@@ -182,5 +182,10 @@
 - 2026-10-17：Confirmed・main変更なし。資料内容の永久削除なし。
 
 ## P0帰属変更の追加確定候補（未確定）
-- [帰属変更11項目から抽出した追加確定候補5項目のABC比較と短い例](Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)。5項目は未選択。Bは推奨候補で正式確定ではない。
+- [帰属変更11項目から抽出した追加確定候補5項目のABC比較と短い例](Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)。5項目の追加基本原則は正式確定済み。比較・選択履歴と詳細・例外は未確定。
 - [帰属変更11項目の現行未確定統合設計](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)と既存Confirmedの重複を区別。今回の旧資料Archive移動なし。Confirmed・main変更なし、永久削除なし。
+
+## P0家督・独立・落城の追加基本原則5項目（確定）
+- **確定正本**：[`Confirmed/P0_SUCCESSION_ADDITIONAL_PRINCIPLES.md`](Confirmed/P0_SUCCESSION_ADDITIONAL_PRINCIPLES.md)。既存F01〜F08・P0追加6原則と重複しない追加部分のみ。
+- **未確定の詳細・例外と比較履歴**：[`Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)、[`Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md`](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)。
+- 2026-10-17：design/foundationのみ更新。mainは変更せず、今回のArchive移動・永久削除なし。
