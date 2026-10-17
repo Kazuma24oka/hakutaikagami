@@ -259,3 +259,8 @@
 - **優先参照先**：[帰属変更18項目の統合設計](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)。基本・詳細11＋複合7項目を統合し、重複・矛盾・依存関係を確認。
 - **比較・選択履歴**：[複合7項目](Archive/P0_SUCCESSION_COMPOUND_TRANSITIONS_OPTIONS.md)。Archiveに内容照合後移動し元配置を除去。
 - 確定済み基本原則は変更しない。main変更なし、資料内容の永久削除なし。
+
+## P0共通基盤の最終横断レビュー・P1移行判定（2026-10-17）
+- **最新レビュー**：[P0全体の確定済み原則・未確定詳細・重複・矛盾・依存関係・完了条件](Proposals/P0_FINAL_CROSS_REVIEW_AND_P1_READINESS.md)。
+- **判定**：基本方針は確定済み、概念整合は概ね完了、実装前仕様と復旧検証は未完了。P1の並行設計は可能。
+- 既存Confirmedの重複確定なし。先行横断レビューは固有の検討履歴として維持。main変更なし、今回Archive移動・永久削除なし。
