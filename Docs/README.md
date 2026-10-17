@@ -359,3 +359,8 @@
 - [婚姻・養子・交易・諜報・裁定・人質・寺社・文化とP1/P2優先順位のB案と未確定詳細](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。
 - F01/F03/F07/F08、P0-A01/A03/A04/A06、既存15コマンド・P1行動42項目と整合。新規Confirmed追加なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1追加コマンドの具体化（未確定・ABCD）
+- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化のコマンド名・対象・条件・結果とABCD比較7項目](Proposals/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。Bは推奨、7項目は未選択。D選択項目のみ次のチャットで自由記載を確認。
+- [拡充7項目](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[既存15コマンド](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動42項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)に整合。新規Confirmed追加なし。
+- 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
