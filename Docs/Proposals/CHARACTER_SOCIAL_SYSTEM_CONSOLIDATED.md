@@ -77,9 +77,9 @@
 9. 各制度の閾値・係数・支払周期・UI・詳細ログ。
 
 ## 10. 参照・管理
-- [身分・主従・命令・相続の検討履歴](STATUS_VASSALAGE_CAREER.md)
-- [出世・俸禄・知行・独立の検討履歴](CAREER_STIPEND_LAND_INDEPENDENCE.md)
+- [身分・主従・命令・相続の検討履歴](../Archive/STATUS_VASSALAGE_CAREER.md)
+- [出世・俸禄・知行・独立の検討履歴](../Archive/CAREER_STIPEND_LAND_INDEPENDENCE.md)
 - [確定ゲーム構想](../Confirmed/GAME_CONCEPT.md)
 - [確定情報システム](../Confirmed/INFORMATION_SYSTEM.md)
 
-本書をこの領域の**未確定設計の優先参照先**とする。従来の2文書は削除・移動・縮約せず、詳細と検討履歴として残す。ユーザーの指示に従いアーカイブ整理は保留。Confirmedとmainは変更しない。
+本書をこの領域の**未確定設計の優先参照先**とする。従来の2文書はArchiveに移動し、詳細と検討履歴として保持する。ユーザーの指示に従いアーカイブ整理は許可。Confirmedとmainは変更しない。
