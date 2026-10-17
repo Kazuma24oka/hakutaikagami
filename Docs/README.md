@@ -166,3 +166,8 @@
 - **優先参照先**：[`Proposals/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md`](Proposals/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md)。基本6項目＋境界5項目の選択済みB案を統合。
 - **比較・選択履歴**：[`Archive/P0_SIMULTANEOUS_EVENT_OPTIONS.md`](Archive/P0_SIMULTANEOUS_EVENT_OPTIONS.md)、[`Archive/P0_SIMULTANEOUS_EVENT_BOUNDARIES_OPTIONS.md`](Archive/P0_SIMULTANEOUS_EVENT_BOUNDARIES_OPTIONS.md)。
 - 2026-10-17：上記2資料をArchiveへ移動し、内容照合・参照更新後にProposalsの元配置を除去。Confirmed・main変更なし、永久削除なし。
+
+## P0家督相続・独立・落城の帰属処理（未確定）
+- [家臣・城・所領・軍勢・条約・債務のABC比較6項目と短い具体例](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)。Bは推奨候補、6項目は未選択。
+- 確定済みの家督・権利・占有・実効支配・忠誠の分離と段階更新を前提に、個別の帰属・承継条件を比較する。Confirmed・main変更なし。
+- 現行統合案と比較案は独自情報を保持しており、今回Archive移動・永久削除なし。
