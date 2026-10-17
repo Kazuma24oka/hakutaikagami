@@ -276,6 +276,11 @@
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動・権限・越権行為（未確定）
-- [行動メニュー・身分別操作・命令／嘆願・越権・成否・NPC反応・UI説明のABC比較7項目](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。Bは推奨、7項目は未選択。
+- [行動メニュー・身分別操作・命令／嘆願・越権・成否・NPC反応・UI説明のABC比較7項目](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。7項目すべてB案選択済み・未確定。
 - [先行P1行動7項目](Proposals/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)とF01/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
 - 現行資料の固有内容を保持するためArchive移動なし。main変更なし、資料内容の永久削除なし。
+
+## P1行動・権限・越権行為7項目のB案選択（2026-10-18）
+- [行動メニュー・身分兼任・命令／嘆願・越権／密命・部分達成・NPC反応・可否説明のB案と未確定詳細](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。
+- F01/F04/F07/F08、P0-A01/A06、先行P1行動7項目と整合。既存Confirmedを重複確定しない。
+- main変更なし、今回Archive移動・永久削除なし。
