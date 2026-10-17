@@ -68,3 +68,8 @@
 - [基本方針と保留詳細のABC比較](Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md)。
 - A/B/Cは確定候補の範囲を検討する選択肢。ユーザーの明示的な確定承認まではConfirmedに移さない。
 - Confirmed・mainは変更せず、アーカイブ整理は保留。
+
+## F01〜F08共通基本方針（確定）
+- **確定正本**：[`Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md`](Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md)。2026-10-17にB案の基本原則のみ確定。
+- **詳細・例外は未確定**：[`Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md) と [`Proposals/P0_FOUNDATION_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_CONSOLIDATED.md) を参照。
+- 旧比較案は選択履歴として保持。アーカイブ整理は保留し、mainへのマージは別途承認を要する。
