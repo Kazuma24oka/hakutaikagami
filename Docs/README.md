@@ -266,31 +266,36 @@
 - 既存Confirmedの重複確定なし。先行横断レビューは固有の検討履歴として維持。main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動・ゲーム進行（未確定）
-- [プレイヤーの立場・行動権限・行動指示・時間進行・NPC交渉・委任・結果通知のABC比較7項目](Proposals/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)。7項目すべてB案選択済み・未確定。
+- [プレイヤーの立場・行動権限・行動指示・時間進行・NPC交渉・委任・結果通知のABC比較7項目](Archive/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)。7項目すべてB案選択済み・未確定。
 - F01/F02/F04/F07/F08、情報・書状・P0共通原則との重複と整合性を確認。既存Confirmedの再確定なし。
 - 今回置換できる旧資料は特定せずArchive移動なし。main変更なし、資料内容の永久削除なし。
 
 ## P1プレイヤー行動・ゲーム進行7項目のB案選択（2026-10-18）
-- [選択済みB案7項目と未確定詳細](Proposals/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)。立場・権限・複数行動・世界時間・交渉・委任・結果通知。
+- [選択済みB案7項目と未確定詳細](Archive/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)。立場・権限・複数行動・世界時間・交渉・委任・結果通知。
 - F01/F02/F04/F07/F08および情報仕様と整合。自動進行＋任意停止は優先案であり未確定。既存Confirmedを重複確定しない。
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動・権限・越権行為（未確定）
-- [行動メニュー・身分別操作・命令／嘆願・越権・成否・NPC反応・UI説明のABC比較7項目](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。7項目すべてB案選択済み・未確定。
-- [先行P1行動7項目](Proposals/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)とF01/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
+- [行動メニュー・身分別操作・命令／嘆願・越権・成否・NPC反応・UI説明のABC比較7項目](Archive/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。7項目すべてB案選択済み・未確定。
+- [先行P1行動7項目](Archive/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)とF01/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
 - 現行資料の固有内容を保持するためArchive移動なし。main変更なし、資料内容の永久削除なし。
 
 ## P1行動・権限・越権行為7項目のB案選択（2026-10-18）
-- [行動メニュー・身分兼任・命令／嘆願・越権／密命・部分達成・NPC反応・可否説明のB案と未確定詳細](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。
+- [行動メニュー・身分兼任・命令／嘆願・越権／密命・部分達成・NPC反応・可否説明のB案と未確定詳細](Archive/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。
 - F01/F04/F07/F08、P0-A01/A06、先行P1行動7項目と整合。既存Confirmedを重複確定しない。
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1委任・長期行動・時間進行（未確定）
-- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間／速度・通知／停止・緊急介入のABC比較7項目](Proposals/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。7項目すべてB案選択済み・未確定。
+- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間／速度・通知／停止・緊急介入のABC比較7項目](Archive/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。7項目すべてB案選択済み・未確定。
 - F02/F04/F07/F08、情報仕様、P0-A01/A04/A06、イベント信頼性と整合。自動進行＋任意停止はまだ優先案であり正式確定ではない。
 - 置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1委任・長期行動・時間進行7項目のB案選択（2026-10-18）
-- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間・通知／停止・緊急介入のB案と未確定詳細](Proposals/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。
+- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間・通知／停止・緊急介入のB案と未確定詳細](Archive/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。
 - F02/F04/F07/F08、情報仕様、P0-A01/A04/A06、イベント信頼性と整合。自動進行＋任意停止は優先案であり未確定。既存Confirmedの重複確定なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1プレイヤー行動21項目の統合（最新・未確定）
+- **現行正本**：[基本7・権限越権7・委任時間7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係と未確定詳細を整理。
+- **比較・選択履歴**：[基本7](Archive/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)、[権限越権7](Archive/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)、[委任時間7](Archive/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。内容一致と参照更新後に旧Proposals配置を削除する。
+- F01/F02/F04/F07/F08等の確定原則は維持。自動進行＋任意停止は未確定。main変更なし、永久削除なし。
