@@ -78,3 +78,8 @@
 - [外交・同盟・婚姻・人質の8項目ABC比較案](Proposals/DIPLOMACY_ALLIANCE_MARRIAGE_HOSTAGES.md)。
 - すべて選択前の比較案。既存のF01〜F08確定基本方針と情報・書状の確定仕様を維持する。
 - Confirmed・mainは変更せず、アーカイブ整理は保留。
+
+## 外交・同盟・婚姻・人質：統合設計（未確定）
+- **優先参照先**：[`Proposals/DIPLOMACY_SYSTEM_CONSOLIDATED.md`](Proposals/DIPLOMACY_SYSTEM_CONSOLIDATED.md)。
+- `Proposals/DIPLOMACY_ALLIANCE_MARRIAGE_HOSTAGES.md` は基本8項目・詳細5項目・例外6項目の比較案と選択履歴として保持。重複記述は統合案を優先参照するが、どちらも未確定。
+- 旧版・重複資料は正本・固有情報・リンクを確認してDocs/Archiveへ移動可能。永久削除には事前承認が必要。Confirmed・mainは変更しない。
