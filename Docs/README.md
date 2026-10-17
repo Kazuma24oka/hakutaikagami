@@ -341,6 +341,11 @@
 - 確定済み原則は維持、詳細・例外は未確定。main変更なし、資料内容の永久削除なし。
 
 ## P1身分別の具体的コマンド一覧（未確定・ABCD）
-- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略15コマンド候補と7項目のABCD比較](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。Bは推奨、7項目は未選択。D選択項目のみ次のチャットで自由記載を確認。
+- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略15コマンド候補と7項目のABCD比較](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
 - [P1行動42項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F04/F07/F08、P0-A01/A03/A06に整合。新規Confirmed追加なし。
 - 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
+
+## P1身分別コマンド一覧7項目のB案選択（2026-10-18）
+- [15コマンド候補・共通5分類・実行／申請／越権／不可・緊急例外・外交人事・謀略・兼任・結果のB案と未確定詳細](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。
+- F01/F02/F04/F07/F08、P0-A01〜A04/A06、P1行動42項目と整合。既存Confirmedの重複確定なし。
+- main変更なし、今回Archive移動・永久削除なし。
