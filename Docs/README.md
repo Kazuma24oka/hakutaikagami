@@ -189,3 +189,8 @@
 - **確定正本**：[`Confirmed/P0_SUCCESSION_ADDITIONAL_PRINCIPLES.md`](Confirmed/P0_SUCCESSION_ADDITIONAL_PRINCIPLES.md)。既存F01〜F08・P0追加6原則と重複しない追加部分のみ。
 - **未確定の詳細・例外と比較履歴**：[`Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)、[`Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md`](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)。
 - 2026-10-17：design/foundationのみ更新。mainは変更せず、今回のArchive移動・永久削除なし。
+
+## P0共通基盤・全体横断レビュー（2026-10-17）
+- **最新の横断レビュー**：[確定済み原則、未確定詳細、重複・矛盾・依存関係、P0〜P2の残課題](Proposals/P0_FOUNDATION_CROSS_REVIEW_2026-10-17.md)。
+- 今回は新たな確定原則なし。既存ConfirmedのF01〜F08・P0追加6原則・帰属追加5原則を維持。古い横断レビューV2は検討履歴として保持する。
+- 比較資料の旧「未選択」表記よりも、後日の選択・確定記録を優先する。main変更なし、永久削除なし。
