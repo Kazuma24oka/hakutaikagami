@@ -171,3 +171,7 @@
 - [家臣・城・所領・軍勢・条約・債務のABC比較6項目と短い具体例](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)。Bは推奨候補、6項目は未選択。
 - 確定済みの家督・権利・占有・実効支配・忠誠の分離と段階更新を前提に、個別の帰属・承継条件を比較する。Confirmed・main変更なし。
 - 現行統合案と比較案は独自情報を保持しており、今回Archive移動・永久削除なし。
+
+## P0家督・独立・落城の重要詳細（未確定）
+- [家臣服従・城内分裂・相続争い・条約・債務承継のABC比較5項目と短い例](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_DETAILS_OPTIONS.md)。5項目とも未選択、Bは推奨候補。
+- [先行する帰属処理6項目のB選択履歴](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)と既存Confirmedを参照。現行の比較・選択資料は固有情報があるため今回Archive移動なし。Confirmed・main変更なし、永久削除なし。
