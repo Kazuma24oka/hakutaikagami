@@ -63,3 +63,8 @@
 - **優先参照先**：[`Proposals/P0_FOUNDATION_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_CONSOLIDATED.md)。
 - `Proposals/P0_FOUNDATION_OPTIONS.md` はABC比較案・B案選択・例外処理の検討履歴として保持。統合案を優先参照するが、どちらも未確定。
 - 未解決の同時刻処理・権限・会計・帰属・責任は統合案に記載。Confirmed・mainは変更せず、アーカイブ整理は保留。
+
+## F01〜F08の確定候補範囲（未確定）
+- [基本方針と保留詳細のABC比較](Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md)。
+- A/B/Cは確定候補の範囲を検討する選択肢。ユーザーの明示的な確定承認まではConfirmedに移さない。
+- Confirmed・mainは変更せず、アーカイブ整理は保留。
