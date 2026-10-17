@@ -168,10 +168,15 @@
 - 2026-10-17：上記2資料をArchiveへ移動し、内容照合・参照更新後にProposalsの元配置を除去。Confirmed・main変更なし、永久削除なし。
 
 ## P0家督相続・独立・落城の帰属処理（未確定）
-- [家臣・城・所領・軍勢・条約・債務のABC比較6項目と短い具体例](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)。Bは推奨候補、6項目は未選択。
+- [家臣・城・所領・軍勢・条約・債務のABC比較6項目と短い具体例](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)。Bは推奨候補、6項目はB案選択済み・未確定。
 - 確定済みの家督・権利・占有・実効支配・忠誠の分離と段階更新を前提に、個別の帰属・承継条件を比較する。Confirmed・main変更なし。
 - 現行統合案と比較案は独自情報を保持しており、今回Archive移動・永久削除なし。
 
 ## P0家督・独立・落城の重要詳細（未確定）
-- [家臣服従・城内分裂・相続争い・条約・債務承継のABC比較5項目と短い例](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_DETAILS_OPTIONS.md)。5項目とも未選択、Bは推奨候補。
-- [先行する帰属処理6項目のB選択履歴](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)と既存Confirmedを参照。現行の比較・選択資料は固有情報があるため今回Archive移動なし。Confirmed・main変更なし、永久削除なし。
+- [家臣服従・城内分裂・相続争い・条約・債務承継のABC比較5項目と短い例](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_DETAILS_OPTIONS.md)。5項目ともB案選択済み・未確定。
+- [先行する帰属処理6項目のB選択履歴](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)と既存Confirmedを参照。現行の比較・選択資料は固有情報があるため今回Archive移動なし。Confirmed・main変更なし、永久削除なし。
+
+## P0家督・独立・落城11項目の統合（最新・未確定）
+- **優先参照先**：[帰属変更11項目の統合設計](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)。基本6項目＋重要詳細5項目の選択済みB案を統合。
+- **比較・選択履歴**：[基本6項目](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)、[詳細5項目](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_DETAILS_OPTIONS.md)。両者を内容照合後にArchiveへ移動し、元配置を除去。
+- 2026-10-17：Confirmed・main変更なし。資料内容の永久削除なし。
