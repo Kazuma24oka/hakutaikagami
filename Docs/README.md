@@ -233,6 +233,10 @@
 - 既存Confirmedの基本原則は変更しない。main変更なし、資料内容の永久削除なし。
 
 ## P0イベント処理の残課題（未確定）
-- [循環解除・競合の確定境界・ロールバック／補償・再試行・セーブ復旧のABC比較6項目](Proposals/P0_EVENT_RECOVERY_BOUNDARIES_OPTIONS.md)。Bは推奨、6項目は未選択。
+- [循環解除・競合の確定境界・ロールバック／補償・再試行・セーブ復旧のABC比較6項目](Proposals/P0_EVENT_RECOVERY_BOUNDARIES_OPTIONS.md)。6項目すべてB案選択済み・未確定。
 - [イベント処理17項目の統合正本](Proposals/P0_EVENT_PROCESSING_CONSOLIDATED.md)と[確定原則R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)を参照。既存基本原則と重複するため今回Confirmedへの追加なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P0イベント処理の残課題6項目・B案選択（2026-10-17）
+- [循環解除・競合境界・ロールバック／補償・再試行・セーブ復旧のB選択履歴と未確定詳細](Proposals/P0_EVENT_RECOVERY_BOUNDARIES_OPTIONS.md)。
+- 既存[確定原則R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)との整合を確認。追加確定なし。main変更なし、今回Archive移動・永久削除なし。
