@@ -247,6 +247,10 @@
 - 既存Confirmedの基本原則を再確定しない。main変更なし、資料内容の永久削除なし。
 
 ## P0家督・独立・落城の複合状態遷移（未確定）
-- [家臣・城・所領・軍勢・条約・債務・同時発生のABC比較7項目](Proposals/P0_SUCCESSION_COMPOUND_TRANSITIONS_OPTIONS.md)。Bは推奨、7項目は未選択。
+- [家臣・城・所領・軍勢・条約・債務・同時発生のABC比較7項目](Proposals/P0_SUCCESSION_COMPOUND_TRANSITIONS_OPTIONS.md)。7項目すべてB案選択済み・未確定。
 - [帰属変更11項目の統合](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)および[イベント処理23項目の統合](Proposals/P0_EVENT_PROCESSING_CONSOLIDATED.md)を参照。既存Confirmedと整合、追加確定なし。
 - 現行正本に独自の未確定事項があるためArchive移動なし。main変更なし、永久削除なし。
+
+## P0家督・独立・落城の複合状態遷移7項目のB案選択（2026-10-17）
+- [家臣・城・所領・軍勢・条約・債務・同時発生のB案7項目と未確定詳細](Proposals/P0_SUCCESSION_COMPOUND_TRANSITIONS_OPTIONS.md)。
+- 既存[帰属変更の確定原則](Confirmed/P0_SUCCESSION_ADDITIONAL_PRINCIPLES.md)と[共通原則](Confirmed/P0_ADDITIONAL_PRINCIPLES.md)を再確定しない。main変更なし、今回Archive移動・永久削除なし。
