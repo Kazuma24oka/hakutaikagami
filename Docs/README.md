@@ -88,3 +88,8 @@
 - [9項目のABC比較設計](Proposals/CHARACTER_ABILITIES_PERSONALITY_RELATIONSHIPS.md)。
 - 推奨B案は未選択の比較案。能力・性格・関係・評判と本人の認識を区別し、F01〜F08の確定基本方針を維持。
 - Archiveへの移動・整理は正本と参照を確認したうえで可能。永久削除には事前承認が必要。Confirmed・mainは変更しない。
+
+## 武将の能力・性格・人間関係：統合設計（未確定）
+- **優先参照先**：[`Proposals/CHARACTER_PERSONALITY_RELATIONSHIPS_CONSOLIDATED.md`](Proposals/CHARACTER_PERSONALITY_RELATIONSHIPS_CONSOLIDATED.md)。
+- `Proposals/CHARACTER_ABILITIES_PERSONALITY_RELATIONSHIPS.md` は基本9項目・詳細5項目の比較案とユーザー選択履歴として保持。重複説明は統合案を優先参照するが、どちらも未確定。
+- 古い・重複資料のArchive移動は正本・固有情報・参照を確認して実施可能。永久削除には事前承認が必要。Confirmed・mainは変更しない。
