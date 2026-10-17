@@ -63,7 +63,7 @@
 - [武将・主従・相続](CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md)：家督・安堵・実効支配・離反・家臣支持を分離。
 - [在地社会](LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md)：国人の自治、組織決議と個人認識の分離。
 - [中央権威](COURT_SHOGUNATE_SYSTEM_CONSOLIDATED.md)：朝廷・将軍の仲裁と条約の成立・履行を分離。
-- [P0基盤](P0_FOUNDATION_CONSOLIDATED.md)：同時刻処理、代理権限、債務・帰属状態の未決定を維持。
+- [P0基盤](P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)：同時刻処理、代理権限、債務・帰属状態の未決定を維持。
 
 ## 10. 未決定事項（重要度順）
 **P0**
