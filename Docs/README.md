@@ -58,3 +58,8 @@
 - [主体・権限／世界時刻／領地・会計／状態遷移／情報認識のABC比較](Proposals/P0_FOUNDATION_OPTIONS.md)。
 - 推奨B案はユーザー選択前の候補であり、確定仕様への昇格ではない。
 - アーカイブ整理は保留。Confirmed・mainは変更しない。
+
+## P0共通基盤の統合設計（未確定）
+- **優先参照先**：[`Proposals/P0_FOUNDATION_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_CONSOLIDATED.md)。
+- `Proposals/P0_FOUNDATION_OPTIONS.md` はABC比較案・B案選択・例外処理の検討履歴として保持。統合案を優先参照するが、どちらも未確定。
+- 未解決の同時刻処理・権限・会計・帰属・責任は統合案に記載。Confirmed・mainは変更せず、アーカイブ整理は保留。
