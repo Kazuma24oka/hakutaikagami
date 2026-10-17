@@ -85,7 +85,7 @@
 [FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md](FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md) の寺社反発・一揆は本書で未確定の比較検討を開始した。**朝廷工作・将軍家工作・官位・官職・将軍職は未着手の将来検討事項**として残す。いずれも確定仕様ではない。
 
 ## 11. 参照・管理
-- [在地社会の比較案と選択履歴](LOCAL_SOCIAL_FORCES.md)
+- [在地社会の比較案と選択履歴](../Archive/LOCAL_SOCIAL_FORCES.md)
 - [全国マップ・城・領地の統合案](WORLD_MAP_CASTLE_LAND_CONSOLIDATED.md)
 - [武将の身分・主従・独立の統合案](CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md)
 - [行動・時間進行の統合案](ACTION_TIME_SYSTEM_CONSOLIDATED.md)
