@@ -286,6 +286,11 @@
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1委任・長期行動・時間進行（未確定）
-- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間／速度・通知／停止・緊急介入のABC比較7項目](Proposals/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。Bは推奨、7項目は未選択。
+- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間／速度・通知／停止・緊急介入のABC比較7項目](Proposals/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。7項目すべてB案選択済み・未確定。
 - F02/F04/F07/F08、情報仕様、P0-A01/A04/A06、イベント信頼性と整合。自動進行＋任意停止はまだ優先案であり正式確定ではない。
 - 置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
+
+## P1委任・長期行動・時間進行7項目のB案選択（2026-10-18）
+- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間・通知／停止・緊急介入のB案と未確定詳細](Proposals/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。
+- F02/F04/F07/F08、情報仕様、P0-A01/A04/A06、イベント信頼性と整合。自動進行＋任意停止は優先案であり未確定。既存Confirmedの重複確定なし。
+- main変更なし、今回Archive移動・永久削除なし。
