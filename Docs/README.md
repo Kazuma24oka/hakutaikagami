@@ -274,3 +274,8 @@
 - [選択済みB案7項目と未確定詳細](Proposals/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)。立場・権限・複数行動・世界時間・交渉・委任・結果通知。
 - F01/F02/F04/F07/F08および情報仕様と整合。自動進行＋任意停止は優先案であり未確定。既存Confirmedを重複確定しない。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1プレイヤー行動・権限・越権行為（未確定）
+- [行動メニュー・身分別操作・命令／嘆願・越権・成否・NPC反応・UI説明のABC比較7項目](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。Bは推奨、7項目は未選択。
+- [先行P1行動7項目](Proposals/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)とF01/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
+- 現行資料の固有内容を保持するためArchive移動なし。main変更なし、資料内容の永久削除なし。
