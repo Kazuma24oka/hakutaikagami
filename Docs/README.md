@@ -138,3 +138,8 @@
 - **優先参照先**：[`Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)。第1〜第3群の9項目はすべてB優先・未確定。
 - 比較・選択履歴：[`Archive/P0_FOUNDATION_PHASE1_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE1_OPTIONS.md)、[`Archive/P0_FOUNDATION_PHASE2_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE2_OPTIONS.md)、[`Archive/P0_FOUNDATION_PHASE3_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE3_OPTIONS.md)。旧統合案：[`Archive/P0_FOUNDATION_CONSOLIDATED.md`](Archive/P0_FOUNDATION_CONSOLIDATED.md)。
 - 移動記録：2026-10-17、上記4資料をProposalsからArchiveへ移動。元配置は内容照合後に削除。資料内容の永久削除なし。Confirmed・mainは変更しない。
+
+## P0複合例外処理（未確定）
+- [家督・独立・落城・徴税・条約・軍令・偽報の6項目ABC比較（短い具体例付き）](Proposals/P0_COMPOUND_EXCEPTIONS_OPTIONS.md)。Bは推奨候補、6項目はユーザー未選択。
+- [P0共通基盤9項目の現行未確定正本](Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)とConfirmedの基本原則を優先する。今回の例外比較はこれらを変更しない。
+- 新規比較案のため旧資料のArchive移動なし。永久削除なし。Confirmed・mainは変更しない。
