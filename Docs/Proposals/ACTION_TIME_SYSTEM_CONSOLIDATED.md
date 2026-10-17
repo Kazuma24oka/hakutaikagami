@@ -69,8 +69,8 @@
 9. 時間速度倍率、最小時間粒度、表示UI、詳細ログ・数値調整。
 
 ## 8. 参照と管理
-- [時間進行の初期比較案](TIME_PROGRESSION.md)
-- [武将の行動・時間進行の選択履歴](CHARACTER_ACTION_TIME_SYSTEM.md)
+- [時間進行の初期比較案](../Archive/TIME_PROGRESSION.md)
+- [武将の行動・時間進行の選択履歴](../Archive/CHARACTER_ACTION_TIME_SYSTEM.md)
 - [確定情報・書状・通知システム](../Confirmed/INFORMATION_SYSTEM.md)
 - [未確定の身分・主従・出世・独立の統合案](CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md)
 
