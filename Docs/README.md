@@ -316,6 +316,11 @@
 - 自動進行＋任意停止は未確定。既存Confirmedの重複確定なし、main変更なし、永久削除なし。
 
 ## P1身分別操作メニュー（未確定・ABCD）
-- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略・兼任等7項目](Proposals/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。A/B/Cは短い具体例付き、Dはその他。7項目は未選択。
+- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略・兼任等7項目](Proposals/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。A/B/Cは短い具体例付き、Dはその他。7項目すべてB案選択済み・未確定。
 - Dを選択した項目のみ次のチャットで自由記載を確認する。既存F01/F04/F07、P0-A01/A03/A06、P1行動28項目と整合。新規Confirmed追加なし。
 - 置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
+
+## P1身分別操作メニュー7項目のB案選択（2026-10-18）
+- [共通分類・内政・軍事・外交・人事・謀略・兼任の選択済みB案と未確定詳細](Proposals/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。
+- F01/F04/F07、P0-A01/A03/A06、P1行動28項目と整合。既存Confirmedの重複確定なし。
+- main変更なし、今回Archive移動・永久削除なし。
