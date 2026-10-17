@@ -152,3 +152,8 @@
 - **確定正本**：[`Confirmed/P0_ADDITIONAL_PRINCIPLES.md`](Confirmed/P0_ADDITIONAL_PRINCIPLES.md)。既存F01〜F08・情報確定仕様と重複する部分を除いた追加原則のみ。
 - **未確定詳細・例外と選択履歴**：[`Proposals/P0_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/P0_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)、[`Proposals/P0_COMPOUND_EXCEPTIONS_OPTIONS.md`](Proposals/P0_COMPOUND_EXCEPTIONS_OPTIONS.md)。
 - 2026-10-17：design/foundationのみ更新。mainは変更せず、Archiveへの移動・永久削除は今回なし。
+
+## P0同時刻イベント処理のABC比較（未確定）
+- [同時刻イベント6項目の比較設計・具体例](Proposals/P0_SIMULTANEOUS_EVENT_OPTIONS.md)。イベント依存、権限取消／代理受領、返答期限、落城／援軍、二重徴税、軍令／組織決議を検討。
+- 6項目は未選択・未確定。確定済みF02とP0-A02の因果・効力評価を変更せず、具体的な処理方法だけを比較。
+- 新規比較資料につき今回のArchive移動なし。Confirmed・main変更なし、永久削除なし。
