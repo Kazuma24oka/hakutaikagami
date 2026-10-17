@@ -339,3 +339,8 @@
 - **現行正本**：[基本28＋身分別メニュー7＋越権緊急兼任7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係を確認。
 - **比較・選択履歴**：[身分別メニュー7項目](Archive/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)、[越権緊急兼任7項目](Archive/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。内容照合後に旧配置を削除。
 - 確定済み原則は維持、詳細・例外は未確定。main変更なし、資料内容の永久削除なし。
+
+## P1身分別の具体的コマンド一覧（未確定・ABCD）
+- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略15コマンド候補と7項目のABCD比較](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。Bは推奨、7項目は未選択。D選択項目のみ次のチャットで自由記載を確認。
+- [P1行動42項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F04/F07/F08、P0-A01/A03/A06に整合。新規Confirmed追加なし。
+- 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
