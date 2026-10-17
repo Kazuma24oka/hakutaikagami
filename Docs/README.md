@@ -197,19 +197,24 @@
 
 ## P0イベント処理の信頼性（確定基本原則＋未確定詳細）
 - **確定原則**：[イベント重複適用防止・失敗時整合性・セーブ継続整合性（R01〜R03）](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)。既存F02/P0-A02/A04を変更しない追加品質要件。
-- **未確定のABC比較**：[イベントID・重複実行防止・処理順序・復旧・セーブ再現性の5項目](Proposals/P0_EVENT_RELIABILITY_OPTIONS.md)。B案5項目はユーザー選択済み。基本処理契約はConfirmedに確定、詳細・例外は未確定。
+- **未確定のABC比較**：[イベントID・重複実行防止・処理順序・復旧・セーブ再現性の5項目](Archive/P0_EVENT_RELIABILITY_OPTIONS.md)。B案5項目はユーザー選択済み。基本処理契約はConfirmedに確定、詳細・例外は未確定。
 - 2026-10-17：design/foundationのみ更新。旧版に相当する資料は今回特定せずArchive移動なし。main変更なし、永久削除なし。
 
 ## P0イベント処理のB案選択と追加確定（2026-10-17）
 - [Confirmed：イベント信頼性R01〜R03と追加処理契約R04（5項目）](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)。
-- [Proposals：B案5項目の選択履歴、未確定のID生成・循環依存・復旧方式・セーブ互換](Proposals/P0_EVENT_RELIABILITY_OPTIONS.md)。
+- [Proposals：B案5項目の選択履歴、未確定のID生成・循環依存・復旧方式・セーブ互換](Archive/P0_EVENT_RELIABILITY_OPTIONS.md)。
 - 今回は現行資料の更新のみ。置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P0イベント処理の詳細実装方式（未確定）
-- [イベントID生成・処理状態・因果循環・競合裁定・失敗復旧・セーブ再現性のABC比較6項目](Proposals/P0_EVENT_PROCESSING_IMPLEMENTATION_OPTIONS.md)。6項目ともB案選択済み・未確定。
+- [イベントID生成・処理状態・因果循環・競合裁定・失敗復旧・セーブ再現性のABC比較6項目](Archive/P0_EVENT_PROCESSING_IMPLEMENTATION_OPTIONS.md)。6項目ともB案選択済み・未確定。
 - 基本原則は既に[Confirmed](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)に確定済み。今回の比較は実装詳細でありConfirmedへ新規追加なし。
 - 先行5項目の選択履歴は現行Proposalsに維持。main変更なし、今回Archive移動・永久削除なし。
 
 ## P0イベント処理・詳細実装方式6項目のB案選択（2026-10-17）
-- [選択済みB案6項目と未確定詳細](Proposals/P0_EVENT_PROCESSING_IMPLEMENTATION_OPTIONS.md)。イベントID・処理状態・因果循環・制度別競合・補償・セーブ再現性。
+- [選択済みB案6項目と未確定詳細](Archive/P0_EVENT_PROCESSING_IMPLEMENTATION_OPTIONS.md)。イベントID・処理状態・因果循環・制度別競合・補償・セーブ再現性。
 - 既存[確定原則R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)と重複するため新たな基本原則の確定なし。main変更なし、今回Archive移動・永久削除なし。
+
+## P0イベント処理11項目の統合（最新・未確定）
+- **優先参照先**：[イベント処理11項目の統合設計](Proposals/P0_EVENT_PROCESSING_CONSOLIDATED.md)。基本5項目＋詳細6項目のB優先案を統合。
+- **比較・選択履歴**：[基本5項目](Archive/P0_EVENT_RELIABILITY_OPTIONS.md)、[詳細6項目](Archive/P0_EVENT_PROCESSING_IMPLEMENTATION_OPTIONS.md)。内容一致・参照更新後に元配置を削除する。
+- 確定原則は[イベント信頼性R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)を優先。main変更なし、資料内容の永久削除なし。
