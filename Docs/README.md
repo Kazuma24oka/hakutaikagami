@@ -220,5 +220,9 @@
 - 確定原則は[イベント信頼性R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)を優先。main変更なし、資料内容の永久削除なし。
 
 ## P0循環依存・競合・失敗復旧のABC比較（未確定）
-- [循環検出・制度別競合・ロールバック・補償・再試行・セーブ中断の6項目](Proposals/P0_EVENT_CYCLES_CONFLICTS_RECOVERY_OPTIONS.md)。Bは推奨、6項目は未選択。
+- [循環検出・制度別競合・ロールバック・補償・再試行・セーブ中断の6項目](Proposals/P0_EVENT_CYCLES_CONFLICTS_RECOVERY_OPTIONS.md)。6項目ともB案選択済み・未確定。
 - [イベント処理11項目の統合案](Proposals/P0_EVENT_PROCESSING_CONSOLIDATED.md)と[確定原則R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)を参照。新たな独立基本原則の確定なし。main変更なし、今回Archive移動・永久削除なし。
+
+## P0循環依存・競合・失敗復旧6項目のB案選択（2026-10-17）
+- [選択済みB案6項目と未確定詳細](Proposals/P0_EVENT_CYCLES_CONFLICTS_RECOVERY_OPTIONS.md)。循環検出・制度別裁定・ロールバック／補償・再試行・セーブ中断。
+- 既存[確定原則R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)を重複確定しない。main変更なし、Archive移動・永久削除なし。
