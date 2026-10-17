@@ -105,6 +105,11 @@
 - 永久削除なし。Confirmed・mainは変更しない。
 
 ## 合戦・軍制・戦術（未確定）
-- [12項目のABC比較設計](Proposals/BATTLE_MILITARY_TACTICS.md)。
+- [12項目のABC比較設計](Archive/BATTLE_MILITARY_TACTICS.md)。
 - B案は未選択の推奨候補。軍勢・指揮権・野戦／攻城／籠城・士気・兵站・世界時刻・情報認識を既存設計に接続。
 - 旧版・重複資料は固有情報・参照を確認してArchiveへ移動可能。永久削除には事前承認が必要。Confirmed・mainは変更しない。
+
+## 合戦・軍制・戦術：統合設計（未確定）
+- **優先参照先**：[`Proposals/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md`](Proposals/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md)。
+- 基本12項目・詳細5項目のABC比較とB案選択履歴は [`Archive/BATTLE_MILITARY_TACTICS.md`](Archive/BATTLE_MILITARY_TACTICS.md) に移動。現在の未確定設計は統合案を優先参照。
+- 移動記録：2026-10-17、`Proposals/BATTLE_MILITARY_TACTICS.md` → `Archive/BATTLE_MILITARY_TACTICS.md`。内容を保持し、元配置を除去。永久削除なし。Confirmed・mainは変更しない。
