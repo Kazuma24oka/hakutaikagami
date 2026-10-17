@@ -351,6 +351,11 @@
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1コマンド拡充・網羅性（未確定・ABCD）
-- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化と優先順位のABCD比較7項目](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。Bは推奨、7項目は未選択。D選択項目のみ次のチャットで自由記載を確認。
+- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化と優先順位のABCD比較7項目](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
 - [既存15コマンド](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動42項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F03/F07/F08、P0-A01/A03/A04/A06に整合。新規Confirmed追加なし。
 - 置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
+
+## P1コマンド拡充・網羅性7項目のB案選択（2026-10-18）
+- [婚姻・養子・交易・諜報・裁定・人質・寺社・文化とP1/P2優先順位のB案と未確定詳細](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。
+- F01/F03/F07/F08、P0-A01/A03/A04/A06、既存15コマンド・P1行動42項目と整合。新規Confirmed追加なし。
+- main変更なし、今回Archive移動・永久削除なし。
