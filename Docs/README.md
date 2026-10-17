@@ -197,5 +197,10 @@
 
 ## P0イベント処理の信頼性（確定基本原則＋未確定詳細）
 - **確定原則**：[イベント重複適用防止・失敗時整合性・セーブ継続整合性（R01〜R03）](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)。既存F02/P0-A02/A04を変更しない追加品質要件。
-- **未確定のABC比較**：[イベントID・重複実行防止・処理順序・復旧・セーブ再現性の5項目](Proposals/P0_EVENT_RELIABILITY_OPTIONS.md)。Bは推奨、ユーザー未選択。
+- **未確定のABC比較**：[イベントID・重複実行防止・処理順序・復旧・セーブ再現性の5項目](Proposals/P0_EVENT_RELIABILITY_OPTIONS.md)。B案5項目はユーザー選択済み。基本処理契約はConfirmedに確定、詳細・例外は未確定。
 - 2026-10-17：design/foundationのみ更新。旧版に相当する資料は今回特定せずArchive移動なし。main変更なし、永久削除なし。
+
+## P0イベント処理のB案選択と追加確定（2026-10-17）
+- [Confirmed：イベント信頼性R01〜R03と追加処理契約R04（5項目）](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)。
+- [Proposals：B案5項目の選択履歴、未確定のID生成・循環依存・復旧方式・セーブ互換](Proposals/P0_EVENT_RELIABILITY_OPTIONS.md)。
+- 今回は現行資料の更新のみ。置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
