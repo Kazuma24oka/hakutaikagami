@@ -316,21 +316,26 @@
 - 自動進行＋任意停止は未確定。既存Confirmedの重複確定なし、main変更なし、永久削除なし。
 
 ## P1身分別操作メニュー（未確定・ABCD）
-- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略・兼任等7項目](Proposals/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。A/B/Cは短い具体例付き、Dはその他。7項目すべてB案選択済み・未確定。
+- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略・兼任等7項目](Archive/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。A/B/Cは短い具体例付き、Dはその他。7項目すべてB案選択済み・未確定。
 - Dを選択した項目のみ次のチャットで自由記載を確認する。既存F01/F04/F07、P0-A01/A03/A06、P1行動28項目と整合。新規Confirmed追加なし。
 - 置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1身分別操作メニュー7項目のB案選択（2026-10-18）
-- [共通分類・内政・軍事・外交・人事・謀略・兼任の選択済みB案と未確定詳細](Proposals/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。
+- [共通分類・内政・軍事・外交・人事・謀略・兼任の選択済みB案と未確定詳細](Archive/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。
 - F01/F04/F07、P0-A01/A03/A06、P1行動28項目と整合。既存Confirmedの重複確定なし。
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1越権行為・緊急権限・兼任（未確定・ABCD）
-- [独立工作・密約・独断出陣・緊急防衛・役職兼任・権限取消・事後責任のABCD比較7項目](Proposals/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
+- [独立工作・密約・独断出陣・緊急防衛・役職兼任・権限取消・事後責任のABCD比較7項目](Archive/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
 - F01/F02/F03/F07/F08、P0-A01/A02/A03/A06、P1行動28項目と身分別メニュー7項目に整合。新規Confirmed追加なし。
 - 今回置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1越権行為・緊急権限・兼任7項目のB案選択（2026-10-18）
-- [独立工作・密約・独断出陣・緊急防衛・役職兼任・権限取消・事後責任のB優先案と未確定詳細](Proposals/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。
+- [独立工作・密約・独断出陣・緊急防衛・役職兼任・権限取消・事後責任のB優先案と未確定詳細](Archive/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。
 - F01/F02/F03/F07/F08、P0-A01/A02/A03/A06、P1行動28項目・身分別メニュー7項目と整合。新規Confirmed追加なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1プレイヤー行動42項目の統合（最新・未確定）
+- **現行正本**：[基本28＋身分別メニュー7＋越権緊急兼任7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係を確認。
+- **比較・選択履歴**：[身分別メニュー7項目](Archive/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)、[越権緊急兼任7項目](Archive/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。内容照合後に旧配置を削除。
+- 確定済み原則は維持、詳細・例外は未確定。main変更なし、資料内容の永久削除なし。
