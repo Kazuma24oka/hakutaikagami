@@ -374,3 +374,8 @@
 - **現行正本**：[既存42＋身分別コマンド7＋拡充7＋追加詳細7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。共通5分類・操作状態・案件状態・依存関係を整理。
 - **比較・選択履歴**：[身分別コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[拡充](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[追加詳細](Archive/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。内容照合後に旧Proposals配置を削除。
 - Confirmedの重複確定なし、main変更なし、永久削除なし。
+
+## P1/P2実装範囲・完成条件（未確定・ABCD、2026-10-18）
+- [63項目からP1必須・P2拡張・実装前依存・完了判定を比較する7項目](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。B推奨、7項目は未選択。Dはその他、選択した項目のみ次のチャットで自由記載。
+- [63項目統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)およびF01/F02/F04/F07/F08・P0-A01〜A06と整合。自動進行＋任意停止は未確定。新規Confirmedなし。
+- 置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
