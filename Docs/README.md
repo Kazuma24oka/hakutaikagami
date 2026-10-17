@@ -25,3 +25,8 @@
 - **優先参照先**：[`Proposals/CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md`](Proposals/CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md)。
 - `Proposals/STATUS_VASSALAGE_CAREER.md` と `Proposals/CAREER_STIPEND_LAND_INDEPENDENCE.md` は検討履歴・詳細資料として保持する。重複した説明は統合案を優先参照するが、いずれも未確定。
 - アーカイブ整理はユーザーの指示により保留中。旧資料は移動・削除しない。
+
+## 武将の行動・時間進行（未確定）
+- **優先参照先**：[`Proposals/ACTION_TIME_SYSTEM_CONSOLIDATED.md`](Proposals/ACTION_TIME_SYSTEM_CONSOLIDATED.md)。
+- `Proposals/TIME_PROGRESSION.md` と `Proposals/CHARACTER_ACTION_TIME_SYSTEM.md` は初期比較案・選択履歴として保持する。旧記述の表現差は統合案を優先して参照するが、すべて未確定。
+- アーカイブ整理は保留し、旧資料の移動・削除は行わない。
