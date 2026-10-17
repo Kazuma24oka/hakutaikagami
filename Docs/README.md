@@ -154,10 +154,15 @@
 - 2026-10-17：design/foundationのみ更新。mainは変更せず、Archiveへの移動・永久削除は今回なし。
 
 ## P0同時刻イベント処理のABC比較（未確定）
-- [同時刻イベント6項目の比較設計・具体例](Proposals/P0_SIMULTANEOUS_EVENT_OPTIONS.md)。イベント依存、権限取消／代理受領、返答期限、落城／援軍、二重徴税、軍令／組織決議を検討。
-- 6項目は未選択・未確定。確定済みF02とP0-A02の因果・効力評価を変更せず、具体的な処理方法だけを比較。
+- [同時刻イベント6項目の比較設計・具体例](Archive/P0_SIMULTANEOUS_EVENT_OPTIONS.md)。イベント依存、権限取消／代理受領、返答期限、落城／援軍、二重徴税、軍令／組織決議を検討。
+- 6項目はB案優先・未確定。確定済みF02とP0-A02の因果・効力評価を変更せず、具体的な処理方法だけを比較。
 - 新規比較資料につき今回のArchive移動なし。Confirmed・main変更なし、永久削除なし。
 
 ## P0同時刻イベントの境界・優先順位（未確定）
-- [5項目のABC比較・短い具体例](Proposals/P0_SIMULTANEOUS_EVENT_BOUNDARIES_OPTIONS.md)：期限ちょうど、権限取消／代理受領、イベント依存順序、二重徴税、開城／援軍。Bは推奨でありユーザー未選択。
+- [5項目のABC比較・短い具体例](Archive/P0_SIMULTANEOUS_EVENT_BOUNDARIES_OPTIONS.md)：期限ちょうど、権限取消／代理受領、イベント依存順序、二重徴税、開城／援軍。B案優先・未確定。
 - 先行する同時刻イベントのB優先案は独自の検討履歴を持つためProposalsに維持。Confirmed・mainは変更せず、今回Archive移動・永久削除なし。
+
+## P0同時刻イベント11項目の統合（最新・未確定）
+- **優先参照先**：[`Proposals/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md`](Proposals/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md)。基本6項目＋境界5項目の選択済みB案を統合。
+- **比較・選択履歴**：[`Archive/P0_SIMULTANEOUS_EVENT_OPTIONS.md`](Archive/P0_SIMULTANEOUS_EVENT_OPTIONS.md)、[`Archive/P0_SIMULTANEOUS_EVENT_BOUNDARIES_OPTIONS.md`](Archive/P0_SIMULTANEOUS_EVENT_BOUNDARIES_OPTIONS.md)。
+- 2026-10-17：上記2資料をArchiveへ移動し、内容照合・参照更新後にProposalsの元配置を除去。Confirmed・main変更なし、永久削除なし。
