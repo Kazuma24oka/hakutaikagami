@@ -73,3 +73,8 @@
 - **確定正本**：[`Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md`](Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md)。2026-10-17にB案の基本原則のみ確定。
 - **詳細・例外は未確定**：[`Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md) と [`Proposals/P0_FOUNDATION_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_CONSOLIDATED.md) を参照。
 - 旧比較案は選択履歴として保持。アーカイブ整理は保留し、mainへのマージは別途承認を要する。
+
+## 外交・同盟・婚姻・人質（未確定）
+- [外交・同盟・婚姻・人質の8項目ABC比較案](Proposals/DIPLOMACY_ALLIANCE_MARRIAGE_HOSTAGES.md)。
+- すべて選択前の比較案。既存のF01〜F08確定基本方針と情報・書状の確定仕様を維持する。
+- Confirmed・mainは変更せず、アーカイブ整理は保留。
