@@ -231,3 +231,8 @@
 - **優先参照先**：[基本5・詳細6・例外6の統合設計](Proposals/P0_EVENT_PROCESSING_CONSOLIDATED.md)。確定済み原則と未確定実装を分離。
 - **例外6項目の比較・選択履歴**：[Archive](Archive/P0_EVENT_CYCLES_CONFLICTS_RECOVERY_OPTIONS.md)。内容一致と参照更新後にProposalsの旧配置を削除。
 - 既存Confirmedの基本原則は変更しない。main変更なし、資料内容の永久削除なし。
+
+## P0イベント処理の残課題（未確定）
+- [循環解除・競合の確定境界・ロールバック／補償・再試行・セーブ復旧のABC比較6項目](Proposals/P0_EVENT_RECOVERY_BOUNDARIES_OPTIONS.md)。Bは推奨、6項目は未選択。
+- [イベント処理17項目の統合正本](Proposals/P0_EVENT_PROCESSING_CONSOLIDATED.md)と[確定原則R01〜R04](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)を参照。既存基本原則と重複するため今回Confirmedへの追加なし。
+- main変更なし、今回Archive移動・永久削除なし。
