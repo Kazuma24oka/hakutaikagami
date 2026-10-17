@@ -301,6 +301,11 @@
 - F01/F02/F04/F07/F08等の確定原則は維持。自動進行＋任意停止は未確定。main変更なし、永久削除なし。
 
 ## P1プレイヤー操作フロー（未確定）
-- [国人領主・陪臣・城主・大名の立場別行動、命令・移動・交渉・委任・結果確認のABC比較7項目](Proposals/P1_PLAYER_OPERATION_FLOW_OPTIONS.md)。Bは推奨、7項目は未選択。
+- [国人領主・陪臣・城主・大名の立場別行動、命令・移動・交渉・委任・結果確認のABC比較7項目](Proposals/P1_PLAYER_OPERATION_FLOW_OPTIONS.md)。7項目すべてB案選択済み・未確定。
 - [P1プレイヤー行動21項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F02/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
 - 現行正本に独自の内容があるためArchive移動なし。main変更なし、永久削除なし。
+
+## P1プレイヤー操作フロー7項目のB案選択（2026-10-18）
+- [立場別行動・命令／嘆願・移動・委任・時間・結果通知・越権のB案と未確定詳細](Proposals/P1_PLAYER_OPERATION_FLOW_OPTIONS.md)。
+- [P1プレイヤー行動21項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F02/F04/F07/F08、P0-A01/A06に整合。自動進行＋任意停止は優先案であり未確定。
+- 既存Confirmedの重複確定なし。main変更なし、今回Archive移動・永久削除なし。
