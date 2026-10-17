@@ -349,3 +349,8 @@
 - [15コマンド候補・共通5分類・実行／申請／越権／不可・緊急例外・外交人事・謀略・兼任・結果のB案と未確定詳細](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。
 - F01/F02/F04/F07/F08、P0-A01〜A04/A06、P1行動42項目と整合。既存Confirmedの重複確定なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1コマンド拡充・網羅性（未確定・ABCD）
+- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化と優先順位のABCD比較7項目](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。Bは推奨、7項目は未選択。D選択項目のみ次のチャットで自由記載を確認。
+- [既存15コマンド](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動42項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F03/F07/F08、P0-A01/A03/A04/A06に整合。新規Confirmed追加なし。
+- 置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
