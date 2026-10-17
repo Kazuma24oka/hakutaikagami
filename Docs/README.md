@@ -60,7 +60,7 @@
 - アーカイブ整理は許可。Confirmed・mainは変更しない。
 
 ## P0共通基盤の統合設計（未確定）
-- **優先参照先**：[`Proposals/P0_FOUNDATION_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_CONSOLIDATED.md)。
+- **優先参照先**：[`Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)。
 - `Proposals/P0_FOUNDATION_OPTIONS.md` はABC比較案・B案選択・例外処理の検討履歴として保持。統合案を優先参照するが、どちらも未確定。
 - 未解決の同時刻処理・権限・会計・帰属・責任は統合案に記載。Confirmed・mainは変更せず、アーカイブ整理は許可。
 
@@ -71,7 +71,7 @@
 
 ## F01〜F08共通基本方針（確定）
 - **確定正本**：[`Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md`](Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md)。2026-10-17にB案の基本原則のみ確定。
-- **詳細・例外は未確定**：[`Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md) と [`Proposals/P0_FOUNDATION_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_CONSOLIDATED.md) を参照。
+- **詳細・例外は未確定**：[`Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md`](Proposals/F01_F08_CONFIRMATION_SCOPE_OPTIONS.md) と [`Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md) を参照。
 - 旧比較案は選択履歴として保持。アーカイブ整理は許可し、mainへのマージは別途承認を要する。
 
 ## 外交・同盟・婚姻・人質（未確定）
@@ -120,16 +120,21 @@
 - 確定仕様の変更なし。mainへのマージなし。資料内容の永久削除は事前承認が必要。
 
 ## P0共通基盤9項目：依存順の検討（未確定）
-- **今回の比較案**：[`Proposals/P0_FOUNDATION_PHASE1_OPTIONS.md`](Proposals/P0_FOUNDATION_PHASE1_OPTIONS.md)。P0-01〜09を3群に分割し、第1群（権限・世界時刻・情報認識）3項目をABC比較。未選択・未確定。
+- **今回の比較案**：[`Proposals/P0_FOUNDATION_PHASE1_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE1_OPTIONS.md)。P0-01〜09を3群に分割し、第1群（権限・世界時刻・情報認識）3項目をABC比較。未選択・未確定。
 - 既存の確定情報システムを再選択・変更しない。第2群は帰属・会計・組織決議、第3群は条約・軍事指揮・NPCデータ。
 - Confirmed・mainは変更しない。Archiveへの移動は比較履歴の内容・参照を照合してから実施し、永久削除は事前承認を要する。
 
 ## P0共通基盤・第2群（未確定）
-- [領地帰属・資源会計・組織決議のABC比較](Proposals/P0_FOUNDATION_PHASE2_OPTIONS.md)。P0-04〜06の3項目を既存確定原則・第1群B案と照合した未選択の比較案。
+- [領地帰属・資源会計・組織決議のABC比較](Archive/P0_FOUNDATION_PHASE2_OPTIONS.md)。P0-04〜06の3項目を既存確定原則・第1群B案と照合した未選択の比較案。
 - Bは推奨であり確定ではない。既存Confirmed・mainは変更しない。
 - 旧資料のArchive移動は固有情報・参照リンク照合後に行い、元配置を除去する。資料そのものの永久削除には事前承認を要する。
 
 ## P0共通基盤・第3群（未確定）
-- [外交条約・軍事指揮・NPCデータのABC比較と短い具体例](Proposals/P0_FOUNDATION_PHASE3_OPTIONS.md)。P0-07〜09の3項目。Bは推奨候補で、ユーザー未選択・未確定。
+- [外交条約・軍事指揮・NPCデータのABC比較と短い具体例](Archive/P0_FOUNDATION_PHASE3_OPTIONS.md)。P0-07〜09の3項目。B案はユーザー選択済み・未確定。
 - 第1・第2群のB優先案、既存ConfirmedのF01〜F08・情報システムとの依存と整合性を記録。Confirmed・mainは変更しない。
 - 現行の検討資料はProposalsに保持。旧資料は内容・参照を照合した場合のみArchiveへ移動し、元配置を除去する。資料内容の永久削除には事前承認が必要。
+
+## P0共通基盤9項目：統合設計（最新・未確定）
+- **優先参照先**：[`Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md`](Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)。第1〜第3群の9項目はすべてB優先・未確定。
+- 比較・選択履歴：[`Archive/P0_FOUNDATION_PHASE1_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE1_OPTIONS.md)、[`Archive/P0_FOUNDATION_PHASE2_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE2_OPTIONS.md)、[`Archive/P0_FOUNDATION_PHASE3_OPTIONS.md`](Archive/P0_FOUNDATION_PHASE3_OPTIONS.md)。旧統合案：[`Archive/P0_FOUNDATION_CONSOLIDATED.md`](Archive/P0_FOUNDATION_CONSOLIDATED.md)。
+- 移動記録：2026-10-17、上記4資料をProposalsからArchiveへ移動。元配置は内容照合後に削除。資料内容の永久削除なし。Confirmed・mainは変更しない。
