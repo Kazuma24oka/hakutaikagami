@@ -284,3 +284,8 @@
 - [行動メニュー・身分兼任・命令／嘆願・越権／密命・部分達成・NPC反応・可否説明のB案と未確定詳細](Proposals/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)。
 - F01/F04/F07/F08、P0-A01/A06、先行P1行動7項目と整合。既存Confirmedを重複確定しない。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1委任・長期行動・時間進行（未確定）
+- [行動併用・中断・再開／引継ぎ・NPC委任・世界時間／速度・通知／停止・緊急介入のABC比較7項目](Proposals/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。Bは推奨、7項目は未選択。
+- F02/F04/F07/F08、情報仕様、P0-A01/A04/A06、イベント信頼性と整合。自動進行＋任意停止はまだ優先案であり正式確定ではない。
+- 置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
