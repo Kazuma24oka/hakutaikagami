@@ -95,6 +95,11 @@
 - 古い・重複資料のArchive移動は正本・固有情報・参照を確認して実施可能。永久削除には事前承認が必要。Confirmed・mainは変更しない。
 
 ## 内政・経済・兵站（未確定）
-- [12項目のABC比較設計](Proposals/DOMESTIC_ECONOMY_LOGISTICS.md)。
+- [12項目のABC比較設計](Archive/DOMESTIC_ECONOMY_LOGISTICS.md)。
 - B案は未選択の推奨候補。生産・徴税・会計・輸送・兵站とF01〜F08の確定基本方針を接続する。
 - Archive移動は固有情報・参照リンク確認後に実施可能。永久削除には事前承認が必要。Confirmed・mainは変更しない。
+
+## 内政・経済・兵站：統合設計（未確定）
+- **優先参照先**：[`Proposals/DOMESTIC_ECONOMY_LOGISTICS_CONSOLIDATED.md`](Proposals/DOMESTIC_ECONOMY_LOGISTICS_CONSOLIDATED.md)。
+- 基本12項目・詳細5項目の選択履歴は [`Archive/DOMESTIC_ECONOMY_LOGISTICS.md`](Archive/DOMESTIC_ECONOMY_LOGISTICS.md) に移動して保持。比較案の初期記述は履歴であり、ユーザー選択済みB案を優先する。
+- 永久削除なし。Confirmed・mainは変更しない。
