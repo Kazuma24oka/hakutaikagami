@@ -180,3 +180,7 @@
 - **優先参照先**：[帰属変更11項目の統合設計](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)。基本6項目＋重要詳細5項目の選択済みB案を統合。
 - **比較・選択履歴**：[基本6項目](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_OPTIONS.md)、[詳細5項目](Archive/P0_SUCCESSION_INDEPENDENCE_FALL_DETAILS_OPTIONS.md)。両者を内容照合後にArchiveへ移動し、元配置を除去。
 - 2026-10-17：Confirmed・main変更なし。資料内容の永久削除なし。
+
+## P0帰属変更の追加確定候補（未確定）
+- [帰属変更11項目から抽出した追加確定候補5項目のABC比較と短い例](Proposals/P0_SUCCESSION_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)。5項目は未選択。Bは推奨候補で正式確定ではない。
+- [帰属変更11項目の現行未確定統合設計](Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md)と既存Confirmedの重複を区別。今回の旧資料Archive移動なし。Confirmed・main変更なし、永久削除なし。
