@@ -42,3 +42,9 @@
 - `Proposals/LOCAL_SOCIAL_FORCES.md` は比較案・ユーザー選択の検討履歴として保持する。重複した説明は統合案を優先参照するが、どちらも未確定。
 - 寺社反発・一揆は未確定設計として検討開始。朝廷・将軍家工作、官位・官職、将軍職は `Proposals/FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md` に将来検討として残す。
 - アーカイブ整理は保留。旧資料の移動・削除を行わない。
+
+## 朝廷・将軍家・官位・将軍職（未確定）
+- **優先参照先**：[`Proposals/COURT_SHOGUNATE_SYSTEM_CONSOLIDATED.md`](Proposals/COURT_SHOGUNATE_SYSTEM_CONSOLIDATED.md)。
+- `Proposals/COURT_SHOGUNATE_RANKS.md` は比較案・ユーザー選択履歴として保持。重複する説明は統合案を優先参照するが、どちらも未確定。
+- 出家・隠居・還俗は `Proposals/FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md` の将来検討事項として残す。
+- アーカイブ整理は保留し、旧資料の移動・削除は行わない。
