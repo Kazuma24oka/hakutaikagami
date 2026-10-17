@@ -204,3 +204,8 @@
 - [Confirmed：イベント信頼性R01〜R03と追加処理契約R04（5項目）](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)。
 - [Proposals：B案5項目の選択履歴、未確定のID生成・循環依存・復旧方式・セーブ互換](Proposals/P0_EVENT_RELIABILITY_OPTIONS.md)。
 - 今回は現行資料の更新のみ。置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
+
+## P0イベント処理の詳細実装方式（未確定）
+- [イベントID生成・処理状態・因果循環・競合裁定・失敗復旧・セーブ再現性のABC比較6項目](Proposals/P0_EVENT_PROCESSING_IMPLEMENTATION_OPTIONS.md)。6項目は未選択、Bは推奨。
+- 基本原則は既に[Confirmed](Confirmed/P0_EVENT_RELIABILITY_PRINCIPLES.md)に確定済み。今回の比較は実装詳細でありConfirmedへ新規追加なし。
+- 先行5項目の選択履歴は現行Proposalsに維持。main変更なし、今回Archive移動・永久削除なし。
