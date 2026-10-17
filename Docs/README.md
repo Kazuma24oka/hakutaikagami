@@ -113,3 +113,8 @@
 - **優先参照先**：[`Proposals/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md`](Proposals/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md)。
 - 基本12項目・詳細5項目のABC比較とB案選択履歴は [`Archive/BATTLE_MILITARY_TACTICS.md`](Archive/BATTLE_MILITARY_TACTICS.md) に移動。現在の未確定設計は統合案を優先参照。
 - 移動記録：2026-10-17、`Proposals/BATTLE_MILITARY_TACTICS.md` → `Archive/BATTLE_MILITARY_TACTICS.md`。内容を保持し、元配置を除去。永久削除なし。Confirmed・mainは変更しない。
+
+## 全設計横断レビュー（最新・未確定）
+- **最新の優先参照先**：[`Proposals/CROSS_SYSTEM_REVIEW_2026-10-17_V2.md`](Proposals/CROSS_SYSTEM_REVIEW_2026-10-17_V2.md)。確定仕様3文書と現行の各領域統合案を横断照合し、依存関係・重複・表現差とP0（9項目）／P1（10領域）／P2（5領域）を整理。
+- 旧横断レビューは前段階の検討履歴。移動時は固有情報・参照を照合してArchiveへ保管し、元配置を除去する。
+- 確定仕様の変更なし。mainへのマージなし。資料内容の永久削除は事前承認が必要。
