@@ -75,7 +75,7 @@
 ## 12. 既存設計との整合性
 - [確定F01〜F08](../Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md)：権限・共通時刻・権利／債務・委任・自治・NPC認識を維持。
 - [確定情報・書状システム](../Confirmed/INFORMATION_SYSTEM.md)：災害・徴税・補給の事実と報告・認識を分離。
-- [P0基盤](P0_FOUNDATION_CONSOLIDATED.md)：主体・権限・イベント順序・会計・状態遷移の未決定を維持。
+- [P0基盤](P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)：主体・権限・イベント順序・会計・状態遷移の未決定を維持。
 - [全国マップ・城・領地](WORLD_MAP_CASTLE_LAND_CONSOLIDATED.md)：地理・拠点・権利・支配・交通と接続。
 - [武将の身分・主従・俸禄](CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md)：知行収益・債務・家臣行動と接続。
 - [在地社会](LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md)：国人・寺社・村落の権益・反発・一揆と接続。
