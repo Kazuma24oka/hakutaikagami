@@ -69,7 +69,7 @@
 [政治・社会勢力と権威の将来検討メモ](FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md) にある、寺社勢力の反発、農民一揆、朝廷工作、将軍家工作、官位・官職、将軍職は将来の独立した検討課題として保持する。今回の統合で実装範囲・発生条件を決めない。
 
 ## 10. 参照・管理
-- [全国マップ・城・領地の比較案と選択履歴](WORLD_MAP_CASTLE_LAND.md)
+- [全国マップ・城・領地の比較案と選択履歴](../Archive/WORLD_MAP_CASTLE_LAND.md)
 - [確定ゲームコンセプト](../Confirmed/GAME_CONCEPT.md)
 - [確定情報システム](../Confirmed/INFORMATION_SYSTEM.md)
 - [武将制度の未確定統合案](CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md)
