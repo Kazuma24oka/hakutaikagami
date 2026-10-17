@@ -36,3 +36,9 @@
 - `Proposals/WORLD_MAP_CASTLE_LAND.md` は比較案・選択履歴として保持し、重複する説明は統合案を優先参照する（いずれも未確定）。
 - 寺社勢力の反発、農民一揆、朝廷・将軍家工作、官位・将軍職は `Proposals/FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md` に将来検討メモとして保持し、今回確定しない。
 - アーカイブ整理は保留し、旧資料の移動・削除は行わない。
+
+## 在地社会・国人衆・寺社・一揆（未確定）
+- **優先参照先**：[`Proposals/LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md`](Proposals/LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md)。
+- `Proposals/LOCAL_SOCIAL_FORCES.md` は比較案・ユーザー選択の検討履歴として保持する。重複した説明は統合案を優先参照するが、どちらも未確定。
+- 寺社反発・一揆は未確定設計として検討開始。朝廷・将軍家工作、官位・官職、将軍職は `Proposals/FUTURE_POLITICAL_SOCIAL_SYSTEM_MEMO.md` に将来検討として残す。
+- アーカイブ整理は保留。旧資料の移動・削除を行わない。
