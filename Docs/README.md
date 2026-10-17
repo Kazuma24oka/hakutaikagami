@@ -341,31 +341,36 @@
 - 確定済み原則は維持、詳細・例外は未確定。main変更なし、資料内容の永久削除なし。
 
 ## P1身分別の具体的コマンド一覧（未確定・ABCD）
-- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略15コマンド候補と7項目のABCD比較](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
-- [P1行動42項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F04/F07/F08、P0-A01/A03/A06に整合。新規Confirmed追加なし。
+- [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略15コマンド候補と7項目のABCD比較](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
+- [P1行動63項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F04/F07/F08、P0-A01/A03/A06に整合。新規Confirmed追加なし。
 - 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1身分別コマンド一覧7項目のB案選択（2026-10-18）
-- [15コマンド候補・共通5分類・実行／申請／越権／不可・緊急例外・外交人事・謀略・兼任・結果のB案と未確定詳細](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。
-- F01/F02/F04/F07/F08、P0-A01〜A04/A06、P1行動42項目と整合。既存Confirmedの重複確定なし。
+- [15コマンド候補・共通5分類・実行／申請／越権／不可・緊急例外・外交人事・謀略・兼任・結果のB案と未確定詳細](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。
+- F01/F02/F04/F07/F08、P0-A01〜A04/A06、P1行動63項目と整合。既存Confirmedの重複確定なし。
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1コマンド拡充・網羅性（未確定・ABCD）
-- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化と優先順位のABCD比較7項目](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
-- [既存15コマンド](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動42項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F03/F07/F08、P0-A01/A03/A04/A06に整合。新規Confirmed追加なし。
+- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化と優先順位のABCD比較7項目](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
+- [既存15コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動63項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F03/F07/F08、P0-A01/A03/A04/A06に整合。新規Confirmed追加なし。
 - 置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1コマンド拡充・網羅性7項目のB案選択（2026-10-18）
-- [婚姻・養子・交易・諜報・裁定・人質・寺社・文化とP1/P2優先順位のB案と未確定詳細](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。
-- F01/F03/F07/F08、P0-A01/A03/A04/A06、既存15コマンド・P1行動42項目と整合。新規Confirmed追加なし。
+- [婚姻・養子・交易・諜報・裁定・人質・寺社・文化とP1/P2優先順位のB案と未確定詳細](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。
+- F01/F03/F07/F08、P0-A01/A03/A04/A06、既存15コマンド・P1行動63項目と整合。新規Confirmed追加なし。
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1追加コマンドの具体化（未確定・ABCD）
-- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化のコマンド名・対象・条件・結果とABCD比較7項目](Proposals/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
-- [拡充7項目](Proposals/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[既存15コマンド](Proposals/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動42項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)に整合。新規Confirmed追加なし。
+- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化のコマンド名・対象・条件・結果とABCD比較7項目](Archive/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
+- [拡充7項目](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[既存15コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動63項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)に整合。新規Confirmed追加なし。
 - 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1追加コマンド詳細7項目のB案選択（2026-10-18）
-- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化の具体的コマンドとB案・未確定詳細](Proposals/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。
+- [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化の具体的コマンドとB案・未確定詳細](Archive/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。
 - F01/F03/F07/F08、P0-A01/A03/A04/A06、先行P1拡充7項目・15コマンド・42項目と整合。既存Confirmedの重複確定なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1プレイヤー行動63項目の統合（最新・未確定）
+- **現行正本**：[既存42＋身分別コマンド7＋拡充7＋追加詳細7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。共通5分類・操作状態・案件状態・依存関係を整理。
+- **比較・選択履歴**：[身分別コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[拡充](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[追加詳細](Archive/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。内容照合後に旧Proposals配置を削除。
+- Confirmedの重複確定なし、main変更なし、永久削除なし。
