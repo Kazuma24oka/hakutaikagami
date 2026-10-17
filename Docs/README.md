@@ -143,3 +143,7 @@
 - [家督・独立・落城・徴税・条約・軍令・偽報の6項目ABC比較（短い具体例付き）](Proposals/P0_COMPOUND_EXCEPTIONS_OPTIONS.md)。Bは推奨候補、6項目はユーザー未選択。
 - [P0共通基盤9項目の現行未確定正本](Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md)とConfirmedの基本原則を優先する。今回の例外比較はこれらを変更しない。
 - 新規比較案のため旧資料のArchive移動なし。永久削除なし。Confirmed・mainは変更しない。
+
+## P0追加確定候補のABC比較（未確定）
+- [P0追加確定候補6項目：確定済み原則との差分、ABC比較、短い具体例、保留詳細](Proposals/P0_ADDITIONAL_CONFIRMATION_SCOPE_OPTIONS.md)。6項目とも未選択・未確定。Bは推奨でありConfirmedへの自動昇格はしない。
+- 現行のP0統合9項目と複合例外6項目は引き続きProposalsの参照資料として保持する。今回の旧資料移動なし。Confirmed・main変更なし、永久削除なし。
