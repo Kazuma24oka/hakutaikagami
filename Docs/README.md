@@ -324,3 +324,8 @@
 - [共通分類・内政・軍事・外交・人事・謀略・兼任の選択済みB案と未確定詳細](Proposals/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)。
 - F01/F04/F07、P0-A01/A03/A06、P1行動28項目と整合。既存Confirmedの重複確定なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1越権行為・緊急権限・兼任（未確定・ABCD）
+- [独立工作・密約・独断出陣・緊急防衛・役職兼任・権限取消・事後責任のABCD比較7項目](Proposals/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。Bは推奨、7項目は未選択。Dはその他で選択した項目のみ次のチャットで自由記載を確認。
+- F01/F02/F03/F07/F08、P0-A01/A02/A03/A06、P1行動28項目と身分別メニュー7項目に整合。新規Confirmed追加なし。
+- 今回置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
