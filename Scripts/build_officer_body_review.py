@@ -4,6 +4,8 @@ import argparse,json,base64,sys
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--root',type=Path,required=True);a=ap.parse_args();r=a.root.resolve();sys.path.insert(0,str(r/'Scripts'));import officer_art_pipeline as g
     w=json.loads((r/'Art/Officer/work-record.json').read_text(encoding='utf-8'));g.require_plan(r,'front_authoring',w['plans'][w.get('current_review_plan','body-front-v1-review')])
+    if w['current_candidate'].get('appearance_review', '').startswith('USER_REJECTED'):
+        raise g.Blocked('Rejected body review is historical; do not republish it as a current candidate')
     f=r/'Art/Officer/BodyBaseV1';out=r/'Game/Assets/Trials/OfficerBodyBaseV1'
     bundle=json.loads((f/'candidate-bundle.json').read_text(encoding='utf-8'));g.validate_bundle(r,bundle)
     def data(p):return 'data:image/png;base64,'+base64.b64encode(p.read_bytes()).decode()

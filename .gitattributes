@@ -9,3 +9,5 @@ Scripts/run_officer_body_workflow.py -text whitespace=blank-at-eol,blank-at-eof,
 Scripts/validate_officer_body_base.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/build_officer_body_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Proposals/OFFICER_ART_PRODUCTION_AUDIT.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Art/Officer/appearance-reference.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

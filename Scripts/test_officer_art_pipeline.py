@@ -24,7 +24,15 @@ class PipelineTests(unittest.TestCase):
         self.save()
         (self.root/'fixture.txt').write_text('explicitly synthetic test evidence')
         self.e={'path':'fixture.txt','sha256':p.sha(self.root/'fixture.txt')}
-        self.plan={'id':'synthetic-fixture','stage':'front_authoring','contract_sha256':p.digest(self.contract),
+        self.ledger={'status':'CONTROLS_REVIEWED','sources':[self.e],
+            'registration':{'uniform_scale':1,'translate':[0,0]},
+            'landmarks':{k:{'kind':'observed-surface','source_xy':[32,48],
+                'tolerance_native_px':0,'basis':'explicit synthetic fixture'} for k in p.DIMENSIONS},
+            'controls':{k:self.e for k in ['observed_skin','feature_exclusion','hidden_construction','ownership','edit','preserve']},
+            'control_review':{'reviewer':'synthetic test','observation':'No art acceptance',
+                'evidence':{k:self.e for k in ['same_coordinate_overlay','head_body_proportions','pose','line_shading','visible_vs_hidden']}}}
+        self.bind_reference()
+        self.plan={'id':'synthetic-fixture' ,'stage':'front_authoring','contract_sha256':p.digest(self.contract),
             'feedback':['fixture'],'prior_failures':['fixture'],'change_scope':['fixture'],
             'preserve':['fixture'],'unresolved':[], 'inputs':[self.e], 'tools':[self.e], 'references':[self.e],
             'regressions':{k:'fixture method; not visual approval' for k in p.REVIEWS},
@@ -33,11 +41,20 @@ class PipelineTests(unittest.TestCase):
                 'seed':123,'steps':20,'cfg':6,'sampler':'euler','scheduler':'normal','denoise':.4},
             'registration':{'scale_xy':[1,1],'per_part_fit':False,'per_frame_fit':False},
             'landmarks':{k:{'kind':'authoring-target','xy':[32,48],'basis':'synthetic fixture only'} for k in p.DIMENSIONS}}
+        self.plan['appearance_correspondence']=self.correspondence()
         workflow={'1':{'class_type':'CheckpointLoaderSimple','inputs':{'ckpt_name':'fixture.txt'}},
             '2':{'class_type':'KSampler','inputs':{'seed':123,'steps':20,'cfg':6,'sampler_name':'euler','scheduler':'normal','denoise':.4}}}
         (self.root/'workflow.json').write_text(json.dumps(workflow))
         self.plan['backend']['workflow']={'path':'workflow.json','sha256':p.sha(self.root/'workflow.json')}
         (self.root/'Art/Officer/work-record.json').write_text('{"plans":{}}')
+    def bind_reference(self):
+        path=self.root/'appearance.json';path.write_text(json.dumps(self.ledger))
+        self.contract['appearance_reference']={'path':'appearance.json','sha256':p.sha(path)}
+        self.save()
+    def correspondence(self):
+        return {'reference_sha256':self.contract['appearance_reference']['sha256'],
+            'registration':self.ledger['registration'],
+            'targets':{k:[32,48] for k in p.DIMENSIONS}}
     def save(self):
         (self.root/'Art/Officer/production-contract.json').write_text(json.dumps(self.contract),encoding='utf-8')
         (self.root/'Game/Data/officer_visual_profile.json').write_text(json.dumps(self.profile),encoding='utf-8')
@@ -58,6 +75,13 @@ class PipelineTests(unittest.TestCase):
         prep={'scope':'deterministic-controls-only','contract_sha256':p.digest(self.contract),
               'feedback':['fixture'],'preserve':['fixture'],'tools':[self.e],'references':[self.e],
               'geometry':{'path':'geometry.json','sha256':p.sha(self.root/'geometry.json')}}
+        spec=json.loads((self.root/'geometry.json').read_text())
+        for name, xy in spec['landmarks'].items():self.ledger['landmarks'][name]['source_xy']=xy
+        self.bind_reference()
+        prep['contract_sha256']=p.digest(self.contract)
+        prep['inputs']=[self.e]
+        prep['appearance_correspondence']=self.correspondence()
+        prep['appearance_correspondence']['targets']=spec['landmarks']
         return prep
     def save_controls_fixture(self,prep):
         (self.root/'Art/Officer/work-record.json').write_text(json.dumps({'control_preparation':prep}))
@@ -80,6 +104,44 @@ class PipelineTests(unittest.TestCase):
                 (self.root/'geometry.json').write_text(json.dumps(spec))
                 prep['geometry']['sha256']=p.sha(self.root/'geometry.json');self.save_controls_fixture(prep)
                 with self.assertRaises(p.Blocked):p.require_control_plan(self.root,prep)
+    def test_reference_cannot_be_optional_or_replaced(self):
+        for mutation in [lambda q:q.pop('appearance_correspondence'),
+                         lambda q:q.update(inputs=[]),
+                         lambda q:q['appearance_correspondence'].update(reference_sha256='other'),
+                         lambda q:q['appearance_correspondence'].update(registration={'uniform_scale':2})]:
+            q=copy.deepcopy(self.plan);mutation(q)
+            with self.assertRaises(p.Blocked):p.require_appearance_reference(self.root,self.contract,q)
+    def test_same_canvas_does_not_allow_character_landmark_drift(self):
+        q=copy.deepcopy(self.plan);q['appearance_correspondence']['targets']['chin']=[32,49]
+        with self.assertRaises(p.Blocked):p.require_appearance_reference(self.root,self.contract,q)
+    def test_armor_outline_cannot_be_named_observed_anatomy(self):
+        self.ledger['landmarks']['chin']['kind']='armor-outline';self.bind_reference()
+        self.plan['appearance_correspondence']=self.correspondence()
+        with self.assertRaises(p.Blocked):p.require_appearance_reference(self.root,self.contract,self.plan)
+    def test_hidden_anatomy_requires_occluder_and_bounds(self):
+        self.ledger['landmarks']['pelvis']={'kind':'authored-hidden','basis':'synthetic hidden anatomy',
+            'occluder':'armor','allowed_native_bounds':[31,47,33,49]};self.bind_reference()
+        self.plan['appearance_correspondence']=self.correspondence()
+        p.require_appearance_reference(self.root,self.contract,self.plan)
+        self.plan['appearance_correspondence']['targets']['pelvis']=[40,48]
+        with self.assertRaises(p.Blocked):p.require_appearance_reference(self.root,self.contract,self.plan)
+    def test_missing_control_and_false_review_do_not_lift_gate(self):
+        for kind in ['pending','mask','review']:
+            before=copy.deepcopy(self.ledger)
+            if kind=='pending':self.ledger['status']='PENDING'
+            elif kind=='mask':self.ledger['controls']['preserve']={'path':'absent','sha256':'x'}
+            else:self.ledger['control_review']['observation']=''
+            self.bind_reference();self.plan['appearance_correspondence']=self.correspondence()
+            with self.assertRaises(p.Blocked):p.require_appearance_reference(self.root,self.contract,self.plan)
+            self.ledger=before
+    def test_original_source_change_invalidates_correspondence(self):
+        (self.root/'fixture.txt').write_text('changed source')
+        with self.assertRaises(p.Blocked):p.require_appearance_reference(self.root,self.contract,self.plan)
+    def test_actual_rejected_controls_cannot_regenerate(self):
+        root=Path(__file__).resolve().parents[1]
+        work=json.loads((root/'Art/Officer/work-record.json').read_text(encoding='utf-8'))
+        with self.assertRaises(p.Blocked):p.require_control_plan(root,work['control_preparation'])
+        with self.assertRaises(p.Blocked):p.require_plan(root,'front_authoring',work['plans']['body-front-v1'])
     def test_missing_and_changed_prerequisites_are_rejected(self):
         mutations=[lambda q:q.update(unresolved=['not measured']),lambda q:q.update(inputs=[]),
             lambda q:q.update(tools=[]),lambda q:q.update(references=[]),lambda q:q.update(contract_sha256='stale'),

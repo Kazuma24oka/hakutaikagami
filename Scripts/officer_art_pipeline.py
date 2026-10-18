@@ -70,6 +70,71 @@ def validate_contract(contract, profile):
     if contract['portrait_policy'] != 'six-head-separate-art-shared-selection-ids':
         raise Blocked('Portrait linkage changed')
 
+def require_appearance_reference(root, contract, request):
+    """Bind construction to this character, independently of a caller's targets.
+
+    Observed surface points and authored hidden anatomy are separate. Hashes and
+    geometry do not certify visual quality; source-bound review remains required.
+    """
+    ref = contract.get('appearance_reference')
+    if not ref:
+        raise Blocked('Missing independent character appearance reference')
+    ledger = json.loads(evidence(root, ref).read_text(encoding='utf-8'))
+    for item in ledger['sources']:
+        evidence(root, item)
+    if ledger.get('status') != 'CONTROLS_REVIEWED':
+        raise Blocked('Character correspondence controls not reviewed; canvas alone is insufficient')
+    binding = request.get('appearance_correspondence', {})
+    if binding.get('reference_sha256') != ref['sha256']:
+        raise Blocked('Character reference omitted or replaced')
+    if any(item not in request.get('inputs', []) for item in ledger['sources']):
+        raise Blocked('Original character must remain an actual input, not an optional illustration')
+    if binding.get('registration') != ledger['registration']:
+        raise Blocked('Source registration changed; no independent body fitting')
+    marks = ledger['landmarks']
+    if set(marks) != DIMENSIONS:
+        raise Blocked('Incomplete character correspondence landmarks')
+    target = binding.get('targets', {})
+    if set(target) != DIMENSIONS:
+        raise Blocked('Missing candidate correspondence targets')
+    scale = ledger['registration']['uniform_scale']
+    offset = ledger['registration']['translate']
+    if not isinstance(scale, (int, float)) or not math.isfinite(scale) or scale <= 0:
+        raise Blocked('Invalid fixed source registration')
+    for name, mark in marks.items():
+        point = target[name]
+        if len(point) != 2 or any(type(v) is not int for v in point) or not (0 <= point[0] < 64 and 0 <= point[1] < 96):
+            raise Blocked('Invalid correspondence point: ' + name)
+        if not mark.get('basis'):
+            raise Blocked('No anatomical/surface basis: ' + name)
+        if mark['kind'] == 'observed-surface':
+            expected = [mark['source_xy'][i] * scale + offset[i] for i in range(2)]
+            tolerance = mark['tolerance_native_px']
+            if not isinstance(tolerance, (int, float)) or not math.isfinite(tolerance) or tolerance < 0:
+                raise Blocked('Invalid measurement tolerance')
+            if any(abs(point[i] - expected[i]) > tolerance for i in range(2)):
+                raise Blocked('Source landmark drift: ' + name)
+        elif mark['kind'] == 'authored-hidden':
+            bounds = mark['allowed_native_bounds']
+            if not mark.get('occluder') or not (bounds[0] <= point[0] <= bounds[2] and bounds[1] <= point[1] <= bounds[3]):
+                raise Blocked('Undeclared/out-of-bounds hidden anatomy: ' + name)
+        else:
+            raise Blocked('Armor/hair silhouette is not an observed body landmark')
+    for name in ('observed_skin', 'feature_exclusion', 'hidden_construction', 'ownership', 'edit', 'preserve'):
+        evidence(root, ledger['controls'][name])
+    review = ledger['control_review']
+    if not review.get('reviewer') or not review.get('observation'):
+        raise Blocked('Control masks require actual source inspection')
+    for name in ('same_coordinate_overlay', 'head_body_proportions', 'pose', 'line_shading', 'visible_vs_hidden'):
+        evidence(root, review['evidence'][name])
+    if request.get('landmarks'):
+        if set(request['landmarks']) != DIMENSIONS:
+            raise Blocked('Incomplete generation landmarks')
+        if any(request['landmarks'][name]['xy'] != target[name] for name in DIMENSIONS):
+            raise Blocked('Generation landmarks disagree with source correspondence')
+    return digest(ledger)
+
+
 def require_control_plan(root, preparation):
     """Bootstrap only deterministic geometry/masks, before a generation plan exists.
 
@@ -83,10 +148,13 @@ def require_control_plan(root, preparation):
     work=json.loads((root/'Art/Officer/work-record.json').read_text(encoding='utf-8'))
     if work.get('control_preparation') != preparation or preparation.get('scope')!='deterministic-controls-only':
         raise Blocked('Missing persisted control-construction plan')
+    require_appearance_reference(root, contract, preparation)
     if preparation['contract_sha256']!=digest(contract) or not preparation['feedback'] or not preparation['preserve']:
         raise Blocked('Stale/missing construction conditions')
     for e in preparation['tools']+preparation['references']:evidence(root,e)
     spec=json.loads(evidence(root,preparation['geometry']).read_text(encoding='utf-8'))
+    if preparation['appearance_correspondence']['targets'] != spec['landmarks']:
+        raise Blocked('Construction geometry disagrees with source correspondence')
     if spec['canvas']!=[64,96] or set(spec['landmarks'])!=DIMENSIONS:
         raise Blocked('Incomplete native geometry')
     names=[r['name'] for r in spec['regions']];ids=[r['id'] for r in spec['regions']]
@@ -128,6 +196,7 @@ def require_plan(root, stage, plan=None):
     work=json.loads((root/'Art/Officer/work-record.json').read_text(encoding='utf-8'))
     if work.get('plans',{}).get(plan.get('id')) != plan:
         raise Blocked('Plan is not the exact persisted work-record entry')
+    require_appearance_reference(root, contract, plan)
     if plan['stage'] != stage or plan['contract_sha256'] != digest(contract):
         raise Blocked('Wrong stage or stale production contract')
     for name in ('feedback', 'prior_failures', 'change_scope', 'preserve'):

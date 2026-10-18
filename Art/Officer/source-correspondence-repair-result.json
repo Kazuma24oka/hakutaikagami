@@ -1,0 +1,27 @@
+{
+  "tests_passed": 34,
+  "new_image_generated": false,
+  "new_body_completed": false,
+  "rejected_body_pixels": [
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV1/body-front.png",
+      "sha256": "f9247d417c2f5e98c45d5565fbd65f89db3824a21d0a697ff622da8f666b5ed6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV1/edit-mask.png",
+      "sha256": "400fb6bc5689492ffd4f112b3b0276b9f68fb9c0cc000de0553620d8acd90e89"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV1/ownership.png",
+      "sha256": "f4c7f0f9c66d0379afa2ca6c1e2b0f91d41876e8aacb6e9290eed4e52b04881b"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV1/preserve-mask.png",
+      "sha256": "268a4f0d77999927e48d94a9ba4e6922af9adde52f515cf7428ef19dc5a1a80b"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV1/skin-mask.png",
+      "sha256": "977d036574138020ced139d5bef392fe207e01cdece1ab28f8af253a715cd157"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "status": "PENDING_SOURCE_CORRESPONDENCE_CONTROLS",
+  "scope": "Original armored officer is the appearance reference, not an approved bare anatomy or approved segmentation.",
+  "sources": [
+    {
+      "path": "Art/Trials/OfficerScaleV1/front-review-source.png",
+      "sha256": "e80e43ceff78e07406814e7fd4edf78590049c9304898b804cd394f8030448ef"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+      "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+    }
+  ],
+  "registration": {
+    "uniform_scale": 0.1925601750547046,
+    "translate": [
+      4.0787746170678325,
+      2.0743982494529547
+    ]
+  },
+  "landmarks": {},
+  "controls": {},
+  "control_review": {},
+  "maintain": [
+    "head/body proportions of original character",
+    "original pose and shoulder/hip/limb placement",
+    "outline and shading density",
+    "64x96 / 1x; no face/hair/clothes/genital details in base"
+  ],
+  "unobserved": [
+    "scalp under hair",
+    "neck under collar",
+    "torso and pelvis under armor",
+    "limbs under sleeves and gauntlets",
+    "bare feet under boots"
+  ],
+  "measurement_policy": "Annotate visible surfaces in original source coordinates; preserve original fixed transform. Author hidden anatomy with bounded controls and explicit occluders. Hair top, armor edges and boot sole are not naked-body observations.",
+  "rejected_geometry": "BodyBaseV1 four-head construction is not an anatomical source for this character.",
+  "reference_implementation": [
+    {
+      "path": "C:/Workspace/Projects/Games/bokentan/Docs/50_Production/SPRITE_ANIMATION_PIPELINE.md",
+      "sections": [
+        "チヨの採用値と適用の限界",
+        "固定角度の原画登録・共通原点・一度の固定縮小"
+      ]
+    },
+    {
+      "path": "C:/Workspace/Projects/Games/bokentan/Docs/50_Production/HD2D_Handoff/CharacterAnimation/Chiyo/Tools/production_gate.py",
+      "mechanism": "Independent canonical_comparison authority, cumulative comparison ledger, source/code evidence and invalidation"
+    }
+  ]
+}
