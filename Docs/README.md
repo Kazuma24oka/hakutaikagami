@@ -409,28 +409,33 @@
 - 新規Confirmedなし、main変更なし、資料内容の永久削除なし。
 
 ## P1共通コマンド契約（未確定・ABCD、2026-10-18）
-- [コマンド／案件／イベントID、権限、状態、費用・引当、失敗復旧、通知、完成条件の7項目](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
+- [コマンド／案件／イベントID、権限、状態、費用・引当、失敗復旧、通知、完成条件の7項目](Archive/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [84項目最終統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)とF01/F02/F03/F04/F07/F08、P0-A01〜A06に整合。自動進行方式は未確定。新規Confirmed追加なし、main変更なし、Archive移動・永久削除なし。
 
 ## P1共通コマンド契約7項目のB案選択（2026-10-18）
-- [ID・権限・状態・費用・復旧・通知・完成条件のB優先案と未決定詳細](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。
+- [ID・権限・状態・費用・復旧・通知・完成条件のB優先案と未決定詳細](Archive/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。
 - F01〜F04/F07/F08、P0-A01〜A06、P1設計84項目と整合。自動進行＋任意停止は未確定。新規Confirmed追加なし。
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1コマンドID・状態遷移・失敗復旧（未確定・ABCD）
-- [ID生成、状態遷移、中断再開、再試行、補償、セーブ復旧、P0責任分界の7項目](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
-- [共通契約B優先案](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)・[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。新規Confirmed追加なし、main変更なし、Archive移動・永久削除なし。
+- [ID生成、状態遷移、中断再開、再試行、補償、セーブ復旧、P0責任分界の7項目](Archive/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
+- [共通契約B優先案](Archive/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)・[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。新規Confirmed追加なし、main変更なし、Archive移動・永久削除なし。
 
 ## P1コマンドID・状態遷移・失敗復旧7項目のB案選択（2026-10-18）
-- [ID・状態遷移・中断再開・失敗再試行・補償・保存復旧・P0責任分界のB優先案と未決定詳細](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)。
+- [ID・状態遷移・中断再開・失敗再試行・補償・保存復旧・P0責任分界のB優先案と未決定詳細](Archive/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)。
 - F01/F02/F03/F04/F07/F08、P0-A01〜A06、P1共通契約7項目・84項目統合と整合。新規Confirmed追加なし。
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
 
 ## P1 ID生成・状態遷移・復旧境界の詳細（未確定・ABCD）
-- [採番・親子イベント・許可／禁止遷移・再試行限度・補償失敗・乱数保存・復旧受入の7項目](Proposals/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
-- [P1 ID・状態・復旧のB優先案](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)、[共通契約](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)、[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
+- [採番・親子イベント・許可／禁止遷移・再試行限度・補償失敗・乱数保存・復旧受入の7項目](Archive/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
+- [P1 ID・状態・復旧のB優先案](Archive/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)、[共通契約](Archive/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)、[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
 
 ## P1 ID生成・状態遷移・復旧境界7項目のB案選択（2026-10-18）
-- [採番・親子イベント・許可遷移・再試行・補償・乱数／ロード・復旧受入のB優先案と未確定詳細](Proposals/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。
+- [採番・親子イベント・許可遷移・再試行・補償・乱数／ロード・復旧受入のB優先案と未確定詳細](Archive/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。
 - F01/F02/F03/F07/F08、P0-A01/A02/A04/A06、P1共通契約・ID状態復旧B案と整合。新規Confirmedなし。
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
+
+## P1共通コマンド契約21項目・統合（最新・未確定）
+- **現行正本**：[21項目を10領域に統合しP0/P1責任分界・残課題を整理](Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md)。
+- **選択履歴**：[基本7](Archive/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)、[ID・状態・復旧7](Archive/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)、[復旧境界詳細7](Archive/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。
+- Confirmed・main変更なし。旧配置は内容一致確認後のみ削除。永久削除なし。
