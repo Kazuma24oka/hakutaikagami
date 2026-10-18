@@ -384,3 +384,7 @@
 - [P1必須・P2拡張・身分別検証・共通契約・P0依存・時間／委任・P1完了判定のB優先案と未確定詳細](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。
 - F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目と整合。自動進行＋任意停止は未確定。実装・テスト未実施、P1未完了。
 - 新規Confirmedなし、main変更なし、今回Archive移動・永久削除なし。
+
+## P1代表コマンド・完成テスト（未確定・ABCD）
+- [5分類の代表コマンド、正常・部分達成・失敗・越権・中断・NPC反応・セーブ再現性の7項目](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [63項目統合](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)、[P1/P2範囲](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)およびF01/F02/F04/F07/F08、P0-A01〜A06と整合。Confirmedとmain変更なし。Archive移動・永久削除なし。
