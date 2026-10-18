@@ -482,5 +482,10 @@
 - 新規Confirmedなし、main変更なし、Archive移動・永久削除なし。製造開始ゲート未達、実装・テスト未実施。
 
 ## 最小プロトタイプ技術選定・実装仕様（未確定・ABCD）
-- [ゲームエンジン・データ構造・セーブ形式・イベント／時間・最小UI・テスト環境・段階実装の7項目](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [ゲームエンジン・データ構造・セーブ形式・イベント／時間・最小UI・テスト環境・段階実装の7項目](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [P0/P1製造開始ゲート](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)およびF01/F02/F03/F04/F07/F08・P0-A01〜A06と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
+
+## 最小プロトタイプ技術選定・実装仕様7項目のB案選択（2026-10-18）
+- [Unity第一候補・ID分離・バージョン付き保存・共通イベント／時間・最小UI・自動／手動試験・段階実装のB優先案](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)。
+- F01/F02/F03/F04/F07/F08、P0-A01〜A06、製造開始ゲート7項目と整合。新規Confirmed追加なし。
+- main変更なし、Archive移動・永久削除なし。製造開始ゲート未達、実装・テスト未実施。
