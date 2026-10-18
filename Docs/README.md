@@ -526,3 +526,5 @@
 - [元武将に対応する裸素体 V2：実画像・重ね合わせ・検査](Proposals/OFFICER_BODY_SOURCE_V2.md)
 
 - [仮素体：部位の着脱・肌色変更の確認画面](Proposals/officer-body-layer-review.html)（体型は外見未採用）
+
+- [顔・髪・甲冑一式：着脱と元絵への復帰](Proposals/OFFICER_EQUIPMENT_PARTS_V2.md)（正面静止、仮素体）

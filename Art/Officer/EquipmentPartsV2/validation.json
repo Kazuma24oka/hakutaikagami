@@ -1,0 +1,88 @@
+{
+  "status": "REQUIRES_SEMANTIC_AND_ACTUAL_IMAGE_REVIEW",
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "source_foreground_pixels": 2722,
+  "full_reconstruction_pixel_difference": 0,
+  "source_transparent_rgb_normalized": true,
+  "base_outside_original_pixels_before_item_occlusion": 23,
+  "body_occlusion_scope": [
+    8,
+    11,
+    13,
+    14,
+    16,
+    17
+  ],
+  "base_png_sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036",
+  "all_off_rgba_difference": 0,
+  "protected_feature_hair_overlap": 0,
+  "hair_cast_shadow_pixels": 6,
+  "combinations": {
+    "base": {
+      "selected": [],
+      "visible_pixels": 1570
+    },
+    "armor": {
+      "selected": [
+        "armor"
+      ],
+      "visible_pixels": 2426
+    },
+    "hair": {
+      "selected": [
+        "hair"
+      ],
+      "visible_pixels": 1865
+    },
+    "armor-hair": {
+      "selected": [
+        "armor",
+        "hair"
+      ],
+      "visible_pixels": 2721
+    },
+    "face": {
+      "selected": [
+        "face"
+      ],
+      "visible_pixels": 1571
+    },
+    "armor-face": {
+      "selected": [
+        "armor",
+        "face"
+      ],
+      "visible_pixels": 2427
+    },
+    "face-hair": {
+      "selected": [
+        "face",
+        "hair"
+      ],
+      "visible_pixels": 1866
+    },
+    "armor-face-hair": {
+      "selected": [
+        "armor",
+        "face",
+        "hair"
+      ],
+      "visible_pixels": 2722
+    }
+  },
+  "part_pixels": {
+    "face": 216,
+    "hair": 395,
+    "armor": 2215
+  },
+  "limits": [
+    "face includes beard",
+    "armor is complete kit, not separately interchangeable limb armor",
+    "hidden hair-side face skin author constructed",
+    "static only, no joint movement acceptance"
+  ]
+}

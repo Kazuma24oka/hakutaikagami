@@ -23,3 +23,5 @@
 現在の正面素体は OfficerBodyBaseV2。原画対応の実画像検査は完了、ユーザー受入は未認定。初期の原画注記/診断画像だけは `require_reference_preparation` で入力/登録量/注記定義/コードを固定して作成し、実画像を点検してから通常の `require_plan` へ進む。この限定入口は生成・完成素体出力を許可しない。V1や不採用パーツを復活させない。
 
 ユーザーはV2を「ひょろひょろで気持ち悪い」と評価しつつ、一旦の続行を許可した。体型・画風の正式採用へ読み替えない。部位/配色の仮試験は `Docs/Proposals/officer-body-layer-review.html`。素体の外見改善は保留課題として保持する。
+
+正面の顔/髪/甲冑一式は `Art/Officer/EquipmentPartsV2/part-manifest.json` と `Docs/Proposals/OFFICER_EQUIPMENT_PARTS_V2.md`。元絵との可視画素一致、全解除の素体一致、髪なしの顔保護を実画像で検査済み。髪本体owner2と落ち影owner4、顔owner1、装備owner3、人体遮蔽は別責務。甲冑はまだ一式で、顔は髭を含む。部位別甲冑/別髪型/別方向/歩行/6頭身対応の完成を推認しない。V2素体の外見課題と仮受入を維持する。

@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "registration": "same native coordinates, no fitting or resampling",
+  "face_visible_rows": {
+    "18": [
+      28,
+      31
+    ],
+    "19": [
+      27,
+      32
+    ],
+    "20": [
+      26,
+      32
+    ],
+    "21": [
+      25,
+      32
+    ],
+    "22": [
+      25,
+      33
+    ],
+    "23": [
+      25,
+      33
+    ],
+    "24": [
+      25,
+      33
+    ],
+    "25": [
+      24,
+      33
+    ],
+    "26": [
+      24,
+      33
+    ],
+    "27": [
+      24,
+      33
+    ],
+    "28": [
+      24,
+      33
+    ],
+    "29": [
+      24,
+      33
+    ],
+    "30": [
+      24,
+      33
+    ],
+    "31": [
+      26,
+      31
+    ]
+  },
+  "hair_top_rows": [
+    0,
+    27
+  ],
+  "hair_lower_spans": {
+    "28": [
+      [
+        20,
+        23
+      ],
+      [
+        34,
+        37
+      ]
+    ]
+  },
+  "protected_features": {
+    "eyes_brows": [
+      [
+        25,
+        22,
+        33,
+        24
+      ]
+    ],
+    "nose_mouth_beard": [
+      [
+        27,
+        24,
+        32,
+        30
+      ]
+    ]
+  },
+  "face_completion": "Retain warm skin volume/outer contour from existing bare head as hidden face underpaint, then copy observed face features; omit hair-cast forehead shadow when hair absent",
+  "face_includes": "skin surface, eyes, eyebrows, nose, mouth and beard; beard is not independently selectable yet",
+  "armor_kit_includes": "armor, underclothing, coat, gauntlets, leg guards, footwear and sheathed sword; not yet independent armor pieces",
+  "armor_body_occlusion_owner_ids": [
+    8,
+    11,
+    13,
+    14,
+    16,
+    17
+  ],
+  "occlusion_basis": {
+    "8": "right hand replaced by original gauntlet silhouette",
+    "11": "left hand replaced by original gauntlet silhouette",
+    "13": "right lower leg replaced by shin-guard silhouette",
+    "14": "right foot replaced by footwear silhouette",
+    "16": "left lower leg replaced by shin-guard silhouette",
+    "17": "left foot replaced by footwear silhouette"
+  },
+  "forbidden": [
+    "Do not classify owners by RGB brightness",
+    "Do not modify base pixels",
+    "Do not globally clip body by original silhouette",
+    "Do not use rejected OfficerPartsV1 assets"
+  ],
+  "scope": "Front static face/hair/armor kit baseline, no animation or six-head counterpart acceptance",
+  "hair_cast_shadow_pixels": [
+    [
+      29,
+      18
+    ],
+    [
+      31,
+      18
+    ],
+    [
+      32,
+      19
+    ],
+    [
+      32,
+      20
+    ],
+    [
+      25,
+      21
+    ],
+    [
+      32,
+      21
+    ]
+  ],
+  "hair_shadow_basis": "Manually inspected fringe-cast forehead/temple shadow; separate semantic owner4, enabled with hair; never includes eye/brow rows22-24"
+}
