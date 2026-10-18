@@ -1,6 +1,6 @@
 # 百代鏡：Godot 4系技術基盤7項目 ABCD比較
 
-**状態：Proposals／2026-10-18。** Godot 4系を第一候補とするが正式採用・製造開始は未承認。7項目は未選択、B推奨。Dはその他。D選択項目のみ次のチャットで自由記載を確認する。HD-2D風の背景＋大量の2Dパーツ合成武将を前提に検討する。
+**状態：Proposals／2026-10-18。** Godot 4系を第一候補とし、7項目すべてユーザーがB案を正式選択。基本方針は[Confirmed](../Confirmed/GODOT_TECH_FOUNDATION_PRINCIPLES.md)へ反映済み。エンジン正式採用・製造開始は未承認。Dはその他。D選択項目のみ次のチャットで自由記載を確認する。HD-2D風の背景＋大量の2Dパーツ合成武将を前提に検討する。
 
 ## ① 開発言語
 - **A**：GDScriptのみで全処理。例：GDScriptのみで全処理方式で徴税や武将を実装する。
@@ -64,3 +64,8 @@
 ## 参考（公式）
 - Godot C#：https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/index.html
 - Godot 2D Cutout Animation：https://docs.godotengine.org/en/stable/tutorials/animation/cutout_animation.html
+
+## 2026-10-18 決定記録
+- ①〜⑦すべてBを選択。基本方針は[Godot技術基盤の確定原則](../Confirmed/GODOT_TECH_FOUNDATION_PRINCIPLES.md)を正本とする。
+- 本書は選択肢の比較履歴と未確定実装方式（言語境界・スキーマ・保存形式・パーツ・テスト・素材規格）を保持する。
+- Godot 4系は第一候補。正式採用は技術検証後、製造開始ゲートは未達。main変更なし、永久削除なし。
