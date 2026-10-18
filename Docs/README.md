@@ -395,5 +395,10 @@
 - Confirmed・main変更なし。Archive移動・永久削除なし。
 
 ## P1受入テスト・合格条件（未確定・ABCD）
-- [5分類×4立場、成否・越権・中断再開・NPC反応・イベント復旧・P1合格条件の7項目](Proposals/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [5分類×4立場、成否・越権・中断再開・NPC反応・イベント復旧・P1合格条件の7項目](Proposals/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [代表コマンド試験](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)、[P1/P2範囲](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)、[63項目統合](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
+
+## P1受入テスト・合格条件7項目のB案選択（2026-10-18）
+- [5分類×4立場・成否／資源・越権／取消／防衛・中断／再開・NPC／情報・競合／復旧・P1受入のB優先案と未決定詳細](Proposals/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。
+- F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目・P1/P2範囲・代表テストに整合。新規Confirmed追加なし、実装・テスト未実施。
+- main変更なし、今回Archive移動・永久削除なし。
