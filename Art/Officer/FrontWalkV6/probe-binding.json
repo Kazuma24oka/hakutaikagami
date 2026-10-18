@@ -1,0 +1,6 @@
+{
+  "plan": "front-walk-probe-v6",
+  "binding": "2fe0573bb1a258f8640032717ff8e95d24fe012b9f0ab4c8c7a0699f11ae6d1a",
+  "scope": "front-only displacement probes; not completed motion",
+  "rig_sha256": "c7d82e58a41757e5a8dc2b9ca3ee13224980ff3b59129dd33106855372ca7271"
+}

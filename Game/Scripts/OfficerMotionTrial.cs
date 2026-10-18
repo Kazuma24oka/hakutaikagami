@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 public partial class OfficerMotionTrial : Control
 {
     private OfficerMotionFrames art = null!;
+    private ImageTexture[] previousFrames = null!;
+    private Sprite2D previousSprite = null!;
     private int selection, frame;
     private bool walking = true, playing = true;
     private double elapsed, speed = 1;
@@ -30,9 +32,15 @@ public partial class OfficerMotionTrial : Control
     public override void _Ready()
     {
         art = new OfficerMotionFrames(); selection = art.All;
+        var previous = new OfficerMotionFrames("res://Data/officer_motion_trial.json");
+        previousFrames = Enumerable.Range(0, 12).Select(i => {
+            if (OfficerMotionFrames.Hash(previous.Compose(previous.All, i)) != previous.Expected(previous.All, i)) throw new InvalidOperationException("Previous baseline changed.");
+            using var image = previous.MakeImage(previous.All, i); return ImageTexture.CreateFromImage(image);
+        }).ToArray();
+        GetWindow().Title = "百代鏡 — 正面歩行 改善試作";
         Theme = new Theme { DefaultFontSize = 17, DefaultFont = new SystemFont { FontNames = new[] { "Meiryo", "Yu Gothic UI", "sans-serif" } } };
         TextureFilter = TextureFilterEnum.Nearest;
-        Text("百代鏡｜武将表示 — 正面の待機・歩行", new(18, 10), 23, "e6cc95");
+        Text("百代鏡｜武将表示 — 正面歩行の改善試作", new(18, 10), 23, "e6cc95");
         idle = Button("待機", new(18, 48), () => SetClip(false));
         walk = Button("歩行", new(118, 48), () => SetClip(true));
         pause = Button("停止", new(218, 48), () => { playing = !playing; elapsed = 0; UpdateStatus(); });
@@ -54,7 +62,7 @@ public partial class OfficerMotionTrial : Control
         restore = Button("全装備", new(18, 452), () => Choose(art.All));
         armorOff = Button("甲冑なし", new(128, 452), () => Choose(art.Head));
         bare = Button("裸素体", new(238, 452), () => Choose(0));
-        Text("同じコマ・同じ1倍で比較", new(18, 494), 16, "e6cc95");
+        Text("改善案と着脱の比較・右端は前回（1倍）", new(18, 494), 16, "e6cc95");
         var states = new[] { ("全装備", art.All), ("腕・肩なし", art.Without(art.All, "arms", "shoulders")), ("陣羽織なし", art.Without(art.All, "coat")), ("甲冑なし", art.Head), ("裸素体", 0) };
         for (int i = 0; i < states.Length; i++)
         {
@@ -63,6 +71,8 @@ public partial class OfficerMotionTrial : Control
             Text(states[i].Item1, new(x - 4, 518), 15);
             comparisons.Add((Sprite(new(x, 540), 1), states[i].Item2));
         }
+        Box(new(656, 540, 64, 96), "858d7c");
+        Text("前回", new(656, 518), 15); previousSprite = Sprite(new(656, 540), 1);
         Text("確認用・4倍（主表示は1倍）", new(704, 232), 17, "e6cc95");
         Box(new(748, 260, 256, 384), "858d7c"); large = Sprite(new(748, 260), 4);
         Text("正面の小さな足踏み試作。素体の体型は仮採用のまま。", new(18, 655), 15, "b4c1c9");
@@ -111,6 +121,7 @@ public partial class OfficerMotionTrial : Control
     {
         native.Texture = Frames(selection)[FrameIndex]; large.Texture = native.Texture;
         foreach (var (sprite, selected) in comparisons) sprite.Texture = Frames(selected)[FrameIndex];
+        previousSprite.Texture = previousFrames[FrameIndex];
         foreach (var item in checks) item.Value.SetPressedNoSignal(art.Has(selection, item.Key));
         UpdateStatus();
     }
@@ -203,19 +214,19 @@ public partial class OfficerMotionTrial : Control
                         Require(difference <= 1, $"GPU pixel mismatch flags={flags} frame={i} byte={p + c} diff={difference}");
                     }
                     gpu++;
-                    if (flags == art.All && i == 6) Save(viewport, "officer-motion-godot-equipped.png");
-                    if (flags == art.Without(art.All, "arms") && i == 6) Save(viewport, "officer-motion-godot-arms-off.png");
-                    if (flags == 0 && i == 2) Save(viewport, "officer-motion-godot-bare.png");
+                    if (flags == art.All && i == 6) Save(viewport, "officer-walk-v6-godot-equipped.png");
+                    if (flags == art.Without(art.All, "arms") && i == 6) Save(viewport, "officer-walk-v6-godot-arms-off.png");
+                    if (flags == 0 && i == 2) Save(viewport, "officer-walk-v6-godot-bare.png");
                 }
             }
             // The stretch mode must retain literal pixels when the game window changes size.
             GetWindow().Size = new(1280, 800); Choose(art.All); walking = true; frame = 2; Refresh(); await Drawn(); await Drawn();
             var resized = NativeRect(); Require(resized.Size == new Vector2I(64, 96), "Resize changed native dimensions.");
-            using (var shot = GetViewport().GetTexture().GetImage()) { Require(shot.GetWidth() == 1280 && shot.GetHeight() == 800, "Window resize not rendered."); Save(shot, "officer-motion-godot-resized.png"); }
+            using (var shot = GetViewport().GetTexture().GetImage()) { Require(shot.GetWidth() == 1280 && shot.GetHeight() == 800, "Window resize not rendered."); Save(shot, "officer-walk-v6-godot-resized.png"); }
             GetWindow().Size = new(1100, 720); await Drawn();
             var largeAt = large.GetGlobalTransformWithCanvas().Origin;
-            var report = new { status = "PASS", engine = Engine.GetVersionInfo()["string"].AsString(), dotnet = System.Environment.Version.ToString(), binding = art.Binding, native_canvas = new[] {64,96}, display_scale = 1, native_viewport_rect = new[] { bounds.Position.X, bounds.Position.Y, 64, 96 }, enlarged_viewport_rect = new[] { (int)largeAt.X, (int)largeAt.Y, 256, 384 }, resize_native_viewport_rect = new[] { resized.Position.X, resized.Position.Y, 64, 96 }, cpu_cases = cpu, gpu_cases = gpu, max_rgb_difference = maxDifference, live = liveResults, dynamic_toggles = toggled, resize_viewport = new[] {1280,800}, native_input = 0, scope = "Front in-place idle/walk in Godot main game tab; world time unchanged" };
-            string reportPath = ProjectSettings.GlobalizePath("res://../Art/Officer/GodotMotionV5/runtime-validation.json");
+            var report = new { status = "PASS", engine = Engine.GetVersionInfo()["string"].AsString(), dotnet = System.Environment.Version.ToString(), binding = art.Binding, native_canvas = new[] {64,96}, display_scale = 1, native_viewport_rect = new[] { bounds.Position.X, bounds.Position.Y, 64, 96 }, enlarged_viewport_rect = new[] { (int)largeAt.X, (int)largeAt.Y, 256, 384 }, resize_native_viewport_rect = new[] { resized.Position.X, resized.Position.Y, 64, 96 }, cpu_cases = cpu, gpu_cases = gpu, max_rgb_difference = maxDifference, live = liveResults, dynamic_toggles = toggled, resize_viewport = new[] {1280,800}, native_input = 0, previous_baseline_frames = 12, scope = "Improved front walk and previous baseline comparison; world time unchanged" };
+            string reportPath = ProjectSettings.GlobalizePath("res://../Art/Officer/FrontWalkV6/runtime-validation.json");
             System.IO.File.WriteAllText(reportPath, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }) + "\n");
             GD.Print($"OFFICER_MOTION_GODOT_PASS cpu={cpu} gpu={gpu} max_rgb_difference={maxDifference} live_clips=2 speeds=2 toggles={toggled} native=64x96 scale=1 native_input=0");
             GetTree().Quit(0);

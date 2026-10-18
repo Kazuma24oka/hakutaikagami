@@ -1,0 +1,106 @@
+test_actual_png_bundle_checks_pixels_and_rejects_bad_palette (__main__.PipelineTests.test_actual_png_bundle_checks_pixels_and_rejects_bad_palette) ... ok
+test_actual_rejected_controls_cannot_regenerate (__main__.PipelineTests.test_actual_rejected_controls_cannot_regenerate) ... ok
+test_actual_repository_without_plan_is_blocked (__main__.PipelineTests.test_actual_repository_without_plan_is_blocked) ... ok
+test_actual_workflow_must_match_claimed_settings (__main__.PipelineTests.test_actual_workflow_must_match_claimed_settings) ... ok
+test_armor_outline_cannot_be_named_observed_anatomy (__main__.PipelineTests.test_armor_outline_cannot_be_named_observed_anatomy) ... ok
+test_builtin_edit_binds_actual_prompt_and_reference (__main__.PipelineTests.test_builtin_edit_binds_actual_prompt_and_reference) ... ok
+test_cache_failure_is_never_reused_as_pass (__main__.PipelineTests.test_cache_failure_is_never_reused_as_pass) ... ok
+test_cache_reuses_exact_dependencies_and_invalidates_change (__main__.PipelineTests.test_cache_reuses_exact_dependencies_and_invalidates_change) ... ok
+test_changed_input_invalidates_plan (__main__.PipelineTests.test_changed_input_invalidates_plan) ... ok
+test_composition_uses_shared_coordinates_and_no_fit (__main__.PipelineTests.test_composition_uses_shared_coordinates_and_no_fit) ... ok
+test_contract_fixed_conditions_rejected (__main__.PipelineTests.test_contract_fixed_conditions_rejected) ... ok
+test_control_bootstrap_cannot_authorize_generation (__main__.PipelineTests.test_control_bootstrap_cannot_authorize_generation) ... ok
+test_control_bootstrap_rejects_changed_definition (__main__.PipelineTests.test_control_bootstrap_rejects_changed_definition) ... ok
+test_control_bootstrap_rejects_invalid_masks_or_geometry (__main__.PipelineTests.test_control_bootstrap_rejects_invalid_masks_or_geometry) ... ok
+test_empty_pass_string_cannot_release (__main__.PipelineTests.test_empty_pass_string_cannot_release) ... ok
+test_evidence_path_traversal_rejected (__main__.PipelineTests.test_evidence_path_traversal_rejected) ... ok
+test_explicit_front_plan_can_validate_without_approving_art (__main__.PipelineTests.test_explicit_front_plan_can_validate_without_approving_art) ... ok
+test_foreign_hip_pixel_cannot_enter_hand (__main__.PipelineTests.test_foreign_hip_pixel_cannot_enter_hand) ... ok
+test_hair_cannot_take_eye_pixels (__main__.PipelineTests.test_hair_cannot_take_eye_pixels) ... ok
+test_hidden_anatomy_requires_occluder_and_bounds (__main__.PipelineTests.test_hidden_anatomy_requires_occluder_and_bounds) ... ok
+test_missing_and_changed_prerequisites_are_rejected (__main__.PipelineTests.test_missing_and_changed_prerequisites_are_rejected) ... ok
+test_missing_control_and_false_review_do_not_lift_gate (__main__.PipelineTests.test_missing_control_and_false_review_do_not_lift_gate) ... ok
+test_missing_geometry_or_background_annotation_rejected (__main__.PipelineTests.test_missing_geometry_or_background_annotation_rejected) ... ok
+test_native_alpha_and_ownership (__main__.PipelineTests.test_native_alpha_and_ownership) ... ok
+test_original_source_change_invalidates_correspondence (__main__.PipelineTests.test_original_source_change_invalidates_correspondence) ... ok
+test_recolor_preserves_other_material_and_alpha (__main__.PipelineTests.test_recolor_preserves_other_material_and_alpha) ... ok
+test_reference_cannot_be_optional_or_replaced (__main__.PipelineTests.test_reference_cannot_be_optional_or_replaced) ... ok
+test_reused_modules_match_recorded_source_bytes (__main__.PipelineTests.test_reused_modules_match_recorded_source_bytes) ... ok
+test_review_evidence_and_observation_required (__main__.PipelineTests.test_review_evidence_and_observation_required) ... ok
+test_same_canvas_does_not_allow_changed_head_size (__main__.PipelineTests.test_same_canvas_does_not_allow_changed_head_size) ... ok
+test_same_canvas_does_not_allow_character_landmark_drift (__main__.PipelineTests.test_same_canvas_does_not_allow_character_landmark_drift) ... ok
+test_shared_selection_requires_both_representations (__main__.PipelineTests.test_shared_selection_requires_both_representations) ... ok
+test_source_annotation_preparation_does_not_authorize_generation (__main__.PipelineTests.test_source_annotation_preparation_does_not_authorize_generation) ... ok
+test_stage_cannot_skip_front_and_parts_review (__main__.PipelineTests.test_stage_cannot_skip_front_and_parts_review) ... ok
+test_undeclared_joint_overlap_rejected (__main__.PipelineTests.test_undeclared_joint_overlap_rejected) ... ok
+test_unrecorded_plan_is_rejected (__main__.PipelineTests.test_unrecorded_plan_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 1.253s
+
+OK
+test_all_eight_compositions_and_immutable_base (__main__.EquipmentTests.test_all_eight_compositions_and_immutable_base) ... ok
+test_all_removed_equals_frozen_bare_base (__main__.EquipmentTests.test_all_removed_equals_frozen_bare_base) ... ok
+test_armor_visibility_uses_anatomical_regions_not_reference_clip (__main__.EquipmentTests.test_armor_visibility_uses_anatomical_regions_not_reference_clip) ... ok
+test_completion_only_in_current_head (__main__.EquipmentTests.test_completion_only_in_current_head) ... ok
+test_face_removal_exposes_blank_base_without_eye_remnants (__main__.EquipmentTests.test_face_removal_exposes_blank_base_without_eye_remnants) ... ok
+test_hair_removal_preserves_observed_face_features (__main__.EquipmentTests.test_hair_removal_preserves_observed_face_features) ... ok
+test_original_visible_pixels_exactly_restored (__main__.EquipmentTests.test_original_visible_pixels_exactly_restored) ... ok
+test_shared_native_canvas_and_binary_alpha (__main__.EquipmentTests.test_shared_native_canvas_and_binary_alpha) ... ok
+test_source_ownership_and_forehead_shadow_are_explicit (__main__.EquipmentTests.test_source_ownership_and_forehead_shadow_are_explicit) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.019s
+
+OK
+test_all_1024_cases_match_frozen_native_hashes_and_no_mutation (__main__.ArmorSplitTests.test_all_1024_cases_match_frozen_native_hashes_and_no_mutation) ... ok
+test_all_removed_is_original_base_and_base_sha_unchanged (__main__.ArmorSplitTests.test_all_removed_is_original_base_and_base_sha_unchanged) ... ok
+test_body_visibility_is_per_item_and_union_matches_previous (__main__.ArmorSplitTests.test_body_visibility_is_per_item_and_union_matches_previous) ... ok
+test_build_is_deterministic_against_exported_parts (__main__.ArmorSplitTests.test_build_is_deterministic_against_exported_parts) ... ok
+test_cumulative_previous_eight_states_retained (__main__.ArmorSplitTests.test_cumulative_previous_eight_states_retained) ... ok
+test_eight_native_binary_layers_and_exact_source_ownership (__main__.ArmorSplitTests.test_eight_native_binary_layers_and_exact_source_ownership) ... ok
+test_hidden_completion_only_beneath_declared_later_occluders (__main__.ArmorSplitTests.test_hidden_completion_only_beneath_declared_later_occluders) ... ok
+test_removed_gauntlets_restore_bare_hands_in_front_of_scabbard (__main__.ArmorSplitTests.test_removed_gauntlets_restore_bare_hands_in_front_of_scabbard) ... ok
+test_semantic_override_outside_source_rejected (__main__.ArmorSplitTests.test_semantic_override_outside_source_rejected) ... ok
+test_undeclared_foreign_pixel_and_completion_cycle_rejected (__main__.ArmorSplitTests.test_undeclared_foreign_pixel_and_completion_cycle_rejected) ... ok
+test_visible_pixels_hidden_material_and_component_limits (__main__.ArmorSplitTests.test_visible_pixels_hidden_material_and_component_limits) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.180s
+
+OK
+test_actual_exported_independent_sheets_match_fixed_rig (__main__.FrontMotionTests.test_actual_exported_independent_sheets_match_fixed_rig) ... ok
+test_binary_palette_unchanged_no_clipping_and_real_motion (__main__.FrontMotionTests.test_binary_palette_unchanged_no_clipping_and_real_motion) ... ok
+test_gate_rejects_unrecorded_or_changed_motion_rig (__main__.FrontMotionTests.test_gate_rejects_unrecorded_or_changed_motion_rig) ... ok
+test_gear_remains_connected_within_authored_component_limits (__main__.FrontMotionTests.test_gear_remains_connected_within_authored_component_limits) ... ok
+test_head_face_hair_are_rigid_common_translation (__main__.FrontMotionTests.test_head_face_hair_are_rigid_common_translation) ... ok
+test_masks_share_exact_hand_and_foot_lookup (__main__.FrontMotionTests.test_masks_share_exact_hand_and_foot_lookup) ... ok
+test_neutral_restores_source_and_off_restores_immutable_base (__main__.FrontMotionTests.test_neutral_restores_source_and_off_restores_immutable_base) ... ok
+test_planted_foot_never_slides_or_lifts_and_other_foot_lifts (__main__.FrontMotionTests.test_planted_foot_never_slides_or_lifts_and_other_foot_lifts) ... ok
+test_skin_joint_surface_remains_connected_at_all_phases (__main__.FrontMotionTests.test_skin_joint_surface_remains_connected_at_all_phases) ... ok
+test_sword_remains_rigid_and_no_mutation (__main__.FrontMotionTests.test_sword_remains_rigid_and_no_mutation) ... ok
+test_warp_field_has_no_fold (__main__.FrontMotionTests.test_warp_field_has_no_fold) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 1.422s
+
+OK
+test_actual_exported_independent_sheets_match_fixed_rig (__main__.FrontMotionTests.test_actual_exported_independent_sheets_match_fixed_rig) ... ok
+test_binary_palette_unchanged_no_clipping_and_real_motion (__main__.FrontMotionTests.test_binary_palette_unchanged_no_clipping_and_real_motion) ... ok
+test_gate_rejects_unrecorded_or_changed_motion_rig (__main__.FrontMotionTests.test_gate_rejects_unrecorded_or_changed_motion_rig) ... ok
+test_gear_remains_connected_within_authored_component_limits (__main__.FrontMotionTests.test_gear_remains_connected_within_authored_component_limits) ... ok
+test_head_face_hair_are_rigid_common_translation (__main__.FrontMotionTests.test_head_face_hair_are_rigid_common_translation) ... ok
+test_inverse_map_converges_below_pixel_error (__main__.FrontMotionTests.test_inverse_map_converges_below_pixel_error) ... ok
+test_lift_return_distinct_and_amplitude_exceeds_previous (__main__.FrontMotionTests.test_lift_return_distinct_and_amplitude_exceeds_previous) ... ok
+test_masks_share_exact_hand_and_foot_lookup (__main__.FrontMotionTests.test_masks_share_exact_hand_and_foot_lookup) ... ok
+test_neutral_restores_source_and_off_restores_immutable_base (__main__.FrontMotionTests.test_neutral_restores_source_and_off_restores_immutable_base) ... ok
+test_no_narrow_shoe_toe_from_cross_foot_weighting (__main__.FrontMotionTests.test_no_narrow_shoe_toe_from_cross_foot_weighting) ... ok
+test_planted_foot_never_slides_or_lifts_and_other_foot_lifts (__main__.FrontMotionTests.test_planted_foot_never_slides_or_lifts_and_other_foot_lifts) ... ok
+test_skin_joint_surface_remains_connected_at_all_phases (__main__.FrontMotionTests.test_skin_joint_surface_remains_connected_at_all_phases) ... ok
+test_sword_remains_rigid_and_no_mutation (__main__.FrontMotionTests.test_sword_remains_rigid_and_no_mutation) ... ok
+test_warp_field_has_no_fold (__main__.FrontMotionTests.test_warp_field_has_no_fold) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.668s
+
+OK

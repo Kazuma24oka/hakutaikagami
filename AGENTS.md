@@ -31,3 +31,5 @@
 正面の待機/歩行の制御試作は `Art/Officer/FrontMotionV4/manifest.json` と `Docs/Proposals/OFFICER_FRONT_MOTION_V4.md`。8部位原本は不変、共通表面の変形/個別遮蔽/素手前景/剛体刀を分離。12インデックス×1024状態と通常/低速のブラウザー実再生を検査済み。小振幅の正面足踏みだけで、自然な完成歩容・他方向・大きな可動・Godot移動・6頭身対応の承認ではない。新しいrig/マスク/変形コードへ旧検査を流用しない。
 
 Godot表示の現在の入口はMainの「武将表示」タブ（`--officer-motion-review`）と `Docs/Proposals/OFFICER_GODOT_MOTION_V5.md`。V4の20独立表示/遮蔽シートを改変せず読む。実ゲーム12,288合成/132GPU状態と通常低速/動的着脱を検査済み。`Scripts/Validate-OfficerGodotMotion.ps1` が既存制作ゲート→ビルド→インポート→実表示検査を行う。1倍保持のためcanvas stretchはdisabled。表示時計はCore世界時刻を進めない。正面足踏み・仮体型の範囲を、他方向/完成歩容/6頭身/配布エクスポートの承認へ広げない。
+
+現在の正面歩行は `Docs/Proposals/OFFICER_FRONT_WALK_V6.md` と `Art/Officer/FrontWalkV6/`。原本/V4は保持、V6シートを別出力。腕上下4px/足上げ5.5px/膝軌道1.5pxを着脱で検査し、Godotの右端に前回版を同期表示する。現行の検査は `Scripts/Validate-OfficerFrontWalk.ps1`、既存 `Validate-OfficerGodotMotion.ps1` もここへ委譲する。最新計画はwork-recordのfront_walk_plan/godot_motion_plan。旧V5のコードSHAに結び付いた合格を現在へ流用しない。範囲は正面の改善試作で、他方向・実移動・体型の最終採用へ広げない。

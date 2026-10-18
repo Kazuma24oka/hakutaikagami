@@ -19,9 +19,9 @@ public sealed class OfficerMotionFrames
     public int All => (1 << Keys.Length) - 1;
     public int Head => (1 << Array.IndexOf(Keys, "face")) | (1 << Array.IndexOf(Keys, "hair"));
 
-    public OfficerMotionFrames()
+    public OfficerMotionFrames(string dataPath = "res://Data/officer_motion_trial_v6.json")
     {
-        using var data = JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/officer_motion_trial.json"));
+        using var data = JsonDocument.Parse(Godot.FileAccess.GetFileAsString(dataPath));
         var root = data.RootElement;
         if (root.GetProperty("canvas")[0].GetInt32() != Width || root.GetProperty("canvas")[1].GetInt32() != Height || root.GetProperty("display_scale").GetInt32() != 1)
             throw new InvalidOperationException("Officer native dimensions changed.");

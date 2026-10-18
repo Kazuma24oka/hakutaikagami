@@ -534,3 +534,5 @@
 - [正面の待機・歩行：8部位着脱と接地の制御試作](Proposals/OFFICER_FRONT_MOTION_V4.md)（64×96・1倍、正面足踏み、Godot未組込）
 
 - [Godotゲーム画面：正面待機・歩行と甲冑8部位の着脱](Proposals/OFFICER_GODOT_MOTION_V5.md)（64×96・1倍、実GPU再生/画素検査済み）
+
+- [正面歩行の改善と着脱耐久検査 V6](Proposals/OFFICER_FRONT_WALK_V6.md)（腕振り・膝・足上げ、前回比較、Godot実画面）

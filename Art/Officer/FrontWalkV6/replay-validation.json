@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "new_native_pngs": 22,
+  "png_changes": 0,
+  "game_data_changes": 0,
+  "game_data": {
+    "path": "Game/Data/officer_motion_trial_v6.json",
+    "sha256": "40d1e2abd542bc3ae0f0fdbe23fe1c3ee155844424e2d9b213c1a01bdef32b12"
+  },
+  "previous_v4_pngs_unchanged": 22,
+  "hashes": {
+    "arms.png": "6745adceb3192115a299d964b03514190ba5e797d7030c5b0a5dcb34188b54ea",
+    "body.png": "0227c641d68191fe880ffa2b25b0a1bf84861626938022534abfb9ba8214f43e",
+    "coat.png": "767cd07682e6bb37900e07d61be833e7c1d902afe45786a93c641bfebcf6a6f6",
+    "face.png": "0dc4b3615a1077e5c60a9a56c7b3de8359e37c463c6c1c258944c2f673907c6c",
+    "footwear.png": "d5cfaaf0db07d63c1395b43695d036929ab2de3c146425bef8c83246a251a9b5",
+    "hair.png": "255a304ede7d6e15fc8b6c822b352cdc18159d6621366cc4398fa8aa3cee3fd3",
+    "hands.png": "46d9aeb14af945ebdaa22a3810c712564329f4945b1153512a324e63d73a8878",
+    "hide_arms.png": "7e29eed64ff520b03306b62d0addbbbc8a7e955d737c45ddf3eedeeb3658a74f",
+    "hide_coat.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_footwear.png": "9d263f9958e3c788c11b4039268b8ac7a6a0e4e2c5c5cc36216dde0d4798775e",
+    "hide_legs.png": "a69c6a2d3d168527c065da8325761edcdfd047b7c3abfb07a80a5b89150c15cf",
+    "hide_shoulders.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_sword.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_torso.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_waist.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "legs.png": "a32aeac229f64e684c8c76ecff7f2d58effca59369fa7b872304ed97204d423c",
+    "lookup-surface.png": "0b09f337a35a36cdde63bab8ceec478306cb4807c88f2d61862a6faf3588e045",
+    "lookup-sword.png": "c05aabb09e81376b42c6ef243cec4099fbe9e94c07b022b5c70a798c54ae55f8",
+    "shoulders.png": "6609486673c1d4d58d4ae3e7ba0ece20b22bfba461d6ac79b119156a0fc356e5",
+    "sword.png": "ca9497fa0b57f81565246a7b758b9f8120a680b6b450d9000f7825eedd21d899",
+    "torso.png": "7532659ad0dbd20ac61f63afd60a2f876ae8ba50eea3f4fee3519c2de334124c",
+    "waist.png": "cf751907c533c77159828849da55772ff891f834d5fbfdfea3d971ffd802ad08"
+  }
+}

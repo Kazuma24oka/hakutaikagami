@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "nearest4x": [
+    {
+      "name": "equipped",
+      "difference": 0
+    },
+    {
+      "name": "arms-off",
+      "difference": 0
+    },
+    {
+      "name": "bare",
+      "difference": 0
+    }
+  ],
+  "resized_native_difference": 0,
+  "evidence": [
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-equipped.png",
+      "sha256": "8ff6ee6e3acab1f10aaec8b03115dc854f34f906de339c7088d45f10dcd932ed"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-arms-off.png",
+      "sha256": "8b5d75571268832c7658048ba25cda64d670663b6158cc5f650a3dd8b179dc4c"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-bare.png",
+      "sha256": "57cfd2d5340e741d4bf5efeb36a00f538c4f260fbedd5ed09dadbf4bb67e5a9c"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-resized.png",
+      "sha256": "c20a18452cfb9d0b84e5a51fce2c92044b9a3234eaf0c6cf5a98c3322c780fb1"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "status": "PASS",
+  "engine": "4.5.2-stable (official)",
+  "dotnet": "10.0.10",
+  "binding": "932f5b897a6cc8808a4bfd809388f82011781412cd72dbf5d652d4d01102c0a7",
+  "native_canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "native_viewport_rect": [
+    312,
+    291,
+    64,
+    96
+  ],
+  "enlarged_viewport_rect": [
+    748,
+    297,
+    256,
+    384
+  ],
+  "resize_native_viewport_rect": [
+    312,
+    291,
+    64,
+    96
+  ],
+  "cpu_cases": 12288,
+  "gpu_cases": 132,
+  "max_rgb_difference": 0,
+  "live": [
+    {
+      "clip": "walk",
+      "speed": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "wraps": 1
+    },
+    {
+      "clip": "walk",
+      "speed": 0.25,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "wraps": 1
+    },
+    {
+      "clip": "idle",
+      "speed": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wraps": 1
+    },
+    {
+      "clip": "idle",
+      "speed": 0.25,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wraps": 1
+    }
+  ],
+  "dynamic_toggles": 8,
+  "resize_viewport": [
+    1280,
+    800
+  ],
+  "native_input": 0,
+  "previous_baseline_frames": 12,
+  "scope": "Improved front walk and previous baseline comparison; world time unchanged"
+}

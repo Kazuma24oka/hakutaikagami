@@ -1,0 +1,87 @@
+{
+  "status": "AUTHOR_INSPECTED_FRONT_WALK_IMPROVEMENT_USER_REVIEW_PENDING",
+  "binding": "932f5b897a6cc8808a4bfd809388f82011781412cd72dbf5d652d4d01102c0a7",
+  "evidence": [
+    {
+      "path": "Art/Officer/FrontWalkV6/displacement-probes.png",
+      "sha256": "0f3c77a07cf656a25b2eab5b465cac188405ebec5d30eb4c086d432b439de5ed"
+    },
+    {
+      "path": "Art/Officer/FrontWalkV6/joint-probes.png",
+      "sha256": "36f4c9286503cf57ee18818c4e7d78bbc9e33a2c3d8c28f4d4296797c73e2873"
+    },
+    {
+      "path": "Art/Officer/FrontWalkV6/isolated-motion-probes.png",
+      "sha256": "22dba7e7a4fd9258ac307731c016e20eddd0c2eb6e6f53b10891e0ee9234e67f"
+    },
+    {
+      "path": "Art/Officer/FrontWalkV6/runtime-validation.json",
+      "sha256": "45fcd68634f6f81c891b2cfb979a07c41804c1a762432a3fdd26f44e26f84d9e"
+    },
+    {
+      "path": "Art/Officer/FrontWalkV6/capture-validation.json",
+      "sha256": "eb27281608e60b5ad718739033c4c21284301102d3d5a30c1bbc600a722d55b9"
+    },
+    {
+      "path": "Art/Officer/FrontWalkV6/replay-validation.json",
+      "sha256": "73553062833276dd4b094dad319291fbced098e7461a6572622a9dcf1a29fa66"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-build.txt",
+      "sha256": "74c1485953dfd65bf6a3c9b26c4c7d584b6f407c8c34712ba09de9998aa7a118"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-import.txt",
+      "sha256": "688e72a3a41d15fb680a9d256041ec9433810872b6f6830c2af3ec5c5b0cec26"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-runtime.txt",
+      "sha256": "7ef4e0c938442290974acb58b21779aae0acb288340d1785e662157c55c14a95"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-equipped.png",
+      "sha256": "8ff6ee6e3acab1f10aaec8b03115dc854f34f906de339c7088d45f10dcd932ed"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-arms-off.png",
+      "sha256": "8b5d75571268832c7658048ba25cda64d670663b6158cc5f650a3dd8b179dc4c"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-bare.png",
+      "sha256": "57cfd2d5340e741d4bf5efeb36a00f538c4f260fbedd5ed09dadbf4bb67e5a9c"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v6-godot-resized.png",
+      "sha256": "c20a18452cfb9d0b84e5a51fce2c92044b9a3234eaf0c6cf5a98c3322c780fb1"
+    }
+  ],
+  "observations": {
+    "probes": "Viewed final8 walk phases for full/bare and each8armor removal, isolated8slot strips and joint overlays. Source dimensions unchanged. Corrected initial compressed wrists/pointed-foot masks before current controls.",
+    "motion": "Arm vertical4px vs2, foot lift5.5 vs3.5, authored knee inward arc1.5px ends at ankle, torso sway.75px, arm horizontal1px. Separate lift/return phases.40 inverse iterations. No fold/isolated gear/current source clipping under actual tests.",
+    "runtime": "Godot main tab actual132GPU states difference0;12288C# cases match Python. All idle/walk frames at normal/quarter speed and loop observed. Dynamic8part toggles/pause/step/restore verified without native input. Previous V4 full-equipped12frames are shown alongside and checked on load.",
+    "source": "Original body/face/hair/8armor and V4rig/22sheets kept unchanged. Source neutral exact; all-off exposes same animated bare body. Skinny body remains provisional.",
+    "scope": "Only recommended step1 front-walk improvement; no side/back work or game locomotion. Forward-projected surface deformation, not completed natural 3D stride or rigid armor simulation."
+  },
+  "tests": {
+    "new_motion": 14,
+    "previous_art": 67,
+    "core": 233,
+    "cpu_states": 12288,
+    "gpu_states": 132,
+    "gpu_difference": 0,
+    "normal_slow_clips": 4,
+    "dynamic_toggles": 8,
+    "old_baseline_frames": 12,
+    "native_size": [
+      64,
+      96
+    ]
+  },
+  "limits": [
+    "Front-only in-place stride and provisional body, no other views",
+    "No foot/world translation speed synchronisation, battle or command integration",
+    "No final aesthetics/user acceptance claimed",
+    "No book figure inspection, generative image invocation or portrait counterpart work",
+    "GitHub CI execution and distributable export not checked"
+  ]
+}
