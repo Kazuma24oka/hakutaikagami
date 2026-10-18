@@ -376,6 +376,11 @@
 - Confirmedの重複確定なし、main変更なし、永久削除なし。
 
 ## P1/P2実装範囲・完成条件（未確定・ABCD、2026-10-18）
-- [63項目からP1必須・P2拡張・実装前依存・完了判定を比較する7項目](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。B推奨、7項目は未選択。Dはその他、選択した項目のみ次のチャットで自由記載。
+- [63項目からP1必須・P2拡張・実装前依存・完了判定を比較する7項目](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [63項目統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)およびF01/F02/F04/F07/F08・P0-A01〜A06と整合。自動進行＋任意停止は未確定。新規Confirmedなし。
 - 置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
+
+## P1/P2実装範囲・完成条件7項目のB案選択（2026-10-18）
+- [P1必須・P2拡張・身分別検証・共通契約・P0依存・時間／委任・P1完了判定のB優先案と未確定詳細](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。
+- F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目と整合。自動進行＋任意停止は未確定。実装・テスト未実施、P1未完了。
+- 新規Confirmedなし、main変更なし、今回Archive移動・永久削除なし。
