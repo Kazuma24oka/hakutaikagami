@@ -489,3 +489,7 @@
 - [Unity第一候補・ID分離・バージョン付き保存・共通イベント／時間・最小UI・自動／手動試験・段階実装のB優先案](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)。
 - F01/F02/F03/F04/F07/F08、P0-A01〜A06、製造開始ゲート7項目と整合。新規Confirmed追加なし。
 - main変更なし、Archive移動・永久削除なし。製造開始ゲート未達、実装・テスト未実施。
+
+## Godot 4系技術基盤7項目（未確定・ABCD）
+- [開発言語・データ管理・セーブ・武将パーツ・アニメーション・テスト・素材管理の比較](Proposals/GODOT_TECH_FOUNDATION_7_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- Godot 4系は第一候補、正式採用は未決定。従来の[Unity第一候補の技術比較](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)は選定履歴として保持。Confirmed・main変更なし、Archive移動・永久削除なし。
