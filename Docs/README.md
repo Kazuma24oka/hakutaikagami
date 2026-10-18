@@ -491,5 +491,10 @@
 - main変更なし、Archive移動・永久削除なし。製造開始ゲート未達、実装・テスト未実施。
 
 ## Godot 4系技術基盤7項目（未確定・ABCD）
-- [開発言語・データ管理・セーブ・武将パーツ・アニメーション・テスト・素材管理の比較](Proposals/GODOT_TECH_FOUNDATION_7_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [開発言語・データ管理・セーブ・武将パーツ・アニメーション・テスト・素材管理の比較](Proposals/GODOT_TECH_FOUNDATION_7_OPTIONS.md)。B案7項目を選択・基本方針はConfirmedへ確定。D選択なし。
 - Godot 4系は第一候補、正式採用は未決定。従来の[Unity第一候補の技術比較](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)は選定履歴として保持。Confirmed・main変更なし、Archive移動・永久削除なし。
+
+## Godot技術基盤7項目の正式決定（2026-10-18）
+- **確定原則**：[C#中心・ID分離・バージョン付きセーブ・パーツ合成・共通モーション・自動試験・素材管理](Confirmed/GODOT_TECH_FOUNDATION_PRINCIPLES.md)。
+- **比較履歴・未確定詳細**：[Godot 7項目ABCD](Proposals/GODOT_TECH_FOUNDATION_7_OPTIONS.md)。Godot 4系は第一候補、正式採用は技術検証後。
+- Unity第一候補の古い比較は選定履歴であり現行推奨ではない。main変更なし、Archive移動・永久削除なし。製造未着手。
