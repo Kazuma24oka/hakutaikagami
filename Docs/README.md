@@ -439,3 +439,7 @@
 - **現行正本**：[21項目を10領域に統合しP0/P1責任分界・残課題を整理](Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md)。
 - **選択履歴**：[基本7](Archive/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)、[ID・状態・復旧7](Archive/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)、[復旧境界詳細7](Archive/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。
 - Confirmed・main変更なし。旧配置は内容一致確認後のみ削除。永久削除なし。
+
+## P1費用・資源の確定境界（未確定・ABCD）
+- [見積・引当・消費・返還・債務／保証・資源不足／競合・補償／セーブの7項目](Proposals/P1_RESOURCE_COMMIT_BOUNDARIES_OPTIONS.md)。B推奨・未選択、D選択項目のみ次のチャットで自由記載。
+- [P1共通契約21項目統合](Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md)、F01/F02/F03、P0-A01〜A06に整合。Confirmed・main変更なし。Archive移動・永久削除なし。
