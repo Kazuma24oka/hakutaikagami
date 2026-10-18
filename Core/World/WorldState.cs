@@ -12,7 +12,7 @@ public sealed record ScenarioDefinition(int SchemaVersion, ulong Seed, Organizat
 public sealed class WorldState
 {
     public ScenarioDefinition Definition { get; }
-    public long Tick { get; } = 0; // No automatic time policy is chosen by this foundation.
+    public long Tick { get; } // A session supplies the common tick; no wall-clock policy lives here.
     public SeededRandom Random { get; }
     public IReadOnlyDictionary<string, Character> Characters { get; }
     public IReadOnlyDictionary<string, Castle> Castles { get; }
@@ -21,10 +21,11 @@ public sealed class WorldState
     public EventScheduler Events { get; } = new();
 
     public WorldState(ScenarioDefinition definition, IEnumerable<Character> characters, IEnumerable<Castle> castles,
-        IEnumerable<Authority> authorities, IEnumerable<ResourceStock> resources)
+        IEnumerable<Authority> authorities, IEnumerable<ResourceStock> resources, long tick = 0, ulong? randomState = null)
     {
         Definition = definition;
-        Random = new SeededRandom(definition.Seed);
+        Tick = tick;
+        Random = new SeededRandom(randomState ?? definition.Seed);
         Characters = characters.ToDictionary(c => c.Id, StringComparer.Ordinal);
         Castles = castles.ToDictionary(c => c.Id, StringComparer.Ordinal);
         Authorities = Array.AsReadOnly(authorities.ToArray());
@@ -38,6 +39,7 @@ public sealed class WorldState
         var characterIds = Definition.Characters.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
         var castleIds = Definition.Castles.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
         var orgIds = Definition.Organizations.Select(o => o.Id).ToHashSet(StringComparer.Ordinal);
+        Check(Tick >= 0, "Negative world tick.");
         Check(Definition.SchemaVersion == 1, "Unsupported scenario version.");
         Check(characterIds.Count == Definition.Characters.Length && castleIds.Count == Definition.Castles.Length &&
             orgIds.Count == Definition.Organizations.Length, "Duplicate definition ID.");

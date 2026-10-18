@@ -1,0 +1,320 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using HakutaiKagami.Core.Characters;
+using HakutaiKagami.Core.Castles;
+using HakutaiKagami.Core.Commands;
+using HakutaiKagami.Core.World;
+
+namespace HakutaiKagami.Core.Simulation;
+
+public enum TaxPhase { Dispatched, Received, Reserved, Completed, Partial, Refused, Failed, Cancelled }
+public enum DeliveryKind { Order, Report }
+public enum TaxEventKind { DeliverOrder, Decide, Collect, DeliverReport }
+public sealed record TaxOrder(string RequestId, string CaseId, string IssuerId, string ExecutorId,
+    string CastleId, int Requested, int Reserved, int Collected, TaxPhase Phase, bool Reported, string Reason, int? DecisionRoll);
+public sealed record TaxDelivery(string Id, string RequestId, DeliveryKind Kind, string SenderId, string RecipientId,
+    long DueAt, bool Delivered);
+public sealed record TaxKnowledge(string Id, string CharacterId, string RequestId, DeliveryKind Kind,
+    int Amount, string Content, long LearnedAt);
+public sealed record TaxEvent(string Id, string RequestId, TaxEventKind Kind, long DueAt, string[] DependsOn);
+public sealed record RiceAccount(string Id, string OwnerId, string CustodyCastleId, int Balance);
+public sealed record CharacterSnapshot(string Id, string OrganizationId, string Role, string CastleId);
+public sealed record CastleSnapshot(string Id, string LordId, string ControllerOrganizationId);
+public sealed record WorldSnapshot(ScenarioDefinition Definition, CharacterSnapshot[] Characters,
+    CastleSnapshot[] Castles, Authority[] Authorities, ResourceStock[] Resources, long Tick, ulong RandomState)
+{
+    public static WorldSnapshot Capture(WorldState world) => new(world.Definition,
+        world.Characters.Values.Select(c => new CharacterSnapshot(c.Id, c.OrganizationId, c.Role, c.CastleId)).ToArray(),
+        world.Castles.Values.Select(c => new CastleSnapshot(c.Id, c.LordId, c.ControllerOrganizationId)).ToArray(),
+        world.Authorities.ToArray(), world.Resources.ToArray(), world.Tick, world.Random.State);
+    public WorldState Restore() => new(Definition,
+        Characters.Select(c => new Character(Definition.Characters.Single(d => d.Id == c.Id), c.OrganizationId, c.Role, c.CastleId)),
+        Castles.Select(c => new Castle(Definition.Castles.Single(d => d.Id == c.Id), c.LordId, c.ControllerOrganizationId)), Authorities, Resources, Tick, RandomState);
+}
+
+// Persisted DTO is a boundary type. The simulation never exposes its live mutable DTO.
+public sealed class TaxSnapshot
+{
+    public int Version { get; set; } = 1;
+    public WorldSnapshot World { get; set; } = null!;
+    public long Tick { get; set; }
+    public bool Paused { get; set; }
+    public ulong RandomState { get; set; }
+    public int AcceptChancePercent { get; set; } = 100;
+    public int InitialRice { get; set; }
+    public int InitialSourceRice { get; set; }
+    public int InitialTreasuryRice { get; set; }
+    public RiceAccount[] Accounts { get; set; } = [];
+    public Authority[] Grants { get; set; } = [];
+    public TaxOrder[] Orders { get; set; } = [];
+    public TaxDelivery[] Deliveries { get; set; } = [];
+    public TaxKnowledge[] Knowledge { get; set; } = [];
+    public TaxEvent[] Pending { get; set; } = [];
+    public string[] Applied { get; set; } = [];
+}
+
+/// <summary>One-thread prototype transaction boundary: clone, validate, publish. No wall-clock or Godot dependency.</summary>
+public sealed class TaxSimulation
+{
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
+        Converters = { new JsonStringEnumConverter() }
+    };
+    private TaxSnapshot state;
+    private TaxSimulation(TaxSnapshot state) { Validate(state); this.state = Clone(state); }
+    public long Tick => state.Tick;
+    public bool Paused => state.Paused;
+    public int SourceRice => state.Accounts.Single(a => a.Id == "village").Balance;
+    public int TreasuryRice => state.Accounts.Single(a => a.Id == "treasury").Balance;
+    public int ReservedRice => state.Orders.Sum(o => o.Reserved);
+    public int PendingCount => state.Pending.Length;
+    public int AppliedCount => state.Applied.Length;
+    public IReadOnlyList<TaxOrder> Orders => Array.AsReadOnly(state.Orders.ToArray());
+    public IReadOnlyList<TaxKnowledge> KnowledgeFor(string characterId) =>
+        Array.AsReadOnly(state.Knowledge.Where(k => k.CharacterId == characterId).ToArray());
+    public WorldState RestoreWorld()
+    {
+        var snapshot = Clone(state).World;
+        var source = state.Accounts.Single(a => a.Id == "village");
+        return (snapshot with { Tick = state.Tick, RandomState = state.RandomState,
+            Resources = [snapshot.Resources.Single() with { Rice = TreasuryRice },
+                new ResourceStock(source.OwnerId, source.CustodyCastleId, source.Balance, 0)] }).Restore();
+    }
+
+    public static TaxSimulation Create(WorldState world, int sourceRice = 60, int acceptChancePercent = 100)
+    {
+        world.Validate();
+        if (sourceRice < 0 || acceptChancePercent is < 0 or > 100) throw new ArgumentOutOfRangeException();
+        var characters = world.Definition.Characters;
+        var castle = world.Definition.Castles.Single().Id;
+        var owner = world.Definition.Organizations[0].Id;
+        var snapshot = WorldSnapshot.Capture(world);
+        // A fixture-only village organization makes transfer of ownership explicit.
+        snapshot = snapshot with { Definition = snapshot.Definition with {
+            Organizations = [.. snapshot.Definition.Organizations, new("org-fixture-village", "試作村落")]
+        } };
+        return new TaxSimulation(new TaxSnapshot
+        {
+            World = snapshot, Tick = world.Tick, RandomState = world.Random.State, AcceptChancePercent = acceptChancePercent,
+            InitialRice = checked(sourceRice + world.Resources.Single().Rice),
+            InitialSourceRice = sourceRice, InitialTreasuryRice = world.Resources.Single().Rice,
+            Accounts = [new("village", "org-fixture-village", castle, sourceRice),
+                new("treasury", owner, castle, world.Resources.Single().Rice)],
+            Grants = [new(characters[0].Id, castle, "tax-order", "試作の徴税命令委任", 0, long.MaxValue),
+                new(characters[1].Id, castle, "collect-tax", "試作の徴収担当委任", 0, long.MaxValue)]
+        });
+    }
+
+    public void Submit(string requestId, string issuerId, string castleId, int amount)
+    {
+        if (string.IsNullOrWhiteSpace(requestId) || amount <= 0) throw new ArgumentException("Positive amount and request ID required.");
+        var existing = state.Orders.SingleOrDefault(o => o.RequestId == requestId);
+        if (existing != null)
+        {
+            if (existing.IssuerId != issuerId || existing.CastleId != castleId || existing.Requested != amount)
+                throw new InvalidOperationException("Request ID reused with different payload.");
+            return; // Retry retains logical identity, including after load.
+        }
+        Mutate(s =>
+        {
+            if (!s.World.Castles.Any(c => c.Id == castleId) || !Authorized(s, issuerId, castleId, "tax-order"))
+                throw new UnauthorizedAccessException("No active grant for this actor/target/action.");
+            var order = new TaxOrder(requestId, requestId + "/case", issuerId, s.World.Definition.Characters[1].Id,
+                castleId, amount, 0, 0, TaxPhase.Dispatched, false, "", null);
+            s.Orders = [.. s.Orders, order];
+            s.Deliveries = [.. s.Deliveries, new(requestId + "/letter", requestId, DeliveryKind.Order,
+                issuerId, order.ExecutorId, checked(s.Tick + 1), false)];
+            Enqueue(s, order, TaxEventKind.DeliverOrder, s.Tick + 1, []);
+        });
+    }
+
+    public void SetPaused(bool paused) => Mutate(s => s.Paused = paused);
+    public void Revoke(string actorId, string actionId) => Mutate(s =>
+        s.Grants = s.Grants.Where(g => g.ActorId != actorId || g.ActionId != actionId).ToArray());
+    public void Cancel(string requestId) => Mutate(s =>
+    {
+        var order = s.Orders.Single(o => o.RequestId == requestId);
+        if (order.Phase is not (TaxPhase.Dispatched or TaxPhase.Received or TaxPhase.Reserved))
+            throw new InvalidOperationException("Committed outcome cannot be cancelled.");
+        s.Pending = s.Pending.Where(e => e.RequestId != requestId).ToArray();
+        order = order with { Reserved = 0, Phase = TaxPhase.Cancelled, Reason = "発行者が取消" };
+        Replace(s, order);
+        QueueReport(s, order, []);
+    });
+
+    public void AdvanceOneTick(Action? beforeCommit = null)
+    {
+        if (state.Paused) return;
+        Mutate(s =>
+        {
+            s.Tick = checked(s.Tick + 1);
+            var due = s.Pending.Where(e => e.DueAt <= s.Tick).ToArray();
+            // No implicit priority for resource conflicts: this fixture rejects conflicting decisions together.
+            var decisions = due.Where(e => e.Kind == TaxEventKind.Decide).ToArray();
+            bool conflict = decisions.Length > 1;
+            foreach (var e in due.OrderBy(e => e.Id, StringComparer.Ordinal))
+            {
+                if (!e.DependsOn.All(s.Applied.Contains)) throw new InvalidOperationException("Unresolved causal dependency.");
+                Process(s, e, conflict && e.Kind == TaxEventKind.Decide);
+                s.Pending = s.Pending.Where(p => p.Id != e.Id).ToArray();
+                s.Applied = [.. s.Applied, e.Id];
+            }
+        }, beforeCommit);
+    }
+
+    public string SaveJson() => JsonSerializer.Serialize(state, JsonOptions);
+    public static TaxSimulation LoadJson(string json)
+    {
+        try { return new TaxSimulation(JsonSerializer.Deserialize<TaxSnapshot>(json, JsonOptions) ?? throw new InvalidDataException("Empty save.")); }
+        catch (Exception e) when (e is not InvalidDataException)
+        { throw new InvalidDataException("Invalid or unsupported tax prototype save.", e); }
+    }
+    public void SaveFile(string path)
+    {
+        var full = Path.GetFullPath(path);
+        Directory.CreateDirectory(Path.GetDirectoryName(full)!);
+        var temp = full + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        File.WriteAllText(temp, SaveJson());
+        // Same-volume replacement: failure preserves the previous destination and leaves the temp for diagnosis.
+        File.Move(temp, full, overwrite: true);
+    }
+    public static TaxSimulation LoadFile(string path) => LoadJson(File.ReadAllText(path));
+
+    private static TaxSnapshot Clone(TaxSnapshot s) => JsonSerializer.Deserialize<TaxSnapshot>(JsonSerializer.Serialize(s, JsonOptions), JsonOptions)!;
+    private void Mutate(Action<TaxSnapshot> change, Action? beforeCommit = null)
+    {
+        var next = Clone(state);
+        change(next);
+        Validate(next);
+        beforeCommit?.Invoke(); // Failure injection verifies no partial state becomes visible.
+        state = next;
+    }
+    private static bool Authorized(TaxSnapshot s, string actor, string castle, string action) =>
+        s.Grants.Any(g => g.Allows(new("validation", actor, castle, action, s.Tick), s.Tick));
+    private static string EventId(TaxOrder o, TaxEventKind kind) => o.RequestId + "/event/" + kind;
+    private static void Enqueue(TaxSnapshot s, TaxOrder o, TaxEventKind kind, long dueAt, string[] dependencies) =>
+        s.Pending = [.. s.Pending, new(EventId(o, kind), o.RequestId, kind, dueAt, dependencies)];
+    private static void Replace(TaxSnapshot s, TaxOrder o) => s.Orders = s.Orders.Select(x => x.RequestId == o.RequestId ? o : x).ToArray();
+    private static void QueueReport(TaxSnapshot s, TaxOrder o, string[] dependencies)
+    {
+        s.Deliveries = [.. s.Deliveries, new(o.RequestId + "/report", o.RequestId, DeliveryKind.Report,
+            o.ExecutorId, o.IssuerId, checked(s.Tick + 1), false)];
+        Enqueue(s, o, TaxEventKind.DeliverReport, s.Tick + 1, dependencies);
+    }
+    private static void Process(TaxSnapshot s, TaxEvent e, bool resourceConflict)
+    {
+        var o = s.Orders.Single(o => o.RequestId == e.RequestId);
+        switch (e.Kind)
+        {
+            case TaxEventKind.DeliverOrder:
+                s.Deliveries = s.Deliveries.Select(d => d.RequestId == o.RequestId && d.Kind == DeliveryKind.Order ? d with { Delivered = true } : d).ToArray();
+                s.Knowledge = [.. s.Knowledge, new(o.RequestId + "/knowledge/order", o.ExecutorId, o.RequestId,
+                    DeliveryKind.Order, o.Requested, "徴税要求を本人が受領", s.Tick)];
+                Replace(s, o with { Phase = TaxPhase.Received });
+                Enqueue(s, o, TaxEventKind.Decide, s.Tick + 1, [e.Id]);
+                break;
+            case TaxEventKind.Decide:
+                var known = s.Knowledge.Single(k => k.CharacterId == o.ExecutorId && k.RequestId == o.RequestId && k.Kind == DeliveryKind.Order);
+                var random = new SeededRandom(s.RandomState);
+                var roll = (int)(random.Next() % 100);
+                s.RandomState = random.State;
+                o = o with { DecisionRoll = roll };
+                if (!Authorized(s, o.IssuerId, o.CastleId, "tax-order") || !Authorized(s, o.ExecutorId, o.CastleId, "collect-tax"))
+                    o = o with { Phase = TaxPhase.Refused, Reason = "権限が失効" };
+                else if (roll >= s.AcceptChancePercent)
+                    o = o with { Phase = TaxPhase.Refused, Reason = "受領した命令をNPCが拒否" };
+                else if (resourceConflict)
+                    o = o with { Phase = TaxPhase.Failed, Reason = "同時刻の競合。制度別裁定未実装のため安全に拒否" };
+                else
+                {
+                    int available = s.Accounts.Single(a => a.Id == "village").Balance - s.Orders.Sum(x => x.Reserved);
+                    int reserved = Math.Min(known.Amount, available);
+                    o = reserved > 0 ? o with { Phase = TaxPhase.Reserved, Reserved = reserved }
+                        : o with { Phase = TaxPhase.Failed, Reason = "徴収可能な米がない" };
+                }
+                Replace(s, o);
+                if (o.Phase == TaxPhase.Reserved) Enqueue(s, o, TaxEventKind.Collect, s.Tick + 1, [e.Id]);
+                else QueueReport(s, o, [e.Id]);
+                break;
+            case TaxEventKind.Collect:
+                if (!Authorized(s, o.IssuerId, o.CastleId, "tax-order") || !Authorized(s, o.ExecutorId, o.CastleId, "collect-tax"))
+                    o = o with { Phase = TaxPhase.Failed, Reserved = 0, Reason = "確定前に権限が失効" };
+                else
+                {
+                    var amount = o.Reserved;
+                    s.Accounts = s.Accounts.Select(a => a.Id == "village" ? a with { Balance = checked(a.Balance - amount) }
+                        : a with { Balance = checked(a.Balance + amount) }).ToArray();
+                    o = o with { Reserved = 0, Collected = amount, Phase = amount == o.Requested ? TaxPhase.Completed : TaxPhase.Partial,
+                        Reason = amount == o.Requested ? "全量を徴収" : "在庫不足により部分達成" };
+                }
+                Replace(s, o);
+                QueueReport(s, o, [e.Id]);
+                break;
+            case TaxEventKind.DeliverReport:
+                s.Deliveries = s.Deliveries.Select(d => d.RequestId == o.RequestId && d.Kind == DeliveryKind.Report ? d with { Delivered = true } : d).ToArray();
+                s.Knowledge = [.. s.Knowledge, new(o.RequestId + "/knowledge/report", o.IssuerId, o.RequestId,
+                    DeliveryKind.Report, o.Collected, o.Reason, s.Tick)];
+                Replace(s, o with { Reported = true });
+                break;
+            default: throw new InvalidDataException("Unknown event kind.");
+        }
+    }
+
+    private static void Validate(TaxSnapshot s)
+    {
+        static void Check(bool ok, string message) { if (!ok) throw new InvalidDataException(message); }
+        Check(s.Version == 1 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
+        var world = s.World.Restore();
+        Check(s.Accounts.Length == 2 && s.Accounts.Select(a => a.Id).ToHashSet().SetEquals(["village", "treasury"]), "Invalid accounts.");
+        Check(s.Accounts.All(a => a.Balance >= 0 && world.Castles.ContainsKey(a.CustodyCastleId) &&
+            world.Definition.Organizations.Any(o => o.Id == a.OwnerId)), "Invalid owner, custody or balance.");
+        Check(s.Accounts.Sum(a => (long)a.Balance) == s.InitialRice, "Rice conservation violated.");
+        Check(s.InitialSourceRice >= 0 && s.InitialTreasuryRice >= 0 &&
+            (long)s.InitialSourceRice + s.InitialTreasuryRice == s.InitialRice, "Invalid initial accounts.");
+        Check(s.Orders.Select(o => o.RequestId).Distinct().Count() == s.Orders.Length &&
+            s.Orders.Select(o => o.CaseId).Distinct().Count() == s.Orders.Length, "Duplicate request/case.");
+        Check(s.Orders.All(o => !string.IsNullOrWhiteSpace(o.RequestId) && o.CaseId == o.RequestId + "/case" &&
+            world.Characters.ContainsKey(o.IssuerId) && world.Characters.ContainsKey(o.ExecutorId) && world.Castles.ContainsKey(o.CastleId) &&
+            o.Requested > 0 && o.Reserved >= 0 && o.Collected >= 0 && o.Collected <= o.Requested &&
+            (long)o.Reserved + o.Collected <= o.Requested && Enum.IsDefined(o.Phase) &&
+            (o.Phase == TaxPhase.Reserved ? o.Reserved > 0 && o.Collected == 0 : o.Reserved == 0) &&
+            (o.Phase is TaxPhase.Completed or TaxPhase.Partial ? o.Collected > 0 : o.Collected == 0) &&
+            (o.Phase != TaxPhase.Completed || o.Collected == o.Requested) &&
+            (o.Phase != TaxPhase.Partial || o.Collected < o.Requested) &&
+            (!o.Reported || o.Phase is TaxPhase.Completed or TaxPhase.Partial or TaxPhase.Refused or TaxPhase.Failed or TaxPhase.Cancelled)), "Invalid order state.");
+        Check(s.Orders.Sum(o => (long)o.Reserved) <= s.Accounts.Single(a => a.Id == "village").Balance, "Double reservation.");
+        long collected = s.Orders.Sum(o => (long)o.Collected);
+        Check(s.Accounts.Single(a => a.Id == "village").Balance == s.InitialSourceRice - collected &&
+            s.Accounts.Single(a => a.Id == "treasury").Balance == s.InitialTreasuryRice + collected, "Account/effect mismatch.");
+        var allIds = s.Pending.Select(e => e.Id).Concat(s.Applied).ToArray();
+        Check(allIds.Distinct().Count() == allIds.Length, "Duplicate pending/applied event.");
+        Check(s.Pending.All(e => Enum.IsDefined(e.Kind) && e.DueAt > s.Tick &&
+            s.Orders.Any(o => o.RequestId == e.RequestId && e.Id == EventId(o, e.Kind)) &&
+            e.DependsOn.All(s.Applied.Contains)), "Invalid pending event or causal dependency.");
+        Check(s.Applied.All(id => s.Orders.Any(o => Enum.GetValues<TaxEventKind>().Any(kind => EventId(o, kind) == id))), "Unknown applied event.");
+        Check(s.Deliveries.Select(d => d.Id).Distinct().Count() == s.Deliveries.Length && s.Knowledge.Select(k => k.Id).Distinct().Count() == s.Knowledge.Length, "Duplicate delivery/knowledge.");
+        Check(s.Deliveries.All(d => Enum.IsDefined(d.Kind) && s.Orders.Any(o => o.RequestId == d.RequestId) &&
+            world.Characters.ContainsKey(d.SenderId) && world.Characters.ContainsKey(d.RecipientId) && d.DueAt >= 0 &&
+            (!d.Delivered || d.DueAt <= s.Tick)), "Invalid delivery.");
+        Check(s.Knowledge.All(k => Enum.IsDefined(k.Kind) && k.LearnedAt <= s.Tick && k.LearnedAt >= 0 &&
+            s.Deliveries.Any(d => d.RequestId == k.RequestId && d.Kind == k.Kind && d.RecipientId == k.CharacterId && d.Delivered)), "Knowledge without reception.");
+        Check(s.Grants.All(g => world.Characters.ContainsKey(g.ActorId) && world.Castles.ContainsKey(g.TargetCastleId) &&
+            !string.IsNullOrWhiteSpace(g.Basis) && g.ValidFrom >= 0 && g.ValidUntil > g.ValidFrom), "Invalid authority reference.");
+        foreach (var o in s.Orders)
+        {
+            var pending = s.Pending.Where(e => e.RequestId == o.RequestId).ToArray();
+            var expected = o.Phase switch { TaxPhase.Dispatched => TaxEventKind.DeliverOrder,
+                TaxPhase.Received => TaxEventKind.Decide, TaxPhase.Reserved => TaxEventKind.Collect, _ => TaxEventKind.DeliverReport };
+            Check(o.Reported ? pending.Length == 0 : pending.Length == 1 && pending[0].Kind == expected, "Order/event phase mismatch.");
+            Check(o.Reported == s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == DeliveryKind.Report), "Report knowledge mismatch.");
+            Check((o.Phase is TaxPhase.Completed or TaxPhase.Partial) == s.Applied.Contains(EventId(o, TaxEventKind.Collect)) ||
+                (o.Phase == TaxPhase.Failed && s.Applied.Contains(EventId(o, TaxEventKind.Collect))), "Committed effect/event mismatch.");
+            Check(o.Reported == s.Applied.Contains(EventId(o, TaxEventKind.DeliverReport)), "Applied report mismatch.");
+            Check(s.Knowledge.Where(k => k.RequestId == o.RequestId).All(k =>
+                k.Kind == DeliveryKind.Order ? k.Amount == o.Requested && k.CharacterId == o.ExecutorId :
+                    k.Amount == o.Collected && k.CharacterId == o.IssuerId && k.Content == o.Reason), "Knowledge payload mismatch.");
+        }
+    }
+}

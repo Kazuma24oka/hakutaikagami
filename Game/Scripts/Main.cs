@@ -9,6 +9,7 @@ public partial class Main : Control
     private WorldState world = null!;
     private Label details = null!;
     private Label status = null!;
+    private Label castleDetails = null!;
     private string? selectedId;
     private readonly System.Collections.Generic.List<Button> buttons = new();
 
@@ -21,7 +22,11 @@ public partial class Main : Control
         var margin = new MarginContainer();
         margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) margin.AddThemeConstantOverride("margin_" + edge, 36);
-        AddChild(margin);
+        var tabs = new TabContainer();
+        tabs.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        AddChild(tabs);
+        margin.Name = "武将・城";
+        tabs.AddChild(margin);
         var column = new VBoxContainer();
         column.AddThemeConstantOverride("separation", 18);
         margin.AddChild(column);
@@ -46,14 +51,34 @@ public partial class Main : Control
         details = new Label { Text = "武将を選択してください", CustomMinimumSize = new Vector2(560, 245) };
         row.AddChild(details);
         column.AddChild(new HSeparator());
-        var castle = world.Castles.Values.Single();
-        var stock = world.Resources.Single();
-        column.AddChild(new Label { Text = $"城情報  /  {world.Definition.Castles.Single().Name}\n城ID：{castle.Id}    城主：{world.Definition.Characters.Single(c => c.Id == castle.LordId).Name}\n実効支配：{world.Definition.Organizations.Single().Name}\n保管資源：米 {stock.Rice}俵 / 金 {stock.Gold}   所有：{world.Definition.Organizations.Single().Name}" });
+        castleDetails = new Label();
+        column.AddChild(castleDetails);
         status = new Label { Text = $"Seed：{world.Definition.Seed}   世界時刻：{world.Tick}（進行未接続）\n検証用の管理表示です。正式なNPC認識・権限UIは未実装。", Modulate = new Color("a6b7c7") };
         column.AddChild(status);
+        RefreshCastle();
         SelectCharacter(world.Definition.Characters[0].Id);
         GD.Print("FOUNDATION_READY characters=3 castles=1 seed=" + world.Definition.Seed);
-        if (OS.GetCmdlineUserArgs().Contains("--smoke-test")) _ = SmokeTest();
+        var taxPanel = new TaxPanel { Name = "徴税・保存検証" };
+        tabs.AddChild(taxPanel);
+        taxPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
+        taxPanel.WorldChanged += updated =>
+        {
+            world = updated;
+            RefreshCastle();
+            SelectCharacter(selectedId ?? world.Definition.Characters[0].Id);
+            status.Text = $"Seed：{world.Definition.Seed}   世界時刻：{world.Tick}（徴税検証と共通）\n検証用管理表示。正式な認識制限付きUIは未実装。";
+        };
+        if (OS.GetCmdlineUserArgs().Contains("--tax-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.SmokeTest(); }
+        else if (OS.GetCmdlineUserArgs().Contains("--smoke-test")) _ = SmokeTest();
+    }
+
+    private void RefreshCastle()
+    {
+        var castle = world.Castles.Values.Single();
+        string owner = world.Definition.Organizations[0].Id;
+        var stock = world.Resources.Single(r => r.OwnerOrganizationId == owner);
+        string organizationName = world.Definition.Organizations.Single(o => o.Id == castle.ControllerOrganizationId).Name;
+        castleDetails.Text = $"城情報  /  {world.Definition.Castles.Single().Name}\n城ID：{castle.Id}    城主：{world.Definition.Characters.Single(c => c.Id == castle.LordId).Name}\n実効支配：{organizationName}\n鏡家の保管資源：米 {stock.Rice}俵 / 金 {stock.Gold}";
     }
 
     private void SelectCharacter(string id)
