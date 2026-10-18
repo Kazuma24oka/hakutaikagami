@@ -425,3 +425,7 @@
 - [ID・状態遷移・中断再開・失敗再試行・補償・保存復旧・P0責任分界のB優先案と未決定詳細](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)。
 - F01/F02/F03/F04/F07/F08、P0-A01〜A06、P1共通契約7項目・84項目統合と整合。新規Confirmed追加なし。
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
+
+## P1 ID生成・状態遷移・復旧境界の詳細（未確定・ABCD）
+- [採番・親子イベント・許可／禁止遷移・再試行限度・補償失敗・乱数保存・復旧受入の7項目](Proposals/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [P1 ID・状態・復旧のB優先案](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)、[共通契約](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)、[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
