@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "FRONT_IDLE_WALK_PROTOTYPE_AUTHOR_INSPECTED",
+  "status": "GODOT_FRONT_MOTION_AUTHOR_INSPECTED",
   "front_acceptance": "USER_PERMITS_PROVISIONAL_CONTINUATION_APPEARANCE_ISSUE_REMAINS",
   "plans": {
     "body-front-v1": {
@@ -21680,6 +21680,1088 @@
           }
         }
       }
+    },
+    "godot-front-motion-v5": {
+      "id": "godot-front-motion-v5",
+      "stage": "motion",
+      "contract_sha256": "8523e69bf623d6bc41b52fc1643c9e82b7ec4eb9d62e47ba7f2c572c8d9bd5b4",
+      "feedback": [
+        "Finish corresponding bare base, 64x96/1x, no face/hair/clothes, featureless skin pelvis; inspect actual overlay before showing",
+        "User: ひょろひょろで気持ち悪いけど、一旦これですすめてみて",
+        "Independent face/hair/armor and original appearance restore; base must survive removal unchanged",
+        "User requests8 removable armor parts at64x96/1x; original restore and bare base preservation with actual-image inspection",
+        "User requests front idle/walk using same eight armor slots at64x96/1x, actual moving inspection and removal joint/overlap checks before showing.",
+        "User requests Godot main-game integration,64x96/1x idle/walk, individual armor toggles, actual runtime verification and same-branch commit/push."
+      ],
+      "prior_failures": [
+        "Generic 4-head mannequin replaced original officer proportions and pose",
+        "SDXL interior mapped to zero changed pixels",
+        "Earlier hair mask consumed face features",
+        "Earlier clothed underlayer was not a bare base",
+        "Generation01 drifted pose and missed editable control pixels; assembly coverage check refused it without output",
+        "Actual hair-off inspection found forehead fringe-cast shadow marks and overly flat scalp; separate6 shadow pixels from protected facial features and retain bare-head underpaint",
+        "Actual isolated/removal board exposed misowned shoulder/coat/sword fringe pixels; refine source coordinate rows, do not accept source reconstruction alone",
+        "Isolated part inspection located exact shoulder/coat/scabbard edge pixels wrongly left in other slots; corrected explicit coordinates, no pixel deletion. Bound component counts now enforced."
+      ],
+      "change_scope": [
+        "Package unchanged V4 sheets and expected native hashes for independent C# compositor",
+        "Add actual game tab and standalone review scene; native1x and explicitly separate4x",
+        "Godot UI signal tests, real normal/slow playback, all12288 CPU states, actual GPU pixel comparison, resize keeps1x",
+        "Presentation animation independent from shared world simulation; no world logic changes"
+      ],
+      "preserve": [
+        "User: 64×96・1倍：これでいこう",
+        "6-head standing portrait remains separate artwork",
+        "One shared selection ID resolves authored small/portrait parts; no automatic shrinking",
+        "Bare skin-colored body, featureless pelvis; no face, hair, underwear or equipment baked in",
+        "Separate ownership, skin/lacquer palette, occlusion, control/weights, joint overlap and hidden construction",
+        "No native mouse tools; no cursor or OS input setting changes",
+        "No existing files deleted; main/design/foundation/Confirmed unchanged",
+        "Original officer image and source transform",
+        "all previous rejected files",
+        "No mouse input",
+        "Appearance remains provisional; skinny/unpleasant critique is not resolved or accepted"
+      ],
+      "unresolved": [],
+      "inputs": [
+        {
+          "path": "Art/Trials/OfficerScaleV1/front-review-source.png",
+          "sha256": "e80e43ceff78e07406814e7fd4edf78590049c9304898b804cd394f8030448ef"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+          "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/source-definition.json",
+          "sha256": "16041091cdeb34123d01036cedf927847a1039fbe78559a138bd877424b0de4d"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/body-guide.png",
+          "sha256": "a540632a3220798f4b9da1ac1ae655d21c820cc9063e3efa2126da9ca77b9bf9"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/body-guide-12x.png",
+          "sha256": "92fcb9e53ef55d791e4235751f8f37db29065a5aa15b66e125246099ff4a5b9b"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/reference-12x.png",
+          "sha256": "186b00d3cc80ca21940f2e808f3a8fe19f13eec9306c45d1fb721b5da8b8ebb0"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/ownership.png",
+          "sha256": "1d58b5fe3bc3bbccd3cc96da0f0d160bff192d36f1838f50f0fbd229cd4a9e0f"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/edit-mask.png",
+          "sha256": "2103ae9bbafc29738baf9ff66a2a4865f7a31f1505895d1b7c811e11310c965c"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/preserve-mask.png",
+          "sha256": "2ed3f13e9ff711826df19efc1b6d9df0873b9c51a341405792feaf284c2b2cbf"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/observed-skin.png",
+          "sha256": "7bb1c208c8098ec92046abf0f4d9f9cbc9c4059b765ba59bb80d6f507310585a"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/feature-exclusion.png",
+          "sha256": "1c8d457f21d89eb2441849af35f8766e4b1887454a8e18016455ef9c8cec3f38"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/controls/hidden-construction.png",
+          "sha256": "a777df5ebf6db03c317774c41cedf5901635d8ee8db16b7f526f4a490e20cb63"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/prompt.txt",
+          "sha256": "422ce3991bd10a9d52727e27bb3b42dbcb52d2a74a291ad3b18fdb49abbddb62"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/prompt-02.txt",
+          "sha256": "c6d99752320f9579203c71445cc2924db17acb25ce7b3dfdff60655e0dbe6e24"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/generated-material-02.png",
+          "sha256": "eec9b8c4da57e9f87e43482d746a6cb0fa42f2ffa0e421b0e9377da5a53c48ca"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+          "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-mask.png",
+          "sha256": "d15a86d50164adf72801ac11974bae77944260038e065d87b0490c849d7a5889"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/edit-mask.png",
+          "sha256": "2103ae9bbafc29738baf9ff66a2a4865f7a31f1505895d1b7c811e11310c965c"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/empty-mask.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/feature-exclusion.png",
+          "sha256": "1c8d457f21d89eb2441849af35f8766e4b1887454a8e18016455ef9c8cec3f38"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/head-protection.png",
+          "sha256": "549a484b1d1b1f3cb6322cb60563e22620e6a88786609014af827d16b2c265f8"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/hidden-construction.png",
+          "sha256": "a777df5ebf6db03c317774c41cedf5901635d8ee8db16b7f526f4a490e20cb63"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/observed-skin.png",
+          "sha256": "7bb1c208c8098ec92046abf0f4d9f9cbc9c4059b765ba59bb80d6f507310585a"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/ownership.png",
+          "sha256": "1d58b5fe3bc3bbccd3cc96da0f0d160bff192d36f1838f50f0fbd229cd4a9e0f"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/abdomen.png",
+          "sha256": "187e7e70556f2851a830e03e7aa842d429d00a1f33b612e5d4327954614ddfd7"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/calf_left.png",
+          "sha256": "a5b9b855bcb19b04a33119389aab2d61b0b4ebe86be12499cdf512a6438d26b1"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/calf_right.png",
+          "sha256": "06b3dd587ce46b42fca2b58dc2c928e08811302d0c4ea1594af0d309a5e30f95"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/chest.png",
+          "sha256": "dc2443a23bfb4bdd371e7537f3fd1ea5ae452f7a0ce39766fc938bf1ac288d5e"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/foot_left.png",
+          "sha256": "ce1ff7886023c5965ded26c290374b8d7a93a6ef6ecb9de23bdc37a21435944d"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/foot_right.png",
+          "sha256": "b56ed7a9c073273f568ed4d4d1903e3a93bc215c9901b325510ca6e8315778a7"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/forearm_left.png",
+          "sha256": "e116304399b7f5490d83176f0cd7400ef0b74fdb8370de8cd7fc4d99307050ae"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/forearm_right.png",
+          "sha256": "76efa0f510fe7e7883fe7c14154fb3a1102c4c57016a871876a3ecb27a70a469"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/hand_left.png",
+          "sha256": "a5ca77aa959349e3474265c8226c9a8c8f184163b66cc42b6890b5c2128d7d85"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/hand_right.png",
+          "sha256": "d93399d6e4deafe6f024438e282238970d9eb36667368639e591da4852257bb0"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/head.png",
+          "sha256": "8bc35df99f9598844411888c7f7af7969e7c501ab17a0b54dc0747883b185b17"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/neck.png",
+          "sha256": "d5e69e7ce267bed78067bc08bb4a4dace050b6e94d2f31a7052af3e8580cd27a"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/pelvis.png",
+          "sha256": "e076575c97f4783470f48b7aac4777bc5249f6e4496bfe9315b732b412532e0a"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/thigh_left.png",
+          "sha256": "c314b61f0faa226d695d5cf5943660c1ead78d710c8b51eda47e30a7edd68850"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/thigh_right.png",
+          "sha256": "327944f39e60528eff78c3eb7d5bc5c5c7b2eb3dd7ce51febc6b2800221f70d5"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/upper_arm_left.png",
+          "sha256": "3e1e1704e06e5f3cb23547ab8f8d63fb3423c196df996426b047ab307aa7b174"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/upper_arm_right.png",
+          "sha256": "351d7abc969a2ac4131f0e472ad06d14834e678cc5c55584cf9e60d88e38d01d"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/preserve-mask.png",
+          "sha256": "2ed3f13e9ff711826df19efc1b6d9df0873b9c51a341405792feaf284c2b2cbf"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/skin-mask.png",
+          "sha256": "d15a86d50164adf72801ac11974bae77944260038e065d87b0490c849d7a5889"
+        },
+        {
+          "path": "Art/Officer/BodyBaseV2/candidate-bundle.json",
+          "sha256": "71a30dcfd016842aa49dfe549500b101b5b2fd53399fd0efd2d878e4f5e8949e"
+        },
+        {
+          "path": "Art/Officer/EquipmentPartsV2/part-definition.json",
+          "sha256": "9c7d326dc09bb55e2e3631e8ac7cbf0b1f61cc1e69f569b895fab98ef9a3ae65"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/armor-body-occlusion.png",
+          "sha256": "5be9979386bf0c47adc0c79d7bd1b6dc6131fc8a5334377a160905b4424ea452"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/armor.png",
+          "sha256": "542f0fff2cbb92603e6147f71d1a57b4de6124f55ab17bcfab1a96893bec679c"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-armor-face-hair.png",
+          "sha256": "0ead6e73d24877597b76e49096959af396d25a96a587971f5d0d353d9f420625"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-armor-face.png",
+          "sha256": "e9f06741426cd1aa812002e0de84ac4a0a4c3e941c004ad4fc51d2da6b47b09e"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-armor-hair.png",
+          "sha256": "cf16ddaaa86a2c27428968cbc462520950771a217d8c2084036ec54920ec3ad5"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-armor.png",
+          "sha256": "10dcfeac5dafa33305e41bd1901d883f4458247cfa6f4c1b99932f171c7603e3"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-base.png",
+          "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-face-hair.png",
+          "sha256": "a89cb3ca7e3da5a433ae64afedb0928d261b49129d34596c4a2470653b53749d"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-face.png",
+          "sha256": "0b3bbf1db369c874e90091e2544550d6d0583319a816bf6b97a208dd77f8b0b8"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/composite-hair.png",
+          "sha256": "0da8db496f6a7f62e855bed3f8bedf628c71ed3b8dae89e5fa16097bb2093c7e"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/face-hidden-completion.png",
+          "sha256": "4aaee94f234183d4af297ea1cbf0ce7dab5d944c3e2efd0c52506054af2d6c7e"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/face-observed.png",
+          "sha256": "cf1e50e636987510273a69d39b19a4e29ca57cdb62be5192e1b866823cf76fcf"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/face.png",
+          "sha256": "1c1a7be7c65014789e5f0b5cc7497d3e9ca1e299c778b66e192a395ef8d0d511"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/hair-cast-shadow.png",
+          "sha256": "730fa9b2fa0f88f18253408fafd3c24ab3a4fb79f90ade3c9dacab400581dbdf"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/hair.png",
+          "sha256": "3afaf6d77d56ddd19ca87b38845922c992f57c9d5330f4516881bfe6289c3716"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/protected-features.png",
+          "sha256": "cd48b18d8090a6907726bcbd4263409b25899c2a6c7fb6bad306b85ddf62e64a"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerEquipmentV2/source-owners.png",
+          "sha256": "28ffc47c0d8bc05892d9b1b99d942091694bb04a08401eb087d648f084b41654"
+        },
+        {
+          "path": "Art/Officer/ArmorSplitV3/part-definition.json",
+          "sha256": "a4cf71de90159626ab966dd04d383f7eea11fe679229687e31b7741b7ca8c479"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms-hidden.png",
+          "sha256": "d052642ab61d7cb695ec7d5785801428835371f3988105057558ab0c63f776d7"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms-occlusion.png",
+          "sha256": "47d3faacbb015d0b229055d339934cbf3f285f359741f9950bb94d016fc9537b"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms.png",
+          "sha256": "da4499a6a1a87914bd3c3f3bd4558a97dd831e0d6c6b3be19a1df45186905bdf"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/bare-hands-front.png",
+          "sha256": "49434be01f68cb1f4fa7e9e1afed9227106f6583acee57c5827528207adf15f7"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat-hidden.png",
+          "sha256": "86a0e8e00f5e6ffecf5b9b895d2c971b28236214ad3ca2e8db1d10b48f56514b"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat.png",
+          "sha256": "a6e104a8c22a4de846f8db5dc46ada51f9ac15cb1958fb612faaf6a74ee3564f"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-armor-off.png",
+          "sha256": "a89cb3ca7e3da5a433ae64afedb0928d261b49129d34596c4a2470653b53749d"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-base.png",
+          "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-full.png",
+          "sha256": "0ead6e73d24877597b76e49096959af396d25a96a587971f5d0d353d9f420625"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-arms.png",
+          "sha256": "0783d946079cf01db444bbd700a9288bff15833fd53d9ea6e2a57007f400545c"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-coat.png",
+          "sha256": "58fd624ade29bdf22fee21b3db59a38d1061651f32780809d0e168f1cefe6b2a"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-footwear.png",
+          "sha256": "f0e95644e35fdfb73ed7f2bb013427ebb0c5e58527cd58ae320f7b5c17e969fa"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-legs.png",
+          "sha256": "aba471169ce7b1dde8ab00242a3c15114c1da32fdb1f4f63878a0130a1cc2d5a"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-shoulders.png",
+          "sha256": "3740b2e0b75017790201cb4bab7561676bae7a4a9f3f88cc1aada3cfa88f2e43"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-sword.png",
+          "sha256": "224973a981681fb4fd79ab274d264f2dff2517db87c3534de00889c83d0f2e47"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-torso.png",
+          "sha256": "9519e055717107cfa6f386beb0c90f4c5cac825abb0d79daffcfac28381cdb51"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-waist.png",
+          "sha256": "43c2bc936ba454d79f63903c68266491964b3e91faaee751404555ff4237cf3d"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-arms.png",
+          "sha256": "6724485a3dd92c4a8924cf55a574a45f28a5e7a6406cba9711b66a838a9e5ed6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-coat.png",
+          "sha256": "6e960f315ca4944a210aab14bfe2c6418903af008053fbfe3ada3103a017ec3e"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-footwear.png",
+          "sha256": "6282fa85448671e91281b6a0247dd228d242a83dbb74688df87a1453f53d4f53"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-legs.png",
+          "sha256": "7d90e8a3e452062842e8fe794e275ca505bd7613c9dd619b39f789d944a2fee5"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-shoulders.png",
+          "sha256": "f7552dcef6d3f237c1f09629d7ef5bc45fd2599318033a4c13a66079b12f32ea"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-sword.png",
+          "sha256": "ff94b629c2ebc4008bcfa15876e30da27e57a55db669871ccf2e7cf889e64b48"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-torso.png",
+          "sha256": "bb978afee7aa7e87a13e2b7bb6d19d8325bdbab36dced653f6d501828c574709"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-waist.png",
+          "sha256": "1416b657b5efa00f06b9d39545466891e1d5892ce75c110bcda257fb8a3d41e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear-hidden.png",
+          "sha256": "1f4a3e04e46c75948435cc0836a3cb4da786217dff0b1efacc81adbf9aa6b1c7"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear-occlusion.png",
+          "sha256": "ecaa85f8167ad98dbe07502f738c44ac2d61a8f1e950a634853063020a541151"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear.png",
+          "sha256": "923cf4b96ca51356be75ecf1967eafd6ff4b39d4d49773d8ace366e548e84de4"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs-hidden.png",
+          "sha256": "add41449ebebc70a5a8c6bdbec5702c3a39f76ebf227c4934701240b10c9ce33"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs-occlusion.png",
+          "sha256": "42aab2e60d1eeb44706c1c10b625a92d61accb58dd66e2ec1586c4d5464741b4"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs.png",
+          "sha256": "50e8436ee098191b29767749473066880c49a4f8961ce6a7a4d42acca41d88ab"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders-hidden.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders.png",
+          "sha256": "5f45b454892b1ead8b9b04da8e63da2712080bd879149a0d9edcb5408242a1dd"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/source-owners.png",
+          "sha256": "e3dba5f000a118dcc9befe06443424c81eb7220e6db5123eddee4028b733cc06"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword-hidden.png",
+          "sha256": "b815fffe5f9abeca8711d1641d940d34952e3255e3ccc1ef6a88c043304194bd"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword.png",
+          "sha256": "e08acaccef28647cdaabe6153695e83df3c17d3394f61656facc82ca49b5ed8b"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso-hidden.png",
+          "sha256": "1e8dc796fc2bd2cfb698ca7117327ae5effdbcdab4434742b311c2c42854fe51"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso.png",
+          "sha256": "c382e4b6d0b6e114aa4bee039a61e786baae4f5a787b510b323a6acca873a35c"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist-hidden.png",
+          "sha256": "0df1730ed82184bd13ace72dc68b5e58c9af8d2467661cd110643b81d48a7a5e"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist.png",
+          "sha256": "c070d77f7b4e30c2f70af8edac98b3f3c84eb22e782e31b08a6793bfc3e89c0d"
+        },
+        {
+          "path": "Art/Officer/FrontMotionV4/rig.json",
+          "sha256": "62f94e47b8c33990ece0d50f40c7da38050fe596ee257694b847da5836ae0ec1"
+        },
+        {
+          "path": "Art/Officer/FrontMotionV4/manifest.json",
+          "sha256": "8e1227a5172053c927f8b3a9c641df00c280534ff257991c48dd21b15e5e17a8"
+        },
+        {
+          "path": "Art/Officer/FrontMotionV4/combination-hashes.json",
+          "sha256": "c1241b598e53c6c9c51c067517d9a592176ebaeb38ee5de71e02bef09a1f324e"
+        },
+        {
+          "path": "Art/Officer/FrontMotionV4/appearance-review.json",
+          "sha256": "25a8b9cf333fc7e8465f588f6aa8345469e7c86a23ad268983f6e8fab58d50cb"
+        },
+        {
+          "path": "Art/Officer/FrontMotionV4/browser-validation.json",
+          "sha256": "59aab2c46ca106435e62f6b7063ec6e6de9c03f6705f16b3190c3639bd7d629a"
+        }
+      ],
+      "tools": [
+        {
+          "path": "Scripts/build_officer_source_body.py",
+          "sha256": "615199c76d8924c1c55d1746471bcc30194cf1537e9da52c84113329a24ae06c"
+        },
+        {
+          "path": "Scripts/officer_art_pipeline.py",
+          "sha256": "9edbc2511efd660d0895a5798b626365d251c53e05d754d957a98ec9b1c31865"
+        },
+        {
+          "path": "Scripts/review_officer_source_body.py",
+          "sha256": "ff53c481d45d3295745faded77b945ed667ca607270c473cf68e70a1e69114cb"
+        },
+        {
+          "path": "Scripts/review_officer_body_layers.py",
+          "sha256": "3cbeeaf19e2b1fdc445afaa47d7f51d3adaa51f75dc3d108a63c9d25b8723214"
+        },
+        {
+          "path": "Scripts/build_officer_equipment_parts.py",
+          "sha256": "cc42da6c232112030384cde747776c3b10770c384115319a6909103c13668045"
+        },
+        {
+          "path": "Scripts/officer_armor_layers.py",
+          "sha256": "c2027c90c1c5ae7c5665503fd9d46caefd74bf11d51626c7d82bfe6596b2fe67"
+        },
+        {
+          "path": "Scripts/build_officer_armor_parts.py",
+          "sha256": "fdf460b188a739a382ff5f68f289d2dd32329c4a9d594010d87a88a8bf54fe7e"
+        },
+        {
+          "path": "Scripts/officer_front_motion.py",
+          "sha256": "5345ff5a585f8e8c1a2cd98eebf448c95870acacbdcd85cf8b811dd864d4e629"
+        },
+        {
+          "path": "Scripts/build_officer_front_motion.py",
+          "sha256": "b21127e45802dc77790af2db7434a255dc70e75e2a5c8575b4cce3bcca23021b"
+        },
+        {
+          "path": "Scripts/officer_front_motion_page.html",
+          "sha256": "6d5fa85faf0b996fdccf749349506f0e2a57e529ef4c280d146f0965348ed822"
+        },
+        {
+          "path": "Scripts/verify_officer_front_motion.cjs",
+          "sha256": "14566a06e83bdc7151e271cd9f846d3a5f99afa3f06e575ac18bdc46d2a196fa"
+        },
+        {
+          "path": "Game/Scripts/Main.cs",
+          "sha256": "29962d69c0a0c49be8223fb43714411064246376fa6b4184382edb1aa5e3b20c"
+        },
+        {
+          "path": "Game/Scripts/OfficerMotionFrames.cs",
+          "sha256": "c13e3390d8ab3888b6d90148f63c28c142b37d729cb20a489b84460dd8ad5070"
+        },
+        {
+          "path": "Game/Scripts/OfficerMotionTrial.cs",
+          "sha256": "5827d8a2f3a6b26e0971d0c8dad07f8d05254b316383d614fca975fd7b9a6f9a"
+        },
+        {
+          "path": "Game/Scenes/OfficerMotionTrial.tscn",
+          "sha256": "df818bc415f01b32d9e653f2488e7fde71b41510a8382ad7b3bc90892574feeb"
+        },
+        {
+          "path": "Game/project.godot",
+          "sha256": "5d9ab40268d29a83695f043e62c00b2d625978365cb689f3d1760ea6fd232340"
+        },
+        {
+          "path": "Game/HakutaiKagami.Game.csproj",
+          "sha256": "797e54a65426d8fe91ebd476304eed452427d721dbfe6437423b1b30994bbe07"
+        },
+        {
+          "path": "Scripts/prepare_officer_godot_motion.py",
+          "sha256": "c50d67e3fecd9867e5f6d988dbe08053f96ea246ac92c6e0ffb05fffec855cb7"
+        },
+        {
+          "path": "Scripts/Validate-OfficerGodotMotion.ps1",
+          "sha256": "d5b74843869cb1dd0bfc5722515c918f77c4836ad12bb90680233cadb05a3eef"
+        }
+      ],
+      "references": [
+        {
+          "path": "Art/Officer/appearance-reference.json",
+          "sha256": "f1c4431bb1121538a5cbb4f4a6db604a716158b8754a0f01ab5cb716e0a13317"
+        },
+        {
+          "path": "Docs/Proposals/OFFICER_SOURCE_CORRESPONDENCE_REPAIR.md",
+          "sha256": "f0951604ecfd0113310c9badc553b7e432dbeaede13e693e569ce2ddc7330449"
+        },
+        {
+          "path": "Docs/Proposals/OFFICER_ART_PRODUCTION_AUDIT.md",
+          "sha256": "4baff2e89c913ee6e22b6247521f807c5564dabe381914bd4b1ea84ced4690f8"
+        },
+        {
+          "path": "Art/Officer/EquipmentPartsV2/source-head-grid.png",
+          "sha256": "d13f8898d50eeb4048bfe5c5b51e949da17b844fd2d11760f81bf50773a01c13"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-equipment-v2.png",
+          "sha256": "31f5d1cee44c6895cdd4565a9c59a62a1dda9e000589c867ae09b06c39c981c0"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-equipment-browser.png",
+          "sha256": "3f32b3e09ccee53fef2faa0a3b715fd571dcb8ae6434c4abb2ee2d95ee457cf7"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-equipment-hair-off-browser.png",
+          "sha256": "1bafd1990a599aa15fcbabdf9cdb306b6ede00dd738e113c2e14932c3c70d805"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-equipment-white-black.png",
+          "sha256": "4c8bf0c889c4591b34787e76fe6b7744f2c0d2335277ba50b404f18a4022983d"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-armor-isolated-v3.png",
+          "sha256": "43c8f43009eb7d579005444ab85770be001bc0b21dc3f1bf640333a50c28e7d0"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-armor-removal-v3.png",
+          "sha256": "e309a9ff2e21ec21880e19d7e67ce99ef1615c6354d4664f6099e99389115491"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-armor-browser-v3.png",
+          "sha256": "8911d3a34338f0e03afddd6f082ac971bba781ffa59051bb753db3c77952e378"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-armor-white-v3.png",
+          "sha256": "0dc9fd9b54b08b8d92d045af357f8705817855554972fe3cf91bda8d4fe77568"
+        },
+        {
+          "path": "Docs/Proposals/Evidence/officer-armor-black-v3.png",
+          "sha256": "c5ac7429bf14e3c6ad0deb5c00e1c0b6f7bcc663ac064bdd5cb75b4e2f881e9e"
+        },
+        {
+          "path": "Docs/Proposals/OFFICER_ARMOR_SPLIT_V3.md",
+          "sha256": "ca2a9c5a26560e5f9eeb90fbe564154872c88f373a2871f06031e742f838b80b"
+        },
+        {
+          "path": "Art/Officer/ArmorSplitV3/part-manifest.json",
+          "sha256": "5e00f7117a425cb02b2a7c2bf19d6f9662875b2bb0d5131a9863e8cb211d610a"
+        },
+        {
+          "path": "Art/Officer/ArmorSplitV3/appearance-review.json",
+          "sha256": "58c9c64225faea54822f4f365523a526fd59081821e94c76941cd3c1bb6d1732"
+        },
+        {
+          "path": "Art/Officer/FrontMotionV4/reference-notes.json",
+          "sha256": "918a1f77c5d788d8e4ac362b4813b8b6328cd41ebb363f14bf0a3baa1fc71b6b"
+        }
+      ],
+      "regressions": {
+        "dimensions": "Actual Godot sprite64x96 scale1 nearest, canvas stretch disabled. Verify integer canvas transform and resized viewport1280x800; independent4x diagnostic only.",
+        "face_identity": "Blank head only; compare head contour/pose with original, no facial features baked in",
+        "color_texture": "Inspect native+enlarged body for original-style contour and readable skin clusters; no armor/clothing residue",
+        "alpha_edges": "binary alpha, fixed transparent silhouette, white/black/checker actual PNG",
+        "part_ownership": "17 part coverage and exact neutral reassembly; no face/hair/clothes owners",
+        "occlusion": "Source armor overlap inspected; hidden anatomy remains authored, no historical armor extraction claim",
+        "gait_contact": "Preserve same contact-tested V4 maps. Verify actual Godot normal/slow loops, paused stepping and live toggles; GPU silhouette/frame pixel comparison; no claim of world movement.",
+        "cross_direction": "Only requested front view; no all-direction adoption inferred."
+      },
+      "retained_decisions": {
+        "size": "User: 64×96・1倍：これでいこう",
+        "portrait": "6-head standing portrait remains separate artwork",
+        "selection": "One shared selection ID resolves authored small/portrait parts; no automatic shrinking",
+        "base": "Bare skin-colored body, featureless pelvis; no face, hair, underwear or equipment baked in",
+        "masks": "Separate ownership, skin/lacquer palette, occlusion, control/weights, joint overlap and hidden construction",
+        "safety": "No native mouse tools; no cursor or OS input setting changes",
+        "preservation": "No existing files deleted; main/design/foundation/Confirmed unchanged"
+      },
+      "backend": {
+        "name": "builtin-imagegen",
+        "prompt": {
+          "path": "Art/Officer/BodyBaseV2/prompt-02.txt",
+          "sha256": "c6d99752320f9579203c71445cc2924db17acb25ce7b3dfdff60655e0dbe6e24"
+        },
+        "transparent_background": true,
+        "reference_images": [
+          {
+            "path": "Art/Officer/BodyBaseV2/History/generated-inputs-02/body-guide-12x.png",
+            "sha256": "c7c1183b5164635933fcdfc03e8e5ef9b31ae5a765207da585212b567556779f"
+          },
+          {
+            "path": "Art/Trials/OfficerScaleV1/front-review-source.png",
+            "sha256": "e80e43ceff78e07406814e7fd4edf78590049c9304898b804cd394f8030448ef"
+          }
+        ],
+        "seed": "NOT_EXPOSED_BY_TOOL",
+        "model_version": "NOT_EXPOSED_BY_TOOL",
+        "repeatability": "Archive raw output and deterministic assembly settings; do not claim identical fresh model reruns",
+        "assembly_note": "Reference list retains actual generation02 inputs; current controls differ only in manually authored head/pelvis shading. Model was not rerun. All masks and source pose remain fixed."
+      },
+      "registration": {
+        "scale_xy": [
+          1,
+          1
+        ],
+        "translate": [
+          0,
+          0
+        ],
+        "per_part_fit": false,
+        "per_frame_fit": false
+      },
+      "landmarks": {
+        "scalp_top": {
+          "kind": "authoring-target",
+          "xy": [
+            29,
+            13
+          ],
+          "basis": "Author construction below hair using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "chin": {
+          "kind": "authoring-target",
+          "xy": [
+            29,
+            32
+          ],
+          "basis": "Author construction below beard using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "neck": {
+          "kind": "authoring-target",
+          "xy": [
+            30,
+            34
+          ],
+          "basis": "Author construction below collar and beard using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "shoulder_right": {
+          "kind": "authoring-target",
+          "xy": [
+            21,
+            38
+          ],
+          "basis": "Author construction below shoulder armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "shoulder_left": {
+          "kind": "authoring-target",
+          "xy": [
+            41,
+            38
+          ],
+          "basis": "Author construction below shoulder armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "elbow_right": {
+          "kind": "authoring-target",
+          "xy": [
+            14,
+            49
+          ],
+          "basis": "Author construction below sleeve and kote using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "elbow_left": {
+          "kind": "authoring-target",
+          "xy": [
+            48,
+            49
+          ],
+          "basis": "Author construction below sleeve and kote using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "wrist_right": {
+          "kind": "authoring-target",
+          "xy": [
+            10,
+            61
+          ],
+          "basis": "Author construction below gauntlet using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "wrist_left": {
+          "kind": "authoring-target",
+          "xy": [
+            49,
+            61
+          ],
+          "basis": "Author construction below gauntlet using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "pelvis": {
+          "kind": "authoring-target",
+          "xy": [
+            30,
+            63
+          ],
+          "basis": "Author construction below kusazuri and belt cloth using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "knee_right": {
+          "kind": "authoring-target",
+          "xy": [
+            20,
+            77
+          ],
+          "basis": "Author construction below knee armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "knee_left": {
+          "kind": "authoring-target",
+          "xy": [
+            41,
+            77
+          ],
+          "basis": "Author construction below knee armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "ankle_right": {
+          "kind": "authoring-target",
+          "xy": [
+            19,
+            87
+          ],
+          "basis": "Author construction below shin guard and boot using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "ankle_left": {
+          "kind": "authoring-target",
+          "xy": [
+            43,
+            87
+          ],
+          "basis": "Author construction below shin guard and boot using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "sole_right": {
+          "kind": "authoring-target",
+          "xy": [
+            17,
+            91
+          ],
+          "basis": "Author construction below boot sole thickness using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        },
+        "sole_left": {
+          "kind": "authoring-target",
+          "xy": [
+            44,
+            91
+          ],
+          "basis": "Author construction below boot sole thickness using adjacent visible face and original clothed pose; not a measurement of bare anatomy"
+        }
+      },
+      "appearance_correspondence": {
+        "reference_sha256": "f1c4431bb1121538a5cbb4f4a6db604a716158b8754a0f01ab5cb716e0a13317",
+        "registration": {
+          "uniform_scale": 0.1925601750547046,
+          "translate": [
+            4.0787746170678325,
+            2.0743982494529547
+          ]
+        },
+        "targets": {
+          "scalp_top": [
+            29,
+            13
+          ],
+          "chin": [
+            29,
+            32
+          ],
+          "neck": [
+            30,
+            34
+          ],
+          "shoulder_right": [
+            21,
+            38
+          ],
+          "shoulder_left": [
+            41,
+            38
+          ],
+          "elbow_right": [
+            14,
+            49
+          ],
+          "elbow_left": [
+            48,
+            49
+          ],
+          "wrist_right": [
+            10,
+            61
+          ],
+          "wrist_left": [
+            49,
+            61
+          ],
+          "pelvis": [
+            30,
+            63
+          ],
+          "knee_right": [
+            20,
+            77
+          ],
+          "knee_left": [
+            41,
+            77
+          ],
+          "ankle_right": [
+            19,
+            87
+          ],
+          "ankle_left": [
+            43,
+            87
+          ],
+          "sole_right": [
+            17,
+            91
+          ],
+          "sole_left": [
+            44,
+            91
+          ]
+        }
+      },
+      "stage_scope": "Godot front runtime integration only; current provisional body and small in-place clips retained",
+      "generator_invoked": false,
+      "processing": "Deterministic native sheet consumption and C# composition. No image generation, mask editing, fitting or repacking of source PNGs.",
+      "front_review": {
+        "binding": "2eb788037a6d57449b60bebc508f8566eedb2171fc13b02d46c3463a8af188c0",
+        "status": "PASS",
+        "scope": "Author front technical/semantic inspection; no user aesthetic adoption",
+        "checks": {
+          "base_body": {
+            "status": "PASS",
+            "reviewer": "Codex actual images and browser screenshots",
+            "observation": "All equipment disabled restores actual naked body PNG exactly; original body SHA remains fixed. Thin/unpleasant appearance issue is retained as provisional, not accepted.",
+            "evidence": [
+              {
+                "path": "Docs/Proposals/Evidence/officer-equipment-v2.png",
+                "sha256": "31f5d1cee44c6895cdd4565a9c59a62a1dda9e000589c867ae09b06c39c981c0"
+              }
+            ]
+          },
+          "face_on": {
+            "status": "PASS",
+            "reviewer": "Codex actual images and browser screenshots",
+            "observation": "Actual front has copied original eyes/brows/nose/mouth/beard and completed hidden scalp underpaint. Full source appearance matches2722 visible pixels.",
+            "evidence": [
+              {
+                "path": "Docs/Proposals/Evidence/officer-equipment-browser.png",
+                "sha256": "3f32b3e09ccee53fef2faa0a3b715fd571dcb8ae6434c4abb2ee2d95ee457cf7"
+              }
+            ]
+          },
+          "hair_off": {
+            "status": "PASS",
+            "reviewer": "Codex actual images and browser screenshots",
+            "observation": "Inspected actual hair-off screenshot: eyes/brows and beard remain; manually separated6 forehead cast-shadow pixels disable with hair; scalp contour/skin remains.",
+            "evidence": [
+              {
+                "path": "Docs/Proposals/Evidence/officer-equipment-hair-off-browser.png",
+                "sha256": "1bafd1990a599aa15fcbabdf9cdb306b6ede00dd738e113c2e14932c3c70d805"
+              }
+            ]
+          },
+          "native_scale": {
+            "status": "PASS",
+            "reviewer": "Codex actual images and browser screenshots",
+            "observation": "Actual browser native pair64x96, enlarged256x384; all8 native/large states match PNGs; page errors0.",
+            "evidence": [
+              {
+                "path": "Docs/Proposals/Evidence/officer-equipment-browser.png",
+                "sha256": "3f32b3e09ccee53fef2faa0a3b715fd571dcb8ae6434c4abb2ee2d95ee457cf7"
+              }
+            ]
+          },
+          "white_black_checker": {
+            "status": "PASS",
+            "reviewer": "Codex actual images and browser screenshots",
+            "observation": "Inspected white/black exported states and checker browser screenshot, including equipped, bald, and all-off. No base pixels modified. Original reference edge colors retained, not a newly generated silhouette.",
+            "evidence": [
+              {
+                "path": "Docs/Proposals/Evidence/officer-equipment-white-black.png",
+                "sha256": "4c8bf0c889c4591b34787e76fe6b7744f2c0d2335277ba50b404f18a4022983d"
+              }
+            ]
+          }
+        }
+      },
+      "parts_review": {
+        "binding": "2eb788037a6d57449b60bebc508f8566eedb2171fc13b02d46c3463a8af188c0",
+        "status": "PASS",
+        "reviewer_scope": "Codex actual PNG inspection of current bound front probes only; no user aesthetic adoption",
+        "checks": {
+          "contours": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Viewed current eight frame equipment/removal board; original silhouette at neutral preserved; small leg lifts have continuous upper-lower contours.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+                "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+              }
+            ]
+          },
+          "isolated_parts": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Viewed all eight individual transformed slot strips. Paired shoulders/arms/footwear retained; rigid sword remains straight.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/isolated-motion-probes.png",
+                "sha256": "44a948b09d80571ddc6852272a2ea66afbacf45f75c0c4b9e8134500dfe8600e"
+              }
+            ]
+          },
+          "removed_parts": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Viewed all eight individual-off strips and bare-body strip, including wrist/knee/ankle revealed by removal.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+                "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+              }
+            ]
+          },
+          "displacement": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Viewed current joint markers over bare body all eight phases. Source joints are authored hidden targets; not measurement. No detached upper/lower limb ends in bounded displacement.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/joint-probes.png",
+                "sha256": "7e0638a3febcd92c9e38f7537f7824ea0e086897d978e22a80ffc7f3d54f86d8"
+              }
+            ]
+          },
+          "overlap_hidden": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Viewed current coat-off/shoulder-off and gloves-off strips. Same lookup for body, gear and visibility; bounded static hidden completions move with surface. Hands redraw in foreground when gloves absent.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+                "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+              }
+            ]
+          }
+        }
+      },
+      "directions_review": {
+        "binding": "2eb788037a6d57449b60bebc508f8566eedb2171fc13b02d46c3463a8af188c0",
+        "status": "PASS",
+        "reviewer_scope": "Codex actual PNG inspection of current bound front probes only; no user aesthetic adoption",
+        "checks": {
+          "all_requested_views": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "User requested only front. Current full/bare/removal probes are front; no other direction generated or approved.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+                "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+              }
+            ]
+          },
+          "character_sides": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Screen-left is character right, screen-right character left; markers and alternating lifted leg inspected.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/joint-probes.png",
+                "sha256": "7e0638a3febcd92c9e38f7537f7824ea0e086897d978e22a80ffc7f3d54f86d8"
+              }
+            ]
+          },
+          "occlusion": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Current front rank remains body/face/footwear/legs/torso/waist/coat/sword/arms/shoulders/conditional hands/hair; no crossover depth phase in this small motion.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+                "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+              }
+            ]
+          },
+          "proportions": {
+            "status": "PASS",
+            "reviewer": "Codex actual current probe PNGs",
+            "observation": "Head/face cluster translates without rescaling. Same source body kept; provisional skinny-body criticism remains unresolved aesthetically.",
+            "evidence": [
+              {
+                "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+                "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+              }
+            ]
+          }
+        }
+      }
     }
   },
   "accepted_scope": [
@@ -21972,7 +23054,7 @@
   },
   "current_equipment_plan": "equipment-parts-final",
   "current_character_trial": {
-    "id": "officer-front-motion-v4",
+    "id": "officer-godot-motion-v5",
     "page": "Docs/Proposals/officer-motion-review.html",
     "parts": [
       "胴",
@@ -21986,10 +23068,13 @@
     ],
     "source_face_hair": "EquipmentPartsV2 unchanged",
     "base": "OfficerBodyBaseV2 unchanged and provisional",
-    "acceptance": "Author inspected bounded front motion; user aesthetic review pending",
-    "motion": "FRONT_IDLE4_WALK8_PROTOTYPE_ONLY",
+    "acceptance": "Author inspected Godot front runtime; user aesthetic review pending",
+    "motion": "FRONT_IDLE4_WALK8_NATIVE1X_GODOT_TRIAL",
     "previous_static_trial": "officer-armor-split-v3",
-    "source_parts": "ArmorSplitV3 eight slots unchanged; native sheets are derivatives"
+    "source_parts": "ArmorSplitV3 eight slots unchanged; native sheets are derivatives",
+    "game_scene": "Game/Scenes/OfficerMotionTrial.tscn",
+    "game_entry": "Main.tscn tab武将表示 / --officer-motion-review",
+    "previous_browser_trial": "officer-front-motion-v4"
   },
   "active_equipment_page_plan": "equipment-page-final",
   "active_equipment_browser_plan": "equipment-browser-final",
@@ -22002,5 +23087,6 @@
   "armor_split_browser_plan": "armor-split-browser-final",
   "armor_split_build_plan": "armor-split-final",
   "front_motion_probe_plan": "front-motion-probe-v4",
-  "front_motion_plan": "front-motion-v4"
+  "front_motion_plan": "front-motion-v4",
+  "godot_motion_plan": "godot-front-motion-v5"
 }

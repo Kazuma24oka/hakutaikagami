@@ -532,3 +532,5 @@
 - [甲冑8部位：個別着脱・元絵復帰の実画像検査](Proposals/OFFICER_ARMOR_SPLIT_V3.md)（64×96・1倍、正面静止）
 
 - [正面の待機・歩行：8部位着脱と接地の制御試作](Proposals/OFFICER_FRONT_MOTION_V4.md)（64×96・1倍、正面足踏み、Godot未組込）
+
+- [Godotゲーム画面：正面待機・歩行と甲冑8部位の着脱](Proposals/OFFICER_GODOT_MOTION_V5.md)（64×96・1倍、実GPU再生/画素検査済み）

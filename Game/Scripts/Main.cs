@@ -71,7 +71,11 @@ public partial class Main : Control
         var protocolPanel = new ProtocolPanel { Name = "応答・代理・共通検証" };
         tabs.AddChild(protocolPanel);
         protocolPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
-        if (OS.GetCmdlineUserArgs().Contains("--shared-protocol-smoke-test")) { tabs.CurrentTab = 2; _ = protocolPanel.SmokeTest(); }
+        var officerMotionPanel = new OfficerMotionTrial { Name = "武将表示" };
+        tabs.AddChild(officerMotionPanel);
+        if (OS.GetCmdlineUserArgs().Contains("--officer-motion-smoke-test")) { tabs.CurrentTab = 3; _ = officerMotionPanel.SmokeTest(); }
+        else if (OS.GetCmdlineUserArgs().Contains("--officer-motion-review")) tabs.CurrentTab = 3;
+        else if (OS.GetCmdlineUserArgs().Contains("--shared-protocol-smoke-test")) { tabs.CurrentTab = 2; _ = protocolPanel.SmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--deadline-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeadlineCancellationSmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--late-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.LateDuplicateSmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--delivery-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeliveryRecoverySmokeTest(); }

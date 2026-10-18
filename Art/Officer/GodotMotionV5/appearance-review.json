@@ -1,0 +1,80 @@
+{
+  "status": "AUTHOR_INSPECTED_GODOT_FRONT_RUNTIME_NOT_USER_ADOPTED",
+  "binding": "febd3515ee0eb9a66595d3da48c9eae0494be175c7099acda0f43444abbab845",
+  "evidence": [
+    {
+      "path": "Art/Officer/GodotMotionV5/runtime-validation.json",
+      "sha256": "a925e95a332475f279d33b22eb3c383d5ed5afb779668066fe357aa7ecc3bdee"
+    },
+    {
+      "path": "Art/Officer/GodotMotionV5/capture-validation.json",
+      "sha256": "abe03aca8b7dbafea5e0de2a4e34942f8677a6b92265cc0d380b8c28d2bb9aae"
+    },
+    {
+      "path": "Art/Officer/GodotMotionV5/replay-validation.json",
+      "sha256": "7027752061ea85bdec4429751bd25a24268739e10a2567fdf285ceef737c8407"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-build.txt",
+      "sha256": "c7a5c529614892f77eb150d2e3ff91669ffe1795e9824904b6e39a79cddb659a"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-import.txt",
+      "sha256": "d970cda9b2e353b578d56a28e4d4a69d7edde40070d3404418bf70923e0c16be"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-runtime.txt",
+      "sha256": "7ef4e0c938442290974acb58b21779aae0acb288340d1785e662157c55c14a95"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-equipped.png",
+      "sha256": "beebcfa75476976495f0ec85cc71111afa8700a2a2d78961ad840d1c42ca149a"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-arms-off.png",
+      "sha256": "97dfbbeda23ba0f401a930061373bde93dc3d19822f80201ba9790aecd77e6f7"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-bare.png",
+      "sha256": "775cdd8925e17ec3a4d26fa5dfb740b3b6f688ccd615ae16fad469dc7974a5cb"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-resized.png",
+      "sha256": "79539188638ea99bfea77813cbbf7a701103a99f71e20eccc7ab2f1084058157"
+    }
+  ],
+  "observations": {
+    "actual_images": "Inspected actual final GPU screenshots from main game tab: equipped walk, gloves/sleeves off walk, bare idle and1280x800 resize. Native sprite stays64x96; enlarged view is explicitly4x. Corrected sole guide to native y91. Same frame comparison previews visible without clipping at1100x720.",
+    "playback": "Real Godot _Process playback observed via actual frame indices at normal and1/4speed for both clips; every frame and wrap. Pause/step/full restore/armor off/bare UI signals and8 item toggles during playback passed without native input.",
+    "pixels": "Independent C# composition matches12288 Python baselines; actual GPU field crop matches132 cases with maxRGB difference0. External saved-capture check confirms3 nearest4x outputs and unchanged native crop after resize.",
+    "source_preservation": "No body, face/hair,8gear,rig or native sheet PNG modified. Runtime composes same slot IDs and masks. No world state/tick advancement driven by this presentation scene.",
+    "repair": "Initial raw-image loader passed pixels but emitted Godot export warnings; replaced with normal Texture2D resources and verified240 decoded frame hashes before rendering. Initial diagnostic preserved in History, not current acceptance."
+  },
+  "tests": {
+    "core_dotnet": 233,
+    "existing_art": 67,
+    "godot_cpu_states": 12288,
+    "godot_gpu_states": 132,
+    "clips_and_speeds": 4,
+    "live_toggles": 8,
+    "existing_main_scene": "headless smoke3selections passed",
+    "build_warnings": 0,
+    "build_errors": 0,
+    "runtime_warnings": 0,
+    "runtime_errors": 0
+  },
+  "environment": {
+    "godot": "4.5.2-stable (official)",
+    "sdk": "10.0.302",
+    "runtime": "10.0.10",
+    "target": "net8.0",
+    "renderer": "OpenGL3.3 compatibility NVIDIA610.88 / RTX4060Ti",
+    "game_assembly_sha256": "6906b0558dbb82cf5e215d134f7fc3a9aa13553609096ef8db6b9b7962b107d7"
+  },
+  "limits": [
+    "Front-only small in-place motion prototype and provisional skinny body retained",
+    "No locomotion command, battle/negotiation logic or world-time integration in visual test",
+    "No all-view/portrait completion or final aesthetic adoption",
+    "Standalone export package and GitHub CI execution not verified"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "engine": "4.5.2-stable (official)",
+  "dotnet": "10.0.10",
+  "binding": "ac72c14ff48eb0c725094a4cac061ead6d1b99a92d39aafa2f690cbd19c4257a",
+  "native_canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "cpu_cases": 12288,
+  "gpu_cases": 132,
+  "max_rgb_difference": 0,
+  "live": [
+    {
+      "clip": "walk",
+      "speed": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "wraps": 1
+    },
+    {
+      "clip": "walk",
+      "speed": 0.25,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "wraps": 1
+    },
+    {
+      "clip": "idle",
+      "speed": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wraps": 1
+    },
+    {
+      "clip": "idle",
+      "speed": 0.25,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wraps": 1
+    }
+  ],
+  "dynamic_toggles": 8,
+  "resize_viewport": [
+    1280,
+    800
+  ],
+  "native_input": 0,
+  "scope": "Front in-place idle/walk in Godot main game tab; world time unchanged"
+}

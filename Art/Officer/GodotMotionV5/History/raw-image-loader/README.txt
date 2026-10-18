@@ -1,0 +1,1 @@
+Initial CPU/GPU test passed, but raw Image.LoadFromFile emitted resource/export warnings and sole guide was6px low. Superseded by standard Texture2D resource loading, per-frame decode hashes and corrected guide. This history is not current acceptance.

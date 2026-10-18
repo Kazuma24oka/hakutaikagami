@@ -1,0 +1,8 @@
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+OFFICER_MOTION_READY native=64x96 scale=1 parts=8 clips=idle,walk native_input=0
+OFFICER_MOTION_GODOT_PASS cpu=12288 gpu=132 max_rgb_difference=0 live_clips=2 speeds=2 toggles=8 native=64x96 scale=1 native_input=0

@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "native_before_after_resize_rgb_difference": 0,
+  "native_capture_size": [
+    64,
+    96
+  ],
+  "enlarged_nearest_checks": [
+    {
+      "capture": "equipped",
+      "enlarged_rgb_difference": 0
+    },
+    {
+      "capture": "arms-off",
+      "enlarged_rgb_difference": 0
+    },
+    {
+      "capture": "bare",
+      "enlarged_rgb_difference": 0
+    }
+  ],
+  "evidence": [
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-equipped.png",
+      "sha256": "beebcfa75476976495f0ec85cc71111afa8700a2a2d78961ad840d1c42ca149a"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-arms-off.png",
+      "sha256": "97dfbbeda23ba0f401a930061373bde93dc3d19822f80201ba9790aecd77e6f7"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-bare.png",
+      "sha256": "775cdd8925e17ec3a4d26fa5dfb740b3b6f688ccd615ae16fad469dc7974a5cb"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-godot-resized.png",
+      "sha256": "79539188638ea99bfea77813cbbf7a701103a99f71e20eccc7ab2f1084058157"
+    }
+  ]
+}

@@ -29,3 +29,5 @@
 甲冑8部位は `Art/Officer/ArmorSplitV3/part-manifest.json` と `Docs/Proposals/OFFICER_ARMOR_SPLIT_V3.md`。顔/髪/素体は旧V2の同じ実体を使う。可視所属・限定補完・素体遮蔽・素手の前景描画を分け、元の2215装備画素を削除しない。各単体と除去後、全1024状態、全装備の元絵一致と全解除の素体一致を検査済み。範囲は元の正面静止で、方向/関節移動/歩行のゲートを解除しない。
 
 正面の待機/歩行の制御試作は `Art/Officer/FrontMotionV4/manifest.json` と `Docs/Proposals/OFFICER_FRONT_MOTION_V4.md`。8部位原本は不変、共通表面の変形/個別遮蔽/素手前景/剛体刀を分離。12インデックス×1024状態と通常/低速のブラウザー実再生を検査済み。小振幅の正面足踏みだけで、自然な完成歩容・他方向・大きな可動・Godot移動・6頭身対応の承認ではない。新しいrig/マスク/変形コードへ旧検査を流用しない。
+
+Godot表示の現在の入口はMainの「武将表示」タブ（`--officer-motion-review`）と `Docs/Proposals/OFFICER_GODOT_MOTION_V5.md`。V4の20独立表示/遮蔽シートを改変せず読む。実ゲーム12,288合成/132GPU状態と通常低速/動的着脱を検査済み。`Scripts/Validate-OfficerGodotMotion.ps1` が既存制作ゲート→ビルド→インポート→実表示検査を行う。1倍保持のためcanvas stretchはdisabled。表示時計はCore世界時刻を進めない。正面足踏み・仮体型の範囲を、他方向/完成歩容/6頭身/配布エクスポートの承認へ広げない。
