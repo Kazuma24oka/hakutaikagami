@@ -407,3 +407,7 @@
 - **現行正本**：[84項目の最終統合、重複・矛盾・P0依存・P2移管・設計完了判定](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)。設計完了は未達、詳細は未確定。
 - **旧比較・選択履歴**：[63項目](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)、[P1/P2範囲](Archive/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)、[代表試験](Archive/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)、[受入試験](Archive/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。
 - 新規Confirmedなし、main変更なし、資料内容の永久削除なし。
+
+## P1共通コマンド契約（未確定・ABCD、2026-10-18）
+- [コマンド／案件／イベントID、権限、状態、費用・引当、失敗復旧、通知、完成条件の7項目](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。B推奨、未選択。Dを選んだ項目のみ次のチャットで自由記載。
+- [84項目最終統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)とF01/F02/F03/F04/F07/F08、P0-A01〜A06に整合。自動進行方式は未確定。新規Confirmed追加なし、main変更なし、Archive移動・永久削除なし。
