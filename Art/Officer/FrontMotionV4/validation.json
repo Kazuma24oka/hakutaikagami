@@ -1,0 +1,10 @@
+{
+  "status": "TECHNICAL_PASS_PENDING_ACTUAL_RUNTIME_INSPECTION",
+  "combinations": 1024,
+  "frames": 12,
+  "native_cases": 12288,
+  "binary_alpha": true,
+  "clipped_cases": 0,
+  "base_source_unchanged": true,
+  "source_neutral_equal": true
+}

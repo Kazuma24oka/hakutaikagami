@@ -1,0 +1,78 @@
+{
+  "status": "AUTHOR_INSPECTED_FRONT_MOTION_PROTOTYPE_NOT_USER_ADOPTED",
+  "binding": "4a460f5bd9f66b794dba71d26b85d0dbcdd1488958de97bf8524df2ddf2ea54d",
+  "plan": "front-motion-v4",
+  "evidence": [
+    {
+      "path": "Art/Officer/FrontMotionV4/displacement-probes.png",
+      "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+    },
+    {
+      "path": "Art/Officer/FrontMotionV4/isolated-motion-probes.png",
+      "sha256": "44a948b09d80571ddc6852272a2ea66afbacf45f75c0c4b9e8134500dfe8600e"
+    },
+    {
+      "path": "Art/Officer/FrontMotionV4/joint-probes.png",
+      "sha256": "7e0638a3febcd92c9e38f7537f7824ea0e086897d978e22a80ffc7f3d54f86d8"
+    },
+    {
+      "path": "Art/Officer/FrontMotionV4/browser-validation.json",
+      "sha256": "59aab2c46ca106435e62f6b7063ec6e6de9c03f6705f16b3190c3639bd7d629a"
+    },
+    {
+      "path": "Art/Officer/FrontMotionV4/replay-validation.json",
+      "sha256": "8d3e317b559b85e3bdb974ce38207a33ca6dedd8251e7fa7f10afbe4d31bea46"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-frames-v4.png",
+      "sha256": "0b30eff89b9dff1786b96978f3ed37fd731876b4d9d4effae90c787aa3460e91"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-idle-frames-v4.png",
+      "sha256": "e220823f7272fab74e1fbac47b46be80fb97769c4e37d390425d1c8471a5bd99"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-browser-v4.png",
+      "sha256": "61ae582b2625c5cc27bb476cb5f139e5613d3c4872b61823f70fe440b92707eb"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-white-v4.png",
+      "sha256": "d9b01867d0149f0967946387301c7e21bcde369db26861cfbace58e4f96f92ac"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-motion-black-v4.png",
+      "sha256": "04196124261dfcd160de516d8cd162c31475c81be4020f123e67132adcf96016"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-walk-v4.gif",
+      "sha256": "fafd41cffd3eadb6e93ae89816c6dd71bb168d0b56b5fbda9c4269ef39da27f8"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-idle-v4.gif",
+      "sha256": "3c93bd365b6350ead06fd831165d28328cb1df0bc28903f0044de569f9ed680f"
+    }
+  ],
+  "observations": {
+    "actual_images": "Inspected eight-frame all-equipped, all-bare and8 removal strips;8 isolated item strips and source-based joint marker strips. Inspected native/4x browser screenshots checker, white bare-arms and black coat-off. Current head and face clusters preserved, no detached joint ends or unrelated pieces in bounded trial.",
+    "contact_repair": "Initial field shifted planted feet sideways. Corrected travel to lifted foot only; source joint plant x/y fixed, lift greater than2px at midstep. Initial evidence kept in History.",
+    "depth": "Common surface lookup moves body, equipment and item-specific occlusion together. Conditional bare hands remain in front of scabbard when gauntlets absent. Sword is rigid belt child. No crossover depth change within small in-place motion.",
+    "runtime": "Actual requestAnimationFrame playback sampled at normal and1/4speed for BOTH idle/walk; every frame index and at least1wrap observed in each. Dynamic removal8 changes checked against actual native hashes. This is a headless browser runtime, not a Godot game test.",
+    "technical": "All1024 selections times12frames=12288 native RGBA hashes agree with separate browser canvas compositor. NativeCSS64x96, enlarged256x384. Binary alpha and no edge clipping. Original/base/face/hair/8 source layers unmodified."
+  },
+  "tests": {
+    "new_motion": 11,
+    "prior_pipeline": 36,
+    "prior_face_hair": 9,
+    "prior_armor": 11,
+    "total": 67
+  },
+  "limits": [
+    "Front-only conservative in-place foot-lift walk; not final locomotion animation or all views",
+    "Small shared 2D surface deformation; not independently rigid skeletal plates, cloth simulation or large articulation",
+    "64x96 rounding yields held/duplicate poses; indexed frame count is not unique painted poses",
+    "Base thin/unpleasant aesthetic issue remains provisional",
+    "Source hidden surfaces are authored; no exact unseen anatomy claim",
+    "No Godot/Core change or game movement/runtime camera test; no6-head counterpart",
+    "No new image generation; pure deterministic pixel deformation; user aesthetic acceptance pending"
+  ]
+}

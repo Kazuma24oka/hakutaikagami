@@ -40,3 +40,11 @@ Scripts/build_officer_armor_parts.py -text whitespace=blank-at-eol,blank-at-eof,
 Scripts/review_officer_armor_parts.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_officer_armor_browser.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Proposals/officer-armor-parts-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Art/Officer/FrontMotionV4/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_front_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_front_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_front_motion_page.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_front_motion.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-motion-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_ARMOR_SPLIT_V3.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

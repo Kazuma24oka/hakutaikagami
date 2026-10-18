@@ -1,0 +1,29 @@
+{
+  "png_count": 22,
+  "changed": 0,
+  "hashes": {
+    "arms.png": "7d79b656b356dbbe74826c8ca3ec1dc05a120effaadd039778bfcdd8a67c4567",
+    "body.png": "6f9be85b42b8e5b5545e4495af9cc393b3d00da6a95f6aee1c1cbbb4132ba2a4",
+    "coat.png": "405ef3e338dedeaca55268a6ff2b9274085c90f4237fb3a865a757c17d59bafe",
+    "face.png": "8b0ba1e6990351169a490888915b4158d74c069e485c6663a252a4b03c154624",
+    "footwear.png": "483d0f15f97c81f6a86fb7cc9c5a1879cbd729d0fac7c96de9e3260a15e4153d",
+    "hair.png": "1cafbcda0cd1a75e6f1573c19f60d5050bf2b0fede2d4f30c4a7d23ddabef9f0",
+    "hands.png": "5d2ea9cad5aa1ff6792c2953778875c4e4d5c1faaf213cad4a77cd48af92a2d7",
+    "hide_arms.png": "aad5da9267e9118b8d4698c1cd627acc64332fece0788ef7314cc1c973c32edb",
+    "hide_coat.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_footwear.png": "549c2708e46a7a78a3be09eb5579e59ec9dd62504176e9df0dc7c83dc712bd2d",
+    "hide_legs.png": "9de24bd96efa537e3b4e72c262ccde7097bc26a4ea5a2e69748693c79eabbe6c",
+    "hide_shoulders.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_sword.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_torso.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_waist.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "legs.png": "8c20f04a9314ec3fa66c97b4660f3bb09176a8ee120bfb638e6460f30d1093ab",
+    "lookup-surface.png": "fd70224d7e13842a304622baf3334725b1521f6856f4e6fe1e9d686c2b3130d7",
+    "lookup-sword.png": "03eeed70c58478cdcb9dfcfffb728b6d479aec74f1d6b1de189a26f6f1296997",
+    "shoulders.png": "a4fa8abf8df47752dc486bb123c89041901201f584c1e3992dcb29b5112ccb24",
+    "sword.png": "826f737496e026e167d92e7fc0a23a2bffb082091c2f2de7b360589f82dd329d",
+    "torso.png": "67ff2943b499fff37e8b68da63435e5b0e60ba9cc2a505a5ddb913d91dbe2b26",
+    "waist.png": "00b01573d322b45646a704fe6aff31281eef3003dd002570b516434efaf30c71"
+  },
+  "scope": "Deterministic native rig sheets and lookup maps; no generative model replay claim"
+}

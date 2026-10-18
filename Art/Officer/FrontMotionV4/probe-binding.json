@@ -1,0 +1,6 @@
+{
+  "plan": "front-motion-probe-v4",
+  "binding": "eb4630189b7bcc2c30b214b6684506afa5cd69579e6112141dcb89a1319aa964",
+  "scope": "front-only displacement probes; not completed motion",
+  "rig_sha256": "62f94e47b8c33990ece0d50f40c7da38050fe596ee257694b847da5836ae0ec1"
+}

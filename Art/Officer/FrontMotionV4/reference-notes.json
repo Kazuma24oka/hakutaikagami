@@ -1,0 +1,14 @@
+{
+  "reviewed": [
+    {
+      "path": "C:/Workspace/Projects/Games/bokentan/Docs/50_Production/SPRITE_ANIMATION_PIPELINE.md",
+      "sha256": "48b86d5846644b984c251aeb3864fa09fa363ae169ef7caae159216f4d082cef"
+    },
+    {
+      "path": "C:/Workspace/Projects/Games/bokentan/Docs/50_Production/HD2D_Handoff/CharacterAnimation/skin_surface.py",
+      "sha256": "9545d42a1ca7abd2fc0f3a1f0775990d25098732350cbf3c43cc585b0675976d"
+    }
+  ],
+  "used": "Continuous joint surface vs independently cut limb caps; fixed anatomy, source ownership separate from deformation, stance projection, normal/slow/runtime scope. No dimensions/code/art copied from other game.",
+  "book_figures": "Not inspected; not used as visual evidence."
+}

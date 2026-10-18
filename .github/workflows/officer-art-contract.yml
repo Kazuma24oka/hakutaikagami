@@ -12,6 +12,7 @@ jobs:
       - run: python Scripts/test_officer_art_pipeline.py
       - run: python Scripts/test_officer_equipment_parts.py
       - run: python Scripts/test_officer_armor_layers.py
+      - run: python Scripts/test_officer_front_motion.py
       - name: Unplanned production must stay blocked
         shell: bash
         run: |

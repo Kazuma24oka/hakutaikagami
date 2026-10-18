@@ -27,3 +27,5 @@
 以前のV2の正面顔/髪/甲冑一式は `Art/Officer/EquipmentPartsV2/part-manifest.json` と `Docs/Proposals/OFFICER_EQUIPMENT_PARTS_V2.md`。元絵との可視画素一致、全解除の素体一致、髪なしの顔保護を実画像で検査済み。髪本体owner2と落ち影owner4、顔owner1、装備owner3、人体遮蔽は別責務。このV2では甲冑は一式で、顔は髭を含む。V2だけを根拠に部位別甲冑/別髪型/別方向/歩行/6頭身対応の完成を推認しない。V2素体の外見課題と仮受入を維持する。
 
 甲冑8部位は `Art/Officer/ArmorSplitV3/part-manifest.json` と `Docs/Proposals/OFFICER_ARMOR_SPLIT_V3.md`。顔/髪/素体は旧V2の同じ実体を使う。可視所属・限定補完・素体遮蔽・素手の前景描画を分け、元の2215装備画素を削除しない。各単体と除去後、全1024状態、全装備の元絵一致と全解除の素体一致を検査済み。範囲は元の正面静止で、方向/関節移動/歩行のゲートを解除しない。
+
+正面の待機/歩行の制御試作は `Art/Officer/FrontMotionV4/manifest.json` と `Docs/Proposals/OFFICER_FRONT_MOTION_V4.md`。8部位原本は不変、共通表面の変形/個別遮蔽/素手前景/剛体刀を分離。12インデックス×1024状態と通常/低速のブラウザー実再生を検査済み。小振幅の正面足踏みだけで、自然な完成歩容・他方向・大きな可動・Godot移動・6頭身対応の承認ではない。新しいrig/マスク/変形コードへ旧検査を流用しない。
