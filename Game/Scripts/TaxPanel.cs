@@ -26,14 +26,19 @@ public partial class TaxPanel : MarginContainer
     private Button failFailureReport = null!;
     private Button lateArrival = null!;
     private OptionButton fixture = null!;
+    private OptionButton deadlineChoice = null!;
+    private OptionButton cancellationEffect = null!;
+    private Button failCancellation = null!;
+    private Button lateCancellation = null!;
     private string savePath = "";
     private int requestNumber;
+    private int cancellationNumber;
 
     public void Initialize(string json)
     {
         scenarioJson = json;
         simulation = TaxSimulation.Create(PrototypeScenario.Load(json));
-        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v3.json");
+        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v4.json");
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) AddThemeConstantOverride("margin_" + edge, 28);
         var column = new VBoxContainer(); column.AddThemeConstantOverride("separation", 10); AddChild(column);
         column.AddChild(new Label { Text = "徴税・命令配送・保存復旧  /  試作検証", Modulate = new Color("e2c891") });
@@ -47,22 +52,33 @@ public partial class TaxPanel : MarginContainer
             int rice = fixture.Selected == 1 ? 100 : fixture.Selected == 3 ? 0 : 60;
             simulation = TaxSimulation.Create(PrototypeScenario.Load(scenarioJson), rice, fixture.Selected == 2 ? 0 : 100);
             requestNumber = 0;
+            cancellationNumber = 0;
             notice.Text = "試作条件を初期化しました。保存済みファイルは維持します。";
         });
+        deadlineChoice = new OptionButton();
+        foreach (var text in new[] { "期限なし", "履行期限：発送2刻後", "履行期限：発送3刻後" }) deadlineChoice.AddItem(text);
+        modes.AddChild(deadlineChoice);
+        cancellationEffect = new OptionButton();
+        foreach (var text in new[] { "取消：到達時に有効", "取消：発送3刻後に有効", "取消：発送4刻後に有効" }) cancellationEffect.AddItem(text);
+        modes.AddChild(cancellationEffect);
         summary = new Label(); column.AddChild(summary);
         var operations = new HBoxContainer(); operations.AddThemeConstantOverride("separation", 12); column.AddChild(operations);
         submit = AddButton(operations, "徴税100を発送", () =>
         {
             string id = "tax-" + (requestNumber + 1).ToString("D3");
-            simulation.Submit(id, "character-001", "castle-001", 100); requestNumber++;
+            long? deadline = deadlineChoice.Selected == 0 ? null : simulation.Tick + (deadlineChoice.Selected == 1 ? 2 : 3);
+            simulation.Submit(id, "character-001", "castle-001", 100, deadline); requestNumber++;
             notice.Text = "命令を発送しました。NPCはまだ内容を知りません。";
         });
         advance = AddButton(operations, "1刻進める", () => { simulation.AdvanceOneTick(); notice.Text = simulation.Paused ? "停止中です。" : "1刻進めました。"; });
         pause = AddButton(operations, "停止", () => simulation.SetPaused(!simulation.Paused));
-        cancel = AddButton(operations, "未確定命令を取消", () =>
+        cancel = AddButton(operations, "取消命令を発送", () =>
         {
-            var order = simulation.Orders.Last(o => o.Phase is TaxPhase.Dispatched or TaxPhase.Received or TaxPhase.Reserved);
-            simulation.Cancel(order.RequestId); notice.Text = "未使用の引当を解除し、取消報告を配送します。";
+            var order = simulation.Orders.Last();
+            long effective = simulation.Tick + (cancellationEffect.Selected == 0 ? 1 : cancellationEffect.Selected == 1 ? 3 : 4);
+            string id = "cancel-" + (cancellationNumber + 1).ToString("D3");
+            simulation.DispatchCancellation(id, order.RequestId, "character-001", 1, effective); cancellationNumber++;
+            notice.Text = "取消命令を発送しました。到達・効力時刻までは元の命令が継続します。";
         });
         var deliveryActions = new HBoxContainer(); deliveryActions.AddThemeConstantOverride("separation", 12); column.AddChild(deliveryActions);
         failDelivery = AddButton(deliveryActions, "配送失敗を設定（試験）", () =>
@@ -99,15 +115,27 @@ public partial class TaxPanel : MarginContainer
         load = AddButton(storage, "読込", () =>
         {
             var sourcePath = savePath;
-            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v3.json"))
+            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v4.json"))
             {
-                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v2.json");
+                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v3.json");
+                if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v2.json");
                 if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
             }
             var restored = TaxSimulation.LoadFile(sourcePath); // Validate fully before replacing the current session.
             simulation = restored;
             requestNumber = simulation.Orders.Select(o => int.TryParse(o.RequestId.Replace("tax-", ""), out int n) ? n : 0).DefaultIfEmpty(0).Max();
+            cancellationNumber = simulation.Cancellations.Select(c => int.TryParse(c.Id.Replace("cancel-", ""), out int n) ? n : 0).DefaultIfEmpty(0).Max();
             notice.Text = "読込完了。保存した時刻・資源・命令状態から再開します。";
+        });
+        failCancellation = AddButton(storage, "取消配送を紛失（試験）", () =>
+        {
+            simulation.FailCancellation(simulation.Cancellations.Last(c => c.Status == CancellationStatus.InTransit).Id);
+            notice.Text = "取消の配送失敗を設定しました。原命令は発送だけでは止まりません。";
+        });
+        lateCancellation = AddButton(storage, "取消を1刻後に遅着（試験）", () =>
+        {
+            simulation.ScheduleLateCancellation(simulation.Cancellations.Last(c => c.Status == CancellationStatus.Lost && c.LateDueAt == null).Id, 1);
+            notice.Text = "取消の遅着を予約しました。効力は受領より前へ遡りません。";
         });
         column.AddChild(new HSeparator());
         var scroll = new ScrollContainer { SizeFlagsVertical = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(0, 80) };
@@ -133,20 +161,28 @@ public partial class TaxPanel : MarginContainer
     private static string Phase(TaxPhase phase) => phase switch {
         TaxPhase.Dispatched => "配送中", TaxPhase.Received => "本人が受領", TaxPhase.Reserved => "判断済み・引当中",
         TaxPhase.Completed => "全量達成", TaxPhase.Partial => "部分達成", TaxPhase.Refused => "NPC拒否",
-        TaxPhase.Failed => "失敗", TaxPhase.Cancelled => "取消", _ => "不明" };
+        TaxPhase.Failed => "失敗", TaxPhase.Cancelled => "取消", TaxPhase.Expired => "期限超過", _ => "不明" };
+    private static string CancellationPhase(CancellationStatus status) => status switch {
+        CancellationStatus.InTransit => "配送中", CancellationStatus.AwaitingEffect => "受領済み・効力待ち",
+        CancellationStatus.Applied => "取消有効", CancellationStatus.AlreadyStopped => "既に停止済み",
+        CancellationStatus.TooLate => "徴収確定後の到達", CancellationStatus.Unauthorized => "権限失効", CancellationStatus.Lost => "紛失", _ => "不明" };
     private void Refresh()
     {
         WorldChanged?.Invoke(simulation.RestoreWorld());
         summary.Text = $"世界時刻：{simulation.Tick}刻  /  {(simulation.Paused ? "停止中" : "手動進行")}\n村落所有の米：{simulation.SourceRice}俵（引当 {simulation.ReservedRice}）    鏡家所有の米：{simulation.TreasuryRice}俵\n未処理：{simulation.PendingCount}  適用済み：{simulation.AppliedCount}  失敗報告：到達{simulation.FailureReports.Count(r => r.Delivered)} / 発送{simulation.FailureReports.Count}";
         pause.Text = simulation.Paused ? "再開" : "停止";
-        cancel.Disabled = !simulation.Orders.Any(o => o.Phase is TaxPhase.Dispatched or TaxPhase.Received or TaxPhase.Reserved);
+        cancel.Disabled = simulation.Orders.Count == 0;
+        failCancellation.Disabled = !simulation.Cancellations.Any(c => c.Status == CancellationStatus.InTransit && !c.FailOnArrival);
+        lateCancellation.Disabled = !simulation.Cancellations.Any(c => c.Status == CancellationStatus.Lost && c.LateDueAt == null);
         failDelivery.Disabled = !simulation.Deliveries.Any(d => !d.Delivered && !d.Lost && !d.Cancelled && !d.FailOnArrival);
         receiveFailure.Disabled = FailureReportCandidate() == null;
         retryDelivery.Disabled = RetryCandidate() == null;
         failFailureReport.Disabled = !simulation.FailureReports.Any(r => !r.Delivered && !r.Lost && !r.FailOnArrival);
         lateArrival.Disabled = !simulation.Deliveries.Any(d => d.Lost && !d.Delivered && !d.Cancelled && d.LateDueAt == null);
         outcome.Text = simulation.Orders.Count == 0 ? "まだ命令はありません。\n「徴税100を発送」から開始してください。" :
-            string.Join("\n\n", simulation.Orders.Select(o => $"{o.RequestId}  /  {Phase(o.Phase)}  /  要求{o.Requested}・引当{o.Reserved}・徴収{o.Collected}\n{(o.Reported ? "発行者が報告を受領済み" : "発行者への結果報告は未到達")}　{o.Reason}"));
+            string.Join("\n\n", simulation.Orders.Select(o => $"{o.RequestId}  /  {Phase(o.Phase)}  /  要求{o.Requested}・引当{o.Reserved}・徴収{o.Collected}\n履行期限：{(o.ExecuteBy?.ToString() ?? "なし")}  停止時刻：{(o.StoppedAt?.ToString() ?? "なし")}  徴収時刻：{(o.CollectedAt?.ToString() ?? "未確定")}\n{(o.Reported ? "発行者が報告を受領済み" : "発行者への結果報告は未到達")}　{o.Reason}"));
+        if (simulation.Cancellations.Count > 0)
+            outcome.Text += "\n取消配送：" + string.Join(" / ", simulation.Cancellations.Select(c => $"{CancellationPhase(c.Status)}（受領{c.ReceivedAt?.ToString() ?? "未"}・指定効力{c.EffectiveAt}・評価{c.ResolvedAt?.ToString() ?? "未"}）"));
         outcome.Text += $"\n\n個人認識：次郎の受領記録 {simulation.KnowledgeFor("character-002").Count}件 / 太郎の結果報告 {simulation.KnowledgeFor("character-001").Count}件 / 三郎 {simulation.KnowledgeFor("character-003").Count}件";
         if (simulation.Deliveries.Count > 0)
             outcome.Text += "\n\n配送履歴：\n" + string.Join("\n", simulation.Deliveries.Select(d =>
@@ -154,6 +190,67 @@ public partial class TaxPanel : MarginContainer
         if (simulation.FailureReports.Count > 0)
             outcome.Text += "\n失敗報告の配送：\n" + string.Join("\n", simulation.FailureReports.Select(r => $"報告{r.Copy}通目：{(r.Delivered ? "到達" : r.Lost ? "紛失" : "配送中")}"));
         GD.Print($"TAX_STATE tick={simulation.Tick} source={simulation.SourceRice} treasury={simulation.TreasuryRice} reserved={simulation.ReservedRice} pending={simulation.PendingCount}");
+    }
+
+    public async Task DeadlineCancellationSmokeTest()
+    {
+        try
+        {
+            savePath = ProjectSettings.GlobalizePath("user://deadline-smoke-" + Guid.NewGuid().ToString("N") + ".json");
+            deadlineChoice.Select(1); await ClickThroughGui(submit); // Complete by tick 2 inclusive.
+            await ClickThroughGui(advance); await ClickThroughGui(advance); await ClickThroughGui(save);
+            await ClickThroughGui(advance);
+            if (simulation.Orders[0].Phase != TaxPhase.Expired || simulation.TreasuryRice != 100) throw new InvalidOperationException("Expiry did not release reservation.");
+            await ClickThroughGui(load); await ClickThroughGui(advance);
+            if (simulation.Orders[0].StoppedAt != 3 || simulation.ReservedRice != 0) throw new InvalidOperationException("Expiry restore mismatch.");
+
+            await ClickThroughGui(reset); deadlineChoice.Select(2); await ClickThroughGui(submit);
+            for (int i = 0; i < 3; i++) await ClickThroughGui(advance);
+            if (simulation.Orders[0].CollectedAt != 3 || simulation.TreasuryRice != 160) throw new InvalidOperationException("Inclusive deadline failed.");
+
+            await ClickThroughGui(reset); deadlineChoice.Select(0); cancellationEffect.Select(1);
+            await ClickThroughGui(submit); await ClickThroughGui(cancel); await ClickThroughGui(advance);
+            if (simulation.Cancellations[0].Status != CancellationStatus.AwaitingEffect || simulation.Orders[0].Phase != TaxPhase.Received)
+                throw new InvalidOperationException("Receipt prematurely stopped work.");
+            await ClickThroughGui(advance); await ClickThroughGui(save); await ClickThroughGui(advance);
+            if (simulation.Cancellations[0].Status != CancellationStatus.Applied || simulation.TreasuryRice != 100) throw new InvalidOperationException("Same-tick cancellation failed.");
+            await ClickThroughGui(load); await ClickThroughGui(advance);
+            if (simulation.Cancellations[0].ResolvedAt != 3 || simulation.ReservedRice != 0) throw new InvalidOperationException("Cancellation restore failed.");
+
+            await ClickThroughGui(reset); cancellationEffect.Select(0); await ClickThroughGui(submit); await ClickThroughGui(cancel);
+            await ClickThroughGui(failCancellation); await ClickThroughGui(advance); await ClickThroughGui(save);
+            await ClickThroughGui(lateCancellation); await ClickThroughGui(advance);
+            if (simulation.Cancellations[0].ResolvedAt != 2 || simulation.TreasuryRice != 100) throw new InvalidOperationException("Early late-cancellation failed.");
+            await ClickThroughGui(load); await ClickThroughGui(lateCancellation); await ClickThroughGui(advance);
+
+            await ClickThroughGui(reset); await ClickThroughGui(submit); await ClickThroughGui(cancel); await ClickThroughGui(failCancellation);
+            for (int i = 0; i < 3; i++) await ClickThroughGui(advance);
+            await ClickThroughGui(lateCancellation); await ClickThroughGui(save); await ClickThroughGui(advance);
+            if (simulation.Cancellations[0].Status != CancellationStatus.TooLate || simulation.TreasuryRice != 160) throw new InvalidOperationException("Late cancellation undid committed rice.");
+            await ClickThroughGui(load); await ClickThroughGui(advance);
+
+            await ClickThroughGui(reset); await ClickThroughGui(submit); await ClickThroughGui(failDelivery); await ClickThroughGui(advance);
+            await ClickThroughGui(receiveFailure); await ClickThroughGui(advance); await ClickThroughGui(lateArrival);
+            await ClickThroughGui(retryDelivery); await ClickThroughGui(cancel); await ClickThroughGui(save);
+            await ClickThroughGui(advance); await ClickThroughGui(load); await ClickThroughGui(advance);
+            for (int i = 0; i < 3; i++) await ClickThroughGui(advance);
+            if (simulation.Orders[0].Phase != TaxPhase.Cancelled || simulation.TreasuryRice != 100 || simulation.ReservedRice != 0 ||
+                simulation.Deliveries.Count(d => d.Kind == DeliveryKind.Order && d.Delivered) != 2 ||
+                simulation.KnowledgeFor("character-002").Count != 1 || simulation.Orders[0].DecisionRoll != null || simulation.PendingCount != 0)
+                throw new InvalidOperationException("Cancellation/late-original race restarted work.");
+            notice.Text = "期限ちょうどは確定可。取消は受領後の効力時刻で停止。遅着2通も徴収せず、保存5境界から復旧。";
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (notice.GetGlobalRect().End.Y > GetViewportRect().Size.Y) throw new InvalidOperationException("Deadline UI clipped.");
+            if (DisplayServer.GetName() != "headless")
+            {
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+                var path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/deadline-cancellation.png");
+                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+            }
+            GD.Print("DEADLINE_CANCEL_GUI_PASS scenarios=6 loads=5 inclusive=1 cancellation_receipt_effect=1 late_before_after=1 original_receptions=2 collection=0 treasury=100");
+            GetTree().Quit(0);
+        }
+        catch (Exception e) { GD.PushError(e.ToString()); GetTree().Quit(1); }
     }
 
     private TaxDelivery? FailureReportCandidate() => simulation.Deliveries.LastOrDefault(d => d.Lost && !d.Cancelled && !simulation.FailureKnown(d.Id) &&

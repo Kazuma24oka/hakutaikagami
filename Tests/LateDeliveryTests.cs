@@ -150,7 +150,7 @@ public sealed class LateDeliveryTests
     {
         var text = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "tax-v2-" + suffix + ".json"));
         var sim = TaxSimulation.LoadJson(text); Assert.Empty(sim.FailureReports);
-        Assert.Equal(3, JsonNode.Parse(sim.SaveJson())!["Version"]!.GetValue<int>());
+        Assert.Equal(4, JsonNode.Parse(sim.SaveJson())!["Version"]!.GetValue<int>());
         Assert.Equal(2, JsonNode.Parse(sim.SaveJson())!["MigrationOrigin"]!.GetValue<int>());
         if (suffix == "lost") { sim.DispatchFailureReport("tax-001/letter", "character-003"); sim.AdvanceOneTick(); }
         if (suffix is "lost" or "known") sim.RetryDelivery("tax-001", DeliveryKind.Order, "character-001");

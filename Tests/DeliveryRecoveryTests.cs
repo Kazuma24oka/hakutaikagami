@@ -167,7 +167,7 @@ public sealed class DeliveryRecoveryTests
     {
         var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", $"tax-v1-tick-{tick}.json"); var text = File.ReadAllText(path);
         Assert.Equal(1, JsonNode.Parse(text)!["Version"]!.GetValue<int>());
-        var sim = TaxSimulation.LoadJson(text); Assert.Equal(3, JsonNode.Parse(sim.SaveJson())!["Version"]!.GetValue<int>());
+        var sim = TaxSimulation.LoadJson(text); Assert.Equal(4, JsonNode.Parse(sim.SaveJson())!["Version"]!.GetValue<int>());
         Assert.Equal(tick, sim.Tick); Advance(sim, 5); Assert.Equal(160, sim.TreasuryRice); Assert.True(sim.Orders[0].Reported);
         Assert.Equal(text, File.ReadAllText(path));
     }

@@ -7,11 +7,12 @@ using HakutaiKagami.Core.World;
 
 namespace HakutaiKagami.Core.Simulation;
 
-public enum TaxPhase { Dispatched, Received, Reserved, Completed, Partial, Refused, Failed, Cancelled }
+public enum TaxPhase { Dispatched, Received, Reserved, Completed, Partial, Refused, Failed, Cancelled, Expired }
 public enum DeliveryKind { Order, Report }
 public enum TaxEventKind { DeliverOrder, Decide, Collect, DeliverReport, DeliverLateOrder, DeliverLateReport }
 public sealed record TaxOrder(string RequestId, string CaseId, string IssuerId, string ExecutorId,
-    string CastleId, int Requested, int Reserved, int Collected, TaxPhase Phase, bool Reported, string Reason, int? DecisionRoll);
+    string CastleId, int Requested, int Reserved, int Collected, TaxPhase Phase, bool Reported, string Reason, int? DecisionRoll,
+    long? ExecuteBy = null, long? StoppedAt = null, long? CollectedAt = null);
 public sealed record TaxDelivery(string Id, string RequestId, DeliveryKind Kind, string SenderId, string RecipientId,
     long DueAt, bool Delivered, int Attempt = 1, bool Lost = false, bool FailOnArrival = false, bool Cancelled = false,
     long? LateDueAt = null, bool ArrivedLate = false)
@@ -42,7 +43,7 @@ public sealed record WorldSnapshot(ScenarioDefinition Definition, CharacterSnaps
 // Persisted DTO is a boundary type. The simulation never exposes its live mutable DTO.
 public sealed class TaxSnapshot
 {
-    public int Version { get; set; } = 3;
+    public int Version { get; set; } = 4;
     public int? MigrationOrigin { get; set; }
     public WorldSnapshot World { get; set; } = null!;
     public long Tick { get; set; }
@@ -61,10 +62,11 @@ public sealed class TaxSnapshot
     public string[] Applied { get; set; } = [];
     public DeliveryFailureNotice[] FailureNotices { get; set; } = [];
     public FailureReportDelivery[] FailureReports { get; set; } = [];
+    public CancellationCommand[] Cancellations { get; set; } = [];
 }
 
 /// <summary>One-thread prototype transaction boundary: clone, validate, publish. No wall-clock or Godot dependency.</summary>
-public sealed class TaxSimulation
+public sealed partial class TaxSimulation
 {
     public const int MaxDeliveryAttempts = 3; // Prototype cap, including the original attempt.
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -80,7 +82,9 @@ public sealed class TaxSimulation
     public int SourceRice => state.Accounts.Single(a => a.Id == "village").Balance;
     public int TreasuryRice => state.Accounts.Single(a => a.Id == "treasury").Balance;
     public int ReservedRice => state.Orders.Sum(o => o.Reserved);
-    public int PendingCount => state.Pending.Length + state.FailureReports.Count(r => !r.Delivered && !r.Lost);
+    public int PendingCount => state.Pending.Length + state.FailureReports.Count(r => !r.Delivered && !r.Lost) +
+        state.Cancellations.Count(c => c.Status is CancellationStatus.InTransit or CancellationStatus.AwaitingEffect || c.Status == CancellationStatus.Lost && c.LateDueAt != null) +
+        state.Orders.Count(o => IsActive(o) && o.ExecuteBy != null);
     public int AppliedCount => state.Applied.Length;
     public IReadOnlyList<TaxOrder> Orders => Array.AsReadOnly(state.Orders.ToArray());
     public IReadOnlyList<TaxDelivery> Deliveries => Array.AsReadOnly(state.Deliveries.ToArray());
@@ -117,26 +121,28 @@ public sealed class TaxSimulation
             Accounts = [new("village", "org-fixture-village", castle, sourceRice),
                 new("treasury", owner, castle, world.Resources.Single().Rice)],
             Grants = [new(characters[0].Id, castle, "tax-order", "試作の徴税命令委任", 0, long.MaxValue),
-                new(characters[1].Id, castle, "collect-tax", "試作の徴収担当委任", 0, long.MaxValue)]
+                new(characters[1].Id, castle, "collect-tax", "試作の徴収担当委任", 0, long.MaxValue),
+                new(characters[0].Id, castle, "cancel-tax", "試作の取消命令委任", 0, long.MaxValue)]
         });
     }
 
-    public void Submit(string requestId, string issuerId, string castleId, int amount)
+    public void Submit(string requestId, string issuerId, string castleId, int amount, long? executeBy = null)
     {
         if (string.IsNullOrWhiteSpace(requestId) || amount <= 0) throw new ArgumentException("Positive amount and request ID required.");
         var existing = state.Orders.SingleOrDefault(o => o.RequestId == requestId);
         if (existing != null)
         {
-            if (existing.IssuerId != issuerId || existing.CastleId != castleId || existing.Requested != amount)
+            if (existing.IssuerId != issuerId || existing.CastleId != castleId || existing.Requested != amount || existing.ExecuteBy != executeBy)
                 throw new InvalidOperationException("Request ID reused with different payload.");
             return; // Retry retains logical identity, including after load.
         }
         Mutate(s =>
         {
+            if (executeBy < s.Tick) throw new ArgumentOutOfRangeException(nameof(executeBy));
             if (!s.World.Castles.Any(c => c.Id == castleId) || !Authorized(s, issuerId, castleId, "tax-order"))
                 throw new UnauthorizedAccessException("No active grant for this actor/target/action.");
             var order = new TaxOrder(requestId, requestId + "/case", issuerId, s.World.Definition.Characters[1].Id,
-                castleId, amount, 0, 0, TaxPhase.Dispatched, false, "", null);
+                castleId, amount, 0, 0, TaxPhase.Dispatched, false, "", null, executeBy);
             s.Orders = [.. s.Orders, order];
             s.Deliveries = [.. s.Deliveries, new(requestId + "/letter", requestId, DeliveryKind.Order,
                 issuerId, order.ExecutorId, checked(s.Tick + 1), false)];
@@ -205,6 +211,7 @@ public sealed class TaxSimulation
         var eventKind = kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport;
         Enqueue(s, order, eventKind, delivery.DueAt, [EventId(order, eventKind, previous.Attempt)], attempt);
     });
+    // Legacy administrative fixture hook. Product UI uses DispatchCancellation and waits for delivery/effect.
     public void Cancel(string requestId) => Mutate(s =>
     {
         var order = s.Orders.Single(o => o.RequestId == requestId);
@@ -212,7 +219,7 @@ public sealed class TaxSimulation
             throw new InvalidOperationException("Committed outcome cannot be cancelled.");
         s.Pending = s.Pending.Where(e => e.RequestId != requestId).ToArray();
         s.Deliveries = s.Deliveries.Select(d => d.RequestId == requestId && !d.Delivered && d.Kind == DeliveryKind.Order ? d with { Cancelled = true } : d).ToArray();
-        order = order with { Reserved = 0, Phase = TaxPhase.Cancelled, Reason = "発行者が取消" };
+        order = order with { Reserved = 0, Phase = TaxPhase.Cancelled, Reason = "発行者が取消", StoppedAt = s.Tick };
         Replace(s, order);
         QueueReport(s, order, []);
     });
@@ -223,6 +230,7 @@ public sealed class TaxSimulation
         Mutate(s =>
         {
             s.Tick = checked(s.Tick + 1);
+            ApplyDeadlinesAndCancellations(s);
             var due = s.Pending.Where(e => e.DueAt <= s.Tick).ToArray();
             // No implicit priority for resource conflicts: this fixture rejects conflicting decisions together.
             var decisions = due.Where(e => e.Kind == TaxEventKind.Decide).ToArray();
@@ -251,9 +259,11 @@ public sealed class TaxSimulation
         try
         {
             using var document = JsonDocument.Parse(json);
-            if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2 or 3))
+            if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2 or 3 or 4))
                 throw new InvalidDataException("Missing or unsupported save version.");
             var loaded = JsonSerializer.Deserialize<TaxSnapshot>(json, JsonOptions) ?? throw new InvalidDataException("Empty save.");
+            if (number < 4 && (loaded.Cancellations.Length != 0 || loaded.Orders.Any(o => o.ExecuteBy != null || o.StoppedAt != null || o.CollectedAt != null || o.Phase == TaxPhase.Expired)))
+                throw new InvalidDataException("V4 deadline/cancellation data disguised as an older save.");
             if (number < 3)
             {
                 if (loaded.MigrationOrigin != null || loaded.FailureReports.Length != 0 || loaded.Deliveries.Any(d => d.LateDueAt != null || d.ArrivedLate) ||
@@ -261,11 +271,15 @@ public sealed class TaxSimulation
                     throw new InvalidDataException("V3 delivery data cannot be disguised as an older save.");
                 if (number == 1 && (loaded.FailureNotices.Length != 0 || loaded.Deliveries.Any(d => d.Attempt != 1 || d.Lost || d.FailOnArrival || d.Cancelled) || loaded.Pending.Any(e => e.Attempt != 1)))
                     throw new InvalidDataException("Retry data cannot be disguised as a v1 save.");
-                loaded.Version = 3;
                 loaded.MigrationOrigin = number;
                 loaded.FailureNotices = loaded.FailureNotices.Select(n => n with { LegacyImported = true }).ToArray();
                 loaded.Deliveries = loaded.Deliveries.Select(d => d.Kind == DeliveryKind.Order && !d.Delivered &&
                     loaded.Orders.Any(o => o.RequestId == d.RequestId && o.Phase == TaxPhase.Cancelled) ? d with { Cancelled = true } : d).ToArray();
+            }
+            if (number < 4)
+            {
+                loaded.Version = 4;
+                loaded.MigrationOrigin ??= number;
             }
             return new TaxSimulation(loaded);
         }
@@ -319,6 +333,13 @@ public sealed class TaxSimulation
                 return; // A failed attempt completes, but no recipient knowledge, RNG draw or logical effect occurs.
             }
             s.Deliveries = s.Deliveries.Select(d => d.Id == delivery.Id ? d with { Delivered = true, ArrivedLate = late } : d).ToArray();
+            if (kind == DeliveryKind.Order && o.Phase is TaxPhase.Cancelled or TaxPhase.Expired)
+            {
+                if (!s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == kind))
+                    s.Knowledge = [.. s.Knowledge, new(o.RequestId + "/knowledge/order", o.ExecutorId, o.RequestId,
+                        kind, o.Requested, "実行停止済みの命令内容を受領", s.Tick)];
+                return; // Reception still informs the recipient; it does not restore execution authority/effect.
+            }
             // A physical copy is received, but the stable logical message is recognized only once.
             if (s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == kind)) return;
             if (late) e = e with { Kind = kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport };
@@ -362,7 +383,7 @@ public sealed class TaxSimulation
                     var amount = o.Reserved;
                     s.Accounts = s.Accounts.Select(a => a.Id == "village" ? a with { Balance = checked(a.Balance - amount) }
                         : a with { Balance = checked(a.Balance + amount) }).ToArray();
-                    o = o with { Reserved = 0, Collected = amount, Phase = amount == o.Requested ? TaxPhase.Completed : TaxPhase.Partial,
+                    o = o with { Reserved = 0, Collected = amount, CollectedAt = s.Tick, Phase = amount == o.Requested ? TaxPhase.Completed : TaxPhase.Partial,
                         Reason = amount == o.Requested ? "全量を徴収" : "在庫不足により部分達成" };
                 }
                 Replace(s, o);
@@ -380,7 +401,7 @@ public sealed class TaxSimulation
     private static void Validate(TaxSnapshot s)
     {
         static void Check(bool ok, string message) { if (!ok) throw new InvalidDataException(message); }
-        Check(s.Version == 3 && s.MigrationOrigin is null or 1 or 2 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
+        Check(s.Version == 4 && s.MigrationOrigin is null or 1 or 2 or 3 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
         var world = s.World.Restore();
         Check(s.Accounts.Length == 2 && s.Accounts.Select(a => a.Id).ToHashSet().SetEquals(["village", "treasury"]), "Invalid accounts.");
         Check(s.Accounts.All(a => a.Balance >= 0 && world.Castles.ContainsKey(a.CustodyCastleId) &&
@@ -398,7 +419,7 @@ public sealed class TaxSimulation
             (o.Phase is TaxPhase.Completed or TaxPhase.Partial ? o.Collected > 0 : o.Collected == 0) &&
             (o.Phase != TaxPhase.Completed || o.Collected == o.Requested) &&
             (o.Phase != TaxPhase.Partial || o.Collected < o.Requested) &&
-            (!o.Reported || o.Phase is TaxPhase.Completed or TaxPhase.Partial or TaxPhase.Refused or TaxPhase.Failed or TaxPhase.Cancelled)), "Invalid order state.");
+            (!o.Reported || o.Phase is TaxPhase.Completed or TaxPhase.Partial or TaxPhase.Refused or TaxPhase.Failed or TaxPhase.Cancelled or TaxPhase.Expired)), "Invalid order state.");
         Check(s.Orders.Sum(o => (long)o.Reserved) <= s.Accounts.Single(a => a.Id == "village").Balance, "Double reservation.");
         long collected = s.Orders.Sum(o => (long)o.Collected);
         Check(s.Accounts.Single(a => a.Id == "village").Balance == s.InitialSourceRice - collected &&
@@ -414,7 +435,7 @@ public sealed class TaxSimulation
                 d.Kind == (e.Kind == TaxEventKind.DeliverLateOrder ? DeliveryKind.Order : DeliveryKind.Report) && d.Attempt == e.Attempt &&
                 d.Lost && !d.Delivered && !d.Cancelled && d.LateDueAt == e.DueAt) : e.Attempt == 1) &&
             e.DependsOn.All(s.Applied.Contains)), "Invalid pending event or causal dependency.");
-        Check(s.Applied.All(id => s.FailureReports.Any(r => id == r.Id + "/event") || s.Orders.Any(o => new[] { TaxEventKind.Decide, TaxEventKind.Collect }.Any(kind => EventId(o, kind) == id) ||
+        Check(s.Applied.All(id => IsDeadlineOrCancellationMarker(s, id) || s.FailureReports.Any(r => id == r.Id + "/event") || s.Orders.Any(o => new[] { TaxEventKind.Decide, TaxEventKind.Collect }.Any(kind => EventId(o, kind) == id) ||
             s.Deliveries.Any(d => d.RequestId == o.RequestId && (EventId(o, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport, d.Attempt) == id ||
                 d.ArrivedLate && EventId(o, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverLateOrder : TaxEventKind.DeliverLateReport, d.Attempt) == id)))), "Unknown applied event.");
         Check(s.Deliveries.Select(d => d.Id).Distinct().Count() == s.Deliveries.Length && s.Knowledge.Select(k => k.Id).Distinct().Count() == s.Knowledge.Length, "Duplicate delivery/knowledge.");
@@ -475,7 +496,7 @@ public sealed class TaxSimulation
                 Check(s.Deliveries.Any(d => d.RequestId == o.RequestId && d.Kind == kind && !d.Delivered && !d.Cancelled), "No pending or failed logical delivery.");
             }
             Check((o.Phase == TaxPhase.Dispatched) == !s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == DeliveryKind.Order) ||
-                o.Phase == TaxPhase.Cancelled, "Order knowledge/phase mismatch.");
+                o.Phase is TaxPhase.Cancelled or TaxPhase.Expired, "Order knowledge/phase mismatch.");
             Check(o.Reported == s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == DeliveryKind.Report), "Report knowledge mismatch.");
             Check(s.Applied.Contains(EventId(o, TaxEventKind.Decide)) == (o.DecisionRoll != null) &&
                 (o.DecisionRoll == null || o.DecisionRoll is >= 0 and < 100), "Decision/recorded random draw mismatch.");
@@ -486,5 +507,6 @@ public sealed class TaxSimulation
                 k.Kind == DeliveryKind.Order ? k.Amount == o.Requested && k.CharacterId == o.ExecutorId :
                     k.Amount == o.Collected && k.CharacterId == o.IssuerId && k.Content == o.Reason), "Knowledge payload mismatch.");
         }
+        ValidateDeadlinesAndCancellations(s);
     }
 }
