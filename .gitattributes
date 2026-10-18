@@ -1,0 +1,2 @@
+# Preserve exact source bytes used by shared-module provenance checks.
+Scripts/art_shared/*.py -text

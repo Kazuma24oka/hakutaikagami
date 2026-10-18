@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "id": "officer-modular-production-v1",
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "texture_filter": "nearest",
+  "alpha": "binary",
+  "portrait_policy": "six-head-separate-art-shared-selection-ids",
+  "fit_policy": "one-uniform-registration-no-part-fit",
+  "generation_backend": "comfyui",
+  "backend_decision": "production choice for inspectable workflow/seed/masks; no generator is executed by this contract; no fallback without updated recorded decision",
+  "base_body": {
+    "face_features": false,
+    "hair": false,
+    "beard": false,
+    "clothing": false,
+    "footwear": false,
+    "genital_detail": false,
+    "surface": "skin-colored-featureless-pelvis",
+    "adult": true
+  },
+  "decisions": {
+    "size": "User: 64×96・1倍：これでいこう",
+    "portrait": "6-head standing portrait remains separate artwork",
+    "selection": "One shared selection ID resolves authored small/portrait parts; no automatic shrinking",
+    "base": "Bare skin-colored body, featureless pelvis; no face, hair, underwear or equipment baked in",
+    "masks": "Separate ownership, skin/lacquer palette, occlusion, control/weights, joint overlap and hidden construction",
+    "safety": "No native mouse tools; no cursor or OS input setting changes",
+    "preservation": "No existing files deleted; main/design/foundation/Confirmed unchanged"
+  },
+  "authoring_geometry": {
+    "status": "UNMEASURED_NOT_A_USER_DECISION",
+    "reference": null,
+    "scalp_top": null,
+    "chin": null,
+    "neck": null,
+    "shoulders": null,
+    "pelvis": null,
+    "joints": null,
+    "soles": null,
+    "head_ratio": null,
+    "palette": null,
+    "directions": null,
+    "motion_padding": null
+  },
+  "review_policy": "technical / semantic / appearance / runtime separately bound to current input, mask, tool and output hashes; no automatic visual approval",
+  "mask_roles": {
+    "ownership": "Unique visible source pixel owner, character-relative left/right",
+    "material": "Recolor skin or lacquer only; preserve alpha and all other pixels",
+    "occlusion": "Direction/phase-aware front/back relationship; independent of owner ID",
+    "controls": "Joint/face tracking IDs and deformation weights; not source ownership",
+    "overlap": "Declared bounded shared joint zone and allowed owner IDs",
+    "hidden": "Unobserved drawn surface separately authored and reviewed; do not fill face using nearest neighboring pixels"
+  },
+  "layer_slots": [
+    "body",
+    "face_features",
+    "beard",
+    "hair_back",
+    "underclothing",
+    "armor_torso",
+    "armor_shoulders",
+    "armor_arms",
+    "armor_waist",
+    "armor_thighs",
+    "armor_shins",
+    "footwear",
+    "coat_back",
+    "coat_front",
+    "weapon",
+    "hand_front",
+    "hair_front",
+    "helmet"
+  ],
+  "layer_order_status": "Per direction/pose authoring required; slots are not a universal draw order",
+  "stage_order": [
+    "front_authoring",
+    "parts",
+    "directions",
+    "motion",
+    "release"
+  ]
+}

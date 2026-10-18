@@ -512,3 +512,7 @@
 - **Confirmed**：[独立C#ロジック・機能別＋共通フォルダ・責務分離・パーツ規格・固定Seed・並行検証・合格方針](Confirmed/GODOT_IMPLEMENTATION_READINESS_PRINCIPLES.md)。
 - **Proposals**：[ABCD比較履歴とクラスAPI・Pivot・スキーマ・受入閾値など未確定詳細](Proposals/GODOT_IMPLEMENTATION_READINESS_7_OPTIONS.md)。
 - Godotの実機検証・正式採用・製造開始は未実施／未決定。既存Confirmedと整合、main変更なし、Archive移動・永久削除なし。
+
+
+## 武将パーツ制作の再監査（2026-10-18）
+- [指定資料・失敗・再利用した検査と固定工程](Proposals/OFFICER_ART_PRODUCTION_AUDIT.md)。旧パーツは不採用、裸素体は未制作。64×96・1倍の決定は維持。制作は記録した計画と共通ゲートを通す。

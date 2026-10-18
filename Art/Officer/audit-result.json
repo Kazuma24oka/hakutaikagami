@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "date_jst": "2026-10-18",
+  "scope": "production-audit-and-technical-regression-not-artwork-approval",
+  "tests": {
+    "run": 24,
+    "passed": 24,
+    "failed": 0
+  },
+  "game_build": {
+    "status": "PASS",
+    "warnings": 0,
+    "errors": 0
+  },
+  "godot_import": "PASS",
+  "unplanned_production_exit": 2,
+  "retired_exporter_exit": 1,
+  "retired_godot_scene_exit": 2,
+  "browser": {
+    "errors": 0,
+    "rejected_images_displayed": 0
+  },
+  "rejected_pngs": "UNCHANGED",
+  "new_images_generated": 0,
+  "native_mouse_input": 0,
+  "external_reference_hashes_verified_unchanged": 151,
+  "intentional_source_updates": [
+    "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\README.md",
+    "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Scripts\\build_officer_parts_trial.py"
+  ],
+  "ci": "CONFIGURED_NOT_RUN_ON_GITHUB_YET",
+  "core_tests": "NOT_RERUN_NO_CORE_CHANGES",
+  "artwork_quality": "NOT_ACCEPTED",
+  "bare_base_body": "NOT_AUTHORED",
+  "book_diagrams": "NOT_INSPECTED_CURRENT_RAG_LIMIT",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0"
+}

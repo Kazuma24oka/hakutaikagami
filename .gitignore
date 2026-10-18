@@ -4,3 +4,7 @@
 .tools/
 TestResults/
 .vs/
+
+.art-test-tmp/
+.utmp/
+**/__pycache__/

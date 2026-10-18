@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "status": "BLOCKED_PRODUCTION_AUDIT_IMPLEMENTED",
+  "front_acceptance": "NOT_CREATED",
+  "plans": {},
+  "accepted_scope": [
+    "64x96 native canvas",
+    "normal display 1x",
+    "6-head portrait linked via shared selection ids"
+  ],
+  "rejected": [
+    {
+      "id": "OfficerPartsV1",
+      "reason": "User rejected as roughly 5 points; removal destroyed facial features, short hair was a clipped contour; underlayer was clothing; no valid nude base",
+      "scope": "Reject modular art and semantics; original size-selection remains valid",
+      "path": "Art/Trials/OfficerPartsV1"
+    },
+    {
+      "id": "body-v2",
+      "reason": "Face baked in, changed proportions, shorts instead of featureless skin-colored pelvis, uncontrolled generated alpha/background; do not use as base",
+      "path": "C:/Users/hizen/.codex/generated_images/01a14d72-71b3-7531-83f9-1b21fa289173/exec-10153662-86f2-4f7a-bc0c-9ea890051721.png"
+    }
+  ],
+  "unresolved": [
+    "Source-defined bald/faceless adult base not yet authored",
+    "Measure native geometry and shared pivots against actual source before authoring downstream",
+    "No accepted semantic masks or protected facial ROIs",
+    "No project-specific ComfyUI workflow/model/masks/seed bound to current artwork",
+    "Book diagram inspection unavailable through current RAG; do not claim visual review",
+    "Directions and animation contract not yet authored"
+  ],
+  "scope_limits": [
+    "No new image generated during audit",
+    "No original project or purchased tool modified",
+    "No full book or book image obtained",
+    "No blanket control of arbitrary external scripts/API calls; registered entry and persistent AGENTS policy only"
+  ],
+  "preserved_entrypoints": {
+    "archive": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\rejected-officer-entrypoints-20261018.zip",
+    "sha256": "127cc0fb169bf8d513c9ca0494035558ddb9df35a20f078f84612bfbfb456bc3",
+    "crc_and_all_contents_verified": true,
+    "files": [
+      "Scripts/build_officer_parts_trial.py",
+      "Docs/Proposals/officer-parts-review.html",
+      "Game/Scripts/OfficerPartsTrial.cs"
+    ]
+  },
+  "latest_validation": "Art/Officer/audit-result.json",
+  "reference_inventory": "Art/Officer/reference-inventory.json"
+}
