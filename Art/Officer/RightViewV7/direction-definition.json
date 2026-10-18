@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "scale": 1,
+  "direction": "screen-right",
+  "near_character_side": "left",
+  "far_character_side": "right",
+  "baseline_scope": "front source identity only",
+  "status": "AUTHORING_TARGETS_NOT_GENERATED_MEASUREMENTS",
+  "anchors": {
+    "scalp_top": [
+      32,
+      13
+    ],
+    "chin": [
+      35,
+      32
+    ],
+    "neck": [
+      32,
+      34
+    ],
+    "shoulder_left": [
+      30,
+      38
+    ],
+    "shoulder_right": [
+      34,
+      38
+    ],
+    "elbow_left": [
+      30,
+      49
+    ],
+    "elbow_right": [
+      35,
+      49
+    ],
+    "wrist_left": [
+      30,
+      61
+    ],
+    "wrist_right": [
+      35,
+      61
+    ],
+    "pelvis": [
+      31,
+      63
+    ],
+    "knee_left": [
+      32,
+      77
+    ],
+    "knee_right": [
+      35,
+      77
+    ],
+    "ankle_left": [
+      30,
+      87
+    ],
+    "ankle_right": [
+      34,
+      87
+    ],
+    "sole_left": [
+      35,
+      91
+    ],
+    "sole_right": [
+      36,
+      91
+    ]
+  },
+  "slot_ids": [
+    "torso",
+    "shoulders",
+    "arms",
+    "waist",
+    "legs",
+    "footwear",
+    "coat",
+    "sword"
+  ],
+  "base_policy": "Adult faceless hairless unclothed skin surface; featureless pelvis, no genitals, underwear, footwear.",
+  "geometry_policy": "Side silhouette may be narrower; same vertical landmarks. Entire canvas uniform registration only.",
+  "generation_policy": "Raw image retained. Model output is a proposal; native alpha/palette conversion explicitly recorded. Seed/model not exposed; no exact stochastic reproducibility claim.",
+  "hidden_policy": "Hidden surfaces require explicit authored completion and masks; visible cuts alone do not certify interchangeable rig."
+}

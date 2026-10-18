@@ -1,0 +1,72 @@
+{
+  "tool": "image_gen.imagegen",
+  "seed": "not exposed",
+  "model_version": "not exposed",
+  "transparent_background": true,
+  "raw_preserved": true,
+  "exact_model_rerun_guarantee": false,
+  "attempts": [
+    {
+      "purpose": "first armored side",
+      "prompt": {
+        "path": "Art/Officer/RightViewV7/rejected-long-torso-prompt.txt",
+        "sha256": "827963f4cd0d4860b740212dc38b1d2c394df881e37f7796756635bb9c15e636"
+      },
+      "raw": {
+        "path": "Art/Officer/RightViewV7/rejected-long-torso-raw.png",
+        "sha256": "1bf93bdf59cf5ba2f71d974f7cb649b314674c342ca91989b7842a26a446e0b6"
+      },
+      "references": [
+        {
+          "path": "Art/Trials/OfficerScaleV1/front-review-source.png",
+          "sha256": "e80e43ceff78e07406814e7fd4edf78590049c9304898b804cd394f8030448ef"
+        }
+      ],
+      "decision": "REJECTED: long torso, shoulder/chin above native targets; never used for final source"
+    },
+    {
+      "purpose": "guide-registered armored side",
+      "prompt": {
+        "path": "Art/Officer/RightViewV7/generation-prompt.txt",
+        "sha256": "0566468045534e2b820432c5fc5894e56bd48c2eebaa94ef613b90a16a95428d"
+      },
+      "raw": {
+        "path": "Art/Officer/RightViewV7/armored-raw.png",
+        "sha256": "e2e20eb08b2385cdc7e1f7b62452781ec1e1fe4317946b81f9ff7edde9e4e0fb"
+      },
+      "references": [
+        {
+          "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+          "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+        },
+        {
+          "path": "Art/Officer/RightViewV7/layout-guide-12x.png",
+          "sha256": "585b7efb4038a58b319313af487738b156ab770d65660a8a8a81947b22ee4116"
+        }
+      ],
+      "decision": "Static native authoring source; whole-canvas conversion, not model-exact 64x96 claim"
+    },
+    {
+      "purpose": "bare side skin shading",
+      "prompt": {
+        "path": "Art/Officer/RightViewV7/body-generation-prompt.txt",
+        "sha256": "ece9692ec076d13d0723ee3b8b95754368968b42854cb009765f87671ba5459b"
+      },
+      "raw": {
+        "path": "Art/Officer/RightViewV7/body-raw.png",
+        "sha256": "2d08eb8ee179808f47e2cf64e9c085790225c3a6c8361ad7c5856ecef344a853"
+      },
+      "references": [
+        {
+          "path": "Art/Officer/RightViewV7/armored-native-candidate.png",
+          "sha256": "193fc65f2188b2032b976548afc09e5fbe4b6fcb35ca7de6b487506093722357"
+        },
+        {
+          "path": "Art/Officer/RightViewV7/body-target-12x.png",
+          "sha256": "6aebf37f552c864421bf82bb4ef6e2e6e8943ce2c3c78aadc903bf8856dc80d7"
+        }
+      ],
+      "decision": "Shading proposal only. Fixed 17-region silhouette determines actual base; head and pelvis explicitly blanked with authored skin colors."
+    }
+  ]
+}
