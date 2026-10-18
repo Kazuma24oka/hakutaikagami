@@ -427,5 +427,10 @@
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
 
 ## P1 ID生成・状態遷移・復旧境界の詳細（未確定・ABCD）
-- [採番・親子イベント・許可／禁止遷移・再試行限度・補償失敗・乱数保存・復旧受入の7項目](Proposals/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [採番・親子イベント・許可／禁止遷移・再試行限度・補償失敗・乱数保存・復旧受入の7項目](Proposals/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [P1 ID・状態・復旧のB優先案](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)、[共通契約](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)、[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
+
+## P1 ID生成・状態遷移・復旧境界7項目のB案選択（2026-10-18）
+- [採番・親子イベント・許可遷移・再試行・補償・乱数／ロード・復旧受入のB優先案と未確定詳細](Proposals/P1_ID_TRANSITION_RECOVERY_BOUNDARIES_OPTIONS.md)。
+- F01/F02/F03/F07/F08、P0-A01/A02/A04/A06、P1共通契約・ID状態復旧B案と整合。新規Confirmedなし。
+- main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
