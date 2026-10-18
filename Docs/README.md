@@ -473,5 +473,10 @@
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
 
 ## P0/P1最小プロトタイプ製造開始ゲート（未確定・ABCD）
-- [P0/P1横断レビュー、技術・時間・権限・ID・資源・保存の着手ブロッカーと7項目の選択肢](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)。B推奨・未選択、D選択項目のみ次のチャットで自由記載。
+- [P0/P1横断レビュー、技術・時間・権限・ID・資源・保存の着手ブロッカーと7項目の選択肢](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [P1行動84項目](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)、[共通契約21項目](Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md)、[資源14項目](Proposals/P1_RESOURCE_14_CONSOLIDATED.md)とF01〜F08、P0-A01〜A06に整合。Confirmed・main変更なし、Archive移動・永久削除なし。
+
+## 最小プロトタイプ製造開始ゲート7項目のB案選択（2026-10-18）
+- [範囲・時間・権限・共通契約・資源会計・保存復旧・完成条件のB優先案と未決定事項](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)。
+- F01/F02/F03/F04/F07/F08、P0-A01〜A06、P1行動84項目・共通契約21項目・資源14項目と整合。自動進行＋任意停止は正式未確定。
+- 新規Confirmedなし、main変更なし、Archive移動・永久削除なし。製造開始ゲート未達、実装・テスト未実施。
