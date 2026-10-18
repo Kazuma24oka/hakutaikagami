@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "engine": "4.5.2-stable (official)",
+  "dotnet": "10.0.10",
+  "binding": "0980dfac5253ded81ecd996c32ea7ed16cda268f185e525866fbb41727a2ab9c",
+  "cpu_cases": 12288,
+  "gpu_cases": 132,
+  "max_rgb_difference": 0,
+  "native_canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "live": [
+    {
+      "speed": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "speed": 0.25,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  ],
+  "dynamic_toggles": [
+    "torso",
+    "shoulders",
+    "arms",
+    "waist",
+    "legs",
+    "footwear",
+    "coat",
+    "sword"
+  ],
+  "native_input": 0,
+  "scope": "Left-only surface-rig trial; no world tick"
+}

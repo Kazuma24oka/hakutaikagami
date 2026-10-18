@@ -1,0 +1,10 @@
+  復元対象のプロジェクトを決定しています...
+  復元対象のすべてのプロジェクトは最新です。
+  HakutaiKagami.Core -> C:\Workspace\Projects\Games\hakutaikagami\Core\bin\Debug\net8.0\HakutaiKagami.Core.dll
+  HakutaiKagami.Game -> C:\Workspace\Projects\Games\hakutaikagami\Game\.godot\mono\temp\bin\Debug\HakutaiKagami.Game.dll
+
+ビルドに成功しました。
+    0 個の警告
+    0 エラー
+
+経過時間 00:00:02.09

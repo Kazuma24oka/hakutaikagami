@@ -1,0 +1,35 @@
+{
+  "status": "AUTHOR_INSPECTED_PROVISIONAL_NOT_USER_FINAL_ACCEPTANCE",
+  "actual_images_inspected": [
+    "LeftViewV11/removal-review.png",
+    "LeftViewV11/isolated-review.png",
+    "LeftViewV11/hidden-review.png",
+    "LeftViewV11/four-directions.png",
+    "LeftMotionV12/walk-probes.png",
+    "LeftMotionV12/isolated-probes.png",
+    "LeftMotionV12/godot-all.png",
+    "LeftMotionV12/godot-bare.png",
+    "LeftMotionV12/godot-walk-frames.png"
+  ],
+  "findings": [
+    "Face/eyes/beard remain after hair off; body has no features or clothes.",
+    "Katana stays behind body and near armor; parts are new left art, not mirrored right costume.",
+    "Continuous bare body and opposite phase limbs inspected, actual far limb pixel contribution tested.",
+    "Static sole91 and native1x retained; source chin29 vs body target32 is recorded as provisional variance.",
+    "Skinny body, bounded hidden lamellae and dark far donors are trial assets. No approval of final anatomy or six-head art."
+  ],
+  "runtime_evidence": [
+    {
+      "path": "Art/Officer/LeftMotionV12/runtime-validation.json",
+      "sha256": "da1df21ed2ff739aaf183b738bf3503c47d8c74bb43eb8cce0f99f45d0ff1853"
+    },
+    {
+      "path": "Art/Officer/LeftMotionV12/browser-validation.json",
+      "sha256": "62e40420f84e61000d98535a6f1d219bbf3f6f759c93d653f59db59e986e3533"
+    },
+    {
+      "path": "Art/Officer/LeftMotionV12/capture-validation.json",
+      "sha256": "e7d92d499015ac5e46977ff3a7ba5ef5b3bba8509d1e1f6b4483432ba0f5076b"
+    }
+  ]
+}

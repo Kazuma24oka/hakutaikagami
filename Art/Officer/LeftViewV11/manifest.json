@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "status": "STATIC_AUTHORING_TRIAL_NOT_SIDE_WALK",
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "binding": "0f7c48a7daf66dff56479d54015ea0141d91bfd068610cffefc460d1d1f00060",
+  "direction": "screen-left",
+  "near_character_side": "right",
+  "order": [
+    "sword",
+    "legs",
+    "footwear",
+    "torso",
+    "waist",
+    "coat",
+    "arms",
+    "shoulders",
+    "face",
+    "hair"
+  ],
+  "slots": [
+    "torso",
+    "shoulders",
+    "arms",
+    "waist",
+    "legs",
+    "footwear",
+    "coat",
+    "sword",
+    "face",
+    "hair"
+  ],
+  "geometry": {
+    "uniform_scale": 0.0625,
+    "source_translate": [
+      0,
+      1
+    ],
+    "body_translate": [
+      0,
+      0
+    ],
+    "per_part_fit": false
+  },
+  "conversion": {
+    "source_alpha_threshold": 200,
+    "source_palette_colors": 48,
+    "skin_palette_colors": 12,
+    "dither": false,
+    "sampling": "nearest",
+    "raw_retained": true
+  },
+  "layers": {
+    "sword": "Game/Assets/Trials/OfficerLeftViewV11/sword.png",
+    "legs": "Game/Assets/Trials/OfficerLeftViewV11/legs.png",
+    "footwear": "Game/Assets/Trials/OfficerLeftViewV11/footwear.png",
+    "torso": "Game/Assets/Trials/OfficerLeftViewV11/torso.png",
+    "waist": "Game/Assets/Trials/OfficerLeftViewV11/waist.png",
+    "coat": "Game/Assets/Trials/OfficerLeftViewV11/coat.png",
+    "arms": "Game/Assets/Trials/OfficerLeftViewV11/arms.png",
+    "shoulders": "Game/Assets/Trials/OfficerLeftViewV11/shoulders.png",
+    "face": "Game/Assets/Trials/OfficerLeftViewV11/face.png",
+    "hair": "Game/Assets/Trials/OfficerLeftViewV11/hair.png"
+  },
+  "restoration_difference_pixels": 0,
+  "combination_count": 1024,
+  "limitations": [
+    "Static near/far ownership only; no side walking or far-limb swing accepted.",
+    "Hidden cloth/armor completion is bounded authored flat color, not recovered source detail.",
+    "Body follows provisional front construction and is not final approved anatomy.",
+    "Joint probes are horizontal +/-1px elbow surface displacement only; not independent shoulder rotation or gait."
+  ]
+}

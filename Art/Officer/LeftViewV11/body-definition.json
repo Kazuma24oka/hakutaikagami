@@ -1,0 +1,594 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "scale": 1,
+  "direction": "screen-left",
+  "near_character_side": "right",
+  "far_character_side": "left",
+  "baseline_scope": "front source identity only",
+  "status": "AUTHORING_TARGETS_NOT_GENERATED_MEASUREMENTS",
+  "anchors": {
+    "scalp_top": [
+      31,
+      13
+    ],
+    "chin": [
+      28,
+      32
+    ],
+    "neck": [
+      31,
+      34
+    ],
+    "shoulder_right": [
+      33,
+      38
+    ],
+    "shoulder_left": [
+      29,
+      38
+    ],
+    "elbow_right": [
+      33,
+      49
+    ],
+    "elbow_left": [
+      28,
+      49
+    ],
+    "wrist_right": [
+      33,
+      61
+    ],
+    "wrist_left": [
+      28,
+      61
+    ],
+    "pelvis": [
+      32,
+      63
+    ],
+    "knee_right": [
+      31,
+      77
+    ],
+    "knee_left": [
+      28,
+      77
+    ],
+    "ankle_right": [
+      33,
+      87
+    ],
+    "ankle_left": [
+      29,
+      87
+    ],
+    "sole_right": [
+      28,
+      91
+    ],
+    "sole_left": [
+      27,
+      91
+    ]
+  },
+  "slot_ids": [
+    "torso",
+    "shoulders",
+    "arms",
+    "waist",
+    "legs",
+    "footwear",
+    "coat",
+    "sword"
+  ],
+  "base_policy": "Adult faceless hairless unclothed skin surface; featureless pelvis, no genitals, underwear, footwear.",
+  "geometry_policy": "Side silhouette may be narrower; same vertical landmarks. Entire canvas uniform registration only.",
+  "generation_policy": "Raw image retained. Model output is a proposal; native alpha/palette conversion explicitly recorded. Seed/model not exposed; no exact stochastic reproducibility claim.",
+  "hidden_policy": "Hidden surfaces require explicit authored completion and masks; visible cuts alone do not certify interchangeable rig.",
+  "body_parts": {
+    "head": {
+      "id": 1,
+      "polygon": [
+        [
+          34,
+          13
+        ],
+        [
+          28,
+          13
+        ],
+        [
+          24,
+          16
+        ],
+        [
+          23,
+          22
+        ],
+        [
+          23,
+          28
+        ],
+        [
+          26,
+          31
+        ],
+        [
+          30,
+          32
+        ],
+        [
+          34,
+          29
+        ],
+        [
+          36,
+          24
+        ],
+        [
+          36,
+          18
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "neck": {
+      "id": 2,
+      "polygon": [
+        [
+          33,
+          29
+        ],
+        [
+          27,
+          29
+        ],
+        [
+          27,
+          36
+        ],
+        [
+          33,
+          37
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "chest": {
+      "id": 3,
+      "polygon": [
+        [
+          34,
+          35
+        ],
+        [
+          28,
+          35
+        ],
+        [
+          25,
+          40
+        ],
+        [
+          25,
+          47
+        ],
+        [
+          28,
+          51
+        ],
+        [
+          35,
+          50
+        ],
+        [
+          37,
+          42
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "abdomen": {
+      "id": 4,
+      "polygon": [
+        [
+          35,
+          48
+        ],
+        [
+          28,
+          48
+        ],
+        [
+          27,
+          59
+        ],
+        [
+          35,
+          61
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "pelvis": {
+      "id": 5,
+      "polygon": [
+        [
+          35,
+          57
+        ],
+        [
+          27,
+          57
+        ],
+        [
+          26,
+          65
+        ],
+        [
+          29,
+          68
+        ],
+        [
+          35,
+          66
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "upper_arm_left": {
+      "id": 6,
+      "polygon": [
+        [
+          30,
+          37
+        ],
+        [
+          26,
+          38
+        ],
+        [
+          25,
+          49
+        ],
+        [
+          29,
+          51
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "forearm_left": {
+      "id": 7,
+      "polygon": [
+        [
+          29,
+          48
+        ],
+        [
+          25,
+          49
+        ],
+        [
+          25,
+          59
+        ],
+        [
+          28,
+          61
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "hand_left": {
+      "id": 8,
+      "polygon": [
+        [
+          28,
+          58
+        ],
+        [
+          25,
+          59
+        ],
+        [
+          24,
+          63
+        ],
+        [
+          26,
+          65
+        ],
+        [
+          29,
+          63
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "thigh_left": {
+      "id": 9,
+      "polygon": [
+        [
+          31,
+          63
+        ],
+        [
+          26,
+          63
+        ],
+        [
+          25,
+          71
+        ],
+        [
+          26,
+          78
+        ],
+        [
+          30,
+          78
+        ],
+        [
+          32,
+          70
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "calf_left": {
+      "id": 10,
+      "polygon": [
+        [
+          30,
+          76
+        ],
+        [
+          26,
+          76
+        ],
+        [
+          27,
+          87
+        ],
+        [
+          31,
+          88
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "foot_left": {
+      "id": 11,
+      "polygon": [
+        [
+          31,
+          86
+        ],
+        [
+          27,
+          86
+        ],
+        [
+          26,
+          89
+        ],
+        [
+          21,
+          90
+        ],
+        [
+          21,
+          91
+        ],
+        [
+          32,
+          91
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "thigh_right": {
+      "id": 12,
+      "polygon": [
+        [
+          35,
+          63
+        ],
+        [
+          29,
+          63
+        ],
+        [
+          28,
+          70
+        ],
+        [
+          29,
+          78
+        ],
+        [
+          34,
+          78
+        ],
+        [
+          36,
+          71
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "calf_right": {
+      "id": 13,
+      "polygon": [
+        [
+          34,
+          76
+        ],
+        [
+          29,
+          76
+        ],
+        [
+          30,
+          83
+        ],
+        [
+          31,
+          88
+        ],
+        [
+          35,
+          88
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "foot_right": {
+      "id": 14,
+      "polygon": [
+        [
+          35,
+          86
+        ],
+        [
+          31,
+          86
+        ],
+        [
+          30,
+          88
+        ],
+        [
+          23,
+          90
+        ],
+        [
+          22,
+          91
+        ],
+        [
+          36,
+          91
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "upper_arm_right": {
+      "id": 15,
+      "polygon": [
+        [
+          37,
+          38
+        ],
+        [
+          32,
+          37
+        ],
+        [
+          30,
+          42
+        ],
+        [
+          31,
+          50
+        ],
+        [
+          36,
+          51
+        ],
+        [
+          38,
+          44
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "forearm_right": {
+      "id": 16,
+      "polygon": [
+        [
+          36,
+          48
+        ],
+        [
+          31,
+          48
+        ],
+        [
+          30,
+          54
+        ],
+        [
+          31,
+          61
+        ],
+        [
+          35,
+          62
+        ],
+        [
+          37,
+          55
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    },
+    "hand_right": {
+      "id": 17,
+      "polygon": [
+        [
+          35,
+          59
+        ],
+        [
+          31,
+          59
+        ],
+        [
+          30,
+          63
+        ],
+        [
+          32,
+          65
+        ],
+        [
+          36,
+          64
+        ],
+        [
+          36,
+          61
+        ]
+      ],
+      "kind": "authored-hidden-anatomy-not-observed"
+    }
+  },
+  "body_draw_order": [
+    "head",
+    "neck",
+    "chest",
+    "abdomen",
+    "pelvis",
+    "upper_arm_left",
+    "forearm_left",
+    "hand_left",
+    "thigh_left",
+    "calf_left",
+    "foot_left",
+    "thigh_right",
+    "calf_right",
+    "foot_right",
+    "upper_arm_right",
+    "forearm_right",
+    "hand_right"
+  ],
+  "sword_side": "character-left FAR side: behind trunk and near arm, never near-side mirrored katana",
+  "body_geometry_policy": "Reflect existing provisional side geometry, exchange character-relative side names. New armor source independently generated. No new nude-body generation."
+}
