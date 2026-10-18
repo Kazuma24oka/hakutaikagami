@@ -1,0 +1,7 @@
+{
+  "tool": "image_gen.imagegen",
+  "request_id": "7cda23ac-14c4-49a4-94fc-505afff36c7f",
+  "stage": "output moderation",
+  "result": "blocked sexual category; no output saved",
+  "action": "No retry or model fallback. Existing featureless adult game base reused with explicit rear material, no body shape generation."
+}

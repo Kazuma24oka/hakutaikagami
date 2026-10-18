@@ -1,0 +1,56 @@
+{
+  "binding": "c20c4455b6d804c6ca98edf3b847e44d04fd65aeb16074eff0c18a3805f3034b",
+  "technical": "PASS for provisional rear-only native trial",
+  "appearance": "AUTHOR_INSPECTED_PROVISIONAL_NOT_USER_ACCEPTED",
+  "reviewer": "Codex actual native/enlarged source and GPU PNG inspection",
+  "observations": [
+    "Inspected original front/right source and provisional body, rear armor photo for structural reference only; no external photo copied into asset.",
+    "Inspected both rear generated images. First small-head/high-shoulder result rejected; second native source and front/right/rear board inspected.",
+    "Rear source is new artwork with no face, character-left sword at screen-left. Source top6/sole91 retained; guide top4 is not claimed as measured source top.",
+    "Inspected standalone/hair-off/armor removal and white/black/gray background boards. Ear/nape body-owned; bounded connectors prevent detached ears.",
+    "Fixed waist ownership formerly mixed into coat, sword formerly split into arms, and one outside-source hand boundary pixel. All1024 source/base-restoration states checked.",
+    "Inspected rear eight-phase body/armor removal/isolation boards, actual Godot all/bare/extreme-stride/resize screenshots. Front/right originals untouched.",
+    "All-off bare body stays connected; source restoration, left sword, rigid hair/sword, support sole and empty face slot have dedicated regressions.",
+    "CPU/browser12288 and GPU132 cases agree. Actual viewport native64x96 and enlarged256x384 match all8 walk frames; normal/quarter-speed loop each visits8 indices."
+  ],
+  "limitations": [
+    "Existing provisional V2 anatomy remains; rear material/hidden cuirass/sleeve completion is simplified and not final art.",
+    "Model did not provide a new rear bare-body output; no claim of AI-generated rear body.",
+    "Mirrored body template retains approximate lateral hand/foot targets, not recovered hidden anatomical measurements.",
+    "No final physical gait/bone-length guarantee, left view, world movement, portrait system implementation or Core changes."
+  ],
+  "evidence": [
+    {
+      "path": "Art/Officer/BackMotionV10/runtime-validation.json",
+      "sha256": "04712b26868a6c311a3782fb755f36236ca8124ffe64d4388b5925d6dc24c9d4"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/capture-validation.json",
+      "sha256": "709c1ed27a0bda4157d9b9cd27281de5e9b02ab902f4b631cc077896b7d40f9b"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/browser-validation.json",
+      "sha256": "62e40420f84e61000d98535a6f1d219bbf3f6f759c93d653f59db59e986e3533"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/python-tests.txt",
+      "sha256": "0e7c748b578169abc744a176a0b546d07d00f9cb31db8a50ed0808fcac2d136e"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/godot-walk-2.png",
+      "sha256": "e0e24bed86345fa776e40507be80488194687cdedd7db73a4c3b35f0e8c54799"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/godot-bare.png",
+      "sha256": "371c207c4d999e0bb3941522eb45de4fdf4f5abb75469091538a3b166c9b21b8"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/godot-resized.png",
+      "sha256": "3d0125ae9746f1d357da1f1a61d2eb462da9f68a584e12ae3d09b962d1bc0f5c"
+    },
+    {
+      "path": "Art/Officer/BackMotionV10/walk-probes.png",
+      "sha256": "54aa516d00c8c5730ead34778d79c353d45d7a987e8e88d7d6591756ed8bfa89"
+    }
+  ]
+}

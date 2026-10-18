@@ -37,3 +37,5 @@ Godot表示の現在の入口はMainの「武将表示」タブ（`--officer-mot
 右向きの静止試作V7は `Docs/Proposals/OFFICER_RIGHT_VIEW_V7.md`、計画はwork-recordのright_view_plan。正面の承認を横の承認へ流用しない。64×96の固定マスク、原本、所有/素材候補/隠れ面/遮蔽/関節制御を保持する。限定肘±1px確認は横歩行ではない。隠れ面の単色補完と暫定体型は未完成事項。右向きGodot組込みは未実施。
 
 右向き待機/歩行V8は `Docs/Proposals/OFFICER_RIGHT_MOTION_V8.md`。静止V7/正面V6は保持。work-recordのright_motion_planと独立シーンOfficerRightMotionTrialを使う。近遠の実可視寄与とLマスクalphaを回帰へ固定し、画素一致だけで描画欠落を合格にしない。遠側は同寸素材の限定補完、仮体型/未観測面の完成扱いをしない。Show-OfficerRightMotion.ps1で起動、Validate-OfficerRightMotion.ps1で実GPU確認。
+
+背面V9/V10は `Docs/Proposals/OFFICER_BACK_VIEW_MOTION_V9_V10.md`。既存V2形状の登録と背面用肌面、新規の背面甲冑を使用。裸素体の画像生成拒否後は再試行/モデル代替をせず既存形状を再利用した。back_view_plan/back_motion_planと独立OfficerBackMotionTrialを使う。顔slotは背面では空、本人左が画面左で刀を佩用。耳を髪へ所有させず接続/連結を検査。仮体型/補完面を最終承認にしない。Show/Validate-OfficerBackMotion.ps1が入口。
