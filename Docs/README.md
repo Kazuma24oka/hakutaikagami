@@ -386,5 +386,10 @@
 - 新規Confirmedなし、main変更なし、今回Archive移動・永久削除なし。
 
 ## P1代表コマンド・完成テスト（未確定・ABCD）
-- [5分類の代表コマンド、正常・部分達成・失敗・越権・中断・NPC反応・セーブ再現性の7項目](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [5分類の代表コマンド、正常・部分達成・失敗・越権・中断・NPC反応・セーブ再現性の7項目](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [63項目統合](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)、[P1/P2範囲](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)およびF01/F02/F04/F07/F08、P0-A01〜A06と整合。Confirmedとmain変更なし。Archive移動・永久削除なし。
+
+## P1代表コマンド・完成テスト7項目のB案選択（2026-10-18）
+- [5分類の代表操作、成否・越権・中断／再開・NPC反応・同時刻競合／ロード・P1完了のB案と保留詳細](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。
+- F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目・P1/P2範囲と整合。自動進行＋任意停止は未確定。テスト実施・P1完了宣言なし。
+- Confirmed・main変更なし。Archive移動・永久削除なし。
