@@ -409,5 +409,10 @@
 - 新規Confirmedなし、main変更なし、資料内容の永久削除なし。
 
 ## P1共通コマンド契約（未確定・ABCD、2026-10-18）
-- [コマンド／案件／イベントID、権限、状態、費用・引当、失敗復旧、通知、完成条件の7項目](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。B推奨、未選択。Dを選んだ項目のみ次のチャットで自由記載。
+- [コマンド／案件／イベントID、権限、状態、費用・引当、失敗復旧、通知、完成条件の7項目](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [84項目最終統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)とF01/F02/F03/F04/F07/F08、P0-A01〜A06に整合。自動進行方式は未確定。新規Confirmed追加なし、main変更なし、Archive移動・永久削除なし。
+
+## P1共通コマンド契約7項目のB案選択（2026-10-18）
+- [ID・権限・状態・費用・復旧・通知・完成条件のB優先案と未決定詳細](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。
+- F01〜F04/F07/F08、P0-A01〜A06、P1設計84項目と整合。自動進行＋任意停止は未確定。新規Confirmed追加なし。
+- main変更なし、今回Archive移動・永久削除なし。
