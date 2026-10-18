@@ -13,7 +13,11 @@ public sealed class DeliveryRecoveryTests
     private static void Advance(TaxSimulation sim, int count) { for (int i = 0; i < count; i++) sim.AdvanceOneTick(); }
     private static TaxDelivery Latest(TaxSimulation sim, DeliveryKind kind) => sim.Deliveries.Where(d => d.Kind == kind).OrderBy(d => d.Attempt).Last();
     private static string Sender(DeliveryKind kind) => kind == DeliveryKind.Order ? "character-001" : "character-002";
-    private static void Notice(TaxSimulation sim, DeliveryKind kind) => sim.ReceiveFailureNotice(Latest(sim, kind).Id, Sender(kind));
+    private static void Notice(TaxSimulation sim, DeliveryKind kind)
+    {
+        sim.DispatchFailureReport(Latest(sim, kind).Id, "character-003");
+        sim.AdvanceOneTick();
+    }
     private static void Retry(TaxSimulation sim, DeliveryKind kind) => sim.RetryDelivery("tax-001", kind, Sender(kind));
     private static TaxSimulation LostOrder()
     {
@@ -42,14 +46,14 @@ public sealed class DeliveryRecoveryTests
     [Fact] public void FailureNoticeRequiresActualLossAndCorrectObserver()
     {
         var sim = Create(); Submit(sim); var before = sim.SaveJson();
-        Assert.Throws<InvalidOperationException>(() => sim.ReceiveFailureNotice("tax-001/letter", "character-001"));
+        Assert.Throws<InvalidOperationException>(() => sim.DispatchFailureReport("tax-001/letter", "character-003"));
         Assert.Equal(before, sim.SaveJson()); sim.FailNextDelivery("tax-001", DeliveryKind.Order); sim.AdvanceOneTick(); before = sim.SaveJson();
-        Assert.Throws<InvalidOperationException>(() => sim.ReceiveFailureNotice("tax-001/letter", "character-003")); Assert.Equal(before, sim.SaveJson());
+        Assert.Throws<UnauthorizedAccessException>(() => sim.DispatchFailureReport("tax-001/letter", "unknown")); Assert.Equal(before, sim.SaveJson());
     }
     [Fact] public void FailureNoticeIsIdempotentAndDoesNotInformRecipient()
     {
-        var sim = LostOrder(); Notice(sim, DeliveryKind.Order); var before = sim.SaveJson(); Notice(sim, DeliveryKind.Order);
-        Assert.Equal(before, sim.SaveJson()); Assert.Empty(sim.KnowledgeFor("character-002"));
+        var sim = LostOrder(); Notice(sim, DeliveryKind.Order); var notice = JsonNode.Parse(sim.SaveJson())!["FailureNotices"]!.ToJsonString(); Notice(sim, DeliveryKind.Order);
+        Assert.Equal(notice, JsonNode.Parse(sim.SaveJson())!["FailureNotices"]!.ToJsonString()); Assert.Empty(sim.KnowledgeFor("character-002"));
     }
     [Fact] public void OrderRetryKeepsRequestCaseMessageAndSingleLogicalExecution()
     {
@@ -58,7 +62,7 @@ public sealed class DeliveryRecoveryTests
         Advance(sim, 5); Assert.Single(sim.Orders); Assert.Equal("tax-001/case", sim.Orders[0].CaseId);
         Assert.True(sim.Orders[0].Reported); Assert.Equal(60, sim.Orders[0].Collected); Assert.Equal(160, sim.TreasuryRice);
         Assert.Single(sim.KnowledgeFor("character-002")); Assert.Single(sim.KnowledgeFor("character-001"));
-        Assert.Equal(5, sim.AppliedCount);
+        Assert.Equal(6, sim.AppliedCount);
     }
     [Fact] public void DoubleClickRetryCannotScheduleAnotherConcurrentAttempt()
     {
@@ -163,7 +167,7 @@ public sealed class DeliveryRecoveryTests
     {
         var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", $"tax-v1-tick-{tick}.json"); var text = File.ReadAllText(path);
         Assert.Equal(1, JsonNode.Parse(text)!["Version"]!.GetValue<int>());
-        var sim = TaxSimulation.LoadJson(text); Assert.Equal(2, JsonNode.Parse(sim.SaveJson())!["Version"]!.GetValue<int>());
+        var sim = TaxSimulation.LoadJson(text); Assert.Equal(3, JsonNode.Parse(sim.SaveJson())!["Version"]!.GetValue<int>());
         Assert.Equal(tick, sim.Tick); Advance(sim, 5); Assert.Equal(160, sim.TreasuryRice); Assert.True(sim.Orders[0].Reported);
         Assert.Equal(text, File.ReadAllText(path));
     }

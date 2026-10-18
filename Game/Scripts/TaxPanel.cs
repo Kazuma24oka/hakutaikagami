@@ -23,6 +23,8 @@ public partial class TaxPanel : MarginContainer
     private Button failDelivery = null!;
     private Button receiveFailure = null!;
     private Button retryDelivery = null!;
+    private Button failFailureReport = null!;
+    private Button lateArrival = null!;
     private OptionButton fixture = null!;
     private string savePath = "";
     private int requestNumber;
@@ -31,7 +33,7 @@ public partial class TaxPanel : MarginContainer
     {
         scenarioJson = json;
         simulation = TaxSimulation.Create(PrototypeScenario.Load(json));
-        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v2.json");
+        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v3.json");
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) AddThemeConstantOverride("margin_" + edge, 28);
         var column = new VBoxContainer(); column.AddThemeConstantOverride("separation", 10); AddChild(column);
         column.AddChild(new Label { Text = "徴税・命令配送・保存復旧  /  試作検証", Modulate = new Color("e2c891") });
@@ -69,11 +71,22 @@ public partial class TaxPanel : MarginContainer
             simulation.FailNextDelivery(d.RequestId, d.Kind);
             notice.Text = "次の到達試行を失敗させます。この設定は人物の認識には登録しません。";
         });
-        receiveFailure = AddButton(deliveryActions, "失敗報告を受領", () =>
+        receiveFailure = AddButton(deliveryActions, "失敗報告を発送", () =>
         {
-            var d = simulation.Deliveries.Last(d => d.Lost && !d.Cancelled && !simulation.FailureKnown(d.Id));
-            simulation.ReceiveFailureNotice(d.Id, d.SenderId);
-            notice.Text = "差出人が配送失敗の報告を受領しました。再送を選択できます。";
+            var d = FailureReportCandidate() ?? throw new InvalidOperationException("発送可能な失敗報告がありません。");
+            simulation.DispatchFailureReport(d.Id, "character-003");
+            notice.Text = "配送担当者が失敗報告を発送しました。差出人の認識は報告の到達後に更新します。";
+        });
+        var lateActions = new HBoxContainer(); lateActions.AddThemeConstantOverride("separation", 12); column.AddChild(lateActions);
+        failFailureReport = AddButton(lateActions, "失敗報告も紛失（試験）", () =>
+        {
+            var report = simulation.FailureReports.Last(r => !r.Delivered && !r.Lost);
+            simulation.FailFailureReport(report.Id); notice.Text = "配送中の失敗報告を紛失させます。元の差出人は失敗を知りません。";
+        });
+        lateArrival = AddButton(lateActions, "紛失原本を4刻後に到達（試験）", () =>
+        {
+            var d = simulation.Deliveries.Last(d => d.Lost && !d.Delivered && !d.Cancelled && d.LateDueAt == null);
+            simulation.ScheduleLateArrival(d.Id, 4); notice.Text = "原本の遅着を予約しました。再送分が先に届いても論理命令は一度だけ処理します。";
         });
         retryDelivery = AddButton(deliveryActions, "同じ命令・報告を再送", () =>
         {
@@ -86,8 +99,11 @@ public partial class TaxPanel : MarginContainer
         load = AddButton(storage, "読込", () =>
         {
             var sourcePath = savePath;
-            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v2.json"))
-                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
+            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v3.json"))
+            {
+                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v2.json");
+                if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
+            }
             var restored = TaxSimulation.LoadFile(sourcePath); // Validate fully before replacing the current session.
             simulation = restored;
             requestNumber = simulation.Orders.Select(o => int.TryParse(o.RequestId.Replace("tax-", ""), out int n) ? n : 0).DefaultIfEmpty(0).Max();
@@ -121,23 +137,31 @@ public partial class TaxPanel : MarginContainer
     private void Refresh()
     {
         WorldChanged?.Invoke(simulation.RestoreWorld());
-        summary.Text = $"世界時刻：{simulation.Tick}刻  /  {(simulation.Paused ? "停止中" : "手動進行")}\n村落所有の米：{simulation.SourceRice}俵（引当 {simulation.ReservedRice}）    鏡家所有の米：{simulation.TreasuryRice}俵\n未処理イベント：{simulation.PendingCount}    適用済み：{simulation.AppliedCount}";
+        summary.Text = $"世界時刻：{simulation.Tick}刻  /  {(simulation.Paused ? "停止中" : "手動進行")}\n村落所有の米：{simulation.SourceRice}俵（引当 {simulation.ReservedRice}）    鏡家所有の米：{simulation.TreasuryRice}俵\n未処理：{simulation.PendingCount}  適用済み：{simulation.AppliedCount}  失敗報告：到達{simulation.FailureReports.Count(r => r.Delivered)} / 発送{simulation.FailureReports.Count}";
         pause.Text = simulation.Paused ? "再開" : "停止";
         cancel.Disabled = !simulation.Orders.Any(o => o.Phase is TaxPhase.Dispatched or TaxPhase.Received or TaxPhase.Reserved);
         failDelivery.Disabled = !simulation.Deliveries.Any(d => !d.Delivered && !d.Lost && !d.Cancelled && !d.FailOnArrival);
-        receiveFailure.Disabled = !simulation.Deliveries.Any(d => d.Lost && !d.Cancelled && !simulation.FailureKnown(d.Id));
+        receiveFailure.Disabled = FailureReportCandidate() == null;
         retryDelivery.Disabled = RetryCandidate() == null;
+        failFailureReport.Disabled = !simulation.FailureReports.Any(r => !r.Delivered && !r.Lost && !r.FailOnArrival);
+        lateArrival.Disabled = !simulation.Deliveries.Any(d => d.Lost && !d.Delivered && !d.Cancelled && d.LateDueAt == null);
         outcome.Text = simulation.Orders.Count == 0 ? "まだ命令はありません。\n「徴税100を発送」から開始してください。" :
             string.Join("\n\n", simulation.Orders.Select(o => $"{o.RequestId}  /  {Phase(o.Phase)}  /  要求{o.Requested}・引当{o.Reserved}・徴収{o.Collected}\n{(o.Reported ? "発行者が報告を受領済み" : "発行者への結果報告は未到達")}　{o.Reason}"));
         outcome.Text += $"\n\n個人認識：次郎の受領記録 {simulation.KnowledgeFor("character-002").Count}件 / 太郎の結果報告 {simulation.KnowledgeFor("character-001").Count}件 / 三郎 {simulation.KnowledgeFor("character-003").Count}件";
         if (simulation.Deliveries.Count > 0)
             outcome.Text += "\n\n配送履歴：\n" + string.Join("\n", simulation.Deliveries.Select(d =>
-                $"{(d.Kind == DeliveryKind.Order ? "命令" : "報告")} {d.Attempt}/3回目：{(d.Cancelled ? "取消" : d.Delivered ? "到達済み" : d.Lost ? "紛失" : "配送中")} / 失敗認識：{(simulation.FailureKnown(d.Id) ? "あり" : "なし")}"));
+                $"{(d.Kind == DeliveryKind.Order ? "命令" : "報告")} {d.Attempt}/3回目：{(d.Cancelled ? "取消" : d.ArrivedLate ? "遅着済み" : d.Delivered ? "到達済み" : d.Lost ? "紛失" : "配送中")} / 失敗認識：{(simulation.FailureKnown(d.Id) ? "あり" : "なし")}"));
+        if (simulation.FailureReports.Count > 0)
+            outcome.Text += "\n失敗報告の配送：\n" + string.Join("\n", simulation.FailureReports.Select(r => $"報告{r.Copy}通目：{(r.Delivered ? "到達" : r.Lost ? "紛失" : "配送中")}"));
         GD.Print($"TAX_STATE tick={simulation.Tick} source={simulation.SourceRice} treasury={simulation.TreasuryRice} reserved={simulation.ReservedRice} pending={simulation.PendingCount}");
     }
 
-    private TaxDelivery? RetryCandidate() => simulation.Deliveries.LastOrDefault(d => d.Lost && !d.Cancelled &&
+    private TaxDelivery? FailureReportCandidate() => simulation.Deliveries.LastOrDefault(d => d.Lost && !d.Cancelled && !simulation.FailureKnown(d.Id) &&
+        simulation.FailureReports.Count(r => r.DeliveryId == d.Id) < TaxSimulation.MaxDeliveryAttempts &&
+        !simulation.FailureReports.Any(r => r.DeliveryId == d.Id && !r.Delivered && !r.Lost));
+    private TaxDelivery? RetryCandidate() => simulation.Deliveries.LastOrDefault(d => d.Lost && !d.Delivered && !d.Cancelled &&
         simulation.FailureKnown(d.Id) && d.Attempt < TaxSimulation.MaxDeliveryAttempts &&
+        !simulation.Deliveries.Any(other => other.MessageId == d.MessageId && other.Delivered) &&
         !simulation.Deliveries.Any(other => other.MessageId == d.MessageId && other.Attempt > d.Attempt));
 
     // Injects only into this Godot viewport. It never moves the Windows pointer or invokes native input tools.
@@ -178,6 +202,7 @@ public partial class TaxPanel : MarginContainer
             await ClickThroughGui(load); // Restore the unrecognized loss.
             if (!retryDelivery.Disabled) throw new InvalidOperationException("Failure recognition leaked across load.");
             await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(advance); // The failure report itself must arrive before retry.
             await ClickThroughGui(retryDelivery);
             await ClickThroughGui(save); // Retried order is in flight.
             await ClickThroughGui(advance);
@@ -190,6 +215,7 @@ public partial class TaxPanel : MarginContainer
             if (simulation.Orders.Single().Reported || simulation.TreasuryRice != 160 || simulation.KnowledgeFor("character-001").Count != 0)
                 throw new InvalidOperationException("Lost report changed collection or informed issuer.");
             await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(advance);
             await ClickThroughGui(retryDelivery);
             await ClickThroughGui(save);
             await ClickThroughGui(advance);
@@ -210,6 +236,66 @@ public partial class TaxPanel : MarginContainer
                 if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
             }
             GD.Print("DELIVERY_RECOVERY_GUI_PASS input=viewport_mouse_events order_loss=1 report_loss=1 retries=2 load=3 treasury=160 knowledge_each=1");
+            GetTree().Quit(0);
+        }
+        catch (Exception e) { GD.PushError(e.ToString()); GetTree().Quit(1); }
+    }
+
+    public async Task LateDuplicateSmokeTest()
+    {
+        try
+        {
+            savePath = ProjectSettings.GlobalizePath("user://late-smoke-" + Guid.NewGuid().ToString("N") + ".json");
+            await ClickThroughGui(submit);
+            await ClickThroughGui(failDelivery);
+            await ClickThroughGui(advance); // 1: order lost.
+            await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(save); // Failure report in transit; no sender recognition yet.
+            await ClickThroughGui(advance);
+            await ClickThroughGui(load);
+            if (!retryDelivery.Disabled) throw new InvalidOperationException("Loss report recognition leaked before arrival.");
+            await ClickThroughGui(advance); // 2: failure report received.
+            await ClickThroughGui(lateArrival); // Original arrives at 6.
+            await ClickThroughGui(retryDelivery);
+            await ClickThroughGui(save);
+            await ClickThroughGui(advance);
+            await ClickThroughGui(load);
+            await ClickThroughGui(advance); // 3: retry received.
+            await ClickThroughGui(advance); // 4: decision/reservation.
+            await ClickThroughGui(advance); // 5: collect once.
+            await ClickThroughGui(failDelivery);
+            await ClickThroughGui(advance); // 6: late original + lost result report.
+            if (simulation.KnowledgeFor("character-002").Count != 1 || simulation.TreasuryRice != 160)
+                throw new InvalidOperationException("Late original repeated logical execution.");
+            await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(failFailureReport);
+            await ClickThroughGui(advance); // 7: failure report itself lost.
+            if (!retryDelivery.Disabled || simulation.Orders.Single().Reported) throw new InvalidOperationException("Lost failure report informed sender.");
+            await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(advance); // 8: a new copy of the failure report is received.
+            await ClickThroughGui(lateArrival); // Original result report at 12.
+            await ClickThroughGui(retryDelivery);
+            await ClickThroughGui(save);
+            await ClickThroughGui(advance);
+            await ClickThroughGui(load);
+            await ClickThroughGui(advance); // 9: result report retry.
+            for (int i = 0; i < 3; i++) await ClickThroughGui(advance); // 12: late original result report.
+            if (simulation.Deliveries.Count(d => d.Delivered) != 4 || simulation.Deliveries.Count(d => d.ArrivedLate) != 2 ||
+                simulation.KnowledgeFor("character-002").Count != 1 || simulation.KnowledgeFor("character-001").Count != 1 ||
+                simulation.TreasuryRice != 160 || simulation.SourceRice != 0 || simulation.PendingCount != 0 || !retryDelivery.Disabled ||
+                simulation.FailureReports.Count(r => r.Lost) != 1 || simulation.FailureReports.Count(r => r.Delivered) != 2)
+                throw new InvalidOperationException("Late duplicate or failure transport mismatch.");
+            notice.Text = "原本・再送が4通到達。命令認識・NPC判断・徴収・結果認識は各1回。失敗報告の紛失と再配送も復旧。";
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (notice.GetGlobalRect().End.Y > GetViewportRect().Size.Y) throw new InvalidOperationException("Late UI clipped.");
+            if (DisplayServer.GetName() != "headless")
+            {
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+                var path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/late-duplicate.png");
+                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+            }
+            GD.Print("LATE_DUPLICATE_GUI_PASS physical_receptions=4 late=2 logical_order=1 result_knowledge=1 failure_reports_delivered=2 lost=1 loads=3 treasury=160");
             GetTree().Quit(0);
         }
         catch (Exception e) { GD.PushError(e.ToString()); GetTree().Quit(1); }

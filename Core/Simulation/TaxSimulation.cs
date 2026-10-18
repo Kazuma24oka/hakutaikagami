@@ -9,15 +9,18 @@ namespace HakutaiKagami.Core.Simulation;
 
 public enum TaxPhase { Dispatched, Received, Reserved, Completed, Partial, Refused, Failed, Cancelled }
 public enum DeliveryKind { Order, Report }
-public enum TaxEventKind { DeliverOrder, Decide, Collect, DeliverReport }
+public enum TaxEventKind { DeliverOrder, Decide, Collect, DeliverReport, DeliverLateOrder, DeliverLateReport }
 public sealed record TaxOrder(string RequestId, string CaseId, string IssuerId, string ExecutorId,
     string CastleId, int Requested, int Reserved, int Collected, TaxPhase Phase, bool Reported, string Reason, int? DecisionRoll);
 public sealed record TaxDelivery(string Id, string RequestId, DeliveryKind Kind, string SenderId, string RecipientId,
-    long DueAt, bool Delivered, int Attempt = 1, bool Lost = false, bool FailOnArrival = false, bool Cancelled = false)
+    long DueAt, bool Delivered, int Attempt = 1, bool Lost = false, bool FailOnArrival = false, bool Cancelled = false,
+    long? LateDueAt = null, bool ArrivedLate = false)
 {
     [JsonIgnore] public string MessageId => RequestId + (Kind == DeliveryKind.Order ? "/letter" : "/report");
 }
-public sealed record DeliveryFailureNotice(string DeliveryId, string ObserverId, long LearnedAt);
+public sealed record DeliveryFailureNotice(string DeliveryId, string ObserverId, long LearnedAt, bool LegacyImported = false);
+public sealed record FailureReportDelivery(string Id, string DeliveryId, string ReporterId, string RecipientId,
+    int Copy, long SentAt, long DueAt, bool Delivered = false, bool Lost = false, bool FailOnArrival = false);
 public sealed record TaxKnowledge(string Id, string CharacterId, string RequestId, DeliveryKind Kind,
     int Amount, string Content, long LearnedAt);
 public sealed record TaxEvent(string Id, string RequestId, TaxEventKind Kind, long DueAt, string[] DependsOn, int Attempt = 1);
@@ -39,7 +42,8 @@ public sealed record WorldSnapshot(ScenarioDefinition Definition, CharacterSnaps
 // Persisted DTO is a boundary type. The simulation never exposes its live mutable DTO.
 public sealed class TaxSnapshot
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
+    public int? MigrationOrigin { get; set; }
     public WorldSnapshot World { get; set; } = null!;
     public long Tick { get; set; }
     public bool Paused { get; set; }
@@ -56,6 +60,7 @@ public sealed class TaxSnapshot
     public TaxEvent[] Pending { get; set; } = [];
     public string[] Applied { get; set; } = [];
     public DeliveryFailureNotice[] FailureNotices { get; set; } = [];
+    public FailureReportDelivery[] FailureReports { get; set; } = [];
 }
 
 /// <summary>One-thread prototype transaction boundary: clone, validate, publish. No wall-clock or Godot dependency.</summary>
@@ -75,10 +80,11 @@ public sealed class TaxSimulation
     public int SourceRice => state.Accounts.Single(a => a.Id == "village").Balance;
     public int TreasuryRice => state.Accounts.Single(a => a.Id == "treasury").Balance;
     public int ReservedRice => state.Orders.Sum(o => o.Reserved);
-    public int PendingCount => state.Pending.Length;
+    public int PendingCount => state.Pending.Length + state.FailureReports.Count(r => !r.Delivered && !r.Lost);
     public int AppliedCount => state.Applied.Length;
     public IReadOnlyList<TaxOrder> Orders => Array.AsReadOnly(state.Orders.ToArray());
     public IReadOnlyList<TaxDelivery> Deliveries => Array.AsReadOnly(state.Deliveries.ToArray());
+    public IReadOnlyList<FailureReportDelivery> FailureReports => Array.AsReadOnly(state.FailureReports.ToArray());
     public bool FailureKnown(string deliveryId) => state.FailureNotices.Any(n => n.DeliveryId == deliveryId);
     public IReadOnlyList<TaxKnowledge> KnowledgeFor(string characterId) =>
         Array.AsReadOnly(state.Knowledge.Where(k => k.CharacterId == characterId).ToArray());
@@ -147,20 +153,41 @@ public sealed class TaxSimulation
         var delivery = s.Deliveries.Single(d => d.RequestId == requestId && d.Kind == kind && !d.Delivered && !d.Lost && !d.Cancelled);
         s.Deliveries = s.Deliveries.Select(d => d.Id == delivery.Id ? d with { FailOnArrival = true } : d).ToArray();
     });
-    // The test harness supplies a received loss report separately from the physical failure.
-    public void ReceiveFailureNotice(string deliveryId, string observerId) => Mutate(s =>
+    // The fixture supplies a courier's observation; the resulting report must travel before the sender knows.
+    public void DispatchFailureReport(string deliveryId, string reporterId, int delay = 1) => Mutate(s =>
     {
         var delivery = s.Deliveries.Single(d => d.Id == deliveryId);
-        if (!delivery.Lost || delivery.SenderId != observerId) throw new InvalidOperationException("No loss report for this sender.");
-        if (!s.FailureNotices.Any(n => n.DeliveryId == deliveryId))
-            s.FailureNotices = [.. s.FailureNotices, new(deliveryId, observerId, s.Tick)];
+        if (!delivery.Lost || delay < 1) throw new InvalidOperationException("A report requires an observed failed attempt and positive delay.");
+        if (reporterId != s.World.Definition.Characters[2].Id) throw new UnauthorizedAccessException("Only the fixture courier reports this observation.");
+        int copy = s.FailureReports.Count(r => r.DeliveryId == deliveryId) + 1;
+        if (copy > MaxDeliveryAttempts) throw new InvalidOperationException("Failure report copy limit reached.");
+        s.FailureReports = [.. s.FailureReports, new(deliveryId + "/failure-report/" + copy,
+            deliveryId, reporterId, delivery.SenderId, copy, s.Tick, checked(s.Tick + delay))];
+    });
+    public void FailFailureReport(string reportId) => Mutate(s =>
+    {
+        var report = s.FailureReports.Single(r => r.Id == reportId);
+        if (report.Delivered || report.Lost) throw new InvalidOperationException("Report has already finished its delivery attempt.");
+        s.FailureReports = s.FailureReports.Select(r => r.Id == reportId ? r with { FailOnArrival = true } : r).ToArray();
+    });
+    public void ScheduleLateArrival(string deliveryId, int delay) => Mutate(s =>
+    {
+        var delivery = s.Deliveries.Single(d => d.Id == deliveryId);
+        if (!delivery.Lost || delivery.Delivered || delivery.Cancelled || delivery.LateDueAt != null || delay < 1)
+            throw new InvalidOperationException("Only a failed, unreceived, active original can arrive late once.");
+        var order = s.Orders.Single(o => o.RequestId == delivery.RequestId);
+        long due = checked(s.Tick + delay);
+        s.Deliveries = s.Deliveries.Select(d => d.Id == deliveryId ? d with { LateDueAt = due } : d).ToArray();
+        var originalKind = delivery.Kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport;
+        var lateKind = delivery.Kind == DeliveryKind.Order ? TaxEventKind.DeliverLateOrder : TaxEventKind.DeliverLateReport;
+        Enqueue(s, order, lateKind, due, [EventId(order, originalKind, delivery.Attempt)], delivery.Attempt);
     });
     public void RetryDelivery(string requestId, DeliveryKind kind, string senderId) => Mutate(s =>
     {
         var order = s.Orders.Single(o => o.RequestId == requestId);
         var history = s.Deliveries.Where(d => d.RequestId == requestId && d.Kind == kind).OrderBy(d => d.Attempt).ToArray();
         var previous = history.Last();
-        if (previous.SenderId != senderId || !previous.Lost || previous.Cancelled ||
+        if (previous.SenderId != senderId || !previous.Lost || previous.Cancelled || history.Any(d => d.Delivered) ||
             !s.FailureNotices.Any(n => n.DeliveryId == previous.Id && n.ObserverId == senderId) ||
             previous.Attempt >= MaxDeliveryAttempts)
             throw new InvalidOperationException("Retry requires a known failed latest attempt within the limit.");
@@ -172,7 +199,8 @@ public sealed class TaxSimulation
         else if (order.Reported) throw new InvalidOperationException("Report already received.");
         var attempt = checked(previous.Attempt + 1);
         var delivery = previous with { Id = previous.MessageId + "/attempt/" + attempt, Attempt = attempt,
-            DueAt = checked(s.Tick + 1), Delivered = false, Lost = false, FailOnArrival = false, Cancelled = false };
+            DueAt = checked(s.Tick + 1), Delivered = false, Lost = false, FailOnArrival = false, Cancelled = false,
+            LateDueAt = null, ArrivedLate = false };
         s.Deliveries = [.. s.Deliveries, delivery];
         var eventKind = kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport;
         Enqueue(s, order, eventKind, delivery.DueAt, [EventId(order, eventKind, previous.Attempt)], attempt);
@@ -206,6 +234,14 @@ public sealed class TaxSimulation
                 s.Pending = s.Pending.Where(p => p.Id != e.Id).ToArray();
                 s.Applied = [.. s.Applied, e.Id];
             }
+            foreach (var report in s.FailureReports.Where(r => !r.Delivered && !r.Lost && r.DueAt <= s.Tick).ToArray())
+            {
+                s.FailureReports = s.FailureReports.Select(r => r.Id == report.Id ? r with {
+                    Delivered = !r.FailOnArrival, Lost = r.FailOnArrival } : r).ToArray();
+                if (!report.FailOnArrival && !s.FailureNotices.Any(n => n.DeliveryId == report.DeliveryId))
+                    s.FailureNotices = [.. s.FailureNotices, new(report.DeliveryId, report.RecipientId, s.Tick)];
+                s.Applied = [.. s.Applied, report.Id + "/event"];
+            }
         }, beforeCommit);
     }
 
@@ -215,14 +251,19 @@ public sealed class TaxSimulation
         try
         {
             using var document = JsonDocument.Parse(json);
-            if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2))
+            if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2 or 3))
                 throw new InvalidDataException("Missing or unsupported save version.");
             var loaded = JsonSerializer.Deserialize<TaxSnapshot>(json, JsonOptions) ?? throw new InvalidDataException("Empty save.");
-            if (number == 1)
+            if (number < 3)
             {
-                if (loaded.FailureNotices.Length != 0 || loaded.Deliveries.Any(d => d.Attempt != 1 || d.Lost || d.FailOnArrival || d.Cancelled) || loaded.Pending.Any(e => e.Attempt != 1))
+                if (loaded.MigrationOrigin != null || loaded.FailureReports.Length != 0 || loaded.Deliveries.Any(d => d.LateDueAt != null || d.ArrivedLate) ||
+                    loaded.Pending.Any(e => e.Kind is TaxEventKind.DeliverLateOrder or TaxEventKind.DeliverLateReport))
+                    throw new InvalidDataException("V3 delivery data cannot be disguised as an older save.");
+                if (number == 1 && (loaded.FailureNotices.Length != 0 || loaded.Deliveries.Any(d => d.Attempt != 1 || d.Lost || d.FailOnArrival || d.Cancelled) || loaded.Pending.Any(e => e.Attempt != 1)))
                     throw new InvalidDataException("Retry data cannot be disguised as a v1 save.");
-                loaded.Version = 2;
+                loaded.Version = 3;
+                loaded.MigrationOrigin = number;
+                loaded.FailureNotices = loaded.FailureNotices.Select(n => n with { LegacyImported = true }).ToArray();
                 loaded.Deliveries = loaded.Deliveries.Select(d => d.Kind == DeliveryKind.Order && !d.Delivered &&
                     loaded.Orders.Any(o => o.RequestId == d.RequestId && o.Phase == TaxPhase.Cancelled) ? d with { Cancelled = true } : d).ToArray();
             }
@@ -267,20 +308,24 @@ public sealed class TaxSimulation
     private static void Process(TaxSnapshot s, TaxEvent e, bool resourceConflict)
     {
         var o = s.Orders.Single(o => o.RequestId == e.RequestId);
-        if (e.Kind is TaxEventKind.DeliverOrder or TaxEventKind.DeliverReport)
+        if (e.Kind is TaxEventKind.DeliverOrder or TaxEventKind.DeliverReport or TaxEventKind.DeliverLateOrder or TaxEventKind.DeliverLateReport)
         {
-            var kind = e.Kind == TaxEventKind.DeliverOrder ? DeliveryKind.Order : DeliveryKind.Report;
+            bool late = e.Kind is TaxEventKind.DeliverLateOrder or TaxEventKind.DeliverLateReport;
+            var kind = e.Kind is TaxEventKind.DeliverOrder or TaxEventKind.DeliverLateOrder ? DeliveryKind.Order : DeliveryKind.Report;
             var delivery = s.Deliveries.Single(d => d.RequestId == o.RequestId && d.Kind == kind && d.Attempt == e.Attempt);
-            if (delivery.FailOnArrival)
+            if (!late && delivery.FailOnArrival)
             {
                 s.Deliveries = s.Deliveries.Select(d => d.Id == delivery.Id ? d with { Lost = true } : d).ToArray();
                 return; // A failed attempt completes, but no recipient knowledge, RNG draw or logical effect occurs.
             }
+            s.Deliveries = s.Deliveries.Select(d => d.Id == delivery.Id ? d with { Delivered = true, ArrivedLate = late } : d).ToArray();
+            // A physical copy is received, but the stable logical message is recognized only once.
+            if (s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == kind)) return;
+            if (late) e = e with { Kind = kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport };
         }
         switch (e.Kind)
         {
             case TaxEventKind.DeliverOrder:
-                s.Deliveries = s.Deliveries.Select(d => d.RequestId == o.RequestId && d.Kind == DeliveryKind.Order && d.Attempt == e.Attempt ? d with { Delivered = true } : d).ToArray();
                 s.Knowledge = [.. s.Knowledge, new(o.RequestId + "/knowledge/order", o.ExecutorId, o.RequestId,
                     DeliveryKind.Order, o.Requested, "徴税要求を本人が受領", s.Tick)];
                 Replace(s, o with { Phase = TaxPhase.Received });
@@ -324,7 +369,6 @@ public sealed class TaxSimulation
                 QueueReport(s, o, [e.Id]);
                 break;
             case TaxEventKind.DeliverReport:
-                s.Deliveries = s.Deliveries.Select(d => d.RequestId == o.RequestId && d.Kind == DeliveryKind.Report && d.Attempt == e.Attempt ? d with { Delivered = true } : d).ToArray();
                 s.Knowledge = [.. s.Knowledge, new(o.RequestId + "/knowledge/report", o.IssuerId, o.RequestId,
                     DeliveryKind.Report, o.Collected, o.Reason, s.Tick)];
                 Replace(s, o with { Reported = true });
@@ -336,7 +380,7 @@ public sealed class TaxSimulation
     private static void Validate(TaxSnapshot s)
     {
         static void Check(bool ok, string message) { if (!ok) throw new InvalidDataException(message); }
-        Check(s.Version == 2 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
+        Check(s.Version == 3 && s.MigrationOrigin is null or 1 or 2 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
         var world = s.World.Restore();
         Check(s.Accounts.Length == 2 && s.Accounts.Select(a => a.Id).ToHashSet().SetEquals(["village", "treasury"]), "Invalid accounts.");
         Check(s.Accounts.All(a => a.Balance >= 0 && world.Castles.ContainsKey(a.CustodyCastleId) &&
@@ -365,23 +409,38 @@ public sealed class TaxSimulation
             s.Orders.Any(o => o.RequestId == e.RequestId && e.Id == EventId(o, e.Kind, e.Attempt)) &&
             (e.Kind is TaxEventKind.DeliverOrder or TaxEventKind.DeliverReport ? s.Deliveries.Any(d => d.RequestId == e.RequestId &&
                 d.Kind == (e.Kind == TaxEventKind.DeliverOrder ? DeliveryKind.Order : DeliveryKind.Report) && d.Attempt == e.Attempt &&
-                !d.Delivered && !d.Lost && !d.Cancelled && d.DueAt == e.DueAt) : e.Attempt == 1) &&
+                !d.Delivered && !d.Lost && !d.Cancelled && d.DueAt == e.DueAt) :
+             e.Kind is TaxEventKind.DeliverLateOrder or TaxEventKind.DeliverLateReport ? s.Deliveries.Any(d => d.RequestId == e.RequestId &&
+                d.Kind == (e.Kind == TaxEventKind.DeliverLateOrder ? DeliveryKind.Order : DeliveryKind.Report) && d.Attempt == e.Attempt &&
+                d.Lost && !d.Delivered && !d.Cancelled && d.LateDueAt == e.DueAt) : e.Attempt == 1) &&
             e.DependsOn.All(s.Applied.Contains)), "Invalid pending event or causal dependency.");
-        Check(s.Applied.All(id => s.Orders.Any(o => new[] { TaxEventKind.Decide, TaxEventKind.Collect }.Any(kind => EventId(o, kind) == id) ||
-            s.Deliveries.Any(d => d.RequestId == o.RequestId && EventId(o, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport, d.Attempt) == id))), "Unknown applied event.");
+        Check(s.Applied.All(id => s.FailureReports.Any(r => id == r.Id + "/event") || s.Orders.Any(o => new[] { TaxEventKind.Decide, TaxEventKind.Collect }.Any(kind => EventId(o, kind) == id) ||
+            s.Deliveries.Any(d => d.RequestId == o.RequestId && (EventId(o, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport, d.Attempt) == id ||
+                d.ArrivedLate && EventId(o, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverLateOrder : TaxEventKind.DeliverLateReport, d.Attempt) == id)))), "Unknown applied event.");
         Check(s.Deliveries.Select(d => d.Id).Distinct().Count() == s.Deliveries.Length && s.Knowledge.Select(k => k.Id).Distinct().Count() == s.Knowledge.Length, "Duplicate delivery/knowledge.");
         Check(s.Deliveries.All(d => Enum.IsDefined(d.Kind) && s.Orders.Any(o => o.RequestId == d.RequestId) &&
             world.Characters.ContainsKey(d.SenderId) && world.Characters.ContainsKey(d.RecipientId) && d.DueAt >= 0 &&
-            d.Attempt is >= 1 and <= MaxDeliveryAttempts && !(d.Delivered && (d.Lost || d.Cancelled || d.FailOnArrival)) &&
+            d.Attempt is >= 1 and <= MaxDeliveryAttempts && !(d.Delivered && d.Cancelled) &&
+            (d.ArrivedLate ? d.Delivered && d.Lost && d.LateDueAt != null && d.LateDueAt <= s.Tick : !(d.Delivered && (d.Lost || d.FailOnArrival))) &&
             (!d.Delivered && !d.Lost || d.DueAt <= s.Tick) &&
             d.Id == d.MessageId + (d.Attempt == 1 ? "" : "/attempt/" + d.Attempt)), "Invalid delivery.");
         Check(s.FailureNotices.Select(n => n.DeliveryId).Distinct().Count() == s.FailureNotices.Length &&
             s.FailureNotices.All(n => n.LearnedAt >= 0 && n.LearnedAt <= s.Tick && s.Deliveries.Any(d =>
-                d.Id == n.DeliveryId && d.Lost && d.SenderId == n.ObserverId && d.DueAt <= n.LearnedAt)), "Loss recognition without a received failure notice.");
+                d.Id == n.DeliveryId && d.Lost && d.SenderId == n.ObserverId && d.DueAt <= n.LearnedAt) &&
+                (n.LegacyImported ? s.MigrationOrigin is 1 or 2 : s.FailureReports.Any(r => r.DeliveryId == n.DeliveryId && r.Delivered && r.RecipientId == n.ObserverId && r.DueAt == n.LearnedAt))), "Loss recognition without a received failure notice.");
+        Check(s.FailureReports.Select(r => r.Id).Distinct().Count() == s.FailureReports.Length &&
+            s.FailureReports.All(r => r.Copy is >= 1 and <= MaxDeliveryAttempts && r.Id == r.DeliveryId + "/failure-report/" + r.Copy &&
+                r.ReporterId == world.Definition.Characters[2].Id && r.SentAt >= 0 && r.SentAt <= s.Tick && r.DueAt > r.SentAt &&
+                s.Deliveries.Any(d => d.Id == r.DeliveryId && d.Lost && d.SenderId == r.RecipientId && d.DueAt <= r.SentAt) &&
+                !(r.Delivered && (r.Lost || r.FailOnArrival)) && (r.Delivered || r.Lost ? r.DueAt <= s.Tick && s.Applied.Contains(r.Id + "/event") :
+                    r.DueAt > s.Tick && !s.Applied.Contains(r.Id + "/event")) &&
+                (!r.Delivered || s.FailureNotices.Any(n => n.DeliveryId == r.DeliveryId && n.ObserverId == r.RecipientId))), "Invalid failure report delivery.");
+        foreach (var reports in s.FailureReports.GroupBy(r => r.DeliveryId))
+            Check(reports.OrderBy(r => r.Copy).Select(r => r.Copy).SequenceEqual(Enumerable.Range(1, reports.Count())), "Failure report copy sequence broken.");
         foreach (var group in s.Deliveries.GroupBy(d => d.MessageId))
         {
             var history = group.OrderBy(d => d.Attempt).ToArray();
-            Check(history.Select(d => d.Attempt).SequenceEqual(Enumerable.Range(1, history.Length)) && history.Count(d => d.Delivered) <= 1, "Invalid attempt sequence or duplicate logical reception.");
+            Check(history.Select(d => d.Attempt).SequenceEqual(Enumerable.Range(1, history.Length)), "Invalid attempt sequence.");
             for (int i = 0; i < history.Length; i++)
             {
                 var d = history[i]; var order = s.Orders.Single(o => o.RequestId == d.RequestId);
@@ -390,22 +449,36 @@ public sealed class TaxSimulation
                 if (i > 0) Check(history[i - 1].Lost && s.FailureNotices.Any(n => n.DeliveryId == history[i - 1].Id && n.LearnedAt < d.DueAt), "Retry before known failure.");
                 var eventId = EventId(order, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverOrder : TaxEventKind.DeliverReport, d.Attempt);
                 Check(d.Delivered || d.Lost ? s.Applied.Contains(eventId) : d.Cancelled || s.Pending.Any(e => e.Id == eventId), "Delivery/event mismatch.");
+                if (d.LateDueAt != null)
+                {
+                    var lateId = EventId(order, d.Kind == DeliveryKind.Order ? TaxEventKind.DeliverLateOrder : TaxEventKind.DeliverLateReport, d.Attempt);
+                    Check(d.Lost && d.LateDueAt > d.DueAt && (d.ArrivedLate ? s.Applied.Contains(lateId) :
+                        d.Cancelled || d.LateDueAt > s.Tick && s.Pending.Any(e => e.Id == lateId)), "Late arrival/event mismatch.");
+                }
             }
         }
-        Check(s.Knowledge.All(k => Enum.IsDefined(k.Kind) && k.LearnedAt <= s.Tick && k.LearnedAt >= 0 &&
-            s.Deliveries.Any(d => d.RequestId == k.RequestId && d.Kind == k.Kind && d.RecipientId == k.CharacterId && d.Delivered)), "Knowledge without reception.");
+        Check(s.Knowledge.GroupBy(k => (k.RequestId, k.Kind)).All(g => g.Count() == 1) &&
+            s.Knowledge.All(k => Enum.IsDefined(k.Kind) && k.LearnedAt <= s.Tick && k.LearnedAt >= 0 &&
+            k.Id == k.RequestId + (k.Kind == DeliveryKind.Order ? "/knowledge/order" : "/knowledge/report") &&
+            s.Deliveries.Any(d => d.RequestId == k.RequestId && d.Kind == k.Kind && d.RecipientId == k.CharacterId && d.Delivered &&
+                (d.ArrivedLate ? d.LateDueAt : d.DueAt) <= k.LearnedAt)), "Knowledge without unique logical reception.");
         Check(s.Grants.All(g => world.Characters.ContainsKey(g.ActorId) && world.Castles.ContainsKey(g.TargetCastleId) &&
             !string.IsNullOrWhiteSpace(g.Basis) && g.ValidFrom >= 0 && g.ValidUntil > g.ValidFrom), "Invalid authority reference.");
         foreach (var o in s.Orders)
         {
-            var pending = s.Pending.Where(e => e.RequestId == o.RequestId).ToArray();
-            var expected = o.Phase switch { TaxPhase.Dispatched => TaxEventKind.DeliverOrder,
-                TaxPhase.Received => TaxEventKind.Decide, TaxPhase.Reserved => TaxEventKind.Collect, _ => TaxEventKind.DeliverReport };
-            var waitingForRetry = expected is TaxEventKind.DeliverOrder or TaxEventKind.DeliverReport && s.Deliveries
-                .Where(d => d.RequestId == o.RequestId && d.Kind == (expected == TaxEventKind.DeliverOrder ? DeliveryKind.Order : DeliveryKind.Report))
-                .OrderBy(d => d.Attempt).LastOrDefault() is { Lost: true, Cancelled: false };
-            Check(o.Reported || waitingForRetry ? pending.Length == 0 : pending.Length == 1 && pending[0].Kind == expected, "Order/event phase mismatch.");
+            var work = s.Pending.Where(e => e.RequestId == o.RequestId && e.Kind is TaxEventKind.Decide or TaxEventKind.Collect).ToArray();
+            Check(o.Phase == TaxPhase.Received ? work.Length == 1 && work[0].Kind == TaxEventKind.Decide :
+                o.Phase == TaxPhase.Reserved ? work.Length == 1 && work[0].Kind == TaxEventKind.Collect : work.Length == 0, "Order/work phase mismatch.");
+            if (o.Phase == TaxPhase.Dispatched || (!o.Reported && o.Phase is not (TaxPhase.Received or TaxPhase.Reserved)))
+            {
+                var kind = o.Phase == TaxPhase.Dispatched ? DeliveryKind.Order : DeliveryKind.Report;
+                Check(s.Deliveries.Any(d => d.RequestId == o.RequestId && d.Kind == kind && !d.Delivered && !d.Cancelled), "No pending or failed logical delivery.");
+            }
+            Check((o.Phase == TaxPhase.Dispatched) == !s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == DeliveryKind.Order) ||
+                o.Phase == TaxPhase.Cancelled, "Order knowledge/phase mismatch.");
             Check(o.Reported == s.Knowledge.Any(k => k.RequestId == o.RequestId && k.Kind == DeliveryKind.Report), "Report knowledge mismatch.");
+            Check(s.Applied.Contains(EventId(o, TaxEventKind.Decide)) == (o.DecisionRoll != null) &&
+                (o.DecisionRoll == null || o.DecisionRoll is >= 0 and < 100), "Decision/recorded random draw mismatch.");
             Check((o.Phase is TaxPhase.Completed or TaxPhase.Partial) == s.Applied.Contains(EventId(o, TaxEventKind.Collect)) ||
                 (o.Phase == TaxPhase.Failed && s.Applied.Contains(EventId(o, TaxEventKind.Collect))), "Committed effect/event mismatch.");
             Check(o.Reported == s.Deliveries.Any(d => d.RequestId == o.RequestId && d.Kind == DeliveryKind.Report && d.Delivered), "Delivered report mismatch.");

@@ -68,7 +68,8 @@ public partial class Main : Control
             SelectCharacter(selectedId ?? world.Definition.Characters[0].Id);
             status.Text = $"Seed：{world.Definition.Seed}   世界時刻：{world.Tick}（徴税検証と共通）\n検証用管理表示。正式な認識制限付きUIは未実装。";
         };
-        if (OS.GetCmdlineUserArgs().Contains("--delivery-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeliveryRecoverySmokeTest(); }
+        if (OS.GetCmdlineUserArgs().Contains("--late-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.LateDuplicateSmokeTest(); }
+        else if (OS.GetCmdlineUserArgs().Contains("--delivery-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeliveryRecoverySmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--tax-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.SmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--smoke-test")) _ = SmokeTest();
     }
