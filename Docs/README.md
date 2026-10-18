@@ -416,3 +416,7 @@
 - [ID・権限・状態・費用・復旧・通知・完成条件のB優先案と未決定詳細](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)。
 - F01〜F04/F07/F08、P0-A01〜A06、P1設計84項目と整合。自動進行＋任意停止は未確定。新規Confirmed追加なし。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1コマンドID・状態遷移・失敗復旧（未確定・ABCD）
+- [ID生成、状態遷移、中断再開、再試行、補償、セーブ復旧、P0責任分界の7項目](Proposals/P1_COMMAND_ID_STATE_RECOVERY_OPTIONS.md)。B推奨・未選択、D選択項目のみ次のチャットで自由記載。
+- [共通契約B優先案](Proposals/P1_COMMON_COMMAND_CONTRACT_OPTIONS.md)・[84項目統合](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)と整合。新規Confirmed追加なし、main変更なし、Archive移動・永久削除なし。
