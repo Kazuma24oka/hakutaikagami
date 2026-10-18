@@ -1,35 +1,377 @@
-**********************
-PowerShell transcript start
-Start time: 20261018152511
-Username: HITACHI2496\hizen
-RunAs User: HITACHI2496\hizen
-Configuration Name:
-Machine: HITACHI2496 (Microsoft Windows NT 10.0.26200.0)
-Host Application: C:\Users\hizen\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
-$stage='C:\Users\hizen\.codex\.chatgpt-projects\g-p-6ad452ddd494819192568db0153870d9\vertical-source'; foreach ($rel in @('Core/Simulation/TaxSimulation.cs','Tests/SharedProtocolTests.cs')) { Copy-Item -LiteralPath (Join-Path $stage $rel) -Destination $rel -Force }; Start-Transcript -Path 'Docs/Proposals/Evidence/shared-protocol-validation.txt' -Force; try { & ./Scripts/Validate-SharedProtocol.ps1 -Godot (Join-Path (Get-Location) '.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64_console.exe') -WithRendering } finally { Stop-Transcript }
-Process ID: 36340
-PSVersion: 7.6.5
-PSEdition: Core
-GitCommitId: 7.6.5
-OS: Microsoft Windows 10.0.26200
-Platform: Win32NT
-PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
-PSRemotingProtocolVersion: 2.4
-SerializationVersion: 1.1.0.1
-WSManStackVersion: 3.0
-**********************
-Transcript started, output file is Docs/Proposals/Evidence/shared-protocol-validation.txt
+  復元対象のプロジェクトを決定しています...
+  復元対象のすべてのプロジェクトは最新です。
+  HakutaiKagami.Core -> C:\Workspace\Projects\Games\hakutaikagami\Core\bin\Debug\net8.0\HakutaiKagami.Core.dll
+  HakutaiKagami.Game -> C:\Workspace\Projects\Games\hakutaikagami\Game\.godot\mono\temp\bin\Debug\HakutaiKagami.Game.dll
 
+ビルドに成功しました。
+    0 個の警告
+    0 エラー
 
+経過時間 00:00:01.39
+  復元対象のプロジェクトを決定しています...
+  復元対象のすべてのプロジェクトは最新です。
+  HakutaiKagami.Core -> C:\Workspace\Projects\Games\hakutaikagami\Core\bin\Debug\net8.0\HakutaiKagami.Core.dll
+  HakutaiKagami.Tests -> C:\Workspace\Projects\Games\hakutaikagami\Tests\bin\Debug\net8.0\HakutaiKagami.Tests.dll
+C:\Workspace\Projects\Games\hakutaikagami\Tests\bin\Debug\net8.0\HakutaiKagami.Tests.dll (.NETCoreApp,Version=v8.0) のテスト実行
+合計 1 個のテスト ファイルが指定されたパターンと一致しました。
+結果ファイル: C:\Workspace\Projects\Games\hakutaikagami\TestResults\shared-c268f9aaee234fb6a6d3fa6b79e106fd\tests.trx
 
+成功!   -失敗:     0、合格:   233、スキップ:     0、合計:   233、期間: 244 ms - HakutaiKagami.Tests.dll (net8.0)
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started プロジェクトの初期化 (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | ファイル構造をスキャン中...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | グローバルクラス名を読み込み中...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | GDExtensionを検証中...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | 自動読み込みスクリプトを作成中...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | プラグインを初期化中...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | ファイルスキャンを開始...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started エディターの読み込み (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | エディターレイアウトを読み込み中...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+CHARACTER_SELECTED id=character-002 role=奉行
+CHARACTER_SELECTED id=character-003 role=家臣
+SCENE_SMOKE_PASS selections=3 details=3 castle=1
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=160 reserved=0 pending=0
+TAX_OPERATION_FAILED InvalidDataException
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=100 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=100 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=100 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=100 treasury=100 reserved=100 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=200 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=200 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=0 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=0 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=0 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=0 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=100 reserved=0 pending=0
+TAX_SCENE_PASS modes=4 delivery=1 pause=1 reserve=60 collect=60 save=1 load=1 report=1 corrupt_load_preserved=1
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=60 treasury=100 reserved=60 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=5 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=5 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=6 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=6 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=7 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=7 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=7 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=7 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=0
+DELIVERY_RECOVERY_GUI_PASS input=viewport_mouse_events order_loss=1 report_loss=1 retries=2 load=3 treasury=160 knowledge_each=1
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=5 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=5 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=6 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=6 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=6 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=7 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=7 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=9 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=8 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=9 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=10 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=11 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=12 source=0 treasury=160 reserved=0 pending=0
+LATE_DUPLICATE_GUI_PASS physical_receptions=4 late=2 logical_order=1 result_knowledge=1 failure_reports_delivered=2 lost=1 loads=3 treasury=160
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=60 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=0 treasury=160 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=0 treasury=160 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=1 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=0
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=2
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=3
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=3
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=3
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=2 source=60 treasury=100 reserved=0 pending=3
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=3 source=60 treasury=100 reserved=0 pending=3
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=4 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=5 source=60 treasury=100 reserved=0 pending=1
+CHARACTER_SELECTED id=character-001 role=城主
+TAX_STATE tick=6 source=60 treasury=100 reserved=0 pending=0
+DEADLINE_CANCEL_GUI_PASS scenarios=6 loads=5 inclusive=1 cancellation_receipt_effect=1 late_before_after=1 original_receptions=2 collection=0 treasury=100
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
 
-**********************
-PowerShell transcript end
-End time: 20261018152529
-**********************
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+SHARED_PROTOCOL_GUI_PASS scenarios=4 save_boundaries=30 response_duplicate_effect=1 inspection_effect=1 viewport_input_only=1
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+TAX_STATE tick=0 source=60 treasury=100 reserved=0 pending=0
+SHARED_PROTOCOL_GUI_PASS scenarios=4 save_boundaries=30 response_duplicate_effect=1 inspection_effect=1 viewport_input_only=1
