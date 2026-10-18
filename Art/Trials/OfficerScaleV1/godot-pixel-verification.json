@@ -1,0 +1,29 @@
+[
+  {
+    "id": "32x48",
+    "zoom": 4,
+    "maximum_rgb_difference": 0,
+    "excluded_screen_rows_inclusive": [
+      614,
+      616
+    ]
+  },
+  {
+    "id": "48x64",
+    "zoom": 4,
+    "maximum_rgb_difference": 0,
+    "excluded_screen_rows_inclusive": [
+      614,
+      616
+    ]
+  },
+  {
+    "id": "64x96",
+    "zoom": 4,
+    "maximum_rgb_difference": 0,
+    "excluded_screen_rows_inclusive": [
+      614,
+      616
+    ]
+  }
+]

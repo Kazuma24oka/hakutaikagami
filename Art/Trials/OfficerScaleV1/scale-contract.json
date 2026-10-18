@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "status": "size-study-awaiting-user-selection",
+  "source_sha256": "e80e43ceff78e07406814e7fd4edf78590049c9304898b804cd394f8030448ef",
+  "source_size": [
+    295,
+    472
+  ],
+  "source_crop_from_generated_sheet": [
+    110,
+    80,
+    405,
+    552
+  ],
+  "source_sheet_sha256": "ab9cc8aa39f1bb2236ccd8000f5301a3c7343a469b368d2d6b390292e8c4e3d5",
+  "source_anchors": {
+    "center_x": 145,
+    "visible_hair_top_y": 10,
+    "sole_y": 467
+  },
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "pillow_version": "12.3.0",
+  "resampling": "one isotropic affine / BICUBIC",
+  "palette": "MEDIANCUT24 from fixed source, no dithering, shared across candidates",
+  "palette_rgb": [
+    [
+      211,
+      206,
+      199
+    ],
+    [
+      203,
+      200,
+      195
+    ],
+    [
+      202,
+      200,
+      195
+    ],
+    [
+      203,
+      199,
+      194
+    ],
+    [
+      202,
+      199,
+      195
+    ],
+    [
+      202,
+      199,
+      194
+    ],
+    [
+      202,
+      199,
+      193
+    ],
+    [
+      201,
+      199,
+      194
+    ],
+    [
+      202,
+      198,
+      193
+    ],
+    [
+      201,
+      198,
+      193
+    ],
+    [
+      217,
+      182,
+      146
+    ],
+    [
+      192,
+      187,
+      178
+    ],
+    [
+      163,
+      136,
+      111
+    ],
+    [
+      143,
+      98,
+      68
+    ],
+    [
+      143,
+      62,
+      49
+    ],
+    [
+      88,
+      75,
+      65
+    ],
+    [
+      73,
+      60,
+      54
+    ],
+    [
+      64,
+      50,
+      45
+    ],
+    [
+      84,
+      36,
+      31
+    ],
+    [
+      51,
+      35,
+      31
+    ],
+    [
+      36,
+      32,
+      32
+    ],
+    [
+      25,
+      24,
+      24
+    ],
+    [
+      18,
+      15,
+      16
+    ],
+    [
+      9,
+      7,
+      8
+    ]
+  ],
+  "runtime_filter": "nearest; integer display magnification only",
+  "has_production_alpha": false,
+  "has_semantic_masks": false,
+  "has_rig": false,
+  "anatomical_head_ratio_measured": false,
+  "adopted_size": null,
+  "variants": [
+    {
+      "id": "32x48",
+      "file": "front-32x48.png",
+      "canvas": [
+        32,
+        48
+      ],
+      "source_to_cell": {
+        "uniform_scale": 0.087527352297593,
+        "translate": [
+          3.308533916849015,
+          3.124726477024069
+        ]
+      },
+      "review_anchor": {
+        "center_x": 16.0,
+        "sole_y": 44
+      },
+      "rgba_sha256": "a22b7238184fde6a699b21bceb28bfe805633ce7b3d407d229ff5681ddd15985",
+      "png_sha256": "803af73f228fa10fb2f720e9b6aaa46c29d02a813eebcba2fc27e3059fecab5a",
+      "colors_used": 22
+    },
+    {
+      "id": "48x64",
+      "file": "front-48x64.png",
+      "canvas": [
+        48,
+        64
+      ],
+      "source_to_cell": {
+        "uniform_scale": 0.12253829321663019,
+        "translate": [
+          6.231947483588623,
+          2.7746170678337023
+        ]
+      },
+      "review_anchor": {
+        "center_x": 24.0,
+        "sole_y": 60
+      },
+      "rgba_sha256": "b5fe8b2176ccac570a1d6bc0472d8e885cb5d7363abcb7794c0997e96d2d67a5",
+      "png_sha256": "5eb0b81b904b78427d9213fd554a999e68793af880a6e5c762a46b0f1fe4d593",
+      "colors_used": 22
+    },
+    {
+      "id": "64x96",
+      "file": "front-64x96.png",
+      "canvas": [
+        64,
+        96
+      ],
+      "source_to_cell": {
+        "uniform_scale": 0.1925601750547046,
+        "translate": [
+          4.0787746170678325,
+          2.0743982494529547
+        ]
+      },
+      "review_anchor": {
+        "center_x": 32.0,
+        "sole_y": 92
+      },
+      "rgba_sha256": "f468ff78716de1a275af64eddda3d5ef4debc376d8f1665ff943dfa9f2980af2",
+      "png_sha256": "7cfd5296a77998a93f37e8435a9c44f0e845d19b6baa3ec44ccb520ffe181912",
+      "colors_used": 22
+    }
+  ]
+}
