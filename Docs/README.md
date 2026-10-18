@@ -480,3 +480,7 @@
 - [範囲・時間・権限・共通契約・資源会計・保存復旧・完成条件のB優先案と未決定事項](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)。
 - F01/F02/F03/F04/F07/F08、P0-A01〜A06、P1行動84項目・共通契約21項目・資源14項目と整合。自動進行＋任意停止は正式未確定。
 - 新規Confirmedなし、main変更なし、Archive移動・永久削除なし。製造開始ゲート未達、実装・テスト未実施。
+
+## 最小プロトタイプ技術選定・実装仕様（未確定・ABCD）
+- [ゲームエンジン・データ構造・セーブ形式・イベント／時間・最小UI・テスト環境・段階実装の7項目](Proposals/PROTOTYPE_TECHNICAL_IMPLEMENTATION_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [P0/P1製造開始ゲート](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)およびF01/F02/F03/F04/F07/F08・P0-A01〜A06と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
