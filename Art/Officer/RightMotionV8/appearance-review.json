@@ -1,0 +1,72 @@
+{
+  "binding": "0f3affa0573689bcdce8b058215955689e948e2787f6ad141046e649366b4be8",
+  "reviewer": "Codex actual current PNG and frame-board inspection",
+  "technical": "PASS in limited right-facing 2D surface-rig scope",
+  "appearance": "PROVISIONAL controlled in-place walk; user has not reviewed this motion",
+  "observations": [
+    "Read current project audit, production contract, V7 definitions/parts and actual bokentan skin_surface implementation. Reused continuous-chain principle, not its measurements or approval.",
+    "Inspected source V7, bare/removal/isolated side probes, corrected 8 stride phases, real Godot all/bare/resize screenshots and both extreme-stride captures.",
+    "Neutral full armor and all-off body both restore exact V7 sources; head and sword preserve rigid pixel clusters.",
+    "Observed two alternating feet after fixing luminance-mask alpha. Separate contribution regression confirms that far arm and far leg actually affect visible pixels.",
+    "Near/far materials are independent surfaces with opposite phase. Far armor is an explicitly authored same-size material donor at0.78 brightness, not recovered unseen artwork.",
+    "Bare body remains one connected 8-neighbor surface throughout both clips. Supporting sole stays y91; source joints and hidden anatomy are provisional.",
+    "Native GPU64x96 and enlarged256x384 captures match all8 walk frames exactly. Normal and quarter-speed loops show all8 frames; dynamic equipment toggles apply."
+  ],
+  "repairs": [
+    "Moved near-leg hidden completion below waist/coat after105-pixel neutral overwrite.",
+    "Fixed L-image mask loading which had erased all previously drawn far limbs; added actual far visibility and luminance-alpha regressions.",
+    "Adjusted stride5 to6px and far armor brightness to0.78 for readable depth."
+  ],
+  "limitations": [
+    "Simple authored skin/cloth hidden completion remains visible with selected equipment removed.",
+    "Far armor uses same-size near material donor in neutral profile; not final bespoke far-side painting.",
+    "No fixed3D bone lengths, physics, terrain IK or finished gait claimed.",
+    "No left/back views, actual unit locomotion, six-head portrait linkage implementation or Core simulation changes."
+  ],
+  "evidence": [
+    {
+      "path": "Art/Officer/RightMotionV8/walk-probes.png",
+      "sha256": "f9ac2508c6d5ec702dba1ec6768cc66e69272c19430d30dd443341ed6e663684"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/isolated-probes.png",
+      "sha256": "fc0581e455585de06f83f904568142ba7336ccf81dd5bcf0109153eaf99d3dac"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/godot-walk-2.png",
+      "sha256": "b6a9d9632fd81ac6857fc14e30ba9732d7b4062322cc74c21e618e49f5841700"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/godot-walk-6.png",
+      "sha256": "c6f850c93a4f6322df4376eac80780ef4d9980ac8df441ae8f13c526bd23c1d6"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/godot-bare.png",
+      "sha256": "ba8696fd36535134dc703801f47969cceee5fe1b2a2191910679539d7e549557"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/godot-resized.png",
+      "sha256": "b23e7c73e0c6ee2c809ba7581b70f4055b5b9ff89e469b35dac489ce538c6313"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/godot-walk-frames.png",
+      "sha256": "e0963f0c32e2b993d64de96baacf0255aa61d33b1f3939c71ed61341a93ea34f"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/runtime-validation.json",
+      "sha256": "5cf7d300573fecbdc3cb7e48f3cc484d6c6ae8f811957085eb8900759a6e302f"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/capture-validation.json",
+      "sha256": "5d9efe57ff3779386f727a6a0cd89f58cc2041f8816dc214d51fe6ecac5174e6"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/browser-validation.json",
+      "sha256": "62e40420f84e61000d98535a6f1d219bbf3f6f759c93d653f59db59e986e3533"
+    },
+    {
+      "path": "Art/Officer/RightMotionV8/python-tests.txt",
+      "sha256": "a175633d25788f628128578c60711848b720204d17a540220a656dd8c0022f15"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "binding": "bddc66ae1ded19b7dc1d1769fe951099be3942e66b46a3fb6ac4ed0a1b6c69d5",
+  "plan": "right-motion-v8-probe",
+  "scope": "Right-only small in-place displacement probes, not accepted walking."
+}

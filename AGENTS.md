@@ -35,3 +35,5 @@ Godot表示の現在の入口はMainの「武将表示」タブ（`--officer-mot
 現在の正面歩行は `Docs/Proposals/OFFICER_FRONT_WALK_V6.md` と `Art/Officer/FrontWalkV6/`。原本/V4は保持、V6シートを別出力。腕上下4px/足上げ5.5px/膝軌道1.5pxを着脱で検査し、Godotの右端に前回版を同期表示する。現行の検査は `Scripts/Validate-OfficerFrontWalk.ps1`、既存 `Validate-OfficerGodotMotion.ps1` もここへ委譲する。最新計画はwork-recordのfront_walk_plan/godot_motion_plan。旧V5のコードSHAに結び付いた合格を現在へ流用しない。範囲は正面の改善試作で、他方向・実移動・体型の最終採用へ広げない。
 
 右向きの静止試作V7は `Docs/Proposals/OFFICER_RIGHT_VIEW_V7.md`、計画はwork-recordのright_view_plan。正面の承認を横の承認へ流用しない。64×96の固定マスク、原本、所有/素材候補/隠れ面/遮蔽/関節制御を保持する。限定肘±1px確認は横歩行ではない。隠れ面の単色補完と暫定体型は未完成事項。右向きGodot組込みは未実施。
+
+右向き待機/歩行V8は `Docs/Proposals/OFFICER_RIGHT_MOTION_V8.md`。静止V7/正面V6は保持。work-recordのright_motion_planと独立シーンOfficerRightMotionTrialを使う。近遠の実可視寄与とLマスクalphaを回帰へ固定し、画素一致だけで描画欠落を合格にしない。遠側は同寸素材の限定補完、仮体型/未観測面の完成扱いをしない。Show-OfficerRightMotion.ps1で起動、Validate-OfficerRightMotion.ps1で実GPU確認。

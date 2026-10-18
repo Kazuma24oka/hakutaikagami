@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "direction": "screen-right",
+  "near_character_side": "left",
+  "far_character_side": "right",
+  "shoulder_y": 38,
+  "wrist_y": 61,
+  "hip_y": 63,
+  "ankle_y": 87,
+  "sole_y": 91,
+  "arm_swing": 5,
+  "arm_rise": 0.8,
+  "stride": 6,
+  "knee_bend": 1,
+  "foot_lift": 3,
+  "coat_sway": 1.5,
+  "far_surface_policy": "Initial hidden armor surface uses 1:1 same-scale near material donor, retained as explicit authored completion; not recovered anatomical art. Body uses existing separate right/left authored polygons. Static source untouched. Far armor RGB multiplied by0.78 for near/far readability; alpha/geometry unchanged, neutral covered by near surfaces.",
+  "clips": {
+    "idle": {
+      "duration_ms": 240,
+      "frames": [
+        {
+          "bob": 0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.35,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.7,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.35,
+          "swing": 0,
+          "lift": 0
+        }
+      ]
+    },
+    "walk": {
+      "duration_ms": 120,
+      "frames": [
+        {
+          "bob": -0.65,
+          "swing": 0.0,
+          "lift": 1.0
+        },
+        {
+          "bob": -0.45962,
+          "swing": 0.70711,
+          "lift": 0.70711
+        },
+        {
+          "bob": -0.0,
+          "swing": 1.0,
+          "lift": 0.0
+        },
+        {
+          "bob": -0.45962,
+          "swing": 0.70711,
+          "lift": -0.70711
+        },
+        {
+          "bob": -0.65,
+          "swing": 0.0,
+          "lift": -1.0
+        },
+        {
+          "bob": -0.45962,
+          "swing": -0.70711,
+          "lift": -0.70711
+        },
+        {
+          "bob": -0.0,
+          "swing": -1.0,
+          "lift": -0.0
+        },
+        {
+          "bob": -0.45962,
+          "swing": -0.70711,
+          "lift": 0.70711
+        }
+      ]
+    }
+  },
+  "registration": {
+    "canvas_same_as_v7": true,
+    "per_part_scale": false,
+    "per_frame_fit": false,
+    "animation_policy": "authored shared continuous chain displacement, nearest sampling; head/sword rigid translated; no world ticks"
+  },
+  "far_material_brightness": 0.78
+}
