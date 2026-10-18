@@ -1,0 +1,101 @@
+{
+  "errors": [],
+  "states": [
+    {
+      "scene": "battle",
+      "size": "32x48",
+      "zoom": 1,
+      "file": "Evidence/officer-context-battle-32x48-1x.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "battle",
+      "size": "32x48",
+      "zoom": 2,
+      "file": "Evidence/officer-context-battle-32x48.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "battle",
+      "size": "48x64",
+      "zoom": 1,
+      "file": "Evidence/officer-context-battle-48x64-1x.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "battle",
+      "size": "48x64",
+      "zoom": 2,
+      "file": "Evidence/officer-context-battle-48x64.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "battle",
+      "size": "64x96",
+      "zoom": 1,
+      "file": "Evidence/officer-context-battle-64x96-1x.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "battle",
+      "size": "64x96",
+      "zoom": 2,
+      "file": "Evidence/officer-context-battle-64x96.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "dialogue",
+      "size": "32x48",
+      "zoom": 1,
+      "file": "Evidence/officer-context-dialogue-32x48-1x.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "dialogue",
+      "size": "32x48",
+      "zoom": 2,
+      "file": "Evidence/officer-context-dialogue-32x48.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "dialogue",
+      "size": "48x64",
+      "zoom": 1,
+      "file": "Evidence/officer-context-dialogue-48x64-1x.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "dialogue",
+      "size": "48x64",
+      "zoom": 2,
+      "file": "Evidence/officer-context-dialogue-48x64.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "dialogue",
+      "size": "64x96",
+      "zoom": 1,
+      "file": "Evidence/officer-context-dialogue-64x96-1x.png",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "scene": "dialogue",
+      "size": "64x96",
+      "zoom": 2,
+      "file": "Evidence/officer-context-dialogue-64x96.png",
+      "width": 1100,
+      "height": 720
+    }
+  ]
+}
