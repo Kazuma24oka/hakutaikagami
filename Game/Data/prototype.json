@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "seed": 20261018,
+  "organizations": [{ "id": "org-mirror", "name": "鏡家（仮）" }],
+  "characters": [
+    { "id": "character-001", "name": "鏡 太郎（仮）" },
+    { "id": "character-002", "name": "鏡 次郎（仮）" },
+    { "id": "character-003", "name": "鏡 三郎（仮）" }
+  ],
+  "castles": [{ "id": "castle-001", "name": "鏡城（仮）" }]
+}
