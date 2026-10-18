@@ -462,3 +462,7 @@
 - **現行正本**：[費用・資源14項目の統合、重複・依存・P0会計責任分界](Proposals/P1_RESOURCE_14_CONSOLIDATED.md)。
 - **ABCD比較・B選択履歴**：[費用・資源7項目](Archive/P1_RESOURCE_COMMIT_BOUNDARIES_OPTIONS.md)、[資源時点・同時刻競合7項目](Archive/P1_RESOURCE_TIMING_CONFLICT_OPTIONS.md)。
 - Confirmed・main変更なし。内容一致確認後に旧配置を削除、永久削除なし。
+
+## P1資源不足・同時刻競合の制度別裁定（未確定・ABCD）
+- [軍事・内政・交易・外交の優先、緊急軍需、部分実行最低量、待機期限、NPC裁量、再現性の7項目](Proposals/P1_RESOURCE_INSTITUTIONAL_ARBITRATION_OPTIONS.md)。B推奨、未選択。D選択項目のみ次のチャットで自由記載。
+- [P1資源14項目統合](Proposals/P1_RESOURCE_14_CONSOLIDATED.md)とF01/F02/F03/F07/F08、P0-A01〜A06に整合。Confirmed・main変更なし、Archive移動・永久削除なし。
