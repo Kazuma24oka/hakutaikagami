@@ -471,3 +471,7 @@
 - [軍事・内政・交易・外交の競合、緊急軍需と契約、部分実行、待機再評価、NPC裁量、復旧のB優先案と未確定詳細](Proposals/P1_RESOURCE_INSTITUTIONAL_ARBITRATION_OPTIONS.md)。
 - F01/F02/F03/F07/F08、P0-A01〜A06、P1資源14項目統合と整合。新規Confirmed追加なし。
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
+
+## P0/P1最小プロトタイプ製造開始ゲート（未確定・ABCD）
+- [P0/P1横断レビュー、技術・時間・権限・ID・資源・保存の着手ブロッカーと7項目の選択肢](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)。B推奨・未選択、D選択項目のみ次のチャットで自由記載。
+- [P1行動84項目](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)、[共通契約21項目](Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md)、[資源14項目](Proposals/P1_RESOURCE_14_CONSOLIDATED.md)とF01〜F08、P0-A01〜A06に整合。Confirmed・main変更なし、Archive移動・永久削除なし。
