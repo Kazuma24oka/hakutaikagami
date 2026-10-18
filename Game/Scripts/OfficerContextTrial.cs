@@ -8,12 +8,17 @@ public partial class OfficerContextTrial : Control
     private readonly Vector2I[] sizes = { new(32, 48), new(48, 64), new(64, 96) };
     private Control contents = null!;
     private Label status = null!;
-    private int selected = 1, zoom = 2;
+    private int selected, zoom;
     private bool dialogue;
     private readonly Button[] sizeButtons = new Button[3];
     private Button battleButton = null!, dialogueButton = null!, zoomButton = null!;
     public override void _Ready()
     {
+        using var profile = System.Text.Json.JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/officer_visual_profile.json"));
+        var canvas = profile.RootElement.GetProperty("canvas_pixels");
+        selected = Array.FindIndex(sizes, size => size.X == canvas[0].GetInt32() && size.Y == canvas[1].GetInt32());
+        zoom = profile.RootElement.GetProperty("default_display_scale").GetInt32();
+        if (selected < 0 || zoom is not (1 or 2)) throw new InvalidOperationException("Unsupported officer visual profile.");
         Theme = new Theme { DefaultFontSize = 18, DefaultFont = new SystemFont { FontNames = new[] { "Meiryo", "Yu Gothic UI", "sans-serif" } } };
         Label(this, "百代鏡｜ゲーム画面での大きさ比較（仮背景・仮UI）", new(20, 8));
         battleButton = Button("合戦", new(20, 43), () => { dialogue = false; Refresh(); });

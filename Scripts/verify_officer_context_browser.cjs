@@ -11,6 +11,11 @@ const root = path.resolve(process.argv[3] || path.join(__dirname, '..'));
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(pathToFileURL(path.join(root, 'Docs/Proposals/officer-context-review.html')).href);
+    const profile = JSON.parse(fs.readFileSync(path.join(root, 'Game/Data/officer_visual_profile.json'), 'utf8'));
+    const initial = await page.locator('#frame').getAttribute('src');
+    const sizeId = profile.canvas_pixels.join('x');
+    const suffix = profile.default_display_scale === 1 ? '-1x.png' : '.png';
+    if (!initial.endsWith('battle-' + sizeId + suffix)) throw Error('Initial HTML state differs from adopted profile.');
     const states = [];
     for (const scene of ['battle', 'dialogue']) for (const size of ['32x48', '48x64', '64x96']) for (const zoom of [1, 2]) {
       await page.evaluate(values => {

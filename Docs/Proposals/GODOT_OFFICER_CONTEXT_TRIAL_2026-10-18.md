@@ -49,3 +49,9 @@
 再現：`Scripts/Validate-OfficerContext.ps1 -Python <python実行ファイル> -Godot <Godot .NET実行ファイル>`。HTML検査は `node Scripts/verify_officer_context_browser.cjs <インストール済みplaywrightのパス> [リポジトリルート]`（Edge使用）。GUIを開く場合は `Godot --path Game res://Scenes/OfficerContextTrial.tscn`。
 
 未実施：実際の合戦・内応交渉ロジック、正式背景/3Dカメラ、全方向/動作、部位マスク、リグ、着脱、異なる武将同士の識別、正式な6頭身立ち絵表示、最終表示倍率の選定、別OS・別画面解像度。既存Main画面・Core・Confirmed・main・design/foundationは変更しない。
+
+## ユーザー選択の追記（2026-10-18）
+
+ユーザーの「64×96・1倍、これでいこう」により、小型武将の基準画像枠64×96px・通常表示1倍を採用する。通常の表示枠も64×96px。Nearestを維持し、6頭身立ち絵の方針は変更しない。機械可読の選択記録は `Game/Data/officer_visual_profile.json`。比較HTMLと独立Godotシーンの初期値を64×96・1倍へ揃えた。他候補・過去の証跡は比較履歴として保持する。
+
+採用したのは画像枠と通常表示倍率であり、現在の縮小試料の全画素・仮アルファ・24色パレット・頭身・関節・全動作の余白まで承認されたとは扱わない。次工程で装備・武器の可動範囲と余白を確認し、必要な広幅セルを別途定義する。本書前半の「未決定」は選択前の試験記録で、この追記が現在の選択状態を示す。
