@@ -507,3 +507,8 @@
 - **Confirmed**：[HD-2D・パーツ・アニメ・会話／謀略・世界時間・C#・セーブ／テストの検証基本方針](Confirmed/GODOT_TECH_VALIDATION_PRINCIPLES.md)。
 - **Proposals**：[合格条件案・失敗時代替方式・実装詳細](Proposals/GODOT_TECH_VALIDATION_7_OPTIONS.md)。
 - Godot正式採用・製造開始・技術検証の合格は未決定。main変更なし、Archive移動・永久削除なし。
+
+## Godot実装準備7項目のB案確定（2026-10-18）
+- **Confirmed**：[独立C#ロジック・機能別＋共通フォルダ・責務分離・パーツ規格・固定Seed・並行検証・合格方針](Confirmed/GODOT_IMPLEMENTATION_READINESS_PRINCIPLES.md)。
+- **Proposals**：[ABCD比較履歴とクラスAPI・Pivot・スキーマ・受入閾値など未確定詳細](Proposals/GODOT_IMPLEMENTATION_READINESS_7_OPTIONS.md)。
+- Godotの実機検証・正式採用・製造開始は未実施／未決定。既存Confirmedと整合、main変更なし、Archive移動・永久削除なし。
