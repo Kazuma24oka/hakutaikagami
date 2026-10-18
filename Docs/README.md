@@ -450,5 +450,10 @@
 - main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
 
 ## P1資源確定時点・同時刻競合（未確定・ABCD）
-- [引当／消費／返還時点、部分実行、同時刻裁定、競合後再評価、債務／担保、中断損失、補償／セーブの7項目](Proposals/P1_RESOURCE_TIMING_CONFLICT_OPTIONS.md)。B推奨・未選択、D選択項目のみ次のチャットで自由記載。
+- [引当／消費／返還時点、部分実行、同時刻裁定、競合後再評価、債務／担保、中断損失、補償／セーブの7項目](Proposals/P1_RESOURCE_TIMING_CONFLICT_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
 - [費用・資源境界7項目](Proposals/P1_RESOURCE_COMMIT_BOUNDARIES_OPTIONS.md)と[共通契約21項目](Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md)、F01/F02/F03・P0-A01〜A06に整合。Confirmed・main変更なし。Archive移動・永久削除なし。
+
+## P1資源確定時点・同時刻競合7項目のB案選択（2026-10-18）
+- [引当・消費時点、部分実行、同時刻裁定、競合後再評価、債務・担保、中断損失、補償・保存のB優先案と保留詳細](Proposals/P1_RESOURCE_TIMING_CONFLICT_OPTIONS.md)。
+- F01/F02/F03、P0-A01〜A06、P1共通契約21項目・費用資源7項目と整合。新規Confirmed追加なし。
+- main変更なし、Archive移動・永久削除なし。実装・テスト未実施。
