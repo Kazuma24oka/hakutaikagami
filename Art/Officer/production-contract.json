@@ -10,8 +10,8 @@
   "alpha": "binary",
   "portrait_policy": "six-head-separate-art-shared-selection-ids",
   "fit_policy": "one-uniform-registration-no-part-fit",
-  "generation_backend": "comfyui",
-  "backend_decision": "User permits ComfyUI but does not mandate it. This run selects local ComfyUI for fixed workflow/seed/masks; any tool change must retain geometry/masks/validation and record its actual settings.",
+  "generation_backend": "builtin-imagegen",
+  "backend_decision": "User allows tool selection. Built-in reference-image editing selected for matching original detailed pixel shading, rather than repeating a zero-change SDXL interior pass. Fixed native geometry, masks and raw-output retention remain required. Tool does not expose seed/model version; exact rerun equivalence is NOT claimed.",
   "base_body": {
     "face_features": false,
     "hair": false,
@@ -32,9 +32,9 @@
     "preservation": "No existing files deleted; main/design/foundation/Confirmed unchanged"
   },
   "authoring_geometry": {
-    "status": "REJECTED_APPEARANCE_NOT_CHARACTER_BASE",
-    "historical_definition": "Art/Officer/BodyBaseV1/geometry.json",
-    "basis": "User rated appearance about 10; this generic mannequin does not correspond to original officer. No four-head anatomical target adopted."
+    "status": "SOURCE_CORRESPONDING_AUTHOR_CONSTRUCTION_NOT_USER_ACCEPTED",
+    "definition": "Art/Officer/BodyBaseV2/source-definition.json",
+    "basis": "Actual source-control overlay inspected; hidden anatomy authored beneath original armored pose, not copied from rejected mannequin."
   },
   "review_policy": "technical / semantic / appearance / runtime separately bound to current input, mask, tool and output hashes; no automatic visual approval",
   "mask_roles": {
@@ -75,6 +75,6 @@
   ],
   "appearance_reference": {
     "path": "Art/Officer/appearance-reference.json",
-    "sha256": "5575b126b288215224511a16bb2104370cc6aea3084e86094d8cf7658c31af1e"
+    "sha256": "f1c4431bb1121538a5cbb4f4a6db604a716158b8754a0f01ab5cb716e0a13317"
   }
 }

@@ -20,6 +20,7 @@ class PipelineTests(unittest.TestCase):
         (self.root/'Art/Officer').mkdir(parents=True);(self.root/'Game/Data').mkdir(parents=True)
         repo=Path(__file__).resolve().parents[1]
         self.contract=json.loads((repo/'Art/Officer/production-contract.json').read_text(encoding='utf-8'))
+        self.contract['generation_backend']='comfyui'  # Explicit synthetic backend, independent of current art tool.
         self.profile=json.loads((repo/'Game/Data/officer_visual_profile.json').read_text(encoding='utf-8'))
         self.save()
         (self.root/'fixture.txt').write_text('explicitly synthetic test evidence')
@@ -142,6 +143,30 @@ class PipelineTests(unittest.TestCase):
         work=json.loads((root/'Art/Officer/work-record.json').read_text(encoding='utf-8'))
         with self.assertRaises(p.Blocked):p.require_control_plan(root,work['control_preparation'])
         with self.assertRaises(p.Blocked):p.require_plan(root,'front_authoring',work['plans']['body-front-v1'])
+    def test_source_annotation_preparation_does_not_authorize_generation(self):
+        spec={'canvas':[64,96],'landmarks':self.ledger['landmarks'],
+              'observed_surfaces':[{'name':'synthetic visible surface'}], 'registration':self.ledger['registration']}
+        (self.root/'source-definition.json').write_text(json.dumps(spec))
+        prep={'scope':'source-annotation-controls-only','contract_sha256':p.digest(self.contract),
+              'retained_decisions':self.contract['decisions'],'sources':self.ledger['sources'],
+              'registration':self.ledger['registration'],'tools':[self.e],'references':[self.e],
+              'definition':{'path':'source-definition.json','sha256':p.sha(self.root/'source-definition.json')},
+              'feedback':['fixture'],'prior_failures':['fixture']}
+        (self.root/'Art/Officer/work-record.json').write_text(json.dumps({'reference_preparation':prep}))
+        self.assertEqual(len(p.require_reference_preparation(self.root,prep)),64)
+        with self.assertRaises(p.Blocked):p.require_plan(self.root,'front_authoring',self.plan)
+        changed=copy.deepcopy(prep);changed['sources']=[]
+        with self.assertRaises(p.Blocked):p.require_reference_preparation(self.root,changed)
+    def test_builtin_edit_binds_actual_prompt_and_reference(self):
+        self.contract['generation_backend']='builtin-imagegen';self.save()
+        self.plan['contract_sha256']=p.digest(self.contract)
+        self.plan['backend']={'name':'builtin-imagegen','prompt':self.e,
+            'reference_images':[self.e],'transparent_background':True}
+        self.assertEqual(len(self.runplan()),64)
+        self.plan['backend']['reference_images']=[{'path':'absent','sha256':'x'}]
+        with self.assertRaises(p.Blocked):self.runplan()
+        self.plan['backend']['reference_images']=[self.e];self.plan['backend']['transparent_background']=False
+        with self.assertRaises(p.Blocked):self.runplan()
     def test_missing_and_changed_prerequisites_are_rejected(self):
         mutations=[lambda q:q.update(unresolved=['not measured']),lambda q:q.update(inputs=[]),
             lambda q:q.update(tools=[]),lambda q:q.update(references=[]),lambda q:q.update(contract_sha256='stale'),

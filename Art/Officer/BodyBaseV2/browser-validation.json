@@ -1,0 +1,49 @@
+{
+  "dimensions": {
+    "native": {
+      "pixels": [
+        64,
+        96
+      ],
+      "css": [
+        64,
+        96
+      ],
+      "filter": "pixelated"
+    },
+    "body": {
+      "pixels": [
+        64,
+        96
+      ],
+      "css": [
+        256,
+        384
+      ],
+      "filter": "pixelated"
+    },
+    "overlay": {
+      "pixels": [
+        64,
+        96
+      ],
+      "css": [
+        256,
+        384
+      ],
+      "filter": "pixelated"
+    }
+  },
+  "page_errors": [],
+  "modes": {
+    "body": 0,
+    "skin": 0,
+    "edit": 0,
+    "preserve": 0
+  },
+  "native_rgba_difference": 0,
+  "overlay_zero_difference": 0,
+  "overlay_full_reference_difference": 0,
+  "contour_difference": 0,
+  "status": "PASS"
+}

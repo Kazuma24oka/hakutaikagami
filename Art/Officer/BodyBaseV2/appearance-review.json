@@ -1,0 +1,42 @@
+{
+  "status": "AUTHOR_INSPECTED_FRONT_STATIC_NOT_USER_ACCEPTED",
+  "plan": "body-source-v2-browser-verified",
+  "binding": "8eacfd5228997a5bf2f06b94b363e33149180b91d9b9e877faaf85830f9df4b1",
+  "reviewer": "Codex actual PNG and headless browser screenshot inspection 2026-10-18",
+  "evidence": [
+    {
+      "path": "Docs/Proposals/Evidence/officer-body-source-v2.png",
+      "sha256": "b478907670dcccc723c4177eaf478120bb252af02030290d1fda8cbad3084d04"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-body-source-browser.png",
+      "sha256": "065eaf1ab1374c58bb908e0e18b510d912b2282f23391872967b7a2da7a81398"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV2/overlay-50.png",
+      "sha256": "a627a3cd7ae50c4997f881c7e4783a741e2b61105ce0eef606148655e8abc579"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV2/source-contour-overlay.png",
+      "sha256": "2263bc424b50bcb982d90ddf542cb5e05b74a0503589a322496b7dd3f3ac8ba8"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+      "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+    }
+  ],
+  "observations": {
+    "source_correspondence": "Head axis follows the original visible face, shoulders beneath pauldrons, arms/hands follow original lowered-arm stance, knees and ankles aligned with original leg stance. Bare scalp excludes hair volume. Bare soles exclude boot thickness. Body/source not individually rescaled or centered.",
+    "base_surface": "Inspected front on white, black and checker backgrounds, at native 64x96 and 4x enlarged. Blank scalp/head has no eyes/brows/nose/mouth/beard/hair. No cloth/armor/shoes. Featureless skin pelvis has no genital detail or garment edge. No nipples or navel dot added.",
+    "style": "Warm dark contour and clustered skin shading. Final torso/limbs use 542 changed interior pixels from retained generation02. Head/pelvis and outside contour are explicitly authored skin/shape controls; not claimed as entirely generated output.",
+    "mask_semantics": "17 connected body-owner regions; source-visible skin patches and feature exclusion are manually annotated, not RGB threshold segmentation. Two isolated boundary owners reassigned without deleting silhouette pixels. No static hidden-joint completion or animation approval inferred.",
+    "display": "Actual page screenshot inspected: original, base and overlay all visible, native pair at64x96, enlarged4x. Background/mask modes and slider endpoints match real PNGs with zero RGBA differences."
+  },
+  "limits": [
+    "Unobserved anatomy is authored, not exact recovery from armor",
+    "User appearance acceptance pending",
+    "Only original front pose, not side/back/walking",
+    "No fresh-model generation equivalence claimed; seed/model version unavailable from tool",
+    "Source armor components have not been accepted as separated compatible parts"
+  ]
+}

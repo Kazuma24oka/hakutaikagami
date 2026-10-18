@@ -522,3 +522,5 @@
 - [64×96・1倍、顔/髪/服なしの実画像と固定寸法・マスク・生成設定](Proposals/OFFICER_BODY_BASE_V1.md)。作者の正面検査済み、ユーザー外見受入・全方向・動作は未実施。[確認画面](Proposals/officer-body-base-review.html)。
 
 - [元武将への対応を制作前に必須化](Proposals/OFFICER_SOURCE_CORRESPONDENCE_REPAIR.md)（素体の外見修正は未完了）
+
+- [元武将に対応する裸素体 V2：実画像・重ね合わせ・検査](Proposals/OFFICER_BODY_SOURCE_V2.md)

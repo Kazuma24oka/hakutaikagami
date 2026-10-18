@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "PENDING_SOURCE_CORRESPONDENCE_CONTROLS",
+  "status": "CONTROLS_REVIEWED",
   "scope": "Original armored officer is the appearance reference, not an approved bare anatomy or approved segmentation.",
   "sources": [
     {
@@ -19,9 +19,300 @@
       2.0743982494529547
     ]
   },
-  "landmarks": {},
-  "controls": {},
-  "control_review": {},
+  "landmarks": {
+    "scalp_top": {
+      "kind": "authored-hidden",
+      "xy": [
+        29,
+        13
+      ],
+      "basis": "Author construction below hair using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "hair",
+      "allowed_native_bounds": [
+        28,
+        12,
+        30,
+        14
+      ]
+    },
+    "chin": {
+      "kind": "authored-hidden",
+      "xy": [
+        29,
+        32
+      ],
+      "basis": "Author construction below beard using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "beard",
+      "allowed_native_bounds": [
+        28,
+        31,
+        30,
+        33
+      ]
+    },
+    "neck": {
+      "kind": "authored-hidden",
+      "xy": [
+        30,
+        34
+      ],
+      "basis": "Author construction below collar and beard using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "collar and beard",
+      "allowed_native_bounds": [
+        29,
+        33,
+        31,
+        35
+      ]
+    },
+    "shoulder_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        21,
+        38
+      ],
+      "basis": "Author construction below shoulder armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shoulder armor",
+      "allowed_native_bounds": [
+        20,
+        37,
+        22,
+        39
+      ]
+    },
+    "shoulder_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        41,
+        38
+      ],
+      "basis": "Author construction below shoulder armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shoulder armor",
+      "allowed_native_bounds": [
+        40,
+        37,
+        42,
+        39
+      ]
+    },
+    "elbow_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        14,
+        49
+      ],
+      "basis": "Author construction below sleeve and kote using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "sleeve and kote",
+      "allowed_native_bounds": [
+        13,
+        48,
+        15,
+        50
+      ]
+    },
+    "elbow_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        48,
+        49
+      ],
+      "basis": "Author construction below sleeve and kote using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "sleeve and kote",
+      "allowed_native_bounds": [
+        47,
+        48,
+        49,
+        50
+      ]
+    },
+    "wrist_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        10,
+        61
+      ],
+      "basis": "Author construction below gauntlet using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "gauntlet",
+      "allowed_native_bounds": [
+        9,
+        60,
+        11,
+        62
+      ]
+    },
+    "wrist_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        49,
+        61
+      ],
+      "basis": "Author construction below gauntlet using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "gauntlet",
+      "allowed_native_bounds": [
+        48,
+        60,
+        50,
+        62
+      ]
+    },
+    "pelvis": {
+      "kind": "authored-hidden",
+      "xy": [
+        30,
+        63
+      ],
+      "basis": "Author construction below kusazuri and belt cloth using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "kusazuri and belt cloth",
+      "allowed_native_bounds": [
+        29,
+        62,
+        31,
+        64
+      ]
+    },
+    "knee_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        20,
+        77
+      ],
+      "basis": "Author construction below knee armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "knee armor",
+      "allowed_native_bounds": [
+        19,
+        76,
+        21,
+        78
+      ]
+    },
+    "knee_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        41,
+        77
+      ],
+      "basis": "Author construction below knee armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "knee armor",
+      "allowed_native_bounds": [
+        40,
+        76,
+        42,
+        78
+      ]
+    },
+    "ankle_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        19,
+        87
+      ],
+      "basis": "Author construction below shin guard and boot using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shin guard and boot",
+      "allowed_native_bounds": [
+        18,
+        86,
+        20,
+        88
+      ]
+    },
+    "ankle_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        43,
+        87
+      ],
+      "basis": "Author construction below shin guard and boot using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shin guard and boot",
+      "allowed_native_bounds": [
+        42,
+        86,
+        44,
+        88
+      ]
+    },
+    "sole_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        17,
+        91
+      ],
+      "basis": "Author construction below boot sole thickness using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "boot sole thickness",
+      "allowed_native_bounds": [
+        16,
+        90,
+        18,
+        92
+      ]
+    },
+    "sole_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        44,
+        91
+      ],
+      "basis": "Author construction below boot sole thickness using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "boot sole thickness",
+      "allowed_native_bounds": [
+        43,
+        90,
+        45,
+        92
+      ]
+    }
+  },
+  "controls": {
+    "observed_skin": {
+      "path": "Art/Officer/BodyBaseV2/controls/observed-skin.png",
+      "sha256": "7bb1c208c8098ec92046abf0f4d9f9cbc9c4059b765ba59bb80d6f507310585a"
+    },
+    "feature_exclusion": {
+      "path": "Art/Officer/BodyBaseV2/controls/feature-exclusion.png",
+      "sha256": "1c8d457f21d89eb2441849af35f8766e4b1887454a8e18016455ef9c8cec3f38"
+    },
+    "hidden_construction": {
+      "path": "Art/Officer/BodyBaseV2/controls/hidden-construction.png",
+      "sha256": "a777df5ebf6db03c317774c41cedf5901635d8ee8db16b7f526f4a490e20cb63"
+    },
+    "ownership": {
+      "path": "Art/Officer/BodyBaseV2/controls/ownership.png",
+      "sha256": "1d58b5fe3bc3bbccd3cc96da0f0d160bff192d36f1838f50f0fbd229cd4a9e0f"
+    },
+    "edit": {
+      "path": "Art/Officer/BodyBaseV2/controls/edit-mask.png",
+      "sha256": "2103ae9bbafc29738baf9ff66a2a4865f7a31f1505895d1b7c811e11310c965c"
+    },
+    "preserve": {
+      "path": "Art/Officer/BodyBaseV2/controls/preserve-mask.png",
+      "sha256": "2ed3f13e9ff711826df19efc1b6d9df0873b9c51a341405792feaf284c2b2cbf"
+    }
+  },
+  "control_review": {
+    "reviewer": "Codex actual image inspection 2026-10-18",
+    "observation": "Inspected source-control-review.png: original native officer, cyan bare-body contour, blank anatomy guide and joint chains. Head axis follows original face; shoulders/forearms/knees/ankles follow original clothed pose. Hair, armor panels and boot thickness excluded. All 17 anatomical points are explicitly authored hidden values, not bare-body measurements. Forehead and cheek patches are the only manually selected visible skin observations. No generated quality or user acceptance inferred from this control review. Re-inspected after explicit two-pixel owner correction: body silhouette and pose unchanged; no pixel deletion; target controls retained. Re-inspected revised head/pelvis skin volume and source overlay: geometry unchanged; no facial marks or garment border; head highlights and pelvic lighting are authored skin clusters.",
+    "evidence": {
+      "same_coordinate_overlay": {
+        "path": "Art/Officer/BodyBaseV2/source-control-review.png",
+        "sha256": "98f32021c3443e19418f1a32cf3c5746087d54ca74347ca48f75561c69e5a1ab"
+      },
+      "head_body_proportions": {
+        "path": "Art/Officer/BodyBaseV2/source-control-review.png",
+        "sha256": "98f32021c3443e19418f1a32cf3c5746087d54ca74347ca48f75561c69e5a1ab"
+      },
+      "pose": {
+        "path": "Art/Officer/BodyBaseV2/source-control-review.png",
+        "sha256": "98f32021c3443e19418f1a32cf3c5746087d54ca74347ca48f75561c69e5a1ab"
+      },
+      "line_shading": {
+        "path": "Art/Officer/BodyBaseV2/source-control-review.png",
+        "sha256": "98f32021c3443e19418f1a32cf3c5746087d54ca74347ca48f75561c69e5a1ab"
+      },
+      "visible_vs_hidden": {
+        "path": "Art/Officer/BodyBaseV2/source-control-review.png",
+        "sha256": "98f32021c3443e19418f1a32cf3c5746087d54ca74347ca48f75561c69e5a1ab"
+      }
+    }
+  },
   "maintain": [
     "head/body proportions of original character",
     "original pose and shoulder/hip/limb placement",

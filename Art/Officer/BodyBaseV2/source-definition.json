@@ -1,0 +1,1143 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "working_canvas": [
+    768,
+    1152
+  ],
+  "registration": {
+    "uniform_scale": 0.1925601750547046,
+    "translate": [
+      4.0787746170678325,
+      2.0743982494529547
+    ]
+  },
+  "landmarks": {
+    "scalp_top": {
+      "kind": "authored-hidden",
+      "xy": [
+        29,
+        13
+      ],
+      "basis": "Author construction below hair using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "hair",
+      "allowed_native_bounds": [
+        28,
+        12,
+        30,
+        14
+      ]
+    },
+    "chin": {
+      "kind": "authored-hidden",
+      "xy": [
+        29,
+        32
+      ],
+      "basis": "Author construction below beard using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "beard",
+      "allowed_native_bounds": [
+        28,
+        31,
+        30,
+        33
+      ]
+    },
+    "neck": {
+      "kind": "authored-hidden",
+      "xy": [
+        30,
+        34
+      ],
+      "basis": "Author construction below collar and beard using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "collar and beard",
+      "allowed_native_bounds": [
+        29,
+        33,
+        31,
+        35
+      ]
+    },
+    "shoulder_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        21,
+        38
+      ],
+      "basis": "Author construction below shoulder armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shoulder armor",
+      "allowed_native_bounds": [
+        20,
+        37,
+        22,
+        39
+      ]
+    },
+    "shoulder_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        41,
+        38
+      ],
+      "basis": "Author construction below shoulder armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shoulder armor",
+      "allowed_native_bounds": [
+        40,
+        37,
+        42,
+        39
+      ]
+    },
+    "elbow_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        14,
+        49
+      ],
+      "basis": "Author construction below sleeve and kote using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "sleeve and kote",
+      "allowed_native_bounds": [
+        13,
+        48,
+        15,
+        50
+      ]
+    },
+    "elbow_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        48,
+        49
+      ],
+      "basis": "Author construction below sleeve and kote using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "sleeve and kote",
+      "allowed_native_bounds": [
+        47,
+        48,
+        49,
+        50
+      ]
+    },
+    "wrist_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        10,
+        61
+      ],
+      "basis": "Author construction below gauntlet using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "gauntlet",
+      "allowed_native_bounds": [
+        9,
+        60,
+        11,
+        62
+      ]
+    },
+    "wrist_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        49,
+        61
+      ],
+      "basis": "Author construction below gauntlet using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "gauntlet",
+      "allowed_native_bounds": [
+        48,
+        60,
+        50,
+        62
+      ]
+    },
+    "pelvis": {
+      "kind": "authored-hidden",
+      "xy": [
+        30,
+        63
+      ],
+      "basis": "Author construction below kusazuri and belt cloth using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "kusazuri and belt cloth",
+      "allowed_native_bounds": [
+        29,
+        62,
+        31,
+        64
+      ]
+    },
+    "knee_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        20,
+        77
+      ],
+      "basis": "Author construction below knee armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "knee armor",
+      "allowed_native_bounds": [
+        19,
+        76,
+        21,
+        78
+      ]
+    },
+    "knee_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        41,
+        77
+      ],
+      "basis": "Author construction below knee armor using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "knee armor",
+      "allowed_native_bounds": [
+        40,
+        76,
+        42,
+        78
+      ]
+    },
+    "ankle_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        19,
+        87
+      ],
+      "basis": "Author construction below shin guard and boot using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shin guard and boot",
+      "allowed_native_bounds": [
+        18,
+        86,
+        20,
+        88
+      ]
+    },
+    "ankle_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        43,
+        87
+      ],
+      "basis": "Author construction below shin guard and boot using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "shin guard and boot",
+      "allowed_native_bounds": [
+        42,
+        86,
+        44,
+        88
+      ]
+    },
+    "sole_right": {
+      "kind": "authored-hidden",
+      "xy": [
+        17,
+        91
+      ],
+      "basis": "Author construction below boot sole thickness using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "boot sole thickness",
+      "allowed_native_bounds": [
+        16,
+        90,
+        18,
+        92
+      ]
+    },
+    "sole_left": {
+      "kind": "authored-hidden",
+      "xy": [
+        44,
+        91
+      ],
+      "basis": "Author construction below boot sole thickness using adjacent visible face and original clothed pose; not a measurement of bare anatomy",
+      "occluder": "boot sole thickness",
+      "allowed_native_bounds": [
+        43,
+        90,
+        45,
+        92
+      ]
+    }
+  },
+  "observed_surfaces": [
+    {
+      "name": "forehead",
+      "source_bounds": [
+        109,
+        85,
+        148,
+        103
+      ],
+      "use": "skin hue and head width; features excluded"
+    },
+    {
+      "name": "cheek_right",
+      "source_bounds": [
+        101,
+        119,
+        116,
+        136
+      ],
+      "use": "visible side contour and skin, not beard line"
+    },
+    {
+      "name": "cheek_left",
+      "source_bounds": [
+        143,
+        119,
+        157,
+        134
+      ],
+      "use": "visible side contour and skin"
+    }
+  ],
+  "regions": [
+    {
+      "id": 1,
+      "name": "head",
+      "polygon": [
+        [
+          27,
+          13
+        ],
+        [
+          31,
+          13
+        ],
+        [
+          33,
+          14
+        ],
+        [
+          34,
+          16
+        ],
+        [
+          35,
+          19
+        ],
+        [
+          35,
+          22
+        ],
+        [
+          36,
+          23
+        ],
+        [
+          35,
+          25
+        ],
+        [
+          34,
+          26
+        ],
+        [
+          34,
+          28
+        ],
+        [
+          32,
+          31
+        ],
+        [
+          30,
+          32
+        ],
+        [
+          28,
+          32
+        ],
+        [
+          26,
+          31
+        ],
+        [
+          24,
+          29
+        ],
+        [
+          24,
+          26
+        ],
+        [
+          23,
+          25
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          22,
+          22
+        ],
+        [
+          23,
+          21
+        ],
+        [
+          23,
+          18
+        ],
+        [
+          24,
+          16
+        ],
+        [
+          25,
+          14
+        ]
+      ]
+    },
+    {
+      "id": 2,
+      "name": "neck",
+      "polygon": [
+        [
+          27,
+          30
+        ],
+        [
+          32,
+          30
+        ],
+        [
+          33,
+          33
+        ],
+        [
+          35,
+          35
+        ],
+        [
+          32,
+          38
+        ],
+        [
+          27,
+          37
+        ],
+        [
+          25,
+          35
+        ],
+        [
+          27,
+          33
+        ]
+      ]
+    },
+    {
+      "id": 3,
+      "name": "chest",
+      "polygon": [
+        [
+          24,
+          35
+        ],
+        [
+          27,
+          35
+        ],
+        [
+          30,
+          37
+        ],
+        [
+          33,
+          35
+        ],
+        [
+          38,
+          35
+        ],
+        [
+          41,
+          38
+        ],
+        [
+          40,
+          45
+        ],
+        [
+          38,
+          49
+        ],
+        [
+          24,
+          49
+        ],
+        [
+          21,
+          44
+        ],
+        [
+          21,
+          39
+        ]
+      ]
+    },
+    {
+      "id": 4,
+      "name": "abdomen",
+      "polygon": [
+        [
+          24,
+          46
+        ],
+        [
+          38,
+          46
+        ],
+        [
+          37,
+          51
+        ],
+        [
+          36,
+          55
+        ],
+        [
+          37,
+          60
+        ],
+        [
+          24,
+          61
+        ],
+        [
+          24,
+          56
+        ],
+        [
+          25,
+          52
+        ]
+      ]
+    },
+    {
+      "id": 5,
+      "name": "pelvis",
+      "polygon": [
+        [
+          24,
+          57
+        ],
+        [
+          37,
+          57
+        ],
+        [
+          39,
+          61
+        ],
+        [
+          39,
+          66
+        ],
+        [
+          35,
+          68
+        ],
+        [
+          30,
+          67
+        ],
+        [
+          26,
+          69
+        ],
+        [
+          22,
+          66
+        ],
+        [
+          22,
+          63
+        ]
+      ]
+    },
+    {
+      "id": 6,
+      "name": "upper_arm_right",
+      "polygon": [
+        [
+          20,
+          36
+        ],
+        [
+          24,
+          38
+        ],
+        [
+          23,
+          43
+        ],
+        [
+          19,
+          49
+        ],
+        [
+          16,
+          52
+        ],
+        [
+          12,
+          50
+        ],
+        [
+          13,
+          46
+        ],
+        [
+          16,
+          40
+        ]
+      ]
+    },
+    {
+      "id": 7,
+      "name": "forearm_right",
+      "polygon": [
+        [
+          13,
+          47
+        ],
+        [
+          18,
+          49
+        ],
+        [
+          17,
+          53
+        ],
+        [
+          14,
+          58
+        ],
+        [
+          12,
+          63
+        ],
+        [
+          8,
+          63
+        ],
+        [
+          8,
+          59
+        ],
+        [
+          10,
+          55
+        ]
+      ]
+    },
+    {
+      "id": 8,
+      "name": "hand_right",
+      "polygon": [
+        [
+          9,
+          60
+        ],
+        [
+          13,
+          61
+        ],
+        [
+          13,
+          64
+        ],
+        [
+          11,
+          65
+        ],
+        [
+          11,
+          67
+        ],
+        [
+          8,
+          68
+        ],
+        [
+          6,
+          66
+        ],
+        [
+          6,
+          63
+        ],
+        [
+          7,
+          61
+        ]
+      ]
+    },
+    {
+      "id": 9,
+      "name": "upper_arm_left",
+      "polygon": [
+        [
+          38,
+          36
+        ],
+        [
+          41,
+          36
+        ],
+        [
+          44,
+          39
+        ],
+        [
+          46,
+          43
+        ],
+        [
+          49,
+          48
+        ],
+        [
+          49,
+          51
+        ],
+        [
+          45,
+          53
+        ],
+        [
+          42,
+          48
+        ],
+        [
+          41,
+          43
+        ],
+        [
+          39,
+          41
+        ]
+      ]
+    },
+    {
+      "id": 10,
+      "name": "forearm_left",
+      "polygon": [
+        [
+          45,
+          49
+        ],
+        [
+          49,
+          48
+        ],
+        [
+          50,
+          53
+        ],
+        [
+          50,
+          58
+        ],
+        [
+          51,
+          62
+        ],
+        [
+          47,
+          64
+        ],
+        [
+          46,
+          60
+        ],
+        [
+          46,
+          55
+        ]
+      ]
+    },
+    {
+      "id": 11,
+      "name": "hand_left",
+      "polygon": [
+        [
+          47,
+          61
+        ],
+        [
+          50,
+          60
+        ],
+        [
+          51,
+          62
+        ],
+        [
+          52,
+          64
+        ],
+        [
+          52,
+          66
+        ],
+        [
+          50,
+          68
+        ],
+        [
+          47,
+          67
+        ],
+        [
+          46,
+          65
+        ],
+        [
+          46,
+          63
+        ]
+      ]
+    },
+    {
+      "id": 12,
+      "name": "thigh_right",
+      "polygon": [
+        [
+          24,
+          63
+        ],
+        [
+          30,
+          65
+        ],
+        [
+          29,
+          70
+        ],
+        [
+          26,
+          74
+        ],
+        [
+          24,
+          79
+        ],
+        [
+          19,
+          79
+        ],
+        [
+          18,
+          76
+        ],
+        [
+          19,
+          71
+        ],
+        [
+          21,
+          67
+        ]
+      ]
+    },
+    {
+      "id": 13,
+      "name": "calf_right",
+      "polygon": [
+        [
+          19,
+          75
+        ],
+        [
+          25,
+          76
+        ],
+        [
+          25,
+          80
+        ],
+        [
+          23,
+          84
+        ],
+        [
+          22,
+          88
+        ],
+        [
+          17,
+          88
+        ],
+        [
+          17,
+          84
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": 14,
+      "name": "foot_right",
+      "polygon": [
+        [
+          17,
+          86
+        ],
+        [
+          22,
+          87
+        ],
+        [
+          22,
+          90
+        ],
+        [
+          20,
+          91
+        ],
+        [
+          11,
+          91
+        ],
+        [
+          10,
+          90
+        ],
+        [
+          12,
+          88
+        ],
+        [
+          15,
+          87
+        ]
+      ]
+    },
+    {
+      "id": 15,
+      "name": "thigh_left",
+      "polygon": [
+        [
+          33,
+          64
+        ],
+        [
+          39,
+          63
+        ],
+        [
+          41,
+          67
+        ],
+        [
+          43,
+          72
+        ],
+        [
+          44,
+          76
+        ],
+        [
+          43,
+          79
+        ],
+        [
+          38,
+          79
+        ],
+        [
+          36,
+          74
+        ],
+        [
+          34,
+          70
+        ]
+      ]
+    },
+    {
+      "id": 16,
+      "name": "calf_left",
+      "polygon": [
+        [
+          38,
+          76
+        ],
+        [
+          43,
+          76
+        ],
+        [
+          44,
+          80
+        ],
+        [
+          45,
+          84
+        ],
+        [
+          45,
+          88
+        ],
+        [
+          40,
+          89
+        ],
+        [
+          39,
+          85
+        ],
+        [
+          38,
+          81
+        ]
+      ]
+    },
+    {
+      "id": 17,
+      "name": "foot_left",
+      "polygon": [
+        [
+          40,
+          86
+        ],
+        [
+          44,
+          86
+        ],
+        [
+          46,
+          88
+        ],
+        [
+          48,
+          90
+        ],
+        [
+          47,
+          91
+        ],
+        [
+          39,
+          91
+        ],
+        [
+          39,
+          89
+        ]
+      ]
+    }
+  ],
+  "paint_order": [
+    14,
+    17,
+    13,
+    16,
+    12,
+    15,
+    5,
+    4,
+    3,
+    6,
+    9,
+    7,
+    10,
+    8,
+    11,
+    2,
+    1
+  ],
+  "palette_rgb": [
+    [
+      24,
+      20,
+      19
+    ],
+    [
+      49,
+      36,
+      29
+    ],
+    [
+      75,
+      49,
+      36
+    ],
+    [
+      99,
+      62,
+      41
+    ],
+    [
+      126,
+      80,
+      51
+    ],
+    [
+      148,
+      100,
+      65
+    ],
+    [
+      169,
+      122,
+      82
+    ],
+    [
+      190,
+      145,
+      102
+    ],
+    [
+      210,
+      166,
+      121
+    ],
+    [
+      223,
+      183,
+      139
+    ],
+    [
+      236,
+      201,
+      160
+    ],
+    [
+      246,
+      218,
+      181
+    ]
+  ],
+  "sampling": "Fixed whole-canvas BOX reduction; no bbox normalization or part fitting",
+  "head_surface": "Blank smooth head, no eyes/eyebrows/nose/mouth/beard or scalp stubble",
+  "pelvis_surface": "Unbroken skin-colored smooth plane, no genitals/underwear line",
+  "source_envelope_policy": "Bare body is constructed inside armored silhouette; boot thickness and hair are not anatomical body bounds",
+  "protected_surfaces": [
+    "head",
+    "pelvis"
+  ],
+  "ownership_overrides": [
+    {
+      "xy": [
+        37,
+        57
+      ],
+      "id": 4,
+      "reason": "Single pelvis-owned boundary pixel is at abdomen/hip junction; assign to connected abdomen without removing body pixel"
+    },
+    {
+      "xy": [
+        51,
+        61
+      ],
+      "id": 11,
+      "reason": "Single forearm-owned boundary pixel is at hand/forearm junction; assign to connected hand without removing body pixel"
+    }
+  ]
+}

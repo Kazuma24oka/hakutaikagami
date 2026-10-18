@@ -135,6 +135,40 @@ def require_appearance_reference(root, contract, request):
     return digest(ledger)
 
 
+def require_reference_preparation(root, preparation):
+    """Source annotation only, before controls exist. Never authorizes final art.
+
+    Review cannot precede its own diagnostic images. This narrowly scoped gate
+    binds observed/hidden definitions and code before producing those diagnostics.
+    Generation still requires require_plan and reviewed correspondence controls.
+    """
+    root = Path(root)
+    work = json.loads((root/'Art/Officer/work-record.json').read_text(encoding='utf-8'))
+    contract = json.loads((root/'Art/Officer/production-contract.json').read_text(encoding='utf-8'))
+    profile = json.loads((root/'Game/Data/officer_visual_profile.json').read_text(encoding='utf-8'))
+    validate_contract(contract, profile)
+    if work.get('reference_preparation') != preparation or preparation.get('scope') != 'source-annotation-controls-only':
+        raise Blocked('No persisted source-annotation preparation')
+    if preparation['contract_sha256'] != digest(contract) or preparation['retained_decisions'] != contract['decisions']:
+        raise Blocked('Source-annotation conditions changed')
+    ledger = json.loads(evidence(root, contract['appearance_reference']).read_text(encoding='utf-8'))
+    if preparation['sources'] != ledger['sources'] or preparation['registration'] != ledger['registration']:
+        raise Blocked('Annotation must retain original character and fixed registration')
+    for entry in preparation['sources'] + preparation['tools'] + preparation['references']:
+        evidence(root, entry)
+    spec = json.loads(evidence(root, preparation['definition']).read_text(encoding='utf-8'))
+    if spec['canvas'] != [64,96] or set(spec['landmarks']) != DIMENSIONS or not spec['observed_surfaces']:
+        raise Blocked('Incomplete original-character annotation')
+    if spec['registration'] != preparation['registration'] or not preparation['feedback'] or not preparation['prior_failures']:
+        raise Blocked('Missing original registration/repair context')
+    for name, mark in spec['landmarks'].items():
+        if mark['kind'] not in {'observed-surface','authored-hidden'} or not mark['basis']:
+            raise Blocked('Undeclared anatomical basis: '+name)
+        if mark['kind']=='authored-hidden' and (not mark['occluder'] or not mark['allowed_native_bounds']):
+            raise Blocked('Undeclared hidden anatomy')
+    return digest(preparation)
+
+
 def require_control_plan(root, preparation):
     """Bootstrap only deterministic geometry/masks, before a generation plan exists.
 
@@ -230,6 +264,11 @@ def require_plan(root, stage, plan=None):
         setting_names={'seed':'seed','steps':'steps','cfg':'cfg','sampler':'sampler_name','scheduler':'scheduler','denoise':'denoise'}
         if any(samplers[0].get(actual)!=backend[declared] for declared,actual in setting_names.items()):
             raise Blocked('Actual workflow settings differ from declared fixed settings')
+    if backend['name'] == 'builtin-imagegen':
+        evidence(root, backend['prompt'])
+        if backend.get('transparent_background') is not True or not backend.get('reference_images'):
+            raise Blocked('Built-in image edit requires bound references and transparent request')
+        for entry in backend['reference_images']:evidence(root, entry)
     registration = plan['registration']
     sx, sy = registration['scale_xy']
     if not all(isinstance(v,(int,float)) and math.isfinite(v) for v in [sx,sy]) or sx <= 0 or sx != sy:
