@@ -1,0 +1,188 @@
+{
+  "Version": 1,
+  "World": {
+    "Definition": {
+      "SchemaVersion": 1,
+      "Seed": 20261018,
+      "Organizations": [
+        {
+          "Id": "org-mirror",
+          "Name": "\u93E1\u5BB6\uFF08\u4EEE\uFF09"
+        },
+        {
+          "Id": "org-fixture-village",
+          "Name": "\u8A66\u4F5C\u6751\u843D"
+        }
+      ],
+      "Characters": [
+        {
+          "Id": "character-001",
+          "Name": "\u93E1 \u592A\u90CE\uFF08\u4EEE\uFF09"
+        },
+        {
+          "Id": "character-002",
+          "Name": "\u93E1 \u6B21\u90CE\uFF08\u4EEE\uFF09"
+        },
+        {
+          "Id": "character-003",
+          "Name": "\u93E1 \u4E09\u90CE\uFF08\u4EEE\uFF09"
+        }
+      ],
+      "Castles": [
+        {
+          "Id": "castle-001",
+          "Name": "\u93E1\u57CE\uFF08\u4EEE\uFF09"
+        }
+      ]
+    },
+    "Characters": [
+      {
+        "Id": "character-001",
+        "OrganizationId": "org-mirror",
+        "Role": "\u57CE\u4E3B",
+        "CastleId": "castle-001"
+      },
+      {
+        "Id": "character-002",
+        "OrganizationId": "org-mirror",
+        "Role": "\u5949\u884C",
+        "CastleId": "castle-001"
+      },
+      {
+        "Id": "character-003",
+        "OrganizationId": "org-mirror",
+        "Role": "\u5BB6\u81E3",
+        "CastleId": "castle-001"
+      }
+    ],
+    "Castles": [
+      {
+        "Id": "castle-001",
+        "LordId": "character-001",
+        "ControllerOrganizationId": "org-mirror"
+      }
+    ],
+    "Authorities": [
+      {
+        "ActorId": "character-001",
+        "TargetCastleId": "castle-001",
+        "ActionId": "inspect",
+        "Basis": "\u8A66\u4F5C\u306E\u660E\u793A\u7684\u95B2\u89A7\u59D4\u4EFB",
+        "ValidFrom": 0,
+        "ValidUntil": 9223372036854775807
+      }
+    ],
+    "Resources": [
+      {
+        "OwnerOrganizationId": "org-mirror",
+        "CustodyCastleId": "castle-001",
+        "Rice": 100,
+        "Gold": 50
+      }
+    ],
+    "Tick": 0,
+    "RandomState": 20261018
+  },
+  "Tick": 4,
+  "Paused": false,
+  "RandomState": 13701888681127053921,
+  "AcceptChancePercent": 100,
+  "InitialRice": 160,
+  "InitialSourceRice": 60,
+  "InitialTreasuryRice": 100,
+  "Accounts": [
+    {
+      "Id": "village",
+      "OwnerId": "org-fixture-village",
+      "CustodyCastleId": "castle-001",
+      "Balance": 0
+    },
+    {
+      "Id": "treasury",
+      "OwnerId": "org-mirror",
+      "CustodyCastleId": "castle-001",
+      "Balance": 160
+    }
+  ],
+  "Grants": [
+    {
+      "ActorId": "character-001",
+      "TargetCastleId": "castle-001",
+      "ActionId": "tax-order",
+      "Basis": "\u8A66\u4F5C\u306E\u5FB4\u7A0E\u547D\u4EE4\u59D4\u4EFB",
+      "ValidFrom": 0,
+      "ValidUntil": 9223372036854775807
+    },
+    {
+      "ActorId": "character-002",
+      "TargetCastleId": "castle-001",
+      "ActionId": "collect-tax",
+      "Basis": "\u8A66\u4F5C\u306E\u5FB4\u53CE\u62C5\u5F53\u59D4\u4EFB",
+      "ValidFrom": 0,
+      "ValidUntil": 9223372036854775807
+    }
+  ],
+  "Orders": [
+    {
+      "RequestId": "tax-001",
+      "CaseId": "tax-001/case",
+      "IssuerId": "character-001",
+      "ExecutorId": "character-002",
+      "CastleId": "castle-001",
+      "Requested": 100,
+      "Reserved": 0,
+      "Collected": 60,
+      "Phase": "Partial",
+      "Reported": true,
+      "Reason": "\u5728\u5EAB\u4E0D\u8DB3\u306B\u3088\u308A\u90E8\u5206\u9054\u6210",
+      "DecisionRoll": 60
+    }
+  ],
+  "Deliveries": [
+    {
+      "Id": "tax-001/letter",
+      "RequestId": "tax-001",
+      "Kind": "Order",
+      "SenderId": "character-001",
+      "RecipientId": "character-002",
+      "DueAt": 1,
+      "Delivered": true
+    },
+    {
+      "Id": "tax-001/report",
+      "RequestId": "tax-001",
+      "Kind": "Report",
+      "SenderId": "character-002",
+      "RecipientId": "character-001",
+      "DueAt": 4,
+      "Delivered": true
+    }
+  ],
+  "Knowledge": [
+    {
+      "Id": "tax-001/knowledge/order",
+      "CharacterId": "character-002",
+      "RequestId": "tax-001",
+      "Kind": "Order",
+      "Amount": 100,
+      "Content": "\u5FB4\u7A0E\u8981\u6C42\u3092\u672C\u4EBA\u304C\u53D7\u9818",
+      "LearnedAt": 1
+    },
+    {
+      "Id": "tax-001/knowledge/report",
+      "CharacterId": "character-001",
+      "RequestId": "tax-001",
+      "Kind": "Report",
+      "Amount": 60,
+      "Content": "\u5728\u5EAB\u4E0D\u8DB3\u306B\u3088\u308A\u90E8\u5206\u9054\u6210",
+      "LearnedAt": 4
+    }
+  ],
+  "Pending": [],
+  "Applied": [
+    "tax-001/event/DeliverOrder",
+    "tax-001/event/Decide",
+    "tax-001/event/Collect",
+    "tax-001/event/DeliverReport"
+  ]
+}

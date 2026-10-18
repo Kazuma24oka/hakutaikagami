@@ -20,6 +20,9 @@ public partial class TaxPanel : MarginContainer
     private Button load = null!;
     private Button cancel = null!;
     private Button reset = null!;
+    private Button failDelivery = null!;
+    private Button receiveFailure = null!;
+    private Button retryDelivery = null!;
     private OptionButton fixture = null!;
     private string savePath = "";
     private int requestNumber;
@@ -28,7 +31,7 @@ public partial class TaxPanel : MarginContainer
     {
         scenarioJson = json;
         simulation = TaxSimulation.Create(PrototypeScenario.Load(json));
-        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
+        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v2.json");
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) AddThemeConstantOverride("margin_" + edge, 28);
         var column = new VBoxContainer(); column.AddThemeConstantOverride("separation", 10); AddChild(column);
         column.AddChild(new Label { Text = "徴税・命令配送・保存復旧  /  試作検証", Modulate = new Color("e2c891") });
@@ -59,11 +62,33 @@ public partial class TaxPanel : MarginContainer
             var order = simulation.Orders.Last(o => o.Phase is TaxPhase.Dispatched or TaxPhase.Received or TaxPhase.Reserved);
             simulation.Cancel(order.RequestId); notice.Text = "未使用の引当を解除し、取消報告を配送します。";
         });
+        var deliveryActions = new HBoxContainer(); deliveryActions.AddThemeConstantOverride("separation", 12); column.AddChild(deliveryActions);
+        failDelivery = AddButton(deliveryActions, "配送失敗を設定（試験）", () =>
+        {
+            var d = simulation.Deliveries.Last(d => !d.Delivered && !d.Lost && !d.Cancelled);
+            simulation.FailNextDelivery(d.RequestId, d.Kind);
+            notice.Text = "次の到達試行を失敗させます。この設定は人物の認識には登録しません。";
+        });
+        receiveFailure = AddButton(deliveryActions, "失敗報告を受領", () =>
+        {
+            var d = simulation.Deliveries.Last(d => d.Lost && !d.Cancelled && !simulation.FailureKnown(d.Id));
+            simulation.ReceiveFailureNotice(d.Id, d.SenderId);
+            notice.Text = "差出人が配送失敗の報告を受領しました。再送を選択できます。";
+        });
+        retryDelivery = AddButton(deliveryActions, "同じ命令・報告を再送", () =>
+        {
+            var d = RetryCandidate() ?? throw new InvalidOperationException("再送可能な配送がありません。");
+            simulation.RetryDelivery(d.RequestId, d.Kind, d.SenderId);
+            notice.Text = "同じ内容を再送しました。徴税要求や成果を新規作成しません。";
+        });
         var storage = new HBoxContainer(); storage.AddThemeConstantOverride("separation", 12); column.AddChild(storage);
         save = AddButton(storage, "保存", () => { simulation.SaveFile(savePath); notice.Text = "保存しました。未処理・適用済み・乱数状態を保持します。"; });
         load = AddButton(storage, "読込", () =>
         {
-            var restored = TaxSimulation.LoadFile(savePath); // Validate fully before replacing the current session.
+            var sourcePath = savePath;
+            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v2.json"))
+                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
+            var restored = TaxSimulation.LoadFile(sourcePath); // Validate fully before replacing the current session.
             simulation = restored;
             requestNumber = simulation.Orders.Select(o => int.TryParse(o.RequestId.Replace("tax-", ""), out int n) ? n : 0).DefaultIfEmpty(0).Max();
             notice.Text = "読込完了。保存した時刻・資源・命令状態から再開します。";
@@ -99,10 +124,95 @@ public partial class TaxPanel : MarginContainer
         summary.Text = $"世界時刻：{simulation.Tick}刻  /  {(simulation.Paused ? "停止中" : "手動進行")}\n村落所有の米：{simulation.SourceRice}俵（引当 {simulation.ReservedRice}）    鏡家所有の米：{simulation.TreasuryRice}俵\n未処理イベント：{simulation.PendingCount}    適用済み：{simulation.AppliedCount}";
         pause.Text = simulation.Paused ? "再開" : "停止";
         cancel.Disabled = !simulation.Orders.Any(o => o.Phase is TaxPhase.Dispatched or TaxPhase.Received or TaxPhase.Reserved);
+        failDelivery.Disabled = !simulation.Deliveries.Any(d => !d.Delivered && !d.Lost && !d.Cancelled && !d.FailOnArrival);
+        receiveFailure.Disabled = !simulation.Deliveries.Any(d => d.Lost && !d.Cancelled && !simulation.FailureKnown(d.Id));
+        retryDelivery.Disabled = RetryCandidate() == null;
         outcome.Text = simulation.Orders.Count == 0 ? "まだ命令はありません。\n「徴税100を発送」から開始してください。" :
             string.Join("\n\n", simulation.Orders.Select(o => $"{o.RequestId}  /  {Phase(o.Phase)}  /  要求{o.Requested}・引当{o.Reserved}・徴収{o.Collected}\n{(o.Reported ? "発行者が報告を受領済み" : "発行者への結果報告は未到達")}　{o.Reason}"));
         outcome.Text += $"\n\n個人認識：次郎の受領記録 {simulation.KnowledgeFor("character-002").Count}件 / 太郎の結果報告 {simulation.KnowledgeFor("character-001").Count}件 / 三郎 {simulation.KnowledgeFor("character-003").Count}件";
+        if (simulation.Deliveries.Count > 0)
+            outcome.Text += "\n\n配送履歴：\n" + string.Join("\n", simulation.Deliveries.Select(d =>
+                $"{(d.Kind == DeliveryKind.Order ? "命令" : "報告")} {d.Attempt}/3回目：{(d.Cancelled ? "取消" : d.Delivered ? "到達済み" : d.Lost ? "紛失" : "配送中")} / 失敗認識：{(simulation.FailureKnown(d.Id) ? "あり" : "なし")}"));
         GD.Print($"TAX_STATE tick={simulation.Tick} source={simulation.SourceRice} treasury={simulation.TreasuryRice} reserved={simulation.ReservedRice} pending={simulation.PendingCount}");
+    }
+
+    private TaxDelivery? RetryCandidate() => simulation.Deliveries.LastOrDefault(d => d.Lost && !d.Cancelled &&
+        simulation.FailureKnown(d.Id) && d.Attempt < TaxSimulation.MaxDeliveryAttempts &&
+        !simulation.Deliveries.Any(other => other.MessageId == d.MessageId && other.Attempt > d.Attempt));
+
+    // Injects only into this Godot viewport. It never moves the Windows pointer or invokes native input tools.
+    private async Task ClickThroughGui(Button button)
+    {
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        if (button.Disabled || !button.IsVisibleInTree()) throw new InvalidOperationException("Button cannot be clicked: " + button.Text);
+        Vector2 position = button.GetGlobalRect().GetCenter();
+        if (!GetViewportRect().HasPoint(position)) throw new InvalidOperationException("Button is outside viewport: " + button.Text);
+        int presses = 0;
+        void CountPress() => presses++;
+        button.Pressed += CountPress;
+        try
+        {
+            GetViewport().PushInput(new InputEventMouseButton { Position = position, GlobalPosition = position,
+                ButtonIndex = MouseButton.Left, Pressed = true, ButtonMask = MouseButtonMask.Left }, true);
+            GetViewport().PushInput(new InputEventMouseButton { Position = position, GlobalPosition = position,
+                ButtonIndex = MouseButton.Left, Pressed = false }, true);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (presses != 1) throw new InvalidOperationException("GUI click did not activate exactly once: " + button.Text);
+        }
+        finally { button.Pressed -= CountPress; }
+    }
+
+    public async Task DeliveryRecoverySmokeTest()
+    {
+        try
+        {
+            savePath = ProjectSettings.GlobalizePath("user://delivery-smoke-" + Guid.NewGuid().ToString("N") + ".json");
+            await ClickThroughGui(submit);
+            await ClickThroughGui(failDelivery);
+            await ClickThroughGui(save);
+            await ClickThroughGui(advance); // The order is lost. No knowledge and no automatic retry.
+            if (!retryDelivery.Disabled || simulation.KnowledgeFor("character-002").Count != 0 || simulation.PendingCount != 0)
+                throw new InvalidOperationException("Loss was treated as recognition or automatic retry.");
+            await ClickThroughGui(save);
+            await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(load); // Restore the unrecognized loss.
+            if (!retryDelivery.Disabled) throw new InvalidOperationException("Failure recognition leaked across load.");
+            await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(retryDelivery);
+            await ClickThroughGui(save); // Retried order is in flight.
+            await ClickThroughGui(advance);
+            await ClickThroughGui(load);
+            await ClickThroughGui(advance);
+            await ClickThroughGui(advance);
+            await ClickThroughGui(advance); // Collection committed once; result report in flight.
+            await ClickThroughGui(failDelivery);
+            await ClickThroughGui(advance);
+            if (simulation.Orders.Single().Reported || simulation.TreasuryRice != 160 || simulation.KnowledgeFor("character-001").Count != 0)
+                throw new InvalidOperationException("Lost report changed collection or informed issuer.");
+            await ClickThroughGui(receiveFailure);
+            await ClickThroughGui(retryDelivery);
+            await ClickThroughGui(save);
+            await ClickThroughGui(advance);
+            await ClickThroughGui(load);
+            await ClickThroughGui(advance);
+            if (!simulation.Orders.Single().Reported || simulation.TreasuryRice != 160 || simulation.SourceRice != 0 ||
+                simulation.KnowledgeFor("character-002").Count != 1 || simulation.KnowledgeFor("character-001").Count != 1 ||
+                simulation.Deliveries.Count(d => d.Lost) != 2 || simulation.Deliveries.Count(d => d.Delivered) != 2 || !retryDelivery.Disabled)
+                throw new InvalidOperationException("Final recovery or duplicate effect check failed.");
+            notice.Text = "命令・報告を各1回紛失→再送。途中保存から復旧し、徴収・認識は各1回です。";
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (notice.GetGlobalRect().End.Y > GetViewportRect().Size.Y) throw new InvalidOperationException("Recovery UI clipped.");
+            if (DisplayServer.GetName() != "headless")
+            {
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+                var path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/delivery-recovery.png");
+                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+            }
+            GD.Print("DELIVERY_RECOVERY_GUI_PASS input=viewport_mouse_events order_loss=1 report_loss=1 retries=2 load=3 treasury=160 knowledge_each=1");
+            GetTree().Quit(0);
+        }
+        catch (Exception e) { GD.PushError(e.ToString()); GetTree().Quit(1); }
     }
 
     public async Task SmokeTest()
