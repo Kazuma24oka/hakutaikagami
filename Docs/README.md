@@ -296,22 +296,22 @@
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動21項目の統合（最新・未確定）
-- **現行正本**：[基本7・権限越権7・委任時間7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係と未確定詳細を整理。
+- **現行正本**：[基本7・権限越権7・委任時間7の統合設計](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係と未確定詳細を整理。
 - **比較・選択履歴**：[基本7](Archive/P1_PLAYER_ACTION_GAME_FLOW_OPTIONS.md)、[権限越権7](Archive/P1_PLAYER_AUTHORITY_OVERRIDES_OPTIONS.md)、[委任時間7](Archive/P1_DELEGATION_LONG_ACTION_TIME_OPTIONS.md)。内容一致と参照更新後に旧Proposals配置を削除する。
 - F01/F02/F04/F07/F08等の確定原則は維持。自動進行＋任意停止は未確定。main変更なし、永久削除なし。
 
 ## P1プレイヤー操作フロー（未確定）
 - [国人領主・陪臣・城主・大名の立場別行動、命令・移動・交渉・委任・結果確認のABC比較7項目](Archive/P1_PLAYER_OPERATION_FLOW_OPTIONS.md)。7項目すべてB案選択済み・未確定。
-- [P1プレイヤー行動28項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F02/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
+- [P1プレイヤー行動28項目の統合正本](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F02/F04/F07/F08・P0-A01/A06に整合。新規Confirmed追加なし。
 - 現行正本に独自の内容があるためArchive移動なし。main変更なし、永久削除なし。
 
 ## P1プレイヤー操作フロー7項目のB案選択（2026-10-18）
 - [立場別行動・命令／嘆願・移動・委任・時間・結果通知・越権のB案と未確定詳細](Archive/P1_PLAYER_OPERATION_FLOW_OPTIONS.md)。
-- [P1プレイヤー行動28項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F02/F04/F07/F08、P0-A01/A06に整合。自動進行＋任意停止は優先案であり未確定。
+- [P1プレイヤー行動28項目の統合正本](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F02/F04/F07/F08、P0-A01/A06に整合。自動進行＋任意停止は優先案であり未確定。
 - 既存Confirmedの重複確定なし。main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動28項目の統合（最新・未確定）
-- **現行正本**：[基本7＋権限越権7＋委任時間7＋操作フロー7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係を整理。
+- **現行正本**：[基本7＋権限越権7＋委任時間7＋操作フロー7の統合設計](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係を整理。
 - **比較・選択履歴**：[操作フロー7項目](Archive/P1_PLAYER_OPERATION_FLOW_OPTIONS.md)。内容一致と参照更新後に旧Proposals配置を削除。
 - 自動進行＋任意停止は未確定。既存Confirmedの重複確定なし、main変更なし、永久削除なし。
 
@@ -336,13 +336,13 @@
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動42項目の統合（最新・未確定）
-- **現行正本**：[基本28＋身分別メニュー7＋越権緊急兼任7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係を確認。
+- **現行正本**：[基本28＋身分別メニュー7＋越権緊急兼任7の統合設計](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)。重複・矛盾・依存関係を確認。
 - **比較・選択履歴**：[身分別メニュー7項目](Archive/P1_ROLE_BASED_ACTION_MENU_OPTIONS.md)、[越権緊急兼任7項目](Archive/P1_UNAUTHORIZED_EMERGENCY_MULTIPLE_ROLES_OPTIONS.md)。内容照合後に旧配置を削除。
 - 確定済み原則は維持、詳細・例外は未確定。main変更なし、資料内容の永久削除なし。
 
 ## P1身分別の具体的コマンド一覧（未確定・ABCD）
 - [国人領主・陪臣・城主・大名の内政・軍事・外交・人事・謀略15コマンド候補と7項目のABCD比較](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
-- [P1行動63項目の統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F04/F07/F08、P0-A01/A03/A06に整合。新規Confirmed追加なし。
+- [P1行動63項目の統合正本](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F04/F07/F08、P0-A01/A03/A06に整合。新規Confirmed追加なし。
 - 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1身分別コマンド一覧7項目のB案選択（2026-10-18）
@@ -352,7 +352,7 @@
 
 ## P1コマンド拡充・網羅性（未確定・ABCD）
 - [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化と優先順位のABCD比較7項目](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
-- [既存15コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動63項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F03/F07/F08、P0-A01/A03/A04/A06に整合。新規Confirmed追加なし。
+- [既存15コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動63項目](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)とF01/F03/F07/F08、P0-A01/A03/A04/A06に整合。新規Confirmed追加なし。
 - 置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1コマンド拡充・網羅性7項目のB案選択（2026-10-18）
@@ -362,7 +362,7 @@
 
 ## P1追加コマンドの具体化（未確定・ABCD）
 - [婚姻・養子・交易・金融・諜報・裁定・人質・寺社・文化のコマンド名・対象・条件・結果とABCD比較7項目](Archive/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。Bは推奨、7項目すべてB案選択済み・未確定。D選択なし。
-- [拡充7項目](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[既存15コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動63項目](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)に整合。新規Confirmed追加なし。
+- [拡充7項目](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[既存15コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[P1行動63項目](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)に整合。新規Confirmed追加なし。
 - 今回置換可能な旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1追加コマンド詳細7項目のB案選択（2026-10-18）
@@ -371,34 +371,39 @@
 - main変更なし、今回Archive移動・永久削除なし。
 
 ## P1プレイヤー行動63項目の統合（最新・未確定）
-- **現行正本**：[既存42＋身分別コマンド7＋拡充7＋追加詳細7の統合設計](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)。共通5分類・操作状態・案件状態・依存関係を整理。
+- **現行正本**：[既存42＋身分別コマンド7＋拡充7＋追加詳細7の統合設計](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)。共通5分類・操作状態・案件状態・依存関係を整理。
 - **比較・選択履歴**：[身分別コマンド](Archive/P1_ROLE_COMMAND_CATALOG_OPTIONS.md)、[拡充](Archive/P1_COMMAND_COVERAGE_EXPANSION_OPTIONS.md)、[追加詳細](Archive/P1_EXPANDED_COMMAND_DETAILS_OPTIONS.md)。内容照合後に旧Proposals配置を削除。
 - Confirmedの重複確定なし、main変更なし、永久削除なし。
 
 ## P1/P2実装範囲・完成条件（未確定・ABCD、2026-10-18）
-- [63項目からP1必須・P2拡張・実装前依存・完了判定を比較する7項目](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
-- [63項目統合正本](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)およびF01/F02/F04/F07/F08・P0-A01〜A06と整合。自動進行＋任意停止は未確定。新規Confirmedなし。
+- [63項目からP1必須・P2拡張・実装前依存・完了判定を比較する7項目](Archive/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
+- [63項目統合正本](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)およびF01/F02/F04/F07/F08・P0-A01〜A06と整合。自動進行＋任意停止は未確定。新規Confirmedなし。
 - 置換対象の旧資料なし、Archive移動・永久削除なし。main変更なし。
 
 ## P1/P2実装範囲・完成条件7項目のB案選択（2026-10-18）
-- [P1必須・P2拡張・身分別検証・共通契約・P0依存・時間／委任・P1完了判定のB優先案と未確定詳細](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。
+- [P1必須・P2拡張・身分別検証・共通契約・P0依存・時間／委任・P1完了判定のB優先案と未確定詳細](Archive/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)。
 - F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目と整合。自動進行＋任意停止は未確定。実装・テスト未実施、P1未完了。
 - 新規Confirmedなし、main変更なし、今回Archive移動・永久削除なし。
 
 ## P1代表コマンド・完成テスト（未確定・ABCD）
-- [5分類の代表コマンド、正常・部分達成・失敗・越権・中断・NPC反応・セーブ再現性の7項目](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
-- [63項目統合](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)、[P1/P2範囲](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)およびF01/F02/F04/F07/F08、P0-A01〜A06と整合。Confirmedとmain変更なし。Archive移動・永久削除なし。
+- [5分類の代表コマンド、正常・部分達成・失敗・越権・中断・NPC反応・セーブ再現性の7項目](Archive/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
+- [63項目統合](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)、[P1/P2範囲](Archive/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)およびF01/F02/F04/F07/F08、P0-A01〜A06と整合。Confirmedとmain変更なし。Archive移動・永久削除なし。
 
 ## P1代表コマンド・完成テスト7項目のB案選択（2026-10-18）
-- [5分類の代表操作、成否・越権・中断／再開・NPC反応・同時刻競合／ロード・P1完了のB案と保留詳細](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。
+- [5分類の代表操作、成否・越権・中断／再開・NPC反応・同時刻競合／ロード・P1完了のB案と保留詳細](Archive/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)。
 - F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目・P1/P2範囲と整合。自動進行＋任意停止は未確定。テスト実施・P1完了宣言なし。
 - Confirmed・main変更なし。Archive移動・永久削除なし。
 
 ## P1受入テスト・合格条件（未確定・ABCD）
-- [5分類×4立場、成否・越権・中断再開・NPC反応・イベント復旧・P1合格条件の7項目](Proposals/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
-- [代表コマンド試験](Proposals/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)、[P1/P2範囲](Proposals/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)、[63項目統合](Proposals/P1_PLAYER_ACTION_CONSOLIDATED.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
+- [5分類×4立場、成否・越権・中断再開・NPC反応・イベント復旧・P1合格条件の7項目](Archive/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。7項目すべてB案選択済み・未確定。D選択なし。
+- [代表コマンド試験](Archive/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)、[P1/P2範囲](Archive/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)、[63項目統合](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)と整合。Confirmed・main変更なし。Archive移動・永久削除なし。
 
 ## P1受入テスト・合格条件7項目のB案選択（2026-10-18）
-- [5分類×4立場・成否／資源・越権／取消／防衛・中断／再開・NPC／情報・競合／復旧・P1受入のB優先案と未決定詳細](Proposals/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。
+- [5分類×4立場・成否／資源・越権／取消／防衛・中断／再開・NPC／情報・競合／復旧・P1受入のB優先案と未決定詳細](Archive/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。
 - F01/F02/F04/F07/F08、P0-A01〜A06、P1行動63項目・P1/P2範囲・代表テストに整合。新規Confirmed追加なし、実装・テスト未実施。
 - main変更なし、今回Archive移動・永久削除なし。
+
+## P1プレイヤー行動84項目・最終横断レビュー（最新、2026-10-18）
+- **現行正本**：[84項目の最終統合、重複・矛盾・P0依存・P2移管・設計完了判定](Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md)。設計完了は未達、詳細は未確定。
+- **旧比較・選択履歴**：[63項目](Archive/P1_PLAYER_ACTION_CONSOLIDATED.md)、[P1/P2範囲](Archive/P1_P2_SCOPE_AND_ACCEPTANCE_OPTIONS.md)、[代表試験](Archive/P1_REPRESENTATIVE_COMMAND_ACCEPTANCE_TEST_OPTIONS.md)、[受入試験](Archive/P1_ACCEPTANCE_TEST_CRITERIA_OPTIONS.md)。
+- 新規Confirmedなし、main変更なし、資料内容の永久削除なし。
