@@ -1,0 +1,20 @@
+{
+  "source_material_sha256": "ab24a743371fb8ca0015a2a3d4cedcc3044c947bbf5220ce8524f4c386a882d5",
+  "geometry_sha256": "4cd1cf975c50e2142300b66f94f487fca0906ce72992f3bf5dae24dcdf1c5901",
+  "native_size": [
+    64,
+    96
+  ],
+  "visible_pixels": 1822,
+  "generated_interior_pixels": 562,
+  "protected_rgba_difference": 0,
+  "alpha": [
+    0,
+    255
+  ],
+  "palette_colors": 5,
+  "status": "TECHNICAL_CANDIDATE_REQUIRES_VISUAL_INSPECTION",
+  "provenance": "Author constructed silhouette/ownership/blank head/pelvis and broad shading; ComfyUI masked interior material; fixed BOX reduction and palette mapping; no generated alpha claimed",
+  "generated_pixel_difference_from_authored_base": 0,
+  "final_pixel_source": "fixed authored construction; generation produced no adopted palette-level differences"
+}

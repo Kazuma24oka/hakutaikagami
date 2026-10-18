@@ -11,7 +11,7 @@
   "portrait_policy": "six-head-separate-art-shared-selection-ids",
   "fit_policy": "one-uniform-registration-no-part-fit",
   "generation_backend": "comfyui",
-  "backend_decision": "production choice for inspectable workflow/seed/masks; no generator is executed by this contract; no fallback without updated recorded decision",
+  "backend_decision": "User permits ComfyUI but does not mandate it. This run selects local ComfyUI for fixed workflow/seed/masks; any tool change must retain geometry/masks/validation and record its actual settings.",
   "base_body": {
     "face_features": false,
     "hair": false,
@@ -32,19 +32,82 @@
     "preservation": "No existing files deleted; main/design/foundation/Confirmed unchanged"
   },
   "authoring_geometry": {
-    "status": "UNMEASURED_NOT_A_USER_DECISION",
-    "reference": null,
-    "scalp_top": null,
-    "chin": null,
-    "neck": null,
-    "shoulders": null,
-    "pelvis": null,
-    "joints": null,
-    "soles": null,
-    "head_ratio": null,
-    "palette": null,
-    "directions": null,
-    "motion_padding": null
+    "status": "AUTHOR_CONSTRUCTED_FRONT_TARGET_NOT_USER_ACCEPTED",
+    "definition": "Art/Officer/BodyBaseV1/geometry.json",
+    "scalp_top": [
+      32,
+      8
+    ],
+    "chin": [
+      32,
+      28
+    ],
+    "neck": [
+      32,
+      31
+    ],
+    "shoulders": [
+      [
+        21,
+        35
+      ],
+      [
+        43,
+        35
+      ]
+    ],
+    "pelvis": [
+      32,
+      59
+    ],
+    "soles": [
+      [
+        24,
+        91
+      ],
+      [
+        40,
+        91
+      ]
+    ],
+    "head_ratio": 4,
+    "palette": [
+      [
+        81,
+        60,
+        50
+      ],
+      [
+        146,
+        94,
+        70
+      ],
+      [
+        184,
+        126,
+        90
+      ],
+      [
+        214,
+        163,
+        118
+      ],
+      [
+        235,
+        190,
+        145
+      ],
+      [
+        248,
+        216,
+        175
+      ]
+    ],
+    "directions": [
+      "front"
+    ],
+    "motion_padding": "NOT_VALIDATED_FOR_MOTION",
+    "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
   },
   "review_policy": "technical / semantic / appearance / runtime separately bound to current input, mask, tool and output hashes; no automatic visual approval",
   "mask_roles": {

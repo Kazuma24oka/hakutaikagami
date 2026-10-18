@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "status": "AUTHORING_TARGET_NOT_USER_ACCEPTED_ANATOMY",
+  "canvas": [64, 96],
+  "working_scale": 12,
+  "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy.",
+  "head_ratio": {"body_height_px": 84, "scalp_to_chin_px": 21, "ratio": 4},
+  "palette_rgb": [[81,60,50],[146,94,70],[184,126,90],[214,163,118],[235,190,145],[248,216,175]],
+  "landmarks": {
+    "scalp_top": [32,8], "chin": [32,28], "neck": [32,31],
+    "shoulder_right": [21,35], "shoulder_left": [43,35],
+    "elbow_right": [17,48], "elbow_left": [47,48],
+    "wrist_right": [15,61], "wrist_left": [49,61],
+    "pelvis": [32,59], "knee_right": [25,76], "knee_left": [39,76],
+    "ankle_right": [25,87], "ankle_left": [39,87],
+    "sole_right": [24,91], "sole_left": [40,91]
+  },
+  "regions": [
+    {"id":1,"name":"head","polygon":[[28,8],[35,8],[39,11],[40,16],[42,18],[42,22],[39,23],[38,26],[35,28],[28,28],[25,26],[24,23],[21,22],[21,18],[23,16],[24,11]]},
+    {"id":2,"name":"neck","polygon":[[28,27],[35,27],[35,32],[39,34],[24,34],[28,32]]},
+    {"id":3,"name":"chest","polygon":[[26,32],[37,32],[43,34],[44,39],[41,46],[22,46],[19,39],[20,34]]},
+    {"id":4,"name":"abdomen","polygon":[[23,44],[40,44],[39,51],[38,55],[25,55],[24,51]]},
+    {"id":5,"name":"pelvis","polygon":[[25,53],[38,53],[40,59],[40,64],[35,66],[28,66],[23,64],[23,59]]},
+    {"id":6,"name":"upper_arm_right","polygon":[[20,34],[23,37],[21,43],[20,48],[15,49],[14,46],[16,38],[18,35]]},
+    {"id":7,"name":"forearm_right","polygon":[[15,46],[20,47],[19,53],[17,61],[13,62],[12,58],[13,51]]},
+    {"id":8,"name":"hand_right","polygon":[[13,60],[17,61],[18,64],[18,66],[16,66],[16,64],[15,64],[15,68],[12,68],[11,66],[11,63]]},
+    {"id":9,"name":"upper_arm_left","polygon":[[43,34],[40,37],[42,43],[43,48],[48,49],[49,46],[47,38],[45,35]]},
+    {"id":10,"name":"forearm_left","polygon":[[48,46],[43,47],[44,53],[46,61],[50,62],[51,58],[50,51]]},
+    {"id":11,"name":"hand_left","polygon":[[50,60],[46,61],[45,64],[45,66],[47,66],[47,64],[48,64],[48,68],[51,68],[52,66],[52,63]]},
+    {"id":12,"name":"thigh_right","polygon":[[24,61],[31,63],[30,69],[29,74],[28,78],[23,78],[22,74],[22,68]]},
+    {"id":13,"name":"calf_right","polygon":[[23,74],[28,74],[28,80],[27,85],[27,88],[23,88],[22,82],[22,78]]},
+    {"id":14,"name":"foot_right","polygon":[[23,86],[27,86],[28,89],[28,91],[18,91],[18,90],[21,88],[23,88]]},
+    {"id":15,"name":"thigh_left","polygon":[[39,61],[32,63],[33,69],[34,74],[35,78],[40,78],[41,74],[41,68]]},
+    {"id":16,"name":"calf_left","polygon":[[40,74],[35,74],[35,80],[36,85],[36,88],[40,88],[41,82],[41,78]]},
+    {"id":17,"name":"foot_left","polygon":[[40,86],[36,86],[35,89],[35,91],[45,91],[45,90],[42,88],[40,88]]}
+  ],
+  "paint_order": [14,17,13,16,12,15,5,4,3,2,1,6,9,7,10,8,11],
+  "protected_surfaces": ["head","pelvis"],
+  "mask_policy": "Author-defined full body/part ownership, binary alpha. Head and smooth featureless pelvis plus silhouette edge remain unchanged by generation. No RGB threshold classification of body parts.",
+  "generation": {"seed":2026101801,"steps":30,"cfg":5.5,"sampler":"dpmpp_2m","scheduler":"karras","denoise":0.32,"lora":null},
+  "registration": {"scale_xy":[0.08333333333333333,0.08333333333333333],"translation_xy":[0,0],"per_part_fit":false,"per_frame_fit":false}
+}

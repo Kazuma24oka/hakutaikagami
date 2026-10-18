@@ -1,0 +1,549 @@
+{
+  "source": {
+    "path": "Game/Assets/Trials/OfficerBodyBaseV1/body-front.png",
+    "sha256": "f9247d417c2f5e98c45d5565fbd65f89db3824a21d0a697ff622da8f666b5ed6"
+  },
+  "ownership": {
+    "path": "Game/Assets/Trials/OfficerBodyBaseV1/ownership.png",
+    "sha256": "f4c7f0f9c66d0379afa2ca6c1e2b0f91d41876e8aacb6e9290eed4e52b04881b"
+  },
+  "protected_face": {
+    "path": "Art/Officer/BodyBaseV1/controls/face-protection.png",
+    "sha256": "7336a7b2e6a5f23aba2ea2a124416164d04ce1de06d7819f30878f723361c945"
+  },
+  "hair_ids": [],
+  "geometry_regions": {
+    "head": {
+      "path": "Art/Officer/BodyBaseV1/checks/head-region.png",
+      "sha256": "7336a7b2e6a5f23aba2ea2a124416164d04ce1de06d7819f30878f723361c945"
+    },
+    "neck": {
+      "path": "Art/Officer/BodyBaseV1/checks/neck-region.png",
+      "sha256": "57e5850f4229a59ce9e118a22913b419fae5f31765eac5ca91f0556adc842628"
+    },
+    "chest": {
+      "path": "Art/Officer/BodyBaseV1/checks/chest-region.png",
+      "sha256": "b0180d54f2cb552fd13ce7ec550a074ae0196afaf84eb0051aa9459a16263365"
+    },
+    "abdomen": {
+      "path": "Art/Officer/BodyBaseV1/checks/abdomen-region.png",
+      "sha256": "e23fdc3a8c2dabefea2ef40c2558b4239db6bc41c54bcc0b5ad08936d2f4383c"
+    },
+    "pelvis": {
+      "path": "Art/Officer/BodyBaseV1/checks/pelvis-region.png",
+      "sha256": "dfdabf3b7b8c8558902bf34f552465e57b51059e74f9cf625d329737db2f1be6"
+    },
+    "upper_arm_right": {
+      "path": "Art/Officer/BodyBaseV1/checks/upper_arm_right-region.png",
+      "sha256": "f2db895154ec70a2d5fe8399af87ad693d6d4dfac06f1fd80f9ecb48b7377477"
+    },
+    "forearm_right": {
+      "path": "Art/Officer/BodyBaseV1/checks/forearm_right-region.png",
+      "sha256": "17cecbf62597c1b2f9013cd59f50bad0c1c96ac7f129db81a4ca548c8896ab47"
+    },
+    "hand_right": {
+      "path": "Art/Officer/BodyBaseV1/checks/hand_right-region.png",
+      "sha256": "c9ed1f62986222515884056315028b445fe3d3f699499578bd87ecca2af1f885"
+    },
+    "upper_arm_left": {
+      "path": "Art/Officer/BodyBaseV1/checks/upper_arm_left-region.png",
+      "sha256": "93f45a0f6871f8ef0521d004142bc35c0d071b2cf9f1bee8be5efc259e5a2dec"
+    },
+    "forearm_left": {
+      "path": "Art/Officer/BodyBaseV1/checks/forearm_left-region.png",
+      "sha256": "87282311093ccf553e939c846b7aedfdafbe0e75ce104a019b07d77537b66ff0"
+    },
+    "hand_left": {
+      "path": "Art/Officer/BodyBaseV1/checks/hand_left-region.png",
+      "sha256": "a84e2302590ed27157badbf34dbc54f63876ab44af1234140b005b4b1d113d1c"
+    },
+    "thigh_right": {
+      "path": "Art/Officer/BodyBaseV1/checks/thigh_right-region.png",
+      "sha256": "b99f9e0329c42ccdb89339a743097a5ddb40ea96b3c1479e4e9df11083e9829b"
+    },
+    "calf_right": {
+      "path": "Art/Officer/BodyBaseV1/checks/calf_right-region.png",
+      "sha256": "580fa1576ad5c2cc1c47ca0dfad73dbb1e43d5a457d6c23b041269bf9a867d62"
+    },
+    "foot_right": {
+      "path": "Art/Officer/BodyBaseV1/checks/foot_right-region.png",
+      "sha256": "d01b28fd4b4dfd9b3f070217b740299886c02512b5ad301f53602d34cee9dc01"
+    },
+    "thigh_left": {
+      "path": "Art/Officer/BodyBaseV1/checks/thigh_left-region.png",
+      "sha256": "1a982b8864420b03e3726d7d68f76d8cd97abbd03c0446e1bd7bda9ac2959dea"
+    },
+    "calf_left": {
+      "path": "Art/Officer/BodyBaseV1/checks/calf_left-region.png",
+      "sha256": "335d1d19bc750ba10d78ab63f5ba00c0dd3013253b815ff3519fc209bfa96a9e"
+    },
+    "foot_left": {
+      "path": "Art/Officer/BodyBaseV1/checks/foot_left-region.png",
+      "sha256": "19f63e23fd579ba7a6e0a9676b2ceec629edc2e6f6855a209f697cfbb0e96b1e"
+    }
+  },
+  "geometry_criteria": {
+    "head": {
+      "bounds": [
+        21,
+        8,
+        43,
+        29
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "neck": {
+      "bounds": [
+        24,
+        29,
+        40,
+        35
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "chest": {
+      "bounds": [
+        21,
+        32,
+        43,
+        47
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "abdomen": {
+      "bounds": [
+        23,
+        47,
+        41,
+        56
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "pelvis": {
+      "bounds": [
+        23,
+        55,
+        41,
+        67
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "upper_arm_right": {
+      "bounds": [
+        14,
+        34,
+        24,
+        48
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "forearm_right": {
+      "bounds": [
+        12,
+        46,
+        21,
+        61
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "hand_right": {
+      "bounds": [
+        11,
+        60,
+        19,
+        69
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "upper_arm_left": {
+      "bounds": [
+        40,
+        34,
+        50,
+        48
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "forearm_left": {
+      "bounds": [
+        43,
+        46,
+        52,
+        61
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "hand_left": {
+      "bounds": [
+        45,
+        60,
+        53,
+        69
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "thigh_right": {
+      "bounds": [
+        22,
+        65,
+        31,
+        79
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "calf_right": {
+      "bounds": [
+        22,
+        77,
+        29,
+        89
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "foot_right": {
+      "bounds": [
+        18,
+        88,
+        29,
+        92
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "thigh_left": {
+      "bounds": [
+        33,
+        65,
+        42,
+        79
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "calf_left": {
+      "bounds": [
+        35,
+        77,
+        42,
+        89
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    },
+    "foot_left": {
+      "bounds": [
+        35,
+        88,
+        46,
+        92
+      ],
+      "tolerance_px": 0,
+      "basis": "Frozen construction controls; not inferred anatomy"
+    }
+  },
+  "palette_rgb": [
+    [
+      81,
+      60,
+      50
+    ],
+    [
+      146,
+      94,
+      70
+    ],
+    [
+      184,
+      126,
+      90
+    ],
+    [
+      214,
+      163,
+      118
+    ],
+    [
+      235,
+      190,
+      145
+    ],
+    [
+      248,
+      216,
+      175
+    ]
+  ],
+  "parts": {
+    "head": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/head.png",
+        "sha256": "e53e43b4cbdfa6f1e379fee866dd94f6812f5be0c5738cae9c5fba96d550764d"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        1
+      ],
+      "max_components": 1
+    },
+    "neck": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/neck.png",
+        "sha256": "e45606777510223a28bf41e8343c1b2e2295437aafc86c493363c81d33998def"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        2
+      ],
+      "max_components": 1
+    },
+    "chest": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/chest.png",
+        "sha256": "42cfbe76572e31f5b484ec4043e0edc1753990fc11e8203f23d412d7d777a1cd"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        3
+      ],
+      "max_components": 1
+    },
+    "abdomen": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/abdomen.png",
+        "sha256": "3a12fe69c00e434cadf6d07f145307d8be71fa5c4af68f3b05f54e4ea6cd5b33"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        4
+      ],
+      "max_components": 1
+    },
+    "pelvis": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/pelvis.png",
+        "sha256": "2bf5abc30c8bbeb6e11d4146ce737f2909b717d762df1ccf16ffc1e574085036"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        5
+      ],
+      "max_components": 1
+    },
+    "upper_arm_right": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/upper_arm_right.png",
+        "sha256": "306e74c1a8ca9838db594ade4f136c9d2fc936dfb6d32ab94ef512cbc81526ce"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        6
+      ],
+      "max_components": 1
+    },
+    "forearm_right": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/forearm_right.png",
+        "sha256": "5571c32500c6d8b94260f155b0aaa196018abeb64a0887dd02592f34820bb44c"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        7
+      ],
+      "max_components": 1
+    },
+    "hand_right": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/hand_right.png",
+        "sha256": "84ef7228b0f9b2380e1c6fcff33d5e5a38ce90d08a1b304ddb0d9532412422f0"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        8
+      ],
+      "max_components": 1
+    },
+    "upper_arm_left": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/upper_arm_left.png",
+        "sha256": "0118b68325b16f3b64dc6585716056c7ffa303d88d73a71d028410adeb5c52ab"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        9
+      ],
+      "max_components": 1
+    },
+    "forearm_left": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/forearm_left.png",
+        "sha256": "fb873c1a41f09bf21e18a6bf562e6d56b018c150c6e602de177d2924164f99ea"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        10
+      ],
+      "max_components": 1
+    },
+    "hand_left": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/hand_left.png",
+        "sha256": "9a65c46ce3e707740e79fa4b16159f9e226acb3e49d9e7d5372d7e1ec7df7e5d"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        11
+      ],
+      "max_components": 1
+    },
+    "thigh_right": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/thigh_right.png",
+        "sha256": "02a125c099f9dc5c3a3a45f75b17ffa89c1dc289878b0383083b4cac5967c417"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        12
+      ],
+      "max_components": 1
+    },
+    "calf_right": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/calf_right.png",
+        "sha256": "06583221ba3dba9523b9b546f7d7219b24140970f65e04c7356982936db2df9d"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        13
+      ],
+      "max_components": 1
+    },
+    "foot_right": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/foot_right.png",
+        "sha256": "150daec051d1e032a7440de44aad6e969b88b655c12de4f0610ffd17e078bd62"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        14
+      ],
+      "max_components": 1
+    },
+    "thigh_left": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/thigh_left.png",
+        "sha256": "dc5e6b8e32d0693bf18c9cc4af2950be6462b840dbaf18d6adb560978fbed9fb"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        15
+      ],
+      "max_components": 1
+    },
+    "calf_left": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/calf_left.png",
+        "sha256": "0d11893be9f2915a5ce39050efc32461406db322cf52c6e0f3960ec64f821a19"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        16
+      ],
+      "max_components": 1
+    },
+    "foot_left": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerBodyBaseV1/parts/foot_left.png",
+        "sha256": "d602f66f714c44f9f9d2485051c388ba8dc2c53542f17215e087dc33c5468687"
+      },
+      "hidden": {
+        "path": "Art/Officer/BodyBaseV1/controls/empty-mask.png",
+        "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+      },
+      "owner_ids": [
+        17
+      ],
+      "max_components": 1
+    }
+  },
+  "order": [
+    "head",
+    "neck",
+    "chest",
+    "abdomen",
+    "pelvis",
+    "upper_arm_right",
+    "forearm_right",
+    "hand_right",
+    "upper_arm_left",
+    "forearm_left",
+    "hand_left",
+    "thigh_right",
+    "calf_right",
+    "foot_right",
+    "thigh_left",
+    "calf_left",
+    "foot_left"
+  ],
+  "recolor_cases": []
+}

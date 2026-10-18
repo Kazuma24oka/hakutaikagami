@@ -70,6 +70,40 @@ def validate_contract(contract, profile):
     if contract['portrait_policy'] != 'six-head-separate-art-shared-selection-ids':
         raise Blocked('Portrait linkage changed')
 
+def require_control_plan(root, preparation):
+    """Bootstrap only deterministic geometry/masks, before a generation plan exists.
+
+    Does not authorize model execution, a finished candidate, or stage advancement.
+    This solves the prerequisite cycle without dummy preexisting mask evidence.
+    """
+    root=Path(root)
+    contract=json.loads((root/'Art/Officer/production-contract.json').read_text(encoding='utf-8'))
+    profile=json.loads((root/'Game/Data/officer_visual_profile.json').read_text(encoding='utf-8'))
+    validate_contract(contract,profile)
+    work=json.loads((root/'Art/Officer/work-record.json').read_text(encoding='utf-8'))
+    if work.get('control_preparation') != preparation or preparation.get('scope')!='deterministic-controls-only':
+        raise Blocked('Missing persisted control-construction plan')
+    if preparation['contract_sha256']!=digest(contract) or not preparation['feedback'] or not preparation['preserve']:
+        raise Blocked('Stale/missing construction conditions')
+    for e in preparation['tools']+preparation['references']:evidence(root,e)
+    spec=json.loads(evidence(root,preparation['geometry']).read_text(encoding='utf-8'))
+    if spec['canvas']!=[64,96] or set(spec['landmarks'])!=DIMENSIONS:
+        raise Blocked('Incomplete native geometry')
+    names=[r['name'] for r in spec['regions']];ids=[r['id'] for r in spec['regions']]
+    if len(set(ids))!=len(ids) or set(spec['paint_order'])!=set(ids) or len(spec['paint_order'])!=len(ids):
+        raise Blocked('Ambiguous control ownership/order')
+    if not {'head','neck','chest','abdomen','pelvis'}.issubset(names):
+        raise Blocked('Missing adult body construction regions')
+    for r in spec['regions']:
+        if any(type(x) is not int or type(y) is not int or not (0<=x<64 and 0<=y<96) for x,y in r['polygon']):
+            raise Blocked('Construction outside native canvas')
+    if set(spec['protected_surfaces'])!={'head','pelvis'}:
+        raise Blocked('Blank head/featureless pelvis must be protected')
+    for x,y in spec['landmarks'].values():
+        if not (type(x) is int and type(y) is int and 0<=x<64 and 0<=y<96):
+            raise Blocked('Invalid construction landmark')
+    return digest(preparation)
+
 def fingerprint(root, contract, plan):
     bindings = []
     for kind in ('inputs', 'tools', 'references'):

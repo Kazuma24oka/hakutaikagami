@@ -1,0 +1,296 @@
+{
+  "technical_only": true,
+  "visible_pixels": 1822,
+  "geometry": {
+    "head": [
+      21,
+      8,
+      43,
+      29
+    ],
+    "neck": [
+      24,
+      29,
+      40,
+      35
+    ],
+    "chest": [
+      21,
+      32,
+      43,
+      47
+    ],
+    "abdomen": [
+      23,
+      47,
+      41,
+      56
+    ],
+    "pelvis": [
+      23,
+      55,
+      41,
+      67
+    ],
+    "upper_arm_right": [
+      14,
+      34,
+      24,
+      48
+    ],
+    "forearm_right": [
+      12,
+      46,
+      21,
+      61
+    ],
+    "hand_right": [
+      11,
+      60,
+      19,
+      69
+    ],
+    "upper_arm_left": [
+      40,
+      34,
+      50,
+      48
+    ],
+    "forearm_left": [
+      43,
+      46,
+      52,
+      61
+    ],
+    "hand_left": [
+      45,
+      60,
+      53,
+      69
+    ],
+    "thigh_right": [
+      22,
+      65,
+      31,
+      79
+    ],
+    "calf_right": [
+      22,
+      77,
+      29,
+      89
+    ],
+    "foot_right": [
+      18,
+      88,
+      29,
+      92
+    ],
+    "thigh_left": [
+      33,
+      65,
+      42,
+      79
+    ],
+    "calf_left": [
+      35,
+      77,
+      42,
+      89
+    ],
+    "foot_left": [
+      35,
+      88,
+      46,
+      92
+    ]
+  },
+  "reconstruction_rgba_difference": 0,
+  "status": "TECHNICAL_ONLY_NOT_APPEARANCE_APPROVAL",
+  "body_bounds": [
+    11,
+    8,
+    53,
+    92
+  ],
+  "head_body_ratio": 4,
+  "minimum_margin_px": 4,
+  "per_part_metrics": {
+    "head": {
+      "bounds": [
+        21,
+        8,
+        43,
+        29
+      ],
+      "pixels": 342,
+      "components": 1
+    },
+    "neck": {
+      "bounds": [
+        24,
+        29,
+        40,
+        35
+      ],
+      "pixels": 60,
+      "components": 1
+    },
+    "chest": {
+      "bounds": [
+        21,
+        32,
+        43,
+        47
+      ],
+      "pixels": 240,
+      "components": 1
+    },
+    "abdomen": {
+      "bounds": [
+        23,
+        47,
+        41,
+        56
+      ],
+      "pixels": 140,
+      "components": 1
+    },
+    "pelvis": {
+      "bounds": [
+        23,
+        55,
+        41,
+        67
+      ],
+      "pixels": 180,
+      "components": 1
+    },
+    "upper_arm_right": {
+      "bounds": [
+        14,
+        34,
+        24,
+        48
+      ],
+      "pixels": 84,
+      "components": 1
+    },
+    "forearm_right": {
+      "bounds": [
+        12,
+        46,
+        21,
+        61
+      ],
+      "pixels": 94,
+      "components": 1
+    },
+    "hand_right": {
+      "bounds": [
+        11,
+        60,
+        19,
+        69
+      ],
+      "pixels": 53,
+      "components": 1
+    },
+    "upper_arm_left": {
+      "bounds": [
+        40,
+        34,
+        50,
+        48
+      ],
+      "pixels": 84,
+      "components": 1
+    },
+    "forearm_left": {
+      "bounds": [
+        43,
+        46,
+        52,
+        61
+      ],
+      "pixels": 94,
+      "components": 1
+    },
+    "hand_left": {
+      "bounds": [
+        45,
+        60,
+        53,
+        69
+      ],
+      "pixels": 53,
+      "components": 1
+    },
+    "thigh_right": {
+      "bounds": [
+        22,
+        65,
+        31,
+        79
+      ],
+      "pixels": 103,
+      "components": 1
+    },
+    "calf_right": {
+      "bounds": [
+        22,
+        77,
+        29,
+        89
+      ],
+      "pixels": 62,
+      "components": 1
+    },
+    "foot_right": {
+      "bounds": [
+        18,
+        88,
+        29,
+        92
+      ],
+      "pixels": 34,
+      "components": 1
+    },
+    "thigh_left": {
+      "bounds": [
+        33,
+        65,
+        42,
+        79
+      ],
+      "pixels": 103,
+      "components": 1
+    },
+    "calf_left": {
+      "bounds": [
+        35,
+        77,
+        42,
+        89
+      ],
+      "pixels": 62,
+      "components": 1
+    },
+    "foot_left": {
+      "bounds": [
+        35,
+        88,
+        46,
+        92
+      ],
+      "pixels": 34,
+      "components": 1
+    }
+  },
+  "native_display_scale": 1,
+  "preserved_rgba_difference": 0,
+  "head_and_pelvis": "exact frozen featureless construction",
+  "facial_hair_clothes_genital_detail": "absent by separate protected construction; visual check still required",
+  "motion_approved": false,
+  "user_appearance_accepted": false
+}

@@ -1,0 +1,32 @@
+test_actual_png_bundle_checks_pixels_and_rejects_bad_palette (__main__.PipelineTests.test_actual_png_bundle_checks_pixels_and_rejects_bad_palette) ... ok
+test_actual_repository_without_plan_is_blocked (__main__.PipelineTests.test_actual_repository_without_plan_is_blocked) ... ok
+test_actual_workflow_must_match_claimed_settings (__main__.PipelineTests.test_actual_workflow_must_match_claimed_settings) ... ok
+test_cache_failure_is_never_reused_as_pass (__main__.PipelineTests.test_cache_failure_is_never_reused_as_pass) ... ok
+test_cache_reuses_exact_dependencies_and_invalidates_change (__main__.PipelineTests.test_cache_reuses_exact_dependencies_and_invalidates_change) ... ok
+test_changed_input_invalidates_plan (__main__.PipelineTests.test_changed_input_invalidates_plan) ... ok
+test_composition_uses_shared_coordinates_and_no_fit (__main__.PipelineTests.test_composition_uses_shared_coordinates_and_no_fit) ... ok
+test_contract_fixed_conditions_rejected (__main__.PipelineTests.test_contract_fixed_conditions_rejected) ... ok
+test_control_bootstrap_cannot_authorize_generation (__main__.PipelineTests.test_control_bootstrap_cannot_authorize_generation) ... ok
+test_control_bootstrap_rejects_changed_definition (__main__.PipelineTests.test_control_bootstrap_rejects_changed_definition) ... ok
+test_control_bootstrap_rejects_invalid_masks_or_geometry (__main__.PipelineTests.test_control_bootstrap_rejects_invalid_masks_or_geometry) ... ok
+test_empty_pass_string_cannot_release (__main__.PipelineTests.test_empty_pass_string_cannot_release) ... ok
+test_evidence_path_traversal_rejected (__main__.PipelineTests.test_evidence_path_traversal_rejected) ... ok
+test_explicit_front_plan_can_validate_without_approving_art (__main__.PipelineTests.test_explicit_front_plan_can_validate_without_approving_art) ... ok
+test_foreign_hip_pixel_cannot_enter_hand (__main__.PipelineTests.test_foreign_hip_pixel_cannot_enter_hand) ... ok
+test_hair_cannot_take_eye_pixels (__main__.PipelineTests.test_hair_cannot_take_eye_pixels) ... ok
+test_missing_and_changed_prerequisites_are_rejected (__main__.PipelineTests.test_missing_and_changed_prerequisites_are_rejected) ... ok
+test_missing_geometry_or_background_annotation_rejected (__main__.PipelineTests.test_missing_geometry_or_background_annotation_rejected) ... ok
+test_native_alpha_and_ownership (__main__.PipelineTests.test_native_alpha_and_ownership) ... ok
+test_recolor_preserves_other_material_and_alpha (__main__.PipelineTests.test_recolor_preserves_other_material_and_alpha) ... ok
+test_reused_modules_match_recorded_source_bytes (__main__.PipelineTests.test_reused_modules_match_recorded_source_bytes) ... ok
+test_review_evidence_and_observation_required (__main__.PipelineTests.test_review_evidence_and_observation_required) ... ok
+test_same_canvas_does_not_allow_changed_head_size (__main__.PipelineTests.test_same_canvas_does_not_allow_changed_head_size) ... ok
+test_shared_selection_requires_both_representations (__main__.PipelineTests.test_shared_selection_requires_both_representations) ... ok
+test_stage_cannot_skip_front_and_parts_review (__main__.PipelineTests.test_stage_cannot_skip_front_and_parts_review) ... ok
+test_undeclared_joint_overlap_rejected (__main__.PipelineTests.test_undeclared_joint_overlap_rejected) ... ok
+test_unrecorded_plan_is_rejected (__main__.PipelineTests.test_unrecorded_plan_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.679s
+
+OK

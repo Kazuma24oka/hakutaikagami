@@ -52,6 +52,34 @@ class PipelineTests(unittest.TestCase):
         base=Path(p.__file__).parent/'art_shared'
         for item in json.loads((base/'provenance.json').read_text(encoding='utf-8')):
             self.assertEqual(p.sha(base/item['name']),item['sha256'])
+    def controls_fixture(self):
+        actual=Path(p.__file__).resolve().parents[1]/'Art/Officer/BodyBaseV1/geometry.json'
+        (self.root/'geometry.json').write_bytes(actual.read_bytes())
+        prep={'scope':'deterministic-controls-only','contract_sha256':p.digest(self.contract),
+              'feedback':['fixture'],'preserve':['fixture'],'tools':[self.e],'references':[self.e],
+              'geometry':{'path':'geometry.json','sha256':p.sha(self.root/'geometry.json')}}
+        return prep
+    def save_controls_fixture(self,prep):
+        (self.root/'Art/Officer/work-record.json').write_text(json.dumps({'control_preparation':prep}))
+    def test_control_bootstrap_cannot_authorize_generation(self):
+        prep=self.controls_fixture();self.save_controls_fixture(prep)
+        self.assertEqual(len(p.require_control_plan(self.root,prep)),64)
+        with self.assertRaises(p.Blocked):p.require_plan(self.root,'front_authoring')
+    def test_control_bootstrap_rejects_changed_definition(self):
+        prep=self.controls_fixture();self.save_controls_fixture(prep)
+        (self.root/'geometry.json').write_text('{}')
+        with self.assertRaises(p.Blocked):p.require_control_plan(self.root,prep)
+    def test_control_bootstrap_rejects_invalid_masks_or_geometry(self):
+        for kind in ['head-protection','bounds','landmarks','duplicate-id']:
+            with self.subTest(kind=kind):
+                prep=self.controls_fixture();spec=json.loads((self.root/'geometry.json').read_text())
+                if kind=='head-protection':spec['protected_surfaces']=['pelvis']
+                if kind=='bounds':spec['regions'][0]['polygon'][0]=[64,8]
+                if kind=='landmarks':spec['landmarks'].pop('chin')
+                if kind=='duplicate-id':spec['regions'][0]['id']=spec['regions'][1]['id']
+                (self.root/'geometry.json').write_text(json.dumps(spec))
+                prep['geometry']['sha256']=p.sha(self.root/'geometry.json');self.save_controls_fixture(prep)
+                with self.assertRaises(p.Blocked):p.require_control_plan(self.root,prep)
     def test_missing_and_changed_prerequisites_are_rejected(self):
         mutations=[lambda q:q.update(unresolved=['not measured']),lambda q:q.update(inputs=[]),
             lambda q:q.update(tools=[]),lambda q:q.update(references=[]),lambda q:q.update(contract_sha256='stale'),

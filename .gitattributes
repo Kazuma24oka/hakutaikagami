@@ -1,2 +1,11 @@
 # Preserve exact source bytes used by shared-module provenance checks.
-Scripts/art_shared/*.py -text
+Scripts/art_shared/*.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Preserve all byte-hashed production inputs and processing tools across checkout.
+Art/Officer/BodyBaseV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_art_pipeline.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_body_base.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/run_officer_body_workflow.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/validate_officer_body_base.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_body_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_ART_PRODUCTION_AUDIT.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

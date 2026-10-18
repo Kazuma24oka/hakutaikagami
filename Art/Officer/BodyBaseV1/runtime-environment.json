@@ -1,0 +1,74 @@
+{
+  "system": {
+    "os": "win32",
+    "ram_total": 34193522688,
+    "ram_free": 14181900288,
+    "comfyui_version": "0.34.0",
+    "required_frontend_version": "1.49.6",
+    "installed_templates_version": "0.11.48",
+    "required_templates_version": "0.11.48",
+    "comfy_package_versions": [
+      {
+        "name": "comfyui-frontend-package",
+        "installed": "1.49.6",
+        "required": "1.49.6"
+      },
+      {
+        "name": "comfyui-workflow-templates",
+        "installed": "0.11.48",
+        "required": "0.11.48"
+      },
+      {
+        "name": "comfyui-embedded-docs",
+        "installed": "0.5.10",
+        "required": "0.5.10"
+      },
+      {
+        "name": "comfy-kitchen",
+        "installed": "0.2.31",
+        "required": "0.2.31"
+      },
+      {
+        "name": "comfy-aimdo",
+        "installed": "0.4.15",
+        "required": "0.4.15"
+      }
+    ],
+    "python_version": "3.13.12 (main, Feb 12 2026, 00:38:53) [MSC v.1944 64 bit (AMD64)]",
+    "pytorch_version": "2.12.1+cu130",
+    "embedded_python": false,
+    "deploy_environment": "local-git",
+    "argv": [
+      ".utmp/comfy-torch-overlay/ComfyUI/main.py",
+      "--listen",
+      "127.0.0.1",
+      "--port",
+      "8189",
+      "--disable-auto-launch",
+      "--disable-all-custom-nodes",
+      "--extra-model-paths-config",
+      "C:/Workspace/Projects/Games/hakutaikagami/.utmp/officer-body-server/models.yaml",
+      "--input-directory",
+      "C:/Workspace/Projects/Games/hakutaikagami/.utmp/officer-body-server/input",
+      "--output-directory",
+      "C:/Workspace/Projects/Games/hakutaikagami/.utmp/officer-body-server/output",
+      "--user-directory",
+      "C:/Workspace/Projects/Games/hakutaikagami/.utmp/officer-body-server/user",
+      "--temp-directory",
+      "C:/Workspace/Projects/Games/hakutaikagami/.utmp/officer-body-server/temp",
+      "--preview-method",
+      "none"
+    ]
+  },
+  "devices": [
+    {
+      "name": "cuda:0 NVIDIA GeForce RTX 4060 Ti : cudaMallocAsync",
+      "type": "cuda",
+      "index": 0,
+      "vram_total": 8585216000,
+      "vram_free": 7418675200,
+      "torch_vram_total": 0,
+      "torch_vram_free": 0
+    }
+  ]
+}
