@@ -498,3 +498,7 @@
 - **確定原則**：[C#中心・ID分離・バージョン付きセーブ・パーツ合成・共通モーション・自動試験・素材管理](Confirmed/GODOT_TECH_FOUNDATION_PRINCIPLES.md)。
 - **比較履歴・未確定詳細**：[Godot 7項目ABCD](Proposals/GODOT_TECH_FOUNDATION_7_OPTIONS.md)。Godot 4系は第一候補、正式採用は技術検証後。
 - Unity第一候補の古い比較は選定履歴であり現行推奨ではない。main変更なし、Archive移動・永久削除なし。製造未着手。
+
+## Godot 4系技術検証7項目（未確定・ABCD）
+- [HD-2D・武将パーツ・アニメーション・会話／謀略・世界時間・C#ロジック・セーブ／テストの検証範囲、依存、合格条件、代替方式](Proposals/GODOT_TECH_VALIDATION_7_OPTIONS.md)。B推奨・未選択、D選択項目のみ次のチャットで自由記載。
+- [Godot技術基盤Confirmed](Confirmed/GODOT_TECH_FOUNDATION_PRINCIPLES.md)、[P0/P1製造開始ゲート](Proposals/PROTOTYPE_READINESS_P0_P1_OPTIONS.md)に整合。Godot正式採用・製造開始は未決定。main変更なし、Archive移動・永久削除なし。
