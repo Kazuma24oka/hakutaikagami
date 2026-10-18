@@ -1,0 +1,187 @@
+{
+  "status": "PASS",
+  "png_count": 45,
+  "changed": 0,
+  "files": [
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms-hidden.png",
+      "sha256": "d052642ab61d7cb695ec7d5785801428835371f3988105057558ab0c63f776d7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms-occlusion.png",
+      "sha256": "47d3faacbb015d0b229055d339934cbf3f285f359741f9950bb94d016fc9537b"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms.png",
+      "sha256": "da4499a6a1a87914bd3c3f3bd4558a97dd831e0d6c6b3be19a1df45186905bdf"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/bare-hands-front.png",
+      "sha256": "49434be01f68cb1f4fa7e9e1afed9227106f6583acee57c5827528207adf15f7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat-hidden.png",
+      "sha256": "86a0e8e00f5e6ffecf5b9b895d2c971b28236214ad3ca2e8db1d10b48f56514b"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat-occlusion.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat.png",
+      "sha256": "a6e104a8c22a4de846f8db5dc46ada51f9ac15cb1958fb612faaf6a74ee3564f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-armor-off.png",
+      "sha256": "a89cb3ca7e3da5a433ae64afedb0928d261b49129d34596c4a2470653b53749d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-base.png",
+      "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-full.png",
+      "sha256": "0ead6e73d24877597b76e49096959af396d25a96a587971f5d0d353d9f420625"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-arms.png",
+      "sha256": "0783d946079cf01db444bbd700a9288bff15833fd53d9ea6e2a57007f400545c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-coat.png",
+      "sha256": "58fd624ade29bdf22fee21b3db59a38d1061651f32780809d0e168f1cefe6b2a"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-footwear.png",
+      "sha256": "f0e95644e35fdfb73ed7f2bb013427ebb0c5e58527cd58ae320f7b5c17e969fa"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-legs.png",
+      "sha256": "aba471169ce7b1dde8ab00242a3c15114c1da32fdb1f4f63878a0130a1cc2d5a"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-shoulders.png",
+      "sha256": "3740b2e0b75017790201cb4bab7561676bae7a4a9f3f88cc1aada3cfa88f2e43"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-sword.png",
+      "sha256": "224973a981681fb4fd79ab274d264f2dff2517db87c3534de00889c83d0f2e47"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-torso.png",
+      "sha256": "9519e055717107cfa6f386beb0c90f4c5cac825abb0d79daffcfac28381cdb51"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-only-waist.png",
+      "sha256": "43c2bc936ba454d79f63903c68266491964b3e91faaee751404555ff4237cf3d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-arms.png",
+      "sha256": "6724485a3dd92c4a8924cf55a574a45f28a5e7a6406cba9711b66a838a9e5ed6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-coat.png",
+      "sha256": "6e960f315ca4944a210aab14bfe2c6418903af008053fbfe3ada3103a017ec3e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-footwear.png",
+      "sha256": "6282fa85448671e91281b6a0247dd228d242a83dbb74688df87a1453f53d4f53"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-legs.png",
+      "sha256": "7d90e8a3e452062842e8fe794e275ca505bd7613c9dd619b39f789d944a2fee5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-shoulders.png",
+      "sha256": "f7552dcef6d3f237c1f09629d7ef5bc45fd2599318033a4c13a66079b12f32ea"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-sword.png",
+      "sha256": "ff94b629c2ebc4008bcfa15876e30da27e57a55db669871ccf2e7cf889e64b48"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-torso.png",
+      "sha256": "bb978afee7aa7e87a13e2b7bb6d19d8325bdbab36dced653f6d501828c574709"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/example-without-waist.png",
+      "sha256": "1416b657b5efa00f06b9d39545466891e1d5892ce75c110bcda257fb8a3d41e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear-hidden.png",
+      "sha256": "1f4a3e04e46c75948435cc0836a3cb4da786217dff0b1efacc81adbf9aa6b1c7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear-occlusion.png",
+      "sha256": "ecaa85f8167ad98dbe07502f738c44ac2d61a8f1e950a634853063020a541151"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear.png",
+      "sha256": "923cf4b96ca51356be75ecf1967eafd6ff4b39d4d49773d8ace366e548e84de4"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs-hidden.png",
+      "sha256": "add41449ebebc70a5a8c6bdbec5702c3a39f76ebf227c4934701240b10c9ce33"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs-occlusion.png",
+      "sha256": "42aab2e60d1eeb44706c1c10b625a92d61accb58dd66e2ec1586c4d5464741b4"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs.png",
+      "sha256": "50e8436ee098191b29767749473066880c49a4f8961ce6a7a4d42acca41d88ab"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders-hidden.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders-occlusion.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders.png",
+      "sha256": "5f45b454892b1ead8b9b04da8e63da2712080bd879149a0d9edcb5408242a1dd"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/source-owners.png",
+      "sha256": "e3dba5f000a118dcc9befe06443424c81eb7220e6db5123eddee4028b733cc06"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword-hidden.png",
+      "sha256": "b815fffe5f9abeca8711d1641d940d34952e3255e3ccc1ef6a88c043304194bd"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword-occlusion.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword.png",
+      "sha256": "e08acaccef28647cdaabe6153695e83df3c17d3394f61656facc82ca49b5ed8b"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso-hidden.png",
+      "sha256": "1e8dc796fc2bd2cfb698ca7117327ae5effdbcdab4434742b311c2c42854fe51"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso-occlusion.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso.png",
+      "sha256": "c382e4b6d0b6e114aa4bee039a61e786baae4f5a787b510b323a6acca873a35c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist-hidden.png",
+      "sha256": "0df1730ed82184bd13ace72dc68b5e58c9af8d2467661cd110643b81d48a7a5e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist-occlusion.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist.png",
+      "sha256": "c070d77f7b4e30c2f70af8edac98b3f3c84eb22e782e31b08a6793bfc3e89c0d"
+    }
+  ]
+}

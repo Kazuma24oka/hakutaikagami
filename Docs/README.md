@@ -528,3 +528,5 @@
 - [仮素体：部位の着脱・肌色変更の確認画面](Proposals/officer-body-layer-review.html)（体型は外見未採用）
 
 - [顔・髪・甲冑一式：着脱と元絵への復帰](Proposals/OFFICER_EQUIPMENT_PARTS_V2.md)（正面静止、仮素体）
+
+- [甲冑8部位：個別着脱・元絵復帰の実画像検査](Proposals/OFFICER_ARMOR_SPLIT_V3.md)（64×96・1倍、正面静止）

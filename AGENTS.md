@@ -24,4 +24,6 @@
 
 ユーザーはV2を「ひょろひょろで気持ち悪い」と評価しつつ、一旦の続行を許可した。体型・画風の正式採用へ読み替えない。部位/配色の仮試験は `Docs/Proposals/officer-body-layer-review.html`。素体の外見改善は保留課題として保持する。
 
-正面の顔/髪/甲冑一式は `Art/Officer/EquipmentPartsV2/part-manifest.json` と `Docs/Proposals/OFFICER_EQUIPMENT_PARTS_V2.md`。元絵との可視画素一致、全解除の素体一致、髪なしの顔保護を実画像で検査済み。髪本体owner2と落ち影owner4、顔owner1、装備owner3、人体遮蔽は別責務。甲冑はまだ一式で、顔は髭を含む。部位別甲冑/別髪型/別方向/歩行/6頭身対応の完成を推認しない。V2素体の外見課題と仮受入を維持する。
+以前のV2の正面顔/髪/甲冑一式は `Art/Officer/EquipmentPartsV2/part-manifest.json` と `Docs/Proposals/OFFICER_EQUIPMENT_PARTS_V2.md`。元絵との可視画素一致、全解除の素体一致、髪なしの顔保護を実画像で検査済み。髪本体owner2と落ち影owner4、顔owner1、装備owner3、人体遮蔽は別責務。このV2では甲冑は一式で、顔は髭を含む。V2だけを根拠に部位別甲冑/別髪型/別方向/歩行/6頭身対応の完成を推認しない。V2素体の外見課題と仮受入を維持する。
+
+甲冑8部位は `Art/Officer/ArmorSplitV3/part-manifest.json` と `Docs/Proposals/OFFICER_ARMOR_SPLIT_V3.md`。顔/髪/素体は旧V2の同じ実体を使う。可視所属・限定補完・素体遮蔽・素手の前景描画を分け、元の2215装備画素を削除しない。各単体と除去後、全1024状態、全装備の元絵一致と全解除の素体一致を検査済み。範囲は元の正面静止で、方向/関節移動/歩行のゲートを解除しない。

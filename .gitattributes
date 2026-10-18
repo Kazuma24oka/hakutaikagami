@@ -31,3 +31,12 @@ Scripts/build_officer_equipment_parts.py -text whitespace=blank-at-eol,blank-at-
 Scripts/review_officer_equipment.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_officer_equipment_browser.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Proposals/officer-equipment-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact-byte controls and rendering tools for eight-slot armor replay.
+Art/Officer/ArmorSplitV3/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/inspect_officer_armor_source.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_armor_layers.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_armor_parts.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/review_officer_armor_parts.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_armor_browser.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-armor-parts-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

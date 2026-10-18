@@ -1,0 +1,39 @@
+{
+  "all_combinations": {
+    "checked": 1024,
+    "mismatches": []
+  },
+  "individual_removals": {
+    "torso": 0,
+    "shoulders": 0,
+    "arms": 0,
+    "waist": 0,
+    "legs": 0,
+    "footwear": 0,
+    "coat": 0,
+    "sword": 0
+  },
+  "solo": {
+    "torso": 0,
+    "shoulders": 0,
+    "arms": 0,
+    "waist": 0,
+    "legs": 0,
+    "footwear": 0,
+    "coat": 0,
+    "sword": 0
+  },
+  "page_errors": [],
+  "armor_off": 0,
+  "bare": 0,
+  "restored_original": 0,
+  "native_css": [
+    64,
+    96
+  ],
+  "large_css": [
+    256,
+    384
+  ],
+  "status": "PASS"
+}
