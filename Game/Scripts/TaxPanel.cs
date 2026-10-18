@@ -38,7 +38,7 @@ public partial class TaxPanel : MarginContainer
     {
         scenarioJson = json;
         simulation = TaxSimulation.Create(PrototypeScenario.Load(json));
-        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v4.json");
+        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v5.json");
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) AddThemeConstantOverride("margin_" + edge, 28);
         var column = new VBoxContainer(); column.AddThemeConstantOverride("separation", 10); AddChild(column);
         column.AddChild(new Label { Text = "徴税・命令配送・保存復旧  /  試作検証", Modulate = new Color("e2c891") });
@@ -115,9 +115,10 @@ public partial class TaxPanel : MarginContainer
         load = AddButton(storage, "読込", () =>
         {
             var sourcePath = savePath;
-            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v4.json"))
+            if (!System.IO.File.Exists(sourcePath) && sourcePath == ProjectSettings.GlobalizePath("user://tax-prototype-v5.json"))
             {
-                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v3.json");
+                sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v4.json");
+                if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v3.json");
                 if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v2.json");
                 if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
             }

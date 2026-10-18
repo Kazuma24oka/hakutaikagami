@@ -148,7 +148,7 @@ public sealed class DeadlineCancellationTests
     {
         var text = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "tax-v3-" + suffix + ".json"));
         var s = TaxSimulation.LoadJson(text); Assert.Empty(s.Cancellations); Assert.All(s.Orders, o => Assert.Null(o.ExecuteBy));
-        Assert.Equal(4, JsonNode.Parse(s.SaveJson())!["Version"]!.GetValue<int>());
+        Assert.Equal(5, JsonNode.Parse(s.SaveJson())!["Version"]!.GetValue<int>());
         if (suffix == "failure-transit") { s.AdvanceOneTick(); s.RetryDelivery("tax-001", DeliveryKind.Order, "character-001"); }
         Advance(s, 8); Assert.Equal(suffix == "admin-cancelled" ? 100 : 160, s.TreasuryRice);
     }

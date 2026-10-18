@@ -1,0 +1,35 @@
+**********************
+PowerShell transcript start
+Start time: 20261018152511
+Username: HITACHI2496\hizen
+RunAs User: HITACHI2496\hizen
+Configuration Name:
+Machine: HITACHI2496 (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\hizen\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+$stage='C:\Users\hizen\.codex\.chatgpt-projects\g-p-6ad452ddd494819192568db0153870d9\vertical-source'; foreach ($rel in @('Core/Simulation/TaxSimulation.cs','Tests/SharedProtocolTests.cs')) { Copy-Item -LiteralPath (Join-Path $stage $rel) -Destination $rel -Force }; Start-Transcript -Path 'Docs/Proposals/Evidence/shared-protocol-validation.txt' -Force; try { & ./Scripts/Validate-SharedProtocol.ps1 -Godot (Join-Path (Get-Location) '.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64_console.exe') -WithRendering } finally { Stop-Transcript }
+Process ID: 36340
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is Docs/Proposals/Evidence/shared-protocol-validation.txt
+
+
+
+
+
+
+
+
+
+
+**********************
+PowerShell transcript end
+End time: 20261018152529
+**********************

@@ -1,10 +1,11 @@
+using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Simulation;
 
-public enum CancellationStatus { InTransit, AwaitingEffect, Applied, AlreadyStopped, TooLate, Unauthorized, Lost }
+public enum CancellationStatus { InTransit, AwaitingEffect, Applied, AlreadyStopped, TooLate, Unauthorized, Lost, DeliveryRejected }
 public sealed record CancellationCommand(string Id, string RequestId, string SenderId, string RecipientId,
     long SentAt, long DueAt, long EffectiveAt, CancellationStatus Status = CancellationStatus.InTransit,
     bool Delivered = false, bool Lost = false, bool FailOnArrival = false, long? LateDueAt = null,
-    long? ReceivedAt = null, long? ResolvedAt = null);
+    long? ReceivedAt = null, long? ResolvedAt = null, long? PrincipalLearnedAt = null, bool LegacyOutcome = false);
 
 public sealed partial class TaxSimulation
 {
@@ -29,6 +30,8 @@ public sealed partial class TaxSimulation
             long due = checked(s.Tick + delay), effective = effectiveAt ?? due;
             if (effective < due) throw new ArgumentException("Announced effect cannot precede planned receipt.");
             s.Cancellations = [.. s.Cancellations, new(id, requestId, senderId, order.ExecutorId, s.Tick, due, effective)];
+            MessageFlow.Send(s.Messaging, new(id + "/command", id, "cancel-command", senderId, order.ExecutorId,
+                requestId, order.CastleId, s.Tick), s.Tick, delay);
         });
     }
     public void FailCancellation(string id) => Mutate(s =>
@@ -36,12 +39,14 @@ public sealed partial class TaxSimulation
         var c = s.Cancellations.Single(c => c.Id == id);
         if (c.Status != CancellationStatus.InTransit) throw new InvalidOperationException("Cancellation is no longer in transit.");
         s.Cancellations = s.Cancellations.Select(c => c.Id == id ? c with { FailOnArrival = true } : c).ToArray();
+        MessageFlow.Fail(s.Messaging, id + "/command");
     });
     public void ScheduleLateCancellation(string id, int delay) => Mutate(s =>
     {
         var c = s.Cancellations.Single(c => c.Id == id);
         if (c.Status != CancellationStatus.Lost || c.LateDueAt != null || delay < 1) throw new InvalidOperationException("Only a lost cancellation can be scheduled late once.");
         s.Cancellations = s.Cancellations.Select(c => c.Id == id ? c with { LateDueAt = checked(s.Tick + delay) } : c).ToArray();
+        MessageFlow.ScheduleLate(s.Messaging, id + "/command", 1, s.Tick, delay);
     });
 
     // Trial policy: inclusive completion deadline, then effective cancellations, then ordinary arrivals/work.
@@ -56,22 +61,21 @@ public sealed partial class TaxSimulation
         foreach (var original in s.Cancellations.ToArray())
         {
             var c = original;
-            bool normalArrival = c.Status == CancellationStatus.InTransit && c.DueAt <= s.Tick;
-            bool lateArrival = c.Status == CancellationStatus.Lost && c.LateDueAt <= s.Tick;
-            if (normalArrival || lateArrival)
+            var receipt = s.Messaging.Receipts.SingleOrDefault(r => r.MessageId == c.Id + "/command");
+            var latest = MessageFlow.Latest(s.Messaging, c.Id + "/command");
+            if (!c.Delivered && receipt != null)
             {
-                if (normalArrival && c.FailOnArrival)
-                {
-                    c = c with { Lost = true, Status = CancellationStatus.Lost };
-                    s.Applied = [.. s.Applied, c.Id + "/lost"];
-                }
-                else
-                {
-                    c = c with { Delivered = true, ReceivedAt = s.Tick, Status = CancellationStatus.AwaitingEffect };
-                    s.Applied = [.. s.Applied, c.Id + "/received"];
-                }
+                c = c with { Delivered = true, ReceivedAt = receipt.ReceivedAt, Status = CancellationStatus.AwaitingEffect };
+                s.Applied = [.. s.Applied, c.Id + "/received"];
             }
-            if (c.Status == CancellationStatus.AwaitingEffect && c.EffectiveAt <= s.Tick)
+            else if (!c.Delivered && latest.Status is AttemptStatus.Lost or AttemptStatus.Rejected)
+                c = c with { Status = latest.Status == AttemptStatus.Lost ? CancellationStatus.Lost : CancellationStatus.DeliveryRejected };
+            if (!c.Lost && s.Messaging.Attempts.Any(a => a.MessageId == c.Id + "/command" && a.FailureAt != null))
+            {
+                c = c with { Lost = true }; s.Applied = [.. s.Applied, c.Id + "/lost"];
+            }
+            c = c with { PrincipalLearnedAt = MessageFlow.LearnedAt(s.Messaging, c.Id + "/command", c.RecipientId) };
+            if (c.Status == CancellationStatus.AwaitingEffect && c.PrincipalLearnedAt != null && c.EffectiveAt <= s.Tick)
             {
                 var order = s.Orders.Single(o => o.RequestId == c.RequestId);
                 var result = !Authorized(s, c.SenderId, order.CastleId, "cancel-tax") ? CancellationStatus.Unauthorized :
@@ -80,6 +84,7 @@ public sealed partial class TaxSimulation
                 if (result == CancellationStatus.Applied && IsActive(order)) StopUncommitted(s, order, TaxPhase.Cancelled, "到達した取消命令が有効化");
                 c = c with { Status = result, ResolvedAt = s.Tick };
                 s.Applied = [.. s.Applied, c.Id + "/effective"];
+                SendCancellationReply(s, c);
             }
             s.Cancellations = s.Cancellations.Select(x => x.Id == c.Id ? c : x).ToArray();
         }
@@ -113,18 +118,23 @@ public sealed partial class TaxSimulation
             var order = s.Orders.Single(o => o.RequestId == c.RequestId);
             Check(!string.IsNullOrWhiteSpace(c.Id) && Enum.IsDefined(c.Status) && c.SenderId == order.IssuerId && c.RecipientId == order.ExecutorId &&
                 c.SentAt >= 0 && c.SentAt <= s.Tick && c.DueAt > c.SentAt && c.EffectiveAt >= c.DueAt, "Invalid cancellation identity/time.");
-            Check(c.Delivered == (c.ReceivedAt != null) && (c.ReceivedAt == null || c.ReceivedAt <= s.Tick &&
-                c.ReceivedAt == (c.Lost ? c.LateDueAt : c.DueAt)) && c.Delivered == s.Applied.Contains(c.Id + "/received"), "Cancellation receipt mismatch.");
-            Check(c.Lost == s.Applied.Contains(c.Id + "/lost") && (!c.Lost || c.FailOnArrival && c.DueAt <= s.Tick) &&
+            var receipt = s.Messaging.Receipts.SingleOrDefault(r => r.MessageId == c.Id + "/command");
+            var latest = MessageFlow.Latest(s.Messaging, c.Id + "/command");
+            Check(c.Delivered == (c.ReceivedAt != null) && c.Delivered == (receipt != null) && c.ReceivedAt == receipt?.ReceivedAt &&
+                c.Delivered == s.Applied.Contains(c.Id + "/received") && c.PrincipalLearnedAt == MessageFlow.LearnedAt(s.Messaging, c.Id + "/command", c.RecipientId), "Cancellation receipt/recognition mismatch.");
+            Check(c.Lost == s.Applied.Contains(c.Id + "/lost") && c.Lost == s.Messaging.Attempts.Any(a => a.MessageId == c.Id + "/command" && a.FailureAt != null) &&
                 (c.LateDueAt == null || c.Lost && c.LateDueAt > c.DueAt), "Cancellation loss/late mismatch.");
             bool resolved = c.Status is CancellationStatus.Applied or CancellationStatus.AlreadyStopped or CancellationStatus.TooLate or CancellationStatus.Unauthorized;
             Check(resolved == (c.ResolvedAt != null) && resolved == s.Applied.Contains(c.Id + "/effective") &&
-                (!resolved || c.Delivered && c.ResolvedAt == Math.Max(c.EffectiveAt, c.ReceivedAt!.Value) && c.ResolvedAt <= s.Tick), "Cancellation effect mismatch.");
-            Check(c.Status != CancellationStatus.InTransit || !c.Delivered && !c.Lost && c.DueAt > s.Tick, "Stale cancellation transit.");
-            Check(c.Status != CancellationStatus.AwaitingEffect || c.Delivered && c.EffectiveAt > s.Tick, "Stale pending effect.");
-            Check(c.Status != CancellationStatus.Lost || c.Lost && !c.Delivered && (c.LateDueAt == null || c.LateDueAt > s.Tick), "Stale lost cancellation.");
+                (!resolved || c.Delivered && c.PrincipalLearnedAt != null && c.ResolvedAt == Math.Max(c.EffectiveAt, c.PrincipalLearnedAt.Value) && c.ResolvedAt <= s.Tick), "Cancellation effect mismatch.");
+            Check(c.Status != CancellationStatus.InTransit || !c.Delivered && latest.Status == AttemptStatus.InTransit, "Stale cancellation transit.");
+            Check(c.Status != CancellationStatus.AwaitingEffect || c.Delivered && (c.PrincipalLearnedAt == null || c.EffectiveAt > s.Tick), "Stale pending effect.");
+            Check(c.Status != CancellationStatus.Lost || c.Lost && !c.Delivered && latest.Status == AttemptStatus.Lost, "Stale lost cancellation.");
+            Check(c.Status != CancellationStatus.DeliveryRejected || !c.Delivered && latest.Status == AttemptStatus.Rejected, "Stale rejected cancellation.");
             Check(c.Status != CancellationStatus.Applied || order.Phase == TaxPhase.Cancelled && order.StoppedAt == c.ResolvedAt, "Applied cancellation did not stop order.");
             Check(c.Status != CancellationStatus.TooLate || order.Collected > 0, "Too-late outcome without committed collection.");
+            Check(!c.LegacyOutcome || s.MigrationOrigin != null && resolved, "Invalid imported outcome.");
+            Check(!resolved || c.LegacyOutcome || s.Messaging.Messages.Any(m => m.Id == c.Id + "/reply" && m.Body == c.Status.ToString()), "Missing cancellation reply.");
         }
     }
 }

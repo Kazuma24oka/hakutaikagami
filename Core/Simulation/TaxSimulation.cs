@@ -4,6 +4,8 @@ using HakutaiKagami.Core.Characters;
 using HakutaiKagami.Core.Castles;
 using HakutaiKagami.Core.Commands;
 using HakutaiKagami.Core.World;
+using HakutaiKagami.Core.Common;
+using HakutaiKagami.Core.Messaging;
 
 namespace HakutaiKagami.Core.Simulation;
 
@@ -43,7 +45,7 @@ public sealed record WorldSnapshot(ScenarioDefinition Definition, CharacterSnaps
 // Persisted DTO is a boundary type. The simulation never exposes its live mutable DTO.
 public sealed class TaxSnapshot
 {
-    public int Version { get; set; } = 4;
+    public int Version { get; set; } = 5;
     public int? MigrationOrigin { get; set; }
     public WorldSnapshot World { get; set; } = null!;
     public long Tick { get; set; }
@@ -63,18 +65,13 @@ public sealed class TaxSnapshot
     public DeliveryFailureNotice[] FailureNotices { get; set; } = [];
     public FailureReportDelivery[] FailureReports { get; set; } = [];
     public CancellationCommand[] Cancellations { get; set; } = [];
+    public MessageState Messaging { get; set; } = new();
 }
 
 /// <summary>One-thread prototype transaction boundary: clone, validate, publish. No wall-clock or Godot dependency.</summary>
 public sealed partial class TaxSimulation
 {
     public const int MaxDeliveryAttempts = 3; // Prototype cap, including the original attempt.
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
-        Converters = { new JsonStringEnumConverter() }
-    };
     private TaxSnapshot state;
     private TaxSimulation(TaxSnapshot state) { Validate(state); this.state = Clone(state); }
     public long Tick => state.Tick;
@@ -83,8 +80,8 @@ public sealed partial class TaxSimulation
     public int TreasuryRice => state.Accounts.Single(a => a.Id == "treasury").Balance;
     public int ReservedRice => state.Orders.Sum(o => o.Reserved);
     public int PendingCount => state.Pending.Length + state.FailureReports.Count(r => !r.Delivered && !r.Lost) +
-        state.Cancellations.Count(c => c.Status is CancellationStatus.InTransit or CancellationStatus.AwaitingEffect || c.Status == CancellationStatus.Lost && c.LateDueAt != null) +
-        state.Orders.Count(o => IsActive(o) && o.ExecuteBy != null);
+        state.Cancellations.Count(c => c.Status == CancellationStatus.AwaitingEffect) +
+        state.Orders.Count(o => IsActive(o) && o.ExecuteBy != null) + MessageFlow.Pending(state.Messaging);
     public int AppliedCount => state.Applied.Length;
     public IReadOnlyList<TaxOrder> Orders => Array.AsReadOnly(state.Orders.ToArray());
     public IReadOnlyList<TaxDelivery> Deliveries => Array.AsReadOnly(state.Deliveries.ToArray());
@@ -126,13 +123,14 @@ public sealed partial class TaxSimulation
         });
     }
 
-    public void Submit(string requestId, string issuerId, string castleId, int amount, long? executeBy = null)
+    public void Submit(string requestId, string issuerId, string castleId, int amount, long? executeBy = null, string? executorId = null)
     {
         if (string.IsNullOrWhiteSpace(requestId) || amount <= 0) throw new ArgumentException("Positive amount and request ID required.");
         var existing = state.Orders.SingleOrDefault(o => o.RequestId == requestId);
         if (existing != null)
         {
-            if (existing.IssuerId != issuerId || existing.CastleId != castleId || existing.Requested != amount || existing.ExecuteBy != executeBy)
+            if (existing.IssuerId != issuerId || existing.CastleId != castleId || existing.Requested != amount || existing.ExecuteBy != executeBy ||
+                existing.ExecutorId != (executorId ?? state.World.Definition.Characters[1].Id))
                 throw new InvalidOperationException("Request ID reused with different payload.");
             return; // Retry retains logical identity, including after load.
         }
@@ -141,7 +139,7 @@ public sealed partial class TaxSimulation
             if (executeBy < s.Tick) throw new ArgumentOutOfRangeException(nameof(executeBy));
             if (!s.World.Castles.Any(c => c.Id == castleId) || !Authorized(s, issuerId, castleId, "tax-order"))
                 throw new UnauthorizedAccessException("No active grant for this actor/target/action.");
-            var order = new TaxOrder(requestId, requestId + "/case", issuerId, s.World.Definition.Characters[1].Id,
+            var order = new TaxOrder(requestId, requestId + "/case", issuerId, executorId ?? s.World.Definition.Characters[1].Id,
                 castleId, amount, 0, 0, TaxPhase.Dispatched, false, "", null, executeBy);
             s.Orders = [.. s.Orders, order];
             s.Deliveries = [.. s.Deliveries, new(requestId + "/letter", requestId, DeliveryKind.Order,
@@ -230,6 +228,7 @@ public sealed partial class TaxSimulation
         Mutate(s =>
         {
             s.Tick = checked(s.Tick + 1);
+            MessageFlow.Advance(s.Messaging, s.Tick);
             ApplyDeadlinesAndCancellations(s);
             var due = s.Pending.Where(e => e.DueAt <= s.Tick).ToArray();
             // No implicit priority for resource conflicts: this fixture rejects conflicting decisions together.
@@ -253,15 +252,18 @@ public sealed partial class TaxSimulation
         }, beforeCommit);
     }
 
-    public string SaveJson() => JsonSerializer.Serialize(state, JsonOptions);
+    public string SaveJson() => SnapshotCodec.Write(state);
     public static TaxSimulation LoadJson(string json)
     {
         try
         {
             using var document = JsonDocument.Parse(json);
-            if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2 or 3 or 4))
+            if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2 or 3 or 4 or 5))
                 throw new InvalidDataException("Missing or unsupported save version.");
-            var loaded = JsonSerializer.Deserialize<TaxSnapshot>(json, JsonOptions) ?? throw new InvalidDataException("Empty save.");
+            var loaded = SnapshotCodec.Read<TaxSnapshot>(json);
+            if (number < 5 && (loaded.Messaging.Messages.Length != 0 || loaded.Messaging.Attempts.Length != 0 ||
+                loaded.Messaging.Proxies.Length != 0 || loaded.Messaging.Knowledge.Length != 0 || loaded.Messaging.Receipts.Length != 0))
+                throw new InvalidDataException("Common messaging data disguised as an older save.");
             if (number < 4 && (loaded.Cancellations.Length != 0 || loaded.Orders.Any(o => o.ExecuteBy != null || o.StoppedAt != null || o.CollectedAt != null || o.Phase == TaxPhase.Expired)))
                 throw new InvalidDataException("V4 deadline/cancellation data disguised as an older save.");
             if (number < 3)
@@ -281,6 +283,11 @@ public sealed partial class TaxSimulation
                 loaded.Version = 4;
                 loaded.MigrationOrigin ??= number;
             }
+            if (number < 5)
+            {
+                loaded.Version = 5; loaded.MigrationOrigin ??= number;
+                ImportCancellationTransport(loaded);
+            }
             return new TaxSimulation(loaded);
         }
         catch (Exception e) when (e is not InvalidDataException)
@@ -288,26 +295,17 @@ public sealed partial class TaxSimulation
     }
     public void SaveFile(string path)
     {
-        var full = Path.GetFullPath(path);
-        Directory.CreateDirectory(Path.GetDirectoryName(full)!);
-        var temp = full + "." + Guid.NewGuid().ToString("N") + ".tmp";
-        File.WriteAllText(temp, SaveJson());
-        // Same-volume replacement: failure preserves the previous destination and leaves the temp for diagnosis.
-        File.Move(temp, full, overwrite: true);
+        SnapshotCodec.SaveFile(path, SaveJson());
     }
     public static TaxSimulation LoadFile(string path) => LoadJson(File.ReadAllText(path));
 
-    private static TaxSnapshot Clone(TaxSnapshot s) => JsonSerializer.Deserialize<TaxSnapshot>(JsonSerializer.Serialize(s, JsonOptions), JsonOptions)!;
+    private static TaxSnapshot Clone(TaxSnapshot s) => SnapshotCodec.Copy(s);
     private void Mutate(Action<TaxSnapshot> change, Action? beforeCommit = null)
     {
-        var next = Clone(state);
-        change(next);
-        Validate(next);
-        beforeCommit?.Invoke(); // Failure injection verifies no partial state becomes visible.
-        state = next;
+        state = SessionTransaction.Apply(state, change, Validate, beforeCommit);
     }
     private static bool Authorized(TaxSnapshot s, string actor, string castle, string action) =>
-        s.Grants.Any(g => g.Allows(new("validation", actor, castle, action, s.Tick), s.Tick));
+        PermissionPolicy.Allows(s.Grants, actor, castle, action, s.Tick);
     private static string EventId(TaxOrder o, TaxEventKind kind, int attempt = 1) =>
         o.RequestId + "/event/" + kind + (attempt == 1 ? "" : "/attempt/" + attempt);
     private static void Enqueue(TaxSnapshot s, TaxOrder o, TaxEventKind kind, long dueAt, string[] dependencies, int attempt = 1) =>
@@ -401,7 +399,7 @@ public sealed partial class TaxSimulation
     private static void Validate(TaxSnapshot s)
     {
         static void Check(bool ok, string message) { if (!ok) throw new InvalidDataException(message); }
-        Check(s.Version == 4 && s.MigrationOrigin is null or 1 or 2 or 3 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
+        Check(s.Version == 5 && s.MigrationOrigin is null or 1 or 2 or 3 or 4 && s.Tick >= 0 && s.InitialRice >= 0 && s.AcceptChancePercent is >= 0 and <= 100, "Unsupported version or invalid clock/policy.");
         var world = s.World.Restore();
         Check(s.Accounts.Length == 2 && s.Accounts.Select(a => a.Id).ToHashSet().SetEquals(["village", "treasury"]), "Invalid accounts.");
         Check(s.Accounts.All(a => a.Balance >= 0 && world.Castles.ContainsKey(a.CustodyCastleId) &&
@@ -508,5 +506,6 @@ public sealed partial class TaxSimulation
                     k.Amount == o.Collected && k.CharacterId == o.IssuerId && k.Content == o.Reason), "Knowledge payload mismatch.");
         }
         ValidateDeadlinesAndCancellations(s);
+        MessageFlow.Validate(s.Messaging, s.Tick, world.Characters.Keys.ToHashSet(StringComparer.Ordinal));
     }
 }
