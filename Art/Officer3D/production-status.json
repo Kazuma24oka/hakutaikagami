@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "direction": "3d-in-game",
+  "status": "PLANNING_SOURCE_INSPECTED_GODOT_IMPORT_NOT_YET_VALIDATED",
+  "user_decision_date": "2026-10-19",
+  "sources": [
+    {
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\甲冑_織田信長_v013_肌色と動作.blend",
+      "bytes": 24484889,
+      "sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9"
+    },
+    {
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\織田信長_歩行と剣攻撃_v013.mp4",
+      "bytes": 2477290,
+      "sha256": "c7d5bdcbf2c1b2bc076c231ad2eef8cf52af654160702b7fcab688d2301143de"
+    }
+  ],
+  "legacy_2d": {
+    "status": "VERIFIED",
+    "archive": "D:\\開発データ\\過去データ\\百代鏡\\2026-10-19_2D武将方式_凍結\\百代鏡_2D武将方式_資料素材コード一式.zip",
+    "sha256": "7eab1546de78f5b7b9e08eb13594b2a54be07c8379587a3d5834aac6f392d077",
+    "bytes": 94161927,
+    "source_files": 1838,
+    "git_head": "78ad479d347f655ee4e4ce002d237692a2d40278",
+    "bundle_verified": true,
+    "all_archived_files_sha256_verified": true,
+    "original_files_deleted": 0
+  },
+  "fixed_requirements": [
+    "One character definition, shared body/head geometry and material parameters across all views.",
+    "Skin color changes face/body/exposed hands/ears together; eyes/brows/mouth/hair/armor are protected.",
+    "Equipment visibility and colors addressed by semantic slot/material ID; Blender custom controllers not assumed to export to Godot.",
+    "Shared skeleton/bone names/rest pose/unit/pivots and mount points must be specified before new parts.",
+    "Source meshes/animations preserved. Game export excludes reference rigs, historical actions and unused armor variants.",
+    "New visual acceptance requires actual Godot render, clothing/color/animation changes, export/reimport verification and measured performance. No pass by metadata alone."
+  ],
+  "pending_acceptance": [
+    "Exact camera and in-game apparent size",
+    "Appearance/material conversion and color-space policy",
+    "Game mesh/material/drawcall/bone budgets and simultaneous actor count",
+    "Equipment skinning vs rigid mount rules",
+    "Animation clip set and in-place vs root-motion contract",
+    "3D appearance save schema and licensing/provenance inventory"
+  ],
+  "current_execution": "Read-only source inspection, video frame sampling, 2D archival and planning. No 3D model modification/export/import/Godot3D rendering performed."
+}

@@ -129,3 +129,7 @@ Scripts/Show-OfficerMovement.ps1 -text whitespace=blank-at-eol,blank-at-eof,spac
 Docs/Proposals/OFFICER_MOVEMENT_V13.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Proposals/officer-movement-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_officer_movement.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer3D/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_3D_TRANSITION.md -text
+Docs/Archive/Officer2D/** -text
+Art/Officer/ARCHIVED_2D.md -text

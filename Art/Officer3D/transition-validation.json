@@ -1,0 +1,34 @@
+{
+  "status": "ARCHIVE_AND_DIRECTION_SWITCH_VERIFIED_NOT_3D_RUNTIME_ACCEPTANCE",
+  "blender": "5.2.2 LTS",
+  "inspection_tools": [
+    {
+      "path": "Art/Officer3D/InspectionSources/inspect_3d_transition.py",
+      "sha256": "32ecbb145917302f344adc8aee3d270033ce4a0a09ca1dc08c21d4069f1c6d8c"
+    },
+    {
+      "path": "Art/Officer3D/InspectionSources/inspect_blend_more.py",
+      "sha256": "777166c4edba7decd33b6e99e1a7dfad1c25672ff22543ade57bf68a087ce8b9"
+    },
+    {
+      "path": "Art/Officer3D/InspectionSources/inspect_video_blender.py",
+      "sha256": "7316795ce5b4121e14d55d6e73fdfb362d7a5debad48752e155e6e159fc0a978"
+    }
+  ],
+  "source_open_policy": "background --disable-autoexec; no save operation on original blend",
+  "archive": "archive-verification.json",
+  "build": {
+    "status": "PASS",
+    "warnings": 0,
+    "errors": 0
+  },
+  "normal_headless_main": "PASS; foundation3characters1castle initialized; no2D tab by default",
+  "legacy_main_without_opt_in": "Rejected with nonzero exit as intended",
+  "not_executed": [
+    "GLB export/import",
+    "Godot3D render",
+    "3D color/equipment controls",
+    "3D performance measurement",
+    "Core unit regression"
+  ]
+}

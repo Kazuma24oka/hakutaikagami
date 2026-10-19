@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "MOVEMENT_V13_AUTHOR_INSPECTED_PROVISIONAL_ART",
+  "status": "ARCHIVED_2D_SUPERSEDED_BY_3D_2026_10_19",
   "front_acceptance": "USER_PERMITS_PROVISIONAL_CONTINUATION_APPEARANCE_ISSUE_REMAINS",
   "plans": {
     "body-front-v1": {
@@ -45465,7 +45465,7 @@
   "left_motion_plan": "left-motion-v12",
   "movement_plan": "movement-v13",
   "next_art_requirements": {
-    "status": "PENDING_BEFORE_NEW_EXCHANGE_PARTS",
+    "status": "ARCHIVED_2D_REQUIREMENTS_TRANSFER_SEMANTICS_TO_3D",
     "reference": "Docs/Proposals/OFFICER_PALETTE_AND_HEAD_FOLLOWUP.md",
     "user_feedback": [
       "Direction-dependent skin/equipment colors and left/right face contours differ. Current distance-view tolerance is not final acceptance.",
@@ -45479,5 +45479,17 @@
       "Regenerate deterministic sheets/packages after source changes and rerun scoped gates/all-direction runtime checks."
     ],
     "execution_this_turn": "Documentation only; no art/mask/rig/sheet modifications."
-  }
+  },
+  "archive": {
+    "status": "VERIFIED",
+    "archive": "D:\\開発データ\\過去データ\\百代鏡\\2026-10-19_2D武将方式_凍結\\百代鏡_2D武将方式_資料素材コード一式.zip",
+    "sha256": "7eab1546de78f5b7b9e08eb13594b2a54be07c8379587a3d5834aac6f392d077",
+    "bytes": 94161927,
+    "source_files": 1838,
+    "git_head": "78ad479d347f655ee4e4ce002d237692a2d40278",
+    "bundle_verified": true,
+    "all_archived_files_sha256_verified": true,
+    "original_files_deleted": 0
+  },
+  "current_direction_reference": "Art/Officer3D/production-status.json"
 }

@@ -71,11 +71,23 @@ public partial class Main : Control
         var protocolPanel = new ProtocolPanel { Name = "応答・代理・共通検証" };
         tabs.AddChild(protocolPanel);
         protocolPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
-        var officerMotionPanel = new OfficerMotionTrial { Name = "武将表示" };
-        tabs.AddChild(officerMotionPanel);
-        if (OS.GetCmdlineUserArgs().Contains("--officer-motion-smoke-test")) { tabs.CurrentTab = 3; _ = officerMotionPanel.SmokeTest(); }
-        else if (OS.GetCmdlineUserArgs().Contains("--officer-motion-review")) tabs.CurrentTab = 3;
-        else if (OS.GetCmdlineUserArgs().Contains("--shared-protocol-smoke-test")) { tabs.CurrentTab = 2; _ = protocolPanel.SmokeTest(); }
+        bool legacyOfficer2D = OS.GetCmdlineUserArgs().Contains("--legacy-officer-2d");
+        bool legacyOfficerTest = OS.GetCmdlineUserArgs().Contains("--officer-motion-smoke-test");
+        bool legacyOfficerReview = OS.GetCmdlineUserArgs().Contains("--officer-motion-review");
+        if ((legacyOfficerTest || legacyOfficerReview) && !legacyOfficer2D)
+        {
+            GD.PushError("2D officer production is archived. Explicit --legacy-officer-2d is required for historical recovery.");
+            GetTree().Quit(2);
+            return;
+        }
+        if (legacyOfficer2D)
+        {
+            var officerMotionPanel = new OfficerMotionTrial { Name = "旧2D武将（凍結）" };
+            tabs.AddChild(officerMotionPanel);
+            if (legacyOfficerTest) { tabs.CurrentTab = 3; _ = officerMotionPanel.SmokeTest(); }
+            else if (legacyOfficerReview) tabs.CurrentTab = 3;
+        }
+        if (OS.GetCmdlineUserArgs().Contains("--shared-protocol-smoke-test")) { tabs.CurrentTab = 2; _ = protocolPanel.SmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--deadline-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeadlineCancellationSmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--late-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.LateDuplicateSmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--delivery-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeliveryRecoverySmokeTest(); }
