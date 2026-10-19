@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "date": "2026-10-19",
+  "reason": "Basic design V1 resolved former proposal choices; historical specifics preserved, detailed work remains.",
+  "moves": [
+    {
+      "from": "Docs/Proposals/ACTION_TIME_SYSTEM_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/ACTION_TIME_SYSTEM_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "bdb48d94c9125cbd407a7ceedbae2e328c37d256a891250acebbe352c4a02be4",
+      "archived_sha256_normalized_lf": "0fd220997469f8868adf78408fa1c9e1ab42d0fb97468cf13db65bbb04f80e38",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "773c8531fd7e7cd00ede8027f5b0eb729da52d006121b72e64548569931b0702",
+      "archived_sha256_normalized_lf": "ca60a6daac41fdfcce865218f58a1a4d86c0d6f20a78067072bcb33ea0003a99",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/CHARACTER_PERSONALITY_RELATIONSHIPS_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/CHARACTER_PERSONALITY_RELATIONSHIPS_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "f53c6378aa2b0a21c5dcda0f1795d2d7bfb3cb5dd051e33a8056fe96da478b30",
+      "archived_sha256_normalized_lf": "832c1c374d1dfa53942b3b688523c5545b5e259584deebbed4203af06ebc9b40",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "1bb30700dc93ec9c6dc1f0eb6885adced5e255146d38a0f0b8c66fcf535a30da",
+      "archived_sha256_normalized_lf": "88042be215ee0a1b751105abfd3ef5341862923d0c4604a210b5188d88afe223",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/COURT_SHOGUNATE_SYSTEM_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/COURT_SHOGUNATE_SYSTEM_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "0b5e9e3b7f9e22565f9f26491cfb2c8d627e6ae193eec97e0ee94e87e5fe2f83",
+      "archived_sha256_normalized_lf": "6ddcae9ad9fbf241e57992385bb6d8d0d1cda20330035b1a151a53ecf93d4f7e",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/DIPLOMACY_SYSTEM_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/DIPLOMACY_SYSTEM_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "c030a64ade585d478570589fcaf44a1bd8bbca7733c6111c631be2a2954874d5",
+      "archived_sha256_normalized_lf": "5ad7c7a043cd34e8ca34d8c16bc970f42478799ba47b7f419025a7890bad11c1",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/DOMESTIC_ECONOMY_LOGISTICS_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/DOMESTIC_ECONOMY_LOGISTICS_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "300f5b21940b1db986d006e7a6d1bafd088fc62732371faede7a1dabfe282788",
+      "archived_sha256_normalized_lf": "8881050a0ca585ca330996a8d7b1d2b6b0ae558fe1269134408779a0e72b794a",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "14fa59d208a9358a1982e1635d18310de27c092f47cf2ac12e8b488d8a2adce0",
+      "archived_sha256_normalized_lf": "473dad00a7b754db59301dbfeeabf3ca7f867356d06f855d8eba41079c07cd62",
+      "changes": "Relative Markdown links rebased; historical design text retained. Extra trailing blank line removed."
+    },
+    {
+      "from": "Docs/Proposals/P0_FINAL_CROSS_REVIEW_AND_P1_READINESS.md",
+      "to": "Docs/Archive/BasicDesignV1/P0_FINAL_CROSS_REVIEW_AND_P1_READINESS.md",
+      "original_sha256_normalized_lf": "377fa2b3f4d1157491178d03121c5e0b8243c71b882ae833db5956809f1eac79",
+      "archived_sha256_normalized_lf": "7f445a0cca9798e9630a18017c587ab33b3f6adfdfefef9672449e7d3bba077a",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "ef906828540508ef56dc94236032987b4ad893bfa224972672fe202a5bf971fe",
+      "archived_sha256_normalized_lf": "ab522a3ff5494d664e38d14fa7e079326f9673955fe4aed3fcbd72dbbba0e216",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "5feacd1d1d9b9b59337b10eca9b1aa433f7feba0c13d31176b1dd822f5616e6d",
+      "archived_sha256_normalized_lf": "7f4bead69099881fd424fee8fb6580c2fbcf85fafe3003501386995abb29c5c7",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "9f6f1dcde601ac08faf133312894f8d881d012b67c2ee78a6e207f05ffde11f5",
+      "archived_sha256_normalized_lf": "d64a47efbdcae6173ddf61bcedaaa3fd2f7a7377f29857bd4e808d87eef9757a",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "fc192d772e1bf25866a51b71490dc7fc37ca4f57f94d58c76758eff8b3b9a1f4",
+      "archived_sha256_normalized_lf": "0157943717f7a8ecc2572ff57f25c3db748d7e6c08027737c67c1257f6f82ec7",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md",
+      "to": "Docs/Archive/BasicDesignV1/P1_PLAYER_ACTION_84_FINAL_REVIEW.md",
+      "original_sha256_normalized_lf": "8965a54854666d6ee8fcf3775b618525526a862f08161533d48b4622084c9ca7",
+      "archived_sha256_normalized_lf": "f52c3c83d571a0dedebcebc6f0308df13e01ea8ec708ab6754b8b87ddeca4d66",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P1_RESOURCE_14_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/P1_RESOURCE_14_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "b08d0c89fd49608ba9b7d99d3ead60439f0245594fa85991dd2abfa943eeacae",
+      "archived_sha256_normalized_lf": "db95c4c9c169cb7bc828e37795b515b0e32c56c24984c31be5a51afc3fd3c1f8",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/P1_RESOURCE_INSTITUTIONAL_ARBITRATION_OPTIONS.md",
+      "to": "Docs/Archive/BasicDesignV1/P1_RESOURCE_INSTITUTIONAL_ARBITRATION_OPTIONS.md",
+      "original_sha256_normalized_lf": "4f20085adda41109b0e4cbc52ab6179e4b492aea05e817e3e249c7be5a836a3e",
+      "archived_sha256_normalized_lf": "7d71e47ccaa21dc3346e44233a51ae06710028e0cb9240d47e7d9876ced8616c",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/WORLD_MAP_CASTLE_LAND_CONSOLIDATED.md",
+      "to": "Docs/Archive/BasicDesignV1/WORLD_MAP_CASTLE_LAND_CONSOLIDATED.md",
+      "original_sha256_normalized_lf": "3964268c066283c5ad46fc9b917d6b579755dc6bcdb0e77928eb8d71ab8db43b",
+      "archived_sha256_normalized_lf": "d4c6129a093ea9362d543ca0918c32d0f0015f91202844b3d85fd7a3f885fa23",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/Proposals/BASIC_DESIGN_BACKLOG.md",
+      "to": "Docs/Archive/BasicDesignV1/BASIC_DESIGN_BACKLOG.md",
+      "original_sha256_normalized_lf": "858403e3bdcdff32a035931cb5ec00f3faef86d8a700104917c47bd40489566c",
+      "archived_sha256_normalized_lf": "b18579678434dda9ca35448ec5d8e8a27f4c3dbbc46b65a6be4035128346d65c",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    },
+    {
+      "from": "Docs/README.md",
+      "to": "Docs/Archive/BasicDesignV1/DOCS_INDEX_BEFORE_ARCHIVE.md",
+      "original_sha256_normalized_lf": "2c0b57c0bb076d11cb4eac4bf7b52053e482c138b2ca763d14a1a24f0c3b515e",
+      "archived_sha256_normalized_lf": "5929e3eb919100e46271366d1750355f1eaad72d19f985376e5fa94fb2e0b1f3",
+      "changes": "Relative Markdown links rebased; historical design text retained."
+    }
+  ]
+}

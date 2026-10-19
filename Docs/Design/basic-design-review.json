@@ -218,5 +218,32 @@
   "validator_sha256": "83e74f4e89661dea30347127fffc0a148d58051d1642295a83f23b369cbf4dda",
   "markdown_sha256": "be1355652fe7d520a39d65725de9473b211c6162a4aa5410fae677a1e2f7c3e9",
   "acceptance_sha256": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
-  "provenance_sha256": "2ddc28929024b942d089310000c5e596d49ce3943d1d7a5f678525b062b59ae2"
+  "provenance_sha256": "210334b8926b11b0b95cdd359b66baac338787a75858900c725c44286efbd907",
+  "archive_followup": {
+    "date": "2026-10-19",
+    "moved": 19,
+    "checks": [
+      "Docs/Proposals/ACTION_TIME_SYSTEM_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/BATTLE_MILITARY_TACTICS_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/CHARACTER_PERSONALITY_RELATIONSHIPS_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/CHARACTER_SOCIAL_SYSTEM_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/COURT_SHOGUNATE_SYSTEM_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/DIPLOMACY_SYSTEM_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/DOMESTIC_ECONOMY_LOGISTICS_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/LOCAL_SOCIAL_SYSTEM_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P0_FINAL_CROSS_REVIEW_AND_P1_READINESS.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P0_FOUNDATION_NINE_ITEMS_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P0_SIMULTANEOUS_EVENTS_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P0_SUCCESSION_INDEPENDENCE_FALL_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P1_PLAYER_ACTION_84_FINAL_REVIEW.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P1_RESOURCE_14_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/P1_RESOURCE_INSTITUTIONAL_ARBITRATION_OPTIONS.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/WORLD_MAP_CASTLE_LAND_CONSOLIDATED.md: text and valid source links retained; original hash matched",
+      "Docs/Proposals/BASIC_DESIGN_BACKLOG.md: text and valid source links retained; original hash matched",
+      "Docs/README.md: text and valid source links retained; original hash matched"
+    ],
+    "provenance_inputs_verified": 34,
+    "html_unchanged": true
+  }
 }
