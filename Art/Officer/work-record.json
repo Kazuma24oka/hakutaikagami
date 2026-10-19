@@ -45463,5 +45463,21 @@
   "back_motion_status": "BACK_ONLY_NATIVE_AND_GODOT_VERIFIED",
   "left_view_plan": "left-parts-v11-authoring",
   "left_motion_plan": "left-motion-v12",
-  "movement_plan": "movement-v13"
+  "movement_plan": "movement-v13",
+  "next_art_requirements": {
+    "status": "PENDING_BEFORE_NEW_EXCHANGE_PARTS",
+    "reference": "Docs/Proposals/OFFICER_PALETTE_AND_HEAD_FOLLOWUP.md",
+    "user_feedback": [
+      "Direction-dependent skin/equipment colors and left/right face contours differ. Current distance-view tolerance is not final acceptance.",
+      "Reuse existing assets; avoid full recreation for palette/head corrections."
+    ],
+    "required": [
+      "Shared explicit material palettes and shade roles across all directions; exact values not yet selected.",
+      "Audit all visible skin including opaque face pixels and derived hands/ears/neck, not only bare bases.",
+      "Fixed head/profile correspondence and bounded local adjustment; hair/ear/collar contacts checked.",
+      "Recolor preserves alpha, position, ownership, rig and all pixels outside authorized material masks.",
+      "Regenerate deterministic sheets/packages after source changes and rerun scoped gates/all-direction runtime checks."
+    ],
+    "execution_this_turn": "Documentation only; no art/mask/rig/sheet modifications."
+  }
 }

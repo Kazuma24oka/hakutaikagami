@@ -43,3 +43,7 @@ Godot表示の現在の入口はMainの「武将表示」タブ（`--officer-mot
 左向きV11/V12は `Docs/Proposals/OFFICER_LEFT_VIEW_MOTION_V11_V12.md`。本人右が近側、左が遠側。新規左原画と既存横素体の反射登録を区別し、本人左腰の刀は全素体部位より後ろ。left_view_plan/left_motion_planと独立OfficerLeftMotionTrialを使う。顎の登録差・仮体型・遠側同寸補完を完成扱いにしない。Show/Validate-OfficerLeftMotion.ps1が入口。
 
 4方向移動V13は `Docs/Proposals/OFFICER_MOVEMENT_V13.md`。既存4シートは不変、movement_planと独立OfficerMovementTrialを使う。共通足元(32,92)、通常1倍、共通装備選択。移動速度25px/sは仮値、足の厳密固定・地形衝突・Core世界時刻は未接続。Show/Validate-OfficerMovement.ps1が入口。
+
+## 次の武将素材制作の前提（肌・装備色／顔輪郭）
+
+`Docs/Proposals/OFFICER_PALETTE_AND_HEAD_FOLLOWUP.md` とwork-recordのnext_art_requirementsを、交換パーツの追加前に確認・反映する。全方向共通の素材別色コードと実肌面の台帳、頭部輪郭の対応が未対応のまま量産へ進まない。現状の遠目での許容を最終承認にしない。素体だけの色替えで顔パーツ内の肌まで自動更新されると説明しない。旧原画・装備・選択ID・リグは再利用し、色／局所頭部の修正と体型全体の変更を分ける。今回は記録のみ、画像変更は未実施。
