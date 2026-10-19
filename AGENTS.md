@@ -1,5 +1,9 @@
 # 百代鏡：作業の入口
 
+## 共通契約の詳細設計V1（2026-10-19）
+
+ユーザーが推奨選定を委任し、Docs/Design/CommonContractV1/common-contract-v1.jsonのCC-01〜24を採用。HTML/Markdown/受入予定48件はScripts/build_common_contract.pyで生成。決定はDocs/Decisions/2026-10-19_COMMON_CONTRACT_V1.md。これは共通契約の設計採用で、新WorldSession・game-world-save/1等は未実装。旧試作Version1〜5と旧入口を保持し、製品秒への自動移行は現段階で非対応。旧Tickを秒へ読み替えない。ID・権限・所在・知識・効果台帳・隔離Load・世代保存の規則を各制度で共用する。実装前に照合元SHA、変更点、予定試験を確認し、24/24採用と全制度詳細完成を混同しない。
+
 ## 現行方針の優先（2026-10-19・ユーザー明示確認）
 
 ユーザーが「現行方針が正です」と確認。旧Confirmedやdesign/foundationと後続採用方針が食い違う範囲では、基本設計V1・PW01〜07・3D移行等の現行方針を適用する。旧原本の名称やConfirmed分類だけを理由に現行決定を差し戻さない。食い違いのない既存原則は引き続き維持。現行仕様の採用と実装・検証の完了は区別する。記録はDocs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md。

@@ -179,3 +179,7 @@ Docs/Design/** -text
 Scripts/build_basic_design.py -text
 Scripts/basic_design_template.html -text
 Scripts/validate_basic_design.cjs -text
+
+Scripts/build_common_contract.py -text
+Scripts/common_contract_template.html -text
+Scripts/validate_common_contract.cjs -text

@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 共通契約の詳細設計V1
+
+[共通データ・状態遷移・保存仕様HTML](Design/CommonContractV1/common-contract-v1.html)。推奨委任により24契約を採用。8状態軸・6 API境界・旧セーブ方針・実装順を記載。[採用記録](Decisions/2026-10-19_COMMON_CONTRACT_V1.md)。新仕様の実装は未着手、受入48件は未実行です。
+
 ## 完了と残作業
 
 基本設計V1の管理単位60件は解消済みです。詳細設計8群、史料・地理データ、制作・実装、性能達成、[予定受入170件](Design/basic-design-acceptance.json)の実行は別です。HTML等の検査179項目・既存Core317試験の成功を、新仕様全体の実装合格とは扱いません。

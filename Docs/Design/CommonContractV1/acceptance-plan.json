@@ -1,0 +1,342 @@
+{
+  "schema": 1,
+  "count": 48,
+  "cases": [
+    {
+      "id": "CC-01-normal",
+      "contract": "CC-01",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "米の所有移転と徴税実績が同じコミットで確定する。"
+    },
+    {
+      "id": "CC-01-failure",
+      "contract": "CC-01",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "検査失敗なら台帳・乱数・イベントを含め全部不変。"
+    },
+    {
+      "id": "CC-02-normal",
+      "contract": "CC-02",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "同じ要求ID・同じ本文の再提出で同じ受付結果を返す。"
+    },
+    {
+      "id": "CC-02-failure",
+      "contract": "CC-02",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "同じIDで量・期限・宛先・作成時刻が違えばID_PAYLOAD_CONFLICT、既存本文は不変。"
+    },
+    {
+      "id": "CC-03-normal",
+      "contract": "CC-03",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "城主交代後も、商人所有の倉庫の米と旧主家への債務は残る。"
+    },
+    {
+      "id": "CC-03-failure",
+      "contract": "CC-03",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "独立宣言だけで配下・城門・条約・土地を全部取得しない。"
+    },
+    {
+      "id": "CC-04-normal",
+      "contract": "CC-04",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "全国と近景から同じ橋ID・同じ経路進捗が得られる。"
+    },
+    {
+      "id": "CC-04-failure",
+      "contract": "CC-04",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "橋の描画を動かしてもCoreの所在・敵の知識は変化しない。"
+    },
+    {
+      "id": "CC-05-normal",
+      "contract": "CC-05",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "期限Tで受領すれば期限内、権限Until=TはTで失効する。"
+    },
+    {
+      "id": "CC-05-failure",
+      "contract": "CC-05",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "360倍でも途中の到達・取消・戦闘を飛ばさない。"
+    },
+    {
+      "id": "CC-06-normal",
+      "contract": "CC-06",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "受領代理は有効でも開封不可なら、本文知識は本人にも代理にも生じない。"
+    },
+    {
+      "id": "CC-06-failure",
+      "contract": "CC-06",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "未知の解任で履行できない場合、NPC向け理由に秘密の解任理由を漏らさない。"
+    },
+    {
+      "id": "CC-07-normal",
+      "contract": "CC-07",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "原本と再送が同時に届いても正式受領と業務効果は一回。"
+    },
+    {
+      "id": "CC-07-failure",
+      "contract": "CC-07",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "失敗返報が不達なら発送者の「配送失敗を知る」状態は進まない。"
+    },
+    {
+      "id": "CC-08-normal",
+      "contract": "CC-08",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "偽報を信じる本人と誤りを知る別人物の表示が異なる。"
+    },
+    {
+      "id": "CC-08-failure",
+      "contract": "CC-08",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "後継へ切替えても未開封密書の本文を閲覧できない。"
+    },
+    {
+      "id": "CC-09-normal",
+      "contract": "CC-09",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "同じ提出の通信再試行では計画も返書も増えない。"
+    },
+    {
+      "id": "CC-09-failure",
+      "contract": "CC-09",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "三部隊の一つに発送権限がなければ計画発送自体は未成立。既発送後の一部拒否とは区別。"
+    },
+    {
+      "id": "CC-10-normal",
+      "contract": "CC-10",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "行軍中に許可された書状処理はできるが、城内普請の現地監督はできない。"
+    },
+    {
+      "id": "CC-10-failure",
+      "contract": "CC-10",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "引継ぎ失敗で元担当と新担当が同じ進捗を二重計上しない。"
+    },
+    {
+      "id": "CC-11-normal",
+      "contract": "CC-11",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "徴収完了・返報紛失ならExecutionはCompleted、ReportはInTransitまたはLost、主君の評価は未確定。"
+    },
+    {
+      "id": "CC-11-failure",
+      "contract": "CC-11",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "期限超過で部分成果を消してNotStartedへ戻さない。"
+    },
+    {
+      "id": "CC-12-normal",
+      "contract": "CC-12",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "Tに期限内原本と有効な明示取消が認識され、同じ未着手効果へ競合すれば取消が抑止する。"
+    },
+    {
+      "id": "CC-12-failure",
+      "contract": "CC-12",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "T以前に完了した徴税はTの取消で返金されず、必要なら別補償案件へ。"
+    },
+    {
+      "id": "CC-13-normal",
+      "contract": "CC-13",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "同時刻のイベント登録順を逆にしても、競合裁定と最終状態が一致する。"
+    },
+    {
+      "id": "CC-13-failure",
+      "contract": "CC-13",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "満たせない依存が残ればSCHEDULER_INVARIANTでトランザクション全体を不成立にする。"
+    },
+    {
+      "id": "CC-14-normal",
+      "contract": "CC-14",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "100のうち40消費して中止なら60だけ引当解放、40は実績に残る。"
+    },
+    {
+      "id": "CC-14-failure",
+      "contract": "CC-14",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "落城で倉庫を占有しても第三者の米の所有者は勝手に変わらない。"
+    },
+    {
+      "id": "CC-15-normal",
+      "contract": "CC-15",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "効果確定後・返報生成前の復旧でも出金は一回、返報は同じIDで作成できる。"
+    },
+    {
+      "id": "CC-15-failure",
+      "contract": "CC-15",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "返金失敗後の再試行で、成功した他の返金を二重に払わない。"
+    },
+    {
+      "id": "CC-16-normal",
+      "contract": "CC-16",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "保存前後の次の抽選値と判定結果が一致する。"
+    },
+    {
+      "id": "CC-16-failure",
+      "contract": "CC-16",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "UIを何度開き直してもNPC判断の抽選回数が増えない。"
+    },
+    {
+      "id": "CC-17-normal",
+      "contract": "CC-17",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "同じ部隊を自軍・敵軍・古い報告だけの人物で別表示できる。"
+    },
+    {
+      "id": "CC-17-failure",
+      "contract": "CC-17",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "秘密の敵位置をクリックしても存在確認になる詳細エラーを返さない。"
+    },
+    {
+      "id": "CC-18-normal",
+      "contract": "CC-18",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "古い画面から新規操作を出すとSTATE_CHANGED、世界は不変。"
+    },
+    {
+      "id": "CC-18-failure",
+      "contract": "CC-18",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "不明な人物と未開示人物への不正照会は同じNOT_AVAILABLEの公開応答。"
+    },
+    {
+      "id": "CC-19-normal",
+      "contract": "CC-19",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "配送中・交戦中・部分実行中から、同じ経過と本人認識へ復旧する。"
+    },
+    {
+      "id": "CC-19-failure",
+      "contract": "CC-19",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "必要なAppliedや乱数が欠ける保存を既定値で補って開かない。"
+    },
+    {
+      "id": "CC-20-normal",
+      "contract": "CC-20",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "保存失敗後もcurrentかpreviousの正常世代を選んで開ける。"
+    },
+    {
+      "id": "CC-20-failure",
+      "contract": "CC-20",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "書込途中に落ちても部分JSONを正常保存として表示しない。"
+    },
+    {
+      "id": "CC-21-normal",
+      "contract": "CC-21",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "不正保存のLoad後も、開いていたセッションの時刻・残高・乱数が変わらない。"
+    },
+    {
+      "id": "CC-21-failure",
+      "contract": "CC-21",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "将来版・不足ルール・破損出典は拒否し、未知項目を捨てて部分復元しない。"
+    },
+    {
+      "id": "CC-22-normal",
+      "contract": "CC-22",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "旧保存は旧入口で継続でき、製品入口ではMIGRATION_REQUIREDを返す。"
+    },
+    {
+      "id": "CC-22-failure",
+      "contract": "CC-22",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "適用レシピがないのに「移行成功」としてTickをSecondsへコピーしない。"
+    },
+    {
+      "id": "CC-23-normal",
+      "contract": "CC-23",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "保存中に次の操作をしても、保存は一貫した一つのRevisionから作られる。"
+    },
+    {
+      "id": "CC-23-failure",
+      "contract": "CC-23",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "同じRevisionの競合書込みを二つとも公開しない。"
+    },
+    {
+      "id": "CC-24-normal",
+      "contract": "CC-24",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "normal",
+      "given_when_then": "二制度以上（徴税と閲覧、軍令を含む）で共通契約を使い分けの矛盾なく実行する。"
+    },
+    {
+      "id": "CC-24-failure",
+      "contract": "CC-24",
+      "status": "PLANNED_NOT_EXECUTED",
+      "kind": "failure",
+      "given_when_then": "一制度で動いただけで全制度完了・全国性能達成と表示しない。"
+    }
+  ]
+}
