@@ -133,3 +133,9 @@ Art/Officer3D/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-
 Docs/Proposals/OFFICER_3D_TRANSITION.md -text
 Docs/Archive/Officer2D/** -text
 Art/Officer/ARCHIVED_2D.md -text
+Scripts/*officer3d* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/Officer3D*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Shaders/Officer3D.gdshader -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/Officer3DReview.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-Officer3DTrial.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/Officer3D/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

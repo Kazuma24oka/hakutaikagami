@@ -1,0 +1,25 @@
+{
+  "binding": "4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac",
+  "source_sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9",
+  "failed_exporter_sha256": "d252f21839d1e24c65f596e727e7aac291dd1f85b0c0639bf984e4559aff6901",
+  "failure": "Localized default Principled BSDF node name after all four bakes. No GLB produced.",
+  "files": {
+    "albedo": {
+      "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\albedo.png",
+      "sha256": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191"
+    },
+    "metallic": {
+      "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\metallic.png",
+      "sha256": "d71eaf71ff03773f5b003e06ffcd69583e79083bd18e6449c7374319f29d7903"
+    },
+    "roughness": {
+      "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\roughness.png",
+      "sha256": "8fa61df7bb7c00fc65d9d3d8d776918664176ec94d30009188f7e4d6b878435b"
+    },
+    "normal": {
+      "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\normal.png",
+      "sha256": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892"
+    }
+  },
+  "reuse_rule": "Source fixed; re-run original deterministic UV/bake stage, compare complete albedo PNG SHA. Only exact match permits remaining cached passes."
+}

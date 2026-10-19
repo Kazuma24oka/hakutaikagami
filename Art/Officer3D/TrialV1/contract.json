@@ -1,0 +1,476 @@
+{
+  "schema": 1,
+  "id": "officer3d-v013-trial-v1",
+  "source_preservation": {
+    "save_blend": false,
+    "copy_on_disk": false
+  },
+  "portrait": "2D illustration",
+  "slots": {
+    "mask": {
+      "source_group": "面頬",
+      "objects": [
+        "面頬_顔沿いの頬_-1",
+        "面頬_頬の覆輪_-1",
+        "面頬_頬の打出し_-1_0",
+        "面頬_頬の打出し_-1_1",
+        "面頬_頬の打出し_-1_2",
+        "面頬_留め紐_-1",
+        "面頬_顔沿いの頬_1",
+        "面頬_頬の覆輪_1",
+        "面頬_頬の打出し_1_0",
+        "面頬_頬の打出し_1_1",
+        "面頬_頬の打出し_1_2",
+        "面頬_留め紐_1",
+        "面頬_顔沿いの鼻",
+        "面頬_口の上縁",
+        "面頬_顎受け",
+        "面頬_顎の覆輪",
+        "v010_面頬_口元から顎の立体面",
+        "v010_面頬_細い口の通気部"
+      ]
+    },
+    "weapon": {
+      "source_group": "weapon",
+      "objects": [
+        "刀_湾曲した刀身",
+        "刀_柄",
+        "刀_鍔",
+        "刀_柄頭"
+      ]
+    },
+    "underclothes": {
+      "source_group": "下衣・袴",
+      "objects": [
+        "胴01_着物の身頃",
+        "胴01_立ち襟の頭巾",
+        "腕01_L_袖から手首までの着物",
+        "腕01_L_関節の鎖補強_0.186",
+        "腕01_L_関節の鎖補強_0.371",
+        "腕01_L_袖の縫い寄せ_0",
+        "腕01_L_袖の縫い寄せ_1",
+        "腕01_L_袖の縫い寄せ_2",
+        "腕01_L_袖の縫い寄せ_3",
+        "腕01_L_袖の縫い寄せ_4",
+        "腕01_L_袖の縫い寄せ_5",
+        "腕01_L_手首の巻布",
+        "腕01_R_袖から手首までの着物",
+        "腕01_R_関節の鎖補強_0.186",
+        "腕01_R_関節の鎖補強_0.371",
+        "腕01_R_袖の縫い寄せ_0",
+        "腕01_R_袖の縫い寄せ_1",
+        "腕01_R_袖の縫い寄せ_2",
+        "腕01_R_袖の縫い寄せ_3",
+        "腕01_R_袖の縫い寄せ_4",
+        "腕01_R_袖の縫い寄せ_5",
+        "腕01_R_手首の巻布",
+        "脚01_L_立体ひだの袴と脚絆",
+        "脚01_L_膝下の括り紐_0",
+        "脚01_L_膝下の括り紐_1",
+        "脚01_L_膝下の括り紐_2",
+        "脚01_R_立体ひだの袴と脚絆",
+        "脚01_R_膝下の括り紐_0",
+        "脚01_R_膝下の括り紐_1",
+        "脚01_R_膝下の括り紐_2"
+      ]
+    },
+    "cloak": {
+      "source_group": "マント",
+      "objects": [
+        "マント01_肩から自然に落ちる黒赤の布",
+        "マント01_襟の赤い縁",
+        "マント_幅広の金レースと菱形透かし",
+        "マント_資料の赤裏付き立襟",
+        "マント_立襟の金レース"
+      ]
+    },
+    "helmet": {
+      "source_group": "兜",
+      "objects": [
+        "兜鉢_丸みのある銀南蛮鉢",
+        "兜_銀杏形の大きな稜",
+        "兜鉢_後頭の黒い蕨手帯_1",
+        "兜鉢_後頭の黒い蕨手帯_2",
+        "兜鉢_後頭の黒い蕨手帯_3",
+        "兜鉢_後頭の黒い蕨手帯_4",
+        "兜_波打つ眉庇",
+        "兜_吹返し_-1",
+        "兜_吹返し_1",
+        "錣_五段_1",
+        "錣_五段_2",
+        "錣_五段_3",
+        "錣_五段_4",
+        "錣_五段_5",
+        "前立_木瓜紋の黒い地板",
+        "前立_木瓜紋の外輪_0",
+        "前立_木瓜紋の花弁_0",
+        "前立_木瓜紋の外輪_1",
+        "前立_木瓜紋の花弁_1",
+        "前立_木瓜紋の外輪_2",
+        "前立_木瓜紋の花弁_2",
+        "前立_木瓜紋の外輪_3",
+        "前立_木瓜紋の花弁_3",
+        "前立_木瓜紋の外輪_4",
+        "前立_木瓜紋の花弁_4",
+        "前立_花芯",
+        "資料細部_兜_edge_J_Bip_C_Head",
+        "資料細部_兜_black_J_Bip_C_Head",
+        "資料細部_兜_gold_J_Bip_C_Head"
+      ]
+    },
+    "torso": {
+      "source_group": "胴",
+      "objects": [
+        "南蛮胴_絞った腰と切り込んだ袖刳",
+        "胸甲_黒い連続蕨手文_1",
+        "胸甲_黒い連続蕨手文_2",
+        "胸甲_黒い連続蕨手文_3",
+        "胸甲_黒い連続蕨手文_4",
+        "胸甲_黒い連続蕨手文_5",
+        "南蛮胴_背甲_巻縁",
+        "背甲_黒い連続蕨手文_1",
+        "背甲_黒い連続蕨手文_2",
+        "背甲_黒い連続蕨手文_3",
+        "背甲_黒い連続蕨手文_4",
+        "背甲_黒い連続蕨手文_5",
+        "背甲_黒い連続蕨手文_6",
+        "資料細部_胴_edge_J_Bip_C_Chest",
+        "資料細部_胴_black_J_Bip_C_Hips",
+        "v010_腰を締める布帯",
+        "v010_帯の組紐_0",
+        "v010_帯の組紐_1",
+        "v010_帯の組紐_2",
+        "v010_帯の結び_-1",
+        "v010_帯の結び_1"
+      ]
+    },
+    "neck_guard": {
+      "source_group": "喉輪",
+      "objects": [
+        "喉輪_重ね板_1",
+        "喉輪_重ね板_2",
+        "喉輪_重ね板_3",
+        "喉輪_重ね板_4",
+        "資料細部_喉輪_edge_J_Bip_C_UpperChest",
+        "資料細部_喉輪_black_J_Bip_C_UpperChest"
+      ]
+    },
+    "shoulders": {
+      "source_group": "袖（肩）",
+      "objects": [
+        "袖_L_六段の広い板_1",
+        "袖_L_六段の広い板_2",
+        "袖_L_六段の広い板_3",
+        "袖_L_六段の広い板_4",
+        "袖_L_六段の広い板_5",
+        "袖_L_六段の広い板_6",
+        "袖_R_六段の広い板_1",
+        "袖_R_六段の広い板_2",
+        "袖_R_六段の広い板_3",
+        "袖_R_六段の広い板_4",
+        "袖_R_六段の広い板_5",
+        "袖_R_六段の広い板_6",
+        "資料細部_袖（肩）_edge_Armor_Shoulder_L",
+        "資料細部_袖（肩）_black_Armor_Shoulder_L",
+        "資料細部_袖（肩）_edge_Armor_Shoulder_R",
+        "資料細部_袖（肩）_black_Armor_Shoulder_R"
+      ]
+    },
+    "arms": {
+      "source_group": "籠手・手甲",
+      "objects": [
+        "籠手_L_金銀流文の織地下地",
+        "籠手_L_蝶番付きの鉄板_0",
+        "籠手_L_黒い蕨手文_0_1",
+        "籠手_L_黒い蕨手文_0_2",
+        "籠手_L_黒い蕨手文_0_3",
+        "籠手_L_黒い蕨手文_0_4",
+        "籠手_L_蝶番付きの鉄板_1",
+        "籠手_L_黒い蕨手文_1_1",
+        "籠手_L_黒い蕨手文_1_2",
+        "籠手_L_黒い蕨手文_1_3",
+        "籠手_L_黒い蕨手文_1_4",
+        "手甲_L_丸い拳の打出し",
+        "籠手_R_金銀流文の織地下地",
+        "籠手_R_蝶番付きの鉄板_0",
+        "籠手_R_黒い蕨手文_0_1",
+        "籠手_R_黒い蕨手文_0_2",
+        "籠手_R_黒い蕨手文_0_3",
+        "籠手_R_黒い蕨手文_0_4",
+        "籠手_R_蝶番付きの鉄板_1",
+        "籠手_R_黒い蕨手文_1_1",
+        "籠手_R_黒い蕨手文_1_2",
+        "籠手_R_黒い蕨手文_1_3",
+        "籠手_R_黒い蕨手文_1_4",
+        "手甲_R_丸い拳の打出し",
+        "資料細部_籠手・手甲_chain_J_Bip_L_UpperArm",
+        "資料細部_籠手・手甲_edge_J_Bip_L_LowerArm",
+        "資料細部_籠手・手甲_chain_J_Bip_L_LowerArm",
+        "資料細部_籠手・手甲_chain_J_Bip_R_UpperArm",
+        "資料細部_籠手・手甲_edge_J_Bip_R_LowerArm",
+        "資料細部_籠手・手甲_chain_J_Bip_R_LowerArm"
+      ]
+    },
+    "feet": {
+      "source_group": "足甲・靴",
+      "objects": [
+        "v010_足に沿う足袋沓_L",
+        "v010_足袋の縫目_L",
+        "v010_足に沿う足袋沓_R",
+        "v010_足袋の縫目_R",
+        "v012_足甲_L_黒漆の低い甲覆い",
+        "v012_足甲_R_黒漆の低い甲覆い"
+      ]
+    },
+    "waist": {
+      "source_group": "草摺（腰）",
+      "objects": [
+        "v012_草摺_01_五段_01",
+        "v012_草摺_01_五段_02",
+        "v012_草摺_01_五段_03",
+        "v012_草摺_01_五段_04",
+        "v012_草摺_01_五段_05",
+        "v012_草摺_02_五段_01",
+        "v012_草摺_02_五段_02",
+        "v012_草摺_02_五段_03",
+        "v012_草摺_02_五段_04",
+        "v012_草摺_02_五段_05",
+        "v012_草摺_03_五段_01",
+        "v012_草摺_03_五段_02",
+        "v012_草摺_03_五段_03",
+        "v012_草摺_03_五段_04",
+        "v012_草摺_03_五段_05",
+        "v012_草摺_04_五段_01",
+        "v012_草摺_04_五段_02",
+        "v012_草摺_04_五段_03",
+        "v012_草摺_04_五段_04",
+        "v012_草摺_04_五段_05",
+        "v012_草摺_05_五段_01",
+        "v012_草摺_05_五段_02",
+        "v012_草摺_05_五段_03",
+        "v012_草摺_05_五段_04",
+        "v012_草摺_05_五段_05",
+        "v012_草摺_06_五段_01",
+        "v012_草摺_06_五段_02",
+        "v012_草摺_06_五段_03",
+        "v012_草摺_06_五段_04",
+        "v012_草摺_06_五段_05",
+        "v012_草摺_07_五段_01",
+        "v012_草摺_07_五段_02",
+        "v012_草摺_07_五段_03",
+        "v012_草摺_07_五段_04",
+        "v012_草摺_07_五段_05",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_00",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_00.001",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_01",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_01.001",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_02",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_02.001",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_03",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_03.001",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_04",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_04.001",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_05",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_05.001",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_06",
+        "v012_鎖と縁と組紐_草摺（腰）_Armor_Skirt_06.001"
+      ]
+    },
+    "thighs": {
+      "source_group": "佩楯（太腿）",
+      "objects": [
+        "v012_菱筏佩楯_L_独立した柄布の前垂れ",
+        "v012_菱筏佩楯_L_上部白小花縁",
+        "v012_菱筏_L_菱札_1_1",
+        "v012_菱筏_L_菱札_1_2",
+        "v012_菱筏_L_菱札_1_3",
+        "v012_菱筏_L_菱札_2_1",
+        "v012_菱筏_L_菱札_2_2",
+        "v012_菱筏_L_菱札_2_3",
+        "v012_菱筏_L_菱札_3_1",
+        "v012_菱筏_L_菱札_3_2",
+        "v012_菱筏_L_菱札_3_3",
+        "v012_菱筏_L_菱札_4_1",
+        "v012_菱筏_L_菱札_4_2",
+        "v012_菱筏_L_菱札_4_3",
+        "v012_菱筏_L_菱札_5_1",
+        "v012_菱筏_L_菱札_5_2",
+        "v012_菱筏_L_菱札_5_3",
+        "v012_菱筏_L_菱札_6_1",
+        "v012_菱筏_L_菱札_6_2",
+        "v012_菱筏_L_菱札_6_3",
+        "v012_菱筏佩楯_R_独立した柄布の前垂れ",
+        "v012_菱筏佩楯_R_上部白小花縁",
+        "v012_菱筏_R_菱札_1_1",
+        "v012_菱筏_R_菱札_1_2",
+        "v012_菱筏_R_菱札_1_3",
+        "v012_菱筏_R_菱札_2_1",
+        "v012_菱筏_R_菱札_2_2",
+        "v012_菱筏_R_菱札_2_3",
+        "v012_菱筏_R_菱札_3_1",
+        "v012_菱筏_R_菱札_3_2",
+        "v012_菱筏_R_菱札_3_3",
+        "v012_菱筏_R_菱札_4_1",
+        "v012_菱筏_R_菱札_4_2",
+        "v012_菱筏_R_菱札_4_3",
+        "v012_菱筏_R_菱札_5_1",
+        "v012_菱筏_R_菱札_5_2",
+        "v012_菱筏_R_菱札_5_3",
+        "v012_菱筏_R_菱札_6_1",
+        "v012_菱筏_R_菱札_6_2",
+        "v012_菱筏_R_菱札_6_3",
+        "v012_鎖と縁と組紐_佩楯（太腿）_J_Bip_L_UpperLeg",
+        "v012_鎖と縁と組紐_佩楯（太腿）_J_Bip_L_UpperLeg.001",
+        "v012_鎖と縁と組紐_佩楯（太腿）_J_Bip_R_UpperLeg",
+        "v012_鎖と縁と組紐_佩楯（太腿）_J_Bip_R_UpperLeg.001"
+      ]
+    },
+    "shins": {
+      "source_group": "脛当・膝当",
+      "objects": [
+        "v012_筒臑_L_縦三枚板_1",
+        "v012_筒臑_L_縦三枚板_2",
+        "v012_筒臑_L_縦三枚板_3",
+        "v012_大立挙_L_膝を包む独立した立上り",
+        "v012_大立挙_L_幅広の黒い飾金",
+        "v012_筒臑_R_縦三枚板_1",
+        "v012_筒臑_R_縦三枚板_2",
+        "v012_筒臑_R_縦三枚板_3",
+        "v012_大立挙_R_膝を包む独立した立上り",
+        "v012_大立挙_R_幅広の黒い飾金",
+        "v012_鎖と縁と組紐_脛当・膝当_J_Bip_L_LowerLeg",
+        "v012_鎖と縁と組紐_脛当・膝当_J_Bip_L_LowerLeg.001",
+        "v012_鎖と縁と組紐_脛当・膝当_J_Bip_R_LowerLeg",
+        "v012_鎖と縁と組紐_脛当・膝当_J_Bip_R_LowerLeg.001"
+      ]
+    }
+  },
+  "body_objects": [
+    "Face",
+    "Body"
+  ],
+  "skeleton": {
+    "source": "Armature",
+    "bone_count": 73,
+    "unit": "metres",
+    "blender_up": "Z",
+    "export_up": "Y",
+    "source_forward": "-Y",
+    "runtime_facing": "model +Z",
+    "rest_pose": "original bind pose; no independent per-part scaling",
+    "influence_limit": 4
+  },
+  "clips": {
+    "idle": {
+      "source": "10_剣構え_待機",
+      "range": [
+        1,
+        61
+      ],
+      "loop": true
+    },
+    "walk": {
+      "source": "10_剣装備_歩行ループ",
+      "range": [
+        1,
+        42
+      ],
+      "loop": true
+    },
+    "attack": {
+      "source": "10_刀攻撃_斬撃",
+      "range": [
+        1,
+        39
+      ],
+      "loop": false
+    }
+  },
+  "animation": {
+    "fps": 30,
+    "in_place": true,
+    "root_translation_policy": "Remove planar Root drift; leave local hips sway. Runtime world movement is separate; no combat damage events."
+  },
+  "skin": {
+    "materials": [
+      "N00_000_00_Body_00_SKIN (Instance)",
+      "N00_000_00_Face_00_SKIN (Instance)"
+    ],
+    "source_baseline_linear": [
+      0.9764706492424011,
+      0.9019608497619629,
+      0.847058892250061
+    ],
+    "default_linear": [
+      0.87,
+      0.73,
+      0.59
+    ],
+    "exclude_features": [
+      "eyes",
+      "brows",
+      "mouth",
+      "eyeline",
+      "highlight",
+      "equipment"
+    ],
+    "semantics": "base texture multiplied by shared linear skin / original baseline. UI hex is sRGB, converted explicitly."
+  },
+  "equipment_color": {
+    "mode": "multiply",
+    "default_linear": [
+      1,
+      1,
+      1
+    ],
+    "per_slot": true,
+    "global_multiplier": true,
+    "skin_affected": false
+  },
+  "bake": {
+    "atlas_size": 2048,
+    "samples": 1,
+    "passes": [
+      "albedo",
+      "metallic",
+      "roughness",
+      "normal"
+    ],
+    "UV": "GAMEUV; multi-object pack; bake before joining preserves source generated/object coordinates",
+    "device": "CPU",
+    "node_conversion": "source Principled input evaluation -> emission bake; normal bake tangent space",
+    "material_merge": "one baked atlas shared by 13 semantic slot materials"
+  },
+  "camera": {
+    "projection": "orthographic",
+    "initial_size": 9,
+    "min_size": 7,
+    "max_size": 14,
+    "pitch_degrees": 38,
+    "game_closeup": false
+  },
+  "LOD": {
+    "trial": "one measured baseline first; no claimed validated3LOD yet",
+    "selected_policy": "near/mid/far LOD after baseline acceptance"
+  },
+  "acceptance": {
+    "gate": [
+      "source and all tools fixed SHA",
+      "only13slots+complete source body+one rig",
+      "exactly3exported clips",
+      "source file unchanged"
+    ],
+    "semantic": [
+      "body+face share skin setting; all other materials unchanged",
+      "all13equipment toggles",
+      "full base-body topology retained and coverage explicit",
+      "same model topology and materials from all4view angles"
+    ],
+    "runtime": [
+      "actual GPU render, normal/slow clip playback, skin and equipment color tests using ID masks",
+      "restart appearance setting roundtrip",
+      "measured1/10/50 actor performance not declared production budget"
+    ],
+    "release": "local-only model/texture until embedded source terms clarified; code and metrics may be committed"
+  }
+}

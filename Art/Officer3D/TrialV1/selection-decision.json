@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-19",
+  "quote": "推奨でいい。すすめて",
+  "options": {
+    "1": "A",
+    "2": "A",
+    "3": "A",
+    "4": "A",
+    "5": "A",
+    "6": "A",
+    "7": "A",
+    "8": "A",
+    "9": "A",
+    "10": "A"
+  },
+  "implementation_scope": "First v013 game import, shared skin/equipment controls and three clips; no new officers or portrait art yet."
+}

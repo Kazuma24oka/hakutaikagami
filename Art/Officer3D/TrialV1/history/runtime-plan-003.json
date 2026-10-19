@@ -1,0 +1,58 @@
+{
+  "id": "officer3d-v1-runtime",
+  "stage": "runtime",
+  "allowed_stages": [
+    "runtime"
+  ],
+  "contract_sha256": "118584ecce39a8e42722b8a83c5fb2d2c711cc9fbb95e801f77c1e4d0bfc8e85",
+  "source": {
+    "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\甲冑_織田信長_v013_肌色と動作.blend",
+    "bytes": 24484889,
+    "sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9"
+  },
+  "inputs": [
+    {
+      "path": "Art/Officer3D/TrialV1/export-manifest.json",
+      "sha256": "ff9609cb9cb7cafbc0e6c08d8dfcc6deac2fa328995f44943c84376f3ad7211a"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/officer.glb",
+      "sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a"
+    },
+    {
+      "path": "Game/Data/Officer3D/face-protection.json",
+      "sha256": "34cfcecd9ce7036d50e1c7b16055a69ca3c5f86fb7d1aab483a8ace5cd3d0098"
+    }
+  ],
+  "tools": [
+    {
+      "path": "Scripts/officer3d_pipeline.py",
+      "sha256": "0036fa4ba0cb7d657300674a7cd3551b2937f6b8aace6a555f8909a5bcefa403"
+    },
+    {
+      "path": "Scripts/validate_officer3d_trial.py",
+      "sha256": "f85e7f78251cb2c394f8312e336836d3573525d9d248e794c1638389ba1b10ad"
+    },
+    {
+      "path": "Game/Scripts/Officer3DModel.cs",
+      "sha256": "2a1a608dd8344f014a7365e688988e09517bdf5000357dde23dd17122191d11d"
+    },
+    {
+      "path": "Game/Scripts/Officer3DReview.cs",
+      "sha256": "2ac95c0b67166e4a14637f89b9296f8bfaf691425df34878b510a0b040f65dbf"
+    },
+    {
+      "path": "Game/Shaders/Officer3D.gdshader",
+      "sha256": "fe347a927774781edccf632b33a0fbfa7826c4e18101655b639ea8328a5d9d92"
+    },
+    {
+      "path": "Game/Scenes/Officer3DReview.tscn",
+      "sha256": "c7fb9e84c1e176651b922925d6f43e7dc76e984e7e1a234e0d37718804dab355"
+    }
+  ],
+  "scope": "Actual GPU scene, skin/gear ID mask comparisons,13toggles, shared rig from4views, clip playback and appearance roundtrip; no native mouse input",
+  "required_after_runtime": [
+    "Inspect actual captured views, bare base coverage and armor geometry",
+    "Record errors/limits explicitly; production LOD and new face/hair presets remain unimplemented"
+  ]
+}

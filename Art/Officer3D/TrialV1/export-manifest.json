@@ -1,0 +1,1975 @@
+{
+  "schema": 1,
+  "binding": "19c58c103773a8f5804d609a37e9c391b62326ecf021c09922e76c9cd736eb4f",
+  "source_sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9",
+  "exporter_sha256": "4aeadcbffbc46d494580ab0d517ab4d44cba77beb99426b878752913edac6677",
+  "glb": {
+    "path": "res://Assets/Officer3D/TrialV1/officer.glb",
+    "sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a",
+    "bytes": 78482800
+  },
+  "slots": {
+    "mask": "slot_mask",
+    "weapon": "slot_weapon",
+    "underclothes": "slot_underclothes",
+    "cloak": "slot_cloak",
+    "helmet": "slot_helmet",
+    "torso": "slot_torso",
+    "neck_guard": "slot_neck_guard",
+    "shoulders": "slot_shoulders",
+    "arms": "slot_arms",
+    "feet": "slot_feet",
+    "waist": "slot_waist",
+    "thighs": "slot_thighs",
+    "shins": "slot_shins"
+  },
+  "body_coverage": {
+    "skin_exposed": [],
+    "skin_torso": [
+      "torso",
+      "underclothes"
+    ],
+    "skin_arms": [
+      "arms",
+      "underclothes"
+    ],
+    "skin_waist": [
+      "waist",
+      "underclothes"
+    ],
+    "skin_thighs": [
+      "thighs",
+      "underclothes"
+    ],
+    "skin_shins": [
+      "shins"
+    ],
+    "skin_feet": [
+      "feet"
+    ]
+  },
+  "body_original_faces": 10934,
+  "body_partition_faces": {
+    "arms": 1938,
+    "exposed": 3262,
+    "feet": 1608,
+    "shins": 1244,
+    "thighs": 832,
+    "torso": 1446,
+    "waist": 604
+  },
+  "materials": {
+    "feature_mouth_0": {
+      "role": "protected_feature",
+      "source_material": "N00_000_00_FaceMouth_00_FACE (Instance)",
+      "image": "_01"
+    },
+    "feature_eyes_1": {
+      "role": "protected_feature",
+      "source_material": "N00_000_00_EyeIris_00_EYE (Instance)",
+      "image": "_02"
+    },
+    "feature_eyes_2": {
+      "role": "protected_feature",
+      "source_material": "N00_000_00_EyeHighlight_00_EYE (Instance)",
+      "image": "_03"
+    },
+    "skin_face": {
+      "role": "skin_face",
+      "source_material": "N00_000_00_Face_00_SKIN (Instance)",
+      "image": "_04"
+    },
+    "feature_eyes_4": {
+      "role": "protected_feature",
+      "source_material": "N00_000_00_EyeWhite_00_EYE (Instance)",
+      "image": "_06"
+    },
+    "feature_brows_5": {
+      "role": "protected_feature",
+      "source_material": "N00_000_00_FaceBrow_00_FACE (Instance)",
+      "image": "_07"
+    },
+    "feature_eyeline_6": {
+      "role": "protected_feature",
+      "source_material": "N00_000_00_FaceEyeline_00_FACE (Instance)",
+      "image": "_09"
+    },
+    "skin_body": {
+      "role": "skin_body",
+      "source_material": "N00_000_00_Body_00_SKIN (Instance)",
+      "image": "_10"
+    }
+  },
+  "clips": {
+    "idle": {
+      "source": "10_剣構え_待機",
+      "frames": [
+        1,
+        61
+      ],
+      "seconds": 2.0,
+      "loop": true
+    },
+    "walk": {
+      "source": "10_剣装備_歩行ループ",
+      "frames": [
+        1,
+        42
+      ],
+      "seconds": 1.3666666666666667,
+      "loop": true
+    },
+    "attack": {
+      "source": "10_刀攻撃_斬撃",
+      "frames": [
+        1,
+        39
+      ],
+      "seconds": 1.2666666666666666,
+      "loop": false
+    }
+  },
+  "bone_count": 73,
+  "mesh_count": 21,
+  "per_object_modifier_proofs": {
+    "面頬_顔沿いの頬_-1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1233,
+      "faces": 1540,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "面頬_顔沿いの頬_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1233,
+      "faces": 1540,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "面頬_顔沿いの鼻": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 614,
+      "faces": 852,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "面頬_顎受け": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 586,
+      "faces": 800,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v010_面頬_口元から顎の立体面": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 330,
+      "faces": 328,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胴01_着物の身頃": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 910,
+      "faces": 908,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胴01_立ち襟の頭巾": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 392,
+      "faces": 390,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_L_袖から手首までの着物": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1372,
+      "faces": 1370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_L_関節の鎖補強_0.186": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 294,
+      "faces": 292,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_L_関節の鎖補強_0.371": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 294,
+      "faces": 292,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_L_手首の巻布": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 246,
+      "faces": 244,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_R_袖から手首までの着物": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1372,
+      "faces": 1370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_R_関節の鎖補強_0.186": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 294,
+      "faces": 292,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_R_関節の鎖補強_0.371": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 294,
+      "faces": 292,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "腕01_R_手首の巻布": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 246,
+      "faces": 244,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "脚01_L_立体ひだの袴と脚絆": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1690,
+      "faces": 1688,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "脚01_R_立体ひだの袴と脚絆": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1690,
+      "faces": 1688,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "マント01_肩から自然に落ちる黒赤の布": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 4810,
+      "faces": 4808,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "マント_資料の赤裏付き立襟": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 970,
+      "faces": 968,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜鉢_丸みのある銀南蛮鉢": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 16234,
+      "faces": 16232,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜_銀杏形の大きな稜": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 66,
+      "faces": 61,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜鉢_後頭の黒い蕨手帯_1": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY"
+      ],
+      "vertices": 16898,
+      "faces": 16896,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜鉢_後頭の黒い蕨手帯_2": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY"
+      ],
+      "vertices": 16898,
+      "faces": 16896,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜鉢_後頭の黒い蕨手帯_3": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY"
+      ],
+      "vertices": 16898,
+      "faces": 16896,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜鉢_後頭の黒い蕨手帯_4": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY"
+      ],
+      "vertices": 16898,
+      "faces": 16896,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜_波打つ眉庇": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 894,
+      "faces": 892,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜_吹返し_-1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 62,
+      "faces": 59,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "兜_吹返し_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 62,
+      "faces": 59,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "錣_五段_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1062,
+      "faces": 1060,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "錣_五段_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1062,
+      "faces": 1060,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "錣_五段_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1062,
+      "faces": 1060,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "錣_五段_4": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1062,
+      "faces": 1060,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "錣_五段_5": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1062,
+      "faces": 1060,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の黒い地板": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 164,
+      "faces": 242,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の外輪_0": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 332,
+      "faces": 330,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の花弁_0": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 324,
+      "faces": 370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の外輪_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 332,
+      "faces": 330,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の花弁_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 324,
+      "faces": 370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の外輪_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 332,
+      "faces": 330,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の花弁_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 324,
+      "faces": 370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の外輪_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 332,
+      "faces": 330,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の花弁_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 324,
+      "faces": 370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の外輪_4": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 332,
+      "faces": 330,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_木瓜紋の花弁_4": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 324,
+      "faces": 370,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "前立_花芯": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 68,
+      "faces": 98,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "南蛮胴_絞った腰と切り込んだ袖刳": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 15106,
+      "faces": 15104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胸甲_黒い連続蕨手文_1": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1490,
+      "faces": 2672,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胸甲_黒い連続蕨手文_2": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1490,
+      "faces": 2672,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胸甲_黒い連続蕨手文_3": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1490,
+      "faces": 2672,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胸甲_黒い連続蕨手文_4": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1490,
+      "faces": 2672,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "胸甲_黒い連続蕨手文_5": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1490,
+      "faces": 2672,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "南蛮胴_背甲_巻縁": {
+      "modifiers": [
+        "SUBSURF",
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 6682,
+      "faces": 6680,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "背甲_黒い連続蕨手文_1": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "背甲_黒い連続蕨手文_2": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "背甲_黒い連続蕨手文_3": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "背甲_黒い連続蕨手文_4": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "背甲_黒い連続蕨手文_5": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "背甲_黒い連続蕨手文_6": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "喉輪_重ね板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "喉輪_重ね板_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "喉輪_重ね板_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "喉輪_重ね板_4": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_L_六段の広い板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_L_六段の広い板_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_L_六段の広い板_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_L_六段の広い板_4": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_L_六段の広い板_5": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_L_六段の広い板_6": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_R_六段の広い板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_R_六段の広い板_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_R_六段の広い板_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_R_六段の広い板_4": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_R_六段の広い板_5": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "袖_R_六段の広い板_6": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 726,
+      "faces": 724,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_金銀流文の織地下地": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 686,
+      "faces": 684,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_蝶番付きの鉄板_0": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 738,
+      "faces": 736,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_0_1": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_0_2": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_0_3": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_0_4": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_蝶番付きの鉄板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 738,
+      "faces": 736,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_1_1": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_1_2": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_1_3": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_L_黒い蕨手文_1_4": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "手甲_L_丸い拳の打出し": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 492,
+      "faces": 490,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_金銀流文の織地下地": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 686,
+      "faces": 684,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_蝶番付きの鉄板_0": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 738,
+      "faces": 736,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_0_1": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_0_2": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_0_3": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_0_4": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_蝶番付きの鉄板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 738,
+      "faces": 736,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_1_1": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_1_2": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_1_3": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "籠手_R_黒い蕨手文_1_4": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 896,
+      "faces": 1560,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "手甲_R_丸い拳の打出し": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 492,
+      "faces": 490,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_足甲_L_黒漆の低い甲覆い": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 868,
+      "faces": 874,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_足甲_R_黒漆の低い甲覆い": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 868,
+      "faces": 874,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_01_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_01_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_01_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_01_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_01_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_02_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_02_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_02_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_02_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_02_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_03_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_03_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_03_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_03_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_03_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_04_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_04_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_04_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_04_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_04_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_05_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_05_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_05_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_05_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_05_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_06_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_06_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_06_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_06_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_06_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_07_五段_01": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_07_五段_02": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_07_五段_03": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_07_五段_04": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_草摺_07_五段_05": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 914,
+      "faces": 916,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏佩楯_L_独立した柄布の前垂れ": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1386,
+      "faces": 1384,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏佩楯_L_上部白小花縁": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 132,
+      "faces": 130,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_1_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_1_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_1_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_2_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_2_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_2_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_3_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_3_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_3_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_4_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_4_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_4_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_5_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_5_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_5_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_6_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_6_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_L_菱札_6_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏佩楯_R_独立した柄布の前垂れ": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 1386,
+      "faces": 1384,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏佩楯_R_上部白小花縁": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 132,
+      "faces": 130,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_1_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_1_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_1_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_2_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_2_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_2_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_3_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_3_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_3_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_4_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_4_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_4_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_5_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_5_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_5_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_6_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_6_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_菱筏_R_菱札_6_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 98,
+      "faces": 104,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_筒臑_L_縦三枚板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 650,
+      "faces": 652,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_筒臑_L_縦三枚板_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 650,
+      "faces": 652,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_筒臑_L_縦三枚板_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 650,
+      "faces": 652,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_大立挙_L_膝を包む独立した立上り": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1002,
+      "faces": 1004,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_大立挙_L_幅広の黒い飾金": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 260,
+      "faces": 132,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_筒臑_R_縦三枚板_1": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 650,
+      "faces": 652,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_筒臑_R_縦三枚板_2": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 650,
+      "faces": 652,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_筒臑_R_縦三枚板_3": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 650,
+      "faces": 652,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_大立挙_R_膝を包む独立した立上り": {
+      "modifiers": [
+        "SOLIDIFY",
+        "BEVEL"
+      ],
+      "vertices": 1002,
+      "faces": 1004,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    },
+    "v012_大立挙_R_幅広の黒い飾金": {
+      "modifiers": [
+        "SOLIDIFY"
+      ],
+      "vertices": 260,
+      "faces": 132,
+      "positions_uv_topology_weights_match": true,
+      "evaluation": "render-equivalent REST full stack snapshot, ARMATURE retained"
+    }
+  },
+  "triangle_count": 1013598,
+  "bake_textures": {
+    "albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "metallic.png": "d71eaf71ff03773f5b003e06ffcd69583e79083bd18e6449c7374319f29d7903",
+    "normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "roughness.png": "8fa61df7bb7c00fc65d9d3d8d776918664176ec94d30009188f7e4d6b878435b"
+  },
+  "elapsed_seconds": 12.66,
+  "status": "EXPORTED_RUNTIME_NOT_VALIDATED",
+  "source_file_unchanged": true,
+  "cache_reused_after_exact_albedo": true,
+  "cache_provenance": {
+    "binding": "4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac",
+    "source_sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9",
+    "failed_exporter_sha256": "d252f21839d1e24c65f596e727e7aac291dd1f85b0c0639bf984e4559aff6901",
+    "failure": "Localized default Principled BSDF node name after all four bakes. No GLB produced.",
+    "files": {
+      "albedo": {
+        "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\albedo.png",
+        "sha256": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191"
+      },
+      "metallic": {
+        "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\metallic.png",
+        "sha256": "d71eaf71ff03773f5b003e06ffcd69583e79083bd18e6449c7374319f29d7903"
+      },
+      "roughness": {
+        "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\roughness.png",
+        "sha256": "8fa61df7bb7c00fc65d9d3d8d776918664176ec94d30009188f7e4d6b878435b"
+      },
+      "normal": {
+        "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Assets\\Officer3D\\TrialV1\\failed-bake-cache\\4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac\\normal.png",
+        "sha256": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892"
+      }
+    },
+    "reuse_rule": "Source fixed; re-run original deterministic UV/bake stage, compare complete albedo PNG SHA. Only exact match permits remaining cached passes."
+  },
+  "license_distribution": "local-only pending owner/source terms clarification"
+}

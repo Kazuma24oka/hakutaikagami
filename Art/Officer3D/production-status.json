@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "direction": "3d-in-game",
-  "status": "PLANNING_SOURCE_INSPECTED_GODOT_IMPORT_NOT_YET_VALIDATED",
+  "status": "TRIAL_V1_LOCAL_GPU_VALIDATED_USER_REVIEW_PENDING",
   "user_decision_date": "2026-10-19",
   "sources": [
     {
@@ -35,14 +35,15 @@
     "New visual acceptance requires actual Godot render, clothing/color/animation changes, export/reimport verification and measured performance. No pass by metadata alone."
   ],
   "pending_acceptance": [
-    "Exact camera and in-game apparent size",
-    "Appearance/material conversion and color-space policy",
-    "Game mesh/material/drawcall/bone budgets and simultaneous actor count",
-    "Equipment skinning vs rigid mount rules",
-    "Animation clip set and in-place vs root-motion contract",
-    "3D appearance save schema and licensing/provenance inventory"
+    "User review of actual3D appearance/camera",
+    "Production near/mid/far LOD and target actor budget",
+    "New face/hair/beard and replacement armor assets",
+    "Quantitative foot sliding/world movement coupling to Core",
+    "Corresponding2D illustrated portrait assets",
+    "Source rights/provenance clarification before public asset distribution",
+    "Independent cloth/lacquer/metal color masks; current trial tint is per equipment slot"
   ],
-  "current_execution": "Read-only source inspection, video frame sampling, 2D archival and planning. No 3D model modification/export/import/Godot3D rendering performed.",
+  "current_execution": "GLB exported and reimported; one73-bone rig/21meshes/13slots/3clips; actual GPU90captures, skin/paint/equipment isolation, playback and separate-process appearance restore passed. New presets, authored LOD and portraits pending.",
   "portrait_policy": {
     "status": "USER_SELECTED",
     "medium": "2D illustration",
@@ -50,10 +51,31 @@
     "closeup_3d_as_portrait": false,
     "unselected": [
       "illustration style/proportions",
-      "modular illustration vs whole portrait",
-      "shared appearance ID asset coverage"
-    ]
+      "actual corresponding illustration assets"
+    ],
+    "assembly": "shared face/hair/equipment IDs with illustrated parts"
   },
   "options_reference": "Docs/Proposals/OFFICER_3D_OPTIONS.md",
-  "options_status": "RECOMMENDATIONS_ONLY_NOT_YET_SELECTED"
+  "options_status": "USER_SELECTED_ALL_A",
+  "selected_options": {
+    "1": "A",
+    "2": "A",
+    "3": "A",
+    "4": "A",
+    "5": "A",
+    "6": "A",
+    "7": "A",
+    "8": "A",
+    "9": "A",
+    "10": "A"
+  },
+  "selection_quote": "推奨でいい。すすめて",
+  "trial_v1": {
+    "contract": "Art/Officer3D/TrialV1/contract.json",
+    "runtime_report": "Art/Officer3D/TrialV1/runtime-report.json",
+    "visual_review": "Art/Officer3D/TrialV1/visual-review.json",
+    "runtime_binding": "02526c8a51a609bdfdc24845884bd83d28f244f2c7099f4212ffd2796a2173ce",
+    "local_review": "Art/Officer3D/TrialV1/runtime-local/review.html",
+    "next": "Authored LOD and performance reduction; baseline50actors~10fps"
+  }
 }
