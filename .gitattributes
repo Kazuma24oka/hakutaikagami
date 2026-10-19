@@ -196,3 +196,15 @@ Scripts/verify_common_implementation.cjs -text
 Scripts/verify_common_contract_gpu.py -text
 
 Scripts/verify_common_contract_inputs.py -text
+
+Core/Contracts/RouteContract.cs -text
+Tests/RouteContractTests.cs -text
+Game/Scripts/RouteWorldTrial.cs -text
+Game/Scenes/RouteWorldTrial.tscn -text
+Scripts/verify_route_world.py -text
+Scripts/check_route_binding.py -text
+Scripts/Show-RouteWorld.ps1 -text
+
+Scripts/build_route_report.py -text
+Scripts/verify_route_report.cjs -text
+Docs/Design/RouteWorldV1/** -text

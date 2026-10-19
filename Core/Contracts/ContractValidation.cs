@@ -25,7 +25,8 @@ public static class ContractValidation
         Check(s.ElapsedSeconds >= 0 && s.CommitSequence >= 0 && DateOnly.TryParseExact(s.EpochDate, "yyyy-MM-dd", CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), "Invalid world clock.");
         var defs = s.Definitions;
-        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && defs.Ruleset == "common-core-fixture-v1" && defs.MaxAttempts == 3,
+        if(RouteContract.Enabled(s))RouteContract.Validate(s);
+        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset) && defs.MaxAttempts == 3,
             "Unsupported definition/ruleset; no silent production mapping.");
         var people = Keys(defs.Characters, c => c.Id, "character definitions");
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");

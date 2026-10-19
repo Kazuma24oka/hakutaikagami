@@ -41,6 +41,7 @@ public sealed class WorldSession
             try
             {
                 ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
+                if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
                 checked { _ = state.ElapsedSeconds + intent.DeliverySeconds + intent.WorkSeconds + intent.ReportSeconds;
                     _ = intent.EffectiveAt + intent.WorkSeconds + intent.ReportSeconds;
                     _ = intent.Deadline.AbsoluteLatestAt + intent.WorkSeconds + intent.ReportSeconds; }
@@ -248,7 +249,8 @@ public sealed class WorldSession
             s.Actions=s.Actions.Select(x=>x.Id==a.Id?x with{Progress=progress}:x).ToArray();
             var t=s.Tasks.Single(t=>t.Id==a.Task);
             if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==a.Actor&&l.Kind==LocationKind.Traveling?
-                l with{ProgressMm=checked(progress*1000),Revision=s.CommitSequence}:l).ToArray();
+                l with{ProgressMm=RouteContract.Enabled(s)?RouteContract.DistanceAt(progress):checked(progress*1000),
+                    SegmentIndex=RouteContract.Enabled(s)?RouteContract.Segment(RouteContract.DistanceAt(progress)):l.SegmentIndex,Revision=s.CommitSequence}:l).ToArray();
         }
     }
     private static void Schedule(ContractWorld s,TaskState t,EventKind kind,long at)
@@ -274,7 +276,7 @@ public sealed class WorldSession
         }
         var until=checked(s.ElapsedSeconds+i.WorkSeconds);
         s.Actions=[..s.Actions,new(Child("action",t.Id,"main"),t.Id,t.Executor,"main",ExecutionPhase.Running,s.ElapsedSeconds,until,0)];
-        if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.Traveling,null,Child("route",t.Id,"fixture"),0,0,null,null,null,"fixture-local-v1",s.CommitSequence):l).ToArray();
+        if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.Traveling,null,Child("route",t.Id,RouteContract.Enabled(s)?"corridor":"fixture"),0,0,null,null,null,RouteContract.Enabled(s)?RouteContract.Version:"fixture-local-v1",s.CommitSequence):l).ToArray();
         Replace(s,t with{Execution=ExecutionPhase.Running,StartedAt=s.ElapsedSeconds,Revision=s.CommitSequence});Schedule(s,t,EventKind.Finish,until);
     }
     private static void Finish(ContractWorld s,TaskState t)
@@ -320,7 +322,7 @@ public sealed class WorldSession
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.
         var text=reason=="completed"?"任務完了":reason=="too-late"?"既に完了済み":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
-        s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,i.ReportSeconds,false)];
+        s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
         var current=s.Tasks.Single(t=>t.Id==task.Id);Replace(s,current with{Report=ReportingPhase.Queued});
     }
     private static void FlushOutbox(ContractWorld s)
@@ -335,6 +337,17 @@ public sealed class WorldSession
     private static void Expire(ContractWorld s)
     {
         foreach(var t in s.Tasks.Where(t=>!Terminal(t)).ToArray())if(s.ElapsedSeconds>ExpiryLimit(s,t))Stop(s,t,"expired",AgreementPhase.Expired);
+    }
+    public RouteActorView GetRouteActorView(EntityId actor)
+    {
+        lock(gate)
+        {
+            if(!RouteContract.Enabled(state))throw new InvalidOperationException("Route view requires its registered ruleset");
+            var view=GetActorView(actor);var offset=RouteContract.Offset(view.Location);
+            var action=state.Actions.SingleOrDefault(a=>a.Actor==actor&&a.Phase==ExecutionPhase.Running);
+            bool walking=action!=null&&state.Tasks.Single(t=>t.Id==action.Task).Action==ActionKind.Move;
+            return new(view,RouteContract.Point(offset),offset,walking,walking?action!.Until:null);
+        }
     }
     public ActorView GetActorView(EntityId actor)
     {

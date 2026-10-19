@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 新Coreと3D経路の接続（2026-10-20、後続）
+
+**[今回の短いHTML報告](Design/RouteWorldV1/report.html)**。架空の120m経路と区間別所要時間を固定し、新Coreの移動・委任・返報を既存3Dで表示。全Core428件、Godot15検査、GPU20枚、同一／別プロセス復旧の3D画素差分0を確認。入口 `Scripts/Show-RouteWorld.ps1`。[契約と限界](Decisions/2026-10-20_ROUTE_WORLD_V1.md)。全国実地理・分岐経路・通常Mainの移行は未実施。下記の412件報告は前段の履歴です。
+
 ## 共通Coreの実装結果（2026-10-20）
 
 **[短いHTML報告](Design/CommonContractV1/implementation-report.html)**。G1の4項目完了後、共通の秒時計・命令・保存を実装し、架空地域で3任務の一巡と独立Godot画面まで検証。Core412件（既存317＋新95）成功、別プロセス復旧・途中終了・GPU4枚を確認。通常3D Mainと旧保存は維持。全制度・全国・全48受入の完了ではありません。[実装記録](Decisions/2026-10-20_COMMON_CORE_IMPLEMENTATION.md)。

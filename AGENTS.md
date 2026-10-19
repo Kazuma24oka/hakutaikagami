@@ -1,5 +1,13 @@
 # 百代鏡：作業の入口
 
+## 新Coreと3D経路の接続（2026-10-20、後続）
+
+入口Scripts/Show-RouteWorld.ps1、Docs/Design/RouteWorldV1/report.html、Docs/Decisions/2026-10-20_ROUTE_WORLD_V1.md。RouteContractがmm・整数秒・区間別速度を固定し、依存ハッシュをDefinitionPack.Versionに保存する。新ルールcommon-route-fixture-v1を旧4秒移動と混同しない。新Core→本人用RouteActorView→既存3D骨格へ接続。通常Main・旧保存は保持。
+
+架空の平道40m＋峠道80m、徒歩100秒／使者50秒、委任4秒は検証係数。分岐探索・全国実地理・移動中宛先への追跡配送・通常Main移行は未実施。移動中受令者への新規入力は拒否。主君に配下のライブ位置を出さず、返報まで結果未確認とする。保存の小数秒表示位相と復旧時停止を維持。Core428件、Godot12＋別プロセス3検査、GPU20枚、復旧3比較で3D領域差分0画素。画像はローカル限定。
+
+入力・依存変更時はScripts/verify_route_world.pyを再実行し、実画像確認とverification.jsonのレビューを更新する。Scripts/check_route_binding.pyはコード・実行DLL・元アセット・画像の変更で失効する。旧CommonContractV1の412件報告は当時の履歴で、旧入口の入力ゲートを新コードへ無断適合させない。次は分岐・既知通行条件・迂回を同じ経路契約へ追加する。
+
 ## 共通Coreの実装（2026-10-20）
 
 G1の4項目を実装。Core/ContractsのWorldSessionはGameSecondsV1の独立検証系、旧TaxSimulationと通常Mainは保持。CC-01〜24のうち共通の検証用部分を接続し、全制度完成とは扱わない。Docs/Decisions/2026-10-20_COMMON_CORE_IMPLEMENTATION.mdとDocs/Design/CommonContractV1/implementation-report.htmlを参照。全Core412件（新95）、別プロセス/途中終了、独立Godot画面9検査・GPU4枚を確認。新形式はcommon-core-fixture-v1だけに対応。実地理・製品係数・全48受入・補償実行・本格NPC・通常3D接続は未完了。
