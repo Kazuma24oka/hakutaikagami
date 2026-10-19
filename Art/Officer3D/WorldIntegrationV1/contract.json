@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "scope": "officer identity/appearance binding, normal save, common world clock, two-unit field fixture",
+  "accepted_visual_baseline": "TrialV3 at 62c3875cbf3c459a7a0bcf18ee249725f8113a0c; user: とりあえずこれでいこうか",
+  "appearance_schema": 3,
+  "integration_schema": 1,
+  "storage": "optional Officers extension to tax-prototype-v5.json; null legacy saves receive deterministic defaults when opened by normal Main",
+  "rules": {
+    "id": "field-fixture-v1",
+    "status": "test-only, not Confirmed military rules",
+    "units": "two tactical fixture sides, existing character-001/002; no political organization or allegiance changes",
+    "authority": "explicit actor/unit/jurisdiction/basis/[from,until) grant checked at dispatch and receipt",
+    "orders": "explicit per-unit Engage/Withdraw; positive delay; arrival before effect; same due-time contradictory actions rejected",
+    "time": "one battle step per common integer world tick; no separate battle clock",
+    "same_tick": "field order arrival, movement/contact or simultaneous damage from pre-damage values; existing tax event processing retains its own causal order",
+    "step_distance_mm": 1000,
+    "contact_distance_mm": 1600,
+    "initial_soldiers_red_blue": [
+      100,
+      60
+    ],
+    "initial_morale_red_blue": [
+      100,
+      55
+    ],
+    "damage_received_red_blue": [
+      8,
+      12
+    ],
+    "morale_loss_red_blue": [
+      8,
+      15
+    ],
+    "routing_threshold": 20,
+    "retreat_step_mm": 1500,
+    "exit_abs_x_mm": 10000,
+    "casualties": "soldier ledger only; does not imply commander death, capture, political defection or destruction",
+    "exit": "retain unit/survivors in saved state; hide field model only after boundary reached",
+    "npc": "both sides willingness is explicit fixture input; no omniscient NPC policy implemented",
+    "receipt": "arrival, authority, scripted fixture willingness, effective action are separate; record Accepted/Unauthorized/Refused/AlreadyStopped"
+  },
+  "presentation": {
+    "tick_seconds_at_1x": 1.5,
+    "speeds": [
+      1,
+      2,
+      4
+    ],
+    "pause": "freeze common tick and fractional display phase, all motion and animation",
+    "movement": "interpolate previous committed position to current position; no predicted damage",
+    "walk": "cumulative distance / measured source rig stride; same across outfits",
+    "save": "snapshot display fraction and speed together with world/appearance/battle; explicit restore",
+    "lod": "mid in field fixture, retain TrialV3 far quality limitation rather than using it close"
+  },
+  "not_implemented": [
+    "national military AI",
+    "production command delivery failures for military orders",
+    "terrain/pathfinding",
+    "supply and fatigue",
+    "battle recognition reports/fog of war",
+    "commander casualties",
+    "sieges",
+    "new political officer creation",
+    "negotiation demo",
+    "corresponding illustrated portraits"
+  ]
+}

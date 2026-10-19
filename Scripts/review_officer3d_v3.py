@@ -26,6 +26,8 @@ for clip,duration in [('walk',117),('attack',108)]:
  name='motion-'+clip+'.gif';frames[0].save(local/name,save_all=True,append_images=frames[1:],duration=duration,loop=0);derived.append(name)
 sections=''.join(f'<section><h2>{html.escape(n)}</h2><a href="{n}"><img loading="lazy" src="{n}"></a></section>' for n in ['creator-ui.png','motion-walk.gif','motion-attack.gif']+derived[:8]+['mixed-near-50.png'])
 page='''<!doctype html><meta charset="utf-8"><title>百代鏡 第3試作</title><style>body{background:#172027;color:#ede8dc;font:18px sans-serif;max-width:1400px;margin:24px auto}img{max-width:100%;height:auto}section{margin:40px 0}a{color:#dbc392}</style><h1>武将作成・別甲冑 第3試作</h1><p>実Godotの原本283枚から作成。赤漆の具足は資料に着想を得た簡略試作で、史実品の精密復元ではありません。画像を選ぶと原寸を表示します。</p><p>待機・歩行・攻撃、着脱、色変更、保存復旧、1/10/50体を検査。50体は約42〜44fps、60fps未達。見た目の最終採用は未承認です。</p>'''+sections+'<h2>原本一覧</h2>'+''.join(f'<a href="{html.escape(n)}">{html.escape(n)}</a><br>' for n in names)
+fps=[p['fps'] for key,p in report['performance'].items() if key.endswith('-50')]
+page=page.replace('約42〜44fps',f'約{min(fps):.0f}〜{max(fps):.0f}fps')
 (local/'review.html').write_text(page,encoding='utf-8');derived.append('review.html')
 (local/'derived-evidence.json').write_text(json.dumps({n:gate.sha(local/n) for n in derived},indent=2)+'\n',encoding='utf-8')
 print('V3_REVIEW_DERIVED',len(derived))

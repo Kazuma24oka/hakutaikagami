@@ -24,7 +24,7 @@ def audit(path):
 
 def dependencies(root):
  names=['Art/Officer3D/TrialV3/contract.json','Art/Officer3D/TrialV3/export-manifest.json','Scripts/officer3d_v3_pipeline.py','Scripts/validate_officer3d_v3.py','Game/Scripts/Officer3DCustomActor.cs','Game/Scripts/Officer3DCreator.cs','Game/Scripts/Officer3DV3Validation.cs','Game/Scripts/Officer3DV3Gate.cs','Game/Scripts/Officer3DModel.cs','Game/Shaders/Officer3D.gdshader','Game/Shaders/Officer3DV3.gdshader','Game/Scenes/Officer3DCreator.tscn','Game/Data/Officer3D/face-protection.json','Core/Common/SessionInfrastructure.cs','Game/Assets/Officer3D/TrialV1/normal.png','Game/Assets/Officer3D/TrialV1/orm.png','Game/Assets/Officer3D/TrialV2/materials.png']
- return names+[f'Game/Assets/Officer3D/TrialV3/{n}.glb' for n in ['near','mid','far']]
+ return names+[str(p.relative_to(root)) for p in sorted((root/'Core').rglob('*.cs')) if not any(x in p.parts for x in ['obj','bin']) and str(p.relative_to(root)) not in names]+[f'Game/Assets/Officer3D/TrialV3/{n}.glb' for n in ['near','mid','far']]
 
 def main():
  root=Path(sys.argv[1]);e=root/'Art/Officer3D/TrialV3';export=gate.read(e/'export-manifest.json');assert gate.require(root,'export')==export['binding']
@@ -40,6 +40,7 @@ def main():
  run([godot,'--headless','--path',root/'Game','--editor','--import'],root)
  assert 'V3_TEST_COMPLETE' in run([godot,'--path',root/'Game','--rendering-method','gl_compatibility','res://Scenes/Officer3DCreator.tscn','--','--v3-test'],root)
  assert 'V3_RESTORE_COMPLETE' in run([godot,'--path',root/'Game','--rendering-method','gl_compatibility','res://Scenes/Officer3DCreator.tscn','--','--v3-restore'],root)
+ assert gate.require(root,'runtime')==binding,'Inputs changed during validation'
  local=e/'runtime-local';report=gate.read(local/'results.json');names=report.pop('raw_capture_names')+['restart'];assert len(names)==len(set(names)) and len(names)>250
  report.update({'runtime_binding':binding,'runtime_plan_sha256':gate.sha(e/'runtime-plan.json'),'export_binding':export['binding'],'geometry_audit':geometry,'restart_restore':'passed','evidence_sha256':{n+'.png':gate.sha(local/(n+'.png')) for n in names}})
  (e/'runtime-report.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print('V3_VALIDATED',binding,len(names))

@@ -60,7 +60,8 @@ public partial class Main : Control
         GD.Print("FOUNDATION_READY characters=3 castles=1 seed=" + world.Definition.Seed);
         var taxPanel = new TaxPanel { Name = "徴税・保存検証" };
         tabs.AddChild(taxPanel);
-        taxPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
+        bool officerWorldTest=OS.GetCmdlineUserArgs().Any(a=>a=="--officer-world-test"||a=="--officer-world-restore");
+        taxPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"),officerWorldTest?ProjectSettings.GlobalizePath("user://officer-world-test.json"):null);
         taxPanel.WorldChanged += updated =>
         {
             world = updated;
@@ -71,11 +72,17 @@ public partial class Main : Control
         var protocolPanel = new ProtocolPanel { Name = "応答・代理・共通検証" };
         tabs.AddChild(protocolPanel);
         protocolPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
-        if (System.IO.File.Exists(ProjectSettings.GlobalizePath("res://Assets/Officer3D/TrialV2/near.glb")))
+        if (System.IO.File.Exists(ProjectSettings.GlobalizePath("res://Assets/Officer3D/TrialV3/near.glb")))
         {
-            try {Officer3DV2Gate.Require(true);var stage=new Officer3DStage{Name="3D武将・配送"};tabs.AddChild(stage);stage.Initialize(taxPanel);}
-            catch(Exception e){var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
+            try
+            {
+                var stage=new OfficerWorldStage{Name="3D武将・合戦検証"};tabs.AddChild(stage);stage.Initialize(taxPanel);
+                if(officerWorldTest){tabs.CurrentTab=tabs.GetTabCount()-1;_ = OfficerWorldValidation.Run(stage,OS.GetCmdlineUserArgs().Contains("--officer-world-restore"));}
+                else if(OS.GetCmdlineUserArgs().Contains("--officer-world-show"))tabs.CurrentTab=tabs.GetTabCount()-1;
+            }
+            catch(Exception e){GD.PushWarning(e.Message);if(officerWorldTest){GetTree().Quit(2);return;}var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
         }
+        else if(officerWorldTest){GD.PushError("Local 3D assets unavailable");GetTree().Quit(2);return;}
 
         bool legacyOfficer2D = OS.GetCmdlineUserArgs().Contains("--legacy-officer-2d");
         bool legacyOfficerTest = OS.GetCmdlineUserArgs().Contains("--officer-motion-smoke-test");

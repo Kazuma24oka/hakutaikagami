@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "direction": "3d-in-game",
-  "status": "TRIAL_V3_LOCAL_GPU_VALIDATED_USER_REVIEW_PENDING",
+  "status": "WORLD_INTEGRATION_V1_GPU_VALIDATED_USER_REVIEW_PENDING",
   "user_decision_date": "2026-10-19",
   "sources": [
     {
@@ -35,16 +35,16 @@
     "New visual acceptance requires actual Godot render, clothing/color/animation changes, export/reimport verification and measured performance. No pass by metadata alone."
   ],
   "pending_acceptance": [
-    "User review of V3 art",
-    "Production hair/beard/armor finish and silver far LOD quality",
-    "50 actors at60fps; reduce draw/material/rig update costs",
-    "Connect cosmetic roster to Core officer IDs and normal save",
-    "All armor combinations and all-time collision inspection",
-    "Quantitative foot sliding/world movement coupling to Core",
-    "Corresponding2D illustrated portrait assets",
-    "Source rights/provenance clarification before public asset distribution"
+    "User review of world integration fixture",
+    "Production military rules / authorities / NPC / battlefield knowledge / geography",
+    "Military order delivery failures and retries",
+    "Source far silver armor quality and50actor60fps",
+    "New political character creation with stats/affiliation/authority",
+    "Planted-foot / weapon contact / terrain IK measurements",
+    "Corresponding illustrated portraits",
+    "Source rights before asset distribution"
   ],
-  "current_execution": "V3 standalone officer creator, mature face/tied hair/short beard, 10 alternate red armor parts; shared73-bone rig /3LOD /35meshes /3clips; 283 GPUcaptures and separate-process roster restore passed; repeated3GLBs byte exact; Core233 pass.",
+  "current_execution": "Existing officerID appearance binding + normal v5 Officers extension + shared TaxPanel clock + two-unit field fixture; Core261 pass; actual normal Main30captures, V3regression283 and V2regression187; separate-process restore passed.",
   "portrait_policy": {
     "status": "USER_SELECTED",
     "medium": "2D illustration",
@@ -82,7 +82,7 @@
   "followup_v2": {
     "status": "GPU_VALIDATED_SELF_REVIEWED_USER_NOT_YET_ACCEPTED",
     "report": "Docs/Proposals/OFFICER_3D_TRIAL_V2.md",
-    "runtime_binding": "096fb7ac2443d7fc501aa015eed9fc75c06321153b3ee9d82410553ebb419295",
+    "runtime_binding": "d58ce00926bdef66a7e130b04865e8256d6ce4deadc084759c8634fd43d06e84",
     "implemented": [
       "three authored LOD meshes",
       "source material ID mask + independent cloth/lacquer/metal multipliers",
@@ -99,10 +99,10 @@
     "negotiation_direction": "left foreground self, right background counterpart; deferred"
   },
   "followup_v3": {
-    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_NOT_YET_ACCEPTED",
+    "status": "BASELINE_PROVISIONALLY_ACCEPTED_AT_62c3875",
     "report": "Docs/Proposals/OFFICER_3D_TRIAL_V3.md",
     "guide": "Docs/Proposals/OFFICER_3D_PARTS_GUIDE.md",
-    "runtime_binding": "2c4f07d46f5ebf8189bd8345efa0c3139d3103ea292e948a01feabee59cbf5af",
+    "runtime_binding": "21391c0a56de2d15ad4fa51d39e198943b2fcd2a37013fe1738a8f534218b35a",
     "entry": "Scripts/Show-Officer3DV3.ps1",
     "implemented": [
       "fixed same-environment repeated export3GLBs byte exact",
@@ -119,6 +119,18 @@
       "cosmetic roster assigned to Core characters",
       "negotiation/portrait creation",
       "public distribution of source assets"
-    ]
+    ],
+    "user_quote": "とりあえずこれでいこうか。"
+  },
+  "world_integration_v1": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
+    "entry": "Scripts/Show-OfficerWorld.ps1",
+    "report": "Docs/Proposals/OFFICER_WORLD_INTEGRATION_V1.md",
+    "runtime_plan_sha256": "64b890be98692a0e1a7785d7c0c4e8b12caaa4f2eec324157a126203390eb8d2",
+    "raw_captures": 30,
+    "core_tests": 261,
+    "fixture_rules": "field-fixture-v1; not Confirmed battle parameters",
+    "normal_save": "tax-prototype-v5.json / Officers optional schema1 extension",
+    "negotiation": "direction retained, implementation deferred"
   }
 }

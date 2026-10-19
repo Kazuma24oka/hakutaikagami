@@ -46,6 +46,8 @@ public sealed record WorldSnapshot(ScenarioDefinition Definition, CharacterSnaps
 public sealed class TaxSnapshot
 {
     public int Version { get; set; } = 5;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public OfficerIntegration? Officers { get; set; }
     public int? MigrationOrigin { get; set; }
     public WorldSnapshot World { get; set; } = null!;
     public long Tick { get; set; }
@@ -228,6 +230,7 @@ public sealed partial class TaxSimulation
         Mutate(s =>
         {
             s.Tick = checked(s.Tick + 1);
+            if(s.Officers is not null) OfficerIntegrationFlow.Advance(s.Officers,s.Tick);
             MessageFlow.Advance(s.Messaging, s.Tick);
             ApplyDeadlinesAndCancellations(s);
             var due = s.Pending.Where(e => e.DueAt <= s.Tick).ToArray();
@@ -261,6 +264,7 @@ public sealed partial class TaxSimulation
             if (!document.RootElement.TryGetProperty("Version", out var version) || !version.TryGetInt32(out int number) || number is not (1 or 2 or 3 or 4 or 5))
                 throw new InvalidDataException("Missing or unsupported save version.");
             var loaded = SnapshotCodec.Read<TaxSnapshot>(json);
+            if(number<5&&loaded.Officers is not null)throw new InvalidDataException("Officer integration cannot be disguised as a pre-v5 save.");
             if (number < 5 && (loaded.Messaging.Messages.Length != 0 || loaded.Messaging.Attempts.Length != 0 ||
                 loaded.Messaging.Proxies.Length != 0 || loaded.Messaging.Knowledge.Length != 0 || loaded.Messaging.Receipts.Length != 0))
                 throw new InvalidDataException("Common messaging data disguised as an older save.");
@@ -505,6 +509,7 @@ public sealed partial class TaxSimulation
                 k.Kind == DeliveryKind.Order ? k.Amount == o.Requested && k.CharacterId == o.ExecutorId :
                     k.Amount == o.Collected && k.CharacterId == o.IssuerId && k.Content == o.Reason), "Knowledge payload mismatch.");
         }
+        if(s.Officers is not null) OfficerIntegrationFlow.Validate(s.Officers,s.World.Characters.Select(c=>c.Id),s.Tick);
         ValidateDeadlinesAndCancellations(s);
         MessageFlow.Validate(s.Messaging, s.Tick, world.Characters.Keys.ToHashSet(StringComparer.Ordinal));
     }

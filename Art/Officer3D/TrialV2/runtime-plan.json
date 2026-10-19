@@ -31,6 +31,10 @@
       "sha256": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d"
     },
     {
+      "path": "Core\\Appearance\\OfficerAppearance.cs",
+      "sha256": "23209c9d24537bc3c7aa605fefbb84d9b2adb95bf1a4d012b386742adab53ac0"
+    },
+    {
       "path": "Core\\Castles\\Castle.cs",
       "sha256": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370"
     },
@@ -59,6 +63,10 @@
       "sha256": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf"
     },
     {
+      "path": "Core\\Simulation\\OfficerIntegration.cs",
+      "sha256": "3523706623e27a46b8ef05c17d54683991889c84523c2e83402c782b502130b4"
+    },
+    {
       "path": "Core\\Simulation\\TaxSimulation.Cancellation.cs",
       "sha256": "e1366fcd8691995b4fdc443768668602e11437309a0262d0504794b57325edb1"
     },
@@ -68,7 +76,7 @@
     },
     {
       "path": "Core\\Simulation\\TaxSimulation.cs",
-      "sha256": "c90cb1fb46afb594fdfc91206ca68a18096f04bf33f5652f41e68860aafe9942"
+      "sha256": "4e277b7185610fb5b62efa0f680572f11b3fc050dc9aa5799277a424656b260b"
     },
     {
       "path": "Core\\World\\PrototypeScenario.cs",
@@ -104,7 +112,7 @@
     },
     {
       "path": "Game/Scripts/Officer3DStage.cs",
-      "sha256": "20dd0dd0a994602c43de37ecb2fd55d769a89f812511bbad20d0e7be1c1567ca"
+      "sha256": "2e7a63ce776411e92343331f83378979416902d96f653f781fd06c31ec9c998b"
     },
     {
       "path": "Game/Scripts/Officer3DV2Review.cs",
@@ -116,11 +124,11 @@
     },
     {
       "path": "Game/Scripts/Main.cs",
-      "sha256": "db8918b306e8517bb0a7db738f183dcb8527ebdb90ffa82150561896d36baf33"
+      "sha256": "f2c6b4892eeeba83ce915b81f7320800e93b40d7d8710302f0c305880c553bd4"
     },
     {
       "path": "Game/Scripts/TaxPanel.cs",
-      "sha256": "4186d14278556680295ee46f13cafff2a6c1aaceaaaf065065784a9c66007cea"
+      "sha256": "02b6b0225992b3844420a00bc6b5d0d88094dce8185cf6be48d221b14ccd72ef"
     },
     {
       "path": "Game/Shaders/Officer3DV2.gdshader",

@@ -1,7 +1,8 @@
 {
-  "status": "SELF_REVIEWED_WITH_LIMITATIONS_USER_ACCEPTANCE_PENDING",
-  "runtime_plan_sha256": "05f70c92e7afc7bc095994b80c973d4c0afcef86832d05de96614dcd7f057c88",
-  "runtime_binding": "2c4f07d46f5ebf8189bd8345efa0c3139d3103ea292e948a01feabee59cbf5af",
+  "schema": 3,
+  "status": "REGRESSION_SELF_REVIEWED_WITH_EXISTING_ART_LIMITATIONS",
+  "runtime_binding": "21391c0a56de2d15ad4fa51d39e198943b2fcd2a37013fe1738a8f534218b35a",
+  "runtime_plan_sha256": "7f532c103c43a575d7ffcf19ce79fff8afea4d92d5b6df6a12d2dfc20d797a32",
   "raw_count": 283,
   "derived_count": 11,
   "evidence_sha256": {
@@ -277,17 +278,17 @@
     "joint-attack-10.png": "ce2de2fa505d5ce45c11d9a811d8c02eb578fd92fc87d07a32b3462f85d2b9ff",
     "joint-attack-11.png": "7e0c1a885f52a406f740e530c28047ce41ee0002a929fe00ebb0b3cc646c0acd",
     "creator-ui.png": "8ff6c4036f6e6c0f4b23fea6b4bb61fec2ae76b4a2cb285d9a53c2e3b3fb8668",
-    "mixed-near-1.png": "d395a630273cb17214920bc9d1fe0a8de68db093175ad38c2ff54505354f3de0",
-    "mixed-mid-1.png": "cebb88beddd6d48b5041ff3e2ae210db8fccf1a140e9e282f87ea8200a476f81",
-    "mixed-far-1.png": "6d8aec02ecad39ff52225e75f71eec9a0ff182c8145cc27f87825aa164eaf88f",
-    "mixed-near-10.png": "d42a3ff12f48ac7bd5590a24b44870e9dc0c980b18b42f3b31ae5227e8288085",
-    "mixed-mid-10.png": "60ee966cc0842c0c34167e47c011f468409b59aceb8fc8ea78ee4eb0258efdd6",
-    "mixed-far-10.png": "8b338d0236276bfb21ea2bd860020215a7b75c14c5aab6f16109350952f23c2f",
-    "mixed-near-50.png": "7ee18c2b5bc5b57ea3a00c5227713b3255475fb911411469916dd84ab5684841",
-    "mixed-mid-50.png": "22a9a6f1dda4074b9aeac2a7e313e66d653215723e160ad46d0758e8865a7313",
-    "mixed-far-50.png": "6408cec565b46af2cc5876c74e7f954a491b1e5e2c35f1257604fdbf4d1aac34",
-    "review.png": "83d6770a76a8d0aa33914af1efbe64b0f94e779add6e4262497e7fd2f38709ed",
-    "restart.png": "5ff8ef79d2f0703219d6e08fc83d5e0e22d1928aa94b106af202aae79a66d0b6",
+    "mixed-near-1.png": "56b897b2bf0fa69a976820d0623f1357fd2fe4908cd8c1c94074b4b277ffe948",
+    "mixed-mid-1.png": "3394af98e9df3208a37d18620a0d7c10541e9850b15217b43ac69e12fdf1d8eb",
+    "mixed-far-1.png": "2ff088d7c827aff712c9d281c5171579bb8427e0d0e3f1a7ff0bc6a5030d90b5",
+    "mixed-near-10.png": "846e924dbf8a52738e2dc66999d5dcafd9729ce20197b7242140b4cfcdd9c547",
+    "mixed-mid-10.png": "949f11687035f9c482f3faa0fd43e47b20e0dcd8834a5e902a9bdc7dd097bcbe",
+    "mixed-far-10.png": "48b6e002c98af54a654ca4e5c60882a580a2a39a9ad0796dfc35ceb4c0ef62d3",
+    "mixed-near-50.png": "2906bffc0560e55c15a31880a782ff438ce0f5730a22d55ed4a95e01d80e40f7",
+    "mixed-mid-50.png": "8dd8603274d357d2005c5adc220e7468fde556c0146fea654b8e9e231d368703",
+    "mixed-far-50.png": "e5f509478986a132b32f8c897bc757250b31177ef97788d262c7160a5187d76d",
+    "review.png": "0941a7d96352a53b8566a510a1e0d56011ccae0782cd5f8104642ad4aba7ce45",
+    "restart.png": "0d3ce956416b7c0c812a7282bfdd5a6089d93e48ebd1c90e324f00a84f8be300",
     "sheet-commander.jpg": "760dd23aa27067c33437c327e24673038d745c72bbb95b06f91ce170fa8ae0e7",
     "sheet-veteran.jpg": "be05448064300abd3f5e4c6c9dc4996c83884820bc3dcd838b22974f490ffe14",
     "sheet-red_guard.jpg": "fd16d748a9a441d6d232ed293ff3dad7fbf93be80d11f36869c5c6d5cbf3d984",
@@ -295,38 +296,23 @@
     "sheet-joints.jpg": "95013d7f9cdc4a566414ef3cdbeff77753e1a42932d827001c98f5943a9f9ab0",
     "sheet-base.jpg": "1953f1dda969b9846c6f8f827ff3617cc9320af0904a808e39062dc09b5a6184",
     "sheet-skin.jpg": "0e129be4f30c895c54c6390747385004527d148a54cf0c42edf977a43167a6b9",
-    "sheet-mixed.jpg": "393e86b3ac86957bfd09d047bffbb35da722a6e278e158f0fedd98cd43dca7ea",
+    "sheet-mixed.jpg": "fe147e72280573811d38da05c48f9898507d4b4c7c58ab7890f7121e9c783378",
     "motion-walk.gif": "ed7a78fdad6c14ca3b23e3dd47fc25d683ccc3b458167bde6934bca71dda01e5",
     "motion-attack.gif": "cdb42fc900355b8fb4fb4072c0ac9a4c63af7201be243b9349fc3aa7c64206b4",
-    "review.html": "a535f8c402df6dfb08df6c111f933babbda91585a2694d60ad297e75546deb09"
+    "review.html": "60510569da648c6e65f0c17065dff0c27f942cd72b604e8176cc067b4015de5c"
   },
-  "self_review": {
-    "inspected": [
-      "creator-ui.png",
-      "review.png",
-      "sheet-commander.jpg",
-      "sheet-veteran.jpg",
-      "sheet-red_guard.jpg",
-      "sheet-equipment.jpg",
-      "sheet-joints.jpg",
-      "sheet-base.jpg",
-      "sheet-skin.jpg",
-      "sheet-mixed.jpg",
-      "preset-veteran-near-90-idle.png",
-      "preset-veteran-far-90-idle.png",
-      "preset-veteran-far-180-idle.png",
-      "preset-red_guard-near-0-idle.png",
-      "preset-red_guard-near-90-attack.png",
-      "preset-red_guard-far-90-walk.png"
-    ],
-    "findings": [
-      "body/head/hair contacts preserved across LOD after observed scalp protrusion was corrected",
-      "all-off body retained; no whole-body disappearance or disconnected joints observed in reviewed samples",
-      "existing silver far armor has visibly degraded small surfaces; only intended for distant display, not close view",
-      "new red armor, tied hair and short beard are simplified prototype art, not final quality",
-      "all combinations/timestamps and geometry intersection checks are not exhaustive"
-    ],
-    "automated_color_tests": "24 material /4 skin cases, affected>0 and outside=0",
-    "user_acceptance": false
-  }
+  "inspected_this_regression": [
+    "creator-ui.png",
+    "preset-veteran-near-90-idle.png"
+  ],
+  "baseline_acceptance": {
+    "status": "provisionally accepted baseline at62c3875; current integration not yet user reviewed",
+    "quote": "とりあえずこれでいこうか。"
+  },
+  "findings": [
+    "runtime tests and separate-process restore passed after shared clock / appearance type integration",
+    "no new geometry or textures generated",
+    "far silver armor surface loss and simplified hair/beard remain; no new art-quality acceptance inferred"
+  ],
+  "review_builder_sha256": "9ecf42145e625e530bc6e830774fe9e583e65936dd577bd5c3a3945cf1ede41a"
 }

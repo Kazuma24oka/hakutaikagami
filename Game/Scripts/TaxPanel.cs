@@ -16,6 +16,19 @@ public partial class TaxPanel : MarginContainer
         if(button.Disabled)throw new InvalidOperationException("Action disabled");
         button.EmitSignal(Button.SignalName.Pressed);
     }
+    public bool Automatic {get;set;}
+    public int ClockSpeed {get;private set;}=1;
+    public double PresentationFraction {get;private set;}
+    public void SetClockSpeed(int value){if(!new[]{1,2,4}.Contains(value))throw new ArgumentException();ClockSpeed=value;}
+    public void ChangeIntegration(Action<TaxSimulation> action){action(simulation);Refresh();}
+    public override void _Process(double delta)=>AdvanceDisplayClock(delta);
+    public void AdvanceDisplayClock(double delta)
+    {
+        if(!Automatic||simulation is null||simulation.Paused)return;
+        PresentationFraction+=Math.Max(0,Math.Min(delta,.25))*ClockSpeed/1.5;
+        while(PresentationFraction>=1-1e-9){simulation.AdvanceOneTick();PresentationFraction=Math.Max(0,PresentationFraction-1);Refresh();}
+    }
+    void RestoreClock(){PresentationFraction=simulation.OfficerState?.DisplayFraction??0;ClockSpeed=simulation.OfficerState?.DisplaySpeed??1;}
     private TaxSimulation simulation = null!;
     private string scenarioJson = "";
     private Label summary = null!;
@@ -46,6 +59,7 @@ public partial class TaxPanel : MarginContainer
     {
         scenarioJson = json;
         simulation = TaxSimulation.Create(PrototypeScenario.Load(json));
+        simulation.EnableOfficerIntegration();
         savePath = storagePath ?? ProjectSettings.GlobalizePath("user://tax-prototype-v5.json");
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) AddThemeConstantOverride("margin_" + edge, 28);
         var column = new VBoxContainer(); column.AddThemeConstantOverride("separation", 10); AddChild(column);
@@ -59,6 +73,7 @@ public partial class TaxPanel : MarginContainer
         {
             int rice = fixture.Selected == 1 ? 100 : fixture.Selected == 3 ? 0 : 60;
             simulation = TaxSimulation.Create(PrototypeScenario.Load(scenarioJson), rice, fixture.Selected == 2 ? 0 : 100);
+            simulation.EnableOfficerIntegration();PresentationFraction=0;Automatic=false;ClockSpeed=1;
             requestNumber = 0;
             cancellationNumber = 0;
             notice.Text = "試作条件を初期化しました。保存済みファイルは維持します。";
@@ -78,7 +93,7 @@ public partial class TaxPanel : MarginContainer
             simulation.Submit(id, "character-001", "castle-001", 100, deadline); requestNumber++;
             notice.Text = "命令を発送しました。NPCはまだ内容を知りません。";
         });
-        advance = AddButton(operations, "1刻進める", () => { simulation.AdvanceOneTick(); notice.Text = simulation.Paused ? "停止中です。" : "1刻進めました。"; });
+        advance = AddButton(operations, "1刻進める", () => { simulation.AdvanceOneTick(); if(!simulation.Paused)PresentationFraction=0; notice.Text = simulation.Paused ? "停止中です。" : "1刻進めました。"; });
         pause = AddButton(operations, "停止", () => simulation.SetPaused(!simulation.Paused));
         cancel = AddButton(operations, "取消命令を発送", () =>
         {
@@ -119,7 +134,7 @@ public partial class TaxPanel : MarginContainer
             notice.Text = "同じ内容を再送しました。徴税要求や成果を新規作成しません。";
         });
         var storage = new HBoxContainer(); storage.AddThemeConstantOverride("separation", 12); column.AddChild(storage);
-        save = AddButton(storage, "保存", () => { simulation.SaveFile(savePath); notice.Text = "保存しました。未処理・適用済み・乱数状態を保持します。"; });
+        save = AddButton(storage, "保存", () => { simulation.CaptureDisplayClock(PresentationFraction,ClockSpeed);simulation.SaveFile(savePath); notice.Text = "保存しました。未処理・適用済み・乱数状態を保持します。"; });
         load = AddButton(storage, "読込", () =>
         {
             var sourcePath = savePath;
@@ -131,7 +146,8 @@ public partial class TaxPanel : MarginContainer
                 if (!System.IO.File.Exists(sourcePath)) sourcePath = ProjectSettings.GlobalizePath("user://tax-prototype-v1.json");
             }
             var restored = TaxSimulation.LoadFile(sourcePath); // Validate fully before replacing the current session.
-            simulation = restored;
+            restored.EnableOfficerIntegration();
+            simulation = restored;RestoreClock();
             requestNumber = simulation.Orders.Select(o => int.TryParse(o.RequestId.Replace("tax-", ""), out int n) ? n : 0).DefaultIfEmpty(0).Max();
             cancellationNumber = simulation.Cancellations.Select(c => int.TryParse(c.Id.Replace("cancel-", ""), out int n) ? n : 0).DefaultIfEmpty(0).Max();
             notice.Text = "読込完了。保存した時刻・資源・命令状態から再開します。";

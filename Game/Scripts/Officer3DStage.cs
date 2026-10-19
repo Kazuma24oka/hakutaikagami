@@ -14,7 +14,7 @@ public partial class Officer3DStage : VBoxContainer
     public Camera3D Camera {get; private set;}=null!;
     public Dictionary<string,Officer3DActor> Actors {get;}=new();
     public Label Status {get; private set;}=null!;
-    public bool Automatic {get;set;}
+    public bool Automatic {get=>Session is not null&&Session.Automatic;set{if(Session is not null)Session.Automatic=value;}}
     public double Fraction {get;private set;}
     public bool AutomaticLod {get;set;}=true;
     public string SelectedId {get;set;}="character-002";
@@ -77,7 +77,7 @@ public partial class Officer3DStage : VBoxContainer
     }
     public override void _Process(double delta)
     {
-        if(Automatic && !Session.Simulation.Paused){Fraction+=delta/1.5;if(Fraction>=1){Fraction=0;Session.InvokeFrom3D("advance");}}
+        Fraction=Session.PresentationFraction;
         Synchronize();
     }
     public void Synchronize()

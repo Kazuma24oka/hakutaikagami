@@ -16,11 +16,11 @@
     },
     {
       "path": "Scripts/validate_officer3d_v3.py",
-      "sha256": "5b2b7cbe760527a154e628429684e61c99be689edb4cad368d9234ceb3352fe2"
+      "sha256": "fa7cae405e05ac1bf94b97ada835cece4b883d7fcdbbe0145e0b1d5b973220ba"
     },
     {
       "path": "Game/Scripts/Officer3DCustomActor.cs",
-      "sha256": "4a78ff2e6412948aa0f4eb3241cd78e89423bd879b36c45cba6fdae95afc3506"
+      "sha256": "4bda6f1c1a35580a2376e0f8851049d516851a5902a166251fc794630277febf"
     },
     {
       "path": "Game/Scripts/Officer3DCreator.cs",
@@ -69,6 +69,66 @@
     {
       "path": "Game/Assets/Officer3D/TrialV2/materials.png",
       "sha256": "f567e6fc83b2e87fc6f40c5dd48bc9d8cfee03485977fa45655eaab84bd0fcd0"
+    },
+    {
+      "path": "Core\\Appearance\\OfficerAppearance.cs",
+      "sha256": "23209c9d24537bc3c7aa605fefbb84d9b2adb95bf1a4d012b386742adab53ac0"
+    },
+    {
+      "path": "Core\\Castles\\Castle.cs",
+      "sha256": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370"
+    },
+    {
+      "path": "Core\\Characters\\Character.cs",
+      "sha256": "486419e8df320074f56c53883cdbc9525e4fee6a702d543d54bbd7240816c8fe"
+    },
+    {
+      "path": "Core\\Commands\\CommandRequest.cs",
+      "sha256": "90ada6b09698d4417ea44f7917d4098f5bef8030239c1eeb3e1883b287d6bb47"
+    },
+    {
+      "path": "Core\\Commands\\InspectionSession.cs",
+      "sha256": "2a5cf2a011a83c9f3c20bd0511d0a9fd32fe17768785384721dab4a2a6a2450f"
+    },
+    {
+      "path": "Core\\Common\\SessionInfrastructure.cs",
+      "sha256": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076"
+    },
+    {
+      "path": "Core\\Events\\EventScheduler.cs",
+      "sha256": "a58b9f064263c6090be3cd5788349f47e68ecda70e22cc6049d43a0b234bd542"
+    },
+    {
+      "path": "Core\\Messaging\\MessageFlow.cs",
+      "sha256": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf"
+    },
+    {
+      "path": "Core\\Simulation\\OfficerIntegration.cs",
+      "sha256": "3523706623e27a46b8ef05c17d54683991889c84523c2e83402c782b502130b4"
+    },
+    {
+      "path": "Core\\Simulation\\TaxSimulation.Cancellation.cs",
+      "sha256": "e1366fcd8691995b4fdc443768668602e11437309a0262d0504794b57325edb1"
+    },
+    {
+      "path": "Core\\Simulation\\TaxSimulation.Communication.cs",
+      "sha256": "2c5e296c466eea3b1c6f5a6ea5ad7c88e5eac7f57c95ed629b27ecd24a4c070d"
+    },
+    {
+      "path": "Core\\Simulation\\TaxSimulation.cs",
+      "sha256": "4e277b7185610fb5b62efa0f680572f11b3fc050dc9aa5799277a424656b260b"
+    },
+    {
+      "path": "Core\\World\\PrototypeScenario.cs",
+      "sha256": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529"
+    },
+    {
+      "path": "Core\\World\\SeededRandom.cs",
+      "sha256": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f"
+    },
+    {
+      "path": "Core\\World\\WorldState.cs",
+      "sha256": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c"
     },
     {
       "path": "Game/Assets/Officer3D/TrialV3/near.glb",

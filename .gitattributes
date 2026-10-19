@@ -150,3 +150,15 @@ Scripts/capture_officer3d_main.gd -text
 Game/Scenes/Officer3DCreator.tscn -text
 Game/Shaders/Officer3DV3.gdshader -text
 Scripts/Show-Officer3DV3.ps1 -text
+
+Game/Scripts/OfficerWorld*.cs -text
+Core/Appearance/*.cs -text
+Core/Simulation/OfficerIntegration.cs -text
+Scripts/*officer_world* -text
+Scripts/Show-OfficerWorld.ps1 -text
+
+# Preserve the validated Windows source bytes; recognize CRLF as line endings.
+Core/Appearance/*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Simulation/TaxSimulation.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/Officer3DCustomActor.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/TaxPanel.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
