@@ -1,0 +1,488 @@
+{
+  "status": "PASS",
+  "binding": "5d4c00f49cdc6663dbb2659e2e005e56ade471e2e63e3e7ba228625aae4601a5",
+  "cpu_cases": 49152,
+  "gpu_cases": 528,
+  "rgb_difference": 0,
+  "transitions": [
+    {
+      "direction": "front",
+      "anchor": "(420, 442.5)",
+      "stopped_idle": true
+    },
+    {
+      "direction": "right",
+      "anchor": "(432.5, 442.5)",
+      "stopped_idle": true
+    },
+    {
+      "direction": "back",
+      "anchor": "(432.5, 430)",
+      "stopped_idle": true
+    },
+    {
+      "direction": "left",
+      "anchor": "(420, 430)",
+      "stopped_idle": true
+    }
+  ],
+  "route_frames": 44,
+  "route": [
+    {
+      "file": "route-00.png",
+      "direction": "right",
+      "index": 5,
+      "flags": 1023,
+      "x": 272,
+      "y": 288,
+      "foot_x": 304.5,
+      "foot_y": 380
+    },
+    {
+      "file": "route-01.png",
+      "direction": "right",
+      "index": 7,
+      "flags": 1023,
+      "x": 277,
+      "y": 288,
+      "foot_x": 309,
+      "foot_y": 380
+    },
+    {
+      "file": "route-02.png",
+      "direction": "right",
+      "index": 8,
+      "flags": 1023,
+      "x": 282,
+      "y": 288,
+      "foot_x": 313.5,
+      "foot_y": 380
+    },
+    {
+      "file": "route-03.png",
+      "direction": "right",
+      "index": 10,
+      "flags": 1023,
+      "x": 286,
+      "y": 288,
+      "foot_x": 318,
+      "foot_y": 380
+    },
+    {
+      "file": "route-04.png",
+      "direction": "right",
+      "index": 11,
+      "flags": 1023,
+      "x": 290,
+      "y": 288,
+      "foot_x": 322.5,
+      "foot_y": 380
+    },
+    {
+      "file": "route-05.png",
+      "direction": "right",
+      "index": 5,
+      "flags": 1023,
+      "x": 295,
+      "y": 288,
+      "foot_x": 327,
+      "foot_y": 380
+    },
+    {
+      "file": "route-06.png",
+      "direction": "right",
+      "index": 6,
+      "flags": 1023,
+      "x": 300,
+      "y": 288,
+      "foot_x": 331.5,
+      "foot_y": 380
+    },
+    {
+      "file": "route-07.png",
+      "direction": "right",
+      "index": 8,
+      "flags": 1023,
+      "x": 304,
+      "y": 288,
+      "foot_x": 336,
+      "foot_y": 380
+    },
+    {
+      "file": "route-08.png",
+      "direction": "right",
+      "index": 9,
+      "flags": 1023,
+      "x": 308,
+      "y": 288,
+      "foot_x": 340.5,
+      "foot_y": 380
+    },
+    {
+      "file": "route-09.png",
+      "direction": "right",
+      "index": 11,
+      "flags": 1023,
+      "x": 313,
+      "y": 288,
+      "foot_x": 345,
+      "foot_y": 380
+    },
+    {
+      "file": "route-10.png",
+      "direction": "front",
+      "index": 4,
+      "flags": 1023,
+      "x": 313,
+      "y": 292,
+      "foot_x": 345,
+      "foot_y": 384.5
+    },
+    {
+      "file": "route-11.png",
+      "direction": "front",
+      "index": 6,
+      "flags": 1023,
+      "x": 313,
+      "y": 297,
+      "foot_x": 345,
+      "foot_y": 389
+    },
+    {
+      "file": "route-12.png",
+      "direction": "front",
+      "index": 7,
+      "flags": 1023,
+      "x": 313,
+      "y": 302,
+      "foot_x": 345,
+      "foot_y": 393.5
+    },
+    {
+      "file": "route-13.png",
+      "direction": "front",
+      "index": 9,
+      "flags": 1023,
+      "x": 313,
+      "y": 306,
+      "foot_x": 345,
+      "foot_y": 398
+    },
+    {
+      "file": "route-14.png",
+      "direction": "front",
+      "index": 10,
+      "flags": 1023,
+      "x": 313,
+      "y": 310,
+      "foot_x": 345,
+      "foot_y": 402.5
+    },
+    {
+      "file": "route-15.png",
+      "direction": "front",
+      "index": 4,
+      "flags": 1023,
+      "x": 313,
+      "y": 315,
+      "foot_x": 345,
+      "foot_y": 407
+    },
+    {
+      "file": "route-16.png",
+      "direction": "front",
+      "index": 5,
+      "flags": 1023,
+      "x": 313,
+      "y": 320,
+      "foot_x": 345,
+      "foot_y": 411.5
+    },
+    {
+      "file": "route-17.png",
+      "direction": "front",
+      "index": 7,
+      "flags": 1023,
+      "x": 313,
+      "y": 324,
+      "foot_x": 345,
+      "foot_y": 416
+    },
+    {
+      "file": "route-18.png",
+      "direction": "front",
+      "index": 8,
+      "flags": 1023,
+      "x": 313,
+      "y": 328,
+      "foot_x": 345,
+      "foot_y": 420.5
+    },
+    {
+      "file": "route-19.png",
+      "direction": "front",
+      "index": 10,
+      "flags": 1023,
+      "x": 313,
+      "y": 333,
+      "foot_x": 345,
+      "foot_y": 425
+    },
+    {
+      "file": "route-20.png",
+      "direction": "left",
+      "index": 11,
+      "flags": 1023,
+      "x": 308,
+      "y": 333,
+      "foot_x": 340.5,
+      "foot_y": 425
+    },
+    {
+      "file": "route-21.png",
+      "direction": "left",
+      "index": 5,
+      "flags": 1023,
+      "x": 304,
+      "y": 333,
+      "foot_x": 336,
+      "foot_y": 425
+    },
+    {
+      "file": "route-22.png",
+      "direction": "left",
+      "index": 6,
+      "flags": 1023,
+      "x": 300,
+      "y": 333,
+      "foot_x": 331.5,
+      "foot_y": 425
+    },
+    {
+      "file": "route-23.png",
+      "direction": "left",
+      "index": 8,
+      "flags": 1023,
+      "x": 295,
+      "y": 333,
+      "foot_x": 327,
+      "foot_y": 425
+    },
+    {
+      "file": "route-24.png",
+      "direction": "left",
+      "index": 9,
+      "flags": 1023,
+      "x": 290,
+      "y": 333,
+      "foot_x": 322.5,
+      "foot_y": 425
+    },
+    {
+      "file": "route-25.png",
+      "direction": "left",
+      "index": 11,
+      "flags": 1023,
+      "x": 286,
+      "y": 333,
+      "foot_x": 318,
+      "foot_y": 425
+    },
+    {
+      "file": "route-26.png",
+      "direction": "left",
+      "index": 4,
+      "flags": 1023,
+      "x": 282,
+      "y": 333,
+      "foot_x": 313.5,
+      "foot_y": 425
+    },
+    {
+      "file": "route-27.png",
+      "direction": "left",
+      "index": 6,
+      "flags": 1023,
+      "x": 277,
+      "y": 333,
+      "foot_x": 309,
+      "foot_y": 425
+    },
+    {
+      "file": "route-28.png",
+      "direction": "left",
+      "index": 7,
+      "flags": 1023,
+      "x": 272,
+      "y": 333,
+      "foot_x": 304.5,
+      "foot_y": 425
+    },
+    {
+      "file": "route-29.png",
+      "direction": "left",
+      "index": 9,
+      "flags": 1023,
+      "x": 268,
+      "y": 333,
+      "foot_x": 300,
+      "foot_y": 425
+    },
+    {
+      "file": "route-30.png",
+      "direction": "back",
+      "index": 10,
+      "flags": 1023,
+      "x": 268,
+      "y": 328,
+      "foot_x": 300,
+      "foot_y": 420.5
+    },
+    {
+      "file": "route-31.png",
+      "direction": "back",
+      "index": 4,
+      "flags": 1023,
+      "x": 268,
+      "y": 324,
+      "foot_x": 300,
+      "foot_y": 416
+    },
+    {
+      "file": "route-32.png",
+      "direction": "back",
+      "index": 5,
+      "flags": 1023,
+      "x": 268,
+      "y": 320,
+      "foot_x": 300,
+      "foot_y": 411.5
+    },
+    {
+      "file": "route-33.png",
+      "direction": "back",
+      "index": 7,
+      "flags": 1023,
+      "x": 268,
+      "y": 315,
+      "foot_x": 300,
+      "foot_y": 407
+    },
+    {
+      "file": "route-34.png",
+      "direction": "back",
+      "index": 8,
+      "flags": 1023,
+      "x": 268,
+      "y": 310,
+      "foot_x": 300,
+      "foot_y": 402.5
+    },
+    {
+      "file": "route-35.png",
+      "direction": "back",
+      "index": 10,
+      "flags": 1023,
+      "x": 268,
+      "y": 306,
+      "foot_x": 300,
+      "foot_y": 398
+    },
+    {
+      "file": "route-36.png",
+      "direction": "back",
+      "index": 11,
+      "flags": 1023,
+      "x": 268,
+      "y": 302,
+      "foot_x": 300,
+      "foot_y": 393.5
+    },
+    {
+      "file": "route-37.png",
+      "direction": "back",
+      "index": 5,
+      "flags": 1023,
+      "x": 268,
+      "y": 297,
+      "foot_x": 300,
+      "foot_y": 389
+    },
+    {
+      "file": "route-38.png",
+      "direction": "back",
+      "index": 6,
+      "flags": 1023,
+      "x": 268,
+      "y": 292,
+      "foot_x": 300,
+      "foot_y": 384.5
+    },
+    {
+      "file": "route-39.png",
+      "direction": "back",
+      "index": 8,
+      "flags": 1023,
+      "x": 268,
+      "y": 288,
+      "foot_x": 300,
+      "foot_y": 380
+    },
+    {
+      "file": "route-40.png",
+      "direction": "back",
+      "index": 0,
+      "flags": 1023,
+      "x": 268,
+      "y": 288,
+      "foot_x": 300,
+      "foot_y": 380
+    },
+    {
+      "file": "route-41.png",
+      "direction": "back",
+      "index": 1,
+      "flags": 1023,
+      "x": 268,
+      "y": 288,
+      "foot_x": 300,
+      "foot_y": 380
+    },
+    {
+      "file": "route-42.png",
+      "direction": "back",
+      "index": 1,
+      "flags": 1023,
+      "x": 268,
+      "y": 288,
+      "foot_x": 300,
+      "foot_y": 380
+    },
+    {
+      "file": "route-43.png",
+      "direction": "back",
+      "index": 2,
+      "flags": 1023,
+      "x": 268,
+      "y": 288,
+      "foot_x": 300,
+      "foot_y": 380
+    }
+  ],
+  "selection_preserved": true,
+  "stop_idle": true,
+  "direction_anchor_jump": 0,
+  "godot_key_press_release": 4,
+  "ui_toggle": true,
+  "delta_partition": true,
+  "boundary_stop": true,
+  "contexts": [
+    "grass",
+    "road",
+    "bank"
+  ],
+  "diagonal_policy": "vertical priority",
+  "native_scale": 1,
+  "native_input": 0,
+  "world_ticks": 0
+}

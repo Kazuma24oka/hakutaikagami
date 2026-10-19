@@ -1,0 +1,433 @@
+{
+  "status": "PASS",
+  "compared_to_commit": "ed6b6dadb1b2196e47ce0270c22b19da4c7383fb",
+  "files": [
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/arms.png",
+      "sha256": "6745adceb3192115a299d964b03514190ba5e797d7030c5b0a5dcb34188b54ea"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/body.png",
+      "sha256": "0227c641d68191fe880ffa2b25b0a1bf84861626938022534abfb9ba8214f43e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/coat.png",
+      "sha256": "767cd07682e6bb37900e07d61be833e7c1d902afe45786a93c641bfebcf6a6f6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/face.png",
+      "sha256": "0dc4b3615a1077e5c60a9a56c7b3de8359e37c463c6c1c258944c2f673907c6c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/footwear.png",
+      "sha256": "d5cfaaf0db07d63c1395b43695d036929ab2de3c146425bef8c83246a251a9b5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hair.png",
+      "sha256": "255a304ede7d6e15fc8b6c822b352cdc18159d6621366cc4398fa8aa3cee3fd3"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hands.png",
+      "sha256": "46d9aeb14af945ebdaa22a3810c712564329f4945b1153512a324e63d73a8878"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_arms.png",
+      "sha256": "7e29eed64ff520b03306b62d0addbbbc8a7e955d737c45ddf3eedeeb3658a74f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_coat.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_footwear.png",
+      "sha256": "9d263f9958e3c788c11b4039268b8ac7a6a0e4e2c5c5cc36216dde0d4798775e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_legs.png",
+      "sha256": "a69c6a2d3d168527c065da8325761edcdfd047b7c3abfb07a80a5b89150c15cf"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_shoulders.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_sword.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_torso.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/hide_waist.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/legs.png",
+      "sha256": "a32aeac229f64e684c8c76ecff7f2d58effca59369fa7b872304ed97204d423c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/lookup-surface.png",
+      "sha256": "0b09f337a35a36cdde63bab8ceec478306cb4807c88f2d61862a6faf3588e045"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/lookup-sword.png",
+      "sha256": "c05aabb09e81376b42c6ef243cec4099fbe9e94c07b022b5c70a798c54ae55f8"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/shoulders.png",
+      "sha256": "6609486673c1d4d58d4ae3e7ba0ece20b22bfba461d6ac79b119156a0fc356e5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/sword.png",
+      "sha256": "ca9497fa0b57f81565246a7b758b9f8120a680b6b450d9000f7825eedd21d899"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/torso.png",
+      "sha256": "7532659ad0dbd20ac61f63afd60a2f876ae8ba50eea3f4fee3519c2de334124c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerFrontWalkV6/waist.png",
+      "sha256": "cf751907c533c77159828849da55772ff891f834d5fbfdfea3d971ffd802ad08"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/coat.png",
+      "sha256": "19a3af78d0bb52ac9af945cd9bdc3474bb6960fe3fa43c68c04d07b64ab080df"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core.png",
+      "sha256": "e654a7028f201d49c3fe462aab6824ae06a5da4808c0ff7e0be79ad822d7a90c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_arms.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_coat.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_face.png",
+      "sha256": "b4643c3de4bc5232acc5f0724bd63bde8c0ef544afa034134a78a70bc64888f3"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_footwear.png",
+      "sha256": "f1cd458ad463a21093c83800b4f86ec24fe33cbb0415e1bbd621881ca53e9421"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_hair.png",
+      "sha256": "b4643c3de4bc5232acc5f0724bd63bde8c0ef544afa034134a78a70bc64888f3"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_legs.png",
+      "sha256": "263f5ac0a7b6583a86f74adf0a8ec2a37e3cca756f9372dfa24bef596e69d09a"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_shoulders.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_torso.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/core_hide_waist.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/face.png",
+      "sha256": "0f482019a1a5b487f6126372e3fdbbd2d0aef75b2eb2b70cd3a57762e1f6d525"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_arm.png",
+      "sha256": "3299f6392191e68e7b39ac1c6062418b5e9aa01e539173341569a770fcc258e3"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_arm_skin.png",
+      "sha256": "cbf2e15ea92893ba966d417b9ef809c6354c03dd90ca821ecead6bbcde782765"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_boot.png",
+      "sha256": "ad779bbad58f9a3cacd479538cdeb51c4df555eae21adfe784b6aef7d1284306"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_foot_skin.png",
+      "sha256": "c31c4023a4b5b2f25b37b91df2948df86f3d0eb0178bdefca2aecca6c2231373"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_leg_skin.png",
+      "sha256": "02d13aec12163d47d12e1689a6ac640bd9badb1a5ef2692b4bf3471246180f76"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_legs.png",
+      "sha256": "5b3316fc2d8216e56623ed87e07ddc9a5cbae28f11122d6cc59ebf95e3b6101f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/far_shoulder.png",
+      "sha256": "b3dc9a5ca3f00e2a1ee60fe66aa8908266aec4ea383d71ecd21757a5fe7d63b0"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/hair.png",
+      "sha256": "46641044f53f28dad8c5f0bb380a83295454cf2f669cb0c966768c343a38c1f0"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_arm.png",
+      "sha256": "087303b5dfb682c120ed378b6ae5086e47740b3ad8e17ecbf66254a8f5d65e93"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_arm_skin.png",
+      "sha256": "1b759ac738d1422086edac919cd55ae2afa5c5e895d88d81bf07ace4d1537393"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_boot.png",
+      "sha256": "642d0416134878b41e8730268abea5de8db22e71a394cd6c6af8c13f467fdaa2"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_foot_skin.png",
+      "sha256": "354900d867d3a029c89ebe068717742d48d01137af50069cd86147196f8582f9"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_leg_skin.png",
+      "sha256": "0a63eaacbd1fbd85e240948a756fe007a2644dc613b8a153fca274a7bb7b4753"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_legs.png",
+      "sha256": "16eb642d4e2c54493423016b8c4a47cf40b1ec8060fac7cfc47d417a065f123e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/near_shoulder.png",
+      "sha256": "df1be42d7706a44c94aec1dee359c54dc971fc3ebb202aee267cd158c4ef52a5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/sword.png",
+      "sha256": "d8f2a21136810d23be3c37ac4b28112cb10fc3cbe63fcd400a27438dc4de3c51"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/torso.png",
+      "sha256": "34369948cc39330609c3c28864c694416c213ed3671753c8d716e71896b94d3f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerRightMotionV8/waist.png",
+      "sha256": "b5509dc6b3ff1c5680a23d8d9b000a764395147cbe74d0c8b157bd486b7c4754"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/arms.png",
+      "sha256": "5f5b9c81823d51dfc8160a5c752cf4385f5006017445880f65a76ece676bc3b5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/body.png",
+      "sha256": "081373866f110fb9e0a1b8fac21bd83777b1b6efdee34f1e42cb514d79fc68c2"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/coat.png",
+      "sha256": "541bc85bb6921f699e86b63e6fa2b4f755366fdc3cc43abcb3466c6f2f2c05bd"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/face.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/footwear.png",
+      "sha256": "6c9efb99bbc060b6ef036a4d8d5dc552191756ef1089f3fa46636fb135376955"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hair.png",
+      "sha256": "2a8dbe8351a6f82f2170287c02cb369c48a57eccbdbc5a52c0972a204483677e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hands.png",
+      "sha256": "34d4d5c63ce496db62a6ba1d35d1820a156e750bb43a7f33c8075c3c84fe83d6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_arms.png",
+      "sha256": "fcbb27e3ef2788687106baa12307666c9f09582faa483ed87a1070233a7d8d29"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_coat.png",
+      "sha256": "3e1c047c004691cb2c047e91e8588e7fae9b787d2c4aa6f0196275374e5cea2e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_footwear.png",
+      "sha256": "a71c89c45f791d6ead30dc38a8e59456b4a07fd6eab95939ec4311bb5b3b8c25"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_legs.png",
+      "sha256": "95011751756ae190e2329f35eba59ea697cc314d4d0fd65dd8b5609a15d20765"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_shoulders.png",
+      "sha256": "7e0128b4d34b353c69b41801d63d6b8dfa71c1f83e24ab3565f661b06d8c5eb0"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_sword.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_torso.png",
+      "sha256": "14f7de5cf6ed932b6c7eb855baccfbede013268524c2141f4df479703c143b53"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/hide_waist.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/legs.png",
+      "sha256": "6fb79b541ee792eb57dadf310174800c5c38473392d7bc4833e8cbc1f7fb8c8c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/shoulders.png",
+      "sha256": "84e40e1ab43d279ba90e009ae85dfed3015d7c10aa0a3caeda05780ed50c11f5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/sword.png",
+      "sha256": "eec26c05bb8e32c8973d03ba6405eb8b632541e73259e7832ddbc127b11cf14d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/torso.png",
+      "sha256": "59ac3560dd2211a161d95ab2896ab4ec910ebe03741610bf10c4e10b62d75130"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBackMotionV10/waist.png",
+      "sha256": "4ec04f572399b7898be3d06b3ea985600a8fa7e729546757f4196c80e3b7f992"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/coat.png",
+      "sha256": "ae663ade0fed16374370c1f5d7f9e66883f4e5cde2e842308b018906cd423ba5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core.png",
+      "sha256": "baeb94097e7678ad4000280d7512d319d33463b7c2cf970bc4685b6c1c6ca51d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_arms.png",
+      "sha256": "96479f9d5bb8d73467be6cfc5679c4d44a8d114bb4623da156de644bfb40e098"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_coat.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_face.png",
+      "sha256": "d4fe5f2101e39049639d3b136c30b8dc11d1669b441788a00079c0d25d3d9ae7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_footwear.png",
+      "sha256": "acc97b8ed67b347c879651781b12743e8d604a177c1128695a8639ae77f57f96"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_hair.png",
+      "sha256": "d4fe5f2101e39049639d3b136c30b8dc11d1669b441788a00079c0d25d3d9ae7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_legs.png",
+      "sha256": "d5f6a6706c309411c905f8fa5e9441170c1d74534cbd553d6abf9ac27b4a99b4"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_shoulders.png",
+      "sha256": "96479f9d5bb8d73467be6cfc5679c4d44a8d114bb4623da156de644bfb40e098"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_torso.png",
+      "sha256": "2f9e76cfa7ccb67b3b2c1864b7adcf35f2995b9ce846aae4a090e96292c78c1f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/core_hide_waist.png",
+      "sha256": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/face.png",
+      "sha256": "63075704b0a6a58ec6bb4402ffd0e4e68d56b2f72ac83af9506f267205e8a93d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_arm.png",
+      "sha256": "11838ee2a1a3cef428a01502b8b749423b2fe3649a1eeee5630dd54877b67cd5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_arm_skin.png",
+      "sha256": "597f0bcfb80e069101b5605978dabcac5f3d255928fc324911b6d9da097464b4"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_boot.png",
+      "sha256": "3b5b47a2afe74bf6897a0f03c994d4a96e9c211d02b4cff97f6a39669e2ec631"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_foot_skin.png",
+      "sha256": "1f1103b6a061b42e3d4458876f24023f3f3c1c55e576e8a9ca6be8e32578cd54"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_leg_skin.png",
+      "sha256": "a69ce0de84f27482185e39e1752efc6b8bc1cc6723c7cb57a1a81e3747303496"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_legs.png",
+      "sha256": "ef1ec011cd5a60f2d40250ecf1590ae343ce64ce13bfb035e60bf0293602c16b"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/far_shoulder.png",
+      "sha256": "f90a856627b9c817d9893fe221dca737cab5e82e5c6f1676588a7b7f998f2c92"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/hair.png",
+      "sha256": "3b5b926cd408ea78403abc455e589315d481b580f9c0decb3623214255b8a42e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_arm.png",
+      "sha256": "807ab15c04bfab01f8652c3190847555dfd7e4b8f2dfb6f4d26967b9fd45ed90"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_arm_skin.png",
+      "sha256": "6edc683cb993c23b8de309cd036e9bf3f0064c6ad45a0a8769348229880d2b37"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_boot.png",
+      "sha256": "9026c1758311a5f4ce4aa5c41ad66f30332888b829727c61979b17d5f767b2e2"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_foot_skin.png",
+      "sha256": "fd5d9b1dd611d62c450bdc3e5570c10a8fe2d6380954801b81d70629eb7a2aec"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_leg_skin.png",
+      "sha256": "4320d5be820ce201b265162a596ea977e1f3c50a697d3d6f5ed2ee33c6e4e6b5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_legs.png",
+      "sha256": "7f1f5d40cd15cf6173868a61a227908fdb2de1004c03e07061837e6af760f29e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/near_shoulder.png",
+      "sha256": "c985f2081a3a7ad6c39b58bf85dc3d65e2faa6288077485d2bb186f92db81ead"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/sword.png",
+      "sha256": "3e7196699ac85ffc76b188dda270a89143888d85074e86614ff7fda801d55b38"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/torso.png",
+      "sha256": "14ad737fa865b02b34b3dda3d07912cf3becc2104784ae99c5a7c78e4c48634f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerLeftMotionV12/waist.png",
+      "sha256": "e5e34bc0c74e90f26effaaa1f639d2333466563aed9dc83b65f638eed2448f43"
+    },
+    {
+      "path": "Game/Data/officer_motion_trial_v6.json",
+      "sha256": "40d1e2abd542bc3ae0f0fdbe23fe1c3ee155844424e2d9b213c1a01bdef32b12"
+    },
+    {
+      "path": "Game/Data/officer_right_motion_v8.json",
+      "sha256": "b633cb42ab543523c118f841b857602f0fb1b49d2c6ae69defcb885425aa95b6"
+    },
+    {
+      "path": "Game/Data/officer_back_motion_v10.json",
+      "sha256": "acb0d3dd30d9e51ecead67b5dd49e66a9435217e665936970fd56eae78aa20a1"
+    },
+    {
+      "path": "Game/Data/officer_left_motion_v12.json",
+      "sha256": "2e4dd3639286ea393626f2df5b8ff3705dcb942b96238913019ff3d0ded75040"
+    }
+  ],
+  "count": 106,
+  "new_images_generated": 0,
+  "existing_parts_repacked": 0
+}
