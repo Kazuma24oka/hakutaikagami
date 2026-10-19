@@ -2,6 +2,8 @@
 
 ## 現行の設計
 
+ユーザー確認：「現行方針が正です」。旧資料との食い違いでは後続採用を優先します。[適用記録](Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md)。
+
 - **[基本設計書HTML](Design/basic-design-v1.html)** ／ [テキスト版](Design/BASIC_DESIGN_V1.md)。15分野60判断を委任採用済み。
 - [機械可読正本](Design/basic-design-v1.json) ／ [共通境界・参考作品・詳細設計への引継ぎ8群](Design/basic-design-rules.json)。
 - [採用と整合確認](Decisions/2026-10-19_BASIC_DESIGN_V1.md) ／ [決定履歴](Decisions/DECISION_LOG.md)。

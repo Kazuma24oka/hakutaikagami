@@ -1,5 +1,9 @@
 # 百代鏡：作業の入口
 
+## 現行方針の優先（2026-10-19・ユーザー明示確認）
+
+ユーザーが「現行方針が正です」と確認。旧Confirmedやdesign/foundationと後続採用方針が食い違う範囲では、基本設計V1・PW01〜07・3D移行等の現行方針を適用する。旧原本の名称やConfirmed分類だけを理由に現行決定を差し戻さない。食い違いのない既存原則は引き続き維持。現行仕様の採用と実装・検証の完了は区別する。記録はDocs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md。
+
 ## 基本設計V1の採用と今回のmainマージ許可（2026-10-19）
 
 ユーザーが「全部推奨」「基本設計を完了」「commit/pushとmainへのマージ」「HTMLで」と明示指示。今回の基本設計と既存prototype/godot-foundation成果のmainマージは許可済みで、下記の通常のmain変更禁止に対するこの作業限りの例外。design/foundation・既存Docs/Confirmed・同期sources・外部プロジェクト原本は編集しない。
