@@ -12,3 +12,6 @@ TestResults/
 # Local officer3D import trial; source terms/provenance not cleared for redistribution.
 /Game/Assets/Officer3D/TrialV1/
 /Art/Officer3D/TrialV1/runtime-local/
+
+/Game/Assets/Officer3D/TrialV2/
+/Art/Officer3D/TrialV2/runtime-local/

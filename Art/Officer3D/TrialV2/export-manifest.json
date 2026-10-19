@@ -1,0 +1,72 @@
+{
+  "binding": "d8cf6488f7d2209e3671bb48d495ad4a9101be2a8439f65664c4f338315d487d",
+  "source_sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9",
+  "source_glb_sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a",
+  "material_mask_counts": {
+    "cloth": 98118,
+    "lacquer": 974223,
+    "metal": 3110202
+  },
+  "lod": {
+    "near": {
+      "sha256": "20f5a3753db2c65d4b6e42fa5d3a9fe78a852e66104382af8b3ed0dd84ffefda",
+      "bytes": 15971768,
+      "triangles_including_hidden_variants": 145102,
+      "meshes": 25,
+      "bones": 73,
+      "settings": {
+        "gear_ratio": 0.12,
+        "skin_ratio": 1
+      },
+      "validated_mesh_repairs": []
+    },
+    "mid": {
+      "sha256": "2beac7251f3437a3793462f421f45f59da8467da8c7b35fc6b10c9c7f6f54db8",
+      "bytes": 7855336,
+      "triangles_including_hidden_variants": 47984,
+      "meshes": 25,
+      "bones": 73,
+      "settings": {
+        "gear_ratio": 0.035,
+        "skin_ratio": 0.5
+      },
+      "validated_mesh_repairs": []
+    },
+    "far": {
+      "sha256": "84b4db9a5197b4882692fba3a7c0aaa5fff6ada06d530ec672a68592c4e240c7",
+      "bytes": 4824128,
+      "triangles_including_hidden_variants": 14589,
+      "meshes": 25,
+      "bones": 73,
+      "settings": {
+        "gear_ratio": 0.008,
+        "skin_ratio": 0.2
+      },
+      "validated_mesh_repairs": [
+        "slot_helmet",
+        "slot_thighs"
+      ]
+    }
+  },
+  "parts": [
+    "face_veteran",
+    "hair_tied",
+    "hair_knot",
+    "beard_short"
+  ],
+  "head_bone": "J_Bip_C_Head",
+  "head_bounds": [
+    [
+      -0.10878273099660873,
+      -0.0896533653140068,
+      1.4840378761291504
+    ],
+    [
+      0.10878264158964157,
+      0.05806085094809532,
+      1.7303458452224731
+    ]
+  ],
+  "material_mask_sha256": "f567e6fc83b2e87fc6f40c5dd48bc9d8cfee03485977fa45655eaab84bd0fcd0",
+  "elapsed_seconds": 75.44985818862915
+}

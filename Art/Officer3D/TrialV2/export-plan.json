@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "stage": "export",
+  "dependencies": [
+    {
+      "path": "Art/Officer3D/TrialV2/contract.json",
+      "sha256": "1178126fa981888d92afd5f98d39e513427bdb4e58f3696c63463af7a7b1fd19"
+    },
+    {
+      "path": "Scripts/build_officer3d_v2.py",
+      "sha256": "79f45fb48daa447896e02056df858b5b05f2926de173aaf1b41e3450a1445705"
+    },
+    {
+      "path": "Scripts/officer3d_v2_pipeline.py",
+      "sha256": "2610b8a61d07bf8ac65743d95c322b49ccd71acd833d20380414cc38b1211e05"
+    },
+    {
+      "path": "Scripts/export_officer3d_trial.py",
+      "sha256": "4aeadcbffbc46d494580ab0d517ab4d44cba77beb99426b878752913edac6677"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/officer.glb",
+      "sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a"
+    },
+    {
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\甲冑_織田信長_v013_肌色と動作.blend",
+      "sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9"
+    },
+    {
+      "path": "Scripts/rasterize_officer3d_materials.py",
+      "sha256": "a9e4de6caf4b8f449ee72fbf0800849f88dff9192564f00e85ec381a987c2193"
+    },
+    {
+      "path": "Scripts/preserve_officer3d_clips.py",
+      "sha256": "ef9d62c79ac6cc8ca3aefcdc8829642fe40fcf7c06145d54e3ad9df01d42d479"
+    }
+  ]
+}

@@ -8,6 +8,14 @@ using System.Threading.Tasks;
 public partial class TaxPanel : MarginContainer
 {
     public event Action<WorldState>? WorldChanged;
+    public TaxSimulation Simulation => simulation;
+    // Reuse the same UI transaction boundary; 3D never owns a separate simulation.
+    public void InvokeFrom3D(string action)
+    {
+        var button=action switch {"submit"=>submit,"advance"=>advance,"pause"=>pause,"save"=>save,"load"=>load,"reset"=>reset,_=>throw new ArgumentException("Unknown 3D action")};
+        if(button.Disabled)throw new InvalidOperationException("Action disabled");
+        button.EmitSignal(Button.SignalName.Pressed);
+    }
     private TaxSimulation simulation = null!;
     private string scenarioJson = "";
     private Label summary = null!;
@@ -34,11 +42,11 @@ public partial class TaxPanel : MarginContainer
     private int requestNumber;
     private int cancellationNumber;
 
-    public void Initialize(string json)
+    public void Initialize(string json, string? storagePath = null)
     {
         scenarioJson = json;
         simulation = TaxSimulation.Create(PrototypeScenario.Load(json));
-        savePath = ProjectSettings.GlobalizePath("user://tax-prototype-v5.json");
+        savePath = storagePath ?? ProjectSettings.GlobalizePath("user://tax-prototype-v5.json");
         foreach (var edge in new[] { "left", "top", "right", "bottom" }) AddThemeConstantOverride("margin_" + edge, 28);
         var column = new VBoxContainer(); column.AddThemeConstantOverride("separation", 10); AddChild(column);
         column.AddChild(new Label { Text = "徴税・命令配送・保存復旧  /  試作検証", Modulate = new Color("e2c891") });

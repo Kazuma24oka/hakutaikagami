@@ -1,0 +1,8 @@
+{
+  "schema": 2,
+  "presets": [
+    {"id":"commander","label":"基準武将","face":"v013_face","hair":"none_under_helmet","beard":"none","helmet":true,"mask":true,"cloth":[1,1,1],"lacquer":[1,1,1],"metal":[1,1,1]},
+    {"id":"veteran","label":"交換試作・髪と短髭","face":"angular_jaw","hair":"tied","beard":"short","helmet":false,"mask":false,"cloth":[0.45,0.6,1],"lacquer":[0.5,0.6,1],"metal":[1,0.88,0.65]}
+  ],
+  "character_presets":{"character-001":"commander","character-002":"veteran","character-003":"commander"}
+}

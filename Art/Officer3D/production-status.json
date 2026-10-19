@@ -77,5 +77,24 @@
     "runtime_binding": "02526c8a51a609bdfdc24845884bd83d28f244f2c7099f4212ffd2796a2173ce",
     "local_review": "Art/Officer3D/TrialV1/runtime-local/review.html",
     "next": "Authored LOD and performance reduction; baseline50actors~10fps"
+  },
+  "followup_v2": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_NOT_YET_ACCEPTED",
+    "report": "Docs/Proposals/OFFICER_3D_TRIAL_V2.md",
+    "runtime_binding": "096fb7ac2443d7fc501aa015eed9fc75c06321153b3ee9d82410553ebb419295",
+    "implemented": [
+      "three authored LOD meshes",
+      "source material ID mask + independent cloth/lacquer/metal multipliers",
+      "face/hair/beard reusable prototype",
+      "shared TaxPanel command/time/save session in Main 3D tab"
+    ],
+    "not_claimed": [
+      "production quality new character art",
+      "all 8192 armor combinations",
+      "near 50 actors at 60fps",
+      "general strategic movement/battle",
+      "negotiation implementation"
+    ],
+    "negotiation_direction": "left foreground self, right background counterpart; deferred"
   }
 }

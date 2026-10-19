@@ -139,3 +139,10 @@ Game/Shaders/Officer3D.gdshader -text whitespace=blank-at-eol,blank-at-eof,space
 Game/Scenes/Officer3DReview.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/Show-Officer3DTrial.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Game/Data/Officer3D/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for V2 bound runtime and shared session UI.
+Game/Scripts/TaxPanel.cs -text
+Game/Shaders/Officer3DV2.gdshader -text
+Game/Scenes/Officer3DV2Review.tscn -text
+Scripts/Show-Officer3DV2.ps1 -text
+Scripts/capture_officer3d_main.gd -text

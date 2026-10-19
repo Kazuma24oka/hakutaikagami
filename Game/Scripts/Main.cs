@@ -71,6 +71,12 @@ public partial class Main : Control
         var protocolPanel = new ProtocolPanel { Name = "応答・代理・共通検証" };
         tabs.AddChild(protocolPanel);
         protocolPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
+        if (System.IO.File.Exists(ProjectSettings.GlobalizePath("res://Assets/Officer3D/TrialV2/near.glb")))
+        {
+            try {Officer3DV2Gate.Require(true);var stage=new Officer3DStage{Name="3D武将・配送"};tabs.AddChild(stage);stage.Initialize(taxPanel);}
+            catch(Exception e){var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
+        }
+
         bool legacyOfficer2D = OS.GetCmdlineUserArgs().Contains("--legacy-officer-2d");
         bool legacyOfficerTest = OS.GetCmdlineUserArgs().Contains("--officer-motion-smoke-test");
         bool legacyOfficerReview = OS.GetCmdlineUserArgs().Contains("--officer-motion-review");
@@ -84,8 +90,8 @@ public partial class Main : Control
         {
             var officerMotionPanel = new OfficerMotionTrial { Name = "旧2D武将（凍結）" };
             tabs.AddChild(officerMotionPanel);
-            if (legacyOfficerTest) { tabs.CurrentTab = 3; _ = officerMotionPanel.SmokeTest(); }
-            else if (legacyOfficerReview) tabs.CurrentTab = 3;
+            if (legacyOfficerTest) { tabs.CurrentTab = tabs.GetTabCount()-1; _ = officerMotionPanel.SmokeTest(); }
+            else if (legacyOfficerReview) tabs.CurrentTab = tabs.GetTabCount()-1;
         }
         if (OS.GetCmdlineUserArgs().Contains("--shared-protocol-smoke-test")) { tabs.CurrentTab = 2; _ = protocolPanel.SmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--deadline-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeadlineCancellationSmokeTest(); }
