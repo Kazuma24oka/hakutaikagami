@@ -13,7 +13,7 @@ def main():
  cases=[dict(id=i['id']+'-'+a['kind'],contract=i['id'],status='PLANNED_NOT_EXECUTED',**a) for i in d['items'] for a in i['acceptance']]
  write(BASE/'acceptance-plan.json',json.dumps(dict(schema=1,count=len(cases),cases=cases),ensure_ascii=False,indent=2))
  assert len(cases)==48
- blocks=[];md=['# '+d['title'],'',d['authority'],'',d['scope'],'']
+ blocks=[];md=['# '+d['title'],'',d['authority'],'',d['scope'],'','設計採用時点の記録。後続の実装・検証状況は [2026-10-20実装結果](implementation-report.html) を参照。全制度・全48受入の完了ではない。','']
  for i in d['items']:
   refs=' '.join(f'<a href="../basic-design-v1.html#{esc(ref)}">{esc(ref)}</a>' if not ref.startswith('PW') else '<a href="../../Proposals/PLAYER_PEACE_WAR_FLOW.md">'+esc(ref)+'</a>' for ref in i['refs'])
   sources=' '.join(f'<a href="../../../{esc(p)}">{esc(Path(p).name)}</a>' for p in i['source'])

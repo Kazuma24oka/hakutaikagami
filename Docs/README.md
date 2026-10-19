@@ -11,9 +11,13 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 共通Coreの実装結果（2026-10-20）
+
+**[短いHTML報告](Design/CommonContractV1/implementation-report.html)**。G1の4項目完了後、共通の秒時計・命令・保存を実装し、架空地域で3任務の一巡と独立Godot画面まで検証。Core412件（既存317＋新95）成功、別プロセス復旧・途中終了・GPU4枚を確認。通常3D Mainと旧保存は維持。全制度・全国・全48受入の完了ではありません。[実装記録](Decisions/2026-10-20_COMMON_CORE_IMPLEMENTATION.md)。
+
 ## 共通契約の詳細設計V1
 
-[共通データ・状態遷移・保存仕様HTML](Design/CommonContractV1/common-contract-v1.html)。推奨委任により24契約を採用。8状態軸・6 API境界・旧セーブ方針・実装順を記載。[採用記録](Decisions/2026-10-19_COMMON_CONTRACT_V1.md)。新仕様の実装は未着手、受入48件は未実行です。
+[共通データ・状態遷移・保存仕様HTML](Design/CommonContractV1/common-contract-v1.html)。推奨委任により24契約を採用。8状態軸・6 API境界・旧セーブ方針・実装順を記載。[採用記録](Decisions/2026-10-19_COMMON_CONTRACT_V1.md)。上記の後続実装は共通の検証用部分まで進んでいます。設計時の受入48件を全件合格した状態ではありません。
 
 ## 完了と残作業
 

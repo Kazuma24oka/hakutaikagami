@@ -1,0 +1,52 @@
+{
+  "status": "PASSED",
+  "checks": [
+    "dispatch does not advance time",
+    "important arrival pauses at its boundary",
+    "sealed body hidden in actual view model",
+    "lord screen learns report only after arrival",
+    "officer screen has intermediate route progress",
+    "UI restores saved revision paused without legacy clock conversion",
+    "UI restore retains physical progress",
+    "three reports visible to lord after loop",
+    "actual button callbacks completed without exceptions"
+  ],
+  "screen": "【person:lordの認識】\n所在: site:castle\n\n【認識している任務】\ntask:1: 任務完了\ntask:2: 任務完了\ntask:3: 任務完了\n\n【手元に届いた書状】\nmessage:task/1/report: 任務完了\nmessage:task/2/report: 任務完了\nmessage:task/3/report: 任務完了\n\n【知識の出典】\n8秒 / 任務完了\n16秒 / 任務完了\n16秒 / 任務完了",
+  "seconds": 16,
+  "schema": 1,
+  "date": "2026-10-20",
+  "scope": "Independent data-only Godot screen; normal 3D Main and legacy saves unchanged.",
+  "gpu_log": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nCOMMON_CONTRACT_UI_COMPLETE 9\n",
+  "images": {
+    "sealed.png": "15c6afe15a5e371822f43c85d00a8520e77969fd3aafba4dc9819c74f0433ebc",
+    "in-progress.png": "b4711d7251d2282af5ee5feb3384fda66dbab66d44abdb24ca3949d248a79f0b",
+    "restored.png": "e1c199f353fceb78d4708163a3147eef77cedc55d807dfc3330b6923e3d9d01c",
+    "complete.png": "83298de2b6652d8bda954acb9852cea881a8d696ffb324f9146152a4a546e0cb"
+  },
+  "code_sha256": {
+    "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
+    "Core/Contracts/ContractJson.cs": "263ff5f29fa0f0177f4a54aa6dff689099196ef32a269aeb83f6c27b6e877736",
+    "Core/Contracts/ContractModels.cs": "877b97442fcfc911125fa66ed8a3cf5990e17225d796a6ce079a93f0f4004044",
+    "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
+    "Core/Contracts/ContractValidation.cs": "f01748e67f63b4df58208d2a219e8806be2aa13a7153d31cb674321f47e50171",
+    "Core/Contracts/GenerationSaveStore.cs": "a5b46f3ae49401060eb807beee97a95cac0c20b6a4bfd918bd97fa7a2b64a9b5",
+    "Core/Contracts/LegacyContractAdapter.cs": "2a0394387ffb842dd37cfdc1acfa3e2bd790aad85bd0762faf30a04bfb68dca8",
+    "Core/Contracts/WorldSession.cs": "1dbfe602fbfabef27062c6469f3122dac70b4d37eac26c4081046d6bde88e9c8",
+    "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
+    "Game/Scenes/CommonContractTrial.tscn": "a7124ec70df692145a02fe47de447c03452d706f3a7a11c62b28b93985ecf986"
+  },
+  "binary_sha256": {
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "108b4b9dd9e9d02b92525b68dafaa9eefc26fd3bc6cb154d996b36ce8645b94a",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "dcc0b3d28d0a6f2292a4c3ed91837503088ee555a862a597e901972e7cf19255"
+  },
+  "visual_review": {
+    "reviewer": "Codex self review; not user approval",
+    "images": [
+      "sealed.png",
+      "in-progress.png",
+      "restored.png",
+      "complete.png"
+    ],
+    "result": "Final GPU captures are byte-identical to all four images visually inspected in this turn; sealed body hidden, route progress 2000mm retained, three completion reports visible to lord."
+  }
+}

@@ -1,5 +1,13 @@
 # 百代鏡：作業の入口
 
+## 共通Coreの実装（2026-10-20）
+
+G1の4項目を実装。Core/ContractsのWorldSessionはGameSecondsV1の独立検証系、旧TaxSimulationと通常Mainは保持。CC-01〜24のうち共通の検証用部分を接続し、全制度完成とは扱わない。Docs/Decisions/2026-10-20_COMMON_CORE_IMPLEMENTATION.mdとDocs/Design/CommonContractV1/implementation-report.htmlを参照。全Core412件（新95）、別プロセス/途中終了、独立Godot画面9検査・GPU4枚を確認。新形式はcommon-core-fixture-v1だけに対応。実地理・製品係数・全48受入・補償実行・本格NPC・通常3D接続は未完了。
+
+独立画面の入口Scripts/Show-CommonContract.ps1。変更時はCore試験、Scripts/verify_common_contract_process.py、Scripts/verify_common_contract_gpu.py、報告生成/文書検査を関連範囲で再実施し、コード/画像/DLLのSHA対応を更新する。新制度へ別配送器・別時計を作らず、旧Tickの無断移行・未知情報の画面/NPC参照を禁止。
+
+ユーザー希望：毎回、最終報告の末尾に「次にやる作業」と「その完了条件」を簡潔に添える。
+
 ## 共通契約の詳細設計V1（2026-10-19）
 
 ユーザーが推奨選定を委任し、Docs/Design/CommonContractV1/common-contract-v1.jsonのCC-01〜24を採用。HTML/Markdown/受入予定48件はScripts/build_common_contract.pyで生成。決定はDocs/Decisions/2026-10-19_COMMON_CONTRACT_V1.md。これは共通契約の設計採用で、新WorldSession・game-world-save/1等は未実装。旧試作Version1〜5と旧入口を保持し、製品秒への自動移行は現段階で非対応。旧Tickを秒へ読み替えない。ID・権限・所在・知識・効果台帳・隔離Load・世代保存の規則を各制度で共用する。実装前に照合元SHA、変更点、予定試験を確認し、24/24採用と全制度詳細完成を混同しない。

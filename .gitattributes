@@ -183,3 +183,16 @@ Scripts/validate_basic_design.cjs -text
 Scripts/build_common_contract.py -text
 Scripts/common_contract_template.html -text
 Scripts/validate_common_contract.cjs -text
+
+Core/Contracts/** -text
+Tools/CommonContractProbe/** -text
+Game/Scripts/CommonContractTrial.cs -text
+Game/Scenes/CommonContractTrial.tscn -text
+Scripts/Show-CommonContract.ps1 -text
+Scripts/verify_common_contract_process.py -text
+Scripts/build_common_implementation_report.py -text
+Scripts/verify_common_implementation.cjs -text
+
+Scripts/verify_common_contract_gpu.py -text
+
+Scripts/verify_common_contract_inputs.py -text

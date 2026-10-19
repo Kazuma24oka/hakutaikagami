@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "status": "PASSED",
+  "cross_process": {
+    "saved_seconds": 4,
+    "restored_seconds": 4,
+    "next_random_identical": true,
+    "semantic_digest_identical": true,
+    "single_transfer": true,
+    "restored_paused": true
+  },
+  "abrupt_process_exit": {
+    "exit_code": 73,
+    "stage": "GenerationVerified before current reference publication",
+    "old_generation_still_current": true,
+    "scope": "Process exit tested; physical power-loss durability not certified."
+  },
+  "peace_fixture": {
+    "Mode": "peace",
+    "Synthetic": true,
+    "Timeline": [
+      {
+        "Stage": "重要任務が到達・未開封で停止",
+        "Seconds": 2,
+        "Locations": [
+          {
+            "Actor": "person:lord",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:officer",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:clerk",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          }
+        ],
+        "Tasks": [
+          {
+            "Id": "task:1",
+            "Execution": "NotStarted",
+            "Report": "NotCreated",
+            "Assessment": "Pending"
+          }
+        ]
+      },
+      {
+        "Stage": "本人が開封・準備作業・返報認識",
+        "Seconds": 8,
+        "Locations": [
+          {
+            "Actor": "person:lord",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:officer",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:clerk",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          }
+        ],
+        "Tasks": [
+          {
+            "Id": "task:1",
+            "Execution": "Completed",
+            "Report": "KnownByRecipient",
+            "Assessment": "Confirmed"
+          }
+        ]
+      },
+      {
+        "Stage": "本人は移動中・別担当が並行履行",
+        "Seconds": 12,
+        "Locations": [
+          {
+            "Actor": "person:lord",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:officer",
+            "Kind": "Traveling",
+            "Site": null,
+            "ProgressMm": 2000
+          },
+          {
+            "Actor": "person:clerk",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          }
+        ],
+        "Tasks": [
+          {
+            "Id": "task:1",
+            "Execution": "Completed",
+            "Report": "KnownByRecipient",
+            "Assessment": "Confirmed"
+          },
+          {
+            "Id": "task:2",
+            "Execution": "Running",
+            "Report": "NotCreated",
+            "Assessment": "Pending"
+          },
+          {
+            "Id": "task:3",
+            "Execution": "Running",
+            "Report": "NotCreated",
+            "Assessment": "Pending"
+          }
+        ]
+      },
+      {
+        "Stage": "途中保存から停止状態で復旧",
+        "Seconds": 12,
+        "Locations": [
+          {
+            "Actor": "person:lord",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:officer",
+            "Kind": "Traveling",
+            "Site": null,
+            "ProgressMm": 2000
+          },
+          {
+            "Actor": "person:clerk",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          }
+        ],
+        "Tasks": [
+          {
+            "Id": "task:1",
+            "Execution": "Completed",
+            "Report": "KnownByRecipient",
+            "Assessment": "Confirmed"
+          },
+          {
+            "Id": "task:2",
+            "Execution": "Running",
+            "Report": "NotCreated",
+            "Assessment": "Pending"
+          },
+          {
+            "Id": "task:3",
+            "Execution": "Running",
+            "Report": "NotCreated",
+            "Assessment": "Pending"
+          }
+        ]
+      },
+      {
+        "Stage": "移動・委任完了、主君への返報を確認",
+        "Seconds": 16,
+        "Locations": [
+          {
+            "Actor": "person:lord",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:officer",
+            "Kind": "AtSite",
+            "Site": "site:village",
+            "ProgressMm": 0
+          },
+          {
+            "Actor": "person:clerk",
+            "Kind": "AtSite",
+            "Site": "site:castle",
+            "ProgressMm": 0
+          }
+        ],
+        "Tasks": [
+          {
+            "Id": "task:1",
+            "Execution": "Completed",
+            "Report": "KnownByRecipient",
+            "Assessment": "Confirmed"
+          },
+          {
+            "Id": "task:2",
+            "Execution": "Completed",
+            "Report": "KnownByRecipient",
+            "Assessment": "Confirmed"
+          },
+          {
+            "Id": "task:3",
+            "Execution": "Completed",
+            "Report": "KnownByRecipient",
+            "Assessment": "Confirmed"
+          }
+        ]
+      }
+    ],
+    "Treasury": 40,
+    "Completed": 3,
+    "Assessed": 3,
+    "Digest": "857b10b0d5e7498acfbeba7a9ca88c397c5cb68686b7b18d2f0ce0088e92084a"
+  },
+  "limitations": [
+    "Synthetic seconds-domain region; not historical geography or production balancing.",
+    "Semantic digest excludes control pause and revision metadata only.",
+    "Not all 48 design acceptance cases or national-scale performance are complete."
+  ],
+  "run_evidence": "Docs/Design/CommonContractV1/runtime-local/run-c57e79f721b04fd9b76ba2760e564fe5",
+  "sources": {
+    "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
+    "Core/Contracts/ContractJson.cs": "263ff5f29fa0f0177f4a54aa6dff689099196ef32a269aeb83f6c27b6e877736",
+    "Core/Contracts/ContractModels.cs": "877b97442fcfc911125fa66ed8a3cf5990e17225d796a6ce079a93f0f4004044",
+    "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
+    "Core/Contracts/ContractValidation.cs": "f01748e67f63b4df58208d2a219e8806be2aa13a7153d31cb674321f47e50171",
+    "Core/Contracts/GenerationSaveStore.cs": "a5b46f3ae49401060eb807beee97a95cac0c20b6a4bfd918bd97fa7a2b64a9b5",
+    "Core/Contracts/LegacyContractAdapter.cs": "2a0394387ffb842dd37cfdc1acfa3e2bd790aad85bd0762faf30a04bfb68dca8",
+    "Core/Contracts/WorldSession.cs": "1dbfe602fbfabef27062c6469f3122dac70b4d37eac26c4081046d6bde88e9c8",
+    "Tools/CommonContractProbe/Program.cs": "13702f1f0eb3d3974fc12ca7bdf191bf587b4b825461fc5162e4fe531ee3a440"
+  }
+}
