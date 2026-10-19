@@ -162,3 +162,9 @@ Core/Appearance/*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab
 Core/Simulation/TaxSimulation.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Game/Scripts/Officer3DCustomActor.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Game/Scripts/TaxPanel.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Game/Scripts/MilitaryGrid*.cs -text
+Core/Simulation/Military*.cs -text
+Core/Simulation/TaxSimulation.Military.cs -text
+Scripts/*military_grid* -text
+Scripts/Show-MilitaryGrid.ps1 -text

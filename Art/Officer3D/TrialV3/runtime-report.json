@@ -135,64 +135,64 @@
   "persistence": "GUI signals save/load 3 officers; invalid IDs/schema rejected atomically; separate process checked by runner",
   "performance": {
     "near-1": {
-      "average_ms": 0.6555633333333332,
-      "fps": 1525.4056307806522,
+      "average_ms": 0.6562183333333337,
+      "fps": 1523.8830572141885,
       "draw_calls": 60,
       "primitives": 45579
     },
     "mid-1": {
-      "average_ms": 0.654005,
-      "fps": 1529.04029785705,
+      "average_ms": 0.6502049999999999,
+      "fps": 1537.9764843395546,
       "draw_calls": 60,
       "primitives": 30194
     },
     "far-1": {
-      "average_ms": 0.6358433333333333,
-      "fps": 1572.7144527215823,
+      "average_ms": 0.6350533333333331,
+      "fps": 1574.6708937831997,
       "draw_calls": 60,
       "primitives": 21097
     },
     "near-10": {
-      "average_ms": 4.789563333333332,
-      "fps": 208.787300721221,
+      "average_ms": 4.807060000000002,
+      "fps": 208.02735975835535,
       "draw_calls": 574,
       "primitives": 558587
     },
     "mid-10": {
-      "average_ms": 4.508111666666667,
-      "fps": 221.8223668668367,
+      "average_ms": 4.516480000000001,
+      "fps": 221.41136460252224,
       "draw_calls": 574,
       "primitives": 321424
     },
     "far-10": {
-      "average_ms": 4.268750000000001,
-      "fps": 234.26061493411416,
+      "average_ms": 4.281550000000001,
+      "fps": 233.56027606824625,
       "draw_calls": 574,
       "primitives": 206931
     },
     "near-50": {
-      "average_ms": 23.105949999999996,
-      "fps": 43.278895695697436,
+      "average_ms": 23.395858333333333,
+      "fps": 42.74260793309927,
       "draw_calls": 2806,
       "primitives": 3026788
     },
     "mid-50": {
-      "average_ms": 22.328303333333334,
-      "fps": 44.78620632617107,
+      "average_ms": 22.499114999999993,
+      "fps": 44.44619266135581,
       "draw_calls": 2806,
       "primitives": 1647282
     },
     "far-50": {
-      "average_ms": 22.446804999999998,
-      "fps": 44.54977000067493,
+      "average_ms": 22.75343,
+      "fps": 43.94941773613912,
       "draw_calls": 2806,
       "primitives": 1031112
     }
   },
   "hardware": "NVIDIA GeForce RTX 4060 Ti",
   "measurement": "1280x800 GL Compatibility, 15 warmup +60 samples, shadows, unique positions, mixed presets / per-slot mixes / color variants; 50 displayed instances of 3 saved officers, not 50 authored unique characters",
-  "runtime_binding": "21391c0a56de2d15ad4fa51d39e198943b2fcd2a37013fe1738a8f534218b35a",
-  "runtime_plan_sha256": "7f532c103c43a575d7ffcf19ce79fff8afea4d92d5b6df6a12d2dfc20d797a32",
+  "runtime_binding": "891677aac8c8cc4799499911f5da49840d25df5c779ba52132858ae2e0433653",
+  "runtime_plan_sha256": "e7f11e51df7c0b31e86dfd7bc4d9070b4781d2c44e5ad110e426cb8686f8859c",
   "export_binding": "bcebe8b81146afae1eb70b9fefdb4b315a270a75111bfd9ff8b497a54cbe155d",
   "geometry_audit": {
     "near": {
@@ -491,16 +491,16 @@
     "joint-attack-10.png": "ce2de2fa505d5ce45c11d9a811d8c02eb578fd92fc87d07a32b3462f85d2b9ff",
     "joint-attack-11.png": "7e0c1a885f52a406f740e530c28047ce41ee0002a929fe00ebb0b3cc646c0acd",
     "creator-ui.png": "8ff6c4036f6e6c0f4b23fea6b4bb61fec2ae76b4a2cb285d9a53c2e3b3fb8668",
-    "mixed-near-1.png": "56b897b2bf0fa69a976820d0623f1357fd2fe4908cd8c1c94074b4b277ffe948",
-    "mixed-mid-1.png": "3394af98e9df3208a37d18620a0d7c10541e9850b15217b43ac69e12fdf1d8eb",
-    "mixed-far-1.png": "2ff088d7c827aff712c9d281c5171579bb8427e0d0e3f1a7ff0bc6a5030d90b5",
-    "mixed-near-10.png": "846e924dbf8a52738e2dc66999d5dcafd9729ce20197b7242140b4cfcdd9c547",
-    "mixed-mid-10.png": "949f11687035f9c482f3faa0fd43e47b20e0dcd8834a5e902a9bdc7dd097bcbe",
-    "mixed-far-10.png": "48b6e002c98af54a654ca4e5c60882a580a2a39a9ad0796dfc35ceb4c0ef62d3",
-    "mixed-near-50.png": "2906bffc0560e55c15a31880a782ff438ce0f5730a22d55ed4a95e01d80e40f7",
-    "mixed-mid-50.png": "8dd8603274d357d2005c5adc220e7468fde556c0146fea654b8e9e231d368703",
-    "mixed-far-50.png": "e5f509478986a132b32f8c897bc757250b31177ef97788d262c7160a5187d76d",
-    "review.png": "0941a7d96352a53b8566a510a1e0d56011ccae0782cd5f8104642ad4aba7ce45",
-    "restart.png": "0d3ce956416b7c0c812a7282bfdd5a6089d93e48ebd1c90e324f00a84f8be300"
+    "mixed-near-1.png": "5d590089a99839d646a2d798ed3d1dc57b7651345e74eb44337f5d78511bd5c3",
+    "mixed-mid-1.png": "cf322b48f28421310c4f07b98d74dbae3bd8f40e78bf3bf77399d2dea9d90ce4",
+    "mixed-far-1.png": "1d222cf450979aa289355c83c1d080ae883ae42088a4be1eb1ba84a004bc7c17",
+    "mixed-near-10.png": "3de21a79d4786b15862746f9c0a7826d5a3df90ee223558c445ca030cc8595e3",
+    "mixed-mid-10.png": "2554d059dc5d9e573985f93d2daade5d0934a845a60ecb1a310ace664021e040",
+    "mixed-far-10.png": "cc65e036ef3d022e744959f74fc831a82cff8aded98db25e1e0e78fd859bcb0f",
+    "mixed-near-50.png": "a9c108aed3f40f23034d9d99a0be24f456b755108b33ae40cc65f44f2191d1dd",
+    "mixed-mid-50.png": "a72774fdcdce74cb64cf4fefead586942323fce5c951e7114b41eaf221ac94e8",
+    "mixed-far-50.png": "06fe2f9a22b6696c97d7c75b8169fa0a57331e0181371c71e00c0f6f868d349b",
+    "review.png": "836f5b60c2aa715388180e473c667092375ba47b49ad0e9b3c082af93411c6b9",
+    "restart.png": "ab5058d13bd164eb33cc9a28162b36ab06e9c786b03275e8975caaf8fb2d67df"
   }
 }

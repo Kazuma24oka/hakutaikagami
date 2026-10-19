@@ -232,6 +232,7 @@ public sealed partial class TaxSimulation
             s.Tick = checked(s.Tick + 1);
             if(s.Officers is not null) OfficerIntegrationFlow.Advance(s.Officers,s.Tick);
             MessageFlow.Advance(s.Messaging, s.Tick);
+            if(s.Officers?.Military is not null)MilitaryFlow.Advance(s.Officers.Military,s.Messaging,s.Tick,s.World.Characters.Select(c=>c.Id));
             ApplyDeadlinesAndCancellations(s);
             var due = s.Pending.Where(e => e.DueAt <= s.Tick).ToArray();
             // No implicit priority for resource conflicts: this fixture rejects conflicting decisions together.
@@ -512,5 +513,10 @@ public sealed partial class TaxSimulation
         if(s.Officers is not null) OfficerIntegrationFlow.Validate(s.Officers,s.World.Characters.Select(c=>c.Id),s.Tick);
         ValidateDeadlinesAndCancellations(s);
         MessageFlow.Validate(s.Messaging, s.Tick, world.Characters.Keys.ToHashSet(StringComparer.Ordinal));
+        if(s.Officers?.Military is not null)
+        {
+            if(s.Officers.Battle is not null)throw new InvalidDataException("Two battlefield models cannot run in one fixture session.");
+            MilitaryFlow.Validate(s.Officers.Military,s.World,s.Messaging,s.Tick);
+        }
     }
 }

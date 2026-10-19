@@ -1,8 +1,8 @@
 {
   "schema": 3,
-  "status": "REGRESSION_SELF_REVIEWED_WITH_EXISTING_ART_LIMITATIONS",
+  "status": "SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
   "runtime_binding": "21391c0a56de2d15ad4fa51d39e198943b2fcd2a37013fe1738a8f534218b35a",
-  "runtime_plan_sha256": "7f532c103c43a575d7ffcf19ce79fff8afea4d92d5b6df6a12d2dfc20d797a32",
+  "runtime_plan_sha256": "e7f11e51df7c0b31e86dfd7bc4d9070b4781d2c44e5ad110e426cb8686f8859c",
   "raw_count": 283,
   "derived_count": 11,
   "evidence_sha256": {
@@ -278,17 +278,17 @@
     "joint-attack-10.png": "ce2de2fa505d5ce45c11d9a811d8c02eb578fd92fc87d07a32b3462f85d2b9ff",
     "joint-attack-11.png": "7e0c1a885f52a406f740e530c28047ce41ee0002a929fe00ebb0b3cc646c0acd",
     "creator-ui.png": "8ff6c4036f6e6c0f4b23fea6b4bb61fec2ae76b4a2cb285d9a53c2e3b3fb8668",
-    "mixed-near-1.png": "56b897b2bf0fa69a976820d0623f1357fd2fe4908cd8c1c94074b4b277ffe948",
-    "mixed-mid-1.png": "3394af98e9df3208a37d18620a0d7c10541e9850b15217b43ac69e12fdf1d8eb",
-    "mixed-far-1.png": "2ff088d7c827aff712c9d281c5171579bb8427e0d0e3f1a7ff0bc6a5030d90b5",
-    "mixed-near-10.png": "846e924dbf8a52738e2dc66999d5dcafd9729ce20197b7242140b4cfcdd9c547",
-    "mixed-mid-10.png": "949f11687035f9c482f3faa0fd43e47b20e0dcd8834a5e902a9bdc7dd097bcbe",
-    "mixed-far-10.png": "48b6e002c98af54a654ca4e5c60882a580a2a39a9ad0796dfc35ceb4c0ef62d3",
-    "mixed-near-50.png": "2906bffc0560e55c15a31880a782ff438ce0f5730a22d55ed4a95e01d80e40f7",
-    "mixed-mid-50.png": "8dd8603274d357d2005c5adc220e7468fde556c0146fea654b8e9e231d368703",
-    "mixed-far-50.png": "e5f509478986a132b32f8c897bc757250b31177ef97788d262c7160a5187d76d",
-    "review.png": "0941a7d96352a53b8566a510a1e0d56011ccae0782cd5f8104642ad4aba7ce45",
-    "restart.png": "0d3ce956416b7c0c812a7282bfdd5a6089d93e48ebd1c90e324f00a84f8be300",
+    "mixed-near-1.png": "5d590089a99839d646a2d798ed3d1dc57b7651345e74eb44337f5d78511bd5c3",
+    "mixed-mid-1.png": "cf322b48f28421310c4f07b98d74dbae3bd8f40e78bf3bf77399d2dea9d90ce4",
+    "mixed-far-1.png": "1d222cf450979aa289355c83c1d080ae883ae42088a4be1eb1ba84a004bc7c17",
+    "mixed-near-10.png": "3de21a79d4786b15862746f9c0a7826d5a3df90ee223558c445ca030cc8595e3",
+    "mixed-mid-10.png": "2554d059dc5d9e573985f93d2daade5d0934a845a60ecb1a310ace664021e040",
+    "mixed-far-10.png": "cc65e036ef3d022e744959f74fc831a82cff8aded98db25e1e0e78fd859bcb0f",
+    "mixed-near-50.png": "a9c108aed3f40f23034d9d99a0be24f456b755108b33ae40cc65f44f2191d1dd",
+    "mixed-mid-50.png": "a72774fdcdce74cb64cf4fefead586942323fce5c951e7114b41eaf221ac94e8",
+    "mixed-far-50.png": "06fe2f9a22b6696c97d7c75b8169fa0a57331e0181371c71e00c0f6f868d349b",
+    "review.png": "836f5b60c2aa715388180e473c667092375ba47b49ad0e9b3c082af93411c6b9",
+    "restart.png": "ab5058d13bd164eb33cc9a28162b36ab06e9c786b03275e8975caaf8fb2d67df",
     "sheet-commander.jpg": "760dd23aa27067c33437c327e24673038d745c72bbb95b06f91ce170fa8ae0e7",
     "sheet-veteran.jpg": "be05448064300abd3f5e4c6c9dc4996c83884820bc3dcd838b22974f490ffe14",
     "sheet-red_guard.jpg": "fd16d748a9a441d6d232ed293ff3dad7fbf93be80d11f36869c5c6d5cbf3d984",
@@ -296,10 +296,10 @@
     "sheet-joints.jpg": "95013d7f9cdc4a566414ef3cdbeff77753e1a42932d827001c98f5943a9f9ab0",
     "sheet-base.jpg": "1953f1dda969b9846c6f8f827ff3617cc9320af0904a808e39062dc09b5a6184",
     "sheet-skin.jpg": "0e129be4f30c895c54c6390747385004527d148a54cf0c42edf977a43167a6b9",
-    "sheet-mixed.jpg": "fe147e72280573811d38da05c48f9898507d4b4c7c58ab7890f7121e9c783378",
+    "sheet-mixed.jpg": "0b0707b2310a7c5d9316e75f5738d05c7699f24a96461c74f42da60d777b6545",
     "motion-walk.gif": "ed7a78fdad6c14ca3b23e3dd47fc25d683ccc3b458167bde6934bca71dda01e5",
     "motion-attack.gif": "cdb42fc900355b8fb4fb4072c0ac9a4c63af7201be243b9349fc3aa7c64206b4",
-    "review.html": "60510569da648c6e65f0c17065dff0c27f942cd72b604e8176cc067b4015de5c"
+    "review.html": "757d28d93e7713ffc9ce571035d24666fae99c0ee814c452c3bdb71bf7dec614"
   },
   "inspected_this_regression": [
     "creator-ui.png",
@@ -314,5 +314,6 @@
     "no new geometry or textures generated",
     "far silver armor surface loss and simplified hair/beard remain; no new art-quality acceptance inferred"
   ],
-  "review_builder_sha256": "9ecf42145e625e530bc6e830774fe9e583e65936dd577bd5c3a3945cf1ede41a"
+  "review_builder_sha256": "9ecf42145e625e530bc6e830774fe9e583e65936dd577bd5c3a3945cf1ede41a",
+  "current_review_scope": "Runtime regression refreshed; historical visual acceptance remains historical. No new art created or newly accepted."
 }

@@ -61,7 +61,8 @@ public partial class Main : Control
         var taxPanel = new TaxPanel { Name = "徴税・保存検証" };
         tabs.AddChild(taxPanel);
         bool officerWorldTest=OS.GetCmdlineUserArgs().Any(a=>a=="--officer-world-test"||a=="--officer-world-restore");
-        taxPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"),officerWorldTest?ProjectSettings.GlobalizePath("user://officer-world-test.json"):null);
+        bool militaryTest=OS.GetCmdlineUserArgs().Any(a=>a=="--military-grid-test"||a=="--military-grid-restore");
+        taxPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"),militaryTest?ProjectSettings.GlobalizePath("user://military-grid-test.json"):officerWorldTest?ProjectSettings.GlobalizePath("user://officer-world-test.json"):null);
         taxPanel.WorldChanged += updated =>
         {
             world = updated;
@@ -76,13 +77,22 @@ public partial class Main : Control
         {
             try
             {
-                var stage=new OfficerWorldStage{Name="3D武将・合戦検証"};tabs.AddChild(stage);stage.Initialize(taxPanel);
-                if(officerWorldTest){tabs.CurrentTab=tabs.GetTabCount()-1;_ = OfficerWorldValidation.Run(stage,OS.GetCmdlineUserArgs().Contains("--officer-world-restore"));}
-                else if(OS.GetCmdlineUserArgs().Contains("--officer-world-show"))tabs.CurrentTab=tabs.GetTabCount()-1;
+                if(officerWorldTest||OS.GetCmdlineUserArgs().Contains("--officer-world-show"))
+                {
+                    var stage=new OfficerWorldStage{Name="旧3D接続検証"};tabs.AddChild(stage);stage.Initialize(taxPanel);
+                    if(officerWorldTest){tabs.CurrentTab=tabs.GetTabCount()-1;_ = OfficerWorldValidation.Run(stage,OS.GetCmdlineUserArgs().Contains("--officer-world-restore"));}
+                    else tabs.CurrentTab=tabs.GetTabCount()-1;
+                }
+                else
+                {
+                    var stage=new MilitaryGridStage{Name="部隊・軍令・地図"};tabs.AddChild(stage);stage.Initialize(taxPanel);
+                    if(militaryTest){tabs.CurrentTab=tabs.GetTabCount()-1;_ = MilitaryGridValidation.Run(stage,OS.GetCmdlineUserArgs().Contains("--military-grid-restore"));}
+                    else if(OS.GetCmdlineUserArgs().Contains("--military-grid-show"))tabs.CurrentTab=tabs.GetTabCount()-1;
+                }
             }
-            catch(Exception e){GD.PushWarning(e.Message);if(officerWorldTest){GetTree().Quit(2);return;}var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
+            catch(Exception e){GD.PushWarning(e.Message);if(officerWorldTest||militaryTest){GetTree().Quit(2);return;}var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
         }
-        else if(officerWorldTest){GD.PushError("Local 3D assets unavailable");GetTree().Quit(2);return;}
+        else if(officerWorldTest||militaryTest){GD.PushError("Local 3D assets unavailable");GetTree().Quit(2);return;}
 
         bool legacyOfficer2D = OS.GetCmdlineUserArgs().Contains("--legacy-officer-2d");
         bool legacyOfficerTest = OS.GetCmdlineUserArgs().Contains("--officer-motion-smoke-test");

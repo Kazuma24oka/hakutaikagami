@@ -31,6 +31,8 @@ public sealed class OfficerIntegration
     public double DisplayFraction {get;set;}
     public int DisplaySpeed {get;set;}=1;
     public FieldBattle? Battle {get;set;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public MilitaryState? Military {get;set;}
 }
 
 // This fixed two-unit fixture is not the production battle/authority/NPC model.
@@ -143,7 +145,7 @@ public sealed partial class TaxSimulation
     public void StartFieldFixture()=>Mutate(s=>
     {
         if(s.Officers is null)throw new InvalidOperationException("Officer integration is disabled.");
-        if(s.Officers.Battle is not null)throw new InvalidOperationException("Battle fixture already exists; use session reset for a new run.");
+        if(s.Officers.Battle is not null||s.Officers.Military is not null)throw new InvalidOperationException("Battle fixture already exists; use session reset for a new run.");
         var ids=s.World.Characters.Select(c=>c.Id).ToArray();
         s.Officers.Battle=new(){StartedAt=s.Tick,Tick=s.Tick,Units=[
             new("unit-red",ids[0],"fixture-red",-5000,-5000,100,100,100,FieldPhase.Standing),
