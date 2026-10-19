@@ -19,3 +19,5 @@ Art/Officer、Officer系2D素材・シーン・スクリプト・旧Proposalsは
 旧AGENTSはDocs/Archive/Officer2D/AGENTS_BEFORE_3D_2026-10-19.md、検証済みZIPとGit bundleの場所はArt/Officer3D/archive-verification.json。旧原本は削除していない。旧2Dを再開する場合はユーザーの明示指示が必要。
 
 共通Core・世界時間・命令／配送／保存復旧の基盤は保持し、表示を変更してもゲーム状態の権限や決定性を変えない。
+
+立ち絵はユーザー選択により2Dイラスト。ゲーム内3Dモデルの接写で代替しない。その他の選択肢はDocs/Proposals/OFFICER_3D_OPTIONS.mdで未選択として管理し、推奨Aを承認済みと扱わない。旧2Dスプライト工程の再開ではない。

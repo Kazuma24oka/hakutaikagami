@@ -42,5 +42,18 @@
     "Animation clip set and in-place vs root-motion contract",
     "3D appearance save schema and licensing/provenance inventory"
   ],
-  "current_execution": "Read-only source inspection, video frame sampling, 2D archival and planning. No 3D model modification/export/import/Godot3D rendering performed."
+  "current_execution": "Read-only source inspection, video frame sampling, 2D archival and planning. No 3D model modification/export/import/Godot3D rendering performed.",
+  "portrait_policy": {
+    "status": "USER_SELECTED",
+    "medium": "2D illustration",
+    "in_game_character": "3D model",
+    "closeup_3d_as_portrait": false,
+    "unselected": [
+      "illustration style/proportions",
+      "modular illustration vs whole portrait",
+      "shared appearance ID asset coverage"
+    ]
+  },
+  "options_reference": "Docs/Proposals/OFFICER_3D_OPTIONS.md",
+  "options_status": "RECOMMENDATIONS_ONLY_NOT_YET_SELECTED"
 }
