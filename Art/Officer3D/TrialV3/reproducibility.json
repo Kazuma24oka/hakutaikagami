@@ -1,0 +1,22 @@
+{
+  "binding": "bcebe8b81146afae1eb70b9fefdb4b315a270a75111bfd9ff8b497a54cbe155d",
+  "same_environment_repeat": true,
+  "producer_sha256": "8b081352a31c594c60ad9b65b9faf38e147be45935e544c8ce4c5741960d5721",
+  "comparison": {
+    "near": {
+      "original": "1db4bc8fd71c184aadb137fdccc6d0a155f416c3f8b45a30cceac8d93e1d4d2e",
+      "repeat": "1db4bc8fd71c184aadb137fdccc6d0a155f416c3f8b45a30cceac8d93e1d4d2e",
+      "byte_exact": true
+    },
+    "mid": {
+      "original": "5b1e644b97af41a545c21dee05fcdd5706f22d896378ad6742989e06c5f12267",
+      "repeat": "5b1e644b97af41a545c21dee05fcdd5706f22d896378ad6742989e06c5f12267",
+      "byte_exact": true
+    },
+    "far": {
+      "original": "7385c1abd9f5408e9bb997df05f89fec40364e01acffa0bfd352a6bc1ebcca92",
+      "repeat": "7385c1abd9f5408e9bb997df05f89fec40364e01acffa0bfd352a6bc1ebcca92",
+      "byte_exact": true
+    }
+  }
+}

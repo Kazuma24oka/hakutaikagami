@@ -1,0 +1,142 @@
+{
+  "binding": "bcebe8b81146afae1eb70b9fefdb4b315a270a75111bfd9ff8b497a54cbe155d",
+  "weights": {
+    "torso": {
+      "vertices": 3432,
+      "faces": 3503,
+      "max_weight_sum_error": 1.1102230246251565e-16,
+      "weights_reference": "slot_torso",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "waist": {
+      "vertices": 5880,
+      "faces": 6090,
+      "max_weight_sum_error": 1.1102230246251565e-16,
+      "weights_reference": "slot_waist",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "helmet": {
+      "vertices": 3373,
+      "faces": 3462,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_helmet",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "neck_guard": {
+      "vertices": 624,
+      "faces": 630,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_neck_guard",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "mask": {
+      "vertices": 322,
+      "faces": 348,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_mask",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "shoulders": {
+      "vertices": 1728,
+      "faces": 1848,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_shoulders",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "arms": {
+      "vertices": 448,
+      "faces": 408,
+      "max_weight_sum_error": 1.1102230246251565e-16,
+      "weights_reference": "slot_arms",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "thighs": {
+      "vertices": 1008,
+      "faces": 1092,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_thighs",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "shins": {
+      "vertices": 648,
+      "faces": 652,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_shins",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    },
+    "feet": {
+      "vertices": 992,
+      "faces": 1016,
+      "max_weight_sum_error": 0,
+      "weights_reference": "slot_feet",
+      "material_categories": [
+        "cloth",
+        "lacquer",
+        "metal"
+      ]
+    }
+  },
+  "mouth_anchor": [
+    -0.00010902064968831837,
+    -0.06272967904806137,
+    1.5235573053359985
+  ],
+  "lod": {
+    "near": {
+      "sha256": "1db4bc8fd71c184aadb137fdccc6d0a155f416c3f8b45a30cceac8d93e1d4d2e",
+      "bytes": 19496852,
+      "triangles_all_parts": 183285,
+      "mesh_count": 35
+    },
+    "mid": {
+      "sha256": "5b1e644b97af41a545c21dee05fcdd5706f22d896378ad6742989e06c5f12267",
+      "bytes": 10996092,
+      "triangles_all_parts": 82599,
+      "mesh_count": 35
+    },
+    "far": {
+      "sha256": "7385c1abd9f5408e9bb997df05f89fec40364e01acffa0bfd352a6bc1ebcca92",
+      "bytes": 6863208,
+      "triangles_all_parts": 46009,
+      "mesh_count": 35
+    }
+  },
+  "source_preserved": true,
+  "elapsed_seconds": 12.088721513748169
+}

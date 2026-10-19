@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "stage": "runtime",
+  "dependencies": [
+    {
+      "path": "Art/Officer3D/TrialV3/contract.json",
+      "sha256": "bd9cd195d09193de54211dd32a2a9f23bd68e85e7ba81347dbe9cff2f1f2e747"
+    },
+    {
+      "path": "Art/Officer3D/TrialV3/export-manifest.json",
+      "sha256": "ada3563e082e3524b90e9052b5c60d2456fe999f30c237768c451e74e8491458"
+    },
+    {
+      "path": "Scripts/officer3d_v3_pipeline.py",
+      "sha256": "aa3961bd8c63588b8bb3308ada63384d709f4c17cf49f0a9ff086baccea05085"
+    },
+    {
+      "path": "Scripts/validate_officer3d_v3.py",
+      "sha256": "5b2b7cbe760527a154e628429684e61c99be689edb4cad368d9234ceb3352fe2"
+    },
+    {
+      "path": "Game/Scripts/Officer3DCustomActor.cs",
+      "sha256": "4a78ff2e6412948aa0f4eb3241cd78e89423bd879b36c45cba6fdae95afc3506"
+    },
+    {
+      "path": "Game/Scripts/Officer3DCreator.cs",
+      "sha256": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c"
+    },
+    {
+      "path": "Game/Scripts/Officer3DV3Validation.cs",
+      "sha256": "6a48aae09482edbfce2377ae3d0c99ed12884012af70b7d289b8f15158fc7a5f"
+    },
+    {
+      "path": "Game/Scripts/Officer3DV3Gate.cs",
+      "sha256": "359ffa2ff8a5d913d8fb406ebac935f8231686ff60d2319d922f59b844c427c4"
+    },
+    {
+      "path": "Game/Scripts/Officer3DModel.cs",
+      "sha256": "f899442ca790902329857479960fdcf71a990a826f8619435cc0566e092fee2b"
+    },
+    {
+      "path": "Game/Shaders/Officer3D.gdshader",
+      "sha256": "e42fc79b673b582136d66ef618eb761f7f0a719f6f08c671ec2b1192e2da483c"
+    },
+    {
+      "path": "Game/Shaders/Officer3DV3.gdshader",
+      "sha256": "e2b6bdea8f6666ba28b1e5f8c420415609254da3a79ddef65c22ca4b0d6fdc05"
+    },
+    {
+      "path": "Game/Scenes/Officer3DCreator.tscn",
+      "sha256": "edbfa95f90091fc519fe4f6bb59d29f2e85e6fad42feee4570fdd1b063346092"
+    },
+    {
+      "path": "Game/Data/Officer3D/face-protection.json",
+      "sha256": "066e12c804a72c8bb8b4755e7194ad2640e5c91ea3ddb0ac1097cff04b6a02bd"
+    },
+    {
+      "path": "Core/Common/SessionInfrastructure.cs",
+      "sha256": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/normal.png",
+      "sha256": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/orm.png",
+      "sha256": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV2/materials.png",
+      "sha256": "f567e6fc83b2e87fc6f40c5dd48bc9d8cfee03485977fa45655eaab84bd0fcd0"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV3/near.glb",
+      "sha256": "1db4bc8fd71c184aadb137fdccc6d0a155f416c3f8b45a30cceac8d93e1d4d2e"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV3/mid.glb",
+      "sha256": "5b1e644b97af41a545c21dee05fcdd5706f22d896378ad6742989e06c5f12267"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV3/far.glb",
+      "sha256": "7385c1abd9f5408e9bb997df05f89fec40364e01acffa0bfd352a6bc1ebcca92"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "schema": 3,
+  "source_v2_glb_sha256": "20f5a3753db2c65d4b6e42fa5d3a9fe78a852e66104382af8b3ed0dd84ffefda",
+  "source_v1_glb_sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a",
+  "source_blend_sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9",
+  "references_root": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑",
+  "references": [
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_back.jpg",
+      "sha256": "887b2bcc58338e816a3681e1bc12bc993e18af27252845bd2ac5e27b4aa7fac5",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail.jpg",
+      "sha256": "830ca6e2699855e8b03600145e222af78d50c4f52c56f3c9db9532a35af7f77e",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_02.jpg",
+      "sha256": "547f1f61f4efaa69a4ed6606c6f34792b2030393c9afbca55e14a27fe8537575",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_03.jpg",
+      "sha256": "868569d0e1d35db0e673fdb676eae618b50d18fa99e567e7325137837b626446",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_04.jpg",
+      "sha256": "fb98f4d0f8af6df63eb8ca3c402bb742222e59d043f9cb19171f28e0b40788df",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_05.jpg",
+      "sha256": "0034e977b9b927e09374d31587c6ee47cfb29c917c61197d53376de6dd8debac",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_06.jpg",
+      "sha256": "8cbb4dc098a9ee39e5056a4ce987979c21ba0d81842a35b2612eaf42321bab17",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_front.jpg",
+      "sha256": "fe6d4f00cfd480f98b8140b7875daa4b20a3ffcb9d6b0140f1a2330236219ed5",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_other.jpg",
+      "sha256": "19fc897d1d8e7afeb83ee9d1a65ff268a400715caf3ad9f91c7b54a6d819198f",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_other_02.jpg",
+      "sha256": "3a78716fc26643f9c16a5812762c86d7257808e00c2b521027c7670641bcbac1",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_right.jpg",
+      "sha256": "8a283a30b0f1382e5b4646d6d3bf2764c1c4891ca3d7f55384cd437ccd6bbeba",
+      "inspected": true,
+      "role": "modern reconstruction photo: shape / overlap / lacing reference only"
+    }
+  ],
+  "web_sources": [
+    {
+      "url": "https://hikone-castle-museum.jp/collection/1358.html",
+      "use": "plate-built red lacquer torso; 7 divisions / 5-tier kusazuri; zunari helmet; not a full historical replica"
+    },
+    {
+      "url": "https://marutake-yoroi.myshopify.com/products/y-015-%E4%BA%95%E4%BC%8A%E7%9B%B4%E6%94%BF-%E5%B1%95%E7%A4%BA%E8%B2%A9%E5%A3%B2",
+      "use": "modern reconstructed armor closeups, combined with local original photos"
+    }
+  ],
+  "armor_id": "red_lamellar",
+  "new_slots": [
+    "mask",
+    "helmet",
+    "torso",
+    "neck_guard",
+    "shoulders",
+    "arms",
+    "feet",
+    "waist",
+    "thighs",
+    "shins"
+  ],
+  "shared_slots": [
+    "weapon",
+    "underclothes",
+    "cloak"
+  ],
+  "palette": {
+    "lacquer": "#9F241F",
+    "cloth": "#182640",
+    "metal": "#B99B58",
+    "hair": "#211B18"
+  },
+  "character": {
+    "face": "mature_v1",
+    "hair": "tied_v1",
+    "beard": "short_v1",
+    "skeleton": "same 73 bones / original animation bytes",
+    "body": "v013_base unchanged"
+  },
+  "asset_rules": {
+    "reference_pixels_as_texture": false,
+    "save_source_blend": false,
+    "distribution": "local only pending source terms",
+    "weights": "nearest 4 reference slot vertices inverse-distance blend, normalized by named skeleton groups; hair rigid Head",
+    "lod_contacts": "body/head/hair/beard keep near geometry; source armor uses V2 per-LOD meshes; new armor uses lod ratios"
+  },
+  "lod": {
+    "near": 1,
+    "mid": 0.55,
+    "far": 0.25
+  },
+  "expected_ui": [
+    "face/hair/beard",
+    "13 per-slot equipment selectors",
+    "skin/hair/cloth/lacquer/metal RGB",
+    "rotate/idle/walk/attack",
+    "save/load",
+    "1/10/50 mixed officers"
+  ],
+  "coordinates": {
+    "source": "Blender Z-up / front -Y",
+    "runtime": "glTF Y-up / front +Z",
+    "units": "meters",
+    "origin": "source origin at feet, unchanged",
+    "reference_pose": "source T pose",
+    "bones": 73
+  },
+  "part_interface": {
+    "slot_names_source": "Officer3DCustomActor.Slots / 13 stable semantic IDs",
+    "attachment": "named source skeleton groups; no per-direction variants",
+    "max_influences_per_vertex": 4,
+    "source_body_geometry": "unchanged source V2 near body/head geometry across all LODs; preserve fitted contacts",
+    "required_validation": [
+      "finite positions",
+      "one skin /73 joints",
+      "normalized weights",
+      "source clip duration and pose",
+      "color isolation outside=0",
+      "all-off base present",
+      "part exchange in motion",
+      "schema and ID validation",
+      "roster save/load across processes",
+      "shared mesh resources / independent actor material instances"
+    ]
+  }
+}

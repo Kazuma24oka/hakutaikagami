@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "direction": "3d-in-game",
-  "status": "TRIAL_V1_LOCAL_GPU_VALIDATED_USER_REVIEW_PENDING",
+  "status": "TRIAL_V3_LOCAL_GPU_VALIDATED_USER_REVIEW_PENDING",
   "user_decision_date": "2026-10-19",
   "sources": [
     {
@@ -35,15 +35,16 @@
     "New visual acceptance requires actual Godot render, clothing/color/animation changes, export/reimport verification and measured performance. No pass by metadata alone."
   ],
   "pending_acceptance": [
-    "User review of actual3D appearance/camera",
-    "Production near/mid/far LOD and target actor budget",
-    "New face/hair/beard and replacement armor assets",
+    "User review of V3 art",
+    "Production hair/beard/armor finish and silver far LOD quality",
+    "50 actors at60fps; reduce draw/material/rig update costs",
+    "Connect cosmetic roster to Core officer IDs and normal save",
+    "All armor combinations and all-time collision inspection",
     "Quantitative foot sliding/world movement coupling to Core",
     "Corresponding2D illustrated portrait assets",
-    "Source rights/provenance clarification before public asset distribution",
-    "Independent cloth/lacquer/metal color masks; current trial tint is per equipment slot"
+    "Source rights/provenance clarification before public asset distribution"
   ],
-  "current_execution": "GLB exported and reimported; one73-bone rig/21meshes/13slots/3clips; actual GPU90captures, skin/paint/equipment isolation, playback and separate-process appearance restore passed. New presets, authored LOD and portraits pending.",
+  "current_execution": "V3 standalone officer creator, mature face/tied hair/short beard, 10 alternate red armor parts; shared73-bone rig /3LOD /35meshes /3clips; 283 GPUcaptures and separate-process roster restore passed; repeated3GLBs byte exact; Core233 pass.",
   "portrait_policy": {
     "status": "USER_SELECTED",
     "medium": "2D illustration",
@@ -96,5 +97,28 @@
       "negotiation implementation"
     ],
     "negotiation_direction": "left foreground self, right background counterpart; deferred"
+  },
+  "followup_v3": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_NOT_YET_ACCEPTED",
+    "report": "Docs/Proposals/OFFICER_3D_TRIAL_V3.md",
+    "guide": "Docs/Proposals/OFFICER_3D_PARTS_GUIDE.md",
+    "runtime_binding": "2c4f07d46f5ebf8189bd8345efa0c3139d3103ea292e948a01feabee59cbf5af",
+    "entry": "Scripts/Show-Officer3DV3.ps1",
+    "implemented": [
+      "fixed same-environment repeated export3GLBs byte exact",
+      "mature face/tied hair/short beard preserving fitted head contacts acrossLOD",
+      "10 alternate red armor slots plus3shared source slots",
+      "standalone officer creator with roster atomic save/restart restore",
+      "mixed1/10/50 benchmark and shared geometry/independent materials checks"
+    ],
+    "local_review": "Art/Officer3D/TrialV3/runtime-local/review.html",
+    "not_claimed": [
+      "production quality character art",
+      "all combinations/timestamps without clipping",
+      "50 actors60fps",
+      "cosmetic roster assigned to Core characters",
+      "negotiation/portrait creation",
+      "public distribution of source assets"
+    ]
   }
 }

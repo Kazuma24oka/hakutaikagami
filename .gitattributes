@@ -146,3 +146,7 @@ Game/Shaders/Officer3DV2.gdshader -text
 Game/Scenes/Officer3DV2Review.tscn -text
 Scripts/Show-Officer3DV2.ps1 -text
 Scripts/capture_officer3d_main.gd -text
+
+Game/Scenes/Officer3DCreator.tscn -text
+Game/Shaders/Officer3DV3.gdshader -text
+Scripts/Show-Officer3DV3.ps1 -text

@@ -6,6 +6,8 @@
 
 第2試作の実装・実測・未実施事項は[3D武将 第2試作](Proposals/OFFICER_3D_TRIAL_V2.md)。内応工作は3D対面構図の方向性だけを記録し、制作保留。
 
+別具足・武将作成・混成表示の現行確認は[3D武将 第3試作](Proposals/OFFICER_3D_TRIAL_V3.md)。制作を繰り返す際は[固定した部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)を使う。外見登録とCoreの武将生成はまだ別。
+
 ## 管理規則
 - `Confirmed/`：ユーザーが明示的に確定した仕様の正本。
 - `Proposals/`：未決定事項・設計候補。確定仕様と混同しない。
