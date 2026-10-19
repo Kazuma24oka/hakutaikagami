@@ -175,3 +175,7 @@ Scripts/*formation_world* -text
 Scripts/Show-FormationWorld.ps1 -text
 Tests/*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Tests/*.csproj -text
+Docs/Design/** -text
+Scripts/build_basic_design.py -text
+Scripts/basic_design_template.html -text
+Scripts/validate_basic_design.cjs -text

@@ -1,0 +1,1368 @@
+{
+  "schema": 1,
+  "status": "DESIGN_EXPECTATIONS_ONLY",
+  "count": 170,
+  "note": "170は実行済みテスト数ではなく、設計から導出した予定シナリオ数。既存Core317件とは別。",
+  "cases": [
+    {
+      "id": "BD-01-normal",
+      "design_id": "BD-01",
+      "kind": "normal",
+      "scenario": "家臣が普請を委任して出陣し、戦後の恩賞で城主になる。",
+      "acceptance": "浪人・家臣・城主・国人・大名の主要経路と平戦往復が同じ保存世界で成立するシナリオを受入計画へ割り当てる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-01-failure",
+      "design_id": "BD-01",
+      "kind": "failure",
+      "scenario": "敗戦や失職でも存命なら浪人等として続く。全国未接続のデモは製品受入不合格。",
+      "acceptance": "浪人・家臣・城主・国人・大名の主要経路と平戦往復が同じ保存世界で成立するシナリオを受入計画へ割り当てる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-02-normal",
+      "design_id": "BD-02",
+      "kind": "normal",
+      "scenario": "同じ1560年開始状態から歴史傾向を強めるか、自律分岐を増やすか選ぶ。",
+      "acceptance": "モード別差分がイベント発火方針とAIの歴史志向に限定され、権限・知識・時計原則を共通にする。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-02-failure",
+      "design_id": "BD-02",
+      "kind": "failure",
+      "scenario": "不明な関係は推定区分とし、未採録の名前・城を史実確定データと表示しない。",
+      "acceptance": "モード別差分がイベント発火方針とAIの歴史志向に限定され、権限・知識・時計原則を共通にする。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-03-normal",
+      "design_id": "BD-03",
+      "kind": "normal",
+      "scenario": "会戦当事者が不在なら史実会戦を強制発生させず、前提不成立を開発履歴へ記録する。",
+      "acceptance": "全モードでI01〜I10を破る強制イベントがなく、事件前提と分岐の試験ケースを持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-03-failure",
+      "design_id": "BD-03",
+      "kind": "failure",
+      "scenario": "史実の勝者を守るために確定済み損害を消すことは禁止。画面に非公開事件の不発理由を出さない。",
+      "acceptance": "全モードでI01〜I10を破る強制イベントがなく、事件前提と分岐の試験ケースを持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-04-normal",
+      "design_id": "BD-04",
+      "kind": "normal",
+      "scenario": "全国で500部隊を状態管理し、画面外は経路進捗と同じ戦闘モデルで進む。",
+      "acceptance": "指定負荷・ハード・画質・速度の再現可能な計測と正しさの比較を製品受入へ定義する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-04-failure",
+      "design_id": "BD-04",
+      "kind": "failure",
+      "scenario": "現状50モデル60fps未達を達成済みとしない。負荷目標未達は最適化課題とし、機能削減は変更決定を要する。",
+      "acceptance": "指定負荷・ハード・画質・速度の再現可能な計測と正しさの比較を製品受入へ定義する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-05-normal",
+      "design_id": "BD-05",
+      "kind": "normal",
+      "scenario": "小規模国人の作成武将として所領と軍役義務を持って始める。",
+      "acceptance": "全開始テンプレートが権限・資源・所在地・知識の整合検査を通り、史実保存と作成データが分離する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-05-failure",
+      "design_id": "BD-05",
+      "kind": "failure",
+      "scenario": "無所属なのに主家全軍の指揮権を持つ開始設定は説明付きで拒否する。",
+      "acceptance": "全開始テンプレートが権限・資源・所在地・知識の整合検査を通り、史実保存と作成データが分離する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-06-normal",
+      "design_id": "BD-06",
+      "kind": "normal",
+      "scenario": "捕虜となった城主が返還交渉を待つ間、留守居が委任範囲の守備を続ける。",
+      "acceptance": "負傷・拘束・解放の各遷移で操作可否と情報経路が変わり、保存後も同じ経過を再現する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-06-failure",
+      "design_id": "BD-06",
+      "kind": "failure",
+      "scenario": "兵力ゼロを武将死亡と同一視せず、逃亡成功が所属や債務を自動消去しない。",
+      "acceptance": "負傷・拘束・解放の各遷移で操作可否と情報経路が変わり、保存後も同じ経過を再現する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-07-normal",
+      "design_id": "BD-07",
+      "kind": "normal",
+      "scenario": "隠居者から成人養子へ操作を移しても、家督争いは継続する。",
+      "acceptance": "死・隠居・継承・係争が独立し、候補の認識と権限で継続状態を検査できる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-07-failure",
+      "design_id": "BD-07",
+      "kind": "failure",
+      "scenario": "処刑された人物に操作を戻したり、候補選択画面から未知の相続人を漏らしたりしない。",
+      "acceptance": "死・隠居・継承・係争が独立し、候補の認識と権限で継続状態を検査できる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-08-normal",
+      "design_id": "BD-08",
+      "kind": "normal",
+      "scenario": "国人が所領保全の目標を果たし、独立せずに世代継続する。",
+      "acceptance": "目標達成・失敗・主家滅亡・1650年・本人死亡に対する終了／継続をすべて明示する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-08-failure",
+      "design_id": "BD-08",
+      "kind": "failure",
+      "scenario": "存命で失職した人物は浪人経路へ。死亡かつ適格継続候補なし、または自発的終了で年代記を閉じる。",
+      "acceptance": "目標達成・失敗・主家滅亡・1650年・本人死亡に対する終了／継続をすべて明示する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-09-normal",
+      "design_id": "BD-09",
+      "kind": "normal",
+      "scenario": "浪人が城主へ仕え、城主家臣であると同時に主家の軍役へ参加する。",
+      "acceptance": "所属・直属・権限・知識の更新時点を分離し、通知だけで全資産を移転しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-09-failure",
+      "design_id": "BD-09",
+      "kind": "failure",
+      "scenario": "不承諾なら職権を取得せず、解任通知未到達なら認識と正当権限の食い違いを別記する。",
+      "acceptance": "所属・直属・権限・知識の更新時点を分離し、通知だけで全資産を移転しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-10-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "陪臣は援軍要請を上申し、委任された守備は直接指示する。",
+      "acceptance": "5分類×浪人・家臣陪臣・城主国人・大名の20組に代表正常例と拒否／申請例を用意する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-10-failure",
+      "design_id": "BD-10",
+      "kind": "failure",
+      "scenario": "任命権がない城主は配下の主家役職を推薦できても確定任命できない。",
+      "acceptance": "5分類×浪人・家臣陪臣・城主国人・大名の20組に代表正常例と拒否／申請例を用意する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-11-normal",
+      "design_id": "BD-11",
+      "kind": "normal",
+      "scenario": "軍事与力の作戦命令が、その範囲の戦闘行動を指揮する。主君への奉公義務は別に残る。",
+      "acceptance": "兼任・密命・同格競合・不明な取消の各例で、権限と本人認識に依存した理由を残す。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-11-failure",
+      "design_id": "BD-11",
+      "kind": "failure",
+      "scenario": "同格の進軍と撤退が同時認識なら安全維持・照会へ。NPCが独断した場合は服従意思・責任を別評価する。",
+      "acceptance": "兼任・密命・同格競合・不明な取消の各例で、権限と本人認識に依存した理由を残す。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-12-normal",
+      "design_id": "BD-12",
+      "kind": "normal",
+      "scenario": "国人が自家の本隊と、戦時のみ預かった与力隊へ異なる命令経路を持つ。",
+      "acceptance": "各名簿の所属・位置・指揮根拠・期間が保存され、混同した選択や一括移籍を防ぐ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-12-failure",
+      "design_id": "BD-12",
+      "kind": "failure",
+      "scenario": "本隊を離れて本人だけ脱出した場合、全兵が瞬時に追随することはない。",
+      "acceptance": "各名簿の所属・位置・指揮根拠・期間が保存され、混同した選択や一括移籍を防ぐ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-13-normal",
+      "design_id": "BD-13",
+      "kind": "normal",
+      "scenario": "普請実務で普請熟練が伸びても、自動的に役職や所領を取得しない。",
+      "acceptance": "代表コマンドが参照能力・熟練・状況を説明でき、成長は一度だけ確定する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-13-failure",
+      "design_id": "BD-13",
+      "kind": "failure",
+      "scenario": "負傷時の低下を基礎能力の永久削除と混同せず、未完了修行を重複計上しない。",
+      "acceptance": "代表コマンドが参照能力・熟練・状況を説明でき、成長は一度だけ確定する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-14-normal",
+      "design_id": "BD-14",
+      "kind": "normal",
+      "scenario": "忠誠の高い将が、本隊孤立を認識して撤退を進言する。",
+      "acceptance": "同じ命令でも認識・性格・補給により判断が変わり、内部理由と開示可能な理由を分離する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-14-failure",
+      "design_id": "BD-14",
+      "kind": "failure",
+      "scenario": "拒否理由を誰も知らない敵増援の真実から生成しない。",
+      "acceptance": "同じ命令でも認識・性格・補給により判断が変わり、内部理由と開示可能な理由を分離する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-15-normal",
+      "design_id": "BD-15",
+      "kind": "normal",
+      "scenario": "救援を知った本人の信頼が増し、未報告の第三者にはまだ変化しない。",
+      "acceptance": "非対称関係・派閥脱退・訂正報の三例で、知識と社会的所属の変化が区別される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-15-failure",
+      "design_id": "BD-15",
+      "kind": "failure",
+      "scenario": "誤報を訂正しても実際に被った損害や既成立した関係を無条件に巻き戻さない。",
+      "acceptance": "非対称関係・派閥脱退・訂正報の三例で、知識と社会的所属の変化が区別される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-16-normal",
+      "design_id": "BD-16",
+      "kind": "normal",
+      "scenario": "面識の浅い相手は『統率は高いとの評判・半年前』と表示する。",
+      "acceptance": "未知・古い・直接観察・噂・訂正の各表示を区別し、真の値をUIへ渡さない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-16-failure",
+      "design_id": "BD-16",
+      "kind": "failure",
+      "scenario": "秘密の裏切りフラグを赤色や自動停止で知らせない。",
+      "acceptance": "未知・古い・直接観察・噂・訂正の各表示を区別し、真の値をUIへ渡さない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-17-normal",
+      "design_id": "BD-17",
+      "kind": "normal",
+      "scenario": "広域の橋を拡大すると同じ橋の両岸へ配下が展開している。",
+      "acceptance": "全国と近景の座標往復、経路距離、同一橋ID、複数地点同時進行を検査する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-17-failure",
+      "design_id": "BD-17",
+      "kind": "failure",
+      "scenario": "画面外へ出た部隊を別戦場インスタンスに移さず、カメラ移動で情報・時計を変更しない。",
+      "acceptance": "全国と近景の座標往復、経路距離、同一橋ID、複数地点同時進行を検査する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-18-normal",
+      "design_id": "BD-18",
+      "kind": "normal",
+      "scenario": "同一郡に二家の知行があり、一城の行政圏と完全一致しない。",
+      "acceptance": "地理・施設・組織・権利・支配を別IDでたどれ、係争状態を表示できる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-18-failure",
+      "design_id": "BD-18",
+      "kind": "failure",
+      "scenario": "国境ポリゴン内の全村を一回の城占有で自動移転しない。",
+      "acceptance": "地理・施設・組織・権利・支配を別IDでたどれ、係争状態を表示できる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-19-normal",
+      "design_id": "BD-19",
+      "kind": "normal",
+      "scenario": "港で船と護送を手配し、兵糧を航路輸送する。",
+      "acceptance": "地形・権限・認識・移動主体で経路と到着時刻が変わり、輸送中資源が瞬間共有されない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-19-failure",
+      "design_id": "BD-19",
+      "kind": "failure",
+      "scenario": "橋封鎖を未認識なら旧経路で向かい、現地確認後に迂回報告を送る。",
+      "acceptance": "地形・権限・認識・移動主体で経路と到着時刻が変わり、輸送中資源が瞬間共有されない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-20-normal",
+      "design_id": "BD-20",
+      "kind": "normal",
+      "scenario": "全国の地形は見えるが、遠方の城の支配は『去年の報告』で色分けされる。",
+      "acceptance": "静的地理と変動する政治・軍事情勢を異なる知識属性で管理する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-20-failure",
+      "design_id": "BD-20",
+      "kind": "failure",
+      "scenario": "カメラを遠方へ飛ばすだけで落城を即時認識しない。",
+      "acceptance": "静的地理と変動する政治・軍事情勢を異なる知識属性で管理する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-21-normal",
+      "design_id": "BD-21",
+      "kind": "normal",
+      "scenario": "移動中に留守居へ追加報告を求める。",
+      "acceptance": "代表併用表の許可・禁止を本人と委任先へ共通適用し、競合理由を認識範囲で表示する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-21-failure",
+      "design_id": "BD-21",
+      "kind": "failure",
+      "scenario": "担当奉行が従軍中なら現地の普請担当を同時に引き受けられず、引継ぎ候補を提示する。",
+      "acceptance": "代表併用表の許可・禁止を本人と委任先へ共通適用し、競合理由を認識範囲で表示する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-22-normal",
+      "design_id": "BD-22",
+      "kind": "normal",
+      "scenario": "堀工事40％で中断し、次の奉行が資料と資材を引き継いで再開する。",
+      "acceptance": "中断と完了の同時刻、資材返還失敗、再ロードの各例で進捗と現物が一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-22-failure",
+      "design_id": "BD-22",
+      "kind": "failure",
+      "scenario": "中断書状が届く前に完成した工事は完成のまま、不要支出の責任を別評価する。",
+      "acceptance": "中断と完了の同時刻、資材返還失敗、再ロードの各例で進捗と現物が一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-23-normal",
+      "design_id": "BD-23",
+      "kind": "normal",
+      "scenario": "合戦を見ている間も遠方の一日が同じ秒数で経過する。",
+      "acceptance": "速度・描画頻度・拡大率を変えても同じ種と入力時刻から同じ世界結果を得る。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-23-failure",
+      "design_id": "BD-23",
+      "kind": "failure",
+      "scenario": "高倍率で処理不能なら達成できる速度へ制限し、実行速度を表示する。",
+      "acceptance": "速度・描画頻度・拡大率を変えても同じ種と入力時刻から同じ世界結果を得る。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-24-normal",
+      "design_id": "BD-24",
+      "kind": "normal",
+      "scenario": "通常の面会画面を開いて進行を続けるか自分で停止し、確定した会談を同じ時計上で行う。",
+      "acceptance": "開閉だけの無料進捗・局所停止中の全国進行・未発送返答の成立がない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-24-failure",
+      "design_id": "BD-24",
+      "kind": "failure",
+      "scenario": "会話中に襲撃を本人が認識すれば重要停止・中断判断へ移る。",
+      "acceptance": "開閉だけの無料進捗・局所停止中の全国進行・未発送返答の成立がない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-25-normal",
+      "design_id": "BD-25",
+      "kind": "normal",
+      "scenario": "物見が敵増援を観測して伝令し、主人公は受領後に判断を変える。",
+      "acceptance": "各表示事実が観測時刻・学習時刻・出典を持ち、報告で観測日を現在へ更新しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-25-failure",
+      "design_id": "BD-25",
+      "kind": "failure",
+      "scenario": "調査失敗・使者不達・虚報を異なる状態にし、帰還しないだけで殺害の真実を断定しない。",
+      "acceptance": "各表示事実が観測時刻・学習時刻・出典を持ち、報告で観測日を現在へ更新しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-26-normal",
+      "design_id": "BD-26",
+      "kind": "normal",
+      "scenario": "敵兵千との噂と物見の五百という報告を比較して追加調査する。",
+      "acceptance": "真実が異なる二つの同一報告入力で、受領時のUIが真偽を漏らして変化しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-26-failure",
+      "design_id": "BD-26",
+      "kind": "failure",
+      "scenario": "敵が実際に撤退しても、未観測なら記憶の印は残る。",
+      "acceptance": "真実が異なる二つの同一報告入力で、受領時のUIが真偽を漏らして変化しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-27-normal",
+      "design_id": "BD-27",
+      "kind": "normal",
+      "scenario": "留守居が受領し、内容を読める代理人だけが開封して本人へ報告する。",
+      "acceptance": "本人・代理・物理所持・開封・期限を別々に検査し、代理交代時の二重回答を防ぐ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-27-failure",
+      "design_id": "BD-27",
+      "kind": "failure",
+      "scenario": "開封権を失った代理人の新規開封は無権行為として別評価し、到達効力や実際の閲覧事実を消さない。",
+      "acceptance": "本人・代理・物理所持・開封・期限を別々に検査し、代理交代時の二重回答を防ぐ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-28-normal",
+      "design_id": "BD-28",
+      "kind": "normal",
+      "scenario": "敵との直接遭遇をまとめて停止し、本人が知る根拠と選択肢を示す。",
+      "acceptance": "各通知分類に発動・非発動・同時集約・未開封・代理受領の期待例を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-28-failure",
+      "design_id": "BD-28",
+      "kind": "failure",
+      "scenario": "偽の襲撃書状でも同条件なら停止するため、停止の有無が偽書検出器にならない。",
+      "acceptance": "各通知分類に発動・非発動・同時集約・未開封・代理受領の期待例を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-29-normal",
+      "design_id": "BD-29",
+      "kind": "normal",
+      "scenario": "普請任務の工事を達成後、報告が届いて主君が勲功を審査する。",
+      "acceptance": "命令・任意依頼・期限・部分達成・報告不達の代表状態遷移を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-29-failure",
+      "design_id": "BD-29",
+      "kind": "failure",
+      "scenario": "成果が完成しても返書紛失なら依頼者は未確認。再送は同じ論理報告を配送する。",
+      "acceptance": "命令・任意依頼・期限・部分達成・報告不達の代表状態遷移を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-30-normal",
+      "design_id": "BD-30",
+      "kind": "normal",
+      "scenario": "凶作を知った奉行が一部徴収を保留し、減免を進言する。",
+      "acceptance": "同じ委任入力を人物・知識違いで実行し、上限と報告経路を守るか逸脱理由を残す。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-30-failure",
+      "design_id": "BD-30",
+      "kind": "failure",
+      "scenario": "勝手に費用上限を超えた場合、成果の有無と違反・債務を別に記録する。",
+      "acceptance": "同じ委任入力を人物・知識違いで実行し、上限と報告経路を守るか逸脱理由を残す。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-31-normal",
+      "design_id": "BD-31",
+      "kind": "normal",
+      "scenario": "届いた退路変更命令で後続の撤退先を変更し、既に渡った距離は消さない。",
+      "acceptance": "遅着原本・再送・取消・差替え・担当交代で二重実行や過去の巻戻しがない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-31-failure",
+      "design_id": "BD-31",
+      "kind": "failure",
+      "scenario": "新旧命令が同時に競合し明示差替え関係がなければBD-11の照会・安全維持へ。",
+      "acceptance": "遅着原本・再送・取消・差替え・担当交代で二重実行や過去の巻戻しがない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-32-normal",
+      "design_id": "BD-32",
+      "kind": "normal",
+      "scenario": "救援成功を称えつつ、持ち場離脱を叱責される。",
+      "acceptance": "成功した違反、失敗した適法命令、未認識命令、誤報に基づく判断を異なる根拠で審査する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-32-failure",
+      "design_id": "BD-32",
+      "kind": "failure",
+      "scenario": "知らなかった取消をプレイヤー警告で漏らさず、後から責任審査で認識と通知義務を確認する。",
+      "acceptance": "成功した違反、失敗した適法命令、未認識命令、誤報に基づく判断を異なる根拠で審査する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-33-normal",
+      "design_id": "BD-33",
+      "kind": "normal",
+      "scenario": "農繁期の徴発で工事と収穫の見込みが落ち、帰還後に労働力が戻る。",
+      "acceptance": "人口・動員・収穫・損失・備蓄の帳尻が保存前後で一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-33-failure",
+      "design_id": "BD-33",
+      "kind": "failure",
+      "scenario": "洪水報告が遅れれば主人公の予測は古いまま、現地被害は真実として進む。",
+      "acceptance": "人口・動員・収穫・損失・備蓄の帳尻が保存前後で一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-34-normal",
+      "design_id": "BD-34",
+      "kind": "normal",
+      "scenario": "国人が主家への軍役と年貢を負いながら、自領収益で家臣へ俸禄を払う。",
+      "acceptance": "二重請求は記録できても二重徴収は現物残量で制限し、私財と家財の出入根拠を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-34-failure",
+      "design_id": "BD-34",
+      "kind": "failure",
+      "scenario": "米不足の未払俸禄は債務として残り、主家交代だけで消えない。",
+      "acceptance": "二重請求は記録できても二重徴収は現物残量で制限し、私財と家財の出入根拠を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-35-normal",
+      "design_id": "BD-35",
+      "kind": "normal",
+      "scenario": "城が商人と米の搬入契約を結び、納入後に代金を払う。",
+      "acceptance": "見積から決済までの各段階で現物・引当・債務が対応し、途中保存で再決済しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-35-failure",
+      "design_id": "BD-35",
+      "kind": "failure",
+      "scenario": "封鎖で未納なら履行不能・再交渉・違約を分け、契約書だけで米を受領しない。",
+      "acceptance": "見積から決済までの各段階で現物・引当・債務が対応し、途中保存で再決済しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-36-normal",
+      "design_id": "BD-36",
+      "kind": "normal",
+      "scenario": "自由米100への兵糧70と未成立交易60なら、防衛に70、分割可能な交易に30。確定契約60を既引当なら自由米40のみを防衛へ回し、転用は別裁定。",
+      "acceptance": "引当先後・同順位按分・不可分・緊急転用・補償失敗・再ロードで数量と裁定が一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-36-failure",
+      "design_id": "BD-36",
+      "kind": "failure",
+      "scenario": "最低量未満は縮小可能な用途へ再提案し、無期限待機はせず期限・権限・在庫更新で再評価する。",
+      "acceptance": "引当先後・同順位按分・不可分・緊急転用・補償失敗・再ロードで数量と裁定が一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-37-normal",
+      "design_id": "BD-37",
+      "kind": "normal",
+      "scenario": "複数国人の軍役隊が集合し、作戦指揮を受けるが家臣所属は変わらない。",
+      "acceptance": "招集数・出発数・現地数・損耗・帰還が整合し、指揮委任終了でも兵は消えない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-37-failure",
+      "design_id": "BD-37",
+      "kind": "failure",
+      "scenario": "動員命令未到達の部隊は出発せず、即時に主家兵力へ加算しない。",
+      "acceptance": "招集数・出発数・現地数・損耗・帰還が整合し、指揮委任終了でも兵は消えない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-38-normal",
+      "design_id": "BD-38",
+      "kind": "normal",
+      "scenario": "左翼の線を短縮して予備を作り、未受領の右翼は旧任務を続ける。",
+      "acceptance": "旧原本の遅着・再送・部分到達・取消・混雑でも各部隊は一つの有効任務と物理経路を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-38-failure",
+      "design_id": "BD-38",
+      "kind": "failure",
+      "scenario": "道が詰まれば安全な待機位置と順番を維持し、瞬間移動や地形越えで整列させない。",
+      "acceptance": "旧原本の遅着・再送・部分到達・取消・混雑でも各部隊は一つの有効任務と物理経路を持つ。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-39-normal",
+      "design_id": "BD-39",
+      "kind": "normal",
+      "scenario": "劣勢の右翼が退路へ後退し、城外で再集結して軍勢へ残る。",
+      "acceptance": "野戦・包囲・強襲・救援・撤退・降伏の正常／競合／中断例を同じ時計と損害台帳で扱う。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-39-failure",
+      "design_id": "BD-39",
+      "kind": "failure",
+      "scenario": "開城合意だけでは門・倉庫・全守備隊が移らず、各権限と引渡し進捗を確認する。",
+      "acceptance": "野戦・包囲・強襲・救援・撤退・降伏の正常／競合／中断例を同じ時計と損害台帳で扱う。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-40-normal",
+      "design_id": "BD-40",
+      "kind": "normal",
+      "scenario": "橋の封鎖後も携行分で守備を続け、迂回補給を求める。",
+      "acceptance": "出庫・移動・損失・到着・日次消費が保存で一致し、戦闘中と遠方簡略処理の在庫結果が同じになる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-40-failure",
+      "design_id": "BD-40",
+      "kind": "failure",
+      "scenario": "弾薬不足なら射撃を減らし、兵糧不足なら撤退・現地交渉を検討するが、物資を自動生成しない。",
+      "acceptance": "出庫・移動・損失・到着・日次消費が保存で一致し、戦闘中と遠方簡略処理の在庫結果が同じになる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-41-normal",
+      "design_id": "BD-41",
+      "kind": "normal",
+      "scenario": "停戦案の同一版を双方が承認し、最後の必要承諾が届いて成立する。",
+      "acceptance": "両当事者・本文版・権限・到達・発効・期限を検査し、再送で二重条約を作らない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-41-failure",
+      "design_id": "BD-41",
+      "kind": "failure",
+      "scenario": "版違いの承諾や返書不達は再交渉・再送待ちとし、一方のUI操作だけで同盟にしない。",
+      "acceptance": "両当事者・本文版・権限・到達・発効・期限を検査し、再送で二重条約を作らない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-42-normal",
+      "design_id": "BD-42",
+      "kind": "normal",
+      "scenario": "防衛援軍を受諾するが、到着前に停戦し帰還を相談する。",
+      "acceptance": "解除通知不達、同盟先同士の交戦、履行不能、秘密条項の各例で義務と認識を区別する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-42-failure",
+      "design_id": "BD-42",
+      "kind": "failure",
+      "scenario": "知らなかった攻撃や物理的履行不能に対し、理由・証拠・仲裁を経ず自動的な全面報復を強制しない。",
+      "acceptance": "解除通知不達、同盟先同士の交戦、履行不能、秘密条項の各例で義務と認識を区別する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-43-normal",
+      "design_id": "BD-43",
+      "kind": "normal",
+      "scenario": "成人養子を迎えて後継候補にするが、家臣支持と家督承認は別に必要。",
+      "acceptance": "当人・家・権限・所在・合意版・実施・相続資格が別々に評価される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-43-failure",
+      "design_id": "BD-43",
+      "kind": "failure",
+      "scenario": "本人の拒否を家の承諾だけで消さず、離縁・死別でも他の条約を無条件消去しない。",
+      "acceptance": "当人・家・権限・所在・合意版・実施・相続資格が別々に評価される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-44-normal",
+      "design_id": "BD-44",
+      "kind": "normal",
+      "scenario": "停戦に伴って護送隊を手配し、返還到着後に保証解除を確認する。",
+      "acceptance": "同一人物の拘束・所在・保証が一意で、交換失敗でも複製や消失を起こさない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-44-failure",
+      "design_id": "BD-44",
+      "kind": "failure",
+      "scenario": "道が塞がって返還が遅れれば、遅延理由と安全確認を伝令し、未到着を即殺害と断定しない。",
+      "acceptance": "同一人物の拘束・所在・保証が一意で、交換失敗でも複製や消失を起こさない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-45-normal",
+      "design_id": "BD-45",
+      "kind": "normal",
+      "scenario": "養子が家督を継ぎ、国人へ安堵を提案して個別の服従を取り付ける。",
+      "acceptance": "家督・暫定権限・所領・指揮・支持の異なる状態を保存でき、未知の遺言を選択肢で漏らさない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-45-failure",
+      "design_id": "BD-45",
+      "kind": "failure",
+      "scenario": "二候補が主張すれば係争を保持し、正式承認と実占有が違う状態を許す。",
+      "acceptance": "家督・暫定権限・所領・指揮・支持の異なる状態を保存でき、未知の遺言を選択肢で漏らさない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-46-normal",
+      "design_id": "BD-46",
+      "kind": "normal",
+      "scenario": "城主の独立に一部守備が残留し、門の引渡しを交渉する。",
+      "acceptance": "同じ城内の部隊別帰属、密約未発覚、宣言遅延、債務残存の例を扱える。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-46-failure",
+      "design_id": "BD-46",
+      "kind": "failure",
+      "scenario": "支持不足なら出奔・拘束・和解等へ分かれ、全資産を保持した無条件独立にしない。",
+      "acceptance": "同じ城内の部隊別帰属、密約未発覚、宣言遅延、債務残存の例を扱える。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-47-normal",
+      "design_id": "BD-47",
+      "kind": "normal",
+      "scenario": "救援が未引渡しの城門へ到達し、守備が履行を保留して再交渉する。",
+      "acceptance": "合意前後・引渡し前後・救援可能／不能・守備分裂の期待遷移が明記される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-47-failure",
+      "design_id": "BD-47",
+      "kind": "failure",
+      "scenario": "一門を占有しただけで倉庫の所有権・全守備隊・周辺村を取得しない。",
+      "acceptance": "合意前後・引渡し前後・救援可能／不能・守備分裂の期待遷移が明記される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-48-normal",
+      "design_id": "BD-48",
+      "kind": "normal",
+      "scenario": "新当主が家の未払俸禄を引き継ぎ、個人保証は相手と再交渉する。",
+      "acceptance": "兵・家臣・契約・人質・債務・現物を対象別に更新し、各要素の継続／同意待ち／係争を保存する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-48-failure",
+      "design_id": "BD-48",
+      "kind": "failure",
+      "scenario": "落城で在庫占有が移っても債務者・所有者が一括で征服者へ変わらない。",
+      "acceptance": "兵・家臣・契約・人質・債務・現物を対象別に更新し、各要素の継続／同意待ち／係争を保存する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-49-normal",
+      "design_id": "BD-49",
+      "kind": "normal",
+      "scenario": "国人連合が代表者に限定外交権を与えて停戦案を送る。",
+      "acceptance": "代表交代・不在・代理・反対派・通知不達でも組織意思と個人意思が区別される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-49-failure",
+      "design_id": "BD-49",
+      "kind": "failure",
+      "scenario": "合議成立だけで反対派を自動服従・処罰せず、異議や離脱を記録する。",
+      "acceptance": "代表交代・不在・代理・反対派・通知不達でも組織意思と個人意思が区別される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-50-normal",
+      "design_id": "BD-50",
+      "kind": "normal",
+      "scenario": "国人が軍役を負う一方、所領の徴税と家臣任命を留保する。",
+      "acceptance": "同一人物が国人の家督・主家への義務・戦時指揮を並行して持てる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-50-failure",
+      "design_id": "BD-50",
+      "kind": "failure",
+      "scenario": "総大将の一通で国人家の全財産処分や婚姻を決定しない。",
+      "acceptance": "同一人物が国人の家督・主家への義務・戦時指揮を並行して持てる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-51-normal",
+      "design_id": "BD-51",
+      "kind": "normal",
+      "scenario": "港の通行を寺社と交渉し、禁制の交付と現場履行を確認する。",
+      "acceptance": "要求・正式権益・実支配・協力・不服従を別状態で表せる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-51-failure",
+      "design_id": "BD-51",
+      "kind": "failure",
+      "scenario": "既存の権益を侵害すれば交渉・非協力・経済抵抗・必要時の武装へ分岐し、一律反乱にしない。",
+      "acceptance": "要求・正式権益・実支配・協力・不服従を別状態で表せる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-52-normal",
+      "design_id": "BD-52",
+      "kind": "normal",
+      "scenario": "減免と米の輸送を合意し、到着後に地域の緊張が下がる。",
+      "acceptance": "災害・報告・救済発送・到着・反応を同じ時系列と在庫で追跡する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-52-failure",
+      "design_id": "BD-52",
+      "kind": "failure",
+      "scenario": "救済決定だけでは飢餓被害は消えず、未到着を知った組織が不履行を訴える。",
+      "acceptance": "災害・報告・救済発送・到着・反応を同じ時系列と在庫で追跡する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-53-normal",
+      "design_id": "BD-53",
+      "kind": "normal",
+      "scenario": "国人が取次を通じて所領紛争の仲裁を求める。",
+      "acceptance": "外交と共通案件基盤を使いながら、朝廷と幕府固有の決裁権を別に検査する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-53-failure",
+      "design_id": "BD-53",
+      "kind": "failure",
+      "scenario": "取次費用を払っても審議成功・任官・返書到着を保証しない。",
+      "acceptance": "外交と共通案件基盤を使いながら、朝廷と幕府固有の決裁権を別に検査する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-54-normal",
+      "design_id": "BD-54",
+      "kind": "normal",
+      "scenario": "正式任官を受けたが、遠方の相手には文書が届くまで知られない。",
+      "acceptance": "正式地位・名乗り・他者認識・実権を別々に表示・照合する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-54-failure",
+      "design_id": "BD-54",
+      "kind": "failure",
+      "scenario": "自称した官途が通用しても正式任官記録へ変換しない。",
+      "acceptance": "正式地位・名乗り・他者認識・実権を別々に表示・照合する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-55-normal",
+      "design_id": "BD-55",
+      "kind": "normal",
+      "scenario": "家臣が主家の方針に従い対立候補の支持を取り付ける。",
+      "acceptance": "名目就任・候補支持・実権・外交服従の状態が独立し、資格制約は開始時に公開される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-55-failure",
+      "design_id": "BD-55",
+      "kind": "failure",
+      "scenario": "任命が成立しても地方勢力が従わなければ政治的係争・軍事対立は残る。",
+      "acceptance": "名目就任・候補支持・実権・外交服従の状態が独立し、資格制約は開始時に公開される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-56-normal",
+      "design_id": "BD-56",
+      "kind": "normal",
+      "scenario": "仲裁を受け入れた両家が、期限を設けて城の引渡しを行う。",
+      "acceptance": "発給・到達・受容・履行・政治評価を分離し、未到達の相手を全知で処罰しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-56-failure",
+      "design_id": "BD-56",
+      "kind": "failure",
+      "scenario": "一方が拒否すれば仲裁不履行と信用・支援の問題が残り、相手の城を自動取得しない。",
+      "acceptance": "発給・到達・受容・履行・政治評価を分離し、未到達の相手を全知で処罰しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-57-normal",
+      "design_id": "BD-57",
+      "kind": "normal",
+      "scenario": "古い敵情報を地図から選び、出典を読み、偵察の任務へ進む。",
+      "acceptance": "平時任務→移動→布陣→報告→戦後評価を主画面から往復し、キーボードだけでも主要操作を完結できる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-57-failure",
+      "design_id": "BD-57",
+      "kind": "failure",
+      "scenario": "費用不足なら入力済みの下書きを保持して理由を示し、別の相手へ誤送しない。",
+      "acceptance": "平時任務→移動→布陣→報告→戦後評価を主画面から往復し、キーボードだけでも主要操作を完結できる。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-58-normal",
+      "design_id": "BD-58",
+      "kind": "normal",
+      "scenario": "慎重な将は既知の補給危険から迂回と報告を選び、上限内で任務を続ける。",
+      "acceptance": "同じ種・知識・入力で判断が再現し、詳細／簡略モードの主要状態と資源が一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-58-failure",
+      "design_id": "BD-58",
+      "kind": "failure",
+      "scenario": "危険が変わらないのに毎刻命令を破棄・再配置したり、画面外で損失を免除したりしない。",
+      "acceptance": "同じ種・知識・入力で判断が再現し、詳細／簡略モードの主要状態と資源が一致する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-59-normal",
+      "design_id": "BD-59",
+      "kind": "normal",
+      "scenario": "装備と肌色を変更しても同じ人物の顔・骨格・全方向が一致する。",
+      "acceptance": "外見ID・保存・全周・色保護・装備着脱・会話構図を実画像で確認し、生成履歴と編集外保護の検査を残す。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-59-failure",
+      "design_id": "BD-59",
+      "kind": "failure",
+      "scenario": "未制作の対応立ち絵は明示した共通肖像を使い、別人画像を本人の完成絵と偽らない。初回収録人物の代表肖像は発売受入前に用意する。",
+      "acceptance": "外見ID・保存・全周・色保護・装備着脱・会話構図を実画像で確認し、生成履歴と編集外保護の検査を残す。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-60-normal",
+      "design_id": "BD-60",
+      "kind": "normal",
+      "scenario": "設計段階では方針と期待結果を閉じ、後続で順に実装・試験証拠を関連付ける。",
+      "acceptance": "60件の一意ID・境界・正常失敗例・受入条件の欠落0、原則照合、HTML動作／表示検査、追跡表の整合が確認される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "BD-60-failure",
+      "design_id": "BD-60",
+      "kind": "failure",
+      "scenario": "未実装を合格、既知の性能未達を完成、HTML生成成功をゲーム実動作合格としない。",
+      "acceptance": "60件の一意ID・境界・正常失敗例・受入条件の欠落0、原則照合、HTML動作／表示検査、追跡表の整合が確認される。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-01-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "浪人 / 内政 / 私費の交易・修行・訪問、依頼としての手伝い",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-01-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "浪人 / 内政 / 所領徴税は権限なし。雇用・委任を得て担当する",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-02-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "浪人 / 軍事 / 本人・随行者の移動と自衛、加勢の申し出",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-02-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "浪人 / 軍事 / 他家部隊の動員・指揮は委任なしには不可",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-03-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "浪人 / 外交 / 私的接触・使者応募・仕官交渉",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-03-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "浪人 / 外交 / 家を拘束する条約は締結権なし",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-04-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "浪人 / 人事 / 随行の勧誘・自家の開始、推薦",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-04-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "浪人 / 人事 / 主家役職・他家知行を授与できない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-05-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "浪人 / 謀略 / 接触可能な相手への秘密交渉・情報提供の試行",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-05-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "浪人 / 謀略 / 発覚・拒否・信用低下があり、成功を保証しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-06-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "家臣・陪臣 / 内政 / 委任された普請・徴税・調査",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-06-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "家臣・陪臣 / 内政 / 管轄外は上申。主家の全財産を処分しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-07-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "家臣・陪臣 / 軍事 / 任された本隊と配下の指揮",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-07-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "家臣・陪臣 / 軍事 / 他部隊・主家全軍は申請または別委任",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-08-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "家臣・陪臣 / 外交 / 私的接触・委任された使者業務",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-08-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "家臣・陪臣 / 外交 / 代理範囲外の条約は追認が必要",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-09-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "家臣・陪臣 / 人事 / 直属配下への範囲内任務、推挙・恩賞申請",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-09-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "家臣・陪臣 / 人事 / 上位職の任命と知行安堵は任命権者の決裁",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-10-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "家臣・陪臣 / 謀略 / 内通・離間・密約の秘密試行",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-10-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "家臣・陪臣 / 謀略 / 密約を主家の正式同盟に変えない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-11-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "城主・国人 / 内政 / 権利・管轄内の徴税・減免・開発",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-11-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "城主・国人 / 内政 / 寺社等の留保権や他者所有物を無視しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-12-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "城主・国人 / 軍事 / 自城守備と有効な指揮下の動員・出陣",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-12-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "城主・国人 / 軍事 / 主家軍役・作戦任務との競合、独断責任を確認",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-13-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "城主・国人 / 外交 / 留保された自治外交・私的交渉・上申",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-13-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "城主・国人 / 外交 / 主家を拘束する条約は別の締結権を要する",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-14-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "城主・国人 / 人事 / 自家の任命権に基づく配下任用、主家へ推挙",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-14-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "城主・国人 / 人事 / 城主職と全所領の安堵権を同一視しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-15-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "城主・国人 / 謀略 / 独立根回し・内応交渉等の試行",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-15-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "城主・国人 / 謀略 / 宣言で全家臣・守備・領地を自動移転しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-16-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "大名 / 内政 / 自家の正当な権利・処分権内の政策と委任",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-16-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "大名 / 内政 / 他家・寺社・自治領の財産には個別権限が必要",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-17-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "大名 / 軍事 / 軍役招集・軍勢編成・正当な作戦指揮",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-17-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "大名 / 軍事 / 到達・服従・集合は別で、全軍瞬間出現をしない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-18-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "大名 / 外交 / 自家の締結権に基づく条約・使節派遣",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-18-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "大名 / 外交 / 相手の同意・時刻・代理権を省略しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-19-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "大名 / 人事 / 自家の役職・恩賞・安堵の決裁",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-19-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "大名 / 人事 / 朝廷任官や他家家督まで自動決定しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-20-normal",
+      "design_id": "BD-10",
+      "kind": "normal",
+      "scenario": "大名 / 謀略 / 密偵・離間・内応等の委任または秘密試行",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "ROLE-20-boundary",
+      "design_id": "BD-10",
+      "kind": "boundary",
+      "scenario": "大名 / 謀略 / 対象者の知識・利害・支持・発覚を無視しない",
+      "acceptance": "権限・知識・伝達・資源条件を確認し、実行／申請／越権／不可を期待経路へ分類する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C01",
+      "design_id": "BD-10",
+      "kind": "cross-system",
+      "scenario": "15時に解任が有効となる奉行へ15時到達の未着手徴税命令は履行を開始しない。本人の未認識を保持し、UIは知り得る内容だけ示す。解任前の徴収は消えない。",
+      "acceptance": "権限は表示時・発送時・受領時・効力発生時に分けて確認し、実際の効力はその時刻の権限と条件で決める。本人が知らなかった取消等の事情は責任・善意の相手方保護へ別記する。認識不足で真の権限を再生成しない。既発生効果を巻き戻さず、補償・追認は明示案件とする。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C02",
+      "design_id": "BD-24",
+      "kind": "cross-system",
+      "scenario": "返答発送基準15時の返書を15時に発送した場合は期限遵守。ただし相手未着なら合意成立・相手の行動には反映しない。代理が受けても本人が内容を知るのは別報告後。",
+      "acceptance": "全案件に期限起点、判定対象、発送／到達基準、最終失効を明示し、期限ちょうどは有効とする。期限なしを除き、開封起点にも案件の固定最終失効を設ける。通常書状の本人適法受領は自動認識、重要書状は開封時認識。代理の受領・開封・回答は別権限。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C03",
+      "design_id": "BD-11",
+      "kind": "cross-system",
+      "scenario": "差替え関係を持つ新版の効力後に旧原本が遅着しても旧版を再履行しない。依存が循環した場合はその整合単位の新確定を留保し、他の独立案件は進行する。",
+      "acceptance": "同じ時刻の候補を収集し、因果依存と時刻境界を先に解決する。明示的な取消対象・版差替えはその関係を使い、独立した軍令競合はBD-11、在庫競合はBD-36、引渡しと救援はBD-47へ委譲する。登録順で制度上の勝者を作らず、未解決は係争・保留として記録する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C04",
+      "design_id": "BD-22",
+      "kind": "cross-system",
+      "scenario": "未到達の軍令は移動を開始しない。紛失未認識で自動再送しない。遅着原本と再送到達の二通から履行・徴税・決済は一回だけ生じる。",
+      "acceptance": "要求・案件・配送・履行・報告を別に持つ。下書き→発送、配送中→受領、認識→判断、承認→履行開始、進行→部分／完了／中断、履行→報告を制度固有に接続する。再送は論理本文を維持し配送試行だけ追加。内容変更・期限変更は参照付きの新要求とする。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C05",
+      "design_id": "BD-22",
+      "kind": "cross-system",
+      "scenario": "木材100の引当から40消費後に中止すれば未使用60だけ解放。返金失敗の再試行で二重返金しない。緊急転用で既存契約の違約責任を消さない。",
+      "acceptance": "所有・処分・保管・引当・出庫・輸送・実消費・債務を別記し、BD-36の裁定規則で同じ物を重複配分しない。中止で未使用引当を解放しても消費済み分は返還しない。補償は元取引に結び付けた一意の新イベントであり、失敗時は補償待ちを保持する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C06",
+      "design_id": "BD-07",
+      "kind": "cross-system",
+      "scenario": "城主の独立宣言後も旧主家へ従う門番が残る。落城で倉庫を占有しても商人所有の米を自動的に取得しない。後継操作への切替で前主人公の秘密を全移植しない。",
+      "acceptance": "家督・所属・忠誠・指揮・占有・権利・収益・条約・保証・債務を対象別に遷移させる。家や組織の継続、個人の死亡、第三者同意、担保を参照し、係争を単一の所有フラグへ縮めない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C07",
+      "design_id": "BD-17",
+      "kind": "cross-system",
+      "scenario": "全国から近景へ同じ橋に近づける。未知の敵は見えず、古い報告は日付付きの印。遠方の実際の撤退で未受領報告の内容が変わらない。",
+      "acceptance": "正規世界座標と共通時刻を唯一の正本にする。ズーム・回転・傾斜は表示操作で、軍勢の所属・経路・戦場・時刻・知識を変えない。画面外でも同じ主要戦闘・物流モデルを使い、見ていないことを理由に一律の別勝敗式へ変えない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C08",
+      "design_id": "BD-14",
+      "kind": "cross-system",
+      "scenario": "命令不履行の主君評価は報告と証言の受領後に生じる。自己防衛で勝った人物も違反は別審査される。偽の報告を信じた場合は誤認として記録する。",
+      "acceptance": "NPCが使う行動入力は各本人の知識・既知任務・資源とし、能力が高くても未知の敵位置・密約・未到達命令を直接参照しない。内部の真の権限や物理衝突を判定する整合検査と、NPCが知る判断材料・報告理由を分離する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C09",
+      "design_id": "BD-22",
+      "kind": "cross-system",
+      "scenario": "配送中と交戦中の保存から別プロセス復旧しても二重徴収・乱数引き直し・知識の若返りがない。旧試作保存は明示的に移行するか旧入口で保持し、上書きしない。",
+      "acceptance": "確定済み効果、未処理、配送試行、知識出典、担当、経路進捗、停止・表示位相、必要乱数・競合裁定・補償待ちを整合した単位で保存する。未知・破損データは現在状態を部分更新せず拒否する。試作の刻・地図・スキーマを製品の秒・全国地理へ無断再解釈しない。",
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C10",
+      "design_id": "BD-01",
+      "kind": "cross-system",
+      "scenario": "60/60基本判断を閉じても、現状は3部隊等の試作範囲の実装。ゲームの完成・全国実装・60fps達成と表示しない。仕様変更は版・理由・影響・再検査対象を残す。",
+      "acceptance": "既存Confirmedの原本とPW01〜07を維持し、今回の60件は委任された推奨による基本設計V1の採用と記録する。後続資料の旧未確定表記は対応IDの範囲で履歴として扱う。詳細実装、数値調整、史実データ採録、実画像品質・性能・製品受入の完了を別に追跡する。",
+      "status": "PLANNED_NOT_EXECUTED"
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # 百代鏡：作業の入口
 
+## 基本設計V1の採用と今回のmainマージ許可（2026-10-19）
+
+ユーザーが「全部推奨」「基本設計を完了」「commit/pushとmainへのマージ」「HTMLで」と明示指示。今回の基本設計と既存prototype/godot-foundation成果のmainマージは許可済みで、下記の通常のmain変更禁止に対するこの作業限りの例外。design/foundation・既存Docs/Confirmed・同期sources・外部プロジェクト原本は編集しない。
+
+現行正本はDocs/Design/basic-design-v1.jsonとbasic-design-rules.json。HTML/MarkdownはScripts/build_basic_design.pyから生成。15分野60判断を委任採用し、決定記録はDocs/Decisions/2026-10-19_BASIC_DESIGN_V1.md。旧未確定表記を理由に同じ基本判断を再度未選択に戻さない。既存ConfirmedとPW01〜07を維持し、詳細の後続DD-01〜08、受入予定170件（未実行）、既存Core317件等の試作証拠を区別する。
+
+初回製品は全国と武将個人の人生、1560年開始一シナリオ。制作順のみ一地域→全国。旧2D復帰、別戦闘空間・別時計、全知AI、所属・領地・債務一括移転、瞬間配置を禁止。性能目標・新制度・全国地理・自由カメラ等を実装済みにしない。将来の基本方針変更は理由・影響・版・再検査を記録する。
+
 ## 平時・戦時の操作骨格（2026-10-19、7項目B採用）
 
 Docs/Proposals/PLAYER_PEACE_WAR_FLOW.mdとDocs/Decisions/2026-10-19_PLAYER_PEACE_WAR_FLOW.mdを現行の操作設計として読む。ユーザーはPW01〜07のBをすべて採用。任務と自分の目的、所在、拘束・競合による併用、目的・制約・報告条件での委任、本隊地点指定＋配下命令、既知任務との逸脱表示、自動進行＋任意停止＋重要時自動停止を前提とする。

@@ -1,5 +1,7 @@
 # 決定履歴
 
+- 2026-10-19：[基本設計V1・60件の推奨委任採用](2026-10-19_BASIC_DESIGN_V1.md)。ユーザーが推奨選定・整合確認・基本設計完了・commit/push・mainマージを明示委任。[HTML基本設計書](../Design/basic-design-v1.html)に15分野60判断、共通境界10件、代表権限20組、予定受入170件（未実行）を集約。既存Confirmed原本とdesign/foundationは維持。基本設計完了と実装・製品受入完了は別。
+
 - 2026-10-19：武将個人の平時・戦時の操作骨格7項目をすべてBで採用。[決定・整合確認](2026-10-19_PLAYER_PEACE_WAR_FLOW.md)、[操作設計](../Proposals/PLAYER_PEACE_WAR_FLOW.md)。自動進行＋任意停止＋重要時自動停止を採用し、旧資料の「方式の採否未確定」を今回の範囲で更新。数値・例外・実装完了は未確定。Docs/Confirmed・main・design/foundationは変更しない。
 
 - 2026-10-17：タイトルを『百代鏡 / Mirror of Ages』に決定。
