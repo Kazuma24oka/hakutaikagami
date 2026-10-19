@@ -1,0 +1,55 @@
+{
+  "binding": "c20c4455b6d804c6ca98edf3b847e44d04fd65aeb16074eff0c18a3805f3034b",
+  "source": "real Godot GPU viewport PNGs",
+  "frames": [
+    {
+      "frame": 0,
+      "png_sha256": "429d49e69266bc550e6a83162aebfef18e35a9700f3df9c80636dbae660a9e00",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 1,
+      "png_sha256": "8d9f03de191b1fc508a46ca91a0f3beefce08f5850b6b0becaa766f7f32876a7",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 2,
+      "png_sha256": "e0e24bed86345fa776e40507be80488194687cdedd7db73a4c3b35f0e8c54799",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 3,
+      "png_sha256": "b726d6b6aa283662b8ef724233a6b5351173e007dd8d68bc1df5b8a56925f447",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 4,
+      "png_sha256": "18d00c5a8895c50726e78a03c0784796ad768299f8dccf749a0ecee8062d22e3",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 5,
+      "png_sha256": "22b3525b7c6b27d74d4a404136f5fea101e19d09918b72ae14ecfbaaf19d23e3",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 6,
+      "png_sha256": "46cc3dff4bcaf21f66f0001b12dfa65d96395521b7ef320ff848abeb40eb3cfe",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    },
+    {
+      "frame": 7,
+      "png_sha256": "789b3375a949a72a7ae648a19c05ecaff6e19a0141b9e2dbb7a82922ba0d6379",
+      "native_difference_pixels": 0,
+      "large_difference_pixels": 0
+    }
+  ],
+  "gif_note": "Viewing copy with GIF palette conversion; PNGs remain exact source evidence."
+}

@@ -1,0 +1,4 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://Scripts/Officer3DV2Review.cs" id="1"]
+[node name="Officer3DV2Review" type="Node"]
+script = ExtResource("1")

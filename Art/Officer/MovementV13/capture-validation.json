@@ -1,0 +1,270 @@
+{
+  "binding": "5d4c00f49cdc6663dbb2659e2e005e56ade471e2e63e3e7ba228625aae4601a5",
+  "frames": [
+    {
+      "file": "route-00.png",
+      "sha256": "ddc124771561d69d998e81c74ddc2b5c661135753e5179239996cc17b150704a",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-01.png",
+      "sha256": "6b09970518b6c3365f80a7886514d3ebf256574929d85638b99e670c4c0ab78c",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-02.png",
+      "sha256": "f652c58c7f50bdabc89021b6b86d7c3273968c70c4fb4e0ab431bbe652db36b4",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-03.png",
+      "sha256": "b250066de5bc2643be81c1507bf1c0f0823f0f30be5f855592ee6b55b5490aa9",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-04.png",
+      "sha256": "ab2180265b3ff92293b5645327510f101bdf56ead6c333e58ebd0560d0e684d5",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-05.png",
+      "sha256": "829b236d720626e02b599b89cbe278e04a41c853786b81a1b7d8d810028ac82a",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-06.png",
+      "sha256": "c4ccc5433ea1663418f4c1f0a0826fd26c5449bf93acf902aefc6742d7f5a349",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-07.png",
+      "sha256": "9106f34299a1cced2f40011d5322af9aae57765aa0e3f6f62aa62bb7e110f19a",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-08.png",
+      "sha256": "69eac2204b6a1dfd91997b181f97ae7708a44ce39dcf8a59153ad6c1d1f0cc42",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-09.png",
+      "sha256": "5976c83bf3ece4536ac2cb0f8ab72f15596e1d0b9b18fd54b5dfd0cb5733fabd",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-10.png",
+      "sha256": "2c497509220212cff6cc3e6db1586b5368ec43d9f85749b20857dd7ae7ef4021",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-11.png",
+      "sha256": "e967a230a70ce3695ea8a58a82ed32f0b6d3eed1d64f8b39b1fab9f6ef84ec13",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-12.png",
+      "sha256": "1202e1312df6668e20250dcce52f26fc3350566d50090312679c46e8e464bcaa",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-13.png",
+      "sha256": "0429f4431bd51e15e164f08ef0e124e2057e5e50a9903b3b536b693ba3ef70fc",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-14.png",
+      "sha256": "56567830efffa2947238d8bb1519a1c24cb8b4f1c04a0df006b30a36dd6b65d6",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-15.png",
+      "sha256": "49e8199ae9003f2561cf6d809170fd7537e21503495b3d289e1a1c7d7e07dd5b",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-16.png",
+      "sha256": "3bfe6fdd15ab0388ee93d54a23b4375e3014700e564da3c0d38a7240f64039a8",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-17.png",
+      "sha256": "1e38021f85232783bc21d299e4762bb920490c5844a5845d2c975adf1e04a565",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-18.png",
+      "sha256": "8814c2a6f0a90cd96951ea978f26ce149007652b8a099dd9ef244c9542fc16a0",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-19.png",
+      "sha256": "22d43eacdbe94ff750ba918b934f797e34f7c80a5667c791e98151aa2a8c1b21",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-20.png",
+      "sha256": "e15e51e446a29c32e8eed512d0fab5500105d969b83e8af70923dfeee34bb2f8",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-21.png",
+      "sha256": "9e970e254f1ccb5e3348b3137c310ded3da520d1c53bbce0bd314c2a57d3d137",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-22.png",
+      "sha256": "eef7ddaf865caeb46cbd63d523218a0184164d83918caad55f45c0b5602d4e9e",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-23.png",
+      "sha256": "7af76aaf43ac4e85b29e6d97fc1805190e300406de49f9478345865cbc6ed334",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-24.png",
+      "sha256": "2421545411985726d8c2ceefec6923378f61ab30991a6bbe0db313f4ac552f00",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-25.png",
+      "sha256": "6b55dd055557479ae77f66bcdfc7484b635a28ffbc3b49b434c5751dce050a93",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-26.png",
+      "sha256": "7ea0a9839cd9821065cd6179eb00402d2fc55591e8bedf584544b7312a0037f4",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-27.png",
+      "sha256": "95fa64f0c4faf21a6a738f840b85f0329b6f4e33042314807b97069f97c8bf3b",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-28.png",
+      "sha256": "b76cd021df2b32fdf0c1a8384a3bc85fc2df3d762ded683f1971d65c0b42236f",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-29.png",
+      "sha256": "5aac1b51ecce8aaee620df47ae60e530758bd9b5d63b4d4b2df0b61a1daa71b5",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-30.png",
+      "sha256": "2bea75db2715d179da240902c4a2544e0d6361a22f0f481b6d87ff68d306dce5",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-31.png",
+      "sha256": "e527cd5c0034108f21ab0e3cadb598c34f9ff89f40ddb17898c03ce6c2973b2e",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-32.png",
+      "sha256": "a1a519c4d2fb57b7b914cac7c570d66bdd430544c13e229ba491a68da9fabca3",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-33.png",
+      "sha256": "ce58f7c5f8679da4704646b9bda024429527363e1f7f9630b6c00ecd68398d14",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-34.png",
+      "sha256": "5a6edf8e84bce9939d3dce18060326915e8dfab593d6cf79151bf4e0fd23b047",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-35.png",
+      "sha256": "55d67228583c15c292ee8335934a2bb08c1938a09b0dd8eb5ed233b368cec16e",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-36.png",
+      "sha256": "e1f16bac8dd094cd5fb6fd076fb332543822b0fe879445c02992788683f3d9a6",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-37.png",
+      "sha256": "b1de496c0cfbcede3873b26023fa72ed38e4d8040a0ab7bd7e15a7888e082e63",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-38.png",
+      "sha256": "d7369a14909f89bf1d7b43a416042463ca706edf8ba8180bd6397fc16bb86966",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-39.png",
+      "sha256": "c69568a44f2fa4920a3a4655d4710de6780d03c9e7410b0b2989f4ea3bdc9efc",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-40.png",
+      "sha256": "abaf0b68095372110d59f1c9e4417648168ad3681515cabe7b45892ac12b0bb3",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-41.png",
+      "sha256": "452d15a9e5d9e948af7a6f5009e6d47c410887639272367ff706943992a6f9d3",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-42.png",
+      "sha256": "452d15a9e5d9e948af7a6f5009e6d47c410887639272367ff706943992a6f9d3",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    },
+    {
+      "file": "route-43.png",
+      "sha256": "ef73c1179ee6131efa6fd36a8d23a88c06de24a36fb953f85753323cd2e14129",
+      "native_opaque_pixel_difference": 0,
+      "large_all_pixel_difference": 0
+    }
+  ],
+  "source": "actual Godot viewport PNGs; native opaque pixels, whole4x preview compared to Python; GIF has palette conversion"
+}

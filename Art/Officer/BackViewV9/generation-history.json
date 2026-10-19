@@ -1,0 +1,130 @@
+{
+  "tool": "builtin image_gen.imagegen",
+  "transparent_background": true,
+  "seed": "not exposed",
+  "model_version": "not exposed",
+  "raw_alpha_preserved": true,
+  "native_conversion": {
+    "whole_canvas_scale": 0.0625,
+    "source_size": [
+      1024,
+      1536
+    ],
+    "native_size": [
+      64,
+      96
+    ],
+    "sampling": "nearest",
+    "alpha_threshold": 200,
+    "palette_colors": 48,
+    "per_part_fit": false,
+    "translate": [
+      0,
+      0
+    ]
+  },
+  "attempts": [
+    {
+      "role": "rear armor first attempt",
+      "prompt": {
+        "path": "Art/Officer/BackViewV9/armor-prompt.txt",
+        "sha256": "24890e2a2239cc21fdc0b589376ea81413eb551e36dbb9c7697aa69bef99d927"
+      },
+      "references": [
+        {
+          "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+          "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+        },
+        {
+          "path": "Game/Assets/Trials/OfficerRightViewV7/source-right.png",
+          "sha256": "927d83249da74cb7cfa351f6777f1cc60abe7790ddf624969efe6f09fdd16690"
+        },
+        {
+          "path": "Art/Officer/BackViewV9/armor-guide-12x.png",
+          "sha256": "9a062a4c388d805fbab13ad3c98981c8613465a695fcfc3d3c0a0618a923bca6"
+        }
+      ],
+      "raw": {
+        "path": "Art/Officer/BackViewV9/rejected-small-head-raw.png",
+        "sha256": "96f7912f115bb258f990843cdea569b08c4698b36c35c803b28d09c9d6155c24"
+      },
+      "decision": "rejected: small head/high shoulders"
+    },
+    {
+      "role": "rear armor proportion correction",
+      "prompt": {
+        "path": "Art/Officer/BackViewV9/armor-prompt-v2.txt",
+        "sha256": "1a8482143c8488c4ce45c8fb883b33eff217f1c2fa31407a4c9552f3387a85d3"
+      },
+      "references": [
+        {
+          "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+          "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+        },
+        {
+          "path": "Art/Officer/BackViewV9/armor-guide-12x.png",
+          "sha256": "9a062a4c388d805fbab13ad3c98981c8613465a695fcfc3d3c0a0618a923bca6"
+        },
+        {
+          "path": "Art/Officer/BackViewV9/rejected-small-head-raw.png",
+          "sha256": "96f7912f115bb258f990843cdea569b08c4698b36c35c803b28d09c9d6155c24"
+        }
+      ],
+      "raw": {
+        "path": "Art/Officer/BackViewV9/armor-raw.png",
+        "sha256": "d453018c029e91e1bbd42f4ed8f624a73e0c06a158a40a6ba4df714290da80b7"
+      },
+      "native": {
+        "path": "Art/Officer/BackViewV9/source-back-candidate.png",
+        "sha256": "10ba45079af65978e50c1ca05f675ad90b374829bb55f60c66763765e8ff202c"
+      },
+      "decision": "rear source retained; hairtop6 vs target4 explicitly observed, other views untouched"
+    },
+    {
+      "role": "rear bare body generation request",
+      "prompt": {
+        "path": "Art/Officer/BackViewV9/body-prompt.txt",
+        "sha256": "e68ab1f60a04fa663ce0294f20404830c40ded2607ec94807b188d15d20aae83"
+      },
+      "references": [
+        {
+          "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+          "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+        },
+        {
+          "path": "Art/Officer/BackViewV9/body-guide-12x.png",
+          "sha256": "8827726ad011113a4054b6927922a866a7319abbac2b194307311b0aeb2a9905"
+        },
+        {
+          "path": "Art/Officer/BackViewV9/source-back-candidate.png",
+          "sha256": "10ba45079af65978e50c1ca05f675ad90b374829bb55f60c66763765e8ff202c"
+        }
+      ],
+      "result": {
+        "path": "Art/Officer/BackViewV9/body-generation-blocked.json",
+        "sha256": "fd9f4542e6db218685b7d9d4d3db78fd801ab925c6510cd5e36ebe283f40cedd"
+      },
+      "raw": null,
+      "decision": "Tool blocked output; no retry/model fallback. Existing featureless body reused with explicit rear material."
+    }
+  ],
+  "body_final": {
+    "source": {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+      "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+    },
+    "construction": "Mirrored source geometry with rear-only core shading, featureless head/pelvis, observed rear ear/nape and bounded ear bridges. No new body shape model.",
+    "definition": {
+      "path": "Art/Officer/BackViewV9/definition.json",
+      "sha256": "e88df73e8c14daea7c71f0bdd1ee37ea21ef8beea387eb0a4666f5ca19d2490a"
+    },
+    "parts": {
+      "path": "Art/Officer/BackViewV9/parts.json",
+      "sha256": "fbaa27bb59269d18f751fdd3ec97d3192b62ea56580e9302cefe1cce10611724"
+    },
+    "final": {
+      "path": "Game/Assets/Trials/OfficerBackViewV9/body.png",
+      "sha256": "56f933a14b92b2cac76eca2a2525501a4bdd8a53bf033db988496e7c7ca7a6be"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "date_jst": "2026-10-18",
+  "status": "AUTHOR_REVIEWED_FRONT_CANDIDATE_NOT_USER_ACCEPTED",
+  "checks": {
+    "face_hair_clothing_absent": "PASS",
+    "featureless_skin_pelvis": "PASS",
+    "head_neck_shoulders_trunk_legs_connected": "PASS",
+    "native_1x_and_5x_white_black_viewed": "PASS",
+    "mask_ownership_front_static": "AUTHOR_DEFINED_AND_INSPECTED",
+    "motion_or_hidden_surfaces": "NOT_TESTED"
+  },
+  "evidence": [
+    {
+      "path": "Docs/Proposals/Evidence/officer-body-base-v1.png",
+      "sha256": "4729673caffd6b6088b0ed1de79ffa5e7ffb2ab71bf7e347af2b0885e9a638a8"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-body-base-browser.png",
+      "sha256": "844e26e9b2d0540b700f7a9edee0640dcb02b068c45aa2190d97844eac6c3799"
+    }
+  ],
+  "material_changed_native_pixels": 0,
+  "repack_png_count": 22,
+  "repack_hash_difference": 0,
+  "regressions_passed": 27,
+  "native_mouse_input": 0,
+  "limits": "Front static construction, no hidden anatomical observation, user acceptance, joint-motion or runtime GPU result claimed",
+  "generation_trial": "Executed with fixed settings; palette-level output delta0; final base is authored control artwork"
+}

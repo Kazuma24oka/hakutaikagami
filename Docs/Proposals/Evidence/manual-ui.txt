@@ -1,0 +1,13 @@
+Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+CHARACTER_SELECTED id=character-001 role=城主
+FOUNDATION_READY characters=3 castles=1 seed=20261018
+CHARACTER_SELECTED id=character-002 role=奉行
+CHARACTER_SELECTED id=character-003 role=家臣
+CHARACTER_SELECTED id=character-003 role=家臣
+CHARACTER_SELECTED id=character-003 role=家臣
+CHARACTER_SELECTED id=character-002 role=奉行
+CHARACTER_SELECTED id=character-001 role=城主
+CHARACTER_SELECTED id=character-002 role=奉行
+CHARACTER_SELECTED id=character-003 role=家臣

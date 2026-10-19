@@ -1,0 +1,181 @@
+# Preserve exact source bytes used by shared-module provenance checks.
+Scripts/art_shared/*.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Preserve all byte-hashed production inputs and processing tools across checkout.
+Art/Officer/BodyBaseV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_art_pipeline.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_body_base.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/run_officer_body_workflow.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/validate_officer_body_base.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_body_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_ART_PRODUCTION_AUDIT.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Art/Officer/appearance-reference.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for source-corresponding bare-body replay and its bound review.
+Art/Officer/BodyBaseV2/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_source_body.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/review_officer_source_body.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_source_browser.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-body-source-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_SOURCE_CORRESPONDENCE_REPAIR.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/review_officer_body_layers.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_body_layers.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-body-layer-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact source masks and compositing tools for the original officer front parts.
+Art/Officer/EquipmentPartsV2/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/inspect_officer_equipment_source.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_equipment_parts.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/review_officer_equipment.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_equipment_browser.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-equipment-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact-byte controls and rendering tools for eight-slot armor replay.
+Art/Officer/ArmorSplitV3/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/inspect_officer_armor_source.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_armor_layers.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_armor_parts.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/review_officer_armor_parts.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_armor_browser.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-armor-parts-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Art/Officer/FrontMotionV4/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_front_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_front_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_front_motion_page.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_front_motion.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-motion-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_ARMOR_SPLIT_V3.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/GodotMotionV5/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/officer_motion_trial.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/Main.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/OfficerMotionFrames.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/OfficerMotionTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerMotionTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/project.godot -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/HakutaiKagami.Game.csproj -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_officer_godot_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Validate-OfficerGodotMotion.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/Evidence/officer-motion-godot-*.txt -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/FrontWalkV6/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_front_walk.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_front_walk.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_front_walk_page.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-walk-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/officer_motion_trial_v6.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_officer_front_walk.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Validate-OfficerFrontWalk.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/Evidence/officer-walk-v6-godot-*.txt -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/Evidence/officer-walk-v6-*.txt -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/RightViewV7/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/work-record.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_right.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_right_page.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_right.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/test_officer_right.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-right-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_RIGHT_VIEW_V7.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/RightMotionV8/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_right_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_right_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_right_motion_page.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/test_officer_right_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_right_motion.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_officer_right_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/export_officer_right_capture.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Validate-OfficerRightMotion.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-OfficerRightMotion.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/OfficerRightMotionTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerRightMotionTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/officer_right_motion_v8.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-right-motion-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_RIGHT_MOTION_V8.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/BackViewV9/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/BackMotionV10/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_back.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_back_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/build_officer_back_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/officer_back_motion_page.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/test_officer_back.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_back_motion.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_officer_back_motion.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/export_officer_back_capture.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-OfficerBackMotion.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Validate-OfficerBackMotion.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/OfficerBackMotionTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerBackMotionTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/officer_back_motion_v10.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-back-motion-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_BACK_VIEW_MOTION_V9_V10.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/LeftViewV11/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/LeftMotionV12/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*officer_left* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*OfficerLeft* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/OfficerLeftMotionTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerLeftMotionTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/officer_left_motion_v12.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-left-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-left-motion-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_LEFT_VIEW_MOTION_V11_V12.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer/MovementV13/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/OfficerMovementTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerMovementTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_officer_movement.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/export_officer_movement.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Validate-OfficerMovement.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-OfficerMovement.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_MOVEMENT_V13.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/officer-movement-review.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_officer_movement.cjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Art/Officer3D/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Proposals/OFFICER_3D_TRANSITION.md -text
+Docs/Archive/Officer2D/** -text
+Art/Officer/ARCHIVED_2D.md -text
+Scripts/*officer3d* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/Officer3D*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Shaders/Officer3D.gdshader -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/Officer3DReview.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-Officer3DTrial.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/Officer3D/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for V2 bound runtime and shared session UI.
+Game/Scripts/TaxPanel.cs -text
+Game/Shaders/Officer3DV2.gdshader -text
+Game/Scenes/Officer3DV2Review.tscn -text
+Scripts/Show-Officer3DV2.ps1 -text
+Scripts/capture_officer3d_main.gd -text
+
+Game/Scenes/Officer3DCreator.tscn -text
+Game/Shaders/Officer3DV3.gdshader -text
+Scripts/Show-Officer3DV3.ps1 -text
+
+Game/Scripts/OfficerWorld*.cs -text
+Core/Appearance/*.cs -text
+Core/Simulation/OfficerIntegration.cs -text
+Scripts/*officer_world* -text
+Scripts/Show-OfficerWorld.ps1 -text
+
+# Preserve the validated Windows source bytes; recognize CRLF as line endings.
+Core/Appearance/*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Simulation/TaxSimulation.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/Officer3DCustomActor.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/TaxPanel.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Game/Scripts/MilitaryGrid*.cs -text
+Core/Simulation/Military*.cs -text
+Core/Simulation/TaxSimulation.Military.cs -text
+Scripts/*military_grid* -text
+Scripts/Show-MilitaryGrid.ps1 -text
+
+Core/Simulation/Formation*.cs -text
+Game/Scripts/FormationWorld*.cs -text
+Scripts/*formation_world* -text
+Scripts/Show-FormationWorld.ps1 -text
+Tests/*.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/*.csproj -text
+Docs/Design/** -text
+Scripts/build_basic_design.py -text
+Scripts/basic_design_template.html -text
+Scripts/validate_basic_design.cjs -text

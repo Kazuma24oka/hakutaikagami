@@ -1,0 +1,851 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "parts": {
+    "torso": {
+      "id": 1,
+      "label": "胴",
+      "includes": "cuirass, collar and torso underclothing"
+    },
+    "shoulders": {
+      "id": 2,
+      "label": "肩",
+      "includes": "left and right shoulder plates"
+    },
+    "arms": {
+      "id": 3,
+      "label": "腕",
+      "includes": "sleeves, kote and gloves"
+    },
+    "waist": {
+      "id": 4,
+      "label": "腰",
+      "includes": "belt and kusazuri"
+    },
+    "legs": {
+      "id": 5,
+      "label": "脚",
+      "includes": "trousers, thigh protection and shin guards"
+    },
+    "footwear": {
+      "id": 6,
+      "label": "履物",
+      "includes": "paired shoes and upper cuffs"
+    },
+    "coat": {
+      "id": 7,
+      "label": "陣羽織",
+      "includes": "coat collar/lapels and tails"
+    },
+    "sword": {
+      "id": 8,
+      "label": "刀",
+      "includes": "hilt, guard and scabbard"
+    }
+  },
+  "bands": [
+    {
+      "part": "torso",
+      "y": [
+        0,
+        51
+      ]
+    },
+    {
+      "part": "waist",
+      "y": [
+        52,
+        69
+      ]
+    },
+    {
+      "part": "legs",
+      "y": [
+        70,
+        86
+      ]
+    },
+    {
+      "part": "footwear",
+      "y": [
+        87,
+        95
+      ]
+    }
+  ],
+  "polygons": [
+    {
+      "part": "coat",
+      "points": [
+        [
+          20,
+          32
+        ],
+        [
+          23,
+          33
+        ],
+        [
+          22,
+          44
+        ],
+        [
+          21,
+          50
+        ],
+        [
+          19,
+          56
+        ],
+        [
+          17,
+          63
+        ],
+        [
+          15,
+          70
+        ],
+        [
+          15,
+          74
+        ],
+        [
+          13,
+          79
+        ],
+        [
+          11,
+          80
+        ],
+        [
+          9,
+          76
+        ],
+        [
+          8,
+          74
+        ],
+        [
+          9,
+          70
+        ],
+        [
+          11,
+          65
+        ],
+        [
+          14,
+          57
+        ],
+        [
+          17,
+          48
+        ],
+        [
+          18,
+          39
+        ]
+      ]
+    },
+    {
+      "part": "coat",
+      "points": [
+        [
+          33,
+          31
+        ],
+        [
+          36,
+          31
+        ],
+        [
+          39,
+          36
+        ],
+        [
+          41,
+          44
+        ],
+        [
+          42,
+          50
+        ],
+        [
+          42,
+          54
+        ],
+        [
+          43,
+          56
+        ],
+        [
+          46,
+          62
+        ],
+        [
+          49,
+          72
+        ],
+        [
+          50,
+          78
+        ],
+        [
+          46,
+          75
+        ],
+        [
+          43,
+          72
+        ],
+        [
+          40,
+          73
+        ],
+        [
+          38,
+          70
+        ],
+        [
+          35,
+          63
+        ],
+        [
+          34,
+          57
+        ],
+        [
+          36,
+          54
+        ],
+        [
+          37,
+          47
+        ],
+        [
+          36,
+          40
+        ],
+        [
+          34,
+          34
+        ]
+      ]
+    },
+    {
+      "part": "coat",
+      "points": [
+        [
+          46,
+          65
+        ],
+        [
+          49,
+          68
+        ],
+        [
+          51,
+          73
+        ],
+        [
+          52,
+          78
+        ],
+        [
+          51,
+          80
+        ],
+        [
+          49,
+          79
+        ],
+        [
+          48,
+          75
+        ],
+        [
+          47,
+          71
+        ]
+      ]
+    },
+    {
+      "part": "arms",
+      "points": [
+        [
+          16,
+          41
+        ],
+        [
+          20,
+          43
+        ],
+        [
+          20,
+          48
+        ],
+        [
+          18,
+          52
+        ],
+        [
+          16,
+          60
+        ],
+        [
+          14,
+          65
+        ],
+        [
+          10,
+          68
+        ],
+        [
+          6,
+          66
+        ],
+        [
+          6,
+          61
+        ],
+        [
+          9,
+          54
+        ],
+        [
+          10,
+          47
+        ],
+        [
+          13,
+          43
+        ]
+      ]
+    },
+    {
+      "part": "arms",
+      "points": [
+        [
+          42,
+          41
+        ],
+        [
+          47,
+          43
+        ],
+        [
+          50,
+          49
+        ],
+        [
+          50,
+          53
+        ],
+        [
+          52,
+          57
+        ],
+        [
+          52,
+          65
+        ],
+        [
+          49,
+          67
+        ],
+        [
+          46,
+          66
+        ],
+        [
+          45,
+          60
+        ],
+        [
+          44,
+          54
+        ],
+        [
+          42,
+          48
+        ]
+      ]
+    },
+    {
+      "part": "shoulders",
+      "points": [
+        [
+          17,
+          32
+        ],
+        [
+          21,
+          32
+        ],
+        [
+          23,
+          35
+        ],
+        [
+          22,
+          39
+        ],
+        [
+          20,
+          43
+        ],
+        [
+          17,
+          45
+        ],
+        [
+          12,
+          43
+        ],
+        [
+          12,
+          40
+        ],
+        [
+          14,
+          36
+        ]
+      ]
+    },
+    {
+      "part": "shoulders",
+      "points": [
+        [
+          38,
+          32
+        ],
+        [
+          42,
+          32
+        ],
+        [
+          47,
+          36
+        ],
+        [
+          49,
+          40
+        ],
+        [
+          49,
+          43
+        ],
+        [
+          45,
+          45
+        ],
+        [
+          42,
+          43
+        ],
+        [
+          41,
+          39
+        ],
+        [
+          38,
+          36
+        ]
+      ]
+    }
+  ],
+  "draw_order": [
+    "footwear",
+    "legs",
+    "torso",
+    "waist",
+    "coat",
+    "sword",
+    "arms",
+    "shoulders"
+  ],
+  "body_occlusion": {
+    "torso": [],
+    "shoulders": [],
+    "arms": [
+      8,
+      11
+    ],
+    "waist": [],
+    "legs": [
+      13,
+      16
+    ],
+    "footwear": [
+      14,
+      17
+    ],
+    "coat": [],
+    "sword": []
+  },
+  "completion_policy": {
+    "basis": "Author scoped concealed material only; visible source ownership unchanged. No automatic face/foreign nearest fill. Every constructed mask is restricted to a declared later-drawn occluder.",
+    "torso": {
+      "body_ids": [
+        3,
+        4
+      ],
+      "dilation": 1,
+      "rows": [
+        35,
+        53
+      ],
+      "occluders": [
+        "coat",
+        "sword"
+      ],
+      "material": "red_lamellar"
+    },
+    "waist": {
+      "polygon": [
+        [
+          19,
+          52
+        ],
+        [
+          41,
+          52
+        ],
+        [
+          42,
+          61
+        ],
+        [
+          35,
+          68
+        ],
+        [
+          22,
+          70
+        ],
+        [
+          18,
+          64
+        ]
+      ],
+      "occluders": [
+        "coat",
+        "sword"
+      ],
+      "material": "red_lamellar"
+    },
+    "legs": {
+      "body_ids": [
+        5,
+        12,
+        13,
+        15,
+        16
+      ],
+      "dilation": 2,
+      "rows": [
+        57,
+        88
+      ],
+      "occluders": [
+        "waist",
+        "coat"
+      ],
+      "material": "dark_trousers_and_knee_guard"
+    },
+    "arms": {
+      "body_ids": [
+        6,
+        9
+      ],
+      "dilation": 1,
+      "rows": [
+        36,
+        45
+      ],
+      "occluders": [
+        "shoulders"
+      ],
+      "material": "dark_sleeve"
+    },
+    "coat": {
+      "polygons": [
+        [
+          [
+            18,
+            35
+          ],
+          [
+            21,
+            36
+          ],
+          [
+            20,
+            50
+          ],
+          [
+            17,
+            64
+          ],
+          [
+            15,
+            68
+          ],
+          [
+            16,
+            51
+          ]
+        ],
+        [
+          [
+            36,
+            34
+          ],
+          [
+            39,
+            36
+          ],
+          [
+            43,
+            51
+          ],
+          [
+            46,
+            66
+          ],
+          [
+            43,
+            66
+          ],
+          [
+            39,
+            51
+          ]
+        ]
+      ],
+      "occluders": [
+        "arms",
+        "shoulders",
+        "sword"
+      ],
+      "material": "red_coat"
+    },
+    "sword": {
+      "line": [
+        [
+          35,
+          53
+        ],
+        [
+          58,
+          74
+        ]
+      ],
+      "width": 3,
+      "rows": [
+        61,
+        69
+      ],
+      "occluders": [
+        "arms"
+      ],
+      "material": "dark_scabbard"
+    },
+    "footwear": {
+      "body_ids": [
+        14,
+        17,
+        13,
+        16
+      ],
+      "dilation": 1,
+      "rows": [
+        85,
+        89
+      ],
+      "occluders": [
+        "legs"
+      ],
+      "material": "dark_footwear"
+    }
+  },
+  "palette": {
+    "dark": [
+      18,
+      15,
+      16
+    ],
+    "edge": [
+      64,
+      50,
+      45
+    ],
+    "red_dark": [
+      84,
+      36,
+      31
+    ],
+    "red": [
+      143,
+      62,
+      49
+    ],
+    "cord": [
+      36,
+      32,
+      32
+    ],
+    "gold": [
+      143,
+      98,
+      68
+    ],
+    "highlight": [
+      217,
+      182,
+      146
+    ],
+    "cloth_light": [
+      73,
+      60,
+      54
+    ]
+  },
+  "forbidden": [
+    "RGB threshold semantic ownership",
+    "whole-source silhouette clipping of body",
+    "base pixel edits",
+    "unbounded hidden completion",
+    "reuse of rejected V1 masks"
+  ],
+  "scope": "original front pose only; body remains provisional; no animation certification",
+  "sword_rows": {
+    "46": [
+      27,
+      29
+    ],
+    "47": [
+      28,
+      30
+    ],
+    "48": [
+      29,
+      31
+    ],
+    "49": [
+      30,
+      32
+    ],
+    "50": [
+      31,
+      33
+    ],
+    "51": [
+      32,
+      35
+    ],
+    "52": [
+      33,
+      37
+    ],
+    "53": [
+      34,
+      39
+    ],
+    "54": [
+      35,
+      40
+    ],
+    "55": [
+      36,
+      40
+    ],
+    "56": [
+      37,
+      41
+    ],
+    "57": [
+      38,
+      42
+    ],
+    "58": [
+      39,
+      43
+    ],
+    "59": [
+      40,
+      44
+    ],
+    "60": [
+      41,
+      45
+    ],
+    "61": [
+      42,
+      46
+    ],
+    "62": [
+      43,
+      47
+    ],
+    "63": [
+      44,
+      49
+    ],
+    "64": [
+      47,
+      50
+    ],
+    "65": [
+      49,
+      52
+    ],
+    "66": [
+      51,
+      53
+    ],
+    "67": [
+      52,
+      54
+    ],
+    "68": [
+      53,
+      55
+    ],
+    "69": [
+      54,
+      56
+    ],
+    "70": [
+      55,
+      57
+    ],
+    "71": [
+      56,
+      58
+    ],
+    "72": [
+      57,
+      59
+    ],
+    "73": [
+      57,
+      59
+    ],
+    "74": [
+      57,
+      59
+    ]
+  },
+  "ownership_priority": [
+    "bands",
+    "coat",
+    "sword",
+    "arms",
+    "shoulders"
+  ]
+}

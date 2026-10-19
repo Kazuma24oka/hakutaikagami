@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "texture_filter": "nearest",
+  "basis": "Authored provisional source-corresponding body construction; hidden joints are author targets, not recovered anatomical measurements",
+  "algorithm": "continuous common inverse pixel surface, identical skin/gear/occlusion lookup; rigid sword belt child",
+  "shoulder_y": 38,
+  "wrist_y": 61,
+  "hip_y": 63,
+  "ankle_y": 87,
+  "sole_y": 91,
+  "sword_bob_weight": 0.8,
+  "arm_x": 0.5,
+  "arm_y": 3,
+  "foot_lift": 3.5,
+  "foot_x": 0.6,
+  "joints": {
+    "scalp_top": [
+      34,
+      13
+    ],
+    "chin": [
+      34,
+      32
+    ],
+    "neck": [
+      33,
+      34
+    ],
+    "shoulder_right": [
+      42,
+      38
+    ],
+    "shoulder_left": [
+      22,
+      38
+    ],
+    "elbow_right": [
+      49,
+      49
+    ],
+    "elbow_left": [
+      15,
+      49
+    ],
+    "wrist_right": [
+      53,
+      61
+    ],
+    "wrist_left": [
+      14,
+      61
+    ],
+    "pelvis": [
+      33,
+      63
+    ],
+    "knee_right": [
+      43,
+      77
+    ],
+    "knee_left": [
+      22,
+      77
+    ],
+    "ankle_right": [
+      44,
+      87
+    ],
+    "ankle_left": [
+      20,
+      87
+    ],
+    "sole_right": [
+      46,
+      91
+    ],
+    "sole_left": [
+      19,
+      91
+    ]
+  },
+  "source_preservation": "All source and base textures immutable. No per-frame fit, no generated repaint, no model call. Masks and parts remain separate.",
+  "clips": {
+    "idle": {
+      "duration_ms": 350,
+      "frames": [
+        {
+          "bob": 0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.5,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -1,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.5,
+          "swing": 0,
+          "lift": 0
+        }
+      ]
+    },
+    "walk": {
+      "duration_ms": 120,
+      "frames": [
+        {
+          "bob": 0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.7,
+          "swing": 0.65,
+          "lift": 0.75
+        },
+        {
+          "bob": -1.2,
+          "swing": 1,
+          "lift": 1
+        },
+        {
+          "bob": -0.4,
+          "swing": 0.4,
+          "lift": 0.5
+        },
+        {
+          "bob": 0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.7,
+          "swing": -0.65,
+          "lift": -0.75
+        },
+        {
+          "bob": -1.2,
+          "swing": -1,
+          "lift": -1
+        },
+        {
+          "bob": -0.4,
+          "swing": -0.4,
+          "lift": -0.5
+        }
+      ]
+    }
+  },
+  "scope": "Rear-only coordinate field; source artwork not mirrored; same IDs resolve new rear assets.",
+  "torso_sway": 0.6,
+  "knee_inward": 1.2,
+  "revision": 2,
+  "weight_revision": "Arm return spreads from65to87; no deformation below ankle; leg midpoint blend10px; inverse40iterations. Bounded after fold and foot-shape probes.",
+  "direction": "back",
+  "character_left": "screen-left",
+  "character_right": "screen-right"
+}

@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "model": "v013",
+  "surface": "skin_face",
+  "width": 1024,
+  "height": 1024,
+  "uv_origin": "top-left, same as exported glTF texture sampling",
+  "semantics": "Explicit mouth paint protection within source SKIN texture. No runtime color threshold classifier. Separate mouth/eyes/brows/eyeline surfaces remain protected as before.",
+  "mouth_rows": [
+    [
+      771,
+      451,
+      572
+    ],
+    [
+      772,
+      447,
+      576
+    ],
+    [
+      773,
+      447,
+      577
+    ],
+    [
+      774,
+      447,
+      577
+    ],
+    [
+      775,
+      447,
+      577
+    ],
+    [
+      776,
+      447,
+      577
+    ],
+    [
+      777,
+      447,
+      577
+    ],
+    [
+      778,
+      448,
+      576
+    ],
+    [
+      779,
+      451,
+      573
+    ]
+  ],
+  "source_rgba_sha256": "4eca68236234c9aac3b550f968952d53ac2b824645876a01ffa9c8361a40afcf",
+  "source_texture_review": "Actual GLB image inspected. Mouth paint dark core bounds x449..574/y773..777; explicitly protected rows include antialias fringe. This is not a material-name-only exclusion.",
+  "mouth_core_srgb": [
+    0.7568627450980392,
+    0.5607843137254902,
+    0.5372549019607843
+  ],
+  "underpaint_sample_rows": [
+    770,
+    780
+  ],
+  "mask_channels": "linear premultiplied paint RGB, paint alpha; source=underpaint*(1-alpha)+paint. Tint skin contribution only, no protected rectangle halo."
+}

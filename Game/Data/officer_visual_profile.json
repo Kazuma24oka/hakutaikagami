@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "id": "officer-small-pixel-v1",
+  "decision_date": "2026-10-18",
+  "status": "user-selected-size-and-default-display-scale",
+  "canvas_pixels": [64, 96],
+  "default_display_scale": 1,
+  "default_display_extent_pixels": [64, 96],
+  "texture_filter": "nearest",
+  "anatomical_head_ratio": null,
+  "six_head_portrait_policy": "unchanged",
+  "reference_trial": "OfficerContextV1/64x96/1x",
+  "adoption_scope": "Small-character reference canvas and normal integer display scale only.",
+  "pending": [
+    "Production alpha and semantic part masks",
+    "Palette and part compatibility",
+    "Rig, anatomical landmarks and contact pivots",
+    "Motion padding and wider weapon/action cells",
+    "Directions, animation frames and runtime camera"
+  ]
+}

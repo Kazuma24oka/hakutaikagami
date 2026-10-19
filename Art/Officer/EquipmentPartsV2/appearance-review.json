@@ -1,0 +1,41 @@
+{
+  "status": "AUTHOR_INSPECTED_FRONT_PARTS_NOT_USER_ACCEPTED",
+  "plan": "equipment-parts-final",
+  "binding": "ec35ddce3cf28b29649d92d2e059b682fe245e3c91084f0ee72af599bcee91b3",
+  "inspected_evidence": [
+    {
+      "path": "Docs/Proposals/Evidence/officer-equipment-v2.png",
+      "sha256": "31f5d1cee44c6895cdd4565a9c59a62a1dda9e000589c867ae09b06c39c981c0"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-equipment-browser.png",
+      "sha256": "3f32b3e09ccee53fef2faa0a3b715fd571dcb8ae6434c4abb2ee2d95ee457cf7"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-equipment-hair-off-browser.png",
+      "sha256": "1bafd1990a599aa15fcbabdf9cdb306b6ede00dd738e113c2e14932c3c70d805"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-equipment-white-black.png",
+      "sha256": "4c8bf0c889c4591b34787e76fe6b7744f2c0d2335277ba50b404f18a4022983d"
+    }
+  ],
+  "observations": {
+    "base_body": "All equipment disabled restores actual naked body PNG exactly; original body SHA remains fixed. Thin/unpleasant appearance issue is retained as provisional, not accepted.",
+    "face_on": "Actual front has copied original eyes/brows/nose/mouth/beard and completed hidden scalp underpaint. Full source appearance matches2722 visible pixels.",
+    "hair_off": "Inspected actual hair-off screenshot: eyes/brows and beard remain; manually separated6 forehead cast-shadow pixels disable with hair; scalp contour/skin remains.",
+    "native_scale": "Actual browser native pair64x96, enlarged256x384; all8 native/large states match PNGs; page errors0.",
+    "white_black_checker": "Inspected white/black exported states and checker browser screenshot, including equipped, bald, and all-off. No base pixels modified. Original reference edge colors retained, not a newly generated silhouette."
+  },
+  "png_replay_count": 17,
+  "png_replay_changed": 0,
+  "source_foreground_difference": 0,
+  "body_all_off_difference": 0,
+  "regression_tests": {
+    "equipment": 9,
+    "existing_pipeline": 36
+  },
+  "browser_combinations_checked": 8,
+  "base_appearance_issue_retained": true,
+  "mask_semantics": "Hair source owner2, face owner1, kit owner3; forehead cast shadow owner4. Item occlusion is a separate whole-anatomical-region mask, not ownership or global silhouette clipping."
+}

@@ -1,0 +1,400 @@
+{
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "filter": "nearest",
+  "clips": {
+    "idle": {
+      "duration_ms": 350,
+      "frames": [
+        {
+          "bob": 0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.5,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -1,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.5,
+          "swing": 0,
+          "lift": 0
+        }
+      ]
+    },
+    "walk": {
+      "duration_ms": 120,
+      "frames": [
+        {
+          "bob": -0.0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.56569,
+          "swing": 0.70710678,
+          "lift": 0.70710678
+        },
+        {
+          "bob": -0.8,
+          "swing": 1,
+          "lift": 1
+        },
+        {
+          "bob": -0.56569,
+          "swing": 0.70710678,
+          "lift": 0.70710678
+        },
+        {
+          "bob": -0.0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.56569,
+          "swing": -0.70710678,
+          "lift": -0.70710678
+        },
+        {
+          "bob": -0.8,
+          "swing": -1,
+          "lift": -1
+        },
+        {
+          "bob": -0.56569,
+          "swing": -0.70710678,
+          "lift": -0.70710678
+        }
+      ]
+    }
+  },
+  "frame_order": [
+    [
+      "idle",
+      0
+    ],
+    [
+      "idle",
+      1
+    ],
+    [
+      "idle",
+      2
+    ],
+    [
+      "idle",
+      3
+    ],
+    [
+      "walk",
+      0
+    ],
+    [
+      "walk",
+      1
+    ],
+    [
+      "walk",
+      2
+    ],
+    [
+      "walk",
+      3
+    ],
+    [
+      "walk",
+      4
+    ],
+    [
+      "walk",
+      5
+    ],
+    [
+      "walk",
+      6
+    ],
+    [
+      "walk",
+      7
+    ]
+  ],
+  "slots": [
+    "face",
+    "hair",
+    "torso",
+    "shoulders",
+    "arms",
+    "waist",
+    "legs",
+    "footwear",
+    "coat",
+    "sword"
+  ],
+  "draw_order": [
+    "footwear",
+    "legs",
+    "torso",
+    "waist",
+    "coat",
+    "sword",
+    "arms",
+    "shoulders"
+  ],
+  "sheets": {
+    "arms.png": "7d79b656b356dbbe74826c8ca3ec1dc05a120effaadd039778bfcdd8a67c4567",
+    "body.png": "6f9be85b42b8e5b5545e4495af9cc393b3d00da6a95f6aee1c1cbbb4132ba2a4",
+    "coat.png": "405ef3e338dedeaca55268a6ff2b9274085c90f4237fb3a865a757c17d59bafe",
+    "face.png": "8b0ba1e6990351169a490888915b4158d74c069e485c6663a252a4b03c154624",
+    "footwear.png": "483d0f15f97c81f6a86fb7cc9c5a1879cbd729d0fac7c96de9e3260a15e4153d",
+    "hair.png": "1cafbcda0cd1a75e6f1573c19f60d5050bf2b0fede2d4f30c4a7d23ddabef9f0",
+    "hands.png": "5d2ea9cad5aa1ff6792c2953778875c4e4d5c1faaf213cad4a77cd48af92a2d7",
+    "hide_arms.png": "aad5da9267e9118b8d4698c1cd627acc64332fece0788ef7314cc1c973c32edb",
+    "hide_coat.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_footwear.png": "549c2708e46a7a78a3be09eb5579e59ec9dd62504176e9df0dc7c83dc712bd2d",
+    "hide_legs.png": "9de24bd96efa537e3b4e72c262ccde7097bc26a4ea5a2e69748693c79eabbe6c",
+    "hide_shoulders.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_sword.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_torso.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "hide_waist.png": "1720195b9b30c53ac1fccbfba7fbe36906a09212ea62970f6c6323db07ca2b90",
+    "legs.png": "8c20f04a9314ec3fa66c97b4660f3bb09176a8ee120bfb638e6460f30d1093ab",
+    "lookup-surface.png": "fd70224d7e13842a304622baf3334725b1521f6856f4e6fe1e9d686c2b3130d7",
+    "lookup-sword.png": "03eeed70c58478cdcb9dfcfffb728b6d479aec74f1d6b1de189a26f6f1296997",
+    "shoulders.png": "a4fa8abf8df47752dc486bb123c89041901201f584c1e3992dcb29b5112ccb24",
+    "sword.png": "826f737496e026e167d92e7fc0a23a2bffb082091c2f2de7b360589f82dd329d",
+    "torso.png": "67ff2943b499fff37e8b68da63435e5b0e60ba9cc2a505a5ddb913d91dbe2b26",
+    "waist.png": "00b01573d322b45646a704fe6aff31281eef3003dd002570b516434efaf30c71"
+  },
+  "source_manifest": {
+    "schema": 1,
+    "canvas": [
+      64,
+      96
+    ],
+    "display_scale": 1,
+    "filter": "nearest",
+    "source": {
+      "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+      "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+    },
+    "source_kit": {
+      "path": "Game/Assets/Trials/OfficerEquipmentV2/armor.png",
+      "sha256": "542f0fff2cbb92603e6147f71d1a57b4de6124f55ab17bcfab1a96893bec679c"
+    },
+    "base": {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+      "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+    },
+    "body_owners": {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/ownership.png",
+      "sha256": "1d58b5fe3bc3bbccd3cc96da0f0d160bff192d36f1838f50f0fbd229cd4a9e0f"
+    },
+    "source_owners": {
+      "path": "Game/Assets/Trials/OfficerArmorSplitV3/source-owners.png",
+      "sha256": "e3dba5f000a118dcc9befe06443424c81eb7220e6db5123eddee4028b733cc06"
+    },
+    "definition": {
+      "path": "Art/Officer/ArmorSplitV3/part-definition.json",
+      "sha256": "a4cf71de90159626ab966dd04d383f7eea11fe679229687e31b7741b7ca8c479"
+    },
+    "draw_order": [
+      "footwear",
+      "legs",
+      "torso",
+      "waist",
+      "coat",
+      "sword",
+      "arms",
+      "shoulders"
+    ],
+    "face_hair": {
+      "face": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/face.png",
+        "sha256": "1c1a7be7c65014789e5f0b5cc7497d3e9ca1e299c778b66e192a395ef8d0d511"
+      },
+      "hair": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/hair.png",
+        "sha256": "3afaf6d77d56ddd19ca87b38845922c992f57c9d5330f4516881bfe6289c3716"
+      }
+    },
+    "parts": {
+      "torso": {
+        "id": "officer-original.torso",
+        "source_owner_id": 1,
+        "label": "胴",
+        "includes": "cuirass, collar and torso underclothing",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso.png",
+          "sha256": "c382e4b6d0b6e114aa4bee039a61e786baae4f5a787b510b323a6acca873a35c"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso-hidden.png",
+          "sha256": "1e8dc796fc2bd2cfb698ca7117327ae5effdbcdab4434742b311c2c42854fe51"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/torso-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        "max_components": 1
+      },
+      "shoulders": {
+        "id": "officer-original.shoulders",
+        "source_owner_id": 2,
+        "label": "肩",
+        "includes": "left and right shoulder plates",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders.png",
+          "sha256": "5f45b454892b1ead8b9b04da8e63da2712080bd879149a0d9edcb5408242a1dd"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders-hidden.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/shoulders-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        "max_components": 2
+      },
+      "arms": {
+        "id": "officer-original.arms",
+        "source_owner_id": 3,
+        "label": "腕",
+        "includes": "sleeves, kote and gloves",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms.png",
+          "sha256": "da4499a6a1a87914bd3c3f3bd4558a97dd831e0d6c6b3be19a1df45186905bdf"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms-hidden.png",
+          "sha256": "d052642ab61d7cb695ec7d5785801428835371f3988105057558ab0c63f776d7"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/arms-occlusion.png",
+          "sha256": "47d3faacbb015d0b229055d339934cbf3f285f359741f9950bb94d016fc9537b"
+        },
+        "max_components": 2
+      },
+      "waist": {
+        "id": "officer-original.waist",
+        "source_owner_id": 4,
+        "label": "腰",
+        "includes": "belt and kusazuri",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist.png",
+          "sha256": "c070d77f7b4e30c2f70af8edac98b3f3c84eb22e782e31b08a6793bfc3e89c0d"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist-hidden.png",
+          "sha256": "0df1730ed82184bd13ace72dc68b5e58c9af8d2467661cd110643b81d48a7a5e"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/waist-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        "max_components": 1
+      },
+      "legs": {
+        "id": "officer-original.legs",
+        "source_owner_id": 5,
+        "label": "脚",
+        "includes": "trousers, thigh protection and shin guards",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs.png",
+          "sha256": "50e8436ee098191b29767749473066880c49a4f8961ce6a7a4d42acca41d88ab"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs-hidden.png",
+          "sha256": "add41449ebebc70a5a8c6bdbec5702c3a39f76ebf227c4934701240b10c9ce33"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/legs-occlusion.png",
+          "sha256": "42aab2e60d1eeb44706c1c10b625a92d61accb58dd66e2ec1586c4d5464741b4"
+        },
+        "max_components": 1
+      },
+      "footwear": {
+        "id": "officer-original.footwear",
+        "source_owner_id": 6,
+        "label": "履物",
+        "includes": "paired shoes and upper cuffs",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear.png",
+          "sha256": "923cf4b96ca51356be75ecf1967eafd6ff4b39d4d49773d8ace366e548e84de4"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear-hidden.png",
+          "sha256": "1f4a3e04e46c75948435cc0836a3cb4da786217dff0b1efacc81adbf9aa6b1c7"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/footwear-occlusion.png",
+          "sha256": "ecaa85f8167ad98dbe07502f738c44ac2d61a8f1e950a634853063020a541151"
+        },
+        "max_components": 2
+      },
+      "coat": {
+        "id": "officer-original.coat",
+        "source_owner_id": 7,
+        "label": "陣羽織",
+        "includes": "coat collar/lapels and tails",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat.png",
+          "sha256": "a6e104a8c22a4de846f8db5dc46ada51f9ac15cb1958fb612faaf6a74ee3564f"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat-hidden.png",
+          "sha256": "86a0e8e00f5e6ffecf5b9b895d2c971b28236214ad3ca2e8db1d10b48f56514b"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/coat-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        "max_components": 2
+      },
+      "sword": {
+        "id": "officer-original.sword",
+        "source_owner_id": 8,
+        "label": "刀",
+        "includes": "hilt, guard and scabbard",
+        "image": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword.png",
+          "sha256": "e08acaccef28647cdaabe6153695e83df3c17d3394f61656facc82ca49b5ed8b"
+        },
+        "hidden": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword-hidden.png",
+          "sha256": "b815fffe5f9abeca8711d1641d940d34952e3255e3ccc1ef6a88c043304194bd"
+        },
+        "body_occlusion": {
+          "path": "Game/Assets/Trials/OfficerArmorSplitV3/sword-occlusion.png",
+          "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+        },
+        "max_components": 1
+      }
+    },
+    "bare_hands_front": {
+      "image": {
+        "path": "Game/Assets/Trials/OfficerArmorSplitV3/bare-hands-front.png",
+        "sha256": "49434be01f68cb1f4fa7e9e1afed9227106f6583acee57c5827528207adf15f7"
+      },
+      "when_part_absent": "arms",
+      "basis": "Immutable bare hands draw in front of scabbard when gauntlets removed"
+    },
+    "pose": "original front static",
+    "portrait_counterparts": "NOT_AUTHORED",
+    "motion": "NOT_ACCEPTED"
+  },
+  "rig": {
+    "path": "Art/Officer/FrontMotionV4/rig.json",
+    "sha256": "62f94e47b8c33990ece0d50f40c7da38050fe596ee257694b847da5836ae0ec1"
+  },
+  "binding": "4a460f5bd9f66b794dba71d26b85d0dbcdd1488958de97bf8524df2ddf2ea54d",
+  "scope": "front-only small in-place controlled motion; no other views or portrait approval"
+}

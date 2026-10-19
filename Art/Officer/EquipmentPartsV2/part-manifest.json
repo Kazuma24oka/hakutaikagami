@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "filter": "nearest",
+  "pose": "original-front-static",
+  "base": {
+    "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+    "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+  },
+  "source": {
+    "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+    "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+  },
+  "definition": {
+    "path": "Art/Officer/EquipmentPartsV2/part-definition.json",
+    "sha256": "9c7d326dc09bb55e2e3631e8ac7cbf0b1f61cc1e69f569b895fab98ef9a3ae65"
+  },
+  "source_ownership": {
+    "path": "Game/Assets/Trials/OfficerEquipmentV2/source-owners.png",
+    "sha256": "28ffc47c0d8bc05892d9b1b99d942091694bb04a08401eb087d648f084b41654"
+  },
+  "draw_order": [
+    "base",
+    "face",
+    "armor",
+    "hair"
+  ],
+  "layers": {
+    "face": {
+      "id": "officer-original.face-with-beard",
+      "image": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/face.png",
+        "sha256": "1c1a7be7c65014789e5f0b5cc7497d3e9ca1e299c778b66e192a395ef8d0d511"
+      },
+      "observed_owner_ids": [
+        1
+      ],
+      "hidden_skin": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/face-hidden-completion.png",
+        "sha256": "4aaee94f234183d4af297ea1cbf0ce7dab5d944c3e2efd0c52506054af2d6c7e"
+      }
+    },
+    "hair": {
+      "id": "officer-original.hair",
+      "image": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/hair.png",
+        "sha256": "3afaf6d77d56ddd19ca87b38845922c992f57c9d5330f4516881bfe6289c3716"
+      },
+      "observed_owner_ids": [
+        2,
+        4
+      ],
+      "cast_shadow": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/hair-cast-shadow.png",
+        "sha256": "730fa9b2fa0f88f18253408fafd3c24ab3a4fb79f90ade3c9dacab400581dbdf"
+      }
+    },
+    "armor": {
+      "id": "officer-original.armor-kit",
+      "image": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/armor.png",
+        "sha256": "542f0fff2cbb92603e6147f71d1a57b4de6124f55ab17bcfab1a96893bec679c"
+      },
+      "observed_owner_ids": [
+        3
+      ],
+      "base_visibility_mask": {
+        "path": "Game/Assets/Trials/OfficerEquipmentV2/armor-body-occlusion.png",
+        "sha256": "5be9979386bf0c47adc0c79d7bd1b6dc6131fc8a5334377a160905b4424ea452"
+      },
+      "hidden_body_owner_ids": [
+        8,
+        11,
+        13,
+        14,
+        16,
+        17
+      ]
+    }
+  },
+  "portrait_counterparts": "NOT_AUTHORED_DO_NOT_SUBSTITUTE",
+  "motion": "NOT_ACCEPTED",
+  "scope": "Provisional front baseline; original face/hair/armor kit, not a complete customizable officer system"
+}

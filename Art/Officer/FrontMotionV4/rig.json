@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "texture_filter": "nearest",
+  "basis": "Authored provisional source-corresponding body construction; hidden joints are author targets, not recovered anatomical measurements",
+  "algorithm": "continuous common inverse pixel surface, identical skin/gear/occlusion lookup; rigid sword belt child",
+  "shoulder_y": 38,
+  "wrist_y": 61,
+  "hip_y": 63,
+  "ankle_y": 87,
+  "sole_y": 91,
+  "sword_bob_weight": 0.8,
+  "arm_x": 0.65,
+  "arm_y": 2.0,
+  "foot_lift": 3.5,
+  "foot_x": 0.6,
+  "joints": {
+    "scalp_top": [
+      29,
+      13
+    ],
+    "chin": [
+      29,
+      32
+    ],
+    "neck": [
+      30,
+      34
+    ],
+    "shoulder_right": [
+      21,
+      38
+    ],
+    "shoulder_left": [
+      41,
+      38
+    ],
+    "elbow_right": [
+      14,
+      49
+    ],
+    "elbow_left": [
+      48,
+      49
+    ],
+    "wrist_right": [
+      10,
+      61
+    ],
+    "wrist_left": [
+      49,
+      61
+    ],
+    "pelvis": [
+      30,
+      63
+    ],
+    "knee_right": [
+      20,
+      77
+    ],
+    "knee_left": [
+      41,
+      77
+    ],
+    "ankle_right": [
+      19,
+      87
+    ],
+    "ankle_left": [
+      43,
+      87
+    ],
+    "sole_right": [
+      17,
+      91
+    ],
+    "sole_left": [
+      44,
+      91
+    ]
+  },
+  "source_preservation": "All source and base textures immutable. No per-frame fit, no generated repaint, no model call. Masks and parts remain separate.",
+  "clips": {
+    "idle": {
+      "duration_ms": 350,
+      "frames": [
+        {
+          "bob": 0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.5,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -1,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.5,
+          "swing": 0,
+          "lift": 0
+        }
+      ]
+    },
+    "walk": {
+      "duration_ms": 120,
+      "frames": [
+        {
+          "bob": -0.0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.56569,
+          "swing": 0.70710678,
+          "lift": 0.70710678
+        },
+        {
+          "bob": -0.8,
+          "swing": 1,
+          "lift": 1
+        },
+        {
+          "bob": -0.56569,
+          "swing": 0.70710678,
+          "lift": 0.70710678
+        },
+        {
+          "bob": -0.0,
+          "swing": 0,
+          "lift": 0
+        },
+        {
+          "bob": -0.56569,
+          "swing": -0.70710678,
+          "lift": -0.70710678
+        },
+        {
+          "bob": -0.8,
+          "swing": -1,
+          "lift": -1
+        },
+        {
+          "bob": -0.56569,
+          "swing": -0.70710678,
+          "lift": -0.70710678
+        }
+      ]
+    }
+  },
+  "scope": "Front only. Small conservative in-place walk; no crossovers, depth rotation, large arm swing, portrait or Godot integration."
+}

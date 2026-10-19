@@ -1,0 +1,14 @@
+[
+  {
+    "name": "part_ownership.py",
+    "source": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\part_ownership.py",
+    "sha256": "1ebb16628af06d61f110b849c13b65419f91f20333633d409e820f0929895804",
+    "reuse": "exact copy; adapter in officer_art_pipeline.py; no other project edited"
+  },
+  {
+    "name": "regression_runner.py",
+    "source": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\regression_runner.py",
+    "sha256": "0be05dc9992bf5ca1ec2be74e4460983b6b14299264bbdf7cf25a0fe9630b7e8",
+    "reuse": "exact copy; adapter in officer_art_pipeline.py; no other project edited"
+  }
+]

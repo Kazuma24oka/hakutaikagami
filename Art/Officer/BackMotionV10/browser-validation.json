@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "browser": "headless Edge; no mouse input",
+  "native_size": {
+    "x": 28,
+    "y": 487.453125,
+    "width": 64,
+    "height": 96
+  },
+  "cases": 12288,
+  "pixel_mismatches": 0,
+  "live": [
+    {
+      "speed": 1,
+      "frames": 8
+    },
+    {
+      "speed": 0.25,
+      "frames": 8
+    }
+  ],
+  "js_errors": [],
+  "toggles": 8
+}

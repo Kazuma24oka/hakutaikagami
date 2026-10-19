@@ -1,0 +1,146 @@
+{
+  "technical_only": true,
+  "visible_pixels": 1570,
+  "geometry": {
+    "head": [
+      22,
+      13,
+      37,
+      33
+    ],
+    "neck": [
+      25,
+      32,
+      36,
+      39
+    ],
+    "chest": [
+      22,
+      35,
+      41,
+      50
+    ],
+    "abdomen": [
+      24,
+      50,
+      38,
+      62
+    ],
+    "pelvis": [
+      22,
+      59,
+      40,
+      70
+    ],
+    "upper_arm_right": [
+      13,
+      36,
+      25,
+      50
+    ],
+    "forearm_right": [
+      8,
+      47,
+      19,
+      61
+    ],
+    "hand_right": [
+      6,
+      60,
+      14,
+      69
+    ],
+    "upper_arm_left": [
+      38,
+      36,
+      49,
+      54
+    ],
+    "forearm_left": [
+      45,
+      48,
+      51,
+      62
+    ],
+    "hand_left": [
+      46,
+      60,
+      53,
+      69
+    ],
+    "thigh_right": [
+      18,
+      67,
+      30,
+      80
+    ],
+    "calf_right": [
+      17,
+      78,
+      26,
+      89
+    ],
+    "foot_right": [
+      10,
+      87,
+      23,
+      92
+    ],
+    "thigh_left": [
+      34,
+      65,
+      45,
+      80
+    ],
+    "calf_left": [
+      38,
+      79,
+      46,
+      90
+    ],
+    "foot_left": [
+      39,
+      88,
+      49,
+      92
+    ]
+  },
+  "reconstruction_rgba_difference": 0,
+  "status": "TECHNICAL_ONLY_NOT_APPEARANCE_APPROVAL",
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "alpha_values": [
+    0,
+    255
+  ],
+  "bounds": [
+    6,
+    13,
+    53,
+    92
+  ],
+  "visible_colors": 12,
+  "source_registration_unchanged": true,
+  "all_17_parts_connected": true,
+  "head_and_pelvis_protected": true,
+  "generation": {
+    "raw_sha256": "eec9b8c4da57e9f87e43482d746a6cb0fa42f2ffa0e421b0e9377da5a53c48ca",
+    "native_size": [
+      64,
+      96
+    ],
+    "fixed_silhouette_difference": 0,
+    "preserved_rgba_difference": 0,
+    "generated_interior_changed_pixels": 542,
+    "visible_pixels": 1570,
+    "generation_canvas": [
+      1024,
+      1536
+    ],
+    "sampling": "whole-canvas BOX, fixed 12-color palette, no bbox registration; preserves blank head/pelvis and outer boundary",
+    "status": "REQUIRES_ACTUAL_IMAGE_REVIEW"
+  }
+}

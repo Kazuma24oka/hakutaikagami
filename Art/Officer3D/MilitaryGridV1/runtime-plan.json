@@ -1,0 +1,197 @@
+{
+  "schema": 1,
+  "dependencies": [
+    {
+      "path": "Game/project.godot",
+      "sha256": "5d9ab40268d29a83695f043e62c00b2d625978365cb689f3d1760ea6fd232340"
+    },
+    {
+      "path": "Game/HakutaiKagami.Game.csproj",
+      "sha256": "797e54a65426d8fe91ebd476304eed452427d721dbfe6437423b1b30994bbe07"
+    },
+    {
+      "path": "Core/HakutaiKagami.Core.csproj",
+      "sha256": "e4fd5ab881177cbb6cfce7717d017801f046b26f97fc33ae794c75689fec2309"
+    },
+    {
+      "path": "Game/Data/prototype.json",
+      "sha256": "8772043797ed3fefeb15edae28c0a8c1a4ee59d564f9c8ba0522faea44e0401f"
+    },
+    {
+      "path": "Game/Scenes/Main.tscn",
+      "sha256": "9328967591e1991bc16d698dd8c2d0299f0c37ccb06f113166291cafe91e98eb"
+    },
+    {
+      "path": "Art/Officer3D/MilitaryGridV1/contract.json",
+      "sha256": "09a9fac35b9f531ed5d4b10d0933e52faff9752c7cdc80019fb5d8b64ed19d75"
+    },
+    {
+      "path": "Art/Officer3D/TrialV3/contract.json",
+      "sha256": "bd9cd195d09193de54211dd32a2a9f23bd68e85e7ba81347dbe9cff2f1f2e747"
+    },
+    {
+      "path": "Art/Officer3D/TrialV3/export-manifest.json",
+      "sha256": "ada3563e082e3524b90e9052b5c60d2456fe999f30c237768c451e74e8491458"
+    },
+    {
+      "path": "Scripts/validate_military_grid.py",
+      "sha256": "08041144f6aad1103d16c64135474ba18362bac5d105c04b6acb7c51cb4f832c"
+    },
+    {
+      "path": "Core/Appearance/OfficerAppearance.cs",
+      "sha256": "23209c9d24537bc3c7aa605fefbb84d9b2adb95bf1a4d012b386742adab53ac0"
+    },
+    {
+      "path": "Core/Castles/Castle.cs",
+      "sha256": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370"
+    },
+    {
+      "path": "Core/Characters/Character.cs",
+      "sha256": "486419e8df320074f56c53883cdbc9525e4fee6a702d543d54bbd7240816c8fe"
+    },
+    {
+      "path": "Core/Commands/CommandRequest.cs",
+      "sha256": "90ada6b09698d4417ea44f7917d4098f5bef8030239c1eeb3e1883b287d6bb47"
+    },
+    {
+      "path": "Core/Commands/InspectionSession.cs",
+      "sha256": "2a5cf2a011a83c9f3c20bd0511d0a9fd32fe17768785384721dab4a2a6a2450f"
+    },
+    {
+      "path": "Core/Common/SessionInfrastructure.cs",
+      "sha256": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076"
+    },
+    {
+      "path": "Core/Events/EventScheduler.cs",
+      "sha256": "a58b9f064263c6090be3cd5788349f47e68ecda70e22cc6049d43a0b234bd542"
+    },
+    {
+      "path": "Core/Messaging/MessageFlow.cs",
+      "sha256": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf"
+    },
+    {
+      "path": "Core/Simulation/FormationFlow.cs",
+      "sha256": "032f7e6d69579c8465db11cf5bd1c329f582070a5441d0698b8919ee118729e6"
+    },
+    {
+      "path": "Core/Simulation/MilitaryFlow.cs",
+      "sha256": "851ca70b5dda4bc26e1bf5808c522a2ab96f30e37b3894b83e7e89ced83fd6b9"
+    },
+    {
+      "path": "Core/Simulation/MilitaryIntel.cs",
+      "sha256": "1e0fdcb00f591874de22b83eee58a9cb96af45565338b19f98669683d69960ff"
+    },
+    {
+      "path": "Core/Simulation/MilitaryMap.cs",
+      "sha256": "0a3b03e004c823ee3b8f149f5cdd3b3415b5b863cbafdf6570ebf11cf6963b9c"
+    },
+    {
+      "path": "Core/Simulation/MilitaryModels.cs",
+      "sha256": "2dab7b8593d010a0112fda3ae7a0b642c0637fb54488182355aabdec3ef14bb6"
+    },
+    {
+      "path": "Core/Simulation/MilitaryValidation.cs",
+      "sha256": "bdd8b888b19bd135897b2901c97dbee9d5b160dce339204619eb01b9e0bbf4d7"
+    },
+    {
+      "path": "Core/Simulation/OfficerIntegration.cs",
+      "sha256": "35d7f6750ac96443f9fc0f60cab6302ca0bdcc206f3c804bb616987eeba4ef9f"
+    },
+    {
+      "path": "Core/Simulation/TaxSimulation.Cancellation.cs",
+      "sha256": "e1366fcd8691995b4fdc443768668602e11437309a0262d0504794b57325edb1"
+    },
+    {
+      "path": "Core/Simulation/TaxSimulation.Communication.cs",
+      "sha256": "2c5e296c466eea3b1c6f5a6ea5ad7c88e5eac7f57c95ed629b27ecd24a4c070d"
+    },
+    {
+      "path": "Core/Simulation/TaxSimulation.cs",
+      "sha256": "b03b4ff3eac6d60084ddda3d5e399c103df1f54959143cf5d0b98de4fe20f411"
+    },
+    {
+      "path": "Core/Simulation/TaxSimulation.Military.cs",
+      "sha256": "6c4d316deb55fb575aa2b57eec65338f12462613e911dede06205286ded2d80b"
+    },
+    {
+      "path": "Core/World/PrototypeScenario.cs",
+      "sha256": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529"
+    },
+    {
+      "path": "Core/World/SeededRandom.cs",
+      "sha256": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f"
+    },
+    {
+      "path": "Core/World/WorldState.cs",
+      "sha256": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c"
+    },
+    {
+      "path": "Game/Scripts/Main.cs",
+      "sha256": "d0b62bf6b268c98faa002fe622b4c0f36a9e91e54eee202247430f6920785879"
+    },
+    {
+      "path": "Game/Scripts/TaxPanel.cs",
+      "sha256": "02b6b0225992b3844420a00bc6b5d0d88094dce8185cf6be48d221b14ccd72ef"
+    },
+    {
+      "path": "Game/Scripts/MilitaryGridStage.cs",
+      "sha256": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5"
+    },
+    {
+      "path": "Game/Scripts/MilitaryGridGate.cs",
+      "sha256": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f"
+    },
+    {
+      "path": "Game/Scripts/MilitaryGridValidation.cs",
+      "sha256": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47"
+    },
+    {
+      "path": "Game/Scripts/Officer3DCustomActor.cs",
+      "sha256": "4bda6f1c1a35580a2376e0f8851049d516851a5902a166251fc794630277febf"
+    },
+    {
+      "path": "Game/Scripts/Officer3DCreator.cs",
+      "sha256": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c"
+    },
+    {
+      "path": "Game/Scripts/Officer3DModel.cs",
+      "sha256": "f899442ca790902329857479960fdcf71a990a826f8619435cc0566e092fee2b"
+    },
+    {
+      "path": "Game/Shaders/Officer3D.gdshader",
+      "sha256": "e42fc79b673b582136d66ef618eb761f7f0a719f6f08c671ec2b1192e2da483c"
+    },
+    {
+      "path": "Game/Shaders/Officer3DV3.gdshader",
+      "sha256": "e2b6bdea8f6666ba28b1e5f8c420415609254da3a79ddef65c22ca4b0d6fdc05"
+    },
+    {
+      "path": "Game/Data/Officer3D/face-protection.json",
+      "sha256": "066e12c804a72c8bb8b4755e7194ad2640e5c91ea3ddb0ac1097cff04b6a02bd"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/normal.png",
+      "sha256": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/orm.png",
+      "sha256": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV2/materials.png",
+      "sha256": "f567e6fc83b2e87fc6f40c5dd48bc9d8cfee03485977fa45655eaab84bd0fcd0"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV3/near.glb",
+      "sha256": "1db4bc8fd71c184aadb137fdccc6d0a155f416c3f8b45a30cceac8d93e1d4d2e"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV3/mid.glb",
+      "sha256": "5b1e644b97af41a545c21dee05fcdd5706f22d896378ad6742989e06c5f12267"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV3/far.glb",
+      "sha256": "7385c1abd9f5408e9bb997df05f89fec40364e01acffa0bfd352a6bc1ebcca92"
+    }
+  ]
+}

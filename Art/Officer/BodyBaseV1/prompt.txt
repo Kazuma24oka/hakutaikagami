@@ -1,0 +1,5 @@
+POSITIVE
+pixel art, single adult male anatomical artist mannequin, faceless blank head, bald, smooth warm skin colored body, featureless pelvis, no clothing, front orthographic standing neutral pose, mature broad shoulders, sturdy adult limbs, four heads tall stylized game sprite, controlled simple warm skin shading, crisp large pixel clusters, limited warm tan palette, clear continuous anatomy, neutral even lighting, keep exact input pose silhouette and proportions
+
+NEGATIVE
+eyes, eyebrows, nose, mouth, facial features, beard, hair, clothing, shorts, underwear, shoes, genitals, nipples, jewelry, armor, weapons, child, baby, chibi toddler, huge muscles, six pack, photorealistic, skin pores, texture noise, dithering, antialiasing, blurry, gradient background, cast shadow, text, watermark, changed body proportions, stretched limbs

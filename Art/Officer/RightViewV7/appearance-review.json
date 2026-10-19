@@ -1,0 +1,49 @@
+{
+  "scope": "screen-right static authoring trial only",
+  "reviewer": "Codex actual PNG inspection",
+  "technical": "PASS: source restoration 0 pixels, all-off base unchanged, 1024 Python/browser combinations, native browser 64x96",
+  "appearance": "PROVISIONAL: side silhouette is naturally narrower; original front is unchanged. Same red/black/tied-hair/beard design. Base anatomy remains provisional and hidden material completion is visibly simpler than source.",
+  "direction_gate": "NOT PROMOTED: no old front approval relabeled as full multi-direction or walking approval",
+  "observations": [
+    "Inspected original front, source side at native and enlarged scale, generated raw bare body, fixed blank silhouette, removal/isolated/material/joint boards and actual browser all/bare/probe screenshots.",
+    "Fixed early ownership priority which placed coat above arms/shoulders; restored bare foreground arm when armor arms removed.",
+    "Fixed 15 hidden completion pixels that had overwritten source; hidden completion now only beneath later foreground owners.",
+    "Hair and face are independent; bald base contains no facial features or garments, featureless skin pelvis.",
+    "Head and foot rows remain identical under limited elbow +/-1px shared surface displacement. Shoulder removal reveals black sleeve; under-arm torso completion remains simplified.",
+    "Body mask exactly matches authored silhouette, including scalp y13 and sole y91. Final armored native bbox x14..46,y4..91; sword tip extends one pixel beyond guide target x45, retained inside64px cell and recorded rather than silently changing source per part."
+  ],
+  "evidence": [
+    {
+      "path": "Art/Officer/RightViewV7/browser-all.png",
+      "sha256": "7c9e8e976c10a167d3595ac8bdb3d6a433cedaf614a2bd00d03a08cad77f5de1"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/browser-bare.png",
+      "sha256": "d170e3ef48825194e519d51f69259a1a016062a5349f2df07c1220e0f9ab0902"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/joint-probes.png",
+      "sha256": "05d07da6d1602d0d64130ec47522cb6efce76e16165a19f38542f029b5bbe05a"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/removal-review.png",
+      "sha256": "5e988c1e77c0057f5597e45b5e507fafcb83a10cdae0f44100a9cf381b25a773"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/isolated-review.png",
+      "sha256": "2446f7febdeb881f3260413afa933f63ebe7235daa3dd52dee66a27e806c22d4"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/material-review.png",
+      "sha256": "6bf9ca2b43bdb6237e95f313f5f151ae007a36bcf1c32e692ef2096c939b3f9a"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/browser-validation.json",
+      "sha256": "0f174e0c0582e636eb83b90a0201aa8f3c453c97f1a8a2c95087537fb85abbe5"
+    },
+    {
+      "path": "Art/Officer/RightViewV7/manifest.json",
+      "sha256": "12d831ced540b3c160bfd5361f190570326c0351017e374ba2383bf372385724"
+    }
+  ]
+}

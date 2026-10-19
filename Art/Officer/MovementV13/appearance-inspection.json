@@ -1,0 +1,25 @@
+{
+  "binding": "5d4c00f49cdc6663dbb2659e2e005e56ade471e2e63e3e7ba228625aae4601a5",
+  "reviewer": "Codex actual GPU viewport PNG inspection",
+  "status": "PROVISIONAL_ART_INTEGRATION_INSPECTED",
+  "images": [
+    "godot-front.png",
+    "godot-left.png",
+    "godot-back.png",
+    "context-bank.png",
+    "context-grass.png",
+    "context-road.png",
+    "browser-replay.png"
+  ],
+  "findings": [
+    "Native sprite is readable on grass/road/bank at64x96 without scaling.",
+    "4x review label moved above the preview so it does not cover shins/boots.",
+    "Context capture refreshed after coordinate change; foot marker, sprite position and label now agree.",
+    "Direction change preserves registered foot position; source pose/proportion and chin differences remain provisional.",
+    "Display-only25px/s trial; no exact planted-foot world lock or full cross-view anatomical gait correspondence claimed."
+  ],
+  "limits": [
+    "No terrain collision/pathfinding or Core simulation.",
+    "Four existing art sources not reauthored."
+  ]
+}

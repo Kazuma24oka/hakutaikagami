@@ -1,0 +1,49 @@
+{
+  "status": "STATIC_DIAGNOSTICS_PASS_NOT_PARTS_STAGE_ACCEPTANCE",
+  "source": {
+    "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+    "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+  },
+  "source_unchanged": true,
+  "tones": {
+    "original": {
+      "reconstruction_rgba_difference": 0,
+      "alpha_difference": 0
+    },
+    "light": {
+      "reconstruction_rgba_difference": 0,
+      "alpha_difference": 0
+    },
+    "tan": {
+      "reconstruction_rgba_difference": 0,
+      "alpha_difference": 0
+    }
+  },
+  "single_part_removals_rgba_difference": {
+    "head": 0,
+    "neck": 0,
+    "chest": 0,
+    "abdomen": 0,
+    "pelvis": 0,
+    "upper_arm_right": 0,
+    "forearm_right": 0,
+    "hand_right": 0,
+    "upper_arm_left": 0,
+    "forearm_left": 0,
+    "hand_left": 0,
+    "thigh_right": 0,
+    "calf_right": 0,
+    "foot_right": 0,
+    "thigh_left": 0,
+    "calf_left": 0,
+    "foot_left": 0
+  },
+  "empty_selection_transparent": true,
+  "user_scope": "Proceed provisionally despite too skinny/unpleasant appearance; no final body/style acceptance",
+  "not_implemented": [
+    "face/hair/armor replacements",
+    "portrait counterpart resolution",
+    "joint hidden surfaces or animation"
+  ],
+  "generation_executed": false
+}

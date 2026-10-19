@@ -1,0 +1,271 @@
+{
+  "id": "body-front-v1",
+  "stage": "front_authoring",
+  "contract_sha256": "fc24eabca64582358ab73515611a93adbcd5fe5865355bca2a89d4b692a2044c",
+  "feedback": [
+    "User requests actual bare 64x96/1x faceless/hairless/clothesless base with featureless skin-colored pelvis, fixed dimensions/masks/settings before generation"
+  ],
+  "prior_failures": [
+    "Part ownership removed eyes with hair",
+    "Clothed or face-bearing replacement was incorrectly proposed",
+    "Uncontrolled tall muscular body and noisy alpha"
+  ],
+  "change_scope": [
+    "New adult four-head-equivalent front construction",
+    "Fixed 17-part ownership plus protected scalp/pelvis/outer edge",
+    "ComfyUI proposes interior shading only; geometry never fitted to generation"
+  ],
+  "preserve": [
+    "64x96/1x",
+    "all decisions in retained_decisions",
+    "no face/hair/clothes/genital detail",
+    "no mouse input",
+    "rejected originals retained"
+  ],
+  "unresolved": [],
+  "inputs": [
+    {
+      "path": "Art/Officer/BodyBaseV1/geometry.json",
+      "sha256": "4cd1cf975c50e2142300b66f94f487fca0906ce72992f3bf5dae24dcdf1c5901"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/authoring-body.png",
+      "sha256": "f9247d417c2f5e98c45d5565fbd65f89db3824a21d0a697ff622da8f666b5ed6"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/ownership.png",
+      "sha256": "f4c7f0f9c66d0379afa2ca6c1e2b0f91d41876e8aacb6e9290eed4e52b04881b"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/edit-mask.png",
+      "sha256": "400fb6bc5689492ffd4f112b3b0276b9f68fb9c0cc000de0553620d8acd90e89"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/preserve-mask.png",
+      "sha256": "268a4f0d77999927e48d94a9ba4e6922af9adde52f515cf7428ef19dc5a1a80b"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/comfy-input.png",
+      "sha256": "57042a4db770a8629533abb9ab1f2af3922959bc38de1f7aaf9114f8cdc78581"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/comfy-edit-mask.png",
+      "sha256": "de772b70504306bb3901e7acd15964b66aec192f8cf2b97117ccb35aa604be1a"
+    },
+    {
+      "path": "Art/Officer/BodyBaseV1/controls/face-protection.png",
+      "sha256": "7336a7b2e6a5f23aba2ea2a124416164d04ce1de06d7819f30878f723361c945"
+    }
+  ],
+  "tools": [
+    {
+      "path": "Scripts/build_officer_body_base.py",
+      "sha256": "9d1739de96d160c1430f00c9ad6d5b855af74d7be4d64ef3912755fffbb1e042"
+    },
+    {
+      "path": "Scripts/run_officer_body_workflow.py",
+      "sha256": "a1f7a2469b060bfd45d8ecffb4aa1d0298baa9704ea02b280ffa23516a482504"
+    },
+    {
+      "path": "Scripts/officer_art_pipeline.py",
+      "sha256": "d56a702695314e7bcee5e446e5410e384b858083accf02abd4d1aa31de60f9ae"
+    }
+  ],
+  "references": [
+    {
+      "path": "Docs/Proposals/OFFICER_ART_PRODUCTION_AUDIT.md",
+      "sha256": "4baff2e89c913ee6e22b6247521f807c5564dabe381914bd4b1ea84ced4690f8"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerContextV1/front-64x96.png",
+      "sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+    }
+  ],
+  "regressions": {
+    "dimensions": "Exact fixed full-body and per-owner visible bounds; scalp8/chin28/soles91; never per-part fit",
+    "face_identity": "Base head contains no features, all head pixels protected; no face/hair layers",
+    "color_texture": "Declared six-color warm skin palette; no clothing-coded material; inspect clusters at1x/8x",
+    "alpha_edges": "Binary alpha exact authored silhouette, 4px minimum margin, white/black/checker review",
+    "part_ownership": "17 fixed unique owners, isolated part/removal/reconstruction review; no color classification",
+    "occlusion": "Front neutral only; no hidden surface reconstruction or moving limb claimed",
+    "gait_contact": "NOT_APPLICABLE_FRONT_STATIC; no motion/foot-slip approval",
+    "cross_direction": "NOT_APPLICABLE_FRONT_ONLY; no other direction approved"
+  },
+  "retained_decisions": {
+    "size": "User: 64×96・1倍：これでいこう",
+    "portrait": "6-head standing portrait remains separate artwork",
+    "selection": "One shared selection ID resolves authored small/portrait parts; no automatic shrinking",
+    "base": "Bare skin-colored body, featureless pelvis; no face, hair, underwear or equipment baked in",
+    "masks": "Separate ownership, skin/lacquer palette, occlusion, control/weights, joint overlap and hidden construction",
+    "safety": "No native mouse tools; no cursor or OS input setting changes",
+    "preservation": "No existing files deleted; main/design/foundation/Confirmed unchanged"
+  },
+  "backend": {
+    "name": "comfyui",
+    "workflow": {
+      "path": "Art/Officer/BodyBaseV1/workflow-api.json",
+      "sha256": "9b19fa1b430c21fc6da91af08490ebee329717a2e23344c1c33d70ffaa78e8e5"
+    },
+    "model": {
+      "path": "C:/Workspace/Projects/Tools/Models/ComfyUI/checkpoints/sd_xl_base_1.0.safetensors",
+      "sha256": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+    },
+    "edit_mask": {
+      "path": "Art/Officer/BodyBaseV1/controls/comfy-edit-mask.png",
+      "sha256": "de772b70504306bb3901e7acd15964b66aec192f8cf2b97117ccb35aa604be1a"
+    },
+    "preserve_mask": {
+      "path": "Art/Officer/BodyBaseV1/controls/preserve-mask.png",
+      "sha256": "268a4f0d77999927e48d94a9ba4e6922af9adde52f515cf7428ef19dc5a1a80b"
+    },
+    "seed": 2026101801,
+    "steps": 30,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.32
+  },
+  "registration": {
+    "scale_xy": [
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "translation_xy": [
+      0,
+      0
+    ],
+    "per_part_fit": false,
+    "per_frame_fit": false
+  },
+  "landmarks": {
+    "scalp_top": {
+      "kind": "authoring-target",
+      "xy": [
+        32,
+        8
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "chin": {
+      "kind": "authoring-target",
+      "xy": [
+        32,
+        28
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "neck": {
+      "kind": "authoring-target",
+      "xy": [
+        32,
+        31
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "shoulder_right": {
+      "kind": "authoring-target",
+      "xy": [
+        21,
+        35
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "shoulder_left": {
+      "kind": "authoring-target",
+      "xy": [
+        43,
+        35
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "elbow_right": {
+      "kind": "authoring-target",
+      "xy": [
+        17,
+        48
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "elbow_left": {
+      "kind": "authoring-target",
+      "xy": [
+        47,
+        48
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "wrist_right": {
+      "kind": "authoring-target",
+      "xy": [
+        15,
+        61
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "wrist_left": {
+      "kind": "authoring-target",
+      "xy": [
+        49,
+        61
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "pelvis": {
+      "kind": "authoring-target",
+      "xy": [
+        32,
+        59
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "knee_right": {
+      "kind": "authoring-target",
+      "xy": [
+        25,
+        76
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "knee_left": {
+      "kind": "authoring-target",
+      "xy": [
+        39,
+        76
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "ankle_right": {
+      "kind": "authoring-target",
+      "xy": [
+        25,
+        87
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "ankle_left": {
+      "kind": "authoring-target",
+      "xy": [
+        39,
+        87
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "sole_right": {
+      "kind": "authoring-target",
+      "xy": [
+        24,
+        91
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    },
+    "sole_left": {
+      "kind": "authoring-target",
+      "xy": [
+        40,
+        91
+      ],
+      "basis": "New unclothed adult front construction in the adopted 64x96 cell. No extraction or fitting of rejected armor/body-v2. Dimensions are construction targets, not observations of hidden anatomy."
+    }
+  },
+  "approval_scope": "New front candidate only, not user accepted anatomy/parts/motion"
+}

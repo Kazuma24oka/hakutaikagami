@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "stage": "export",
+  "dependencies": [
+    {
+      "path": "Art/Officer3D/TrialV3/contract.json",
+      "sha256": "bd9cd195d09193de54211dd32a2a9f23bd68e85e7ba81347dbe9cff2f1f2e747"
+    },
+    {
+      "path": "Scripts/build_officer3d_v3.py",
+      "sha256": "8b081352a31c594c60ad9b65b9faf38e147be45935e544c8ce4c5741960d5721"
+    },
+    {
+      "path": "Scripts/officer3d_v3_pipeline.py",
+      "sha256": "aa3961bd8c63588b8bb3308ada63384d709f4c17cf49f0a9ff086baccea05085"
+    },
+    {
+      "path": "Scripts/preserve_officer3d_clips.py",
+      "sha256": "ef9d62c79ac6cc8ca3aefcdc8829642fe40fcf7c06145d54e3ad9df01d42d479"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV2/near.glb",
+      "sha256": "20f5a3753db2c65d4b6e42fa5d3a9fe78a852e66104382af8b3ed0dd84ffefda"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV2/mid.glb",
+      "sha256": "2beac7251f3437a3793462f421f45f59da8467da8c7b35fc6b10c9c7f6f54db8"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV2/far.glb",
+      "sha256": "84b4db9a5197b4882692fba3a7c0aaa5fff6ada06d530ec672a68592c4e240c7"
+    },
+    {
+      "path": "Game/Assets/Officer3D/TrialV1/officer.glb",
+      "sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_back.jpg",
+      "sha256": "887b2bcc58338e816a3681e1bc12bc993e18af27252845bd2ac5e27b4aa7fac5"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail.jpg",
+      "sha256": "830ca6e2699855e8b03600145e222af78d50c4f52c56f3c9db9532a35af7f77e"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_02.jpg",
+      "sha256": "547f1f61f4efaa69a4ed6606c6f34792b2030393c9afbca55e14a27fe8537575"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_03.jpg",
+      "sha256": "868569d0e1d35db0e673fdb676eae618b50d18fa99e567e7325137837b626446"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_04.jpg",
+      "sha256": "fb98f4d0f8af6df63eb8ca3c402bb742222e59d043f9cb19171f28e0b40788df"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_05.jpg",
+      "sha256": "0034e977b9b927e09374d31587c6ee47cfb29c917c61197d53376de6dd8debac"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_detail_06.jpg",
+      "sha256": "8cbb4dc098a9ee39e5056a4ce987979c21ba0d81842a35b2612eaf42321bab17"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_front.jpg",
+      "sha256": "fe6d4f00cfd480f98b8140b7875daa4b20a3ffcb9d6b0140f1a2330236219ed5"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_other.jpg",
+      "sha256": "19fc897d1d8e7afeb83ee9d1a65ff268a400715caf3ad9f91c7b54a6d819198f"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_other_02.jpg",
+      "sha256": "3a78716fc26643f9c16a5812762c86d7257808e00c2b521027c7670641bcbac1"
+    },
+    {
+      "path": "D:\\開発データ\\資料\\プロジェクト別\\百代鏡\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_right.jpg",
+      "sha256": "8a283a30b0f1382e5b4646d6d3bf2764c1c4891ca3d7f55384cd437ccd6bbeba"
+    }
+  ]
+}

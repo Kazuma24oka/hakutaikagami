@@ -1,0 +1,63 @@
+{
+  "combinations": {
+    "base": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "face": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "hair": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "face-hair": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "armor": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "armor-face": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "armor-hair": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    },
+    "armor-face-hair": {
+      "native": 0,
+      "large": 0,
+      "base_readonly": 0
+    }
+  },
+  "parts": {
+    "face": 0,
+    "hair": 0,
+    "armor": 0
+  },
+  "page_errors": [],
+  "original_reconstruction": 0,
+  "all_removed": 0,
+  "hair_off": 0,
+  "armor_off": 0,
+  "native_css": [
+    64,
+    96
+  ],
+  "large_css": [
+    256,
+    384
+  ],
+  "status": "PASS"
+}

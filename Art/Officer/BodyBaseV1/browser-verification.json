@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "sizes": [
+    {
+      "id": "native",
+      "pixels": [
+        64,
+        96
+      ],
+      "css": [
+        64,
+        96
+      ]
+    },
+    {
+      "id": "large",
+      "pixels": [
+        64,
+        96
+      ],
+      "css": [
+        320,
+        480
+      ]
+    }
+  ],
+  "rgba_difference": 0,
+  "states": 6,
+  "native_input": 0
+}

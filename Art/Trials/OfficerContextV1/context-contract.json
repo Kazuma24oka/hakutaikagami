@@ -1,0 +1,31 @@
+{
+  "status": "context-preview-only-not-adopted",
+  "source_scale_contract": "../OfficerScaleV1/scale-contract.json",
+  "alpha": "edge-connected low-chroma bright candidate, visually inspected on white/black; not semantic part masks",
+  "mask_l8_sha256": "17f9558df8b07192c8198ce8b3616f9ff636ba713d780bc8d06e24e34867341d",
+  "portrait": {
+    "origin": "user-provided character sheet, crop [655,75,785,215]",
+    "role": "fixed-size dialogue-face reference, not final six-head standing art",
+    "file_sha256": "bc7e388ce31866084612867d193fd7e07b144bb7eca8c22fb68760860f5b12b2"
+  },
+  "variants": [
+    {
+      "id": "32x48",
+      "source_rgb_unchanged": true,
+      "binary_alpha": true,
+      "png_sha256": "1e1f8d31cd5b9783bfa12f91d118c67f0b4f02780aa5d38e5d89457b11ca4c8f"
+    },
+    {
+      "id": "48x64",
+      "source_rgb_unchanged": true,
+      "binary_alpha": true,
+      "png_sha256": "c0fe9e9b82accd541983efe521aa684bc3fece7a7c33a175bded8128f221d482"
+    },
+    {
+      "id": "64x96",
+      "source_rgb_unchanged": true,
+      "binary_alpha": true,
+      "png_sha256": "1065fc8cbdca434a683d97a355262d366287c4b8ea924bd7499f6ed1e48275d3"
+    }
+  ]
+}

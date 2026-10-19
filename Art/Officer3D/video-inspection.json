@@ -1,0 +1,28 @@
+{
+  "width": 640,
+  "height": 800,
+  "frames": 341,
+  "source_fps": 30.0,
+  "samples": [
+    {
+      "frame": 7,
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\3d-transition-review\\video-frame-7.png"
+    },
+    {
+      "frame": 75,
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\3d-transition-review\\video-frame-75.png"
+    },
+    {
+      "frame": 150,
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\3d-transition-review\\video-frame-150.png"
+    },
+    {
+      "frame": 222,
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\3d-transition-review\\video-frame-222.png"
+    },
+    {
+      "frame": 290,
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\3d-transition-review\\video-frame-290.png"
+    }
+  ]
+}

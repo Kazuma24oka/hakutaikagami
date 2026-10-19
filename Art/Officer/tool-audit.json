@@ -1,0 +1,12 @@
+{
+  "comfy_desktop": "C:/Users/hizen/AppData/Local/Programs/Comfy Desktop/Comfy Desktop.exe",
+  "model": {
+    "path": "C:\\Workspace\\Projects\\Tools\\Models\\ComfyUI\\checkpoints\\sd_xl_base_1.0.safetensors",
+    "bytes": 6938078334,
+    "sha256": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+  },
+  "gimp_shortcut": "C:/Workspace/Projects/Tools/Launchers/GIMP.lnk",
+  "gimp_target": "shell:AppsFolder/GIMP.43237F745459_nq49gba4h4mx8!GIMP",
+  "production_workflow": "NOT_AUTHORED_FOR_HAKUTAIKAGAMI",
+  "generation_executed_during_audit": false
+}

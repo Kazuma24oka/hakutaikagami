@@ -1,0 +1,121 @@
+{
+  "status": "PASS",
+  "png_count": 28,
+  "changed_pngs": 0,
+  "model_rerun": false,
+  "source": "Archived generated-material-02.png and fixed current controls",
+  "files": [
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-front.png",
+      "sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/body-mask.png",
+      "sha256": "d15a86d50164adf72801ac11974bae77944260038e065d87b0490c849d7a5889"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/edit-mask.png",
+      "sha256": "2103ae9bbafc29738baf9ff66a2a4865f7a31f1505895d1b7c811e11310c965c"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/empty-mask.png",
+      "sha256": "be37b9d2b9892d9edff288662340fe0734239b5d8b17584e20ff22b9048b96e6"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/feature-exclusion.png",
+      "sha256": "1c8d457f21d89eb2441849af35f8766e4b1887454a8e18016455ef9c8cec3f38"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/head-protection.png",
+      "sha256": "549a484b1d1b1f3cb6322cb60563e22620e6a88786609014af827d16b2c265f8"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/hidden-construction.png",
+      "sha256": "a777df5ebf6db03c317774c41cedf5901635d8ee8db16b7f526f4a490e20cb63"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/observed-skin.png",
+      "sha256": "7bb1c208c8098ec92046abf0f4d9f9cbc9c4059b765ba59bb80d6f507310585a"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/ownership.png",
+      "sha256": "1d58b5fe3bc3bbccd3cc96da0f0d160bff192d36f1838f50f0fbd229cd4a9e0f"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/abdomen.png",
+      "sha256": "187e7e70556f2851a830e03e7aa842d429d00a1f33b612e5d4327954614ddfd7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/calf_left.png",
+      "sha256": "a5b9b855bcb19b04a33119389aab2d61b0b4ebe86be12499cdf512a6438d26b1"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/calf_right.png",
+      "sha256": "06b3dd587ce46b42fca2b58dc2c928e08811302d0c4ea1594af0d309a5e30f95"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/chest.png",
+      "sha256": "dc2443a23bfb4bdd371e7537f3fd1ea5ae452f7a0ce39766fc938bf1ac288d5e"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/foot_left.png",
+      "sha256": "ce1ff7886023c5965ded26c290374b8d7a93a6ef6ecb9de23bdc37a21435944d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/foot_right.png",
+      "sha256": "b56ed7a9c073273f568ed4d4d1903e3a93bc215c9901b325510ca6e8315778a7"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/forearm_left.png",
+      "sha256": "e116304399b7f5490d83176f0cd7400ef0b74fdb8370de8cd7fc4d99307050ae"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/forearm_right.png",
+      "sha256": "76efa0f510fe7e7883fe7c14154fb3a1102c4c57016a871876a3ecb27a70a469"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/hand_left.png",
+      "sha256": "a5ca77aa959349e3474265c8226c9a8c8f184163b66cc42b6890b5c2128d7d85"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/hand_right.png",
+      "sha256": "d93399d6e4deafe6f024438e282238970d9eb36667368639e591da4852257bb0"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/head.png",
+      "sha256": "8bc35df99f9598844411888c7f7af7969e7c501ab17a0b54dc0747883b185b17"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/neck.png",
+      "sha256": "d5e69e7ce267bed78067bc08bb4a4dace050b6e94d2f31a7052af3e8580cd27a"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/pelvis.png",
+      "sha256": "e076575c97f4783470f48b7aac4777bc5249f6e4496bfe9315b732b412532e0a"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/thigh_left.png",
+      "sha256": "c314b61f0faa226d695d5cf5943660c1ead78d710c8b51eda47e30a7edd68850"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/thigh_right.png",
+      "sha256": "327944f39e60528eff78c3eb7d5bc5c5c7b2eb3dd7ce51febc6b2800221f70d5"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/upper_arm_left.png",
+      "sha256": "3e1e1704e06e5f3cb23547ab8f8d63fb3423c196df996426b047ab307aa7b174"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/parts/upper_arm_right.png",
+      "sha256": "351d7abc969a2ac4131f0e472ad06d14834e678cc5c55584cf9e60d88e38d01d"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/preserve-mask.png",
+      "sha256": "2ed3f13e9ff711826df19efc1b6d9df0873b9c51a341405792feaf284c2b2cbf"
+    },
+    {
+      "path": "Game/Assets/Trials/OfficerBodyBaseV2/skin-mask.png",
+      "sha256": "d15a86d50164adf72801ac11974bae77944260038e065d87b0490c849d7a5889"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "scope": ["army/unit/commander/grant separation", "MessageFlow military orders", "per-character battlefield knowledge", "weighted small-map movement and retreats"],
+  "status": "implemented validation rules; not Confirmed production military parameters",
+  "military_state_schema": 1,
+  "map_id": "river-crossing-v1",
+  "rules": "military-grid-v1",
+  "world_clock": "TaxSimulation single tick and transaction; MessageFlow advances before military receipt/effect; tax causal processing retained",
+  "save": "normal v5 Officers optional Military schema1 extension; legacy FieldBattle retained; simultaneous old and new field models rejected",
+  "identity": "army owner organization, army commander, unit commander, grant actor and tactical exercise hostility are separate IDs; no political allegiance changes",
+  "authority": "actor/unit/army/action/jurisdiction/basis/[from,until), checked at dispatch and receipt/effect; commander replacement does not invent grants",
+  "transport": "existing shared MessageFlow envelopes/attempts/receipts/personal knowledge/failure reports/retry/late arrivals; no separate delivery simulator",
+  "deadline": "inclusive command-start deadline, not destination-arrival deadline",
+  "cancel": "delivered to recipient and personally learned, then effective at specified tick; cancellations precede their target; prior movement/losses are not rolled back",
+  "idempotency": "one logical command across retries/original; shared formal receipt and applied ledger; payload reuse conflicts rejected",
+  "intelligence": {
+    "truth_api": "MilitaryDiagnostic for tests only",
+    "render_api": "MilitaryViewFor(observer), AppearanceFor(character)",
+    "unknown_enemy": "no visible unit row/model/label",
+    "report": "immutable learned source snapshot sent through MessageFlow; observed and learned times distinct",
+    "stale": "dated memory marker at reported cell, never live hidden position/stats/commander",
+    "clearing": "sight of an empty known cell or delivered absence report; unseen enemy retreat does not globally clear memory",
+    "third_observer_post": [0,6]
+  },
+  "map": {"width":11,"height":7,"cell_meters":1.5,"movement":"4-neighbour stable weighted Dijkstra; no hidden-enemy-aware routes","costs":{"road":1,"bridge":1,"plain":2,"forest":3},"blocked":["river without bridge","rock"],"sight_range":3,"sight_blockers":["forest","rock"],"bridge":[5,3],"exit_red":[0,3],"exit_blue":[10,3],"collision":"simultaneous same-cell/swap conflicts wait; no arbitrary first unit wins"},
+  "combat": {"scenario":"two opposing exercise armies using existing officers; not a political war","initiation":"explicit Advance consent plus explicit hostility relation and direct sight/contact","red_soldiers":100,"blue_soldiers":60,"red_attack":12,"blue_attack":8,"morale_pressure_red":15,"morale_pressure_blue":8,"routing_threshold":20,"contact":"distinct step before simultaneous losses","npc":"scripted willingness and explicit opponent input; no omniscient target pursuit"},
+  "not_implemented": ["production military balance", "national army deployment/recruitment", "political war/diplomacy", "general military AI", "sieges and supply", "terrain height/IK", "3+ unit combat", "fog-aware strategic planning", "important-letter UI", "negotiation demo"]
+}

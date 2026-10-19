@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "direction": "3d-in-game",
+  "status": "FORMATION_WORLD_V1_GPU_VALIDATED_USER_REVIEW_PENDING",
+  "user_decision_date": "2026-10-19",
+  "sources": [
+    {
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\甲冑_織田信長_v013_肌色と動作.blend",
+      "bytes": 24484889,
+      "sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9"
+    },
+    {
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\織田信長_歩行と剣攻撃_v013.mp4",
+      "bytes": 2477290,
+      "sha256": "c7d5bdcbf2c1b2bc076c231ad2eef8cf52af654160702b7fcab688d2301143de"
+    }
+  ],
+  "legacy_2d": {
+    "status": "VERIFIED",
+    "archive": "D:\\開発データ\\過去データ\\百代鏡\\2026-10-19_2D武将方式_凍結\\百代鏡_2D武将方式_資料素材コード一式.zip",
+    "sha256": "7eab1546de78f5b7b9e08eb13594b2a54be07c8379587a3d5834aac6f392d077",
+    "bytes": 94161927,
+    "source_files": 1838,
+    "git_head": "78ad479d347f655ee4e4ce002d237692a2d40278",
+    "bundle_verified": true,
+    "all_archived_files_sha256_verified": true,
+    "original_files_deleted": 0
+  },
+  "fixed_requirements": [
+    "One character definition, shared body/head geometry and material parameters across all views.",
+    "Skin color changes face/body/exposed hands/ears together; eyes/brows/mouth/hair/armor are protected.",
+    "Equipment visibility and colors addressed by semantic slot/material ID; Blender custom controllers not assumed to export to Godot.",
+    "Shared skeleton/bone names/rest pose/unit/pivots and mount points must be specified before new parts.",
+    "Source meshes/animations preserved. Game export excludes reference rigs, historical actions and unused armor variants.",
+    "New visual acceptance requires actual Godot render, clothing/color/animation changes, export/reimport verification and measured performance. No pass by metadata alone."
+  ],
+  "pending_acceptance": [
+    "User review of formation line and continuous world prototype",
+    "Production AI, many-unit combat, political war and calibrated military rules",
+    "Historical national geography, nationwide movement and logistics",
+    "Operation line replacement and player initiative/consequence UI",
+    "Production terrain art",
+    "Existing far silver armor quality and 50actor60fps",
+    "New political character creation with stats/affiliation/authority",
+    "Planted-foot / weapon contact / terrain IK measurements",
+    "Corresponding illustrated portraits",
+    "Source rights before asset distribution"
+  ],
+  "current_execution": "Three friendly field commanders; draft line -> shared immutable military orders -> staggered receipt -> physical deployment; same-scene national/regional/local camera. Core317; new28 + prior25/30/283/187 GPU captures; independent process save/render restore passed.",
+  "portrait_policy": {
+    "status": "USER_SELECTED",
+    "medium": "2D illustration",
+    "in_game_character": "3D model",
+    "closeup_3d_as_portrait": false,
+    "unselected": [
+      "illustration style/proportions",
+      "actual corresponding illustration assets"
+    ],
+    "assembly": "shared face/hair/equipment IDs with illustrated parts"
+  },
+  "options_reference": "Docs/Proposals/OFFICER_3D_OPTIONS.md",
+  "options_status": "USER_SELECTED_ALL_A",
+  "selected_options": {
+    "1": "A",
+    "2": "A",
+    "3": "A",
+    "4": "A",
+    "5": "A",
+    "6": "A",
+    "7": "A",
+    "8": "A",
+    "9": "A",
+    "10": "A"
+  },
+  "selection_quote": "推奨でいい。すすめて",
+  "trial_v1": {
+    "contract": "Art/Officer3D/TrialV1/contract.json",
+    "runtime_report": "Art/Officer3D/TrialV1/runtime-report.json",
+    "visual_review": "Art/Officer3D/TrialV1/visual-review.json",
+    "runtime_binding": "02526c8a51a609bdfdc24845884bd83d28f244f2c7099f4212ffd2796a2173ce",
+    "local_review": "Art/Officer3D/TrialV1/runtime-local/review.html",
+    "next": "Authored LOD and performance reduction; baseline50actors~10fps"
+  },
+  "followup_v2": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_NOT_YET_ACCEPTED",
+    "report": "Docs/Proposals/OFFICER_3D_TRIAL_V2.md",
+    "runtime_binding": "f1076cc790cc906bf81ff1d11b78f7d49ca24c851fded1bb93c7518e361311fe",
+    "implemented": [
+      "three authored LOD meshes",
+      "source material ID mask + independent cloth/lacquer/metal multipliers",
+      "face/hair/beard reusable prototype",
+      "shared TaxPanel command/time/save session in Main 3D tab"
+    ],
+    "not_claimed": [
+      "production quality new character art",
+      "all 8192 armor combinations",
+      "near 50 actors at 60fps",
+      "general strategic movement/battle",
+      "negotiation implementation"
+    ],
+    "negotiation_direction": "left foreground self, right background counterpart; deferred"
+  },
+  "followup_v3": {
+    "status": "BASELINE_PROVISIONALLY_ACCEPTED_AT_62c3875",
+    "report": "Docs/Proposals/OFFICER_3D_TRIAL_V3.md",
+    "guide": "Docs/Proposals/OFFICER_3D_PARTS_GUIDE.md",
+    "runtime_binding": "9cabe2c8b4dfb9e72345f9b9f6db5a69f9a66458570084e4c02721f180c96710",
+    "entry": "Scripts/Show-Officer3DV3.ps1",
+    "implemented": [
+      "fixed same-environment repeated export3GLBs byte exact",
+      "mature face/tied hair/short beard preserving fitted head contacts acrossLOD",
+      "10 alternate red armor slots plus3shared source slots",
+      "standalone officer creator with roster atomic save/restart restore",
+      "mixed1/10/50 benchmark and shared geometry/independent materials checks"
+    ],
+    "local_review": "Art/Officer3D/TrialV3/runtime-local/review.html",
+    "not_claimed": [
+      "production quality character art",
+      "all combinations/timestamps without clipping",
+      "50 actors60fps",
+      "cosmetic roster assigned to Core characters",
+      "negotiation/portrait creation",
+      "public distribution of source assets"
+    ],
+    "user_quote": "とりあえずこれでいこうか。"
+  },
+  "world_integration_v1": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
+    "entry": "Scripts/Show-OfficerWorld.ps1",
+    "report": "Docs/Proposals/OFFICER_WORLD_INTEGRATION_V1.md",
+    "runtime_plan_sha256": "dcde4bb5eaa53d022a3efbced9c3f4e6a63f7ab5ba3104a1e44b003dcf3f98ad",
+    "raw_captures": 30,
+    "core_tests": 317,
+    "fixture_rules": "field-fixture-v1; not Confirmed battle parameters",
+    "normal_save": "tax-prototype-v5.json / Officers optional schema1 extension",
+    "negotiation": "direction retained, implementation deferred"
+  },
+  "military_grid_v1": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
+    "entry": "Scripts/Show-MilitaryGrid.ps1",
+    "report": "Docs/Proposals/MILITARY_GRID_INTEGRATION_V1.md",
+    "contract": "Art/Officer3D/MilitaryGridV1/contract.json",
+    "runtime_plan_sha256": "8a3c15a9d7af3a25a5f060674f7493830584ea575ae1ec34f77e3d83adbbfe84",
+    "core_tests": 317,
+    "raw_captures": 25,
+    "fixture": "two-unit same-organization opposing exercise; not political war",
+    "save": "v5 optional MilitaryState schema1; legacy fixture mutually exclusive"
+  },
+  "formation_world_v1": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
+    "entry": "Scripts/Show-FormationWorld.ps1",
+    "report": "Docs/Proposals/FORMATION_WORLD_V1.md",
+    "contract": "Art/Officer3D/FormationWorldV1/contract.json",
+    "runtime_plan_sha256": "849f8f628a04442f0f3fc1b6d0233ae7ec31467664908a497bc0df73217e0b73",
+    "core_tests": 317,
+    "raw_captures": 28,
+    "fixture": "one line, 3 friendly commanders/units; delays1/3/5; same world camera; static national context/local11x7 movement",
+    "normal_save": "existing v5 Officers.Military schema1 extension",
+    "source_art_changes": 0
+  }
+}

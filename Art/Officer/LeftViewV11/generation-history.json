@@ -1,0 +1,30 @@
+{
+  "backend": "builtin-imagegen",
+  "transparent_background": true,
+  "seed": "not exposed",
+  "model_version": "not exposed",
+  "raws": [
+    {
+      "file": "armored-raw.png",
+      "prompt": "generation-prompt.txt",
+      "status": "rejected",
+      "reason": "head smaller and upper body landmarks too high; retained, never production sprite"
+    },
+    {
+      "file": "armored-v2-raw.png",
+      "prompt": "generation-prompt-v2.txt",
+      "status": "selected provisional left source",
+      "native_conversion": "nearest1/16 full canvas,48 colors,no dither,alpha>=200,whole source y+1",
+      "observed_bbox": [
+        21,
+        5,
+        51,
+        92
+      ],
+      "observed_chin_bottom_y": 29,
+      "authored_body_chin_target_y": 32,
+      "remaining": "Profile jaw/head correspondence remains provisional, not exact anatomy."
+    }
+  ],
+  "body": "No new image generation. Existing right side base reflected at x63-x with character-relative left/right names exchanged. No fallback after earlier rear-body moderation."
+}

@@ -1,0 +1,17 @@
+{
+  "raw_sha256": "eec9b8c4da57e9f87e43482d746a6cb0fa42f2ffa0e421b0e9377da5a53c48ca",
+  "native_size": [
+    64,
+    96
+  ],
+  "fixed_silhouette_difference": 0,
+  "preserved_rgba_difference": 0,
+  "generated_interior_changed_pixels": 542,
+  "visible_pixels": 1570,
+  "generation_canvas": [
+    1024,
+    1536
+  ],
+  "sampling": "whole-canvas BOX, fixed 12-color palette, no bbox registration; preserves blank head/pelvis and outer boundary",
+  "status": "REQUIRES_ACTUAL_IMAGE_REVIEW"
+}

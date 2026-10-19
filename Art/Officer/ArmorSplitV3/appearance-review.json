@@ -1,0 +1,50 @@
+{
+  "status": "AUTHOR_INSPECTED_FRONT_STATIC_NOT_USER_ADOPTED",
+  "plan": "armor-split-final",
+  "binding": "15abbac0faf94e3dec0905d01d54c325ad00569113aaf26660ee716dea647b0a",
+  "reviewer": "Codex actual isolated/removal PNGs and browser screenshots",
+  "evidence": [
+    {
+      "path": "Docs/Proposals/Evidence/officer-armor-isolated-v3.png",
+      "sha256": "43c8f43009eb7d579005444ab85770be001bc0b21dc3f1bf640333a50c28e7d0"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-armor-removal-v3.png",
+      "sha256": "e309a9ff2e21ec21880e19d7e67ce99ef1615c6354d4664f6099e99389115491"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-armor-browser-v3.png",
+      "sha256": "8911d3a34338f0e03afddd6f082ac971bba781ffa59051bb753db3c77952e378"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-armor-white-v3.png",
+      "sha256": "0dc9fd9b54b08b8d92d045af357f8705817855554972fe3cf91bda8d4fe77568"
+    },
+    {
+      "path": "Docs/Proposals/Evidence/officer-armor-black-v3.png",
+      "sha256": "c5ac7429bf14e3c6ad0deb5c00e1c0b6f7bcc663ac064bdd5cb75b4e2f881e9e"
+    }
+  ],
+  "observations": {
+    "contours": "Visible source pixels partition into8 declared semantic slots. Corrected exact shoulder, sleeve, coat-trim and scabbard edge coordinates after inspection; no source pixels deleted to pass.",
+    "isolated": "Inspected8 isolated layer PNGs, including bounded author-completed inner surfaces; no unrelated isolated fragments remain. Paired shoulders/arms/footwear each allow2 components, torso/waist/legs/sword1, coat2.",
+    "removed": "Inspected all8 individual-off states, full/off and head-off. Coat removal reveals completed cuirass/pants; shoulder removal reveals limited sleeve surface. Bare hands redraw in front of scabbard with gloves removed.",
+    "native_and_background": "Actual browser native64x96 and4x256x384, full/white coat-off/black shoulder-off screenshots inspected. All1024 native render hashes match, base preview unchanged throughout.",
+    "preserve": "Full matches original visible RGBA; alloff matches original bare body. Historical V2 eight-state comparisons retained. Source/body/face/hair files unchanged."
+  },
+  "tests": {
+    "new_armor": 11,
+    "existing_face_hair": 9,
+    "existing_pipeline": 36
+  },
+  "browser_combinations": 1024,
+  "png_replay_count": 45,
+  "png_replay_changed": 0,
+  "limits": [
+    "Hidden surfaces author constructed, not recovered exact original anatomy",
+    "Only current original-front static pose",
+    "No displacement/deformation/joint-motion acceptance",
+    "No portrait counterpart parts or other gear styles",
+    "Provisional skinny-body issue retained"
+  ]
+}

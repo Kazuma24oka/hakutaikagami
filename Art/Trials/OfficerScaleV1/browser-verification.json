@@ -1,0 +1,74 @@
+{
+  "errors": [],
+  "variants": [
+    {
+      "zoom": 1,
+      "sizes": [
+        {
+          "width": 32,
+          "height": 48,
+          "naturalWidth": 32,
+          "naturalHeight": 48
+        },
+        {
+          "width": 48,
+          "height": 64,
+          "naturalWidth": 48,
+          "naturalHeight": 64
+        },
+        {
+          "width": 64,
+          "height": 96,
+          "naturalWidth": 64,
+          "naturalHeight": 96
+        }
+      ]
+    },
+    {
+      "zoom": 2,
+      "sizes": [
+        {
+          "width": 64,
+          "height": 96,
+          "naturalWidth": 32,
+          "naturalHeight": 48
+        },
+        {
+          "width": 96,
+          "height": 128,
+          "naturalWidth": 48,
+          "naturalHeight": 64
+        },
+        {
+          "width": 128,
+          "height": 192,
+          "naturalWidth": 64,
+          "naturalHeight": 96
+        }
+      ]
+    },
+    {
+      "zoom": 4,
+      "sizes": [
+        {
+          "width": 128,
+          "height": 192,
+          "naturalWidth": 32,
+          "naturalHeight": 48
+        },
+        {
+          "width": 192,
+          "height": 256,
+          "naturalWidth": 48,
+          "naturalHeight": 64
+        },
+        {
+          "width": 256,
+          "height": 384,
+          "naturalWidth": 64,
+          "naturalHeight": 96
+        }
+      ]
+    }
+  ]
+}

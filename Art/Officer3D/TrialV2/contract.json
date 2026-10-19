@@ -1,0 +1,94 @@
+{
+  "schema": 2,
+  "source_v1_glb_sha256": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a",
+  "source_blend_sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9",
+  "source_material_roles": {
+    "v009_inlay_面頬": "lacquer",
+    "面頬｜黒威し_組紐": "cloth",
+    "v009_black_面頬": "lacquer",
+    "刀_研磨鋼": "metal",
+    "刀_黒柄": "cloth",
+    "刀_真鍮": "metal",
+    "v008_墨黒の織物": "cloth",
+    "v008_関節の鎖地": "metal",
+    "v008_縫目の墨色": "cloth",
+    "v008_黒羅紗": "cloth",
+    "v008_深紅の裏地": "cloth",
+    "v009_gold_胴": "metal",
+    "v009_マントの金レース": "metal",
+    "v009_silver_兜": "metal",
+    "v009_inlay_兜": "lacquer",
+    "v009_black_兜": "lacquer",
+    "v009_gold_兜": "metal",
+    "v009_edge_兜": "metal",
+    "v009_silver_胴": "metal",
+    "v009_inlay_胴": "lacquer",
+    "v009_edge_胴": "metal",
+    "v009_black_胴": "lacquer",
+    "v008_臙脂の組紐": "cloth",
+    "v009_silver_喉輪": "metal",
+    "v009_edge_喉輪": "metal",
+    "v009_black_喉輪": "lacquer",
+    "v009_silver_袖（肩）": "metal",
+    "v009_edge_袖（肩）": "metal",
+    "v009_black_袖（肩）": "lacquer",
+    "v009_金銀の流文織_籠手・手甲": "cloth",
+    "v009_silver_籠手・手甲": "metal",
+    "v009_inlay_籠手・手甲": "lacquer",
+    "v009_chain_籠手・手甲": "metal",
+    "v009_edge_籠手・手甲": "metal",
+    "足甲・靴｜黒漆_装飾と金具": "lacquer",
+    "v009_silver_草摺（腰）": "metal",
+    "v009_edge_草摺（腰）": "metal",
+    "v009_black_草摺（腰）": "lacquer",
+    "v009_金銀の流文織_佩楯（太腿）": "cloth",
+    "v012_佩楯_白地小花の縁革": "cloth",
+    "v009_silver_佩楯（太腿）": "metal",
+    "v009_black_佩楯（太腿）": "lacquer",
+    "v009_chain_佩楯（太腿）": "metal",
+    "v009_silver_脛当・膝当": "metal",
+    "v009_inlay_脛当・膝当": "lacquer",
+    "v009_edge_脛当・膝当": "metal",
+    "v009_black_脛当・膝当": "lacquer"
+  },
+  "material_mask": {
+    "channels": [
+      "cloth",
+      "lacquer",
+      "metal"
+    ],
+    "size": 2048,
+    "filter": "nearest",
+    "semantics": "source material ownership, not inferred from albedo; RGB multipliers in linear light"
+  },
+  "lod": {
+    "near": {
+      "gear_ratio": 0.12,
+      "skin_ratio": 1
+    },
+    "mid": {
+      "gear_ratio": 0.035,
+      "skin_ratio": 0.5
+    },
+    "far": {
+      "gear_ratio": 0.008,
+      "skin_ratio": 0.2
+    }
+  },
+  "lod_screen_height_px": {
+    "near_enter": 180,
+    "near_exit": 160,
+    "far_enter": 65,
+    "far_exit": 80
+  },
+  "variant": {
+    "id": "veteran",
+    "face": "angular_jaw",
+    "hair": "tied",
+    "beard": "short",
+    "body": "v013_base",
+    "skeleton": "same73bones"
+  },
+  "integration": "TaxSimulation sole tick/command/save owner. Delivery world positions are derived display routes; no strategic movement rules added.",
+  "negotiation": "3D left foreground self / right background counterpart, approved composition only; deferred."
+}

@@ -1,0 +1,22 @@
+{
+  "browser": "headless Edge / no OS mouse input",
+  "native_size": {
+    "x": 177,
+    "y": 413.375,
+    "width": 64,
+    "height": 96
+  },
+  "combinations_compared_to_python": 1024,
+  "pixel_mismatches": 0,
+  "js_errors": [],
+  "probe_state_hashes": [
+    "0ddbd3b63bc385086bfd809c2bea214788246d004b2080183d56430926b2f8ce",
+    "7be0df713d566627352e47849c9456ff6d716fb622b7ff94aba75d1c4ea9c13b",
+    "3e35d60715af8ed81994ebfe1aa847c96cf46bc98ecfa5c130e704cc1e300e60"
+  ],
+  "animated_states_observed": [
+    "64×96 / 1倍　10/10部位　接合確認 0画素",
+    "64×96 / 1倍　10/10部位　接合確認 1画素",
+    "64×96 / 1倍　10/10部位　接合確認 -1画素"
+  ]
+}

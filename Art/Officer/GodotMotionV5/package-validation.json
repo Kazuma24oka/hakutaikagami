@@ -1,0 +1,10 @@
+{
+  "status": "PREPARED_RUNTIME_UNVERIFIED",
+  "binding": "febd3515ee0eb9a66595d3da48c9eae0494be175c7099acda0f43444abbab845",
+  "data": {
+    "path": "Game/Data/officer_motion_trial.json",
+    "sha256": "34a9e683d6a9845c6f3f62b3099dea1e8d152d03ad5b5974d37b59532c799b46"
+  },
+  "native_sheets_unchanged": 22,
+  "new_generator_invocations": 0
+}

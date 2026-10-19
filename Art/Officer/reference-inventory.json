@@ -1,0 +1,1257 @@
+[
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\README.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "0c98e6933b01e00bdd7018de7bbd2dd010878af5a845e875607c3725184c676a",
+    "verification_scope": "audited source then intentionally updated by this audit; original SHA retained",
+    "before_audit_change_sha256": "651b7018cc30f7988bf083e83308dbb4425850b8b94733dcec76570008710b9c"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Game\\Data\\officer_visual_profile.json",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "770cd351654cbfb17138398cebb257a78779e623e43966109255ced07f17ab0a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Scripts\\build_officer_parts_trial.py",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "4dac3acb6487c55de41ea80dbae58b40bf1046f486803783fe0c0308ce64cbd3",
+    "verification_scope": "audited source then intentionally updated by this audit; original SHA retained",
+    "before_audit_change_sha256": "68598a90dd5ca5af9191716c7b6f8ca137ccd08ddfc867546b7332ba0c0c3aae"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Art\\Trials\\OfficerPartsV1\\parts-authoring.json",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "e414f54f3fd1fdecef67432ad97350c26c9cf39e51ce0da02668be834adb696d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Art\\Trials\\OfficerPartsV1\\parts-contract.json",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "f286d2c927eae74d0d6962bcd636e4523ae51dfcfdef7604c8a02b964de485aa",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\AGENTS.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "054fae8de8a81a90e666f674b478cf4bf5fd5a525496482cc11ca8c34b9e664a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\README.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "d6f1b4b4ca713e7d03ff9178685dcd8da14fdff985cad553b85f5758147f7f32",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\README.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "fc2f146d584ed13f041c2db33fdec9a52454e07058578b9e1d4d98660b45ff75",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\DESIGN_INDEX.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "2bef401b2efd035dd7c725f4d8e67452a8641c3195b3a04a4af5792b0644a23b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\70_Planning\\UNDECIDED.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "3371ae84e6ede10972dedb120f963ba7095f35701519159f671a78aad7f7a9ac",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\80_Development\\DEVELOPMENT_GUIDELINES.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "917a6b2d33a9f305c67f7fe35b27c61a66cf6f2f6db4a1612e31f52663794d94",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\CHARACTER_ART_STANDARD.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "93eefab424f20c08b4d6fbe9cf9e5e8b6ba5e63964ba1695425dfeef7d039c81",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\SPRITE_ANIMATION_PIPELINE.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "48b86d5846644b984c251aeb3864fa09fa363ae169ef7caae159216f4d082cef",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\README.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "2f829f87e86789b0be554834e013bc4098cd451c3280b8f382a27d7749b73603",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\01_Protagonist\\Chiyo\\README.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "4de140dc0d8639543941a1e9244a6ab19ec2f1af71d8c760981e68c88f970ee1",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Assets\\HD2DPreview\\BodyBaseTrial\\sprite_contract.json",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "6d77b0c97452aa01e599997ebdd23794ca055c72923a14b4f55247fc68706c7d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Assets\\HD2DPreview\\ChiyoTrial\\sprite_contract.json",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "da00df0fe6c9b074eddc2af624022e5f93bd7f3aef005b116bb92b0a7f4658f0",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\AGENTS.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "0adddbb6098d3b90ad75683e055aa102425cc96db9d1786ce5616cdd74e43abf",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\README.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "1fc32ad4c13f59c29aa35f91c624158fba0f2e803db3bf74d333ad1f7604a16b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Docs\\DEVELOPMENT_GUIDELINES.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "52fed100817d4680318aa7bc2bdf673e5038e49178b2017d9adb9f441d4f0cc6",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Docs\\ART\\Ph15_VISUAL_REFERENCE_INVENTORY.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "05f830a1a68c459bd0c3cfe3f7af8f1670b69c6f8d859f2ed269d4d373096c1e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Docs\\ART\\Ph15_10_APPEARANCE_ACCEPTANCE.md",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "647024e7ae7c51e26e790c82ba239e44b4c52c9007db4f85c2532643a29444f2",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Docs\\ART\\Ph15_TALL_PRODUCTION_ACCEPTANCE.json",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "4eac2b1bc4dd5d9bcd6bae33a96676f1197edc63760705b9592ecd99bd723b3f",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Scripts\\Presentation\\OfficerAppearanceDefinition.cs",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "02dee58d374bd97c3238a7e1f1a43078f1cb74ff1b302be1e403a8b334abd807",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Scripts\\Presentation\\OfficerArmorColorMaskRules.cs",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "fe42a29ec18142762639d4547ab900119907dba2715b852ff73961a34f9f5b53",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Editor\\OfficerNativeUnderpaintBaker.cs",
+    "role": "source-document",
+    "exists": true,
+    "sha256": "a3e32ef46844b2d4d3212447866829d318af27abb7a2af644e5c2c7120e69289",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\FOUNDATION_PRINCIPLES_F01_F08.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "26fdbbc1aed8b11da14583f8087cb46adde42d37ff7ef9e61010c53436dfda56",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\GAME_CONCEPT.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "71b844896f2f5f0554e556ab8ec4f242d9d9e75e7830f35194ed827692110b97",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\GODOT_IMPLEMENTATION_READINESS_PRINCIPLES.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "7c4dc22f7edc131a972e504741d6911b561cfafda23e140d4f59c0cc926e012b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\GODOT_TECH_FOUNDATION_PRINCIPLES.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "daf10476c9ee77fa45861fb5e46ae53e3f4a84c8168f6895d90651a3b6af4fd0",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\GODOT_TECH_VALIDATION_PRINCIPLES.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "5ef5c180bbc576ed6ae86128741c9e72457911820d7ff8f4edb15eca6bffc716",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\INFORMATION_SYSTEM.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "f7fce11f212d4413efec22c1fc128a533fa69837dcbe54cbddcec090f4f264b5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\NAMING.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "814537e37aeb26192bc1839f4d8925029e42e021d84490a1835af828ccc3869f",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\P0_ADDITIONAL_PRINCIPLES.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "78f4e23c206f0d4872c728886566257c7c4feea43be000ee697736c8fea3b452",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\P0_EVENT_RELIABILITY_PRINCIPLES.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "26c60307c288d8ac93f7a99e7f9d64a1f684ccbe788bb3572cd46d055af342b1",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Confirmed\\P0_SUCCESSION_ADDITIONAL_PRINCIPLES.md",
+    "role": "confirmed-index-followup",
+    "exists": true,
+    "sha256": "55ae943c6052ce9addb02fe816bf44bda351d9d2c9ac59b4850e2c3b6b181a8f",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Proposals\\GODOT_TECH_FOUNDATION_7_OPTIONS.md",
+    "role": "explicitly-requested-proposal",
+    "exists": true,
+    "sha256": "930219af70d3bdd8eb2c8b082f6c800291650ed38267811e2ee2c7215e4feccc",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Proposals\\GODOT_TECH_VALIDATION_7_OPTIONS.md",
+    "role": "explicitly-requested-proposal",
+    "exists": true,
+    "sha256": "e350f0ad482ebd79a51a49baef5d51d9dc935dc7e0b93110b8e3e9317f656340",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Proposals\\GODOT_IMPLEMENTATION_READINESS_7_OPTIONS.md",
+    "role": "explicitly-requested-proposal",
+    "exists": true,
+    "sha256": "e4858552915710495e92bf8934f99a38db6eca6c23c05b6c46fee55396fd45f0",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Proposals\\PROTOTYPE_READINESS_P0_P1_OPTIONS.md",
+    "role": "explicitly-requested-proposal",
+    "exists": true,
+    "sha256": "e0ffdaa58b95c7278c158530a20608cb2d91654138e8718123ff1aa21fa81d2d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Proposals\\P1_COMMON_COMMAND_CONTRACT_21_CONSOLIDATED.md",
+    "role": "explicitly-requested-proposal",
+    "exists": true,
+    "sha256": "13add4e23a70c79cfc03dcc1ea3676838e2bc061f8101b20caf4352a0e4c4dae",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Proposals\\P1_RESOURCE_14_CONSOLIDATED.md",
+    "role": "explicitly-requested-proposal",
+    "exists": true,
+    "sha256": "94134dd26ee3fe80d8f117724889b0b43767ec91c1f563b54006e0ca87ff9a5f",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\part_ownership.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "1ebb16628af06d61f110b849c13b65419f91f20333633d409e820f0929895804",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\test_part_ownership.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "5de119a226926d1285d89eae3494b270941355fdd4f87cb0a1cd0b22d864b442",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\regression_runner.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "0be05dc9992bf5ca1ec2be74e4460983b6b14299264bbdf7cf25a0fe9630b7e8",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\source_segmentation.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "c0553abcf506c4c49cd168e64cb311bd6f3ca7ff598b64af301a23f64305da72",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\skin_surface.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "9545d42a1ca7abd2fc0f3a1f0775990d25098732350cbf3c43cc585b0675976d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\BodyBase\\canonical_assets.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "ed768b57a4de0c71170513b7ed0b502a4d0c53e373315812d5b22d616af32e8f",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\BodyBase\\work_record.json",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "92055ea54f79c445f9e7971b97ca3925f5a62a5db84789fbd5dd7edf93416c05",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\Chiyo\\Tools\\production_gate.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "c8614770bf475dfec73fca22f8c4600a601ddc3db95832b705a8f16fd14f5cd4",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\Chiyo\\Tools\\validate_review.py",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "6f38d380d0d7eda08e0f0a563206e0f0778fe31665e711233a4b2f3bdc65c978",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\Chiyo\\SourceHistory\\ComfyUI\\review03_workflow_api.json",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "ea3e692b6f875cac8714a14a6dd2dbeb94c7791fbb22cbb945a1f778185e6cac",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\50_Production\\HD2D_Handoff\\CharacterAnimation\\Chiyo\\SourceHistory\\README.md",
+    "role": "reusable-mechanism",
+    "exists": true,
+    "sha256": "957468adc2d4ed29275093594568cf3f76faade9401c65ef816c56ec370e2acd",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\Static\\body_front_reference.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "4b9494121c3e001127d433bbf1feeaa709fdbd136d1c12ddb06f24a545b84e18",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\Static\\body_standing_sheet.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "e38a9124a90ab0e3837d248b1da680a6cc6a119aa7947281d8b4f12283a46ba3",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\Parts\\body_right_parts_review.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "abbe212f2ff455b5c3040a2a36750992f672e4311f3a6c7be5489072b0aa31e9",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\Parts\\body_right_rig_review.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "0bcf3c2b8959504366d97e47b5ed5ff2ad9c1fe7909b7ac3a12406fa90fdb30a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\Parts\\body_side_mask_audit.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "e9242713fae67be59ccd81d88628e2eccca55d23bc5cf60f9226c5c9f9939713",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\BodyBase\\Parts\\body_front_right_parts_review.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "81452da44b53447ee3d8ecabab17aed99178f01778a45e946bcfeaa02cff6140",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\01_Protagonist\\Chiyo\\chiyo_female_deform_front_reference.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "8ac7cb1d0565f6a99a892b507afc0f4c9ba9a5a56a2feca4f8e008f48452da41",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\bokentan\\Docs\\60_Images\\01_Protagonist\\Chiyo\\review\\chiyo_front_authority_comparison.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "90d38fd259dd2c9f6f15762ef4632e75b4a65c71a728cd0d5d8f27ef6973c5bb",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\a-approved-reference-v1.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "43830981d7a3dadfe7e613bd79ae56a827070a3b4ed07380f6c8432981fe8b5a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\face-features-a-v1.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "7737c9990c706e3618d19826d25322ab81489256aaf402f86e92f8d513baca5b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\hair-short-a-v1.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "9a0181faf955dc909cc9db64ed9214c78be82ba886875ba2e6a236631b2f5274",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-arms-mask.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "e8277f53b27ec1fb3b79b072947e4a808eeb74a62d2c2a06d1817de797f3fd73",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-arms.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "fce1b7ac101b74e40faa6cea2e7c20276da6c61898199bc0138be3f2c682e5a9",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-body.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "00fa21332c3413efa7bd46eadded42aa905cf5c58cf28f498dde0709555b8ec7",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-chest-mask.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "d029f00d2b879cd7b6b9e538c0de6ffa42b3d243f397509f904b157ac018ee27",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-chest.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "8cdd3e4735db6af49c633ab0e22887c4245883be773e2775b9503175cac58484",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-face.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "8ff4ff44bbff7dc31920a783a46e365c87a7fca298760ad0184e0264befada5c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-head-mask.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "6896e891f4361b821575ccd99656ea0a2adb88666da0ae7007cfab1cda968287",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-head.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "194264b11c11026f41e06041db7f7b0fb6d386a2156e2d5f65b962080e8969c5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-legs-mask.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "65ec680d56ecee1d0c8e4d86ab4be4a3b8af354a8d048c9070c845b0749990da",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-legs.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "6cf6addede0b85af65bb6e8d37f6d095f5753e3ee493f74bf453962007a1adfc",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-waist-mask.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "98e0a98c3f0042a0f2bf6cfaa476d24c0c748939f391933e0bc348d6b070cb32",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:\\Workspace\\Projects\\Games\\Sengokushi\\Assets\\Art\\OfficerHD\\NativeUnderpaintV11\\armor-kabuto-waist.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "88272d049974c8b8f06d56ac81861e65498010e4bbcc3c85dd48037908f1062d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\サンプル\\サンプル1.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "5b347cee9cbbbab9dba9a2d2c8ab163ab15ea927cd9dd415b6f71c7f2ae9513e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\サンプル\\サンプル2.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "71cf7ff01ea8e803c574cb002d2c60dc712797be1313a90f4bb7ca724d33ad5f",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\サンプル\\サンプル3.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "256536cefa30ad63547980ef5aa65db1927e9c9a3bb0cf5a489e36feb208c401",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\サンプル\\サンプル4.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "1b9184c64934ddc7d1ce34eca9cbb1f5e40652f455900799c366142400a170e4",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\サンプル\\サンプル5.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "53e0131c044179889d157e168df2cbdd43dc090e8e6b27011d7266295e079e03",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\サンプル\\サンプル6.png",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "11d9a333f290f6e893bf356d0a74b607f73ac75a2382a72a2e05d142cede016b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\readme.txt",
+    "role": "license-entry",
+    "exists": true,
+    "sha256": "8bb63b52fb03c937b4c5d69206bb6c769d3b5efe6563788f3caed65e6deed832",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\素材\\購入素材\\ちびコマドット絵作成機(商用版)\\data\\dotKisekae.js",
+    "role": "purchased-implementation-inspected-not-copied",
+    "exists": true,
+    "sha256": "a23ea2dcc9fe2a5b1b1ff58c215044e8216290a3786f544b6753874f852a72cb",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\README.txt",
+    "role": "armor-catalog",
+    "exists": true,
+    "sha256": "0907f8eb9b35400e614ae999c20431708bf9452b8a2f3f5dd80b2f8369f88483",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\summary.json",
+    "role": "armor-catalog",
+    "exists": true,
+    "sha256": "1080f783a6cd314f36f47ea750cfedf90e0d372cd523338a56ccb066af791407",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\index.csv",
+    "role": "armor-catalog",
+    "exists": true,
+    "sha256": "6e80291701702f759708c7a4891f4bed43e147e7cacd79c1abcb902919374c8c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\products.csv",
+    "role": "armor-catalog",
+    "exists": true,
+    "sha256": "df4373fef37f0adc3b5b3da9d7713d37c1d2ab005c3575da866f1f8e2a00c7c8",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\管理情報\\verification.json",
+    "role": "armor-catalog",
+    "exists": true,
+    "sha256": "6c6aa51557037c03387ddcbc1ea89ab9b46febd999f374211522135f89a509b1",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kuki_yoshitaka\\gusoku_y-061\\kuki_yoshitaka_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "857e3e1d673f0cba4f4ea9a7ae0486597941b92cb8d3565ff19dd1e8ed789d1b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kato_kiyomasa\\gusoku_matsu_y-064\\kato_kiyomasa_gusoku_matsu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "d6ccd39465337bc48bf4817a6967febf1fde1b316a0222937d3f70c4110d16af",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\ukita_hideie\\gusoku_y-065\\ukita_hideie_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "a3c7d0334b08ed7a52aa39273981735f04b8f6fe3ff5ff948354467098c0969b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kuki_moritaka\\gusoku_y-062\\kuki_moritaka_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "29a54b8281fbe68d4429a5aa12dbd1e89f37704c7c779ddd89511a0bdaffd0c5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kuki_kanzaemon\\gusoku_y-063\\kuki_kanzaemon_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "cd18cd469d23a39acee97f8d3ebd88fbc80931858ea6f3a550fab4132251c970",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_masayuki\\gusoku_y-001\\sanada_masayuki_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "89fbecb81398d1b803263827a5118d79f0f74a55a3918d455b50c9f5e2670788",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kuroda_kanbee\\gusoku_y-002-1\\kuroda_kanbee_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "02064f437d895744bc3edd630066dd2fa4a23281f0a30156c7b164d6ca702a6b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\uesugi_kenshin\\nanban_yoroi_tentochitomoderu_y-003\\uesugi_kenshin_nanban_yoroi_tentochitomoderu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "4edc32a4fce207e60d7b92a6e93ad8f3bb8c946e8e53fb7875e65eeec61d7d7d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\uesugi_kenshin\\nanban_yoroi_y-003-1\\uesugi_kenshin_nanban_yoroi_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "9deb03309c7f3082f92625970c93be2eb1f8b7f4e5a1bb8ed95c82b153f92d11",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\naoe_kanetsugu\\honkautsushi_y-004\\naoe_kanetsugu_honkautsushi_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "54cfbcc1b0afe8912cefeffc708761f8659f361ef7a47d2690e6fd8057cfcbda",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_y-005\\sanada_yukimura_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "d88d1bbf4ccd20c594723ae9034a55b48a1715fa11e3af9d462504cc9a630c9a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\ashikaga_takauji\\honkozane_oyoroi_sha_y-007\\ashikaga_takauji_honkozane_oyoroi_sha_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "2eabd06f623f54676793168de983d94b3c01f50feaeb2cfa1fad56fe79238a2d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\toyotomi_hideyoshi\\gusoku_take_y-008\\toyotomi_hideyoshi_gusoku_take_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "c220fc736ec37d31493fad3330377cf37cf39033dac4b78efbd5444631d34d45",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\tetsusabiji_y-009\\sanada_yukimura_tetsusabiji_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "35907e42c3cf2b998a4fef52928f35136697be3a0fb04d14ba624058578108e4",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\yamauchi_kazutoyo\\gusoku_y-010\\yamauchi_kazutoyo_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "9dbd50de3b279c998d8e18941bfb2f69c4e6e02cdf30cdb628e288f02ccbaaf4",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\maeda_toshiie\\gusoku_y-011\\maeda_toshiie_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "b6743e72569e57583d56c57ebffb6f8e2b1f93c32c05dc5181e77873447ee771",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_hidetada\\gusoku_y-012\\tokugawa_hidetada_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "4dd0d7176db59a7835f7d2cc6989dc2d0a05fd2fe7b344efe31bcf8d3ae34159",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\mori_motonari\\iroiroodoshi_haramaki_sha_y-013\\mori_motonari_iroiroodoshi_haramaki_sha_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "0325ddfb8b7b39388df2c65a2bd30f6f48e8c3996daa6be7365c9a46594b1c51",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\yamamoto_kansuke\\gusoku_y-014\\yamamoto_kansuke_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "31b707af098863e48b89f5433690ae645d5d7d458903e6568b9187d0cf4ee3a8",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\ii_naomasa\\gusoku_y-015\\ii_naomasa_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "fe6d4f00cfd480f98b8140b7875daa4b20a3ffcb9d6b0140f1a2330236219ed5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\fukushima_masanori\\gusoku_y-016\\fukushima_masanori_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "abaf201b77ba57d0c716146d5b3fe1239f15ac8c6bab19080223d34b19361de8",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_ieyasu\\taigadoramamoderu_kindamigusoku_matsu_y-017\\tokugawa_ieyasu_taigadoramamoderu_kindamigusoku_matsu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "16342568fd24d466abecf88d8fa697224ab81676aa37843fa1859d087bb9fcc4",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\otomo_sorin\\byakudannuri_haramaki_sha_y-018\\otomo_sorin_byakudannuri_haramaki_sha_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "b9be1fcc52de3937e05f3782b2cb9670b88f43a854f86b3e63d1564eb916cfe1",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\oda_nobunaga\\domaru_honkautsushi_y-019\\oda_nobunaga_domaru_honkautsushi_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "ffe6e50da5e1aa6c5d803147cea605828971cc5f1a7c1d6703109fba0e8d205c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\ishida_mitsunari\\gusoku_y-020\\ishida_mitsunari_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "ca6b7c2251991a90908faf2b5a222628e864c1d3b5e667a43aa81a5c0d75fad2",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\shimazu_yoshihiro\\iroiroodoshi_domaru_y-021\\shimazu_yoshihiro_iroiroodoshi_domaru_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "4eb357315a4b7965556c014b8ae84d60a0a0b63fe6ceb6624f1393b587becc7b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\honda_tadakatsu\\gusoku_matsu_y-022\\honda_tadakatsu_gusoku_matsu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "980b70b843ac77d0e53cfe75ac4786f7c24e66c9ab95ace92d4fe185adc290ec",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\katakura_kojuro_kagetsuna\\gomai_dogusoku_y-023\\katakura_kojuro_kagetsuna_gomai_dogusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "42d4672fff6906f1e486f9d2c03613060a7329035f147422175770e22fd92c4c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\minamoto_yoshitsune\\gusoku_y-024\\minamoto_yoshitsune_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "14cd877f99dff937d5e85de941826fa84b856fdfa60e661ab88aea9c4cd03178",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\takeda_shingen\\gusoku_y-025\\takeda_shingen_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "81ffb259502304192e1f68c7677e5df0de09a5bf59adc03627cc39d63e69dded",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\azai_nagamasa\\gusoku_y-026\\azai_nagamasa_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "4929fc584083519e02a0003c7d55ec77dd57aa27309782398ae8c00f24a19afe",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\mori_terumoto\\gusoku_y-027\\mori_terumoto_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "2eff9a53dc04beb98ab737d9c27927d297efe75d5f40decddbf7a2f8561bde0c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_ieyasu\\daikokuzukin_matsu_y-028\\tokugawa_ieyasu_daikokuzukin_matsu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "bd1964577dc8384aa53902859bea882b1e9a77b704e84e761dcfb550289bce94",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\todo_takatora\\gusoku_y-029\\todo_takatora_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "9b81b16ed72e0df4042469683963cbd4ca73daba73797d1f20dd4f9a867145c5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\date_masamune\\matsu_gomai_dogusoku_y-030\\date_masamune_matsu_gomai_dogusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "b5b3a71ea44e254312133b08efdc8a1ae81117d399fb37e341ad8af7c812c728",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kuroda_nagamasa\\gusoku_y-031\\kuroda_nagamasa_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "94fb5c0f3ba232d69e91c31cb95292c54d6dbabc2b687ff3e47c15fc5879ff2e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\oda_nobunaga\\gusoku_y-032\\oda_nobunaga_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "0f968e68f23ddd0eef55e6fb491f59e6971f5a848a39c71b2010215549975657",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\asakura_yoshikage\\gusoku_y-033\\asakura_yoshikage_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "f5e1067c3bb62f8eb5bf933f64931d727013150581679123c2d222a8f4d7db5b",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\kato_kiyomasa\\gusoku_y-034\\kato_kiyomasa_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "1ece9b415763b27db89bf10e468d2fd4f68b6aed11b89f3384f677af5675c00e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\uesugi_kenshin\\iroiroodoshi_haramaki_y-035\\uesugi_kenshin_iroiroodoshi_haramaki_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "9f037070d8b9ac44811a7976041a949c08018cd6ee3a1a0da021da2e9f7fc96c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\shimazu_takahisa\\iroiroodoshi_domaru_y-036\\shimazu_takahisa_iroiroodoshi_domaru_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "599e8c8948abba33b530fb08f893e7f7626395fb8bdf66de8837b1a5aed2fa76",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "93c3bc526a70dcd67f2fc4ab1de8b3122668fedfa2b05d3c7a5e105e7ea1f85a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tachibana_muneshige\\gusoku_y-038\\tachibana_muneshige_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "dc76fb85ac77a724a814f8e1cd8b8fb9349739d860eee1b5b95dad0762142ad0",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\naoe_kanetsugu\\taigadoramamoderu_y-039\\naoe_kanetsugu_taigadoramamoderu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "af0dc2bc83cc8f53d0280d4121c21f4e2a88f7725d0cff7e4d272bf1f7a24be6",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\uesugi_kagekatsu\\gusoku_y-040\\uesugi_kagekatsu_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "dff74f9608181bd8e84486743b5a878c08fbbaa2d98a92d755e15cc12c8e67ee",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sakakibara_yasumasa\\gusoku_y-041\\sakakibara_yasumasa_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "a6e97e7623bca3996974eb68be7115fdafd812d9ef3d6ab80fb0f4b9ede5bb91",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\akechi_mitsuharu\\gusoku_y-042\\akechi_mitsuharu_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "3599b3e73b133c44aeca38b46268c710a82fa0f565157c5a6c14014604eb7146",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\oda_nobunaga\\ginnanbandogusoku_y-043\\oda_nobunaga_ginnanbandogusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "fe128c31c233f9fa3d96fb2bcf6c0384fd0034ee78390d60fc09c8b67382c89e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_ieyasu\\kindame_zunari_take_y-044\\tokugawa_ieyasu_kindame_zunari_take_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "b1832c82be6712b8a3a81e3442c81e8e65478ed1931eddb07f7f83f470af3363",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_ieyasu\\kindame_zunari_ume_y-045\\tokugawa_ieyasu_kindame_zunari_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "885af9c2656b7847c9071f1c7ae028e2e2b3a35e4c7aaaf8457c80bfbe9e1e57",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\honda_tadakatsu\\gusoku_ume_y-046\\honda_tadakatsu_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "4462d344a73a6fb6786b0517b7ff13f22fc3923fa42141b687b1d92e42b54e20",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\honda_tadakatsu\\gusoku_take_y-047\\honda_tadakatsu_gusoku_take_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "9cbe3aa63005417411c4ec5c7ef9ca80c34b859202db2b229590b5db9ee8c067",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\date_masamune\\take_gomai_dogusoku_y-048\\date_masamune_take_gomai_dogusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "2581acf4c62d03fffc0a1d805c7fc98bffcbd4b6970a217f7cba2c628de80a9a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\date_masamune\\gusoku_ume_y-049\\date_masamune_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "de26472e1d5c818f63f688fe948ead884213821269fcb54ad02e5cd96834c275",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_ieyasu\\daikokuzukin_take_y-050\\tokugawa_ieyasu_daikokuzukin_take_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "a79772deadadd701892aac0ee17faa6d119391148f3933b9b6984d8090e66c73",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\tokugawa_ieyasu\\daikokuzukin_ume_y-051\\tokugawa_ieyasu_daikokuzukin_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "c50fd17c94c4092e00833a9d69b249637e73649edf1395d88833e8ef83d74558",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\akechi_mitsuhide\\byoutsuzurinimaidougusoku_y-052\\akechi_mitsuhide_byoutsuzurinimaidougusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "a7242ca84eda3bd993a23f3fa4db99d77f2096f7236f23852f61c60bdb3eb1fb",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\hosokawa_tadaoki\\gusoku_y-053\\hosokawa_tadaoki_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "6a151383211822cd40714f76187e665a552abcb6b0e3117b65f3d0fdcf1d0d99",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\takeda_shingen\\gusoku_ume_y-054\\takeda_shingen_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "aeb2985fe578d905b2d7f9ac55d3614d4ad55638c4bdf7d96ab6e37e36e195fd",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\ishida_mitsunari\\gusoku_ume_y-055\\ishida_mitsunari_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "c44dbf2e46e65b3cae26b040d8dfb442385482af2416baaafa71455c610ae6b9",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\naoe_kanetsugu\\gusoku_y-056\\naoe_kanetsugu_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "32face8a642213df1828ac22cc0d62466c5d64e6903dad8beaaf660ef383c22e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\minamoto_yoshitsune\\ume_nimaidou_y-057\\minamoto_yoshitsune_ume_nimaidou_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "d933d5331cd043a31a130571b007acfd2360f2450b9c3f4fe62264832ee5d036",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\otani_yoshitsugu\\gusoku_y-058\\otani_yoshitsugu_gusoku_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "a61f73d808ae23b44723a121a9180075e25e6fa854d8b72cf180949e60b62ff0",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\toyotomi_hideyoshi\\gusoku_matsu_y-059\\toyotomi_hideyoshi_gusoku_matsu_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "3dc0a071f7bfe3535aaf87ae3849cb276f71829d687ed01df522386131367447",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\toyotomi_hideyoshi\\gusoku_ume_y-060\\toyotomi_hideyoshi_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "0bb4ab12bf8e18ca9a1b86101f913afec1b080d58c31e62392b99b191fa50477",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_front.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "93c3bc526a70dcd67f2fc4ab1de8b3122668fedfa2b05d3c7a5e105e7ea1f85a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_other.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "91d8f2f62362d019c7b9aa82a8c2b59dcfeedf81b56a8e8ae08269006bc16cb0",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_right.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "56f74cd04ab206772bc2a5241aabf6fa8683b700ca1eed571aace168351e3c95",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_other_02.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "789a8c5124a96d51919adceaf037f03bea2962e729dfb2820905ec1ce87c0bc3",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_back.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "beebc7f3652260d708f672815b2f559685925339697516f24a4656720fd8922c",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_other_03.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "378acf367f3f25bf246fcc516f759b8888ea3df33ab551b37bf90620c335b701",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_left.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "f4d9a6f4dcfd122bae0fbaafa1e7f392e90f7ab4132c02dbb3a8571905279e91",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_other_04.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "480d2786d3b5e9ade93f027b13b319da34415eba60598d8f955898175af2a5b4",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_detail.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "b642e94275aef1f58caba860e0669f0c43f59fe944385561a67e2976eea56fb7",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_other_05.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "b1b3cc096d02b1d0b71a7969276fa7e5215d0f0330c97d72f40b0b3851f08fa5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_detail_02.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "f4dfba8a8ce9ffb8dfdf8024f20f808eddf9c1928ce23ed5756d8c21ffefce7e",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_detail_03.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "54a6891e6894fc7244c7f33dacd0309b7f9488510300580fbf734870bce75645",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_detail_04.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "a8b6425d39c230fc8e8b5a32408337cd2e2b930b5f6dd44d50e804403d4f2999",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_detail_05.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "17f4610711a30da078085915ee8ba3eb9740917578c40491490976f8146ba7c3",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "D:\\開発データ\\資料\\プロジェクト別\\戦国武将_甲冑\\sanada_yukimura\\gusoku_ume_y-037\\sanada_yukimura_gusoku_ume_detail_06.jpg",
+    "role": "visual-reference",
+    "exists": true,
+    "sha256": "e58323c6f7469d86ca47518dfa161fdade2a3c62e1d7419f24136bab8bd05a02",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v1\\armor-prompt.txt",
+    "role": "previous-local-prompt",
+    "exists": true,
+    "sha256": "acf7518a2696795ad3250ac44e9b71f8e9be4553a46fdf41795c0fba7c00ba8a",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v1\\base-prompt.txt",
+    "role": "previous-local-prompt",
+    "exists": true,
+    "sha256": "4a65625ede64bdd440f713a2208de76091e0db91330e029a7f384597eb5ce9e9",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v1\\smile-prompt.txt",
+    "role": "previous-local-prompt",
+    "exists": true,
+    "sha256": "a78005d9b43db6e84f2fc85cddc9e70104b388dbd5bd01367f21fae104ad0056",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v1\\stern-prompt.txt",
+    "role": "previous-local-prompt",
+    "exists": true,
+    "sha256": "8aaba830c76b6d7c175f3404a6b79ab8ef2bc7f0177def8ca797d420952ce638",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v2-books\\generation-prompt.txt",
+    "role": "previous-local-prompt",
+    "exists": true,
+    "sha256": "95a32083c8680c2a71611434aff52c258c0e9bd9fbae42e52d7449a6ae262a28",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v1\\README.md",
+    "role": "previous-local-record",
+    "exists": true,
+    "sha256": "b27fdcdc01878be3ac09ebd0b39c90e61dd9f5c260f33c453645cf35c9812d8d",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "art-review\\officer-v2-books\\small-pixel-study.png",
+    "role": "style-reference-not-anatomy-approval",
+    "exists": true,
+    "sha256": "ab9cc8aa39f1bb2236ccd8000f5301a3c7343a469b368d2d6b390292e8c4e3d5",
+    "verification_scope": "file identity and role; see OFFICER_ART_PRODUCTION_AUDIT.md for actual content/image inspection scope"
+  },
+  {
+    "path": "C:/Users/hizen/AppData/Local/Temp/codex-clipboard-7d8cd1b1-a90b-4fee-952a-8ac18d336e64.png",
+    "role": "user-provided-design-or-rejection-image",
+    "exists": true,
+    "sha256": "89441d31ae6f1e113c1b997cbc729019ed7f6b424716b50da270b91e503b5cf4",
+    "verification_scope": "image supplied and visible in conversation; not canonical production masks"
+  },
+  {
+    "path": "C:/Users/hizen/AppData/Local/Temp/codex-clipboard-1b6268b8-bb10-4b70-a1a9-6eefb79dcd84.png",
+    "role": "user-provided-design-or-rejection-image",
+    "exists": true,
+    "sha256": "e890a4498c225323ce5b87e898bcae9d21b4301e4adc379a11585ebec5f3cd99",
+    "verification_scope": "image supplied and visible in conversation; not canonical production masks"
+  },
+  {
+    "path": "C:/Users/hizen/AppData/Local/Temp/codex-clipboard-092b9019-1632-4182-a693-f3907ce97ff5.png",
+    "role": "user-provided-design-or-rejection-image",
+    "exists": true,
+    "sha256": "57b700990f3ba6871ad7be381fa2d745fffd9833151c879761cb64b51a61aa18",
+    "verification_scope": "image supplied and visible in conversation; not canonical production masks"
+  }
+]

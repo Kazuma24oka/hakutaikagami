@@ -1,0 +1,53 @@
+{
+  "status": "REQUIRES_ACTUAL_REMOVAL_AND_SEMANTIC_REVIEW",
+  "canvas": [
+    64,
+    96
+  ],
+  "display_scale": 1,
+  "part_count": 8,
+  "combinations": 1024,
+  "original_visible_pixel_difference": 0,
+  "bare_base_rgba_difference": 0,
+  "base_sha256": "f2e62a97092eabc7fa99e12ac665ad74c74f1d8a837bad359feb17d947633036",
+  "source_owner_counts": {
+    "torso": 329,
+    "shoulders": 211,
+    "arms": 375,
+    "waist": 311,
+    "legs": 361,
+    "footwear": 103,
+    "coat": 429,
+    "sword": 96
+  },
+  "hidden_counts": {
+    "torso": 111,
+    "shoulders": 0,
+    "arms": 114,
+    "waist": 116,
+    "legs": 307,
+    "footwear": 27,
+    "coat": 134,
+    "sword": 21
+  },
+  "body_occlusion": {
+    "torso": [],
+    "shoulders": [],
+    "arms": [
+      8,
+      11
+    ],
+    "waist": [],
+    "legs": [
+      13,
+      16
+    ],
+    "footwear": [
+      14,
+      17
+    ],
+    "coat": [],
+    "sword": []
+  },
+  "scope": "Front static, provisional body; hidden pixels author constructed within declared source occluders; not motion approval"
+}

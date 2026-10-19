@@ -1,0 +1,177 @@
+{
+  "prompt": [
+    0,
+    "2bcc1e80-cc8f-4284-a4a3-81eecbb94a88",
+    {
+      "1": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "sd_xl_base_1.0.safetensors"
+        }
+      },
+      "2": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "body-front-v1-input.png"
+        }
+      },
+      "3": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "2",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "4": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "1",
+            1
+          ],
+          "text": "pixel art, single adult male anatomical artist mannequin, faceless blank head, bald, smooth warm skin colored body, featureless pelvis, no clothing, front orthographic standing neutral pose, mature broad shoulders, sturdy adult limbs, four heads tall stylized game sprite, controlled simple warm skin shading, crisp large pixel clusters, limited warm tan palette, clear continuous anatomy, neutral even lighting, keep exact input pose silhouette and proportions"
+        }
+      },
+      "5": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "1",
+            1
+          ],
+          "text": "eyes, eyebrows, nose, mouth, facial features, beard, hair, clothing, shorts, underwear, shoes, genitals, nipples, jewelry, armor, weapons, child, baby, chibi toddler, huge muscles, six pack, photorealistic, skin pores, texture noise, dithering, antialiasing, blurry, gradient background, cast shadow, text, watermark, changed body proportions, stretched limbs"
+        }
+      },
+      "6": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "4",
+            0
+          ],
+          "negative": [
+            "5",
+            0
+          ],
+          "latent_image": [
+            "10",
+            0
+          ],
+          "seed": 2026101801,
+          "steps": 30,
+          "cfg": 5.5,
+          "sampler_name": "dpmpp_2m",
+          "scheduler": "karras",
+          "denoise": 0.32
+        }
+      },
+      "7": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "6",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "8": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "7",
+            0
+          ],
+          "filename_prefix": "officer_body_front_v1_material"
+        }
+      },
+      "9": {
+        "class_type": "LoadImageMask",
+        "inputs": {
+          "image": "body-front-v1-edit.png",
+          "channel": "red"
+        }
+      },
+      "10": {
+        "class_type": "SetLatentNoiseMask",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "mask": [
+            "9",
+            0
+          ]
+        }
+      }
+    },
+    {
+      "client_id": "hakutai-body-base-v1",
+      "create_time": 1792320600285
+    },
+    [
+      "8"
+    ]
+  ],
+  "outputs": {
+    "8": {
+      "images": [
+        {
+          "filename": "officer_body_front_v1_material_00001_.png",
+          "subfolder": "",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "2bcc1e80-cc8f-4284-a4a3-81eecbb94a88",
+          "timestamp": 1792320600286
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "2bcc1e80-cc8f-4284-a4a3-81eecbb94a88",
+          "timestamp": 1792320600289
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "2bcc1e80-cc8f-4284-a4a3-81eecbb94a88",
+          "timestamp": 1792320619831
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "8": {
+      "node_id": "8",
+      "display_node": "8",
+      "parent_node": null,
+      "real_node_id": "8"
+    }
+  }
+}

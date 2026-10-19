@@ -1,0 +1,48 @@
+{
+  "id": "officer3d-v1-export",
+  "stage": "export",
+  "allowed_stages": [
+    "export"
+  ],
+  "contract_sha256": "118584ecce39a8e42722b8a83c5fb2d2c711cc9fbb95e801f77c1e4d0bfc8e85",
+  "source": {
+    "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\甲冑_織田信長_v013_肌色と動作.blend",
+    "bytes": 24484889,
+    "sha256": "9a98b6578f82235018a01a01213707be80672a16333d65df3cb22f9f830b22f9"
+  },
+  "inputs": [
+    {
+      "path": "C:\\Users\\hizen\\.codex\\.chatgpt-projects\\g-p-6ad452ddd494819192568db0153870d9\\officer3d-v1\\details.json",
+      "sha256": "603a11dc81e2bfcc747ad48046d950461a2b7628edf5fbb600727ddf231b70df"
+    },
+    {
+      "path": "Art/Officer3D/TrialV1/failed-export-cache.json",
+      "sha256": "28d4c363596d448b995593920af86c7cb82b3646ab4a514f3d0956564926870d"
+    },
+    {
+      "path": "Art/Officer3D/TrialV1/cache-verification.json",
+      "sha256": "9dcd9a854f44c5eb2a316c01cd4b23690a0492573238d020630763b24c5bb3aa"
+    }
+  ],
+  "tools": [
+    {
+      "path": "Scripts/officer3d_pipeline.py",
+      "sha256": "0036fa4ba0cb7d657300674a7cd3551b2937f6b8aace6a555f8909a5bcefa403"
+    },
+    {
+      "path": "Scripts/export_officer3d_trial.py",
+      "sha256": "058498233432f974db9db5d62794f501acdd1165e850d30766012b3e54599e52"
+    }
+  ],
+  "scope": "Read-only original blend; select and join semantic slots, portable PBR texture baking, COMPLETE base body, one primary rig and exactly3clips. No new character generation.",
+  "prior_failures": [
+    "2D face/skin masks not complete; all visible skin must share explicit skin material bindings.",
+    "No approval from file dimension/hash alone; runtime semantic and GPU tests remain required."
+  ],
+  "required_after_export": [
+    "Actual Godot material binding/skin coverage and protected features",
+    "13equipment toggles",
+    "4view actual GPU comparisons and clip playback",
+    "Local-only asset persistence until source terms clarified"
+  ]
+}
