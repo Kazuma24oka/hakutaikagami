@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "direction": "3d-in-game",
-  "status": "MILITARY_GRID_V1_GPU_VALIDATED_USER_REVIEW_PENDING",
+  "status": "FORMATION_WORLD_V1_GPU_VALIDATED_USER_REVIEW_PENDING",
   "user_decision_date": "2026-10-19",
   "sources": [
     {
@@ -35,16 +35,18 @@
     "New visual acceptance requires actual Godot render, clothing/color/animation changes, export/reimport verification and measured performance. No pass by metadata alone."
   ],
   "pending_acceptance": [
-    "User review of military grid fixture",
-    "Production military AI, 3+ units, political hostility/war and calibrated battle rules",
+    "User review of formation line and continuous world prototype",
+    "Production AI, many-unit combat, political war and calibrated military rules",
+    "Historical national geography, nationwide movement and logistics",
+    "Operation line replacement and player initiative/consequence UI",
     "Production terrain art",
-    "Source far silver armor quality and 50actor60fps",
+    "Existing far silver armor quality and 50actor60fps",
     "New political character creation with stats/affiliation/authority",
     "Planted-foot / weapon contact / terrain IK measurements",
     "Corresponding illustrated portraits",
     "Source rights before asset distribution"
   ],
-  "current_execution": "Military organization/unit/commander/authority separation; shared military delivery/cancel/deadline; per-character knowledge; road/river/bridge/woods map. Core302; military25, legacy30, V3 283, V2 187 GPU captures; separate-process restore passed.",
+  "current_execution": "Three friendly field commanders; draft line -> shared immutable military orders -> staggered receipt -> physical deployment; same-scene national/regional/local camera. Core317; new28 + prior25/30/283/187 GPU captures; independent process save/render restore passed.",
   "portrait_policy": {
     "status": "USER_SELECTED",
     "medium": "2D illustration",
@@ -82,7 +84,7 @@
   "followup_v2": {
     "status": "GPU_VALIDATED_SELF_REVIEWED_USER_NOT_YET_ACCEPTED",
     "report": "Docs/Proposals/OFFICER_3D_TRIAL_V2.md",
-    "runtime_binding": "a41ea61764fc7eb48bb694cc15d678b883b7a609fdae65609d5153802a7055ad",
+    "runtime_binding": "f1076cc790cc906bf81ff1d11b78f7d49ca24c851fded1bb93c7518e361311fe",
     "implemented": [
       "three authored LOD meshes",
       "source material ID mask + independent cloth/lacquer/metal multipliers",
@@ -102,7 +104,7 @@
     "status": "BASELINE_PROVISIONALLY_ACCEPTED_AT_62c3875",
     "report": "Docs/Proposals/OFFICER_3D_TRIAL_V3.md",
     "guide": "Docs/Proposals/OFFICER_3D_PARTS_GUIDE.md",
-    "runtime_binding": "e7f11e51df7c0b31e86dfd7bc4d9070b4781d2c44e5ad110e426cb8686f8859c",
+    "runtime_binding": "9cabe2c8b4dfb9e72345f9b9f6db5a69f9a66458570084e4c02721f180c96710",
     "entry": "Scripts/Show-Officer3DV3.ps1",
     "implemented": [
       "fixed same-environment repeated export3GLBs byte exact",
@@ -126,9 +128,9 @@
     "status": "GPU_VALIDATED_SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
     "entry": "Scripts/Show-OfficerWorld.ps1",
     "report": "Docs/Proposals/OFFICER_WORLD_INTEGRATION_V1.md",
-    "runtime_plan_sha256": "e76101616f721f6426d0f4b87364d4b703591fba663b9c7c7c45a5b88ba0d178",
+    "runtime_plan_sha256": "dcde4bb5eaa53d022a3efbced9c3f4e6a63f7ab5ba3104a1e44b003dcf3f98ad",
     "raw_captures": 30,
-    "core_tests": 302,
+    "core_tests": 317,
     "fixture_rules": "field-fixture-v1; not Confirmed battle parameters",
     "normal_save": "tax-prototype-v5.json / Officers optional schema1 extension",
     "negotiation": "direction retained, implementation deferred"
@@ -138,10 +140,22 @@
     "entry": "Scripts/Show-MilitaryGrid.ps1",
     "report": "Docs/Proposals/MILITARY_GRID_INTEGRATION_V1.md",
     "contract": "Art/Officer3D/MilitaryGridV1/contract.json",
-    "runtime_plan_sha256": "8b59cdd9db1e8e605da7fbd9f721a0233ea2015adb4130c1eaef2bd72fa13018",
-    "core_tests": 302,
+    "runtime_plan_sha256": "8a3c15a9d7af3a25a5f060674f7493830584ea575ae1ec34f77e3d83adbbfe84",
+    "core_tests": 317,
     "raw_captures": 25,
     "fixture": "two-unit same-organization opposing exercise; not political war",
     "save": "v5 optional MilitaryState schema1; legacy fixture mutually exclusive"
+  },
+  "formation_world_v1": {
+    "status": "GPU_VALIDATED_SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
+    "entry": "Scripts/Show-FormationWorld.ps1",
+    "report": "Docs/Proposals/FORMATION_WORLD_V1.md",
+    "contract": "Art/Officer3D/FormationWorldV1/contract.json",
+    "runtime_plan_sha256": "849f8f628a04442f0f3fc1b6d0233ae7ec31467664908a497bc0df73217e0b73",
+    "core_tests": 317,
+    "raw_captures": 28,
+    "fixture": "one line, 3 friendly commanders/units; delays1/3/5; same world camera; static national context/local11x7 movement",
+    "normal_save": "existing v5 Officers.Military schema1 extension",
+    "source_art_changes": 0
   }
 }

@@ -70,7 +70,7 @@
   "source_stride": 1.5009153,
   "hardware": "NVIDIA GeForce RTX 4060 Ti",
   "measurement": "Actual normal Main + TaxPanel + OfficerWorldStage; dedicated test saves; internal signals without native input",
-  "runtime_plan_sha256": "e76101616f721f6426d0f4b87364d4b703591fba663b9c7c7c45a5b88ba0d178",
+  "runtime_plan_sha256": "dcde4bb5eaa53d022a3efbced9c3f4e6a63f7ab5ba3104a1e44b003dcf3f98ad",
   "evidence_sha256": {
     "officer-bindings.png": "0a01247f6528c30dab2a90efe77fc5c44536c7702204a978b5189e95e30bbbef",
     "battle-00-Marching.png": "6bd818e3facf469c0043c9c364ed575fa361a2138d282d466f603f2d6f605cba",
@@ -104,5 +104,5 @@
     "restart.png": "55805d812e6c52751b8d3be08ee56679ec0a6b8146bac902c2f826645b288ac1"
   },
   "restart_restore": "passed",
-  "core_test_output": "  HakutaiKagami.Core -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Core\\bin\\Debug\\net8.0\\HakutaiKagami.Core.dll\n  HakutaiKagami.Tests -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll\nC:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll (.NETCoreApp,Version=v8.0) のテスト実行\n合計 1 個のテスト ファイルが指定されたパターンと一致しました。\n\n成功!   -失敗:     0、合格:   302、スキップ:     0、合計:   302、期間: 525 ms - HakutaiKagami.Tests.dll (net8.0)\n"
+  "core_test_output": "  HakutaiKagami.Core -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Core\\bin\\Debug\\net8.0\\HakutaiKagami.Core.dll\n  HakutaiKagami.Tests -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll\nC:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll (.NETCoreApp,Version=v8.0) のテスト実行\n合計 1 個のテスト ファイルが指定されたパターンと一致しました。\n\n成功!   -失敗:     0、合格:   317、スキップ:     0、合計:   317、期間: 2 s - HakutaiKagami.Tests.dll (net8.0)\n"
 }

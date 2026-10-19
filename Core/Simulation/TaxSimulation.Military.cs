@@ -5,6 +5,14 @@ namespace HakutaiKagami.Core.Simulation;
 
 public sealed partial class TaxSimulation
 {
+    public bool HasFormationMap=>state.Officers?.Military?.Rules==MilitaryFlow.FormationRules;
+    public FormationPlan[] FormationPlansFor(string observer)=>SnapshotCodec.Copy((state.Officers?.Military?.FormationPlans??[]).Where(p=>p.IssuerId==observer).ToArray());
+    public void StartFormationMap()=>Mutate(s=>
+    {
+        if(s.Officers is null||s.Officers.Military is not null||s.Officers.Battle is not null)throw new InvalidOperationException("既存の演習を保持しています。初期化後に布陣演習を配置してください。");
+        s.Officers.Military=MilitaryFlow.CreateFormation(s.World,s.Tick);MilitaryFlow.Observe(s.Officers.Military,s.World.Characters.Select(c=>c.Id),s.Tick);
+    });
+    public void SendFormation(string id,string issuer,MapCell start,MapCell end,int[] delays)=>Mutate(s=>MilitaryFlow.DispatchFormation(s.Officers?.Military??throw new InvalidOperationException(),s.Messaging,id,issuer,start,end,delays,s.Tick));
     public bool HasMilitaryMap=>state.Officers?.Military is not null;
     public bool HasLegacyField=>state.Officers?.Battle is not null;
     public HakutaiKagami.Core.Appearance.OfficerAppearance AppearanceFor(string id)=>SnapshotCodec.Copy(state.Officers?.Looks[id]??throw new InvalidOperationException("No officer appearance binding."));

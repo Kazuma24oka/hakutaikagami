@@ -2,7 +2,7 @@
   "schema": 3,
   "status": "SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
   "runtime_binding": "21391c0a56de2d15ad4fa51d39e198943b2fcd2a37013fe1738a8f534218b35a",
-  "runtime_plan_sha256": "e7f11e51df7c0b31e86dfd7bc4d9070b4781d2c44e5ad110e426cb8686f8859c",
+  "runtime_plan_sha256": "9cabe2c8b4dfb9e72345f9b9f6db5a69f9a66458570084e4c02721f180c96710",
   "raw_count": 283,
   "derived_count": 11,
   "evidence_sha256": {
@@ -278,17 +278,17 @@
     "joint-attack-10.png": "ce2de2fa505d5ce45c11d9a811d8c02eb578fd92fc87d07a32b3462f85d2b9ff",
     "joint-attack-11.png": "7e0c1a885f52a406f740e530c28047ce41ee0002a929fe00ebb0b3cc646c0acd",
     "creator-ui.png": "8ff6c4036f6e6c0f4b23fea6b4bb61fec2ae76b4a2cb285d9a53c2e3b3fb8668",
-    "mixed-near-1.png": "5d590089a99839d646a2d798ed3d1dc57b7651345e74eb44337f5d78511bd5c3",
-    "mixed-mid-1.png": "cf322b48f28421310c4f07b98d74dbae3bd8f40e78bf3bf77399d2dea9d90ce4",
-    "mixed-far-1.png": "1d222cf450979aa289355c83c1d080ae883ae42088a4be1eb1ba84a004bc7c17",
-    "mixed-near-10.png": "3de21a79d4786b15862746f9c0a7826d5a3df90ee223558c445ca030cc8595e3",
-    "mixed-mid-10.png": "2554d059dc5d9e573985f93d2daade5d0934a845a60ecb1a310ace664021e040",
-    "mixed-far-10.png": "cc65e036ef3d022e744959f74fc831a82cff8aded98db25e1e0e78fd859bcb0f",
-    "mixed-near-50.png": "a9c108aed3f40f23034d9d99a0be24f456b755108b33ae40cc65f44f2191d1dd",
-    "mixed-mid-50.png": "a72774fdcdce74cb64cf4fefead586942323fce5c951e7114b41eaf221ac94e8",
-    "mixed-far-50.png": "06fe2f9a22b6696c97d7c75b8169fa0a57331e0181371c71e00c0f6f868d349b",
-    "review.png": "836f5b60c2aa715388180e473c667092375ba47b49ad0e9b3c082af93411c6b9",
-    "restart.png": "ab5058d13bd164eb33cc9a28162b36ab06e9c786b03275e8975caaf8fb2d67df",
+    "mixed-near-1.png": "222a2e2509ddf30373d017e2a2eb8b2a6aea006cc7ce4b2f52405cf589667d0b",
+    "mixed-mid-1.png": "18a2b079691efef06273143cfb33ed7c4b50c72410b06eb5324c28bd88775b3c",
+    "mixed-far-1.png": "5202f79ad1fed097c19645a52e1fd1fa95a0b39d93fddd1680c42c03a9602e42",
+    "mixed-near-10.png": "29823eb93d9dc8705a49c5a3fef333e7391bcbba8dffaeaf0c55e5d4bc718bd6",
+    "mixed-mid-10.png": "0fb21ff09466ab93cb9947645269a6b226ffef3635ebe6d209372e0209bb4c04",
+    "mixed-far-10.png": "a38d1f03761045c152492905092be67f05cd7379bb9fa9cc36479cb5539100d7",
+    "mixed-near-50.png": "f0c36b2a87705b7fa896882b9883648fb9cecb4dfdfa37db5a8780052aa345f2",
+    "mixed-mid-50.png": "dfa47fa7a242383168121f51a160b756ebff616d3c349a0eb9d048d7bd8717f7",
+    "mixed-far-50.png": "b29323c6eda86a985ebcb06a77b3c4f5f0f2da74444a6a842ad56c4a8f2db487",
+    "review.png": "19fb36340b2047355e0d4ebd151be6c3eb57ec5e11ece07e1da0c688c744dd57",
+    "restart.png": "a0f069b5f5a7b62f39eecdcd19630d71319d9d7db30622c24f80191fb20a1f9a",
     "sheet-commander.jpg": "760dd23aa27067c33437c327e24673038d745c72bbb95b06f91ce170fa8ae0e7",
     "sheet-veteran.jpg": "be05448064300abd3f5e4c6c9dc4996c83884820bc3dcd838b22974f490ffe14",
     "sheet-red_guard.jpg": "fd16d748a9a441d6d232ed293ff3dad7fbf93be80d11f36869c5c6d5cbf3d984",
@@ -296,10 +296,10 @@
     "sheet-joints.jpg": "95013d7f9cdc4a566414ef3cdbeff77753e1a42932d827001c98f5943a9f9ab0",
     "sheet-base.jpg": "1953f1dda969b9846c6f8f827ff3617cc9320af0904a808e39062dc09b5a6184",
     "sheet-skin.jpg": "0e129be4f30c895c54c6390747385004527d148a54cf0c42edf977a43167a6b9",
-    "sheet-mixed.jpg": "0b0707b2310a7c5d9316e75f5738d05c7699f24a96461c74f42da60d777b6545",
+    "sheet-mixed.jpg": "3bbf34946b419a447daab9f2601930836418b220168ff3603aae2b63bf1a86c1",
     "motion-walk.gif": "ed7a78fdad6c14ca3b23e3dd47fc25d683ccc3b458167bde6934bca71dda01e5",
     "motion-attack.gif": "cdb42fc900355b8fb4fb4072c0ac9a4c63af7201be243b9349fc3aa7c64206b4",
-    "review.html": "757d28d93e7713ffc9ce571035d24666fae99c0ee814c452c3bdb71bf7dec614"
+    "review.html": "60510569da648c6e65f0c17065dff0c27f942cd72b604e8176cc067b4015de5c"
   },
   "inspected_this_regression": [
     "creator-ui.png",
@@ -315,5 +315,5 @@
     "far silver armor surface loss and simplified hair/beard remain; no new art-quality acceptance inferred"
   ],
   "review_builder_sha256": "9ecf42145e625e530bc6e830774fe9e583e65936dd577bd5c3a3945cf1ede41a",
-  "current_review_scope": "Runtime regression refreshed; historical visual acceptance remains historical. No new art created or newly accepted."
+  "current_review_scope": "Regression after formation/continuous-world integration; no model art change. Historical user art acceptance remains tied to 62c3875."
 }

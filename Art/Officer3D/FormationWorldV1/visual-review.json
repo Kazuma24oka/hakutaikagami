@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "status": "SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
+  "runtime_plan_sha256": "849f8f628a04442f0f3fc1b6d0233ae7ec31467664908a497bc0df73217e0b73",
+  "raw_count": 28,
+  "derived_count": 4,
+  "evidence_sha256": {
+    "nation-before.png": "a8b3c061fd43389c94dff73a33efd28b74b40c13a466eb9ea8739ac11a93c7e6",
+    "region-before.png": "acb3d1f7332d119899ee54c06a5cefff405fe93a2f5e2a5d9ea525defcd5e8ff",
+    "near-before.png": "a6317713aee1d51e9f6fcabe61cf3df3f5f9ad24a39ee26d321b1382046fe99d",
+    "line-draft.png": "1c70042ff0fa9f559257f3e14ef6a676facac977833ddf986b3115547accd2d9",
+    "sent-not-arrived.png": "57c5de9d190612a017a726e7fd02e1a7eba83db0084a8dd638a54cee9e913b44",
+    "arrival-1.png": "60830ff3971b76b21a07f56ce2edb9f109588ad0dcb82f9cfc1df05f75785f0a",
+    "arrival-3.png": "6aecc8bcdeeb949f081512c38e1cf62b59940db8c6061ec1f78ec75f46aec459",
+    "arrival-5.png": "c1791ba150ffd101856c22d5093edb717c4551f13c9b069a4b6eb96c397ad9ff",
+    "paused-restored.png": "974e6be51cd667c7f5295bc056d8076a15c5994a8716ae39b4ce5b98cf97aa16",
+    "bridge-queue.png": "af2121d26ecc50a64f2aac5d595dd2c6a38a17fb92c6f3afe54e7659d87ae31e",
+    "deployment-3.png": "42248ae323e6dfc6c01d1566d8313f95eb32ea44f14f46f9c6ccf39a9e961d2c",
+    "deployment-8.png": "5177ef4139b3286e0dace2709b9b3b461799c6126ba65b78ac0f834a4b1ef89d",
+    "deployed-near.png": "fecf61ae82852f05c999191347a2fef4c083bef4994c1da7b587cb5bd578ffac",
+    "deployed-region.png": "0120066da5be4d214b28511c7d869be11d18889295885aaf0c54f4062efdf6dc",
+    "deployed-nation.png": "f67ae06b040c184d670e671800f23bef293182cee6c41fb5a00bc2f539a8b314",
+    "zoom-00.png": "d9d267f2a06183fd3f3a4a52197ba5cace63502dd9d1de10e4a66db3e8842f2e",
+    "zoom-01.png": "f3782241cdaf8d9c53f8d2c3792a9581b471c58bb1c6766048e325bc66de58bb",
+    "zoom-02.png": "b5a8d30308af72d0493cb59ff0d384621d37b098501ea9fe7d91b30e2307d9e9",
+    "zoom-03.png": "1a07835165acbce05b6fb8fb9ac1f8c009ed045a676f16b3b5250304a19f81c0",
+    "zoom-04.png": "91911fd75977cb6f1223e8110a33495f7f20dc4c5ab90c2699d618ce92daa946",
+    "zoom-05.png": "52efbc0bc1649b58e028896e9e352742600588569a71c8ccd4736c6833bf2ba5",
+    "zoom-06.png": "6faea6b0c308046cace858e8abb8c41fd9dfa0b1bdec6773543d04f4d5145133",
+    "zoom-07.png": "65f93adbb79476bb4c3f7c115ab06f068014f47e51e92aa23a44a9959a8b846b",
+    "zoom-08.png": "f05c2f965c54ded5146cebd59cb3b2c6bcdb9b0b2204059482178f230e668ecd",
+    "zoom-09.png": "5c43dfd22d658302ee4e30da5f6eb234703d6d3e9718a95d64ae96c1d7237dca",
+    "zoom-10.png": "1243b3deaeb0697e465679520003e2cbd1a2c28980a669da9996b5c678e6162a",
+    "zoom-11.png": "1edde6a305f0ceb5c695e0ed2ce653d18b0dde13f499c6d86af1d02e520dbbcc",
+    "restart.png": "88e1ef27a70ef9f12f1596d98535fe2a498d17a42a587564c43effe1d352d61f",
+    "contact-sheet.jpg": "fc46e3b339dd2211c0059051b650f8df164344df8bff47d70bdd11f3383ec1b7",
+    "continuous-zoom.gif": "71dfa8ed2039fe350a83580dc073c4e85c771a765dce3000f075cdee3b3a8f7d",
+    "deployment.gif": "eff992e6b3bfbf47cb61fd5ae61f6470c7d7fd3ed43b5799d60307730cbeaa7d",
+    "review.html": "a2857c7220d8e20f8892416eff5896f8173ee1ca770b083670c826a322ebd3ee"
+  },
+  "inspected": [
+    "nation-before.png",
+    "deployed-near.png",
+    "bridge-queue.png",
+    "contact-sheet.jpg",
+    "region-before.png",
+    "zoom-05.png",
+    "restart.png"
+  ],
+  "findings": [
+    "Same physical bridge and roads in broad/local camera views; readable national labels and one aggregated army mark.",
+    "Three accepted V3 characters occupy distinct line slots after delivery and physical movement.",
+    "Late knowledge remains dated marker; no live unseen troop position shown.",
+    "Same-world continuous camera samples and restart verified."
+  ],
+  "limitations": [
+    "Fictional national silhouette, local 11x7 routing only.",
+    "One plan per reset; three friendly units; no national war AI or player disobedience consequence UI.",
+    "Existing model art/LOD/performance limitations retained."
+  ]
+}

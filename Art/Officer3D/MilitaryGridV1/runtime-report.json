@@ -56,7 +56,7 @@
   "world_tick": 22,
   "report_observed_at": 6,
   "measurement": "Actual normal Main + shared TaxPanel clock / MessageFlow / filtered military view; dedicated test saves; no native input",
-  "runtime_plan_sha256": "8b59cdd9db1e8e605da7fbd9f721a0233ea2015adb4130c1eaef2bd72fa13018",
+  "runtime_plan_sha256": "8a3c15a9d7af3a25a5f060674f7493830584ea575ae1ec34f77e3d83adbbfe84",
   "evidence_sha256": {
     "initial-red-unseen.png": "12b503d2c1ebb65565eb0b5cd5b6ff19eda518363ced21ba35a3090851612593",
     "initial-third-unseen.png": "8e4b1c41a085c6a1fb7889696fa20441da83f752ab21239b58422da909d15530",
@@ -84,7 +84,7 @@
     "review.png": "1d50b1f738762a7d604d24592b72bbf88675d5a4350d5bf8aef233046a82ddc6",
     "restart.png": "9f60fe21d850841e2b2d18b4e5c24ba0e1df2b4c217f046e8315260ff9a4fa2c"
   },
-  "core_test_output": "  HakutaiKagami.Core -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Core\\bin\\Debug\\net8.0\\HakutaiKagami.Core.dll\n  HakutaiKagami.Tests -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll\nC:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll (.NETCoreApp,Version=v8.0) のテスト実行\n合計 1 個のテスト ファイルが指定されたパターンと一致しました。\n\n成功!   -失敗:     0、合格:   302、スキップ:     0、合計:   302、期間: 523 ms - HakutaiKagami.Tests.dll (net8.0)\n",
+  "core_test_output": "  HakutaiKagami.Core -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Core\\bin\\Debug\\net8.0\\HakutaiKagami.Core.dll\n  HakutaiKagami.Tests -> C:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll\nC:\\Workspace\\Projects\\Games\\hakutaikagami\\Tests\\bin\\Debug\\net8.0\\HakutaiKagami.Tests.dll (.NETCoreApp,Version=v8.0) のテスト実行\n合計 1 個のテスト ファイルが指定されたパターンと一致しました。\n\n成功!   -失敗:     0、合格:   317、スキップ:     0、合計:   317、期間: 2 s - HakutaiKagami.Tests.dll (net8.0)\n",
   "restart_restore": "passed",
   "renderer_no_truth_access_check": "passed"
 }

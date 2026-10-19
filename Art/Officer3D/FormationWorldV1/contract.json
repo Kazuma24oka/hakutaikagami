@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "rules": "formation-line-v1",
+  "scope": "Three existing characters command three friendly units under an explicit army grant. One deploy plan per reset; no political war or multi-unit combat claim.",
+  "line": "Two ground endpoints, three evenly spaced snapped walkable slots. Invalid endpoints/slots reject atomically. Recipient 0/1/2 gets immutable Move order after 1/3/5 ticks via existing MessageFlow.",
+  "traffic": "Existing weighted routes; reserve other final slots; friendly merge priority by ordinal unit ID with stationary-occupant priority and dependency rejection. Physical collision waits; no teleport. General deadlock-free opposing traffic not claimed.",
+  "knowledge": "MilitaryViewFor and issuer-only FormationPlansFor. Own/sight actors, dated report markers, no omniscient army positions. Completion sent as immutable existing military-intel report after personal arrival.",
+  "world": "One Godot world, same terrain and cell coordinates, camera size180/40/14 with smooth transition and wheel zoom. Fictional national context is static schematic geometry; navigable military area remains 11x7 river-crossing-v1. Not historical Japan or nationwide military routing.",
+  "input": "Normal map left drag in near view sets draft, separate dispatch button sends orders; internal GuiInput signals used for QA without native input/cursor tools.",
+  "save": "Existing normal v5 Officers.Military schema1 extended with optional default-empty FormationPlans/FormationArrivals. Shared RNG, world tick, delivery, route progress and display phase preserved. Test saves user://formation-world-test* only.",
+  "art": "Existing provisionally accepted V3 GLBs. No source model/material changes; local assets and raw captures not committed.",
+  "limits": ["Three friendly units only", "One immutable line per reset", "No player disobedience reputation/consequence UI", "No nationwide AI/pathfinding", "No production terrain art", "Existing LOD/art/performance limitations retained"]
+}

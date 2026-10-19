@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "status": "SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
-  "runtime_plan_sha256": "e76101616f721f6426d0f4b87364d4b703591fba663b9c7c7c45a5b88ba0d178",
+  "runtime_plan_sha256": "dcde4bb5eaa53d022a3efbced9c3f4e6a63f7ab5ba3104a1e44b003dcf3f98ad",
   "raw_count": 30,
   "derived_count": 3,
   "evidence_sha256": {
@@ -60,5 +60,5 @@
     "source stride coupling checked; all-frame planted-foot sliding/weapon contact/IK not verified"
   ],
   "user_acceptance": false,
-  "current_review_scope": "Runtime regression refreshed; historical visual acceptance remains historical. No new art created or newly accepted."
+  "current_review_scope": "Regression after formation/continuous-world integration; no model art change. Historical user art acceptance remains tied to 62c3875."
 }

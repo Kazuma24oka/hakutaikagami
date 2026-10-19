@@ -70,8 +70,12 @@
       "sha256": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf"
     },
     {
+      "path": "Core/Simulation/FormationFlow.cs",
+      "sha256": "032f7e6d69579c8465db11cf5bd1c329f582070a5441d0698b8919ee118729e6"
+    },
+    {
       "path": "Core/Simulation/MilitaryFlow.cs",
-      "sha256": "9add82e0690deca1a1fb021b2dad3367a7200f0c355adc2d71be182240f51fc7"
+      "sha256": "851ca70b5dda4bc26e1bf5808c522a2ab96f30e37b3894b83e7e89ced83fd6b9"
     },
     {
       "path": "Core/Simulation/MilitaryIntel.cs",
@@ -79,15 +83,15 @@
     },
     {
       "path": "Core/Simulation/MilitaryMap.cs",
-      "sha256": "1bd434ed094f7263e29bc4dd9f13756f53bfc61da8614b9e387c8bf5dc076ad4"
+      "sha256": "0a3b03e004c823ee3b8f149f5cdd3b3415b5b863cbafdf6570ebf11cf6963b9c"
     },
     {
       "path": "Core/Simulation/MilitaryModels.cs",
-      "sha256": "c77dbb4c4f78b06ba559c47101a84d4c61bfabec5db39cddff0a234716c588a2"
+      "sha256": "2dab7b8593d010a0112fda3ae7a0b642c0637fb54488182355aabdec3ef14bb6"
     },
     {
       "path": "Core/Simulation/MilitaryValidation.cs",
-      "sha256": "540619e5a6ab2fcff11a5473d46ff9d21c03d7d7b9b58e96e45f096484512717"
+      "sha256": "bdd8b888b19bd135897b2901c97dbee9d5b160dce339204619eb01b9e0bbf4d7"
     },
     {
       "path": "Core/Simulation/OfficerIntegration.cs",
@@ -107,7 +111,7 @@
     },
     {
       "path": "Core/Simulation/TaxSimulation.Military.cs",
-      "sha256": "c5243e38c5599f4ce9968c056ad9eec7360b9120298975b34ba4abca59bdd41f"
+      "sha256": "6c4d316deb55fb575aa2b57eec65338f12462613e911dede06205286ded2d80b"
     },
     {
       "path": "Core/World/PrototypeScenario.cs",
@@ -123,7 +127,7 @@
     },
     {
       "path": "Game/Scripts/Main.cs",
-      "sha256": "e97649be4d2455b1f99b85625909f0c396620ebdc9b8232b093e50f7d6f06e08"
+      "sha256": "d0b62bf6b268c98faa002fe622b4c0f36a9e91e54eee202247430f6920785879"
     },
     {
       "path": "Game/Scripts/TaxPanel.cs",

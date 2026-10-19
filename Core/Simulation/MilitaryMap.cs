@@ -24,14 +24,16 @@ public static class MilitaryMap
     public static int Cost(MapCell c)=>Terrain(c) switch{MilitaryTerrain.Road or MilitaryTerrain.Bridge=>1,MilitaryTerrain.Forest=>3,_=>2};
     public static IEnumerable<MapCell> Neighbours(MapCell c)=>new[]{new MapCell(c.X-1,c.Z),new(c.X,c.Z-1),new(c.X,c.Z+1),new(c.X+1,c.Z)}.Where(Walkable).OrderBy(x=>x.X).ThenBy(x=>x.Z);
     // Stable weighted Dijkstra; no diagonal movement or hidden enemy positions in pathfinding.
-    public static MapCell[] Route(MapCell from,MapCell to)
+    public static MapCell[] Route(MapCell from,MapCell to,IEnumerable<MapCell>? blocked=null)
     {
         if(!Walkable(from)||!Walkable(to))throw new ArgumentException("Destination is not walkable.");
+        var reserved=blocked?.ToHashSet()??[];
+        if(reserved.Contains(to))throw new ArgumentException("Destination is reserved.");
         var distance=new Dictionary<MapCell,int>{{from,0}};var previous=new Dictionary<MapCell,MapCell>();var open=new HashSet<MapCell>{from};
         while(open.Count>0)
         {
             var cell=open.OrderBy(c=>distance[c]).ThenBy(c=>c.X).ThenBy(c=>c.Z).First();open.Remove(cell);if(cell==to)break;
-            foreach(var next in Neighbours(cell))
+            foreach(var next in Neighbours(cell).Where(n=>!reserved.Contains(n)))
             {
                 int cost=distance[cell]+Cost(next);if(distance.TryGetValue(next,out var old)&&old<=cost)continue;
                 distance[next]=cost;previous[next]=cell;open.Add(next);

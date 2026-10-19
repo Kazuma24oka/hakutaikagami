@@ -1,5 +1,13 @@
 # 百代鏡：作業の入口
 
+## 現行の作戦線試作（2026-10-19）
+
+通常MainはFormationWorldStage、入口Scripts/Show-FormationWorld.ps1。Docs/Proposals/FORMATION_WORLD_V1.mdとArt/Officer3D/FormationWorldV1の契約・検証結果を読む。3部隊の一本の布陣線を個別軍令へ分解し、既存MessageFlowで配送。線を描いただけで移動せず、受領・権限・服従判断後に履行する。履行開始返書と配置完了報告を区別する。
+
+全国概略と近景は同じGodotワールド・座標・時計。架空の概略地形と11×7の実移動地域であり、日本全国の地理・経路探索・多数部隊交戦の完成を主張しない。描画はMilitaryViewForと発送者限定FormationPlansFor。未知位置のズーム開示を禁止。自己点検と採用を分ける。
+
+旧2部隊地図・旧接続・V3/V2は明示入口で保持。試作は一つの不変計画／初期化で、線差替え・独断の責任UI・全国AIは未実装。Core317件、新GPU28枚・別プロセス復旧、旧25/30/283/187枚を検査。専用user://formation-world-test*以外を試験で書かない。
+
 - main / design/foundation / Docs/Confirmed は変更しない。作業ブランチはprototype/godot-foundation。既存ファイルを無断削除しない。
 - マウス操作・ネイティブ入力・カーソル設定変更は禁止。CLI、バックグラウンド検査、Godot内部試験を使う。
 - sources/等の同期資料と外部参照は読み取り専用。

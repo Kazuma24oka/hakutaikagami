@@ -9,9 +9,11 @@ public static partial class MilitaryFlow
     {
         static void Check(bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
         var ids=world.Characters.Select(c=>c.Id).ToHashSet(StringComparer.Ordinal);var orgs=world.Definition.Organizations.Select(o=>o.Id).ToHashSet(StringComparer.Ordinal);
-        Check(s.Schema==1&&s.MapId==MilitaryMap.Id&&s.Rules==Scope&&s.StartedAt>=0&&s.StartedAt<=tick&&s.Tick==tick,"Military schema/map/common clock mismatch.");
-        Check(s.Armies.Length==2&&s.Armies.Select(a=>a.Id).Distinct().Count()==2&&s.Armies.All(a=>!string.IsNullOrWhiteSpace(a.Id)&&orgs.Contains(a.OrganizationId)&&ids.Contains(a.CommanderId)&&MilitaryMap.Walkable(a.Exit)),"Invalid army/owner/commander/exit.");
-        Check(s.Units.Length==2&&s.Units.Select(u=>u.Id).Distinct().Count()==2&&s.Units.Select(u=>u.CommanderId).Distinct().Count()==2&&s.Units.Where(Live).Select(u=>u.Cell).Distinct().Count()==s.Units.Count(Live),"Invalid/overlapping military units or duplicate field commander.");
+        bool formation=s.Rules==FormationRules;int unitCount=formation?3:2,armyCount=formation?1:2;
+        Check(s.Schema==1&&s.MapId==MilitaryMap.Id&&(s.Rules==Scope||formation)&&s.StartedAt>=0&&s.StartedAt<=tick&&s.Tick==tick,"Military schema/map/common clock mismatch.");
+        Check(s.Armies.Length==armyCount&&s.Armies.Select(a=>a.Id).Distinct().Count()==armyCount&&s.Armies.All(a=>!string.IsNullOrWhiteSpace(a.Id)&&orgs.Contains(a.OrganizationId)&&ids.Contains(a.CommanderId)&&MilitaryMap.Walkable(a.Exit)),"Invalid army/owner/commander/exit.");
+        Check(s.Units.Length==unitCount&&s.Units.Select(u=>u.Id).Distinct().Count()==unitCount&&s.Units.Select(u=>u.CommanderId).Distinct().Count()==unitCount&&s.Units.Where(Live).Select(u=>u.Cell).Distinct().Count()==s.Units.Count(Live),"Invalid/overlapping military units or duplicate field commander.");
+        Check(!formation||s.Hostilities.Length==0&&s.Losses.Length==0&&s.Orders.All(o=>o.Action is MilitaryAction.Move or MilitaryAction.Cancel),"Formation fixture has no combat rules.");
         Check(s.Hostilities.Length<=1,"Duplicate exercise hostility relation.");
         foreach(var h in s.Hostilities)Check(h.LeftArmy!=h.RightArmy&&s.Armies.Any(a=>a.Id==h.LeftArmy)&&s.Armies.Any(a=>a.Id==h.RightArmy)&&!string.IsNullOrWhiteSpace(h.Basis)&&h.ValidFrom>=0&&h.ValidUntil>h.ValidFrom,"Invalid explicit hostility/exercise relation.");
         foreach(var u in s.Units)
@@ -27,7 +29,8 @@ public static partial class MilitaryFlow
             if(u.Route.Length>0)
             {
                 var destination=Retreating(u)?s.Armies.Single(a=>a.Id==u.ArmyId).Exit:s.Orders.Single(o=>o.Id==u.ActiveOrder).Destination;
-                Check(u.Route[^1]==destination&&!u.Route.Contains(u.Cell)&&u.Route.Distinct().Count()==u.Route.Length&&u.Route.Sum(MilitaryMap.Cost)==MilitaryMap.Route(u.Cell,destination).Sum(MilitaryMap.Cost),"Saved path diverges from its active command/exit or has invalid cost.");
+                var expected=Retreating(u)?MilitaryMap.Route(u.Cell,destination):CommandRoute(s,u,s.Orders.Single(o=>o.Id==u.ActiveOrder));
+                Check(u.Route[^1]==destination&&!u.Route.Contains(u.Cell)&&u.Route.Distinct().Count()==u.Route.Length&&u.Route.Sum(MilitaryMap.Cost)==expected.Sum(MilitaryMap.Cost),"Saved path diverges from its active command/exit or has invalid cost.");
             }
         }
         Check(s.Grants.Select(g=>g.Id).Distinct().Count()==s.Grants.Length,"Duplicate military grant.");
@@ -68,5 +71,6 @@ public static partial class MilitaryFlow
         {
             var source=s.Intel.Single(i=>i.Id==r.SourceIntelId);Check(source.ObserverId==r.SenderId&&ids.Contains(r.RecipientId)&&messages.Messages.Any(m=>m.Id==r.Id+"/military-intel"&&m.Kind=="military-intel"&&m.SenderId==r.SenderId&&m.RecipientId==r.RecipientId&&m.Body==SnapshotCodec.Write(source)&&m.CreatedAt>=source.LearnedAt),"Battle report was not known by its sender.");
         }
+        ValidateFormations(s,messages,tick);
     }
 }

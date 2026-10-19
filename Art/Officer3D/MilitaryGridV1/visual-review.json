@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "status": "SELF_REVIEWED_USER_ACCEPTANCE_PENDING",
-  "runtime_plan_sha256": "8b59cdd9db1e8e605da7fbd9f721a0233ea2015adb4130c1eaef2bd72fa13018",
+  "runtime_plan_sha256": "8a3c15a9d7af3a25a5f060674f7493830584ea575ae1ec34f77e3d83adbbfe84",
   "raw_count": 25,
   "derived_count": 3,
   "evidence_sha256": {
@@ -50,5 +50,6 @@
   "limitations": [
     "Primitive terrain; two-unit exercise fixture; provisional combat values.",
     "Existing model art and performance limitations retained."
-  ]
+  ],
+  "current_review_scope": "Regression after formation/continuous-world integration; no model art change. Historical user art acceptance remains tied to 62c3875."
 }

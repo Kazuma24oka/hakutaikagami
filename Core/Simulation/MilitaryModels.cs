@@ -41,6 +41,8 @@ public sealed class MilitaryState
     public MilitaryIntel[] Intel {get;set;}=[];
     public MilitaryReport[] Reports {get;set;}=[];
     public string[] Applied {get;set;}=[];
+    public FormationPlan[] FormationPlans {get;set;}=[];
+    public string[] FormationArrivals {get;set;}=[];
 }
 // A filtered read model: unknown enemies have no row, and stale information has no live position/stats.
 public sealed record MilitaryVisibleUnit(string UnitId,string ArmyId,string CommanderId,MapCell Cell,MapCell Previous,
