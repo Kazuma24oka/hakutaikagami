@@ -6,7 +6,7 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  report=json.loads((BASE/'verification.json').read_bytes())
  assert report['status']=='PASSED' and isinstance(report.get('visual_review'),dict),'Actual image review required'
- for section in ['sources','assets','binaries']:
+ for section in ['sources','assets','binaries','entry_tools']:
   for name,expected in report[section].items():
    p=ROOT/name;assert p.is_file() and sha(p)==expected,'Changed '+section+': '+name
  for name,expected in report['images'].items():assert sha(BASE/'runtime-local'/name)==expected,'Changed image: '+name

@@ -10,7 +10,7 @@ public sealed record RoadSighting(EntityId Actor,string Edge,bool Blocked,long A
 public sealed record CourierState(CourierMission[] Missions,RoadCondition[] Conditions,RoadSighting[] Sightings,string[] InitialBlocked);
 public sealed record NearbyActor(EntityId Actor,RoutePoint Position,RoutePoint Heading,long DistanceMm,bool Walking,RoutePoint NextPosition,long StepDistanceMm);
 // A sender can see dispatch plans, but live coordinates require a local sighting.
-public sealed record CourierView(string Attempt,string Message,string Destination,long DispatchedAt,long PlannedAt,
+public sealed record CourierView(string Attempt,string Message,string Destination,long? DispatchedAt,long? PlannedAt,
     RoutePoint? Position,string Status,RoutePoint? Heading,long? DistanceMm,RoutePoint? NextPosition,long? StepDistanceMm);
 
 public static class RegionalCampaign
@@ -170,7 +170,9 @@ public static class RegionalCampaign
             var leg=c.Legs.FirstOrDefault(l=>w.ElapsedSeconds<l.EndAt)??c.Legs.LastOrDefault();
             var distance=c.Legs.Sum(l=>w.ElapsedSeconds>=l.EndAt?l.LengthMm:w.ElapsedSeconds<=l.StartAt?0:l.LengthMm*(w.ElapsedSeconds-l.StartAt)/(l.EndAt-l.StartAt));
             var nextDistance=c.Legs.Sum(l=>w.ElapsedSeconds+1>=l.EndAt?l.LengthMm:w.ElapsedSeconds+1<=l.StartAt?0:l.LengthMm*(w.ElapsedSeconds+1-l.StartAt)/(l.EndAt-l.StartAt));
-            return new CourierView(c.Attempt,m.Id,c.Destination,a.SentAt,Math.Max(c.Appointment,a.SentAt+1),seen?p:null,status,seen&&leg!=null?new(leg.To.EastMm-leg.From.EastMm,leg.To.NorthMm-leg.From.NorthMm):null,seen?distance:null,seen?Position(w,c,w.ElapsedSeconds+1):null,seen?nextDistance-distance:null);
+            bool informed=MessageFlow.Knows(w.Messaging,m.Id,observer.Value)||m.SenderId==observer.Value&&m.Kind!="delivery-failure";
+            var opaque=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Attempt));
+            return new CourierView(informed?c.Attempt:"courier:seen/"+opaque,informed?m.Id:"message:unread/"+opaque,informed?c.Destination:"届け先未確認",informed?a.SentAt:null,informed?Math.Max(c.Appointment,a.SentAt+1):null,seen?p:null,status,seen&&leg!=null?new(leg.To.EastMm-leg.From.EastMm,leg.To.NorthMm-leg.From.NorthMm):null,seen?(informed?distance:checked(w.ElapsedSeconds*2000)):null,seen?Position(w,c,w.ElapsedSeconds+1):null,seen?nextDistance-distance:null);
         }).OfType<CourierView>().ToArray();
     }
     public static NearbyActor[] Nearby(ContractWorld w,EntityId observer)

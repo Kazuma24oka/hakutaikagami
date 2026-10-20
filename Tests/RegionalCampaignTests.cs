@@ -31,4 +31,6 @@ public sealed class RegionalCampaignTests
 
     [Theory][InlineData("inabayama")][InlineData("okazaki")]
     public void ControlAddressComesFromKnownOriginalMission(string destination){var s=New();s.Submit(RegionalCampaign.Move(s.DiagnosticSnapshot(),"request:regional",destination),s.Revision);s.AdvanceTo(5);var task=s.DiagnosticSnapshot().Tasks.Single();var i=RegionalCampaign.Control(s.DiagnosticSnapshot(),"request:regional-control",task.Id,ActionKind.Cancel,false);Assert.Equal(ResultCode.Accepted,s.Submit(i,s.Revision).Code);s.AdvanceTo(100000);Assert.Equal(ExecutionPhase.Stopped,s.DiagnosticSnapshot().Tasks.Single(t=>t.Id==task.Id).Execution);}
+
+    [Fact] public void SeeingAReturningCourierDoesNotRevealItsUnopenedFailureDetails(){var s=New();var target=Start(s);s.AdvanceTo(12000);var mid=Send(s,target);s.AdvanceTo(23630);Assert.False(MessageFlow.FailureKnown(s.DiagnosticSnapshot().Messaging,mid+"/attempt/1",ContractFixture.Lord.Value));var courier=Assert.Single(s.GetCourierView(ContractFixture.Lord),v=>v.Position!=null&&v.Message.StartsWith("message:unread/"));Assert.Null(courier.DispatchedAt);Assert.Null(courier.PlannedAt);Assert.Equal("届け先未確認",courier.Destination);Assert.Equal(ResultCode.NotAvailable,s.RetryCourier(ContractFixture.Lord,mid,"village",s.Seconds,s.Revision).Code);}
 }
