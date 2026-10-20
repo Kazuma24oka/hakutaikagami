@@ -31,7 +31,7 @@ public static class ContractValidation
         if(RegionalCampaign.Enabled(s))RegionalCampaign.Validate(s);else Check(s.Couriers==null,"Unexpected courier module");
         Check(!s.Tasks.Any(t=>t.Action==ActionKind.Redirect)||MovementControl.Enabled(s),"Redirect requires registered rules");
         if(RouteContract.Enabled(s))RouteContract.Validate(s);
-        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == RegionalRoute.Ruleset || defs.Ruleset == RegionalBranch.Ruleset || defs.Ruleset == RegionalControl.Ruleset || defs.Ruleset == RegionalCampaign.Ruleset || defs.Ruleset == HistoricalRoads.Ruleset || defs.Ruleset == RiverRoads.Ruleset || defs.Ruleset == BranchRoutes.Ruleset || defs.Ruleset == MovementControl.Ruleset) && defs.MaxAttempts == 3,
+        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == RegionalRoute.Ruleset || defs.Ruleset == RegionalBranch.Ruleset || defs.Ruleset == RegionalControl.Ruleset || defs.Ruleset == RegionalCampaign.Ruleset || defs.Ruleset == NationalRoutes.Ruleset || defs.Ruleset == HistoricalRoads.Ruleset || defs.Ruleset == RiverRoads.Ruleset || defs.Ruleset == BranchRoutes.Ruleset || defs.Ruleset == MovementControl.Ruleset) && defs.MaxAttempts == 3,
             "Unsupported definition/ruleset; no silent production mapping.");
         var people = Keys(defs.Characters, c => c.Id, "character definitions");
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");

@@ -26,7 +26,7 @@ public static class RegionalCampaign
     public static EntityId Site(string node)=>node=="castle"?ContractFixture.Castle:node=="village"?ContractFixture.Village:new("site:"+node);
     public static string Destination(ContractWorld w,EntityId site)=>BranchRoutes.GraphNodes(w).Single(n=>Site(n.Id)==site).Id;
     public static Intent Move(ContractWorld w,string id,string destination,EntityId? executor=null){var i=RegionalBranch.Order(w,id,executor:executor);return i with{DestinationSite=Site(destination),WorkSeconds=checked((int)BranchRoutes.Duration(BranchRoutes.Plan("castle",destination,BranchRoutes.KnownBlocked(w,i.Executor),w:w),w:w))};}
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||RiverRoads.Enabled(w)||HistoricalRoads.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||RiverRoads.Enabled(w)||HistoricalRoads.Enabled(w)||NationalRoutes.Enabled(w);
     public static ContractWorld Create(RoadCondition[]? conditions=null,bool initiallyBlocked=true)
     {
         var w=RegionalControl.Create();w.WorldId=new("world:regional-campaign-v1");

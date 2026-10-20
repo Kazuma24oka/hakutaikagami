@@ -301,3 +301,12 @@ Core/Data/futamura-survey-review-v1.json -text
 Tests/SurveyRoadReviewTests.cs -text
 Scripts/*survey_roads*.py -text
 Docs/Design/SurveyRoadV1/** -text
+
+Core/Contracts/NationalRoutes.cs -text
+Core/Data/national-routes-v1.json -text
+Tests/NationalRoutesTests.cs -text
+Game/Scripts/NationalWorldTrial.cs -text
+Game/Scenes/NationalWorldTrial.tscn -text
+Scripts/*national*.py -text
+Scripts/Show-NationalWorld.ps1 -text
+Docs/Design/NationalWorldV1/** -text
