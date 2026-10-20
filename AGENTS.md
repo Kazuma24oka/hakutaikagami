@@ -1,5 +1,18 @@
 # 百代鏡：作業の入口
 
+## 物理伝令・再送・通行条件と隣接地域（2026-10-20、後続）
+
+入口Scripts/Show-RegionalCampaign.ps1。新ruleset owari-campaign-v1、world:regional-campaign-v1、schema2／Couriers必須。旧保存へ読み替えない。通常Main、main、design/foundation、Confirmedは保持。HTML・動画の報告は必要な場合のみという最新ユーザー指定を適用する。Docs/Decisions/2026-10-20_REGIONAL_CAMPAIGN_V1.mdを参照。
+
+伝令は既存MessageFlowのattemptへ一対一で経路・部分区間距離・出発位置・待合せ・到達を結合する。同じ世界時計で移動し、先着時に待つ。不在で受領させず、失敗報告も物理経路で戻す。差出人が報告を受け取る前の再送は拒否。原命令で知る城／待合せ／行先だけ再指定する。封鎖／解除の履歴と現地確認を保存し、古い報告は新しい観測を上書きしない。現地80m以外にライブ座標を表示しない（遮蔽物なしの試作係数）。
+
+通常ボタンで移動、納入委任、同行、取消・帰城変更、開封、再送、現地確認、保存復旧を操作可能。奉行・書役の異なる行先を同時に表示し、Core18武将の同時移動／途中保存を検査。尾張5地点に稲葉山城・岡崎城を追加。7地点7区間の概略距離であり、1560年の実道路・橋・渡河・所有権ではない。出典・精度と未確定箇所はsource-manifest.jsonへ記録。全国の経路網・全国AI／負荷・実道路復元は未完了。
+
+Core567件（新23）、Godot36検査・4プロセス・39枚。途中保存9段階、復旧・続行・秘匿15比較で差分0画素。verify_regional_campaign.py、check_regional_campaign_binding.pyで入力／DLL／素材／TRX／実画像と自己レビューを固定。画像・保存はruntime-localのみ。自己点検はユーザー採用ではない。既存入口のbindingは共通ソース更新で失効し、古い画像を新入力へ転用しない。
+
+物理回収経路のない「紛失原本を指定秒後に遅着させる」注入は新規則では拒否。旧規則の遅着／重複検証は維持。回収原本の物理再配送は未実装。次は道路と渡河の史料照合・実長化、回収原本の再配送、その後に全国経路と規模検証へ進む。
+
+
 ## 尾張での道中取消・帰城変更（2026-10-20、後続）
 
 入口Scripts/Show-RegionalControl.ps1。ユーザー指示により今回の検証HTMLは作成しない。Docs/Decisions/2026-10-20_REGIONAL_CONTROL_V1.mdとDocs/Design/RegionalControlV1/verification.jsonを参照。新ruleset owari-movement-control-v1、schema2。既存地域の5拠点・概略線・出典・CC BYクレジットを維持し、旧保存を新規則へ読み替えない。通常Mainは保持。

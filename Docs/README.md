@@ -1,5 +1,7 @@
 # 百代鏡 設計資料
 
+最新の地域縦断試作：`../Scripts/Show-RegionalCampaign.ps1`。物理伝令・再送・通行条件・複数武将・尾張／美濃／三河の概略リンクは [決定と実装範囲](Decisions/2026-10-20_REGIONAL_CAMPAIGN_V1.md) を参照。実道路・全国経路網は未完了。
+
 ## 現行の設計
 
 ユーザー確認：「現行方針が正です」。旧資料との食い違いでは後続採用を優先します。[適用記録](Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md)。

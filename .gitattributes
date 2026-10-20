@@ -270,3 +270,11 @@ Game/Scripts/RegionalControlTrial.cs -text
 Game/Scenes/RegionalControlTrial.tscn -text
 Docs/Design/RegionalControlV1/** -text
 Scripts/Show-RegionalControl.ps1 -text
+
+Core/Contracts/RegionalCampaign.cs -text
+Tests/RegionalCampaignTests.cs -text
+Game/Scripts/RegionalCampaignTrial.cs -text
+Game/Scenes/RegionalCampaignTrial.tscn -text
+Docs/Design/RegionalCampaignV1/** -text
+Scripts/*regional_campaign*.py -text
+Scripts/Show-RegionalCampaign.ps1 -text

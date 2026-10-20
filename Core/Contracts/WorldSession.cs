@@ -24,7 +24,7 @@ public sealed class WorldSession
     private void Change(Action<ContractWorld> change, Action? beforeCommit = null)
     {
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
-        change(next); ContractValidation.Validate(next); beforeCommit?.Invoke(); state = next;
+        change(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); ContractValidation.Validate(next); beforeCommit?.Invoke(); state = next;
     }
     public CommandResult Submit(Intent intent, long expectedRevision, Action? beforeCommit = null)
     {
@@ -130,11 +130,12 @@ public sealed class WorldSession
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
                     s.ElapsedSeconds=boundary;
+                    if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     UpdateProgress(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
-                    if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
+                    if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
                     MessageFlow.Advance(s.Messaging,boundary);
-                    if(MovementControl.Enabled(s))MovementControl.ReportFailures(s); // Existing common transport, not a second delivery simulator.
+                    if(RegionalCampaign.Enabled(s))RegionalCampaign.Failures(s);else if(MovementControl.Enabled(s))MovementControl.ReportFailures(s); // Existing common transport, not a second delivery simulator.
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
@@ -151,6 +152,7 @@ public sealed class WorldSession
         var times=s.Messaging.Attempts.SelectMany(a=>a.Status==AttemptStatus.InTransit?new[]{a.DueAt}:
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
+        if(RegionalCampaign.Enabled(s)&&RegionalCampaign.NextBoundary(s,target) is {} courierBoundary)times.Add(courierBoundary);
         if(BranchRoutes.Enabled(s)&&BranchRoutes.NextBoundary(s,target) is {} graphBoundary)times.Add(graphBoundary);
         foreach(var t in s.Tasks.Where(t=>!Terminal(t)))
         {
@@ -339,7 +341,7 @@ public sealed class WorldSession
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.
         var text=reason=="completed"?"任務完了":reason=="redirected"?"行先変更を適用":reason=="too-late"?"既に完了済み":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
-        s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,BranchRoutes.Enabled(s)?BranchRoutes.ReportDelay(s,task):RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
+        s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,RegionalCampaign.Enabled(s)?1:BranchRoutes.Enabled(s)?BranchRoutes.ReportDelay(s,task):RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
         var current=s.Tasks.Single(t=>t.Id==task.Id);Replace(s,current with{Report=ReportingPhase.Queued});
     }
     private static void FlushOutbox(ContractWorld s)
@@ -401,6 +403,14 @@ public sealed class WorldSession
             },beforeCommit);return result;
         }
     }
+    public NearbyActor[] GetNearbyActors(EntityId observer){lock(gate)return RegionalCampaign.Nearby(state,observer);}
+    public CommandResult InspectRoad(EntityId actor,string edge,long revision)
+    {lock(gate){var id=new EntityId("request:inspect-road");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalCampaign.InspectRoad(s,actor,edge));return new(ResultCode.Accepted,id,state.CommitSequence,"現地で通行状況を確認しました");}catch(Exception e)when(e is InvalidOperationException or InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"道の入口で確認してください");}}}
+    public CourierView[] GetCourierView(EntityId observer){lock(gate)return RegionalCampaign.Views(state,observer);}
+    public CommandResult RetryCourier(EntityId actor,string message,string destination,long appointment,long revision)
+    {lock(gate){if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,new(message),state.CommitSequence,"表示を更新してください");
+        try{Change(s=>RegionalCampaign.Retry(s,actor,message,destination,appointment));return new(ResultCode.Accepted,new(message),state.CommitSequence,"再発送しました");}
+        catch(Exception e) when(e is InvalidDataException or InvalidOperationException or ArgumentException){return new(ResultCode.NotAvailable,new(message),state.CommitSequence,"既知の失敗と届け先を確認してください");}}}
     // Explicit test/diagnostic transport control; never exposed by an ordinary ActorView.
     public void DiagnosticTransport(Action<MessageState,long> control)
     {lock(gate)Change(s=>control(s.Messaging,s.ElapsedSeconds));}

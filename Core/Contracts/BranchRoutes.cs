@@ -19,17 +19,21 @@ public static class BranchRoutes
         new("bypass-east","fork","east",40000,2000,4000),new("bypass-north","east","north",80000,1000,2000),new("bypass-west","north","village",40000,2000,4000)];
     public static string Version {get;}=ContractJson.CanonicalHash(new BranchCatalog(Nodes,Edges,"known-edges-dijkstra-time-ordinal-tie-v1",1,4));
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||MovementControl.Enabled(w)||RegionalBranch.Enabled(w);
-    public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
-    public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
-    public static string GraphVersion(ContractWorld w)=>RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
+    public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Nodes:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
+    public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Edges:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
+    public static string GraphVersion(ContractWorld w)=>RegionalCampaign.Enabled(w)?RegionalCampaign.Version:RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
     public static ContractWorld Create(bool passBlocked=true)
     {
         var w=ContractFixture.Create();w.Schema=2;w.WorldId=new("world:branch-fixture");
         w.Definitions=w.Definitions with{Id=new("scenario:branch-fixture"),Version=Version,Ruleset=Ruleset};
         w.Branches=new(passBlocked?["pass"]:[],[]);ContractValidation.Validate(w);return w;
     }
-    public static string[] KnownBlocked(ContractWorld w,EntityId observer)=>w.Evidence.Where(e=>e.Observer==observer&&w.Knowledge.Any(k=>k.Character==observer&&k.Evidence==e.Id)&&e.Claim.StartsWith("route-block:",StringComparison.Ordinal))
-        .Select(e=>e.Claim[12..]).Distinct(StringComparer.Ordinal).OrderBy(x=>x,StringComparer.Ordinal).ToArray();
+    public static string[] KnownBlocked(ContractWorld w,EntityId observer)
+    {
+        if(!RegionalCampaign.Enabled(w))return w.Evidence.Where(e=>e.Observer==observer&&w.Knowledge.Any(k=>k.Character==observer&&k.Evidence==e.Id)&&e.Claim.StartsWith("route-block:",StringComparison.Ordinal)).Select(e=>e.Claim[12..]).Distinct(StringComparer.Ordinal).OrderBy(x=>x,StringComparer.Ordinal).ToArray();
+        return w.Evidence.Where(e=>e.Observer==observer&&w.Knowledge.Any(k=>k.Character==observer&&k.Evidence==e.Id)&&(e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||e.Claim.StartsWith("route-open:",StringComparison.Ordinal)))
+            .GroupBy(e=>e.Claim[(e.Claim.StartsWith("route-open:")?11:12)..]).Where(g=>g.OrderByDescending(e=>e.ObservedAt).ThenByDescending(e=>e.RecordedAt).First().Claim.StartsWith("route-block:")).Select(g=>g.Key).Order(StringComparer.Ordinal).ToArray();
+    }
     public static string[] Plan(string from,string to,IEnumerable<string> knownBlocked,bool courier=false,ContractWorld? w=null)
     {
         var blocked=knownBlocked.ToHashSet(StringComparer.Ordinal);var distance=GraphNodes(w).ToDictionary(n=>n.Id,_=>long.MaxValue,StringComparer.Ordinal);
@@ -68,7 +72,7 @@ public static class BranchRoutes
     }
     public static long Start(ContractWorld w,TaskState task)
     {
-        var legs=Schedule("castle",Plan("castle","village",KnownBlocked(w,task.Executor),w:w),w.ElapsedSeconds,w);
+        var legs=Schedule("castle",Plan("castle",RegionalCampaign.Enabled(w)?RegionalCampaign.Destination(w,w.Requests.Single(r=>r.Id==task.RequestId).Intent.DestinationSite!.Value):"village",KnownBlocked(w,task.Executor),w:w),w.ElapsedSeconds,w);
         w.Branches=w.Branches! with{Journeys=[..w.Branches.Journeys,new(task.Id,task.Executor,legs)]};return legs[^1].EndAt;
     }
     public static long? NextBoundary(ContractWorld w,long target)=>w.Branches!.Journeys
@@ -95,10 +99,10 @@ public static class BranchRoutes
     static void Observe(ContractWorld w,TaskState task,string edge)
     {
         var claim="route-block:"+edge;
-        if(w.Evidence.Any(e=>e.Observer==task.Executor&&e.Claim==claim))return;
-        var id=WorldSession.Child("evidence",task.Id,"block/"+edge);
+        if(w.Evidence.Any(e=>e.Observer==task.Executor&&e.Claim==claim&&(!RegionalCampaign.Enabled(w)||e.ObservedAt==w.ElapsedSeconds)))return;
+        var id=WorldSession.Child("evidence",task.Id,"block/"+edge+(RegionalCampaign.Enabled(w)?"/"+w.ElapsedSeconds:""));
         w.Evidence=[..w.Evidence,new(id,task.Executor,task.Executor,claim,w.ElapsedSeconds,w.ElapsedSeconds,null,null)];w.Knowledge=[..w.Knowledge,new(task.Executor,id,w.ElapsedSeconds)];
-        var mid=WorldSession.Child("message",task.Id,"block/"+edge);
+        var mid=WorldSession.Child("message",task.Id,"block/"+edge+(RegionalCampaign.Enabled(w)?"/"+w.ElapsedSeconds:""));
         var journey=w.Branches!.Journeys.Single(j=>j.Task==task.Id);var node=journey.Legs.Single(l=>l.StartAt==w.ElapsedSeconds).From;
         var delay=Math.Max(1,checked((int)Duration(Plan(node,"castle",KnownBlocked(w,task.Executor),true,w),true,w)));
         MessageFlow.Send(w.Messaging,new(mid.Value,task.RequestId.Value,"route-observation",task.Executor.Value,task.Issuer.Value,claim,task.Scope.Value,w.ElapsedSeconds),w.ElapsedSeconds,delay);
@@ -138,24 +142,29 @@ public static class BranchRoutes
     }
     public static void Validate(ContractWorld w)
     {
-        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
+        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(RegionalCampaign.Enabled(w)?"scenario:regional-campaign-v1":RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
         if(RegionalBranch.Enabled(w))RegionalBranch.ValidateSites(w);
         if(w.Locations.Single(l=>l.Actor==ContractFixture.Lord).Site!=ContractFixture.Castle||!RegionalBranch.Enabled(w)&&!w.Definitions.Sites.Select(s=>s.Id).ToHashSet().SetEquals(new[]{ContractFixture.Castle,ContractFixture.Village}))throw new InvalidDataException("Unsupported graph fixture sites");
         var graph=w.Branches;var edges=GraphEdges(w).Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);
         if(graph.BlockedEdges.Distinct().Count()!=graph.BlockedEdges.Length||graph.BlockedEdges.Any(e=>!edges.Contains(e))||graph.Journeys.Select(j=>j.Task).Distinct().Count()!=graph.Journeys.Length)throw new InvalidDataException("Invalid graph references");
-        foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||j.Legs[0].From!="castle"||(j.Legs[^1].To!="village"&&(!MovementControl.Enabled(w)||j.Legs[^1].To!="castle")))throw new InvalidDataException("Invalid journey endpoints");
+        foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||j.Legs[0].From!="castle"||(!RegionalCampaign.Enabled(w)&&j.Legs[^1].To!="village"&&(!MovementControl.Enabled(w)||j.Legs[^1].To!="castle")))throw new InvalidDataException("Invalid journey endpoints");
             for(int i=0;i<j.Legs.Length;i++){var l=j.Legs[i];var e=GraphEdges(w).Single(e=>e.Id==l.Edge);
                 if(l.StartAt<0||l.EndAt-l.StartAt!=Duration(e)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||
                     i==0&&l.StartAt!=task.StartedAt||i>0&&(l.StartAt!=j.Legs[i-1].EndAt||l.From!=j.Legs[i-1].To))throw new InvalidDataException("Invalid journey chronology");}
             var action=w.Actions.Single(a=>a.Task==task.Id);if(action.Until!=j.Legs[^1].EndAt||action.StartedAt!=task.StartedAt||action.Progress!=Math.Clamp((task.FinishedAt??w.ElapsedSeconds)-action.StartedAt,0,action.Until-action.StartedAt))throw new InvalidDataException("Journey/event completion mismatch");
             var location=w.Locations.Single(l=>l.Actor==j.Actor);if(task.Execution==ExecutionPhase.Completed ? location.Kind!=LocationKind.AtSite||location.Site!=(MovementControl.Enabled(w)?MovementControl.Destination(w,task):ContractFixture.Village) : location!=(Location(w,task) with{Revision=location.Revision}))throw new InvalidDataException("Journey/location mismatch");}
         if(w.Tasks.Any(t=>t.Action==ActionKind.Move&&t.StartedAt!=null&&!graph.Journeys.Any(j=>j.Task==t.Id)))throw new InvalidDataException("Missing journey");
-        foreach(var evidence in w.Evidence.Where(e=>e.Claim.StartsWith("route-block:",StringComparison.Ordinal))){
-            var edge=GraphEdges(w).Single(e=>e.Id==evidence.Claim[12..]);
+        foreach(var evidence in w.Evidence.Where(e=>(e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||RegionalCampaign.Enabled(w)&&e.Claim.StartsWith("route-open:",StringComparison.Ordinal)))){
+            var edge=GraphEdges(w).Single(e=>e.Id==evidence.Claim[(evidence.Claim.StartsWith("route-open:")?11:12)..]);
             if(!w.Knowledge.Any(k=>k.Character==evidence.Observer&&k.Evidence==evidence.Id))throw new InvalidDataException("Closure claim lacks personal knowledge");
             if(evidence.Message is {} message){var m=w.Messaging.Messages.Single(m=>m.Id==message.Value);
                 if(m.Kind!="route-observation"||m.Body!=evidence.Claim||m.CreatedAt!=evidence.ObservedAt||
                     !w.Evidence.Any(e=>e.Message==null&&e.Observer.Value==m.SenderId&&e.Claim==m.Body&&e.ObservedAt==m.CreatedAt))throw new InvalidDataException("Closure report lacks source observation");}
+            else if(RegionalCampaign.Enabled(w)){
+                if((evidence.Claim.StartsWith("route-block:")!=RegionalCampaign.BlockedAt(w,edge.Id,evidence.ObservedAt!.Value))||
+                    !w.Couriers!.Sightings.Any(x=>x.Actor==evidence.Observer&&x.Edge==edge.Id&&x.At==evidence.ObservedAt)&&
+                    !graph.Journeys.Any(j=>j.Actor==evidence.Observer&&j.Legs.Any(l=>l.StartAt==evidence.ObservedAt&&(l.From==edge.From||l.From==edge.To))))throw new InvalidDataException("Road claim lacks timed local observation");
+            }
             else if(!graph.BlockedEdges.Contains(edge.Id)||!graph.Journeys.Any(j=>j.Actor==evidence.Observer&&j.Legs.Any(l=>l.StartAt==evidence.ObservedAt&&(l.From==edge.From||l.From==edge.To))))throw new InvalidDataException("Closure observation lacks physical presence");
         }
         foreach(var l in w.Locations.Where(l=>l.Kind==LocationKind.Traveling))if(!graph.Journeys.Any(j=>WorldSession.Child("route",j.Task,"graph")==l.Route&&j.Actor==l.Actor))throw new InvalidDataException("Unknown route location");
