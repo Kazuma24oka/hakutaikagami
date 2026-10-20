@@ -50,7 +50,7 @@ public static class ContractJson
         resolver.Modifiers.Add(t =>
         {
             if (t.Kind == JsonTypeInfoKind.Object)
-                foreach (var p in t.Properties.Where(p => p.Get != null)) p.IsRequired = !(t.Type == typeof(ContractWorld) && (p.Name == nameof(ContractWorld.Branches) || p.Name == nameof(ContractWorld.Couriers)));
+                foreach (var p in t.Properties.Where(p => p.Get != null)) p.IsRequired = !(t.Type == typeof(ContractWorld) && (p.Name == nameof(ContractWorld.Branches) || p.Name == nameof(ContractWorld.Couriers) || p.Name == nameof(ContractWorld.TravelDecisions)));
         });
         return new() { TypeInfoResolver = resolver, UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
             MaxDepth = 64, Converters = { new EntityIdConverter(), new Int64StringConverter(),

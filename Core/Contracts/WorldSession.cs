@@ -26,6 +26,13 @@ public sealed class WorldSession
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
         change(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); ContractValidation.Validate(next); beforeCommit?.Invoke(); state = next;
     }
+    public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
+    {lock(gate){
+        var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
+        if(expectedRevision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");
+        try{if(state.Requests.Any(r=>r.Id==request.Id))throw new InvalidDataException("ID already used");var decision=TravelControl.Prepare(state,request);Change(s=>{s.TravelDecisions=[..s.TravelDecisions!,decision];TravelControl.ApplyDue(s);FlushOutbox(s);},beforeCommit);return new(ResultCode.Accepted,request.Id,state.CommitSequence,request.Destination==null?"出航を取りやめ、この港に留まりました":"次の拠点で行先を変更します");}
+        catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}
+    }}
     public CommandResult Submit(Intent intent, long expectedRevision, Action? beforeCommit = null)
     {
         lock(gate)
@@ -34,6 +41,7 @@ public sealed class WorldSession
             try{hash=ContractJson.CanonicalHash(intent);}
             catch(Exception e) when(e is System.Text.Json.JsonException or ArgumentException or InvalidOperationException)
             {return new(ResultCode.InvalidInput,intent.RequestId,state.CommitSequence,"入力条件を確認してください");}
+            if(state.TravelDecisions?.Any(d=>d.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             var old = state.Requests.SingleOrDefault(r => r.Id == intent.RequestId);
             if (old != null) return new(old.BodyHash == hash ? ResultCode.AlreadyAccepted : ResultCode.IdPayloadConflict,
                 intent.RequestId,old.CommitSequence,old.BodyHash == hash ? "受付済み" : "同一IDの内容が異なります");
@@ -126,11 +134,12 @@ public sealed class WorldSession
             {
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
-                int cost=1+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
+                int cost=1+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
                     s.ElapsedSeconds=boundary;
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
+                    if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
@@ -153,6 +162,7 @@ public sealed class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalCampaign.Enabled(s)&&RegionalCampaign.NextBoundary(s,target) is {} courierBoundary)times.Add(courierBoundary);
+        if(TravelControl.Enabled(s)&&TravelControl.NextBoundary(s,target) is {} personalBoundary)times.Add(personalBoundary);
         if(BranchRoutes.Enabled(s)&&BranchRoutes.NextBoundary(s,target) is {} graphBoundary)times.Add(graphBoundary);
         foreach(var t in s.Tasks.Where(t=>!Terminal(t)))
         {
@@ -325,7 +335,7 @@ public sealed class WorldSession
         Replace(s,t with{Execution=ExecutionPhase.Completed,Progress=1,FinishedAt=s.ElapsedSeconds,InternalReason=reason,Revision=s.CommitSequence});
         QueueReport(s,t,reason);
     }
-    private static void Stop(ContractWorld s,TaskState t,string reason,AgreementPhase? agreement=null)
+    internal static void Stop(ContractWorld s,TaskState t,string reason,AgreementPhase? agreement=null)
     {
         if(Terminal(t))return;
         s.PendingEvents=s.PendingEvents.Where(e=>e.Task!=t.Id).ToArray();
@@ -340,7 +350,7 @@ public sealed class WorldSession
         var id=Child("message",task.Id,"report");if(s.Outbox.Any(o=>o.Id==id))return;
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.
-        var text=reason=="completed"?"任務完了":reason=="redirected"?"行先変更を適用":reason=="too-late"?"既に完了済み":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
+        var text=reason=="completed"?"任務完了":reason=="redirected"?"行先変更を適用":reason=="too-late"?"既に完了済み":reason=="port-cancelled"?"出航を取りやめ":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
         s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,RegionalCampaign.Enabled(s)?1:BranchRoutes.Enabled(s)?BranchRoutes.ReportDelay(s,task):RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
         var current=s.Tasks.Single(t=>t.Id==task.Id);Replace(s,current with{Report=ReportingPhase.Queued});
     }

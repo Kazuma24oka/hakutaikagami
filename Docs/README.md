@@ -1,5 +1,8 @@
 # 百代鏡 設計資料
 
+最新の本人操作：`../Scripts/Show-TravelControl.ps1`。[道中の行先変更・出航取りやめ・検証と範囲](Decisions/2026-10-20_TRAVEL_CONTROL_V1.md)。Core667件、9保存点の別プロセス復旧と続行18比較で3D差分0。
+
+
 最新の全国連続移動：`../Scripts/Show-TravelWorld.ps1`。[出航待機・人物配置・実測と範囲](Decisions/2026-10-20_TRAVEL_WORLD_V1.md)。清洲→堺→洲本→清洲、本人の行先選択、港待機、3名の史料付き初期配置。Core646件、別プロセス復旧と続行8比較で3D差分0。
 
 

@@ -22,6 +22,7 @@ public static class ContractValidation
     private static void ValidateCore(ContractWorld s)
     {
         Check((s.Schema == 1 || s.Schema == 2 && BranchRoutes.Enabled(s)) && s.TimeDomain == "GameSecondsV1" && EntityId.IsValid(s.WorldId.Value), "Unknown world format/time domain.");
+        Check(TravelControl.Enabled(s)==(s.TravelDecisions!=null),"Personal decisions require their own ruleset/module.");
         Check(s.ElapsedSeconds >= 0 && s.CommitSequence >= 0 && DateOnly.TryParseExact(s.EpochDate, "yyyy-MM-dd", CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), "Invalid world clock.");
         var defs = s.Definitions;
@@ -31,7 +32,7 @@ public static class ContractValidation
         if(RegionalCampaign.Enabled(s))RegionalCampaign.Validate(s);else Check(s.Couriers==null,"Unexpected courier module");
         Check(!s.Tasks.Any(t=>t.Action==ActionKind.Redirect)||MovementControl.Enabled(s),"Redirect requires registered rules");
         if(RouteContract.Enabled(s))RouteContract.Validate(s);
-        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == RegionalRoute.Ruleset || defs.Ruleset == RegionalBranch.Ruleset || defs.Ruleset == RegionalControl.Ruleset || defs.Ruleset == RegionalCampaign.Ruleset || defs.Ruleset == TravelWorld.Ruleset || defs.Ruleset == NationalRoutes.Ruleset || defs.Ruleset == HistoricalRoads.Ruleset || defs.Ruleset == RiverRoads.Ruleset || defs.Ruleset == BranchRoutes.Ruleset || defs.Ruleset == MovementControl.Ruleset) && defs.MaxAttempts == 3,
+        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == RegionalRoute.Ruleset || defs.Ruleset == RegionalBranch.Ruleset || defs.Ruleset == RegionalControl.Ruleset || defs.Ruleset == RegionalCampaign.Ruleset || defs.Ruleset == TravelControl.Ruleset || defs.Ruleset == TravelWorld.Ruleset || defs.Ruleset == NationalRoutes.Ruleset || defs.Ruleset == HistoricalRoads.Ruleset || defs.Ruleset == RiverRoads.Ruleset || defs.Ruleset == BranchRoutes.Ruleset || defs.Ruleset == MovementControl.Ruleset) && defs.MaxAttempts == 3,
             "Unsupported definition/ruleset; no silent production mapping.");
         var people = Keys(defs.Characters, c => c.Id, "character definitions");
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");

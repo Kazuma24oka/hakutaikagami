@@ -1,5 +1,14 @@
 # 百代鏡：作業の入口
 
+## 本人の道中変更・出航取りやめ（2026-10-20、最新）
+
+入口Scripts/Show-TravelControl.ps1、national-personal-control-v1 / world:national-personal-control-v1。前のTravelWorldV1保存を読み替えない。schema2のTravelDecisionsは新規則だけ必須、旧規則では省略し存在を拒否する。行先変更は今の区間の終点で効く（海上なら次の港）。通過済み区間を保持、変更待ち中の重ね操作は拒否。港の取りやめは出航時刻より前のみ即時適用、同時・後は拒否。AtSiteでその港に留まり次の旅を始められる。路上Uターン・海上停止・遠隔主君命令ではない。
+
+既存WorldSessionの時計・原子的確定・効果台帳・配送・行動・保存を共用。受付ID/本人/対象/新行先/受付・効力・適用時刻/効力拠点/変更前後の経路/既知封鎖/結果を保存検査。重複再適用・過去の区間改変・未知情報漏出を拒否。同時刻は通行条件→本人判断→位置・進行→既存配送と完了処理。自己宛て記録から伝令人物を二重描画しない。
+
+Core667件（新21）、実Godot7プロセス30検査30PNG。陸路・港・海上の9保存点を別プロセス復旧し続行、18比較で3D差分0。26秒624フレーム実動画。verify_travel_control.py→実画像点検→check_travel_control_binding.py。詳細Docs/Decisions/2026-10-20_TRAVEL_CONTROL_V1.md。マウス操作なし。通常Main・main・design/foundation・Confirmed保持。元素材と出力はruntime-local、既存未追跡素材保持。旧bindingは共通ソース変更で失効。次は通行止め・運休と変更待ち／港待機の競合、その後人物勢力と任務を拡充。天候・船の定員等と全国NPC AIは未実装。
+
+
 ## 全国での連続移動・出航待機（2026-10-20、最新）
 
 入口Scripts/Show-TravelWorld.ps1、TravelWorldV1。national-personal-travel-v1 / world:national-personal-travel-v1を独立追加。本人が現在地から選ぶ自己Move、清洲→堺→洲本→清洲を継続。現在Locationは最後の旅、過去の出発地・時系列・配送原点は全旅を保存検査。旧保存を読み替えない。通常Main・main・design/foundation・Confirmed保持。
