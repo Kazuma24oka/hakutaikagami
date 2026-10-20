@@ -1,5 +1,11 @@
 # 百代鏡：作業の入口
 
+## 道路の年代・距離根拠と旧道参考区間（2026-10-20、後続）
+
+入口Scripts/Show-HistoricalRoad.ps1。owari-historical-road-preview-v1 / world:historical-road-preview-v1。14地点15区間、全区間の距離根拠と出典を固定。二村山鎌倉街道の公表約200mを徒歩200秒／伝令100秒へ接続。ただしPDFは本文抽出のみ、直接取得403/リダイレクト反復で図面・端点は未確認。代表座標に置いた200m直線は表示用仮線で、実際の線形ではない。仮線内では1秒1mと歩行距離の一致を検査済み。戦国期の実測道路長への全面置換は未完了、正式史実採用は0区間。現代道路・ダム・ビル・DEMを当時の世界へ取り込まない。全国海岸線も現代の位置参照。2017-04-01は史跡指定日で建設年／発行年ではない。
+
+年代・線形・出典・距離を検査し、未来施設と未確認線形を史実として採用しない。新22件を含むCore597件、Godot3プロセス・8画像比較差分0、26秒624フレームの実動画。verify_historical_roads.py→実画像点検→check_historical_binding.py。旧保存を読み替えない。通常Main・main・design/foundation・Confirmedは保持。Docs/Decisions/2026-10-20_HISTORICAL_ROAD_V1.md参照。次は指定範囲／測量図と年代の一次資料で端点・曲折線を確定し、距離と3D地上速度を同時更新する。元資料・画像・動画はruntime-local、再配布しない。
+
 ## 中島橋周辺の推定経路・渡河と動画（2026-10-20、後続）
 
 入口Scripts/Show-RiverRoad.ps1、新ruleset owari-river-roads-v1、world:river-roads-v1。12地点13区間、三河への概略リンクを橋の入口・渡河・検証用迂回へ分ける。名古屋市資料と地図PDFを画像で確認。ただし新しい地点は±250mの位置推定、距離は大円参考値であり、実道路の実長や1560年の橋の復元ではない。仮設渡しは合成した試験選択肢。詳しくはDocs/Decisions/2026-10-20_RIVER_ROAD_V1.mdとsource-manifest.json。

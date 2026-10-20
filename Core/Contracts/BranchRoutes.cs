@@ -19,9 +19,9 @@ public static class BranchRoutes
         new("bypass-east","fork","east",40000,2000,4000),new("bypass-north","east","north",80000,1000,2000),new("bypass-west","north","village",40000,2000,4000)];
     public static string Version {get;}=ContractJson.CanonicalHash(new BranchCatalog(Nodes,Edges,"known-edges-dijkstra-time-ordinal-tie-v1",1,4));
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||MovementControl.Enabled(w)||RegionalBranch.Enabled(w);
-    public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&RiverRoads.Enabled(w)?RiverRoads.Nodes:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Nodes:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
-    public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&RiverRoads.Enabled(w)?RiverRoads.Edges:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Edges:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
-    public static string GraphVersion(ContractWorld w)=>RiverRoads.Enabled(w)?RiverRoads.Version:RegionalCampaign.Enabled(w)?RegionalCampaign.Version:RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
+    public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&HistoricalRoads.Enabled(w)?HistoricalRoads.Nodes:w!=null&&RiverRoads.Enabled(w)?RiverRoads.Nodes:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Nodes:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
+    public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&HistoricalRoads.Enabled(w)?HistoricalRoads.Edges:w!=null&&RiverRoads.Enabled(w)?RiverRoads.Edges:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Edges:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
+    public static string GraphVersion(ContractWorld w)=>HistoricalRoads.Enabled(w)?HistoricalRoads.Version:RiverRoads.Enabled(w)?RiverRoads.Version:RegionalCampaign.Enabled(w)?RegionalCampaign.Version:RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
     public static ContractWorld Create(bool passBlocked=true)
     {
         var w=ContractFixture.Create();w.Schema=2;w.WorldId=new("world:branch-fixture");
@@ -142,7 +142,7 @@ public static class BranchRoutes
     }
     public static void Validate(ContractWorld w)
     {
-        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(RiverRoads.Enabled(w)?"scenario:river-roads-v1":RegionalCampaign.Enabled(w)?"scenario:regional-campaign-v1":RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
+        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(HistoricalRoads.Enabled(w)?"scenario:historical-road-preview-v1":RiverRoads.Enabled(w)?"scenario:river-roads-v1":RegionalCampaign.Enabled(w)?"scenario:regional-campaign-v1":RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
         if(RegionalBranch.Enabled(w))RegionalBranch.ValidateSites(w);
         if(w.Locations.Single(l=>l.Actor==ContractFixture.Lord).Site!=ContractFixture.Castle||!RegionalBranch.Enabled(w)&&!w.Definitions.Sites.Select(s=>s.Id).ToHashSet().SetEquals(new[]{ContractFixture.Castle,ContractFixture.Village}))throw new InvalidDataException("Unsupported graph fixture sites");
         var graph=w.Branches;var edges=GraphEdges(w).Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);

@@ -286,3 +286,12 @@ Game/Scenes/RiverRoadTrial.tscn -text
 Scripts/*river*.py -text
 Scripts/Show-RiverRoad.ps1 -text
 Docs/Design/RiverRoadV1/** -text
+
+Core/Contracts/HistoricalRoads.cs -text
+Core/Data/historical-roads-v1.json -text
+Tests/HistoricalRoadTests.cs -text
+Game/Scripts/HistoricalRoadTrial.cs -text
+Game/Scenes/HistoricalRoadTrial.tscn -text
+Scripts/*historical*.py -text
+Scripts/Show-HistoricalRoad.ps1 -text
+Docs/Design/HistoricalRoadV1/** -text
