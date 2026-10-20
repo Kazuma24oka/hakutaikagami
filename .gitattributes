@@ -232,3 +232,13 @@ Docs/Design/MovementControlV1/** -text
 
 Scripts/build_movement_report.py -text
 Scripts/verify_movement_report.cjs -text
+
+Core/World/JapanGeography.cs -text
+Tests/JapanGeographyTests.cs -text
+Game/Scripts/JapanMapTrial.cs -text
+Game/Scenes/JapanMapTrial.tscn -text
+Game/Data/Geography/** -text
+Docs/Design/JapanMapV1/** -text
+Scripts/*japan*.py -text
+Scripts/verify_japan_report.cjs -text
+Scripts/Show-JapanMap.ps1 -text

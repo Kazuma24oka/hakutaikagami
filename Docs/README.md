@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 全国地図の表示基盤（2026-10-20、後続）
+
+**[実画面付きHTML報告](Design/JapanMapV1/report.html)**。海岸線109ポリゴンと出典付き城・館30地点候補。全国→地域→現地を同じ3Dワールドと座標で表示。Core488件、実Godot51検査・12枚、全国へ戻す画素差分0。入口 `Scripts/Show-JapanMap.ps1`。[データと境界](Decisions/2026-10-20_JAPAN_MAP_V1.md)。現代の代表点であり1560年の地理シナリオ確定ではありません。次は一地域の実在拠点・経路を新Coreへ接続します。
+
 ## 移動中の命令変更・取消（2026-10-20、後続）
 
 **[実画面付きHTML報告](Design/MovementControlV1/report.html)**。伝令の受渡し・開封・効力を分け、取消時の位置保持と次の分岐からの帰城変更を確認。Core475件、新18件、Godot58検査・GPU29枚、4段階の保存を両命令で復旧して16比較の3D画素差分0。入口 `Scripts/Show-MovementControl.ps1`。[共有した全国像・契約・限界](Decisions/2026-10-20_MOVEMENT_CONTROL_V1.md)。次は日本全国の概略地図と主要城・拠点へ進みます。

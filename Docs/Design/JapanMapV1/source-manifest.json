@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-20",
+  "catalog_sha256": "b0b0083aeaf2d9c007f923cd130720859f542d6a6eb533f8fbe3a421c254c244",
+  "polygons": 109,
+  "vertices": 6843,
+  "landmarks": 30,
+  "omitted": [
+    {
+      "Name": "内城",
+      "Reason": "No Wikidata Earth coordinate; not invented"
+    },
+    {
+      "Name": "岡城",
+      "Reason": "No Wikidata Earth coordinate; not invented"
+    },
+    {
+      "Name": "高屋城",
+      "Reason": "No Wikidata Earth coordinate; not invented"
+    }
+  ],
+  "sources": [
+    {
+      "Name": "Natural Earth 1:10m admin-0 Japan geometry",
+      "Url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/9380cca83db5f9aef52d5e762765100745f84b27/geojson/ne_10m_admin_0_countries.geojson",
+      "License": "Public domain: https://www.naturalearthdata.com/about/terms-of-use/",
+      "Revision": "9380cca83db5f9aef52d5e762765100745f84b27",
+      "Sha256": "239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255"
+    },
+    {
+      "Name": "Wikidata P625 coordinate subset",
+      "Url": "https://www.wikidata.org/wiki/Wikidata:Data_access",
+      "License": "CC0; structured data only",
+      "Revision": "Per landmark SourceRevision; retrieved 2026-10-20",
+      "Sha256": "16672e7c7550a088238735a7b3cb9c8842db71377748c94cfb38dbf77556aa8c"
+    }
+  ]
+}
