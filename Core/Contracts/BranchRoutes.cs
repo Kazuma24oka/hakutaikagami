@@ -19,9 +19,9 @@ public static class BranchRoutes
         new("bypass-east","fork","east",40000,2000,4000),new("bypass-north","east","north",80000,1000,2000),new("bypass-west","north","village",40000,2000,4000)];
     public static string Version {get;}=ContractJson.CanonicalHash(new BranchCatalog(Nodes,Edges,"known-edges-dijkstra-time-ordinal-tie-v1",1,4));
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||MovementControl.Enabled(w)||RegionalBranch.Enabled(w);
-    public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&NationalRoutes.Enabled(w)?NationalRoutes.Nodes:w!=null&&HistoricalRoads.Enabled(w)?HistoricalRoads.Nodes:w!=null&&RiverRoads.Enabled(w)?RiverRoads.Nodes:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Nodes:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
-    public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&NationalRoutes.Enabled(w)?NationalRoutes.Edges:w!=null&&HistoricalRoads.Enabled(w)?HistoricalRoads.Edges:w!=null&&RiverRoads.Enabled(w)?RiverRoads.Edges:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Edges:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
-    public static string GraphVersion(ContractWorld w)=>NationalRoutes.Enabled(w)?NationalRoutes.Version:HistoricalRoads.Enabled(w)?HistoricalRoads.Version:RiverRoads.Enabled(w)?RiverRoads.Version:RegionalCampaign.Enabled(w)?RegionalCampaign.Version:RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
+    public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&(NationalRoutes.Enabled(w)||TravelWorld.Enabled(w))?NationalRoutes.Nodes:w!=null&&HistoricalRoads.Enabled(w)?HistoricalRoads.Nodes:w!=null&&RiverRoads.Enabled(w)?RiverRoads.Nodes:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Nodes:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
+    public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&(NationalRoutes.Enabled(w)||TravelWorld.Enabled(w))?NationalRoutes.Edges:w!=null&&HistoricalRoads.Enabled(w)?HistoricalRoads.Edges:w!=null&&RiverRoads.Enabled(w)?RiverRoads.Edges:w!=null&&RegionalCampaign.Enabled(w)?RegionalCampaign.Edges:w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
+    public static string GraphVersion(ContractWorld w)=>TravelWorld.Enabled(w)?TravelWorld.Version:NationalRoutes.Enabled(w)?NationalRoutes.Version:HistoricalRoads.Enabled(w)?HistoricalRoads.Version:RiverRoads.Enabled(w)?RiverRoads.Version:RegionalCampaign.Enabled(w)?RegionalCampaign.Version:RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
     public static ContractWorld Create(bool passBlocked=true)
     {
         var w=ContractFixture.Create();w.Schema=2;w.WorldId=new("world:branch-fixture");
@@ -34,7 +34,7 @@ public static class BranchRoutes
         return w.Evidence.Where(e=>e.Observer==observer&&w.Knowledge.Any(k=>k.Character==observer&&k.Evidence==e.Id)&&(e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||e.Claim.StartsWith("route-open:",StringComparison.Ordinal)))
             .GroupBy(e=>e.Claim[(e.Claim.StartsWith("route-open:")?11:12)..]).Where(g=>g.OrderByDescending(e=>e.ObservedAt).ThenByDescending(e=>e.RecordedAt).First().Claim.StartsWith("route-block:")).Select(g=>g.Key).Order(StringComparer.Ordinal).ToArray();
     }
-    public static string[] Plan(string from,string to,IEnumerable<string> knownBlocked,bool courier=false,ContractWorld? w=null)
+    public static string[] Plan(string from,string to,IEnumerable<string> knownBlocked,bool courier=false,ContractWorld? w=null,long? departureAt=null)
     {
         var blocked=knownBlocked.ToHashSet(StringComparer.Ordinal);var distance=GraphNodes(w).ToDictionary(n=>n.Id,_=>long.MaxValue,StringComparer.Ordinal);
         if(!distance.ContainsKey(from)||!distance.ContainsKey(to))throw new InvalidDataException("Unknown graph node");
@@ -43,7 +43,7 @@ public static class BranchRoutes
         while(true){var current=distance.Where(p=>!visited.Contains(p.Key)&&p.Value<long.MaxValue).OrderBy(p=>p.Value).ThenBy(p=>p.Key,StringComparer.Ordinal).FirstOrDefault();
             if(current.Key==null)throw new InvalidDataException("No known traversable path");if(current.Key==to)return paths[to];visited.Add(current.Key);
             foreach(var e in GraphEdges(w).Where(e=>!blocked.Contains(e.Id)&&(e.From==current.Key||e.To==current.Key)).OrderBy(e=>e.Id,StringComparer.Ordinal)){
-                var next=e.From==current.Key?e.To:e.From;var d=checked(current.Value+Duration(e,courier));var path=paths[current.Key].Append(e.Id).ToArray();
+                var next=e.From==current.Key?e.To:e.From;var d=checked(current.Value+(w!=null&&TravelWorld.Enabled(w)?TravelWorld.End(w,e,checked((departureAt??w.ElapsedSeconds)+current.Value),courier)-((departureAt??w.ElapsedSeconds)+current.Value):Duration(e,courier)));var path=paths[current.Key].Append(e.Id).ToArray();
                 if(d<distance[next]||d==distance[next]&&string.CompareOrdinal(string.Join("/",path),string.Join("/",paths.GetValueOrDefault(next,[])))<0){distance[next]=d;paths[next]=path;}}
         }
     }
@@ -52,7 +52,7 @@ public static class BranchRoutes
     public static JourneyLeg[] Schedule(string from,string[] path,long at,ContractWorld? w=null)
     {
         var result=new List<JourneyLeg>();foreach(var id in path){var e=GraphEdges(w).Single(e=>e.Id==id);var to=e.From==from?e.To:e.From;
-            var end=checked(at+Duration(e));result.Add(new(id,from,to,at,end));from=to;at=end;}return result.ToArray();
+            var end=TravelWorld.End(w,e,at);result.Add(new(id,from,to,at,end));from=to;at=end;}return result.ToArray();
     }
     public static Intent Order(ContractWorld w,string id,ActionKind action=ActionKind.Move,EntityId? executor=null)
     {
@@ -61,7 +61,7 @@ public static class BranchRoutes
         return i with{DeliverySeconds=1,WorkSeconds=action==ActionKind.Move?checked((int)Duration(Plan("castle","village",KnownBlocked(w,i.Executor)))):4,ReportSeconds=1};
     }
     public static void ValidateOrder(ContractWorld w,Intent i)
-    {if(MovementControl.Enabled(w))MovementControl.ValidateOrder(w,i);else ValidateOrdinaryOrder(w,i);}
+    {if(TravelWorld.Enabled(w))TravelWorld.ValidateOrder(w,i);else if(MovementControl.Enabled(w))MovementControl.ValidateOrder(w,i);else ValidateOrdinaryOrder(w,i);}
     public static void ValidateOrdinaryOrder(ContractWorld w,Intent i)
     {
         if(RegionalBranch.Enabled(w)){RegionalBranch.ValidateOrder(w,i);return;}
@@ -72,12 +72,12 @@ public static class BranchRoutes
     }
     public static long Start(ContractWorld w,TaskState task)
     {
-        var legs=Schedule("castle",Plan("castle",RegionalCampaign.Enabled(w)?RegionalCampaign.Destination(w,w.Requests.Single(r=>r.Id==task.RequestId).Intent.DestinationSite!.Value):"village",KnownBlocked(w,task.Executor),w:w),w.ElapsedSeconds,w);
+        var from=TravelWorld.Enabled(w)?TravelWorld.Origin(w,task.Executor):"castle";var legs=Schedule(from,Plan(from,RegionalCampaign.Enabled(w)?RegionalCampaign.Destination(w,w.Requests.Single(r=>r.Id==task.RequestId).Intent.DestinationSite!.Value):"village",KnownBlocked(w,task.Executor),w:w),w.ElapsedSeconds,w);
         w.Branches=w.Branches! with{Journeys=[..w.Branches.Journeys,new(task.Id,task.Executor,legs)]};return legs[^1].EndAt;
     }
     public static long? NextBoundary(ContractWorld w,long target)=>w.Branches!.Journeys
         .Where(j=>w.Tasks.Any(t=>t.Id==j.Task&&t.Execution==ExecutionPhase.Running))
-        .SelectMany(j=>j.Legs.Select(l=>l.EndAt)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
+        .SelectMany(j=>j.Legs.SelectMany(l=>new[]{l.EndAt,TravelWorld.Departure(w,l.Edge,l.StartAt)})).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     public static bool Advance(ContractWorld w,TaskState task)
     {
         var journey=w.Branches!.Journeys.Single(j=>j.Task==task.Id);
@@ -111,7 +111,7 @@ public static class BranchRoutes
     {
         var task=w.Tasks.Single(t=>t.Id==journey.Task);var time=task.FinishedAt??w.ElapsedSeconds;
         int index=Array.FindIndex(journey.Legs,l=>time<l.EndAt);if(index<0)index=journey.Legs.Length-1;
-        var leg=journey.Legs[index];var edge=GraphEdges(w).Single(e=>e.Id==leg.Edge);var p=Math.Clamp(checked((time-leg.StartAt)*edge.FootSpeed),0,edge.LengthMm);
+        var leg=journey.Legs[index];var edge=GraphEdges(w).Single(e=>e.Id==leg.Edge);var p=Math.Clamp(checked((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed),0,edge.LengthMm);
         return(leg,index,p,journey.Legs.Take(index).Sum(l=>GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm)+p);
     }
     public static LocationState Location(ContractWorld w,TaskState task)
@@ -123,11 +123,11 @@ public static class BranchRoutes
     public static BranchView View(ContractWorld w,ActorView knowledge)
     {
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==knowledge.Observer);
-        if(j==null)return new(knowledge,Node("castle",w),new(1,0),0,false,null,[],KnownBlocked(w,knowledge.Observer),Node("castle",w),0);
+        if(j==null)return new(knowledge,Node(TravelWorld.Enabled(w)?TravelWorld.InitialNode(knowledge.Observer):"castle",w),new(1,0),0,false,null,[],KnownBlocked(w,knowledge.Observer),Node(TravelWorld.Enabled(w)?TravelWorld.InitialNode(knowledge.Observer):"castle",w),0);
         var sample=Sample(w,j);var a=Node(sample.Leg.From,w);var b=Node(sample.Leg.To,w);var e=GraphEdges(w).Single(e=>e.Id==sample.Leg.Edge);
         var point=new RoutePoint(a.EastMm+(b.EastMm-a.EastMm)*sample.Progress/e.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*sample.Progress/e.LengthMm);
-        var running=w.Tasks.Single(t=>t.Id==j.Task).Execution==ExecutionPhase.Running;
-        long nextProgress=running?Math.Min(e.LengthMm,sample.Progress+e.FootSpeed):sample.Progress;
+        var running=w.Tasks.Single(t=>t.Id==j.Task).Execution==ExecutionPhase.Running&&w.ElapsedSeconds>=TravelWorld.Departure(w,sample.Leg.Edge,sample.Leg.StartAt);
+        long nextProgress=TravelWorld.Enabled(w)&&w.Tasks.Single(t=>t.Id==j.Task).Execution==ExecutionPhase.Running?TravelWorld.Progress(w,sample.Leg,w.ElapsedSeconds+1):running?Math.Min(e.LengthMm,sample.Progress+e.FootSpeed):sample.Progress;
         var nextPoint=new RoutePoint(a.EastMm+(b.EastMm-a.EastMm)*nextProgress/e.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*nextProgress/e.LengthMm);
         return new(knowledge,point,new(b.EastMm-a.EastMm,b.NorthMm-a.NorthMm),sample.Distance,running,running?j.Legs[^1].EndAt:null,
             j.Legs.Select(l=>l.Edge).ToArray(),KnownBlocked(w,knowledge.Observer),nextPoint,nextProgress-sample.Progress);
@@ -142,17 +142,17 @@ public static class BranchRoutes
     }
     public static void Validate(ContractWorld w)
     {
-        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(NationalRoutes.Enabled(w)?"scenario:national-inferred-routes-v1":HistoricalRoads.Enabled(w)?"scenario:historical-road-preview-v1":RiverRoads.Enabled(w)?"scenario:river-roads-v1":RegionalCampaign.Enabled(w)?"scenario:regional-campaign-v1":RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
+        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(TravelWorld.Enabled(w)?"scenario:national-personal-travel-v1":NationalRoutes.Enabled(w)?"scenario:national-inferred-routes-v1":HistoricalRoads.Enabled(w)?"scenario:historical-road-preview-v1":RiverRoads.Enabled(w)?"scenario:river-roads-v1":RegionalCampaign.Enabled(w)?"scenario:regional-campaign-v1":RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
         if(RegionalBranch.Enabled(w))RegionalBranch.ValidateSites(w);
         if(w.Locations.Single(l=>l.Actor==ContractFixture.Lord).Site!=ContractFixture.Castle||!RegionalBranch.Enabled(w)&&!w.Definitions.Sites.Select(s=>s.Id).ToHashSet().SetEquals(new[]{ContractFixture.Castle,ContractFixture.Village}))throw new InvalidDataException("Unsupported graph fixture sites");
-        var graph=w.Branches;var edges=GraphEdges(w).Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);
+        if(TravelWorld.Enabled(w))TravelWorld.Validate(w);var graph=w.Branches;var edges=GraphEdges(w).Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);
         if(graph.BlockedEdges.Distinct().Count()!=graph.BlockedEdges.Length||graph.BlockedEdges.Any(e=>!edges.Contains(e))||graph.Journeys.Select(j=>j.Task).Distinct().Count()!=graph.Journeys.Length)throw new InvalidDataException("Invalid graph references");
-        foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||j.Legs[0].From!="castle"||(!RegionalCampaign.Enabled(w)&&j.Legs[^1].To!="village"&&(!MovementControl.Enabled(w)||j.Legs[^1].To!="castle")))throw new InvalidDataException("Invalid journey endpoints");
+        foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||(!TravelWorld.Enabled(w)&&j.Legs[0].From!="castle")||(!RegionalCampaign.Enabled(w)&&j.Legs[^1].To!="village"&&(!MovementControl.Enabled(w)||j.Legs[^1].To!="castle")))throw new InvalidDataException("Invalid journey endpoints");
             for(int i=0;i<j.Legs.Length;i++){var l=j.Legs[i];var e=GraphEdges(w).Single(e=>e.Id==l.Edge);
-                if(l.StartAt<0||l.EndAt-l.StartAt!=Duration(e)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||
+                if(l.StartAt<0||l.EndAt!=TravelWorld.End(w,e,l.StartAt)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||
                     i==0&&l.StartAt!=task.StartedAt||i>0&&(l.StartAt!=j.Legs[i-1].EndAt||l.From!=j.Legs[i-1].To))throw new InvalidDataException("Invalid journey chronology");}
             var action=w.Actions.Single(a=>a.Task==task.Id);if(action.Until!=j.Legs[^1].EndAt||action.StartedAt!=task.StartedAt||action.Progress!=Math.Clamp((task.FinishedAt??w.ElapsedSeconds)-action.StartedAt,0,action.Until-action.StartedAt))throw new InvalidDataException("Journey/event completion mismatch");
-            var location=w.Locations.Single(l=>l.Actor==j.Actor);if(task.Execution==ExecutionPhase.Completed ? location.Kind!=LocationKind.AtSite||location.Site!=(MovementControl.Enabled(w)?MovementControl.Destination(w,task):ContractFixture.Village) : location!=(Location(w,task) with{Revision=location.Revision}))throw new InvalidDataException("Journey/location mismatch");}
+            if(TravelWorld.Enabled(w)&&j!=graph.Journeys.Last(x=>x.Actor==j.Actor))continue;var location=w.Locations.Single(l=>l.Actor==j.Actor);if(task.Execution==ExecutionPhase.Completed ? location.Kind!=LocationKind.AtSite||location.Site!=(MovementControl.Enabled(w)?MovementControl.Destination(w,task):ContractFixture.Village) : location!=(Location(w,task) with{Revision=location.Revision}))throw new InvalidDataException("Journey/location mismatch");}
         if(w.Tasks.Any(t=>t.Action==ActionKind.Move&&t.StartedAt!=null&&!graph.Journeys.Any(j=>j.Task==t.Id)))throw new InvalidDataException("Missing journey");
         foreach(var evidence in w.Evidence.Where(e=>(e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||RegionalCampaign.Enabled(w)&&e.Claim.StartsWith("route-open:",StringComparison.Ordinal)))){
             var edge=GraphEdges(w).Single(e=>e.Id==evidence.Claim[(evidence.Claim.StartsWith("route-open:")?11:12)..]);

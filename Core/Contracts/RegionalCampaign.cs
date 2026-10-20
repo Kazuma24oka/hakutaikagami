@@ -26,7 +26,7 @@ public static class RegionalCampaign
     public static EntityId Site(string node)=>node=="castle"?ContractFixture.Castle:node=="village"?ContractFixture.Village:new("site:"+node);
     public static string Destination(ContractWorld w,EntityId site)=>BranchRoutes.GraphNodes(w).Single(n=>Site(n.Id)==site).Id;
     public static Intent Move(ContractWorld w,string id,string destination,EntityId? executor=null){var i=RegionalBranch.Order(w,id,executor:executor);return i with{DestinationSite=Site(destination),WorkSeconds=checked((int)BranchRoutes.Duration(BranchRoutes.Plan("castle",destination,BranchRoutes.KnownBlocked(w,i.Executor),w:w),w:w))};}
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||RiverRoads.Enabled(w)||HistoricalRoads.Enabled(w)||NationalRoutes.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||RiverRoads.Enabled(w)||HistoricalRoads.Enabled(w)||NationalRoutes.Enabled(w)||TravelWorld.Enabled(w);
     public static ContractWorld Create(RoadCondition[]? conditions=null,bool initiallyBlocked=true)
     {
         var w=RegionalControl.Create();w.WorldId=new("world:regional-campaign-v1");
@@ -42,9 +42,9 @@ public static class RegionalCampaign
     static CourierLeg[] FromNode(ContractWorld w,string from,string to,string[] blocked,long at)
     {
         var list=new List<CourierLeg>();
-        foreach(var id in BranchRoutes.Plan(from,to,blocked,true,w)){
+        foreach(var id in BranchRoutes.Plan(from,to,blocked,true,w,at)){
             var e=BranchRoutes.GraphEdges(w).Single(e=>e.Id==id);var next=e.From==from?e.To:e.From;
-            var end=checked(at+Seconds(e.LengthMm,e.CourierSpeed));list.Add(new(id,Node(w,from),Node(w,next),e.LengthMm,at,end));from=next;at=end;
+            var end=TravelWorld.End(w,e,at,true);list.Add(new(id,Node(w,from),Node(w,next),e.LengthMm,at,end));from=next;at=end;
         }return list.ToArray();
     }
     static CourierLeg[] Route(ContractWorld w,EntityId sender,string to,string[] blocked,long at,RoutePoint? overrideOrigin=null)
@@ -54,7 +54,7 @@ public static class RegionalCampaign
         // A report sent along a road starts at its actual partial progress, never at a teleported endpoint.
         var j=w.Branches!.Journeys.Last(j=>j.Actor==sender);var task=w.Tasks.Single(t=>t.Id==j.Task);var time=task.FinishedAt??w.ElapsedSeconds;
         var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
-        var progress=Math.Clamp(checked((time-leg.StartAt)*edge.FootSpeed),0,edge.LengthMm);
+        var progress=Math.Clamp(checked((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed),0,edge.LengthMm);
         var options=new List<CourierLeg[]>();
         foreach(var option in new[]{(leg.From,progress),(leg.To,edge.LengthMm-progress)})try{
             var end=checked(at+Seconds(option.Item2,edge.CourierSpeed));
@@ -78,7 +78,7 @@ public static class RegionalCampaign
     public static void Bind(ContractWorld w)
     {
         foreach(var a in w.Messaging.Attempts.Where(a=>!w.Couriers!.Missions.Any(c=>c.Attempt==a.Id)).ToArray()){
-            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination="castle";long appointment=a.SentAt+1;RoutePoint? origin=null;
+            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle";long appointment=a.SentAt+1;RoutePoint? origin=null;
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);
             if(t?.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(x=>x.Id==w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask);destination=Meeting(w,target);appointment=Appointment(w,target);}
             if(m.Kind=="delivery-failure")origin=Position(w,w.Couriers!.Missions.Single(c=>c.Attempt==m.Body),a.SentAt);
@@ -106,13 +106,13 @@ public static class RegionalCampaign
     public static RoutePoint Position(ContractWorld w,CourierMission c,long at)
     {
         if(c.Legs.Length==0)return c.Origin;
-        var leg=c.Legs.FirstOrDefault(l=>at<l.EndAt)??c.Legs[^1];var elapsed=Math.Clamp(at-leg.StartAt,0,leg.EndAt-leg.StartAt);
-        var duration=leg.EndAt-leg.StartAt;
+        var leg=c.Legs.FirstOrDefault(l=>at<l.EndAt)??c.Legs[^1];var departure=TravelWorld.Departure(w,leg.Edge,leg.StartAt,leg.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge).LengthMm);var elapsed=Math.Clamp(at-departure,0,leg.EndAt-departure);
+        var duration=leg.EndAt-departure;
         return new(leg.From.EastMm+(leg.To.EastMm-leg.From.EastMm)*elapsed/duration,leg.From.NorthMm+(leg.To.NorthMm-leg.From.NorthMm)*elapsed/duration);
     }
     public static long? NextBoundary(ContractWorld w,long target)=>w.Couriers!.Missions
         .Where(c=>w.Messaging.Attempts.Any(a=>a.Id==c.Attempt&&a.Status==AttemptStatus.InTransit))
-        .SelectMany(c=>c.Legs.Select(l=>l.StartAt).Concat(c.Legs.Select(l=>l.EndAt)))
+        .SelectMany(c=>c.Legs.SelectMany(l=>new[]{l.StartAt,l.EndAt,TravelWorld.Departure(w,l.Edge,l.StartAt,l.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm)}))
         .Concat(w.Couriers.Conditions.Select(c=>c.At)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     public static void ApplyConditions(ContractWorld w)
     {
@@ -157,6 +157,7 @@ public static class RegionalCampaign
         MessageFlow.Retry(w.Messaging,message,actor.Value,w.ElapsedSeconds,1);
         var a=MessageFlow.Latest(w.Messaging,message);Put(w,New(w,a,destination,appointment));
     }
+    static long LegDistance(ContractWorld w,CourierLeg l,long at){var departure=TravelWorld.Departure(w,l.Edge,l.StartAt,l.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm);return at>=l.EndAt?l.LengthMm:at<=departure?0:l.LengthMm*(at-departure)/(l.EndAt-departure);}
     public static CourierView[] Views(ContractWorld w,EntityId observer)
     {
         if(!Enabled(w))return [];var own=ActorPoint(w,observer);
@@ -168,8 +169,9 @@ public static class RegionalCampaign
             if(m.SenderId!=observer.Value&&!seen&&!MessageFlow.Knows(w.Messaging,m.Id,observer.Value))return null;
             var status=MessageFlow.Knows(w.Messaging,m.Id,observer.Value)?"受領済":seen?(w.ElapsedSeconds<End(c.Legs,a.SentAt)?"移動を目撃":"待機を目撃"):MessageFlow.FailureKnown(w.Messaging,a.Id,observer.Value)?"失敗報告を受領":"発送済・結果未確認";
             var leg=c.Legs.FirstOrDefault(l=>w.ElapsedSeconds<l.EndAt)??c.Legs.LastOrDefault();
-            var distance=c.Legs.Sum(l=>w.ElapsedSeconds>=l.EndAt?l.LengthMm:w.ElapsedSeconds<=l.StartAt?0:l.LengthMm*(w.ElapsedSeconds-l.StartAt)/(l.EndAt-l.StartAt));
-            var nextDistance=c.Legs.Sum(l=>w.ElapsedSeconds+1>=l.EndAt?l.LengthMm:w.ElapsedSeconds+1<=l.StartAt?0:l.LengthMm*(w.ElapsedSeconds+1-l.StartAt)/(l.EndAt-l.StartAt));
+            if(seen&&leg!=null&&w.ElapsedSeconds<TravelWorld.Departure(w,leg.Edge,leg.StartAt,leg.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge).LengthMm))status="出航待ちを目撃";
+            var distance=c.Legs.Sum(l=>LegDistance(w,l,w.ElapsedSeconds));
+            var nextDistance=c.Legs.Sum(l=>LegDistance(w,l,w.ElapsedSeconds+1));
             bool informed=MessageFlow.Knows(w.Messaging,m.Id,observer.Value)||m.SenderId==observer.Value&&m.Kind!="delivery-failure";
             var opaque=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Attempt));
             return new CourierView(informed?c.Attempt:"courier:seen/"+opaque,informed?m.Id:"message:unread/"+opaque,informed?c.Destination:"届け先未確認",informed?a.SentAt:null,informed?Math.Max(c.Appointment,a.SentAt+1):null,seen?p:null,status,seen&&leg!=null?new(leg.To.EastMm-leg.From.EastMm,leg.To.NorthMm-leg.From.NorthMm):null,seen?(informed?distance:checked(w.ElapsedSeconds*2000)):null,seen?Position(w,c,w.ElapsedSeconds+1):null,seen?nextDistance-distance:null);
@@ -195,9 +197,9 @@ public static class RegionalCampaign
     }
     public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
     {
-        var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,"castle");
+        var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor):"castle");
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
-        var progress=Math.Clamp((time-leg.StartAt)*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
+        var progress=Math.Clamp((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
         return new(a.EastMm+(b.EastMm-a.EastMm)*progress/edge.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*progress/edge.LengthMm);
     }
     public static bool BlockedAt(ContractWorld w,string edge,long at)
@@ -220,12 +222,12 @@ public static class RegionalCampaign
                 var task=w.Tasks.Single(t=>WorldSession.Child("message",t.Id,"order").Value==message.Id);
                 if(task.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(t=>t.Id==w.Requests.Single(r=>r.Id==task.RequestId).Intent.TargetTask);var goal=Destination(w,w.Requests.Single(r=>r.Id==target.RequestId).Intent.DestinationSite!.Value);
                     if(a.Number==1&&(c.Destination!=Meeting(w,target)||c.Appointment!=Appointment(w,target))||a.Number>1&&(c.Appointment<a.SentAt||c.Destination!="castle"&&c.Destination!=Meeting(w,target)&&c.Destination!=goal))throw new InvalidDataException("Courier address is not justified by original known mission");}
-                else if(c.Destination!="castle"||c.Appointment!=a.SentAt+1)throw new InvalidDataException("Ordinary order left its original address");
+                else if(c.Destination!=(TravelWorld.Enabled(w)&&message.SenderId==message.RecipientId?TravelWorld.SelfAddress(w,message.SenderId,a.SentAt):"castle")||c.Appointment!=a.SentAt+1)throw new InvalidDataException("Ordinary order left its original address");
             }
             if(a.LateDueAt!=null)throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
             if(!BranchRoutes.GraphNodes(w).Any(n=>n.Id==c.Destination)||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edges.Any(e=>e.Id==id)))throw new InvalidDataException("Invalid courier binding");
             for(int i=0;i<c.Legs.Length;i++){var l=c.Legs[i];var edge=edges.Single(e=>e.Id==l.Edge);
-                if(l.LengthMm<0||l.LengthMm>edge.LengthMm||l.EndAt-l.StartAt!=Seconds(l.LengthMm,edge.CourierSpeed)||l.StartAt<0||i==0&&(l.StartAt!=a.SentAt||l.From!=c.Origin)||i>0&&(l.StartAt!=c.Legs[i-1].EndAt||l.From!=c.Legs[i-1].To))throw new InvalidDataException("Invalid courier chronology");
+                if(l.LengthMm<0||l.LengthMm>edge.LengthMm||l.EndAt!=TravelWorld.End(w,edge,l.StartAt,true,l.LengthMm)||l.StartAt<0||i==0&&(l.StartAt!=a.SentAt||l.From!=c.Origin)||i>0&&(l.StartAt!=c.Legs[i-1].EndAt||l.From!=c.Legs[i-1].To))throw new InvalidDataException("Invalid courier chronology");
                 var ea=Node(w,edge.From);var eb=Node(w,edge.To);if(l.To!=ea&&l.To!=eb||i>0&&(l.From!=ea&&l.From!=eb||l.LengthMm!=edge.LengthMm))throw new InvalidDataException("Courier left its road");
                 if(i==0){decimal dx=eb.EastMm-ea.EastMm,dy=eb.NorthMm-ea.NorthMm,x=l.From.EastMm-ea.EastMm,y=l.From.NorthMm-ea.NorthMm;
                     var f=(x*dx+y*dy)/(dx*dx+dy*dy);var length=(l.To==ea?f:1-f)*edge.LengthMm;

@@ -282,7 +282,7 @@ public sealed class WorldSession
         if(!Permits(s,t.Issuer,i,s.ElapsedSeconds)||!Permits(s,t.Executor,i,s.ElapsedSeconds)||!s.Characters.Single(c=>c.Id==t.Executor).WillObey)
         {Stop(s,t,"unavailable");return;}
         var location=s.Locations.Single(l=>l.Actor==t.Executor);
-        if(location.Kind!=LocationKind.AtSite||location.Site!=t.Scope){Stop(s,t,"wrong-location");return;}
+        if(location.Kind!=LocationKind.AtSite||(!(TravelWorld.Enabled(s)&&t.Action==ActionKind.Move&&t.Issuer==t.Executor)&&location.Site!=t.Scope)){Stop(s,t,"wrong-location");return;}
         if(t.Action==ActionKind.Transfer)
         {
             var source=s.ResourceLots.Single(l=>l.Id==i.SourceLot);var dest=s.ResourceLots.Single(l=>l.Id==i.DestinationLot);

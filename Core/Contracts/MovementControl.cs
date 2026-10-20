@@ -80,7 +80,7 @@ public static class MovementControl
             if(task.Execution==ExecutionPhase.Completed){var learned=MessageFlow.LearnedAt(w.Messaging,WorldSession.Child("message",task.Id,"order").Value,task.Executor.Value);
                 if(learned==null||task.FinishedAt<learned||task.FinishedAt<i.EffectiveAt)throw new InvalidDataException("Control applied before reception/recognition/effective time");}
         }
-        foreach(var journey in w.Branches!.Journeys.Where(j=>j.Legs[^1].To=="castle"))
+        foreach(var journey in w.Branches!.Journeys.Where(j=>j.Legs[^1].To=="castle"&&!(TravelWorld.Enabled(w)&&w.Requests.Single(r=>r.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId).Intent.DestinationSite==ContractFixture.Castle)))
             if(!w.Tasks.Any(t=>t.Action==ActionKind.Redirect&&t.Execution==ExecutionPhase.Completed&&w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask==journey.Task&&
                 w.EffectLedger.Any(e=>e.Task==t.Id&&e.Result=="redirected"&&e.BusinessKey==t.Id.Value+"/finish/1")))throw new InvalidDataException("Changed destination lacks committed authority/effect");
     }

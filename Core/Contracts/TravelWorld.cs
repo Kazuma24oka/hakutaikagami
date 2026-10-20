@@ -1,0 +1,31 @@
+namespace HakutaiKagami.Core.Contracts;
+public sealed record RegionalPerson(string Id,string Name,string House,string HouseName,string Home,string Source);
+// New ruleset: immutable older national journeys retain their original timing.
+public static class TravelWorld
+{
+    public const string Ruleset="national-personal-travel-v1";
+    public const int BoardingSeconds=300,DepartureInterval=3600;
+    public static RegionalPerson[] People=>[
+        new("nobunaga","織田信長","oda","織田家","castle","https://www.city.kiyosu.aichi.jp/shisetsu_annai/kanko_shisetsu_sonota/kiyosujo.html"),
+        new("shingen","武田信玄","takeda","武田家","kofu","https://www.pref.yamanashi.jp/bunka/maibun/yamanashinobunkazai_sb0003.html"),
+        new("ujiyasu","北条氏康","hojo","北条家","odawara","https://www.city.odawara.kanagawa.jp/encycl/neohojo5/012/")];
+    public static string Version{get;}=ContractJson.CanonicalHash(new[]{NationalRoutes.Version,"personal-arrival-origin-v1","port-preparation-300-hourly-3600-v1",ContractJson.CanonicalHash(People)});
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static ContractWorld Create(){var w=NationalRoutes.Create();w.WorldId=new("world:national-personal-travel-v1");w.Definitions=w.Definitions with{Id=new("scenario:national-personal-travel-v1"),Ruleset=Ruleset,Version=Version};
+        var basis=new EntityId("basis:historical-home-seed");w.Definitions=w.Definitions with{Characters=[..w.Definitions.Characters,..People.Select(p=>new DefinitionEntry(new("person:"+p.Id),p.Name))],Organizations=[..w.Definitions.Organizations,..People.Select(p=>new DefinitionEntry(new("org:"+p.House),p.HouseName))],AuthorityBases=[..w.Definitions.AuthorityBases,new(basis,"史料による所属・本拠候補。初期所在地は試作配置") ]};
+        foreach(var p in People){var id=new EntityId("person:"+p.Id);w.Characters=[..w.Characters,new(id,LifeState.Adult,new("appearance:fixture"),0)];w.Locations=[..w.Locations,new(id,LocationKind.AtSite,RegionalCampaign.Site(p.Home),null,0,0,null,null,null,null,0)];w.Memberships=[..w.Memberships,new(new("membership:historical/"+p.Id),id,new("org:"+p.House),"membership",basis,0,long.MaxValue,0)];}
+        ContractValidation.Validate(w);return w;}
+    public static string Origin(ContractWorld w,EntityId actor)=>RegionalCampaign.Destination(w,w.Locations.Single(l=>l.Actor==actor).Site??throw new InvalidDataException("Travel requires arrival"));
+    public static long Departure(ContractWorld? w,string edge,long at,bool full=true)=>w!=null&&Enabled(w)&&NationalRoutes.Sea(edge)&&full?checked(((at+BoardingSeconds+DepartureInterval-1)/DepartureInterval)*DepartureInterval):at;
+    public static long End(ContractWorld? w,BranchEdge e,long at,bool courier=false,long? length=null){var mm=length??e.LengthMm;var speed=courier?e.CourierSpeed:e.FootSpeed;return checked(Departure(w,e.Id,at,mm==e.LengthMm)+Math.Max(1,(mm+speed-1)/speed));}
+    public static long Progress(ContractWorld w,JourneyLeg l,long at)=>Math.Clamp((at-Departure(w,l.Edge,l.StartAt))*BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).FootSpeed,0,BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm);
+    public static bool Active(ContractWorld w)=>w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Action==ActionKind.Move&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));
+    public static Intent Move(ContractWorld w,string id,string destination){if(!Enabled(w)||Active(w))throw new InvalidDataException("Personal journey already pending");var actor=w.PlayerControl;var from=Origin(w,actor);if(from==destination)throw new InvalidDataException("Already at destination");var at=w.ElapsedSeconds+1;var path=BranchRoutes.Plan(from,destination,BranchRoutes.KnownBlocked(w,actor),w:w,departureAt:at);var legs=BranchRoutes.Schedule(from,path,at,w);var latest=checked(w.ElapsedSeconds+100000000);return new(new(id),actor,actor,ContractFixture.Castle,ActionKind.Move,null,null,0,RegionalCampaign.Site(destination),new(DeadlineCriterion.Completion,latest,false,null,latest),w.ElapsedSeconds,1,checked((int)(legs[^1].EndAt-at)),1,false,TaskKind.BindingOrder);}
+    public static void ValidateOrder(ContractWorld w,Intent i){var expected=Move(w,i.RequestId.Value,RegionalCampaign.Destination(w,i.DestinationSite??throw new InvalidDataException("Missing destination")));if(i!=expected)throw new InvalidDataException("Invalid personal travel intent");}
+    public static string InitialNode(EntityId actor)=>People.SingleOrDefault(p=>"person:"+p.Id==actor.Value)?.Home??"castle";
+    public static void Validate(ContractWorld w){
+        foreach(var actor in w.Characters){string previous=InitialNode(actor.Id);long finished=-1;foreach(var j in w.Branches!.Journeys.Where(j=>j.Actor==actor.Id)){var t=w.Tasks.Single(t=>t.Id==j.Task);var request=w.Requests.Single(r=>r.Id==t.RequestId);if(j.Legs[0].From!=previous||j.Legs[0].StartAt<=finished||request.Intent.Actor!=actor.Id||request.Intent.Executor!=actor.Id||RegionalCampaign.Site(j.Legs[^1].To)!=request.Intent.DestinationSite)throw new InvalidDataException("Journey lacks personal continuous origin");previous=j.Legs[^1].To;finished=t.FinishedAt??long.MaxValue;}}
+        foreach(var p in People){var id=new EntityId("person:"+p.Id);if(!w.Definitions.Characters.Contains(new(id,p.Name))||!w.Definitions.Organizations.Contains(new(new("org:"+p.House),p.HouseName))||w.Locations.Single(l=>l.Actor==id).Site!=RegionalCampaign.Site(p.Home)||!w.Memberships.Any(m=>m.Subject==id&&m.Target==new EntityId("org:"+p.House)))throw new InvalidDataException("Historical seed changed without definition migration");}
+    }
+    public static string SelfAddress(ContractWorld w,string actor,long at){var p=RegionalCampaign.ActorPointAt(w,new(actor),at);return BranchRoutes.GraphNodes(w).Single(n=>n.Position==p).Id;}
+}

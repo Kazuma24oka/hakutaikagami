@@ -1,5 +1,14 @@
 # 百代鏡：作業の入口
 
+## 全国での連続移動・出航待機（2026-10-20、最新）
+
+入口Scripts/Show-TravelWorld.ps1、TravelWorldV1。national-personal-travel-v1 / world:national-personal-travel-v1を独立追加。本人が現在地から選ぶ自己Move、清洲→堺→洲本→清洲を継続。現在Locationは最後の旅、過去の出発地・時系列・配送原点は全旅を保存検査。旧保存を読み替えない。通常Main・main・design/foundation・Confirmed保持。
+
+港は準備300秒＋毎時3600秒境界出航の試作便。本人・伝令・探索・表示・保存で同じ時刻、待機は距離0/idle、出航後は簡易船。定員・運休・料金・天候未実装。信長/織田家/清洲、信玄/武田家/甲府、氏康/北条家/小田原の出典付き静止NPC3名。本拠候補を使った初期配置で当日の所在復元ではない。政治領土・全国AI未設定。外見は汎用試作。80m外の生位置を描画しない。
+
+Core646件（新15）、実Godot3プロセス14検査14PNG、4段階保存の別プロセス復旧と続行8比較で3D差分0。26秒624フレーム実動画。verify_travel_world.py→実画像点検→check_travel_binding.py、入力/DLL/元資産/出力/自己レビューを結合。runtime-localはローカルのみ。マウス操作なし。Docs/Decisions/2026-10-20_TRAVEL_WORLD_V1.md参照。次は本人の道中での行先変更・港で出航取りやめ。その後運休・人物勢力任務を拡充。粗い海岸線と平面地形、仮の箱船を史実の地形/港復元と呼ばない。共通ソース変更で旧bindingは失効。
+
+
 ## 全国規模の地理・移動基盤（2026-10-20、最新方針）
 
 ユーザーは厳密な測量を不要とし、概略整合で全国規模まで進めることを指示。以前の測量資料待ちを全国拡張の条件にしない。別ruleset national-inferred-routes-v1 / world:national-inferred-routes-v1で108拠点118区間（陸106／海12）を接続。蝦夷地南部・対馬・琉球を含む地理的接続で政治所有は未設定。主要拠点網であり、すべての城・全国NPCの完成ではない。既存定義や保存は読み替えない。通常Main・main・design/foundation・Confirmedは保持。
