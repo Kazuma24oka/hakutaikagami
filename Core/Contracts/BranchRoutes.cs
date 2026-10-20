@@ -21,7 +21,7 @@ public static class BranchRoutes
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||MovementControl.Enabled(w)||RegionalBranch.Enabled(w);
     public static BranchNode[] GraphNodes(ContractWorld? w=null)=>w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Nodes:Nodes;
     public static BranchEdge[] GraphEdges(ContractWorld? w=null)=>w!=null&&RegionalBranch.Enabled(w)?RegionalBranch.Edges:Edges;
-    public static string GraphVersion(ContractWorld w)=>RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
+    public static string GraphVersion(ContractWorld w)=>RegionalControl.Enabled(w)?RegionalControl.Version:RegionalBranch.Enabled(w)?RegionalBranch.Version:MovementControl.Enabled(w)?MovementControl.Version:Version;
     public static ContractWorld Create(bool passBlocked=true)
     {
         var w=ContractFixture.Create();w.Schema=2;w.WorldId=new("world:branch-fixture");
@@ -138,7 +138,7 @@ public static class BranchRoutes
     }
     public static void Validate(ContractWorld w)
     {
-        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
+        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=GraphVersion(w)||w.Definitions.Id!=new EntityId(RegionalControl.Enabled(w)?"scenario:owari-control-v1":RegionalBranch.Enabled(w)?"scenario:owari-branches-v1":MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
         if(RegionalBranch.Enabled(w))RegionalBranch.ValidateSites(w);
         if(w.Locations.Single(l=>l.Actor==ContractFixture.Lord).Site!=ContractFixture.Castle||!RegionalBranch.Enabled(w)&&!w.Definitions.Sites.Select(s=>s.Id).ToHashSet().SetEquals(new[]{ContractFixture.Castle,ContractFixture.Village}))throw new InvalidDataException("Unsupported graph fixture sites");
         var graph=w.Branches;var edges=GraphEdges(w).Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);

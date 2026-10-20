@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 尾張の道中取消・帰城変更（2026-10-20、後続）
+
+[契約・実測・限界](Decisions/2026-10-20_REGIONAL_CONTROL_V1.md)。熱田での受渡し、受領・開封・効力の分離、現在位置停止と次の分岐からの帰城。全Core544件、実Godot40検査・4プロセス・26枚。8保存の復旧・続行16比較が差分0画素。[入力ハッシュと実行結果](Design/RegionalControlV1/verification.json)。入口 `Scripts/Show-RegionalControl.ps1`。今回以降、ユーザーから求められるまで検証HTMLを必須としません。
+
 ## 尾張の分岐・未知封鎖・迂回（2026-10-20、後続）
 
 **[実画面付きHTML報告](Design/RegionalBranchV1/report.html)**。熱田で目撃してから笠寺・丹下へ迂回。主君には遅延報告。Core525件、新19件、実Godot25検査・4プロセス・19枚。未知状態の全画面2比較と保存復旧・続行の3D6比較がすべて差分0。入口 `Scripts/Show-RegionalBranch.ps1`。[契約・出典・範囲](Decisions/2026-10-20_REGIONAL_BRANCH_V1.md)。実在代表点と検証用概略線で、道路・橋・封鎖の史実を復元したものではありません。次は道中の取消・行先変更へ進みます。

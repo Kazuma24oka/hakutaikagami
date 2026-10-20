@@ -263,3 +263,10 @@ Docs/Design/RegionalBranchV1/** -text
 Scripts/Show-RegionalBranch.ps1 -text
 Scripts/build_regional_branch_report.py -text
 Scripts/verify_regional_branch_report.cjs -text
+
+Core/Contracts/RegionalControl.cs -text
+Tests/RegionalControlTests.cs -text
+Game/Scripts/RegionalControlTrial.cs -text
+Game/Scenes/RegionalControlTrial.tscn -text
+Docs/Design/RegionalControlV1/** -text
+Scripts/Show-RegionalControl.ps1 -text

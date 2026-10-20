@@ -1,5 +1,17 @@
 # 百代鏡：作業の入口
 
+## 尾張での道中取消・帰城変更（2026-10-20、後続）
+
+入口Scripts/Show-RegionalControl.ps1。ユーザー指示により今回の検証HTMLは作成しない。Docs/Decisions/2026-10-20_REGIONAL_CONTROL_V1.mdとDocs/Design/RegionalControlV1/verification.jsonを参照。新ruleset owari-movement-control-v1、schema2。既存地域の5拠点・概略線・出典・CC BYクレジットを維持し、旧保存を新規則へ読み替えない。通常Mainは保持。
+
+熱田の既知待合せを使用。使者の最低所要5828秒と予定到達11656秒を使い、早い使者は待合せまで待つ。宛先の生位置で配送所要を算出しない。実到達時の本人位置照合だけが受領を許可する。通り過ぎていれば受領せず、失敗報告も遅延配送。動く相手の任意追跡・使者自身の経路と3D・再指定は未実装。
+
+受領・未開封・開封・効力を分離。例：5秒発送、11656秒受領・重要書状で停止、11658秒開封、11660秒効力。取消はその位置で停止。帰城変更は現在の熱田→笠寺区間を完歩して15590秒の笠寺から戻り、31179秒清洲着。到着済みの未開封命令は完了を巻き戻さない。再送・遅着原本と同時取消優先を検証。
+
+Core544件（新19）、実Godot40検査・4プロセス・26枚。両命令で配送中／未開封／効力待ち／適用後の4保存を別プロセス復旧し、続行を含む16比較で3D差分0画素。経路・効果台帳・配送・表示位相の継続一致も単体検査。verify_regional_control.py→実画像自己確認→check_regional_control_binding.pyで現行入力・DLL・資産・画像を照合。画像はruntime-localのみ。自己確認はユーザー採用ではない。
+
+次は伝令自身の移動・待合せ失敗後の再送／再指定をこの地域へ接続し、宛先の現在地を漏らさず到達・失敗・返報・保存復旧が一致することを検証する。検証HTMLはユーザーから再度求められるまで必須にしない。
+
 ## 尾張の分岐・未知封鎖・迂回（2026-10-20、後続）
 
 入口Scripts/Show-RegionalBranch.ps1、Docs/Design/RegionalBranchV1/report.html、Docs/Decisions/2026-10-20_REGIONAL_BRANCH_V1.md。新ruleset owari-geographic-branches-v1、world schema2／Branches保存を共用。Core/Data/owari-branches-v1.jsonは清洲・熱田・善照寺・笠寺観音・丹下の5代表点5概略区間。実道路・橋の線形や封鎖の史実ではない。距離は大円下限参考、速度は検証係数。

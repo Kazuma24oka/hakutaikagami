@@ -10,7 +10,7 @@ public static class RegionalBranch
     public static RegionalBranchCatalog Catalog=>ContractJson.Copy(catalog);
     public static string Version{get;}=ContractJson.CanonicalHash(new RegionalBranchBinding(catalog,JapanGeography.Projection));
     static RegionalBranchCatalog Read(){using var s=typeof(RegionalBranch).Assembly.GetManifestResourceStream("OwariBranchesV1")??throw new InvalidDataException("Missing branch catalog");using var m=new MemoryStream();s.CopyTo(m);return ContractJson.Read<RegionalBranchCatalog>(m.ToArray());}
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||w.Definitions.Ruleset==RegionalControl.Ruleset;
     public static BranchNode[] Nodes=>catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.Stop.LatitudeE7,n.Stop.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));}).ToArray();
     public static BranchEdge[] Edges=>catalog.Edges.Select(e=>e with{}).ToArray();
     public static SiteDefinition[] Sites=>catalog.Nodes.Select(n=>new SiteDefinition(n.Id=="castle"?ContractFixture.Castle:n.Id=="village"?ContractFixture.Village:new("site:"+n.Id),n.Stop.Name,n.Stop.LatitudeE7,n.Stop.LongitudeE7,0)).ToArray();
