@@ -26,8 +26,10 @@ public sealed class WorldSession
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
         change(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); ContractValidation.Validate(next); beforeCommit?.Invoke(); state = next;
     }
+    public CommandResult SetFormation(FieldRequest request,long revision){lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
+        if(state.Field?.Orders.Any(o=>o.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
         if(expectedRevision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");
         try{if(state.Requests.Any(r=>r.Id==request.Id))throw new InvalidDataException("ID already used");var decision=TravelControl.Prepare(state,request);Change(s=>{s.TravelDecisions=[..s.TravelDecisions!,decision];TravelControl.ApplyDue(s);FlushOutbox(s);},beforeCommit);return new(ResultCode.Accepted,request.Id,state.CommitSequence,request.Destination==null?"出航を取りやめ、この港に留まりました":"次の拠点で行先を変更します");}
@@ -41,6 +43,7 @@ public sealed class WorldSession
             try{hash=ContractJson.CanonicalHash(intent);}
             catch(Exception e) when(e is System.Text.Json.JsonException or ArgumentException or InvalidOperationException)
             {return new(ResultCode.InvalidInput,intent.RequestId,state.CommitSequence,"入力条件を確認してください");}
+            if(state.Field?.Orders.Any(o=>o.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             if(state.TravelDecisions?.Any(d=>d.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             var old = state.Requests.SingleOrDefault(r => r.Id == intent.RequestId);
             if (old != null) return new(old.BodyHash == hash ? ResultCode.AlreadyAccepted : ResultCode.IdPayloadConflict,
@@ -50,6 +53,7 @@ public sealed class WorldSession
             {
                 ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
                 if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
+                if(FieldWorld.Enabled(state)&&state.Field!.Orders.Length>0&&Enumerable.Range(0,3).Any(i=>FieldWorld.Sample(state,i,state.ElapsedSeconds).Moving))throw new InvalidDataException("Local force still moving");
                 if(BranchRoutes.Enabled(state))BranchRoutes.ValidateOrder(state,intent);
                 checked { _ = state.ElapsedSeconds + intent.DeliverySeconds + intent.WorkSeconds + intent.ReportSeconds;
                     _ = intent.EffectiveAt + intent.WorkSeconds + intent.ReportSeconds;
@@ -140,7 +144,7 @@ public sealed class WorldSession
                     s.ElapsedSeconds=boundary;
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
-                    UpdateProgress(s);
+                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
                     MessageFlow.Advance(s.Messaging,boundary);
@@ -162,6 +166,7 @@ public sealed class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalCampaign.Enabled(s)&&RegionalCampaign.NextBoundary(s,target) is {} courierBoundary)times.Add(courierBoundary);
+        if(FieldWorld.Enabled(s)&&FieldWorld.NextBoundary(s,target) is {} fieldBoundary)times.Add(fieldBoundary);
         if(TravelControl.Enabled(s)&&TravelControl.NextBoundary(s,target) is {} personalBoundary)times.Add(personalBoundary);
         if(BranchRoutes.Enabled(s)&&BranchRoutes.NextBoundary(s,target) is {} graphBoundary)times.Add(graphBoundary);
         foreach(var t in s.Tasks.Where(t=>!Terminal(t)))

@@ -1,5 +1,16 @@
 # 百代鏡：作業の入口
 
+## 陸上道外移動・自由布陣（2026-10-20、最新）
+
+入口Scripts/Show-FieldWorld.ps1、national-land-field-v1 / world:national-land-field-v1。清洲の同じ全国座標・世界時計に接続した160m合成地形。史実の地形ではない。海路は固定航路を保持。自隊100人を40/30/30の3分隊へ分け、地面ドラッグの任意線の端・中点へ移動。自隊への現地指示で、他武将の遠隔操作ではない。10mセル4方向の中継探索、実目標は丸めず任意座標。道2m/s・平地1・森0.5・斜面0.4は検証係数。水面・崖・区画外を通さない。地形速度タグで、高低差描画は未実装。
+
+新規則のみFieldモジュール必須、旧規則は省略・存在拒否、保存を読み替えない。履歴を再計算して位置・経路・任意目標を検査し、256セルの地形/速度も定義版へ結合。既存WorldSessionの時計・原子的確定・世代保存を共用。AtPositionと同じ投影を使用。清洲の帰着点へ戻ればAtSiteで全国移動でき、戻って再び布陣できる。海路と全国往復はCore検査、今回の画面は局所布陣専用。
+
+Core699件（新15）、実Godot3プロセス、4保存点を別プロセス復旧・続行8比較で3D差分0。森林・斜面の実際の移動時刻を検査。地面ドラッグはGodot内部GuiInputで確認（マウス操作ツール不使用）。26秒624フレーム実動画。verify_field_world.py→実画像点検→check_field_binding.py。代表モデル拡大は占有幅でなく表示用、歩行位相を補正。到着方向は経路から決定、名称は整数画面座標へ。Docs/Decisions/2026-10-20_FIELD_WORLD_V1.md参照。
+
+全国地形・占有幅・分隊の衝突回避・接敵・敵AI・地形偵察は未実装。任意道外地点から全国道路へ自動接続せず、まず清洲帰着点を使う。次は経路の滑らかさと分隊同士の回避、その後接敵と他武将への命令配送。通常Main・main・design/foundation・Confirmed・未追跡素材保持。出力はruntime-local。共通ソース変更で旧bindingは失効し、旧GPU画像を転用しない。
+
+
 ## 通行止め・運休の競合（2026-10-20、最新）
 
 入口Scripts/Show-TrafficWorld.ps1（-Case road/detour/port/sailed）。national-traffic-conflicts-v1 / world:national-traffic-conflicts-v1、schema2のTrafficStopsを新規則だけ必須、他規則で省略・存在拒否。旧保存は読み替えない。条件は合成検証日程で史実ではない。通常Main・main・design/foundation・Confirmed・既存未追跡素材を保持。

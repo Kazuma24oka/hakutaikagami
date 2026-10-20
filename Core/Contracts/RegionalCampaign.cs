@@ -198,6 +198,7 @@ public static class RegionalCampaign
     }
     public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
     {
+        if(FieldWorld.Enabled(w)&&actor==w.PlayerControl&&w.Field!.Orders.Any(o=>o.At<=at)&&!(w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at)?.Legs[0].StartAt>w.Field.Orders.Last(o=>o.At<=at).At))return FieldWorld.ToWorld(FieldWorld.Sample(w,0,at).Position);
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor):"castle");
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
         var progress=Math.Clamp((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
