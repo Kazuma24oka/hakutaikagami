@@ -42,6 +42,7 @@ public sealed class WorldSession
             {
                 ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
                 if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
+                if(BranchRoutes.Enabled(state))BranchRoutes.ValidateOrder(state,intent);
                 checked { _ = state.ElapsedSeconds + intent.DeliverySeconds + intent.WorkSeconds + intent.ReportSeconds;
                     _ = intent.EffectiveAt + intent.WorkSeconds + intent.ReportSeconds;
                     _ = intent.Deadline.AbsoluteLatestAt + intent.WorkSeconds + intent.ReportSeconds; }
@@ -148,6 +149,7 @@ public sealed class WorldSession
         var times=s.Messaging.Attempts.SelectMany(a=>a.Status==AttemptStatus.InTransit?new[]{a.DueAt}:
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
+        if(BranchRoutes.Enabled(s)&&BranchRoutes.NextBoundary(s,target) is {} graphBoundary)times.Add(graphBoundary);
         foreach(var t in s.Tasks.Where(t=>!Terminal(t)))
         {
             long deadline=ExpiryLimit(s,t);
@@ -248,7 +250,8 @@ public sealed class WorldSession
             long progress=Math.Min(s.ElapsedSeconds-a.StartedAt,a.Until-a.StartedAt);
             s.Actions=s.Actions.Select(x=>x.Id==a.Id?x with{Progress=progress}:x).ToArray();
             var t=s.Tasks.Single(t=>t.Id==a.Task);
-            if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==a.Actor&&l.Kind==LocationKind.Traveling?
+            if(t.Action==ActionKind.Move&&BranchRoutes.Enabled(s)){if(!BranchRoutes.Advance(s,t))Stop(s,t,"route-unavailable");}
+            else if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==a.Actor&&l.Kind==LocationKind.Traveling?
                 l with{ProgressMm=RouteContract.Enabled(s)?RouteContract.DistanceAt(progress):checked(progress*1000),
                     SegmentIndex=RouteContract.Enabled(s)?RouteContract.Segment(RouteContract.DistanceAt(progress)):l.SegmentIndex,Revision=s.CommitSequence}:l).ToArray();
         }
@@ -274,10 +277,12 @@ public sealed class WorldSession
             {Stop(s,t,"resource-unavailable");return;}
             s.Reservations=[..s.Reservations,new(Child("reservation",t.Id,"resource"),source.Id,t.Id,i.Amount,0,ReservationPhase.Active)];
         }
-        var until=checked(s.ElapsedSeconds+i.WorkSeconds);
+        var until=t.Action==ActionKind.Move&&BranchRoutes.Enabled(s)?BranchRoutes.Start(s,t):checked(s.ElapsedSeconds+i.WorkSeconds);
         s.Actions=[..s.Actions,new(Child("action",t.Id,"main"),t.Id,t.Executor,"main",ExecutionPhase.Running,s.ElapsedSeconds,until,0)];
-        if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.Traveling,null,Child("route",t.Id,RouteContract.Enabled(s)?"corridor":"fixture"),0,0,null,null,null,RouteContract.Enabled(s)?RouteContract.Version:"fixture-local-v1",s.CommitSequence):l).ToArray();
+        if(t.Action==ActionKind.Move&&BranchRoutes.Enabled(s))s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?BranchRoutes.Location(s,t):l).ToArray();
+        else if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.Traveling,null,Child("route",t.Id,RouteContract.Enabled(s)?"corridor":"fixture"),0,0,null,null,null,RouteContract.Enabled(s)?RouteContract.Version:"fixture-local-v1",s.CommitSequence):l).ToArray();
         Replace(s,t with{Execution=ExecutionPhase.Running,StartedAt=s.ElapsedSeconds,Revision=s.CommitSequence});Schedule(s,t,EventKind.Finish,until);
+        if(t.Action==ActionKind.Move&&BranchRoutes.Enabled(s)&&!BranchRoutes.Advance(s,s.Tasks.Single(x=>x.Id==t.Id)))Stop(s,s.Tasks.Single(x=>x.Id==t.Id),"route-unavailable");
     }
     private static void Finish(ContractWorld s,TaskState t)
     {
@@ -322,7 +327,7 @@ public sealed class WorldSession
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.
         var text=reason=="completed"?"任務完了":reason=="too-late"?"既に完了済み":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
-        s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
+        s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,BranchRoutes.Enabled(s)?BranchRoutes.ReportDelay(s,task):RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
         var current=s.Tasks.Single(t=>t.Id==task.Id);Replace(s,current with{Report=ReportingPhase.Queued});
     }
     private static void FlushOutbox(ContractWorld s)
@@ -338,6 +343,8 @@ public sealed class WorldSession
     {
         foreach(var t in s.Tasks.Where(t=>!Terminal(t)).ToArray())if(s.ElapsedSeconds>ExpiryLimit(s,t))Stop(s,t,"expired",AgreementPhase.Expired);
     }
+    public BranchView GetBranchView(EntityId actor)
+    {lock(gate){if(!BranchRoutes.Enabled(state))throw new InvalidOperationException("Branch rules required");return BranchRoutes.View(state,GetActorView(actor));}}
     public RouteActorView GetRouteActorView(EntityId actor)
     {
         lock(gate)

@@ -21,12 +21,14 @@ public static class ContractValidation
     }
     private static void ValidateCore(ContractWorld s)
     {
-        Check(s.Schema == 1 && s.TimeDomain == "GameSecondsV1" && EntityId.IsValid(s.WorldId.Value), "Unknown world format/time domain.");
+        Check((s.Schema == 1 || s.Schema == 2 && BranchRoutes.Enabled(s)) && s.TimeDomain == "GameSecondsV1" && EntityId.IsValid(s.WorldId.Value), "Unknown world format/time domain.");
         Check(s.ElapsedSeconds >= 0 && s.CommitSequence >= 0 && DateOnly.TryParseExact(s.EpochDate, "yyyy-MM-dd", CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), "Invalid world clock.");
         var defs = s.Definitions;
+        Check(s.Schema==2 ? s.Branches!=null : s.Branches==null,"Graph module/schema mismatch");
+        if(BranchRoutes.Enabled(s))BranchRoutes.Validate(s);
         if(RouteContract.Enabled(s))RouteContract.Validate(s);
-        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset) && defs.MaxAttempts == 3,
+        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == BranchRoutes.Ruleset) && defs.MaxAttempts == 3,
             "Unsupported definition/ruleset; no silent production mapping.");
         var people = Keys(defs.Characters, c => c.Id, "character definitions");
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");

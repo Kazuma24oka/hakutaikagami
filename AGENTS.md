@@ -1,5 +1,13 @@
 # 百代鏡：作業の入口
 
+## 分岐経路・未知封鎖・迂回（2026-10-20、後続）
+
+入口Scripts/Show-BranchWorld.ps1、Docs/Design/BranchWorldV1/report.html、Docs/Decisions/2026-10-20_BRANCH_WORLD_V1.md。BranchRoutesの5地点5区間を秒基準の同じWorldSession／MessageFlowへ接続。探索は本人のEvidence＋Knowledgeのみを参照し、真実のBlockedEdgesを予定経路・予定時刻・描画へ漏らさない。区間入口で目撃して迂回し、歩いた区間は保存。主君は遅延報告で知る。
+
+世界Schema 2／保存Worldモジュール2はBranches必須。旧Schema 1は拡張を省略して従来形式を維持し、旧保存を自動変換しない。一本道／通常Mainは履歴として保持。変更入力のSHA、元アセット、DLL、画像レビューはScripts/check_branch_binding.pyで照合する。共通ソース更新により旧入口のbindingは失効し、過去の画像確認を新入力へ転用しない。
+
+全Core457件、新29件、Godot24検査・4プロセス・GPU27枚。未知封鎖の有無による本人／主君の全画素比較2件、目撃前／迂回途中復旧と続行の3D比較6件で差分0。検査はScripts/verify_branch_world.py、実画像を確認してレビューを更新。3D画像はruntime-local限定でGitに入れない。静的封鎖の小規模既知地図であり、動的な解除・通行権・全国・追跡配送は未実施。次は移動中の命令変更・取消と安全な停止。
+
 ## 新Coreと3D経路の接続（2026-10-20、後続）
 
 入口Scripts/Show-RouteWorld.ps1、Docs/Design/RouteWorldV1/report.html、Docs/Decisions/2026-10-20_ROUTE_WORLD_V1.md。RouteContractがmm・整数秒・区間別速度を固定し、依存ハッシュをDefinitionPack.Versionに保存する。新ルールcommon-route-fixture-v1を旧4秒移動と混同しない。新Core→本人用RouteActorView→既存3D骨格へ接続。通常Main・旧保存は保持。

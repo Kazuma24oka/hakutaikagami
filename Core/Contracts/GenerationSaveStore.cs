@@ -120,7 +120,7 @@ public sealed class GenerationSaveStore
             DurableWrite(Path.Combine(dest,"payload.json"),payload);DurableWrite(Path.Combine(dest,"presentation.json"),displayBytes);
             fault?.Invoke(SaveStage.PayloadWritten);
             var manifest=new SaveManifest(Format,1,snapshot.WorldId,generation,snapshot.CommitSequence,snapshot.TimeDomain,
-                new(StringComparer.Ordinal){{"World",1},{"Messaging",1},{"Resources",1}},expectedRules,RulesHash(expectedRules),expectedDefinitionHash,
+                new(StringComparer.Ordinal){{"World",snapshot.Schema},{"Messaging",1},{"Resources",1}},expectedRules,RulesHash(expectedRules),expectedDefinitionHash,
                 ContractJson.Hash(payload),payload.LongLength,ContractJson.Hash(displayBytes));
             var manifestBytes=ContractJson.Write(manifest);DurableWrite(Path.Combine(dest,"manifest.json"),manifestBytes);
             PrepareCore(slot,generation,null);fault?.Invoke(SaveStage.GenerationVerified);
@@ -163,7 +163,7 @@ public sealed class GenerationSaveStore
         if(manifest.Format!=Format||manifest.EnvelopeVersion!=1)throw new ContractLoadException(ResultCode.UnsupportedVersion,"Unsupported save envelope.");
         if(manifest.GenerationId!=generation||manifest.TimeDomain!="GameSecondsV1"||manifest.CommitSequence<0||manifest.PayloadByteLength<1||manifest.PayloadByteLength>MaximumPayloadBytes||
             !ContractValidation.IsHash(manifest.PayloadHash)||!ContractValidation.IsHash(manifest.PresentationHash))throw new InvalidDataException("Invalid manifest.");
-        if(manifest.SchemaVersions.Count!=3||!new[]{"World","Messaging","Resources"}.All(k=>manifest.SchemaVersions.GetValueOrDefault(k)==1))
+        if(manifest.SchemaVersions.Count!=3||manifest.SchemaVersions.GetValueOrDefault("World")!=(expectedRules==BranchRoutes.Ruleset?2:1)||!new[]{"Messaging","Resources"}.All(k=>manifest.SchemaVersions.GetValueOrDefault(k)==1))
             throw new ContractLoadException(ResultCode.UnsupportedVersion,"Unsupported module schema.");
         if(manifest.DefinitionHash!=expectedDefinitionHash||manifest.Ruleset!=expectedRules||manifest.RulesHash!=RulesHash(expectedRules))
             throw new ContractLoadException(ResultCode.DependencyMismatch,"Definition or rules dependency differs.");
@@ -173,7 +173,9 @@ public sealed class GenerationSaveStore
         var displayBytes=ReadBounded(Path.Combine(dir,"presentation.json"),16384);
         if(payload.LongLength!=manifest.PayloadByteLength||ContractJson.Hash(payload)!=manifest.PayloadHash||ContractJson.Hash(displayBytes)!=manifest.PresentationHash)
             throw new InvalidDataException("Payload/presentation hash or length mismatch.");
-        var world=ReadPayload(payload);ContractValidation.Validate(world);VerifyDefinitions(world.Definitions);
+        var world=ReadPayload(payload);
+        if(world.Schema!=manifest.SchemaVersions["World"])throw new InvalidDataException("Payload/manifest version mismatch");
+        ContractValidation.Validate(world);VerifyDefinitions(world.Definitions);
         if(world.WorldId!=manifest.WorldId||world.CommitSequence!=manifest.CommitSequence||world.TimeDomain!=manifest.TimeDomain)throw new InvalidDataException("Mixed save generation.");
         var display=ContractJson.Read<SavePresentation>(displayBytes);ValidatePresentation(display);
         return new(world,this,slot,generation,manifest.PayloadHash,ContractJson.Hash(manifestBytes),manifest.PresentationHash,display);

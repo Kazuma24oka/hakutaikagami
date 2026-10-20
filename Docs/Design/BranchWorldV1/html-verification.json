@@ -1,0 +1,17 @@
+{
+  "status": "PASSED",
+  "results": [
+    {
+      "width": 1440,
+      "images": 8,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "images": 8,
+      "overflow": false,
+      "errors": []
+    }
+  ]
+}

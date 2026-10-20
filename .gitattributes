@@ -208,3 +208,15 @@ Scripts/Show-RouteWorld.ps1 -text
 Scripts/build_route_report.py -text
 Scripts/verify_route_report.cjs -text
 Docs/Design/RouteWorldV1/** -text
+
+Core/Contracts/BranchRoutes.cs -text
+Tests/BranchRouteTests.cs -text
+Game/Scripts/BranchWorldTrial.cs -text
+Game/Scenes/BranchWorldTrial.tscn -text
+Scripts/verify_branch_world.py -text
+Scripts/check_branch_binding.py -text
+Scripts/Show-BranchWorld.ps1 -text
+Docs/Design/BranchWorldV1/** -text
+
+Scripts/build_branch_report.py -text
+Scripts/verify_branch_report.cjs -text

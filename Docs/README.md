@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 分岐経路と迂回（2026-10-20、後続）
+
+**[分岐経路・未知封鎖・保存復旧のHTML報告](Design/BranchWorldV1/report.html)**。本人の認識だけで経路探索し、現地目撃後に迂回。主君には遅延報告。全Core457件、新29件、Godot24検査、GPU27枚。未知封鎖2比較と復旧・続行6比較で画素差分0。入口 `Scripts/Show-BranchWorld.ps1`。[契約・新保存版・限界](Decisions/2026-10-20_BRANCH_WORLD_V1.md)。静的封鎖の小規模架空グラフまでで、全国・動的な解除・通常Main移行は未実施です。
+
 ## 新Coreと3D経路の接続（2026-10-20、後続）
 
 **[今回の短いHTML報告](Design/RouteWorldV1/report.html)**。架空の120m経路と区間別所要時間を固定し、新Coreの移動・委任・返報を既存3Dで表示。全Core428件、Godot15検査、GPU20枚、同一／別プロセス復旧の3D画素差分0を確認。入口 `Scripts/Show-RouteWorld.ps1`。[契約と限界](Decisions/2026-10-20_ROUTE_WORLD_V1.md)。全国実地理・分岐経路・通常Mainの移行は未実施。下記の412件報告は前段の履歴です。
