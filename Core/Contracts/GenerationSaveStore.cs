@@ -6,7 +6,8 @@ namespace HakutaiKagami.Core.Contracts;
 public enum SaveStage { SnapshotCaptured, PayloadWritten, GenerationVerified, PreviousPublished, CurrentPublished }
 public sealed class ContractLoadException(ResultCode code,string message,Exception? inner=null) : IOException(message,inner)
 { public ResultCode Code { get; } = code; }
-public sealed record SavePresentation(double DisplayFraction, int DisplaySpeed, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? ScenerySkin=null);
+public sealed record SaveWorldCamera(long X,long Y,double Span,double Yaw,bool Follow,bool Improved);
+public sealed record SavePresentation(double DisplayFraction, int DisplaySpeed, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? ScenerySkin=null,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] SaveWorldCamera? WorldCamera=null);
 public sealed record SaveManifest(string Format,int EnvelopeVersion,EntityId WorldId,string GenerationId,long CommitSequence,
     string TimeDomain,Dictionary<string,int> SchemaVersions,string Ruleset,string RulesHash,string DefinitionHash,
     string PayloadHash,long PayloadByteLength,string PresentationHash);
@@ -163,7 +164,7 @@ public sealed class GenerationSaveStore
         if(manifest.Format!=Format||manifest.EnvelopeVersion!=1)throw new ContractLoadException(ResultCode.UnsupportedVersion,"Unsupported save envelope.");
         if(manifest.GenerationId!=generation||manifest.TimeDomain!="GameSecondsV1"||manifest.CommitSequence<0||manifest.PayloadByteLength<1||manifest.PayloadByteLength>MaximumPayloadBytes||
             !ContractValidation.IsHash(manifest.PayloadHash)||!ContractValidation.IsHash(manifest.PresentationHash))throw new InvalidDataException("Invalid manifest.");
-        if(manifest.SchemaVersions.Count!=3||manifest.SchemaVersions.GetValueOrDefault("World")!=(expectedRules==BranchRoutes.Ruleset||expectedRules==MovementControl.Ruleset||expectedRules==RegionalBranch.Ruleset||expectedRules==RegionalControl.Ruleset||expectedRules==RegionalCampaign.Ruleset||expectedRules==RiverRoads.Ruleset||expectedRules==HistoricalRoads.Ruleset||expectedRules==RegionalScenery.Ruleset||expectedRules==RegionalBattle.Ruleset||expectedRules==FieldWorld.Ruleset||expectedRules==TrafficWorld.Ruleset||expectedRules==TravelControl.Ruleset||expectedRules==TravelWorld.Ruleset||expectedRules==NationalRoutes.Ruleset?2:1)||!new[]{"Messaging","Resources"}.All(k=>manifest.SchemaVersions.GetValueOrDefault(k)==1))
+        if(manifest.SchemaVersions.Count!=3||manifest.SchemaVersions.GetValueOrDefault("World")!=(expectedRules==BranchRoutes.Ruleset||expectedRules==MovementControl.Ruleset||expectedRules==RegionalBranch.Ruleset||expectedRules==RegionalControl.Ruleset||expectedRules==RegionalCampaign.Ruleset||expectedRules==RiverRoads.Ruleset||expectedRules==HistoricalRoads.Ruleset||expectedRules==ContinuousWorld.Ruleset||expectedRules==RegionalScenery.Ruleset||expectedRules==RegionalBattle.Ruleset||expectedRules==FieldWorld.Ruleset||expectedRules==TrafficWorld.Ruleset||expectedRules==TravelControl.Ruleset||expectedRules==TravelWorld.Ruleset||expectedRules==NationalRoutes.Ruleset?2:1)||!new[]{"Messaging","Resources"}.All(k=>manifest.SchemaVersions.GetValueOrDefault(k)==1))
             throw new ContractLoadException(ResultCode.UnsupportedVersion,"Unsupported module schema.");
         if(manifest.DefinitionHash!=expectedDefinitionHash||manifest.Ruleset!=expectedRules||manifest.RulesHash!=RulesHash(expectedRules))
             throw new ContractLoadException(ResultCode.DependencyMismatch,"Definition or rules dependency differs.");
@@ -206,6 +207,7 @@ public sealed class GenerationSaveStore
     }
     private static void ValidatePresentation(SavePresentation p)
     {
+        if(p.WorldCamera is {} c&&(!double.IsFinite(c.Span)||c.Span<40||c.Span>4000000||!double.IsFinite(c.Yaw)||Math.Abs(c.Yaw)>360000||Math.Abs(c.X)>4000000000L||Math.Abs(c.Y)>4000000000L))throw new InvalidDataException("Invalid world camera");
         if(p.ScenerySkin!=null&&!Regex.IsMatch(p.ScenerySkin,"^skin:[a-z0-9_-]{1,64}$"))throw new InvalidDataException("Invalid scenery skin ID");
         if(!double.IsFinite(p.DisplayFraction)||p.DisplayFraction<0||p.DisplayFraction>=1||!new[]{1,10,60,360}.Contains(p.DisplaySpeed))throw new InvalidDataException("Invalid presentation phase/speed.");
     }

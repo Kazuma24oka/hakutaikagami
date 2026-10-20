@@ -89,6 +89,8 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 public sealed class ContractWorld
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public TerrainAtlasState? Atlas { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public CourierState? Couriers { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TravelDecision[]? TravelDecisions { get; set; }

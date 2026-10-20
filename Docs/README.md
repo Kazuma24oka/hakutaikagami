@@ -1,3 +1,5 @@
+最新の全国・連続地形：`../Scripts/Show-ContinuousWorld.ps1`。[7項目の実装契約・範囲](Decisions/2026-10-20_CONTINUOUS_WORLD_V1.md)、[操作手順](Design/ContinuousWorldV1/README.md)、[実測](Design/ContinuousWorldV1/verification.json)。全国108拠点のGPU巡回、774テスト、36保存点84画面比較、26秒実動画。全国地形と城郭は合成の試作。
+
 最新の背景交換基盤：`../Scripts/Show-SceneryAppearance.ps1`。[外観ID・固定配置・素材交換の契約](Decisions/2026-10-20_SCENERY_APPEARANCE_V1.md)、[素材交換手順](Design/SceneryAppearanceV1/README.md)、[実測](Design/SceneryAppearanceV1/verification.json)。道の材質・岩モデルを交換しても移動と保存復旧を維持。
 
 最新の3D背景：`../Scripts/Show-RegionalScenery.ps1`。[山・森・道・川・城と移動判定の共用、検証範囲](Decisions/2026-10-20_REGIONAL_SCENERY_V1.md)。実測は [検証記録](Design/RegionalSceneryV1/verification.json)。

@@ -344,3 +344,12 @@ Scripts/verify_scenery_appearance.py -text whitespace=blank-at-eol,blank-at-eof,
 Scripts/check_appearance_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/Show-SceneryAppearance.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Design/SceneryAppearanceV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/ContinuousWorld.cs -text
+Tests/ContinuousWorldTests.cs -text
+Game/Scripts/Continuous*.cs -text
+Game/Scenes/ContinuousWorldTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*continuous* -text
+Scripts/Show-ContinuousWorld.ps1 -text
+Docs/Design/ContinuousWorldV1/** -text
+Core/Data/japan-terrain-mask-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

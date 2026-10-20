@@ -1,3 +1,15 @@
+## 全国・連続地形（2026-10-20、最新）
+
+ユーザー「全部やって」：隣接地域・境界保存・全国拡縮・負荷制御・命令戦闘・全国展開・背景改善の7項目を独立試作へ統合。入口Scripts/Show-ContinuousWorld.ps1、continuous-world-v1 / world:continuous-world-v1。Docs/Decisions/2026-10-20_CONTINUOUS_WORLD_V1.md と Docs/Design/ContinuousWorldV1/README.md を参照。
+
+全国108拠点118経路を保持し、既存概略海岸線の陸海マスクと合成地形を共通10m格子・80m区画で遅延生成。最大25区画/12800地面三角形、遠方は詳細0。世界の秒時計・物理配送/返報・拒否・権限・接敵/同時損害/敗走は既存Core。地形三角形・経路切断・保存高さ・足元・地面選択を共用。640m/16384セルの局所探索、長距離は帰還/拠点経由で既存街道と固定海路。到着後に展開しても他武将・損害・過去の目撃を初期化しない。
+
+新規則だけAtlas必須。旧世界/保存を読み替えず、世代保存の任意WorldCamera/ScenerySkinでカメラと外観を復元。実UIの再開ボタンで復旧後の続行も確認。全国は全海岸線の画面収まりを検査。人物のLODは保存カメラから決定的に選択。道/岩/植生/砦を段階的に改善し、既存の外観ID・材質/静的scene契約を再利用する。指定した道テクスチャを上書きしないこと、396実岩モデルの読込も確認。
+
+Core774件（追加16）、実Godot25プロセス12ケース36保存点、GPU387検査、84比較差分0、168比較PNG。全国108拠点の実GPU巡回、26秒624フレーム動画のデコード/実画像点検済み。件数とSHAの正本はDocs/Design/ContinuousWorldV1/verification.json。verify_continuous_world.py→実画像点検→check_continuous_binding.py。runtime-localは生成証拠、マウス操作ツール不使用。通常Main・main・design/foundation・Confirmed・旧素材保持。共通コード変更により旧bindingは再検証まで失効。
+
+全国の起伏・川・城郭の史実復元、固有城郭の制作、全城収録、全国NPC大量配置/AI、数万部隊の性能保証、中間倍率の立体LODは未実装。合成道路と全国リンクの全線形を詳細再現したものではない。集合位置は拠点代表点付近の試作で、城門内外の連続歩行演出は未実装。伝令の専用キャラ描画は新画面では未実装（物理経路と返報・UI結果は接続）。次は平時任務・軍議からこの共通世界へつなぐプレイループ、その後固有地形/城郭・中間LODを改善。
+
 ## 背景外観の差し替え（2026-10-20、最新）
 
 入口Scripts/Show-SceneryAppearance.ps1。Docs/Decisions/2026-10-20_SCENERY_APPEARANCE_V1.md と Docs/Design/SceneryAppearanceV1/README.md を参照。外観ID・地域名前空間付き固定配置・安定したvariantキー・材質/静的scene対応表を分離。道は共有地形の材質交換、岩は静的モデル交換を実検証。制作基準寸法・地面中央ピボット・占有範囲を検査し、欠損/不適合は通知して手続き形状へ戻す。見た目を理由に移動判定を変更しない。
