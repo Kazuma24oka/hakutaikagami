@@ -51,7 +51,7 @@ public sealed class WorldSession
             { return new(ResultCode.InvalidInput,intent.RequestId,state.CommitSequence,"入力条件を確認してください"); }
             if (intent.Deadline.AbsoluteLatestAt < state.ElapsedSeconds || intent.Deadline.At < state.ElapsedSeconds ||
                 !Permits(state,intent.Actor,intent,state.ElapsedSeconds)) return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"現在は実行できません");
-            if (intent.Action == ActionKind.Cancel && !state.Tasks.Any(t=>t.Id==intent.TargetTask && t.Scope==intent.Scope && t.Executor==intent.Executor && (t.Issuer==intent.Actor || t.Executor==intent.Actor)))
+            if ((intent.Action is ActionKind.Cancel or ActionKind.Redirect) && !state.Tasks.Any(t=>t.Id==intent.TargetTask && t.Scope==intent.Scope && t.Executor==intent.Executor && (t.Issuer==intent.Actor || t.Executor==intent.Actor)))
                 return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"現在は実行できません");
             Change(s => {
                 var taskId = Allocate(s,"task");
@@ -132,7 +132,9 @@ public sealed class WorldSession
                     s.ElapsedSeconds=boundary;
                     UpdateProgress(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
-                    MessageFlow.Advance(s.Messaging,boundary); // Existing common transport, not a second delivery simulator.
+                    if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
+                    MessageFlow.Advance(s.Messaging,boundary);
+                    if(MovementControl.Enabled(s))MovementControl.ReportFailures(s); // Existing common transport, not a second delivery simulator.
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
@@ -212,6 +214,16 @@ public sealed class WorldSession
             else if(Terminal(target))Complete(s,t,target.Execution==ExecutionPhase.Completed?"too-late":"already-stopped");
             else{Stop(s,target,"cancelled");Complete(s,t,"cancelled");}
         }
+        foreach(var t in s.Tasks.Where(t=>!Terminal(t)&&t.Action==ActionKind.Redirect&&t.Agreement==AgreementPhase.Active).ToArray())
+        {
+            if(t.EffectiveAt>s.ElapsedSeconds){Schedule(s,t,EventKind.Cancel,t.EffectiveAt);continue;}
+            var i=IntentFor(s,t);var target=s.Tasks.Single(x=>x.Id==i.TargetTask);
+            if(!MovementControl.Enabled(s)||!Permits(s,t.Issuer,i,s.ElapsedSeconds)||!Permits(s,t.Executor,i,s.ElapsedSeconds)){Stop(s,t,"unavailable");continue;}
+            bool applied=MovementControl.Redirect(s,t,target);
+            var reason=applied?"redirected":target.Execution==ExecutionPhase.Completed?"too-late":target.Execution==ExecutionPhase.Stopped?"already-stopped":"unavailable";
+            s.EffectLedger=[..s.EffectLedger,new(Child("effect",t.Id,"finish"),t.Id.Value+"/finish/1",ContractJson.CanonicalHash(i),t.Id,s.ElapsedSeconds,reason)];
+            s.PendingEvents=s.PendingEvents.Where(e=>e.Task!=t.Id).ToArray();Complete(s,t,reason);
+        }
         var due=s.PendingEvents.Where(e=>e.At<=s.ElapsedSeconds).ToArray();
         var unprocessed=due.ToList();
         while(unprocessed.Count>0)
@@ -224,7 +236,7 @@ public sealed class WorldSession
             if(e.Kind==EventKind.Finish&&!Terminal(t))Finish(s,t);
             s.EffectLedger=[..s.EffectLedger,new(e.Id,"event/"+e.Id.Value,ContractJson.CanonicalHash(e),e.Task,s.ElapsedSeconds,"processed")];
         }
-        var waiting=s.Tasks.Where(t=>!Terminal(t)&&t.Action!=ActionKind.Cancel&&t.Agreement==AgreementPhase.Active&&t.Execution==ExecutionPhase.Waiting).ToArray();
+        var waiting=s.Tasks.Where(t=>!Terminal(t)&&t.Action is not(ActionKind.Cancel or ActionKind.Redirect)&&t.Agreement==AgreementPhase.Active&&t.Execution==ExecutionPhase.Waiting).ToArray();
         foreach(var t in waiting.Where(t=>t.EffectiveAt>s.ElapsedSeconds))Schedule(s,t,EventKind.Execute,t.EffectiveAt);
         var ready=waiting.Where(t=>t.EffectiveAt<=s.ElapsedSeconds).ToArray();
         foreach(var group in ready.GroupBy(t=>t.Executor))
@@ -302,7 +314,7 @@ public sealed class WorldSession
             s.Transfers=[..s.Transfers,new(Child("transfer",t.Id,"finish"),effect,i.SourceLot!.Value,i.DestinationLot!.Value,i.Amount,s.ElapsedSeconds)];
             s.Reservations=s.Reservations.Select(r=>r.Id==reservation.Id?r with{Consumed=r.Amount,Phase=ReservationPhase.Consumed}:r).ToArray();
         }
-        if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.AtSite,i.DestinationSite,null,0,0,null,null,null,null,s.CommitSequence):l).ToArray();
+        if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.AtSite,MovementControl.Enabled(s)?MovementControl.Destination(s,t):i.DestinationSite,null,0,0,null,null,null,null,s.CommitSequence):l).ToArray();
         s.Actions=s.Actions.Select(a=>a.Task==t.Id?a with{Phase=ExecutionPhase.Completed,Progress=a.Until-a.StartedAt}:a).ToArray();
         Complete(s,t,"completed");
     }
@@ -326,7 +338,7 @@ public sealed class WorldSession
         var id=Child("message",task.Id,"report");if(s.Outbox.Any(o=>o.Id==id))return;
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.
-        var text=reason=="completed"?"任務完了":reason=="too-late"?"既に完了済み":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
+        var text=reason=="completed"?"任務完了":reason=="redirected"?"行先変更を適用":reason=="too-late"?"既に完了済み":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
         s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,BranchRoutes.Enabled(s)?BranchRoutes.ReportDelay(s,task):RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
         var current=s.Tasks.Single(t=>t.Id==task.Id);Replace(s,current with{Report=ReportingPhase.Queued});
     }

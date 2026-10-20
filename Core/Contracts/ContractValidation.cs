@@ -27,8 +27,10 @@ public static class ContractValidation
         var defs = s.Definitions;
         Check(s.Schema==2 ? s.Branches!=null : s.Branches==null,"Graph module/schema mismatch");
         if(BranchRoutes.Enabled(s))BranchRoutes.Validate(s);
+        if(MovementControl.Enabled(s))MovementControl.Validate(s);
+        Check(!s.Tasks.Any(t=>t.Action==ActionKind.Redirect)||MovementControl.Enabled(s),"Redirect requires registered rules");
         if(RouteContract.Enabled(s))RouteContract.Validate(s);
-        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == BranchRoutes.Ruleset) && defs.MaxAttempts == 3,
+        Check(EntityId.IsValid(defs.Id.Value) && !string.IsNullOrWhiteSpace(defs.Version) && (defs.Ruleset == "common-core-fixture-v1" || defs.Ruleset == RouteContract.Ruleset || defs.Ruleset == BranchRoutes.Ruleset || defs.Ruleset == MovementControl.Ruleset) && defs.MaxAttempts == 3,
             "Unsupported definition/ruleset; no silent production mapping.");
         var people = Keys(defs.Characters, c => c.Id, "character definitions");
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");
@@ -101,7 +103,7 @@ public static class ContractValidation
                 (t.FinishedAt == null || t.FinishedAt >= 0 && t.FinishedAt <= s.ElapsedSeconds) &&
                 (t.Execution is not (ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed) || t.FinishedAt != null), "Invalid task.");
             var i = s.Requests.Single(r => r.Id == t.RequestId).Intent;
-            if(i.Action==ActionKind.Cancel)Check(i.TargetTask is {} target&&tasks.Contains(target)&&s.Tasks.Single(x=>x.Id==target).Scope==i.Scope&&
+            if(i.Action is ActionKind.Cancel or ActionKind.Redirect)Check(i.TargetTask is {} target&&tasks.Contains(target)&&s.Tasks.Single(x=>x.Id==target).Scope==i.Scope&&
                 s.Tasks.Single(x=>x.Id==target).Executor==i.Executor,"Cancellation targets wrong task/recipient/scope.");
             Check(t.Issuer == i.Actor && t.Executor == i.Executor && t.Scope == i.Scope && t.Action == i.Action && t.Kind == i.Kind && t.AbsoluteLatestAt == i.Deadline.AbsoluteLatestAt, "Task identity mismatch.");
             var r=s.Requests.Single(r=>r.Id==t.RequestId);var mid=WorldSession.Child("message",t.Id,"order");
@@ -165,7 +167,7 @@ public static class ContractValidation
             Check(e.Kind switch{
                 EventKind.Finish=>t.Execution==ExecutionPhase.Running&&s.Actions.Any(a=>a.Task==t.Id&&a.Phase==ExecutionPhase.Running&&a.Until==e.At),
                 EventKind.Execute=>t.Execution==ExecutionPhase.Waiting&&t.Agreement==AgreementPhase.Active&&t.EffectiveAt==e.At,
-                EventKind.Cancel=>t.Action==ActionKind.Cancel&&t.Agreement==AgreementPhase.Active&&t.EffectiveAt==e.At,
+                EventKind.Cancel=>(t.Action is ActionKind.Cancel or ActionKind.Redirect)&&t.Agreement==AgreementPhase.Active&&t.EffectiveAt==e.At,
                 _=>false},"Scheduled step contradicts task phase.");
             Check(e.DependsOn.All(d=>!pending.Contains(d)||s.PendingEvents.Single(x=>x.Id==d).At<=e.At),"Dependency is later than its consequence.");
         }
@@ -219,6 +221,7 @@ public static class ContractValidation
             ActionKind.Transfer => i.Amount > 0 && i.SourceLot != null && i.DestinationLot != null && i.SourceLot != i.DestinationLot && i.DestinationSite == null && i.TargetTask == null,
             ActionKind.Move => i.Amount == 0 && i.SourceLot == null && i.DestinationLot == null && i.DestinationSite != null && i.TargetTask == null,
             ActionKind.Inspect => i.Amount == 0 && i.SourceLot == null && i.DestinationLot == null && i.DestinationSite == null && i.TargetTask == null,
+            ActionKind.Redirect => i.Amount == 0 && i.SourceLot == null && i.DestinationLot == null && i.DestinationSite != null && i.TargetTask != null,
             ActionKind.Cancel => i.Amount == 0 && i.SourceLot == null && i.DestinationLot == null && i.DestinationSite == null && i.TargetTask != null,
             _ => false }, "Action payload mismatch.");
     }

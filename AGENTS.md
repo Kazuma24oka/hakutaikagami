@@ -1,5 +1,13 @@
 # 百代鏡：作業の入口
 
+## 移動中の制御と共有した全国像（2026-10-20、後続）
+
+製品目標は日本全国の多数の城・集落・街道。同一座標／世界時計で全国→地域→現地を連続表示する。局所の架空グラフは検証規模であり製品規模ではない。ユーザーは急ぎではなく、この像の共有を確認し、推奨順の続行を承認した。次は全国概略地図と主要城・拠点の配置へ進む。
+
+今回の入口Scripts/Show-MovementControl.ps1、Docs/Design/MovementControlV1/report.html、Docs/Decisions/2026-10-20_MOVEMENT_CONTROL_V1.md。MovementControlの新ルールを登録し、既知の分岐点での受渡し、受領／開封／効力の分離、取消時の現在位置保持、次の分岐からの帰城変更を実装。World schema2／既存配送・時計・効果台帳・保存を共用。任意地点への追跡・任意目的地・使者3Dは未実施。
+
+Core475件、新18件、実Godot58検査・4プロセス・29枚。発送中／未開封／効力待ち／適用後の各保存を両命令で別プロセス復旧し、16比較で3D差分0。合法な遅着原本＋正規再送の重複到達、同時取消優先もCore検査。Scripts/verify_movement_control.pyとcheck_movement_binding.pyで現行入力・画像・DLL・素材・レビューを照合する。入力変更で過去のbindingを転用しない。画像はローカル限定。
+
 ## 分岐経路・未知封鎖・迂回（2026-10-20、後続）
 
 入口Scripts/Show-BranchWorld.ps1、Docs/Design/BranchWorldV1/report.html、Docs/Decisions/2026-10-20_BRANCH_WORLD_V1.md。BranchRoutesの5地点5区間を秒基準の同じWorldSession／MessageFlowへ接続。探索は本人のEvidence＋Knowledgeのみを参照し、真実のBlockedEdgesを予定経路・予定時刻・描画へ漏らさない。区間入口で目撃して迂回し、歩いた区間は保存。主君は遅延報告で知る。

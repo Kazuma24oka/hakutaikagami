@@ -25,7 +25,7 @@ public readonly record struct SimTime(long Seconds)
 public enum LifeState { Adult, Minor, Dead }
 public enum LocationKind { AtSite, Traveling, AtPosition }
 public enum TaskKind { BindingOrder, VoluntaryRequest }
-public enum ActionKind { Inspect, Transfer, Move, Cancel }
+public enum ActionKind { Inspect, Transfer, Move, Cancel, Redirect }
 public enum ExecutionPhase { NotStarted, Waiting, Running, Suspended, PartiallyCompleted, Completed, Stopped, Failed }
 public enum AgreementPhase { Issued, AwaitingReceipt, AwaitingRecognition, AwaitingAssent, Active, Declined, Expired }
 public enum ReportingPhase { NotCreated, Queued, InTransit, KnownByRecipient }

@@ -220,3 +220,15 @@ Docs/Design/BranchWorldV1/** -text
 
 Scripts/build_branch_report.py -text
 Scripts/verify_branch_report.cjs -text
+
+Core/Contracts/MovementControl.cs -text
+Tests/MovementControlTests.cs -text
+Game/Scripts/MovementControlTrial.cs -text
+Game/Scenes/MovementControlTrial.tscn -text
+Scripts/verify_movement_control.py -text
+Scripts/check_movement_binding.py -text
+Scripts/Show-MovementControl.ps1 -text
+Docs/Design/MovementControlV1/** -text
+
+Scripts/build_movement_report.py -text
+Scripts/verify_movement_report.cjs -text

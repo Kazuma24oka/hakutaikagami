@@ -18,7 +18,7 @@ public static class BranchRoutes
     public static BranchEdge[] Edges=>[new("road","castle","fork",40000,2000,4000),new("pass","fork","village",80000,1000,2000),
         new("bypass-east","fork","east",40000,2000,4000),new("bypass-north","east","north",80000,1000,2000),new("bypass-west","north","village",40000,2000,4000)];
     public static string Version {get;}=ContractJson.CanonicalHash(new BranchCatalog(Nodes,Edges,"known-edges-dijkstra-time-ordinal-tie-v1",1,4));
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||MovementControl.Enabled(w);
     public static ContractWorld Create(bool passBlocked=true)
     {
         var w=ContractFixture.Create();w.Schema=2;w.WorldId=new("world:branch-fixture");
@@ -42,7 +42,7 @@ public static class BranchRoutes
     }
     static int Duration(BranchEdge e,bool courier=false)=>checked((int)((e.LengthMm+(courier?e.CourierSpeed:e.FootSpeed)-1)/(courier?e.CourierSpeed:e.FootSpeed)));
     public static long Duration(IEnumerable<string> path,bool courier=false)=>path.Sum(id=>(long)Duration(Edges.Single(e=>e.Id==id),courier));
-    static JourneyLeg[] Schedule(string from,string[] path,long at)
+    public static JourneyLeg[] Schedule(string from,string[] path,long at)
     {
         var result=new List<JourneyLeg>();foreach(var id in path){var e=Edges.Single(e=>e.Id==id);var to=e.From==from?e.To:e.From;
             var end=checked(at+Duration(e));result.Add(new(id,from,to,at,end));from=to;at=end;}return result.ToArray();
@@ -53,6 +53,8 @@ public static class BranchRoutes
         return i with{DeliverySeconds=1,WorkSeconds=action==ActionKind.Move?checked((int)Duration(Plan("castle","village",KnownBlocked(w,i.Executor)))):4,ReportSeconds=1};
     }
     public static void ValidateOrder(ContractWorld w,Intent i)
+    {if(MovementControl.Enabled(w))MovementControl.ValidateOrder(w,i);else ValidateOrdinaryOrder(w,i);}
+    public static void ValidateOrdinaryOrder(ContractWorld w,Intent i)
     {
         if(i.Actor!=ContractFixture.Lord||i.Executor==ContractFixture.Lord||i.Scope!=ContractFixture.Castle||i.DeliverySeconds!=1||i.ReportSeconds!=1||
             w.Locations.Single(l=>l.Actor==i.Executor).Site!=ContractFixture.Castle||
@@ -75,7 +77,7 @@ public static class BranchRoutes
         if(index>=0){var candidate=journey.Legs[index];
             if(w.Branches.BlockedEdges.Contains(candidate.Edge,StringComparer.Ordinal)){
                 Observe(w,task,candidate.Edge);
-                string[] path;try{path=Plan(candidate.From,"village",KnownBlocked(w,task.Executor));}catch(InvalidDataException){return false;}
+                string[] path;try{path=Plan(candidate.From,journey.Legs[^1].To,KnownBlocked(w,task.Executor));}catch(InvalidDataException){return false;}
                 journey=journey with{Legs=[..journey.Legs.Take(index),..Schedule(candidate.From,path,w.ElapsedSeconds)]};
                 w.Branches=w.Branches with{Journeys=w.Branches.Journeys.Select(j=>j.Task==task.Id?journey:j).ToArray()};
                 var end=journey.Legs[^1].EndAt;w.Actions=w.Actions.Select(a=>a.Task==task.Id?a with{Until=end}:a).ToArray();
@@ -131,16 +133,16 @@ public static class BranchRoutes
     }
     public static void Validate(ContractWorld w)
     {
-        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=Version||w.Definitions.Id!=new EntityId("scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
+        if(w.Schema!=2||w.Branches==null||w.Definitions.Version!=(MovementControl.Enabled(w)?MovementControl.Version:Version)||w.Definitions.Id!=new EntityId(MovementControl.Enabled(w)?"scenario:movement-control":"scenario:branch-fixture"))throw new InvalidDataException("Graph version/module missing");
         if(w.Locations.Single(l=>l.Actor==ContractFixture.Lord).Site!=ContractFixture.Castle||!w.Definitions.Sites.Select(s=>s.Id).ToHashSet().SetEquals(new[]{ContractFixture.Castle,ContractFixture.Village}))throw new InvalidDataException("Unsupported graph fixture sites");
         var graph=w.Branches;var edges=Edges.Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);
         if(graph.BlockedEdges.Distinct().Count()!=graph.BlockedEdges.Length||graph.BlockedEdges.Any(e=>!edges.Contains(e))||graph.Journeys.Select(j=>j.Task).Distinct().Count()!=graph.Journeys.Length)throw new InvalidDataException("Invalid graph references");
-        foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||j.Legs[0].From!="castle"||j.Legs[^1].To!="village")throw new InvalidDataException("Invalid journey endpoints");
+        foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||j.Legs[0].From!="castle"||(j.Legs[^1].To!="village"&&(!MovementControl.Enabled(w)||j.Legs[^1].To!="castle")))throw new InvalidDataException("Invalid journey endpoints");
             for(int i=0;i<j.Legs.Length;i++){var l=j.Legs[i];var e=Edges.Single(e=>e.Id==l.Edge);
                 if(l.StartAt<0||l.EndAt-l.StartAt!=Duration(e)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||
                     i==0&&l.StartAt!=task.StartedAt||i>0&&(l.StartAt!=j.Legs[i-1].EndAt||l.From!=j.Legs[i-1].To))throw new InvalidDataException("Invalid journey chronology");}
             var action=w.Actions.Single(a=>a.Task==task.Id);if(action.Until!=j.Legs[^1].EndAt||action.StartedAt!=task.StartedAt||action.Progress!=Math.Clamp((task.FinishedAt??w.ElapsedSeconds)-action.StartedAt,0,action.Until-action.StartedAt))throw new InvalidDataException("Journey/event completion mismatch");
-            var location=w.Locations.Single(l=>l.Actor==j.Actor);if(task.Execution==ExecutionPhase.Completed ? location.Kind!=LocationKind.AtSite||location.Site!=ContractFixture.Village : location!=(Location(w,task) with{Revision=location.Revision}))throw new InvalidDataException("Journey/location mismatch");}
+            var location=w.Locations.Single(l=>l.Actor==j.Actor);if(task.Execution==ExecutionPhase.Completed ? location.Kind!=LocationKind.AtSite||location.Site!=(MovementControl.Enabled(w)?MovementControl.Destination(w,task):ContractFixture.Village) : location!=(Location(w,task) with{Revision=location.Revision}))throw new InvalidDataException("Journey/location mismatch");}
         if(w.Tasks.Any(t=>t.Action==ActionKind.Move&&t.StartedAt!=null&&!graph.Journeys.Any(j=>j.Task==t.Id)))throw new InvalidDataException("Missing journey");
         foreach(var evidence in w.Evidence.Where(e=>e.Claim.StartsWith("route-block:",StringComparison.Ordinal))){
             var edge=Edges.Single(e=>e.Id==evidence.Claim[12..]);

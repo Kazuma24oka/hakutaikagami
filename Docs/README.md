@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 移動中の命令変更・取消（2026-10-20、後続）
+
+**[実画面付きHTML報告](Design/MovementControlV1/report.html)**。伝令の受渡し・開封・効力を分け、取消時の位置保持と次の分岐からの帰城変更を確認。Core475件、新18件、Godot58検査・GPU29枚、4段階の保存を両命令で復旧して16比較の3D画素差分0。入口 `Scripts/Show-MovementControl.ps1`。[共有した全国像・契約・限界](Decisions/2026-10-20_MOVEMENT_CONTROL_V1.md)。次は日本全国の概略地図と主要城・拠点へ進みます。
+
 ## 分岐経路と迂回（2026-10-20、後続）
 
 **[分岐経路・未知封鎖・保存復旧のHTML報告](Design/BranchWorldV1/report.html)**。本人の認識だけで経路探索し、現地目撃後に迂回。主君には遅延報告。全Core457件、新29件、Godot24検査、GPU27枚。未知封鎖2比較と復旧・続行6比較で画素差分0。入口 `Scripts/Show-BranchWorld.ps1`。[契約・新保存版・限界](Decisions/2026-10-20_BRANCH_WORLD_V1.md)。静的封鎖の小規模架空グラフまでで、全国・動的な解除・通常Main移行は未実施です。
