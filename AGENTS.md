@@ -1,3 +1,9 @@
+## 背景外観の差し替え（2026-10-20、最新）
+
+入口Scripts/Show-SceneryAppearance.ps1。Docs/Decisions/2026-10-20_SCENERY_APPEARANCE_V1.md と Docs/Design/SceneryAppearanceV1/README.md を参照。外観ID・地域名前空間付き固定配置・安定したvariantキー・材質/静的scene対応表を分離。道は共有地形の材質交換、岩は静的モデル交換を実検証。制作基準寸法・地面中央ピボット・占有範囲を検査し、欠損/不適合は通知して手続き形状へ戻す。見た目を理由に移動判定を変更しない。
+
+旧保存の省略可能ScenerySkinは基本外観、世界本体は不変。758テスト（追加20）、実Godot21プロセス10ケース30保存点、66画面一致比較は差分0。108PNG、26秒624フレーム動画、実画像点検済み。実測正本はverification.json。交換例は検証用の暫定素材。通常Main・main・design/foundation・Confirmed・旧素材保持、マウス操作不使用。旧bindingは共有コード変更で失効。次は隣接地域の境界・連続移動・保存復旧、その後全国負荷と背景品質。
+
 ## 一地域の3D背景（2026-10-20、最新）
 
 入口Scripts/Show-RegionalScenery.ps1、regional-scenery-v1 / world:regional-scenery-v1。Docs/Decisions/2026-10-20_REGIONAL_SCENERY_V1.md参照。160mの合成地域、頂点0〜43mの山、森、土の道、川、木橋、木柵の砦。歴史的な清洲の復元ではない。背景は手続き形状、武将は既存3D。

@@ -6,7 +6,7 @@ namespace HakutaiKagami.Core.Contracts;
 public enum SaveStage { SnapshotCaptured, PayloadWritten, GenerationVerified, PreviousPublished, CurrentPublished }
 public sealed class ContractLoadException(ResultCode code,string message,Exception? inner=null) : IOException(message,inner)
 { public ResultCode Code { get; } = code; }
-public sealed record SavePresentation(double DisplayFraction, int DisplaySpeed);
+public sealed record SavePresentation(double DisplayFraction, int DisplaySpeed, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? ScenerySkin=null);
 public sealed record SaveManifest(string Format,int EnvelopeVersion,EntityId WorldId,string GenerationId,long CommitSequence,
     string TimeDomain,Dictionary<string,int> SchemaVersions,string Ruleset,string RulesHash,string DefinitionHash,
     string PayloadHash,long PayloadByteLength,string PresentationHash);
@@ -206,6 +206,7 @@ public sealed class GenerationSaveStore
     }
     private static void ValidatePresentation(SavePresentation p)
     {
+        if(p.ScenerySkin!=null&&!Regex.IsMatch(p.ScenerySkin,"^skin:[a-z0-9_-]{1,64}$"))throw new InvalidDataException("Invalid scenery skin ID");
         if(!double.IsFinite(p.DisplayFraction)||p.DisplayFraction<0||p.DisplayFraction>=1||!new[]{1,10,60,360}.Contains(p.DisplaySpeed))throw new InvalidDataException("Invalid presentation phase/speed.");
     }
     public RecoveryCandidate[] RecoveryOptions(string slot)
