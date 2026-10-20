@@ -1,3 +1,5 @@
+最新の3D背景：`../Scripts/Show-RegionalScenery.ps1`。[山・森・道・川・城と移動判定の共用、検証範囲](Decisions/2026-10-20_REGIONAL_SCENERY_V1.md)。実測は [検証記録](Design/RegionalSceneryV1/verification.json)。
+
 最新の一地域統合検証：`../Scripts/Show-RegionalIntegration.ps1`。[6段階の実装・検証・範囲](Decisions/2026-10-20_REGIONAL_INTEGRATION_V1.md)。地形起伏・衝突回避・命令判断・接敵・士気退却・道路接続と保存復旧。実測は [検証記録](Design/RegionalIntegrationV1/verification.json) を参照。
 
 # 百代鏡 設計資料

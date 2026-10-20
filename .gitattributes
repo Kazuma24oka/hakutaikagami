@@ -322,3 +322,14 @@ Scripts/verify_regional_integration.py -text whitespace=blank-at-eol,blank-at-eo
 Scripts/check_integration_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/Show-RegionalIntegration.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Design/RegionalIntegrationV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Shared scenery geometry and validation preserve exact verified input bytes.
+Core/Contracts/RegionalScenery.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/RegionalSceneryTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/RegionalSceneryTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/RegionalSceneryRenderer.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/RegionalSceneryTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_regional_scenery.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_scenery_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-RegionalScenery.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/RegionalSceneryV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

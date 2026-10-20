@@ -1,3 +1,11 @@
+## 一地域の3D背景（2026-10-20、最新）
+
+入口Scripts/Show-RegionalScenery.ps1、regional-scenery-v1 / world:regional-scenery-v1。Docs/Decisions/2026-10-20_REGIONAL_SCENERY_V1.md参照。160mの合成地域、頂点0〜43mの山、森、土の道、川、木橋、木柵の砦。歴史的な清洲の復元ではない。背景は手続き形状、武将は既存3D。
+
+RegionalSceneryの512三角形・通行種別・木/城壁/建物/橋柵の矩形・城門経路を正本に、移動/所要/保存高さ/モデル足元/描画/地面選択を共用。新プロファイルだけ適用し、旧傾斜面の保存定義は維持。版違い読み替え禁止。城門は6m、中庭の奥から整列。樹冠と屋根庇は頭上装飾、地面の通行判定は矩形と半径1m。視線遮蔽・攻城・城内階層・全国地形は未実装。
+
+Core738件（新11）合格、実Godot9プロセス64検査40PNG。12保存点の復旧・続行24比較は3D差分0。26秒624フレーム動画。verify_regional_scenery.py→実画像点検→check_scenery_binding.py。件数とSHAはDocs/Design/RegionalSceneryV1/verification.jsonを正とする。森/橋/城/麓の実GPU復旧・続行比較と26秒動画。マウス操作ツール不使用、出力runtime-local、通常Main・main・design/foundation・Confirmed・旧素材保持。旧bindingは共有コード変更で再検証まで失効。次は複数地域の地形境界で移動・表示・保存を接続し、その後LOD/全国負荷と背景品質を調整。
+
 ## 一地域の6段階統合検証（2026-10-20、最新）
 
 ユーザー「検証、全部やってください」。入口Scripts/Show-RegionalIntegration.ps1、新ruleset regional-integrated-validation-v1 / world:regional-integrated-validation-v1。schema2のRegionは新規則だけ必須、旧保存は読み替えない。通常Main・main・design/foundation・Confirmed・旧素材を保持。HTMLは必要なし。

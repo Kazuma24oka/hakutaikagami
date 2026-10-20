@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "ruleset": "regional-scenery-v1",
+  "world": "world:regional-scenery-v1",
+  "scope": "160m synthetic landscape at existing Kiyosu projected anchor; not historical terrain or fort reconstruction",
+  "authoritative_catalog": "Core/Contracts/RegionalScenery.cs",
+  "shared_surface": "512 triangles;10m cell diagonals; piecewise planar integer millimeter height,0 to43m",
+  "navigation": "Road/grass/forest/slope speeds retained; water/cliff blocked; large height changes classify cliffs; route cost split at cell and triangle edges",
+  "features": "Forest trunk rectangles, fort foundation/palisade rectangles, bridge railing rectangles; unit radius1m clearance; canopies/roof eaves are overhead decoration",
+  "castle_gate": "6m east opening, courtyard approach waypoints and destinations fill the interior from the back",
+  "river_bridge": "Impassable level tributary, walkable10m crossing; deck top shares Core0m walking plane; posts fit rail rectangles",
+  "rendering": "Procedural low-poly lit meshes, deterministic spatial vertex colors, forest canopy, rock boulders limited to blocked cliff cells, wood/palisade fort and plank bridge; no new external artwork",
+  "gameplay_clock": "Existing WorldSession seconds and MessageFlow/Region modules; no separate visual simulation",
+  "appearance": "Existing local Officer3D assets; representative model scale2 with compensated walk stride",
+  "save_policy": "Separate ruleset and terrain hash includes vertices, kinds, obstacle catalog and waypoints; older profile not reinterpreted",
+  "verification_cases": [
+    "forest",
+    "bridge",
+    "castle",
+    "ridge"
+  ],
+  "verification": "Core regression, shared plane interpolation and footprints, multi-unit courtyard entry and full forest/bridge/fort sequence;12 save stages in independent GPU processes,24 viewport comparisons,26second video",
+  "limitations": [
+    "synthetic geometry, not historic reconstruction",
+    "one region; no national terrain streaming",
+    "no tree/terrain line-of-sight occlusion",
+    "2D ground footprints; no interior floors, climbing, destruction, siege or full3D body physics",
+    "terrain edges remain visible to show scope",
+    "test fixture cliffs and rivers deliberately exaggerated",
+    "conservative reservations can hold in congested narrow spaces"
+  ],
+  "references": [
+    "Docs/Decisions/2026-10-20_REGIONAL_INTEGRATION_V1.md",
+    "Docs/Design/CommonContractV1/COMMON_CONTRACT_V1.md",
+    "Docs/Design/BASIC_DESIGN_V1.md"
+  ]
+}
