@@ -1,0 +1,110 @@
+{
+  "status": "PASSED_WITH_NO_ADOPTION",
+  "decision": {
+    "Mode": "survey",
+    "Decision": {
+      "CanReplace": false,
+      "Reasons": [
+        "target-era-alignment-unproven",
+        "endpoints-or-centerline-unidentified",
+        "world-coordinate-reference-missing",
+        "coordinate-control-not-verified",
+        "coordinate-error-unbounded-or-too-large",
+        "metric-centerline-missing-or-degenerate",
+        "coordinate-authority-missing"
+      ],
+      "EvidenceHash": "88c1c959dbe6a9f084d101e069a2c34c2bcd23b54f6b2401848231df0785b3fa"
+    },
+    "ReplacementCount": 0,
+    "Refused": true,
+    "GeometryUnchanged": true,
+    "DefinitionUnchanged": true,
+    "WorldDefinition": "5410d5d60e317ee2d689dde8add3b79fb3b181c840778b1b5a10127aa6a6b883"
+  },
+  "inputs": {
+    "Core/Contracts/SurveyRoadReview.cs": "808db4bfb3474c67cb354934cb265c130b4f5aab9ff6eae3caaece4c12179acd",
+    "Core/Data/futamura-survey-review-v1.json": "d045183631fd1c6c4f2f1e437f4a981168a0958f63f3c05c38478555f8453fc7",
+    "Tests/SurveyRoadReviewTests.cs": "ae0d09c31f8a6f53cae5721ed6b4acbc4c2161778d28d8d35275b0ab9c569987",
+    "Tools/CommonContractProbe/Program.cs": "ac1c2957e01a4ef649d2e00659ac1f3c11032f4a2538859f4e860606dc7bf81b",
+    "Scripts/review_survey_roads.py": "1fd61e1483e13a2ee5c78244af406154bd991f6b30bf608cf42c1fe2f82e4efd",
+    "Docs/Design/SurveyRoadV1/source-manifest.json": "021234f98a932c336c2c44a5b22de6f7823a9e5accde3f25eea9d057baa90d4e"
+  },
+  "source_manifest_sha256": "021234f98a932c336c2c44a5b22de6f7823a9e5accde3f25eea9d057baa90d4e",
+  "godot_verification_file": "Docs/Design/HistoricalRoadV1/verification.json",
+  "godot_verification_sha256": "5caa2734138802b9c7a34db3236cca79037c32ae4b8402c9a82ae6c97adf5209",
+  "gpu_pixel_comparisons": {
+    "approach/restored-approach": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "final/continued-approach": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "quarter/restored-quarter": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "final/continued-quarter": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "half/restored-half": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "final/continued-half": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "passed/restored-passed": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    },
+    "final/continued-passed": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        243,
+        1368,
+        639
+      ]
+    }
+  },
+  "limitations": "No georeferenced/surveyed replacement accepted. Existing200m preview geometry retained. Source map inspected; actual geographic endpoints and1560 centerline not confirmed."
+}

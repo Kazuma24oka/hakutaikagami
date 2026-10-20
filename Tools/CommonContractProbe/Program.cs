@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 using HakutaiKagami.Core.Contracts;
 
 // Headless integration/foreign-process probe. Only writes into the explicitly supplied test root.
-if(args.Length!=2)throw new ArgumentException("Usage: CommonContractProbe exercise|restore|interrupt|peace <test-root>");
+if(args.Length!=2)throw new ArgumentException("Usage: CommonContractProbe exercise|restore|interrupt|peace|survey <test-root>");
 var mode=args[0];var store=new GenerationSaveStore(args[1],ContractFixture.Create().Definitions);
 WorldSession Load()
 {
@@ -30,6 +30,14 @@ object Continue(WorldSession session)
 object result;
 switch(mode)
 {
+    case "survey":
+    {
+        var candidate=SurveyRoadReview.Futamura();var decision=SurveyRoadReview.Evaluate(candidate,1560);
+        var before=HistoricalRoads.Create();var graph=ContractJson.CanonicalHash(HistoricalRoads.Edges);
+        bool refused=false;try{SurveyRoadReview.Replacement(candidate,1560);}catch(InvalidDataException){refused=true;}
+        result=new{Mode=mode,Decision=decision,ReplacementCount=0,Refused=refused,GeometryUnchanged=graph==ContractJson.CanonicalHash(HistoricalRoads.Edges),DefinitionUnchanged=before.Definitions.Version==HistoricalRoads.Create().Definitions.Version,WorldDefinition=before.Definitions.Version};break;
+    }
+
     case "exercise":
     {
         var s=new WorldSession(ContractFixture.Create());s.Draw(new("decision:first"),"decisions");

@@ -23,6 +23,7 @@
     "Core/Contracts/RegionalRoute.cs": "ef9f173c1b1584de9dfc11ac4c4fd5d7cd76a54a3b5d05d9944fe7eb2db190c2",
     "Core/Contracts/RiverRoads.cs": "1e64ed02e941ead4b8fb8d96f8c36e43f26bf038749942f5479a02ec49458adf",
     "Core/Contracts/RouteContract.cs": "8a74865f2143c356735437882b79b0b9b1196e34ad6b1ffaed34b371bf297132",
+    "Core/Contracts/SurveyRoadReview.cs": "808db4bfb3474c67cb354934cb265c130b4f5aab9ff6eae3caaece4c12179acd",
     "Core/Contracts/WorldSession.cs": "c4d612a83d3a94a3cca94687cdb2047adeee5a0bda25d0c601afc2a27fee5b62",
     "Core/Events/EventScheduler.cs": "a58b9f064263c6090be3cd5788349f47e68ecda70e22cc6049d43a0b234bd542",
     "Core/Messaging/MessageFlow.cs": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf",
@@ -61,6 +62,7 @@
     "Tests/RiverRoadTests.cs": "81b8a74e725facef34f4e92ea1ea9ec1c20b24f200f96d641c163f01e7fdba92",
     "Tests/RouteContractTests.cs": "7f53b473448d659192c0dcba7673bca8e5341cbcf3ea7662a12f12c234635265",
     "Tests/SharedProtocolTests.cs": "d92db64d8d5015204fa4ec41435d09d43a8e5873441f8e557acc71a6b59f535e",
+    "Tests/SurveyRoadReviewTests.cs": "ae0d09c31f8a6f53cae5721ed6b4acbc4c2161778d28d8d35275b0ab9c569987",
     "Tests/TaxSimulationTests.cs": "339005f92eb4d92510204e89db4c8b0f096cc35ec4f1fba3533264119e7175cd",
     "Game/Scripts/BranchWorldTrial.cs": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0",
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
@@ -104,19 +106,20 @@
     "Game/Scripts/RiverRoadTrial.cs": "b4a034a500cc5e80340f3fd454c060ca4aba5ff1d69d4f9a99f10f78d12831e3",
     "Game/Scripts/RouteWorldTrial.cs": "cbaa8fb9c51ca9437fc263f6fb3350446e4a237361afdd0058951a9142013109",
     "Game/Scripts/TaxPanel.cs": "02b6b0225992b3844420a00bc6b5d0d88094dce8185cf6be48d221b14ccd72ef",
+    "Core/Data/futamura-survey-review-v1.json": "d045183631fd1c6c4f2f1e437f4a981168a0958f63f3c05c38478555f8453fc7",
     "Core/Data/historical-roads-v1.json": "40f988f4a23201d8c1497afbc9a672610fcf91a2ba08a52bdf8506333c6dff3f",
     "Core/Data/owari-branches-v1.json": "c9534733dceb570591feef18c3cc3b59122283f0bc186907a96536576d896372",
     "Core/Data/owari-route-v1.json": "3d9b4405e8d060bc4682a6bc17306972dc31952261796a5c59190935ff77e8ed",
     "Core/Data/regional-expansion-v1.json": "b6aa50f3a5339afb9854840b00142c2298eee091029c84a7cc78364a8f8e7e6b",
     "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a",
-    "Core/HakutaiKagami.Core.csproj": "8b040a187ed43d2458804018ac13cf6a364e4e1092cb0ee6d274f0e98c4b2b7f",
+    "Core/HakutaiKagami.Core.csproj": "5636936800d6c31f83d1adb93d32fcbd5abae704b23dd8e52ce53e5a2789e10e",
     "Game/Scenes/HistoricalRoadTrial.tscn": "7b1477fdf319f0a2f1cc85c8aea3fb493d83b13b57b9c9d3ca1469c46aa02627",
     "Scripts/verify_historical_roads.py": "6d972e797c9021407107ab43f32f499ecd7747a13f70897a1af8833638704f31",
     "Game/project.godot": "5d9ab40268d29a83695f043e62c00b2d625978365cb689f3d1760ea6fd232340"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "9d3c072dce43dc46f4a7bc3945c75592ae06381bae22f90bb9eef6222cf51f6f",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "93e574bb463862122ba184697090f518515b11e683c5bd64dd668e29eded9cc8"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "9358bb54843c5062be44644dd891a32a1be60888f298e3fee7faba0a8be4349c",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "17356a0527d50f1e4334d358e4534079062d1666779f02c7670ffb1b8afd5b68"
   },
   "images": {
     "approach.png": "9c9de32f0795b05e9c00fb51acd5a0cbe2ee4808ec7af9a44d6fb2ecf3adfc40",
@@ -143,7 +146,7 @@
     "duration_seconds": 26,
     "width": 1100,
     "height": 720,
-    "decode_log_sha256": "9d77d06e44a1c3491b3f76ee0e87e24f809c5044f4207e0c91c0018f96231cd1",
+    "decode_log_sha256": "7f38108f57154352d14bd8fed4c22960f43520cb0f8db5037685ce4dfc914fbb",
     "bytes": 521790,
     "scope": "Published approximate 200m remnant length; synthetic straight display and access; NOT a surveyed 1560 reconstruction"
   },
@@ -224,7 +227,7 @@
   "logs": {
     "check": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nHISTORY_CHECK_PASSED 3\n",
     "restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nHISTORY_CHECK_PASSED 8\n",
-    "video": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nMovie Maker mode enabled, recording movie in 1100×720 @ 24 FPS...\nHISTORY_VIDEO_PASSED 624 frames\n--------------------------------------------------------------------------------\nDone recording movie at path: C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Design\\HistoricalRoadV1\\runtime-local\\historical-roads.avi\n624 frames at 24 FPS (movie length: 00:00:26:00), recorded in 00:00:10 (260% of real-time speed).\nCPU render time: 0.20 seconds (average: 0.32 ms/frame)\nGPU render time: 0.06 seconds (average: 0.10 ms/frame)\nEncoding time: 2.68 seconds (average: 4.30 ms/frame)\n--------------------------------------------------------------------------------\n"
+    "video": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nMovie Maker mode enabled, recording movie in 1100×720 @ 24 FPS...\nHISTORY_VIDEO_PASSED 624 frames\n--------------------------------------------------------------------------------\nDone recording movie at path: C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Design\\HistoricalRoadV1\\runtime-local\\historical-roads.avi\n624 frames at 24 FPS (movie length: 00:00:26:00), recorded in 00:00:10 (260% of real-time speed).\nCPU render time: 0.20 seconds (average: 0.32 ms/frame)\nGPU render time: 0.10 seconds (average: 0.15 ms/frame)\nEncoding time: 2.67 seconds (average: 4.28 ms/frame)\n--------------------------------------------------------------------------------\n"
   },
   "checks": {
     "check": [
@@ -348,7 +351,7 @@
     "Scripts/check_historical_binding.py": "9c83c97bf3fd0d97d9d57da0075ec82b65301e203bd24d9f123d38a69114d7f8",
     "Scripts/Show-HistoricalRoad.ps1": "5420bfa63fb5b00747fd6f5d2a649e59d3ed76a08be82e99fcbf4ae690b1f4b4"
   },
-  "trx_sha256": "76091daed759d37d7fbf5ec8fdc0bc519c1c51defa06ad71a5bf252d31931edd",
+  "trx_sha256": "18f89a40f0ccfe4adcc8b0425ef37ff2a479eff2b64298117da323e45a5b9806",
   "visual_review": {
     "reviewer": "Codex self-review; NOT user acceptance",
     "method": "Inspected actual final video frames at2/7/12/16/21/25s plus saved/restored viewport; no mouse/native input. Full624frames decoded.",
@@ -366,6 +369,7 @@
       "Published-length segment cyan; synthetic connector grey",
       "Walk and save/load continue on same route; eight ROI comparisons zero changed pixels",
       "Geometry is synthetic200m display chord; not actual road survey or1560 reconstruction"
-    ]
+    ],
+    "reuse_basis": "Re-run output MP4 and all13 stage images have identical SHA256 to the previously visually inspected output; no geographic replacement."
   }
 }

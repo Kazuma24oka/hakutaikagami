@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-20",
+  "designation_map": {
+    "Id": "bunka-designation-map",
+    "Url": "https://online.bunka.go.jp/heritage/166873/_353561/166873_353561788982160385476_900.jpg",
+    "Sha256": "285f3855cf954d8bb04e3a0abc36a6f7ce6176a336cd936bba568c581b636bb8",
+    "Role": "designation-map-unreferenced"
+  },
+  "raw_image_size": [
+    900,
+    410
+  ],
+  "image_inspection": "Inspected all10 Culture Heritage Online photographs; image6 is the pink-marked designation map; image1 sign describes route usage before1601. Approximate highlighted endpoint pixels (489,214),(686,298) are NOT surveyed coordinates or necessarily exact statutory vertices.",
+  "failed_source": {
+    "url": "https://www.city.toyoake.lg.jp/secure/3347/kamakurakaidouchizu_s.jpg",
+    "result": "web image fetch cache miss, direct HTTP403; no bypass"
+  },
+  "georeferencing_attempt": {
+    "source": "GSI std z17 tiles around Futamurayama",
+    "result": "Visual comparison only. Insufficient independently verified common control points; no numeric coordinate transformation fitted or accepted. Modern campus and roads differ.",
+    "use": "Coordinate reference only; no modern road/building/dam/terrain imported",
+    "credit": "国土地理院 地理院タイル（標準地図） https://maps.gsi.go.jp/help/use.html"
+  },
+  "photos": {
+    "bunka-0.jpg": "cc4df3f43bd1ada3abdeb7b8cd7ad2b9de4c03f34ff3dd8c50d472ff0f896132",
+    "bunka-1.jpg": "bee2dc588401154f6aac3ace5049e0e9561d07fe29d7bcfff4a3f28781050cb3",
+    "bunka-2.jpg": "32e44ece71c663ce44d8f585c2453447fbe96b1361e87d89caa2332e686c0469",
+    "bunka-3.jpg": "e5400b094099c8d19c40e246f59030694ff1c23a52fa681644ecbbf5ed921550",
+    "bunka-4.jpg": "97e9132e034e80472a0516d01a3a896857182b2fe5732473a173ae9626fcd2c2",
+    "bunka-5.jpg": "363e2936d877d0525aebbdcbb14c6a9b0576d25c57645259f45f913a3508ba1a",
+    "bunka-6.jpg": "285f3855cf954d8bb04e3a0abc36a6f7ce6176a336cd936bba568c581b636bb8",
+    "bunka-7.jpg": "37e52e3517cac1eb1546ba881c03b57ac785da0f3f63b6c581e4929908cc66c9",
+    "bunka-8.jpg": "a679f6ba30b9a44bd28ef69043c43cd615ad0787fad0e380d5f2c55ea51df67b",
+    "bunka-9.jpg": "2dd728a0d907af033edbe30072989a953480def5e8f2af011040d3f3a9dae7cd"
+  },
+  "gsi_tiles": {
+    "gsi-17-115417-51884.png": "a5e709cb9221c3b5f4c9f49f961720d48fa9e9e449fd8d46f906a4b3696c2ed7",
+    "gsi-17-115417-51885.png": "66cbd69540791b4ebbbfb6594c8e0bbf6dd2d4c806c215649a010e7459212178",
+    "gsi-17-115417-51886.png": "a68b562fd47babb979baa3032edaa228f1bb7166822c06b4b15857d71adf390f",
+    "gsi-17-115418-51884.png": "e2e74f43ff7711ababc656d15ea86514e516cdb887063b00ae78b6814c945555",
+    "gsi-17-115418-51885.png": "011cc2ce33502a489269189e1fad1ca47b386ebbc031463603059022eb496f2d",
+    "gsi-17-115418-51886.png": "8bb507e49d92fd44a6879d8f828885bba4e0f3c38fcf52c16407537a39e7530e",
+    "gsi-17-115419-51884.png": "bf6ef587d78d9990c3e04c376e5822fcdd73064cdcad5aaf2666c4530aea30b1",
+    "gsi-17-115419-51885.png": "bb610221636f9f084c4cf30870b22f6664f9c6f970973c86770810e3d99a3866",
+    "gsi-17-115419-51886.png": "8d71bd2ff6652817e7404d260f773e460f0002e9d3c8fc78f81737a73bc4839c",
+    "gsi-17-115420-51884.png": "5071264993d5020c87a755f4dab1fc9f8db2ad3636eada04198d5e403af8cf98",
+    "gsi-17-115420-51885.png": "d5521c1586058afd9587c51b2b7850711dff45d0f3ed6aef7679284ddf8a2dc2",
+    "gsi-17-115420-51886.png": "f34290621dfefcaab50409edf5745949ea75f2f4578daf694c6abb8fdf5ad1d3"
+  },
+  "replacement_count": 0,
+  "missing": [
+    "Coordinate/datum/scale information or independently checked georeference",
+    "Road-centerline endpoints versus statutory boundary distinction",
+    "Specific1560 alignment evidence"
+  ],
+  "next_primary_documents": [
+    {
+      "url": "https://crd.ndl.go.jp/reference/entry/reference/show?id=1000387489",
+      "status": "Bibliographic lead only; books not inspected in this task",
+      "items": [
+        "名残の道 鎌倉街道濱田ルート p63-66 cadastral maps",
+        "豊明市史 資料編補7",
+        "豊明市史 資料編2"
+      ]
+    }
+  ],
+  "local_reference_search": {
+    "query": "二村山 鎌倉街道 地籍図 指定区域 測量",
+    "result": "No relevant coordinate/survey evidence obtained from returned RAG excerpts. This does not establish that the local library lacks relevant books. No PDF/image export or access bypass attempted."
+  }
+}

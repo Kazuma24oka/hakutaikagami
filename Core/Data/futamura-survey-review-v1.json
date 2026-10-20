@@ -1,0 +1,67 @@
+{
+  "Id": "futamura-designation-review-v1",
+  "TargetEdge": "futamura-remnant",
+  "WorldYear": 1560,
+  "CoordinateFrame": "image-pixels",
+  "Datum": null,
+  "ScaleDenominator": null,
+  "EndpointsIdentified": false,
+  "AlignmentIdentified": false,
+  "HistoricalPeriodSupported": false,
+  "CoordinateControlVerified": false,
+  "IndependentCheckPassed": false,
+  "MaximumErrorMm": null,
+  "MetricVertices": [],
+  "PixelVertices": [
+    {
+      "X": 489,
+      "Y": 214
+    },
+    {
+      "X": 514,
+      "Y": 223
+    },
+    {
+      "X": 540,
+      "Y": 234
+    },
+    {
+      "X": 565,
+      "Y": 246
+    },
+    {
+      "X": 588,
+      "Y": 257
+    },
+    {
+      "X": 613,
+      "Y": 271
+    },
+    {
+      "X": 636,
+      "Y": 283
+    },
+    {
+      "X": 661,
+      "Y": 292
+    },
+    {
+      "X": 686,
+      "Y": 298
+    }
+  ],
+  "Sources": [
+    {
+      "Id": "bunka-designation-map",
+      "Url": "https://online.bunka.go.jp/heritage/166873/_353561/166873_353561788982160385476_900.jpg",
+      "Sha256": "285f3855cf954d8bb04e3a0abc36a6f7ce6176a336cd936bba568c581b636bb8",
+      "Role": "designation-map-unreferenced"
+    },
+    {
+      "Id": "bunka-era-sign",
+      "Url": "https://online.bunka.go.jp/heritage/166873/_353561/166873_353561279085198652721_900.jpg",
+      "Sha256": "bee2dc588401154f6aac3ace5049e0e9561d07fe29d7bcfff4a3f28781050cb3",
+      "Role": "historical-corridor-description"
+    }
+  ]
+}

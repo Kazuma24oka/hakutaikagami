@@ -295,3 +295,9 @@ Game/Scenes/HistoricalRoadTrial.tscn -text
 Scripts/*historical*.py -text
 Scripts/Show-HistoricalRoad.ps1 -text
 Docs/Design/HistoricalRoadV1/** -text
+
+Core/Contracts/SurveyRoadReview.cs -text
+Core/Data/futamura-survey-review-v1.json -text
+Tests/SurveyRoadReviewTests.cs -text
+Scripts/*survey_roads*.py -text
+Docs/Design/SurveyRoadV1/** -text
