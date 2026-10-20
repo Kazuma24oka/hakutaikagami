@@ -8,7 +8,7 @@ public static class ContinuousWorld
 {
     public const string Ruleset="continuous-world-v1";
     public const long Cell=10000,Tile=80000,Extent=400000;
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||OfficerLoop.Enabled(w);
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{NationalRoutes.Version,CoastHash(),"atlas-global-coastland-local800m-cell10m-tile80m-height-shared-v1","bounded25-tiles-local640m-path-waterbridge-staticfootprints-v1"});
     static string CoastHash(){using var s=typeof(ContinuousWorld).Assembly.GetManifestResourceStream("JapanTerrainMaskV1")!;using var m=new MemoryStream();s.CopyTo(m);return ContractJson.Hash(m.ToArray());}
     static readonly (string Id,FieldPoint Point)[] anchors=NationalRoutes.Nodes.Select(n=>{var o=NationalRoutes.Nodes.Single(x=>x.Id=="castle").Position;return(n.Id,new FieldPoint(n.Position.EastMm-o.EastMm+5000,n.Position.NorthMm-o.NorthMm+5000));}).ToArray();

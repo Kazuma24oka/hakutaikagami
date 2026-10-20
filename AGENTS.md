@@ -1,3 +1,15 @@
+## 武将の平時任務・軍議（2026-10-21、最新）
+
+ユーザー「すすめて。次から5個先くらいまでの次作業書いて」。入口Scripts/Show-OfficerLoop.ps1、新規則officer-peace-war-loop-v1。Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.mdとDocs/Design/OfficerLoopV1/README.mdを読む。
+
+在所の本人点検＋書役徴税40の委任、main担当者拘束、返報待ちの野外展開拒否、軍議から物理配送する固定線布陣、本隊地点移動、拒否・返報逸失・交戦、帰還配送から次の平時任務へ接続。既存の時計・任務・資源・配送・戦闘・世代保存を再利用。旧プロファイルの挙動/版を保持。軍議開閉は世界を止めず、省略可能CouncilOpenで保存する。結果はGetActorViewとRegionalBattle.Status経由。返報前に移動しても使者は自動追跡しない。
+
+Core 787件（追加13）、実Godot 10プロセス、4ケース・20保存点、復旧/続行40画面比較は差分0。比較PNG64枚、24秒576フレーム動画を実画像で点検。全国街道移動の旧プロファイル回帰も合格。
+
+件数とSHAの正本はverification.json。verify_officer_loop.py→実画像/24秒動画点検→check_officer_loop_binding.py。未完：自由な目的/制約/報告編集、全国の任務生成と経済、人物評価、軍議人物演出、到着返報。親試作の全国地形/大量AIの制限も維持。通常Main・main・design/foundation・Confirmed・旧素材を保持。マウス操作ツール不使用。共通ソース変更で旧bindingは再検証まで失効。
+
+今後の完了報告は次の作業を約5件、順番付きで提示する。次は①任務/軍議の目的・担当・制約入力、②主君/配下の任務提示と評価、③全国の人物・勢力・平時任務、④中間倍率LOD、⑤各拠点の地形/城郭と外観改善。
+
 ## 全国・連続地形（2026-10-20、最新）
 
 ユーザー「全部やって」：隣接地域・境界保存・全国拡縮・負荷制御・命令戦闘・全国展開・背景改善の7項目を独立試作へ統合。入口Scripts/Show-ContinuousWorld.ps1、continuous-world-v1 / world:continuous-world-v1。Docs/Decisions/2026-10-20_CONTINUOUS_WORLD_V1.md と Docs/Design/ContinuousWorldV1/README.md を参照。

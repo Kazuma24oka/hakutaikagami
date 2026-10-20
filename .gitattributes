@@ -353,3 +353,21 @@ Scripts/*continuous* -text
 Scripts/Show-ContinuousWorld.ps1 -text
 Docs/Design/ContinuousWorldV1/** -text
 Core/Data/japan-terrain-mask-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/OfficerLoop.cs -text
+Tests/OfficerLoopTests.cs -text
+Game/Scenes/OfficerLoopTrial.tscn -text
+Scripts/*officer_loop* -text
+Scripts/Show-OfficerLoop.ps1 -text
+Docs/Design/OfficerLoopV1/** -text
+Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.md -text
+
+Core/Contracts/OfficerLoop.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/OfficerLoopTests.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerLoopTrial.tscn whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*officer_loop* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-OfficerLoop.ps1 whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/OfficerLoopV1/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.md whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Game/Scripts/ContinuousWorldTrial.Loop.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
