@@ -242,3 +242,15 @@ Docs/Design/JapanMapV1/** -text
 Scripts/*japan*.py -text
 Scripts/verify_japan_report.cjs -text
 Scripts/Show-JapanMap.ps1 -text
+
+Core/Contracts/RegionalRoute.cs -text
+Core/Data/** -text
+Tests/RegionalRouteTests.cs -text
+Game/Scripts/RegionalRouteTrial.cs -text
+Game/Scenes/RegionalRouteTrial.tscn -text
+Docs/Design/RegionalRouteV1/** -text
+Scripts/*regional*.py -text
+Scripts/verify_regional_report.cjs -text
+Scripts/Show-RegionalRoute.ps1 -text
+
+Core/HakutaiKagami.Core.csproj -text

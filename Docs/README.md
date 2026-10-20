@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 尾張の実在拠点と移動・保存復旧（2026-10-20、後続）
+
+**[実画面付きHTML報告](Design/RegionalRouteV1/report.html)**。清洲城→熱田神宮→善照寺砦の概略経路を新Coreの移動・委任・返報へ接続。Core506件、実Godot26検査・2プロセス・27枚、4段階の保存復旧と続行の12比較で3D差分0画素。入口 `Scripts/Show-RegionalRoute.ps1`。[契約・史料と限界](Decisions/2026-10-20_REGIONAL_ROUTE_V1.md)。現代代表点を結ぶ概略線で、1560年の道路・橋の復元ではありません。次はこの地域の分岐・通行条件・迂回へ進みます。
+
 ## 全国地図の表示基盤（2026-10-20、後続）
 
 **[実画面付きHTML報告](Design/JapanMapV1/report.html)**。海岸線109ポリゴンと出典付き城・館30地点候補。全国→地域→現地を同じ3Dワールドと座標で表示。Core488件、実Godot51検査・12枚、全国へ戻す画素差分0。入口 `Scripts/Show-JapanMap.ps1`。[データと境界](Decisions/2026-10-20_JAPAN_MAP_V1.md)。現代の代表点であり1560年の地理シナリオ確定ではありません。次は一地域の実在拠点・経路を新Coreへ接続します。

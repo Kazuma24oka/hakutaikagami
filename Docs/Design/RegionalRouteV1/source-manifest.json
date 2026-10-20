@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-20",
+  "entity_snapshot_sha256": "1f549632c79449657c2b4c824b9a83f73515350007e7f349e4f376151084b688",
+  "catalog_sha256": "3d9b4405e8d060bc4682a6bc17306972dc31952261796a5c59190935ff77e8ed",
+  "sources": [
+    "https://rekishi-kanko.pref.aichi.jp/place/place5.html",
+    "https://www.city.nagoya.jp/naka/miryoku/1021146/1033230/1049391.html"
+  ],
+  "stops": [
+    {
+      "Id": "Q1357421",
+      "Name": "清洲城",
+      "LatitudeE7": 352170000,
+      "LongitudeE7": 1368440000,
+      "Revision": "2449829991",
+      "Precision": "2.777777777778e-05"
+    },
+    {
+      "Id": "Q482065",
+      "Name": "熱田神宮",
+      "LatitudeE7": 351265090,
+      "LongitudeE7": 1369086980,
+      "Revision": "2554524499",
+      "Precision": "0.0001"
+    },
+    {
+      "Id": "Q11418956",
+      "Name": "善照寺砦",
+      "LatitudeE7": 350815833,
+      "LongitudeE7": 1369575000,
+      "Revision": "2493037870",
+      "Precision": "2.777777777777778e-05"
+    }
+  ],
+  "caveat": "Historical stop sequence; modern representative coordinates; straight stop-to-stop corridor, NOT reconstructed roads. Distances are great-circle lower bounds. Speeds are prototype coefficients; no terrain/water crossing reconstruction."
+}

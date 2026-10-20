@@ -264,8 +264,8 @@ public sealed class WorldSession
             var t=s.Tasks.Single(t=>t.Id==a.Task);
             if(t.Action==ActionKind.Move&&BranchRoutes.Enabled(s)){if(!BranchRoutes.Advance(s,t))Stop(s,t,"route-unavailable");}
             else if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==a.Actor&&l.Kind==LocationKind.Traveling?
-                l with{ProgressMm=RouteContract.Enabled(s)?RouteContract.DistanceAt(progress):checked(progress*1000),
-                    SegmentIndex=RouteContract.Enabled(s)?RouteContract.Segment(RouteContract.DistanceAt(progress)):l.SegmentIndex,Revision=s.CommitSequence}:l).ToArray();
+                l with{ProgressMm=RouteContract.Enabled(s)?RouteContract.DistanceAt(progress,s):checked(progress*1000),
+                    SegmentIndex=RouteContract.Enabled(s)?RouteContract.Segment(RouteContract.DistanceAt(progress,s),s):l.SegmentIndex,Revision=s.CommitSequence}:l).ToArray();
         }
     }
     private static void Schedule(ContractWorld s,TaskState t,EventKind kind,long at)
@@ -292,7 +292,7 @@ public sealed class WorldSession
         var until=t.Action==ActionKind.Move&&BranchRoutes.Enabled(s)?BranchRoutes.Start(s,t):checked(s.ElapsedSeconds+i.WorkSeconds);
         s.Actions=[..s.Actions,new(Child("action",t.Id,"main"),t.Id,t.Executor,"main",ExecutionPhase.Running,s.ElapsedSeconds,until,0)];
         if(t.Action==ActionKind.Move&&BranchRoutes.Enabled(s))s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?BranchRoutes.Location(s,t):l).ToArray();
-        else if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.Traveling,null,Child("route",t.Id,RouteContract.Enabled(s)?"corridor":"fixture"),0,0,null,null,null,RouteContract.Enabled(s)?RouteContract.Version:"fixture-local-v1",s.CommitSequence):l).ToArray();
+        else if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.Traveling,null,Child("route",t.Id,RouteContract.Enabled(s)?"corridor":"fixture"),0,0,null,null,null,RouteContract.Enabled(s)?RouteContract.Revision(s):"fixture-local-v1",s.CommitSequence):l).ToArray();
         Replace(s,t with{Execution=ExecutionPhase.Running,StartedAt=s.ElapsedSeconds,Revision=s.CommitSequence});Schedule(s,t,EventKind.Finish,until);
         if(t.Action==ActionKind.Move&&BranchRoutes.Enabled(s)&&!BranchRoutes.Advance(s,s.Tasks.Single(x=>x.Id==t.Id)))Stop(s,s.Tasks.Single(x=>x.Id==t.Id),"route-unavailable");
     }
@@ -362,10 +362,10 @@ public sealed class WorldSession
         lock(gate)
         {
             if(!RouteContract.Enabled(state))throw new InvalidOperationException("Route view requires its registered ruleset");
-            var view=GetActorView(actor);var offset=RouteContract.Offset(view.Location);
+            var view=GetActorView(actor);var offset=RouteContract.Offset(view.Location,state);
             var action=state.Actions.SingleOrDefault(a=>a.Actor==actor&&a.Phase==ExecutionPhase.Running);
             bool walking=action!=null&&state.Tasks.Single(t=>t.Id==action.Task).Action==ActionKind.Move;
-            return new(view,RouteContract.Point(offset),offset,walking,walking?action!.Until:null);
+            return new(view,RouteContract.Point(offset,state),offset,walking,walking?action!.Until:null);
         }
     }
     public ActorView GetActorView(EntityId actor)
