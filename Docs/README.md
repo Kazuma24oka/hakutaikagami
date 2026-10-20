@@ -11,6 +11,10 @@
 - [3D移行方針](Proposals/OFFICER_3D_TRANSITION.md) ／ [3D部品制作・検査手順](Proposals/OFFICER_3D_PARTS_GUIDE.md)。立ち絵は絵、ゲーム内は3D。旧2Dは凍結。
 - [既存Confirmed原則](Confirmed/)は改変せず維持し、後続決定の適用範囲を上記採用記録で確認します。
 
+## 尾張の分岐・未知封鎖・迂回（2026-10-20、後続）
+
+**[実画面付きHTML報告](Design/RegionalBranchV1/report.html)**。熱田で目撃してから笠寺・丹下へ迂回。主君には遅延報告。Core525件、新19件、実Godot25検査・4プロセス・19枚。未知状態の全画面2比較と保存復旧・続行の3D6比較がすべて差分0。入口 `Scripts/Show-RegionalBranch.ps1`。[契約・出典・範囲](Decisions/2026-10-20_REGIONAL_BRANCH_V1.md)。実在代表点と検証用概略線で、道路・橋・封鎖の史実を復元したものではありません。次は道中の取消・行先変更へ進みます。
+
 ## 尾張の実在拠点と移動・保存復旧（2026-10-20、後続）
 
 **[実画面付きHTML報告](Design/RegionalRouteV1/report.html)**。清洲城→熱田神宮→善照寺砦の概略経路を新Coreの移動・委任・返報へ接続。Core506件、実Godot26検査・2プロセス・27枚、4段階の保存復旧と続行の12比較で3D差分0画素。入口 `Scripts/Show-RegionalRoute.ps1`。[契約・史料と限界](Decisions/2026-10-20_REGIONAL_ROUTE_V1.md)。現代代表点を結ぶ概略線で、1560年の道路・橋の復元ではありません。次はこの地域の分岐・通行条件・迂回へ進みます。

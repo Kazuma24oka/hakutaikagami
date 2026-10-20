@@ -254,3 +254,12 @@ Scripts/verify_regional_report.cjs -text
 Scripts/Show-RegionalRoute.ps1 -text
 
 Core/HakutaiKagami.Core.csproj -text
+
+Core/Contracts/RegionalBranch.cs -text
+Tests/RegionalBranchTests.cs -text
+Game/Scripts/RegionalBranchTrial.cs -text
+Game/Scenes/RegionalBranchTrial.tscn -text
+Docs/Design/RegionalBranchV1/** -text
+Scripts/Show-RegionalBranch.ps1 -text
+Scripts/build_regional_branch_report.py -text
+Scripts/verify_regional_branch_report.cjs -text

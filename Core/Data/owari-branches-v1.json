@@ -1,0 +1,112 @@
+{
+  "Schema": 1,
+  "Nodes": [
+    {
+      "Id": "castle",
+      "Stop": {
+        "Id": "Q1357421",
+        "Name": "清洲城",
+        "LatitudeE7": 352170000,
+        "LongitudeE7": 1368440000,
+        "Revision": "2449829991",
+        "Precision": "2.777777777778e-05"
+      }
+    },
+    {
+      "Id": "fork",
+      "Stop": {
+        "Id": "Q482065",
+        "Name": "熱田神宮",
+        "LatitudeE7": 351265090,
+        "LongitudeE7": 1369086980,
+        "Revision": "2554524499",
+        "Precision": "0.0001"
+      }
+    },
+    {
+      "Id": "village",
+      "Stop": {
+        "Id": "Q11418956",
+        "Name": "善照寺砦",
+        "LatitudeE7": 350815833,
+        "LongitudeE7": 1369575000,
+        "Revision": "2493037870",
+        "Precision": "2.777777777777778e-05"
+      }
+    },
+    {
+      "Id": "tange",
+      "Stop": {
+        "Id": "CODH230000107700",
+        "Name": "丹下砦跡",
+        "LatitudeE7": 350868790,
+        "LongitudeE7": 1369509830,
+        "Revision": "retrieved-2026-10-20;sha256:686ae80e328ec8c35dc3b2f51f88adce163590c88f94295a897871b35ab4880e",
+        "Precision": "not supplied; decimal digits are not accuracy"
+      }
+    },
+    {
+      "Id": "kasadera",
+      "Stop": {
+        "Id": "Q3193655",
+        "Name": "笠寺観音（笠覆寺）",
+        "LatitudeE7": 350995420,
+        "LongitudeE7": 1369366920,
+        "Revision": "2552800098",
+        "Precision": "1e-06"
+      }
+    }
+  ],
+  "Edges": [
+    {
+      "Id": "road",
+      "From": "castle",
+      "To": "fork",
+      "LengthMm": "11654560",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "pass",
+      "From": "fork",
+      "To": "village",
+      "LengthMm": "6683132",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "kasadera-access",
+      "From": "fork",
+      "To": "kasadera",
+      "LengthMm": "3933868",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "kasadera-tange",
+      "From": "kasadera",
+      "To": "tange",
+      "LengthMm": "1916561",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "tange-fort",
+      "From": "tange",
+      "To": "village",
+      "LengthMm": "835698",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    }
+  ],
+  "Algorithm": "known-evidence-dijkstra-time-ordinal/haversine-R6371000-mm-v1",
+  "Sources": [
+    "https://rekishi-kanko.pref.aichi.jp/place/place5.html",
+    "https://www.city.nagoya.jp/naka/miryoku/1021146/1033230/1049391.html",
+    "https://www.city.nagoya.jp/midori/miryoku/1024446/1036842/1024461.html",
+    "https://geoshape.ex.nii.ac.jp/nrct-poi/resource/23/230000107700.html",
+    "https://www.city.nagoya.jp/minami/miryoku/1023909/1023959/1023965.html"
+  ],
+  "Credit": "『日本歴史地名大系』施設・地点項目データセット（CODH作成） doi:10.20676/00000456 / CC BY 4.0 / 丹下砦跡の座標をE7化・距離導出。精度未提示。",
+  "Caveat": "Public representative anchors and coarse inferred links, not reconstructed historical roads. Closed pass is synthetic test condition, not a historical event. No bridge location asserted."
+}

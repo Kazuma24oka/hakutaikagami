@@ -1,5 +1,17 @@
 # 百代鏡：作業の入口
 
+## 尾張の分岐・未知封鎖・迂回（2026-10-20、後続）
+
+入口Scripts/Show-RegionalBranch.ps1、Docs/Design/RegionalBranchV1/report.html、Docs/Decisions/2026-10-20_REGIONAL_BRANCH_V1.md。新ruleset owari-geographic-branches-v1、world schema2／Branches保存を共用。Core/Data/owari-branches-v1.jsonは清洲・熱田・善照寺・笠寺観音・丹下の5代表点5概略区間。実道路・橋の線形や封鎖の史実ではない。距離は大円下限参考、速度は検証係数。
+
+BranchRoutesにシナリオ別Nodes／Edges／版を渡し、既存の本人証拠による経路探索・現地目撃・配送・任務・世代保存を再利用。熱田で初めて封鎖を目撃し、笠寺・丹下経由へ変更。主君は報告受領まで知らない。行先を失う場合もその到達位置を確定して停止。旧MovementControlのLocation.TerrainRevisionはBranchRoutes.Versionのまま保持し、旧保存を新地域へ読み替えない。
+
+丹下の座標は『日本歴史地名大系』施設・地点項目データセット（CODH作成）doi:10.20676/00000456、CC BY 4.0。ゲーム画面・HTML・manifestに帰属と変換内容を記載。元精度未提示。その他は改訂付きWikidata CC0。Scripts/build_regional_branches.pyで取得スナップショットから再生成。同期資料・原本は変更しない。
+
+Core525件（新19）、実Godot25検査・4プロセス・19枚。目撃前の封鎖あり／なしで本人・主君の全画面2比較、目撃前／迂回途中の同一・別プロセス復旧と続行6比較、合計8比較で差分0画素。全出口封鎖時の現地停止も実描画。入力・DLL・資産・画像と自己レビューはcheck_regional_branch_binding.pyで照合。画像はruntime-localのみ、自己確認はユーザー採用ではない。
+
+次はこの地域で道中の取消・行先変更を配送し、受領・開封・効力を分離して遅着競合と保存復旧を検証する。動的な解除・自由な目的地・道路橋復元・全国網・多数部隊は未実施。通常Mainは保持。
+
 ## 尾張の実在拠点と移動・保存復旧（2026-10-20、後続）
 
 入口Scripts/Show-RegionalRoute.ps1、Docs/Design/RegionalRouteV1/report.html、Docs/Decisions/2026-10-20_REGIONAL_ROUTE_V1.md。新ruleset owari-geographic-corridor-v1／世界schema1。清洲城→熱田神宮→善照寺砦の通過順を愛知県資料で確認。Core/Data/owari-route-v1.jsonを埋込正本に、現代代表座標・改訂・精度・大円距離・速度・投影名を版固定。旧架空シナリオや保存を読み替えない。
