@@ -1,5 +1,7 @@
 # 百代鏡 設計資料
 
+渡河の最新試作：[中島橋周辺の推定経路と検証範囲](Decisions/2026-10-20_RIVER_ROAD_V1.md)。入口 `../Scripts/Show-RiverRoad.ps1`。26秒の実画面動画はローカル保存。位置推定・検証用渡河と史実復元を区別する。
+
 最新の地域縦断試作：`../Scripts/Show-RegionalCampaign.ps1`。物理伝令・再送・通行条件・複数武将・尾張／美濃／三河の概略リンクは [決定と実装範囲](Decisions/2026-10-20_REGIONAL_CAMPAIGN_V1.md) を参照。実道路・全国経路網は未完了。
 
 ## 現行の設計

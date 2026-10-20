@@ -1,5 +1,14 @@
 # 百代鏡：作業の入口
 
+## 中島橋周辺の推定経路・渡河と動画（2026-10-20、後続）
+
+入口Scripts/Show-RiverRoad.ps1、新ruleset owari-river-roads-v1、world:river-roads-v1。12地点13区間、三河への概略リンクを橋の入口・渡河・検証用迂回へ分ける。名古屋市資料と地図PDFを画像で確認。ただし新しい地点は±250mの位置推定、距離は大円参考値であり、実道路の実長や1560年の橋の復元ではない。仮設渡しは合成した試験選択肢。詳しくはDocs/Decisions/2026-10-20_RIVER_ROAD_V1.mdとsource-manifest.json。
+
+Core575件／新7件、Godot12検査、別プロセス復旧・続行8比較で3D差分0。26秒・624フレーム・24fps・720pの実Godot動画を出力し、デコードと主要場面を画像で確認。動画はruntime-localのみ。verify_river_roads.pyで収録、check_river_binding.pyで現行ソース／DLL／資産／動画を照合。自己レビューはユーザー採用ではない。未受領の封鎖は予定や主君へ出さない。旧保存・通常Main・main・design/foundationは変更しない。
+
+次は地理参照できる史料・測量データへの対応づけと実長化。今回の位置・道路・川の形状を確定史実として扱わない。全国経路網、木曽川／矢作川、船便の待ち行列や運休は今回未実装。
+
+
 ## 物理伝令・再送・通行条件と隣接地域（2026-10-20、後続）
 
 入口Scripts/Show-RegionalCampaign.ps1。新ruleset owari-campaign-v1、world:regional-campaign-v1、schema2／Couriers必須。旧保存へ読み替えない。通常Main、main、design/foundation、Confirmedは保持。HTML・動画の報告は必要な場合のみという最新ユーザー指定を適用する。Docs/Decisions/2026-10-20_REGIONAL_CAMPAIGN_V1.mdを参照。

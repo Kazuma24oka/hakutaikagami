@@ -1,0 +1,66 @@
+{
+  "scope": "Reference-led inferred river corridor prototype; NOT historical road reconstruction",
+  "sources": [
+    {
+      "id": "bridge-history",
+      "url": "https://www.city.nagoya.jp/midori/miryoku/1024793/1024801/1024805.html",
+      "retrieved": "2026-10-20",
+      "sha256": "45fdeb3db623fe65972a8f40aaf00b9feca08a201af72b170eef2ff73d2021d7",
+      "local_snapshot": "bridge-history.html"
+    },
+    {
+      "id": "narumi-walk",
+      "url": "https://www.city.nagoya.jp/midori/miryoku/1024793/1024794/1024795.html",
+      "retrieved": "2026-10-20",
+      "sha256": "22773fb23f1b39a391fe97347144e7e9ff4c154fcbfb8a4191ef9759f953f8de",
+      "local_snapshot": "narumi-walk.html"
+    },
+    {
+      "id": "map",
+      "url": "https://www.city.nagoya.jp/_res/projects/default_project/_page_/001/024/795/midori_1_narumisyuku.pdf",
+      "retrieved": "2026-10-20",
+      "sha256": "298ce7605629dabc5cac99989e13185a9384bba4a7276af41795f07a0b529c56",
+      "local_snapshot": "map.pdf"
+    }
+  ],
+  "other_references": [
+    {
+      "url": "https://www.city.nagoya.jp/_res/projects/default_project/_page_/001/010/411/beppyou202509.pdf",
+      "status": "Official search index checked; direct download returned404; not used as medieval-dimension evidence"
+    },
+    {
+      "url": "https://www.museum.city.nagoya.jp/collection/data/data_34/index.html",
+      "status": "Official museum page consulted for comparison; not used to establish a1560 Nakajima alignment"
+    }
+  ],
+  "visual_inspection": {
+    "map_pdf_sha256": "298ce7605629dabc5cac99989e13185a9384bba4a7276af41795f07a0b529c56",
+    "method": "Rendered page inspected. Present fort/temple/bridge/river relationships compared. Sightseeing diagram is NOT a survey or georeferenced1560 map."
+  },
+  "evidence": [
+    {
+      "claim": "Municipal description refers to a Nakajima crossing record in1408",
+      "source": "bridge-history",
+      "limits": "Does not prove exact condition, alignment, structure or day-specific presence in1560."
+    },
+    {
+      "claim": "Modern sightseeing diagram shows access in the area south of Zenshoji fort toward Nakajima bridge",
+      "source": "map",
+      "limits": "The sightseeing route is not asserted to be the1560 military route."
+    }
+  ],
+  "inferences": {
+    "coordinates": "All added approach and bank coordinates are hand-estimated vicinity controls, uncertainty +/-250m; NOT extracted survey coordinates. The synthetic ford is positioned along the visualization river for a repeatable test.",
+    "lengths": "Haversine reference distances between estimated controls, not surveyed actual road lengths.",
+    "alternate_crossing": "Entirely synthetic for detour testing. No historic ford/ferry location is asserted.",
+    "art": "River, deck and obstruction are authored fixture shapes, not a historic structure reconstruction."
+  },
+  "remaining": [
+    "Georeferenced period road geometry",
+    "1560 riverbed/shoreline and bridge state",
+    "Survey-based road lengths and gradients",
+    "Kiso/Yahagi crossing reconstruction",
+    "Nationwide routing"
+  ],
+  "rights": "Original maps/photos and full page snapshots stay local-only; only reference metadata and independent estimated controls are committed. Existing CODH CC BY4.0 attribution retained."
+}

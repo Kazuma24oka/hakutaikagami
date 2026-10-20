@@ -1,0 +1,126 @@
+{
+  "Schema": 1,
+  "Nodes": [
+    {
+      "Id": "narumi-road",
+      "Stop": {
+        "Id": "trial-narumi-road",
+        "Name": "鳴海道筋（推定）",
+        "LatitudeE7": 350782000,
+        "LongitudeE7": 1369564000,
+        "Revision": "inferred-from-nagoya-map-2026-10-20",
+        "Precision": "estimated corridor only; +/-250m; NOT surveyed historical location"
+      }
+    },
+    {
+      "Id": "bridge-west",
+      "Stop": {
+        "Id": "trial-bridge-west",
+        "Name": "中島橋周辺・北岸（位置推定）",
+        "LatitudeE7": 350766500,
+        "LongitudeE7": 1369568000,
+        "Revision": "inferred-from-nagoya-map-2026-10-20",
+        "Precision": "estimated corridor only; +/-250m; NOT surveyed historical location"
+      }
+    },
+    {
+      "Id": "bridge-east",
+      "Stop": {
+        "Id": "trial-bridge-east",
+        "Name": "中島橋周辺・南岸（位置推定）",
+        "LatitudeE7": 350764200,
+        "LongitudeE7": 1369569500,
+        "Revision": "inferred-from-nagoya-map-2026-10-20",
+        "Precision": "estimated corridor only; +/-250m; NOT surveyed historical location"
+      }
+    },
+    {
+      "Id": "ford-west",
+      "Stop": {
+        "Id": "trial-ford-west",
+        "Name": "仮設渡し・北岸（検証用）",
+        "LatitudeE7": 350759750,
+        "LongitudeE7": 1369552520,
+        "Revision": "inferred-from-nagoya-map-2026-10-20",
+        "Precision": "estimated corridor only; +/-250m; NOT surveyed historical location"
+      }
+    },
+    {
+      "Id": "ford-east",
+      "Stop": {
+        "Id": "trial-ford-east",
+        "Name": "仮設渡し・南岸（検証用）",
+        "LatitudeE7": 350757450,
+        "LongitudeE7": 1369554020,
+        "Revision": "inferred-from-nagoya-map-2026-10-20",
+        "Precision": "estimated corridor only; +/-250m; NOT surveyed historical location"
+      }
+    }
+  ],
+  "Edges": [
+    {
+      "Id": "narumi-access",
+      "From": "village",
+      "To": "narumi-road",
+      "LengthMm": "389294",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "bridge-approach",
+      "From": "narumi-road",
+      "To": "bridge-west",
+      "LengthMm": "176154",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "nakajima-crossing",
+      "From": "bridge-west",
+      "To": "bridge-east",
+      "LengthMm": "28990",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "mikawa-approach",
+      "From": "bridge-east",
+      "To": "okazaki",
+      "LengthMm": "22722920",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "ford-approach",
+      "From": "bridge-west",
+      "To": "ford-west",
+      "LengthMm": "159617",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "temporary-ford",
+      "From": "ford-west",
+      "To": "ford-east",
+      "LengthMm": "28990",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "ford-return",
+      "From": "ford-east",
+      "To": "bridge-east",
+      "LengthMm": "159617",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    }
+  ],
+  "Algorithm": "haversine-R6371000-round-mm; explicitly inferred corridor/fixtures, not surveyed road lengths",
+  "Sources": [
+    "https://www.city.nagoya.jp/midori/miryoku/1024793/1024801/1024805.html",
+    "https://www.city.nagoya.jp/_res/projects/default_project/_page_/001/024/795/midori_1_narumisyuku.pdf",
+    "https://www.city.nagoya.jp/_res/projects/default_project/_page_/001/010/411/beppyou202509.pdf"
+  ],
+  "Credit": "名古屋市公表資料に基づく位置推定・独自の概略区間。原図・写真は配布しない。既存CODH CC BY 4.0表示を保持。",
+  "Caveat": "Nakajima bridge medieval mention is evidence of a crossing tradition, not proof of exact 1560 location/structure. All added coordinates estimated +/-250m from modern area diagram; geometric distances are lower-bound simulation lengths. Temporary ford is a synthetic test option, NOT a historical site. No claim of surveyed road length or 1560 bridge reconstruction."
+}

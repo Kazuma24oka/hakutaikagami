@@ -278,3 +278,11 @@ Game/Scenes/RegionalCampaignTrial.tscn -text
 Docs/Design/RegionalCampaignV1/** -text
 Scripts/*regional_campaign*.py -text
 Scripts/Show-RegionalCampaign.ps1 -text
+
+Core/Contracts/RiverRoads.cs -text
+Tests/RiverRoadTests.cs -text
+Game/Scripts/RiverRoadTrial.cs -text
+Game/Scenes/RiverRoadTrial.tscn -text
+Scripts/*river*.py -text
+Scripts/Show-RiverRoad.ps1 -text
+Docs/Design/RiverRoadV1/** -text
