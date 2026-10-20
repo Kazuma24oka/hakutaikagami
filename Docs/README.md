@@ -1,3 +1,5 @@
+最新の一地域統合検証：`../Scripts/Show-RegionalIntegration.ps1`。[6段階の実装・検証・範囲](Decisions/2026-10-20_REGIONAL_INTEGRATION_V1.md)。地形起伏・衝突回避・命令判断・接敵・士気退却・道路接続と保存復旧。実測は [検証記録](Design/RegionalIntegrationV1/verification.json) を参照。
+
 # 百代鏡 設計資料
 
 最新の陸上布陣：`../Scripts/Show-FieldWorld.ps1`。[地形・権限・保存・実測と範囲](Decisions/2026-10-20_FIELD_WORLD_V1.md)。清洲近傍の合成地形で任意線へ自隊3分隊を配置。Core699件、4保存点の復旧・続行8比較で3D差分0。海路は固定航路を維持。

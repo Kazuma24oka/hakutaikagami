@@ -96,6 +96,8 @@ public sealed class ContractWorld
     public TrafficStop[]? TrafficStops { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public FieldState? Field { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public RegionalState? Region { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BranchState? Branches { get; set; }
     public required int Schema { get; set; }

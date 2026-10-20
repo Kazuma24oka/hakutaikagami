@@ -1,3 +1,11 @@
+## 一地域の6段階統合検証（2026-10-20、最新）
+
+ユーザー「検証、全部やってください」。入口Scripts/Show-RegionalIntegration.ps1、新ruleset regional-integrated-validation-v1 / world:regional-integrated-validation-v1。schema2のRegionは新規則だけ必須、旧保存は読み替えない。通常Main・main・design/foundation・Confirmed・旧素材を保持。HTMLは必要なし。
+
+Docs/Decisions/2026-10-20_REGIONAL_INTEGRATION_V1.mdとDocs/Design/RegionalIntegrationV1/source-manifest.jsonを参照。160m合成地形で平滑化・半径と連続衝突・発進予約・途中停止、共通の高さを経路/保存/3D/地面選択に使用。拠点帰還から既存道路へ出て往復。共有秒時計で接敵/同時損害/士気25以下の敗走、配下への物理伝令/在所/権限/服従/競合保留/物理返報。未知の結果は返報前に見せず、範囲外の位置と向きは最終目撃を保持。
+
+Core727件（新28）全合格、実Godot15プロセス43検査70PNG。7ケース21保存点の復旧・続行42比較は3D差分0。26秒624フレーム実動画。verify_regional_integration.py → 実画像点検 → check_integration_binding.py。実測の最終件数・画素比較・動画ハッシュはverification.jsonを正とする。9/36分隊は一地域の試作検査で全国性能保証ではない。地形遮蔽・複雑な戦術AI・補給天候・攻城・全国地形制作は未実装。次は同じ高さ/地形契約で山・森・道・川・城の3D背景表現へ。その後に複数地域と全国規模の負荷へ。旧bindingは共通ソース更新で再検証まで失効。出力はruntime-local、マウス操作ツール不使用。
+
 # 百代鏡：作業の入口
 
 ## 陸上道外移動・自由布陣（2026-10-20、最新）

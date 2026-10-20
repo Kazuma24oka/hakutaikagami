@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "ruleset": "regional-integrated-validation-v1",
+  "world": "world:regional-integrated-validation-v1",
+  "time": "GameSecondsV1",
+  "scope": "Synthetic160m Kiyosu anchor patch, 9 or36 detachments, existing national road graph",
+  "truth_and_view": {
+    "height_mm": "clamp((x_mm-20000)/5,0,10000)",
+    "terrain": "FieldWorld16x16 ten-meter cells",
+    "unit_radius_mm": 1000,
+    "static_obstacle_margin_mm": 250,
+    "route": "deterministic eight-neighbor graph, exact goals, terrain-aware line-of-sight smoothing",
+    "route_reservation": "swept relative-motion separation; wait up to600s then hold; stop crossing movers when assumptions change",
+    "visibility_radius_mm": 80000,
+    "occlusion": "not implemented; prototype range visibility",
+    "command_delivery": "existing MessageFlow attempts with physical terrain path; recipient presence required; result/failure report travels back",
+    "combat": "one simultaneous loss step per second;4500mm contact radius and3000mm height difference; damage max1(enemy soldiers/10),8 morale per enemy",
+    "routing": "morale<=25 after damage; reserve home route or hold if blocked"
+  },
+  "fixed_inputs": {
+    "randomness": "none; deterministic IDs/ordering, inherited world RNG state retained",
+    "configurations": [
+      "3 per force",
+      "12 per force",
+      "clerk refuses",
+      "own low morale25"
+    ]
+  },
+  "six_steps": [
+    {
+      "step": 1,
+      "implementation": [
+        "RegionalGround.Plan",
+        "RegionalGround.Conflict",
+        "RegionalBattle.Reserve",
+        "RegionalBattle.Tick"
+      ],
+      "verification": "diagonal smoothing, radius clearance, swept crossing,36 detachments, midjourney hold"
+    },
+    {
+      "step": 2,
+      "implementation": [
+        "RegionalGround.Height",
+        "RegionalGround.ValidatePath",
+        "RegionalIntegrationTrial.UpdateGround",
+        "RegionalIntegrationTrial.Pick"
+      ],
+      "verification": "path cost, saved HeightMm, shared mesh vertices and actual signal drag picking"
+    },
+    {
+      "step": 3,
+      "implementation": [
+        "RegionalBattle.SetActive",
+        "TravelWorld.Move",
+        "WorldSession.ChangeTravel",
+        "RegionalIntegrationTrial.DrawRoad"
+      ],
+      "verification": "field return to site, road round trip to Atsuta, reentry; road save/restore GPU case; legacy travel-control tests"
+    },
+    {
+      "step": 4,
+      "implementation": [
+        "RegionalBattle.Tick"
+      ],
+      "verification": "contact/retaliation, simultaneous loss entries, morale routing, saved continuation, normal/low morale GPU cases"
+    },
+    {
+      "step": 5,
+      "implementation": [
+        "RegionalBattle.Issue",
+        "BeforeMessages",
+        "AfterMessages",
+        "Status"
+      ],
+      "verification": "physical delay, officer refusal, expired authority, simultaneous conflicting orders, absence and physical failure report, last-observation retention"
+    },
+    {
+      "step": 6,
+      "implementation": [
+        "WorldSession.AdvanceTo",
+        "GenerationSaveStore",
+        "RegionalIntegrationTrial.RunChecks",
+        "verify_regional_integration.py"
+      ],
+      "verification": "7 GPU cases,21 independent save stages,42 viewport comparisons;727 Core tests including28 new"
+    }
+  ],
+  "limitations": [
+    "not a historic terrain reconstruction",
+    "no national terrain streaming/art completion",
+    "36 synthetic detachments is not full national population performance",
+    "no sophisticated tactical AI, supply/weather/cavalry/siege/river crossings",
+    "no custom local courier retry UI or recovered late-original physical adapter; older rules retain existing retry tests",
+    "no exit from arbitrary field point: return to site anchor first",
+    "conservative reservation may hold despite a more elaborate valid plan",
+    "nearby sightings use distance only; no forest or hill line-of-sight occlusion",
+    "3D actor assets remain local purchased/source assets; see existing Officer3D provenance"
+  ],
+  "references": [
+    "Docs/Design/CommonContractV1/COMMON_CONTRACT_V1.md",
+    "Docs/Design/BASIC_DESIGN_V1.md",
+    "Docs/Proposals/PLAYER_PEACE_WAR_FLOW.md",
+    "Docs/Proposals/FORMATION_WORLD_V1.md",
+    "Docs/Decisions/2026-10-20_FIELD_WORLD_V1.md"
+  ]
+}

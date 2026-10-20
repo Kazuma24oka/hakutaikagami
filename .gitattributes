@@ -310,3 +310,15 @@ Game/Scenes/NationalWorldTrial.tscn -text
 Scripts/*national*.py -text
 Scripts/Show-NationalWorld.ps1 -text
 Docs/Design/NationalWorldV1/** -text
+
+# Exact byte preservation for the integrated regional runtime and its evidence.
+Core/Contracts/RegionalBattle.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/RegionalGround.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/RegionalBattleModels.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/RegionalBattleTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/RegionalIntegrationTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/RegionalIntegrationTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_regional_integration.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_integration_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-RegionalIntegration.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/RegionalIntegrationV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

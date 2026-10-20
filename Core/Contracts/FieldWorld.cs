@@ -12,7 +12,7 @@ public static class FieldWorld
 {
  public const string Ruleset="national-land-field-v1";
  public static string Version{get;}=ContractJson.CanonicalHash(new[]{TrafficWorld.Version,ContractJson.CanonicalHash(Enumerable.Range(-6,16).SelectMany(x=>Enumerable.Range(-6,16).Select(y=>$"{x}/{y}/{Terrain(x,y)}/{Speed(Terrain(x,y))}")).ToArray()),"terrain16x16-10m-cells-v1","road2000-grass1000-forest500-slope400-water-cliff0-v1","continuous-line-slots-cardinal-no-corner-cut-v1"});
- public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+ public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||RegionalBattle.Enabled(w);
  public static EntityId[] UnitIds=>[new("unit:officer"),new("unit:field-left"),new("unit:field-right")];
  public static FieldPoint Initial(int i)=>new(5000,5000+(i==0?0:i==1?10000:-10000));
  public static string Terrain(int x,int y)=>x< -6||x>9||y< -6||y>9?"outside":x>=8?"water":x==4&&y>=4&&y<=8?"cliff":y==5&&x<4&&x!=0?"water":y==0||x==0?"road":x>=2&&x<=4&&y>=1&&y<=4?"forest":x>=5&&x<=7&&y>=1&&y<=4?"slope":"grass";
