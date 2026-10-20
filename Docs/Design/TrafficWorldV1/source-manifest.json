@@ -1,0 +1,51 @@
+{
+  "ruleset": "national-traffic-conflicts-v1",
+  "world": "world:national-traffic-conflicts-v1",
+  "base": "TravelControlV1,108 nodes118 edges",
+  "module": "TrafficStops, mandatory only in this ruleset; old saves unchanged and not upgraded",
+  "rules": {
+    "road": "At entry observe closure; plan from own knowledge. Detour if possible, otherwise stop AtSite. Do not undo current crossing.",
+    "sea": "Check locally while waiting through exact departure instant. Outage stops trip at port. Already afloat actor/courier completes crossing.",
+    "same_time": "Conditions then personal redirect then local route/departure check; a committed redirect is not rolled back if new route becomes unavailable.",
+    "reopening": "No automatic launch. Actor must inspect updated local state and explicitly submit a new trip, including fresh boarding preparation.",
+    "couriers": "Waiting sea courier fails physically at port; failure return uses original dispatch node, not recipient live location. Already afloat courier continues.",
+    "privacy": "Truth conditions never enter personal planning; closures learned only at local edge/port, remote lord by physical report."
+  },
+  "fixtures": [
+    "road: all incident roads close at redirect effective time",
+    "detour: selected next road closes at redirect effective time",
+    "port: sea service closes exactly at departure",
+    "sailed: service closes1sec after departure"
+  ],
+  "fixture_status": "Synthetic reproducible schedules, not historical incidents or actual ferry services",
+  "unit_tests": 684,
+  "new_tests": 17,
+  "godot_processes": 9,
+  "godot_checks": 40,
+  "save_stages": 12,
+  "pngs": 40,
+  "pixel_comparisons": 24,
+  "changed_pixels": 0,
+  "video": {
+    "file": "runtime-local/traffic-world-short.mp4",
+    "sha256": "bc7c875ad99d9496b84719df82f742e6411f106f474de4fcc8979f7de3bab371",
+    "capture": "Actual Godot Movie Maker frames; scripted game actions, no native input",
+    "fps": 24,
+    "frames_expected": 624,
+    "frames_decoded": 624,
+    "duration_seconds": 26,
+    "width": 1100,
+    "height": 720,
+    "decode_log_sha256": "b64036e117588ef4f250601bab53f2a41ea46183d3bb1b5bad92b32f8a236043",
+    "bytes": 292445,
+    "scope": "Road closure and service suspension conflicts; local knowledge, explicit restart,12 independent save stages"
+  },
+  "verification": "verification.json",
+  "limitations": [
+    "No automatic resumption; explicit restart policy adopted for this trial",
+    "No weather simulation, capacity, queues, fares or port access rights",
+    "Mid-edge road closure/current crossing continues; hazards destroying a road under a traveler not modeled",
+    "Geography remains approximate; no historical service schedule or port reconstruction"
+  ],
+  "next": "Connect local people, faction contacts and officer tasks to arrival/stop/restart using the same world clock and knowledge rules"
+}

@@ -93,6 +93,8 @@ public sealed class ContractWorld
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TravelDecision[]? TravelDecisions { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public TrafficStop[]? TrafficStops { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BranchState? Branches { get; set; }
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }

@@ -1,5 +1,8 @@
 # 百代鏡 設計資料
 
+最新の通行条件競合：`../Scripts/Show-TrafficWorld.ps1`。[規則・検証・範囲](Decisions/2026-10-20_TRAFFIC_WORLD_V1.md)。行先変更と閉鎖、港での運休、出航後の継続。Core684件、12保存点の別プロセス復旧・続行24比較で3D差分0。
+
+
 最新の本人操作：`../Scripts/Show-TravelControl.ps1`。[道中の行先変更・出航取りやめ・検証と範囲](Decisions/2026-10-20_TRAVEL_CONTROL_V1.md)。Core667件、9保存点の別プロセス復旧と続行18比較で3D差分0。
 
 

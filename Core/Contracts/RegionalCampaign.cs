@@ -81,7 +81,7 @@ public static class RegionalCampaign
             var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle";long appointment=a.SentAt+1;RoutePoint? origin=null;
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);
             if(t?.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(x=>x.Id==w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask);destination=Meeting(w,target);appointment=Appointment(w,target);}
-            if(m.Kind=="delivery-failure")origin=Position(w,w.Couriers!.Missions.Single(c=>c.Attempt==m.Body),a.SentAt);
+            if(m.Kind=="delivery-failure"){origin=Position(w,w.Couriers!.Missions.Single(c=>c.Attempt==m.Body),a.SentAt);if(TrafficWorld.Enabled(w))destination=TrafficWorld.FailureAddress(w,m.Body);}
             Put(w,New(w,a,destination,appointment,origin));
         }
         Arrivals(w);
@@ -121,6 +121,7 @@ public static class RegionalCampaign
     }
     public static void Arrivals(ContractWorld w)
     {
+        if(TrafficWorld.Enabled(w))TrafficWorld.CheckCouriers(w);
         foreach(var old in w.Couriers!.Missions.ToArray()){
             var a=w.Messaging.Attempts.Single(a=>a.Id==old.Attempt);if(a.Status!=AttemptStatus.InTransit)continue;var c=old;
             // Truth is checked at an edge entrance only. Crossings already begun finish their edge.

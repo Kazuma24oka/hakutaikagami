@@ -7,7 +7,7 @@ public static class TravelControl
 {
     public const string Ruleset="national-personal-control-v1";
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{TravelWorld.Version,"redirect-after-current-edge-v1","cancel-strictly-before-port-departure-v1","persist-personal-decisions-v1"});
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||TrafficWorld.Enabled(w);
     public static ContractWorld Create(){var w=TravelWorld.Create();w.WorldId=new("world:national-personal-control-v1");w.Definitions=w.Definitions with{Id=new("scenario:national-personal-control-v1"),Ruleset=Ruleset,Version=Version};w.TravelDecisions=[];ContractValidation.Validate(w);return w;}
     public static bool Pending(ContractWorld w,EntityId actor)=>w.TravelDecisions?.Any(d=>d.Request.Actor==actor&&d.AppliedAt==null)==true;
     public static bool PortWaiting(ContractWorld w,EntityId actor){var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor);if(j==null||w.Tasks.Single(t=>t.Id==j.Task).Execution!=ExecutionPhase.Running)return false;var l=j.Legs.FirstOrDefault(l=>w.ElapsedSeconds<l.EndAt);return l!=null&&NationalRoutes.Sea(l.Edge)&&w.ElapsedSeconds<TravelWorld.Departure(w,l.Edge,l.StartAt);}

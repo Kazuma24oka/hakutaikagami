@@ -1,5 +1,16 @@
 # 百代鏡：作業の入口
 
+## 通行止め・運休の競合（2026-10-20、最新）
+
+入口Scripts/Show-TrafficWorld.ps1（-Case road/detour/port/sailed）。national-traffic-conflicts-v1 / world:national-traffic-conflicts-v1、schema2のTrafficStopsを新規則だけ必須、他規則で省略・存在拒否。旧保存は読み替えない。条件は合成検証日程で史実ではない。通常Main・main・design/foundation・Confirmed・既存未追跡素材を保持。
+
+道は進入時に現地確認し、既知情報で迂回、不能ならその拠点AtSiteで中止。海は港到達〜出航時刻ちょうどまで運休を確認し中止、出航後は到着港まで航行。歩き始めた区間も後発閉鎖で巻き戻さない。同時刻は通行条件→本人判断効力→現地進入確認。再開で自動移動せず、現地確認して新たな旅として出発。乗船準備もやり直す。
+
+配送は既存時計・RoadConditionと共有。使者も運休前後の境界を守り、失敗返報は原発送住所へ物理的に戻す。現在位置への追跡ではない。未知の閉鎖は本人計画へ漏らさず、主君は返報受領で知る。停止記録と目撃・真実・時刻・現在位置・次の出発地を保存検査。
+
+Core684件（新17）、実Godot9プロセス40検査40PNG。4ケース12保存点の別プロセス復旧と続行24比較で3D差分0。26秒624フレーム実動画。verify_traffic_world.py→実画像点検→check_traffic_binding.py。Docs/Decisions/2026-10-20_TRAFFIC_WORLD_V1.md参照。出力はruntime-local、マウス操作なし。旧bindingは共通ソース変更で失効。自動再開・船定員・運賃・天候・港権限は未実装。次は各地の人物・勢力と任務を到着・停止・再出発へ接続する。
+
+
 ## 本人の道中変更・出航取りやめ（2026-10-20、最新）
 
 入口Scripts/Show-TravelControl.ps1、national-personal-control-v1 / world:national-personal-control-v1。前のTravelWorldV1保存を読み替えない。schema2のTravelDecisionsは新規則だけ必須、旧規則では省略し存在を拒否する。行先変更は今の区間の終点で効く（海上なら次の港）。通過済み区間を保持、変更待ち中の重ね操作は拒否。港の取りやめは出航時刻より前のみ即時適用、同時・後は拒否。AtSiteでその港に留まり次の旅を始められる。路上Uターン・海上停止・遠隔主君命令ではない。

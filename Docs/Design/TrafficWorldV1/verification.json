@@ -1,0 +1,604 @@
+{
+  "status": "PASSED",
+  "sources": {
+    "Core/Appearance/OfficerAppearance.cs": "23209c9d24537bc3c7aa605fefbb84d9b2adb95bf1a4d012b386742adab53ac0",
+    "Core/Castles/Castle.cs": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370",
+    "Core/Characters/Character.cs": "486419e8df320074f56c53883cdbc9525e4fee6a702d543d54bbd7240816c8fe",
+    "Core/Commands/CommandRequest.cs": "90ada6b09698d4417ea44f7917d4098f5bef8030239c1eeb3e1883b287d6bb47",
+    "Core/Commands/InspectionSession.cs": "2a5cf2a011a83c9f3c20bd0511d0a9fd32fe17768785384721dab4a2a6a2450f",
+    "Core/Common/SessionInfrastructure.cs": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076",
+    "Core/Contracts/BranchRoutes.cs": "f3d74f3a2f6baf6dee1b752ab567cb4ace859a8e9f1aad7e9b8960666892b19b",
+    "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
+    "Core/Contracts/ContractJson.cs": "8dc27e37a9db659d5a62ae9fb70a470baaaad1076acc2afb8a076bd4e1b8e581",
+    "Core/Contracts/ContractModels.cs": "4c6b7bc52e25c6bae428fd04d5c5575d73606ec55659cd257f81b03591c3e75b",
+    "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
+    "Core/Contracts/ContractValidation.cs": "fd6ebc078c58ebd2f38a0910fcd80ce4f3fd066e5e1f6777a38f7bb7b0f52ae6",
+    "Core/Contracts/GenerationSaveStore.cs": "39248ccc47d88325ee55538fc3cad7561d2924b383af4d4622943b2475aae8ea",
+    "Core/Contracts/HistoricalRoads.cs": "39e3ee87e893ef682d558858d5042b77d501c2a7169f120dc458926036c69530",
+    "Core/Contracts/LegacyContractAdapter.cs": "2a0394387ffb842dd37cfdc1acfa3e2bd790aad85bd0762faf30a04bfb68dca8",
+    "Core/Contracts/MovementControl.cs": "917bba7e01f62bfe08cb2b46156496404586c9e8300147858157d67a761fc8db",
+    "Core/Contracts/NationalRoutes.cs": "325676a9e4ff25bfa1f79afe588b9f4df75537a25e659d86677e218490af7e0e",
+    "Core/Contracts/RegionalBranch.cs": "f8daa501ce88d0507e325cc6cfca70ecfbae6da7dac476b13f566aefa83844ff",
+    "Core/Contracts/RegionalCampaign.cs": "affba803ea25ddea1be2b0aa6e3b97e37e164b11a5e5fbc74aca06d386a89631",
+    "Core/Contracts/RegionalControl.cs": "27bb02da924200411d6a7b431ccdcfc84d8d7af5c69081f9567611d85ce8710d",
+    "Core/Contracts/RegionalRoute.cs": "ef9f173c1b1584de9dfc11ac4c4fd5d7cd76a54a3b5d05d9944fe7eb2db190c2",
+    "Core/Contracts/RiverRoads.cs": "1e64ed02e941ead4b8fb8d96f8c36e43f26bf038749942f5479a02ec49458adf",
+    "Core/Contracts/RouteContract.cs": "8a74865f2143c356735437882b79b0b9b1196e34ad6b1ffaed34b371bf297132",
+    "Core/Contracts/SurveyRoadReview.cs": "808db4bfb3474c67cb354934cb265c130b4f5aab9ff6eae3caaece4c12179acd",
+    "Core/Contracts/TrafficExamples.cs": "64b0e500482b8db1b389b6716dcdf567784043e7d1d8c9422cae9ad91d28ed39",
+    "Core/Contracts/TrafficWorld.cs": "e5d393843a7ab4b01eb14bece0ff90d3d288b764eb136abe4986d6166bb554e6",
+    "Core/Contracts/TravelControl.cs": "0ac96038f86d6223585694963ee7bbcb1e3ad35e1dca1dee98e9c55e15190494",
+    "Core/Contracts/TravelWorld.cs": "932964301ee46bae5b2882a8c4478737043769c6c9ae71d60dfc2a47bffc5c6c",
+    "Core/Contracts/WorldSession.cs": "571a7e0647730c032059af78b9685c08bfcb61aa78d7775e3c20c0933ea3d33c",
+    "Core/Events/EventScheduler.cs": "a58b9f064263c6090be3cd5788349f47e68ecda70e22cc6049d43a0b234bd542",
+    "Core/Messaging/MessageFlow.cs": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf",
+    "Core/Simulation/FormationFlow.cs": "032f7e6d69579c8465db11cf5bd1c329f582070a5441d0698b8919ee118729e6",
+    "Core/Simulation/MilitaryFlow.cs": "851ca70b5dda4bc26e1bf5808c522a2ab96f30e37b3894b83e7e89ced83fd6b9",
+    "Core/Simulation/MilitaryIntel.cs": "1e0fdcb00f591874de22b83eee58a9cb96af45565338b19f98669683d69960ff",
+    "Core/Simulation/MilitaryMap.cs": "0a3b03e004c823ee3b8f149f5cdd3b3415b5b863cbafdf6570ebf11cf6963b9c",
+    "Core/Simulation/MilitaryModels.cs": "2dab7b8593d010a0112fda3ae7a0b642c0637fb54488182355aabdec3ef14bb6",
+    "Core/Simulation/MilitaryValidation.cs": "bdd8b888b19bd135897b2901c97dbee9d5b160dce339204619eb01b9e0bbf4d7",
+    "Core/Simulation/OfficerIntegration.cs": "35d7f6750ac96443f9fc0f60cab6302ca0bdcc206f3c804bb616987eeba4ef9f",
+    "Core/Simulation/TaxSimulation.Cancellation.cs": "e1366fcd8691995b4fdc443768668602e11437309a0262d0504794b57325edb1",
+    "Core/Simulation/TaxSimulation.Communication.cs": "2c5e296c466eea3b1c6f5a6ea5ad7c88e5eac7f57c95ed629b27ecd24a4c070d",
+    "Core/Simulation/TaxSimulation.cs": "b03b4ff3eac6d60084ddda3d5e399c103df1f54959143cf5d0b98de4fe20f411",
+    "Core/Simulation/TaxSimulation.Military.cs": "6c4d316deb55fb575aa2b57eec65338f12462613e911dede06205286ded2d80b",
+    "Core/World/JapanGeography.cs": "9a606749c1a9276796b7b4754f929f1baf6defb5a451299d904f01b2d53fcd57",
+    "Core/World/PrototypeScenario.cs": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529",
+    "Core/World/SeededRandom.cs": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f",
+    "Core/World/WorldState.cs": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c",
+    "Tests/BranchRouteTests.cs": "6b9322a039ebeb57f5e28ae735963d352a99a9355619665809005d4917391e93",
+    "Tests/CommonContractTests.cs": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
+    "Tests/CommonSaveTests.cs": "66f854ecd0e1fd262336814cf59e6113c947f84c06bb415ac3a119ee46a291ce",
+    "Tests/DeadlineCancellationTests.cs": "b72de0f9f28b607804ced8e967bf8d5166b0057ec4070f93699195febe4c23ae",
+    "Tests/DeliveryRecoveryTests.cs": "6a20d8354823147376694a7d69dcd49f8f5a37e958ecc00c95fac9a33d7a5e66",
+    "Tests/FormationTests.cs": "f4746f0db6c6f915ea6cf9da2185cdd1aa07d3351f583da1af74f0675cde7945",
+    "Tests/FoundationTests.cs": "6b8df0f93a9fa7c3ddc5a906447fe47c53462ee208b4c0f3934e3be4c1375bf9",
+    "Tests/HistoricalRoadTests.cs": "badddecf41497169062bc50beadf077e17a1437ebf7497186f06fdde24f82635",
+    "Tests/JapanGeographyTests.cs": "1328f3b63421897fc664a875cd8148b50d2212dd92f79cee645ba8f7d8d94e4f",
+    "Tests/LateDeliveryTests.cs": "57d7bcea27109bacfdc7545a62785fab8273b5c53053e0f3e26e1dbae17e525c",
+    "Tests/MilitaryIntegrationTests.cs": "021cc7d3d8f9519cf67dbe98871d2b826f65ed8b5d4d2cef389d3870e4d10722",
+    "Tests/MovementControlTests.cs": "84910c00d9cd80795c386e68f17c972d47a8b182c9dcc731edc33aec3246c96a",
+    "Tests/NationalRoutesTests.cs": "6b692f585538769e15ce36bbe7d38e105172fb38811f0ce8dbf4f15238d21ca4",
+    "Tests/OfficerIntegrationTests.cs": "2d2b6077fc00b6198d7537a737bfc5eddeca23a20bf9f392d7bc404d7b30df9f",
+    "Tests/RegionalBranchTests.cs": "0e06ca5b7af80df89b39422fb3b8dab1b795614c646a6162b1eadd7ba6171d39",
+    "Tests/RegionalCampaignTests.cs": "cc599434d113fce10584c9d0d855755290c4edfd87a4ec61665b7ea6efc37207",
+    "Tests/RegionalControlTests.cs": "f1f476386c7ba9e92a003dfb80169e05da36a9336b4a1350bac4d598b5f3e122",
+    "Tests/RegionalRouteTests.cs": "ba85d8fbb649066cbc697589542e73a08b8f0c6f4d1b319301d1a81e988b4532",
+    "Tests/RiverRoadTests.cs": "81b8a74e725facef34f4e92ea1ea9ec1c20b24f200f96d641c163f01e7fdba92",
+    "Tests/RouteContractTests.cs": "7f53b473448d659192c0dcba7673bca8e5341cbcf3ea7662a12f12c234635265",
+    "Tests/SharedProtocolTests.cs": "d92db64d8d5015204fa4ec41435d09d43a8e5873441f8e557acc71a6b59f535e",
+    "Tests/SurveyRoadReviewTests.cs": "ae0d09c31f8a6f53cae5721ed6b4acbc4c2161778d28d8d35275b0ab9c569987",
+    "Tests/TaxSimulationTests.cs": "339005f92eb4d92510204e89db4c8b0f096cc35ec4f1fba3533264119e7175cd",
+    "Tests/TrafficWorldTests.cs": "b875ac3f9b46d615a4fbb235f51d784cba0293fd9c3e6b43918be5dba8971774",
+    "Tests/TravelControlTests.cs": "0351acda0c728c5aa3e25d15da29cc10779478aa0d6fce2d4638ef48aa271dfb",
+    "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59",
+    "Game/Scripts/BranchWorldTrial.cs": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0",
+    "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
+    "Game/Scripts/FormationWorldGate.cs": "de5e27c6bfda188a2a24e333403ea10b548a6adb7ba1aab925b254fa1b36cbe0",
+    "Game/Scripts/FormationWorldStage.cs": "889758285728cf356bad69c4c147a1e72d0e8516ee0b428022d3da4612ff64c5",
+    "Game/Scripts/FormationWorldValidation.cs": "20ac7434bed6522d23124bf0e7301dc75205caa27f8ec7160092f0b821c16f9b",
+    "Game/Scripts/HistoricalRoadTrial.cs": "5bd4d54cdc34adbf3e3a78fd0c34d028179b8aedd6187d165592d9e31462aa9b",
+    "Game/Scripts/JapanMapTrial.cs": "b6ece8af1254d3d4a052269a4bba572f932469da4c456de4a1328b8a0a894586",
+    "Game/Scripts/Main.cs": "d0b62bf6b268c98faa002fe622b4c0f36a9e91e54eee202247430f6920785879",
+    "Game/Scripts/MilitaryGridGate.cs": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f",
+    "Game/Scripts/MilitaryGridStage.cs": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5",
+    "Game/Scripts/MilitaryGridValidation.cs": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47",
+    "Game/Scripts/MovementControlTrial.cs": "bf4bd193cce034fa4cba30ca0b441fdd0c6bcbb2118fe3d9ea6649ebb0d386de",
+    "Game/Scripts/NationalWorldTrial.cs": "0103b66258f17ca725de7f4d932b8147196786396d0c170fe7e8dd02eebd3a9e",
+    "Game/Scripts/Officer3DActor.cs": "936933c943c66dd2278cc6bce1a1226db76b5a93ba5db9212ed597f68ff2e218",
+    "Game/Scripts/Officer3DCreator.cs": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c",
+    "Game/Scripts/Officer3DCustomActor.cs": "4bda6f1c1a35580a2376e0f8851049d516851a5902a166251fc794630277febf",
+    "Game/Scripts/Officer3DModel.cs": "f899442ca790902329857479960fdcf71a990a826f8619435cc0566e092fee2b",
+    "Game/Scripts/Officer3DReview.cs": "d0ecd9dbe550a223acacf5b171e8c524fba01ade587b183c12c38844862e7cc3",
+    "Game/Scripts/Officer3DStage.cs": "2e7a63ce776411e92343331f83378979416902d96f653f781fd06c31ec9c998b",
+    "Game/Scripts/Officer3DV2Gate.cs": "8c3d772033b41040e29ab2781a10647bde57ac6151eab717e4a6fe54440eac86",
+    "Game/Scripts/Officer3DV2Review.cs": "cd71af805a8e52c454ef2c4ef9521dfbbee2a8cd668d24afeb5d2b1a004cb97a",
+    "Game/Scripts/Officer3DV3Gate.cs": "359ffa2ff8a5d913d8fb406ebac935f8231686ff60d2319d922f59b844c427c4",
+    "Game/Scripts/Officer3DV3Validation.cs": "6a48aae09482edbfce2377ae3d0c99ed12884012af70b7d289b8f15158fc7a5f",
+    "Game/Scripts/OfficerBackMotionTrial.cs": "d35edd3592b2070ff602a61dc15034cc80712dc3b183772782f6567868a244af",
+    "Game/Scripts/OfficerContextTrial.cs": "f0b06f4a7b55736b00098db96213609abc3f87d8a62235c4e0ddeae4b7a0330e",
+    "Game/Scripts/OfficerLeftMotionTrial.cs": "8b566e562720f2881e60d6e16f44904de557c6bce7af6fbabe0451db1042611f",
+    "Game/Scripts/OfficerMotionFrames.cs": "36b3f91757fa2d65edd3b55cfa3aca89e8e5a057de80dcb6b2f9d7159c36ac1f",
+    "Game/Scripts/OfficerMotionTrial.cs": "5d82f73e19862ec90e42b12ea55a58abafdd401de375a6f96b66f2f8b1287f28",
+    "Game/Scripts/OfficerMovementTrial.cs": "d40d417db7966283cf644b9f26254c1dcf4d3e76b644da5fe7ee31a50a0e12fa",
+    "Game/Scripts/OfficerPartsTrial.cs": "fde022b9fa5e51dfa03391c51eae5fa351e0186fb99764ce183670793e32e715",
+    "Game/Scripts/OfficerRightMotionTrial.cs": "e7a522055bcb027e903148617b924dff9514491853a539f7bbead7604073868a",
+    "Game/Scripts/OfficerScaleTrial.cs": "bd2a5869dbe03b63c1fb822298b09315862b7cd35bb9a3bdab08c6f85430326e",
+    "Game/Scripts/OfficerWorldGate.cs": "2bff421e82b0d7a0875c6e248b54809730c1125664ebc4c742df44905477d2ee",
+    "Game/Scripts/OfficerWorldStage.cs": "06273cd6cecfa0d1d37826f2b2580aaa26baa1d64716bbd6cbd3ac4850681919",
+    "Game/Scripts/OfficerWorldValidation.cs": "8075b34d5c088a0738f97b56e0b8f170ab9b628505c6a1cad9143be7546a102a",
+    "Game/Scripts/ProtocolPanel.cs": "e2b15fd6390ac06e52a20e121323a387b24b71c990b18d8867a508a029e7e1d0",
+    "Game/Scripts/RegionalBranchTrial.cs": "282a25f2d1087da47ecb6c39faff8cda557d31ae1d9e9a15b11c6fc4b47c5ebd",
+    "Game/Scripts/RegionalCampaignTrial.cs": "5a25f9ebbc24434935184a986da4a1ff25cde5007f9c34137161243c166ede94",
+    "Game/Scripts/RegionalControlTrial.cs": "e1d0fad4084c632b4331406e145f92c4eec10d0f3a4c34c4def65015699565d8",
+    "Game/Scripts/RegionalRouteTrial.cs": "79d4d4af506a11d88254117ec7a5e3c51c5d8c43416530856a345573088d753b",
+    "Game/Scripts/RiverRoadTrial.cs": "b4a034a500cc5e80340f3fd454c060ca4aba5ff1d69d4f9a99f10f78d12831e3",
+    "Game/Scripts/RouteWorldTrial.cs": "cbaa8fb9c51ca9437fc263f6fb3350446e4a237361afdd0058951a9142013109",
+    "Game/Scripts/TaxPanel.cs": "02b6b0225992b3844420a00bc6b5d0d88094dce8185cf6be48d221b14ccd72ef",
+    "Game/Scripts/TrafficWorldTrial.cs": "dafafe979db88083717937c738a3d33a7b633b9c50967d199d22adc1b7077251",
+    "Game/Scripts/TravelControlTrial.cs": "8a02cd0dbab3493592b26c2f828919d7cc6a59da0b78db2bc0844dbbfd97f4fd",
+    "Game/Scripts/TravelWorldTrial.cs": "a419c5a96b086d16f5fc3c383c3307c8878f833680d83677874a5924b30c74d2",
+    "Core/Data/futamura-survey-review-v1.json": "d045183631fd1c6c4f2f1e437f4a981168a0958f63f3c05c38478555f8453fc7",
+    "Core/Data/historical-roads-v1.json": "40f988f4a23201d8c1497afbc9a672610fcf91a2ba08a52bdf8506333c6dff3f",
+    "Core/Data/national-routes-v1.json": "5f5eb9d68e1c7969b79e2d74fb0a6f81fd3bb78dbf8aa3d816e03abd19e5baf9",
+    "Core/Data/owari-branches-v1.json": "c9534733dceb570591feef18c3cc3b59122283f0bc186907a96536576d896372",
+    "Core/Data/owari-route-v1.json": "3d9b4405e8d060bc4682a6bc17306972dc31952261796a5c59190935ff77e8ed",
+    "Core/Data/regional-expansion-v1.json": "b6aa50f3a5339afb9854840b00142c2298eee091029c84a7cc78364a8f8e7e6b",
+    "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a",
+    "Core/HakutaiKagami.Core.csproj": "277a35439502aa94373c87df6e022205a6ff0a112c6f1043bb8e6758150b9396",
+    "Game/Scenes/TrafficWorldTrial.tscn": "eddd4c5c36f3b2d7a7d4b14af9d2d9870e305c18d45d4319232661ce450cfc8c",
+    "Scripts/verify_traffic_world.py": "2e8b54c722857155cf9535bc5d7d372adce301d8c9c7ab6a1255a5e68095884e",
+    "Game/project.godot": "5d9ab40268d29a83695f043e62c00b2d625978365cb689f3d1760ea6fd232340",
+    "Game/Data/Geography/japan-map-v1.json": "b0b0083aeaf2d9c007f923cd130720859f542d6a6eb533f8fbe3a421c254c244"
+  },
+  "binaries": {
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "d2b8ab795bbea6bc0f9aaad58ad349b699797f29d32e277552e413c77bde61dc",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "3724b227be0b0d868250fa90f6d4109f15b7cd946669f440db94929348048282"
+  },
+  "images": {
+    "road-pending.png": "b057ff215d44fdb1c4bfda3303cc4ec07d8afb28f6641400f30388d12b6b16c6",
+    "road-restored-pending.png": "fd4fc76cd23c9c0ff83696104f8ef7dcf15c46ca99846af21110c7705e276400",
+    "road-final.png": "b6cb9746386889f6d115bf86f10aab9c8aac927d7e964591ac1055f6411b9692",
+    "road-continued-pending.png": "b6cb9746386889f6d115bf86f10aab9c8aac927d7e964591ac1055f6411b9692",
+    "road-stopped.png": "f718f9573236262adfcac1664c70dfeb29a53ff5c9baab9975b430337404fd29",
+    "road-restored-stopped.png": "6dbf39c9c8fc06f0f47b884343b11ba93768441dc5a7488e3fdfee01fd03eb69",
+    "road-continued-stopped.png": "b6cb9746386889f6d115bf86f10aab9c8aac927d7e964591ac1055f6411b9692",
+    "road-restart.png": "56dc56599d7d4b5cf16e4fcec46838467bffe7833055d2f0b40d11e75ff05f7d",
+    "road-restored-restart.png": "3f403c27b52e7e69b39867a0aeec254717942d04c60866d6102a02a7f0d3a920",
+    "road-continued-restart.png": "b6cb9746386889f6d115bf86f10aab9c8aac927d7e964591ac1055f6411b9692",
+    "detour-pending.png": "b057ff215d44fdb1c4bfda3303cc4ec07d8afb28f6641400f30388d12b6b16c6",
+    "detour-restored-pending.png": "fd4fc76cd23c9c0ff83696104f8ef7dcf15c46ca99846af21110c7705e276400",
+    "detour-final.png": "6da2a4f14b891efd13c40ff64d228789594e4690694439cb2434d49a21c175bc",
+    "detour-continued-pending.png": "997903b01cfd11525b362995ca73e02c64008f69f54cec5ddd488f290283f34d",
+    "detour-detoured.png": "b5aa89cdac4bec72792a3d64ed7e06537f818bef28e91f9958db97cc1964a68d",
+    "detour-restored-detoured.png": "b333ae06823529058e80ff1dc7c75c42724a7b06536228a385bc9e299d30574a",
+    "detour-continued-detoured.png": "997903b01cfd11525b362995ca73e02c64008f69f54cec5ddd488f290283f34d",
+    "detour-moving.png": "829b8d949e579a9db9d0bf414d8cb42525d602121a2620a81787ba97a9a68b44",
+    "detour-restored-moving.png": "59c8865debbb6b6fbaf79ad05c4992eac22211cdfde979eceeff592cfb3e96a9",
+    "detour-continued-moving.png": "997903b01cfd11525b362995ca73e02c64008f69f54cec5ddd488f290283f34d",
+    "port-waiting.png": "7ff74c0cf04abe12533b0e4bf989882f83fcef98ecb80f2ed2b987b37bc44414",
+    "port-restored-waiting.png": "29cb46ec2188dcedc7c0ab388d2b489dbc45c103a2ad11b6888161a1fbcdb8ff",
+    "port-final.png": "b8b64c42dc0c7f0033262488261d4361f02a66979c9e4e66af81e08ea09ed760",
+    "port-continued-waiting.png": "b8b64c42dc0c7f0033262488261d4361f02a66979c9e4e66af81e08ea09ed760",
+    "port-stopped.png": "19f730e11ffe77c07ae543d6dac70f89ac7f758e9fee6a4a14efaef3a633dfb9",
+    "port-restored-stopped.png": "d1a1a848962847a893a913016586880486bac0aab3e13b52831dacbdf70751e5",
+    "port-continued-stopped.png": "b8b64c42dc0c7f0033262488261d4361f02a66979c9e4e66af81e08ea09ed760",
+    "port-restart.png": "261e98348d1e664039950af4eeb9c7c130cbf7568a89f4b035ffa3750a485190",
+    "port-restored-restart.png": "5a41d64943d5056ecdbde5c8469f518b13693a813b2b2a173efc007159b678a5",
+    "port-continued-restart.png": "b8b64c42dc0c7f0033262488261d4361f02a66979c9e4e66af81e08ea09ed760",
+    "sailed-waiting.png": "7ff74c0cf04abe12533b0e4bf989882f83fcef98ecb80f2ed2b987b37bc44414",
+    "sailed-restored-waiting.png": "29cb46ec2188dcedc7c0ab388d2b489dbc45c103a2ad11b6888161a1fbcdb8ff",
+    "sailed-final.png": "01ca05e657c6061b9d9a6f8f6a93347d95de5a45665b3617000bf34f16ec64b7",
+    "sailed-continued-waiting.png": "01ca05e657c6061b9d9a6f8f6a93347d95de5a45665b3617000bf34f16ec64b7",
+    "sailed-afloat.png": "050416048ed3fe2952f1534a75b2732db23437ac898a1fad1b22bdbc47b4d723",
+    "sailed-restored-afloat.png": "2489f53b6ac360b92a04e806b13f88ffc2fa7be9cb8269e5cb845be1c1f49fe5",
+    "sailed-continued-afloat.png": "01ca05e657c6061b9d9a6f8f6a93347d95de5a45665b3617000bf34f16ec64b7",
+    "sailed-arrived.png": "ff012b65f7b07f7f788100a6531fef929127c8f1eac16fbc1d701c674e6b1a09",
+    "sailed-restored-arrived.png": "e35302966101115ddb4cb04136bde4199b50e9e6e2b4b3f6f638e08989f68c2d",
+    "sailed-continued-arrived.png": "01ca05e657c6061b9d9a6f8f6a93347d95de5a45665b3617000bf34f16ec64b7"
+  },
+  "video": {
+    "file": "runtime-local/traffic-world-short.mp4",
+    "sha256": "bc7c875ad99d9496b84719df82f742e6411f106f474de4fcc8979f7de3bab371",
+    "capture": "Actual Godot Movie Maker frames; scripted game actions, no native input",
+    "fps": 24,
+    "frames_expected": 624,
+    "frames_decoded": 624,
+    "duration_seconds": 26,
+    "width": 1100,
+    "height": 720,
+    "decode_log_sha256": "b64036e117588ef4f250601bab53f2a41ea46183d3bb1b5bad92b32f8a236043",
+    "bytes": 292445,
+    "scope": "Road closure and service suspension conflicts; local knowledge, explicit restart,12 independent save stages"
+  },
+  "pixel_checks": {
+    "road-pending/road-restored-pending": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        500
+      ]
+    },
+    "road-final/road-continued-pending": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        500
+      ]
+    },
+    "road-stopped/road-restored-stopped": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        500
+      ]
+    },
+    "road-final/road-continued-stopped": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        500
+      ]
+    },
+    "road-restart/road-restored-restart": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        500
+      ]
+    },
+    "road-final/road-continued-restart": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        500
+      ]
+    },
+    "detour-pending/detour-restored-pending": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "detour-final/detour-continued-pending": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "detour-detoured/detour-restored-detoured": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "detour-final/detour-continued-detoured": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "detour-moving/detour-restored-moving": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "detour-final/detour-continued-moving": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "port-waiting/port-restored-waiting": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "port-final/port-continued-waiting": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "port-stopped/port-restored-stopped": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "port-final/port-continued-stopped": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "port-restart/port-restored-restart": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "port-final/port-continued-restart": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        556
+      ]
+    },
+    "sailed-waiting/sailed-restored-waiting": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        584
+      ]
+    },
+    "sailed-final/sailed-continued-waiting": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        584
+      ]
+    },
+    "sailed-afloat/sailed-restored-afloat": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        584
+      ]
+    },
+    "sailed-final/sailed-continued-afloat": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        584
+      ]
+    },
+    "sailed-arrived/sailed-restored-arrived": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        584
+      ]
+    },
+    "sailed-final/sailed-continued-arrived": {
+      "changed_pixels": 0,
+      "rect": [
+        16,
+        206,
+        1368,
+        584
+      ]
+    }
+  },
+  "logs": {
+    "road-check": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 5\n",
+    "road-restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 6\n",
+    "detour-check": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 3\n",
+    "detour-restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 6\n",
+    "port-check": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 5\n",
+    "port-restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 6\n",
+    "sailed-check": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 3\n",
+    "sailed-restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nTRAFFIC_CHECK_PASSED 6\n",
+    "port-video": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\n\nMovie Maker mode enabled, recording movie in 1100×720 @ 24 FPS...\nTRAFFIC_VIDEO_PASSED 624 frames\n--------------------------------------------------------------------------------\nDone recording movie at path: C:\\Workspace\\Projects\\Games\\hakutaikagami\\Docs\\Design\\TrafficWorldV1\\runtime-local\\traffic-world.avi\n624 frames at 24 FPS (movie length: 00:00:26:00), recorded in 00:00:18 (144% of real-time speed).\nCPU render time: 0.21 seconds (average: 0.34 ms/frame)\nGPU render time: 0.12 seconds (average: 0.18 ms/frame)\nEncoding time: 2.71 seconds (average: 4.35 ms/frame)\n--------------------------------------------------------------------------------\n"
+  },
+  "checks": {
+    "road-check": [
+      "disruption stops at physical site",
+      "stopped actor is idle",
+      "single committed traffic stop",
+      "reopening never auto-launches actor",
+      "continued trip reaches intended final site"
+    ],
+    "road-restore": [
+      "restore paused pending",
+      "restore exact position pose stops and decisions pending",
+      "restore paused stopped",
+      "restore exact position pose stops and decisions stopped",
+      "restore paused restart",
+      "restore exact position pose stops and decisions restart"
+    ],
+    "detour-check": [
+      "detour or afloat travel is not interrupted",
+      "traveler continues after safe decision",
+      "continued trip reaches intended final site"
+    ],
+    "detour-restore": [
+      "restore paused pending",
+      "restore exact position pose stops and decisions pending",
+      "restore paused detoured",
+      "restore exact position pose stops and decisions detoured",
+      "restore paused moving",
+      "restore exact position pose stops and decisions moving"
+    ],
+    "port-check": [
+      "disruption stops at physical site",
+      "stopped actor is idle",
+      "single committed traffic stop",
+      "reopening never auto-launches actor",
+      "continued trip reaches intended final site"
+    ],
+    "port-restore": [
+      "restore paused waiting",
+      "restore exact position pose stops and decisions waiting",
+      "restore paused stopped",
+      "restore exact position pose stops and decisions stopped",
+      "restore paused restart",
+      "restore exact position pose stops and decisions restart"
+    ],
+    "sailed-check": [
+      "detour or afloat travel is not interrupted",
+      "traveler continues after safe decision",
+      "continued trip reaches intended final site"
+    ],
+    "sailed-restore": [
+      "restore paused waiting",
+      "restore exact position pose stops and decisions waiting",
+      "restore paused afloat",
+      "restore exact position pose stops and decisions afloat",
+      "restore paused arrived",
+      "restore exact position pose stops and decisions arrived"
+    ]
+  },
+  "assets": {
+    "Game/Assets/Officer3D/TrialV1/officer.glb": "2112b732afee0534777f3460b3b09ef287e5a3224fe5ce31ec83547aad62a44a",
+    "Game/Assets/Officer3D/TrialV2/far.glb": "84b4db9a5197b4882692fba3a7c0aaa5fff6ada06d530ec672a68592c4e240c7",
+    "Game/Assets/Officer3D/TrialV2/mid.glb": "2beac7251f3437a3793462f421f45f59da8467da8c7b35fc6b10c9c7f6f54db8",
+    "Game/Assets/Officer3D/TrialV2/near.glb": "20f5a3753db2c65d4b6e42fa5d3a9fe78a852e66104382af8b3ed0dd84ffefda",
+    "Game/Assets/Officer3D/TrialV3/far.glb": "7385c1abd9f5408e9bb997df05f89fec40364e01acffa0bfd352a6bc1ebcca92",
+    "Game/Assets/Officer3D/TrialV3/mid.glb": "5b1e644b97af41a545c21dee05fcdd5706f22d896378ad6742989e06c5f12267",
+    "Game/Assets/Officer3D/TrialV3/near.glb": "1db4bc8fd71c184aadb137fdccc6d0a155f416c3f8b45a30cceac8d93e1d4d2e",
+    "Game/Assets/Officer3D/TrialV1/albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV1/metallic.png": "d71eaf71ff03773f5b003e06ffcd69583e79083bd18e6449c7374319f29d7903",
+    "Game/Assets/Officer3D/TrialV1/normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV1/officer_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV1/officer_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV1/officer_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV1/officer__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV1/officer__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV1/officer__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV1/officer__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV1/officer__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV1/officer__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV1/officer__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV1/officer__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV1/orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV1/roughness.png": "8fa61df7bb7c00fc65d9d3d8d776918664176ec94d30009188f7e4d6b878435b",
+    "Game/Assets/Officer3D/TrialV2/far_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV2/far_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV2/far_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV2/far__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV2/far__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV2/far__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV2/far__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV2/far__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV2/far__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV2/far__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV2/far__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV2/materials.png": "f567e6fc83b2e87fc6f40c5dd48bc9d8cfee03485977fa45655eaab84bd0fcd0",
+    "Game/Assets/Officer3D/TrialV2/mid_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV2/mid_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV2/mid_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV2/mid__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV2/mid__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV2/mid__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV2/mid__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV2/mid__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV2/mid__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV2/mid__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV2/mid__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV2/near_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV2/near_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV2/near_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV2/near__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV2/near__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV2/near__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV2/near__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV2/near__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV2/near__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV2/near__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV2/near__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV3/far_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV3/far_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV3/far_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV3/far__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV3/far__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV3/far__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV3/far__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV3/far__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV3/far__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV3/far__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV3/far__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV3/mid_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV3/mid_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV3/mid_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV3/mid__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV3/mid__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV3/mid__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV3/mid__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV3/mid__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV3/mid__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV3/mid__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV3/mid__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV3/near_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV3/near_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV3/near_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Officer3D/TrialV3/near__01.png": "2c80a4a3c10825836aaa1f9dc5547bd2d2b899384a4b224166bb5455e52393f7",
+    "Game/Assets/Officer3D/TrialV3/near__02.png": "9bdd32f2f6032e78dff1918bfc8e1cc9e631f9813de4c6c821d14e54bea3f510",
+    "Game/Assets/Officer3D/TrialV3/near__03.png": "a9216e5a756b2e956f7d9400b1ff5b8eecacabbb523a0b78f087507a2e106098",
+    "Game/Assets/Officer3D/TrialV3/near__04.png": "37a8761fde74ef03731d7686e55a0bc529c5afe0aca94b377f2d1c1471b42118",
+    "Game/Assets/Officer3D/TrialV3/near__06.png": "46a0d95fb6d4e9f60167a20908e3512dba45bff71fd310b64472a7a232bdb421",
+    "Game/Assets/Officer3D/TrialV3/near__07.png": "651a9bfb2eafc3c111ab511ce92e534cf2d807897214a06ea5fc6c4b4fb156c4",
+    "Game/Assets/Officer3D/TrialV3/near__09.png": "d18ea00fd671a8c1c6143e0595ba2b172e225ee1f65a570467669c1290dedc3b",
+    "Game/Assets/Officer3D/TrialV3/near__10.png": "050bf7f4af04b0ad7ed6ec285c2cd341114d70d5222b76b922789b7cd1d7344b",
+    "Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
+    "Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/metallic.png": "d71eaf71ff03773f5b003e06ffcd69583e79083bd18e6449c7374319f29d7903",
+    "Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
+    "Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/roughness.png": "8fa61df7bb7c00fc65d9d3d8d776918664176ec94d30009188f7e4d6b878435b",
+    "Game/Data/Officer3D/face-protection.json": "066e12c804a72c8bb8b4755e7194ad2640e5c91ea3ddb0ac1097cff04b6a02bd",
+    "Game/Data/Officer3D/presets-v2.json": "398f4febadc282a1549e244599ff89003473a1e83aa4a87d78176c4f7c1c08a6",
+    "Game/Shaders/Officer3D.gdshader": "e42fc79b673b582136d66ef618eb761f7f0a719f6f08c671ec2b1192e2da483c",
+    "Game/Shaders/Officer3DV2.gdshader": "6025fece58c8e670a7dd986e5a1d00224afb509846b445250412ac81da623177",
+    "Game/Shaders/Officer3DV3.gdshader": "e2b6bdea8f6666ba28b1e5f8c420415609254da3a79ddef65c22ca4b0d6fdc05"
+  },
+  "entry_tools": {
+    "Scripts/check_traffic_binding.py": "0f7b32dc174154af2dad891986e30e5e07c81ccdc8dd34f69e4a2b49f2434faf",
+    "Scripts/Show-TrafficWorld.ps1": "fa2843ec62d3a033410a500c48bc6a8c6e7b6afb1b1d4dbd1134fae393ce877f"
+  },
+  "trx_sha256": "c9a37bbce07eec85baa6e36b46e3350cd1731ed76aa09dbe612a2e5656813ccf",
+  "visual_review": {
+    "reviewer": "Codex self-review, not user acceptance",
+    "date": "2026-10-20",
+    "video_sha256": "bc7c875ad99d9496b84719df82f742e6411f106f474de4fcc8979f7de3bab371",
+    "reviewed": [
+      "Six actual Godot video scenes: waiting, simultaneous outage, restore at port, local reopening inspection, explicit new boarding, arrival",
+      "Actual stage sheet: pending redirect/blocked node/detour/port stop/restart/afloat after closure",
+      "40 bound PNGs;24 viewport comparisons with0 changed pixels"
+    ],
+    "observations": [
+      "Red routes appear only after local observation; reopening does not move actor until explicit restart",
+      "Stopped actor remains at same physical node/port; original goal and decision history retained",
+      "Black figures at the port are physical outgoing report couriers, not duplicated self-message actors",
+      "Flat geographic reference and box vessel remain placeholders, not historical port reconstruction"
+    ]
+  }
+}

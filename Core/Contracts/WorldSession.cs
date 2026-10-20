@@ -350,7 +350,7 @@ public sealed class WorldSession
         var id=Child("message",task.Id,"report");if(s.Outbox.Any(o=>o.Id==id))return;
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.
-        var text=reason=="completed"?"任務完了":reason=="redirected"?"行先変更を適用":reason=="too-late"?"既に完了済み":reason=="port-cancelled"?"出航を取りやめ":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
+        var text=reason=="completed"?"任務完了":reason=="redirected"?"行先変更を適用":reason=="too-late"?"既に完了済み":reason=="service-suspended"?"運休のため港で移動を中止":reason=="road-unavailable"?"通行不能のため拠点で移動を中止":reason=="port-cancelled"?"出航を取りやめ":reason=="cancelled"?"取消を処理":reason=="expired"?"期限超過":"履行できず・照会が必要";
         s.Outbox=[..s.Outbox,new(id,task.Id,task.Executor,task.Issuer,"contract-report",text,s.ElapsedSeconds,RegionalCampaign.Enabled(s)?1:BranchRoutes.Enabled(s)?BranchRoutes.ReportDelay(s,task):RouteContract.Enabled(s)?RouteContract.Courier(s,task.Executor,task.Issuer):i.ReportSeconds,false)];
         var current=s.Tasks.Single(t=>t.Id==task.Id);Replace(s,current with{Report=ReportingPhase.Queued});
     }
