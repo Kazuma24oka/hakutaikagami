@@ -226,8 +226,9 @@
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "5cd95afd2bc265bce4a63da07a774a8bbfc824ccfbd72fadd1ad895697ce5fff",
+    "Game/Scripts/ContinuousWorldTrial.cs": "958aa674213f1a775c3f636fa38afc615bd8051c36a431cdaa06af949d0648a0",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
+    "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
     "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
@@ -369,8 +370,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "053eaf6c0d29b3695fcc59c5b406f87c10f6bcda2f012c38cbdc3caa69ec3216",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "18709e479333e9a097196a98d54f09e9588c416ff96cc4975849c0ef34be60bb"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "bafa26cd73facd0b6236e44d179bfa16c725ea89e0bde52a85acc1f1d36deae1",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "6e02487a2d5ad3fd6f1afe440311c3448f88b0c8e5c9c4aa3eb38740d6c5f8a6"
   },
   "comparisons": {
     "0": 0,
@@ -382,12 +383,12 @@
     "6": 0
   },
   "images": {
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "56d874ce3b1d95036fd677142e2ee20e595afc73c2bcfcaa5b1b89bc30c716e9",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-0.png": "343c270daf3de475a41baee42c0659f4c91843765f2e9d71af79a872dca64c5b",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-1.png": "c8d00569a81631aae4a61ef5379a250b8ce160b482cc58aa57fb16da47c45ac8",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-1.png": "57118a04c8e0ef8ac58ef9f18faea65072d14af5302a315f4ad54857de3a7ebd",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-2.png": "58cd361ff043d592fb9a90408ee759d88ea348b9efa2ff07df516fd94142a2f2",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-2.png": "978e276b1ff593250360249fc03d8746f4a366c4d8d3fda42fafc50d69cd2dca",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "cb38a1d9366e2c4a3467b6974c9ad435c73b5ca0fb6849761490ac7108f7ac4b",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-0.png": "a98d7e48f51cbb6eb998cdb68ac91de498834523b56f6167c7375272ee2777dc",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-1.png": "a55f9baf328929e4034540f87c47d1ff7a1de593e2a6b57ab2a7c684541aba1d",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-1.png": "5fde9b2039e570fe50662e8f30fcd84f3aaa2f8b2e4249b82ba93022e8dc22b2",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-2.png": "e39b06b49c5af9d8dcaadd81935184133aa2b1ccca4d073896783a1de9786a73",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-2.png": "f2843480bd373a9efff3b8e36af3c8b0d2cf13fd3c3c9c7b6d82deda6baec350",
     "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-3.png": "9d990815d8538632b56990d080ad0901db27bc8b0d908a1f59addf2bfb16e6b2",
     "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-3.png": "9a64f472271ba5cf816e2ed7366fe95fa6ece5226e46736434dfec446f39c2f7",
     "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-4.png": "fefb496df99ff72b5c7b7eaf61a4018c30d68f295587f6bf2064e999c73b3ed1",
@@ -467,8 +468,7 @@
   },
   "visual_review": {
     "inspected": {
-      "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-1.png": "c8d00569a81631aae4a61ef5379a250b8ce160b482cc58aa57fb16da47c45ac8",
-      "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-6.png": "76571e677d0ee2fbd3622874f8b32f2919f15bf3286dae5934ca943234ba1e2a"
+      "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "cb38a1d9366e2c4a3467b6974c9ad435c73b5ca0fb6849761490ac7108f7ac4b"
     }
   }
 }

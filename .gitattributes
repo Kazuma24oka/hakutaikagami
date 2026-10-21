@@ -463,3 +463,7 @@ Scripts/*lod_appearance* -text
 Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs -text
 Docs/Design/CameraContinuityV1/** -text
 Scripts/*camera_continuity* -text
+
+Game/Scripts/ContinuousWorldTrial.ForceLod.cs -text
+Docs/Design/ForceLodV1/** -text
+Scripts/*force_lod* -text

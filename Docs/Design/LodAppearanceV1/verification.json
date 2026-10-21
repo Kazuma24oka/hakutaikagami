@@ -225,8 +225,9 @@
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "5cd95afd2bc265bce4a63da07a774a8bbfc824ccfbd72fadd1ad895697ce5fff",
+    "Game/Scripts/ContinuousWorldTrial.cs": "958aa674213f1a775c3f636fa38afc615bd8051c36a431cdaa06af949d0648a0",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
+    "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
     "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
@@ -366,8 +367,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "053eaf6c0d29b3695fcc59c5b406f87c10f6bcda2f012c38cbdc3caa69ec3216",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "18709e479333e9a097196a98d54f09e9588c416ff96cc4975849c0ef34be60bb"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "bafa26cd73facd0b6236e44d179bfa16c725ea89e0bde52a85acc1f1d36deae1",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "6e02487a2d5ad3fd6f1afe440311c3448f88b0c8e5c9c4aa3eb38740d6c5f8a6"
   },
   "comparisons": {
     "back-0": 0,
@@ -380,28 +381,28 @@
     "restore-3": 0
   },
   "visible_changes": {
-    "0": 110569,
-    "1": 68335,
+    "0": 110565,
+    "1": 67570,
     "2": 1877,
     "3": 453
   },
   "images": {
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-0.png": "d905a47e85503f566cd782412571aa8e6c68e1378da76260f24e2bca9f5e5de2",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-0.png": "d905a47e85503f566cd782412571aa8e6c68e1378da76260f24e2bca9f5e5de2",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-0.png": "a84eea95a3688cf9deb4a3ec4363418e7884b38355dfdd4e504f8ec09116f22e",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-0.png": "2d27cee14c1570018a5982b5daaf8322b06d6cd19f27ccab20f53e0f5f7744e5",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-1.png": "5762aca3ef3f8bd2f795ffd474ebd2d6ac2f39e886a5182432412ffcd21335e7",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-1.png": "5762aca3ef3f8bd2f795ffd474ebd2d6ac2f39e886a5182432412ffcd21335e7",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-1.png": "2ccf8df81c134e294022f7dbc37058aca1818cac01ce81dcf31ec4332e47282e",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-1.png": "2e88fc21a3a9a54f42b7fb5806d8d8060a155b60289c3230c468a74baa7f4520",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-2.png": "fb1c01a7c3ff9af286a506efc704795756d05d5654fbd641e421d2ec02b2f279",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-2.png": "fb1c01a7c3ff9af286a506efc704795756d05d5654fbd641e421d2ec02b2f279",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-2.png": "c1e3163c5f1fc662648fbd2480b82d4beb38d56283f40bc1aa0813f4b45410e3",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-2.png": "a676d73e42f1c611f84c7b791eda92e0d5d076a0acfe53b590a93f2707acc62c",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "b6ef3c9cc855649961718e5be7d8e7deb0713c9bd8510f24a66a91be06f55d79",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-3.png": "b6ef3c9cc855649961718e5be7d8e7deb0713c9bd8510f24a66a91be06f55d79",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-3.png": "aba9c17e12cb76a2d3bea2bad0aed80587c2ecc852ec046caa5ce77a75ab4fcd",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-3.png": "49b6a969388ef548d336fd0fe5e0e92d8fad75184cf9efb2e0155b51582a7b80"
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-0.png": "d0ce23605b851ddf6f64a8603b3ded8c6ecf83c26926afd2e00e7efddc714400",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-0.png": "d0ce23605b851ddf6f64a8603b3ded8c6ecf83c26926afd2e00e7efddc714400",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-0.png": "96022da1fc39a32688724bac585377dcabb8d33aca388cfedc34ed0129b1e7bc",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-0.png": "4135de4ecdc7cbb05b4d97018e335d709c9b8e54ea781f2096b77e0a22f7ae3a",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-1.png": "5339f92718050d13598bd35ba32d5d45ef5431cbfb6b58bdc790273b98580f55",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-1.png": "5339f92718050d13598bd35ba32d5d45ef5431cbfb6b58bdc790273b98580f55",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-1.png": "ee4da8a111a570a954c3ef4143ce8251868b23a08b73779488bee3e028bf03f4",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-1.png": "c0af6b628ff772869c845107e83d1030944fe0ac5ad722b496345b599b47c8dc",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-2.png": "e66e5a7fb98383bde191d25f78b823c0c4ac9ff78f993d7937263fd92cdacb74",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-2.png": "e66e5a7fb98383bde191d25f78b823c0c4ac9ff78f993d7937263fd92cdacb74",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-2.png": "c6e7625def6779ab696dba87b4d83d05e55b0e420ea91d33665ed6545b9b743a",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-2.png": "03f5e96a71026ecfeb40ccbc1f8242c2a564c797be0ebc58fe0029b33048f10b",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "d98a31bf9e87de54159483f1e6754159cc5b6bc72b265f817748a789180449a0",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-3.png": "d98a31bf9e87de54159483f1e6754159cc5b6bc72b265f817748a789180449a0",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-3.png": "fef8695f4d2f5111618534cf53bacbf28fcac5fddd72e7516dd8900007712f14",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-3.png": "e74ce1cde86384e1843af630b6a491d75995e310d6eabc9b7a67425145c4b686"
   },
   "checks": {
     "check": {
@@ -449,7 +450,7 @@
   },
   "visual_review": {
     "inspected": {
-      "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "b6ef3c9cc855649961718e5be7d8e7deb0713c9bd8510f24a66a91be06f55d79"
+      "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "d98a31bf9e87de54159483f1e6754159cc5b6bc72b265f817748a789180449a0"
     }
   }
 }

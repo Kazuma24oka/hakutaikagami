@@ -223,8 +223,9 @@
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "5cd95afd2bc265bce4a63da07a774a8bbfc824ccfbd72fadd1ad895697ce5fff",
+    "Game/Scripts/ContinuousWorldTrial.cs": "958aa674213f1a775c3f636fa38afc615bd8051c36a431cdaa06af949d0648a0",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
+    "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
     "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
@@ -360,12 +361,12 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "053eaf6c0d29b3695fcc59c5b406f87c10f6bcda2f012c38cbdc3caa69ec3216",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "18709e479333e9a097196a98d54f09e9588c416ff96cc4975849c0ef34be60bb"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "bafa26cd73facd0b6236e44d179bfa16c725ea89e0bde52a85acc1f1d36deae1",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "6e02487a2d5ad3fd6f1afe440311c3448f88b0c8e5c9c4aa3eb38740d6c5f8a6"
   },
   "summary": {
     "tests": 933,
-    "tests_rerun": true,
+    "tests_rerun": false,
     "test_evidence": "unchanged Core/Tests source; exact rebuilt binary retested because commit metadata changed DLL hash",
     "gpu_processes": 14,
     "hub_saves": 5,
@@ -382,8 +383,8 @@
     "report": "Docs/Design/NpcWorkV1/verification.json",
     "report_sha256": "eafcca3b04335d5d4e7048edb232bc52387132c3460cb4b5c773657f2e3bbe75",
     "trx_path": "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx",
-    "trx_sha256": "5fc067d35bba72b6f831f8763838d585d377372f003773594aaf2a27dcf8d5b3",
-    "core_sha256": "053eaf6c0d29b3695fcc59c5b406f87c10f6bcda2f012c38cbdc3caa69ec3216"
+    "trx_sha256": "d4282192f17119ed80600dd3ffcb42b84ca165575e6a7b5309e3c8c78383ec35",
+    "core_sha256": "bafa26cd73facd0b6236e44d179bfa16c725ea89e0bde52a85acc1f1d36deae1"
   },
   "comparisons": {
     "Docs/Design/WorkHubStartupV1/runtime-local/s0.png/restored-s0": 0,
