@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "expected_passed": 945,
+  "baseline": 933,
+  "added": 12,
+  "scope": "LandMaskIndexTests: 4 facts and 8 boundary cases; no test filtering"
+}

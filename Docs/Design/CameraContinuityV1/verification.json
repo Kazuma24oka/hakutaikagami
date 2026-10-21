@@ -10,14 +10,14 @@
     "Core/Common/SessionInfrastructure.cs": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076",
     "Core/Contracts/AssessmentNotice.cs": "d51f75c6dcdc2eb2fc944ae259fba566bd67425a4c26eafde53774c675285764",
     "Core/Contracts/BranchRoutes.cs": "9550b4d8973eed7a1d428e0f61011b5aea82c6332828160140f6e1d609fbe748",
-    "Core/Contracts/ContinuousWorld.cs": "94898d22c9c6790ae3cfae5e73143f456e545bd9581e6941bc8add27a9a32da6",
+    "Core/Contracts/ContinuousWorld.cs": "e1047998371a0876349a7677c84f50101ac43f72d5d90e38de4f8e87ba1835c7",
     "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
     "Core/Contracts/ContractJson.cs": "4b7cf33b5b81213b542d52e9286c9d8cb62094d426808640ff0840ed2ac38574",
     "Core/Contracts/ContractModels.cs": "c7df1a1889a2b4eefcd727f32e2a8bbe50a0a802bd4e8b355755d0cf3728d001",
     "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
     "Core/Contracts/ContractValidation.cs": "b2122779fa70f64d792ccbd7b1d06d2c938368824c7aec46c7376a201c989af8",
     "Core/Contracts/CouncilInput.cs": "23ced7f34511d0169fa882919bd0b06e1125ff0e46b2f87b7560fbda6b9c8bfe",
-    "Core/Contracts/FieldWorld.cs": "b3350650ae241c9d31345f101896edafa0a53343086c3a3c844a73e325c6dbe8",
+    "Core/Contracts/FieldWorld.cs": "186a2ff1ebc2f216c86b7a737f5c0fdcb0b8e709660765a03558faca23933806",
     "Core/Contracts/GenerationSaveStore.cs": "fa480f7154f063de2af6e2b1262522af91b9e3e9797e09f517826536b476edbc",
     "Core/Contracts/HistoricalRoads.cs": "39e3ee87e893ef682d558858d5042b77d501c2a7169f120dc458926036c69530",
     "Core/Contracts/IncomingMission.cs": "38199138ebdeeb9ce4fd5f3acbc26dc412eb38ad0055e908a82769e71a05b82f",
@@ -73,6 +73,7 @@
     "Core/Simulation/TaxSimulation.cs": "b03b4ff3eac6d60084ddda3d5e399c103df1f54959143cf5d0b98de4fe20f411",
     "Core/Simulation/TaxSimulation.Military.cs": "6c4d316deb55fb575aa2b57eec65338f12462613e911dede06205286ded2d80b",
     "Core/World/JapanGeography.cs": "9a606749c1a9276796b7b4754f929f1baf6defb5a451299d904f01b2d53fcd57",
+    "Core/World/LandMaskIndex.cs": "1740e4ecd91aa6b6570c2b072a032e207f21804d99ee971ac8b5edf853904145",
     "Core/World/PrototypeScenario.cs": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529",
     "Core/World/SeededRandom.cs": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f",
     "Core/World/WorldState.cs": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c",
@@ -250,7 +251,7 @@
     "Game/Scripts/ContinuousWorldTrial.RegionalWork.cs": "a0de8962e6278b9f0995bf06bb6248df7a159509b8aee73e06ade02dda3f2f33",
     "Game/Scripts/ContinuousWorldTrial.Review.cs": "6fdcb66c926d899d88c5541740e788108145e8634de8aa8f1d114800437cf50a",
     "Game/Scripts/ContinuousWorldTrial.TaskEntry.cs": "1ec27012373822affb70f3fff34e18ce5fc78016b23a5b2e44f8e08e9d369077",
-    "Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs": "f7a9cee7f8428236589ceead0385c1bdf1bb5537420a371027adfaa9ec231c56",
+    "Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs": "03d4eb33827b2ff10c1bf7752e76eab724f0611bc0c8e034457bd389103d9c38",
     "Game/Scripts/FieldWorldTrial.cs": "5756eea5f97463694e7ff488e146e3edb90ab0c76206483b6a7a1a55ca5d4368",
     "Game/Scripts/FormationWorldGate.cs": "de5e27c6bfda188a2a24e333403ea10b548a6adb7ba1aab925b254fa1b36cbe0",
     "Game/Scripts/FormationWorldStage.cs": "889758285728cf356bad69c4c147a1e72d0e8516ee0b428022d3da4612ff64c5",
@@ -259,7 +260,7 @@
     "Game/Scripts/JapanMapTrial.cs": "b6ece8af1254d3d4a052269a4bba572f932469da4c456de4a1328b8a0a894586",
     "Game/Scripts/Main.cs": "a2d66cf586bce73c6ffde52ec6e979a7a7a37578ea277772661555332188741a",
     "Game/Scripts/Main.TaskEntry.cs": "9804919c9d180b1978d4a86f39320b56577bae302ff71280cec8618963631203",
-    "Game/Scripts/MidTerrainRenderer.cs": "3a67066a381d5e2191024044aaed644cc232ae5ff7defba8eaab611459a56178",
+    "Game/Scripts/MidTerrainRenderer.cs": "e910f164567eb49130ee3bd992d78aa269a7a3eeaa134734ad378f36f71182ae",
     "Game/Scripts/MilitaryGridGate.cs": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f",
     "Game/Scripts/MilitaryGridStage.cs": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5",
     "Game/Scripts/MilitaryGridValidation.cs": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47",
@@ -311,7 +312,7 @@
     "Scripts/check_council_input_binding.py": "63d8e8e23b7acba896cac6d2ad742d366ac6caae107103f4c70e7cfe26753b30",
     "Scripts/check_incoming_mission_binding.py": "bab5c226cfe82128a9c07cf1a9ba79b176f1a7db43489169b68bf56cec61fdea",
     "Scripts/check_lod_appearance_binding.py": "d00b39a98216745a662e61d02cabf38bb389fc14a6ab0a732b90ba1228bcd126",
-    "Scripts/check_mid_terrain_binding.py": "c687b6aabb922a7d2d2ca4c6c477980e3c6a26d5d52c01e1f8e6b160fe221ab3",
+    "Scripts/check_mid_terrain_binding.py": "4651e56ab8d71a6951ffe13a7481d6e2f5f82693180fa80e7466ffa315f8cff6",
     "Scripts/check_mission_entry_binding.py": "7c11d8bbc5b85dc77cc1c34f38d68f40feb086b52e15c4f3cbf59b576cc30d34",
     "Scripts/check_mission_review_binding.py": "6e34713a3a852ef7471e3561830c1803fc84f54faafab958207082d05557f93e",
     "Scripts/check_national_personnel_binding.py": "a4987d680992d0cc59cf338cfdb271a0ff0f7c9f9bd9dc57f4d87c0c31c88915",
@@ -320,6 +321,7 @@
     "Scripts/check_regional_work_binding.py": "87504f7ea88f2963737f628dadc757bfcedf09858a63c0080a51e0e782366919",
     "Scripts/check_task_entry_binding.py": "9eb2721b03299ad0c57e5cd4464855c439ba08696a43c8e11003c9bda9ae2d2e",
     "Scripts/check_work_hub_startup_binding.py": "ff1b58061a73c02afb38d1f8dce2eb07bf3b8708e6220ca0fc9fb219f616976a",
+    "Scripts/current_test_contract.json": "b82b3af645cbd96d10e859a87f0f56d88652fae8f94e2809c91a697fc7c5ed2c",
     "Scripts/Show-CouncilInput.ps1": "a588d2d493553f250385d8fff355ab5637a2cc98f3afbf985b724ab40acb1e14",
     "Scripts/Show-MissionEntry.ps1": "ab1384f3a38bdd862fffaba71ebcb2e6d9b3f3ba871611c2a010ce12803e60a0",
     "Scripts/Show-OfficerLoop.ps1": "f601ee0a04bcce67e6656db5efe0b1f903c8d25b72eac4ff790bcaf8c8a8dfcf",
@@ -336,7 +338,7 @@
     "Scripts/verify_officer_loop.py": "dba6c3fd140894179b1ec6a4873f764598562fc2bb9b922a1bfc0a13541ec3ca",
     "Scripts/verify_regional_work.py": "191a2526d08d022f885e70d3521dab9f2a8e0858d6e93a36adc552c3a6df3440",
     "Scripts/verify_task_entry.py": "904dece9a677c41b46f105cc3db36d71b6e6138f0c9e4a7907e0cebfa6887c81",
-    "Scripts/verify_work_hub_startup.py": "e4d845381e1527119e8007ede0f0cfaaf1248fe05c4d43aed3dda1e81cfcc2f5",
+    "Scripts/verify_work_hub_startup.py": "fb95af7ff5439089adc48c9c1073da0d922116457ad47f1f81fd5e431206147a",
     "Tests/AssessmentNoticeTests.cs": "737090a3cfa539a6a2941d9f705a38f8b70e5f3e8b44ceb71323c2a5b1f856b7",
     "Tests/BranchRouteTests.cs": "6b9322a039ebeb57f5e28ae735963d352a99a9355619665809005d4917391e93",
     "Tests/CommonContractTests.cs": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
@@ -352,6 +354,7 @@
     "Tests/HistoricalRoadTests.cs": "badddecf41497169062bc50beadf077e17a1437ebf7497186f06fdde24f82635",
     "Tests/IncomingMissionTests.cs": "348e56bff0b12fff8f20373f80f5c3be1ce06c3e7947067cf9425eee593c678a",
     "Tests/JapanGeographyTests.cs": "1328f3b63421897fc664a875cd8148b50d2212dd92f79cee645ba8f7d8d94e4f",
+    "Tests/LandMaskIndexTests.cs": "f0760569b9be3754cfc80c3472b4d257438cb7c2472e2217725e017ce7b4fd05",
     "Tests/LateDeliveryTests.cs": "57d7bcea27109bacfdc7545a62785fab8273b5c53053e0f3e26e1dbae17e525c",
     "Tests/MilitaryIntegrationTests.cs": "021cc7d3d8f9519cf67dbe98871d2b826f65ed8b5d4d2cef389d3870e4d10722",
     "Tests/MissionEntryTests.cs": "7bef81f7dc93ee9b1f48f57a3c8e9da83e2696393fc81fb284d2ba5e0db13bd7",
@@ -380,8 +383,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "da7d1ec1ec0c2ddc42b8bbc43a4f55536348e13ca54620760f173b908950c336",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "958a3d2e8444782ec0792c34016ba807ce34366e6a222b8bfa099c7e7254e7cf"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "582be8ea6bb84cf6a85008a5710811f0a1a0d8333834e0a3c61e3215c52df040",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "074422afbdd3f969cd689a76723ecf1e73666edadf3342833b94a689318b6180"
   },
   "comparisons": {
     "0": 0,
@@ -393,20 +396,20 @@
     "6": 0
   },
   "images": {
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "c6bb1cd92e981f339a37659a98f0a9b911f6241a9f27b02b0b8dc59b761d87af",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-0.png": "ed0d5e26810af37b4bf019290f2f3cf272d9d2e18c2b8fbade257ab3bafe586d",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-1.png": "a55f9baf328929e4034540f87c47d1ff7a1de593e2a6b57ab2a7c684541aba1d",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-1.png": "5fde9b2039e570fe50662e8f30fcd84f3aaa2f8b2e4249b82ba93022e8dc22b2",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-2.png": "e39b06b49c5af9d8dcaadd81935184133aa2b1ccca4d073896783a1de9786a73",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-2.png": "f2843480bd373a9efff3b8e36af3c8b0d2cf13fd3c3c9c7b6d82deda6baec350",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-3.png": "9d990815d8538632b56990d080ad0901db27bc8b0d908a1f59addf2bfb16e6b2",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-3.png": "9a64f472271ba5cf816e2ed7366fe95fa6ece5226e46736434dfec446f39c2f7",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-4.png": "fefb496df99ff72b5c7b7eaf61a4018c30d68f295587f6bf2064e999c73b3ed1",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-4.png": "bfb7222757b47ff393566cfaf359f2fe620b7101d38d1e22799298aa95688ecd",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-5.png": "d167b85ebbdf28d5bc0f675059afe3549d625a9a2ceff35f4f1fa09f7e3d0201",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-5.png": "9a7d3f29e7ca8bd24b63388d663137eea342f6e86519d946b5cad83c17bafc2c",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-6.png": "76571e677d0ee2fbd3622874f8b32f2919f15bf3286dae5934ca943234ba1e2a",
-    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-6.png": "806fb7f4072bf137e8053c72b59a4ff346e6d7511de1d179934ad8bfcd9af8c7"
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "b0c266724503b8b120f7e2768b595f0fa9c289168a8c3312d5ab5adec72c2b1d",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-0.png": "0cb90cb57734f0013505e387acb0fb22eb7d35da79c2ee6bcb577cfa6f7fb89f",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-1.png": "d1c96aa6f1a5a216a202341a8793470a2a8d389c13c655dd560463143fbc95f5",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-1.png": "0ed60a8fc4e8a5eb3a82f9379ffc05c339cef1e7997aa22f31a6081635455f05",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-2.png": "04d33214ebc36da9aa13536ec2f3fe7c1952fd754b42707d290e24371f5754fe",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-2.png": "5e4c814867a9ed2451346eba3dec6906c41ba359380fdf31319c8d29116237d2",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-3.png": "23dead885d2b6f026401cd5c27ee949be39116818c41c1c44421d7346e5eba80",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-3.png": "56560b1f69cafcd83528971a461ba78ab984730156c31689ed9d92651b1da0b4",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-4.png": "66c2222c5a195f0765cefbbadc5fac34f4ac52885f6261857ad79ab1e5d35a81",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-4.png": "206085b414d09dc360529363e68b03164838d8951f358fad6ac1987dc1c656dc",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-5.png": "188bac5176c9b2905f7af20660463cfb840250ac8d2c7cbb7149c7b6b149d5bd",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-5.png": "1c015d5215bbc06720f770d0f60ef3bd7960286721f05b1d3ff8b81cf88a7645",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-6.png": "a45dd29db6c0e79c1ed16db3844ae6d73fc3374f164d3a5ddf0186ec410e4725",
+    "Docs/Design/CameraContinuityV1/runtime-local/coverage-restored-6.png": "eed67c23b3617fcf633e865fd49b9a9f92b75b4b60ae1f74f19cab59728a3589"
   },
   "checks": {
     "check": {
@@ -427,29 +430,29 @@
         {
           "From": 239,
           "To": 241,
-          "FirstPixels": 82.95711,
-          "SecondPixels": 82.26949,
-          "NormalizedChange": 1.001358e-05
+          "FirstPixels": 88.88262,
+          "SecondPixels": 88.1459,
+          "NormalizedChange": 1.013279e-05
         },
         {
           "From": 29900,
           "To": 30100,
-          "FirstPixels": 0.6638514,
-          "SecondPixels": 0.65944743,
-          "NormalizedChange": 1.0609627e-05
+          "FirstPixels": 0.71128464,
+          "SecondPixels": 0.7065624,
+          "NormalizedChange": 5.6028366e-06
         },
         {
           "From": 499000,
           "To": 501000,
           "FirstPixels": 0.014984605,
-          "SecondPixels": 0.014921691,
-          "NormalizedChange": 0.00020736456
+          "SecondPixels": 0.0149808675,
+          "NormalizedChange": 0.003757596
         }
       ],
       "ViewportRect": [
         10,
         194,
-        1008,
+        1080,
         461
       ]
     },
@@ -467,7 +470,7 @@
       "ViewportRect": [
         10,
         194,
-        1008,
+        1080,
         461
       ]
     }
@@ -478,8 +481,7 @@
   },
   "visual_review": {
     "inspected": {
-      "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "c6bb1cd92e981f339a37659a98f0a9b911f6241a9f27b02b0b8dc59b761d87af"
-    },
-    "same_inspected_bytes_as": "f2f1b32"
+      "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "b0c266724503b8b120f7e2768b595f0fa9c289168a8c3312d5ab5adec72c2b1d"
+    }
   }
 }

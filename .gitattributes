@@ -495,3 +495,12 @@ Scripts/*map_cache* -text
 
 Docs/Design/TerrainBreakdownV1/** -text
 Scripts/*terrain_breakdown* -text
+
+Core/World/LandMaskIndex.cs -text
+Core/Contracts/ContinuousWorld.cs -text
+Tests/LandMaskIndexTests.cs -text
+Scripts/current_test_contract.json -text
+Docs/Design/LandIndexV1/** -text
+Scripts/*land_index* -text
+
+Core/Contracts/FieldWorld.cs -text

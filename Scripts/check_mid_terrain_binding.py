@@ -8,5 +8,5 @@ assert len(j['comparisons'])==7 and set(j['comparisons'].values())=={0}
 assert j['visual_review'] and j['visual_review']['inspected']
 for p,h in j['visual_review']['inspected'].items():assert sha(ROOT/p)==h,p
 prior=json.loads((ROOT/'Docs/Design/WorkHubStartupV1/verification.json').read_bytes())
-assert j['binaries']==prior['binaries'] and prior['summary']['tests']==933 and len(prior['comparisons'])==36
+assert j['binaries']==prior['binaries'] and prior['summary']['tests']==json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'] and len(prior['comparisons'])==36
 print('PASS mid terrain sources, binaries, exact restored images and startup regression')
