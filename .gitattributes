@@ -402,3 +402,11 @@ Game/Scripts/ContinuousWorldTrial.Review.cs -text
 Game/Scenes/MissionReviewTrial.tscn -text
 Scripts/*mission_review* -text
 Docs/Design/MissionReviewV1/** -text
+
+Core/Contracts/*AssessmentNotice*.cs -text
+Tests/AssessmentNoticeTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Notice.cs -text
+Game/Scenes/AssessmentNoticeTrial.tscn -text
+Scripts/*assessment_notice* -text
+Docs/Design/AssessmentNoticeV1/** -text
+Docs/Proposals/MainEntryIntegration.patch -text

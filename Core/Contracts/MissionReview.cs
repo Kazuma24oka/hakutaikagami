@@ -8,7 +8,7 @@ public static class MissionReview
     public const string ExplanationKind="mission-explanation";
     public const string InterruptedReport="担当者が任務を中断（本人返報）";
     public enum Explanation { OwnDecision, ClaimedDanger }
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||AssessmentNotice.Enabled(w);
     public static ContractWorld Create()
     {
         var w=IncomingMission.Create();w.WorldId=new("world:"+Ruleset);
@@ -37,6 +37,11 @@ public static class MissionReview
         return v.Tasks.Where(t=>t.Issuer==assessor&&w.Requests.Single(r=>w.Tasks.Single(x=>x.Id==t.Id).RequestId==r.Id).Intent.Action==ActionKind.Inspect).Select(t=>{
             var report=v.Messages.SingleOrDefault(m=>m.Id==WorldSession.Child("message",t.Id,"report")&&m.KnownBody!=null);
             var explanation=v.Messages.SingleOrDefault(m=>m.Id==ExplanationId(t.Id)&&m.KnownBody!=null);
+            return FromClaims(t.Id,report,explanation);
+        }).ToArray();
+    }
+    internal static Review FromClaims(EntityId task,VisibleMessage? report,VisibleMessage? explanation)
+    {
             string achievement=report==null?"結果未確認":report.KnownBody=="任務完了"?"点検完了の申告を受領":"未達・中断等の申告を受領";
             string difference=report?.KnownBody switch{
                 null=>"指示との差異は未確認",
@@ -44,7 +49,7 @@ public static class MissionReview
                 "期限超過"=>"期限未達の申告あり（故意は未判定）",
                 "任務完了"=>"差異の申告なし（違反なしの確定ではない）",
                 _=>"原因・指示との差異は照会が必要"};
-            return new Review(t.Id,achievement,difference,explanation?.KnownBody??"本人の理由書状は未認識","責任・処分は未審査",new[]{report?.Id,explanation?.Id}.Where(id=>id!=null).Select(id=>id!.Value).ToArray());
-        }).ToArray();
+            return new Review(task,achievement,difference,explanation?.KnownBody??"本人の理由書状は未認識","責任・処分は未審査",new[]{report?.Id,explanation?.Id}.Where(id=>id!=null).Select(id=>id!.Value).ToArray());
     }
+
 }

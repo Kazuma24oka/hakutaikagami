@@ -1,3 +1,7 @@
+# 評価通知・訂正・本人応答
+
+AssessmentNoticeTrial / Docs/Design/AssessmentNoticeV1/README.md。根拠を発送時に固定した封書、後着理由による訂正版、旧原本の物理再送、本人の受領確認/再審査希望を接続。未開封本文/版/根拠は非表示。古い版で最新既知版を戻さない。通常Mainへの統合差分はDocs/Proposals/MainEntryIntegration.patchの未適用案だけとし、保護規則を維持。
+
 # 任務差異・暫定審査の入口
 
 MissionReviewTrial / Docs/Design/MissionReviewV1/README.md。本人の既知任務中断、独立の理由書状、評価者の受領情報だけの暫定審査。主君パネルは検証視点で主人公への通知ではない。成果・差異・理由・責任を分け、自動処罰しない。通常Main・旧保存・旧規則を保持。

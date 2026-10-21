@@ -1,3 +1,5 @@
+評価通知・訂正・本人応答の最新試作：[AssessmentNoticeV1](Design/AssessmentNoticeV1/README.md)。
+
 任務差異・暫定審査の最新試作：[MissionReviewV1](Design/MissionReviewV1/README.md)。
 
 任務受信の最新試作：[IncomingMissionV1](Design/IncomingMissionV1/README.md)。

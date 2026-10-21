@@ -6,7 +6,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 public partial class ContinuousWorldTrial
 {
-    bool ReviewEnabled=>Name=="MissionReviewTrial";
+    bool ReviewEnabled=>NoticeEnabled||Name=="MissionReviewTrial";
     Label reviewWarning=null!,reviewText=null!;
     OptionButton reviewReason=null!;
     EntityId ReviewTask()=>S.DiagnosticSnapshot().Tasks.Last(t=>t.Action==ActionKind.Inspect).Id;
