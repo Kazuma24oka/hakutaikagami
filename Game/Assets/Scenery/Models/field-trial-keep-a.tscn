@@ -1,0 +1,234 @@
+[gd_scene load_steps=27 format=3]
+
+
+[sub_resource type="StandardMaterial3D" id="Resource_1"]
+albedo_color = Color(0.5333333, 0.4431373, 0.3176471, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Resource_2"]
+size = Vector3(16, 2.4, 12)
+
+[sub_resource type="StandardMaterial3D" id="Resource_3"]
+albedo_color = Color(0.8313725, 0.7960784, 0.6941176, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Resource_4"]
+size = Vector3(14, 4.8, 10)
+
+[sub_resource type="StandardMaterial3D" id="Resource_5"]
+albedo_color = Color(0.2431373, 0.2823529, 0.2784314, 1)
+roughness = 1.0
+
+[sub_resource type="PrismMesh" id="Resource_6"]
+size = Vector3(18.8, 2.4, 14.8)
+
+[sub_resource type="BoxMesh" id="Resource_7"]
+size = Vector3(8, 2.2, 6)
+
+[sub_resource type="StandardMaterial3D" id="Resource_8"]
+albedo_color = Color(0.2196078, 0.2627451, 0.2666667, 1)
+roughness = 1.0
+
+[sub_resource type="PrismMesh" id="Resource_9"]
+size = Vector3(10.4, 2, 8.4)
+
+[sub_resource type="StandardMaterial3D" id="Resource_10"]
+albedo_color = Color(0.4078431, 0.3686275, 0.2862745, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Resource_11"]
+size = Vector3(0.22, 4.8, 0.22)
+
+[sub_resource type="BoxMesh" id="Resource_12"]
+size = Vector3(0.22, 4.8, 0.22)
+
+[sub_resource type="BoxMesh" id="Resource_13"]
+size = Vector3(0.22, 4.8, 0.22)
+
+[sub_resource type="BoxMesh" id="Resource_14"]
+size = Vector3(0.22, 4.8, 0.22)
+
+[sub_resource type="BoxMesh" id="Resource_15"]
+size = Vector3(14.2, 0.22, 0.18)
+
+[sub_resource type="BoxMesh" id="Resource_16"]
+size = Vector3(0.7, 0.8, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_17"]
+size = Vector3(0.7, 0.8, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_18"]
+size = Vector3(0.7, 0.8, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_19"]
+size = Vector3(14.2, 0.22, 0.18)
+
+[sub_resource type="BoxMesh" id="Resource_20"]
+size = Vector3(0.7, 0.8, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_21"]
+size = Vector3(0.7, 0.8, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_22"]
+size = Vector3(0.7, 0.8, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_23"]
+size = Vector3(0.7, 0.65, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_24"]
+size = Vector3(0.7, 0.65, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_25"]
+size = Vector3(0.7, 0.65, 0.05)
+
+[sub_resource type="BoxMesh" id="Resource_26"]
+size = Vector3(0.7, 0.65, 0.05)
+
+[node name="FieldTrialKeep" type="Node3D"]
+
+[node name="Foundation" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.2, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_2")
+material_override = SubResource("Resource_1")
+
+[node name="LowerHouse" type="MeshInstance3D" parent="."]
+position = Vector3(0, 4.8, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_4")
+material_override = SubResource("Resource_3")
+
+[node name="LowerRoof" type="MeshInstance3D" parent="."]
+position = Vector3(0, 8.4, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_6")
+material_override = SubResource("Resource_5")
+
+[node name="UpperHouse" type="MeshInstance3D" parent="."]
+position = Vector3(0, 9.3, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_7")
+material_override = SubResource("Resource_3")
+
+[node name="UpperRoof" type="MeshInstance3D" parent="."]
+position = Vector3(0, 11.4, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_9")
+material_override = SubResource("Resource_8")
+
+[node name="Pillar-6.85_-4.85" type="MeshInstance3D" parent="."]
+position = Vector3(-6.85, 4.8, -4.85)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_11")
+material_override = SubResource("Resource_10")
+
+[node name="Pillar-6.85_4.85" type="MeshInstance3D" parent="."]
+position = Vector3(-6.85, 4.8, 4.85)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_12")
+material_override = SubResource("Resource_10")
+
+[node name="Pillar6.85_-4.85" type="MeshInstance3D" parent="."]
+position = Vector3(6.85, 4.8, -4.85)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_13")
+material_override = SubResource("Resource_10")
+
+[node name="Pillar6.85_4.85" type="MeshInstance3D" parent="."]
+position = Vector3(6.85, 4.8, 4.85)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_14")
+material_override = SubResource("Resource_10")
+
+[node name="Beam-5.01" type="MeshInstance3D" parent="."]
+position = Vector3(0, 4, -5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_15")
+material_override = SubResource("Resource_10")
+
+[node name="LowerWindow-4_-5.01" type="MeshInstance3D" parent="."]
+position = Vector3(-4, 5.4, -5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_16")
+material_override = SubResource("Resource_8")
+
+[node name="LowerWindow0_-5.01" type="MeshInstance3D" parent="."]
+position = Vector3(0, 5.4, -5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_17")
+material_override = SubResource("Resource_8")
+
+[node name="LowerWindow4_-5.01" type="MeshInstance3D" parent="."]
+position = Vector3(4, 5.4, -5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_18")
+material_override = SubResource("Resource_8")
+
+[node name="Beam5.01" type="MeshInstance3D" parent="."]
+position = Vector3(0, 4, 5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_19")
+material_override = SubResource("Resource_10")
+
+[node name="LowerWindow-4_5.01" type="MeshInstance3D" parent="."]
+position = Vector3(-4, 5.4, 5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_20")
+material_override = SubResource("Resource_8")
+
+[node name="LowerWindow0_5.01" type="MeshInstance3D" parent="."]
+position = Vector3(0, 5.4, 5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_21")
+material_override = SubResource("Resource_8")
+
+[node name="LowerWindow4_5.01" type="MeshInstance3D" parent="."]
+position = Vector3(4, 5.4, 5.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_22")
+material_override = SubResource("Resource_8")
+
+[node name="UpperWindow-2_-3.01" type="MeshInstance3D" parent="."]
+position = Vector3(-2, 9.6, -3.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_23")
+material_override = SubResource("Resource_8")
+
+[node name="UpperWindow2_-3.01" type="MeshInstance3D" parent="."]
+position = Vector3(2, 9.6, -3.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_24")
+material_override = SubResource("Resource_8")
+
+[node name="UpperWindow-2_3.01" type="MeshInstance3D" parent="."]
+position = Vector3(-2, 9.6, 3.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_25")
+material_override = SubResource("Resource_8")
+
+[node name="UpperWindow2_3.01" type="MeshInstance3D" parent="."]
+position = Vector3(2, 9.6, 3.01)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_26")
+material_override = SubResource("Resource_8")

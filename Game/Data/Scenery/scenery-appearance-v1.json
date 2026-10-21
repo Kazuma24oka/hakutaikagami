@@ -445,6 +445,58 @@
       "AuthoringDepthMm": 1000,
       "AuthoringHeightMm": 1000,
       "Fallback": "visual:rock"
+    },
+    {
+      "Id": "visual:field-pine",
+      "Role": "tree",
+      "Builder": "scene",
+      "Material": "material:tree",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/field-pine-a.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 10000,
+      "Fallback": "visual:tree"
+    },
+    {
+      "Id": "visual:field-rock",
+      "Role": "rock",
+      "Builder": "scene",
+      "Material": "material:rock",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/field-rock-a.tscn"
+        },
+        {
+          "Id": "variant:b",
+          "Resource": "res://Assets/Scenery/Models/field-rock-b.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": "visual:rock"
+    },
+    {
+      "Id": "visual:field-trial-keep",
+      "Role": "keep",
+      "Builder": "scene",
+      "Material": "material:keep",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/field-trial-keep-a.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 18000,
+      "AuthoringDepthMm": 14000,
+      "AuthoringHeightMm": 12000,
+      "Fallback": "visual:keep"
     }
   ],
   "Skins": [
@@ -485,15 +537,15 @@
         },
         {
           "Appearance": "appearance:tree",
-          "Visual": "visual:tree"
+          "Visual": "visual:field-pine"
         },
         {
           "Appearance": "appearance:rock",
-          "Visual": "visual:rock"
+          "Visual": "visual:field-rock"
         },
         {
           "Appearance": "appearance:keep",
-          "Visual": "visual:keep"
+          "Visual": "visual:field-trial-keep"
         },
         {
           "Appearance": "appearance:wall",

@@ -467,3 +467,12 @@ Scripts/*camera_continuity* -text
 Game/Scripts/ContinuousWorldTrial.ForceLod.cs -text
 Docs/Design/ForceLodV1/** -text
 Scripts/*force_lod* -text
+
+Docs/Design/FieldModelsV1/** -text
+Scripts/*field_models* -text
+Game/Assets/Scenery/Models/field-*.tscn -text
+
+Game/Scripts/ContinuousWorldTrial.FieldModels.cs -text
+
+Game/Tools/author_field_rocks.gd -text
+Game/Assets/Scenery/Models/field-*.tres -text

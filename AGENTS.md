@@ -1,3 +1,7 @@
+# 背景の静的モデル（2026-10-21）
+
+FieldModelsV1：既存配置ID/Seed/占有範囲を変えず岩2種/木/試作城郭を追加。元モデル/手続き形状を代替として保持。史実建築復元ではない。Scripts/generate_field_models.pyとGame/Tools/author_field_rocks.gdから再生成し全形状ハッシュ一致を検査。実GetFacesで占有/4m余白・欠損/不正寸法拒否。933テスト・68復旧等比較差分0とモデル3/素材4可視変化。verify_field_models.py→実画像点検→check_field_models_binding.py。Core/保存/旧素材は保持。次は地表材質と繰返し寸法。
+
 # 既知部隊の中景表示（2026-10-21）
 
 ForceLodV1：240m超〜30kmでRegionalBattle.Viewの把握済み部隊だけ記号化。古い目撃は灰色/凡例、真の位置/損耗を変えても表示不変。観測を削ると非表示。部隊名は5km以内で地名/他部隊名と重ならないものだけ表示し、全倍率で字体を固定。世界/操作権限/保存は変更しない。933テスト・62復旧等比較差分0と4素材可視変化。verify_force_lod.py→実画像点検→check_force_lod_binding.py。次は背景の既存配置/判定を維持したモデル改善。
