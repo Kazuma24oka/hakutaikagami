@@ -8,7 +8,7 @@ public static class NpcWork
 {
     public const string Ruleset="npc-local-work-v1",Contract="local-witness-own-reports-stable-input-memory-3600cooldown-v1";
     public const long Interval=3600;
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||PersonalStart.Enabled(w)||RetainerStart.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||PersonalStart.Enabled(w)||RetainerStart.Enabled(w)||CreatedCampaign.Enabled(w);
     public static ContractWorld Create()
     {
         var w=RegionalWork.Create();w.WorldId=new("world:"+Ruleset);w.NpcWork=new([]);
@@ -51,7 +51,7 @@ public static class NpcWork
     }
     public static void Validate(ContractWorld w)
     {
-        if(w.NpcWork==null||w.Region!.Active)throw new InvalidDataException("NPC peace profile/module required");
+        if(w.NpcWork==null||w.Region!.Active&&!CreatedCampaign.Enabled(w))throw new InvalidDataException("NPC peace profile/module required");
         var ds=w.NpcWork.Decisions;
         if(ds.Select(d=>d.Id).Distinct().Count()!=ds.Length)throw new InvalidDataException("Duplicate NPC decision");
         for(int n=0;n<ds.Length;n++){var d=ds[n];

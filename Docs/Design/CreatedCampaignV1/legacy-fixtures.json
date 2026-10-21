@@ -1,0 +1,9 @@
+{
+  "source_commit": "bea3d4f",
+  "kind": "Synthetic verification officer only; no user personal save",
+  "initial_canonical_world_hash": "a5587a8d1bba2cf0a68ee104f41b6b23247abb1c2217876eeefe045fd76ac8bf",
+  "files": {
+    "Tests/Fixtures/created-ronin-bea3d4f-initial.json": "841c658be3b803940b3142fd0debef1d8f093c2a014a76955ddc1015642219e5",
+    "Tests/Fixtures/created-ronin-bea3d4f-saved.json": "664d0700502dd15940c82a8b37072caa67949b0c8d1fffe06058845faecc9faf"
+  }
+}

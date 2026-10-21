@@ -23,11 +23,15 @@ public static class RetainerStart
     }
     public static void Validate(ContractWorld w)
     {
-        if(!Enabled(w))return;var actor=PersonalStart.Person;
+        if(!Enabled(w))return;ValidateIdentity(w,false);
+    }
+    internal static void ValidateIdentity(ContractWorld w,bool armyAllowed)
+    {
+        var actor=PersonalStart.Person;
         var membership=w.Memberships.Where(m=>m.Subject==actor).ToArray();var service=w.ServiceBonds.Where(m=>m.Subject==actor||m.Target==actor).ToArray();
         if(w.PlayerControl!=actor||membership.Length!=1||service.Length!=1||membership[0].Target!=House||service[0].Subject!=actor||service[0].Target!=Lord||
             membership.Concat(service).Any(b=>b.Basis!=Basis||b.From!=0||b.Until!=long.MaxValue)||
-            w.Offices.Any(o=>o.Subject==actor)||w.LandRights.Any(l=>l.Subject==actor)||w.Units.Any(u=>u.Commander==actor)||w.ResourceLots.Any(l=>l.Owner==actor))
+            w.Offices.Any(o=>o.Subject==actor)||w.LandRights.Any(l=>l.Subject==actor)||!armyAllowed&&w.Units.Any(u=>u.Commander==actor)||w.ResourceLots.Any(l=>l.Owner==actor))
             throw new InvalidDataException("Created retainer cannot silently gain another service or coercive rights");
         foreach(var observer in new[]{actor,Lord}){
             var id=new EntityId("evidence:created-retainer/"+observer.Value.Replace(':','/'));

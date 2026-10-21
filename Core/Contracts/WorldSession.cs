@@ -29,7 +29,7 @@ public sealed partial class WorldSession
     }
     public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
     public CommandResult IssueRegional(RegionalRequest request,long revision){lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
-    public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);RegionalBattle.SetActive(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
+    public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);RegionalBattle.SetActive(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
         if(state.Region?.Commands.Any(c=>c.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
@@ -185,7 +185,7 @@ public sealed partial class WorldSession
         }
         return times.Count==0?target:times.Min();
     }
-    private static long ExpiryLimit(ContractWorld s,TaskState t)
+    internal static long ExpiryLimit(ContractWorld s,TaskState t)
     {
         var i=IntentFor(s,t);var deadline=t.DeadlineAt;
         bool met=i.Deadline.Criterion switch{
@@ -264,7 +264,7 @@ public sealed partial class WorldSession
         }
         var waiting=s.Tasks.Where(t=>!Terminal(t)&&t.Action is not(ActionKind.Cancel or ActionKind.Redirect)&&t.Agreement==AgreementPhase.Active&&t.Execution==ExecutionPhase.Waiting).ToArray();
         foreach(var t in waiting.Where(t=>t.EffectiveAt>s.ElapsedSeconds))Schedule(s,t,EventKind.Execute,t.EffectiveAt);
-        var ready=waiting.Where(t=>t.EffectiveAt<=s.ElapsedSeconds).ToArray();
+        var ready=waiting.Where(t=>t.EffectiveAt<=s.ElapsedSeconds&&(!CreatedCampaign.Enabled(s)||t.Action!=ActionKind.Inspect||s.Locations.Any(l=>l.Actor==t.Executor&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope))).ToArray();
         foreach(var group in ready.GroupBy(t=>t.Executor))
         {
             var candidates=group.ToArray();
@@ -356,11 +356,12 @@ public sealed partial class WorldSession
         s.Reservations=s.Reservations.Select(r=>r.Task==t.Id&&r.Phase is ReservationPhase.Active or ReservationPhase.PartiallyConsumed?r with{Phase=ReservationPhase.Released}:r).ToArray();
         s.Actions=s.Actions.Select(a=>a.Task==t.Id&&a.Phase==ExecutionPhase.Running?a with{Phase=ExecutionPhase.Stopped}:a).ToArray();
         // A stopped march stays at its physical route progress; never teleport back to the assigned castle.
-        Replace(s,t with{Execution=ExecutionPhase.Stopped,Agreement=agreement??t.Agreement,FinishedAt=s.ElapsedSeconds,InternalReason=reason,Revision=s.CommitSequence});
+        Replace(s,t with{Execution=ExecutionPhase.Stopped,Agreement=agreement??t.Agreement,FinishedAt=s.ElapsedSeconds,InternalReason=CreatedCampaign.Enabled(s)&&t.Issuer!=t.Executor&&!MissionReview.KnownOrder(s,t,t.Executor)?"unrecognized/"+reason:reason,Revision=s.CommitSequence});
         QueueReport(s,t,reason);
     }
     private static void QueueReport(ContractWorld s,TaskState task,string reason)
     {
+        if(CreatedCampaign.Enabled(s)&&task.Issuer!=task.Executor&&!MissionReview.KnownOrder(s,task,task.Executor))return;
         var id=Child("message",task.Id,"report");if(s.Outbox.Any(o=>o.Id==id))return;
         var i=IntentFor(s,task);
         // Public report deliberately excludes hidden institutional reasons.

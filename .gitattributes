@@ -530,3 +530,9 @@ Game/Scripts/ContinuousWorldTrial.Retainer.cs -text
 Game/Scripts/StartSelectionPanel.RetainerChecks.cs -text
 Docs/Design/RetainerStartV1/** -text
 Scripts/*retainer_start* -text
+
+Docs/Design/CreatedCampaignV1/** -text
+Scripts/*created_campaign* -text
+Tests/Fixtures/created-ronin-bea3d4f-*.json -text
+Game/Scripts/StartSelectionPanel.CampaignChecks.cs -text
+Game/Scripts/ContinuousWorldTrial.Campaign.cs -text

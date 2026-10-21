@@ -20,7 +20,7 @@ public partial class ContinuousWorldTrial
         });
         Add(row,"work-open","届いた書状を開封",()=>Require(S.Open(S.PlayerControl,RegionalWork.Inbox(S).Last(c=>c.CanOpen).Message,S.Revision)));
         Add(row,"work-accept","受諾",()=>WorkConsent(true));Add(row,"work-decline","辞退",()=>WorkConsent(false));
-        if(RetainerStartEnabled)BuildRetainerUI(row);
+        if(RetainerStartEnabled)BuildRetainerUI(row);if(CampaignStartEnabled)BuildCampaignUI(row);
         workRole=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(workRole);
         workText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(workText);
     }
@@ -28,7 +28,8 @@ public partial class ContinuousWorldTrial
     void RefreshRegionalWork()
     {
         councilNotice.Visible=false;
-        var nearby=RegionalWork.NearbyDispatchers(S);var w=S.DiagnosticSnapshot();
+        var w=S.DiagnosticSnapshot();if(CampaignStartEnabled&&w.Region!.Active){RefreshCampaignWork(w);return;}
+        var nearby=RegionalWork.NearbyDispatchers(S);
         string selected=workDispatcher.ItemCount>0?workDispatcher.GetItemMetadata(workDispatcher.Selected).AsString():"";
         workDispatcher.Clear();foreach(var id in nearby){workDispatcher.AddItem(w.Definitions.Characters.Single(p=>p.Id==id).Name);workDispatcher.SetItemMetadata(workDispatcher.ItemCount-1,id.Value);if(id.Value==selected)workDispatcher.Select(workDispatcher.ItemCount-1);}
         buttons["work-send"].Disabled=nearby.Length==0||!RegionalWork.CanDispatch(w,new(workDispatcher.GetItemMetadata(workDispatcher.Selected).AsString()));
@@ -37,11 +38,11 @@ public partial class ContinuousWorldTrial
         if(PersonalStartEnabled)workRole.Text="本人："+w.Definitions.Characters.Single(c=>c.Id==S.PlayerControl).Name+(RetainerStartEnabled?"（作成・織田家の家臣） / ":"（作成・浪人） / ")+workRole.Text;
         workText.Text=inbox.Length==0?"本人の受信：なし（未着の内容は表示しません）":string.Join("\n",inbox.TakeLast(2).Select(c=>MissionText(c.Text)));
         workText.Text+="\n"+(RetainerStartEnabled?"主従は作成人物の開始合意（架空）。中断の理由と責任は別審査です。":"任意点検は試作設定。史実の具体的命令・主従関係・徴税権は追加していません。");
-        if(RetainerStartEnabled)RefreshRetainerUI();
+        if(RetainerStartEnabled)RefreshRetainerUI();if(CampaignStartEnabled)RefreshCampaignControls(w);
         // One actor at the authoritative player point; NPC and player share a site anchor and are not artificially displaced.
         var key=S.PlayerControl;
         if(!actors.TryGetValue(key,out var model)){model=new();world.AddChild(model);model.Apply(Officer3DCustomActor.Preset("red_guard"));actors[key]=model;}
-        if(NpcWorkEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Visible=false;details.Text="平時の地域仕事 / 軍議・戦闘は従来の検証に残しています（別世界）";if(notice.Text.StartsWith("地面を左ドラッグ"))notice.Text="行先を選んで移動。時間を進めると、現地で任意の依頼が届きます。";}
+        if(NpcWorkEnabled&&!CampaignStartEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Visible=false;details.Text="平時の地域仕事 / 軍議・戦闘は従来の検証に残しています（別世界）";if(notice.Text.StartsWith("地面を左ドラッグ"))notice.Text="行先を選んで移動。時間を進めると、現地で任意の依頼が届きます。";}
         var view=S.GetBranchView(key);model.Visible=span<=240&&!w.Region!.Active;model.Scale=Vector3.One*2;model.Position=P(Current());model.Rotation=new(0,Mathf.Atan2(view.Heading.EastMm,-view.Heading.NorthMm),0);model.SetLod("mid");
         string clip=view.Walking?"walk":"idle";model.Freeze(clip,S.Seconds%model.Player.GetAnimation(model.Clips[clip]).Length);if(model.Visible)playerMarker.Visible=false;
     }

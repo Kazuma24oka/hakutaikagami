@@ -9,7 +9,7 @@ public static class OfficerLoop
     public const string Contract = "at-castle-inspect-or-levy40-4s-delivery1-report1-main-lock-council-line-v1";
     public static bool Enabled(ContractWorld w) => w.Definitions.Ruleset == Ruleset || RegionalWork.Enabled(w) || MissionEntry.Enabled(w) || IncomingMission.Enabled(w);
     public static bool Terminal(TaskState t) => t.Execution is ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed;
-    public static bool Busy(ContractWorld w, EntityId actor) => w.Tasks.Any(t => t.Executor == actor && !Terminal(t));
+    public static bool Busy(ContractWorld w, EntityId actor) => w.Tasks.Any(t => t.Executor == actor && !Terminal(t) && (!CreatedCampaign.Enabled(w)||((t.Issuer==actor||t.Agreement==AgreementPhase.Active)&&!(t.Action==ActionKind.Inspect&&t.Execution==ExecutionPhase.Waiting&&!w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope)))));
     public static ContractWorld Create(bool refuses = false)
     {
         var w = ContinuousWorld.Create(refuses: refuses);
@@ -62,15 +62,16 @@ public static class OfficerLoop
     internal static void Transition(ContractWorld w, bool active)
     {
         if (!Enabled(w)) return;
-        if(NpcWork.Enabled(w)&&active)throw new InvalidDataException("NPC work profile is a peace-only trial");
+        if(NpcWork.Enabled(w)&&!CreatedCampaign.Enabled(w)&&active)throw new InvalidDataException("NPC work profile is a peace-only trial");
         if (active)
         {
+            if(CreatedCampaign.Enabled(w)&&!CreatedCampaign.CanDeploy(w))throw new InvalidDataException("本隊は清洲で待機しています。任務と返報を終えてから出陣してください");
             if (new[]{w.PlayerControl, ContractFixture.Clerk}.Any(a => Busy(w, a)) ||
-                w.Messaging.Attempts.Any(a => a.Status == AttemptStatus.InTransit &&
+                !CreatedCampaign.Enabled(w)&&w.Messaging.Attempts.Any(a => a.Status == AttemptStatus.InTransit &&
                     w.Messaging.Messages.Any(m => m.Id == a.MessageId && m.Kind.StartsWith("contract-", StringComparison.Ordinal))))
                 throw new InvalidDataException("任務と返報が済んでから野外へ出てください");
         }
-        else if (w.Region!.Units.Any(u => u.Side == 0 && (u.Position != u.Home || u.Route.Any(l => l.EndAt > w.ElapsedSeconds))))
+        else if (w.Region!.Units.Any(u => (CreatedCampaign.Enabled(w)?u.Commander==w.PlayerControl:u.Side==0) && (u.Position != u.Home || u.Route.Any(l => l.EndAt > w.ElapsedSeconds))))
             throw new InvalidDataException("自隊と別働隊の帰還が必要です");
     }
     internal static void SetSiteLocations(ContractWorld w)

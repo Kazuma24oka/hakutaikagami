@@ -104,6 +104,8 @@ public sealed class ContractWorld
     public BranchState? Branches { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public NpcWorkState? NpcWork { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public CommandMandate[]? CommandMandates { get; set; }
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

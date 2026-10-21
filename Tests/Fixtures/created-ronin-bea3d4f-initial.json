@@ -1,0 +1,2298 @@
+{
+  "Atlas": {
+    "Anchor": "castle",
+    "TerrainVersion": "b033f41d6065d992a08570555d50b828c4eb1f2d87f23ae85e72cbcbcbff3812"
+  },
+  "Couriers": {
+    "Missions": [],
+    "Conditions": [],
+    "Sightings": [],
+    "InitialBlocked": []
+  },
+  "TravelDecisions": [],
+  "TrafficStops": [],
+  "Field": {
+    "Orders": []
+  },
+  "Region": {
+    "PerForce": 3,
+    "Refuses": false,
+    "LowMorale": false,
+    "Active": false,
+    "Since": "0",
+    "Tick": "0",
+    "Hostile": false,
+    "Units": [
+      {
+        "Id": "unit:officer",
+        "Commander": "person:officer",
+        "Side": 0,
+        "Home": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "Position": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "RouteOrigin": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "Route": [],
+        "InitialSoldiers": 40,
+        "Soldiers": 40,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:field-left",
+        "Commander": "person:officer",
+        "Side": 0,
+        "Home": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "Position": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "RouteOrigin": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "Route": [],
+        "InitialSoldiers": 30,
+        "Soldiers": 30,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:field-right",
+        "Commander": "person:officer",
+        "Side": 0,
+        "Home": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "Position": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "RouteOrigin": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "Route": [],
+        "InitialSoldiers": 30,
+        "Soldiers": 30,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:clerk",
+        "Commander": "person:clerk",
+        "Side": 0,
+        "Home": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "Position": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "RouteOrigin": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "Route": [],
+        "InitialSoldiers": 40,
+        "Soldiers": 40,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:region/1/1",
+        "Commander": "person:clerk",
+        "Side": 0,
+        "Home": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "Position": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "RouteOrigin": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "Route": [],
+        "InitialSoldiers": 30,
+        "Soldiers": 30,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:region/1/2",
+        "Commander": "person:clerk",
+        "Side": 0,
+        "Home": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "Position": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "RouteOrigin": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "Route": [],
+        "InitialSoldiers": 30,
+        "Soldiers": 30,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:region/2/0",
+        "Commander": "person:region-enemy",
+        "Side": 1,
+        "Home": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "Position": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "RouteOrigin": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "Route": [],
+        "InitialSoldiers": 40,
+        "Soldiers": 40,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:region/2/1",
+        "Commander": "person:region-enemy",
+        "Side": 1,
+        "Home": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "Position": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "RouteOrigin": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "Route": [],
+        "InitialSoldiers": 30,
+        "Soldiers": 30,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      },
+      {
+        "Id": "unit:region/2/2",
+        "Commander": "person:region-enemy",
+        "Side": 1,
+        "Home": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "Position": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Goal": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "RouteOrigin": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "Route": [],
+        "InitialSoldiers": 30,
+        "Soldiers": 30,
+        "InitialMorale": 100,
+        "Morale": 100,
+        "Phase": "standing"
+      }
+    ],
+    "Commands": [],
+    "Deliveries": [],
+    "Losses": [],
+    "Sights": [
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:officer",
+        "Position": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:field-left",
+        "Position": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:field-right",
+        "Position": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:clerk",
+        "Position": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:region/1/1",
+        "Position": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:region/1/2",
+        "Position": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:region/2/0",
+        "Position": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:region/2/1",
+        "Position": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:officer",
+        "Unit": "unit:region/2/2",
+        "Position": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:officer",
+        "Position": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:field-left",
+        "Position": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:field-right",
+        "Position": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:clerk",
+        "Position": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:region/1/1",
+        "Position": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:region/1/2",
+        "Position": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:region/2/0",
+        "Position": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:region/2/1",
+        "Position": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:clerk",
+        "Unit": "unit:region/2/2",
+        "Position": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:officer",
+        "Position": {
+          "X": "70000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:field-left",
+        "Position": {
+          "X": "80000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:field-right",
+        "Position": {
+          "X": "90000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:clerk",
+        "Position": {
+          "X": "100000",
+          "Y": "-45000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:region/1/1",
+        "Position": {
+          "X": "110000",
+          "Y": "-35000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:region/1/2",
+        "Position": {
+          "X": "120000",
+          "Y": "-25000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:region/2/0",
+        "Position": {
+          "X": "120000",
+          "Y": "-10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 40,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:region/2/1",
+        "Position": {
+          "X": "130000",
+          "Y": "0"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      },
+      {
+        "Observer": "person:region-enemy",
+        "Unit": "unit:region/2/2",
+        "Position": {
+          "X": "140000",
+          "Y": "10000"
+        },
+        "Heading": {
+          "X": "0",
+          "Y": "1"
+        },
+        "Soldiers": 30,
+        "Morale": 100,
+        "Phase": "standing",
+        "At": "0"
+      }
+    ]
+  },
+  "Branches": {
+    "BlockedEdges": [],
+    "Journeys": []
+  },
+  "NpcWork": {
+    "Decisions": []
+  },
+  "Schema": 2,
+  "WorldId": "world:created-person-peace-v1",
+  "TimeDomain": "GameSecondsV1",
+  "EpochDate": "1560-01-01",
+  "ElapsedSeconds": "0",
+  "CommitSequence": "0",
+  "Seed": "20261020",
+  "Paused": false,
+  "Definitions": {
+    "Id": "scenario:created-person-peace-v1",
+    "Version": "9a34494099e1a9d0a6b64a1607552bf3bc5a87248e4d717ddcc5eddc746148c9",
+    "Ruleset": "created-person-peace-v1",
+    "Characters": [
+      {
+        "Id": "person:lord",
+        "Name": "試作城主"
+      },
+      {
+        "Id": "person:officer",
+        "Name": "試作奉行"
+      },
+      {
+        "Id": "person:clerk",
+        "Name": "試作書役"
+      },
+      {
+        "Id": "person:nobunaga",
+        "Name": "織田信長"
+      },
+      {
+        "Id": "person:shingen",
+        "Name": "武田信玄"
+      },
+      {
+        "Id": "person:ujiyasu",
+        "Name": "北条氏康"
+      },
+      {
+        "Id": "person:region-enemy",
+        "Name": "検証敵将"
+      },
+      {
+        "Id": "person:created/player",
+        "Name": "検証浪人"
+      }
+    ],
+    "Organizations": [
+      {
+        "Id": "org:house",
+        "Name": "試作主家"
+      },
+      {
+        "Id": "org:village",
+        "Name": "試作村落"
+      },
+      {
+        "Id": "org:oda",
+        "Name": "織田家"
+      },
+      {
+        "Id": "org:takeda",
+        "Name": "武田家"
+      },
+      {
+        "Id": "org:hojo",
+        "Name": "北条家"
+      },
+      {
+        "Id": "org:region-enemy",
+        "Name": "検証敵勢力"
+      }
+    ],
+    "Sites": [
+      {
+        "Id": "site:castle",
+        "Name": "清洲城",
+        "LatitudeE7": 352170000,
+        "LongitudeE7": 1368440000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:fork",
+        "Name": "熱田神宮",
+        "LatitudeE7": 351265090,
+        "LongitudeE7": 1369086980,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:village",
+        "Name": "善照寺砦",
+        "LatitudeE7": 350815833,
+        "LongitudeE7": 1369575000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tange",
+        "Name": "丹下砦跡",
+        "LatitudeE7": 350868790,
+        "LongitudeE7": 1369509830,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kasadera",
+        "Name": "笠寺観音（笠覆寺）",
+        "LatitudeE7": 350995420,
+        "LongitudeE7": 1369366920,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:inabayama",
+        "Name": "稲葉山城",
+        "LatitudeE7": 354338889,
+        "LongitudeE7": 1367822222,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:okazaki",
+        "Name": "岡崎城",
+        "LatitudeE7": 349563889,
+        "LongitudeE7": 1371588889,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:ichijodani",
+        "Name": "一乗谷",
+        "LatitudeE7": 359995000,
+        "LongitudeE7": 1362960000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:nanao",
+        "Name": "七尾城",
+        "LatitudeE7": 370090361,
+        "LongitudeE7": 1369839167,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:sannohe",
+        "Name": "三戸城",
+        "LatitudeE7": 403811901,
+        "LongitudeE7": 1412641863,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hitoyoshi",
+        "Name": "人吉城",
+        "LatitudeE7": 322110833,
+        "LongitudeE7": 1307664917,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:katsuyama",
+        "Name": "勝山館",
+        "LatitudeE7": 418008330,
+        "LongitudeE7": 1400994440,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:koriyama",
+        "Name": "吉田郡山城",
+        "LatitudeE7": 346742861,
+        "LongitudeE7": 1327095889,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yamaguchi",
+        "Name": "大内氏館",
+        "LatitudeE7": 341841111,
+        "LongitudeE7": 1314804444,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:funai",
+        "Name": "大友氏館",
+        "LatitudeE7": 332289440,
+        "LongitudeE7": 1316191940,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:odawara",
+        "Name": "小田原城",
+        "LatitudeE7": 352508333,
+        "LongitudeE7": 1391536111,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:odani",
+        "Name": "小谷城",
+        "LatitudeE7": 354591700,
+        "LongitudeE7": 1362769400,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yamagata",
+        "Name": "山形城",
+        "LatitudeE7": 382555556,
+        "LongitudeE7": 1403280556,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:oko",
+        "Name": "岡豊城",
+        "LatitudeE7": 335949611,
+        "LongitudeE7": 1336224917,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:iwamura",
+        "Name": "岩村城",
+        "LatitudeE7": 353603333,
+        "LongitudeE7": 1374513056,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:iwatsuki",
+        "Name": "岩槻城",
+        "LatitudeE7": 359513472,
+        "LongitudeE7": 1397102389,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kasugayama",
+        "Name": "春日山城",
+        "LatitudeE7": 371471080,
+        "LongitudeE7": 1382055970,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:toda",
+        "Name": "月山富田城",
+        "LatitudeE7": 353609670,
+        "LongitudeE7": 1331848750,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:nejo",
+        "Name": "根城",
+        "LatitudeE7": 405061889,
+        "LongitudeE7": 1414596111,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:edo",
+        "Name": "江戸城",
+        "LatitudeE7": 356883222,
+        "LongitudeE7": 1397543889,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yuzuki",
+        "Name": "湯築城",
+        "LatitudeE7": 338486000,
+        "LongitudeE7": 1327870000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:ishiyama",
+        "Name": "石山本願寺",
+        "LatitudeE7": 346873611,
+        "LongitudeE7": 1355256944,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yonezawa",
+        "Name": "米沢城",
+        "LatitudeE7": 379096000,
+        "LongitudeE7": 1401050000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:akutagawa",
+        "Name": "芥川山城",
+        "LatitudeE7": 348808333,
+        "LongitudeE7": 1355880556,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kurokawa",
+        "Name": "黒川城",
+        "LatitudeE7": 374877778,
+        "LongitudeE7": 1399297222,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kannonji",
+        "Name": "観音寺城",
+        "LatitudeE7": 351460270,
+        "LongitudeE7": 1361577780,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kofu",
+        "Name": "躑躅ヶ崎館",
+        "LatitudeE7": 356868639,
+        "LongitudeE7": 1385774639,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:shuri",
+        "Name": "首里城",
+        "LatitudeE7": 262170306,
+        "LongitudeE7": 1277194750,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:sunpu",
+        "Name": "駿府の城館",
+        "LatitudeE7": 349791667,
+        "LongitudeE7": 1383833333,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kyoto",
+        "Name": "京都",
+        "LatitudeE7": 350100000,
+        "LongitudeE7": 1357600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:nara",
+        "Name": "奈良",
+        "LatitudeE7": 346800000,
+        "LongitudeE7": 1358300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:sakai",
+        "Name": "堺湊",
+        "LatitudeE7": 345800000,
+        "LongitudeE7": 1354700000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kameyama",
+        "Name": "亀山周辺",
+        "LatitudeE7": 348500000,
+        "LongitudeE7": 1364500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:ise",
+        "Name": "伊勢・山田周辺",
+        "LatitudeE7": 344900000,
+        "LongitudeE7": 1367100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yoshida",
+        "Name": "吉田周辺",
+        "LatitudeE7": 347700000,
+        "LongitudeE7": 1373900000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hamamatsu",
+        "Name": "浜松周辺",
+        "LatitudeE7": 347100000,
+        "LongitudeE7": 1377300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kakegawa",
+        "Name": "掛川周辺",
+        "LatitudeE7": 347700000,
+        "LongitudeE7": 1380100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:fuji",
+        "Name": "富士周辺",
+        "LatitudeE7": 351600000,
+        "LongitudeE7": 1386800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:mishima",
+        "Name": "三島",
+        "LatitudeE7": 351200000,
+        "LongitudeE7": 1389200000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kiso",
+        "Name": "木曽・福島周辺",
+        "LatitudeE7": 358500000,
+        "LongitudeE7": 1377000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:shiojiri",
+        "Name": "塩尻周辺",
+        "LatitudeE7": 361200000,
+        "LongitudeE7": 1379500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:suwa",
+        "Name": "諏訪",
+        "LatitudeE7": 360400000,
+        "LongitudeE7": 1381100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:komoro",
+        "Name": "小諸周辺",
+        "LatitudeE7": 363200000,
+        "LongitudeE7": 1384200000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:usui",
+        "Name": "碓氷峠周辺",
+        "LatitudeE7": 363300000,
+        "LongitudeE7": 1386400000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:minowa",
+        "Name": "箕輪周辺",
+        "LatitudeE7": 364100000,
+        "LongitudeE7": 1389500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kaizu",
+        "Name": "海津周辺",
+        "LatitudeE7": 365600000,
+        "LongitudeE7": 1382000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kamakura",
+        "Name": "鎌倉",
+        "LatitudeE7": 353200000,
+        "LongitudeE7": 1395500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:utsunomiya",
+        "Name": "宇都宮",
+        "LatitudeE7": 365600000,
+        "LongitudeE7": 1398800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:shirakawa",
+        "Name": "白河",
+        "LatitudeE7": 371300000,
+        "LongitudeE7": 1402100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:sukagawa",
+        "Name": "須賀川周辺",
+        "LatitudeE7": 372800000,
+        "LongitudeE7": 1403700000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:koori",
+        "Name": "桑折周辺",
+        "LatitudeE7": 378400000,
+        "LongitudeE7": 1405100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:iwakiri",
+        "Name": "岩切周辺",
+        "LatitudeE7": 383100000,
+        "LongitudeE7": 1409600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hiraizumi",
+        "Name": "平泉",
+        "LatitudeE7": 389900000,
+        "LongitudeE7": 1411100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kozukata",
+        "Name": "不来方周辺",
+        "LatitudeE7": 397000000,
+        "LongitudeE7": 1411500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:namioka",
+        "Name": "浪岡周辺",
+        "LatitudeE7": 407100000,
+        "LongitudeE7": 1405900000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tosaminato",
+        "Name": "十三湊周辺",
+        "LatitudeE7": 410300000,
+        "LongitudeE7": 1403300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tokuyama",
+        "Name": "徳山館周辺",
+        "LatitudeE7": 414300000,
+        "LongitudeE7": 1401100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:sakata",
+        "Name": "酒田湊周辺",
+        "LatitudeE7": 389100000,
+        "LongitudeE7": 1398400000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:niigata",
+        "Name": "新潟湊周辺",
+        "LatitudeE7": 379200000,
+        "LongitudeE7": 1390500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kashiwazaki",
+        "Name": "柏崎周辺",
+        "LatitudeE7": 373700000,
+        "LongitudeE7": 1385600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:itoigawa",
+        "Name": "糸魚川周辺",
+        "LatitudeE7": 370400000,
+        "LongitudeE7": 1378600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:uozu",
+        "Name": "魚津周辺",
+        "LatitudeE7": 368200000,
+        "LongitudeE7": 1374000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:toyama",
+        "Name": "富山周辺",
+        "LatitudeE7": 367000000,
+        "LongitudeE7": 1372100000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:himi",
+        "Name": "氷見周辺",
+        "LatitudeE7": 368600000,
+        "LongitudeE7": 1369800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kanazawa",
+        "Name": "金沢周辺",
+        "LatitudeE7": 365600000,
+        "LongitudeE7": 1366500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tsuruga",
+        "Name": "敦賀湊周辺",
+        "LatitudeE7": 356500000,
+        "LongitudeE7": 1360600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:obama",
+        "Name": "小浜湊周辺",
+        "LatitudeE7": 355000000,
+        "LongitudeE7": 1357500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yagi",
+        "Name": "丹波八木周辺",
+        "LatitudeE7": 350700000,
+        "LongitudeE7": 1355300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:fukuchiyama",
+        "Name": "福知山周辺",
+        "LatitudeE7": 353000000,
+        "LongitudeE7": 1351300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:izushi",
+        "Name": "出石周辺",
+        "LatitudeE7": 354600000,
+        "LongitudeE7": 1348700000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tottori",
+        "Name": "鳥取周辺",
+        "LatitudeE7": 355000000,
+        "LongitudeE7": 1342300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:omori",
+        "Name": "石見大森周辺",
+        "LatitudeE7": 351200000,
+        "LongitudeE7": 1324400000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tsuwano",
+        "Name": "津和野周辺",
+        "LatitudeE7": 344600000,
+        "LongitudeE7": 1317700000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:nishinomiya",
+        "Name": "西宮",
+        "LatitudeE7": 347400000,
+        "LongitudeE7": 1353400000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hyogo",
+        "Name": "兵庫湊",
+        "LatitudeE7": 346700000,
+        "LongitudeE7": 1351700000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:himeji",
+        "Name": "姫路周辺",
+        "LatitudeE7": 348400000,
+        "LongitudeE7": 1346900000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:okayama",
+        "Name": "岡山周辺",
+        "LatitudeE7": 346700000,
+        "LongitudeE7": 1339300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:onomichi",
+        "Name": "尾道湊",
+        "LatitudeE7": 344100000,
+        "LongitudeE7": 1332000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:mihara",
+        "Name": "三原周辺",
+        "LatitudeE7": 343900000,
+        "LongitudeE7": 1330800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kusatsu",
+        "Name": "安芸草津周辺",
+        "LatitudeE7": 343700000,
+        "LongitudeE7": 1323900000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:itsukushima",
+        "Name": "厳島",
+        "LatitudeE7": 342900000,
+        "LongitudeE7": 1323200000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:iwakuni",
+        "Name": "岩国周辺",
+        "LatitudeE7": 341700000,
+        "LongitudeE7": 1321800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:akama",
+        "Name": "赤間関",
+        "LatitudeE7": 340000000,
+        "LongitudeE7": 1309400000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:moji",
+        "Name": "門司周辺",
+        "LatitudeE7": 339400000,
+        "LongitudeE7": 1309600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hakata",
+        "Name": "博多",
+        "LatitudeE7": 336000000,
+        "LongitudeE7": 1304200000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hita",
+        "Name": "日田周辺",
+        "LatitudeE7": 333200000,
+        "LongitudeE7": 1309400000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:yanagawa",
+        "Name": "柳川周辺",
+        "LatitudeE7": 331600000,
+        "LongitudeE7": 1304000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:kumamoto",
+        "Name": "隈本古城周辺",
+        "LatitudeE7": 327900000,
+        "LongitudeE7": 1306900000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:uchijo",
+        "Name": "鹿児島・内城周辺",
+        "LatitudeE7": 316100000,
+        "LongitudeE7": 1305600000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:saga",
+        "Name": "佐賀周辺",
+        "LatitudeE7": 332600000,
+        "LongitudeE7": 1303000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:imari",
+        "Name": "伊万里周辺",
+        "LatitudeE7": 332700000,
+        "LongitudeE7": 1298800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:tabira",
+        "Name": "田平沿岸",
+        "LatitudeE7": 333600000,
+        "LongitudeE7": 1295800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hirado",
+        "Name": "平戸湊周辺",
+        "LatitudeE7": 333700000,
+        "LongitudeE7": 1295500000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:iki",
+        "Name": "壱岐沿岸",
+        "LatitudeE7": 337500000,
+        "LongitudeE7": 1297000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:izuhara",
+        "Name": "対馬・厳原周辺",
+        "LatitudeE7": 342000000,
+        "LongitudeE7": 1292900000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:sumoto",
+        "Name": "淡路・洲本周辺",
+        "LatitudeE7": 343400000,
+        "LongitudeE7": 1349000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:shozui",
+        "Name": "勝瑞周辺",
+        "LatitudeE7": 341300000,
+        "LongitudeE7": 1345300000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:hakuchi",
+        "Name": "阿波白地周辺",
+        "LatitudeE7": 340200000,
+        "LongitudeE7": 1338000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:utazu",
+        "Name": "宇多津周辺",
+        "LatitudeE7": 343000000,
+        "LongitudeE7": 1338200000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:saijo",
+        "Name": "伊予西条周辺",
+        "LatitudeE7": 339200000,
+        "LongitudeE7": 1331800000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:bonotsu",
+        "Name": "坊津周辺",
+        "LatitudeE7": 312700000,
+        "LongitudeE7": 1302200000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:amami",
+        "Name": "奄美北部沿岸（概略）",
+        "LatitudeE7": 284000000,
+        "LongitudeE7": 1295000000,
+        "HeightMm": "0"
+      },
+      {
+        "Id": "site:naha",
+        "Name": "那覇周辺",
+        "LatitudeE7": 262100000,
+        "LongitudeE7": 1276800000,
+        "HeightMm": "0"
+      }
+    ],
+    "MaxAttempts": 3,
+    "AuthorityBases": [
+      {
+        "Id": "basis:membership",
+        "Name": "membership"
+      },
+      {
+        "Id": "basis:service",
+        "Name": "service"
+      },
+      {
+        "Id": "basis:office",
+        "Name": "office"
+      },
+      {
+        "Id": "basis:council",
+        "Name": "council"
+      },
+      {
+        "Id": "basis:explicit-fixture-levy-right",
+        "Name": "explicit-fixture-levy-right"
+      },
+      {
+        "Id": "basis:historical-home-seed",
+        "Name": "史料による所属・本拠候補。初期所在地は試作配置"
+      },
+      {
+        "Id": "basis:regional-voluntary-inspection",
+        "Name": "試作用の任意点検の合意。史実の任命/徴税/軍事/土地権ではない"
+      },
+      {
+        "Id": "basis:personal-start",
+        "Name": "試作用の本人移動と任意点検。所属/主従/徴税/指揮権を与えない"
+      }
+    ],
+    "Armies": [
+      {
+        "Id": "army:officer",
+        "Organization": "org:house",
+        "Commander": "person:officer"
+      },
+      {
+        "Id": "army:clerk",
+        "Organization": "org:house",
+        "Commander": "person:clerk"
+      },
+      {
+        "Id": "army:region-enemy",
+        "Organization": "org:region-enemy",
+        "Commander": "person:region-enemy"
+      }
+    ]
+  },
+  "Characters": [
+    {
+      "Id": "person:lord",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:officer",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:clerk",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:nobunaga",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:shingen",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:ujiyasu",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:region-enemy",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    },
+    {
+      "Id": "person:created/player",
+      "Life": "Adult",
+      "AppearanceId": "appearance:fixture",
+      "Revision": "0",
+      "WillObey": true
+    }
+  ],
+  "Memberships": [
+    {
+      "Id": "membership:0",
+      "Subject": "person:lord",
+      "Target": "org:house",
+      "Kind": "membership",
+      "Basis": "basis:membership",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    },
+    {
+      "Id": "membership:1",
+      "Subject": "person:officer",
+      "Target": "org:house",
+      "Kind": "membership",
+      "Basis": "basis:membership",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    },
+    {
+      "Id": "membership:2",
+      "Subject": "person:clerk",
+      "Target": "org:house",
+      "Kind": "membership",
+      "Basis": "basis:membership",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    },
+    {
+      "Id": "membership:historical/nobunaga",
+      "Subject": "person:nobunaga",
+      "Target": "org:oda",
+      "Kind": "membership",
+      "Basis": "basis:historical-home-seed",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    },
+    {
+      "Id": "membership:historical/shingen",
+      "Subject": "person:shingen",
+      "Target": "org:takeda",
+      "Kind": "membership",
+      "Basis": "basis:historical-home-seed",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    },
+    {
+      "Id": "membership:historical/ujiyasu",
+      "Subject": "person:ujiyasu",
+      "Target": "org:hojo",
+      "Kind": "membership",
+      "Basis": "basis:historical-home-seed",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    }
+  ],
+  "ServiceBonds": [
+    {
+      "Id": "service:officer",
+      "Subject": "person:officer",
+      "Target": "person:lord",
+      "Kind": "service",
+      "Basis": "basis:service",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    },
+    {
+      "Id": "service:regional-clerk",
+      "Subject": "person:clerk",
+      "Target": "person:officer",
+      "Kind": "service",
+      "Basis": "basis:service",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    }
+  ],
+  "Offices": [
+    {
+      "Id": "office:lord",
+      "Subject": "person:lord",
+      "Target": "site:castle",
+      "Kind": "castellan",
+      "Basis": "basis:office",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Revision": "0"
+    }
+  ],
+  "LandRights": [],
+  "Grants": [
+    {
+      "Id": "grant:ordinary/0",
+      "Principal": "org:house",
+      "Agent": "person:lord",
+      "Scope": "site:castle",
+      "Actions": [
+        "Inspect",
+        "Move",
+        "Cancel",
+        "Redirect"
+      ],
+      "Basis": "basis:council",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "9223372036854775807",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:tax/0",
+      "Principal": "org:village",
+      "Agent": "person:lord",
+      "Scope": "site:castle",
+      "Actions": [
+        "Transfer"
+      ],
+      "Basis": "basis:explicit-fixture-levy-right",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "100",
+      "Assets": [
+        "lot:village-rice"
+      ],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:ordinary/1",
+      "Principal": "org:house",
+      "Agent": "person:officer",
+      "Scope": "site:castle",
+      "Actions": [
+        "Inspect",
+        "Move",
+        "Cancel",
+        "Redirect"
+      ],
+      "Basis": "basis:council",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "9223372036854775807",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:tax/1",
+      "Principal": "org:village",
+      "Agent": "person:officer",
+      "Scope": "site:castle",
+      "Actions": [
+        "Transfer"
+      ],
+      "Basis": "basis:explicit-fixture-levy-right",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "100",
+      "Assets": [
+        "lot:village-rice"
+      ],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:ordinary/2",
+      "Principal": "org:house",
+      "Agent": "person:clerk",
+      "Scope": "site:castle",
+      "Actions": [
+        "Inspect",
+        "Move",
+        "Cancel",
+        "Redirect"
+      ],
+      "Basis": "basis:council",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "9223372036854775807",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:tax/2",
+      "Principal": "org:village",
+      "Agent": "person:clerk",
+      "Scope": "site:castle",
+      "Actions": [
+        "Transfer"
+      ],
+      "Basis": "basis:explicit-fixture-levy-right",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "100",
+      "Assets": [
+        "lot:village-rice"
+      ],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:regional-work/castle/person/nobunaga",
+      "Principal": "person:nobunaga",
+      "Agent": "person:nobunaga",
+      "Scope": "site:castle",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:regional-voluntary-inspection",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:regional-work/castle/person/officer",
+      "Principal": "person:nobunaga",
+      "Agent": "person:officer",
+      "Scope": "site:castle",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:regional-voluntary-inspection",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:regional-work/kofu/person/shingen",
+      "Principal": "person:shingen",
+      "Agent": "person:shingen",
+      "Scope": "site:kofu",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:regional-voluntary-inspection",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:regional-work/kofu/person/officer",
+      "Principal": "person:shingen",
+      "Agent": "person:officer",
+      "Scope": "site:kofu",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:regional-voluntary-inspection",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:regional-work/odawara/person/ujiyasu",
+      "Principal": "person:ujiyasu",
+      "Agent": "person:ujiyasu",
+      "Scope": "site:odawara",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:regional-voluntary-inspection",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:regional-work/odawara/person/officer",
+      "Principal": "person:ujiyasu",
+      "Agent": "person:officer",
+      "Scope": "site:odawara",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:regional-voluntary-inspection",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:personal-start-move",
+      "Principal": "person:created/player",
+      "Agent": "person:created/player",
+      "Scope": "site:castle",
+      "Actions": [
+        "Move"
+      ],
+      "Basis": "basis:personal-start",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:personal-inspect/castle",
+      "Principal": "person:nobunaga",
+      "Agent": "person:created/player",
+      "Scope": "site:castle",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:personal-start",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:personal-inspect/kofu",
+      "Principal": "person:shingen",
+      "Agent": "person:created/player",
+      "Scope": "site:kofu",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:personal-start",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    },
+    {
+      "Id": "grant:personal-inspect/odawara",
+      "Principal": "person:ujiyasu",
+      "Agent": "person:created/player",
+      "Scope": "site:odawara",
+      "Actions": [
+        "Inspect"
+      ],
+      "Basis": "basis:personal-start",
+      "From": "0",
+      "Until": "9223372036854775807",
+      "Limit": "0",
+      "Assets": [],
+      "Redelegate": false,
+      "Revision": "0"
+    }
+  ],
+  "Locations": [
+    {
+      "Actor": "person:lord",
+      "Kind": "AtSite",
+      "Site": "site:castle",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:officer",
+      "Kind": "AtSite",
+      "Site": "site:castle",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:clerk",
+      "Kind": "AtSite",
+      "Site": "site:castle",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:nobunaga",
+      "Kind": "AtSite",
+      "Site": "site:castle",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:shingen",
+      "Kind": "AtSite",
+      "Site": "site:kofu",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:ujiyasu",
+      "Kind": "AtSite",
+      "Site": "site:odawara",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:region-enemy",
+      "Kind": "AtPosition",
+      "Site": null,
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": 352168651,
+      "LongitudeE7": 1368452784,
+      "HeightMm": "0",
+      "TerrainRevision": "f1769acf6eb34126651045c92733ed4b374e9ef7f74114f31491d2b65a6a8456",
+      "Revision": "0"
+    },
+    {
+      "Actor": "person:created/player",
+      "Kind": "AtSite",
+      "Site": "site:castle",
+      "Route": null,
+      "SegmentIndex": 0,
+      "ProgressMm": "0",
+      "LatitudeE7": null,
+      "LongitudeE7": null,
+      "HeightMm": null,
+      "TerrainRevision": null,
+      "Revision": "0"
+    }
+  ],
+  "Units": [
+    {
+      "Id": "unit:officer",
+      "Army": "army:officer",
+      "Commander": "person:officer",
+      "Organization": "org:house",
+      "Soldiers": "40",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:field-left",
+      "Army": "army:officer",
+      "Commander": "person:officer",
+      "Organization": "org:house",
+      "Soldiers": "30",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:field-right",
+      "Army": "army:officer",
+      "Commander": "person:officer",
+      "Organization": "org:house",
+      "Soldiers": "30",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:clerk",
+      "Army": "army:clerk",
+      "Commander": "person:clerk",
+      "Organization": "org:house",
+      "Soldiers": "40",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:region/1/1",
+      "Army": "army:clerk",
+      "Commander": "person:clerk",
+      "Organization": "org:house",
+      "Soldiers": "30",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:region/1/2",
+      "Army": "army:clerk",
+      "Commander": "person:clerk",
+      "Organization": "org:house",
+      "Soldiers": "30",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:region/2/0",
+      "Army": "army:region-enemy",
+      "Commander": "person:region-enemy",
+      "Organization": "org:region-enemy",
+      "Soldiers": "40",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:region/2/1",
+      "Army": "army:region-enemy",
+      "Commander": "person:region-enemy",
+      "Organization": "org:region-enemy",
+      "Soldiers": "30",
+      "Revision": "0"
+    },
+    {
+      "Id": "unit:region/2/2",
+      "Army": "army:region-enemy",
+      "Commander": "person:region-enemy",
+      "Organization": "org:region-enemy",
+      "Soldiers": "30",
+      "Revision": "0"
+    }
+  ],
+  "Tasks": [],
+  "Actions": [],
+  "ResourceLots": [
+    {
+      "Id": "lot:village-rice",
+      "Kind": "rice",
+      "Owner": "org:village",
+      "Holder": "org:house",
+      "Site": "site:castle",
+      "Unit": "fixture-rice-unit",
+      "Quantity": "100",
+      "InitialQuantity": "100",
+      "Revision": "0"
+    },
+    {
+      "Id": "lot:treasury-rice",
+      "Kind": "rice",
+      "Owner": "org:house",
+      "Holder": "org:house",
+      "Site": "site:castle",
+      "Unit": "fixture-rice-unit",
+      "Quantity": "0",
+      "InitialQuantity": "0",
+      "Revision": "0"
+    }
+  ],
+  "Reservations": [],
+  "Transfers": [],
+  "Debts": [],
+  "Messaging": {
+    "Messages": [],
+    "Attempts": [],
+    "Receipts": [],
+    "Knowledge": [],
+    "Proxies": []
+  },
+  "SealedMessages": [],
+  "Evidence": [],
+  "Knowledge": [],
+  "PendingEvents": [],
+  "EffectLedger": [],
+  "Outbox": [],
+  "Compensations": [],
+  "RandomStreams": [
+    {
+      "Purpose": "decisions",
+      "State": "9787247649000534628",
+      "DrawCount": "0"
+    }
+  ],
+  "RandomDraws": [],
+  "IdCounters": {},
+  "ConflictDecisions": [],
+  "PlayerControl": "person:created/player",
+  "Chronicle": [],
+  "Requests": []
+}

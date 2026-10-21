@@ -3,8 +3,10 @@ using HakutaiKagami.Core.World;
 namespace HakutaiKagami.Core.Contracts;
 
 public sealed record CourierLeg(string Edge, RoutePoint From, RoutePoint To, long LengthMm, long StartAt, long EndAt);
+public sealed record DispatchLocation(EntityId Actor,LocationKind Kind,EntityId? Site,EntityId? Route,int SegmentIndex,long ProgressMm,int? LatitudeE7,int? LongitudeE7,long? HeightMm,string? TerrainRevision);
+public sealed record CourierDispatchPose(long At,DispatchLocation Location);
 public sealed record CourierMission(string Attempt, string Destination, long Appointment, RoutePoint Origin, CourierLeg[] Legs,
-    string[] KnownBlocked, long ReadyAt, bool Obstructed=false);
+    string[] KnownBlocked, long ReadyAt, bool Obstructed=false, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] CourierDispatchPose? DispatchPose=null, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] FieldLeg[]? FirstMile=null);
 public sealed record RoadCondition(long At,string Edge,bool Blocked);
 public sealed record RoadSighting(EntityId Actor,string Edge,bool Blocked,long At,RoutePoint Position);
 public sealed record CourierState(CourierMission[] Missions,RoadCondition[] Conditions,RoadSighting[] Sightings,string[] InitialBlocked);
@@ -67,8 +69,13 @@ public static class RegionalCampaign
     static CourierMission New(ContractWorld w,MessageAttempt attempt,string destination,long appointment,RoutePoint? origin=null)
     {
         var m=w.Messaging.Messages.Single(m=>m.Id==attempt.MessageId);var known=BranchRoutes.KnownBlocked(w,new(m.SenderId));
-        CourierLeg[] legs;try{legs=Route(w,new(m.SenderId),destination,known,attempt.SentAt,origin);}catch(InvalidDataException){return new(attempt.Id,destination,appointment,origin??ActorPoint(w,new(m.SenderId)),[],known,attempt.SentAt+1,true);}
-        return new(attempt.Id,destination,appointment,origin??ActorPoint(w,new(m.SenderId)),legs,known,Math.Max(attempt.SentAt+1,Math.Max(appointment,End(legs,attempt.SentAt))));
+        var point=origin??ActorPoint(w,new(m.SenderId));FieldLeg[]? first=null;long roadsAt=attempt.SentAt;string? connector=null;
+        if(origin==null&&w.Locations.Single(l=>l.Actor.Value==m.SenderId).Kind==LocationKind.AtPosition&&!BranchRoutes.GraphNodes(w).Any(n=>n.Position==point)){
+            connector=w.Atlas?.Anchor??BranchRoutes.GraphNodes(w).OrderBy(n=>Math.Abs(n.Position.EastMm-point.EastMm)+Math.Abs(n.Position.NorthMm-point.NorthMm)).ThenBy(n=>n.Id,StringComparer.Ordinal).First().Id;
+            first=RegionalGround.Plan(FieldWorld.FromWorld(point),FieldWorld.FromWorld(Node(w,connector)),attempt.SentAt,courier:true,scenery:RegionalScenery.Enabled(w),atlas:ContinuousWorld.Enabled(w));roadsAt=first.LastOrDefault()?.EndAt??roadsAt;
+        }
+        CourierLeg[] legs;try{legs=connector==null?Route(w,new(m.SenderId),destination,known,attempt.SentAt,origin):FromNode(w,connector,destination,known,roadsAt);}catch(InvalidDataException){return new(attempt.Id,destination,appointment,point,[],known,Math.Max(roadsAt,attempt.SentAt)+1,true,null,first);}
+        return new(attempt.Id,destination,appointment,point,legs,known,Math.Max(attempt.SentAt+1,Math.Max(appointment,End(legs,roadsAt))),false,null,first);
     }
     static void Put(ContractWorld w,CourierMission c)
     {
@@ -83,7 +90,9 @@ public static class RegionalCampaign
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);
             if(t?.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(x=>x.Id==w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask);destination=Meeting(w,target);appointment=Appointment(w,target);}
             if(m.Kind=="delivery-failure"){origin=Position(w,w.Couriers!.Missions.Single(c=>c.Attempt==m.Body),a.SentAt);if(TrafficWorld.Enabled(w))destination=TrafficWorld.FailureAddress(w,m.Body);}
-            Put(w,New(w,a,destination,appointment,origin));
+            var bound=New(w,a,destination,appointment,origin);
+            if(m.Kind!="delivery-failure"){var location=w.Locations.Single(l=>l.Actor.Value==m.SenderId);bound=bound with{DispatchPose=new(a.SentAt,new(location.Actor,location.Kind,location.Site,location.Route,location.SegmentIndex,location.ProgressMm,location.LatitudeE7,location.LongitudeE7,location.HeightMm,location.TerrainRevision))};}
+            Put(w,bound);
         }
         Arrivals(w);
     }
@@ -106,6 +115,7 @@ public static class RegionalCampaign
     }
     public static RoutePoint Position(ContractWorld w,CourierMission c,long at)
     {
+        if(c.FirstMile!=null){var end=c.FirstMile.LastOrDefault()?.EndAt??at;if(at<=end)return FieldWorld.ToWorld(RegionalGround.At(c.FirstMile,FieldWorld.FromWorld(c.Origin),at));if(c.Legs.Length==0)return FieldWorld.ToWorld(c.FirstMile.LastOrDefault()?.To??FieldWorld.FromWorld(c.Origin));}
         if(c.Legs.Length==0)return c.Origin;
         var leg=c.Legs.FirstOrDefault(l=>at<l.EndAt)??c.Legs[^1];var departure=TravelWorld.Departure(w,leg.Edge,leg.StartAt,leg.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge).LengthMm);var elapsed=Math.Clamp(at-departure,0,leg.EndAt-departure);
         var duration=leg.EndAt-departure;
@@ -113,7 +123,7 @@ public static class RegionalCampaign
     }
     public static long? NextBoundary(ContractWorld w,long target)=>w.Couriers!.Missions
         .Where(c=>w.Messaging.Attempts.Any(a=>a.Id==c.Attempt&&a.Status==AttemptStatus.InTransit))
-        .SelectMany(c=>c.Legs.SelectMany(l=>new[]{l.StartAt,l.EndAt,TravelWorld.Departure(w,l.Edge,l.StartAt,l.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm)}))
+        .SelectMany(c=>c.Legs.SelectMany(l=>new[]{l.StartAt,l.EndAt,TravelWorld.Departure(w,l.Edge,l.StartAt,l.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm)}).Concat((c.FirstMile??[]).SelectMany(l=>new[]{l.StartAt,l.EndAt})))
         .Concat(w.Couriers.Conditions.Select(c=>c.At)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     public static void ApplyConditions(ContractWorld w)
     {
@@ -169,14 +179,15 @@ public static class RegionalCampaign
             bool seen=Math.Abs(p.EastMm-own.EastMm)<=80000&&Math.Abs(p.NorthMm-own.NorthMm)<=80000&&a.Status==AttemptStatus.InTransit;
             if(m.Kind=="delivery-failure"&&!seen&&!MessageFlow.Knows(w.Messaging,m.Id,observer.Value))return null;
             if(m.SenderId!=observer.Value&&!seen&&!MessageFlow.Knows(w.Messaging,m.Id,observer.Value))return null;
-            var status=MessageFlow.Knows(w.Messaging,m.Id,observer.Value)?"受領済":seen?(w.ElapsedSeconds<End(c.Legs,a.SentAt)?"移動を目撃":"待機を目撃"):MessageFlow.FailureKnown(w.Messaging,a.Id,observer.Value)?"失敗報告を受領":"発送済・結果未確認";
+            var status=MessageFlow.Knows(w.Messaging,m.Id,observer.Value)?"受領済":seen?(w.ElapsedSeconds<End(c.Legs,c.FirstMile?.LastOrDefault()?.EndAt??a.SentAt)?"移動を目撃":"待機を目撃"):MessageFlow.FailureKnown(w.Messaging,a.Id,observer.Value)?"失敗報告を受領":"発送済・結果未確認";
             var leg=c.Legs.FirstOrDefault(l=>w.ElapsedSeconds<l.EndAt)??c.Legs.LastOrDefault();
-            if(seen&&leg!=null&&w.ElapsedSeconds<TravelWorld.Departure(w,leg.Edge,leg.StartAt,leg.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge).LengthMm))status="出航待ちを目撃";
+            if(seen&&(c.FirstMile?.LastOrDefault()?.EndAt??0)<=w.ElapsedSeconds&&leg!=null&&NationalRoutes.Sea(leg.Edge)&&w.ElapsedSeconds<TravelWorld.Departure(w,leg.Edge,leg.StartAt,leg.LengthMm==BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge).LengthMm))status="出航待ちを目撃";
             var distance=c.Legs.Sum(l=>LegDistance(w,l,w.ElapsedSeconds));
             var nextDistance=c.Legs.Sum(l=>LegDistance(w,l,w.ElapsedSeconds+1));
+            long FieldDistance(long at)=>(c.FirstMile??[]).Sum(l=>at>=l.EndAt?RegionalGround.Distance(l.From,l.To):at<=l.StartAt?0:RegionalGround.Distance(l.From,RegionalGround.At([l],l.From,at)));distance+=FieldDistance(w.ElapsedSeconds);nextDistance+=FieldDistance(w.ElapsedSeconds+1);var nextPosition=Position(w,c,w.ElapsedSeconds+1);
             bool informed=MessageFlow.Knows(w.Messaging,m.Id,observer.Value)||m.SenderId==observer.Value&&m.Kind!="delivery-failure";
             var opaque=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Attempt));
-            return new CourierView(informed?c.Attempt:"courier:seen/"+opaque,informed?m.Id:"message:unread/"+opaque,informed?c.Destination:"届け先未確認",informed?a.SentAt:null,informed?Math.Max(c.Appointment,a.SentAt+1):null,seen?p:null,status,seen&&leg!=null?new(leg.To.EastMm-leg.From.EastMm,leg.To.NorthMm-leg.From.NorthMm):null,seen?(informed?distance:checked(w.ElapsedSeconds*2000)):null,seen?Position(w,c,w.ElapsedSeconds+1):null,seen?nextDistance-distance:null);
+            return new CourierView(informed?c.Attempt:"courier:seen/"+opaque,informed?m.Id:"message:unread/"+opaque,informed?c.Destination:"届け先未確認",informed?a.SentAt:null,informed?Math.Max(c.Appointment,a.SentAt+1):null,seen?p:null,status,seen&&c.FirstMile!=null?new(nextPosition.EastMm-p.EastMm,nextPosition.NorthMm-p.NorthMm):seen&&leg!=null?new(leg.To.EastMm-leg.From.EastMm,leg.To.NorthMm-leg.From.NorthMm):null,seen?(informed?distance:checked(w.ElapsedSeconds*2000)):null,seen?Position(w,c,w.ElapsedSeconds+1):null,seen?nextDistance-distance:null);
         }).OfType<CourierView>().ToArray();
     }
     public static NearbyActor[] Nearby(ContractWorld w,EntityId observer)
@@ -201,10 +212,29 @@ public static class RegionalCampaign
     {
         if(RegionalBattle.Active(w)&&at==w.ElapsedSeconds&&w.Region!.Units.Any(u=>u.Commander==actor))return FieldWorld.ToWorld(RegionalBattle.Position(w,actor));
         if(FieldWorld.Enabled(w)&&actor==w.PlayerControl&&w.Field!.Orders.Any(o=>o.At<=at)&&!(w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at)?.Legs[0].StartAt>w.Field.Orders.Last(o=>o.At<=at).At))return FieldWorld.ToWorld(FieldWorld.Sample(w,0,at).Position);
+        return RoadActorPointAt(w,actor,at);
+    }
+    public static RoutePoint RoadActorPointAt(ContractWorld w,EntityId actor,long at)
+    {
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor):"castle");
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
         var progress=Math.Clamp((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
         return new(a.EastMm+(b.EastMm-a.EastMm)*progress/edge.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*progress/edge.LengthMm);
+    }
+    static RoutePoint DispatchOrigin(ContractWorld w,CourierMission mission,MessageAttempt attempt,MessageEnvelope message)
+    {
+        var pose=mission.DispatchPose!;var l=pose.Location;
+        if(pose.At!=attempt.SentAt||l.Actor.Value!=message.SenderId||l.ProgressMm<0||l.SegmentIndex<0)throw new InvalidDataException("Invalid dispatch event provenance");
+        if(l.Kind==LocationKind.AtPosition){
+            var p=FieldWorld.FromWorld(mission.Origin);var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(mission.Origin.EastMm,mission.Origin.NorthMm));
+            if(l.Site!=null||l.Route!=null||l.ProgressMm!=0||l.SegmentIndex!=0||l.LatitudeE7!=geo.LatitudeE7||l.LongitudeE7!=geo.LongitudeE7||l.HeightMm!=RegionalGround.Height(p,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w))||string.IsNullOrWhiteSpace(l.TerrainRevision))throw new InvalidDataException("Dispatch point differs from physical location snapshot");
+            if(mission.FirstMile==null&&!BranchRoutes.GraphNodes(w).Any(n=>n.Position==mission.Origin))throw new InvalidDataException("Field dispatch requires first-mile route");return mission.Origin;
+        }
+        if(l.LatitudeE7!=null||l.LongitudeE7!=null||l.HeightMm!=null||mission.FirstMile!=null)throw new InvalidDataException("Road dispatch has field-only fields");
+        var point=RoadActorPointAt(w,l.Actor,pose.At);
+        if(l.Kind==LocationKind.AtSite){if(l.Site is not {} site||l.Route!=null||l.ProgressMm!=0||l.SegmentIndex!=0||l.TerrainRevision!=null||Node(w,Destination(w,site))!=point)throw new InvalidDataException("Dispatch site differs from stored road history");}
+        else if(l.Kind==LocationKind.Traveling){if(l.Site!=null||l.Route==null||l.TerrainRevision==null||!w.Branches!.Journeys.Any(j=>j.Actor==l.Actor&&WorldSession.Child("route",j.Task,"graph")==l.Route&&j.Legs[0].StartAt<=pose.At))throw new InvalidDataException("Dispatch route lacks physical journey");}
+        else throw new InvalidDataException("Unregistered dispatch location kind");return point;
     }
     public static bool BlockedAt(ContractWorld w,string edge,long at)
     {
@@ -220,7 +250,9 @@ public static class RegionalCampaign
         foreach(var sight in cs.Sightings){var edge=edges.Single(e=>e.Id==sight.Edge);if(sight.At>w.ElapsedSeconds||sight.Position!=ActorPointAt(w,sight.Actor,sight.At)||sight.Blocked!=BlockedAt(w,edge.Id,sight.At)||sight.Position!=Node(w,edge.From)&&sight.Position!=Node(w,edge.To))throw new InvalidDataException("Invalid road sighting");}
         if(cs.Missions.Select(c=>c.Attempt).Distinct().Count()!=cs.Missions.Length||cs.Missions.Length!=w.Messaging.Attempts.Count(a=>!RegionalBattle.Handles(w,a.MessageId)))throw new InvalidDataException("Missing/duplicate courier");
         foreach(var c in cs.Missions){var a=w.Messaging.Attempts.Single(a=>a.Id==c.Attempt);var message=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);
-            var origin=message.Kind=="delivery-failure"?Position(w,cs.Missions.Single(x=>x.Attempt==message.Body),a.SentAt):ActorPointAt(w,new(message.SenderId),a.SentAt);
+            var origin=message.Kind=="delivery-failure"?Position(w,cs.Missions.Single(x=>x.Attempt==message.Body),a.SentAt):c.DispatchPose!=null?DispatchOrigin(w,c,a,message):ActorPointAt(w,new(message.SenderId),a.SentAt);
+            if(CreatedCampaign.Enabled(w)&&message.Kind!="delivery-failure"&&c.DispatchPose==null)throw new InvalidDataException("New campaign courier lacks dispatch location");
+            if(message.Kind=="delivery-failure"&&c.DispatchPose!=null)throw new InvalidDataException("Failure report origin is its failed courier, not an actor location");
             if(c.Origin!=origin)throw new InvalidDataException("Courier origin lacks physical dispatch");
             if(message.Kind=="contract-order"){
                 var task=w.Tasks.Single(t=>WorldSession.Child("message",t.Id,"order").Value==message.Id);
@@ -230,14 +262,16 @@ public static class RegionalCampaign
             }
             if(a.LateDueAt!=null)throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
             if(!BranchRoutes.GraphNodes(w).Any(n=>n.Id==c.Destination)||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edges.Any(e=>e.Id==id)))throw new InvalidDataException("Invalid courier binding");
+            long roadStart=a.SentAt;var roadOrigin=c.Origin;
+            if(c.FirstMile!=null){var from=FieldWorld.FromWorld(c.Origin);var goal=c.FirstMile.LastOrDefault()?.To??from;RegionalGround.ValidatePath(c.FirstMile,from,goal,true,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w));if(c.FirstMile.Length>0&&c.FirstMile[0].StartAt!=a.SentAt)throw new InvalidDataException("First mile starts before dispatch");roadStart=c.FirstMile.LastOrDefault()?.EndAt??a.SentAt;roadOrigin=FieldWorld.ToWorld(goal);if(!BranchRoutes.GraphNodes(w).Any(n=>n.Position==roadOrigin))throw new InvalidDataException("First mile does not connect to a road node");}
             for(int i=0;i<c.Legs.Length;i++){var l=c.Legs[i];var edge=edges.Single(e=>e.Id==l.Edge);
-                if(l.LengthMm<0||l.LengthMm>edge.LengthMm||l.EndAt!=TravelWorld.End(w,edge,l.StartAt,true,l.LengthMm)||l.StartAt<0||i==0&&(l.StartAt!=a.SentAt||l.From!=c.Origin)||i>0&&(l.StartAt!=c.Legs[i-1].EndAt||l.From!=c.Legs[i-1].To))throw new InvalidDataException("Invalid courier chronology");
+                if(l.LengthMm<0||l.LengthMm>edge.LengthMm||l.EndAt!=TravelWorld.End(w,edge,l.StartAt,true,l.LengthMm)||l.StartAt<0||i==0&&(l.StartAt!=roadStart||l.From!=roadOrigin)||i>0&&(l.StartAt!=c.Legs[i-1].EndAt||l.From!=c.Legs[i-1].To))throw new InvalidDataException("Invalid courier chronology");
                 var ea=Node(w,edge.From);var eb=Node(w,edge.To);if(l.To!=ea&&l.To!=eb||i>0&&(l.From!=ea&&l.From!=eb||l.LengthMm!=edge.LengthMm))throw new InvalidDataException("Courier left its road");
                 if(i==0){decimal dx=eb.EastMm-ea.EastMm,dy=eb.NorthMm-ea.NorthMm,x=l.From.EastMm-ea.EastMm,y=l.From.NorthMm-ea.NorthMm;
                     var f=(x*dx+y*dy)/(dx*dx+dy*dy);var length=(l.To==ea?f:1-f)*edge.LengthMm;
                     if(f<0||f>1||Math.Abs(x*dy-y*dx)>Math.Abs(dx)+Math.Abs(dy)||Math.Abs(length-l.LengthMm)>3)throw new InvalidDataException("Invalid courier partial-road distance");}
             }
-            if(!c.Obstructed&&(c.ReadyAt<End(c.Legs,a.SentAt)||c.ReadyAt<c.Appointment||c.Legs.Length>0&&c.Legs[^1].To!=Node(w,c.Destination)))throw new InvalidDataException("Delivery before physical arrival");
+            if(!c.Obstructed&&(c.ReadyAt<End(c.Legs,roadStart)||c.ReadyAt<c.Appointment||c.Legs.Length>0&&c.Legs[^1].To!=Node(w,c.Destination)))throw new InvalidDataException("Delivery before physical arrival");
             if(a.Status==AttemptStatus.Delivered&&a.FinishedAt<c.ReadyAt)throw new InvalidDataException("Early courier delivery");
         }
     }

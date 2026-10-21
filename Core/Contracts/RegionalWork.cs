@@ -21,7 +21,7 @@ public static class RegionalWork
             w.Grants=[..w.Grants,new(new("grant:regional-work/"+role.Node+"/"+actor.Value.Replace(':','/')),role.Person,actor,RegionalCampaign.Site(role.Node),[ActionKind.Inspect],basis,0,long.MaxValue,0,[],false,0)];
         w.Definitions=w.Definitions with{Version=RegionalBattle.Version(w)};ContractValidation.Validate(w);return w;
     }
-    public static TaskKind Kind(ContractWorld w,EntityId issuer)=>RetainerStart.Enabled(w)&&issuer==RetainerStart.Lord?TaskKind.BindingOrder:TaskKind.VoluntaryRequest;
+    public static TaskKind Kind(ContractWorld w,EntityId issuer)=>(RetainerStart.Enabled(w)||CreatedCampaign.Enabled(w))&&issuer==RetainerStart.Lord?TaskKind.BindingOrder:TaskKind.VoluntaryRequest;
     public static Intent Build(ContractWorld w,string id,EntityId issuer,int due=60)
     {
         if(!Enabled(w)||!EntityId.IsValid(id)||due is <1 or >3600)throw new InvalidDataException("Local work profile required");
