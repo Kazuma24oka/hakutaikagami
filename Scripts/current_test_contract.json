@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 985,
-  "baseline_passed": 970,
-  "added": 15,
-  "scope": "PersonalStartTests: seven facts and eight restored boundaries"
+  "expected_passed": 1010,
+  "baseline_passed": 985,
+  "added": 25,
+  "scope": "RetainerStartTests: ten facts, ten restore rows and five invalid rights"
 }

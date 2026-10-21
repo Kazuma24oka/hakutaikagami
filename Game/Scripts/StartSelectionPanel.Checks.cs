@@ -30,6 +30,7 @@ public partial class StartSelectionPanel
     async void RunSelectionChecks()
     {
         try{
+            if(SelectionMode.Contains("-retainer-")){await RunRetainerSelectionChecks();return;}
             Directory.CreateDirectory(Output);var tabs=(TabContainer)GetParent();tabs.CurrentTab=2;await Frame();
             if(SelectionMode.EndsWith("restore")){
                 ScanProfiles();int index=profiles.FindIndex(p=>p.Profile.Instance==File.ReadAllText(Output+"/origin-instance.txt"));Need(index>=0,"saved creation package is listed after fresh process");saved.Select(index);Press(load);await Frame();

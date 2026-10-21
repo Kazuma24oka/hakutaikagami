@@ -4,6 +4,8 @@ using HakutaiKagami.Core.Contracts;
 public partial class ContinuousWorldTrial
 {
     bool WorkHubCheck=>OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--work-hub-")||a.StartsWith("--start-selection-"));
+    internal bool HubCanPress(string id)=>buttons.TryGetValue(id,out var b)&&b.Visible&&!b.Disabled;
+    internal void HubDestination(string node){int i=System.Array.FindIndex(NationalRoutes.Nodes,n=>n.Id==node);if(i<0)throw new System.Exception("Unknown destination");destination.Select(i);}
     internal void HubSetAutomatic(bool value){automatic=value;}
     internal WorldSession HubSession=>S;
     internal string HubPose()=>NpcPose();

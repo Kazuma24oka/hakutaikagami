@@ -21,13 +21,14 @@ public static class RegionalWork
             w.Grants=[..w.Grants,new(new("grant:regional-work/"+role.Node+"/"+actor.Value.Replace(':','/')),role.Person,actor,RegionalCampaign.Site(role.Node),[ActionKind.Inspect],basis,0,long.MaxValue,0,[],false,0)];
         w.Definitions=w.Definitions with{Version=RegionalBattle.Version(w)};ContractValidation.Validate(w);return w;
     }
+    public static TaskKind Kind(ContractWorld w,EntityId issuer)=>RetainerStart.Enabled(w)&&issuer==RetainerStart.Lord?TaskKind.BindingOrder:TaskKind.VoluntaryRequest;
     public static Intent Build(ContractWorld w,string id,EntityId issuer,int due=60)
     {
-        if(!Enabled(w)||!EntityId.IsValid(id)||due is <1 or >3600)throw new InvalidDataException("Local voluntary work profile required");
+        if(!Enabled(w)||!EntityId.IsValid(id)||due is <1 or >3600)throw new InvalidDataException("Local work profile required");
         var role=Roles.SingleOrDefault(r=>r.Person==issuer)??throw new InvalidDataException("Unknown local dispatcher");
         long end=checked(w.ElapsedSeconds+due);
         return new(new(id),issuer,w.PlayerControl,RegionalCampaign.Site(role.Node),ActionKind.Inspect,null,null,0,null,
-            new(DeadlineCriterion.Completion,end,false,null,end),w.ElapsedSeconds,1,4,1,true,TaskKind.VoluntaryRequest);
+            new(DeadlineCriterion.Completion,end,false,null,end),w.ElapsedSeconds,1,4,1,true,Kind(w,issuer));
     }
     public static void ValidateOrder(ContractWorld w,Intent i)
     {
@@ -55,15 +56,15 @@ public static class RegionalWork
             if(m.KnownBody==null)return new IncomingMission.Card(m.Id,null,"現地からの書状・未開封（内容未確認）",m.Sealed,false);
             var task=w.Tasks.Single(t=>t.Id.Value==m.KnownBody);var person=w.Definitions.Characters.Single(p=>p.Id==task.Issuer);
             string site=w.Definitions.Sites.Single(p=>p.Id==task.Scope).Name;
-            return new IncomingMission.Card(m.Id,task.Id,person.Name+"からの任意依頼："+site+"の点検 / "+v.Tasks.Single(t=>t.Id==task.Id).KnownStatus,false,task.Agreement==AgreementPhase.AwaitingAssent);
+            return new IncomingMission.Card(m.Id,task.Id,person.Name+(task.Kind==TaskKind.BindingOrder?"からの点検命令：":"からの任意依頼：")+site+"の点検 / "+v.Tasks.Single(t=>t.Id==task.Id).KnownStatus,false,task.Agreement==AgreementPhase.AwaitingAssent);
         }).ToArray();
     }
     public static void Validate(ContractWorld w)
     {
         foreach(var task in w.Tasks.Where(t=>t.Action==ActionKind.Inspect)){
             var request=w.Requests.Single(r=>r.Id==task.RequestId);var i=request.Intent;
-            if(!Roles.Any(r=>r.Person==i.Actor&&RegionalCampaign.Site(r.Node)==i.Scope)||i.Executor!=w.PlayerControl||i.Kind!=TaskKind.VoluntaryRequest||i.Action!=ActionKind.Inspect||i.Amount!=0||i.SourceLot!=null||i.DestinationLot!=null||i.DestinationSite!=null||i.WorkSeconds!=4||i.DeliverySeconds!=1||i.ReportSeconds!=1||!i.Important||i.TargetTask!=null||i.EffectiveAt!=request.CreatedAt||i.Deadline.Criterion!=DeadlineCriterion.Completion||i.Deadline.FromOpening||i.Deadline.DurationSeconds!=null||i.Deadline.At!=i.Deadline.AbsoluteLatestAt||i.Deadline.AbsoluteLatestAt-request.CreatedAt is <1 or >3600)
-                throw new InvalidDataException("Regional work lacks a valid voluntary contract");
+            if(!Roles.Any(r=>r.Person==i.Actor&&RegionalCampaign.Site(r.Node)==i.Scope)||i.Executor!=w.PlayerControl||i.Kind!=Kind(w,i.Actor)||i.Action!=ActionKind.Inspect||i.Amount!=0||i.SourceLot!=null||i.DestinationLot!=null||i.DestinationSite!=null||i.WorkSeconds!=4||i.DeliverySeconds!=1||i.ReportSeconds!=1||!i.Important||i.TargetTask!=null||i.EffectiveAt!=request.CreatedAt||i.Deadline.Criterion!=DeadlineCriterion.Completion||i.Deadline.FromOpening||i.Deadline.DurationSeconds!=null||i.Deadline.At!=i.Deadline.AbsoluteLatestAt||i.Deadline.AbsoluteLatestAt-request.CreatedAt is <1 or >3600)
+                throw new InvalidDataException("Regional work lacks a valid local contract");
         }
         foreach(var g in w.Grants.Where(g=>Roles.Any(r=>r.Person==g.Agent))){if(g.Actions.Length!=1||g.Actions[0]!=ActionKind.Inspect||g.Limit!=0||g.Assets.Length!=0||g.Redelegate||!Roles.Any(r=>r.Person==g.Agent&&RegionalCampaign.Site(r.Node)==g.Scope))throw new InvalidDataException("Historical dispatcher granted unregistered coercive rights");}
         foreach(var c in w.Couriers!.Missions){var message=w.Messaging.Messages.Single(m=>m.Id==w.Messaging.Attempts.Single(a=>a.Id==c.Attempt).MessageId);var address=Address(w,message);if(address!=null&&c.Destination!=address)throw new InvalidDataException("Local work left its fixed dispatch address");}

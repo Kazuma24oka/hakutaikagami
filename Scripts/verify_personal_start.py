@@ -6,9 +6,10 @@ ROOT=Path(__file__).resolve().parents[1];BASE=ROOT/'Docs/Design/PersonalStartV1'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def source_files():return sorted(set(parent_sources()+[Path(__file__),ROOT/'Scripts/check_personal_start_binding.py',ROOT/'Game/Scenes/PersonalStartTrial.tscn',BASE/'README.md']))
 def main():
+ expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed']
  subprocess.run([__import__('sys').executable,str(ROOT/'Scripts/verify_work_hub_startup.py')],cwd=ROOT,check=True)
  before={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()};key=uuid.uuid4().hex
- prior=ROOT/'Docs/Design/WorkHubStartupV1/verification.json';j=json.loads(prior.read_bytes());assert j['summary']['tests']==985
+ prior=ROOT/'Docs/Design/WorkHubStartupV1/verification.json';j=json.loads(prior.read_bytes());assert j['summary']['tests']==expected
  exe=ROOT/'.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64_console.exe';images={};comparisons={};checks={}
  for case in ['job','journey']:
   folder=OUT/case;folder.mkdir(parents=True,exist_ok=True)
@@ -22,6 +23,6 @@ def main():
     diff=sum(v!=(0,0,0) for v in ImageChops.difference(ia.crop((x,y,x+w,y+h)),ib.crop((x,y,x+w,y+h))).get_flattened_data());assert diff==0,(case,a,b,diff);comparisons[case+'/'+a+'/'+b]=diff
     for p in [pa,pb]:images[p.relative_to(ROOT).as_posix()]=sha(p)
  assert before=={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
- report=dict(status='PASSED',sources=before,binaries=j['binaries'],tests=985,added=15,comparisons=comparisons,images=images,checks=checks,proofs={prior.relative_to(ROOT).as_posix():sha(prior)},visual_review=None)
- (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print('PASS personal independent identity,985 tests,20 exact GPU restore/continue comparisons')
+ report=dict(status='PASSED',sources=before,binaries=j['binaries'],tests=expected,added=15,comparisons=comparisons,images=images,checks=checks,proofs={prior.relative_to(ROOT).as_posix():sha(prior)},visual_review=None)
+ (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print('PASS personal independent identity,fixed-count tests,20 exact GPU restore/continue comparisons')
 if __name__=='__main__':main()

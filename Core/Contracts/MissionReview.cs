@@ -8,7 +8,7 @@ public static class MissionReview
     public const string ExplanationKind="mission-explanation";
     public const string InterruptedReport="担当者が任務を中断（本人返報）";
     public enum Explanation { OwnDecision, ClaimedDanger }
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||AssessmentNotice.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||RetainerStart.Enabled(w)||AssessmentNotice.Enabled(w);
     public static ContractWorld Create()
     {
         var w=IncomingMission.Create();w.WorldId=new("world:"+Ruleset);

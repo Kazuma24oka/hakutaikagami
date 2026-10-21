@@ -1,0 +1,20 @@
+{
+  "checked_on": "2026-10-21",
+  "policy": "作成家臣の主従は架空の開始合意。下記資料から実在人物の任命・兵力・土地権を推測して追加しない。",
+  "sources": [
+    {
+      "url": "https://www.city.kiyosu.aichi.jp/kiyosu_brand/jinbutsu_den.html",
+      "fact": "1560年の信長と清須の関係の背景。既存人物台帳の出典と共通。"
+    },
+    {
+      "url": "https://history-museum.city.fukui.lg.jp/tenji/tenran/katsuie.html",
+      "fact": "信行没後の信長家臣としての勝家を解説。北庄拝領は1575年の事項。",
+      "use": "後年の城主権限を1560年へ転写しない。勝家の開始権限の採録完了とは扱わない。"
+    },
+    {
+      "url": "https://www.city.komaki.aichi.jp/admin/soshiki/kyoiku/komakiyama01/1/1/1/1/5413.html",
+      "fact": "小牧山築城と清須からの移転は1563年。",
+      "use": "1560年の開始拠点を後年の居城へ移さない。全国108地点の時代別採録完了とは扱わない。"
+    }
+  ]
+}

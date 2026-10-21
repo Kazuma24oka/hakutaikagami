@@ -5,6 +5,7 @@ from verify_personal_start import source_files as parent_sources,sha
 ROOT=Path(__file__).resolve().parents[1];BASE=ROOT/'Docs/Design/StartSelectionV1';OUT=BASE/'runtime-local'
 def source_files():return sorted(set(parent_sources()+[Path(__file__),ROOT/'Scripts/check_start_selection_binding.py',BASE/'README.md']))
 def main():
+ expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed']
  subprocess.run([sys.executable,str(ROOT/'Scripts/verify_personal_start.py')],cwd=ROOT,check=True)
  before={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()};key=uuid.uuid4().hex;OUT.mkdir(parents=True,exist_ok=True)
  exe=ROOT/'.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64_console.exe';checks={};images={};comparisons={}
@@ -20,7 +21,7 @@ def main():
  for name in ['form','second-person']:
   p=OUT/(name+'.png');images[p.relative_to(ROOT).as_posix()]=sha(p)
  assert before=={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
- prior=ROOT/'Docs/Design/PersonalStartV1/verification.json';j=json.loads(prior.read_bytes());assert j['tests']==985 and len(j['comparisons'])==20
- report=dict(status='PASSED',sources=before,binaries=j['binaries'],tests=985,comparisons=comparisons,images=images,checks=checks,proofs={prior.relative_to(ROOT).as_posix():sha(prior)},visual_review=None)
+ prior=ROOT/'Docs/Design/PersonalStartV1/verification.json';j=json.loads(prior.read_bytes());assert j['tests']==expected and len(j['comparisons'])==20
+ report=dict(status='PASSED',sources=before,binaries=j['binaries'],tests=expected,comparisons=comparisons,images=images,checks=checks,proofs={prior.relative_to(ROOT).as_posix():sha(prior)},visual_review=None)
  (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print('PASS startup selection, preserved runs, 10 exact view comparisons and prior56 on current binary')
 if __name__=='__main__':main()

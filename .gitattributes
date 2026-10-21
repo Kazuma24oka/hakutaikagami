@@ -523,3 +523,10 @@ Scripts/check_personal_start_binding.py -text
 Game/Scripts/StartSelectionPanel*.cs -text
 Docs/Design/StartSelectionV1/** -text
 Scripts/*start_selection* -text
+
+Core/Contracts/RetainerStart.cs -text
+Tests/RetainerStartTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Retainer.cs -text
+Game/Scripts/StartSelectionPanel.RetainerChecks.cs -text
+Docs/Design/RetainerStartV1/** -text
+Scripts/*retainer_start* -text

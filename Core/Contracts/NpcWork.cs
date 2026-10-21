@@ -8,7 +8,7 @@ public static class NpcWork
 {
     public const string Ruleset="npc-local-work-v1",Contract="local-witness-own-reports-stable-input-memory-3600cooldown-v1";
     public const long Interval=3600;
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||PersonalStart.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||PersonalStart.Enabled(w)||RetainerStart.Enabled(w);
     public static ContractWorld Create()
     {
         var w=RegionalWork.Create();w.WorldId=new("world:"+Ruleset);w.NpcWork=new([]);

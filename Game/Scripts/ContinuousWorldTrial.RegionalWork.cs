@@ -20,6 +20,7 @@ public partial class ContinuousWorldTrial
         });
         Add(row,"work-open","届いた書状を開封",()=>Require(S.Open(S.PlayerControl,RegionalWork.Inbox(S).Last(c=>c.CanOpen).Message,S.Revision)));
         Add(row,"work-accept","受諾",()=>WorkConsent(true));Add(row,"work-decline","辞退",()=>WorkConsent(false));
+        if(RetainerStartEnabled)BuildRetainerUI(row);
         workRole=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(workRole);
         workText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(workText);
     }
@@ -33,9 +34,10 @@ public partial class ContinuousWorldTrial
         buttons["work-send"].Disabled=nearby.Length==0||!RegionalWork.CanDispatch(w,new(workDispatcher.GetItemMetadata(workDispatcher.Selected).AsString()));
         var inbox=RegionalWork.Inbox(S);buttons["work-open"].Disabled=!inbox.Any(c=>c.CanOpen);buttons["work-accept"].Disabled=buttons["work-decline"].Disabled=!inbox.Any(c=>c.CanDecide);
         workRole.Text=nearby.Length==0?"現地で会える依頼元：なし。拠点へ移動してください。":string.Join(" / ",nearby.Select(id=>{var role=RegionalWork.Roles.Single(r=>r.Person==id);return w.Definitions.Characters.Single(p=>p.Id==id).Name+"："+role.Position;}));
-        if(PersonalStartEnabled)workRole.Text="本人："+w.Definitions.Characters.Single(c=>c.Id==S.PlayerControl).Name+"（作成・浪人） / "+workRole.Text;
+        if(PersonalStartEnabled)workRole.Text="本人："+w.Definitions.Characters.Single(c=>c.Id==S.PlayerControl).Name+(RetainerStartEnabled?"（作成・織田家の家臣） / ":"（作成・浪人） / ")+workRole.Text;
         workText.Text=inbox.Length==0?"本人の受信：なし（未着の内容は表示しません）":string.Join("\n",inbox.TakeLast(2).Select(c=>MissionText(c.Text)));
-        workText.Text+="\n任意点検は試作設定。史実の具体的命令・主従関係・徴税権は追加していません。";
+        workText.Text+="\n"+(RetainerStartEnabled?"主従は作成人物の開始合意（架空）。中断の理由と責任は別審査です。":"任意点検は試作設定。史実の具体的命令・主従関係・徴税権は追加していません。");
+        if(RetainerStartEnabled)RefreshRetainerUI();
         // One actor at the authoritative player point; NPC and player share a site anchor and are not artificially displaced.
         var key=S.PlayerControl;
         if(!actors.TryGetValue(key,out var model)){model=new();world.AddChild(model);model.Apply(Officer3DCustomActor.Preset("red_guard"));actors[key]=model;}

@@ -9,7 +9,7 @@ public sealed record SavedStartProfile(string Instance, StartPackage Package);
 public partial class StartSelectionPanel : Control
 {
     VBoxContainer form=null!,play=null!;LineEdit nameInput=null!;Label message=null!;Button begin=null!,resume=null!,load=null!,back=null!;
-    OptionButton saved=null!;ConfirmationDialog confirmation=null!;ContinuousWorldTrial? stage;
+    OptionButton saved=null!,role=null!;ConfirmationDialog confirmation=null!;ContinuousWorldTrial? stage;
     readonly List<(SavedStartProfile Profile,string Directory)> profiles=new();
     (SavedStartProfile Profile,string Directory,bool Load)? pending;
     string SelectionMode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--start-selection-"))??"";
@@ -21,15 +21,16 @@ public partial class StartSelectionPanel : Control
     {
         form=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};AddChild(form);form.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         form.AddChild(new Label{Text="作成武将として始める"});
-        form.AddChild(new Label{Text="1560年・清洲から / 成人の浪人 / 準史実（既定）"});
+        form.AddChild(new Label{Text="1560年・清洲から / 成人 / 準史実（既定）"});
         form.AddChild(new Label{Text="本人の移動と、現地で受ける任意の仕事を試せます。軍・土地・徴税権は持ちません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         form.AddChild(new Label{Text="名前"});nameInput=new(){Text="作成武将",MaxLength=24,PlaceholderText="1～24文字"};form.AddChild(nameInput);
+        form.AddChild(new Label{Text="開始時の立場"});role=new();role.AddItem("浪人");role.AddItem("織田家の家臣（作成人物の架空の開始合意）");form.AddChild(role);
         begin=new(){Text="新しく始める"};form.AddChild(begin);begin.Pressed+=RequestNew;
         resume=new(){Text="いまの人物へ戻る",Visible=false};form.AddChild(resume);resume.Pressed+=ShowGame;
         form.AddChild(new HSeparator());form.AddChild(new Label{Text="保存した人物の続き"});saved=new();form.AddChild(saved);
         load=new(){Text="選んだ保存を開く"};form.AddChild(load);load.Pressed+=RequestLoad;
         message=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};form.AddChild(message);
-        form.AddChild(new Label{Text="家臣・城主などの開始と史実武将の選択は、開始権限の収録・接続後に追加します。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("e6c785")});
+        form.AddChild(new Label{Text="陪臣・城主などと史実武将の開始は今後追加します。作成家臣の主従は史実の任命ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("e6c785")});
         play=new(){Visible=false};AddChild(play);play.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         back=new(){Text="開始設定へ戻る（現在の人物は保持）"};play.AddChild(back);back.Pressed+=ShowForm;
         confirmation=new(){Title="現在の進行を切り替えますか",DialogText="画面上の未保存の進行を閉じ、選んだ人物へ切り替えます。保存したデータは残ります。"};AddChild(confirmation);
@@ -38,16 +39,17 @@ public partial class StartSelectionPanel : Control
     }
     StartPackage NewPackage(string name)
     {
-        var w=PersonalStart.Create(name);var choice=StartConfiguration.Describe(w,w.PlayerControl,StartTemplate.Ronin,PersonOrigin.Created,PersonalStart.Policy);
+        var w=role.Selected==1?RetainerStart.Create(name):PersonalStart.Create(name);var template=role.Selected==1?StartTemplate.Retainer:StartTemplate.Ronin;var choice=StartConfiguration.Describe(w,w.PlayerControl,template,PersonOrigin.Created,PersonalStart.Policy);
         return new(choice,w,PersonalStart.Policy);
     }
     static void Validate(SavedStartProfile profile)
     {
         if(profile==null||profile.Package==null||profile.Package.World==null||profile.Package.Selection==null||profile.Package.Policy==null)throw new InvalidDataException("開始データに必要な項目がありません");
-        if(!Guid.TryParseExact(profile.Instance,"N",out _)||!PersonalStart.Enabled(profile.Package.World)||
+        if(!Guid.TryParseExact(profile.Instance,"N",out _)||(!PersonalStart.Enabled(profile.Package.World)&&!RetainerStart.Enabled(profile.Package.World))||
             !StartConfiguration.Check(profile.Package.World,profile.Package.Selection,profile.Package.Policy).Eligible)
             throw new InvalidDataException("開始データの整合を確認できません");
-        var original=PersonalStart.Create(profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name,profile.Package.World.Seed);
+        var isRetainer=RetainerStart.Enabled(profile.Package.World);var personName=profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;var original=isRetainer?RetainerStart.Create(personName,profile.Package.World.Seed):PersonalStart.Create(personName,profile.Package.World.Seed);
+        if(profile.Package.Selection.Template!=(isRetainer?StartTemplate.Retainer:StartTemplate.Ronin))throw new InvalidDataException("開始時の立場が一致しません");
         if(profile.Package.Selection.Mode!=HistoryMode.SemiHistorical||ContractJson.CanonicalHash(original)!=profile.Package.Selection.WorldHash||ContractJson.CanonicalHash(profile.Package.Policy)!=ContractJson.CanonicalHash(PersonalStart.Policy))throw new InvalidDataException("この開始定義には対応していません");
     }
     static SavedStartProfile ReadProfile(string path)
@@ -78,7 +80,7 @@ public partial class StartSelectionPanel : Control
             fresh.StartDefinition=ContractJson.Copy(next.Profile.Package.World);fresh.StartSaveRoot=Path.Combine(next.Directory,"game");fresh.SizeFlagsVertical=SizeFlags.ExpandFill;
             play.AddChild(fresh);if(next.Load)fresh.HubLoad("manual");
             if(stage!=null){stage.ProcessMode=ProcessModeEnum.Disabled;play.RemoveChild(stage);stage.QueueFree();}
-            stage=fresh;CurrentDirectory=next.Directory;pending=null;nameInput.Text=next.Profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;ShowGame();
+            stage=fresh;CurrentDirectory=next.Directory;pending=null;role.Select(next.Profile.Package.Selection.Template==StartTemplate.Retainer?1:0);nameInput.Text=next.Profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;ShowGame();
         }catch(Exception e)when(e is InvalidDataException or ArgumentException or IOException or UnauthorizedAccessException or ContractLoadException){if(fresh!=null){play.RemoveChild(fresh);fresh.QueueFree();}message.Text="開けません："+e.Message;pending=null;}
     }
     void ShowGame(){if(stage==null)return;form.Visible=false;play.Visible=true;stage.ProcessMode=ProcessModeEnum.Inherit;}
