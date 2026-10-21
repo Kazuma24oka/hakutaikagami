@@ -536,3 +536,7 @@ Scripts/*created_campaign* -text
 Tests/Fixtures/created-ronin-bea3d4f-*.json -text
 Game/Scripts/StartSelectionPanel.CampaignChecks.cs -text
 Game/Scripts/ContinuousWorldTrial.Campaign.cs -text
+
+Docs/Design/EngagementMissionV1/** -text
+Scripts/*engagement_mission* -text
+Tests/Fixtures/created-campaign-c30f379-*.json -text

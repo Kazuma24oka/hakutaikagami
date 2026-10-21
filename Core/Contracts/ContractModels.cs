@@ -106,6 +106,8 @@ public sealed class ContractWorld
     public NpcWorkState? NpcWork { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public CommandMandate[]? CommandMandates { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EngagementState? Engagement { get; set; }
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1047,
-  "baseline_passed": 1010,
-  "added": 37,
-  "scope": "CreatedCampaignTests: mandates, old saves, unknown orders, physical field reports and restoration"
+  "expected_passed": 1068,
+  "baseline_passed": 1047,
+  "added": 21,
+  "scope": "EngagementMissionTests: explicit enemy mission, losses, immutable physical reports and old profile"
 }

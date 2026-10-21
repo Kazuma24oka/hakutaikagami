@@ -12,9 +12,9 @@ public partial class StartSelectionPanel
     async Task CampaignCapture(string name){await Frame();GetViewport().GetTexture().GetImage().SavePng(CampaignOutput+"/diagnostic.png");Need(stage!.HubFits(),"campaign controls and minimum 3D area fit actual window");GetViewport().GetTexture().GetImage().SavePng(CampaignOutput+"/"+name+".png");File.WriteAllText(CampaignOutput+"/"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(stage.HubRect()));}
     void CampaignStep(int n){var child=stage!;
         if(n==0)child.HubAdvance(CampaignCase=="incoming"?2:1);
-        if(n==1){if(CampaignCase!="incoming"){child.HubAdvance(2);child.HubPress("work-open");if(CampaignCase=="dispatch"){child.HubPress("retainer-interrupt");child.HubAdvance(3);}}if(CampaignCase=="deployment")child.HubAdvance(9);child.HubPress("site");if(CampaignCase=="dispatch")child.HubPress("retainer-explain");if(CampaignCase=="incoming")child.HubPress("work-open");}
-        if(n==2){child.HubPress("own-line");child.HubAdvance(child.HubSession.Seconds+10);}
-        if(n==3){child.HubPress("own-return");child.HubAdvance(child.HubSession.Seconds+1);}
+        if(n==1){if(CampaignCase!="incoming"){child.HubAdvance(2);child.HubPress("work-open");if(CampaignCase=="dispatch"){child.HubPress("retainer-interrupt");child.HubAdvance(3);}}if(CampaignCase is "deployment" or "combat")child.HubAdvance(9);child.HubPress("site");if(CampaignCase=="dispatch")child.HubPress("retainer-explain");if(CampaignCase=="incoming")child.HubPress("work-open");}
+        if(n==2){child.HubPress(CampaignCase=="combat"?"own-engage":"own-line");child.HubAdvance(CampaignCase=="combat"?60:child.HubSession.Seconds+10);if(CampaignCase=="combat")Need(child.HubSession.DiagnosticSnapshot().Region!.Losses.Length>0,"actual 3D engagement applies contact losses");}
+        if(n==3){if(CampaignCase=="combat")child.HubPress("field-report");child.HubPress("own-return");child.HubAdvance(child.HubSession.Seconds+1);}
         if(n==4){child.HubAdvance(CampaignEnd+1);child.HubPress("site");child.HubAdvance(child.HubSession.Seconds+6);}
     }
     void CampaignContinue(int checkpoint){for(int n=checkpoint+1;n<5;n++)CampaignStep(n);var child=stage!;if(child.HubCanPress("work-open"))child.HubPress("work-open");if(child.HubCanPress("work-accept"))child.HubPress("work-accept");if(child.HubSession.Seconds<4000)child.HubAdvance(4000);}
@@ -25,7 +25,7 @@ public partial class StartSelectionPanel
             ScanProfiles();int index=profiles.FindIndex(p=>p.Profile.Instance==File.ReadAllText(CampaignOutput+"/origin-instance.txt"));Need(index>=0,"campaign original start package listed");saved.Select(index);Press(load);await Frame();
             for(int n=0;n<5;n++){stage!.HubLoad("campaign-s"+n);Need(stage.HubPose()==File.ReadAllText(CampaignOutput+"/s"+n+"-pose.json"),"same person position knowledge and scene restored "+n);await CampaignCapture("restored-s"+n);CampaignContinue(n);await CampaignCapture("continued-s"+n);}
         }else{
-            role.Select(2);nameInput.Text="検証配置家臣";Press(begin);await Frame();Need(stage!=null&&CreatedCampaign.Enabled(stage.HubSession.DiagnosticSnapshot()),"actual dropdown starts limited command profile");var profile=ContractJson.Read<SavedStartProfile>(File.ReadAllBytes(Path.Combine(CurrentDirectory,"start-profile.json")));File.WriteAllText(CampaignOutput+"/origin-instance.txt",profile.Instance);string world=stage!.HubSession.DiagnosticSnapshot().WorldId.Value;
+            role.Select(CampaignCase=="combat"?3:2);nameInput.Text="検証配置家臣";Press(begin);await Frame();Need(stage!=null&&CreatedCampaign.Enabled(stage.HubSession.DiagnosticSnapshot()),"actual dropdown starts limited command profile");var profile=ContractJson.Read<SavedStartProfile>(File.ReadAllBytes(Path.Combine(CurrentDirectory,"start-profile.json")));File.WriteAllText(CampaignOutput+"/origin-instance.txt",profile.Instance);string world=stage!.HubSession.DiagnosticSnapshot().WorldId.Value;
             for(int n=0;n<5;n++){
                 CampaignStep(n);
                 Need(stage.HubSession.DiagnosticSnapshot().WorldId.Value==world,"peace and field share world identity "+n);stage.HubSession.SetPaused(true);stage.HubSave("campaign-s"+n);File.WriteAllText(CampaignOutput+"/s"+n+"-pose.json",stage.HubPose());await CampaignCapture("s"+n);
