@@ -455,3 +455,7 @@ Docs/Design/MidTerrainV1/** -text
 Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs -text
 Docs/Design/TerrainPerformanceV1/** -text
 Scripts/*terrain_performance* -text
+
+Game/Scripts/ContinuousWorldTrial.LodAppearance.cs -text
+Docs/Design/LodAppearanceV1/** -text
+Scripts/*lod_appearance* -text

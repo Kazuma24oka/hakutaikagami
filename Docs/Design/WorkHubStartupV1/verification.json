@@ -222,10 +222,11 @@
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "7bd2ab6ea05a0905c02200f2cb0f7d347949fbf5a7b0f89fe2d2fa6226e48d4c",
+    "Game/Scripts/ContinuousWorldTrial.cs": "56051947927228aa897e0ecc30b5bd17659a024e4940949ea39cd24cd2652eed",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
+    "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "062210b1ed960c310d35aa132f8760a11c91520618dec7603da2edb2e89b7311",
     "Game/Scripts/ContinuousWorldTrial.Loop.cs": "ca3ec1c7b653c247ddd16474c687325230509dd3ebd7f38b437cc7842abe8f2c",
     "Game/Scripts/ContinuousWorldTrial.MidTerrain.cs": "ace914c31ac9ca283edea31bd13ffe7b128efa3c6a11f71f090ef517894b479c",
     "Game/Scripts/ContinuousWorldTrial.Notice.cs": "baacfa1acda0f574fffcdb325760ea669a910adc16054975d87258633c043109",
@@ -243,7 +244,7 @@
     "Game/Scripts/JapanMapTrial.cs": "b6ece8af1254d3d4a052269a4bba572f932469da4c456de4a1328b8a0a894586",
     "Game/Scripts/Main.cs": "a2d66cf586bce73c6ffde52ec6e979a7a7a37578ea277772661555332188741a",
     "Game/Scripts/Main.TaskEntry.cs": "9804919c9d180b1978d4a86f39320b56577bae302ff71280cec8618963631203",
-    "Game/Scripts/MidTerrainRenderer.cs": "9b2df3dac020c199f403d5b73dece43a229586970c8076cad07c5b02479cc30a",
+    "Game/Scripts/MidTerrainRenderer.cs": "3a67066a381d5e2191024044aaed644cc232ae5ff7defba8eaab611459a56178",
     "Game/Scripts/MilitaryGridGate.cs": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f",
     "Game/Scripts/MilitaryGridStage.cs": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5",
     "Game/Scripts/MilitaryGridValidation.cs": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47",
@@ -358,8 +359,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "0b1b4a44766bd2f8b2a4ae0f60a0d3a846bc95bc89a23fad293803fcf1dedf50",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "0163b10c5d5a8657bbfe239ffc799a3c997d456769152bec64e938b63cd9ae66"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "f62d1a701d30cdf9450548bd25ae40d25d2740ea2019fa48e82646d12cfbd059",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "3e519ff471934d84780c92951c3696e2252483ad662f4a800168981a79abf5b4"
   },
   "summary": {
     "tests": 933,
@@ -380,8 +381,8 @@
     "report": "Docs/Design/NpcWorkV1/verification.json",
     "report_sha256": "eafcca3b04335d5d4e7048edb232bc52387132c3460cb4b5c773657f2e3bbe75",
     "trx_path": "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx",
-    "trx_sha256": "9ecc30e09336345a4d4565533485c78cfe5f3f9a5b8781169a0742dbb2852b85",
-    "core_sha256": "0b1b4a44766bd2f8b2a4ae0f60a0d3a846bc95bc89a23fad293803fcf1dedf50"
+    "trx_sha256": "586b5647c18168d319d86ee0698b09691a23db6b0033086cacce360f72e6517b",
+    "core_sha256": "f62d1a701d30cdf9450548bd25ae40d25d2740ea2019fa48e82646d12cfbd059"
   },
   "comparisons": {
     "Docs/Design/WorkHubStartupV1/runtime-local/s0.png/restored-s0": 0,

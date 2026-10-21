@@ -1,3 +1,7 @@
+# 倍率間の素材IDと地名（2026-10-21）
+
+中景の独立パレットを廃止。MidTerrainRendererはSceneryAppearanceの既存役割/skinの材質色を参照し、概略経路線にも道路/水面色を使用。細部テクスチャ/モデルは詳細表示。地名はフォント寸法と投影矩形で距離/ID順に間引き、文字を経路線より手前へ。世界/保存は不変。正本LodAppearanceV1、verify_lod_appearance.py→実画像点検→check_lod_appearance_binding.py。933テスト・復旧等51比較差分0、4可視変化、全国216表示。旧性能レポートは以前の配色の履歴。現行負荷はLodAppearanceV1のperformanceと紐付く。
+
 # 全国地形の負荷調整（2026-10-21）
 
 TerrainPerformanceV1：108拠点×2倍率を実GPUで検査。共有頂点再利用・交換メッシュ解放・同一中心/倍率/寸法の地図再利用。世界不変と2048三角形を確認。冷間中央値11.7%減、再利用p95 2.53ms。FPSではない。前後6比較/復旧7比較/旧36比較差分0、933単体テスト。正本Docs/Design/TerrainPerformanceV1、check_terrain_performance_binding.py。旧共有コードの記録は履歴。
