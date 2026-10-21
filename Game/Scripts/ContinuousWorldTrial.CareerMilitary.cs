@@ -6,6 +6,7 @@ public partial class ContinuousWorldTrial
     void MilitaryDecision(MilitaryAction action)=>Require(S.DecideMilitary(new(new("request:military-ui/"+S.Revision),action),S.PlayerControl,S.Revision));
     void BuildMilitaryUI(HFlowContainer row)
     {
+        Add(row,"military-retry","軍務の書状を再送",()=>{var card=CareerMilitary.Retryable(S,S.PlayerControl)!;Require(S.RetryMilitaryRequest(card.Message,card.Attempt,S.PlayerControl,S.Revision));});
         Add(row,"military-request","軍務を申し出る",()=>MilitaryDecision(MilitaryAction.Request));
         Add(row,"military-open","軍務の封書を開く",()=>Require(S.Open(S.PlayerControl,CareerMilitary.View(S,S.PlayerControl).Unopened!.Value,S.Revision)));
         Add(row,"military-accept","軍務条件に回答",()=>MilitaryDecision(MilitaryAction.Accept));
@@ -14,6 +15,7 @@ public partial class ContinuousWorldTrial
     }
     void RefreshMilitaryUI(ContractWorld w)
     {
+        buttons["military-retry"].Visible=CareerMilitary.Retryable(S,S.PlayerControl)!=null;buttons["career-status"].Text="身分・軍務を照会";buttons["career-status"].Visible|=w.Military!.Requests.Length>0;
         var view=CareerMilitary.View(S,S.PlayerControl);bool local=FieldSupply.AtDepot(w)&&RegionalWork.NearbyDispatchers(S).Contains(RetainerStart.Lord),active=FieldPresence.PlayerDeployed(w);
         buttons["military-request"].Visible=view.CanRequest;buttons["military-request"].Disabled=!local;
         buttons["military-open"].Visible=view.Unopened!=null;buttons["military-accept"].Visible=view.CanAccept;

@@ -28,7 +28,7 @@ public partial class StartSelectionPanel
         case 12:CareerPress("field-report");CareerPress("military-return");CareerAdvance(s.Seconds+2);Need(CareerMilitary.Custody(s.DiagnosticSnapshot())&&s.DiagnosticSnapshot().Military!.Events.Any(e=>e.Effect==MilitaryEffect.Waiting),"received handover request waits while carried stock remains");break;
         case 13:{var p=s.GetBranchView(s.PlayerControl).Position;CareerPress("supply-return");CareerAdvance(s.Seconds+1);Need(!CareerMilitary.Custody(s.DiagnosticSnapshot())&&s.GetBranchView(s.PlayerControl).Position==p,"lord retakes command only after local return, stock and received report without teleport");Need(CareerMilitary.View(s,s.PlayerControl).Custody,"actual handback does not leak before its notice");break;}
         case 14:CareerAdvance(s.Seconds+2);while(child.HubCanPress("military-open"))CareerPress("military-open");Need(!CareerMilitary.View(s,s.PlayerControl).Custody&&!child.HubCanPress("supply-pack"),"known handback removes personal command and supply controls");break;
-        case 15:CareerPress("career-release");CareerAdvance(CareerDue(CareerOwnMessage)+2);CareerPress("career-open");Need(Career.View(s,s.PlayerControl).Role.StartsWith("浪人"),"same officer leaves service after handover");break;
+        case 15:CareerPress("career-release");CareerAdvance(CareerDue(CareerOwnMessage)+2);while(child.HubCanPress("career-open"))CareerPress("career-open");Need(Career.View(s,s.PlayerControl).Role.StartsWith("浪人"),"same officer leaves service after handover");break;
         case 16:child.HubDestination("kofu");CareerPress("depart");CareerAdvance(s.Seconds+2);Need(TravelWorld.Active(s.DiagnosticSnapshot()),"same life starts road travel after army return and resignation");break;
         }
     }

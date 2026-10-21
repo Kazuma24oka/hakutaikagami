@@ -1,3 +1,5 @@
+軍務の不達回復：[MilitaryInquiryV1](Design/MilitaryInquiryV1/README.md)。原本の受領を偽らず、物理照会の引用から条件/許可/返還認識を回復。既知不達後の原本再送と局所回収の二重到達も検査。
+
 同一人生の軍務・現地引受/返還：[CareerMilitaryV1](Design/CareerMilitaryV1/README.md)。仕官だけでは軍/兵糧を取得せず、同一人物で平時→出陣→帰還→辞去へ継続。現在の結果と次工程は[完成条件](Development/CURRENT_STAGE.md)。
 
 通常起動の選択入口：[WorkHubStartupV1](Design/WorkHubStartupV1/README.md)。ユーザー承認を受けて切替済み。旧Main/入口/保存は保持。

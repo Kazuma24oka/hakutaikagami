@@ -580,3 +580,8 @@ Scripts/*career_military* -text
 Tests/Fixtures/career-72b0665-*.json -text
 Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs -text
 Game/Scripts/StartSelectionPanel.CareerMilitaryChecks.cs -text
+
+Docs/Design/MilitaryInquiryV1/** -text
+Scripts/*military_inquiry* -text
+Tests/Fixtures/military-bd631ba-*.json -text
+Game/Scripts/StartSelectionPanel.MilitaryInquiryChecks.cs -text

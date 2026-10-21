@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 public enum MilitaryAction { Request, Accept, Pickup, Return }
-public enum MilitaryEffect { Offered, Permission, PickedUp, Waiting, Returned, Refused, Expired }
+public enum MilitaryEffect { Offered, Permission, PickedUp, Waiting, Returned, Refused, Expired, StatusSent }
 public sealed record MilitaryInput(EntityId Id,MilitaryAction Action);
 public sealed record MilitaryRequest(MilitaryInput Input,long At,long Revision,string? Message);
 public sealed record MilitaryEvent(MilitaryEffect Effect,long At,long Revision,string Source,string Message);
@@ -46,13 +46,16 @@ public static partial class CareerMilitary
         long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;var s=w.Military!;
         bool Before(MilitaryRequest q)=>Prior(q.At,q.Revision,t,r);
         bool Known(MilitaryEvent e)=>s.Openings.Any(o=>o.Message==e.Message&&Prior(o.At,o.Revision,t,r));
-        var known=s.Events.Where(e=>Prior(e.At,e.Revision,t,r)&&Known(e)).ToArray();var last=known.LastOrDefault();
+        bool Quoted(MilitaryEvent e)=>s.Events.Where(q=>q.Effect==MilitaryEffect.StatusSent&&Prior(q.At,q.Revision,t,r)&&Known(q)).Any(q=>ReadStatus(w,q).Original==e.Message);
+        var known=s.Events.Where(e=>e.Effect!=MilitaryEffect.StatusSent&&Prior(e.At,e.Revision,t,r)&&(Known(e)||Quoted(e))).ToArray();var last=known.LastOrDefault();
         var unopened=s.Events.FirstOrDefault(e=>Prior(e.At,e.Revision,t,r)&&!Known(e)&&w.Messaging.Attempts.Any(a=>a.MessageId==e.Message&&a.Status==AttemptStatus.Delivered&&a.ReceiverId==observer.Value&&a.FinishedAt<=t));
         bool answered=s.Requests.Any(q=>q.Input.Action==MilitaryAction.Accept&&Before(q)),picked=s.Requests.Any(q=>q.Input.Action==MilitaryAction.Pickup&&Before(q)),returned=known.Any(e=>e.Effect==MilitaryEffect.Returned);
         bool permission=known.Any(e=>e.Effect==MilitaryEffect.Permission)&&!returned;
         var offer=known.SingleOrDefault(e=>e.Effect==MilitaryEffect.Offered);
         bool returning=s.Requests.Any(q=>q.Input.Action==MilitaryAction.Return&&Before(q));
         string status=returned?"指揮返還の通知を確認":returning?"指揮返還願い発送・帰還/兵糧/返報の確認待ち":picked?"主家兵100を現地引受・配置/保持/帰還のみ":last?.Effect switch{MilitaryEffect.Offered=>answered?"軍務回答発送・許可未確認":"条件：主家兵100 / 配置・保持・帰還 / 回答到達は"+(last.At+OfferSeconds)+"秒未満",MilitaryEffect.Permission=>"軍務許可を確認・指揮は未引受",MilitaryEffect.Waiting=>"帰還・物資返還・現況返報の確認待ち",MilitaryEffect.Refused=>"軍務不承諾を確認",MilitaryEffect.Expired=>"軍務条件の期限切れを確認",_=>s.Requests.Any(Before)?"軍務申し出発送・結果未確認":"軍務は別途申し出が必要"};
+        if(last!=null&&!Known(last)&&Quoted(last))status+="（照会引用）";
+        if(known.Length==0&&s.Events.Any(q=>q.Effect==MilitaryEffect.StatusSent&&Prior(q.At,q.Revision,t,r)&&Known(q)&&ReadStatus(w,q).Original==null))status="照会返書：先方に軍務条件の記録なし（返書作成時点）";
         return new(status,unopened==null?null:new(unopened.Message),!s.Requests.Any(Before)&&Career.View(w,observer,t,r).Cases.Any(c=>c.CanRelease),offer!=null&&t<offer.At+OfferSeconds&&!answered,permission&&!picked,picked&&!returned&&!s.Requests.Any(q=>q.Input.Action==MilitaryAction.Return&&Before(q)),picked&&!returned);
     }
     static MilitaryEvent Announce(ContractWorld w,MilitaryEffect effect,string source)
@@ -81,6 +84,7 @@ public static partial class CareerMilitary
             if(q.Input.Action==MilitaryAction.Return&&!Has(MilitaryEffect.Returned)){if(ReturnReady(w)){var e=Announce(w,MilitaryEffect.Returned,q.Message!);w.CommandMandates=w.CommandMandates!.Select(m=>m with{Until=e.At}).ToArray();Commander(w,Lord);}else if(!Has(MilitaryEffect.Waiting))Announce(w,MilitaryEffect.Waiting,q.Message!);}
         }
         var pending=Event(w,MilitaryEffect.Offered,w.ElapsedSeconds,w.CommitSequence);if(pending!=null&&!Has(MilitaryEffect.Permission)&&!Has(MilitaryEffect.Expired)&&w.ElapsedSeconds>=pending.At+OfferSeconds)Announce(w,MilitaryEffect.Expired,pending.Message);
+        UpdateInquiries(w);
     }
     internal static long? NextBoundary(ContractWorld w,long target){if(!Enabled(w))return null;var e=Event(w,MilitaryEffect.Offered,w.ElapsedSeconds,w.CommitSequence);long due=(e?.At??0)+OfferSeconds;return e!=null&&!w.Military!.Events.Any(x=>x.Effect is MilitaryEffect.Permission or MilitaryEffect.Expired)&&due>w.ElapsedSeconds&&due<=target?due:null;}
 }

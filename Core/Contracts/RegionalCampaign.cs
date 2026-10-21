@@ -40,7 +40,7 @@ public static class RegionalCampaign
     }
     static RoutePoint Node(ContractWorld w,string id)=>BranchRoutes.GraphNodes(w).Single(n=>n.Id==id).Position;
     static long Seconds(long mm,int speed)=>Math.Max(1,checked((mm+speed-1)/speed));
-    static RoutePoint ActorPoint(ContractWorld w,EntityId actor)=>BranchRoutes.View(w,new(actor,w.CommitSequence,w.ElapsedSeconds,w.Locations.Single(l=>l.Actor==actor),[],[],[])).Position;
+    internal static RoutePoint ActorPoint(ContractWorld w,EntityId actor)=>BranchRoutes.View(w,new(actor,w.CommitSequence,w.ElapsedSeconds,w.Locations.Single(l=>l.Actor==actor),[],[],[])).Position;
     static CourierLeg[] FromNode(ContractWorld w,string from,string to,string[] blocked,long at)
     {
         var list=new List<CourierLeg>();
@@ -113,7 +113,8 @@ public static class RegionalCampaign
             i.DeliverySeconds!=ControlDelay(w,target)||
             i.Action==ActionKind.Redirect&&i.DestinationSite!=ContractFixture.Castle)throw new InvalidDataException("Invalid campaign control");
     }
-    public static RoutePoint Position(ContractWorld w,CourierMission c,long at)
+    public static RoutePoint Position(ContractWorld w,CourierMission c,long at)=>CourierRecovery.Position(w,c.Attempt,at)??OriginalPosition(w,c,at);
+    public static RoutePoint OriginalPosition(ContractWorld w,CourierMission c,long at)
     {
         if(c.FirstMile!=null){var end=c.FirstMile.LastOrDefault()?.EndAt??at;if(at<=end)return FieldWorld.ToWorld(RegionalGround.At(c.FirstMile,FieldWorld.FromWorld(c.Origin),at));if(c.Legs.Length==0)return FieldWorld.ToWorld(c.FirstMile.LastOrDefault()?.To??FieldWorld.FromWorld(c.Origin));}
         if(c.Legs.Length==0)return c.Origin;
@@ -174,6 +175,7 @@ public static class RegionalCampaign
     {
         if(!Enabled(w))return [];var own=ActorPoint(w,observer);
         return w.Couriers!.Missions.Select(c=>{
+            if(CourierRecovery.LocalView(w,c,observer) is {} recovered)return recovered;
             var a=w.Messaging.Attempts.Single(a=>a.Id==c.Attempt);var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);var p=Position(w,c,w.ElapsedSeconds);
             // Local 80m sight radius is a prototype coefficient, not global sender telemetry.
             bool seen=Math.Abs(p.EastMm-own.EastMm)<=80000&&Math.Abs(p.NorthMm-own.NorthMm)<=80000&&a.Status==AttemptStatus.InTransit;
@@ -260,7 +262,7 @@ public static class RegionalCampaign
                     if(a.Number==1&&(c.Destination!=Meeting(w,target)||c.Appointment!=Appointment(w,target))||a.Number>1&&(c.Appointment<a.SentAt||c.Destination!="castle"&&c.Destination!=Meeting(w,target)&&c.Destination!=goal))throw new InvalidDataException("Courier address is not justified by original known mission");}
                 else if(c.Destination!=(RegionalWork.Address(w,message)??(TravelWorld.Enabled(w)&&message.SenderId==message.RecipientId?TravelWorld.SelfAddress(w,message.SenderId,a.SentAt):"castle"))||c.Appointment!=a.SentAt+1)throw new InvalidDataException("Ordinary order left its original address");
             }
-            if(a.LateDueAt!=null)throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
+            if(a.LateDueAt!=null&&!CourierRecovery.Registered(w,a.Id))throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
             if(!BranchRoutes.GraphNodes(w).Any(n=>n.Id==c.Destination)||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edges.Any(e=>e.Id==id)))throw new InvalidDataException("Invalid courier binding");
             long roadStart=a.SentAt;var roadOrigin=c.Origin;
             if(c.FirstMile!=null){var from=FieldWorld.FromWorld(c.Origin);var goal=c.FirstMile.LastOrDefault()?.To??from;RegionalGround.ValidatePath(c.FirstMile,from,goal,true,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w));if(c.FirstMile.Length>0&&c.FirstMile[0].StartAt!=a.SentAt)throw new InvalidDataException("First mile starts before dispatch");roadStart=c.FirstMile.LastOrDefault()?.EndAt??a.SentAt;roadOrigin=FieldWorld.ToWorld(goal);if(!BranchRoutes.GraphNodes(w).Any(n=>n.Position==roadOrigin))throw new InvalidDataException("First mile does not connect to a road node");}

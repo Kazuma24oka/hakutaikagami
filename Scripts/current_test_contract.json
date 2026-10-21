@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1256,
-  "baseline_passed": 1233,
-  "added": 23,
-  "scope": "CareerMilitaryTests: independent duty permission/local pickup, placement-only house custody, physical report/stock/command handover, no teleport, failure/deadline/remote rejection, legacy Career and full-world restoration"
+  "expected_passed": 1281,
+  "baseline_passed": 1256,
+  "added": 25,
+  "scope": "MilitaryInquiryTests: sealed physical status citations, no forged original receipt, old-status ordering, known-failure original retry and duplicate arrival, registered local recovery/absence, legacy shape and restore"
 }

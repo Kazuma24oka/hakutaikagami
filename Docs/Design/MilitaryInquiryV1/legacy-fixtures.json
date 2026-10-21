@@ -1,0 +1,11 @@
+{
+  "source_commit": "bd631bad978a73740d92a5ce49175c1ed07c3aaf",
+  "kind": "Literal tested military initial/local-custody synthetic worlds before inquiry; not user saves",
+  "producer_core_sha256": "dbdc3b9b94bec26d8d8ccb6c4310f44660c4bf972ec56f0b5c700d16a2c55791",
+  "verification_git_object": "bd631bad978a73740d92a5ce49175c1ed07c3aaf:Docs/Design/CareerMilitaryV1/verification.json",
+  "verification_sha256": "f695d8b869764228a606321492adec7689a92415a5e00e23a9e70f7395ad2e5c",
+  "fixtures": {
+    "Tests/Fixtures/military-bd631ba-initial.json": "3eb491c4270535b3d602dbc4460f54b7d038bff530b29efd2d7ac7bacbf088a7",
+    "Tests/Fixtures/military-bd631ba-active.json": "2e534e2181c0b8cde5df560fc424432608278a84eabc31added7c33f0309bda5"
+  }
+}

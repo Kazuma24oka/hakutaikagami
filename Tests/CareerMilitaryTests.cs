@@ -4,16 +4,16 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public sealed class CareerMilitaryTests
 {
-    static WorldSession New()=>new(CareerMilitary.Create());
-    static void At(WorldSession s,long at){while(s.Seconds<at){s.SetPaused(false);long before=s.Seconds;s.AdvanceTo(at);Assert.True(s.Seconds>before);}}
-    static void Open(WorldSession s,string id)=>Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,new(id),s.Revision).Code);
-    static long Due(WorldSession s,string id)=>MessageFlow.Latest(s.DiagnosticSnapshot().Messaging,id).DueAt;
-    static void Join(WorldSession s){var id=new EntityId("request:join");Assert.Equal(ResultCode.Accepted,s.DecideCareer(new(id,CareerAction.Apply),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s,s.DiagnosticSnapshot().Career!.Events.Single(e=>e.Kind==CareerEventKind.Offered).Message);Assert.Equal(ResultCode.Accepted,s.DecideCareer(new(new("request:join-answer"),CareerAction.Accept,id),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s,s.DiagnosticSnapshot().Career!.Events.Single(e=>e.Kind==CareerEventKind.Joined).Message);var work=RegionalWork.Inbox(s).Last(c=>c.CanOpen);Open(s,work.Message.Value);At(s,s.Seconds+5);}
-    static MilitaryInput Input(MilitaryAction action)=>new(new("request:military/"+action),action);
-    static void Decide(WorldSession s,MilitaryAction action)=>Assert.Equal(ResultCode.Accepted,s.DecideMilitary(Input(action),s.PlayerControl,s.Revision).Code);
-    static string Notice(WorldSession s,MilitaryEffect effect)=>s.DiagnosticSnapshot().Military!.Events.Single(e=>e.Effect==effect).Message;
-    static void Permission(WorldSession s){Join(s);Decide(s,MilitaryAction.Request);At(s,s.Seconds+2);Open(s,Notice(s,MilitaryEffect.Offered));Decide(s,MilitaryAction.Accept);At(s,s.Seconds+2);Open(s,Notice(s,MilitaryEffect.Permission));}
-    static void Pickup(WorldSession s){Permission(s);Decide(s,MilitaryAction.Pickup);}
+    internal static WorldSession New()=>new(CareerMilitary.Create());
+    internal static void At(WorldSession s,long at){while(s.Seconds<at){s.SetPaused(false);long before=s.Seconds;s.AdvanceTo(at);Assert.True(s.Seconds>before);}}
+    internal static void Open(WorldSession s,string id)=>Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,new(id),s.Revision).Code);
+    internal static long Due(WorldSession s,string id)=>MessageFlow.Latest(s.DiagnosticSnapshot().Messaging,id).DueAt;
+    internal static void Join(WorldSession s){var id=new EntityId("request:join");Assert.Equal(ResultCode.Accepted,s.DecideCareer(new(id,CareerAction.Apply),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s,s.DiagnosticSnapshot().Career!.Events.Single(e=>e.Kind==CareerEventKind.Offered).Message);Assert.Equal(ResultCode.Accepted,s.DecideCareer(new(new("request:join-answer"),CareerAction.Accept,id),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s,s.DiagnosticSnapshot().Career!.Events.Single(e=>e.Kind==CareerEventKind.Joined).Message);var work=RegionalWork.Inbox(s).Last(c=>c.CanOpen);Open(s,work.Message.Value);At(s,s.Seconds+5);}
+    internal static MilitaryInput Input(MilitaryAction action)=>new(new("request:military/"+action),action);
+    internal static void Decide(WorldSession s,MilitaryAction action)=>Assert.Equal(ResultCode.Accepted,s.DecideMilitary(Input(action),s.PlayerControl,s.Revision).Code);
+    internal static string Notice(WorldSession s,MilitaryEffect effect)=>s.DiagnosticSnapshot().Military!.Events.Single(e=>e.Effect==effect).Message;
+    internal static void Permission(WorldSession s){Join(s);Decide(s,MilitaryAction.Request);At(s,s.Seconds+2);Open(s,Notice(s,MilitaryEffect.Offered));Decide(s,MilitaryAction.Accept);At(s,s.Seconds+2);Open(s,Notice(s,MilitaryEffect.Permission));}
+    internal static void Pickup(WorldSession s){Permission(s);Decide(s,MilitaryAction.Pickup);}
     [Fact]public void InitialRoninHasNoCommandOrSupplyPermission(){var s=New();var w=s.DiagnosticSnapshot();Assert.Empty(w.CommandMandates!);Assert.False(CareerMilitary.Custody(w));Assert.All(w.Units.Where(u=>FieldWorld.UnitIds.Contains(u.Id)),u=>Assert.Equal(RetainerStart.Lord,u.Commander));Assert.Equal(ResultCode.NotAvailable,s.HandleSupply(new("request:free-supply"),s.PlayerControl,true,1,s.Revision).Code);Assert.Equal(ResultCode.NotAvailable,s.SetRegionalActive(true,s.Revision).Code);}
     [Fact]public void ServiceAloneCannotDeployOrTakeStock(){var s=New();Join(s);Assert.True(Career.ActiveAt(s.DiagnosticSnapshot(),RetainerStart.Lord,s.Seconds));Assert.Equal(ResultCode.NotAvailable,s.SetRegionalActive(true,s.Revision).Code);Assert.Equal(ResultCode.NotAvailable,s.HandleSupply(new("request:free"),s.PlayerControl,true,100,s.Revision).Code);Assert.Empty(s.DiagnosticSnapshot().CommandMandates!);}
     [Fact]public void UnopenedConditionsCannotBeAnswered(){var s=New();Join(s);Decide(s,MilitaryAction.Request);At(s,s.Seconds+2);var before=ContractJson.Write(s.DiagnosticSnapshot());Assert.Equal(ResultCode.NotAvailable,s.DecideMilitary(Input(MilitaryAction.Accept),s.PlayerControl,s.Revision).Code);Assert.Equal(before,ContractJson.Write(s.DiagnosticSnapshot()));}

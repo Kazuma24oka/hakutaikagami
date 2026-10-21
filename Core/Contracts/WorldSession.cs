@@ -156,7 +156,7 @@ public sealed partial class WorldSession
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);RegionalBattle.Tick(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
-                    RegionalBattle.BeforeMessages(s);MessageFlow.Advance(s.Messaging,boundary);RegionalBattle.AfterMessages(s);DelegationMission.Update(s);DelegationInquiry.Update(s);
+                    CourierRecovery.BeforeMessages(s);RegionalBattle.BeforeMessages(s);MessageFlow.Advance(s.Messaging,boundary);RegionalBattle.AfterMessages(s);DelegationMission.Update(s);DelegationInquiry.Update(s);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Failures(s);else if(MovementControl.Enabled(s))MovementControl.ReportFailures(s); // Existing common transport, not a second delivery simulator.
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||

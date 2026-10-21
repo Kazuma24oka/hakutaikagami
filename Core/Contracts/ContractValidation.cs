@@ -15,7 +15,7 @@ public static class ContractValidation
     }
     public static void Validate(ContractWorld s)
     {
-        try { ValidateCore(s);Career.Validate(s);CareerMilitary.Validate(s);DelegationInquiry.Validate(s); if(NpcWork.Enabled(s))NpcWork.Validate(s); else Check(s.NpcWork==null,"Unexpected NPC work module"); if(RegionalWork.Enabled(s))RegionalWork.Validate(s); if(PersonalStart.Enabled(s))PersonalStart.Validate(s); if(RetainerStart.Enabled(s))RetainerStart.Validate(s); if(CreatedCampaign.Enabled(s))CreatedCampaign.Validate(s); if(EngagementMission.Enabled(s))EngagementMission.Validate(s); if(FieldSupply.Enabled(s))FieldSupply.Validate(s); if(FieldPresence.Enabled(s))FieldPresence.Validate(s); if(DelegationMission.Enabled(s))DelegationMission.Validate(s); if(AssessmentNotice.Enabled(s))AssessmentNotice.Validate(s); }
+        try { ValidateCore(s);Career.Validate(s);CareerMilitary.Validate(s);CourierRecovery.Validate(s);DelegationInquiry.Validate(s); if(NpcWork.Enabled(s))NpcWork.Validate(s); else Check(s.NpcWork==null,"Unexpected NPC work module"); if(RegionalWork.Enabled(s))RegionalWork.Validate(s); if(PersonalStart.Enabled(s))PersonalStart.Validate(s); if(RetainerStart.Enabled(s))RetainerStart.Validate(s); if(CreatedCampaign.Enabled(s))CreatedCampaign.Validate(s); if(EngagementMission.Enabled(s))EngagementMission.Validate(s); if(FieldSupply.Enabled(s))FieldSupply.Validate(s); if(FieldPresence.Enabled(s))FieldPresence.Validate(s); if(DelegationMission.Enabled(s))DelegationMission.Validate(s); if(AssessmentNotice.Enabled(s))AssessmentNotice.Validate(s); }
         catch (Exception e) when (e is not InvalidDataException)
         { throw new InvalidDataException("Malformed contract state.", e); }
     }

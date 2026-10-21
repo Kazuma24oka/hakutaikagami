@@ -118,6 +118,8 @@ public sealed class ContractWorld
     public CareerState? Career {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public MilitaryState? Military {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public RecoveredCourier[]? CourierRecoveries {get;set;}
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }
