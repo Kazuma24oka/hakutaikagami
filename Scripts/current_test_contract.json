@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1159,
-  "baseline_passed": 1144,
-  "added": 15,
-  "scope": "DelegationTransportTests: known failure, physical retry, immutable message, reply address and restoration"
+  "expected_passed": 1181,
+  "baseline_passed": 1159,
+  "added": 22,
+  "scope": "DelegationInquiryTests: physical question/reply, no reexecution or forged original receipt, private status, interruption claim and restoration"
 }

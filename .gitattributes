@@ -560,3 +560,7 @@ Game/Scripts/StartSelectionPanel.DelegationChecks.cs -text
 Docs/Design/DelegationTransportV1/** -text
 Scripts/*delegation_transport* -text
 Game/Scripts/StartSelectionPanel.RetryChecks.cs -text
+
+Docs/Design/DelegationInquiryV1/** -text
+Scripts/*delegation_inquiry* -text
+Game/Scripts/StartSelectionPanel.InquiryChecks.cs -text
