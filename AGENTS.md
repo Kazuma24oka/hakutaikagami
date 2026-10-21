@@ -1,3 +1,7 @@
+# 全国地形の負荷調整（2026-10-21）
+
+TerrainPerformanceV1：108拠点×2倍率を実GPUで検査。共有頂点再利用・交換メッシュ解放・同一中心/倍率/寸法の地図再利用。世界不変と2048三角形を確認。冷間中央値11.7%減、再利用p95 2.53ms。FPSではない。前後6比較/復旧7比較/旧36比較差分0、933単体テスト。正本Docs/Design/TerrainPerformanceV1、check_terrain_performance_binding.py。旧共有コードの記録は履歴。
+
 # 中間倍率の地形（2026-10-21）
 
 240m超〜30kmはMidTerrainRendererで最大2048三角形。Core高さ/地表を参照する表示専用近似。通行規則/旧保存は変更しない。正本Docs/Design/MidTerrainV1。verify_mid_terrain.py→実画像点検→check_mid_terrain_binding.py。通常入口の回帰36比較と7倍率復旧7比較差分0。全国108拠点の負荷測定へ続行。

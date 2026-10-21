@@ -451,3 +451,7 @@ Game/Scripts/MidTerrainRenderer.cs -text
 Game/Scripts/ContinuousWorldTrial.MidTerrain.cs -text
 Scripts/*mid_terrain* -text
 Docs/Design/MidTerrainV1/** -text
+
+Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs -text
+Docs/Design/TerrainPerformanceV1/** -text
+Scripts/*terrain_performance* -text

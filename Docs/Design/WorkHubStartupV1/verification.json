@@ -222,7 +222,7 @@
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "ae3da5578f4130a04495c4e1f965ce9ce5de753f6ab72731abb4147264eed23f",
+    "Game/Scripts/ContinuousWorldTrial.cs": "7bd2ab6ea05a0905c02200f2cb0f7d347949fbf5a7b0f89fe2d2fa6226e48d4c",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
@@ -234,6 +234,7 @@
     "Game/Scripts/ContinuousWorldTrial.RegionalWork.cs": "a0de8962e6278b9f0995bf06bb6248df7a159509b8aee73e06ade02dda3f2f33",
     "Game/Scripts/ContinuousWorldTrial.Review.cs": "6fdcb66c926d899d88c5541740e788108145e8634de8aa8f1d114800437cf50a",
     "Game/Scripts/ContinuousWorldTrial.TaskEntry.cs": "1ec27012373822affb70f3fff34e18ce5fc78016b23a5b2e44f8e08e9d369077",
+    "Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs": "f7a9cee7f8428236589ceead0385c1bdf1bb5537420a371027adfaa9ec231c56",
     "Game/Scripts/FieldWorldTrial.cs": "5756eea5f97463694e7ff488e146e3edb90ab0c76206483b6a7a1a55ca5d4368",
     "Game/Scripts/FormationWorldGate.cs": "de5e27c6bfda188a2a24e333403ea10b548a6adb7ba1aab925b254fa1b36cbe0",
     "Game/Scripts/FormationWorldStage.cs": "889758285728cf356bad69c4c147a1e72d0e8516ee0b428022d3da4612ff64c5",
@@ -242,7 +243,7 @@
     "Game/Scripts/JapanMapTrial.cs": "b6ece8af1254d3d4a052269a4bba572f932469da4c456de4a1328b8a0a894586",
     "Game/Scripts/Main.cs": "a2d66cf586bce73c6ffde52ec6e979a7a7a37578ea277772661555332188741a",
     "Game/Scripts/Main.TaskEntry.cs": "9804919c9d180b1978d4a86f39320b56577bae302ff71280cec8618963631203",
-    "Game/Scripts/MidTerrainRenderer.cs": "ae5c627a215f91433029c4fb9b7765ad4061a999a52f3e3df8971ec98790a81b",
+    "Game/Scripts/MidTerrainRenderer.cs": "9b2df3dac020c199f403d5b73dece43a229586970c8076cad07c5b02479cc30a",
     "Game/Scripts/MilitaryGridGate.cs": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f",
     "Game/Scripts/MilitaryGridStage.cs": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5",
     "Game/Scripts/MilitaryGridValidation.cs": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47",
@@ -357,12 +358,12 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "7e70adbe7e27cd99254a66113c8838aa6c9d59100cec5461ff58f44c578dae5e",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "9ed952105f3e099419954ba2544f467e7bfdc9de82d6aca81620f3f1e7c0b670"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "0b1b4a44766bd2f8b2a4ae0f60a0d3a846bc95bc89a23fad293803fcf1dedf50",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "0163b10c5d5a8657bbfe239ffc799a3c997d456769152bec64e938b63cd9ae66"
   },
   "summary": {
     "tests": 933,
-    "tests_rerun": false,
+    "tests_rerun": true,
     "test_evidence": "unchanged Core/Tests source; exact rebuilt binary retested because commit metadata changed DLL hash",
     "gpu_processes": 14,
     "hub_saves": 5,
@@ -379,8 +380,8 @@
     "report": "Docs/Design/NpcWorkV1/verification.json",
     "report_sha256": "eafcca3b04335d5d4e7048edb232bc52387132c3460cb4b5c773657f2e3bbe75",
     "trx_path": "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx",
-    "trx_sha256": "a70e0e58b2838c620a7d5e5b260dc1fbea35c4e68980512467bc2f9eeec0dc15",
-    "core_sha256": "7e70adbe7e27cd99254a66113c8838aa6c9d59100cec5461ff58f44c578dae5e"
+    "trx_sha256": "9ecc30e09336345a4d4565533485c78cfe5f3f9a5b8781169a0742dbb2852b85",
+    "core_sha256": "0b1b4a44766bd2f8b2a4ae0f60a0d3a846bc95bc89a23fad293803fcf1dedf50"
   },
   "comparisons": {
     "Docs/Design/WorkHubStartupV1/runtime-local/s0.png/restored-s0": 0,
@@ -579,8 +580,6 @@
   "visual_review": {
     "inspected": {
       "Docs/Design/WorkHubStartupV1/runtime-local/startup.png": "b9142a155daf658a6b963e156f58dcef0287a79d17a28ae451b2f52b40c3f872",
-      "Docs/Design/WorkHubStartupV1/runtime-local/s2.png": "9ccaf994fcf6ba2e0a93e4a58b32b4796c783b2391a385beac1850d8a8400a35",
-      "Docs/Design/WorkHubStartupV1/runtime-local/final.png": "79368b1f43ed3645f17163806bcbea50ba5a476d4c940048e1aafac4716c252b",
       "Docs/Design/WorkHubStartupV1/runtime-local/normal-main/own-final.png": "afe7eec6ad68f7d585387fc94d66547108c10b945bcc4bcbf469e56a76dc1eeb"
     }
   }
