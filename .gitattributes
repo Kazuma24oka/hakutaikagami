@@ -564,3 +564,7 @@ Game/Scripts/StartSelectionPanel.RetryChecks.cs -text
 Docs/Design/DelegationInquiryV1/** -text
 Scripts/*delegation_inquiry* -text
 Game/Scripts/StartSelectionPanel.InquiryChecks.cs -text
+
+Docs/Design/DelegationReturnRetryV1/** -text
+Scripts/*delegation_return_retry* -text
+Game/Scripts/StartSelectionPanel.ReturnRetryChecks.cs -text
