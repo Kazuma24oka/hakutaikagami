@@ -6,7 +6,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 public partial class ContinuousWorldTrial
 {
-    bool NpcWorkEnabled=>Name=="NpcWorkTrial";
+    bool NpcWorkEnabled=>Name=="NpcWorkTrial"||PersonalStartEnabled;
     long NpcIssued=>S.DiagnosticSnapshot().Requests.First(r=>r.Intent.Action==ActionKind.Inspect).CreatedAt;
     string NpcPose()=>System.Text.Json.JsonSerializer.Serialize(new{World=WorkPose(),Decisions=S.DiagnosticSnapshot().NpcWork!.Decisions.Select(d=>new{d.Actor,d.At,d.InputHash,d.Reason,d.Request,d.Result})});
     void NpcOpenAndAnswer(){if(RegionalWork.Inbox(S).Any(c=>c.CanOpen))Click("work-open");if(RegionalWork.Inbox(S).Any(c=>c.CanDecide))Click(Case=="refuse"?"work-decline":"work-accept");}

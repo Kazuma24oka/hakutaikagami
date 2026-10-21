@@ -9,6 +9,7 @@ public sealed partial class WorldSession
     private readonly object gate = new();
     private ContractWorld state;
     public WorldSession(ContractWorld initial) { ContractValidation.Validate(initial); state = ContractJson.Copy(initial); }
+    public EntityId PlayerControl { get { lock(gate) return state.PlayerControl; } }
     public long Revision { get { lock(gate) return state.CommitSequence; } }
     public long Seconds { get { lock(gate) return state.ElapsedSeconds; } }
     public bool Paused { get { lock(gate) return state.Paused; } }

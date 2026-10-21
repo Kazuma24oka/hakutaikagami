@@ -28,7 +28,7 @@ public partial class ContinuousWorldTrial
         // Read pending typed SpinBox text as well as stepped values before dispatch.
         entryQuantity.Apply();entryDeadline.Apply();
         var w=S.DiagnosticSnapshot();var purpose=entryPurpose.Selected==0?ActionKind.Inspect:ActionKind.Transfer;
-        var intent=MissionEntry.Build(w,"request:entry/"+S.Revision,purpose,entryExecutor.Selected==0?ContractFixture.Officer:ContractFixture.Clerk,purpose==ActionKind.Transfer?(long)entryQuantity.Value:0,(int)entryDeadline.Value);
+        var intent=MissionEntry.Build(w,"request:entry/"+S.Revision,purpose,entryExecutor.Selected==0?S.PlayerControl:ContractFixture.Clerk,purpose==ActionKind.Transfer?(long)entryQuantity.Value:0,(int)entryDeadline.Value);
         var result=S.Submit(intent,S.Revision);Require(result);
         if(result.Code==ResultCode.Accepted){entryPurpose.Select(0);entryExecutor.Select(0);entryQuantity.Value=40;entryDeadline.Value=60;}
     }
@@ -37,8 +37,8 @@ public partial class ContinuousWorldTrial
         if(entrySummary==null)return;
         var w=S.DiagnosticSnapshot();if(CouncilEnabled){entryRow.Visible=!w.Region!.Active;entrySummary.Visible=!w.Region.Active;}entryQuantity.Editable=entryPurpose.Selected==1;
         entrySummary.Text="送信前："+(entryPurpose.Selected==0?"点検":$"徴税{entryQuantity.Value:0}")+" / "+(entryExecutor.Selected==0?"本人":"書役")+$" / 完了期限は{entryDeadline.Value:0}秒後。作業4秒・報告は配送。数量と秒は試作値です。";
-        buttons["entry-send"].Disabled=w.Region!.Active||S.GetActorView(ContractFixture.Officer).Location.Site!=ContractFixture.Castle;
-        missionPanel.Text=string.Join(" / ",S.GetActorView(ContractFixture.Officer).Tasks.TakeLast(3).Select(t=>{
+        buttons["entry-send"].Disabled=w.Region!.Active||S.GetActorView(S.PlayerControl).Location.Site!=ContractFixture.Castle;
+        missionPanel.Text=string.Join(" / ",S.GetActorView(S.PlayerControl).Tasks.TakeLast(3).Select(t=>{
             var i=w.Requests.Single(r=>w.Tasks.Single(x=>x.Id==t.Id).RequestId==r.Id).Intent;
             return (i.Action==ActionKind.Transfer?$"徴税{i.Amount}":i.Action==ActionKind.Inspect?"点検":"移動")+"・"+(i.Executor==ContractFixture.Clerk?"書役":"本人")+$"・期限{i.Deadline.At}秒："+MissionText(t.KnownStatus);
         }));
@@ -71,18 +71,18 @@ public partial class ContinuousWorldTrial
             else
             {
                 ChooseEntry();await EntryCapture("draft");Click("entry-send");var w=S.DiagnosticSnapshot();var intent=w.Requests.Single().Intent;
-                Check(intent.Amount==(Case=="self"?0:27)&&intent.Deadline.At==(Case=="expiry"?3:37)&&intent.Executor==(Case=="self"?ContractFixture.Officer:ContractFixture.Clerk),"actual UI sends selected purpose, executor, amount and deadline");
+                Check(intent.Amount==(Case=="self"?0:27)&&intent.Deadline.At==(Case=="expiry"?3:37)&&intent.Executor==(Case=="self"?S.PlayerControl:ContractFixture.Clerk),"actual UI sends selected purpose, executor, amount and deadline");
                 Check(S.Submit(intent,S.Revision).Code==ResultCode.AlreadyAccepted,"retry uses same task without duplicate effect");
                 for(int n=0;n<stages.Length;n++)
                 {
                     Advance(stages[n]);Refresh();Save(Case+"-s"+n);System.IO.File.WriteAllText(Output+"/"+Case+"-s"+n+"-pose.json",EntryPose());await EntryCapture("s"+n);
-                    if(Case=="success"&&stages[n]==5)Check(S.GetActorView(ContractFixture.Officer).Tasks.Single().KnownStatus=="発送済・結果未確認","completed levy not leaked before return report");
+                    if(Case=="success"&&stages[n]==5)Check(S.GetActorView(S.PlayerControl).Tasks.Single().KnownStatus=="発送済・結果未確認","completed levy not leaked before return report");
                 }
                 Advance(final);Refresh();await EntryCapture("final");w=S.DiagnosticSnapshot();ContractValidation.Validate(w);
                 Check(w.Transfers.Length==(Case=="success"?1:0),"expired, refused and inspection duties do not transfer resources");
                 if(Case=="success")Check(w.Transfers.Single().Amount==27,"chosen levy quantity applied once");
                 if(Case=="expiry")Check(w.Tasks.Single().Execution==ExecutionPhase.Stopped,"completion deadline expires while work is pending");
-                Check(!S.GetActorView(ContractFixture.Officer).Tasks.Single().KnownStatus.Contains("未確認"),"player eventually receives physically delivered report");
+                Check(!S.GetActorView(S.PlayerControl).Tasks.Single().KnownStatus.Contains("未確認"),"player eventually receives physically delivered report");
                 Check(entrySummary.GlobalPosition.Y+entrySummary.Size.Y<Size.Y&&details.GlobalPosition.Y+details.Size.Y<=Size.Y+1,"mission and bottom status fit the actual viewport");
             }
             System.IO.File.WriteAllText(Output+"/"+Case+"-"+(Mode.EndsWith("restore")?"restore":"check")+"-checks.json",System.Text.Json.JsonSerializer.Serialize(new{Checks=checks}));

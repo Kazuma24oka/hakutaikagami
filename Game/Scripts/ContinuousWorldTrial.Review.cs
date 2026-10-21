@@ -14,7 +14,7 @@ public partial class ContinuousWorldTrial
     {
         missionPanel.Visible=false;
         var row=new HFlowContainer();col.AddChild(row);
-        Add(row,"review-interrupt","任務と異なる中断を試す",()=>Require(S.InterruptMission(S.GetActorView(ContractFixture.Officer).Tasks.Last(t=>MissionReview.CanInterrupt(S,t.Id,ContractFixture.Officer)).Id,ContractFixture.Officer,S.Revision)));
+        Add(row,"review-interrupt","任務と異なる中断を試す",()=>Require(S.InterruptMission(S.GetActorView(S.PlayerControl).Tasks.Last(t=>MissionReview.CanInterrupt(S,t.Id,S.PlayerControl)).Id,S.PlayerControl,S.Revision)));
         reviewReason=new();reviewReason.AddItem("自己判断による中断");reviewReason.AddItem("危険回避と本人申告");row.AddChild(reviewReason);
         Add(row,"review-explain","中断理由を返送",SendReviewExplanation);
         reviewWarning=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(reviewWarning);
@@ -22,15 +22,15 @@ public partial class ContinuousWorldTrial
     }
     void SendReviewExplanation()
     {
-        var w=S.DiagnosticSnapshot();var id=S.GetActorView(ContractFixture.Officer).Tasks.Last(t=>w.Tasks.Single(x=>x.Id==t.Id).InternalReason=="executor-interrupted"&&!w.Messaging.Messages.Any(m=>m.Kind==MissionReview.ExplanationKind&&m.CorrelationId==w.Tasks.Single(x=>x.Id==t.Id).RequestId.Value)).Id;
-        var result=S.ExplainMission(id,ContractFixture.Officer,(MissionReview.Explanation)reviewReason.Selected,S.Revision);Require(result);
+        var w=S.DiagnosticSnapshot();var id=S.GetActorView(S.PlayerControl).Tasks.Last(t=>w.Tasks.Single(x=>x.Id==t.Id).InternalReason=="executor-interrupted"&&!w.Messaging.Messages.Any(m=>m.Kind==MissionReview.ExplanationKind&&m.CorrelationId==w.Tasks.Single(x=>x.Id==t.Id).RequestId.Value)).Id;
+        var result=S.ExplainMission(id,S.PlayerControl,(MissionReview.Explanation)reviewReason.Selected,S.Revision);Require(result);
         if(result.Code==ResultCode.Accepted)reviewReason.Select(0);
     }
     void RefreshReview()
     {
-        if(reviewText==null)return;var v=S.GetActorView(ContractFixture.Officer);var w=S.DiagnosticSnapshot();
-        reviewWarning.Text=MissionReview.Warning(S,ContractFixture.Officer);
-        buttons["review-interrupt"].Disabled=!v.Tasks.Any(t=>MissionReview.CanInterrupt(S,t.Id,ContractFixture.Officer));
+        if(reviewText==null)return;var v=S.GetActorView(S.PlayerControl);var w=S.DiagnosticSnapshot();
+        reviewWarning.Text=MissionReview.Warning(S,S.PlayerControl);
+        buttons["review-interrupt"].Disabled=!v.Tasks.Any(t=>MissionReview.CanInterrupt(S,t.Id,S.PlayerControl));
         buttons["review-explain"].Disabled=!v.Tasks.Any(t=>w.Tasks.Single(x=>x.Id==t.Id).InternalReason=="executor-interrupted"&&!w.Messaging.Messages.Any(m=>m.Kind==MissionReview.ExplanationKind&&m.CorrelationId==w.Tasks.Single(x=>x.Id==t.Id).RequestId.Value));
         var reviews=MissionReview.View(S,ContractFixture.Lord);
         reviewText.Text="検証用・主君の直近審査（主人公へは未通知）："+(reviews.Length==0?"審査対象なし":string.Join(" / ",reviews.TakeLast(1).Select(c=>c.Achievement+" / "+c.Difference+"\n理由："+c.Reason+" / "+c.Liability)));
@@ -43,7 +43,7 @@ public partial class ContinuousWorldTrial
         foreach(var at in new long[]{1,2,4,5}.Where(t=>S.Seconds<t&&t<=target)){
             if(at==1)S.AdvanceTo(at);else Advance(at);
             Refresh();
-            if(at==1){Check(!MissionReview.CanInterrupt(S,ReviewTask(),ContractFixture.Officer),"unopened orders do not enable deviation");Click("incoming-open");if(S.Paused)Click("resume");Check(!buttons["review-interrupt"].Disabled,"actual UI warns and permits known personal interruption");}
+            if(at==1){Check(!MissionReview.CanInterrupt(S,ReviewTask(),S.PlayerControl),"unopened orders do not enable deviation");Click("incoming-open");if(S.Paused)Click("resume");Check(!buttons["review-interrupt"].Disabled,"actual UI warns and permits known personal interruption");}
             if(at==2&&Case=="own")Click("review-interrupt");
             if(at==4&&Case=="own"){Check(MissionReview.View(S,ContractFixture.Lord).Single().Reason.Contains("未認識"),"reason unknown until separately sent and delivered");reviewReason.Select(1);Click("review-explain");Check(MissionReview.View(S,ContractFixture.Lord).Single().Reason.Contains("未認識"),"sending reason does not reveal it to assessor");}
             if(at==5&&Case=="report-miss"){var id=S.DiagnosticSnapshot().Messaging.Messages.Single(m=>m.Kind=="contract-report").Id;S.DiagnosticTransport((m,t)=>MessageFlow.Fail(m,id));}

@@ -511,3 +511,11 @@ Docs/Design/StartConfigurationV1/** -text
 Docs/Design/ImplementationAuditV1/** -text
 Scripts/verify_start_configuration.py -text
 Scripts/verify_pre_index_save.py -text
+
+Core/Contracts/PersonalStart.cs -text
+Tests/PersonalStartTests.cs -text
+Game/Scenes/PersonalStartTrial.tscn -text
+Game/Scripts/ContinuousWorldTrial.PersonalStart.cs -text
+Docs/Design/PersonalStartV1/** -text
+Scripts/verify_personal_start.py -text
+Scripts/check_personal_start_binding.py -text

@@ -28,19 +28,19 @@ public partial class ContinuousWorldTrial
     static string MissionText(string s)=>s.Replace("本人の履行: ","本人：").Replace("NotStarted","未着手").Replace("Waiting","待機").Replace("Running","作業中").Replace("Completed","完了").Replace("Stopped","中止").Replace("Failed","失敗").Replace("completed","完了の返報").Replace("unavailable","権限・服従条件を満たさず中止");
     void RefreshLoop()
     {
-        var w=S.DiagnosticSnapshot();var v=S.GetActorView(ContractFixture.Officer);
+        var w=S.DiagnosticSnapshot();var v=S.GetActorView(S.PlayerControl);
         // Only the player's issued intent and their evidence-filtered status are displayed.
         missionPanel.Text="在所の任務："+ (v.Tasks.Length==0?"なし。本人の点検と書役への委任は同時に進められます。":string.Join(" / ",v.Tasks.TakeLast(3).Select(t=>{
             var i=w.Requests.Single(r=>w.Tasks.Single(x=>x.Id==t.Id).RequestId==r.Id).Intent;
             return (i.Action==ActionKind.Transfer?$"徴税{i.Amount}":i.Action==ActionKind.Inspect?"点検":"街道移動")+"："+MissionText(t.KnownStatus);
         })));
-        buttons["inspect"].Disabled=w.Region!.Active||OfficerLoop.Busy(w,ContractFixture.Officer)||v.Location.Site!=ContractFixture.Castle;
+        buttons["inspect"].Disabled=w.Region!.Active||OfficerLoop.Busy(w,S.PlayerControl)||v.Location.Site!=ContractFixture.Castle;
         buttons["levy"].Disabled=w.Region.Active||v.Location.Site!=ContractFixture.Castle;
         foreach(var id in new[]{"own-line","own-engage","own-return","council-line","council-return"})buttons[id].Disabled=!w.Region.Active;
         councilNotice.Visible=councilPanel.Visible;
         if(councilPanel.Visible)councilNotice.Text="目的：自地域の南側線に布陣 / 指示：移動（開戦指示なし） / 報告：受令判断の物理返報（到着報告ではない）";
     }
-    string LoopPose()=>System.Text.Json.JsonSerializer.Serialize(new{Scene=Pose(),Tasks=S.GetActorView(ContractFixture.Officer).Tasks.Select(t=>new{t.Id,t.KnownStatus,t.DeadlineAt}),Panel=missionPanel.Text,Council=councilPanel.Visible,Models=actors.OrderBy(k=>k.Key.Value,StringComparer.Ordinal).Where(k=>k.Value.Visible).Select(k=>new{Id=k.Key.Value,Position=new[]{k.Value.Position.X,k.Value.Position.Y,k.Value.Position.Z},Rotation=new[]{k.Value.Rotation.X,k.Value.Rotation.Y,k.Value.Rotation.Z},k.Value.Lod})});
+    string LoopPose()=>System.Text.Json.JsonSerializer.Serialize(new{Scene=Pose(),Tasks=S.GetActorView(S.PlayerControl).Tasks.Select(t=>new{t.Id,t.KnownStatus,t.DeadlineAt}),Panel=missionPanel.Text,Council=councilPanel.Visible,Models=actors.OrderBy(k=>k.Key.Value,StringComparer.Ordinal).Where(k=>k.Value.Visible).Select(k=>new{Id=k.Key.Value,Position=new[]{k.Value.Position.X,k.Value.Position.Y,k.Value.Position.Z},Rotation=new[]{k.Value.Rotation.X,k.Value.Rotation.Y,k.Value.Rotation.Z},k.Value.Lod})});
     void LoopArrange(){Click("inspect");Click("levy");Refresh();}
     void LoopTimeline(long target)
     {
@@ -84,12 +84,12 @@ public partial class ContinuousWorldTrial
                     LoopTimeline(stages[i]);Refresh();Save(Case+"-s"+i);
                     System.IO.File.WriteAllText(Output+"/"+Case+"-s"+i+"-pose.json",LoopPose());await Capture("s"+i);
                     System.IO.File.WriteAllText(Output+"/"+Case+"-s"+i+"-rect.json",System.Text.Json.JsonSerializer.Serialize(new[]{surface.GlobalPosition.X,surface.GlobalPosition.Y,surface.Size.X,surface.Size.Y}));
-                    if(stages[i]==5&&Case!="refuse")Check(S.GetActorView(ContractFixture.Officer).Tasks.Any(t=>t.Executor==ContractFixture.Clerk&&t.KnownStatus=="発送済・結果未確認"),"levy outcome hidden before physical report");
+                    if(stages[i]==5&&Case!="refuse")Check(S.GetActorView(S.PlayerControl).Tasks.Any(t=>t.Executor==ContractFixture.Clerk&&t.KnownStatus=="発送済・結果未確認"),"levy outcome hidden before physical report");
                 }
                 LoopTimeline(final);await Capture("final");System.IO.File.WriteAllText(Output+"/"+Case+"-final-rect.json",System.Text.Json.JsonSerializer.Serialize(new[]{surface.GlobalPosition.X,surface.GlobalPosition.Y,surface.Size.X,surface.Size.Y}));w=S.DiagnosticSnapshot();ContractValidation.Validate(w);
                 Check(w.Transfers.Length==(Case=="refuse"?0:1),"levy committed once or refused without resource transfer");
                 var council=w.Region!.Commands.First(c=>c.Request.Recipient==ContractFixture.Clerk);
-                Check(RegionalBattle.Status(w,council,ContractFixture.Officer)==(Case=="refuse"?"refused":Case=="report-miss"?"発送済・結果未確認":"applied"),"council decision physically reported to player");
+                Check(RegionalBattle.Status(w,council,S.PlayerControl)==(Case=="refuse"?"refused":Case=="report-miss"?"発送済・結果未確認":"applied"),"council decision physically reported to player");
                 if(Case=="roundtrip")Check(!w.Region.Active&&w.Tasks.Last().Execution==ExecutionPhase.Completed,"returned to site and completed next peace duty");
                 if(Case=="combat")Check(w.Region.Losses.Length>0,"council and civilian missions share combat world clock");
                 Check(w.Seed==OfficerLoop.Create().Seed,"fixed seed preserved");

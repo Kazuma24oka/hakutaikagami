@@ -1,3 +1,7 @@
+# 独立した作成人物（2026-10-21）
+
+PersonalStartV1：created-person-peace-v1、person:created/playerの浪人。旧人物のID/記憶/所属/軍/徴税権をコピーしない。共有画面の操作主体/受信箱/3D/既知部隊をS.PlayerControlへ統一。全985件、実GPU18プロセス/56比較差分0、旧PNG65枚は477d3cfと同一。正本verify_personal_start.py→実画像点検→check_personal_start_binding.py。独立シーンのみで通常入口にはまだ未接続。次は名前入力と開始前検査を通常WorkHubへ追加する。
+
 # 開始設定の契約（2026-10-21）
 
 StartConfigurationV1：六立場/三歴史設定を開始前世界のハッシュへ結合し、権限・所在・予算を検査する追加API。史実人物の権限は詳細採録前なので選択拒否。全970件（追加25件）成功、旧ゲーム動作を変えない。UI/開始世界接続は次段階。60判断の静的棚卸しはImplementationAuditV1、製品受入合格数ではない。以前の地形116比較はc1a1897の履歴。

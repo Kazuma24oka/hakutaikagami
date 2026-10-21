@@ -13,14 +13,14 @@ public partial class ContinuousWorldTrial
     Node3D councilLines=null!;
     string councilGeometry="";
     int drawnCouncilLines;
-    EntityId CouncilRecipient=>councilRecipient.Selected==0?ContractFixture.Officer:ContractFixture.Clerk;
+    EntityId CouncilRecipient=>councilRecipient.Selected==0?S.PlayerControl:ContractFixture.Clerk;
     void BuildCouncilUI()
     {
         buttons["council-line"].Visible=false;buttons["council-return"].Visible=false;
         councilPanel.AddChild(new Label{Text="次の命令先"});councilRecipient=new();councilRecipient.AddItem("本隊（本人）");councilRecipient.AddItem("別働隊");councilRecipient.Select(1);councilPanel.AddChild(councilRecipient);
         Add(councilPanel,"council-draw","作戦線を引く",()=>{councilArmed=!councilArmed;councilStart=null;drag=null;});
         Add(councilPanel,"council-send","この線で命令",SendCouncil);
-        Add(councilPanel,"council-back","選んだ部隊へ帰還指示",()=>{Require(S.IssueRegional(new(new("request:council-back/"+S.Revision),ContractFixture.Officer,CouncilRecipient,RegionalAction.Retreat,new(0,0),new(0,0)),S.Revision));});
+        Add(councilPanel,"council-back","選んだ部隊へ帰還指示",()=>{Require(S.IssueRegional(new(new("request:council-back/"+S.Revision),S.PlayerControl,CouncilRecipient,RegionalAction.Retreat,new(0,0),new(0,0)),S.Revision));});
         councilRecipient.ItemSelected+=_=>Refresh();councilNotice.AutowrapMode=TextServer.AutowrapMode.WordSmart;
     }
     void ClearCouncilDraft(){councilA=null;councilB=null;councilStart=null;councilArmed=false;drag=null;if(councilRecipient!=null)councilRecipient.Select(1);}
@@ -114,19 +114,19 @@ public partial class ContinuousWorldTrial
                 Check(before==ContractJson.CanonicalHash(S.DiagnosticSnapshot()),"recipient selection, line drawing and preview never dispatch or pause world");
                 Check(!buttons["council-send"].Disabled&&drawnCouncilLines==1,"valid draft is visible and send button enabled");await CouncilCapture("draft");
                 var positions=S.DiagnosticSnapshot().Region!.Units.Select(u=>u.Position).ToArray();var chosenA=councilA;var chosenB=councilB;Click("council-send");var w=S.DiagnosticSnapshot();var command=w.Region!.Commands.Single();
-                Check(command.Request.Recipient==(own?ContractFixture.Officer:ContractFixture.Clerk)&&command.Request.A==chosenA&&command.Request.B==chosenB,"UI sends exact chosen recipient and picked line");
+                Check(command.Request.Recipient==(own?S.PlayerControl:ContractFixture.Clerk)&&command.Request.A==chosenA&&command.Request.B==chosenB,"UI sends exact chosen recipient and picked line");
                 Check(councilA==null&&drawnCouncilLines==1,"accepted line is reconstructed from saved command rather than draft");
                 Check(S.IssueRegional(command.Request,S.Revision).Code==ResultCode.AlreadyAccepted,"same request does not duplicate order or courier");
-                if(!own)Check(positions.SequenceEqual(w.Region.Units.Select(u=>u.Position))&&RegionalBattle.Status(w,command,ContractFixture.Officer)=="発送済・結果未確認","recipient stays still and result stays unknown before delivery");
+                if(!own)Check(positions.SequenceEqual(w.Region.Units.Select(u=>u.Position))&&RegionalBattle.Status(w,command,S.PlayerControl)=="発送済・結果未確認","recipient stays still and result stays unknown before delivery");
                 long due=own?1:w.Region.Deliveries.Single().DueAt;long[] stages={0,Math.Max(1,due-1),due+1};System.IO.File.WriteAllText(Output+"/"+Case+"-stages.json",System.Text.Json.JsonSerializer.Serialize(stages));
                 for(int i=0;i<stages.Length;i++)
                 {
                     Advance(stages[i]);Refresh();Save(Case+"-s"+i);System.IO.File.WriteAllText(Output+"/"+Case+"-s"+i+"-pose.json",CouncilPose());await CouncilCapture("s"+i);
-                    if(!own&&i==2)Check(RegionalBattle.Status(S.DiagnosticSnapshot(),S.DiagnosticSnapshot().Region!.Commands.Single(),ContractFixture.Officer)=="発送済・結果未確認","recipient decision cannot leak before physical return report");
+                    if(!own&&i==2)Check(RegionalBattle.Status(S.DiagnosticSnapshot(),S.DiagnosticSnapshot().Region!.Commands.Single(),S.PlayerControl)=="発送済・結果未確認","recipient decision cannot leak before physical return report");
                 }
                 Advance(final);Refresh();await CouncilCapture("final");w=S.DiagnosticSnapshot();ContractValidation.Validate(w);
                 string expected=Case=="refuse"?"refused":Case=="blocked"?"blocked-hold":"applied";
-                Check(RegionalBattle.Status(w,w.Region!.Commands.Single(),ContractFixture.Officer)==expected,"physical report or own recognition has correct visible outcome");
+                Check(RegionalBattle.Status(w,w.Region!.Commands.Single(),S.PlayerControl)==expected,"physical report or own recognition has correct visible outcome");
                 if(Case is "clerk" or "own")Check(w.Region.Units.Where(u=>u.Commander==command.Request.Recipient).All(u=>u.Position==u.Goal),"chosen formation reached without changing unrelated commander");
                 else Check(positions.SequenceEqual(w.Region.Units.Select(u=>u.Position)),"refusal and unwalkable goal do not move troops");
                 Check(!w.Region.Hostile,"drawing and formation never authorize war");

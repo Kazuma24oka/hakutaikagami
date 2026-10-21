@@ -572,5 +572,17 @@
       "remaining": "単一製品世界の導線・人物作成・製品受入は未完了。",
       "acceptance": "60件の一意ID・境界・正常失敗例・受入条件の欠落0、原則照合、HTML動作／表示検査、追跡表の整合が確認される。"
     }
+  ],
+  "baseline_commit": "c1a1897",
+  "followups": [
+    {
+      "decision": "BD-05",
+      "status": "partial",
+      "references": [
+        "Core/Contracts/StartConfiguration.cs",
+        "Core/Contracts/PersonalStart.cs"
+      ],
+      "scope": "作成浪人の限定開始/移動/任意依頼。六立場の設定検査はあるが全立場や史実開始のゲーム統合は未完了。"
+    }
   ]
 }
