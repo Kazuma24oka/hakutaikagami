@@ -223,12 +223,13 @@
     "Game/Scripts/BranchWorldTrial.cs": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0",
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
+    "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "56051947927228aa897e0ecc30b5bd17659a024e4940949ea39cd24cd2652eed",
+    "Game/Scripts/ContinuousWorldTrial.cs": "5cd95afd2bc265bce4a63da07a774a8bbfc824ccfbd72fadd1ad895697ce5fff",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
-    "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "062210b1ed960c310d35aa132f8760a11c91520618dec7603da2edb2e89b7311",
+    "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
     "Game/Scripts/ContinuousWorldTrial.Loop.cs": "ca3ec1c7b653c247ddd16474c687325230509dd3ebd7f38b437cc7842abe8f2c",
     "Game/Scripts/ContinuousWorldTrial.MidTerrain.cs": "ace914c31ac9ca283edea31bd13ffe7b128efa3c6a11f71f090ef517894b479c",
     "Game/Scripts/ContinuousWorldTrial.Notice.cs": "baacfa1acda0f574fffcdb325760ea669a910adc16054975d87258633c043109",
@@ -365,8 +366,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "f62d1a701d30cdf9450548bd25ae40d25d2740ea2019fa48e82646d12cfbd059",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "3e519ff471934d84780c92951c3696e2252483ad662f4a800168981a79abf5b4"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "053eaf6c0d29b3695fcc59c5b406f87c10f6bcda2f012c38cbdc3caa69ec3216",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "18709e479333e9a097196a98d54f09e9588c416ff96cc4975849c0ef34be60bb"
   },
   "comparisons": {
     "back-0": 0,
@@ -379,28 +380,28 @@
     "restore-3": 0
   },
   "visible_changes": {
-    "0": 117300,
-    "1": 31116,
-    "2": 1076,
-    "3": 118
+    "0": 110569,
+    "1": 68335,
+    "2": 1877,
+    "3": 453
   },
   "images": {
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-0.png": "6301b536c9b5f409b55a4e904fbb4c92975bf8a9546a57ef739fefabf4e9d413",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-0.png": "6301b536c9b5f409b55a4e904fbb4c92975bf8a9546a57ef739fefabf4e9d413",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-0.png": "5ac05a5fa61ecfccecac277281153d9f3002777d9ad507c27f405f018d49307b",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-0.png": "2e3cffdb1c493d0249d283a9dcc0c00dd22e1539fc79203dfed639d4f463f746",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-1.png": "98ea19f53084ebedc6dcf28aa6fab11adc1e836fb50f4ea060da4bde889b0a00",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-1.png": "98ea19f53084ebedc6dcf28aa6fab11adc1e836fb50f4ea060da4bde889b0a00",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-1.png": "a3fd56e3c1e4b7830e7b57eec30d96262bb6c6eddc1cdbbede6f884e01c4bc3f",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-1.png": "650116784bf288b171d1fb99baa47d64211fc85909894681d221021ff707f75f",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-2.png": "8b3da48d5753ae4f700c29ca9e60ebe542956537b0683c579769724b9cdca777",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-2.png": "8b3da48d5753ae4f700c29ca9e60ebe542956537b0683c579769724b9cdca777",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-2.png": "d22ed6ef02e54f42393eda548ffc2e7f1c486057836e233336564807bd894b1b",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-2.png": "b3eaf4bbdc8d454fd2bef8e3fbbdd35bc1aca4f677c9a93052130d726550ed8e",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "4e4495e7e4e5ebfdbdf91a1953a89bb75ce9323b1f9b9ce744fecd70f9d5ede5",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-3.png": "4e4495e7e4e5ebfdbdf91a1953a89bb75ce9323b1f9b9ce744fecd70f9d5ede5",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-3.png": "67e71bbd2f4243638d7b8707a2b65e774f6a6d32bc6b13261326eacd1ff8d57a",
-    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-3.png": "fcfa6cbd9e4db54e237889edfca82eb1c1c04fdee3dcf69b96b4c1b250300485"
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-0.png": "d905a47e85503f566cd782412571aa8e6c68e1378da76260f24e2bca9f5e5de2",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-0.png": "d905a47e85503f566cd782412571aa8e6c68e1378da76260f24e2bca9f5e5de2",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-0.png": "a84eea95a3688cf9deb4a3ec4363418e7884b38355dfdd4e504f8ec09116f22e",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-0.png": "2d27cee14c1570018a5982b5daaf8322b06d6cd19f27ccab20f53e0f5f7744e5",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-1.png": "5762aca3ef3f8bd2f795ffd474ebd2d6ac2f39e886a5182432412ffcd21335e7",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-1.png": "5762aca3ef3f8bd2f795ffd474ebd2d6ac2f39e886a5182432412ffcd21335e7",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-1.png": "2ccf8df81c134e294022f7dbc37058aca1818cac01ce81dcf31ec4332e47282e",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-1.png": "2e88fc21a3a9a54f42b7fb5806d8d8060a155b60289c3230c468a74baa7f4520",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-2.png": "fb1c01a7c3ff9af286a506efc704795756d05d5654fbd641e421d2ec02b2f279",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-2.png": "fb1c01a7c3ff9af286a506efc704795756d05d5654fbd641e421d2ec02b2f279",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-2.png": "c1e3163c5f1fc662648fbd2480b82d4beb38d56283f40bc1aa0813f4b45410e3",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-2.png": "a676d73e42f1c611f84c7b791eda92e0d5d076a0acfe53b590a93f2707acc62c",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "b6ef3c9cc855649961718e5be7d8e7deb0713c9bd8510f24a66a91be06f55d79",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-back-3.png": "b6ef3c9cc855649961718e5be7d8e7deb0713c9bd8510f24a66a91be06f55d79",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-3.png": "aba9c17e12cb76a2d3bea2bad0aed80587c2ecc852ec046caa5ce77a75ab4fcd",
+    "Docs/Design/LodAppearanceV1/runtime-local/coverage-restored-3.png": "49b6a969388ef548d336fd0fe5e0e92d8fad75184cf9efb2e0155b51582a7b80"
   },
   "checks": {
     "check": {
@@ -423,7 +424,7 @@
       "ViewportRect": [
         10,
         194,
-        1080,
+        1008,
         461
       ]
     },
@@ -437,7 +438,7 @@
       "ViewportRect": [
         10,
         194,
-        1080,
+        1008,
         461
       ]
     }
@@ -448,23 +449,7 @@
   },
   "visual_review": {
     "inspected": {
-      "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "4e4495e7e4e5ebfdbdf91a1953a89bb75ce9323b1f9b9ce744fecd70f9d5ede5",
-      "Docs/Design/LodAppearanceV1/runtime-local/coverage-swap-1.png": "a3fd56e3c1e4b7830e7b57eec30d96262bb6c6eddc1cdbbede6f884e01c4bc3f"
+      "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "b6ef3c9cc855649961718e5be7d8e7deb0713c9bd8510f24a66a91be06f55d79"
     }
-  },
-  "performance": {
-    "samples": 216,
-    "cpu_refresh_ms_p50": 181.8017,
-    "cpu_refresh_ms_p95": 208.5416,
-    "cpu_refresh_ms_max": 287.3473,
-    "working_bytes_max": 492089344,
-    "godot_video_bytes_max": 296911681,
-    "warm_refresh_ms_p95": 3.1856,
-    "measurement": "CPU refresh not GPU frametime or FPS",
-    "source_sha256": "3a67066a381d5e2191024044aaed644cc232ae5ff7defba8eaab611459a56178",
-    "game_dll_sha256": "3e519ff471934d84780c92951c3696e2252483ad662f4a800168981a79abf5b4"
-  },
-  "performance_proof": {
-    "Docs/Design/TerrainPerformanceV1/runtime-local/styled-summary.json": "ffbc105db555068524ab1affb55e1fc8a9a5e915a524fc5b8f1bdcbd826d57ee"
   }
 }

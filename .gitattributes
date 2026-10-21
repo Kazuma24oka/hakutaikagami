@@ -459,3 +459,7 @@ Scripts/*terrain_performance* -text
 Game/Scripts/ContinuousWorldTrial.LodAppearance.cs -text
 Docs/Design/LodAppearanceV1/** -text
 Scripts/*lod_appearance* -text
+
+Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs -text
+Docs/Design/CameraContinuityV1/** -text
+Scripts/*camera_continuity* -text

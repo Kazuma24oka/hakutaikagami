@@ -14,7 +14,7 @@ public partial class ContinuousWorldTrial
         foreach(int i in Enumerable.Range(0,ns.Length).OrderBy(i=>markers[i].Position.LengthSquared()).ThenBy(i=>ns[i].Id,StringComparer.Ordinal)){
             var label=siteLabels[i];label.Visible=false;if(span>=150000&&i%5!=0)continue;
             if(camera.IsPositionBehind(label.GlobalPosition))continue;
-            var at=camera.UnprojectPosition(label.GlobalPosition);float pixels=label.PixelSize*viewport.Size.Y/span;
+            var at=camera.UnprojectPosition(label.GlobalPosition);float projectionScale=viewport.Size.X/camera.Size;if(span<=30000)label.PixelSize=18/(22*projectionScale);float pixels=label.PixelSize*projectionScale;
             var size=label.Font.GetStringSize(label.Text,fontSize:22)*pixels+new Vector2(12,12);
             var rect=new Rect2(at-size/2,size);if(!bounds.Encloses(rect)||siteLabelRects.Any(r=>r.Intersects(rect)))continue;
             label.Visible=true;siteLabelRects.Add(rect);

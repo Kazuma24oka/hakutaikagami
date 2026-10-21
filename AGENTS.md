@@ -1,3 +1,7 @@
+# 倍率境界のカメラ（2026-10-21）
+
+CameraContinuityV1：横幅基準を統一し30km〜500kmで全国画角へ連続接続。注視点の高さも連続化。3境界最大0.021%、全海岸線が画面内。カメラ7/中景7/素材8/旧36の58比較差分0、933単体テスト。verify_camera_continuity.py→実画像点検→check_camera_continuity_binding.py。自動検査指定時だけControl.MouseFilter.Ignoreで外部ポインターの強調色を排除。OSのマウス表示/位置/権限は変えず通常プレイも変更しない。次に既知部隊の中景記号を維持する。
+
 # 倍率間の素材IDと地名（2026-10-21）
 
 中景の独立パレットを廃止。MidTerrainRendererはSceneryAppearanceの既存役割/skinの材質色を参照し、概略経路線にも道路/水面色を使用。細部テクスチャ/モデルは詳細表示。地名はフォント寸法と投影矩形で距離/ID順に間引き、文字を経路線より手前へ。世界/保存は不変。正本LodAppearanceV1、verify_lod_appearance.py→実画像点検→check_lod_appearance_binding.py。933テスト・復旧等51比較差分0、4可視変化、全国216表示。旧性能レポートは以前の配色の履歴。現行負荷はLodAppearanceV1のperformanceと紐付く。

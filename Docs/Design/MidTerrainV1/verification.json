@@ -222,12 +222,13 @@
     "Game/Scripts/BranchWorldTrial.cs": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0",
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
     "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
+    "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "56051947927228aa897e0ecc30b5bd17659a024e4940949ea39cd24cd2652eed",
+    "Game/Scripts/ContinuousWorldTrial.cs": "5cd95afd2bc265bce4a63da07a774a8bbfc824ccfbd72fadd1ad895697ce5fff",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
-    "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "062210b1ed960c310d35aa132f8760a11c91520618dec7603da2edb2e89b7311",
+    "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
     "Game/Scripts/ContinuousWorldTrial.Loop.cs": "ca3ec1c7b653c247ddd16474c687325230509dd3ebd7f38b437cc7842abe8f2c",
     "Game/Scripts/ContinuousWorldTrial.MidTerrain.cs": "ace914c31ac9ca283edea31bd13ffe7b128efa3c6a11f71f090ef517894b479c",
     "Game/Scripts/ContinuousWorldTrial.Notice.cs": "baacfa1acda0f574fffcdb325760ea669a910adc16054975d87258633c043109",
@@ -362,20 +363,20 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "images": {
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-0.png": "3ed8dc88a5be0499af44b26af676f0ffe29ca7446dbdd5382dcf4e4da8509cdf",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-0.png": "ad7dc2b09688a04ae7d47779667dcc687fb42a98798275198e7f02c6301b6329",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-1.png": "9a27b4772f977175bc4b490ac19249796ea7424a6829753389eec917077c7323",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-1.png": "f914caf0cbc389ce4b3aa05be079d34b0d74e381e308ffe713aaa67da8fdb2c6",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-2.png": "6a2f5eae756d5aa8537704b0daa3b9613425e86c45bf05b2f36474112a287752",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-2.png": "0d65df47c7b43428c44b6e76a9cd046560df4b0775c4431da38f206773442ed4",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-3.png": "78b599a7d733cf981df578cc926a35829a8358a65ebfef6e629979dd5bdf39c6",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-3.png": "10bced6d6c877eb89ac66c96811658bf1727ba8b558648b881f31515ccb592f6",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-4.png": "a2c4e435e97a08650e6cd4e708150953405f0fccc0da8ad960cb1ff93d5ee569",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-4.png": "ddf48d1cd5468f5eb4d62352f8b7f2f3d48b0ae52fed1c8791362f3a05ff3bf3",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-5.png": "72a97240a9706ffde4eee1f457353582fd431a18c45923aa9bf68637cfc666ef",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-5.png": "155dd27a0ab141d925fafd24e2f1e836c7650422f69cbbaac89644345b4c1b7d",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-6.png": "af1d031b6e9d125f5e2528b305418250de2126e31a4370c2bc653468d8715713",
-    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-6.png": "c88a18980d02ecca4d15af9666e8f6efa002e6c758f1123d426fbe24fa452428"
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-0.png": "187b2e77b5aed3b2d19228dbb7d13a1df43665f94d40809bd44802b050141936",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-0.png": "970663ab276b47bbeb9c2d935fd6cc9698ff4905266ec99d945948cdb09ded51",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-1.png": "d76713f459381268227126cbe164f160f9aef03886cfe0ce78073f51521fc800",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-1.png": "e4784964194aef7258bdbe09ff794ba53351b79bf358a0292668f0bc9799575e",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-2.png": "d9d3200cb94f2730a42ac123d8625c1f3d04f6d849364920b6ec54d1c9584174",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-2.png": "8d85fdd2617e7894b14ae39b44bbdb9bfdcaf8a655beaaacd3b48691698d4702",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-3.png": "95e3ed7b463de09d323e15225ebd4ded76be05ec7019ecf917d7f7a9e544108e",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-3.png": "cc44214fc425ba911ab9be21f371ffc870e8dbf118a1077dc94e9dc421f16f67",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-4.png": "c76df8277a1f35357975828c52e823394ab33dcd58c75f26136a2a134cb6776d",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-4.png": "7ad89f512acd6e087c0bd166bc96f6fad2fef4a7f69470ffef9a09d55bb55893",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-5.png": "485efde318b0df16e1e37e9bfb53bb40b63b276aef6289ad52e2fba47221cb1e",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-5.png": "b5ca21653d4fde44f94c3ce195399a4d11de638188864dc43cd58921fab30a27",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-6.png": "5d8f19b36e43ef6cf2654445af3f07c8816b28bd2de6ae29b49305ebf383fc71",
+    "Docs/Design/MidTerrainV1/runtime-local/coverage-restored-6.png": "9822112d2f50abf6c6f16f4b3550b905af85cc88bffa5eb81a97fa83efa64e9f"
   },
   "comparisons": {
     "0": 0,
@@ -422,33 +423,33 @@
       "Triangles": 0,
       "Step": 5120000,
       "RefreshMs": [
-        689.4203,
-        73.7075,
-        22.5222,
-        22.9271,
-        245.8715,
-        6.1148,
-        5.9886,
-        249.3161,
-        4.2379,
-        4.6504,
-        294.7784,
-        4.502,
-        4.3944,
-        281.3605,
-        2.7397,
-        3.0209,
-        235.9539,
-        3.2778,
-        2.9547,
-        122.7199,
-        2.2693,
-        2.3029
+        799.799,
+        72.627,
+        22.5916,
+        23.6208,
+        245.439,
+        5.82,
+        6.0321,
+        246.7204,
+        4.164,
+        5.2498,
+        293.1235,
+        4.3841,
+        4.4435,
+        301.607,
+        2.8713,
+        3.0404,
+        243.8627,
+        3.1752,
+        2.8503,
+        111.6617,
+        2.1622,
+        2.1781
       ],
       "ViewportRect": [
         10,
         194,
-        1080,
+        1008,
         461
       ]
     },
@@ -466,26 +467,26 @@
       "Triangles": 0,
       "Step": 5120000,
       "RefreshMs": [
-        720.9982,
-        68.2213,
-        32.022,
-        253.3013,
-        6.173,
-        256.1691,
-        4.5868,
-        290.1007,
-        4.6287,
-        299.2577,
-        3.3195,
-        231.716,
-        2.777,
-        140.9946,
-        2.1968
+        809.1591,
+        67.4541,
+        22.7356,
+        245.9437,
+        6.217,
+        232.2319,
+        4.2232,
+        256.6601,
+        4.3299,
+        291.3897,
+        4.4051,
+        287.4188,
+        3.0545,
+        147.1104,
+        2.7378
       ],
       "ViewportRect": [
         10,
         194,
-        1080,
+        1008,
         461
       ]
     }
@@ -495,18 +496,18 @@
     "restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\r\n\r\nMID_TERRAIN_PASSED\r\n"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "f62d1a701d30cdf9450548bd25ae40d25d2740ea2019fa48e82646d12cfbd059",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "3e519ff471934d84780c92951c3696e2252483ad662f4a800168981a79abf5b4"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "053eaf6c0d29b3695fcc59c5b406f87c10f6bcda2f012c38cbdc3caa69ec3216",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "18709e479333e9a097196a98d54f09e9588c416ff96cc4975849c0ef34be60bb"
   },
   "performance": {
     "samples": 22,
-    "refresh_ms_max": 689.4203,
-    "refresh_ms_p95": 294.7784,
+    "refresh_ms_max": 799.799,
+    "refresh_ms_p95": 301.607,
     "measurement": "CPU refresh incl mesh rebuild; not GPU frame time"
   },
   "visual_review": {
     "inspected": {
-      "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-1.png": "9a27b4772f977175bc4b490ac19249796ea7424a6829753389eec917077c7323"
+      "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-3.png": "95e3ed7b463de09d323e15225ebd4ded76be05ec7019ecf917d7f7a9e544108e"
     }
   }
 }
