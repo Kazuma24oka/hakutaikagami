@@ -1,3 +1,5 @@
+通常起動の選択入口候補：[WorkHubV1](Design/WorkHubV1/README.md)。独立試作は完成・検証済み。通常起動への切替は確認待ち。
+
 現地NPCの自動依頼：[NpcWorkV1](Design/NpcWorkV1/README.md)。本人の目撃と既知返報に基づく任意依頼・返報待ち・再提示。
 
 複数拠点の任意点検：[RegionalWorkV1](Design/RegionalWorkV1/README.md)。実街道移動・3武将・固定宛先の返報。NPC自動選定は次段階。

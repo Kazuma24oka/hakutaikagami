@@ -1,3 +1,7 @@
+# 通常起動の選択入口候補（2026-10-21、切替未承認）
+
+WorkHubTrial / Docs/Design/WorkHubV1/README.md。地域NPCの仕事を初期表示し旧Mainを遅延読込する独立候補。別セッション/保存と明示し、非表示の処理を止めて各状態を保持。旧起動指定は従来Mainそのものへ遷移して実ルート互換を維持。verify_work_hub.py→実画像点検→check_work_hub_binding.py。933テスト合格版Core/Tests・実GPU14プロセス36比較差分0。Docs/Proposals/WorkHubEntry.patchは未適用。既存の通常Main保持例外を広げず、通常起動切替の確認後にだけ例外記録と適用を行う。段階境界では停止せず地域依頼とNPC選定を完了してここへ到達。
+
 # 現地NPCの自動依頼（2026-10-21）
 
 NpcWorkTrial / npc-local-work-v1 / Docs/Design/NpcWorkV1/README.md。本人の現地目撃・Inspection許可・発送履歴・物理返報と3600秒再提示間隔だけで依頼を選ぶ。未返報の真の完了を知った扱いにせず、未知のWillObeyや遠方状態を使わない。判断入力/参照Revision/ハッシュ/根拠/受付結果を保存し、記録時点の移動と知識へ照合。入力不変なら維持し、共通時計・処理予算で更新する。旧規則のJSONへNPC欄を出さず、新平時試作だけ野外展開拒否。verify_npc_work.py→実画像点検→check_npc_work_binding.py。全933テスト、実GPU15プロセス58比較差分0。樹冠1画素差は許容差を増やさず固定回転で修正。通常入口の導線へ続ける。

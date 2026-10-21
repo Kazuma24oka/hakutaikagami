@@ -437,3 +437,10 @@ Game/Scripts/ContinuousWorldTrial.NpcWork.cs -text
 Game/Scenes/NpcWorkTrial.tscn -text
 Scripts/*npc_work* -text
 Docs/Design/NpcWorkV1/** -text
+
+Game/Scripts/WorkHubTrial.cs -text
+Game/Scripts/ContinuousWorldTrial.HubAccess.cs -text
+Game/Scenes/WorkHubTrial.tscn -text
+Scripts/*work_hub* -text
+Docs/Design/WorkHubV1/** -text
+Docs/Proposals/WorkHubEntry.patch -text

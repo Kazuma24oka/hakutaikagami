@@ -38,7 +38,7 @@ public partial class ContinuousWorldTrial
         // One actor at the authoritative player point; NPC and player share a site anchor and are not artificially displaced.
         var key=ContractFixture.Officer;
         if(!actors.TryGetValue(key,out var model)){model=new();world.AddChild(model);model.Apply(Officer3DCustomActor.Preset("red_guard"));actors[key]=model;}
-        if(NpcWorkEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Disabled=true;}
+        if(NpcWorkEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Visible=false;details.Text="平時の地域仕事 / 軍議・戦闘は従来の検証に残しています（別世界）";if(notice.Text.StartsWith("地面を左ドラッグ"))notice.Text="行先を選んで移動。時間を進めると、現地で任意の依頼が届きます。";}
         var view=S.GetBranchView(key);model.Visible=span<=240&&!w.Region!.Active;model.Scale=Vector3.One*2;model.Position=P(Current());model.Rotation=new(0,Mathf.Atan2(view.Heading.EastMm,-view.Heading.NorthMm),0);model.SetLod("mid");
         string clip=view.Walking?"walk":"idle";model.Freeze(clip,S.Seconds%model.Player.GetAnimation(model.Clips[clip]).Length);if(model.Visible)playerMarker.Visible=false;
     }
