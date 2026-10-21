@@ -486,3 +486,6 @@ Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs -text
 
 Docs/Design/CameraPanV1/** -text
 Scripts/*camera_pan* -text
+
+Docs/Design/VisualAcceptanceV1/** -text
+Scripts/*visual_acceptance* -text
