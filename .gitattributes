@@ -489,3 +489,6 @@ Scripts/*camera_pan* -text
 
 Docs/Design/VisualAcceptanceV1/** -text
 Scripts/*visual_acceptance* -text
+
+Docs/Design/MapCacheV1/** -text
+Scripts/*map_cache* -text

@@ -232,7 +232,7 @@
     "Game/Scripts/ContinuousTerrainRenderer.cs": "6bcf760dfff2f5acfb6312bd9d89f7d63ada200a8cd58be6977169bd11c6fa80",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "0f360cb93c6dc70f169564d910ea96597527385beb425f183c59d1001153243b",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "3a3b97e6bc798ebf743688165d13a93aa1a66607e077ceef93285915195b3f48",
+    "Game/Scripts/ContinuousWorldTrial.cs": "2149579d307307416fb51bee824ffc04070a08b2f22e02baf09eb892f374b354",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
@@ -434,28 +434,28 @@
       "Triangles": 0,
       "Step": 5120000,
       "RefreshMs": [
-        998.1739,
-        83.6922,
-        21.3115,
-        21.1277,
-        238.4353,
-        7.0413,
-        6.9746,
-        228.4274,
-        3.9201,
-        4.1341,
-        225.5542,
-        4.125,
-        4.018,
-        253.617,
-        4.0685,
-        3.9298,
-        267.8052,
-        3.9361,
-        3.8457,
-        188.5403,
-        2.6545,
-        3.0103
+        982.9525,
+        85.1369,
+        21.7893,
+        21.5647,
+        94.7591,
+        7.0486,
+        7.1985,
+        95.2311,
+        6.6361,
+        6.3087,
+        87.4208,
+        3.8958,
+        4.2049,
+        84.3362,
+        4.3945,
+        4.0354,
+        88.2302,
+        4.5352,
+        5.5037,
+        12.8639,
+        4.0692,
+        3.7548
       ],
       "ViewportRect": [
         10,
@@ -478,21 +478,21 @@
       "Triangles": 0,
       "Step": 5120000,
       "RefreshMs": [
-        983.2648,
-        83.6386,
-        22.9391,
-        239.9716,
-        7.1085,
-        231.5427,
-        3.8717,
-        231.4082,
-        4.0589,
-        251.7002,
-        4.0975,
-        273.7555,
-        4.0609,
-        193.3284,
-        3.2171
+        1001.8811,
+        69.9735,
+        13.4121,
+        77.0218,
+        5.8457,
+        78.0468,
+        4.8427,
+        81.0519,
+        3.7975,
+        79.7051,
+        3.8553,
+        80.2708,
+        4.4847,
+        12.4257,
+        3.632
       ],
       "ViewportRect": [
         10,
@@ -507,19 +507,19 @@
     "restore": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060 Ti\r\n\r\nMID_TERRAIN_PASSED\r\n"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "7e822d450dc1880ee899d394d621934946799b49a9c9f922ebb78f1c1d6813c5",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "96d5fa1a31fe48725271ed52b9e223241543650c5282af45a812614d4825778c"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "da7d1ec1ec0c2ddc42b8bbc43a4f55536348e13ca54620760f173b908950c336",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "958a3d2e8444782ec0792c34016ba807ce34366e6a222b8bfa099c7e7254e7cf"
   },
   "performance": {
     "samples": 22,
-    "refresh_ms_max": 998.1739,
-    "refresh_ms_p95": 267.8052,
+    "refresh_ms_max": 982.9525,
+    "refresh_ms_p95": 95.2311,
     "measurement": "CPU refresh incl mesh rebuild; not GPU frame time"
   },
   "visual_review": {
     "inspected": {
       "Docs/Design/MidTerrainV1/runtime-local/coverage-stage-3.png": "010085968c70a567059d7db79987ce13ff926332d46ebe2f4f4d584a2761a9d0"
     },
-    "same_inspected_bytes_as": "2f7facb"
+    "same_inspected_bytes_as": "f2f1b32"
   }
 }

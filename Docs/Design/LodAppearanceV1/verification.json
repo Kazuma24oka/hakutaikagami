@@ -233,7 +233,7 @@
     "Game/Scripts/ContinuousTerrainRenderer.cs": "6bcf760dfff2f5acfb6312bd9d89f7d63ada200a8cd58be6977169bd11c6fa80",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "0f360cb93c6dc70f169564d910ea96597527385beb425f183c59d1001153243b",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "3a3b97e6bc798ebf743688165d13a93aa1a66607e077ceef93285915195b3f48",
+    "Game/Scripts/ContinuousWorldTrial.cs": "2149579d307307416fb51bee824ffc04070a08b2f22e02baf09eb892f374b354",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
@@ -377,8 +377,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "7e822d450dc1880ee899d394d621934946799b49a9c9f922ebb78f1c1d6813c5",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "96d5fa1a31fe48725271ed52b9e223241543650c5282af45a812614d4825778c"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "da7d1ec1ec0c2ddc42b8bbc43a4f55536348e13ca54620760f173b908950c336",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "958a3d2e8444782ec0792c34016ba807ce34366e6a222b8bfa099c7e7254e7cf"
   },
   "comparisons": {
     "back-0": 0,
@@ -462,6 +462,6 @@
     "inspected": {
       "Docs/Design/LodAppearanceV1/runtime-local/coverage-base-3.png": "d98a31bf9e87de54159483f1e6754159cc5b6bc72b265f817748a789180449a0"
     },
-    "same_inspected_bytes_as": "2f7facb"
+    "same_inspected_bytes_as": "f2f1b32"
   }
 }
