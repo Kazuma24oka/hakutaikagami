@@ -492,3 +492,6 @@ Scripts/*visual_acceptance* -text
 
 Docs/Design/MapCacheV1/** -text
 Scripts/*map_cache* -text
+
+Docs/Design/TerrainBreakdownV1/** -text
+Scripts/*terrain_breakdown* -text
