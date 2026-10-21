@@ -3,7 +3,8 @@ using System.Linq;
 using HakutaiKagami.Core.Contracts;
 public partial class ContinuousWorldTrial
 {
-    bool WorkHubCheck=>OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--work-hub-"));
+    bool WorkHubCheck=>OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--work-hub-")||a.StartsWith("--start-selection-"));
+    internal void HubSetAutomatic(bool value){automatic=value;}
     internal WorldSession HubSession=>S;
     internal string HubPose()=>NpcPose();
     internal void HubPress(string id)=>Click(id);

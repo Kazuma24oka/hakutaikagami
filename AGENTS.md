@@ -1,3 +1,7 @@
+# 通常入口の作成人物開始（2026-10-21）
+
+StartSelectionV1：WorkHubの既存初期表示/二タブを保ち、三番目に名前入力→開始と保存一覧からの再開を追加。開始包内容ハッシュ/保存インスタンスごとに分離し、同名再開始でも上書きしない。戻る際は世界を保持/非表示停止、未保存の切替はゲーム内確認。明示開始定義がノード自動改名より優先。全985件、実GPU20プロセス/66比較差分0、旧保存全ファイル不変。不正名/破損/取消も確認。verify_start_selection.py→実画像点検→check_start_selection_binding.py。次は家臣開始の所属/直属/許可を分けて接続する。
+
 # 独立した作成人物（2026-10-21）
 
 PersonalStartV1：created-person-peace-v1、person:created/playerの浪人。旧人物のID/記憶/所属/軍/徴税権をコピーしない。共有画面の操作主体/受信箱/3D/既知部隊をS.PlayerControlへ統一。全985件、実GPU18プロセス/56比較差分0、旧PNG65枚は477d3cfと同一。正本verify_personal_start.py→実画像点検→check_personal_start_binding.py。独立シーンのみで通常入口にはまだ未接続。次は名前入力と開始前検査を通常WorkHubへ追加する。

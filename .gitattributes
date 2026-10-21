@@ -519,3 +519,7 @@ Game/Scripts/ContinuousWorldTrial.PersonalStart.cs -text
 Docs/Design/PersonalStartV1/** -text
 Scripts/verify_personal_start.py -text
 Scripts/check_personal_start_binding.py -text
+
+Game/Scripts/StartSelectionPanel*.cs -text
+Docs/Design/StartSelectionV1/** -text
+Scripts/*start_selection* -text

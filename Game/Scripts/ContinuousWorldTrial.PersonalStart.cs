@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class ContinuousWorldTrial
 {
-    bool PersonalStartEnabled=>Name=="PersonalStartTrial";
+    internal ContractWorld? StartDefinition {get;set;}
+    internal string? StartSaveRoot {get;set;}
+    bool PersonalSelectionCheck=>PersonalStartEnabled&&OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--start-selection-"));
+    bool PersonalStartEnabled=>StartDefinition!=null||Name=="PersonalStartTrial";
     long PersonalArrival=>S.DiagnosticSnapshot().Branches!.Journeys.Single().Legs[^1].EndAt;
     void PersonalContinue()
     {

@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 // Approved default entry; legacy Main and its saves remain available.
 public partial class WorkHubTrial:Control
 {
-    TabContainer tabs=null!;Control npcSlot=null!,legacySlot=null!;
+    TabContainer tabs=null!;StartSelectionPanel selection=null!;Control npcSlot=null!,legacySlot=null!;
     ContinuousWorldTrial npc=null!;Main? legacy;
     readonly List<string> checks=new();
     string Mode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--work-hub-"))??"";
@@ -22,11 +22,11 @@ public partial class WorkHubTrial:Control
             col.AddChild(new Label{Text="百代鏡 / 試作の選択"});
             col.AddChild(new Label{Text="各タブは別の試作世界・保存先です。以前の保存は「従来の検証」で開けます。",Modulate=new Color("e6c785")});
             tabs=new TabContainer{SizeFlagsVertical=SizeFlags.ExpandFill};col.AddChild(tabs);
-            npcSlot=new Control{Name="地域NPCの仕事"};legacySlot=new Control{Name="従来の検証"};tabs.AddChild(npcSlot);tabs.AddChild(legacySlot);
+            npcSlot=new Control{Name="地域NPCの仕事"};legacySlot=new Control{Name="従来の検証"};tabs.AddChild(npcSlot);tabs.AddChild(legacySlot);selection=new(){Name="作成武将で開始",ProcessMode=ProcessModeEnum.Disabled};tabs.AddChild(selection);
             npc=GD.Load<PackedScene>("res://Scenes/NpcWorkTrial.tscn").Instantiate<ContinuousWorldTrial>();npcSlot.AddChild(npc);
             tabs.TabChanged+=i=>{
                 if(i==1&&legacy==null){legacy=GD.Load<PackedScene>("res://Scenes/Main.tscn").Instantiate<Main>();legacySlot.AddChild(legacy);}
-                npc.ProcessMode=i==0?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;
+                npc.ProcessMode=i==0?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;selection.ProcessMode=i==2?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;
                 if(legacy!=null)legacy.ProcessMode=i==1?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;
             };
             if(Mode!="")CallDeferred(nameof(RunHubChecks));

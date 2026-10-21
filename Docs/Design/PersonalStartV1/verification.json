@@ -92,10 +92,10 @@
     "Docs/Design/NpcWorkV1/README.md": "2c0160409882a87acd8a3216e581ee730f6db030a72c270290f0e891c405c6ff",
     "Docs/Design/NpcWorkV1/source-manifest.json": "b152cdac8c614064b57806c9e16defa6a45ab18d638746f2e5f91645ea6d7523",
     "Docs/Design/OfficerLoopV1/source-manifest.json": "e28137107f9668ea35ccc14b16ddd2b8786a9bcfc1ce85c72076b04e3a5d2e19",
-    "Docs/Design/PersonalStartV1/README.md": "e21e8f12cfe942f3ef5e9db69439189ce44049814883d3afa655eae6e5076cd8",
+    "Docs/Design/PersonalStartV1/README.md": "4feffa72146176b10033bbfa874f53658ede68d29dd5dd89fdb0aecedd7dc3ae",
     "Docs/Design/RegionalWorkV1/README.md": "58f9d3b0075de9e5915ecc066c9f4a4a7fbc0ffa8a9fadd7aa743b11c7e58bd5",
     "Docs/Design/RegionalWorkV1/source-manifest.json": "b3302d44a6dfeb93aa8b2a838c805332244c1612305c3297aa29caca39a47526",
-    "Docs/Design/WorkHubStartupV1/README.md": "b47f9ccd26545ffcd4801ae4256c49167c1bc8094724e22e1c10912d70e41de8",
+    "Docs/Design/WorkHubStartupV1/README.md": "1b737d0c5b1fa65b76e68add8ec249df028112e92bbccab8b5706e1bd38d332f",
     "Docs/Design/WorkHubStartupV1/source-manifest.json": "bbbe49edf34f796029cc71c406b89877b5b77e5088d21175d34013c82648c690",
     "Docs/Development/OPERATING_POLICY.md": "521c1732a64ee8f4d26baf15058cd9ffab2ba7b3619df38ecace08d8aded89a7",
     "Docs/Proposals/MainEntryIntegration.patch": "90328b6676e8576dbb29dc55c13b0333f3fa2a31deda0bc051b2aaa19cde4fed",
@@ -236,19 +236,19 @@
     "Game/Scripts/ContinuousTerrainRenderer.cs": "6bcf760dfff2f5acfb6312bd9d89f7d63ada200a8cd58be6977169bd11c6fa80",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "0f360cb93c6dc70f169564d910ea96597527385beb425f183c59d1001153243b",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "318e8353d1361e1574bf52253445ecbcc93fff87a71c6bc86cc2b981b8bb4c68",
-    "Game/Scripts/ContinuousWorldTrial.cs": "6fde53acfc67d35e8c2d64289276965ec30fde75a349c752135676aa2bfe0514",
+    "Game/Scripts/ContinuousWorldTrial.cs": "7a710f7c767aca422b847def1ff3667b1da40fb6a9685af56070328fc22908ac",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "55661ec8c81909708bcedc64de890a7c47025066bf9ffd520fef3921ae07bec0",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "830c56bf1198d72e68e1bf2da84113a00a1f18c6dcedbdc609ce31cd08d7a234",
     "Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs": "69bed15ac1f2a58b9cd686f50271890d896cbeb26b12ff18da610bf4bd9b8c71",
-    "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
+    "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "05ec86dd72317592bdfb0b34213b0ffa71c565ff2013112aba5c89a2a069e4a4",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "432c6421aec7c3aa92a639b4c2483bb0fef06b201d88e1b786c7b0831375ff26",
     "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
     "Game/Scripts/ContinuousWorldTrial.Loop.cs": "c4610cd8660f4d43e97184debfe2d7bbaed00afd28f718c4b549c5f70e80896d",
     "Game/Scripts/ContinuousWorldTrial.MidTerrain.cs": "ace914c31ac9ca283edea31bd13ffe7b128efa3c6a11f71f090ef517894b479c",
     "Game/Scripts/ContinuousWorldTrial.Notice.cs": "89716b63043d30f61cd302a466a5dbb015e084ba6e3919d7adecdc88766482aa",
     "Game/Scripts/ContinuousWorldTrial.NpcWork.cs": "4fd53d12abc80921a6941f170ba794f88a4fb1681adc47705ace8fa91bc8f881",
-    "Game/Scripts/ContinuousWorldTrial.PersonalStart.cs": "47d470a2cafdd674aaf7757362556ba833e6bd11f9bc1a7ec152e2984d66cf02",
+    "Game/Scripts/ContinuousWorldTrial.PersonalStart.cs": "19fe49a2d2b75ef5c1e4e25398087f7308826542902970298736b2c840a73741",
     "Game/Scripts/ContinuousWorldTrial.Personnel.cs": "1c3e1c2be1407887af0e43960b9efccb3e346e32891f0edb20f8549ea750e5b6",
     "Game/Scripts/ContinuousWorldTrial.RegionalWork.cs": "341b66ce482ec20a7c29cd92eaa6e8386c711877aa2ec5f13434cc26965f8f1a",
     "Game/Scripts/ContinuousWorldTrial.Review.cs": "b5234ced482c09af69a0569f4303c9177b042e156e68f3d51d08d361d956932f",
@@ -301,11 +301,13 @@
     "Game/Scripts/RiverRoadTrial.cs": "b4a034a500cc5e80340f3fd454c060ca4aba5ff1d69d4f9a99f10f78d12831e3",
     "Game/Scripts/RouteWorldTrial.cs": "cbaa8fb9c51ca9437fc263f6fb3350446e4a237361afdd0058951a9142013109",
     "Game/Scripts/SceneryVisualAssets.cs": "9fb4e55325911ace48766156ee459534b5bba1fd5dc0c956ecf4b2821bc0362c",
+    "Game/Scripts/StartSelectionPanel.Checks.cs": "2471010b0994827609500a42611c48c0f023efaf9b9d690284b4ce721ed05f2e",
+    "Game/Scripts/StartSelectionPanel.cs": "c77cbb6aa9421c2510f672fcb1e51727a87efa8da94d19e8848e1c87f3314817",
     "Game/Scripts/TaxPanel.cs": "02b6b0225992b3844420a00bc6b5d0d88094dce8185cf6be48d221b14ccd72ef",
     "Game/Scripts/TrafficWorldTrial.cs": "dafafe979db88083717937c738a3d33a7b633b9c50967d199d22adc1b7077251",
     "Game/Scripts/TravelControlTrial.cs": "8a02cd0dbab3493592b26c2f828919d7cc6a59da0b78db2bc0844dbbfd97f4fd",
     "Game/Scripts/TravelWorldTrial.cs": "a419c5a96b086d16f5fc3c383c3307c8878f833680d83677874a5924b30c74d2",
-    "Game/Scripts/WorkHubTrial.cs": "016c8235dc7ca5328d1934719ccaa361fce3c318d2d3837fb4259e6fd931f5cb",
+    "Game/Scripts/WorkHubTrial.cs": "9160f05317ffda0252d08ceb43ef6159d4b8aa26380e4376fb29f5769b38da25",
     "Game/Shaders/Officer3D.gdshader": "e42fc79b673b582136d66ef618eb761f7f0a719f6f08c671ec2b1192e2da483c",
     "Game/Shaders/Officer3DV2.gdshader": "6025fece58c8e670a7dd986e5a1d00224afb509846b445250412ac81da623177",
     "Game/Shaders/Officer3DV3.gdshader": "e2b6bdea8f6666ba28b1e5f8c420415609254da3a79ddef65c22ca4b0d6fdc05",
@@ -383,8 +385,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "32536bc1e781cc089b8d15e252192dc8eb2624f4e762e7c75437429f375cdbcc",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "ca961d8f1ef4199e645e82cff03918a955bbe3c808fe1f89c3705fb39c216591"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "7b3a8858d0e7d96cc8789f46a7beaa098fa10509e978148543464628a26a53bf",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "6ee97ed3f0924f50aa39ab4b7161624215b4debea242c9d04f22172a6e557d7c"
   },
   "tests": 985,
   "added": 15,
@@ -507,12 +509,13 @@
     ]
   },
   "proofs": {
-    "Docs/Design/WorkHubStartupV1/verification.json": "dbf913d084b1212306d24837ff68bbeba969d0e7c8dbb2debe6f35800585e586"
+    "Docs/Design/WorkHubStartupV1/verification.json": "a45e7a55692ad162411682804f33b504290ff7534470a0c7f9eb3b89aa3df7c4"
   },
   "visual_review": {
     "inspected": {
       "Docs/Design/PersonalStartV1/runtime-local/job/final.png": "e1a1fff4a5c366b53a6e8f8676959c498d9647582845b42d237a52ea659acb38",
       "Docs/Design/PersonalStartV1/runtime-local/journey/final.png": "fb368fc25f0c9e589dda1ff9234a385c46c076d9ada94def44c0baaef1293136"
-    }
+    },
+    "basis": "Exact full PNG bytes equal previously inspected d2371f7 images"
   }
 }
