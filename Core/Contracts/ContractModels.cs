@@ -114,6 +114,8 @@ public sealed class ContractWorld
     public FieldPresenceState? Presence { get; set; }
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public DelegationState? Delegation { get; set; }
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public CareerState? Career {get;set;}
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

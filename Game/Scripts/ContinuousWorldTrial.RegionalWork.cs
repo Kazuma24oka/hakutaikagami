@@ -20,7 +20,7 @@ public partial class ContinuousWorldTrial
         });
         Add(row,"work-open","届いた書状を開封",()=>Require(S.Open(S.PlayerControl,RegionalWork.Inbox(S).Last(c=>c.CanOpen).Message,S.Revision)));
         Add(row,"work-accept","受諾",()=>WorkConsent(true));Add(row,"work-decline","辞退",()=>WorkConsent(false));
-        if(RetainerStartEnabled)BuildRetainerUI(row);if(CampaignStartEnabled)BuildCampaignUI(row);
+        if(RetainerStartEnabled)BuildRetainerUI(row);if(CampaignStartEnabled)BuildCampaignUI(row);if(CareerStartEnabled)BuildCareerUI(row);
         workRole=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(workRole);
         workText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(workText);
     }
@@ -43,6 +43,7 @@ public partial class ContinuousWorldTrial
         var key=S.PlayerControl;
         if(!actors.TryGetValue(key,out var model)){model=new();world.AddChild(model);model.Apply(Officer3DCustomActor.Preset("red_guard"));actors[key]=model;}
         if(NpcWorkEnabled&&!CampaignStartEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Visible=false;details.Text="平時の地域仕事 / 軍議・戦闘は従来の検証に残しています（別世界）";if(notice.Text.StartsWith("地面を左ドラッグ"))notice.Text="行先を選んで移動。時間を進めると、現地で任意の依頼が届きます。";}
+        if(CareerStartEnabled)RefreshCareerUI(w);
         var view=S.GetBranchView(key);model.Visible=span<=240&&!FieldPresence.PlayerDeployed(w);model.Scale=Vector3.One*2;model.Position=P(Current());model.Rotation=new(0,Mathf.Atan2(view.Heading.EastMm,-view.Heading.NorthMm),0);model.SetLod("mid");
         string clip=view.Walking?"walk":"idle";model.Freeze(clip,S.Seconds%model.Player.GetAnimation(model.Clips[clip]).Length);if(model.Visible)playerMarker.Visible=false;
     }

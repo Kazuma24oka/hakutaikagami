@@ -21,7 +21,7 @@ public static class RegionalWork
             w.Grants=[..w.Grants,new(new("grant:regional-work/"+role.Node+"/"+actor.Value.Replace(':','/')),role.Person,actor,RegionalCampaign.Site(role.Node),[ActionKind.Inspect],basis,0,long.MaxValue,0,[],false,0)];
         w.Definitions=w.Definitions with{Version=RegionalBattle.Version(w)};ContractValidation.Validate(w);return w;
     }
-    public static TaskKind Kind(ContractWorld w,EntityId issuer)=>(RetainerStart.Enabled(w)||CreatedCampaign.Enabled(w))&&issuer==RetainerStart.Lord?TaskKind.BindingOrder:TaskKind.VoluntaryRequest;
+    public static TaskKind Kind(ContractWorld w,EntityId issuer,long? at=null,long? revision=null)=>(RetainerStart.Enabled(w)||CreatedCampaign.Enabled(w)||Career.ActiveAt(w,issuer,at??w.ElapsedSeconds,revision))&&issuer==RetainerStart.Lord?TaskKind.BindingOrder:TaskKind.VoluntaryRequest;
     public static Intent Build(ContractWorld w,string id,EntityId issuer,int due=60)
     {
         if(!Enabled(w)||!EntityId.IsValid(id)||due is <1 or >3600)throw new InvalidDataException("Local work profile required");
@@ -63,7 +63,7 @@ public static class RegionalWork
     {
         foreach(var task in w.Tasks.Where(t=>t.Action==ActionKind.Inspect)){
             var request=w.Requests.Single(r=>r.Id==task.RequestId);var i=request.Intent;
-            if(!Roles.Any(r=>r.Person==i.Actor&&RegionalCampaign.Site(r.Node)==i.Scope)||i.Executor!=w.PlayerControl||i.Kind!=Kind(w,i.Actor)||i.Action!=ActionKind.Inspect||i.Amount!=0||i.SourceLot!=null||i.DestinationLot!=null||i.DestinationSite!=null||i.WorkSeconds!=4||i.DeliverySeconds!=1||i.ReportSeconds!=1||!i.Important||i.TargetTask!=null||i.EffectiveAt!=request.CreatedAt||i.Deadline.Criterion!=DeadlineCriterion.Completion||i.Deadline.FromOpening||i.Deadline.DurationSeconds!=null||i.Deadline.At!=i.Deadline.AbsoluteLatestAt||i.Deadline.AbsoluteLatestAt-request.CreatedAt is <1 or >3600)
+            if(!Roles.Any(r=>r.Person==i.Actor&&RegionalCampaign.Site(r.Node)==i.Scope)||i.Executor!=w.PlayerControl||i.Kind!=Kind(w,i.Actor,request.CreatedAt,request.CommitSequence)||i.Action!=ActionKind.Inspect||i.Amount!=0||i.SourceLot!=null||i.DestinationLot!=null||i.DestinationSite!=null||i.WorkSeconds!=4||i.DeliverySeconds!=1||i.ReportSeconds!=1||!i.Important||i.TargetTask!=null||i.EffectiveAt!=request.CreatedAt||i.Deadline.Criterion!=DeadlineCriterion.Completion||i.Deadline.FromOpening||i.Deadline.DurationSeconds!=null||i.Deadline.At!=i.Deadline.AbsoluteLatestAt||i.Deadline.AbsoluteLatestAt-request.CreatedAt is <1 or >3600)
                 throw new InvalidDataException("Regional work lacks a valid local contract");
         }
         foreach(var g in w.Grants.Where(g=>Roles.Any(r=>r.Person==g.Agent))){if(g.Actions.Length!=1||g.Actions[0]!=ActionKind.Inspect||g.Limit!=0||g.Assets.Length!=0||g.Redelegate||!Roles.Any(r=>r.Person==g.Agent&&RegionalCampaign.Site(r.Node)==g.Scope))throw new InvalidDataException("Historical dispatcher granted unregistered coercive rights");}

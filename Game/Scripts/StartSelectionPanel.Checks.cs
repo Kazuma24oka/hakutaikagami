@@ -30,6 +30,7 @@ public partial class StartSelectionPanel
     async void RunSelectionChecks()
     {
         try{
+            if(SelectionMode.Contains("-career-")){await RunCareerSelectionChecks();return;}
             if(SelectionMode.Contains("-return-retry-")){await RunReturnRetrySelectionChecks();return;}
             if(SelectionMode.Contains("-inquiry-")){await RunInquirySelectionChecks();return;}
             if(SelectionMode.Contains("-retry-")){await RunRetrySelectionChecks();return;}

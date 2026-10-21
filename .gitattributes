@@ -568,3 +568,9 @@ Game/Scripts/StartSelectionPanel.InquiryChecks.cs -text
 Docs/Design/DelegationReturnRetryV1/** -text
 Scripts/*delegation_return_retry* -text
 Game/Scripts/StartSelectionPanel.ReturnRetryChecks.cs -text
+
+Docs/Design/CareerV1/** -text
+Scripts/*career* -text
+Tests/Fixtures/ronin-9959278-*.json -text
+Game/Scripts/ContinuousWorldTrial.Career.cs -text
+Game/Scripts/StartSelectionPanel.CareerChecks.cs -text

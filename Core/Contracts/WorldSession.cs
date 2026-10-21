@@ -32,6 +32,7 @@ public sealed partial class WorldSession
     public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
+        if(state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Region?.Commands.Any(c=>c.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Field?.Orders.Any(o=>o.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
@@ -47,6 +48,7 @@ public sealed partial class WorldSession
             try{hash=ContractJson.CanonicalHash(intent);}
             catch(Exception e) when(e is System.Text.Json.JsonException or ArgumentException or InvalidOperationException)
             {return new(ResultCode.InvalidInput,intent.RequestId,state.CommitSequence,"入力条件を確認してください");}
+            if(state.Career?.Requests.Any(r=>r.Input.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             if(state.Region?.Commands.Any(c=>c.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             if(state.Field?.Orders.Any(o=>o.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             if(state.TravelDecisions?.Any(d=>d.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
@@ -113,6 +115,7 @@ public sealed partial class WorldSession
             Change(s=>{
                 if(principal)s.Messaging.Knowledge=[..s.Messaging.Knowledge,new(m.Id,actor.Value,s.ElapsedSeconds,m.Id)];
                 else MessageFlow.OpenAsProxy(s.Messaging,m.Id,actor.Value,s.ElapsedSeconds);
+                Career.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
             return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
@@ -159,7 +162,7 @@ public sealed partial class WorldSession
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
-                    SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);
+                    SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);Career.Update(s);
                 },beforeCommit);
                 if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);
                 processed+=cost;
@@ -173,6 +176,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
+        if(Career.Enabled(s)&&Career.NextBoundary(s,target) is {} careerBoundary)times.Add(careerBoundary);
         if(NpcWork.Enabled(s)&&NpcWork.NextBoundary(s,target) is {} npcBoundary)times.Add(npcBoundary);
         if(RegionalCampaign.Enabled(s)&&RegionalCampaign.NextBoundary(s,target) is {} courierBoundary)times.Add(courierBoundary);
         if(FieldWorld.Enabled(s)&&FieldWorld.NextBoundary(s,target) is {} fieldBoundary)times.Add(fieldBoundary);

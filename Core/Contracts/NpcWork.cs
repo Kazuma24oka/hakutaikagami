@@ -1,6 +1,6 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
-public sealed record NpcWorkInputs(bool LocalWitness,bool InspectionPermit,EntityId[] OwnTasks,bool LastReportKnown,string? KnownResult,long ReadyAt,bool CooldownElapsed);
+public sealed record NpcWorkInputs(bool LocalWitness,bool InspectionPermit,EntityId[] OwnTasks,bool LastReportKnown,string? KnownResult,long ReadyAt,bool CooldownElapsed,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool DialoguePending=false);
 public sealed record NpcWorkDecision(EntityId Id,EntityId Actor,long At,long InputRevision,NpcWorkInputs Inputs,string InputHash,string Reason,EntityId? Request,ResultCode Result);
 public sealed record NpcWorkState(NpcWorkDecision[] Decisions);
 // A bounded knowledge-based planner, opt-in only. No second clock, transport or task implementation.
@@ -8,7 +8,7 @@ public static class NpcWork
 {
     public const string Ruleset="npc-local-work-v1",Contract="local-witness-own-reports-stable-input-memory-3600cooldown-v1";
     public const long Interval=3600;
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||PersonalStart.Enabled(w)||RetainerStart.Enabled(w)||CreatedCampaign.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||Career.Enabled(w)||PersonalStart.Enabled(w)||RetainerStart.Enabled(w)||CreatedCampaign.Enabled(w);
     public static ContractWorld Create()
     {
         var w=RegionalWork.Create();w.WorldId=new("world:"+Ruleset);w.NpcWork=new([]);
@@ -26,9 +26,9 @@ public static class NpcWork
         long ready=own.Length==0?0:checked(own[^1].CreatedAt+Interval);
         var role=RegionalWork.Roles.Single(r=>r.Person==actor);
         bool permit=w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&w.Grants.Any(g=>g.Agent==actor&&g.Scope==RegionalCampaign.Site(role.Node)&&g.Actions.Contains(ActionKind.Inspect)&&g.From<=at&&at<g.Until);
-        return new(seen,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready);
+        return new(seen,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready,Career.DialoguePendingAt(w,actor,at,inputRevision));
     }
-    public static string Reason(NpcWorkInputs input)=>!input.LocalWitness?"no-local-witness":!input.InspectionPermit?"no-inspection-permit":!input.LastReportKnown?"await-own-report":!input.CooldownElapsed?"cooldown":"offer-local-inspection";
+    public static string Reason(NpcWorkInputs input)=>!input.LocalWitness?"no-local-witness":!input.InspectionPermit?"no-inspection-permit":input.DialoguePending?"career-dialogue-pending":!input.LastReportKnown?"await-own-report":!input.CooldownElapsed?"cooldown":"offer-local-inspection";
     public static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w)||FieldPresence.PlayerDeployed(w))return null;var candidates=new List<long>();
