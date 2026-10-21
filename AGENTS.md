@@ -1,3 +1,7 @@
+# 複数拠点の任意依頼（2026-10-21）
+
+RegionalWorkTrial / regional-peace-work-v1 / Docs/Design/RegionalWorkV1/README.md。清洲/甲府/小田原を既存街道で移動して任意点検を受ける。史実の立場と試作用Inspect合意を分離。氏康は1559年家督譲渡後。架空の主従/土地/徴税/軍事権を追加しない。依頼/返報はTask.Scopeへ物理配送し、自動追跡しない。旧保存/旧入口は保持。verify_regional_work.py→実画像点検→check_regional_work_binding.py。段階完了でもユーザー判断不要なら終了せず次工程へ続ける（OPERATING_POLICY末尾）。
+
 # 全国人物台帳・在所の仕事（2026-10-21）
 
 NationalPersonnel / Core/Data/national-personnel-v1.json / Docs/Design/NationalPersonnelV1/README.md。既存3人と3勢力の本拠候補・出典・確認日、全国108拠点の収録状態を固定。史実の本拠候補と現在地/領域/主従/命令権を混同しない。残る105拠点に領主を推測で加えない。台帳は検証用の収録管理画面で主人公の観測ではない。

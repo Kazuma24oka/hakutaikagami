@@ -6,7 +6,7 @@ using HakutaiKagami.Core.Contracts;
 
 public partial class ContinuousWorldTrial
 {
-    bool LoopEnabled => IncomingEnabled || EntryEnabled || Name=="OfficerLoopTrial" || OS.GetCmdlineUserArgs().Contains("--officer-loop");
+    bool LoopEnabled => RegionalWorkEnabled || IncomingEnabled || EntryEnabled || Name=="OfficerLoopTrial" || OS.GetCmdlineUserArgs().Contains("--officer-loop");
     Label missionPanel=null!, councilNotice=null!;
     HFlowContainer councilPanel=null!;
     void BuildLoopUI(VBoxContainer col,HFlowContainer bar)

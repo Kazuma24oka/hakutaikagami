@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "base": "6e84d18a89c7253f8f8df73b9c277979a2e8d957",
+  "ruleset": "regional-peace-work-v1",
+  "sourced_standing": "Core/Contracts/RegionalWork.cs",
+  "fixture": "consensual inspection only; no service or coercion",
+  "nodes": [
+    "castle",
+    "kofu",
+    "odawara"
+  ],
+  "old_save_mapping": false,
+  "mouse_tools": false
+}

@@ -422,3 +422,10 @@ Tests/NationalPersonnelTests.cs -text
 Game/Scripts/ContinuousWorldTrial.Personnel.cs -text
 Scripts/*national_personnel* -text
 Docs/Design/NationalPersonnelV1/** -text
+
+Core/Contracts/RegionalWork.cs -text
+Tests/RegionalWorkTests.cs -text
+Game/Scripts/ContinuousWorldTrial.RegionalWork.cs -text
+Game/Scenes/RegionalWorkTrial.tscn -text
+Scripts/*regional_work* -text
+Docs/Design/RegionalWorkV1/** -text

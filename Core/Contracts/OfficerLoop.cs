@@ -7,7 +7,7 @@ public static class OfficerLoop
 {
     public const string Ruleset = "officer-peace-war-loop-v1";
     public const string Contract = "at-castle-inspect-or-levy40-4s-delivery1-report1-main-lock-council-line-v1";
-    public static bool Enabled(ContractWorld w) => w.Definitions.Ruleset == Ruleset || MissionEntry.Enabled(w) || IncomingMission.Enabled(w);
+    public static bool Enabled(ContractWorld w) => w.Definitions.Ruleset == Ruleset || RegionalWork.Enabled(w) || MissionEntry.Enabled(w) || IncomingMission.Enabled(w);
     public static bool Terminal(TaskState t) => t.Execution is ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed;
     public static bool Busy(ContractWorld w, EntityId actor) => w.Tasks.Any(t => t.Executor == actor && !Terminal(t));
     public static ContractWorld Create(bool refuses = false)
@@ -46,6 +46,7 @@ public static class OfficerLoop
             TravelWorld.ValidateOrder(w, i);
             return;
         }
+        if (RegionalWork.Enabled(w)){RegionalWork.ValidateOrder(w,i);return;}
         if (IncomingMission.Enabled(w)) IncomingMission.ValidateOrder(w,i);
         else if (MissionEntry.Enabled(w)) MissionEntry.ValidateOrder(w,i);
         else if (i != Mission(w, i.RequestId.Value, i.Action == ActionKind.Transfer))

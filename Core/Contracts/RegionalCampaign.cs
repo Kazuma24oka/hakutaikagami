@@ -79,7 +79,7 @@ public static class RegionalCampaign
     {
         foreach(var a in w.Messaging.Attempts.Where(a=>!w.Couriers!.Missions.Any(c=>c.Attempt==a.Id)).ToArray()){
             if(RegionalBattle.Handles(w,a.MessageId))continue;
-            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle";long appointment=a.SentAt+1;RoutePoint? origin=null;
+            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=RegionalWork.Address(w,m)??(TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle");long appointment=a.SentAt+1;RoutePoint? origin=null;
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);
             if(t?.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(x=>x.Id==w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask);destination=Meeting(w,target);appointment=Appointment(w,target);}
             if(m.Kind=="delivery-failure"){origin=Position(w,w.Couriers!.Missions.Single(c=>c.Attempt==m.Body),a.SentAt);if(TrafficWorld.Enabled(w))destination=TrafficWorld.FailureAddress(w,m.Body);}
@@ -226,7 +226,7 @@ public static class RegionalCampaign
                 var task=w.Tasks.Single(t=>WorldSession.Child("message",t.Id,"order").Value==message.Id);
                 if(task.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(t=>t.Id==w.Requests.Single(r=>r.Id==task.RequestId).Intent.TargetTask);var goal=Destination(w,w.Requests.Single(r=>r.Id==target.RequestId).Intent.DestinationSite!.Value);
                     if(a.Number==1&&(c.Destination!=Meeting(w,target)||c.Appointment!=Appointment(w,target))||a.Number>1&&(c.Appointment<a.SentAt||c.Destination!="castle"&&c.Destination!=Meeting(w,target)&&c.Destination!=goal))throw new InvalidDataException("Courier address is not justified by original known mission");}
-                else if(c.Destination!=(TravelWorld.Enabled(w)&&message.SenderId==message.RecipientId?TravelWorld.SelfAddress(w,message.SenderId,a.SentAt):"castle")||c.Appointment!=a.SentAt+1)throw new InvalidDataException("Ordinary order left its original address");
+                else if(c.Destination!=(RegionalWork.Address(w,message)??(TravelWorld.Enabled(w)&&message.SenderId==message.RecipientId?TravelWorld.SelfAddress(w,message.SenderId,a.SentAt):"castle"))||c.Appointment!=a.SentAt+1)throw new InvalidDataException("Ordinary order left its original address");
             }
             if(a.LateDueAt!=null)throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
             if(!BranchRoutes.GraphNodes(w).Any(n=>n.Id==c.Destination)||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edges.Any(e=>e.Id==id)))throw new InvalidDataException("Invalid courier binding");
