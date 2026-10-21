@@ -1,3 +1,15 @@
+## 在所任務入力：完成（2026-10-21）
+
+入口Scripts/Show-MissionEntry.ps1、officer-mission-entry-v1。現在の運用はDocs/Development/OPERATING_POLICY.md、完成条件/次段階はCURRENT_STAGE.mdを参照。任務を点検/徴税・本人/書役・量1〜100・完了期限1〜3600秒で入力し、既存Intent/TaskState/権限/所在/資源/配送/保存へ接続。旧規則と旧保存は維持し読み替えない。下書きは保存せず送信済み内容を復元。
+
+5条件達成、全802テスト（追加15）、実Godot9プロセス・4ケース・12保存点・24比較差分0、44PNG。正本Docs/Design/MissionEntryV1/verification.json。verify_mission_entry.py→実PNG点検→check_mission_entry_binding.py。旧bindingは共通コード更新で再検証まで失効。次は軍議の作戦線・担当者の入力。新しい報告形式を優先し、通常の次作業報告は1件。約5段階の見通しはCURRENT_STAGE.mdに残す。
+
+## 開発運用方針（2026-10-21、現行）
+
+最初にDocs/Development/OPERATING_POLICY.mdとCURRENT_STAGE.mdを読む。技術判断・実行・検証・進捗管理はCodexが担い、ユーザーは創作と重要操作を判断する。完成条件は3〜5件に固定し、不要な機能追加を避ける。既存の承認範囲内で再質問しない。現在の同じブランチへのcommit/push承認、保護対象、マウス操作ツール禁止を維持する。
+
+報告は「今回完成したこと / 現在の状態（完成条件とテスト） / 次に行うこと1件 / ユーザーの判断（原則不要）」。下に残る古い「毎回5件」の記録は履歴。見通し5件はCURRENT_STAGE.mdへ残し、新しい報告形式を優先する。他プロジェクトや同期sources/へ適用しない。
+
 ## 武将の平時任務・軍議（2026-10-21、最新）
 
 ユーザー「すすめて。次から5個先くらいまでの次作業書いて」。入口Scripts/Show-OfficerLoop.ps1、新規則officer-peace-war-loop-v1。Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.mdとDocs/Design/OfficerLoopV1/README.mdを読む。

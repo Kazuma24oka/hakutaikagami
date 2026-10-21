@@ -1,0 +1,10 @@
+{
+ "ruleset":"officer-mission-entry-v1",
+ "parent":"officer-peace-war-loop-v1",
+ "scope":"in-site inspect/levy, own officer/clerk, quantity1..100, completion deadline1..3600 seconds from dispatch",
+ "contract":"existing Intent/TaskState/Grant/Resource/MessageFlow/GenerationSaveStore; no separate clock or mission progress state",
+ "versioning":"old rulesets and saves retained; no silent conversion",
+ "not_in_scope":"unsent draft persistence, arbitrary destinations, council editing, economic rates, AI task generation, defeat aftermath",
+ "policy":"Docs/Development/OPERATING_POLICY.md",
+ "acceptance":"Docs/Development/CURRENT_STAGE.md"
+}

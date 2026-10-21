@@ -1,3 +1,7 @@
+## 現在の開発運用と完成条件
+
+[Codex運用方針](Development/OPERATING_POLICY.md) / [現在段階・完成条件・見通し](Development/CURRENT_STAGE.md)
+
 ## 武将の平時任務・軍議（2026-10-21）
 
 [入口・検証](Design/OfficerLoopV1/README.md) / [設計と次の5件](Decisions/2026-10-21_OFFICER_LOOP_V1.md)

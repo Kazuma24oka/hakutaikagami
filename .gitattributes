@@ -371,3 +371,12 @@ Docs/Design/OfficerLoopV1/** whitespace=blank-at-eol,blank-at-eof,space-before-t
 Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.md whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 
 Game/Scripts/ContinuousWorldTrial.Loop.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/MissionEntry.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/MissionEntryTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/ContinuousWorldTrial.Entry.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/MissionEntryTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*mission_entry* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-MissionEntry.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/MissionEntryV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Development/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

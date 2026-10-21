@@ -6,7 +6,7 @@ using HakutaiKagami.Core.Contracts;
 
 public partial class ContinuousWorldTrial
 {
-    bool LoopEnabled => Name=="OfficerLoopTrial" || OS.GetCmdlineUserArgs().Contains("--officer-loop");
+    bool LoopEnabled => EntryEnabled || Name=="OfficerLoopTrial" || OS.GetCmdlineUserArgs().Contains("--officer-loop");
     Label missionPanel=null!, councilNotice=null!;
     HFlowContainer councilPanel=null!;
     void BuildLoopUI(VBoxContainer col,HFlowContainer bar)
@@ -32,7 +32,7 @@ public partial class ContinuousWorldTrial
         // Only the player's issued intent and their evidence-filtered status are displayed.
         missionPanel.Text="在所の任務："+ (v.Tasks.Length==0?"なし。本人の点検と書役への委任は同時に進められます。":string.Join(" / ",v.Tasks.TakeLast(3).Select(t=>{
             var i=w.Requests.Single(r=>w.Tasks.Single(x=>x.Id==t.Id).RequestId==r.Id).Intent;
-            return (i.Action==ActionKind.Transfer?"徴税40":i.Action==ActionKind.Inspect?"点検":"街道移動")+"："+MissionText(t.KnownStatus);
+            return (i.Action==ActionKind.Transfer?$"徴税{i.Amount}":i.Action==ActionKind.Inspect?"点検":"街道移動")+"："+MissionText(t.KnownStatus);
         })));
         buttons["inspect"].Disabled=w.Region!.Active||OfficerLoop.Busy(w,ContractFixture.Officer)||v.Location.Site!=ContractFixture.Castle;
         buttons["levy"].Disabled=w.Region.Active||v.Location.Site!=ContractFixture.Castle;
