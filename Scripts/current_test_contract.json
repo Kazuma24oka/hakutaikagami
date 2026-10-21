@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1114,
-  "baseline_passed": 1094,
-  "added": 20,
-  "scope": "FieldPresenceTests: personal site and continuing NPC field clock, physical origin, observation, canonical consumption and restoration"
+  "expected_passed": 1144,
+  "baseline_passed": 1114,
+  "added": 30,
+  "scope": "DelegationMissionTests: other-house authority, physical receipt/arrival, private refusal, replacement lineage, late original and restoration"
 }

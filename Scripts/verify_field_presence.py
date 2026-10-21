@@ -5,7 +5,7 @@ from verify_field_supply import source_files as parent_sources,sha
 ROOT=Path(__file__).resolve().parents[1];BASE=ROOT/'Docs/Design/FieldPresenceV1';OUT=BASE/'runtime-local'
 def source_files():return sorted(set(parent_sources()+[Path(__file__),ROOT/'Scripts/check_field_presence_binding.py',BASE/'DESIGN.md',BASE/'README.md',BASE/'legacy-fixture.json',ROOT/'Tests/Fixtures/supply-f9dcd84-initial.json']))
 def main():
- expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'];assert expected==1114
+ expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'];assert expected>=1114
  subprocess.run([sys.executable,str(ROOT/'Scripts/verify_field_supply.py')],cwd=ROOT,check=True)
  before={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()};key=uuid.uuid4().hex;images={};comparisons={};checks={}
  trx=ROOT/'Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx';ns={'t':'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'};tests=[x for x in ET.parse(trx).findall('.//t:UnitTestResult',ns) if 'FieldPresenceTests.' in x.attrib['testName']];assert len(tests)==20 and all(x.attrib['outcome']=='Passed' for x in tests)

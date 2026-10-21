@@ -8,6 +8,7 @@ public partial class ContinuousWorldTrial
     internal ContractWorld? StartDefinition {get;set;}
     internal string? StartSaveRoot {get;set;}
     bool PersonalSelectionCheck=>PersonalStartEnabled&&OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--start-selection-"));
+    bool DelegationStartEnabled=>StartDefinition!=null&&DelegationMission.Enabled(StartDefinition);
     bool PresenceStartEnabled=>StartDefinition!=null&&FieldPresence.Enabled(StartDefinition);
     bool SupplyStartEnabled=>StartDefinition!=null&&FieldSupply.Enabled(StartDefinition);
     bool EngagementStartEnabled=>StartDefinition!=null&&EngagementMission.Enabled(StartDefinition);

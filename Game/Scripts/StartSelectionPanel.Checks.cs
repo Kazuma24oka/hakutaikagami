@@ -30,6 +30,7 @@ public partial class StartSelectionPanel
     async void RunSelectionChecks()
     {
         try{
+            if(SelectionMode.Contains("-delegation-")){await RunDelegationSelectionChecks();return;}
             if(SelectionMode.Contains("-campaign-")){await RunCampaignSelectionChecks();return;}
             if(SelectionMode.Contains("-retainer-")){await RunRetainerSelectionChecks();return;}
             Directory.CreateDirectory(Output);var tabs=(TabContainer)GetParent();tabs.CurrentTab=2;await Frame();
