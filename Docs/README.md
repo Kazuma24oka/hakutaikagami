@@ -1,3 +1,5 @@
+任務受信の最新試作：[IncomingMissionV1](Design/IncomingMissionV1/README.md)。
+
 ## 軍議の作戦線・担当者入力
 
 [入口と検証](Design/CouncilInputV1/README.md) / [現在段階・完成条件](Development/CURRENT_STAGE.md)

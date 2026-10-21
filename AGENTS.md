@@ -1,3 +1,7 @@
+# 任務受信の検証入口
+
+IncomingMissionTrialは主君命令/配下依頼の独立試作。仕様と検証はDocs/Design/IncomingMissionV1/README.md。未着/未開封の任務内容をUIに渡さない。判断理由に未知の内部動機を混ぜない。既存の通常Main・旧規則版・旧保存を保持。
+
 ## 軍議の作戦線・担当者入力：完成（2026-10-21）
 
 入口Scripts/Show-CouncilInput.ps1、CouncilEntryTrial。既存officer-mission-entry-v1のRegionalRequest/Commandと保存をそのまま使うUI拡張。新世界規則や二重時計はない。軍議で本隊/別働隊を選び、実地面に青い下書き線→明示送信→金色の送信済み線。下書きや担当変更、軍議中の誤ドラッグでは動かさない。本人指示と物理伝令/受令/返報を区別。既知の送信線だけを命令から描画し、判断結果はRegionalBattle.Status経由。到着報告とは扱わない。下書きは保存せず復旧時に破棄。
