@@ -1,3 +1,7 @@
+# 回転後の視点移動（2026-10-21）
+
+CameraPanV1：GUIと共通のPanCameraで画面2点の投影線から地面上の差を計算。4方位×4倍率で投影移動誤差1画素以内、世界不変。OSマウスは操作しない。933テスト・80復旧等比較差分0。verify_camera_pan.py→実画像点検→check_camera_pan_binding.py。従来の再検査画像は目視済み画像とバイト一致で照合。次はVisualAcceptanceV1の既存移動/伝令/橋渡りと全国再測定。
+
 # 地表材質と周期（2026-10-21）
 
 GroundMaterialV1：固定無彩色土粒とミップマップを開発時生成。色IDは既存、周期はTileSizeMm（道4m/草6m）を正本とし、区画近傍原点からUV計算。UVScale/Offset/Repeat/両面描画を統一し外部材質既定値による地面消失を防ぐ。実メッシュ345600頂点の位相/負座標/遠方/実描画画素を検査。933テスト・73比較差分0。verify_ground_material.py→実画像点検→check_ground_material_binding.py。Core/旧素材/保存規則は維持。次は総合行動と視点入力。

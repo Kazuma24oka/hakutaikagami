@@ -483,3 +483,6 @@ Game/Tools/author_ground_material.gd -text
 Game/Assets/Scenery/Materials/field-earth-*.tres -text
 
 Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs -text
+
+Docs/Design/CameraPanV1/** -text
+Scripts/*camera_pan* -text

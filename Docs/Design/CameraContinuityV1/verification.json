@@ -232,9 +232,9 @@
     "Game/Scripts/BranchWorldTrial.cs": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0",
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
     "Game/Scripts/ContinuousTerrainRenderer.cs": "6bcf760dfff2f5acfb6312bd9d89f7d63ada200a8cd58be6977169bd11c6fa80",
-    "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
+    "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "0f360cb93c6dc70f169564d910ea96597527385beb425f183c59d1001153243b",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "5c41f5baa8a238c205efa278b9db5b4f4605ace7e85f13558482b6b10942a759",
+    "Game/Scripts/ContinuousWorldTrial.cs": "3a3b97e6bc798ebf743688165d13a93aa1a66607e077ceef93285915195b3f48",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
@@ -380,8 +380,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "8feb5493a355f178db44363c2f7fb61558a0d3efadfc0b3f1222a449d80fd1ae",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "04b428dde06f4be8906d63c690ed9d652348fc02e57d552cc7997ea523d81a5e"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "7e822d450dc1880ee899d394d621934946799b49a9c9f922ebb78f1c1d6813c5",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "96d5fa1a31fe48725271ed52b9e223241543650c5282af45a812614d4825778c"
   },
   "comparisons": {
     "0": 0,
@@ -479,6 +479,7 @@
   "visual_review": {
     "inspected": {
       "Docs/Design/CameraContinuityV1/runtime-local/coverage-stage-0.png": "c6bb1cd92e981f339a37659a98f0a9b911f6241a9f27b02b0b8dc59b761d87af"
-    }
+    },
+    "same_inspected_bytes_as": "2f7facb"
   }
 }
