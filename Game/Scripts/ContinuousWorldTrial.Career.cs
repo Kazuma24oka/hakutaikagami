@@ -7,6 +7,7 @@ public partial class ContinuousWorldTrial
     void CareerDecision(CareerAction action){var card=CareerCard;Require(S.DecideCareer(new(new("request:career-ui/"+S.Revision),action,action==CareerAction.Apply?null:card?.Case),S.PlayerControl,S.Revision));}
     void BuildCareerUI(HFlowContainer row)
     {
+        if(MilitaryStartEnabled)BuildMilitaryUI(row);
         Add(row,"career-apply","仕官を申し出る",()=>CareerDecision(CareerAction.Apply));
         Add(row,"career-open","身分の封書を開く",()=>{var card=Career.View(S,S.PlayerControl).Cases.First(c=>c.Unopened!=null);Require(S.Open(S.PlayerControl,card.Unopened!.Value,S.Revision));});
         Add(row,"career-accept","条件に同意して回答",()=>CareerDecision(CareerAction.Accept));
@@ -24,5 +25,6 @@ public partial class ContinuousWorldTrial
         workText.Text="身分："+(card?.Status??"まだ申し出はありません")+" / 所属・直属と軍や財産は別";
         if(inbox.Length>0)workText.Text+="\n"+MissionText(inbox.Last().Text);
         details.Text="同じ人物・時計・世界で継続 / 合意の効力と本人の通知認識を区別 / 失職しても人生は続きます";
+        if(MilitaryStartEnabled)RefreshMilitaryUI(w);
     }
 }

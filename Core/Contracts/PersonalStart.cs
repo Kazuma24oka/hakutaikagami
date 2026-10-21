@@ -31,12 +31,12 @@ public static class PersonalStart
     {
         if(!Enabled(w))return;ValidatePeaceIdentity(w,false);
     }
-    internal static void ValidatePeaceIdentity(ContractWorld w,bool relationsAllowed)
+    internal static void ValidatePeaceIdentity(ContractWorld w,bool relationsAllowed,bool armyAllowed=false)
     {
         if(w.PlayerControl!=Person||w.Characters.SingleOrDefault(c=>c.Id==Person)?.Life!=LifeState.Adult||
             !relationsAllowed&&(w.Memberships.Any(m=>m.Subject==Person)||w.ServiceBonds.Any(b=>b.Subject==Person||b.Target==Person))||
             w.Offices.Any(o=>o.Subject==Person)||w.LandRights.Any(l=>l.Subject==Person)||
-            w.Units.Any(u=>u.Commander==Person)||w.ResourceLots.Any(l=>l.Owner==Person))
+            !armyAllowed&&w.Units.Any(u=>u.Commander==Person)||w.ResourceLots.Any(l=>l.Owner==Person))
             throw new InvalidDataException("Personal peace start cannot silently gain political or military rights");
         var grants=w.Grants.Where(g=>g.Agent==Person).ToArray();
         if(grants.Length!=4||grants.Any(g=>g.Principal!=Person&&!RegionalWork.Roles.Any(r=>r.Person==g.Principal)||g.Actions.Length!=1||g.Redelegate||g.Limit!=0||g.Assets.Length!=0||g.From!=0||g.Until!=long.MaxValue)||

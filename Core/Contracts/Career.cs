@@ -19,9 +19,9 @@ public static partial class Career
 {
     public const string Ruleset="created-career-peace-v1",Contract="same-person-physical-mutual-assent-independent-relations-notice-and-known-role-v1";
     public static readonly EntityId Basis=new("basis:career-agreement");
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||CareerMilitary.Enabled(w);
     static CareerTerms Terms(bool recruits,bool dismiss)=>new(RetainerStart.Lord,RetainerStart.House,ContractFixture.Castle,120,recruits,dismiss);
-    public static string Fingerprint(ContractWorld w)=>ContractJson.CanonicalHash(new[]{Contract,PersonalStart.Fingerprint(w),ContractJson.CanonicalHash(w.Career!.Terms)});
+    public static string Fingerprint(ContractWorld w)=>ContractJson.CanonicalHash(new[]{Contract,PersonalStart.Fingerprint(w),ContractJson.CanonicalHash(w.Career!.Terms)+(CareerMilitary.Enabled(w)?CareerMilitary.Contract:"")});
     public static ContractWorld Create(string name="作成武将",ulong seed=20261020,bool recruits=true,bool dismissAfterReport=false)
     {
         var w=PersonalStart.Create(name,seed);w.WorldId=new("world:"+Ruleset);w.Career=new(1,Terms(recruits,dismissAfterReport),[],[],[]);
@@ -77,8 +77,9 @@ public static partial class Career
         var joined=Event(w,id,CareerEventKind.Joined)!;var principal=w.Career!.Terms.Principal;long time=at??w.ElapsedSeconds,rev=revision??w.CommitSequence;
         var tasks=w.Tasks.Where(t=>t.Issuer==principal&&t.Executor==w.PlayerControl&&w.Requests.Single(r=>r.Id==t.RequestId).CommitSequence>=joined.Revision&&w.Requests.Single(r=>r.Id==t.RequestId).CommitSequence<=rev&&w.Requests.Single(r=>r.Id==t.RequestId).CreatedAt<=time).ToArray();latest=null;
         foreach(var t in tasks){var report=WorldSession.Child("message",t.Id,"report").Value;if(MessageFlow.LearnedAt(w.Messaging,report,principal.Value) is not {} known||known>time)return false;latest=report;}
-        return true;
+        return !CareerMilitary.OutstandingAt(w,time,CareerMilitary.Enabled(w)&&w.Military!.Events.Any(e=>e.Effect==MilitaryEffect.Returned&&e.Revision==rev)?rev-1:rev);
     }
+    internal static bool WorkReportsKnown(ContractWorld w,out string? latest,long? at=null,long? revision=null){long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;var join=w.Career!.Events.LastOrDefault(e=>e.Kind==CareerEventKind.Joined&&Before(e,t,r));latest=null;return join!=null&&ReportsKnown(w,join.Case,out latest,t,r);}
     internal static void RecordOpening(ContractWorld w,EntityId actor,string message)
     {
         if(!Enabled(w)||actor!=w.PlayerControl||!w.Messaging.Messages.Any(m=>m.Id==message&&m.Kind=="career-notice")||w.Career!.Openings.Any(o=>o.Message==message))return;

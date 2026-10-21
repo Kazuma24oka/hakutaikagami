@@ -4,7 +4,7 @@ public sealed record FieldPresenceState(PresenceTerms Terms,EntityId[] DeployedA
 public static class FieldPresence
 {
     public const string Ruleset="created-retainer-continuous-presence-v1",Contract="independent-player-presence-npc-field-clock-static-sleep-exact-v1";
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||DelegationMission.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||DelegationMission.Enabled(w)||CareerMilitary.Enabled(w);
     public static PresenceTerms Terms=>new([ContractFixture.Clerk,RegionalBattle.Enemy],ContractFixture.Clerk,ContinuousWorld.Point("castle",195000,-85000),ContinuousWorld.Point("castle",305000,-85000),"scenario:independent-house-training-march");
     public static PresenceTerms ExpectedTerms(ContractWorld w)=>DelegationMission.Enabled(w)?new(Terms.NpcFieldActors,ContractFixture.Clerk,ContinuousWorld.Point("castle",95000,-50000),ContinuousWorld.Point("castle",115000,-30000),"scenario:joint-house-training-awaiting-orders"):Terms;
     public static bool Deployed(ContractWorld w,EntityId actor)=>Enabled(w)?w.Presence!.DeployedActors.Contains(actor):RegionalBattle.Active(w)&&w.Region!.Units.Any(u=>u.Commander==actor);

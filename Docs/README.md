@@ -1,4 +1,6 @@
-通常起動の選択入口候補：[WorkHubV1](Design/WorkHubV1/README.md)。独立試作は完成・検証済み。通常起動への切替は確認待ち。
+同一人生の軍務・現地引受/返還：[CareerMilitaryV1](Design/CareerMilitaryV1/README.md)。仕官だけでは軍/兵糧を取得せず、同一人物で平時→出陣→帰還→辞去へ継続。現在の結果と次工程は[完成条件](Development/CURRENT_STAGE.md)。
+
+通常起動の選択入口：[WorkHubStartupV1](Design/WorkHubStartupV1/README.md)。ユーザー承認を受けて切替済み。旧Main/入口/保存は保持。
 
 現地NPCの自動依頼：[NpcWorkV1](Design/NpcWorkV1/README.md)。本人の目撃と既知返報に基づく任意依頼・返報待ち・再提示。
 

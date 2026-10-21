@@ -28,7 +28,7 @@ public partial class ContinuousWorldTrial
     void RefreshRegionalWork()
     {
         councilNotice.Visible=false;
-        var w=S.DiagnosticSnapshot();if(CampaignStartEnabled&&FieldPresence.PlayerDeployed(w)){RefreshCampaignWork(w);return;}
+        var w=S.DiagnosticSnapshot();if(CampaignStartEnabled&&FieldPresence.PlayerDeployed(w)){RefreshCampaignWork(w);if(MilitaryStartEnabled)RefreshCareerUI(w);return;}
         var nearby=RegionalWork.NearbyDispatchers(S);
         string selected=workDispatcher.ItemCount>0?workDispatcher.GetItemMetadata(workDispatcher.Selected).AsString():"";
         workDispatcher.Clear();foreach(var id in nearby){workDispatcher.AddItem(w.Definitions.Characters.Single(p=>p.Id==id).Name);workDispatcher.SetItemMetadata(workDispatcher.ItemCount-1,id.Value);if(id.Value==selected)workDispatcher.Select(workDispatcher.ItemCount-1);}

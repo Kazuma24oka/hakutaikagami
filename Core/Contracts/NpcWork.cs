@@ -26,7 +26,7 @@ public static class NpcWork
         long ready=own.Length==0?0:checked(own[^1].CreatedAt+Interval);
         var role=RegionalWork.Roles.Single(r=>r.Person==actor);
         bool permit=w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&w.Grants.Any(g=>g.Agent==actor&&g.Scope==RegionalCampaign.Site(role.Node)&&g.Actions.Contains(ActionKind.Inspect)&&g.From<=at&&at<g.Until);
-        return new(seen,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready,Career.DialoguePendingAt(w,actor,at,inputRevision));
+        return new(seen,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready,Career.DialoguePendingAt(w,actor,at,inputRevision)||actor==RetainerStart.Lord&&CareerMilitary.DialogueAt(w,at,inputRevision??w.CommitSequence));
     }
     public static string Reason(NpcWorkInputs input)=>!input.LocalWitness?"no-local-witness":!input.InspectionPermit?"no-inspection-permit":input.DialoguePending?"career-dialogue-pending":!input.LastReportKnown?"await-own-report":!input.CooldownElapsed?"cooldown":"offer-local-inspection";
     public static long? NextBoundary(ContractWorld w,long target)

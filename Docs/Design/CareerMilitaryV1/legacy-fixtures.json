@@ -1,0 +1,11 @@
+{
+  "source_commit": "72b0665a497f68d5d9eccf45e59a7d6263878d11",
+  "kind": "Literal old peace Career initial and effective-but-unconfirmed synthetic worlds, not user saves",
+  "producer_core_sha256": "337f1458372cea37ad2160a7a17a60981fcbc05282c0a60bf9fa8295d0af6fe1",
+  "verification_git_object": "72b0665a497f68d5d9eccf45e59a7d6263878d11:Docs/Design/CareerV1/verification.json",
+  "verification_sha256": "b0125653b1393c95a8b28c9285e15be2d6b7597dd08257f75403c4d1cf7f7797",
+  "fixtures": {
+    "Tests/Fixtures/career-72b0665-initial.json": "a06172a71b2cd4144e6ea3420d244c8422b707409b81ea7c4e4f062d5c5b50d6",
+    "Tests/Fixtures/career-72b0665-unconfirmed.json": "fcfd3a66b2731acc680f0b37a37213f33a126b3b3c76af9e795855a4106875c7"
+  }
+}

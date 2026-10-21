@@ -8,11 +8,12 @@ public partial class ContinuousWorldTrial
     internal ContractWorld? StartDefinition {get;set;}
     internal string? StartSaveRoot {get;set;}
     bool PersonalSelectionCheck=>PersonalStartEnabled&&OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--start-selection-"));
+    bool MilitaryStartEnabled=>StartDefinition!=null&&CareerMilitary.Enabled(StartDefinition);
     bool CareerStartEnabled=>StartDefinition!=null&&Career.Enabled(StartDefinition);
     bool DelegationStartEnabled=>StartDefinition!=null&&DelegationMission.Enabled(StartDefinition);
     bool PresenceStartEnabled=>StartDefinition!=null&&FieldPresence.Enabled(StartDefinition);
     bool SupplyStartEnabled=>StartDefinition!=null&&FieldSupply.Enabled(StartDefinition);
-    bool EngagementStartEnabled=>StartDefinition!=null&&EngagementMission.Enabled(StartDefinition);
+    bool EngagementStartEnabled=>StartDefinition!=null&&EngagementMission.Enabled(StartDefinition)&&!CareerMilitary.Enabled(StartDefinition);
     bool CampaignStartEnabled=>StartDefinition!=null&&CreatedCampaign.Enabled(StartDefinition);
     bool RetainerStartEnabled=>StartDefinition!=null?(RetainerStart.Enabled(StartDefinition)||CreatedCampaign.Enabled(StartDefinition)||Career.Enabled(StartDefinition)):Name=="RetainerStartTrial";
     bool PersonalStartEnabled=>StartDefinition!=null||Name=="PersonalStartTrial"||RetainerStartEnabled;

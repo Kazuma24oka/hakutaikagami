@@ -574,3 +574,9 @@ Scripts/*career* -text
 Tests/Fixtures/ronin-9959278-*.json -text
 Game/Scripts/ContinuousWorldTrial.Career.cs -text
 Game/Scripts/StartSelectionPanel.CareerChecks.cs -text
+
+Docs/Design/CareerMilitaryV1/** -text
+Scripts/*career_military* -text
+Tests/Fixtures/career-72b0665-*.json -text
+Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs -text
+Game/Scripts/StartSelectionPanel.CareerMilitaryChecks.cs -text

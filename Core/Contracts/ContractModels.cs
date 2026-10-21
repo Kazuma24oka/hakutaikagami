@@ -116,6 +116,8 @@ public sealed class ContractWorld
     public DelegationState? Delegation { get; set; }
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public CareerState? Career {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public MilitaryState? Military {get;set;}
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

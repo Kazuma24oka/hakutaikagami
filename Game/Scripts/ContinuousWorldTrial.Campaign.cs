@@ -7,7 +7,7 @@ public partial class ContinuousWorldTrial
     {
         foreach(var id in (EngagementStartEnabled?new[]{"own-line","own-return","own-engage"}:new[]{"own-line","own-return"})){var b=buttons[id];b.GetParent().RemoveChild(b);row.AddChild(b);}
         if(SupplyStartEnabled){Add(row,"supply-pack","兵糧を携行",()=>Require(S.HandleSupply(new("request:pack/"+S.Revision),S.PlayerControl,true,FieldSupply.Capacity-FieldSupply.Carried(S.DiagnosticSnapshot()).Quantity,S.Revision)));Add(row,"supply-return","兵糧残量を返還",()=>Require(S.HandleSupply(new("request:unpack/"+S.Revision),S.PlayerControl,false,FieldSupply.Carried(S.DiagnosticSnapshot()).Quantity,S.Revision)));}
-        if(EngagementStartEnabled)Add(row,"field-report","自隊の現況を発送",()=>Require(S.ReportEngagement(new("request:field-report/"+S.Seconds),S.PlayerControl,S.Revision)));
+        if(EngagementStartEnabled||MilitaryStartEnabled)Add(row,"field-report","自隊の現況を発送",()=>Require(S.ReportEngagement(new("request:field-report/"+S.Seconds),S.PlayerControl,S.Revision)));
         if(DelegationStartEnabled)BuildDelegationUI(row);
     }
     void RefreshCampaignControls(ContractWorld w)

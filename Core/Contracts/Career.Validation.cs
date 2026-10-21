@@ -6,8 +6,8 @@ public static partial class Career
     {
         if(!Enabled(w)){if(w.Career!=null)throw new InvalidDataException("Unexpected career module");return;}
         var s=w.Career??throw new InvalidDataException("Missing career module");
-        if(s.Schema!=1||ContractJson.CanonicalHash(s.Terms)!=ContractJson.CanonicalHash(Terms(s.Terms.Recruits,s.Terms.DismissAfterReport))||w.Definitions.Version!=RegionalBattle.Version(w)||!w.Definitions.AuthorityBases.Any(b=>b.Id==Basis)||w.WorldId!=new EntityId("world:"+Ruleset))throw new InvalidDataException("Career definition or policy differs");
-        PersonalStart.ValidatePeaceIdentity(w,true);
+        if(s.Schema!=1||ContractJson.CanonicalHash(s.Terms)!=ContractJson.CanonicalHash(Terms(s.Terms.Recruits,s.Terms.DismissAfterReport))||w.Definitions.Version!=RegionalBattle.Version(w)||!w.Definitions.AuthorityBases.Any(b=>b.Id==Basis)||w.WorldId!=new EntityId("world:"+w.Definitions.Ruleset))throw new InvalidDataException("Career definition or policy differs");
+        PersonalStart.ValidatePeaceIdentity(w,true,CareerMilitary.Enabled(w));
         bool LearnedBy(string message,EntityId actor,long at)=>MessageFlow.LearnedAt(w.Messaging,message,actor.Value) is {} known&&known<=at;
         if(s.Requests.Select(r=>r.Input.Id).Distinct().Count()!=s.Requests.Length||s.Events.Select(e=>e.Message).Distinct().Count()!=s.Events.Length||s.Openings.Select(o=>o.Message).Distinct().Count()!=s.Openings.Length)throw new InvalidDataException("Duplicate career business or opening");
         if(w.Messaging.Messages.Count(m=>m.Kind=="career-request")!=s.Requests.Length||w.Messaging.Messages.Count(m=>m.Kind=="career-notice")!=s.Events.Length||s.Events.Length!=w.IdCounters.GetValueOrDefault("career-event"))throw new InvalidDataException("Career letter/event ledger is incomplete");
