@@ -9,4 +9,4 @@ assert len(j['comparisons'])==30 and set(j['comparisons'].values())=={0}
 assert j['visual_review'] and j['visual_review']['inspected']
 for p,h in j['visual_review']['inspected'].items():assert sha(ROOT/p)==h,p
 prior=json.loads((ROOT/'Docs/Design/StartSelectionV1/verification.json').read_bytes());assert prior['binaries']==j['binaries'] and prior['tests']==expected
-print('PASS current retainer service, known orders, independent explanations,1010 tested binary and96 exact comparisons')
+print(f'PASS current retainer service, known orders, independent explanations,{expected} tested binary and96 exact comparisons')

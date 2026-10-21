@@ -24,7 +24,7 @@ public partial class StartSelectionPanel : Control
         form.AddChild(new Label{Text="1560年・清洲から / 成人 / 準史実（既定）"});
         intro=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};form.AddChild(intro);
         form.AddChild(new Label{Text="名前"});nameInput=new(){Text="作成武将",MaxLength=24,PlaceholderText="1～24文字"};form.AddChild(nameInput);
-        form.AddChild(new Label{Text="開始時の立場"});role=new();role.AddItem("浪人");role.AddItem("織田家の家臣（作成人物の架空の開始合意）");role.AddItem("織田家の家臣・本隊配置任務（試作兵100）");role.AddItem("織田家の家臣・交戦任務（架空の演習）");form.AddChild(role);role.ItemSelected+=_=>RefreshIntro();RefreshIntro();
+        form.AddChild(new Label{Text="開始時の立場"});role=new();role.AddItem("浪人");role.AddItem("織田家の家臣（作成人物の架空の開始合意）");role.AddItem("織田家の家臣・本隊配置任務（試作兵100）");role.AddItem("織田家の家臣・交戦任務（架空の演習）");role.AddItem("織田家の家臣・兵糧携行つき演習");form.AddChild(role);role.ItemSelected+=_=>RefreshIntro();RefreshIntro();
         begin=new(){Text="新しく始める"};form.AddChild(begin);begin.Pressed+=RequestNew;
         resume=new(){Text="いまの人物へ戻る",Visible=false};form.AddChild(resume);resume.Pressed+=ShowGame;
         form.AddChild(new HSeparator());form.AddChild(new Label{Text="保存した人物の続き"});saved=new();form.AddChild(saved);
@@ -37,10 +37,10 @@ public partial class StartSelectionPanel : Control
         confirmation.Confirmed+=OpenPending;confirmation.Canceled+=()=>pending=null;
         ScanProfiles();if(SelectionMode!="")CallDeferred(nameof(RunSelectionChecks));
     }
-    void RefreshIntro(){intro.Text=role.Selected==3?"架空の検証敵との交戦・損耗・撤退・現況報告を試せます。史実の開戦ではありません。":role.Selected==2?"主家の試作兵100で、本隊の配置と帰還を試せます。私有の兵・土地・徴税権は持ちません。":"本人の移動と、現地の仕事を試せます。軍・土地・徴税権は持ちません。";}
+    void RefreshIntro(){intro.Text=role.Selected==4?"主家の兵糧を積載して出陣。実際の兵数と経過時間で消費し、帰還後に残量を返します。":role.Selected==3?"架空の検証敵との交戦・損耗・撤退・現況報告を試せます。史実の開戦ではありません。":role.Selected==2?"主家の試作兵100で、本隊の配置と帰還を試せます。私有の兵・土地・徴税権は持ちません。":"本人の移動と、現地の仕事を試せます。軍・土地・徴税権は持ちません。";}
     StartPackage NewPackage(string name)
     {
-        var w=role.Selected==3?EngagementMission.Create(name):role.Selected==2?CreatedCampaign.Create(name):role.Selected==1?RetainerStart.Create(name):PersonalStart.Create(name);
+        var w=role.Selected==4?FieldSupply.Create(name):role.Selected==3?EngagementMission.Create(name):role.Selected==2?CreatedCampaign.Create(name):role.Selected==1?RetainerStart.Create(name):PersonalStart.Create(name);
         var template=role.Selected==0?StartTemplate.Ronin:StartTemplate.Retainer;var policy=role.Selected>=2?CreatedCampaign.Policy:PersonalStart.Policy;
         var choice=StartConfiguration.Describe(w,w.PlayerControl,template,PersonOrigin.Created,policy);
         return new(choice,w,policy);
@@ -53,7 +53,7 @@ public partial class StartSelectionPanel : Control
             throw new InvalidDataException("開始データの整合を確認できません");
         var isCampaign=CreatedCampaign.Enabled(profile.Package.World);var isRetainer=RetainerStart.Enabled(profile.Package.World)||isCampaign;
         var personName=profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;
-        var original=EngagementMission.Enabled(profile.Package.World)?EngagementMission.Create(personName,profile.Package.World.Seed,profile.Package.World.CommandMandates!.Single().Until):isCampaign?CreatedCampaign.Create(personName,profile.Package.World.Seed,profile.Package.World.CommandMandates!.Single().Until):isRetainer?RetainerStart.Create(personName,profile.Package.World.Seed):PersonalStart.Create(personName,profile.Package.World.Seed);
+        var original=FieldSupply.Enabled(profile.Package.World)?FieldSupply.Create(personName,profile.Package.World.Seed):EngagementMission.Enabled(profile.Package.World)?EngagementMission.Create(personName,profile.Package.World.Seed,profile.Package.World.CommandMandates!.Single().Until):isCampaign?CreatedCampaign.Create(personName,profile.Package.World.Seed,profile.Package.World.CommandMandates!.Single().Until):isRetainer?RetainerStart.Create(personName,profile.Package.World.Seed):PersonalStart.Create(personName,profile.Package.World.Seed);
         if(profile.Package.Selection.Template!=(isRetainer?StartTemplate.Retainer:StartTemplate.Ronin))throw new InvalidDataException("開始時の立場が一致しません");
         var policy=isCampaign?CreatedCampaign.Policy:PersonalStart.Policy;
         if(profile.Package.Selection.Mode!=HistoryMode.SemiHistorical||ContractJson.CanonicalHash(original)!=profile.Package.Selection.WorldHash||ContractJson.CanonicalHash(profile.Package.Policy)!=ContractJson.CanonicalHash(policy))throw new InvalidDataException("この開始定義には対応していません");
@@ -86,7 +86,7 @@ public partial class StartSelectionPanel : Control
             fresh.StartDefinition=ContractJson.Copy(next.Profile.Package.World);fresh.StartSaveRoot=Path.Combine(next.Directory,"game");fresh.SizeFlagsVertical=SizeFlags.ExpandFill;
             play.AddChild(fresh);if(next.Load)fresh.HubLoad("manual");
             if(stage!=null){stage.ProcessMode=ProcessModeEnum.Disabled;play.RemoveChild(stage);stage.QueueFree();}
-            stage=fresh;CurrentDirectory=next.Directory;pending=null;role.Select(EngagementMission.Enabled(next.Profile.Package.World)?3:CreatedCampaign.Enabled(next.Profile.Package.World)?2:next.Profile.Package.Selection.Template==StartTemplate.Retainer?1:0);RefreshIntro();nameInput.Text=next.Profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;ShowGame();
+            stage=fresh;CurrentDirectory=next.Directory;pending=null;role.Select(FieldSupply.Enabled(next.Profile.Package.World)?4:EngagementMission.Enabled(next.Profile.Package.World)?3:CreatedCampaign.Enabled(next.Profile.Package.World)?2:next.Profile.Package.Selection.Template==StartTemplate.Retainer?1:0);RefreshIntro();nameInput.Text=next.Profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;ShowGame();
         }catch(Exception e)when(e is InvalidDataException or ArgumentException or IOException or UnauthorizedAccessException or ContractLoadException){if(fresh!=null){play.RemoveChild(fresh);fresh.QueueFree();}message.Text="開けません："+e.Message;pending=null;}
     }
     void ShowGame(){if(stage==null)return;form.Visible=false;play.Visible=true;stage.ProcessMode=ProcessModeEnum.Inherit;}

@@ -8,6 +8,12 @@ using HakutaiKagami.Core.Appearance;
 public sealed class SceneryVisualAssets
 {
     public readonly SceneryAppearanceCatalog Catalog=SceneryAppearance.Read(FileAccess.GetFileAsBytes("res://Data/Scenery/scenery-appearance-v1.json"));
+    // Godot's native cache does not provide a managed lifetime owner. Keep the
+    // finite catalog resources strongly referenced while this process uses them.
+    static readonly Dictionary<string,Resource> retainedResources=new(StringComparer.Ordinal);
+    public static int RetainedResourceCount=>retainedResources.Count;
+    public int ResourceLimit=>Catalog.Materials.Where(m=>m.Resource!=null).Select(m=>m.Resource!).Concat(Catalog.Visuals.SelectMany(v=>v.Variants).Select(v=>v.Resource)).Distinct(StringComparer.Ordinal).Count();
+    static T Retain<T>(string path) where T:Resource{if(!retainedResources.TryGetValue(path,out var resource)){resource=GD.Load<T>(path);retainedResources.Add(path,resource);}return resource is T typed&&GodotObject.IsInstanceValid(typed)?typed:throw new InvalidOperationException("Retained resource type/lifetime differs");}
     readonly Dictionary<string,StandardMaterial3D> materials=new();
     public readonly HashSet<string> Notices=new(StringComparer.Ordinal);
     public Color Color(string id)=>new(Catalog.Materials.Single(m=>m.Id==id).Color);
@@ -17,7 +23,7 @@ public sealed class SceneryVisualAssets
     {
         var key=id+"/"+vertex;if(materials.TryGetValue(key,out var known))return known;
         var d=Catalog.Materials.Single(m=>m.Id==id);StandardMaterial3D? result=null;
-        if(d.Resource!=null){if(ResourceLoader.Exists(d.Resource)&&GD.Load<Material>(d.Resource) is StandardMaterial3D s&&SafeMaterial(s))result=(StandardMaterial3D)s.Duplicate();else Notices.Add("材質を仮素材で表示："+id);}
+        if(d.Resource!=null){if(ResourceLoader.Exists(d.Resource)&&Retain<Material>(d.Resource) is StandardMaterial3D s&&SafeMaterial(s))result=(StandardMaterial3D)s.Duplicate();else Notices.Add("材質を仮素材で表示："+id);}
         result??=new StandardMaterial3D{Roughness=1,CullMode=BaseMaterial3D.CullModeEnum.Disabled};
         result.AlbedoColor=vertex?Colors.White:Color(id);result.VertexColorUseAsAlbedo=vertex;materials[key]=result;return result;
     }
@@ -28,7 +34,7 @@ public sealed class SceneryVisualAssets
         Node3D? root=null;
         try
         {
-            root=GD.Load<PackedScene>(variant.Resource).Instantiate<Node3D>();
+            root=Retain<PackedScene>(variant.Resource).Instantiate<Node3D>();
             if(!root.Transform.IsEqualApprox(Transform3D.Identity))throw new InvalidOperationException("Scene origin must be ground-center");
             var scale=new Vector3(placement.WidthMm/(float)visual.AuthoringWidthMm,placement.HeightMm/(float)visual.AuthoringHeightMm,placement.DepthMm/(float)visual.AuthoringDepthMm);
             var yaw=new Basis(Vector3.Up,Mathf.DegToRad(placement.YawMilliDegrees/1000f));

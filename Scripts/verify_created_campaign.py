@@ -24,5 +24,5 @@ def main():
  assert before=={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
  prior=ROOT/'Docs/Design/RetainerStartV1/verification.json';j=json.loads(prior.read_bytes());assert j['tests']==expected and len(j['comparisons'])==30
  report=dict(status='PASSED',sources=before,binaries=j['binaries'],tests=expected,added=37,comparisons=comparisons,images=images,checks=checks,proofs={prior.relative_to(ROOT).as_posix():sha(prior),trx.relative_to(ROOT).as_posix():sha(trx)},visual_review=None)
- (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print('PASS campaign1047,30 exact images and prior96')
+ (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print(f'PASS campaign {expected} tests,30 exact images and prior96')
 if __name__=='__main__':main()

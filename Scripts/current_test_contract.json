@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1068,
-  "baseline_passed": 1047,
-  "added": 21,
-  "scope": "EngagementMissionTests: explicit enemy mission, losses, immutable physical reports and old profile"
+  "expected_passed": 1094,
+  "baseline_passed": 1068,
+  "added": 26,
+  "scope": "FieldSupplyTests: custody, loading, real-time coalesced consumption, return, tamper and restoration"
 }

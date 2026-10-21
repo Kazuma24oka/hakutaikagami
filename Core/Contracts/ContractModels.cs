@@ -56,7 +56,7 @@ public sealed record LocationState(EntityId Actor, LocationKind Kind, EntityId? 
     int SegmentIndex, long ProgressMm, int? LatitudeE7, int? LongitudeE7, long? HeightMm, string? TerrainRevision, long Revision);
 public sealed record UnitState(EntityId Id, EntityId Army, EntityId Commander, EntityId Organization, long Soldiers, long Revision);
 public sealed record ResourceLot(EntityId Id, string Kind, EntityId Owner, EntityId Holder, EntityId Site,
-    string Unit, long Quantity, long InitialQuantity, long Revision);
+    string Unit, long Quantity, long InitialQuantity, long Revision, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] EntityId? MobileHolder=null);
 public sealed record Reservation(EntityId Id, EntityId Lot, EntityId Task, long Amount, long Consumed, ReservationPhase Phase);
 public sealed record TransferEntry(EntityId Id, EntityId Effect, EntityId FromLot, EntityId ToLot, long Amount, long At);
 public sealed record DebtState(EntityId Id, EntityId Debtor, EntityId Creditor, string Unit, long Outstanding, EntityId Basis);
@@ -108,6 +108,8 @@ public sealed class ContractWorld
     public CommandMandate[]? CommandMandates { get; set; }
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public EngagementState? Engagement { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public SupplyState? Supply { get; set; }
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

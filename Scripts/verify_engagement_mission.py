@@ -5,7 +5,7 @@ from verify_created_campaign import source_files as parent_sources,sha
 ROOT=Path(__file__).resolve().parents[1];BASE=ROOT/'Docs/Design/EngagementMissionV1';OUT=BASE/'runtime-local'
 def source_files():return sorted(set(parent_sources()+[Path(__file__),ROOT/'Scripts/check_engagement_mission_binding.py',BASE/'DESIGN.md',BASE/'README.md',BASE/'legacy-fixture.json',ROOT/'Tests/Fixtures/created-campaign-c30f379-initial.json']))
 def main():
- expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'];assert expected==1068
+ expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'];assert expected>=1068
  subprocess.run([sys.executable,str(ROOT/'Scripts/verify_created_campaign.py')],cwd=ROOT,check=True)
  before={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()};key=uuid.uuid4().hex;images={};comparisons={};checks={}
  trx=ROOT/'Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx';ns={'t':'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'};tests=[x for x in ET.parse(trx).findall('.//t:UnitTestResult',ns) if 'EngagementMissionTests.' in x.attrib['testName']];assert len(tests)==21 and all(x.attrib['outcome']=='Passed' for x in tests)
@@ -24,5 +24,5 @@ def main():
  assert before=={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
  prior=ROOT/'Docs/Design/CreatedCampaignV1/verification.json';j=json.loads(prior.read_bytes());assert j['tests']==expected and len(j['comparisons'])==30
  report=dict(status='PASSED',sources=before,binaries=j['binaries'],tests=expected,added=21,comparisons=comparisons,images=images,checks=checks,proofs={prior.relative_to(ROOT).as_posix():sha(prior),trx.relative_to(ROOT).as_posix():sha(trx)},visual_review=None)
- (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print('PASS engagement1068,10 exact images and prior126')
+ (BASE/'verification.json').write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+'\n').encode());print(f'PASS engagement {expected} tests,10 exact images and prior126')
 if __name__=='__main__':main()

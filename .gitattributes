@@ -540,3 +540,9 @@ Game/Scripts/ContinuousWorldTrial.Campaign.cs -text
 Docs/Design/EngagementMissionV1/** -text
 Scripts/*engagement_mission* -text
 Tests/Fixtures/created-campaign-c30f379-*.json -text
+
+Docs/Design/FieldSupplyV1/** -text
+Scripts/*field_supply* -text
+Tests/Fixtures/engagement-511fe68-*.json -text
+
+Game/Scenes/SceneryAssetLifetimeChecks.tscn -text
