@@ -1,0 +1,576 @@
+{
+  "schema": 1,
+  "basis": "Docs/Design/BASIC_DESIGN_V1.md",
+  "method": "静的棚卸し。参照は部分機能であり製品受入合格ではない。",
+  "product_acceptance_passed": 0,
+  "items": [
+    {
+      "id": "BD-01",
+      "title": "最初の完成版",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContinuousWorld.cs"
+      ],
+      "remaining": "1560年全国初期状態・史実事件・製品負荷目標は未完了。",
+      "acceptance": "浪人・家臣・城主・国人・大名の主要経路と平戦往復が同じ保存世界で成立するシナリオを受入計画へ割り当てる。"
+    },
+    {
+      "id": "BD-02",
+      "title": "開始年代とモード",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContinuousWorld.cs"
+      ],
+      "remaining": "1560年全国初期状態・史実事件・製品負荷目標は未完了。",
+      "acceptance": "モード別差分がイベント発火方針とAIの歴史志向に限定され、権限・知識・時計原則を共通にする。"
+    },
+    {
+      "id": "BD-03",
+      "title": "史実と自由行動の競合",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContinuousWorld.cs"
+      ],
+      "remaining": "1560年全国初期状態・史実事件・製品負荷目標は未完了。",
+      "acceptance": "全モードでI01〜I10を破る強制イベントがなく、事件前提と分岐の試験ケースを持つ。"
+    },
+    {
+      "id": "BD-04",
+      "title": "全国規模と対応環境",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContinuousWorld.cs"
+      ],
+      "remaining": "1560年全国初期状態・史実事件・製品負荷目標は未完了。",
+      "acceptance": "指定負荷・ハード・画質・速度の再現可能な計測と正しさの比較を製品受入へ定義する。"
+    },
+    {
+      "id": "BD-05",
+      "title": "開始人物と作成武将",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "開始六立場・選択・負傷捕縛・後継・人生継続は未完了。",
+      "acceptance": "全開始テンプレートが権限・資源・所在地・知識の整合検査を通り、史実保存と作成データが分離する。"
+    },
+    {
+      "id": "BD-06",
+      "title": "負傷・捕縛・逃亡",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "開始六立場・選択・負傷捕縛・後継・人生継続は未完了。",
+      "acceptance": "負傷・拘束・解放の各遷移で操作可否と情報経路が変わり、保存後も同じ経過を再現する。"
+    },
+    {
+      "id": "BD-07",
+      "title": "死亡と後継・隠居等",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "開始六立場・選択・負傷捕縛・後継・人生継続は未完了。",
+      "acceptance": "死・隠居・継承・係争が独立し、候補の認識と権限で継続状態を検査できる。"
+    },
+    {
+      "id": "BD-08",
+      "title": "個人目標と終了条件",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "開始六立場・選択・負傷捕縛・後継・人生継続は未完了。",
+      "acceptance": "目標達成・失敗・主家滅亡・1650年・本人死亡に対する終了／継続をすべて明示する。"
+    },
+    {
+      "id": "BD-09",
+      "title": "仕官・臣従・解任・離反",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/WorldSession.cs"
+      ],
+      "remaining": "仕官・解任・全制度権限の統合は未完了。",
+      "acceptance": "所属・直属・権限・知識の更新時点を分離し、通知だけで全資産を移転しない。"
+    },
+    {
+      "id": "BD-10",
+      "title": "代表行動の権限",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/WorldSession.cs"
+      ],
+      "remaining": "仕官・解任・全制度権限の統合は未完了。",
+      "acceptance": "5分類×浪人・家臣陪臣・城主国人・大名の20組に代表正常例と拒否／申請例を用意する。"
+    },
+    {
+      "id": "BD-11",
+      "title": "競合命令の処理",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/WorldSession.cs"
+      ],
+      "remaining": "仕官・解任・全制度権限の統合は未完了。",
+      "acceptance": "兼任・密命・同格競合・不明な取消の各例で、権限と本人認識に依存した理由を残す。"
+    },
+    {
+      "id": "BD-12",
+      "title": "随行者と配下・指揮対象",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/WorldSession.cs"
+      ],
+      "remaining": "仕官・解任・全制度権限の統合は未完了。",
+      "acceptance": "各名簿の所属・位置・指揮根拠・期間が保存され、混同した選択や一括移籍を防ぐ。"
+    },
+    {
+      "id": "BD-13",
+      "title": "能力・技能・成長",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "能力成長・対象別忠誠・派閥は未完了。",
+      "acceptance": "代表コマンドが参照能力・熟練・状況を説明でき、成長は一度だけ確定する。"
+    },
+    {
+      "id": "BD-14",
+      "title": "性格と対象別忠誠",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "能力成長・対象別忠誠・派閥は未完了。",
+      "acceptance": "同じ命令でも認識・性格・補給により判断が変わり、内部理由と開示可能な理由を分離する。"
+    },
+    {
+      "id": "BD-15",
+      "title": "非対称の関係と派閥",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "能力成長・対象別忠誠・派閥は未完了。",
+      "acceptance": "非対称関係・派閥脱退・訂正報の三例で、知識と社会的所属の変化が区別される。"
+    },
+    {
+      "id": "BD-16",
+      "title": "能力・感情の表示",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "能力成長・対象別忠誠・派閥は未完了。",
+      "acceptance": "未知・古い・直接観察・噂・訂正の各表示を区別し、真の値をUIへ渡さない。"
+    },
+    {
+      "id": "BD-17",
+      "title": "連続座標と縮尺",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NationalRoutes.cs"
+      ],
+      "remaining": "全国史料採録・領域・実地形は未完了。",
+      "acceptance": "全国と近景の座標往復、経路距離、同一橋ID、複数地点同時進行を検査する。"
+    },
+    {
+      "id": "BD-18",
+      "title": "拠点・領地の粒度",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NationalRoutes.cs"
+      ],
+      "remaining": "全国史料採録・領域・実地形は未完了。",
+      "acceptance": "地理・施設・組織・権利・支配を別IDでたどれ、係争状態を表示できる。"
+    },
+    {
+      "id": "BD-19",
+      "title": "経路と通行",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NationalRoutes.cs"
+      ],
+      "remaining": "全国史料採録・領域・実地形は未完了。",
+      "acceptance": "地形・権限・認識・移動主体で経路と到着時刻が変わり、輸送中資源が瞬間共有されない。"
+    },
+    {
+      "id": "BD-20",
+      "title": "初期地理と史料",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NationalRoutes.cs"
+      ],
+      "remaining": "全国史料採録・領域・実地形は未完了。",
+      "acceptance": "静的地理と変動する政治・軍事情勢を異なる知識属性で管理する。"
+    },
+    {
+      "id": "BD-21",
+      "title": "行動併用の基本表",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/OfficerLoop.cs"
+      ],
+      "remaining": "全行動併用・引継ぎ・会話中操作は未完了。",
+      "acceptance": "代表併用表の許可・禁止を本人と委任先へ共通適用し、競合理由を認識範囲で表示する。"
+    },
+    {
+      "id": "BD-22",
+      "title": "中断・再開・引継ぎ",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/OfficerLoop.cs"
+      ],
+      "remaining": "全行動併用・引継ぎ・会話中操作は未完了。",
+      "acceptance": "中断と完了の同時刻、資材返還失敗、再ロードの各例で進捗と現物が一致する。"
+    },
+    {
+      "id": "BD-23",
+      "title": "時間尺度と速度",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/OfficerLoop.cs"
+      ],
+      "remaining": "全行動併用・引継ぎ・会話中操作は未完了。",
+      "acceptance": "速度・描画頻度・拡大率を変えても同じ種と入力時刻から同じ世界結果を得る。"
+    },
+    {
+      "id": "BD-24",
+      "title": "会話・入力中の時間",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/OfficerLoop.cs"
+      ],
+      "remaining": "全行動併用・引継ぎ・会話中操作は未完了。",
+      "acceptance": "開閉だけの無料進捗・局所停止中の全国進行・未発送返答の成立がない。"
+    },
+    {
+      "id": "BD-25",
+      "title": "情報の取得経路",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/AssessmentNotice.cs"
+      ],
+      "remaining": "全制度の情報経路・表示設定は未完了。",
+      "acceptance": "各表示事実が観測時刻・学習時刻・出典を持ち、報告で観測日を現在へ更新しない。"
+    },
+    {
+      "id": "BD-26",
+      "title": "信用・鮮度・訂正",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/AssessmentNotice.cs"
+      ],
+      "remaining": "全制度の情報経路・表示設定は未完了。",
+      "acceptance": "真実が異なる二つの同一報告入力で、受領時のUIが真偽を漏らして変化しない。"
+    },
+    {
+      "id": "BD-27",
+      "title": "代理と重要書状",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/AssessmentNotice.cs"
+      ],
+      "remaining": "全制度の情報経路・表示設定は未完了。",
+      "acceptance": "本人・代理・物理所持・開封・期限を別々に検査し、代理交代時の二重回答を防ぐ。"
+    },
+    {
+      "id": "BD-28",
+      "title": "通知と自動停止",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/AssessmentNotice.cs"
+      ],
+      "remaining": "全制度の情報経路・表示設定は未完了。",
+      "acceptance": "各通知分類に発動・非発動・同時集約・未開封・代理受領の期待例を持つ。"
+    },
+    {
+      "id": "BD-29",
+      "title": "任務の成立と完了",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/IncomingMission.cs"
+      ],
+      "remaining": "全制度委任・政治評価への統合は未完了。",
+      "acceptance": "命令・任意依頼・期限・部分達成・報告不達の代表状態遷移を持つ。"
+    },
+    {
+      "id": "BD-30",
+      "title": "委任裁量と監督",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/IncomingMission.cs"
+      ],
+      "remaining": "全制度委任・政治評価への統合は未完了。",
+      "acceptance": "同じ委任入力を人物・知識違いで実行し、上限と報告経路を守るか逸脱理由を残す。"
+    },
+    {
+      "id": "BD-31",
+      "title": "任務変更・取消・緊急判断",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/IncomingMission.cs"
+      ],
+      "remaining": "全制度委任・政治評価への統合は未完了。",
+      "acceptance": "遅着原本・再送・取消・差替え・担当交代で二重実行や過去の巻戻しがない。"
+    },
+    {
+      "id": "BD-32",
+      "title": "拒否・逸脱と戦後評価",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/IncomingMission.cs"
+      ],
+      "remaining": "全制度委任・政治評価への統合は未完了。",
+      "acceptance": "成功した違反、失敗した適法命令、未認識命令、誤報に基づく判断を異なる根拠で審査する。"
+    },
+    {
+      "id": "BD-33",
+      "title": "生産と開発",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "生産・普請・俸禄・市場循環は未完了。",
+      "acceptance": "人口・動員・収穫・損失・備蓄の帳尻が保存前後で一致する。"
+    },
+    {
+      "id": "BD-34",
+      "title": "徴税・俸禄・私財",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "生産・普請・俸禄・市場循環は未完了。",
+      "acceptance": "二重請求は記録できても二重徴収は現物残量で制限し、私財と家財の出入根拠を持つ。"
+    },
+    {
+      "id": "BD-35",
+      "title": "交易・契約・債務",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "生産・普請・俸禄・市場循環は未完了。",
+      "acceptance": "見積から決済までの各段階で現物・引当・債務が対応し、途中保存で再決済しない。"
+    },
+    {
+      "id": "BD-36",
+      "title": "資源不足・同時刻配分",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/ContractModels.cs"
+      ],
+      "remaining": "生産・普請・俸禄・市場循環は未完了。",
+      "acceptance": "引当先後・同順位按分・不可分・緊急転用・補償失敗・再ロードで数量と裁定が一致する。"
+    },
+    {
+      "id": "BD-37",
+      "title": "編成・動員・指揮",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/RegionalBattle.cs"
+      ],
+      "remaining": "全国動員・攻城・継続補給は未完了。",
+      "acceptance": "招集数・出発数・現地数・損耗・帰還が整合し、指揮委任終了でも兵は消えない。"
+    },
+    {
+      "id": "BD-38",
+      "title": "作戦線と再配置",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/RegionalBattle.cs"
+      ],
+      "remaining": "全国動員・攻城・継続補給は未完了。",
+      "acceptance": "旧原本の遅着・再送・部分到達・取消・混雑でも各部隊は一つの有効任務と物理経路を持つ。"
+    },
+    {
+      "id": "BD-39",
+      "title": "野戦・攻城・撤退",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/RegionalBattle.cs"
+      ],
+      "remaining": "全国動員・攻城・継続補給は未完了。",
+      "acceptance": "野戦・包囲・強襲・救援・撤退・降伏の正常／競合／中断例を同じ時計と損害台帳で扱う。"
+    },
+    {
+      "id": "BD-40",
+      "title": "補給と消耗",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/RegionalBattle.cs"
+      ],
+      "remaining": "全国動員・攻城・継続補給は未完了。",
+      "acceptance": "出庫・移動・損失・到着・日次消費が保存で一致し、戦闘中と遠方簡略処理の在庫結果が同じになる。"
+    },
+    {
+      "id": "BD-41",
+      "title": "交渉と条約成立",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "条約・同盟・婚姻養子・人質捕虜は未完了。",
+      "acceptance": "両当事者・本文版・権限・到達・発効・期限を検査し、再送で二重条約を作らない。"
+    },
+    {
+      "id": "BD-42",
+      "title": "同盟義務・破棄・違反",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "条約・同盟・婚姻養子・人質捕虜は未完了。",
+      "acceptance": "解除通知不達、同盟先同士の交戦、履行不能、秘密条項の各例で義務と認識を区別する。"
+    },
+    {
+      "id": "BD-43",
+      "title": "婚姻・養子の合意",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "条約・同盟・婚姻養子・人質捕虜は未完了。",
+      "acceptance": "当人・家・権限・所在・合意版・実施・相続資格が別々に評価される。"
+    },
+    {
+      "id": "BD-44",
+      "title": "人質・捕虜・保証",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "条約・同盟・婚姻養子・人質捕虜は未完了。",
+      "acceptance": "同一人物の拘束・所在・保証が一意で、交換失敗でも複製や消失を起こさない。"
+    },
+    {
+      "id": "BD-45",
+      "title": "家督と暫定統治",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "家督・暫定統治・独立・開城・個別承継は未完了。",
+      "acceptance": "家督・暫定権限・所領・指揮・支持の異なる状態を保存でき、未知の遺言を選択肢で漏らさない。"
+    },
+    {
+      "id": "BD-46",
+      "title": "独立・離反",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "家督・暫定統治・独立・開城・個別承継は未完了。",
+      "acceptance": "同じ城内の部隊別帰属、密約未発覚、宣言遅延、債務残存の例を扱える。"
+    },
+    {
+      "id": "BD-47",
+      "title": "開城・占有と救援",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "家督・暫定統治・独立・開城・個別承継は未完了。",
+      "acceptance": "合意前後・引渡し前後・救援可能／不能・守備分裂の期待遷移が明記される。"
+    },
+    {
+      "id": "BD-48",
+      "title": "条約・兵・債務の承継",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "家督・暫定統治・独立・開城・個別承継は未完了。",
+      "acceptance": "兵・家臣・契約・人質・債務・現物を対象別に更新し、各要素の継続／同意待ち／係争を保存する。"
+    },
+    {
+      "id": "BD-49",
+      "title": "組織決定と個人",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "組織意思・自治・寺社権益・凶作救済は未完了。",
+      "acceptance": "代表交代・不在・代理・反対派・通知不達でも組織意思と個人意思が区別される。"
+    },
+    {
+      "id": "BD-50",
+      "title": "自治・従属・派閥",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "組織意思・自治・寺社権益・凶作救済は未完了。",
+      "acceptance": "同一人物が国人の家督・主家への義務・戦時指揮を並行して持てる。"
+    },
+    {
+      "id": "BD-51",
+      "title": "寺社との権益交渉",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "組織意思・自治・寺社権益・凶作救済は未完了。",
+      "acceptance": "要求・正式権益・実支配・協力・不服従を別状態で表せる。"
+    },
+    {
+      "id": "BD-52",
+      "title": "凶作・救済・一揆",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "組織意思・自治・寺社権益・凶作救済は未完了。",
+      "acceptance": "災害・報告・救済発送・到着・反応を同じ時系列と在庫で追跡する。"
+    },
+    {
+      "id": "BD-53",
+      "title": "中央への働きかけ",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "中央への取次・任官・擁立・仲裁は未完了。",
+      "acceptance": "外交と共通案件基盤を使いながら、朝廷と幕府固有の決裁権を別に検査する。"
+    },
+    {
+      "id": "BD-54",
+      "title": "称号・任官・実権",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "中央への取次・任官・擁立・仲裁は未完了。",
+      "acceptance": "正式地位・名乗り・他者認識・実権を別々に表示・照合する。"
+    },
+    {
+      "id": "BD-55",
+      "title": "将軍継承・擁立",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "中央への取次・任官・擁立・仲裁は未完了。",
+      "acceptance": "名目就任・候補支持・実権・外交服従の状態が独立し、資格制約は開始時に公開される。"
+    },
+    {
+      "id": "BD-56",
+      "title": "仲裁と服従",
+      "state": "not-implemented",
+      "references": [],
+      "remaining": "中央への取次・任官・擁立・仲裁は未完了。",
+      "acceptance": "発給・到達・受容・履行・政治評価を分離し、未到達の相手を全知で処罰しない。"
+    },
+    {
+      "id": "BD-57",
+      "title": "画面と操作導線",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "単一製品世界の導線・人物作成・製品受入は未完了。",
+      "acceptance": "平時任務→移動→布陣→報告→戦後評価を主画面から往復し、キーボードだけでも主要操作を完結できる。"
+    },
+    {
+      "id": "BD-58",
+      "title": "NPCの共通判断契約",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "単一製品世界の導線・人物作成・製品受入は未完了。",
+      "acceptance": "同じ種・知識・入力で判断が再現し、詳細／簡略モードの主要状態と資源が一致する。"
+    },
+    {
+      "id": "BD-59",
+      "title": "人物作成・外見・会話",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "単一製品世界の導線・人物作成・製品受入は未完了。",
+      "acceptance": "外見ID・保存・全周・色保護・装備着脱・会話構図を実画像で確認し、生成履歴と編集外保護の検査を残す。"
+    },
+    {
+      "id": "BD-60",
+      "title": "基本設計完了と製品受入",
+      "state": "partial",
+      "references": [
+        "Core/Contracts/NpcWork.cs"
+      ],
+      "remaining": "単一製品世界の導線・人物作成・製品受入は未完了。",
+      "acceptance": "60件の一意ID・境界・正常失敗例・受入条件の欠落0、原則照合、HTML動作／表示検査、追跡表の整合が確認される。"
+    }
+  ]
+}

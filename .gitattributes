@@ -504,3 +504,10 @@ Docs/Design/LandIndexV1/** -text
 Scripts/*land_index* -text
 
 Core/Contracts/FieldWorld.cs -text
+
+Core/Contracts/StartConfiguration.cs -text
+Tests/StartConfigurationTests.cs -text
+Docs/Design/StartConfigurationV1/** -text
+Docs/Design/ImplementationAuditV1/** -text
+Scripts/verify_start_configuration.py -text
+Scripts/verify_pre_index_save.py -text
