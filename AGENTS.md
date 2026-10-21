@@ -1,3 +1,9 @@
+## 軍議の作戦線・担当者入力：完成（2026-10-21）
+
+入口Scripts/Show-CouncilInput.ps1、CouncilEntryTrial。既存officer-mission-entry-v1のRegionalRequest/Commandと保存をそのまま使うUI拡張。新世界規則や二重時計はない。軍議で本隊/別働隊を選び、実地面に青い下書き線→明示送信→金色の送信済み線。下書きや担当変更、軍議中の誤ドラッグでは動かさない。本人指示と物理伝令/受令/返報を区別。既知の送信線だけを命令から描画し、判断結果はRegionalBattle.Status経由。到着報告とは扱わない。下書きは保存せず復旧時に破棄。
+
+完成5/5、全816テスト（追加14）、実Godot9プロセス・4ケース・12保存点・24比較差分0、44PNG。正本Docs/Design/CouncilInputV1/verification.json。verify_council_input.py→実PNG点検→check_council_input_binding.py。旧bindingは共通コード更新で再検証まで失効。前段階の原則/成績は履歴として保持。Current stageと運用はDocs/Developmentへ。次は主君/配下の任務提示と判断理由を接続する。通常の報告は4項目・次作業1件。
+
 ## 在所任務入力：完成（2026-10-21）
 
 入口Scripts/Show-MissionEntry.ps1、officer-mission-entry-v1。現在の運用はDocs/Development/OPERATING_POLICY.md、完成条件/次段階はCURRENT_STAGE.mdを参照。任務を点検/徴税・本人/書役・量1〜100・完了期限1〜3600秒で入力し、既存Intent/TaskState/権限/所在/資源/配送/保存へ接続。旧規則と旧保存は維持し読み替えない。下書きは保存せず送信済み内容を復元。

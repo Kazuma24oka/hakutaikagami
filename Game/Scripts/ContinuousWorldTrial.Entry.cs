@@ -6,14 +6,15 @@ using HakutaiKagami.Core.Contracts;
 
 public partial class ContinuousWorldTrial
 {
-    bool EntryEnabled=>Name=="MissionEntryTrial"||OS.GetCmdlineUserArgs().Contains("--mission-entry");
+    bool EntryEnabled=>CouncilEnabled||Name=="MissionEntryTrial"||OS.GetCmdlineUserArgs().Contains("--mission-entry");
     OptionButton entryPurpose=null!,entryExecutor=null!;
     SpinBox entryQuantity=null!,entryDeadline=null!;
     Label entrySummary=null!;
+    HFlowContainer entryRow=null!;
     void BuildEntryUI(VBoxContainer col)
     {
         foreach(var id in new[]{"inspect","levy"})buttons[id].Visible=false;
-        var row=new HFlowContainer();col.AddChild(row);
+        var row=new HFlowContainer();entryRow=row;col.AddChild(row);
         row.AddChild(new Label{Text="任務"});entryPurpose=new();entryPurpose.AddItem("点検");entryPurpose.AddItem("徴税");row.AddChild(entryPurpose);
         row.AddChild(new Label{Text="担当"});entryExecutor=new();entryExecutor.AddItem("本人");entryExecutor.AddItem("書役");row.AddChild(entryExecutor);
         row.AddChild(new Label{Text="数量"});entryQuantity=new(){MinValue=1,MaxValue=100,Step=1,Value=40,CustomMinimumSize=new(85,0)};row.AddChild(entryQuantity);
@@ -34,7 +35,7 @@ public partial class ContinuousWorldTrial
     void RefreshEntry()
     {
         if(entrySummary==null)return;
-        var w=S.DiagnosticSnapshot();entryQuantity.Editable=entryPurpose.Selected==1;
+        var w=S.DiagnosticSnapshot();if(CouncilEnabled){entryRow.Visible=!w.Region!.Active;entrySummary.Visible=!w.Region.Active;}entryQuantity.Editable=entryPurpose.Selected==1;
         entrySummary.Text="送信前："+(entryPurpose.Selected==0?"点検":$"徴税{entryQuantity.Value:0}")+" / "+(entryExecutor.Selected==0?"本人":"書役")+$" / 完了期限は{entryDeadline.Value:0}秒後。作業4秒・報告は配送。数量と秒は試作値です。";
         buttons["entry-send"].Disabled=w.Region!.Active||S.GetActorView(ContractFixture.Officer).Location.Site!=ContractFixture.Castle;
         missionPanel.Text=string.Join(" / ",S.GetActorView(ContractFixture.Officer).Tasks.TakeLast(3).Select(t=>{

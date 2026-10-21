@@ -380,3 +380,11 @@ Scripts/*mission_entry* -text whitespace=blank-at-eol,blank-at-eof,space-before-
 Scripts/Show-MissionEntry.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Design/MissionEntryV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Development/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/CouncilInput.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/CouncilInputTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/ContinuousWorldTrial.Council.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/CouncilEntryTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*council_input* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-CouncilInput.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/CouncilInputV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

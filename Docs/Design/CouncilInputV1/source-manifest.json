@@ -1,0 +1,9 @@
+{
+ "world_ruleset":"officer-mission-entry-v1",
+ "scope":"own/clerk recipient, drag 3D terrain line into draft, explicitly dispatch existing RegionalRequest.Move",
+ "geometry":"global mm, existing minimum10m, known issued geometry drawn from saved command, bounded256 segment preview",
+ "authority":"existing WorldSession.IssueRegional rights/service checks, physical regional courier/decision/report, no direct remote control",
+ "knowledge":"issuer knows chosen line; result only through RegionalBattle.Status; no path-truth prevalidation",
+ "save":"existing command/delivery/region and CouncilOpen/camera; no schema or world version change; unsent draft is not saved",
+ "limits":"two fixture recipients, no free-text purpose/constraint/report rules, no new military AI or economic model"
+}
