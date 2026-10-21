@@ -1,0 +1,7 @@
+{
+  "kind": "Test harness correction, not a passed restoration run",
+  "observed": "Initial isolated checkpoints were saved, but normal resume list requires the normal save action. The checker omitted that action.",
+  "correction": "Use the normal save button at the final checkpoint before starting the independent restore process.",
+  "original_log": "Docs/Design/DelegationTransportV1/runtime-local/harness-first-failure.log",
+  "sha256": "8e3854dac27d65a375e7852d43c620f70050c56b18eeb560b8b18b0dd8010f19"
+}

@@ -556,3 +556,7 @@ Scripts/*delegation_mission* -text
 Tests/Fixtures/presence-d9f71d9-*.json -text
 Game/Scripts/ContinuousWorldTrial.Delegation.cs -text
 Game/Scripts/StartSelectionPanel.DelegationChecks.cs -text
+
+Docs/Design/DelegationTransportV1/** -text
+Scripts/*delegation_transport* -text
+Game/Scripts/StartSelectionPanel.RetryChecks.cs -text

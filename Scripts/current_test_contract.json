@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1144,
-  "baseline_passed": 1114,
-  "added": 30,
-  "scope": "DelegationMissionTests: other-house authority, physical receipt/arrival, private refusal, replacement lineage, late original and restoration"
+  "expected_passed": 1159,
+  "baseline_passed": 1144,
+  "added": 15,
+  "scope": "DelegationTransportTests: known failure, physical retry, immutable message, reply address and restoration"
 }

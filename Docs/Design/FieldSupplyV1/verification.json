@@ -18,7 +18,8 @@
     "Core/Contracts/ContractValidation.cs": "96b92c6b7a3e3be27dde5af7deba7481f8aabc685cd652924d96f76a8d6c7230",
     "Core/Contracts/CouncilInput.cs": "23ced7f34511d0169fa882919bd0b06e1125ff0e46b2f87b7560fbda6b9c8bfe",
     "Core/Contracts/CreatedCampaign.cs": "f4514a52dbd013fa9adb5894cf45f935eac532ee4c39e40bbd86ed41b95bcc7f",
-    "Core/Contracts/DelegationMission.cs": "26cf7896fe01809c969b2b54a053650c3cf475a277b40f320b47bf4aff4aba4f",
+    "Core/Contracts/DelegationMission.cs": "10b4a31cfe1427dbead47cce835003d663c8ae84e7520a1868a7f01892d65298",
+    "Core/Contracts/DelegationTransport.cs": "247a89365561b90d159d67b9bda1dfc29d7165645a5cab73aa1af44bfcdc42f9",
     "Core/Contracts/EngagementMission.cs": "3ad7f20701ddc33b3c27bb80c21f95cdca863f999d062df270e43f57fce50504",
     "Core/Contracts/FieldPresence.cs": "c31663aad7044f5481d82b13432ff7f50ebbe705fba540e6e42be1c2832b7269",
     "Core/Contracts/FieldSupply.cs": "abb4dad1e8733b3dd0b880e3dd96db2c2d88c2238b3417f0b3da173fec924eef",
@@ -35,7 +36,7 @@
     "Core/Contracts/NpcWork.cs": "e5d2e3c4bb1bc6014c894058b7c89f382cf9dd2ee0a9741edd9b93ded697449a",
     "Core/Contracts/OfficerLoop.cs": "b95321605ed92564759a203bca586a44da16bfe51e8f95cec960583e9163977d",
     "Core/Contracts/PersonalStart.cs": "d904e6dff16d3902ac867ed61ad3b7a2267a3a941a1a8f6f6d17b71e924f5adc",
-    "Core/Contracts/RegionalBattle.cs": "0c6eebbbfef22a1c0c195beb85e0dd87d630dea02d6e9472b5dacb2d1fe4004b",
+    "Core/Contracts/RegionalBattle.cs": "148e61eaefff603228eef2edfb4d5feff870b7a44b50341e3709bd2e9a9d7c02",
     "Core/Contracts/RegionalBattleModels.cs": "4ee18861258b670ef51ba60fa06b7e268559e1bd364c69ac543262a06624c55e",
     "Core/Contracts/RegionalBranch.cs": "f8daa501ce88d0507e325cc6cfca70ecfbae6da7dac476b13f566aefa83844ff",
     "Core/Contracts/RegionalCampaign.cs": "063effef9fc7700bb0f0f6d0a7178ceb0039d1e6360145a31fbeb1d82c6ff4da",
@@ -55,6 +56,7 @@
     "Core/Contracts/TravelWorld.cs": "932964301ee46bae5b2882a8c4478737043769c6c9ae71d60dfc2a47bffc5c6c",
     "Core/Contracts/WorldSession.AssessmentNotice.cs": "264492876a840f4d9689012e4ee7f2d2bb42cda7ad3c28d00f77d2486e58785c",
     "Core/Contracts/WorldSession.cs": "c63dd02c68a84933ecc6def258e70442af071b9d16cbfd2a4e352c313fa28d11",
+    "Core/Contracts/WorldSession.DelegationTransport.cs": "90c7a58e45e63af67c8c78db15beb65c26588ce08444465106685375c1fd154e",
     "Core/Contracts/WorldSession.Engagement.cs": "4066406c166036c81d6900984caa7cba031854a00d276ecc5739c1acbb47bfa3",
     "Core/Contracts/WorldSession.FieldSupply.cs": "457b81ec4ea0bd217fe891e6b3ad540931bdd3999da3f51d8d61af123e61d5da",
     "Core/Contracts/WorldSession.MissionReview.cs": "6480f5a657fc6acd41a72132a9bdcc235a7d7a5a0a91f98a4162d923cf5aa9a5",
@@ -260,7 +262,7 @@
     "Game/Scripts/ContinuousWorldTrial.Campaign.cs": "a597b6d81762a866717293d9bfb14ff87efe35a86c820a4536a48267c83f734f",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "318e8353d1361e1574bf52253445ecbcc93fff87a71c6bc86cc2b981b8bb4c68",
     "Game/Scripts/ContinuousWorldTrial.cs": "7553cbe7070f429ba90b35ed6197211ca00c0e90bdc659b396fa4e659609332f",
-    "Game/Scripts/ContinuousWorldTrial.Delegation.cs": "63676d7d8b501d02d55b78b899b82438a3688590619c056e41c60f3056d69add",
+    "Game/Scripts/ContinuousWorldTrial.Delegation.cs": "de84a03bd6b9e59004d0a64ba1a27cba2dc15b20ff764ddbd476c2587ad0cbb1",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "55661ec8c81909708bcedc64de890a7c47025066bf9ffd520fef3921ae07bec0",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "830c56bf1198d72e68e1bf2da84113a00a1f18c6dcedbdc609ce31cd08d7a234",
@@ -328,10 +330,11 @@
     "Game/Scripts/SceneryAssetLifetimeChecks.cs": "0bbeef3bb38cf272fa2e2412d24f7c35685b21d7674ca61b32465968bcf85f2e",
     "Game/Scripts/SceneryVisualAssets.cs": "f9cb733601e6f5fecb888a727cd81986133127b46c5ef078c008a19815b64f35",
     "Game/Scripts/StartSelectionPanel.CampaignChecks.cs": "13c98177d57d2474fe9d6f35b071044db5a83f9f82a3be65a9048e81dae288df",
-    "Game/Scripts/StartSelectionPanel.Checks.cs": "92916da90de9182c48b1787202499a9fe1e4df32851b849ea0357b6a10cf051f",
+    "Game/Scripts/StartSelectionPanel.Checks.cs": "6a0cc8a10759bbc24f6d8a569d9566379a55104cb1d4bf500ff22439d772b4ab",
     "Game/Scripts/StartSelectionPanel.cs": "5b85b5ef98e55e64ff02dbcb4a85223eb4ed7e661adbc7dd4b977b7c15ae8bf9",
     "Game/Scripts/StartSelectionPanel.DelegationChecks.cs": "ed0a232c9002c20ac586b026e1d79c37876b04e5bb655a71ff2b2370aba1794d",
     "Game/Scripts/StartSelectionPanel.RetainerChecks.cs": "469d1d9f22a8200689ec26130f0067297528bea3c56914b4bc974b97a2b9b66c",
+    "Game/Scripts/StartSelectionPanel.RetryChecks.cs": "b57f6091b9ed63bbaa0215de4c0cb9301fcc3b59e2e8250c24bac5cf3021c6bb",
     "Game/Scripts/TaxPanel.cs": "02b6b0225992b3844420a00bc6b5d0d88094dce8185cf6be48d221b14ccd72ef",
     "Game/Scripts/TrafficWorldTrial.cs": "dafafe979db88083717937c738a3d33a7b633b9c50967d199d22adc1b7077251",
     "Game/Scripts/TravelControlTrial.cs": "8a02cd0dbab3493592b26c2f828919d7cc6a59da0b78db2bc0844dbbfd97f4fd",
@@ -357,7 +360,7 @@
     "Scripts/check_start_selection_binding.py": "818b98a2f89dcdb4b98ae9d50aa53b653df756007f4f630341ead11ecfb62b87",
     "Scripts/check_task_entry_binding.py": "9eb2721b03299ad0c57e5cd4464855c439ba08696a43c8e11003c9bda9ae2d2e",
     "Scripts/check_work_hub_startup_binding.py": "ff1b58061a73c02afb38d1f8dce2eb07bf3b8708e6220ca0fc9fb219f616976a",
-    "Scripts/current_test_contract.json": "b2d46376abe8070ef799ec0a303d5ebf0824cf332569bc23fbe50c98253033b7",
+    "Scripts/current_test_contract.json": "ca1fee4cc6ed613b0ef012079b8a717a16462e90e8f6ce2f81d01d74f6d2fd3a",
     "Scripts/Show-CouncilInput.ps1": "a588d2d493553f250385d8fff355ab5637a2cc98f3afbf985b724ab40acb1e14",
     "Scripts/Show-MissionEntry.ps1": "ab1384f3a38bdd862fffaba71ebcb2e6d9b3f3ba871611c2a010ce12803e60a0",
     "Scripts/Show-OfficerLoop.ps1": "f601ee0a04bcce67e6656db5efe0b1f903c8d25b72eac4ff790bcaf8c8a8dfcf",
@@ -387,6 +390,7 @@
     "Tests/CreatedCampaignTests.cs": "e371a3632f3184d9269dcec71c4c0896928268ff5362002d81bc1a6369bdebb7",
     "Tests/DeadlineCancellationTests.cs": "b72de0f9f28b607804ced8e967bf8d5166b0057ec4070f93699195febe4c23ae",
     "Tests/DelegationMissionTests.cs": "28b3dd4cd7a535b06bef9699c50655085eafa6e0f5715de42b431a565f9d0398",
+    "Tests/DelegationTransportTests.cs": "b6b19c6ee712f3fc78500ef586a7e7931f67d12af00b91a9551993c57d8274a5",
     "Tests/DeliveryRecoveryTests.cs": "6a20d8354823147376694a7d69dcd49f8f5a37e958ecc00c95fac9a33d7a5e66",
     "Tests/EngagementMissionTests.cs": "c077a950b70b18a8581c467a5f99a462d8cb0ea4019c74a5351418c2b9ac6783",
     "Tests/FieldPresenceTests.cs": "2da2729b52481dace4388aff6908da17276b839e50484949730baadfdde0230d",
@@ -434,10 +438,10 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "d1e150d18a3a3fcfd90be1e7baf813e308dafb0fbc8f11ad3d6b5b5f29c4a823",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "88fa8ceae1fa4527b3115df5ede8b7191be902601be24486e8b7749525e1c2e2"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "9b8548c550f6a1d9eaf35cf7109db5bebf556d011de226c6b8808eed3432bbb8",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "c0b0648feec388d419c0b0902b0ba970c7e015dc1ccd5c03a07cf1d003b7a602"
   },
-  "tests": 1144,
+  "tests": 1159,
   "added": 26,
   "comparisons": {
     "supplies/s0/restored-s0": 0,
@@ -556,8 +560,8 @@
     }
   },
   "proofs": {
-    "Docs/Design/EngagementMissionV1/verification.json": "bd125c0c92331bc9b7dbf7acbe9f523bc1284bb611026612ba5755f0e8115dfe",
-    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "426a183a26990270bb26c58eedbce16895b7f5e14028057c3e71cc141df9cf52",
+    "Docs/Design/EngagementMissionV1/verification.json": "d3f3da213e143b38b8bbd72fafdb36431d38f5f85af19f9f245d104d50aa5925",
+    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "05f9f4305338d5e99790dc43694aaa40768ae477f3f361ed53753ddb0e24e47f",
     "Docs/Design/FieldSupplyV1/runtime-local/lifetime/original-failure.log": "4394a66c40f05cbc80d5a3ad5507e4435df09e30c1eebedbfdc63f39e3a8918f",
     "Docs/Design/FieldSupplyV1/runtime-local/lifetime/baseline.log": "3eda4ff0cb8e7aa41f0540a4d38960faef036e1f455e315f07840d62efd7e967"
   },
@@ -569,7 +573,7 @@
       "Docs/Design/CreatedCampaignV1/runtime-local/supplies/final.png": "d38b488f09f19df89b8a86ce57c0d6e8bc53081c59bbf0b40e501a3bfbd4dfa4",
       "Docs/Design/FieldSupplyV1/runtime-local/lifetime/pinned0.png": "c7ce13a0a85491a3c1bba9a287f65489712b354a0a34e3354c63ae901393a9d1"
     },
-    "method": "Exact SHA256 equality with personally inspected d9f71d9 PNGs."
+    "method": "Previously personally inspected representative PNGs remain byte-identical to commit2973f84; runtime restore/continue comparisons were rerun for the current binary."
   },
   "summary": {
     "gpu_processes": 39,
