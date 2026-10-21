@@ -22,6 +22,9 @@ public partial class ContinuousWorldTrial
         buttons["military-pickup"].Visible=view.CanPickup;buttons["military-pickup"].Disabled=!local;
         buttons["military-return"].Visible=view.CanReturn;buttons["field-report"].Visible=view.Custody;buttons["field-report"].Disabled=w.Engagement!.Reports.Any(r=>r.At==S.Seconds);
         buttons["supply-pack"].Visible&=view.Custody&&!w.Military!.Requests.Any(q=>q.Input.Action==MilitaryAction.Return);buttons["supply-return"].Visible&=view.Custody;
+        bool returning=w.Military!.Requests.Any(q=>q.Input.Action==MilitaryAction.Return);
+        buttons["site"].Disabled|=returning;
+        if(returning&&!active&&w.Engagement!.Reports.Any(r=>r.Sender==S.PlayerControl&&r.At>=System.Math.Max(w.Military.Requests.Single(q=>q.Input.Action==MilitaryAction.Pickup).At,w.Supply!.Sorties.LastOrDefault()?.Until??0)))buttons["field-report"].Visible=false;
         buttons["site"].Visible=view.Custody;buttons["depart"].Disabled=active||OfficerLoop.Busy(w,S.PlayerControl);
         workText.Text="身分："+(CareerCard?.Status??"浪人")+" / 軍務："+view.Status;
         var inbox=RegionalWork.Inbox(S);if(inbox.Length>0&&!active)workText.Text+="\n"+MissionText(inbox.Last().Text);

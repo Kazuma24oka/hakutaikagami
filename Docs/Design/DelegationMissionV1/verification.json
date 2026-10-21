@@ -280,9 +280,9 @@
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "0f360cb93c6dc70f169564d910ea96597527385beb425f183c59d1001153243b",
     "Game/Scripts/ContinuousWorldTrial.Campaign.cs": "8633a4396af7d98869cf40ced09e08eb451032cf6ab3635f87368a53e099df87",
     "Game/Scripts/ContinuousWorldTrial.Career.cs": "f5464b411100ce6a1a58d6b776c8eac851a71a9b8916a86d00dafa6b53183f5b",
-    "Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs": "1da75c18d5433a4e28912ca9a65ae0ea3ce0c0fcccf1d0d742d6ebd5ee7581fd",
+    "Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs": "ac91de1ff3cfb73a391b8057f317e0880438e5fc29ba574994f3370f61504c34",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "318e8353d1361e1574bf52253445ecbcc93fff87a71c6bc86cc2b981b8bb4c68",
-    "Game/Scripts/ContinuousWorldTrial.cs": "e6f775d07d3043e7f9043d4316787c53b131a3de7d4ba9559e9fbbe991a6b0ae",
+    "Game/Scripts/ContinuousWorldTrial.cs": "be861f63b12c6fb34c14882b8bd198d08a15e92dd1e621bc3789fd220d1f6717",
     "Game/Scripts/ContinuousWorldTrial.Delegation.cs": "6083e8ba0287865d1c4c860a40dba1c65fac07f3a3203a8f9e6a6bcd328ff80f",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "55661ec8c81909708bcedc64de890a7c47025066bf9ffd520fef3921ae07bec0",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
@@ -290,6 +290,7 @@
     "Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs": "69bed15ac1f2a58b9cd686f50271890d896cbeb26b12ff18da610bf4bd9b8c71",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "d063aa853414a9e48da2a8e6c0ef19fee90b3f8cdb316aad759cf6caa2caee4e",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "432c6421aec7c3aa92a639b4c2483bb0fef06b201d88e1b786c7b0831375ff26",
+    "Game/Scripts/ContinuousWorldTrial.LifeView.cs": "2c8d8d8aadcef09a969887bd3f5bcb9c9f6a2e950a6663a828fd40e6c2c4a86c",
     "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
     "Game/Scripts/ContinuousWorldTrial.Loop.cs": "deb191e8eb63ea71d02f653adf244fb99a3c874167bc05e06bec691bc3ca99c4",
     "Game/Scripts/ContinuousWorldTrial.MidTerrain.cs": "ace914c31ac9ca283edea31bd13ffe7b128efa3c6a11f71f090ef517894b479c",
@@ -353,10 +354,11 @@
     "Game/Scripts/StartSelectionPanel.CampaignChecks.cs": "13c98177d57d2474fe9d6f35b071044db5a83f9f82a3be65a9048e81dae288df",
     "Game/Scripts/StartSelectionPanel.CareerChecks.cs": "9ba21db379089d907c895827e8e259da539c3233a5d96d93e61d3b68bf13e354",
     "Game/Scripts/StartSelectionPanel.CareerMilitaryChecks.cs": "60b5e8938212ff1e33fddced512a91830b4fdc904241b32677a665d4fc999c60",
-    "Game/Scripts/StartSelectionPanel.Checks.cs": "266ed0fe6d9a96aea579a4f07d718992752c1191129cfab983da46fa18c491c0",
-    "Game/Scripts/StartSelectionPanel.cs": "088723f79d5a836fdfd813fa1b0549ee0c2f0e17c01fddaf483dc0c3236adc17",
+    "Game/Scripts/StartSelectionPanel.Checks.cs": "8e4b81065741edb54cb263b8e22536ac492927521d0c579fce34b1397524eccb",
+    "Game/Scripts/StartSelectionPanel.cs": "e67fd3c9e8a926fb5cc1300fe56914884b808e3dcc4ab46bd3933f0b34248784",
     "Game/Scripts/StartSelectionPanel.DelegationChecks.cs": "ed0a232c9002c20ac586b026e1d79c37876b04e5bb655a71ff2b2370aba1794d",
     "Game/Scripts/StartSelectionPanel.InquiryChecks.cs": "dce9cc0c4f073d114035643c68018e06a0cc46eb75f145f9efcf4b1e9611cd0c",
+    "Game/Scripts/StartSelectionPanel.LifeEntryChecks.cs": "dc3218f1bfca8055602d76fa5ec1f224032498e79095c9bc0eafbc285585e382",
     "Game/Scripts/StartSelectionPanel.MilitaryInquiryChecks.cs": "598cbe96de66cb22be2f430183976076e8e54d229350b7933385ebac1b16c10e",
     "Game/Scripts/StartSelectionPanel.RetainerChecks.cs": "469d1d9f22a8200689ec26130f0067297528bea3c56914b4bc974b97a2b9b66c",
     "Game/Scripts/StartSelectionPanel.RetryChecks.cs": "b57f6091b9ed63bbaa0215de4c0cb9301fcc3b59e2e8250c24bac5cf3021c6bb",
@@ -365,7 +367,7 @@
     "Game/Scripts/TrafficWorldTrial.cs": "dafafe979db88083717937c738a3d33a7b633b9c50967d199d22adc1b7077251",
     "Game/Scripts/TravelControlTrial.cs": "8a02cd0dbab3493592b26c2f828919d7cc6a59da0b78db2bc0844dbbfd97f4fd",
     "Game/Scripts/TravelWorldTrial.cs": "a419c5a96b086d16f5fc3c383c3307c8878f833680d83677874a5924b30c74d2",
-    "Game/Scripts/WorkHubTrial.cs": "9160f05317ffda0252d08ceb43ef6159d4b8aa26380e4376fb29f5769b38da25",
+    "Game/Scripts/WorkHubTrial.cs": "00a8dbedc3c0681fae3c4698e7a71f4ddede5576ecd9316f8c27066bba6556b7",
     "Game/Shaders/Officer3D.gdshader": "e42fc79b673b582136d66ef618eb761f7f0a719f6f08c671ec2b1192e2da483c",
     "Game/Shaders/Officer3DV2.gdshader": "6025fece58c8e670a7dd986e5a1d00224afb509846b445250412ac81da623177",
     "Game/Shaders/Officer3DV3.gdshader": "e2b6bdea8f6666ba28b1e5f8c420415609254da3a79ddef65c22ca4b0d6fdc05",
@@ -475,8 +477,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "48dbb2559c288e2ae3c6f45e0a1c6a07a355f8b93c010f13f1a0abb163bd10dc",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "d3fdeb88fd32412ebaea31daf7d1f5a9faea550fd206bf6cb18c77c1e61c3759"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "f24d82c4aade74ec4bb8c1ba99fc7c1bb8f3fdf05249829c2841061886615b41",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "759425d4d348cff2ff33a0c501ba952d9bf2b209035c1c85dc8c5a307d374fc8"
   },
   "tests": 1281,
   "added": 30,
@@ -727,8 +729,8 @@
     ]
   },
   "proofs": {
-    "Docs/Design/FieldPresenceV1/verification.json": "1fccbee277c43e658fa614ade3cf1a6674cefd522dbabef67fb8cdd5090815d0",
-    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "7c27463507f09ce562f7442b0201fee879bbc5ef5ca5661a8e5b703426798977"
+    "Docs/Design/FieldPresenceV1/verification.json": "bdd614f2962cf68b140e6402cecff24b8a2672279ce0bb6c4246018a43e5843c",
+    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "2b9f56bd68661c48d442cd986da683abb3cb085d08ae3477a86a1b71b0195dc7"
   },
   "visual_review": {
     "inspected": {
@@ -739,7 +741,7 @@
       "Docs/Design/DelegationMissionV1/runtime-local/refuse/final.png": "cf328777bdf7147da25095e213e55573048812682859fc1d0b2b795f48d04158",
       "Docs/Design/DelegationMissionV1/runtime-local/expiry/final.png": "74648d6349d5c31ae5e2e0a8f2d8315d21af5f319c840410366460f3634e7e93"
     },
-    "method": "Reran actual GPU save/restore/continue on current sources. Prior personally inspected representative PNGs were compared byte-for-byte with commitbd631ba; changed military controls were personally reinspected in full.",
+    "method": "Reran actual GPU save/restore/continue on current sources. Prior personally inspected representative PNGs were compared byte-for-byte with commit1406bf7; changed military handback controls were personally reinspected in full.",
     "reinspected_changed": []
   }
 }

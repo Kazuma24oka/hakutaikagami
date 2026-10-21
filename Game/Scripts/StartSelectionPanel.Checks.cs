@@ -30,6 +30,7 @@ public partial class StartSelectionPanel
     async void RunSelectionChecks()
     {
         try{
+            if(SelectionMode.Contains("-life-")){await RunLifeEntryChecks();return;}
             if(SelectionMode.Contains("-military-inquiry-")){await RunMilitaryInquiryChecks();return;}
             if(SelectionMode.Contains("-military-")){await RunMilitarySelectionChecks();return;}
             if(SelectionMode.Contains("-career-")){await RunCareerSelectionChecks();return;}

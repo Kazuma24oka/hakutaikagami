@@ -7,6 +7,7 @@ using HakutaiKagami.Core.Contracts;
 // Approved default entry; legacy Main and its saves remain available.
 public partial class WorkHubTrial:Control
 {
+    [Export] public bool LifeFirst {get;set;}
     TabContainer tabs=null!;StartSelectionPanel selection=null!;Control npcSlot=null!,legacySlot=null!;
     ContinuousWorldTrial npc=null!;Main? legacy;
     readonly List<string> checks=new();
@@ -19,16 +20,17 @@ public partial class WorkHubTrial:Control
             if(OS.GetCmdlineUserArgs().Any(a=>oldFlags.Contains(a)||a.StartsWith("--task-entry-")||a.StartsWith("--officer-world-")||a.StartsWith("--military-grid-")||a.StartsWith("--formation-world-"))){CallDeferred(nameof(OpenLegacyScene));return;}
             Theme=new Theme{DefaultFontSize=15,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
             var col=new VBoxContainer();AddChild(col);col.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-            col.AddChild(new Label{Text="百代鏡 / 試作の選択"});
-            col.AddChild(new Label{Text="各タブは別の試作世界・保存先です。以前の保存は「従来の検証」で開けます。",Modulate=new Color("e6c785")});
+            col.AddChild(new Label{Text=LifeFirst?"百代鏡 / 武将の人生":"百代鏡 / 試作の選択"});
+            col.AddChild(new Label{Text=LifeFirst?"一人の武将として同じ世界で生きる試作です。地形・城郭は開発中の仮表現です。":"各タブは別の試作世界・保存先です。以前の保存は「従来の検証」で開けます。",Modulate=new Color("e6c785")});
             tabs=new TabContainer{SizeFlagsVertical=SizeFlags.ExpandFill};col.AddChild(tabs);
-            npcSlot=new Control{Name="地域NPCの仕事"};legacySlot=new Control{Name="従来の検証"};tabs.AddChild(npcSlot);tabs.AddChild(legacySlot);selection=new(){Name="作成武将で開始",ProcessMode=ProcessModeEnum.Disabled};tabs.AddChild(selection);
+            npcSlot=new Control{Name="地域NPCの仕事"};legacySlot=new Control{Name="従来の検証"};tabs.AddChild(npcSlot);tabs.AddChild(legacySlot);selection=new(){Name=LifeFirst?"武将の人生":"作成武将で開始",Simplified=LifeFirst,ProcessMode=ProcessModeEnum.Disabled};tabs.AddChild(selection);
             npc=GD.Load<PackedScene>("res://Scenes/NpcWorkTrial.tscn").Instantiate<ContinuousWorldTrial>();npcSlot.AddChild(npc);
             tabs.TabChanged+=i=>{
                 if(i==1&&legacy==null){legacy=GD.Load<PackedScene>("res://Scenes/Main.tscn").Instantiate<Main>();legacySlot.AddChild(legacy);}
                 npc.ProcessMode=i==0?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;selection.ProcessMode=i==2?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;
                 if(legacy!=null)legacy.ProcessMode=i==1?ProcessModeEnum.Inherit:ProcessModeEnum.Disabled;
             };
+            if(LifeFirst)tabs.CurrentTab=2;
             if(Mode!="")CallDeferred(nameof(RunHubChecks));
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }

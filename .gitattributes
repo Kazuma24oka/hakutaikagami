@@ -585,3 +585,9 @@ Docs/Design/MilitaryInquiryV1/** -text
 Scripts/*military_inquiry* -text
 Tests/Fixtures/military-bd631ba-*.json -text
 Game/Scripts/StartSelectionPanel.MilitaryInquiryChecks.cs -text
+
+Docs/Design/LifeEntryV1/** -text
+Scripts/*life_entry* -text
+Game/Scripts/ContinuousWorldTrial.LifeView.cs -text
+Game/Scripts/StartSelectionPanel.LifeEntryChecks.cs -text
+Game/Scenes/LifeEntryTrial.tscn -text

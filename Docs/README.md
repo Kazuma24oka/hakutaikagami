@@ -1,3 +1,5 @@
+武将の人生の入口候補：[LifeEntryV1](Design/LifeEntryV1/README.md)。名前から同じ世界へ開始・再開し、ゲーム操作を整理した独立候補。通常起動の切替は未実施。
+
 軍務の不達回復：[MilitaryInquiryV1](Design/MilitaryInquiryV1/README.md)。原本の受領を偽らず、物理照会の引用から条件/許可/返還認識を回復。既知不達後の原本再送と局所回収の二重到達も検査。
 
 同一人生の軍務・現地引受/返還：[CareerMilitaryV1](Design/CareerMilitaryV1/README.md)。仕官だけでは軍/兵糧を取得せず、同一人物で平時→出陣→帰還→辞去へ継続。現在の結果と次工程は[完成条件](Development/CURRENT_STAGE.md)。
