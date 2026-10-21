@@ -5,14 +5,14 @@
     {
       "Id": "material:surface/road",
       "Color": "a58a5b",
-      "Resource": null,
+      "Resource": "res://Assets/Scenery/Materials/field-earth-material.tres",
       "TileSizeMm": 4000
     },
     {
       "Id": "material:surface/grass",
       "Color": "81916b",
-      "Resource": null,
-      "TileSizeMm": 4000
+      "Resource": "res://Assets/Scenery/Materials/field-earth-material.tres",
+      "TileSizeMm": 6000
     },
     {
       "Id": "material:surface/forest",

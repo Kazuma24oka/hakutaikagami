@@ -1,3 +1,7 @@
+# 地表材質と周期（2026-10-21）
+
+GroundMaterialV1：固定無彩色土粒とミップマップを開発時生成。色IDは既存、周期はTileSizeMm（道4m/草6m）を正本とし、区画近傍原点からUV計算。UVScale/Offset/Repeat/両面描画を統一し外部材質既定値による地面消失を防ぐ。実メッシュ345600頂点の位相/負座標/遠方/実描画画素を検査。933テスト・73比較差分0。verify_ground_material.py→実画像点検→check_ground_material_binding.py。Core/旧素材/保存規則は維持。次は総合行動と視点入力。
+
 # 背景の静的モデル（2026-10-21）
 
 FieldModelsV1：既存配置ID/Seed/占有範囲を変えず岩2種/木/試作城郭を追加。元モデル/手続き形状を代替として保持。史実建築復元ではない。Scripts/generate_field_models.pyとGame/Tools/author_field_rocks.gdから再生成し全形状ハッシュ一致を検査。実GetFacesで占有/4m余白・欠損/不正寸法拒否。933テスト・68復旧等比較差分0とモデル3/素材4可視変化。verify_field_models.py→実画像点検→check_field_models_binding.py。Core/保存/旧素材は保持。次は地表材質と繰返し寸法。

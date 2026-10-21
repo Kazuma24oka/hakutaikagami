@@ -194,6 +194,8 @@
     "Game/Assets/Officer3D/TrialV3/near_albedo.png": "f8b121be32d22e7c80539b072fda0fa69dfbb86f1d41e94fe820328008684191",
     "Game/Assets/Officer3D/TrialV3/near_normal.png": "ff3dde36f7e335114b0debd9d4ed799826c123b2d8fa9de0447f1b2c72023892",
     "Game/Assets/Officer3D/TrialV3/near_orm.png": "5576a3969a8f93ddd043f4db0460e6b4070256b1d329c522adca7e2a5c12254d",
+    "Game/Assets/Scenery/Materials/field-earth-grain.tres": "afed78e9bcea95c12b6bccbc0e7912fee24753322a2f40620611e299b128fb97",
+    "Game/Assets/Scenery/Materials/field-earth-material.tres": "ed55d51406d046dda8cb89e58fbfa08ecf5e171bfe1e05fa532301c029b47dfe",
     "Game/Assets/Scenery/Materials/road-demo.tres": "ca0e81a9d850972b96faaedcb391f2a60c0ac8847c62025cc7d25f9eace45ff2",
     "Game/Assets/Scenery/Models/field-pine-a.tscn": "32b24f6e99c4fefe39f1d371b59c4fbf6ec3a9bd1038f06aacc7955287aea08f",
     "Game/Assets/Scenery/Models/field-rock-a.tscn": "50dc8326196b915522c070d7efbed023ef65843ae2de027e748b36d3043cae31",
@@ -214,7 +216,7 @@
     "Game/Data/officer_right_motion_v8.json": "b633cb42ab543523c118f841b857602f0fb1b49d2c6ae69defcb885425aa95b6",
     "Game/Data/officer_visual_profile.json": "770cd351654cbfb17138398cebb257a78779e623e43966109255ced07f17ab0a",
     "Game/Data/prototype.json": "8772043797ed3fefeb15edae28c0a8c1a4ee59d564f9c8ba0522faea44e0401f",
-    "Game/Data/Scenery/scenery-appearance-v1.json": "cdc3795cdb32f652847128088562d430e03f690499784c1a820e7c97b0ad4cdc",
+    "Game/Data/Scenery/scenery-appearance-v1.json": "999d1a78e528e0091b97f7a331198310a0e31d4a56bd15eebfc357a24287ae49",
     "Game/HakutaiKagami.Game.csproj": "797e54a65426d8fe91ebd476304eed452427d721dbfe6437423b1b30994bbe07",
     "Game/project.godot": "36a30a934965cdddf01952904880287ba01e67515e9101289d574eff20917e24",
     "Game/Scenes/AssessmentNoticeTrial.tscn": "160295c12b0dcac68d5ec82414009ab99a937d1f9d42219d5e84987eaba63b4f",
@@ -230,13 +232,14 @@
     "Game/Scenes/WorkHubTrial.tscn": "229de1936992a74630b9fc2bb20d42caa58c4e35625bd8008fe5e445d6c201b4",
     "Game/Scripts/BranchWorldTrial.cs": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0",
     "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
-    "Game/Scripts/ContinuousTerrainRenderer.cs": "ccc2c019003f7e771ab8163bfc2ce10636f73764605bdf8ee94580f22bc247f7",
+    "Game/Scripts/ContinuousTerrainRenderer.cs": "6bcf760dfff2f5acfb6312bd9d89f7d63ada200a8cd58be6977169bd11c6fa80",
     "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": "fa463204f8fe70aa8c39c2d617fadcf13dcf7373172f3f8a8a22d4f37561e60c",
     "Game/Scripts/ContinuousWorldTrial.Council.cs": "62491784d8a8ac64fd9e230f1834286f250a25eee8c2d355e8d5e04fc69fe1ae",
-    "Game/Scripts/ContinuousWorldTrial.cs": "f523ce60ebfd5cd91194df29670710d1ecaf4ec180325d6d1943032b78cdb3cb",
+    "Game/Scripts/ContinuousWorldTrial.cs": "5c41f5baa8a238c205efa278b9db5b4f4605ace7e85f13558482b6b10942a759",
     "Game/Scripts/ContinuousWorldTrial.Entry.cs": "f76620f734a4c3112dd8e2de7900922ce3b3656e89c2bc2c3fba5ba1f88725f9",
     "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "9d6ffdfe7f93faec5468fb399d186194c9b91a47134fa4c9888eab6387890a72",
+    "Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs": "69bed15ac1f2a58b9cd686f50271890d896cbeb26b12ff18da610bf4bd9b8c71",
     "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": "e417a886d127056c5afccd3c48d4ba9dc527d13b0d6d8ee2d1fe031ec58910af",
     "Game/Scripts/ContinuousWorldTrial.Incoming.cs": "7e68e8c88b0db1737e0b81b2820c09601b79e8e03d06303ba355926e98b6fc6c",
     "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3",
@@ -380,8 +383,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "7a91e914f3f6165240dd296c9aab356f53e872a7e8f2fc95c6edfb6dcd71108a",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "b1ac2d0257c289d872a4ec3b9ee7992d890cbf83e520084b85d0ae62f9b14116"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "8feb5493a355f178db44363c2f7fb61558a0d3efadfc0b3f1222a449d80fd1ae",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "04b428dde06f4be8906d63c690ed9d652348fc02e57d552cc7997ea523d81a5e"
   },
   "comparisons": {
     "0": 0,

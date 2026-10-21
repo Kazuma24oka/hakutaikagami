@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "base": "86c3c62",
+  "original_catalog_sha256": "cdc3795cdb32f652847128088562d430e03f690499784c1a820e7c97b0ad4cdc",
+  "road_repeat_mm": 4000,
+  "grass_repeat_mm": 6000,
+  "layout_changed": false,
+  "rules_changed": false
+}

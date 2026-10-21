@@ -476,3 +476,10 @@ Game/Scripts/ContinuousWorldTrial.FieldModels.cs -text
 
 Game/Tools/author_field_rocks.gd -text
 Game/Assets/Scenery/Models/field-*.tres -text
+
+Docs/Design/GroundMaterialV1/** -text
+Scripts/*ground_material* -text
+Game/Tools/author_ground_material.gd -text
+Game/Assets/Scenery/Materials/field-earth-*.tres -text
+
+Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs -text
