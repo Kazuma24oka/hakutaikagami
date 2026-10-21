@@ -28,7 +28,7 @@ public partial class ContinuousWorldTrial
     void RefreshRegionalWork()
     {
         councilNotice.Visible=false;
-        var w=S.DiagnosticSnapshot();if(CampaignStartEnabled&&w.Region!.Active){RefreshCampaignWork(w);return;}
+        var w=S.DiagnosticSnapshot();if(CampaignStartEnabled&&FieldPresence.PlayerDeployed(w)){RefreshCampaignWork(w);return;}
         var nearby=RegionalWork.NearbyDispatchers(S);
         string selected=workDispatcher.ItemCount>0?workDispatcher.GetItemMetadata(workDispatcher.Selected).AsString():"";
         workDispatcher.Clear();foreach(var id in nearby){workDispatcher.AddItem(w.Definitions.Characters.Single(p=>p.Id==id).Name);workDispatcher.SetItemMetadata(workDispatcher.ItemCount-1,id.Value);if(id.Value==selected)workDispatcher.Select(workDispatcher.ItemCount-1);}
@@ -43,10 +43,10 @@ public partial class ContinuousWorldTrial
         var key=S.PlayerControl;
         if(!actors.TryGetValue(key,out var model)){model=new();world.AddChild(model);model.Apply(Officer3DCustomActor.Preset("red_guard"));actors[key]=model;}
         if(NpcWorkEnabled&&!CampaignStartEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Visible=false;details.Text="平時の地域仕事 / 軍議・戦闘は従来の検証に残しています（別世界）";if(notice.Text.StartsWith("地面を左ドラッグ"))notice.Text="行先を選んで移動。時間を進めると、現地で任意の依頼が届きます。";}
-        var view=S.GetBranchView(key);model.Visible=span<=240&&!w.Region!.Active;model.Scale=Vector3.One*2;model.Position=P(Current());model.Rotation=new(0,Mathf.Atan2(view.Heading.EastMm,-view.Heading.NorthMm),0);model.SetLod("mid");
+        var view=S.GetBranchView(key);model.Visible=span<=240&&!FieldPresence.PlayerDeployed(w);model.Scale=Vector3.One*2;model.Position=P(Current());model.Rotation=new(0,Mathf.Atan2(view.Heading.EastMm,-view.Heading.NorthMm),0);model.SetLod("mid");
         string clip=view.Walking?"walk":"idle";model.Freeze(clip,S.Seconds%model.Player.GetAnimation(model.Clips[clip]).Length);if(model.Visible)playerMarker.Visible=false;
     }
-    string WorkPose()=>System.Text.Json.JsonSerializer.Serialize(new{Scene=LoopPose(),workText.Text,Role=workRole.Text,Inbox=RegionalWork.Inbox(S),Position=S.GetBranchView(S.PlayerControl).Position,Models=actors.Where(p=>p.Value.Visible).Select(p=>new{p.Key,p.Value.Position,p.Value.Rotation,p.Value.Lod})});
+    string WorkPose()=>System.Text.Json.JsonSerializer.Serialize(new{Scene=LoopPose(),workText.Text,Role=workRole.Text,Inbox=RegionalWork.Inbox(S),Position=S.GetBranchView(S.PlayerControl).Position,Models=actors.OrderBy(p=>p.Key.Value,StringComparer.Ordinal).Where(p=>p.Value.Visible).Select(p=>new{p.Key,p.Value.Position,p.Value.Rotation,p.Value.Lod})});
     long WorkAt=>WorkNode=="castle"?0:S.DiagnosticSnapshot().Branches!.Journeys.First().Legs[^1].EndAt;
     void WorkAdvance(long at){if(S.Paused)Click("resume");Advance(at);Refresh();}
     void WorkArrive(){if(TravelWorld.Active(S.DiagnosticSnapshot()))WorkAdvance(WorkAt);}

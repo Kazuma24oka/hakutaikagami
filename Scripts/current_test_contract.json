@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1094,
-  "baseline_passed": 1068,
-  "added": 26,
-  "scope": "FieldSupplyTests: custody, loading, real-time coalesced consumption, return, tamper and restoration"
+  "expected_passed": 1114,
+  "baseline_passed": 1094,
+  "added": 20,
+  "scope": "FieldPresenceTests: personal site and continuing NPC field clock, physical origin, observation, canonical consumption and restoration"
 }

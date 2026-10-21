@@ -31,7 +31,7 @@ public static class NpcWork
     public static string Reason(NpcWorkInputs input)=>!input.LocalWitness?"no-local-witness":!input.InspectionPermit?"no-inspection-permit":!input.LastReportKnown?"await-own-report":!input.CooldownElapsed?"cooldown":"offer-local-inspection";
     public static long? NextBoundary(ContractWorld w,long target)
     {
-        if(!Enabled(w)||w.Region!.Active)return null;var candidates=new List<long>();
+        if(!Enabled(w)||FieldPresence.PlayerDeployed(w))return null;var candidates=new List<long>();
         foreach(var role in RegionalWork.Roles){var input=Inputs(w,role.Person,w.ElapsedSeconds);string hash=ContractJson.CanonicalHash(input);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==role.Person);
             if(last==null||last.InputHash!=hash)candidates.Add(checked(w.ElapsedSeconds+1));
             else if(input.LocalWitness&&input.InspectionPermit&&input.LastReportKnown&&input.ReadyAt>w.ElapsedSeconds)candidates.Add(input.ReadyAt);}
@@ -39,7 +39,7 @@ public static class NpcWork
     }
     internal static void TakeTurns(WorldSession session)
     {
-        foreach(var role in RegionalWork.Roles){var w=session.DiagnosticSnapshot();if(w.Paused||w.Region!.Active)return;
+        foreach(var role in RegionalWork.Roles){var w=session.DiagnosticSnapshot();if(w.Paused||FieldPresence.PlayerDeployed(w))return;
             var input=Inputs(w,role.Person,w.ElapsedSeconds);string hash=ContractJson.CanonicalHash(input);if(w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==role.Person)?.InputHash==hash)continue;
             string reason=Reason(input);EntityId? request=null;var result=ResultCode.NotAvailable;
             if(reason=="offer-local-inspection"){

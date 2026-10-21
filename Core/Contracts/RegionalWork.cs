@@ -35,7 +35,7 @@ public static class RegionalWork
         long due=(i.Deadline.At??-1)-w.ElapsedSeconds;
         if(due is <1 or >3600||i!=Build(w,i.RequestId.Value,i.Actor,(int)due))throw new InvalidDataException("Invalid local work fields");
         bool At(EntityId actor)=>w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==i.Scope);
-        if(w.Region!.Active||!At(i.Actor)||!At(i.Executor)||OfficerLoop.Busy(w,i.Executor)||
+        if(FieldPresence.PlayerDeployed(w)||!At(i.Actor)||!At(i.Executor)||OfficerLoop.Busy(w,i.Executor)||
             !WorldSession.Permits(w,i.Actor,i,w.ElapsedSeconds)||!WorldSession.Permits(w,i.Executor,i,w.ElapsedSeconds))throw new InvalidDataException("Local work unavailable");
     }
     // Dispatcher-only availability. Never include private willingness in a visible explanation.

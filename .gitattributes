@@ -546,3 +546,7 @@ Scripts/*field_supply* -text
 Tests/Fixtures/engagement-511fe68-*.json -text
 
 Game/Scenes/SceneryAssetLifetimeChecks.tscn -text
+
+Docs/Design/FieldPresenceV1/** -text
+Scripts/*field_presence* -text
+Tests/Fixtures/supply-f9dcd84-*.json -text

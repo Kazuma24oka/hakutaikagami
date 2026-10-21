@@ -9,7 +9,7 @@ public static class CreatedCampaign
     public static readonly EntityId Army=new("army:created-field"),Basis=new("basis:created-field-command"),Mandate=new("mandate:created-field");
     public static readonly StartBudgetPolicy Policy=new(100,1,1,1,[]);
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||EngagementMission.Enabled(w);
-    public static string Fingerprint(ContractWorld w)=>ContractJson.CanonicalHash(EngagementMission.Enabled(w)?new[]{Contract,RetainerStart.Fingerprint(w),ContractJson.CanonicalHash(w.CommandMandates),EngagementMission.Contract+ContractJson.CanonicalHash(w.Engagement!.Terms)+(FieldSupply.Enabled(w)?FieldSupply.Contract+ContractJson.CanonicalHash(w.Supply!.Terms):"")}:new[]{Contract,RetainerStart.Fingerprint(w),ContractJson.CanonicalHash(w.CommandMandates)});
+    public static string Fingerprint(ContractWorld w)=>ContractJson.CanonicalHash(EngagementMission.Enabled(w)?new[]{Contract,RetainerStart.Fingerprint(w),ContractJson.CanonicalHash(w.CommandMandates),EngagementMission.Contract+ContractJson.CanonicalHash(w.Engagement!.Terms)+(FieldSupply.Enabled(w)?FieldSupply.Contract+ContractJson.CanonicalHash(w.Supply!.Terms)+(FieldPresence.Enabled(w)?FieldPresence.Contract+ContractJson.CanonicalHash(w.Presence!.Terms):""):"")}:new[]{Contract,RetainerStart.Fingerprint(w),ContractJson.CanonicalHash(w.CommandMandates)});
     public static ContractWorld Create(string name="作成武将",ulong seed=20261020,long commandUntil=long.MaxValue)
     {
         if(commandUntil<=0)throw new InvalidDataException("指揮許可の期限が不正です");

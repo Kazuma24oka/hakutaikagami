@@ -66,7 +66,7 @@ public static class OfficerLoop
         if (active)
         {
             if(CreatedCampaign.Enabled(w)&&!CreatedCampaign.CanDeploy(w))throw new InvalidDataException("本隊は清洲で待機しています。任務と返報を終えてから出陣してください");
-            if (new[]{w.PlayerControl, ContractFixture.Clerk}.Any(a => Busy(w, a)) ||
+            if ((FieldPresence.Enabled(w)?new[]{w.PlayerControl}:new[]{w.PlayerControl, ContractFixture.Clerk}).Any(a => Busy(w, a)) ||
                 !CreatedCampaign.Enabled(w)&&w.Messaging.Attempts.Any(a => a.Status == AttemptStatus.InTransit &&
                     w.Messaging.Messages.Any(m => m.Id == a.MessageId && m.Kind.StartsWith("contract-", StringComparison.Ordinal))))
                 throw new InvalidDataException("任務と返報が済んでから野外へ出てください");
@@ -76,6 +76,7 @@ public static class OfficerLoop
     }
     internal static void SetSiteLocations(ContractWorld w)
     {
+        if(FieldPresence.Enabled(w))return;
         if (!w.Region!.Active)
             w.Locations = w.Locations.Select(l => l.Actor == ContractFixture.Clerk ?
                 new LocationState(l.Actor, LocationKind.AtSite, ContractFixture.Castle, null, 0, 0, null, null, null, null, w.CommitSequence) : l).ToArray();

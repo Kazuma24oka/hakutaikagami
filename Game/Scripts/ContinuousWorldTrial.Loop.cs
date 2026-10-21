@@ -16,7 +16,7 @@ public partial class ContinuousWorldTrial
         Add(row,"inspect","本人：在所の点検",()=>Require(S.Submit(OfficerLoop.Mission(S.DiagnosticSnapshot(),"request:inspect/"+S.Revision,false),S.Revision)));
         Add(row,"levy","書役へ：徴税40を委任",()=>Require(S.Submit(OfficerLoop.Mission(S.DiagnosticSnapshot(),"request:levy/"+S.Revision,true),S.Revision)));
         Add(row,"council","軍議を開く・閉じる",()=>councilPanel.Visible=!councilPanel.Visible);
-        Add(row,"own-line","本隊：地点へ移動",()=>Issue(RegionalAction.Move,65000,-85000,85000,-85000));
+        Add(row,"own-line","本隊：地点へ移動",()=>{if(PresenceStartEnabled)Issue(RegionalAction.Move,65000,-15000,85000,-15000);else Issue(RegionalAction.Move,65000,-85000,85000,-85000);});
         Add(row,"own-engage","本隊：交戦を指示",()=>Issue(RegionalAction.Engage));
         Add(row,"own-return","本隊：帰還",()=>Issue(RegionalAction.Retreat));
         councilPanel=new HFlowContainer{Visible=false};col.AddChild(councilPanel);
@@ -34,9 +34,9 @@ public partial class ContinuousWorldTrial
             var i=w.Requests.Single(r=>w.Tasks.Single(x=>x.Id==t.Id).RequestId==r.Id).Intent;
             return (i.Action==ActionKind.Transfer?$"徴税{i.Amount}":i.Action==ActionKind.Inspect?"点検":"街道移動")+"："+MissionText(t.KnownStatus);
         })));
-        buttons["inspect"].Disabled=w.Region!.Active||OfficerLoop.Busy(w,S.PlayerControl)||v.Location.Site!=ContractFixture.Castle;
-        buttons["levy"].Disabled=w.Region.Active||v.Location.Site!=ContractFixture.Castle;
-        foreach(var id in new[]{"own-line","own-engage","own-return","council-line","council-return"})buttons[id].Disabled=!w.Region.Active;
+        buttons["inspect"].Disabled=FieldPresence.PlayerDeployed(w)||OfficerLoop.Busy(w,S.PlayerControl)||v.Location.Site!=ContractFixture.Castle;
+        buttons["levy"].Disabled=FieldPresence.PlayerDeployed(w)||v.Location.Site!=ContractFixture.Castle;
+        foreach(var id in new[]{"own-line","own-engage","own-return","council-line","council-return"})buttons[id].Disabled=!FieldPresence.PlayerDeployed(w);
         councilNotice.Visible=councilPanel.Visible;
         if(councilPanel.Visible)councilNotice.Text="目的：自地域の南側線に布陣 / 指示：移動（開戦指示なし） / 報告：受令判断の物理返報（到着報告ではない）";
     }

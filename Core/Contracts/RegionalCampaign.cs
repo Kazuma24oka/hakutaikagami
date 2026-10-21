@@ -210,7 +210,7 @@ public static class RegionalCampaign
     }
     public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
     {
-        if(RegionalBattle.Active(w)&&at==w.ElapsedSeconds&&w.Region!.Units.Any(u=>u.Commander==actor))return FieldWorld.ToWorld(RegionalBattle.Position(w,actor));
+        if(RegionalBattle.Active(w)&&FieldPresence.Deployed(w,actor)&&at==w.ElapsedSeconds&&w.Region!.Units.Any(u=>u.Commander==actor))return FieldWorld.ToWorld(RegionalBattle.Position(w,actor));
         if(FieldWorld.Enabled(w)&&actor==w.PlayerControl&&w.Field!.Orders.Any(o=>o.At<=at)&&!(w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at)?.Legs[0].StartAt>w.Field.Orders.Last(o=>o.At<=at).At))return FieldWorld.ToWorld(FieldWorld.Sample(w,0,at).Position);
         return RoadActorPointAt(w,actor,at);
     }
