@@ -11,6 +11,7 @@ public partial class ContinuousWorldTrial
     {
         foreach(var id in new[]{"inspect","levy","depart","site","council","own-line","own-engage","own-return"})buttons[id].Visible=false;
         var row=new HFlowContainer();col.AddChild(row);
+        Add(row,"personnel-catalog","収録台帳",OpenPersonnelCatalog);
         Add(row,"incoming-lord","試作：主君が点検命令を発送",()=>SendIncoming(false));
         Add(row,"incoming-clerk","試作：書役が点検依頼を発送",()=>SendIncoming(true));
         Add(row,"incoming-open","届いた書状を開封",()=>{var c=IncomingMission.View(S,ContractFixture.Officer).Last(x=>x.CanOpen);Require(S.Open(ContractFixture.Officer,c.Message,S.Revision));});
@@ -18,7 +19,7 @@ public partial class ContinuousWorldTrial
         Add(row,"incoming-decline","依頼を辞退",()=>DecideIncoming(false));
         incomingText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(incomingText);
     }
-    void SendIncoming(bool subordinate)=>Require(S.Submit(IncomingMission.Build(S.DiagnosticSnapshot(),"request:incoming/"+S.Revision,subordinate,Case=="expiry"?2:60),S.Revision));
+    void SendIncoming(bool subordinate)=>Require(S.Submit(NationalPersonnel.Build(S.DiagnosticSnapshot(),new(subordinate?"work:clerk-inspect":"work:lord-inspect"),"request:incoming/"+S.Revision,Case=="expiry"?2:60),S.Revision));
     void DecideIncoming(bool accept){var c=IncomingMission.View(S,ContractFixture.Officer).Last(x=>x.CanDecide);Require(S.Assent(c.Task!.Value,ContractFixture.Officer,accept,S.Revision));}
     void RefreshIncoming()
     {
@@ -26,7 +27,7 @@ public partial class ContinuousWorldTrial
         incomingText.Text=cards.Length==0?"受信任務：なし（未着の内容は表示しません）":string.Join("\n",cards.TakeLast(2).Select(c=>MissionText(c.Text)));
         buttons["incoming-open"].Disabled=!cards.Any(c=>c.CanOpen);
         buttons["incoming-accept"].Disabled=buttons["incoming-decline"].Disabled=!cards.Any(c=>c.CanDecide);
-        buttons["incoming-lord"].Disabled=buttons["incoming-clerk"].Disabled=S.DiagnosticSnapshot().Region!.Active||OfficerLoop.Busy(S.DiagnosticSnapshot(),ContractFixture.Officer);
+        foreach(var issuer in new[]{ContractFixture.Lord,ContractFixture.Clerk})buttons[issuer==ContractFixture.Lord?"incoming-lord":"incoming-clerk"].Disabled=!NationalPersonnel.DispatcherOptions(S.DiagnosticSnapshot(),issuer).Single().CanDispatch;
     }
     string IncomingPose()=>System.Text.Json.JsonSerializer.Serialize(new{Scene=LoopPose(),Text=incomingText.Text,Cards=IncomingMission.View(S,ContractFixture.Officer)});
     async Task IncomingCapture(string name){await Capture(name);System.IO.File.WriteAllText(Output+"/"+Case+"-"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(new[]{incomingText.GlobalPosition.X,incomingText.GlobalPosition.Y,Size.X-20,Size.Y-incomingText.GlobalPosition.Y-10}));}

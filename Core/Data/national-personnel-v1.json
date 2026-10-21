@@ -1,0 +1,106 @@
+{
+  "Schema": 1,
+  "WorldYear": 1560,
+  "Policy": "準史実・部分収録。史料の本拠候補は現在地・城主権・指揮権・領域ではない。",
+  "Sources": [
+    {
+      "Id": "kiyosu-city",
+      "Title": "清須市：清洲城",
+      "Url": "https://www.city.kiyosu.aichi.jp/shisetsu_annai/kanko_shisetsu_sonota/kiyosujo.html",
+      "CheckedOn": "2026-10-21",
+      "Fact": "信長の1555年入城と1560年桶狭間への出発地。現代の再建建物は使用しない。"
+    },
+    {
+      "Id": "yamanashi-pref",
+      "Title": "山梨県：武田氏館跡",
+      "Url": "https://www.pref.yamanashi.jp/bunka/maibun/yamanashinobunkazai_sb0003.html",
+      "CheckedOn": "2026-10-21",
+      "Fact": "武田氏館は信虎・信玄・勝頼の居館。1560年当日の所在の根拠ではない。"
+    },
+    {
+      "Id": "odawara-city",
+      "Title": "小田原市：北条五代が残したもの",
+      "Url": "https://www.city.odawara.kanagawa.jp/encycl/neohojo5/012/",
+      "CheckedOn": "2026-10-21",
+      "Fact": "後北条氏と小田原の関係。氏康の1560年当日の所在や現役当主権限は断定しない。"
+    }
+  ],
+  "People": [
+    {
+      "Id": "person:nobunaga",
+      "Name": "織田信長",
+      "Faction": "org:oda",
+      "HomeCandidate": "castle",
+      "SourceIds": [
+        "kiyosu-city"
+      ],
+      "Certainty": "本拠候補・試作配置は別定義"
+    },
+    {
+      "Id": "person:shingen",
+      "Name": "武田信玄",
+      "Faction": "org:takeda",
+      "HomeCandidate": "kofu",
+      "SourceIds": [
+        "yamanashi-pref"
+      ],
+      "Certainty": "本拠候補・試作配置は別定義"
+    },
+    {
+      "Id": "person:ujiyasu",
+      "Name": "北条氏康",
+      "Faction": "org:hojo",
+      "HomeCandidate": "odawara",
+      "SourceIds": [
+        "odawara-city"
+      ],
+      "Certainty": "本拠候補・試作配置は別定義"
+    }
+  ],
+  "Factions": [
+    {
+      "Id": "org:oda",
+      "Name": "織田家",
+      "SourceIds": [
+        "kiyosu-city"
+      ],
+      "TerritoryStatus": "領域未収録・命令権を付与しない"
+    },
+    {
+      "Id": "org:takeda",
+      "Name": "武田家",
+      "SourceIds": [
+        "yamanashi-pref"
+      ],
+      "TerritoryStatus": "領域未収録・命令権を付与しない"
+    },
+    {
+      "Id": "org:hojo",
+      "Name": "北条家",
+      "SourceIds": [
+        "odawara-city"
+      ],
+      "TerritoryStatus": "領域未収録・命令権を付与しない"
+    }
+  ],
+  "Work": [
+    {
+      "Id": "work:lord-inspect",
+      "Title": "試作主君から在所点検の命令",
+      "Issuer": "person:lord",
+      "Recipient": "person:officer",
+      "Site": "site:castle",
+      "Subordinate": false,
+      "Basis": "検証用設定・歴史的な命令の再現ではない"
+    },
+    {
+      "Id": "work:clerk-inspect",
+      "Title": "試作書役から在所点検の依頼",
+      "Issuer": "person:clerk",
+      "Recipient": "person:officer",
+      "Site": "site:castle",
+      "Subordinate": true,
+      "Basis": "検証用設定・歴史的な依頼の再現ではない"
+    }
+  ]
+}

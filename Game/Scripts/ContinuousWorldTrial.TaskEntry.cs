@@ -14,7 +14,7 @@ public partial class ContinuousWorldTrial
         Check(GetParent().GetChildCount()==1,"one lazy session instance per tab");
         string legacy=System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(Output+"/"+Case+"-host.json")).RootElement.GetProperty("Legacy").GetString()!;
         Check(((Main)GetTree().CurrentScene).TaskEntryLegacyFingerprint==legacy,"new session initialization preserves old foundation state");
-        await Capture("entry-open");await VerifyTaskEntryRoundtrip();
+        await Capture("entry-open");if(Case=="success")await VerifyPersonnelCatalog();await VerifyTaskEntryRoundtrip();
     }
     async Task VerifyTaskEntryRoundtrip()
     {

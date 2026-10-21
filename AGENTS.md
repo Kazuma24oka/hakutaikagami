@@ -1,3 +1,9 @@
+# 全国人物台帳・在所の仕事（2026-10-21）
+
+NationalPersonnel / Core/Data/national-personnel-v1.json / Docs/Design/NationalPersonnelV1/README.md。既存3人と3勢力の本拠候補・出典・確認日、全国108拠点の収録状態を固定。史実の本拠候補と現在地/領域/主従/命令権を混同しない。残る105拠点に領主を推測で加えない。台帳は検証用の収録管理画面で主人公の観測ではない。
+
+通常Main→武将の任務→収録台帳。既存の試作主君命令/書役依頼は入力前に所在・主従有効期間・成人/権限・拘束を確認し、既存IncomingMissionのIntentと配送/保存を使用する。拒否意図を可否に漏らさない。既存規則/保存版は変更しない。全国任務生成・実在人物の役職/権限収録・NPC自律は未実装。今回の正本はverify_national_personnel.py→実画像点検→check_national_personnel_binding.py。旧共有ソースの検証記録は履歴として維持。
+
 # 通常起動の武将任務タブ（承認済み）
 
 ユーザー「はい」により通常Mainへの入口追加を承認。Main.TaskEntry.csが末尾に遅延読込タブを追加する。既存タブ番号と既存機能は保持。通常Main保持の例外はこの追加と必要な検証/修正に限る。mainブランチの変更許可ではない。正本Docs/Design/TaskEntryV1/README.mdとCURRENT_STAGE.md。旧初期化失敗ノードの後始末を修正し、旧布陣の再検査ゲートは維持。

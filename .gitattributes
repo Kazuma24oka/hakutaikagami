@@ -415,3 +415,10 @@ Game/Scripts/Main.TaskEntry.cs -text
 Game/Scripts/ContinuousWorldTrial.TaskEntry.cs -text
 Scripts/*task_entry* -text
 Docs/Design/TaskEntryV1/** -text
+
+Core/Contracts/NationalPersonnel.cs -text
+Core/Data/national-personnel-v1.json -text
+Tests/NationalPersonnelTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Personnel.cs -text
+Scripts/*national_personnel* -text
+Docs/Design/NationalPersonnelV1/** -text

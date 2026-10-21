@@ -1,3 +1,5 @@
+全国人物台帳・在所の仕事：[NationalPersonnelV1](Design/NationalPersonnelV1/README.md)。3人・3勢力の本拠候補と108拠点の収録状況。全国任務生成は未実装。
+
 通常起動の武将任務タブ：[TaskEntryV1](Design/TaskEntryV1/README.md)。
 
 評価通知・訂正・本人応答の最新試作：[AssessmentNoticeV1](Design/AssessmentNoticeV1/README.md)。

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "base": "add90839bfde169cb815b10c03f7003079cb86e2",
+  "catalog": "Core/Data/national-personnel-v1.json",
+  "scope": "reference catalog and dispatch preflight; existing rules and save schema preserved",
+  "historical_people": 3,
+  "factions": 3,
+  "national_sites": 108,
+  "fixture_work_templates": 2,
+  "mouse_tools": false
+}
