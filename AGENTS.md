@@ -1,3 +1,7 @@
+# 任務差異・暫定審査の入口
+
+MissionReviewTrial / Docs/Design/MissionReviewV1/README.md。本人の既知任務中断、独立の理由書状、評価者の受領情報だけの暫定審査。主君パネルは検証視点で主人公への通知ではない。成果・差異・理由・責任を分け、自動処罰しない。通常Main・旧保存・旧規則を保持。
+
 # 任務受信の検証入口
 
 IncomingMissionTrialは主君命令/配下依頼の独立試作。仕様と検証はDocs/Design/IncomingMissionV1/README.md。未着/未開封の任務内容をUIに渡さない。判断理由に未知の内部動機を混ぜない。既存の通常Main・旧規則版・旧保存を保持。

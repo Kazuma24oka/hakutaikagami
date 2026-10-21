@@ -5,7 +5,7 @@ public static class IncomingMission
 {
     public const string Ruleset="officer-incoming-mission-v1";
     public const string Contract="sealed-lord-binding-clerk-voluntary-inspect-delivery1-work4-report1-v1";
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||MissionReview.Enabled(w);
     public static ContractWorld Create()
     {
         var w=OfficerLoop.Create();w.WorldId=new("world:"+Ruleset);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class ContinuousWorldTrial
 {
-    bool IncomingEnabled=>Name=="IncomingMissionTrial";
+    bool IncomingEnabled=>ReviewEnabled||Name=="IncomingMissionTrial";
     Label incomingText=null!;
     void BuildIncomingUI(VBoxContainer col)
     {

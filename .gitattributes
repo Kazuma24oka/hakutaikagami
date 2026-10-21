@@ -395,3 +395,10 @@ Game/Scripts/ContinuousWorldTrial.Incoming.cs -text
 Game/Scenes/IncomingMissionTrial.tscn -text
 Scripts/*incoming_mission* -text
 Docs/Design/IncomingMissionV1/** -text
+
+Core/Contracts/*MissionReview*.cs -text
+Tests/MissionReviewTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Review.cs -text
+Game/Scenes/MissionReviewTrial.tscn -text
+Scripts/*mission_review* -text
+Docs/Design/MissionReviewV1/** -text
