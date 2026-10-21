@@ -446,3 +446,8 @@ Docs/Design/WorkHubV1/** -text
 Docs/Proposals/WorkHubEntry.patch -text
 
 Docs/Design/WorkHubStartupV1/** -text
+
+Game/Scripts/MidTerrainRenderer.cs -text
+Game/Scripts/ContinuousWorldTrial.MidTerrain.cs -text
+Scripts/*mid_terrain* -text
+Docs/Design/MidTerrainV1/** -text

@@ -1,3 +1,7 @@
+# 中間倍率の地形（2026-10-21）
+
+240m超〜30kmはMidTerrainRendererで最大2048三角形。Core高さ/地表を参照する表示専用近似。通行規則/旧保存は変更しない。正本Docs/Design/MidTerrainV1。verify_mid_terrain.py→実画像点検→check_mid_terrain_binding.py。通常入口の回帰36比較と7倍率復旧7比較差分0。全国108拠点の負荷測定へ続行。
+
 # 通常起動の選択入口（2026-10-21、承認済み）
 
 ユーザー「従います。すすめて」によりWorkHubTrialへの通常起動切替を承認。例外はGame/project.godotのmain_sceneと必要な検証だけ。旧Main・保存・保護ブランチは保持。中間倍率改善へ連続して進める。正本Docs/Design/WorkHubStartupV1。
