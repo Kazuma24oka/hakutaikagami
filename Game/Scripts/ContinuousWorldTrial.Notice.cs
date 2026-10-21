@@ -34,7 +34,7 @@ public partial class ContinuousWorldTrial
     }
     EntityId NoticeId(int version)=>new(S.DiagnosticSnapshot().Messaging.Messages.Single(m=>m.Kind==AssessmentNotice.Kind&&ContractJson.Read<AssessmentNotice.Payload>(System.Text.Encoding.UTF8.GetBytes(m.Body)).Version==version).Id);
     string NoticePose()=>System.Text.Json.JsonSerializer.Serialize(new{Scene=IncomingPose(),Body=noticeBody.Text,Response=noticeResponse.Text,Inbox=AssessmentNotice.Inbox(S,ContractFixture.Officer),Latest=AssessmentNotice.LatestKnown(S,ContractFixture.Officer),Replies=AssessmentNotice.KnownResponses(S,ContractFixture.Lord)});
-    async Task NoticeCapture(string name){await Capture(name);System.IO.File.WriteAllText(Output+"/"+Case+"-"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(new[]{incomingText.GlobalPosition.X,incomingText.GlobalPosition.Y,Size.X-20,Size.Y-incomingText.GlobalPosition.Y-10}));}
+    async Task NoticeCapture(string name){if(TaskEntryMode&&(name=="s0"||name=="final"))await VerifyTaskEntryRoundtrip();await Capture(name);System.IO.File.WriteAllText(Output+"/"+Case+"-"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(new[]{incomingText.GlobalPosition.X,incomingText.GlobalPosition.Y,GlobalPosition.X+Size.X-incomingText.GlobalPosition.X-10,GlobalPosition.Y+Size.Y-incomingText.GlobalPosition.Y-10}));}
     void NoticeTimeline(long target)
     {
         foreach(var at in new long[]{1,2,7,8,9,10,11,12,13,14,16,17,18}.Where(t=>S.Seconds<t&&t<=target)){
@@ -55,7 +55,7 @@ public partial class ContinuousWorldTrial
     async Task RunNoticeChecks()
     {
         try{
-            System.IO.Directory.CreateDirectory(Output);long[] stages={7,8,12,18};
+            System.IO.Directory.CreateDirectory(Output);if(TaskEntryMode)await VerifyTaskEntryHost();long[] stages={7,8,12,18};
             if(Mode.EndsWith("restore")){
                 for(int n=0;n<stages.Length;n++){Load(Case+"-s"+n);Check(NoticePose()==System.IO.File.ReadAllText(Output+"/"+Case+"-s"+n+"-pose.json"),"restored sealed notices, revisions, replies, position and 3D "+n);await NoticeCapture("restored-s"+n);NoticeTimeline(20);await NoticeCapture("continued-s"+n);}
             }else{
@@ -63,7 +63,7 @@ public partial class ContinuousWorldTrial
                 NoticeTimeline(20);await NoticeCapture("final");var p=AssessmentNotice.LatestKnown(S,ContractFixture.Officer).Single();
                 Check(p.Version==(Case=="own"||Case=="report-miss"?2:1),"recipient only uses highest known version");Check(p.Review.Liability=="責任・処分は未審査","notification and reply never impose automatic punishment");
                 Check(AssessmentNotice.KnownResponses(S,ContractFixture.Lord).Length==1,"reply has actually reached assessor");
-                Check(noticeResponse.GlobalPosition.Y+noticeResponse.Size.Y<Size.Y&&details.GlobalPosition.Y+details.Size.Y<=Size.Y+1,"notification, response and 3D fit actual viewport");
+                Check(noticeResponse.GlobalPosition.Y+noticeResponse.Size.Y<GlobalPosition.Y+Size.Y&&details.GlobalPosition.Y+details.Size.Y<=GlobalPosition.Y+Size.Y+1,"notification, response and 3D fit actual viewport");
             }
             System.IO.File.WriteAllText(Output+"/"+Case+"-"+(Mode.EndsWith("restore")?"restore":"check")+"-checks.json",System.Text.Json.JsonSerializer.Serialize(new{Checks=checks}));GD.Print("ASSESSMENT_NOTICE_PASSED "+Case);GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}

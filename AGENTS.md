@@ -1,3 +1,7 @@
+# 通常起動の武将任務タブ（承認済み）
+
+ユーザー「はい」により通常Mainへの入口追加を承認。Main.TaskEntry.csが末尾に遅延読込タブを追加する。既存タブ番号と既存機能は保持。通常Main保持の例外はこの追加と必要な検証/修正に限る。mainブランチの変更許可ではない。正本Docs/Design/TaskEntryV1/README.mdとCURRENT_STAGE.md。旧初期化失敗ノードの後始末を修正し、旧布陣の再検査ゲートは維持。
+
 # 評価通知・訂正・本人応答
 
 AssessmentNoticeTrial / Docs/Design/AssessmentNoticeV1/README.md。根拠を発送時に固定した封書、後着理由による訂正版、旧原本の物理再送、本人の受領確認/再審査希望を接続。未開封本文/版/根拠は非表示。古い版で最新既知版を戻さない。通常Mainへの統合差分はDocs/Proposals/MainEntryIntegration.patchの未適用案だけとし、保護規則を維持。

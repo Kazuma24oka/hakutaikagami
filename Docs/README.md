@@ -1,3 +1,5 @@
+通常起動の武将任務タブ：[TaskEntryV1](Design/TaskEntryV1/README.md)。
+
 評価通知・訂正・本人応答の最新試作：[AssessmentNoticeV1](Design/AssessmentNoticeV1/README.md)。
 
 任務差異・暫定審査の最新試作：[MissionReviewV1](Design/MissionReviewV1/README.md)。

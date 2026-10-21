@@ -410,3 +410,8 @@ Game/Scenes/AssessmentNoticeTrial.tscn -text
 Scripts/*assessment_notice* -text
 Docs/Design/AssessmentNoticeV1/** -text
 Docs/Proposals/MainEntryIntegration.patch -text
+
+Game/Scripts/Main.TaskEntry.cs -text
+Game/Scripts/ContinuousWorldTrial.TaskEntry.cs -text
+Scripts/*task_entry* -text
+Docs/Design/TaskEntryV1/** -text
