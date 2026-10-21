@@ -429,3 +429,11 @@ Game/Scripts/ContinuousWorldTrial.RegionalWork.cs -text
 Game/Scenes/RegionalWorkTrial.tscn -text
 Scripts/*regional_work* -text
 Docs/Design/RegionalWorkV1/** -text
+
+Core/Contracts/NpcWork.cs -text
+Core/Contracts/WorldSession.NpcWork.cs -text
+Tests/NpcWorkTests.cs -text
+Game/Scripts/ContinuousWorldTrial.NpcWork.cs -text
+Game/Scenes/NpcWorkTrial.tscn -text
+Scripts/*npc_work* -text
+Docs/Design/NpcWorkV1/** -text

@@ -143,7 +143,7 @@ public sealed partial class WorldSession
             {
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
-                int cost=1+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
+                int cost=1+(NpcWork.Enabled(state)?6:0)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
                     s.ElapsedSeconds=boundary;
@@ -160,6 +160,7 @@ public sealed partial class WorldSession
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);
                 },beforeCommit);
+                if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);
                 processed+=cost;
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
@@ -171,6 +172,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s))times.Add(s.ElapsedSeconds+1);
+        if(NpcWork.Enabled(s)&&NpcWork.NextBoundary(s,target) is {} npcBoundary)times.Add(npcBoundary);
         if(RegionalCampaign.Enabled(s)&&RegionalCampaign.NextBoundary(s,target) is {} courierBoundary)times.Add(courierBoundary);
         if(FieldWorld.Enabled(s)&&FieldWorld.NextBoundary(s,target) is {} fieldBoundary)times.Add(fieldBoundary);
         if(TravelControl.Enabled(s)&&TravelControl.NextBoundary(s,target) is {} personalBoundary)times.Add(personalBoundary);

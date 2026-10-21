@@ -102,6 +102,8 @@ public sealed class ContractWorld
     public RegionalState? Region { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BranchState? Branches { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public NpcWorkState? NpcWork { get; set; }
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

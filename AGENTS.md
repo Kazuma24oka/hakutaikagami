@@ -1,3 +1,7 @@
+# 現地NPCの自動依頼（2026-10-21）
+
+NpcWorkTrial / npc-local-work-v1 / Docs/Design/NpcWorkV1/README.md。本人の現地目撃・Inspection許可・発送履歴・物理返報と3600秒再提示間隔だけで依頼を選ぶ。未返報の真の完了を知った扱いにせず、未知のWillObeyや遠方状態を使わない。判断入力/参照Revision/ハッシュ/根拠/受付結果を保存し、記録時点の移動と知識へ照合。入力不変なら維持し、共通時計・処理予算で更新する。旧規則のJSONへNPC欄を出さず、新平時試作だけ野外展開拒否。verify_npc_work.py→実画像点検→check_npc_work_binding.py。全933テスト、実GPU15プロセス58比較差分0。樹冠1画素差は許容差を増やさず固定回転で修正。通常入口の導線へ続ける。
+
 # 複数拠点の任意依頼（2026-10-21）
 
 RegionalWorkTrial / regional-peace-work-v1 / Docs/Design/RegionalWorkV1/README.md。清洲/甲府/小田原を既存街道で移動して任意点検を受ける。史実の立場と試作用Inspect合意を分離。氏康は1559年家督譲渡後。架空の主従/土地/徴税/軍事権を追加しない。依頼/返報はTask.Scopeへ物理配送し、自動追跡しない。旧保存/旧入口は保持。verify_regional_work.py→実画像点検→check_regional_work_binding.py。段階完了でもユーザー判断不要なら終了せず次工程へ続ける（OPERATING_POLICY末尾）。

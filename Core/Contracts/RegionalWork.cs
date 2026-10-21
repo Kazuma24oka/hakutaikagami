@@ -7,7 +7,7 @@ public static class RegionalWork
 {
     public const string Ruleset="regional-peace-work-v1";
     public const string Contract="three-local-voluntary-inspections-fixed-scope-address-work4-sealed-report1-v1";
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||NpcWork.Enabled(w);
     public static RegionalRole[] Roles=>[
         new(new("person:nobunaga"),"castle","清須を拠点とする領主（支配領域は未収録）","https://www.city.kiyosu.aichi.jp/kiyosu_brand/jinbutsu_den.html","2026-10-21"),
         new(new("person:shingen"),"kofu","甲斐の国主（具体的な権限・領域は別定義）","https://www.pref.yamanashi.jp/sabo/114_019.html","2026-10-21"),

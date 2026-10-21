@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class ContinuousWorldTrial
 {
-    bool RegionalWorkEnabled=>Name=="RegionalWorkTrial";
+    bool RegionalWorkEnabled=>NpcWorkEnabled||Name=="RegionalWorkTrial";
     string WorkNode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--node="))?[7..]??"castle";
     OptionButton workDispatcher=null!;
     Label workText=null!,workRole=null!;
@@ -38,6 +38,7 @@ public partial class ContinuousWorldTrial
         // One actor at the authoritative player point; NPC and player share a site anchor and are not artificially displaced.
         var key=ContractFixture.Officer;
         if(!actors.TryGetValue(key,out var model)){model=new();world.AddChild(model);model.Apply(Officer3DCustomActor.Preset("red_guard"));actors[key]=model;}
+        if(NpcWorkEnabled){buttons["work-send"].Visible=false;workDispatcher.Visible=false;buttons["site"].Disabled=true;}
         var view=S.GetBranchView(key);model.Visible=span<=240&&!w.Region!.Active;model.Scale=Vector3.One*2;model.Position=P(Current());model.Rotation=new(0,Mathf.Atan2(view.Heading.EastMm,-view.Heading.NorthMm),0);model.SetLod("mid");
         string clip=view.Walking?"walk":"idle";model.Freeze(clip,S.Seconds%model.Player.GetAnimation(model.Clips[clip]).Length);if(model.Visible)playerMarker.Visible=false;
     }

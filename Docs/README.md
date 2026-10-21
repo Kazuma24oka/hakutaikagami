@@ -1,3 +1,5 @@
+現地NPCの自動依頼：[NpcWorkV1](Design/NpcWorkV1/README.md)。本人の目撃と既知返報に基づく任意依頼・返報待ち・再提示。
+
 複数拠点の任意点検：[RegionalWorkV1](Design/RegionalWorkV1/README.md)。実街道移動・3武将・固定宛先の返報。NPC自動選定は次段階。
 
 全国人物台帳・在所の仕事：[NationalPersonnelV1](Design/NationalPersonnelV1/README.md)。3人・3勢力の本拠候補と108拠点の収録状況。全国任務生成は未実装。

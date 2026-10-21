@@ -62,6 +62,7 @@ public static class OfficerLoop
     internal static void Transition(ContractWorld w, bool active)
     {
         if (!Enabled(w)) return;
+        if(NpcWork.Enabled(w)&&active)throw new InvalidDataException("NPC work profile is a peace-only trial");
         if (active)
         {
             if (new[]{w.PlayerControl, ContractFixture.Clerk}.Any(a => Busy(w, a)) ||
