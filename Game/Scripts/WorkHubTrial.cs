@@ -4,14 +4,14 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
-// Standalone preview only. The protected project main scene remains unchanged until approval.
+// Approved default entry; legacy Main and its saves remain available.
 public partial class WorkHubTrial:Control
 {
     TabContainer tabs=null!;Control npcSlot=null!,legacySlot=null!;
     ContinuousWorldTrial npc=null!;Main? legacy;
     readonly List<string> checks=new();
     string Mode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--work-hub-"))??"";
-    string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/WorkHubV1/runtime-local");
+    string Output=>ProjectSettings.GlobalizePath((OS.GetCmdlineUserArgs().Contains("--startup-entry")?"res://../Docs/Design/WorkHubStartupV1/runtime-local":"res://../Docs/Design/WorkHubV1/runtime-local"));
     public override void _Ready()
     {
         try{

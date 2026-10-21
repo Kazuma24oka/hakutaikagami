@@ -444,3 +444,5 @@ Game/Scenes/WorkHubTrial.tscn -text
 Scripts/*work_hub* -text
 Docs/Design/WorkHubV1/** -text
 Docs/Proposals/WorkHubEntry.patch -text
+
+Docs/Design/WorkHubStartupV1/** -text

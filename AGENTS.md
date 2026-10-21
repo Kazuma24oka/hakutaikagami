@@ -1,3 +1,7 @@
+# 通常起動の選択入口（2026-10-21、承認済み）
+
+ユーザー「従います。すすめて」によりWorkHubTrialへの通常起動切替を承認。例外はGame/project.godotのmain_sceneと必要な検証だけ。旧Main・保存・保護ブランチは保持。中間倍率改善へ連続して進める。正本Docs/Design/WorkHubStartupV1。
+
 # 通常起動の選択入口候補（2026-10-21、切替未承認）
 
 WorkHubTrial / Docs/Design/WorkHubV1/README.md。地域NPCの仕事を初期表示し旧Mainを遅延読込する独立候補。別セッション/保存と明示し、非表示の処理を止めて各状態を保持。旧起動指定は従来Mainそのものへ遷移して実ルート互換を維持。verify_work_hub.py→実画像点検→check_work_hub_binding.py。933テスト合格版Core/Tests・実GPU14プロセス36比較差分0。Docs/Proposals/WorkHubEntry.patchは未適用。既存の通常Main保持例外を広げず、通常起動切替の確認後にだけ例外記録と適用を行う。段階境界では停止せず地域依頼とNPC選定を完了してここへ到達。
