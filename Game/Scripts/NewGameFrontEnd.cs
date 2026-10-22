@@ -13,14 +13,14 @@ public partial class NewGameFrontEnd : Control
     string? filterSite,selected;string? registryReadError;SetupPerson[] visiblePeople=[];NewCampaignListing[] savedRows=[];ItemList savedList=null!;
     Action? pendingStart;bool refreshingClaims;OptionButton jumpChoice=null!,placementPerson=null!,placementSite=null!;
     string? TestKey=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--new-game-test-key="))?.Split('=')[1];
-    string TestOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/"+(FlowCase.StartsWith("retry-")?"UnitPostRecoveryV1":FlowCase.StartsWith("rout-")?"RoutRegroupV1":FlowCase.StartsWith("withdrawal-")?"PersonalWithdrawalV1":FlowCase.StartsWith("combat-")?"ContactCombatV1":FlowCase.StartsWith("military-")?"NewGameMilitaryV1":FlowCase.StartsWith("service-")?"ServiceEntryV1":"NewGameFlowV1")+"/runtime-local/"+FlowCase);
+    string TestOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/"+(FlowCase.StartsWith("inquiry-")?"UnitPostInquiryV1":FlowCase.StartsWith("retry-")?"UnitPostRecoveryV1":FlowCase.StartsWith("rout-")?"RoutRegroupV1":FlowCase.StartsWith("withdrawal-")?"PersonalWithdrawalV1":FlowCase.StartsWith("combat-")?"ContactCombatV1":FlowCase.StartsWith("military-")?"NewGameMilitaryV1":FlowCase.StartsWith("service-")?"ServiceEntryV1":"NewGameFlowV1")+"/runtime-local/"+FlowCase);
     string DataRoot=>TestKey is {} key?Path.Combine(TestOutput,Guid.ParseExact(key,"N").ToString("N")):ProjectSettings.GlobalizePath("user://new-game-v1");
     string LibraryRoot=>TestKey!=null?Path.Combine(DataRoot,"library"):ProjectSettings.GlobalizePath("user://officer-library-v1");
     const ulong Seed=20261022;
     SystemFont? ownedFont;
     public override void _ExitTree(){ownedFont?.Dispose();ownedFont=null;}
     void QuitGracefully(int code=0)=>GameProcessExit.Request(GetTree(),this,code);
-    public override void _Notification(int what){if(what==NotificationWMCloseRequest)QuitGracefully();}
+    public override void _Notification(int what){if(what==NotificationWMCloseRequest&&!GetTree().AutoAcceptQuit)QuitGracefully();}
     public override void _Ready()
     {
         // Explicit legacy verification flags preserve the former harness entry. Normal play uses this menu.

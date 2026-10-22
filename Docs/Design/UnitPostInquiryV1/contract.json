@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "contract": "receiver-own-record-physical-query-quote-not-original-receipt-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "reported_unit": 0,
+  "quote_is_formal_original_receipt": false,
+  "quote_is_failure_report": false,
+  "old_optional_extension": "UnitInquiry absent"
+}

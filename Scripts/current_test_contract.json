@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1539,
-  "baseline_passed": 1522,
-  "added": 17,
-  "scope": "UnitRetryTests(17): immutable original and initial failure, known latest failure only, explicit known destination, three physical attempts, one effect, restore and forged journal rejection, stale original priority and failure reply missing the sender"
+  "expected_passed": 1557,
+  "baseline_passed": 1539,
+  "added": 18,
+  "scope": "UnitInquiryTests(18): own role without recall originals, physical return, quote not original receipt/failure recognition, fixed past snapshot, no hidden following, missing sender, restore and forged payloads"
 }

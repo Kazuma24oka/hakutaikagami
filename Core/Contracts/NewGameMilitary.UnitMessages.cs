@@ -10,7 +10,7 @@ public static partial class NewGameMilitary
     static string UnitMessage(EntityId request,string kind)=>"message:unit-post/"+kind+"/"+Hash(request.Value);
     static EntityId UnitCourier(EntityId request)=>new("courier:unit-post/"+Hash(request.Value));
     static EntityId UnitOrder(EntityId request)=>new("order:unit-post/"+Hash(request.Value));
-    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {} x&&x.Dispatches.Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value)]:[];
+    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value)]:[];
     static FieldPoint PhysicalPerson(ContractWorld w,long at)=>DeployedAt(w,at)?PersonPosition(w,at):FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,at));
     internal static void BeforeUnitMessages(ContractWorld w)
     {

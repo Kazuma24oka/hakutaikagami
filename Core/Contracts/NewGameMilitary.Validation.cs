@@ -9,7 +9,7 @@ public static partial class NewGameMilitary
         w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
         var s=w.NewMilitary!;var requests=s.Requests.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray();
         w.NewMilitary=requests.Length==0?null:s with{
-            UnitRetry=requests.Any(q=>UnitRetryAction(q.Input.Action))?UnitRetryBefore(s.UnitRetry,at,rev):null,Rout=requests.Any(q=>q.Input.MotionContract==RoutContract)?RoutBefore(s.Rout,at,rev):null,Withdrawal=requests.Any(q=>WithdrawalAction(q.Input.Action))?WithdrawalBefore(s.Withdrawal,at,rev):null,Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),
+            UnitInquiry=requests.Any(q=>UnitInquiryAction(q.Input.Action))?UnitInquiryBefore(s.UnitInquiry,at,rev):null,UnitRetry=requests.Any(q=>UnitRetryAction(q.Input.Action))?UnitRetryBefore(s.UnitRetry,at,rev):null,Rout=requests.Any(q=>q.Input.MotionContract==RoutContract)?RoutBefore(s.Rout,at,rev):null,Withdrawal=requests.Any(q=>WithdrawalAction(q.Input.Action))?WithdrawalBefore(s.Withdrawal,at,rev):null,Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),
             Orders=s.Orders.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Moves=s.Moves.Where(m=>requests.Any(q=>q.Input.Id==m.Id)).ToArray(),Reports=s.Reports.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray(),
             Sorties=requests.Where(q=>q.Input.Action==NewMilitaryAction.Deploy).Select(q=>new SupplySortie(q.At,requests.FirstOrDefault(e=>e.Input.Action==NewMilitaryAction.Enter&&e.Revision>q.Revision)?.At)).ToArray(),
             Uses=s.Uses.Where(u=>u.From<at).Select(u=>u with{Until=Math.Min(u.Until,at),Consumed=Math.Min(u.Consumed,checked(u.Soldiers*(Math.Min(u.Until,at)-u.From)))}).ToArray()};
@@ -53,7 +53,7 @@ public static partial class NewGameMilitary
         Need(s.Uses.All(u=>s.Sorties.Any(t=>t.From<=u.From&&u.Until<=(t.Until??w.ElapsedSeconds)))&&s.Uses.Select((u,i)=>i==0||s.Uses[i-1].Until<=u.From).All(x=>x),"出陣外の消費か重複です");
         long carry=0,depot=InitialStock;var ledger=s.Moves.Select(m=>(At:m.At,Rank:1,Move:(SupplyMove?)m,Use:(SupplyUse?)null)).Concat(s.Uses.Select(u=>(At:u.Until,Rank:0,Move:(SupplyMove?)null,Use:(SupplyUse?)u))).OrderBy(x=>x.At).ThenBy(x=>x.Rank);
         foreach(var e in ledger){if(e.Move is {} m){long d=m.Loading?m.Amount:-m.Amount;carry=checked(carry+d);depot=checked(depot-d);Need(carry>=0&&carry<=Capacity&&depot>=0,"兵糧が過剰引当されています");}else if(e.Use is {} u){Need(u.Consumed==Math.Min(carry,checked(u.Soldiers*(u.Until-u.From))),"兵糧消費と在庫が違います");carry-=u.Consumed;}}
-        ValidateUnitRetry(w);ValidateWithdrawal(w,replay);ValidateRout(w,replay);
+        ValidateUnitInquiry(w);ValidateUnitRetry(w);ValidateWithdrawal(w,replay);ValidateRout(w,replay);
         var normalized=ContractJson.Copy(w);Sync(normalized);Need(Same(w.Definitions.Armies,normalized.Definitions.Armies)&&Same(w.Units,normalized.Units)&&Same(w.ResourceLots,normalized.ResourceLots)&&Same(w.Locations,normalized.Locations),"貸与名簿・所有・現地所在・兵糧残量が台帳と一致しません");
     }
 }
