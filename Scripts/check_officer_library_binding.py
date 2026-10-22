@@ -1,7 +1,7 @@
 import json
 from verify_officer_library import ROOT,BASE,source_files,sha
 j=json.loads((BASE/'verification.json').read_bytes())
-assert j['status']=='PASSED' and j['tests']==1316 and j['added']==35
+assert j['status']=='PASSED' and j['tests']==json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'] and j['added']==35
 assert j['sources']=={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
 for field in ['binaries','proofs','images']:
     for p,h in j[field].items():assert sha(ROOT/p)==h,p

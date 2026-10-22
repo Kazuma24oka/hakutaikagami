@@ -3,11 +3,11 @@ namespace HakutaiKagami.Core.Contracts;
 // Authoring data and a scenario projection, not runtime permissions or a ContractWorld.
 public sealed record OfficerAttributes(int Leadership, int Valor, int Intelligence, int Politics);
 public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Name, int BirthYear,
-    OfficerAttributes Attributes, StartTemplate Role, string Site, string? Lord, string? FactionName);
+    OfficerAttributes Attributes, StartTemplate Role, string Site, string? Lord, string? FactionName, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] HakutaiKagami.Core.Appearance.OfficerAppearance? Look = null);
 public sealed record OfficerGroup(string Id, string Name, RegisteredOfficer[] Officers);
 public sealed record OfficerLibrary(int Schema, RegisteredOfficer[] Ungrouped, OfficerGroup[] Groups);
 public sealed record SetupPerson(string Id, string Name, string Site, string? Faction, string? Lord, bool Created, bool PersonalRetainer, int? BirthYear = null, OfficerAttributes? Attributes = null, StartTemplate? InitialRole = null);
-public sealed record SetupCastle(string Id, string Faction);
+public sealed record SetupCastle(string Id, string? Faction);
 public sealed record SetupFaction(string Id, string Name, string Head, string Home);
 public sealed record SetupScenario(int Schema, string EpochDate, SetupPerson[] People, SetupCastle[] Castles, SetupFaction[] Factions);
 public sealed record DaimyoPlacement(string Officer, string Faction, string[] Castles, bool IncorporateOldHead);
@@ -15,7 +15,7 @@ public sealed record WorldSetupRequest(RegisteredOfficer[] Officers, DaimyoPlace
 public sealed record SetupChange(string Person, string Kind, string Detail);
 public sealed record WorldSetupPreview(string ScenarioHash, string RequestHash, SetupScenario? World, string[] Errors, SetupChange[] Changes)
 {
-    public bool IsEligible() => World != null && Errors.Length == 0;
+    public bool IsEligible() => World != null && Errors is {Length:0};
 }
 
 public static class NewGameSetup
@@ -34,6 +34,7 @@ public static class NewGameSetup
         Need(p.Lord == null || (Key(p.Lord) && p.Lord != p.Id),"直属主君が不正です");
         Need(p.Role != StartTemplate.Daimyo || (Text(p.FactionName) && p.Lord == null),"大名の勢力名・主従が不正です");
         Need(p.Role != StartTemplate.Ronin || p.Lord == null,"浪人本人に主君を設定できません");
+        if(p.Look!=null){try{p.Look.Validate(HakutaiKagami.Core.Appearance.AppearanceCatalog.Slots);}catch(Exception e){throw new InvalidDataException("外見の部品・色が不正です",e);}}
     }
     public static void Validate(OfficerLibrary library)
     {
@@ -66,7 +67,7 @@ public static class NewGameSetup
         Unique(s.People.Select(p=>p.Id));Unique(s.Castles.Select(c=>c.Id));Unique(s.Factions.Select(f=>f.Id));
         Need(s.People.All(p=>Text(p.Name) && Key(p.Site) && (p.Faction==null || s.Factions.Any(f=>f.Id==p.Faction)) && (p.Lord==null || s.People.Any(q=>q.Id==p.Lord))),"人物の所属・主従・場所が不正です");
         Need(s.People.Where(p=>p.Created).All(p=>p.BirthYear is >=1 and <=9999 && p.Attributes!=null && p.InitialRole!=null && Enum.IsDefined(p.InitialRole.Value) && new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics}.All(n=>n>=0)),"登録人物の生年・能力・開始立場がありません");
-        Need(s.Castles.All(c=>s.Factions.Any(f=>f.Id==c.Faction)),"城の所有勢力がありません");
+        Need(s.Castles.All(c=>c.Faction==null || s.Factions.Any(f=>f.Id==c.Faction)),"城の所有勢力がありません");
         Need(s.Factions.All(f=>Text(f.Name) && s.People.Any(p=>p.Id==f.Head && p.Faction==f.Id && p.Lord==null) && s.Castles.Any(c=>c.Id==f.Home && c.Faction==f.Id)),"大名または本拠が不正です");
         foreach(var p in s.People){var seen=new HashSet<string>();var q=p;while(q.Lord!=null){Need(seen.Add(q.Id),"主従が循環しています");var lord=s.People.Single(x=>x.Id==q.Lord);Need(q.Faction==lord.Faction,"主従の所属が矛盾します");q=lord;}}
     }
@@ -116,12 +117,20 @@ public static class NewGameSetup
             changes.Add(new(old.Head,home!=null?"relocated":absorbed?"incorporated":"ronin-with-followers",home??oldHead.Site));
         }
         foreach(var d in request.Daimyo){var p=request.Officers.Single(p=>p.Id==d.Officer);factions.Add(new(d.Faction,p.FactionName!,p.Id,p.Site));}
-        foreach(var p in request.Officers)
+        var resolving=new HashSet<string>();
+        SetupPerson Resolve(RegisteredOfficer p)
         {
+            if(people.TryGetValue(p.Id,out var known))return known;
+            Need(resolving.Add(p.Id),"登録武将の主従が循環しています");
             string? faction=p.Role==StartTemplate.Ronin?null:p.Role==StartTemplate.Daimyo?request.Daimyo.Single(d=>d.Officer==p.Id).Faction:castles.Single(c=>c.Id==p.Site).Faction;
-            string? lord=p.Role is StartTemplate.Ronin or StartTemplate.Daimyo?null:p.Lord??factions.Single(f=>f.Id==faction).Head;
-            people.Add(p.Id,new(p.Id,p.Name,p.Site,faction,lord,true,p.Lord!=null,p.BirthYear,ContractJson.Copy(p.Attributes),p.Role));
+            string? lord=null;
+            if(p.Role is not(StartTemplate.Ronin or StartTemplate.Daimyo)){
+                if(p.Lord!=null){var other=request.Officers.SingleOrDefault(q=>q.Id==p.Lord);var principal=other==null?people.GetValueOrDefault(p.Lord):Resolve(other);Need(principal!=null,"直属主君がこの世界に登場していません");faction=principal.Faction;lord=principal.Id;}
+                else{Need(faction!=null,"この場所の所属が未設定です。直属相手を指定するか浪人/大名を選んでください");lord=factions.Single(f=>f.Id==faction).Head;}
+            }
+            var value=new SetupPerson(p.Id,p.Name,p.Site,faction,lord,true,p.Lord!=null,p.BirthYear,ContractJson.Copy(p.Attributes),p.Role);people.Add(p.Id,value);resolving.Remove(p.Id);return value;
         }
+        foreach(var p in request.Officers)Resolve(p);
         // Preserve foreign guests/prisoners: only allegiance members above are reassigned.
         var result=new SetupScenario(1,original.EpochDate,people.Values.OrderBy(p=>p.Id,StringComparer.Ordinal).ToArray(),castles.OrderBy(c=>c.Id,StringComparer.Ordinal).ToArray(),factions.OrderBy(f=>f.Id,StringComparer.Ordinal).ToArray());
         Validate(result);return new(sh,rh,ContractJson.Copy(result),[],changes.ToArray());

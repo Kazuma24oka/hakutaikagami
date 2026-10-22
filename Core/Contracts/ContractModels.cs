@@ -120,6 +120,8 @@ public sealed class ContractWorld
     public MilitaryState? Military {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RecoveredCourier[]? CourierRecoveries {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public NewGameState? NewGame {get;set;}
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

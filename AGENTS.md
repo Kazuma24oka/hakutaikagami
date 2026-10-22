@@ -1,3 +1,7 @@
+# 新規ゲームから同一人物の生活まで（2026-10-22）
+
+ユーザーは五工程の接続と実動作・同ブランチcommit/push・実画面提示を承認。Docs/Design/NewGameFlowV1/README.mdとcontract.jsonを読む。NewGameFrontEndは独立候補で通常project.godotはWorkHubTrialを保持。NewGameWorldは新しい明示プロフィール、旧保存へ強制変換しない。登録と実世界・所属と主従・領土と軍/徴収権・真実と本人認識を分離する。人物/支配の部分採録と試作初期条件、18歳/予算等の試作値を史実確定/製品調整済みにしない。旧軍務等は旧入口に保持。実画像/別プロセス復旧/現行証拠照合を満たしてから提示。マウス操作は禁止のまま。
+
 # 人生の入口と操作画面の独立候補（2026-10-22）
 
 LifeEntryV1。LifeEntryTrial.tscnだけLifeFirst=trueで人生タブから開く。通常project.godotはWorkHubTrialのまま。旧タブ順/機能/旧Main/保存を保持。Simplified開始は9種類の技術試作を隠し、既存CareerMilitary.Createの初期世界/開始包をそのまま使う。LifeViewは開発用区画/三角形/素材比較を隠し、既知身分/軍務/届いた仕事/必要な操作/世界時間を表示。座標や資源整数を変えず、兵糧は100人分の約日数。現地で重なる部隊名を抑制するだけで3D座標はずらさない。

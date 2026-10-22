@@ -23,9 +23,9 @@ def main():
     for p in [pa,pb]:images[p.relative_to(ROOT).as_posix()]=sha(p)
  lifetime=OUT/'lifetime';baseline=json.loads((BASE/'lifetime-baseline.json').read_bytes());assert sha(lifetime/'baseline.png')==baseline['png_sha256'] and sha(lifetime/'baseline.log')==baseline['log_sha256']
  for n in range(3):
-  mode='pinned'+str(n);run=subprocess.run([str(exe),'--path',str(ROOT/'Game'),'res://Scenes/SceneryAssetLifetimeChecks.tscn','--resolution','1100x720','--','--lifetime='+mode],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW,timeout=240);log=run.stdout.decode('utf8',errors='replace');(lifetime/(mode+'.log')).write_bytes(run.stdout);assert run.returncode==0 and 'ASSET_LIFETIME_PASSED' in log and 'ERROR:' not in log
+  mode='pinned'+str(n);baseline_size=Image.open(lifetime/'baseline.png').size;run=subprocess.run([str(exe),'--path',str(ROOT/'Game'),'res://Scenes/SceneryAssetLifetimeChecks.tscn','--resolution',str(baseline_size[0])+'x'+str(baseline_size[1]),'--','--lifetime='+mode],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW,timeout=240);log=run.stdout.decode('utf8',errors='replace');(lifetime/(mode+'.log')).write_bytes(run.stdout);assert run.returncode==0 and 'ASSET_LIFETIME_PASSED' in log and 'ERROR:' not in log
   stats=json.loads((lifetime/(mode+'.json')).read_bytes());assert stats['Updates']==48 and stats['CreatedChunks']>25 and 0<stats['RetainedResources']<=stats['ResourceLimit'] and stats['Notices']==[];checks['lifetime/'+mode]=stats
-  pa=lifetime/'baseline.png';pb=lifetime/(mode+'.png');assert ImageChops.difference(Image.open(pa).convert('RGB'),Image.open(pb).convert('RGB')).getbbox() is None;comparisons['lifetime/'+mode]=0
+  pa=lifetime/'baseline.png';pb=lifetime/(mode+'.png');assert Image.open(pa).size==Image.open(pb).size==baseline_size;assert ImageChops.difference(Image.open(pa).convert('RGB'),Image.open(pb).convert('RGB')).getbbox() is None;comparisons['lifetime/'+mode]=0
   for p in [pa,pb]:images[p.relative_to(ROOT).as_posix()]=sha(p)
   print('GPU PASS forced-GC lifetime',mode,flush=True)
  assert before=={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
