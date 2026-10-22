@@ -1,3 +1,7 @@
+# 返書自身の不達回復（2026-10-23）
+
+判断必要までの継続指示を維持。前工程3000790は1557件/29GPU/260世界画像+216数値+5材質でpush済みの履歴。現在UnitReplyRecoveryV1/README.mdの5条件。新規書状に方針を固定し、旧保存へ自動再送を遡及しない。伝令が実不達を部隊の既知発送点へ持ち帰り、実受領後だけ同一返書を最大3便。部隊不在なら知らない。初回不達/原本文面を不変に保ち、保持者/地点と新しい再送伝令を別に記録・描画する。架空武将/兵/所有権を作らない。verify_unit_reply_recovery.py→実画像/復号動画/全描画座標→--finalize→check_unit_reply_recovery_binding.py後に同ブランチpush。マウス操作禁止、保護ブランチ/既存保存/素材を保持。次はUnitHeldDeliveryV1/PLAN.md。判断不要なら継続。
+
 # 部隊への物理照会（2026-10-23）
 
 判断が必要になるまでの継続指示を維持。前工程6e02405は1539件/51GPU/492比較+5材質でpush済みの履歴。現在はUnitPostInquiryV1/README.mdの5条件。照会を別原本にし、受信役0が知る自隊0の記録だけを返書へ固定。引用で元原本の正式受領/FailureKnown/目撃記録を追加しない。本人が動けば返書も不達。UnitInquiryは省略可能。verify_unit_post_inquiry.py→実画像/復号動画→--finalize→check_unit_post_inquiry_binding.pyを照合後に同ブランチpush。代表回帰だけを現在実施とし、未再実行ケースを成功件数へ混ぜない。マウス操作禁止・保護ブランチ/既存保存/素材維持。次はUnitReplyRecoveryV1/PLAN.md、判断不要なら継続。

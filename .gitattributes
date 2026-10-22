@@ -1272,3 +1272,12 @@ Scripts/verify_unit_post_inquiry.py -text whitespace=trailing-space,space-before
 Scripts/check_unit_post_inquiry_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitPostInquiryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitReplyRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.ReplyRecovery.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitCouriers.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitReplyRecoveryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitReplyChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_reply_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_reply_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitReplyRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitHeldDeliveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol

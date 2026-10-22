@@ -1,6 +1,10 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
-public sealed record UnitPostOrder(EntityId Request,string Action,string Role,EntityId AddressEvidence);
+public sealed record UnitPostOrder(EntityId Request,string Action,string Role,EntityId AddressEvidence)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? ReplyPolicy {get;init;}
+}
 public sealed record UnitPostAnswer(string Original,bool Delivered,bool Applied);
 public sealed record UnitTransportSnapshot(MessageEnvelope[] Messages,MessageAttempt[] Attempts,FormalReceipt[] Receipts,PersonalKnowledge[] Knowledge);
 public static partial class NewGameMilitary
@@ -10,11 +14,11 @@ public static partial class NewGameMilitary
     static string UnitMessage(EntityId request,string kind)=>"message:unit-post/"+kind+"/"+Hash(request.Value);
     static EntityId UnitCourier(EntityId request)=>new("courier:unit-post/"+Hash(request.Value));
     static EntityId UnitOrder(EntityId request)=>new("order:unit-post/"+Hash(request.Value));
-    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value)]:[];
+    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Carrier.Value)).Distinct(StringComparer.Ordinal)]:[];
     static FieldPoint PhysicalPerson(ContractWorld w,long at)=>DeployedAt(w,at)?PersonPosition(w,at):FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,at));
     internal static void BeforeUnitMessages(ContractWorld w)
     {
-        if(w.NewMilitary?.Withdrawal is not {} x)return;
+        BeforeReplyRecovery(w);if(w.NewMilitary?.Withdrawal is not {} x)return;
         foreach(var d in UnitDispatches(w)){var a=w.Messaging.Attempts.Single(a=>a.Id==d.Attempt);if(a.Status!=AttemptStatus.InTransit||a.DueAt!=w.ElapsedSeconds)continue;
             bool present=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w)&&StrengthAt(w,0,w.ElapsedSeconds)>0&&RegionalGround.Distance(Position(w,0,w.ElapsedSeconds),d.Destination)<=1000;
             if(!present)MessageFlow.Fail(w.Messaging,d.Message);
@@ -28,26 +32,31 @@ public static partial class NewGameMilitary
     }
     static void RewindUnitTransport(ContractWorld w)
     {
-        var x=w.NewMilitary?.Withdrawal;var messages=w.Messaging.Messages.Where(UnitEnvelope).Select(m=>m.Id).ToHashSet();
-        var dispatches=UnitDispatches(w);var receipts=UnitReceipts(w);var replies=UnitReplies(w);
-        var keep=dispatches.Select(d=>d.Message).Concat(receipts.Select(r=>r.ReplyMessage)).ToHashSet();
-        w.Messaging.Messages=w.Messaging.Messages.Where(m=>!messages.Contains(m.Id)||keep.Contains(m.Id)).ToArray();
-        w.Messaging.Attempts=w.Messaging.Attempts.Where(a=>!messages.Contains(a.MessageId)).Concat(dispatches.SelectMany(d=>{
-            var r=receipts.SingleOrDefault(r=>r.Id==d.Id);int number=int.Parse(d.Attempt.Split('/').Last(),System.Globalization.CultureInfo.InvariantCulture);var a=new MessageAttempt(d.Attempt,d.Message,number,d.At,d.DueAt,d.Recipient.Value);
-            if(r!=null)a=a with{Status=r.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!r.Delivered,FinishedAt=r.At,FailureAt=r.Delivered?null:r.At};
-            if(r==null)return new[]{a};var reply=replies.SingleOrDefault(t=>t.Id==d.Id);var b=new MessageAttempt(r.ReplyAttempt,r.ReplyMessage,1,r.At,r.ReplyDueAt,w.PlayerControl.Value);
-            if(reply!=null)b=b with{Status=reply.Received?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!reply.Received,FinishedAt=reply.At,FailureAt=reply.Received?null:reply.At};return new[]{a,b};
-        })).ToArray();
-        // Preserve original global order while deterministically rebuilding only unit-post transport fields.
-        var rank=w.Messaging.Messages.Select((m,i)=>(m.Id,i)).ToDictionary(x=>x.Id,x=>x.i);w.Messaging.Attempts=w.Messaging.Attempts.OrderBy(a=>rank[a.MessageId]).ThenBy(a=>a.Number).ToArray();
-        w.Messaging.Receipts=w.Messaging.Receipts.Where(r=>!messages.Contains(r.MessageId)).Concat(receipts.Where(r=>r.Delivered).Select(r=>{var d=dispatches.Single(d=>d.Id==r.Id);return new FormalReceipt(d.Message,d.Recipient.Value,d.Recipient.Value,r.At,false);})).Concat(replies.Where(r=>r.Received).Select(r=>new FormalReceipt(receipts.Single(t=>t.Id==r.Id).ReplyMessage,w.PlayerControl.Value,w.PlayerControl.Value,r.At,false))).OrderBy(r=>r.ReceivedAt).ThenBy(r=>r.MessageId,StringComparer.Ordinal).ToArray();
-        w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>!messages.Contains(k.MessageId)).Concat(receipts.Where(r=>r.Delivered).Select(r=>{var d=dispatches.Single(d=>d.Id==r.Id);return new PersonalKnowledge(d.Message,d.Recipient.Value,r.At,d.Message);})).Concat(replies.Where(r=>r.Received).Select(r=>{var id=receipts.Single(t=>t.Id==r.Id).ReplyMessage;return new PersonalKnowledge(id,w.PlayerControl.Value,r.At,id);})).ToArray();
+        var keys=w.Messaging.Messages.Where(UnitEnvelope).Select(m=>m.Id).ToHashSet();var dispatches=UnitDispatches(w);var receipts=UnitReceipts(w);var replies=UnitReplies(w);var flights=w.NewMilitary?.ReplyRecovery?.Flights??[];
+        var keep=dispatches.Select(d=>d.Message).Concat(receipts.Select(r=>r.ReplyMessage)).Concat(flights.Select(f=>f.Message)).ToHashSet();
+        w.Messaging.Messages=w.Messaging.Messages.Where(m=>!keys.Contains(m.Id)||keep.Contains(m.Id)).ToArray();var generated=new List<MessageAttempt>();
+        foreach(var d in dispatches){
+            var r=receipts.SingleOrDefault(r=>r.Id==d.Id);var a=new MessageAttempt(d.Attempt,d.Message,int.Parse(d.Attempt.Split('/').Last(),System.Globalization.CultureInfo.InvariantCulture),d.At,d.DueAt,d.Recipient.Value);
+            if(r!=null)a=a with{Status=r.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!r.Delivered,FinishedAt=r.At,FailureAt=r.Delivered?null:r.At};generated.Add(a);
+            if(r==null)continue;var observed=replies.SingleOrDefault(t=>t.Id==d.Id);var b=new MessageAttempt(r.ReplyAttempt,r.ReplyMessage,1,r.At,r.ReplyDueAt,w.PlayerControl.Value);
+            if(observed!=null)b=b with{Status=observed.Received?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!observed.Received,FinishedAt=observed.At,FailureAt=observed.Received?null:observed.At};generated.Add(b);
+        }
+        foreach(var f in flights){
+            var observed=w.NewMilitary!.ReplyRecovery!.Arrivals.SingleOrDefault(a=>a.Attempt==f.Attempt);string receiver=f.Kind==UnitReplyLeg.FailureReport?UnitIds[0].Value:w.PlayerControl.Value;
+            var a=new MessageAttempt(f.Attempt,f.Message,int.Parse(f.Attempt.Split('/').Last(),System.Globalization.CultureInfo.InvariantCulture),f.At,f.DueAt,receiver);
+            if(observed!=null)a=a with{Status=observed.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!observed.Delivered,FinishedAt=observed.At,FailureAt=observed.Delivered?null:observed.At};generated.Add(a);
+        }
+        var rank=w.Messaging.Messages.Select((m,i)=>(m.Id,i)).ToDictionary(x=>x.Id,x=>x.i);Need(generated.All(a=>rank.ContainsKey(a.MessageId)),"配送便の原本が欠落しています");
+        w.Messaging.Attempts=w.Messaging.Attempts.Where(a=>!keys.Contains(a.MessageId)).Concat(generated).OrderBy(a=>rank[a.MessageId]).ThenBy(a=>a.Number).ToArray();
+        var received=generated.Where(a=>a.Status==AttemptStatus.Delivered).GroupBy(a=>a.MessageId).Select(g=>g.OrderBy(a=>a.FinishedAt).ThenBy(a=>a.Id,StringComparer.Ordinal).First()).Select(a=>new FormalReceipt(a.MessageId,w.Messaging.Messages.Single(m=>m.Id==a.MessageId).RecipientId,a.ReceiverId,a.FinishedAt!.Value,false)).ToArray();
+        w.Messaging.Receipts=w.Messaging.Receipts.Where(r=>!keys.Contains(r.MessageId)).Concat(received).OrderBy(r=>r.ReceivedAt).ThenBy(r=>r.MessageId,StringComparer.Ordinal).ToArray();
+        w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>!keys.Contains(k.MessageId)).Concat(received.Select(r=>new PersonalKnowledge(r.MessageId,r.ReceiverId,r.ReceivedAt,r.MessageId))).ToArray();
     }
     static void ValidateUnitTransport(ContractWorld w)
     {
-        var dispatches=UnitDispatches(w);var receipts=UnitReceipts(w);var expected=dispatches.Select(d=>d.Message).Concat(receipts.Select(r=>r.ReplyMessage)).ToHashSet();
+        var dispatches=UnitDispatches(w);var receipts=UnitReceipts(w);var expected=dispatches.Select(d=>d.Message).Concat(receipts.Select(r=>r.ReplyMessage)).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Message)).ToHashSet();
         Need(w.Messaging.Messages.Where(UnitEnvelope).Select(m=>m.Id).ToHashSet().SetEquals(expected),"部隊宛の原本台帳が一致しません");
-        Need(w.Messaging.Attempts.Where(a=>expected.Contains(a.MessageId)).All(a=>a.LateDueAt==null&&(dispatches.Any(d=>d.Attempt==a.Id)||receipts.Any(r=>r.ReplyAttempt==a.Id&&a.Number==1))),"部隊宛の未登録の再送/遅着です");
+        Need(w.Messaging.Attempts.Where(a=>expected.Contains(a.MessageId)).All(a=>a.LateDueAt==null&&(dispatches.Any(d=>d.Attempt==a.Id)||receipts.Any(r=>r.ReplyAttempt==a.Id&&a.Number==1)||(w.NewMilitary?.ReplyRecovery?.Flights??[]).Any(f=>f.Attempt==a.Id))),"部隊宛の未登録の再送/遅着です");
         var copy=BeforeState(w,w.ElapsedSeconds,w.CommitSequence);
         Need(Same(UnitTransport(w),UnitTransport(copy)),"部隊宛の正式受領/試行/知識と業務台帳が違います");
     }

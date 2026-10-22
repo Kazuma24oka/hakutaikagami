@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1557,
-  "baseline_passed": 1539,
-  "added": 18,
-  "scope": "UnitInquiryTests(18): own role without recall originals, physical return, quote not original receipt/failure recognition, fixed past snapshot, no hidden following, missing sender, restore and forged payloads"
+  "expected_passed": 1578,
+  "baseline_passed": 1557,
+  "added": 21,
+  "scope": "UnitReplyRecoveryTests(21): versioned policy, physical failure recognition, max3, immutable original/lost record, moved receiver, distinct retained/retry carriers, restore and forged/missing records"
 }
