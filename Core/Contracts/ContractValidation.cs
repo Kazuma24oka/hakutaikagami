@@ -13,9 +13,10 @@ public static class ContractValidation
         Check(list.All(i => EntityId.IsValid(i.Value)) && list.Distinct().Count() == list.Length, "Invalid/duplicate " + name);
         return list.ToHashSet();
     }
-    public static void Validate(ContractWorld s)
+    public static void Validate(ContractWorld s)=>Validate(s,null);
+    internal static void Validate(ContractWorld s,ContractWorld? trustedPrior)
     {
-        try { ValidateCore(s);NewGameWorld.Validate(s);NewGameService.Validate(s);Career.Validate(s);CareerMilitary.Validate(s);CourierRecovery.Validate(s);DelegationInquiry.Validate(s); if(NpcWork.Enabled(s))NpcWork.Validate(s); else Check(s.NpcWork==null,"Unexpected NPC work module"); if(RegionalWork.Enabled(s))RegionalWork.Validate(s); if(PersonalStart.Enabled(s))PersonalStart.Validate(s); if(RetainerStart.Enabled(s))RetainerStart.Validate(s); if(CreatedCampaign.Enabled(s))CreatedCampaign.Validate(s); if(EngagementMission.Enabled(s))EngagementMission.Validate(s); if(FieldSupply.Enabled(s))FieldSupply.Validate(s); if(FieldPresence.Enabled(s))FieldPresence.Validate(s); if(DelegationMission.Enabled(s))DelegationMission.Validate(s); if(AssessmentNotice.Enabled(s))AssessmentNotice.Validate(s); }
+        try { ValidateCore(s);NewGameWorld.Validate(s);NewGameService.Validate(s);NewGameMilitary.Validate(s,trustedPrior);Career.Validate(s);CareerMilitary.Validate(s);CourierRecovery.Validate(s);DelegationInquiry.Validate(s); if(NpcWork.Enabled(s))NpcWork.Validate(s); else Check(s.NpcWork==null,"Unexpected NPC work module"); if(RegionalWork.Enabled(s))RegionalWork.Validate(s); if(PersonalStart.Enabled(s))PersonalStart.Validate(s); if(RetainerStart.Enabled(s))RetainerStart.Validate(s); if(CreatedCampaign.Enabled(s))CreatedCampaign.Validate(s); if(EngagementMission.Enabled(s))EngagementMission.Validate(s); if(FieldSupply.Enabled(s))FieldSupply.Validate(s); if(FieldPresence.Enabled(s))FieldPresence.Validate(s); if(DelegationMission.Enabled(s))DelegationMission.Validate(s); if(AssessmentNotice.Enabled(s))AssessmentNotice.Validate(s); }
         catch (Exception e) when (e is not InvalidDataException)
         { throw new InvalidDataException("Malformed contract state.", e); }
     }
@@ -26,7 +27,7 @@ public static class ContractValidation
         Check(DelegationMission.Enabled(s)==(s.Delegation!=null),"Delegation requires its explicit profile");
         Check(FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
         Check(FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
-        Check(s.ResourceLots.All(l=>l.MobileHolder==null||FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry),"Unexpected mobile resource holder");
+        Check(s.ResourceLots.All(l=>l.MobileHolder==null||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||s.NewMilitary!=null&&l.MobileHolder==s.PlayerControl&&l.Id==NewGameMilitary.Carry)),"Unexpected mobile resource holder");
         Check(EngagementMission.Enabled(s)==(s.Engagement!=null),"Engagement requires its explicit profile");
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
         Check(ContinuousWorld.Enabled(s)==(s.Atlas!=null),"Terrain atlas requires its ruleset");if(ContinuousWorld.Enabled(s))ContinuousWorld.Validate(s);
@@ -49,8 +50,8 @@ public static class ContractValidation
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");
         var sites = Keys(defs.Sites, o => o.Id, "sites");
         var bases = Keys(defs.AuthorityBases,b=>b.Id,"authority bases");
-        var armies = Keys(defs.Armies,a=>a.Id,"armies");
-        Check(defs.Armies.All(a=>orgs.Contains(a.Organization)&&people.Contains(a.Commander)),"Broken army definition reference.");
+        var armyRows=defs.Armies.Concat(NewGameMilitary.Armies(s)).ToArray();var armies = Keys(armyRows,a=>a.Id,"armies");
+        Check(armyRows.All(a=>orgs.Contains(a.Organization)&&people.Contains(a.Commander)),"Broken army definition reference.");
         Check(defs.Characters.All(c => !string.IsNullOrWhiteSpace(c.Name)) && defs.Organizations.All(o => !string.IsNullOrWhiteSpace(o.Name)), "Missing name.");
         Check(defs.Sites.All(c => !string.IsNullOrWhiteSpace(c.Name) && c.LatitudeE7 is >= -900000000 and <= 900000000 &&
             c.LongitudeE7 is >= -1800000000 and <= 1800000000), "Invalid geographic anchor.");
@@ -152,7 +153,7 @@ public static class ContractValidation
         {
             var expected = s.Transfers.Where(x => x.ToLot == lot.Id).Aggregate(lot.InitialQuantity, (sum, x) => checked(sum + x.Amount));
             expected = s.Transfers.Where(x => x.FromLot == lot.Id).Aggregate(expected, (sum, x) => checked(sum - x.Amount));
-            Check(checked(expected+FieldSupply.Net(s,lot.Id)) == lot.Quantity, "Resource conservation failure.");
+            Check(checked(expected+FieldSupply.Net(s,lot.Id)+NewGameMilitary.Net(s,lot.Id)) == lot.Quantity, "Resource conservation failure.");
         }
         Keys(s.Debts, x => x.Id, "debts");
         Check(s.Debts.All(x => entities.Contains(x.Debtor) && entities.Contains(x.Creditor) && x.Debtor != x.Creditor && x.Outstanding >= 0 && bases.Contains(x.Basis) && !string.IsNullOrWhiteSpace(x.Unit)), "Invalid debt.");

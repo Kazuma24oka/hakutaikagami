@@ -104,7 +104,7 @@ public static class NewGameWorld
     }
     public static string? Address(ContractWorld w,MessageEnvelope message)
     {
-        if(!Enabled(w))return null;if(NewGameService.Address(w,message) is {} address)return address;var request=w.Requests.SingleOrDefault(r=>r.Id.Value==message.CorrelationId);
+        if(!Enabled(w))return null;if(NewGameMilitary.Address(w,message) is {} militaryAddress)return militaryAddress;if(NewGameService.Address(w,message) is {} address)return address;var request=w.Requests.SingleOrDefault(r=>r.Id.Value==message.CorrelationId);
         // Reply to the original meeting site, not the other person's current GPS.
         return request!=null&&request.Intent.Actor!=request.Intent.Executor?Node(request.Intent.Scope.Value):null;
     }
@@ -115,8 +115,9 @@ public static class NewGameWorld
         Need(w.NewGame!=null,"開始定義がありません");var d=w.NewGame;ValidateStart(d);
         Need(w.PlayerControl==d.Selected&&w.Seed==d.Seed&&w.Definitions.Version==Version(d)&&w.EpochDate==d.Start.EpochDate,"開始人物・Seed・定義が一致しません");
         Need(Same(w.Definitions.Characters,d.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray())&&Same(w.Definitions.Organizations,d.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray()),"世界の人物・勢力が開始定義と一致しません");
-        var rel=InitialRelations(d);Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&Same(w.Offices,rel.Offices)&&Same(w.LandRights,rel.Lands)&&Same(w.Grants,Grants(d))&&w.Units.Length==0&&w.ResourceLots.Length==0,"開始時の主従・土地・権限を無断変更できません");
-        foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==new EntityId("appearance:"+ContractJson.Hash(ContractJson.Write(Look(d,p.Id))))&&c.Life==(CanPlay(d.Start,p)?LifeState.Adult:LifeState.Minor),"人物の外見・成人資格が一致しません");if(!w.Branches!.Journeys.Any(j=>j.Actor==c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
+        Need(w.Definitions.Armies.Length==0,"開始定義へ軍務の動的名簿を混在させることはできません");
+        var rel=InitialRelations(d);Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&Same(w.Offices,rel.Offices)&&Same(w.LandRights,rel.Lands)&&Same(w.Grants,Grants(d))&&(w.NewMilitary!=null||w.Units.Length==0&&w.ResourceLots.Length==0),"開始時の主従・土地・権限を無断変更できません");
+        foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==new EntityId("appearance:"+ContractJson.Hash(ContractJson.Write(Look(d,p.Id))))&&c.Life==(CanPlay(d.Start,p)?LifeState.Adult:LifeState.Minor),"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
         foreach(var r in w.Requests)ValidateOrderAt(w,r.Intent,r.CreatedAt);
     }
     public static Intent Inspect(ContractWorld w,string id)=>new(new(id),w.PlayerControl,w.PlayerControl,w.Locations.Single(l=>l.Actor==w.PlayerControl).Site??throw new InvalidDataException("到着してから点検してください"),ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,w.ElapsedSeconds+60,false,null,w.ElapsedSeconds+60),w.ElapsedSeconds,1,4,1,false,TaskKind.BindingOrder);

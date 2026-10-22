@@ -18,7 +18,7 @@ public partial class NewGameFrontEnd
     async Task Capture(string name,bool play=false)
     {
         foreach(var control in Children(this).OfType<Control>())control.MouseFilter=MouseFilterEnum.Ignore;
-        await Frame();await Frame();if(game!=null&&play)game.Refresh();await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(TestOutput,name+".png"));
+        await Frame();await Frame();if(game!=null&&play)game.Refresh();await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(TestOutput,name+".png"));
         if(play){var rect=game!.RenderRect;var info=game.InfoRect;Check(rect.Size.Y>=300&&rect.Position.Y+rect.Size.Y<=GetViewportRect().Size.Y,"actual 3D surface fits viewport "+name);File.WriteAllText(Path.Combine(TestOutput,name+"-rect.json"),System.Text.Json.JsonSerializer.Serialize(new{Surface=new[]{rect.Position.X,rect.Position.Y,rect.Size.X,rect.Size.Y},Info=new[]{info.Position.X,info.Position.Y,info.Size.X,info.Size.Y}}));File.WriteAllText(Path.Combine(TestOutput,name+"-pose.json"),game.Pose());File.WriteAllText(Path.Combine(TestOutput,name+"-world.sha256"),ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()));File.WriteAllText(Path.Combine(TestOutput,name+"-info.txt"),game.InfoText);}
     }
     void GameStep(int n)
@@ -79,14 +79,14 @@ Press("manage");await Frame();await Frame();string io=Path.Combine(DataRoot,"qa-
     async Task CaptureFilm()
     {
         string folder=Path.Combine(TestOutput,"film");Directory.CreateDirectory(folder);game!.LoadCheckpoint("s1");
-        game.Press("auto");for(int n=0;n<48;n++){await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(folder,"walk-"+n.ToString("D3")+".png"));}game.Press("pause");
-        game.LoadCheckpoint("s2");await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(folder,"arrival.png"));game.Load();await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(folder,"reopened.png"));
+        game.Press("auto");for(int n=0;n<48;n++){await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(folder,"walk-"+n.ToString("D3")+".png"));}game.Press("pause");
+        game.LoadCheckpoint("s2");await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(folder,"arrival.png"));game.Load();await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(folder,"reopened.png"));
         GD.Print("NEW_GAME_FILM_FRAMES_PASSED 50");
     }
     async void RunFlowChecks()
     {
         try{
-            Directory.CreateDirectory(TestOutput);await Frame();await Frame();if(FlowCase.StartsWith("service-")){await RunServiceChecks();GetTree().Quit();return;}if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreFlow();else{await SetupFlow();if(OS.GetCmdlineUserArgs().Contains("--new-game-film"))await CaptureFilm();}
+            Directory.CreateDirectory(TestOutput);await Frame();await Frame();if(FlowCase.StartsWith("military-")){await RunNewMilitaryChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("service-")){await RunServiceChecks();GetTree().Quit();return;}if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreFlow();else{await SetupFlow();if(OS.GetCmdlineUserArgs().Contains("--new-game-film"))await CaptureFilm();}
             File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-checks.json":"check-checks.json"),System.Text.Json.JsonSerializer.Serialize(assertions));GD.Print("NEW_GAME_FLOW_PASSED "+FlowCase);GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }

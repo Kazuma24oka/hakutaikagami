@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1377,
-  "baseline_passed": 1352,
-  "added": 25,
-  "scope": "NewGameServiceTests: physical mutual service, known state, inquiry, report-gated departure, save compatibility and forgery rejection"
+  "expected_passed": 1405,
+  "baseline_passed": 1377,
+  "added": 28,
+  "scope": "NewGameMilitaryTests: selected officer loan, physical permit, pickup, shared terrain and supply, return report, same-life service departure, immutable save definitions, inquiry and forgery rejection"
 }

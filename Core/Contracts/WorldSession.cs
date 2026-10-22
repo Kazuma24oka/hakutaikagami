@@ -25,7 +25,7 @@ public sealed partial class WorldSession
     private void Change(Action<ContractWorld> change, Action? beforeCommit = null)
     {
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
-        change(next);NewGameService.Sync(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); ContractValidation.Validate(next); beforeCommit?.Invoke(); state = next;
+        change(next);NewGameService.Sync(next);NewGameMilitary.Sync(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
     }
     public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
     public CommandResult IssueRegional(RegionalRequest request,long revision){lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
@@ -58,7 +58,7 @@ public sealed partial class WorldSession
             if (expectedRevision != state.CommitSequence) return new(ResultCode.StateChanged,intent.RequestId,state.CommitSequence,"表示を更新してください");
             try
             {
-                if(FieldPresence.PlayerDeployed(state))throw new InvalidDataException("Return to the site before road travel");
+                if(FieldPresence.PlayerDeployed(state)||NewGameMilitary.Deployed(state))throw new InvalidDataException("Return to the site before road travel");
                 ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
                 if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
                 if(FieldWorld.Enabled(state)&&state.Field!.Orders.Length>0&&Enumerable.Range(0,3).Any(i=>FieldWorld.Sample(state,i,state.ElapsedSeconds).Moving))throw new InvalidDataException("Local force still moving");
@@ -115,7 +115,7 @@ public sealed partial class WorldSession
             Change(s=>{
                 if(principal)s.Messaging.Knowledge=[..s.Messaging.Knowledge,new(m.Id,actor.Value,s.ElapsedSeconds,m.Id)];
                 else MessageFlow.OpenAsProxy(s.Messaging,m.Id,actor.Value,s.ElapsedSeconds);
-                NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
+                NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
             return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
@@ -153,7 +153,7 @@ public sealed partial class WorldSession
                     long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
-                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);RegionalBattle.Tick(s);
+                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
                     CourierRecovery.BeforeMessages(s);RegionalBattle.BeforeMessages(s);MessageFlow.Advance(s.Messaging,boundary);RegionalBattle.AfterMessages(s);DelegationMission.Update(s);DelegationInquiry.Update(s);
@@ -162,7 +162,7 @@ public sealed partial class WorldSession
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
-                    SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameService.Update(s);
+                    SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);
                 },beforeCommit);
                 if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);
                 processed+=cost;
@@ -176,6 +176,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
+        if(NewGameMilitary.NextBoundary(s,target) is {} militaryLoanBoundary)times.Add(militaryLoanBoundary);
         if(NewGameService.NextBoundary(s,target) is {} serviceBoundary)times.Add(serviceBoundary);
         if(CareerMilitary.NextBoundary(s,target) is {} militaryBoundary)times.Add(militaryBoundary);
         if(Career.Enabled(s)&&Career.NextBoundary(s,target) is {} careerBoundary)times.Add(careerBoundary);

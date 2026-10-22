@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "contract": "new-game-personal-loan-physical-permission-local-custody-shared-ground-person-seconds-return-report-v1",
+  "completion_conditions": 5,
+  "trial_soldiers": [
+    40,
+    30,
+    30
+  ],
+  "trial_range_mm": 120000,
+  "trial_offer_seconds": 120,
+  "stock_unit": "ration-person-second",
+  "depot_initial": 86400000,
+  "carry_capacity": 17280000,
+  "world_definition_mutable": false,
+  "same_person_and_world": true,
+  "combat": false
+}

@@ -270,7 +270,7 @@ public partial class TaxPanel : MarginContainer
             {
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
                 var path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/deadline-cancellation.png");
-                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+                if (ViewportCapture.Save(GetViewport(),path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
             }
             GD.Print("DEADLINE_CANCEL_GUI_PASS scenarios=6 loads=5 inclusive=1 cancellation_receipt_effect=1 late_before_after=1 original_receptions=2 collection=0 treasury=100");
             GetTree().Quit(0);
@@ -355,7 +355,7 @@ public partial class TaxPanel : MarginContainer
             {
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
                 var path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/delivery-recovery.png");
-                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+                if (ViewportCapture.Save(GetViewport(),path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
             }
             GD.Print("DELIVERY_RECOVERY_GUI_PASS input=viewport_mouse_events order_loss=1 report_loss=1 retries=2 load=3 treasury=160 knowledge_each=1");
             GetTree().Quit(0);
@@ -415,7 +415,7 @@ public partial class TaxPanel : MarginContainer
             {
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
                 var path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/late-duplicate.png");
-                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+                if (ViewportCapture.Save(GetViewport(),path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
             }
             GD.Print("LATE_DUPLICATE_GUI_PASS physical_receptions=4 late=2 logical_order=1 result_knowledge=1 failure_reports_delivered=2 lost=1 loads=3 treasury=160");
             GetTree().Quit(0);
@@ -456,7 +456,7 @@ public partial class TaxPanel : MarginContainer
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
                 string path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/tax-vertical.png");
                 DirAccess.MakeDirRecursiveAbsolute(System.IO.Path.GetDirectoryName(path)!);
-                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
+                if (ViewportCapture.Save(GetViewport(),path) != Error.Ok) throw new InvalidOperationException("Screenshot failed.");
             }
             var beforeBadLoad = simulation.SaveJson();
             System.IO.File.WriteAllText(savePath, "{broken");

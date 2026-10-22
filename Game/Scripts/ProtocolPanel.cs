@@ -153,7 +153,7 @@ public partial class ProtocolPanel : MarginContainer
             Check(notice.GetGlobalRect().End.Y <= GetViewportRect().Size.Y, "表示が画面下にはみ出し");
             if (DisplayServer.GetName() != "headless") {
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
-                Check(GetViewport().GetTexture().GetImage().SavePng(ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/shared-protocol.png")) == Error.Ok, "画面保存失敗");
+                Check(ViewportCapture.Save(GetViewport(),ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/shared-protocol.png")) == Error.Ok, "画面保存失敗");
             }
             GD.Print($"SHARED_PROTOCOL_GUI_PASS scenarios=4 save_boundaries={boundaries} response_duplicate_effect=1 inspection_effect=1 viewport_input_only=1"); GetTree().Quit(0);
         } catch (Exception e) { GD.PushError(e.ToString()); GetTree().Quit(1); }

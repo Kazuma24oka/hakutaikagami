@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
 {
-    bool InitialService=>FlowCase=="service-retainer";
-    string ServiceSite=>FlowCase=="service-odawara"?"site:odawara":"site:kofu";
+    bool InitialService=>FlowCase=="service-retainer"||FlowCase.StartsWith("military-")&&FlowCase!="military-ronin";
+    string ServiceSite=>FlowCase.Contains("odawara")?"site:odawara":"site:kofu";
     void OpenAllServiceLetters(){for(int n=0;n<12&&game!.Session.GetActorView(game.Session.PlayerControl).Messages.Any(m=>m.KnownBody==null);n++)game.Press("open");}
     void ServiceStep(int step)
     {
@@ -34,7 +34,7 @@ public partial class NewGameFrontEnd
     async Task RunServiceChecks()
     {
         if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreServiceFlow();else await BeginServiceFlow();
-        if(OS.GetCmdlineUserArgs().Contains("--service-film")){string dir=Path.Combine(TestOutput,"film");Directory.CreateDirectory(dir);game!.LoadCheckpoint("service5");game.Press("auto");for(int n=0;n<180;n++){await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(dir,"walk-"+n.ToString("D3")+".png"));}game.Press("pause");}
+        if(OS.GetCmdlineUserArgs().Contains("--service-film")){string dir=Path.Combine(TestOutput,"film");Directory.CreateDirectory(dir);game!.LoadCheckpoint("service5");game.Press("auto");for(int n=0;n<180;n++){await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(dir,"walk-"+n.ToString("D3")+".png"));}game.Press("pause");}
         File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-checks.json":"check-checks.json"),System.Text.Json.JsonSerializer.Serialize(assertions));GD.Print("SERVICE_ENTRY_PASSED "+FlowCase);
     }
 }

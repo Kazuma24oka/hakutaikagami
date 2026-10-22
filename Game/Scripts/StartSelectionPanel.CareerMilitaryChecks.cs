@@ -33,7 +33,7 @@ public partial class StartSelectionPanel
         }
     }
     void MilitaryContinue(int checkpoint){for(int n=checkpoint+1;n<MilitarySteps;n++){MilitaryStep(n);stage!.HubSession.SetPaused(true);}CareerAdvance(stage!.HubSession.Seconds+1);}
-    async Task MilitaryCapture(string name){await Frame();GetViewport().GetTexture().GetImage().SavePng(MilitaryOutput+"/diagnostic.png");Need(stage!.HubFits(),"military controls and minimum3D fit actual viewport");GetViewport().GetTexture().GetImage().SavePng(MilitaryOutput+"/"+name+".png");File.WriteAllText(MilitaryOutput+"/"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(stage.HubRect()));File.WriteAllText(MilitaryOutput+"/"+name+"-world.sha256",ContractJson.CanonicalHash(stage.HubSession.DiagnosticSnapshot()));}
+    async Task MilitaryCapture(string name){await Frame();ViewportCapture.Save(GetViewport(),MilitaryOutput+"/diagnostic.png");Need(stage!.HubFits(),"military controls and minimum3D fit actual viewport");ViewportCapture.Save(GetViewport(),MilitaryOutput+"/"+name+".png");File.WriteAllText(MilitaryOutput+"/"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(stage.HubRect()));File.WriteAllText(MilitaryOutput+"/"+name+"-world.sha256",ContractJson.CanonicalHash(stage.HubSession.DiagnosticSnapshot()));}
     async Task RunMilitarySelectionChecks()
     {
         Directory.CreateDirectory(MilitaryOutput);((TabContainer)GetParent()).CurrentTab=2;await Frame();

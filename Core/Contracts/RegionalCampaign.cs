@@ -72,7 +72,7 @@ public static class RegionalCampaign
         var point=origin??ActorPoint(w,new(m.SenderId));FieldLeg[]? first=null;long roadsAt=attempt.SentAt;string? connector=null;
         if(origin==null&&w.Locations.Single(l=>l.Actor.Value==m.SenderId).Kind==LocationKind.AtPosition&&!BranchRoutes.GraphNodes(w).Any(n=>n.Position==point)){
             connector=w.Atlas?.Anchor??BranchRoutes.GraphNodes(w).OrderBy(n=>Math.Abs(n.Position.EastMm-point.EastMm)+Math.Abs(n.Position.NorthMm-point.NorthMm)).ThenBy(n=>n.Id,StringComparer.Ordinal).First().Id;
-            first=RegionalGround.Plan(FieldWorld.FromWorld(point),FieldWorld.FromWorld(Node(w,connector)),attempt.SentAt,courier:true,scenery:RegionalScenery.Enabled(w),atlas:ContinuousWorld.Enabled(w));roadsAt=first.LastOrDefault()?.EndAt??roadsAt;
+            first=RegionalGround.Plan(FieldWorld.FromWorld(point),FieldWorld.FromWorld(Node(w,connector)),attempt.SentAt,courier:true,scenery:RegionalScenery.Enabled(w),atlas:ContinuousWorld.Enabled(w)||NewGameWorld.Enabled(w));roadsAt=first.LastOrDefault()?.EndAt??roadsAt;
         }
         CourierLeg[] legs;try{legs=connector==null?Route(w,new(m.SenderId),destination,known,attempt.SentAt,origin):FromNode(w,connector,destination,known,roadsAt);}catch(InvalidDataException){return new(attempt.Id,destination,appointment,point,[],known,Math.Max(roadsAt,attempt.SentAt)+1,true,null,first);}
         return new(attempt.Id,destination,appointment,point,legs,known,Math.Max(attempt.SentAt+1,Math.Max(appointment,End(legs,roadsAt))),false,null,first);
@@ -212,6 +212,7 @@ public static class RegionalCampaign
     }
     public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
     {
+        if(actor==w.PlayerControl&&NewGameMilitary.DeployedAt(w,at))return FieldWorld.ToWorld(NewGameMilitary.Position(w,0,at));
         if(RegionalBattle.Active(w)&&FieldPresence.Deployed(w,actor)&&at==w.ElapsedSeconds&&w.Region!.Units.Any(u=>u.Commander==actor))return FieldWorld.ToWorld(RegionalBattle.Position(w,actor));
         if(FieldWorld.Enabled(w)&&actor==w.PlayerControl&&w.Field!.Orders.Any(o=>o.At<=at)&&!(w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at)?.Legs[0].StartAt>w.Field.Orders.Last(o=>o.At<=at).At))return FieldWorld.ToWorld(FieldWorld.Sample(w,0,at).Position);
         return RoadActorPointAt(w,actor,at);
@@ -229,7 +230,7 @@ public static class RegionalCampaign
         if(pose.At!=attempt.SentAt||l.Actor.Value!=message.SenderId||l.ProgressMm<0||l.SegmentIndex<0)throw new InvalidDataException("Invalid dispatch event provenance");
         if(l.Kind==LocationKind.AtPosition){
             var p=FieldWorld.FromWorld(mission.Origin);var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(mission.Origin.EastMm,mission.Origin.NorthMm));
-            if(l.Site!=null||l.Route!=null||l.ProgressMm!=0||l.SegmentIndex!=0||l.LatitudeE7!=geo.LatitudeE7||l.LongitudeE7!=geo.LongitudeE7||l.HeightMm!=RegionalGround.Height(p,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w))||string.IsNullOrWhiteSpace(l.TerrainRevision))throw new InvalidDataException("Dispatch point differs from physical location snapshot");
+            if(l.Site!=null||l.Route!=null||l.ProgressMm!=0||l.SegmentIndex!=0||l.LatitudeE7!=geo.LatitudeE7||l.LongitudeE7!=geo.LongitudeE7||l.HeightMm!=RegionalGround.Height(p,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w)||NewGameWorld.Enabled(w))||string.IsNullOrWhiteSpace(l.TerrainRevision))throw new InvalidDataException("Dispatch point differs from physical location snapshot");
             if(mission.FirstMile==null&&!BranchRoutes.GraphNodes(w).Any(n=>n.Position==mission.Origin))throw new InvalidDataException("Field dispatch requires first-mile route");return mission.Origin;
         }
         if(l.LatitudeE7!=null||l.LongitudeE7!=null||l.HeightMm!=null||mission.FirstMile!=null)throw new InvalidDataException("Road dispatch has field-only fields");
@@ -265,7 +266,7 @@ public static class RegionalCampaign
             if(a.LateDueAt!=null&&!CourierRecovery.Registered(w,a.Id))throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
             if(!BranchRoutes.GraphNodes(w).Any(n=>n.Id==c.Destination)||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edges.Any(e=>e.Id==id)))throw new InvalidDataException("Invalid courier binding");
             long roadStart=a.SentAt;var roadOrigin=c.Origin;
-            if(c.FirstMile!=null){var from=FieldWorld.FromWorld(c.Origin);var goal=c.FirstMile.LastOrDefault()?.To??from;RegionalGround.ValidatePath(c.FirstMile,from,goal,true,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w));if(c.FirstMile.Length>0&&c.FirstMile[0].StartAt!=a.SentAt)throw new InvalidDataException("First mile starts before dispatch");roadStart=c.FirstMile.LastOrDefault()?.EndAt??a.SentAt;roadOrigin=FieldWorld.ToWorld(goal);if(!BranchRoutes.GraphNodes(w).Any(n=>n.Position==roadOrigin))throw new InvalidDataException("First mile does not connect to a road node");}
+            if(c.FirstMile!=null){var from=FieldWorld.FromWorld(c.Origin);var goal=c.FirstMile.LastOrDefault()?.To??from;RegionalGround.ValidatePath(c.FirstMile,from,goal,true,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w)||NewGameWorld.Enabled(w));if(c.FirstMile.Length>0&&c.FirstMile[0].StartAt!=a.SentAt)throw new InvalidDataException("First mile starts before dispatch");roadStart=c.FirstMile.LastOrDefault()?.EndAt??a.SentAt;roadOrigin=FieldWorld.ToWorld(goal);if(!BranchRoutes.GraphNodes(w).Any(n=>n.Position==roadOrigin))throw new InvalidDataException("First mile does not connect to a road node");}
             for(int i=0;i<c.Legs.Length;i++){var l=c.Legs[i];var edge=edges.Single(e=>e.Id==l.Edge);
                 if(l.LengthMm<0||l.LengthMm>edge.LengthMm||l.EndAt!=TravelWorld.End(w,edge,l.StartAt,true,l.LengthMm)||l.StartAt<0||i==0&&(l.StartAt!=roadStart||l.From!=roadOrigin)||i>0&&(l.StartAt!=c.Legs[i-1].EndAt||l.From!=c.Legs[i-1].To))throw new InvalidDataException("Invalid courier chronology");
                 var ea=Node(w,edge.From);var eb=Node(w,edge.To);if(l.To!=ea&&l.To!=eb||i>0&&(l.From!=ea&&l.From!=eb||l.LengthMm!=edge.LengthMm))throw new InvalidDataException("Courier left its road");

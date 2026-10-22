@@ -45,7 +45,7 @@ public partial class OfficerLibraryTrial
     internal void ExerciseMinor(){Press(create);personName.Text="鏡山 幼少";birth.Value=1555;role.Select(0);site.Select(Array.IndexOf(SiteIds,"site:castle"));Press(apply);}
     internal void ExerciseServiceOfficer(string node,bool retainer)
     {
-        Press(create);personName.Text="鏡山 宗久";role.Select(retainer?1:0);site.Select(Array.IndexOf(SiteIds,node));if(retainer)lordChoice.Select(lordIds.IndexOf("person:shingen"));skinChoice.Select(1);hairChoice.Select(1);UpdateLook();Press(apply);
+        Press(create);personName.Text="鏡山 宗久";role.Select(retainer?1:0);site.Select(Array.IndexOf(SiteIds,node));if(retainer)lordChoice.Select(lordIds.IndexOf(node=="site:odawara"?"person:ujiyasu":node=="site:castle"?"person:nobunaga":"person:shingen"));skinChoice.Select(1);hairChoice.Select(1);UpdateLook();Press(apply);
     }
     internal OfficerLibrary CurrentLibrary=>ContractJson.Copy(library);
     internal void ExerciseManagement(string output)

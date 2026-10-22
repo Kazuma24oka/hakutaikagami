@@ -87,7 +87,7 @@ public static partial class NewGameService
     static bool Received(ContractWorld w,string message,ServiceCase c,long at)=>MessageFlow.LearnedAt(w.Messaging,message,c.Principal.Value) is {} t&&t<=at;
     static bool ReportsKnown(ContractWorld w,ServiceCase c,long at,long rev)
     {
-        var join=Joined(w,c);if(join==null)return false;
+        var join=Joined(w,c);if(join==null||NewGameMilitary.Outstanding(w,at,rev))return false;
         return w.Requests.Where(q=>q.Intent.Actor==c.Principal&&q.Intent.Executor==w.PlayerControl&&q.CommitSequence>=join.Revision&&q.CommitSequence<=rev&&q.CreatedAt<=at).All(q=>{var task=w.Tasks.Single(t=>t.RequestId==q.Id);var msg=WorldSession.Child("message",task.Id,"report").Value;return MessageFlow.LearnedAt(w.Messaging,msg,c.Principal.Value) is {} known&&known<=at;});
     }
     static (CareerStatement State,long? Effective) Status(ContractWorld w,ServiceCase c,long at,long rev)

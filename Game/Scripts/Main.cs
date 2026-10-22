@@ -163,7 +163,7 @@ public partial class Main : Control
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
                 string path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/godot-foundation.png");
                 DirAccess.MakeDirRecursiveAbsolute(System.IO.Path.GetDirectoryName(path)!);
-                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok)
+                if (ViewportCapture.Save(GetViewport(),path) != Error.Ok)
                     throw new InvalidOperationException("Screenshot failed.");
             }
             GD.Print("SCENE_SMOKE_PASS selections=3 details=3 castle=1");
