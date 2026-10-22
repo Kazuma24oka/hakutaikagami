@@ -10,6 +10,8 @@ public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long 
     public string? PostPolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? OriginalPolicy {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public long? DeliverBy {get;init;}
 }
 public sealed record NewMilitaryRequest(NewMilitaryInput Input,long At,long Revision,string? Message);
 public sealed record NewMilitaryTerms(EntityId Principal,EntityId Owner,EntityId Site,EntityId Army,EntityId Case);
@@ -91,7 +93,7 @@ public static partial class NewGameMilitary
     }
     public static void Dispatch(ContractWorld w,NewMilitaryInput input)
     {
-        Need(input.OriginalPolicy==null||input.Action==NewMilitaryAction.RemoteRecall&&input.OriginalPolicy==UnitCommandHoldingContract,"未知の原命令保持方針です");Need(input.PostPolicy==null||ReplyPolicyAction(input.Action)&&input.PostPolicy==UnitReplyRecoveryContract,"未知の返書配送方針です");Need(input.MotionContract==null||input.Action==NewMilitaryAction.CombatStart&&input.MotionContract==RoutContract,"未知の交戦移動契約です");Need(Enum.IsDefined(input.Action)&&EntityId.IsValid(input.Id.Value)&&input.Amount>=0,"軍務入力が不正です");var v=View(w);
+        Need(input.DeliverBy==null||input.Action==NewMilitaryAction.RemoteRecall&&input.DeliverBy>=checked(w.ElapsedSeconds+1),"撤退命令の期限は本人が発送した後の正式受領時刻で指定します");Need(input.OriginalPolicy==null||input.Action==NewMilitaryAction.RemoteRecall&&input.OriginalPolicy==UnitCommandHoldingContract,"未知の原命令保持方針です");Need(input.PostPolicy==null||ReplyPolicyAction(input.Action)&&input.PostPolicy==UnitReplyRecoveryContract,"未知の返書配送方針です");Need(input.MotionContract==null||input.Action==NewMilitaryAction.CombatStart&&input.MotionContract==RoutContract,"未知の交戦移動契約です");Need(Enum.IsDefined(input.Action)&&EntityId.IsValid(input.Id.Value)&&input.Amount>=0,"軍務入力が不正です");var v=View(w);
         if(input.Action==NewMilitaryAction.Request){Need(w.NewMilitary==null&&v.CanRequest,"現地で主君に軍務を申し出てください");w.NewMilitary=new(1,Contract,Terms(w,input.Id),[],[],[],[],[],[],[],[]);}
         var s=w.NewMilitary??throw new InvalidDataException("軍務の申し出がありません");bool custody=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence),deployed=Deployed(w),returning=Returning(w,w.ElapsedSeconds,w.CommitSequence);
         Need(input.Action switch{

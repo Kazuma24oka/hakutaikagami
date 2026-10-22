@@ -6,7 +6,11 @@ public sealed record TroopSighting(EntityId Id,long At,long Revision,FieldPoint 
 // A unit reception role is a post held by existing rank-and-file, not an invented character.
 // It receives only a standing Recall directive, never another house's army or assets.
 public sealed record TroopDispatch(EntityId Id,long At,long Revision,EntityId Recipient,string Role,EntityId AddressEvidence,FieldPoint Origin,FieldPoint Destination,FieldLeg[] Route,long DueAt,string Message,string Attempt);
-public sealed record TroopReceipt(EntityId Id,long At,long Revision,bool Delivered,bool Applied,FieldPoint ReplyDestination,FieldLeg[] ReplyRoute,long ReplyDueAt,string ReplyMessage,string ReplyAttempt);
+public sealed record TroopReceipt(EntityId Id,long At,long Revision,bool Delivered,bool Applied,FieldPoint ReplyDestination,FieldLeg[] ReplyRoute,long ReplyDueAt,string ReplyMessage,string ReplyAttempt)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public AttemptStatus? ArrivalStatus {get;init;}
+}
 public sealed record TroopReply(EntityId Id,long At,long Revision,bool Received);
 public sealed record PersonalWithdrawalState(string Contract,PersonalJourney[] Journeys,TroopSighting[] Sightings,TroopDispatch[] Dispatches,TroopReceipt[] Receipts,TroopReply[] Replies);
 
@@ -65,7 +69,7 @@ public static partial class NewGameMilitary
             var x=w.NewMilitary.Withdrawal!;var known=x.Sightings.Last();var from=PersonPosition(w,w.ElapsedSeconds);
             var route=RegionalGround.Plan(from,known.Position,w.ElapsedSeconds,courier:true,atlas:true);
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var message=UnitMessage(i.Id,"order");
-            MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-order",w.PlayerControl.Value,UnitIds[0].Value,Text(new UnitPostOrder(i.Id,"recall",ReceivingRole,known.Id){ReplyPolicy=i.PostPolicy,HoldingPolicy=i.OriginalPolicy}),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
+            MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-order",w.PlayerControl.Value,UnitIds[0].Value,Text(new UnitPostOrder(i.Id,"recall",ReceivingRole,known.Id){ReplyPolicy=i.PostPolicy,HoldingPolicy=i.OriginalPolicy}),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds,i.DeliverBy),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             w.NewMilitary=w.NewMilitary with{Withdrawal=x with{Dispatches=[..x.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,UnitIds[0],ReceivingRole,known.Id,from,known.Position,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};
         }
     }
@@ -83,7 +87,7 @@ public static partial class NewGameMilitary
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var reply=UnitMessage(d.Id,delivered?"reply":"failure");
             if(delivered)MessageFlow.Send(w.Messaging,new(reply,d.Id.Value,d.Role==ReceivingRole?"unit-post-reply":"unit-post-inquiry-reply",d.Recipient.Value,w.PlayerControl.Value,d.Role==ReceivingRole?Text(new UnitPostAnswer(d.Message,true,applied)):Text(UnitQueryAnswer(w,d)),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             else MessageFlow.ReportFailure(w.Messaging,reply,d.Attempt,UnitCourier(d.Id).Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
-            RecordUnitReceipt(w,new(d.Id,w.ElapsedSeconds,w.CommitSequence,delivered,applied,d.Origin,route,due,reply,MessageFlow.Latest(w.Messaging,reply).Id));
+            RecordUnitReceipt(w,new(d.Id,w.ElapsedSeconds,w.CommitSequence,delivered,applied,d.Origin,route,due,reply,MessageFlow.Latest(w.Messaging,reply).Id){ArrivalStatus=w.Messaging.Messages.Single(m=>m.Id==d.Message).DeliverBy!=null?w.Messaging.Attempts.Single(a=>a.Id==d.Attempt).Status:null});
         }
         foreach(var r in UnitReceipts(w).Where(r=>r.ReplyDueAt<=w.ElapsedSeconds&&!UnitReplies(w).Any(a=>a.Id==r.Id)).ToArray()){
             Need(r.ReplyDueAt==w.ElapsedSeconds,"部隊伝令の返書到着を飛ばしました");var x=w.NewMilitary.Withdrawal;
@@ -96,7 +100,8 @@ public static partial class NewGameMilitary
         if(w.NewMilitary?.Withdrawal is not {} x)return "本人・本隊は同行中";
         var d=UnitDispatches(w).LastOrDefault(d=>d.Role==ReceivingRole);var reply=d==null?null:UnitReplies(w).LastOrDefault(r=>r.Id==d.Id);var response=d==null?null:UnitReceipts(w).SingleOrDefault(r=>r.Id==d.Id);bool received=response!=null&&MessageFlow.Knows(w.Messaging,response.ReplyMessage,w.PlayerControl.Value);
         var late=d==null?null:w.NewMilitary?.CommandHolding?.Outcomes.LastOrDefault(f=>f.Original==d.Message&&f.ReplyMessage!=null&&MessageFlow.Knows(w.Messaging,f.ReplyMessage,w.PlayerControl.Value));
-        string mail=late!=null?late.Applied?" / 遅着原本の受令・実行返書を受領":" / 遅着原本を受令・重複/旧命令は実行せず":d==null?"":received?UnitReceipts(w).Single(r=>r.Id==d.Id).Delivered?UnitReceipts(w).Single(r=>r.Id==d.Id).Applied?" / 撤退命令の受令返書を受領":" / 新しい現地命令を維持・旧撤退命令は実行せず":" / 指定場所で部隊に会えなかった返書を受領":" / 撤退伝令の返書は未受領";
+        string mail=late!=null?late.Applied?" / 遅着原本の受令・実行返書を受領":" / 遅着原本を受令・重複/旧命令は実行せず":d==null?"":received?UnitReceipts(w).Single(r=>r.Id==d.Id).Delivered?UnitReceipts(w).Single(r=>r.Id==d.Id).Applied?" / 撤退命令の受令返書を受領":" / 新しい現地命令を維持・旧撤退命令は実行せず":" / 撤退命令の不達報告を受領":" / 撤退伝令の返書は未受領";
+        var deadline=d==null?null:w.Messaging.Messages.Single(m=>m.Id==d.Message).DeliverBy;if(deadline!=null)mail+=" / 撤退命令の受領期限：開始から"+deadline+"秒";
         return (Detached(w)?PersonMoving(w)?"本人だけ移動中":"本人は部隊と別行動":"本人・本隊は合流済み")+(UnitCarries(w)?" / 兵糧は本隊が運搬":" / 兵糧は本人が運搬")+mail;
     }
     public static LocationState CargoLocation(ContractWorld w)

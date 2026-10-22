@@ -39,7 +39,7 @@ public static partial class NewGameMilitary
         w.Messaging.Messages=w.Messaging.Messages.Where(m=>!keys.Contains(m.Id)||keep.Contains(m.Id)).ToArray();var generated=new List<MessageAttempt>();
         foreach(var d in dispatches){
             var r=receipts.SingleOrDefault(r=>r.Id==d.Id);var a=new MessageAttempt(d.Attempt,d.Message,int.Parse(d.Attempt.Split('/').Last(),System.Globalization.CultureInfo.InvariantCulture),d.At,d.DueAt,d.Recipient.Value);
-            if(r!=null)a=a with{Status=r.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!r.Delivered,FinishedAt=r.At,FailureAt=r.Delivered?null:r.At};generated.Add(a);
+            if(r!=null)a=a with{Status=r.ArrivalStatus??(r.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost),FailOnArrival=(r.ArrivalStatus??(r.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost))==AttemptStatus.Lost,FinishedAt=r.At,FailureAt=r.Delivered?null:r.At};generated.Add(a);
             if(r==null)continue;var observed=replies.SingleOrDefault(t=>t.Id==d.Id);var b=new MessageAttempt(r.ReplyAttempt,r.ReplyMessage,1,r.At,r.ReplyDueAt,w.PlayerControl.Value);
             if(observed!=null)b=b with{Status=observed.Received?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!observed.Received,FinishedAt=observed.At,FailureAt=observed.Received?null:observed.At};generated.Add(b);
         }

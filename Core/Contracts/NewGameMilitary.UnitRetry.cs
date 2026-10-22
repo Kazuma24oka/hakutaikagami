@@ -10,19 +10,19 @@ public static partial class NewGameMilitary
     public static TroopDispatch[] UnitDispatches(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Dispatches??[]).Concat(w.NewMilitary?.UnitRetry?.Dispatches??[]).Concat(w.NewMilitary?.UnitInquiry?.Dispatches??[]).OrderBy(d=>d.Revision).ToArray();
     public static TroopReceipt[] UnitReceipts(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Receipts??[]).Concat(w.NewMilitary?.UnitRetry?.Receipts??[]).Concat(w.NewMilitary?.UnitInquiry?.Receipts??[]).OrderBy(d=>d.Revision).ThenBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
     public static TroopReply[] UnitReplies(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Replies??[]).Concat(w.NewMilitary?.UnitRetry?.Replies??[]).Concat(w.NewMilitary?.UnitInquiry?.Replies??[]).OrderBy(d=>d.Revision).ThenBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
-    static TroopDispatch? RetryOriginal(ContractWorld w)
+    static TroopDispatch? RetryOriginal(ContractWorld w,NewMilitaryAction action)
     {
         if(w.NewMilitary?.Withdrawal is not {} x)return null;
         return x.Dispatches.LastOrDefault(d=>{
             var a=MessageFlow.Latest(w.Messaging,d.Message);
-            return a.Status is (AttemptStatus.Lost or AttemptStatus.Rejected)&&a.Number<MessageFlow.MaxAttempts&&!w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)&&MessageFlow.FailureKnown(w.Messaging,a.Id,w.PlayerControl.Value);
+            return RetryWithinDeadline(w,d,action)&&a.Status is (AttemptStatus.Lost or AttemptStatus.Rejected)&&a.Number<MessageFlow.MaxAttempts&&!w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)&&MessageFlow.FailureKnown(w.Messaging,a.Id,w.PlayerControl.Value);
         });
     }
-    public static bool UnitRetryAllowed(ContractWorld w,NewMilitaryAction action)=>UnitRetryAction(action)&&Detached(w)&&Deployed(w)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&RetryOriginal(w)!=null;
+    public static bool UnitRetryAllowed(ContractWorld w,NewMilitaryAction action)=>UnitRetryAction(action)&&Detached(w)&&Deployed(w)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&RetryOriginal(w,action)!=null;
     static void ApplyUnitRetry(ContractWorld w,NewMilitaryInput i)
     {
         if(!UnitRetryAction(i.Action))return;
-        var original=RetryOriginal(w)!;var from=PersonPosition(w,w.ElapsedSeconds);var sight=w.NewMilitary!.Withdrawal!.Sightings.Last();
+        var original=RetryOriginal(w,i.Action)!;var from=PersonPosition(w,w.ElapsedSeconds);var sight=w.NewMilitary!.Withdrawal!.Sightings.Last();
         // Home is a declared known destination, never a lookup of the unit's actual position.
         var to=i.Action==NewMilitaryAction.RetryRecallHome?Home(w,0):sight.Position;
         var evidence=i.Action==NewMilitaryAction.RetryRecallHome?w.NewMilitary.Terms.Site:sight.Id;

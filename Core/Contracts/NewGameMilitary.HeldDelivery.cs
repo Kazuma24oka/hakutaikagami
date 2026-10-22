@@ -24,7 +24,7 @@ public static partial class NewGameMilitary
         return HeldPapers(w,w.ElapsedSeconds).Where(h=>{
             var a=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);var m=w.Messaging.Messages.Single(m=>m.Id==h.Message);
             bool allowed=action==NewMilitaryAction.TakeHeldReply?m.RecipientId==w.PlayerControl.Value:(action==NewMilitaryAction.DeliverHeldRecallHome?m.Kind=="unit-post-order"&&w.NewMilitary.CommandHolding!=null:m.Kind=="delivery-failure")&&m.RecipientId==UnitIds[0].Value&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w);
-            return allowed&&!(w.NewMilitary.CommandHolding?.Outcomes.Any(t=>t.Carrier==h.Holder&&t.Received&&t.DueAt>w.ElapsedSeconds)??false)&&a.Status==AttemptStatus.Lost&&a.LateDueAt==null&&RegionalGround.Distance(person,h.Position)<=1000&&!(w.NewMilitary.HeldDelivery?.Transfers.Any(t=>t.Carrier==h.Holder&&t.DueAt>w.ElapsedSeconds)??false);
+            return allowed&&HeldWithinDeadline(w,m,h,action)&&!(w.NewMilitary.CommandHolding?.Outcomes.Any(t=>t.Carrier==h.Holder&&t.Received&&t.DueAt>w.ElapsedSeconds)??false)&&a.Status==AttemptStatus.Lost&&a.LateDueAt==null&&RegionalGround.Distance(person,h.Position)<=1000&&!(w.NewMilitary.HeldDelivery?.Transfers.Any(t=>t.Carrier==h.Holder&&t.DueAt>w.ElapsedSeconds)??false);
         }).OrderByDescending(h=>h.At).ThenBy(h=>h.Attempt,StringComparer.Ordinal).FirstOrDefault();
     }
     public static bool HeldAllowed(ContractWorld w,NewMilitaryAction action)=>PickHeld(w,action)!=null;

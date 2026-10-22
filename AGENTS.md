@@ -1,3 +1,9 @@
+# 撤退命令の正式受領期限（2026-10-23）
+
+UnitOrderDeadlineV1/README.mdの5条件を優先。CC-12の期限Tの正式受領は有効、T後は無効。新DeliverByと期限付き初回ArrivalStatusは任意項目で旧JSON不変。原期限を再送/実物遅着で延ばさない。本人の認識/原本受領/返書到達を別にし、実行結果を受領前のラベルに出さない。通常600秒は試作値。verify_unit_order_deadline.py→実画像/動画→--finalize→check_unit_order_deadline_binding.py後に同ブランチpush。保護枝/既存素材/保存を保持、マウス操作禁止。判断不要なら取消配送の次工程まで継続。
+
+以下は過去工程の記録。
+
 # 撤退命令原本の保持と実物遅着（2026-10-23）
 
 判断が必要になるまで技術作業/同ブランチcommit/pushを継続。UnitCommandHoldingV1/README.mdの5条件を優先。新規OriginalPolicyでだけ保持を宣言。原命令と不達報告の実保持、共通正式受領、一度だけの効力、本人が物理返書で知る時点を別にする。再送/同着/新しい現地命令と競合しても巻き戻さない。全紙が同じ実保持者と動く。旧保存/素材/保護枝を保持、マウス操作禁止。verify_unit_command_holding.py→実画像/動画点検→--finalize→check_unit_command_holding_binding.py。次は新入口の期限/取消配送を既存共通規則へ接続する。
