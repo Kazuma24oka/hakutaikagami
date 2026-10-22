@@ -1,3 +1,5 @@
+[現行工程：発送者が確認した受領証拠と再送](Design/UnitSenderEvidenceV1/README.md)
+
 [現行工程：撤退命令の正式受領期限](Design/UnitOrderDeadlineV1/README.md)
 
 [現行工程：命令原本の保持・実物遅着と受令返書](Design/UnitCommandHoldingV1/README.md)

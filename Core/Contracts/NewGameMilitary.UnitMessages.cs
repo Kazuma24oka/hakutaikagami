@@ -6,6 +6,8 @@ public sealed record UnitPostOrder(EntityId Request,string Action,string Role,En
     public string? ReplyPolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? HoldingPolicy {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? TransportPolicy {get;init;}
 }
 public sealed record UnitPostAnswer(string Original,bool Delivered,bool Applied);
 public sealed record UnitTransportSnapshot(MessageEnvelope[] Messages,MessageAttempt[] Attempts,FormalReceipt[] Receipts,PersonalKnowledge[] Knowledge);

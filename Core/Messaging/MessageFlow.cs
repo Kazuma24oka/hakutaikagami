@@ -62,11 +62,13 @@ public static class MessageFlow
     }
     public static bool FailureKnown(MessageState s, string attemptId, string sender) =>
         s.Messages.Any(m => m.Kind == "delivery-failure" && m.Body == attemptId && m.RecipientId == sender && Knows(s, m.Id, sender));
-    public static void Retry(MessageState s, string messageId, string sender, long tick, int delay = 1)
+    public static void Retry(MessageState s, string messageId, string sender, long tick, int delay = 1) => Retry(s,messageId,sender,tick,delay,false);
+    // Opt-in versioned adapters validate sender evidence before requesting a bounded duplicate copy.
+    public static void Retry(MessageState s, string messageId, string sender, long tick, int delay, bool receiptUnconfirmed)
     {
         var message = s.Messages.Single(m => m.Id == messageId); var previous = Latest(s, messageId);
-        if (message.SenderId != sender || previous.Status is not (AttemptStatus.Lost or AttemptStatus.Rejected) ||
-            !FailureKnown(s, previous.Id, sender) || previous.Number >= MaxAttempts || s.Receipts.Any(r => r.MessageId == messageId) || delay < 1 || message.DeliverBy < tick + delay)
+        if (message.SenderId != sender || (previous.Status is not (AttemptStatus.Lost or AttemptStatus.Rejected)&&!(receiptUnconfirmed&&previous.ArrivedLate&&previous.Status==AttemptStatus.Delivered&&previous.FailureAt!=null)) ||
+            !FailureKnown(s, previous.Id, sender) || previous.Number >= MaxAttempts || !receiptUnconfirmed&&s.Receipts.Any(r => r.MessageId == messageId) || delay < 1 || message.DeliverBy < tick + delay)
             throw new InvalidOperationException("Retry requires a known failed latest attempt, no receipt, and a valid deadline.");
         int next = previous.Number + 1;
         s.Attempts = [.. s.Attempts, new(message.Id + "/attempt/" + next, message.Id, next, tick, checked(tick + delay), message.RecipientId)];

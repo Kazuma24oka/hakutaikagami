@@ -1305,3 +1305,11 @@ Scripts/verify_unit_order_deadline.py -text whitespace=trailing-space,space-befo
 Scripts/check_unit_order_deadline_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitOrderDeadlineV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitOrderDeadlineV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.SenderEvidence.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitSenderEvidenceTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitEvidenceChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_sender_evidence.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_sender_evidence_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitSenderEvidenceV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitSenderEvidenceV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol

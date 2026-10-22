@@ -1,3 +1,9 @@
+# 発送者の受領証拠に基づく再送（2026-10-23）
+
+UnitSenderEvidenceV1/README.mdの5条件を優先。取消の競合調査で発見した受領前の再送可否の情報漏れを先に補強。新TransportPolicyを新原本または新再送入力へ明示し、既知不達・発送者が未確認の受領・原期限・最大3便で物理コピー。受令返書/照会/1m以内の実受渡し証拠を確認条件にし、本人/部隊役で統一。世界の受領真値でUI/NPCを動かさない。原本/履歴は不変、共通既存APIと旧JSONは保持。verify_unit_sender_evidence.py→実画像/動画→--finalize→check_unit_sender_evidence_binding.py後に同ブランチpush。保護枝/素材/保存保持、マウス操作/サブエージェント禁止。次は取消の実装へ戻り、ユーザー判断不要なら継続。
+
+以下は過去工程の記録。
+
 # 撤退命令の正式受領期限（2026-10-23）
 
 UnitOrderDeadlineV1/README.mdの5条件を優先。CC-12の期限Tの正式受領は有効、T後は無効。新DeliverByと期限付き初回ArrivalStatusは任意項目で旧JSON不変。原期限を再送/実物遅着で延ばさない。本人の認識/原本受領/返書到達を別にし、実行結果を受領前のラベルに出さない。通常600秒は試作値。verify_unit_order_deadline.py→実画像/動画→--finalize→check_unit_order_deadline_binding.py後に同ブランチpush。保護枝/既存素材/保存を保持、マウス操作禁止。判断不要なら取消配送の次工程まで継続。

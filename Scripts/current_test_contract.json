@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1644,
-  "baseline_passed": 1627,
-  "added": 17,
-  "scope": "UnitOrderDeadlineTests(17): inclusive actual receipt, unchanged retry/late deadline, physical reporting and ack, expired rejection no mutation, old optional shape, restore, forged deadline/status/input"
+  "expected_passed": 1663,
+  "baseline_passed": 1644,
+  "added": 19,
+  "scope": "UnitSenderEvidenceTests(19): no hidden-receipt retry gate, ack/quote/local witness for both senders, duplicates once, max3/deadline, per-attempt adoption without body rewrite, old API shape, restore, forged policies"
 }
