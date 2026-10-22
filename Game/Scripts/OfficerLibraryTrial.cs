@@ -16,9 +16,11 @@ public partial class OfficerLibraryTrial : Control
     string? TestKey=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--library-test-key="))?.Split('=')[1];
     string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/NewGameSetupV1/runtime-local/library");
     string Root=>StorageOverride??(TestKey is {} key?Path.Combine(Output,Guid.ParseExact(key,"N").ToString("N")):ProjectSettings.GlobalizePath("user://officer-library-v1"));
+    SystemFont? ownedFont;
+    public override void _ExitTree(){ownedFont?.Dispose();ownedFont=null;}
     public override void _Ready()
     {
-        Theme=new Theme{DefaultFontSize=Enhanced?GetThemeDefaultFontSize():16,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
+        Theme=new Theme{DefaultFontSize=Enhanced?GetThemeDefaultFontSize():16,DefaultFont=ownedFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var margin=new MarginContainer();AddChild(margin);margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);foreach(var key in new[]{"left","right","top","bottom"})margin.AddThemeConstantOverride("margin_"+key,16);
         var root=new VBoxContainer();margin.AddChild(root);root.AddChild(new Label{Text="百代鏡 / 登録武将の管理"});
         root.AddChild(new Label{Text="開始とは独立した登録画面の試作です。ここでの編集は、開始済みの世界へ影響しません。",Modulate=new Color("e6c785")});

@@ -13,11 +13,14 @@ public partial class NewGameFrontEnd : Control
     string? filterSite,selected;string? registryReadError;SetupPerson[] visiblePeople=[];NewCampaignListing[] savedRows=[];ItemList savedList=null!;
     Action? pendingStart;bool refreshingClaims;OptionButton jumpChoice=null!,placementPerson=null!,placementSite=null!;
     string? TestKey=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--new-game-test-key="))?.Split('=')[1];
-    string TestOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/"+(FlowCase.StartsWith("rout-")?"RoutRegroupV1":FlowCase.StartsWith("withdrawal-")?"PersonalWithdrawalV1":FlowCase.StartsWith("combat-")?"ContactCombatV1":FlowCase.StartsWith("military-")?"NewGameMilitaryV1":FlowCase.StartsWith("service-")?"ServiceEntryV1":"NewGameFlowV1")+"/runtime-local/"+FlowCase);
+    string TestOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/"+(FlowCase.StartsWith("retry-")?"UnitPostRecoveryV1":FlowCase.StartsWith("rout-")?"RoutRegroupV1":FlowCase.StartsWith("withdrawal-")?"PersonalWithdrawalV1":FlowCase.StartsWith("combat-")?"ContactCombatV1":FlowCase.StartsWith("military-")?"NewGameMilitaryV1":FlowCase.StartsWith("service-")?"ServiceEntryV1":"NewGameFlowV1")+"/runtime-local/"+FlowCase);
     string DataRoot=>TestKey is {} key?Path.Combine(TestOutput,Guid.ParseExact(key,"N").ToString("N")):ProjectSettings.GlobalizePath("user://new-game-v1");
     string LibraryRoot=>TestKey!=null?Path.Combine(DataRoot,"library"):ProjectSettings.GlobalizePath("user://officer-library-v1");
     const ulong Seed=20261022;
-    public override void _ExitTree(){Theme?.DefaultFont?.Dispose();}
+    SystemFont? ownedFont;
+    public override void _ExitTree(){ownedFont?.Dispose();ownedFont=null;}
+    void QuitGracefully(int code=0)=>GameProcessExit.Request(GetTree(),this,code);
+    public override void _Notification(int what){if(what==NotificationWMCloseRequest)QuitGracefully();}
     public override void _Ready()
     {
         // Explicit legacy verification flags preserve the former harness entry. Normal play uses this menu.
@@ -26,7 +29,8 @@ public partial class NewGameFrontEnd : Control
             using var legacyScene=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn");var legacy=legacyScene.Instantiate<Control>();AddChild(legacy);legacy.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);return;
         }
 
-        Theme=new Theme{DefaultFontSize=16,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
+        GetTree().AutoAcceptQuit=false;
+        Theme=new Theme{DefaultFontSize=16,DefaultFont=ownedFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var bg=new ColorRect{Color=new Color("17232b"),MouseFilter=MouseFilterEnum.Ignore};AddChild(bg);bg.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         canvas=new Control();AddChild(canvas);canvas.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         switching=new(){Title="現在の人生を切り替えますか",DialogText="現在の保存済み進行は残ります。画面上の未保存の進行を閉じ、選んだ人物へ切り替えます。"};AddChild(switching);switching.Confirmed+=()=>{var action=pendingStart;pendingStart=null;Guard(()=>action?.Invoke());};switching.Canceled+=()=>pendingStart=null;
@@ -49,7 +53,7 @@ public partial class NewGameFrontEnd : Control
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(columns);var menu=new VBoxContainer{CustomMinimumSize=new(300,0)};columns.AddChild(menu);
         Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
-        Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>GetTree().Quit());
+        Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
         var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=site=>{notice.Text=NewGameWorld.SiteName(site)+" / 新規ゲームで、ここから武将を探せます。";nation.Focus(site);};
         menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"\n\n作成・編集は新規ゲームと独立。\n開始した世界には後から上書きされません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         page.AddChild(new Label{Text="人物・勢力は部分収録。領土・役職は開始配置の試作設定です。通常起動と旧保存は元の入口に保持しています。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("c7b687")});

@@ -1254,3 +1254,13 @@ Scripts/verify_rout_regroup.py -text whitespace=trailing-space,space-before-tab,
 Scripts/check_rout_regroup_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/RoutRegroupV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitPostRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.UnitRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitRetryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitRetryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_post_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_post_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostInquiryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/GameProcessExit.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol

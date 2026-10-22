@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
-public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd, Handoff, Reclaim, Withdraw, Rejoin, Attach, Observe, RemoteRecall, PersonalHome, PersonalMove, AutoRout }
+public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd, Handoff, Reclaim, Withdraw, Rejoin, Attach, Observe, RemoteRecall, PersonalHome, PersonalMove, AutoRout, RetryRecallKnown, RetryRecallHome }
 public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long Amount=0,FieldPoint? A=null,FieldPoint? B=null)
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -17,6 +17,8 @@ public sealed record NewMilitaryState(int Schema,string Contract,NewMilitaryTerm
     public PersonalWithdrawalState? Withdrawal {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public NewRoutState? Rout {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public UnitRetryState? UnitRetry {get;init;}
 }
 public sealed record NewMilitaryView(string Status,bool CanRequest,bool CanAccept,bool CanPickup,bool Custody,bool Deployed,bool Returning,long Carry,bool CanEnter);
 
@@ -89,12 +91,12 @@ public static partial class NewGameMilitary
             NewMilitaryAction.Recall=>custody&&deployed&&!Detached(w),NewMilitaryAction.Enter=>custody&&deployed&&!RoutActive(w)&&AtHome(w)&&PersonPosition(w,w.ElapsedSeconds)==Home(w,0),
             NewMilitaryAction.Report=>custody&&!Detached(w),
             NewMilitaryAction.Return=>!returning&&v.CanPickup||!returning&&v.Custody,
-            NewMilitaryAction.CombatPermit=>custody&&!returning&&!s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit),NewMilitaryAction.CombatStart=>CanStartCombat(w),NewMilitaryAction.CombatEnd=>CombatActive(w),NewMilitaryAction.Inquire=>true,_=>WithdrawalAllowed(w,input)},"軍務の許可・現地引受・兵糧・帰還条件が不足しています");
+            NewMilitaryAction.CombatPermit=>custody&&!returning&&!s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit),NewMilitaryAction.CombatStart=>CanStartCombat(w),NewMilitaryAction.CombatEnd=>CombatActive(w),NewMilitaryAction.Inquire=>true,_=>WithdrawalAllowed(w,input)||UnitRetryAllowed(w,input.Action)},"軍務の許可・現地引受・兵糧・帰還条件が不足しています");
         Need(input.Action is NewMilitaryAction.Load or NewMilitaryAction.Unload?input.Amount>0:input.Amount==0,"兵糧数量は受渡しだけに指定します");Need(input.Action==NewMilitaryAction.Form?input.A!=null&&input.B!=null:input.Action==NewMilitaryAction.PersonalMove?input.A!=null&&input.B==null:input.A==null&&input.B==null,"配置線は配置だけに指定します");
         string? message=input.Action is NewMilitaryAction.Request or NewMilitaryAction.Accept or NewMilitaryAction.Return or NewMilitaryAction.Report or NewMilitaryAction.Inquire or NewMilitaryAction.CombatPermit?RequestId(input.Id):null;
         w.NewMilitary=s with{Requests=[..s.Requests,new(input,w.ElapsedSeconds,w.CommitSequence,message)]};
         if(message!=null){long? due=input.Action==NewMilitaryAction.Accept?Event(w,MilitaryEffect.Offered)!.At+OfferSeconds-1:null;string body=input.Action==NewMilitaryAction.Report?Text(new NewMilitaryReport(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,TotalStrength(w,w.ElapsedSeconds))):Text(input);MessageFlow.Send(w.Messaging,new(message,s.Terms.Case.Value,input.Action==NewMilitaryAction.Report?"new-military-report":"new-military-request",w.PlayerControl.Value,s.Terms.Principal.Value,body,s.Terms.Site.Value,w.ElapsedSeconds,due),w.ElapsedSeconds,1);if(input.Action==NewMilitaryAction.Report)w.NewMilitary=w.NewMilitary! with{Reports=[..w.NewMilitary.Reports,new(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,TotalStrength(w,w.ElapsedSeconds))]};}
-        ApplyWithdrawal(w,input);StartRout(w,input);
+        ApplyWithdrawal(w,input);StartRout(w,input);ApplyUnitRetry(w,input);
         switch(input.Action){
             case NewMilitaryAction.Pickup:Announce(w,MilitaryEffect.PickedUp,input.Id.Value);break;
             case NewMilitaryAction.Load:case NewMilitaryAction.Unload:Transfer(w,input);break;

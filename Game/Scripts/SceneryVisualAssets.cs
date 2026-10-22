@@ -11,6 +11,7 @@ public sealed class SceneryVisualAssets
     // Godot's native cache does not provide a managed lifetime owner. Keep the
     // finite catalog resources strongly referenced while this process uses them.
     static readonly Dictionary<string,Resource> retainedResources=new(StringComparer.Ordinal);
+    internal static void ReleaseProcessResources(){foreach(var resource in retainedResources.Values)resource.Dispose();retainedResources.Clear();}
     public static int RetainedResourceCount=>retainedResources.Count;
     public int ResourceLimit=>Catalog.Materials.Where(m=>m.Resource!=null).Select(m=>m.Resource!).Concat(Catalog.Visuals.SelectMany(v=>v.Variants).Select(v=>v.Resource)).Distinct(StringComparer.Ordinal).Count();
     static T Retain<T>(string path) where T:Resource{if(!retainedResources.TryGetValue(path,out var resource)){resource=GD.Load<T>(path);retainedResources.Add(path,resource);}return resource is T typed&&GodotObject.IsInstanceValid(typed)?typed:throw new InvalidOperationException("Retained resource type/lifetime differs");}

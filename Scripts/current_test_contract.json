@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1522,
-  "baseline_passed": 1496,
-  "added": 26,
-  "scope": "RoutRegroupTests(26): explicit new motion contract, old save behavior, partial automatic rout, blocked hold and recovery, independent person/cargo, first arrival/regroup, forged journals and old-recall race"
+  "expected_passed": 1539,
+  "baseline_passed": 1522,
+  "added": 17,
+  "scope": "UnitRetryTests(17): immutable original and initial failure, known latest failure only, explicit known destination, three physical attempts, one effect, restore and forged journal rejection, stale original priority and failure reply missing the sender"
 }
