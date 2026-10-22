@@ -9,7 +9,7 @@ public static partial class NewGameMilitary
         w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
         var s=w.NewMilitary!;var requests=s.Requests.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray();
         w.NewMilitary=requests.Length==0?null:s with{
-            Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),
+            Withdrawal=requests.Any(q=>WithdrawalAction(q.Input.Action))?WithdrawalBefore(s.Withdrawal,at,rev):null,Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),
             Orders=s.Orders.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Moves=s.Moves.Where(m=>requests.Any(q=>q.Input.Id==m.Id)).ToArray(),Reports=s.Reports.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray(),
             Sorties=requests.Where(q=>q.Input.Action==NewMilitaryAction.Deploy).Select(q=>new SupplySortie(q.At,requests.FirstOrDefault(e=>e.Input.Action==NewMilitaryAction.Enter&&e.Revision>q.Revision)?.At)).ToArray(),
             Uses=s.Uses.Where(u=>u.From<at).Select(u=>u with{Until=Math.Min(u.Until,at),Consumed=Math.Min(u.Consumed,checked(u.Soldiers*(Math.Min(u.Until,at)-u.From)))}).ToArray()};
@@ -17,13 +17,13 @@ public static partial class NewGameMilitary
             var point=RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
             if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
             var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(FieldWorld.FromWorld(point)),Contract,0);
-        }).ToArray();Sync(w);return w;
+        }).ToArray();RewindUnitTransport(w);Sync(w);return w;
     }
     static void RemoveGenerated(ContractWorld w,IEnumerable<string> ids){var keys=ids.ToHashSet();w.Messaging.Messages=w.Messaging.Messages.Where(m=>!keys.Contains(m.Id)).ToArray();w.Messaging.Attempts=w.Messaging.Attempts.Where(a=>!keys.Contains(a.MessageId)).ToArray();w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>!keys.Contains(k.MessageId)).ToArray();w.SealedMessages=w.SealedMessages.Where(id=>!keys.Contains(id.Value)).ToArray();}
     public static void Validate(ContractWorld w)=>Validate(w,null);
     internal static void Validate(ContractWorld w,ContractWorld? trustedPrior)
     {
-        var s=w.NewMilitary;if(s==null){Need(!w.Messaging.Messages.Any(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)),"軍務原本だけが残っています");return;}
+        var s=w.NewMilitary;if(s==null){Need(!w.Messaging.Messages.Any(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m)),"軍務原本だけが残っています");return;}
         Need(NewGameWorld.Enabled(w)&&s.Schema==1&&s.Contract==Contract&&s.Requests.Length>0,"軍務の開始定義が不正です");
         Need(s.Requests.Select(q=>q.Input.Id).Distinct().Count()==s.Requests.Length&&s.Requests.Select((q,i)=>i==0||q.Revision>s.Requests[i-1].Revision&&q.At>=s.Requests[i-1].At).All(x=>x),"軍務入力が重複・逆順です");
         var first=s.Requests[0];var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id),"貸与元・名簿・所在地の根拠が違います");
@@ -31,7 +31,7 @@ public static partial class NewGameMilitary
         // Only WorldSession may supply its already validated prior state. Loads always replay fully.
         // Unchanged immutable military inputs/effects/routes and original letters cannot be reinterpreted by later travel.
         static NewMilitaryState Journal(NewMilitaryState x)=>x with{Uses=[]};
-        bool replay=trustedPrior?.NewMilitary is not {} verifiedPrior||!Same(Journal(verifiedPrior),Journal(s))||!Same(trustedPrior.Messaging.Messages.Where(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)).ToArray(),w.Messaging.Messages.Where(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)).ToArray());
+        bool replay=trustedPrior?.NewMilitary is not {} verifiedPrior||!Same(Journal(verifiedPrior),Journal(s))||!Same(trustedPrior.Messaging.Messages.Where(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m)).ToArray(),w.Messaging.Messages.Where(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m)).ToArray());
         if(replay)foreach(var q in s.Requests){
             Need(EntityId.IsValid(q.Input.Id.Value)&&q.At>=0&&q.At<=w.ElapsedSeconds&&q.Revision>=1&&q.Revision<=w.CommitSequence&&!w.Requests.Any(r=>r.Id==q.Input.Id)&&!NewGameService.OwnIdUsed(w,q.Input.Id)&&w.TravelDecisions?.Any(d=>d.Request.Id==q.Input.Id)!=true,"軍務入力の時点・IDが不正です");
             var prior=BeforeState(w,q.At,q.Revision-1);prior.CommitSequence=q.Revision;var pickup=NoticeId(s.Terms,MilitaryEffect.PickedUp,q.Input.Id.Value);RemoveGenerated(prior,new[]{q.Message??"",pickup});Dispatch(prior,q.Input);
@@ -42,7 +42,7 @@ public static partial class NewGameMilitary
             if(q.Input.Action==NewMilitaryAction.Report)Need(Same(expected.Reports.Last(),s.Reports.Single(m=>m.Message==q.Message)),"発送時の現況が変わっています");
             if(q.Input.Action==NewMilitaryAction.Pickup){var e=expected.Events.Last();Need(s.Events.Contains(e)&&Same(w.Messaging.Messages.Single(m=>m.Id==e.Message),prior.Messaging.Messages.Single(m=>m.Id==e.Message)),"引受効果の根拠が違います");}
         }
-        Need(s.Moves.Length==s.Requests.Count(q=>q.Input.Action is NewMilitaryAction.Load or NewMilitaryAction.Unload)&&s.Orders.Length==s.Requests.Count(q=>q.Input.Action is NewMilitaryAction.Form or NewMilitaryAction.Hold or NewMilitaryAction.Recall)&&s.Reports.Length==s.Requests.Count(q=>q.Input.Action==NewMilitaryAction.Report),"軍務の操作台帳が欠落しています");
+        Need(s.Moves.Length==s.Requests.Count(q=>q.Input.Action is NewMilitaryAction.Load or NewMilitaryAction.Unload)&&s.Orders.Length==s.Requests.Count(q=>q.Input.Action is NewMilitaryAction.Form or NewMilitaryAction.Hold or NewMilitaryAction.Recall)+(s.Withdrawal?.Receipts.Count(r=>r.Applied)??0)&&s.Reports.Length==s.Requests.Count(q=>q.Input.Action==NewMilitaryAction.Report),"軍務の操作台帳が欠落しています");
         Need(s.Events.Select(e=>e.Message).Distinct().Count()==s.Events.Length&&s.Events.Select((e,i)=>e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>=1&&e.Revision<=w.CommitSequence&&(i==0||Before(s.Events[i-1].At,s.Events[i-1].Revision,e.At,e.Revision))).All(x=>x),"軍務効果の順序・IDが不正です");
         if(replay)foreach(var group in s.Events.Where(e=>e.Effect!=MilitaryEffect.PickedUp).GroupBy(e=>(e.At,e.Revision))){var prior=BeforeState(w,group.Key.At,group.Key.Revision-1);prior.CommitSequence=group.Key.Revision;RemoveGenerated(prior,group.Select(e=>e.Message));var before=prior.NewMilitary!.Events.Length;Update(prior);var generated=prior.NewMilitary.Events.Skip(before).ToArray();Need(Same(generated,group.ToArray()),"主君の実受領・条件から軍務効果を再現できません");foreach(var e in group)Need(Same(w.Messaging.Messages.Single(m=>m.Id==e.Message),prior.Messaging.Messages.Single(m=>m.Id==e.Message)),"軍務通知の原文が変わっています");}
         foreach(var kind in Enum.GetValues<MilitaryEffect>().Where(k=>k!=MilitaryEffect.StatusSent))Need(s.Events.Count(e=>e.Effect==kind)<=1,"軍務の効力が重複しています");
@@ -53,6 +53,7 @@ public static partial class NewGameMilitary
         Need(s.Uses.All(u=>s.Sorties.Any(t=>t.From<=u.From&&u.Until<=(t.Until??w.ElapsedSeconds)))&&s.Uses.Select((u,i)=>i==0||s.Uses[i-1].Until<=u.From).All(x=>x),"出陣外の消費か重複です");
         long carry=0,depot=InitialStock;var ledger=s.Moves.Select(m=>(At:m.At,Rank:1,Move:(SupplyMove?)m,Use:(SupplyUse?)null)).Concat(s.Uses.Select(u=>(At:u.Until,Rank:0,Move:(SupplyMove?)null,Use:(SupplyUse?)u))).OrderBy(x=>x.At).ThenBy(x=>x.Rank);
         foreach(var e in ledger){if(e.Move is {} m){long d=m.Loading?m.Amount:-m.Amount;carry=checked(carry+d);depot=checked(depot-d);Need(carry>=0&&carry<=Capacity&&depot>=0,"兵糧が過剰引当されています");}else if(e.Use is {} u){Need(u.Consumed==Math.Min(carry,checked(u.Soldiers*(u.Until-u.From))),"兵糧消費と在庫が違います");carry-=u.Consumed;}}
+        ValidateWithdrawal(w,replay);
         var normalized=ContractJson.Copy(w);Sync(normalized);Need(Same(w.Definitions.Armies,normalized.Definitions.Armies)&&Same(w.Units,normalized.Units)&&Same(w.ResourceLots,normalized.ResourceLots)&&Same(w.Locations,normalized.Locations),"貸与名簿・所有・現地所在・兵糧残量が台帳と一致しません");
     }
 }

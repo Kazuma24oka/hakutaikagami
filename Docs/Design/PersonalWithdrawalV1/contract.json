@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "contract": "independent-person-unit-carrier-known-post-physical-recall-receipt-v1",
+  "completion_conditions": 5,
+  "recall_recipient": "unit:new-military/0",
+  "receiving_role": "standing-unit-reception/recall-only",
+  "address": "last-local-sighting",
+  "reply_address": "dispatch-origin",
+  "tolerance_pixels": 0,
+  "legacy_optional_field": "NewMilitaryState.Withdrawal",
+  "scope": "declared synthetic local exercise",
+  "transport": "existing MessageFlow; unit-role ground adapter only",
+  "original_attempt_effect_ids": "separate",
+  "participant_roles": "registered unit reception and physical courier; no fictional character"
+}

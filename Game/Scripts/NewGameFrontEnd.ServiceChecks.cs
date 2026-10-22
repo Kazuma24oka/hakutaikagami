@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
 {
-    bool InitialService=>FlowCase.StartsWith("combat-")&&FlowCase!="combat-ronin"||FlowCase=="service-retainer"||FlowCase.StartsWith("military-")&&FlowCase!="military-ronin";
+    bool InitialService=>FlowCase.StartsWith("withdrawal-")&&FlowCase!="withdrawal-ronin"||FlowCase.StartsWith("combat-")&&FlowCase!="combat-ronin"||FlowCase=="service-retainer"||FlowCase.StartsWith("military-")&&FlowCase!="military-ronin";
     string ServiceSite=>FlowCase.Contains("odawara")?"site:odawara":"site:kofu";
     void OpenAllServiceLetters(){for(int n=0;n<12&&game!.Session.GetActorView(game.Session.PlayerControl).Messages.Any(m=>m.KnownBody==null);n++)game.Press("open");}
     void ServiceStep(int step)
@@ -29,7 +29,7 @@ public partial class NewGameFrontEnd
     async Task RestoreServiceFlow()
     {
         Press("load-list");await Frame();string id=File.ReadAllText(Path.Combine(TestOutput,"campaign-instance.txt"));savedList.Select(Array.FindIndex(savedRows,r=>r.Profile.Instance==id));Press("load");await Frame();
-        for(int n=0;n<=5;n++){game!.LoadCheckpoint("service"+n);Check(game.Pose()==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")),"restored identical officer pose at"+n);await Capture("restored-s"+n,true);for(int step=n+1;step<=6;step++)ServiceStep(step);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"final-world.sha256")),"same future yields same full world from"+n);await Capture("continued-s"+n,true);}
+        for(int n=0;n<=5;n++){game!.LoadCheckpoint("service"+n);await Frame();await Frame();Check(game.Pose()==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")),"restored identical officer pose at"+n);await Capture("restored-s"+n,true);for(int step=n+1;step<=6;step++)ServiceStep(step);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"final-world.sha256")),"same future yields same full world from"+n);await Capture("continued-s"+n,true);}
     }
     async Task RunServiceChecks()
     {

@@ -27,7 +27,7 @@ public static class ContractValidation
         Check(DelegationMission.Enabled(s)==(s.Delegation!=null),"Delegation requires its explicit profile");
         Check(FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
         Check(FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
-        Check(s.ResourceLots.All(l=>l.MobileHolder==null||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||s.NewMilitary!=null&&l.MobileHolder==s.PlayerControl&&l.Id==NewGameMilitary.Carry)),"Unexpected mobile resource holder");
+        Check(s.ResourceLots.All(l=>l.MobileHolder==null||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||s.NewMilitary!=null&&(l.MobileHolder==s.PlayerControl||NewGameMilitary.UnitCarries(s)&&l.MobileHolder==NewGameMilitary.UnitIds[0])&&l.Id==NewGameMilitary.Carry)),"Unexpected mobile resource holder");
         Check(EngagementMission.Enabled(s)==(s.Engagement!=null),"Engagement requires its explicit profile");
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
         Check(ContinuousWorld.Enabled(s)==(s.Atlas!=null),"Terrain atlas requires its ruleset");if(ContinuousWorld.Enabled(s))ContinuousWorld.Validate(s);
@@ -157,7 +157,9 @@ public static class ContractValidation
         }
         Keys(s.Debts, x => x.Id, "debts");
         Check(s.Debts.All(x => entities.Contains(x.Debtor) && entities.Contains(x.Creditor) && x.Debtor != x.Creditor && x.Outstanding >= 0 && bases.Contains(x.Basis) && !string.IsNullOrWhiteSpace(x.Unit)), "Invalid debt.");
-        MessageFlow.Validate(s.Messaging, s.ElapsedSeconds, people.Select(x => x.Value).ToHashSet(StringComparer.Ordinal));
+        MessageFlow.Validate(s.Messaging, s.ElapsedSeconds, people.Select(x => x.Value).Concat(NewGameMilitary.MessageParticipants(s)).ToHashSet(StringComparer.Ordinal));
+        Check(s.Messaging.Proxies.All(p=>people.Contains(new(p.PrincipalId))&&people.Contains(new(p.AgentId))),"A unit post is not a character proxy");
+        Check(s.Messaging.Messages.Where(m=>!people.Contains(new(m.SenderId))||!people.Contains(new(m.RecipientId))).All(m=>NewGameMilitary.HandlesUnitMessage(s,m.Id)),"Non-character sender requires its registered physical unit adapter");
         Check(s.Messaging.Messages.All(m => EntityId.IsValid(m.Id) && EntityId.IsValid(m.CorrelationId) && EntityId.IsValid(m.Scope)), "Invalid message IDs.");
         Check(s.SealedMessages.Distinct().Count() == s.SealedMessages.Length && s.SealedMessages.All(id => s.Messaging.Messages.Any(m => m.Id == id.Value)), "Unknown sealed message.");
         var evidence = Keys(s.Evidence, x => x.Id, "evidence");

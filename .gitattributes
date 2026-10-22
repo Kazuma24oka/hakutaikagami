@@ -1235,3 +1235,14 @@ Docs/Design/ContactCombatV1/*.json -text whitespace=trailing-space,space-before-
 .gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/PersonalWithdrawalV1/PLAN.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Game/Scripts/NewGameRuntime.WorldLabels.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Withdrawal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/PersonalWithdrawalTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Withdrawal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_personal_withdrawal.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_personal_withdrawal_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PersonalWithdrawalV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PersonalWithdrawalV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RoutRegroupV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitMessages.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1454,
-  "baseline_passed": 1405,
-  "added": 49,
-  "scope": "ContactCombatTests(27) and NewGameCombatTests(22): shared simultaneous contact, explicit sealed exercise authorization, own loss, strength-based supply, physical frozen report, restoration and old notice compatibility"
+  "expected_passed": 1496,
+  "baseline_passed": 1454,
+  "added": 42,
+  "scope": "PersonalWithdrawalTests(42): independent terrain travel, local cargo handoff, known unit post/physical recall/return courier, stale address failure, immutable ownership, restoration and forged history rejection"
 }

@@ -6,7 +6,7 @@ public partial class NewGameRuntime
 {
     readonly List<(Officer3DCustomActor Actor,Label Label)> exerciseModels=new();
     bool ExerciseFighting(ContractWorld w,int i){if(!NewGameMilitary.CombatActive(w))return false;var hits=NewGameMilitary.CombatLosses(w,w.ElapsedSeconds);return 100-hits.Where(l=>l.Unit==NewGameMilitary.UnitIds[i]).Sum(l=>l.Morale)>25&&100-hits.Where(l=>l.Unit==NewGameMilitary.ExerciseIds[i]).Sum(l=>l.Morale)>25;}
-    object? ExercisePose(ContractWorld w)=>NewGameMilitary.CombatStarted(w)?new{Own=NewGameMilitary.OwnCombatReport(w,w.ElapsedSeconds),Losses=NewGameMilitary.CombatLosses(w,w.ElapsedSeconds),Models=exerciseModels.Select(m=>new{m.Actor.Position,m.Actor.Visible,m.Label.Text})}:null;
+    object? ExercisePose(ContractWorld w)=>NewGameMilitary.CombatStarted(w)?new{Own=NewGameMilitary.OwnCombatReport(w,w.ElapsedSeconds),Losses=NewGameMilitary.CombatLosses(w,w.ElapsedSeconds),Models=exerciseModels.Select(m=>new{Position=V(m.Actor.Position),m.Actor.Visible,m.Label.Text})}:null;
     void RenderExercise(ContractWorld w,FieldPoint center)
     {
         bool started=NewGameMilitary.CombatStarted(w);

@@ -10,7 +10,7 @@ public partial class NewGameFrontEnd
     readonly List<string> assertions=new();
     bool HistoricalCase=>FlowCase is "historical" or "corrupt";
     string FlowCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--new-game-case="))?.Split('=')[1]??"group";
-    void Check(bool ok,string text){if(!ok)throw new Exception(text);assertions.Add(text);}
+    void Check(bool ok,string text){if(!ok){if(game!=null){Directory.CreateDirectory(TestOutput);File.WriteAllText(Path.Combine(TestOutput,"failure-pose.json"),game.Pose());ViewportCapture.Save(GetViewport(),Path.Combine(TestOutput,"failure.png"));}throw new Exception(text);}assertions.Add(text);}
     async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
     void Press(string id){Check(buttons.TryGetValue(id,out var b)&&!b.Disabled,"enabled actual frontend button: "+id);b!.EmitSignal(Button.SignalName.Pressed);}
     static IEnumerable<Node> Children(Node n){foreach(Node child in n.GetChildren()){yield return child;foreach(var x in Children(child))yield return x;}}
@@ -74,7 +74,7 @@ Press("manage");await Frame();await Frame();string io=Path.Combine(DataRoot,"qa-
     async Task RestoreFlow()
     {
         Press("load-list");await Frame();string instance=File.ReadAllText(Path.Combine(TestOutput,"campaign-instance.txt"));int index=Array.FindIndex(savedRows,r=>r.Profile.Instance==instance);Check(index>=0,"campaign appears in load list after process restart");savedList.Select(index);Press("load");await Frame();
-        for(int n=0;n<=3;n++){game!.LoadCheckpoint("s"+n);Check(game.Pose()==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")),"restored 3D pose/appearance/person at checkpoint "+n);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-world.sha256")),"restored all Core state at checkpoint "+n);await Capture("restored-s"+n,true);ContinueFrom(n);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"final-world.sha256")),"same continuation yields same complete world "+n);await Capture("continued-s"+n,true);}
+        for(int n=0;n<=3;n++){game!.LoadCheckpoint("s"+n);await Frame();await Frame();Check(game.Pose()==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")),"restored 3D pose/appearance/person at checkpoint "+n);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-world.sha256")),"restored all Core state at checkpoint "+n);await Capture("restored-s"+n,true);ContinueFrom(n);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"final-world.sha256")),"same continuation yields same complete world "+n);await Capture("continued-s"+n,true);}
     }
     async Task CaptureFilm()
     {
@@ -86,7 +86,7 @@ Press("manage");await Frame();await Frame();string io=Path.Combine(DataRoot,"qa-
     async void RunFlowChecks()
     {
         try{
-            Directory.CreateDirectory(TestOutput);await Frame();await Frame();if(FlowCase.StartsWith("combat-")){await RunCombatChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("military-")){await RunNewMilitaryChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("service-")){await RunServiceChecks();GetTree().Quit();return;}if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreFlow();else{await SetupFlow();if(OS.GetCmdlineUserArgs().Contains("--new-game-film"))await CaptureFilm();}
+            Directory.CreateDirectory(TestOutput);await Frame();await Frame();if(FlowCase.StartsWith("withdrawal-")){await RunWithdrawalChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("combat-")){await RunCombatChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("military-")){await RunNewMilitaryChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("service-")){await RunServiceChecks();GetTree().Quit();return;}if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreFlow();else{await SetupFlow();if(OS.GetCmdlineUserArgs().Contains("--new-game-film"))await CaptureFilm();}
             File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-checks.json":"check-checks.json"),System.Text.Json.JsonSerializer.Serialize(assertions));GD.Print("NEW_GAME_FLOW_PASSED "+FlowCase);GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }

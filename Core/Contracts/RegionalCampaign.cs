@@ -85,7 +85,7 @@ public static class RegionalCampaign
     public static void Bind(ContractWorld w)
     {
         foreach(var a in w.Messaging.Attempts.Where(a=>!w.Couriers!.Missions.Any(c=>c.Attempt==a.Id)).ToArray()){
-            if(RegionalBattle.Handles(w,a.MessageId))continue;
+            if(RegionalBattle.Handles(w,a.MessageId)||NewGameMilitary.HandlesUnitMessage(w,a.MessageId))continue;
             var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=NewGameWorld.Address(w,m)??RegionalWork.Address(w,m)??(TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle");long appointment=a.SentAt+1;RoutePoint? origin=null;
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);
             if(t?.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(x=>x.Id==w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask);destination=Meeting(w,target);appointment=Appointment(w,target);}
@@ -153,7 +153,7 @@ public static class RegionalCampaign
     public static void Failures(ContractWorld w)
     {
         foreach(var a in w.Messaging.Attempts.Where(a=>a.FailureAt==w.ElapsedSeconds).ToArray()){
-            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);if(m.Kind=="delivery-failure"||RegionalBattle.Handles(w,a.MessageId))continue;
+            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);if(m.Kind=="delivery-failure"||RegionalBattle.Handles(w,a.MessageId)||NewGameMilitary.HandlesUnitMessage(w,a.MessageId))continue;
             var id="message:courier-failure/"+a.Id.Replace(':','/');
             MessageFlow.ReportFailure(w.Messaging,id,a.Id,m.SenderId,w.ElapsedSeconds,1);
         }
@@ -212,7 +212,7 @@ public static class RegionalCampaign
     }
     public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
     {
-        if(actor==w.PlayerControl&&NewGameMilitary.DeployedAt(w,at))return FieldWorld.ToWorld(NewGameMilitary.Position(w,0,at));
+        if(actor==w.PlayerControl&&NewGameMilitary.DeployedAt(w,at))return FieldWorld.ToWorld(NewGameMilitary.PersonPosition(w,at));
         if(RegionalBattle.Active(w)&&FieldPresence.Deployed(w,actor)&&at==w.ElapsedSeconds&&w.Region!.Units.Any(u=>u.Commander==actor))return FieldWorld.ToWorld(RegionalBattle.Position(w,actor));
         if(FieldWorld.Enabled(w)&&actor==w.PlayerControl&&w.Field!.Orders.Any(o=>o.At<=at)&&!(w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at)?.Legs[0].StartAt>w.Field.Orders.Last(o=>o.At<=at).At))return FieldWorld.ToWorld(FieldWorld.Sample(w,0,at).Position);
         return RoadActorPointAt(w,actor,at);
@@ -251,7 +251,7 @@ public static class RegionalCampaign
         if(cs.InitialBlocked.Distinct().Count()!=cs.InitialBlocked.Length||cs.InitialBlocked.Any(id=>!edges.Any(e=>e.Id==id))||!w.Branches!.BlockedEdges.ToHashSet().SetEquals(edges.Where(e=>BlockedAt(w,e.Id,w.ElapsedSeconds)).Select(e=>e.Id)))throw new InvalidDataException("Road truth differs from recorded conditions");
         if(cs.Conditions.Any(c=>c.At<1||!edges.Any(e=>e.Id==c.Edge))||cs.Conditions.Select(c=>(c.At,c.Edge)).Distinct().Count()!=cs.Conditions.Length)throw new InvalidDataException("Invalid condition schedule");
         foreach(var sight in cs.Sightings){var edge=edges.Single(e=>e.Id==sight.Edge);if(sight.At>w.ElapsedSeconds||sight.Position!=ActorPointAt(w,sight.Actor,sight.At)||sight.Blocked!=BlockedAt(w,edge.Id,sight.At)||sight.Position!=Node(w,edge.From)&&sight.Position!=Node(w,edge.To))throw new InvalidDataException("Invalid road sighting");}
-        if(cs.Missions.Select(c=>c.Attempt).Distinct().Count()!=cs.Missions.Length||cs.Missions.Length!=w.Messaging.Attempts.Count(a=>!RegionalBattle.Handles(w,a.MessageId)))throw new InvalidDataException("Missing/duplicate courier");
+        if(cs.Missions.Select(c=>c.Attempt).Distinct().Count()!=cs.Missions.Length||cs.Missions.Length!=w.Messaging.Attempts.Count(a=>!RegionalBattle.Handles(w,a.MessageId)&&!NewGameMilitary.HandlesUnitMessage(w,a.MessageId)))throw new InvalidDataException("Missing/duplicate courier");
         foreach(var c in cs.Missions){var a=w.Messaging.Attempts.Single(a=>a.Id==c.Attempt);var message=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);
             var origin=message.Kind=="delivery-failure"?Position(w,cs.Missions.Single(x=>x.Attempt==message.Body),a.SentAt):c.DispatchPose!=null?DispatchOrigin(w,c,a,message):ActorPointAt(w,new(message.SenderId),a.SentAt);
             if(CreatedCampaign.Enabled(w)&&message.Kind!="delivery-failure"&&c.DispatchPose==null)throw new InvalidDataException("New campaign courier lacks dispatch location");
