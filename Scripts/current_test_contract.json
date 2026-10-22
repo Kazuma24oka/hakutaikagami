@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1352,
-  "baseline_passed": 1316,
-  "added": 36,
-  "scope": "NewGameWorldTests and NewGameFlowBoundaryTests: reproducible start conversion, common Core movement, local sealed voluntary work/consent/report, appearance and role preservation, corrupt profiles and legacy compatibility"
+  "expected_passed": 1377,
+  "baseline_passed": 1352,
+  "added": 25,
+  "scope": "NewGameServiceTests: physical mutual service, known state, inquiry, report-gated departure, save compatibility and forgery rejection"
 }

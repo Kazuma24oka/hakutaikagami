@@ -11,10 +11,11 @@ public partial class NewGameRuntime : Control
     SubViewport view=null!;SubViewportContainer surface=null!;Node3D stage=null!;Camera3D camera=null!;ContinuousTerrainRenderer terrain=null!;
     readonly Dictionary<EntityId,Officer3DCustomActor> actors=new();readonly Dictionary<EntityId,Label3D> labels=new();
     NewGameMap overview=null!;bool nationMode;
-    WorldSession? cachedSession;ContractWorld? cachedWorld;long cachedRevision=-1,cachedSeconds=-1;bool cachedPaused;
+    WorldSession? cachedSession;ContractWorld? cachedWorld;ServiceView? cachedServiceView;long cachedRevision=-1,cachedSeconds=-1;bool cachedPaused;
     readonly Dictionary<EntityId,BranchView> cachedBranches=new();
     TerrainTile? terrainTile;FieldPoint terrainOrigin=new(0,0);float terrainSpan;
-    Label info=null!,message=null!,tasks=null!;OptionButton destination=null!;readonly Dictionary<string,Button> buttons=new();
+    Label info=null!,message=null!,tasks=null!;
+    HFlowContainer serviceBar=null!;OptionButton servicePrincipal=null!,serviceCase=null!;EntityId[] servicePrincipalIds=[],serviceCaseIds=[];OptionButton destination=null!;readonly Dictionary<string,Button> buttons=new();
     internal float Yaw=15,Span=50;double fraction;bool automatic;bool loading;int speed=1;OptionButton speedChoice=null!;
     internal void Configure(NewCampaignStore owner,NewCampaignProfile profile,bool load){campaigns=owner;Profile=profile;var start=NewCampaignStore.Build(profile);host=new(new WorldSession(start));saves=owner.Saves(profile);if(load){var prepared=saves.Prepare("manual");if(host.CommitLoad(prepared,host.Current,host.Current.Revision)!=ResultCode.Accepted)throw new InvalidDataException("保存を再開できません");ApplyPresentation(prepared.Presentation);}loading=load;}
     public override void _Ready()
@@ -25,6 +26,7 @@ public partial class NewGameRuntime : Control
         speedChoice=new();foreach(var label in new[]{"1倍","10倍","60倍","360倍"})speedChoice.AddItem(label);speedChoice.Select(Array.IndexOf(new[]{1,10,60,360},speed));speedChoice.ItemSelected+=i=>speed=new[]{1,10,60,360}[(int)i];bar.AddChild(speedChoice);
         destination=new(){CustomMinimumSize=new(170,0)};foreach(var s in NationalRoutes.Sites)destination.AddItem(s.Name);bar.AddChild(destination);Add(bar,"depart","この行先へ出発",Depart);Add(bar,"arrive","次の拠点まで",()=>{var v=Branch(Session.PlayerControl);if(v.ArrivalAt is {} at)Advance(at+2);});Add(bar,"inspect","現地を自分で点検",()=>Submit(NewGameWorld.Inspect(Snapshot(),"request:inspection/"+Session.Revision)));Add(bar,"open","届いた書状を開く",Open);Add(bar,"save","保存",Save);Add(bar,"load","保存から再開",Load);
         Add(bar,"work","現地で仕事を相談",()=>Submit(NewGameWorld.LocalWork(Snapshot(),"request:local-work/"+Session.Revision)));Add(bar,"accept","依頼を引き受ける",()=>Assent(true));Add(bar,"decline","依頼を断る",()=>Assent(false));
+        serviceBar=new HFlowContainer();root.AddChild(serviceBar);servicePrincipal=new(){CustomMinimumSize=new(170,0)};serviceBar.AddChild(servicePrincipal);Add(serviceBar,"service-apply","仕官を申し出る",()=>DecideService(CareerAction.Apply));serviceCase=new(){CustomMinimumSize=new(230,0)};serviceBar.AddChild(serviceCase);serviceCase.ItemSelected+=_=>RefreshService();Add(serviceBar,"service-accept","仕官条件に同意",()=>DecideService(CareerAction.Accept));Add(serviceBar,"service-decline","仕官条件を辞退",()=>DecideService(CareerAction.Decline));Add(serviceBar,"service-release","辞去を願い出る",()=>DecideService(CareerAction.RequestRelease));Add(serviceBar,"service-inquire","仕官案件を照会",()=>DecideService(CareerAction.Inquire));
         info=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};message=new(){Text=loading?"保存した同じ人物の人生を再開しました。":"確定した世界で、選んだ武将の人生が始まりました。"};root.AddChild(info);root.AddChild(message);
         surface=new(){Stretch=true,SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill,CustomMinimumSize=new(600,350)};root.AddChild(surface);view=new(){OwnWorld3D=true,Size=new(1000,600),RenderTargetUpdateMode=SubViewport.UpdateMode.Always};surface.AddChild(view);stage=new();view.AddChild(stage);
         stage.AddChild(new WorldEnvironment{Environment=new Godot.Environment{BackgroundMode=Godot.Environment.BGMode.Color,BackgroundColor=new Color("364f5c"),AmbientLightSource=Godot.Environment.AmbientSource.Color,AmbientLightColor=new Color("e9e7d8"),AmbientLightEnergy=.7f}});stage.AddChild(new DirectionalLight3D{RotationDegrees=new(-50,-30,0),LightEnergy=.9f});terrain=new();stage.AddChild(terrain);camera=new(){Current=true,Projection=Camera3D.ProjectionType.Orthogonal,KeepAspect=Camera3D.KeepAspectEnum.Width};stage.AddChild(camera);
@@ -49,6 +51,7 @@ public partial class NewGameRuntime : Control
     internal Rect2 InfoRect=>info.GetGlobalRect();
     internal void SaveCheckpoint(string slot)=>saves.Save(Session,slot,Snapshot().WorldId,new(fraction,speed,null,new(0,0,Span,Yaw,!nationMode,true)));
     internal void LoadCheckpoint(string slot){var p=saves.Prepare(slot);if(host.CommitLoad(p,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("checkpoint restore failed");ApplyPresentation(p.Presentation);Refresh();}
+    internal bool ButtonEnabled(string id)=>!buttons[id].Disabled;
     internal void Press(string id)=>buttons[id].EmitSignal(Button.SignalName.Pressed);
     internal void SetDestination(string id)=>destination.Select(Array.FindIndex(NationalRoutes.Nodes,n=>n.Id==id));
     internal void ReviewFraction(double value){fraction=value;Refresh();}
@@ -62,19 +65,30 @@ public partial class NewGameRuntime : Control
         var local=RegionalCampaign.Nearby(w,w.PlayerControl).Where(p=>p.Position!=own.Position).GroupBy(p=>p.Position).Select(g=>g.First()).Select(p=>(p.Actor,p.Position,p.Walking)).Prepend((w.PlayerControl,own.Position,own.Walking));
         foreach(var (id,position,walking) in local){if(!actors.TryGetValue(id,out var actor)){actor=new(){Scale=Vector3.One*2};stage.AddChild(actor);actor.Apply(ContractJson.Read<Officer3DCustomLook>(ContractJson.Write(NewGameWorld.Look(w.NewGame!,id.Value))));actors[id]=actor;var label=new Label3D{Text=w.Definitions.Characters.Single(p=>p.Id==id).Name,Font=GetThemeDefaultFont(),FontSize=20,PixelSize=.03f,Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,NoDepthTest=true};stage.AddChild(label);labels[id]=label;}
             var fp=FieldWorld.FromWorld(RenderPosition(Branch(id)));actor.Position=new((fp.X-center.X)/1000f,ContinuousWorld.Height(fp)/1000f,-(fp.Y-center.Y)/1000f);actor.Visible=true;var heading=Branch(id).Heading;actor.Rotation=new(0,Mathf.Atan2(heading.EastMm,-heading.NorthMm),0);var clip=actor.Player.GetAnimation(actor.Clips[walking?"walk":"idle"]);double time=walking?VisualDistance(w,id,fraction)/1000d/(actor.WalkStride*actor.Scale.Z)*clip.Length:Session.Seconds+fraction;actor.Freeze(walking?"walk":"idle",time%clip.Length);labels[id].Position=actor.Position+Vector3.Up*4.5f;labels[id].Visible=true;}
-        var p=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);string affiliation=p.Faction==null?"所属なし":w.Definitions.Organizations.Single(f=>f.Id.Value==p.Faction).Name;string lord=p.Lord==null?"直属なし":"直属："+w.Definitions.Characters.Single(q=>q.Id.Value==p.Lord).Name;var location=w.Locations.Single(l=>l.Actor==w.PlayerControl);string place=location.Site is {} at?NewGameWorld.SiteName(at.Value):"道中";
-        string role=p.Faction!=null&&w.NewGame.Start.Factions.Any(f=>f.Head==p.Id)?"大名":p.InitialRole is {} initial?NewGameWorld.RoleName(initial):p.Lord==null?"浪人":"家臣";
+        var p=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);var service=ServiceDisplay();string affiliation=service.House is {} house?w.Definitions.Organizations.Single(f=>f.Id==house).Name:"所属なし";string lord=service.Principal is {} principal?"直属："+w.Definitions.Characters.Single(q=>q.Id==principal).Name:"直属なし";var location=w.Locations.Single(l=>l.Actor==w.PlayerControl);string place=location.Site is {} at?NewGameWorld.SiteName(at.Value):"道中";string role=service.Role;
         string abilities=p.Attributes==null?"能力は未採録":"統率"+p.Attributes.Leadership+"・武勇"+p.Attributes.Valor+"・知略"+p.Attributes.Intelligence+"・政務"+p.Attributes.Politics;
         info.Text=p.Name+" / "+role+" / "+affiliation+" / "+lord+" / "+place+" / "+abilities+"\n世界時間：開始から"+Session.Seconds+"秒 / "+(Session.Paused?"停止中":"進行中");
         var knowledge=Branch(w.PlayerControl).Knowledge;tasks.Text=string.Join(" / ",knowledge.Tasks.Select(t=>t.KnownStatus.Replace("Running","進行中").Replace("Completed","完了").Replace("Waiting","着手待ち").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗")))+"\n届いた書状："+knowledge.Messages.Length+"通";
-        var awaiting=Awaiting();buttons["accept"].Visible=buttons["decline"].Visible=awaiting!=null;buttons["work"].Disabled=location.Kind!=LocationKind.AtSite||w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));
+        RefreshService();var awaiting=Awaiting();buttons["accept"].Visible=buttons["decline"].Visible=awaiting!=null;buttons["work"].Disabled=location.Kind!=LocationKind.AtSite||w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));
         buttons["inspect"].Disabled=location.Kind!=LocationKind.AtSite;buttons["depart"].Disabled=TravelWorld.Active(w);buttons["arrive"].Disabled=own.ArrivalAt==null;
+    }
+    ServiceView ServiceDisplay(){Snapshot();return cachedServiceView??=NewGameService.View(cachedWorld!);}
+    void RefreshService()
+    {
+        var world=Snapshot();var view=ServiceDisplay();var principals=NewGameService.LocalPrincipals(world);var cases=view.Cases;
+        if(!principals.SequenceEqual(servicePrincipalIds)){var chosen=servicePrincipal.Selected>=0&&servicePrincipal.Selected<servicePrincipalIds.Length?servicePrincipalIds[servicePrincipal.Selected]:(EntityId?)null;servicePrincipal.Clear();foreach(var id in principals)servicePrincipal.AddItem(world.Definitions.Characters.Single(c=>c.Id==id).Name);servicePrincipalIds=principals;int found=Array.FindIndex(principals,id=>id==chosen);if(found>=0)servicePrincipal.Select(found);}
+        var ids=cases.Select(c=>c.Case).ToArray();int index=serviceCase.Selected;var prior=index>=0&&index<serviceCaseIds.Length?serviceCaseIds[index]:(EntityId?)null;if(!ids.SequenceEqual(serviceCaseIds)||Enumerable.Range(0,cases.Length).Any(i=>serviceCase.GetItemText(i)!=cases[i].Status)){serviceCase.Clear();foreach(var c in cases)serviceCase.AddItem(c.Status);serviceCaseIds=ids;int selected=Array.FindIndex(ids,id=>id==prior);if(selected>=0)serviceCase.Select(selected);else if(ids.Length>0)serviceCase.Select(ids.Length-1);}
+        var card=serviceCase.Selected>=0&&serviceCase.Selected<cases.Length?cases[serviceCase.Selected]:null;buttons["service-apply"].Disabled=!view.CanApply||principals.Length==0;buttons["service-accept"].Disabled=card?.CanAccept!=true;buttons["service-decline"].Disabled=card?.CanDecline!=true;buttons["service-release"].Disabled=card?.CanRelease!=true;buttons["service-inquire"].Disabled=card==null;serviceBar.Visible=cases.Length>0||view.CanApply&&principals.Length>0;
+    }
+    void DecideService(CareerAction action)
+    {
+        EntityId? c=action==CareerAction.Apply?null:serviceCaseIds[serviceCase.Selected];EntityId? principal=action==CareerAction.Apply?servicePrincipalIds[servicePrincipal.Selected]:null;Submit(Session.DecideService(new(new("request:service-ui/"+Session.Revision),action,c,principal),Session.PlayerControl,Session.Revision));
     }
     // A display snapshot is immutable and valid only for this exact session/revision/time/pause.
     // Loading another instance at the same revision must never reuse the old person's view.
     ContractWorld Snapshot()
     {
-        if(!ReferenceEquals(cachedSession,Session)||cachedRevision!=Session.Revision||cachedSeconds!=Session.Seconds||cachedPaused!=Session.Paused){cachedSession=Session;cachedRevision=Session.Revision;cachedSeconds=Session.Seconds;cachedPaused=Session.Paused;cachedWorld=Session.DiagnosticSnapshot();cachedBranches.Clear();}
+        if(!ReferenceEquals(cachedSession,Session)||cachedRevision!=Session.Revision||cachedSeconds!=Session.Seconds||cachedPaused!=Session.Paused){cachedSession=Session;cachedRevision=Session.Revision;cachedSeconds=Session.Seconds;cachedPaused=Session.Paused;cachedWorld=Session.DiagnosticSnapshot();cachedBranches.Clear();cachedServiceView=null;}
         return cachedWorld!;
     }
     BranchView Branch(EntityId actor)

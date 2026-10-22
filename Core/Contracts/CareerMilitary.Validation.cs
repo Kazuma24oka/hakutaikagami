@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static partial class CareerMilitary
 {
     internal static bool OtherIdUsed(ContractWorld w,EntityId id)=>w.Career!.Requests.Any(q=>q.Input.Id==id)||w.Requests.Any(q=>q.Id==id)||w.Region!.Commands.Any(q=>q.Request.Id==id)||w.Field!.Orders.Any(q=>q.Request.Id==id)||w.TravelDecisions!.Any(q=>q.Request.Id==id)||w.Supply!.Moves.Any(q=>q.Id==id)||w.Engagement!.Reports.Any(q=>q.Id==id);
-    internal static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Military?.Requests.Any(q=>q.Input.Id==id)==true;
+    internal static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Military?.Requests.Any(q=>q.Input.Id==id)==true||NewGameService.OwnIdUsed(w,id);
     public static void ValidateArmy(ContractWorld w)
     {
         if(!w.Definitions.Armies.Contains(new(CreatedCampaign.Army,RetainerStart.House,Lord))||w.Atlas!.Anchor!="castle"||w.Region!.PerForce!=3||w.Region.Hostile||w.Region.Losses.Length!=0||w.Field!.Orders.Length!=0)throw new InvalidDataException("Placement-only military profile differs");

@@ -43,6 +43,10 @@ public partial class OfficerLibraryTrial
     void ResetEnhanced(){role.Select(0);birth.Value=1520;foreach(var n in attributes)n.Value=50;RestoreEnhanced(null);}
     internal void ExerciseSecondDaimyo(){Press(create);personName.Text="鏡山 別家";role.Select(5);factionName.Text="別家";site.Select(Array.IndexOf(SiteIds,"site:castle"));Press(apply);}
     internal void ExerciseMinor(){Press(create);personName.Text="鏡山 幼少";birth.Value=1555;role.Select(0);site.Select(Array.IndexOf(SiteIds,"site:castle"));Press(apply);}
+    internal void ExerciseServiceOfficer(string node,bool retainer)
+    {
+        Press(create);personName.Text="鏡山 宗久";role.Select(retainer?1:0);site.Select(Array.IndexOf(SiteIds,node));if(retainer)lordChoice.Select(lordIds.IndexOf("person:shingen"));skinChoice.Select(1);hairChoice.Select(1);UpdateLook();Press(apply);
+    }
     internal OfficerLibrary CurrentLibrary=>ContractJson.Copy(library);
     internal void ExerciseManagement(string output)
     {

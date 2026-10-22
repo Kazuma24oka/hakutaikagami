@@ -127,8 +127,10 @@ public partial class ProtocolPanel : MarginContainer
         Check(!button.Disabled && button.IsVisibleInTree() && GetViewportRect().HasPoint(point), "検証ボタンが画面外");
         int count = 0; void Pressed() => count++; button.Pressed += Pressed;
         try {
-            GetViewport().PushInput(new InputEventMouseButton { Position = point, GlobalPosition = point, ButtonIndex = MouseButton.Left, Pressed = true, ButtonMask = MouseButtonMask.Left }, true);
-            GetViewport().PushInput(new InputEventMouseButton { Position = point, GlobalPosition = point, ButtonIndex = MouseButton.Left, Pressed = false }, true);
+            using var down = new InputEventMouseButton { Position = point, GlobalPosition = point, ButtonIndex = MouseButton.Left, Pressed = true, ButtonMask = MouseButtonMask.Left };
+            using var up = new InputEventMouseButton { Position = point, GlobalPosition = point, ButtonIndex = MouseButton.Left, Pressed = false };
+            GetViewport().PushInput(down, true);
+            GetViewport().PushInput(up, true);
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); Check(count == 1 && !notice.Text.StartsWith("操作に失敗"), notice.Text);
         } finally { button.Pressed -= Pressed; }
     }

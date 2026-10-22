@@ -13,12 +13,18 @@ public partial class NewGameFrontEnd : Control
     string? filterSite,selected;string? registryReadError;SetupPerson[] visiblePeople=[];NewCampaignListing[] savedRows=[];ItemList savedList=null!;
     Action? pendingStart;bool refreshingClaims;OptionButton jumpChoice=null!,placementPerson=null!,placementSite=null!;
     string? TestKey=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--new-game-test-key="))?.Split('=')[1];
-    string TestOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/NewGameFlowV1/runtime-local/"+(OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--new-game-case="))?.Split('=')[1]??"group"));
+    string TestOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/"+(FlowCase.StartsWith("service-")?"ServiceEntryV1":"NewGameFlowV1")+"/runtime-local/"+FlowCase);
     string DataRoot=>TestKey is {} key?Path.Combine(TestOutput,Guid.ParseExact(key,"N").ToString("N")):ProjectSettings.GlobalizePath("user://new-game-v1");
     string LibraryRoot=>TestKey!=null?Path.Combine(DataRoot,"library"):ProjectSettings.GlobalizePath("user://officer-library-v1");
     const ulong Seed=20261022;
     public override void _Ready()
     {
+        // Explicit legacy verification flags preserve the former harness entry. Normal play uses this menu.
+        var args=OS.GetCmdlineUserArgs();
+        if(args.Any(a=>a.StartsWith("--start-selection-")||a.StartsWith("--work-hub-")||a.StartsWith("--task-entry-")||a is "--startup-entry" or "--personnel-catalog" or "--smoke-test" or "--tax-smoke-test" or "--shared-protocol-smoke-test")){
+            using var legacyScene=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn");var legacy=legacyScene.Instantiate<Control>();AddChild(legacy);legacy.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);return;
+        }
+
         Theme=new Theme{DefaultFontSize=16,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var bg=new ColorRect{Color=new Color("17232b"),MouseFilter=MouseFilterEnum.Ignore};AddChild(bg);bg.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         canvas=new Control();AddChild(canvas);canvas.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -38,7 +44,7 @@ public partial class NewGameFrontEnd : Control
     static string DisplaySite(string site){try{return NewGameWorld.SiteName(site);}catch(InvalidDataException){return "未収録の登場場所（管理画面で選び直してください）";}}
     void ShowMenu()
     {
-        Clear("百代鏡","一人の武将として、時代の中を生きる。 / 新しい入口の動作確認候補");ReadRegistry();if(registryReadError!=null)notice.Text=registryReadError;
+        Clear("百代鏡","一人の武将として、時代の中を生きる。 / 新しいゲームの入口");ReadRegistry();if(registryReadError!=null)notice.Text=registryReadError;
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(columns);var menu=new VBoxContainer{CustomMinimumSize=new(300,0)};columns.AddChild(menu);
         Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});

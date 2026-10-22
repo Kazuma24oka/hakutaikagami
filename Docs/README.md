@@ -1,3 +1,5 @@
+[通常起動と仕官・辞去の現行検証](Design/ServiceEntryV1/README.md)
+
 # 近距離動作の計測と60fps確認
 
 [MotionResponseV1](Design/MotionResponseV1/README.md)：同じ局所場面の調整前後、60fps制限での実測と足運び・地形再利用。全国負荷の保証とは区別。
