@@ -1,3 +1,9 @@
+# 特定の撤退原本の物理取消（2026-10-23）
+
+判断が必要になるまで技術作業と同ブランチcommit/pushを継続。UnitCancellationV1/README.mdの5条件。発送・実受令・効力・本人の返報受領を別にする。実受令と指定時刻の遅い方で対象だけを止め、同秒の原本/再送/遅着を抑止し、完了や別命令を巻き戻さない。取消も原期限/最大3便/実保持/実物遅着を共有。旧保存の任意項目省略を維持。verify_unit_cancellation.py→実画像/動画→--finalize→check_unit_cancellation_binding.py後push。マウス操作禁止、保護枝と既存素材/保存保持。未来時刻編集UIは未実装。
+
+以下は過去工程の記録。
+
 # 発送者の受領証拠に基づく再送（2026-10-23）
 
 UnitSenderEvidenceV1/README.mdの5条件を優先。取消の競合調査で発見した受領前の再送可否の情報漏れを先に補強。新TransportPolicyを新原本または新再送入力へ明示し、既知不達・発送者が未確認の受領・原期限・最大3便で物理コピー。受令返書/照会/1m以内の実受渡し証拠を確認条件にし、本人/部隊役で統一。世界の受領真値でUI/NPCを動かさない。原本/履歴は不変、共通既存APIと旧JSONは保持。verify_unit_sender_evidence.py→実画像/動画→--finalize→check_unit_sender_evidence_binding.py後に同ブランチpush。保護枝/素材/保存保持、マウス操作/サブエージェント禁止。次は取消の実装へ戻り、ユーザー判断不要なら継続。

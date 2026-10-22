@@ -7,7 +7,7 @@ public static partial class NewGameMilitary
     {
         var m=w.Messaging.Messages.Single(m=>m.Id==d.Message);if(m.DeliverBy==null)return true;
         if(m.DeliverBy<w.ElapsedSeconds+1)return false;
-        var destination=action==NewMilitaryAction.RetryRecallHome?Home(w,0):w.NewMilitary!.Withdrawal!.Sightings.Last().Position;
+        var destination=RetryHomeAction(action)?Home(w,0):w.NewMilitary!.Withdrawal!.Sightings.Last().Position;
         var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),destination,w.ElapsedSeconds,courier:true,atlas:true);
         return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;
     }

@@ -8,7 +8,7 @@ public static partial class NewGameMilitary
     static void HeldOrderOutcome(ContractWorld w,UnitHeldTransfer t,bool received)
     {
         if(!HeldOrderMessage(w,t))return;
-        var d=w.NewMilitary!.Withdrawal!.Dispatches.Single(d=>d.Message==t.Message);bool applied=received&&!w.NewMilitary.Orders.Any(o=>o.Id==UnitOrder(d.Id)||o.Revision>d.Revision);
+        var d=w.NewMilitary!.Withdrawal!.Dispatches.Single(d=>d.Message==t.Message);bool applied=received&&!CancelledRecall(w,d.Message)&&!w.NewMilitary.Orders.Any(o=>o.Id==UnitOrder(d.Id)||SupersedesRecall(w,o,d));
         if(applied)Order(w,new(UnitOrder(d.Id),NewMilitaryAction.Recall));
         string? reply=null,attempt=null;FieldLeg[] path=[];long due=0;
         if(received){path=RegionalGround.Plan(t.Destination,t.Origin,w.ElapsedSeconds,courier:true,atlas:true);due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);reply=UnitMessage(t.Id,"late-reply");MessageFlow.Send(w.Messaging,new(reply,d.Id.Value,"unit-post-late-reply",UnitIds[0].Value,w.PlayerControl.Value,Text(new UnitPostAnswer(d.Message,true,applied)),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));attempt=MessageFlow.Latest(w.Messaging,reply).Id;}
@@ -20,7 +20,7 @@ public static partial class NewGameMilitary
     static FieldPoint HeldCarrierPosition(ContractWorld w,UnitReplyHolding h,long at)
     {
         var motions=(w.NewMilitary?.HeldDelivery?.Transfers??[]).Where(t=>t.Carrier==h.Holder&&t.Cargo.Contains(h.Attempt)&&t.At<=at).Select(t=>(t.At,t.Revision,t.Origin,t.Route))
-            .Concat((w.NewMilitary?.CommandHolding?.Outcomes??[]).Where(t=>t.Carrier==h.Holder&&t.Received&&t.At>=h.At&&t.At<=at).Select(t=>(t.At,t.Revision,t.Origin,t.Route))).OrderBy(t=>t.Revision).ToArray();
+            .Concat((w.NewMilitary?.CommandHolding?.Outcomes??[]).Where(t=>t.Carrier==h.Holder&&t.Received&&t.At>=h.At&&t.At<=at).Select(t=>(t.At,t.Revision,t.Origin,t.Route))).Concat((w.NewMilitary?.Cancellation?.Notices??[]).Where(t=>t.Carrier==h.Holder&&t.At>=h.At&&t.At<=at).Select(t=>(t.At,t.Revision,t.Origin,t.Route))).OrderBy(t=>t.Revision).ToArray();
         return motions.Length==0?h.Position:RegionalGround.At(motions[^1].Route,motions[^1].Origin,at);
     }
     static void ValidateHeldOrderOutcomes(ContractWorld w,bool replay)
@@ -33,7 +33,7 @@ public static partial class NewGameMilitary
         foreach(var a in x.Acks)Need(x.Outcomes.Any(f=>f.ReplyAttempt==a.Attempt&&f.DueAt==a.At)&&a.Revision>0&&a.Revision<=w.CommitSequence,"原命令の受令返書時点が不正です");
         if(!replay)return;
         foreach(var g in x.Outcomes.Select(f=>(f.At,f.Revision)).Concat(x.Acks.Select(a=>(a.At,a.Revision))).Distinct()){
-            var p=BeforeState(w,g.At,g.Revision-1);p.CommitSequence=g.Revision;BeforeUnitMessages(p);MessageFlow.Advance(p.Messaging,p.ElapsedSeconds);UpdateRout(p);UpdateWithdrawal(p);UpdateCommandHolding(p);UpdateHeldDelivery(p);UpdateReplyRecovery(p);
+            var p=BeforeState(w,g.At,g.Revision-1);p.CommitSequence=g.Revision;BeforeUnitMessages(p);MessageFlow.Advance(p.Messaging,p.ElapsedSeconds);UpdateRout(p);UpdateCancellation(p);UpdateWithdrawal(p);UpdateCancellationHoldings(p);UpdateCommandHolding(p);UpdateHeldDelivery(p);UpdateReplyRecovery(p);
             var expected=BeforeState(w,g.At,g.Revision);Need(Same(p.NewMilitary!.CommandHolding,expected.NewMilitary!.CommandHolding)&&Same(UnitTransport(p),UnitTransport(expected))&&Same(p.NewMilitary.Orders,expected.NewMilitary.Orders),"原命令の実到達/一度だけの効力/物理返書を再現できません");
         }
     }

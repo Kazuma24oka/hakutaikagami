@@ -81,11 +81,11 @@ public static partial class NewGameMilitary
             bool delivered=w.Messaging.Attempts.Single(a=>a.Id==d.Attempt).Status==AttemptStatus.Delivered;
             // Recipient-local truth is tested only on arrival, never used to choose the address.
             var original=d.Role==ReceivingRole?w.NewMilitary!.Withdrawal!.Dispatches.Single(t=>t.Message==d.Message):null;
-            bool applied=original!=null&&delivered&&!UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==d.Message)&&!w.NewMilitary.Orders.Any(o=>o.Revision>original.Revision);
+            bool applied=original!=null&&delivered&&!CancelledRecall(w,d.Message)&&!UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==d.Message)&&!w.NewMilitary.Orders.Any(o=>SupersedesRecall(w,o,original));
             if(applied)Order(w,new(UnitOrder(original!.Id),NewMilitaryAction.Recall));
             var route=RegionalGround.Plan(d.Destination,d.Origin,w.ElapsedSeconds,courier:true,atlas:true);var x=w.NewMilitary!.Withdrawal!;
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var reply=UnitMessage(d.Id,delivered?"reply":"failure");
-            if(delivered)MessageFlow.Send(w.Messaging,new(reply,d.Id.Value,d.Role==ReceivingRole?"unit-post-reply":"unit-post-inquiry-reply",d.Recipient.Value,w.PlayerControl.Value,d.Role==ReceivingRole?Text(new UnitPostAnswer(d.Message,true,applied)):Text(UnitQueryAnswer(w,d)),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
+            if(delivered)MessageFlow.Send(w.Messaging,new(reply,d.Id.Value,d.Role==ReceivingRole?"unit-post-reply":d.Role==CancellationRole?"unit-post-cancel-reply":"unit-post-inquiry-reply",d.Recipient.Value,w.PlayerControl.Value,UnitReplyBody(w,d,applied),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             else MessageFlow.ReportFailure(w.Messaging,reply,d.Attempt,UnitCourier(d.Id).Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             RecordUnitReceipt(w,new(d.Id,w.ElapsedSeconds,w.CommitSequence,delivered,applied,d.Origin,route,due,reply,MessageFlow.Latest(w.Messaging,reply).Id){ArrivalStatus=w.Messaging.Messages.Single(m=>m.Id==d.Message).DeliverBy!=null?w.Messaging.Attempts.Single(a=>a.Id==d.Attempt).Status:null});
         }
@@ -127,7 +127,7 @@ public static partial class NewGameMilitary
         }
         foreach(var group in UnitReceipts(w).Select(r=>(r.At,r.Revision)).Concat(UnitReplies(w).Select(r=>(r.At,r.Revision))).Distinct()){
             Need(group.At<=w.ElapsedSeconds&&group.Revision<=w.CommitSequence&&group.Revision>0,"伝令の時点が不正です");
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateCommandHolding(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateCancellation(prior);UpdateWithdrawal(prior);UpdateCancellationHoldings(prior);UpdateCommandHolding(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             var expectedState=BeforeState(w,group.At,group.Revision);Need(Same(UnitTransport(prior),UnitTransport(expectedState)),"部隊の返書原本・共通配送を再現できません");
             Need(Same(prior.NewMilitary!.HeldDelivery,HeldBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitInquiry,UnitInquiryBefore(s.UnitInquiry,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitRetry,UnitRetryBefore(s.UnitRetry,group.At,group.Revision))&&Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,group.At,group.Revision)),"伝令の実到達/返書を原経路から再現できません");
             Need(Same(prior.NewMilitary.Orders,w.NewMilitary!.Orders.Where(o=>Before(o.At,o.Revision,group.At,group.Revision)).ToArray()),"届いた撤退命令と部隊経路が違います");

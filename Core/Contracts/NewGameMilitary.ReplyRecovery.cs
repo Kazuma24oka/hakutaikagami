@@ -8,8 +8,8 @@ public sealed record UnitReplyRecoveryState(string Contract,UnitReplyFlight[] Fl
 public static partial class NewGameMilitary
 {
     public const string UnitReplyRecoveryContract="declared-reply-policy-observed-failure-physical-return-same-original-v1";
-    static bool ReplyPolicyAction(NewMilitaryAction a)=>a==NewMilitaryAction.RemoteRecall||UnitInquiryAction(a);
-    static string? ReplyPolicy(ContractWorld w,TroopDispatch d){var m=w.Messaging.Messages.Single(m=>m.Id==d.Message);return d.Role==ReceivingRole?ContractJson.Read<UnitPostOrder>(System.Text.Encoding.UTF8.GetBytes(m.Body)).ReplyPolicy:ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(m.Body)).ReplyPolicy;}
+    static bool ReplyPolicyAction(NewMilitaryAction a)=>a==NewMilitaryAction.RemoteRecall||UnitInquiryAction(a)||CancellationAction(a);
+    static string? ReplyPolicy(ContractWorld w,TroopDispatch d){var m=w.Messaging.Messages.Single(m=>m.Id==d.Message);return d.Role==ReceivingRole?ContractJson.Read<UnitPostOrder>(System.Text.Encoding.UTF8.GetBytes(m.Body)).ReplyPolicy:d.Role==CancellationRole?CancellationNote(w,d).ReplyPolicy:ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(m.Body)).ReplyPolicy;}
     static void EnableReplyRecovery(ContractWorld w,NewMilitaryInput i){if(i.PostPolicy==UnitReplyRecoveryContract&&w.NewMilitary!.ReplyRecovery==null)w.NewMilitary=w.NewMilitary with{ReplyRecovery=new(UnitReplyRecoveryContract,[],[],[])};}
     static UnitReplyRecoveryState? ReplyRecoveryBefore(NewMilitaryState? s,long at,long rev){if(s?.ReplyRecovery is not {} x||!s.Requests.Any(q=>q.Input.PostPolicy==UnitReplyRecoveryContract&&Before(q.At,q.Revision,at,rev)))return null;return x with{Flights=x.Flights.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray(),Arrivals=x.Arrivals.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray(),Holdings=x.Holdings.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray()};}
     static EntityId ReplyCarrier(TroopDispatch d,int number)=>number==1?UnitCourier(d.Id):new("courier:unit-reply/"+Hash(d.Id.Value+"/"+number));
@@ -65,7 +65,7 @@ public static partial class NewGameMilitary
     {
         var s=w.NewMilitary!;var x=s.ReplyRecovery;if(x==null||!replay)return;
         foreach(var group in x.Flights.Select(f=>(f.At,f.Revision)).Concat(x.Arrivals.Select(a=>(a.At,a.Revision))).Distinct()){
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateCommandHolding(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateCancellation(prior);UpdateWithdrawal(prior);UpdateCancellationHoldings(prior);UpdateCommandHolding(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             Need(Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision)),"返書の不達持ち帰り/実受領後再送を再現できません");
             Need(Same(UnitTransport(prior),UnitTransport(BeforeState(w,group.At,group.Revision))),"返書原本/追加試行/正式受領が共通配送と違います");
         }

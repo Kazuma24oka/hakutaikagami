@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1663,
-  "baseline_passed": 1644,
-  "added": 19,
-  "scope": "UnitSenderEvidenceTests(19): no hidden-receipt retry gate, ack/quote/local witness for both senders, duplicates once, max3/deadline, per-attempt adoption without body rewrite, old API shape, restore, forged policies"
+  "expected_passed": 1687,
+  "baseline_passed": 1663,
+  "added": 24,
+  "scope": "UnitCancellationTests(24): physical receipt/effect/knowledge separation, future stop, same-time retry/late originals, duplicate cancellation, no rollback/new local order, invalid ledger/inputs, old shape and identical restored future"
 }

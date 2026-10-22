@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "contract": "targeted-recall-physical-cancellation-inclusive-receipt-effective-boundary-no-rollback-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "max_attempts": 3,
+  "effect_time": "max(first formal physical receipt,requested effective time)",
+  "same_tick": "targeted cancellation before original effect",
+  "rollback_completed_orders": false,
+  "old_optional_fields": [
+    "NewMilitaryState.Cancellation",
+    "NewMilitaryInput.TargetOriginal",
+    "NewMilitaryInput.RequestedEffectiveAt"
+  ]
+}

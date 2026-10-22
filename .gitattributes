@@ -1313,3 +1313,7 @@ Scripts/verify_unit_sender_evidence.py -text whitespace=trailing-space,space-bef
 Scripts/check_unit_sender_evidence_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitSenderEvidenceV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitSenderEvidenceV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Cancellation*.cs -text
+Tests/UnitCancellationTests.cs -text
+Game/Scripts/NewGameFrontEnd.UnitCancelChecks.cs -text
