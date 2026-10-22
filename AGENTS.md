@@ -1,3 +1,9 @@
+# 取消結果の不達回収と終了後の権限（2026-10-23）
+
+判断が必要になるまで同ブランチcommit/pushを含めて継続。UnitCancellationRecoveryV1/README.mdの5条件。前工程94f3ab9は1687件/31GPU/360世界画像の当時実績。結果返書の実不達/実保持/本人受取と効力を分離し、期限・旧対象・権限終了を保存復旧と3Dで検査する。兵や資源を復活させない。verify_unit_cancellation_recovery.py→目視→--finalize→check_unit_cancellation_recovery_binding.py。マウス操作禁止、保護枝・保存・既存素材保持。次は同じ主君/守備隊の再任と案件識別。判断不要なら止めない。
+
+以下は過去工程の記録。
+
 # 特定の撤退原本の物理取消（2026-10-23）
 
 判断が必要になるまで技術作業と同ブランチcommit/pushを継続。UnitCancellationV1/README.mdの5条件。発送・実受令・効力・本人の返報受領を別にする。実受令と指定時刻の遅い方で対象だけを止め、同秒の原本/再送/遅着を抑止し、完了や別命令を巻き戻さない。取消も原期限/最大3便/実保持/実物遅着を共有。旧保存の任意項目省略を維持。verify_unit_cancellation.py→実画像/動画→--finalize→check_unit_cancellation_binding.py後push。マウス操作禁止、保護枝と既存素材/保存保持。未来時刻編集UIは未実装。

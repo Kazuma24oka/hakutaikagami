@@ -10,7 +10,7 @@ public static partial class NewGameMilitary
         foreach(var d in UnitDispatches(w)){
             if(at<d.At)continue;
             var r=UnitReceipts(w).SingleOrDefault(r=>r.Id==d.Id&&r.At<=at);
-            if(r==null&&at<d.DueAt)Add(UnitCourier(d.Id),d.Origin,d.Route,d.Role==UnitInquiryRole?"本隊への照会伝令":"撤退命令の伝令");
+            if(r==null&&at<d.DueAt)Add(UnitCourier(d.Id),d.Origin,d.Route,d.Role==UnitInquiryRole?"本隊への照会伝令":d.Role==CancellationRole?"取消命令の伝令":"撤退命令の伝令");
             else if(r!=null&&at<r.ReplyDueAt)Add(UnitCourier(d.Id),d.Destination,r.ReplyRoute,"戻りの伝令");
         }
         var x=w.NewMilitary?.ReplyRecovery;

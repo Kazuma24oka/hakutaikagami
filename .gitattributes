@@ -1317,3 +1317,14 @@ Docs/Design/UnitSenderEvidenceV1/*.md -text whitespace=trailing-space,space-befo
 Core/Contracts/NewGameMilitary.Cancellation*.cs -text
 Tests/UnitCancellationTests.cs -text
 Game/Scripts/NewGameFrontEnd.UnitCancelChecks.cs -text
+
+Docs/Design/UnitCancellationV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCancellationV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitCouriers.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitCancellationRecoveryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitCancelRecoveryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Docs/Design/UnitCancellationRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCancellationRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_cancellation_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_cancellation_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

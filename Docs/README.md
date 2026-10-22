@@ -1,3 +1,9 @@
+[現行工程：取消結果の不達回収と権限終了](Design/UnitCancellationRecoveryV1/README.md)
+
+[直前完了：特定の撤退原本の物理取消](Design/UnitCancellationV1/README.md)
+
+以下の現行工程表記は各当時の履歴として保持する。
+
 [現行工程：発送者が確認した受領証拠と再送](Design/UnitSenderEvidenceV1/README.md)
 
 [現行工程：撤退命令の正式受領期限](Design/UnitOrderDeadlineV1/README.md)

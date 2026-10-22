@@ -9,7 +9,7 @@ public partial class NewGameFrontEnd
 {
  const int UnitCancelCheckpoints=16;
  TroopDispatch CurrentCancel()=>game!.Session.DiagnosticSnapshot().NewMilitary!.Cancellation!.Dispatches.Single();
- async Task UnitCancelStep(int n){await Frame();var s=game!.Session;bool moving=FlowCase=="cancel-moving",late=FlowCase=="cancel-late";
+ async Task UnitCancelStep(int n){await Frame();var s=game!.Session;bool moving=FlowCase=="cancel-moving"||FlowCase.StartsWith("cancelnotice-"),late=FlowCase=="cancel-late";
   if(n==1){var a=NewGameMilitary.Anchor(s.DiagnosticSnapshot());game.ExerciseMilitaryLine(new(a.X+20000,a.Y),new(a.X+20000,a.Y+12000));game.Advance(ArmyEnd()+1);}
   if(n==2){if(!moving)game.ChooseMilitary(NewMilitaryAction.Recall);game.ChooseMilitary(NewMilitaryAction.Handoff);game.ChooseMilitary(NewMilitaryAction.Withdraw);}
   if(n==3){game.Advance(Math.Max(PersonalEnd(),moving?s.Seconds:ArmyEnd())+1);game.Press("military-frame");}
