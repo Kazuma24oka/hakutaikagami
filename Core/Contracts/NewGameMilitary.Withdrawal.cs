@@ -65,7 +65,7 @@ public static partial class NewGameMilitary
             var x=w.NewMilitary.Withdrawal!;var known=x.Sightings.Last();var from=PersonPosition(w,w.ElapsedSeconds);
             var route=RegionalGround.Plan(from,known.Position,w.ElapsedSeconds,courier:true,atlas:true);
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var message=UnitMessage(i.Id,"order");
-            MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-order",w.PlayerControl.Value,UnitIds[0].Value,Text(new UnitPostOrder(i.Id,"recall",ReceivingRole,known.Id){ReplyPolicy=i.PostPolicy}),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
+            MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-order",w.PlayerControl.Value,UnitIds[0].Value,Text(new UnitPostOrder(i.Id,"recall",ReceivingRole,known.Id){ReplyPolicy=i.PostPolicy,HoldingPolicy=i.OriginalPolicy}),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             w.NewMilitary=w.NewMilitary with{Withdrawal=x with{Dispatches=[..x.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,UnitIds[0],ReceivingRole,known.Id,from,known.Position,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};
         }
     }
@@ -95,7 +95,8 @@ public static partial class NewGameMilitary
     {
         if(w.NewMilitary?.Withdrawal is not {} x)return "本人・本隊は同行中";
         var d=UnitDispatches(w).LastOrDefault(d=>d.Role==ReceivingRole);var reply=d==null?null:UnitReplies(w).LastOrDefault(r=>r.Id==d.Id);var response=d==null?null:UnitReceipts(w).SingleOrDefault(r=>r.Id==d.Id);bool received=response!=null&&MessageFlow.Knows(w.Messaging,response.ReplyMessage,w.PlayerControl.Value);
-        string mail=d==null?"":received?UnitReceipts(w).Single(r=>r.Id==d.Id).Delivered?UnitReceipts(w).Single(r=>r.Id==d.Id).Applied?" / 撤退命令の受令返書を受領":" / 新しい現地命令を維持・旧撤退命令は実行せず":" / 指定場所で部隊に会えなかった返書を受領":" / 撤退伝令の返書は未受領";
+        var late=d==null?null:w.NewMilitary?.CommandHolding?.Outcomes.LastOrDefault(f=>f.Original==d.Message&&f.ReplyMessage!=null&&MessageFlow.Knows(w.Messaging,f.ReplyMessage,w.PlayerControl.Value));
+        string mail=late!=null?late.Applied?" / 遅着原本の受令・実行返書を受領":" / 遅着原本を受令・重複/旧命令は実行せず":d==null?"":received?UnitReceipts(w).Single(r=>r.Id==d.Id).Delivered?UnitReceipts(w).Single(r=>r.Id==d.Id).Applied?" / 撤退命令の受令返書を受領":" / 新しい現地命令を維持・旧撤退命令は実行せず":" / 指定場所で部隊に会えなかった返書を受領":" / 撤退伝令の返書は未受領";
         return (Detached(w)?PersonMoving(w)?"本人だけ移動中":"本人は部隊と別行動":"本人・本隊は合流済み")+(UnitCarries(w)?" / 兵糧は本隊が運搬":" / 兵糧は本人が運搬")+mail;
     }
     public static LocationState CargoLocation(ContractWorld w)
@@ -121,7 +122,7 @@ public static partial class NewGameMilitary
         }
         foreach(var group in UnitReceipts(w).Select(r=>(r.At,r.Revision)).Concat(UnitReplies(w).Select(r=>(r.At,r.Revision))).Distinct()){
             Need(group.At<=w.ElapsedSeconds&&group.Revision<=w.CommitSequence&&group.Revision>0,"伝令の時点が不正です");
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateCommandHolding(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             var expectedState=BeforeState(w,group.At,group.Revision);Need(Same(UnitTransport(prior),UnitTransport(expectedState)),"部隊の返書原本・共通配送を再現できません");
             Need(Same(prior.NewMilitary!.HeldDelivery,HeldBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitInquiry,UnitInquiryBefore(s.UnitInquiry,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitRetry,UnitRetryBefore(s.UnitRetry,group.At,group.Revision))&&Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,group.At,group.Revision)),"伝令の実到達/返書を原経路から再現できません");
             Need(Same(prior.NewMilitary.Orders,w.NewMilitary!.Orders.Where(o=>Before(o.At,o.Revision,group.At,group.Revision)).ToArray()),"届いた撤退命令と部隊経路が違います");

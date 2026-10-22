@@ -1288,3 +1288,12 @@ Game/Scripts/NewGameFrontEnd.UnitHeldChecks.cs -text whitespace=trailing-space,s
 Scripts/verify_unit_held_delivery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_unit_held_delivery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitHeldDeliveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.CommandHolding.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.HeldOrder.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitCommandHoldingTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitCommandChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_command_holding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_command_holding_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCommandHoldingV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCommandHoldingV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol

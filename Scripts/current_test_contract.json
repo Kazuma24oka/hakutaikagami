@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1596,
-  "baseline_passed": 1578,
-  "added": 18,
-  "scope": "UnitHeldDeliveryTests(18): physical original/report handover, retry ordering, actual absence, all cargo, nonzero route restore, immutable first loss, forged transfer rejection"
+  "expected_passed": 1627,
+  "baseline_passed": 1596,
+  "added": 31,
+  "scope": "UnitCommandHoldingTests(31): physical original/report custody, late/retry races, stale suppression, actual absence, ack loss/recovery, nonzero all-paper motion, no unreveived content leakage from visible labels, restore and forged records"
 }

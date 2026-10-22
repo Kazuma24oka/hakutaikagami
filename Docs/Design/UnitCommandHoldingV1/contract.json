@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "contract": "declared-order-retained-original-physical-late-effect-and-reply-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "max_attempts": 3,
+  "old_optional_fields": [
+    "OriginalPolicy",
+    "HoldingPolicy",
+    "CommandHolding"
+  ],
+  "immutable_initial_failure": true,
+  "once_only_order_effect": true,
+  "physical_ack_required_for_sender_knowledge": true
+}

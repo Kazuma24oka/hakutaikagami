@@ -30,7 +30,7 @@ public static partial class NewGameMilitary
         var query=ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));
         var rows=query.Originals.Select(id=>{
             var receipt=w.Messaging.Receipts.SingleOrDefault(r=>r.MessageId==id&&r.PrincipalId==d.Recipient.Value);
-            bool applied=UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==id);
+            bool applied=UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==id)||(w.NewMilitary?.CommandHolding?.Outcomes.Any(f=>f.Original==id&&f.Applied)??false);
             return new UnitOriginalStatus(id,receipt!=null,applied,receipt?.ReceivedAt);
         }).ToArray();
         var position=Position(w,0,w.ElapsedSeconds);

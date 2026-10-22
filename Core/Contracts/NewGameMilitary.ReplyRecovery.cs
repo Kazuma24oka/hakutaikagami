@@ -65,7 +65,7 @@ public static partial class NewGameMilitary
     {
         var s=w.NewMilitary!;var x=s.ReplyRecovery;if(x==null||!replay)return;
         foreach(var group in x.Flights.Select(f=>(f.At,f.Revision)).Concat(x.Arrivals.Select(a=>(a.At,a.Revision))).Distinct()){
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateCommandHolding(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             Need(Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision)),"返書の不達持ち帰り/実受領後再送を再現できません");
             Need(Same(UnitTransport(prior),UnitTransport(BeforeState(w,group.At,group.Revision))),"返書原本/追加試行/正式受領が共通配送と違います");
         }
