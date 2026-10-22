@@ -1,8 +1,12 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
-public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd, Handoff, Reclaim, Withdraw, Rejoin, Attach, Observe, RemoteRecall, PersonalHome, PersonalMove }
-public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long Amount=0,FieldPoint? A=null,FieldPoint? B=null);
+public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd, Handoff, Reclaim, Withdraw, Rejoin, Attach, Observe, RemoteRecall, PersonalHome, PersonalMove, AutoRout }
+public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long Amount=0,FieldPoint? A=null,FieldPoint? B=null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? MotionContract {get;init;}
+}
 public sealed record NewMilitaryRequest(NewMilitaryInput Input,long At,long Revision,string? Message);
 public sealed record NewMilitaryTerms(EntityId Principal,EntityId Owner,EntityId Site,EntityId Army,EntityId Case);
 public sealed record NewMilitaryOrder(EntityId Id,NewMilitaryAction Action,long At,long Revision,FieldPoint[] Origins,FieldLeg[][] Routes);
@@ -11,6 +15,8 @@ public sealed record NewMilitaryState(int Schema,string Contract,NewMilitaryTerm
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public PersonalWithdrawalState? Withdrawal {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public NewRoutState? Rout {get;init;}
 }
 public sealed record NewMilitaryView(string Status,bool CanRequest,bool CanAccept,bool CanPickup,bool Custody,bool Deployed,bool Returning,long Carry,bool CanEnter);
 
@@ -54,7 +60,7 @@ public static partial class NewGameMilitary
         bool permission=known.Any(e=>e.Notice.Effect==MilitaryEffect.Permission),returned=known.Any(e=>e.Notice.Effect==MilitaryEffect.Returned),answered=s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.Accept&&Before(q.At,q.Revision,t,r)),picked=s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.Pickup&&Before(q.At,q.Revision,t,r)),returning=Returning(w,t,r);
         var offer=known.FirstOrDefault(e=>e.Notice.Effect==MilitaryEffect.Offered);bool closed=known.Any(e=>e.Notice.Effect is MilitaryEffect.Expired or MilitaryEffect.Refused);
         string status=returned?"指揮返還の通知を確認":returning?"指揮返還願い発送・帰還/兵糧/返報の確認待ち":picked?Detached(w)?"本人は部隊と別行動・部隊の現況は未確認":"主家兵"+TotalStrength(w,t)+"を現地引受":permission?"軍務許可を確認・兵は未引受":closed?"軍務の不承諾・期限切れを確認":offer.Event!=null?answered?"軍務回答発送・許可未確認":"軍務条件を開封・回答可能":"軍務申し出発送・結果未確認";
-        return new(status,false,offer.Event!=null&&t<offer.Notice.Deadline&&!answered&&!closed,permission&&!picked&&!returned&&service.Principal==s.Terms.Principal,picked&&!returned,DeployedAt(w,t),returning,CarryAt(w,t,r),picked&&!returned&&DeployedAt(w,t)&&AtHome(w)&&PersonPosition(w,t)==Home(w,0));
+        return new(status,false,offer.Event!=null&&t<offer.Notice.Deadline&&!answered&&!closed,permission&&!picked&&!returned&&service.Principal==s.Terms.Principal,picked&&!returned,DeployedAt(w,t),returning,CarryAt(w,t,r),picked&&!returned&&DeployedAt(w,t)&&!RoutActive(w)&&AtHome(w)&&PersonPosition(w,t)==Home(w,0));
     }
     public static long CarryAt(ContractWorld w,long at,long rev)=>w.NewMilitary is {} s?s.Moves.Where(m=>s.Requests.Any(q=>q.Input.Id==m.Id&&Before(q.At,q.Revision,at,rev))).Sum(m=>m.Loading?m.Amount:-m.Amount)-s.Uses.Where(u=>u.From<at).Sum(u=>Math.Min(u.Consumed,checked(u.Soldiers*(Math.Min(at,u.Until)-u.From)))):0;
     public static BranchView BranchView(ContractWorld w,ActorView knowledge){var p=PersonPosition(w,w.ElapsedSeconds);var next=PersonPosition(w,w.ElapsedSeconds+1);var a=FieldWorld.ToWorld(p);var b=FieldWorld.ToWorld(next);long distance=RegionalGround.Distance(p,next);return new(knowledge,a,new(b.EastMm-a.EastMm,b.NorthMm-a.NorthMm),0,p!=next,null,[],BranchRoutes.KnownBlocked(w,knowledge.Observer),b,distance);}
@@ -71,7 +77,7 @@ public static partial class NewGameMilitary
     }
     public static void Dispatch(ContractWorld w,NewMilitaryInput input)
     {
-        Need(Enum.IsDefined(input.Action)&&EntityId.IsValid(input.Id.Value)&&input.Amount>=0,"軍務入力が不正です");var v=View(w);
+        Need(input.MotionContract==null||input.Action==NewMilitaryAction.CombatStart&&input.MotionContract==RoutContract,"未知の交戦移動契約です");Need(Enum.IsDefined(input.Action)&&EntityId.IsValid(input.Id.Value)&&input.Amount>=0,"軍務入力が不正です");var v=View(w);
         if(input.Action==NewMilitaryAction.Request){Need(w.NewMilitary==null&&v.CanRequest,"現地で主君に軍務を申し出てください");w.NewMilitary=new(1,Contract,Terms(w,input.Id),[],[],[],[],[],[],[],[]);}
         var s=w.NewMilitary??throw new InvalidDataException("軍務の申し出がありません");bool custody=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence),deployed=Deployed(w),returning=Returning(w,w.ElapsedSeconds,w.CommitSequence);
         Need(input.Action switch{
@@ -79,8 +85,8 @@ public static partial class NewGameMilitary
             NewMilitaryAction.Pickup=>v.CanPickup&&!returning&&Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Returned)&&Local(w)&&AtHome(w)&&NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence)&&!TravelWorld.Active(w),
             NewMilitaryAction.Load or NewMilitaryAction.Unload=>custody&&!deployed&&Local(w)&&AtHome(w)&&(input.Action==NewMilitaryAction.Unload||!returning),
             NewMilitaryAction.Deploy=>custody&&!deployed&&Local(w)&&AtHome(w)&&v.Carry>0&&!returning&&!TravelWorld.Active(w)&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is ExecutionPhase.Running or ExecutionPhase.Waiting),
-            NewMilitaryAction.Form or NewMilitaryAction.Hold=>custody&&deployed&&!Detached(w)&&!returning&&v.Carry>0&&!CombatActive(w),
-            NewMilitaryAction.Recall=>custody&&deployed&&!Detached(w),NewMilitaryAction.Enter=>custody&&deployed&&AtHome(w)&&PersonPosition(w,w.ElapsedSeconds)==Home(w,0),
+            NewMilitaryAction.Form or NewMilitaryAction.Hold=>custody&&deployed&&!Detached(w)&&!returning&&v.Carry>0&&!CombatActive(w)&&!RoutActive(w),
+            NewMilitaryAction.Recall=>custody&&deployed&&!Detached(w),NewMilitaryAction.Enter=>custody&&deployed&&!RoutActive(w)&&AtHome(w)&&PersonPosition(w,w.ElapsedSeconds)==Home(w,0),
             NewMilitaryAction.Report=>custody&&!Detached(w),
             NewMilitaryAction.Return=>!returning&&v.CanPickup||!returning&&v.Custody,
             NewMilitaryAction.CombatPermit=>custody&&!returning&&!s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit),NewMilitaryAction.CombatStart=>CanStartCombat(w),NewMilitaryAction.CombatEnd=>CombatActive(w),NewMilitaryAction.Inquire=>true,_=>WithdrawalAllowed(w,input)},"軍務の許可・現地引受・兵糧・帰還条件が不足しています");
@@ -88,7 +94,7 @@ public static partial class NewGameMilitary
         string? message=input.Action is NewMilitaryAction.Request or NewMilitaryAction.Accept or NewMilitaryAction.Return or NewMilitaryAction.Report or NewMilitaryAction.Inquire or NewMilitaryAction.CombatPermit?RequestId(input.Id):null;
         w.NewMilitary=s with{Requests=[..s.Requests,new(input,w.ElapsedSeconds,w.CommitSequence,message)]};
         if(message!=null){long? due=input.Action==NewMilitaryAction.Accept?Event(w,MilitaryEffect.Offered)!.At+OfferSeconds-1:null;string body=input.Action==NewMilitaryAction.Report?Text(new NewMilitaryReport(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,TotalStrength(w,w.ElapsedSeconds))):Text(input);MessageFlow.Send(w.Messaging,new(message,s.Terms.Case.Value,input.Action==NewMilitaryAction.Report?"new-military-report":"new-military-request",w.PlayerControl.Value,s.Terms.Principal.Value,body,s.Terms.Site.Value,w.ElapsedSeconds,due),w.ElapsedSeconds,1);if(input.Action==NewMilitaryAction.Report)w.NewMilitary=w.NewMilitary! with{Reports=[..w.NewMilitary.Reports,new(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,TotalStrength(w,w.ElapsedSeconds))]};}
-        ApplyWithdrawal(w,input);
+        ApplyWithdrawal(w,input);StartRout(w,input);
         switch(input.Action){
             case NewMilitaryAction.Pickup:Announce(w,MilitaryEffect.PickedUp,input.Id.Value);break;
             case NewMilitaryAction.Load:case NewMilitaryAction.Unload:Transfer(w,input);break;
@@ -115,7 +121,7 @@ public static partial class NewGameMilitary
     internal static void Update(ContractWorld w)
     {
         var s=w.NewMilitary;if(s==null)return;
-        UpdateWithdrawal(w);s=w.NewMilitary!;
+        UpdateRout(w);UpdateWithdrawal(w);s=w.NewMilitary!;
         foreach(var q in s.Requests.Where(q=>q.Message!=null&&MessageFlow.Knows(w.Messaging,q.Message,s.Terms.Principal.Value))){
             if(q.Input.Action==NewMilitaryAction.CombatPermit&&!Has(w,MilitaryEffect.CombatPermission)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&!Returning(w,w.ElapsedSeconds,w.CommitSequence)&&NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence))Announce(w,MilitaryEffect.CombatPermission,q.Message!);
             if(q.Input.Action==NewMilitaryAction.Request&&!Has(w,MilitaryEffect.Offered)&&!Has(w,MilitaryEffect.Refused)){if(NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence)&&ReportsKnown(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence))Announce(w,MilitaryEffect.Offered,q.Message!);else Announce(w,MilitaryEffect.Refused,q.Message!);}

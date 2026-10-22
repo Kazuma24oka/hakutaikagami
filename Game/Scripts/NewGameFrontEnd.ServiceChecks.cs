@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
 {
-    bool InitialService=>FlowCase.StartsWith("withdrawal-")&&FlowCase!="withdrawal-ronin"||FlowCase.StartsWith("combat-")&&FlowCase!="combat-ronin"||FlowCase=="service-retainer"||FlowCase.StartsWith("military-")&&FlowCase!="military-ronin";
+    bool InitialService=>FlowCase.StartsWith("rout-")&&FlowCase!="rout-ronin"||FlowCase.StartsWith("withdrawal-")&&FlowCase!="withdrawal-ronin"||FlowCase.StartsWith("combat-")&&FlowCase!="combat-ronin"||FlowCase=="service-retainer"||FlowCase.StartsWith("military-")&&FlowCase!="military-ronin";
     string ServiceSite=>FlowCase.Contains("odawara")?"site:odawara":"site:kofu";
     void OpenAllServiceLetters(){for(int n=0;n<12&&game!.Session.GetActorView(game.Session.PlayerControl).Messages.Any(m=>m.KnownBody==null);n++)game.Press("open");}
     void ServiceStep(int step)

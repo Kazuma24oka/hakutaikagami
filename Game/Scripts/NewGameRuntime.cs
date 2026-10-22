@@ -106,10 +106,15 @@ public partial class NewGameRuntime : Control
         if(terrainTile!=tile||terrainSpan!=Span){terrain.Position=Vector3.Zero;terrainOrigin=ContinuousWorld.Point(tile.Node,tile.X*ContinuousWorld.Tile,tile.Y*ContinuousWorld.Tile);terrain.Update(terrainOrigin,Span);terrainTile=tile;terrainSpan=Span;}
         terrain.Position=new((terrainOrigin.X-center.X)/1000f,0,-(terrainOrigin.Y-center.Y)/1000f);
     }
+    static double MilitaryDistance(ContractWorld w,int unit,double time)
+    {
+        var all=w.NewMilitary!.Orders;
+        return all.Sum(o=>{double until=Math.Min(time,all.FirstOrDefault(n=>n.Revision>o.Revision)?.At??double.MaxValue);return o.Routes[unit].Sum(l=>RegionalGround.Distance(l.From,l.To)*Math.Max(0,Math.Min(until,l.EndAt)-Math.Max(o.At,l.StartAt))/(l.EndAt-l.StartAt));});
+    }
     internal static double VisualDistance(ContractWorld world,EntityId actor,double phase)
     {
         if(actor==world.PlayerControl&&NewGameMilitary.Detached(world)){var j=world.NewMilitary!.Withdrawal!.Journeys.Last();double t=world.ElapsedSeconds+phase;return j.Route.Sum(l=>RegionalGround.Distance(l.From,l.To)*Math.Clamp((t-l.StartAt)/(l.EndAt-l.StartAt),0,1));}
-        var journey=world.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor);if(NewGameMilitary.Deployed(world)){var military=world.NewMilitary!;return military.Orders.Sum(o=>{var next=military.Orders.FirstOrDefault(n=>n.Revision>o.Revision);double at=Math.Min(world.ElapsedSeconds+phase,next?.At??double.MaxValue);return o.Routes[0].Sum(l=>RegionalGround.Distance(l.From,l.To)*Math.Clamp((at-l.StartAt)/(l.EndAt-l.StartAt),0,1));});}if(journey==null)return 0;
+        var journey=world.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor);if(NewGameMilitary.Deployed(world)){return MilitaryDistance(world,0,world.ElapsedSeconds+phase);}if(journey==null)return 0;
         var nodes=BranchRoutes.GraphNodes(world);var edges=BranchRoutes.GraphEdges(world);double distance=0;
         foreach(var leg in journey.Legs){var a=nodes.Single(n=>n.Id==leg.From).Position;var b=nodes.Single(n=>n.Id==leg.To).Position;double dx=b.EastMm-a.EastMm,dy=b.NorthMm-a.NorthMm;double length=Math.Sqrt(dx*dx+dy*dy);var edge=edges.Single(e=>e.Id==leg.Edge);double p=TravelWorld.Progress(world,leg,world.ElapsedSeconds),next=TravelWorld.Progress(world,leg,world.ElapsedSeconds+1);distance+=length*Math.Clamp((p+(next-p)*phase)/edge.LengthMm,0,1);}
         return distance;

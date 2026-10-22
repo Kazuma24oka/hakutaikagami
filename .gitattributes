@@ -1246,3 +1246,11 @@ Docs/Design/PersonalWithdrawalV1/*.md -text whitespace=trailing-space,space-befo
 Docs/Design/PersonalWithdrawalV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/RoutRegroupV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Core/Contracts/NewGameMilitary.UnitMessages.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Rout.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/RoutRegroupTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RoutChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_rout_regroup.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_rout_regroup_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RoutRegroupV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol

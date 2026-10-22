@@ -120,7 +120,7 @@ public static partial class NewGameMilitary
         }
         foreach(var group in x.Receipts.Select(r=>(r.At,r.Revision)).Concat(x.Replies.Select(r=>(r.At,r.Revision))).Distinct()){
             Need(group.At<=w.ElapsedSeconds&&group.Revision<=w.CommitSequence&&group.Revision>0,"伝令の時点が不正です");
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateWithdrawal(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);
             var expectedState=BeforeState(w,group.At,group.Revision);Need(Same(UnitTransport(prior),UnitTransport(expectedState)),"部隊の返書原本・共通配送を再現できません");
             Need(Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,group.At,group.Revision)),"伝令の実到達/返書を原経路から再現できません");
             Need(Same(prior.NewMilitary.Orders,w.NewMilitary!.Orders.Where(o=>Before(o.At,o.Revision,group.At,group.Revision)).ToArray()),"届いた撤退命令と部隊経路が違います");

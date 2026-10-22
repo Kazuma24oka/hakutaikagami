@@ -1,0 +1,1 @@
+{"schema":1,"contract":"local-morale-collapse-independent-unit-retreat-physical-regroup-v1","completion_conditions":5,"morale_threshold":25,"regroup_seconds":60,"regroup_morale":50,"restore_pixel_tolerance":0,"old_motion_contract":"null preserves prior contact behavior","scope":"declared synthetic contact only"}

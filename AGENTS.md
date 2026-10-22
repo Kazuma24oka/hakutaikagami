@@ -1,3 +1,7 @@
+# 自動敗走と現地再集結（2026-10-23）
+
+ユーザーは判断が必要になるまで工程をまたいだ実装/検証/同ブランチcommit/pushを指示。PersonalWithdrawalV1は28e019dでpush済み、1496件/49GPU/388世界画像+5材質比較は当時の実績。次はRoutRegroupV1/README.mdの5条件。新交戦入力のMotionContractだけで新移動規則を選び、旧保存の未指定原本は旧接触のまま。士気25で生存部隊だけの地形/予約退避、初到達と60秒/士気50の試作再集結を区別する。本人/主家所有/携行/正式受領を維持し、兵や健康を復活させない。通行不能なら理由付き待機と現地帰還命令で回復する。共有MessageFlowの旧便と自動判断が競合しても巻き戻さない。verify_rout_regroup.py→実画像/動画点検→--finalize→check_rout_regroup_binding.py。マウス操作ツール禁止、保護ブランチ/既存素材/保存を保持。判断不要なら次のUnitPostRecoveryV1/PLAN.mdへ続行。
+
 # 本人退避・部隊撤退の分離（2026-10-22）
 
 ユーザーは判断が必要になるまで段階をまたいで実装・検証・同ブランチcommit/pushの継続を指示。完成報告だけで止めない。PersonalWithdrawalV1/README.mdの5条件を管理し、本人経路/部隊経路/主家兵糧の運び手/部隊の受信役/既知宛先/物理受令と返書を分離する。兵糧は現地受渡しなしに本人随伴から部隊随伴へ変えない。架空人物や真の未観測座標による追跡伝令を作らない。旧保存では任意Withdrawal項目を省略。verify_personal_withdrawal.py→実画像点検→--finalize→check_personal_withdrawal_binding.py。保護ブランチと既存素材/保存を維持し、マウス操作ツール禁止。次の技術工程はRoutRegroupV1/PLAN.md。
