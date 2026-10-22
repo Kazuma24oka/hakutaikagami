@@ -325,7 +325,8 @@
     "Game/Scripts/NewGameFrontEnd.Checks.cs": "a0bdf00f082b2e8f7b459c3fc1c161f2eb66acb484c9daeb09ddd82a9850dc15",
     "Game/Scripts/NewGameFrontEnd.cs": "2a3b0b253bee1ad4b605fbab36556a2020db08d97cf51972e047fb3dfcdc7080",
     "Game/Scripts/NewGameMap.cs": "fedd623dfac6fafc853ac550942380220bc28c9a6c4caa47cc6d16e371fbad95",
-    "Game/Scripts/NewGameRuntime.cs": "199f93b898edede374b239d662c9afc0529922775cb7f5ce84a6597fa8260aab",
+    "Game/Scripts/NewGameMotionChecks.cs": "4d212dfb7dc51b038171f3ea256f40504f465c0fce90e9304f385e16f0f6cb56",
+    "Game/Scripts/NewGameRuntime.cs": "c2d7c4a5120639f4595d73a6482859c0fc09fe8dd2202bad56533eaad873e8e5",
     "Game/Scripts/Officer3DActor.cs": "936933c943c66dd2278cc6bce1a1226db76b5a93ba5db9212ed597f68ff2e218",
     "Game/Scripts/Officer3DCreator.cs": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c",
     "Game/Scripts/Officer3DCustomActor.cs": "4bda6f1c1a35580a2376e0f8851049d516851a5902a166251fc794630277febf",
@@ -494,8 +495,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "536f8e0bc960e2f479df4aa44c8c8eea591debc8edd3f6e8ed53eab5465aef64",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "ba2bd421265785898e86c517d1c60160ff551f2fe6709f26cacf3e0da56060c3"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "71a92f68047a5c9e0f24c23ec67aa4ab07b7d7dd83feb9d1b47522af34847e4e",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "2f8322f95cfbdab4b9753e09494301fa18779aa2b622525de81c1c870b4b938b"
   },
   "tests": 1352,
   "added": 15,
@@ -602,8 +603,8 @@
     ]
   },
   "proofs": {
-    "Docs/Design/DelegationMissionV1/verification.json": "4322a8f1d2e70380f3153f2322e16bba623a2a9c107507fd5d73884151c8c4fa",
-    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "e586c4e1deadd7405817f4a7068fa1d65e01e2a739a8fa0922fec8afa671cc87",
+    "Docs/Design/DelegationMissionV1/verification.json": "d0086692edb33d356dad77239e425aa1cbeefa980f3a5912f9c69658d8c89dee",
+    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "90aca9d31932b89045621f53dc4de8109f51b80d9edf1d666eb97cc994d3f056",
     "Docs/Design/DelegationTransportV1/harness-correction.json": "71f88b12de101b804b3d9bd2bded87eea7fcd4fc6e19b23af629b6bfc0aadde1",
     "Docs/Design/DelegationTransportV1/runtime-local/harness-first-failure.log": "8e3854dac27d65a375e7852d43c620f70050c56b18eeb560b8b18b0dd8010f19"
   },
@@ -614,12 +615,8 @@
       "Docs/Design/DelegationTransportV1/runtime-local/s3.png": "b720019e5518a33f42a698ff50e1a255af43f3b0aff713764940665e5651a6d9",
       "Docs/Design/DelegationTransportV1/runtime-local/final.png": "7085788de0e64b13007ffe7e47b7e3cafd45d40a20aacadcd073fc83b3073b76"
     },
-    "method": "Current GPU save/restore/continuation rerun. Byte-identical representatives reuse personally inspected hashes from f330026. All72 changed representative PNGs were personally checked in12 contact sheets for layout/terrain/character placement; life-entry normal/s10 and both standalone-library PNGs additionally checked full size. This is visual regression review, not final art acceptance. Exact world/image checks remain unchanged.",
-    "reinspected_changed": [
-      "Docs/Design/DelegationTransportV1/runtime-local/s1.png",
-      "Docs/Design/DelegationTransportV1/runtime-local/s2.png",
-      "Docs/Design/DelegationTransportV1/runtime-local/s3.png",
-      "Docs/Design/DelegationTransportV1/runtime-local/final.png"
-    ]
-  }
+    "method": "Current GPU regression on motion-tuned binary. Byte-identical representative PNG hashes reuse the personal review in f43e1ee. Changed representative files listed below were personally inspected again full-size. This is old-behavior preservation, not final art acceptance.",
+    "reinspected_changed": []
+  },
+  "summary": {}
 }

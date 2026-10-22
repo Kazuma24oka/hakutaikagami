@@ -340,7 +340,8 @@
     "Game/Scripts/NewGameFrontEnd.Checks.cs": "a0bdf00f082b2e8f7b459c3fc1c161f2eb66acb484c9daeb09ddd82a9850dc15",
     "Game/Scripts/NewGameFrontEnd.cs": "2a3b0b253bee1ad4b605fbab36556a2020db08d97cf51972e047fb3dfcdc7080",
     "Game/Scripts/NewGameMap.cs": "fedd623dfac6fafc853ac550942380220bc28c9a6c4caa47cc6d16e371fbad95",
-    "Game/Scripts/NewGameRuntime.cs": "199f93b898edede374b239d662c9afc0529922775cb7f5ce84a6597fa8260aab",
+    "Game/Scripts/NewGameMotionChecks.cs": "4d212dfb7dc51b038171f3ea256f40504f465c0fce90e9304f385e16f0f6cb56",
+    "Game/Scripts/NewGameRuntime.cs": "c2d7c4a5120639f4595d73a6482859c0fc09fe8dd2202bad56533eaad873e8e5",
     "Game/Scripts/Officer3DActor.cs": "936933c943c66dd2278cc6bce1a1226db76b5a93ba5db9212ed597f68ff2e218",
     "Game/Scripts/Officer3DCreator.cs": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c",
     "Game/Scripts/Officer3DCustomActor.cs": "4bda6f1c1a35580a2376e0f8851049d516851a5902a166251fc794630277febf",
@@ -526,8 +527,8 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "536f8e0bc960e2f479df4aa44c8c8eea591debc8edd3f6e8ed53eab5465aef64",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "ba2bd421265785898e86c517d1c60160ff551f2fe6709f26cacf3e0da56060c3"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "71a92f68047a5c9e0f24c23ec67aa4ab07b7d7dd83feb9d1b47522af34847e4e",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "2f8322f95cfbdab4b9753e09494301fa18779aa2b622525de81c1c870b4b938b"
   },
   "tests": 1352,
   "added": 0,
@@ -724,7 +725,7 @@
     "Docs/Design/LifeEntryV1/runtime-local/normal/s16.png": "06ba30ff0a0b8f798f2c50d0446c36211b23a8d154aea1f68d96f23048477f4e",
     "Docs/Design/LifeEntryV1/runtime-local/normal/restored-s16.png": "eb7d837c2fa3cf81bf913837a29e3fcf232ee73c012698afeb940a4e9302587a",
     "Docs/Design/LifeEntryV1/runtime-local/normal/continued-s16.png": "6117d45f783d97079b85ed6ee6a9a2db937619ce225ef687789b436a7d0c7ea6",
-    "Docs/Design/LifeEntryV1/runtime-local/normal/form.png": "6143317886249df02d581591a1675a0a035043117714626ab4087a12ec0d481b",
+    "Docs/Design/LifeEntryV1/runtime-local/normal/form.png": "0ba1f1f24a5a4e91f6cf1ae041fa72b8981fa678ae75a30653855f78bf5829a2",
     "Docs/Design/LifeEntryV1/runtime-local/long-name/s0.png": "2a2e513ca020481636859a010022b1b04128598f481a3f5f28736a9619880a99",
     "Docs/Design/LifeEntryV1/runtime-local/long-name/restored-s0.png": "77a27d386d2ad87735edbf26cf77aba81d0340c13856cfb9e772cd3abe967111",
     "Docs/Design/LifeEntryV1/runtime-local/long-name/final.png": "d1974c44112186a0b47fec6abd150579b8045b571dc3233a225539254155a3c7",
@@ -777,7 +778,7 @@
     "Docs/Design/LifeEntryV1/runtime-local/long-name/s16.png": "9f872190bf92e170e4e562efff3fdeb0c0917564001ccbc49c40b8fba1ebdb27",
     "Docs/Design/LifeEntryV1/runtime-local/long-name/restored-s16.png": "3283f51cc068b3c444a6cf26e45273bed33b8380d22fc4ff57f2fe970ff18e58",
     "Docs/Design/LifeEntryV1/runtime-local/long-name/continued-s16.png": "d0ec0e3871462db28e1ae08a06f947d2a9027aeae5559374f5b0d8886d18ff59",
-    "Docs/Design/LifeEntryV1/runtime-local/long-name/form.png": "6a7a41f5cd91e8101aa5891b05b778b4fd37fb210d2aa18eb4f6ea7f829148df"
+    "Docs/Design/LifeEntryV1/runtime-local/long-name/form.png": "4b8f4a790787eb57f0029f7db58c985b5b33306ff45d08bb406878a1c7f1d5ef"
   },
   "checks": {
     "normal/check": [
@@ -2138,8 +2139,8 @@
     ]
   },
   "proofs": {
-    "Docs/Design/MilitaryInquiryV1/verification.json": "df928dc1e65bfafeac991a4ab24de580c49eeb7a72db94daacdd084878d5d2d4",
-    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "e586c4e1deadd7405817f4a7068fa1d65e01e2a739a8fa0922fec8afa671cc87",
+    "Docs/Design/MilitaryInquiryV1/verification.json": "413b2fc6517a9e05c0a6365ab8bd47a1b5e0b42bb4a03ef3250c552b96aa874d",
+    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "90aca9d31932b89045621f53dc4de8109f51b80d9edf1d666eb97cc994d3f056",
     "Docs/Design/LifeEntryV1/runtime-local/normal/s0-world.sha256": "19fd568b5ec8e92d8c01dbe374078bab2de569d1afe72111dcd98d866d5c23e2",
     "Docs/Design/LifeEntryV1/runtime-local/normal/restored-s0-world.sha256": "19fd568b5ec8e92d8c01dbe374078bab2de569d1afe72111dcd98d866d5c23e2",
     "Docs/Design/LifeEntryV1/runtime-local/normal/final-world.sha256": "a1e562298eb18841b2d469cf03c95b73d69fc11ab6a13baea4eccada91a0f08c",
@@ -2247,7 +2248,7 @@
   },
   "visual_review": {
     "inspected": {
-      "Docs/Design/LifeEntryV1/runtime-local/normal/form.png": "6143317886249df02d581591a1675a0a035043117714626ab4087a12ec0d481b",
+      "Docs/Design/LifeEntryV1/runtime-local/normal/form.png": "0ba1f1f24a5a4e91f6cf1ae041fa72b8981fa678ae75a30653855f78bf5829a2",
       "Docs/Design/LifeEntryV1/runtime-local/normal/s0.png": "9bee97c0e744e6aabca607dfa15289a79d3f424d1200798b26d40688dc62fe75",
       "Docs/Design/LifeEntryV1/runtime-local/normal/s4.png": "fe134f98770211bb5e3c17c2c9419fe397ef2e49a9bc238734001f91b151f309",
       "Docs/Design/LifeEntryV1/runtime-local/normal/s10.png": "4c12b689ab5a83f72d00056eaf51c93b4f671253fc6dc0e2b0645bab1a507e34",
@@ -2257,15 +2258,9 @@
       "Docs/Design/LifeEntryV1/runtime-local/long-name/s4.png": "948fb3012707def6edbc629139b827dde47729ba748b71818d2a48bc1c8aabf2",
       "Docs/Design/LifeEntryV1/runtime-local/long-name/s10.png": "25ed2b41eede668adfe8493faf7838e64a15699f2d990f5a49cf4ac204f67f47"
     },
-    "method": "Current GPU save/restore/continuation rerun. Byte-identical representatives reuse personally inspected hashes from f330026. All72 changed representative PNGs were personally checked in12 contact sheets for layout/terrain/character placement; life-entry normal/s10 and both standalone-library PNGs additionally checked full size. This is visual regression review, not final art acceptance. Exact world/image checks remain unchanged.",
+    "method": "Current GPU regression on motion-tuned binary. Byte-identical representative PNG hashes reuse the personal review in f43e1ee. Changed representative files listed below were personally inspected again full-size. This is old-behavior preservation, not final art acceptance.",
     "reinspected_changed": [
-      "Docs/Design/LifeEntryV1/runtime-local/normal/form.png",
-      "Docs/Design/LifeEntryV1/runtime-local/normal/s0.png",
-      "Docs/Design/LifeEntryV1/runtime-local/normal/s4.png",
-      "Docs/Design/LifeEntryV1/runtime-local/normal/s10.png",
-      "Docs/Design/LifeEntryV1/runtime-local/normal/s13.png",
-      "Docs/Design/LifeEntryV1/runtime-local/normal/s14.png",
-      "Docs/Design/LifeEntryV1/runtime-local/normal/final.png"
+      "Docs/Design/LifeEntryV1/runtime-local/normal/form.png"
     ]
   },
   "summary": {
@@ -2275,11 +2270,11 @@
     "life_entry_full_world_comparisons": 68,
     "life_entry_save_points": 34,
     "added_core_tests": 0,
-    "old_representatives_byte_identical": 3,
-    "old_representatives_reinspected": 72,
+    "old_representatives_byte_identical": 74,
+    "old_representatives_reinspected": 1,
     "candidate_only": true,
     "approved_default": "res://Scenes/WorkHubTrial.tscn unchanged",
     "candidate_scene": "res://Scenes/LifeEntryTrial.tscn",
-    "remaining": "New-game/library flow adopted; default unchanged pending full integration. This rerun adds no combat or historical-start implementation."
+    "remaining": "Local new-game motion tuning; default entry unchanged. No Core game rules or old entry changed."
   }
 }

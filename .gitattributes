@@ -633,3 +633,8 @@ Core/Contracts/GenerationSaveStore.cs whitespace=trailing-space,space-before-tab
 Scripts/check_officer_library_binding.py whitespace=trailing-space,space-before-tab,cr-at-eol
 
 Scripts/verify_field_supply.py whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameMotionChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/NewGameMotionChecks.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MotionResponseV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/*motion_response* -text whitespace=trailing-space,space-before-tab,cr-at-eol

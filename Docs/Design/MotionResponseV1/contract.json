@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "scope": "new-game-local-motion",
+  "resolution": [
+    1280,
+    900
+  ],
+  "warmup_seconds": 2,
+  "measurement_seconds": 10,
+  "runs": 3,
+  "capped_fps": 60,
+  "p95_ms_max": 20,
+  "p99_ms_max": 33.34,
+  "button_to_draw_ms_max": 50,
+  "film_fps": 60,
+  "film_frames": 480,
+  "core_speed_changed": false,
+  "default_entry_changed": false,
+  "nationwide_performance_verified": false
+}

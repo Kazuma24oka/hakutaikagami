@@ -1,0 +1,35 @@
+using Godot;
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using HakutaiKagami.Core.Contracts;
+public partial class NewGameMotionChecks : Control
+{
+    async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
+    public override async void _Ready()
+    {
+        try
+        {
+            string label=OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--motion-label="))?.Split('=')[1]??"baseline";
+            string root=ProjectSettings.GlobalizePath("res://../Docs/Design/MotionResponseV1/runtime-local/");Directory.CreateDirectory(root);
+            Engine.MaxFps=0;DisplayServer.WindowSetVsyncMode(DisplayServer.VSyncMode.Disabled);
+            Theme=new Theme{DefaultFontSize=16,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
+            var profile=ContractJson.Read<NewCampaignProfile>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath("res://../Docs/Design/MotionResponseV1/baseline-start.json")));
+            var store=new NewCampaignStore(Path.Combine(root,Guid.NewGuid().ToString("N")));var run=store.New(profile.Setup,profile.Registered,profile.Selected,profile.Seed);
+            var game=new NewGameRuntime();game.Configure(store,run,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+            await Frame();await Frame();game.SetDestination("fork");game.Press("depart");game.Press("auto");
+            var clock=Stopwatch.StartNew();while(clock.Elapsed.TotalSeconds<2)await Frame();
+            long allocated=GC.GetTotalAllocatedBytes(false);int gc0=GC.CollectionCount(0);var intervals=new List<double>();var cpu=new List<double>();double last=clock.Elapsed.TotalMilliseconds;double until=last+10000;
+            while(clock.Elapsed.TotalMilliseconds<until){await Frame();double now=clock.Elapsed.TotalMilliseconds;intervals.Add(now-last);last=now;cpu.Add(Performance.GetMonitor(Performance.Monitor.TimeProcess)*1000);}
+            game.Press("pause");long allocation=GC.GetTotalAllocatedBytes(false)-allocated;var order=intervals.Order().ToArray();double P(double p)=>order[(int)Math.Min(order.Length-1,Math.Ceiling(p*order.Length)-1)];
+            var responses=new List<double>();for(int i=0;i<12;i++){var timer=Stopwatch.StartNew();game.Press("rotate");await Frame();responses.Add(timer.Elapsed.TotalMilliseconds);}
+            GetViewport().GetTexture().GetImage().SavePng(Path.Combine(root,label+".png"));
+            var actor=Officer3DCustomActor.Descendants(game).OfType<Officer3DCustomActor>().First();var branch=game.Session.GetBranchView(game.Session.PlayerControl);double metres=new Vector2(branch.NextPosition.EastMm-branch.Position.EastMm,branch.NextPosition.NorthMm-branch.Position.NorthMm).Length()/1000;
+            var result=new{Label=label,Resolution=new[]{(int)GetViewportRect().Size.X,(int)GetViewportRect().Size.Y},Frames=intervals.Count,MeanFrameMs=intervals.Average(),MedianMs=P(.5),P95Ms=P(.95),P99Ms=P(.99),WorstMs=order.Last(),Over33=intervals.Count(x=>x>33.334),Over50=intervals.Count(x=>x>50),MeanProcessMs=cpu.Average(),AllocatedBytes=allocation,Gen0Collections=GC.CollectionCount(0)-gc0,ButtonToDrawMs=responses,WalkStride=actor.WalkStride,ActorScale=actor.Scale.Z,ClipSeconds=actor.Player.GetAnimation(actor.Clips["walk"]).Length,MetresPerWorldSecond=metres,IntervalsMs=intervals,ProcessMs=cpu,Seconds=game.Session.Seconds,Renderer=RenderingServer.GetRenderingDevice()==null?"Compatibility/OpenGL":"RenderingDevice",Device=RenderingServer.GetVideoAdapterName()};
+            System.IO.File.WriteAllText(Path.Combine(root,label+".json"),System.Text.Json.JsonSerializer.Serialize(result));GD.Print("MOTION_BENCH_PASSED "+label+" "+intervals.Count+"frames");GetTree().Quit();
+        }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
+    }
+}

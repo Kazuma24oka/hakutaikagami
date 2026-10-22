@@ -1,3 +1,7 @@
+# 近距離動作の計測と60fps確認
+
+[MotionResponseV1](Design/MotionResponseV1/README.md)：同じ局所場面の調整前後、60fps制限での実測と足運び・地形再利用。全国負荷の保証とは区別。
+
 新規ゲームの通し接続候補：[NewGameFlowV1](Design/NewGameFlowV1/README.md)。管理→配置→地図/一覧選択→同じ人物の生活→保存再開。旧入口/保存を保持し、通常起動の採用判断は最後に行う。
 
 登録武将・新規世界配置：[NewGameSetupV1](Design/NewGameSetupV1/README.md)。独立した登録/グループ複製/保存と、開始前の勢力・領土・浪人随行の検査。通常入口への接続は後続。
