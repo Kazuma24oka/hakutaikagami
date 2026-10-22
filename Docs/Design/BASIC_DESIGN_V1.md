@@ -1102,3 +1102,7 @@ https://w.atwiki.jp/geten/
 V1の範囲・境界・方式は今回の委任採用で固定する。調整係数・API・史料レコードは詳細設計で具体化するが、設計方針を変更する場合は版・根拠・影響・再検査範囲を記録する。
 
 機械可読正本：[basic-design-v1.json](basic-design-v1.json)、共通規則：[basic-design-rules.json](basic-design-rules.json)、受入予定：[basic-design-acceptance.json](basic-design-acceptance.json)。HTMLは同じデータから生成する。
+
+## 新規ゲーム・登録武将と勢力配置（2026-10-22採用）
+
+Docs/Design/NewGameSetupV1/README.mdを追加の現行方針として読む。武将管理は新規ゲームから独立し、グループは独立複製。開始シナリオ→登録武将選択→配置調整→世界確定→マップ/一覧から操作人物選択。旧大名は残領へ移転、全領喪失では直属家臣と浪人、旧本拠取得者へ明示取り込み可。所属/個人主従/領土は分離。開始前の編集規則でありプレイ中の自動一括移転へ拡張しない。初回1560年/六立場と既存権限検査を維持。詳細な実装済み範囲は同README参照。

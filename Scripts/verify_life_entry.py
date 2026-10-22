@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1];BASE=ROOT/'Docs/Design/LifeEntryV1';OUT
 CASES=['normal','long-name'];STEPS=17
 def source_files():return sorted(set(parent_sources()+[Path(__file__),ROOT/'Scripts/check_life_entry_binding.py',BASE/'README.md',BASE/'DESIGN.md',ROOT/'Game/Scenes/LifeEntryTrial.tscn']))
 def main():
- expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'];assert expected==1281
+ expected=json.loads((ROOT/'Scripts/current_test_contract.json').read_bytes())['expected_passed'];assert expected>=1281
  before={p.relative_to(ROOT).as_posix():sha(p) for p in source_files()}
  assert 'run/main_scene="res://Scenes/WorkHubTrial.tscn"' in (ROOT/'Game/project.godot').read_bytes().decode()
  subprocess.run([sys.executable,str(ROOT/'Scripts/verify_military_inquiry.py')],cwd=ROOT,check=True)

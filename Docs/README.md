@@ -1,3 +1,5 @@
+登録武将・新規世界配置：[NewGameSetupV1](Design/NewGameSetupV1/README.md)。独立した登録/グループ複製/保存と、開始前の勢力・領土・浪人随行の検査。通常入口への接続は後続。
+
 武将の人生の入口候補：[LifeEntryV1](Design/LifeEntryV1/README.md)。名前から同じ世界へ開始・再開し、ゲーム操作を整理した独立候補。通常起動の切替は未実施。
 
 軍務の不達回復：[MilitaryInquiryV1](Design/MilitaryInquiryV1/README.md)。原本の受領を偽らず、物理照会の引用から条件/許可/返還認識を回復。既知不達後の原本再送と局所回収の二重到達も検査。

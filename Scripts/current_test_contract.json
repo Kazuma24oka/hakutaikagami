@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1281,
-  "baseline_passed": 1256,
-  "added": 25,
-  "scope": "MilitaryInquiryTests: sealed physical status citations, no forged original receipt, old-status ordering, known-failure original retry and duplicate arrival, registered local recovery/absence, legacy shape and restore"
+  "expected_passed": 1316,
+  "baseline_passed": 1281,
+  "added": 35,
+  "scope": "NewGameSetupTests and OfficerLibraryStoreTests: independent group copies, simultaneous pre-start territory allocation, displaced lords and personal retinue, reviewed confirmation, local library persistence and stale/import collision rejection"
 }

@@ -42,7 +42,9 @@
     "Core/Contracts/MovementControl.cs": "917bba7e01f62bfe08cb2b46156496404586c9e8300147858157d67a761fc8db",
     "Core/Contracts/NationalPersonnel.cs": "b1a369a049a2bf898588245357d29a24d10763c5b94d62d16f152550349b7a38",
     "Core/Contracts/NationalRoutes.cs": "325676a9e4ff25bfa1f79afe588b9f4df75537a25e659d86677e218490af7e0e",
+    "Core/Contracts/NewGameSetup.cs": "07d712cef6411d3cbc95f9e4ddf7baeb0c681b6be7f69a90760e8e32e2a55d7f",
     "Core/Contracts/NpcWork.cs": "fad5d63a77d68cf218f81b7dc75d0ac21200cb0f0c04ded6c4ffde3731a792c5",
+    "Core/Contracts/OfficerLibraryStore.cs": "b59d2ccafffc30bb0771a9d7a23347d5ac1b2729a9fb8ca3cbcc718af60928d3",
     "Core/Contracts/OfficerLoop.cs": "b95321605ed92564759a203bca586a44da16bfe51e8f95cec960583e9163977d",
     "Core/Contracts/PersonalStart.cs": "bc3b07116e0e94c88fc8b4f73f5f9686ce4d0e4cddd75a9db0fe5416a2730b97",
     "Core/Contracts/RegionalBattle.cs": "72703848cb289455218c0bee4cbdc721c3bc3dd8a0db379f5b4838724cad407b",
@@ -327,6 +329,7 @@
     "Game/Scripts/OfficerBackMotionTrial.cs": "d35edd3592b2070ff602a61dc15034cc80712dc3b183772782f6567868a244af",
     "Game/Scripts/OfficerContextTrial.cs": "f0b06f4a7b55736b00098db96213609abc3f87d8a62235c4e0ddeae4b7a0330e",
     "Game/Scripts/OfficerLeftMotionTrial.cs": "8b566e562720f2881e60d6e16f44904de557c6bce7af6fbabe0451db1042611f",
+    "Game/Scripts/OfficerLibraryTrial.cs": "d261b3e700b58af98d3139b136ac85b67c0ab21f428e510b06d3cfcb15130524",
     "Game/Scripts/OfficerMotionFrames.cs": "36b3f91757fa2d65edd3b55cfa3aca89e8e5a057de80dcb6b2f9d7159c36ac1f",
     "Game/Scripts/OfficerMotionTrial.cs": "5d82f73e19862ec90e42b12ea55a58abafdd401de375a6f96b66f2f8b1287f28",
     "Game/Scripts/OfficerMovementTrial.cs": "d40d417db7966283cf644b9f26254c1dcf4d3e76b644da5fe7ee31a50a0e12fa",
@@ -386,7 +389,7 @@
     "Scripts/check_start_selection_binding.py": "818b98a2f89dcdb4b98ae9d50aa53b653df756007f4f630341ead11ecfb62b87",
     "Scripts/check_task_entry_binding.py": "9eb2721b03299ad0c57e5cd4464855c439ba08696a43c8e11003c9bda9ae2d2e",
     "Scripts/check_work_hub_startup_binding.py": "ff1b58061a73c02afb38d1f8dce2eb07bf3b8708e6220ca0fc9fb219f616976a",
-    "Scripts/current_test_contract.json": "c1f7a8f4d02de3376b2b5b5b3c889795560b59f21adeaaae142cbfa8357b0f35",
+    "Scripts/current_test_contract.json": "bdec32da91ffbee6b383dddcbe75aeaff04f0302d0d6ff4cbe945e88892959a3",
     "Scripts/Show-CouncilInput.ps1": "a588d2d493553f250385d8fff355ab5637a2cc98f3afbf985b724ab40acb1e14",
     "Scripts/Show-MissionEntry.ps1": "ab1384f3a38bdd862fffaba71ebcb2e6d9b3f3ba871611c2a010ce12803e60a0",
     "Scripts/Show-OfficerLoop.ps1": "f601ee0a04bcce67e6656db5efe0b1f903c8d25b72eac4ff790bcaf8c8a8dfcf",
@@ -447,8 +450,10 @@
     "Tests/MovementControlTests.cs": "84910c00d9cd80795c386e68f17c972d47a8b182c9dcc731edc33aec3246c96a",
     "Tests/NationalPersonnelTests.cs": "cb3369a4927bb4b0a2c1078616e922c86ca4df3076fa5fab5720135a3741a1d3",
     "Tests/NationalRoutesTests.cs": "6b692f585538769e15ce36bbe7d38e105172fb38811f0ce8dbf4f15238d21ca4",
+    "Tests/NewGameSetupTests.cs": "ab2a7766dc07e451b5961a9c2e578997e2e5cd66106f3b7de225530a418e1a5b",
     "Tests/NpcWorkTests.cs": "08a9f5f873b5e785b60f6563fc9b7c0c1201c4ae56430fc089ae03f01afc2087",
     "Tests/OfficerIntegrationTests.cs": "2d2b6077fc00b6198d7537a737bfc5eddeca23a20bf9f392d7bc404d7b30df9f",
+    "Tests/OfficerLibraryStoreTests.cs": "cc635c3a3a7d85ddf69bd11bab7784f24dee1ee84e3c18ca9ebad0e1f2dff274",
     "Tests/OfficerLoopTests.cs": "7964e1d7b618f4aa4462ba0a60325772df744e127a764c621e120cea051ea8c9",
     "Tests/PersonalStartTests.cs": "58b9948798a8597369c349a113385df48f85b07291e074e6c35676237ec4668b",
     "Tests/RegionalBattleTests.cs": "03a3eefcd848e9733c33350945763d32bfdc935156f4d3e58dc44d40f396e3b5",
@@ -471,10 +476,10 @@
     "Tests/TravelWorldTests.cs": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
   },
   "binaries": {
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "f24d82c4aade74ec4bb8c1ba99fc7c1bb8f3fdf05249829c2841061886615b41",
-    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "759425d4d348cff2ff33a0c501ba952d9bf2b209035c1c85dc8c5a307d374fc8"
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": "418d28714b558685e52bb0f8200becbca1c5b7cc4c476d3fe23a5be652be5df7",
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": "358907e981839c22bfd2d162f646d5f16a7535d2f5d8375f22472ee483a86197"
   },
-  "tests": 1281,
+  "tests": 1316,
   "added": 20,
   "comparisons": {
     "presence/s0/restored-s0": 0,
@@ -568,8 +573,8 @@
     ]
   },
   "proofs": {
-    "Docs/Design/FieldSupplyV1/verification.json": "ba122ddd7623e71438e8c8404feb1542114e0fd61e42aee0da623be8d442f47c",
-    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "2b9f56bd68661c48d442cd986da683abb3cb085d08ae3477a86a1b71b0195dc7"
+    "Docs/Design/FieldSupplyV1/verification.json": "1dee90ab9440019f884d00a4f1bf4077d4b80906e1181d398af4ba86ddba29ff",
+    "Docs/Design/WorkHubStartupV1/runtime-local/tests/work-hub.trx": "0bd258b19b734fb508c5dbeb4326876f27f1add8899dbdfbcf6f86199d30c09b"
   },
   "visual_review": {
     "inspected": {
@@ -579,7 +584,7 @@
       "Docs/Design/CreatedCampaignV1/runtime-local/presence/s4.png": "2100a05bedaf19714d1fe565921fb9b301577a332ad42b0cc3a82e3d449a7b25",
       "Docs/Design/CreatedCampaignV1/runtime-local/presence/final.png": "c2b046730d347482c391ac16518d62585a47293be5c162c7dd54f60215f04dd9"
     },
-    "method": "Reran actual GPU save/restore/continue on current sources. Prior personally inspected representative PNGs were compared byte-for-byte with commit1406bf7; changed military handback controls were personally reinspected in full.",
+    "method": "Current GPU save/restore/continuation rerun. Unchanged representative PNGs are byte-identical to the previously personally inspected hashes in commit98ad107. Changed life-entry form and two long-name views were personally inspected again in full; current save/restore image rectangles and full-world continuation checks remain exact.",
     "reinspected_changed": []
   }
 }

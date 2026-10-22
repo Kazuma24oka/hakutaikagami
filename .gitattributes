@@ -591,3 +591,25 @@ Scripts/*life_entry* -text
 Game/Scripts/ContinuousWorldTrial.LifeView.cs -text
 Game/Scripts/StartSelectionPanel.LifeEntryChecks.cs -text
 Game/Scenes/LifeEntryTrial.tscn -text
+Core/Contracts/NewGameSetup.cs -text
+Core/Contracts/OfficerLibraryStore.cs -text
+Tests/NewGameSetupTests.cs -text
+Tests/OfficerLibraryStoreTests.cs -text
+Game/Scripts/OfficerLibraryTrial.cs -text
+Game/Scenes/OfficerLibraryTrial.tscn -text
+Scripts/verify_officer_library.py -text
+Docs/Design/NewGameSetupV1/README.md -text
+Docs/Design/NewGameSetupV1/verification.json -text
+Scripts/check_officer_library_binding.py -text
+# Preserve verified Windows CRLF bytes while retaining trailing-space checks.
+Core/Contracts/NewGameSetup.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/OfficerLibraryStore.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameSetupTests.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/OfficerLibraryStoreTests.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/OfficerLibraryTrial.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/OfficerLibraryTrial.tscn whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_officer_library.py whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_officer_library_binding.py whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/NewGameSetupV1/README.md whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/BASIC_DESIGN_V1.md whitespace=trailing-space,space-before-tab,cr-at-eol
