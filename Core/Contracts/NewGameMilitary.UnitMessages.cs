@@ -18,7 +18,7 @@ public static partial class NewGameMilitary
     static FieldPoint PhysicalPerson(ContractWorld w,long at)=>DeployedAt(w,at)?PersonPosition(w,at):FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,at));
     internal static void BeforeUnitMessages(ContractWorld w)
     {
-        BeforeReplyRecovery(w);if(w.NewMilitary?.Withdrawal is not {} x)return;
+        BeforeHeldMessages(w);BeforeReplyRecovery(w);if(w.NewMilitary?.Withdrawal is not {} x)return;
         foreach(var d in UnitDispatches(w)){var a=w.Messaging.Attempts.Single(a=>a.Id==d.Attempt);if(a.Status!=AttemptStatus.InTransit||a.DueAt!=w.ElapsedSeconds)continue;
             bool present=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w)&&StrengthAt(w,0,w.ElapsedSeconds)>0&&RegionalGround.Distance(Position(w,0,w.ElapsedSeconds),d.Destination)<=1000;
             if(!present)MessageFlow.Fail(w.Messaging,d.Message);
@@ -46,6 +46,10 @@ public static partial class NewGameMilitary
             var a=new MessageAttempt(f.Attempt,f.Message,int.Parse(f.Attempt.Split('/').Last(),System.Globalization.CultureInfo.InvariantCulture),f.At,f.DueAt,receiver);
             if(observed!=null)a=a with{Status=observed.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!observed.Delivered,FinishedAt=observed.At,FailureAt=observed.Delivered?null:observed.At};generated.Add(a);
         }
+        foreach(var t in w.NewMilitary?.HeldDelivery?.Transfers??[]){
+            int index=generated.FindIndex(a=>a.Id==t.Attempt);Need(index>=0,"保持原本の配送試行がありません");var observed=w.NewMilitary!.HeldDelivery!.Arrivals.SingleOrDefault(a=>a.Id==t.Id);var a=generated[index] with{LateDueAt=t.DueAt};
+            if(observed!=null)a=a with{Status=observed.Received?AttemptStatus.Delivered:AttemptStatus.Rejected,FinishedAt=observed.At,ArrivedLate=observed.Received};generated[index]=a;
+        }
         var rank=w.Messaging.Messages.Select((m,i)=>(m.Id,i)).ToDictionary(x=>x.Id,x=>x.i);Need(generated.All(a=>rank.ContainsKey(a.MessageId)),"配送便の原本が欠落しています");
         w.Messaging.Attempts=w.Messaging.Attempts.Where(a=>!keys.Contains(a.MessageId)).Concat(generated).OrderBy(a=>rank[a.MessageId]).ThenBy(a=>a.Number).ToArray();
         var received=generated.Where(a=>a.Status==AttemptStatus.Delivered).GroupBy(a=>a.MessageId).Select(g=>g.OrderBy(a=>a.FinishedAt).ThenBy(a=>a.Id,StringComparer.Ordinal).First()).Select(a=>new FormalReceipt(a.MessageId,w.Messaging.Messages.Single(m=>m.Id==a.MessageId).RecipientId,a.ReceiverId,a.FinishedAt!.Value,false)).ToArray();
@@ -56,7 +60,7 @@ public static partial class NewGameMilitary
     {
         var dispatches=UnitDispatches(w);var receipts=UnitReceipts(w);var expected=dispatches.Select(d=>d.Message).Concat(receipts.Select(r=>r.ReplyMessage)).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Message)).ToHashSet();
         Need(w.Messaging.Messages.Where(UnitEnvelope).Select(m=>m.Id).ToHashSet().SetEquals(expected),"部隊宛の原本台帳が一致しません");
-        Need(w.Messaging.Attempts.Where(a=>expected.Contains(a.MessageId)).All(a=>a.LateDueAt==null&&(dispatches.Any(d=>d.Attempt==a.Id)||receipts.Any(r=>r.ReplyAttempt==a.Id&&a.Number==1)||(w.NewMilitary?.ReplyRecovery?.Flights??[]).Any(f=>f.Attempt==a.Id))),"部隊宛の未登録の再送/遅着です");
+        Need(w.Messaging.Attempts.Where(a=>expected.Contains(a.MessageId)).All(a=>(a.LateDueAt==null||(w.NewMilitary?.HeldDelivery?.Transfers??[]).Any(t=>t.Attempt==a.Id&&t.DueAt==a.LateDueAt))&&(dispatches.Any(d=>d.Attempt==a.Id)||receipts.Any(r=>r.ReplyAttempt==a.Id&&a.Number==1)||(w.NewMilitary?.ReplyRecovery?.Flights??[]).Any(f=>f.Attempt==a.Id))),"部隊宛の未登録の再送/遅着です");
         var copy=BeforeState(w,w.ElapsedSeconds,w.CommitSequence);
         Need(Same(UnitTransport(w),UnitTransport(copy)),"部隊宛の正式受領/試行/知識と業務台帳が違います");
     }

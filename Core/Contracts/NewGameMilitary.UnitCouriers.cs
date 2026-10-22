@@ -16,7 +16,8 @@ public static partial class NewGameMilitary
         var x=w.NewMilitary?.ReplyRecovery;
         if(x!=null){
             foreach(var f in x.Flights.Where(f=>f.At<=at&&at<f.DueAt))Add(f.Carrier,f.Origin,f.Route,f.Kind==UnitReplyLeg.FailureReport?"返書の不達を本隊へ報告":"返書の再送伝令");
-            foreach(var group in x.Holdings.Where(h=>h.At<=at).GroupBy(h=>h.Holder)){Need(group.Select(h=>h.Position).Distinct().Count()==1,"同じ保持者が異なる場所に存在します");var h=group.First();if(!frames.Any(f=>f.Carrier==h.Holder))Add(h.Holder,h.Position,[],"書状を預かる伝令",true);}
+            foreach(var t in w.NewMilitary?.HeldDelivery?.Transfers.Where(t=>t.At<=at&&at<t.DueAt)??[])Add(t.Carrier,t.Origin,t.Route,"保持書状の受渡し");
+            foreach(var group in HeldPapers(w,at).GroupBy(h=>h.Holder)){Need(group.Select(h=>h.Position).Distinct().Count()==1,"同じ保持者が異なる場所に存在します");var h=group.First();if(!frames.Any(f=>f.Carrier==h.Holder))Add(h.Holder,h.Position,[],"書状を預かる伝令",true);}
         }
         Need(frames.Select(f=>f.Carrier).Distinct().Count()==frames.Count,"同じ伝令が複数の経路に存在します");
         return frames.OrderBy(f=>f.Carrier.Value,StringComparer.Ordinal).ToArray();

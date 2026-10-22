@@ -72,7 +72,7 @@ public static partial class NewGameMilitary
         if(!replay)return;
         foreach(var group in r.Retreats.Select(t=>(t.At,t.Revision)).Concat(r.Arrivals.Select(t=>(t.At,t.Revision))).Concat(r.Regroups.Select(t=>(t.At,t.Revision))).Distinct()){
             Need(group.At>=0&&group.At<=w.ElapsedSeconds&&group.Revision>0&&group.Revision<=w.CommitSequence,"敗走の時点が不正です");
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             Need(Same(prior.NewMilitary!.Rout,RoutBefore(r,group.At,group.Revision)),"士気と到達から敗走/再集結を再現できません");
             Need(Same(prior.NewMilitary.Orders,s.Orders.Where(o=>Before(o.At,o.Revision,group.At,group.Revision)).ToArray()),"敗走経路が原判断と違います");
         }

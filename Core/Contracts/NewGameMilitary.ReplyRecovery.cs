@@ -40,11 +40,11 @@ public static partial class NewGameMilitary
             }
             var latest=MessageFlow.Latest(w.Messaging,r.ReplyMessage);
             if(latest.Status!=AttemptStatus.Lost||latest.Number>=MessageFlow.MaxAttempts||!MessageFlow.FailureKnown(w.Messaging,latest.Id,d.Recipient.Value)||w.Messaging.Receipts.Any(x=>x.MessageId==r.ReplyMessage))continue;
-            var report=w.NewMilitary.ReplyRecovery.Flights.LastOrDefault(f=>f.Kind==UnitReplyLeg.FailureReport&&f.Basis==latest.Id&&w.NewMilitary.ReplyRecovery.Arrivals.Any(a=>a.Attempt==f.Attempt&&a.Delivered));
-            if(report==null||!UnitPostPresent(w,report.Destination))continue;
-            var route=RegionalGround.Plan(report.Destination,r.ReplyDestination,w.ElapsedSeconds,courier:true,atlas:true);long until=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
+            var report=w.NewMilitary.ReplyRecovery.Flights.LastOrDefault(f=>f.Kind==UnitReplyLeg.FailureReport&&f.Basis==latest.Id&&(w.NewMilitary.ReplyRecovery.Arrivals.Any(a=>a.Attempt==f.Attempt&&a.Delivered)||LateReportPoint(w,f.Message)!=null));
+            if(report==null)continue;var sendingPoint=LateReportPoint(w,report.Message)??report.Destination;if(!UnitPostPresent(w,sendingPoint))continue;
+            var route=RegionalGround.Plan(sendingPoint,r.ReplyDestination,w.ElapsedSeconds,courier:true,atlas:true);long until=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
             MessageFlow.Retry(w.Messaging,r.ReplyMessage,d.Recipient.Value,w.ElapsedSeconds,checked((int)(until-w.ElapsedSeconds)));var attempt=MessageFlow.Latest(w.Messaging,r.ReplyMessage);var flightId=new EntityId("courier-leg:unit-post/"+Hash(attempt.Id+"/retry"));
-            AddReplyFlight(w,new(flightId,d.Id,UnitReplyLeg.Retry,r.ReplyMessage,attempt.Id,report.Message,w.ElapsedSeconds,w.CommitSequence,report.Destination,r.ReplyDestination,route,until,ReplyCarrier(d,attempt.Number)));
+            AddReplyFlight(w,new(flightId,d.Id,UnitReplyLeg.Retry,r.ReplyMessage,attempt.Id,report.Message,w.ElapsedSeconds,w.CommitSequence,sendingPoint,r.ReplyDestination,route,until,ReplyCarrier(d,attempt.Number)));
         }
     }
     static void ValidateReplyRecoveryShape(ContractWorld w)
@@ -65,7 +65,7 @@ public static partial class NewGameMilitary
     {
         var s=w.NewMilitary!;var x=s.ReplyRecovery;if(x==null||!replay)return;
         foreach(var group in x.Flights.Select(f=>(f.At,f.Revision)).Concat(x.Arrivals.Select(a=>(a.At,a.Revision))).Distinct()){
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             Need(Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision)),"返書の不達持ち帰り/実受領後再送を再現できません");
             Need(Same(UnitTransport(prior),UnitTransport(BeforeState(w,group.At,group.Revision))),"返書原本/追加試行/正式受領が共通配送と違います");
         }

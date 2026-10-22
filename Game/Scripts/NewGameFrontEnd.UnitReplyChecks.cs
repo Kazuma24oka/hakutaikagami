@@ -8,7 +8,7 @@ using HakutaiKagami.Core.Messaging;
 public partial class NewGameFrontEnd
 {
     const int UnitReplyCheckpoints=12;
-    bool ReplyMoved=>FlowCase=="reply-moved";
+    bool ReplyMoved=>FlowCase=="reply-moved"||FlowCase is "held-report" or "held-open";
     async Task UnitReplyStep(int n){await Frame();var s=game!.Session;
         if(n==1){if(ReplyMoved){game.ChooseMilitary(NewMilitaryAction.CombatPermit);game.Advance(s.Seconds+2);OpenAllServiceLetters();}var a=NewGameMilitary.Anchor(s.DiagnosticSnapshot());game.ExerciseMilitaryLine(new(a.X+(ReplyMoved?5000:20000),a.Y+(ReplyMoved?0:-12000)),new(a.X+(ReplyMoved?5000:20000),a.Y+(ReplyMoved?10000:12000)));game.Advance(ArmyEnd()+1);}
         if(n==2){if(ReplyMoved)game.ChooseMilitary(NewMilitaryAction.CombatStart);game.ChooseMilitary(NewMilitaryAction.Handoff);game.ChooseMilitary(NewMilitaryAction.Withdraw);game.Press("military-frame");}

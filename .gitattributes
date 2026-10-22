@@ -1281,3 +1281,10 @@ Scripts/verify_unit_reply_recovery.py -text whitespace=trailing-space,space-befo
 Scripts/check_unit_reply_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitReplyRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Docs/Design/UnitHeldDeliveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.HeldDelivery.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitHeldDeliveryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitHeldChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_held_delivery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_held_delivery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitHeldDeliveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol

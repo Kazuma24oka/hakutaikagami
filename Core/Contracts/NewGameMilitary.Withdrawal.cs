@@ -114,16 +114,16 @@ public static partial class NewGameMilitary
         Need(x.Receipts.Length==x.Dispatches.Count(d=>d.DueAt<=w.ElapsedSeconds)&&x.Replies.Length==x.Receipts.Count(r=>r.ReplyDueAt<=w.ElapsedSeconds),"部隊の受令/返書の更新が不足しています");
         ValidateUnitTransport(w);
         if(!replay)return;
-        foreach(var q in s.Requests.Where(q=>WithdrawalAction(q.Input.Action)||UnitRetryAction(q.Input.Action)||UnitInquiryAction(q.Input.Action))){
+        foreach(var q in s.Requests.Where(q=>WithdrawalAction(q.Input.Action)||UnitRetryAction(q.Input.Action)||UnitInquiryAction(q.Input.Action)||HeldAction(q.Input.Action))){
             var prior=BeforeState(w,q.At,q.Revision-1);prior.CommitSequence=q.Revision;Dispatch(prior,q.Input);
             if(q.Input.Action==NewMilitaryAction.RemoteRecall||UnitInquiryAction(q.Input.Action)){var d=UnitDispatches(prior).Last();Need(Same(w.Messaging.Messages.Single(m=>m.Id==d.Message),prior.Messaging.Messages.Single(m=>m.Id==d.Message)),"部隊宛原本が改ざんされています");}
-            Need(Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,q.At,q.Revision))&&Same(prior.NewMilitary!.UnitInquiry,UnitInquiryBefore(s.UnitInquiry,q.At,q.Revision))&&Same(prior.NewMilitary!.UnitRetry,UnitRetryBefore(s.UnitRetry,q.At,q.Revision))&&Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,q.At,q.Revision)),"本人の経路・既知宛先・現地受渡しを原判断から再現できません");
+            Need(Same(prior.NewMilitary!.HeldDelivery,HeldBefore(s,q.At,q.Revision))&&Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,q.At,q.Revision))&&Same(prior.NewMilitary!.UnitInquiry,UnitInquiryBefore(s.UnitInquiry,q.At,q.Revision))&&Same(prior.NewMilitary!.UnitRetry,UnitRetryBefore(s.UnitRetry,q.At,q.Revision))&&Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,q.At,q.Revision)),"本人の経路・既知宛先・現地受渡しを原判断から再現できません");
         }
         foreach(var group in UnitReceipts(w).Select(r=>(r.At,r.Revision)).Concat(UnitReplies(w).Select(r=>(r.At,r.Revision))).Distinct()){
             Need(group.At<=w.ElapsedSeconds&&group.Revision<=w.CommitSequence&&group.Revision>0,"伝令の時点が不正です");
-            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateReplyRecovery(prior);
+            var prior=BeforeState(w,group.At,group.Revision-1);prior.CommitSequence=group.Revision;BeforeUnitMessages(prior);MessageFlow.Advance(prior.Messaging,prior.ElapsedSeconds);UpdateRout(prior);UpdateWithdrawal(prior);UpdateHeldDelivery(prior);UpdateReplyRecovery(prior);
             var expectedState=BeforeState(w,group.At,group.Revision);Need(Same(UnitTransport(prior),UnitTransport(expectedState)),"部隊の返書原本・共通配送を再現できません");
-            Need(Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitInquiry,UnitInquiryBefore(s.UnitInquiry,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitRetry,UnitRetryBefore(s.UnitRetry,group.At,group.Revision))&&Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,group.At,group.Revision)),"伝令の実到達/返書を原経路から再現できません");
+            Need(Same(prior.NewMilitary!.HeldDelivery,HeldBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.ReplyRecovery,ReplyRecoveryBefore(s,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitInquiry,UnitInquiryBefore(s.UnitInquiry,group.At,group.Revision))&&Same(prior.NewMilitary!.UnitRetry,UnitRetryBefore(s.UnitRetry,group.At,group.Revision))&&Same(prior.NewMilitary!.Withdrawal,WithdrawalBefore(x,group.At,group.Revision)),"伝令の実到達/返書を原経路から再現できません");
             Need(Same(prior.NewMilitary.Orders,w.NewMilitary!.Orders.Where(o=>Before(o.At,o.Revision,group.At,group.Revision)).ToArray()),"届いた撤退命令と部隊経路が違います");
         }
     }
