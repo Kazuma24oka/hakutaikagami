@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
-public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire }
+public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd }
 public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long Amount=0,FieldPoint? A=null,FieldPoint? B=null);
 public sealed record NewMilitaryRequest(NewMilitaryInput Input,long At,long Revision,string? Message);
 public sealed record NewMilitaryTerms(EntityId Principal,EntityId Owner,EntityId Site,EntityId Army,EntityId Case);
@@ -49,10 +49,10 @@ public static partial class NewGameMilitary
         var known=s.Events.Where(e=>Before(e.At,e.Revision,t,r)&&Known(w,e,t,r)).Select(e=>(Event:e,Notice:Read(w,e))).OrderBy(e=>e.Notice.EffectiveAt).ThenBy(e=>e.Notice.Effect==MilitaryEffect.Returned?1:0).ToArray();
         bool permission=known.Any(e=>e.Notice.Effect==MilitaryEffect.Permission),returned=known.Any(e=>e.Notice.Effect==MilitaryEffect.Returned),answered=s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.Accept&&Before(q.At,q.Revision,t,r)),picked=s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.Pickup&&Before(q.At,q.Revision,t,r)),returning=Returning(w,t,r);
         var offer=known.FirstOrDefault(e=>e.Notice.Effect==MilitaryEffect.Offered);bool closed=known.Any(e=>e.Notice.Effect is MilitaryEffect.Expired or MilitaryEffect.Refused);
-        string status=returned?"指揮返還の通知を確認":returning?"指揮返還願い発送・帰還/兵糧/返報の確認待ち":picked?"主家兵100を現地引受（配置・保持・帰還のみ）":permission?"軍務許可を確認・兵は未引受":closed?"軍務の不承諾・期限切れを確認":offer.Event!=null?answered?"軍務回答発送・許可未確認":"軍務条件を開封・回答可能":"軍務申し出発送・結果未確認";
+        string status=returned?"指揮返還の通知を確認":returning?"指揮返還願い発送・帰還/兵糧/返報の確認待ち":picked?"主家兵"+TotalStrength(w,t)+"を現地引受":permission?"軍務許可を確認・兵は未引受":closed?"軍務の不承諾・期限切れを確認":offer.Event!=null?answered?"軍務回答発送・許可未確認":"軍務条件を開封・回答可能":"軍務申し出発送・結果未確認";
         return new(status,false,offer.Event!=null&&t<offer.Notice.Deadline&&!answered&&!closed,permission&&!picked&&!returned&&service.Principal==s.Terms.Principal,picked&&!returned,DeployedAt(w,t),returning,CarryAt(w,t,r),picked&&!returned&&DeployedAt(w,t)&&AtHome(w));
     }
-    public static long CarryAt(ContractWorld w,long at,long rev)=>w.NewMilitary is {} s?s.Moves.Where(m=>s.Requests.Any(q=>q.Input.Id==m.Id&&Before(q.At,q.Revision,at,rev))).Sum(m=>m.Loading?m.Amount:-m.Amount)-s.Uses.Where(u=>u.From<at).Sum(u=>Math.Min(u.Consumed,checked(100*(Math.Min(at,u.Until)-u.From)))):0;
+    public static long CarryAt(ContractWorld w,long at,long rev)=>w.NewMilitary is {} s?s.Moves.Where(m=>s.Requests.Any(q=>q.Input.Id==m.Id&&Before(q.At,q.Revision,at,rev))).Sum(m=>m.Loading?m.Amount:-m.Amount)-s.Uses.Where(u=>u.From<at).Sum(u=>Math.Min(u.Consumed,checked(u.Soldiers*(Math.Min(at,u.Until)-u.From)))):0;
     public static BranchView BranchView(ContractWorld w,ActorView knowledge){var p=Position(w,0,w.ElapsedSeconds);var next=Position(w,0,w.ElapsedSeconds+1);var a=FieldWorld.ToWorld(p);var b=FieldWorld.ToWorld(next);long distance=RegionalGround.Distance(p,next);return new(knowledge,a,new(b.EastMm-a.EastMm,b.NorthMm-a.NorthMm),0,p!=next,null,[],BranchRoutes.KnownBlocked(w,knowledge.Observer),b,distance);}
     static NewMilitaryTerms Terms(ContractWorld w,EntityId request)
     {
@@ -62,6 +62,7 @@ public static partial class NewGameMilitary
     static void Announce(ContractWorld w,MilitaryEffect effect,string source,long? effective=null,MilitaryEffect? quote=null)
     {
         var s=w.NewMilitary!;var id=NoticeId(s.Terms,effect,source);var notice=new MilitaryNotice(quote??effect,source,effective??w.ElapsedSeconds,effect==MilitaryEffect.Offered?w.ElapsedSeconds+OfferSeconds:null);
+        if(notice.Effect==MilitaryEffect.CombatPermission)notice=notice with{Deadline=notice.EffectiveAt+CombatPermitDuration,Combat=CombatTerms(w,notice.EffectiveAt)};
         MessageFlow.Send(w.Messaging,new(id,s.Terms.Case.Value,"new-military-notice",s.Terms.Principal.Value,w.PlayerControl.Value,Text(notice),s.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);w.SealedMessages=[..w.SealedMessages,new(id)];w.NewMilitary=s with{Events=[..s.Events,new(effect,w.ElapsedSeconds,w.CommitSequence,source,id)]};
     }
     public static void Dispatch(ContractWorld w,NewMilitaryInput input)
@@ -74,15 +75,15 @@ public static partial class NewGameMilitary
             NewMilitaryAction.Pickup=>v.CanPickup&&!returning&&Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Returned)&&Local(w)&&AtHome(w)&&NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence)&&!TravelWorld.Active(w),
             NewMilitaryAction.Load or NewMilitaryAction.Unload=>custody&&!deployed&&Local(w)&&AtHome(w)&&(input.Action==NewMilitaryAction.Unload||!returning),
             NewMilitaryAction.Deploy=>custody&&!deployed&&Local(w)&&AtHome(w)&&v.Carry>0&&!returning&&!TravelWorld.Active(w)&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is ExecutionPhase.Running or ExecutionPhase.Waiting),
-            NewMilitaryAction.Form or NewMilitaryAction.Hold=>custody&&deployed&&!returning&&v.Carry>0,
+            NewMilitaryAction.Form or NewMilitaryAction.Hold=>custody&&deployed&&!returning&&v.Carry>0&&!CombatActive(w),
             NewMilitaryAction.Recall=>custody&&deployed,NewMilitaryAction.Enter=>custody&&deployed&&AtHome(w),
             NewMilitaryAction.Report=>custody,
             NewMilitaryAction.Return=>!returning&&v.CanPickup||!returning&&v.Custody,
-            NewMilitaryAction.Inquire=>true,_=>false},"軍務の許可・現地引受・兵糧・帰還条件が不足しています");
+            NewMilitaryAction.CombatPermit=>custody&&!returning&&!s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit),NewMilitaryAction.CombatStart=>CanStartCombat(w),NewMilitaryAction.CombatEnd=>CombatActive(w),NewMilitaryAction.Inquire=>true,_=>false},"軍務の許可・現地引受・兵糧・帰還条件が不足しています");
         Need(input.Action is NewMilitaryAction.Load or NewMilitaryAction.Unload?input.Amount>0:input.Amount==0,"兵糧数量は受渡しだけに指定します");Need(input.Action==NewMilitaryAction.Form?input.A!=null&&input.B!=null:input.A==null&&input.B==null,"配置線は配置だけに指定します");
-        string? message=input.Action is NewMilitaryAction.Request or NewMilitaryAction.Accept or NewMilitaryAction.Return or NewMilitaryAction.Report or NewMilitaryAction.Inquire?RequestId(input.Id):null;
+        string? message=input.Action is NewMilitaryAction.Request or NewMilitaryAction.Accept or NewMilitaryAction.Return or NewMilitaryAction.Report or NewMilitaryAction.Inquire or NewMilitaryAction.CombatPermit?RequestId(input.Id):null;
         w.NewMilitary=s with{Requests=[..s.Requests,new(input,w.ElapsedSeconds,w.CommitSequence,message)]};
-        if(message!=null){long? due=input.Action==NewMilitaryAction.Accept?Event(w,MilitaryEffect.Offered)!.At+OfferSeconds-1:null;string body=input.Action==NewMilitaryAction.Report?Text(new NewMilitaryReport(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,100)):Text(input);MessageFlow.Send(w.Messaging,new(message,s.Terms.Case.Value,input.Action==NewMilitaryAction.Report?"new-military-report":"new-military-request",w.PlayerControl.Value,s.Terms.Principal.Value,body,s.Terms.Site.Value,w.ElapsedSeconds,due),w.ElapsedSeconds,1);if(input.Action==NewMilitaryAction.Report)w.NewMilitary=w.NewMilitary! with{Reports=[..w.NewMilitary.Reports,new(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,100)]};}
+        if(message!=null){long? due=input.Action==NewMilitaryAction.Accept?Event(w,MilitaryEffect.Offered)!.At+OfferSeconds-1:null;string body=input.Action==NewMilitaryAction.Report?Text(new NewMilitaryReport(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,TotalStrength(w,w.ElapsedSeconds))):Text(input);MessageFlow.Send(w.Messaging,new(message,s.Terms.Case.Value,input.Action==NewMilitaryAction.Report?"new-military-report":"new-military-request",w.PlayerControl.Value,s.Terms.Principal.Value,body,s.Terms.Site.Value,w.ElapsedSeconds,due),w.ElapsedSeconds,1);if(input.Action==NewMilitaryAction.Report)w.NewMilitary=w.NewMilitary! with{Reports=[..w.NewMilitary.Reports,new(message,w.ElapsedSeconds,w.CommitSequence,LastEntry(w),v.Carry,TotalStrength(w,w.ElapsedSeconds))]};}
         switch(input.Action){
             case NewMilitaryAction.Pickup:Announce(w,MilitaryEffect.PickedUp,input.Id.Value);break;
             case NewMilitaryAction.Load:case NewMilitaryAction.Unload:Transfer(w,input);break;
@@ -104,16 +105,17 @@ public static partial class NewGameMilitary
         }
         w.NewMilitary=w.NewMilitary! with{Orders=[..w.NewMilitary.Orders,new(i.Id,i.Action,w.ElapsedSeconds,w.CommitSequence,origins,routes)]};
     }
-    internal static void Tick(ContractWorld w,long from){if(!Deployed(w)||w.ElapsedSeconds<=from)return;var s=w.NewMilitary!;long carry=s.Moves.Sum(m=>m.Loading?m.Amount:-m.Amount)-s.Uses.Sum(u=>u.Consumed),amount=Math.Min(carry,checked(100*(w.ElapsedSeconds-from)));var uses=s.Uses;var next=new SupplyUse(from,w.ElapsedSeconds,100,amount);if(uses.LastOrDefault() is {} last&&last.Until==from&&last.From>=s.Sorties.Last().From&&last.Consumed==100*(last.Until-last.From)&&amount==100*(w.ElapsedSeconds-from))uses=[..uses[..^1],last with{Until=w.ElapsedSeconds,Consumed=last.Consumed+amount}];else uses=[..uses,next];w.NewMilitary=s with{Uses=uses};}
+    internal static void Tick(ContractWorld w,long from){if(!Deployed(w)||w.ElapsedSeconds<=from)return;var s=w.NewMilitary!;int men=TotalStrength(w,from);long carry=s.Moves.Sum(m=>m.Loading?m.Amount:-m.Amount)-s.Uses.Sum(u=>u.Consumed),amount=Math.Min(carry,checked(men*(w.ElapsedSeconds-from)));var uses=s.Uses;var next=new SupplyUse(from,w.ElapsedSeconds,men,amount);if(uses.LastOrDefault() is {} last&&last.Until==from&&last.From>=s.Sorties.Last().From&&last.Soldiers==men&&last.Consumed==men*(last.Until-last.From)&&amount==men*(w.ElapsedSeconds-from))uses=[..uses[..^1],last with{Until=w.ElapsedSeconds,Consumed=last.Consumed+amount}];else uses=[..uses,next];w.NewMilitary=s with{Uses=uses};}
     static bool Ready(ContractWorld w){var s=w.NewMilitary!;if(!Has(w,MilitaryEffect.PickedUp))return Local(w);return Local(w)&&!Deployed(w)&&AtHome(w)&&View(w).Carry==0&&s.Reports.Any(r=>r.ReturnRevision==LastEntry(w)&&r.Carry==0&&MessageFlow.LearnedAt(w.Messaging,r.Message,s.Terms.Principal.Value) is {} known&&known<=w.ElapsedSeconds);}
     internal static void Update(ContractWorld w)
     {
         var s=w.NewMilitary;if(s==null)return;
         foreach(var q in s.Requests.Where(q=>q.Message!=null&&MessageFlow.Knows(w.Messaging,q.Message,s.Terms.Principal.Value))){
+            if(q.Input.Action==NewMilitaryAction.CombatPermit&&!Has(w,MilitaryEffect.CombatPermission)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&!Returning(w,w.ElapsedSeconds,w.CommitSequence)&&NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence))Announce(w,MilitaryEffect.CombatPermission,q.Message!);
             if(q.Input.Action==NewMilitaryAction.Request&&!Has(w,MilitaryEffect.Offered)&&!Has(w,MilitaryEffect.Refused)){if(NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence)&&ReportsKnown(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence))Announce(w,MilitaryEffect.Offered,q.Message!);else Announce(w,MilitaryEffect.Refused,q.Message!);}
             if(q.Input.Action==NewMilitaryAction.Accept&&!Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Expired)){if(Event(w,MilitaryEffect.Offered) is {} offer&&w.ElapsedSeconds<offer.At+OfferSeconds&&NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence))Announce(w,MilitaryEffect.Permission,q.Message!);else Announce(w,MilitaryEffect.Expired,q.Message!);}
             if(q.Input.Action==NewMilitaryAction.Return&&!Has(w,MilitaryEffect.Returned)){if(Ready(w))Announce(w,MilitaryEffect.Returned,q.Message!);else if(!Has(w,MilitaryEffect.Waiting))Announce(w,MilitaryEffect.Waiting,q.Message!);}
-            if(q.Input.Action==NewMilitaryAction.Inquire&&!w.NewMilitary!.Events.Any(e=>e.Effect==MilitaryEffect.StatusSent&&e.Source==q.Message)){var e=w.NewMilitary.Events.LastOrDefault(e=>e.Effect is MilitaryEffect.Returned or MilitaryEffect.Permission or MilitaryEffect.Expired or MilitaryEffect.Refused);Announce(w,MilitaryEffect.StatusSent,q.Message!,e?.At??w.ElapsedSeconds,e?.Effect??MilitaryEffect.StatusSent);}
+            if(q.Input.Action==NewMilitaryAction.Inquire&&!w.NewMilitary!.Events.Any(e=>e.Effect==MilitaryEffect.StatusSent&&e.Source==q.Message)){var e=w.NewMilitary.Events.LastOrDefault(e=>e.Effect is MilitaryEffect.Returned or MilitaryEffect.Permission or MilitaryEffect.Expired or MilitaryEffect.Refused or MilitaryEffect.CombatPermission);Announce(w,MilitaryEffect.StatusSent,q.Message!,e?.At??w.ElapsedSeconds,e?.Effect??MilitaryEffect.StatusSent);}
         }
         if(Event(w,MilitaryEffect.Offered) is {} pending&&!Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Expired)&&w.ElapsedSeconds>=pending.At+OfferSeconds)Announce(w,MilitaryEffect.Expired,pending.Message);
     }
@@ -124,7 +126,7 @@ public static partial class NewGameMilitary
     internal static void Sync(ContractWorld w)
     {
         if(w.NewMilitary is not {} s)return;bool custody=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence);var commander=custody?w.PlayerControl:s.Terms.Principal;
-        w.Units=Enumerable.Range(0,3).Select(i=>new UnitState(UnitIds[i],s.Terms.Army,commander,s.Terms.Owner,Strength[i],0)).ToArray();
+        w.Units=Enumerable.Range(0,3).Select(i=>new UnitState(UnitIds[i],s.Terms.Army,commander,s.Terms.Owner,StrengthAt(w,i,w.ElapsedSeconds),0)).ToArray();
         w.ResourceLots=[new(Depot,"rice",s.Terms.Owner,s.Terms.Owner,s.Terms.Site,FieldSupply.Unit,InitialStock+Net(w,Depot),InitialStock,0),new(Carry,"rice",s.Terms.Owner,w.PlayerControl,s.Terms.Site,FieldSupply.Unit,Net(w,Carry),0,0,w.PlayerControl)];
         var loc=w.Locations.Single(l=>l.Actor==w.PlayerControl);
         if(Deployed(w)){var p=Position(w,0,w.ElapsedSeconds);var point=FieldWorld.ToWorld(p);var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));w.Locations=w.Locations.Select(l=>l.Actor==w.PlayerControl?new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(p),Contract,0):l).ToArray();}

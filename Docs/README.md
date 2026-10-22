@@ -1,3 +1,5 @@
+[現行工程：明示演習交戦と損害・復旧検証](Design/ContactCombatV1/README.md)
+
 [新入口の軍務・現地引受・指揮返還](Design/NewGameMilitaryV1/README.md)
 
 [通常起動と仕官・辞去の現行検証](Design/ServiceEntryV1/README.md)

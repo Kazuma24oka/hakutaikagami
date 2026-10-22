@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1405,
-  "baseline_passed": 1377,
-  "added": 28,
-  "scope": "NewGameMilitaryTests: selected officer loan, physical permit, pickup, shared terrain and supply, return report, same-life service departure, immutable save definitions, inquiry and forgery rejection"
+  "expected_passed": 1454,
+  "baseline_passed": 1405,
+  "added": 49,
+  "scope": "ContactCombatTests(27) and NewGameCombatTests(22): shared simultaneous contact, explicit sealed exercise authorization, own loss, strength-based supply, physical frozen report, restoration and old notice compatibility"
 }

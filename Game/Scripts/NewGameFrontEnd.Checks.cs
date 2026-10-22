@@ -86,7 +86,7 @@ Press("manage");await Frame();await Frame();string io=Path.Combine(DataRoot,"qa-
     async void RunFlowChecks()
     {
         try{
-            Directory.CreateDirectory(TestOutput);await Frame();await Frame();if(FlowCase.StartsWith("military-")){await RunNewMilitaryChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("service-")){await RunServiceChecks();GetTree().Quit();return;}if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreFlow();else{await SetupFlow();if(OS.GetCmdlineUserArgs().Contains("--new-game-film"))await CaptureFilm();}
+            Directory.CreateDirectory(TestOutput);await Frame();await Frame();if(FlowCase.StartsWith("combat-")){await RunCombatChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("military-")){await RunNewMilitaryChecks();GetTree().Quit();return;}if(FlowCase.StartsWith("service-")){await RunServiceChecks();GetTree().Quit();return;}if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreFlow();else{await SetupFlow();if(OS.GetCmdlineUserArgs().Contains("--new-game-film"))await CaptureFilm();}
             File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-checks.json":"check-checks.json"),System.Text.Json.JsonSerializer.Serialize(assertions));GD.Print("NEW_GAME_FLOW_PASSED "+FlowCase);GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }

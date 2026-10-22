@@ -1,11 +1,15 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 public enum MilitaryAction { Request, Accept, Pickup, Return }
-public enum MilitaryEffect { Offered, Permission, PickedUp, Waiting, Returned, Refused, Expired, StatusSent }
+public enum MilitaryEffect { Offered, Permission, PickedUp, Waiting, Returned, Refused, Expired, StatusSent, CombatPermission }
 public sealed record MilitaryInput(EntityId Id,MilitaryAction Action);
 public sealed record MilitaryRequest(MilitaryInput Input,long At,long Revision,string? Message);
 public sealed record MilitaryEvent(MilitaryEffect Effect,long At,long Revision,string Source,string Message);
-public sealed record MilitaryNotice(MilitaryEffect Effect,string Source,long EffectiveAt,long? Deadline);
+public sealed record MilitaryNotice(MilitaryEffect Effect,string Source,long EffectiveAt,long? Deadline)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CombatAuthorization? Combat {get;init;}
+}
 public sealed record MilitaryState(int Schema,MilitaryRequest[] Requests,MilitaryEvent[] Events,CareerOpening[] Openings);
 public sealed record MilitaryView(string Status,EntityId? Unopened,bool CanRequest,bool CanAccept,bool CanPickup,bool CanReturn,bool Custody);
 // A bounded same-life placement loan. Prepared stock and troop definitions are not permissions.

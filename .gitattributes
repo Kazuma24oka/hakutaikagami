@@ -1221,3 +1221,17 @@ Docs/Design/NewGameMilitaryV1/** -text whitespace=trailing-space,space-before-ta
 Scripts/*new_game_military* -text whitespace=trailing-space,space-before-tab,cr-at-eol
 .gitattributes -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Game/Scripts/ViewportCapture.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/ContactCombat.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Combat.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/ContactCombatTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameCombatTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Combat.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CombatChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_contact_combat.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_contact_combat_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ContactCombatV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ContactCombatV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PersonalWithdrawalV1/PLAN.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.WorldLabels.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol

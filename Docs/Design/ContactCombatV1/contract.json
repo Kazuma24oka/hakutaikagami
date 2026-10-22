@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "baseline": 1405,
+  "expected_tests": 1454,
+  "new_tests": 49,
+  "gpu_processes": 39,
+  "pairs": 292,
+  "completion_conditions": 5,
+  "synthetic_only": true,
+  "legacy_save_definitions_unchanged": true
+}
