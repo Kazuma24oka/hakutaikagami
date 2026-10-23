@@ -1356,3 +1356,12 @@ Docs/Design/RecognizedMilitaryV1/*.md -text whitespace=trailing-space,space-befo
 Docs/Design/RecognizedMilitaryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/verify_recognized_military.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_recognized_military_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.KnownTarget.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/KnownMilitaryTargetTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.KnownTarget.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.KnownTargetChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/KnownMilitaryTargetV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/KnownMilitaryTargetV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_known_military_target.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_known_military_target_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

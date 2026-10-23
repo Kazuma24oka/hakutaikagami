@@ -13,6 +13,8 @@ public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long 
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? ObservationPolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public KnownMilitaryTarget? KnownTarget {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? PostPolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? OriginalPolicy {get;init;}
@@ -109,6 +111,7 @@ public static partial class NewGameMilitary
     }
     public static void Dispatch(ContractWorld w,NewMilitaryInput input)
     {
+        ValidateKnownTarget(w,input);
         Need(input.ObservationPolicy==null||(input.Action is NewMilitaryAction.Request or NewMilitaryAction.ObserveField)&&input.ObservationPolicy==ObservationContract,"観測方針は版付きの軍務申出で指定します");
         Need(input.ExercisePolicy==null||(input.Action is NewMilitaryAction.CombatPermit or NewMilitaryAction.CombatStart)&&input.ExercisePolicy==RepeatedExerciseContract,"未知の反復演習方針です");Need(input.ExercisePolicy==null||input.Action!=NewMilitaryAction.CombatStart||input.MotionContract==RoutContract,"新しい反復演習では敗走経路を明示します");Need(input.CycleContract==null||input.Action==NewMilitaryAction.Request&&input.CycleContract==RenewalContract,"再任方針は軍務の申出だけに指定します");Need(CancellationAction(input.Action)?input.TargetOriginal is {} target&&EntityId.IsValid(target.Value):input.TargetOriginal==null,"取消対象は本人が発した原撤退命令です");Need(input.RequestedEffectiveAt==null||CancellationAction(input.Action)&&input.RequestedEffectiveAt>=w.ElapsedSeconds,"取消効力の要求時刻が不正です");Need(input.TransportPolicy==null||SenderEvidenceAction(input.Action)&&input.TransportPolicy==UnitSenderEvidenceContract,"未知の送信者受領証拠方針です");Need(input.DeliverBy==null||(input.Action==NewMilitaryAction.RemoteRecall||CancellationAction(input.Action))&&input.DeliverBy>=checked(w.ElapsedSeconds+1),"撤退命令の期限は本人が発送した後の正式受領時刻で指定します");Need(input.OriginalPolicy==null||input.Action==NewMilitaryAction.RemoteRecall&&input.OriginalPolicy==UnitCommandHoldingContract,"未知の原命令保持方針です");Need(input.PostPolicy==null||ReplyPolicyAction(input.Action)&&input.PostPolicy==UnitReplyRecoveryContract,"未知の返書配送方針です");Need(input.MotionContract==null||input.Action==NewMilitaryAction.CombatStart&&input.MotionContract==RoutContract,"未知の交戦移動契約です");Need(Enum.IsDefined(input.Action)&&EntityId.IsValid(input.Id.Value)&&input.Amount>=0,"軍務入力が不正です");var v=View(w);
         if(input.Action==NewMilitaryAction.Request){if(w.NewMilitary==null){Need(v.CanRequest&&input.CycleContract==null,"現地で主君に最初の軍務を申し出てください");w.NewMilitary=new(1,Contract,Terms(w,input.Id),[],[],[],[],[],[],[],[]);}else Need(input.CycleContract==RenewalContract&&CanRenew(w),"前案件の終了を確認し、指揮と兵糧を返して同じ主君に会ってください");}

@@ -7,7 +7,7 @@ public enum SaveStage { SnapshotCaptured, PayloadWritten, GenerationVerified, Pr
 public sealed class ContractLoadException(ResultCode code,string message,Exception? inner=null) : IOException(message,inner)
 { public ResultCode Code { get; } = code; }
 public sealed record SaveWorldCamera(long X,long Y,double Span,double Yaw,bool Follow,bool Improved);
-public sealed record SavePresentation(double DisplayFraction, int DisplaySpeed, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? ScenerySkin=null,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] SaveWorldCamera? WorldCamera=null,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? CouncilOpen=null);
+public sealed record SavePresentation(double DisplayFraction, int DisplaySpeed, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? ScenerySkin=null,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] SaveWorldCamera? WorldCamera=null,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] bool? CouncilOpen=null,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] string? MilitaryTarget=null);
 public sealed record SaveManifest(string Format,int EnvelopeVersion,EntityId WorldId,string GenerationId,long CommitSequence,
     string TimeDomain,Dictionary<string,int> SchemaVersions,string Ruleset,string RulesHash,string DefinitionHash,
     string PayloadHash,long PayloadByteLength,string PresentationHash);
@@ -208,6 +208,7 @@ public sealed class GenerationSaveStore
     private static void ValidatePresentation(SavePresentation p)
     {
         if(p.WorldCamera is {} c&&(!double.IsFinite(c.Span)||c.Span<40||c.Span>4000000||!double.IsFinite(c.Yaw)||Math.Abs(c.Yaw)>360000||Math.Abs(c.X)>4000000000L||Math.Abs(c.Y)>4000000000L))throw new InvalidDataException("Invalid world camera");
+        if(p.MilitaryTarget!=null&&(!EntityId.IsValid(p.MilitaryTarget)||p.MilitaryTarget.Length>256))throw new InvalidDataException("Invalid selected military target ID");
         if(p.ScenerySkin!=null&&!Regex.IsMatch(p.ScenerySkin,"^skin:[a-z0-9_-]{1,64}$"))throw new InvalidDataException("Invalid scenery skin ID");
         if(!double.IsFinite(p.DisplayFraction)||p.DisplayFraction<0||p.DisplayFraction>=1||!new[]{1,10,60,360}.Contains(p.DisplaySpeed))throw new InvalidDataException("Invalid presentation phase/speed.");
     }

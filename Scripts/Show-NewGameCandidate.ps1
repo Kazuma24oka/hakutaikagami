@@ -3,7 +3,7 @@ $repo=Split-Path -Parent $PSScriptRoot
 $python=Join-Path $env:USERPROFILE '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
 Push-Location $repo
 try {
-    & $python (Join-Path $PSScriptRoot 'check_recognized_military_binding.py')
+    & $python (Join-Path $PSScriptRoot 'check_known_military_target_binding.py')
     if($LASTEXITCODE -ne 0){throw '現在の候補と検証記録が一致しません。再検証してから開いてください。'}
     $godot=Join-Path $repo '.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64.exe'
     $project=Join-Path $repo 'Game'

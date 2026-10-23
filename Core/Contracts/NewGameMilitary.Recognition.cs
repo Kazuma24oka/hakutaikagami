@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
 public sealed record MilitarySeenUnit(EntityId Unit,long At,long Revision,FieldPoint Position,FieldPoint Heading,int Soldiers,int Morale,string Phase,string Kind);
-public sealed record MilitaryKnownUnit(EntityId Unit,long ObservedAt,FieldPoint Position,FieldPoint Next,FieldPoint Heading,int Soldiers,int? Morale,string Phase,string Kind,bool Live,string Source);
+public sealed record MilitaryKnownUnit(EntityId Unit,long ObservedAt,FieldPoint Position,FieldPoint Next,FieldPoint Heading,int Soldiers,int? Morale,string Phase,string Kind,bool Live,string Source,string Evidence);
 public sealed record MilitarySeenCourier(string Token,FieldPoint Position,FieldPoint Next);
 public static partial class NewGameMilitary
 {
@@ -35,7 +35,7 @@ public static partial class NewGameMilitary
         foreach(var row in recorded){
             bool live=current.TryGetValue(row.Unit,out var now)&&now with{Revision=row.Revision}==row;
             var next=live?new FieldPoint(row.Position.X+row.Heading.X,row.Position.Y+row.Heading.Y):row.Position;
-            list[row.Unit]=new(row.Unit,row.At,row.Position,next,row.Heading,row.Soldiers,row.Morale,row.Phase,row.Kind,live,"本人の目撃");
+            list[row.Unit]=new(row.Unit,row.At,row.Position,next,row.Heading,row.Soldiers,row.Morale,row.Phase,row.Kind,live,"本人の目撃","observation/"+row.Revision);
         }
         foreach(var receipt in w.NewMilitary?.UnitInquiry?.Receipts??[]){
             if(!receipt.Delivered||!MessageFlow.Knows(w.Messaging,receipt.ReplyMessage,w.PlayerControl.Value))continue;
@@ -44,7 +44,7 @@ public static partial class NewGameMilitary
             var id=new EntityId(report.Unit);
             if(id!=UnitIds[0])continue;
             if(list.TryGetValue(id,out var known)&&known.ObservedAt>=report.At)continue;
-            list[id]=new(id,report.At,report.Position,report.Position,new(0,0),report.Soldiers,null,report.RoutPhase,"own",false,"受領した本隊の返書");
+            list[id]=new(id,report.At,report.Position,report.Position,new(0,0),report.Soldiers,null,report.RoutPhase,"own",false,"受領した本隊の返書","letter/"+receipt.ReplyMessage);
         }
         return list.Values.OrderBy(r=>r.Unit.Value,StringComparer.Ordinal).ToArray();
     }

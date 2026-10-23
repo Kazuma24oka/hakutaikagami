@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1759,
-  "baseline_passed": 1739,
-  "added": 20,
-  "scope": "MilitaryRecognitionTests(20): versioned direct observation, old saves, range boundary, report knowledge and precedence, hidden movement/couriers, precise action gates, forgery/missing history and restore, full observation fork/deep isolation equivalence and original world immutability"
+  "expected_passed": 1775,
+  "baseline_passed": 1759,
+  "added": 16,
+  "scope": "KnownMilitaryTargetTests(16): known provenance selection, no GPS, forgery and unknown letter rejection, stale evidence, legacy omission, same-generation selection save, reference replay and fixed destination restore"
 }
