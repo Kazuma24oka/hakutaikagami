@@ -24,7 +24,7 @@ public partial class NewGameMotionChecks : Control
             if(film)
             {
                 string dir=Path.Combine(root,"film");Directory.CreateDirectory(dir);
-                for(int n=0;n<480;n++){if(n==240)game.Press("pause");if(n==300)game.Press("rotate");if(n==360)game.Press("save");if(n==420)game.Press("load");await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(dir,"frame-"+n.ToString("D4")+".png"));}
+                for(int n=0;n<480;n++){if(n==240)game.Press("pause");if(n==300)game.Press("rotate");if(n==360){game.Press("save");while(game.IsSaving)await Frame();}if(n==420)game.Press("load");await Frame();GetViewport().GetTexture().GetImage().SavePng(Path.Combine(dir,"frame-"+n.ToString("D4")+".png"));}
                 GD.Print("MOTION_FILM_PASSED 480");GetTree().Quit();return;
             }
             var clock=Stopwatch.StartNew();while(clock.Elapsed.TotalSeconds<2)await Frame();

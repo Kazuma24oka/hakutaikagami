@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "status": "implemented_completion_in_verification_json",
+  "completion_criteria": 5,
+  "core_tests": 1775,
+  "added_core_tests": 0,
+  "exact_core_test_reuse_required": true,
+  "new_cases": {
+    "saveui-normal": 16,
+    "saveui-failure": 16
+  },
+  "delay_injected": false,
+  "old_save_format_unchanged": true,
+  "limits": [
+    "manual save only",
+    "initial load/checkpoints remain synchronous",
+    "instrumented frames are not a performance benchmark",
+    "no nationwide performance acceptance"
+  ]
+}
