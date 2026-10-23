@@ -1,3 +1,5 @@
+- [1倍速の次秒先行計算](Design/PreparedAdvanceV1/README.md)
+
 - [新入口の人数増加・操作整理・通し確認](Design/PlayableLoopV1/README.md)
 
 - [実在主君・勢力と本人の軍務権限](Design/MilitaryAuthorityV1/README.md)

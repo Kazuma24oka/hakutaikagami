@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2010,
-  "baseline_passed": 1970,
-  "added": 40,
-  "scope": "StartProjection13+CompactAuthority13+CompactMilitary5+NearbyProjection3+OperationPanelSave6: same permission set, legacy omission, bounded exact-input reuse, nearfield equivalence, grouped population travel and real generation restore"
+  "expected_passed": 2040,
+  "baseline_passed": 2010,
+  "added": 30,
+  "scope": "PreparedAdvance25+Integration5: opaque future, immutable source capture, exact atomic one-shot publication, cancellation/fault/concurrent input/save/load/important receipt/NPC/region/military/100person travel equivalence"
 }

@@ -9,9 +9,8 @@ using HakutaiKagami.Core.Appearance;
 public partial class NewGameFrontEnd
 {
     int CapacityCount=>FlowCase=="capacity-1000"?1000:100;
-    async Task BeginCapacityFlow()
+    async Task BeginPopulationEntry(int count)
     {
-        int count=CapacityCount;
         var rows=Enumerable.Range(0,count).Select(i=>new RegisteredOfficer("created:capacity-"+i.ToString("D5"),null,"測定専用"+i.ToString("D5"),1520,new(50,50,50,50),StartTemplate.Ronin,NationalRoutes.Sites[i%NationalRoutes.Sites.Length].Id.Value,null,null,AppearanceCatalog.Default(1))).ToArray();
         // A declared imported library fixture, then the ordinary group-selection
         // screens. This is not a claim that these are sourced historical NPCs.
@@ -20,7 +19,11 @@ public partial class NewGameFrontEnd
         map!.PressSite("site:castle");PickRow("person:nobunaga");Press("begin");await Frame();await Frame();
         var w=game!.Session.DiagnosticSnapshot();Check(w.Characters.Length==count+3&&w.NewGame!.Registered.Length==count,"declared imported synthetic group and three historical people enter the actual normal UI");Check(w.NewGame!.PersonalAuthorityLayout==NewGameWorld.CompactPersonalAuthority&&w.Grants.Length==2*w.Characters.Length,"actual new entry adopts exact compact authority layout");
         Check(NationalRoutes.Nodes.Length==108&&NationalRoutes.Edges.Length==118,"runtime108/118 includes regional7/7 plus national catalog101/111");File.WriteAllText(Path.Combine(TestOutput,"campaign-instance.txt"),game.Profile.Instance);
-        game.Press("save");await WaitSave();game.Refresh();game.SaveCheckpoint("s0");await Capture("s0",true);
+    }
+    async Task BeginCapacityFlow()
+    {
+        int count=CapacityCount;await BeginPopulationEntry(count);
+        game!.Press("save");await WaitSave();game.Refresh();game.SaveCheckpoint("s0");await Capture("s0",true);
         for(int n=1;n<=3;n++){await GameStep(n);game.SaveCheckpoint("s"+n);await Capture("s"+n,true);}await GameStep(4);await Capture("final",true);
         Check(game.Session.DiagnosticSnapshot().Tasks.Any(t=>t.Action==ActionKind.Inspect&&t.Execution==ExecutionPhase.Completed),"same selected historical actor moves and completes inspection in synthetic population world");
         var samples=new System.Collections.Generic.List<double>();var click=Stopwatch.StartNew();game.Press("auto");double autoClickMs=click.Elapsed.TotalMilliseconds;long autoStart=game.Session.Seconds;

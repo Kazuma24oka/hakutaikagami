@@ -225,7 +225,7 @@ public sealed class GenerationSaveStore
     }
 }
 
-public sealed class WorldSessionHost
+public sealed partial class WorldSessionHost
 {
     private readonly object gate=new();
     public WorldSession Current { get; private set; }

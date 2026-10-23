@@ -42,11 +42,11 @@ public partial class NewGameRuntime : Control
     void Assent(bool accept){var task=Awaiting()??throw new InvalidDataException("回答できる依頼はありません");Submit(Session.Assent(task.Id,Session.PlayerControl,accept,Session.Revision));}
     void Open()=>OpenSelectedMail();
     internal void Advance(long to){if(IsSaving)return;automatic=false;fraction=0;while(Session.Seconds<to){Session.SetPaused(false);long prior=Session.Seconds;Session.AdvanceTo(to);if(Session.Seconds==prior)break;}Session.SetPaused(true);Refresh();}
-    internal void Suspend(){automatic=false;Session.SetPaused(true);Visible=false;ProcessMode=ProcessModeEnum.Disabled;}
+    internal void Suspend(){CancelAdvancePrefetch();automatic=false;Session.SetPaused(true);Visible=false;ProcessMode=ProcessModeEnum.Disabled;}
     internal void Resume(){Visible=true;ProcessMode=ProcessModeEnum.Inherit;Refresh();}
-    internal void Save(){automatic=false;Session.SetPaused(true);saves.Save(Session,"manual",Snapshot().WorldId,CurrentPresentation());message.Text="同じ人物・世界の進行を保存しました。";}
+    internal void Save(){CancelAdvancePrefetch();automatic=false;Session.SetPaused(true);saves.Save(Session,"manual",Snapshot().WorldId,CurrentPresentation());message.Text="同じ人物・世界の進行を保存しました。";}
     void ApplyPresentation(SavePresentation p){RestoreOperationPanel(p.OperationPanel);selectedKnownTarget=p.MilitaryTarget;selectedDirectiveOriginal=p.MilitaryOriginal;selectedCancellationOriginal=p.MilitaryCancellation;fraction=p.DisplayFraction;speed=p.DisplaySpeed;if(speedChoice!=null)speedChoice.Select(Array.IndexOf(new[]{1,10,60,360},speed));if(p.WorldCamera is {} c){Span=(float)c.Span;Yaw=(float)c.Yaw;nationMode=!c.Follow;}}
-    internal void Load(){automatic=false;var prepared=saves.Prepare("manual");if(host.CommitLoad(prepared,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("現在の進行が変わったため読み直してください");ApplyPresentation(prepared.Presentation);message.Text="保存した人物・所属・外見・位置へ戻りました。";Refresh();}
+    internal void Load(){CancelAdvancePrefetch();automatic=false;var prepared=saves.Prepare("manual");if(host.CommitLoad(prepared,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("現在の進行が変わったため読み直してください");ApplyPresentation(prepared.Presentation);message.Text="保存した人物・所属・外見・位置へ戻りました。";Refresh();}
     internal string InfoText=>info.Text;
     internal Rect2 RenderRect=>surface.GetGlobalRect();
     internal Rect2 InfoRect=>info.GetGlobalRect();
@@ -119,5 +119,5 @@ public partial class NewGameRuntime : Control
         foreach(var leg in journey.Legs){var a=nodes.Single(n=>n.Id==leg.From).Position;var b=nodes.Single(n=>n.Id==leg.To).Position;double dx=b.EastMm-a.EastMm,dy=b.NorthMm-a.NorthMm;double length=Math.Sqrt(dx*dx+dy*dy);var edge=edges.Single(e=>e.Id==leg.Edge);double p=TravelWorld.Progress(world,leg,world.ElapsedSeconds),next=TravelWorld.Progress(world,leg,world.ElapsedSeconds+1);distance+=length*Math.Clamp((p+(next-p)*phase)/edge.LengthMm,0,1);}
         return distance;
     }
-    public override void _Process(double delta){if(PollManualSave(delta))return;if(!automatic||Session.Paused)return;fraction+=Math.Min(delta,.25)*speed;long steps=(long)fraction;if(steps>0){fraction-=steps;Session.AdvanceTo(Session.Seconds+steps);}Refresh();}
+    public override void _Process(double delta){if(PollManualSave(delta))return;if(PollPreparedAdvance(delta))return;if(!automatic||Session.Paused)return;fraction+=Math.Min(delta,.25)*speed;long steps=(long)fraction;if(steps>0){fraction-=steps;Session.AdvanceTo(Session.Seconds+steps);}Refresh();}
 }

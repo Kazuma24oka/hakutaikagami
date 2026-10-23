@@ -23,7 +23,7 @@ public partial class NewGameRuntime
  static IEnumerable<Node> SaveDescendants(Node root){foreach(Node child in root.GetChildren()){yield return child;foreach(var descendant in SaveDescendants(child))yield return descendant;}}
  void RequestManualSave()
  {
-  if(IsSaving)return;
+  if(IsSaving)return;CancelAdvancePrefetch();
   automatic=false;Session.SetPaused(true);LastSaveError=null;LastSavePublished=null;saveClock.Restart();
   // Snapshot and presentation are captured together on the UI thread. The worker
   // owns this detached snapshot and never reads the live session or Godot nodes.
