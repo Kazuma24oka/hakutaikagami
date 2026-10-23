@@ -1372,3 +1372,11 @@ Docs/Design/ResponsiveSaveV1/*.md -text whitespace=trailing-space,space-before-t
 Docs/Design/ResponsiveSaveV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/verify_responsive_save.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_responsive_save_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.UnitRecipient.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitRecipientTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitRecipientChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitRecipientV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitRecipientV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_recipient.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_recipient_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

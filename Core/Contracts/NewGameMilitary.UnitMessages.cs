@@ -18,13 +18,13 @@ public static partial class NewGameMilitary
     static string UnitMessage(EntityId request,string kind)=>"message:unit-post/"+kind+"/"+Hash(request.Value);
     static EntityId UnitCourier(EntityId request)=>new("courier:unit-post/"+Hash(request.Value));
     static EntityId UnitOrder(EntityId request)=>new("order:unit-post/"+Hash(request.Value));
-    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Carrier.Value)).Concat((w.NewMilitary?.Cancellation?.Notices??[]).Select(f=>f.Carrier.Value)).Distinct(StringComparer.Ordinal)]:[];
+    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>d.Recipient.Value).Where(id=>id!=UnitIds[0].Value).Distinct(StringComparer.Ordinal),..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Carrier.Value)).Concat((w.NewMilitary?.Cancellation?.Notices??[]).Select(f=>f.Carrier.Value)).Distinct(StringComparer.Ordinal)]:[];
     static FieldPoint PhysicalPerson(ContractWorld w,long at)=>DeployedAt(w,at)?PersonPosition(w,at):FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,at));
     internal static void BeforeUnitMessages(ContractWorld w)
     {
         BeforeCancellationNotices(w);BeforeHeldMessages(w);BeforeHeldOrderAcks(w);BeforeReplyRecovery(w);if(w.NewMilitary?.Withdrawal is not {} x)return;
         foreach(var d in UnitDispatches(w)){var a=w.Messaging.Attempts.Single(a=>a.Id==d.Attempt);if(a.Status!=AttemptStatus.InTransit||a.DueAt!=w.ElapsedSeconds)continue;
-            bool present=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w)&&StrengthAt(w,0,w.ElapsedSeconds)>0&&RegionalGround.Distance(Position(w,0,w.ElapsedSeconds),d.Destination)<=1000;
+            bool present=UnitPostPresent(w,d.Destination,d.Recipient);
             if(!present)MessageFlow.Fail(w.Messaging,d.Message);
         }
         foreach(var r in UnitReceipts(w)){var a=MessageFlow.Latest(w.Messaging,r.ReplyMessage);if(a.Status==AttemptStatus.InTransit&&a.DueAt==w.ElapsedSeconds&&RegionalGround.Distance(PhysicalPerson(w,w.ElapsedSeconds),r.ReplyDestination)>1000)MessageFlow.Fail(w.Messaging,r.ReplyMessage);}
@@ -46,7 +46,7 @@ public static partial class NewGameMilitary
             if(observed!=null)b=b with{Status=observed.Received?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!observed.Received,FinishedAt=observed.At,FailureAt=observed.Received?null:observed.At};generated.Add(b);
         }
         foreach(var f in flights){
-            var observed=w.NewMilitary!.ReplyRecovery!.Arrivals.SingleOrDefault(a=>a.Attempt==f.Attempt);string receiver=f.Kind==UnitReplyLeg.FailureReport?UnitIds[0].Value:w.PlayerControl.Value;
+            var observed=w.NewMilitary!.ReplyRecovery!.Arrivals.SingleOrDefault(a=>a.Attempt==f.Attempt);string receiver=f.Kind==UnitReplyLeg.FailureReport?UnitDispatches(w).Single(d=>d.Id==f.Dispatch).Recipient.Value:w.PlayerControl.Value;
             var a=new MessageAttempt(f.Attempt,f.Message,int.Parse(f.Attempt.Split('/').Last(),System.Globalization.CultureInfo.InvariantCulture),f.At,f.DueAt,receiver);
             if(observed!=null)a=a with{Status=observed.Delivered?AttemptStatus.Delivered:AttemptStatus.Lost,FailOnArrival=!observed.Delivered,FinishedAt=observed.At,FailureAt=observed.Delivered?null:observed.At};generated.Add(a);
         }

@@ -1,3 +1,5 @@
+[分隊別の固定宛先・照会・返書 V1](Design/UnitRecipientV1/README.md)：左右分隊の情報分離、不達回復、保存復旧の完成条件。
+
 [保存中の画面応答 V1](Design/ResponsiveSaveV1/README.md)：正常/失敗・再試行・描画継続・保存復旧の完成条件。
 
 - 現在：[既知部隊の選択と記録地点への本人移動](Design/KnownMilitaryTargetV1/README.md)（完成判定は同工程のverification.json）。前工程0ea1154の実績と現行状態を区別する。

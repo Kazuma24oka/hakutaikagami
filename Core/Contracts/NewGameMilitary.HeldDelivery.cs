@@ -36,8 +36,8 @@ public static partial class NewGameMilitary
         MessageFlow.ScheduleLate(w.Messaging,h.Message,attempt.Number,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         var x=w.NewMilitary!.HeldDelivery??new(UnitHeldContract,[],[]);w.NewMilitary=w.NewMilitary with{HeldDelivery=x with{Transfers=[..x.Transfers,new(i.Id,w.ElapsedSeconds,w.CommitSequence,i.Action,h.Message,h.Attempt,h.Holder,cargo,h.Position,to,route,due)]}};
     }
-    static FieldPoint HeldRecipient(ContractWorld w,UnitHeldTransfer t)=>w.Messaging.Messages.Single(m=>m.Id==t.Message).RecipientId==w.PlayerControl.Value?PhysicalPerson(w,w.ElapsedSeconds):Position(w,0,w.ElapsedSeconds);
-    static bool HeldPresent(ContractWorld w,UnitHeldTransfer t,FieldPoint p)=>RegionalGround.Distance(p,t.Destination)<=1000&&(w.Messaging.Messages.Single(m=>m.Id==t.Message).RecipientId==w.PlayerControl.Value||UnitPostPresent(w,t.Destination));
+    static FieldPoint HeldRecipient(ContractWorld w,UnitHeldTransfer t){string id=w.Messaging.Messages.Single(m=>m.Id==t.Message).RecipientId;if(id==w.PlayerControl.Value)return PhysicalPerson(w,w.ElapsedSeconds);int index=Array.FindIndex(UnitIds,u=>u.Value==id);Need(index>=0,"保持書状の受信隊がありません");return Position(w,index,w.ElapsedSeconds);}
+    static bool HeldPresent(ContractWorld w,UnitHeldTransfer t,FieldPoint p)=>RegionalGround.Distance(p,t.Destination)<=1000&&(w.Messaging.Messages.Single(m=>m.Id==t.Message).RecipientId==w.PlayerControl.Value||UnitPostPresent(w,t.Destination,new(w.Messaging.Messages.Single(m=>m.Id==t.Message).RecipientId)));
     static void BeforeHeldMessages(ContractWorld w)
     {
         foreach(var t in w.NewMilitary?.HeldDelivery?.Transfers.Where(t=>t.DueAt==w.ElapsedSeconds)??[]){if(HeldPresent(w,t,HeldRecipient(w,t)))continue;

@@ -42,9 +42,10 @@ public static partial class NewGameMilitary
             var message=w.Messaging.Messages.Single(m=>m.Id==receipt.ReplyMessage);
             var report=ContractJson.Read<UnitPostInquiryAnswer>(System.Text.Encoding.UTF8.GetBytes(message.Body));
             var id=new EntityId(report.Unit);
-            if(id!=UnitIds[0])continue;
+            var dispatch=w.NewMilitary!.UnitInquiry!.Dispatches.Single(d=>d.Id==receipt.Id);if(!UnitIds.Contains(id)||dispatch.Recipient!=id)continue;
+            var query=ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==dispatch.Message).Body));if(query.Target==null&&id!=UnitIds[0])continue;
             if(list.TryGetValue(id,out var known)&&known.ObservedAt>=report.At)continue;
-            list[id]=new(id,report.At,report.Position,report.Position,new(0,0),report.Soldiers,null,report.RoutPhase,"own",false,"受領した本隊の返書","letter/"+receipt.ReplyMessage);
+            list[id]=new(id,report.At,report.Position,report.Position,new(0,0),report.Soldiers,null,report.RoutPhase,"own",false,"受領した"+UnitRecipientName(id)+"の返書","letter/"+receipt.ReplyMessage);
         }
         return list.Values.OrderBy(r=>r.Unit.Value,StringComparer.Ordinal).ToArray();
     }
