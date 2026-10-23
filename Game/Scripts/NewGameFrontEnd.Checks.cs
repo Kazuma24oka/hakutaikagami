@@ -18,6 +18,7 @@ public partial class NewGameFrontEnd
     void PressText(Node node,string text)=>Children(node).OfType<Button>().Single(b=>b.Text==text).EmitSignal(Button.SignalName.Pressed);
     async Task Capture(string name,bool play=false)
     {
+        if(play&&!guideReviewed&&OS.GetCmdlineUserArgs().Contains("--play-guide-check"))await ReviewPlayGuide();
         foreach(var control in Children(this).OfType<Control>())control.MouseFilter=MouseFilterEnum.Ignore;
         await Frame();await Frame();if(game!=null&&play)game.Refresh();await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(TestOutput,name+".png"));
         if(play){var rect=game!.RenderRect;var info=game.InfoRect;Check(rect.Size.Y>=300&&rect.Position.Y+rect.Size.Y<=GetViewportRect().Size.Y,"actual 3D surface fits viewport "+name);File.WriteAllText(Path.Combine(TestOutput,name+"-rect.json"),System.Text.Json.JsonSerializer.Serialize(new{Surface=new[]{rect.Position.X,rect.Position.Y,rect.Size.X,rect.Size.Y},Info=new[]{info.Position.X,info.Position.Y,info.Size.X,info.Size.Y}}));File.WriteAllText(Path.Combine(TestOutput,name+"-pose.json"),game.Pose());File.WriteAllText(Path.Combine(TestOutput,name+"-world.sha256"),ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()));File.WriteAllText(Path.Combine(TestOutput,name+"-info.txt"),game.InfoText);}

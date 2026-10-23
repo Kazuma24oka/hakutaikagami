@@ -1547,3 +1547,13 @@ Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-
 Scripts/verify_prepared_advance.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Tests/PreparedAdvanceIntegrationTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Tests/PreparedAdvanceTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for view-only in-game guide acceptance.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PlayGuide.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PlayGuideChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_play_guide.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_play_guide_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayGuideV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayGuideV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
