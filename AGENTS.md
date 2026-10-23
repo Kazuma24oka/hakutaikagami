@@ -1,3 +1,9 @@
+# 反復演習と生涯の損耗（2026-10-23）
+
+判断が必要になるまで同ブランチcommit/pushを継続。RepeatedExerciseV1/README.mdの5条件。前工程829be51は1718件/29GPU/362比較の当時実績。新ExercisePolicyと実受領した反復許可だけで二回目を許す。旧入力/許可/保存を遡及拡張せず、実在自隊のID・残兵・士気・消費を保持する。相手は交戦ID修飾の新たな架空演習対象、開始時の自隊残兵に合わせる。敗走/到達/再集結は回別、回復は既存60秒/士気50のみ。verify_repeated_exercise.py→実画像/動画→--finalize→check_repeated_exercise_binding.py後push。マウス禁止・保護枝・保存素材保持。次は認識別表示/対象、判断不要なら継続。
+
+以下は過去工程の記録。
+
 # 同じ主君への再任と生涯台帳（2026-10-23）
 
 判断が必要になるまで同ブランチcommit/pushを継続。MilitaryRenewalV1/README.mdの5条件。前工程3532a9bは1695件/25GPU/278比較の当時実績。許可/終了は案件単位、兵/在庫/損耗/書状は生涯台帳。旧原本の正式受領で新貸与を動かさず、旧照会返答は出典の案件に属する。新CycleContractだけで再任を明示。旧保存省略/マウス禁止/保護枝/保存素材保持。verify_military_renewal.py→実画像動画→--finalize→check_military_renewal_binding.py後push。反復交戦・他主君の同時貸与は未実装、判断不要なら次工程へ。

@@ -1,3 +1,7 @@
+[現行工程：反復演習と生涯の損耗](Design/RepeatedExerciseV1/README.md)
+
+以下は各当時の工程履歴として保持する。
+
 [現行工程：同じ主君への再任と生涯台帳](Design/MilitaryRenewalV1/README.md)
 
 以下は各当時の工程履歴として保持する。

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1718,
-  "baseline_passed": 1695,
-  "added": 23,
-  "scope": "MilitaryRenewalTests(23): two/three lifetime cases, actual/known close and fresh permission, casualties/stock continuity, old paper and future cancel, old inquiry original-case reply, scoped handover report, idempotency, forged case/effects, old omission and restore boundaries, quoted return/expiry permits new case without original notice opening"
+  "expected_passed": 1739,
+  "baseline_passed": 1718,
+  "added": 21,
+  "scope": "RepeatedExerciseTests(21): two episodes/same tick no double cost, repeat permission and quotation, old permission/shape/history, actual regroup, cumulative losses, episode IDs, fresh case permission, expiry/overlap/invalid input/forgery and restore boundaries"
 }
