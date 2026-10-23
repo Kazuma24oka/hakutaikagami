@@ -1380,3 +1380,11 @@ Docs/Design/UnitRecipientV1/*.md -text whitespace=trailing-space,space-before-ta
 Docs/Design/UnitRecipientV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/verify_unit_recipient.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_unit_recipient_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Docs/Design/UnitDirectiveV1/** -text
+Scripts/verify_unit_directive.py -text
+Scripts/check_unit_directive_binding.py -text
+Core/Contracts/NewGameMilitary.UnitDirective.cs -text
+Tests/UnitDirectiveTests.cs -text
+Game/Scripts/NewGameRuntime.UnitDirective.cs -text
+Game/Scripts/NewGameFrontEnd.UnitDirectiveChecks.cs -text

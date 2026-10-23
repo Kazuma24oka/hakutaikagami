@@ -9,7 +9,7 @@ public static partial class NewGameMilitary
     {
         if(!HeldOrderMessage(w,t))return;
         var d=w.NewMilitary!.Withdrawal!.Dispatches.Single(d=>d.Message==t.Message);bool applied=received&&SameMilitaryCase(w,d)&&!CancelledRecall(w,d.Message)&&!w.NewMilitary.Orders.Any(o=>o.Id==UnitOrder(d.Id)||SupersedesRecall(w,o,d));
-        if(applied)Order(w,new(UnitOrder(d.Id),NewMilitaryAction.Recall));
+        if(applied)applied=ApplyStandingRecall(w,d);
         string? reply=null,attempt=null;FieldLeg[] path=[];long due=0;
         if(received){path=RegionalGround.Plan(t.Destination,t.Origin,w.ElapsedSeconds,courier:true,atlas:true);due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);reply=UnitMessage(t.Id,"late-reply");MessageFlow.Send(w.Messaging,new(reply,d.Id.Value,"unit-post-late-reply",UnitIds[0].Value,w.PlayerControl.Value,Text(new UnitPostAnswer(d.Message,true,applied)),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));attempt=MessageFlow.Latest(w.Messaging,reply).Id;}
         var x=w.NewMilitary.CommandHolding!;w.NewMilitary=w.NewMilitary with{CommandHolding=x with{Outcomes=[..x.Outcomes,new(t.Id,t.Message,w.ElapsedSeconds,w.CommitSequence,received,applied,reply,attempt,t.Destination,t.Origin,path,due,t.Carrier)]}};

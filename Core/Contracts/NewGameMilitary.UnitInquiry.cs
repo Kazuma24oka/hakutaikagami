@@ -26,7 +26,7 @@ public static partial class NewGameMilitary
         var evidence=i.InquiryTarget==null?(i.Action==NewMilitaryAction.InquireUnitHome?w.NewMilitary.Terms.Site:sight.Id):new EntityId("evidence:unit-query/"+Hash(Text(i.InquiryTarget)));
         var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"inquiry");
         // A wing reports its own received originals, never the main post's records.
-        var originals=x.Dispatches.Where(d=>i.InquiryTarget==null||d.Recipient==recipient).Select(d=>d.Message).Distinct(StringComparer.Ordinal).ToArray();
+        var originals=(i.InquiryTarget==null?x.Dispatches:x.Dispatches.Concat(w.NewMilitary.UnitDirective?.Dispatches??[])).Where(d=>i.InquiryTarget==null||d.Recipient==recipient).Select(d=>d.Message).Distinct(StringComparer.Ordinal).ToArray();
         MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-inquiry",w.PlayerControl.Value,recipient.Value,Text(new UnitPostInquiry(i.Id,UnitInquiryRole,originals){Target=i.InquiryTarget,ReplyPolicy=i.PostPolicy,TransportPolicy=i.TransportPolicy}),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         var state=w.NewMilitary.UnitInquiry??new(UnitInquiryContract,[],[],[]);
         w.NewMilitary=w.NewMilitary with{UnitInquiry=state with{Dispatches=[..state.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,recipient,UnitInquiryRole,evidence,from,to,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};

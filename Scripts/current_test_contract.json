@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1795,
-  "baseline_passed": 1775,
-  "added": 20,
-  "scope": "UnitRecipientTests(20): selected own recipient, fixed known destination and provenance, recipient-owned report, no knowledge before physical reply, per-wing failure return/retry, forged input rejection, legacy omission, replay/save restoration"
+  "expected_passed": 1822,
+  "baseline_passed": 1795,
+  "added": 27,
+  "scope": "UnitDirectiveTests(27): per-unit physical move/hold/recall, unchanged other routes, immutable known address, issue priority, partial old recall cancellation, expiry, reply recovery, legacy omission and strict save replay"
 }

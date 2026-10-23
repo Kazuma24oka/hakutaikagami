@@ -51,7 +51,7 @@ public static partial class NewGameMilitary
                 planned.Add(i);
             }
             var id=new EntityId("order:rout/"+Hash((RepeatedExercise(w)?CombatStart(w)!.Input.Id.Value:w.NewMilitary.Terms.Case.Value)+"/"+w.ElapsedSeconds+"/"+string.Join('/',trigger)));
-            w.NewMilitary=w.NewMilitary with{Orders=[..w.NewMilitary.Orders,new(id,NewMilitaryAction.AutoRout,w.ElapsedSeconds,w.CommitSequence,origins,routes)],Rout=s with{Retreats=[..s.Retreats,new(id,w.ElapsedSeconds,w.CommitSequence,trigger,blocked?"morale-collapse/blocked-hold":"morale-collapse")]}};
+            w.NewMilitary=w.NewMilitary with{Orders=[..w.NewMilitary.Orders,new(id,NewMilitaryAction.AutoRout,w.ElapsedSeconds,w.CommitSequence,origins,routes){AffectedUnits=w.NewMilitary.UnitDirective==null?null:trigger}],Rout=s with{Retreats=[..s.Retreats,new(id,w.ElapsedSeconds,w.CommitSequence,trigger,blocked?"morale-collapse/blocked-hold":"morale-collapse")]}};
         }
         s=w.NewMilitary.Rout!;scoped=RoutScope(w,s);
         foreach(int i in scoped.Retreats.SelectMany(r=>r.Units).Distinct()){

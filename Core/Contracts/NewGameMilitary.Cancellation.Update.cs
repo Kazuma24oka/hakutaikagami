@@ -29,6 +29,7 @@ public static partial class NewGameMilitary
             if(!SameMilitaryCase(w,target)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))outcome=UnitCancelDisposition.AuthorityEnded;
             else if(w.NewMilitary.Cancellation.Effects.Any(e=>e.Original==note.Original&&e.At<w.ElapsedSeconds&&e.Outcome!=UnitCancelDisposition.AuthorityEnded))outcome=UnitCancelDisposition.AlreadyStopped;
             else if(order==null)outcome=UnitCancelDisposition.Suppressed;
+            else if(w.NewMilitary.UnitDirective!=null)(outcome,stop)=StopScopedRecall(w,order,note.Original);
             else if(originalOrders.Last().Id!=order.Id)outcome=UnitCancelDisposition.Superseded;
             else if(order.Routes.All(r=>r.Length==0||r[^1].EndAt<=w.ElapsedSeconds))outcome=UnitCancelDisposition.TooLate;
             else{outcome=UnitCancelDisposition.Stopped;stop=new EntityId("order:unit-cancel/"+Hash(note.Original+"/"+w.ElapsedSeconds));if(!w.NewMilitary.Orders.Any(o=>o.Id==stop))Order(w,new(stop.Value,NewMilitaryAction.Hold));}
