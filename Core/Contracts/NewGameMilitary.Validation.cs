@@ -26,7 +26,7 @@ public static partial class NewGameMilitary
         var s=w.NewMilitary;if(s==null){Need(!w.Messaging.Messages.Any(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m)),"軍務原本だけが残っています");return;}
         Need(NewGameWorld.Enabled(w)&&s.Schema==1&&s.Contract==Contract&&s.Requests.Length>0,"軍務の開始定義が不正です");
         Need(s.Requests.Select(q=>q.Input.Id).Distinct().Count()==s.Requests.Length&&s.Requests.Select((q,i)=>i==0||q.Revision>s.Requests[i-1].Revision&&q.At>=s.Requests[i-1].At).All(x=>x),"軍務入力が重複・逆順です");
-        ValidateDirectiveCancellation(w,false);ValidateCancellationShape(w);ValidateUnitInitialStatuses(w);ValidateUnitDirectiveShape(w);ValidateDirectiveHolding(w,false);ValidateReplyRecoveryShape(w);ValidateCommandHolding(w);ValidateHeldShape(w);
+        ValidateDirectiveCancellation(w,false);ValidateCancellationShape(w);ValidateUnitInitialStatuses(w);ValidateUnitDirectiveShape(w);ValidateDirectiveHolding(w,false);ValidateDirectiveCancelHolding(w,false);ValidateReplyRecoveryShape(w);ValidateCommandHolding(w);ValidateHeldShape(w);
         var first=s.Requests[0];var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id),"貸与元・名簿・所在地の根拠が違います");
         Need(w.Messaging.Messages.Count(m=>m.Kind is "new-military-request" or "new-military-report")==s.Requests.Count(q=>q.Message!=null)&&w.Messaging.Messages.Count(m=>m.Kind=="new-military-notice")==s.Events.Length,"軍務と原本台帳が一致しません");
         // Only WorldSession may supply its already validated prior state. Loads always replay fully.
@@ -55,7 +55,7 @@ public static partial class NewGameMilitary
         long carry=0,depot=InitialStock;var ledger=s.Moves.Select(m=>(At:m.At,Rank:1,Move:(SupplyMove?)m,Use:(SupplyUse?)null)).Concat(s.Uses.Select(u=>(At:u.Until,Rank:0,Move:(SupplyMove?)null,Use:(SupplyUse?)u))).OrderBy(x=>x.At).ThenBy(x=>x.Rank);
         foreach(var e in ledger){if(e.Move is {} m){long d=m.Loading?m.Amount:-m.Amount;carry=checked(carry+d);depot=checked(depot-d);Need(carry>=0&&carry<=Capacity&&depot>=0,"兵糧が過剰引当されています");}else if(e.Use is {} u){Need(u.Consumed==Math.Min(carry,checked(u.Soldiers*(u.Until-u.From))),"兵糧消費と在庫が違います");carry-=u.Consumed;}}
         ValidateMilitaryObservation(w,trustedPrior);
-        ValidateDirectiveCancellation(w,replay);ValidateCancellation(w,replay);ValidateHeldOrderOutcomes(w,replay);ValidateHeldDelivery(w,replay);ValidateReplyRecovery(w,replay);ValidateDirectiveHolding(w,replay);ValidateUnitInquiry(w);ValidateUnitRetry(w);ValidateWithdrawal(w,replay);ValidateRout(w,replay);
+        ValidateDirectiveCancellation(w,replay);ValidateCancellation(w,replay);ValidateHeldOrderOutcomes(w,replay);ValidateHeldDelivery(w,replay);ValidateReplyRecovery(w,replay);ValidateDirectiveHolding(w,replay);ValidateDirectiveCancelHolding(w,replay);ValidateUnitInquiry(w);ValidateUnitRetry(w);ValidateWithdrawal(w,replay);ValidateRout(w,replay);
         var normalized=ContractJson.Copy(w);Sync(normalized);Need(Same(w.Definitions.Armies,normalized.Definitions.Armies)&&Same(w.Units,normalized.Units)&&Same(w.ResourceLots,normalized.ResourceLots)&&Same(w.Locations,normalized.Locations),"貸与名簿・所有・現地所在・兵糧残量が台帳と一致しません");
     }
 }

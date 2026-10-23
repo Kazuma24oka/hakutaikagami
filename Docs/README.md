@@ -1,3 +1,5 @@
+- [分隊取消原本の実物保持・遅着](Design/UnitDirectiveCancelHoldingV1/README.md)
+
 [Scoped cancellation retry V1](Design/UnitDirectiveCancelRetryV1/README.md)
 
 [分隊原本の物理取消 V1](Design/UnitDirectiveCancellationV1/README.md) — 現在の完成条件と検証境界。

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1905,
-  "baseline_passed": 1885,
-  "added": 20,
-  "scope": "UnitDirectiveCancelRetryTests20: fixed original cancellation, known actual failure,immutable requested time/deadline/max3,one canonical root effect,actual copy return address,known-only status,same-generation selection and legacy save compatibility"
+  "expected_passed": 1923,
+  "baseline_passed": 1905,
+  "added": 18,
+  "scope": "UnitDirectiveCancelHoldingTests18: opt-in retained physical cancellation, real return, fixed known recipient, one canonical effect, duplicate original/copy, future effect notice, lost acknowledgment recovery, immutable initial loss, cargo/holder/frame coherence and old-save omission"
 }

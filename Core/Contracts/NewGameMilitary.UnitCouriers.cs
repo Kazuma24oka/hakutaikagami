@@ -18,6 +18,7 @@ public static partial class NewGameMilitary
             foreach(var f in (x?.Flights??[]).Where(f=>f.At<=at&&at<f.DueAt))Add(f.Carrier,f.Origin,f.Route,"移動中の伝令");
             foreach(var f in w.NewMilitary?.CommandHolding?.Outcomes.Where(f=>f.Received&&f.At<=at&&at<f.DueAt)??[])Add(f.Carrier,f.Origin,f.Route,"戻りの伝令");
             foreach(var f in w.NewMilitary?.Cancellation?.Notices.Where(f=>f.At<=at&&at<f.DueAt)??[])Add(f.Carrier,f.Origin,f.Route,"戻りの伝令");
+            foreach(var f in DirectiveCancelAckFlights(w).Where(f=>f.At<=at&&at<f.DueAt))Add(f.Carrier,f.Origin,f.Route,"取消原本の遅着返書伝令");
             foreach(var f in DirectiveAckFlights(w).Where(f=>f.At<=at&&at<f.DueAt))Add(f.Carrier,f.Origin,f.Route,"分隊原本の遅着返書伝令");
             foreach(var f in w.NewMilitary?.UnitDirective?.Cancellation?.Notices.Where(f=>f.At<=at&&at<f.DueAt)??[])Add(f.Carrier,f.Origin,f.Route,"分隊取消の効力通知伝令");
             foreach(var t in w.NewMilitary?.HeldDelivery?.Transfers.Where(t=>t.At<=at&&at<t.DueAt)??[])Add(t.Carrier,t.Origin,t.Route,"書状を運ぶ伝令");

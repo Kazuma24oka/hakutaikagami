@@ -17,17 +17,13 @@ public static partial class NewGameMilitary
     static UnitDirectiveLateOutcome[] DirectiveAckFlights(ContractWorld w)=>w.NewMilitary?.UnitDirective?.Holding?.Outcomes.Where(f=>f.Received).ToArray()??[];
     static UnitReplyHolding[] ExpectedDirectivePapers(ContractWorld w)
     {
-        var originals=UnitDispatches(w).Where(d=>HoldsDirectiveOriginal(w,d)).SelectMany(d=>{
-            var r=UnitReceipts(w).SingleOrDefault(r=>r.Id==d.Id&&!r.Delivered);var returned=r==null?null:UnitReplies(w).SingleOrDefault(a=>a.Id==d.Id);if(r==null||returned==null)return Array.Empty<UnitReplyHolding>();
-            var paper=new UnitReplyHolding(d.Message,d.Attempt,UnitCourier(d.Id),r.ReplyDestination,returned.At,returned.Revision);
-            return returned.Received?[paper]:new[]{paper,new UnitReplyHolding(r.ReplyMessage,r.ReplyAttempt,UnitCourier(d.Id),r.ReplyDestination,returned.At,returned.Revision)};
-        });
+        var originals=ReturnedOriginalPapers(w,d=>HoldsDirectiveOriginal(w,d));
         var acks=(w.NewMilitary?.UnitDirective?.Holding?.Acks??[]).Where(a=>!a.Received).Select(a=>{var f=DirectiveAckFlights(w).Single(f=>f.ReplyAttempt==a.Attempt);return new UnitReplyHolding(f.ReplyMessage!,a.Attempt,f.Carrier,f.Destination,a.At,a.Revision);});
         return originals.Concat(acks).OrderBy(h=>h.Revision).ThenBy(h=>h.Attempt,StringComparer.Ordinal).ToArray();
     }
     static void UpdateDirectiveHolding(ContractWorld w)
     {
-        if(w.NewMilitary?.UnitDirective?.Holding==null)return;
+        UpdateDirectiveCancelHolding(w);if(w.NewMilitary?.UnitDirective?.Holding==null)return;
         foreach(var f in DirectiveAckFlights(w).Where(f=>f.DueAt<=w.ElapsedSeconds&&!w.NewMilitary.UnitDirective.Holding.Acks.Any(a=>a.Attempt==f.ReplyAttempt)).ToArray()){
             Need(f.DueAt==w.ElapsedSeconds,"分隊原本の遅着返書到達を飛ばしました");var x=w.NewMilitary.UnitDirective.Holding;bool received=w.Messaging.Attempts.Single(a=>a.Id==f.ReplyAttempt).Status==AttemptStatus.Delivered;
             w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Holding=x with{Acks=[..x.Acks,new(f.ReplyAttempt!,w.ElapsedSeconds,w.CommitSequence,received)]}}};
@@ -40,7 +36,7 @@ public static partial class NewGameMilitary
             var a=w.Messaging.Attempts.Single(a=>a.Id==f.ReplyAttempt);if(a.Status==AttemptStatus.InTransit&&RegionalGround.Distance(PhysicalPerson(w,w.ElapsedSeconds),f.Destination)>1000)MessageFlow.Fail(w.Messaging,f.ReplyMessage!);
         }
     }
-    static bool DirectiveCarrierIdle(ContractWorld w,EntityId carrier)=>!(w.NewMilitary?.UnitDirective?.Cancellation?.Notices.Any(n=>n.Carrier==carrier&&n.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.HeldDelivery?.Transfers.Any(t=>t.Carrier==carrier&&t.DueAt>w.ElapsedSeconds)??false)&&!DirectiveAckFlights(w).Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)&&!(w.NewMilitary?.CommandHolding?.Outcomes.Any(f=>f.Carrier==carrier&&f.Received&&f.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.Cancellation?.Notices.Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)??false);
+    static bool DirectiveCarrierIdle(ContractWorld w,EntityId carrier)=>!DirectiveCancelAckFlights(w).Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)&&!(w.NewMilitary?.UnitDirective?.Cancellation?.Notices.Any(n=>n.Carrier==carrier&&n.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.HeldDelivery?.Transfers.Any(t=>t.Carrier==carrier&&t.DueAt>w.ElapsedSeconds)??false)&&!DirectiveAckFlights(w).Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)&&!(w.NewMilitary?.CommandHolding?.Outcomes.Any(f=>f.Carrier==carrier&&f.Received&&f.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.Cancellation?.Notices.Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)??false);
     static UnitReplyHolding? PickDirectivePaper(ContractWorld w,UnitDirectiveHandoffInput p)
     {
         if(w.NewMilitary?.UnitDirective?.Holding==null||!RecognitionEnabled(w)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)||!Deployed(w)||DirectiveOriginal(w,p.Original) is not {} root||!SameMilitaryCase(w,root)||root.Recipient!=p.Known.Unit||SelectKnownTarget(w,p.Known.Unit)!=p.Known)return null;
