@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
-public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd, Handoff, Reclaim, Withdraw, Rejoin, Attach, Observe, RemoteRecall, PersonalHome, PersonalMove, AutoRout, RetryRecallKnown, RetryRecallHome, InquireUnitKnown, InquireUnitHome, TakeHeldReply, ReturnHeldReportHome, DeliverHeldRecallHome, CancelRecallKnown, CancelRecallHome, RetryCancelKnown, RetryCancelHome, DeliverHeldCancelHome }
+public enum NewMilitaryAction { Request, Accept, Pickup, Load, Unload, Deploy, Form, Hold, Recall, Enter, Report, Return, Inquire, CombatPermit, CombatStart, CombatEnd, Handoff, Reclaim, Withdraw, Rejoin, Attach, Observe, RemoteRecall, PersonalHome, PersonalMove, AutoRout, RetryRecallKnown, RetryRecallHome, InquireUnitKnown, InquireUnitHome, TakeHeldReply, ReturnHeldReportHome, DeliverHeldRecallHome, CancelRecallKnown, CancelRecallHome, RetryCancelKnown, RetryCancelHome, DeliverHeldCancelHome, ObserveField }
 public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long Amount=0,FieldPoint? A=null,FieldPoint? B=null)
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -10,6 +10,8 @@ public sealed record NewMilitaryInput(EntityId Id,NewMilitaryAction Action,long 
     public string? CycleContract {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? ExercisePolicy {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? ObservationPolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? PostPolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -45,6 +47,8 @@ public sealed record NewMilitaryState(int Schema,string Contract,NewMilitaryTerm
     public UnitCommandHoldingState? CommandHolding {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public UnitCancellationState? Cancellation {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public MilitaryObservationState? Observation {get;init;}
 }
 public sealed record NewMilitaryView(string Status,bool CanRequest,bool CanAccept,bool CanPickup,bool Custody,bool Deployed,bool Returning,long Carry,bool CanEnter);
 
@@ -87,7 +91,7 @@ public static partial class NewGameMilitary
         var known=CaseEvents(w,t,r).Where(e=>Known(w,e,t,r)).Select(e=>(Event:e,Notice:Read(w,e))).OrderBy(e=>e.Notice.EffectiveAt).ThenBy(e=>e.Notice.Effect==MilitaryEffect.Returned?1:0).ToArray();
         bool permission=known.Any(e=>e.Notice.Effect==MilitaryEffect.Permission),returned=known.Any(e=>e.Notice.Effect==MilitaryEffect.Returned),answered=CaseRequests(w,t,r).Any(q=>q.Input.Action==NewMilitaryAction.Accept),picked=CaseRequests(w,t,r).Any(q=>q.Input.Action==NewMilitaryAction.Pickup),returning=Returning(w,t,r);
         var offer=known.FirstOrDefault(e=>e.Notice.Effect==MilitaryEffect.Offered);bool closed=known.Any(e=>e.Notice.Effect is MilitaryEffect.Expired or MilitaryEffect.Refused);
-        string status=returned?"指揮返還の通知を確認":returning?"指揮返還願い発送・帰還/兵糧/返報の確認待ち":picked?Detached(w)?"本人は部隊と別行動・部隊の現況は未確認":"主家兵"+TotalStrength(w,t)+"を現地引受":permission?"軍務許可を確認・兵は未引受":closed?"軍務の不承諾・期限切れを確認":offer.Event!=null?answered?"軍務回答発送・許可未確認":"軍務条件を開封・回答可能":"軍務申し出発送・結果未確認";
+        string status=returned?"指揮返還の通知を確認":returning?"指揮返還願い発送・帰還/兵糧/返報の確認待ち":picked?Detached(w)?"本人は部隊と別行動・部隊の現況は未確認":RecognitionEnabled(w)&&!AllOwnCurrentlySeen(w)?"主家兵の指揮中・全隊の現況は未確認":"主家兵"+TotalStrength(w,t)+"を現地引受":permission?"軍務許可を確認・兵は未引受":closed?"軍務の不承諾・期限切れを確認":offer.Event!=null?answered?"軍務回答発送・許可未確認":"軍務条件を開封・回答可能":"軍務申し出発送・結果未確認";
         return new((Cases(w).Length>1?"軍務"+Cases(w).Length+"：":"")+status,CanRenewKnown(w,t,r),offer.Event!=null&&t<offer.Notice.Deadline&&!answered&&!closed,permission&&!picked&&!returned&&service.Principal==s.Terms.Principal,picked&&!returned,DeployedAt(w,t),returning,CarryAt(w,t,r),picked&&!returned&&DeployedAt(w,t)&&!RoutActive(w)&&AtHome(w)&&PersonPosition(w,t)==Home(w,0));
     }
     public static long CarryAt(ContractWorld w,long at,long rev)=>w.NewMilitary is {} s?s.Moves.Where(m=>s.Requests.Any(q=>q.Input.Id==m.Id&&Before(q.At,q.Revision,at,rev))).Sum(m=>m.Loading?m.Amount:-m.Amount)-s.Uses.Where(u=>u.From<at).Sum(u=>Math.Min(u.Consumed,checked(u.Soldiers*(Math.Min(at,u.Until)-u.From)))):0;
@@ -105,17 +109,18 @@ public static partial class NewGameMilitary
     }
     public static void Dispatch(ContractWorld w,NewMilitaryInput input)
     {
+        Need(input.ObservationPolicy==null||(input.Action is NewMilitaryAction.Request or NewMilitaryAction.ObserveField)&&input.ObservationPolicy==ObservationContract,"観測方針は版付きの軍務申出で指定します");
         Need(input.ExercisePolicy==null||(input.Action is NewMilitaryAction.CombatPermit or NewMilitaryAction.CombatStart)&&input.ExercisePolicy==RepeatedExerciseContract,"未知の反復演習方針です");Need(input.ExercisePolicy==null||input.Action!=NewMilitaryAction.CombatStart||input.MotionContract==RoutContract,"新しい反復演習では敗走経路を明示します");Need(input.CycleContract==null||input.Action==NewMilitaryAction.Request&&input.CycleContract==RenewalContract,"再任方針は軍務の申出だけに指定します");Need(CancellationAction(input.Action)?input.TargetOriginal is {} target&&EntityId.IsValid(target.Value):input.TargetOriginal==null,"取消対象は本人が発した原撤退命令です");Need(input.RequestedEffectiveAt==null||CancellationAction(input.Action)&&input.RequestedEffectiveAt>=w.ElapsedSeconds,"取消効力の要求時刻が不正です");Need(input.TransportPolicy==null||SenderEvidenceAction(input.Action)&&input.TransportPolicy==UnitSenderEvidenceContract,"未知の送信者受領証拠方針です");Need(input.DeliverBy==null||(input.Action==NewMilitaryAction.RemoteRecall||CancellationAction(input.Action))&&input.DeliverBy>=checked(w.ElapsedSeconds+1),"撤退命令の期限は本人が発送した後の正式受領時刻で指定します");Need(input.OriginalPolicy==null||input.Action==NewMilitaryAction.RemoteRecall&&input.OriginalPolicy==UnitCommandHoldingContract,"未知の原命令保持方針です");Need(input.PostPolicy==null||ReplyPolicyAction(input.Action)&&input.PostPolicy==UnitReplyRecoveryContract,"未知の返書配送方針です");Need(input.MotionContract==null||input.Action==NewMilitaryAction.CombatStart&&input.MotionContract==RoutContract,"未知の交戦移動契約です");Need(Enum.IsDefined(input.Action)&&EntityId.IsValid(input.Id.Value)&&input.Amount>=0,"軍務入力が不正です");var v=View(w);
         if(input.Action==NewMilitaryAction.Request){if(w.NewMilitary==null){Need(v.CanRequest&&input.CycleContract==null,"現地で主君に最初の軍務を申し出てください");w.NewMilitary=new(1,Contract,Terms(w,input.Id),[],[],[],[],[],[],[],[]);}else Need(input.CycleContract==RenewalContract&&CanRenew(w),"前案件の終了を確認し、指揮と兵糧を返して同じ主君に会ってください");}
         var s=w.NewMilitary??throw new InvalidDataException("軍務の申し出がありません");bool custody=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence),deployed=Deployed(w),returning=Returning(w,w.ElapsedSeconds,w.CommitSequence);
         Need(input.Action switch{
-            NewMilitaryAction.Request=>true,NewMilitaryAction.Accept=>v.CanAccept,
+            NewMilitaryAction.ObserveField=>input.ObservationPolicy==ObservationContract&&!RecognitionEnabled(w),NewMilitaryAction.Request=>true,NewMilitaryAction.Accept=>v.CanAccept,
             NewMilitaryAction.Pickup=>v.CanPickup&&!returning&&Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Returned)&&Local(w)&&AtHome(w)&&NewGameService.BoundAt(w,s.Terms.Principal,w.ElapsedSeconds,w.CommitSequence)&&!TravelWorld.Active(w),
             NewMilitaryAction.Load or NewMilitaryAction.Unload=>custody&&!deployed&&Local(w)&&AtHome(w)&&(input.Action==NewMilitaryAction.Unload||!returning),
             NewMilitaryAction.Deploy=>custody&&!deployed&&Local(w)&&AtHome(w)&&v.Carry>0&&!returning&&!TravelWorld.Active(w)&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is ExecutionPhase.Running or ExecutionPhase.Waiting),
-            NewMilitaryAction.Form or NewMilitaryAction.Hold=>custody&&deployed&&!Detached(w)&&!returning&&v.Carry>0&&!CombatActive(w)&&!RoutActive(w),
+            NewMilitaryAction.Form or NewMilitaryAction.Hold=>(!RecognitionEnabled(w)||AllOwnCurrentlySeen(w))&&custody&&deployed&&!Detached(w)&&!returning&&v.Carry>0&&!CombatActive(w)&&!RoutActive(w),
             NewMilitaryAction.Recall=>custody&&deployed&&!Detached(w),NewMilitaryAction.Enter=>custody&&deployed&&!RoutActive(w)&&AtHome(w)&&PersonPosition(w,w.ElapsedSeconds)==Home(w,0),
-            NewMilitaryAction.Report=>custody&&!Detached(w),
+            NewMilitaryAction.Report=>custody&&!Detached(w)&&(!RecognitionEnabled(w)||AllOwnCurrentlySeen(w)),
             NewMilitaryAction.Return=>!returning&&v.CanPickup||!returning&&v.Custody,
             NewMilitaryAction.CombatPermit=>custody&&!returning&&(!CombatStarted(w)||input.ExercisePolicy==RepeatedExerciseContract)&&!CaseRequests(w).Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit),NewMilitaryAction.CombatStart=>CanStartCombat(w,input.ExercisePolicy),NewMilitaryAction.CombatEnd=>CombatActive(w),NewMilitaryAction.Inquire=>true,_=>WithdrawalAllowed(w,input)||UnitRetryAllowed(w,input.Action,input.TransportPolicy)||UnitInquiryAllowed(w,input.Action)||HeldAllowed(w,input.Action)||CancellationAllowed(w,input.Action,input.TargetOriginal)},"軍務の許可・現地引受・兵糧・帰還条件が不足しています");
         Need(input.Action is NewMilitaryAction.Load or NewMilitaryAction.Unload?input.Amount>0:input.Amount==0,"兵糧数量は受渡しだけに指定します");Need(input.Action==NewMilitaryAction.Form?input.A!=null&&input.B!=null:input.Action==NewMilitaryAction.PersonalMove?input.A!=null&&input.B==null:input.A==null&&input.B==null,"配置線は配置だけに指定します");

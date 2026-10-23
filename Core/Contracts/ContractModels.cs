@@ -88,6 +88,15 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 // All sections are required even when empty. Mutable DTO never escapes a live session.
 public sealed class ContractWorld
 {
+    // Restricted to read-only military observation reconstruction. BeforeState replaces
+    // immutable record/array sections; only MessageFlow has mutable nested state.
+    internal ContractWorld ForkMilitaryObservation()
+    {
+        var copy=(ContractWorld)MemberwiseClone();
+        copy.Messaging=ContractJson.Copy(Messaging);
+        if(NewMilitary!=null)copy.NewMilitary=NewMilitary with{Observation=null};
+        return copy;
+    }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TerrainAtlasState? Atlas { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

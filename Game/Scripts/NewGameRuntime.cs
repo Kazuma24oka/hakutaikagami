@@ -103,7 +103,7 @@ public partial class NewGameRuntime : Control
     void UpdateTerrain(FieldPoint center)
     {
         var tile=ContinuousWorld.TileAt(center);
-        if(terrainTile!=tile||terrainSpan!=Span){terrain.Position=Vector3.Zero;terrainOrigin=ContinuousWorld.Point(tile.Node,tile.X*ContinuousWorld.Tile,tile.Y*ContinuousWorld.Tile);terrain.Update(terrainOrigin,Span);terrainTile=tile;terrainSpan=Span;}
+        if(terrainTile!=tile||terrainSpan!=Span){terrain.Position=Vector3.Zero;terrainOrigin=ContinuousWorld.Point(tile.Node,tile.X*ContinuousWorld.Tile,tile.Y*ContinuousWorld.Tile);terrain.Update(terrainOrigin,Math.Min(Span,240f));terrainTile=tile;terrainSpan=Span;}
         terrain.Position=new((terrainOrigin.X-center.X)/1000f,0,-(terrainOrigin.Y-center.Y)/1000f);
     }
     static double MilitaryDistance(ContractWorld w,int unit,double time)

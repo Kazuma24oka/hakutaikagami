@@ -1,3 +1,5 @@
+- 現在：[本人の目撃・返書と軍務表示](Design/RecognizedMilitaryV1/README.md)（完成判定は同工程のverification.json）。前工程b7cc152の実績と現行の検証状態を区別する。
+
 [現行工程：反復演習と生涯の損耗](Design/RepeatedExerciseV1/README.md)
 
 以下は各当時の工程履歴として保持する。

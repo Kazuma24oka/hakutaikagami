@@ -1346,3 +1346,13 @@ Docs/Design/RepeatedExerciseV1/*.md -text whitespace=trailing-space,space-before
 Docs/Design/RepeatedExerciseV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/verify_repeated_exercise.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_repeated_exercise_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Recognition.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Observation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryRecognitionTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Recognition.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RecognitionChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RecognizedMilitaryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RecognizedMilitaryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_recognized_military.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_recognized_military_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

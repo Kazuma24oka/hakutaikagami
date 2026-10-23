@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "status": "contract_implemented_completion_in_verification_json",
+  "completion_criteria": 5,
+  "baseline_tests": 1739,
+  "added_tests": 20,
+  "expected_tests": 1759,
+  "new_cases": {
+    "known-withdraw": 16,
+    "known-spread": 16
+  },
+  "range_mm_trial": 80000,
+  "legacy_observation_omitted": true,
+  "limits": [
+    "No final terrain occlusion or nationwide performance acceptance",
+    "No uncertain full-army report or remote formation UI yet",
+    "Current3D/label quality remains prototype"
+  ]
+}

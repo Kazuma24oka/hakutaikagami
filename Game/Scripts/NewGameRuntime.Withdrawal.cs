@@ -15,15 +15,17 @@ public partial class NewGameRuntime
         if(separateLead!=null)separateLead.Visible=false;if(baggage!=null)baggage.Visible=baggageLabel!.Visible=false;foreach(var slot in courierActors.Values){slot.Marker.Visible=slot.Label.Visible=false;slot.Marker.Position=Vector3.Zero;}
         if(w.NewMilitary?.Withdrawal is not {} x)return;
         if(separateLead==null){separateLead=new(){Scale=Vector3.One*2};stage.AddChild(separateLead);separateLead.Apply(Officer3DCustomActor.Preset("veteran"));baggage=new(){Mesh=new BoxMesh{Size=new(1.2f,.9f,.8f)},MaterialOverride=new StandardMaterial3D{AlbedoColor=new Color("957b42")}};stage.AddChild(baggage);baggageLabel=WorldLabel("40/baggage",14);baggageLabel.Text="本隊の兵糧";}
-        var p=NewGameMilitary.Position(w,0,w.ElapsedSeconds);var next=NewGameMilitary.Position(w,0,w.ElapsedSeconds+1);var current=new FieldPoint(p.X+(long)Math.Round((next.X-p.X)*fraction),p.Y+(long)Math.Round((next.Y-p.Y)*fraction));
-        separateLead.Position=WithdrawalPoint(current,center);separateLead.Visible=NewGameMilitary.Detached(w)&&RegionalGround.Distance(current,center)<150000;
-        var heading=new Vector2(next.X-p.X,-(next.Y-p.Y));separateLead.Rotation=new(0,heading==Vector2.Zero?0:Mathf.Atan2(heading.X,heading.Y),0);bool fighting=ExerciseFighting(w,0);string animation=fighting?"attack":next!=p?"walk":"idle";if(fighting)separateLead.Rotation=new(0,Mathf.Pi/2,0);var clip=separateLead.Player.GetAnimation(separateLead.Clips[animation]);double phase=next!=p?MilitaryDistance(w,0,w.ElapsedSeconds+fraction)/1000d/(separateLead.WalkStride*separateLead.Scale.Z)*clip.Length:w.ElapsedSeconds+fraction;separateLead.Freeze(animation,phase%clip.Length);
-        baggage!.Position=WithdrawalPoint(current,center,.5f)+Vector3.Right*1.3f;baggage.Visible=baggageLabel!.Visible=NewGameMilitary.UnitCarries(w)&&RegionalGround.Distance(current,center)<150000;PlaceWorldLabel(baggageLabel,baggage.Position+Vector3.Up);
+        bool observed=NewGameMilitary.RecognitionEnabled(w);var row=observed?RecognizedUnit(w,NewGameMilitary.UnitIds[0]):null;bool confirmed=!observed||row?.Live==true;
+        var p=observed?row?.Position??center:NewGameMilitary.Position(w,0,w.ElapsedSeconds);var next=observed?row?.Next??p:NewGameMilitary.Position(w,0,w.ElapsedSeconds+1);var current=new FieldPoint(p.X+(long)Math.Round((next.X-p.X)*fraction),p.Y+(long)Math.Round((next.Y-p.Y)*fraction));
+        separateLead.Position=WithdrawalPoint(current,center);separateLead.Visible=confirmed&&NewGameMilitary.Detached(w)&&RegionalGround.Distance(current,center)<150000;
+        var heading=new Vector2(next.X-p.X,-(next.Y-p.Y));separateLead.Rotation=new(0,heading==Vector2.Zero?0:Mathf.Atan2(heading.X,heading.Y),0);bool fighting=confirmed&&ExerciseFighting(w,0);string animation=fighting?"attack":next!=p?"walk":"idle";if(fighting)separateLead.Rotation=new(0,Mathf.Pi/2,0);var clip=separateLead.Player.GetAnimation(separateLead.Clips[animation]);double phase=next!=p?MilitaryDistance(w,0,w.ElapsedSeconds+fraction)/1000d/(separateLead.WalkStride*separateLead.Scale.Z)*clip.Length:w.ElapsedSeconds+fraction;separateLead.Freeze(animation,phase%clip.Length);
+        baggage!.Position=WithdrawalPoint(current,center,.5f)+Vector3.Right*1.3f;baggage.Visible=baggageLabel!.Visible=confirmed&&NewGameMilitary.UnitCarries(w)&&RegionalGround.Distance(current,center)<150000;PlaceWorldLabel(baggageLabel,baggage.Position+Vector3.Up);
         RenderPhysicalCouriers(w,center);
     }
     void RenderPhysicalCouriers(ContractWorld w,FieldPoint center)
     {
-        foreach(var frame in NewGameMilitary.CourierFrames(w,w.ElapsedSeconds)){
+        var frames=NewGameMilitary.RecognitionEnabled(w)?NewGameMilitary.ProjectNearbyMilitaryCouriers(w).Select(c=>new UnitCourierFrame(new(c.Token),c.Position,c.Next,"目の前の伝令",false)):NewGameMilitary.CourierFrames(w,w.ElapsedSeconds);
+        foreach(var frame in frames){
             if(!courierActors.TryGetValue(frame.Carrier,out var slot)){
                 var marker=new MeshInstance3D{Mesh=new SphereMesh{Radius=.4f,Height=.8f},MaterialOverride=new StandardMaterial3D{AlbedoColor=new Color("74d4db")}};stage.AddChild(marker);
                 var label=WorldLabel("50/unit-courier/"+frame.Carrier.Value,14);slot=(marker,label);courierActors[frame.Carrier]=slot;

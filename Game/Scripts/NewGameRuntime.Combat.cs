@@ -19,7 +19,9 @@ public partial class NewGameRuntime
         var combat=CachedExercise(w);
         for(int i=0;i<exerciseModels.Count;i++){
             var m=exerciseModels[i];m.Actor.Visible=m.Label.Visible=started&&NewGameMilitary.Deployed(w);if(!started){m.Actor.Position=Vector3.Zero;m.Actor.Rotation=Vector3.Zero;m.Label.Text="";continue;}
-            var p=NewGameMilitary.ExercisePosition(w,i);int men=combat.Opponents[i].Soldiers;int morale=combat.Opponents[i].Morale;
+            bool observed=NewGameMilitary.RecognitionEnabled(w);var row=observed?RecognizedUnit(w,combat.Opponents[i].Unit):null;
+            if(observed&&(row==null||!row.Live)){m.Actor.Visible=m.Label.Visible=false;m.Actor.Position=Vector3.Zero;m.Actor.Rotation=Vector3.Zero;m.Label.Text="";continue;}
+            var p=row?.Position??NewGameMilitary.ExercisePosition(w,i);int men=row?.Soldiers??combat.Opponents[i].Soldiers;int morale=row?.Morale??combat.Opponents[i].Morale;
             m.Actor.Position=new((p.X-center.X)/1000f,ContinuousWorld.Height(p)/1000f,-(p.Y-center.Y)/1000f);m.Actor.Rotation=new(0,-Mathf.Pi/2,0);string clip=ExerciseFighting(w,i)?"attack":"idle";m.Actor.Freeze(clip,(w.ElapsedSeconds+fraction)%m.Actor.Player.GetAnimation(m.Actor.Clips[clip]).Length);m.Label.Text="演習相手"+(NewGameMilitary.ExerciseNumber(w)>1?"（"+NewGameMilitary.ExerciseNumber(w)+"回目）":"")+" "+men;PlaceWorldLabel(m.Label,m.Actor.Position+Vector3.Up*6f);m.Actor.Visible=m.Label.Visible=m.Actor.Visible&&men>0;
         }
     }
