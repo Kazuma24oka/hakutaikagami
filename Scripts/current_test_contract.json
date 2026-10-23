@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2040,
-  "baseline_passed": 2010,
-  "added": 30,
-  "scope": "PreparedAdvance25+Integration5: opaque future, immutable source capture, exact atomic one-shot publication, cancellation/fault/concurrent input/save/load/important receipt/NPC/region/military/100person travel equivalence"
+  "expected_passed": 2055,
+  "baseline_passed": 2040,
+  "added": 15,
+  "scope": "PreparedPause15: exact existing SetPaused, private capture, cancellation/fault, stale/same-revision load, bidirectional race with prepared next-second, NPC/regional effects,1000person equality"
 }

@@ -192,3 +192,5 @@
 Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採用・変更理由、Proposalsは現行試作・検討中の詳細・履歴への案内、Archiveは旧案です。履歴は削除せず保持し、通常の設計導線から分けます。design/foundationと同期sourcesは編集しません。
 
 - 操作の手引き V1：`Design/PlayGuideV1/contract.json`、`Design/PlayGuideV1/verification.json`。閲覧操作が世界を変えないことと、実画面・保存復旧を検証する。
+
+- 開始・停止の画面応答 V1：`Design/ResponsiveClockV1/README.md`、`Design/ResponsiveClockV1/verification.json`。既存停止処理と同じ効果を私有準備し、実画面/保存復旧/取消を照合する。

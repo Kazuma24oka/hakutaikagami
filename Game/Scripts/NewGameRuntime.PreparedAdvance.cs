@@ -36,10 +36,11 @@ public partial class NewGameRuntime
         // Core only: no Godot nodes, live-session mutation or future view access.
         advanceJob=Task.Run(()=>capture.Prepare(token,fault));
     }
-    void InstallAdvanceDisplay(AdvancePublication publication)
+    void InstallAdvanceDisplay(AdvancePublication publication)=>InstallWorldDisplay(publication.Display);
+    void InstallWorldDisplay(ContractWorld display)
     {
         // Independent display copy was built on the worker, not on this frame.
-        cachedSession=Session;cachedWorld=publication.Display;cachedRevision=cachedWorld.CommitSequence;cachedSeconds=cachedWorld.ElapsedSeconds;cachedPaused=cachedWorld.Paused;
+        cachedSession=Session;cachedWorld=display;cachedRevision=cachedWorld.CommitSequence;cachedSeconds=cachedWorld.ElapsedSeconds;cachedPaused=cachedWorld.Paused;
         cachedBranches.Clear();cachedServiceView=null;cachedNearby=null;
     }
     bool PollPreparedAdvance(double delta)
@@ -78,6 +79,7 @@ public partial class NewGameRuntime
     }
     public override void _ExitTree()
     {
+        CancelClockControl(false);
         CancelAdvancePrefetch();
         if(advanceJob!=null){_ =advanceJob.ContinueWith(t=>{_=t.Exception;},CancellationToken.None,TaskContinuationOptions.OnlyOnFaulted,TaskScheduler.Default);advanceJob=null;}
         advanceStop?.Dispose();advanceStop=null;
