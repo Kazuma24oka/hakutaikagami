@@ -22,7 +22,7 @@ public static partial class NewGameMilitary
     public const string UnitDirectiveContract="known-own-recipient-fixed-point-local-scope-directive-v1";
     public const string UnitDirectiveRole="standing-unit-reception/scoped-directive-v1";
     static bool DirectiveAction(NewMilitaryAction a)=>a==NewMilitaryAction.SendUnitDirective;
-    public static bool UnitDirectiveAllowed(ContractWorld w)=>RecognitionEnabled(w)&&Detached(w)&&Deployed(w)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence);
+    public static bool UnitDirectiveAllowed(ContractWorld w)=>RecognitionEnabled(w)&&Detached(w)&&Deployed(w)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&CurrentPlacementAuthority(w);
     static void ValidateUnitDirectiveInput(ContractWorld w,NewMilitaryInput i)
     {
         Need(DirectiveAction(i.Action)==(i.Directive!=null),"分隊指示の操作と本文が一致しません");if(i.Directive is not {} x)return;

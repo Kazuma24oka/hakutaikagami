@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "contract": "explicit-real-issuer-source-case-unit-placement-only-mandate-v1",
+  "criteria": 5,
+  "tests": 1970,
+  "baseline": 1923,
+  "added": 47,
+  "save_checkpoints": 32
+}

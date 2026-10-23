@@ -1454,3 +1454,36 @@ Scripts/check_unit_directive_cancel_holding_binding.py -text whitespace=trailing
 Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/verify_unit_directive_cancel_holding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Tests/UnitDirectiveCancelHoldingTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for real military authority and internal own-head processing.
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+AGENTS.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Authority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.AuthorityScope.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Renewal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirective.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Validation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitaryAuthority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/RegionalCampaign.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryAuthorityV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryAuthorityV1/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryAuthorityV1/contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Development/CURRENT_STAGE.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Authority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Military.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_military_authority_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_military_authority.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryAuthorityKnowledgeTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryAuthorityPolicyTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryAuthorityScopeTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryIssuerAuthorityTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryOwnHeadAuthorityTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Authority actual entry and four save/restore scenarios.
+Game/Scripts/OfficerLibraryTrial.AuthorityChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol

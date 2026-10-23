@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1923,
-  "baseline_passed": 1905,
-  "added": 18,
-  "scope": "UnitDirectiveCancelHoldingTests18: opt-in retained physical cancellation, real return, fixed known recipient, one canonical effect, duplicate original/copy, future effect notice, lost acknowledgment recovery, immutable initial loss, cargo/holder/frame coherence and old-save omission"
+  "expected_passed": 1970,
+  "baseline_passed": 1923,
+  "added": 47,
+  "scope": "MilitaryIssuerAuthority16+Scope11+Policy10+OwnHead7+Knowledge3: actual issuer facts, source replay, scoped mandate, typed own internal decisions, return/reappointment, no unseen-result UI and legacy omission"
 }

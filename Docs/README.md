@@ -1,3 +1,5 @@
+- [実在主君・勢力と本人の軍務権限](Design/MilitaryAuthorityV1/README.md)
+
 - [分隊取消原本の実物保持・遅着](Design/UnitDirectiveCancelHoldingV1/README.md)
 
 [Scoped cancellation retry V1](Design/UnitDirectiveCancelRetryV1/README.md)
