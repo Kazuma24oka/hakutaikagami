@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1970,
-  "baseline_passed": 1923,
-  "added": 47,
-  "scope": "MilitaryIssuerAuthority16+Scope11+Policy10+OwnHead7+Knowledge3: actual issuer facts, source replay, scoped mandate, typed own internal decisions, return/reappointment, no unseen-result UI and legacy omission"
+  "expected_passed": 2010,
+  "baseline_passed": 1970,
+  "added": 40,
+  "scope": "StartProjection13+CompactAuthority13+CompactMilitary5+NearbyProjection3+OperationPanelSave6: same permission set, legacy omission, bounded exact-input reuse, nearfield equivalence, grouped population travel and real generation restore"
 }

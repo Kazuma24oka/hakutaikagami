@@ -15,7 +15,7 @@ public sealed record NearbyActor(EntityId Actor,RoutePoint Position,RoutePoint H
 public sealed record CourierView(string Attempt,string Message,string Destination,long? DispatchedAt,long? PlannedAt,
     RoutePoint? Position,string Status,RoutePoint? Heading,long? DistanceMm,RoutePoint? NextPosition,long? StepDistanceMm);
 
-public static class RegionalCampaign
+public static partial class RegionalCampaign
 {
     public const string Ruleset="owari-campaign-v1";
     static readonly RegionalBranchCatalog expansion=ReadExpansion();
@@ -195,6 +195,7 @@ public static class RegionalCampaign
     public static NearbyActor[] Nearby(ContractWorld w,EntityId observer)
     {
         if(!Enabled(w))throw new InvalidOperationException("Regional campaign required");var own=ActorPoint(w,observer);
+        if(NewGameWorld.Enabled(w))return NearbyNewGame(w,observer,own);
         return w.Characters.Where(c=>c.Id!=observer).Select(c=>BranchRoutes.View(w,new(c.Id,w.CommitSequence,w.ElapsedSeconds,w.Locations.Single(l=>l.Actor==c.Id),[],[],[])))
             .Where(v=>Math.Abs(v.Position.EastMm-own.EastMm)<=80000&&Math.Abs(v.Position.NorthMm-own.NorthMm)<=80000)
             .Select(v=>new NearbyActor(v.Knowledge.Observer,v.Position,v.Heading,v.DistanceMm,v.Walking,v.NextPosition,v.StepDistanceMm)).ToArray();

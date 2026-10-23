@@ -92,7 +92,7 @@ public sealed partial class WorldSession
     internal static bool Permits(ContractWorld s, EntityId actor, Intent i, long at)
     {
         if(!s.Characters.Any(c=>c.Id==actor && c.Life==LifeState.Adult)) return false;
-        return s.Grants.Any(g=>g.Agent==actor && g.Scope==i.Scope && g.Actions.Contains(i.Action) && g.From<=at && at<g.Until &&
+        return s.Grants.Any(g=>g.Agent==actor && (g.Scope==i.Scope || NewGameWorld.CompactPersonalScope(s,g,actor,i)) && g.Actions.Contains(i.Action) && g.From<=at && at<g.Until &&
             i.Amount<=g.Limit && (i.Action!=ActionKind.Transfer || g.Assets.Contains(i.SourceLot!.Value) &&
             s.ResourceLots.Any(l=>l.Id==i.SourceLot && l.Owner==g.Principal)));
     }

@@ -1,3 +1,5 @@
+- [新入口の人数増加・操作整理・通し確認](Design/PlayableLoopV1/README.md)
+
 - [実在主君・勢力と本人の軍務権限](Design/MilitaryAuthorityV1/README.md)
 
 - [分隊取消原本の実物保持・遅着](Design/UnitDirectiveCancelHoldingV1/README.md)

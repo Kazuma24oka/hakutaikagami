@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "tests": 2010,
+  "baseline": 1970,
+  "added": 40,
+  "criteria": 5,
+  "synthetic_counts": [
+    0,
+    100,
+    1000
+  ],
+  "runtime_graph": {
+    "nodes": 108,
+    "edges": 118,
+    "national_catalog_nodes": 101,
+    "national_catalog_edges": 111,
+    "regional_nodes": 7,
+    "regional_edges": 7
+  },
+  "limits": [
+    "Static synthetic registered people and selected-person travel; not nationwide NPC AI or simultaneous armies.",
+    "Compact authority is explicit only for new-entry worlds; old profile JSON, permissions and saves stay unchanged.",
+    "No game completion percentage or real-time performance certification follows from test counts."
+  ]
+}

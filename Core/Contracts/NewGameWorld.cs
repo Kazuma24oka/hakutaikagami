@@ -3,8 +3,12 @@ using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
 // Immutable authoring inputs are saved beside the live Core; they do not become the player's world knowledge.
-public sealed record NewGameState(int Schema, SetupScenario Start, RegisteredOfficer[] Registered, EntityId Selected, ulong Seed, int AdultAge);
-public static class NewGameWorld
+public sealed record NewGameState(int Schema, SetupScenario Start, RegisteredOfficer[] Registered, EntityId Selected, ulong Seed, int AdultAge)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? PersonalAuthorityLayout { get; init; }
+}
+public static partial class NewGameWorld
 {
     public const string Ruleset="new-game-personal-world-v1";
     public static readonly EntityId Basis=new("basis:new-game-start");
@@ -61,12 +65,12 @@ public static class NewGameWorld
         foreach(var c in data.Start.Castles.Where(c=>c.Faction!=null))lands.Add(Relation("land",ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Id)),new(c.Faction!),new(c.Id)));
         return(members.ToArray(),bonds.ToArray(),offices.ToArray(),lands.ToArray());
     }
-    static Grant[] Grants(NewGameState state)=>state.Start.People.SelectMany(p=>
+    static Grant[] Grants(NewGameState state)=>state.PersonalAuthorityLayout==CompactPersonalAuthority?CompactPersonalGrants(state):state.Start.People.SelectMany(p=>
         new[]{new Grant(new("grant:new-game/move/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id))),new(p.Id),new(p.Id),ContractFixture.Castle,[ActionKind.Move],Basis,0,long.MaxValue,0,[],false,0)}
         .Concat(NationalRoutes.Sites.Select(s=>new Grant(new("grant:new-game/inspect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id+"/"+s.Id.Value))),new(p.Id),new(p.Id),s.Id,[ActionKind.Inspect],Basis,0,long.MaxValue,0,[],false,0)))).ToArray();
     static void ValidateStart(NewGameState data)
     {
-        Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
+        Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");Need(data.PersonalAuthorityLayout is null or CompactPersonalAuthority,"本人権限の保存形式が不正です");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
         Need(data.Start.EpochDate=="1560-01-01","この候補は1560年開始です");
         Need(data.Start.People.Where(p=>!p.Created).OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name)).SequenceEqual(NationalPersonnel.Catalog.People.OrderBy(p=>p.Id.Value).Select(p=>(p.Id.Value,p.Name))),"史実人物の定義を無断追加・変更できません");
         Need(data.Start.Castles.Select(c=>c.Id).Order().SequenceEqual(NationalRoutes.Sites.Select(s=>s.Id.Value).Order()),"収録拠点の構成が違います");
@@ -83,9 +87,9 @@ public static class NewGameWorld
         }
         Need(data.Start.People.Where(p=>p.InitialRole==StartTemplate.Castellan).GroupBy(p=>p.Site).All(g=>g.Count()==1),"同じ城に複数の登録城主がいます");
     }
-    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022)
+    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null)
     {
-        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge);ValidateStart(data);
+        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout};ValidateStart(data);
         var w=TravelWorld.Create();w.NewGame=data;w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
         w.Definitions=w.Definitions with{Id=new("scenario:"+Ruleset),Ruleset=Ruleset,Version=Version(data),Characters=data.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray(),Organizations=data.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray(),AuthorityBases=[new(Basis,"新規ゲームの開始配置（役職・領土は試作設定）。個人の移動/自己点検以外の軍・徴収権を付与しない")],Armies=[]};
         w.Characters=data.Start.People.Select(p=>new CharacterState(new(p.Id),CanPlay(data.Start,p)?LifeState.Adult:LifeState.Minor,new("appearance:"+ContractJson.Hash(ContractJson.Write(Look(data,p.Id)))),0)).ToArray();
@@ -112,12 +116,12 @@ public static class NewGameWorld
     public static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.NewGame==null,"他の開始に新規ゲーム定義を混在できません");return;}
-        Need(w.NewGame!=null,"開始定義がありません");var d=w.NewGame;ValidateStart(d);
-        Need(w.PlayerControl==d.Selected&&w.Seed==d.Seed&&w.Definitions.Version==Version(d)&&w.EpochDate==d.Start.EpochDate,"開始人物・Seed・定義が一致しません");
-        Need(Same(w.Definitions.Characters,d.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray())&&Same(w.Definitions.Organizations,d.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray()),"世界の人物・勢力が開始定義と一致しません");
+        Need(w.NewGame!=null,"開始定義がありません");var d=w.NewGame;var projection=VerifiedStart(d);
+        Need(w.PlayerControl==d.Selected&&w.Seed==d.Seed&&w.Definitions.Version==projection.Version&&w.EpochDate==d.Start.EpochDate,"開始人物・Seed・定義が一致しません");
+        Need(ContractJson.CanonicalHash(w.Definitions.Characters)==projection.CharactersHash&&ContractJson.CanonicalHash(w.Definitions.Organizations)==projection.OrganizationsHash,"世界の人物・勢力が開始定義と一致しません");
         Need(w.Definitions.Armies.Length==0,"開始定義へ軍務の動的名簿を混在させることはできません");
-        var rel=InitialRelations(d);Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&Same(w.Offices,rel.Offices)&&Same(w.LandRights,rel.Lands)&&Same(w.Grants,Grants(d))&&(w.NewMilitary!=null||w.Units.Length==0&&w.ResourceLots.Length==0),"開始時の主従・土地・権限を無断変更できません");
-        foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==new EntityId("appearance:"+ContractJson.Hash(ContractJson.Write(Look(d,p.Id))))&&c.Life==(CanPlay(d.Start,p)?LifeState.Adult:LifeState.Minor),"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
+        var rel=projection.Relations;Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&ContractJson.CanonicalHash(w.Offices)==projection.OfficesHash&&ContractJson.CanonicalHash(w.LandRights)==projection.LandsHash&&ContractJson.CanonicalHash(w.Grants)==projection.GrantsHash&&(w.NewMilitary!=null||w.Units.Length==0&&w.ResourceLots.Length==0),"開始時の主従・土地・権限を無断変更できません");
+        foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==projection.People[p.Id].Appearance&&c.Life==projection.People[p.Id].Life,"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
         foreach(var r in w.Requests)ValidateOrderAt(w,r.Intent,r.CreatedAt);
     }
     public static Intent Inspect(ContractWorld w,string id)=>new(new(id),w.PlayerControl,w.PlayerControl,w.Locations.Single(l=>l.Actor==w.PlayerControl).Site??throw new InvalidDataException("到着してから点検してください"),ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,w.ElapsedSeconds+60,false,null,w.ElapsedSeconds+60),w.ElapsedSeconds,1,4,1,false,TaskKind.BindingOrder);
