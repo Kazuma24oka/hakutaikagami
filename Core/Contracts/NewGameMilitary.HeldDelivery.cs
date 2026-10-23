@@ -6,11 +6,11 @@ public sealed record UnitHeldDeliveryState(string Contract,UnitHeldTransfer[] Tr
 public static partial class NewGameMilitary
 {
     public const string UnitHeldContract="present-holder-actual-paper-registered-late-handover-once-per-attempt-v1";
-    static bool HeldAction(NewMilitaryAction a)=>a is NewMilitaryAction.TakeHeldReply or NewMilitaryAction.ReturnHeldReportHome or NewMilitaryAction.DeliverHeldRecallHome or NewMilitaryAction.DeliverHeldCancelHome;
+    static bool HeldAction(NewMilitaryAction a)=>a is NewMilitaryAction.TakeHeldReply or NewMilitaryAction.ReturnHeldReportHome or NewMilitaryAction.DeliverHeldRecallHome or NewMilitaryAction.DeliverHeldCancelHome or NewMilitaryAction.DeliverHeldUnitDirective;
     public static UnitReplyHolding[] HeldPapers(ContractWorld w,long at)
     {
         var rows=new List<UnitReplyHolding>();var x=w.NewMilitary?.HeldDelivery;
-        foreach(var h in (w.NewMilitary?.ReplyRecovery?.Holdings??[]).Concat(w.NewMilitary?.CommandHolding?.Holdings??[]).Concat(w.NewMilitary?.Cancellation?.Holdings??[]).Where(h=>h.At<=at)){
+        foreach(var h in (w.NewMilitary?.UnitDirective?.Holding?.Holdings??[]).Concat(w.NewMilitary?.ReplyRecovery?.Holdings??[]).Concat(w.NewMilitary?.CommandHolding?.Holdings??[]).Concat(w.NewMilitary?.Cancellation?.Holdings??[]).Where(h=>h.At<=at)){
             var moves=x?.Transfers.Where(t=>t.At<=at&&t.Cargo.Contains(h.Attempt)).OrderBy(t=>t.Revision).ToArray()??[];
             if(moves.Any(t=>t.Attempt==h.Attempt&&x!.Arrivals.Any(a=>a.Id==t.Id&&a.At<=at&&a.Received)))continue;
             rows.Add(h with{Position=HeldCarrierPosition(w,h,at)});
@@ -19,18 +19,18 @@ public static partial class NewGameMilitary
     }
     static UnitReplyHolding? PickHeld(ContractWorld w,NewMilitaryAction action)
     {
-        if(!HeldAction(action)||w.NewMilitary?.ReplyRecovery==null&&w.NewMilitary?.CommandHolding==null&&w.NewMilitary?.Cancellation==null)return null;
+        if(!HeldAction(action)||DirectiveHandoffAction(action)||w.NewMilitary?.ReplyRecovery==null&&w.NewMilitary?.CommandHolding==null&&w.NewMilitary?.Cancellation==null&&w.NewMilitary?.UnitDirective?.Holding==null)return null;
         var person=PhysicalPerson(w,w.ElapsedSeconds);if(person!=PhysicalPerson(w,w.ElapsedSeconds+1))return null;
         return HeldPapers(w,w.ElapsedSeconds).Where(h=>{
             var a=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);var m=w.Messaging.Messages.Single(m=>m.Id==h.Message);
             bool allowed=action==NewMilitaryAction.TakeHeldReply?m.RecipientId==w.PlayerControl.Value:(action==NewMilitaryAction.DeliverHeldRecallHome?m.Kind=="unit-post-order"&&w.NewMilitary.CommandHolding!=null:action==NewMilitaryAction.DeliverHeldCancelHome?m.Kind=="unit-post-cancel"&&w.NewMilitary.Cancellation!=null:m.Kind=="delivery-failure")&&m.RecipientId==UnitIds[0].Value&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w);
-            return allowed&&!(w.NewMilitary.Cancellation?.Notices.Any(f=>f.Carrier==h.Holder&&f.DueAt>w.ElapsedSeconds)??false)&&HeldWithinDeadline(w,m,h,action)&&!(w.NewMilitary.CommandHolding?.Outcomes.Any(t=>t.Carrier==h.Holder&&t.Received&&t.DueAt>w.ElapsedSeconds)??false)&&a.Status==AttemptStatus.Lost&&a.LateDueAt==null&&RegionalGround.Distance(person,h.Position)<=1000&&!(w.NewMilitary.HeldDelivery?.Transfers.Any(t=>t.Carrier==h.Holder&&t.DueAt>w.ElapsedSeconds)??false);
+            return allowed&&DirectiveCarrierIdle(w,h.Holder)&&!(w.NewMilitary.Cancellation?.Notices.Any(f=>f.Carrier==h.Holder&&f.DueAt>w.ElapsedSeconds)??false)&&HeldWithinDeadline(w,m,h,action)&&!(w.NewMilitary.CommandHolding?.Outcomes.Any(t=>t.Carrier==h.Holder&&t.Received&&t.DueAt>w.ElapsedSeconds)??false)&&a.Status==AttemptStatus.Lost&&a.LateDueAt==null&&RegionalGround.Distance(person,h.Position)<=1000&&!(w.NewMilitary.HeldDelivery?.Transfers.Any(t=>t.Carrier==h.Holder&&t.DueAt>w.ElapsedSeconds)??false);
         }).OrderByDescending(h=>h.At).ThenBy(h=>h.Attempt,StringComparer.Ordinal).FirstOrDefault();
     }
     public static bool HeldAllowed(ContractWorld w,NewMilitaryAction action)=>PickHeld(w,action)!=null;
     static void ApplyHeld(ContractWorld w,NewMilitaryInput i)
     {
-        if(!HeldAction(i.Action))return;var h=PickHeld(w,i.Action)!;var to=i.Action==NewMilitaryAction.TakeHeldReply?PhysicalPerson(w,w.ElapsedSeconds):Home(w,0);
+        if(!HeldAction(i.Action))return;if(DirectiveHandoffAction(i.Action)){ApplyDirectiveHandoff(w,i);return;}var h=PickHeld(w,i.Action)!;var to=i.Action==NewMilitaryAction.TakeHeldReply?PhysicalPerson(w,w.ElapsedSeconds):Home(w,0);
         var cargo=HeldPapers(w,w.ElapsedSeconds).Where(p=>p.Holder==h.Holder).Select(p=>p.Attempt).OrderBy(x=>x,StringComparer.Ordinal).ToArray();
         var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var attempt=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);
         MessageFlow.ScheduleLate(w.Messaging,h.Message,attempt.Number,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
@@ -49,7 +49,7 @@ public static partial class NewGameMilitary
     {
         foreach(var t in w.NewMilitary?.HeldDelivery?.Transfers.Where(t=>t.DueAt<=w.ElapsedSeconds&&!w.NewMilitary.HeldDelivery.Arrivals.Any(a=>a.Id==t.Id)).ToArray()??[]){
             Need(t.DueAt==w.ElapsedSeconds,"保持紙の受渡し境界を飛ばしました");var a=w.Messaging.Attempts.Single(a=>a.Id==t.Attempt);var p=HeldRecipient(w,t);bool present=HeldPresent(w,t,p);var x=w.NewMilitary!.HeldDelivery!;
-            w.NewMilitary=w.NewMilitary with{HeldDelivery=x with{Arrivals=[..x.Arrivals,new(t.Id,w.ElapsedSeconds,w.CommitSequence,p,present,a.Status==AttemptStatus.Delivered&&a.ArrivedLate)]}};HeldOrderOutcome(w,t,a.Status==AttemptStatus.Delivered&&a.ArrivedLate);
+            w.NewMilitary=w.NewMilitary with{HeldDelivery=x with{Arrivals=[..x.Arrivals,new(t.Id,w.ElapsedSeconds,w.CommitSequence,p,present,a.Status==AttemptStatus.Delivered&&a.ArrivedLate)]}};HeldOrderOutcome(w,t,a.Status==AttemptStatus.Delivered&&a.ArrivedLate);HeldDirectiveOutcome(w,t,a.Status==AttemptStatus.Delivered&&a.ArrivedLate);UpdateDirectiveHolding(w);
         }
     }
     static UnitHeldDeliveryState? HeldBefore(NewMilitaryState? s,long at,long rev)=>s?.HeldDelivery is not {} x||!s.Requests.Any(q=>HeldAction(q.Input.Action)&&Before(q.At,q.Revision,at,rev))?null:x with{Transfers=x.Transfers.Where(t=>Before(t.At,t.Revision,at,rev)).ToArray(),Arrivals=x.Arrivals.Where(t=>Before(t.At,t.Revision,at,rev)).ToArray()};

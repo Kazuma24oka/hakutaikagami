@@ -1396,3 +1396,11 @@ Core/Contracts/NewGameMilitary.UnitDirectiveRetry.cs -text
 Tests/UnitDirectiveRetryTests.cs -text
 Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs -text
 Game/Scripts/NewGameFrontEnd.UnitDirectiveRetryChecks.cs -text
+
+Docs/Design/UnitDirectiveHoldingV1/** -text
+Scripts/verify_unit_directive_holding.py -text
+Scripts/check_unit_directive_holding_binding.py -text
+Core/Contracts/NewGameMilitary.UnitDirectiveHolding.cs -text
+Tests/UnitDirectiveHoldingTests.cs -text
+Game/Scripts/NewGameRuntime.UnitDirectiveHolding.cs -text
+Game/Scripts/NewGameFrontEnd.UnitDirectiveHoldingChecks.cs -text

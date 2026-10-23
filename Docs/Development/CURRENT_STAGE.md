@@ -1,3 +1,11 @@
+# 現在：分隊原本の実物保持・遅着
+
+[完成条件5件](../Design/UnitDirectiveHoldingV1/README.md)。前工程c2656a2は当時5/5。現行は本工程verification.jsonで判定し、未生成/不一致なら未完了。
+
+次の5件：本工程の検証/push、個別取消、実在権限、全国負荷、通常操作。判断不要なら継続。
+
+以下は過去工程の記録。
+
 # 現在：分隊原本を指定した再送
 
 [完成条件5件](../Design/UnitDirectiveRetryV1/README.md)。前工程a54218eは当時5/5。現行は本工程verification.jsonで判定する。未生成/不一致なら未完了。

@@ -1,3 +1,5 @@
+[分隊原本の実物保持・遅着と現行条件](Design/UnitDirectiveHoldingV1/README.md)
+
 [分隊原本の明示再送と現行の完成条件](Design/UnitDirectiveRetryV1/README.md)
 
 [分隊別の移動・待機・帰還と現行の完成条件](Design/UnitDirectiveV1/README.md)

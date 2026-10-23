@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1834,
-  "baseline_passed": 1822,
-  "added": 12,
-  "scope": "UnitDirectiveRetryTests(12): explicit immutable original copy to all three own posts, sender-known physical failure, original deadline and priority, strict references, idempotence and full restoration"
+  "expected_passed": 1858,
+  "baseline_passed": 1834,
+  "added": 24,
+  "scope": "UnitDirectiveHoldingTests(24): retained actual original/carrier, fixed handover, all3posts x3arrival orders one root effect, late ack physical recovery, no retro paper, forged references, expiry, missing post, ended real command despite unknown notice, strict replay"
 }

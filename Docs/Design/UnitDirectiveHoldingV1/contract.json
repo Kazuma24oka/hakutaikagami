@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "contract": "declared-retained-directive-original-physical-fixed-handover-once-v1",
+  "criteria": 5,
+  "tests": 1858,
+  "baseline": 1834,
+  "added": 24,
+  "save_checkpoints": 32
+}
