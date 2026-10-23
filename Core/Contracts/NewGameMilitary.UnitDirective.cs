@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 public enum UnitDirectiveKind { Move, Hold, Recall }
-public enum UnitDirectiveOutcome { Applied, Superseded, AuthorityEnded, RoutActive, PathBlocked }
+public enum UnitDirectiveOutcome { Applied, Superseded, AuthorityEnded, RoutActive, PathBlocked, AlreadyApplied }
 public sealed record UnitDirectiveInput(string Contract,KnownMilitaryTarget Known,UnitDirectiveKind Kind,FieldPoint? Goal);
 public sealed record UnitDirectiveNote(EntityId Request,UnitDirectiveInput Directive,string? ReplyPolicy,string? TransportPolicy);
 public sealed record UnitDirectiveAnswer(string Original,EntityId Unit,UnitDirectiveKind Kind,UnitDirectiveOutcome Outcome,long At,FieldPoint Position);
@@ -54,21 +54,22 @@ public static partial class NewGameMilitary
     {
         if(w.NewMilitary!.UnitDirective is not {} state)return order.Revision;
         var effect=state.Effects.SingleOrDefault(e=>e.Order==order.Id);
-        if(effect!=null)return state.Dispatches.Single(d=>d.Id==effect.Id).Revision;
+        if(effect!=null){var dispatch=state.Dispatches.Single(d=>d.Id==effect.Id);var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==dispatch.Message).Body));return state.Dispatches.Single(d=>d.Id==note.Request).Revision;}
         var recall=w.NewMilitary.Withdrawal?.Dispatches.SingleOrDefault(d=>UnitOrder(d.Id)==order.Id);
         return recall?.Revision??order.Revision;
     }
     static bool ApplyDirectedArrival(ContractWorld w,TroopDispatch d)
     {
         int index=ReceivingUnitIndex(d);Need(index>=0,"分隊指示の対象がありません");var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));
-        UnitDirectiveOutcome outcome;EntityId? order=null;
-        if(!SameMilitaryCase(w,d)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))outcome=UnitDirectiveOutcome.AuthorityEnded;
+        var root=DirectiveOriginal(w,note.Request);Need(root!=null,"分隊指示の発送原本がありません");UnitDirectiveOutcome outcome;EntityId? order=null;
+        if(!SameMilitaryCase(w,root!)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))outcome=UnitDirectiveOutcome.AuthorityEnded;
         else if(w.NewMilitary!.UnitDirective!.Effects.Any(e=>e.Id==d.Id))return false;
-        else if(w.NewMilitary.Orders.Any(o=>Affects(o,index)&&OrderIssuedRevision(w,o)>d.Revision))outcome=UnitDirectiveOutcome.Superseded;
+        else if(w.NewMilitary.UnitDirective!.Effects.Any(e=>e.Order==UnitOrder(root!.Id)&&e.Outcome==UnitDirectiveOutcome.Applied))outcome=UnitDirectiveOutcome.AlreadyApplied;
+        else if(w.NewMilitary.Orders.Any(o=>Affects(o,index)&&OrderIssuedRevision(w,o)>root!.Revision))outcome=UnitDirectiveOutcome.Superseded;
         else if(RoutActive(w)&&RoutPhase(w,index) is not ("standing" or "regrouped"))outcome=UnitDirectiveOutcome.RoutActive;
         else{
             var goal=note.Directive.Kind switch{UnitDirectiveKind.Move=>note.Directive.Goal!,UnitDirectiveKind.Recall=>Home(w,index),_=>Position(w,index,w.ElapsedSeconds)};
-            order=UnitOrder(d.Id);if(TryScopedOrder(w,order.Value,index,goal,note.Directive.Kind))outcome=UnitDirectiveOutcome.Applied;else{outcome=UnitDirectiveOutcome.PathBlocked;order=null;}
+            order=UnitOrder(root!.Id);if(TryScopedOrder(w,order.Value,index,goal,note.Directive.Kind))outcome=UnitDirectiveOutcome.Applied;else{outcome=UnitDirectiveOutcome.PathBlocked;order=null;}
         }
         var s=w.NewMilitary!.UnitDirective!;w.NewMilitary=w.NewMilitary with{UnitDirective=s with{Effects=[..s.Effects,new(d.Id,w.ElapsedSeconds,w.CommitSequence,outcome,order)]}};return outcome==UnitDirectiveOutcome.Applied;
     }
@@ -113,7 +114,7 @@ public static partial class NewGameMilitary
         foreach(var o in s.Orders)Need(o.AffectedUnits==null||x!=null&&o.AffectedUnits.Length>0&&o.AffectedUnits.Distinct().Count()==o.AffectedUnits.Length&&o.AffectedUnits.All(i=>i is >=0 and <3),"命令の対象隊が不正です");
         if(x==null)return;
         Need(x.Contract==UnitDirectiveContract&&x.Dispatches!=null&&x.Receipts!=null&&x.Replies!=null&&x.Effects!=null,"分隊指示の台帳が不正です");
-        Need(x.Dispatches.Length==s.Requests.Count(q=>DirectiveAction(q.Input.Action))&&x.Dispatches.Select(d=>d.Id).Distinct().Count()==x.Dispatches.Length,"分隊指示の原本が欠落・重複しています");
+        Need(x.Dispatches.Length==s.Requests.Count(q=>DirectiveAction(q.Input.Action)||DirectiveRetryAction(q.Input.Action))&&x.Dispatches.Select(d=>d.Id).Distinct().Count()==x.Dispatches.Length,"分隊指示の原本が欠落・重複しています");
         Need(x.Receipts.Length==x.Dispatches.Count(d=>d.DueAt<=w.ElapsedSeconds)&&x.Replies.Length==x.Receipts.Count(r=>r.ReplyDueAt<=w.ElapsedSeconds)&&x.Effects.Length==x.Receipts.Count(r=>r.Delivered),"分隊指示の受領・効力・返書が欠落しています");
         Need(x.Receipts.Select(r=>r.Id).Distinct().Count()==x.Receipts.Length&&x.Replies.Select(r=>r.Id).Distinct().Count()==x.Replies.Length&&x.Effects.Select(e=>e.Id).Distinct().Count()==x.Effects.Length,"分隊指示の受領・効力が重複しています");
         foreach(var e in x.Effects){var r=x.Receipts.Single(t=>t.Id==e.Id);Need(Enum.IsDefined(e.Outcome)&&r.Delivered&&r.At==e.At&&r.Revision==e.Revision&&r.Applied==(e.Outcome==UnitDirectiveOutcome.Applied)&&(e.Order!=null)==r.Applied,"分隊指示の効力と受令が違います");}
@@ -123,6 +124,6 @@ public static partial class NewGameMilitary
         var x=w.NewMilitary?.UnitDirective;var d=x?.Dispatches.LastOrDefault(d=>SameMilitaryCase(w,d));if(d==null)return "";var r=x!.Receipts.SingleOrDefault(r=>r.Id==d.Id);string name=UnitRecipientName(d.Recipient);
         if(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value))return name+"への指示：返書未受領";
         if(!r.Delivered)return name+"への指示：伝令が指定地点で正式受領できず";
-        var a=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));string text=a.Outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",_=>"経路を確保できず指示を実行せず"};return name+"の返書（開始"+a.At+"秒）："+text;
+        var a=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));string text=a.Outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};return name+"の返書（開始"+a.At+"秒）："+text;
     }
 }

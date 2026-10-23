@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1822,
-  "baseline_passed": 1795,
-  "added": 27,
-  "scope": "UnitDirectiveTests(27): per-unit physical move/hold/recall, unchanged other routes, immutable known address, issue priority, partial old recall cancellation, expiry, reply recovery, legacy omission and strict save replay"
+  "expected_passed": 1834,
+  "baseline_passed": 1822,
+  "added": 12,
+  "scope": "UnitDirectiveRetryTests(12): explicit immutable original copy to all three own posts, sender-known physical failure, original deadline and priority, strict references, idempotence and full restoration"
 }

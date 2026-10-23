@@ -1388,3 +1388,11 @@ Core/Contracts/NewGameMilitary.UnitDirective.cs -text
 Tests/UnitDirectiveTests.cs -text
 Game/Scripts/NewGameRuntime.UnitDirective.cs -text
 Game/Scripts/NewGameFrontEnd.UnitDirectiveChecks.cs -text
+
+Docs/Design/UnitDirectiveRetryV1/** -text
+Scripts/verify_unit_directive_retry.py -text
+Scripts/check_unit_directive_retry_binding.py -text
+Core/Contracts/NewGameMilitary.UnitDirectiveRetry.cs -text
+Tests/UnitDirectiveRetryTests.cs -text
+Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs -text
+Game/Scripts/NewGameFrontEnd.UnitDirectiveRetryChecks.cs -text

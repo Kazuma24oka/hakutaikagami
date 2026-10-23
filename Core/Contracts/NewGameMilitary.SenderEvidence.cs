@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static partial class NewGameMilitary
 {
  public const string UnitSenderEvidenceContract="sender-physical-receipt-evidence-known-failure-bounded-copy-v1";
- static bool SenderEvidenceAction(NewMilitaryAction action)=>action==NewMilitaryAction.RemoteRecall||UnitInquiryAction(action)||UnitRetryAction(action)||CancellationAction(action)||DirectiveAction(action);
+ static bool SenderEvidenceAction(NewMilitaryAction action)=>action==NewMilitaryAction.RemoteRecall||UnitInquiryAction(action)||UnitRetryAction(action)||CancellationAction(action)||DirectiveAction(action)||DirectiveRetryAction(action);
  static bool UsesSenderEvidence(ContractWorld w,TroopDispatch d){var m=w.Messaging.Messages.Single(m=>m.Id==d.Message);return (d.Role==UnitDirectiveRole?ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(m.Body)).TransportPolicy:d.Role==ReceivingRole?ContractJson.Read<UnitPostOrder>(System.Text.Encoding.UTF8.GetBytes(m.Body)).TransportPolicy:d.Role==CancellationRole?CancellationNote(w,d).TransportPolicy:ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(m.Body)).TransportPolicy)==UnitSenderEvidenceContract;}
  static bool RetryUsesEvidence(ContractWorld w,TroopDispatch d,string? policy)=>policy==UnitSenderEvidenceContract||UsesSenderEvidence(w,d);
  static bool KnownFailedAttempt(MessageAttempt a,bool evidence)=>a.Status is AttemptStatus.Lost or AttemptStatus.Rejected||evidence&&a.Status==AttemptStatus.Delivered&&a.ArrivedLate&&a.FailureAt!=null;
