@@ -35,7 +35,7 @@ public static partial class NewGameMilitary
     static long? DirectiveCancelBoundary(ContractWorld w,long target)
     {
         var x=w.NewMilitary?.UnitDirective?.Cancellation;if(x==null)return null;
-        return x.Dispatches.Where(d=>!x.Effects.Any(e=>e.Id==d.Id)&&w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)).Select(d=>Math.Max(w.Messaging.Receipts.Single(r=>r.MessageId==d.Message).ReceivedAt,DirectiveCancelNote(w,d).EffectiveAt)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
+        return DirectiveCancellationOriginals(w).Where(d=>!x.Effects.Any(e=>e.Id==d.Id)&&w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)).Select(d=>Math.Max(w.Messaging.Receipts.Single(r=>r.MessageId==d.Message).ReceivedAt,DirectiveCancelNote(w,d).EffectiveAt)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     }
     static (UnitCancelDisposition Outcome,EntityId? Order) StopDirectiveOriginal(ContractWorld w,TroopDispatch cancellation,UnitDirectiveCancellationNote note)
     {
@@ -50,16 +50,20 @@ public static partial class NewGameMilitary
     }
     static UnitDirectiveCancelAnswer DirectiveCancelAnswer(ContractWorld w,TroopDispatch cancellation)
     {
-        var note=DirectiveCancelNote(w,cancellation);var received=w.Messaging.Receipts.Single(r=>r.MessageId==cancellation.Message).ReceivedAt;var effect=w.NewMilitary!.UnitDirective!.Cancellation!.Effects.SingleOrDefault(e=>e.Id==cancellation.Id);
-        return new(cancellation.Id,note.OriginalMessage,w.ElapsedSeconds,received,note.EffectiveAt,effect?.At,effect?.Outcome??UnitCancelDisposition.Waiting);
+        var note=DirectiveCancelNote(w,cancellation);var received=w.Messaging.Receipts.Single(r=>r.MessageId==cancellation.Message).ReceivedAt;var effect=w.NewMilitary!.UnitDirective!.Cancellation!.Effects.SingleOrDefault(e=>e.Id==note.Request);
+        return new(note.Request,note.OriginalMessage,w.ElapsedSeconds,received,note.EffectiveAt,effect?.At,effect?.Outcome??UnitCancelDisposition.Waiting);
     }
-    public static string UnitDirectiveCancellationStatus(ContractWorld w,EntityId original)
+    public static string UnitDirectiveCancellationStatus(ContractWorld w,EntityId original){var root=DirectiveCancellationOriginals(w).LastOrDefault(d=>DirectiveCancelNote(w,d).Original==original);return root==null?"":UnitDirectiveCancellationOriginalStatus(w,root.Id);}
+    public static string UnitDirectiveCancellationOriginalStatus(ContractWorld w,EntityId cancellation)
     {
-        var x=w.NewMilitary?.UnitDirective?.Cancellation;var d=x?.Dispatches.LastOrDefault(d=>DirectiveCancelNote(w,d).Original==original);if(d==null)return "";
-        var n=x!.Notices.Where(n=>n.Cancellation==d.Id&&MessageFlow.Knows(w.Messaging,n.Message,w.PlayerControl.Value)).OrderBy(n=>n.At).LastOrDefault();
-        string? message=n?.Message;var r=x.Receipts.SingleOrDefault(r=>r.Id==d.Id);if(message==null&&r!=null&&MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)){if(!r.Delivered)return "取消の不達報告を受領：指定地点で正式受領できず";message=r.ReplyMessage;}
-        if(message==null)return "取消を発送：返書未受領";var a=ContractJson.Read<UnitDirectiveCancelAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==message).Body));
-        return "取消の返書（開始"+a.At+"秒）："+(a.Outcome switch{UnitCancelDisposition.Waiting=>"受令済み・指定した効力時刻を待つ",UnitCancelDisposition.Suppressed=>"未実行の対象原本を取消",UnitCancelDisposition.Stopped=>"対象原本による移動だけを停止",UnitCancelDisposition.AlreadyStopped=>"対象原本は取消済み",UnitCancelDisposition.TooLate=>"行動完了のため巻き戻さず",UnitCancelDisposition.Superseded=>"新しい命令を維持",_=>"指揮権終了のため変更せず"});
+        var root=DirectiveCancellationOriginal(w,cancellation);if(root==null)return "";var x=w.NewMilitary!.UnitDirective!.Cancellation!;
+        var known=x.Receipts.Where(r=>x.Dispatches.Single(d=>d.Id==r.Id).Message==root.Message&&MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)).ToArray();
+        var r=known.Where(r=>r.Delivered).OrderBy(r=>r.At).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).LastOrDefault();
+        var n=x.Notices.Where(n=>n.Cancellation==root.Id&&MessageFlow.Knows(w.Messaging,n.Message,w.PlayerControl.Value)).OrderBy(n=>n.At).LastOrDefault();
+        string? message=n!=null&&(r==null||n.At>=r.At)?n.Message:r?.ReplyMessage;
+        if(message==null){var latest=x.Dispatches.Last(d=>d.Message==root.Message);if(latest.Id!=root.Id&&!known.Any(r=>r.Id==latest.Id))return "取消を再送：返書未受領";return known.Any(r=>!r.Delivered)?"取消の不達報告を受領：指定地点で正式受領できず":"取消を発送：返書未受領";}
+        var answer=ContractJson.Read<UnitDirectiveCancelAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==message).Body));
+        return "取消の返書（開始"+answer.At+"秒）："+(answer.Outcome switch{UnitCancelDisposition.Waiting=>"受令済み・指定した効力時刻を待つ",UnitCancelDisposition.Suppressed=>"未実行の対象原本を取消",UnitCancelDisposition.Stopped=>"対象原本による移動だけを停止",UnitCancelDisposition.AlreadyStopped=>"対象原本は取消済み",UnitCancelDisposition.TooLate=>"行動完了のため巻き戻さず",UnitCancelDisposition.Superseded=>"新しい命令を維持",_=>"指揮権終了のため変更せず"});
     }
     static void BeforeDirectiveCancelNotices(ContractWorld w)
     {
@@ -72,14 +76,14 @@ public static partial class NewGameMilitary
             Need(n.DueAt==w.ElapsedSeconds,"分隊取消結果返書の到達を飛ばしました");var x=w.NewMilitary.UnitDirective.Cancellation!;bool received=w.Messaging.Attempts.Single(a=>a.Id==n.Attempt).Status==AttemptStatus.Delivered;
             w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Arrivals=[..x.Arrivals,new(n.Attempt,w.ElapsedSeconds,w.CommitSequence,received)]}}};
         }
-        foreach(var d in state.Dispatches.Where(d=>!w.NewMilitary.UnitDirective.Cancellation!.Effects.Any(e=>e.Id==d.Id)&&w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)).OrderBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray()){
+        foreach(var d in DirectiveCancellationOriginals(w).Where(d=>!w.NewMilitary.UnitDirective.Cancellation!.Effects.Any(e=>e.Id==d.Id)&&w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)).OrderBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray()){
             var note=DirectiveCancelNote(w,d);long received=w.Messaging.Receipts.Single(r=>r.MessageId==d.Message).ReceivedAt;long effective=Math.Max(received,note.EffectiveAt);if(effective>w.ElapsedSeconds)continue;Need(effective==w.ElapsedSeconds,"分隊取消の効力境界を飛ばしました");
             var result=StopDirectiveOriginal(w,d,note);int index=ReceivingUnitIndex(d);var x=w.NewMilitary.UnitDirective.Cancellation!;
             w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Effects=[..x.Effects,new(d.Id,note.Original,w.ElapsedSeconds,w.CommitSequence,result.Outcome,result.Order,Position(w,index,w.ElapsedSeconds))]}}};
             if(effective<=received)continue;
-            var origin=Position(w,index,w.ElapsedSeconds);var route=RegionalGround.Plan(origin,d.Origin,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var id=new EntityId("notice:directive-cancel/"+Hash(d.Id.Value));string message=UnitMessage(id,"directive-cancel-effect");
+            var origin=Position(w,index,w.ElapsedSeconds);var destination=DirectiveCancellationReturnOrigin(w,d);var route=RegionalGround.Plan(origin,destination,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var id=new EntityId("notice:directive-cancel/"+Hash(d.Id.Value));string message=UnitMessage(id,"directive-cancel-effect");
             MessageFlow.Send(w.Messaging,new(message,d.Id.Value,"unit-post-directive-cancel-effect",d.Recipient.Value,w.PlayerControl.Value,Text(DirectiveCancelAnswer(w,d)),w.Messaging.Messages.Single(m=>m.Id==d.Message).Scope,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
-            x=w.NewMilitary.UnitDirective.Cancellation!;w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Notices=[..x.Notices,new(id,d.Id,message,MessageFlow.Latest(w.Messaging,message).Id,w.ElapsedSeconds,w.CommitSequence,origin,d.Origin,route,due,UnitCourier(id))]}}};
+            x=w.NewMilitary.UnitDirective.Cancellation!;w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Notices=[..x.Notices,new(id,d.Id,message,MessageFlow.Latest(w.Messaging,message).Id,w.ElapsedSeconds,w.CommitSequence,origin,destination,route,due,UnitCourier(id))]}}};
         }
         var current=w.NewMilitary.UnitDirective.Cancellation!;var papers=current.Arrivals.Where(a=>!a.Received).Select(a=>{var n=current.Notices.Single(n=>n.Attempt==a.Attempt);return new UnitReplyHolding(n.Message,n.Attempt,n.Carrier,n.Destination,a.At,a.Revision);}).OrderBy(h=>h.Revision).ThenBy(h=>h.Attempt,StringComparer.Ordinal).ToArray();
         w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=current with{Holdings=papers}}};

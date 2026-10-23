@@ -45,7 +45,7 @@ public partial class NewGameRuntime : Control
     internal void Suspend(){automatic=false;Session.SetPaused(true);Visible=false;ProcessMode=ProcessModeEnum.Disabled;}
     internal void Resume(){Visible=true;ProcessMode=ProcessModeEnum.Inherit;Refresh();}
     internal void Save(){automatic=false;Session.SetPaused(true);saves.Save(Session,"manual",Snapshot().WorldId,CurrentPresentation());message.Text="同じ人物・世界の進行を保存しました。";}
-    void ApplyPresentation(SavePresentation p){selectedKnownTarget=p.MilitaryTarget;selectedDirectiveOriginal=p.MilitaryOriginal;fraction=p.DisplayFraction;speed=p.DisplaySpeed;if(speedChoice!=null)speedChoice.Select(Array.IndexOf(new[]{1,10,60,360},speed));if(p.WorldCamera is {} c){Span=(float)c.Span;Yaw=(float)c.Yaw;nationMode=!c.Follow;}}
+    void ApplyPresentation(SavePresentation p){selectedKnownTarget=p.MilitaryTarget;selectedDirectiveOriginal=p.MilitaryOriginal;selectedCancellationOriginal=p.MilitaryCancellation;fraction=p.DisplayFraction;speed=p.DisplaySpeed;if(speedChoice!=null)speedChoice.Select(Array.IndexOf(new[]{1,10,60,360},speed));if(p.WorldCamera is {} c){Span=(float)c.Span;Yaw=(float)c.Yaw;nationMode=!c.Follow;}}
     internal void Load(){automatic=false;var prepared=saves.Prepare("manual");if(host.CommitLoad(prepared,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("現在の進行が変わったため読み直してください");ApplyPresentation(prepared.Presentation);message.Text="保存した人物・所属・外見・位置へ戻りました。";Refresh();}
     internal string InfoText=>info.Text;
     internal Rect2 RenderRect=>surface.GetGlobalRect();

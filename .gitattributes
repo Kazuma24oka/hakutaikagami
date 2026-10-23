@@ -1409,3 +1409,12 @@ Docs/Design/UnitDirectiveCancellationV1/verification.json -text
 
 Scripts/verify_unit_directive_cancellation.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_unit_directive_cancellation_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Docs/Design/UnitDirectiveCancelRetryV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_directive_cancel_retry.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_directive_cancel_retry_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitDirectiveCancelRetryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitDirectiveCancelRetrySaveTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UnitDirectiveCancelRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelRetryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol

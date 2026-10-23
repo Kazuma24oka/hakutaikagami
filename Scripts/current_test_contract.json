@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1885,
-  "baseline_passed": 1858,
-  "added": 27,
-  "scope": "UnitDirectiveCancellationTests(13),UnitDirectiveCancellationBoundaryTests(14): actual fixed-post cancel max(receipt,requested time),only targeted original,copy/late suppression,scope stop,no newer issue-priority inversion,physical late result recovery,authority/deadline/legacy/replay"
+  "expected_passed": 1905,
+  "baseline_passed": 1885,
+  "added": 20,
+  "scope": "UnitDirectiveCancelRetryTests20: fixed original cancellation, known actual failure,immutable requested time/deadline/max3,one canonical root effect,actual copy return address,known-only status,same-generation selection and legacy save compatibility"
 }
