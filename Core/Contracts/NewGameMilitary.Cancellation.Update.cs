@@ -12,7 +12,7 @@ public static partial class NewGameMilitary
     }
     static void UpdateCancellation(ContractWorld w)
     {
-        if(w.NewMilitary?.Cancellation==null)return;
+        UpdateDirectiveCancellation(w);if(w.NewMilitary?.Cancellation==null)return;
         foreach(var f in w.NewMilitary.Cancellation.Notices.Where(f=>f.DueAt<=w.ElapsedSeconds&&!w.NewMilitary.Cancellation.NoticeArrivals.Any(a=>a.Id==f.Id)).ToArray()){
             Need(f.DueAt==w.ElapsedSeconds,"取消結果の実到達を飛ばしました");var x=w.NewMilitary.Cancellation;
             w.NewMilitary=w.NewMilitary with{Cancellation=x with{NoticeArrivals=[..x.NoticeArrivals,new(f.Id,w.ElapsedSeconds,w.CommitSequence,w.Messaging.Attempts.Single(a=>a.Id==f.Attempt).Status==AttemptStatus.Delivered)]}};

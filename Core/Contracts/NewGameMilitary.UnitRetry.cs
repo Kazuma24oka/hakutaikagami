@@ -7,9 +7,9 @@ public static partial class NewGameMilitary
 {
     public const string UnitRetryContract="same-original-known-failure-explicit-known-post-retry-v1";
     static bool UnitRetryAction(NewMilitaryAction a)=>a is NewMilitaryAction.RetryRecallKnown or NewMilitaryAction.RetryRecallHome or NewMilitaryAction.RetryCancelKnown or NewMilitaryAction.RetryCancelHome;
-    public static TroopDispatch[] UnitDispatches(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Dispatches??[]).Concat(w.NewMilitary?.UnitRetry?.Dispatches??[]).Concat(w.NewMilitary?.UnitInquiry?.Dispatches??[]).Concat(w.NewMilitary?.UnitDirective?.Dispatches??[]).Concat(w.NewMilitary?.Cancellation?.Dispatches??[]).OrderBy(d=>d.Revision).ToArray();
-    public static TroopReceipt[] UnitReceipts(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Receipts??[]).Concat(w.NewMilitary?.UnitRetry?.Receipts??[]).Concat(w.NewMilitary?.UnitInquiry?.Receipts??[]).Concat(w.NewMilitary?.UnitDirective?.Receipts??[]).Concat(w.NewMilitary?.Cancellation?.Receipts??[]).OrderBy(d=>d.Revision).ThenBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
-    public static TroopReply[] UnitReplies(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Replies??[]).Concat(w.NewMilitary?.UnitRetry?.Replies??[]).Concat(w.NewMilitary?.UnitInquiry?.Replies??[]).Concat(w.NewMilitary?.UnitDirective?.Replies??[]).Concat(w.NewMilitary?.Cancellation?.Replies??[]).OrderBy(d=>d.Revision).ThenBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
+    public static TroopDispatch[] UnitDispatches(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Dispatches??[]).Concat(w.NewMilitary?.UnitRetry?.Dispatches??[]).Concat(w.NewMilitary?.UnitInquiry?.Dispatches??[]).Concat(w.NewMilitary?.UnitDirective?.Dispatches??[]).Concat(w.NewMilitary?.UnitDirective?.Cancellation?.Dispatches??[]).Concat(w.NewMilitary?.Cancellation?.Dispatches??[]).OrderBy(d=>d.Revision).ToArray();
+    public static TroopReceipt[] UnitReceipts(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Receipts??[]).Concat(w.NewMilitary?.UnitRetry?.Receipts??[]).Concat(w.NewMilitary?.UnitInquiry?.Receipts??[]).Concat(w.NewMilitary?.UnitDirective?.Receipts??[]).Concat(w.NewMilitary?.UnitDirective?.Cancellation?.Receipts??[]).Concat(w.NewMilitary?.Cancellation?.Receipts??[]).OrderBy(d=>d.Revision).ThenBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
+    public static TroopReply[] UnitReplies(ContractWorld w)=>(w.NewMilitary?.Withdrawal?.Replies??[]).Concat(w.NewMilitary?.UnitRetry?.Replies??[]).Concat(w.NewMilitary?.UnitInquiry?.Replies??[]).Concat(w.NewMilitary?.UnitDirective?.Replies??[]).Concat(w.NewMilitary?.UnitDirective?.Cancellation?.Replies??[]).Concat(w.NewMilitary?.Cancellation?.Replies??[]).OrderBy(d=>d.Revision).ThenBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
     static TroopDispatch? RetryOriginal(ContractWorld w,NewMilitaryAction action,string? policy=null)
     {
         if(w.NewMilitary?.Withdrawal is not {} x)return null;
@@ -35,7 +35,8 @@ public static partial class NewGameMilitary
     static void RecordUnitReceipt(ContractWorld w,TroopReceipt row)
     {
         var s=w.NewMilitary!;
-        if(s.Cancellation?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{Cancellation=s.Cancellation with{Receipts=[..s.Cancellation.Receipts,row]}};
+        if(s.UnitDirective?.Cancellation?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitDirective=s.UnitDirective with{Cancellation=s.UnitDirective.Cancellation with{Receipts=[..s.UnitDirective.Cancellation.Receipts,row]}}};
+        else if(s.Cancellation?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{Cancellation=s.Cancellation with{Receipts=[..s.Cancellation.Receipts,row]}};
         else if(s.UnitRetry?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitRetry=s.UnitRetry with{Receipts=[..s.UnitRetry.Receipts,row]}};
         else if(s.UnitInquiry?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitInquiry=s.UnitInquiry with{Receipts=[..s.UnitInquiry.Receipts,row]}};
         else if(s.UnitDirective?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitDirective=s.UnitDirective with{Receipts=[..s.UnitDirective.Receipts,row]}};
@@ -44,7 +45,8 @@ public static partial class NewGameMilitary
     static void RecordUnitReply(ContractWorld w,TroopReply row)
     {
         var s=w.NewMilitary!;
-        if(s.Cancellation?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{Cancellation=s.Cancellation with{Replies=[..s.Cancellation.Replies,row]}};
+        if(s.UnitDirective?.Cancellation?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitDirective=s.UnitDirective with{Cancellation=s.UnitDirective.Cancellation with{Replies=[..s.UnitDirective.Cancellation.Replies,row]}}};
+        else if(s.Cancellation?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{Cancellation=s.Cancellation with{Replies=[..s.Cancellation.Replies,row]}};
         else if(s.UnitRetry?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitRetry=s.UnitRetry with{Replies=[..s.UnitRetry.Replies,row]}};
         else if(s.UnitInquiry?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitInquiry=s.UnitInquiry with{Replies=[..s.UnitInquiry.Replies,row]}};
         else if(s.UnitDirective?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitDirective=s.UnitDirective with{Replies=[..s.UnitDirective.Replies,row]}};

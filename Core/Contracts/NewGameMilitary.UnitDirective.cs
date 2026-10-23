@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 public enum UnitDirectiveKind { Move, Hold, Recall }
-public enum UnitDirectiveOutcome { Applied, Superseded, AuthorityEnded, RoutActive, PathBlocked, AlreadyApplied }
+public enum UnitDirectiveOutcome { Applied, Superseded, AuthorityEnded, RoutActive, PathBlocked, AlreadyApplied, Cancelled }
 public sealed record UnitDirectiveInput(string Contract,KnownMilitaryTarget Known,UnitDirectiveKind Kind,FieldPoint? Goal);
 public sealed record UnitDirectiveNote(EntityId Request,UnitDirectiveInput Directive,string? ReplyPolicy,string? TransportPolicy)
 {
@@ -14,6 +14,8 @@ public sealed record UnitDirectiveState(string Contract,TroopDispatch[] Dispatch
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public UnitDirectiveHoldingState? Holding {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public UnitDirectiveCancellationState? Cancellation {get;init;}
 }
 public static partial class NewGameMilitary
 {
@@ -38,7 +40,7 @@ public static partial class NewGameMilitary
     }
     static UnitDirectiveState? DirectiveBefore(UnitDirectiveState? s,long at,long rev)
     {
-        if(s==null)return null;var ds=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return ds.Length==0?null:s with{Holding=DirectiveHoldingBefore(s.Holding,at,rev),Dispatches=ds,Receipts=s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),Replies=s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),Effects=s.Effects.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray()};
+        if(s==null)return null;var ds=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return ds.Length==0?null:s with{Cancellation=DirectiveCancellationBefore(s.Cancellation,at,rev),Holding=DirectiveHoldingBefore(s.Holding,at,rev),Dispatches=ds,Receipts=s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),Replies=s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),Effects=s.Effects.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray()};
     }
     static bool Affects(NewMilitaryOrder o,int unit)=>o.AffectedUnits==null||o.AffectedUnits.Contains(unit);
     static NewMilitaryOrder? EffectiveOrder(ContractWorld w,int unit,long at)=>w.NewMilitary!.Orders.LastOrDefault(o=>o.At<=at&&Affects(o,unit));
@@ -61,6 +63,7 @@ public static partial class NewGameMilitary
     static long OrderIssuedRevision(ContractWorld w,NewMilitaryOrder order)
     {
         if(w.NewMilitary!.UnitDirective is not {} state)return order.Revision;
+        var cancellation=state.Cancellation?.Effects.SingleOrDefault(e=>e.StopOrder==order.Id);if(cancellation!=null)return state.Dispatches.Single(d=>d.Id==cancellation.Original).Revision;
         var effect=state.Effects.SingleOrDefault(e=>e.Order==order.Id);
         if(effect!=null){var dispatch=state.Dispatches.Single(d=>d.Id==effect.Id);var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==dispatch.Message).Body));return state.Dispatches.Single(d=>d.Id==note.Request).Revision;}
         var late=state.Holding?.Outcomes.SingleOrDefault(f=>f.Order==order.Id);if(late!=null)return state.Dispatches.Single(d=>d.Id==late.Original).Revision;
@@ -72,6 +75,7 @@ public static partial class NewGameMilitary
         int index=ReceivingUnitIndex(d);Need(index>=0,"分隊指示の対象がありません");var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));
         var root=DirectiveOriginal(w,note.Request);Need(root!=null,"分隊指示の発送原本がありません");
         if(!SameMilitaryCase(w,root!)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))return(UnitDirectiveOutcome.AuthorityEnded,null);
+        if(DirectiveOriginalCancelled(w,root!.Id))return(UnitDirectiveOutcome.Cancelled,null);
         if(w.NewMilitary!.Orders.Any(o=>o.Id==UnitOrder(root!.Id)))return(UnitDirectiveOutcome.AlreadyApplied,null);
         if(w.NewMilitary.Orders.Any(o=>Affects(o,index)&&OrderIssuedRevision(w,o)>root!.Revision))return(UnitDirectiveOutcome.Superseded,null);
         if(RoutActive(w)&&RoutPhase(w,index) is not ("standing" or "regrouped"))return(UnitDirectiveOutcome.RoutActive,null);
@@ -137,6 +141,6 @@ public static partial class NewGameMilitary
         var late=KnownDirectiveAck(w,d.Message,w.PlayerControl.Value);if(late!=null&&(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)||late.At>=r.At)){var answer=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==late.ReplyMessage).Body));return name+"の遅着返書（開始"+answer.At+"秒）："+DirectiveOutcomeText(answer.Outcome);}
         if(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value))return name+"への指示：返書未受領";
         if(!r.Delivered)return name+"への指示：伝令が指定地点で正式受領できず";
-        var a=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));string text=a.Outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};return name+"の返書（開始"+a.At+"秒）："+text;
+        var a=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));string text=a.Outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.Cancelled=>"取消済みの原本を実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};return name+"の返書（開始"+a.At+"秒）："+text;
     }
 }

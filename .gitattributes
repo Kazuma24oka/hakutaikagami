@@ -1404,3 +1404,8 @@ Core/Contracts/NewGameMilitary.UnitDirectiveHolding.cs -text
 Tests/UnitDirectiveHoldingTests.cs -text
 Game/Scripts/NewGameRuntime.UnitDirectiveHolding.cs -text
 Game/Scripts/NewGameFrontEnd.UnitDirectiveHoldingChecks.cs -text
+
+Docs/Design/UnitDirectiveCancellationV1/verification.json -text
+
+Scripts/verify_unit_directive_cancellation.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_directive_cancellation_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

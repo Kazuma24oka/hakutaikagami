@@ -40,7 +40,7 @@ public static partial class NewGameMilitary
             var a=w.Messaging.Attempts.Single(a=>a.Id==f.ReplyAttempt);if(a.Status==AttemptStatus.InTransit&&RegionalGround.Distance(PhysicalPerson(w,w.ElapsedSeconds),f.Destination)>1000)MessageFlow.Fail(w.Messaging,f.ReplyMessage!);
         }
     }
-    static bool DirectiveCarrierIdle(ContractWorld w,EntityId carrier)=>!(w.NewMilitary?.HeldDelivery?.Transfers.Any(t=>t.Carrier==carrier&&t.DueAt>w.ElapsedSeconds)??false)&&!DirectiveAckFlights(w).Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)&&!(w.NewMilitary?.CommandHolding?.Outcomes.Any(f=>f.Carrier==carrier&&f.Received&&f.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.Cancellation?.Notices.Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)??false);
+    static bool DirectiveCarrierIdle(ContractWorld w,EntityId carrier)=>!(w.NewMilitary?.UnitDirective?.Cancellation?.Notices.Any(n=>n.Carrier==carrier&&n.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.HeldDelivery?.Transfers.Any(t=>t.Carrier==carrier&&t.DueAt>w.ElapsedSeconds)??false)&&!DirectiveAckFlights(w).Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)&&!(w.NewMilitary?.CommandHolding?.Outcomes.Any(f=>f.Carrier==carrier&&f.Received&&f.DueAt>w.ElapsedSeconds)??false)&&!(w.NewMilitary?.Cancellation?.Notices.Any(f=>f.Carrier==carrier&&f.DueAt>w.ElapsedSeconds)??false);
     static UnitReplyHolding? PickDirectivePaper(ContractWorld w,UnitDirectiveHandoffInput p)
     {
         if(w.NewMilitary?.UnitDirective?.Holding==null||!RecognitionEnabled(w)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)||!Deployed(w)||DirectiveOriginal(w,p.Original) is not {} root||!SameMilitaryCase(w,root)||root.Recipient!=p.Known.Unit||SelectKnownTarget(w,p.Known.Unit)!=p.Known)return null;
@@ -84,7 +84,7 @@ public static partial class NewGameMilitary
         var x=w.NewMilitary!.UnitDirective!.Holding!;w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Holding=x with{Outcomes=[..x.Outcomes,new(t.Id,note.Request,w.ElapsedSeconds,w.CommitSequence,received,outcome,order,reply,attempt,t.Destination,t.Origin,route,due,t.Carrier)]}}};
     }
     static UnitDirectiveLateOutcome? KnownDirectiveAck(ContractWorld w,string original,string sender)=>DirectiveAckFlights(w).Where(f=>DirectiveOriginal(w,f.Original)?.Message==original&&MessageFlow.Knows(w.Messaging,f.ReplyMessage!,sender)).OrderBy(f=>f.At).ThenBy(f=>f.Transfer.Value,StringComparer.Ordinal).LastOrDefault();
-    static string DirectiveOutcomeText(UnitDirectiveOutcome outcome)=>outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};
+    static string DirectiveOutcomeText(UnitDirectiveOutcome outcome)=>outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.Cancelled=>"取消済みの原本を実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};
     static void ValidateDirectiveHolding(ContractWorld w,bool replay)
     {
         var s=w.NewMilitary!;var x=s.UnitDirective?.Holding;var first=s.Requests.FirstOrDefault(q=>q.Input.OriginalPolicy==UnitDirectiveHoldingContract);Need((x!=null)==(first!=null),"分隊原本の保持方針と実物台帳が違います");if(x==null)return;

@@ -10,7 +10,7 @@ public static partial class NewGameMilitary
     public static UnitReplyHolding[] HeldPapers(ContractWorld w,long at)
     {
         var rows=new List<UnitReplyHolding>();var x=w.NewMilitary?.HeldDelivery;
-        foreach(var h in (w.NewMilitary?.UnitDirective?.Holding?.Holdings??[]).Concat(w.NewMilitary?.ReplyRecovery?.Holdings??[]).Concat(w.NewMilitary?.CommandHolding?.Holdings??[]).Concat(w.NewMilitary?.Cancellation?.Holdings??[]).Where(h=>h.At<=at)){
+        foreach(var h in (w.NewMilitary?.UnitDirective?.Cancellation?.Holdings??[]).Concat(w.NewMilitary?.UnitDirective?.Holding?.Holdings??[]).Concat(w.NewMilitary?.ReplyRecovery?.Holdings??[]).Concat(w.NewMilitary?.CommandHolding?.Holdings??[]).Concat(w.NewMilitary?.Cancellation?.Holdings??[]).Where(h=>h.At<=at)){
             var moves=x?.Transfers.Where(t=>t.At<=at&&t.Cargo.Contains(h.Attempt)).OrderBy(t=>t.Revision).ToArray()??[];
             if(moves.Any(t=>t.Attempt==h.Attempt&&x!.Arrivals.Any(a=>a.Id==t.Id&&a.At<=at&&a.Received)))continue;
             rows.Add(h with{Position=HeldCarrierPosition(w,h,at)});
@@ -19,7 +19,7 @@ public static partial class NewGameMilitary
     }
     static UnitReplyHolding? PickHeld(ContractWorld w,NewMilitaryAction action)
     {
-        if(!HeldAction(action)||DirectiveHandoffAction(action)||w.NewMilitary?.ReplyRecovery==null&&w.NewMilitary?.CommandHolding==null&&w.NewMilitary?.Cancellation==null&&w.NewMilitary?.UnitDirective?.Holding==null)return null;
+        if(!HeldAction(action)||DirectiveHandoffAction(action)||w.NewMilitary?.ReplyRecovery==null&&w.NewMilitary?.CommandHolding==null&&w.NewMilitary?.Cancellation==null&&w.NewMilitary?.UnitDirective?.Holding==null&&w.NewMilitary?.UnitDirective?.Cancellation==null)return null;
         var person=PhysicalPerson(w,w.ElapsedSeconds);if(person!=PhysicalPerson(w,w.ElapsedSeconds+1))return null;
         return HeldPapers(w,w.ElapsedSeconds).Where(h=>{
             var a=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);var m=w.Messaging.Messages.Single(m=>m.Id==h.Message);

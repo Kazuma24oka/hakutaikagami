@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1858,
-  "baseline_passed": 1834,
-  "added": 24,
-  "scope": "UnitDirectiveHoldingTests(24): retained actual original/carrier, fixed handover, all3posts x3arrival orders one root effect, late ack physical recovery, no retro paper, forged references, expiry, missing post, ended real command despite unknown notice, strict replay"
+  "expected_passed": 1885,
+  "baseline_passed": 1858,
+  "added": 27,
+  "scope": "UnitDirectiveCancellationTests(13),UnitDirectiveCancellationBoundaryTests(14): actual fixed-post cancel max(receipt,requested time),only targeted original,copy/late suppression,scope stop,no newer issue-priority inversion,physical late result recovery,authority/deadline/legacy/replay"
 }

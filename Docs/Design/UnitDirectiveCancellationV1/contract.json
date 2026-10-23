@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "contract": "explicit-scoped-original-physical-cancel-max-receipt-requested-time-v1",
+  "criteria": 5,
+  "tests": 1885,
+  "baseline": 1858,
+  "added": 27,
+  "save_checkpoints": 24
+}
