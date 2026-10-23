@@ -1,3 +1,7 @@
+[現行工程：同じ主君への再任と生涯台帳](Design/MilitaryRenewalV1/README.md)
+
+以下は各当時の工程履歴として保持する。
+
 [現行工程：取消結果の不達回収と権限終了](Design/UnitCancellationRecoveryV1/README.md)
 
 [直前完了：特定の撤退原本の物理取消](Design/UnitCancellationV1/README.md)

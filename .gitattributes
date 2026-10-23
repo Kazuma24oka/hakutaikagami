@@ -1328,3 +1328,13 @@ Docs/Design/UnitCancellationRecoveryV1/*.md -text whitespace=trailing-space,spac
 Docs/Design/UnitCancellationRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/verify_unit_cancellation_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 Scripts/check_unit_cancellation_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Renewal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryRenewalTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryRenewalV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryRenewalV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_military_renewal.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_military_renewal_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameRuntime.Mail.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol

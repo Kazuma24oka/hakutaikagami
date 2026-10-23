@@ -1,3 +1,9 @@
+# 同じ主君への再任と生涯台帳（2026-10-23）
+
+判断が必要になるまで同ブランチcommit/pushを継続。MilitaryRenewalV1/README.mdの5条件。前工程3532a9bは1695件/25GPU/278比較の当時実績。許可/終了は案件単位、兵/在庫/損耗/書状は生涯台帳。旧原本の正式受領で新貸与を動かさず、旧照会返答は出典の案件に属する。新CycleContractだけで再任を明示。旧保存省略/マウス禁止/保護枝/保存素材保持。verify_military_renewal.py→実画像動画→--finalize→check_military_renewal_binding.py後push。反復交戦・他主君の同時貸与は未実装、判断不要なら次工程へ。
+
+以下は過去工程の記録。
+
 # 取消結果の不達回収と終了後の権限（2026-10-23）
 
 判断が必要になるまで同ブランチcommit/pushを含めて継続。UnitCancellationRecoveryV1/README.mdの5条件。前工程94f3ab9は1687件/31GPU/360世界画像の当時実績。結果返書の実不達/実保持/本人受取と効力を分離し、期限・旧対象・権限終了を保存復旧と3Dで検査する。兵や資源を復活させない。verify_unit_cancellation_recovery.py→目視→--finalize→check_unit_cancellation_recovery_binding.py。マウス操作禁止、保護枝・保存・既存素材保持。次は同じ主君/守備隊の再任と案件識別。判断不要なら止めない。

@@ -21,8 +21,8 @@ public static partial class NewGameMilitary
     public static bool CancellationAction(NewMilitaryAction a)=>a is NewMilitaryAction.CancelRecallKnown or NewMilitaryAction.CancelRecallHome;
     static bool CancelRetryAction(NewMilitaryAction a)=>a is NewMilitaryAction.RetryCancelKnown or NewMilitaryAction.RetryCancelHome;
     static bool RetryHomeAction(NewMilitaryAction a)=>a is NewMilitaryAction.RetryRecallHome or NewMilitaryAction.RetryCancelHome;
-    public static EntityId? LatestRecallTarget(ContractWorld w)=>w.NewMilitary?.Withdrawal?.Dispatches.LastOrDefault()?.Id;
-    public static bool CancellationAllowed(ContractWorld w,NewMilitaryAction action,EntityId? target=null)=>CancellationAction(action)&&Detached(w)&&Deployed(w)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&(target is {} id?w.NewMilitary!.Withdrawal!.Dispatches.Any(d=>d.Id==id):LatestRecallTarget(w)!=null);
+    public static EntityId? LatestRecallTarget(ContractWorld w)=>w.NewMilitary?.Withdrawal?.Dispatches.LastOrDefault(d=>SameMilitaryCase(w,d))?.Id;
+    public static bool CancellationAllowed(ContractWorld w,NewMilitaryAction action,EntityId? target=null)=>CancellationAction(action)&&Detached(w)&&Deployed(w)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&(target is {} id?w.NewMilitary!.Withdrawal!.Dispatches.Any(d=>d.Id==id&&SameMilitaryCase(w,d)):LatestRecallTarget(w)!=null);
     static UnitPostCancellation CancellationNote(ContractWorld w,TroopDispatch d){try{return ContractJson.Read<UnitPostCancellation>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));}catch(System.Text.Json.JsonException e){throw new InvalidDataException("取消原文が不正です",e);}}
     static void ApplyCancellation(ContractWorld w,NewMilitaryInput i)
     {
@@ -47,7 +47,7 @@ public static partial class NewGameMilitary
     static long? CancellationBoundary(ContractWorld w,long target)=>(w.NewMilitary?.Cancellation?.Dispatches??[]).Where(d=>w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)&&!w.NewMilitary!.Cancellation!.Effects.Any(e=>e.Id==d.Id)).Select(d=>Math.Max(w.Messaging.Receipts.Single(r=>r.MessageId==d.Message).ReceivedAt,CancellationNote(w,d).RequestedAt)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     public static string CancellationStatus(ContractWorld w)
     {
-        var root=w.NewMilitary?.Cancellation?.Dispatches.LastOrDefault();if(root==null)return "";
+        var root=w.NewMilitary?.Cancellation?.Dispatches.LastOrDefault(d=>SameMilitaryCase(w,d));if(root==null)return "";
         var known=UnitReceipts(w).Where(r=>UnitDispatches(w).Single(d=>d.Id==r.Id).Message==root.Message&&MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)).Select(r=>w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage)).Concat((w.NewMilitary!.Cancellation!.Notices??[]).Where(f=>f.Cancellation==root.Id&&MessageFlow.Knows(w.Messaging,f.Message,w.PlayerControl.Value)).Select(f=>w.Messaging.Messages.Single(m=>m.Id==f.Message))).OrderBy(m=>m.CreatedAt).ThenBy(m=>m.Id,StringComparer.Ordinal).LastOrDefault();
         if(known==null)return " / 取消伝令の返書は未受領";if(known.Kind=="delivery-failure")return " / 取消伝令の不達報告を受領";
         var a=ContractJson.Read<UnitCancelAnswer>(System.Text.Encoding.UTF8.GetBytes(known.Body));return " / 取消返書（開始"+a.At+"秒時点）："+(a.Outcome switch{UnitCancelDisposition.Waiting=>"受令・効力待ち",UnitCancelDisposition.Suppressed=>"未着手の対象命令を抑止",UnitCancelDisposition.Stopped=>"対象の残りの移動を停止",UnitCancelDisposition.AlreadyStopped=>"対象は取消済み",UnitCancelDisposition.TooLate=>"対象は完了済み・巻き戻さず",UnitCancelDisposition.Superseded=>"新しい別命令を維持",_=>"指揮権終了・変更せず"});

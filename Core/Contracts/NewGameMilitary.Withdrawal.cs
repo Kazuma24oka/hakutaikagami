@@ -20,9 +20,9 @@ public static partial class NewGameMilitary
     static bool InExerciseRange(ContractWorld w,FieldPoint p){var a=Anchor(w);System.Numerics.BigInteger x=(System.Numerics.BigInteger)p.X-a.X,y=(System.Numerics.BigInteger)p.Y-a.Y;return x*x+y*y<=120000L*120000;}
     public const string ReceivingRole="standing-unit-reception/recall-only";
     static bool WithdrawalAction(NewMilitaryAction a)=>a is NewMilitaryAction.Handoff or NewMilitaryAction.Reclaim or NewMilitaryAction.Withdraw or NewMilitaryAction.Rejoin or NewMilitaryAction.Attach or NewMilitaryAction.Observe or NewMilitaryAction.RemoteRecall or NewMilitaryAction.PersonalHome or NewMilitaryAction.PersonalMove;
-    public static bool DetachedAt(ContractWorld w,long at)=>w.NewMilitary?.Requests.LastOrDefault(q=>q.At<=at&&q.Input.Action is NewMilitaryAction.Withdraw or NewMilitaryAction.Attach or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Withdraw;
+    public static bool DetachedAt(ContractWorld w,long at)=>CaseRequests(w,at).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Withdraw or NewMilitaryAction.Attach or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Withdraw;
     public static bool Detached(ContractWorld w)=>DetachedAt(w,w.ElapsedSeconds);
-    public static bool UnitCarries(ContractWorld w)=>w.NewMilitary?.Requests.LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Handoff or NewMilitaryAction.Reclaim)?.Input.Action==NewMilitaryAction.Handoff;
+    public static bool UnitCarries(ContractWorld w)=>CaseRequests(w).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Handoff or NewMilitaryAction.Reclaim)?.Input.Action==NewMilitaryAction.Handoff;
     public static FieldPoint PersonPosition(ContractWorld w,long at)
     {
         if(!DetachedAt(w,at))return Position(w,0,at);
@@ -42,7 +42,7 @@ public static partial class NewGameMilitary
             NewMilitaryAction.Rejoin=>Detached(w)&&!PersonMoving(w)&&w.NewMilitary.Withdrawal!.Sightings.Length>0,
             NewMilitaryAction.Attach=>Detached(w)&&Meeting(w),
             NewMilitaryAction.Observe=>Meeting(w),
-            NewMilitaryAction.RemoteRecall=>Detached(w)&&w.NewMilitary.Withdrawal!.Sightings.Length>0&&!w.NewMilitary.Withdrawal.Dispatches.Any(d=>!w.NewMilitary.Withdrawal.Replies.Any(a=>a.Id==d.Id)),
+            NewMilitaryAction.RemoteRecall=>Detached(w)&&w.NewMilitary.Withdrawal!.Sightings.Length>0&&!w.NewMilitary.Withdrawal.Dispatches.Any(d=>SameMilitaryCase(w,d)&&!w.NewMilitary.Withdrawal.Replies.Any(a=>a.Id==d.Id)),
             _=>false};
     }
     static PersonalWithdrawalState EmptyWithdrawal()=>new(WithdrawalContract,[],[],[],[],[]);
@@ -81,7 +81,7 @@ public static partial class NewGameMilitary
             bool delivered=w.Messaging.Attempts.Single(a=>a.Id==d.Attempt).Status==AttemptStatus.Delivered;
             // Recipient-local truth is tested only on arrival, never used to choose the address.
             var original=d.Role==ReceivingRole?w.NewMilitary!.Withdrawal!.Dispatches.Single(t=>t.Message==d.Message):null;
-            bool applied=original!=null&&delivered&&!CancelledRecall(w,d.Message)&&!UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==d.Message)&&!w.NewMilitary.Orders.Any(o=>SupersedesRecall(w,o,original));
+            bool applied=original!=null&&SameMilitaryCase(w,original)&&delivered&&!CancelledRecall(w,d.Message)&&!UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==d.Message)&&!w.NewMilitary.Orders.Any(o=>SupersedesRecall(w,o,original));
             if(applied)Order(w,new(UnitOrder(original!.Id),NewMilitaryAction.Recall));
             var route=RegionalGround.Plan(d.Destination,d.Origin,w.ElapsedSeconds,courier:true,atlas:true);var x=w.NewMilitary!.Withdrawal!;
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var reply=UnitMessage(d.Id,delivered?"reply":"failure");
@@ -98,7 +98,7 @@ public static partial class NewGameMilitary
     public static string PersonalStatus(ContractWorld w)
     {
         if(w.NewMilitary?.Withdrawal is not {} x)return "本人・本隊は同行中";
-        var d=UnitDispatches(w).LastOrDefault(d=>d.Role==ReceivingRole);var reply=d==null?null:UnitReplies(w).LastOrDefault(r=>r.Id==d.Id);var response=d==null?null:UnitReceipts(w).SingleOrDefault(r=>r.Id==d.Id);bool received=response!=null&&MessageFlow.Knows(w.Messaging,response.ReplyMessage,w.PlayerControl.Value);
+        var d=UnitDispatches(w).LastOrDefault(d=>d.Role==ReceivingRole&&SameMilitaryCase(w,d));var reply=d==null?null:UnitReplies(w).LastOrDefault(r=>r.Id==d.Id);var response=d==null?null:UnitReceipts(w).SingleOrDefault(r=>r.Id==d.Id);bool received=response!=null&&MessageFlow.Knows(w.Messaging,response.ReplyMessage,w.PlayerControl.Value);
         var late=d==null?null:w.NewMilitary?.CommandHolding?.Outcomes.LastOrDefault(f=>f.Original==d.Message&&f.ReplyMessage!=null&&MessageFlow.Knows(w.Messaging,f.ReplyMessage,w.PlayerControl.Value));
         string mail=late!=null?late.Applied?" / 遅着原本の受令・実行返書を受領":" / 遅着原本を受令・重複/旧命令は実行せず":d==null?"":received?UnitReceipts(w).Single(r=>r.Id==d.Id).Delivered?UnitReceipts(w).Single(r=>r.Id==d.Id).Applied?" / 撤退命令の受令返書を受領":" / 新しい現地命令を維持・旧撤退命令は実行せず":" / 撤退命令の不達報告を受領":" / 撤退伝令の返書は未受領";
         var deadline=d==null?null:w.Messaging.Messages.Single(m=>m.Id==d.Message).DeliverBy;if(deadline!=null)mail+=" / 撤退命令の受領期限：開始から"+deadline+"秒";

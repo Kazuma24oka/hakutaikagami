@@ -26,7 +26,7 @@ public static partial class NewGameMilitary
         var originalOrders=w.NewMilitary.Orders.ToArray();var pending=w.NewMilitary.Cancellation.Dispatches.Where(d=>w.NewMilitary.Cancellation.Receives.Any(r=>r.Cancellation==d.Id)&&!w.NewMilitary.Cancellation.Effects.Any(e=>e.Id==d.Id)).OrderBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray();
         foreach(var root in pending){var note=CancellationNote(w,root);long received=w.Messaging.Receipts.Single(r=>r.MessageId==root.Message).ReceivedAt;long effective=Math.Max(received,note.RequestedAt);if(effective>w.ElapsedSeconds)continue;Need(effective==w.ElapsedSeconds,"取消効力の境界を飛ばしました");
             var target=w.NewMilitary.Withdrawal!.Dispatches.Single(d=>d.Id==note.Target);var order=originalOrders.SingleOrDefault(o=>o.Id==UnitOrder(target.Id));var points=Enumerable.Range(0,3).Select(i=>Position(w,i,w.ElapsedSeconds)).ToArray();EntityId? stop=null;UnitCancelDisposition outcome;
-            if(!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))outcome=UnitCancelDisposition.AuthorityEnded;
+            if(!SameMilitaryCase(w,target)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))outcome=UnitCancelDisposition.AuthorityEnded;
             else if(w.NewMilitary.Cancellation.Effects.Any(e=>e.Original==note.Original&&e.At<w.ElapsedSeconds&&e.Outcome!=UnitCancelDisposition.AuthorityEnded))outcome=UnitCancelDisposition.AlreadyStopped;
             else if(order==null)outcome=UnitCancelDisposition.Suppressed;
             else if(originalOrders.Last().Id!=order.Id)outcome=UnitCancelDisposition.Superseded;

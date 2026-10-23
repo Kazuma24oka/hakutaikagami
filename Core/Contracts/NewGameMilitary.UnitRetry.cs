@@ -14,6 +14,7 @@ public static partial class NewGameMilitary
     {
         if(w.NewMilitary?.Withdrawal is not {} x)return null;
         var candidates=CancelRetryAction(action)?w.NewMilitary!.Cancellation?.Dispatches??[]:x.Dispatches;return candidates.LastOrDefault(d=>{
+            if(!SameMilitaryCase(w,d))return false;
             var a=MessageFlow.Latest(w.Messaging,d.Message);
             return RetryWithinDeadline(w,d,action)&&KnownFailedAttempt(a,RetryUsesEvidence(w,d,policy))&&a.Number<MessageFlow.MaxAttempts&&(RetryUsesEvidence(w,d,policy)?!ReceiptConfirmedToSender(w,d.Message,w.PlayerControl.Value):!w.Messaging.Receipts.Any(r=>r.MessageId==d.Message))&&MessageFlow.FailureKnown(w.Messaging,a.Id,w.PlayerControl.Value);
         });

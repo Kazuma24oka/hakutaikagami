@@ -48,7 +48,7 @@ public static partial class NewGameMilitary
     }
     public static string UnitInquiryStatus(ContractWorld w)
     {
-        var x=w.NewMilitary?.UnitInquiry;var d=x?.Dispatches.LastOrDefault();if(d==null)return "";
+        var x=w.NewMilitary?.UnitInquiry;var d=x?.Dispatches.LastOrDefault(d=>SameMilitaryCase(w,d));if(d==null)return "";
         var r=x!.Receipts.SingleOrDefault(r=>r.Id==d.Id);if(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value))return "本隊への照会返書は未受領";
         if(!r.Delivered)return "照会伝令は指定場所で本隊に会えなかった";
         var reply=ContractJson.Read<UnitPostInquiryAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));

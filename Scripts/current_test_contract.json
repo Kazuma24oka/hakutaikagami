@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 1695,
-  "baseline_passed": 1687,
-  "added": 8,
-  "scope": "UnitCancellationRecoveryTests(8): missed physical result pickup and restore, inclusive cancel deadline, no retry/late expiry extension, future effect after command handover, different original at same time"
+  "expected_passed": 1718,
+  "baseline_passed": 1695,
+  "added": 23,
+  "scope": "MilitaryRenewalTests(23): two/three lifetime cases, actual/known close and fresh permission, casualties/stock continuity, old paper and future cancel, old inquiry original-case reply, scoped handover report, idempotency, forged case/effects, old omission and restore boundaries, quoted return/expiry permits new case without original notice opening"
 }
