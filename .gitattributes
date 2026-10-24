@@ -1801,3 +1801,10 @@ Docs/Design/BottomDialogueV1/README.md -text whitespace=blank-at-eol,blank-at-eo
 Docs/Design/BottomDialogueV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_bottom_dialogue.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_bottom_dialogue_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/LocalInspectionFindings.cs -text
+Tests/LocalInspectionFindingsTests.cs -text
+Game/Scripts/NewGameFrontEnd.InspectionFindingsChecks.cs -text
+Docs/Design/InspectionFindingsV1/** -text
+Scripts/verify_inspection_findings.py -text
+Scripts/check_inspection_findings_binding.py -text

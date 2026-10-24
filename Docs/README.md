@@ -226,3 +226,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [仕事の判断画面 V2](Design/WorkDecisionUIV2/README.md)：会話・依頼要点・返答の集約と、実行/報告の場面分離。
 
 - [下部会話帯 V1](Design/BottomDialogueV1/README.md)：地図を保つ会話帯、左右の顔アイコン、選択時だけ表示する用件と返答。
+
+- [陸路点検結果と行先選択](Design/InspectionFindingsV1/README.md)

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2122,
-  "baseline_passed": 2104,
-  "added": 18,
-  "scope": "NewGameNpcRoutine18: opt-in only,5NPC own jobs,own received result prevents repeats,noninterference,budget no partial commit,decision tamper,6save points/same future,long400000s bounded history,old3/5/6profile hashes,new policy profile binding and module guard"
+  "expected_passed": 2143,
+  "baseline_passed": 2122,
+  "added": 21,
+  "scope": "LocalInspectionFindings21: local presence, actual completion, historical observation, sealed physical reports, no remote leakage, immutable source, malformed extra report, legacy policy hashes and six saves/same future"
 }

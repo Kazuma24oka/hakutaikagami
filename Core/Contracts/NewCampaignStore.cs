@@ -7,6 +7,9 @@ public sealed record NewCampaignProfile(string Instance,SetupScenario Setup,Regi
     public string? HistoricalCatalog { get; init; }
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? NpcRoutinePolicy { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? InspectionPolicy { get; init; }
+
 }
 public sealed record NewCampaignListing(NewCampaignProfile Profile,long Seconds,string Directory);
 public sealed class NewCampaignStore
@@ -15,10 +18,10 @@ public sealed class NewCampaignStore
     public NewCampaignStore(string root)=>this.root=Path.GetFullPath(root);
     static bool Id(string s)=>Guid.TryParseExact(s,"N",out _);
     public string DirectoryFor(string instance){if(!Id(instance))throw new InvalidDataException("開始保存IDが不正です");return Path.Combine(root,instance);}
-    public static ContractWorld Build(NewCampaignProfile p){if(!Id(p.Instance))throw new InvalidDataException("開始保存IDが不正です");var w=NewGameWorld.Create(p.Setup,p.Registered,p.Selected,p.Seed,p.PersonalAuthorityLayout,p.HistoricalCatalog,p.NpcRoutinePolicy);if(ContractJson.CanonicalHash(w)!=p.InitialHash)throw new InvalidDataException("開始定義が変更されています");return w;}
-    public NewCampaignProfile New(SetupScenario setup,RegisteredOfficer[] registered,string selected,ulong seed,string? personalAuthorityLayout=null,string? historicalCatalog=null,string? npcRoutinePolicy=null)
+    public static ContractWorld Build(NewCampaignProfile p){if(!Id(p.Instance))throw new InvalidDataException("開始保存IDが不正です");var w=NewGameWorld.Create(p.Setup,p.Registered,p.Selected,p.Seed,p.PersonalAuthorityLayout,p.HistoricalCatalog,p.NpcRoutinePolicy,p.InspectionPolicy);if(ContractJson.CanonicalHash(w)!=p.InitialHash)throw new InvalidDataException("開始定義が変更されています");return w;}
+    public NewCampaignProfile New(SetupScenario setup,RegisteredOfficer[] registered,string selected,ulong seed,string? personalAuthorityLayout=null,string? historicalCatalog=null,string? npcRoutinePolicy=null,string? inspectionPolicy=null)
     {
-        var initial=NewGameWorld.Create(setup,registered,selected,seed,personalAuthorityLayout,historicalCatalog,npcRoutinePolicy);var p=new NewCampaignProfile(Guid.NewGuid().ToString("N"),ContractJson.Copy(setup),NewGameWorld.Normalize(registered),selected,seed,ContractJson.CanonicalHash(initial)){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog,NpcRoutinePolicy=npcRoutinePolicy};
+        var initial=NewGameWorld.Create(setup,registered,selected,seed,personalAuthorityLayout,historicalCatalog,npcRoutinePolicy,inspectionPolicy);var p=new NewCampaignProfile(Guid.NewGuid().ToString("N"),ContractJson.Copy(setup),NewGameWorld.Normalize(registered),selected,seed,ContractJson.CanonicalHash(initial)){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog,NpcRoutinePolicy=npcRoutinePolicy,InspectionPolicy=inspectionPolicy};
         Directory.CreateDirectory(DirectoryFor(p.Instance));using var stream=new FileStream(Path.Combine(DirectoryFor(p.Instance),"start.json"),FileMode.CreateNew,FileAccess.Write,FileShare.None);stream.Write(ContractJson.Write(p));stream.Flush(true);return p;
     }
     public NewCampaignProfile Read(string instance)

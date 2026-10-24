@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
 {
-    bool WorkVoluntary=>FlowCase is "worktalk-voluntary" or "worktalk-small";
+    bool WorkVoluntary=>FlowCase is "worktalk-voluntary" or "worktalk-small" or "findings-normal" or "findings-small";
     async Task TalkHold(double seconds){for(int n=0;n<(int)(seconds*30);n++)await Frame();}
     async Task WorkAcceptAndRun()
     {

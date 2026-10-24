@@ -350,6 +350,7 @@ public sealed partial class WorldSession
         }
         if(t.Action==ActionKind.Move)s.Locations=s.Locations.Select(l=>l.Actor==t.Executor?new LocationState(t.Executor,LocationKind.AtSite,MovementControl.Enabled(s)?MovementControl.Destination(s,t):i.DestinationSite,null,0,0,null,null,null,null,s.CommitSequence):l).ToArray();
         s.Actions=s.Actions.Select(a=>a.Task==t.Id?a with{Phase=ExecutionPhase.Completed,Progress=a.Until-a.StartedAt}:a).ToArray();
+        LocalInspectionFindings.Record(s,t);
         Complete(s,t,"completed");
     }
     private static void Complete(ContractWorld s,TaskState t,string reason)
