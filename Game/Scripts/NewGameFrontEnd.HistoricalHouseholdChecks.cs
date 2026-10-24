@@ -12,8 +12,8 @@ public partial class NewGameFrontEnd
     {
         if(FlowCase=="household-west-v2"){await EditionStep(n);return;}
         var s=game!.Session;
-        if(n==1){await PressLocalIntent("work");game.Press("ten");await WaitManualTime();Check(game.Session.GetActorView(game.Session.PlayerControl).Messages.Any(m=>m.KnownBody==null),"historical retainer work arrives sealed through existing delivery");Check(game.Session.DiagnosticSnapshot().Tasks.Single(t=>t.Action==ActionKind.Inspect).Kind==TaskKind.BindingOrder,"known initial lord issues actual binding work");}
-        if(n==2){OpenAllServiceLetters();game.Press("ten");await WaitManualTime();Check(game.Session.DiagnosticSnapshot().EffectLedger.Any(e=>e.Result=="completed"),"retainer completes real work before release");}
+        if(n==1){await PressLocalIntent("work");game.Press("ten");await WaitManualTime();Check(game.Session.GetActorView(game.Session.PlayerControl).Messages.Any(m=>m.KnownBody==null),"historical retainer work arrives sealed through existing delivery");Check(game.Session.DiagnosticSnapshot().Tasks.Single(t=>t.Action==ActionKind.Inspect&&t.Executor==game.Session.PlayerControl).Kind==TaskKind.BindingOrder,"known initial lord issues actual binding work");}
+        if(n==2){OpenAllServiceLetters();game.Press("ten");await WaitManualTime();Check(SelectedInspectionCompleted(),"retainer completes real work before release");}
         if(n==3){Check(game.ButtonEnabled("service-release"),"retainer may request release without fabricated extra army rights");game.Press("service-release");game.Press("ten");await WaitManualTime();}
         if(n==4){OpenAllServiceLetters();game.Press("ten");await WaitManualTime();OpenAllServiceLetters();Check(NewGameService.View(game.Session.DiagnosticSnapshot()).House==null&&game.InfoText.Contains("所属なし"),"same historical retainer becomes ronin only after existing release notice is opened");}
         if(n==5){game.SetDestination("castle");await PressDeparture();game.Press("ten");await WaitManualTime();Check(game.Session.GetBranchView(game.Session.PlayerControl).Walking,"same historical person travels after work and release");}

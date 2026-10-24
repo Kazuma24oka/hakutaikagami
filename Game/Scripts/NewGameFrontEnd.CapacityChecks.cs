@@ -25,7 +25,7 @@ public partial class NewGameFrontEnd
         int count=CapacityCount;await BeginPopulationEntry(count);
         game!.Press("save");await WaitSave();game.Refresh();game.SaveCheckpoint("s0");await Capture("s0",true);
         for(int n=1;n<=3;n++){await GameStep(n);game.SaveCheckpoint("s"+n);await Capture("s"+n,true);}await GameStep(4);await Capture("final",true);
-        Check(game.Session.DiagnosticSnapshot().Tasks.Any(t=>t.Action==ActionKind.Inspect&&t.Execution==ExecutionPhase.Completed),"same selected historical actor moves and completes inspection in synthetic population world");
+        Check(game.Session.DiagnosticSnapshot().Tasks.Any(t=>t.Executor==game.Session.PlayerControl&&t.Action==ActionKind.Inspect&&t.Execution==ExecutionPhase.Completed),"same selected historical actor moves and completes inspection in synthetic population world");
         var samples=new System.Collections.Generic.List<double>();var click=Stopwatch.StartNew();game.Press("auto");double autoClickMs=click.Elapsed.TotalMilliseconds;await WaitClock();double autoCompleteMs=click.Elapsed.TotalMilliseconds;long autoStart=game.Session.Seconds;
         var clock=Stopwatch.StartNew();double prior=0;
         for(int n=0;n<1000&&(samples.Count<120||clock.Elapsed.TotalSeconds<3);n++){await Frame();double now=clock.Elapsed.TotalMilliseconds;samples.Add(now-prior);prior=now;}

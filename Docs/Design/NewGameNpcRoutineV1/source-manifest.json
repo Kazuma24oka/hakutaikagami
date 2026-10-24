@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "kind": "implementation-contract",
+  "historical_baseline": "Docs/Design/HistoricalHouseholdV1/source-manifest.json",
+  "policy": "historical-own-site-first-inspection-v1",
+  "inputs": [
+    "own current authored-site position",
+    "own adult status and exact personal permit",
+    "own issued inspection tasks",
+    "own physically received report knowledge"
+  ],
+  "limits": [
+    "No new historical assertions or imagery.",
+    "NPC behavior is a declared prototype policy,not sourced historical behavior.",
+    "Long wait uses existing Core QA advance,not recorded wall-clock playback."
+  ]
+}

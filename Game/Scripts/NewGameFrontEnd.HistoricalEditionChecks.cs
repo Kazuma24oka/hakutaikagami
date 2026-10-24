@@ -10,7 +10,7 @@ public partial class NewGameFrontEnd
     async Task EditionPoint(int n){game!.ReviewFraction(0);game.Press("save");await WaitSave();game.Refresh();game.SaveCheckpoint("edition"+n);await Capture("s"+n,true);}
     async Task EditionStep(int n)
     {
-        if(n==1){await CompleteLocal("inspect");game!.Press("ten");await WaitManualTime();Check(game.Session.DiagnosticSnapshot().EffectLedger.Any(e=>e.Result=="completed"),"same western/legacy person completes existing inspection effects");}
+        if(n==1){await CompleteLocal("inspect");game!.Press("ten");await WaitManualTime();Check(SelectedInspectionCompleted(),"same western/legacy person completes existing inspection effects");}
         if(n==2){game!.SetDestination(FlowCase=="edition-otomo"?"hita":FlowCase=="edition-shimazu"?"hitoyoshi":"fork");await PressDeparture();game.Press("ten");await WaitManualTime();Check(game.Session.GetBranchView(game.Session.PlayerControl).Walking,"same versioned person enters existing road movement");}
     }
     async Task BeginHistoricalEditionFlow()

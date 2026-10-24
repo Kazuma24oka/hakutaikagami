@@ -216,3 +216,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 開始人物の版固定・西日本候補：`Design/HistoricalStartEditionV1/README.md`。旧3人版保存を保持し、新規5人版を明示固定。
 
 - 版付き名簿の家臣開始：`Design/HistoricalHouseholdV1/README.md`。信繁の仕事・返報・辞去・旅立ちと旧3人/5人保存の維持。
+
+- 新入口の限定NPC初回判断：`Design/NewGameNpcRoutineV1/README.md`。自分の点検と返報による待機、旧保存への後付けなし。

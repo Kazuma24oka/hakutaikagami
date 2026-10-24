@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2104,
-  "baseline_passed": 2093,
-  "added": 11,
-  "scope": "HistoricalHousehold11: frozen real west-v2profile,unchanged5heads/sites,new6person roster,initial retainer/lord without military rights,physical sealed work/report/release,copy/provenance tamper guards,4save checkpoints and identical future"
+  "expected_passed": 2122,
+  "baseline_passed": 2104,
+  "added": 18,
+  "scope": "NewGameNpcRoutine18: opt-in only,5NPC own jobs,own received result prevents repeats,noninterference,budget no partial commit,decision tamper,6save points/same future,long400000s bounded history,old3/5/6profile hashes,new policy profile binding and module guard"
 }

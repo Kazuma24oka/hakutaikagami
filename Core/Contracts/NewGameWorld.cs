@@ -9,6 +9,8 @@ public sealed record NewGameState(int Schema, SetupScenario Start, RegisteredOff
     public string? PersonalAuthorityLayout { get; init; }
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? HistoricalCatalog { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? NpcRoutinePolicy { get; init; }
 }
 public static partial class NewGameWorld
 {
@@ -35,7 +37,7 @@ public static partial class NewGameWorld
             return ContractJson.Copy(p) with{Site=RegionalCampaign.Site(Node(p.Site)).Value,Lord=lord};
         }).ToArray();
     }
-    public static SetupScenario Scenario(string? historicalCatalog=null)
+    public static SetupScenario Scenario(string? historicalCatalog=null,string? npcRoutinePolicy=null)
     {
         if(historicalCatalog!=null)return HistoricalStartCatalog.Scenario(historicalCatalog);
         var catalog=NationalPersonnel.Catalog;
@@ -73,7 +75,7 @@ public static partial class NewGameWorld
         .Concat(NationalRoutes.Sites.Select(s=>new Grant(new("grant:new-game/inspect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id+"/"+s.Id.Value))),new(p.Id),new(p.Id),s.Id,[ActionKind.Inspect],Basis,0,long.MaxValue,0,[],false,0)))).ToArray();
     static void ValidateStart(NewGameState data)
     {
-        Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");Need(data.PersonalAuthorityLayout is null or CompactPersonalAuthority,"本人権限の保存形式が不正です");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
+        Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");Need(data.PersonalAuthorityLayout is null or CompactPersonalAuthority,"本人権限の保存形式が不正です");Need(data.NpcRoutinePolicy is null or NewGameNpcRoutine.Policy,"NPC routine policy is unknown");Need(data.NpcRoutinePolicy==null||data.Start.People.Count(p=>!p.Created&&p.Id!=data.Selected.Value)<=NewGameNpcRoutine.MaximumActors,"NPC routine candidate limit exceeded");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
         Need(data.Start.EpochDate=="1560-01-01","この候補は1560年開始です");
         Need(data.Start.People.Where(p=>!p.Created).OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name)).SequenceEqual(Scenario(data.HistoricalCatalog).People.OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name))),"史実人物の定義を無断追加・変更できません");
         Need(data.Start.Castles.Select(c=>c.Id).Order().SequenceEqual(NationalRoutes.Sites.Select(s=>s.Id.Value).Order()),"収録拠点の構成が違います");
@@ -90,10 +92,10 @@ public static partial class NewGameWorld
         }
         Need(data.Start.People.Where(p=>p.InitialRole==StartTemplate.Castellan).GroupBy(p=>p.Site).All(g=>g.Count()==1),"同じ城に複数の登録城主がいます");
     }
-    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null,string? historicalCatalog=null)
+    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null,string? historicalCatalog=null,string? npcRoutinePolicy=null)
     {
-        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog};ValidateStart(data);
-        var w=TravelWorld.Create();w.NewGame=data;w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
+        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog,NpcRoutinePolicy=npcRoutinePolicy};ValidateStart(data);
+        var w=TravelWorld.Create();w.NewGame=data;w.NpcWork=data.NpcRoutinePolicy==null?null:new([]);w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
         w.Definitions=w.Definitions with{Id=new("scenario:"+Ruleset),Ruleset=Ruleset,Version=Version(data),Characters=data.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray(),Organizations=data.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray(),AuthorityBases=[new(Basis,"新規ゲームの開始配置（役職・領土は試作設定）。個人の移動/自己点検以外の軍・徴収権を付与しない")],Armies=[]};
         w.Characters=data.Start.People.Select(p=>new CharacterState(new(p.Id),CanPlay(data.Start,p)?LifeState.Adult:LifeState.Minor,new("appearance:"+ContractJson.Hash(ContractJson.Write(Look(data,p.Id)))),0)).ToArray();
         w.Locations=data.Start.People.Select(p=>new LocationState(new(p.Id),LocationKind.AtSite,new(p.Site),null,0,0,null,null,null,null,0)).ToArray();
@@ -127,16 +129,18 @@ public static partial class NewGameWorld
         foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==projection.People[p.Id].Appearance&&c.Life==projection.People[p.Id].Life,"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
         foreach(var r in w.Requests)ValidateOrderAt(w,r.Intent,r.CreatedAt);
     }
-    public static Intent Inspect(ContractWorld w,string id)=>new(new(id),w.PlayerControl,w.PlayerControl,w.Locations.Single(l=>l.Actor==w.PlayerControl).Site??throw new InvalidDataException("到着してから点検してください"),ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,w.ElapsedSeconds+60,false,null,w.ElapsedSeconds+60),w.ElapsedSeconds,1,4,1,false,TaskKind.BindingOrder);
+    public static Intent Inspect(ContractWorld w,string id)=>InspectFor(w,w.PlayerControl,id,w.ElapsedSeconds);
+    internal static Intent InspectFor(ContractWorld w,EntityId actor,string id,long at)=>new(new(id),actor,actor,w.Locations.Single(l=>l.Actor==actor).Site??throw new InvalidDataException("到着してから点検してください"),ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+60,false,null,at+60),at,1,4,1,false,TaskKind.BindingOrder);
     public static void ValidateOrder(ContractWorld w,Intent i)
     {
         if(i.Action==ActionKind.Move){TravelWorld.ValidateOrder(w,i);return;}
+        if(i.Actor==i.Executor&&i.Executor!=w.PlayerControl){Need(NewGameNpcRoutine.IsActor(w,i.Actor)&&i==InspectFor(w,i.Actor,i.RequestId.Value,w.ElapsedSeconds),"NPC personal inspection lacks declared policy");return;}
         if(i.Actor!=i.Executor){Need(i==LocalWork(w,i.RequestId.Value),"現地で相談した任意依頼の条件が違います");return;}
         Need(i.Action==ActionKind.Inspect && i==Inspect(w,i.RequestId.Value),"本人の移動・到着した拠点の自己点検だけを扱います");
     }
     static void ValidateOrderAt(ContractWorld w,Intent i,long at)
     {
-        Need(i.Executor==w.PlayerControl&&i.Action is ActionKind.Move or ActionKind.Inspect,"本人以外の指揮・徴収は開始だけではできません");
+        Need((i.Executor==w.PlayerControl||i.Actor==i.Executor&&i.Action==ActionKind.Inspect&&NewGameNpcRoutine.IsActor(w,i.Actor))&&i.Action is ActionKind.Move or ActionKind.Inspect,"本人以外の指揮・徴収は開始だけではできません");
         if(i.Actor!=i.Executor){Need(i.Action==ActionKind.Inspect&&(i.Kind==TaskKind.VoluntaryRequest||i.Kind==TaskKind.BindingOrder&&NewGameService.BoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1)&&NewGameService.KnownBoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1))&&i.Important&&i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Executor,at)&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+120,"現地相談の物理所在・任意依頼・期限が不正です");}
         else if(i.Action==ActionKind.Inspect)Need(i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+60,"自己点検の場所・期限が不正です");
     }
