@@ -683,3 +683,6 @@ ResponsiveLocalIntentV1の5条件。既存Inspect/LocalWork/Submitを共有私�
 
 ## 開始人物の版固定・西日本候補 V1（2026-10-24）
 HistoricalStartEditionV1の5条件。旧null版3人物は初期hash/JSON保持。新規のみ明示版で義鎮/貴久を追加、公式解説の本拠候補と試作の当主/一拠点を区別。未知版は代替しない。17追加/2093全試験を再実行、310入力/34実GPU172比較/実画像照合後同枝push。旧TravelWorld/台帳は維持。判断不要なら継続。
+
+## 版付き名簿の家臣開始 V1（2026-10-24）
+HistoricalHouseholdV1の5条件。旧null3人/旧west-v2の5人は実プロフィールhashとJSON保持。新規household-v3だけ信繁を追加。初期主従と軍職権限・個人随行を分け、兵/兵糧を自動付与しない。11追加/2104全試験、314入力/38現行GPU190比較/実画像後同枝push。旧西日本試験はWestern明示で継続。判断不要なら継続。

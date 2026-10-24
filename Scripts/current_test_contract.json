@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2093,
-  "baseline_passed": 2076,
-  "added": 17,
-  "scope": "HistoricalStartEdition17: golden pre-upgrade profile exact hash,closed optional edition,null legacy preservation,unknown/mixed edition rejection,copy/provenance constraints,western2actors save/restore/continuation and profile binding"
+  "expected_passed": 2104,
+  "baseline_passed": 2093,
+  "added": 11,
+  "scope": "HistoricalHousehold11: frozen real west-v2profile,unchanged5heads/sites,new6person roster,initial retainer/lord without military rights,physical sealed work/report/release,copy/provenance tamper guards,4save checkpoints and identical future"
 }

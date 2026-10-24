@@ -1719,3 +1719,23 @@ Docs/Design/HistoricalStartEditionV1/source-manifest.json -text whitespace=blank
 Docs/Design/HistoricalStartEditionV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_historical_start_edition.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_historical_start_edition_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact historical household bytes.
+Core/Contracts/HistoricalStartCatalog.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/HistoricalHouseholdCatalog.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Data/historical-household-v3.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/HakutaiKagami.Core.csproj -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/HistoricalStartCatalogTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/HistoricalHouseholdTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/Fixtures/pre-household-start-west-v2.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/source-manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_historical_household.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_historical_household_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

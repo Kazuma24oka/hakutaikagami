@@ -1,0 +1,29 @@
+{
+  "Schema": 1,
+  "Id": "historical-start-household-v3",
+  "BaseEdition": "historical-start-west-v2",
+  "WorldYear": 1560,
+  "Policy": "準史実の家臣1名の部分収録。名前・武田家との関係は公式解説。本拠候補の甲府配置、開始時の直属主従と家臣区分は検証用初期条件。個人随行・知行地・軍職権限・1560年当日の現在地は未採録。",
+  "Sources": [
+    {
+      "Id": "nagano-nobushige",
+      "Title": "長野市・川中島の戦い：武田典厩信繁の墓",
+      "Url": "https://kawanakajima.nagano.jp/tour/tour-333/",
+      "CheckedOn": "2026-10-24",
+      "Fact": "信玄の実弟・副将として兄を支えた信繁と、1561年川中島での戦死を説明する。戦記由来の会話・兵数・忠誠値は採用しない。"
+    }
+  ],
+  "People": [
+    {
+      "Id": "person:takeda-nobushige",
+      "Name": "武田信繁",
+      "Faction": "org:takeda",
+      "Lord": "person:shingen",
+      "HomeCandidate": "kofu",
+      "SourceIds": [
+        "nagano-nobushige"
+      ],
+      "Certainty": "武田家と信玄を支えた関係を採録。甲府での開始・直属主従・家の家臣としての配置は試作条件。個人随行・1560年当日所在・独自の軍権は断定しない。"
+    }
+  ]
+}
