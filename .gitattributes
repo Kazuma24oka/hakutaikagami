@@ -1775,3 +1775,17 @@ Scripts/verify_play_review.py -text whitespace=blank-at-eol,blank-at-eof,space-b
 Scripts/check_play_review_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/prepare_play_review_recording.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/encode_play_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact work-conversation evidence bytes.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Mail.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.WorkExperience.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.LocalIntentChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WorkConversationChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkConversationV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkConversationV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_work_conversation.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_work_conversation_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -220,3 +220,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 新入口の限定NPC初回判断：`Design/NewGameNpcRoutineV1/README.md`。自分の点検と返報による待機、旧保存への後付けなし。
 
 - 連続操作と確認映像：`Design/PlayReviewV1/README.md`。仕事/書状/保存再開/旅立ちの実操作と別プロセス続行、固定フレーム録画。
+
+- [仕事の会話表示 V1](Design/WorkConversationV1/README.md)：既存点検の相談・引受・実行・返報と、履歴への分離。
