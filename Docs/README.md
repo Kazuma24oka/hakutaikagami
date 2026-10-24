@@ -200,3 +200,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 全速度の画面応答 V1：`Design/BatchedAdvanceV1/README.md`、`Design/BatchedAdvanceV1/verification.json`。全速度の私有準備と速度変更時の取消、公開入力列での厳密な復旧を照合する。
 
 - 地形参照キャッシュ：`Design/TerrainCacheV1/README.md`。共有rendererの見た目/UV/復旧と実測を照合。
+
+- 手動時間操作の応答：`Design/ManualAdvanceV1/README.md`。受付時間と確定時間を分け、取消/通知/保存復旧を照合。

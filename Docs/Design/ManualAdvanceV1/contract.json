@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "tests": 2055,
+  "core_inputs": 304,
+  "gpu_processes": 40,
+  "world_image_pairs": 116,
+  "numeric_pairs": 116,
+  "allowed_source_changes": [
+    "Game/Scripts/NewGameRuntime.cs",
+    "Game/Scripts/NewGameRuntime.ResponsiveClock.cs",
+    "Game/Scripts/NewGameRuntime.PreparedAdvance.cs",
+    "Game/Scripts/NewGameRuntime.ManualAdvance.cs",
+    "Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.cs",
+    "Game/Scripts/NewGameFrontEnd.Checks.cs",
+    "Game/Scripts/NewGameFrontEnd.ServiceChecks.cs",
+    "Docs/Design/ManualAdvanceV1/README.md",
+    "Docs/Design/ManualAdvanceV1/contract.json",
+    "Docs/Design/ManualAdvanceV1/verification.json",
+    "Scripts/verify_manual_advance.py",
+    "Scripts/check_manual_advance_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "scope": "Visible explicit-time action through existing opaque pause/advance captures; UI locking/cancel/reap; no Core/schema/renderer change; targeted40 current GPU,previous62/24 historical."
+}

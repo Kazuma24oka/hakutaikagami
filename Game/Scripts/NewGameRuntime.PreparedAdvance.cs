@@ -86,6 +86,7 @@ public partial class NewGameRuntime
     }
     public override void _ExitTree()
     {
+        AbandonManualAdvanceOnExit();
         CancelManualSavePreparationOnExit();
         CancelClockControl(false);
         CancelAdvancePrefetch();
