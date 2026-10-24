@@ -66,7 +66,7 @@ public partial class NewGameRuntime
   try{
    if(saveWaiting){
     ClearCompletedAdvance();
-    if(advanceJob==null){var capture=saveCapture!;var token=savePrepareStop!.Token;var fault=SavePrepareTestFault;savePrepareJob=Task.Run(()=>capture.Prepare(token,fault));saveWaiting=false;}
+    if(advanceJob==null){var capture=saveCapture!;var token=savePrepareStop!.Token;var fault=SavePrepareTestFault;savePrepareJob=preparations.Run(()=>capture.Prepare(token,fault),token);saveWaiting=false;}
    }
    if(savePrepareJob?.IsCompleted==true){
     var ready=savePrepareJob.GetAwaiter().GetResult();var code=host.CommitPause(ready,out var display);
@@ -75,7 +75,7 @@ public partial class NewGameRuntime
     // Only an accepted confirmed world reaches the file writer. With inputs
     // locked and automatic progression suspended, this session cannot change.
     var frozen=Session;var id=display!.WorldId;var target=saveTarget!;var presentation=saveView!;var fault=saveFault;
-    manualSaveJob=Task.Run(()=>target.Save(frozen,"manual",id,presentation,fault));
+    manualSaveJob=preparations.Run(()=>target.Save(frozen,"manual",id,presentation,fault),CancellationToken.None);
    }
    if(manualSaveJob?.IsCompleted==true){
     var result=manualSaveJob.GetAwaiter().GetResult();LastSavePublished=result.Published;message.Text=result.Published?"同じ人物・世界の進行を保存しました。":"より新しい保存があるため上書きしませんでした。現在の進行は維持しています。";FinishManualSave();return false;

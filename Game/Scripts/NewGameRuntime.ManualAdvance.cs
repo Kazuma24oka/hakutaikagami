@@ -55,14 +55,14 @@ public partial class NewGameRuntime
             if(manualAdvanceStop?.IsCancellationRequested==true){ReapManualAdvance();if(ManualAdvanceWorkerPending)return true;}
             if(manualAdvancePhase is 0 or 2){
                 bool paused=manualAdvancePhase==2;
-                if(manualAdvancePause==null){var capture=Session.CapturePause(paused,Session.Revision);manualAdvanceStop=new();var token=manualAdvanceStop.Token;manualAdvancePause=Task.Run(()=>capture.Prepare(token));}
+                if(manualAdvancePause==null){var capture=Session.CapturePause(paused,Session.Revision);manualAdvanceStop=new();var token=manualAdvanceStop.Token;manualAdvancePause=preparations.Run(()=>capture.Prepare(token),token);}
                 if(!manualAdvancePause.IsCompleted)return true;
                 var ready=manualAdvancePause.GetAwaiter().GetResult();if(host.CommitPause(ready,out var display)!=ResultCode.Accepted)throw new InvalidOperationException("Manual pause source changed");
                 InstallWorldDisplay(display!);manualAdvancePause=null;manualAdvanceStop!.Dispose();manualAdvanceStop=null;
                 if(paused){bool failed=LastManualAdvanceError!=null;ReleaseManualAdvanceUi();message.Text=failed?"時間を進められませんでした。確定済みの世界を停止しました。再操作できます。":"指定時刻または停止すべき出来事で止まりました。";Refresh();return true;}
                 manualAdvancePhase=1;Refresh();return true;
             }
-            if(manualAdvanceWork==null){var capture=Session.CaptureAdvance(target,Session.Revision);manualAdvanceStop=new();var token=manualAdvanceStop.Token;var fault=ManualAdvanceTestFault;manualAdvanceWork=Task.Run(()=>capture.Prepare(token,fault));}
+            if(manualAdvanceWork==null){var capture=Session.CaptureAdvance(target,Session.Revision);manualAdvanceStop=new();var token=manualAdvanceStop.Token;var fault=ManualAdvanceTestFault;manualAdvanceWork=preparations.Run(()=>capture.Prepare(token,fault),token);}
             if(!manualAdvanceWork.IsCompleted)return true;
             long prior=Session.Seconds;var prepared=manualAdvanceWork.GetAwaiter().GetResult();if(host.CommitAdvance(prepared,out var publication)!=ResultCode.Accepted)throw new InvalidOperationException("Manual advance source changed");
             InstallAdvanceDisplay(publication!);ManualAdvancePublications++;manualAdvanceWork=null;manualAdvanceStop!.Dispose();manualAdvanceStop=null;

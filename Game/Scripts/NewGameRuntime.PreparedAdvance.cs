@@ -39,7 +39,7 @@ public partial class NewGameRuntime
         advanceSpeed=speed;advanceCapture=source.CaptureAdvance(target,source.Revision);advanceStop=new();advanceCanceled=false;
         var capture=advanceCapture;var token=advanceStop.Token;var fault=AdvanceTestFault;
         // Core only: no Godot nodes, live-session mutation or future view access.
-        advanceJob=Task.Run(()=>capture.Prepare(token,fault));
+        advanceJob=preparations.Run(()=>capture.Prepare(token,fault),token);
     }
     void InstallAdvanceDisplay(AdvancePublication publication)=>InstallWorldDisplay(publication.Display);
     void InstallWorldDisplay(ContractWorld display)
@@ -92,5 +92,6 @@ public partial class NewGameRuntime
         CancelAdvancePrefetch();
         if(advanceJob!=null){_ =advanceJob.ContinueWith(t=>{_=t.Exception;},CancellationToken.None,TaskContinuationOptions.OnlyOnFaulted,TaskScheduler.Default);advanceJob=null;}
         advanceStop?.Dispose();advanceStop=null;
+        preparations.CloseWhenIdle();
     }
 }

@@ -1648,3 +1648,18 @@ Docs/Design/PreparedSubmitV1/contract.json -text whitespace=blank-at-eol,blank-a
 Docs/Design/PreparedSubmitV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_prepared_submit.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_prepared_submit_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact tracked preparation queue acceptance bytes.
+Game/Scripts/RuntimePreparationQueue.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveClock.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ManualAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveSave.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparationQueueChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparationQueueV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparationQueueV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparationQueueV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_preparation_queue.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_preparation_queue_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

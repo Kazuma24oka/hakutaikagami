@@ -52,7 +52,7 @@ public partial class NewGameRuntime
             ClearCompletedAdvance();
             if(advanceJob!=null)return true;
             if(clockJob!=null&&clockJob.IsCompleted&&clockStop!.IsCancellationRequested){_=clockJob.Exception;clockJob=null;clockStop.Dispose();clockStop=null;}
-            if(clockJob==null){var capture=Session.CapturePause(clockDesired.Value,Session.Revision);clockStop=new();var token=clockStop.Token;var fault=ClockTestFault;clockJob=Task.Run(()=>capture.Prepare(token,fault));}
+            if(clockJob==null){var capture=Session.CapturePause(clockDesired.Value,Session.Revision);clockStop=new();var token=clockStop.Token;var fault=ClockTestFault;clockJob=preparations.Run(()=>capture.Prepare(token,fault),token);}
             if(!clockJob.IsCompleted)return true;
             var ready=clockJob.GetAwaiter().GetResult();var code=host.CommitPause(ready,out var display);
             if(code!=ResultCode.Accepted)throw new InvalidOperationException("Clock source changed");
