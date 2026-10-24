@@ -31,6 +31,7 @@ public partial class NewGameFrontEnd
             File.WriteAllText(Path.Combine(TestOutput,"clock-click-"+point+".json"),System.Text.Json.JsonSerializer.Serialize(new{StartClickMilliseconds=startClick,StopClickMilliseconds=stopClick,StartCompletionMilliseconds=startComplete,StopCompletionMilliseconds=stopComplete,StartRenderTicks=startFrames,StopRenderTicks=stopFrames,Scope="Actual1000 static synthetic people and selected-person movement; click duration is not completion latency or national AI acceptance."}));return;
         }
         if(FlowCase=="clock-cancel"){
+            game!.Press("play-guide");await Frame();Check(game.ReviewGuideVisible,"guide exists before clock-control locking");game.ReviewCloseGuide();await Frame();
             using var entered=new ManualResetEventSlim();using var release=new ManualResetEventSlim();string before=ContractJson.CanonicalHash(game!.Session.DiagnosticSnapshot());long published=game.ClockPublications;
             game.ClockTestFault=()=>{entered.Set();if(!release.Wait(TimeSpan.FromSeconds(30)))throw new TimeoutException("QA held clock control");};
             try{
@@ -42,7 +43,7 @@ public partial class NewGameFrontEnd
                     using var newPose=System.Text.Json.JsonDocument.Parse(game.Pose());Check(oldBasis!=newPose.RootElement.GetProperty("Render").GetProperty("Basis").GetRawText(),"actual rendered camera basis changes while control is held");
                 }
                 Check(before==ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()),"camera remains available while clock control is held");
-                game.Press("play-guide");await Frame();Check(game.ReviewGuideVisible,"actual guide remains available while control is held");game.ReviewCloseGuide();await Frame();
+                game.Press("play-guide");await Frame();Check(game.ReviewGuideVisible,"actual guide remains available while control is held");Check(game.ReviewGuideCloseEnabled,"previously created guide close stays enabled during clock wait");await Capture("clock-guide-reused",true);game.ReviewCloseGuide();await Frame();
                 Check(!game.ButtonEnabled("save")&&!game.ButtonEnabled("depart"),"world-changing controls locked during authoritative control publication");
                 game.Press("pause");release.Set();await WaitClock();Check(game.Session.Paused&&!game.ReviewAutomatic&&game.ClockPublications==published+1,"stop supersedes pending start without starting world time");
                 Check(before==ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()),"canceled start has no time,revision or world effects");

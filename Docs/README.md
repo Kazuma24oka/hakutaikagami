@@ -202,3 +202,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 地形参照キャッシュ：`Design/TerrainCacheV1/README.md`。共有rendererの見た目/UV/復旧と実測を照合。
 
 - 手動時間操作の応答：`Design/ManualAdvanceV1/README.md`。受付時間と確定時間を分け、取消/通知/保存復旧を照合。
+
+- 手引き再表示の回帰検査：`Design/GuideReuseV1/README.md`。事前表示済みダイアログの実ボタンと世界不変を検証。

@@ -48,6 +48,7 @@ public partial class NewGameFrontEnd
             game.ReviewFraction(0);return;
         }
         if(FlowCase is "manual-cancel" or "manual-menu"){
+            game!.Press("play-guide");await Frame();Check(game.ReviewGuideVisible,"existing guide opens before manual operation");game.ReviewCloseGuide();await Frame();
             using var entered=new ManualResetEventSlim();using var release=new ManualResetEventSlim();using var left=new ManualResetEventSlim();
             game!.ManualAdvanceTestFault=()=>{entered.Set();try{if(!release.Wait(TimeSpan.FromSeconds(30)))throw new TimeoutException("held manual advance");}finally{left.Set();}};
             try{
@@ -55,7 +56,7 @@ public partial class NewGameFrontEnd
                 string source=ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot());var expected=new WorldSession(game.Session.DiagnosticSnapshot());expected.SetPaused(true);
                 for(int n=0;n<160;n++)await Frame();Check(source==ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())&&game.ManualAdvanceRenderTicks>=160,"held manual future never replaces confirmed world while rendering continues");await Capture("manual-pending",true);
                 Check(!game.ButtonEnabled("save")&&!game.ButtonEnabled("depart")&&!game.ButtonEnabled("ten"),"world controls and duplicate explicit request locked while pending");
-                game.Press("rotate");await Frame();game.Press("play-guide");await Frame();Check(game.ReviewGuideVisible,"guide remains usable during explicit-time wait");game.ReviewCloseGuide();await Frame();
+                game.Press("rotate");await Frame();game.Press("play-guide");await Frame();Check(game.ReviewGuideVisible,"guide remains usable during explicit-time wait");Check(game.ReviewGuideCloseEnabled,"previously created guide close stays enabled during manual wait");await Capture("manual-guide-reused",true);game.ReviewCloseGuide();await Frame();
                 if(FlowCase=="manual-menu"){
                     game.Press("menu");Check(!game.Visible&&canvas.Visible&&!game.IsManualAdvancing,"menu cancels explicit-time operation and suspends actual runtime");release.Set();await UntilPrefetch(()=>left.IsSet,"abandoned manual worker leaves gate");for(int n=0;n<20;n++)await Frame();
                     Check(game.ManualAdvancePublications==pubs,"suspended private manual future cannot publish");Press("continue");await Frame();await WaitManualTime();

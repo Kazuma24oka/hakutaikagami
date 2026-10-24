@@ -3,8 +3,9 @@ using System;
 public partial class NewGameRuntime
 {
     AcceptDialog? playGuide;
+    internal bool ReviewGuideCloseEnabled=>playGuide!=null&&!playGuide.GetOkButton().Disabled;
     internal bool ReviewGuideVisible=>playGuide?.Visible==true;
-    internal void ReviewCloseGuide()=>playGuide!.GetOkButton().EmitSignal(Button.SignalName.Pressed);
+    internal void ReviewCloseGuide(){if(playGuide!.GetOkButton().Disabled)throw new InvalidOperationException("Actual guide close button is disabled");playGuide.GetOkButton().EmitSignal(Button.SignalName.Pressed);}
     void BuildPlayGuide(HFlowContainer toolbar)
     {
         Add(toolbar,"play-guide","操作の手引き",ShowPlayGuide);
