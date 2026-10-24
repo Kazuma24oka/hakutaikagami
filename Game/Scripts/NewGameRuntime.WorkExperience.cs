@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameRuntime
 {
+    PanelContainer workDecision=null!;PanelContainer[] portraitPanels=[];SubViewport[] portraitViews=[];Node3D[] portraitStages=[];bool workDecisionOpen,ownWorkSpeaker;Action? pendingWorkReply;
     ColorRect workBackdrop=null!;PanelContainer workOverlay=null!;Label workTitle=null!,workNames=null!,workSpeech=null!,workDetails=null!,workSummary=null!;
     VBoxContainer workChoices=null!;Label workPrompt=null!,workCardHeading=null!,workPhase=null!;PanelContainer workSpeechBox=null!;SubViewport talkView=null!;Node3D talkStage=null!;Label historyText=null!;PanelContainer historyOverlay=null!;
     readonly Dictionary<EntityId,Officer3DCustomActor> talkActors=new();
@@ -25,32 +26,25 @@ public partial class NewGameRuntime
         foreach(var id in new[]{"work-details","work-run","work"}){buttons[id].Reparent(workStack);buttons[id].CustomMinimumSize=new(0,42);}
         col.GetChildren().OfType<Label>().First().Text="移動";
         workBackdrop=new(){Visible=false,Color=new Color(0,0,0,.85f),ZIndex=49};AddChild(workBackdrop);workBackdrop.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        workOverlay=Overlay();
-        var content=new VBoxContainer();content.AddThemeConstantOverride("separation",16);workOverlay.AddChild(content);
-        var header=new HBoxContainer();content.AddChild(header);
-        workPhase=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};workPhase.AddThemeColorOverride("font_color",new Color("bcae91"));header.AddChild(workPhase);
-        Add(header,"work-close","閉じる",()=>{consultation=null;workOverlay.Hide();});buttons["work-back"]=buttons["work-close"];
-        var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddThemeConstantOverride("separation",28);content.AddChild(columns);
-        var visual=new VBoxContainer{CustomMinimumSize=new(330,0),SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsStretchRatio=.9f};columns.AddChild(visual);
-        var scene=new SubViewportContainer{Stretch=true,CustomMinimumSize=new(310,340),SizeFlagsVertical=SizeFlags.ExpandFill};visual.AddChild(scene);
-        talkView=new(){OwnWorld3D=true,Size=new(420,420),RenderTargetUpdateMode=SubViewport.UpdateMode.Always};scene.AddChild(talkView);talkStage=new();talkView.AddChild(talkStage);
-        talkStage.AddChild(new WorldEnvironment{Environment=new Godot.Environment{BackgroundMode=Godot.Environment.BGMode.Color,BackgroundColor=new Color("24333b"),AmbientLightSource=Godot.Environment.AmbientSource.Color,AmbientLightColor=new Color("ffe9c9"),AmbientLightEnergy=.8f}});
-        talkStage.AddChild(new DirectionalLight3D{RotationDegrees=new(-35,-25,0),LightEnergy=1.1f});
-        talkStage.AddChild(new MeshInstance3D{Mesh=new PlaneMesh{Size=new(20,20)},MaterialOverride=new StandardMaterial3D{AlbedoColor=new Color("4a4338")}});
-        var cam=new Camera3D{Current=true,Projection=Camera3D.ProjectionType.Orthogonal,Size=4.3f,Position=new(0,2.5f,5.5f)};talkStage.AddChild(cam);cam.LookAt(new(0,1,0));
-        var decision=new VBoxContainer{CustomMinimumSize=new(420,0),SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsStretchRatio=1.15f};decision.AddThemeConstantOverride("separation",16);columns.AddChild(decision);
-        workTitle=new();workTitle.AddThemeFontSizeOverride("font_size",26);decision.AddChild(workTitle);
-        workSpeechBox=new();workSpeechBox.AddThemeStyleboxOverride("panel",WorkBox("23333e","526776",16));decision.AddChild(workSpeechBox);
-        var speechCol=new VBoxContainer();speechCol.AddThemeConstantOverride("separation",9);workSpeechBox.AddChild(speechCol);
-        workNames=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};workNames.AddThemeColorOverride("font_color",new Color("e7c78c"));speechCol.AddChild(workNames);
-        workSpeech=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(0,78)};workSpeech.AddThemeFontSizeOverride("font_size",22);speechCol.AddChild(workSpeech);
-        var card=new PanelContainer();card.AddThemeStyleboxOverride("panel",WorkBox("1c292f","46564f",16));decision.AddChild(card);
-        var cardCol=new VBoxContainer();cardCol.AddThemeConstantOverride("separation",12);card.AddChild(cardCol);
-        workCardHeading=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};workCardHeading.AddThemeFontSizeOverride("font_size",19);cardCol.AddChild(workCardHeading);
-        workDetails=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};cardCol.AddChild(workDetails);
-        workPrompt=new();workPrompt.AddThemeColorOverride("font_color",new Color("e7c78c"));decision.AddChild(workPrompt);
-        workChoices=new();workChoices.AddThemeConstantOverride("separation",10);decision.AddChild(workChoices);
-        decision.AddChild(new Control{SizeFlagsVertical=SizeFlags.ExpandFill});
+        workOverlay=new(){Visible=false,ZIndex=50};AddChild(workOverlay);workOverlay.AddThemeStyleboxOverride("panel",WorkBox("17252f","a28b61",12));
+        var band=new HBoxContainer();band.AddThemeConstantOverride("separation",14);workOverlay.AddChild(band);
+        var left=BuildTalkPortrait();band.AddChild(left.Panel);
+        var words=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};words.AddThemeConstantOverride("separation",6);band.AddChild(words);
+        var header=new HBoxContainer();words.AddChild(header);
+        workNames=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};workNames.AddThemeColorOverride("font_color",new Color("efce92"));workNames.AddThemeFontSizeOverride("font_size",18);header.AddChild(workNames);
+        workTitle=new();workTitle.AddThemeFontSizeOverride("font_size",14);workTitle.AddThemeColorOverride("font_color",new Color("a8b7be"));header.AddChild(workTitle);
+        Add(header,"work-close","×",CloseBottomTalk);buttons["work-back"]=buttons["work-close"];
+        workSpeech=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsVertical=SizeFlags.ExpandFill};workSpeech.AddThemeFontSizeOverride("font_size",21);words.AddChild(workSpeech);
+        var footer=new HBoxContainer();words.AddChild(footer);workPhase=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};workPhase.AddThemeColorOverride("font_color",new Color("99aeb9"));footer.AddChild(workPhase);
+        Add(footer,"work-reply","返答を選ぶ",AdvanceBottomTalk);buttons["work-reply"].CustomMinimumSize=new(130,32);
+        var right=BuildTalkPortrait();band.AddChild(right.Panel);portraitPanels=[left.Panel,right.Panel];portraitViews=[left.View,right.View];portraitStages=[left.Stage,right.Stage];talkView=left.View;talkStage=left.Stage;workSpeechBox=workOverlay;
+        workDecision=new(){Visible=false,ZIndex=51};AddChild(workDecision);workDecision.AddThemeStyleboxOverride("panel",WorkBox("1d2b33","a28b61",10));
+        var decision=new VBoxContainer();decision.AddThemeConstantOverride("separation",6);workDecision.AddChild(decision);
+        var caption=new HBoxContainer();decision.AddChild(caption);workPrompt=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};workPrompt.AddThemeColorOverride("font_color",new Color("efce92"));caption.AddChild(workPrompt);
+        workCardHeading=new();workCardHeading.AddThemeColorOverride("font_color",new Color("a8b7be"));caption.AddChild(workCardHeading);
+        workDetails=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};decision.AddChild(workDetails);
+        workChoices=new();workChoices.AddThemeConstantOverride("separation",6);decision.AddChild(workChoices);
+        Resized+=LayoutBottomTalk;LayoutBottomTalk();
         historyOverlay=Overlay();var historyCol=new VBoxContainer();historyOverlay.AddChild(historyCol);historyCol.AddChild(new Label{Text="履歴 — 本人が確認した用件・書状"});var scroll=new ScrollContainer{SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};historyCol.AddChild(scroll);historyText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(historyText);var close=new Button{Text="閉じる"};historyCol.AddChild(close);close.Pressed+=()=>{historyOverlay.Hide();RefreshWorkExperience();};
     }
     PanelContainer Overlay()
@@ -61,20 +55,49 @@ public partial class NewGameRuntime
     static StyleBoxFlat WorkBox(string background,string border,int padding)=>new(){BgColor=new Color(background),BorderColor=new Color(border),BorderWidthLeft=1,BorderWidthRight=1,BorderWidthTop=1,BorderWidthBottom=1,CornerRadiusTopLeft=6,CornerRadiusTopRight=6,CornerRadiusBottomLeft=6,CornerRadiusBottomRight=6,ContentMarginLeft=padding,ContentMarginRight=padding,ContentMarginTop=padding,ContentMarginBottom=padding};
     string PersonName(EntityId id)=>Snapshot().Definitions.Characters.Single(p=>p.Id==id).Name;
     VisibleTask? KnownWork()=>Branch(Session.PlayerControl).Knowledge.Tasks.LastOrDefault(t=>t.Executor==Session.PlayerControl&&t.Issuer!=Session.PlayerControl&&Snapshot().Tasks.Single(p=>p.Id==t.Id).Action==ActionKind.Inspect);
+    (PanelContainer Panel,SubViewport View,Node3D Stage) BuildTalkPortrait()
+    {
+        var panel=new PanelContainer{CustomMinimumSize=new(94,106),SizeFlagsVertical=SizeFlags.ShrinkCenter};panel.AddThemeStyleboxOverride("panel",WorkBox("22323c","89754e",2));
+        var holder=new SubViewportContainer{Stretch=true,CustomMinimumSize=new(88,100)};panel.AddChild(holder);
+        var viewport=new SubViewport{OwnWorld3D=true,Size=new(112,128),RenderTargetUpdateMode=SubViewport.UpdateMode.Always};holder.AddChild(viewport);var stage=new Node3D();viewport.AddChild(stage);
+        stage.AddChild(new WorldEnvironment{Environment=new Godot.Environment{BackgroundMode=Godot.Environment.BGMode.Color,BackgroundColor=new Color("24333b"),AmbientLightSource=Godot.Environment.AmbientSource.Color,AmbientLightColor=new Color("ffe9c9"),AmbientLightEnergy=.8f}});
+        stage.AddChild(new DirectionalLight3D{RotationDegrees=new(-35,-25,0),LightEnergy=1.1f});
+        var camera=new Camera3D{Current=true,Projection=Camera3D.ProjectionType.Orthogonal,Size=.65f,Position=new(0,1.42f,3)};stage.AddChild(camera);return(panel,viewport,stage);
+    }
+    void LayoutBottomTalk()
+    {
+        if(workOverlay==null||workDecision==null)return;float height=Math.Clamp(Size.Y*.22f,154,190);float width=Math.Min(Size.X-36,Math.Max(580,Size.X*.56f));
+        workOverlay.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);workOverlay.OffsetLeft=18;workOverlay.OffsetRight=-18;workOverlay.OffsetTop=-height-18;workOverlay.OffsetBottom=-18;
+        workDecision.AnchorLeft=workDecision.AnchorRight=workDecision.AnchorTop=workDecision.AnchorBottom=1;workDecision.OffsetLeft=-width-18;workDecision.OffsetRight=-18;workDecision.OffsetTop=-height-18-8-200;workDecision.OffsetBottom=-height-18-8;
+    }
+    void CloseBottomTalk(){consultation=null;pendingWorkReply=null;workDecisionOpen=false;workDecision.Hide();workOverlay.Hide();}
+    void AdvanceBottomTalk()
+    {
+        if(!workOverlay.Visible||historyOverlay.Visible)return;
+        if(pendingWorkReply is {} action){pendingWorkReply=null;action();return;}
+        workDecisionOpen=!workDecisionOpen;workDecision.Visible=workDecisionOpen;buttons["work-reply"].Text=workDecisionOpen?"台詞に戻る":shownWork is {} id&&KnownWork()?.KnownStatus.Contains("Completed")==true?"結果を見る":"返答を選ぶ";
+    }
+    void SetTalkSpeaker(EntityId speaker)
+    {
+        ownWorkSpeaker=speaker==Session.PlayerControl;workNames.Text=PersonName(speaker)+(ownWorkSpeaker?"  ／  あなた":"");
+        for(int n=0;n<portraitPanels.Length;n++)portraitPanels[n].Modulate=n==(ownWorkSpeaker?0:1)?Colors.White:new Color(.42f,.42f,.42f,1);
+    }
     void TalkPeople(EntityId other,bool present)
     {
-        foreach(var a in talkActors.Values)a.Visible=false;
-        var w=Snapshot();var ids=present?new[]{w.PlayerControl,other}:new[]{w.PlayerControl};
-        for(int n=0;n<ids.Length;n++){if(!talkActors.TryGetValue(ids[n],out var actor)){actor=new();talkStage.AddChild(actor);talkActors.Add(ids[n],actor);}actor.Visible=true;actor.Position=n==0?new(-.75f,0,.5f):new(.65f,0,-.45f);actor.RotationDegrees=new(0,n==0?155:-25,0);actor.Apply(ContractJson.Read<Officer3DCustomLook>(ContractJson.Write(NewGameWorld.Look(w.NewGame!,ids[n].Value))));actor.Freeze("idle",0);}
-
+        foreach(var a in talkActors.Values)a.Visible=false;var w=Snapshot();var ids=new[]{w.PlayerControl,other};
+        for(int n=0;n<ids.Length;n++){if(!talkActors.TryGetValue(ids[n],out var actor)){actor=new();portraitStages[n].AddChild(actor);talkActors.Add(ids[n],actor);}actor.Visible=true;actor.Position=Vector3.Zero;actor.Rotation=Vector3.Zero;actor.Apply(ContractJson.Read<Officer3DCustomLook>(ContractJson.Write(NewGameWorld.Look(w.NewGame!,ids[n].Value))));actor.Freeze("idle",0);}
     }
-    void Choice(string id,string text,Action action){Add(workChoices,id,text,action);var button=buttons[id];button.CustomMinimumSize=new(0,54);button.Alignment=HorizontalAlignment.Left;button.AddThemeFontSizeOverride("font_size",20);button.AddThemeStyleboxOverride("normal",WorkBox("3e382a","bda068",14));button.AddThemeStyleboxOverride("hover",WorkBox("655338","eed39c",14));button.AddThemeStyleboxOverride("focus",WorkBox("655338","eed39c",14));}
+    void Choice(string id,string text,Action action)
+    {
+        Add(workChoices,id,text,()=>{if(id is "work-confirm" or "work-assent" or "work-refuse"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
+        var button=buttons[id];button.CustomMinimumSize=new(0,42);button.Alignment=HorizontalAlignment.Left;button.AddThemeFontSizeOverride("font_size",18);button.AddThemeStyleboxOverride("normal",WorkBox("3e382a","bda068",8));button.AddThemeStyleboxOverride("hover",WorkBox("655338","eed39c",8));button.AddThemeStyleboxOverride("focus",WorkBox("655338","eed39c",8));
+    }
     void ClearChoices(){foreach(Node n in workChoices.GetChildren()){workChoices.RemoveChild(n);n.QueueFree();}}
     void PresentWork(string title,string speech,string details,EntityId other,EntityId speaker,string phase,string prompt)
     {
-        workReadOnly=true;ClearChoices();workTitle.Text=title;workSpeech.Text=speech;workDetails.Text=details;workPhase.Text=phase;workPrompt.Text=prompt;
+        workReadOnly=true;pendingWorkReply=null;workDecisionOpen=false;workDecision.Hide();ClearChoices();workTitle.Text=title;workSpeech.Text=speech;workDetails.Text=details.Replace("\n","　");workPhase.Text=phase.Split('/')[0].Trim();workPrompt.Text=prompt;buttons["work-reply"].Text=phase.StartsWith("報告")?"結果を見る":"返答を選ぶ";
         bool present=NearbyDisplay().Any(p=>p.Actor==other)&&Snapshot().Locations.Single(p=>p.Actor==other).Site==Branch(Session.PlayerControl).Knowledge.Location.Site;
-        TalkPeople(other,present);workNames.Text=PersonName(speaker)+(speaker==Session.PlayerControl?"  ／  あなた":present?"  ／  相手の話":"  ／  書状");
+        TalkPeople(other,present);SetTalkSpeaker(speaker);if(!present&&speaker!=Session.PlayerControl)workNames.Text+="  ／  書状";
         workOverlay.Show();
     }
     string WorkTerms(EntityId scope,long? deadline,bool consultationPreview=false)
@@ -98,7 +121,7 @@ public partial class NewGameRuntime
     void RenderKnownWork(VisibleTask t)
     {
         bool done=t.KnownStatus.Contains("Completed");bool awaiting=Awaiting()?.Id==t.Id;bool running=t.KnownStatus.Contains("Running");var task=Snapshot().Tasks.Single(p=>p.Id==t.Id);
-        if(running){workOverlay.Hide();operationTabs.CurrentTab=0;return;}
+        if(running){CloseBottomTalk();operationTabs.CurrentTab=0;return;}
         if(done){
             var report=Snapshot().Outbox.SingleOrDefault(o=>o.Task==t.Id&&o.Sender==Session.PlayerControl&&o.Kind=="contract-report");
             PresentWork("点検の報告","点検を終えました。結果をお送りします。","点検　　完了\n返報　　"+(report?.Sent==true?"発送済み":"発送待ち")+"\n相手の確認　未確認",t.Issuer,Session.PlayerControl,"報告  /  仕事の結果","次の行動");
@@ -106,7 +129,7 @@ public partial class NewGameRuntime
         }
         if(awaiting){
             PresentWork("点検を引き受けますか","この地を点検してくれないか。引き受けてもらえるだろうか。",WorkTerms(task.Scope,t.DeadlineAt),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
-            workCardHeading.Text="依頼の要点";Choice("work-assent","引き受けよう",()=>{Assent(true);ShowKnownWork();});Choice("work-refuse","今回は断ろう",()=>{Assent(false);ShowKnownWork();});return;
+            workCardHeading.Text="依頼の要点";Choice("work-assent","引き受けよう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(true);ShowKnownWork();});Choice("work-refuse","今回は断ろう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(false);ShowKnownWork();});return;
         }
         bool declined=task.Agreement==AgreementPhase.Declined;
         PresentWork(declined?"依頼を辞退しました":"仕事の確認",declined?"今回は引き受けないことにしました。":"この仕事の状況を確認しよう。","状態　　"+ReadableStatus(t.KnownStatus),t.Issuer,Session.PlayerControl,"確認","次の行動");
@@ -115,7 +138,7 @@ public partial class NewGameRuntime
     static string ReadableStatus(string text)=>text.Replace("Completed","完了").Replace("Running","進行中").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗").Replace("Waiting","待機");
     void RefreshWorkExperience()
     {
-        if(workSummary==null)return;workBackdrop.Visible=workOverlay.Visible||historyOverlay.Visible;
+        if(workSummary==null)return;workBackdrop.Visible=historyOverlay.Visible;workDecision.Visible=workOverlay.Visible&&workDecisionOpen&&!historyOverlay.Visible;
         message.Visible=message.Text.StartsWith("操作できません：")||message.Text.Contains("確定できませんでした")||message.Text.Contains("保存できません");
         if(message.Text!=lastObservedMessage){lastObservedMessage=message.Text;if(!string.IsNullOrWhiteSpace(lastObservedMessage)){observedHistory.Add("開始から"+Session.Seconds+"秒　"+lastObservedMessage);if(observedHistory.Count>200)observedHistory.RemoveAt(0);}}
         var t=KnownWork();int unread=Branch(Session.PlayerControl).Knowledge.Messages.Count(m=>m.KnownBody==null);
@@ -125,7 +148,7 @@ public partial class NewGameRuntime
         buttons["work-details"].Visible=!running&&(t!=null||unread>0);buttons["work"].Visible=t==null||t.KnownStatus.Contains("Completed")||t.KnownStatus.Contains("Stopped")||t.KnownStatus.Contains("Failed");
         buttons["work-run"].Visible=running;buttons["work-run"].Disabled=IsClockControlling||IsSaving;
         buttons["accept"].Visible=buttons["decline"].Visible=false;
-        if(workOverlay.Visible&&workReadOnly&&shownWork is {} id){var current=Branch(Session.PlayerControl).Knowledge.Tasks.SingleOrDefault(p=>p.Id==id);if(current!=null&&((current.KnownStatus.Contains("Completed")&&workTitle.Text!="点検の報告")||(Awaiting()?.Id==id&&workTitle.Text!="点検を引き受けますか")))RenderKnownWork(current);}
+        if(workOverlay.Visible&&workReadOnly&&shownWork is {} id){var current=Branch(Session.PlayerControl).Knowledge.Tasks.SingleOrDefault(p=>p.Id==id);if(current!=null&&Awaiting()?.Id==id&&!ownWorkSpeaker)workDetails.Text=WorkTerms(Snapshot().Tasks.Single(p=>p.Id==id).Scope,current.DeadlineAt).Replace("\n","　");if(current!=null&&((current.KnownStatus.Contains("Completed")&&workTitle.Text!="点検の報告")||(Awaiting()?.Id==id&&workTitle.Text!="点検を引き受けますか")))RenderKnownWork(current);}
     }
     internal bool ReviewRunningWorkLayout()
     {
@@ -134,17 +157,21 @@ public partial class NewGameRuntime
     }
     internal bool ReviewWorkLayout()
     {
-        if(!workOverlay.Visible)return false;
-        var screen=GetViewportRect();var scene=((Control)talkView.GetParent()).GetGlobalRect();var speech=workSpeechBox.GetGlobalRect();var detail=workDetails.GetGlobalRect();var prompt=workPrompt.GetGlobalRect();var choices=workChoices.GetChildren().OfType<Button>().ToArray();
-        if(scene.End.X+12>speech.Position.X||speech.End.Y>detail.Position.Y||detail.End.Y>prompt.Position.Y||choices.Length==0)return false;
-        float bottom=prompt.End.Y;
-        foreach(var button in choices){var rect=button.GetGlobalRect();if(rect.Position.Y<bottom||rect.Size.Y<50||rect.End.Y>screen.End.Y-28||rect.End.X>screen.End.X-28)return false;bottom=rect.End.Y;}
-        return workSpeech.GetLineCount()*workSpeech.GetLineHeight()<=workSpeech.Size.Y+1&&workDetails.GetLineCount()*workDetails.GetLineHeight()<=workDetails.Size.Y+1;
+        if(!workOverlay.Visible)return false;var screen=GetViewportRect();var band=workOverlay.GetGlobalRect();
+        if(band.Size.Y>screen.Size.Y*.26f||band.Position.Y<screen.Size.Y*.72f||workBackdrop.Visible)return false;
+        if(workSpeech.GetLineCount()*workSpeech.GetLineHeight()>workSpeech.Size.Y+1)return false;
+        if(!workDecision.Visible)return true;var decision=workDecision.GetGlobalRect();if(decision.End.Y>=band.Position.Y||decision.Position.Y<0)return false;
+        if((band.Area+decision.Area)/screen.Area>.43f)return false;
+        float bottom=workDetails.GetGlobalRect().End.Y;
+        foreach(var button in workChoices.GetChildren().OfType<Button>()){var rect=button.GetGlobalRect();if(rect.Position.Y<bottom||rect.Size.Y<40||rect.End.Y>decision.End.Y-8)return false;bottom=rect.End.Y;}
+        return workDetails.GetLineCount()*workDetails.GetLineHeight()<=workDetails.Size.Y+1;
     }
-    object? WorkPose()=>workOverlay?.Visible!=true?(object)new{Mode="map",Summary=workSummary.Text,RunVisible=buttons["work-run"].Visible,DetailsVisible=buttons["work-details"].Visible,DetailsText=buttons["work-details"].Text}:new{SceneRect=new[]{((Control)talkView.GetParent()).GetGlobalRect().Position.X,((Control)talkView.GetParent()).GetGlobalRect().Position.Y,((Control)talkView.GetParent()).Size.X,((Control)talkView.GetParent()).Size.Y},Viewport=new[]{talkView.Size.X,talkView.Size.Y},Camera=V(talkStage.GetChildren().OfType<Camera3D>().Single().Position),Title=workTitle.Text,Phase=workPhase.Text,Prompt=workPrompt.Text,Card=workCardHeading.Text,Choices=workChoices.GetChildren().OfType<Button>().Select(b=>b.Text),Names=workNames.Text,Speech=workSpeech.Text,Details=workDetails.Text,Task=shownWork,Actors=talkStage.GetChildren().OfType<Officer3DCustomActor>().Where(a=>a.Visible).Select(a=>new{Position=V(a.Position),Rotation=V(a.Rotation),Look=a.Appearance,Bones=Enumerable.Range(0,a.Skeleton.GetBoneCount()).Select(i=>{var b=a.Skeleton.GetBoneGlobalPose(i);return new{Origin=V(b.Origin),Basis=new[]{V(b.Basis.X),V(b.Basis.Y),V(b.Basis.Z)}};})})};
+    internal bool ReviewOwnWorkSpeaker=>ownWorkSpeaker&&portraitPanels[0].Modulate==Colors.White&&portraitPanels[1].Modulate!=Colors.White;
+    object? WorkPose()=>workOverlay?.Visible!=true?(object)new{Mode="map",Summary=workSummary.Text,RunVisible=buttons["work-run"].Visible,DetailsVisible=buttons["work-details"].Visible,DetailsText=buttons["work-details"].Text}:new{Band=TalkRect(workOverlay),DecisionVisible=workDecision.Visible,Decision=TalkRect(workDecision),OwnSpeaker=ownWorkSpeaker,Title=workTitle.Text,Phase=workPhase.Text,Prompt=workPrompt.Text,Card=workCardHeading.Text,Choices=workChoices.GetChildren().OfType<Button>().Select(b=>b.Text),Names=workNames.Text,Speech=workSpeech.Text,Details=workDetails.Text,Task=shownWork,Portraits=portraitStages.Select((stage,n)=>new{Rect=TalkRect(portraitPanels[n]),Size=new[]{portraitViews[n].Size.X,portraitViews[n].Size.Y},Camera=V(stage.GetChildren().OfType<Camera3D>().Single().Position),CameraSize=stage.GetChildren().OfType<Camera3D>().Single().Size,Modulate=portraitPanels[n].Modulate.ToHtml(),Actors=stage.GetChildren().OfType<Officer3DCustomActor>().Where(a=>a.Visible).Select(a=>new{Position=V(a.Position),Rotation=V(a.Rotation),Look=a.Appearance,Bones=Enumerable.Range(0,a.Skeleton.GetBoneCount()).Select(i=>{var bone=a.Skeleton.GetBoneGlobalPose(i);return new{Origin=V(bone.Origin),Basis=new[]{V(bone.Basis.X),V(bone.Basis.Y),V(bone.Basis.Z)}};})})})};
+    static float[] TalkRect(Control control){var rect=control.GetGlobalRect();return[rect.Position.X,rect.Position.Y,rect.Size.X,rect.Size.Y];}
     void ShowWorkHistory()
     {
-        var k=Branch(Session.PlayerControl).Knowledge;
+        workDecisionOpen=false;workDecision.Hide();var k=Branch(Session.PlayerControl).Knowledge;
         historyText.Text="確認済みの用件\n"+string.Join("\n",k.Tasks.Select(t=>PersonName(t.Issuer)+" → "+PersonName(t.Executor)+"　"+ReadableStatus(t.KnownStatus)))+"\n\n届いた書状\n"+string.Join("\n",k.Messages.Select(m=>PersonName(new(m.Sender))+"："+(m.KnownBody==null?"未開封・内容未確認":m.KnownBody.StartsWith("task:")?"用件を確認済み":m.KnownBody)))+"\n\nこの画面での操作履歴（最大200件）\n"+string.Join("\n",observedHistory);historyOverlay.Show();
     }
 }

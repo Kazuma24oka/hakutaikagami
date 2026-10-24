@@ -1795,3 +1795,9 @@ Docs/Design/WorkDecisionUIV2/README.md -text whitespace=blank-at-eol,blank-at-eo
 Docs/Design/WorkDecisionUIV2/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_work_decision_ui.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_work_decision_ui_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bottom dialogue evidence.
+Docs/Design/BottomDialogueV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/BottomDialogueV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_bottom_dialogue.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_bottom_dialogue_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

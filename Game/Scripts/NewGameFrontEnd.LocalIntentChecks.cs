@@ -8,12 +8,12 @@ using System.Diagnostics;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
 {
-    async Task PressLocalIntent(string id){game!.Press(id);if(id=="work")game.Press("work-confirm");await WaitDeparture();Check(game.LastLocalIntentError==null&&game.LastLocalIntentResult is ResultCode.Accepted or ResultCode.AlreadyAccepted,"actual local intent is accepted before subsequent action");}
+    async Task PressLocalIntent(string id){game!.Press(id);if(id=="work"){game.Press("work-reply");game.Press("work-confirm");game.Press("work-reply");}await WaitDeparture();Check(game.LastLocalIntentError==null&&game.LastLocalIntentResult is ResultCode.Accepted or ResultCode.AlreadyAccepted,"actual local intent is accepted before subsequent action");}
     Intent LocalInput(string button){var w=game!.Session.DiagnosticSnapshot();return button=="inspect"?NewGameWorld.Inspect(w,"request:inspection/"+game.Session.Revision):NewGameWorld.LocalWork(w,"request:local-work/"+game.Session.Revision);}
     async Task CompleteLocal(string button)
     {
         var source=game!.Session.DiagnosticSnapshot();var expected=new WorldSession(source);Check(expected.Submit(LocalInput(button),expected.Revision).Code==ResultCode.Accepted,"existing local Submit accepts baseline");
-        long pubs=game.LocalIntentPublications;var timer=Stopwatch.StartNew();game.Press(button);if(button=="work")game.Press("work-confirm");double click=timer.Elapsed.TotalMilliseconds;await WaitDeparture();
+        long pubs=game.LocalIntentPublications;var timer=Stopwatch.StartNew();game.Press(button);if(button=="work"){game.Press("work-reply");game.Press("work-confirm");game.Press("work-reply");}double click=timer.Elapsed.TotalMilliseconds;await WaitDeparture();
         Check(game.LastLocalIntentError==null&&game.LastLocalIntentResult==ResultCode.Accepted&&game.LocalIntentPublications==pubs+1,"actual local intent publishes exactly once");
         Check(ContractJson.CanonicalHash(expected.DiagnosticSnapshot())==ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())&&game.Session.Paused,"local publication equals existing Submit without implicit unpause");
         File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-local.json":"check-local.json"),System.Text.Json.JsonSerializer.Serialize(new{Button=button,ClickMilliseconds=click,CompletionMilliseconds=timer.Elapsed.TotalMilliseconds,RenderFrames=game.LocalIntentRenderTicks,Scope="1000 stationary synthetic people plus selected local operation;not national autonomous AI/fps guarantee"}));
