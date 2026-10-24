@@ -196,3 +196,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 開始・停止の画面応答 V1：`Design/ResponsiveClockV1/README.md`、`Design/ResponsiveClockV1/verification.json`。既存停止処理と同じ効果を私有準備し、実画面/保存復旧/取消を照合する。
 
 - 保存開始の画面応答 V1：`Design/SaveCaptureV1/README.md`、`Design/SaveCaptureV1/verification.json`。停止を確定してから既存の原子的保存へ渡す。
+
+- 全速度の画面応答 V1：`Design/BatchedAdvanceV1/README.md`、`Design/BatchedAdvanceV1/verification.json`。全速度の私有準備と速度変更時の取消、公開入力列での厳密な復旧を照合する。
