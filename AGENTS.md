@@ -680,3 +680,6 @@ ResponsiveDepartureV1。既存Move/Submit/受理時SetPaused(false)を私有準�
 
 ## 点検・相談の画面応答 V1（2026-10-24）
 ResponsiveLocalIntentV1の5条件。既存Inspect/LocalWork/Submitを共有私有準備へ接続、時間を勝手に再開しない。取消/失敗/再試行/保存復旧・実3D、52現行GPU190比較、306入力/DLL/TRX一致時だけ2076再利用。軍務等の同期処理は未改修。実画像確認後同枝push、判断不要なら継続。
+
+## 開始人物の版固定・西日本候補 V1（2026-10-24）
+HistoricalStartEditionV1の5条件。旧null版3人物は初期hash/JSON保持。新規のみ明示版で義鎮/貴久を追加、公式解説の本拠候補と試作の当主/一拠点を区別。未知版は代替しない。17追加/2093全試験を再実行、310入力/34実GPU172比較/実画像照合後同枝push。旧TravelWorld/台帳は維持。判断不要なら継続。

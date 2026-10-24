@@ -7,6 +7,8 @@ public sealed record NewGameState(int Schema, SetupScenario Start, RegisteredOff
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? PersonalAuthorityLayout { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? HistoricalCatalog { get; init; }
 }
 public static partial class NewGameWorld
 {
@@ -33,8 +35,9 @@ public static partial class NewGameWorld
             return ContractJson.Copy(p) with{Site=RegionalCampaign.Site(Node(p.Site)).Value,Lord=lord};
         }).ToArray();
     }
-    public static SetupScenario Scenario()
+    public static SetupScenario Scenario(string? historicalCatalog=null)
     {
+        if(historicalCatalog!=null)return HistoricalStartCatalog.Scenario(historicalCatalog);
         var catalog=NationalPersonnel.Catalog;
         var people=catalog.People.Select(p=>new SetupPerson(p.Id.Value,p.Name,RegionalCampaign.Site(p.HomeCandidate).Value,p.Faction.Value,null,false,false)).ToArray();
         var factions=catalog.Factions.Select(f=>{var head=people.Single(p=>p.Faction==f.Id.Value);return new SetupFaction(f.Id.Value,f.Name,head.Id,head.Site);}).ToArray();
@@ -72,9 +75,9 @@ public static partial class NewGameWorld
     {
         Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");Need(data.PersonalAuthorityLayout is null or CompactPersonalAuthority,"本人権限の保存形式が不正です");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
         Need(data.Start.EpochDate=="1560-01-01","この候補は1560年開始です");
-        Need(data.Start.People.Where(p=>!p.Created).OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name)).SequenceEqual(NationalPersonnel.Catalog.People.OrderBy(p=>p.Id.Value).Select(p=>(p.Id.Value,p.Name))),"史実人物の定義を無断追加・変更できません");
+        Need(data.Start.People.Where(p=>!p.Created).OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name)).SequenceEqual(Scenario(data.HistoricalCatalog).People.OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name))),"史実人物の定義を無断追加・変更できません");
         Need(data.Start.Castles.Select(c=>c.Id).Order().SequenceEqual(NationalRoutes.Sites.Select(s=>s.Id.Value).Order()),"収録拠点の構成が違います");
-        var baseScenario=Scenario();var allocations=data.Start.Factions.Where(f=>data.Registered.Any(p=>p.Id==f.Head&&p.Role==StartTemplate.Daimyo)).Select(f=>new DaimyoPlacement(f.Head,f.Id,data.Start.Castles.Where(c=>c.Faction==f.Id).Select(c=>c.Id).ToArray(),baseScenario.Factions.Any(old=>data.Start.People.Single(p=>p.Id==old.Head).Lord==f.Head))).ToArray();
+        var baseScenario=Scenario(data.HistoricalCatalog);var allocations=data.Start.Factions.Where(f=>data.Registered.Any(p=>p.Id==f.Head&&p.Role==StartTemplate.Daimyo)).Select(f=>new DaimyoPlacement(f.Head,f.Id,data.Start.Castles.Where(c=>c.Faction==f.Id).Select(c=>c.Id).ToArray(),baseScenario.Factions.Any(old=>data.Start.People.Single(p=>p.Id==old.Head).Lord==f.Head))).ToArray();
         var rebuilt=NewGameSetup.Preview(baseScenario,new(data.Registered,allocations));Need(rebuilt.IsEligible()&&ContractJson.CanonicalHash(rebuilt.World)==ContractJson.CanonicalHash(data.Start),"開始配置は選択した登録武将と領土・処遇から再現できません");
 
         Need(data.Start.People.Any(p=>p.Id==data.Selected.Value&&CanPlay(data.Start,p,data.AdultAge)),"操作できる成人武将を選んでください");
@@ -87,9 +90,9 @@ public static partial class NewGameWorld
         }
         Need(data.Start.People.Where(p=>p.InitialRole==StartTemplate.Castellan).GroupBy(p=>p.Site).All(g=>g.Count()==1),"同じ城に複数の登録城主がいます");
     }
-    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null)
+    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null,string? historicalCatalog=null)
     {
-        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout};ValidateStart(data);
+        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog};ValidateStart(data);
         var w=TravelWorld.Create();w.NewGame=data;w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
         w.Definitions=w.Definitions with{Id=new("scenario:"+Ruleset),Ruleset=Ruleset,Version=Version(data),Characters=data.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray(),Organizations=data.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray(),AuthorityBases=[new(Basis,"新規ゲームの開始配置（役職・領土は試作設定）。個人の移動/自己点検以外の軍・徴収権を付与しない")],Armies=[]};
         w.Characters=data.Start.People.Select(p=>new CharacterState(new(p.Id),CanPlay(data.Start,p)?LifeState.Adult:LifeState.Minor,new("appearance:"+ContractJson.Hash(ContractJson.Write(Look(data,p.Id)))),0)).ToArray();

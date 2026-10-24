@@ -1698,3 +1698,24 @@ Docs/Design/ResponsiveLocalIntentV1/contract.json -text whitespace=blank-at-eol,
 Docs/Design/ResponsiveLocalIntentV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_responsive_local_intent.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_responsive_local_intent_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact historical start edition bytes.
+Core/Contracts/NewGameWorld.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/NewCampaignStore.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/HistoricalStartCatalog.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Data/historical-start-west-v2.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/HakutaiKagami.Core.csproj -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/HistoricalStartCatalogTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/Fixtures/pre-catalog-start-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CapacityChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/source-manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_historical_start_edition.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_historical_start_edition_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

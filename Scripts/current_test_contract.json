@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2076,
-  "baseline_passed": 2055,
-  "added": 21,
-  "scope": "PreparedSubmit21: existing Submit and accepted-only optional SetPaused(false),private generation,result/display opaque until exact one-shot host acceptance,cancel/fault/stale/same-revision load,immutable Intent shape,duplicate/conflict/authority,1000person equality"
+  "expected_passed": 2093,
+  "baseline_passed": 2076,
+  "added": 17,
+  "scope": "HistoricalStartEdition17: golden pre-upgrade profile exact hash,closed optional edition,null legacy preservation,unknown/mixed edition rejection,copy/provenance constraints,western2actors save/restore/continuation and profile binding"
 }
