@@ -3,6 +3,7 @@ using System;
 public partial class NewGameRuntime
 {
     internal Func<long,long>? AdvanceTargetTestHook {get;set;}
+    internal Action<double>? TerrainBuildTestHook {get;set;}
     void ChangeAdvanceSpeed(int value)
     {
         if(IsSaving||IsClockControlling||value==speed)return;

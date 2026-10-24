@@ -21,6 +21,7 @@ public partial class NewGameFrontEnd
     {
         if(FlowCase is "batch-10" or "batch-60" or "batch-360"){
             bool replay=OS.GetCmdlineUserArgs().Contains("--new-game-restore");
+            var terrainTimes=new List<double>();game!.TerrainBuildTestHook=value=>terrainTimes.Add(value);
             var saved=new List<(long From,long Target)>();
             if(replay){using var doc=System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(TestOutput,"check-batch-observation.json")));foreach(var item in doc.RootElement.GetProperty("Targets").EnumerateArray())saved.Add((item.GetProperty("From").GetInt64(),item.GetProperty("Target").GetInt64()));Check(saved.Count>0,"forward public target inputs exist for exact restart replay");}
             var records=new List<(long From,long Target,long Reached,int Processed,string Reason)>();game!.AdvancePublishedTestHook=(a,b,c,d,e)=>records.Add((a,b,c,d,e));
@@ -32,8 +33,8 @@ public partial class NewGameFrontEnd
                 Check(records.Count>0&&frames.Count>=3&&game.LastAdvanceError==null,"actual highspeed preparation publishes and rendering continues without injected delay");
                 foreach(var record in records){Check(expected.Seconds==record.From,"recorded publication begins at same actual source time");var result=expected.AdvanceTo(record.Target);Check(result.ReachedAt==record.Reached&&result.Processed==record.Processed&&result.StopReason==record.Reason,"same target/budget preserves exact event boundary and stop reason");}
                 expected.SetPaused(true);Check(ContractJson.CanonicalHash(expected.DiagnosticSnapshot())==ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()),"actual bounded batches equal the same synchronous Core transaction sequence");
-                File.WriteAllText(Path.Combine(TestOutput,(replay?"restore":"check")+"-batch-observation.json"),System.Text.Json.JsonSerializer.Serialize(new{SelectedSpeed=game.ReviewSpeed,ObservedSeconds=observed,ReachedSeconds=reached,Frames=frames,Targets=records.Select(r=>new{r.From,r.Target,r.Reached,r.Processed,r.Reason}),Scope="Actual1000 static synthetic people and selected travel. Rate depends on CPU/event work; no fixed-fps/national NPC guarantee. Expected replay runs after measurement."}));
-            }finally{game.AdvancePublishedTestHook=null;game.AdvanceTargetTestHook=null;}
+                File.WriteAllText(Path.Combine(TestOutput,(replay?"restore":"check")+"-batch-observation.json"),System.Text.Json.JsonSerializer.Serialize(new{SelectedSpeed=game.ReviewSpeed,ObservedSeconds=observed,ReachedSeconds=reached,Frames=frames,TerrainUpdatesMilliseconds=terrainTimes,Targets=records.Select(r=>new{r.From,r.Target,r.Reached,r.Processed,r.Reason}),Scope="Actual1000 static synthetic people and selected travel. Rate depends on CPU/event work; no fixed-fps/national NPC guarantee. Expected replay runs after measurement."}));
+            }finally{game.AdvancePublishedTestHook=null;game.AdvanceTargetTestHook=null;game.TerrainBuildTestHook=null;}
             game.ReviewFraction(0);return;
         }
         if(FlowCase is "batch-switch" or "batch-save"){

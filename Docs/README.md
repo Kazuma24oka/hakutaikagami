@@ -198,3 +198,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 保存開始の画面応答 V1：`Design/SaveCaptureV1/README.md`、`Design/SaveCaptureV1/verification.json`。停止を確定してから既存の原子的保存へ渡す。
 
 - 全速度の画面応答 V1：`Design/BatchedAdvanceV1/README.md`、`Design/BatchedAdvanceV1/verification.json`。全速度の私有準備と速度変更時の取消、公開入力列での厳密な復旧を照合する。
+
+- 地形参照キャッシュ：`Design/TerrainCacheV1/README.md`。共有rendererの見た目/UV/復旧と実測を照合。
