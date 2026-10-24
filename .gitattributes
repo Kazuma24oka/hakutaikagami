@@ -1638,3 +1638,13 @@ Docs/Design/GuideReuseV1/contract.json -text whitespace=blank-at-eol,blank-at-eo
 Docs/Design/GuideReuseV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_guide_reuse.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_guide_reuse_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact typed-submit acceptance bytes.
+Core/Contracts/WorldSession.PreparedSubmit.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/PreparedSubmitTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparedSubmitV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparedSubmitV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparedSubmitV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_prepared_submit.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_prepared_submit_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

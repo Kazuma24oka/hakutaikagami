@@ -204,3 +204,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 手動時間操作の応答：`Design/ManualAdvanceV1/README.md`。受付時間と確定時間を分け、取消/通知/保存復旧を照合。
 
 - 手引き再表示の回帰検査：`Design/GuideReuseV1/README.md`。事前表示済みダイアログの実ボタンと世界不変を検証。
+
+- 通常命令の私有準備：`Design/PreparedSubmitV1/README.md`。既存Submitの権限/結果を維持するCore基盤、画面接続前。
