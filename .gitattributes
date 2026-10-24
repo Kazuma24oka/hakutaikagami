@@ -1763,3 +1763,15 @@ Docs/Design/NewGameNpcRoutineV1/source-manifest.json -text whitespace=blank-at-e
 Docs/Design/NewGameNpcRoutineV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_new_game_npc_routine.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_new_game_npc_routine_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact continuous review evidence bytes.
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayReviewV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayReviewV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayReviewV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_play_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_play_review_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_play_review_recording.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/encode_play_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

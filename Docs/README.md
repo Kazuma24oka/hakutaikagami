@@ -218,3 +218,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 版付き名簿の家臣開始：`Design/HistoricalHouseholdV1/README.md`。信繁の仕事・返報・辞去・旅立ちと旧3人/5人保存の維持。
 
 - 新入口の限定NPC初回判断：`Design/NewGameNpcRoutineV1/README.md`。自分の点検と返報による待機、旧保存への後付けなし。
+
+- 連続操作と確認映像：`Design/PlayReviewV1/README.md`。仕事/書状/保存再開/旅立ちの実操作と別プロセス続行、固定フレーム録画。
