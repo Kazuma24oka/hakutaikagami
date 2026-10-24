@@ -1575,3 +1575,17 @@ Docs/Design/ResponsiveClockV1/contract.json -text whitespace=blank-at-eol,blank-
 Docs/Design/ResponsiveClockV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_responsive_clock.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_responsive_clock_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for UI-only manual save capture acceptance.
+Game/Scripts/NewGameRuntime.ResponsiveSave.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SaveCaptureV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SaveCaptureV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SaveCaptureV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_save_capture.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_save_capture_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

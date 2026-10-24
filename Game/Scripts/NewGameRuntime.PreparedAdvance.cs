@@ -79,6 +79,7 @@ public partial class NewGameRuntime
     }
     public override void _ExitTree()
     {
+        CancelManualSavePreparationOnExit();
         CancelClockControl(false);
         CancelAdvancePrefetch();
         if(advanceJob!=null){_ =advanceJob.ContinueWith(t=>{_=t.Exception;},CancellationToken.None,TaskContinuationOptions.OnlyOnFaulted,TaskScheduler.Default);advanceJob=null;}
