@@ -6,7 +6,7 @@ public sealed partial class WorldSession
     {
         lock(gate){
             var t=state.Tasks.SingleOrDefault(t=>t.Id==taskId);
-            if(!AssessmentNotice.Enabled(state)||t==null||t.Action!=ActionKind.Inspect||assessor!=t.Issuer)return new(ResultCode.NotAvailable,messageId,state.CommitSequence,"担当する評価者ではありません");
+            if(!AssessmentNotice.Available(state)||t==null||t.Action!=ActionKind.Inspect||assessor!=t.Issuer)return new(ResultCode.NotAvailable,messageId,state.CommitSequence,"担当する評価者ではありません");
             var old=state.Messaging.Messages.SingleOrDefault(m=>m.Id==messageId.Value);
             if(old!=null)return new(old.Kind==AssessmentNotice.Kind&&old.SenderId==assessor.Value&&AssessmentNotice.Read(old.Body).Task==taskId?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,messageId,state.CommitSequence,"同じ書状IDは発送済みです");
             if(expectedRevision!=state.CommitSequence)return new(ResultCode.StateChanged,messageId,state.CommitSequence,"表示を更新してください");
@@ -14,7 +14,7 @@ public sealed partial class WorldSession
             var review=AssessmentNotice.ReviewAt(state,t,assessor,state.ElapsedSeconds);var chain=AssessmentNotice.Authored(state,taskId,assessor);
             if(review.Achievement=="結果未確認"||chain.Length>0&&ContractJson.CanonicalHash(AssessmentNotice.Read(chain[^1].Body).Review)==ContractJson.CanonicalHash(review))return new(ResultCode.NotAvailable,messageId,state.CommitSequence,"認識した新しい返報・理由が必要です");
             var p=new AssessmentNotice.Payload(taskId,assessor,t.Executor,chain.Length+1,chain.Length==0?null:new(chain[^1].Id),review);
-            Change(s=>{MessageFlow.Send(s.Messaging,new(messageId.Value,t.RequestId.Value,AssessmentNotice.Kind,assessor.Value,t.Executor.Value,AssessmentNotice.Body(p),t.Scope.Value,s.ElapsedSeconds),s.ElapsedSeconds,1);s.SealedMessages=[..s.SealedMessages,messageId];});
+            Change(s=>{MessageFlow.Send(s.Messaging,new(messageId.Value,t.RequestId.Value,AssessmentNotice.Kind,assessor.Value,t.Executor.Value,AssessmentNotice.Body(p),t.Scope.Value,s.ElapsedSeconds),s.ElapsedSeconds,1);s.SealedMessages=[..s.SealedMessages,messageId];NewGameWork.EnsureDebt(s,t,review);});
             return new(ResultCode.Accepted,messageId,state.CommitSequence,"暫定評価を根拠とともに封書で発送しました");
         }
     }
@@ -22,7 +22,7 @@ public sealed partial class WorldSession
     {
         lock(gate){
             var m=state.Messaging.Messages.SingleOrDefault(m=>m.Id==noticeId.Value&&m.Kind==AssessmentNotice.Kind);
-            if(!AssessmentNotice.Enabled(state)||m==null||m.RecipientId!=actor.Value||!Enum.IsDefined(reply)||!AssessmentNotice.KnowsAt(state,m.Id,actor,state.ElapsedSeconds)||!state.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult))return new(ResultCode.NotAvailable,noticeId,state.CommitSequence,"本人が開封した評価だけに回答できます");
+            if(!AssessmentNotice.Available(state)||m==null||m.RecipientId!=actor.Value||!Enum.IsDefined(reply)||!AssessmentNotice.KnowsAt(state,m.Id,actor,state.ElapsedSeconds)||!state.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult))return new(ResultCode.NotAvailable,noticeId,state.CommitSequence,"本人が開封した評価だけに回答できます");
             var id=Child("message",noticeId,"response");var body=AssessmentNotice.Body(new AssessmentNotice.Response(noticeId,reply));var old=state.Messaging.Messages.SingleOrDefault(m=>m.Id==id.Value);
             if(old!=null)return new(old.Body==body?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,noticeId,state.CommitSequence,"回答は発送済みです");
             if(expectedRevision!=state.CommitSequence)return new(ResultCode.StateChanged,noticeId,state.CommitSequence,"表示を更新してください");

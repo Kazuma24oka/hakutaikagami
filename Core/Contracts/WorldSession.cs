@@ -59,7 +59,7 @@ public sealed partial class WorldSession
             try
             {
                 if(FieldPresence.PlayerDeployed(state)||NewGameMilitary.Deployed(state))throw new InvalidDataException("Return to the site before road travel");
-                ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
+                if(NewGameWork.OwnIdUsed(state,intent.RequestId))return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"別の操作で使用したIDです");ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
                 if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
                 if(FieldWorld.Enabled(state)&&state.Field!.Orders.Length>0&&Enumerable.Range(0,3).Any(i=>FieldWorld.Sample(state,i,state.ElapsedSeconds).Moving))throw new InvalidDataException("Local force still moving");
                 if(BranchRoutes.Enabled(state))BranchRoutes.ValidateOrder(state,intent);
@@ -115,7 +115,7 @@ public sealed partial class WorldSession
             Change(s=>{
                 if(principal)s.Messaging.Knowledge=[..s.Messaging.Knowledge,new(m.Id,actor.Value,s.ElapsedSeconds,m.Id)];
                 else MessageFlow.OpenAsProxy(s.Messaging,m.Id,actor.Value,s.ElapsedSeconds);
-                NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
+                NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
             return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
@@ -147,7 +147,7 @@ public sealed partial class WorldSession
             {
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
-                int cost=1+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
+                int cost=1+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
                     long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;
@@ -162,7 +162,7 @@ public sealed partial class WorldSession
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
-                    SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);
+                    NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);
                 },beforeCommit);
                 if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 processed+=cost;

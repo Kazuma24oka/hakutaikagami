@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2143,
-  "baseline_passed": 2122,
-  "added": 21,
-  "scope": "LocalInspectionFindings21: local presence, actual completion, historical observation, sealed physical reports, no remote leakage, immutable source, malformed extra report, legacy policy hashes and six saves/same future"
+  "expected_passed": 2183,
+  "baseline_passed": 2143,
+  "added": 40,
+  "scope": "NewGameWork40: physical receipt and sealed reply,observed road evidence,actual personal money and unpaid debt,duplicate payment protection,50payments exhaustion,known failed paper retry,reply redelivery after physical return,same-tick payment before deployment,military coexistence,unmapped paid-offer guard,legacy policy and six saves/same future"
 }

@@ -95,7 +95,7 @@ public static partial class NewGameMilitary
     static string RequestId(EntityId id)=>"message:new-military/request/"+Hash(id.Value);
     static string NoticeId(ContractWorld w,MilitaryEffect e,string source,EntityId? caseId=null)=>"message:new-military/notice/"+Hash((caseId??CaseStart(w)!.Input.Id).Value+"/"+e+"/"+source);
     public static ArmyEntry[] Armies(ContractWorld w)=>w.NewMilitary is {} s?[new(s.Terms.Army,s.Terms.Owner,s.Terms.Principal)]:[];
-    public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.NewMilitary?.Requests.Any(q=>q.Input.Id==id)==true;
+    public static bool OwnIdUsed(ContractWorld w,EntityId id)=>NewGameWork.OwnIdUsed(w,id)||w.NewMilitary?.Requests.Any(q=>q.Input.Id==id)==true;
     public static bool Outstanding(ContractWorld w,long at,long rev)=>NewGameWorld.Enabled(w)&&Event(w,MilitaryEffect.Permission,at,rev)!=null&&Event(w,MilitaryEffect.Returned,at,rev)==null;
     public static bool DeployedAt(ContractWorld w,long at)=>CaseRequests(w,at).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy;
     public static bool Deployed(ContractWorld w)=>DeployedAt(w,w.ElapsedSeconds);
@@ -200,10 +200,10 @@ public static partial class NewGameMilitary
     public static long Net(ContractWorld w,EntityId lot){if(w.NewMilitary==null)return 0;long moved=w.NewMilitary.Moves.Sum(m=>m.Loading?m.Amount:-m.Amount);return lot==Depot?-moved:lot==Carry?moved-w.NewMilitary.Uses.Sum(u=>u.Consumed):0;}
     internal static void Sync(ContractWorld w)
     {
-        SyncAuthority(w);if(w.NewMilitary is not {} s)return;bool custody=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence);var commander=custody?w.PlayerControl:s.Terms.Principal;
+        SyncAuthority(w);if(w.NewMilitary is not {} s){NewGameWork.Sync(w);return;}bool custody=CustodyAt(w,w.ElapsedSeconds,w.CommitSequence);var commander=custody?w.PlayerControl:s.Terms.Principal;
         w.Units=Enumerable.Range(0,3).Select(i=>new UnitState(UnitIds[i],s.Terms.Army,commander,s.Terms.Owner,StrengthAt(w,i,w.ElapsedSeconds),0)).ToArray();
         w.ResourceLots=[new(Depot,"rice",s.Terms.Owner,s.Terms.Owner,s.Terms.Site,FieldSupply.Unit,InitialStock+Net(w,Depot),InitialStock,0),new(Carry,"rice",s.Terms.Owner,UnitCarries(w)?s.Terms.Owner:w.PlayerControl,s.Terms.Site,FieldSupply.Unit,Net(w,Carry),0,0,UnitCarries(w)?UnitIds[0]:w.PlayerControl)];
-        var loc=w.Locations.Single(l=>l.Actor==w.PlayerControl);
+        NewGameWork.Sync(w);var loc=w.Locations.Single(l=>l.Actor==w.PlayerControl);
         if(Deployed(w)){var p=PersonPosition(w,w.ElapsedSeconds);var point=FieldWorld.ToWorld(p);var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));w.Locations=w.Locations.Select(l=>l.Actor==w.PlayerControl?new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(p),Contract,0):l).ToArray();}
         else if(loc.Kind==LocationKind.AtPosition)w.Locations=w.Locations.Select(l=>l.Actor==w.PlayerControl?new LocationState(l.Actor,LocationKind.AtSite,s.Terms.Site,null,0,0,null,null,null,null,0):l).ToArray();
     }

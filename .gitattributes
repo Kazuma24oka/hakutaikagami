@@ -1808,3 +1808,16 @@ Game/Scripts/NewGameFrontEnd.InspectionFindingsChecks.cs -text
 Docs/Design/InspectionFindingsV1/** -text
 Scripts/verify_inspection_findings.py -text
 Scripts/check_inspection_findings_binding.py -text
+
+Core/Contracts/NewGameWork.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.WorkCycle.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/NewGameWorkTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.WorkCycle.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WorkCycleChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RepeatedExerciseChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_work_cycle.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_work_cycle_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkCycleV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

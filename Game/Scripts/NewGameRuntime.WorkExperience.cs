@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameRuntime
 {
-    OptionButton findingRoad=null!;InspectedRoad[] shownRoads=[];PanelContainer workDecision=null!;PanelContainer[] portraitPanels=[];SubViewport[] portraitViews=[];Node3D[] portraitStages=[];bool workDecisionOpen,ownWorkSpeaker;Action? pendingWorkReply;
+    OptionButton workReplyChoice=null!;EntityId[] workReplyIds=[];bool renderingWorkReply;OptionButton findingRoad=null!;InspectedRoad[] shownRoads=[];PanelContainer workDecision=null!;PanelContainer[] portraitPanels=[];SubViewport[] portraitViews=[];Node3D[] portraitStages=[];bool workDecisionOpen,ownWorkSpeaker;Action? pendingWorkReply;
     ColorRect workBackdrop=null!;PanelContainer workOverlay=null!;Label workTitle=null!,workNames=null!,workSpeech=null!,workDetails=null!,workSummary=null!;
     VBoxContainer workChoices=null!;Label workPrompt=null!,workCardHeading=null!,workPhase=null!;PanelContainer workSpeechBox=null!;SubViewport talkView=null!;Node3D talkStage=null!;Label historyText=null!;PanelContainer historyOverlay=null!;
     readonly Dictionary<EntityId,Officer3DCustomActor> talkActors=new();
@@ -19,11 +19,13 @@ public partial class NewGameRuntime
         Add(toolbar,"history","履歴",ShowWorkHistory);
         var col=(VBoxContainer)buttons["work"].GetParent();
         workSummary=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(0,82)};col.AddChild(workSummary);col.MoveChild(workSummary,1);
+        Add(col,"work-receipts","返答・未受領の報酬",()=>ShowWorkAssessment());Add(col,"work-self","自分で陸路を調べる（報酬なし）",()=>Submit(NewGameWorld.Inspect(Snapshot(),"request:inspection/"+Session.Revision)));
+        buttons["inspect"].Hide();buttons["inspect"]=buttons["work-self"];Add(col,"work-retry","不達と分かった返報を再送",RetryKnownWorkLetter);
         Add(col,"work-details","仕事の内容・報告を見る",()=>{if(unreadIds.Length>0)OpenSelectedMail();else ShowKnownWork();});Add(col,"work-run","点検を進める",()=>RequestManualAdvance(Session.Seconds+10));
         var workArea=new PanelContainer();workArea.AddThemeStyleboxOverride("panel",WorkBox("213038","465b65",14));col.AddChild(workArea);col.MoveChild(workArea,0);operationPanels[workArea]=0;
         var workStack=new VBoxContainer();workStack.AddThemeConstantOverride("separation",10);workArea.AddChild(workStack);workStack.AddChild(new Label{Text="仕事"});
         workSummary.Reparent(workStack);workSummary.CustomMinimumSize=new(0,46);
-        foreach(var id in new[]{"work-details","work-run","work"}){buttons[id].Reparent(workStack);buttons[id].CustomMinimumSize=new(0,42);}
+        foreach(var id in new[]{"work-details","work-run","work-receipts","work-retry","work","work-self"}){buttons[id].Reparent(workStack);buttons[id].CustomMinimumSize=new(0,42);}
         col.GetChildren().OfType<Label>().First().Text="移動";
         workBackdrop=new(){Visible=false,Color=new Color(0,0,0,.85f),ZIndex=49};AddChild(workBackdrop);workBackdrop.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         workOverlay=new(){Visible=false,ZIndex=50};AddChild(workOverlay);workOverlay.AddThemeStyleboxOverride("panel",WorkBox("17252f","a28b61",12));
@@ -44,6 +46,7 @@ public partial class NewGameRuntime
         workCardHeading=new();workCardHeading.AddThemeColorOverride("font_color",new Color("a8b7be"));caption.AddChild(workCardHeading);
         workDetails=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};decision.AddChild(workDetails);
         findingRoad=new(){Visible=false,CustomMinimumSize=new(0,36)};decision.AddChild(findingRoad);
+        workReplyChoice=new(){Visible=false,CustomMinimumSize=new(0,36)};decision.AddChild(workReplyChoice);workReplyChoice.ItemSelected+=n=>{if(!renderingWorkReply&&n>=0&&n<workReplyIds.Length)ShowWorkAssessment(workReplyIds[n]);};
         workChoices=new();workChoices.AddThemeConstantOverride("separation",6);decision.AddChild(workChoices);
         Resized+=LayoutBottomTalk;LayoutBottomTalk();
         historyOverlay=Overlay();var historyCol=new VBoxContainer();historyOverlay.AddChild(historyCol);historyCol.AddChild(new Label{Text="履歴 — 本人が確認した用件・書状"});var scroll=new ScrollContainer{SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};historyCol.AddChild(scroll);historyText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(historyText);var close=new Button{Text="閉じる"};historyCol.AddChild(close);close.Pressed+=()=>{historyOverlay.Hide();RefreshWorkExperience();};
@@ -55,7 +58,7 @@ public partial class NewGameRuntime
     }
     static StyleBoxFlat WorkBox(string background,string border,int padding)=>new(){BgColor=new Color(background),BorderColor=new Color(border),BorderWidthLeft=1,BorderWidthRight=1,BorderWidthTop=1,BorderWidthBottom=1,CornerRadiusTopLeft=6,CornerRadiusTopRight=6,CornerRadiusBottomLeft=6,CornerRadiusBottomRight=6,ContentMarginLeft=padding,ContentMarginRight=padding,ContentMarginTop=padding,ContentMarginBottom=padding};
     string PersonName(EntityId id)=>Snapshot().Definitions.Characters.Single(p=>p.Id==id).Name;
-    VisibleTask? KnownWork()=>Branch(Session.PlayerControl).Knowledge.Tasks.LastOrDefault(t=>t.Executor==Session.PlayerControl&&t.Issuer!=Session.PlayerControl&&Snapshot().Tasks.Single(p=>p.Id==t.Id).Action==ActionKind.Inspect);
+    VisibleTask? KnownWork()=>Branch(Session.PlayerControl).Knowledge.Tasks.LastOrDefault(t=>t.Executor==Session.PlayerControl&&Snapshot().Tasks.Single(p=>p.Id==t.Id).Action==ActionKind.Inspect);
     (PanelContainer Panel,SubViewport View,Node3D Stage) BuildTalkPortrait()
     {
         var panel=new PanelContainer{CustomMinimumSize=new(94,106),SizeFlagsVertical=SizeFlags.ShrinkCenter};panel.AddThemeStyleboxOverride("panel",WorkBox("22323c","89754e",2));
@@ -69,7 +72,7 @@ public partial class NewGameRuntime
     {
         if(workOverlay==null||workDecision==null)return;float height=Math.Clamp(Size.Y*.22f,154,190);float width=Math.Min(Size.X-36,Math.Max(580,Size.X*.56f));
         workOverlay.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomWide);workOverlay.OffsetLeft=18;workOverlay.OffsetRight=-18;workOverlay.OffsetTop=-height-18;workOverlay.OffsetBottom=-18;
-        workDecision.AnchorLeft=workDecision.AnchorRight=workDecision.AnchorTop=workDecision.AnchorBottom=1;workDecision.OffsetLeft=-width-18;workDecision.OffsetRight=-18;workDecision.OffsetTop=-height-18-8-(findingRoad?.Visible==true?260:200);workDecision.OffsetBottom=-height-18-8;
+        workDecision.AnchorLeft=workDecision.AnchorRight=workDecision.AnchorTop=workDecision.AnchorBottom=1;workDecision.OffsetLeft=-width-18;workDecision.OffsetRight=-18;workDecision.OffsetTop=-height-18-8-(NewGameWork.Enabled(Snapshot())?275:findingRoad?.Visible==true?260:200);workDecision.OffsetBottom=-height-18-8;
     }
     void CloseBottomTalk(){consultation=null;pendingWorkReply=null;workDecisionOpen=false;workDecision.Hide();workOverlay.Hide();}
     void AdvanceBottomTalk()
@@ -90,27 +93,28 @@ public partial class NewGameRuntime
     }
     void Choice(string id,string text,Action action)
     {
-        Add(workChoices,id,text,()=>{if(id is "work-confirm" or "work-assent" or "work-refuse"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
+        Add(workChoices,id,text,()=>{if(id is "work-confirm" or "work-assent" or "work-refuse" or "work-pay" or "work-received"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
         var button=buttons[id];button.CustomMinimumSize=new(0,42);button.Alignment=HorizontalAlignment.Left;button.AddThemeFontSizeOverride("font_size",18);button.AddThemeStyleboxOverride("normal",WorkBox("3e382a","bda068",8));button.AddThemeStyleboxOverride("hover",WorkBox("655338","eed39c",8));button.AddThemeStyleboxOverride("focus",WorkBox("655338","eed39c",8));
     }
     void ClearChoices(){foreach(Node n in workChoices.GetChildren()){workChoices.RemoveChild(n);n.QueueFree();}}
     void PresentWork(string title,string speech,string details,EntityId other,EntityId speaker,string phase,string prompt)
     {
-        workReadOnly=true;pendingWorkReply=null;workDecisionOpen=false;workDecision.Hide();ClearChoices();findingRoad.Hide();shownRoads=[];LayoutBottomTalk();workTitle.Text=title;workSpeech.Text=speech;workDetails.Text=details.Replace("\n","　");workPhase.Text=phase.Split('/')[0].Trim();workPrompt.Text=prompt;buttons["work-reply"].Text=phase.StartsWith("報告")?"結果を見る":"返答を選ぶ";
+        workReadOnly=true;pendingWorkReply=null;workDecisionOpen=false;workDecision.Hide();ClearChoices();findingRoad.Hide();workReplyChoice.Hide();shownRoads=[];LayoutBottomTalk();workTitle.Text=title;workSpeech.Text=speech;workDetails.Text=FormatWorkDetails(details);workPhase.Text=phase.Split('/')[0].Trim();workPrompt.Text=prompt;buttons["work-reply"].Text=phase.StartsWith("報告")?"結果を見る":"返答を選ぶ";
         bool present=NearbyDisplay().Any(p=>p.Actor==other)&&Snapshot().Locations.Single(p=>p.Actor==other).Site==Branch(Session.PlayerControl).Knowledge.Location.Site;
-        TalkPeople(other,present);SetTalkSpeaker(speaker);if(!present&&speaker!=Session.PlayerControl)workNames.Text+="  ／  書状";
+        TalkPeople(other,present);portraitPanels[1].Visible=other!=Session.PlayerControl;SetTalkSpeaker(speaker);if(!present&&speaker!=Session.PlayerControl)workNames.Text+="  ／  書状";
         workOverlay.Show();
     }
-    string WorkTerms(EntityId scope,long? deadline,bool consultationPreview=false)
+    string FormatWorkDetails(string text)=>NewGameWork.Enabled(Snapshot())?text:text.Replace("\n","　");
+    string WorkTerms(EntityId scope,long? deadline,bool consultationPreview=false,TaskKind? kind=null)
     {
         string due=deadline is {} at?consultationPreview?"受取手続きから120秒以内":Math.Max(0,at-Session.Seconds)+"秒以内":"未確認";
-        return "場所　　"+NewGameWorld.SiteName(scope.Value)+"\n期限　　"+due+"\n報酬　　提示なし";
+        string reward=!NewGameWork.Enabled(Snapshot())?"提示なし":kind==TaskKind.VoluntaryRequest?"銭20文（返答開封後・現地で受取）":"別払いなし";return "場所　"+NewGameWorld.SiteName(scope.Value)+"\n期限　"+due+"\n報酬　"+reward;
     }
     void ShowWorkConsultation()
     {
         if(IsSaving||IsClockControlling)return;
         consultation=NewGameWorld.LocalWork(Snapshot(),"request:local-work/"+Session.Revision);var i=consultation;shownWork=null;
-        PresentWork("現地の点検", "この拠点から出る陸路を点検し、通れるか知らせてほしい。",WorkTerms(i.Scope,i.Deadline.At,true),i.Actor,i.Actor,"相談  /  用件を受け取る前","あなたの返答");
+        PresentWork("現地の点検", "この拠点から出る陸路を点検し、通れるか知らせてほしい。",WorkTerms(i.Scope,i.Deadline.At,true,i.Kind),i.Actor,i.Actor,"相談  /  用件を受け取る前","あなたの返答");
         workCardHeading.Text=i.Kind==TaskKind.BindingOrder?"主君からの用件":"依頼の要点";
         workReadOnly=false;Choice("work-confirm","内容を確認しよう",()=>{if(!workOverlay.Visible||consultation==null)return;var fresh=NewGameWorld.LocalWork(Snapshot(),"request:local-work/"+Session.Revision);if(fresh.Actor!=i.Actor||fresh.Scope!=i.Scope||fresh.Kind!=i.Kind)throw new InvalidOperationException("相談相手や状況が変わりました。相談し直してください。");workOverlay.Hide();consultation=null;Submit(fresh);});
         Choice("work-back-choice","今は見送ろう",()=>{consultation=null;workOverlay.Hide();});
@@ -135,10 +139,10 @@ public partial class NewGameRuntime
                 int available=Array.FindIndex(shownRoads,r=>!r.Blocked);findingRoad.Select(available);findingRoad.Show();LayoutBottomTalk();
                 Choice("work-road","選んだ道の行先を指定",()=>{int n=findingRoad.Selected;if(n<0||n>=shownRoads.Length||shownRoads[n].Blocked||Branch(Session.PlayerControl).Knowledge.Location.Site!=task.Scope)return;SetDestination(shownRoads[n].Destination);CloseBottomTalk();operationTabs.CurrentTab=0;});buttons["work-road"].Disabled=available<0||Branch(Session.PlayerControl).Knowledge.Location.Site!=task.Scope;
             }else workDetails.Text="この保存には陸路の点検記録がありません。完了返報："+(report?.Sent==true?"発送済み":"発送待ち");
-            Choice("work-finish","地図へ戻る",CloseBottomTalk);return;
+            if(t.Issuer==Session.PlayerControl){workTitle.Text="点検記録";workDetails.Text=shownRoads.Length>0?"確認：開始から"+shownRoads[0].ObservedAt+"秒　／　自分の行動判断用の記録":"この拠点の陸路は、まだ点検対象が設定されていません。";}Choice("work-finish","地図へ戻る",CloseBottomTalk);return;
         }
         if(awaiting){
-            PresentWork("点検を引き受けますか","この拠点から出る陸路を点検してくれないか。",WorkTerms(task.Scope,t.DeadlineAt),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
+            PresentWork("点検を引き受けますか","この拠点から出る陸路を点検してくれないか。",WorkTerms(task.Scope,t.DeadlineAt,false,task.Kind),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
             workCardHeading.Text="依頼の要点";Choice("work-assent","引き受けよう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(true);ShowKnownWork();});Choice("work-refuse","今回は断ろう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(false);ShowKnownWork();});return;
         }
         bool declined=task.Agreement==AgreementPhase.Declined;
@@ -158,7 +162,12 @@ public partial class NewGameRuntime
         buttons["work-details"].Visible=!running&&(t!=null||unread>0);buttons["work"].Visible=t==null||t.KnownStatus.Contains("Completed")||t.KnownStatus.Contains("Stopped")||t.KnownStatus.Contains("Failed");
         buttons["work-run"].Visible=running;buttons["work-run"].Disabled=IsClockControlling||IsSaving;
         buttons["accept"].Visible=buttons["decline"].Visible=false;
-        if(workOverlay.Visible&&workReadOnly&&shownWork is {} id){var current=Branch(Session.PlayerControl).Knowledge.Tasks.SingleOrDefault(p=>p.Id==id);if(current!=null&&Awaiting()?.Id==id&&!ownWorkSpeaker)workDetails.Text=WorkTerms(Snapshot().Tasks.Single(p=>p.Id==id).Scope,current.DeadlineAt).Replace("\n","　");if(current!=null&&((current.KnownStatus.Contains("Completed")&&workTitle.Text!="点検の報告")||(Awaiting()?.Id==id&&workTitle.Text!="点検を引き受けますか")))RenderKnownWork(current);}
+        bool idle=!Snapshot().Tasks.Any(p=>p.Executor==Session.PlayerControl&&p.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));buttons["work-self"].Visible=idle;buttons["work-self"].Disabled=!idle||Branch(Session.PlayerControl).Knowledge.Location.Kind!=LocationKind.AtSite||IsSaving||IsClockControlling;
+        buttons["work-retry"].Visible=KnownFailedWorkLetters().Length>0;buttons["work-retry"].Disabled=IsSaving||IsClockControlling;
+        bool peer=NearbyDisplay().Any(p=>Snapshot().Characters.Single(c=>c.Id==p.Actor).Life==LifeState.Adult&&Snapshot().Locations.Single(l=>l.Actor==p.Actor).Site==Branch(Session.PlayerControl).Knowledge.Location.Site);bool mapped=Branch(Session.PlayerControl).Knowledge.Location.Site is {} here&&NewGameWork.ScopeSupported(Snapshot(),here);buttons["work-self"].Disabled|=!mapped;buttons["work-self"].TooltipText=mapped?"自分の判断に使う陸路の記録を得ます。":"この拠点の陸路は点検対象が未設定です。";buttons["work"].Disabled=!idle||!peer||!mapped||IsSaving||IsClockControlling;buttons["work"].TooltipText=!mapped?"この拠点の陸路は点検対象が未設定です。別の拠点で相談してください。":peer?"現地の相手と依頼条件を相談します。":"この拠点には相談できる相手がいません。自主点検はできます。";
+        buttons["work-receipts"].Visible=NewGameWork.Enabled(Snapshot())&&AssessmentNotice.LatestKnown(Session,Session.PlayerControl).Length>0;buttons["work-receipts"].Disabled=IsSaving||IsClockControlling;
+        RefreshWorkCycleGuidance(t,unread);if(NewGameWork.Enabled(Snapshot()))workSummary.Text+="\n私財：銭"+NewGameWork.Balance(Snapshot(),Session.PlayerControl)+"文";
+        if(workOverlay.Visible&&workReadOnly&&shownWork is {} id){var current=Branch(Session.PlayerControl).Knowledge.Tasks.SingleOrDefault(p=>p.Id==id);if(current!=null&&Awaiting()?.Id==id&&!ownWorkSpeaker)workDetails.Text=FormatWorkDetails(WorkTerms(Snapshot().Tasks.Single(p=>p.Id==id).Scope,current.DeadlineAt,false,Snapshot().Tasks.Single(p=>p.Id==id).Kind));if(current!=null&&((current.KnownStatus.Contains("Completed")&&workTitle.Text is not ("点検の報告" or "点検記録"))||(Awaiting()?.Id==id&&workTitle.Text!="点検を引き受けますか")))RenderKnownWork(current);}
     }
     internal bool ReviewRunningWorkLayout()
     {
@@ -172,18 +181,18 @@ public partial class NewGameRuntime
         if(workSpeech.GetLineCount()*workSpeech.GetLineHeight()>workSpeech.Size.Y+1)return false;
         if(!workDecision.Visible)return true;var decision=workDecision.GetGlobalRect();if(decision.End.Y>=band.Position.Y||decision.Position.Y<0)return false;
         if((band.Area+decision.Area)/screen.Area>.43f)return false;
-        float bottom=findingRoad.Visible?findingRoad.GetGlobalRect().End.Y:workDetails.GetGlobalRect().End.Y;
+        float bottom=workReplyChoice.Visible?workReplyChoice.GetGlobalRect().End.Y:findingRoad.Visible?findingRoad.GetGlobalRect().End.Y:workDetails.GetGlobalRect().End.Y;
         foreach(var button in workChoices.GetChildren().OfType<Button>()){var rect=button.GetGlobalRect();if(rect.Position.Y<bottom||rect.Size.Y<40||rect.End.Y>decision.End.Y-8)return false;bottom=rect.End.Y;}
         return workDetails.GetLineCount()*workDetails.GetLineHeight()<=workDetails.Size.Y+1;
     }
     internal string[] ReviewFindingEdges=>shownRoads.Select(r=>r.Edge).ToArray();
     internal string? ReviewFindingDestination=>findingRoad.Selected>=0?shownRoads[findingRoad.Selected].Destination:null;
     internal bool ReviewOwnWorkSpeaker=>ownWorkSpeaker&&portraitPanels[0].Modulate==Colors.White&&portraitPanels[1].Modulate!=Colors.White;
-    object? WorkPose()=>workOverlay?.Visible!=true?(object)new{Mode="map",Summary=workSummary.Text,RunVisible=buttons["work-run"].Visible,DetailsVisible=buttons["work-details"].Visible,DetailsText=buttons["work-details"].Text}:new{Band=TalkRect(workOverlay),DecisionVisible=workDecision.Visible,Decision=workDecision.Visible?TalkRect(workDecision):null,OwnSpeaker=ownWorkSpeaker,Title=workTitle.Text,Phase=workPhase.Text,Prompt=workPrompt.Text,Card=workCardHeading.Text,Choices=workChoices.GetChildren().OfType<Button>().Select(b=>b.Text),Names=workNames.Text,Speech=workSpeech.Text,Details=workDetails.Text,Task=shownWork,Roads=shownRoads,SelectedRoad=findingRoad.Visible?findingRoad.Selected:-1,Portraits=portraitStages.Select((stage,n)=>new{Rect=TalkRect(portraitPanels[n]),Size=new[]{portraitViews[n].Size.X,portraitViews[n].Size.Y},Camera=V(stage.GetChildren().OfType<Camera3D>().Single().Position),CameraSize=stage.GetChildren().OfType<Camera3D>().Single().Size,Modulate=portraitPanels[n].Modulate.ToHtml(),Actors=stage.GetChildren().OfType<Officer3DCustomActor>().Where(a=>a.Visible).Select(a=>new{Position=V(a.Position),Rotation=V(a.Rotation),Look=a.Appearance,Bones=Enumerable.Range(0,a.Skeleton.GetBoneCount()).Select(i=>{var bone=a.Skeleton.GetBoneGlobalPose(i);return new{Origin=V(bone.Origin),Basis=new[]{V(bone.Basis.X),V(bone.Basis.Y),V(bone.Basis.Z)}};})})})};
+    object? WorkPose()=>workOverlay?.Visible!=true?(object)new{Mode="map",Summary=workSummary.Text,RunVisible=buttons["work-run"].Visible,DetailsVisible=buttons["work-details"].Visible,DetailsText=buttons["work-details"].Text}:new{Band=TalkRect(workOverlay),DecisionVisible=workDecision.Visible,Decision=workDecision.Visible?TalkRect(workDecision):null,OwnSpeaker=ownWorkSpeaker,Title=workTitle.Text,Phase=workPhase.Text,Prompt=workPrompt.Text,Card=workCardHeading.Text,Choices=workChoices.GetChildren().OfType<Button>().Select(b=>b.Text),Names=workNames.Text,Speech=workSpeech.Text,Details=workDetails.Text,Task=shownWork,Roads=shownRoads,SelectedRoad=findingRoad.Visible?findingRoad.Selected:-1,ReplyChoices=workReplyChoice.Visible?workReplyIds.Select(id=>id.Value).ToArray():[],SelectedReply=workReplyChoice.Visible?workReplyChoice.Selected:-1,Portraits=portraitStages.Select((stage,n)=>new{Rect=TalkRect(portraitPanels[n]),Size=new[]{portraitViews[n].Size.X,portraitViews[n].Size.Y},Camera=V(stage.GetChildren().OfType<Camera3D>().Single().Position),CameraSize=stage.GetChildren().OfType<Camera3D>().Single().Size,Modulate=portraitPanels[n].Modulate.ToHtml(),Actors=stage.GetChildren().OfType<Officer3DCustomActor>().Where(a=>a.Visible).Select(a=>new{Position=V(a.Position),Rotation=V(a.Rotation),Look=a.Appearance,Bones=Enumerable.Range(0,a.Skeleton.GetBoneCount()).Select(i=>{var bone=a.Skeleton.GetBoneGlobalPose(i);return new{Origin=V(bone.Origin),Basis=new[]{V(bone.Basis.X),V(bone.Basis.Y),V(bone.Basis.Z)}};})})})};
     static float[] TalkRect(Control control){var rect=control.GetGlobalRect();return[rect.Position.X,rect.Position.Y,rect.Size.X,rect.Size.Y];}
     void ShowWorkHistory()
     {
         workDecisionOpen=false;workDecision.Hide();var k=Branch(Session.PlayerControl).Knowledge;
-        historyText.Text="確認済みの用件\n"+string.Join("\n",k.Tasks.Select(t=>PersonName(t.Issuer)+" → "+PersonName(t.Executor)+"　"+ReadableStatus(t.KnownStatus)))+"\n\n届いた書状\n"+string.Join("\n",k.Messages.Select(m=>PersonName(new(m.Sender))+"："+(m.KnownBody==null?"未開封・内容未確認":m.KnownBody.StartsWith("task:")?"用件を確認済み":m.KnownBody)))+"\n\nこの画面での操作履歴（最大200件）\n"+string.Join("\n",observedHistory);historyOverlay.Show();
+        historyText.Text="確認済みの用件\n"+string.Join("\n",k.Tasks.Select(t=>PersonName(t.Issuer)+" → "+PersonName(t.Executor)+"　"+ReadableStatus(t.KnownStatus)))+"\n\n届いた書状\n"+string.Join("\n",k.Messages.Select(m=>PersonName(new(m.Sender))+"："+(m.KnownBody==null?"未開封・内容未確認":m.KnownBody.StartsWith("task:")?"用件を確認済み":ReadableWorkLetter(m))))+"\n\nこの画面での操作履歴（最大200件）\n"+string.Join("\n",observedHistory);historyOverlay.Show();
     }
 }

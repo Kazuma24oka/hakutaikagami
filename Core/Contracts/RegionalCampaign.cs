@@ -162,6 +162,7 @@ public static partial class RegionalCampaign
     {
         if(!Enabled(w))throw new InvalidOperationException("Regional campaign required");var m=w.Messaging.Messages.Single(m=>m.Id==message);
         if(m.SenderId!=actor.Value||!BranchRoutes.GraphNodes(w).Any(n=>n.Id==destination)||appointment<w.ElapsedSeconds)throw new InvalidDataException("Unknown delivery address");
+        if(NewGameWork.SupportsRetry(w,m,actor,destination)){MessageFlow.Retry(w.Messaging,message,actor.Value,w.ElapsedSeconds,1);var copy=MessageFlow.Latest(w.Messaging,message);Put(w,New(w,copy,destination,w.ElapsedSeconds+1));return;}
         // A destination is selected from the original known mission; it is never inferred from recipient truth.
         var task=w.Tasks.Single(t=>WorldSession.Child("message",t.Id,"order").Value==message);
         if(task.Action is not(ActionKind.Cancel or ActionKind.Redirect))throw new InvalidDataException("Unsupported retry address");

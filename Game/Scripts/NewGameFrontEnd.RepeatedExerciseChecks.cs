@@ -33,7 +33,7 @@ public partial class NewGameFrontEnd
   if(n==18&&RepeatedLong)RepeatHome();
   if(n==19&&RepeatedLong){game.Advance(s.DiagnosticSnapshot().NewMilitary!.Rout!.Arrivals.Max(a=>a.At)+NewGameMilitary.RegroupSeconds+1);var w=s.DiagnosticSnapshot();Check(w.NewMilitary!.Rout!.Regroups.Length==6&&!NewGameMilitary.RoutActive(w),"two sets of arrival and physical regroup remain in lifetime journal");}
   if(n==21)RepeatHandover();
-  if(n==22){game.Advance(s.Seconds+3);OpenAllServiceLetters();var w=s.DiagnosticSnapshot();Check(w.NewMilitary!.Events.Count(e=>e.Effect==MilitaryEffect.Returned)==(RepeatedLong?2:1),"same person actually returns command after repeated contacts");Check(w.ResourceLots.Sum(l=>l.Quantity)==NewGameMilitary.InitialStock-w.NewMilitary.Uses.Sum(u=>u.Consumed),"food consumption includes all episodes and duties");}
+  if(n==22){game.Advance(s.Seconds+3);OpenAllServiceLetters();var w=s.DiagnosticSnapshot();Check(w.NewMilitary!.Events.Count(e=>e.Effect==MilitaryEffect.Returned)==(RepeatedLong?2:1),"same person actually returns command after repeated contacts");Check(w.ResourceLots.Where(l=>l.Kind=="rice").Sum(l=>l.Quantity)==NewGameMilitary.InitialStock-w.NewMilitary.Uses.Sum(u=>u.Consumed),"food consumption includes all episodes and duties");}
   if(n==23){game.Press("military-frame");Check(NewGameMilitary.ExerciseNumber(s.DiagnosticSnapshot())==2&&NewGameMilitary.TotalStrength(s.DiagnosticSnapshot(),s.Seconds)<100,"two episodes keep real surviving roster without reset");}
   if(n==24)game.Advance(s.Seconds+2);
   game.Press("save");await WaitSave();game.Refresh();

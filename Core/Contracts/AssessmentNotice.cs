@@ -11,6 +11,7 @@ public static class AssessmentNotice
     public sealed record Response(EntityId Notice,Reply Reply);
     public sealed record Card(EntityId Message,bool CanOpen,Payload? Known);
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Available(ContractWorld w)=>Enabled(w)||NewGameWork.Enabled(w);
     public static ContractWorld Create(){var w=MissionReview.Create();w.WorldId=new("world:"+Ruleset);w.Definitions=w.Definitions with{Id=new("scenario:"+Ruleset),Ruleset=Ruleset};w.Definitions=w.Definitions with{Version=RegionalBattle.Version(w)};ContractValidation.Validate(w);return w;}
     internal static Payload Read(string body)=>ContractJson.Read<Payload>(Encoding.UTF8.GetBytes(body));
     internal static Response ReadResponse(string body)=>ContractJson.Read<Response>(Encoding.UTF8.GetBytes(body));
@@ -20,13 +21,13 @@ public static class AssessmentNotice
     internal static MissionReview.Review ReviewAt(ContractWorld w,TaskState t,EntityId assessor,long at)
     {
         VisibleMessage? Known(EntityId id){var m=w.Messaging.Messages.SingleOrDefault(m=>m.Id==id.Value);return m!=null&&KnowsAt(w,m.Id,assessor,at)?new(id,m.SenderId,false,m.Body):null;}
-        return MissionReview.FromClaims(t.Id,Known(WorldSession.Child("message",t.Id,"report")),Known(MissionReview.ExplanationId(t.Id)));
+        var review=MissionReview.FromClaims(t.Id,Known(WorldSession.Child("message",t.Id,"report")),Known(MissionReview.ExplanationId(t.Id)));return NewGameWork.Review(w,t,assessor,at,review);
     }
     public static EntityId NextMessageId(WorldSession session,EntityId task,EntityId assessor)=>new("message:assessment/"+task.Value.Replace(':','/')+"/"+(Authored(session.DiagnosticSnapshot(),task,assessor).Length+1));
     public static bool CanPublish(WorldSession session,EntityId task,EntityId assessor)
     {
         var w=session.DiagnosticSnapshot();var t=w.Tasks.SingleOrDefault(t=>t.Id==task);
-        if(!Enabled(w)||t==null||t.Action!=ActionKind.Inspect||t.Issuer!=assessor||!w.Characters.Any(c=>c.Id==assessor&&c.Life==LifeState.Adult)||!w.Grants.Any(g=>g.Agent==assessor&&g.Scope==t.Scope&&g.Actions.Contains(ActionKind.Inspect)&&g.From<=w.ElapsedSeconds&&w.ElapsedSeconds<g.Until))return false;
+        if(!Available(w)||t==null||t.Action!=ActionKind.Inspect||t.Issuer!=assessor||!w.Characters.Any(c=>c.Id==assessor&&c.Life==LifeState.Adult)||!w.Grants.Any(g=>g.Agent==assessor&&g.Scope==t.Scope&&g.Actions.Contains(ActionKind.Inspect)&&g.From<=w.ElapsedSeconds&&w.ElapsedSeconds<g.Until))return false;
         var review=ReviewAt(w,t,assessor,w.ElapsedSeconds);var chain=Authored(w,task,assessor);
         return review.Achievement!="結果未確認"&&(chain.Length==0||ContractJson.CanonicalHash(Read(chain[^1].Body).Review)!=ContractJson.CanonicalHash(review));
     }

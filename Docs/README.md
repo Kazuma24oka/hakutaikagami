@@ -228,3 +228,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [下部会話帯 V1](Design/BottomDialogueV1/README.md)：地図を保つ会話帯、左右の顔アイコン、選択時だけ表示する用件と返答。
 
 - [陸路点検結果と行先選択](Design/InspectionFindingsV1/README.md)
+
+- [返報・現地報酬・次の仕事](Design/WorkCycleV1/README.md)
