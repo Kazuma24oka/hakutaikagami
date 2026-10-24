@@ -1789,3 +1789,9 @@ Docs/Design/WorkConversationV1/README.md -text whitespace=blank-at-eol,blank-at-
 Docs/Design/WorkConversationV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_work_conversation.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_work_conversation_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact work decision UI evidence.
+Docs/Design/WorkDecisionUIV2/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkDecisionUIV2/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_work_decision_ui.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_work_decision_ui_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
