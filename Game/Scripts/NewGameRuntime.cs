@@ -35,7 +35,7 @@ public partial class NewGameRuntime : Control
         tasks=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};root.AddChild(tasks);root.AddChild(new Label{Text="地形・城郭は既存の試作表現です。開始時の所属や立場だけで、他人の兵・徴税権は得ません。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("d6bb7d")});view.SizeChanged+=()=>CallDeferred(nameof(Refresh));BuildUsableLayout(root,bar);BuildPlayGuide(bar);Refresh();if(!loading)Save();
     }
     void Add(Node parent,string id,string text,Action action){var b=new Button{Text=text};parent.AddChild(b);buttons[id]=b;b.Pressed+=()=>{try{if(IsSaving||(IsClockControlling&&!ClockAllowed(id)))return;action();if(!IsClockControlling||id is "rotate" or "near" or "play-guide")Refresh();}catch(Exception e){message.Text="操作できません："+e.Message;GD.Print("RUNTIME_REJECT "+e.Message);}};}
-    void Submit(Intent intent)=>Submit(Session.Submit(intent,Session.Revision));
+    void Submit(Intent intent)=>RequestLocalIntent(intent,intent.Action==ActionKind.Inspect?(intent.Actor==intent.Executor?"点検":"仕事の相談"):"操作");
     void Submit(CommandResult result){if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted))throw new InvalidDataException(result.VisibleReason);message.Text=result.VisibleReason;}
     void Depart(){var w=Snapshot();RequestDeparture(TravelWorld.Move(w,"request:travel/"+Session.Revision,NationalRoutes.Nodes[destination.Selected].Id));}
     TaskState? Awaiting(){var w=Snapshot();var known=Branch(w.PlayerControl).Knowledge.Tasks.Select(t=>t.Id).ToHashSet();return w.Tasks.FirstOrDefault(t=>known.Contains(t.Id)&&t.Executor==w.PlayerControl&&t.Agreement==AgreementPhase.AwaitingAssent);}

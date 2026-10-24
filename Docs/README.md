@@ -210,3 +210,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - 私有計算の直列実行：`Design/PreparationQueueV1/README.md`。即再入場/保存/実runtime破棄の競合と一つずつの処理を検証。
 
 - 出発受付の画面応答：`Design/ResponsiveDepartureV1/README.md`。同じCore結果を保ち、取消・ロード・返還後の移動を検証。
+
+- 点検・仕事相談の画面応答：`Design/ResponsiveLocalIntentV1/README.md`。時間停止状態を保つ共有命令準備と取消・復旧。

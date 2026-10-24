@@ -677,3 +677,6 @@ PreparationQueueV1。メニューで切り離したworkerも追跡し、一runti
 
 ## 出発受付の画面応答 V1（2026-10-24）
 ResponsiveDepartureV1。既存Move/Submit/受理時SetPaused(false)を私有準備し同世代へ一回公開。取消/メニュー/ロード/破棄で未来を捨て、待ち中は通常操作と保存をロック。以前の自動進行設定を復元。実完了後は現在sessionで判定する。42現行GPU/170比較、306入力/DLL/TRX一致時だけ2076試験再利用。実画像後同枝push、判断不要なら継続。点検/相談は別工程。
+
+## 点検・相談の画面応答 V1（2026-10-24）
+ResponsiveLocalIntentV1の5条件。既存Inspect/LocalWork/Submitを共有私有準備へ接続、時間を勝手に再開しない。取消/失敗/再試行/保存復旧・実3D、52現行GPU190比較、306入力/DLL/TRX一致時だけ2076再利用。軍務等の同期処理は未改修。実画像確認後同枝push、判断不要なら継続。
