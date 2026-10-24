@@ -21,7 +21,7 @@ public partial class NewGameFrontEnd
     async Task BeginPrefetchFlow()
     {
         await BeginPopulationEntry(FlowCase=="prefetch-notice"?0:1000);
-        if(FlowCase=="prefetch-1000"){game!.SetDestination("fork");game.Press("depart");}
+        if(FlowCase=="prefetch-1000"){game!.SetDestination("fork");await PressDeparture();}
         if(FlowCase=="prefetch-notice")game!.ChooseMilitary(NewMilitaryAction.Request);
         await PrefetchPoint(0);for(int n=1;n<PrefetchPoints;n++){await PrefetchStep(n);await PrefetchPoint(n);}await Capture("final",true);
     }

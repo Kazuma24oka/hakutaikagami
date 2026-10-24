@@ -15,7 +15,7 @@ public partial class NewGameFrontEnd
     async Task BeginClockFlow()
     {
         await BeginPopulationEntry(FlowCase=="clock-notice"?0:1000);
-        if(FlowCase=="clock-1000"){game!.SetDestination("fork");game.Press("depart");await ClockPress(true);}
+        if(FlowCase=="clock-1000"){game!.SetDestination("fork");await PressDeparture();await ClockPress(true);}
         if(FlowCase=="clock-notice")game!.ChooseMilitary(NewMilitaryAction.Request);
         await ClockPoint(0);for(int n=1;n<ClockPoints;n++){await ClockStep(n);await ClockPoint(n);}await Capture("final",true);
     }

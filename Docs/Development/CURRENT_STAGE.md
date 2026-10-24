@@ -288,3 +288,6 @@ GuideReuseV1はb2b35f4で5/5。PreparedSubmitV1の5条件を管理。次の五�
 
 ## 私有計算の直列実行 V1（2026-10-24）
 PreparedSubmitV1完了後のGame側競合検証。PreparationQueueV1の5条件を管理。次の五件：直列化の検証/push、出発接続、点検/相談接続、全国人物/役職、同時処理負荷と実プレイ確認。判断不要なら継続。
+
+## 出発受付の画面応答 V1（2026-10-24）
+PreparationQueueV1はbc4894eで5/5。ResponsiveDepartureV1の5条件を管理。次の五件：出発検証/push、点検/相談接続、全国人物/役職、同時処理負荷、実プレイ体験確認。判断不要なら継続。

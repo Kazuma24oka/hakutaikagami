@@ -14,7 +14,7 @@ public partial class NewGameFrontEnd
     async Task BeginBatchFlow()
     {
         await BeginPopulationEntry(FlowCase=="batch-notice"?0:1000);game!.ReviewSelectSpeed(BatchSpeed);
-        if(FlowCase=="batch-notice")game.ChooseMilitary(NewMilitaryAction.Request);else{game.SetDestination("fork");game.Press("depart");}
+        if(FlowCase=="batch-notice")game.ChooseMilitary(NewMilitaryAction.Request);else{game.SetDestination("fork");await PressDeparture();}
         await BatchPoint(0);await BatchStep();await BatchPoint(1);await Capture("final",true);
     }
     async Task BatchStep()

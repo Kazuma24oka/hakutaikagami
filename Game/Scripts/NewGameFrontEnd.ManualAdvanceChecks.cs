@@ -13,7 +13,7 @@ public partial class NewGameFrontEnd
     async Task BeginManualTimeFlow()
     {
         await BeginPopulationEntry(FlowCase=="manual-notice"?0:1000);
-        if(FlowCase=="manual-notice")game!.ChooseMilitary(NewMilitaryAction.Request);else{game!.SetDestination("fork");game.Press("depart");}
+        if(FlowCase=="manual-notice")game!.ChooseMilitary(NewMilitaryAction.Request);else{game!.SetDestination("fork");await PressDeparture();}
         if(FlowCase=="manual-arrive"){game!.Press("ten");await WaitManualTime();Check(game.ButtonEnabled("arrive"),"actual initial departure has entered the road and exposes arrival time");}
         await ManualTimePoint(0);await ManualTimeStep();await ManualTimePoint(1);await Capture("final",true);
     }

@@ -19,7 +19,7 @@ public partial class NewGameFrontEnd
         if(n==8){game.ChooseMilitary(NewMilitaryAction.Attach);game.ChooseMilitary(NewMilitaryAction.Reclaim);Check(!NewGameMilitary.Detached(s.DiagnosticSnapshot())&&!NewGameMilitary.UnitCarries(s.DiagnosticSnapshot()),"actual local reattachment and cargo handover are separate actions");}
         if(n==9){game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);game.ChooseMilitary(NewMilitaryAction.Report);game.ChooseMilitary(NewMilitaryAction.Return);}
         if(n==10){game.Advance(s.Seconds+3);OpenAllServiceLetters();Check(s.DiagnosticSnapshot().NewMilitary!.Events.Any(e=>e.Effect==MilitaryEffect.Returned),"final report, cargo zero and army entry are required before command handover");}
-        if(n==11){game.SetDestination("castle");game.Press("depart");game.Advance(s.Seconds+3);Check(s.GetBranchView(s.PlayerControl).Walking,"same person continues ordinary travel after handover");}
+        if(n==11){game.SetDestination("castle");await PressDeparture();s=game.Session;game.Advance(s.Seconds+3);Check(s.GetBranchView(s.PlayerControl).Walking,"same person continues ordinary travel after handover");}
         game.Press("save");await WaitSave();game.Refresh();if(n==2)Check(game.MilitaryModelsFit(),"army overview contains unit heads at actual viewport aspect");
     }
     async Task WithdrawalSearchStep(int n){var s=game!.Session;
@@ -33,7 +33,7 @@ public partial class NewGameFrontEnd
         if(n==8){var known=s.DiagnosticSnapshot().NewMilitary!.Requests.Last(q=>q.Input.Action==NewMilitaryAction.Form).Input.A!;game.ExercisePersonalMove(known);game.Advance(s.Seconds+1);Check(NewGameMilitary.PersonMoving(s.DiagnosticSnapshot()),"actual ground input chooses own walk destination without a unit command");}
         if(n==9){game.Advance(PersonalEnd()+1);game.ChooseMilitary(NewMilitaryAction.Attach);game.ChooseMilitary(NewMilitaryAction.Reclaim);game.ChooseMilitary(NewMilitaryAction.Recall);game.Advance(ArmyEnd()+1);game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);game.ChooseMilitary(NewMilitaryAction.Report);game.ChooseMilitary(NewMilitaryAction.Return);}
         if(n==10){game.Advance(s.Seconds+3);OpenAllServiceLetters();Check(s.DiagnosticSnapshot().NewMilitary!.Events.Any(e=>e.Effect==MilitaryEffect.Returned),"search, real reunion and local return complete the same loan");}
-        if(n==11){game.SetDestination("castle");game.Press("depart");game.Advance(s.Seconds+3);}
+        if(n==11){game.SetDestination("castle");await PressDeparture();s=game.Session;game.Advance(s.Seconds+3);}
         game.Press("save");await WaitSave();game.Refresh();await Frame();
     }
     async Task BeginWithdrawalContinuation(){for(int n=1;n<=9;n++)await MilitaryStep(n);for(int n=0;n<WithdrawalCheckpoints;n++){await WithdrawalStep(n);game!.SaveCheckpoint("withdrawal"+n);await Capture("s"+n,true);}await Capture("final",true);}

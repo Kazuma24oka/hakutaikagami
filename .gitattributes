@@ -1663,3 +1663,25 @@ Docs/Design/PreparationQueueV1/contract.json -text whitespace=blank-at-eol,blank
 Docs/Design/PreparationQueueV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/verify_preparation_queue.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_preparation_queue_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact responsive departure acceptance bytes.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveClock.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveDepartureChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ServiceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveDepartureV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveDepartureV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveDepartureV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_responsive_departure.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_responsive_departure_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

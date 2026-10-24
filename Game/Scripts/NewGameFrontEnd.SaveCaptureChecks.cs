@@ -12,7 +12,7 @@ public partial class NewGameFrontEnd
     async Task SaveCapturePoint(int n){game!.ReviewFraction(0);game.Press("save");await WaitSave();game.Refresh();game.SaveCheckpoint("savecapture"+n);await Capture("s"+n,true);}
     async Task BeginSaveCaptureFlow()
     {
-        await BeginPopulationEntry(1000);game!.SetDestination("fork");game.Press("depart");await SaveCapturePoint(0);
+        await BeginPopulationEntry(1000);game!.SetDestination("fork");await PressDeparture();await SaveCapturePoint(0);
         for(int n=1;n<SaveCapturePoints;n++){await SaveCaptureStep(n);await SaveCapturePoint(n);}await Capture("final",true);
     }
     async Task SaveCaptureStep(int point)

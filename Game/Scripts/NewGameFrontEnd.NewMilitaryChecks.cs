@@ -27,7 +27,7 @@ public partial class NewGameFrontEnd
         if(step==13){game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);Check(NewGameMilitary.View(s.DiagnosticSnapshot()).Carry==0,"actual remaining house stock is returned");}
         if(step==14){game.ChooseMilitary(NewMilitaryAction.Report);Check(!s.DiagnosticSnapshot().NewMilitary!.Events.Any(e=>e.Effect==MilitaryEffect.Returned),"sending report is insufficient until lord physically receives it");}
         if(step==15){game.Advance(s.Seconds+3);OpenAllServiceLetters();Check(s.DiagnosticSnapshot().NewMilitary!.Events.Any(e=>e.Effect==MilitaryEffect.Returned)&&NewGameMilitary.View(s.DiagnosticSnapshot()).Status.Contains("返還の通知を確認"),"physical report completes command handover and opened notice confirms it");Check(NewGameService.View(s.DiagnosticSnapshot()).House==null,"service release resumes only after military handover");}
-        if(step==16){game.SetDestination("castle");game.Press("depart");game.Advance(s.Seconds+5);Check(s.GetBranchView(s.PlayerControl).Walking,"released same officer can actually resume road travel");}
+        if(step==16){game.SetDestination("castle");await PressDeparture();s=game.Session;game.Advance(s.Seconds+5);Check(s.GetBranchView(s.PlayerControl).Walking,"released same officer can actually resume road travel");}
         game.Press("save");await WaitSave();game.Refresh();
     }
     async Task BeginNewMilitaryFlow()

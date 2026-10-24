@@ -11,7 +11,7 @@ public partial class NewGameRuntime
     CancellationTokenSource? clockStop;
     bool? clockDesired;
     readonly List<(BaseButton Button,bool Disabled)> clockDisabled=[];
-    internal bool IsClockControlling=>clockDesired.HasValue||IsManualAdvancing;
+    internal bool IsClockControlling=>clockDesired.HasValue||IsManualAdvancing||IsDeparting;
     internal string? LastClockError {get;private set;}
     internal Action? ClockTestFault {get;set;}
     internal long ClockRenderTicks {get;private set;}
@@ -19,7 +19,7 @@ public partial class NewGameRuntime
     static bool ClockAllowed(string id)=>id is "pause" or "menu" or "rotate" or "near" or "play-guide";
     void RequestClockPause(bool paused)
     {
-        if(IsSaving)return;CancelManualAdvance();LastClockError=null;
+        if(IsSaving)return;CancelDeparture();CancelManualAdvance();LastClockError=null;
         automatic=false;CancelAdvancePrefetch();advanceClockActive=false;
         if(IsClockControlling){clockDesired=paused;clockStop?.Cancel();message.Text=paused?"停止を確認中…":"自動進行を準備中…";return;}
         if(Session.Paused==paused){automatic=!paused;return;}

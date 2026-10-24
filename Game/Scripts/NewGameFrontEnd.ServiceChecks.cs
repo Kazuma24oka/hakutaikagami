@@ -15,7 +15,7 @@ public partial class NewGameFrontEnd
         if(step==2){game!.Press("work");game.Advance(game.Session.Seconds+2);OpenAllServiceLetters();Check(game.Session.DiagnosticSnapshot().Tasks.Single(t=>t.Action==ActionKind.Inspect).Kind==TaskKind.BindingOrder,"same officer's known lord issues a distinct binding work order");}
         if(step==3){Check(game!.ButtonEnabled("service-release"),"known current service permits a release request");game.Press("service-release");game.Advance(game.Session.Seconds+2);OpenAllServiceLetters();Check(game.Session.DiagnosticSnapshot().Service!.Events.Any(e=>e.Kind==CareerEventKind.ReleaseWaiting),"release waits for a physically received work report");}
         if(step==4){game!.Advance(game.Session.Seconds+12);OpenAllServiceLetters();Check(NewGameService.View(game.Session.DiagnosticSnapshot()).House==null&&game.InfoText.Contains("所属なし"),"released same person is shown as ronin only after notice");}
-        if(step==5){game!.SetDestination("castle");game.Press("depart");game.Advance(game.Session.Seconds+5);}
+        if(step==5){game!.SetDestination("castle");await PressDeparture();game.Advance(game.Session.Seconds+5);}
         if(step==6){game!.Press("arrive");await WaitManualTime();Check(game.Session.DiagnosticSnapshot().Locations.Single(l=>l.Actor==game.Session.PlayerControl).Site==new EntityId("site:castle"),"same released person actually arrives at new site");}
         game!.Press("save");await WaitSave();game.Refresh();
     }

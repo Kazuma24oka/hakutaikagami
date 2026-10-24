@@ -37,21 +37,21 @@ public partial class NewGameRuntime : Control
     void Add(Node parent,string id,string text,Action action){var b=new Button{Text=text};parent.AddChild(b);buttons[id]=b;b.Pressed+=()=>{try{if(IsSaving||(IsClockControlling&&!ClockAllowed(id)))return;action();if(!IsClockControlling||id is "rotate" or "near" or "play-guide")Refresh();}catch(Exception e){message.Text="操作できません："+e.Message;GD.Print("RUNTIME_REJECT "+e.Message);}};}
     void Submit(Intent intent)=>Submit(Session.Submit(intent,Session.Revision));
     void Submit(CommandResult result){if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted))throw new InvalidDataException(result.VisibleReason);message.Text=result.VisibleReason;}
-    void Depart(){var w=Snapshot();Submit(Session.Submit(TravelWorld.Move(w,"request:travel/"+Session.Revision,NationalRoutes.Nodes[destination.Selected].Id),Session.Revision));Session.SetPaused(false);}
+    void Depart(){var w=Snapshot();RequestDeparture(TravelWorld.Move(w,"request:travel/"+Session.Revision,NationalRoutes.Nodes[destination.Selected].Id));}
     TaskState? Awaiting(){var w=Snapshot();var known=Branch(w.PlayerControl).Knowledge.Tasks.Select(t=>t.Id).ToHashSet();return w.Tasks.FirstOrDefault(t=>known.Contains(t.Id)&&t.Executor==w.PlayerControl&&t.Agreement==AgreementPhase.AwaitingAssent);}
     void Assent(bool accept){var task=Awaiting()??throw new InvalidDataException("回答できる依頼はありません");Submit(Session.Assent(task.Id,Session.PlayerControl,accept,Session.Revision));}
     void Open()=>OpenSelectedMail();
     internal void Advance(long to){if(IsSaving||IsClockControlling)return;automatic=false;fraction=0;while(Session.Seconds<to){Session.SetPaused(false);long prior=Session.Seconds;Session.AdvanceTo(to);if(Session.Seconds==prior)break;}Session.SetPaused(true);Refresh();}
-    internal void Suspend(){CancelManualAdvance();CancelClockControl();CancelAdvancePrefetch();automatic=false;Session.SetPaused(true);Visible=false;ProcessMode=ProcessModeEnum.Disabled;}
+    internal void Suspend(){CancelDeparture();CancelManualAdvance();CancelClockControl();CancelAdvancePrefetch();automatic=false;Session.SetPaused(true);Visible=false;ProcessMode=ProcessModeEnum.Disabled;}
     internal void Resume(){Visible=true;ProcessMode=ProcessModeEnum.Inherit;Refresh();}
     internal void Save(){CancelAdvancePrefetch();automatic=false;Session.SetPaused(true);saves.Save(Session,"manual",Snapshot().WorldId,CurrentPresentation());message.Text="同じ人物・世界の進行を保存しました。";}
     void ApplyPresentation(SavePresentation p){RestoreOperationPanel(p.OperationPanel);selectedKnownTarget=p.MilitaryTarget;selectedDirectiveOriginal=p.MilitaryOriginal;selectedCancellationOriginal=p.MilitaryCancellation;fraction=p.DisplayFraction;speed=p.DisplaySpeed;if(speedChoice!=null)speedChoice.Select(Array.IndexOf(new[]{1,10,60,360},speed));if(p.WorldCamera is {} c){Span=(float)c.Span;Yaw=(float)c.Yaw;nationMode=!c.Follow;}}
-    internal void Load(){CancelManualAdvance();CancelClockControl();CancelAdvancePrefetch();automatic=false;var prepared=saves.Prepare("manual");if(host.CommitLoad(prepared,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("現在の進行が変わったため読み直してください");ApplyPresentation(prepared.Presentation);message.Text="保存した人物・所属・外見・位置へ戻りました。";Refresh();}
+    internal void Load(){CancelDeparture();CancelManualAdvance();CancelClockControl();CancelAdvancePrefetch();automatic=false;var prepared=saves.Prepare("manual");if(host.CommitLoad(prepared,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("現在の進行が変わったため読み直してください");ApplyPresentation(prepared.Presentation);message.Text="保存した人物・所属・外見・位置へ戻りました。";Refresh();}
     internal string InfoText=>info.Text;
     internal Rect2 RenderRect=>surface.GetGlobalRect();
     internal Rect2 InfoRect=>info.GetGlobalRect();
     internal void SaveCheckpoint(string slot)=>saves.Save(Session,slot,Snapshot().WorldId,CurrentPresentation());
-    internal void LoadCheckpoint(string slot){CancelManualAdvance();CancelClockControl();CancelAdvancePrefetch();automatic=false;var p=saves.Prepare(slot);if(host.CommitLoad(p,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("checkpoint restore failed");ApplyPresentation(p.Presentation);Refresh();}
+    internal void LoadCheckpoint(string slot){CancelDeparture();CancelManualAdvance();CancelClockControl();CancelAdvancePrefetch();automatic=false;var p=saves.Prepare(slot);if(host.CommitLoad(p,Session,Session.Revision)!=ResultCode.Accepted)throw new InvalidDataException("checkpoint restore failed");ApplyPresentation(p.Presentation);Refresh();}
     internal bool ButtonEnabled(string id)=>!buttons[id].Disabled;
     internal void Press(string id){ShowOperation(buttons[id]);buttons[id].EmitSignal(Button.SignalName.Pressed);}
     internal void SetDestination(string id)=>destination.Select(Array.FindIndex(NationalRoutes.Nodes,n=>n.Id==id));
@@ -73,7 +73,7 @@ public partial class NewGameRuntime : Control
         info.Text=p.Name+" / "+role+" / "+affiliation+" / "+lord+" / "+place+" / "+abilities+"\n世界時間：開始から"+Session.Seconds+"秒 / "+(Session.Paused?"停止中":"進行中");
         var knowledge=Branch(w.PlayerControl).Knowledge;tasks.Text=string.Join(" / ",knowledge.Tasks.Select(t=>t.KnownStatus.Replace("Running","進行中").Replace("Completed","完了").Replace("Waiting","着手待ち").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗")))+"\n届いた書状："+knowledge.Messages.Length+"通";
         RefreshMail();RefreshMilitary();RefreshAuthorityUI();RefreshKnownTarget();RefreshService();var awaiting=Awaiting();buttons["accept"].Visible=buttons["decline"].Visible=awaiting!=null;buttons["work"].Disabled=location.Kind!=LocationKind.AtSite||w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));
-        buttons["inspect"].Disabled=location.Kind!=LocationKind.AtSite;buttons["depart"].Disabled=TravelWorld.Active(w);buttons["arrive"].Disabled=own.ArrivalAt==null;if(NewGameMilitary.Deployed(w)){buttons["depart"].Disabled=buttons["inspect"].Disabled=buttons["work"].Disabled=true;}RetainSaveInputLock();RetainClockInputLock();RetainManualAdvanceInputLock();
+        buttons["inspect"].Disabled=location.Kind!=LocationKind.AtSite;buttons["depart"].Disabled=TravelWorld.Active(w);buttons["arrive"].Disabled=own.ArrivalAt==null;if(NewGameMilitary.Deployed(w)){buttons["depart"].Disabled=buttons["inspect"].Disabled=buttons["work"].Disabled=true;}RetainSaveInputLock();RetainClockInputLock();RetainManualAdvanceInputLock();RetainDepartureInputLock();
     }
     ServiceView ServiceDisplay(){Snapshot();return cachedServiceView??=NewGameService.View(cachedWorld!);}
     void RefreshService()
@@ -119,5 +119,5 @@ public partial class NewGameRuntime : Control
         foreach(var leg in journey.Legs){var a=nodes.Single(n=>n.Id==leg.From).Position;var b=nodes.Single(n=>n.Id==leg.To).Position;double dx=b.EastMm-a.EastMm,dy=b.NorthMm-a.NorthMm;double length=Math.Sqrt(dx*dx+dy*dy);var edge=edges.Single(e=>e.Id==leg.Edge);double p=TravelWorld.Progress(world,leg,world.ElapsedSeconds),next=TravelWorld.Progress(world,leg,world.ElapsedSeconds+1);distance+=length*Math.Clamp((p+(next-p)*phase)/edge.LengthMm,0,1);}
         return distance;
     }
-    public override void _Process(double delta){if(PollManualAdvance(delta))return;if(PollManualSave(delta))return;if(PollClockControl(delta))return;if(PollPreparedAdvance(delta))return;if(!automatic||Session.Paused)return;fraction+=Math.Min(delta,.25)*speed;long steps=(long)fraction;if(steps>0){fraction-=steps;Session.AdvanceTo(Session.Seconds+steps);}Refresh();}
+    public override void _Process(double delta){if(PollDeparture(delta))return;if(PollManualAdvance(delta))return;if(PollManualSave(delta))return;if(PollClockControl(delta))return;if(PollPreparedAdvance(delta))return;if(!automatic||Session.Paused)return;fraction+=Math.Min(delta,.25)*speed;long steps=(long)fraction;if(steps>0){fraction-=steps;Session.AdvanceTo(Session.Seconds+steps);}Refresh();}
 }
