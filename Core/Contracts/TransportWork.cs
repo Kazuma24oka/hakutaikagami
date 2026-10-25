@@ -27,7 +27,7 @@ public static class TransportWork
     {
         if(!NewGameWork.Enabled(w)||w.TransportWork?.Jobs.Any(j=>TransportHandover.Validate(j.Handover).Phase is not(HandoverPhase.Paid or HandoverPhase.Cancelled or HandoverPhase.Returned))==true)return null;
         var location=w.Locations.Single(l=>l.Actor==w.PlayerControl);if(location.Kind!=LocationKind.AtSite)return null;var site=location.Site!.Value;
-        var issuer=RegionalCampaign.Nearby(w,w.PlayerControl).Where(p=>p.Actor!=w.PlayerControl&&!Jobs(w).Any(j=>j.Handover.Terms.Issuer==p.Actor)).FirstOrDefault(p=>{
+        var issuer=RegionalCampaign.Nearby(w,w.PlayerControl).Where(p=>p.Actor!=w.PlayerControl&&!Jobs(w).Any(j=>j.Handover.Terms.Issuer==p.Actor&&j.Handover.Terms.Amount==WorkProgression.Amount(w,p.Actor))).FirstOrDefault(p=>{
             var sender=w.NewGame!.Start.People.Single(s=>s.Id==p.Actor.Value);
             return w.NewGame.Start.People.Any(d=>d.Id!=w.PlayerControl.Value&&d.Id!=sender.Id&&d.Site!=site.Value&&d.Faction!=null&&d.Faction==sender.Faction&&w.Characters.Any(c=>c.Id.Value==d.Id&&c.Life==LifeState.Adult));});
         // Avoid dereferencing absent opt-in state. Candidate positions come from the
@@ -36,7 +36,7 @@ public static class TransportWork
         var sender=w.NewGame!.Start.People.Single(p=>p.Id==issuer.Actor.Value);
         var destination=w.NewGame.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&p.Id!=sender.Id&&p.Site!=site.Value&&p.Faction!=null&&p.Faction==sender.Faction&&w.Characters.Any(c=>c.Id.Value==p.Id&&c.Life==LifeState.Adult)).OrderBy(p=>p.Site,StringComparer.Ordinal).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
         if(destination==null)return null;
-        return new(id,issuer.Actor,w.PlayerControl,new(destination.Id),site,new(destination.Site),issuer.Actor,NewGameWork.Wallet(issuer.Actor),"money","mon",Amount,Fee,w.ElapsedSeconds,w.ElapsedSeconds+86400,w.ElapsedSeconds+30*86400);
+        return new(id,issuer.Actor,w.PlayerControl,new(destination.Id),site,new(destination.Site),issuer.Actor,NewGameWork.Wallet(issuer.Actor),"money","mon",WorkProgression.Amount(w,issuer.Actor),WorkProgression.Fee(w,issuer.Actor),w.ElapsedSeconds,w.ElapsedSeconds+86400,w.ElapsedSeconds+30*86400);
     }
     public static TransportJob[] Jobs(ContractWorld w)=>w.TransportWork?.Jobs??[];
     public static long Net(ContractWorld w,EntityId lot,long at=long.MaxValue,long revision=long.MaxValue)
@@ -88,9 +88,9 @@ public static class TransportWork
     {
         if(w.TransportWork==null){Need(!w.ResourceLots.Any(IsLot)&&!w.Debts.Any(d=>IsDebt(d)),"Orphan transport stock");return;}
         var s=w.TransportWork;Need(NewGameWork.Enabled(w)&&s.Schema==1&&s.Policy==Policy&&s.Jobs.Length>0,"Unexpected transport policy");Need(s.Jobs.Select(j=>j.Handover.Terms.Id).Distinct().Count()==s.Jobs.Length,"Duplicate transport job");
-        Need(s.Jobs.Select(j=>j.Handover.Terms.Issuer).Distinct().Count()==s.Jobs.Length,"Duplicate local dispatch demand");
+        Need(s.Jobs.Select(j=>(j.Handover.Terms.Issuer,j.Handover.Terms.Amount)).Distinct().Count()==s.Jobs.Length,"Duplicate local dispatch demand");
         var operations=new HashSet<EntityId>();var revisions=new HashSet<long>();
-        foreach(var j in s.Jobs){var t=j.Handover.Terms;TransportHandover.Validate(j.Handover);Need(t.Carrier==w.PlayerControl&&t.SourceLot==NewGameWork.Wallet(t.Issuer)&&t.Amount==Amount&&t.Fee==Fee&&t.Unit=="mon"&&t.Resource=="money"&&t.AcceptBy==t.OfferedAt+86400&&t.DeliverBy==t.OfferedAt+30*86400&&j.CreatedRevision>0&&j.CreatedRevision<=w.CommitSequence&&t.OfferedAt<=w.ElapsedSeconds,"Unregistered transport terms");Need(At(w,t.Issuer,t.Source,t.OfferedAt,j.CreatedRevision)&&At(w,t.Carrier,t.Source,t.OfferedAt,j.CreatedRevision),"Offer was not local");
+        foreach(var j in s.Jobs){var t=j.Handover.Terms;TransportHandover.Validate(j.Handover);Need(t.Carrier==w.PlayerControl&&t.SourceLot==NewGameWork.Wallet(t.Issuer)&&t.Amount==WorkProgression.Amount(w,t.Issuer,t.OfferedAt,j.CreatedRevision)&&t.Fee==WorkProgression.Fee(w,t.Issuer,t.OfferedAt,j.CreatedRevision)&&t.Unit=="mon"&&t.Resource=="money"&&t.AcceptBy==t.OfferedAt+86400&&t.DeliverBy==t.OfferedAt+30*86400&&j.CreatedRevision>0&&j.CreatedRevision<=w.CommitSequence&&t.OfferedAt<=w.ElapsedSeconds,"Unregistered transport terms");Need(At(w,t.Issuer,t.Source,t.OfferedAt,j.CreatedRevision)&&At(w,t.Carrier,t.Source,t.OfferedAt,j.CreatedRevision),"Offer was not local");
             Need(w.NewGame!.Start.People.Any(p=>p.Id==t.Recipient.Value&&p.Site==t.Destination.Value&&p.Faction!=null&&p.Faction==w.NewGame.Start.People.Single(p=>p.Id==t.Issuer.Value).Faction),"Recipient lacks original appointment address");
             Need(revisions.Add(j.CreatedRevision)&&j.Receipts.Length==j.Handover.Entries.Length,"Invalid receipt timeline");long previous=j.CreatedRevision;
             foreach(var e in j.Handover.Entries){var p=j.Receipts.Single(p=>p.Operation==e.Input.Id);Need(operations.Add(e.Input.Id)&&revisions.Add(p.Revision)&&p.Revision>previous&&p.Revision<=w.CommitSequence,"Duplicate or reversed operation sequence");previous=p.Revision;CheckInput(w,j,e.Input,p.Revision);}

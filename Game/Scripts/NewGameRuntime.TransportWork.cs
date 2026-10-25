@@ -23,7 +23,7 @@ public partial class NewGameRuntime
         if(IsSaving||IsClockControlling||IsDeparting)return;
         var j=CurrentTransport();
         if(j==null){var result=Session.RequestTransport(new("job:transport-ui/"+Session.Revision),Session.Revision);if(result.Code!=ResultCode.Accepted){message.Text="この拠点では運搬の依頼を準備できません。";return;}Refresh();j=CurrentTransport();}
-        if(j==null)return;var t=j.Handover.Terms;var v=TransportHandover.Validate(j.Handover);var source=Session;long revision=Session.Revision;
+        if(j==null)return;shownWork=null;var t=j.Handover.Terms;var v=TransportHandover.Validate(j.Handover);var source=Session;long revision=Session.Revision;
         string sourceName=Snapshot().Definitions.Sites.Single(s=>s.Id==t.Source).Name,destName=Snapshot().Definitions.Sites.Single(s=>s.Id==t.Destination).Name;
         string speech=v.Phase switch{HandoverPhase.Offered=>$"{PersonName(t.Recipient)}への預り銭を、{destName}まで運んでほしい。",HandoverPhase.Accepted=>"引き受けた荷物をここで預かろう。",HandoverPhase.Carrying=>$"{destName}の{PersonName(t.Recipient)}に渡そう。",HandoverPhase.Delivered=>$"受渡しは済んだ。{sourceName}の荷主へ報告しよう。",HandoverPhase.Reported=>"報告を確認した。運賃を受け取ってほしい。",HandoverPhase.Paid=>"運搬と運賃の受領まで済んだ。",_=>"預り銭の返却を確認しよう。"};
         bool carrierSpeaker=v.Phase!=HandoverPhase.Offered&&v.Phase!=HandoverPhase.Reported;
@@ -46,6 +46,8 @@ public partial class NewGameRuntime
         if((v.Phase==HandoverPhase.ReturnRequired||v.Phase==HandoverPhase.Carrying&&Session.Seconds>t.DeliverBy)&&At(t.Source,t.Issuer))Step("transport-return","荷主へ預り銭を返そう",HandoverAction.Return);
         if(v.Phase==HandoverPhase.Carrying){Choice("transport-go","届け先を行先に設定する",()=>{CloseBottomTalk();SetDestination(NewGameWorld.Node(t.Destination.Value));});}
         if(v.Phase is HandoverPhase.Delivered or HandoverPhase.ReturnRequired){Choice("transport-home","荷主の拠点を行先に設定する",()=>{CloseBottomTalk();SetDestination(NewGameWorld.Node(t.Source.Value));});}
+        if(v.Phase is HandoverPhase.Paid or HandoverPhase.Returned or HandoverPhase.Cancelled&&TransportWork.OfferAt(Snapshot(),new("job:next-preview"))!=null)
+            Choice("transport-next","次の運搬を相談しよう",()=>{CloseBottomTalk();var result=Session.RequestTransport(new("job:next-transport/"+Session.Revision),Session.Revision);if(result.Code!=ResultCode.Accepted)throw new InvalidOperationException("今は新しい運搬を相談できません。");Refresh();ShowTransportWork();});
         Choice("transport-close","いったん戻る",CloseBottomTalk);
     }
     internal string ReviewTransportSummary=>transportSummary.Text;
