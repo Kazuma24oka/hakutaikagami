@@ -19,14 +19,14 @@ public partial class NewGameRuntime
         if(card?.CanAccept==true){ContactServiceChoice("work-contact-accept","返書の条件で仕えよう",CareerAction.Accept,c.Other,card.Case);ContactServiceChoice("work-contact-decline","今回は仕官を辞退しよう",CareerAction.Decline,c.Other,card.Case);}
         else {
             if(c.CanDiscussService)ContactServiceChoice("work-contact-apply","仕官について相談したい",CareerAction.Apply,c.Other,null);
-            else if(c.CanDiscussMilitary){if(WorkDuty.Candidate(w)==c.Other)Choice("work-contact-duty","今後の点検の役目を聞きたい",()=>ShowWorkDutyOffer(c.Other));else Choice("work-contact-military","軍務について相談したい",()=>ShowMilitaryWork());}
-            var offer=TransportWork.OfferAt(w,new("job:contact-preview"));if(offer?.Issuer==c.Other)Choice("work-contact-transport","運搬の仕事を続けたい",()=>{CloseBottomTalk();if(TransportWork.Jobs(Snapshot()).LastOrDefault() is {} last&&TransportHandover.Validate(last.Handover).Phase is HandoverPhase.Paid or HandoverPhase.Returned or HandoverPhase.Cancelled)Submit(Session.RequestTransport(new("job:contact/"+Session.Revision),Session.Revision));ShowTransportWork();});
+            else if(c.CanDiscussMilitary){Choice("work-contact-service","今後の身の振り方を相談したい",()=>ShowServiceDirection(c.Other));if(WorkDuty.Candidate(w)==c.Other)Choice("work-contact-duty","今後の点検の役目を聞きたい",()=>ShowWorkDutyOffer(c.Other));else Choice("work-contact-military","軍務について相談したい",()=>ShowMilitaryWork());}
+            var offer=TransportWork.OfferAt(w,new("job:contact-preview"));if(!c.CanDiscussMilitary&&offer?.Issuer==c.Other)Choice("work-contact-transport","運搬の仕事を続けたい",()=>{CloseBottomTalk();if(TransportWork.Jobs(Snapshot()).LastOrDefault() is {} last&&TransportHandover.Validate(last.Handover).Phase is HandoverPhase.Paid or HandoverPhase.Returned or HandoverPhase.Cancelled)Submit(Session.RequestTransport(new("job:contact/"+Session.Revision),Session.Revision));ShowTransportWork();});
         }
         Choice("work-contact-back","地図へ戻る",CloseBottomTalk);
     }
     void ContactServiceChoice(string id,string text,CareerAction action,EntityId principal,EntityId? caseId)
     {
         var expected=Session;long revision=Session.Revision;
-        Choice(id,text,()=>{if(!ReferenceEquals(Session,expected)||Session.Revision!=revision)throw new InvalidOperationException("状況が変わりました。相手と条件を確認し直してください。");Submit(Session.DecideService(new(new("request:work-contact/"+revision),action,caseId,action==CareerAction.Apply?principal:null),Session.PlayerControl,revision));CloseBottomTalk();});
+        Choice(id,text,()=>{if(!ReferenceEquals(Session,expected)||Session.Revision!=revision)throw new InvalidOperationException("状況が変わりました。相手と条件を確認し直してください。");var requestId=new EntityId("request:work-contact/"+revision);Submit(Session.DecideService(new(requestId,action,caseId,action==CareerAction.Apply?principal:null),Session.PlayerControl,revision));if(action==CareerAction.Apply)FocusServiceCase(requestId);CloseBottomTalk();});
     }
 }

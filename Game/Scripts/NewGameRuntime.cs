@@ -85,8 +85,9 @@ public partial class NewGameRuntime : Control
     }
     void DecideService(CareerAction action)
     {
-        EntityId? c=action==CareerAction.Apply?null:serviceCaseIds[serviceCase.Selected];EntityId? principal=action==CareerAction.Apply?servicePrincipalIds[servicePrincipal.Selected]:null;Submit(Session.DecideService(new(new("request:service-ui/"+Session.Revision),action,c,principal),Session.PlayerControl,Session.Revision));
+        EntityId? c=action==CareerAction.Apply?null:serviceCaseIds[serviceCase.Selected];EntityId? principal=action==CareerAction.Apply?servicePrincipalIds[servicePrincipal.Selected]:null;var id=new EntityId("request:service-ui/"+Session.Revision);Submit(Session.DecideService(new(id,action,c,principal),Session.PlayerControl,Session.Revision));if(action==CareerAction.Apply)FocusServiceCase(id);
     }
+    void FocusServiceCase(EntityId id){RefreshService();int index=Array.IndexOf(serviceCaseIds,id);if(index>=0)serviceCase.Select(index);}
     // A display snapshot is immutable and valid only for this exact session/revision/time/pause.
     // Loading another instance at the same revision must never reuse the old person's view.
     ContractWorld Snapshot()
