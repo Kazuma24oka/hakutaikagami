@@ -18,9 +18,9 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "27799594c3ec288fa2b1976127d49d77c7900a77983ca70768d338e123146999",
-    "Docs/Development/ProgressV1/estimate.json": "16227bc743f93499481b8852f221a18e83ca523931a915f1ea8d722ded19ca84",
+    "Docs/Development/ProgressV1/estimate.json": "b0b3c07245deeb96e07cc5325fadbcbd1c9e4cc7cac5b447a65c7b2c08689518",
     "Scripts/build_progress_report.py": "2f77bc8d74ef02d00e535ab382a007b18e2c30a71eaff8cf552f7dbcf337eced",
-    "Scripts/check_progress_report.py": "805841cb14b130a33cede6dbf7b75ff53f089d5e68ba04e1efa0fbdc914fb3e5",
+    "Scripts/check_progress_report.py": "5d78b088652731ef64ac4862bf600e9dc0f17b87e6dcedd42152dfcc05dc3eab",
     "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
@@ -662,13 +662,17 @@
     {
       "id": "BD-39",
       "status": "normal",
-      "existing": "通常入口の架空演習で接触・損耗・敗走・退避・再集結を扱う。",
+      "existing": "通常入口の架空演習で接触・損耗・敗走・退避・再集結を扱う。 交戦条件Coreを追加し、到着/効力/期限/取消と敵対・意思・自衛を分離。通常入口には未接続。",
       "remaining": "勢力間の実戦、包囲/強襲/救援/降伏と攻城・開城を接続する。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.Combat.cs",
         "Core/Contracts/NewGameMilitary.Rout.cs",
         "Tests/RepeatedExerciseTests.cs",
-        "Tests/RoutRegroupTests.cs"
+        "Tests/RoutRegroupTests.cs",
+        "Core/Contracts/FieldEngagement.cs",
+        "Tests/FieldEngagementTests.cs",
+        "Docs/Design/FieldEngagementV1/README.md",
+        "Docs/Design/FieldEngagementV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1505,7 +1509,7 @@
       "passed": 2392,
       "trx": "Docs/Design/HouseholdMilitaryV1/runtime-local/all-tests/all-current.trx",
       "sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
-      "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
+      "scope": "Historical all-Core2392 success for code838f2e5; not a current-source full-suite result"
     },
     "latest_game_verification": "Docs/Design/HouseholdMilitaryV1/verification.json",
     "latest_game_verification_sha256": "473715c9372024b1be9958054ea2078e4c44be9df6e8621ef84b1821af8821e1",
@@ -1524,13 +1528,15 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
+    "current_stage_summary": "BD-39の実戦工程に着手。命令の到着/効力/期限/取消、敵対関係、本人の意思、接触、自衛を分離するCore判定を追加。関連80件成功（新規32件）。通常入口の実戦任務・配送・敵軍・帰還返報への接続、新機能の世代保存復旧/3Dは未実施。工程全体0/3、全体概算20%は据置。既存の演習や主家別軍務を実戦と読み替えない。 過去の主家別軍務（コード838f2e5）では全Core2392件・Godot8プロセス/60比較が成功済み。新規実戦の確認とは別。",
     "screens": [
       {
         "title": "旧軍を残して新主家の軍務へ",
         "path": "Docs/Design/HouseholdMilitaryV1/index.html"
       }
-    ]
+    ],
+    "subsequent_core_verification": "Docs/Design/FieldEngagementV1/verification.json",
+    "subsequent_core_verification_sha256": "71c7c0d8c49038d2701149eb7114517ab8b96dc75c14a8cca40791a4d02fd81f"
   },
   "release": {
     "functional_items": 59,

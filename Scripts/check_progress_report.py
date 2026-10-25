@@ -20,9 +20,23 @@ print('PASS: 60 rows / 15 domains / 170 planned cases; evidence and runtime sour
 
 v=json.loads((R/p["evidence"]["latest_game_verification"]).read_bytes())
 check(p["evidence"]["latest_game_verification"],p["evidence"]["latest_game_verification_sha256"])
-for f,h in v["binaries"].items():check(f,h)
+# Historical game acceptance must not be silently claimed for rebuilt test binaries.
+# Only explicitly superseded test DLLs may bind to the newer, narrower Core evidence.
+new_path=p['evidence'].get('subsequent_core_verification')
+new=None
+if new_path:
+ check(new_path,p['evidence']['subsequent_core_verification_sha256'])
+ new=json.loads((R/new_path).read_bytes())
+ from verify_field_engagement import check as check_increment
+ check_increment(new)
+for f,h in v['binaries'].items():
+ if hashlib.sha256((R/f).read_bytes()).hexdigest()==h:continue
+ assert new is not None and f in {
+  'Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll',
+  'Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll'},('unverified binary changed',f)
+ check(f,new['binaries'][f])
 t=p["evidence"]["core_test"];check(t["trx"],t["sha256"])
-print("PASS: bound binaries and recorded test-result provenance unchanged")
+print("PASS: historical game evidence retained; rebuilt test DLLs require separate targeted Core evidence")
 
 # Product-scope estimate is separate from test counts and preserves all adopted design items.
 from progress_estimate import load as load_estimate,calculate

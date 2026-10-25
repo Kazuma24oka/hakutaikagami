@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2392,
-  "baseline_passed": 2373,
-  "added": 19,
-  "scope": "MilitaryLedgerIdentity (5) and HouseholdMilitary (14); exact full-suite result is recorded in HouseholdMilitaryV1 verification, never inferred from this expected count"
+  "expected_passed": 2424,
+  "baseline_passed": 2392,
+  "added": 32,
+  "scope": "FieldEngagement32 added; 80 targeted tests passed. Full2424 suite NOT_RUN for this source; do not infer success from expected count"
 }
