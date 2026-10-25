@@ -4,7 +4,8 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record EngagementTaskRequest(string Contract,EntityId TargetOwner,long EffectiveFrom,long Until);
 public sealed record EngagementTaskTerms(EntityId Original,EntityId Principal,EntityId Agent,EntityId Owner,
     EntityId Army,EntityId TargetOwner,EntityId[] Units,long IssuedAt,long EffectiveFrom,long Until,
-    MilitaryIssuerAuthorityBasis Authority);
+    MilitaryIssuerAuthorityBasis Authority,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] FactionStanceClaim? Hostility=null);
 
 public static partial class NewGameMilitary
 {
@@ -36,7 +37,7 @@ public static partial class NewGameMilitary
         var authority=NewGameMilitaryAuthority.Resolve(w,s.Terms.Principal,w.PlayerControl,s.Terms.Owner,s.Terms.Site);
         Need(authority!=null,"主君の実在の発令権限がありません");
         return new(q.Input.Id,s.Terms.Principal,w.PlayerControl,s.Terms.Owner,s.Terms.Army,x.TargetOwner,
-            [..UnitIdsFor(w)],w.ElapsedSeconds,Math.Max(w.ElapsedSeconds,x.EffectiveFrom),x.Until,authority);
+            [..UnitIdsFor(w)],w.ElapsedSeconds,Math.Max(w.ElapsedSeconds,x.EffectiveFrom),x.Until,authority,FactionStances.ClaimAt(w,s.Terms.Owner,x.TargetOwner,w.ElapsedSeconds,w.CommitSequence));
     }
     static void UpdateEngagementTasks(ContractWorld w)
     {

@@ -18,9 +18,9 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "7e94290a87f26fde78c9e8e289401ac991a7834f54da9fbfb577119d86294483",
-    "Docs/Development/ProgressV1/estimate.json": "26a4365cfba622b928049121e2eae2c2841b1b60b7df23208458bf2cef4a1196",
-    "Scripts/build_progress_report.py": "2f77bc8d74ef02d00e535ab382a007b18e2c30a71eaff8cf552f7dbcf337eced",
-    "Scripts/check_progress_report.py": "7ec4cb1d2c8a421dfe7554e7a772f07c591fed7c7c81be9695eb9618a0b84e84",
+    "Docs/Development/ProgressV1/estimate.json": "b82bb93b65c1c7ef6d52b7b684d03251e6b372b19bb9415bdfd06f41be984d02",
+    "Scripts/build_progress_report.py": "c78e8b83cd021deda85d624a503bca3bb2c42da51ff7454b2ac37d2f751678b8",
+    "Scripts/check_progress_report.py": "2be1052a35ea9e5388609fcf0fffa1d469d1916e6ceb063b22ba44f7b796255a",
     "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
@@ -662,9 +662,10 @@
     {
       "id": "BD-39",
       "status": "normal",
-      "existing": "通常入口の架空演習で接触・損耗・敗走・退避・再集結を扱う。 交戦条件Coreを追加し、到着/効力/期限/取消と敵対・意思・自衛を分離。通常入口には未接続。 実在主君の交戦任務原本・配送・本人開封・取消・照会を通常入口と世代保存へ接続。開戦や敵軍の生成は行わない。",
+      "existing": "通常入口の架空演習で接触・損耗・敗走・退避・再集結を扱う。 交戦条件Coreを追加し、到着/効力/期限/取消と敵対・意思・自衛を分離。通常入口には未接続。 実在主君の交戦任務原本・配送・本人開封・取消・照会を通常入口と世代保存へ接続。開戦や敵軍の生成は行わない。 方向別の敵対意思/自家の撤回を世界へ保持し、開封した書状だけから当時の敵対情報を知るCore/APIを接続。NPC軍は未接続。",
       "remaining": "勢力間の実戦、包囲/強襲/救援/降伏と攻城・開城を接続する。",
       "evidence": [
+        "Docs/Design/FactionStanceV1/README.md",
         "Core/Contracts/NewGameMilitary.Combat.cs",
         "Core/Contracts/NewGameMilitary.Rout.cs",
         "Tests/RepeatedExerciseTests.cs",
@@ -678,7 +679,10 @@
         "Docs/Design/EngagementTaskDeliveryV1/README.md",
         "Docs/Design/EngagementTaskDeliveryV1/verification.json",
         "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
-        "Docs/Design/EngagementTaskDeliveryV1/git-only-build.json"
+        "Docs/Design/EngagementTaskDeliveryV1/git-only-build.json",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.FactionStances.cs",
+        "Docs/Design/FactionStanceV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1512,10 +1516,10 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 2446,
-      "trx": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/full-core/all-current.trx",
-      "sha256": "87edad59ed4006c21dae102d97d4ef6f7222f0ace94821c8665ae9957c8de9b5",
-      "scope": "All current Core2446 success; same sources/DLLs as normal Godot engagement delivery verification"
+      "passed": 199,
+      "trx": "Docs/Design/FactionStanceV1/runtime-local/tests/stance-current.trx",
+      "sha256": "64aa85f7b059bb31fbb081f9f287300181c256da9428b9ed6c3f4bc86b1c2787",
+      "scope": "Current related199 only,33 new; full2479 NOT_RUN. Full2446 belongs to accepted main9762c59."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1523,7 +1527,7 @@
       "processes": 2,
       "savepoints": 6,
       "comparisons": 12,
-      "scope": "Conditional permission/cancellation delivery only: world, text, rendered3D/info pixels and complete display pose; NOT real combat loop"
+      "scope": "Historical only: accepted main9762c59, before the no-Computer-Use instruction. Current faction code GUI NOT_RUN."
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
@@ -1534,7 +1538,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "交戦任務の対象選択→相談配送→実在主君の条件付き許可→本人開封→取消通知/開封と照会を通常入口へ接続。全Core2446件成功、実Godot2回/6保存/12組一致。実戦の敵対状態・敵軍移動・損害/撤退/返報は未接続で、BD-39工程全体0/3。全体概算20%は据置。 PR #3はユーザー承認によりmain 9762c59へコードのみ統合済み。実行コードと検証範囲は不変。実戦接続は継続。",
+    "current_stage_summary": "敵対意思の真実と本人の知識をCore/APIへ接続。当主の根拠・方向別の敵対/自家の撤回・効力時点を検証し、交戦任務の原本に確認時点の情報を固定。開封前は知らず、その後に主君が撤回しても既知情報は勝手に更新しない。新規33件/関連199件成功、Gameビルド成功。現コードの全2479件とGUI/画面検証は未実施。承認済みmain9762c59の全2446件と実画面12組は別の過去記録として保存。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1556,14 +1560,18 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json"
+    "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
+    "current_logic_verification": "Docs/Design/FactionStanceV1/verification.json",
+    "current_logic_verification_sha256": "1343913d7d33c6968e6c0146b40874f2f852e837fddd6f6fbc81844bf2881351",
+    "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
+    "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
   "release": {
     "functional_items": 59,
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "170件は基本設計時点の受入予定。Core2446テストとの正式な全件対応表は未整備。未実行170件と断定しない。"
+    "formal_case_mapping": "基本設計170ケースと自動テストの正式な全件対応表は未整備。過去の全2446件と現コードの関連199件を別に記録する。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",

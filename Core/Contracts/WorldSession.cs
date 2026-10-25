@@ -32,7 +32,7 @@ public sealed partial class WorldSession
     public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
-        if(CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
+        if(FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Region?.Commands.Any(c=>c.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Field?.Orders.Any(o=>o.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
@@ -176,6 +176,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
+        if(FactionStances.NextBoundary(s,target) is {} stanceBoundary)times.Add(stanceBoundary);
         if(NewGameMilitary.NextBoundary(s,target) is {} militaryLoanBoundary)times.Add(militaryLoanBoundary);
         if(NewGameService.NextBoundary(s,target) is {} serviceBoundary)times.Add(serviceBoundary);
         if(CareerMilitary.NextBoundary(s,target) is {} militaryBoundary)times.Add(militaryBoundary);
