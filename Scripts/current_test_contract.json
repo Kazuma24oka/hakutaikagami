@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2573,
-  "baseline_passed": 2530,
-  "added": 43,
-  "scope": "Physical faction notices15, NPC reaction14, atomic proclamation5, sparse combat9 added. Related393 CLI + headless Node3D10 files/5 pairs/40 nodes; full2573 and actual GUI/screens NOT_RUN."
+  "expected_passed": 2592,
+  "baseline_passed": 2573,
+  "added": 19,
+  "scope": "Regional economy19 added; related412 and headless combat projection regression. Full2592 and GUI NOT_RUN."
 }

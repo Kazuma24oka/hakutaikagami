@@ -17,10 +17,10 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "7e94290a87f26fde78c9e8e289401ac991a7834f54da9fbfb577119d86294483",
-    "Docs/Development/ProgressV1/estimate.json": "7389e1e1f255405da100eac74bea424b16345a6fe558a06f3f567f4447b250cd",
-    "Scripts/build_progress_report.py": "c78e8b83cd021deda85d624a503bca3bb2c42da51ff7454b2ac37d2f751678b8",
-    "Scripts/check_progress_report.py": "3f0adcff06ee06854e4aad68729097677ad3010b1a3d44c317cfd40fc10decaa",
+    "Docs/Development/OPERATING_POLICY.md": "4e63b1a787ebc43b31a3beb73bcbfa6865f87c1b0a64ccbc2e0949453152f606",
+    "Docs/Development/ProgressV1/estimate.json": "50c11528c66a9e55d894ade865cc89a0a34242ae0cee5c6b08c65449045a1b80",
+    "Scripts/build_progress_report.py": "964a4c83eab4c0003cdca5ee84ea96b7ea137f2ef2afbc3afdbc86c82be690ae",
+    "Scripts/check_progress_report.py": "110acff4be3cf07c89d76900d4d43ecac19232bebb2c2b72b1f5013624bd0c5b",
     "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
@@ -542,12 +542,13 @@
     },
     {
       "id": "BD-33",
-      "status": "design_only",
-      "existing": "生産と開発の基本設計がある。城の現物在庫は存在する。",
-      "remaining": "人口・動員・季節収穫・普請・損失・備蓄を更新する経済循環を実装する。",
+      "status": "normal",
+      "existing": "清洲一地域の季節収穫/水利工事と村の米/家の蔵/年貢へ通常開始の明示版を接続。現地権限と世代復旧を検証。画面外観は未確認。",
+      "remaining": "人口/動員労働力/飢饉/作柄/全国生産と開発の一般化。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json",
-        "Core/Castles/Castle.cs"
+        "Core/Contracts/RegionalEconomy.cs",
+        "Game/Scripts/NewGameRuntime.Economy.cs",
+        "Docs/Design/RegionalEconomyV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -555,8 +556,8 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。",
-      "remaining": "通常入口からの徴税・定期俸禄・所領財政と、私財の支出/旅費を接続する。",
+      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 清洲の明示契約で年貢計上/現物徴収/村への救済/水利工事支出を別記録。家の米と私財を混ぜず現地権限と世代復旧を確認。",
+      "remaining": "定期俸禄/未払い債務・市場換算・全国の所領財政と現物の軍用割当へ拡張。",
       "evidence": [
         "Core/Contracts/NewGameWork.cs",
         "Core/Simulation/TaxSimulation.cs",
@@ -579,7 +580,8 @@
         "Docs/Design/WorkDutyV1/verification.json",
         "Core/Contracts/WorkFollowup.cs",
         "Tests/WorkFollowupTests.cs",
-        "Docs/Design/WorkFollowupV1/verification.json"
+        "Docs/Design/WorkFollowupV1/verification.json",
+        "Docs/Design/RegionalEconomyV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1520,12 +1522,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 393,
+      "passed": 412,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/FactionEntryV1/runtime-local/tests/faction-entry-current.trx",
-      "sha256": "6d3726d5bf087526bfe331b5bcb72d04643f8f92a99702a9ad6fa1be0d03d1c3",
-      "scope": "Current related393 only,43 new; full2573 NOT_RUN. Full2446 belongs to accepted main9762c59."
+      "trx": "Docs/Design/RegionalEconomyV1/runtime-local/tests/regional-economy-current.trx",
+      "sha256": "5eef9e393a76b9fac3c2b1985118f83449e9bc429a683bbea28b46debcd8851b",
+      "scope": "Current related412 only,19 new; full2592 NOT_RUN. Historical full2446 remains separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1544,7 +1546,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "通常の新規開始を明示v3へ接続。当主の通知発送→物理到達/開封→NPC独自判断/返書→実出陣/接触/損害→撤退/帰還/返納/返報/指揮返還を公開プレイヤーAPIで一巡。関連393件成功、Gameビルド成功、保存復旧5組/40個の実Node3D座標・兵数・攻撃用データ一致。GUI操作/見た目と現コード全2573件は未実施。全体概算20%据置。",
+    "current_stage_summary": "清洲一地域の明示契約で、季節収穫・年貢計上・現物徴収・救済・7日の水利工事と次回収穫へ接続。村の米/家の蔵/私財/既存軍用備蓄を分離。関連412件（新規19）・Gameビルド成功。工事中/徴収後の実世代保存2組で全世界と現地帳簿データ一致。既存実戦の画面なしNode3D5組40個も一致。現画面操作/外観と全2592件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1567,8 +1569,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
-    "current_logic_verification": "Docs/Design/FactionEntryV1/verification.json",
-    "current_logic_verification_sha256": "25ebe0ce6b3406aa5d1e70c65c4aada7dd803972b0943d40d137cbd24b76ae78",
+    "current_logic_verification": "Docs/Design/RegionalEconomyV1/verification.json",
+    "current_logic_verification_sha256": "6138f29a52cf5e24426791b1633aa2e43d0dfddf439be372762f6bcb5d59cf20",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1577,7 +1579,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連393件/画面なしNode3Dデータを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連412件/画面なしNode3Dデータを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",

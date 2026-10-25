@@ -100,6 +100,8 @@ public sealed class ContractWorld
     public NpcArmyState? NpcArmies {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public FactionStanceState? FactionStances {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public RegionalEconomyState? Economy {get;set;}
     // Pure location reconstruction only; the caller replaces Branches and never
     // mutates shared arrays, messaging, or any nested state.
     internal ContractWorld ForkTransportLocation()=>(ContractWorld)MemberwiseClone();
