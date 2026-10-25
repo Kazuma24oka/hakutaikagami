@@ -17,7 +17,7 @@
   "source_hashes": {
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
-    "Docs/Development/OPERATING_POLICY.md": "27460f02ecd8c6c4b11d5b8f7114822d6e976176fd862624222b47690e8802be"
+    "Docs/Development/OPERATING_POLICY.md": "27799594c3ec288fa2b1976127d49d77c7900a77983ca70768d338e123146999"
   },
   "items": [
     {
@@ -1504,14 +1504,14 @@
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
     "latest_game_verification": "Docs/Design/HouseholdMilitaryV1/verification.json",
-    "latest_game_verification_sha256": "498823c237bd12e3d9e92b8c5e381b728098e1b37c4b6f0d3b29931fb9747cde",
+    "latest_game_verification_sha256": "473715c9372024b1be9958054ea2078e4c44be9df6e8621ef84b1821af8821e1",
     "gpu": {
       "processes": 8,
       "savepoints": 30,
       "comparisons": 60,
       "scope": "Two-house no-loss/loss28 pairs plus scoped unit directive/cancellation32 pairs; world/text/rendered pixels/complete display pose"
     },
-    "audit_runtime_tests": "主家別の軍務台帳を通常入口へ接続。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルド成功。旧軍の損耗/兵糧/返報/IDを保持し、新主家の許可・引受・布陣・帰還と復旧が一致。PR #2のコードのみmain統合は別承認待ち。main/design/foundationは今回変更していない。",
+    "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
       "passed": 2392,
       "failed": 0,
@@ -1520,7 +1520,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "主家別の軍務台帳を通常入口へ接続。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルド成功。旧軍の損耗/兵糧/返報/IDを保持し、新主家の許可・引受・布陣・帰還と復旧が一致。PR #2のコードのみmain統合は別承認待ち。main/design/foundationは今回変更していない。",
+    "current_stage_summary": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "screens": [
       {
         "title": "旧軍を残して新主家の軍務へ",
@@ -1586,14 +1586,14 @@
         "finish": "旧軍83人を保持して新主家100人を引受。旧主家復帰・遅着・保存復旧と実3Dを接続。"
       }
     ],
-    "review_prompt": "地域一巡の方向性は承認済み。基盤検証は終了し、遊べる機能の追加を中心に進めます。"
+    "review_prompt": "主家別軍務のコード統合は承認済み。以後も基本設計の承認範囲内で技術判断を進め、根本的な方向変更・費用・重要操作だけ確認する。"
   },
   "next_priorities": [
-    "主家別軍務のコード統合PR #2を確認（main mergeのみ別承認）",
-    "実在勢力の交戦条件・任務・自衛と接触を接続",
+    "実在勢力の敵対・自衛・任務と接敵条件を接続",
     "複数軍の接触・損害・撤退と本人認識の返報を接続",
     "包囲/攻城と城・守備隊・倉庫の実引渡しへ広げる",
-    "所領/生産/交易、全国データ/政治AIと受入を進める"
+    "所領/生産/交易と外交/社会/継承を接続",
+    "全国データ/政治AI、性能、正式素材と受入を進める"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。"
 }

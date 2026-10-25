@@ -2,7 +2,7 @@
   "title": "地域プレイ版：PR #1の統合記録",
   "code_revision": "29e86854e7f61ed256b217b4fcbcde8ee6dd23aa",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/1",
-  "status": "PR #1はmain統合済み。続く主家別軍務はPR #2で確認待ち",
+  "status": "PR #1と追加の主家別軍務PR #2をmainへ統合済み",
   "core_tests": {
     "status": "PASSED",
     "passed": 2373,
