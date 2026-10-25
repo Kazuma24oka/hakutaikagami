@@ -1,0 +1,25 @@
+{
+  "stage": "HouseholdMilitaryV1",
+  "status": "IN_PROGRESS",
+  "completed_conditions": [
+    1
+  ],
+  "pending_conditions": [
+    2,
+    3,
+    4
+  ],
+  "tests": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "command": "dotnet test Tests/HakutaiKagami.Tests.csproj --filter FullyQualifiedName~MilitaryLedgerIdentityTests|FullyQualifiedName~NewGameMilitaryTests --nologo --verbosity minimal"
+  },
+  "godot": "NOT_RUN",
+  "multi_ledger_save_restore": "NOT_IMPLEMENTED",
+  "files": {
+    "Core/Contracts/NewGameMilitary.LedgerIdentity.cs": "c29e0962e3a3e7762233df49d0781c0554f2918b6a50ec02e97b068a2c3ebbd3",
+    "Core/Contracts/NewGameMilitary.cs": "a73b07185c298ff5eb642d208216babdd16259320121410a8e0887d4c12f8e56",
+    "Tests/MilitaryLedgerIdentityTests.cs": "83fd1cf2cecc53659a5936b83387e1f3d1c5178b01643e7cb236449101bc132f"
+  }
+}

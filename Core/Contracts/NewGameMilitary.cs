@@ -94,7 +94,7 @@ public static partial class NewGameMilitary
     static bool Has(ContractWorld w,MilitaryEffect e)=>Event(w,e)!=null;
     static string RequestId(EntityId id)=>"message:new-military/request/"+Hash(id.Value);
     static string NoticeId(ContractWorld w,MilitaryEffect e,string source,EntityId? caseId=null)=>"message:new-military/notice/"+Hash((caseId??CaseStart(w)!.Input.Id).Value+"/"+e+"/"+source);
-    public static ArmyEntry[] Armies(ContractWorld w)=>w.NewMilitary is {} s?[new(s.Terms.Army,s.Terms.Owner,s.Terms.Principal)]:[];
+    public static ArmyEntry[] Armies(ContractWorld w)=>ExistingLedgerIdentity(w) is {} ledger?[new(ledger.Army,ledger.Owner,w.NewMilitary!.Terms.Principal)]:[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>NewGameWork.OwnIdUsed(w,id)||w.NewMilitary?.Requests.Any(q=>q.Input.Id==id)==true;
     public static bool Outstanding(ContractWorld w,long at,long rev)=>NewGameWorld.Enabled(w)&&Event(w,MilitaryEffect.Permission,at,rev)!=null&&Event(w,MilitaryEffect.Returned,at,rev)==null;
     public static bool DeployedAt(ContractWorld w,long at)=>CaseRequests(w,at).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy;
