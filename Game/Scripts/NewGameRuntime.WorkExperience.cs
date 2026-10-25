@@ -16,7 +16,7 @@ public partial class NewGameRuntime
     void BuildWorkExperience(HFlowContainer toolbar)
     {
         message.Visible=false;tasks.Visible=false;
-        Add(toolbar,"history","履歴",ShowWorkHistory);Add(toolbar,"economy","地域の帳簿",ShowLocalEconomy);Add(toolbar,"companions","同行者・配下",ShowCompanions);
+        Add(toolbar,"history","履歴",ShowWorkHistory);Add(toolbar,"economy","地域の帳簿",ShowLocalEconomy);Add(toolbar,"companions","同行者・配下",ShowCompanions);Add(toolbar,"truce-negotiation","不戦交渉",ShowTruceNegotiation);
         var col=(VBoxContainer)buttons["work"].GetParent();
         workSummary=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(0,82)};col.AddChild(workSummary);col.MoveChild(workSummary,1);
         Add(col,"work-receipts","返答・未受領の報酬",()=>ShowWorkAssessment());Add(col,"work-self","自分で陸路を調べる（報酬なし）",()=>Submit(NewGameWorld.Inspect(Snapshot(),"request:inspection/"+Session.Revision)));
@@ -153,6 +153,7 @@ public partial class NewGameRuntime
     static string ReadableStatus(string text)=>text.Replace("Completed","完了").Replace("Running","進行中").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗").Replace("Waiting","待機");
     void RefreshWorkExperience()
     {
+        buttons["truce-negotiation"].Visible=TruceNegotiations.Enabled(Snapshot())&&OwnPoliticalHouse(Snapshot())!=null;buttons["truce-negotiation"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["companions"].Visible=PersonalCompanions.Enabled(Snapshot());buttons["companions"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["economy"].Visible=Session.LocalEconomyView()!=null;buttons["economy"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["work-contact"].Visible=SelectWorkContact()!=null;

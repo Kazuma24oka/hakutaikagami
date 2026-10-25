@@ -16,7 +16,7 @@ public static class FactionNoticeReactions
     static FactionStanceInput? Decision(ContractWorld w,FactionNoticeRequest source,long at,long rev,IEnumerable<FactionNoticeReaction> prior)
     {
         var faction=w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Head==source.Recipient.Value&&f.Id==source.Claim.ToOwner.Value);if(faction==null||source.Recipient==w.PlayerControl)return null;
-        var owner=new EntityId(faction.Id);if(FactionStances.ResolveAuthority(w,source.Recipient,owner,at,rev)==null)return null;
+        var owner=new EntityId(faction.Id);if(TruceNegotiations.WillNotInitiate(w,owner,source.Claim.FromOwner,at,rev))return null;if(FactionStances.ResolveAuthority(w,source.Recipient,owner,at,rev)==null)return null;
         var state=w.FactionNotices!;var response=prior.SingleOrDefault(r=>r.Actor==source.Recipient&&r.Decision.Action==FactionStanceAction.DeclareHostile&&state.Requests.Single(q=>q.Input.Id==r.Source).Claim.Declaration==source.Claim.Declaration);
         if(Active(source.Claim,at)){
             if(response!=null||FactionStances.ClaimAt(w,owner,source.Claim.FromOwner,at,rev)!=null)return null;

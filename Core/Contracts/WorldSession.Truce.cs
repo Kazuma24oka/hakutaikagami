@@ -1,0 +1,8 @@
+namespace HakutaiKagami.Core.Contracts;
+public sealed partial class WorldSession
+{
+    internal void ActOnTruce(EntityId actor,TruceInput? reply,TruceFormation? formation){lock(gate)Change(w=>TruceNegotiations.ApplyAutomatic(w,actor,reply,formation));}
+    public TruceCard[] TruceView(){lock(gate)return TruceNegotiations.View(state);}
+    public CommandResult NegotiateTruce(TruceInput input,EntityId actor,long revision)
+    {lock(gate){if(actor!=state.PlayerControl||input.Action is not(TruceAction.Propose or TruceAction.Accept or TruceAction.Decline)||!EntityId.IsValid(input.Id.Value))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の交渉ではありません");var old=state.Truces?.Papers.SingleOrDefault(p=>p.Input.Id==input.Id);if(old!=null&&old.Author!=actor)return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の交渉原本ではありません");if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"発送済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の操作のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>TruceNegotiations.Dispatch(w,input,actor));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"条件を書状で発送しました。相手への到達と成立は別です");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
+}
