@@ -18,7 +18,9 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- if logic["scope"]=="headless-npc-garrison-common-land-travel-return":
+ if logic["scope"]=="headless-actual-clash-loss-return-node3d-data":
+  from verify_world_clashes import check as check_logic
+ elif logic["scope"]=="headless-npc-garrison-common-land-travel-return":
   from verify_npc_armies import check as check_logic
  else:
   from verify_faction_stances import check as check_logic

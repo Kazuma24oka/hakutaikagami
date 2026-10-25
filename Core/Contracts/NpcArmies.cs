@@ -1,5 +1,6 @@
 namespace HakutaiKagami.Core.Contracts;
 
+public sealed record NpcArmySight(EntityId Army,EntityId Commander,EntityId Owner,RoutePoint Position,RoutePoint Next,int Soldiers,bool Attacking);
 public sealed record NpcArmyObjective(EntityId TargetOwner,EntityId TargetSite,FactionStanceClaim Claim,int HoldSeconds);
 public sealed record NpcArmyMuster(EntityId Id,EntityId Commander,EntityId Owner,EntityId Site,long At,long Revision,FactionStanceAuthority Authority,NpcArmyObjective? Objective=null);
 public sealed record NpcArmyMarch(EntityId Muster,Intent Input,long At,long Revision);
@@ -9,9 +10,11 @@ public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Mus
 // Actual garrison custody. No default wars, generated enemies, castle capture, or shared knowledge.
 public static class NpcArmies
 {
+    public const string CombatPolicy="head-led-owned-garrison-local-combat-v2";
+    public static bool Supported(string? policy)=>policy is Policy or CombatPolicy;
     public const string Policy="head-led-owned-garrison-common-land-travel-v1",LandRoute="npc-army-land-only-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool b,string why){if(!b)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.WorldArmyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy);
     public static NpcArmyMuster[] Musters(ContractWorld w)=>w.NpcArmies?.Musters??[];
     static MilitaryLedgerIdentity Binding(NpcArmyMuster m)=>NewGameMilitary.LedgerIdentity(m.Owner,m.Site);
     public static bool HoldsGarrison(ContractWorld w,EntityId owner,EntityId site)=>Musters(w).Any(m=>m.Owner==owner&&m.Site==site);
@@ -68,7 +71,7 @@ public static class NpcArmies
     public static long Consumed(ContractWorld w,NpcArmyMuster m)
     {
         var starts=(w.NpcArmies?.Marches??[]).Where(q=>q.Muster==m.Id).Select(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt).Where(t=>t!=null).Select(t=>t!.Value).ToArray();
-        var end=w.NpcArmies?.Returns.SingleOrDefault(q=>q.Muster==m.Id)?.At??w.ElapsedSeconds;return starts.Length==0?0:Math.Min(NewGameMilitary.Capacity,checked(100*(end-starts.Min())));
+        var end=w.NpcArmies?.Returns.SingleOrDefault(q=>q.Muster==m.Id)?.At??w.ElapsedSeconds;return starts.Length==0?0:Math.Min(NewGameMilitary.Capacity,checked(100*(end-starts.Min())-WorldClashes.Losses(w,end).Where(l=>Binding(m).Units.Contains(l.Unit)&&l.At>=starts.Min()).Sum(l=>checked((end-l.At)*l.Soldiers))));
     }
     static ResourceLot[] Lots(ContractWorld w,NpcArmyMuster m)
     {
@@ -83,7 +86,7 @@ public static class NpcArmies
     internal static void Sync(ContractWorld w)
     {
         var ms=Musters(w);if(ms.Length==0)return;var ids=ms.SelectMany(m=>Binding(m).Units).ToHashSet();
-        w.Units=[..w.Units.Where(u=>!ids.Contains(u.Id)),..ms.SelectMany(m=>Binding(m).Units.Select((id,n)=>new UnitState(id,Binding(m).Army,m.Commander,m.Owner,n==0?40:30,0)))];
+        w.Units=[..w.Units.Where(u=>!ids.Contains(u.Id)),..ms.SelectMany(m=>Binding(m).Units.Select((id,n)=>new UnitState(id,Binding(m).Army,m.Commander,m.Owner,(n==0?40:30)-WorldClashes.SoldiersLost(w,id,w.ElapsedSeconds),0)))];
         w.ResourceLots=[..w.ResourceLots.Where(l=>!IsLot(w,l)),..ms.SelectMany(m=>Lots(w,m))];
     }
     public static void Return(ContractWorld w,EntityId muster)
@@ -103,7 +106,7 @@ public static class NpcArmies
         foreach(var known in FactionStances.KnownOwnDeclarations(w,commander).OrderBy(k=>k.Declaration.Value,StringComparer.Ordinal)){
             var claim=FactionStances.ClaimAt(w,owner,known.ToOwner,w.ElapsedSeconds,w.CommitSequence);if(claim==null||claim.Declaration!=known.Declaration)continue;
             var target=new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==claim.ToOwner.Value).Home);
-            try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",commander,NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100)return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
+            try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",commander,NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100&&(w.NewGame?.WorldArmyPolicy!=CombatPolicy||w.ElapsedSeconds+i.WorkSeconds+32<claim.Until))return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
         }return null;
     }
     internal static bool NeedsTurn(ContractWorld w,NpcArmyMuster m)
@@ -140,6 +143,15 @@ public static class NpcArmies
             if(last?.Input.RequestId.Value==MarchId(m,true)){if(w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site))session.ReturnNpcArmy(id);continue;}
             bool home=last!=null;if(home&&w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site)){session.ReturnNpcArmy(id);continue;}var input=Move(w,id,MarchId(m,home),NewGameWorld.Node((home?m.Site:m.Objective!.TargetSite).Value));session.Submit(input,session.Revision);
         }
+    }
+    public static NpcArmySight[] Sights(ContractWorld w,EntityId observer)
+    {
+        if(!Enabled(w))return [];var seen=RegionalCampaign.Nearby(w,observer).ToDictionary(v=>v.Actor);var result=new List<NpcArmySight>();
+        foreach(var m in Musters(w)){
+            if(!seen.TryGetValue(m.Commander,out var v)||ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence))continue;
+            var b=Binding(m);int soldiers=checked((int)w.Units.Where(u=>u.Army==b.Army).Sum(u=>u.Soldiers));
+            if(soldiers>0)result.Add(new(b.Army,m.Commander,m.Owner,v.Position,v.NextPosition,soldiers,b.Units.Any(id=>WorldClashes.AttacksNow(w,id))));
+        }return result.OrderBy(v=>v.Army.Value,StringComparer.Ordinal).ToArray();
     }
     public static void Validate(ContractWorld w)
     {

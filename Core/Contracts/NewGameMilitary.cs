@@ -147,6 +147,7 @@ public static partial class NewGameMilitary
     }
     public static void Dispatch(ContractWorld w,NewMilitaryInput input)
     {
+        Need(!WorldClashes.Enabled(w)||input.Action is not(NewMilitaryAction.CombatPermit or NewMilitaryAction.CombatStart),"実在軍の世界では旧架空演習を混在させません");
         Need(input.LedgerPolicy==null||input.Action==NewMilitaryAction.Request&&input.LedgerPolicy==LedgerIdentityContract,"未知の主家別台帳方針です");
         Need(input.FromLedger==null||input.Action==NewMilitaryAction.Request&&input.LedgerPolicy==LedgerIdentityContract,"元台帳の指定は主家別軍務の申出だけです");
         SelectRequestedLedger(w,input);

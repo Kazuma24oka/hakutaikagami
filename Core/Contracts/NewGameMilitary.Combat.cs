@@ -31,7 +31,7 @@ public static partial class NewGameMilitary
         }
         return effects.ToArray();
     }
-    public static int StrengthAt(ContractWorld w,int i,long at)=>Strength[i]-CombatLosses(w,at).Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Soldiers);
-    public static int TotalStrength(ContractWorld w,long at)=>Strength.Sum()-CombatLosses(w,at).Where(l=>UnitIdsFor(w).Contains(l.Unit)).Sum(l=>l.Soldiers);
-    public static OwnUnitReport[] OwnCombatReport(ContractWorld w,long at){if(RepeatedExercise(w))return ExerciseState(w,at).Own;var hits=CombatLosses(w,at);return Enumerable.Range(0,3).Select(i=>new OwnUnitReport(UnitIdsFor(w)[i],Strength[i]-hits.Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Soldiers),hits.Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Soldiers),w.NewMilitary?.Rout?.Regroups.FirstOrDefault(g=>g.Unit==i&&g.At<=at)?.Morale??100-hits.Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Morale))).ToArray();}
+    public static int StrengthAt(ContractWorld w,int i,long at)=>Strength[i]-CombatLosses(w,at).Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Soldiers)-WorldClashes.SoldiersLost(w,UnitIdsFor(w)[i],at);
+    public static int TotalStrength(ContractWorld w,long at)=>Enumerable.Range(0,3).Sum(i=>StrengthAt(w,i,at));
+    public static OwnUnitReport[] OwnCombatReport(ContractWorld w,long at){if(RepeatedExercise(w))return ExerciseState(w,at).Own;var hits=CombatLosses(w,at).Concat(WorldClashes.Losses(w,at)).ToArray();return Enumerable.Range(0,3).Select(i=>new OwnUnitReport(UnitIdsFor(w)[i],Strength[i]-hits.Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Soldiers),hits.Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Soldiers),w.NewMilitary?.Rout?.Regroups.FirstOrDefault(g=>g.Unit==i&&g.At<=at)?.Morale??100-hits.Where(l=>l.Unit==UnitIdsFor(w)[i]).Sum(l=>l.Morale))).ToArray();}
 }

@@ -15,7 +15,7 @@ public sealed record EngagementResult(long At,EngagementStrike[] Strikes,Regiona
 
 public static class FieldEngagement
 {
-    public const string Contract="received-scoped-mission-directed-hostility-immediate-defense-explicit-unauthorized-contact-v1";
+    public const string Contract="received-scoped-mission-directed-hostility-retained-immediate-defense-unique-contact-v2";
     static bool Near(EngagementUnit a,EngagementUnit b)
     {
         System.Numerics.BigInteger x=(System.Numerics.BigInteger)a.Position.X-b.Position.X,y=(System.Numerics.BigInteger)a.Position.Y-b.Position.Y;
@@ -40,7 +40,7 @@ public static class FieldEngagement
             if(order!=null)strikes.Add(new(a.Unit.Id,b.Unit.Id,EngagementBasis.Mission,order.Original));
         }
         var incoming=strikes.ToArray();
-        foreach(var a in units.Where(u=>CanAct(u)&&u.Intent==EngagementIntent.SelfDefense))foreach(var hit in incoming.Where(s=>s.Target==a.Unit.Id))strikes.Add(new(a.Unit.Id,hit.Attacker,EngagementBasis.ImmediateDefense,null));
+        foreach(var a in units.Where(u=>CanAct(u)&&u.Intent is EngagementIntent.SelfDefense or EngagementIntent.Mission))foreach(var hit in incoming.Where(s=>s.Target==a.Unit.Id))if(!strikes.Any(s=>s.Attacker==a.Unit.Id&&s.Target==hit.Attacker))strikes.Add(new(a.Unit.Id,hit.Attacker,EngagementBasis.ImmediateDefense,null));
         // Read all contributions from the same pre-effect state. Neither input order nor animation decides a hit.
         var losses=new List<RegionalLoss>();
         foreach(var target in units.OrderBy(u=>u.Unit.Id.Value,StringComparer.Ordinal)){

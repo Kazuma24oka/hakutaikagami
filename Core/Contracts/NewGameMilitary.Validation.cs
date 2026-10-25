@@ -3,6 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static partial class NewGameMilitary
 {
     static bool Same<T>(T a,T b)=>Text(a)==Text(b);
+    internal static ContractWorld WorldEngagementBefore(ContractWorld w,EntityId army,long at,long rev)=>BeforeState(LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army)),at,rev);
     static ContractWorld BeforeState(ContractWorld original,long at,long rev,bool observationOnly=false)
     {
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
@@ -56,7 +57,7 @@ public static partial class NewGameMilitary
         Need(s.Openings.Select(o=>o.Message).Distinct().Count()==s.Openings.Length,"開封記録が重複しています");foreach(var o in s.Openings)Need(s.Events.Any(e=>e.Message==o.Message&&e.Revision<o.Revision)&&MessageFlow.LearnedAt(w.Messaging,o.Message,w.PlayerControl.Value)==o.At&&o.At<=w.ElapsedSeconds&&o.Revision<=w.CommitSequence,"軍務通知の開封根拠がありません");
         Need(s.Events.All(e=>w.SealedMessages.Any(id=>id.Value==e.Message)),"軍務通知は封書でなければなりません");
         var sorties=s.Requests.Where(q=>q.Input.Action==NewMilitaryAction.Deploy).Select(q=>new SupplySortie(q.At,s.Requests.FirstOrDefault(e=>e.Input.Action==NewMilitaryAction.Enter&&e.Revision>q.Revision)?.At)).ToArray();Need(Same(sorties,s.Sorties)&&s.Sorties.Count(t=>t.Until==null)<=1,"出陣・帰還の台帳が不正です");
-        foreach(var sortie in s.Sorties){long cursor=sortie.From;foreach(var use in s.Uses.Where(u=>u.From>=sortie.From&&u.Until<=(sortie.Until??w.ElapsedSeconds))){Need(use.From==cursor&&use.Until>use.From&&use.Soldiers==TotalStrength(w,use.From)&&use.Consumed>=0&&use.Consumed<=use.Soldiers*(use.Until-use.From)&&!CombatLosses(w,use.Until-1).Any(l=>UnitIdsFor(w).Contains(l.Unit)&&l.At>use.From),"兵糧の消費時間が欠落・重複しています");cursor=use.Until;}Need(cursor==(sortie.Until??w.ElapsedSeconds),"兵糧の消費時間が不足しています");}
+        foreach(var sortie in s.Sorties){long cursor=sortie.From;foreach(var use in s.Uses.Where(u=>u.From>=sortie.From&&u.Until<=(sortie.Until??w.ElapsedSeconds))){Need(use.From==cursor&&use.Until>use.From&&use.Soldiers==TotalStrength(w,use.From)&&use.Consumed>=0&&use.Consumed<=use.Soldiers*(use.Until-use.From)&&!CombatLosses(w,use.Until-1).Concat(WorldClashes.Losses(w,use.Until-1)).Any(l=>UnitIdsFor(w).Contains(l.Unit)&&l.At>use.From),"兵糧の消費時間が欠落・重複しています");cursor=use.Until;}Need(cursor==(sortie.Until??w.ElapsedSeconds),"兵糧の消費時間が不足しています");}
         Need(s.Uses.All(u=>s.Sorties.Any(t=>t.From<=u.From&&u.Until<=(t.Until??w.ElapsedSeconds)))&&s.Uses.Select((u,i)=>i==0||s.Uses[i-1].Until<=u.From).All(x=>x),"出陣外の消費か重複です");
         long carry=0,depot=InitialStock;var ledger=s.Moves.Select(m=>(At:m.At,Rank:1,Move:(SupplyMove?)m,Use:(SupplyUse?)null)).Concat(s.Uses.Select(u=>(At:u.Until,Rank:0,Move:(SupplyMove?)null,Use:(SupplyUse?)u))).OrderBy(x=>x.At).ThenBy(x=>x.Rank);
         foreach(var e in ledger){if(e.Move is {} m){long d=m.Loading?m.Amount:-m.Amount;carry=checked(carry+d);depot=checked(depot-d);Need(carry>=0&&carry<=Capacity&&depot>=0,"兵糧が過剰引当されています");}else if(e.Use is {} u){Need(u.Consumed==Math.Min(carry,checked(u.Soldiers*(u.Until-u.From))),"兵糧消費と在庫が違います");carry-=u.Consumed;}}

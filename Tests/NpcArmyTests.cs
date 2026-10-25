@@ -103,10 +103,10 @@ public sealed class NpcArmyTests
         var bytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","engagement-613d135-accepted.json"));var w=ContractJson.Read<ContractWorld>(bytes);new WorldSession(w);Assert.Equal(bytes,ContractJson.Write(w));Assert.Null(w.NpcArmies);Assert.Null(w.NewGame!.WorldArmyPolicy);
     }
 
-    static WorldSession PoliticalRaid(bool hostile=true)
+    static WorldSession PoliticalRaid(bool hostile=true,bool combat=false)
     {
-        var p=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");var setup=NewGameWorldTests.Setup([p],[new(p.Id,"org:created-raid",[p.Site],false)]);var w=NewGameWorld.Create(setup.World,setup.Registered,p.Id,worldArmyPolicy:NpcArmies.Policy);w.CommitSequence++;
-        if(hostile)FactionStances.Apply(w,new(new("decision:oda-raiding-intent"),FactionStanceAction.DeclareHostile,Oda,new("org:created-raid"),0,10000),Nobunaga);return new(w);
+        var p=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");var setup=NewGameWorldTests.Setup([p],[new(p.Id,"org:created-raid",[p.Site],false)]);var w=NewGameWorld.Create(setup.World,setup.Registered,p.Id,worldArmyPolicy:combat?NpcArmies.CombatPolicy:NpcArmies.Policy);w.CommitSequence++;
+        if(hostile)FactionStances.Apply(w,new(new("decision:oda-raiding-intent"),FactionStanceAction.DeclareHostile,Oda,new("org:created-raid"),0,1000000),Nobunaga);return new(w);
     }
     static void FinishRaid(WorldSession s)
     {
@@ -135,4 +135,72 @@ public sealed class NpcArmyTests
     {
         var w=PoliticalRaid().DiagnosticSnapshot();var edge=BranchRoutes.Plan("castle","fork",[],w:w)[0];w.Branches=w.Branches! with{BlockedEdges=[edge]};w.Couriers=w.Couriers! with{InitialBlocked=[edge]};var s=new WorldSession(w);FinishRaid(s);w=s.DiagnosticSnapshot();var m=Assert.Single(w.NpcArmies!.Musters);Assert.Equal(2,w.NpcArmies.Marches.Length);Assert.Single(w.NpcArmies.Returns);Assert.Equal(RegionalCampaign.Site("castle"),w.Locations.Single(l=>l.Actor==Nobunaga).Site);Assert.All(w.Branches!.Journeys.Where(j=>j.Actor==Nobunaga).SelectMany(j=>j.Legs),l=>Assert.NotEqual(edge,l.Edge));Assert.Contains(edge,BranchRoutes.KnownBlocked(w,Nobunaga));Assert.Empty(BranchRoutes.KnownBlocked(w,s.PlayerControl));Assert.Equal(NewGameMilitary.InitialStock-NpcArmies.Consumed(w,m),w.ResourceLots.Sum(l=>l.Quantity));
     }
+    static WorldSession AtActualContact(bool permitted=false)
+    {
+        var s=PoliticalRaid(combat:true);NewGameWorldTests.At(s,3);var outLeg=s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==Nobunaga);NewGameWorldTests.At(s,outLeg.Legs[^1].EndAt+1);
+        var q=new NewMilitaryInput(new("request:contact-army"),NewMilitaryAction.Request){AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract};Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(q,s.PlayerControl,s.Revision).Code);
+        NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
+        Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-accept"),NewMilitaryAction.Accept),s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
+        foreach(var action in new[]{NewMilitaryAction.Pickup,NewMilitaryAction.Load})Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-"+action),action,action==NewMilitaryAction.Load?100000:0),s.PlayerControl,s.Revision).Code);
+        if(permitted){Assert.Equal(ResultCode.Accepted,s.DecideFactionStance(new(new("decision:own-defense"),FactionStanceAction.DeclareHostile,new("org:created-raid"),Oda,s.Seconds,s.Seconds+60),s.PlayerControl,s.Revision).Code);var engagement=new NewMilitaryInput(new("request:contact-engagement"),NewMilitaryAction.RequestEngagement){Engagement=new(NewGameMilitary.EngagementTaskContract,Oda,s.Seconds,s.Seconds+60)};Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(engagement,s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);}
+        Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-deploy"),NewMilitaryAction.Deploy),s.PlayerControl,s.Revision).Code);return s;
+    }
+    [Fact]public void ActualRosterAndPositionFeedScopedContactWithoutCreatingAnExerciseEnemy()
+    {
+        var s=AtActualContact();var w=s.DiagnosticSnapshot();var before=ContractJson.Write(w);var snapshot=WorldEngagement.Snapshot(w);var contact=WorldEngagement.Resolve(w);Assert.Equal(6,snapshot.Units.Length);Assert.NotEmpty(contact.Strikes);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.Mission);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.ImmediateDefense);Assert.NotEmpty(contact.Losses);Assert.All(snapshot.Units,u=>Assert.Contains(u.Unit,w.Units));Assert.DoesNotContain(snapshot.Units,u=>NewGameMilitary.ExerciseIds.Contains(u.Unit.Id));Assert.Equal(before,ContractJson.Write(w));
+    }
+    [Fact]public void DistantRealArmiesAndFriendlyTroopsDoNotProduceContactDamage()
+    {
+        var s=new WorldSession(Raised());Assert.Empty(WorldEngagement.Resolve(s.DiagnosticSnapshot()).Losses);
+        var c=AtActualContact();var w=c.DiagnosticSnapshot();w.CommitSequence++;FactionStances.Apply(w,new(new("request:contact-withdraw"),FactionStanceAction.WithdrawOwnDeclaration,Oda,new("org:created-raid"),w.ElapsedSeconds,0,new("decision:oda-raiding-intent")),Nobunaga);Assert.Empty(WorldEngagement.Resolve(w).Strikes);Assert.Empty(WorldEngagement.Resolve(w).Losses);
+    }
+
+    [Fact]public void ContactActuallyReducesOwnedSoldiersAndLaterFoodConsumption()
+    {
+        var s=AtActualContact();var initial=s.DiagnosticSnapshot();NewGameWorldTests.At(s,s.Seconds+2);var w=s.DiagnosticSnapshot();Assert.Equal(2,w.WorldClashes!.Steps.Length);Assert.NotEmpty(WorldClashes.Losses(w,w.ElapsedSeconds));Assert.True(w.Units.Where(u=>u.Organization==Oda).Sum(u=>u.Soldiers)<100);Assert.True(NewGameMilitary.TotalStrength(w,w.ElapsedSeconds)<100);Assert.Equal(6,w.Units.Length);Assert.Equal(ContractJson.Write(initial.Definitions),ContractJson.Write(w.Definitions));Assert.True(w.NewMilitary!.Uses[^1].Soldiers<100);new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+    }
+    [Theory][InlineData(1)][InlineData(2)][InlineData(4)]
+    public void ActualClashRecoveryKeepsTheSameLossesFoodAndNextSecond(int seconds)
+    {
+        var s=AtActualContact();NewGameWorldTests.At(s,s.Seconds+seconds);s.SetPaused(true);var w=s.DiagnosticSnapshot();ExportProjection(w,seconds,"before");var store=new GenerationSaveStore(Path.Combine(Path.GetTempPath(),"actual-clash-"+Guid.NewGuid().ToString("N")),w.Definitions);Assert.True(store.Save(s,"case",w.WorldId).Published);var host=new WorldSessionHost(PoliticalRaid());Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("case"),host.Current,host.Current.Revision));Assert.Equal(ContractJson.Write(w),ContractJson.Write(host.Current.DiagnosticSnapshot()));ExportProjection(host.Current.DiagnosticSnapshot(),seconds,"restored");foreach(var x in new[]{s,host.Current})NewGameWorldTests.At(x,w.ElapsedSeconds+2);Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+    }
+    [Theory][InlineData("missing")][InlineData("duplicate")][InlineData("damage")][InlineData("target")]
+    public void MissingDuplicatedOrChangedCombatEffectsCannotBeLoaded(string change)
+    {
+        var s=AtActualContact();NewGameWorldTests.At(s,s.Seconds+2);var w=s.DiagnosticSnapshot();var steps=w.WorldClashes!.Steps;
+        if(change=="missing")w.WorldClashes=w.WorldClashes with{Steps=steps[1..]};
+        if(change=="duplicate")w.WorldClashes=w.WorldClashes with{Steps=[..steps,steps[^1]]};
+        if(change=="damage"){var q=steps[0];var losses=q.Result.Losses.ToArray();losses[0]=losses[0] with{Soldiers=0};steps[0]=q with{Result=q.Result with{Losses=losses}};}
+        if(change=="target"){var q=steps[0];var strikes=q.Result.Strikes.ToArray();strikes[0]=strikes[0] with{Target=strikes[0].Attacker};steps[0]=q with{Result=q.Result with{Strikes=strikes}};}
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(w));
+    }
+
+    [Fact]public void RealLossesSurviveRetreatReturnUnloadingReportAndCommandHandback()
+    {
+        var s=AtActualContact();NewGameWorldTests.At(s,s.Seconds+2);int remaining=NewGameMilitary.TotalStrength(s.DiagnosticSnapshot(),s.Seconds);
+        void Send(NewMilitaryAction action,long amount=0){var q=new NewMilitaryInput(new("request:actual-return/"+action),action,amount);var result=s.DecideNewMilitary(q,s.PlayerControl,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);}
+        Send(NewMilitaryAction.Recall);var end=s.DiagnosticSnapshot().NewMilitary!.Orders.Last().Routes.SelectMany(r=>r).Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max();NewGameWorldTests.At(s,end);Send(NewMilitaryAction.Enter);Send(NewMilitaryAction.Unload,NewGameMilitary.View(s.DiagnosticSnapshot()).Carry);Send(NewMilitaryAction.Report);Send(NewMilitaryAction.Return);NewGameWorldTests.At(s,s.Seconds+3);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
+        var w=s.DiagnosticSnapshot();Assert.Equal(remaining,w.NewMilitary!.Reports.Last().Soldiers);Assert.Equal(0,NewGameMilitary.View(w).Carry);Assert.False(NewGameMilitary.CustodyAt(w,w.ElapsedSeconds,w.CommitSequence));Assert.Equal(remaining,NewGameMilitary.TotalStrength(w,w.ElapsedSeconds));Assert.All(w.Units.Where(u=>u.Organization!=Oda),u=>Assert.Equal(s.PlayerControl,u.Commander));Assert.NotEmpty(WorldClashes.Losses(w,w.ElapsedSeconds));
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));foreach(var x in new[]{s,restored})FinishRaid(x);Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));Assert.Equal(remaining,NewGameMilitary.TotalStrength(s.DiagnosticSnapshot(),s.Seconds));
+    }
+
+    [Fact]public void ActuallyOpenedScopedPermissionBecomesTheSourceOfRealWorldDamage()
+    {
+        var s=AtActualContact(true);NewGameWorldTests.At(s,s.Seconds+1);var w=s.DiagnosticSnapshot();var own=w.NewMilitary!.Terms.Owner;var ids=w.Units.Where(u=>u.Organization==own).Select(u=>u.Id).ToHashSet();Assert.Contains(w.WorldClashes!.Steps[0].Result.Strikes,h=>ids.Contains(h.Attacker)&&h.Basis==EngagementBasis.Mission&&h.Original==new EntityId("request:contact-engagement"));Assert.True(w.Units.Where(u=>u.Organization==Oda).Sum(u=>u.Soldiers)<100);new WorldSession(w);
+    }
+
+    [Fact]public void ActualPriorNpcV1ProfileRebuildsItsOriginalWorldWithoutAdoptingCombat()
+    {
+        var bytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","npc-army-4a0f0a4-start.json"));Assert.Equal("a9a17a93ea1a7f58574c7975f7093c1ba910ee87c8eec7586391b1023ce6cd4c",ContractJson.Hash(bytes));var p=ContractJson.Read<NewCampaignProfile>(bytes);Assert.Equal(NpcArmies.Policy,p.WorldArmyPolicy);var w=NewCampaignStore.Build(p);Assert.Null(w.WorldClashes);Assert.Equal("94aa624ca100e7bdd5e87f22de37fd3df1091f02934b00307b998075bfc70359",ContractJson.CanonicalHash(w));Assert.Equal(bytes,ContractJson.Write(p));
+    }
+
+    static void ExportProjection(ContractWorld world,int phase,string variant)
+    {
+        var dir=Environment.GetEnvironmentVariable("HAKUTAI_WORLD_CLASH_QA_DIR");if(string.IsNullOrEmpty(dir))return;Directory.CreateDirectory(dir);File.WriteAllBytes(Path.Combine(dir,"clash-"+phase+"."+variant+".json"),ContractJson.Write(world));
+    }
+    [Fact]public void NpcArmyDisplayNeedsCurrentLocalSightAndDoesNotMutateTheWorld()
+    {
+        var remote=PoliticalRaid(combat:true);NewGameWorldTests.At(remote,3);Assert.Empty(NpcArmies.Sights(remote.DiagnosticSnapshot(),remote.PlayerControl));var s=AtActualContact();NewGameWorldTests.At(s,s.Seconds+1);var w=s.DiagnosticSnapshot();var before=ContractJson.Write(w);var sight=Assert.Single(NpcArmies.Sights(w,s.PlayerControl));Assert.Equal(Nobunaga,sight.Commander);Assert.True(sight.Soldiers<100);Assert.True(sight.Attacking);Assert.Equal(RegionalCampaign.ActorPointAt(w,Nobunaga,w.ElapsedSeconds),sight.Position);Assert.Equal(before,ContractJson.Write(w));
+    }
+
 }

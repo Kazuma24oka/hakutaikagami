@@ -153,7 +153,7 @@ public sealed partial class WorldSession
                     long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
-                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
+                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
                     CourierRecovery.BeforeMessages(s);RegionalBattle.BeforeMessages(s);NewGameMilitary.BeforeUnitMessages(s);MessageFlow.Advance(s.Messaging,boundary);RegionalBattle.AfterMessages(s);DelegationMission.Update(s);DelegationInquiry.Update(s);
