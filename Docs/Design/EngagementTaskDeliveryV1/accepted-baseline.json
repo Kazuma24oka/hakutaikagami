@@ -1,0 +1,2181 @@
+{
+  "schema": 1,
+  "scope": "accepted-source-and-binaries-before-next-Core-implementation",
+  "main": "9762c59994e1fc9b721b1356eb1534343d5e2fca",
+  "verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
+  "full_core_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
+  "files": {
+    "Core/Appearance/OfficerAppearance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Appearance/OfficerAppearance.cs",
+      "sha256": "23209c9d24537bc3c7aa605fefbb84d9b2adb95bf1a4d012b386742adab53ac0"
+    },
+    "Core/Appearance/SceneryAppearance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Appearance/SceneryAppearance.cs",
+      "sha256": "da987c498ca3b6457812fc25ad6be8541e9afb9b9df49156c2d15661498ce89e"
+    },
+    "Core/Castles/Castle.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Castles/Castle.cs",
+      "sha256": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370"
+    },
+    "Core/Characters/Character.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Characters/Character.cs",
+      "sha256": "486419e8df320074f56c53883cdbc9525e4fee6a702d543d54bbd7240816c8fe"
+    },
+    "Core/Commands/CommandRequest.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Commands/CommandRequest.cs",
+      "sha256": "90ada6b09698d4417ea44f7917d4098f5bef8030239c1eeb3e1883b287d6bb47"
+    },
+    "Core/Commands/InspectionSession.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Commands/InspectionSession.cs",
+      "sha256": "2a5cf2a011a83c9f3c20bd0511d0a9fd32fe17768785384721dab4a2a6a2450f"
+    },
+    "Core/Common/SessionInfrastructure.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Common/SessionInfrastructure.cs",
+      "sha256": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076"
+    },
+    "Core/Contracts/AssessmentNotice.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/AssessmentNotice.cs",
+      "sha256": "2bcc83aef7da4cdf53439156ef5f55d5ba5d587da84d7eeefae19c759566da34"
+    },
+    "Core/Contracts/BranchRoutes.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/BranchRoutes.cs",
+      "sha256": "06763ada7ccc52caaa91cf53838ecea567baf87fbb65bfe0c85d3fa293dcff00"
+    },
+    "Core/Contracts/Career.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/Career.cs",
+      "sha256": "7a684a1dfd98d4d3ba55e9b40f49b1311f5834c6910a090ed3dae2b330c40c44"
+    },
+    "Core/Contracts/Career.Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/Career.Validation.cs",
+      "sha256": "13ab5a050127f0e8451c5d6914adda2de93504efb21b8f33505e83b078871642"
+    },
+    "Core/Contracts/Career.View.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/Career.View.cs",
+      "sha256": "83a0b48cd8bd54346d4eb400a4af2634fce3b92322b7946acec8ecf3240faf3f"
+    },
+    "Core/Contracts/CareerMilitary.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/CareerMilitary.cs",
+      "sha256": "e3817310bb4d3d180c95374ec1b480a33c56d80d7a797e33e84122a9c4d0c5d3"
+    },
+    "Core/Contracts/CareerMilitary.Inquiry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/CareerMilitary.Inquiry.cs",
+      "sha256": "85c15b15b54e29aaf7ef7e41259f031eeb763c62f1d4127dfc7fd71102a89e1e"
+    },
+    "Core/Contracts/CareerMilitary.Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/CareerMilitary.Validation.cs",
+      "sha256": "bd536f628352f14abd7f79c903b4df2591829feb3edc22f27529d3e155db8e34"
+    },
+    "Core/Contracts/ContactCombat.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContactCombat.cs",
+      "sha256": "a002b38cb240bc99e9cfcb4f3f58371b317e1e710fd369d0b63b9ec34cbb7df9"
+    },
+    "Core/Contracts/ContinuousWorld.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContinuousWorld.cs",
+      "sha256": "e1047998371a0876349a7677c84f50101ac43f72d5d90e38de4f8e87ba1835c7"
+    },
+    "Core/Contracts/ContractFixture.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContractFixture.cs",
+      "sha256": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6"
+    },
+    "Core/Contracts/ContractJson.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContractJson.cs",
+      "sha256": "d53011c258e419f5932ddffa641a2c8074c30043e493d788b93ba2e58c95874f"
+    },
+    "Core/Contracts/ContractModels.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContractModels.cs",
+      "sha256": "e662e958a311a42408466bd77237c4b6f27c71d679be3ec1b5915f836170c2a9"
+    },
+    "Core/Contracts/ContractRandom.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContractRandom.cs",
+      "sha256": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5"
+    },
+    "Core/Contracts/ContractValidation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/ContractValidation.cs",
+      "sha256": "50c06a4e8289a85c7ac977819bf0d3b07fee43eff70413ef47de14d869798907"
+    },
+    "Core/Contracts/CouncilInput.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/CouncilInput.cs",
+      "sha256": "23ced7f34511d0169fa882919bd0b06e1125ff0e46b2f87b7560fbda6b9c8bfe"
+    },
+    "Core/Contracts/CourierRecovery.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/CourierRecovery.cs",
+      "sha256": "02b483755d442183dc0f8a2fb529d00bac4c620cd0efcc51ca7b2b950068f3a7"
+    },
+    "Core/Contracts/CreatedCampaign.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/CreatedCampaign.cs",
+      "sha256": "9b799e8e0c43cda69cc51b7f8cd01ccba3d82143cc3cd521e8fc013c68370b0b"
+    },
+    "Core/Contracts/DelegationInquiry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/DelegationInquiry.cs",
+      "sha256": "408432417bfcffc87dfe9091c54826ad4d745909c910b0a4a52dc4038f8c1a05"
+    },
+    "Core/Contracts/DelegationMission.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/DelegationMission.cs",
+      "sha256": "0e4ea15950838c1e2eaca2c38fb5e835f69827260d741967550fc43cfc9df065"
+    },
+    "Core/Contracts/DelegationReturnRetry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/DelegationReturnRetry.cs",
+      "sha256": "1dc82ca2fda11accdf0bf6ee5529211c8244ca66a7929116e0ab06f8f3268fa3"
+    },
+    "Core/Contracts/DelegationTransport.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/DelegationTransport.cs",
+      "sha256": "247a89365561b90d159d67b9bda1dfc29d7165645a5cab73aa1af44bfcdc42f9"
+    },
+    "Core/Contracts/EngagementMission.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/EngagementMission.cs",
+      "sha256": "b70ed348726256dca1ba48586729445056b1b7532c203515569c7464d921848e"
+    },
+    "Core/Contracts/FieldEngagement.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/FieldEngagement.cs",
+      "sha256": "9908eede31d152c72268c7e7ffec50d3162e43884337fbeca18c08b620dc1e89"
+    },
+    "Core/Contracts/FieldPresence.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/FieldPresence.cs",
+      "sha256": "88683073a1b56e8544e8cdb13e5bd810bb0df5b409eccad840c124fbc8c0c98f"
+    },
+    "Core/Contracts/FieldSupply.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/FieldSupply.cs",
+      "sha256": "8331d602e877a41adeb0d67758c3d5e49e1df1d03b8df8a10d1e63babcd30b20"
+    },
+    "Core/Contracts/FieldWorld.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/FieldWorld.cs",
+      "sha256": "ed71c1eb9503553454cc36d6bec2e065d726e5f38736db3163596ec7ffdde11a"
+    },
+    "Core/Contracts/GenerationSaveStore.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/GenerationSaveStore.cs",
+      "sha256": "69f85ef594cb9dbc863a4d2be8cfcedc1292e5b40a24868cedb42cace75044bf"
+    },
+    "Core/Contracts/HistoricalHouseholdCatalog.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/HistoricalHouseholdCatalog.cs",
+      "sha256": "060ff3be64c060b45d952cbf5582f61643437163fe40dfdb4b96253c515aba79"
+    },
+    "Core/Contracts/HistoricalRoads.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/HistoricalRoads.cs",
+      "sha256": "39e3ee87e893ef682d558858d5042b77d501c2a7169f120dc458926036c69530"
+    },
+    "Core/Contracts/HistoricalStartCatalog.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/HistoricalStartCatalog.cs",
+      "sha256": "854aba437a04c2e485760b57706742e157034f5b7f4c3babe512459ac77abf26"
+    },
+    "Core/Contracts/IncomingMission.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/IncomingMission.cs",
+      "sha256": "38199138ebdeeb9ce4fd5f3acbc26dc412eb38ad0055e908a82769e71a05b82f"
+    },
+    "Core/Contracts/LegacyContractAdapter.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/LegacyContractAdapter.cs",
+      "sha256": "2a0394387ffb842dd37cfdc1acfa3e2bd790aad85bd0762faf30a04bfb68dca8"
+    },
+    "Core/Contracts/LocalInspectionFindings.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/LocalInspectionFindings.cs",
+      "sha256": "aed564bf6217ae0cbafee27248021fece3b81ca9c6b089f026caba068acd2b42"
+    },
+    "Core/Contracts/LocalWorkDemand.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/LocalWorkDemand.cs",
+      "sha256": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c"
+    },
+    "Core/Contracts/MissionEntry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/MissionEntry.cs",
+      "sha256": "40cba49e818bc2171835d097e04630290920eba691402c1f2ae85495238ab454"
+    },
+    "Core/Contracts/MissionReview.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/MissionReview.cs",
+      "sha256": "7dc5019c164e4e60f9b65c6c951d6f67e1803af08a90130421399333d25aa881"
+    },
+    "Core/Contracts/MovementControl.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/MovementControl.cs",
+      "sha256": "917bba7e01f62bfe08cb2b46156496404586c9e8300147858157d67a761fc8db"
+    },
+    "Core/Contracts/NationalPersonnel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NationalPersonnel.cs",
+      "sha256": "b1a369a049a2bf898588245357d29a24d10763c5b94d62d16f152550349b7a38"
+    },
+    "Core/Contracts/NationalRoutes.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NationalRoutes.cs",
+      "sha256": "325676a9e4ff25bfa1f79afe588b9f4df75537a25e659d86677e218490af7e0e"
+    },
+    "Core/Contracts/NewCampaignStore.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewCampaignStore.cs",
+      "sha256": "260402feb44d84087d47ad16ba2af01a9ec65aed2e7ce11a2080cfabf765c9f5"
+    },
+    "Core/Contracts/NewGameMilitary.Authority.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Authority.cs",
+      "sha256": "022a6f4784714ebf11e2d68498d74ed9ba8e50e1a1a90a75e4de4a169e11e21a"
+    },
+    "Core/Contracts/NewGameMilitary.AuthorityScope.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+      "sha256": "1b998b18434ea5aea250bd6350312e46884193fe215cb13a6080514eb56f1696"
+    },
+    "Core/Contracts/NewGameMilitary.Cancellation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Cancellation.cs",
+      "sha256": "99085fe74ea1a528f23c598419f9755ecc60e8e121a273e89863744c842314dc"
+    },
+    "Core/Contracts/NewGameMilitary.Cancellation.Update.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Cancellation.Update.cs",
+      "sha256": "fff2875e1dc67005b2964ca8541bfebcbb87b4fc8c48bf2b5bc14836d5f63b78"
+    },
+    "Core/Contracts/NewGameMilitary.Cancellation.Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Cancellation.Validation.cs",
+      "sha256": "34d43481375bc614f02360e8d2df4072277e97fe87cd122cd95f61bbe06b70af"
+    },
+    "Core/Contracts/NewGameMilitary.Combat.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Combat.cs",
+      "sha256": "073565288964e094566e68b410a7c2f2ed1a9e4f1fce2629e107434e6b364d6b"
+    },
+    "Core/Contracts/NewGameMilitary.CommandHolding.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.CommandHolding.cs",
+      "sha256": "1bbb4c1426bc6c40d46025b3eed663ff570ad7ebce564401fd56bcff1aa55063"
+    },
+    "Core/Contracts/NewGameMilitary.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.cs",
+      "sha256": "3d2db2a84e28653660eb747241b6ca2f374f53612c80750c040abba35fa226f5"
+    },
+    "Core/Contracts/NewGameMilitary.Debrief.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Debrief.cs",
+      "sha256": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a"
+    },
+    "Core/Contracts/NewGameMilitary.EngagementTasks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.EngagementTasks.cs",
+      "sha256": "bd5a2f4b3e67af465cec706ce0ffb9ef70e11222c0c1d3542c1be8564ec7cfad"
+    },
+    "Core/Contracts/NewGameMilitary.HeldDelivery.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.HeldDelivery.cs",
+      "sha256": "512d243e908b8a139bfd67fdc60c7faa7d6c4c25f05e17ebcf701e4d8730429f"
+    },
+    "Core/Contracts/NewGameMilitary.HeldOrder.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.HeldOrder.cs",
+      "sha256": "77c9cb5662224c9981721e3f760bb05dcd3fa96c17cbb73e97ec37d97e851c89"
+    },
+    "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+      "sha256": "70303dc6ac2f88da55af34360dbd99cbb308a5211a15d0ade54feed8d87e5e5d"
+    },
+    "Core/Contracts/NewGameMilitary.KnownTarget.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.KnownTarget.cs",
+      "sha256": "f02f5f083877901b92ac9cf950c0a465299d50c562816eab067c48c3e364678a"
+    },
+    "Core/Contracts/NewGameMilitary.LedgerIdentity.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.LedgerIdentity.cs",
+      "sha256": "0c7be8615bdf3859896ee5942d493b48b13fda3d1b042ab18962f4854033dddb"
+    },
+    "Core/Contracts/NewGameMilitary.Observation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Observation.cs",
+      "sha256": "2bc80d688abdc0fd8bb79bb77d8eeacf1aa8c3b76be45c9507321658a0c978c3"
+    },
+    "Core/Contracts/NewGameMilitary.OrderDeadline.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.OrderDeadline.cs",
+      "sha256": "0033af788141dbe27b8baae657e17c657f5d9ab18702b3f0b7152766842f18f0"
+    },
+    "Core/Contracts/NewGameMilitary.Recognition.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Recognition.cs",
+      "sha256": "6a5f7fb65f33a69bd0f3b2403ce06507977c5c676c5e769b52f736f763910139"
+    },
+    "Core/Contracts/NewGameMilitary.Renewal.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Renewal.cs",
+      "sha256": "98d5b23025d2d63bf80787b815ed8baf87e9aaef813df2cca38b60624eaf38a1"
+    },
+    "Core/Contracts/NewGameMilitary.RepeatedExercise.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.RepeatedExercise.cs",
+      "sha256": "4d77902b96084f4237076b86d636aa31a042c7c80edaf08b481b89e8c82f8b17"
+    },
+    "Core/Contracts/NewGameMilitary.ReplyRecovery.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.ReplyRecovery.cs",
+      "sha256": "5be514e53d07b4b0ed12030c6bc3a7a82912c7419ab3f6b30488a97010cf6ae3"
+    },
+    "Core/Contracts/NewGameMilitary.ReturnedOriginalPapers.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.ReturnedOriginalPapers.cs",
+      "sha256": "097de8e7f2e3f861667bad76f503513309a043a1c69c9edb8ec4790f839deb6f"
+    },
+    "Core/Contracts/NewGameMilitary.Rout.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Rout.cs",
+      "sha256": "8d2ae934c556f37d80598d2e96d9f50281e5cee467d5a6b93056eda89a65bfdb"
+    },
+    "Core/Contracts/NewGameMilitary.SenderEvidence.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.SenderEvidence.cs",
+      "sha256": "28a31afeb5ac21a2ac28eaa589d8176d08791ca26c606270e26e580e912cf9f3"
+    },
+    "Core/Contracts/NewGameMilitary.UnitCouriers.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitCouriers.cs",
+      "sha256": "6c731ef6ea10da3a83b1860dfad34b4a24e9ecee1232b6b164fca6b9a5f76852"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirective.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirective.cs",
+      "sha256": "34f005fee448c54d3886f16171d642473824048c9dc1b8b0cde399f9c0ca040d"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirectiveCancelHolding.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirectiveCancelHolding.cs",
+      "sha256": "5346f809dc12447bee8ef34193f6173fe305261f3c66d10c004547ce7ad95507"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.cs",
+      "sha256": "4968e2fff6885c7b504b9aaa2d44e035e2610c54d8e757f714014e1fbaacae09"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.Validation.cs",
+      "sha256": "cf1b70f15656763d62642aea8d046df68832d0e2507e46f3548f68efc7dbd9ff"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs",
+      "sha256": "219765ffaadb0f155b2ae25da6df58bf292173c40c4df4c47db7ced33a38867a"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirectiveHolding.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirectiveHolding.cs",
+      "sha256": "307697e8c52ab5eefab83b11e546c88e590632f679db144544c0983c77d9bf32"
+    },
+    "Core/Contracts/NewGameMilitary.UnitDirectiveRetry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitDirectiveRetry.cs",
+      "sha256": "fc41e5e98b88642ec0ff69b1a1a5967178a324947d4c0df9988af2ba4e6d5244"
+    },
+    "Core/Contracts/NewGameMilitary.UnitInquiry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitInquiry.cs",
+      "sha256": "a79eb0588ae912ccd5ede106afd8c754ac8d27c86f9b4b7cc2e304cb8529f85d"
+    },
+    "Core/Contracts/NewGameMilitary.UnitMessages.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitMessages.cs",
+      "sha256": "daf273489bbf97090c39ccd7170af234e48e3d7da6e22b9efedddfbc9a4bcd19"
+    },
+    "Core/Contracts/NewGameMilitary.UnitRecipient.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitRecipient.cs",
+      "sha256": "6fd66127aefde5e990a2e064512adb8f8da3632457a84b2596469e8fb8d213ff"
+    },
+    "Core/Contracts/NewGameMilitary.UnitRetry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.UnitRetry.cs",
+      "sha256": "575d7e5112eba898be0a3a749a2b4f91586b5a7fc673c3bf960927b5961f97e7"
+    },
+    "Core/Contracts/NewGameMilitary.Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Validation.cs",
+      "sha256": "1af6b25c14d56fa3b0e88c0eee73fc0c8627d866a0a18b7ba8475cb1bd2bb03c"
+    },
+    "Core/Contracts/NewGameMilitary.Withdrawal.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitary.Withdrawal.cs",
+      "sha256": "5914e0a06ed657340f4bc0d0fdf04391d0b017968b21c881ade377ce181146aa"
+    },
+    "Core/Contracts/NewGameMilitaryAuthority.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameMilitaryAuthority.cs",
+      "sha256": "02e5ed2b8e247a978e523dd57a3905ec03394fbfafe1c6fe9055808d8c703849"
+    },
+    "Core/Contracts/NewGameNpcRoutine.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameNpcRoutine.cs",
+      "sha256": "89373b4ecc6380c7122cbbe83e3ea924ebcfa4e02ead308c596022ec5e3d5d82"
+    },
+    "Core/Contracts/NewGameService.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameService.cs",
+      "sha256": "1997c19cdc6d0db4d5bcb7dfec8e71d3329ddb335b70375410472e19e343c715"
+    },
+    "Core/Contracts/NewGameService.Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameService.Validation.cs",
+      "sha256": "35c13b5de88ed9a1cd53c78ae611aeaedc5c6bc0608c3a616a92eb8688cd9250"
+    },
+    "Core/Contracts/NewGameSetup.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameSetup.cs",
+      "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f"
+    },
+    "Core/Contracts/NewGameWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameWork.cs",
+      "sha256": "6aa6d433936b391b491091404d5e3d21fbbf4a0a9d47a9cbb641fcc78d87ad04"
+    },
+    "Core/Contracts/NewGameWorld.CompactAuthority.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameWorld.CompactAuthority.cs",
+      "sha256": "31bb9896f4df92183d202c2b509aa5283d952da4b7b0a6ed64c2e53452101ce0"
+    },
+    "Core/Contracts/NewGameWorld.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameWorld.cs",
+      "sha256": "8eca7cd032819dffbbd7d4709629234a47f4e16cd332a772954299a5c52aac2e"
+    },
+    "Core/Contracts/NewGameWorld.StartProjection.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NewGameWorld.StartProjection.cs",
+      "sha256": "04ab18c81cc6152475549de876170bec8bd96b7fdf07192cac9f5fb591294b9d"
+    },
+    "Core/Contracts/NpcWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/NpcWork.cs",
+      "sha256": "fad5d63a77d68cf218f81b7dc75d0ac21200cb0f0c04ded6c4ffde3731a792c5"
+    },
+    "Core/Contracts/OfficerLibraryStore.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/OfficerLibraryStore.cs",
+      "sha256": "b59d2ccafffc30bb0771a9d7a23347d5ac1b2729a9fb8ca3cbcc718af60928d3"
+    },
+    "Core/Contracts/OfficerLoop.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/OfficerLoop.cs",
+      "sha256": "b95321605ed92564759a203bca586a44da16bfe51e8f95cec960583e9163977d"
+    },
+    "Core/Contracts/PersonalStart.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/PersonalStart.cs",
+      "sha256": "bc3b07116e0e94c88fc8b4f73f5f9686ce4d0e4cddd75a9db0fe5416a2730b97"
+    },
+    "Core/Contracts/RegionalBattle.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalBattle.cs",
+      "sha256": "f38f54b67a022244fe745572c39faf2f0b986f55ca416cde718eea8ece0be05d"
+    },
+    "Core/Contracts/RegionalBattleModels.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalBattleModels.cs",
+      "sha256": "4ee18861258b670ef51ba60fa06b7e268559e1bd364c69ac543262a06624c55e"
+    },
+    "Core/Contracts/RegionalBranch.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalBranch.cs",
+      "sha256": "f8daa501ce88d0507e325cc6cfca70ecfbae6da7dac476b13f566aefa83844ff"
+    },
+    "Core/Contracts/RegionalCampaign.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalCampaign.cs",
+      "sha256": "ca2bff03d5fad0505ea6a1692337f42cfc83a1bc6d53656cecb9fdb200bb7159"
+    },
+    "Core/Contracts/RegionalCampaign.NearbyNewGame.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalCampaign.NearbyNewGame.cs",
+      "sha256": "39e367b117cf1239becf852d2e50d96aab0615db3301b64c468d8816134a2751"
+    },
+    "Core/Contracts/RegionalControl.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalControl.cs",
+      "sha256": "27bb02da924200411d6a7b431ccdcfc84d8d7af5c69081f9567611d85ce8710d"
+    },
+    "Core/Contracts/RegionalGround.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalGround.cs",
+      "sha256": "32739fed6fbc999b19cf7e710d1f4bc7fb4da209b78da2980f53ad0a3d1f8041"
+    },
+    "Core/Contracts/RegionalRoute.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalRoute.cs",
+      "sha256": "ef9f173c1b1584de9dfc11ac4c4fd5d7cd76a54a3b5d05d9944fe7eb2db190c2"
+    },
+    "Core/Contracts/RegionalScenery.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalScenery.cs",
+      "sha256": "4cd01aad6cfaa4404b5d2f60422cc049dc75ea6abf7d9d4ebf8891809e9079d9"
+    },
+    "Core/Contracts/RegionalWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RegionalWork.cs",
+      "sha256": "0c5330a441b16300a53237fab992d2bd1cf081f30a960d4a7632d45f03354fdd"
+    },
+    "Core/Contracts/RetainerStart.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RetainerStart.cs",
+      "sha256": "40b89e76fb11c998f27d68aac214fc15bb49d53c826eb1609b0c109173afc9f1"
+    },
+    "Core/Contracts/RiverRoads.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RiverRoads.cs",
+      "sha256": "1e64ed02e941ead4b8fb8d96f8c36e43f26bf038749942f5479a02ec49458adf"
+    },
+    "Core/Contracts/RouteContract.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/RouteContract.cs",
+      "sha256": "8a74865f2143c356735437882b79b0b9b1196e34ad6b1ffaed34b371bf297132"
+    },
+    "Core/Contracts/StartConfiguration.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/StartConfiguration.cs",
+      "sha256": "af9185ef9566590cc684ef91b0e10b725b20ede1934c77f17144e3f62aaf4b08"
+    },
+    "Core/Contracts/SurveyRoadReview.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/SurveyRoadReview.cs",
+      "sha256": "808db4bfb3474c67cb354934cb265c130b4f5aab9ff6eae3caaece4c12179acd"
+    },
+    "Core/Contracts/TrafficExamples.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/TrafficExamples.cs",
+      "sha256": "64b0e500482b8db1b389b6716dcdf567784043e7d1d8c9422cae9ad91d28ed39"
+    },
+    "Core/Contracts/TrafficWorld.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/TrafficWorld.cs",
+      "sha256": "2492d888168cc9db2a2794559e5263b155519b2518059c32437cd07a1d86e7ae"
+    },
+    "Core/Contracts/TransportHandover.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/TransportHandover.cs",
+      "sha256": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7"
+    },
+    "Core/Contracts/TransportWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/TransportWork.cs",
+      "sha256": "959c96b7c6c1759b95e0c7760a37bdfdfb343a45c8ec9dea208d16b4ed4fac74"
+    },
+    "Core/Contracts/TravelControl.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/TravelControl.cs",
+      "sha256": "08e57d97ca250b660d14f8764cf57138e32cb55ed944597f6b2fee5ced384437"
+    },
+    "Core/Contracts/TravelWorld.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/TravelWorld.cs",
+      "sha256": "17649beb4c43e62401e8204db9e64c41f2908378d13c53c9c26b324563745eef"
+    },
+    "Core/Contracts/VoyageExpense.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/VoyageExpense.cs",
+      "sha256": "425fd8449d5faa01fb7dce6f158b97ea08a9f655deacd8fc57d2f59c4c083e04"
+    },
+    "Core/Contracts/WorkDuty.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorkDuty.cs",
+      "sha256": "c5505b9b3aa5866627a2efc0b20dc6d5b11f085387e50719f82a49b399fa1816"
+    },
+    "Core/Contracts/WorkFollowup.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorkFollowup.cs",
+      "sha256": "a8c35dcf81e1b7a137f38985da62211283164ca24d55de5621326bbcfb187bae"
+    },
+    "Core/Contracts/WorkProgression.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorkProgression.cs",
+      "sha256": "8ee56e5121694cfea9368d03088282b6b6d546a4ad32557bd2c1dd93cc6f851e"
+    },
+    "Core/Contracts/WorkRelations.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorkRelations.cs",
+      "sha256": "464dec242e3d5eba617e8fd335cf5f0ce2d1cfe40ff791b255a7013a7dfa0326"
+    },
+    "Core/Contracts/WorldSession.AssessmentNotice.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.AssessmentNotice.cs",
+      "sha256": "25319ff0456476b9e1ad907722b45853e71c58cdc1b383a526529e9c0ddc5f78"
+    },
+    "Core/Contracts/WorldSession.Career.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.Career.cs",
+      "sha256": "735c15c11b3325c91e1769aef42744e736982ac722429526d0e0dcf218ef0ad9"
+    },
+    "Core/Contracts/WorldSession.CareerMilitary.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.CareerMilitary.cs",
+      "sha256": "6792e2754ac536d6827239d5005fd3295038359cee888f80e4dda555deb8d29c"
+    },
+    "Core/Contracts/WorldSession.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.cs",
+      "sha256": "cde0b8392de90f3389fef2950b3296d5c2e5137a9ceee2222490ffb4b7ac7055"
+    },
+    "Core/Contracts/WorldSession.DelegationInquiry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.DelegationInquiry.cs",
+      "sha256": "a6012325d2955af198e5e815472fc125cf172946ffe8aab26beff442e8aba62a"
+    },
+    "Core/Contracts/WorldSession.DelegationTransport.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.DelegationTransport.cs",
+      "sha256": "90c7a58e45e63af67c8c78db15beb65c26588ce08444465106685375c1fd154e"
+    },
+    "Core/Contracts/WorldSession.Engagement.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.Engagement.cs",
+      "sha256": "c741e3fde896b9c5d52f10de9c1ecc35055f0ecf8c3490c3e0681ecdaba97d8c"
+    },
+    "Core/Contracts/WorldSession.FieldSupply.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.FieldSupply.cs",
+      "sha256": "3e243b80d32a57bd0d30ce9bb84a868e157825fdc4eb33560c7aae440230533f"
+    },
+    "Core/Contracts/WorldSession.MilitaryInquiry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.MilitaryInquiry.cs",
+      "sha256": "914c9716625f22881f052fab3fe407c6116328297992972b94a2e19fe5099851"
+    },
+    "Core/Contracts/WorldSession.MissionReview.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.MissionReview.cs",
+      "sha256": "6480f5a657fc6acd41a72132a9bdcc235a7d7a5a0a91f98a4162d923cf5aa9a5"
+    },
+    "Core/Contracts/WorldSession.NewMilitary.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.NewMilitary.cs",
+      "sha256": "73f9ae898bf58b28e49bfc3eacf4c3259e1a4d2c15f2ff93506872cf98a6d2cd"
+    },
+    "Core/Contracts/WorldSession.NpcWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.NpcWork.cs",
+      "sha256": "c8a7e102ca0393cc22237cac79651ad74c102a82577fc827f5006b331f9971eb"
+    },
+    "Core/Contracts/WorldSession.PreparedAdvance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.PreparedAdvance.cs",
+      "sha256": "318f3257c5abe552ed31842533e4ffbeb2bc204d6b5e5d7d91a6a1b67fd237df"
+    },
+    "Core/Contracts/WorldSession.PreparedPause.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.PreparedPause.cs",
+      "sha256": "73800067de3930ecce21496fb2b8592e8f3ab3282b0804ca7103fe768b319486"
+    },
+    "Core/Contracts/WorldSession.PreparedSubmit.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.PreparedSubmit.cs",
+      "sha256": "8bff662fda965c3ae16e8ecb3473b1bac120770d265dc4095245a384eff32947"
+    },
+    "Core/Contracts/WorldSession.Service.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.Service.cs",
+      "sha256": "1bce85056fb1085537c991b3cd35330d93f81cf438c99245ecce5d005d6a8452"
+    },
+    "Core/Contracts/WorldSession.TransportWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.TransportWork.cs",
+      "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3"
+    },
+    "Core/Contracts/WorldSession.WorkCycle.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Contracts/WorldSession.WorkCycle.cs",
+      "sha256": "5910189f2979cfc7cb239c0465d9e50ee7637b8c49ee352562668a68cf0b1041"
+    },
+    "Core/Events/EventScheduler.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Events/EventScheduler.cs",
+      "sha256": "a58b9f064263c6090be3cd5788349f47e68ecda70e22cc6049d43a0b234bd542"
+    },
+    "Core/HakutaiKagami.Core.csproj": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/HakutaiKagami.Core.csproj",
+      "sha256": "5930f98a22133b1f8f7b4ee54792e5e605e05c21d052d6ac95941faafcf2e07b"
+    },
+    "Core/Messaging/MessageFlow.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Messaging/MessageFlow.cs",
+      "sha256": "e07fee8a5eb1b1e73f8be8e26279e60a9ac07a5dacdcf2e5e25c4fc8da08aacd"
+    },
+    "Core/Simulation/FormationFlow.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/FormationFlow.cs",
+      "sha256": "032f7e6d69579c8465db11cf5bd1c329f582070a5441d0698b8919ee118729e6"
+    },
+    "Core/Simulation/MilitaryFlow.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/MilitaryFlow.cs",
+      "sha256": "851ca70b5dda4bc26e1bf5808c522a2ab96f30e37b3894b83e7e89ced83fd6b9"
+    },
+    "Core/Simulation/MilitaryIntel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/MilitaryIntel.cs",
+      "sha256": "1e0fdcb00f591874de22b83eee58a9cb96af45565338b19f98669683d69960ff"
+    },
+    "Core/Simulation/MilitaryMap.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/MilitaryMap.cs",
+      "sha256": "0a3b03e004c823ee3b8f149f5cdd3b3415b5b863cbafdf6570ebf11cf6963b9c"
+    },
+    "Core/Simulation/MilitaryModels.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/MilitaryModels.cs",
+      "sha256": "2dab7b8593d010a0112fda3ae7a0b642c0637fb54488182355aabdec3ef14bb6"
+    },
+    "Core/Simulation/MilitaryValidation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/MilitaryValidation.cs",
+      "sha256": "bdd8b888b19bd135897b2901c97dbee9d5b160dce339204619eb01b9e0bbf4d7"
+    },
+    "Core/Simulation/OfficerIntegration.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/OfficerIntegration.cs",
+      "sha256": "35d7f6750ac96443f9fc0f60cab6302ca0bdcc206f3c804bb616987eeba4ef9f"
+    },
+    "Core/Simulation/TaxSimulation.Cancellation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/TaxSimulation.Cancellation.cs",
+      "sha256": "e1366fcd8691995b4fdc443768668602e11437309a0262d0504794b57325edb1"
+    },
+    "Core/Simulation/TaxSimulation.Communication.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/TaxSimulation.Communication.cs",
+      "sha256": "2c5e296c466eea3b1c6f5a6ea5ad7c88e5eac7f57c95ed629b27ecd24a4c070d"
+    },
+    "Core/Simulation/TaxSimulation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/TaxSimulation.cs",
+      "sha256": "b03b4ff3eac6d60084ddda3d5e399c103df1f54959143cf5d0b98de4fe20f411"
+    },
+    "Core/Simulation/TaxSimulation.Military.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/Simulation/TaxSimulation.Military.cs",
+      "sha256": "6c4d316deb55fb575aa2b57eec65338f12462613e911dede06205286ded2d80b"
+    },
+    "Core/World/JapanGeography.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/World/JapanGeography.cs",
+      "sha256": "9a606749c1a9276796b7b4754f929f1baf6defb5a451299d904f01b2d53fcd57"
+    },
+    "Core/World/LandMaskIndex.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/World/LandMaskIndex.cs",
+      "sha256": "1740e4ecd91aa6b6570c2b072a032e207f21804d99ee971ac8b5edf853904145"
+    },
+    "Core/World/PrototypeScenario.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/World/PrototypeScenario.cs",
+      "sha256": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529"
+    },
+    "Core/World/SeededRandom.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/World/SeededRandom.cs",
+      "sha256": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f"
+    },
+    "Core/World/WorldState.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Core/World/WorldState.cs",
+      "sha256": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c"
+    },
+    "Game/Data/Geography/japan-map-v1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/Geography/japan-map-v1.json",
+      "sha256": "b0b0083aeaf2d9c007f923cd130720859f542d6a6eb533f8fbe3a421c254c244"
+    },
+    "Game/Data/Officer3D/face-protection.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/Officer3D/face-protection.json",
+      "sha256": "066e12c804a72c8bb8b4755e7194ad2640e5c91ea3ddb0ac1097cff04b6a02bd"
+    },
+    "Game/Data/Officer3D/presets-v2.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/Officer3D/presets-v2.json",
+      "sha256": "398f4febadc282a1549e244599ff89003473a1e83aa4a87d78176c4f7c1c08a6"
+    },
+    "Game/Data/officer_back_motion_v10.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/officer_back_motion_v10.json",
+      "sha256": "acb0d3dd30d9e51ecead67b5dd49e66a9435217e665936970fd56eae78aa20a1"
+    },
+    "Game/Data/officer_left_motion_v12.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/officer_left_motion_v12.json",
+      "sha256": "2e4dd3639286ea393626f2df5b8ff3705dcb942b96238913019ff3d0ded75040"
+    },
+    "Game/Data/officer_motion_trial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/officer_motion_trial.json",
+      "sha256": "34a9e683d6a9845c6f3f62b3099dea1e8d152d03ad5b5974d37b59532c799b46"
+    },
+    "Game/Data/officer_motion_trial_v6.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/officer_motion_trial_v6.json",
+      "sha256": "40d1e2abd542bc3ae0f0fdbe23fe1c3ee155844424e2d9b213c1a01bdef32b12"
+    },
+    "Game/Data/officer_right_motion_v8.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/officer_right_motion_v8.json",
+      "sha256": "b633cb42ab543523c118f841b857602f0fb1b49d2c6ae69defcb885425aa95b6"
+    },
+    "Game/Data/officer_visual_profile.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/officer_visual_profile.json",
+      "sha256": "770cd351654cbfb17138398cebb257a78779e623e43966109255ced07f17ab0a"
+    },
+    "Game/Data/prototype.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/prototype.json",
+      "sha256": "8772043797ed3fefeb15edae28c0a8c1a4ee59d564f9c8ba0522faea44e0401f"
+    },
+    "Game/Data/Scenery/scenery-appearance-v1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Data/Scenery/scenery-appearance-v1.json",
+      "sha256": "999d1a78e528e0091b97f7a331198310a0e31d4a56bd15eebfc357a24287ae49"
+    },
+    "Game/Scripts/BranchWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/BranchWorldTrial.cs",
+      "sha256": "d6bf9becd633ad0e409d6cfe28a5231a716dcb7d0c3464741a5a5b842fffb0e0"
+    },
+    "Game/Scripts/CommonContractTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/CommonContractTrial.cs",
+      "sha256": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3"
+    },
+    "Game/Scripts/ContinuousTerrainRenderer.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousTerrainRenderer.cs",
+      "sha256": "3fbd1ab24d9be6c62257c7e68c774f6dd6d0aaeaa065c02be8d9cdaf6ea76934"
+    },
+    "Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs",
+      "sha256": "0f360cb93c6dc70f169564d910ea96597527385beb425f183c59d1001153243b"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Campaign.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Campaign.cs",
+      "sha256": "8633a4396af7d98869cf40ced09e08eb451032cf6ab3635f87368a53e099df87"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Career.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Career.cs",
+      "sha256": "f5464b411100ce6a1a58d6b776c8eac851a71a9b8916a86d00dafa6b53183f5b"
+    },
+    "Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs",
+      "sha256": "ac91de1ff3cfb73a391b8057f317e0880438e5fc29ba574994f3370f61504c34"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Council.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Council.cs",
+      "sha256": "318e8353d1361e1574bf52253445ecbcc93fff87a71c6bc86cc2b981b8bb4c68"
+    },
+    "Game/Scripts/ContinuousWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.cs",
+      "sha256": "be861f63b12c6fb34c14882b8bd198d08a15e92dd1e621bc3789fd220d1f6717"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Delegation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Delegation.cs",
+      "sha256": "6083e8ba0287865d1c4c860a40dba1c65fac07f3a3203a8f9e6a6bcd328ff80f"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Entry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Entry.cs",
+      "sha256": "55661ec8c81909708bcedc64de890a7c47025066bf9ffd520fef3921ae07bec0"
+    },
+    "Game/Scripts/ContinuousWorldTrial.FieldModels.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.FieldModels.cs",
+      "sha256": "d379b4d45a34211cd048adc854ac74de4bd120eeb377839de4a57f656fc75f23"
+    },
+    "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.ForceLod.cs",
+      "sha256": "830c56bf1198d72e68e1bf2da84113a00a1f18c6dcedbdc609ce31cd08d7a234"
+    },
+    "Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs",
+      "sha256": "69bed15ac1f2a58b9cd686f50271890d896cbeb26b12ff18da610bf4bd9b8c71"
+    },
+    "Game/Scripts/ContinuousWorldTrial.HubAccess.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.HubAccess.cs",
+      "sha256": "d063aa853414a9e48da2a8e6c0ef19fee90b3f8cdb316aad759cf6caa2caee4e"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Incoming.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Incoming.cs",
+      "sha256": "432c6421aec7c3aa92a639b4c2483bb0fef06b201d88e1b786c7b0831375ff26"
+    },
+    "Game/Scripts/ContinuousWorldTrial.LifeView.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.LifeView.cs",
+      "sha256": "2c8d8d8aadcef09a969887bd3f5bcb9c9f6a2e950a6663a828fd40e6c2c4a86c"
+    },
+    "Game/Scripts/ContinuousWorldTrial.LodAppearance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.LodAppearance.cs",
+      "sha256": "94fa10bfed7b1bf9cae8e530798b963d651d7430292a77a0e595debb31985cc3"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Loop.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Loop.cs",
+      "sha256": "deb191e8eb63ea71d02f653adf244fb99a3c874167bc05e06bec691bc3ca99c4"
+    },
+    "Game/Scripts/ContinuousWorldTrial.MidTerrain.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.MidTerrain.cs",
+      "sha256": "ace914c31ac9ca283edea31bd13ffe7b128efa3c6a11f71f090ef517894b479c"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Notice.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Notice.cs",
+      "sha256": "89716b63043d30f61cd302a466a5dbb015e084ba6e3919d7adecdc88766482aa"
+    },
+    "Game/Scripts/ContinuousWorldTrial.NpcWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.NpcWork.cs",
+      "sha256": "4fd53d12abc80921a6941f170ba794f88a4fb1681adc47705ace8fa91bc8f881"
+    },
+    "Game/Scripts/ContinuousWorldTrial.PersonalStart.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.PersonalStart.cs",
+      "sha256": "d34aacd920ecb8d3ddd1622b29c1312945fa391a617b8f4286b217167f53e8dc"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Personnel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Personnel.cs",
+      "sha256": "1c3e1c2be1407887af0e43960b9efccb3e346e32891f0edb20f8549ea750e5b6"
+    },
+    "Game/Scripts/ContinuousWorldTrial.RegionalWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.RegionalWork.cs",
+      "sha256": "f568e22d88d2ee9f2fdf10f36cda8d35cec04475f4744e2ff63510dc3f8d3999"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Retainer.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Retainer.cs",
+      "sha256": "bcbd5ab7dd91200c60ebe98d5b38c628fe3308ca26246c7f3ce5822652c15efa"
+    },
+    "Game/Scripts/ContinuousWorldTrial.Review.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.Review.cs",
+      "sha256": "b5234ced482c09af69a0569f4303c9177b042e156e68f3d51d08d361d956932f"
+    },
+    "Game/Scripts/ContinuousWorldTrial.TaskEntry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.TaskEntry.cs",
+      "sha256": "1ec27012373822affb70f3fff34e18ce5fc78016b23a5b2e44f8e08e9d369077"
+    },
+    "Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs",
+      "sha256": "03d4eb33827b2ff10c1bf7752e76eab724f0611bc0c8e034457bd389103d9c38"
+    },
+    "Game/Scripts/FieldWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/FieldWorldTrial.cs",
+      "sha256": "5756eea5f97463694e7ff488e146e3edb90ab0c76206483b6a7a1a55ca5d4368"
+    },
+    "Game/Scripts/FormationWorldGate.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/FormationWorldGate.cs",
+      "sha256": "de5e27c6bfda188a2a24e333403ea10b548a6adb7ba1aab925b254fa1b36cbe0"
+    },
+    "Game/Scripts/FormationWorldStage.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/FormationWorldStage.cs",
+      "sha256": "889758285728cf356bad69c4c147a1e72d0e8516ee0b428022d3da4612ff64c5"
+    },
+    "Game/Scripts/FormationWorldValidation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/FormationWorldValidation.cs",
+      "sha256": "20ac7434bed6522d23124bf0e7301dc75205caa27f8ec7160092f0b821c16f9b"
+    },
+    "Game/Scripts/GameProcessExit.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/GameProcessExit.cs",
+      "sha256": "4cd388b9321b1ba8e432c4db04c4674db70df165721e8c5f33a70758062b9f9b"
+    },
+    "Game/Scripts/HistoricalRoadTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/HistoricalRoadTrial.cs",
+      "sha256": "5bd4d54cdc34adbf3e3a78fd0c34d028179b8aedd6187d165592d9e31462aa9b"
+    },
+    "Game/Scripts/JapanMapTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/JapanMapTrial.cs",
+      "sha256": "b6ece8af1254d3d4a052269a4bba572f932469da4c456de4a1328b8a0a894586"
+    },
+    "Game/Scripts/Main.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Main.cs",
+      "sha256": "ac2555a8d8c5b3232dd34ba05c0d22942e7a908b45c718b1c4c6bdfd5af2742f"
+    },
+    "Game/Scripts/Main.TaskEntry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Main.TaskEntry.cs",
+      "sha256": "9804919c9d180b1978d4a86f39320b56577bae302ff71280cec8618963631203"
+    },
+    "Game/Scripts/MidTerrainRenderer.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/MidTerrainRenderer.cs",
+      "sha256": "e910f164567eb49130ee3bd992d78aa269a7a3eeaa134734ad378f36f71182ae"
+    },
+    "Game/Scripts/MilitaryGridGate.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/MilitaryGridGate.cs",
+      "sha256": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f"
+    },
+    "Game/Scripts/MilitaryGridStage.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/MilitaryGridStage.cs",
+      "sha256": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5"
+    },
+    "Game/Scripts/MilitaryGridValidation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/MilitaryGridValidation.cs",
+      "sha256": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47"
+    },
+    "Game/Scripts/MovementControlTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/MovementControlTrial.cs",
+      "sha256": "bf4bd193cce034fa4cba30ca0b441fdd0c6bcbb2118fe3d9ea6649ebb0d386de"
+    },
+    "Game/Scripts/NationalWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NationalWorldTrial.cs",
+      "sha256": "0103b66258f17ca725de7f4d932b8147196786396d0c170fe7e8dd02eebd3a9e"
+    },
+    "Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs",
+      "sha256": "3fd2a04b3c03e04520e04cbf332aa4fce4503b987ced75748c12019b4c5e3f4e"
+    },
+    "Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs",
+      "sha256": "f16620b2f5f7f6b9080f6ffb2728348a1ba30f75e3f7cf7a7616f23dee21d705"
+    },
+    "Game/Scripts/NewGameFrontEnd.CapacityChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.CapacityChecks.cs",
+      "sha256": "a98863f064b8d372de51da5d5d0ebe6d572b5231695b63d6dcfed50a9a1853ff"
+    },
+    "Game/Scripts/NewGameFrontEnd.Checks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.Checks.cs",
+      "sha256": "2b7c3dcc26711a92949bec23f9e128587fd433e7b4683f96b34e83c6c76fa505"
+    },
+    "Game/Scripts/NewGameFrontEnd.CombatChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.CombatChecks.cs",
+      "sha256": "1021dadc7e3cb0b657e5f713af46fab9995d26cae55ca02208ec4fafbad568c0"
+    },
+    "Game/Scripts/NewGameFrontEnd.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.cs",
+      "sha256": "aac2c862d5730fc3f639d976feae19063d077ca537e8ca3ae62997643eabef0d"
+    },
+    "Game/Scripts/NewGameFrontEnd.DemandChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.DemandChecks.cs",
+      "sha256": "aed426a8802b2bc7a1815cbee7352810969d6565d752e2a042254597af5b5755"
+    },
+    "Game/Scripts/NewGameFrontEnd.EngagementTaskChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.EngagementTaskChecks.cs",
+      "sha256": "a111d280cbfba791af6149e5d07d5bbac9489f015879383f972160107847f305"
+    },
+    "Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs",
+      "sha256": "700ad5c78ed1366e6e1bf424b2e333441ca1e63dddcb5d1b4979e94dc6c98626"
+    },
+    "Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs",
+      "sha256": "9268d5801d02e640996be74ba59dd591fca4abffba00abb883a5c9ff439a563b"
+    },
+    "Game/Scripts/NewGameFrontEnd.HouseArmyChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.HouseArmyChecks.cs",
+      "sha256": "3a7557a6fb8012b7db6ed662a2388eef04b6a58417773e7abbe7ccf47121beb5"
+    },
+    "Game/Scripts/NewGameFrontEnd.InspectionFindingsChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.InspectionFindingsChecks.cs",
+      "sha256": "174b54d6380e14a5dd218dbe1462a4d606d369488f1ff9d856de5632a0a74528"
+    },
+    "Game/Scripts/NewGameFrontEnd.KnownTargetChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.KnownTargetChecks.cs",
+      "sha256": "f1aa8f0822f9ea0b402be2594a8cd435107bc214ced45ae2d6ea44fc0a4b58d9"
+    },
+    "Game/Scripts/NewGameFrontEnd.LocalIntentChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.LocalIntentChecks.cs",
+      "sha256": "6a66f1b594864f43baac1df9ba55c95b9ea856df0d0ca02b9d842a3f9fae2262"
+    },
+    "Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs",
+      "sha256": "f3b759ea45a306382538dc3eee4d2112eb9aa9e87e8559489b9ac3651db0d20f"
+    },
+    "Game/Scripts/NewGameFrontEnd.MilitaryDebriefChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.MilitaryDebriefChecks.cs",
+      "sha256": "834250cbf2fb3b14f6a063b885eaf066582e6a3940af9295066a14ce47394b7d"
+    },
+    "Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs",
+      "sha256": "8632d485687577bf83322da8d7d38ad2c34c4b2347a629bafeef5073a3450c10"
+    },
+    "Game/Scripts/NewGameFrontEnd.MilitaryWorkChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.MilitaryWorkChecks.cs",
+      "sha256": "51647f91c7268f7bb5774b596ed1b4182d15c2086f87fd4939fe7b24fba19589"
+    },
+    "Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs",
+      "sha256": "8a3c5a5b69c7848bf1cefdfcf1788e9c99082a7f12236678f6fd22db6b59df8c"
+    },
+    "Game/Scripts/NewGameFrontEnd.NpcRoutineChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.NpcRoutineChecks.cs",
+      "sha256": "0d7f1b7b3a955de9c10bcf13c501dd73be560824044b4e04a040f9879a076443"
+    },
+    "Game/Scripts/NewGameFrontEnd.PlayGuideChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.PlayGuideChecks.cs",
+      "sha256": "0715bffd7a7116774ccc89ad9fc70a7a9826fbc77bcd8a729db3b5352c231c5e"
+    },
+    "Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs",
+      "sha256": "e7845e5dc3b995caebaa36a625b3ab43010437db1b9225ba493e5a1e72a8257d"
+    },
+    "Game/Scripts/NewGameFrontEnd.PreparationQueueChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.PreparationQueueChecks.cs",
+      "sha256": "08ada3d8d1b13e3718a365d9ff66ccefad69d37c1ca1b163278c9ec9de5a9033"
+    },
+    "Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs",
+      "sha256": "2c3adcc3f65e61b4a6095109c21abe17ecc92d6101e3881c0d401b1aed559c68"
+    },
+    "Game/Scripts/NewGameFrontEnd.RecognitionChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.RecognitionChecks.cs",
+      "sha256": "cc3f214b69c4cc319292865cb135a68905de8b48b2f7ed21f5a2f766fce22d13"
+    },
+    "Game/Scripts/NewGameFrontEnd.RepeatedExerciseChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.RepeatedExerciseChecks.cs",
+      "sha256": "d813c11ae47fc790c8de092801a613ed0977366513092123bc23f8008db9cab3"
+    },
+    "Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs",
+      "sha256": "8a9767f08c9da6f2a9ab9e84500b75be387b45c95adb1e19ac4eecaa23a4e53f"
+    },
+    "Game/Scripts/NewGameFrontEnd.ResponsiveDepartureChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.ResponsiveDepartureChecks.cs",
+      "sha256": "bc106f9e193cdbc54da60f5b258aaf79b71e0aa116b2f6438187cccedd667511"
+    },
+    "Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs",
+      "sha256": "4c6708820486bafda5641f81f94d21eab7087b0816189cf0ab5cc1dd285a8ecd"
+    },
+    "Game/Scripts/NewGameFrontEnd.RoutChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.RoutChecks.cs",
+      "sha256": "21eb55e07db463ebff85e297fb3680e046525a792b25adb8d2dd8dd9d5e36054"
+    },
+    "Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs",
+      "sha256": "6a91ae3a94202d072063ec2c2c26a1bec1515bff48c84033c72945aad734ac2e"
+    },
+    "Game/Scripts/NewGameFrontEnd.ServiceChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.ServiceChecks.cs",
+      "sha256": "5369eebc846d8f9dcdf1dda2425101014acbc62331731a5a025465e2b9cde314"
+    },
+    "Game/Scripts/NewGameFrontEnd.ServiceDirectionChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.ServiceDirectionChecks.cs",
+      "sha256": "f207ccccafeef1ebc89eeb49487e911942b2cbde80cc5dd1907052d88e52caf6"
+    },
+    "Game/Scripts/NewGameFrontEnd.SupplyWorkChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.SupplyWorkChecks.cs",
+      "sha256": "4921d34009799f1f7884920d28a15fa7a892f07f7c91b90437a363c72fd6c663"
+    },
+    "Game/Scripts/NewGameFrontEnd.TransportWorkChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.TransportWorkChecks.cs",
+      "sha256": "3e0d62e58305d120faf97432b1aa76697277c4d774e3fd8095892a233b665e15"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitCancelChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitCancelChecks.cs",
+      "sha256": "e4e0ac31cbd77a17ada908cfc146fe85b80c3b3079b1d6d62ca89afdbd88d7f5"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitCancelRecoveryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitCancelRecoveryChecks.cs",
+      "sha256": "ea93edbb77ec291523214d18e3f7d16d8f500998d57804bc32c56eed8e5e2030"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitCommandChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitCommandChecks.cs",
+      "sha256": "ee88d7b2e96004d2494c53056b76e9510c0c27206b84e2c5b3be822130860c7c"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDeadlineChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDeadlineChecks.cs",
+      "sha256": "b6d29cedc6c3633cc79c602dc402595bb8d967c6e9fd22ee5872fa7592f2f8d6"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelHoldingChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelHoldingChecks.cs",
+      "sha256": "f15aa4de583b93e0cd5d9212f19c8e6413b5b83ca705c8c39b0f3c44be8039a1"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDirectiveCancellationChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDirectiveCancellationChecks.cs",
+      "sha256": "25329da840bda739d784159014546638b4bf3a911c3c3c1f7bd94ef9a695ffe0"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelRetryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelRetryChecks.cs",
+      "sha256": "828a557026948139626549e4637e294f96d9573aeecfece927b9bb1d351eefa1"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDirectiveChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDirectiveChecks.cs",
+      "sha256": "f7f36c2422f9777e625ed66ac8b198a06e443b7fe052869e93584b926aab8d3c"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDirectiveHoldingChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDirectiveHoldingChecks.cs",
+      "sha256": "ce627c203859c376d47d2c31f98b3d7cb24e60424cbf2287664228a9d34319c9"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitDirectiveRetryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitDirectiveRetryChecks.cs",
+      "sha256": "ee94b2aea6ed730497c429475fa63cc2f1d14e721bb3a88fecfb944481512257"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitEvidenceChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitEvidenceChecks.cs",
+      "sha256": "70ee8b707db6d7e676444b8ba5b9d5548cfc5a648669350e809fa710f6064a86"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitHeldChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitHeldChecks.cs",
+      "sha256": "2b5f29cfee864bf5193d9d234b5ab9c94206a2c2d9fef957dfa1d1f6dd0b4f1e"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitInquiryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitInquiryChecks.cs",
+      "sha256": "5ea0baa2669c8ee8babb09146254dd0800e9761afdffef9e04f026f31cf8618d"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitRecipientChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitRecipientChecks.cs",
+      "sha256": "82932bc092f42d0d02943e6128d8dd46bdcaca5cf36fdd3bb55b626946c7f46e"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitReplyChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitReplyChecks.cs",
+      "sha256": "035e246f47ec0bc6054be6d50d66aaa95141d1cb185681fdab686b2b3f48a592"
+    },
+    "Game/Scripts/NewGameFrontEnd.UnitRetryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.UnitRetryChecks.cs",
+      "sha256": "666f0b91ddffdf85729cc490e7650c0a6194e850e0b77ba37ae3f1007dac489e"
+    },
+    "Game/Scripts/NewGameFrontEnd.VoyageChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.VoyageChecks.cs",
+      "sha256": "4771f763c485d9ee9aa17d779c5a96eaa5d37ee0e5669b2148f84b183c636885"
+    },
+    "Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs",
+      "sha256": "c13719ab673ba1007c2ee87eff2a3463c691b996de0e5b58fe021242b4befd33"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkContactReviewChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkContactReviewChecks.cs",
+      "sha256": "c950f1b0bd084fb844bea4e50df403ba9e7efa93276cec64c715e8d20d89c3db"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkConversationChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkConversationChecks.cs",
+      "sha256": "893e92539d1cabe3ec2ab3436171ee6a82d5fe6363aa39f3280a08f47bc9fa11"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkCycleChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkCycleChecks.cs",
+      "sha256": "116d29ec5dfc13815178a74061ea211990a32eb83fc0eed7730da3f3556310f2"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkDutyChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkDutyChecks.cs",
+      "sha256": "8c38855619d8f7c04771264c70bdf152399beafd4e3fefabe41b7005460bea74"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkFollowupChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkFollowupChecks.cs",
+      "sha256": "d82a38a10ab11d28e0e02fcb06551131a8fc3e9f3768d8603a3f854473453de3"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkProgressionChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkProgressionChecks.cs",
+      "sha256": "77dd8f4ba53eca501e992656d9e50b631b6334a86f4fbe93f7bfd6f4a6bc83b5"
+    },
+    "Game/Scripts/NewGameFrontEnd.WorkRelationsChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameFrontEnd.WorkRelationsChecks.cs",
+      "sha256": "d0b3a03e29bc9c235e7845a6e3a6b1c2ed515971556e285b55f8578f891cb46c"
+    },
+    "Game/Scripts/NewGameMap.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameMap.cs",
+      "sha256": "fedd623dfac6fafc853ac550942380220bc28c9a6c4caa47cc6d16e371fbad95"
+    },
+    "Game/Scripts/NewGameMotionChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameMotionChecks.cs",
+      "sha256": "5a451171dc5dc92e0a4c8cc62ad1859bdf60212eb7fe648744a15bd5c4cf0ced"
+    },
+    "Game/Scripts/NewGameRuntime.Authority.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.Authority.cs",
+      "sha256": "0b609402534dacc0db3fe63cb6e2597d6b2b9c36b614ee9638334514a630f7cd"
+    },
+    "Game/Scripts/NewGameRuntime.BatchedAdvance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.BatchedAdvance.cs",
+      "sha256": "0ff79ae29a09c8dadddee0951b49420636fc35af491d0f9d1bea4d462f51b915"
+    },
+    "Game/Scripts/NewGameRuntime.Combat.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.Combat.cs",
+      "sha256": "bff694e373c49514a9c7082a34032b54705cb540f219422efca1785f6817053f"
+    },
+    "Game/Scripts/NewGameRuntime.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.cs",
+      "sha256": "d459e5b3bf33104ba330b06b870362d227b5a839286d1914384abee77ed96f72"
+    },
+    "Game/Scripts/NewGameRuntime.EngagementTasks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.EngagementTasks.cs",
+      "sha256": "03fc5bb138e62f1306084fc7b99478ca13087519af47509e279f96050134ebff"
+    },
+    "Game/Scripts/NewGameRuntime.KnownTarget.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.KnownTarget.cs",
+      "sha256": "cc6f953f34af9e37d27a4115f4ab62cefeb1d004de827beb210f3bd581056244"
+    },
+    "Game/Scripts/NewGameRuntime.Mail.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.Mail.cs",
+      "sha256": "02ca76216c6c5bee2b2a69d6367cd65139930af4ea4fd4cd722544fee281b6b4"
+    },
+    "Game/Scripts/NewGameRuntime.ManualAdvance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.ManualAdvance.cs",
+      "sha256": "f3853346d2db48249dd431723d73e5f49acc2bb5831d64c7e5572dd67b5bd278"
+    },
+    "Game/Scripts/NewGameRuntime.Military.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.Military.cs",
+      "sha256": "f305afc156d4e2e9103f475dc0b58e8fe8bccba42d8e06746041c4714a5f5729"
+    },
+    "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
+      "sha256": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99"
+    },
+    "Game/Scripts/NewGameRuntime.MilitaryWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.MilitaryWork.cs",
+      "sha256": "9765401274e2e1349decb28e47e73b265402b20c6788b710842ae659859a89f4"
+    },
+    "Game/Scripts/NewGameRuntime.PlayGuide.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.PlayGuide.cs",
+      "sha256": "1ec1d6b10931af19a78362d0dc46ce8620974d1b3652fec79ca299020e7f286c"
+    },
+    "Game/Scripts/NewGameRuntime.PreparedAdvance.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.PreparedAdvance.cs",
+      "sha256": "6a6196b3126f7b32fa9e96cf777124944a4d6ab7bc8983ae8f0a0303a01a0235"
+    },
+    "Game/Scripts/NewGameRuntime.Recognition.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.Recognition.cs",
+      "sha256": "5e8f30538b07234133d8f0d243601e05e97bd62d4e3c4388954ad83955568297"
+    },
+    "Game/Scripts/NewGameRuntime.ResponsiveClock.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.ResponsiveClock.cs",
+      "sha256": "dd1b220702e135ca9624e90505516b365d49d3dd9858f0cc668939b2b3ff8feb"
+    },
+    "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs",
+      "sha256": "5ccf0c7e11672cb8ff12f54382e99b6ad2ea5015b4e38718eea00ec2cb9bd892"
+    },
+    "Game/Scripts/NewGameRuntime.ResponsiveSave.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.ResponsiveSave.cs",
+      "sha256": "0eb9ee492cf1431f8813c42073a7ef09f3f3566bb828d2a46f330c0816caa98c"
+    },
+    "Game/Scripts/NewGameRuntime.ServiceDirection.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.ServiceDirection.cs",
+      "sha256": "5b2027fd00401106b7e49c83d480419aaf41b41a7c637b6977dc172af92af223"
+    },
+    "Game/Scripts/NewGameRuntime.SupplyWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.SupplyWork.cs",
+      "sha256": "1123dbfaf3e6f8d5076199d720e321823cab4ca52a526ec9b38c2755feb1506a"
+    },
+    "Game/Scripts/NewGameRuntime.TransportWork.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.TransportWork.cs",
+      "sha256": "b2bb8b813355465820ba28bec94cb1a36c65f698699ad7069cd7a80ec810fab8"
+    },
+    "Game/Scripts/NewGameRuntime.UnitDirective.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UnitDirective.cs",
+      "sha256": "7b43ce031ed177e954777024b08413fa07f6ad0ab6f3113ada68687a1e81b083"
+    },
+    "Game/Scripts/NewGameRuntime.UnitDirectiveCancelHolding.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UnitDirectiveCancelHolding.cs",
+      "sha256": "11d8f4fd7ec4fec767c3070123bd78cd3dd19e6a4e6a9348ed917c6ee2450f83"
+    },
+    "Game/Scripts/NewGameRuntime.UnitDirectiveCancellation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UnitDirectiveCancellation.cs",
+      "sha256": "eed02f7ed2dbc240350665526b1c518db7df4b1f5de7a451ca86a95cbcf56adc"
+    },
+    "Game/Scripts/NewGameRuntime.UnitDirectiveCancelRetry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UnitDirectiveCancelRetry.cs",
+      "sha256": "b82df74315e1a601164bca58946784aaf5dfad5c48fa6c618f7900a547c6b3d2"
+    },
+    "Game/Scripts/NewGameRuntime.UnitDirectiveHolding.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UnitDirectiveHolding.cs",
+      "sha256": "2f04f1484c038fdfd865ea0cbd3571fbfa73a99d62fbad67f10122eb21f6e1d8"
+    },
+    "Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs",
+      "sha256": "9ca2acdef0e3e88ca20480c42d03cab6ebb70998fa2c5e59f84a7b490159af5d"
+    },
+    "Game/Scripts/NewGameRuntime.UsableLayout.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.UsableLayout.cs",
+      "sha256": "be9e01acc0bd347e88f849d7cc27728a799ae01fc6578d92453ebfa1b819fc5c"
+    },
+    "Game/Scripts/NewGameRuntime.VoyageExpense.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+      "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a"
+    },
+    "Game/Scripts/NewGameRuntime.Withdrawal.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.Withdrawal.cs",
+      "sha256": "5ea35ac51af0500fc012e14c08a89d3ab0f1799d80509a13ac2c39514c5880d2"
+    },
+    "Game/Scripts/NewGameRuntime.WorkCycle.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.WorkCycle.cs",
+      "sha256": "1f3c7393f1d818e828bca2c6920d9d7d59013e2f569d4e369616ae1c5dc8603f"
+    },
+    "Game/Scripts/NewGameRuntime.WorkDuty.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.WorkDuty.cs",
+      "sha256": "21edeab4a5aaea1a9aea0e452c7bf2e1b9a0d83ab05ce00c6de38a5c05bbe4e0"
+    },
+    "Game/Scripts/NewGameRuntime.WorkExperience.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.WorkExperience.cs",
+      "sha256": "16d794098e9cfd19974df7f6fe2525504dd85ad77e177b6d8aec4736b07bc482"
+    },
+    "Game/Scripts/NewGameRuntime.WorkRelations.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.WorkRelations.cs",
+      "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53"
+    },
+    "Game/Scripts/NewGameRuntime.WorldLabels.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/NewGameRuntime.WorldLabels.cs",
+      "sha256": "f9798da0ad543738a9f9f95a096b28171a35461a4c2974cca4356a2c988210b5"
+    },
+    "Game/Scripts/Officer3DActor.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DActor.cs",
+      "sha256": "936933c943c66dd2278cc6bce1a1226db76b5a93ba5db9212ed597f68ff2e218"
+    },
+    "Game/Scripts/Officer3DCreator.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DCreator.cs",
+      "sha256": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c"
+    },
+    "Game/Scripts/Officer3DCustomActor.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DCustomActor.cs",
+      "sha256": "4a72bac68d4a9c674496185f9b0f81fe216711478f206d7cd93f14290b501476"
+    },
+    "Game/Scripts/Officer3DModel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DModel.cs",
+      "sha256": "f899442ca790902329857479960fdcf71a990a826f8619435cc0566e092fee2b"
+    },
+    "Game/Scripts/Officer3DReview.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DReview.cs",
+      "sha256": "d0ecd9dbe550a223acacf5b171e8c524fba01ade587b183c12c38844862e7cc3"
+    },
+    "Game/Scripts/Officer3DStage.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DStage.cs",
+      "sha256": "2e7a63ce776411e92343331f83378979416902d96f653f781fd06c31ec9c998b"
+    },
+    "Game/Scripts/Officer3DV2Gate.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DV2Gate.cs",
+      "sha256": "8c3d772033b41040e29ab2781a10647bde57ac6151eab717e4a6fe54440eac86"
+    },
+    "Game/Scripts/Officer3DV2Review.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DV2Review.cs",
+      "sha256": "cd71af805a8e52c454ef2c4ef9521dfbbee2a8cd668d24afeb5d2b1a004cb97a"
+    },
+    "Game/Scripts/Officer3DV3Gate.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DV3Gate.cs",
+      "sha256": "359ffa2ff8a5d913d8fb406ebac935f8231686ff60d2319d922f59b844c427c4"
+    },
+    "Game/Scripts/Officer3DV3Validation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/Officer3DV3Validation.cs",
+      "sha256": "6a48aae09482edbfce2377ae3d0c99ed12884012af70b7d289b8f15158fc7a5f"
+    },
+    "Game/Scripts/OfficerBackMotionTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerBackMotionTrial.cs",
+      "sha256": "d35edd3592b2070ff602a61dc15034cc80712dc3b183772782f6567868a244af"
+    },
+    "Game/Scripts/OfficerContextTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerContextTrial.cs",
+      "sha256": "f0b06f4a7b55736b00098db96213609abc3f87d8a62235c4e0ddeae4b7a0330e"
+    },
+    "Game/Scripts/OfficerLeftMotionTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerLeftMotionTrial.cs",
+      "sha256": "8b566e562720f2881e60d6e16f44904de557c6bce7af6fbabe0451db1042611f"
+    },
+    "Game/Scripts/OfficerLibraryTrial.AuthorityChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerLibraryTrial.AuthorityChecks.cs",
+      "sha256": "077938b35a70060614230f9a6c59b3bc09f5131e26377ca1b633c0714c547eae"
+    },
+    "Game/Scripts/OfficerLibraryTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerLibraryTrial.cs",
+      "sha256": "45b711c68d7c93ae5b8b1bf3ba4e42089b8d83a2f10aa8e2177358149a27e09c"
+    },
+    "Game/Scripts/OfficerLibraryTrial.Enhanced.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerLibraryTrial.Enhanced.cs",
+      "sha256": "42e60bfe510e64b947afd66cfefee6d99949bf90d7ef1f42441e189f25b5deed"
+    },
+    "Game/Scripts/OfficerMotionFrames.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerMotionFrames.cs",
+      "sha256": "36b3f91757fa2d65edd3b55cfa3aca89e8e5a057de80dcb6b2f9d7159c36ac1f"
+    },
+    "Game/Scripts/OfficerMotionTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerMotionTrial.cs",
+      "sha256": "5d82f73e19862ec90e42b12ea55a58abafdd401de375a6f96b66f2f8b1287f28"
+    },
+    "Game/Scripts/OfficerMovementTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerMovementTrial.cs",
+      "sha256": "d40d417db7966283cf644b9f26254c1dcf4d3e76b644da5fe7ee31a50a0e12fa"
+    },
+    "Game/Scripts/OfficerPartsTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerPartsTrial.cs",
+      "sha256": "fde022b9fa5e51dfa03391c51eae5fa351e0186fb99764ce183670793e32e715"
+    },
+    "Game/Scripts/OfficerRightMotionTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerRightMotionTrial.cs",
+      "sha256": "e7a522055bcb027e903148617b924dff9514491853a539f7bbead7604073868a"
+    },
+    "Game/Scripts/OfficerScaleTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerScaleTrial.cs",
+      "sha256": "bd2a5869dbe03b63c1fb822298b09315862b7cd35bb9a3bdab08c6f85430326e"
+    },
+    "Game/Scripts/OfficerWorldGate.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerWorldGate.cs",
+      "sha256": "2bff421e82b0d7a0875c6e248b54809730c1125664ebc4c742df44905477d2ee"
+    },
+    "Game/Scripts/OfficerWorldStage.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerWorldStage.cs",
+      "sha256": "06273cd6cecfa0d1d37826f2b2580aaa26baa1d64716bbd6cbd3ac4850681919"
+    },
+    "Game/Scripts/OfficerWorldValidation.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/OfficerWorldValidation.cs",
+      "sha256": "8075b34d5c088a0738f97b56e0b8f170ab9b628505c6a1cad9143be7546a102a"
+    },
+    "Game/Scripts/ProtocolPanel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ProtocolPanel.cs",
+      "sha256": "462fab0b2133a9313065c2b804984d7adbd83d4d7a2e7400e8905be7d7c88ffe"
+    },
+    "Game/Scripts/RegionalBranchTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalBranchTrial.cs",
+      "sha256": "282a25f2d1087da47ecb6c39faff8cda557d31ae1d9e9a15b11c6fc4b47c5ebd"
+    },
+    "Game/Scripts/RegionalCampaignTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalCampaignTrial.cs",
+      "sha256": "5a25f9ebbc24434935184a986da4a1ff25cde5007f9c34137161243c166ede94"
+    },
+    "Game/Scripts/RegionalControlTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalControlTrial.cs",
+      "sha256": "e1d0fad4084c632b4331406e145f92c4eec10d0f3a4c34c4def65015699565d8"
+    },
+    "Game/Scripts/RegionalIntegrationTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalIntegrationTrial.cs",
+      "sha256": "d6550a7f13540b540fbad16fc0d728e3c4467fa2931737207b757816c462ab1b"
+    },
+    "Game/Scripts/RegionalRouteTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalRouteTrial.cs",
+      "sha256": "79d4d4af506a11d88254117ec7a5e3c51c5d8c43416530856a345573088d753b"
+    },
+    "Game/Scripts/RegionalSceneryRenderer.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalSceneryRenderer.cs",
+      "sha256": "56c6e32c6b782a6d40ef28558301aca6f21afac290fbebd6bb5d5f317a1c5b54"
+    },
+    "Game/Scripts/RegionalSceneryTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RegionalSceneryTrial.cs",
+      "sha256": "251955c51594a5296903994ffebc5f78f683bdff616b396ce8ea269b841418fd"
+    },
+    "Game/Scripts/RiverRoadTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RiverRoadTrial.cs",
+      "sha256": "b4a034a500cc5e80340f3fd454c060ca4aba5ff1d69d4f9a99f10f78d12831e3"
+    },
+    "Game/Scripts/RouteWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RouteWorldTrial.cs",
+      "sha256": "cbaa8fb9c51ca9437fc263f6fb3350446e4a237361afdd0058951a9142013109"
+    },
+    "Game/Scripts/RuntimePreparationQueue.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/RuntimePreparationQueue.cs",
+      "sha256": "5cc65c8bbab9a8c353bda0b3d979cd06bf4011acc4a73926a36b34fe4008d3b2"
+    },
+    "Game/Scripts/SceneryAssetLifetimeChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/SceneryAssetLifetimeChecks.cs",
+      "sha256": "0bbeef3bb38cf272fa2e2412d24f7c35685b21d7674ca61b32465968bcf85f2e"
+    },
+    "Game/Scripts/SceneryVisualAssets.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/SceneryVisualAssets.cs",
+      "sha256": "dc3afefa89c0ce691d556f640630e0ff05c1b8b240aa674d8866fc5e45160e2a"
+    },
+    "Game/Scripts/StartSelectionPanel.CampaignChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.CampaignChecks.cs",
+      "sha256": "b585d3e1be740a906da7d62c15256a445c5ddcda5a9d82f32b4c67c3e06b2067"
+    },
+    "Game/Scripts/StartSelectionPanel.CareerChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.CareerChecks.cs",
+      "sha256": "9ba21db379089d907c895827e8e259da539c3233a5d96d93e61d3b68bf13e354"
+    },
+    "Game/Scripts/StartSelectionPanel.CareerMilitaryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.CareerMilitaryChecks.cs",
+      "sha256": "79e2018f15e3f984a181d37e8f4177c397ffcff61578e2536ba72d93eb6e2f11"
+    },
+    "Game/Scripts/StartSelectionPanel.Checks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.Checks.cs",
+      "sha256": "8e4b81065741edb54cb263b8e22536ac492927521d0c579fce34b1397524eccb"
+    },
+    "Game/Scripts/StartSelectionPanel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.cs",
+      "sha256": "e67fd3c9e8a926fb5cc1300fe56914884b808e3dcc4ab46bd3933f0b34248784"
+    },
+    "Game/Scripts/StartSelectionPanel.DelegationChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.DelegationChecks.cs",
+      "sha256": "ed0a232c9002c20ac586b026e1d79c37876b04e5bb655a71ff2b2370aba1794d"
+    },
+    "Game/Scripts/StartSelectionPanel.InquiryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.InquiryChecks.cs",
+      "sha256": "dce9cc0c4f073d114035643c68018e06a0cc46eb75f145f9efcf4b1e9611cd0c"
+    },
+    "Game/Scripts/StartSelectionPanel.LifeEntryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.LifeEntryChecks.cs",
+      "sha256": "dc3218f1bfca8055602d76fa5ec1f224032498e79095c9bc0eafbc285585e382"
+    },
+    "Game/Scripts/StartSelectionPanel.MilitaryInquiryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.MilitaryInquiryChecks.cs",
+      "sha256": "598cbe96de66cb22be2f430183976076e8e54d229350b7933385ebac1b16c10e"
+    },
+    "Game/Scripts/StartSelectionPanel.RetainerChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.RetainerChecks.cs",
+      "sha256": "469d1d9f22a8200689ec26130f0067297528bea3c56914b4bc974b97a2b9b66c"
+    },
+    "Game/Scripts/StartSelectionPanel.RetryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.RetryChecks.cs",
+      "sha256": "b57f6091b9ed63bbaa0215de4c0cb9301fcc3b59e2e8250c24bac5cf3021c6bb"
+    },
+    "Game/Scripts/StartSelectionPanel.ReturnRetryChecks.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/StartSelectionPanel.ReturnRetryChecks.cs",
+      "sha256": "f726ebd61e67b0d20e806da487e99d4c24a580e1d81e9529bab6d6457d1d2714"
+    },
+    "Game/Scripts/TaxPanel.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/TaxPanel.cs",
+      "sha256": "53d7e5fa58b6a15cccc67f29c45597252c8c82401149a0bd269c14828bd45d60"
+    },
+    "Game/Scripts/TrafficWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/TrafficWorldTrial.cs",
+      "sha256": "dafafe979db88083717937c738a3d33a7b633b9c50967d199d22adc1b7077251"
+    },
+    "Game/Scripts/TravelControlTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/TravelControlTrial.cs",
+      "sha256": "8a02cd0dbab3493592b26c2f828919d7cc6a59da0b78db2bc0844dbbfd97f4fd"
+    },
+    "Game/Scripts/TravelWorldTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/TravelWorldTrial.cs",
+      "sha256": "a419c5a96b086d16f5fc3c383c3307c8878f833680d83677874a5924b30c74d2"
+    },
+    "Game/Scripts/ViewportCapture.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/ViewportCapture.cs",
+      "sha256": "ee77cca54bc5898b4d3813a339efc606189a8a0c91323d1c2622762c61625443"
+    },
+    "Game/Scripts/WorkHubTrial.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/Scripts/WorkHubTrial.cs",
+      "sha256": "00a8dbedc3c0681fae3c4698e7a71f4ddede5576ecd9316f8c27066bba6556b7"
+    },
+    "Scripts/verify_household_military.py": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Scripts/verify_household_military.py",
+      "sha256": "06e289f183eee2bbbf83fa979cb850c34fb56f8ccc54c934f5ec392355dc17f8"
+    },
+    "Scripts/verify_service_entry.py": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Scripts/verify_service_entry.py",
+      "sha256": "667a1f2b1ddeee1429cecba7067ad615f33ceac4d6108eefc8bf3d17427973a7"
+    },
+    "Tests/AssessmentNoticeTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/AssessmentNoticeTests.cs",
+      "sha256": "737090a3cfa539a6a2941d9f705a38f8b70e5f3e8b44ceb71323c2a5b1f856b7"
+    },
+    "Tests/BranchRouteTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/BranchRouteTests.cs",
+      "sha256": "6b9322a039ebeb57f5e28ae735963d352a99a9355619665809005d4917391e93"
+    },
+    "Tests/CareerMilitaryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/CareerMilitaryTests.cs",
+      "sha256": "b4337202a05ed675c8e1ba5848c31176a2646ad40275cd934f3e74356cda8404"
+    },
+    "Tests/CareerTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/CareerTests.cs",
+      "sha256": "6e11bcd70a9d89ae8666eb9aa4364737674805c571804cf9246f87d8b288d50f"
+    },
+    "Tests/CommonContractTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/CommonContractTests.cs",
+      "sha256": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5"
+    },
+    "Tests/CommonSaveTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/CommonSaveTests.cs",
+      "sha256": "66f854ecd0e1fd262336814cf59e6113c947f84c06bb415ac3a119ee46a291ce"
+    },
+    "Tests/ContactCombatTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/ContactCombatTests.cs",
+      "sha256": "b8ac7ff21b33d7049efe954fbf2d48eb6af055f6ef0a21d63aef18014225883e"
+    },
+    "Tests/ContinuousWorldTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/ContinuousWorldTests.cs",
+      "sha256": "a9850dbc910678cc356a57b47cd01e8cc41f6713319fe437fd8aa8b651518423"
+    },
+    "Tests/CouncilInputTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/CouncilInputTests.cs",
+      "sha256": "f7ce414ff2f4970ee9624aaa5b804412e33d0d342048eba8a8489c269c05cb89"
+    },
+    "Tests/CreatedCampaignTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/CreatedCampaignTests.cs",
+      "sha256": "e371a3632f3184d9269dcec71c4c0896928268ff5362002d81bc1a6369bdebb7"
+    },
+    "Tests/DeadlineCancellationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/DeadlineCancellationTests.cs",
+      "sha256": "b72de0f9f28b607804ced8e967bf8d5166b0057ec4070f93699195febe4c23ae"
+    },
+    "Tests/DelegationInquiryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/DelegationInquiryTests.cs",
+      "sha256": "e3a5d333601d635bbc3d181e340dfd3f6d31ee538bf159bb5771e6090dc84d84"
+    },
+    "Tests/DelegationMissionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/DelegationMissionTests.cs",
+      "sha256": "28b3dd4cd7a535b06bef9699c50655085eafa6e0f5715de42b431a565f9d0398"
+    },
+    "Tests/DelegationReturnRetryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/DelegationReturnRetryTests.cs",
+      "sha256": "2f06c74251f964c78897177aa5f81d12ed51a9af00aab08814bac12f4b2083ac"
+    },
+    "Tests/DelegationTransportTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/DelegationTransportTests.cs",
+      "sha256": "b6b19c6ee712f3fc78500ef586a7e7931f67d12af00b91a9551993c57d8274a5"
+    },
+    "Tests/DeliveryRecoveryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/DeliveryRecoveryTests.cs",
+      "sha256": "6a20d8354823147376694a7d69dcd49f8f5a37e958ecc00c95fac9a33d7a5e66"
+    },
+    "Tests/EngagementMissionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/EngagementMissionTests.cs",
+      "sha256": "c077a950b70b18a8581c467a5f99a462d8cb0ea4019c74a5351418c2b9ac6783"
+    },
+    "Tests/EngagementTaskDeliveryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/EngagementTaskDeliveryTests.cs",
+      "sha256": "95b95c3d42c2012fa822f2c8ffdfc2ff13c0fb35038c69f3238dcd49b7724b81"
+    },
+    "Tests/FieldEngagementTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/FieldEngagementTests.cs",
+      "sha256": "97c2294a5034d49780c0c5694dabbbba50e7bc4a12a62053e18fd84ddda3cd09"
+    },
+    "Tests/FieldPresenceTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/FieldPresenceTests.cs",
+      "sha256": "2da2729b52481dace4388aff6908da17276b839e50484949730baadfdde0230d"
+    },
+    "Tests/FieldSupplyTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/FieldSupplyTests.cs",
+      "sha256": "1e13c56b1887b9bf57d83116acee273d38cff20731661ed94318531bd7c581df"
+    },
+    "Tests/FieldWorldTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/FieldWorldTests.cs",
+      "sha256": "0bc01cda07aba75e6e11ccb4c327475d978bca3605e74c6c6780f0d4491b507e"
+    },
+    "Tests/Fixtures/career-72b0665-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/career-72b0665-initial.json",
+      "sha256": "a06172a71b2cd4144e6ea3420d244c8422b707409b81ea7c4e4f062d5c5b50d6"
+    },
+    "Tests/Fixtures/career-72b0665-unconfirmed.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/career-72b0665-unconfirmed.json",
+      "sha256": "fcfd3a66b2731acc680f0b37a37213f33a126b3b3c76af9e795855a4106875c7"
+    },
+    "Tests/Fixtures/created-campaign-c30f379-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/created-campaign-c30f379-initial.json",
+      "sha256": "10674f51fa9bedaffa51df8ee718f6cf1f642b79b37eb7c9aef8105201e43426"
+    },
+    "Tests/Fixtures/created-ronin-bea3d4f-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/created-ronin-bea3d4f-initial.json",
+      "sha256": "841c658be3b803940b3142fd0debef1d8f093c2a014a76955ddc1015642219e5"
+    },
+    "Tests/Fixtures/created-ronin-bea3d4f-saved.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/created-ronin-bea3d4f-saved.json",
+      "sha256": "664d0700502dd15940c82a8b37072caa67949b0c8d1fffe06058845faecc9faf"
+    },
+    "Tests/Fixtures/engagement-511fe68-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/engagement-511fe68-initial.json",
+      "sha256": "6a293157429e21595f3745caa0a67b40f8c098014dcbd113e631c4d2bfaa4b66"
+    },
+    "Tests/Fixtures/military-bd631ba-active.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/military-bd631ba-active.json",
+      "sha256": "2e534e2181c0b8cde5df560fc424432608278a84eabc31added7c33f0309bda5"
+    },
+    "Tests/Fixtures/military-bd631ba-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/military-bd631ba-initial.json",
+      "sha256": "3eb491c4270535b3d602dbc4460f54b7d038bff530b29efd2d7ac7bacbf088a7"
+    },
+    "Tests/Fixtures/pre-catalog-start-v1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/pre-catalog-start-v1.json",
+      "sha256": "c3f82db4597bc41f4a87e2cf303683b8d0265c7560bdccbdb4cf1855a5af9d69"
+    },
+    "Tests/Fixtures/pre-household-start-west-v2.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/pre-household-start-west-v2.json",
+      "sha256": "c8915b4c99d4641bb19dbe2d28abadc90d5b9622e078c661d962256e571f9523"
+    },
+    "Tests/Fixtures/pre-routine-household-v3.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/pre-routine-household-v3.json",
+      "sha256": "ee4a202a4b3f33cb3a163fc0932bf74716b82be07b6cf62e5f5aabd1e2dc665c"
+    },
+    "Tests/Fixtures/presence-d9f71d9-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/presence-d9f71d9-initial.json",
+      "sha256": "d1eec90063a0f4d85d57c5176e98d57e886c1fdc4dc562c28af5ae179bd2a445"
+    },
+    "Tests/Fixtures/ronin-9959278-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/ronin-9959278-initial.json",
+      "sha256": "ff6bb01d72127c01dd61c5e67a294d4dd613d5e5ab442fb3021a82a626476f62"
+    },
+    "Tests/Fixtures/supply-f9dcd84-initial.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/supply-f9dcd84-initial.json",
+      "sha256": "d2bba7785e4db8b8d6ae2d42c34fa0c1cafdbbb96462a1c93793f33c8c64d7ed"
+    },
+    "Tests/Fixtures/tax-v1-tick-0.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v1-tick-0.json",
+      "sha256": "e36bd831ba125146e5a2d3eb30d38bc1d546aed15645148e19c56cbf00bc03fb"
+    },
+    "Tests/Fixtures/tax-v1-tick-1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v1-tick-1.json",
+      "sha256": "a6dbf621befe6543faaed6b891493946e4ea5700ba12bfe9b1338feaf22daa62"
+    },
+    "Tests/Fixtures/tax-v1-tick-2.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v1-tick-2.json",
+      "sha256": "c4b8b4e7a735c7ecc74c549dd47231d2cb834b372d2b02bf020e7babd7d88898"
+    },
+    "Tests/Fixtures/tax-v1-tick-3.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v1-tick-3.json",
+      "sha256": "97d447e02c634e689b4467ac41297bdcfa42c4e50ae8660ecf39da56891c63da"
+    },
+    "Tests/Fixtures/tax-v1-tick-4.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v1-tick-4.json",
+      "sha256": "6eff1a419263cf4487a1dac69b8764ba67f2a04e7e73678dca4ddc0af4f708ee"
+    },
+    "Tests/Fixtures/tax-v2-known.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-known.json",
+      "sha256": "036b9972a733546968cf41bac0fd6000ed454ed4c47e407941337b74b341d8fb"
+    },
+    "Tests/Fixtures/tax-v2-lost.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-lost.json",
+      "sha256": "07ebe6d37cd3519a5e63c89e15ee813108199c34887ddc5cdb2343cea9b42d9d"
+    },
+    "Tests/Fixtures/tax-v2-retry.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-retry.json",
+      "sha256": "953d1ee021cd8f6e9953c8eed09ccd2c3641721ac04bfef83be2c1c07d9329f2"
+    },
+    "Tests/Fixtures/tax-v2-tick-0.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-tick-0.json",
+      "sha256": "eec7f38a42bc53b42d54170f31137fa8015c13c172e0f61677d3671bccf34314"
+    },
+    "Tests/Fixtures/tax-v2-tick-1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-tick-1.json",
+      "sha256": "21deb401114860865ce2919a3cf5d3e8add4e3f4e47df623b9bcefcefbf41452"
+    },
+    "Tests/Fixtures/tax-v2-tick-2.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-tick-2.json",
+      "sha256": "9172a2bb1af0753fa0d49674422aa044b357b9e705339e39e012a929cf0ae2b3"
+    },
+    "Tests/Fixtures/tax-v2-tick-3.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-tick-3.json",
+      "sha256": "8bdc3ae7fff2cbaece9b0b73f1936e50e1f322164ae1b6e048ed69633810ea84"
+    },
+    "Tests/Fixtures/tax-v2-tick-4.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v2-tick-4.json",
+      "sha256": "c3c013d4c8422f1ce25b51314aa46fee26eb5711d6e9a93c89130cef60c3697c"
+    },
+    "Tests/Fixtures/tax-v3-admin-cancelled.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-admin-cancelled.json",
+      "sha256": "e342a59c9def136f811bbdb01036c00bf423549f5b1bf0f7ccaa397aa501b8dd"
+    },
+    "Tests/Fixtures/tax-v3-failure-transit.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-failure-transit.json",
+      "sha256": "eb57257b0d48efb7ee8d3b70bd524b6b0ffe9b4ecfd9422bb387f08d72c0fe86"
+    },
+    "Tests/Fixtures/tax-v3-late-transit.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-late-transit.json",
+      "sha256": "adc28103738eaec37604fdb79b72308be6103ae485ac8dc3031b610fd62da4f9"
+    },
+    "Tests/Fixtures/tax-v3-tick-0.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-tick-0.json",
+      "sha256": "2373beb5a0190807b53ccac44783f76933e1ce28b62cd105e35ffecf80e2a8e1"
+    },
+    "Tests/Fixtures/tax-v3-tick-1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-tick-1.json",
+      "sha256": "56754a9551f1a4faa793f362291e733f0343bc5758ceb9c71f8c0a8a9ef3b06c"
+    },
+    "Tests/Fixtures/tax-v3-tick-2.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-tick-2.json",
+      "sha256": "3e1d198e544f1e04078f372a51d1276cb0f837b31d7272cfc6b7176dfc9fd1af"
+    },
+    "Tests/Fixtures/tax-v3-tick-3.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-tick-3.json",
+      "sha256": "8345ca4e516b02bfada7333cce78030a2600edd561ee1cfb1632a27151d7b0d7"
+    },
+    "Tests/Fixtures/tax-v3-tick-4.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v3-tick-4.json",
+      "sha256": "c73704e60e9bfdb5b9960111f04bf44c478c2618e70fcff5d511c09b19b2fa47"
+    },
+    "Tests/Fixtures/tax-v4-cancel-applied.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-cancel-applied.json",
+      "sha256": "614f5921ff3a2526c107aea52126a9f04aebde148898ac1a1d38dcfecf44f33a"
+    },
+    "Tests/Fixtures/tax-v4-cancel-late.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-cancel-late.json",
+      "sha256": "1b29486ce74edcfdb8590ead00d7cfac79e2025afed7554f5b61712416769411"
+    },
+    "Tests/Fixtures/tax-v4-cancel-transit.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-cancel-transit.json",
+      "sha256": "4d4c0e02a99df2e7f882d35c7ee3a7307a064a70310412c8d7bde216186bded6"
+    },
+    "Tests/Fixtures/tax-v4-effect-wait.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-effect-wait.json",
+      "sha256": "0a71b892fea729eb02185fac481e647fba80ee6caac014a2354cf0b40bb24636"
+    },
+    "Tests/Fixtures/tax-v4-tick-0.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-tick-0.json",
+      "sha256": "bcb299d15267d4962c4fadb973cd9a5e2f26b6c647a763e90c0d728ef396f65d"
+    },
+    "Tests/Fixtures/tax-v4-tick-1.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-tick-1.json",
+      "sha256": "1885819dc225b8106a530f6ce1624984d740711b0737089231f59c27ff76d7ed"
+    },
+    "Tests/Fixtures/tax-v4-tick-2.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-tick-2.json",
+      "sha256": "f5e702b2349d981520c64bbcabb13fb00198408f97073aa89b7c50fa83725562"
+    },
+    "Tests/Fixtures/tax-v4-tick-3.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-tick-3.json",
+      "sha256": "f00394a13da8b53b4b3f8181d83840f6e44a956f15cc06dcf935b3ce6cd7c989"
+    },
+    "Tests/Fixtures/tax-v4-tick-4.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/Fixtures/tax-v4-tick-4.json",
+      "sha256": "37a9040d0b92177ecb66ab494f7bb7a799e5cd984524df81c5d297e74aa20596"
+    },
+    "Tests/FormationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/FormationTests.cs",
+      "sha256": "f4746f0db6c6f915ea6cf9da2185cdd1aa07d3351f583da1af74f0675cde7945"
+    },
+    "Tests/FoundationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/FoundationTests.cs",
+      "sha256": "6b8df0f93a9fa7c3ddc5a906447fe47c53462ee208b4c0f3934e3be4c1375bf9"
+    },
+    "Tests/HakutaiKagami.Tests.csproj": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/HakutaiKagami.Tests.csproj",
+      "sha256": "596693d2b73a9570f286b807d73bd505c02a8f5eff203edd1b36708eef8d8b20"
+    },
+    "Tests/HistoricalHouseholdTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/HistoricalHouseholdTests.cs",
+      "sha256": "fe6e37b25e23d2fc2f4353cc7682b5202e2831a65deb213742650280a46f2568"
+    },
+    "Tests/HistoricalRoadTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/HistoricalRoadTests.cs",
+      "sha256": "badddecf41497169062bc50beadf077e17a1437ebf7497186f06fdde24f82635"
+    },
+    "Tests/HistoricalStartCatalogTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/HistoricalStartCatalogTests.cs",
+      "sha256": "59c8c364e0a3259d81b53a9b2d23024a31a366dd33c78dd2189a170f6e83a107"
+    },
+    "Tests/HouseholdMilitaryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/HouseholdMilitaryTests.cs",
+      "sha256": "f5aa28c6a771f3c5c3deef5cca4b0791e47db5bc6b14da167795976bb64c9aae"
+    },
+    "Tests/IncomingMissionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/IncomingMissionTests.cs",
+      "sha256": "348e56bff0b12fff8f20373f80f5c3be1ce06c3e7947067cf9425eee593c678a"
+    },
+    "Tests/JapanGeographyTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/JapanGeographyTests.cs",
+      "sha256": "1328f3b63421897fc664a875cd8148b50d2212dd92f79cee645ba8f7d8d94e4f"
+    },
+    "Tests/KnownMilitaryTargetTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/KnownMilitaryTargetTests.cs",
+      "sha256": "8a793b3d1e4e0f4387e3a578a8dba461803895da322955857170acb72b91faa0"
+    },
+    "Tests/LandMaskIndexTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/LandMaskIndexTests.cs",
+      "sha256": "f0760569b9be3754cfc80c3472b4d257438cb7c2472e2217725e017ce7b4fd05"
+    },
+    "Tests/LateDeliveryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/LateDeliveryTests.cs",
+      "sha256": "57d7bcea27109bacfdc7545a62785fab8273b5c53053e0f3e26e1dbae17e525c"
+    },
+    "Tests/LocalInspectionFindingsTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/LocalInspectionFindingsTests.cs",
+      "sha256": "b5ca0866842f82696bf02fdf67aa7295fcaf22ec97af5559376807b00646948b"
+    },
+    "Tests/LocalWorkDemandTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/LocalWorkDemandTests.cs",
+      "sha256": "5359d23adf8a65edea5c14014049a53cea1940566e3a6d58045079135b2e65c0"
+    },
+    "Tests/MilitaryAuthorityKnowledgeTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryAuthorityKnowledgeTests.cs",
+      "sha256": "edd8bfa836bb5eeb75975d3cbdc347460a8e106c68223f96e3ad037dbbf29824"
+    },
+    "Tests/MilitaryAuthorityPolicyTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryAuthorityPolicyTests.cs",
+      "sha256": "05a6dad8784253263dd4931dc8d3379b79ced3878517243d786e477f1753d92c"
+    },
+    "Tests/MilitaryAuthorityScopeTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryAuthorityScopeTests.cs",
+      "sha256": "29e44d5a59cc7409db6056e7990ef0f0c874b7caf3e25115e029795c0ce772d7"
+    },
+    "Tests/MilitaryDebriefTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryDebriefTests.cs",
+      "sha256": "59939ef4f37a6ba6708e3286ea103fc232477c60fa7852d6458c08a422fe38a0"
+    },
+    "Tests/MilitaryInquiryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryInquiryTests.cs",
+      "sha256": "5fb0a3543cd0f6c09486e38a19ef9a0bf981087687d963258c45d090cac28f05"
+    },
+    "Tests/MilitaryIntegrationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryIntegrationTests.cs",
+      "sha256": "021cc7d3d8f9519cf67dbe98871d2b826f65ed8b5d4d2cef389d3870e4d10722"
+    },
+    "Tests/MilitaryIssuerAuthorityTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryIssuerAuthorityTests.cs",
+      "sha256": "e238bbb2cdedf1e205d9691421bc03f494881f0ebc1248e7653c726f528e7e5b"
+    },
+    "Tests/MilitaryLedgerIdentityTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryLedgerIdentityTests.cs",
+      "sha256": "83fd1cf2cecc53659a5936b83387e1f3d1c5178b01643e7cb236449101bc132f"
+    },
+    "Tests/MilitaryOwnHeadAuthorityTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryOwnHeadAuthorityTests.cs",
+      "sha256": "a1602693cd410fcd4ab7312f6d686d60ce87750ed421e0365136fa5c531f77fa"
+    },
+    "Tests/MilitaryRecognitionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryRecognitionTests.cs",
+      "sha256": "cc4be116ef88b0d063c759bb65bf176c70839c01c3fd197e836cd21c70da1d57"
+    },
+    "Tests/MilitaryRenewalTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MilitaryRenewalTests.cs",
+      "sha256": "7d6eed7c9da2e23727285ac7abc9dac5e6e0be45f8e8e0e6eeba112b34b56d96"
+    },
+    "Tests/MissionEntryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MissionEntryTests.cs",
+      "sha256": "7bef81f7dc93ee9b1f48f57a3c8e9da83e2696393fc81fb284d2ba5e0db13bd7"
+    },
+    "Tests/MissionReviewTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MissionReviewTests.cs",
+      "sha256": "f457e8e196f7ae5f80c2c6c03ff937051954194ceeb73aa8f596d860bab8baaf"
+    },
+    "Tests/MovementControlTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/MovementControlTests.cs",
+      "sha256": "84910c00d9cd80795c386e68f17c972d47a8b182c9dcc731edc33aec3246c96a"
+    },
+    "Tests/NationalPersonnelTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NationalPersonnelTests.cs",
+      "sha256": "cb3369a4927bb4b0a2c1078616e922c86ca4df3076fa5fab5720135a3741a1d3"
+    },
+    "Tests/NationalRoutesTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NationalRoutesTests.cs",
+      "sha256": "6b692f585538769e15ce36bbe7d38e105172fb38811f0ce8dbf4f15238d21ca4"
+    },
+    "Tests/NewGameCombatTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameCombatTests.cs",
+      "sha256": "418dd79389910db501177a2711c4dd6b37e0d667adad2e910b2d4a66dbcad9a3"
+    },
+    "Tests/NewGameCompactAuthorityTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameCompactAuthorityTests.cs",
+      "sha256": "2aee73272664e0935ead39dfad14744bd48c35e23d172d064cbaaa5a8d833080"
+    },
+    "Tests/NewGameCompactMilitaryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameCompactMilitaryTests.cs",
+      "sha256": "6b3b4acd87b539efd2072f4755f318025676152ecb52eb4abf89af08c38818a0"
+    },
+    "Tests/NewGameFlowBoundaryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameFlowBoundaryTests.cs",
+      "sha256": "2e67fe10ccf3c89b261e729c9fc3f989c0c4f1fae44471c1399553122c346cd3"
+    },
+    "Tests/NewGameMilitaryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameMilitaryTests.cs",
+      "sha256": "1d143209d650a825712561eb54ff5cfeab5a05549d2794d1c4d383b04425b20b"
+    },
+    "Tests/NewGameNearbyProjectionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameNearbyProjectionTests.cs",
+      "sha256": "9839dc828f658da71faeba808791105a7e191813b02e20923834f36f7a062b0b"
+    },
+    "Tests/NewGameNpcRoutineTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameNpcRoutineTests.cs",
+      "sha256": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d"
+    },
+    "Tests/NewGameServiceTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameServiceTests.cs",
+      "sha256": "73b302ea2ecb57ff4b109f447136d6f026a05947b759d6f5f86b90c93c5b3011"
+    },
+    "Tests/NewGameSetupTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameSetupTests.cs",
+      "sha256": "ab2a7766dc07e451b5961a9c2e578997e2e5cd66106f3b7de225530a418e1a5b"
+    },
+    "Tests/NewGameStartProjectionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameStartProjectionTests.cs",
+      "sha256": "819ee410bf69d97e6c488da510ffac611d1e7a0ec7416c444a902f241c0d3ed7"
+    },
+    "Tests/NewGameWorkTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameWorkTests.cs",
+      "sha256": "3b902759a0bb34be45e4d6a0e485c2f78c78e9a84a00ff42c8c5a937f0c464a3"
+    },
+    "Tests/NewGameWorldTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NewGameWorldTests.cs",
+      "sha256": "1a9995a28de45eed2253174bd90fc7213317e0729014853d16c37816c2334926"
+    },
+    "Tests/NpcWorkTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/NpcWorkTests.cs",
+      "sha256": "08a9f5f873b5e785b60f6563fc9b7c0c1201c4ae56430fc089ae03f01afc2087"
+    },
+    "Tests/OfficerIntegrationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/OfficerIntegrationTests.cs",
+      "sha256": "2d2b6077fc00b6198d7537a737bfc5eddeca23a20bf9f392d7bc404d7b30df9f"
+    },
+    "Tests/OfficerLibraryStoreTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/OfficerLibraryStoreTests.cs",
+      "sha256": "cc635c3a3a7d85ddf69bd11bab7784f24dee1ee84e3c18ca9ebad0e1f2dff274"
+    },
+    "Tests/OfficerLoopTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/OfficerLoopTests.cs",
+      "sha256": "7964e1d7b618f4aa4462ba0a60325772df744e127a764c621e120cea051ea8c9"
+    },
+    "Tests/OperationPanelSaveTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/OperationPanelSaveTests.cs",
+      "sha256": "d3f4355f3c8d157079638be7a2f08ff189281e68a3a9c87300689713bacd01cd"
+    },
+    "Tests/PersonalStartTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/PersonalStartTests.cs",
+      "sha256": "58b9948798a8597369c349a113385df48f85b07291e074e6c35676237ec4668b"
+    },
+    "Tests/PersonalWithdrawalTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/PersonalWithdrawalTests.cs",
+      "sha256": "4df10552e177e4d521fd4577bfbbaf1c4cbd95f5357f86d754fc395981fe7b3a"
+    },
+    "Tests/PreparedAdvanceIntegrationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/PreparedAdvanceIntegrationTests.cs",
+      "sha256": "d93e8728ddb0d7627bf381fbd6d14ddfe4d8d3b2bfc8d2829c970705470f8b74"
+    },
+    "Tests/PreparedAdvanceTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/PreparedAdvanceTests.cs",
+      "sha256": "afbe49d1e814ad7dafc40f555e4f2106292bbf27307498a209a9db583b4c3f51"
+    },
+    "Tests/PreparedPauseTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/PreparedPauseTests.cs",
+      "sha256": "1634d62f6cd71778e442012795d24a450bfebd85f22f3409f59c2bc7c6bc589a"
+    },
+    "Tests/PreparedSubmitTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/PreparedSubmitTests.cs",
+      "sha256": "16c4369d6e793d141f0dc79e9e099d2feb3fc89dbdbe4132f3362efda523a55a"
+    },
+    "Tests/RegionalBattleTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalBattleTests.cs",
+      "sha256": "03a3eefcd848e9733c33350945763d32bfdc935156f4d3e58dc44d40f396e3b5"
+    },
+    "Tests/RegionalBranchTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalBranchTests.cs",
+      "sha256": "0e06ca5b7af80df89b39422fb3b8dab1b795614c646a6162b1eadd7ba6171d39"
+    },
+    "Tests/RegionalCampaignTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalCampaignTests.cs",
+      "sha256": "cc599434d113fce10584c9d0d855755290c4edfd87a4ec61665b7ea6efc37207"
+    },
+    "Tests/RegionalControlTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalControlTests.cs",
+      "sha256": "f1f476386c7ba9e92a003dfb80169e05da36a9336b4a1350bac4d598b5f3e122"
+    },
+    "Tests/RegionalRouteTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalRouteTests.cs",
+      "sha256": "ba85d8fbb649066cbc697589542e73a08b8f0c6f4d1b319301d1a81e988b4532"
+    },
+    "Tests/RegionalSceneryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalSceneryTests.cs",
+      "sha256": "1d68df5a44386a55e990084d298d952479afc68238d3ff31dd20151611022d41"
+    },
+    "Tests/RegionalWorkTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RegionalWorkTests.cs",
+      "sha256": "b3e37e9fe8f446790d242c8283013d50d483c10ff9989f6edb9e4149070e450b"
+    },
+    "Tests/RepeatedExerciseTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RepeatedExerciseTests.cs",
+      "sha256": "dfd72bc642d9598644352041086059f5aee7c610fdddc5ef8a082f2164b4d673"
+    },
+    "Tests/RetainerStartTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RetainerStartTests.cs",
+      "sha256": "e5af465002b6cd044766bac4e3ca499177b07d8383b467d29f77fa664c3513f9"
+    },
+    "Tests/RiverRoadTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RiverRoadTests.cs",
+      "sha256": "81b8a74e725facef34f4e92ea1ea9ec1c20b24f200f96d641c163f01e7fdba92"
+    },
+    "Tests/RouteContractTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RouteContractTests.cs",
+      "sha256": "7f53b473448d659192c0dcba7673bca8e5341cbcf3ea7662a12f12c234635265"
+    },
+    "Tests/RoutRegroupTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/RoutRegroupTests.cs",
+      "sha256": "4410cbae5265b6dd87a75322be3e3b0252711d25faf22756d8192af2c957e43d"
+    },
+    "Tests/SceneryAppearanceTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/SceneryAppearanceTests.cs",
+      "sha256": "839ef4995c78c7dce04bba39bca8c86b38804460c08159a6f3f7102d5682e56f"
+    },
+    "Tests/SharedProtocolTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/SharedProtocolTests.cs",
+      "sha256": "d92db64d8d5015204fa4ec41435d09d43a8e5873441f8e557acc71a6b59f535e"
+    },
+    "Tests/StartConfigurationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/StartConfigurationTests.cs",
+      "sha256": "1cfbf078dbf3c25b36bf1bc86315e2514a20221ad341e7bb84d701c9e0eb2850"
+    },
+    "Tests/SurveyRoadReviewTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/SurveyRoadReviewTests.cs",
+      "sha256": "ae0d09c31f8a6f53cae5721ed6b4acbc4c2161778d28d8d35275b0ab9c569987"
+    },
+    "Tests/TaxSimulationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TaxSimulationTests.cs",
+      "sha256": "339005f92eb4d92510204e89db4c8b0f096cc35ec4f1fba3533264119e7175cd"
+    },
+    "Tests/TrafficWorldTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TrafficWorldTests.cs",
+      "sha256": "b875ac3f9b46d615a4fbb235f51d784cba0293fd9c3e6b43918be5dba8971774"
+    },
+    "Tests/TransportHandoverTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TransportHandoverTests.cs",
+      "sha256": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8"
+    },
+    "Tests/TransportWorkLocationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TransportWorkLocationTests.cs",
+      "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03"
+    },
+    "Tests/TransportWorkTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TransportWorkTests.cs",
+      "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578"
+    },
+    "Tests/TravelControlTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TravelControlTests.cs",
+      "sha256": "0351acda0c728c5aa3e25d15da29cc10779478aa0d6fce2d4638ef48aa271dfb"
+    },
+    "Tests/TravelWorldTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/TravelWorldTests.cs",
+      "sha256": "f601e6db4b54222dfaf2b34e0da3aef5d299812c0dca6151b8de36615f0bdc59"
+    },
+    "Tests/UnitCancellationRecoveryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitCancellationRecoveryTests.cs",
+      "sha256": "73023603b5d92521c8ed19009554b4692bebf0327b575ec622fbb176dea631bb"
+    },
+    "Tests/UnitCancellationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitCancellationTests.cs",
+      "sha256": "20fa47fcb8d93394dc0f5a53b7b0ab9ed5c34bc8355a327ed4cf947b22e34aac"
+    },
+    "Tests/UnitCommandHoldingTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitCommandHoldingTests.cs",
+      "sha256": "998b0b54483f22e35be9d7698cd2cd1a2b0ae87cc931f3843f286cf36d69017c"
+    },
+    "Tests/UnitDirectiveCancelHoldingTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveCancelHoldingTests.cs",
+      "sha256": "c9b4c29387c6151dcabba23195df829df2d507d6064d3324dcf26a900eefb6a5"
+    },
+    "Tests/UnitDirectiveCancellationBoundaryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveCancellationBoundaryTests.cs",
+      "sha256": "f66a6f61a81355e920b561bcebbbe39b85de70708fa0f10ac0a07320be32dc05"
+    },
+    "Tests/UnitDirectiveCancellationTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveCancellationTests.cs",
+      "sha256": "e9de8a32a7b99049732b0566221cfe03c8cd1fc28008313bbd26b6928306b85b"
+    },
+    "Tests/UnitDirectiveCancelRetrySaveTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveCancelRetrySaveTests.cs",
+      "sha256": "403e7431003e6fa6d8ef7acb5cd4ff8bbe01c805ccae071c175bbf3c39888a33"
+    },
+    "Tests/UnitDirectiveCancelRetryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveCancelRetryTests.cs",
+      "sha256": "b210a9023fac23b1edb11661fce8b263d00c8907de806d699f736374a9d9525d"
+    },
+    "Tests/UnitDirectiveHoldingTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveHoldingTests.cs",
+      "sha256": "88ff7ada3fde54bc4131d02fa4a4f2d9cce433ee0bb7cfdcad2c44f66cdc89b5"
+    },
+    "Tests/UnitDirectiveRetryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveRetryTests.cs",
+      "sha256": "465885afea2fba1d64741532b9c01dd8c6adfaf6841c7e50d527e906306c18f3"
+    },
+    "Tests/UnitDirectiveTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitDirectiveTests.cs",
+      "sha256": "48de7983a3e17855a35a1d8b85a6fbecbe83579104423f27f8e8675b00f18f52"
+    },
+    "Tests/UnitHeldDeliveryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitHeldDeliveryTests.cs",
+      "sha256": "edbe2581e0ec7c597260866d4ca63a572bf93806d87d12a5670c1e10b1786f97"
+    },
+    "Tests/UnitInquiryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitInquiryTests.cs",
+      "sha256": "ba5ca7d6121169d7bf8e45b95f7c4b51bfc4b3b61e1c0825bd46154219e17d5b"
+    },
+    "Tests/UnitOrderDeadlineTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitOrderDeadlineTests.cs",
+      "sha256": "1982b3fa9e41822d312c774e293552ed914c10694525c534d70f9751d7a986eb"
+    },
+    "Tests/UnitRecipientTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitRecipientTests.cs",
+      "sha256": "08d1cc86b195b9a2142f96c7f45649009c0975e637825de9c1fe313586bca08a"
+    },
+    "Tests/UnitReplyRecoveryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitReplyRecoveryTests.cs",
+      "sha256": "537364d8241ab405dd26e038c43fabebb949cc9afe7de36381ba5cc2a29b8847"
+    },
+    "Tests/UnitRetryTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitRetryTests.cs",
+      "sha256": "95e27e938aacc1a84b8c0531f1d096f0dddef3f9c1417745f2955ee2fffdfe9e"
+    },
+    "Tests/UnitSenderEvidenceTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/UnitSenderEvidenceTests.cs",
+      "sha256": "2405d968010e077eb4c41dc4cd12f31365a0012678411d9d4848082355b13fc5"
+    },
+    "Tests/VoyageExpenseTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/VoyageExpenseTests.cs",
+      "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed"
+    },
+    "Tests/WorkDutyTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/WorkDutyTests.cs",
+      "sha256": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1"
+    },
+    "Tests/WorkFollowupTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/WorkFollowupTests.cs",
+      "sha256": "e242d60cb8ba36dd5d87ecfba5f93ba101039e90a015d343fa4f7ec7ce5dc5b1"
+    },
+    "Tests/WorkProgressionTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/WorkProgressionTests.cs",
+      "sha256": "a76e725acc47e40da64ded68072f3079ad77418eace4cbed94ce96ce88bfed89"
+    },
+    "Tests/WorkRelationsTests.cs": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/WorkRelationsTests.cs",
+      "sha256": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b"
+    },
+    "Scripts/verify_engagement_delivery.py": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Scripts/verify_engagement_delivery.py",
+      "sha256": "63c25d95e249e131f03e92d51a3dee9dd5ae5d5d3fbe5eebe6f8af8a1e23e68f"
+    },
+    "Scripts/current_test_contract.json": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Scripts/current_test_contract.json",
+      "sha256": "71e77922beb63e712a749f5beea168a8d2872549e89832bbe789bd0d21f6a1f9"
+    },
+    "Scripts/verify_engagement_full_core.py": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Scripts/verify_engagement_full_core.py",
+      "sha256": "567fe2a2a0d669fcdee2d9dc9e1007f87f36df0c71494c54aecfc034bc525724"
+    },
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll",
+      "sha256": "a5d616331eba53e0637aeb90ac27b7e347f0443915cac80b534d8af16d81e521"
+    },
+    "Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll",
+      "sha256": "388afbeb6695c6552f781d4a1ecfe9caf3ccadec2595c0b6f0db638ffabd028f"
+    },
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll",
+      "sha256": "a5d616331eba53e0637aeb90ac27b7e347f0443915cac80b534d8af16d81e521"
+    },
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll": {
+      "snapshot": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/accepted-baseline/Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll",
+      "sha256": "895d70dca7f1b03db59aee194f70dcb231665642844f9d134a7612b146b009e4"
+    }
+  }
+}

@@ -7,7 +7,7 @@ public partial class NewGameRuntime
     readonly List<(Officer3DCustomActor Actor,Label Label)> exerciseModels=new();
     ContractWorld? exerciseSnapshot;ExerciseStateView? exerciseState;
     ExerciseStateView CachedExercise(ContractWorld w){if(!ReferenceEquals(exerciseSnapshot,w)){exerciseSnapshot=w;exerciseState=NewGameMilitary.ExerciseState(w,w.ElapsedSeconds);}return exerciseState!;}
-    bool ExerciseFighting(ContractWorld w,int i)=>NewGameMilitary.CombatActive(w)&&CachedExercise(w).Own[i].Morale>25&&CachedExercise(w).Opponents[i].Morale>25;
+    bool ExerciseFighting(ContractWorld w,int i)=>WorldClashes.Enabled(w)?NewGameMilitary.Deployed(w)&&WorldClashes.AttacksNow(w,NewGameMilitary.UnitIdsFor(w)[i]):NewGameMilitary.CombatActive(w)&&CachedExercise(w).Own[i].Morale>25&&CachedExercise(w).Opponents[i].Morale>25;
     object? ExercisePose(ContractWorld w)=>NewGameMilitary.CombatStarted(w)?new{Episode=CachedExercise(w).Episode,Own=CachedExercise(w).Own,Opponents=CachedExercise(w).Opponents,Losses=CachedExercise(w).Losses,Models=exerciseModels.Select((m,i)=>new{Unit=CachedExercise(w).Opponents[i].Unit,Position=V(m.Actor.Position),m.Actor.Visible,m.Label.Text})}:null;
     void RenderExercise(ContractWorld w,FieldPoint center)
     {

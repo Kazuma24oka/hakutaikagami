@@ -92,6 +92,14 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 // All sections are required even when empty. Mutable DTO never escapes a live session.
 public sealed class ContractWorld
 {
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public FactionNoticeState? FactionNotices {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public WorldClashState? WorldClashes {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public NpcArmyState? NpcArmies {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public FactionStanceState? FactionStances {get;set;}
     // Pure location reconstruction only; the caller replaces Branches and never
     // mutates shared arrays, messaging, or any nested state.
     internal ContractWorld ForkTransportLocation()=>(ContractWorld)MemberwiseClone();

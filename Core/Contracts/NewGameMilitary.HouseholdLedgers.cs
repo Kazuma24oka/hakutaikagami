@@ -24,7 +24,7 @@ public static partial class NewGameMilitary
         c.SealedMessages=c.SealedMessages.Where(id=>!removed.Contains(id.Value)).ToArray();
         var allLots=LedgerStates(w).SelectMany(x=>new[]{x.Binding?.Depot??Depot,x.Binding?.Carry??Carry}).ToHashSet();
         var units=UnitIdsFor(c).ToHashSet();c.Units=w.Units.Where(u=>units.Contains(u.Id)).ToArray();
-        c.ResourceLots=w.ResourceLots.Where(l=>!allLots.Contains(l.Id)||l.Id==DepotFor(c)||l.Id==CarryFor(c)).ToArray();
+        c.ResourceLots=w.ResourceLots.Where(l=>!NpcArmies.IsLot(w,l)&&(!allLots.Contains(l.Id)||l.Id==DepotFor(c)||l.Id==CarryFor(c))).ToArray();
         return c;
     }
     static bool MilitaryEnvelope(MessageEnvelope m)=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m);
@@ -108,10 +108,10 @@ public static partial class NewGameMilitary
     }
     internal static void Sync(ContractWorld w)
     {
-        SyncLedger(w);if(w.OtherMilitaryLedgers==null)return;
+        SyncLedger(w);if(w.OtherMilitaryLedgers==null){NpcArmies.Sync(w);return;}
         var units=w.Units.ToList();var lots=w.ResourceLots.ToList();
         foreach(var s in w.OtherMilitaryLedgers){var c=LedgerContext(w,s);SyncLedger(c);units.AddRange(c.Units);lots.AddRange(c.ResourceLots.Where(l=>l.Id==DepotFor(c)||l.Id==CarryFor(c)));}
-        w.Units=units.ToArray();w.ResourceLots=lots.ToArray();
+        w.Units=units.ToArray();w.ResourceLots=lots.ToArray();NpcArmies.Sync(w);
     }
     static void ValidateLedgerBinding(ContractWorld w)
     {
@@ -122,7 +122,7 @@ public static partial class NewGameMilitary
     internal static void Validate(ContractWorld w,ContractWorld? trustedPrior)
     {
         ValidateSelectionSources(w);
-        if(w.OtherMilitaryLedgers==null){ValidateLedger(w,trustedPrior);return;}
+        if(w.OtherMilitaryLedgers==null){if(w.NewMilitary is {} only&&NpcArmies.Musters(w).Length>0)ValidateLedger(LedgerContext(w,only,true),null);else ValidateLedger(w,trustedPrior);return;}
         Need(w.NewMilitary!=null&&w.OtherMilitaryLedgers.Length>0,"操作対象のない軍台帳です");
         var ledgers=LedgerStates(w);Need(ledgers.Select(LedgerKey).Distinct(StringComparer.Ordinal).Count()==ledgers.Length,"同じ主家・拠点の軍台帳が重複しています");
         var requests=ledgers.SelectMany(s=>s.Requests.Select(q=>(Ledger:s,Request:q))).OrderBy(x=>x.Request.Revision).ToArray();

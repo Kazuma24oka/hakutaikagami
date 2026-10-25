@@ -1870,3 +1870,19 @@ Scripts/build_household_military_report.py -text
 # Hierarchical product-scope progress estimates.
 Scripts/progress_estimate.py -text
 Docs/Development/ProgressV1/estimate.json -text
+
+# Exact bytes for CLI-only actual combat and headless Node3D data verification.
+Game/Scripts/WorldArmyProjection.cs -text
+Game/Scripts/WorldClashProjectionCheck.cs -text
+Game/Scenes/WorldClashProjectionCheck.tscn -text
+Scripts/verify_world_clashes.py -text
+Scripts/verify_npc_armies.py -text
+Tests/Fixtures/npc-army-4a0f0a4-start.json -text
+Docs/Design/WorldClashV1/** -text
+Docs/Design/NpcArmyV1/** -text
+
+# Ordinary faction-paper entry and sparse combat verification inputs.
+Game/Scripts/NewGameRuntime.FactionPolicy.cs -text
+Scripts/verify_faction_entry.py -text
+Tests/Fixtures/world-clash-4d8ac2f-active.json -text
+Docs/Design/FactionEntryV1/** -text

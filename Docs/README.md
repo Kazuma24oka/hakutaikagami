@@ -1,3 +1,5 @@
+- [敵対意思の世界状態と本人の知識（CLI/API検証）](Design/FactionStanceV1/README.md)
+
 - [交戦任務の配送・本人開封・取消（実戦一巡は進行中）](Design/EngagementTaskDeliveryV1/README.md)
 
 - [実戦の交戦条件Core（進行中・通常入口未接続）](Design/FieldEngagementV1/README.md)

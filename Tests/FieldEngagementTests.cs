@@ -73,4 +73,18 @@ public sealed class FieldEngagementTests
             var expected=ContactCombat.Resolve(3,true,[new(a.Unit.Id,0,a.Position,a.Height,(int)a.Unit.Soldiers,a.Morale,a.Phase),new(b.Unit.Id,1,b.Position,b.Height,(int)b.Unit.Soldiers,b.Morale,b.Phase)]);
             Assert.Equal(expected,Run(a:a,b:b).Losses);
         }
-    }}
+    }
+    [Fact]public void MissionStillDefendsAgainstAnAttackerOutsideItsMissionTarget()
+    {
+        var r=FieldEngagement.Resolve(3,[A,B with{Intent=EngagementIntent.DeliberateUnauthorizedAttack,Target=A.Unit.Id}],[Order with{TargetOwner=new("org:elsewhere")}],[]);Assert.Contains(r.Strikes,s=>s.Attacker==A.Unit.Id&&s.Target==B.Unit.Id&&s.Basis==EngagementBasis.ImmediateDefense);
+    }
+    [Fact]public void MissionAndImmediateDefenseCannotCountTheSameReciprocalHitTwice()
+    {
+        var r=Run(b:B with{Intent=EngagementIntent.DeliberateUnauthorizedAttack,Target=A.Unit.Id});Assert.Single(r.Strikes,s=>s.Attacker==A.Unit.Id&&s.Target==B.Unit.Id);Assert.Equal(4,r.Losses.Single(l=>l.Unit==B.Unit.Id).Soldiers);
+    }
+    [Fact]public void ExpiredMissionRetainsImmediateDefenseWithoutMissionAuthority()
+    {
+        var r=Run(at:10,b:B with{Intent=EngagementIntent.DeliberateUnauthorizedAttack,Target=A.Unit.Id});Assert.Contains(r.Strikes,s=>s.Attacker==A.Unit.Id&&s.Basis==EngagementBasis.ImmediateDefense);Assert.DoesNotContain(r.Strikes,s=>s.Basis==EngagementBasis.Mission);
+    }
+
+}
