@@ -1,3 +1,7 @@
+# PR #1はmain統合済み（2026-10-25）
+
+ユーザーのコードのみ統合承認によりmain dd667079a799daefc04188cf5e9ef3c6309cd68aへ統合済み。次の追加実装と結果は[主家別軍務](../../Design/HouseholdMilitaryV1/index.html)・PR #2に記録。以下の未変更/承認待ちはPR #1準備時の履歴。
+
 # 地域プレイ版のコード統合候補
 
 mainへの新規mergeの前に、レビュー用Draft PR #1を用意した。main/design/foundationは未変更。コードの基準は29e86854e7f61ed256b217b4fcbcde8ee6dd23aa。後続のレビュー文書コミットは実行コードを変更しない。

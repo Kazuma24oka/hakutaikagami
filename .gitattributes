@@ -1864,3 +1864,5 @@ Game/Scripts/NewGameFrontEnd.HouseArmyChecks.cs -text
 Scripts/verify_household_military.py -text
 Scripts/verify_household_core.py -text
 Scripts/verify_household_unit_regression.py -text
+Scripts/check_household_military_binding.py -text
+Scripts/build_household_military_report.py -text
