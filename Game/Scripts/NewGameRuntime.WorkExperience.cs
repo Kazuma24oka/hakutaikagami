@@ -48,7 +48,7 @@ public partial class NewGameRuntime
         findingRoad=new(){Visible=false,CustomMinimumSize=new(0,36)};decision.AddChild(findingRoad);
         workReplyChoice=new(){Visible=false,CustomMinimumSize=new(0,36)};decision.AddChild(workReplyChoice);workReplyChoice.ItemSelected+=n=>{if(!renderingWorkReply&&n>=0&&n<workReplyIds.Length)ShowWorkAssessment(workReplyIds[n]);};
         workChoices=new();workChoices.AddThemeConstantOverride("separation",6);decision.AddChild(workChoices);
-        BuildMilitaryWork(workStack);BuildSupplyWork(workStack);BuildTransportWork(workStack);Resized+=LayoutBottomTalk;LayoutBottomTalk();
+        BuildMilitaryWork(workStack);BuildSupplyWork(workStack);BuildTransportWork(workStack);BuildWorkDuty(workStack);Resized+=LayoutBottomTalk;LayoutBottomTalk();
         historyOverlay=Overlay();var historyCol=new VBoxContainer();historyOverlay.AddChild(historyCol);historyCol.AddChild(new Label{Text="履歴 — 本人が確認した用件・書状"});var scroll=new ScrollContainer{SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};historyCol.AddChild(scroll);historyText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(historyText);var close=new Button{Text="閉じる"};historyCol.AddChild(close);close.Pressed+=()=>{historyOverlay.Hide();RefreshWorkExperience();};
     }
     PanelContainer Overlay()
@@ -93,7 +93,7 @@ public partial class NewGameRuntime
     }
     void Choice(string id,string text,Action action)
     {
-        Add(workChoices,id,text,()=>{if(id is "work-confirm" or "work-assent" or "work-refuse" or "work-pay" or "work-received" or "work-military-confirm" or "work-supply-confirm" or "transport-accept" or "transport-collect" or "transport-deliver" or "transport-report" or "transport-pay" or "transport-cancel" or "transport-return"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
+        Add(workChoices,id,text,()=>{if(id is "work-duty-accept" or "work-confirm" or "work-assent" or "work-refuse" or "work-pay" or "work-received" or "work-military-confirm" or "work-supply-confirm" or "transport-accept" or "transport-collect" or "transport-deliver" or "transport-report" or "transport-pay" or "transport-cancel" or "transport-return"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
         var button=buttons[id];button.CustomMinimumSize=new(0,42);button.Alignment=HorizontalAlignment.Left;button.AddThemeFontSizeOverride("font_size",18);button.AddThemeStyleboxOverride("normal",WorkBox("3e382a","bda068",8));button.AddThemeStyleboxOverride("hover",WorkBox("655338","eed39c",8));button.AddThemeStyleboxOverride("focus",WorkBox("655338","eed39c",8));
     }
     void ClearChoices(){foreach(Node n in workChoices.GetChildren()){workChoices.RemoveChild(n);n.QueueFree();}}
@@ -105,10 +105,10 @@ public partial class NewGameRuntime
         workOverlay.Show();
     }
     string FormatWorkDetails(string text)=>NewGameWork.Enabled(Snapshot())?text:text.Replace("\n","　");
-    string WorkTerms(EntityId scope,long? deadline,bool consultationPreview=false,TaskKind? kind=null)
+    string WorkTerms(EntityId scope,long? deadline,bool consultationPreview=false,TaskKind? kind=null,long? fixedFee=null)
     {
         string due=deadline is {} at?consultationPreview?"受取手続きから120秒以内":Math.Max(0,at-Session.Seconds)+"秒以内":"未確認";
-        string reward=!NewGameWork.Enabled(Snapshot())?"提示なし":kind==TaskKind.VoluntaryRequest?"銭20文（返答開封後・現地で受取）":"別払いなし";return "場所　"+NewGameWorld.SiteName(scope.Value)+"\n期限　"+due+"\n報酬　"+reward;
+        string reward=!NewGameWork.Enabled(Snapshot())?"提示なし":(fixedFee??(kind==TaskKind.VoluntaryRequest||consultationPreview&&WorkDuty.Active(Snapshot())?.Site==scope?20:0))>0?"銭20文（返答開封後・現地で受取）":"別払いなし";return "場所　"+NewGameWorld.SiteName(scope.Value)+"\n期限　"+due+"\n報酬　"+reward;
     }
     void ShowWorkConsultation()
     {
@@ -143,7 +143,7 @@ public partial class NewGameRuntime
             if(t.Issuer==Session.PlayerControl){workTitle.Text="点検記録";workDetails.Text=shownRoads.Length>0?"確認：開始から"+shownRoads[0].ObservedAt+"秒　／　自分の行動判断用の記録":"この拠点の陸路は、まだ点検対象が設定されていません。";}Choice("work-finish","地図へ戻る",CloseBottomTalk);return;
         }
         if(awaiting){
-            PresentWork("点検を引き受けますか","この拠点から出る陸路を点検してくれないか。",WorkTerms(task.Scope,t.DeadlineAt,false,task.Kind),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
+            PresentWork("点検を引き受けますか","この拠点から出る陸路を点検してくれないか。",WorkTerms(task.Scope,t.DeadlineAt,false,task.Kind,NewGameWork.Reward(Snapshot(),task)),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
             workCardHeading.Text="依頼の要点";Choice("work-assent","引き受けよう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(true);ShowKnownWork();});Choice("work-refuse","今回は断ろう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(false);ShowKnownWork();});return;
         }
         bool declined=task.Agreement==AgreementPhase.Declined;
@@ -153,6 +153,7 @@ public partial class NewGameRuntime
     static string ReadableStatus(string text)=>text.Replace("Completed","完了").Replace("Running","進行中").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗").Replace("Waiting","待機");
     void RefreshWorkExperience()
     {
+        buttons["work-duty"].Visible=WorkDuty.Candidate(Snapshot())!=null||WorkDuty.Active(Snapshot())!=null;
         if(workSummary==null)return;workBackdrop.Visible=historyOverlay.Visible;workDecision.Visible=workOverlay.Visible&&workDecisionOpen&&!historyOverlay.Visible;
         message.Visible=message.Text.StartsWith("操作できません：")||message.Text.Contains("確定できませんでした")||message.Text.Contains("保存できません");
         if(message.Text!=lastObservedMessage){lastObservedMessage=message.Text;if(!string.IsNullOrWhiteSpace(lastObservedMessage)){observedHistory.Add("開始から"+Session.Seconds+"秒　"+lastObservedMessage);if(observedHistory.Count>200)observedHistory.RemoveAt(0);}}
@@ -168,7 +169,7 @@ public partial class NewGameRuntime
         bool peer=NearbyDisplay().Any(p=>Snapshot().Characters.Single(c=>c.Id==p.Actor).Life==LifeState.Adult&&Snapshot().Locations.Single(l=>l.Actor==p.Actor).Site==Branch(Session.PlayerControl).Knowledge.Location.Site);bool mapped=Branch(Session.PlayerControl).Knowledge.Location.Site is {} here&&NewGameWork.ScopeSupported(Snapshot(),here);buttons["work-self"].Disabled|=!mapped;buttons["work-self"].TooltipText=mapped?"自分の判断に使う陸路の記録を得ます。":"この拠点の陸路は点検対象が未設定です。";buttons["work"].Disabled=!idle||!peer||!mapped||IsSaving||IsClockControlling;buttons["work"].TooltipText=!mapped?"この拠点の陸路は点検対象が未設定です。別の拠点で相談してください。":peer?"現地の相手と依頼条件を相談します。":"この拠点には相談できる相手がいません。自主点検はできます。";
         buttons["work-receipts"].Visible=NewGameWork.Enabled(Snapshot())&&AssessmentNotice.LatestKnown(Session,Session.PlayerControl).Length>0;buttons["work-receipts"].Disabled=IsSaving||IsClockControlling;
         RefreshMilitaryWork();RefreshSupplyWork();RefreshTransportWork();RefreshVoyageTravel();RefreshWorkCycleGuidance(t,unread);if(NewGameWork.Enabled(Snapshot()))workSummary.Text+="\n私財：銭"+NewGameWork.Balance(Snapshot(),Session.PlayerControl)+"文"+(VoyageExpense.Enabled(Snapshot())?" ／船賃"+Snapshot().NewGame!.VoyageRules!.FarePerPassage+"文/区間":"");
-        if(workOverlay.Visible&&workReadOnly&&shownWork is {} id){var current=Branch(Session.PlayerControl).Knowledge.Tasks.SingleOrDefault(p=>p.Id==id);if(current!=null&&Awaiting()?.Id==id&&!ownWorkSpeaker)workDetails.Text=FormatWorkDetails(WorkTerms(Snapshot().Tasks.Single(p=>p.Id==id).Scope,current.DeadlineAt,false,Snapshot().Tasks.Single(p=>p.Id==id).Kind));if(current!=null&&((current.KnownStatus.Contains("Completed")&&workTitle.Text is not ("点検の報告" or "点検記録"))||(Awaiting()?.Id==id&&workTitle.Text!="点検を引き受けますか")))RenderKnownWork(current);}
+        if(workOverlay.Visible&&workReadOnly&&shownWork is {} id){var current=Branch(Session.PlayerControl).Knowledge.Tasks.SingleOrDefault(p=>p.Id==id);if(current!=null&&Awaiting()?.Id==id&&!ownWorkSpeaker)workDetails.Text=FormatWorkDetails(WorkTerms(Snapshot().Tasks.Single(p=>p.Id==id).Scope,current.DeadlineAt,false,Snapshot().Tasks.Single(p=>p.Id==id).Kind,NewGameWork.Reward(Snapshot(),Snapshot().Tasks.Single(p=>p.Id==id))));if(current!=null&&((current.KnownStatus.Contains("Completed")&&workTitle.Text is not ("点検の報告" or "点検記録"))||(Awaiting()?.Id==id&&workTitle.Text!="点検を引き受けますか")))RenderKnownWork(current);}
     }
     internal bool ReviewRunningWorkLayout()
     {

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2316,
-  "baseline_passed": 2308,
-  "added": 8,
-  "scope": "WorkProgression8 added; current execution is targeted74, not full2316"
+  "expected_passed": 2331,
+  "baseline_passed": 2316,
+  "added": 15,
+  "scope": "WorkDuty15 added; current execution targeted88, full2331 not run"
 }

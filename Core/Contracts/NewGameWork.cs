@@ -1,7 +1,11 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 public sealed record WorkPayment(EntityId Id,EntityId Task,EntityId Notice,long Amount,long At,long Revision);
-public sealed record WorkCycleState(int Schema,string Contract,CareerOpening[] Openings,WorkPayment[] Payments);
+public sealed record WorkCycleState(int Schema,string Contract,CareerOpening[] Openings,WorkPayment[] Payments)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public WorkDutyAgreement[]? Duties {get;init;}
+}
 public static class NewGameWork
 {
     public const string Policy="local-work-physical-reply-fee20-wallet1000-mon-v1";
@@ -18,7 +22,8 @@ public static class NewGameWork
     static string Key(EntityId task)=>task.Value+"/work-fee/1";
     static bool Eligible(TaskState t)=>t.Action==ActionKind.Inspect&&t.Issuer!=t.Executor;
     public static long Reward(TaskState t)=>t.Kind==TaskKind.VoluntaryRequest?Fee:0;
-    public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.WorkCycle?.Payments.Any(p=>p.Id==id)==true||TransportWork.Jobs(w).Any(j=>j.Handover.Terms.Id==id||j.Handover.Entries.Any(e=>e.Input.Id==id));
+    public static long Reward(ContractWorld w,TaskState t)=>t.Kind==TaskKind.VoluntaryRequest?Fee:WorkDuty.Reward(w,t);
+    public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.WorkCycle?.Duties?.Any(a=>a.Id==id)==true||w.WorkCycle?.Payments.Any(p=>p.Id==id)==true||TransportWork.Jobs(w).Any(j=>j.Handover.Terms.Id==id||j.Handover.Entries.Any(e=>e.Input.Id==id));
     public static long Balance(ContractWorld w,EntityId actor)=>w.ResourceLots.SingleOrDefault(l=>l.Id==Wallet(actor))?.Quantity??0;
     internal static void Initialize(ContractWorld w){if(!Enabled(w))return;w.WorkCycle=new(1,Policy,[],[]);w.Definitions=w.Definitions with{AuthorityBases=[..w.Definitions.AuthorityBases,new(Basis,"現地任意点検の受領確認後に銭20文。私財初期1000文は試作用開始設定。軍・徴収権とは独立") ]};Sync(w);}
     static ResourceLot[] WalletRows(ContractWorld w)=>w.NewGame!.Start.People.Where(p=>w.Characters.Single(c=>c.Id.Value==p.Id).Life==LifeState.Adult).OrderBy(p=>p.Id,StringComparer.Ordinal).Select(p=>{var id=Wallet(new(p.Id));long delta=w.Transfers.Where(t=>t.ToLot==id).Sum(t=>t.Amount)-w.Transfers.Where(t=>t.FromLot==id).Sum(t=>t.Amount);return new ResourceLot(id,"money",new(p.Id),new(p.Id),new(p.Site),"mon",checked(InitialCoins+delta+TransportWork.Net(w,id)+VoyageExpense.Net(w,id)),InitialCoins,0,new(p.Id));}).ToArray();
@@ -47,12 +52,12 @@ public static class NewGameWork
             EnsureDebt(w,t,review);
         }
     }
-    internal static void EnsureDebt(ContractWorld w,TaskState t,MissionReview.Review review){if(Enabled(w)&&WorkProgression.Completed(review.Achievement)&&Reward(t)>0&&!w.Debts.Any(d=>d.Id==DebtId(t)))w.Debts=[..w.Debts,new(DebtId(t),t.Issuer,t.Executor,"mon",Reward(t),Basis)];}
+    internal static void EnsureDebt(ContractWorld w,TaskState t,MissionReview.Review review){if(Enabled(w)&&WorkProgression.Completed(review.Achievement)&&Reward(w,t)>0&&!w.Debts.Any(d=>d.Id==DebtId(t)))w.Debts=[..w.Debts,new(DebtId(t),t.Issuer,t.Executor,"mon",Reward(w,t),Basis)];}
     internal static void RecordOpening(ContractWorld w,EntityId actor,string id){if(!Enabled(w)||actor!=w.PlayerControl||!w.Messaging.Messages.Any(m=>m.Id==id&&m.Kind==AssessmentNotice.Kind)||w.WorkCycle!.Openings.Any(o=>o.Message==id))return;w.WorkCycle=w.WorkCycle with{Openings=[..w.WorkCycle.Openings,new(id,w.ElapsedSeconds,w.CommitSequence)]};}
     public static bool Paid(ContractWorld w,EntityId task)=>w.WorkCycle?.Payments.Any(p=>p.Task==task)==true;
     public static bool CanRequest(WorldSession session,EntityId task)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||Paid(w,task))return false;var t=w.Tasks.SingleOrDefault(t=>t.Id==task);if(t==null||t.Executor!=session.PlayerControl||Reward(t)==0)return false;
+        var w=session.DiagnosticSnapshot();if(!Enabled(w)||Paid(w,task))return false;var t=w.Tasks.SingleOrDefault(t=>t.Id==task);if(t==null||t.Executor!=session.PlayerControl||Reward(w,t)==0)return false;
         bool known=AssessmentNotice.LatestKnown(session,session.PlayerControl).Any(p=>p.Task==task&&WorkProgression.Completed(p.Review.Achievement));
         return known&&w.Locations.Any(l=>l.Actor==session.PlayerControl&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope)&&RegionalCampaign.Nearby(w,session.PlayerControl).Any(p=>p.Actor==t.Issuer);
     }
@@ -64,9 +69,9 @@ public static class NewGameWork
     }
     internal static void Pay(ContractWorld w,EntityId id,TaskState t,EntityId notice)
     {
-        if(!Local(w,t,w.ElapsedSeconds,w.CommitSequence)||Balance(w,t.Issuer)<Reward(t))throw new InvalidDataException("現地の受渡しを確定できません。未払い分は残ります");
-        var proof=new WorkPayment(id,t.Id,notice,Reward(t),w.ElapsedSeconds,w.CommitSequence);var effect=EffectId(t.Id);
-        w.WorkCycle=w.WorkCycle! with{Payments=[..w.WorkCycle.Payments,proof]};w.EffectLedger=[..w.EffectLedger,new(effect,Key(t.Id),ContractJson.CanonicalHash(proof),t.Id,w.ElapsedSeconds,"work-payment")];w.Transfers=[..w.Transfers,new(TransferId(t.Id),effect,Wallet(t.Issuer),Wallet(t.Executor),Reward(t),w.ElapsedSeconds)];w.Debts=w.Debts.Select(d=>d.Id==DebtId(t)?d with{Outstanding=0}:d).ToArray();Sync(w);
+        if(!Local(w,t,w.ElapsedSeconds,w.CommitSequence)||Balance(w,t.Issuer)<Reward(w,t))throw new InvalidDataException("現地の受渡しを確定できません。未払い分は残ります");
+        var proof=new WorkPayment(id,t.Id,notice,Reward(w,t),w.ElapsedSeconds,w.CommitSequence);var effect=EffectId(t.Id);
+        w.WorkCycle=w.WorkCycle! with{Payments=[..w.WorkCycle.Payments,proof]};w.EffectLedger=[..w.EffectLedger,new(effect,Key(t.Id),ContractJson.CanonicalHash(proof),t.Id,w.ElapsedSeconds,"work-payment")];w.Transfers=[..w.Transfers,new(TransferId(t.Id),effect,Wallet(t.Issuer),Wallet(t.Executor),Reward(w,t),w.ElapsedSeconds)];w.Debts=w.Debts.Select(d=>d.Id==DebtId(t)?d with{Outstanding=0}:d).ToArray();Sync(w);
     }
     internal static void Rewind(ContractWorld w,long at,long rev)
     {
@@ -80,9 +85,9 @@ public static class NewGameWork
         Need(state!.Payments.Select(p=>p.Id).Distinct().Count()==state.Payments.Length&&state.Payments.Select(p=>p.Task).Distinct().Count()==state.Payments.Length,"Repeated work payment");
         Need(state.Openings.Select(o=>o.Message).Distinct().Count()==state.Openings.Length,"Repeated work notice opening");
         foreach(var o in state.Openings)Need(w.Messaging.Messages.Any(m=>m.Id==o.Message&&m.Kind==AssessmentNotice.Kind&&m.RecipientId==w.PlayerControl.Value)&&MessageFlow.LearnedAt(w.Messaging,o.Message,w.PlayerControl.Value)==o.At&&o.At<=w.ElapsedSeconds&&o.Revision>0&&o.Revision<=w.CommitSequence,"Invalid work notice opening");
-        foreach(var p in state.Payments){var t=w.Tasks.Single(t=>t.Id==p.Task);var note=w.Messaging.Messages.Single(m=>m.Id==p.Notice.Value&&m.Kind==AssessmentNotice.Kind);var payload=AssessmentNotice.Read(note.Body);Need(Eligible(t)&&t.Executor==w.PlayerControl&&p.Amount==Reward(t)&&p.Amount>0&&payload.Task==t.Id&&WorkProgression.Completed(payload.Review.Achievement)&&state.Openings.Any(o=>o.Message==note.Id&&o.At<=p.At&&o.Revision<p.Revision)&&p.At<=w.ElapsedSeconds&&p.Revision<=w.CommitSequence&&Local(w,t,p.At,p.Revision),"Payment lacks prior personal receipt or local handover");Need(w.EffectLedger.Contains(new(EffectId(t.Id),Key(t.Id),ContractJson.CanonicalHash(p),t.Id,p.At,"work-payment"))&&w.Transfers.Contains(new(TransferId(t.Id),EffectId(t.Id),Wallet(t.Issuer),Wallet(t.Executor),p.Amount,p.At)),"Missing actual coin transfer");}
+        foreach(var p in state.Payments){var t=w.Tasks.Single(t=>t.Id==p.Task);var note=w.Messaging.Messages.Single(m=>m.Id==p.Notice.Value&&m.Kind==AssessmentNotice.Kind);var payload=AssessmentNotice.Read(note.Body);Need(Eligible(t)&&t.Executor==w.PlayerControl&&p.Amount==Reward(w,t)&&p.Amount>0&&payload.Task==t.Id&&WorkProgression.Completed(payload.Review.Achievement)&&state.Openings.Any(o=>o.Message==note.Id&&o.At<=p.At&&o.Revision<p.Revision)&&p.At<=w.ElapsedSeconds&&p.Revision<=w.CommitSequence&&Local(w,t,p.At,p.Revision),"Payment lacks prior personal receipt or local handover");Need(w.EffectLedger.Contains(new(EffectId(t.Id),Key(t.Id),ContractJson.CanonicalHash(p),t.Id,p.At,"work-payment"))&&w.Transfers.Contains(new(TransferId(t.Id),EffectId(t.Id),Wallet(t.Issuer),Wallet(t.Executor),p.Amount,p.At)),"Missing actual coin transfer");}
         Need(w.EffectLedger.Count(e=>e.Result=="work-payment")==state.Payments.Length&&w.Transfers.Count(x=>w.ResourceLots.Any(l=>IsWallet(w,l)&&(l.Id==x.FromLot||l.Id==x.ToLot)))==state.Payments.Length,"Orphan money movement");
-        var debts=w.Tasks.Where(Eligible).Where(t=>Reward(t)>0&&AssessmentNotice.Authored(w,t.Id,t.Issuer).Any(m=>WorkProgression.Completed(AssessmentNotice.Read(m.Body).Review.Achievement))).Select(t=>new DebtState(DebtId(t),t.Issuer,t.Executor,"mon",Paid(w,t.Id)?0:Reward(t),Basis)).OrderBy(d=>d.Id.Value).ToArray();Need(ContractJson.CanonicalHash(debts)==ContractJson.CanonicalHash(w.Debts.Where(d=>d.Basis==Basis).OrderBy(d=>d.Id.Value).ToArray()),"Work debt was lost or changed");
+        var debts=w.Tasks.Where(Eligible).Where(t=>Reward(w,t)>0&&AssessmentNotice.Authored(w,t.Id,t.Issuer).Any(m=>WorkProgression.Completed(AssessmentNotice.Read(m.Body).Review.Achievement))).Select(t=>new DebtState(DebtId(t),t.Issuer,t.Executor,"mon",Paid(w,t.Id)?0:Reward(w,t),Basis)).OrderBy(d=>d.Id.Value).ToArray();Need(ContractJson.CanonicalHash(debts)==ContractJson.CanonicalHash(w.Debts.Where(d=>d.Basis==Basis).OrderBy(d=>d.Id.Value).ToArray()),"Work debt was lost or changed");
         Need(ContractJson.CanonicalHash(w.ResourceLots.Where(l=>IsWallet(w,l)).ToArray())==ContractJson.CanonicalHash(WalletRows(w)),"Personal coin balance differs from actual transfers");Need(w.Reservations.All(r=>!w.ResourceLots.Any(l=>IsWallet(w,l)&&l.Id==r.Lot)),"Money wallet is reserved by unsupported operation");
     }
 }
