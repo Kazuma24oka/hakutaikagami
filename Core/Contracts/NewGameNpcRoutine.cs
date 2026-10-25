@@ -14,7 +14,7 @@ public static class NewGameNpcRoutine
         bool known=true;string? result=null;
         if(own.Length>0){var task=w.Tasks.Single(t=>t.RequestId==own[^1].Id);string report=WorldSession.Child("message",task.Id,"report").Value;known=w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.MessageId==report&&k.LearnedAt<=at);if(known)result=w.Messaging.Messages.Single(m=>m.Id==report).Body;}
         var place=w.Locations.Single(l=>l.Actor==actor);bool local=place.Kind==LocationKind.AtSite&&place.Site!=null;long ready=0;
-        bool permit=IsActor(w,actor)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult&&local&&WorldSession.Permits(w,actor,NewGameWorld.InspectFor(w,actor,"request:npc-routine-preview",at),at);
+        bool permit=!NpcArmies.CommanderBusyAt(w,actor,at,revision)&&IsActor(w,actor)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult&&local&&WorldSession.Permits(w,actor,NewGameWorld.InspectFor(w,actor,"request:npc-routine-preview",at),at);
         return new(local,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready);
     }
     public static string Reason(NpcWorkInputs i)=>!i.LocalWitness?"not-at-own-site":!i.InspectionPermit?"no-personal-permit":!i.LastReportKnown?"await-own-report":i.OwnTasks.Length>0?"own-result-known":"inspect-own-site";

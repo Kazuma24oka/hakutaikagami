@@ -93,6 +93,8 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 public sealed class ContractWorld
 {
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public NpcArmyState? NpcArmies {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public FactionStanceState? FactionStances {get;set;}
     // Pure location reconstruction only; the caller replaces Branches and never
     // mutates shared arrays, messaging, or any nested state.

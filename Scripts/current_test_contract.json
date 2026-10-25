@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2479,
-  "baseline_passed": 2446,
-  "added": 33,
-  "scope": "FactionStance24 and FactionStanceKnowledge9 added. Current related199 verified by CLI; full2479 and current GUI NOT_RUN. Accepted main9762c59 full2446 is historical evidence."
+  "expected_passed": 2513,
+  "baseline_passed": 2479,
+  "added": 34,
+  "scope": "NPC army34 added. Scoped CLI run covers authoritative garrison, common land movement, actual return and generation recovery. Full2513 and GUI NOT_RUN; previous main976 full2446 is historical."
 }

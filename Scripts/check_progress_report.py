@@ -18,7 +18,10 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- from verify_faction_stances import check as check_logic
+ if logic["scope"]=="headless-npc-garrison-common-land-travel-return":
+  from verify_npc_armies import check as check_logic
+ else:
+  from verify_faction_stances import check as check_logic
  check_logic(logic)
  f=p['evidence']['accepted_baseline_snapshot'];check(f,p['evidence']['accepted_baseline_snapshot_sha256'])
  snapshot=json.loads((R/f).read_bytes());assert snapshot['main']=='9762c59994e1fc9b721b1356eb1534343d5e2fca'
