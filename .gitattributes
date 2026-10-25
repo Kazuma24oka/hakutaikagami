@@ -1891,3 +1891,8 @@ Docs/Design/FactionEntryV1/** -text
 Game/Scripts/NewGameRuntime.Economy.cs -text
 Scripts/verify_regional_economy.py -text
 Docs/Design/RegionalEconomyV1/** -text
+
+# Personal companion agreement and headless data verification.
+Game/Scripts/NewGameRuntime.Companions.cs -text
+Scripts/verify_personal_companions.py -text
+Docs/Design/PersonalCompanionsV1/** -text

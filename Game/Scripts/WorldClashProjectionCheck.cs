@@ -16,13 +16,14 @@ public partial class WorldClashProjectionCheck : Node
         try{
             if(DisplayServer.GetName()!="headless")throw new InvalidDataException("This check is headless-only");
             var dir=System.Environment.GetEnvironmentVariable("HAKUTAI_WORLD_CLASH_QA_DIR")??throw new InvalidDataException("Missing QA input directory");
-            int pairs=int.Parse(System.Environment.GetEnvironmentVariable("HAKUTAI_PROJECTION_EXPECTED_PAIRS")??"3");if(pairs is not(3 or 5))throw new InvalidDataException("Unknown projection scope");
+            int pairs=int.Parse(System.Environment.GetEnvironmentVariable("HAKUTAI_PROJECTION_EXPECTED_PAIRS")??"3");if(pairs is not(3 or 5 or 7))throw new InvalidDataException("Unknown projection scope");
             var files=Directory.GetFiles(dir,"*.json").Where(p=>p.EndsWith(".before.json",StringComparison.Ordinal)||p.EndsWith(".restored.json",StringComparison.Ordinal)).Order(StringComparer.Ordinal).ToArray();if(files.Length!=pairs*2)throw new InvalidDataException("Missing actual generation-recovery pairs");
             var results=new Dictionary<string,string>();int nodes=0;
             foreach(var path in files){
                 var w=ContractJson.Read<ContractWorld>(File.ReadAllBytes(path));ContractValidation.Validate(w);
                 var center=FieldWorld.FromWorld(RegionalCampaign.ActorPointAt(w,w.PlayerControl,w.ElapsedSeconds));
                 var positions=new List<(string Id,FieldPoint Position,int Soldiers,bool Attack)>();
+                if(PersonalCompanions.Enabled(w)){foreach(var person in new[]{w.PlayerControl}.Concat(w.Companions!.Orders.Where(q=>q.Input.Action==CompanionAction.Agree).Select(q=>q.Input.Person)).Distinct()){positions.Add((person.Value,FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,person,w.ElapsedSeconds)),0,false));}}
                 foreach(var u in w.Units.Where(u=>u.Organization==w.NewMilitary!.Terms.Owner)){
                     int i=Array.IndexOf(NewGameMilitary.UnitIdsFor(w),u.Id);positions.Add((u.Id.Value,NewGameMilitary.Position(w,i,w.ElapsedSeconds),(int)u.Soldiers,WorldClashes.AttacksNow(w,u.Id)));
                 }

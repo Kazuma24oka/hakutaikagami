@@ -18,7 +18,9 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- if logic["scope"]=="headless-regional-seasonal-rice-accounts-generation-recovery":
+ if logic["scope"]=="headless-personal-companions-agreement-pay-common-tasks-recovery":
+  from verify_personal_companions import check as check_logic
+ elif logic["scope"]=="headless-regional-seasonal-rice-accounts-generation-recovery":
   from verify_regional_economy import check as check_logic
  elif logic["scope"]=="headless-normal-faction-paper-reaction-sparse-combat-entry":
   from verify_faction_entry import check as check_logic

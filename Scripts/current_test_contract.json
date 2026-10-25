@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2592,
-  "baseline_passed": 2573,
-  "added": 19,
-  "scope": "Regional economy19 added; related412 and headless combat projection regression. Full2592 and GUI NOT_RUN."
+  "expected_passed": 2615,
+  "baseline_passed": 2592,
+  "added": 23,
+  "scope": "Personal companion23 added; related435, generation recovery and headless Node3D14 worlds/7 pairs/48 nodes. Full2615 and GUI NOT_RUN."
 }
