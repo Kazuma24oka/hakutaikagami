@@ -230,3 +230,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [陸路点検結果と行先選択](Design/InspectionFindingsV1/README.md)
 
 - [返報・現地報酬・次の仕事](Design/WorkCycleV1/README.md)
+
+- [仕事から軍務の判断へ](Design/MilitaryWorkV1/README.md)

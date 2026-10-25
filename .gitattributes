@@ -1821,3 +1821,10 @@ Game/Scripts/NewGameFrontEnd.RepeatedExerciseChecks.cs -text whitespace=blank-at
 Scripts/verify_work_cycle.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_work_cycle_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Docs/Design/WorkCycleV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameRuntime.MilitaryWork.cs -text
+Game/Scripts/NewGameFrontEnd.MilitaryWorkChecks.cs -text
+Scripts/verify_military_work.py -text
+Scripts/check_military_work_binding.py -text
+Docs/Design/MilitaryWorkV1/** -text
+Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text
