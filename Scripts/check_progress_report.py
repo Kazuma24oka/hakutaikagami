@@ -6,7 +6,7 @@ p=json.loads((R/'Docs/Development/ProgressV1/progress.json').read_bytes());d=jso
 ids=[i['id'] for g in d['groups'] for i in g['items']]
 assert len(d['groups'])==15 and len(ids)==60 and len(set(ids))==60
 assert [i['id'] for i in p['items']]==ids
-assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=30,isolated=3,foundation=12,design_only=14,management=1)
+assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=31,isolated=3,foundation=11,design_only=14,management=1)
 assert len(a['cases'])==170
 for i in p['items']:
  assert i['existing'] and i['remaining'] and i['evidence']

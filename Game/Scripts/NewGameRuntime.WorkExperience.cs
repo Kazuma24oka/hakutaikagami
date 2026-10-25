@@ -48,7 +48,7 @@ public partial class NewGameRuntime
         findingRoad=new(){Visible=false,CustomMinimumSize=new(0,36)};decision.AddChild(findingRoad);
         workReplyChoice=new(){Visible=false,CustomMinimumSize=new(0,36)};decision.AddChild(workReplyChoice);workReplyChoice.ItemSelected+=n=>{if(!renderingWorkReply&&n>=0&&n<workReplyIds.Length)ShowWorkAssessment(workReplyIds[n]);};
         workChoices=new();workChoices.AddThemeConstantOverride("separation",6);decision.AddChild(workChoices);
-        BuildMilitaryWork(workStack);BuildSupplyWork(workStack);BuildTransportWork(workStack);BuildWorkDuty(workStack);Resized+=LayoutBottomTalk;LayoutBottomTalk();
+        BuildMilitaryWork(workStack);BuildSupplyWork(workStack);BuildTransportWork(workStack);BuildWorkDuty(workStack);BuildWorkRelations(workStack);Resized+=LayoutBottomTalk;LayoutBottomTalk();
         historyOverlay=Overlay();var historyCol=new VBoxContainer();historyOverlay.AddChild(historyCol);historyCol.AddChild(new Label{Text="履歴 — 本人が確認した用件・書状"});var scroll=new ScrollContainer{SizeFlagsVertical=SizeFlags.ExpandFill,HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};historyCol.AddChild(scroll);historyText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill};scroll.AddChild(historyText);var close=new Button{Text="閉じる"};historyCol.AddChild(close);close.Pressed+=()=>{historyOverlay.Hide();RefreshWorkExperience();};
     }
     PanelContainer Overlay()
@@ -93,7 +93,7 @@ public partial class NewGameRuntime
     }
     void Choice(string id,string text,Action action)
     {
-        Add(workChoices,id,text,()=>{if(id is "transport-next" or "work-duty-accept" or "work-confirm" or "work-assent" or "work-refuse" or "work-pay" or "work-received" or "work-military-confirm" or "work-supply-confirm" or "transport-accept" or "transport-collect" or "transport-deliver" or "transport-report" or "transport-pay" or "transport-cancel" or "transport-return"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
+        Add(workChoices,id,text,()=>{if(id is "work-contact-apply" or "work-contact-accept" or "work-contact-decline" or "transport-next" or "work-duty-accept" or "work-confirm" or "work-assent" or "work-refuse" or "work-pay" or "work-received" or "work-military-confirm" or "work-supply-confirm" or "transport-accept" or "transport-collect" or "transport-deliver" or "transport-report" or "transport-pay" or "transport-cancel" or "transport-return"){pendingWorkReply=action;workDecisionOpen=false;workDecision.Hide();SetTalkSpeaker(Session.PlayerControl);workSpeech.Text=text+"。";workPhase.Text="あなたの返答";buttons["work-reply"].Text="続ける";}else action();});
         var button=buttons[id];button.CustomMinimumSize=new(0,42);button.Alignment=HorizontalAlignment.Left;button.AddThemeFontSizeOverride("font_size",18);button.AddThemeStyleboxOverride("normal",WorkBox("3e382a","bda068",8));button.AddThemeStyleboxOverride("hover",WorkBox("655338","eed39c",8));button.AddThemeStyleboxOverride("focus",WorkBox("655338","eed39c",8));
     }
     void ClearChoices(){foreach(Node n in workChoices.GetChildren()){workChoices.RemoveChild(n);n.QueueFree();}}
@@ -153,6 +153,8 @@ public partial class NewGameRuntime
     static string ReadableStatus(string text)=>text.Replace("Completed","完了").Replace("Running","進行中").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗").Replace("Waiting","待機");
     void RefreshWorkExperience()
     {
+        buttons["work-contact"].Visible=LocalWorkContact()!=null;
+        buttons["work-contact"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["work-duty"].Visible=WorkDuty.Candidate(Snapshot())!=null||WorkDuty.Active(Snapshot())!=null;
         if(workSummary==null)return;workBackdrop.Visible=historyOverlay.Visible;workDecision.Visible=workOverlay.Visible&&workDecisionOpen&&!historyOverlay.Visible;
         message.Visible=message.Text.StartsWith("操作できません：")||message.Text.Contains("確定できませんでした")||message.Text.Contains("保存できません");
