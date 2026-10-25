@@ -1,8 +1,8 @@
 {
-  "title": "地域プレイ版：main統合候補",
+  "title": "地域プレイ版：コードmain統合済み",
   "code_revision": "29e86854e7f61ed256b217b4fcbcde8ee6dd23aa",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/1",
-  "status": "コード側の確認完了・main統合の承認待ち",
+  "status": "PR #1 main統合済み・仮素材はローカル限定",
   "core_tests": {
     "status": "PASSED",
     "passed": 2373,
@@ -34,5 +34,6 @@
     "経済・所領と全国のデータ/統合受入"
   ],
   "assets": "現モデルはTripo/GPT等と外部ツール由来の要素を含む仮素材。正式キャラクターは別途制作予定。モデル本体・描画画像・保存・ツールはローカル限定で、コードのみを統合候補とする。Gitからのビルドと、仮モデルを含む見た目の再現は別。",
-  "approval": "mainへの新規mergeは別承認が必要。prototype/godot-foundationへのcommit/pushの承認をmainへ拡張しない（OPERATING_POLICY.md）。"
+  "approval": "2026-10-25、ユーザーがPR #1のコードのみmain統合を明示承認。実施済み。以後のmain統合や素材公開への包括承認ではない。",
+  "merge_sha": "dd667079a799daefc04188cf5e9ef3c6309cd68a"
 }
