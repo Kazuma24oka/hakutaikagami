@@ -26,6 +26,7 @@ public partial class NewGameRuntime
         if(j==null)return;shownWork=null;var t=j.Handover.Terms;var v=TransportHandover.Validate(j.Handover);var source=Session;long revision=Session.Revision;
         string sourceName=Snapshot().Definitions.Sites.Single(s=>s.Id==t.Source).Name,destName=Snapshot().Definitions.Sites.Single(s=>s.Id==t.Destination).Name;
         string speech=v.Phase switch{HandoverPhase.Offered=>$"{PersonName(t.Recipient)}への預り銭を、{destName}まで運んでほしい。",HandoverPhase.Accepted=>"引き受けた荷物をここで預かろう。",HandoverPhase.Carrying=>$"{destName}の{PersonName(t.Recipient)}に渡そう。",HandoverPhase.Delivered=>$"受渡しは済んだ。{sourceName}の荷主へ報告しよう。",HandoverPhase.Reported=>"報告を確認した。運賃を受け取ってほしい。",HandoverPhase.Paid=>"運搬と運賃の受領まで済んだ。",_=>"預り銭の返却を確認しよう。"};
+        if(v.Phase==HandoverPhase.Offered&&WorkFollowup.Enabled(Snapshot()))speech=WorkFollowup.Terms(Snapshot(),t.Issuer,t.OfferedAt,j.CreatedRevision).Reason+"\n"+speech;
         bool carrierSpeaker=v.Phase!=HandoverPhase.Offered&&v.Phase!=HandoverPhase.Reported;
         PresentWork("小口送金の運搬",speech,$"荷物　銭{t.Amount}文（所有は{PersonName(t.Issuer)}）\n届け先　{destName} / {PersonName(t.Recipient)}\n運賃　報告後に{t.Fee}文。私財での立替なし。",t.Issuer,carrierSpeaker?Session.PlayerControl:t.Issuer,TransportPhase(v.Phase),"次の行動");workCardHeading.Text="固定した運搬条件";
         void Step(string id,string words,HandoverAction action)

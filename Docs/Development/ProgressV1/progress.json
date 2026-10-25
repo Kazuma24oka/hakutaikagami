@@ -406,7 +406,7 @@
     {
       "id": "BD-29",
       "status": "normal",
-      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。",
+      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。",
       "remaining": "運搬/普請/政治など任務種別を増やし、部分達成と正式な評価まで接続する。",
       "evidence": [
         "Core/Contracts/NewGameWork.cs",
@@ -430,7 +430,10 @@
         "Docs/Design/WorkProgressionV1/verification.json",
         "Core/Contracts/WorkDuty.cs",
         "Tests/WorkDutyTests.cs",
-        "Docs/Design/WorkDutyV1/verification.json"
+        "Docs/Design/WorkDutyV1/verification.json",
+        "Core/Contracts/WorkFollowup.cs",
+        "Tests/WorkFollowupTests.cs",
+        "Docs/Design/WorkFollowupV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -474,7 +477,7 @@
     {
       "id": "BD-32",
       "status": "isolated",
-      "existing": "独立試作で中断理由書状と暫定レビューを分ける。通常の点検返答は受領確認まで。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。",
+      "existing": "独立試作で中断理由書状と暫定レビューを分ける。通常の点検返答は受領確認まで。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。",
       "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。",
       "evidence": [
         "Core/Contracts/MissionReview.cs",
@@ -485,7 +488,10 @@
         "Docs/Design/WorkProgressionV1/verification.json",
         "Core/Contracts/WorkDuty.cs",
         "Tests/WorkDutyTests.cs",
-        "Docs/Design/WorkDutyV1/verification.json"
+        "Docs/Design/WorkDutyV1/verification.json",
+        "Core/Contracts/WorkFollowup.cs",
+        "Tests/WorkFollowupTests.cs",
+        "Docs/Design/WorkFollowupV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -505,7 +511,7 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。",
+      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。",
       "remaining": "通常入口からの徴税・定期俸禄・所領財政と、私財の支出/旅費を接続する。",
       "evidence": [
         "Core/Contracts/NewGameWork.cs",
@@ -526,7 +532,10 @@
         "Docs/Design/WorkProgressionV1/verification.json",
         "Core/Contracts/WorkDuty.cs",
         "Tests/WorkDutyTests.cs",
-        "Docs/Design/WorkDutyV1/verification.json"
+        "Docs/Design/WorkDutyV1/verification.json",
+        "Core/Contracts/WorkFollowup.cs",
+        "Tests/WorkFollowupTests.cs",
+        "Docs/Design/WorkFollowupV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -816,7 +825,7 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "スタート/作成/ロード・地図・仕事/会話・軍務・書状・履歴が通常入口につながる。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。",
+      "existing": "スタート/作成/ロード・地図・仕事/会話・軍務・書状・履歴が通常入口につながる。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。",
       "remaining": "全制度の案内・戦後評価と、布陣などを含むキーボード操作/アクセシビリティを仕上げる。",
       "evidence": [
         "Game/Scripts/NewGameFrontEnd.cs",
@@ -836,7 +845,10 @@
         "Docs/Design/WorkProgressionV1/verification.json",
         "Core/Contracts/WorkDuty.cs",
         "Tests/WorkDutyTests.cs",
-        "Docs/Design/WorkDutyV1/verification.json"
+        "Docs/Design/WorkDutyV1/verification.json",
+        "Core/Contracts/WorkFollowup.cs",
+        "Tests/WorkFollowupTests.cs",
+        "Docs/Design/WorkFollowupV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -970,7 +982,7 @@
       "Core/Contracts/NewGameService.cs": "1997c19cdc6d0db4d5bcb7dfec8e71d3329ddb335b70375410472e19e343c715",
       "Core/Contracts/NewGameService.Validation.cs": "35c13b5de88ed9a1cd53c78ae611aeaedc5c6bc0608c3a616a92eb8688cd9250",
       "Core/Contracts/NewGameSetup.cs": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
-      "Core/Contracts/NewGameWork.cs": "338817f139f85e8b4131c93988662d042fa7354aff551363989cfa0ed558fad7",
+      "Core/Contracts/NewGameWork.cs": "40a6610a6223fcbf4e396a53bd85ca65d85b54541d0ce4b45d1a7b10fe1bc3b7",
       "Core/Contracts/NewGameWorld.CompactAuthority.cs": "31bb9896f4df92183d202c2b509aa5283d952da4b7b0a6ed64c2e53452101ce0",
       "Core/Contracts/NewGameWorld.cs": "8eca7cd032819dffbbd7d4709629234a47f4e16cd332a772954299a5c52aac2e",
       "Core/Contracts/NewGameWorld.StartProjection.cs": "04ab18c81cc6152475549de876170bec8bd96b7fdf07192cac9f5fb591294b9d",
@@ -996,12 +1008,13 @@
       "Core/Contracts/TrafficExamples.cs": "64b0e500482b8db1b389b6716dcdf567784043e7d1d8c9422cae9ad91d28ed39",
       "Core/Contracts/TrafficWorld.cs": "2492d888168cc9db2a2794559e5263b155519b2518059c32437cd07a1d86e7ae",
       "Core/Contracts/TransportHandover.cs": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
-      "Core/Contracts/TransportWork.cs": "794d1105085f3a1de2b4127ff7de07d162de16dde30fec0b7d11cd4f5bd0eb28",
+      "Core/Contracts/TransportWork.cs": "2fb917de33cbded5f0975c0772a1e3be4a057a445f10f09c0741a63da17128f6",
       "Core/Contracts/TravelControl.cs": "08e57d97ca250b660d14f8764cf57138e32cb55ed944597f6b2fee5ced384437",
       "Core/Contracts/TravelWorld.cs": "17649beb4c43e62401e8204db9e64c41f2908378d13c53c9c26b324563745eef",
       "Core/Contracts/VoyageExpense.cs": "425fd8449d5faa01fb7dce6f158b97ea08a9f655deacd8fc57d2f59c4c083e04",
       "Core/Contracts/WorkDuty.cs": "be195a768d6a9278317ea926d09229bf6e23bb92785198d389e6677cc720cff4",
-      "Core/Contracts/WorkProgression.cs": "4ad7d333c376b55e8f1fd9db917985d39ed3d8d68415c72b9813caac02b397e3",
+      "Core/Contracts/WorkFollowup.cs": "a8c35dcf81e1b7a137f38985da62211283164ca24d55de5621326bbcfb187bae",
+      "Core/Contracts/WorkProgression.cs": "8ee56e5121694cfea9368d03088282b6b6d546a4ad32557bd2c1dd93cc6f851e",
       "Core/Contracts/WorldSession.AssessmentNotice.cs": "25319ff0456476b9e1ad907722b45853e71c58cdc1b383a526529e9c0ddc5f78",
       "Core/Contracts/WorldSession.Career.cs": "735c15c11b3325c91e1769aef42744e736982ac722429526d0e0dcf218ef0ad9",
       "Core/Contracts/WorldSession.CareerMilitary.cs": "6792e2754ac536d6827239d5005fd3295038359cee888f80e4dda555deb8d29c",
@@ -1669,9 +1682,9 @@
       "Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs": "1f8cd5037f69a16e2830bfdc5f63dc4c78a6640c25f18364edf9d219a69089d3",
       "Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs": "f16620b2f5f7f6b9080f6ffb2728348a1ba30f75e3f7cf7a7616f23dee21d705",
       "Game/Scripts/NewGameFrontEnd.CapacityChecks.cs": "a98863f064b8d372de51da5d5d0ebe6d572b5231695b63d6dcfed50a9a1853ff",
-      "Game/Scripts/NewGameFrontEnd.Checks.cs": "a51d8ad09fd8dcb6f71907f52f9f248eafe21f4dbcd599f7ad051269d6d5ab7d",
+      "Game/Scripts/NewGameFrontEnd.Checks.cs": "a3e1ee9cf9285078d60cefdf65bf0c743be144c51edfa145d858052508224007",
       "Game/Scripts/NewGameFrontEnd.CombatChecks.cs": "1021dadc7e3cb0b657e5f713af46fab9995d26cae55ca02208ec4fafbad568c0",
-      "Game/Scripts/NewGameFrontEnd.cs": "80491afcc5fae82c4b1cfa54971ffb94ee4852d5ec9c73a3fd04dc3ee3394f77",
+      "Game/Scripts/NewGameFrontEnd.cs": "e354d29b98e2ded0da8ad6edc515512fc4ac786c6fa8bdcee1dd32720086e4ee",
       "Game/Scripts/NewGameFrontEnd.DemandChecks.cs": "aed426a8802b2bc7a1815cbee7352810969d6565d752e2a042254597af5b5755",
       "Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs": "700ad5c78ed1366e6e1bf424b2e333441ca1e63dddcb5d1b4979e94dc6c98626",
       "Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs": "9268d5801d02e640996be74ba59dd591fca4abffba00abb883a5c9ff439a563b",
@@ -1718,6 +1731,7 @@
       "Game/Scripts/NewGameFrontEnd.WorkConversationChecks.cs": "893e92539d1cabe3ec2ab3436171ee6a82d5fe6363aa39f3280a08f47bc9fa11",
       "Game/Scripts/NewGameFrontEnd.WorkCycleChecks.cs": "116d29ec5dfc13815178a74061ea211990a32eb83fc0eed7730da3f3556310f2",
       "Game/Scripts/NewGameFrontEnd.WorkDutyChecks.cs": "8c38855619d8f7c04771264c70bdf152399beafd4e3fefabe41b7005460bea74",
+      "Game/Scripts/NewGameFrontEnd.WorkFollowupChecks.cs": "d82a38a10ab11d28e0e02fcb06551131a8fc3e9f3768d8603a3f854473453de3",
       "Game/Scripts/NewGameFrontEnd.WorkProgressionChecks.cs": "77dd8f4ba53eca501e992656d9e50b631b6334a86f4fbe93f7bfd6f4a6bc83b5",
       "Game/Scripts/NewGameMap.cs": "fedd623dfac6fafc853ac550942380220bc28c9a6c4caa47cc6d16e371fbad95",
       "Game/Scripts/NewGameMotionChecks.cs": "5a451171dc5dc92e0a4c8cc62ad1859bdf60212eb7fe648744a15bd5c4cf0ced",
@@ -1737,7 +1751,7 @@
       "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs": "5ccf0c7e11672cb8ff12f54382e99b6ad2ea5015b4e38718eea00ec2cb9bd892",
       "Game/Scripts/NewGameRuntime.ResponsiveSave.cs": "0eb9ee492cf1431f8813c42073a7ef09f3f3566bb828d2a46f330c0816caa98c",
       "Game/Scripts/NewGameRuntime.SupplyWork.cs": "1123dbfaf3e6f8d5076199d720e321823cab4ca52a526ec9b38c2755feb1506a",
-      "Game/Scripts/NewGameRuntime.TransportWork.cs": "537316f1fbb6edb1a746c8b1da646d7fe92f341788eef9441c9b378b4c57e05e",
+      "Game/Scripts/NewGameRuntime.TransportWork.cs": "b2bb8b813355465820ba28bec94cb1a36c65f698699ad7069cd7a80ec810fab8",
       "Game/Scripts/NewGameRuntime.UnitDirective.cs": "debafc6c91d3df6ba91c95fffa97aba5f546b570423661ef951b86e05480af6e",
       "Game/Scripts/NewGameRuntime.UnitDirectiveCancelHolding.cs": "11d8f4fd7ec4fec767c3070123bd78cd3dd19e6a4e6a9348ed917c6ee2450f83",
       "Game/Scripts/NewGameRuntime.UnitDirectiveCancellation.cs": "eed02f7ed2dbc240350665526b1c518db7df4b1f5de7a451ca86a95cbcf56adc",
@@ -1749,7 +1763,7 @@
       "Game/Scripts/NewGameRuntime.Withdrawal.cs": "28b518c604a8df13923eb41af9d9577cc4c61c80b0a4c491960918e0ea1d5840",
       "Game/Scripts/NewGameRuntime.WorkCycle.cs": "1f3c7393f1d818e828bca2c6920d9d7d59013e2f569d4e369616ae1c5dc8603f",
       "Game/Scripts/NewGameRuntime.WorkDuty.cs": "65b974bd35b1297a6e8e1d6f562024d9f7e7a79fe6a29d97641455c358264040",
-      "Game/Scripts/NewGameRuntime.WorkExperience.cs": "03fd07897faf1eabfa5f412ec63ed43e833e9ddb468a7eb2c5aaf969b26010c3",
+      "Game/Scripts/NewGameRuntime.WorkExperience.cs": "9680f2fea675488e1b1b96f1a0564489183cff1b8e4741a9968e4a662deda1bb",
       "Game/Scripts/NewGameRuntime.WorldLabels.cs": "f9798da0ad543738a9f9f95a096b28171a35461a4c2974cca4356a2c988210b5",
       "Game/Scripts/Officer3DActor.cs": "936933c943c66dd2278cc6bce1a1226db76b5a93ba5db9212ed597f68ff2e218",
       "Game/Scripts/Officer3DCreator.cs": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c",
@@ -1807,7 +1821,7 @@
       "Game/Scripts/TravelWorldTrial.cs": "a419c5a96b086d16f5fc3c383c3307c8878f833680d83677874a5924b30c74d2",
       "Game/Scripts/ViewportCapture.cs": "ee77cca54bc5898b4d3813a339efc606189a8a0c91323d1c2622762c61625443",
       "Game/Scripts/WorkHubTrial.cs": "00a8dbedc3c0681fae3c4698e7a71f4ddede5576ecd9316f8c27066bba6556b7",
-      "Scripts/current_test_contract.json": "b674cec59753fa1d838b4e5ead62c2b5c7f307340b1792131f211e151c9bfe78",
+      "Scripts/current_test_contract.json": "a60402ab08b3b7e254a6a74bad24803dbc2074f5b320ea8283105a23d135ea57",
       "Tests/AssessmentNoticeTests.cs": "737090a3cfa539a6a2941d9f705a38f8b70e5f3e8b44ceb71323c2a5b1f856b7",
       "Tests/BranchRouteTests.cs": "6b9322a039ebeb57f5e28ae735963d352a99a9355619665809005d4917391e93",
       "Tests/CareerMilitaryTests.cs": "b4337202a05ed675c8e1ba5848c31176a2646ad40275cd934f3e74356cda8404",
@@ -1965,40 +1979,41 @@
       "Tests/UnitSenderEvidenceTests.cs": "2405d968010e077eb4c41dc4cd12f31365a0012678411d9d4848082355b13fc5",
       "Tests/VoyageExpenseTests.cs": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
       "Tests/WorkDutyTests.cs": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1",
+      "Tests/WorkFollowupTests.cs": "e242d60cb8ba36dd5d87ecfba5f93ba101039e90a015d343fa4f7ec7ce5dc5b1",
       "Tests/WorkProgressionTests.cs": "a76e725acc47e40da64ded68072f3079ad77418eace4cbed94ce96ce88bfed89"
     },
     "core_test": {
-      "passed": 88,
-      "trx": "Docs/Design/WorkDutyV1/runtime-local/tests/duty.trx",
-      "sha256": "f17a3db4483335c247ded001bb091de38dc8343043ff97b7ec02888c549a74f5",
-      "scope": "WorkDutyTests + NewGameWorkTests + WorkProgressionTests + NewGameServiceTests; full suite not run"
+      "passed": 106,
+      "trx": "Docs/Design/WorkFollowupV1/runtime-local/tests/followup.trx",
+      "sha256": "972f365ea29df90860b35338d6dfff0439b2a816595138437d0ad99975e582eb",
+      "scope": "WorkFollowupTests + TransportWorkTests + WorkProgressionTests + WorkDutyTests + NewGameWorkTests; full suite not run"
     },
-    "latest_game_verification": "Docs/Design/WorkDutyV1/verification.json",
-    "latest_game_verification_sha256": "bf474ed5a6140fc80dd79acccf80fbf8c0132153d65348460899a3c04a38a52c",
+    "latest_game_verification": "Docs/Design/WorkFollowupV1/verification.json",
+    "latest_game_verification_sha256": "f82f3093fbad72370c6d98fec7c82378e1ef1f2aec3481c913ca04f48a08226e",
     "gpu": {
       "processes": 2,
-      "comparisons": 8,
-      "scope": "4 checkpoints restored and continued; world/pixels/fullpose"
+      "comparisons": 10,
+      "scope": "5 checkpoints restored and continued; world/pixels/fullpose"
     },
-    "audit_runtime_tests": "成果を主君に認められた家臣が、会話で陸路点検の担当を引き受け、次の命令から20文の手当を実際に受け取れるようになりました。辞去で役目は終了し、働いた分の未払いは保持。関連88件と代表経路の実画面・保存復旧を確認。全件テストは今回は未実施。",
+    "audit_runtime_tests": "運搬を完了すると次は大きな荷物へ進み、預り物を返却した場合は小口の仕事から再開できるようになりました。会話で理由と固定条件を表示。200文の完了→300文の次依頼→中止・返却→100文の再開を実画面で確認。関連106件と保存復旧が成功。全件テストは今回は未実施。",
     "current_stage_test": {
-      "passed": 88,
-      "added_this_stage": 15,
+      "passed": 106,
+      "added_this_stage": 17,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/WorkDutyV1/runtime-local/tests/duty.trx",
-      "trx_sha256": "f17a3db4483335c247ded001bb091de38dc8343043ff97b7ec02888c549a74f5",
-      "scope": "WorkDutyTests + NewGameWorkTests + WorkProgressionTests + NewGameServiceTests; full suite not run"
+      "trx": "Docs/Design/WorkFollowupV1/runtime-local/tests/followup.trx",
+      "trx_sha256": "972f365ea29df90860b35338d6dfff0439b2a816595138437d0ad99975e582eb",
+      "scope": "WorkFollowupTests + TransportWorkTests + WorkProgressionTests + WorkDutyTests + NewGameWorkTests; full suite not run"
     },
-    "current_stage_summary": "成果を主君に認められた家臣が、会話で陸路点検の担当を引き受け、次の命令から20文の手当を実際に受け取れるようになりました。辞去で役目は終了し、働いた分の未払いは保持。関連88件と代表経路の実画面・保存復旧を確認。全件テストは今回は未実施。",
+    "current_stage_summary": "運搬を完了すると次は大きな荷物へ進み、預り物を返却した場合は小口の仕事から再開できるようになりました。会話で理由と固定条件を表示。200文の完了→300文の次依頼→中止・返却→100文の再開を実画面で確認。関連106件と保存復旧が成功。全件テストは今回は未実施。",
     "screens": [
       {
-        "title": "主君から役目・手当の打診",
-        "path": "Docs/Design/WorkDutyV1/runtime-local/duty-normal/duty-offer.png"
+        "title": "運搬完了から300文の次依頼へ",
+        "path": "Docs/Design/WorkFollowupV1/runtime-local/followup-normal/larger-next-job.png"
       },
       {
-        "title": "同じ武将が担当になり手当を受領",
-        "path": "Docs/Design/WorkDutyV1/runtime-local/duty-normal/duty-paid.png"
+        "title": "返却後は100文の用件から再開",
+        "path": "Docs/Design/WorkFollowupV1/runtime-local/followup-normal/small-restart.png"
       }
     ]
   },
@@ -2034,12 +2049,16 @@
       {
         "title": "成果から役目・手当",
         "finish": "現地の打診と本人引受、新しい点検の手当、辞去と未払い保持を接続。"
+      },
+      {
+        "title": "任務の結果で次の用件が変わる",
+        "finish": "完了で運搬規模が増え、現物返却後は小口から再開。理由を会話で説明。"
       }
     ],
     "review_prompt": "地域一巡の方向性は承認済み。基盤検証は終了し、遊べる機能の追加を中心に進めます。"
   },
   "next_priorities": [
-    "任務の評価と責任を、次の働き方や任される用件へつなげる",
+    "任務で得た評価を人物同士の関係と次の働き方へ接続する",
     "任務の正式評価・身分と成長・人間関係へ接続する",
     "勢力間の実戦・包囲/攻城と自律判断へ広げる",
     "生産/交易・所領運用・外交/社会/継承を接続する",

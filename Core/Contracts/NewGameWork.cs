@@ -12,7 +12,7 @@ public static class NewGameWork
     public const long InitialCoins=1000,Fee=20;
     public static readonly EntityId Basis=new("basis:local-work-contract");
     public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorkPolicy);
-    public static bool Supported(string? policy)=>policy is Policy or WorkProgression.Policy;
+    public static bool Supported(string? policy)=>policy is Policy or WorkProgression.Policy or WorkFollowup.Policy;
     public static bool ScopeSupported(ContractWorld w,EntityId site)=>!Enabled(w)||BranchRoutes.GraphEdges(w).Any(e=>(e.From==NewGameWorld.Node(site.Value)||e.To==NewGameWorld.Node(site.Value))&&!NationalRoutes.Sea(e.Id));
     public static EntityId Wallet(EntityId actor)=>new("lot:personal-mon/"+actor.Value.Replace(':','/'));
     public static bool IsWallet(ContractWorld w,ResourceLot l)=>Enabled(w)&&l.Id==Wallet(l.Owner);
