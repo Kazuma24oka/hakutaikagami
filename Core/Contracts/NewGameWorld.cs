@@ -15,6 +15,9 @@ public sealed record NewGameState(int Schema, SetupScenario Start, RegisteredOff
     public string? InspectionPolicy { get; init; }
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? WorkPolicy { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? DemandPolicy { get; init; }
+
 
 }
 public static partial class NewGameWorld
@@ -80,7 +83,7 @@ public static partial class NewGameWorld
         .Concat(NationalRoutes.Sites.Select(s=>new Grant(new("grant:new-game/inspect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id+"/"+s.Id.Value))),new(p.Id),new(p.Id),s.Id,[ActionKind.Inspect],Basis,0,long.MaxValue,0,[],false,0)))).ToArray();
     static void ValidateStart(NewGameState data)
     {
-        Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");Need(data.PersonalAuthorityLayout is null or CompactPersonalAuthority,"本人権限の保存形式が不正です");Need(data.WorkPolicy is null or NewGameWork.Policy,"Unknown work cycle policy");Need(data.WorkPolicy==null||data.InspectionPolicy==LocalInspectionFindings.Policy,"Work requires local observation policy");Need(data.InspectionPolicy is null or LocalInspectionFindings.Policy,"Unknown local inspection policy");Need(data.NpcRoutinePolicy is null or NewGameNpcRoutine.Policy,"NPC routine policy is unknown");Need(data.NpcRoutinePolicy==null||data.Start.People.Count(p=>!p.Created&&p.Id!=data.Selected.Value)<=NewGameNpcRoutine.MaximumActors,"NPC routine candidate limit exceeded");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
+        Need(data!=null&&data.Schema==1&&data.Start!=null&&data.Registered!=null&&data.AdultAge==TrialAdultAge,"開始定義の版が不正です");Need(data.PersonalAuthorityLayout is null or CompactPersonalAuthority,"本人権限の保存形式が不正です");Need(data.DemandPolicy is null or LocalWorkDemand.Policy,"Unknown local demand policy");Need(data.DemandPolicy==null||data.WorkPolicy==NewGameWork.Policy,"Demand requires work and observation policies");Need(data.WorkPolicy is null or NewGameWork.Policy,"Unknown work cycle policy");Need(data.WorkPolicy==null||data.InspectionPolicy==LocalInspectionFindings.Policy,"Work requires local observation policy");Need(data.InspectionPolicy is null or LocalInspectionFindings.Policy,"Unknown local inspection policy");Need(data.NpcRoutinePolicy is null or NewGameNpcRoutine.Policy,"NPC routine policy is unknown");Need(data.NpcRoutinePolicy==null||data.Start.People.Count(p=>!p.Created&&p.Id!=data.Selected.Value)<=NewGameNpcRoutine.MaximumActors,"NPC routine candidate limit exceeded");NewGameSetup.Validate(data.Start);NewGameSetup.Validate(new OfficerLibrary(1,data.Registered,[]));
         Need(data.Start.EpochDate=="1560-01-01","この候補は1560年開始です");
         Need(data.Start.People.Where(p=>!p.Created).OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name)).SequenceEqual(Scenario(data.HistoricalCatalog).People.OrderBy(p=>p.Id).Select(p=>(p.Id,p.Name))),"史実人物の定義を無断追加・変更できません");
         Need(data.Start.Castles.Select(c=>c.Id).Order().SequenceEqual(NationalRoutes.Sites.Select(s=>s.Id.Value).Order()),"収録拠点の構成が違います");
@@ -97,9 +100,9 @@ public static partial class NewGameWorld
         }
         Need(data.Start.People.Where(p=>p.InitialRole==StartTemplate.Castellan).GroupBy(p=>p.Site).All(g=>g.Count()==1),"同じ城に複数の登録城主がいます");
     }
-    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null,string? historicalCatalog=null,string? npcRoutinePolicy=null,string? inspectionPolicy=null,string? workPolicy=null)
+    public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null,string? historicalCatalog=null,string? npcRoutinePolicy=null,string? inspectionPolicy=null,string? workPolicy=null,string? demandPolicy=null)
     {
-        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog,NpcRoutinePolicy=npcRoutinePolicy,InspectionPolicy=inspectionPolicy,WorkPolicy=workPolicy};ValidateStart(data);
+        var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog,NpcRoutinePolicy=npcRoutinePolicy,InspectionPolicy=inspectionPolicy,WorkPolicy=workPolicy,DemandPolicy=demandPolicy};ValidateStart(data);
         var w=TravelWorld.Create();w.NewGame=data;w.NpcWork=data.NpcRoutinePolicy==null?null:new([]);w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
         w.Definitions=w.Definitions with{Id=new("scenario:"+Ruleset),Ruleset=Ruleset,Version=Version(data),Characters=data.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray(),Organizations=data.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray(),AuthorityBases=[new(Basis,"新規ゲームの開始配置（役職・領土は試作設定）。個人の移動/自己点検以外の軍・徴収権を付与しない")],Armies=[]};
         w.Characters=data.Start.People.Select(p=>new CharacterState(new(p.Id),CanPlay(data.Start,p)?LifeState.Adult:LifeState.Minor,new("appearance:"+ContractJson.Hash(ContractJson.Write(Look(data,p.Id)))),0)).ToArray();
@@ -113,7 +116,7 @@ public static partial class NewGameWorld
     {
         var site=w.Locations.Single(l=>l.Actor==w.PlayerControl);Need(site.Kind==LocationKind.AtSite,"到着した拠点で相談してください");Need(NewGameWork.ScopeSupported(w,site.Site!.Value),"この拠点の陸路は点検対象が未設定です。別の拠点で相談してください");
         Need(!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)),"先に進行中の用件を片付けてください");
-        var knownLord=NewGameService.View(w).Principal;var other=RegionalCampaign.Nearby(w,w.PlayerControl).OrderBy(p=>p.Actor==knownLord?0:1).Where(p=>w.Characters.Single(c=>c.Id==p.Actor).Life==LifeState.Adult).FirstOrDefault(p=>w.Locations.Single(l=>l.Actor==p.Actor).Site==site.Site)??throw new InvalidDataException("この拠点に相談できる相手はいません");
+        var knownLord=NewGameService.View(w).Principal;var other=LocalWorkDemand.Candidates(w).FirstOrDefault()??throw new InvalidDataException("この拠点に新しい点検を依頼する相手はいません");
         return new(new(id),other.Actor,w.PlayerControl,site.Site!.Value,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,w.ElapsedSeconds+120,false,null,w.ElapsedSeconds+120),w.ElapsedSeconds,1,4,1,true,knownLord==other.Actor&&NewGameService.BoundAt(w,other.Actor,w.ElapsedSeconds,w.CommitSequence)?TaskKind.BindingOrder:TaskKind.VoluntaryRequest);
     }
     public static string? Address(ContractWorld w,MessageEnvelope message)
@@ -146,7 +149,7 @@ public static partial class NewGameWorld
     static void ValidateOrderAt(ContractWorld w,Intent i,long at)
     {
         Need((i.Executor==w.PlayerControl||i.Actor==i.Executor&&i.Action==ActionKind.Inspect&&NewGameNpcRoutine.IsActor(w,i.Actor))&&i.Action is ActionKind.Move or ActionKind.Inspect,"本人以外の指揮・徴収は開始だけではできません");
-        if(i.Actor!=i.Executor){Need(NewGameWork.ScopeSupported(w,i.Scope),"Unmapped local inspection offer");Need(i.Action==ActionKind.Inspect&&(i.Kind==TaskKind.VoluntaryRequest||i.Kind==TaskKind.BindingOrder&&NewGameService.BoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1)&&NewGameService.KnownBoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1))&&i.Important&&i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Executor,at)&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+120,"現地相談の物理所在・任意依頼・期限が不正です");}
+        if(i.Actor!=i.Executor){Need(NewGameWork.ScopeSupported(w,i.Scope),"Unmapped local inspection offer");Need(LocalWorkDemand.At(w,i.Actor,i.Scope,at,w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence-1).Needed,"Local inspection lacks known demand at issue");Need(i.Action==ActionKind.Inspect&&(i.Kind==TaskKind.VoluntaryRequest||i.Kind==TaskKind.BindingOrder&&NewGameService.BoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1)&&NewGameService.KnownBoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1))&&i.Important&&i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Executor,at)&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+120,"現地相談の物理所在・任意依頼・期限が不正です");}
         else if(i.Action==ActionKind.Inspect)Need(i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+60,"自己点検の場所・期限が不正です");
     }
     static string dSite(ContractWorld w,EntityId actor,long at){var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&w.Tasks.Single(t=>t.Id==j.Task).FinishedAt<=at);return j==null?w.NewGame!.Start.People.Single(p=>p.Id==actor.Value).Site:RegionalCampaign.Site(j.Legs[^1].To).Value;}

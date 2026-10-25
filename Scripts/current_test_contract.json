@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2183,
-  "baseline_passed": 2143,
-  "added": 40,
-  "scope": "NewGameWork40: physical receipt and sealed reply,observed road evidence,actual personal money and unpaid debt,duplicate payment protection,50payments exhaustion,known failed paper retry,reply redelivery after physical return,same-tick payment before deployment,military coexistence,unmapped paid-offer guard,legacy policy and six saves/same future"
+  "expected_passed": 2208,
+  "baseline_passed": 2183,
+  "added": 25,
+  "scope": "LocalWorkDemand25: issuer-known records,previous-second cutoff,missing/stale3600s,duplicate suppression,real road-paper loss/retry,NPC issued-work accounting,old optional profiles,six saves/same future"
 }

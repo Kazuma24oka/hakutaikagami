@@ -1828,3 +1828,10 @@ Scripts/verify_military_work.py -text
 Scripts/check_military_work_binding.py -text
 Docs/Design/MilitaryWorkV1/** -text
 Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text
+
+Core/Contracts/LocalWorkDemand.cs -text
+Tests/LocalWorkDemandTests.cs -text
+Game/Scripts/NewGameFrontEnd.DemandChecks.cs -text
+Scripts/verify_local_demand.py -text
+Scripts/check_local_demand_binding.py -text
+Docs/Design/LocalWorkDemandV1/** -text

@@ -113,6 +113,7 @@ public partial class NewGameRuntime
     void ShowWorkConsultation()
     {
         if(IsSaving||IsClockControlling)return;
+        if(LocalWorkDemand.Enabled(Snapshot())&&LocalWorkDemand.Candidates(Snapshot()).Length==0){var peer=LocalWorkDemand.Candidates(Snapshot(),false).FirstOrDefault();if(peer==null)return;shownWork=null;consultation=null;PresentWork("現地の相談","今は新しく頼む点検の用件はない。また立ち寄ってくれ。","自主点検や移動、軍務はそれぞれの判断から進められます。",peer.Actor,peer.Actor,"相談","次の行動");workCardHeading.Text="新しい依頼なし";Choice("work-no-demand","地図へ戻る",CloseBottomTalk);return;}
         consultation=NewGameWorld.LocalWork(Snapshot(),"request:local-work/"+Session.Revision);var i=consultation;shownWork=null;
         PresentWork("現地の点検", "この拠点から出る陸路を点検し、通れるか知らせてほしい。",WorkTerms(i.Scope,i.Deadline.At,true,i.Kind),i.Actor,i.Actor,"相談  /  用件を受け取る前","あなたの返答");
         workCardHeading.Text=i.Kind==TaskKind.BindingOrder?"主君からの用件":"依頼の要点";

@@ -10,7 +10,7 @@ public static class NewGameNpcRoutine
     public static int BoundaryCost(ContractWorld w)=>2*Actors(w).Length;
     public static NpcWorkInputs Inputs(ContractWorld w,EntityId actor,long at,long revision)
     {
-        var own=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision&&r.Intent.Actor==actor&&r.Intent.Executor==actor&&r.Intent.Action==ActionKind.Inspect).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
+        var own=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision&&r.Intent.Actor==actor&&(r.Intent.Executor==actor||LocalWorkDemand.Enabled(w))&&r.Intent.Action==ActionKind.Inspect).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
         bool known=true;string? result=null;
         if(own.Length>0){var task=w.Tasks.Single(t=>t.RequestId==own[^1].Id);string report=WorldSession.Child("message",task.Id,"report").Value;known=w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.MessageId==report&&k.LearnedAt<=at);if(known)result=w.Messaging.Messages.Single(m=>m.Id==report).Body;}
         var place=w.Locations.Single(l=>l.Actor==actor);bool local=place.Kind==LocationKind.AtSite&&place.Site!=null;long ready=0;
