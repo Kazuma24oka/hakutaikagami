@@ -10,8 +10,9 @@ public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Mus
 // Actual garrison custody. No default wars, generated enemies, castle capture, or shared knowledge.
 public static class NpcArmies
 {
+    public const string CompactCombatPolicy="head-led-owned-garrison-sparse-local-combat-v3";
     public const string CombatPolicy="head-led-owned-garrison-local-combat-v2";
-    public static bool Supported(string? policy)=>policy is Policy or CombatPolicy;
+    public static bool Supported(string? policy)=>policy is Policy or CombatPolicy or CompactCombatPolicy;
     public const string Policy="head-led-owned-garrison-common-land-travel-v1",LandRoute="npc-army-land-only-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool b,string why){if(!b)throw new InvalidDataException(why);}
     public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy);
@@ -99,6 +100,8 @@ public static class NpcArmies
     static string Key(EntityId id)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value));
     static EntityId MusterId(FactionStanceClaim claim)=>new("decision:npc-army/"+Key(claim.Declaration));
     static string MarchId(NpcArmyMuster m,bool home)=>"request:npc-army/"+Key(m.Id)+(home?"/home":"/out");
+    static SetupFaction[] DecidingHeads(ContractWorld w){var ids=(w.FactionStances?.Decisions??[]).Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile&&d.Authority.Issuer!=w.PlayerControl).Select(d=>d.Authority.Issuer.Value).ToHashSet(StringComparer.Ordinal);return ids.Count==0?[]:w.NewGame!.Start.Factions.Where(f=>ids.Contains(f.Head)).ToArray();}
+    internal static int BoundaryCost(ContractWorld w)=>!Enabled(w)?0:2*(DecidingHeads(w).Length+Musters(w).Count(m=>m.Objective!=null&&!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)));
     internal static NpcArmyObjective? Candidate(ContractWorld w,EntityId commander,EntityId owner)
     {
         if(!Enabled(w)||commander==w.PlayerControl||Musters(w).Any(m=>m.Commander==commander)||NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==owner)||w.Tasks.Any(t=>t.Executor==commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)))return null;
@@ -106,7 +109,7 @@ public static class NpcArmies
         foreach(var known in FactionStances.KnownOwnDeclarations(w,commander).OrderBy(k=>k.Declaration.Value,StringComparer.Ordinal)){
             var claim=FactionStances.ClaimAt(w,owner,known.ToOwner,w.ElapsedSeconds,w.CommitSequence);if(claim==null||claim.Declaration!=known.Declaration)continue;
             var target=new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==claim.ToOwner.Value).Home);
-            try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",commander,NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100&&(w.NewGame?.WorldArmyPolicy!=CombatPolicy||w.ElapsedSeconds+i.WorkSeconds+32<claim.Until))return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
+            try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",commander,NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100&&(!WorldClashes.Enabled(w)||w.ElapsedSeconds+i.WorkSeconds+32<claim.Until))return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
         }return null;
     }
     internal static bool NeedsTurn(ContractWorld w,NpcArmyMuster m)
@@ -115,14 +118,15 @@ public static class NpcArmies
         var qs=w.NpcArmies!.Marches.Where(q=>q.Muster==m.Id).ToArray();if(qs.Length==0)return true;
         var t=w.Tasks.Single(t=>t.RequestId==qs[^1].Input.RequestId);if(t.FinishedAt==null)return false;
         if(qs[^1].Input.RequestId.Value==MarchId(m,true))return w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site);
-        if(t.Execution==ExecutionPhase.Completed&&w.ElapsedSeconds<t.FinishedAt+m.Objective.HoldSeconds)return false;
+        bool endedReactiveMission=w.FactionNotices?.Reactions.Any(r=>r.Decision.Id==m.Objective.Claim.Declaration&&r.Decision.Action==FactionStanceAction.DeclareHostile)==true&&!FactionStances.KnownOwnDeclarations(w,m.Commander).Any(c=>c.Declaration==m.Objective.Claim.Declaration&&c.EffectiveFrom<=w.ElapsedSeconds&&w.ElapsedSeconds<c.Until);
+        if(!endedReactiveMission&&t.Execution==ExecutionPhase.Completed&&w.ElapsedSeconds<t.FinishedAt+m.Objective.HoldSeconds)return false;
         if(w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site))return true;
         try{Move(w,m.Id,MarchId(m,true),NewGameWorld.Node(m.Site.Value));return true;}catch(InvalidDataException){return false;}
     }
     internal static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w))return null;var times=new List<long>();
-        foreach(var f in w.NewGame!.Start.Factions)if(Candidate(w,new(f.Head),new(f.Id))!=null)times.Add(w.ElapsedSeconds+1);
+        foreach(var f in DecidingHeads(w))if(Candidate(w,new(f.Head),new(f.Id))!=null)times.Add(w.ElapsedSeconds+1);
         foreach(var m in Musters(w)){
             if(NeedsTurn(w,m))times.Add(w.ElapsedSeconds+1);
             else if(m.Objective!=null&&!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)){
@@ -134,7 +138,7 @@ public static class NpcArmies
     internal static void TakeTurns(WorldSession session)
     {
         var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.Paused)return;
-        foreach(var f in w.NewGame!.Start.Factions.OrderBy(f=>f.Id,StringComparer.Ordinal)){
+        foreach(var f in DecidingHeads(w).OrderBy(f=>f.Id,StringComparer.Ordinal)){
             w=session.DiagnosticSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective)session.MusterNpcArmy(MusterId(objective.Claim),new(f.Head),new(f.Id),objective);
         }
         foreach(var id in Musters(session.DiagnosticSnapshot()).Select(m=>m.Id)){

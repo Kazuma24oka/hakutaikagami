@@ -32,7 +32,7 @@ public sealed partial class WorldSession
     public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
-        if(NpcArmies.Musters(state).Any(m=>m.Id==request.Id)||FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
+        if(FactionNotices.OwnIdUsed(state,request.Id)||NpcArmies.Musters(state).Any(m=>m.Id==request.Id)||FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Region?.Commands.Any(c=>c.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Field?.Orders.Any(o=>o.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
@@ -115,7 +115,7 @@ public sealed partial class WorldSession
             Change(s=>{
                 if(principal)s.Messaging.Knowledge=[..s.Messaging.Knowledge,new(m.Id,actor.Value,s.ElapsedSeconds,m.Id)];
                 else MessageFlow.OpenAsProxy(s.Messaging,m.Id,actor.Value,s.ElapsedSeconds);
-                NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
+                FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
             return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
@@ -147,13 +147,13 @@ public sealed partial class WorldSession
             {
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
-                int cost=1+(NpcArmies.Enabled(state)?2*state.NewGame!.Start.Factions.Length:0)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
+                int cost=1+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
                     long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
-                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
+                    UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
                     var known=s.Messaging.Knowledge.Select(k=>(k.MessageId,k.CharacterId)).ToHashSet();
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.Arrivals(s);else if(MovementControl.Enabled(s))MovementControl.CheckArrivals(s);
                     CourierRecovery.BeforeMessages(s);RegionalBattle.BeforeMessages(s);NewGameMilitary.BeforeUnitMessages(s);MessageFlow.Advance(s.Messaging,boundary);RegionalBattle.AfterMessages(s);DelegationMission.Update(s);DelegationInquiry.Update(s);
@@ -161,10 +161,11 @@ public sealed partial class WorldSession
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
+                    FactionNotices.ReceiveNpc(s);
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
-                    NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);
+                    NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 processed+=cost;
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
@@ -176,6 +177,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
+        if(FactionNoticeReactions.NextBoundary(s,target) is {} reactionBoundary)times.Add(reactionBoundary);
         if(NpcArmies.NextBoundary(s,target) is {} armyBoundary)times.Add(armyBoundary);
         if(FactionStances.NextBoundary(s,target) is {} stanceBoundary)times.Add(stanceBoundary);
         if(NewGameMilitary.NextBoundary(s,target) is {} militaryLoanBoundary)times.Add(militaryLoanBoundary);

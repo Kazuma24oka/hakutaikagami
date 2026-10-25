@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2530,
-  "baseline_passed": 2513,
-  "added": 17,
-  "scope": "NpcArmy48 vs34 adds14; FieldEngagement35 vs32 adds3. Related350 CLI and headless Node3D data; full2530 and GUI/screen NOT_RUN. Accepted full2446 is historical."
+  "expected_passed": 2573,
+  "baseline_passed": 2530,
+  "added": 43,
+  "scope": "Physical faction notices15, NPC reaction14, atomic proclamation5, sparse combat9 added. Related393 CLI + headless Node3D10 files/5 pairs/40 nodes; full2573 and actual GUI/screens NOT_RUN."
 }

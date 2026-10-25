@@ -22,7 +22,7 @@ public static class FactionStances
     static bool Active(TimedRelation r,long at,long rev)=>r.From<=at&&(at<r.Until||at==r.Until&&rev<r.Revision);
     static FactionStanceDecision[] At(ContractWorld w,long at,long rev)=>w.FactionStances?.Decisions.Where(d=>Before(d,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.FactionStances?.Decisions.Any(d=>d.Input.Id==id)==true;
-    internal static bool OtherIdUsed(ContractWorld w,EntityId id,bool includeNpc=true)=>includeNpc&&NpcArmies.Musters(w).Any(m=>m.Id==id)||w.Requests.Any(r=>r.Id==id)||
+    internal static bool OtherIdUsed(ContractWorld w,EntityId id,bool includeNpc=true,bool includeNotices=true)=>includeNotices&&FactionNotices.OwnIdUsed(w,id)||includeNpc&&NpcArmies.Musters(w).Any(m=>m.Id==id)||w.Requests.Any(r=>r.Id==id)||
         NewGameService.OwnIdUsed(w,id)||w.TravelDecisions?.Any(d=>d.Request.Id==id)==true||
         NewGameMilitary.LedgerStates(w).Any(s=>s.Requests.Any(q=>q.Input.Id==id))||
         w.WorkCycle?.Duties?.Any(a=>a.Id==id)==true||w.WorkCycle?.Payments.Any(p=>p.Id==id)==true||
@@ -87,14 +87,18 @@ public static class FactionStances
     // are added separately; this first path knows only one's own political decisions.
     public static FactionStanceClaim[] KnownOwnDeclarations(ContractWorld w,EntityId observer)
     {
-        var own=At(w,w.ElapsedSeconds,w.CommitSequence).Where(d=>d.Authority.Issuer==observer).ToArray();
-        return own.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile).Select(d=>new FactionStanceClaim(d.Input.Id,d.Input.Owner,d.Input.Target,d.Input.EffectiveAt,End(d,own),w.ElapsedSeconds)).ToArray();
+        return OwnAt(w,observer,w.ElapsedSeconds,w.CommitSequence);
+    }
+    public static FactionStanceClaim[] OwnAt(ContractWorld w,EntityId observer,long at,long revision)
+    {
+        Need(at>=0&&at<=w.ElapsedSeconds&&revision>=0&&revision<=w.CommitSequence,"未確定の政治情報は参照しません");var own=At(w,at,revision).Where(d=>d.Authority.Issuer==observer).ToArray();
+        return own.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile).Select(d=>new FactionStanceClaim(d.Input.Id,d.Input.Owner,d.Input.Target,d.Input.EffectiveAt,End(d,own),at)).ToArray();
     }
     internal static long? NextBoundary(ContractWorld w,long target)=>At(w,w.ElapsedSeconds,w.CommitSequence)
         .SelectMany(d=>new[]{d.Input.EffectiveAt,d.Input.Until}).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     public static FactionStanceClaim[] Known(ContractWorld w,EntityId observer)
     {
-        var result=KnownOwnDeclarations(w,observer).ToList();
+        var result=KnownOwnDeclarations(w,observer).Concat(FactionNotices.Known(w,observer)).ToList();
         if(observer==w.PlayerControl)foreach(var ledger in NewGameMilitary.LedgerStates(w))foreach(var opened in ledger.Openings){
             if(opened.At>w.ElapsedSeconds)continue;
             var m=w.Messaging.Messages.Single(m=>m.Id==opened.Message);

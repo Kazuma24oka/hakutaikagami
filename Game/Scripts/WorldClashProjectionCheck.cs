@@ -16,7 +16,8 @@ public partial class WorldClashProjectionCheck : Node
         try{
             if(DisplayServer.GetName()!="headless")throw new InvalidDataException("This check is headless-only");
             var dir=System.Environment.GetEnvironmentVariable("HAKUTAI_WORLD_CLASH_QA_DIR")??throw new InvalidDataException("Missing QA input directory");
-            var files=Directory.GetFiles(dir,"clash-*.json").Order(StringComparer.Ordinal).ToArray();if(files.Length!=6)throw new InvalidDataException("Expected three actual generation-recovery pairs");
+            int pairs=int.Parse(System.Environment.GetEnvironmentVariable("HAKUTAI_PROJECTION_EXPECTED_PAIRS")??"3");if(pairs is not(3 or 5))throw new InvalidDataException("Unknown projection scope");
+            var files=Directory.GetFiles(dir,"*.json").Where(p=>p.EndsWith(".before.json",StringComparison.Ordinal)||p.EndsWith(".restored.json",StringComparison.Ordinal)).Order(StringComparer.Ordinal).ToArray();if(files.Length!=pairs*2)throw new InvalidDataException("Missing actual generation-recovery pairs");
             var results=new Dictionary<string,string>();int nodes=0;
             foreach(var path in files){
                 var w=ContractJson.Read<ContractWorld>(File.ReadAllBytes(path));ContractValidation.Validate(w);
@@ -33,9 +34,9 @@ public partial class WorldClashProjectionCheck : Node
                 }
                 results[Path.GetFileName(path)]=JsonSerializer.Serialize(new{w.ElapsedSeconds,Actors=rows});
             }
-            foreach(int phase in new[]{1,2,4})if(results["clash-"+phase+".before.json"]!=results["clash-"+phase+".restored.json"])throw new InvalidDataException("Restored Node3D presentation differs");
-            File.WriteAllText(Path.Combine(dir,"projection-result.json"),JsonSerializer.Serialize(new{Status="PASSED",Mode="Godot headless Node3D data only",Files=files.Length,Pairs=3,Nodes=nodes,Results=results,Screens="NOT_CAPTURED",Gui="NOT_USED"},new JsonSerializerOptions{WriteIndented=true}));
-            GD.Print("WORLD_CLASH_HEADLESS_PROJECTION_PASS files=6 pairs=3 nodes="+nodes);GetTree().Quit();
+            foreach(var name in results.Keys.Where(p=>p.EndsWith(".before.json",StringComparison.Ordinal)))if(results[name]!=results[name.Replace(".before.json",".restored.json",StringComparison.Ordinal)])throw new InvalidDataException("Restored Node3D presentation differs");
+            File.WriteAllText(Path.Combine(dir,"projection-result.json"),JsonSerializer.Serialize(new{Status="PASSED",Mode="Godot headless Node3D data only",Files=files.Length,Pairs=pairs,Nodes=nodes,Results=results,Screens="NOT_CAPTURED",Gui="NOT_USED"},new JsonSerializerOptions{WriteIndented=true}));
+            GD.Print("WORLD_CLASH_HEADLESS_PROJECTION_PASS files="+files.Length+" pairs="+pairs+" nodes="+nodes);GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }
 }

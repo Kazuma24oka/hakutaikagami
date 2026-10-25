@@ -109,7 +109,7 @@ public static partial class NewGameWorld
     public static ContractWorld Create(SetupScenario confirmed,RegisteredOfficer[] registered,string selected,ulong seed=20261022,string? personalAuthorityLayout=null,string? historicalCatalog=null,string? npcRoutinePolicy=null,string? inspectionPolicy=null,string? workPolicy=null,string? demandPolicy=null,VoyageExpenseRules? voyageRules=null,string? worldArmyPolicy=null)
     {
         var data=new NewGameState(1,ContractJson.Copy(confirmed),Normalize(registered),new(selected),seed,TrialAdultAge){PersonalAuthorityLayout=personalAuthorityLayout,HistoricalCatalog=historicalCatalog,NpcRoutinePolicy=npcRoutinePolicy,InspectionPolicy=inspectionPolicy,WorkPolicy=workPolicy,DemandPolicy=demandPolicy,VoyageRules=voyageRules,WorldArmyPolicy=worldArmyPolicy};ValidateStart(data);
-        var w=TravelWorld.Create();w.NewGame=data;w.WorldClashes=worldArmyPolicy==NpcArmies.CombatPolicy?new(1,WorldClashes.Policy,[]):null;w.NpcArmies=worldArmyPolicy==null?null:new(1,NpcArmies.Policy,[],[],[]);if(voyageRules!=null||worldArmyPolicy!=null){w.TravelDecisions=[];w.TrafficStops=[];}w.NpcWork=data.NpcRoutinePolicy==null?null:new([]);w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
+        var w=TravelWorld.Create();w.NewGame=data;w.WorldClashes=worldArmyPolicy==NpcArmies.CompactCombatPolicy?new(1,WorldClashes.SparsePolicy,[]):worldArmyPolicy==NpcArmies.CombatPolicy?new(1,WorldClashes.Policy,[]):null;w.NpcArmies=worldArmyPolicy==null?null:new(1,NpcArmies.Policy,[],[],[]);if(voyageRules!=null||worldArmyPolicy!=null){w.TravelDecisions=[];w.TrafficStops=[];}w.NpcWork=data.NpcRoutinePolicy==null?null:new([]);w.WorldId=new("world:"+Ruleset);w.Seed=seed;w.Paused=true;w.PlayerControl=data.Selected;
         w.Definitions=w.Definitions with{Id=new("scenario:"+Ruleset),Ruleset=Ruleset,Version=Version(data),Characters=data.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray(),Organizations=data.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray(),AuthorityBases=[new(Basis,"新規ゲームの開始配置（役職・領土は試作設定）。個人の移動/自己点検以外の軍・徴収権を付与しない")],Armies=[]};
         w.Characters=data.Start.People.Select(p=>new CharacterState(new(p.Id),CanPlay(data.Start,p)?LifeState.Adult:LifeState.Minor,new("appearance:"+ContractJson.Hash(ContractJson.Write(Look(data,p.Id)))),0)).ToArray();
         w.Locations=data.Start.People.Select(p=>new LocationState(new(p.Id),LocationKind.AtSite,new(p.Site),null,0,0,null,null,null,null,0)).ToArray();
@@ -127,7 +127,7 @@ public static partial class NewGameWorld
     }
     public static string? Address(ContractWorld w,MessageEnvelope message)
     {
-        if(!Enabled(w))return null;if(NewGameMilitary.Address(w,message) is {} militaryAddress)return militaryAddress;if(NewGameService.Address(w,message) is {} address)return address;var request=w.Requests.SingleOrDefault(r=>r.Id.Value==message.CorrelationId);
+        if(!Enabled(w))return null;if(FactionNotices.Address(w,message) is {} politicalAddress)return politicalAddress;if(NewGameMilitary.Address(w,message) is {} militaryAddress)return militaryAddress;if(NewGameService.Address(w,message) is {} address)return address;var request=w.Requests.SingleOrDefault(r=>r.Id.Value==message.CorrelationId);
         // Reply to the original meeting site, not the other person's current GPS.
         return request!=null&&request.Intent.Actor!=request.Intent.Executor?Node(request.Intent.Scope.Value):null;
     }

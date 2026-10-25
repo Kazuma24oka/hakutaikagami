@@ -3,6 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static partial class NewGameMilitary
 {
     static bool Same<T>(T a,T b)=>Text(a)==Text(b);
+    internal static ContractWorld WorldEngagementContext(ContractWorld w,EntityId army)=>LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army));
     internal static ContractWorld WorldEngagementBefore(ContractWorld w,EntityId army,long at,long rev)=>BeforeState(LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army)),at,rev);
     static ContractWorld BeforeState(ContractWorld original,long at,long rev,bool observationOnly=false)
     {

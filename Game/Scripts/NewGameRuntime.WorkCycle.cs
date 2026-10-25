@@ -34,7 +34,7 @@ public partial class NewGameRuntime
     string ReadableWorkLetter(VisibleMessage letter)
     {
         var m=Snapshot().Messaging.Messages.Single(m=>m.Id==letter.Id.Value);
-        return m.Kind switch{AssessmentNotice.Kind=>"依頼主から結果への返答",AssessmentNotice.ResponseKind=>"返答を承知した旨の書状","route-observation"=>letter.KnownBody!.StartsWith("route-block:")?"通行不可の点検記録":"通行可の点検記録","delivery-failure"=>"配送不達の報告","service-notice"=>"仕官に関する返答",_=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)?"軍務に関する書状":letter.KnownBody!};
+        return m.Kind switch{FactionNotices.Kind=>"対外方針に関する通知",AssessmentNotice.Kind=>"依頼主から結果への返答",AssessmentNotice.ResponseKind=>"返答を承知した旨の書状","route-observation"=>letter.KnownBody!.StartsWith("route-block:")?"通行不可の点検記録":"通行可の点検記録","delivery-failure"=>"配送不達の報告","service-notice"=>"仕官に関する返答",_=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)?"軍務に関する書状":letter.KnownBody!};
     }
     internal long ReviewPrivateCoins=>NewGameWork.Balance(Snapshot(),Session.PlayerControl);
 }

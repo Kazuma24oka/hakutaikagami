@@ -103,9 +103,9 @@ public sealed class NpcArmyTests
         var bytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","engagement-613d135-accepted.json"));var w=ContractJson.Read<ContractWorld>(bytes);new WorldSession(w);Assert.Equal(bytes,ContractJson.Write(w));Assert.Null(w.NpcArmies);Assert.Null(w.NewGame!.WorldArmyPolicy);
     }
 
-    static WorldSession PoliticalRaid(bool hostile=true,bool combat=false)
+    static WorldSession PoliticalRaid(bool hostile=true,bool combat=false,bool sparse=false)
     {
-        var p=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");var setup=NewGameWorldTests.Setup([p],[new(p.Id,"org:created-raid",[p.Site],false)]);var w=NewGameWorld.Create(setup.World,setup.Registered,p.Id,worldArmyPolicy:combat?NpcArmies.CombatPolicy:NpcArmies.Policy);w.CommitSequence++;
+        var p=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");var setup=NewGameWorldTests.Setup([p],[new(p.Id,"org:created-raid",[p.Site],false)]);var w=NewGameWorld.Create(setup.World,setup.Registered,p.Id,worldArmyPolicy:sparse?NpcArmies.CompactCombatPolicy:combat?NpcArmies.CombatPolicy:NpcArmies.Policy);w.CommitSequence++;
         if(hostile)FactionStances.Apply(w,new(new("decision:oda-raiding-intent"),FactionStanceAction.DeclareHostile,Oda,new("org:created-raid"),0,1000000),Nobunaga);return new(w);
     }
     static void FinishRaid(WorldSession s)
@@ -135,14 +135,14 @@ public sealed class NpcArmyTests
     {
         var w=PoliticalRaid().DiagnosticSnapshot();var edge=BranchRoutes.Plan("castle","fork",[],w:w)[0];w.Branches=w.Branches! with{BlockedEdges=[edge]};w.Couriers=w.Couriers! with{InitialBlocked=[edge]};var s=new WorldSession(w);FinishRaid(s);w=s.DiagnosticSnapshot();var m=Assert.Single(w.NpcArmies!.Musters);Assert.Equal(2,w.NpcArmies.Marches.Length);Assert.Single(w.NpcArmies.Returns);Assert.Equal(RegionalCampaign.Site("castle"),w.Locations.Single(l=>l.Actor==Nobunaga).Site);Assert.All(w.Branches!.Journeys.Where(j=>j.Actor==Nobunaga).SelectMany(j=>j.Legs),l=>Assert.NotEqual(edge,l.Edge));Assert.Contains(edge,BranchRoutes.KnownBlocked(w,Nobunaga));Assert.Empty(BranchRoutes.KnownBlocked(w,s.PlayerControl));Assert.Equal(NewGameMilitary.InitialStock-NpcArmies.Consumed(w,m),w.ResourceLots.Sum(l=>l.Quantity));
     }
-    static WorldSession AtActualContact(bool permitted=false)
+    internal static WorldSession AtActualContact(bool permitted=false,bool sparse=false,bool openPermission=true,long arrivalOffset=1)
     {
-        var s=PoliticalRaid(combat:true);NewGameWorldTests.At(s,3);var outLeg=s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==Nobunaga);NewGameWorldTests.At(s,outLeg.Legs[^1].EndAt+1);
+        var s=PoliticalRaid(combat:true,sparse:sparse);NewGameWorldTests.At(s,3);var outLeg=s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==Nobunaga);NewGameWorldTests.At(s,outLeg.Legs[^1].EndAt+arrivalOffset);
         var q=new NewMilitaryInput(new("request:contact-army"),NewMilitaryAction.Request){AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract};Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(q,s.PlayerControl,s.Revision).Code);
         NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
         Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-accept"),NewMilitaryAction.Accept),s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
         foreach(var action in new[]{NewMilitaryAction.Pickup,NewMilitaryAction.Load})Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-"+action),action,action==NewMilitaryAction.Load?100000:0),s.PlayerControl,s.Revision).Code);
-        if(permitted){Assert.Equal(ResultCode.Accepted,s.DecideFactionStance(new(new("decision:own-defense"),FactionStanceAction.DeclareHostile,new("org:created-raid"),Oda,s.Seconds,s.Seconds+60),s.PlayerControl,s.Revision).Code);var engagement=new NewMilitaryInput(new("request:contact-engagement"),NewMilitaryAction.RequestEngagement){Engagement=new(NewGameMilitary.EngagementTaskContract,Oda,s.Seconds,s.Seconds+60)};Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(engagement,s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);}
+        if(permitted){Assert.Equal(ResultCode.Accepted,s.DecideFactionStance(new(new("decision:own-defense"),FactionStanceAction.DeclareHostile,new("org:created-raid"),Oda,s.Seconds,s.Seconds+60),s.PlayerControl,s.Revision).Code);var engagement=new NewMilitaryInput(new("request:contact-engagement"),NewMilitaryAction.RequestEngagement){Engagement=new(NewGameMilitary.EngagementTaskContract,Oda,s.Seconds,s.Seconds+60)};Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(engagement,s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,s.Seconds+2);if(openPermission)foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);}
         Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-deploy"),NewMilitaryAction.Deploy),s.PlayerControl,s.Revision).Code);return s;
     }
     [Fact]public void ActualRosterAndPositionFeedScopedContactWithoutCreatingAnExerciseEnemy()
