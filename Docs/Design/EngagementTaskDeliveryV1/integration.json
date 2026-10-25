@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "status": "MERGED",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/3",
+  "approved_head": "613d135e6f1d6ba0e485497754899c73f1f8b866",
+  "main": "9762c59994e1fc9b721b1356eb1534343d5e2fca",
+  "code_revision": "63fbb28b2457cb6cc6bd5af34c45adcd7116e52c",
+  "approved_tree_matches_main": true,
+  "code_only": true,
+  "new_merge_requires_separate_approval": true
+}
