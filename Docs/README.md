@@ -240,3 +240,6 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [全体進捗表：基本設計60枠の実装・残件](Development/ProgressV1/index.html)
 
 - [運搬受渡し契約L1・保存復旧の範囲](Design/TransportHandoverV1/README.md)
+
+- [小口送金の実運搬・世代復旧の結果](Design/TransportWorkV1/RESULT.md)
+- [承認済み：金欠でも徒歩を維持する旅費](Design/TravelExpenseV1/README.md)

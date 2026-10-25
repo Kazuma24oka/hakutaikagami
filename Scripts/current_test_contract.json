@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2208,
-  "baseline_passed": 2183,
-  "added": 25,
-  "scope": "LocalWorkDemand25: issuer-known records,previous-second cutoff,missing/stale3600s,duplicate suppression,real road-paper loss/retry,NPC issued-work accounting,old optional profiles,six saves/same future"
+  "expected_passed": 2276,
+  "baseline_passed": 2208,
+  "added": 68,
+  "scope": "TransportHandover39 + TransportWork26 + TransportWorkLocation3; full2273 baseline then scoped final-location regression, source delta explicitly bound"
 }

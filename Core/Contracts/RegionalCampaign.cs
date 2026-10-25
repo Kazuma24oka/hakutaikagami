@@ -210,7 +210,7 @@ public static partial class RegionalCampaign
         w.Couriers=w.Couriers! with{Sightings=[..w.Couriers.Sightings,new(actor,edge,blocked,w.ElapsedSeconds,p)]};
         var claim=(blocked?"route-block:":"route-open:")+edge;
         w.Evidence=[..w.Evidence,new(id,actor,actor,claim,w.ElapsedSeconds,w.ElapsedSeconds,null,null)];w.Knowledge=[..w.Knowledge,new(actor,id,w.ElapsedSeconds)];
-        if(actor!=ContractFixture.Lord)MessageFlow.Send(w.Messaging,new("message:"+id.Value[9..],actor.Value,"route-observation",actor.Value,ContractFixture.Lord.Value,claim,ContractFixture.Castle.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);
+        if(!NewGameWorld.Enabled(w)&&actor!=ContractFixture.Lord)MessageFlow.Send(w.Messaging,new("message:"+id.Value[9..],actor.Value,"route-observation",actor.Value,ContractFixture.Lord.Value,claim,ContractFixture.Castle.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);
     }
     public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
     {

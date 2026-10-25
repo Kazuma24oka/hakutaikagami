@@ -1841,3 +1841,10 @@ Game/Scripts/NewGameFrontEnd.SupplyWorkChecks.cs -text
 Scripts/verify_supply_work.py -text
 Scripts/check_supply_work_binding.py -text
 Docs/Design/SupplyWorkV1/** -text
+
+# Bound transport verification tools
+Scripts/verify_transport_work.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_transport_work_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/build_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

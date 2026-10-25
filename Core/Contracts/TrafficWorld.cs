@@ -6,7 +6,7 @@ public static class TrafficWorld
 {
     public const string Ruleset="national-traffic-conflicts-v1";
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{TravelControl.Version,"local-road-entry-sea-predeparture-check-v1","stop-at-site-explicit-restart-v1","courier-service-failure-static-return-address-v1"});
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||FieldWorld.Enabled(w);
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||FieldWorld.Enabled(w)||NewGameWorld.Enabled(w)&&w.TransportWork!=null;
     public static ContractWorld Create(RoadCondition[]? conditions=null){var w=TravelControl.Create();w.WorldId=new("world:national-traffic-conflicts-v1");w.Definitions=w.Definitions with{Id=new("scenario:national-traffic-conflicts-v1"),Ruleset=Ruleset,Version=Version};w.TrafficStops=[];w.Couriers=w.Couriers! with{Conditions=conditions??[]};ContractValidation.Validate(w);return w;}
     public static string? StoppedNode(ContractWorld w,EntityId task)=>w.TrafficStops?.SingleOrDefault(s=>s.Task==task)?.Node;
     static void Reschedule(ContractWorld w,BranchJourney j){w.Branches=w.Branches! with{Journeys=w.Branches.Journeys.Select(x=>x.Task==j.Task?j:x).ToArray()};w.Actions=w.Actions.Select(a=>a.Task==j.Task?a with{Until=j.Legs[^1].EndAt}:a).ToArray();w.PendingEvents=w.PendingEvents.Select(e=>e.Task==j.Task&&e.Kind==EventKind.Finish?e with{At=j.Legs[^1].EndAt}:e).ToArray();}
