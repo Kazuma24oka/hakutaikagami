@@ -55,7 +55,7 @@ public static class WorkDuty
             Need(NewGameService.View(w,a.At,a.Revision-1).Principal==a.Principal&&WorkProgression.Recognized(w,a.Principal,a.At,a.Revision)>0);
             var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==a.Site).Position;
             Need(RegionalCampaign.ActorPointAt(w,w.PlayerControl,a.At)==point&&RegionalCampaign.ActorPointAt(w,a.Principal,a.At)==point);
-            Need(!w.Requests.Any(q=>q.Id==a.Id)&&w.TravelDecisions?.Any(q=>q.Request.Id==a.Id)!=true&&w.Service?.Requests.Any(q=>q.Input.Id==a.Id)!=true&&w.NewMilitary?.Requests.Any(q=>q.Input.Id==a.Id)!=true&&!w.WorkCycle!.Payments.Any(p=>p.Id==a.Id)&&!TransportWork.Jobs(w).Any(j=>j.Handover.Terms.Id==a.Id||j.Handover.Entries.Any(e=>e.Input.Id==a.Id)));
+            Need(!w.Requests.Any(q=>q.Id==a.Id)&&w.TravelDecisions?.Any(q=>q.Request.Id==a.Id)!=true&&w.Service?.Requests.Any(q=>q.Input.Id==a.Id)!=true&&!NewGameMilitary.LedgerStates(w).Any(s=>s.Requests.Any(q=>q.Input.Id==a.Id))&&!w.WorkCycle!.Payments.Any(p=>p.Id==a.Id)&&!TransportWork.Jobs(w).Any(j=>j.Handover.Terms.Id==a.Id||j.Handover.Entries.Any(e=>e.Input.Id==a.Id)));
         }
     }
 }

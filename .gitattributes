@@ -1854,3 +1854,15 @@ Scripts/check_voyage_expense_binding.py -text whitespace=blank-at-eol,blank-at-e
 
 Scripts/build_integration_candidate_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_runtime_model_package.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact inputs for owner/site military ledger and physical-history verification.
+Core/Contracts/NewGameMilitary.HouseholdLedgers.cs -text
+Core/Contracts/NewGameMilitary.LedgerIdentity.cs -text
+Tests/HouseholdMilitaryTests.cs -text
+Tests/MilitaryLedgerIdentityTests.cs -text
+Game/Scripts/NewGameFrontEnd.HouseArmyChecks.cs -text
+Scripts/verify_household_military.py -text
+Scripts/verify_household_core.py -text
+Scripts/verify_household_unit_regression.py -text
+Scripts/check_household_military_binding.py -text
+Scripts/build_household_military_report.py -text

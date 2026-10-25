@@ -11,7 +11,7 @@ public static partial class NewGameMilitary
  {
   // A recorded local handover at the sender post is direct evidence; a distant global receipt is not.
   if(w.Messaging.Messages.Single(m=>m.Id==original).SenderId!=sender)return false;
-  int senderIndex=Array.FindIndex(UnitIds,id=>id.Value==sender);if(senderIndex>=0)return (w.NewMilitary?.HeldDelivery?.Transfers??[]).Any(t=>t.Message==original&&w.NewMilitary!.HeldDelivery!.Arrivals.Any(a=>a.Id==t.Id&&a.Received&&DeployedAt(w,a.At)&&CustodyAt(w,a.At,a.Revision)&&StrengthAt(w,senderIndex,a.At)>0&&RegionalGround.Distance(Position(w,senderIndex,a.At),a.RecipientPosition)<=1000));
+  int senderIndex=Array.FindIndex(UnitIdsFor(w),id=>id.Value==sender);if(senderIndex>=0)return (w.NewMilitary?.HeldDelivery?.Transfers??[]).Any(t=>t.Message==original&&w.NewMilitary!.HeldDelivery!.Arrivals.Any(a=>a.Id==t.Id&&a.Received&&DeployedAt(w,a.At)&&CustodyAt(w,a.At,a.Revision)&&StrengthAt(w,senderIndex,a.At)>0&&RegionalGround.Distance(Position(w,senderIndex,a.At),a.RecipientPosition)<=1000));
   if(sender!=w.PlayerControl.Value)return false;
   if(KnownDirectiveCancellationAck(w,original,sender)!=null)return true;
   if(KnownDirectiveAck(w,original,sender)!=null)return true;

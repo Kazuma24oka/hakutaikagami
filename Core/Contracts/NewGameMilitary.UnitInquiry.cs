@@ -21,7 +21,7 @@ public static partial class NewGameMilitary
     static void ApplyUnitInquiry(ContractWorld w,NewMilitaryInput i)
     {
         if(!UnitInquiryAction(i.Action))return;
-        var x=w.NewMilitary!.Withdrawal!;var sight=x.Sightings.Last();var from=PersonPosition(w,w.ElapsedSeconds);var recipient=i.InquiryTarget?.Known.Unit??UnitIds[0];
+        var x=w.NewMilitary!.Withdrawal!;var sight=x.Sightings.Last();var from=PersonPosition(w,w.ElapsedSeconds);var recipient=i.InquiryTarget?.Known.Unit??UnitIdsFor(w)[0];
         var to=i.InquiryTarget?.Known.Position??(i.Action==NewMilitaryAction.InquireUnitHome?Home(w,0):sight.Position);
         var evidence=i.InquiryTarget==null?(i.Action==NewMilitaryAction.InquireUnitHome?w.NewMilitary.Terms.Site:sight.Id):new EntityId("evidence:unit-query/"+Hash(Text(i.InquiryTarget)));
         var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"inquiry");
@@ -39,7 +39,7 @@ public static partial class NewGameMilitary
             bool applied=UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==id)||(w.NewMilitary?.CommandHolding?.Outcomes.Any(f=>f.Original==id&&f.Applied)??false);
             return new UnitOriginalStatus(id,receipt!=null,applied,receipt?.ReceivedAt);
         }).ToArray();
-        int index=ReceivingUnitIndex(d);Need(index>=0,"照会の受信隊がありません");var position=Position(w,index,w.ElapsedSeconds);
+        int index=ReceivingUnitIndex(w,d);Need(index>=0,"照会の受信隊がありません");var position=Position(w,index,w.ElapsedSeconds);
         return new(d.Message,w.ElapsedSeconds,d.Recipient.Value,StrengthAt(w,index,w.ElapsedSeconds),RoutPhase(w,index),Position(w,index,w.ElapsedSeconds+1)!=position,position==Home(w,index),position,rows);
     }
     static UnitInquiryState? UnitInquiryBefore(UnitInquiryState? s,long at,long rev){if(s==null)return null;var dispatches=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return dispatches.Length==0?null:new(s.Contract,dispatches,s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray());}
@@ -52,7 +52,7 @@ public static partial class NewGameMilitary
     }
     public static string UnitInquiryStatus(ContractWorld w)
     {
-        var x=w.NewMilitary?.UnitInquiry;var d=x?.Dispatches.LastOrDefault(d=>SameMilitaryCase(w,d));if(d==null)return "";string name=UnitRecipientName(d.Recipient);
+        var x=w.NewMilitary?.UnitInquiry;var d=x?.Dispatches.LastOrDefault(d=>SameMilitaryCase(w,d));if(d==null)return "";string name=UnitRecipientName(w,d.Recipient);
         var r=x!.Receipts.SingleOrDefault(r=>r.Id==d.Id);if(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value))return name+"への照会返書は未受領";
         if(!r.Delivered)return "照会伝令は指定場所で"+name+"に会えなかった";
         var reply=ContractJson.Read<UnitPostInquiryAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));

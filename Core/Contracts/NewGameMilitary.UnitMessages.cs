@@ -14,13 +14,13 @@ public sealed record UnitTransportSnapshot(MessageEnvelope[] Messages,MessageAtt
 public static partial class NewGameMilitary
 {
     static bool UnitEnvelope(MessageEnvelope m)=>m.Kind.StartsWith("unit-post-",StringComparison.Ordinal)||m.Kind=="delivery-failure"&&m.Id.StartsWith("message:unit-post/",StringComparison.Ordinal);
-    public static bool HandlesUnitMessage(ContractWorld w,string id)=>w.NewMilitary?.Withdrawal!=null&&w.Messaging.Messages.Any(m=>m.Id==id&&UnitEnvelope(m));
+    public static bool HandlesUnitMessage(ContractWorld w,string id)=>LedgerStates(w).Any(s=>s.Withdrawal!=null)&&w.Messaging.Messages.Any(m=>m.Id==id&&UnitEnvelope(m));
     static string UnitMessage(EntityId request,string kind)=>"message:unit-post/"+kind+"/"+Hash(request.Value);
     static EntityId UnitCourier(EntityId request)=>new("courier:unit-post/"+Hash(request.Value));
     static EntityId UnitOrder(EntityId request)=>new("order:unit-post/"+Hash(request.Value));
-    public static string[] MessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIds[0].Value,..UnitDispatches(w).Select(d=>d.Recipient.Value).Where(id=>id!=UnitIds[0].Value).Distinct(StringComparer.Ordinal),..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Carrier.Value)).Concat((w.NewMilitary?.Cancellation?.Notices??[]).Select(f=>f.Carrier.Value)).Concat((w.NewMilitary?.UnitDirective?.Cancellation?.Notices??[]).Select(f=>f.Carrier.Value)).Concat(DirectiveCancelAckFlights(w).Select(f=>f.Carrier.Value)).Distinct(StringComparer.Ordinal)]:[];
-    static FieldPoint PhysicalPerson(ContractWorld w,long at)=>DeployedAt(w,at)?PersonPosition(w,at):FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,at));
-    internal static void BeforeUnitMessages(ContractWorld w)
+    static string[] LedgerMessageParticipants(ContractWorld w)=>w.NewMilitary?.Withdrawal is {}&&UnitDispatches(w).Length>0?[UnitIdsFor(w)[0].Value,..UnitDispatches(w).Select(d=>d.Recipient.Value).Where(id=>id!=UnitIdsFor(w)[0].Value).Distinct(StringComparer.Ordinal),..UnitDispatches(w).Select(d=>UnitCourier(d.Id).Value).Concat((w.NewMilitary?.ReplyRecovery?.Flights??[]).Select(f=>f.Carrier.Value)).Concat((w.NewMilitary?.Cancellation?.Notices??[]).Select(f=>f.Carrier.Value)).Concat((w.NewMilitary?.UnitDirective?.Cancellation?.Notices??[]).Select(f=>f.Carrier.Value)).Concat(DirectiveCancelAckFlights(w).Select(f=>f.Carrier.Value)).Distinct(StringComparer.Ordinal)]:[];
+    static FieldPoint PhysicalPerson(ContractWorld w,long at)=>ActualMilitaryPosition(w,at)??FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,at));
+    static void BeforeLedgerUnitMessages(ContractWorld w)
     {
         BeforeDirectiveCancelLateAcks(w);BeforeDirectiveCancelNotices(w);BeforeCancellationNotices(w);BeforeHeldMessages(w);BeforeHeldOrderAcks(w);BeforeDirectiveLateAcks(w);BeforeReplyRecovery(w);if(w.NewMilitary?.Withdrawal is not {} x)return;
         foreach(var d in UnitDispatches(w)){var a=w.Messaging.Attempts.Single(a=>a.Id==d.Attempt);if(a.Status!=AttemptStatus.InTransit||a.DueAt!=w.ElapsedSeconds)continue;

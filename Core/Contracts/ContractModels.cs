@@ -148,6 +148,12 @@ public sealed class ContractWorld
     public ServiceState? Service {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public NewMilitaryState? NewMilitary {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public NewMilitaryState[]? OtherMilitaryLedgers {get;set;}
+    internal ContractWorld ForkMilitaryLedger()=>(ContractWorld)MemberwiseClone();
+    // Transient read-only context for historical/other-ledger physical reconstruction.
+    [JsonIgnore]
+    internal NewMilitaryState[]? MilitaryLedgerHistory {get;set;}
     public required int Schema { get; set; }
     public required EntityId WorldId { get; set; }
     public required string TimeDomain { get; set; }

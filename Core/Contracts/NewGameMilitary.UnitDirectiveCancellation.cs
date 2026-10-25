@@ -48,7 +48,7 @@ public static partial class NewGameMilitary
     }
     static (UnitCancelDisposition Outcome,EntityId? Order) StopDirectiveOriginal(ContractWorld w,TroopDispatch cancellation,UnitDirectiveCancellationNote note)
     {
-        var root=DirectiveOriginal(w,note.Original)!;int index=ReceivingUnitIndex(root);Need(index>=0,"取消対象の受信隊がありません");
+        var root=DirectiveOriginal(w,note.Original)!;int index=ReceivingUnitIndex(w,root);Need(index>=0,"取消対象の受信隊がありません");
         if(!SameMilitaryCase(w,root)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))return(UnitCancelDisposition.AuthorityEnded,null);
         if(DirectiveOriginalCancelled(w,root.Id))return(UnitCancelDisposition.AlreadyStopped,null);
         var order=w.NewMilitary!.Orders.SingleOrDefault(o=>o.Id==UnitOrder(root.Id));if(order==null)return(UnitCancelDisposition.Suppressed,null);
@@ -88,7 +88,7 @@ public static partial class NewGameMilitary
         }
         foreach(var d in DirectiveCancellationOriginals(w).Where(d=>!w.NewMilitary.UnitDirective.Cancellation!.Effects.Any(e=>e.Id==d.Id)&&w.Messaging.Receipts.Any(r=>r.MessageId==d.Message)).OrderBy(d=>d.Id.Value,StringComparer.Ordinal).ToArray()){
             var note=DirectiveCancelNote(w,d);long received=w.Messaging.Receipts.Single(r=>r.MessageId==d.Message).ReceivedAt;long effective=Math.Max(received,note.EffectiveAt);if(effective>w.ElapsedSeconds)continue;Need(effective==w.ElapsedSeconds,"分隊取消の効力境界を飛ばしました");
-            var result=StopDirectiveOriginal(w,d,note);int index=ReceivingUnitIndex(d);var x=w.NewMilitary.UnitDirective.Cancellation!;
+            var result=StopDirectiveOriginal(w,d,note);int index=ReceivingUnitIndex(w,d);var x=w.NewMilitary.UnitDirective.Cancellation!;
             w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Effects=[..x.Effects,new(d.Id,note.Original,w.ElapsedSeconds,w.CommitSequence,result.Outcome,result.Order,Position(w,index,w.ElapsedSeconds))]}}};
             if(effective<=received)continue;
             var origin=Position(w,index,w.ElapsedSeconds);var destination=DirectiveCancellationReturnOrigin(w,d);var route=RegionalGround.Plan(origin,destination,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var id=new EntityId("notice:directive-cancel/"+Hash(d.Id.Value));string message=UnitMessage(id,"directive-cancel-effect");

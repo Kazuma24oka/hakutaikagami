@@ -12,7 +12,7 @@ public partial class NewGameFrontEnd
  long TargetJourneyEnd()=>game!.Session.DiagnosticSnapshot().NewMilitary!.Withdrawal!.Journeys.Last().Route.Select(l=>l.EndAt).DefaultIfEmpty(game.Session.Seconds).Max();
  NewMilitaryRequest TargetFirstMove()=>game!.Session.DiagnosticSnapshot().NewMilitary!.Requests.First(q=>q.Input.KnownTarget!=null);
  async Task KnownTargetStep(int n){await Frame();var s=game!.Session;
-  if(n==0){game.SelectKnownMilitary(NewGameMilitary.UnitIds[TargetSlot]);var row=NewGameMilitary.SelectKnownTarget(s.DiagnosticSnapshot(),NewGameMilitary.UnitIds[TargetSlot])!;Check(row.Evidence.StartsWith(TargetLetter?"letter/":"observation/"),"selection uses actual learned report or direct observation provenance");Check(game.ButtonEnabled("known-target-go"),"detached person can choose a recorded destination");}
+  if(n==0){game.SelectKnownMilitary(NewGameMilitary.UnitIdsFor(game!.Session.DiagnosticSnapshot())[TargetSlot]);var row=NewGameMilitary.SelectKnownTarget(s.DiagnosticSnapshot(),NewGameMilitary.UnitIdsFor(game!.Session.DiagnosticSnapshot())[TargetSlot])!;Check(row.Evidence.StartsWith(TargetLetter?"letter/":"observation/"),"selection uses actual learned report or direct observation provenance");Check(game.ButtonEnabled("known-target-go"),"detached person can choose a recorded destination");}
   if(n==1)game.ChooseMilitary(NewMilitaryAction.RemoteRecall);
   if(n==2){game.Press("known-target-go");var q=TargetFirstMove();Check(q.Input.Action==NewMilitaryAction.PersonalMove&&q.Input.A==q.Input.KnownTarget!.Position,"real target button records immutable known destination and provenance");Check(!game.ButtonEnabled("known-target-go"),"walking person is not given a second immediate move");}
   if(n==3){long end=TargetJourneyEnd();game.Advance(s.Seconds+Math.Max(1,(end-s.Seconds)/2));}
@@ -22,7 +22,7 @@ public partial class NewGameFrontEnd
   if(n==7)game.Advance(Math.Max(s.Seconds,ArmyEnd()+1));
   if(n==8)game.ChooseMilitary(NewMilitaryAction.InquireUnitHome);
   if(n==9)game.Advance(s.DiagnosticSnapshot().NewMilitary!.UnitInquiry!.Dispatches.Last().DueAt);
-  if(n==10){game.Advance(s.DiagnosticSnapshot().NewMilitary!.UnitInquiry!.Receipts.Last().ReplyDueAt);game.SelectKnownMilitary(NewGameMilitary.UnitIds[0]);Check(NewGameMilitary.SelectKnownTarget(s.DiagnosticSnapshot(),NewGameMilitary.UnitIds[0])!.Position==NewGameMilitary.Home(s.DiagnosticSnapshot(),0),"only physically received main-unit report supplies return location");}
+  if(n==10){game.Advance(s.DiagnosticSnapshot().NewMilitary!.UnitInquiry!.Receipts.Last().ReplyDueAt);game.SelectKnownMilitary(NewGameMilitary.UnitIdsFor(game!.Session.DiagnosticSnapshot())[0]);Check(NewGameMilitary.SelectKnownTarget(s.DiagnosticSnapshot(),NewGameMilitary.UnitIdsFor(game!.Session.DiagnosticSnapshot())[0])!.Position==NewGameMilitary.Home(s.DiagnosticSnapshot(),0),"only physically received main-unit report supplies return location");}
   if(n==11){game.Press("known-target-go");Check(s.DiagnosticSnapshot().NewMilitary!.Requests.Last().Input.KnownTarget!=null,"second explicit move uses updated known main-unit destination");}
   if(n==12){game.Advance(TargetJourneyEnd()+1);game.ChooseMilitary(NewMilitaryAction.Attach);Check(!NewGameMilitary.Detached(s.DiagnosticSnapshot()),"physical one-meter reunion remains a separate explicit action");}
   if(n==13){game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);game.ChooseMilitary(NewMilitaryAction.Report);game.ChooseMilitary(NewMilitaryAction.Return);}
