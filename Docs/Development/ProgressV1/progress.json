@@ -1536,7 +1536,7 @@
       }
     ],
     "subsequent_core_verification": "Docs/Design/FieldEngagementV1/verification.json",
-    "subsequent_core_verification_sha256": "71c7c0d8c49038d2701149eb7114517ab8b96dc75c14a8cca40791a4d02fd81f"
+    "subsequent_core_verification_sha256": "33c3a566970cd43c7fe222371ac4cd9667b8348e78e79dd4dffc0f80c5b3b725"
   },
   "release": {
     "functional_items": 59,

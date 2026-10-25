@@ -2,7 +2,7 @@
   "schema": 1,
   "status": "PASSED",
   "scope": "core-only-engagement-gate",
-  "baseline_revision": "aa0dee5e3b784d769564a148b0c1b1297dad2ed5",
+  "baseline_revision": "96cb69fd55ab15395fce2e25e62d484b70fce306",
   "tests": {
     "passed": 80,
     "failed": 0,
@@ -179,7 +179,7 @@
     "Core/World/PrototypeScenario.cs": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529",
     "Core/World/SeededRandom.cs": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f",
     "Core/World/WorldState.cs": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c",
-    "Scripts/verify_field_engagement.py": "0cb5f0c56e69bc5ae88bd7a32ae1724b4d28785de8a564e19a96b722850e33bc",
+    "Scripts/verify_field_engagement.py": "a5f73d1760c7c909f6d3a64095ff05bfacc91998480ebdb9c9ce167a33d41255",
     "Tests/ContactCombatTests.cs": "b8ac7ff21b33d7049efe954fbf2d48eb6af055f6ef0a21d63aef18014225883e",
     "Tests/EngagementMissionTests.cs": "c077a950b70b18a8581c467a5f99a462d8cb0ea4019c74a5351418c2b9ac6783",
     "Tests/FieldEngagementTests.cs": "97c2294a5034d49780c0c5694dabbbba50e7bc4a12a62053e18fd84ddda3cd09",
@@ -231,10 +231,10 @@
   },
   "binaries": {
     "Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll": "bc1deb17e8c18a49827536807794ccb8660ca8a1975ed8864142e06f9a893f3c",
-    "Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll": "4d7ac8d8d2d325a3cc329f5cf30d08d2f68e0c9729c25464c9c0713f57970304"
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll": "38d7eb643b35430dfa3b7591fe5004be1f086f2135a7e7002f13405767a45944"
   },
   "proofs": {
-    "Docs/Design/FieldEngagementV1/runtime-local/test.log": "dd74a4f0d9cf13440ce837a4d14139c0271825f13a73cef7261b541176632622",
-    "Docs/Design/FieldEngagementV1/runtime-local/tests/engagement.trx": "7150f66d3e85786afcaa0c482251bbbea3b9919700292e21434139b7f31c1fe8"
+    "Docs/Design/FieldEngagementV1/runtime-local/test.log": "efd78d2eeecb57feaaaa185cc333d7b0753cfc7816830430d01ddf5f31c4f82f",
+    "Docs/Design/FieldEngagementV1/runtime-local/tests/engagement.trx": "960313d8f74c4b8d9af8fb81a12f5a54b8069c301df34b37d5acdc677cd350c9"
   }
 }

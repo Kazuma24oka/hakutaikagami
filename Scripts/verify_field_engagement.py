@@ -67,7 +67,7 @@ def main():
                             'Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll']},
                  proofs={p.relative_to(ROOT).as_posix(): sha(p) for p in
                          [OUT / 'test.log', OUT / 'tests/engagement.trx']})
-        manifest.write_text(json.dumps(v, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        manifest.write_text(json.dumps(v, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
         check(v)
     print('PASS: 80 targeted Core tests; no new-game or 3D acceptance claimed')
 
