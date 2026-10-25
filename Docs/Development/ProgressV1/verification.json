@@ -1,25 +1,26 @@
 {
   "status": "PASS",
   "completion": "4/4",
-  "scope": "Documentation audit only; no new Core/GPU game execution",
+  "scope": "Progress refresh after L1 transport contract.150 related tests executed; historical2208/GPU evidence is not current full coverage",
   "checks": [
     "60 design rows,15 groups,170 planned cases",
     "evidence files and unchanged runtime source hashes",
     "prior DLL/TRX hashes unchanged",
     "browser filters and 1280/600/390 widths, no overflow or JS errors"
   ],
-  "visual_review": "1280 and390 screenshots inspected; readable and no overlapping text",
+  "visual_review": "Prior responsive layout preserved; current browser filters and three widths rerun",
   "sources": {
-    ".gitignore": "4fe7e36f3880e0713310111fc7cb4ddd5cb11c3587b8352e1fdfee31379afc1b",
-    "AGENTS.md": "67c39f32ea6676ff3fa8e4347a56805f82fad3b2442990a5936486d6b5479284",
-    "Docs/README.md": "0dbbc655a743bdb38cf9e18764b44cd9d79e4d8b341fa3f1f416eac336d02a89",
-    "Docs/Development/CURRENT_STAGE.md": "fc86c13a17d8aac1e1353244bc7f56e7c7f98502cf604f8c44dfeae4b5d00c2e",
-    "Docs/Development/ProgressV1/README.md": "4b767117a8722a1fda7dfa2a81adeccf5eac6d70c966b4153d120df636e3354e",
-    "Docs/Development/ProgressV1/progress.json": "45ca7922972216be9b09cc1ab6503530f4318dfa641e26311763538136a7f610",
-    "Docs/Development/ProgressV1/index.html": "6caa5f40a9b073eefe54f5475281f88ec4e3c17e64e80e30ce0f72dff4d69d80",
-    "Scripts/build_progress_report.py": "b3a0317510e2b2b71fc6a8f4923c80f86beee5cc85a6342582623cef8432ddd5",
-    "Scripts/check_progress_report.py": "8cb51b703bba038bc324329aeb1db1832c35bc26f37f80c0a2455086b14b5db1",
-    "Scripts/verify_progress_report.cjs": "83d2ffde841ad9071e0e9e53b06d4f64e680205f8e6c98183bedf92179a983a3"
+    ".gitignore": "653f11748572f6ca963368a2cc6f2562f53a6e8fe9fa9d2ab427ba35e9594d38",
+    "AGENTS.md": "8b61790c0087b0348931416c8ca5e608091ab3148f1c5c69ab194b37ddeaa60a",
+    "Docs/README.md": "7766459b24e9bcdd8949c21dfdd74d8c3ea3ab9e89604c9a5d233425a9757639",
+    "Docs/Development/CURRENT_STAGE.md": "92b63faaa1a95107a227076b17b3b3f1b9f7fe2fcd70b47d8d1da54f75320be6",
+    "Docs/Development/ProgressV1/index.html": "819e8fc3e0af2d02592b504c5582130ddbc4a15516a3067377bcbf2c93629886",
+    "Docs/Development/ProgressV1/progress.json": "bcf2b01f7eab8e22ef82418d343dc85b57957501bcbc06cf80680bffbae5c1fa",
+    "Scripts/build_progress_report.py": "c2b9b6596ff428dfc7c114b47debbb6e6afe6b3ebc0397cc172f1ee21fc27432",
+    "Core/Contracts/TransportHandover.cs": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
+    "Tests/TransportHandoverTests.cs": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8",
+    "Docs/Design/TransportHandoverV1/README.md": "417060c9c4e634577f28fca52c449863f783074d3050f37c7a52c53e2868131a",
+    "Docs/Design/TransportHandoverV1/verification.json": "4045fe22f40c07c709c197f915d7c6ce1377828c116f120c3da91dec5d2fda9c"
   },
   "browser": {
     "status": "PASS",

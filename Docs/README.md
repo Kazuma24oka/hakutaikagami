@@ -238,3 +238,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [軍務の兵糧準備を仕事欄へ](Design/SupplyWorkV1/README.md)
 
 - [全体進捗表：基本設計60枠の実装・残件](Development/ProgressV1/index.html)
+
+- [運搬受渡し契約L1・保存復旧の範囲](Design/TransportHandoverV1/README.md)

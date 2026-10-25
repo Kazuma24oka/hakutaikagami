@@ -390,13 +390,17 @@
     {
       "id": "BD-29",
       "status": "normal",
-      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。",
+      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。",
       "remaining": "運搬/普請/政治など任務種別を増やし、部分達成と正式な評価まで接続する。",
       "evidence": [
         "Core/Contracts/NewGameWork.cs",
         "Core/Contracts/LocalWorkDemand.cs",
         "Game/Scripts/NewGameRuntime.WorkCycle.cs",
-        "Tests/NewGameWorkTests.cs"
+        "Tests/NewGameWorkTests.cs",
+        "Core/Contracts/TransportHandover.cs",
+        "Tests/TransportHandoverTests.cs",
+        "Docs/Design/TransportHandoverV1/README.md",
+        "Docs/Design/TransportHandoverV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -418,12 +422,16 @@
     {
       "id": "BD-31",
       "status": "normal",
-      "existing": "期限・取消原本・保持・遅着・再送・隊別の一度だけの効力を扱う。",
+      "existing": "期限・取消原本・保持・遅着・再送・隊別の一度だけの効力を扱う。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。",
       "remaining": "一般任務の担当交代/緊急判断まで同じ契約で接続し、全種別を統合検査する。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.UnitDirectiveCancelHolding.cs",
         "Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs",
-        "Tests/UnitDirectiveCancelHoldingTests.cs"
+        "Tests/UnitDirectiveCancelHoldingTests.cs",
+        "Core/Contracts/TransportHandover.cs",
+        "Tests/TransportHandoverTests.cs",
+        "Docs/Design/TransportHandoverV1/README.md",
+        "Docs/Design/TransportHandoverV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -472,12 +480,16 @@
     {
       "id": "BD-35",
       "status": "foundation",
-      "existing": "引当・現物移動・債務のデータと、点検報酬の未払い処理がある。",
+      "existing": "引当・現物移動・債務のデータと、点検報酬の未払い処理がある。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。",
       "remaining": "市場価格・見積・売買合意・運搬・受渡し・決済という交易の一巡を実装する。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameWork.cs",
-        "Tests/NewGameWorkTests.cs"
+        "Tests/NewGameWorkTests.cs",
+        "Core/Contracts/TransportHandover.cs",
+        "Tests/TransportHandoverTests.cs",
+        "Docs/Design/TransportHandoverV1/README.md",
+        "Docs/Design/TransportHandoverV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1857,7 +1869,9 @@
       "Core/Data/owari-branches-v1.json": "c9534733dceb570591feef18c3cc3b59122283f0bc186907a96536576d896372",
       "Core/Data/owari-route-v1.json": "3d9b4405e8d060bc4682a6bc17306972dc31952261796a5c59190935ff77e8ed",
       "Core/Data/regional-expansion-v1.json": "b6aa50f3a5339afb9854840b00142c2298eee091029c84a7cc78364a8f8e7e6b",
-      "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
+      "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a",
+      "Core/Contracts/TransportHandover.cs": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
+      "Tests/TransportHandoverTests.cs": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8"
     },
     "core_test": {
       "passed": 2208,
@@ -1873,7 +1887,15 @@
       "comparisons": 104,
       "scope": "直前工程SupplyWorkV1で検証した限定ケース。60項目全部のGPU試験数ではない。"
     },
-    "audit_runtime_tests": "この進捗監査ではゲーム動作試験を新たに実行しない。文書/HTMLとコード非変更を確認する。"
+    "audit_runtime_tests": "L1 related tests 150 passed;39 new. Prior2208 and17GPU are historical scope, not rerun on new Core.",
+    "current_stage_test": {
+      "passed": 150,
+      "added": 39,
+      "failed": 0,
+      "skipped": 0,
+      "trx": "Docs/Design/TransportHandoverV1/runtime-local/tests/related.trx",
+      "trx_sha256": "4c0bed6283d259dac9ec56aca952cb69a2acfd950dedc7a125455c0ce173ddb1"
+    }
   },
   "release": {
     "functional_items": 59,
@@ -1884,13 +1906,8 @@
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
-    "done": "点検/需要/返報/報酬、移動/他拠点、軍務許可/兵糧準備/帰還の試作。",
+    "done": "点検/需要/返報/報酬、移動/他拠点、軍務許可/兵糧準備/帰還の試作。 固定受渡し契約L1の独立検証を完了。",
     "remaining": [
-      {
-        "id": "L1",
-        "title": "運搬の受渡し条件",
-        "finish": "依頼・引受・原本/現物・宛先・受渡し・報告・報酬の条件を固定する。"
-      },
       {
         "id": "L2",
         "title": "運搬の仕事を接続",
@@ -1905,7 +1922,7 @@
     "boundary": "これは地域の開発段階。全国・政治社会を含む製品範囲を縮小しない。"
   },
   "next_priorities": [
-    "地域一巡の残り3枠を閉じる",
+    "地域一巡の残り2枠を閉じる",
     "任務の正式評価・身分と成長・人間関係へ接続する",
     "勢力間の実戦・包囲/攻城と自律判断へ広げる",
     "生産/交易・所領運用・外交/社会/継承を接続する",
