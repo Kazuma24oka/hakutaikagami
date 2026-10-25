@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2424,
-  "baseline_passed": 2392,
-  "added": 32,
-  "scope": "FieldEngagement32 added; 80 targeted tests passed. Full2424 suite NOT_RUN for this source; do not infer success from expected count"
+  "expected_passed": 2446,
+  "baseline_passed": 2424,
+  "added": 22,
+  "scope": "EngagementTaskDelivery22 added; full2446 regression and current Godot evidence recorded separately"
 }

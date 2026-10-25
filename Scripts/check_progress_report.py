@@ -27,7 +27,10 @@ new=None
 if new_path:
  check(new_path,p['evidence']['subsequent_core_verification_sha256'])
  new=json.loads((R/new_path).read_bytes())
- from verify_field_engagement import check as check_increment
+ if new["scope"]=="normal-game-conditional-engagement-delivery":
+  from verify_engagement_delivery import check as check_increment
+ else:
+  from verify_field_engagement import check as check_increment
  check_increment(new)
 for f,h in v['binaries'].items():
  if hashlib.sha256((R/f).read_bytes()).hexdigest()==h:continue
@@ -36,7 +39,14 @@ for f,h in v['binaries'].items():
   'Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll'},('unverified binary changed',f)
  check(f,new['binaries'][f])
 t=p["evidence"]["core_test"];check(t["trx"],t["sha256"])
-print("PASS: historical game evidence retained; rebuilt test DLLs require separate targeted Core evidence")
+print("PASS: historical game evidence retained; current binaries bind to their recorded verification scope")
+if p['evidence'].get('full_core_verification'):
+ f=p['evidence']['full_core_verification'];check(f,p['evidence']['full_core_verification_sha256'])
+ full=json.loads((R/f).read_bytes());assert full['status']=='PASSED' and full['scope']=='full-core-exact-godot-tested-binaries'
+ for group in ['sources','binaries','proofs']:
+  for f,h in full[group].items():check(f,h)
+ assert full['passed']==p['evidence']['core_test']['passed'] and full['failed']==full['skipped']==0
+ print('PASS: complete Core regression binds to the actual Godot-tested code and DLLs')
 
 # Product-scope estimate is separate from test counts and preserves all adopted design items.
 from progress_estimate import load as load_estimate,calculate
