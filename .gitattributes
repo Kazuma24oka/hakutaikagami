@@ -1886,3 +1886,8 @@ Game/Scripts/NewGameRuntime.FactionPolicy.cs -text
 Scripts/verify_faction_entry.py -text
 Tests/Fixtures/world-clash-4d8ac2f-active.json -text
 Docs/Design/FactionEntryV1/** -text
+
+# Regional economy verification inputs.
+Game/Scripts/NewGameRuntime.Economy.cs -text
+Scripts/verify_regional_economy.py -text
+Docs/Design/RegionalEconomyV1/** -text
