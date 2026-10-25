@@ -236,3 +236,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [既知の陸路記録に基づく点検需要](Design/LocalWorkDemandV1/README.md)
 
 - [軍務の兵糧準備を仕事欄へ](Design/SupplyWorkV1/README.md)
+
+- [全体進捗表：基本設計60枠の実装・残件](Development/ProgressV1/index.html)

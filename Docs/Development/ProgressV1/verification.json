@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "completion": "4/4",
+  "scope": "Documentation audit only; no new Core/GPU game execution",
+  "checks": [
+    "60 design rows,15 groups,170 planned cases",
+    "evidence files and unchanged runtime source hashes",
+    "prior DLL/TRX hashes unchanged",
+    "browser filters and 1280/600/390 widths, no overflow or JS errors"
+  ],
+  "visual_review": "1280 and390 screenshots inspected; readable and no overlapping text",
+  "sources": {
+    ".gitignore": "4fe7e36f3880e0713310111fc7cb4ddd5cb11c3587b8352e1fdfee31379afc1b",
+    "AGENTS.md": "67c39f32ea6676ff3fa8e4347a56805f82fad3b2442990a5936486d6b5479284",
+    "Docs/README.md": "0dbbc655a743bdb38cf9e18764b44cd9d79e4d8b341fa3f1f416eac336d02a89",
+    "Docs/Development/CURRENT_STAGE.md": "fc86c13a17d8aac1e1353244bc7f56e7c7f98502cf604f8c44dfeae4b5d00c2e",
+    "Docs/Development/ProgressV1/README.md": "4b767117a8722a1fda7dfa2a81adeccf5eac6d70c966b4153d120df636e3354e",
+    "Docs/Development/ProgressV1/progress.json": "45ca7922972216be9b09cc1ab6503530f4318dfa641e26311763538136a7f610",
+    "Docs/Development/ProgressV1/index.html": "6caa5f40a9b073eefe54f5475281f88ec4e3c17e64e80e30ce0f72dff4d69d80",
+    "Scripts/build_progress_report.py": "b3a0317510e2b2b71fc6a8f4923c80f86beee5cc85a6342582623cef8432ddd5",
+    "Scripts/check_progress_report.py": "8cb51b703bba038bc324329aeb1db1832c35bc26f37f80c0a2455086b14b5db1",
+    "Scripts/verify_progress_report.cjs": "83d2ffde841ad9071e0e9e53b06d4f64e680205f8e6c98183bedf92179a983a3"
+  },
+  "browser": {
+    "status": "PASS",
+    "rows": 60,
+    "filters": [
+      "14 design_only",
+      "30 normal",
+      "4 G11",
+      "1 BD-59"
+    ],
+    "viewports": [
+      1280,
+      600,
+      390
+    ],
+    "errors": []
+  }
+}
