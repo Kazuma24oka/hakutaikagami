@@ -23,3 +23,18 @@ check(p["evidence"]["latest_game_verification"],p["evidence"]["latest_game_verif
 for f,h in v["binaries"].items():check(f,h)
 t=p["evidence"]["core_test"];check(t["trx"],t["sha256"])
 print("PASS: bound binaries and recorded test-result provenance unchanged")
+
+# Product-scope estimate is separate from test counts and preserves all adopted design items.
+from progress_estimate import load as load_estimate,calculate
+x=load_estimate();c=calculate(x,d)
+assert sum(v['weight'] for v in x['domains'])==100
+covered=[g for v in x['domains'] for g in v['groups']]
+assert len(covered)==len(set(covered))==15 and set(covered)=={g['id'] for g in d['groups']}
+assert set(x['leaves'])==set(ids)
+assert all(isinstance(v['percent'],int) and 0<=v['percent']<=100 and v['basis'] for v in x['leaves'].values())
+assert set(x['excluded_from_rollup'])=={'BD-01','BD-60'}
+assert 0<=c['total']<=100 and c['total']%x['rounding_step']==0
+assert x['overall_range'][0]<=c['total']<=x['overall_range'][1]
+assert x['focus']['leaf'] in ids and 3<=len(x['focus']['exit'])<=5
+assert len(x['roadmap'])==6 and all(v['finish'] and v['why'] and v['status'] for v in x['roadmap'])
+print('PASS: weighted estimate / 6 large, 15 medium, 60 small entries / scope exits and roadmap')

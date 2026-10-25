@@ -1866,3 +1866,7 @@ Scripts/verify_household_core.py -text
 Scripts/verify_household_unit_regression.py -text
 Scripts/check_household_military_binding.py -text
 Scripts/build_household_military_report.py -text
+
+# Hierarchical product-scope progress estimates.
+Scripts/progress_estimate.py -text
+Docs/Development/ProgressV1/estimate.json -text

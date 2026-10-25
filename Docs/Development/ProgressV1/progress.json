@@ -15,9 +15,13 @@
   "design_source": "Docs/Design/basic-design-v1.json",
   "acceptance_source": "Docs/Design/basic-design-acceptance.json",
   "source_hashes": {
-    "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
-    "Docs/Development/OPERATING_POLICY.md": "27799594c3ec288fa2b1976127d49d77c7900a77983ca70768d338e123146999"
+    "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+    "Docs/Development/OPERATING_POLICY.md": "27799594c3ec288fa2b1976127d49d77c7900a77983ca70768d338e123146999",
+    "Docs/Development/ProgressV1/estimate.json": "16227bc743f93499481b8852f221a18e83ca523931a915f1ea8d722ded19ca84",
+    "Scripts/build_progress_report.py": "2f77bc8d74ef02d00e535ab382a007b18e2c30a71eaff8cf552f7dbcf337eced",
+    "Scripts/check_progress_report.py": "805841cb14b130a33cede6dbf7b75ff53f089d5e68ba04e1efa0fbdc914fb3e5",
+    "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
     {
@@ -1586,14 +1590,16 @@
         "finish": "旧軍83人を保持して新主家100人を引受。旧主家復帰・遅着・保存復旧と実3Dを接続。"
       }
     ],
-    "review_prompt": "主家別軍務のコード統合は承認済み。以後も基本設計の承認範囲内で技術判断を進め、根本的な方向変更・費用・重要操作だけ確認する。"
+    "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "実在勢力の敵対・自衛・任務と接敵条件を接続",
-    "複数軍の接触・損害・撤退と本人認識の返報を接続",
-    "包囲/攻城と城・守備隊・倉庫の実引渡しへ広げる",
-    "所領/生産/交易と外交/社会/継承を接続",
-    "全国データ/政治AI、性能、正式素材と受入を進める"
+    "地域での実戦の入口：任務・接敵・損害・撤退・返報を一本つなぐ。上記の終了条件で区切る。",
+    "領地で暮らしと収支を回す：一地域で生産/収穫・在庫・徴収/支払い・使い道を一巡させる。",
+    "人を雇い、任せ、関係を変える：配下の加入/離脱・同行・仕事の委任・待遇と関係変化をつなぐ。",
+    "相手に働きかけて結果を変える：情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
+    "城・勢力・家を動的に変える：包囲/開城・支配の引渡し・独立・家督を、兵/家臣/資源/債務へ反映する。",
+    "全国を自律的に動かし、製品に仕上げる：全国史実データと活動NPC、身分別の一巡、正式素材、画面、調整、性能を統合する。"
   ],
-  "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。"
+  "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
+  "estimate_source": "Docs/Development/ProgressV1/estimate.json"
 }
