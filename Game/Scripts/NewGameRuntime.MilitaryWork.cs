@@ -7,6 +7,7 @@ public partial class NewGameRuntime
     OptionButton militaryWorkChoice=null!;NewMilitaryAction[] militaryWorkActions=[];bool drawingMilitaryWork;long? militaryWorkDeadline;
     void BuildMilitaryWork(Node parent)
     {
+        BuildMilitaryDebrief(parent);
         Add(parent,"work-military","軍務を相談・確認",()=>ShowMilitaryWork());
         militaryWorkChoice=new(){Visible=false,CustomMinimumSize=new(0,36),FitToLongestItem=false,TextOverrunBehavior=TextServer.OverrunBehavior.TrimEllipsis};
         workDetails.GetParent().AddChild(militaryWorkChoice);workDetails.GetParent().MoveChild(militaryWorkChoice,workDetails.GetIndex()+1);
@@ -14,7 +15,7 @@ public partial class NewGameRuntime
     }
     void RefreshMilitaryWork()
     {
-        var w=Snapshot();buttons["work-military"].Visible=NewGameWork.Enabled(w)&&(militaryActions.Length>0||w.NewMilitary!=null);
+        RefreshMilitaryDebrief();var w=Snapshot();buttons["work-military"].Visible=NewGameWork.Enabled(w)&&(militaryActions.Length>0||w.NewMilitary!=null);
         buttons["work-military"].Disabled=IsSaving||IsClockControlling;
         var v=NewGameMilitary.ViewWithAuthority(w);buttons["work-military"].Text=v.CanAccept?"軍務条件を確認・回答する":v.CanPickup?"許可済み・兵を引き受ける":w.NewMilitary!=null?"軍務の状況・次の行動":"軍務を相談・確認";
     }
@@ -36,7 +37,7 @@ public partial class NewGameRuntime
     }
     void ShowMilitaryWork(EntityId? letter=null)
     {
-        if(IsSaving||IsClockControlling)return;RefreshMilitary();shownWork=null;
+        if(IsSaving||IsClockControlling)return;var debrief=letter is {} received?NewGameMilitary.Debriefs(Snapshot()).SingleOrDefault(d=>d.Notice==received):null;if(debrief!=null){ShowMilitaryDebrief(debrief.Case);return;}RefreshMilitary();shownWork=null;
         var w=Snapshot();var status=NewGameMilitary.ViewWithAuthority(w);militaryWorkDeadline=Branch(Session.PlayerControl).Knowledge.Messages.Where(k=>k.KnownBody!=null&&w.Messaging.Messages.Any(m=>m.Id==k.Id.Value&&m.Kind=="new-military-notice")).Select(k=>ContractJson.Read<MilitaryNotice>(System.Text.Encoding.UTF8.GetBytes(k.KnownBody!))).Where(n=>n.Effect==MilitaryEffect.Offered).Select(n=>n.Deadline).DefaultIfEmpty(null).Max();EntityId other=Session.PlayerControl,speaker=Session.PlayerControl;
         string speech=status.Status,phase="軍務の判断";
         // A speaking issuer is shown only for a letter this person actually opened.

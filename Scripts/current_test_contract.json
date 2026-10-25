@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2362,
-  "baseline_passed": 2348,
-  "added": 14,
-  "scope": "WorkRelations14 added; current execution targeted47, full2362 not run"
+  "expected_passed": 2373,
+  "baseline_passed": 2362,
+  "added": 11,
+  "scope": "MilitaryDebrief added; current execution targeted48, full suite not run"
 }
