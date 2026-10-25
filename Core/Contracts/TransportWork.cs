@@ -46,9 +46,9 @@ public static class TransportWork
             switch(e.Input.Action){case HandoverAction.Collect:Move(t.SourceLot,Cargo(t.Id),t.Amount);break;case HandoverAction.Deliver:Move(Cargo(t.Id),Delivered(t.Id),t.Amount);break;case HandoverAction.Return:Move(Cargo(t.Id),t.SourceLot,t.Amount);break;case HandoverAction.Pay:Move(NewGameWork.Wallet(t.Issuer),NewGameWork.Wallet(t.Carrier),t.Fee);break;}}
         return n;
     }
-    static long WalletBefore(ContractWorld w,EntityId actor,long at,long revision)
+    internal static long WalletBefore(ContractWorld w,EntityId actor,long at,long revision)
     {
-        var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+Net(w,id,at,revision);
+        var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+Net(w,id,at,revision)+VoyageExpense.Net(w,id,at,revision);
         foreach(var p in w.WorkCycle!.Payments.Where(p=>Before(p.At,p.Revision,at,revision))){var t=w.Tasks.Single(t=>t.Id==p.Task);if(t.Issuer==actor)n-=p.Amount;if(t.Executor==actor)n+=p.Amount;}
         return n;
     }
@@ -82,7 +82,7 @@ public static class TransportWork
         if(w.TransportWork==null)return;
         var jobs=Jobs(w).Where(j=>j.Handover.Terms.OfferedAt<at||j.Handover.Terms.OfferedAt==at&&j.CreatedRevision<=revision).Select(j=>{
             var receipts=j.Receipts.Where(p=>p.Revision<=revision&&j.Handover.Entries.Any(e=>e.Input.Id==p.Operation&&e.Input.At<=at)).ToArray();var ids=receipts.Select(p=>p.Operation).ToHashSet();return j with{Receipts=receipts,Handover=j.Handover with{Entries=j.Handover.Entries.Where(e=>ids.Contains(e.Input.Id)).ToArray()}};}).ToArray();
-        w.TransportWork=jobs.Length==0?null:w.TransportWork with{Jobs=jobs};if(jobs.Length==0){w.TravelDecisions=null;w.TrafficStops=null;}Sync(w);
+        w.TransportWork=jobs.Length==0?null:w.TransportWork with{Jobs=jobs};if(jobs.Length==0&&!VoyageExpense.Enabled(w)){w.TravelDecisions=null;w.TrafficStops=null;}Sync(w);
     }
     public static void Validate(ContractWorld w)
     {

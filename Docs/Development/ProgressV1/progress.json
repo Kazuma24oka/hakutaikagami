@@ -254,7 +254,7 @@
     {
       "id": "BD-19",
       "status": "normal",
-      "existing": "陸路/海路・迂回・封鎖・道外移動・地形減速と到着を扱う。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
+      "existing": "陸路/海路・迂回・封鎖・道外移動・地形減速と到着を扱う。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
       "remaining": "物資運搬と交通主体の差、天候/季節/通行権を製品条件として接続する。",
       "evidence": [
         "Core/Contracts/TravelWorld.cs",
@@ -266,7 +266,11 @@
         "Core/Contracts/WorldSession.TransportWork.cs",
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
-        "Docs/Design/TransportWorkV1/verification.json"
+        "Docs/Design/TransportWorkV1/verification.json",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/VoyageExpenseTests.cs",
+        "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+        "Docs/Design/TravelExpenseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -315,13 +319,17 @@
     {
       "id": "BD-23",
       "status": "normal",
-      "existing": "秒基準の共通時計、速度変更・停止・私有先行計算と決定的な再開がある。",
+      "existing": "秒基準の共通時計、速度変更・停止・私有先行計算と決定的な再開がある。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
       "remaining": "今後接続する全制度と全国負荷で、速度・描画頻度差による結果一致を受入確認する。",
       "evidence": [
         "Core/Contracts/WorldSession.PreparedAdvance.cs",
         "Game/Scripts/NewGameRuntime.ResponsiveClock.cs",
         "Tests/PreparedAdvanceIntegrationTests.cs",
-        "Tests/PreparedPauseTests.cs"
+        "Tests/PreparedPauseTests.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/VoyageExpenseTests.cs",
+        "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+        "Docs/Design/TravelExpenseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -395,7 +403,7 @@
     {
       "id": "BD-29",
       "status": "normal",
-      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
+      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
       "remaining": "運搬/普請/政治など任務種別を増やし、部分達成と正式な評価まで接続する。",
       "evidence": [
         "Core/Contracts/NewGameWork.cs",
@@ -410,7 +418,11 @@
         "Core/Contracts/WorldSession.TransportWork.cs",
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
-        "Docs/Design/TransportWorkV1/verification.json"
+        "Docs/Design/TransportWorkV1/verification.json",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/VoyageExpenseTests.cs",
+        "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+        "Docs/Design/TravelExpenseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -480,7 +492,7 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
+      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
       "remaining": "通常入口からの徴税・定期俸禄・所領財政と、私財の支出/旅費を接続する。",
       "evidence": [
         "Core/Contracts/NewGameWork.cs",
@@ -492,7 +504,11 @@
         "Core/Contracts/WorldSession.TransportWork.cs",
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
-        "Docs/Design/TransportWorkV1/verification.json"
+        "Docs/Design/TransportWorkV1/verification.json",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/VoyageExpenseTests.cs",
+        "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+        "Docs/Design/TravelExpenseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -500,7 +516,7 @@
     {
       "id": "BD-35",
       "status": "foundation",
-      "existing": "引当・現物移動・債務のデータと、点検報酬の未払い処理がある。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
+      "existing": "引当・現物移動・債務のデータと、点検報酬の未払い処理がある。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
       "remaining": "市場価格・見積・売買合意・運搬・受渡し・決済という交易の一巡を実装する。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
@@ -514,7 +530,11 @@
         "Core/Contracts/WorldSession.TransportWork.cs",
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
-        "Docs/Design/TransportWorkV1/verification.json"
+        "Docs/Design/TransportWorkV1/verification.json",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/VoyageExpenseTests.cs",
+        "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+        "Docs/Design/TravelExpenseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -778,7 +798,7 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "スタート/作成/ロード・地図・仕事/会話・軍務・書状・履歴が通常入口につながる。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
+      "existing": "スタート/作成/ロード・地図・仕事/会話・軍務・書状・履歴が通常入口につながる。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
       "remaining": "全制度の案内・戦後評価と、布陣などを含むキーボード操作/アクセシビリティを仕上げる。",
       "evidence": [
         "Game/Scripts/NewGameFrontEnd.cs",
@@ -789,7 +809,11 @@
         "Core/Contracts/WorldSession.TransportWork.cs",
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
-        "Docs/Design/TransportWorkV1/verification.json"
+        "Docs/Design/TransportWorkV1/verification.json",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/VoyageExpenseTests.cs",
+        "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+        "Docs/Design/TravelExpenseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -845,7 +869,7 @@
       "Core/Commands/InspectionSession.cs": "2a5cf2a011a83c9f3c20bd0511d0a9fd32fe17768785384721dab4a2a6a2450f",
       "Core/Common/SessionInfrastructure.cs": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076",
       "Core/Contracts/AssessmentNotice.cs": "2bcc83aef7da4cdf53439156ef5f55d5ba5d587da84d7eeefae19c759566da34",
-      "Core/Contracts/BranchRoutes.cs": "3437405e8ee8485adcb0b517b8fd3f212152d66690e28102dc3a54bf9319608e",
+      "Core/Contracts/BranchRoutes.cs": "06763ada7ccc52caaa91cf53838ecea567baf87fbb65bfe0c85d3fa293dcff00",
       "Core/Contracts/Career.cs": "7a684a1dfd98d4d3ba55e9b40f49b1311f5834c6910a090ed3dae2b330c40c44",
       "Core/Contracts/Career.Validation.cs": "13ab5a050127f0e8451c5d6914adda2de93504efb21b8f33505e83b078871642",
       "Core/Contracts/Career.View.cs": "83a0b48cd8bd54346d4eb400a4af2634fce3b92322b7946acec8ecf3240faf3f",
@@ -855,10 +879,10 @@
       "Core/Contracts/ContactCombat.cs": "a002b38cb240bc99e9cfcb4f3f58371b317e1e710fd369d0b63b9ec34cbb7df9",
       "Core/Contracts/ContinuousWorld.cs": "e1047998371a0876349a7677c84f50101ac43f72d5d90e38de4f8e87ba1835c7",
       "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
-      "Core/Contracts/ContractJson.cs": "ed09c33d4ffd5d737adcc87ab51ff719dfab030f682f35b5d7ee5b12475eba5e",
-      "Core/Contracts/ContractModels.cs": "936be6ddbef421bf1a9836046e543feb1b8c271615865602f96f379d30ca7e13",
+      "Core/Contracts/ContractJson.cs": "c6648226f90584df7ebe317942db8c24eb8373b28e5ddaa15da045da692b55c7",
+      "Core/Contracts/ContractModels.cs": "ae5cb442eda44a100bb898d66ccb163c5eae49a05ccd6a4767fb11569b9ccbf9",
       "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
-      "Core/Contracts/ContractValidation.cs": "ac225ef00f7034ff4d2553aef6976ab406426fc193c4a90e7e36519fb4764da5",
+      "Core/Contracts/ContractValidation.cs": "186b34b276e2cc13ecad8bb2f754d6bb2442300a2c5778e9121dc0b85a17eaca",
       "Core/Contracts/CouncilInput.cs": "23ced7f34511d0169fa882919bd0b06e1125ff0e46b2f87b7560fbda6b9c8bfe",
       "Core/Contracts/CourierRecovery.cs": "02b483755d442183dc0f8a2fb529d00bac4c620cd0efcc51ca7b2b950068f3a7",
       "Core/Contracts/CreatedCampaign.cs": "9b799e8e0c43cda69cc51b7f8cd01ccba3d82143cc3cd521e8fc013c68370b0b",
@@ -883,7 +907,7 @@
       "Core/Contracts/MovementControl.cs": "917bba7e01f62bfe08cb2b46156496404586c9e8300147858157d67a761fc8db",
       "Core/Contracts/NationalPersonnel.cs": "b1a369a049a2bf898588245357d29a24d10763c5b94d62d16f152550349b7a38",
       "Core/Contracts/NationalRoutes.cs": "325676a9e4ff25bfa1f79afe588b9f4df75537a25e659d86677e218490af7e0e",
-      "Core/Contracts/NewCampaignStore.cs": "ed59468f5aceefd3bae324038e9d220c270ce45674f0ba7d711db67d83b0b4d5",
+      "Core/Contracts/NewCampaignStore.cs": "260402feb44d84087d47ad16ba2af01a9ec65aed2e7ce11a2080cfabf765c9f5",
       "Core/Contracts/NewGameMilitary.Authority.cs": "1c4dcd966e2c5391160df9556b2c8330ea75230f3a6a39f85cda9f977d55c633",
       "Core/Contracts/NewGameMilitary.AuthorityScope.cs": "7e050e7c02a427d8258dbfe3d219295c0e2160c67c4394552cdff8ec9677d9b3",
       "Core/Contracts/NewGameMilitary.Cancellation.cs": "481f9d1e43e97899c182a83776e1eedd257ba7f4965ab1bf0390d1f71cc9d415",
@@ -916,16 +940,16 @@
       "Core/Contracts/NewGameMilitary.UnitMessages.cs": "ef33d5eb061834894827b02d265f5ed85660d0e4df14f7824495482ca6deba25",
       "Core/Contracts/NewGameMilitary.UnitRecipient.cs": "f32bb75a8c53dd28c704921b3592319cc4b984ee9d592c8c4f4ebf875fc0fbf8",
       "Core/Contracts/NewGameMilitary.UnitRetry.cs": "575d7e5112eba898be0a3a749a2b4f91586b5a7fc673c3bf960927b5961f97e7",
-      "Core/Contracts/NewGameMilitary.Validation.cs": "41bd3aa9569c5dec8cef54e8a63a000e1e14ca5ddb69fb507519373717bf7e00",
+      "Core/Contracts/NewGameMilitary.Validation.cs": "fdb9aaaadb4043ab6902414e161fc040b7d1b5f9f42e356dab95f84109961b8b",
       "Core/Contracts/NewGameMilitary.Withdrawal.cs": "5497d405493dfd50709a193e85cc115febc558bd50cd67b736d4c149b96fc346",
       "Core/Contracts/NewGameMilitaryAuthority.cs": "02e5ed2b8e247a978e523dd57a3905ec03394fbfafe1c6fe9055808d8c703849",
       "Core/Contracts/NewGameNpcRoutine.cs": "89373b4ecc6380c7122cbbe83e3ea924ebcfa4e02ead308c596022ec5e3d5d82",
       "Core/Contracts/NewGameService.cs": "1997c19cdc6d0db4d5bcb7dfec8e71d3329ddb335b70375410472e19e343c715",
       "Core/Contracts/NewGameService.Validation.cs": "35c13b5de88ed9a1cd53c78ae611aeaedc5c6bc0608c3a616a92eb8688cd9250",
       "Core/Contracts/NewGameSetup.cs": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
-      "Core/Contracts/NewGameWork.cs": "4a043f407584447725a33c10d041c0ec9c10f33961822a8888487b3b07661164",
+      "Core/Contracts/NewGameWork.cs": "b6cf68e7a437e3d17c2561b2c92bb2337d66b010cae734077331ffe05504d77c",
       "Core/Contracts/NewGameWorld.CompactAuthority.cs": "31bb9896f4df92183d202c2b509aa5283d952da4b7b0a6ed64c2e53452101ce0",
-      "Core/Contracts/NewGameWorld.cs": "f65327a902db16d5eec89b55dc574376174309b9c759bd099613efd0672c987d",
+      "Core/Contracts/NewGameWorld.cs": "045e0aa400ebf270eca9295c56f30650c3aba8c62c3fa8492d971be1e3d4c404",
       "Core/Contracts/NewGameWorld.StartProjection.cs": "04ab18c81cc6152475549de876170bec8bd96b7fdf07192cac9f5fb591294b9d",
       "Core/Contracts/NpcWork.cs": "fad5d63a77d68cf218f81b7dc75d0ac21200cb0f0c04ded6c4ffde3731a792c5",
       "Core/Contracts/OfficerLibraryStore.cs": "b59d2ccafffc30bb0771a9d7a23347d5ac1b2729a9fb8ca3cbcc718af60928d3",
@@ -947,15 +971,16 @@
       "Core/Contracts/StartConfiguration.cs": "af9185ef9566590cc684ef91b0e10b725b20ede1934c77f17144e3f62aaf4b08",
       "Core/Contracts/SurveyRoadReview.cs": "808db4bfb3474c67cb354934cb265c130b4f5aab9ff6eae3caaece4c12179acd",
       "Core/Contracts/TrafficExamples.cs": "64b0e500482b8db1b389b6716dcdf567784043e7d1d8c9422cae9ad91d28ed39",
-      "Core/Contracts/TrafficWorld.cs": "e2af2dc1579b53b31efb8afb2b16074cbf49fb424016d071028d492c2906ab12",
+      "Core/Contracts/TrafficWorld.cs": "2492d888168cc9db2a2794559e5263b155519b2518059c32437cd07a1d86e7ae",
       "Core/Contracts/TransportHandover.cs": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
-      "Core/Contracts/TransportWork.cs": "44573018e6bebf5692d76787c907e5eb2da0e243b7ea39904df44ce92531fd9d",
-      "Core/Contracts/TravelControl.cs": "0ac96038f86d6223585694963ee7bbcb1e3ad35e1dca1dee98e9c55e15190494",
-      "Core/Contracts/TravelWorld.cs": "8e25497a81fd69120ac30a87ab49f5279da39a492729686856fab8bea2fa0b0b",
+      "Core/Contracts/TransportWork.cs": "a9dcd350550f6233af9a7f122ffb5e3d323c41cec7cee6acefa67fdbec6a6335",
+      "Core/Contracts/TravelControl.cs": "08e57d97ca250b660d14f8764cf57138e32cb55ed944597f6b2fee5ced384437",
+      "Core/Contracts/TravelWorld.cs": "17649beb4c43e62401e8204db9e64c41f2908378d13c53c9c26b324563745eef",
+      "Core/Contracts/VoyageExpense.cs": "425fd8449d5faa01fb7dce6f158b97ea08a9f655deacd8fc57d2f59c4c083e04",
       "Core/Contracts/WorldSession.AssessmentNotice.cs": "25319ff0456476b9e1ad907722b45853e71c58cdc1b383a526529e9c0ddc5f78",
       "Core/Contracts/WorldSession.Career.cs": "735c15c11b3325c91e1769aef42744e736982ac722429526d0e0dcf218ef0ad9",
       "Core/Contracts/WorldSession.CareerMilitary.cs": "6792e2754ac536d6827239d5005fd3295038359cee888f80e4dda555deb8d29c",
-      "Core/Contracts/WorldSession.cs": "127ec0d4e2240510aaebf5b5064c182722d93153322cf6703352b595f965280d",
+      "Core/Contracts/WorldSession.cs": "cde0b8392de90f3389fef2950b3296d5c2e5137a9ceee2222490ffb4b7ac7055",
       "Core/Contracts/WorldSession.DelegationInquiry.cs": "a6012325d2955af198e5e815472fc125cf172946ffe8aab26beff442e8aba62a",
       "Core/Contracts/WorldSession.DelegationTransport.cs": "90c7a58e45e63af67c8c78db15beb65c26588ce08444465106685375c1fd154e",
       "Core/Contracts/WorldSession.Engagement.cs": "c741e3fde896b9c5d52f10de9c1ecc35055f0ecf8c3490c3e0681ecdaba97d8c",
@@ -1619,9 +1644,9 @@
       "Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs": "1f8cd5037f69a16e2830bfdc5f63dc4c78a6640c25f18364edf9d219a69089d3",
       "Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs": "f16620b2f5f7f6b9080f6ffb2728348a1ba30f75e3f7cf7a7616f23dee21d705",
       "Game/Scripts/NewGameFrontEnd.CapacityChecks.cs": "a98863f064b8d372de51da5d5d0ebe6d572b5231695b63d6dcfed50a9a1853ff",
-      "Game/Scripts/NewGameFrontEnd.Checks.cs": "eb27282457aefeb2a26774bc0d92a4002d4c3ac60e71d253901e47d3250df408",
+      "Game/Scripts/NewGameFrontEnd.Checks.cs": "eee9cd4f1b1f3360e8c424414d2619eb2d5963ad6ae650c25e7e69213560d2f1",
       "Game/Scripts/NewGameFrontEnd.CombatChecks.cs": "1021dadc7e3cb0b657e5f713af46fab9995d26cae55ca02208ec4fafbad568c0",
-      "Game/Scripts/NewGameFrontEnd.cs": "3dd727edd8bc673eaf881f31224ae0bd310731304d0097a4f3a173518198b77f",
+      "Game/Scripts/NewGameFrontEnd.cs": "b8680b28605d62cfe11b8c0db3fe4b36904cade8fa06173b962b0658f51eaa76",
       "Game/Scripts/NewGameFrontEnd.DemandChecks.cs": "aed426a8802b2bc7a1815cbee7352810969d6565d752e2a042254597af5b5755",
       "Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs": "700ad5c78ed1366e6e1bf424b2e333441ca1e63dddcb5d1b4979e94dc6c98626",
       "Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs": "9268d5801d02e640996be74ba59dd591fca4abffba00abb883a5c9ff439a563b",
@@ -1663,6 +1688,7 @@
       "Game/Scripts/NewGameFrontEnd.UnitRecipientChecks.cs": "bfedef546a6c0857b82377165d469c14bb838bcafbd5658d7cc01f1e2f62f503",
       "Game/Scripts/NewGameFrontEnd.UnitReplyChecks.cs": "ae387d122a3c0ab90b3d34e591f000f70b3ca8e04527db3d15b7cb58eb442293",
       "Game/Scripts/NewGameFrontEnd.UnitRetryChecks.cs": "666f0b91ddffdf85729cc490e7650c0a6194e850e0b77ba37ae3f1007dac489e",
+      "Game/Scripts/NewGameFrontEnd.VoyageChecks.cs": "4771f763c485d9ee9aa17d779c5a96eaa5d37ee0e5669b2148f84b183c636885",
       "Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs": "30286851a3ae1c0d0e528d81422ce2447ff250c7f47310960a95049eee0992d0",
       "Game/Scripts/NewGameFrontEnd.WorkConversationChecks.cs": "893e92539d1cabe3ec2ab3436171ee6a82d5fe6363aa39f3280a08f47bc9fa11",
       "Game/Scripts/NewGameFrontEnd.WorkCycleChecks.cs": "116d29ec5dfc13815178a74061ea211990a32eb83fc0eed7730da3f3556310f2",
@@ -1671,7 +1697,7 @@
       "Game/Scripts/NewGameRuntime.Authority.cs": "0b609402534dacc0db3fe63cb6e2597d6b2b9c36b614ee9638334514a630f7cd",
       "Game/Scripts/NewGameRuntime.BatchedAdvance.cs": "0ff79ae29a09c8dadddee0951b49420636fc35af491d0f9d1bea4d462f51b915",
       "Game/Scripts/NewGameRuntime.Combat.cs": "bff694e373c49514a9c7082a34032b54705cb540f219422efca1785f6817053f",
-      "Game/Scripts/NewGameRuntime.cs": "11c69a44a8974d04bdfa3e04468cb01e5312db53c89cce727153e115ada0dab5",
+      "Game/Scripts/NewGameRuntime.cs": "b06fe4169e795f59ebc8782b908b680453b79cdc624a5af575372fb4daaf3c0c",
       "Game/Scripts/NewGameRuntime.KnownTarget.cs": "39b5c0c7cd1919d18ebc97b146c61fb7c283a1a491f9f016933dac1bbdf0efab",
       "Game/Scripts/NewGameRuntime.Mail.cs": "9d7734f59c1acfa216b26a162be4e7f8fdbe2db6eab11c41d13f734aa0d0fb0b",
       "Game/Scripts/NewGameRuntime.ManualAdvance.cs": "f3853346d2db48249dd431723d73e5f49acc2bb5831d64c7e5572dd67b5bd278",
@@ -1692,9 +1718,10 @@
       "Game/Scripts/NewGameRuntime.UnitDirectiveHolding.cs": "2f04f1484c038fdfd865ea0cbd3571fbfa73a99d62fbad67f10122eb21f6e1d8",
       "Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs": "9ca2acdef0e3e88ca20480c42d03cab6ebb70998fa2c5e59f84a7b490159af5d",
       "Game/Scripts/NewGameRuntime.UsableLayout.cs": "be9e01acc0bd347e88f849d7cc27728a799ae01fc6578d92453ebfa1b819fc5c",
+      "Game/Scripts/NewGameRuntime.VoyageExpense.cs": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
       "Game/Scripts/NewGameRuntime.Withdrawal.cs": "28b518c604a8df13923eb41af9d9577cc4c61c80b0a4c491960918e0ea1d5840",
       "Game/Scripts/NewGameRuntime.WorkCycle.cs": "5f5e86612889d6c92f45d147c11d3a67362f8382675958b40d8869ec886701a5",
-      "Game/Scripts/NewGameRuntime.WorkExperience.cs": "98dba5d8bc1c8c3c440a517942c8b46c5d2e27f1b3a61485330fbdcd2346872f",
+      "Game/Scripts/NewGameRuntime.WorkExperience.cs": "9fec6a201a886a2299a063e679e33a919191a59d49b3bcd113587e5b6d136e6d",
       "Game/Scripts/NewGameRuntime.WorldLabels.cs": "f9798da0ad543738a9f9f95a096b28171a35461a4c2974cca4356a2c988210b5",
       "Game/Scripts/Officer3DActor.cs": "936933c943c66dd2278cc6bce1a1226db76b5a93ba5db9212ed597f68ff2e218",
       "Game/Scripts/Officer3DCreator.cs": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c",
@@ -1752,7 +1779,7 @@
       "Game/Scripts/TravelWorldTrial.cs": "a419c5a96b086d16f5fc3c383c3307c8878f833680d83677874a5924b30c74d2",
       "Game/Scripts/ViewportCapture.cs": "ee77cca54bc5898b4d3813a339efc606189a8a0c91323d1c2622762c61625443",
       "Game/Scripts/WorkHubTrial.cs": "00a8dbedc3c0681fae3c4698e7a71f4ddede5576ecd9316f8c27066bba6556b7",
-      "Scripts/current_test_contract.json": "cd3743bcb9765840576bc0c0ef700f50e2d7c9f439ccd522c29f20c0cf876604",
+      "Scripts/current_test_contract.json": "034aeaf8e1e05c7f2da4ccbf5c9fe1c23c413d3a32d1c39d01d2a7812b883e6f",
       "Tests/AssessmentNoticeTests.cs": "737090a3cfa539a6a2941d9f705a38f8b70e5f3e8b44ceb71323c2a5b1f856b7",
       "Tests/BranchRouteTests.cs": "6b9322a039ebeb57f5e28ae735963d352a99a9355619665809005d4917391e93",
       "Tests/CareerMilitaryTests.cs": "b4337202a05ed675c8e1ba5848c31176a2646ad40275cd934f3e74356cda8404",
@@ -1907,43 +1934,47 @@
       "Tests/UnitRecipientTests.cs": "08d1cc86b195b9a2142f96c7f45649009c0975e637825de9c1fe313586bca08a",
       "Tests/UnitReplyRecoveryTests.cs": "537364d8241ab405dd26e038c43fabebb949cc9afe7de36381ba5cc2a29b8847",
       "Tests/UnitRetryTests.cs": "95e27e938aacc1a84b8c0531f1d096f0dddef3f9c1417745f2955ee2fffdfe9e",
-      "Tests/UnitSenderEvidenceTests.cs": "2405d968010e077eb4c41dc4cd12f31365a0012678411d9d4848082355b13fc5"
+      "Tests/UnitSenderEvidenceTests.cs": "2405d968010e077eb4c41dc4cd12f31365a0012678411d9d4848082355b13fc5",
+      "Tests/VoyageExpenseTests.cs": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed"
     },
     "core_test": {
-      "passed": 2273,
-      "trx": "Docs/Design/TransportWorkV1/runtime-local/tests/all-2273.trx",
-      "sha256": "7c0390187a583e076813b5664d31495b96dd35c21bb255cc1d1ca289e4257021",
-      "scope": "Full2273 before isolated new-transport location fixes; final358 on exact production Core, including all new68 cases and related old saves/military/traffic. Not a claim that all2276 were rerun on the final binary."
+      "passed": 2308,
+      "trx": "Docs/Design/TravelExpenseV1/runtime-local/tests/all-2308.trx",
+      "sha256": "14b8fef66dff0680f329edc2f23a21b963c1bd660ef19967eed7ef7ce2686199",
+      "scope": "All2308 executed on unchanged current Core/Tests/data inputs; production Core DLL exact match"
     },
-    "latest_game_verification": "Docs/Design/TransportWorkV1/verification.json",
-    "latest_game_verification_sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+    "latest_game_verification": "Docs/Design/TravelExpenseV1/verification.json",
+    "latest_game_verification_sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
     "gpu": {
-      "processes": 12,
-      "comparisons": 102,
-      "scope": "Transport4cases / old supply / old military; scoped14/12/34 comparisons"
+      "processes": 16,
+      "comparisons": 142,
+      "scope": "8 cases,71 checkpoints,142 restored/continued comparisons"
     },
-    "audit_runtime_tests": "運搬接続：全2273件成功の後、位置判定等を補強した最終Coreで重点358件成功。最終版で全2276件を再実行した数ではありません。GPU12回・102組の世界/画像/表示数値が一致しました。",
+    "audit_runtime_tests": "最終のCoreで全2308件成功（追加32、失敗/スキップ0）。実GPU16回・142組で途中復旧と続行後の世界/3D画像/表示数値が一致。旧開始の料金を後付けせず、新規開始の標準船賃は10文です。",
     "current_stage_test": {
-      "passed": 2273,
-      "trx": "Docs/Design/TransportWorkV1/runtime-local/tests/all-2273.trx",
-      "trx_sha256": "7c0390187a583e076813b5664d31495b96dd35c21bb255cc1d1ca289e4257021",
-      "baseline_inputs": "Docs/Design/TransportWorkV1/runtime-local/tests/full-baseline/inputs.json",
-      "baseline_input_sha256": "9d50817af2b0262d3c1ea8988c11fea08442579be71d4024914f802dc32d9042",
-      "final_passed": 358,
-      "final_trx": "Docs/Design/TransportWorkV1/runtime-local/tests/final-targeted.trx",
-      "final_trx_sha256": "0ba7a6a9d195b4b05c28c62a5d8b5fcab438a9992e892ca677150dc97f4c266b",
-      "final_current_catalog_cases": 2276,
-      "changed_after_full": [
-        "Core/Contracts/ContractModels.cs",
-        "Core/Contracts/RegionalCampaign.cs",
-        "Core/Contracts/TrafficWorld.cs",
-        "Core/Contracts/TransportWork.cs",
-        "Scripts/current_test_contract.json",
-        "Tests/TransportWorkLocationTests.cs"
-      ],
-      "scope": "Full2273 before isolated new-transport location fixes; final358 on exact production Core, including all new68 cases and related old saves/military/traffic. Not a claim that all2276 were rerun on the final binary."
+      "passed": 2308,
+      "added_this_stage": 32,
+      "failed": 0,
+      "skipped": 0,
+      "trx": "Docs/Design/TravelExpenseV1/runtime-local/tests/all-2308.trx",
+      "trx_sha256": "14b8fef66dff0680f329edc2f23a21b963c1bd660ef19967eed7ef7ce2686199",
+      "scope": "All2308 executed on unchanged current Core/Tests/data inputs; production Core DLL exact match"
     },
-    "current_stage_summary": "運搬接続：全2273件成功の後、位置判定等を補強した最終Coreで重点358件成功。最終版で全2276件を再実行した数ではありません。GPU12回・102組の世界/画像/表示数値が一致しました。"
+    "current_stage_summary": "最終のCoreで全2308件成功（追加32、失敗/スキップ0）。実GPU16回・142組で途中復旧と続行後の世界/3D画像/表示数値が一致。旧開始の料金を後付けせず、新規開始の標準船賃は10文です。",
+    "screens": [
+      {
+        "title": "乗船と私財の支払",
+        "path": "Docs/Design/TravelExpenseV1/runtime-local/voyage-normal/s2.png"
+      },
+      {
+        "title": "金欠でも陸路と仕事へ",
+        "path": "Docs/Design/TravelExpenseV1/runtime-local/voyage-poor/s4.png"
+      },
+      {
+        "title": "同じ武将の軍務と帰還",
+        "path": "Docs/Design/TravelExpenseV1/runtime-local/voyage-normal/s9.png"
+      }
+    ]
   },
   "release": {
     "functional_items": 59,
@@ -1954,18 +1985,27 @@
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
-    "done": "点検/需要/返報/報酬、移動/他拠点、軍務許可/兵糧準備/帰還の試作。 固定受渡し契約L1の独立検証を完了。 小口送金の運搬L2を通常入口・世代復旧・実3Dへ接続。",
-    "remaining": [
+    "done": "点検/需要/返報/報酬、移動/他拠点、軍務許可/兵糧準備/帰還の試作。 固定受渡し契約L1の独立検証を完了。 小口送金の運搬L2を通常入口・世代復旧・実3Dへ接続。 L3の船賃・無料陸路・同一人物の一巡を接続。",
+    "remaining": [],
+    "boundary": "これは地域の開発段階。全国・政治社会を含む製品範囲を縮小しない。",
+    "completed": [
       {
-        "id": "L3",
-        "title": "私財の使途・旅費と通しプレイ",
-        "finish": "収入→旅の支出→移動先で次の仕事→軍務→帰還を、同じ武将/保存世界で一巡できる。"
+        "title": "L1 受渡し契約",
+        "finish": "所有/保管・受取人・期限/取消・報告/運賃を固定し履歴を検査。"
+      },
+      {
+        "title": "L2 現物運搬",
+        "finish": "小口送金を通常会話・実移動・現地受渡しへ接続し途中復旧を検証。"
+      },
+      {
+        "title": "L3 旅費と一巡",
+        "finish": "船賃・無料陸路・金欠からの仕事・仕官/軍務/帰還を同じ保存世界で検証。"
       }
     ],
-    "boundary": "これは地域の開発段階。全国・政治社会を含む製品範囲を縮小しない。"
+    "review_prompt": "次の確認：この一巡の操作量と、会話・移動中の見せ方が好みに合うか。料金の技術設計を再判断する必要はありません。"
   },
   "next_priorities": [
-    "承認済みの「金欠でも徒歩を維持」で地域一巡の残り1枠へ進む",
+    "地域一巡の操作量・会話/移動中の見せ方を確認し反映する",
     "任務の正式評価・身分と成長・人間関係へ接続する",
     "勢力間の実戦・包囲/攻城と自律判断へ広げる",
     "生産/交易・所領運用・外交/社会/継承を接続する",

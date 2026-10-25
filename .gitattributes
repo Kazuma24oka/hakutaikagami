@@ -1848,3 +1848,6 @@ Scripts/check_transport_work_binding.py -text whitespace=blank-at-eol,blank-at-e
 
 Scripts/build_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/verify_voyage_expense.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_voyage_expense_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

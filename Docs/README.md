@@ -243,3 +243,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 
 - [小口送金の実運搬・世代復旧の結果](Design/TransportWorkV1/RESULT.md)
 - [承認済み：金欠でも徒歩を維持する旅費](Design/TravelExpenseV1/README.md)
+
+- [船賃・無料陸路・仕事から軍務の一巡：実測結果](Design/TravelExpenseV1/RESULT.md)

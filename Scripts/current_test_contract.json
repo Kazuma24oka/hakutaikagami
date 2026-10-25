@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2276,
-  "baseline_passed": 2208,
-  "added": 68,
-  "scope": "TransportHandover39 + TransportWork26 + TransportWorkLocation3; full2273 baseline then scoped final-location regression, source delta explicitly bound"
+  "expected_passed": 2308,
+  "baseline_passed": 2276,
+  "added": 32,
+  "scope": "VoyageExpense32: versioned fare, actual boarding, port cancel/suspension, zero-money land-only movement and earning, borrowed money isolation, generation restore and legacy JSON"
 }

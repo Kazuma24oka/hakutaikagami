@@ -16,7 +16,7 @@ public static class ContractValidation
     public static void Validate(ContractWorld s)=>Validate(s,null);
     internal static void Validate(ContractWorld s,ContractWorld? trustedPrior)
     {
-        try { ValidateCore(s);TransportWork.Validate(s);NewGameWorld.Validate(s);LocalInspectionFindings.Validate(s);NewGameWork.Validate(s);NewGameService.Validate(s);NewGameMilitary.Validate(s,trustedPrior);Career.Validate(s);CareerMilitary.Validate(s);CourierRecovery.Validate(s);DelegationInquiry.Validate(s); if(NpcWork.Enabled(s))NpcWork.Validate(s); else if(NewGameNpcRoutine.Enabled(s))NewGameNpcRoutine.Validate(s); else Check(s.NpcWork==null,"Unexpected NPC work module"); if(RegionalWork.Enabled(s))RegionalWork.Validate(s); if(PersonalStart.Enabled(s))PersonalStart.Validate(s); if(RetainerStart.Enabled(s))RetainerStart.Validate(s); if(CreatedCampaign.Enabled(s))CreatedCampaign.Validate(s); if(EngagementMission.Enabled(s))EngagementMission.Validate(s); if(FieldSupply.Enabled(s))FieldSupply.Validate(s); if(FieldPresence.Enabled(s))FieldPresence.Validate(s); if(DelegationMission.Enabled(s))DelegationMission.Validate(s); if(AssessmentNotice.Available(s))AssessmentNotice.Validate(s); }
+        try { ValidateCore(s);TransportWork.Validate(s);VoyageExpense.Validate(s);NewGameWorld.Validate(s);LocalInspectionFindings.Validate(s);NewGameWork.Validate(s);NewGameService.Validate(s);NewGameMilitary.Validate(s,trustedPrior);Career.Validate(s);CareerMilitary.Validate(s);CourierRecovery.Validate(s);DelegationInquiry.Validate(s); if(NpcWork.Enabled(s))NpcWork.Validate(s); else if(NewGameNpcRoutine.Enabled(s))NewGameNpcRoutine.Validate(s); else Check(s.NpcWork==null,"Unexpected NPC work module"); if(RegionalWork.Enabled(s))RegionalWork.Validate(s); if(PersonalStart.Enabled(s))PersonalStart.Validate(s); if(RetainerStart.Enabled(s))RetainerStart.Validate(s); if(CreatedCampaign.Enabled(s))CreatedCampaign.Validate(s); if(EngagementMission.Enabled(s))EngagementMission.Validate(s); if(FieldSupply.Enabled(s))FieldSupply.Validate(s); if(FieldPresence.Enabled(s))FieldPresence.Validate(s); if(DelegationMission.Enabled(s))DelegationMission.Validate(s); if(AssessmentNotice.Available(s))AssessmentNotice.Validate(s); }
         catch (Exception e) when (e is not InvalidDataException)
         { throw new InvalidDataException("Malformed contract state.", e); }
     }
@@ -153,7 +153,7 @@ public static class ContractValidation
         {
             var expected = s.Transfers.Where(x => x.ToLot == lot.Id).Aggregate(lot.InitialQuantity, (sum, x) => checked(sum + x.Amount));
             expected = s.Transfers.Where(x => x.FromLot == lot.Id).Aggregate(expected, (sum, x) => checked(sum - x.Amount));
-            Check(checked(expected+TransportWork.Net(s,lot.Id)+FieldSupply.Net(s,lot.Id)+NewGameMilitary.Net(s,lot.Id)) == lot.Quantity, "Resource conservation failure.");
+            Check(checked(expected+VoyageExpense.Net(s,lot.Id)+TransportWork.Net(s,lot.Id)+FieldSupply.Net(s,lot.Id)+NewGameMilitary.Net(s,lot.Id)) == lot.Quantity, "Resource conservation failure.");
         }
         Keys(s.Debts, x => x.Id, "debts");
         Check(s.Debts.All(x => entities.Contains(x.Debtor) && entities.Contains(x.Creditor) && x.Debtor != x.Creditor && x.Outstanding >= 0 && bases.Contains(x.Basis) && !string.IsNullOrWhiteSpace(x.Unit)), "Invalid debt.");
@@ -233,6 +233,7 @@ public static class ContractValidation
             (!i.Deadline.FromOpening || i.Important && i.Deadline.DurationSeconds > 0 && i.Deadline.Criterion == DeadlineCriterion.Completion) &&
             (i.SourceLot == null || lots.Contains(i.SourceLot.Value)) && (i.DestinationLot == null || lots.Contains(i.DestinationLot.Value)) &&
             (i.DestinationSite == null || sites.Contains(i.DestinationSite.Value)), "Invalid intent.");
+        Check(i.RoutePolicy is null or VoyageExpense.WalkOnly && (i.RoutePolicy==null||i.Action==ActionKind.Move),"Unknown route policy");
         Check(i.Action switch {
             ActionKind.Transfer => i.Amount > 0 && i.SourceLot != null && i.DestinationLot != null && i.SourceLot != i.DestinationLot && i.DestinationSite == null && i.TargetTask == null,
             ActionKind.Move => i.Amount == 0 && i.SourceLot == null && i.DestinationLot == null && i.DestinationSite != null && i.TargetTask == null,

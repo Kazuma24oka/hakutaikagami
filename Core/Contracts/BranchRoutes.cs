@@ -72,7 +72,7 @@ public static class BranchRoutes
     }
     public static long Start(ContractWorld w,TaskState task)
     {
-        var from=TravelWorld.Enabled(w)?TravelWorld.Origin(w,task.Executor):"castle";var legs=Schedule(from,Plan(from,RegionalCampaign.Enabled(w)?RegionalCampaign.Destination(w,w.Requests.Single(r=>r.Id==task.RequestId).Intent.DestinationSite!.Value):"village",KnownBlocked(w,task.Executor),w:w),w.ElapsedSeconds,w);
+        var from=TravelWorld.Enabled(w)?TravelWorld.Origin(w,task.Executor):"castle";var legs=Schedule(from,Plan(from,RegionalCampaign.Enabled(w)?RegionalCampaign.Destination(w,w.Requests.Single(r=>r.Id==task.RequestId).Intent.DestinationSite!.Value):"village",VoyageExpense.PlanningExclusions(w,task),w:w),w.ElapsedSeconds,w);
         w.Branches=w.Branches! with{Journeys=[..w.Branches.Journeys,new(task.Id,task.Executor,legs)]};return legs[^1].EndAt;
     }
     public static long? NextBoundary(ContractWorld w,long target)=>w.Branches!.Journeys
@@ -87,7 +87,7 @@ public static class BranchRoutes
         if(index>=0){var candidate=journey.Legs[index];
             if(w.Branches.BlockedEdges.Contains(candidate.Edge,StringComparer.Ordinal)){
                 Observe(w,task,candidate.Edge);
-                string[] path;try{path=Plan(candidate.From,journey.Legs[^1].To,KnownBlocked(w,task.Executor),w:w);}catch(InvalidDataException){var stopped=Location(w,task);w.Locations=w.Locations.Select(l=>l.Actor==task.Executor?stopped:l).ToArray();return false;}
+                string[] path;try{path=Plan(candidate.From,journey.Legs[^1].To,VoyageExpense.PlanningExclusions(w,task),w:w);}catch(InvalidDataException){var stopped=Location(w,task);w.Locations=w.Locations.Select(l=>l.Actor==task.Executor?stopped:l).ToArray();return false;}
                 journey=journey with{Legs=[..journey.Legs.Take(index),..Schedule(candidate.From,path,w.ElapsedSeconds,w)]};
                 w.Branches=w.Branches with{Journeys=w.Branches.Journeys.Select(j=>j.Task==task.Id?journey:j).ToArray()};
                 var end=journey.Legs[^1].EndAt;w.Actions=w.Actions.Select(a=>a.Task==task.Id?a with{Until=end}:a).ToArray();

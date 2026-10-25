@@ -64,7 +64,11 @@ public sealed record DeadlinePolicy(DeadlineCriterion Criterion, long? At, bool 
 public sealed record Intent(EntityId RequestId, EntityId Actor, EntityId Executor, EntityId Scope, ActionKind Action,
     EntityId? SourceLot, EntityId? DestinationLot, long Amount, EntityId? DestinationSite, DeadlinePolicy Deadline,
     long EffectiveAt, int DeliverySeconds, int WorkSeconds, int ReportSeconds, bool Important, TaskKind Kind,
-    EntityId? TargetTask = null);
+    EntityId? TargetTask = null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? RoutePolicy {get;init;}
+}
 public sealed record RequestReceipt(EntityId Id, string BodyHash, Intent Intent, long CreatedAt, long CommitSequence);
 public sealed record TaskState(EntityId Id, EntityId RequestId, EntityId Issuer, EntityId Executor, EntityId Scope,
     ActionKind Action, TaskKind Kind, AgreementPhase Agreement, ExecutionPhase Execution, ReportingPhase Report,
@@ -93,6 +97,8 @@ public sealed class ContractWorld
     internal ContractWorld ForkTransportLocation()=>(ContractWorld)MemberwiseClone();
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public TransportWorkState? TransportWork {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public VoyageExpenseState? VoyageExpenses {get;set;}
     // Restricted to read-only military observation reconstruction. BeforeState replaces
     // immutable record/array sections; only MessageFlow has mutable nested state.
     internal ContractWorld ForkMilitaryObservation()
