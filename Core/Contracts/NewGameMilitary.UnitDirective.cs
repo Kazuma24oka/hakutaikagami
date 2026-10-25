@@ -26,7 +26,7 @@ public static partial class NewGameMilitary
     static void ValidateUnitDirectiveInput(ContractWorld w,NewMilitaryInput i)
     {
         Need(DirectiveAction(i.Action)==(i.Directive!=null),"分隊指示の操作と本文が一致しません");if(i.Directive is not {} x)return;
-        Need(x.Contract==UnitDirectiveContract&&x.Known!=null&&Enum.IsDefined(x.Kind)&&UnitIds.Contains(x.Known.Unit)&&SelectKnownTarget(w,x.Known.Unit)==x.Known,"分隊指示の既知宛先・版が違います");
+        Need(x.Contract==UnitDirectiveContract&&x.Known!=null&&Enum.IsDefined(x.Kind)&&UnitIdsFor(w).Contains(x.Known.Unit)&&SelectKnownTarget(w,x.Known.Unit)==x.Known,"分隊指示の既知宛先・版が違います");
         Need(x.Kind==UnitDirectiveKind.Move?x.Goal!=null&&InExerciseRange(w,x.Goal):x.Goal==null,"移動以外に行先は指定しません");
         Need(i.Amount==0&&i.A==null&&i.B==null&&i.InquiryTarget==null&&i.KnownTarget==null&&(i.OriginalPolicy==null||i.OriginalPolicy==UnitDirectiveHoldingContract)&&i.TargetOriginal==null&&i.RequestedEffectiveAt==null,"分隊指示に別操作の値が混入しています");
     }
@@ -72,7 +72,7 @@ public static partial class NewGameMilitary
     }
     static (UnitDirectiveOutcome Outcome,EntityId? Order) DecideDirectedArrival(ContractWorld w,TroopDispatch d)
     {
-        int index=ReceivingUnitIndex(d);Need(index>=0,"分隊指示の対象がありません");var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));
+        int index=ReceivingUnitIndex(w,d);Need(index>=0,"分隊指示の対象がありません");var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));
         var root=DirectiveOriginal(w,note.Request);Need(root!=null,"分隊指示の発送原本がありません");
         if(!SameMilitaryCase(w,root!)||!CustodyAt(w,w.ElapsedSeconds,w.CommitSequence))return(UnitDirectiveOutcome.AuthorityEnded,null);
         if(DirectiveOriginalCancelled(w,root!.Id))return(UnitDirectiveOutcome.Cancelled,null);
@@ -89,7 +89,7 @@ public static partial class NewGameMilitary
     }
     static string DirectiveAnswerBody(ContractWorld w,TroopDispatch d,UnitDirectiveOutcome outcome)
     {
-        var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));return Text(new UnitDirectiveAnswer(d.Message,d.Recipient,note.Directive.Kind,outcome,w.ElapsedSeconds,Position(w,ReceivingUnitIndex(d),w.ElapsedSeconds)));
+        var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));return Text(new UnitDirectiveAnswer(d.Message,d.Recipient,note.Directive.Kind,outcome,w.ElapsedSeconds,Position(w,ReceivingUnitIndex(w,d),w.ElapsedSeconds)));
     }
     static string DirectiveReplyBody(ContractWorld w,TroopDispatch d)=>DirectiveAnswerBody(w,d,w.NewMilitary!.UnitDirective!.Effects.Single(e=>e.Id==d.Id).Outcome);
     static bool ApplyStandingRecall(ContractWorld w,TroopDispatch original)
@@ -137,7 +137,7 @@ public static partial class NewGameMilitary
     public static string UnitDirectiveOriginalStatus(ContractWorld w,EntityId original){var root=DirectiveOriginal(w,original);var d=root==null?null:w.NewMilitary!.UnitDirective!.Dispatches.LastOrDefault(d=>d.Message==root.Message);return d==null?"":DirectiveMessageStatus(w,d);}
     static string DirectiveMessageStatus(ContractWorld w,TroopDispatch d)
     {
-        var x=w.NewMilitary!.UnitDirective!;var r=x.Receipts.SingleOrDefault(r=>r.Id==d.Id);string name=UnitRecipientName(d.Recipient);
+        var x=w.NewMilitary!.UnitDirective!;var r=x.Receipts.SingleOrDefault(r=>r.Id==d.Id);string name=UnitRecipientName(w,d.Recipient);
         var late=KnownDirectiveAck(w,d.Message,w.PlayerControl.Value);if(late!=null&&(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)||late.At>=r.At)){var answer=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==late.ReplyMessage).Body));return name+"の遅着返書（開始"+answer.At+"秒）："+DirectiveOutcomeText(answer.Outcome);}
         if(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value))return name+"への指示：返書未受領";
         if(!r.Delivered)return name+"への指示：伝令が指定地点で正式受領できず";

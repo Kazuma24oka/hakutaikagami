@@ -27,7 +27,7 @@ public static class ContractValidation
         Check(DelegationMission.Enabled(s)==(s.Delegation!=null),"Delegation requires its explicit profile");
         Check(FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
         Check(FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
-        Check(s.ResourceLots.All(l=>l.MobileHolder==null||TransportWork.IsLot(l)||NewGameWork.IsWallet(s,l)||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||s.NewMilitary!=null&&(l.MobileHolder==s.PlayerControl||NewGameMilitary.UnitCarries(s)&&l.MobileHolder==NewGameMilitary.UnitIds[0])&&l.Id==NewGameMilitary.Carry)),"Unexpected mobile resource holder");
+        Check(s.ResourceLots.All(l=>l.MobileHolder==null||TransportWork.IsLot(l)||NewGameWork.IsWallet(s,l)||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||NewGameMilitary.AllowsMobileLot(s,l))),"Unexpected mobile resource holder");
         Check(EngagementMission.Enabled(s)==(s.Engagement!=null),"Engagement requires its explicit profile");
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
         Check(ContinuousWorld.Enabled(s)==(s.Atlas!=null),"Terrain atlas requires its ruleset");if(ContinuousWorld.Enabled(s))ContinuousWorld.Validate(s);

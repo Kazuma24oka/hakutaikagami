@@ -20,13 +20,13 @@ public static partial class NewGameMilitary
         if(!s.Requests.Any(q=>q.Input.ObservationPolicy==ObservationContract&&Before(q.At,q.Revision,at,revision)))return null;
         return s.Observation is {} o?o with{Frames=o.Frames.Where(f=>Before(f.At,f.Revision,at,revision)).ToArray()}:null;
     }
-    static void ValidateMilitaryObservation(ContractWorld w,ContractWorld? trustedPrior)
+    static void ValidateMilitaryObservation(ContractWorld w,ContractWorld? trustedPrior,bool currentLedger=true)
     {
         var start=ObservationStart(w);var state=w.NewMilitary?.Observation;
         Need((start!=null)==(state!=null),"観測開始の原判断と記録が一致しません");if(state==null)return;
         Need(state.Contract==ObservationContract&&state.Observer==w.PlayerControl&&state.Frames.Length>0,"観測契約・本人・記録が不正です");
         Need(state.Frames.Select(f=>f.Revision).Distinct().Count()==state.Frames.Length&&state.Frames.Select((f,i)=>f.Revision>=start!.Revision&&f.At>=start.At&&f.Revision<=w.CommitSequence&&f.At<=w.ElapsedSeconds&&(i==0||f.Revision>state.Frames[i-1].Revision&&f.At>=state.Frames[i-1].At)).All(x=>x),"観測の時点が重複・逆順です");
-        var tail=state.Frames[^1];Need(tail.At==w.ElapsedSeconds&&tail.Revision==w.CommitSequence&&Same(tail.Units,DirectMilitarySamples(w)),"現在の本人視認と保存記録が違います");
+        var tail=state.Frames[^1];if(currentLedger)Need(tail.At==w.ElapsedSeconds&&tail.Revision==w.CommitSequence&&Same(tail.Units,DirectMilitarySamples(w)),"現在の本人視認と保存記録が違います");
         int first=0;
         if(trustedPrior?.NewMilitary?.Observation is {} prior){
             Need(state.Frames.Length>=prior.Frames.Length&&Same(prior.Frames,state.Frames.Take(prior.Frames.Length).ToArray()),"既知の観測記憶を変更・削除できません");first=prior.Frames.Length;

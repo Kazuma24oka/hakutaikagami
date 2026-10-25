@@ -23,6 +23,6 @@ public static partial class NewGameMilitary
     {
         if(w.NewMilitary is not {} s)return null;
         var identity=LedgerIdentity(s.Terms.Owner,s.Terms.Site);
-        return identity with {Army=s.Terms.Army,Depot=Depot,Carry=Carry,Units=[..UnitIds]};
+        return s.Binding??identity with {Army=s.Terms.Army,Depot=Depot,Carry=Carry,Units=[..UnitIds]};
     }
 }

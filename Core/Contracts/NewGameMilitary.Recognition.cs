@@ -16,7 +16,7 @@ public static partial class NewGameMilitary
         for(int i=0;i<3;i++){
             var p=Position(w,i,w.ElapsedSeconds);if(!InRecognitionRange(observer,p))continue;
             var next=Position(w,i,w.ElapsedSeconds+1);
-            rows.Add(new(UnitIds[i],w.ElapsedSeconds,w.CommitSequence,p,new(next.X-p.X,next.Y-p.Y),strength[i].Soldiers,strength[i].Morale,strength[i].Soldiers==0?"destroyed":RoutPhase(w,i),"own"));
+            rows.Add(new(UnitIdsFor(w)[i],w.ElapsedSeconds,w.CommitSequence,p,new(next.X-p.X,next.Y-p.Y),strength[i].Soldiers,strength[i].Morale,strength[i].Soldiers==0?"destroyed":RoutPhase(w,i),"own"));
         }
         if(Deployed(w)&&ExerciseVisible(w)){
             var opponent=ExerciseState(w,w.ElapsedSeconds).Opponents;
@@ -42,16 +42,16 @@ public static partial class NewGameMilitary
             var message=w.Messaging.Messages.Single(m=>m.Id==receipt.ReplyMessage);
             var report=ContractJson.Read<UnitPostInquiryAnswer>(System.Text.Encoding.UTF8.GetBytes(message.Body));
             var id=new EntityId(report.Unit);
-            var dispatch=w.NewMilitary!.UnitInquiry!.Dispatches.Single(d=>d.Id==receipt.Id);if(!UnitIds.Contains(id)||dispatch.Recipient!=id)continue;
-            var query=ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==dispatch.Message).Body));if(query.Target==null&&id!=UnitIds[0])continue;
+            var dispatch=w.NewMilitary!.UnitInquiry!.Dispatches.Single(d=>d.Id==receipt.Id);if(!UnitIdsFor(w).Contains(id)||dispatch.Recipient!=id)continue;
+            var query=ContractJson.Read<UnitPostInquiry>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==dispatch.Message).Body));if(query.Target==null&&id!=UnitIdsFor(w)[0])continue;
             if(list.TryGetValue(id,out var known)&&known.ObservedAt>=report.At)continue;
-            list[id]=new(id,report.At,report.Position,report.Position,new(0,0),report.Soldiers,null,report.RoutPhase,"own",false,"受領した"+UnitRecipientName(id)+"の返書","letter/"+receipt.ReplyMessage);
+            list[id]=new(id,report.At,report.Position,report.Position,new(0,0),report.Soldiers,null,report.RoutPhase,"own",false,"受領した"+UnitRecipientName(w,id)+"の返書","letter/"+receipt.ReplyMessage);
         }
         return list.Values.OrderBy(r=>r.Unit.Value,StringComparer.Ordinal).ToArray();
     }
     public static bool RecognitionEnabled(ContractWorld w)=>w.NewMilitary?.Observation!=null;
     public static MilitaryKnownUnit[] KnownMilitary(ContractWorld w)=>w.NewMilitary?.Observation is {} s?ProjectKnownMilitary(w,s.Frames.SelectMany(f=>f.Units)):[];
-    public static bool AllOwnCurrentlySeen(ContractWorld w)=>UnitIds.All(id=>KnownMilitary(w).Any(r=>r.Unit==id&&r.Live));
+    public static bool AllOwnCurrentlySeen(ContractWorld w)=>UnitIdsFor(w).All(id=>KnownMilitary(w).Any(r=>r.Unit==id&&r.Live));
     public static MilitarySeenCourier[] ProjectNearbyMilitaryCouriers(ContractWorld w)
     {
         var observer=RecognitionOrigin(w);

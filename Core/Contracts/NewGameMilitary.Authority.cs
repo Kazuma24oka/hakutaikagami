@@ -8,7 +8,7 @@ public static partial class NewGameMilitary
     static bool OwnAuthorityCase(ContractWorld w,long at,long rev)=>w.NewMilitary is {} s&&CaseStart(w,at,rev) is {} q&&q.Input.AuthorityPolicy==AuthorityContract&&s.Terms.Principal==w.PlayerControl&&w.NewGame!.Start.Factions.Any(f=>f.Head==w.PlayerControl.Value&&f.Id==s.Terms.Owner.Value);
     static bool MilitaryBoundAt(ContractWorld w,long at,long rev)=>NewGameService.BoundAt(w,w.NewMilitary!.Terms.Principal,at,rev)||OwnAuthorityCase(w,at,rev);
     static bool MilitaryPrincipalKnown(ContractWorld w,long at,long rev)=>NewGameService.View(w,at,rev).Principal==w.NewMilitary!.Terms.Principal||OwnAuthorityCase(w,at,rev);
-    public static NewMilitaryView ViewWithAuthority(ContractWorld w){var v=View(w);return w.NewMilitary==null&&CanRequestOwnAuthority(w)?v with{CanRequest=true,Status="自家の軍務を準備し、現地で兵と兵糧を引き受けます"}:v;}
+    public static NewMilitaryView ViewWithAuthority(ContractWorld w){var v=View(w);if(CanSwitchToCurrentHouse(w))return v with{CanRequest=true,CanAccept=false,CanPickup=false,Status="旧主家の軍務は返納済み。今の主家に新たに軍務を相談できます"};return w.NewMilitary==null&&CanRequestOwnAuthority(w)?v with{CanRequest=true,Status="自家の軍務を準備し、現地で兵と兵糧を引き受けます"}:v;}
     public static string AuthorityKnownStatus(ContractWorld w)
     {
         if(w.NewMilitary==null)return CanRequestOwnAuthority(w)?"自家の軍務を準備できます。兵の現地引受は別です。":"";
@@ -23,7 +23,7 @@ public static partial class NewGameMilitary
     }
     // A decision of the same issuer/agent is local processing, not a courier to an empty castle.
     // Only the explicit new own-head policy uses this path; unit letters and other people still travel.
-    public static bool HandlesInternalAuthorityMessage(ContractWorld w,string id){var s=w.NewMilitary;if(s==null||s.Terms.Principal!=w.PlayerControl||s.Authority==null)return false;var m=w.Messaging.Messages.SingleOrDefault(m=>m.Id==id);return m!=null&&m.Kind.StartsWith("new-military-",StringComparison.Ordinal)&&m.SenderId==w.PlayerControl.Value&&m.RecipientId==w.PlayerControl.Value&&s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.Request&&q.Input.AuthorityPolicy==AuthorityContract&&q.Input.Id.Value==m.CorrelationId);}
+    static bool HandlesLedgerInternalAuthorityMessage(ContractWorld w,string id){var s=w.NewMilitary;if(s==null||s.Terms.Principal!=w.PlayerControl||s.Authority==null)return false;var m=w.Messaging.Messages.SingleOrDefault(m=>m.Id==id);return m!=null&&m.Kind.StartsWith("new-military-",StringComparison.Ordinal)&&m.SenderId==w.PlayerControl.Value&&m.RecipientId==w.PlayerControl.Value&&s.Requests.Any(q=>q.Input.Action==NewMilitaryAction.Request&&q.Input.AuthorityPolicy==AuthorityContract&&q.Input.Id.Value==m.CorrelationId);}
     static bool AuthorityCase(ContractWorld w,EntityId militaryCase)=>w.NewMilitary?.Requests.Any(q=>q.Input.Id==militaryCase&&q.Input.Action==NewMilitaryAction.Request&&q.Input.AuthorityPolicy==AuthorityContract)==true;
     static bool CurrentAuthorityCase(ContractWorld w)=>CaseStart(w) is {} q&&AuthorityCase(w,q.Input.Id);
     static void EnableAuthority(ContractWorld w,NewMilitaryInput i){if(i.AuthorityPolicy!=AuthorityContract||w.NewMilitary!.Authority!=null)return;w.NewMilitary=w.NewMilitary with{Authority=new(AuthorityContract,w.ElapsedSeconds,w.CommitSequence,[],[])};}
@@ -36,7 +36,7 @@ public static partial class NewGameMilitary
     }
     static void SyncAuthority(ContractWorld w){if(w.NewMilitary?.Authority is not {} x)return;w.NewMilitary=w.NewMilitary with{Authority=x with{Grants=DeriveAuthorityScopes(w,x.Proofs)}};}
     static NewMilitaryAuthorityState? AuthorityBefore(NewMilitaryAuthorityState? x,long at,long rev)=>x==null||!Before(x.At,x.Revision,at,rev)?null:x with{Proofs=x.Proofs.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray(),Grants=[]};
-    static bool CurrentPlacementAuthority(ContractWorld w)=>!CurrentAuthorityCase(w)||w.NewMilitary!.Authority!.Grants.Any(g=>ScopedAuthorityAllows(g,CaseStart(w)!.Input.Id,w.PlayerControl,w.NewMilitary.Terms.Army,UnitIds[0],RegionalAction.Move,w.ElapsedSeconds,w.CommitSequence));
+    static bool CurrentPlacementAuthority(ContractWorld w)=>!CurrentAuthorityCase(w)||w.NewMilitary!.Authority!.Grants.Any(g=>ScopedAuthorityAllows(g,CaseStart(w)!.Input.Id,w.PlayerControl,w.NewMilitary.Terms.Army,UnitIdsFor(w)[0],RegionalAction.Move,w.ElapsedSeconds,w.CommitSequence));
     static void ValidateAuthority(ContractWorld w,bool replay)
     {
         var s=w.NewMilitary!;var x=s.Authority;var first=s.Requests.FirstOrDefault(q=>q.Input.AuthorityPolicy==AuthorityContract);Need((x!=null)==(first!=null),"実在発令根拠の方針と台帳が一致しません");if(x==null)return;

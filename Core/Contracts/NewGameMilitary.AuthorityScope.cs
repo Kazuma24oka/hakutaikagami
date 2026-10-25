@@ -24,7 +24,7 @@ public static partial class NewGameMilitary
         foreach(var p in proofs.Where(p=>p.Effect==MilitaryEffect.Permission)){
             var pickup=s.Events.SingleOrDefault(e=>e.Effect==MilitaryEffect.PickedUp&&EventCase(w,e)==p.Case);if(pickup==null)continue;
             var end=s.Events.SingleOrDefault(e=>e.Effect==MilitaryEffect.Returned&&EventCase(w,e)==p.Case);
-            var mandate=new CommandMandate(new("mandate:new-military/"+Hash(p.Case.Value)),p.Source.Issuer,p.Source.Agent,s.Terms.Army,[..UnitIds],[RegionalAction.Move,RegionalAction.Hold,RegionalAction.Retreat],NewGameWorld.Basis,pickup.At,end?.At??long.MaxValue);
+            var mandate=new CommandMandate(new("mandate:new-military/"+Hash(p.Case.Value)),p.Source.Issuer,p.Source.Agent,s.Terms.Army,[..UnitIdsFor(w)],[RegionalAction.Move,RegionalAction.Hold,RegionalAction.Retreat],NewGameWorld.Basis,pickup.At,end?.At??long.MaxValue);
             grants.Add(new(p.Case,p.Source.Owner,mandate,pickup.Revision,end?.Revision));
         }
         return grants.OrderBy(g=>g.Mandate.From).ThenBy(g=>g.FromRevision).ToArray();

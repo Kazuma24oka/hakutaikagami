@@ -16,7 +16,7 @@ public static class TransportWork
     static bool Before(long t,long rev,long at,long cut)=>t<at||t==at&&rev<cut;
     static bool At(ContractWorld w,EntityId actor,EntityId site,long at,long revision)
     {
-        if(actor==w.PlayerControl&&w.NewMilitary?.Requests.LastOrDefault(q=>Before(q.At,q.Revision,at,revision)&&q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return false;
+        if(actor==w.PlayerControl&&NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).OrderBy(q=>q.Revision).LastOrDefault(q=>Before(q.At,q.Revision,at,revision)&&q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return false;
         var journeys=w.Branches!.Journeys.Where(j=>j.Actor==actor&&w.Requests.Any(q=>q.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId&&Before(q.CreatedAt,q.CommitSequence,at,revision))).ToArray();
         if(journeys.Any(j=>j.Legs[0].StartAt<=at&&w.Tasks.Single(t=>t.Id==j.Task) is var t&&(t.FinishedAt==null||t.FinishedAt>at||t.FinishedAt==at&&t.Revision>=revision)))return false;
         var history=w.ForkTransportLocation();history.Branches=w.Branches with{Journeys=journeys};

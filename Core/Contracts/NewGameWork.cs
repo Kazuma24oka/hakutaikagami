@@ -63,7 +63,7 @@ public static class NewGameWork
     }
     static bool Local(ContractWorld w,TaskState t,long at,long revision)
     {
-        var last=w.NewMilitary?.Requests.Where(q=>q.At<at||q.At==at&&q.Revision<revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);if(last?.Input.Action==NewMilitaryAction.Deploy)return false;
+        var last=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).OrderBy(q=>q.Revision).Where(q=>q.At<at||q.At==at&&q.Revision<revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);if(last?.Input.Action==NewMilitaryAction.Deploy)return false;
         var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==t.Scope).Position;
         return RegionalCampaign.RoadActorPointAt(w,t.Executor,at)==point&&RegionalCampaign.RoadActorPointAt(w,t.Issuer,at)==point&&!w.Branches!.Journeys.Any(j=>(j.Actor==t.Executor||j.Actor==t.Issuer)&&w.Requests.Any(r=>r.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<revision))&&j.Legs.Any(l=>l.StartAt<=at&&at<l.EndAt));
     }

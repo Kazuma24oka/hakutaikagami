@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record MilitaryDebrief(EntityId Case,EntityId Principal,EntityId Notice,string Report,long At,long Revision,int Started,int Returned,int Losses,long Used,bool Deployed,string Next);
 public static partial class NewGameMilitary
 {
-    public static MilitaryDebrief[] Debriefs(ContractWorld w,bool knownOnly=true,long? at=null,long? revision=null)
+    static MilitaryDebrief[] LedgerDebriefs(ContractWorld w,bool knownOnly=true,long? at=null,long? revision=null)
     {
         if(!WorkFollowup.Enabled(w)||w.NewMilitary is not {} s)return [];
         long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;var result=new List<MilitaryDebrief>();
@@ -17,9 +17,10 @@ public static partial class NewGameMilitary
         }
         return result.OrderBy(x=>x.Revision).ToArray();
     }
+    public static MilitaryDebrief[] Debriefs(ContractWorld w,bool knownOnly=true,long? at=null,long? revision=null)=>LedgerStates(w).SelectMany(s=>LedgerDebriefs(LedgerContext(w,s),knownOnly,at,revision)).OrderBy(x=>x.Revision).ToArray();
     public static MilitaryDebrief? FollowupBasis(ContractWorld w)
     {
-        var c=Cases(w).LastOrDefault();return c==null?null:Debriefs(w,at:c.At,revision:c.Revision-1).LastOrDefault();
+        var c=Cases(w).LastOrDefault();return c==null?null:LedgerDebriefs(w,at:c.At,revision:c.Revision-1).LastOrDefault();
     }
     public static FieldPoint[] FollowupLine(ContractWorld w)
     {

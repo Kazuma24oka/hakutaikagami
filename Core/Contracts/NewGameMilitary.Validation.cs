@@ -7,27 +7,33 @@ public static partial class NewGameMilitary
     {
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
         VoyageExpense.Rewind(w,at,rev);TransportWork.Rewind(w,at,rev);NewGameWork.Rewind(w,at,rev);w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
-        var s=w.NewMilitary!;var requests=s.Requests.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray();
-        w.NewMilitary=requests.Length==0?null:s with{
+        w.MilitaryLedgerHistory=original.MilitaryLedgerHistory??LedgerStates(original);
+        w.NewMilitary=LedgerStateBefore(w.NewMilitary!,at,rev);
+        w.Locations=w.Locations.Select(l=>{
+            var physical=l.Actor==w.PlayerControl?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
+            if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
+            var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(FieldWorld.FromWorld(point)),Contract,0);
+        }).ToArray();RewindUnitTransport(w);var controlling=ControllingLedger(w,at);SyncLedger(w,w.NewMilitary==null||controlling==null||LedgerKey(controlling)==LedgerKey(w.NewMilitary));return w;
+    }
+    static NewMilitaryState? LedgerStateBefore(NewMilitaryState s,long at,long rev)
+    {
+        var requests=s.Requests.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray();
+        return requests.Length==0?null:s with{
             Authority=AuthorityBefore(s.Authority,at,rev),UnitDirective=DirectiveBefore(s.UnitDirective,at,rev),Observation=ObservationBefore(s,at,rev),Cancellation=CancellationBefore(s,at,rev),CommandHolding=CommandHoldingBefore(s,at,rev),HeldDelivery=HeldBefore(s,at,rev),ReplyRecovery=ReplyRecoveryBefore(s,at,rev),UnitInquiry=requests.Any(q=>UnitInquiryAction(q.Input.Action))?UnitInquiryBefore(s.UnitInquiry,at,rev):null,UnitRetry=requests.Any(q=>UnitRetryAction(q.Input.Action))?UnitRetryBefore(s.UnitRetry,at,rev):null,Rout=requests.Any(q=>q.Input.MotionContract==RoutContract)?RoutBefore(s.Rout,at,rev):null,Withdrawal=requests.Any(q=>WithdrawalAction(q.Input.Action))?WithdrawalBefore(s.Withdrawal,at,rev):null,Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),
             Orders=s.Orders.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Moves=s.Moves.Where(m=>requests.Any(q=>q.Input.Id==m.Id)).ToArray(),Reports=s.Reports.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray(),
             Sorties=requests.Where(q=>q.Input.Action==NewMilitaryAction.Deploy).Select(q=>new SupplySortie(q.At,requests.FirstOrDefault(e=>e.Input.Action==NewMilitaryAction.Enter&&e.Revision>q.Revision)?.At)).ToArray(),
             Uses=s.Uses.Where(u=>u.From<at).Select(u=>u with{Until=Math.Min(u.Until,at),Consumed=Math.Min(u.Consumed,checked(u.Soldiers*(Math.Min(u.Until,at)-u.From)))}).ToArray()};
-        w.Locations=w.Locations.Select(l=>{
-            var point=RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
-            if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
-            var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(FieldWorld.FromWorld(point)),Contract,0);
-        }).ToArray();RewindUnitTransport(w);Sync(w);return w;
     }
     static void RemoveGenerated(ContractWorld w,IEnumerable<string> ids){var keys=ids.ToHashSet();w.Messaging.Messages=w.Messaging.Messages.Where(m=>!keys.Contains(m.Id)).ToArray();w.Messaging.Attempts=w.Messaging.Attempts.Where(a=>!keys.Contains(a.MessageId)).ToArray();w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>!keys.Contains(k.MessageId)).ToArray();w.SealedMessages=w.SealedMessages.Where(id=>!keys.Contains(id.Value)).ToArray();}
     public static void Validate(ContractWorld w)=>Validate(w,null);
-    internal static void Validate(ContractWorld w,ContractWorld? trustedPrior)
+    static void ValidateLedger(ContractWorld w,ContractWorld? trustedPrior,bool placePerson=true)
     {
         var s=w.NewMilitary;if(s==null){Need(!w.Messaging.Messages.Any(m=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m)),"軍務原本だけが残っています");return;}
         Need(NewGameWorld.Enabled(w)&&s.Schema==1&&s.Contract==Contract&&s.Requests.Length>0,"軍務の開始定義が不正です");
         Need(s.Requests.Select(q=>q.Input.Id).Distinct().Count()==s.Requests.Length&&s.Requests.Select((q,i)=>i==0||q.Revision>s.Requests[i-1].Revision&&q.At>=s.Requests[i-1].At).All(x=>x),"軍務入力が重複・逆順です");
         ValidateAuthority(w,false);ValidateDirectiveCancellation(w,false);ValidateCancellationShape(w);ValidateUnitInitialStatuses(w);ValidateUnitDirectiveShape(w);ValidateDirectiveHolding(w,false);ValidateDirectiveCancelHolding(w,false);ValidateReplyRecoveryShape(w);ValidateCommandHolding(w);ValidateHeldShape(w);
-        var first=s.Requests[0];var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id,first.Input.AuthorityPolicy),"貸与元・名簿・所在地の根拠が違います");
+        ValidateLedgerBinding(w);
+        var first=s.Requests[0];var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id,first.Input.AuthorityPolicy,first.Input.LedgerPolicy),"貸与元・名簿・所在地の根拠が違います");
         Need(w.Messaging.Messages.Count(m=>m.Kind is "new-military-request" or "new-military-report")==s.Requests.Count(q=>q.Message!=null)&&w.Messaging.Messages.Count(m=>m.Kind=="new-military-notice")==s.Events.Length,"軍務と原本台帳が一致しません");
         // Only WorldSession may supply its already validated prior state. Loads always replay fully.
         // Unchanged immutable military inputs/effects/routes and original letters cannot be reinterpreted by later travel.
@@ -50,12 +56,12 @@ public static partial class NewGameMilitary
         Need(s.Openings.Select(o=>o.Message).Distinct().Count()==s.Openings.Length,"開封記録が重複しています");foreach(var o in s.Openings)Need(s.Events.Any(e=>e.Message==o.Message&&e.Revision<o.Revision)&&MessageFlow.LearnedAt(w.Messaging,o.Message,w.PlayerControl.Value)==o.At&&o.At<=w.ElapsedSeconds&&o.Revision<=w.CommitSequence,"軍務通知の開封根拠がありません");
         Need(s.Events.All(e=>w.SealedMessages.Any(id=>id.Value==e.Message)),"軍務通知は封書でなければなりません");
         var sorties=s.Requests.Where(q=>q.Input.Action==NewMilitaryAction.Deploy).Select(q=>new SupplySortie(q.At,s.Requests.FirstOrDefault(e=>e.Input.Action==NewMilitaryAction.Enter&&e.Revision>q.Revision)?.At)).ToArray();Need(Same(sorties,s.Sorties)&&s.Sorties.Count(t=>t.Until==null)<=1,"出陣・帰還の台帳が不正です");
-        foreach(var sortie in s.Sorties){long cursor=sortie.From;foreach(var use in s.Uses.Where(u=>u.From>=sortie.From&&u.Until<=(sortie.Until??w.ElapsedSeconds))){Need(use.From==cursor&&use.Until>use.From&&use.Soldiers==TotalStrength(w,use.From)&&use.Consumed>=0&&use.Consumed<=use.Soldiers*(use.Until-use.From)&&!CombatLosses(w,use.Until-1).Any(l=>UnitIds.Contains(l.Unit)&&l.At>use.From),"兵糧の消費時間が欠落・重複しています");cursor=use.Until;}Need(cursor==(sortie.Until??w.ElapsedSeconds),"兵糧の消費時間が不足しています");}
+        foreach(var sortie in s.Sorties){long cursor=sortie.From;foreach(var use in s.Uses.Where(u=>u.From>=sortie.From&&u.Until<=(sortie.Until??w.ElapsedSeconds))){Need(use.From==cursor&&use.Until>use.From&&use.Soldiers==TotalStrength(w,use.From)&&use.Consumed>=0&&use.Consumed<=use.Soldiers*(use.Until-use.From)&&!CombatLosses(w,use.Until-1).Any(l=>UnitIdsFor(w).Contains(l.Unit)&&l.At>use.From),"兵糧の消費時間が欠落・重複しています");cursor=use.Until;}Need(cursor==(sortie.Until??w.ElapsedSeconds),"兵糧の消費時間が不足しています");}
         Need(s.Uses.All(u=>s.Sorties.Any(t=>t.From<=u.From&&u.Until<=(t.Until??w.ElapsedSeconds)))&&s.Uses.Select((u,i)=>i==0||s.Uses[i-1].Until<=u.From).All(x=>x),"出陣外の消費か重複です");
         long carry=0,depot=InitialStock;var ledger=s.Moves.Select(m=>(At:m.At,Rank:1,Move:(SupplyMove?)m,Use:(SupplyUse?)null)).Concat(s.Uses.Select(u=>(At:u.Until,Rank:0,Move:(SupplyMove?)null,Use:(SupplyUse?)u))).OrderBy(x=>x.At).ThenBy(x=>x.Rank);
         foreach(var e in ledger){if(e.Move is {} m){long d=m.Loading?m.Amount:-m.Amount;carry=checked(carry+d);depot=checked(depot-d);Need(carry>=0&&carry<=Capacity&&depot>=0,"兵糧が過剰引当されています");}else if(e.Use is {} u){Need(u.Consumed==Math.Min(carry,checked(u.Soldiers*(u.Until-u.From))),"兵糧消費と在庫が違います");carry-=u.Consumed;}}
-        ValidateMilitaryObservation(w,trustedPrior);
+        ValidateMilitaryObservation(w,trustedPrior,placePerson);
         ValidateAuthority(w,replay);ValidateDirectiveCancellation(w,replay);ValidateCancellation(w,replay);ValidateHeldOrderOutcomes(w,replay);ValidateHeldDelivery(w,replay);ValidateReplyRecovery(w,replay);ValidateDirectiveHolding(w,replay);ValidateDirectiveCancelHolding(w,replay);ValidateUnitInquiry(w);ValidateUnitRetry(w);ValidateWithdrawal(w,replay);ValidateRout(w,replay);
-        var normalized=ContractJson.Copy(w);Sync(normalized);Need(Same(w.Definitions.Armies,normalized.Definitions.Armies)&&Same(w.Units,normalized.Units)&&Same(w.ResourceLots,normalized.ResourceLots)&&Same(w.Locations,normalized.Locations),"貸与名簿・所有・現地所在・兵糧残量が台帳と一致しません");
+        var normalized=ContractJson.Copy(w);SyncLedger(normalized,placePerson);Need(Same(w.Definitions.Armies,normalized.Definitions.Armies)&&Same(w.Units,normalized.Units)&&Same(w.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray(),normalized.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray())&&Same(w.Locations,normalized.Locations),"貸与名簿・所有・現地所在・兵糧残量が台帳と一致しません");
     }
 }
