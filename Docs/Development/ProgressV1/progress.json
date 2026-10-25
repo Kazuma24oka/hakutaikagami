@@ -15,9 +15,13 @@
   "design_source": "Docs/Design/basic-design-v1.json",
   "acceptance_source": "Docs/Design/basic-design-acceptance.json",
   "source_hashes": {
-    "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
-    "Docs/Development/OPERATING_POLICY.md": "27460f02ecd8c6c4b11d5b8f7114822d6e976176fd862624222b47690e8802be"
+    "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+    "Docs/Development/OPERATING_POLICY.md": "872f598a0414bcb208d2e136c76ad0dd8cc40b2fe6926a42a8525c0565f2f38e",
+    "Docs/Development/ProgressV1/estimate.json": "26a4365cfba622b928049121e2eae2c2841b1b60b7df23208458bf2cef4a1196",
+    "Scripts/build_progress_report.py": "2f77bc8d74ef02d00e535ab382a007b18e2c30a71eaff8cf552f7dbcf337eced",
+    "Scripts/check_progress_report.py": "7ec4cb1d2c8a421dfe7554e7a772f07c591fed7c7c81be9695eb9618a0b84e84",
+    "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
     {
@@ -658,13 +662,23 @@
     {
       "id": "BD-39",
       "status": "normal",
-      "existing": "通常入口の架空演習で接触・損耗・敗走・退避・再集結を扱う。",
+      "existing": "通常入口の架空演習で接触・損耗・敗走・退避・再集結を扱う。 交戦条件Coreを追加し、到着/効力/期限/取消と敵対・意思・自衛を分離。通常入口には未接続。 実在主君の交戦任務原本・配送・本人開封・取消・照会を通常入口と世代保存へ接続。開戦や敵軍の生成は行わない。",
       "remaining": "勢力間の実戦、包囲/強襲/救援/降伏と攻城・開城を接続する。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.Combat.cs",
         "Core/Contracts/NewGameMilitary.Rout.cs",
         "Tests/RepeatedExerciseTests.cs",
-        "Tests/RoutRegroupTests.cs"
+        "Tests/RoutRegroupTests.cs",
+        "Core/Contracts/FieldEngagement.cs",
+        "Tests/FieldEngagementTests.cs",
+        "Docs/Design/FieldEngagementV1/README.md",
+        "Docs/Design/FieldEngagementV1/verification.json",
+        "Core/Contracts/NewGameMilitary.EngagementTasks.cs",
+        "Game/Scripts/NewGameRuntime.EngagementTasks.cs",
+        "Docs/Design/EngagementTaskDeliveryV1/README.md",
+        "Docs/Design/EngagementTaskDeliveryV1/verification.json",
+        "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
+        "Docs/Design/EngagementTaskDeliveryV1/git-only-build.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -969,13 +983,13 @@
       "Core/Contracts/Career.cs": "7a684a1dfd98d4d3ba55e9b40f49b1311f5834c6910a090ed3dae2b330c40c44",
       "Core/Contracts/Career.Validation.cs": "13ab5a050127f0e8451c5d6914adda2de93504efb21b8f33505e83b078871642",
       "Core/Contracts/Career.View.cs": "83a0b48cd8bd54346d4eb400a4af2634fce3b92322b7946acec8ecf3240faf3f",
-      "Core/Contracts/CareerMilitary.cs": "12f4e32e10593c07021c046757b9b55756954603f6ecf3e186307d7267e3db49",
+      "Core/Contracts/CareerMilitary.cs": "e3817310bb4d3d180c95374ec1b480a33c56d80d7a797e33e84122a9c4d0c5d3",
       "Core/Contracts/CareerMilitary.Inquiry.cs": "85c15b15b54e29aaf7ef7e41259f031eeb763c62f1d4127dfc7fd71102a89e1e",
       "Core/Contracts/CareerMilitary.Validation.cs": "bd536f628352f14abd7f79c903b4df2591829feb3edc22f27529d3e155db8e34",
       "Core/Contracts/ContactCombat.cs": "a002b38cb240bc99e9cfcb4f3f58371b317e1e710fd369d0b63b9ec34cbb7df9",
       "Core/Contracts/ContinuousWorld.cs": "e1047998371a0876349a7677c84f50101ac43f72d5d90e38de4f8e87ba1835c7",
       "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
-      "Core/Contracts/ContractJson.cs": "f68c8d79cdd27d0eda47dc5d42349bc98abf02535b705d379165293b7f4054d5",
+      "Core/Contracts/ContractJson.cs": "d53011c258e419f5932ddffa641a2c8074c30043e493d788b93ba2e58c95874f",
       "Core/Contracts/ContractModels.cs": "e662e958a311a42408466bd77237c4b6f27c71d679be3ec1b5915f836170c2a9",
       "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
       "Core/Contracts/ContractValidation.cs": "50c06a4e8289a85c7ac977819bf0d3b07fee43eff70413ef47de14d869798907",
@@ -1011,7 +1025,7 @@
       "Core/Contracts/NewGameMilitary.Cancellation.Validation.cs": "34d43481375bc614f02360e8d2df4072277e97fe87cd122cd95f61bbe06b70af",
       "Core/Contracts/NewGameMilitary.Combat.cs": "073565288964e094566e68b410a7c2f2ed1a9e4f1fce2629e107434e6b364d6b",
       "Core/Contracts/NewGameMilitary.CommandHolding.cs": "1bbb4c1426bc6c40d46025b3eed663ff570ad7ebce564401fd56bcff1aa55063",
-      "Core/Contracts/NewGameMilitary.cs": "2b96c9a84b04b96d0bf88e797e087337491baa2aa24253ea5ac26d3ab2f7706a",
+      "Core/Contracts/NewGameMilitary.cs": "3d2db2a84e28653660eb747241b6ca2f374f53612c80750c040abba35fa226f5",
       "Core/Contracts/NewGameMilitary.Debrief.cs": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a",
       "Core/Contracts/NewGameMilitary.HeldDelivery.cs": "512d243e908b8a139bfd67fdc60c7faa7d6c4c25f05e17ebcf701e4d8730429f",
       "Core/Contracts/NewGameMilitary.HeldOrder.cs": "77c9cb5662224c9981721e3f760bb05dcd3fa96c17cbb73e97ec37d97e851c89",
@@ -1021,7 +1035,7 @@
       "Core/Contracts/NewGameMilitary.Observation.cs": "2bc80d688abdc0fd8bb79bb77d8eeacf1aa8c3b76be45c9507321658a0c978c3",
       "Core/Contracts/NewGameMilitary.OrderDeadline.cs": "0033af788141dbe27b8baae657e17c657f5d9ab18702b3f0b7152766842f18f0",
       "Core/Contracts/NewGameMilitary.Recognition.cs": "6a5f7fb65f33a69bd0f3b2403ce06507977c5c676c5e769b52f736f763910139",
-      "Core/Contracts/NewGameMilitary.Renewal.cs": "44b9ec392a49b050f99cb56600a8ad6bbca7e4cf44e74a89b86e1e899eebe590",
+      "Core/Contracts/NewGameMilitary.Renewal.cs": "98d5b23025d2d63bf80787b815ed8baf87e9aaef813df2cca38b60624eaf38a1",
       "Core/Contracts/NewGameMilitary.RepeatedExercise.cs": "4d77902b96084f4237076b86d636aa31a042c7c80edaf08b481b89e8c82f8b17",
       "Core/Contracts/NewGameMilitary.ReplyRecovery.cs": "5be514e53d07b4b0ed12030c6bc3a7a82912c7419ab3f6b30488a97010cf6ae3",
       "Core/Contracts/NewGameMilitary.ReturnedOriginalPapers.cs": "097de8e7f2e3f861667bad76f503513309a043a1c69c9edb8ec4790f839deb6f",
@@ -1175,9 +1189,9 @@
       "Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs": "3fd2a04b3c03e04520e04cbf332aa4fce4503b987ced75748c12019b4c5e3f4e",
       "Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs": "f16620b2f5f7f6b9080f6ffb2728348a1ba30f75e3f7cf7a7616f23dee21d705",
       "Game/Scripts/NewGameFrontEnd.CapacityChecks.cs": "a98863f064b8d372de51da5d5d0ebe6d572b5231695b63d6dcfed50a9a1853ff",
-      "Game/Scripts/NewGameFrontEnd.Checks.cs": "a791b96bdc99c869db85fc46076e3384451d8aa3165ec607675e3e447db1f418",
+      "Game/Scripts/NewGameFrontEnd.Checks.cs": "2b7c3dcc26711a92949bec23f9e128587fd433e7b4683f96b34e83c6c76fa505",
       "Game/Scripts/NewGameFrontEnd.CombatChecks.cs": "1021dadc7e3cb0b657e5f713af46fab9995d26cae55ca02208ec4fafbad568c0",
-      "Game/Scripts/NewGameFrontEnd.cs": "d84c0eddd1a4e68f875b94cbc32fb7818ed4832f8a8f114bc3684d90e00e95cb",
+      "Game/Scripts/NewGameFrontEnd.cs": "aac2c862d5730fc3f639d976feae19063d077ca537e8ca3ae62997643eabef0d",
       "Game/Scripts/NewGameFrontEnd.DemandChecks.cs": "aed426a8802b2bc7a1815cbee7352810969d6565d752e2a042254597af5b5755",
       "Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs": "700ad5c78ed1366e6e1bf424b2e333441ca1e63dddcb5d1b4979e94dc6c98626",
       "Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs": "9268d5801d02e640996be74ba59dd591fca4abffba00abb883a5c9ff439a563b",
@@ -1189,7 +1203,7 @@
       "Game/Scripts/NewGameFrontEnd.MilitaryDebriefChecks.cs": "834250cbf2fb3b14f6a063b885eaf066582e6a3940af9295066a14ce47394b7d",
       "Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs": "8632d485687577bf83322da8d7d38ad2c34c4b2347a629bafeef5073a3450c10",
       "Game/Scripts/NewGameFrontEnd.MilitaryWorkChecks.cs": "51647f91c7268f7bb5774b596ed1b4182d15c2086f87fd4939fe7b24fba19589",
-      "Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs": "3057ad9e171a4407cc37c19b6fe0e6c4def8d6dc75a7e3f9e22ca5247d1d03bb",
+      "Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs": "8a3c5a5b69c7848bf1cefdfcf1788e9c99082a7f12236678f6fd22db6b59df8c",
       "Game/Scripts/NewGameFrontEnd.NpcRoutineChecks.cs": "0d7f1b7b3a955de9c10bcf13c501dd73be560824044b4e04a040f9879a076443",
       "Game/Scripts/NewGameFrontEnd.PlayGuideChecks.cs": "0715bffd7a7116774ccc89ad9fc70a7a9826fbc77bcd8a729db3b5352c231c5e",
       "Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs": "e7845e5dc3b995caebaa36a625b3ab43010437db1b9225ba493e5a1e72a8257d",
@@ -1202,7 +1216,7 @@
       "Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs": "4c6708820486bafda5641f81f94d21eab7087b0816189cf0ab5cc1dd285a8ecd",
       "Game/Scripts/NewGameFrontEnd.RoutChecks.cs": "21eb55e07db463ebff85e297fb3680e046525a792b25adb8d2dd8dd9d5e36054",
       "Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs": "6a91ae3a94202d072063ec2c2c26a1bec1515bff48c84033c72945aad734ac2e",
-      "Game/Scripts/NewGameFrontEnd.ServiceChecks.cs": "1180cf31bebec9572639312b98f5d548fbdab9dc60076327538fde5c61523dde",
+      "Game/Scripts/NewGameFrontEnd.ServiceChecks.cs": "5369eebc846d8f9dcdf1dda2425101014acbc62331731a5a025465e2b9cde314",
       "Game/Scripts/NewGameFrontEnd.ServiceDirectionChecks.cs": "f207ccccafeef1ebc89eeb49487e911942b2cbde80cc5dd1907052d88e52caf6",
       "Game/Scripts/NewGameFrontEnd.SupplyWorkChecks.cs": "4921d34009799f1f7884920d28a15fa7a892f07f7c91b90437a363c72fd6c663",
       "Game/Scripts/NewGameFrontEnd.TransportWorkChecks.cs": "3e0d62e58305d120faf97432b1aa76697277c4d774e3fd8095892a233b665e15",
@@ -1240,9 +1254,9 @@
       "Game/Scripts/NewGameRuntime.KnownTarget.cs": "cc6f953f34af9e37d27a4115f4ab62cefeb1d004de827beb210f3bd581056244",
       "Game/Scripts/NewGameRuntime.Mail.cs": "02ca76216c6c5bee2b2a69d6367cd65139930af4ea4fd4cd722544fee281b6b4",
       "Game/Scripts/NewGameRuntime.ManualAdvance.cs": "f3853346d2db48249dd431723d73e5f49acc2bb5831d64c7e5572dd67b5bd278",
-      "Game/Scripts/NewGameRuntime.Military.cs": "31b5fd078e2bc47417ebc6d8e4cb4bd158349b2c03a8fa932ebf1a6e25f7fa21",
+      "Game/Scripts/NewGameRuntime.Military.cs": "f305afc156d4e2e9103f475dc0b58e8fe8bccba42d8e06746041c4714a5f5729",
       "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99",
-      "Game/Scripts/NewGameRuntime.MilitaryWork.cs": "395b185c86fddbf5e06d605a246d70e20fecd1517ae23d5807b7e8b2eef8ebdd",
+      "Game/Scripts/NewGameRuntime.MilitaryWork.cs": "9765401274e2e1349decb28e47e73b265402b20c6788b710842ae659859a89f4",
       "Game/Scripts/NewGameRuntime.PlayGuide.cs": "1ec1d6b10931af19a78362d0dc46ce8620974d1b3652fec79ca299020e7f286c",
       "Game/Scripts/NewGameRuntime.PreparedAdvance.cs": "6a6196b3126f7b32fa9e96cf777124944a4d6ab7bc8983ae8f0a0303a01a0235",
       "Game/Scripts/NewGameRuntime.Recognition.cs": "5e8f30538b07234133d8f0d243601e05e97bd62d4e3c4388954ad83955568297",
@@ -1498,20 +1512,20 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 2392,
-      "trx": "Docs/Design/HouseholdMilitaryV1/runtime-local/all-tests/all-current.trx",
-      "sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
-      "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
+      "passed": 2446,
+      "trx": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/full-core/all-current.trx",
+      "sha256": "87edad59ed4006c21dae102d97d4ef6f7222f0ace94821c8665ae9957c8de9b5",
+      "scope": "All current Core2446 success; same sources/DLLs as normal Godot engagement delivery verification"
     },
-    "latest_game_verification": "Docs/Design/HouseholdMilitaryV1/verification.json",
-    "latest_game_verification_sha256": "498823c237bd12e3d9e92b8c5e381b728098e1b37c4b6f0d3b29931fb9747cde",
+    "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
+    "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
     "gpu": {
-      "processes": 8,
-      "savepoints": 30,
-      "comparisons": 60,
-      "scope": "Two-house no-loss/loss28 pairs plus scoped unit directive/cancellation32 pairs; world/text/rendered pixels/complete display pose"
+      "processes": 2,
+      "savepoints": 6,
+      "comparisons": 12,
+      "scope": "Conditional permission/cancellation delivery only: world, text, rendered3D/info pixels and complete display pose; NOT real combat loop"
     },
-    "audit_runtime_tests": "主家別の軍務台帳を通常入口へ接続。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルド成功。旧軍の損耗/兵糧/返報/IDを保持し、新主家の許可・引受・布陣・帰還と復旧が一致。PR #2のコードのみmain統合は別承認待ち。main/design/foundationは今回変更していない。",
+    "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
       "passed": 2392,
       "failed": 0,
@@ -1520,20 +1534,35 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "主家別の軍務台帳を通常入口へ接続。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルド成功。旧軍の損耗/兵糧/返報/IDを保持し、新主家の許可・引受・布陣・帰還と復旧が一致。PR #2のコードのみmain統合は別承認待ち。main/design/foundationは今回変更していない。",
+    "current_stage_summary": "交戦任務の対象選択→相談配送→実在主君の条件付き許可→本人開封→取消通知/開封と照会を通常入口へ接続。全Core2446件成功、実Godot2回/6保存/12組一致。実戦の敵対状態・敵軍移動・損害/撤退/返報は未接続で、BD-39工程全体0/3。全体概算20%は据置。",
     "screens": [
       {
-        "title": "旧軍を残して新主家の軍務へ",
-        "path": "Docs/Design/HouseholdMilitaryV1/index.html"
+        "title": "交戦任務の許可を開封した実画面",
+        "path": "Docs/Design/EngagementTaskDeliveryV1/runtime-local/engagementtask-recovery/opened-permission.png"
+      },
+      {
+        "title": "今回の実装範囲と未完了事項",
+        "path": "Docs/Design/EngagementTaskDeliveryV1/README.md"
       }
-    ]
+    ],
+    "subsequent_core_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
+    "subsequent_core_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
+    "prior_game_verifications": [
+      {
+        "game": "Docs/Design/HouseholdMilitaryV1/verification.json",
+        "sha256": "473715c9372024b1be9958054ea2078e4c44be9df6e8621ef84b1821af8821e1"
+      }
+    ],
+    "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
+    "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
+    "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。"
   },
   "release": {
     "functional_items": 59,
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "170件は基本設計時点の受入予定。現行2392テストとの正式な全件対応表は未整備。未実行170件と断定もしない。"
+    "formal_case_mapping": "170件は基本設計時点の受入予定。Core2446テストとの正式な全件対応表は未整備。未実行170件と断定しない。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1586,14 +1615,16 @@
         "finish": "旧軍83人を保持して新主家100人を引受。旧主家復帰・遅着・保存復旧と実3Dを接続。"
       }
     ],
-    "review_prompt": "地域一巡の方向性は承認済み。基盤検証は終了し、遊べる機能の追加を中心に進めます。"
+    "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "主家別軍務のコード統合PR #2を確認（main mergeのみ別承認）",
-    "実在勢力の交戦条件・任務・自衛と接触を接続",
-    "複数軍の接触・損害・撤退と本人認識の返報を接続",
-    "包囲/攻城と城・守備隊・倉庫の実引渡しへ広げる",
-    "所領/生産/交易、全国データ/政治AIと受入を進める"
+    "地域での実戦の入口：任務・接敵・損害・撤退・返報を一本つなぐ。上記の終了条件で区切る。",
+    "領地で暮らしと収支を回す：一地域で生産/収穫・在庫・徴収/支払い・使い道を一巡させる。",
+    "人を雇い、任せ、関係を変える：配下の加入/離脱・同行・仕事の委任・待遇と関係変化をつなぐ。",
+    "相手に働きかけて結果を変える：情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
+    "城・勢力・家を動的に変える：包囲/開城・支配の引渡し・独立・家督を、兵/家臣/資源/債務へ反映する。",
+    "全国を自律的に動かし、製品に仕上げる：全国史実データと活動NPC、身分別の一巡、正式素材、画面、調整、性能を統合する。"
   ],
-  "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。"
+  "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
+  "estimate_source": "Docs/Development/ProgressV1/estimate.json"
 }

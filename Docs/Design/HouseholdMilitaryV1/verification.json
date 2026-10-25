@@ -2032,5 +2032,12 @@
     "Linux/national performance/product acceptance are not certified."
   ],
   "main_base": "dd667079a799daefc04188cf5e9ef3c6309cd68a",
-  "design_foundation": "f4a1ac69342c13afd608d2331669b545657e3ea6"
+  "design_foundation": "f4a1ac69342c13afd608d2331669b545657e3ea6",
+  "main_merge": {
+    "sha": "3b3c9f7f8c02eab11f9e25e25d30135600262571",
+    "approved_head": "aeaf838e2a9144a6351583a77edb1283d7769869",
+    "pull_request": 2,
+    "approved_scope": "ユーザーが2026-10-25にPR #2のコードのみmain統合を明示承認。仮素材の公開や以後のmain統合には拡張しない。",
+    "tree_equals_approved_candidate": true
+  }
 }

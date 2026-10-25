@@ -1,12 +1,14 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 public enum MilitaryAction { Request, Accept, Pickup, Return }
-public enum MilitaryEffect { Offered, Permission, PickedUp, Waiting, Returned, Refused, Expired, StatusSent, CombatPermission }
+public enum MilitaryEffect { Offered, Permission, PickedUp, Waiting, Returned, Refused, Expired, StatusSent, CombatPermission, EngagementPermission, EngagementRejected, EngagementCancelled }
 public sealed record MilitaryInput(EntityId Id,MilitaryAction Action);
 public sealed record MilitaryRequest(MilitaryInput Input,long At,long Revision,string? Message);
 public sealed record MilitaryEvent(MilitaryEffect Effect,long At,long Revision,string Source,string Message);
 public sealed record MilitaryNotice(MilitaryEffect Effect,string Source,long EffectiveAt,long? Deadline)
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EngagementTaskTerms? Engagement {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CombatAuthorization? Combat {get;init;}
 }

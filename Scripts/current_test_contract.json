@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2392,
-  "baseline_passed": 2373,
-  "added": 19,
-  "scope": "MilitaryLedgerIdentity (5) and HouseholdMilitary (14); exact full-suite result is recorded in HouseholdMilitaryV1 verification, never inferred from this expected count"
+  "expected_passed": 2446,
+  "baseline_passed": 2424,
+  "added": 22,
+  "scope": "EngagementTaskDelivery22 added; full2446 regression and current Godot evidence recorded separately"
 }

@@ -20,6 +20,45 @@ print('PASS: 60 rows / 15 domains / 170 planned cases; evidence and runtime sour
 
 v=json.loads((R/p["evidence"]["latest_game_verification"]).read_bytes())
 check(p["evidence"]["latest_game_verification"],p["evidence"]["latest_game_verification_sha256"])
-for f,h in v["binaries"].items():check(f,h)
+# Historical game acceptance must not be silently claimed for rebuilt test binaries.
+# Only explicitly superseded test DLLs may bind to the newer, narrower Core evidence.
+new_path=p['evidence'].get('subsequent_core_verification')
+new=None
+if new_path:
+ check(new_path,p['evidence']['subsequent_core_verification_sha256'])
+ new=json.loads((R/new_path).read_bytes())
+ if new["scope"]=="normal-game-conditional-engagement-delivery":
+  from verify_engagement_delivery import check as check_increment
+ else:
+  from verify_field_engagement import check as check_increment
+ check_increment(new)
+for f,h in v['binaries'].items():
+ if hashlib.sha256((R/f).read_bytes()).hexdigest()==h:continue
+ assert new is not None and f in {
+  'Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll',
+  'Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll'},('unverified binary changed',f)
+ check(f,new['binaries'][f])
 t=p["evidence"]["core_test"];check(t["trx"],t["sha256"])
-print("PASS: bound binaries and recorded test-result provenance unchanged")
+print("PASS: historical game evidence retained; current binaries bind to their recorded verification scope")
+if p['evidence'].get('full_core_verification'):
+ f=p['evidence']['full_core_verification'];check(f,p['evidence']['full_core_verification_sha256'])
+ full=json.loads((R/f).read_bytes());assert full['status']=='PASSED' and full['scope']=='full-core-exact-godot-tested-binaries'
+ for group in ['sources','binaries','proofs']:
+  for f,h in full[group].items():check(f,h)
+ assert full['passed']==p['evidence']['core_test']['passed'] and full['failed']==full['skipped']==0
+ print('PASS: complete Core regression binds to the actual Godot-tested code and DLLs')
+
+# Product-scope estimate is separate from test counts and preserves all adopted design items.
+from progress_estimate import load as load_estimate,calculate
+x=load_estimate();c=calculate(x,d)
+assert sum(v['weight'] for v in x['domains'])==100
+covered=[g for v in x['domains'] for g in v['groups']]
+assert len(covered)==len(set(covered))==15 and set(covered)=={g['id'] for g in d['groups']}
+assert set(x['leaves'])==set(ids)
+assert all(isinstance(v['percent'],int) and 0<=v['percent']<=100 and v['basis'] for v in x['leaves'].values())
+assert set(x['excluded_from_rollup'])=={'BD-01','BD-60'}
+assert 0<=c['total']<=100 and c['total']%x['rounding_step']==0
+assert x['overall_range'][0]<=c['total']<=x['overall_range'][1]
+assert x['focus']['leaf'] in ids and 3<=len(x['focus']['exit'])<=5
+assert len(x['roadmap'])==6 and all(v['finish'] and v['why'] and v['status'] for v in x['roadmap'])
+print('PASS: weighted estimate / 6 large, 15 medium, 60 small entries / scope exits and roadmap')

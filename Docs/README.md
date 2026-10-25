@@ -1,3 +1,7 @@
+- [交戦任務の配送・本人開封・取消（実戦一巡は進行中）](Design/EngagementTaskDeliveryV1/README.md)
+
+- [実戦の交戦条件Core（進行中・通常入口未接続）](Design/FieldEngagementV1/README.md)
+
 - [1倍速の次秒先行計算](Design/PreparedAdvanceV1/README.md)
 
 - [新入口の人数増加・操作整理・通し確認](Design/PlayableLoopV1/README.md)
