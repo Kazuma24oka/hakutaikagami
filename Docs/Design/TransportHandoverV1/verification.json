@@ -1,0 +1,23 @@
+{
+  "status": "PASSED",
+  "completion": "5/5",
+  "scope": "L1 contract reducer and actual file restore; world authorization/stock/normal game/3D not yet connected",
+  "tests": {
+    "passed": 150,
+    "added": 39,
+    "failed": 0,
+    "skipped": 0,
+    "trx": "Docs/Design/TransportHandoverV1/runtime-local/tests/related.trx",
+    "trx_sha256": "4c0bed6283d259dac9ec56aca952cb69a2acfd950dedc7a125455c0ce173ddb1"
+  },
+  "sources": {
+    "Core/Contracts/TransportHandover.cs": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
+    "Tests/TransportHandoverTests.cs": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8",
+    "Docs/Design/TransportHandoverV1/README.md": "417060c9c4e634577f28fca52c449863f783074d3050f37c7a52c53e2868131a"
+  },
+  "binaries": {
+    "Core/bin/Debug/net8.0/HakutaiKagami.Core.dll": "8c4214ef96b60ed29dfb9650b2053c3199c9db33d357cb8218ba46558568f6d4",
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll": "bc2c3163e6647826037ac82282ad2769ba8610446af76b8d800442b2fda08cb8"
+  },
+  "runtime": "No game or GPU execution in L1"
+}

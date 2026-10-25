@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "status": "contract_implemented_completion_in_verification_json",
+  "completion_criteria": 5,
+  "baseline_tests": 1759,
+  "added_tests": 16,
+  "expected_tests": 1775,
+  "new_cases": {
+    "target-direct": 16,
+    "target-letter": 16
+  },
+  "personal_move_reused": true,
+  "unknown_target_not_selectable": true,
+  "legacy_reference_and_selection_omitted": true,
+  "limits": [
+    "No automatic GPS tracking or reunion",
+    "No remote per-unit formation UI yet",
+    "No final terrain occlusion/HUD/nation performance acceptance"
+  ]
+}

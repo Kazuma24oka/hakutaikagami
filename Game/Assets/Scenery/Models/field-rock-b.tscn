@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="ArrayMesh" path="res://Assets/Scenery/Models/field-rock-mesh-b.tres" id="External_0"]
+[sub_resource type="StandardMaterial3D" id="Resource_1"]
+albedo_color = Color(0.4549020, 0.4745098, 0.4117647, 1)
+roughness = 1.0
+
+[node name="FieldRock" type="Node3D"]
+
+[node name="Stone" type="MeshInstance3D" parent="."]
+mesh = ExtResource("External_0")
+material_override = SubResource("Resource_1")

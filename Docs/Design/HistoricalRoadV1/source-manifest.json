@@ -1,0 +1,196 @@
+{
+  "scope": "Evidence correspondence and published approximate remnant length preview; NOT surveyed Sengoku roads",
+  "retrieved": "2026-10-20",
+  "catalog": "Core/Data/historical-roads-v1.json",
+  "sources": [
+    {
+      "Id": "bunka-futamura",
+      "Url": "https://online.bunka.go.jp/heritages/detail/389841",
+      "Role": "medieval-remnant-and-locator",
+      "PublishedYear": null,
+      "SnapshotSha256": "68c825c6387efbf1714d4291743518b15fd02a5f7b7b61fad28e002658e4eada",
+      "Access": "downloaded HTML; locator 35.070689,137.008991 is a representative point, not surveyed road endpoints; designation date is 2017-04-01, NOT the publication date or a construction date"
+    },
+    {
+      "Id": "toyoake-length",
+      "Url": "https://www.city.toyoake.lg.jp/secure/2971/02.pdf",
+      "Role": "published-approximate-length",
+      "PublishedYear": null,
+      "SnapshotSha256": null,
+      "Access": "web extracted page 1: Kamakura road approximately 200m; direct PDF returned 403/redirect loop; layout/endpoints NOT visually verified; preview only"
+    },
+    {
+      "Id": "toyoake-history",
+      "Url": "https://www.city.toyoake.lg.jp/3356.htm",
+      "Role": "medieval-corridor",
+      "PublishedYear": null,
+      "SnapshotSha256": null,
+      "Access": "web text verified; direct download redirect loop"
+    },
+    {
+      "Id": "nagoya-bridge",
+      "Url": "https://www.city.nagoya.jp/midori/miryoku/1024793/1024801/1024805.html",
+      "Role": "bridge-history-not-1560-survey",
+      "PublishedYear": null,
+      "SnapshotSha256": null,
+      "Access": "1408 bridge tradition and 1977 current bridge; neither fixes 1560 geometry"
+    },
+    {
+      "Id": "regional-anchors",
+      "Url": "repo:Core/Data/owari-branches-v1.json",
+      "Role": "representative-locators-only-not-road-survey",
+      "PublishedYear": null,
+      "SnapshotSha256": "c9534733dceb570591feef18c3cc3b59122283f0bc186907a96536576d896372",
+      "Access": "Existing catalog of primary reference URLs and representative coordinates; not evidence of 1560 road alignment or road length"
+    },
+    {
+      "Id": "expanded-anchors",
+      "Url": "repo:Core/Data/regional-expansion-v1.json",
+      "Role": "representative-locators-only-not-road-survey",
+      "PublishedYear": null,
+      "SnapshotSha256": "b6aa50f3a5339afb9854840b00142c2298eee091029c84a7cc78364a8f8e7e6b",
+      "Access": "Existing catalog of primary reference URLs and representative coordinates; not evidence of 1560 road alignment or road length"
+    }
+  ],
+  "edge_bindings": [
+    {
+      "Edge": "road",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "regional-anchors"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "pass",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "regional-anchors"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "kasadera-access",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "regional-anchors"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "kasadera-tange",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "regional-anchors"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "tange-fort",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "regional-anchors"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "mino-concept",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "expanded-anchors"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "narumi-access",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "nagoya-bridge"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "bridge-approach",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "nagoya-bridge"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "nakajima-crossing",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "nagoya-bridge"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "mikawa-approach",
+      "DistanceBasis": "geodesic-estimate",
+      "SourceIds": [
+        "nagoya-bridge"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "ford-approach",
+      "DistanceBasis": "synthetic-preview",
+      "SourceIds": [],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "temporary-ford",
+      "DistanceBasis": "synthetic-preview",
+      "SourceIds": [],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "ford-return",
+      "DistanceBasis": "synthetic-preview",
+      "SourceIds": [],
+      "HistoricalAdoption": false,
+      "Caveat": "Existing trial estimate retained; source does NOT substantiate this numeric length or a 1560 alignment. See prior regional/river manifests."
+    },
+    {
+      "Edge": "futamura-access-preview",
+      "DistanceBasis": "synthetic-preview",
+      "SourceIds": [],
+      "HistoricalAdoption": false,
+      "Caveat": "Connecting line for simulation only, NOT an attested road"
+    },
+    {
+      "Edge": "futamura-remnant",
+      "DistanceBasis": "published-approximate-preview",
+      "SourceIds": [
+        "bunka-futamura",
+        "toyoake-length",
+        "toyoake-history"
+      ],
+      "HistoricalAdoption": false,
+      "Caveat": "Approx 200m from extracted municipal PDF text; layout/endpoints not inspected; 200m straight display chord is synthetic; 1560 usage/alignment unverified"
+    }
+  ],
+  "formal_historical_edges_adopted": 0,
+  "road_length_replacement_complete": false,
+  "pdf_visual_inspection": "NOT PERFORMED: direct 403/redirect loop and web screenshot fetch failed",
+  "representative_locator": "Culture Heritage Online embedded map point; NOT a surveyed road endpoint",
+  "geometry": "Synthetic 200m NW display chord, published approximately200m traversal cost; preview ground speed1m/s matches animation distance; NOT surveyed actual road alignment",
+  "modern_map_policy": "Present generalized coastline and representative locator coordinates only; no current roads, dams, buildings or DEM adopted as1560 terrain",
+  "previous_manifests": [
+    "Docs/Design/RiverRoadV1/source-manifest.json",
+    "Docs/Design/RegionalCampaignV1/source-manifest.json"
+  ]
+}

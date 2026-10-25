@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "tests": 2055,
+  "core_inputs": 304,
+  "gpu_processes": 24,
+  "allowed_source_changes": [
+    "Game/Scripts/ContinuousTerrainRenderer.cs",
+    "Game/Scripts/NewGameRuntime.cs",
+    "Game/Scripts/NewGameRuntime.BatchedAdvance.cs",
+    "Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs",
+    "Docs/Design/TerrainCacheV1/README.md",
+    "Docs/Design/TerrainCacheV1/contract.json",
+    "Docs/Design/TerrainCacheV1/verification.json",
+    "Scripts/verify_terrain_cache.py",
+    "Scripts/check_terrain_cache_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "scope": "Identical finite catalog material values cached; nullable terrain timing observation; Core/schema unchanged. Targeted shared-renderer regression; historical62 not rerun."
+}

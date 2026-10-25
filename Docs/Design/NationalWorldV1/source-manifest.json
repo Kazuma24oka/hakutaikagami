@@ -1,0 +1,134 @@
+{
+  "scope": "User-approved playable inferred national graph; not a surveyed1560 reconstruction",
+  "approval": "2026-10-20 user accepts approximate coherence and requests national scale",
+  "counts": {
+    "nodes": 108,
+    "edges": 118,
+    "land_edges": 106,
+    "sea_edges": 12
+  },
+  "policy": "Approximate positions and connections are allowed for playable world geography. SurveyRoadReview remains for surveyed-adoption claims, not a prerequisite for this separate inference ruleset.",
+  "catalog": "Core/Data/national-routes-v1.json",
+  "catalog_sha256": "5f5eb9d68e1c7969b79e2d74fb0a6f81fd3bb78dbf8aa3d816e03abd19e5baf9",
+  "sources": [
+    {
+      "Id": "historic-corridors",
+      "Url": "https://www.bunka.go.jp/seisaku/bunkazai/shokai/kinenbutsu/rekishinomichi/index.html",
+      "Role": "historical-corridor context ONLY; list spans periods including Edo and does NOT prove these exact1560 links"
+    },
+    {
+      "Id": "medieval-maritime",
+      "Url": "https://archive.rekihaku.ac.jp/exhibitions/project/old/050323/index.html",
+      "Role": "medieval maritime exchange among Hakata/Sakai/Funai/Ryukyu; exact sailing links/waypoints inferred"
+    },
+    {
+      "Id": "national-inference-policy",
+      "Url": "user-approval:2026-10-20",
+      "Role": "Rounded locators and national network inferred for gameplay; no exact surveyed or historical geometry claim"
+    }
+  ],
+  "prior_coordinate_catalog": {
+    "file": "Game/Data/Geography/japan-map-v1.json",
+    "sha256": "b0b0083aeaf2d9c007f923cd130720859f542d6a6eb533f8fbe3a421c254c244",
+    "basis": "Existing30 Wikidata CC0 representative locations;27 reused plus3 already in regional graph; source URLs/revisions preserved in CoordinateBasis. No modern structure geometries imported."
+  },
+  "inferred_locations": {
+    "count": 74,
+    "basis": "Rounded regional anchors, generally1-3km positional approximation, not a measured confidence interval; exact castle footprints/port locations unassigned"
+  },
+  "distances": {
+    "land": "great-circle x1.25",
+    "sea": "great-circle x1.10",
+    "scope": "Prototype cost approximations; displayed straight segments compress actual inferred travel distance; not calibrated road/terrain lengths"
+  },
+  "speeds": {
+    "land_foot_mm_s": 1000,
+    "land_courier_mm_s": 2000,
+    "sea_traveler_mm_s": 6000,
+    "sea_courier_mm_s": 8000,
+    "scope": "Prototype coefficients, not historical measured speeds"
+  },
+  "sea_edges": [
+    {
+      "id": "nation-akama-moji",
+      "from": "akama",
+      "to": "moji",
+      "corridor": "関門渡海"
+    },
+    {
+      "id": "nation-kusatsu-itsukushima",
+      "from": "kusatsu",
+      "to": "itsukushima",
+      "corridor": "厳島渡海"
+    },
+    {
+      "id": "nation-sakai-sumoto",
+      "from": "sakai",
+      "to": "sumoto",
+      "corridor": "紀淡・鳴門渡海"
+    },
+    {
+      "id": "nation-sumoto-shozui",
+      "from": "sumoto",
+      "to": "shozui",
+      "corridor": "紀淡・鳴門渡海"
+    },
+    {
+      "id": "nation-onomichi-utazu",
+      "from": "onomichi",
+      "to": "utazu",
+      "corridor": "瀬戸内航路"
+    },
+    {
+      "id": "nation-tabira-hirado",
+      "from": "tabira",
+      "to": "hirado",
+      "corridor": "平戸渡海"
+    },
+    {
+      "id": "nation-hakata-iki",
+      "from": "hakata",
+      "to": "iki",
+      "corridor": "壱岐・対馬航路"
+    },
+    {
+      "id": "nation-iki-izuhara",
+      "from": "iki",
+      "to": "izuhara",
+      "corridor": "壱岐・対馬航路"
+    },
+    {
+      "id": "nation-tosaminato-tokuyama",
+      "from": "tosaminato",
+      "to": "tokuyama",
+      "corridor": "津軽海峡・道南航路"
+    },
+    {
+      "id": "nation-tokuyama-katsuyama",
+      "from": "tokuyama",
+      "to": "katsuyama",
+      "corridor": "津軽海峡・道南航路"
+    },
+    {
+      "id": "nation-bonotsu-amami",
+      "from": "bonotsu",
+      "to": "amami",
+      "corridor": "南島航路"
+    },
+    {
+      "id": "nation-amami-naha",
+      "from": "amami",
+      "to": "naha",
+      "corridor": "南島航路"
+    }
+  ],
+  "limitations": [
+    "Only major stops and connections, not all castles/towns or full historical ownership/population",
+    "Officer requests still start at Kiyosu; repeated travel from arbitrary arrival nodes remains future work",
+    "Static year1560 inference pack; no time-evolving geography/ownership",
+    "No sea weather, boarding queues, ship availability, sinking or navigation simulation; simple boat marker only",
+    "No detailed road/terrain/water collision; coarse land links may intersect small coastline polygons",
+    "Modern generalized coastline is geographic reference only; no current roads, buildings, dams, DEM or modern bridges imported",
+    "Ezo/Ryukyu inclusion is geographic, not a claim of political ownership"
+  ]
+}

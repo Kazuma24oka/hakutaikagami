@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "contract": "declared-reply-policy-observed-failure-physical-return-same-original-v1",
+  "completion_conditions": 5,
+  "max_attempts": 3,
+  "restore_pixel_tolerance": 0,
+  "old_optional_fields": [
+    "PostPolicy",
+    "ReplyPolicy",
+    "ReplyRecovery"
+  ],
+  "same_physical_carrier_cannot_be_in_two_places": true,
+  "held_copy_is_not_received": true
+}

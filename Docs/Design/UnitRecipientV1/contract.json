@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "status": "implemented_completion_in_verification_json",
+  "completion_criteria": 5,
+  "baseline_tests": 1775,
+  "added_tests": 20,
+  "expected_tests": 1795,
+  "new_cases": {
+    "unitrec-left": 16,
+    "unitrec-right": 16,
+    "unitrec-lost": 16
+  },
+  "legacy_null_fields_omitted": true,
+  "recipient_owned_reply": true,
+  "unknown_reply_not_knowledge": true,
+  "per_unit_movement_not_in_this_slice": true
+}

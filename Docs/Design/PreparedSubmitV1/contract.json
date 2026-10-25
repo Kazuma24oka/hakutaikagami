@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "tests": 2076,
+  "added": 21,
+  "core_inputs": 306,
+  "gpu_processes": 8,
+  "world_image_pairs": 24,
+  "numeric_pairs": 24,
+  "allowed_source_changes": [
+    "Core/Contracts/WorldSession.PreparedSubmit.cs",
+    "Tests/PreparedSubmitTests.cs",
+    "Scripts/current_test_contract.json",
+    "Docs/Design/PreparedSubmitV1/README.md",
+    "Docs/Design/PreparedSubmitV1/contract.json",
+    "Docs/Design/PreparedSubmitV1/verification.json",
+    "Scripts/verify_prepared_submit.py",
+    "Scripts/check_prepared_submit_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "scope": "Typed opaque existing Submit preparation,accepted-only optional existing SetPaused(false),exact generation one-shot;no world/save DTO or current UI operation change;full2076 tests rerun."
+}

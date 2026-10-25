@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "completion": "4/4",
+  "scope": "Regional code integration candidate: all2373, current6GPU/30 pairs, fresh git-only source builds, current code remoteCI; main merge remains separate approval",
+  "checks": [
+    "60 design rows,15 groups,170 planned cases",
+    "evidence files and unchanged runtime source hashes",
+    "prior DLL/TRX hashes unchanged",
+    "browser filters and 1280/600/390 widths, no overflow or JS errors"
+  ],
+  "visual_review": "Prior responsive layout preserved; current browser filters and three widths rerun",
+  "sources": {
+    ".gitattributes": "f364586a7bfd72cd316588dd0080a28e129b81d574627c38fc6ccda66168d068",
+    ".gitignore": "856563dd92f1d34ff7e898c2c98277ae02fa15fc7a26221961d0cf3df349d494",
+    "AGENTS.md": "04be780ce6d79677c5dc0d7ea749aa4654aabd8c993669a0676961adc2bd6749",
+    "Docs/Development/CURRENT_STAGE.md": "4efc67ed637896d4a4ccb85734195abcd92aa4e04f580f1adf4fc3901a326618",
+    "Docs/Development/ProgressV1/index.html": "53a4a5f3e1713baaa51946f9a6adeddba5e8d33cd105a27257e00884de7ce51e",
+    "Docs/Development/ProgressV1/progress.json": "0added40169255b5c43437ca1b4311ecfd246d3c9c1869944d099b73aadd75cc",
+    "Docs/Development/IntegrationCandidateV1/README.md": "a0d200a9fa4ae1a6a985f733303e1df9d7b57c1bf000dbfbbd292e534b4d55da",
+    "Docs/Development/IntegrationCandidateV1/index.html": "1ed1cfb145c595b802292a450d9c8f59a3ac73c5163556d18a83bc401ac6a4e9",
+    "Docs/Development/IntegrationCandidateV1/review.json": "e3204d59bf9901924586fba2950ff295a128fbecf3fbddede332920df8680448",
+    "Docs/Development/IntegrationCandidateV1/verification.json": "5cb4e4dd19f91791456cfeb05af62cab44b667f5adf0ded4aa187710605b08a7",
+    "Scripts/build_integration_candidate_report.py": "fea53f50088453f1a3f8a560c3b6d72b840b57faacc71228a315d21ad5c05ea1",
+    "Scripts/check_runtime_model_package.py": "401fb0962fc11c1692d404c6ddfa009a5dd071253cdd71aff1c319ff0c050827"
+  },
+  "browser": {
+    "status": "PASS",
+    "rows": 60,
+    "filters": [
+      "14 design_only",
+      "31 normal",
+      "4 G11",
+      "1 BD-59"
+    ],
+    "viewports": [
+      1280,
+      600,
+      390
+    ],
+    "errors": []
+  }
+}

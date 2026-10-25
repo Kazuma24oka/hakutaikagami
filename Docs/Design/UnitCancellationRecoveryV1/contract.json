@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "contract": "existing-cancellation-physical-result-recovery-deadline-authority-end-target-isolation-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "new_core_tests": 8,
+  "new_save_points": 16,
+  "case_effect_repeated_on_result_pickup": false,
+  "expired_authority_restored": false
+}

@@ -1,0 +1,114 @@
+using Godot;
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using HakutaiKagami.Core.Contracts;
+
+public sealed record SavedStartProfile(string Instance, StartPackage Package);
+public partial class StartSelectionPanel : Control
+{
+    internal bool Simplified {get;set;}
+    VBoxContainer form=null!,play=null!;LineEdit nameInput=null!;Label message=null!,intro=null!;Button begin=null!,resume=null!,load=null!,back=null!;
+    OptionButton saved=null!,role=null!;ConfirmationDialog confirmation=null!;ContinuousWorldTrial? stage;
+    readonly List<(SavedStartProfile Profile,string Directory)> profiles=new();
+    (SavedStartProfile Profile,string Directory,bool Load)? pending;
+    string SelectionMode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--start-selection-"))??"";
+    bool IsTest=>SelectionMode!=""||OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--work-hub-"));
+    string Root=>IsTest?ProjectSettings.GlobalizePath("res://../Docs/Design/StartSelectionV1/runtime-local/configs/"+Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..],"N").ToString("N")):ProjectSettings.GlobalizePath("user://personal-start-v1/configured");
+    string CurrentDirectory="";
+    static bool HashDirectory(string value,int length)=>value.Length==length&&value.All(c=>c is >= '0' and <= '9' or >= 'a' and <= 'f');
+    public override void _Ready()
+    {
+        form=new(){SizeFlagsHorizontal=SizeFlags.ExpandFill};AddChild(form);form.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);if(Simplified){form.OffsetLeft=24;form.OffsetRight=-24;form.OffsetTop=20;form.OffsetBottom=-20;form.AddThemeConstantOverride("separation",10);}
+        form.AddChild(new Label{Text=Simplified?"新しい武将の人生を始める":"作成武将として始める"});
+        form.AddChild(new Label{Text=Simplified?"1560年、清洲から。成人の浪人として始めます。":"1560年・清洲から / 成人 / 準史実（既定）"});
+        intro=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};form.AddChild(intro);
+        form.AddChild(new Label{Text="名前"});nameInput=new(){Text="作成武将",MaxLength=24,PlaceholderText="1～24文字"};form.AddChild(nameInput);
+        form.AddChild(new Label{Text="開始時の立場",Visible=!Simplified});role=new();role.AddItem("浪人");role.AddItem("織田家の家臣（作成人物の架空の開始合意）");role.AddItem("織田家の家臣・本隊配置任務（試作兵100）");role.AddItem("織田家の家臣・交戦任務（架空の演習）");role.AddItem("織田家の家臣・兵糧携行つき演習");role.AddItem("織田家の家臣・継続世界の演習");role.AddItem("織田家の家臣・共同演習の一時指揮");role.AddItem("浪人・仕官と離職後の継続");role.AddItem("浪人から仕官・軍務・帰還を継続");if(Simplified)role.Select(8);role.Visible=!Simplified;form.AddChild(role);role.ItemSelected+=_=>RefreshIntro();RefreshIntro();
+        begin=new(){Text=Simplified?"この武将で始める":"新しく始める"};form.AddChild(begin);begin.Pressed+=RequestNew;if(Simplified){nameInput.TextChanged+=text=>begin.Disabled=string.IsNullOrWhiteSpace(text);begin.Disabled=string.IsNullOrWhiteSpace(nameInput.Text);}
+        resume=new(){Text="いまの人物へ戻る",Visible=false};form.AddChild(resume);resume.Pressed+=ShowGame;
+        form.AddChild(new HSeparator());form.AddChild(new Label{Text=Simplified?"保存した人生の続き":"保存した人物の続き"});saved=new();form.AddChild(saved);
+        load=new(){Text="選んだ保存を開く"};form.AddChild(load);load.Pressed+=RequestLoad;
+        message=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};form.AddChild(message);
+        form.AddChild(new Label{Text=Simplified?"仕官と軍務は始めてから申し出ます。他の開始や以前の検証の保存は、元の入口に残しています。":"陪臣・城主などと史実武将の開始は今後追加します。作成家臣の主従は史実の任命ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("e6c785")});
+        play=new(){Visible=false};AddChild(play);play.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        back=new(){Text=Simplified?"開始画面へ戻る（この人物は保持）":"開始設定へ戻る（現在の人物は保持）"};play.AddChild(back);back.Pressed+=ShowForm;
+        confirmation=new(){Title="現在の進行を切り替えますか",DialogText="画面上の未保存の進行を閉じ、選んだ人物へ切り替えます。保存したデータは残ります。"};AddChild(confirmation);
+        confirmation.Confirmed+=OpenPending;confirmation.Canceled+=()=>pending=null;
+        ScanProfiles();if(SelectionMode!="")CallDeferred(nameof(RunSelectionChecks));
+    }
+    void RefreshIntro(){if(Simplified){intro.Text="名前を決めて始めます。兵や土地を持たない状態から、仕官・仕事・軍務へ進めます。返事や命令は、届いた書状を開いて確かめます。";return;}intro.Text=role.Selected==8?"仕官と軍務の許可は別。主家兵100と兵糧を現地で引き受け、帰還・返報・返還してから同じ人生を続けます。交戦なし。":role.Selected==7?"浪人から仕官を申し出、合意・通知・引継ぎを別に確認。同じ人物で離職後も続けます。軍や所領は自動取得しません。":role.Selected==6?"他家演習軍の所有と主従は変えず、配置・帰還だけを一時指揮します。受令と到達の返報は別に届きます。":role.Selected==5?"本人が在所に戻っても、演習中の他隊は同じ世界時計で動き続けます。":role.Selected==4?"主家の兵糧を積載して出陣。実際の兵数と経過時間で消費し、帰還後に残量を返します。":role.Selected==3?"架空の検証敵との交戦・損耗・撤退・現況報告を試せます。史実の開戦ではありません。":role.Selected==2?"主家の試作兵100で、本隊の配置と帰還を試せます。私有の兵・土地・徴税権は持ちません。":"本人の移動と、現地の仕事を試せます。軍・土地・徴税権は持ちません。";}
+    StartPackage NewPackage(string name)
+    {
+        var w=role.Selected==8?CareerMilitary.Create(name):role.Selected==7?Career.Create(name,recruits:!IsTest||CareerCase!="refuse",dismissAfterReport:IsTest&&CareerCase is "dismiss" or "journey"):role.Selected==6?DelegationMission.Create(name,refuses:IsTest&&SelectionMode.Contains("-delegation-")&&DelegationCase=="refuse",until:IsTest&&SelectionMode.Contains("-delegation-")&&DelegationCase=="expiry"?5:long.MaxValue):role.Selected==5?FieldPresence.Create(name):role.Selected==4?FieldSupply.Create(name):role.Selected==3?EngagementMission.Create(name):role.Selected==2?CreatedCampaign.Create(name):role.Selected==1?RetainerStart.Create(name):PersonalStart.Create(name);
+        var template=role.Selected is 0 or 7 or 8?StartTemplate.Ronin:StartTemplate.Retainer;var policy=role.Selected>=2&&role.Selected!=7&&role.Selected!=8?CreatedCampaign.Policy:PersonalStart.Policy;
+        var choice=StartConfiguration.Describe(w,w.PlayerControl,template,PersonOrigin.Created,policy);
+        return new(choice,w,policy);
+    }
+    static void Validate(SavedStartProfile profile)
+    {
+        if(profile==null||profile.Package==null||profile.Package.World==null||profile.Package.Selection==null||profile.Package.Policy==null)throw new InvalidDataException("開始データに必要な項目がありません");
+        if(!Guid.TryParseExact(profile.Instance,"N",out _)||(!PersonalStart.Enabled(profile.Package.World)&&!RetainerStart.Enabled(profile.Package.World)&&!CreatedCampaign.Enabled(profile.Package.World)&&!Career.Enabled(profile.Package.World))||
+            !StartConfiguration.Check(profile.Package.World,profile.Package.Selection,profile.Package.Policy).Eligible)
+            throw new InvalidDataException("開始データの整合を確認できません");
+        var isCampaign=CreatedCampaign.Enabled(profile.Package.World)&&!CareerMilitary.Enabled(profile.Package.World);var isRetainer=RetainerStart.Enabled(profile.Package.World)||isCampaign;
+        var personName=profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;
+        var original=CareerMilitary.Enabled(profile.Package.World)?CareerMilitary.Create(personName,profile.Package.World.Seed):Career.Enabled(profile.Package.World)?Career.Create(personName,profile.Package.World.Seed,profile.Package.World.Career!.Terms.Recruits,profile.Package.World.Career.Terms.DismissAfterReport):DelegationMission.Enabled(profile.Package.World)?DelegationMission.Create(personName,profile.Package.World.Seed,profile.Package.World.Region!.Refuses,profile.Package.World.Delegation!.Terms.Until):FieldPresence.Enabled(profile.Package.World)?FieldPresence.Create(personName,profile.Package.World.Seed):FieldSupply.Enabled(profile.Package.World)?FieldSupply.Create(personName,profile.Package.World.Seed):EngagementMission.Enabled(profile.Package.World)?EngagementMission.Create(personName,profile.Package.World.Seed,profile.Package.World.CommandMandates!.Single().Until):isCampaign?CreatedCampaign.Create(personName,profile.Package.World.Seed,profile.Package.World.CommandMandates!.Single().Until):isRetainer?RetainerStart.Create(personName,profile.Package.World.Seed):PersonalStart.Create(personName,profile.Package.World.Seed);
+        if(profile.Package.Selection.Template!=(isRetainer?StartTemplate.Retainer:StartTemplate.Ronin))throw new InvalidDataException("開始時の立場が一致しません");
+        var policy=isCampaign?CreatedCampaign.Policy:PersonalStart.Policy;
+        if(profile.Package.Selection.Mode!=HistoryMode.SemiHistorical||ContractJson.CanonicalHash(original)!=profile.Package.Selection.WorldHash||ContractJson.CanonicalHash(profile.Package.Policy)!=ContractJson.CanonicalHash(policy))throw new InvalidDataException("この開始定義には対応していません");
+    }
+    static SavedStartProfile ReadProfile(string path)
+    {
+        using var stream=new FileStream(path,FileMode.Open,System.IO.FileAccess.Read,FileShare.Read);
+        if(stream.Length is <1 or >4194304)throw new InvalidDataException("開始データの容量が不正です");
+        var bytes=new byte[(int)stream.Length];stream.ReadExactly(bytes);var profile=ContractJson.Read<SavedStartProfile>(bytes);Validate(profile);return profile;
+    }
+    void RequestNew()
+    {
+        try{
+            var profile=new SavedStartProfile(Guid.NewGuid().ToString("N"),NewPackage(nameInput.Text));Validate(profile);
+            pending=(profile,Path.Combine(Root,profile.Package.Selection.WorldHash,profile.Instance),false);
+            if(stage!=null)confirmation.PopupCentered();else OpenPending();
+        }catch(Exception e)when(e is InvalidDataException or ArgumentException or IOException or UnauthorizedAccessException or ContractLoadException){message.Text="開始できません："+e.Message;}
+    }
+    void RequestLoad()
+    {
+        if(saved.Selected<0||saved.Selected>=profiles.Count)return;var p=profiles[saved.Selected];pending=(p.Profile,p.Directory,true);
+        if(stage!=null)confirmation.PopupCentered();else OpenPending();
+    }
+    void OpenPending()
+    {
+        if(pending is not {} next)return;ContinuousWorldTrial? fresh=null;
+        try{
+            Validate(next.Profile);if(next.Load){var savedProfile=ReadProfile(Path.Combine(next.Directory,"start-profile.json"));if(ContractJson.CanonicalHash(savedProfile)!=ContractJson.CanonicalHash(next.Profile))throw new InvalidDataException("開始データが選択後に変わっています");}if(!next.Load){Directory.CreateDirectory(next.Directory);using var stream=new FileStream(Path.Combine(next.Directory,"start-profile.json"),FileMode.CreateNew,System.IO.FileAccess.Write,FileShare.None);var bytes=ContractJson.Write(next.Profile);stream.Write(bytes);stream.Flush(true);}
+            fresh=GD.Load<PackedScene>("res://Scenes/PersonalStartTrial.tscn").Instantiate<ContinuousWorldTrial>();
+            fresh.LifeView=Simplified;fresh.StartDefinition=ContractJson.Copy(next.Profile.Package.World);fresh.StartSaveRoot=Path.Combine(next.Directory,"game");fresh.SizeFlagsVertical=SizeFlags.ExpandFill;
+            play.AddChild(fresh);if(next.Load)fresh.HubLoad("manual");
+            if(stage!=null){stage.ProcessMode=ProcessModeEnum.Disabled;play.RemoveChild(stage);stage.QueueFree();}
+            stage=fresh;CurrentDirectory=next.Directory;pending=null;role.Select(CareerMilitary.Enabled(next.Profile.Package.World)?8:Career.Enabled(next.Profile.Package.World)?7:DelegationMission.Enabled(next.Profile.Package.World)?6:FieldPresence.Enabled(next.Profile.Package.World)?5:FieldSupply.Enabled(next.Profile.Package.World)?4:EngagementMission.Enabled(next.Profile.Package.World)?3:CreatedCampaign.Enabled(next.Profile.Package.World)?2:next.Profile.Package.Selection.Template==StartTemplate.Retainer?1:0);RefreshIntro();nameInput.Text=next.Profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name;ShowGame();
+        }catch(Exception e)when(e is InvalidDataException or ArgumentException or IOException or UnauthorizedAccessException or ContractLoadException){if(fresh!=null){play.RemoveChild(fresh);fresh.QueueFree();}message.Text="開けません："+e.Message;pending=null;}
+    }
+    void ShowGame(){if(stage==null)return;form.Visible=false;play.Visible=true;stage.ProcessMode=ProcessModeEnum.Inherit;}
+    void ShowForm(){if(stage!=null)stage.ProcessMode=ProcessModeEnum.Disabled;play.Visible=false;form.Visible=true;resume.Visible=stage!=null;ScanProfiles();}
+    void ScanProfiles()
+    {
+        profiles.Clear();saved.Clear();int unreadable=0;
+        string[] Dirs(string path){try{return Directory.GetDirectories(path);}catch(DirectoryNotFoundException){return [];}catch(Exception e)when(e is IOException or UnauthorizedAccessException){unreadable++;return [];}}
+        foreach(var hash in Dirs(Root).Where(p=>HashDirectory(Path.GetFileName(p),64)))
+            foreach(var dir in Dirs(hash).Where(p=>HashDirectory(Path.GetFileName(p),32))){
+                try{
+                    var file=Path.Combine(dir,"start-profile.json");if(!File.Exists(file))continue;
+                    var profile=ReadProfile(file);if(Simplified&&!CareerMilitary.Enabled(profile.Package.World))continue;
+                    if(profile.Instance!=Path.GetFileName(dir)||profile.Package.Selection.WorldHash!=Path.GetFileName(hash))throw new InvalidDataException();
+                    var store=new GenerationSaveStore(Path.Combine(dir,"game"),profile.Package.World.Definitions);
+                    // An initial definition alone is not saved progress. Do not present it as resumable.
+                    if(!Directory.Exists(Path.Combine(dir,"game","manual")))continue;
+                    var progress=store.Prepare("manual");
+                    profiles.Add((profile,dir));saved.AddItem(profile.Package.World.Definitions.Characters.Single(c=>c.Id==PersonalStart.Person).Name+" / 経過"+progress.Seconds+"秒 / 開始"+File.GetLastWriteTime(file).ToString("MM/dd HH:mm"));
+                }catch(Exception e)when(e is InvalidDataException or ArgumentException or IOException or UnauthorizedAccessException or ContractLoadException){unreadable++;}
+            }
+        saved.Disabled=load.Disabled=profiles.Count==0;message.Text=unreadable>0?"読めない開始データがあります。ファイルは保持しています。":profiles.Count==0?"保存した進行はまだありません。":"保存した人物を選んで再開できます。";
+    }
+}

@@ -11,8 +11,9 @@ public partial class Officer3DCustomActor : Node3D
     public float WalkStride {get;private set;}
     public string Lod { get; private set; } = "near";
     static readonly Dictionary<string,Dictionary<string,(Mesh Mesh,Skin Skin)>> lodMeshes = new();
+    internal static void ReleaseProcessResources(){white?.Dispose();white=null;protectionTexture?.Dispose();protectionTexture=null;var resources=lodMeshes.Values.SelectMany(d=>d.Values).SelectMany(p=>new Resource[]{p.Mesh,p.Skin}).Where(r=>GodotObject.IsInstanceValid(r)).DistinctBy(r=>r.GetInstanceId()).ToArray();lodMeshes.Clear();foreach(var resource in resources)resource.Dispose();}
     static ImageTexture? white;
-    static Texture2D White() { if(white is null) {var i=Image.CreateEmpty(1,1,false,Image.Format.Rgba8);i.Fill(Colors.White);white=ImageTexture.CreateFromImage(i);} return white; }
+    static Texture2D White() { if(white is null) {using var i=Image.CreateEmpty(1,1,false,Image.Format.Rgba8);i.Fill(Colors.White);white=ImageTexture.CreateFromImage(i);} return white; }
     public void SetLod(string level)
     {
         if(!new[]{"near","mid","far"}.Contains(level)) throw new ArgumentException("Unknown LOD");
@@ -56,7 +57,7 @@ public partial class Officer3DCustomActor : Node3D
         using var original=source.GetImage();if(original.IsCompressed())original.Decompress();original.ClearMipmaps();original.Convert(Image.Format.Rgba8);
         var hash=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(original.GetData())).ToLowerInvariant();
         if(hash!=root.GetProperty("source_rgba_sha256").GetString())throw new InvalidOperationException("Face texture changed; UV protection requires review");
-        var image=Image.CreateEmpty(root.GetProperty("width").GetInt32(),root.GetProperty("height").GetInt32(),false,Image.Format.Rgbaf);image.Fill(new Color(0,0,0,0));
+        using var image=Image.CreateEmpty(root.GetProperty("width").GetInt32(),root.GetProperty("height").GetInt32(),false,Image.Format.Rgbaf);image.Fill(new Color(0,0,0,0));
         var coreValues=root.GetProperty("mouth_core_srgb");var core=new Vector3(coreValues[0].GetSingle(),coreValues[1].GetSingle(),coreValues[2].GetSingle());
         int top=root.GetProperty("underpaint_sample_rows")[0].GetInt32(),bottom=root.GetProperty("underpaint_sample_rows")[1].GetInt32();
         foreach(var row in root.GetProperty("mouth_rows").EnumerateArray())

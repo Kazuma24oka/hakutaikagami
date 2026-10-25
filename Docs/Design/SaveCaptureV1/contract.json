@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "tests": 2055,
+  "added": 0,
+  "core_inputs": 304,
+  "criteria": 5,
+  "scope": "UI-only opaque pause capture,accepted-world publication,then existing atomic save writer. No Core/schema change.",
+  "new_cases": {
+    "savecapture-normal": 3,
+    "savecapture-prepare-fault": 2,
+    "savecapture-write-fault": 2
+  },
+  "retained_saveui_cases": {
+    "saveui-normal": 16,
+    "saveui-failure": 16
+  },
+  "gpu_processes": 50,
+  "world_image_pairs": 278,
+  "numeric_pairs": 278,
+  "allowed_source_changes": [
+    "Game/Scripts/NewGameRuntime.ResponsiveSave.cs",
+    "Game/Scripts/NewGameRuntime.PreparedAdvance.cs",
+    "Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.cs",
+    "Game/Scripts/NewGameFrontEnd.Checks.cs",
+    "Docs/Design/SaveCaptureV1/README.md",
+    "Docs/Design/SaveCaptureV1/contract.json",
+    "Docs/Design/SaveCaptureV1/verification.json",
+    "Scripts/verify_save_capture.py",
+    "Scripts/check_save_capture_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "not_rerun": [
+    "old-military2",
+    "old-combat2",
+    "ground-material2",
+    "legacy-smokes3"
+  ]
+}

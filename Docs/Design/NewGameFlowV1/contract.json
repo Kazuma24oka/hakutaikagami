@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "status": "IMPLEMENTATION_CANDIDATE",
+  "epoch": "1560-01-01",
+  "history_mode": "SemiHistorical",
+  "default_entry_changed": false,
+  "entry": "Game/Scenes/NewGameFrontEnd.tscn",
+  "flow": ["start", "conditions", "registered_selection", "placement", "confirm_world", "select_person", "live_world"],
+  "library": {"shared_root": "user://officer-library-v1", "copies_independent": true, "individual_multi_select": true, "group_select": "one", "appearance": "existing-schema3", "runtime_world_updates_from_library": false},
+  "trial_policy": {"adult_age": 18, "attribute_max": 100, "budget": 1000, "per_controlled_site": 100, "per_personal_follower": 50, "product_balance_final": false},
+  "data_scope": {"historical_persons": 3, "anchors": 108, "routes": 118, "head_and_territory_rights": "declared-trial-initialization", "unrecorded_ownership": null},
+  "play": ["self_travel", "self_inspection", "local_voluntary_offer", "sealed_opening", "explicit_assent", "physical_return_report", "save_load", "same_person_continuation"],
+  "knowledge": {"pregame_roster_is_not_character_knowledge": true, "remote_actor_gps": false, "letter_content_before_open": false},
+  "preserved": ["project.godot", "old-Main", "old-WorkHub", "old-save-files", "main", "design/foundation", "raw-art"],
+  "not_completed": ["general-career-military-in-new-start", "wages", "nationwide-personnel-and-territory-data", "combat-in-new-start", "product-art", "fps-targets"]
+}

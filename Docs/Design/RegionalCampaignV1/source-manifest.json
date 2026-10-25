@@ -1,0 +1,32 @@
+{
+  "scope": "Adjacent-region prototype, not a reconstructed nationwide road network",
+  "date": "2026-10-20",
+  "coordinates_source": "Game/Data/Geography/japan-map-v1.json; pinned Wikidata revisions copied without independent precision claims",
+  "historic_checks": [
+    {
+      "url": "https://www.city.gifu.lg.jp/kankoubunka/kankou/1013051/1005097/1034742/1034737.html",
+      "supports": "Inabayama/Gifu castle chronology; conquest and move in 1567. Does not establish a road from Kiyosu."
+    },
+    {
+      "url": "https://okazaki-kanko.jp/feature/shiroatomeguri/okazaki1",
+      "supports": "Okazaki castle existed before 1560. Does not establish route geometry or 1560 bridge positions."
+    },
+    {
+      "url": "https://www.archives.go.jp/exhibition/digital/ieyasu/history.html",
+      "supports": "Okazaki / 1560 chronological context, not road distance."
+    },
+    {
+      "url": "https://www.city.inuyama.aichi.jp/kurashi/bunka/1003488/1003600.html",
+      "supports": "Kiso river geographic context only; does not establish a 1560 crossing."
+    }
+  ],
+  "unresolved": [
+    "1560 road curves, gradients and road lengths",
+    "Kiso/Yahagi crossing locations, ferry/bridge state and traversability",
+    "Historical ownership, borders and passage rights",
+    "Nationwide routing and nationwide AI/load; only existing nationwide presentation plus seven-node regional graph is exercised"
+  ],
+  "coordinate_license": "Wikidata structured coordinates CC0",
+  "inherited_credit": "『日本歴史地名大系』施設・地点項目データセット（CODH作成）doi:10.20676/00000456; CC BY 4.0; original five-node catalog and attribution retained",
+  "geometry": "haversine R6371000 meters, E7 integer coordinates, nearest mm; no road-shape or crossing claim"
+}

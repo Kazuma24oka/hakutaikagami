@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "base": "a3fc3f1",
+  "entry_candidate": "Game/Scenes/WorkHubTrial.tscn",
+  "current_default": "Game/Scenes/Main.tscn",
+  "default_changed": false,
+  "unapplied_patch": "Docs/Proposals/WorkHubEntry.patch",
+  "protected_files": {
+    "Game/project.godot": "5d9ab40268d29a83695f043e62c00b2d625978365cb689f3d1760ea6fd232340",
+    "Game/Scripts/Main.cs": "a2d66cf586bce73c6ffde52ec6e979a7a7a37578ea277772661555332188741a",
+    "Game/Scripts/Main.TaskEntry.cs": "9804919c9d180b1978d4a86f39320b56577bae302ff71280cec8618963631203",
+    "Game/Scenes/Main.tscn": "9328967591e1991bc16d698dd8c2d0299f0c37ccb06f113166291cafe91e98eb"
+  },
+  "mouse_tools": false
+}

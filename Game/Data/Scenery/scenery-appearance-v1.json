@@ -1,0 +1,732 @@
+{
+  "Schema": 1,
+  "DefaultSkin": "skin:baseline",
+  "Materials": [
+    {
+      "Id": "material:surface/road",
+      "Color": "a58a5b",
+      "Resource": "res://Assets/Scenery/Materials/field-earth-material.tres",
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:surface/grass",
+      "Color": "81916b",
+      "Resource": "res://Assets/Scenery/Materials/field-earth-material.tres",
+      "TileSizeMm": 6000
+    },
+    {
+      "Id": "material:surface/forest",
+      "Color": "617144",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:surface/water",
+      "Color": "467e91",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:surface/cliff",
+      "Color": "7d7b6a",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:surface/slope",
+      "Color": "849064",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:surface/bridge",
+      "Color": "a38b62",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:cut",
+      "Color": "685e49",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:tree",
+      "Color": "665642",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:rock",
+      "Color": "747969",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:keep",
+      "Color": "846a4b",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:wall",
+      "Color": "887151",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:rail",
+      "Color": "a28b65",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:highland",
+      "Color": "8e9079",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:pine-dark",
+      "Color": "3f6144",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:pine-mid",
+      "Color": "4e7350",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:pine-light",
+      "Color": "61805a",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:broad-dark",
+      "Color": "557447",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:broad-light",
+      "Color": "718a54",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:ridge",
+      "Color": "50574f",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:foundation",
+      "Color": "8b8573",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:timber-dark",
+      "Color": "473f32",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:window",
+      "Color": "343d38",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:roof-lower",
+      "Color": "3e4847",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:plaster",
+      "Color": "d4cbb1",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:beam",
+      "Color": "65523b",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:upper-window",
+      "Color": "3d433b",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:roof-upper",
+      "Color": "384344",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:wall-earth",
+      "Color": "998866",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:wall-dark",
+      "Color": "715d43",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:wall-beam",
+      "Color": "594c38",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:rail-post",
+      "Color": "766247",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:rail-mid",
+      "Color": "8b7654",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:deck-1",
+      "Color": "9b8059",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:deck-2",
+      "Color": "ad956c",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:deck-under",
+      "Color": "695a43",
+      "Resource": null,
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:road-demo",
+      "Color": "bd9d74",
+      "Resource": "res://Assets/Scenery/Materials/road-demo.tres",
+      "TileSizeMm": 4000
+    },
+    {
+      "Id": "material:rock-demo",
+      "Color": "6d7475",
+      "Resource": null,
+      "TileSizeMm": 4000
+    }
+  ],
+  "Visuals": [
+    {
+      "Id": "visual:surface/road",
+      "Role": "surface/road",
+      "Builder": "surface",
+      "Material": "material:surface/road",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:surface/grass",
+      "Role": "surface/grass",
+      "Builder": "surface",
+      "Material": "material:surface/grass",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:surface/forest",
+      "Role": "surface/forest",
+      "Builder": "surface",
+      "Material": "material:surface/forest",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:surface/water",
+      "Role": "surface/water",
+      "Builder": "surface",
+      "Material": "material:surface/water",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:surface/cliff",
+      "Role": "surface/cliff",
+      "Builder": "surface",
+      "Material": "material:surface/cliff",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:surface/slope",
+      "Role": "surface/slope",
+      "Builder": "surface",
+      "Material": "material:surface/slope",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:surface/bridge",
+      "Role": "surface/bridge",
+      "Builder": "surface",
+      "Material": "material:surface/bridge",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:cut",
+      "Role": "cut",
+      "Builder": "cut",
+      "Material": "material:cut",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:tree",
+      "Role": "tree",
+      "Builder": "tree",
+      "Material": "material:tree",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:rock",
+      "Role": "rock",
+      "Builder": "rock",
+      "Material": "material:rock",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:keep",
+      "Role": "keep",
+      "Builder": "keep",
+      "Material": "material:keep",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:wall",
+      "Role": "wall",
+      "Builder": "wall",
+      "Material": "material:wall",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:rail",
+      "Role": "rail",
+      "Builder": "rail",
+      "Material": "material:rail",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:road-demo",
+      "Role": "surface/road",
+      "Builder": "surface",
+      "Material": "material:road-demo",
+      "Variants": [],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": null
+    },
+    {
+      "Id": "visual:rock-demo",
+      "Role": "rock",
+      "Builder": "scene",
+      "Material": "material:rock-demo",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/rock-demo-a.tscn"
+        },
+        {
+          "Id": "variant:b",
+          "Resource": "res://Assets/Scenery/Models/rock-demo-b.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": "visual:rock"
+    },
+    {
+      "Id": "visual:rock-missing",
+      "Role": "rock",
+      "Builder": "scene",
+      "Material": "material:rock-demo",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/missing.tscn"
+        },
+        {
+          "Id": "variant:b",
+          "Resource": "res://Assets/Scenery/Models/missing.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": "visual:rock"
+    },
+    {
+      "Id": "visual:rock-invalid",
+      "Role": "rock",
+      "Builder": "scene",
+      "Material": "material:rock-demo",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/rock-invalid-test.tscn"
+        },
+        {
+          "Id": "variant:b",
+          "Resource": "res://Assets/Scenery/Models/rock-invalid-test.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": "visual:rock"
+    },
+    {
+      "Id": "visual:field-pine",
+      "Role": "tree",
+      "Builder": "scene",
+      "Material": "material:tree",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/field-pine-a.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 10000,
+      "Fallback": "visual:tree"
+    },
+    {
+      "Id": "visual:field-rock",
+      "Role": "rock",
+      "Builder": "scene",
+      "Material": "material:rock",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/field-rock-a.tscn"
+        },
+        {
+          "Id": "variant:b",
+          "Resource": "res://Assets/Scenery/Models/field-rock-b.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 1000,
+      "AuthoringDepthMm": 1000,
+      "AuthoringHeightMm": 1000,
+      "Fallback": "visual:rock"
+    },
+    {
+      "Id": "visual:field-trial-keep",
+      "Role": "keep",
+      "Builder": "scene",
+      "Material": "material:keep",
+      "Variants": [
+        {
+          "Id": "variant:a",
+          "Resource": "res://Assets/Scenery/Models/field-trial-keep-a.tscn"
+        }
+      ],
+      "AuthoringWidthMm": 18000,
+      "AuthoringDepthMm": 14000,
+      "AuthoringHeightMm": 12000,
+      "Fallback": "visual:keep"
+    }
+  ],
+  "Skins": [
+    {
+      "Id": "skin:baseline",
+      "Bindings": [
+        {
+          "Appearance": "appearance:surface/road",
+          "Visual": "visual:surface/road"
+        },
+        {
+          "Appearance": "appearance:surface/grass",
+          "Visual": "visual:surface/grass"
+        },
+        {
+          "Appearance": "appearance:surface/forest",
+          "Visual": "visual:surface/forest"
+        },
+        {
+          "Appearance": "appearance:surface/water",
+          "Visual": "visual:surface/water"
+        },
+        {
+          "Appearance": "appearance:surface/cliff",
+          "Visual": "visual:surface/cliff"
+        },
+        {
+          "Appearance": "appearance:surface/slope",
+          "Visual": "visual:surface/slope"
+        },
+        {
+          "Appearance": "appearance:surface/bridge",
+          "Visual": "visual:surface/bridge"
+        },
+        {
+          "Appearance": "appearance:cut",
+          "Visual": "visual:cut"
+        },
+        {
+          "Appearance": "appearance:tree",
+          "Visual": "visual:field-pine"
+        },
+        {
+          "Appearance": "appearance:rock",
+          "Visual": "visual:field-rock"
+        },
+        {
+          "Appearance": "appearance:keep",
+          "Visual": "visual:field-trial-keep"
+        },
+        {
+          "Appearance": "appearance:wall",
+          "Visual": "visual:wall"
+        },
+        {
+          "Appearance": "appearance:rail",
+          "Visual": "visual:rail"
+        }
+      ]
+    },
+    {
+      "Id": "skin:swap-demo",
+      "Bindings": [
+        {
+          "Appearance": "appearance:surface/road",
+          "Visual": "visual:road-demo"
+        },
+        {
+          "Appearance": "appearance:surface/grass",
+          "Visual": "visual:surface/grass"
+        },
+        {
+          "Appearance": "appearance:surface/forest",
+          "Visual": "visual:surface/forest"
+        },
+        {
+          "Appearance": "appearance:surface/water",
+          "Visual": "visual:surface/water"
+        },
+        {
+          "Appearance": "appearance:surface/cliff",
+          "Visual": "visual:surface/cliff"
+        },
+        {
+          "Appearance": "appearance:surface/slope",
+          "Visual": "visual:surface/slope"
+        },
+        {
+          "Appearance": "appearance:surface/bridge",
+          "Visual": "visual:surface/bridge"
+        },
+        {
+          "Appearance": "appearance:cut",
+          "Visual": "visual:cut"
+        },
+        {
+          "Appearance": "appearance:tree",
+          "Visual": "visual:tree"
+        },
+        {
+          "Appearance": "appearance:rock",
+          "Visual": "visual:rock-demo"
+        },
+        {
+          "Appearance": "appearance:keep",
+          "Visual": "visual:keep"
+        },
+        {
+          "Appearance": "appearance:wall",
+          "Visual": "visual:wall"
+        },
+        {
+          "Appearance": "appearance:rail",
+          "Visual": "visual:rail"
+        }
+      ]
+    },
+    {
+      "Id": "skin:fallback-test",
+      "Bindings": [
+        {
+          "Appearance": "appearance:surface/road",
+          "Visual": "visual:surface/road"
+        },
+        {
+          "Appearance": "appearance:surface/grass",
+          "Visual": "visual:surface/grass"
+        },
+        {
+          "Appearance": "appearance:surface/forest",
+          "Visual": "visual:surface/forest"
+        },
+        {
+          "Appearance": "appearance:surface/water",
+          "Visual": "visual:surface/water"
+        },
+        {
+          "Appearance": "appearance:surface/cliff",
+          "Visual": "visual:surface/cliff"
+        },
+        {
+          "Appearance": "appearance:surface/slope",
+          "Visual": "visual:surface/slope"
+        },
+        {
+          "Appearance": "appearance:surface/bridge",
+          "Visual": "visual:surface/bridge"
+        },
+        {
+          "Appearance": "appearance:cut",
+          "Visual": "visual:cut"
+        },
+        {
+          "Appearance": "appearance:tree",
+          "Visual": "visual:tree"
+        },
+        {
+          "Appearance": "appearance:rock",
+          "Visual": "visual:rock-missing"
+        },
+        {
+          "Appearance": "appearance:keep",
+          "Visual": "visual:keep"
+        },
+        {
+          "Appearance": "appearance:wall",
+          "Visual": "visual:wall"
+        },
+        {
+          "Appearance": "appearance:rail",
+          "Visual": "visual:rail"
+        }
+      ]
+    },
+    {
+      "Id": "skin:invalid-test",
+      "Bindings": [
+        {
+          "Appearance": "appearance:surface/road",
+          "Visual": "visual:surface/road"
+        },
+        {
+          "Appearance": "appearance:surface/grass",
+          "Visual": "visual:surface/grass"
+        },
+        {
+          "Appearance": "appearance:surface/forest",
+          "Visual": "visual:surface/forest"
+        },
+        {
+          "Appearance": "appearance:surface/water",
+          "Visual": "visual:surface/water"
+        },
+        {
+          "Appearance": "appearance:surface/cliff",
+          "Visual": "visual:surface/cliff"
+        },
+        {
+          "Appearance": "appearance:surface/slope",
+          "Visual": "visual:surface/slope"
+        },
+        {
+          "Appearance": "appearance:surface/bridge",
+          "Visual": "visual:surface/bridge"
+        },
+        {
+          "Appearance": "appearance:cut",
+          "Visual": "visual:cut"
+        },
+        {
+          "Appearance": "appearance:tree",
+          "Visual": "visual:tree"
+        },
+        {
+          "Appearance": "appearance:rock",
+          "Visual": "visual:rock-invalid"
+        },
+        {
+          "Appearance": "appearance:keep",
+          "Visual": "visual:keep"
+        },
+        {
+          "Appearance": "appearance:wall",
+          "Visual": "visual:wall"
+        },
+        {
+          "Appearance": "appearance:rail",
+          "Visual": "visual:rail"
+        }
+      ]
+    }
+  ]
+}

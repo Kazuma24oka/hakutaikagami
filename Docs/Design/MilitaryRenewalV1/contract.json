@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "contract": "same-principal-garrison-lifetime-ledger-distinct-case-no-reset-v1",
+  "completion_conditions": 5,
+  "new_core_tests": 23,
+  "new_save_points": 42,
+  "restore_pixel_tolerance": 0,
+  "cycle_identity": "authored Request.Id",
+  "event_membership": "source request or source message original case",
+  "new_input_optional": "NewMilitaryInput.CycleContract",
+  "same_lender_site_only": true,
+  "reset_garrison_or_stock": false,
+  "old_paper_grants_new_authority": false,
+  "repeated_combat_implemented": false
+}

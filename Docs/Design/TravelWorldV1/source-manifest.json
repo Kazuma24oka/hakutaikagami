@@ -1,0 +1,59 @@
+{
+  "ruleset": "national-personal-travel-v1",
+  "world": "world:national-personal-travel-v1",
+  "base": "national-inferred-routes-v1 (108 nodes118 edges)",
+  "policy": {
+    "player_agency": "Player officer issues self Move from current AtSite; no instantaneous remote lord command",
+    "origin": "first home then prior arrival; pending journeys cannot overlap",
+    "schedule": "prep300sec then next3600sec global boundary, trial coefficients not historical timetable",
+    "time": "Existing GameSecondsV1 and WorldSession; actor and courier use shared departure/end instants",
+    "save": "Same schema2 modules, separate definition version, no reinterpretation of older saves",
+    "people": "Three sourced home/faction candidates. Static initial placement, not exact1560-01-01 whereabouts. No territory, hierarchy, NPC AI, or bespoke historical appearance."
+  },
+  "sources": [
+    {
+      "name": "清洲市 清洲城",
+      "url": "https://www.city.kiyosu.aichi.jp/shisetsu_annai/kanko_shisetsu_sonota/kiyosujo.html",
+      "use": "信長と清洲の本拠関係"
+    },
+    {
+      "name": "山梨県 武田氏館跡",
+      "url": "https://www.pref.yamanashi.jp/bunka/maibun/yamanashinobunkazai_sb0003.html",
+      "use": "武田三代と躑躅ヶ崎館の関係。kofu代表点で試作配置"
+    },
+    {
+      "name": "小田原市 北条五代が残したもの",
+      "url": "https://www.city.odawara.kanagawa.jp/encycl/neohojo5/012/",
+      "use": "氏康と小田原の本拠関係"
+    }
+  ],
+  "verification": "verification.json",
+  "core_tests": 646,
+  "new_tests": 15,
+  "godot_processes": 3,
+  "godot_checks": 14,
+  "stage_pngs": 14,
+  "viewport_comparisons": 8,
+  "changed_pixels": 0,
+  "video": {
+    "file": "runtime-local/travel-world-short.mp4",
+    "sha256": "9cc02d1d4b19a52908d7b26b0fd319bb13ebf2ac85ffb22bf1a79c50762af471",
+    "capture": "Actual Godot Movie Maker frames; scripted game actions, no native input",
+    "fps": 24,
+    "frames_expected": 624,
+    "frames_decoded": 624,
+    "duration_seconds": 26,
+    "width": 1100,
+    "height": 720,
+    "decode_log_sha256": "e01526dc7b4d5cd61b7295040d0ebae5a15ad2cff0bd378b70b9ce6d687ea7ec",
+    "bytes": 363699,
+    "scope": "Continuous personal trips and timed port waiting; three sourced static people; no territory or NPC AI"
+  },
+  "limitations": [
+    "No weather, cancellation, capacity, queues, fares, port access rights or actual historical ferry services",
+    "No midjourney personal retarget/cancel UI yet; existing older control trial retained separately",
+    "NPC seeds stationary; no political borders, governance, diplomatic interaction or national AI",
+    "No nationwide castle completeness; base108 major nodes only",
+    "Old trial bindings expire after shared-source changes; do not reuse old images as new evidence"
+  ]
+}

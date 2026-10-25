@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "tests": 2122,
+  "added": 0,
+  "core_inputs": 317,
+  "gpu_processes": 2,
+  "world_image_pairs": 2,
+  "numeric_pairs": 2,
+  "allowed_source_changes": [
+    "Game/Scripts/NewGameFrontEnd.cs",
+    "Game/Scripts/NewGameFrontEnd.Checks.cs",
+    "Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs",
+    "Docs/Design/PlayReviewV1/README.md",
+    "Docs/Design/PlayReviewV1/contract.json",
+    "Docs/Design/PlayReviewV1/verification.json",
+    "Scripts/verify_play_review.py",
+    "Scripts/check_play_review_binding.py",
+    "Scripts/prepare_play_review_recording.py",
+    "Scripts/encode_play_review.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "scope": "QA-only continuous real-control sequence and fixed30fps recording copy. Core and product project settings unchanged. Latest save continuation replayed exactly;not realtime fps evidence."
+}

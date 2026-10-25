@@ -1,0 +1,11 @@
+{
+  "source_commit": "99592784ea187f4b4b3f2537bf914cf54b771cc1",
+  "kind": "Literal independent ronin initial world from the previous tested binary, synthetic name; not a user save",
+  "producer_core_sha256": "cf2a2a7833a9d53d0d0ceba740c4060327460b1376f1f2e84270c8e5617fe74a",
+  "verification_path": "Docs/Design/DelegationReturnRetryV1/verification.json",
+  "verification_sha256": "4267c7e694a6969615d59c27253131907c8a9f6209d481c3a8fa475e7b6f5ef3",
+  "fixture": "Tests/Fixtures/ronin-9959278-initial.json",
+  "fixture_sha256": "ff6bb01d72127c01dd61c5e67a294d4dd613d5e5ab442fb3021a82a626476f62",
+  "verification_git_object": "99592784ea187f4b4b3f2537bf914cf54b771cc1:Docs/Design/DelegationReturnRetryV1/verification.json",
+  "verification_note": "Historical verification at the source commit; the worktree path will contain a later revalidation report."
+}

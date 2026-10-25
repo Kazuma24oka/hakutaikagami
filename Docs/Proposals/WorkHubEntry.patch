@@ -1,0 +1,6 @@
+diff --git a/Game/project.godot b/Game/project.godot
+--- a/Game/project.godot
++++ b/Game/project.godot
+@@ -5 +5 @@
+-run/main_scene="res://Scenes/Main.tscn"
++run/main_scene="res://Scenes/WorkHubTrial.tscn"

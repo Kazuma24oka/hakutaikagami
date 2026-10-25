@@ -76,6 +76,7 @@ public partial class Main : Control
         protocolPanel.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"));
         if (System.IO.File.Exists(ProjectSettings.GlobalizePath("res://Assets/Officer3D/TrialV3/near.glb")))
         {
+            int legacyStageStart=tabs.GetTabCount();
             try
             {
                 if(officerWorldTest||OS.GetCmdlineUserArgs().Contains("--officer-world-show"))
@@ -97,7 +98,7 @@ public partial class Main : Control
                     else if(OS.GetCmdlineUserArgs().Contains("--formation-world-show"))tabs.CurrentTab=tabs.GetTabCount()-1;
                 }
             }
-            catch(Exception e){GD.PushWarning(e.Message);if(officerWorldTest||militaryTest||formationTest){GetTree().Quit(2);return;}var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
+            catch(Exception e){while(tabs.GetTabCount()>legacyStageStart){var failed=tabs.GetTabControl(legacyStageStart);tabs.RemoveChild(failed);failed.QueueFree();}GD.PushWarning(e.Message);if(officerWorldTest||militaryTest||formationTest){GetTree().Quit(2);return;}var unavailable=new Label{Name="3D武将（再検査待ち）",Text=e.Message};tabs.AddChild(unavailable);}
         }
         else if(officerWorldTest||militaryTest||formationTest){GD.PushError("Local 3D assets unavailable");GetTree().Quit(2);return;}
 
@@ -117,6 +118,7 @@ public partial class Main : Control
             if (legacyOfficerTest) { tabs.CurrentTab = tabs.GetTabCount()-1; _ = officerMotionPanel.SmokeTest(); }
             else if (legacyOfficerReview) tabs.CurrentTab = tabs.GetTabCount()-1;
         }
+        AddTaskEntry(tabs);
         if (OS.GetCmdlineUserArgs().Contains("--shared-protocol-smoke-test")) { tabs.CurrentTab = 2; _ = protocolPanel.SmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--deadline-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.DeadlineCancellationSmokeTest(); }
         else if (OS.GetCmdlineUserArgs().Contains("--late-smoke-test")) { tabs.CurrentTab = 1; _ = taxPanel.LateDuplicateSmokeTest(); }
@@ -161,7 +163,7 @@ public partial class Main : Control
                 await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
                 string path = ProjectSettings.GlobalizePath("res://../Docs/Proposals/Evidence/godot-foundation.png");
                 DirAccess.MakeDirRecursiveAbsolute(System.IO.Path.GetDirectoryName(path)!);
-                if (GetViewport().GetTexture().GetImage().SavePng(path) != Error.Ok)
+                if (ViewportCapture.Save(GetViewport(),path) != Error.Ok)
                     throw new InvalidOperationException("Screenshot failed.");
             }
             GD.Print("SCENE_SMOKE_PASS selections=3 details=3 castle=1");

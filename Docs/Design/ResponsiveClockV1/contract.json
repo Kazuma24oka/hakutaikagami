@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "tests": 2055,
+  "baseline": 2040,
+  "added": 15,
+  "criteria": 5,
+  "scope": "Opaque prepared existing SetPaused with exact atomic host publication; responsive UI while confirming start/pause. No save schema change.",
+  "new_cases": [
+    "clock-1000",
+    "clock-cancel",
+    "clock-fault",
+    "clock-notice"
+  ],
+  "save_checkpoints": 9
+}

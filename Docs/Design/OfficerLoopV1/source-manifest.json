@@ -1,0 +1,10 @@
+{
+  "ruleset": "officer-peace-war-loop-v1",
+  "world": "world:officer-peace-war-loop-v1",
+  "parent": "continuous-world-v1",
+  "accepted_basis": ["2026-10-19_PLAYER_PEACE_WAR_FLOW", "COMMON_CONTRACT_V1", "2026-10-20_CONTINUOUS_WORLD_V1"],
+  "fixture": "3 officers/friendly forces and synthetic opposition at Kiyosu; inspect 4s, levy40 4s, delivery/report 1s on same site",
+  "council": "existing RegionalRequest.Move, fixed local southern line, physical dispatch and decision report; not arrival report",
+  "limits": "not historical tax rates, no new evaluation formula, no arbitrary mission editor, no new AI or combat outcome policy",
+  "save": "existing tasks/messages/resources/region plus optional presentation CouncilOpen; old profiles retain version and behavior"
+}

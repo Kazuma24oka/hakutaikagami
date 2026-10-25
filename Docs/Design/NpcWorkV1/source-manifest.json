@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "base": "c19cdde",
+  "ruleset": "npc-local-work-v1",
+  "interval_seconds": 3600,
+  "inputs": [
+    "local witness",
+    "own inspection permit",
+    "own dispatched work",
+    "own received report",
+    "cooldown"
+  ],
+  "private_willingness_used": false,
+  "peace_only_trial": true,
+  "old_save_mapping": false,
+  "mouse_tools": false
+}

@@ -1,0 +1,72 @@
+[gd_scene load_steps=9 format=3]
+
+
+[sub_resource type="StandardMaterial3D" id="Resource_1"]
+albedo_color = Color(0.4000000, 0.3372549, 0.2588235, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="Resource_2"]
+top_radius = 0.18
+bottom_radius = 0.34
+height = 7
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="Resource_3"]
+albedo_color = Color(0.2470588, 0.3803922, 0.2666667, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="Resource_4"]
+top_radius = 0.12
+bottom_radius = 2.8
+height = 3.8
+radial_segments = 9
+
+[sub_resource type="StandardMaterial3D" id="Resource_5"]
+albedo_color = Color(0.3058824, 0.4509804, 0.3137255, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="Resource_6"]
+top_radius = 0.12
+bottom_radius = 2.25
+height = 3.2
+radial_segments = 9
+
+[sub_resource type="StandardMaterial3D" id="Resource_7"]
+albedo_color = Color(0.3803922, 0.5019608, 0.3529412, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="Resource_8"]
+top_radius = 0.12
+bottom_radius = 1.5
+height = 2.8
+radial_segments = 9
+
+[node name="FieldPine" type="Node3D"]
+
+[node name="Trunk" type="MeshInstance3D" parent="."]
+position = Vector3(0, 3.5, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("Resource_2")
+material_override = SubResource("Resource_1")
+
+[node name="Crown0" type="MeshInstance3D" parent="."]
+position = Vector3(0, 6.5, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0.0, 0)
+mesh = SubResource("Resource_4")
+material_override = SubResource("Resource_3")
+
+[node name="Crown1" type="MeshInstance3D" parent="."]
+position = Vector3(0, 8, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0.17, 0)
+mesh = SubResource("Resource_6")
+material_override = SubResource("Resource_5")
+
+[node name="Crown2" type="MeshInstance3D" parent="."]
+position = Vector3(0, 9, 0)
+scale = Vector3(1, 1, 1)
+rotation = Vector3(0, 0.34, 0)
+mesh = SubResource("Resource_8")
+material_override = SubResource("Resource_7")

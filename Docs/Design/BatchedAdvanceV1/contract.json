@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "tests": 2055,
+  "added": 0,
+  "core_inputs": 304,
+  "criteria": 5,
+  "new_cases": {
+    "batch-10": 2,
+    "batch-60": 2,
+    "batch-360": 2,
+    "batch-switch": 2,
+    "batch-save": 2,
+    "batch-notice": 2
+  },
+  "gpu_processes": 62,
+  "world_image_pairs": 302,
+  "numeric_pairs": 302,
+  "allowed_source_changes": [
+    "Game/Scripts/NewGameRuntime.PreparedAdvance.cs",
+    "Game/Scripts/NewGameRuntime.cs",
+    "Game/Scripts/NewGameRuntime.BatchedAdvance.cs",
+    "Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.cs",
+    "Game/Scripts/NewGameFrontEnd.Checks.cs",
+    "Docs/Design/BatchedAdvanceV1/README.md",
+    "Docs/Design/BatchedAdvanceV1/contract.json",
+    "Docs/Design/BatchedAdvanceV1/verification.json",
+    "Scripts/verify_batched_advance.py",
+    "Scripts/check_batched_advance_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "not_rerun": [
+    "old-military2",
+    "old-combat2",
+    "ground-material2",
+    "legacy-smokes3"
+  ],
+  "scope": "Same opaque Core preparation at all four speeds;bounded targets,authorized publication,cancel on rate change,exact public-input replay after restart. No Core/schema change."
+}

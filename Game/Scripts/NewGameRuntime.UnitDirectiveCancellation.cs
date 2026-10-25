@@ -1,0 +1,14 @@
+using Godot;
+using System;
+using System.Linq;
+using HakutaiKagami.Core.Contracts;
+public partial class NewGameRuntime
+{
+ HFlowContainer directiveCancelBar=null!;Label directiveCancelResult=null!;SpinBox directiveCancelTime=null!;
+ void BuildDirectiveCancelUI(VBoxContainer root){directiveCancelBar=new();root.AddChild(directiveCancelBar);Add(directiveCancelBar,"unit-directive-cancel","選んだ原本の取消を届ける",CancelSelectedDirective);buttons["unit-directive-cancel"].TooltipText="選んだ原本だけを取り消す書状を同じ隊の確認済み所在地へ送ります。現地で受け取ってから効力が生じ、本人は返書で結果を知ります。";directiveCancelBar.AddChild(new Label{Text="効力を待つ時刻（開始秒・0は受令時）"});directiveCancelTime=new(){MinValue=0,MaxValue=31536000000,Step=1,CustomMinimumSize=new(115,0)};directiveCancelBar.AddChild(directiveCancelTime);directiveCancelResult=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill,CustomMinimumSize=new(300,0)};directiveCancelBar.AddChild(directiveCancelResult);}
+ void RefreshDirectiveCancel(){if(directiveCancelBar==null)return;var w=Snapshot();directiveCancelBar.Visible=directiveRetryBar.Visible;var id=selectedDirectiveOriginal==null?(EntityId?)null:new(selectedDirectiveOriginal);buttons["unit-directive-cancel"].Disabled=id==null||!NewGameMilitary.UnitDirectiveCancellationAllowed(w,id.Value);directiveCancelResult.Text=id is {} root?NewGameMilitary.UnitDirectiveCancellationStatus(w,root):"";}
+ void CancelSelectedDirective()=>SendSelectedDirectiveCancellation(false);
+ void SendSelectedDirectiveCancellation(bool retained){var w=Snapshot();var row=SentDirectiveRows(w).SingleOrDefault(q=>q.Input.Id.Value==selectedDirectiveOriginal);if(row==null)return;var k=NewGameMilitary.SelectKnownTarget(w,row.Input.Directive!.Known.Unit);if(k==null)return;long at=directiveCancelTime.Value==0?Session.Seconds:checked((long)directiveCancelTime.Value);var input=new NewMilitaryInput(new("request:unit-directive-cancel-ui/"+Session.Revision),NewMilitaryAction.CancelUnitDirective){OriginalPolicy=retained?NewGameMilitary.UnitDirectiveCancelHoldingContract:null,DirectiveCancellation=new(NewGameMilitary.UnitDirectiveCancellationContract,row.Input.Id,k,at),DeliverBy=checked(Session.Seconds+NewGameMilitary.OrderDeliveryWindowSeconds),PostPolicy=NewGameMilitary.UnitReplyRecoveryContract,TransportPolicy=NewGameMilitary.UnitSenderEvidenceContract};var result=Session.DecideNewMilitary(input,Session.PlayerControl,Session.Revision);if(result.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)selectedCancellationOriginal=input.Id.Value;Submit(result);}
+ internal void ExerciseDirectiveCancelAt(long at){directiveCancelTime.Value=at;Press("unit-directive-cancel");directiveCancelTime.Value=0;}
+ object? DirectiveCancelPose()=>directiveCancelBar==null?null:new{directiveCancelBar.Visible,Enabled=!buttons["unit-directive-cancel"].Disabled,Text=directiveCancelResult.Text};
+}

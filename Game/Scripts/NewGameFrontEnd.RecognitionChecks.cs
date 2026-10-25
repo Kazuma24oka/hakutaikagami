@@ -1,0 +1,35 @@
+using Godot;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using HakutaiKagami.Core.Contracts;
+public partial class NewGameFrontEnd
+{
+ const int RecognitionCheckpoints=16;
+ bool RecognitionSpread=>FlowCase=="known-spread";
+ async Task RecognitionStep(int n){await Frame();var s=game!.Session;
+  if(n==0)Check(NewGameMilitary.AllOwnCurrentlySeen(s.DiagnosticSnapshot()),"all nearby troops are observed at actual initial point");
+  if(n==1){if(RecognitionSpread){game.Span=180;game.Refresh();await Frame();await Frame();}var a=NewGameMilitary.Anchor(s.DiagnosticSnapshot());game.ExerciseMilitaryLine(RecognitionSpread?a:new(a.X+90000,a.Y-10000),RecognitionSpread?new(a.X+110000,a.Y):new(a.X+90000,a.Y+10000));game.Advance(ArmyEnd()+1);game.Press("military-frame");if(RecognitionSpread){var w=s.DiagnosticSnapshot();Check(NewGameMilitary.KnownMilitary(w).Any(r=>!r.Live),"distant flank is a dated memory while person follows main unit");Check(!game.OffersMilitary(NewMilitaryAction.Form)&&!game.OffersMilitary(NewMilitaryAction.Hold)&&!game.OffersMilitary(NewMilitaryAction.Report),"unknown flank truth does not enable precise full-unit local controls");}}
+  if(n==2){if(RecognitionSpread)game.ChooseMilitary(NewMilitaryAction.Recall);else{game.ChooseMilitary(NewMilitaryAction.Handoff);game.ChooseMilitary(NewMilitaryAction.Withdraw);}}
+  if(n==3){if(RecognitionSpread)game.Advance(ArmyEnd()+1);else{game.Advance(s.DiagnosticSnapshot().NewMilitary!.Withdrawal!.Journeys.Last().Route.Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max()+1);Check(NewGameMilitary.KnownMilitary(s.DiagnosticSnapshot()).Where(r=>r.Kind=="own").All(r=>!r.Live),"departing person cannot see the current remote troop positions");}}
+  if(n==3||n==4)game.Press("military-frame");
+  if(n==4){if(RecognitionSpread){string before=ContractJson.CanonicalHash(NewGameMilitary.KnownMilitary(s.DiagnosticSnapshot()));game.Press("nation");game.Press("rotate");await Frame();Check(before==ContractJson.CanonicalHash(NewGameMilitary.KnownMilitary(s.DiagnosticSnapshot())),"nation camera alone does not add observations");game.Press("nation");game.Press("military-frame");game.ChooseMilitary(NewMilitaryAction.Handoff);game.ChooseMilitary(NewMilitaryAction.Withdraw);}else{var a=NewGameMilitary.Anchor(s.DiagnosticSnapshot());game.ExercisePersonalMove(new(a.X-20000,a.Y));game.Advance(s.DiagnosticSnapshot().NewMilitary!.Withdrawal!.Journeys.Last().Route.Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max()+1);}}
+  if(n==4)game.Press("military-frame");
+  if(n==5)game.ChooseMilitary(RecognitionSpread?NewMilitaryAction.InquireUnitHome:NewMilitaryAction.InquireUnitKnown);
+  if(n==6){var d=s.DiagnosticSnapshot().NewMilitary!.UnitInquiry!.Dispatches.Last();game.Advance(d.DueAt);Check(!NewGameMilitary.KnownMilitary(s.DiagnosticSnapshot()).Any(r=>r.Source.Contains("返書")),"remote answer creation alone does not update actor knowledge");}
+  if(n==7){var receipt=s.DiagnosticSnapshot().NewMilitary!.UnitInquiry!.Receipts.Last();game.Advance(receipt.ReplyDueAt);var w=s.DiagnosticSnapshot();var own=NewGameMilitary.KnownMilitary(w).Single(r=>r.Unit==NewGameMilitary.UnitIds[0]);Check(RecognitionSpread?own.Live&&own.Source=="本人の目撃":!own.Live&&own.Source=="受領した本隊の返書","ordinary reply knowledge updates only main unit; newer direct observation wins");}
+  if(n==8&&!RecognitionSpread)game.ChooseMilitary(NewMilitaryAction.RemoteRecall);
+  if(n==9){if(RecognitionSpread)game.Advance(s.Seconds+1);else{var d=s.DiagnosticSnapshot().NewMilitary!.Withdrawal!.Dispatches.Last();game.Advance(d.DueAt+1);var w=s.DiagnosticSnapshot();var known=NewGameMilitary.KnownMilitary(w).Single(r=>r.Unit==NewGameMilitary.UnitIds[0]);Check(!known.Live&&known.Position!=NewGameMilitary.Position(w,0,s.Seconds),"actual unseen returning army does not move dated report marker");}}
+  if(n==10&&!RecognitionSpread){game.Advance(ArmyEnd()+1);Check(NewGameMilitary.AllOwnCurrentlySeen(s.DiagnosticSnapshot()),"nearby arriving troops replace old report with direct observation");}
+  if(n==11){game.ChooseMilitary(NewMilitaryAction.PersonalHome);game.Advance(s.DiagnosticSnapshot().NewMilitary!.Withdrawal!.Journeys.Last().Route.Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max()+1);}
+  if(n==12)game.ChooseMilitary(NewMilitaryAction.Attach);
+  if(n==13){game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);game.ChooseMilitary(NewMilitaryAction.Report);game.ChooseMilitary(NewMilitaryAction.Return);}
+  if(n==14){game.Advance(s.Seconds+3);OpenAllServiceLetters();Check(NewGameMilitary.View(s.DiagnosticSnapshot()).CanRequest,"observation display preserves actual handover and known duty closure");}
+  if(n==15)game.Advance(s.Seconds+2);
+  game.Refresh();Check(game.RecognitionModelsMatch(),"actual models and dated markers use only projected knowledge at"+n);game.Press("save");await WaitSave();
+ }
+ async Task BeginRecognitionContinuation(){for(int n=1;n<=7;n++)await MilitaryStep(n);for(int n=0;n<RecognitionCheckpoints;n++){await RecognitionStep(n);game!.SaveCheckpoint("recognition"+n);await Capture("s"+n,true);}await Capture("final",true);}
+ async Task RestoreRecognition(){Press("load-list");await Frame();string id=File.ReadAllText(Path.Combine(TestOutput,"campaign-instance.txt"));savedList.Select(Array.FindIndex(savedRows,r=>r.Profile.Instance==id));Press("load");await Frame();for(int n=0;n<RecognitionCheckpoints;n++){game!.LoadCheckpoint("recognition"+n);await Frame();await Frame();if(game.Pose()!=File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")))File.WriteAllText(Path.Combine(TestOutput,"mismatch-s"+n+"-pose.json"),game.Pose());Check(game.Pose()==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")),"same knowledge/raw world/actual projected 3D pose at"+n);Check(game.RecognitionModelsMatch(),"restored actual visibility and dated positions at"+n);await Capture("restored-s"+n,true);for(int k=n+1;k<RecognitionCheckpoints;k++)await RecognitionStep(k);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"final-world.sha256")),"same observed/unobserved future from"+n);await Capture("continued-s"+n,true);GD.Print("MILITARY_RECOGNITION_RESTORED "+n);}}
+ async Task RunRecognitionChecks(){if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreRecognition();else await BeginNewMilitaryFlow();if(OS.GetCmdlineUserArgs().Contains("--recognition-film")){game!.LoadCheckpoint("recognition2");game.Press("auto");string dir=Path.Combine(TestOutput,"film");Directory.CreateDirectory(dir);for(int n=0;n<180;n++){await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(dir,"observed-"+n.ToString("D3")+".png"));}game.Press("pause");}File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-checks.json":"check-checks.json"),System.Text.Json.JsonSerializer.Serialize(assertions));GD.Print("MILITARY_RECOGNITION_PASSED "+FlowCase);}
+}

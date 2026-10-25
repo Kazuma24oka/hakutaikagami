@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "expected_passed": 2373,
+  "baseline_passed": 2362,
+  "added": 11,
+  "scope": "MilitaryDebrief added; current execution targeted48, full suite not run"
+}

@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "contract": "versioned-repeatable-synthetic-contact-lifetime-strength-morale-supply-episode-v1",
+  "completion_conditions": 5,
+  "new_core_tests": 21,
+  "new_save_points": 50,
+  "restore_pixel_tolerance": 0,
+  "new_optional_input": "NewMilitaryInput.ExercisePolicy",
+  "legacy_permission_auto_upgraded": false,
+  "own_units_reset": false,
+  "opponent_identity": "per raw CombatStart.Input.Id and slot",
+  "opponent_start_strength": "own surviving roster at each episode start",
+  "regroup_seconds": 60,
+  "regroup_morale": 50,
+  "combat_seconds": 30,
+  "permit_seconds": 120
+}

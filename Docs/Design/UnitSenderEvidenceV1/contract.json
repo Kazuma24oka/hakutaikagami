@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "contract": "sender-physical-receipt-evidence-known-failure-bounded-copy-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "max_attempts": 3,
+  "physical_handover_witness_mm": 1000,
+  "old_optional_fields": [
+    "NewMilitaryInput.TransportPolicy",
+    "UnitPostOrder.TransportPolicy",
+    "UnitPostInquiry.TransportPolicy"
+  ],
+  "recipient_receipt_is_sender_evidence": false,
+  "old_message_body_immutable": true,
+  "old_common_retry_api_unchanged": true
+}

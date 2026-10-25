@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "contract": "explicit-own-unit-original-sender-known-failure-fixed-copy-v1",
+  "criteria": 5,
+  "tests": 1834,
+  "baseline": 1822,
+  "added": 12,
+  "save_checkpoints": 16
+}

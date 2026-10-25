@@ -1,0 +1,43 @@
+{
+  "ruleset": "national-personal-control-v1",
+  "world": "world:national-personal-control-v1",
+  "base": "TravelWorldV1; nationwide108 nodes118 edges",
+  "persisted_module": "TravelDecisions required only in this ruleset; omitted and rejected elsewhere; no implicit upgrade",
+  "rules": {
+    "redirect": "Apply at current edge endpoint; sea at next port. Keep traveled prefix unchanged. One pending decision per actor.",
+    "cancel": "Only sea leg waiting, now strictly before departure. Immediate stop at the same port AtSite; then new trip permitted.",
+    "shared_time": "WorldSession clock and event boundaries; condition updates, decision apply, progress, common courier and completion handling.",
+    "agency": "Only player acting on own running trip with valid Move grant. No remote lord teleportation or interception.",
+    "idempotency": "Same request returns AlreadyAccepted, changed content conflicts. Atomic rollback, unique business effect, expected revision checked."
+  },
+  "verification": "verification.json",
+  "unit_tests": 667,
+  "new_tests": 21,
+  "godot_processes": 7,
+  "godot_checks": 30,
+  "pngs": 30,
+  "save_stages": 9,
+  "viewport_comparisons": 18,
+  "changed_pixels": 0,
+  "video": {
+    "file": "runtime-local/travel-control-short.mp4",
+    "sha256": "a9fb1f20b852b826bd46b150b071a37c3d2c271660c3d284d2deaedf1a23236d",
+    "capture": "Actual Godot Movie Maker frames; scripted game actions, no native input",
+    "fps": 24,
+    "frames_expected": 624,
+    "frames_decoded": 624,
+    "duration_seconds": 26,
+    "width": 1100,
+    "height": 720,
+    "decode_log_sha256": "8e8515e3f04292584cf692d93cefeea6e3d04e11f93f35e90ead8b7872695e15",
+    "bytes": 356156,
+    "scope": "Next-node personal redirection, port cancellation before departure, exact restoration and continuation"
+  },
+  "limitations": [
+    "Road-side instant U-turn and sea stop not implemented",
+    "Weather, capacity, fares, port access rights and service cancellations not implemented",
+    "Coarse land/sea route network inherited; no historical ferry timetable or port scenery claim",
+    "Old shared-source bindings invalidated pending re-verification"
+  ],
+  "next": "Road closures / service suspension interaction with pending decisions and port waits; then regional people, factions and missions"
+}

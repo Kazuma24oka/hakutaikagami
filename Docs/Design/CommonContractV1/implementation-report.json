@@ -1,0 +1,668 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "status": "VERIFIED_FIXTURE_SCOPE",
+  "baseline_commit": "f3c22ebefb380790b458c83ae92d212ec2541c2f",
+  "g1": {
+    "status": "COMPLETED",
+    "four_items": [
+      "共通データ型",
+      "参照・期間・資源・知識・因果の検査",
+      "旧データの読取対応・製品への混用拒否",
+      "不正変更の拒否と回帰試験"
+    ]
+  },
+  "further_progress": [
+    {
+      "gate": "G2",
+      "status": "FIXTURE_SUBSET_VERIFIED",
+      "scope": "秒時計・権限・本人別表示・密書の受領/開封・停止"
+    },
+    {
+      "gate": "G3",
+      "status": "FIXTURE_SUBSET_VERIFIED",
+      "scope": "閲覧・物資移管・移動・取消・任意受諾、既存配送の再利用、効果台帳"
+    },
+    {
+      "gate": "G4",
+      "status": "FOUNDATION_VERIFIED",
+      "scope": "厳密JSON・世代保存・背景保存API・隔離読込・別プロセス復旧・旧形式拒否"
+    },
+    {
+      "gate": "G5",
+      "status": "SYNTHETIC_LOOP_VERIFIED",
+      "scope": "重要任務→準備→本人移動と書役委任→途中復旧→返報/検証用評価。通常ゲームの平時一巡完成ではない。"
+    }
+  ],
+  "tests": {
+    "total": 412,
+    "passed": 412,
+    "failed": 0,
+    "skipped": 0,
+    "new_cases": 95,
+    "legacy_cases": 317,
+    "trx_sha256": "81198eb921ceaee3217b2cec2516cef724a6fc21324d9d099723498be41079b9",
+    "new_case_results": [
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.FailedCompletionReportDoesNotRevertTruthOrInventEvaluation",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.LegacyTickPayloadReturnsExplicitMigrationRequirement",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 3)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.CancelCannotBeDeliveredToSomeoneOtherThanTargetExecutor",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.SaveSlotCannotEscapeRoot(slot: \"C:\\\\outside\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.ReceiptProxyCannotOpenOrGivePrincipalInstantKnowledge",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.UnknownEvidenceCannotBeSmuggledIntoKnowledge",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MissingRequiredSectionsAreNotDefaulted(section: \"Knowledge\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.SnapshotAndViewsCannotMutateLiveState",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.CorruptCurrentDoesNotSilentlyLoadBackupOrMutateActiveWorld",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidIdsAreRejected(id: \"none\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.OlderBackgroundSnapshotCannotReplaceNewerCurrent",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 0)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.NonObjectProductPayloadIsRejected(payload: \"17\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.DuplicateJsonPropertiesAreRejectedBeforeMaterialization",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.TaxCompletesOnceButIssuerDoesNotKnowUntilReportArrival",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.DefinitionAndStateRoundTripIncludesEveryRequiredSection",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.CircularEventGraphIsRejectedWithoutRecursiveStackGrowth",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.NullRequiredManifestMapIsClassifiedAsCorrupt",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.PayloadHashDoesNotReplaceSemanticValidation",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.OpeningTimeCannotLeakToRemoteIssuerThroughDeadline",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.SaveSlotCannotEscapeRoot(slot: \"../escape\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.SaveSlotCannotEscapeRoot(slot: \"\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.SaveSlotCannotEscapeRoot(slot: \"bad/name\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.AcceptanceDoesNotStartRemoteWork",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.BackgroundSaveCapturesOneRevisionWhileGameplayContinues",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.DeadlineAtCompletionAllowsExactBoundary",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.NonObjectProductPayloadIsRejected(payload: \"null\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.InterruptedSaveKeepsPreviousPublishedGeneration(stage: PreviousPublished)",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidIdsAreRejected(id: \"person:with space\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MissingRequiredSectionsAreNotDefaulted(section: \"PendingEvents\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MainActionConflictCanBeResolvedByTargetedCancellation",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.FailedAdvanceRollsBackElapsedTimeKnowledgeAndEffects",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InFlightMoveKeepsPhysicalProgressWhenStopped",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.SealedArrivalPausesWithoutOpeningOrRecognition",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MissingRequiredSectionsAreNotDefaulted(section: \"Characters\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.InFlightTaskAndReservedResourceRoundTrip",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MissingRequiredSectionsAreNotDefaulted(section: \"RandomStreams\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.ForgedCompletionBeforeOrderRecognitionIsRejected",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.FutureEnvelopeVersionIsNotSilentlyDowngraded",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.VoluntaryRequestNeedsAssent",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.UnknownFieldsAreRejected",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.RandomStateMustMatchTheSavedMasterSeed(changeSeed: True)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 5)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.LateCancellationDoesNotUndoCommittedTransfer",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.LegacyProjectionDoesNotMutateOrPretendToMigrate",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.NonObjectProductPayloadIsRejected(payload: \"[]\")",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.MissingRuleDependenciesAreRejectedBeforeLiveSwap",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.NoncanonicalOrOverflowingInt64IsRejected(value: \"01\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.LostOriginalAndRetryDoNotDoubleExecute",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.DisplayPhaseAndNewSpeedMustValidate",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.StalePreparedLoadIsRejectedWhenCurrentSessionHasProgressed",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.StableIdsRoundTrip(id: \"person:one\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.IdenticalRetryReturnsOriginalReceiptBeforeRevisionCheck",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.StaleNewRequestDoesNotAdvanceCountersOrClock",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 4)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidIdsAreRejected(id: \"\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.RandomDecisionsAreIdempotentAndSurviveRoundTrip",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.ExpiryReleasesOnlyUnconsumedReservation",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidUtf8IsRejected",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.RandomDrawsAndCancellationAfterReloadAreNotRepeated",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.SameIdChangedPayloadCannotChangeAnExistingOrder",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.UnopenedSealedLetterStillExpiresAtAbsoluteLimit",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 7)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.ThirdPartyPropertyRequiresSpecificOwnerGrant",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.SecondsOverflowDoesNotWrap",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.ModifyingPreparedFilesCannotLoadStaleValidatedBytes",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.FailureAfterPublicationLeavesNewGenerationReadable",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.RemovingSealedPolicyFromSaveIsNotAccepted",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MainActionConflictDoesNotUseRequestRegistrationOrder",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.NoncanonicalOrOverflowingInt64IsRejected(value: \"-0\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.NoncanonicalOrOverflowingInt64IsRejected(value: \"9223372036854775808\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.NoncanonicalOrOverflowingInt64IsRejected(value: \"+1\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.InterruptedSaveKeepsPreviousPublishedGeneration(stage: PayloadWritten)",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.CancelAtSameBoundarySuppressesOnlyUncommittedTarget",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.StableIdsRoundTrip(id: \"task:12/a-b_C.3\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.GrantAtSubmissionCannotAuthorizeCompletionAfterExpiry",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidIdsAreRejected(id: \"person:空白\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.FutureEffectiveOrderDoesNotBlockCurrentlyEffectiveWork",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.RandomStateMustMatchTheSavedMasterSeed(changeSeed: False)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.DefinitionSetOrderingDoesNotChangeDependencyIdentity",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 1)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.SavedCounterCannotReuseACommittedTaskIdentity",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.EventBudgetNeverPretendsToReachRequestedTime",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.FailureBeforeCommitRollsBackEntireWorld",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.ReadingViewsDoesNotDrawRandomNumbers",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.OpeningTriggerDoesNotCountAsMeetingTheSubsequentCompletionDeadline",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.LegacyFormationProjectionPreservesMilitaryIdentityAndTickDomain",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.InterruptedSaveKeepsPreviousPublishedGeneration(stage: GenerationVerified)",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonSaveTests.PreparedLoadIsOneShotEvenForAnEqualRevision",
+        "class": "HakutaiKagami.Tests.CommonSaveTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.MissingRequiredSectionsAreNotDefaulted(section: \"EffectLedger\")",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 2)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.InvalidSnapshotsFailBeforeBecomingLive(fault: 6)",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.CallerCannotMutateAnAcceptedIntentArrayOrInitialWorld",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      },
+      {
+        "name": "HakutaiKagami.Tests.CommonContractTests.DeadlineInclusiveButGrantUntilExclusive",
+        "class": "HakutaiKagami.Tests.CommonContractTests",
+        "outcome": "Passed"
+      }
+    ]
+  },
+  "godot": {
+    "checks": 9,
+    "captures": [
+      "sealed.png",
+      "in-progress.png",
+      "restored.png",
+      "complete.png"
+    ],
+    "version": "Godot Engine v4.5.2.stable.mono.official.6ce3de25a - https://godotengine.org",
+    "ui_entry": "Scripts/Show-CommonContract.ps1",
+    "visual_self_review": {
+      "reviewer": "Codex self review; not user approval",
+      "images": [
+        "sealed.png",
+        "in-progress.png",
+        "restored.png",
+        "complete.png"
+      ],
+      "result": "Final GPU captures are byte-identical to all four images visually inspected in this turn; sealed body hidden, route progress 2000mm retained, three completion reports visible to lord."
+    }
+  },
+  "foreign_process": {
+    "saved_seconds": 4,
+    "restored_seconds": 4,
+    "next_random_identical": true,
+    "semantic_digest_identical": true,
+    "single_transfer": true,
+    "restored_paused": true
+  },
+  "abrupt_exit": {
+    "exit_code": 73,
+    "stage": "GenerationVerified before current reference publication",
+    "old_generation_still_current": true,
+    "scope": "Process exit tested; physical power-loss durability not certified."
+  },
+  "next": {
+    "task": "移動経路・行動所要時間の契約を具体化し、新しい秒基準セッションを既存3D表示へ接続する。",
+    "done_when": "準備・移動・委任・返報を3D表示と本人認識から操作でき、途中保存・別プロセス復旧後も一致する。"
+  },
+  "not_completed": [
+    "全国の実地理・史料データ、製品用の移動/経済/戦闘係数",
+    "通常3D Mainの新セッション移行、全制度の状態遷移、交渉・人事・継承等の実行サービス",
+    "補償の実行・部分消費の工程・本格的な任務評価やNPC計画AI",
+    "設計の全48受入ケース、物理電源断、全国負荷/性能、全自動世代整理"
+  ],
+  "protected": [
+    "旧Core/Gameの既存追跡ファイルは基準コミットと一致",
+    "通常Main・旧Tick保存・既存3D資産は変更していない",
+    "main/design/foundation/Confirmed/sourcesは変更しない",
+    "既存プレビューを終了せず、OSマウス入力・カーソル設定を使用していない"
+  ],
+  "proof_sha256": {
+    "process-verification.json": "9213b664bdc1fc6b84ba5e3a3963c6c369386acac118c86382f7ac77019ce263",
+    "godot-verification.json": "c26e69100d36f9892bcece0eff64a3ebe2ffcbe1133154696ef208efcb6ed7ac"
+  },
+  "source_sha256": {
+    "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
+    "Core/Contracts/ContractJson.cs": "263ff5f29fa0f0177f4a54aa6dff689099196ef32a269aeb83f6c27b6e877736",
+    "Core/Contracts/ContractModels.cs": "877b97442fcfc911125fa66ed8a3cf5990e17225d796a6ce079a93f0f4004044",
+    "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
+    "Core/Contracts/ContractValidation.cs": "f01748e67f63b4df58208d2a219e8806be2aa13a7153d31cb674321f47e50171",
+    "Core/Contracts/GenerationSaveStore.cs": "a5b46f3ae49401060eb807beee97a95cac0c20b6a4bfd918bd97fa7a2b64a9b5",
+    "Core/Contracts/LegacyContractAdapter.cs": "2a0394387ffb842dd37cfdc1acfa3e2bd790aad85bd0762faf30a04bfb68dca8",
+    "Core/Contracts/WorldSession.cs": "1dbfe602fbfabef27062c6469f3122dac70b4d37eac26c4081046d6bde88e9c8",
+    "Tools/CommonContractProbe/Program.cs": "13702f1f0eb3d3974fc12ca7bdf191bf587b4b825461fc5162e4fe531ee3a440",
+    "Tests/CommonContractTests.cs": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
+    "Tests/CommonSaveTests.cs": "66f854ecd0e1fd262336814cf59e6113c947f84c06bb415ac3a119ee46a291ce",
+    "Tests/HakutaiKagami.Tests.csproj": "c28bf5d923190defd73816f9debbb077026f6004b6a2defa5d768a211dbcc120",
+    "Scripts/verify_common_contract_process.py": "4e8cadaebe130962ff0f9c42b1ca14e3643d436b2825df0ae89da69809fa6e62",
+    "Scripts/verify_common_contract_gpu.py": "8d020244f23e0883a7d6dfd222b431e01f380671b4b108f7e008c0196e8d51ef",
+    "Scripts/verify_common_contract_inputs.py": "49ba852fd72506667b283cd420133ed50d28eeb85fad2cdd3e81dec150d8bb30",
+    "Scripts/Show-CommonContract.ps1": "cf269e9d7d8cddf7465b9883c7684d321dbf229022bd4145f13571ef1f7442e2"
+  },
+  "test_binary_sha256": {
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll": "1dffc54400c64c86cb51bdb8b93a953c49b96173e79839ffbaa7323619712fd4",
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll": "108b4b9dd9e9d02b92525b68dafaa9eefc26fd3bc6cb154d996b36ce8645b94a"
+  },
+  "shared_source_sha256_normalized_lf": {
+    "Core/Appearance/OfficerAppearance.cs": "93ac902f530877a745969a39f5944e4595fbdc3100f7a5c302d9f1752fa7782f",
+    "Core/Castles/Castle.cs": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370",
+    "Core/Characters/Character.cs": "486419e8df320074f56c53883cdbc9525e4fee6a702d543d54bbd7240816c8fe",
+    "Core/Commands/CommandRequest.cs": "90ada6b09698d4417ea44f7917d4098f5bef8030239c1eeb3e1883b287d6bb47",
+    "Core/Commands/InspectionSession.cs": "2a5cf2a011a83c9f3c20bd0511d0a9fd32fe17768785384721dab4a2a6a2450f",
+    "Core/Common/SessionInfrastructure.cs": "8043e8af11875f9ad3c2a74365812883bc321be91f3e467386d240480cbe2076",
+    "Core/Contracts/ContractFixture.cs": "f0fe18dc25b84f986ac9e0662c85017680c1dc13de91d549f922d26f4c1ba6b6",
+    "Core/Contracts/ContractJson.cs": "263ff5f29fa0f0177f4a54aa6dff689099196ef32a269aeb83f6c27b6e877736",
+    "Core/Contracts/ContractModels.cs": "877b97442fcfc911125fa66ed8a3cf5990e17225d796a6ce079a93f0f4004044",
+    "Core/Contracts/ContractRandom.cs": "1a8eb74a69c439bbe74572561b3aaf47af58ea9bc816f316960c598cec4ce0e5",
+    "Core/Contracts/ContractValidation.cs": "f01748e67f63b4df58208d2a219e8806be2aa13a7153d31cb674321f47e50171",
+    "Core/Contracts/GenerationSaveStore.cs": "a5b46f3ae49401060eb807beee97a95cac0c20b6a4bfd918bd97fa7a2b64a9b5",
+    "Core/Contracts/LegacyContractAdapter.cs": "2a0394387ffb842dd37cfdc1acfa3e2bd790aad85bd0762faf30a04bfb68dca8",
+    "Core/Contracts/WorldSession.cs": "1dbfe602fbfabef27062c6469f3122dac70b4d37eac26c4081046d6bde88e9c8",
+    "Core/Events/EventScheduler.cs": "a58b9f064263c6090be3cd5788349f47e68ecda70e22cc6049d43a0b234bd542",
+    "Core/Messaging/MessageFlow.cs": "553570e9fe25e6e3e00663a9004fa87eec66f2f616961bfac611a21d421f85cf",
+    "Core/Simulation/FormationFlow.cs": "032f7e6d69579c8465db11cf5bd1c329f582070a5441d0698b8919ee118729e6",
+    "Core/Simulation/MilitaryFlow.cs": "851ca70b5dda4bc26e1bf5808c522a2ab96f30e37b3894b83e7e89ced83fd6b9",
+    "Core/Simulation/MilitaryIntel.cs": "1e0fdcb00f591874de22b83eee58a9cb96af45565338b19f98669683d69960ff",
+    "Core/Simulation/MilitaryMap.cs": "0a3b03e004c823ee3b8f149f5cdd3b3415b5b863cbafdf6570ebf11cf6963b9c",
+    "Core/Simulation/MilitaryModels.cs": "2dab7b8593d010a0112fda3ae7a0b642c0637fb54488182355aabdec3ef14bb6",
+    "Core/Simulation/MilitaryValidation.cs": "bdd8b888b19bd135897b2901c97dbee9d5b160dce339204619eb01b9e0bbf4d7",
+    "Core/Simulation/OfficerIntegration.cs": "35d7f6750ac96443f9fc0f60cab6302ca0bdcc206f3c804bb616987eeba4ef9f",
+    "Core/Simulation/TaxSimulation.Cancellation.cs": "e1366fcd8691995b4fdc443768668602e11437309a0262d0504794b57325edb1",
+    "Core/Simulation/TaxSimulation.Communication.cs": "2c5e296c466eea3b1c6f5a6ea5ad7c88e5eac7f57c95ed629b27ecd24a4c070d",
+    "Core/Simulation/TaxSimulation.cs": "37b3e8a8fafc96dbe7bc1562e41d5831e2de0d79fa0e6d9b44c7f664724c5e72",
+    "Core/Simulation/TaxSimulation.Military.cs": "6c4d316deb55fb575aa2b57eec65338f12462613e911dede06205286ded2d80b",
+    "Core/World/PrototypeScenario.cs": "6695cd217dc1ef44c5ab21dabcc588f3361a12b3ab173a3dab6f8d27dc63c529",
+    "Core/World/SeededRandom.cs": "f3c8623d19ec91c7cec6b2fda959e0248c516a8e76338bfc913b7a5b4bb4131f",
+    "Core/World/WorldState.cs": "71019ee3c97c7b939cb58905c918584683eff6d981e3bba719b26c9afd7a950c",
+    "Game/Scripts/CommonContractTrial.cs": "da0d10454060133bfb095be94007b72ca99b648aa6201cfbdf2a890db68081a3",
+    "Game/Scripts/FormationWorldGate.cs": "de5e27c6bfda188a2a24e333403ea10b548a6adb7ba1aab925b254fa1b36cbe0",
+    "Game/Scripts/FormationWorldStage.cs": "889758285728cf356bad69c4c147a1e72d0e8516ee0b428022d3da4612ff64c5",
+    "Game/Scripts/FormationWorldValidation.cs": "20ac7434bed6522d23124bf0e7301dc75205caa27f8ec7160092f0b821c16f9b",
+    "Game/Scripts/Main.cs": "6a10d5b6d82237d94fa367af0c75cddf785f11e3bbf8e43590a2aafd71fb5ca5",
+    "Game/Scripts/MilitaryGridGate.cs": "15536e958264bc2c912fd066bbdefbf1a6ce5d78babdd1278fc145fae287e94f",
+    "Game/Scripts/MilitaryGridStage.cs": "bd6887c8cf16824b14b49be1b2dd2d09ac9f7c7615d1da219fc451f36d2ac1a5",
+    "Game/Scripts/MilitaryGridValidation.cs": "c4a61cb282b4949574aefb1c3a7f86090eef9dcff0925cde4177b37f3886cf47",
+    "Game/Scripts/Officer3DActor.cs": "daacb122c296f66bf7f434ca5890e9634af492fdd347c432d0e60f203ddf3886",
+    "Game/Scripts/Officer3DCreator.cs": "d4594412e784760a06ece7c8fbcc9c2345b7bcda2f11495e4a5995b2912faa6c",
+    "Game/Scripts/Officer3DCustomActor.cs": "686c0ae0b828649d74f8efeedf943306307912d6c66154d48e3e449d027de450",
+    "Game/Scripts/Officer3DModel.cs": "f899442ca790902329857479960fdcf71a990a826f8619435cc0566e092fee2b",
+    "Game/Scripts/Officer3DReview.cs": "d0ecd9dbe550a223acacf5b171e8c524fba01ade587b183c12c38844862e7cc3",
+    "Game/Scripts/Officer3DStage.cs": "bb0588223ba2509777a49e7d9cc8a3a2bc2c32b814daae317dfea164cf9afbd6",
+    "Game/Scripts/Officer3DV2Gate.cs": "8c3d772033b41040e29ab2781a10647bde57ac6151eab717e4a6fe54440eac86",
+    "Game/Scripts/Officer3DV2Review.cs": "cd71af805a8e52c454ef2c4ef9521dfbbee2a8cd668d24afeb5d2b1a004cb97a",
+    "Game/Scripts/Officer3DV3Gate.cs": "359ffa2ff8a5d913d8fb406ebac935f8231686ff60d2319d922f59b844c427c4",
+    "Game/Scripts/Officer3DV3Validation.cs": "6a48aae09482edbfce2377ae3d0c99ed12884012af70b7d289b8f15158fc7a5f",
+    "Game/Scripts/OfficerBackMotionTrial.cs": "d35edd3592b2070ff602a61dc15034cc80712dc3b183772782f6567868a244af",
+    "Game/Scripts/OfficerContextTrial.cs": "4c4850974c797f189a8c48af8241c0658d9c36d824abaf25dac842b26e710c09",
+    "Game/Scripts/OfficerLeftMotionTrial.cs": "8b566e562720f2881e60d6e16f44904de557c6bce7af6fbabe0451db1042611f",
+    "Game/Scripts/OfficerMotionFrames.cs": "36b3f91757fa2d65edd3b55cfa3aca89e8e5a057de80dcb6b2f9d7159c36ac1f",
+    "Game/Scripts/OfficerMotionTrial.cs": "5d82f73e19862ec90e42b12ea55a58abafdd401de375a6f96b66f2f8b1287f28",
+    "Game/Scripts/OfficerMovementTrial.cs": "d40d417db7966283cf644b9f26254c1dcf4d3e76b644da5fe7ee31a50a0e12fa",
+    "Game/Scripts/OfficerPartsTrial.cs": "a8f61e5dcbbe7eebfd34ffca889396bca3ea3c33e87ab2da4359690006c294e6",
+    "Game/Scripts/OfficerRightMotionTrial.cs": "e7a522055bcb027e903148617b924dff9514491853a539f7bbead7604073868a",
+    "Game/Scripts/OfficerScaleTrial.cs": "bd2a5869dbe03b63c1fb822298b09315862b7cd35bb9a3bdab08c6f85430326e",
+    "Game/Scripts/OfficerWorldGate.cs": "2bff421e82b0d7a0875c6e248b54809730c1125664ebc4c742df44905477d2ee",
+    "Game/Scripts/OfficerWorldStage.cs": "06273cd6cecfa0d1d37826f2b2580aaa26baa1d64716bbd6cbd3ac4850681919",
+    "Game/Scripts/OfficerWorldValidation.cs": "8075b34d5c088a0738f97b56e0b8f170ab9b628505c6a1cad9143be7546a102a",
+    "Game/Scripts/ProtocolPanel.cs": "e2b15fd6390ac06e52a20e121323a387b24b71c990b18d8867a508a029e7e1d0",
+    "Game/Scripts/TaxPanel.cs": "1c45a5de771a09aeb5c53571279cdafc8bd7fcb84557ee7695276c4e0586818b",
+    "Core/HakutaiKagami.Core.csproj": "e4fd5ab881177cbb6cfce7717d017801f046b26f97fc33ae794c75689fec2309",
+    "Game/HakutaiKagami.Game.csproj": "797e54a65426d8fe91ebd476304eed452427d721dbfe6437423b1b30994bbe07",
+    "Game/project.godot": "5d9ab40268d29a83695f043e62c00b2d625978365cb689f3d1760ea6fd232340",
+    "global.json": "de47995fdee948eed97787ed72936761ac8c733cdda8a910d6ece236715159c1"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "contract": "new-game-local-mutual-service-physical-effective-known-notice-independent-personal-retinue-v1",
+  "default_scene": "res://Scenes/NewGameFrontEnd.tscn",
+  "offer_window_trial_seconds": 120,
+  "completion_conditions": 5,
+  "military_in_new_profile": false
+}

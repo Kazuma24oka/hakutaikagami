@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "checked_on": "2026-10-24",
+  "sources": [
+    {
+      "Id": "oita-city-sorin",
+      "Title": "大分市：大友宗麟とその時代",
+      "Url": "https://www.city.oita.oita.jp/o157/bunkasports/citypromotion/1369370791117.html",
+      "CheckedOn": "2026-10-24",
+      "Fact": "1550年義鎮が21代当主となり、1551年豊後府内でザビエルと会見。1550年代の府内との関係。"
+    },
+    {
+      "Id": "usuki-city-sorin",
+      "Title": "臼杵市：大友宗麟",
+      "Url": "https://www.city.usuki.oita.jp/docs/2014020600551/",
+      "CheckedOn": "2026-10-24",
+      "Fact": "1562年に府内の館から臼杵へ移居。1560年は義鎮の名を採用し、守護職を領土所有とは扱わない。"
+    },
+    {
+      "Id": "kagoshima-pref-takahisa",
+      "Title": "鹿児島県黎明館：島津氏の三州統一",
+      "Url": "https://www.pref.kagoshima.jp/reimeikan/josetsu/theme/chusei/sanshu/index.html",
+      "CheckedOn": "2026-10-24",
+      "Fact": "1550年ころ貴久が15代当主の地位を確立。当時薩摩も一円支配ではなく、三州統一は1570年代。"
+    },
+    {
+      "Id": "hioki-city-uchijo",
+      "Title": "日置市：城山公園・城山の歴史",
+      "Url": "https://www.city.hioki.kagoshima.jp/kanko/kankou/kanko-map/osusume/joyamakoen.html",
+      "CheckedOn": "2026-10-24",
+      "Fact": "1550年に貴久が鹿児島の内城へ移ったと説明する。1560年当日の所在・敷地形状の確定資料ではない。"
+    }
+  ],
+  "policy": "準史実の部分収録。本拠候補・年代の出典とゲーム用の初期配置/当主役を分離。1560年1月1日の正確な所在・守護国領有・配下権限・城郭形状は未確定。",
+  "limits": [
+    "Modern official explanatory sources,not primary historical manuscripts.",
+    "Candidates not exact Jan1locations,province ownership or actual permissions.",
+    "Original3person catalog/data unchanged;new edition aloneadds2."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "contract": "present-holder-actual-paper-registered-late-handover-once-per-attempt-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "old_optional_fields": [
+    "HeldDelivery"
+  ],
+  "one_late_registration_per_attempt": true,
+  "all_papers_move_with_carrier": true
+}

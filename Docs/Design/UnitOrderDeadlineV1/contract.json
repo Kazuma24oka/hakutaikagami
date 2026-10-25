@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "contract": "standing-unit-original-inclusive-receipt-deadline-unchanged-retry-late-v1",
+  "completion_conditions": 5,
+  "restore_pixel_tolerance": 0,
+  "normal_trial_delivery_window_seconds": 600,
+  "criterion": "actual-standing-unit-formal-receipt",
+  "inclusive": true,
+  "acknowledgement_uses_original_deadline": false,
+  "old_optional_fields": [
+    "NewMilitaryInput.DeliverBy",
+    "TroopReceipt.ArrivalStatus"
+  ]
+}

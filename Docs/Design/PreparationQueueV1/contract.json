@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "tests": 2076,
+  "added": 0,
+  "core_inputs": 306,
+  "gpu_processes": 42,
+  "world_image_pairs": 118,
+  "numeric_pairs": 118,
+  "new_evidence_checkpoints": 8,
+  "allowed_source_changes": [
+    "Game/Scripts/RuntimePreparationQueue.cs",
+    "Game/Scripts/NewGameRuntime.PreparedAdvance.cs",
+    "Game/Scripts/NewGameRuntime.ResponsiveClock.cs",
+    "Game/Scripts/NewGameRuntime.ManualAdvance.cs",
+    "Game/Scripts/NewGameRuntime.ResponsiveSave.cs",
+    "Game/Scripts/NewGameFrontEnd.PreparationQueueChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.cs",
+    "Game/Scripts/NewGameFrontEnd.Checks.cs",
+    "Docs/Design/PreparationQueueV1/README.md",
+    "Docs/Design/PreparationQueueV1/contract.json",
+    "Docs/Design/PreparationQueueV1/verification.json",
+    "Scripts/verify_preparation_queue.py",
+    "Scripts/check_preparation_queue_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "scope": "Game-only tracked per-runtime serial private preparations and accepted atomic save writer;exit disposal after all tracked tasks. Core/schema/renderer unchanged."
+}

@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "base": "66fd6ef",
+  "entry_candidate": "Game/Scenes/WorkHubTrial.tscn",
+  "current_default": "Game/Scenes/WorkHubTrial.tscn",
+  "default_changed": true,
+  "protected_files": {
+    "Game/Scripts/Main.cs": "a2d66cf586bce73c6ffde52ec6e979a7a7a37578ea277772661555332188741a",
+    "Game/Scripts/Main.TaskEntry.cs": "9804919c9d180b1978d4a86f39320b56577bae302ff71280cec8618963631203",
+    "Game/Scenes/Main.tscn": "9328967591e1991bc16d698dd8c2d0299f0c37ccb06f113166291cafe91e98eb"
+  },
+  "mouse_tools": false,
+  "approved_by": "従います。すすめて"
+}

@@ -1,0 +1,2803 @@
+{
+  "Schema": 1,
+  "WorldYear": 1560,
+  "Policy": "User approved approximate national coherence on2026-10-20. Never require survey precision for playable-inferred routes. Preserve source certainty; no modern infrastructure imported.",
+  "Nodes": [
+    {
+      "Id": "ichijodani",
+      "Name": "一乗谷",
+      "LatitudeE7": 359995000,
+      "LongitudeE7": 1362960000,
+      "Region": "北陸",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q2968274",
+      "CoordinateBasis": "CC0 representative point; revision 2490616137",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "nanao",
+      "Name": "七尾城",
+      "LatitudeE7": 370090361,
+      "LongitudeE7": 1369839167,
+      "Region": "北陸",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q8011662",
+      "CoordinateBasis": "CC0 representative point; revision 2512694546",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "sannohe",
+      "Name": "三戸城",
+      "LatitudeE7": 403811901,
+      "LongitudeE7": 1412641863,
+      "Region": "東北",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q10866038",
+      "CoordinateBasis": "CC0 representative point; revision 1934685892",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "hitoyoshi",
+      "Name": "人吉城",
+      "LatitudeE7": 322110833,
+      "LongitudeE7": 1307664917,
+      "Region": "九州",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q8011484",
+      "CoordinateBasis": "CC0 representative point; revision 2241960135",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "katsuyama",
+      "Name": "勝山館",
+      "LatitudeE7": 418008330,
+      "LongitudeE7": 1400994440,
+      "Region": "蝦夷地南部",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11400268",
+      "CoordinateBasis": "CC0 representative point; revision 2554226936",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "koriyama",
+      "Name": "吉田郡山城",
+      "LatitudeE7": 346742861,
+      "LongitudeE7": 1327095889,
+      "Region": "中国",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1036410",
+      "CoordinateBasis": "CC0 representative point; revision 2487337936",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "yamaguchi",
+      "Name": "大内氏館",
+      "LatitudeE7": 341841111,
+      "LongitudeE7": 1314804444,
+      "Region": "中国",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11432542",
+      "CoordinateBasis": "CC0 representative point; revision 1733578589",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "funai",
+      "Name": "大友氏館",
+      "LatitudeE7": 332289440,
+      "LongitudeE7": 1316191940,
+      "Region": "九州",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11433237",
+      "CoordinateBasis": "CC0 representative point; revision 2231194207",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "odawara",
+      "Name": "小田原城",
+      "LatitudeE7": 352508333,
+      "LongitudeE7": 1391536111,
+      "Region": "関東",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1013437",
+      "CoordinateBasis": "CC0 representative point; revision 2422396271",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "odani",
+      "Name": "小谷城",
+      "LatitudeE7": 354591700,
+      "LongitudeE7": 1362769400,
+      "Region": "畿内",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q2436937",
+      "CoordinateBasis": "CC0 representative point; revision 2512690278",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "yamagata",
+      "Name": "山形城",
+      "LatitudeE7": 382555556,
+      "LongitudeE7": 1403280556,
+      "Region": "東北",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q15604669",
+      "CoordinateBasis": "CC0 representative point; revision 2520877817",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "oko",
+      "Name": "岡豊城",
+      "LatitudeE7": 335949611,
+      "LongitudeE7": 1336224917,
+      "Region": "四国",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11048926",
+      "CoordinateBasis": "CC0 representative point; revision 1906726342",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "iwamura",
+      "Name": "岩村城",
+      "LatitudeE7": 353603333,
+      "LongitudeE7": 1374513056,
+      "Region": "中部",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1196356",
+      "CoordinateBasis": "CC0 representative point; revision 2512689007",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "iwatsuki",
+      "Name": "岩槻城",
+      "LatitudeE7": 359513472,
+      "LongitudeE7": 1397102389,
+      "Region": "関東",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11475219",
+      "CoordinateBasis": "CC0 representative point; revision 2527796230",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "kasugayama",
+      "Name": "春日山城",
+      "LatitudeE7": 371471080,
+      "LongitudeE7": 1382055970,
+      "Region": "北陸",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1197131",
+      "CoordinateBasis": "CC0 representative point; revision 2512689009",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "toda",
+      "Name": "月山富田城",
+      "LatitudeE7": 353609670,
+      "LongitudeE7": 1331848750,
+      "Region": "中国",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1039004",
+      "CoordinateBasis": "CC0 representative point; revision 2512688735",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "nejo",
+      "Name": "根城",
+      "LatitudeE7": 405061889,
+      "LongitudeE7": 1414596111,
+      "Region": "東北",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q8140388",
+      "CoordinateBasis": "CC0 representative point; revision 2478810265",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "edo",
+      "Name": "江戸城",
+      "LatitudeE7": 356883222,
+      "LongitudeE7": 1397543889,
+      "Region": "関東",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q865913",
+      "CoordinateBasis": "CC0 representative point; revision 2490640407",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "yuzuki",
+      "Name": "湯築城",
+      "LatitudeE7": 338486000,
+      "LongitudeE7": 1327870000,
+      "Region": "四国",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q649463",
+      "CoordinateBasis": "CC0 representative point; revision 2170795214",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "ishiyama",
+      "Name": "石山本願寺",
+      "LatitudeE7": 346873611,
+      "LongitudeE7": 1355256944,
+      "Region": "畿内",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1098123",
+      "CoordinateBasis": "CC0 representative point; revision 2551641269",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "yonezawa",
+      "Name": "米沢城",
+      "LatitudeE7": 379096000,
+      "LongitudeE7": 1401050000,
+      "Region": "東北",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11262656",
+      "CoordinateBasis": "CC0 representative point; revision 2300630469",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "akutagawa",
+      "Name": "芥川山城",
+      "LatitudeE7": 348808333,
+      "LongitudeE7": 1355880556,
+      "Region": "畿内",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11614735",
+      "CoordinateBasis": "CC0 representative point; revision 2545326197",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "kurokawa",
+      "Name": "黒川城",
+      "LatitudeE7": 374877778,
+      "LongitudeE7": 1399297222,
+      "Region": "東北",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1365061",
+      "CoordinateBasis": "CC0 representative point; revision 2490607297",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "kannonji",
+      "Name": "観音寺城",
+      "LatitudeE7": 351460270,
+      "LongitudeE7": 1361577780,
+      "Region": "畿内",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q2969462",
+      "CoordinateBasis": "CC0 representative point; revision 2512690836",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "kofu",
+      "Name": "躑躅ヶ崎館",
+      "LatitudeE7": 356868639,
+      "LongitudeE7": 1385774639,
+      "Region": "中部",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q11637200",
+      "CoordinateBasis": "CC0 representative point; revision 2222812990",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "shuri",
+      "Name": "首里城",
+      "LatitudeE7": 262170306,
+      "LongitudeE7": 1277194750,
+      "Region": "琉球",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q907052",
+      "CoordinateBasis": "CC0 representative point; revision 2553984736",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "sunpu",
+      "Name": "駿府の城館",
+      "LatitudeE7": 349791667,
+      "LongitudeE7": 1383833333,
+      "Region": "中部",
+      "Kind": "historic-site-candidate",
+      "Source": "https://www.wikidata.org/wiki/Q1038629",
+      "CoordinateBasis": "CC0 representative point; revision 2503455547",
+      "Certainty": "approximate location; footprint and ownership not assigned"
+    },
+    {
+      "Id": "kyoto",
+      "Name": "京都",
+      "LatitudeE7": 350100000,
+      "LongitudeE7": 1357600000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "nara",
+      "Name": "奈良",
+      "LatitudeE7": 346800000,
+      "LongitudeE7": 1358300000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "sakai",
+      "Name": "堺湊",
+      "LatitudeE7": 345800000,
+      "LongitudeE7": 1354700000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kameyama",
+      "Name": "亀山周辺",
+      "LatitudeE7": 348500000,
+      "LongitudeE7": 1364500000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "ise",
+      "Name": "伊勢・山田周辺",
+      "LatitudeE7": 344900000,
+      "LongitudeE7": 1367100000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "yoshida",
+      "Name": "吉田周辺",
+      "LatitudeE7": 347700000,
+      "LongitudeE7": 1373900000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hamamatsu",
+      "Name": "浜松周辺",
+      "LatitudeE7": 347100000,
+      "LongitudeE7": 1377300000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kakegawa",
+      "Name": "掛川周辺",
+      "LatitudeE7": 347700000,
+      "LongitudeE7": 1380100000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "fuji",
+      "Name": "富士周辺",
+      "LatitudeE7": 351600000,
+      "LongitudeE7": 1386800000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "mishima",
+      "Name": "三島",
+      "LatitudeE7": 351200000,
+      "LongitudeE7": 1389200000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kiso",
+      "Name": "木曽・福島周辺",
+      "LatitudeE7": 358500000,
+      "LongitudeE7": 1377000000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "shiojiri",
+      "Name": "塩尻周辺",
+      "LatitudeE7": 361200000,
+      "LongitudeE7": 1379500000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "suwa",
+      "Name": "諏訪",
+      "LatitudeE7": 360400000,
+      "LongitudeE7": 1381100000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "komoro",
+      "Name": "小諸周辺",
+      "LatitudeE7": 363200000,
+      "LongitudeE7": 1384200000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "usui",
+      "Name": "碓氷峠周辺",
+      "LatitudeE7": 363300000,
+      "LongitudeE7": 1386400000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "minowa",
+      "Name": "箕輪周辺",
+      "LatitudeE7": 364100000,
+      "LongitudeE7": 1389500000,
+      "Region": "関東",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kaizu",
+      "Name": "海津周辺",
+      "LatitudeE7": 365600000,
+      "LongitudeE7": 1382000000,
+      "Region": "中部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kamakura",
+      "Name": "鎌倉",
+      "LatitudeE7": 353200000,
+      "LongitudeE7": 1395500000,
+      "Region": "関東",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "utsunomiya",
+      "Name": "宇都宮",
+      "LatitudeE7": 365600000,
+      "LongitudeE7": 1398800000,
+      "Region": "関東",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "shirakawa",
+      "Name": "白河",
+      "LatitudeE7": 371300000,
+      "LongitudeE7": 1402100000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "sukagawa",
+      "Name": "須賀川周辺",
+      "LatitudeE7": 372800000,
+      "LongitudeE7": 1403700000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "koori",
+      "Name": "桑折周辺",
+      "LatitudeE7": 378400000,
+      "LongitudeE7": 1405100000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "iwakiri",
+      "Name": "岩切周辺",
+      "LatitudeE7": 383100000,
+      "LongitudeE7": 1409600000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hiraizumi",
+      "Name": "平泉",
+      "LatitudeE7": 389900000,
+      "LongitudeE7": 1411100000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kozukata",
+      "Name": "不来方周辺",
+      "LatitudeE7": 397000000,
+      "LongitudeE7": 1411500000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "namioka",
+      "Name": "浪岡周辺",
+      "LatitudeE7": 407100000,
+      "LongitudeE7": 1405900000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "tosaminato",
+      "Name": "十三湊周辺",
+      "LatitudeE7": 410300000,
+      "LongitudeE7": 1403300000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "tokuyama",
+      "Name": "徳山館周辺",
+      "LatitudeE7": 414300000,
+      "LongitudeE7": 1401100000,
+      "Region": "蝦夷地南部",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "sakata",
+      "Name": "酒田湊周辺",
+      "LatitudeE7": 389100000,
+      "LongitudeE7": 1398400000,
+      "Region": "東北",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "niigata",
+      "Name": "新潟湊周辺",
+      "LatitudeE7": 379200000,
+      "LongitudeE7": 1390500000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kashiwazaki",
+      "Name": "柏崎周辺",
+      "LatitudeE7": 373700000,
+      "LongitudeE7": 1385600000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "itoigawa",
+      "Name": "糸魚川周辺",
+      "LatitudeE7": 370400000,
+      "LongitudeE7": 1378600000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "uozu",
+      "Name": "魚津周辺",
+      "LatitudeE7": 368200000,
+      "LongitudeE7": 1374000000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "toyama",
+      "Name": "富山周辺",
+      "LatitudeE7": 367000000,
+      "LongitudeE7": 1372100000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "himi",
+      "Name": "氷見周辺",
+      "LatitudeE7": 368600000,
+      "LongitudeE7": 1369800000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kanazawa",
+      "Name": "金沢周辺",
+      "LatitudeE7": 365600000,
+      "LongitudeE7": 1366500000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "tsuruga",
+      "Name": "敦賀湊周辺",
+      "LatitudeE7": 356500000,
+      "LongitudeE7": 1360600000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "obama",
+      "Name": "小浜湊周辺",
+      "LatitudeE7": 355000000,
+      "LongitudeE7": 1357500000,
+      "Region": "北陸",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "yagi",
+      "Name": "丹波八木周辺",
+      "LatitudeE7": 350700000,
+      "LongitudeE7": 1355300000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "fukuchiyama",
+      "Name": "福知山周辺",
+      "LatitudeE7": 353000000,
+      "LongitudeE7": 1351300000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "izushi",
+      "Name": "出石周辺",
+      "LatitudeE7": 354600000,
+      "LongitudeE7": 1348700000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "tottori",
+      "Name": "鳥取周辺",
+      "LatitudeE7": 355000000,
+      "LongitudeE7": 1342300000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "omori",
+      "Name": "石見大森周辺",
+      "LatitudeE7": 351200000,
+      "LongitudeE7": 1324400000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "tsuwano",
+      "Name": "津和野周辺",
+      "LatitudeE7": 344600000,
+      "LongitudeE7": 1317700000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "nishinomiya",
+      "Name": "西宮",
+      "LatitudeE7": 347400000,
+      "LongitudeE7": 1353400000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hyogo",
+      "Name": "兵庫湊",
+      "LatitudeE7": 346700000,
+      "LongitudeE7": 1351700000,
+      "Region": "畿内",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "himeji",
+      "Name": "姫路周辺",
+      "LatitudeE7": 348400000,
+      "LongitudeE7": 1346900000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "okayama",
+      "Name": "岡山周辺",
+      "LatitudeE7": 346700000,
+      "LongitudeE7": 1339300000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "onomichi",
+      "Name": "尾道湊",
+      "LatitudeE7": 344100000,
+      "LongitudeE7": 1332000000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "mihara",
+      "Name": "三原周辺",
+      "LatitudeE7": 343900000,
+      "LongitudeE7": 1330800000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kusatsu",
+      "Name": "安芸草津周辺",
+      "LatitudeE7": 343700000,
+      "LongitudeE7": 1323900000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "itsukushima",
+      "Name": "厳島",
+      "LatitudeE7": 342900000,
+      "LongitudeE7": 1323200000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "iwakuni",
+      "Name": "岩国周辺",
+      "LatitudeE7": 341700000,
+      "LongitudeE7": 1321800000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "akama",
+      "Name": "赤間関",
+      "LatitudeE7": 340000000,
+      "LongitudeE7": 1309400000,
+      "Region": "中国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "moji",
+      "Name": "門司周辺",
+      "LatitudeE7": 339400000,
+      "LongitudeE7": 1309600000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hakata",
+      "Name": "博多",
+      "LatitudeE7": 336000000,
+      "LongitudeE7": 1304200000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hita",
+      "Name": "日田周辺",
+      "LatitudeE7": 333200000,
+      "LongitudeE7": 1309400000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "yanagawa",
+      "Name": "柳川周辺",
+      "LatitudeE7": 331600000,
+      "LongitudeE7": 1304000000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "kumamoto",
+      "Name": "隈本古城周辺",
+      "LatitudeE7": 327900000,
+      "LongitudeE7": 1306900000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "uchijo",
+      "Name": "鹿児島・内城周辺",
+      "LatitudeE7": 316100000,
+      "LongitudeE7": 1305600000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "saga",
+      "Name": "佐賀周辺",
+      "LatitudeE7": 332600000,
+      "LongitudeE7": 1303000000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "imari",
+      "Name": "伊万里周辺",
+      "LatitudeE7": 332700000,
+      "LongitudeE7": 1298800000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "tabira",
+      "Name": "田平沿岸",
+      "LatitudeE7": 333600000,
+      "LongitudeE7": 1295800000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hirado",
+      "Name": "平戸湊周辺",
+      "LatitudeE7": 333700000,
+      "LongitudeE7": 1295500000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "iki",
+      "Name": "壱岐沿岸",
+      "LatitudeE7": 337500000,
+      "LongitudeE7": 1297000000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "izuhara",
+      "Name": "対馬・厳原周辺",
+      "LatitudeE7": 342000000,
+      "LongitudeE7": 1292900000,
+      "Region": "対馬",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "sumoto",
+      "Name": "淡路・洲本周辺",
+      "LatitudeE7": 343400000,
+      "LongitudeE7": 1349000000,
+      "Region": "淡路",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "shozui",
+      "Name": "勝瑞周辺",
+      "LatitudeE7": 341300000,
+      "LongitudeE7": 1345300000,
+      "Region": "四国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "hakuchi",
+      "Name": "阿波白地周辺",
+      "LatitudeE7": 340200000,
+      "LongitudeE7": 1338000000,
+      "Region": "四国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "utazu",
+      "Name": "宇多津周辺",
+      "LatitudeE7": 343000000,
+      "LongitudeE7": 1338200000,
+      "Region": "四国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "saijo",
+      "Name": "伊予西条周辺",
+      "LatitudeE7": 339200000,
+      "LongitudeE7": 1331800000,
+      "Region": "四国",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "bonotsu",
+      "Name": "坊津周辺",
+      "LatitudeE7": 312700000,
+      "LongitudeE7": 1302200000,
+      "Region": "九州",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "amami",
+      "Name": "奄美北部沿岸（概略）",
+      "LatitudeE7": 284000000,
+      "LongitudeE7": 1295000000,
+      "Region": "奄美",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    },
+    {
+      "Id": "naha",
+      "Name": "那覇周辺",
+      "LatitudeE7": 262100000,
+      "LongitudeE7": 1276800000,
+      "Region": "琉球",
+      "Kind": "corridor-or-port-anchor",
+      "Source": "national-inference-policy",
+      "CoordinateBasis": "Developer-rounded regional locator, approximately1-3km; NOT a castle footprint or exact port",
+      "Certainty": "user-authorized approximate regional network; route and date details inferred"
+    }
+  ],
+  "Edges": [
+    {
+      "Id": "nation-kyoto-kannonji",
+      "From": "kyoto",
+      "To": "kannonji",
+      "LengthMm": "49037914",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "近江・美濃",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kannonji-odani",
+      "From": "kannonji",
+      "To": "odani",
+      "LengthMm": "45575496",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "近江・美濃",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-odani-inabayama",
+      "From": "odani",
+      "To": "inabayama",
+      "LengthMm": "57321941",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "近江・美濃",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kyoto-akutagawa",
+      "From": "kyoto",
+      "To": "akutagawa",
+      "LengthMm": "26572446",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "畿内",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-akutagawa-ishiyama",
+      "From": "akutagawa",
+      "To": "ishiyama",
+      "LengthMm": "27817748",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "畿内",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-ishiyama-sakai",
+      "From": "ishiyama",
+      "To": "sakai",
+      "LengthMm": "16225020",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "畿内",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kyoto-nara",
+      "From": "kyoto",
+      "To": "nara",
+      "LengthMm": "46557766",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "伊勢方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-nara-ise",
+      "From": "nara",
+      "To": "ise",
+      "LengthMm": "104104528",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "伊勢方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-ise-kameyama",
+      "From": "ise",
+      "To": "kameyama",
+      "LengthMm": "58199182",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "伊勢方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kameyama-castle",
+      "From": "kameyama",
+      "To": "castle",
+      "LengthMm": "67917654",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "伊勢方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kannonji-kameyama",
+      "From": "kannonji",
+      "To": "kameyama",
+      "LengthMm": "52915242",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "鈴鹿方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-okazaki-yoshida",
+      "From": "okazaki",
+      "To": "yoshida",
+      "LengthMm": "36957858",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yoshida-hamamatsu",
+      "From": "yoshida",
+      "To": "hamamatsu",
+      "LengthMm": "39719318",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hamamatsu-kakegawa",
+      "From": "hamamatsu",
+      "To": "kakegawa",
+      "LengthMm": "33050371",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kakegawa-sunpu",
+      "From": "kakegawa",
+      "To": "sunpu",
+      "LengthMm": "51551599",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-sunpu-fuji",
+      "From": "sunpu",
+      "To": "fuji",
+      "LengthMm": "42080060",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-fuji-mishima",
+      "From": "fuji",
+      "To": "mishima",
+      "LengthMm": "27839630",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-mishima-odawara",
+      "From": "mishima",
+      "To": "odawara",
+      "LengthMm": "32170635",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東海方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-okazaki-iwamura",
+      "From": "okazaki",
+      "To": "iwamura",
+      "LengthMm": "65241875",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "木曽・信濃方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-iwamura-kiso",
+      "From": "iwamura",
+      "To": "kiso",
+      "LengthMm": "73634885",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "木曽・信濃方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kiso-shiojiri",
+      "From": "kiso",
+      "To": "shiojiri",
+      "LengthMm": "46893034",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "木曽・信濃方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-shiojiri-suwa",
+      "From": "shiojiri",
+      "To": "suwa",
+      "LengthMm": "21134989",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "木曽・信濃方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-suwa-kofu",
+      "From": "suwa",
+      "To": "kofu",
+      "LengthMm": "71985228",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "木曽・信濃方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-suwa-komoro",
+      "From": "suwa",
+      "To": "komoro",
+      "LengthMm": "52194010",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東山方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-komoro-usui",
+      "From": "komoro",
+      "To": "usui",
+      "LengthMm": "24675434",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東山方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-usui-minowa",
+      "From": "usui",
+      "To": "minowa",
+      "LengthMm": "36432980",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東山方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-minowa-iwatsuki",
+      "From": "minowa",
+      "To": "iwatsuki",
+      "LengthMm": "106482384",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東山方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-suwa-kaizu",
+      "From": "suwa",
+      "To": "kaizu",
+      "LengthMm": "72976439",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "信越方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kaizu-kasugayama",
+      "From": "kaizu",
+      "To": "kasugayama",
+      "LengthMm": "81606662",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "信越方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-odawara-kamakura",
+      "From": "odawara",
+      "To": "kamakura",
+      "LengthMm": "45989666",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kamakura-edo",
+      "From": "kamakura",
+      "To": "edo",
+      "LengthMm": "56175764",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-edo-iwatsuki",
+      "From": "edo",
+      "To": "iwatsuki",
+      "LengthMm": "36895879",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-iwatsuki-utsunomiya",
+      "From": "iwatsuki",
+      "To": "utsunomiya",
+      "LengthMm": "86712155",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-utsunomiya-shirakawa",
+      "From": "utsunomiya",
+      "To": "shirakawa",
+      "LengthMm": "87316321",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-shirakawa-kurokawa",
+      "From": "shirakawa",
+      "To": "kurokawa",
+      "LengthMm": "58592218",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kurokawa-yonezawa",
+      "From": "kurokawa",
+      "To": "yonezawa",
+      "LengthMm": "61718135",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yonezawa-yamagata",
+      "From": "yonezawa",
+      "To": "yamagata",
+      "LengthMm": "53923550",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yamagata-sakata",
+      "From": "yamagata",
+      "To": "sakata",
+      "LengthMm": "105291500",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-sakata-niigata",
+      "From": "sakata",
+      "To": "niigata",
+      "LengthMm": "162284721",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-niigata-kashiwazaki",
+      "From": "niigata",
+      "To": "kashiwazaki",
+      "LengthMm": "93553198",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kashiwazaki-kasugayama",
+      "From": "kashiwazaki",
+      "To": "kasugayama",
+      "LengthMm": "49969316",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "関東・奥羽・越後",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-shirakawa-sukagawa",
+      "From": "shirakawa",
+      "To": "sukagawa",
+      "LengthMm": "27357396",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-sukagawa-koori",
+      "From": "sukagawa",
+      "To": "koori",
+      "LengthMm": "79350202",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-koori-iwakiri",
+      "From": "koori",
+      "To": "iwakiri",
+      "LengthMm": "81804005",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-iwakiri-hiraizumi",
+      "From": "iwakiri",
+      "To": "hiraizumi",
+      "LengthMm": "95907920",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hiraizumi-kozukata",
+      "From": "hiraizumi",
+      "To": "kozukata",
+      "LengthMm": "98779112",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kozukata-sannohe",
+      "From": "kozukata",
+      "To": "sannohe",
+      "LengthMm": "95457570",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-sannohe-nejo",
+      "From": "sannohe",
+      "To": "nejo",
+      "LengthMm": "27003552",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "東北方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-koori-yonezawa",
+      "From": "koori",
+      "To": "yonezawa",
+      "LengthMm": "45475502",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "米沢方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-sannohe-namioka",
+      "From": "sannohe",
+      "To": "namioka",
+      "LengthMm": "84611699",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "津軽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-namioka-tosaminato",
+      "From": "namioka",
+      "To": "tosaminato",
+      "LengthMm": "52202350",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "津軽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kasugayama-itoigawa",
+      "From": "kasugayama",
+      "To": "itoigawa",
+      "LengthMm": "41106364",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-itoigawa-uozu",
+      "From": "itoigawa",
+      "To": "uozu",
+      "LengthMm": "59558440",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-uozu-toyama",
+      "From": "uozu",
+      "To": "toyama",
+      "LengthMm": "26941261",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-toyama-himi",
+      "From": "toyama",
+      "To": "himi",
+      "LengthMm": "33914330",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-himi-nanao",
+      "From": "himi",
+      "To": "nanao",
+      "LengthMm": "20719642",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-toyama-kanazawa",
+      "From": "toyama",
+      "To": "kanazawa",
+      "LengthMm": "65424852",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸・近江",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kanazawa-ichijodani",
+      "From": "kanazawa",
+      "To": "ichijodani",
+      "LengthMm": "87422041",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸・近江",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-ichijodani-tsuruga",
+      "From": "ichijodani",
+      "To": "tsuruga",
+      "LengthMm": "55382529",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸・近江",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-tsuruga-odani",
+      "From": "tsuruga",
+      "To": "odani",
+      "LengthMm": "36129310",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "北陸・近江",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-tsuruga-obama",
+      "From": "tsuruga",
+      "To": "obama",
+      "LengthMm": "40778572",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "若狭方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-obama-kyoto",
+      "From": "obama",
+      "To": "kyoto",
+      "LengthMm": "68116349",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "若狭方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kyoto-yagi",
+      "From": "kyoto",
+      "To": "yagi",
+      "LengthMm": "27470751",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yagi-fukuchiyama",
+      "From": "yagi",
+      "To": "fukuchiyama",
+      "LengthMm": "55558371",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-fukuchiyama-izushi",
+      "From": "fukuchiyama",
+      "To": "izushi",
+      "LengthMm": "36915280",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-izushi-tottori",
+      "From": "izushi",
+      "To": "tottori",
+      "LengthMm": "72651355",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-tottori-toda",
+      "From": "tottori",
+      "To": "toda",
+      "LengthMm": "119931876",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-toda-omori",
+      "From": "toda",
+      "To": "omori",
+      "LengthMm": "90950375",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-omori-tsuwano",
+      "From": "omori",
+      "To": "tsuwano",
+      "LengthMm": "119433580",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-tsuwano-yamaguchi",
+      "From": "tsuwano",
+      "To": "yamaguchi",
+      "LengthMm": "50747274",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陰方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-akutagawa-nishinomiya",
+      "From": "akutagawa",
+      "To": "nishinomiya",
+      "LengthMm": "34416959",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-nishinomiya-hyogo",
+      "From": "nishinomiya",
+      "To": "hyogo",
+      "LengthMm": "21725620",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hyogo-himeji",
+      "From": "hyogo",
+      "To": "himeji",
+      "LengthMm": "59690370",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-himeji-okayama",
+      "From": "himeji",
+      "To": "okayama",
+      "LengthMm": "89948350",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-okayama-onomichi",
+      "From": "okayama",
+      "To": "onomichi",
+      "LengthMm": "91057996",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-onomichi-mihara",
+      "From": "onomichi",
+      "To": "mihara",
+      "LengthMm": "14040214",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-mihara-kusatsu",
+      "From": "mihara",
+      "To": "kusatsu",
+      "LengthMm": "79200581",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kusatsu-iwakuni",
+      "From": "kusatsu",
+      "To": "iwakuni",
+      "LengthMm": "36804970",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-iwakuni-yamaguchi",
+      "From": "iwakuni",
+      "To": "yamaguchi",
+      "LengthMm": "80465810",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yamaguchi-akama",
+      "From": "yamaguchi",
+      "To": "akama",
+      "LengthMm": "67266079",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "山陽方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-mihara-koriyama",
+      "From": "mihara",
+      "To": "koriyama",
+      "LengthMm": "57967715",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "安芸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-koriyama-kusatsu",
+      "From": "koriyama",
+      "To": "kusatsu",
+      "LengthMm": "55930499",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "安芸方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-moji-hakata",
+      "From": "moji",
+      "To": "hakata",
+      "LengthMm": "78269518",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "九州方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hakata-yanagawa",
+      "From": "hakata",
+      "To": "yanagawa",
+      "LengthMm": "61201248",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "九州方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yanagawa-kumamoto",
+      "From": "yanagawa",
+      "To": "kumamoto",
+      "LengthMm": "61548660",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "九州方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-kumamoto-hitoyoshi",
+      "From": "kumamoto",
+      "To": "hitoyoshi",
+      "LengthMm": "80963809",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "九州方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hitoyoshi-uchijo",
+      "From": "hitoyoshi",
+      "To": "uchijo",
+      "LengthMm": "87026629",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "九州方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-uchijo-bonotsu",
+      "From": "uchijo",
+      "To": "bonotsu",
+      "LengthMm": "62120660",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "九州方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hakata-hita",
+      "From": "hakata",
+      "To": "hita",
+      "LengthMm": "71766951",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "豊後方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hita-funai",
+      "From": "hita",
+      "To": "funai",
+      "LengthMm": "79934501",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "豊後方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-yanagawa-saga",
+      "From": "yanagawa",
+      "To": "saga",
+      "LengthMm": "18122631",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "肥前方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-saga-imari",
+      "From": "saga",
+      "To": "imari",
+      "LengthMm": "48831530",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "肥前方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-imari-tabira",
+      "From": "imari",
+      "To": "tabira",
+      "LengthMm": "37022952",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "肥前方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-shozui-hakuchi",
+      "From": "shozui",
+      "To": "hakuchi",
+      "LengthMm": "85423449",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "阿波・土佐",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hakuchi-oko",
+      "From": "hakuchi",
+      "To": "oko",
+      "LengthMm": "62533590",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "阿波・土佐",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-hakuchi-utazu",
+      "From": "hakuchi",
+      "To": "utazu",
+      "LengthMm": "38986144",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "四国方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-utazu-saijo",
+      "From": "utazu",
+      "To": "saijo",
+      "LengthMm": "90632646",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "四国方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-saijo-yuzuki",
+      "From": "saijo",
+      "To": "yuzuki",
+      "LengthMm": "46420561",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "四国方面",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    },
+    {
+      "Id": "nation-akama-moji",
+      "From": "akama",
+      "To": "moji",
+      "LengthMm": "7614124",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "関門渡海",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-kusatsu-itsukushima",
+      "From": "kusatsu",
+      "To": "itsukushima",
+      "LengthMm": "12072352",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "厳島渡海",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-sakai-sumoto",
+      "From": "sakai",
+      "To": "sumoto",
+      "LengthMm": "64546469",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "紀淡・鳴門渡海",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-sumoto-shozui",
+      "From": "sumoto",
+      "To": "shozui",
+      "LengthMm": "45383429",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "紀淡・鳴門渡海",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-onomichi-utazu",
+      "From": "onomichi",
+      "To": "utazu",
+      "LengthMm": "64035380",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "瀬戸内航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-tabira-hirado",
+      "From": "tabira",
+      "To": "hirado",
+      "LengthMm": "3299723",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "平戸渡海",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-hakata-iki",
+      "From": "hakata",
+      "To": "iki",
+      "LengthMm": "75549945",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "壱岐・対馬航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-iki-izuhara",
+      "From": "iki",
+      "To": "izuhara",
+      "LengthMm": "68985996",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "壱岐・対馬航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-tosaminato-tokuyama",
+      "From": "tosaminato",
+      "To": "tokuyama",
+      "LengthMm": "52946054",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "津軽海峡・道南航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-tokuyama-katsuyama",
+      "From": "tokuyama",
+      "To": "katsuyama",
+      "LengthMm": "45368494",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "津軽海峡・道南航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-bonotsu-amami",
+      "From": "bonotsu",
+      "To": "amami",
+      "LengthMm": "359255323",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "南島航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-amami-naha",
+      "From": "amami",
+      "To": "naha",
+      "LengthMm": "332975044",
+      "FootSpeed": 6000,
+      "CourierSpeed": 8000,
+      "Mode": "sea",
+      "Corridor": "南島航路",
+      "Basis": "great-circle x1.10 approximate sailing cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "medieval-maritime"
+      ]
+    },
+    {
+      "Id": "nation-naha-shuri",
+      "From": "naha",
+      "To": "shuri",
+      "LengthMm": "5018542",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000,
+      "Mode": "land",
+      "Corridor": "那覇・首里",
+      "Basis": "great-circle x1.25 approximate land cost",
+      "HistoricalCertainty": "inferred connection; not a surveyed1560 alignment; no modern road geometry",
+      "SourceIds": [
+        "historic-corridors"
+      ]
+    }
+  ],
+  "Sources": [
+    {
+      "Id": "historic-corridors",
+      "Url": "https://www.bunka.go.jp/seisaku/bunkazai/shokai/kinenbutsu/rekishinomichi/index.html",
+      "Role": "historical-corridor context ONLY; list spans periods including Edo and does NOT prove these exact1560 links"
+    },
+    {
+      "Id": "medieval-maritime",
+      "Url": "https://archive.rekihaku.ac.jp/exhibitions/project/old/050323/index.html",
+      "Role": "medieval maritime exchange among Hakata/Sakai/Funai/Ryukyu; exact sailing links/waypoints inferred"
+    },
+    {
+      "Id": "national-inference-policy",
+      "Url": "user-approval:2026-10-20",
+      "Role": "Rounded locators and national network inferred for gameplay; no exact surveyed or historical geometry claim"
+    }
+  ],
+  "Caveat": "Nationwide coarse movement network, not nationwide population/ownership/historical reconstruction. Land/sea modes separate. Sea speed is a prototype coefficient; no port queues, weather, ship availability or navigation simulation. Approximate links can cross small coastal polygons; no detailed land/water collision asserted. Modern generalized coastline is reference only. Ezo/Ryukyu coverage is geographic, not political ownership."
+}

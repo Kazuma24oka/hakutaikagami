@@ -1,0 +1,67 @@
+{
+  "ruleset": "national-land-field-v1",
+  "world": "world:national-land-field-v1",
+  "base": "TrafficWorldV1 shared world/clock, sea rules unchanged",
+  "module": "Field required only here, omitted/rejected under older rulesets; explicit migration required",
+  "terrain": {
+    "area_m": 160,
+    "cell_m": 10,
+    "cells": 256,
+    "basis": "synthetic public test terrain anchored at Kiyosu projected world coordinate",
+    "speed_mm_s": {
+      "road": 2000,
+      "grass": 1000,
+      "forest": 500,
+      "slope": 400,
+      "water": 0,
+      "cliff": 0
+    },
+    "version_binding": "full terrain kinds and speeds hashed into definition version",
+    "routing": "deterministic time-cost cardinal cell centers, split at boundaries; exact within-cell endpoints"
+  },
+  "formation": {
+    "owner": "player officer and own army",
+    "unit_count": 3,
+    "soldiers": [
+      40,
+      30,
+      30
+    ],
+    "targets": "arbitrary line endpoints and midpoint, no target cell-center snapping",
+    "commands": "local self-force orders, not instantaneous remote-general orders",
+    "position": "authoritative millimeter paths sampled at shared world seconds, same global projection",
+    "restart": "midmovement retarget from actual current positions; anchor return permits national journey then reentry"
+  },
+  "verification": "verification.json",
+  "unit_tests": 699,
+  "new_tests": 15,
+  "godot_processes": 3,
+  "godot_checks": 11,
+  "save_stages": 4,
+  "pngs": 13,
+  "pixel_comparisons": 8,
+  "changed_pixels": 0,
+  "video": {
+    "file": "runtime-local/field-world-short.mp4",
+    "sha256": "1fbcdd27f5e9db757b1a352a30eb5dd0d8e5e6d7d2265714edd1075c32776aac",
+    "capture": "Actual Godot Movie Maker frames; scripted game actions, no native input",
+    "fps": 24,
+    "frames_expected": 624,
+    "frames_decoded": 624,
+    "duration_seconds": 26,
+    "width": 1100,
+    "height": 720,
+    "decode_log_sha256": "5eee203548aa15e8710c4f9f84ed84110e6474d148f9f9456880fbe57ede712f",
+    "bytes": 1272772,
+    "scope": "Synthetic Kiyosu160m land patch, terrain speed and impassability, arbitrary formation line for own three detachments; four independent save stages"
+  },
+  "scope_limits": [
+    "Prototype160m region only; no national terrain coverage",
+    "Own three detachments only, no collision footprint, inter-unit avoidance, enemy combat or continuous front occupancy",
+    "Static public terrain, no fog/scouting or terrain changes",
+    "Slope traversal cost only; no continuous elevation reconstruction",
+    "National/sea round trip regression verified in Core, not new GPU nationwide movie",
+    "Return via Kiyosu anchor, no arbitrary offroad-to-national-road connector yet"
+  ],
+  "next": "Path smoothing and inter-unit avoidance; then contact/combat and officer-specific delivered commands"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "contract": "known-own-recipient-fixed-point-local-scope-directive-v1",
+  "criteria": 5,
+  "tests": 1822,
+  "baseline": 1795,
+  "added": 27,
+  "save_checkpoints": 32,
+  "scope": "own-recipient Move/Hold/Recall, physical delivery, original issuance order, per-unit effective order and partial cancellation of old army recall"
+}

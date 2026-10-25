@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "scope": "View-only in-game guide. No Core/save schema/game rules changes.",
+  "conditions": [
+    "Guide covers existing movement/work,military,mail/service,personal versus units and save/restart with actual button names.",
+    "Actual open/close/reopen preserves exact Core world and presentation.",
+    "Historical,created-group and important-letter cases restore and continue in separate processes with exact image/world/numeric pose.",
+    "Reuse only exact302 Core/test/data inputs,2040-test TRX and same Core DLL; current Game build has no warning/error.",
+    "Directly inspect actual guide/screenshots before commit/push; preserve protected refs."
+  ],
+  "limits": [
+    "Not a tutorial mission,not national autonomous NPC acceptance.",
+    "Prior1x prefetch acceptance remains historical after this UI source change; only the six GPU processes listed here are rerun.",
+    "Start/pause click costs and faster modes remain synchronous."
+  ]
+}

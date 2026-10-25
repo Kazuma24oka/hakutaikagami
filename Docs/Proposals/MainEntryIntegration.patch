@@ -1,0 +1,12 @@
+--- a/Game/Scripts/Main.cs
++++ b/Game/Scripts/Main.cs
+@@ -60,6 +60,9 @@
+         GD.Print("FOUNDATION_READY characters=3 castles=1 seed=" + world.Definition.Seed);
+         var taxPanel = new TaxPanel { Name = "徴税・保存検証" };
+         tabs.AddChild(taxPanel);
++        var taskLoopEntry=GD.Load<PackedScene>("res://Scenes/AssessmentNoticeTrial.tscn").Instantiate<Control>();
++        tabs.AddChild(taskLoopEntry);
++        tabs.SetTabTitle(tabs.GetTabCount()-1,"武将の任務");
+         bool officerWorldTest=OS.GetCmdlineUserArgs().Any(a=>a=="--officer-world-test"||a=="--officer-world-restore");
+         bool militaryTest=OS.GetCmdlineUserArgs().Any(a=>a=="--military-grid-test"||a=="--military-grid-restore");
+         bool formationTest=OS.GetCmdlineUserArgs().Any(a=>a=="--formation-world-test"||a=="--formation-world-restore");

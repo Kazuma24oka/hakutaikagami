@@ -1,0 +1,55 @@
+{
+  "Schema": 1,
+  "Nodes": [
+    {
+      "Id": "inabayama",
+      "Stop": {
+        "Id": "Q1367052",
+        "Name": "稲葉山城",
+        "LatitudeE7": 354338889,
+        "LongitudeE7": 1367822222,
+        "Revision": "2512270183",
+        "Precision": "0.00027777777777778"
+      }
+    },
+    {
+      "Id": "okazaki",
+      "Stop": {
+        "Id": "Q1013445",
+        "Name": "岡崎城",
+        "LatitudeE7": 349563889,
+        "LongitudeE7": 1371588889,
+        "Revision": "2440512260",
+        "Precision": "None"
+      }
+    }
+  ],
+  "Edges": [
+    {
+      "Id": "mino-concept",
+      "From": "castle",
+      "To": "inabayama",
+      "LengthMm": "24759613",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    },
+    {
+      "Id": "mikawa-concept",
+      "From": "village",
+      "To": "okazaki",
+      "LengthMm": "23024454",
+      "FootSpeed": 1000,
+      "CourierSpeed": 2000
+    }
+  ],
+  "Algorithm": "haversine-R6371000-round-mm-v1; abstract interregional links; historic roads/river crossings unverified",
+  "Sources": [
+    "https://www.city.gifu.lg.jp/kankoubunka/kankou/1013051/1005097/1034742/1034737.html",
+    "https://okazaki-kanko.jp/feature/shiroatomeguri/okazaki1",
+    "https://www.archives.go.jp/exhibition/digital/ieyasu/history.html",
+    "https://www.wikidata.org/wiki/Q1367052?oldid=2512270183",
+    "https://www.wikidata.org/wiki/Q1013445?oldid=2440512260"
+  ],
+  "Credit": "Wikidata structured coordinates CC0; inherited CODH CC BY 4.0 credit remains mandatory",
+  "Caveat": "Modern representative points. Interregional links are simulation-only geodesic lower bounds, NOT reconstructed roads; Kiso/Yahagi river crossings, bridges, slopes and 1560 access/ownership unverified. No historic bridge is invented."
+}

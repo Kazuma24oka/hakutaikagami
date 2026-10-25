@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "criteria": 5,
+  "tests": 2055,
+  "core_inputs": 304,
+  "gpu_processes": 8,
+  "world_image_pairs": 20,
+  "numeric_pairs": 20,
+  "allowed_source_changes": [
+    "Game/Scripts/NewGameRuntime.PlayGuide.cs",
+    "Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs",
+    "Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs",
+    "Docs/Design/GuideReuseV1/README.md",
+    "Docs/Design/GuideReuseV1/contract.json",
+    "Docs/Design/GuideReuseV1/verification.json",
+    "Scripts/verify_guide_reuse.py",
+    "Scripts/check_guide_reuse_binding.py",
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "Docs/README.md",
+    "Docs/Development/CURRENT_STAGE.md",
+    "Scripts/Show-NewGameCandidate.ps1"
+  ],
+  "scope": "QA-only guards and preexisting dialog repeat tests;no production world/operation/render change. Prior40 historical,not current rerun."
+}

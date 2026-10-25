@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "contract": "same-original-known-failure-explicit-known-post-retry-v1",
+  "completion_conditions": 5,
+  "max_attempts": 3,
+  "restore_pixel_tolerance": 0,
+  "old_optional_extension": "UnitRetry absent",
+  "scope": "only recall original retries; inquiry/reply recovery/late physical recovery continue in later slices"
+}

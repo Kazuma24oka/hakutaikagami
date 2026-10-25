@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "contract": "declared-retained-scoped-cancellation-original-fixed-handoff-once-v1",
+  "criteria": 5,
+  "tests": 1923,
+  "baseline": 1905,
+  "added": 18,
+  "save_checkpoints": 24
+}

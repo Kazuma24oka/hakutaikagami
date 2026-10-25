@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "checked_on": "2026-10-24",
+  "sources": [
+    {
+      "Id": "nagano-nobushige",
+      "Title": "長野市・川中島の戦い：武田典厩信繁の墓",
+      "Url": "https://kawanakajima.nagano.jp/tour/tour-333/",
+      "CheckedOn": "2026-10-24",
+      "Fact": "信玄の実弟・副将として兄を支えた信繁と、1561年川中島での戦死を説明する。戦記由来の会話・兵数・忠誠値は採用しない。"
+    }
+  ],
+  "policy": "準史実の家臣1名の部分収録。名前・武田家との関係は公式解説。本拠候補の甲府配置、開始時の直属主従と家臣区分は検証用初期条件。個人随行・知行地・軍職権限・1560年当日の現在地は未採録。",
+  "limits": [
+    "Modern official explanation,not a primary1560document.",
+    "Kofu/direct service/house retainer are trial initialization,not exactpresence or personal-following evidence.",
+    "Historical deputy title grants no command/stock/realm permissions."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "Before explicit strong resource retention;48 location updates with forced GC passed, including repeated-center cache reuse. Original intermittent bridge failure not reproduced in this isolated run.",
+  "sources": {
+    "Game/Scripts/SceneryVisualAssets.cs": "9fb4e55325911ace48766156ee459534b5bba1fd5dc0c956ecf4b2821bc0362c",
+    "Game/Scripts/SceneryAssetLifetimeChecks.cs": "71a4f31390a62f026a4ed15d3475cb6a0f164c5929771054becb78fb2f4d5687"
+  },
+  "binary_sha256": "47e84ee5b08cd81b679dff8a0da71c099b0bf04e90d470d41c9549c94ef4b7dd",
+  "png_sha256": "c7ce13a0a85491a3c1bba9a287f65489712b354a0a34e3354c63ae901393a9d1",
+  "log_sha256": "3eda4ff0cb8e7aa41f0540a4d38960faef036e1f455e315f07840d62efd7e967",
+  "observed_error": "Handle is not initialized / SwapGCHandleForType in SceneryVisualAssets.Instantiate during personal journey restoration",
+  "primary_sources": [
+    "https://docs.godotengine.org/en/4.5/classes/class_resource.html",
+    "https://raw.githubusercontent.com/godotengine/godot/4.5.2-stable/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/ScriptManagerBridge.cs"
+  ],
+  "interpretation": "Strong retention removes repeated lookup of collectible wrappers. This is a bounded lifetime mitigation, not proof of the exact engine race or a guarantee against every engine failure.",
+  "original_failure_log": "Docs/Design/FieldSupplyV1/runtime-local/lifetime/original-failure.log",
+  "original_failure_log_sha256": "4394a66c40f05cbc80d5a3ad5507e4435df09e30c1eebedbfdc63f39e3a8918f"
+}

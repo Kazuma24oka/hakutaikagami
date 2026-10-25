@@ -179,3 +179,1678 @@ Docs/Design/** -text
 Scripts/build_basic_design.py -text
 Scripts/basic_design_template.html -text
 Scripts/validate_basic_design.cjs -text
+
+Scripts/build_common_contract.py -text
+Scripts/common_contract_template.html -text
+Scripts/validate_common_contract.cjs -text
+
+Core/Contracts/** -text
+Tools/CommonContractProbe/** -text
+Game/Scripts/CommonContractTrial.cs -text
+Game/Scenes/CommonContractTrial.tscn -text
+Scripts/Show-CommonContract.ps1 -text
+Scripts/verify_common_contract_process.py -text
+Scripts/build_common_implementation_report.py -text
+Scripts/verify_common_implementation.cjs -text
+
+Scripts/verify_common_contract_gpu.py -text
+
+Scripts/verify_common_contract_inputs.py -text
+
+Core/Contracts/RouteContract.cs -text
+Tests/RouteContractTests.cs -text
+Game/Scripts/RouteWorldTrial.cs -text
+Game/Scenes/RouteWorldTrial.tscn -text
+Scripts/verify_route_world.py -text
+Scripts/check_route_binding.py -text
+Scripts/Show-RouteWorld.ps1 -text
+
+Scripts/build_route_report.py -text
+Scripts/verify_route_report.cjs -text
+Docs/Design/RouteWorldV1/** -text
+
+Core/Contracts/BranchRoutes.cs -text
+Tests/BranchRouteTests.cs -text
+Game/Scripts/BranchWorldTrial.cs -text
+Game/Scenes/BranchWorldTrial.tscn -text
+Scripts/verify_branch_world.py -text
+Scripts/check_branch_binding.py -text
+Scripts/Show-BranchWorld.ps1 -text
+Docs/Design/BranchWorldV1/** -text
+
+Scripts/build_branch_report.py -text
+Scripts/verify_branch_report.cjs -text
+
+Core/Contracts/MovementControl.cs -text
+Tests/MovementControlTests.cs -text
+Game/Scripts/MovementControlTrial.cs -text
+Game/Scenes/MovementControlTrial.tscn -text
+Scripts/verify_movement_control.py -text
+Scripts/check_movement_binding.py -text
+Scripts/Show-MovementControl.ps1 -text
+Docs/Design/MovementControlV1/** -text
+
+Scripts/build_movement_report.py -text
+Scripts/verify_movement_report.cjs -text
+
+Core/World/JapanGeography.cs -text
+Tests/JapanGeographyTests.cs -text
+Game/Scripts/JapanMapTrial.cs -text
+Game/Scenes/JapanMapTrial.tscn -text
+Game/Data/Geography/** -text
+Docs/Design/JapanMapV1/** -text
+Scripts/*japan*.py -text
+Scripts/verify_japan_report.cjs -text
+Scripts/Show-JapanMap.ps1 -text
+
+Core/Contracts/RegionalRoute.cs -text
+Core/Data/** -text
+Tests/RegionalRouteTests.cs -text
+Game/Scripts/RegionalRouteTrial.cs -text
+Game/Scenes/RegionalRouteTrial.tscn -text
+Docs/Design/RegionalRouteV1/** -text
+Scripts/*regional*.py -text
+Scripts/verify_regional_report.cjs -text
+Scripts/Show-RegionalRoute.ps1 -text
+
+Core/HakutaiKagami.Core.csproj -text
+
+Core/Contracts/RegionalBranch.cs -text
+Tests/RegionalBranchTests.cs -text
+Game/Scripts/RegionalBranchTrial.cs -text
+Game/Scenes/RegionalBranchTrial.tscn -text
+Docs/Design/RegionalBranchV1/** -text
+Scripts/Show-RegionalBranch.ps1 -text
+Scripts/build_regional_branch_report.py -text
+Scripts/verify_regional_branch_report.cjs -text
+
+Core/Contracts/RegionalControl.cs -text
+Tests/RegionalControlTests.cs -text
+Game/Scripts/RegionalControlTrial.cs -text
+Game/Scenes/RegionalControlTrial.tscn -text
+Docs/Design/RegionalControlV1/** -text
+Scripts/Show-RegionalControl.ps1 -text
+
+Core/Contracts/RegionalCampaign.cs -text
+Tests/RegionalCampaignTests.cs -text
+Game/Scripts/RegionalCampaignTrial.cs -text
+Game/Scenes/RegionalCampaignTrial.tscn -text
+Docs/Design/RegionalCampaignV1/** -text
+Scripts/*regional_campaign*.py -text
+Scripts/Show-RegionalCampaign.ps1 -text
+
+Core/Contracts/RiverRoads.cs -text
+Tests/RiverRoadTests.cs -text
+Game/Scripts/RiverRoadTrial.cs -text
+Game/Scenes/RiverRoadTrial.tscn -text
+Scripts/*river*.py -text
+Scripts/Show-RiverRoad.ps1 -text
+Docs/Design/RiverRoadV1/** -text
+
+Core/Contracts/HistoricalRoads.cs -text
+Core/Data/historical-roads-v1.json -text
+Tests/HistoricalRoadTests.cs -text
+Game/Scripts/HistoricalRoadTrial.cs -text
+Game/Scenes/HistoricalRoadTrial.tscn -text
+Scripts/*historical*.py -text
+Scripts/Show-HistoricalRoad.ps1 -text
+Docs/Design/HistoricalRoadV1/** -text
+
+Core/Contracts/SurveyRoadReview.cs -text
+Core/Data/futamura-survey-review-v1.json -text
+Tests/SurveyRoadReviewTests.cs -text
+Scripts/*survey_roads*.py -text
+Docs/Design/SurveyRoadV1/** -text
+
+Core/Contracts/NationalRoutes.cs -text
+Core/Data/national-routes-v1.json -text
+Tests/NationalRoutesTests.cs -text
+Game/Scripts/NationalWorldTrial.cs -text
+Game/Scenes/NationalWorldTrial.tscn -text
+Scripts/*national*.py -text
+Scripts/Show-NationalWorld.ps1 -text
+Docs/Design/NationalWorldV1/** -text
+
+# Exact byte preservation for the integrated regional runtime and its evidence.
+Core/Contracts/RegionalBattle.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/RegionalGround.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/RegionalBattleModels.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/RegionalBattleTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/RegionalIntegrationTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/RegionalIntegrationTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_regional_integration.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_integration_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-RegionalIntegration.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/RegionalIntegrationV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Shared scenery geometry and validation preserve exact verified input bytes.
+Core/Contracts/RegionalScenery.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/RegionalSceneryTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/RegionalSceneryTrial.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/RegionalSceneryRenderer.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/RegionalSceneryTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_regional_scenery.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_scenery_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-RegionalScenery.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/RegionalSceneryV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Scenery appearance catalog and exact verification inputs.
+Core/Appearance/SceneryAppearance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/SceneryAppearanceTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/SceneryVisualAssets.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Data/Scenery/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Assets/Scenery/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_scenery_appearance.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_appearance_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-SceneryAppearance.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SceneryAppearanceV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/ContinuousWorld.cs -text
+Tests/ContinuousWorldTests.cs -text
+Game/Scripts/Continuous*.cs -text
+Game/Scenes/ContinuousWorldTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*continuous* -text
+Scripts/Show-ContinuousWorld.ps1 -text
+Docs/Design/ContinuousWorldV1/** -text
+Core/Data/japan-terrain-mask-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/OfficerLoop.cs -text
+Tests/OfficerLoopTests.cs -text
+Game/Scenes/OfficerLoopTrial.tscn -text
+Scripts/*officer_loop* -text
+Scripts/Show-OfficerLoop.ps1 -text
+Docs/Design/OfficerLoopV1/** -text
+Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.md -text
+
+Core/Contracts/OfficerLoop.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/OfficerLoopTests.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/OfficerLoopTrial.tscn whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*officer_loop* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-OfficerLoop.ps1 whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/OfficerLoopV1/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Decisions/2026-10-21_OFFICER_LOOP_V1.md whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Game/Scripts/ContinuousWorldTrial.Loop.cs whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/MissionEntry.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/MissionEntryTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/ContinuousWorldTrial.Entry.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/MissionEntryTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*mission_entry* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-MissionEntry.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/MissionEntryV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Development/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/CouncilInput.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/CouncilInputTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/ContinuousWorldTrial.Council.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scenes/CouncilEntryTrial.tscn -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/*council_input* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/Show-CouncilInput.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/CouncilInputV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/IncomingMission.cs -text
+Tests/IncomingMissionTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Incoming.cs -text
+Game/Scenes/IncomingMissionTrial.tscn -text
+Scripts/*incoming_mission* -text
+Docs/Design/IncomingMissionV1/** -text
+
+Core/Contracts/*MissionReview*.cs -text
+Tests/MissionReviewTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Review.cs -text
+Game/Scenes/MissionReviewTrial.tscn -text
+Scripts/*mission_review* -text
+Docs/Design/MissionReviewV1/** -text
+
+Core/Contracts/*AssessmentNotice*.cs -text
+Tests/AssessmentNoticeTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Notice.cs -text
+Game/Scenes/AssessmentNoticeTrial.tscn -text
+Scripts/*assessment_notice* -text
+Docs/Design/AssessmentNoticeV1/** -text
+Docs/Proposals/MainEntryIntegration.patch -text
+
+Game/Scripts/Main.TaskEntry.cs -text
+Game/Scripts/ContinuousWorldTrial.TaskEntry.cs -text
+Scripts/*task_entry* -text
+Docs/Design/TaskEntryV1/** -text
+
+Core/Contracts/NationalPersonnel.cs -text
+Core/Data/national-personnel-v1.json -text
+Tests/NationalPersonnelTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Personnel.cs -text
+Scripts/*national_personnel* -text
+Docs/Design/NationalPersonnelV1/** -text
+
+Core/Contracts/RegionalWork.cs -text
+Tests/RegionalWorkTests.cs -text
+Game/Scripts/ContinuousWorldTrial.RegionalWork.cs -text
+Game/Scenes/RegionalWorkTrial.tscn -text
+Scripts/*regional_work* -text
+Docs/Design/RegionalWorkV1/** -text
+
+Core/Contracts/NpcWork.cs -text
+Core/Contracts/WorldSession.NpcWork.cs -text
+Tests/NpcWorkTests.cs -text
+Game/Scripts/ContinuousWorldTrial.NpcWork.cs -text
+Game/Scenes/NpcWorkTrial.tscn -text
+Scripts/*npc_work* -text
+Docs/Design/NpcWorkV1/** -text
+
+Game/Scripts/WorkHubTrial.cs -text
+Game/Scripts/ContinuousWorldTrial.HubAccess.cs -text
+Game/Scenes/WorkHubTrial.tscn -text
+Scripts/*work_hub* -text
+Docs/Design/WorkHubV1/** -text
+Docs/Proposals/WorkHubEntry.patch -text
+
+Docs/Design/WorkHubStartupV1/** -text
+
+Game/Scripts/MidTerrainRenderer.cs -text
+Game/Scripts/ContinuousWorldTrial.MidTerrain.cs -text
+Scripts/*mid_terrain* -text
+Docs/Design/MidTerrainV1/** -text
+
+Game/Scripts/ContinuousWorldTrial.TerrainPerformance.cs -text
+Docs/Design/TerrainPerformanceV1/** -text
+Scripts/*terrain_performance* -text
+
+Game/Scripts/ContinuousWorldTrial.LodAppearance.cs -text
+Docs/Design/LodAppearanceV1/** -text
+Scripts/*lod_appearance* -text
+
+Game/Scripts/ContinuousWorldTrial.CameraContinuity.cs -text
+Docs/Design/CameraContinuityV1/** -text
+Scripts/*camera_continuity* -text
+
+Game/Scripts/ContinuousWorldTrial.ForceLod.cs -text
+Docs/Design/ForceLodV1/** -text
+Scripts/*force_lod* -text
+
+Docs/Design/FieldModelsV1/** -text
+Scripts/*field_models* -text
+Game/Assets/Scenery/Models/field-*.tscn -text
+
+Game/Scripts/ContinuousWorldTrial.FieldModels.cs -text
+
+Game/Tools/author_field_rocks.gd -text
+Game/Assets/Scenery/Models/field-*.tres -text
+
+Docs/Design/GroundMaterialV1/** -text
+Scripts/*ground_material* -text
+Game/Tools/author_ground_material.gd -text
+Game/Assets/Scenery/Materials/field-earth-*.tres -text
+
+Game/Scripts/ContinuousWorldTrial.GroundMaterial.cs -text
+
+Docs/Design/CameraPanV1/** -text
+Scripts/*camera_pan* -text
+
+Docs/Design/VisualAcceptanceV1/** -text
+Scripts/*visual_acceptance* -text
+
+Docs/Design/MapCacheV1/** -text
+Scripts/*map_cache* -text
+
+Docs/Design/TerrainBreakdownV1/** -text
+Scripts/*terrain_breakdown* -text
+
+Core/World/LandMaskIndex.cs -text
+Core/Contracts/ContinuousWorld.cs -text
+Tests/LandMaskIndexTests.cs -text
+Scripts/current_test_contract.json -text
+Docs/Design/LandIndexV1/** -text
+Scripts/*land_index* -text
+
+Core/Contracts/FieldWorld.cs -text
+
+Core/Contracts/StartConfiguration.cs -text
+Tests/StartConfigurationTests.cs -text
+Docs/Design/StartConfigurationV1/** -text
+Docs/Design/ImplementationAuditV1/** -text
+Scripts/verify_start_configuration.py -text
+Scripts/verify_pre_index_save.py -text
+
+Core/Contracts/PersonalStart.cs -text
+Tests/PersonalStartTests.cs -text
+Game/Scenes/PersonalStartTrial.tscn -text
+Game/Scripts/ContinuousWorldTrial.PersonalStart.cs -text
+Docs/Design/PersonalStartV1/** -text
+Scripts/verify_personal_start.py -text
+Scripts/check_personal_start_binding.py -text
+
+Game/Scripts/StartSelectionPanel*.cs -text
+Docs/Design/StartSelectionV1/** -text
+Scripts/*start_selection* -text
+
+Core/Contracts/RetainerStart.cs -text
+Tests/RetainerStartTests.cs -text
+Game/Scripts/ContinuousWorldTrial.Retainer.cs -text
+Game/Scripts/StartSelectionPanel.RetainerChecks.cs -text
+Docs/Design/RetainerStartV1/** -text
+Scripts/*retainer_start* -text
+
+Docs/Design/CreatedCampaignV1/** -text
+Scripts/*created_campaign* -text
+Tests/Fixtures/created-ronin-bea3d4f-*.json -text
+Game/Scripts/StartSelectionPanel.CampaignChecks.cs -text
+Game/Scripts/ContinuousWorldTrial.Campaign.cs -text
+
+Docs/Design/EngagementMissionV1/** -text
+Scripts/*engagement_mission* -text
+Tests/Fixtures/created-campaign-c30f379-*.json -text
+
+Docs/Design/FieldSupplyV1/** -text
+Scripts/*field_supply* -text
+Tests/Fixtures/engagement-511fe68-*.json -text
+
+Game/Scenes/SceneryAssetLifetimeChecks.tscn -text
+
+Docs/Design/FieldPresenceV1/** -text
+Scripts/*field_presence* -text
+Tests/Fixtures/supply-f9dcd84-*.json -text
+
+Docs/Design/DelegationMissionV1/** -text
+Scripts/*delegation_mission* -text
+Tests/Fixtures/presence-d9f71d9-*.json -text
+Game/Scripts/ContinuousWorldTrial.Delegation.cs -text
+Game/Scripts/StartSelectionPanel.DelegationChecks.cs -text
+
+Docs/Design/DelegationTransportV1/** -text
+Scripts/*delegation_transport* -text
+Game/Scripts/StartSelectionPanel.RetryChecks.cs -text
+
+Docs/Design/DelegationInquiryV1/** -text
+Scripts/*delegation_inquiry* -text
+Game/Scripts/StartSelectionPanel.InquiryChecks.cs -text
+
+Docs/Design/DelegationReturnRetryV1/** -text
+Scripts/*delegation_return_retry* -text
+Game/Scripts/StartSelectionPanel.ReturnRetryChecks.cs -text
+
+Docs/Design/CareerV1/** -text
+Scripts/*career* -text
+Tests/Fixtures/ronin-9959278-*.json -text
+Game/Scripts/ContinuousWorldTrial.Career.cs -text
+Game/Scripts/StartSelectionPanel.CareerChecks.cs -text
+
+Docs/Design/CareerMilitaryV1/** -text
+Scripts/*career_military* -text
+Tests/Fixtures/career-72b0665-*.json -text
+Game/Scripts/ContinuousWorldTrial.CareerMilitary.cs -text
+Game/Scripts/StartSelectionPanel.CareerMilitaryChecks.cs -text
+
+Docs/Design/MilitaryInquiryV1/** -text
+Scripts/*military_inquiry* -text
+Tests/Fixtures/military-bd631ba-*.json -text
+Game/Scripts/StartSelectionPanel.MilitaryInquiryChecks.cs -text
+
+Docs/Design/LifeEntryV1/** -text
+Scripts/*life_entry* -text
+Game/Scripts/ContinuousWorldTrial.LifeView.cs -text
+Game/Scripts/StartSelectionPanel.LifeEntryChecks.cs -text
+Game/Scenes/LifeEntryTrial.tscn -text
+Core/Contracts/NewGameSetup.cs -text
+Core/Contracts/OfficerLibraryStore.cs -text
+Tests/NewGameSetupTests.cs -text
+Tests/OfficerLibraryStoreTests.cs -text
+Game/Scripts/OfficerLibraryTrial.cs -text
+Game/Scenes/OfficerLibraryTrial.tscn -text
+Scripts/verify_officer_library.py -text
+Docs/Design/NewGameSetupV1/README.md -text
+Docs/Design/NewGameSetupV1/verification.json -text
+Scripts/check_officer_library_binding.py -text
+# Preserve verified Windows CRLF bytes while retaining trailing-space checks.
+Core/Contracts/NewGameSetup.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/OfficerLibraryStore.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameSetupTests.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/OfficerLibraryStoreTests.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/OfficerLibraryTrial.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/OfficerLibraryTrial.tscn whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_officer_library.py whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_officer_library_binding.py whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/NewGameSetupV1/README.md whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/BASIC_DESIGN_V1.md whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameWorld.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewCampaignStore.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGame*.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/OfficerLibraryTrial.Enhanced.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/NewGameFrontEnd.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameWorldTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameFlowBoundaryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/NewGameFlowV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/*new_game_flow* -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/Show-NewGameCandidate.ps1 -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractModels.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractValidation.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/TravelWorld.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/BranchRoutes.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/RegionalCampaign.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/GenerationSaveStore.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_officer_library_binding.py whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Scripts/verify_field_supply.py whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameMotionChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/NewGameMotionChecks.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MotionResponseV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/*motion_response* -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# ServiceEntryV1: keep byte-hashed source and verification bytes stable across checkout.
+AGENTS.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Castles/Castle.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Characters/Character.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Commands/CommandRequest.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Commands/InspectionSession.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Common/SessionInfrastructure.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Events/EventScheduler.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Messaging/MessageFlow.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Simulation/TaxSimulation.Cancellation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Simulation/TaxSimulation.Communication.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/World/PrototypeScenario.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/World/SeededRandom.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/World/WorldState.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/export-trace.txt -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/metallic.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/failed-bake-cache/4e28bbf15aab6c5d75f105100ed17dfb4d508417607d111a05747f641ea252ac/roughness.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/metallic.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/officer_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV1/roughness.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/far_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mask-counts.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/materials.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/mid_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/near_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV2/source-material-uv.npz -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/far_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/mid_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near.glb -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__01.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__02.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__03.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__04.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__06.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__07.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__09.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near__10.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near_albedo.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near_normal.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Officer3D/TrialV3/near_orm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/arms-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/arms-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/bare-hands-front.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/coat-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/coat-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-armor-off.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-base.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-full.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-only-waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/example-without-waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/footwear-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/footwear-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/legs-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/legs-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/shoulders-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/shoulders-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/source-owners.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/sword-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/sword-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/torso-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/torso-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/waist-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/waist-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerArmorSplitV3/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/body.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hands.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/hide_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackMotionV10/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/arms-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/body-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/body-ownership.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/body.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/coat-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/face-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/footwear-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hair-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hands.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/hide_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/legs-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/material.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/ownership.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/shoulders-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/source-back.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/sword-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/torso-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/waist-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBackViewV9/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/body-front.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/edit-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/ownership.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/abdomen.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/calf_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/calf_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/chest.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/foot_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/foot_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/forearm_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/forearm_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/hand_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/hand_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/head.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/neck.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/pelvis.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/thigh_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/thigh_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/upper_arm_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/parts/upper_arm_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/preserve-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV1/skin-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/body-front.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/body-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/edit-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/empty-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/feature-exclusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/head-protection.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/hidden-construction.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/observed-skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/ownership.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/abdomen.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/calf_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/calf_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/chest.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/foot_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/foot_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/forearm_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/forearm_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/hand_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/hand_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/head.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/neck.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/pelvis.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/thigh_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/thigh_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/upper_arm_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/parts/upper_arm_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/preserve-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerBodyBaseV2/skin-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerContextV1/dialogue-face-reference.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerContextV1/front-32x48.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerContextV1/front-48x64.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerContextV1/front-64x96.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/armor-body-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/armor.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-armor-face-hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-armor-face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-armor-hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-armor.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-base.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-face-hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/composite-hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/face-hidden-completion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/face-observed.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/hair-cast-shadow.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/protected-features.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerEquipmentV2/source-owners.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/body.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hands.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/hide_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/lookup-surface.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/lookup-sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontMotionV4/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/body.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hands.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/hide_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/lookup-surface.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/lookup-sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerFrontWalkV6/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/core_hide_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_arm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_arm_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_boot.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_foot_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_leg_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/far_shoulder.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_arm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_arm_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_boot.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_foot_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_leg_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/near_shoulder.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftMotionV12/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/arms-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/arms-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/assembled-left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/bare-arm-front.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/body-left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/coat-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/coat-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/elbow-control-weight.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/face-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/face-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/footwear-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/footwear-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/hair-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/hair-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/joint-overlap.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/legs-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/legs-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/material.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/ownership.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/shoulders-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/shoulders-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/source-left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/sword-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/sword-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/torso-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/torso-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/waist-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/waist-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerLeftViewV11/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/lacquer-color-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/landmarks.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_forearm_left-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_forearm_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_forearm_right-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_forearm_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shin_left-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shin_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shin_right-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shin_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shoulder_left-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shoulder_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shoulder_right-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_shoulder_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_thigh_left-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_thigh_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_thigh_right-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_thigh_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_torso-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_waist-blue.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/armor_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/beard.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/coat_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/coat_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/collar.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/face_features.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/foot_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/foot_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/hair_short.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/hand_left.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/hand_right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/head_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/underclothes.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/layers/weapon.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/ownership-ids.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/ownership-view.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/parts-contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/blue_armor.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/equipped.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/no_beard.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/no_hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/no_weapon.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/short_hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/underlayer.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/previews/underwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/reference.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/skin-color-mask.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerPartsV1/underlayer.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/core_hide_waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_arm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_arm_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_boot.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_foot_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_leg_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/far_shoulder.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_arm.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_arm_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_boot.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_foot_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_leg_skin.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/near_shoulder.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightMotionV8/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/arms-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/arms-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/arms.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/assembled-right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/bare-arm-front.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/body-right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/coat-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/coat-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/coat.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/elbow-control-weight.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/face-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/face-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/face.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/footwear-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/footwear-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/footwear.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/hair-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/hair-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/hair.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/joint-overlap.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/legs-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/legs-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/legs.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/material.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/ownership.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/shoulders-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/shoulders-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/shoulders.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/source-right.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/sword-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/sword-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/sword.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/torso-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/torso-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/torso.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/waist-hidden.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/waist-occlusion.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerRightViewV7/waist.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerScaleV1/front-32x48.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerScaleV1/front-48x64.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Assets/Trials/OfficerScaleV1/front-64x96.png -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Data/officer_visual_profile.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Data/prototype.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/FieldWorldTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/Main.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/OfficerContextTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/OfficerPartsTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/OfficerScaleTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/TrafficWorldTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/TravelControlTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scenes/TravelWorldTrial.tscn -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/FieldWorldTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/OfficerContextTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/OfficerPartsTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/OfficerScaleTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/ProtocolPanel.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/SceneryAssetLifetimeChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/TrafficWorldTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/TravelControlTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/TravelWorldTrial.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_service_entry_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_service_entry.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v1-tick-0.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v1-tick-1.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v1-tick-2.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v1-tick-3.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v1-tick-4.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-known.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-lost.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-retry.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-tick-0.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-tick-1.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-tick-2.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-tick-3.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v2-tick-4.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-admin-cancelled.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-failure-transit.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-late-transit.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-tick-0.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-tick-1.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-tick-2.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-tick-3.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v3-tick-4.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-cancel-applied.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-cancel-late.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-cancel-transit.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-effect-wait.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-tick-0.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-tick-1.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-tick-2.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-tick-3.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/Fixtures/tax-v4-tick-4.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameService*.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.Service.cs whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ServiceEntryV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# NewGameMilitaryV1 verified inputs: preserve original bytes.
+Core/Contracts/NewGameMilitary*.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.NewMilitary.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Military.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameMilitaryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/NewGameMilitaryV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/*new_game_military* -text whitespace=trailing-space,space-before-tab,cr-at-eol
+.gitattributes -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/ViewportCapture.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/ContactCombat.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Combat.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/ContactCombatTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameCombatTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Combat.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CombatChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_contact_combat.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_contact_combat_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ContactCombatV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ContactCombatV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PersonalWithdrawalV1/PLAN.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.WorldLabels.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Withdrawal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/PersonalWithdrawalTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Withdrawal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_personal_withdrawal.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_personal_withdrawal_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PersonalWithdrawalV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PersonalWithdrawalV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RoutRegroupV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitMessages.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Rout.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/RoutRegroupTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RoutChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_rout_regroup.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_rout_regroup_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RoutRegroupV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.UnitRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitRetryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitRetryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_post_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_post_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostInquiryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/GameProcessExit.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.UnitInquiry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitInquiryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitInquiryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_post_inquiry.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_post_inquiry_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitPostInquiryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitReplyRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.ReplyRecovery.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitCouriers.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitReplyRecoveryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitReplyChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_reply_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_reply_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitReplyRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitHeldDeliveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.HeldDelivery.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitHeldDeliveryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitHeldChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_held_delivery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_held_delivery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitHeldDeliveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.CommandHolding.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.HeldOrder.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitCommandHoldingTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitCommandChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_command_holding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_command_holding_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCommandHoldingV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCommandHoldingV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.OrderDeadline.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitOrderDeadlineTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitDeadlineChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_order_deadline.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_order_deadline_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitOrderDeadlineV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitOrderDeadlineV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.SenderEvidence.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitSenderEvidenceTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitEvidenceChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_sender_evidence.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_sender_evidence_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitSenderEvidenceV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitSenderEvidenceV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Cancellation*.cs -text
+Tests/UnitCancellationTests.cs -text
+Game/Scripts/NewGameFrontEnd.UnitCancelChecks.cs -text
+
+Docs/Design/UnitCancellationV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCancellationV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitCouriers.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitCancellationRecoveryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitCancelRecoveryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Docs/Design/UnitCancellationRecoveryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitCancellationRecoveryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_cancellation_recovery.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_cancellation_recovery_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Renewal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryRenewalTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryRenewalV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryRenewalV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_military_renewal.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_military_renewal_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameRuntime.Mail.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.RepeatedExercise.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/RepeatedExerciseTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RepeatedExerciseChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RepeatedExerciseV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RepeatedExerciseV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_repeated_exercise.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_repeated_exercise_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.Recognition.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Observation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryRecognitionTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Recognition.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RecognitionChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RecognizedMilitaryV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/RecognizedMilitaryV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_recognized_military.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_recognized_military_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.KnownTarget.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/KnownMilitaryTargetTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.KnownTarget.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.KnownTargetChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/KnownMilitaryTargetV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/KnownMilitaryTargetV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_known_military_target.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_known_military_target_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameRuntime.ResponsiveSave.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveSaveV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveSaveV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_responsive_save.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_responsive_save_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Core/Contracts/NewGameMilitary.UnitRecipient.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitRecipientTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitRecipientChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitRecipientV1/*.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitRecipientV1/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_recipient.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_recipient_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Docs/Design/UnitDirectiveV1/** -text
+Scripts/verify_unit_directive.py -text
+Scripts/check_unit_directive_binding.py -text
+Core/Contracts/NewGameMilitary.UnitDirective.cs -text
+Tests/UnitDirectiveTests.cs -text
+Game/Scripts/NewGameRuntime.UnitDirective.cs -text
+Game/Scripts/NewGameFrontEnd.UnitDirectiveChecks.cs -text
+
+Docs/Design/UnitDirectiveRetryV1/** -text
+Scripts/verify_unit_directive_retry.py -text
+Scripts/check_unit_directive_retry_binding.py -text
+Core/Contracts/NewGameMilitary.UnitDirectiveRetry.cs -text
+Tests/UnitDirectiveRetryTests.cs -text
+Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs -text
+Game/Scripts/NewGameFrontEnd.UnitDirectiveRetryChecks.cs -text
+
+Docs/Design/UnitDirectiveHoldingV1/** -text
+Scripts/verify_unit_directive_holding.py -text
+Scripts/check_unit_directive_holding_binding.py -text
+Core/Contracts/NewGameMilitary.UnitDirectiveHolding.cs -text
+Tests/UnitDirectiveHoldingTests.cs -text
+Game/Scripts/NewGameRuntime.UnitDirectiveHolding.cs -text
+Game/Scripts/NewGameFrontEnd.UnitDirectiveHoldingChecks.cs -text
+
+Docs/Design/UnitDirectiveCancellationV1/verification.json -text
+
+Scripts/verify_unit_directive_cancellation.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_directive_cancellation_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+Docs/Design/UnitDirectiveCancelRetryV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_directive_cancel_retry.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_directive_cancel_retry_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitDirectiveCancelRetryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitDirectiveCancelRetrySaveTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UnitDirectiveCancelRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelRetryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for physical cancellation original recovery.
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+AGENTS.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.CommandHolding.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.HeldDelivery.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.HeldOrder.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.ReturnedOriginalPapers.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.SenderEvidence.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitCouriers.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirectiveCancelHolding.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirectiveHolding.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitMessages.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Validation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitDirectiveCancelHoldingV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitDirectiveCancelHoldingV1/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/UnitDirectiveCancelHoldingV1/contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Development/CURRENT_STAGE.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ServiceChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.UnitDirectiveCancelHoldingChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UnitDirectiveCancelHolding.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UnitDirectiveCancelRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UnitDirectiveCancellation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UnitDirectiveRetry.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/Show-NewGameCandidate.ps1 -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_unit_directive_cancel_holding_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_unit_directive_cancel_holding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/UnitDirectiveCancelHoldingTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for real military authority and internal own-head processing.
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+AGENTS.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Authority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.AuthorityScope.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Renewal.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.UnitDirective.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.Validation.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitary.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameMilitaryAuthority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/RegionalCampaign.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryAuthorityV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryAuthorityV1/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/MilitaryAuthorityV1/contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Development/CURRENT_STAGE.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Authority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Military.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_military_authority_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_military_authority.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryAuthorityKnowledgeTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryAuthorityPolicyTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryAuthorityScopeTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryIssuerAuthorityTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/MilitaryOwnHeadAuthorityTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Authority actual entry and four save/restore scenarios.
+Game/Scripts/OfficerLibraryTrial.AuthorityChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for playable entry population, authority encoding, saved UI and nearfield projection.
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+AGENTS.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/GenerationSaveStore.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewCampaignStore.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameWorld.CompactAuthority.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameWorld.StartProjection.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/NewGameWorld.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/RegionalCampaign.NearbyNewGame.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/RegionalCampaign.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PlayableLoopV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PlayableLoopV1/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PlayableLoopV1/contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PlayableLoopV1/verification.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Development/CURRENT_STAGE.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CapacityChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.KnownTarget.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.UsableLayout.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/CapacityProbe/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_playable_loop_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_playable_loop.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameCompactAuthorityTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameCompactMilitaryTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameNearbyProjectionTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/NewGameStartProjectionTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/OperationPanelSaveTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/capacity_profile_probe.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for opaque prepared1x simulation and current evidence.
+.gitignore -text whitespace=trailing-space,space-before-tab,cr-at-eol
+AGENTS.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/GenerationSaveStore.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.PreparedAdvance.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PreparedAdvanceV1/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PreparedAdvanceV1/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PreparedAdvanceV1/contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Design/PreparedAdvanceV1/verification.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/Development/CURRENT_STAGE.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Docs/README.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CapacityChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveSave.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_prepared_advance_binding.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/check_session_generations.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Scripts/verify_prepared_advance.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/PreparedAdvanceIntegrationTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+Tests/PreparedAdvanceTests.cs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Exact bytes for view-only in-game guide acceptance.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PlayGuide.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PlayGuideChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_play_guide.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_play_guide_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayGuideV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayGuideV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for opaque responsive clock control acceptance.
+Core/Contracts/WorldSession.PreparedPause.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/PreparedPauseTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveClock.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Military.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CapacityChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveClockV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveClockV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveClockV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_responsive_clock.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_responsive_clock_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for UI-only manual save capture acceptance.
+Game/Scripts/NewGameRuntime.ResponsiveSave.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveSaveChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SaveCaptureV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SaveCaptureV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/SaveCaptureV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_save_capture.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_save_capture_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bytes for bounded all-speed opaque advancement acceptance.
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.BatchedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/BatchedAdvanceV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/BatchedAdvanceV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/BatchedAdvanceV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_batched_advance.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_batched_advance_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact terrain cache acceptance bytes.
+Game/Scripts/ContinuousTerrainRenderer.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.BatchedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/TerrainCacheV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/TerrainCacheV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/TerrainCacheV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_terrain_cache.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_terrain_cache_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact explicit-time response acceptance bytes.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveClock.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ManualAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ServiceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ManualAdvanceV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ManualAdvanceV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ManualAdvanceV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_manual_advance.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_manual_advance_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact guide-repeat QA acceptance bytes.
+Game/Scripts/NewGameRuntime.PlayGuide.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/GuideReuseV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/GuideReuseV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/GuideReuseV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_guide_reuse.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_guide_reuse_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact typed-submit acceptance bytes.
+Core/Contracts/WorldSession.PreparedSubmit.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/PreparedSubmitTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparedSubmitV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparedSubmitV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparedSubmitV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_prepared_submit.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_prepared_submit_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact tracked preparation queue acceptance bytes.
+Game/Scripts/RuntimePreparationQueue.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveClock.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ManualAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveSave.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparationQueueChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparationQueueV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparationQueueV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PreparationQueueV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_preparation_queue.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_preparation_queue_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact responsive departure acceptance bytes.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.PreparedAdvance.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveClock.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.BatchedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ManualAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PreparedAdvanceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveClockChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ResponsiveDepartureChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.SaveCaptureChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ServiceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WithdrawalChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveDepartureV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveDepartureV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveDepartureV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_responsive_departure.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_responsive_departure_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact responsive local intent bytes.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ServiceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.LocalIntentChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveLocalIntentV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveLocalIntentV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/ResponsiveLocalIntentV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_responsive_local_intent.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_responsive_local_intent_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact historical start edition bytes.
+Core/Contracts/NewGameWorld.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/NewCampaignStore.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/HistoricalStartCatalog.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Data/historical-start-west-v2.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/HakutaiKagami.Core.csproj -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/HistoricalStartCatalogTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/Fixtures/pre-catalog-start-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CapacityChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/source-manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalStartEditionV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_historical_start_edition.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_historical_start_edition_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact historical household bytes.
+Core/Contracts/HistoricalStartCatalog.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/HistoricalHouseholdCatalog.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Data/historical-household-v3.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/HakutaiKagami.Core.csproj -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/HistoricalStartCatalogTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/HistoricalHouseholdTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/Fixtures/pre-household-start-west-v2.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/source-manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/HistoricalHouseholdV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_historical_household.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_historical_household_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact opt-in initial NPC routine bytes.
+Core/Contracts/NewGameWorld.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/NewCampaignStore.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/ContractJson.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/ContractValidation.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/NewGameNpcRoutine.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/NewGameNpcRoutineTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/Fixtures/pre-routine-household-v3.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.CapacityChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.ServiceChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalEditionChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.NpcRoutineChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/current_test_contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/NewGameNpcRoutineV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/NewGameNpcRoutineV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/NewGameNpcRoutineV1/source-manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/NewGameNpcRoutineV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_new_game_npc_routine.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_new_game_npc_routine_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact continuous review evidence bytes.
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayReviewV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayReviewV1/contract.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/PlayReviewV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_play_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_play_review_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/prepare_play_review_recording.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/encode_play_review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact work-conversation evidence bytes.
+Game/Scripts/NewGameRuntime.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.Mail.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.WorkExperience.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.Checks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.LocalIntentChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.PlayReviewChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WorkConversationChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkConversationV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkConversationV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_work_conversation.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_work_conversation_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact work decision UI evidence.
+Docs/Design/WorkDecisionUIV2/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkDecisionUIV2/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_work_decision_ui.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_work_decision_ui_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Exact bottom dialogue evidence.
+Docs/Design/BottomDialogueV1/README.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/BottomDialogueV1/verification.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_bottom_dialogue.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_bottom_dialogue_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Core/Contracts/LocalInspectionFindings.cs -text
+Tests/LocalInspectionFindingsTests.cs -text
+Game/Scripts/NewGameFrontEnd.InspectionFindingsChecks.cs -text
+Docs/Design/InspectionFindingsV1/** -text
+Scripts/verify_inspection_findings.py -text
+Scripts/check_inspection_findings_binding.py -text
+
+Core/Contracts/NewGameWork.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Core/Contracts/WorldSession.WorkCycle.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Tests/NewGameWorkTests.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameRuntime.WorkCycle.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.WorkCycleChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.AuthorityChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.HistoricalHouseholdChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.MilitaryRenewalChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Game/Scripts/NewGameFrontEnd.RepeatedExerciseChecks.cs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/verify_work_cycle.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_work_cycle_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Docs/Design/WorkCycleV1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Game/Scripts/NewGameRuntime.MilitaryWork.cs -text
+Game/Scripts/NewGameFrontEnd.MilitaryWorkChecks.cs -text
+Scripts/verify_military_work.py -text
+Scripts/check_military_work_binding.py -text
+Docs/Design/MilitaryWorkV1/** -text
+Game/Scripts/NewGameFrontEnd.NewMilitaryChecks.cs -text
+
+Core/Contracts/LocalWorkDemand.cs -text
+Tests/LocalWorkDemandTests.cs -text
+Game/Scripts/NewGameFrontEnd.DemandChecks.cs -text
+Scripts/verify_local_demand.py -text
+Scripts/check_local_demand_binding.py -text
+Docs/Design/LocalWorkDemandV1/** -text
+
+Game/Scripts/NewGameRuntime.SupplyWork.cs -text
+Game/Scripts/NewGameFrontEnd.SupplyWorkChecks.cs -text
+Scripts/verify_supply_work.py -text
+Scripts/check_supply_work_binding.py -text
+Docs/Design/SupplyWorkV1/** -text
+
+# Bound transport verification tools
+Scripts/verify_transport_work.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_transport_work_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/build_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/verify_voyage_expense.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_voyage_expense_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/build_integration_candidate_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_runtime_model_package.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

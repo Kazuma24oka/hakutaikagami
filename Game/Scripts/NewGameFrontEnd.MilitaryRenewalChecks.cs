@@ -1,0 +1,38 @@
+using Godot;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using HakutaiKagami.Core.Contracts;
+using HakutaiKagami.Core.Messaging;
+public partial class NewGameFrontEnd
+{
+ const int MilitaryRenewalCheckpoints=21;
+ bool RenewalOldMail=>FlowCase=="renewal-oldmail";
+ async Task MilitaryRenewalStep(int n){await Frame();var s=game!.Session;
+  if(n==1){var a=NewGameMilitary.Anchor(s.DiagnosticSnapshot());game.ExerciseMilitaryLine(new(a.X+20000,a.Y),new(a.X+20000,a.Y+12000));game.Advance(ArmyEnd()+1);}
+  if(n==2){game.ChooseMilitary(NewMilitaryAction.Recall);if(RenewalOldMail){game.ChooseMilitary(NewMilitaryAction.Handoff);game.ChooseMilitary(NewMilitaryAction.Withdraw);}}
+  if(n==3){game.Advance(Math.Max(ArmyEnd(),RenewalOldMail?PersonalEnd():s.Seconds)+1);game.Press("military-frame");}
+  if(n==4&&RenewalOldMail)game.ChooseMilitary(NewMilitaryAction.RemoteRecall);
+  if(n==5&&RenewalOldMail){game.Advance(OriginalCommand().DueAt);game.Advance(OriginalCommandFailure().ReplyDueAt);Check(s.DiagnosticSnapshot().NewMilitary!.CommandHolding!.Holdings.Length==1,"previous-case original remains physically held after known failure");}
+  if(n==6){if(RenewalOldMail){game.ChooseMilitary(NewMilitaryAction.Attach);game.ChooseMilitary(NewMilitaryAction.Reclaim);}game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);game.ChooseMilitary(NewMilitaryAction.Report);game.ChooseMilitary(NewMilitaryAction.Return);}
+  if(n==7){game.Advance(s.Seconds+3);var w=s.DiagnosticSnapshot();Check(w.NewMilitary!.Events.Count(e=>e.Effect==MilitaryEffect.Returned)==1&&!game.OffersMilitary(NewMilitaryAction.Request),"actual first handover without opened notice does not expose renewal option");}
+  if(n==8){if(!RenewalOldMail){var original=s.DiagnosticSnapshot().NewMilitary!.Events.Single(e=>e.Effect==MilitaryEffect.Returned);game.ChooseMilitary(NewMilitaryAction.Inquire);var request=s.DiagnosticSnapshot().NewMilitary!.Requests.Last();game.Advance(s.Seconds+2);var quote=s.DiagnosticSnapshot().NewMilitary!.Events.Single(e=>e.Effect==MilitaryEffect.StatusSent&&e.Source==request.Message);game.SelectUnreadMail(new(quote.Message));game.Press("open");Check(!MessageFlow.Knows(s.DiagnosticSnapshot().Messaging,original.Message,s.PlayerControl.Value),"normal selected-letter button opens only quotation and leaves original return notice unknown");}else OpenAllServiceLetters();Check(game.OffersMilitary(NewMilitaryAction.Request),"normal renewal option appears after opened original or physically received quotation");if(RenewalOldMail)game.ChooseMilitary(NewMilitaryAction.Inquire);}
+  if(n==9){game.ChooseMilitary(NewMilitaryAction.Request);var w=s.DiagnosticSnapshot();Check(NewGameMilitary.Cases(w).Length==2&&w.NewMilitary!.Requests.Last().Input.CycleContract==NewGameMilitary.RenewalContract,"normal UI explicitly versions a distinct second military case");Check(!game.OffersMilitary(NewMilitaryAction.Pickup),"old permission and custody do not transfer into second case");}
+  if(n==10){game.Advance(s.Seconds+2);OpenAllServiceLetters();Check(game.OffersMilitary(NewMilitaryAction.Accept)&&!game.OffersMilitary(NewMilitaryAction.Request),"received old inquiry status cannot close new case or hide fresh offer");}
+  if(n==11){game.ChooseMilitary(NewMilitaryAction.Accept);game.Advance(s.Seconds+2);Check(!game.OffersMilitary(NewMilitaryAction.Pickup),"second actual permission still requires its own opened notice");}
+  if(n==12){OpenAllServiceLetters();Check(game.OffersMilitary(NewMilitaryAction.Pickup),"second known permission offers actual local pickup");}
+  if(n==13){game.ChooseMilitary(NewMilitaryAction.Pickup);game.ChooseMilitary(NewMilitaryAction.Load);var w=s.DiagnosticSnapshot();Check(w.ResourceLots.Single(l=>l.Id==NewGameMilitary.Carry).MobileHolder==w.PlayerControl,"old handoff cannot silently move second-case loaded food to a unit");}
+  if(n==14){game.ChooseMilitary(NewMilitaryAction.Deploy);game.Press("military-frame");}
+  if(n==15){if(RenewalOldMail)game.ChooseMilitary(NewMilitaryAction.DeliverHeldRecallHome);}
+  if(n==16){if(RenewalOldMail){game.Advance(s.DiagnosticSnapshot().NewMilitary!.HeldDelivery!.Transfers.Last().DueAt);var w=s.DiagnosticSnapshot();Check(w.NewMilitary!.CommandHolding!.Outcomes.Last().Received&&!w.NewMilitary.CommandHolding.Outcomes.Last().Applied,"actual old original can be physically received without commanding new case");Check(!w.NewMilitary.Orders.Any(o=>o.Id.Value.StartsWith("order:unit-post/")),"old loan authority is not revived through late receipt");}var a=NewGameMilitary.Anchor(s.DiagnosticSnapshot());game.ExerciseMilitaryLine(new(a.X+25000,a.Y),new(a.X+25000,a.Y+10000));}
+  if(n==17){game.Advance(ArmyEnd()+1);Check(game.MilitaryModelsFit(),"actual same second-case garrison models fit camera after new movement");}
+  if(n==18)game.ChooseMilitary(NewMilitaryAction.Recall);
+  if(n==19){game.Advance(ArmyEnd()+1);game.ChooseMilitary(NewMilitaryAction.Enter);game.ChooseMilitary(NewMilitaryAction.Unload);game.ChooseMilitary(NewMilitaryAction.Report);game.ChooseMilitary(NewMilitaryAction.Return);}
+  if(n==20){game.Advance(s.Seconds+3);OpenAllServiceLetters();var w=s.DiagnosticSnapshot();Check(w.NewMilitary!.Events.Count(e=>e.Effect==MilitaryEffect.Returned)==2,"two distinct military cases complete actual physical handover");Check(w.ResourceLots.Where(l=>l.Kind=="rice").Sum(l=>l.Quantity)==NewGameMilitary.InitialStock-w.NewMilitary.Uses.Sum(u=>u.Consumed),"lifetime depot and carried stock reflect both cases without reset");Check(w.Units.All(u=>u.Commander==w.NewMilitary.Terms.Principal),"same real surviving units return to original principal");game.Press("military-frame");}
+  game.Press("save");await WaitSave();game.Refresh();
+ }
+ async Task BeginMilitaryRenewalContinuation(){for(int n=1;n<=7;n++)await MilitaryStep(n);for(int n=0;n<MilitaryRenewalCheckpoints;n++){await MilitaryRenewalStep(n);game!.SaveCheckpoint("militaryrenewal"+n);await Capture("s"+n,true);}await Capture("final",true);}
+ async Task RestoreMilitaryRenewal(){Press("load-list");await Frame();string id=File.ReadAllText(Path.Combine(TestOutput,"campaign-instance.txt"));savedList.Select(Array.FindIndex(savedRows,r=>r.Profile.Instance==id));Press("load");await Frame();for(int n=0;n<MilitaryRenewalCheckpoints;n++){game!.LoadCheckpoint("militaryrenewal"+n);await Frame();await Frame();Check(game.Pose()==File.ReadAllText(Path.Combine(TestOutput,"s"+n+"-pose.json")),"actual case identity/person/garrison/stock/courier pose restored at"+n);await Capture("restored-s"+n,true);for(int next=n+1;next<MilitaryRenewalCheckpoints;next++)await MilitaryRenewalStep(next);Check(ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot())==File.ReadAllText(Path.Combine(TestOutput,"final-world.sha256")),"same two-case lifetime stock and old-mail future from"+n);await Capture("continued-s"+n,true);GD.Print("MILITARY_RENEWAL_RESTORED "+n);}}
+ async Task RunMilitaryRenewalChecks(){if(OS.GetCmdlineUserArgs().Contains("--new-game-restore"))await RestoreMilitaryRenewal();else await BeginNewMilitaryFlow();if(OS.GetCmdlineUserArgs().Contains("--military-renewal-film")){game!.LoadCheckpoint("militaryrenewal16");game.Press("auto");string dir=Path.Combine(TestOutput,"film");Directory.CreateDirectory(dir);for(int n=0;n<180;n++){await Frame();ViewportCapture.Save(GetViewport(),Path.Combine(dir,"renewal-"+n.ToString("D3")+".png"));}game.Press("pause");}File.WriteAllText(Path.Combine(TestOutput,OS.GetCmdlineUserArgs().Contains("--new-game-restore")?"restore-checks.json":"check-checks.json"),System.Text.Json.JsonSerializer.Serialize(assertions));GD.Print("MILITARY_RENEWAL_PASSED "+FlowCase);}
+}

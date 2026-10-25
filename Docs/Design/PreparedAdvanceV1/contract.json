@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "tests": 2040,
+  "baseline": 2010,
+  "added": 30,
+  "criteria": 5,
+  "scope": "Opaque private generation capture, exact atomic publication, automatic1x next-second prefetch only, normal source-changing inputs invalidate speculation. No save schema change.",
+  "new_cases": [
+    "prefetch-1000",
+    "prefetch-stale",
+    "prefetch-save",
+    "prefetch-fault",
+    "prefetch-notice"
+  ],
+  "save_checkpoints": 11
+}

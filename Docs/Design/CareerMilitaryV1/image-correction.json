@@ -1,0 +1,10 @@
+{
+  "result": "Initial source scene and restored state had identical full world/pose; only first-frame force label sizing differed by1724 pixels. All other16 saved views matched. Runtime viewport resize now refreshes projection-dependent labels, rather than changing comparison tolerance.",
+  "proofs": {
+    "Docs/Design/CareerMilitaryV1/runtime-local/first-image-failure/s0.png": "8793fc179e9437625bef7011257f0480ccd4d6a39dcc9cb74cbb3491f455eab0",
+    "Docs/Design/CareerMilitaryV1/runtime-local/first-image-failure/restored-s0.png": "c20dfe159d4b91d8099172bfb29835cb51d9d2fd3a7febffc59ed28fc49e719b",
+    "Docs/Design/CareerMilitaryV1/runtime-local/first-image-failure/s0-rect.json": "4952e472f7a752816f63126c525739142fab69d090d552da30db53325a73e978",
+    "Docs/Design/CareerMilitaryV1/runtime-local/first-image-failure/restore.log": "3eca32d804e485becf1b203f7fdd5817eeab05da018e4727e6d75104af65241c",
+    "Docs/Design/CareerMilitaryV1/runtime-local/first-image-failure/check.log": "3eca32d804e485becf1b203f7fdd5817eeab05da018e4727e6d75104af65241c"
+  }
+}
