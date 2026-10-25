@@ -17,7 +17,7 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "27799594c3ec288fa2b1976127d49d77c7900a77983ca70768d338e123146999",
+    "Docs/Development/OPERATING_POLICY.md": "872f598a0414bcb208d2e136c76ad0dd8cc40b2fe6926a42a8525c0565f2f38e",
     "Docs/Development/ProgressV1/estimate.json": "26a4365cfba622b928049121e2eae2c2841b1b60b7df23208458bf2cef4a1196",
     "Scripts/build_progress_report.py": "2f77bc8d74ef02d00e535ab382a007b18e2c30a71eaff8cf552f7dbcf337eced",
     "Scripts/check_progress_report.py": "7ec4cb1d2c8a421dfe7554e7a772f07c591fed7c7c81be9695eb9618a0b84e84",
@@ -1554,7 +1554,8 @@
       }
     ],
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
-    "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80"
+    "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
+    "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。"
   },
   "release": {
     "functional_items": 59,
