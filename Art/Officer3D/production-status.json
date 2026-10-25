@@ -157,5 +157,11 @@
     "fixture": "one line, 3 friendly commanders/units; delays1/3/5; same world camera; static national context/local11x7 movement",
     "normal_save": "existing v5 Officers.Military schema1 extension",
     "source_art_changes": 0
+  },
+  "source_clarification_2026_10_25": {
+    "user_statement": "VtuberStudioなど外部で作ったものを含む。現在はTripoとGPTで生成。正式キャラクターは別途制作する予定。",
+    "status": "provisional_source_includes_external_elements_terms_not_verified",
+    "current_assets": "local_only",
+    "replacement": "planned; preserve shared appearance IDs, rig and animation contracts"
   }
 }
