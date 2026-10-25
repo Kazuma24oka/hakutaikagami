@@ -2052,37 +2052,40 @@
       "Tests/WorkRelationsTests.cs": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b"
     },
     "core_test": {
-      "passed": 39,
-      "trx": "Docs/Design/WorkContactReviewV1/runtime-local/tests/contact-review.trx",
-      "sha256": "246308ee10fca607ac34ac39c27419b3a289700a0fe7ec233fa1ec385fddcc99",
-      "scope": "NewGameServiceTests + WorkRelationsTests; Core unchanged; full integration run recorded separately when finished"
+      "passed": 2373,
+      "trx": "Docs/Design/WorkContactReviewV1/runtime-local/integration-tests/integration-all.trx",
+      "sha256": "99ba7aa594bbcc9d66c0e6e0fa93f3e859997a5dd6c8078ad87d8dc9703b0aa8",
+      "scope": "All current Core tests executed once for integration; Game/Core DLL exact match"
     },
-    "latest_game_verification": "Docs/Design/WorkContactReviewV1/verification.json",
-    "latest_game_verification_sha256": "89695f6f8a995df7f0aeab385f87afb346218d06673c20e297892c7ec57bef17",
+    "latest_game_verification": "Docs/Development/IntegrationCandidateV1/verification.json",
+    "latest_game_verification_sha256": "5cb4e4dd19f91791456cfeb05af62cab44b667f5adf0ded4aa187710605b08a7",
     "gpu": {
-      "processes": 2,
-      "comparisons": 10,
-      "scope": "5 checkpoints restored and continued; world/pixels/fullpose"
+      "processes": 6,
+      "comparisons": 30,
+      "scope": "Current normal/loss debrief4 processes/20 pairs plus current contact-review2 processes/10 pairs"
     },
-    "audit_runtime_tests": "主家を変えた後も新旧の人物を選んで縁の記録を見返せます。遠方の相手には現地の会話や権限を出さず、新主家の点検と担当を別に獲得するところまで実行。関連39件と実画面・保存復旧が成功。現モデルは仮素材としてローカル維持し、正式キャラへの差替えを予定。",
+    "audit_runtime_tests": "地域プレイ版のコード統合候補をDraft PR #1へ整理。全Core2373件、現行実Godot6回/30組、Git-only別フォルダのCore/Gameビルド、コード基準のGitHubCI2件が成功。main/design/foundationは未変更。仮3Dはローカル限定のままで、mainへのコード統合は別承認待ち。",
     "current_stage_test": {
-      "passed": 39,
-      "added_this_stage": 0,
+      "passed": 2373,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/WorkContactReviewV1/runtime-local/tests/contact-review.trx",
-      "trx_sha256": "246308ee10fca607ac34ac39c27419b3a289700a0fe7ec233fa1ec385fddcc99",
-      "scope": "NewGameServiceTests + WorkRelationsTests; Core unchanged; full integration run recorded separately when finished"
+      "trx": "Docs/Design/WorkContactReviewV1/runtime-local/integration-tests/integration-all.trx",
+      "trx_sha256": "99ba7aa594bbcc9d66c0e6e0fa93f3e859997a5dd6c8078ad87d8dc9703b0aa8",
+      "scope": "All current Core tests executed once for integration; Game/Core DLL exact match"
     },
-    "current_stage_summary": "主家を変えた後も新旧の人物を選んで縁の記録を見返せます。遠方の相手には現地の会話や権限を出さず、新主家の点検と担当を別に獲得するところまで実行。関連39件と実画面・保存復旧が成功。現モデルは仮素材としてローカル維持し、正式キャラへの差替えを予定。",
+    "current_stage_summary": "地域プレイ版のコード統合候補をDraft PR #1へ整理。全Core2373件、現行実Godot6回/30組、Git-only別フォルダのCore/Gameビルド、コード基準のGitHubCI2件が成功。main/design/foundationは未変更。仮3Dはローカル限定のままで、mainへのコード統合は別承認待ち。",
     "screens": [
       {
-        "title": "以前の主君との縁を記録として確認",
-        "path": "Docs/Design/WorkContactReviewV1/runtime-local/contactreview-normal/former-lord-memory.png"
+        "title": "帰還から次の配置へ",
+        "path": "Docs/Development/IntegrationCandidateV1/runtime-local/debrief-loss/return-feedback.png"
       },
       {
-        "title": "新しい主君の担当を別途引受",
-        "path": "Docs/Design/WorkContactReviewV1/runtime-local/contactreview-normal/new-lord-duty.png"
+        "title": "辞去と実際の引継ぎ",
+        "path": "Docs/Design/WorkContactReviewV1/runtime-local/contactreview-normal/new-service.png"
+      },
+      {
+        "title": "新旧の縁と新しい役目",
+        "path": "Docs/Design/WorkContactReviewV1/runtime-local/contactreview-normal/former-lord-memory.png"
       }
     ]
   },
@@ -2143,7 +2146,7 @@
     "review_prompt": "地域一巡の方向性は承認済み。基盤検証は終了し、遊べる機能の追加を中心に進めます。"
   },
   "next_priorities": [
-    "地域プレイ版のコード統合候補を準備し、mainへの統合は別承認で扱う",
+    "レビュー用PR #1のmain統合は別承認。仮モデルは含めない",
     "任務の正式評価・身分と成長・人間関係へ接続する",
     "勢力間の実戦・包囲/攻城と自律判断へ広げる",
     "生産/交易・所領運用・外交/社会/継承を接続する",

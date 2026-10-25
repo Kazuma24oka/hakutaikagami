@@ -1851,3 +1851,6 @@ Scripts/check_progress_report.py -text whitespace=blank-at-eol,blank-at-eof,spac
 
 Scripts/verify_voyage_expense.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 Scripts/check_voyage_expense_binding.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+Scripts/build_integration_candidate_report.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+Scripts/check_runtime_model_package.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

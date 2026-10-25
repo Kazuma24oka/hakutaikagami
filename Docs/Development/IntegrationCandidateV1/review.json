@@ -1,0 +1,38 @@
+{
+  "title": "地域プレイ版：main統合候補",
+  "code_revision": "29e86854e7f61ed256b217b4fcbcde8ee6dd23aa",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/1",
+  "status": "コード側の確認完了・main統合の承認待ち",
+  "core_tests": {
+    "status": "PASSED",
+    "passed": 2373,
+    "failed": 0,
+    "skipped": 0
+  },
+  "source_build": "PASSED",
+  "remote_ci": "PASSED at code revision",
+  "gameplay": [
+    {
+      "title": "帰還から次の配置へ",
+      "description": "返報と返納を確認。無損耗なら先の布陣、損耗ありなら近場の隊列確認へ、新しい許可を経て残った兵で動く。",
+      "image": "Docs/Development/IntegrationCandidateV1/runtime-local/debrief-loss/return-feedback.png"
+    },
+    {
+      "title": "辞去と実際の引継ぎ",
+      "description": "今の主君のもとで働くかを会話で選ぶ。兵・兵糧・返報の引継ぎを終え、同じ人物が浪人として移動し別の家へ仕官する。",
+      "image": "Docs/Design/WorkContactReviewV1/runtime-local/contactreview-normal/new-service.png"
+    },
+    {
+      "title": "新旧の縁と新しい役目",
+      "description": "旧主君との縁は本人の記録として保持。新主君の評価と担当は別に獲得し、遠方の相手へ現地の会話や権限を出さない。",
+      "image": "Docs/Design/WorkContactReviewV1/runtime-local/contactreview-normal/former-lord-memory.png"
+    }
+  ],
+  "remaining": [
+    "別主家の軍務の権限・兵力・資産を流用しない軍台帳の分離",
+    "実在勢力間の戦争・攻城と政治AI",
+    "経済・所領と全国のデータ/統合受入"
+  ],
+  "assets": "現モデルはTripo/GPT等と外部ツール由来の要素を含む仮素材。正式キャラクターは別途制作予定。モデル本体・描画画像・保存・ツールはローカル限定で、コードのみを統合候補とする。Gitからのビルドと、仮モデルを含む見た目の再現は別。",
+  "approval": "mainへの新規mergeは別承認が必要。prototype/godot-foundationへのcommit/pushの承認をmainへ拡張しない（OPERATING_POLICY.md）。"
+}
