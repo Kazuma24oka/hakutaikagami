@@ -234,3 +234,5 @@ Confirmedは既存確定原則、Designは現行基本設計、Decisionsは採�
 - [仕事から軍務の判断へ](Design/MilitaryWorkV1/README.md)
 
 - [既知の陸路記録に基づく点検需要](Design/LocalWorkDemandV1/README.md)
+
+- [軍務の兵糧準備を仕事欄へ](Design/SupplyWorkV1/README.md)

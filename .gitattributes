@@ -1835,3 +1835,9 @@ Game/Scripts/NewGameFrontEnd.DemandChecks.cs -text
 Scripts/verify_local_demand.py -text
 Scripts/check_local_demand_binding.py -text
 Docs/Design/LocalWorkDemandV1/** -text
+
+Game/Scripts/NewGameRuntime.SupplyWork.cs -text
+Game/Scripts/NewGameFrontEnd.SupplyWorkChecks.cs -text
+Scripts/verify_supply_work.py -text
+Scripts/check_supply_work_binding.py -text
+Docs/Design/SupplyWorkV1/** -text
