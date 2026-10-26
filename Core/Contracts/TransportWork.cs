@@ -48,7 +48,7 @@ public static class TransportWork
     }
     internal static long WalletBefore(ContractWorld w,EntityId actor,long at,long revision)
     {
-        var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+PersonalCompanions.Net(w,id,at,revision)+Net(w,id,at,revision)+VoyageExpense.Net(w,id,at,revision);
+        var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+PrivateInformation.Net(w,id,at,revision)+PersonalCompanions.Net(w,id,at,revision)+Net(w,id,at,revision)+VoyageExpense.Net(w,id,at,revision);
         foreach(var p in w.WorkCycle!.Payments.Where(p=>Before(p.At,p.Revision,at,revision))){var t=w.Tasks.Single(t=>t.Id==p.Task);if(t.Issuer==actor)n-=p.Amount;if(t.Executor==actor)n+=p.Amount;}
         return n;
     }

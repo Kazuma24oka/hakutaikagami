@@ -106,6 +106,8 @@ public sealed class ContractWorld
     public CompanionState? Companions {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public TruceState? Truces {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public PrivateInformationState? PrivateInformation {get;set;}
     // Pure location reconstruction only; the caller replaces Branches and never
     // mutates shared arrays, messaging, or any nested state.
     internal ContractWorld ForkTransportLocation()=>(ContractWorld)MemberwiseClone();

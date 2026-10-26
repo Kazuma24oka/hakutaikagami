@@ -1901,3 +1901,8 @@ Docs/Design/PersonalCompanionsV1/** -text
 Game/Scripts/NewGameRuntime.Truce.cs -text
 Scripts/verify_truce_negotiation.py -text
 Docs/Design/TruceNegotiationV1/** -text
+
+# Private contact and dated sourced road knowledge verification.
+Game/Scripts/NewGameRuntime.PrivateInformation.cs -text
+Scripts/verify_private_information.py -text
+Docs/Design/PrivateInformationV1/** -text
