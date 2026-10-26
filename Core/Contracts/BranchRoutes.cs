@@ -161,6 +161,7 @@ public static class BranchRoutes
         foreach(var evidence in w.Evidence.Where(e=>(e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||RegionalCampaign.Enabled(w)&&e.Claim.StartsWith("route-open:",StringComparison.Ordinal)))){
             var edge=GraphEdges(w).Single(e=>e.Id==evidence.Claim[(evidence.Claim.StartsWith("route-open:")?11:12)..]);
             if(!w.Knowledge.Any(k=>k.Character==evidence.Observer&&k.Evidence==evidence.Id))throw new InvalidDataException("Closure claim lacks personal knowledge");
+            if(PrivateInformation.IsSourceReport(w,evidence))continue;
             if(evidence.Message is {} message){var m=w.Messaging.Messages.Single(m=>m.Id==message.Value);
                 if(m.Kind!="route-observation"||m.Body!=evidence.Claim||m.CreatedAt!=evidence.ObservedAt||
                     !w.Evidence.Any(e=>e.Message==null&&e.Observer.Value==m.SenderId&&e.Claim==m.Body&&e.ObservedAt==m.CreatedAt))throw new InvalidDataException("Closure report lacks source observation");}
