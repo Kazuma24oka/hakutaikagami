@@ -17,11 +17,11 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "a13b1730411818857f5c8303a7db62444880010daf07c74940f4f2ad34518e53",
-    "Docs/Development/ProgressV1/estimate.json": "da0380b837c3973cc536542fbe36384caf17c136026e8d35c264aa1f89e11188",
+    "Docs/Development/OPERATING_POLICY.md": "61160acdbb103bb1e55471f54326780169beaa18a3130a02c0fa54fb68047a34",
+    "Docs/Development/ProgressV1/estimate.json": "10c1ed5e24ffac1d5d461a12c16e18cff93dc159203e60c81a7a097e5a013e35",
     "Scripts/build_progress_report.py": "53156166aaad513918de9173fb38d33f63f22beeaf27a48000490dc3c95e4956",
     "Scripts/check_progress_report.py": "6740ba6779b4d6604883c1aaaa423a4739fa7fa18fd84266a38c43ffd925ff21",
-    "Scripts/progress_estimate.py": "7590b28cc6b72857d5d69d9be34a3dc6e72fe36da14826f006119288076ba34b"
+    "Scripts/progress_estimate.py": "7de6c1db938a77e470e25fce1ee2b60210e1d048d26b82fb895cae488b3943fd"
   },
   "items": [
     {
@@ -185,7 +185,7 @@
       "id": "BD-12",
       "status": "normal",
       "existing": "初期の個人随行の階層と、主家の兵/一時指揮の名簿を分ける。 個人随行協力の現地加入/終了・手当/未払い・本人と別々の実陸路移動・点検委任/返報を通常開始に接続。所属/主従/兵は変更しない。 無所属者と実仕事/開封返報を経て個人の実主従を追加/解消。手当・債務・組織所属を分離。 円満辞去した本人を、別の直属合意で迎えられる。",
-      "remaining": "正式な家臣登用/所属離脱、海上/遠隔の指示、大集団の運用と外観受入へ拡張。",
+      "remaining": "一般の家臣層/非円満離反、海上/遠隔の指示、大集団と外観受入への拡張。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -1657,7 +1657,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "全60区分の実装/通常入口/残件と大工程の終了条件を再監査し、次の作業順を組み直す",
+    "人口/労働/季節収支/凶作/救済を3地域でつなぐ。評価訂正分を除き1ポイント以上の実装増分まで統合承認を求めない。",
     "R5：城・勢力・家督の変化と個別の履行",
     "各地域の生産・人物・軍事・交渉の一巡を拡張",
     "全国史実データと活動NPCを段階的に統合",

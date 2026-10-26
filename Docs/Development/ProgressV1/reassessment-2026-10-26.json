@@ -1,0 +1,4338 @@
+{
+  "schema": 1,
+  "base_main": "0b122b29d821bbc4abf1c81a957ccca69487baf6",
+  "base_code_head": "3bf260e12ef97d6ba8460b037347ec546f211dca",
+  "scope": "60-item static source/entry/evidence audit; not all-product runtime acceptance",
+  "count": 60,
+  "items": [
+    {
+      "id": "BD-01",
+      "status": "normal",
+      "existing": "同じ武将で開始・仕事・移動・軍務・帰還する一巡の一部が通常入口につながる。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。",
+      "remaining": "主要な身分経路、所領経営・外交・実戦・帰属変化を全国の同じ保存世界で一続きにする。",
+      "evidence": [
+        {
+          "path": "Game/Scripts/NewGameFrontEnd.cs",
+          "sha256": "2003ad00d43ad7bbb66440a3e865152389054ec40ae81e528368a3a8bd7b4956",
+          "bytes": 27077,
+          "symbols": [
+            "NewGameFrontEnd"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.cs",
+          "sha256": "081f523bceb91a69655c3a782dd513db2cb6fc9b734333b1cbc0662d1d385854",
+          "bytes": 22850,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/SupplyWorkV1/verification.json",
+          "sha256": "bf0e0f8129b58ba706588e8b26aa4d8b0174aad79c51fb505e1fd497e61ddc64",
+          "bytes": 354293,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
+          "sha256": "5b2027fd00401106b7e49c83d480419aaf41b41a7c637b6977dc172af92af223",
+          "bytes": 2800,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/ServiceDirectionV1/verification.json",
+          "sha256": "6138552d9582b584173897bf2735541e95733905cc91cd8fe3eee0c59aeede51",
+          "bytes": 166319,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-02",
+      "status": "foundation",
+      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。",
+      "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/StartConfiguration.cs",
+          "sha256": "af9185ef9566590cc684ef91b0e10b725b20ede1934c77f17144e3f62aaf4b08",
+          "bytes": 8860,
+          "symbols": [
+            "StartTemplate",
+            "HistoryMode",
+            "PersonOrigin",
+            "StartSelection",
+            "StartResourcePrice",
+            "StartBudgetPolicy",
+            "StartPackage",
+            "StartCheck",
+            "StartConfiguration"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/HistoricalStartCatalog.cs",
+          "sha256": "854aba437a04c2e485760b57706742e157034f5b7f4c3babe512459ac77abf26",
+          "bytes": 3164,
+          "symbols": [
+            "HistoricalStartPerson",
+            "HistoricalStartEdition",
+            "HistoricalStartCatalog"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/StartConfigurationTests.cs",
+          "sha256": "1cfbf078dbf3c25b36bf1bc86315e2514a20221ad341e7bb84d701c9e0eb2850",
+          "bytes": 8538,
+          "symbols": [
+            "StartConfigurationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-03",
+      "status": "design_only",
+      "existing": "基本方針と受入予定がある。",
+      "remaining": "史実事件の前提・人物行動との競合・分岐を実装し、全モードで強制上書きがないことを検査する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/StartConfiguration.cs",
+          "sha256": "af9185ef9566590cc684ef91b0e10b725b20ede1934c77f17144e3f62aaf4b08",
+          "bytes": 8860,
+          "symbols": [
+            "StartTemplate",
+            "HistoryMode",
+            "PersonOrigin",
+            "StartSelection",
+            "StartResourcePrice",
+            "StartBudgetPolicy",
+            "StartPackage",
+            "StartCheck",
+            "StartConfiguration"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-04",
+      "status": "normal",
+      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。",
+      "remaining": "製品目標の活動人物3000・拠点1000・活動部隊500を指定の最低環境で検査する。静止した測定用人物と活動NPCを区別する。",
+      "evidence": [
+        {
+          "path": "Core/World/JapanGeography.cs",
+          "sha256": "9a606749c1a9276796b7b4754f929f1baf6defb5a451299d904f01b2d53fcd57",
+          "bytes": 3351,
+          "symbols": [
+            "GeoCoordinate",
+            "GeoMillimeters",
+            "GeoPolygon",
+            "GeoLandmark",
+            "GeoSource",
+            "JapanCatalog",
+            "JapanGeography"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameFrontEnd.CapacityChecks.cs",
+          "sha256": "a98863f064b8d372de51da5d5d0ebe6d572b5231695b63d6dcfed50a9a1853ff",
+          "bytes": 5079,
+          "symbols": [
+            "NewGameFrontEnd"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameFrontEnd.NpcRoutineChecks.cs",
+          "sha256": "0d7f1b7b3a955de9c10bcf13c501dd73be560824044b4e04a040f9879a076443",
+          "bytes": 5475,
+          "symbols": [
+            "NewGameFrontEnd"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/SupplyWorkV1/verification.json",
+          "sha256": "bf0e0f8129b58ba706588e8b26aa4d8b0174aad79c51fb505e1fd497e61ddc64",
+          "bytes": 354293,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-05",
+      "status": "normal",
+      "existing": "新規/ロード/武将作成、グループ複製、城/人物選択と開始配置の整合検査がある。",
+      "remaining": "全開始身分をその後の遊びへ接続し、全国の史実配置と作成武将を製品データで確認する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/OfficerLibraryStore.cs",
+          "sha256": "b59d2ccafffc30bb0771a9d7a23347d5ac1b2729a9fb8ca3cbcc718af60928d3",
+          "bytes": 2476,
+          "symbols": [
+            "OfficerLibraryStore"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameFrontEnd.cs",
+          "sha256": "2003ad00d43ad7bbb66440a3e865152389054ec40ae81e528368a3a8bd7b4956",
+          "bytes": 27077,
+          "symbols": [
+            "NewGameFrontEnd"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameSetupTests.cs",
+          "sha256": "ab2a7766dc07e451b5961a9c2e578997e2e5cd66106f3b7de225530a418e1a5b",
+          "bytes": 8804,
+          "symbols": [
+            "NewGameSetupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-06",
+      "status": "foundation",
+      "existing": "生死・成人資格のデータと軍務での本人退避がある。捕縛からの逃亡とは別。",
+      "remaining": "負傷・拘束・捕縛・解放・逃亡という人物の状態遷移と、その操作制限/保存復旧を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Withdrawal.cs",
+          "sha256": "5914e0a06ed657340f4bc0d0fdf04391d0b017968b21c881ade377ce181146aa",
+          "bytes": 16766,
+          "symbols": [
+            "PersonalJourney",
+            "TroopSighting",
+            "TroopDispatch",
+            "TroopReceipt",
+            "TroopReply",
+            "PersonalWithdrawalState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/PersonalWithdrawalTests.cs",
+          "sha256": "4df10552e177e4d521fd4577bfbbaf1c4cbd95f5357f86d754fc395981fe7b3a",
+          "bytes": 18572,
+          "symbols": [
+            "PersonalWithdrawalTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-07",
+      "status": "foundation",
+      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。",
+      "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameWorld.cs",
+          "sha256": "49d259f226addffffb2aeeda9669c20645d404aba751258e75acd0ddd171cef9",
+          "bytes": 25217,
+          "symbols": [
+            "NewGameState",
+            "NewGameWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MissionReviewTests.cs",
+          "sha256": "f457e8e196f7ae5f80c2c6c03ff937051954194ceeb73aa8f596d860bab8baaf",
+          "bytes": 10513,
+          "symbols": [
+            "MissionReviewTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-08",
+      "status": "design_only",
+      "existing": "個人目標と年代記の終了条件は基本設計にある。",
+      "remaining": "目標達成、失職/主家滅亡、1650年、本人死亡について終了/継続を遊びとして接続する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-09",
+      "status": "normal",
+      "existing": "仕官申出・条件開封・同意・辞去と軍務返還待ちが通常入口につながる。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。 他家の家臣本人の円満辞去を願書/旧主判断/本人受領/結果認識へ分けて接続。",
+      "remaining": "解任・出奔・離反と新主従への変化、身分ごとの進退を全て接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameService.cs",
+          "sha256": "b2c0915adf09e00547e89043174f36fab3f909c43c4d0deba40424282de7f951",
+          "bytes": 16468,
+          "symbols": [
+            "ServiceInput",
+            "ServiceCase",
+            "ServiceRequest",
+            "ServiceState",
+            "ServiceCard",
+            "ServiceView",
+            "NewGameService"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameFrontEnd.ServiceChecks.cs",
+          "sha256": "5369eebc846d8f9dcdf1dda2425101014acbc62331731a5a025465e2b9cde314",
+          "bytes": 7057,
+          "symbols": [
+            "NewGameFrontEnd"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameServiceTests.cs",
+          "sha256": "73b302ea2ecb57ff4b109f447136d6f026a05947b759d6f5f86b90c93c5b3011",
+          "bytes": 11005,
+          "symbols": [
+            "NewGameServiceTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkDuty.cs",
+          "sha256": "c5505b9b3aa5866627a2efc0b20dc6d5b11f085387e50719f82a49b399fa1816",
+          "bytes": 6213,
+          "symbols": [
+            "WorkDutyAgreement",
+            "WorkDuty",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkDutyTests.cs",
+          "sha256": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1",
+          "bytes": 6435,
+          "symbols": [
+            "WorkDutyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkDutyV1/verification.json",
+          "sha256": "bf474ed5a6140fc80dd79acccf80fbf8c0132153d65348460899a3c04a38a52c",
+          "bytes": 153036,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkRelations.cs",
+          "sha256": "464dec242e3d5eba617e8fd335cf5f0ce2d1cfe40ff791b255a7013a7dfa0326",
+          "bytes": 4769,
+          "symbols": [
+            "WorkTrustFact",
+            "WorkContactProof",
+            "WorkContact",
+            "WorkRelations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkRelationsTests.cs",
+          "sha256": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b",
+          "bytes": 8173,
+          "symbols": [
+            "WorkRelationsTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkRelationsV1/verification.json",
+          "sha256": "f2395cc53a624c0d803ed854323d0e58e75a907e7a8659c4394201e22db1840f",
+          "bytes": 156217,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
+          "sha256": "5b2027fd00401106b7e49c83d480419aaf41b41a7c637b6977dc172af92af223",
+          "bytes": 2800,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/ServiceDirectionV1/verification.json",
+          "sha256": "6138552d9582b584173897bf2735541e95733905cc91cd8fe3eee0c59aeede51",
+          "bytes": 166319,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkContactReviewV1/verification.json",
+          "sha256": "89695f6f8a995df7f0aeab385f87afb346218d06673c20e297892c7ec57bef17",
+          "bytes": 162122,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PersonalCompanions.RetainerRelease.cs",
+          "sha256": "ffd33522e6ff2ba0e42159b89516eb6783063dd82a132306c54651bf2c5c5b2b",
+          "bytes": 15482,
+          "symbols": [
+            "RetainerReleaseCard",
+            "PersonalCompanions",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/RetainerReleaseV1/verification.json",
+          "sha256": "81656bc36d56183a14b18c485d029acf7c7a871f5f397555772a631185cc1697",
+          "bytes": 86857,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-10",
+      "status": "normal",
+      "existing": "本人の移動/点検と、根拠付き軍務許可・指揮範囲を分ける。",
+      "remaining": "外交・経済・所領経営を含む5分類×身分20組の許可/拒否/申請を製品操作へ接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameWorld.CompactAuthority.cs",
+          "sha256": "31bb9896f4df92183d202c2b509aa5283d952da4b7b0a6ed64c2e53452101ce0",
+          "bytes": 1602,
+          "symbols": [
+            "NewGameWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+          "sha256": "1b998b18434ea5aea250bd6350312e46884193fe215cb13a6080514eb56f1696",
+          "bytes": 3022,
+          "symbols": [
+            "MilitaryAuthorityProof",
+            "MilitaryScopedGrant",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryAuthorityScopeTests.cs",
+          "sha256": "29e44d5a59cc7409db6056e7990ef0f0c874b7caf3e25115e029795c0ce772d7",
+          "bytes": 4824,
+          "symbols": [
+            "MilitaryAuthorityScopeTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-11",
+      "status": "normal",
+      "existing": "既知原本・期限・取消・差替え・隊別指示の競合を扱う。",
+      "remaining": "兼任・密命・同格の上司など、政治的な複数義務と認識による競合理由を拡張する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.cs",
+          "sha256": "4968e2fff6885c7b504b9aaa2d44e035e2610c54d8e757f714014e1fbaacae09",
+          "bytes": 14608,
+          "symbols": [
+            "UnitDirectiveCancellationInput",
+            "UnitDirectiveCancellationNote",
+            "UnitDirectiveCancelAnswer",
+            "UnitDirectiveCancelEffect",
+            "UnitDirectiveCancelNotice",
+            "UnitDirectiveCancellationState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.OrderDeadline.cs",
+          "sha256": "0033af788141dbe27b8baae657e17c657f5d9ab18702b3f0b7152766842f18f0",
+          "bytes": 2050,
+          "symbols": [
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/UnitDirectiveCancellationBoundaryTests.cs",
+          "sha256": "f66a6f61a81355e920b561bcebbbe39b85de70708fa0f10ac0a07320be32dc05",
+          "bytes": 14876,
+          "symbols": [
+            "UnitDirectiveCancellationBoundaryTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-12",
+      "status": "normal",
+      "existing": "初期の個人随行の階層と、主家の兵/一時指揮の名簿を分ける。 個人随行協力の現地加入/終了・手当/未払い・本人と別々の実陸路移動・点検委任/返報を通常開始に接続。所属/主従/兵は変更しない。 無所属者と実仕事/開封返報を経て個人の実主従を追加/解消。手当・債務・組織所属を分離。 円満辞去した本人を、別の直属合意で迎えられる。",
+      "remaining": "正式な家臣登用/所属離脱、海上/遠隔の指示、大集団の運用と外観受入へ拡張。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.cs",
+          "sha256": "e784ec48ddfcd377899338ac5567fd9a45f7c639dadeeaba40113499bde5b2fb",
+          "bytes": 37518,
+          "symbols": [
+            "NewMilitaryAction",
+            "NewMilitaryInput",
+            "NewMilitaryRequest",
+            "NewMilitaryTerms",
+            "NewMilitaryOrder",
+            "NewMilitaryReport",
+            "NewMilitaryState",
+            "NewMilitaryView",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameSetupTests.cs",
+          "sha256": "ab2a7766dc07e451b5961a9c2e578997e2e5cd66106f3b7de225530a418e1a5b",
+          "bytes": 8804,
+          "symbols": [
+            "NewGameSetupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PersonalCompanions.cs",
+          "sha256": "8e0967aa6bb38f90186cc6d3e78bb937d0bbaff946c64a594906f7f3008654a5",
+          "bytes": 17119,
+          "symbols": [
+            "CompanionAction",
+            "CompanionInput",
+            "CompanionOrder",
+            "CompanionReport",
+            "CompanionState",
+            "CompanionCard",
+            "PersonalCompanions"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.Companions.cs",
+          "sha256": "5a0e9ba9c9ac37b6ed1bfa5b5ca9e35721d7b309a3563b35afe2100c41343fe9",
+          "bytes": 7843,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PersonalCompanionsV1/verification.json",
+          "sha256": "ff8b80922e16faed36c62de37ab76b9816ecd1f8949a635d3d16fd9fd53214e7",
+          "bytes": 79156,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PersonalCompanions.Service.cs",
+          "sha256": "512ef07b9d4f9d7c82bb15a61bbd537abab08798d39a7f7944166076d02e1615",
+          "bytes": 5202,
+          "symbols": [
+            "PersonalServiceCard",
+            "PersonalCompanions",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PersonalServiceV1/verification.json",
+          "sha256": "ad351e8fb7e03182eb0a44530d1e39f10ed14cea23a613d317b80c2ba53a29b9",
+          "bytes": 85427,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/RetainerReleaseV1/verification.json",
+          "sha256": "81656bc36d56183a14b18c485d029acf7c7a871f5f397555772a631185cc1697",
+          "bytes": 86857,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-13",
+      "status": "foundation",
+      "existing": "登録武将の4能力入力と予算検査がある。",
+      "remaining": "コマンドに能力/熟練を反映し、経験・技能成長を一度だけ確定して保存する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/OfficerLibraryStoreTests.cs",
+          "sha256": "cc635c3a3a7d85ddf69bd11bab7784f24dee1ee84e3c18ca9ebad0e1f2dff274",
+          "bytes": 2903,
+          "symbols": [
+            "OfficerLibraryStoreTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-14",
+      "status": "foundation",
+      "existing": "共通人物状態のWillObeyという単純な服従判定がある。",
+      "remaining": "性格・対象別忠誠・認識・補給から判断し、内部理由と本人への説明を分ける。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/CommonContractTests.cs",
+          "sha256": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
+          "bytes": 23427,
+          "symbols": [
+            "CommonContractTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-15",
+      "status": "normal",
+      "existing": "点検の評価/実報酬/運搬報告から非対称の仕事上の信頼根拠を導き、本人の確認済みの縁から仕官・担当・軍務相談へ通常入口で接続。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
+      "remaining": "好意/敬意/恐れ/敵意、派閥参加/脱退、訂正報による関係変化と、全人物の関係一覧を接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameWorld.cs",
+          "sha256": "49d259f226addffffb2aeeda9669c20645d404aba751258e75acd0ddd171cef9",
+          "bytes": 25217,
+          "symbols": [
+            "NewGameState",
+            "NewGameWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkRelations.cs",
+          "sha256": "464dec242e3d5eba617e8fd335cf5f0ce2d1cfe40ff791b255a7013a7dfa0326",
+          "bytes": 4769,
+          "symbols": [
+            "WorkTrustFact",
+            "WorkContactProof",
+            "WorkContact",
+            "WorkRelations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkRelationsTests.cs",
+          "sha256": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b",
+          "bytes": 8173,
+          "symbols": [
+            "WorkRelationsTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkRelationsV1/verification.json",
+          "sha256": "f2395cc53a624c0d803ed854323d0e58e75a907e7a8659c4394201e22db1840f",
+          "bytes": 156217,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Debrief.cs",
+          "sha256": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a",
+          "bytes": 3103,
+          "symbols": [
+            "MilitaryDebrief",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryDebriefTests.cs",
+          "sha256": "59939ef4f37a6ba6708e3286ea103fc232477c60fa7852d6458c08a422fe38a0",
+          "bytes": 6813,
+          "symbols": [
+            "MilitaryDebriefTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
+          "sha256": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99",
+          "bytes": 3335,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/MilitaryDebriefV1/verification.json",
+          "sha256": "e7eb32e4a74f5a95b3376b927db8513ff1d1bde757a253621708dc7af6f88973",
+          "bytes": 175491,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
+          "sha256": "5b2027fd00401106b7e49c83d480419aaf41b41a7c637b6977dc172af92af223",
+          "bytes": 2800,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/ServiceDirectionV1/verification.json",
+          "sha256": "6138552d9582b584173897bf2735541e95733905cc91cd8fe3eee0c59aeede51",
+          "bytes": 166319,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkContactReviewV1/verification.json",
+          "sha256": "89695f6f8a995df7f0aeab385f87afb346218d06673c20e297892c7ec57bef17",
+          "bytes": 162122,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-16",
+      "status": "foundation",
+      "existing": "一般の既知/未知情報、古い部隊情報を分ける表示基盤がある。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
+      "remaining": "他者の能力推定・感情・噂・訂正を専用の認識データと画面に接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.Recognition.cs",
+          "sha256": "6a5f7fb65f33a69bd0f3b2403ce06507977c5c676c5e769b52f736f763910139",
+          "bytes": 5024,
+          "symbols": [
+            "MilitarySeenUnit",
+            "MilitaryKnownUnit",
+            "MilitarySeenCourier",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.cs",
+          "sha256": "081f523bceb91a69655c3a782dd513db2cb6fc9b734333b1cbc0662d1d385854",
+          "bytes": 22850,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryRecognitionTests.cs",
+          "sha256": "cc4be116ef88b0d063c759bb65bf176c70839c01c3fd197e836cd21c70da1d57",
+          "bytes": 11179,
+          "symbols": [
+            "MilitaryRecognitionTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkRelations.cs",
+          "sha256": "464dec242e3d5eba617e8fd335cf5f0ce2d1cfe40ff791b255a7013a7dfa0326",
+          "bytes": 4769,
+          "symbols": [
+            "WorkTrustFact",
+            "WorkContactProof",
+            "WorkContact",
+            "WorkRelations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkRelationsTests.cs",
+          "sha256": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b",
+          "bytes": 8173,
+          "symbols": [
+            "WorkRelationsTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkRelationsV1/verification.json",
+          "sha256": "f2395cc53a624c0d803ed854323d0e58e75a907e7a8659c4394201e22db1840f",
+          "bytes": 156217,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkContactReviewV1/verification.json",
+          "sha256": "89695f6f8a995df7f0aeab385f87afb346218d06673c20e297892c7ec57bef17",
+          "bytes": 162122,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-17",
+      "status": "normal",
+      "existing": "全国/地域/近景を共有座標で表示し、地点・距離・経路と3Dを照合する。",
+      "remaining": "全国データと全操作の座標/縮尺・局所原点を製品スケールで統合検査する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContinuousWorld.cs",
+          "sha256": "e1047998371a0876349a7677c84f50101ac43f72d5d90e38de4f8e87ba1835c7",
+          "bytes": 9426,
+          "symbols": [
+            "TerrainAtlasState",
+            "TerrainTile",
+            "ContinuousWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/World/JapanGeography.cs",
+          "sha256": "9a606749c1a9276796b7b4754f929f1baf6defb5a451299d904f01b2d53fcd57",
+          "bytes": 3351,
+          "symbols": [
+            "GeoCoordinate",
+            "GeoMillimeters",
+            "GeoPolygon",
+            "GeoLandmark",
+            "GeoSource",
+            "JapanCatalog",
+            "JapanGeography"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/ContinuousWorldTests.cs",
+          "sha256": "a9850dbc910678cc356a57b47cd01e8cc41f6713319fe437fd8aa8b651518423",
+          "bytes": 8870,
+          "symbols": [
+            "ContinuousWorldTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/JapanGeographyTests.cs",
+          "sha256": "1328f3b63421897fc664a875cd8148b50d2212dd92f79cee645ba8f7d8d94e4f",
+          "bytes": 2875,
+          "symbols": [
+            "JapanGeographyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-18",
+      "status": "normal",
+      "existing": "拠点・組織・役職・初期領地を分離し、城/人物を地図から選べる。",
+      "remaining": "施設・村落・領地・実支配・権利主張と係争をゲーム中に更新/表示する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameWorld.cs",
+          "sha256": "49d259f226addffffb2aeeda9669c20645d404aba751258e75acd0ddd171cef9",
+          "bytes": 25217,
+          "symbols": [
+            "NewGameState",
+            "NewGameWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameMap.cs",
+          "sha256": "fedd623dfac6fafc853ac550942380220bc28c9a6c4caa47cc6d16e371fbad95",
+          "bytes": 4882,
+          "symbols": [
+            "NewGameMap"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-19",
+      "status": "normal",
+      "existing": "陸路/海路・迂回・封鎖・道外移動・地形減速と到着を扱う。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
+      "remaining": "物資運搬と交通主体の差、天候/季節/通行権を製品条件として接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/TravelWorld.cs",
+          "sha256": "cd34c5ac22e564015131fc19e280fd31e9c5730422a9515cec4d8483b0c2e85f",
+          "bytes": 7204,
+          "symbols": [
+            "RegionalPerson",
+            "TravelWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/RegionalGround.cs",
+          "sha256": "32739fed6fbc999b19cf7e710d1f4bc7fb4da209b78da2980f53ad0a3d1f8041",
+          "bytes": 10695,
+          "symbols": [
+            "RegionalGround"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TrafficWorld.cs",
+          "sha256": "4475446f9e565525641383bba44e86c14bd15d882a0e5a37f30731a998d4226f",
+          "bytes": 5949,
+          "symbols": [
+            "TrafficStop",
+            "TrafficWorld"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TravelControlTests.cs",
+          "sha256": "0351acda0c728c5aa3e25d15da29cc10779478aa0d6fce2d4638ef48aa271dfb",
+          "bytes": 10926,
+          "symbols": [
+            "TravelControlTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MovementControlTests.cs",
+          "sha256": "84910c00d9cd80795c386e68f17c972d47a8b182c9dcc731edc33aec3246c96a",
+          "bytes": 8648,
+          "symbols": [
+            "MovementControlTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportWork.cs",
+          "sha256": "fe0a88d7ef8eca7c142f3d6966eaa9e2d486819b4306d722c8257befd1049b6a",
+          "bytes": 11712,
+          "symbols": [
+            "TransportWorldReceipt",
+            "TransportJob",
+            "TransportWorkState",
+            "TransportWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.TransportWork.cs",
+          "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3",
+          "bytes": 2585,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkTests.cs",
+          "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578",
+          "bytes": 10824,
+          "symbols": [
+            "TransportWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkLocationTests.cs",
+          "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03",
+          "bytes": 2535,
+          "symbols": [
+            "TransportWorkLocationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportWorkV1/verification.json",
+          "sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+          "bytes": 267613,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/VoyageExpense.cs",
+          "sha256": "860bdccfd7fa9bc72ef44b30f9d9df6176f918a730a2c81c4ff61c7d0108783b",
+          "bytes": 8478,
+          "symbols": [
+            "VoyageExpenseRules",
+            "VoyagePayment",
+            "VoyageRefusal",
+            "VoyageExpenseState",
+            "VoyageExpense"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/VoyageExpenseTests.cs",
+          "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
+          "bytes": 15845,
+          "symbols": [
+            "VoyageExpenseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+          "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
+          "bytes": 2355,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TravelExpenseV1/verification.json",
+          "sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
+          "bytes": 305157,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-20",
+      "status": "normal",
+      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。",
+      "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NationalRoutes.cs",
+          "sha256": "325676a9e4ff25bfa1f79afe588b9f4df75537a25e659d86677e218490af7e0e",
+          "bytes": 3868,
+          "symbols": [
+            "NationalNode",
+            "NationalLink",
+            "NationalSource",
+            "NationalCatalog",
+            "NationalRoutes"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/HistoricalRoads.cs",
+          "sha256": "39e3ee87e893ef682d558858d5042b77d501c2a7169f120dc458926036c69530",
+          "bytes": 4686,
+          "symbols": [
+            "HistoricalSource",
+            "HistoricalRoadBinding",
+            "HistoricalRoadCatalog",
+            "HistoricalFeature",
+            "HistoricalRoads"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/HistoricalStartCatalog.cs",
+          "sha256": "854aba437a04c2e485760b57706742e157034f5b7f4c3babe512459ac77abf26",
+          "bytes": 3164,
+          "symbols": [
+            "HistoricalStartPerson",
+            "HistoricalStartEdition",
+            "HistoricalStartCatalog"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/HistoricalRoadTests.cs",
+          "sha256": "badddecf41497169062bc50beadf077e17a1437ebf7497186f06fdde24f82635",
+          "bytes": 7293,
+          "symbols": [
+            "HistoricalRoadTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-21",
+      "status": "normal",
+      "existing": "共通の拘束/実行状態と、移動・点検・本人と部隊の別行動を扱う。",
+      "remaining": "面会・療養・修行・普請等を増やし、併用表を全主行動/委任先へ適用する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/WorldSession.cs",
+          "sha256": "4f4bde6c0cb900eec1f1ff075de9aa71fd3d7e00027b954a98cf95490a8b80fa",
+          "bytes": 43925,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Withdrawal.cs",
+          "sha256": "5914e0a06ed657340f4bc0d0fdf04391d0b017968b21c881ade377ce181146aa",
+          "bytes": 16766,
+          "symbols": [
+            "PersonalJourney",
+            "TroopSighting",
+            "TroopDispatch",
+            "TroopReceipt",
+            "TroopReply",
+            "PersonalWithdrawalState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/CommonContractTests.cs",
+          "sha256": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
+          "bytes": 23427,
+          "symbols": [
+            "CommonContractTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-22",
+      "status": "normal",
+      "existing": "道中の変更待ち/取消、港待機、軍令取消と実際の停止を分ける。",
+      "remaining": "生産/普請の部分完成や担当交代、資材返還失敗/補償待ちを通常ゲームへ接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/TravelControl.cs",
+          "sha256": "08e57d97ca250b660d14f8764cf57138e32cb55ed944597f6b2fee5ced384437",
+          "bytes": 9912,
+          "symbols": [
+            "PersonalTravelRequest",
+            "TravelDecision",
+            "TravelControl"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.UnitDirective.cs",
+          "sha256": "34f005fee448c54d3886f16171d642473824048c9dc1b8b0cde399f9c0ca040d",
+          "bytes": 16560,
+          "symbols": [
+            "UnitDirectiveKind",
+            "UnitDirectiveOutcome",
+            "UnitDirectiveInput",
+            "UnitDirectiveNote",
+            "UnitDirectiveAnswer",
+            "UnitDirectiveEffect",
+            "UnitDirectiveState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/DeadlineCancellationTests.cs",
+          "sha256": "b72de0f9f28b607804ced8e967bf8d5166b0057ec4070f93699195febe4c23ae",
+          "bytes": 11903,
+          "symbols": [
+            "DeadlineCancellationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TravelControlTests.cs",
+          "sha256": "0351acda0c728c5aa3e25d15da29cc10779478aa0d6fce2d4638ef48aa271dfb",
+          "bytes": 10926,
+          "symbols": [
+            "TravelControlTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-23",
+      "status": "normal",
+      "existing": "秒基準の共通時計、速度変更・停止・私有先行計算と決定的な再開がある。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。",
+      "remaining": "今後接続する全制度と全国負荷で、速度・描画頻度差による結果一致を受入確認する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/WorldSession.PreparedAdvance.cs",
+          "sha256": "318f3257c5abe552ed31842533e4ffbeb2bc204d6b5e5d7d91a6a1b67fd237df",
+          "bytes": 4228,
+          "symbols": [
+            "AdvanceCapture",
+            "PreparedAdvance",
+            "AdvancePublication",
+            "WorldSession",
+            "WorldSessionHost"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.ResponsiveClock.cs",
+          "sha256": "dd1b220702e135ca9624e90505516b365d49d3dd9858f0cc668939b2b3ff8feb",
+          "bytes": 4164,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/PreparedAdvanceIntegrationTests.cs",
+          "sha256": "d93e8728ddb0d7627bf381fbd6d14ddfe4d8d3b2bfc8d2829c970705470f8b74",
+          "bytes": 5595,
+          "symbols": [
+            "PreparedAdvanceIntegrationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/PreparedPauseTests.cs",
+          "sha256": "1634d62f6cd71778e442012795d24a450bfebd85f22f3409f59c2bc7c6bc589a",
+          "bytes": 7313,
+          "symbols": [
+            "PreparedPauseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/VoyageExpense.cs",
+          "sha256": "860bdccfd7fa9bc72ef44b30f9d9df6176f918a730a2c81c4ff61c7d0108783b",
+          "bytes": 8478,
+          "symbols": [
+            "VoyageExpenseRules",
+            "VoyagePayment",
+            "VoyageRefusal",
+            "VoyageExpenseState",
+            "VoyageExpense"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/VoyageExpenseTests.cs",
+          "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
+          "bytes": 15845,
+          "symbols": [
+            "VoyageExpenseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+          "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
+          "bytes": 2355,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TravelExpenseV1/verification.json",
+          "sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
+          "bytes": 305157,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-24",
+      "status": "normal",
+      "existing": "下部会話・未確定の本人返答・続ける・ロード時の破棄を扱う。",
+      "remaining": "長時間の面会/交渉と会話の拘束時間、全国同時進行を製品の会話へ接続する。",
+      "evidence": [
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkExperience.cs",
+          "sha256": "661a9a59b542d83f76bd9d4b98c22080da1c4e7be9f4d3611bb5c383c073b3eb",
+          "bytes": 31453,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.SupplyWork.cs",
+          "sha256": "1123dbfaf3e6f8d5076199d720e321823cab4ca52a526ec9b38c2755feb1506a",
+          "bytes": 2778,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/SupplyWorkV1/verification.json",
+          "sha256": "bf0e0f8129b58ba706588e8b26aa4d8b0174aad79c51fb505e1fd497e61ddc64",
+          "bytes": 354293,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-25",
+      "status": "normal",
+      "existing": "点検の直接観測・原本配送・本人開封・確認日時を分ける。 現地で私的に受け取る本人の観測情報を原本/開封/観測日付きの経路知識へ接続。 精算済み面識の一般家臣への単発点検を実任務/本人観測/返報へ接続。 単発協力は現地の本人返答/同じ状態版での確認に分け、内心をUIへ返さない。",
+      "remaining": "諜報/噂/政治報告など全事実表示の出典と学習経路を接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/LocalInspectionFindings.cs",
+          "sha256": "aed564bf6217ae0cbafee27248021fece3b81ca9c6b089f026caba068acd2b42",
+          "bytes": 5589,
+          "symbols": [
+            "InspectedRoad",
+            "LocalInspectionFindings"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Messaging/MessageFlow.cs",
+          "sha256": "e07fee8a5eb1b1e73f8be8e26279e60a9ac07a5dacdcf2e5e25c4fc8da08aacd",
+          "bytes": 14419,
+          "symbols": [
+            "AttemptStatus",
+            "MessageEnvelope",
+            "MessageAttempt",
+            "FormalReceipt",
+            "PersonalKnowledge",
+            "ProxyPermission",
+            "MessageState",
+            "MessageFlow"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/LocalInspectionFindingsTests.cs",
+          "sha256": "b5ca0866842f82696bf02fdf67aa7295fcaf22ec97af5559376807b00646948b",
+          "bytes": 9009,
+          "symbols": [
+            "LocalInspectionFindingsTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PrivateInformation.cs",
+          "sha256": "e01bca50fd7a45d3bfb63c1ae2ead99a2f756a92b4d48126d8670b24609028f5",
+          "bytes": 14543,
+          "symbols": [
+            "InformationAction",
+            "InformationInput",
+            "InformationQuote",
+            "InformationOrder",
+            "InformationOpening",
+            "PrivateInformationState",
+            "InformationFact",
+            "InformationPayload",
+            "InformationCard",
+            "PrivateInformation"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PrivateInformationV1/verification.json",
+          "sha256": "a676f71cfb96d7143fb4c343d0b8e7a2a4cd9283b1a6ff593a43acbde1dad9f9",
+          "bytes": 82032,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PersonalCompanions.PrivateInspection.cs",
+          "sha256": "b88db02bc75d86d0858317146051d8754249981a8a73806d4efddb05a9f104a4",
+          "bytes": 992,
+          "symbols": [
+            "PersonalCompanions"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PrivateInspectionV1/verification.json",
+          "sha256": "ed2a1ed4806444f439428b9b82a9a00f60fd82d3b137a185753f7615eecaa7d2",
+          "bytes": 83866,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PrivateInspectionTalk.cs",
+          "sha256": "834a9dea3bb25000e342445261ba4c20f58e9d0c66faf5715e1faa8883d7a724",
+          "bytes": 3244,
+          "symbols": [
+            "PrivateInspectionReply",
+            "PersonalCompanions",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/CooperationTalkV1/verification.json",
+          "sha256": "c4c872af114679e1113c29eb1348c31195a30be39e26dd8c9ba20d853f68118d",
+          "bytes": 84000,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-26",
+      "status": "normal",
+      "existing": "点検記録の鮮度による需要と、古い部隊情報/返書・真値を分ける。 私的提供でも古い観測を現在の秘密の真実に更新せず、観測時点を条件提示/受領表示へ残す。",
+      "remaining": "虚報・信用・訂正の伝播と、情報種別ごとの更新/判断を拡張する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/LocalWorkDemand.cs",
+          "sha256": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
+          "bytes": 3143,
+          "symbols": [
+            "LocalInspectionNeed",
+            "LocalWorkDemand"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Recognition.cs",
+          "sha256": "6a5f7fb65f33a69bd0f3b2403ce06507977c5c676c5e769b52f736f763910139",
+          "bytes": 5024,
+          "symbols": [
+            "MilitarySeenUnit",
+            "MilitaryKnownUnit",
+            "MilitarySeenCourier",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/LocalWorkDemandTests.cs",
+          "sha256": "5359d23adf8a65edea5c14014049a53cea1940566e3a6d58045079135b2e65c0",
+          "bytes": 9490,
+          "symbols": [
+            "LocalWorkDemandTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryRecognitionTests.cs",
+          "sha256": "cc4be116ef88b0d063c759bb65bf176c70839c01c3fd197e836cd21c70da1d57",
+          "bytes": 11179,
+          "symbols": [
+            "MilitaryRecognitionTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PrivateInformationV1/verification.json",
+          "sha256": "a676f71cfb96d7143fb4c343d0b8e7a2a4cd9283b1a6ff593a43acbde1dad9f9",
+          "bytes": 82032,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-27",
+      "status": "isolated",
+      "existing": "共通配送の代理受領/開封権/転送/本人の認識の試作がある。",
+      "remaining": "通常ゲームの留守居/代理任命・交代・重要書状の回答へ接続する。",
+      "evidence": [
+        {
+          "path": "Core/Messaging/MessageFlow.cs",
+          "sha256": "e07fee8a5eb1b1e73f8be8e26279e60a9ac07a5dacdcf2e5e25c4fc8da08aacd",
+          "bytes": 14419,
+          "symbols": [
+            "AttemptStatus",
+            "MessageEnvelope",
+            "MessageAttempt",
+            "FormalReceipt",
+            "PersonalKnowledge",
+            "ProxyPermission",
+            "MessageState",
+            "MessageFlow"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/SharedProtocolTests.cs",
+          "sha256": "d92db64d8d5015204fa4ec41435d09d43a8e5873441f8e557acc71a6b59f535e",
+          "bytes": 16707,
+          "symbols": [
+            "SharedProtocolTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/CommonContractTests.cs",
+          "sha256": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
+          "bytes": 23427,
+          "symbols": [
+            "CommonContractTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-28",
+      "status": "normal",
+      "existing": "重要書状の実到達で世界が停止し、未開封本文を隠す。",
+      "remaining": "全通知分類の集約・代理受領・戦闘/政治等の停止方針を製品UIへ適用する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/WorldSession.cs",
+          "sha256": "4f4bde6c0cb900eec1f1ff075de9aa71fd3d7e00027b954a98cf95490a8b80fa",
+          "bytes": 43925,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.Mail.cs",
+          "sha256": "dc9185c0d7288cc10a9098b90fdc2fc630ff440abbc7f08ea6eead941f4c4804",
+          "bytes": 3232,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/PreparedAdvanceIntegrationTests.cs",
+          "sha256": "d93e8728ddb0d7627bf381fbd6d14ddfe4d8d3b2bfc8d2829c970705470f8b74",
+          "bytes": 5595,
+          "symbols": [
+            "PreparedAdvanceIntegrationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-29",
+      "status": "normal",
+      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
+      "remaining": "運搬/普請/政治など任務種別を増やし、部分達成と正式な評価まで接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameWork.cs",
+          "sha256": "8ecceba6924bffa3eac6e98344a384a26e3cde6c250a6753f3a3a22adcf83d47",
+          "bytes": 14296,
+          "symbols": [
+            "WorkPayment",
+            "WorkCycleState",
+            "NewGameWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/LocalWorkDemand.cs",
+          "sha256": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
+          "bytes": 3143,
+          "symbols": [
+            "LocalInspectionNeed",
+            "LocalWorkDemand"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkCycle.cs",
+          "sha256": "25b1e4803891bf281a9f059b097cb53552a28706627cb8834c23a6ede5a5f1fc",
+          "bytes": 6995,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameWorkTests.cs",
+          "sha256": "3b902759a0bb34be45e4d6a0e485c2f78c78e9a84a00ff42c8c5a937f0c464a3",
+          "bytes": 17123,
+          "symbols": [
+            "NewGameWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportHandover.cs",
+          "sha256": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
+          "bytes": 6440,
+          "symbols": [
+            "HandoverAction",
+            "HandoverPhase",
+            "TransportTerms",
+            "HandoverInput",
+            "HandoverEntry",
+            "TransportHandoverState",
+            "HandoverView",
+            "HandoverDecision",
+            "TransportHandover"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportHandoverTests.cs",
+          "sha256": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8",
+          "bytes": 7564,
+          "symbols": [
+            "TransportHandoverTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportHandoverV1/README.md",
+          "sha256": "417060c9c4e634577f28fca52c449863f783074d3050f37c7a52c53e2868131a",
+          "bytes": 2436,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportHandoverV1/verification.json",
+          "sha256": "4045fe22f40c07c709c197f915d7c6ce1377828c116f120c3da91dec5d2fda9c",
+          "bytes": 1081,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportWork.cs",
+          "sha256": "fe0a88d7ef8eca7c142f3d6966eaa9e2d486819b4306d722c8257befd1049b6a",
+          "bytes": 11712,
+          "symbols": [
+            "TransportWorldReceipt",
+            "TransportJob",
+            "TransportWorkState",
+            "TransportWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.TransportWork.cs",
+          "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3",
+          "bytes": 2585,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkTests.cs",
+          "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578",
+          "bytes": 10824,
+          "symbols": [
+            "TransportWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkLocationTests.cs",
+          "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03",
+          "bytes": 2535,
+          "symbols": [
+            "TransportWorkLocationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportWorkV1/verification.json",
+          "sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+          "bytes": 267613,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/VoyageExpense.cs",
+          "sha256": "860bdccfd7fa9bc72ef44b30f9d9df6176f918a730a2c81c4ff61c7d0108783b",
+          "bytes": 8478,
+          "symbols": [
+            "VoyageExpenseRules",
+            "VoyagePayment",
+            "VoyageRefusal",
+            "VoyageExpenseState",
+            "VoyageExpense"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/VoyageExpenseTests.cs",
+          "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
+          "bytes": 15845,
+          "symbols": [
+            "VoyageExpenseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+          "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
+          "bytes": 2355,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TravelExpenseV1/verification.json",
+          "sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
+          "bytes": 305157,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkProgression.cs",
+          "sha256": "8ee56e5121694cfea9368d03088282b6b6d546a4ad32557bd2c1dd93cc6f851e",
+          "bytes": 1718,
+          "symbols": [
+            "WorkProgression"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkProgressionV1/verification.json",
+          "sha256": "64f3ed93d1232b75bb03011e2bd59142fade129fa9a1bd3005c1cbef4f78bb90",
+          "bytes": 152278,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkDuty.cs",
+          "sha256": "c5505b9b3aa5866627a2efc0b20dc6d5b11f085387e50719f82a49b399fa1816",
+          "bytes": 6213,
+          "symbols": [
+            "WorkDutyAgreement",
+            "WorkDuty",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkDutyTests.cs",
+          "sha256": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1",
+          "bytes": 6435,
+          "symbols": [
+            "WorkDutyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkDutyV1/verification.json",
+          "sha256": "bf474ed5a6140fc80dd79acccf80fbf8c0132153d65348460899a3c04a38a52c",
+          "bytes": 153036,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkFollowup.cs",
+          "sha256": "a8c35dcf81e1b7a137f38985da62211283164ca24d55de5621326bbcfb187bae",
+          "bytes": 2557,
+          "symbols": [
+            "FollowupTerms",
+            "WorkFollowup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkFollowupTests.cs",
+          "sha256": "e242d60cb8ba36dd5d87ecfba5f93ba101039e90a015d343fa4f7ec7ce5dc5b1",
+          "bytes": 7551,
+          "symbols": [
+            "WorkFollowupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkFollowupV1/verification.json",
+          "sha256": "f82f3093fbad72370c6d98fec7c82378e1ef1f2aec3481c913ca04f48a08226e",
+          "bytes": 154074,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkRelations.cs",
+          "sha256": "464dec242e3d5eba617e8fd335cf5f0ce2d1cfe40ff791b255a7013a7dfa0326",
+          "bytes": 4769,
+          "symbols": [
+            "WorkTrustFact",
+            "WorkContactProof",
+            "WorkContact",
+            "WorkRelations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkRelationsTests.cs",
+          "sha256": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b",
+          "bytes": 8173,
+          "symbols": [
+            "WorkRelationsTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkRelationsV1/verification.json",
+          "sha256": "f2395cc53a624c0d803ed854323d0e58e75a907e7a8659c4394201e22db1840f",
+          "bytes": 156217,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Debrief.cs",
+          "sha256": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a",
+          "bytes": 3103,
+          "symbols": [
+            "MilitaryDebrief",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryDebriefTests.cs",
+          "sha256": "59939ef4f37a6ba6708e3286ea103fc232477c60fa7852d6458c08a422fe38a0",
+          "bytes": 6813,
+          "symbols": [
+            "MilitaryDebriefTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
+          "sha256": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99",
+          "bytes": 3335,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/MilitaryDebriefV1/verification.json",
+          "sha256": "e7eb32e4a74f5a95b3376b927db8513ff1d1bde757a253621708dc7af6f88973",
+          "bytes": 175491,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-30",
+      "status": "normal",
+      "existing": "隊別指示と受令、既知地点への命令/照会がある。独立試作にも委任原本がある。 現地合意した協力者へ共通Taskで点検を任せ、本人の返報を物理配送/開封する。",
+      "remaining": "人物ごとの裁量・予算/危険上限・自主計画・監督と逸脱理由を接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.UnitDirective.cs",
+          "sha256": "34f005fee448c54d3886f16171d642473824048c9dc1b8b0cde399f9c0ca040d",
+          "bytes": 16560,
+          "symbols": [
+            "UnitDirectiveKind",
+            "UnitDirectiveOutcome",
+            "UnitDirectiveInput",
+            "UnitDirectiveNote",
+            "UnitDirectiveAnswer",
+            "UnitDirectiveEffect",
+            "UnitDirectiveState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/DelegationMission.cs",
+          "sha256": "0e4ea15950838c1e2eaca2c38fb5e835f69827260d741967550fc43cfc9df065",
+          "bytes": 12807,
+          "symbols": [
+            "DelegationTerms",
+            "DelegatedUnitPlan",
+            "DelegationPlan",
+            "DelegatedUnitReport",
+            "DelegationArrival",
+            "DelegationState",
+            "DelegationRow",
+            "DelegationMission"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/UnitDirectiveTests.cs",
+          "sha256": "48de7983a3e17855a35a1d8b85a6fbecbe83579104423f27f8e8675b00f18f52",
+          "bytes": 14744,
+          "symbols": [
+            "UnitDirectiveTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/DelegationMissionTests.cs",
+          "sha256": "28b3dd4cd7a535b06bef9699c50655085eafa6e0f5715de42b431a565f9d0398",
+          "bytes": 10856,
+          "symbols": [
+            "DelegationMissionTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PersonalCompanionsV1/verification.json",
+          "sha256": "ff8b80922e16faed36c62de37ab76b9816ecd1f8949a635d3d16fd9fd53214e7",
+          "bytes": 79156,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-31",
+      "status": "normal",
+      "existing": "期限・取消原本・保持・遅着・再送・隊別の一度だけの効力を扱う。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
+      "remaining": "一般任務の担当交代/緊急判断まで同じ契約で接続し、全種別を統合検査する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.UnitDirectiveCancelHolding.cs",
+          "sha256": "5346f809dc12447bee8ef34193f6173fe305261f3c66d10c004547ce7ad95507",
+          "bytes": 12446,
+          "symbols": [
+            "UnitDirectiveCancelHandoffInput",
+            "UnitDirectiveCancelLateReceipt",
+            "UnitDirectiveCancelHoldingState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs",
+          "sha256": "219765ffaadb0f155b2ae25da6df58bf292173c40c4df4c47db7ced33a38867a",
+          "bytes": 5073,
+          "symbols": [
+            "UnitDirectiveCancelRetryInput",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/UnitDirectiveCancelHoldingTests.cs",
+          "sha256": "c9b4c29387c6151dcabba23195df829df2d507d6064d3324dcf26a900eefb6a5",
+          "bytes": 20621,
+          "symbols": [
+            "UnitDirectiveCancelHoldingTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportHandover.cs",
+          "sha256": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
+          "bytes": 6440,
+          "symbols": [
+            "HandoverAction",
+            "HandoverPhase",
+            "TransportTerms",
+            "HandoverInput",
+            "HandoverEntry",
+            "TransportHandoverState",
+            "HandoverView",
+            "HandoverDecision",
+            "TransportHandover"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportHandoverTests.cs",
+          "sha256": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8",
+          "bytes": 7564,
+          "symbols": [
+            "TransportHandoverTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportHandoverV1/README.md",
+          "sha256": "417060c9c4e634577f28fca52c449863f783074d3050f37c7a52c53e2868131a",
+          "bytes": 2436,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportHandoverV1/verification.json",
+          "sha256": "4045fe22f40c07c709c197f915d7c6ce1377828c116f120c3da91dec5d2fda9c",
+          "bytes": 1081,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportWork.cs",
+          "sha256": "fe0a88d7ef8eca7c142f3d6966eaa9e2d486819b4306d722c8257befd1049b6a",
+          "bytes": 11712,
+          "symbols": [
+            "TransportWorldReceipt",
+            "TransportJob",
+            "TransportWorkState",
+            "TransportWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.TransportWork.cs",
+          "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3",
+          "bytes": 2585,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkTests.cs",
+          "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578",
+          "bytes": 10824,
+          "symbols": [
+            "TransportWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkLocationTests.cs",
+          "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03",
+          "bytes": 2535,
+          "symbols": [
+            "TransportWorkLocationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportWorkV1/verification.json",
+          "sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+          "bytes": 267613,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-32",
+      "status": "isolated",
+      "existing": "独立試作で中断理由書状と暫定レビューを分ける。通常の点検返答は受領確認まで。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
+      "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/MissionReview.cs",
+          "sha256": "7dc5019c164e4e60f9b65c6c951d6f67e1803af08a90130421399333d25aa881",
+          "bytes": 4360,
+          "symbols": [
+            "MissionReview",
+            "Explanation",
+            "Review"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/AssessmentNotice.cs",
+          "sha256": "2bcc83aef7da4cdf53439156ef5f55d5ba5d587da84d7eeefae19c759566da34",
+          "bytes": 6380,
+          "symbols": [
+            "AssessmentNotice",
+            "Reply",
+            "Payload",
+            "Response",
+            "Card"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameWork.cs",
+          "sha256": "8ecceba6924bffa3eac6e98344a384a26e3cde6c250a6753f3a3a22adcf83d47",
+          "bytes": 14296,
+          "symbols": [
+            "WorkPayment",
+            "WorkCycleState",
+            "NewGameWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MissionReviewTests.cs",
+          "sha256": "f457e8e196f7ae5f80c2c6c03ff937051954194ceeb73aa8f596d860bab8baaf",
+          "bytes": 10513,
+          "symbols": [
+            "MissionReviewTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkProgression.cs",
+          "sha256": "8ee56e5121694cfea9368d03088282b6b6d546a4ad32557bd2c1dd93cc6f851e",
+          "bytes": 1718,
+          "symbols": [
+            "WorkProgression"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkProgressionV1/verification.json",
+          "sha256": "64f3ed93d1232b75bb03011e2bd59142fade129fa9a1bd3005c1cbef4f78bb90",
+          "bytes": 152278,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkDuty.cs",
+          "sha256": "c5505b9b3aa5866627a2efc0b20dc6d5b11f085387e50719f82a49b399fa1816",
+          "bytes": 6213,
+          "symbols": [
+            "WorkDutyAgreement",
+            "WorkDuty",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkDutyTests.cs",
+          "sha256": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1",
+          "bytes": 6435,
+          "symbols": [
+            "WorkDutyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkDutyV1/verification.json",
+          "sha256": "bf474ed5a6140fc80dd79acccf80fbf8c0132153d65348460899a3c04a38a52c",
+          "bytes": 153036,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkFollowup.cs",
+          "sha256": "a8c35dcf81e1b7a137f38985da62211283164ca24d55de5621326bbcfb187bae",
+          "bytes": 2557,
+          "symbols": [
+            "FollowupTerms",
+            "WorkFollowup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkFollowupTests.cs",
+          "sha256": "e242d60cb8ba36dd5d87ecfba5f93ba101039e90a015d343fa4f7ec7ce5dc5b1",
+          "bytes": 7551,
+          "symbols": [
+            "WorkFollowupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkFollowupV1/verification.json",
+          "sha256": "f82f3093fbad72370c6d98fec7c82378e1ef1f2aec3481c913ca04f48a08226e",
+          "bytes": 154074,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Debrief.cs",
+          "sha256": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a",
+          "bytes": 3103,
+          "symbols": [
+            "MilitaryDebrief",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryDebriefTests.cs",
+          "sha256": "59939ef4f37a6ba6708e3286ea103fc232477c60fa7852d6458c08a422fe38a0",
+          "bytes": 6813,
+          "symbols": [
+            "MilitaryDebriefTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
+          "sha256": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99",
+          "bytes": 3335,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/MilitaryDebriefV1/verification.json",
+          "sha256": "e7eb32e4a74f5a95b3376b927db8513ff1d1bde757a253621708dc7af6f88973",
+          "bytes": 175491,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-33",
+      "status": "normal",
+      "existing": "清洲一地域の季節収穫/水利工事と村の米/家の蔵/年貢へ通常開始の明示版を接続。現地権限と世代復旧を検証。画面外観は未確認。",
+      "remaining": "人口/動員労働力/飢饉/作柄/全国生産と開発の一般化。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/RegionalEconomy.cs",
+          "sha256": "2c7d73ab8ccb8142523f750000d6f6f1039d9c8cce69f18c1ad655422150cb8b",
+          "bytes": 8171,
+          "symbols": [
+            "EconomyAction",
+            "EconomyInput",
+            "EconomyOrder",
+            "EconomyEvent",
+            "EconomyAccounts",
+            "RegionalEconomyState",
+            "RegionalEconomyView",
+            "RegionalEconomy"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.Economy.cs",
+          "sha256": "9829c6df082f8be7dee0a069110a91b06bc5f2ac3d1d262c3e82031e38e6a1bf",
+          "bytes": 2241,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/RegionalEconomyV1/verification.json",
+          "sha256": "6138f29a52cf5e24426791b1633aa2e43d0dfddf439be372762f6bcb5d59cf20",
+          "bytes": 78073,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-34",
+      "status": "normal",
+      "existing": "通常ゲームで個人財布/報酬/未払い、主家在庫/兵糧を分ける。徴税は独立試作。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 清洲の明示契約で年貢計上/現物徴収/村への救済/水利工事支出を別記録。家の米と私財を混ぜず現地権限と世代復旧を確認。",
+      "remaining": "定期俸禄/未払い債務・市場換算・全国の所領財政と現物の軍用割当へ拡張。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameWork.cs",
+          "sha256": "8ecceba6924bffa3eac6e98344a384a26e3cde6c250a6753f3a3a22adcf83d47",
+          "bytes": 14296,
+          "symbols": [
+            "WorkPayment",
+            "WorkCycleState",
+            "NewGameWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Simulation/TaxSimulation.cs",
+          "sha256": "b03b4ff3eac6d60084ddda3d5e399c103df1f54959143cf5d0b98de4fe20f411",
+          "bytes": 40360,
+          "symbols": [
+            "TaxPhase",
+            "DeliveryKind",
+            "TaxEventKind",
+            "TaxOrder",
+            "TaxDelivery",
+            "DeliveryFailureNotice",
+            "FailureReportDelivery",
+            "TaxKnowledge",
+            "TaxEvent",
+            "RiceAccount",
+            "CharacterSnapshot",
+            "CastleSnapshot",
+            "WorldSnapshot",
+            "TaxSnapshot"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.SupplyWork.cs",
+          "sha256": "1123dbfaf3e6f8d5076199d720e321823cab4ca52a526ec9b38c2755feb1506a",
+          "bytes": 2778,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TaxSimulationTests.cs",
+          "sha256": "339005f92eb4d92510204e89db4c8b0f096cc35ec4f1fba3533264119e7175cd",
+          "bytes": 11508,
+          "symbols": [
+            "TaxSimulationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameWorkTests.cs",
+          "sha256": "3b902759a0bb34be45e4d6a0e485c2f78c78e9a84a00ff42c8c5a937f0c464a3",
+          "bytes": 17123,
+          "symbols": [
+            "NewGameWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportWork.cs",
+          "sha256": "fe0a88d7ef8eca7c142f3d6966eaa9e2d486819b4306d722c8257befd1049b6a",
+          "bytes": 11712,
+          "symbols": [
+            "TransportWorldReceipt",
+            "TransportJob",
+            "TransportWorkState",
+            "TransportWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.TransportWork.cs",
+          "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3",
+          "bytes": 2585,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkTests.cs",
+          "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578",
+          "bytes": 10824,
+          "symbols": [
+            "TransportWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkLocationTests.cs",
+          "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03",
+          "bytes": 2535,
+          "symbols": [
+            "TransportWorkLocationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportWorkV1/verification.json",
+          "sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+          "bytes": 267613,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/VoyageExpense.cs",
+          "sha256": "860bdccfd7fa9bc72ef44b30f9d9df6176f918a730a2c81c4ff61c7d0108783b",
+          "bytes": 8478,
+          "symbols": [
+            "VoyageExpenseRules",
+            "VoyagePayment",
+            "VoyageRefusal",
+            "VoyageExpenseState",
+            "VoyageExpense"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/VoyageExpenseTests.cs",
+          "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
+          "bytes": 15845,
+          "symbols": [
+            "VoyageExpenseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+          "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
+          "bytes": 2355,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TravelExpenseV1/verification.json",
+          "sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
+          "bytes": 305157,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkProgression.cs",
+          "sha256": "8ee56e5121694cfea9368d03088282b6b6d546a4ad32557bd2c1dd93cc6f851e",
+          "bytes": 1718,
+          "symbols": [
+            "WorkProgression"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkProgressionV1/verification.json",
+          "sha256": "64f3ed93d1232b75bb03011e2bd59142fade129fa9a1bd3005c1cbef4f78bb90",
+          "bytes": 152278,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkDuty.cs",
+          "sha256": "c5505b9b3aa5866627a2efc0b20dc6d5b11f085387e50719f82a49b399fa1816",
+          "bytes": 6213,
+          "symbols": [
+            "WorkDutyAgreement",
+            "WorkDuty",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkDutyTests.cs",
+          "sha256": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1",
+          "bytes": 6435,
+          "symbols": [
+            "WorkDutyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkDutyV1/verification.json",
+          "sha256": "bf474ed5a6140fc80dd79acccf80fbf8c0132153d65348460899a3c04a38a52c",
+          "bytes": 153036,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkFollowup.cs",
+          "sha256": "a8c35dcf81e1b7a137f38985da62211283164ca24d55de5621326bbcfb187bae",
+          "bytes": 2557,
+          "symbols": [
+            "FollowupTerms",
+            "WorkFollowup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkFollowupTests.cs",
+          "sha256": "e242d60cb8ba36dd5d87ecfba5f93ba101039e90a015d343fa4f7ec7ce5dc5b1",
+          "bytes": 7551,
+          "symbols": [
+            "WorkFollowupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkFollowupV1/verification.json",
+          "sha256": "f82f3093fbad72370c6d98fec7c82378e1ef1f2aec3481c913ca04f48a08226e",
+          "bytes": 154074,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/RegionalEconomyV1/verification.json",
+          "sha256": "6138f29a52cf5e24426791b1633aa2e43d0dfddf439be372762f6bcb5d59cf20",
+          "bytes": 78073,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-35",
+      "status": "foundation",
+      "existing": "引当・現物移動・債務のデータと、点検報酬の未払い処理がある。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
+      "remaining": "市場価格・見積・売買合意・運搬・受渡し・決済という交易の一巡を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameWork.cs",
+          "sha256": "8ecceba6924bffa3eac6e98344a384a26e3cde6c250a6753f3a3a22adcf83d47",
+          "bytes": 14296,
+          "symbols": [
+            "WorkPayment",
+            "WorkCycleState",
+            "NewGameWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameWorkTests.cs",
+          "sha256": "3b902759a0bb34be45e4d6a0e485c2f78c78e9a84a00ff42c8c5a937f0c464a3",
+          "bytes": 17123,
+          "symbols": [
+            "NewGameWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportHandover.cs",
+          "sha256": "ec5efb6cd8b65345b48693ad9ab7b17768e63769809a37aad14a58c32c7c93e7",
+          "bytes": 6440,
+          "symbols": [
+            "HandoverAction",
+            "HandoverPhase",
+            "TransportTerms",
+            "HandoverInput",
+            "HandoverEntry",
+            "TransportHandoverState",
+            "HandoverView",
+            "HandoverDecision",
+            "TransportHandover"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportHandoverTests.cs",
+          "sha256": "b181fecdb2587b69e456110d57017a3714740b552b554a713f24cd3d9aac78b8",
+          "bytes": 7564,
+          "symbols": [
+            "TransportHandoverTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportHandoverV1/README.md",
+          "sha256": "417060c9c4e634577f28fca52c449863f783074d3050f37c7a52c53e2868131a",
+          "bytes": 2436,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportHandoverV1/verification.json",
+          "sha256": "4045fe22f40c07c709c197f915d7c6ce1377828c116f120c3da91dec5d2fda9c",
+          "bytes": 1081,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportWork.cs",
+          "sha256": "fe0a88d7ef8eca7c142f3d6966eaa9e2d486819b4306d722c8257befd1049b6a",
+          "bytes": 11712,
+          "symbols": [
+            "TransportWorldReceipt",
+            "TransportJob",
+            "TransportWorkState",
+            "TransportWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.TransportWork.cs",
+          "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3",
+          "bytes": 2585,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkTests.cs",
+          "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578",
+          "bytes": 10824,
+          "symbols": [
+            "TransportWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkLocationTests.cs",
+          "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03",
+          "bytes": 2535,
+          "symbols": [
+            "TransportWorkLocationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportWorkV1/verification.json",
+          "sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+          "bytes": 267613,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/VoyageExpense.cs",
+          "sha256": "860bdccfd7fa9bc72ef44b30f9d9df6176f918a730a2c81c4ff61c7d0108783b",
+          "bytes": 8478,
+          "symbols": [
+            "VoyageExpenseRules",
+            "VoyagePayment",
+            "VoyageRefusal",
+            "VoyageExpenseState",
+            "VoyageExpense"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/VoyageExpenseTests.cs",
+          "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
+          "bytes": 15845,
+          "symbols": [
+            "VoyageExpenseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+          "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
+          "bytes": 2355,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TravelExpenseV1/verification.json",
+          "sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
+          "bytes": 305157,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Debrief.cs",
+          "sha256": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a",
+          "bytes": 3103,
+          "symbols": [
+            "MilitaryDebrief",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryDebriefTests.cs",
+          "sha256": "59939ef4f37a6ba6708e3286ea103fc232477c60fa7852d6458c08a422fe38a0",
+          "bytes": 6813,
+          "symbols": [
+            "MilitaryDebriefTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
+          "sha256": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99",
+          "bytes": 3335,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/MilitaryDebriefV1/verification.json",
+          "sha256": "e7eb32e4a74f5a95b3376b927db8513ff1d1bde757a253621708dc7af6f88973",
+          "bytes": 175491,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-36",
+      "status": "isolated",
+      "existing": "独立試作で徴税/資源要求の競合、二重消費防止や未使用引当解放を扱う。",
+      "remaining": "制度別優先順位・同順位按分・不可分抽選・緊急転用・補償を実装/通常接続する。",
+      "evidence": [
+        {
+          "path": "Core/Simulation/TaxSimulation.cs",
+          "sha256": "b03b4ff3eac6d60084ddda3d5e399c103df1f54959143cf5d0b98de4fe20f411",
+          "bytes": 40360,
+          "symbols": [
+            "TaxPhase",
+            "DeliveryKind",
+            "TaxEventKind",
+            "TaxOrder",
+            "TaxDelivery",
+            "DeliveryFailureNotice",
+            "FailureReportDelivery",
+            "TaxKnowledge",
+            "TaxEvent",
+            "RiceAccount",
+            "CharacterSnapshot",
+            "CastleSnapshot",
+            "WorldSnapshot",
+            "TaxSnapshot"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.cs",
+          "sha256": "4f4bde6c0cb900eec1f1ff075de9aa71fd3d7e00027b954a98cf95490a8b80fa",
+          "bytes": 43925,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TaxSimulationTests.cs",
+          "sha256": "339005f92eb4d92510204e89db4c8b0f096cc35ec4f1fba3533264119e7175cd",
+          "bytes": 11508,
+          "symbols": [
+            "TaxSimulationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/CommonContractTests.cs",
+          "sha256": "0e0d7f75960e0d8e20007ad2222135d49ca6cecc543e1037ccfe7fd1080e97d5",
+          "bytes": 23427,
+          "symbols": [
+            "CommonContractTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-37",
+      "status": "normal",
+      "existing": "実許可・現地引受から固定3部隊の指揮/損耗/返還へ接続。主家・拠点別に元帳を保持し、別主家の軍務と旧主家への復帰で兵・兵糧・原本を初期化/流用しない。",
+      "remaining": "人口/装備からの招集・編成変更・兵種・集合と全国の兵数収支を接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.cs",
+          "sha256": "e784ec48ddfcd377899338ac5567fd9a45f7c639dadeeaba40113499bde5b2fb",
+          "bytes": 37518,
+          "symbols": [
+            "NewMilitaryAction",
+            "NewMilitaryInput",
+            "NewMilitaryRequest",
+            "NewMilitaryTerms",
+            "NewMilitaryOrder",
+            "NewMilitaryReport",
+            "NewMilitaryState",
+            "NewMilitaryView",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Authority.cs",
+          "sha256": "022a6f4784714ebf11e2d68498d74ed9ba8e50e1a1a90a75e4de4a169e11e21a",
+          "bytes": 7451,
+          "symbols": [
+            "NewMilitaryAuthorityState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameMilitaryTests.cs",
+          "sha256": "1d143209d650a825712561eb54ff5cfeab5a05549d2794d1c4d383b04425b20b",
+          "bytes": 12331,
+          "symbols": [
+            "NewGameMilitaryTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameCombatTests.cs",
+          "sha256": "418dd79389910db501177a2711c4dd6b37e0d667adad2e910b2d4a66dbcad9a3",
+          "bytes": 8976,
+          "symbols": [
+            "NewGameCombatTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+          "sha256": "89722c7377d22491b7d7f9b18fd8d99c581dd7625f6ff8cad277928eda7ef0e7",
+          "bytes": 12993,
+          "symbols": [
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/HouseholdMilitaryTests.cs",
+          "sha256": "f5aa28c6a771f3c5c3deef5cca4b0791e47db5bc6b14da167795976bb64c9aae",
+          "bytes": 11505,
+          "symbols": [
+            "HouseholdMilitaryTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/HouseholdMilitaryV1/verification.json",
+          "sha256": "473715c9372024b1be9958054ea2078e4c44be9df6e8621ef84b1821af8821e1",
+          "bytes": 258262,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-38",
+      "status": "normal",
+      "existing": "配置線へ複数部隊が移動し、隊別原本・取消・部分到達を扱う。",
+      "remaining": "多数部隊の幅/混雑・異なる指揮官の作戦を全国の実戦条件で統合する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.UnitDirective.cs",
+          "sha256": "34f005fee448c54d3886f16171d642473824048c9dc1b8b0cde399f9c0ca040d",
+          "bytes": 16560,
+          "symbols": [
+            "UnitDirectiveKind",
+            "UnitDirectiveOutcome",
+            "UnitDirectiveInput",
+            "UnitDirectiveNote",
+            "UnitDirectiveAnswer",
+            "UnitDirectiveEffect",
+            "UnitDirectiveState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/RegionalGround.cs",
+          "sha256": "32739fed6fbc999b19cf7e710d1f4bc7fb4da209b78da2980f53ad0a3d1f8041",
+          "bytes": 10695,
+          "symbols": [
+            "RegionalGround"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/UnitDirectiveTests.cs",
+          "sha256": "48de7983a3e17855a35a1d8b85a6fbecbe83579104423f27f8e8675b00f18f52",
+          "bytes": 14744,
+          "symbols": [
+            "UnitDirectiveTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TrafficWorldTests.cs",
+          "sha256": "b875ac3f9b46d615a4fbb235f51d784cba0293fd9c3e6b43918be5dba8971774",
+          "bytes": 10347,
+          "symbols": [
+            "TrafficWorldTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-39",
+      "status": "normal",
+      "existing": "通常の新規開始を明示v3へ接続。当主の通知発送→物理到達/開封→NPC独自判断/返書→実出陣/接触/損害→撤退/帰還/返納/返報/指揮返還を公開プレイヤーAPIで一巡。関連393件成功、Gameビルド成功、保存復旧5組/40個の実Node3D座標・兵数・攻撃用データ一致。GUI操作/見た目と現コード全2573件は未実施。全体概算20%据置。",
+      "remaining": "画面操作/外観の受入、一般の野戦/兵種/自動敗走/攻城/全国NPC戦争へ拡張。最小一巡Core後は地域経済へ渡す。",
+      "evidence": [
+        {
+          "path": "Docs/Design/WorldClashV1/README.md",
+          "sha256": "5448753864b66bc4fafae3e6cd96827f9b6117c2765edfe7ecb2b24085d6927a",
+          "bytes": 5571,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/NpcArmyV1/README.md",
+          "sha256": "f2e9245db66df81ae482e7b870b00ebc371f63c16a15b9fa9a65f61be863a55b",
+          "bytes": 4493,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/FactionStanceV1/README.md",
+          "sha256": "3bc656df6c474878d7b48dddf06c4d8c8ae4969591898e1ffede7011a18530d3",
+          "bytes": 4105,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Combat.cs",
+          "sha256": "40dceea75c23b8593e7a2e721b6bbe0ae852ae3a903c8f49ee500cfa5c6b6f07",
+          "bytes": 5013,
+          "symbols": [
+            "CombatAuthorization",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Rout.cs",
+          "sha256": "8d2ae934c556f37d80598d2e96d9f50281e5cee467d5a6b93056eda89a65bfdb",
+          "bytes": 7746,
+          "symbols": [
+            "RoutRetreat",
+            "RoutRegroup",
+            "RoutArrival",
+            "NewRoutState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/RepeatedExerciseTests.cs",
+          "sha256": "dfd72bc642d9598644352041086059f5aee7c610fdddc5ef8a082f2164b4d673",
+          "bytes": 14624,
+          "symbols": [
+            "RepeatedExerciseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/RoutRegroupTests.cs",
+          "sha256": "4410cbae5265b6dd87a75322be3e3b0252711d25faf22756d8192af2c957e43d",
+          "bytes": 10042,
+          "symbols": [
+            "RoutRegroupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/FieldEngagement.cs",
+          "sha256": "a11fe0481ac7bbeebaa8b4bee29ea3dbf4042ae491945de907ab6c787d6e02ee",
+          "bytes": 6576,
+          "symbols": [
+            "EngagementIntent",
+            "EngagementBasis",
+            "EngagementMandate",
+            "HostilityInterval",
+            "EngagementUnit",
+            "EngagementStrike",
+            "EngagementResult",
+            "FieldEngagement"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/FieldEngagementTests.cs",
+          "sha256": "95f1353eb3190bcef413b45be8783b987f69d69c3f9087ab1c059f8f24e1e632",
+          "bytes": 8830,
+          "symbols": [
+            "FieldEngagementTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/FieldEngagementV1/README.md",
+          "sha256": "2ac34a5c0bcfae4e90210c9a6c5d2a8e0735453e872c650d0639b66afe442fb9",
+          "bytes": 3107,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/FieldEngagementV1/verification.json",
+          "sha256": "33c3a566970cd43c7fe222371ac4cd9667b8348e78e79dd4dffc0f80c5b3b725",
+          "bytes": 24896,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.EngagementTasks.cs",
+          "sha256": "7ac45af216928eca3efcd6c66f45d82ba8bfa54f8d1a194b6bf8068409748a09",
+          "bytes": 6825,
+          "symbols": [
+            "EngagementTaskRequest",
+            "EngagementTaskTerms",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.EngagementTasks.cs",
+          "sha256": "03fc5bb138e62f1306084fc7b99478ca13087519af47509e279f96050134ebff",
+          "bytes": 3788,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/EngagementTaskDeliveryV1/README.md",
+          "sha256": "f45e9dc5ffb5f9f18d4993ee96bc2dc9fd5f6bd0c20db6e10a726c0a59909bc9",
+          "bytes": 4236,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
+          "sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
+          "bytes": 152230,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
+          "sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
+          "bytes": 131926,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/EngagementTaskDeliveryV1/git-only-build.json",
+          "sha256": "e5588b7e51304cb968fbddd95483386b42dd8bd2d373687e3a6fba0341fa3bc4",
+          "bytes": 45105,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/FactionStances.cs",
+          "sha256": "78f54577679380887af1491154c5445e9bc9e88f517761a61992fa557fb50c50",
+          "bytes": 11067,
+          "symbols": [
+            "FactionStanceAction",
+            "FactionStanceInput",
+            "FactionStanceAuthority",
+            "FactionStanceDecision",
+            "FactionStanceState",
+            "FactionStanceClaim",
+            "FactionStances"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.FactionStances.cs",
+          "sha256": "ac0149f5b31d6525d0683250ea4c37499ec9ec8ca25d1800da2086c6e8ceecca",
+          "bytes": 1610,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/FactionStanceV1/verification.json",
+          "sha256": "1343913d7d33c6968e6c0146b40874f2f852e837fddd6f6fbc81844bf2881351",
+          "bytes": 71295,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/FactionEntryV1/verification.json",
+          "sha256": "25ebe0ce6b3406aa5d1e70c65c4aada7dd803972b0943d40d137cbd24b76ae78",
+          "bytes": 75783,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.FactionPolicy.cs",
+          "sha256": "017df0eaf1ddf04db58b0f7455a46e804cb01edba169f78ebe2af1194184abf6",
+          "bytes": 5713,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-40",
+      "status": "normal",
+      "existing": "主家兵糧の引受/携行/消費/返納、本人と本隊の受渡しを扱う。",
+      "remaining": "全国の補給拠点・輸送隊・遮断と、遠方簡略計算の在庫一致を接続する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitary.cs",
+          "sha256": "e784ec48ddfcd377899338ac5567fd9a45f7c639dadeeaba40113499bde5b2fb",
+          "bytes": 37518,
+          "symbols": [
+            "NewMilitaryAction",
+            "NewMilitaryInput",
+            "NewMilitaryRequest",
+            "NewMilitaryTerms",
+            "NewMilitaryOrder",
+            "NewMilitaryReport",
+            "NewMilitaryState",
+            "NewMilitaryView",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Withdrawal.cs",
+          "sha256": "5914e0a06ed657340f4bc0d0fdf04391d0b017968b21c881ade377ce181146aa",
+          "bytes": 16766,
+          "symbols": [
+            "PersonalJourney",
+            "TroopSighting",
+            "TroopDispatch",
+            "TroopReceipt",
+            "TroopReply",
+            "PersonalWithdrawalState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.SupplyWork.cs",
+          "sha256": "1123dbfaf3e6f8d5076199d720e321823cab4ca52a526ec9b38c2755feb1506a",
+          "bytes": 2778,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/FieldSupplyTests.cs",
+          "sha256": "1e13c56b1887b9bf57d83116acee273d38cff20731661ed94318531bd7c581df",
+          "bytes": 8013,
+          "symbols": [
+            "FieldSupplyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/PersonalWithdrawalTests.cs",
+          "sha256": "4df10552e177e4d521fd4577bfbbaf1c4cbd95f5357f86d754fc395981fe7b3a",
+          "bytes": 18572,
+          "symbols": [
+            "PersonalWithdrawalTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-41",
+      "status": "normal",
+      "existing": "当主間の不戦期間提示/対案/同一版承諾/物理到達による成立と本人の認識を通常入口へ接続。対案配送中/成立後の世代復旧を確認。画面外観未確認。 精算済みの私的接触から当主本人の新規軍引受見合わせを実支払い/期限/実出陣/保存復旧へ限定接続。",
+      "remaining": "内応の限定交渉、資源/領地等の一般条項、代理決裁、相手ごとの判断、提示撤回/再送へ拡張。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/TruceNegotiations.cs",
+          "sha256": "8f7c8cc36703bdb1379e83b865a72ecbfe6cae854cedf64f1ff6c81312c8ad9c",
+          "bytes": 19469,
+          "symbols": [
+            "TruceAction",
+            "TruceInput",
+            "TruceTerms",
+            "TrucePaper",
+            "TruceBody",
+            "TruceFormation",
+            "TruceFulfillment",
+            "TruceState",
+            "TruceCard",
+            "TruceNegotiations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.Truce.cs",
+          "sha256": "bb447f6f56bbe87114e7a4d888409fea0d8ac6a24646c52b977abe4351ad4619",
+          "bytes": 4395,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TruceNegotiationV1/verification.json",
+          "sha256": "583b6e7865c6ce49ba3531ade7e3edb17849ec82bb4fb45861517f1e02b9a88a",
+          "bytes": 80312,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/PrivateStanddown.cs",
+          "sha256": "1db599e5fd8d8c25e08df86860eb96c965f9af699d9ce93354d2fa750bc8bee4",
+          "bytes": 7893,
+          "symbols": [
+            "StanddownAction",
+            "StanddownInput",
+            "StanddownQuote",
+            "StanddownOrder",
+            "StanddownState",
+            "StanddownCard",
+            "PrivateStanddown"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/PrivateStanddownV1/verification.json",
+          "sha256": "240767db94a83b90601ef5707d115728eb7d95fc3320ee6ca08b76ac8e4a724f",
+          "bytes": 83021,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-42",
+      "status": "foundation",
+      "existing": "不戦を認識した当事者の自家敵対意思撤回・新規NPC出撃抑制・攻撃任務根拠への反映を実装。自衛を維持。",
+      "remaining": "同盟の一般義務、破棄/違約/信用/仲裁、遠方の別指揮官への伝達、同盟先同士の交戦へ拡張。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/TruceNegotiations.cs",
+          "sha256": "8f7c8cc36703bdb1379e83b865a72ecbfe6cae854cedf64f1ff6c81312c8ad9c",
+          "bytes": 19469,
+          "symbols": [
+            "TruceAction",
+            "TruceInput",
+            "TruceTerms",
+            "TrucePaper",
+            "TruceBody",
+            "TruceFormation",
+            "TruceFulfillment",
+            "TruceState",
+            "TruceCard",
+            "TruceNegotiations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldEngagement.cs",
+          "sha256": "aa27d32cd736a6469ccf9085ebe00214669d57b6759fb6dc68158273b3bf4d42",
+          "bytes": 3144,
+          "symbols": [
+            "WorldEngagementSnapshot",
+            "WorldEngagement"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TruceNegotiationV1/verification.json",
+          "sha256": "583b6e7865c6ce49ba3531ade7e3edb17849ec82bb4fb45861517f1e02b9a88a",
+          "bytes": 80312,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-43",
+      "status": "design_only",
+      "existing": "婚姻/養子の基本方針がある。",
+      "remaining": "当人と家の合意・所在・正式実施・相続資格を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-44",
+      "status": "design_only",
+      "existing": "人質/捕虜/保証の基本方針がある。",
+      "remaining": "拘束と保管主体、所在、交換・解放・交換失敗を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-45",
+      "status": "foundation",
+      "existing": "初期当主・役職・城配置と、既存大名の配置競合処理がある。",
+      "remaining": "ゲーム中の家督・暫定統治・支持/遺言認識・継承争いを実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameSetupTests.cs",
+          "sha256": "ab2a7766dc07e451b5961a9c2e578997e2e5cd66106f3b7de225530a418e1a5b",
+          "bytes": 8804,
+          "symbols": [
+            "NewGameSetupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-46",
+      "status": "foundation",
+      "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。",
+      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameService.cs",
+          "sha256": "b2c0915adf09e00547e89043174f36fab3f909c43c4d0deba40424282de7f951",
+          "bytes": 16468,
+          "symbols": [
+            "ServiceInput",
+            "ServiceCase",
+            "ServiceRequest",
+            "ServiceState",
+            "ServiceCard",
+            "ServiceView",
+            "NewGameService"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameSetupTests.cs",
+          "sha256": "ab2a7766dc07e451b5961a9c2e578997e2e5cd66106f3b7de225530a418e1a5b",
+          "bytes": 8804,
+          "symbols": [
+            "NewGameSetupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-47",
+      "status": "design_only",
+      "existing": "城主/支配の初期データと、開城/救援の設計がある。",
+      "remaining": "合意・引渡し・占有・守備分裂・救援と、実際の城の支配変化を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Castles/Castle.cs",
+          "sha256": "2081bd1991e8a8a345e6232588a2d416b1c20815c9722c74e95433c46234b370",
+          "bytes": 563,
+          "symbols": [
+            "CastleDefinition",
+            "Castle",
+            "ResourceStock"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-48",
+      "status": "foundation",
+      "existing": "対象別の所属・指揮・資源・債務を分けるデータがある。",
+      "remaining": "家督/滅亡時に条約・兵・家臣・人質・債務を別々に承継/同意待ち/係争へ移す。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-49",
+      "status": "normal",
+      "existing": "通常軍務で当主の発令根拠と家の所有資源、本人の指揮権を分ける。",
+      "remaining": "国人/寺社の合議、代表交代・不在/代理、反対派と組織意思を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameMilitaryAuthority.cs",
+          "sha256": "02e5ed2b8e247a978e523dd57a3905ec03394fbfafe1c6fe9055808d8c703849",
+          "bytes": 2482,
+          "symbols": [
+            "MilitaryIssuerAuthorityBasis",
+            "NewGameMilitaryAuthority"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Authority.cs",
+          "sha256": "022a6f4784714ebf11e2d68498d74ed9ba8e50e1a1a90a75e4de4a169e11e21a",
+          "bytes": 7451,
+          "symbols": [
+            "NewMilitaryAuthorityState",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryIssuerAuthorityTests.cs",
+          "sha256": "e238bbb2cdedf1e205d9691421bc03f494881f0ebc1248e7653c726f528e7e5b",
+          "bytes": 6035,
+          "symbols": [
+            "MilitaryIssuerAuthorityTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-50",
+      "status": "foundation",
+      "existing": "初期の家・直属主君・役職と一時指揮を分けるデータがある。",
+      "remaining": "国人の自治・従属義務・派閥・戦時指揮が並行する政治運用を実装する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameSetup.cs",
+          "sha256": "eaa4cc196eddd68d50feef5d54e0b0f9561c4f852bce3df4d3682630ff623b1f",
+          "bytes": 14678,
+          "symbols": [
+            "OfficerAttributes",
+            "RegisteredOfficer",
+            "OfficerGroup",
+            "OfficerLibrary",
+            "SetupPerson",
+            "SetupCastle",
+            "SetupFaction",
+            "SetupScenario",
+            "DaimyoPlacement",
+            "WorldSetupRequest",
+            "SetupChange",
+            "WorldSetupPreview",
+            "NewGameSetup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/ContractModels.cs",
+          "sha256": "48afcb312be6efb36eb73cf0233bc3343bca4bf05a125116a7625bd0c5ff03f1",
+          "bytes": 15157,
+          "symbols": [
+            "struct",
+            "LifeState",
+            "LocationKind",
+            "TaskKind",
+            "ActionKind",
+            "ExecutionPhase",
+            "AgreementPhase",
+            "ReportingPhase",
+            "AssessmentPhase",
+            "ReservationPhase",
+            "CompensationPhase",
+            "EventKind",
+            "DeadlineCriterion",
+            "RelationKind"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-51",
+      "status": "design_only",
+      "existing": "寺社権益の基本方針がある。",
+      "remaining": "寺社の要求・正式権益・実支配・協力/不服従と交渉を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-52",
+      "status": "design_only",
+      "existing": "凶作・救済・一揆の基本方針がある。",
+      "remaining": "災害・収穫変動・救済要請/配送・住民反応を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-53",
+      "status": "design_only",
+      "existing": "朝廷/幕府への働きかけの基本方針がある。",
+      "remaining": "中央固有の決裁権と交渉案件を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-54",
+      "status": "design_only",
+      "existing": "称号・任官・実権を分ける基本方針がある。",
+      "remaining": "中央任官の正式地位・名乗り・他者認識・実権を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-55",
+      "status": "design_only",
+      "existing": "将軍継承・擁立の基本方針がある。",
+      "remaining": "候補資格・支持・名目就任・実権・服従関係の変化を実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-56",
+      "status": "design_only",
+      "existing": "仲裁・服従の基本方針がある。",
+      "remaining": "発給・到達・受容・履行・政治評価と、不達時の扱いを実装する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-57",
+      "status": "normal",
+      "existing": "スタート/作成/ロード・地図・仕事/会話・軍務・書状・履歴が通常入口につながる。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
+      "remaining": "全制度の案内・戦後評価と、布陣などを含むキーボード操作/アクセシビリティを仕上げる。",
+      "evidence": [
+        {
+          "path": "Game/Scripts/NewGameFrontEnd.cs",
+          "sha256": "2003ad00d43ad7bbb66440a3e865152389054ec40ae81e528368a3a8bd7b4956",
+          "bytes": 27077,
+          "symbols": [
+            "NewGameFrontEnd"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.UsableLayout.cs",
+          "sha256": "be9e01acc0bd347e88f849d7cc27728a799ae01fc6578d92453ebfa1b819fc5c",
+          "bytes": 4918,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkExperience.cs",
+          "sha256": "661a9a59b542d83f76bd9d4b98c22080da1c4e7be9f4d3611bb5c383c073b3eb",
+          "bytes": 31453,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.Military.cs",
+          "sha256": "4a9cf7caf52b8d716a569059d3d7338e704f066f88a79d823b6511ae33a0d45b",
+          "bytes": 19062,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/TransportWork.cs",
+          "sha256": "fe0a88d7ef8eca7c142f3d6966eaa9e2d486819b4306d722c8257befd1049b6a",
+          "bytes": 11712,
+          "symbols": [
+            "TransportWorldReceipt",
+            "TransportJob",
+            "TransportWorkState",
+            "TransportWork"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorldSession.TransportWork.cs",
+          "sha256": "f83fbf0f73abe93cdbc196c7647679ab4f70ffa08c0a50278788617825df26b3",
+          "bytes": 2585,
+          "symbols": [
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkTests.cs",
+          "sha256": "3321371fa28f955ec18fc16e34a8d70e2cb5e1fc799c35d628e0fbba43b0e578",
+          "bytes": 10824,
+          "symbols": [
+            "TransportWorkTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/TransportWorkLocationTests.cs",
+          "sha256": "fb8548dc18884702a290b5fa72888586fe11e14f181842b9e434e8b8f1876c03",
+          "bytes": 2535,
+          "symbols": [
+            "TransportWorkLocationTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TransportWorkV1/verification.json",
+          "sha256": "90e0e7aed085b891fd73d9a5445e7520e9d4be2a8fa61c99681c7351b9e75458",
+          "bytes": 267613,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/VoyageExpense.cs",
+          "sha256": "860bdccfd7fa9bc72ef44b30f9d9df6176f918a730a2c81c4ff61c7d0108783b",
+          "bytes": 8478,
+          "symbols": [
+            "VoyageExpenseRules",
+            "VoyagePayment",
+            "VoyageRefusal",
+            "VoyageExpenseState",
+            "VoyageExpense"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/VoyageExpenseTests.cs",
+          "sha256": "852637d9d7f0f896bf505f78a2923cf322524c1656a122c81402fafe115e61ed",
+          "bytes": 15845,
+          "symbols": [
+            "VoyageExpenseTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
+          "sha256": "a5dd33e94362a1d62259c9e2e98b6821f69928648d4b859be6c51f2f5588fe6a",
+          "bytes": 2355,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/TravelExpenseV1/verification.json",
+          "sha256": "151aa5f3d6e40acd11f7e5ffd3fc6b1952c49841def271275e4e6d9950b6145e",
+          "bytes": 305157,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkProgression.cs",
+          "sha256": "8ee56e5121694cfea9368d03088282b6b6d546a4ad32557bd2c1dd93cc6f851e",
+          "bytes": 1718,
+          "symbols": [
+            "WorkProgression"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkProgressionV1/verification.json",
+          "sha256": "64f3ed93d1232b75bb03011e2bd59142fade129fa9a1bd3005c1cbef4f78bb90",
+          "bytes": 152278,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkDuty.cs",
+          "sha256": "c5505b9b3aa5866627a2efc0b20dc6d5b11f085387e50719f82a49b399fa1816",
+          "bytes": 6213,
+          "symbols": [
+            "WorkDutyAgreement",
+            "WorkDuty",
+            "WorldSession"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkDutyTests.cs",
+          "sha256": "c9f1588ced5ce27f776f059839281c29e51d605735e806f21fa0e9503eca03b1",
+          "bytes": 6435,
+          "symbols": [
+            "WorkDutyTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkDutyV1/verification.json",
+          "sha256": "bf474ed5a6140fc80dd79acccf80fbf8c0132153d65348460899a3c04a38a52c",
+          "bytes": 153036,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkFollowup.cs",
+          "sha256": "a8c35dcf81e1b7a137f38985da62211283164ca24d55de5621326bbcfb187bae",
+          "bytes": 2557,
+          "symbols": [
+            "FollowupTerms",
+            "WorkFollowup"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkFollowupTests.cs",
+          "sha256": "e242d60cb8ba36dd5d87ecfba5f93ba101039e90a015d343fa4f7ec7ce5dc5b1",
+          "bytes": 7551,
+          "symbols": [
+            "WorkFollowupTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkFollowupV1/verification.json",
+          "sha256": "f82f3093fbad72370c6d98fec7c82378e1ef1f2aec3481c913ca04f48a08226e",
+          "bytes": 154074,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/WorkRelations.cs",
+          "sha256": "464dec242e3d5eba617e8fd335cf5f0ce2d1cfe40ff791b255a7013a7dfa0326",
+          "bytes": 4769,
+          "symbols": [
+            "WorkTrustFact",
+            "WorkContactProof",
+            "WorkContact",
+            "WorkRelations"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/WorkRelationsTests.cs",
+          "sha256": "e17582158b227c3e84f9f86068b2a033847d4a8e0a7a2a0c6e053f09c5a66c2b",
+          "bytes": 8173,
+          "symbols": [
+            "WorkRelationsTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkRelationsV1/verification.json",
+          "sha256": "f2395cc53a624c0d803ed854323d0e58e75a907e7a8659c4394201e22db1840f",
+          "bytes": 156217,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/NewGameMilitary.Debrief.cs",
+          "sha256": "54006240ec0a724f4113109c3946ac801331c98275b17ed2968f87b63ee47b5a",
+          "bytes": 3103,
+          "symbols": [
+            "MilitaryDebrief",
+            "NewGameMilitary"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/MilitaryDebriefTests.cs",
+          "sha256": "59939ef4f37a6ba6708e3286ea103fc232477c60fa7852d6458c08a422fe38a0",
+          "bytes": 6813,
+          "symbols": [
+            "MilitaryDebriefTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
+          "sha256": "6a4d09baeac74f1fe579f3cd5a166c57f76e0bb1a454ccdaa51612cafdd16b99",
+          "bytes": 3335,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/MilitaryDebriefV1/verification.json",
+          "sha256": "e7eb32e4a74f5a95b3376b927db8513ff1d1bde757a253621708dc7af6f88973",
+          "bytes": 175491,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
+          "sha256": "5b2027fd00401106b7e49c83d480419aaf41b41a7c637b6977dc172af92af223",
+          "bytes": 2800,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/ServiceDirectionV1/verification.json",
+          "sha256": "6138552d9582b584173897bf2735541e95733905cc91cd8fe3eee0c59aeede51",
+          "bytes": 166319,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkContactReviewV1/verification.json",
+          "sha256": "89695f6f8a995df7f0aeab385f87afb346218d06673c20e297892c7ec57bef17",
+          "bytes": 162122,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-58",
+      "status": "normal",
+      "existing": "少数の史実NPCの初回点検/返報待機と、既知記録からの仕事需要がある。",
+      "remaining": "経済・軍事・外交・人物の目標から自律判断し、詳細/遠方簡略モードの状態一致を実現する。",
+      "evidence": [
+        {
+          "path": "Core/Contracts/NewGameNpcRoutine.cs",
+          "sha256": "40b72b9418b4837e33f75d7e4051dfcfe83ca3404b2dab2be96c744b553b871b",
+          "bytes": 6057,
+          "symbols": [
+            "NewGameNpcRoutine"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Core/Contracts/LocalWorkDemand.cs",
+          "sha256": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
+          "bytes": 3143,
+          "symbols": [
+            "LocalInspectionNeed",
+            "LocalWorkDemand"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/NewGameNpcRoutineTests.cs",
+          "sha256": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
+          "bytes": 6338,
+          "symbols": [
+            "NewGameNpcRoutineTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Tests/LocalWorkDemandTests.cs",
+          "sha256": "5359d23adf8a65edea5c14014049a53cea1940566e3a6d58045079135b2e65c0",
+          "bytes": 9490,
+          "symbols": [
+            "LocalWorkDemandTests"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-59",
+      "status": "normal",
+      "existing": "共通3D骨格/装備/配色、武将作成と会話の顔表示が通常入口につながる。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
+      "remaining": "製品品質の人物/装備の種類、肖像・素材利用権の一覧と全組合せ/全周の受入を整える。",
+      "evidence": [
+        {
+          "path": "Core/Appearance/OfficerAppearance.cs",
+          "sha256": "23209c9d24537bc3c7aa605fefbb84d9b2adb95bf1a4d012b386742adab53ac0",
+          "bytes": 2886,
+          "symbols": [
+            "OfficerAppearance",
+            "AppearanceCatalog"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkExperience.cs",
+          "sha256": "661a9a59b542d83f76bd9d4b98c22080da1c4e7be9f4d3611bb5c383c073b3eb",
+          "bytes": 31453,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/SupplyWorkV1/verification.json",
+          "sha256": "bf0e0f8129b58ba706588e8b26aa4d8b0174aad79c51fb505e1fd497e61ddc64",
+          "bytes": 354293,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Game/Scripts/NewGameRuntime.WorkRelations.cs",
+          "sha256": "9f7c615f29b1b3ee2e7900f37ac78b5bde989f41cde6a002aa177b7af2c10d53",
+          "bytes": 6224,
+          "symbols": [
+            "NewGameRuntime"
+          ],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/WorkContactReviewV1/verification.json",
+          "sha256": "89695f6f8a995df7f0aeab385f87afb346218d06673c20e297892c7ec57bef17",
+          "bytes": 162122,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    },
+    {
+      "id": "BD-60",
+      "status": "management",
+      "existing": "基本設計60件・15分野・170受入予定の正本が採用済み。本表で実装の追跡を開始する。",
+      "remaining": "製品の統合受入・実機性能・シナリオ/素材の完成認定は今後。基本設計の完了と区別する。",
+      "evidence": [
+        {
+          "path": "Docs/Design/basic-design-v1.json",
+          "sha256": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
+          "bytes": 60955,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Design/basic-design-acceptance.json",
+          "sha256": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
+          "bytes": 69535,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        },
+        {
+          "path": "Docs/Development/OPERATING_POLICY.md",
+          "sha256": "a13b1730411818857f5c8303a7db62444880010daf07c74940f4f2ad34518e53",
+          "bytes": 13192,
+          "symbols": [],
+          "inspection": "source text/definition read; runtime or visual acceptance is separate"
+        }
+      ],
+      "assessment": "Static scope/evidence audit. Existing current685 runtime proof remains separately scoped; no new all-product or GUI acceptance."
+    }
+  ],
+  "old_estimate": 19.933170995670995,
+  "reaudited_baseline": 20.193587662337663,
+  "reassessment_not_earned": 0.26041666666666785
+}

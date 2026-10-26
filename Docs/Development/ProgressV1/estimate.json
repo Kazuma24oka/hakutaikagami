@@ -8,7 +8,7 @@
     15,
     25
   ],
-  "aggregation": "小区分は個別に概算。中区分は対象小区分の等重み平均、大区分は配下の対象小区分の等重み平均。全体は大区分の固定重みで集計し5%刻みに丸める。重みは製品での位置付けであり、残り工数の見積ではない。",
+  "aggregation": "小区分の概算を中/大区分へ同じ重みで集計。全体は元の値から小数1位を表示し、増分判定は丸め前で行う。旧5%刻み値は履歴比較用に保持。表示桁の変更は進捗の加点ではない。",
   "excluded_from_rollup": [
     "BD-01",
     "BD-60"
@@ -112,8 +112,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-09": {
-      "percent": 40,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。 他家の家臣本人が旧主の承諾を実受領して辞去し、結果の認識後に別合意で個人配下へ加入する限定一巡を接続。"
+      "percent": 45,
+      "basis": "既存プレイヤーの仕官/辞去に加え、NPCの円満辞去を旧主通知/本人受領/結果認識と別加入まで実装。無断離反や全身分は未完。"
     },
     "BD-10": {
       "percent": 35,
@@ -124,8 +124,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-12": {
-      "percent": 35,
-      "basis": "個人協力の現地加入/終了・日額手当/未払い・独立した実同行・点検委任まで。正式な家臣所属変更/大集団/高度な指揮は後続。 浪人との実仕事を経た本人合意で実ServiceBondを追加/解消。組織所属/日当契約/兵を個別に保持。 旧主から円満辞去した本人も別合意で個人配下へ加入できる。"
+      "percent": 40,
+      "basis": "個人随行と実主従の加入/解消、NPC円満辞去後の別加入が存在。一般軍勢/遠隔/海上配下は未完。"
     },
     "BD-13": {
       "percent": 10,
@@ -212,8 +212,8 @@
       "basis": "清洲一地域の季節収穫/年貢/水利工事が新規通常入口へ接続。人口・民兵労働力・飢饉・全国データは未接続。"
     },
     "BD-34": {
-      "percent": 25,
-      "basis": "私財/報酬/運搬と別に、清洲の家の蔵と村の年貢計上/実徴収/支出を接続。定期俸禄・未払い・市場換算・全国所領財政は後続。"
+      "percent": 30,
+      "basis": "既存清洲で年貢計上/現物徴収/救済/工事支出を実装済み。定期俸禄/複数地域/市場は未完。"
     },
     "BD-35": {
       "percent": 10,
@@ -321,17 +321,20 @@
     }
   },
   "focus": {
-    "leaf": "BD-01",
-    "status": "履歴監査は完了。全60区分の実装評価と工程再配分は未完了",
-    "title": "全体評価と工程配分の再監査",
+    "leaf": "BD-33",
+    "status": "基準と4完成条件を固定。実装開始前",
+    "title": "複数地域の暮らし・収穫・不足・救済の一巡",
     "exit": [
-      "60区分の実装範囲・通常入口・残件を照合する",
-      "各大工程の最低限の遊びと次工程へ移る終了条件を固定する",
-      "概算を一括再評価し変更根拠と差分を公開する"
+      "Three authored regional ledgers with population/workforce, seasons and independent village/house stocks",
+      "Actual reserved labor, food shortage and water-work progress affect harvest and spending",
+      "Deterministic observed crop hazards, shortage/relief and dated local reports without remote truth leakage",
+      "Normal-entry integration, actual generation recovery/future equivalence, old-save preservation and headless placement data"
     ],
     "deferred": [
-      "新しい離反/追及の詳細追加",
-      "テスト件数による製品進捗の加点"
+      "全国の人口/経済採録",
+      "市場売買/定期俸禄",
+      "一揆/徴発と全国動員",
+      "現GUI/素材外観の受入"
     ]
   },
   "roadmap": [
@@ -394,7 +397,7 @@
   "plan_revision_reason": "ユーザーから全体進捗停滞の指摘。PR4〜13の算出履歴を監査し、丸め前18.8→19.9%と評価更新不足を確認。小機能の細分化を続ける前に全体評価と工程配分を再監査する。製品範囲と集計重みは変えない。",
   "progress_audit": {
     "date": "2026-10-26",
-    "status": "needs_full_reassessment",
+    "status": "static_source_audit_complete_runtime_acceptance_partial",
     "history": [
       {
         "pr": 4,
@@ -475,6 +478,6 @@
         10
       ]
     },
-    "note": "5%刻みの丸めだけでなく、狭い分野の細分化と数値の再評価不足が重なった。直近実装を含む全60区分の再監査は未実施。重み・分母・小区分の％を表示改善のために変更しない。"
+    "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   }
 }
