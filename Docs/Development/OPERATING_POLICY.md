@@ -108,3 +108,7 @@ Computer Useは、画面の取得・読み取りとGUI自動操作を含めて�
 ## PR #11の承認と統合（2026-10-26）
 
 ユーザー回答「推奨：コードのみmainへ統合」によりheadf76e0ff28c93f9c512ccdae63da501676ba4cb39を通常merge。main36c72932429363cd79e75c1b22873c977bea3d41とツリー一致。以後のmain統合やComputer Useへの包括承認ではない。
+
+## PR #12の承認と統合（2026-10-26）
+
+明示回答「推奨：コードのみmainへ統合」でhead87d053f7c451f2875bf248aa77e9341feebffd70を通常merge。main33dd4acd5d529755260ad45cce9373420ee31d7bとツリー一致。以後のmain統合やComputer Useの包括承認ではない。
