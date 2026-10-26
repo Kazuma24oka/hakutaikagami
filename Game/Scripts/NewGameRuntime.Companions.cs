@@ -18,8 +18,10 @@ public partial class NewGameRuntime
             var pay=new Button{Text="未払い手当を支払う"};box.AddChild(pay);pay.Pressed+=()=>Run(CompanionAction.Pay,cards[choice.Selected].Owed);
             var inspect=new Button{Text="この拠点の点検を頼む"};box.AddChild(inspect);inspect.Pressed+=()=>Run(CompanionAction.Inspect);
             var travel=new Button{Text="指定した行先への同行を頼む"};box.AddChild(travel);travel.Pressed+=()=>Run(CompanionAction.TravelTogether,to:sites[destination.Selected-1].Id);
+            var pledge=new Button{Text="個人の直属として加わってもらう"};box.AddChild(pledge);pledge.Pressed+=()=>{var c=cards[choice.Selected];popup.Hide();ShowPersonalServiceTalk(c.Person);};
+            var release=new Button{Text="個人の直属関係を解く（手当債務は残る）"};box.AddChild(release);release.Pressed+=()=>Run(CompanionAction.ReleaseService);
             var end=new Button{Text="協力契約を終える（所属関係は変更しない）"};box.AddChild(end);end.Pressed+=()=>Run(CompanionAction.EndAgreement);
-            void RefreshCard(){var c=cards[choice.Selected];status.Text=c.Name+"\n"+c.Kind+"／"+c.Status+"\n未払い "+c.Owed+"文"+(c.Nearby?"／現地で面会中":"／離れています。新しい相談は再会してから");bool local=c.Nearby&&!c.Busy;single.Visible=Snapshot().NewGame?.CompanionPolicy==PersonalCompanions.PrivateInspectionPolicy;single.Disabled=!c.Nearby;agree.Disabled=c.Kind=="一件だけの私的点検協力"||!local||c.Active||c.Owed>0;pay.Disabled=!local||c.Owed==0;inspect.Disabled=!local||!c.Active||c.Owed>0;travel.Disabled=inspect.Disabled||destination.Selected<1;end.Disabled=!local||!c.Active;}
+            void RefreshCard(){var c=cards[choice.Selected];status.Text=c.Name+"\n"+c.Kind+"／"+c.Status+"\n未払い "+c.Owed+"文"+(c.Nearby?"／現地で面会中":"／離れています。新しい相談は再会してから");bool local=c.Nearby&&!c.Busy;var supported=Session.PersonalServiceView().Any(v=>v.Person==c.Person&&v.Active);pledge.Visible=release.Visible=Snapshot().NewGame?.CompanionPolicy==PersonalCompanions.PersonalServicePolicy;pledge.Disabled=!local||supported;release.Disabled=!local||!supported;if(supported)status.Text+="\n本人との直属合意あり（所属・軍権は別）";single.Visible=PersonalCompanions.SingleInspectionEnabled(Snapshot());single.Disabled=!c.Nearby;agree.Disabled=c.Kind=="一件だけの私的点検協力"||!local||c.Active||c.Owed>0;pay.Disabled=!local||c.Owed==0;inspect.Disabled=!local||!c.Active||c.Owed>0;travel.Disabled=inspect.Disabled||destination.Selected<1;end.Disabled=!local||!c.Active;}
             choice.ItemSelected+=_=>RefreshCard();destination.ItemSelected+=_=>RefreshCard();RefreshCard();
         }
         var close=new Button{Text="地図へ戻る"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(570,520));
@@ -30,6 +32,11 @@ public partial class NewGameRuntime
         PresentWork("私的な点検の相談",reply.Speech,"本人からの返答です。相談だけでは支払いや依頼は発生しません。",person,person,"点検一件の相談","本人の返答");
         if(reply.CanConfirm)Choice("private-inspect-confirm","私財20文で、この一件を頼む",()=>{var r=Session.ManageCompanion(new(new("request:private-inspect-talk/"+reply.Revision),person,CompanionAction.PrivateInspect,reply.Fee),Session.PlayerControl,reply.Revision);Submit(r);if(r.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)CloseBottomTalk();else ShowPrivateInspectionTalk(person);});
         Choice("private-inspect-leave",reply.CanConfirm?"今回は見送る":"分かった。地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
+    }
+    void ShowPersonalServiceTalk(EntityId person)
+    {
+        var reply=Session.ConsultPersonalService(person,Session.PlayerControl,Session.Revision);PresentWork("個人の直属合意",reply.Speech,"組織所属・兵・土地の移転を伴わない、二人の主従合意です。継続手当は別に残ります。",person,person,"本人の意思を確認","直属合意");
+        if(reply.CanConfirm)Choice("personal-service-confirm","この条件で直属合意を結ぶ",()=>{var r=Session.ManageCompanion(new(new("request:personal-service-talk/"+reply.Revision),person,CompanionAction.PledgeService),Session.PlayerControl,reply.Revision);Submit(r);if(r.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)CloseBottomTalk();else ShowPersonalServiceTalk(person);});Choice("personal-service-leave","今回は見送る",CloseBottomTalk);LayoutBottomTalk();
     }
     void ShowCompanionReport(EntityId id)
     {

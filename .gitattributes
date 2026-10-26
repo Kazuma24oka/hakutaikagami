@@ -1919,3 +1919,7 @@ Docs/Design/PrivateInspectionV1/** -text
 # Local cooperation reply projection.
 Scripts/verify_cooperation_talk.py -text
 Docs/Design/CooperationTalkV1/** -text
+
+# Personal direct-service agreement, independently from house membership.
+Scripts/verify_personal_service.py -text
+Docs/Design/PersonalServiceV1/** -text
