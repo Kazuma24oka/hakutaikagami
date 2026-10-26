@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-10-26",
+  "date": "2026-10-27",
   "title": "百代鏡 全体進捗表",
   "audit_base_commit": "bbbba953ce8172a576060c6ab4a03c5ff4138481",
   "classification": "AIによる一次監査。通常入口・主要Core/テスト・検証記録の対応を確認。製品受入の代わりではない。",
@@ -17,8 +17,8 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "b6e59d2893a8466f6bb38d7335a409da5863320fec240da1813e70c06bb59402",
-    "Docs/Development/ProgressV1/estimate.json": "02a0a9f9891698e451a7a68b0580a879d6f6e060ce0ea9a0618705119afc0f26",
+    "Docs/Development/OPERATING_POLICY.md": "50c6563fa8ce3c0c4db21a26f8212b9295c12eb0f4f45e55db5496916624990a",
+    "Docs/Development/ProgressV1/estimate.json": "dbe2fb4472526a93aeb089ddbfc781cf03a89b5abf5c7254079c81e0989898c6",
     "Scripts/build_progress_report.py": "5b5be43fee560558e42fbfa8e7d6a59790883531c4a60b33bc245e05e966aafe",
     "Scripts/check_progress_report.py": "a69edf2b773b26cab34df39de737b2fa1e937c716ad2fca7521ce2e42028f703",
     "Scripts/progress_estimate.py": "76426907be571d188164da6518c83ac22e299be38caf55c92fa4a3629cef578d",
@@ -26,7 +26,8 @@
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
-    "Docs/Design/CommunityEconomyV2/README.md": "16cfe6c1c02668937acd4971586f88cde4d89ae3554740080edb5db215082854"
+    "Docs/Design/CommunityEconomyV2/README.md": "16cfe6c1c02668937acd4971586f88cde4d89ae3554740080edb5db215082854",
+    "Docs/Design/CommunityEconomyV2/integration.json": "77e7473b96fd650967ab378351d016c8d437e92914fa3d1f4036c275166dda6e"
   },
   "items": [
     {
@@ -1561,7 +1562,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "3地域の独立した人口/働き手/収穫/月次食糧/年貢/救済/工事を接続。新規20/関連705件・Gameビルド成功。実世代復旧（工事中/食糧不足で休止/再開/開封済み報告）と将来世界一致。Godot画面なし23組46世界110Node3D一致。通常入口プロフィールと封書の物理受領/開封もCLIで確認。外観/UI操作と全2741件は未実施。",
+    "current_stage_summary": "3地域の独立した人口/働き手/収穫/月次食糧/年貢/救済/工事を接続。新規20/関連705件・Gameビルド成功。実世代復旧（工事中/食糧不足で休止/再開/開封済み報告）と将来世界一致。Godot画面なし23組46世界110Node3D一致。通常入口プロフィールと封書の物理受領/開封もCLIで確認。外観/UI操作と全2741件は未実施。 PR #14を2026-10-27に明示承認でmainへ統合、承認headとツリー一致。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1583,7 +1584,7 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
+    "integration": "Docs/Design/CommunityEconomyV2/integration.json",
     "current_logic_verification": "Docs/Design/CommunityEconomyV2/verification.json",
     "current_logic_verification_sha256": "63c7b67a030e27c6ed208ec67d9f775a53e6f01b79ead5c9c880dfde3f4a97cc",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",

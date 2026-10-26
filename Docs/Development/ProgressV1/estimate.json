@@ -322,7 +322,7 @@
   },
   "focus": {
     "leaf": "BD-33",
-    "status": "3地域の一巡4/4完了。固定基準からの実装増分+1.125ポイント。main統合のみ別承認。",
+    "status": "4/4完了・PR #14 main統合済み。次は地域間取引の完成条件を実装前に固定。",
     "title": "3地域の暮らし・収穫・不足・救済の一巡",
     "exit": [
       "Three authored regional ledgers with population/workforce, seasons and independent village/house stocks",
@@ -488,6 +488,7 @@
     "excluded_reassessment": 0.26041666666666785,
     "minimum": 1,
     "criteria_passed": 4,
-    "criteria_total": 4
+    "criteria_total": 4,
+    "integrated_main": "31611feca784434c29706b718c95d279417dc790"
   }
 }
