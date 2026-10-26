@@ -177,6 +177,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
+        if(PrivateStanddown.NextBoundary(s,target) is {} standdownBoundary)times.Add(standdownBoundary);
         if(TruceNegotiations.NextBoundary(s,target) is {} truceBoundary)times.Add(truceBoundary);
         if(RegionalEconomy.NextBoundary(s,target) is {} economyBoundary)times.Add(economyBoundary);
         if(FactionNoticeReactions.NextBoundary(s,target) is {} reactionBoundary)times.Add(reactionBoundary);

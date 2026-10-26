@@ -23,7 +23,7 @@ public static class PrivateInformation
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>State(w).Orders.Any(o=>o.Input.Id==id);
     static bool Paid(ContractWorld w,EntityId quote,long at=long.MaxValue,long rev=long.MaxValue)=>State(w).Orders.Any(o=>o.Input.Quote==quote&&o.Input.Action==InformationAction.Pay&&Before(o.At,o.Revision,at,rev));
     static bool Accepted(ContractWorld w,EntityId quote,long at,long rev)=>State(w).Orders.Any(o=>o.Input.Quote==quote&&o.Input.Action==InformationAction.Accept&&Before(o.At,o.Revision,at,rev));
-    static bool Local(ContractWorld w,EntityId person,EntityId site,long at,long rev)
+    internal static bool Local(ContractWorld w,EntityId person,EntityId site,long at,long rev)
     {
         if(person==w.PlayerControl||w.Characters.SingleOrDefault(c=>c.Id==person)?.Life!=LifeState.Adult||NpcArmies.CommanderBusyAt(w,person,at,rev))return false;
         foreach(var actor in new[]{person,w.PlayerControl}){
