@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2741,
-  "baseline_passed": 2721,
-  "added": 20,
-  "scope": "Community economy20 added; related705; generation recovery and headless Node3D46 worlds/23 pairs/110 nodes. Full2741 and GUI NOT_RUN."
+  "expected_passed": 2766,
+  "baseline_passed": 2741,
+  "added": 25,
+  "scope": "Regional trade25 added; related730; actual generation recovery, headless28 pairs/56 worlds/120 nodes. Full2766 and GUI NOT_RUN."
 }

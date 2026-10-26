@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "as_of": "2026-10-26",
+  "as_of": "2026-10-27",
   "basis_revision": "87d053f7c451f2875bf248aa77e9341feebffd70",
   "meaning": "最初の全国製品版を100%とした、実装と接続状況に基づくCodexの概算。工数消化率・発売可能性の認定ではない。",
   "rounding_step": 5,
@@ -212,16 +212,16 @@
       "basis": "3地域の独立台帳/人口/働き手/予約労働/作柄/月次食糧/工事と救済を接続。人口変動/民兵徴発/全国拡張は未完。"
     },
     "BD-34": {
-      "percent": 45,
-      "basis": "村と家の現物在庫、収穫課税/現地徴収/工事支出/救済を3地域へ拡張。私財/軍用米は別。市場/定期俸禄/全国財政は後続。"
+      "percent": 50,
+      "basis": "現地売買の銭と米、私有米の家への供給を別取引として接続。本人の引当を他支払から保護。家の定期俸禄/未払い/全国所領財政は後続。"
     },
     "BD-35": {
-      "percent": 10,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 45,
+      "basis": "米一商品の3地域売買を現地見積/合意/引当/支払と受取/実移動/納入/代金債務/精算へ接続。一般の他商品/商人AI/保証・担保/全国相場は後続。"
     },
     "BD-36": {
-      "percent": 10,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 30,
+      "basis": "売買の米/本人の銭/商人の納入後支払資金の引当を保護し、他の手当支払・期限切れ・取消と競合を確認。全用途同順位按分/緊急転用・補償は未実装。"
     },
     "BD-37": {
       "percent": 30,
@@ -321,20 +321,21 @@
     }
   },
   "focus": {
-    "leaf": "BD-33",
-    "status": "4/4完了・PR #14 main統合済み。次は地域間取引の完成条件を実装前に固定。",
-    "title": "3地域の暮らし・収穫・不足・救済の一巡",
+    "leaf": "BD-35",
+    "status": "米一商品の3地域売買を5/5確認。main統合のみ個別承認。",
+    "title": "現地売買・現物移送・納入後債務・精算の一巡",
     "exit": [
-      "Three authored regional ledgers with population/workforce, seasons and independent village/house stocks",
-      "Actual reserved labor, food shortage and water-work progress affect harvest and spending",
-      "Deterministic observed crop hazards, shortage/relief and dated local reports without remote truth leakage",
-      "Normal-entry integration, actual generation recovery/future equivalence, old-save preservation and headless placement data"
+      "Local dated rice quotes and protected goods/coin reservations; no remote current-market disclosure",
+      "Physical collection, common-route travel and local delivery; no instantaneous regional sharing",
+      "Delivery, merchant debt and settlement are separate; cancellation, local resale and explicit authorized house supply preserve ownership",
+      "Goods/cash conservation, cross-operation reservation protection, stale revisions and global ID reuse are validated",
+      "Actual generation recovery/future equality, legacy v2 preservation, normal-entry Game build and headless Node3D placement"
     ],
     "deferred": [
-      "全国の人口/経済採録",
-      "市場売買/定期俸禄",
-      "一揆/徴発と全国動員",
-      "現GUI/素材外観の受入"
+      "他商品/全国相場/商人AI",
+      "荷役/荷駄/積載減速",
+      "保証人/担保と全用途同時配分",
+      "家の定期俸禄/一般債務"
     ]
   },
   "roadmap": [
@@ -350,8 +351,8 @@
       "id": "R2",
       "title": "領地で暮らしと収支を回す",
       "domain": "領地の暮らしと地域社会",
-      "status": "3地域の最小循環Core/API完了。画面外観は未確認",
-      "finish": "人口・労働・収穫・不足・現物救済を3地域で回し、途中保存後の将来も一致。全国適用は後続。",
+      "status": "3地域の暮らしと米売買の最小一巡Core/API完了。外観は未確認",
+      "finish": "人口/収穫/不足/救済に、米の現地売買/引当/実運搬/納入/債務/精算を接続。全国経済は後続。",
       "why": "在庫を消費するだけの世界から、生活と領地の循環へ進む。"
     },
     {
@@ -481,14 +482,14 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "baseline_commit": "e304cb0018cbeb870a31b82b208ee1c3c18932a7",
-    "baseline": 20.193587662337663,
-    "current": 21.318587662337663,
+    "version": 2,
+    "baseline_commit": "c67b815170681d8453cd36a8d5e8aa1411be54ab",
+    "baseline": 21.318587662337663,
+    "current": 22.443587662337663,
     "earned_gain": 1.125,
-    "excluded_reassessment": 0.26041666666666785,
+    "excluded_reassessment": 0,
     "minimum": 1,
-    "criteria_passed": 4,
-    "criteria_total": 4,
-    "integrated_main": "31611feca784434c29706b718c95d279417dc790"
+    "criteria_passed": 5,
+    "criteria_total": 5
   }
 }

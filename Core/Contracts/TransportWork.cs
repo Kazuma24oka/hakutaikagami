@@ -14,11 +14,11 @@ public static class TransportWork
     static bool IsDebt(DebtState d)=>d.Id.Value.StartsWith("debt:transport-fee/",StringComparison.Ordinal);
     public static bool IsLot(ResourceLot l)=>l.Id.Value.StartsWith("lot:transport-",StringComparison.Ordinal);
     static bool Before(long t,long rev,long at,long cut)=>t<at||t==at&&rev<cut;
-    static bool At(ContractWorld w,EntityId actor,EntityId site,long at,long revision)
+    internal static bool At(ContractWorld w,EntityId actor,EntityId site,long at,long revision,bool stableCompletion=false)
     {
         if(actor==w.PlayerControl&&NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).OrderBy(q=>q.Revision).LastOrDefault(q=>Before(q.At,q.Revision,at,revision)&&q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return false;
         var journeys=w.Branches!.Journeys.Where(j=>j.Actor==actor&&w.Requests.Any(q=>q.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId&&Before(q.CreatedAt,q.CommitSequence,at,revision))).ToArray();
-        if(journeys.Any(j=>j.Legs[0].StartAt<=at&&w.Tasks.Single(t=>t.Id==j.Task) is var t&&(t.FinishedAt==null||t.FinishedAt>at||t.FinishedAt==at&&t.Revision>=revision)))return false;
+        if(journeys.Any(j=>j.Legs[0].StartAt<=at&&w.Tasks.Single(t=>t.Id==j.Task) is var t&&(t.FinishedAt==null||t.FinishedAt>at||t.FinishedAt==at&&t.Revision>=revision&&!stableCompletion)))return false;
         var history=w.ForkTransportLocation();history.Branches=w.Branches with{Journeys=journeys};
         var target=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position;
         return RegionalCampaign.RoadActorPointAt(history,actor,at)==target;
@@ -48,7 +48,7 @@ public static class TransportWork
     }
     internal static long WalletBefore(ContractWorld w,EntityId actor,long at,long revision)
     {
-        var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+PrivateStanddown.Net(w,id,at,revision)+PrivateInformation.Net(w,id,at,revision)+PersonalCompanions.Net(w,id,at,revision)+Net(w,id,at,revision)+VoyageExpense.Net(w,id,at,revision);
+        var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+RegionalTrade.Net(w,id,at,revision)-(actor==w.PlayerControl?RegionalTrade.Reserved(w,at,revision):0)+PrivateStanddown.Net(w,id,at,revision)+PrivateInformation.Net(w,id,at,revision)+PersonalCompanions.Net(w,id,at,revision)+Net(w,id,at,revision)+VoyageExpense.Net(w,id,at,revision);
         foreach(var p in w.WorkCycle!.Payments.Where(p=>Before(p.At,p.Revision,at,revision))){var t=w.Tasks.Single(t=>t.Id==p.Task);if(t.Issuer==actor)n-=p.Amount;if(t.Executor==actor)n+=p.Amount;}
         return n;
     }

@@ -1935,3 +1935,8 @@ Scripts/check_approval_batch.py -text
 Docs/Design/CommunityEconomyV2/** -text
 
 Scripts/probe_community_reports.py -text
+
+# Regional rice trade exact-byte sources and evidence.
+Game/Scripts/NewGameRuntime.Trade.cs -text
+Scripts/verify_regional_trade.py -text
+Docs/Design/RegionalTradeV1/** -text
