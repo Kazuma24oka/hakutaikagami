@@ -101,6 +101,8 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public FactionStanceState? FactionStances {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public CommunityState? Communities {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RegionalEconomyState? Economy {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public CompanionState? Companions {get;set;}

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2721,
-  "baseline_passed": 2707,
-  "added": 14,
-  "scope": "Old-lord consented release14 added; related685. Actual generation recovery and Node3D42 worlds/21 pairs/106 nodes. Full2721 and GUI NOT_RUN."
+  "expected_passed": 2741,
+  "baseline_passed": 2721,
+  "added": 20,
+  "scope": "Community economy20 added; related705; generation recovery and headless Node3D46 worlds/23 pairs/110 nodes. Full2741 and GUI NOT_RUN."
 }

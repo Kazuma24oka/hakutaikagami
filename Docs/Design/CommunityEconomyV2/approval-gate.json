@@ -1,0 +1,9 @@
+{
+  "baseline_commit": "e304cb0018cbeb870a31b82b208ee1c3c18932a7",
+  "baseline": 20.193587662337663,
+  "current": 21.318587662337663,
+  "earned_gain": 1.125,
+  "excluded_reassessment": 0.26041666666666785,
+  "minimum": 1,
+  "status": "PASSED"
+}

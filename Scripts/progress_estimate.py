@@ -24,6 +24,9 @@ def render_estimate(p,d):
         first=audit['history'][0]['raw_total'];last=audit['history'][-1]['raw_total'];delta=last-first
         history_rows=''.join('<tr><td>PR #'+str(v['pr'])+'</td><td>'+format(v['raw_total'],'.1f')+'%</td><td>'+str(v['display_total'])+'%</td></tr>' for v in audit['history'])
         audit_html='<div class="estimate-focus" role="note"><b>60区分の一次静的監査済み・製品受入は未完了</b><p>旧尺度のPR #13集計 '+format(last,'.1f')+'% ／ PR #4時点 '+format(first,'.1f')+'% から '+format(delta,'+.1f')+'ポイント。小区分自体が概算であり、小数表示は測定精度を意味しません。</p><p>'+e(audit['note'])+'</p><details><summary>進捗の算出履歴（PR #4〜#13）</summary><table><thead><tr><th>時点</th><th>丸め前</th><th>5%刻み表示</th></tr></thead><tbody>'+history_rows+'</tbody></table></details></div>'
+    batch=a.get('approval_batch')
+    if batch:
+        audit_html+='<div class="estimate-focus"><b>今回の実装による増分 '+format(batch['earned_gain'],'+.3f')+'ポイント</b><p>固定基準 '+format(batch['baseline'],'.1f')+'% → 現在 '+format(batch['current'],'.1f')+'%。評価補正 '+format(batch['excluded_reassessment'],'.3f')+'ポイントは加点対象外。完成条件 '+str(batch['criteria_passed'])+'/'+str(batch['criteria_total'])+'。重み・分母・実装前の目標は固定。</p></div>'
     tree=''
     for domain in a['domains']:
         middle=''

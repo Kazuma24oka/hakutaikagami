@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Three authored regional ledgers with population/workforce, seasons and independent village/house stocks",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CommunityEconomyTests.cs: ThreeIndependentLedgersAndSeparatePhysicalStocks / EachHeadCanManageOnlyTheirLocalVillage",
+        "Scripts/probe_community_reports.py: full normal-entry profile build"
+      ]
+    },
+    {
+      "contract": "Actual reserved labor, food shortage and water-work progress affect harvest and spending",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CommunityEconomyTests.cs: LaborReservedThenReleasedOnlyAtActualWorkCompletion / ReservedHarvestLaborReducesActualYieldUntilWorkFinishes / ActualShortagePausesLaborReliefConsumesHouseStockThenResumesRemainingWork"
+      ]
+    },
+    {
+      "contract": "Deterministic observed crop hazards, shortage/relief and dated local reports without remote truth leakage",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CommunityEconomyTests.cs: SameSeedAndChunkingPreserveObservedAccounts / UnknownForeignAccountsAndWrongActorCannotBeReadOrSpent",
+        "Scripts/probe_community_reports.py: sealed report / frozen observation / relief / physical receipt"
+      ]
+    },
+    {
+      "contract": "Normal-entry integration, actual generation recovery/future equivalence, old-save preservation and headless placement data",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CommunityEconomyTests.cs: ActualGenerationRecoveryDuringWorkHasIdenticalFuture / ActualGenerationRecoveryOfPausedAndResumedWorkPreservesFutureAndFrozenReport / OldNullAndSingleVillagePoliciesStayIndependent",
+        "Scripts/probe_community_reports.py: actual opened-message generation recovery and future world equality",
+        "Docs/Design/CommunityEconomyV2/verification.json: 705 tests, Game build,23 recovery pairs/110 Node3D"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "limits": "Three trial communities; static population; no military recruitment, market, periodic salary, revolts or full national economy."
+}

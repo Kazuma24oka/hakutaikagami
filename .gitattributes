@@ -1927,3 +1927,11 @@ Docs/Design/PersonalServiceV1/** -text
 # Personal retainer release through old lord and physical papers.
 Scripts/verify_retainer_release.py -text
 Docs/Design/RetainerReleaseV1/** -text
+
+# Multiple authored community economy and fixed-batch verification.
+Game/Scripts/NewGameRuntime.Communities.cs -text
+Scripts/verify_community_economy.py -text
+Scripts/check_approval_batch.py -text
+Docs/Design/CommunityEconomyV2/** -text
+
+Scripts/probe_community_reports.py -text
