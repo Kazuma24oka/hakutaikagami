@@ -17,10 +17,10 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "f8db4b32427f2fe7b4afe825135a72f2f0995be2f85d80891549dc16921936e4",
-    "Docs/Development/ProgressV1/estimate.json": "c34e176a2c362d246ea49f834f7bead96322dace2e85cc826ef7db6ed39d7463",
+    "Docs/Development/OPERATING_POLICY.md": "3f9d10582ae8beb8f9d0e1e24ff6c69b253bc5bd593934fe892fef304570ecaf",
+    "Docs/Development/ProgressV1/estimate.json": "fc506706563438c6b4c90de4f8936c4c8c9ffa1a333cbb675121160e4f863308",
     "Scripts/build_progress_report.py": "53156166aaad513918de9173fb38d33f63f22beeaf27a48000490dc3c95e4956",
-    "Scripts/check_progress_report.py": "51e05d90911fdfa04a09705a05f41c591121cda143990f9714c01ebfb4edb40b",
+    "Scripts/check_progress_report.py": "106631d098693178b3b1fc8c676d6ff4de37b3876b7d1869c4242b338dd6ba08",
     "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
@@ -388,14 +388,16 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "点検の直接観測・原本配送・本人開封・確認日時を分ける。 現地で私的に受け取る本人の観測情報を原本/開封/観測日付きの経路知識へ接続。",
+      "existing": "点検の直接観測・原本配送・本人開封・確認日時を分ける。 現地で私的に受け取る本人の観測情報を原本/開封/観測日付きの経路知識へ接続。 精算済み面識の一般家臣への単発点検を実任務/本人観測/返報へ接続。",
       "remaining": "諜報/噂/政治報告など全事実表示の出典と学習経路を接続する。",
       "evidence": [
         "Core/Contracts/LocalInspectionFindings.cs",
         "Core/Messaging/MessageFlow.cs",
         "Tests/LocalInspectionFindingsTests.cs",
         "Core/Contracts/PrivateInformation.cs",
-        "Docs/Design/PrivateInformationV1/verification.json"
+        "Docs/Design/PrivateInformationV1/verification.json",
+        "Core/Contracts/PersonalCompanions.PrivateInspection.cs",
+        "Docs/Design/PrivateInspectionV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1535,12 +1537,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 607,
+      "passed": 619,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/PrivateStanddownV1/runtime-local/tests/private-standdown-current.trx",
-      "sha256": "be72b941a888f095684f8f44242f5494f7ecf7edfc83539a415327256df6a758",
-      "scope": "Current related607 only,12 new; full2668 NOT_RUN. Historical full2446 remains separate."
+      "trx": "Docs/Design/PrivateInspectionV1/runtime-local/tests/private-inspection-current.trx",
+      "sha256": "e10a0147047fbda58b48771e791873b0074fc1cbe5d3b0fcba716926d5bd7639",
+      "scope": "Current related619 only,12 new; full2680 NOT_RUN. Historical full2446 remains separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1559,7 +1561,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "現地の情報交換を精算した当主本人と、私財100文で次の新規軍引受を1〜24時間見合わせる個人的な協力を接続。敵対意思/主従/兵の所有は変えず、既存軍を引き戻さない。新規12/関連607件成功、Gameビルド成功、見合わせ中/期限後出陣の実保存復旧と将来世界が一致。画面なしGodot13組26世界/74Node3D一致。現GUI/外観と全2668件は未実施。",
+    "current_stage_summary": "一般家臣への単発の私的点検協力を接続。精算済み面識・本人の協力意思・空きを確認し、一件20文を私財から本人へ移す。所属/主従/継続雇用/日当/軍権は変えない。新規12/関連619件成功、Gameビルド成功、仕事中/返報開封後の実世代復旧と将来世界一致。画面なしGodot15組30世界82Node3D一致。外観と全2680件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1582,8 +1584,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
-    "current_logic_verification": "Docs/Design/PrivateStanddownV1/verification.json",
-    "current_logic_verification_sha256": "240767db94a83b90601ef5707d115728eb7d95fc3320ee6ca08b76ac8e4a724f",
+    "current_logic_verification": "Docs/Design/PrivateInspectionV1/verification.json",
+    "current_logic_verification_sha256": "ed2a1ed4806444f439428b9b82a9a00f60fd82d3b137a185753f7615eecaa7d2",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1592,7 +1594,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連607件/画面なしNode3Dデータを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連619件/画面なしNode3Dデータを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1648,7 +1650,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "R4の続き：一般家臣の個人的協力条件と、正式所属変更とは別の限定履行",
+    "R4：協力を断る理由と正式な支持形成の境界整理",
     "R5：城・勢力・家督の変化と個別の履行",
     "各地域の生産・人物・軍事・交渉の一巡を拡張",
     "全国史実データと活動NPCを段階的に統合",

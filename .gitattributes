@@ -1911,3 +1911,7 @@ Docs/Design/PrivateInformationV1/** -text
 Game/Scripts/NewGameRuntime.Standdown.cs -text
 Scripts/verify_private_standdown.py -text
 Docs/Design/PrivateStanddownV1/** -text
+
+# Single private inspection cooperation v2.
+Scripts/verify_private_inspection.py -text
+Docs/Design/PrivateInspectionV1/** -text
