@@ -1,6 +1,6 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
-public enum CompanionAction { Agree, EndAgreement, Pay, TravelTogether, Inspect, PrivateInspect, PledgeService, ReleaseService }
+public enum CompanionAction { Agree, EndAgreement, Pay, TravelTogether, Inspect, PrivateInspect, PledgeService, ReleaseService, RequestLordRelease, LordReleaseApproved, LordReleaseRefused, LordReleaseReceived, LordRefusalReceived, InquireLordRelease }
 public sealed record CompanionInput(EntityId Id,EntityId Person,CompanionAction Action,long Amount=0,string? Destination=null);
 public sealed record CompanionOrder(CompanionInput Input,long At,long Revision,EntityId Site,Intent? Task,Intent? LeaderTask);
 public sealed record CompanionReport(EntityId Order,string Message,long At,long Revision,EntityId Site);
@@ -32,11 +32,12 @@ public static partial class PersonalCompanions
     static bool Eligible(ContractWorld w,EntityId person,long at,long rev)
     {
         if(person==w.PlayerControl||w.Characters.SingleOrDefault(c=>c.Id==person)?.Life!=LifeState.Adult||w.Offices.Any(r=>r.Subject==person&&r.From<=at&&at<r.Until)||NpcArmies.CommanderBusyAt(w,person,at,rev))return false;
+        var original=w.NewGame!.Start.People.Single(p=>p.Id==person.Value);if(ReleaseEnabled(w)&&original.Lord!=null&&original.Lord!=w.PlayerControl.Value&&ReleasedFromOldLord(w,person,at,rev)&&!ReleaseKnown(w,person,at,rev))return false;
         var bonds=w.ServiceBonds.Where(r=>r.Subject==person&&r.From<=at&&at<r.Until).ToArray();if(bonds.Any(b=>b.Target!=w.PlayerControl))return false;
         return bonds.Any(b=>b.Target==w.PlayerControl)||!w.Memberships.Any(r=>r.Subject==person&&r.From<=at&&at<r.Until);
     }
     static bool Busy(ContractWorld w,EntityId person,long at,long rev)=>Orders(w).Where(q=>q.Input.Person==person&&q.Task!=null&&Before(q,at,rev)).Any(q=>!w.Requests.Any(r=>r.Id==q.Task!.RequestId)||w.Tasks.Any(t=>t.RequestId==q.Task!.RequestId&&(t.FinishedAt==null||t.FinishedAt>at)));
-    public static bool Occupied(ContractWorld w,EntityId person,long at,long rev)=>Enabled(w)&&Busy(w,person,at,rev+1);
+    public static bool Occupied(ContractWorld w,EntityId person,long at,long rev)=>Enabled(w)&&(Busy(w,person,at,rev+1)||ReleasePending(w,person,at,rev+1));
     public static CompanionCard[] View(ContractWorld w)
     {
         if(!Enabled(w))return [];var now=Orders(w).Where(q=>Before(q,w.ElapsedSeconds,w.CommitSequence+1)).ToArray();var site=SiteAt(w,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence+1);
@@ -46,9 +47,12 @@ public static partial class PersonalCompanions
     {string id="request:companion-task/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(input.Id.Value));return input.Action==CompanionAction.TravelTogether?TravelWorld.ActorMove(w,id,input.Person,input.Destination??throw new InvalidDataException("行先がありません"),true,LandRoute):NewGameWorld.InspectFor(w,input.Person,id,w.ElapsedSeconds);}
     static void Check(ContractWorld w,CompanionOrder q,CompanionOrder[] prior)
     {
+        if(ReleaseEvent(q.Input.Action)){CheckReleaseEvent(w,q);return;}
         var i=q.Input;Need(EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Amount>=0&&q.At>=0&&q.At<=w.ElapsedSeconds&&q.Revision>0&&q.Revision<=w.CommitSequence&&w.Characters.Any(c=>c.Id==i.Person),"協力契約の入力が不正です");Need(SiteAt(w,w.PlayerControl,q.At,q.Revision)==q.Site&&SiteAt(w,i.Person,q.At,q.Revision)==q.Site,"面会・現物受渡しは現地で行います");Need(!Busy(w,i.Person,q.At,q.Revision),"先に相手の用件を終えてください");
         Need(!FactionStances.OtherIdUsed(w,i.Id,includeCompanions:false)&&!FactionStances.OwnIdUsed(w,i.Id)&&w.Military?.Requests.Any(r=>r.Input.Id==i.Id)!=true&&w.Career?.Requests.Any(r=>r.Input.Id==i.Id)!=true,"協力契約のIDが別の操作に使われています");bool active=Active(prior,i.Person);long owed=Owed(w,i.Person,q.At,q.Revision);
-        if(i.Action is CompanionAction.PledgeService or CompanionAction.ReleaseService)CheckService(w,q);
+        if(i.Action==CompanionAction.InquireLordRelease)CheckReleaseInquiry(w,q);
+        else if(i.Action==CompanionAction.RequestLordRelease)Need(i.Amount==0&&CanAskRelease(w,i.Person,q.At,q.Revision),"先に本人との情報交換・仕事・返報と立場を確認してください");
+        else if(i.Action is CompanionAction.PledgeService or CompanionAction.ReleaseService)CheckService(w,q);
         else if(i.Action==CompanionAction.PrivateInspect){Need(SingleInspectionEnabled(w)&&i.Amount==DailyPay&&owed==0&&!active&&CanCommission(w,i.Person,q.At,q.Revision),"面識と精算のある、仕事の空いた本人へ一件20文で点検を相談してください");}
         else if(i.Action==CompanionAction.Agree){Need(!active&&owed==0&&Eligible(w,i.Person,q.At,q.Revision)&&w.Characters.Single(c=>c.Id==i.Person).WillObey&&i.Amount==DailyPay,"他家の家臣を無断で引き抜かず、協力可能な成人に一日20文を前払いします");}
         else if(i.Action==CompanionAction.Pay)Need(i.Amount>0&&i.Amount<=owed,"支払う未払い手当がありません");
@@ -58,7 +62,7 @@ public static partial class PersonalCompanions
         Need((i.Action==CompanionAction.TravelTogether)==(q.LeaderTask!=null)&& (q.LeaderTask==null||q.LeaderTask==LeaderInput(BeforeTask(w,q),i)),"本人の同行経路・共通任務が一致しません");if(q.Task is {} task){Need(task==TaskInput(BeforeTask(w,q),i),"任務の経路・所要時間・期限が引受時の条件と一致しません");Need(task.Actor==i.Person&&task.Executor==i.Person&&task.EffectiveAt==q.At&&task.DeliverySeconds==1&&task.ReportSeconds==1&&task.Kind==TaskKind.BindingOrder&&!task.Important,"本人が引き受けた共通任務ではありません");Need(task.Action==(i.Action is CompanionAction.Inspect or CompanionAction.PrivateInspect?ActionKind.Inspect:ActionKind.Move)&&task.Scope==(i.Action is CompanionAction.Inspect or CompanionAction.PrivateInspect?q.Site:ContractFixture.Castle)&&task.RoutePolicy==(i.Action is CompanionAction.Inspect or CompanionAction.PrivateInspect?null:LandRoute),"協力任務の分類が不正です");}
     }
     internal static void Apply(ContractWorld w,CompanionInput input)
-    {Need(Enabled(w),"この開始では随行協力が有効ではありません");var site=SiteAt(w,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence)??throw new InvalidDataException("到着してから相談してください");Intent? task=input.Action is CompanionAction.TravelTogether or CompanionAction.Inspect or CompanionAction.PrivateInspect?TaskInput(w,input):null;var leader=input.Action==CompanionAction.TravelTogether?LeaderInput(w,input):null;var q=new CompanionOrder(input,w.ElapsedSeconds,w.CommitSequence,site,task,leader);Check(w,q,Orders(w));w.Companions=w.Companions! with{Orders=[..Orders(w),q]};}
+    {Need(Enabled(w),"この開始では随行協力が有効ではありません");var site=SiteAt(w,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence)??throw new InvalidDataException("到着してから相談してください");Intent? task=input.Action is CompanionAction.TravelTogether or CompanionAction.Inspect or CompanionAction.PrivateInspect?TaskInput(w,input):null;var leader=input.Action==CompanionAction.TravelTogether?LeaderInput(w,input):null;var q=new CompanionOrder(input,w.ElapsedSeconds,w.CommitSequence,site,task,leader);Check(w,q,Orders(w));w.Companions=w.Companions! with{Orders=[..Orders(w),q]};if(input.Action==CompanionAction.InquireLordRelease)SendReleaseInquiry(w,q);if(input.Action==CompanionAction.RequestLordRelease)SendRelease(w,q,"request",input.Person,OldLord(w,input.Person),LordHome(w,input.Person),"役目を引き継いだうえで辞去を願います。");}
     public static bool IsTask(ContractWorld w,Intent i)=>Orders(w).Any(q=>q.Task==i||q.LeaderTask==i);
     static Intent LeaderInput(ContractWorld w,CompanionInput i)=>TravelWorld.ActorMove(w,"request:companion-leader/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(i.Id.Value)),w.PlayerControl,i.Destination!,true,LandRoute);
     internal static void ValidatePending(ContractWorld w,Intent i){var q=Orders(w).SingleOrDefault(q=>q.Task==i||q.LeaderTask==i)??throw new InvalidDataException("引受原本がありません");Need(i==(q.Task==i?TaskInput(w,q.Input):LeaderInput(w,q.Input)),"引受時の移動・点検条件が変わりました");}
@@ -73,5 +77,6 @@ public static partial class PersonalCompanions
     {if(!Enabled(w))return;foreach(var q in Orders(w).Where(q=>q.Task!=null)){if(w.Companions!.Reports.Any(r=>r.Order==q.Input.Id))continue;var t=w.Tasks.SingleOrDefault(t=>t.RequestId==q.Task!.RequestId);if(t?.FinishedAt==null)continue;var site=SiteAt(w,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence);if(site==null||SiteAt(w,q.Input.Person,w.ElapsedSeconds,w.CommitSequence)!=site)continue;string id="message:companion-report/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(q.Input.Id.Value));var body=ReportBody(q,t);MessageFlow.Send(w.Messaging,new(id,q.Input.Id.Value,ReportKind,q.Input.Person.Value,w.PlayerControl.Value,body,site.Value.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);w.SealedMessages=[..w.SealedMessages,new(id)];w.Companions=w.Companions with{Reports=[..w.Companions.Reports,new(q.Input.Id,id,w.ElapsedSeconds,w.CommitSequence,site.Value)]};}}
     internal static void Validate(ContractWorld w,ContractWorld? trustedPrior=null)
     {if(!Enabled(w)){Need(w.Companions==null,"旧世界に随行契約を追加できません");return;}Need(w.Companions is {Schema:1}&&w.Companions.Contract==w.NewGame!.CompanionPolicy&&w.Companions.Orders!=null&&w.Companions.Reports!=null,"協力契約の原本がありません");var orders=Orders(w);Need(orders.Select(q=>q.Input.Id).Distinct().Count()==orders.Length&&orders.Zip(orders.Skip(1)).All(p=>p.First.Revision<p.Second.Revision&&p.First.At<=p.Second.At),"協力契約の順序・IDが不正です");for(int n=0;n<orders.Length;n++){Check(w,orders[n],orders.Take(n).ToArray());var q=orders[n];if(q.Task!=null){foreach(var input in new[]{q.Task,q.LeaderTask}.Where(i=>i!=null)){var r=w.Requests.SingleOrDefault(r=>r.Id==input!.RequestId);Need(r!=null?r.Intent==input&&r.CommitSequence>q.Revision:trustedPrior!=null,"協力原本と共通任務が異なります");}}}
+        ValidateReleaseLetters(w);
         Need(w.Companions!.Reports.Select(r=>r.Order).Distinct().Count()==w.Companions.Reports.Length,"返報が重複しています");foreach(var r in w.Companions.Reports){var q=orders.Single(q=>q.Input.Id==r.Order&&q.Task!=null);var t=w.Tasks.Single(t=>t.RequestId==q.Task!.RequestId);Need(t.FinishedAt<=r.At&&r.At<=w.ElapsedSeconds&&r.Revision>q.Revision&&r.Revision<=w.CommitSequence&&SiteAt(w,w.PlayerControl,r.At,r.Revision)==r.Site&&SiteAt(w,q.Input.Person,r.At,r.Revision)==r.Site&&w.Messaging.Messages.Any(m=>m.Id==r.Message&&m.Kind==ReportKind&&m.CorrelationId==q.Input.Id.Value&&m.SenderId==q.Input.Person.Value&&m.RecipientId==w.PlayerControl.Value&&m.CreatedAt==r.At&&m.Scope==r.Site.Value&&m.Body==ReportBody(q,t)&&w.SealedMessages.Contains(new(r.Message))),"現地の返報原本が一致しません");}}
 }

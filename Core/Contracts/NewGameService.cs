@@ -117,9 +117,9 @@ public static partial class NewGameService
     internal static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Service?.Requests.Any(q=>q.Input.Id==id)==true;
     internal static TimedRelation[] Relations(ContractWorld w,TimedRelation[] original,string kind)
     {
-        var rows=original.ToList();var initial=Initial(w);if(initial!=null&&End(w,initial.Id) is {} e)for(int n=0;n<rows.Count;n++)if(rows[n].Subject==w.PlayerControl)rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};
+        var rows=PersonalCompanions.CloseOldService(w,original).ToList();var initial=Initial(w);if(initial!=null&&End(w,initial.Id) is {} e)for(int n=0;n<rows.Count;n++)if(rows[n].Subject==w.PlayerControl)rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};
         foreach(var c in State(w).Cases.Where(c=>!c.Initial))if(Event(w,c.Id,CareerEventKind.Joined) is {} join){var end=End(w,c.Id);rows.Add(new(new(kind+":service/"+Hash(c.Id.Value)),w.PlayerControl,kind=="membership"?c.House:c.Principal,kind,NewGameWorld.Basis,join.At,end?.At??long.MaxValue,end?.Revision??join.Revision));}
         if(kind=="service")rows.AddRange(PersonalCompanions.PersonalServiceRelations(w));return rows.ToArray();
     }
-    internal static void Sync(ContractWorld w){if(!NewGameWorld.Enabled(w)||w.Service==null&&w.NewGame?.CompanionPolicy!=PersonalCompanions.PersonalServicePolicy)return;var rel=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=Relations(w,rel.Members,"membership");w.ServiceBonds=Relations(w,rel.Bonds,"service");}
+    internal static void Sync(ContractWorld w){if(!NewGameWorld.Enabled(w)||w.Service==null&&!PersonalCompanions.PersonalServiceEnabled(w))return;var rel=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=Relations(w,rel.Members,"membership");w.ServiceBonds=Relations(w,rel.Bonds,"service");}
 }

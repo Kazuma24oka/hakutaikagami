@@ -18,7 +18,9 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- if logic["scope"]=="headless-personal-service-bond-independent-membership-debt-release":
+ if logic["scope"]=="headless-old-lord-release-physical-consent-personal-known-notice":
+  from verify_retainer_release import check as check_logic
+ elif logic["scope"]=="headless-personal-service-bond-independent-membership-debt-release":
   from verify_personal_service import check as check_logic
  elif logic["scope"]=="headless-local-private-inspection-consultation-disclosure-confirmation":
   from verify_cooperation_talk import check as check_logic

@@ -17,10 +17,10 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "bcf367bd652ec1b7c6e0b6b95b4d21b94fcb66890acde2d21a6629dfd7468624",
-    "Docs/Development/ProgressV1/estimate.json": "b0f3b18d0dba1d0201d7f9a0241136e0bbad15def34792ec51f0a511d80f2c0a",
+    "Docs/Development/OPERATING_POLICY.md": "f8f52b3296693690dbf2f2aff767a8e9f2c221620e09041aad8a49380fae6a31",
+    "Docs/Development/ProgressV1/estimate.json": "95c7f1ab750181886f4b625ee44fa698fa11fb2b074cc2dea37bc0fab29f1b2f",
     "Scripts/build_progress_report.py": "53156166aaad513918de9173fb38d33f63f22beeaf27a48000490dc3c95e4956",
-    "Scripts/check_progress_report.py": "31e8cfeda05784463cd09dd5e11424c579aa6977cc74ee00e84e67ab10587d7e",
+    "Scripts/check_progress_report.py": "6740ba6779b4d6604883c1aaaa423a4739fa7fa18fd84266a38c43ffd925ff21",
     "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
@@ -132,7 +132,7 @@
     {
       "id": "BD-09",
       "status": "normal",
-      "existing": "仕官申出・条件開封・同意・辞去と軍務返還待ちが通常入口につながる。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
+      "existing": "仕官申出・条件開封・同意・辞去と軍務返還待ちが通常入口につながる。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。 他家の家臣本人の円満辞去を願書/旧主判断/本人受領/結果認識へ分けて接続。",
       "remaining": "解任・出奔・離反と新主従への変化、身分ごとの進退を全て接続する。",
       "evidence": [
         "Core/Contracts/NewGameService.cs",
@@ -148,7 +148,9 @@
         "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
         "Docs/Design/ServiceDirectionV1/verification.json",
         "Game/Scripts/NewGameRuntime.WorkRelations.cs",
-        "Docs/Design/WorkContactReviewV1/verification.json"
+        "Docs/Design/WorkContactReviewV1/verification.json",
+        "Core/Contracts/PersonalCompanions.RetainerRelease.cs",
+        "Docs/Design/RetainerReleaseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -182,7 +184,7 @@
     {
       "id": "BD-12",
       "status": "normal",
-      "existing": "初期の個人随行の階層と、主家の兵/一時指揮の名簿を分ける。 個人随行協力の現地加入/終了・手当/未払い・本人と別々の実陸路移動・点検委任/返報を通常開始に接続。所属/主従/兵は変更しない。 無所属者と実仕事/開封返報を経て個人の実主従を追加/解消。手当・債務・組織所属を分離。",
+      "existing": "初期の個人随行の階層と、主家の兵/一時指揮の名簿を分ける。 個人随行協力の現地加入/終了・手当/未払い・本人と別々の実陸路移動・点検委任/返報を通常開始に接続。所属/主従/兵は変更しない。 無所属者と実仕事/開封返報を経て個人の実主従を追加/解消。手当・債務・組織所属を分離。 円満辞去した本人を、別の直属合意で迎えられる。",
       "remaining": "正式な家臣登用/所属離脱、海上/遠隔の指示、大集団の運用と外観受入へ拡張。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
@@ -192,7 +194,8 @@
         "Game/Scripts/NewGameRuntime.Companions.cs",
         "Docs/Design/PersonalCompanionsV1/verification.json",
         "Core/Contracts/PersonalCompanions.Service.cs",
-        "Docs/Design/PersonalServiceV1/verification.json"
+        "Docs/Design/PersonalServiceV1/verification.json",
+        "Docs/Design/RetainerReleaseV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1541,12 +1544,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 671,
+      "passed": 685,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/PersonalServiceV1/runtime-local/tests/personal-service-current.trx",
-      "sha256": "2325f0da4e4727e425bee9815577a673ab185c47e2316ba85de28b502641cf75",
-      "scope": "Current related671 only,15 new and25 existing service; full2707 NOT_RUN. Historical full2446 remains separate."
+      "trx": "Docs/Design/RetainerReleaseV1/runtime-local/tests/retainer-release-current.trx",
+      "sha256": "9b28ac235c1a3721a52c2ef1658b457f48c4acaf5e36567205809819f7393806",
+      "scope": "Current related685 only,14 new; full2721 NOT_RUN. Historical full2446 remains separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1565,7 +1568,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "浪人との継続協力・実仕事・開封済み返報・手当精算を経て、本人の合意で個人の実ServiceBondを作る新規v3を接続。組織所属/兵/土地/軍権を移さず、手当契約終了と直属関係解消を分離。新規15を含む関連671件（既存仕官/辞去25件含む）・Gameビルド成功。直属合意前/後/解消後の実世代復旧と将来世界が一致、画面なしGodot18組36世界94Node3D一致。現GUI/外観と全2707件は未実施。",
+    "current_stage_summary": "他家の役職/軍を持たない本人との私的接触・実仕事を経て、旧主への辞去願い→旧主の受領/判断→本人の承諾受領→プレイヤーへの通知/開封を接続。成立時だけ旧主従と組織所属を終え、新しい直属合意・財産・兵・記憶を別に保持。不達通知は現地問い合わせで再受渡し可能。新規14/関連685件・Gameビルド成功、実世代復旧3段階と将来世界一致。既存を含む画面なしGodot21組42世界106Node3D一致。外観と全2721件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1588,8 +1591,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
-    "current_logic_verification": "Docs/Design/PersonalServiceV1/verification.json",
-    "current_logic_verification_sha256": "ad351e8fb7e03182eb0a44530d1e39f10ed14cea23a613d317b80c2ba53a29b9",
+    "current_logic_verification": "Docs/Design/RetainerReleaseV1/verification.json",
+    "current_logic_verification_sha256": "81656bc36d56183a14b18c485d029acf7c7a871f5f397555772a631185cc1697",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1598,7 +1601,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連671件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連685件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1654,7 +1657,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "R4：他家との主従解消と本人の支持形成を、個人直属合意とは別案件で接続する",
+    "R4：不承諾時の本人の離脱意思と旧主側の認識・係争を分けて扱う",
     "R5：城・勢力・家督の変化と個別の履行",
     "各地域の生産・人物・軍事・交渉の一巡を拡張",
     "全国史実データと活動NPCを段階的に統合",
