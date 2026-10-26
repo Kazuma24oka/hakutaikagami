@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2656,
-  "baseline_passed": 2638,
-  "added": 18,
-  "scope": "Private sourced information18 added; related595 including branch/work/transport regression, actual generation recovery, headless Node3D22 worlds/11 pairs/64 nodes. Full2656 and GUI NOT_RUN."
+  "expected_passed": 2668,
+  "baseline_passed": 2656,
+  "added": 12,
+  "scope": "Private individual standdown12 added; related607, actual generation recovery and Node3D26 worlds/13 pairs/74 nodes. Full2668 and GUI NOT_RUN."
 }

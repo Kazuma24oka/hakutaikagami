@@ -8,7 +8,7 @@ public static partial class NewGameMilitary
     static ContractWorld BeforeState(ContractWorld original,long at,long rev,bool observationOnly=false)
     {
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
-        PrivateInformation.Rewind(w,at,rev);TruceNegotiations.Rewind(w,at,rev);PersonalCompanions.Rewind(w,at,rev);VoyageExpense.Rewind(w,at,rev);TransportWork.Rewind(w,at,rev);NewGameWork.Rewind(w,at,rev);w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
+        PrivateStanddown.Rewind(w,at,rev);PrivateInformation.Rewind(w,at,rev);TruceNegotiations.Rewind(w,at,rev);PersonalCompanions.Rewind(w,at,rev);VoyageExpense.Rewind(w,at,rev);TransportWork.Rewind(w,at,rev);NewGameWork.Rewind(w,at,rev);w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
         w.MilitaryLedgerHistory=original.MilitaryLedgerHistory??LedgerStates(original);
         w.NewMilitary=LedgerStateBefore(w.NewMilitary!,at,rev);
         w.Locations=w.Locations.Select(l=>{

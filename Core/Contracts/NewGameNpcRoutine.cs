@@ -13,6 +13,10 @@ public static class NewGameNpcRoutine
         var own=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision&&r.Intent.Actor==actor&&(r.Intent.Executor==actor||LocalWorkDemand.Enabled(w))&&r.Intent.Action==ActionKind.Inspect).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
         bool known=true;string? result=null;
         if(own.Length>0){var task=w.Tasks.Single(t=>t.RequestId==own[^1].Id);string report=WorldSession.Child("message",task.Id,"report").Value;known=w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.MessageId==report&&k.LearnedAt<=at);if(known)result=w.Messaging.Messages.Single(m=>m.Id==report).Body;}
+        if(PrivateStanddown.Enabled(w)){
+            var historical=w.ForkTransportLocation();var requests=w.Requests.Where(r=>r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<=revision).ToArray();historical.Branches=w.Branches! with{Journeys=w.Branches!.Journeys.Where(j=>requests.Any(r=>w.Tasks.Any(t=>t.Id==j.Task&&t.RequestId==r.Id))).ToArray()};
+            var point=RegionalCampaign.RoadActorPointAt(historical,actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);bool moving=requests.Any(r=>r.Intent.Executor==actor&&r.Intent.Action==ActionKind.Move&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));historical.Locations=w.Locations.Select(l=>l.Actor==actor?l with{Kind=node!=null&&!moving?LocationKind.AtSite:LocationKind.Traveling,Site=node!=null&&!moving?RegionalCampaign.Site(node.Id):null}:l).ToArray();w=historical;
+        }
         var place=w.Locations.Single(l=>l.Actor==actor);bool local=place.Kind==LocationKind.AtSite&&place.Site!=null;long ready=0;
         bool permit=!PersonalCompanions.Occupied(w,actor,at,revision)&&!NpcArmies.CommanderBusyAt(w,actor,at,revision)&&IsActor(w,actor)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult&&local&&WorldSession.Permits(w,actor,NewGameWorld.InspectFor(w,actor,"request:npc-routine-preview",at),at);
         return new(local,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready);

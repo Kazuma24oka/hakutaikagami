@@ -1906,3 +1906,8 @@ Docs/Design/TruceNegotiationV1/** -text
 Game/Scripts/NewGameRuntime.PrivateInformation.cs -text
 Scripts/verify_private_information.py -text
 Docs/Design/PrivateInformationV1/** -text
+
+# Private personal standdown and CLI-only generation recovery proof.
+Game/Scripts/NewGameRuntime.Standdown.cs -text
+Scripts/verify_private_standdown.py -text
+Docs/Design/PrivateStanddownV1/** -text

@@ -108,6 +108,8 @@ public sealed class ContractWorld
     public TruceState? Truces {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public PrivateInformationState? PrivateInformation {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public StanddownState? Standdown {get;set;}
     // Pure location reconstruction only; the caller replaces Branches and never
     // mutates shared arrays, messaging, or any nested state.
     internal ContractWorld ForkTransportLocation()=>(ContractWorld)MemberwiseClone();
