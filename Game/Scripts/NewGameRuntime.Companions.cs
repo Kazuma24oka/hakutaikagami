@@ -13,16 +13,23 @@ public partial class NewGameRuntime
             var choice=new OptionButton();foreach(var c in cards)choice.AddItem(c.Name+" — "+c.Status);box.AddChild(choice);var status=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(status);
             var destination=new OptionButton();destination.AddItem("同行してほしい行先を選択");var sites=BranchRoutes.GraphNodes(Snapshot()).OrderBy(n=>n.Id,StringComparer.Ordinal).ToArray();foreach(var n in sites)destination.AddItem(NewGameWorld.SiteName(RegionalCampaign.Site(n.Id).Value));box.AddChild(destination);
             void Run(CompanionAction action,long amount=0,string? to=null){var c=cards[choice.Selected];popup.Hide();Submit(Session.ManageCompanion(new(new("request:companion-ui/"+Session.Revision),c.Person,action,amount,to),Session.PlayerControl,Session.Revision));}
-            var single=new Button{Text="点検を一件だけ頼む（私財20文・継続雇用なし）"};box.AddChild(single);single.Pressed+=()=>Run(CompanionAction.PrivateInspect,20);
+            var single=new Button{Text="点検を一件だけ頼む（私財20文・継続雇用なし）"};box.AddChild(single);single.Pressed+=()=>{var c=cards[choice.Selected];popup.Hide();ShowPrivateInspectionTalk(c.Person);};
             var agree=new Button{Text="協力を相談する（初日20文を支払う）"};box.AddChild(agree);agree.Pressed+=()=>Run(CompanionAction.Agree,20);
             var pay=new Button{Text="未払い手当を支払う"};box.AddChild(pay);pay.Pressed+=()=>Run(CompanionAction.Pay,cards[choice.Selected].Owed);
             var inspect=new Button{Text="この拠点の点検を頼む"};box.AddChild(inspect);inspect.Pressed+=()=>Run(CompanionAction.Inspect);
             var travel=new Button{Text="指定した行先への同行を頼む"};box.AddChild(travel);travel.Pressed+=()=>Run(CompanionAction.TravelTogether,to:sites[destination.Selected-1].Id);
             var end=new Button{Text="協力契約を終える（所属関係は変更しない）"};box.AddChild(end);end.Pressed+=()=>Run(CompanionAction.EndAgreement);
-            void RefreshCard(){var c=cards[choice.Selected];status.Text=c.Name+"\n"+c.Kind+"／"+c.Status+"\n未払い "+c.Owed+"文"+(c.Nearby?"／現地で面会中":"／離れています。新しい相談は再会してから");bool local=c.Nearby&&!c.Busy;single.Visible=Snapshot().NewGame?.CompanionPolicy==PersonalCompanions.PrivateInspectionPolicy;single.Disabled=!local||c.Active||c.Owed>0;agree.Disabled=c.Kind=="一件だけの私的点検協力"||!local||c.Active||c.Owed>0;pay.Disabled=!local||c.Owed==0;inspect.Disabled=!local||!c.Active||c.Owed>0;travel.Disabled=inspect.Disabled||destination.Selected<1;end.Disabled=!local||!c.Active;}
+            void RefreshCard(){var c=cards[choice.Selected];status.Text=c.Name+"\n"+c.Kind+"／"+c.Status+"\n未払い "+c.Owed+"文"+(c.Nearby?"／現地で面会中":"／離れています。新しい相談は再会してから");bool local=c.Nearby&&!c.Busy;single.Visible=Snapshot().NewGame?.CompanionPolicy==PersonalCompanions.PrivateInspectionPolicy;single.Disabled=!c.Nearby;agree.Disabled=c.Kind=="一件だけの私的点検協力"||!local||c.Active||c.Owed>0;pay.Disabled=!local||c.Owed==0;inspect.Disabled=!local||!c.Active||c.Owed>0;travel.Disabled=inspect.Disabled||destination.Selected<1;end.Disabled=!local||!c.Active;}
             choice.ItemSelected+=_=>RefreshCard();destination.ItemSelected+=_=>RefreshCard();RefreshCard();
         }
         var close=new Button{Text="地図へ戻る"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(570,520));
+    }
+    void ShowPrivateInspectionTalk(EntityId person)
+    {
+        var reply=Session.ConsultPrivateInspection(person,Session.PlayerControl,Session.Revision);
+        PresentWork("私的な点検の相談",reply.Speech,"本人からの返答です。相談だけでは支払いや依頼は発生しません。",person,person,"点検一件の相談","本人の返答");
+        if(reply.CanConfirm)Choice("private-inspect-confirm","私財20文で、この一件を頼む",()=>{var r=Session.ManageCompanion(new(new("request:private-inspect-talk/"+reply.Revision),person,CompanionAction.PrivateInspect,reply.Fee),Session.PlayerControl,reply.Revision);Submit(r);if(r.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)CloseBottomTalk();else ShowPrivateInspectionTalk(person);});
+        Choice("private-inspect-leave",reply.CanConfirm?"今回は見送る":"分かった。地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
     }
     void ShowCompanionReport(EntityId id)
     {
