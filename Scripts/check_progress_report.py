@@ -6,7 +6,7 @@ p=json.loads((R/'Docs/Development/ProgressV1/progress.json').read_bytes());d=jso
 ids=[i['id'] for g in d['groups'] for i in g['items']]
 assert len(d['groups'])==15 and len(ids)==60 and len(set(ids))==60
 assert [i['id'] for i in p['items']]==ids
-assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=32,isolated=3,foundation=11,design_only=13,management=1)
+assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=33,isolated=3,foundation=12,design_only=11,management=1)
 assert len(a['cases'])==170
 for i in p['items']:
  assert i['existing'] and i['remaining'] and i['evidence']
@@ -18,7 +18,9 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- if logic["scope"]=="headless-personal-companions-agreement-pay-common-tasks-recovery":
+ if logic["scope"]=="headless-versioned-truce-papers-receipt-consent-own-knowledge":
+  from verify_truce_negotiation import check as check_logic
+ elif logic["scope"]=="headless-personal-companions-agreement-pay-common-tasks-recovery":
   from verify_personal_companions import check as check_logic
  elif logic["scope"]=="headless-regional-seasonal-rice-accounts-generation-recovery":
   from verify_regional_economy import check as check_logic

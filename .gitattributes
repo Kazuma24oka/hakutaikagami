@@ -1896,3 +1896,8 @@ Docs/Design/RegionalEconomyV1/** -text
 Game/Scripts/NewGameRuntime.Companions.cs -text
 Scripts/verify_personal_companions.py -text
 Docs/Design/PersonalCompanionsV1/** -text
+
+# Versioned bilateral truce papers and headless data verification.
+Game/Scripts/NewGameRuntime.Truce.cs -text
+Scripts/verify_truce_negotiation.py -text
+Docs/Design/TruceNegotiationV1/** -text

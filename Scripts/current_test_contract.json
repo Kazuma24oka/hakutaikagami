@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2615,
-  "baseline_passed": 2592,
+  "expected_passed": 2638,
+  "baseline_passed": 2615,
   "added": 23,
-  "scope": "Personal companion23 added; related435, generation recovery and headless Node3D14 worlds/7 pairs/48 nodes. Full2615 and GUI NOT_RUN."
+  "scope": "Truce negotiation23 added; related458 and generation/headless Node3D18 worlds/9 pairs/56 nodes. Full2638 and GUI NOT_RUN."
 }

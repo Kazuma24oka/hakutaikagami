@@ -28,7 +28,7 @@ public static class WorldEngagement
             foreach(var id in b.Units){var u=w.Units.Single(u=>u.Id==id);int morale=100-WorldClashes.MoraleLost(w,id,at);units.Add(new(u,p,ContinuousWorld.Height(p),morale,withdrawing?"withdrawing":morale<=25?"routed":"standing",active?EngagementIntent.Mission:EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==m.Commander).WillObey));}
             if(active){var o=m.Objective!;mandates.Add(new(m.Id,m.Commander,m.Commander,m.Owner,b.Army,o.TargetOwner,b.Units,m.At,m.At,m.At,o.Claim.Until,null));}
         }
-        return new(at,units.ToArray(),mandates.ToArray(),FactionStances.Truth(w,at));
+        return new(at,units.ToArray(),mandates.Where(m=>!TruceNegotiations.WillNotInitiate(w,m.Owner,m.TargetOwner,at,w.CommitSequence)).ToArray(),FactionStances.Truth(w,at));
     }
     public static EngagementResult Resolve(ContractWorld w)
     {var s=Snapshot(w);return FieldEngagement.Resolve(s.At,s.Units,s.Mandates,s.Hostilities);}

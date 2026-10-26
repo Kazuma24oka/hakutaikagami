@@ -25,7 +25,7 @@ public sealed partial class WorldSession
     private void Change(Action<ContractWorld> change, Action? beforeCommit = null)
     {
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
-        change(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);NewGameService.Sync(next);NewGameMilitary.Sync(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); NewGameMilitary.RecordMilitaryObservation(next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
+        change(next);TruceNegotiations.Update(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);NewGameService.Sync(next);NewGameMilitary.Sync(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); NewGameMilitary.RecordMilitaryObservation(next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
     }
     public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
     public CommandResult IssueRegional(RegionalRequest request,long revision){lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
@@ -115,10 +115,10 @@ public sealed partial class WorldSession
             Change(s=>{
                 if(principal)s.Messaging.Knowledge=[..s.Messaging.Knowledge,new(m.Id,actor.Value,s.ElapsedSeconds,m.Id)];
                 else MessageFlow.OpenAsProxy(s.Messaging,m.Id,actor.Value,s.ElapsedSeconds);
-                FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
+                TruceNegotiations.RecordOpening(s,actor,m.Id);FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
-            return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
+            TruceNegotiations.TakeTurns(this);return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
         }
     }
     public CommandResult Assent(EntityId taskId, EntityId actor, bool accept, long expectedRevision)
@@ -147,7 +147,7 @@ public sealed partial class WorldSession
             {
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
-                int cost=1+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
+                int cost=1+TruceNegotiations.BoundaryCost(state)+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
                     long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;
@@ -161,11 +161,11 @@ public sealed partial class WorldSession
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
-                    FactionNotices.ReceiveNpc(s);
+                    TruceNegotiations.Update(s);FactionNotices.ReceiveNpc(s);
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                TruceNegotiations.TakeTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 processed+=cost;
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
@@ -177,6 +177,7 @@ public sealed partial class WorldSession
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
+        if(TruceNegotiations.NextBoundary(s,target) is {} truceBoundary)times.Add(truceBoundary);
         if(RegionalEconomy.NextBoundary(s,target) is {} economyBoundary)times.Add(economyBoundary);
         if(FactionNoticeReactions.NextBoundary(s,target) is {} reactionBoundary)times.Add(reactionBoundary);
         if(NpcArmies.NextBoundary(s,target) is {} armyBoundary)times.Add(armyBoundary);

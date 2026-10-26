@@ -17,10 +17,10 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "5f71a59ea3b044ee84916176e6c7a79ede1e22f98287c3dc3c1baa8d221798d4",
-    "Docs/Development/ProgressV1/estimate.json": "a83069abf3ec46269bdd91df72c07182a760f17c1179807c3831fa506d15d316",
-    "Scripts/build_progress_report.py": "964a4c83eab4c0003cdca5ee84ea96b7ea137f2ef2afbc3afdbc86c82be690ae",
-    "Scripts/check_progress_report.py": "771b0ace9e676abbb9a102ab4605fb8d887e931c5bcbe28b8605c8b6a0eeb0d5",
+    "Docs/Development/OPERATING_POLICY.md": "bcd70a81ed5ec2db1f23bd5fb868152c858717623bc941cd92d202b3fac6d72a",
+    "Docs/Development/ProgressV1/estimate.json": "17353e59fa3c76f81a22bc72c8ec716021e66da8efb7055ab24ec1a93020eccf",
+    "Scripts/build_progress_report.py": "53156166aaad513918de9173fb38d33f63f22beeaf27a48000490dc3c95e4956",
+    "Scripts/check_progress_report.py": "3b44618079b8314b7336d7709e58a77b0f9ffccf9a3b1fd3417eebaea03fd9ae",
     "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
   },
   "items": [
@@ -714,22 +714,26 @@
     },
     {
       "id": "BD-41",
-      "status": "design_only",
-      "existing": "交渉/条約の基本方針と受入予定がある。",
-      "remaining": "本文版・双方の承認権・到達/発効/期限を持つ条約の状態遷移を実装する。",
+      "status": "normal",
+      "existing": "当主間の不戦期間提示/対案/同一版承諾/物理到達による成立と本人の認識を通常入口へ接続。対案配送中/成立後の世代復旧を確認。画面外観未確認。",
+      "remaining": "内応の限定交渉、資源/領地等の一般条項、代理決裁、相手ごとの判断、提示撤回/再送へ拡張。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json"
+        "Core/Contracts/TruceNegotiations.cs",
+        "Game/Scripts/NewGameRuntime.Truce.cs",
+        "Docs/Design/TruceNegotiationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
     },
     {
       "id": "BD-42",
-      "status": "design_only",
-      "existing": "同盟の義務/破棄/違反の基本方針がある。",
-      "remaining": "同盟先同士の交戦、解除不達、履行不能・秘密条項を実装する。",
+      "status": "foundation",
+      "existing": "不戦を認識した当事者の自家敵対意思撤回・新規NPC出撃抑制・攻撃任務根拠への反映を実装。自衛を維持。",
+      "remaining": "同盟の一般義務、破棄/違約/信用/仲裁、遠方の別指揮官への伝達、同盟先同士の交戦へ拡張。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json"
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/WorldEngagement.cs",
+        "Docs/Design/TruceNegotiationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1526,12 +1530,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 435,
+      "passed": 458,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/PersonalCompanionsV1/runtime-local/tests/personal-companions-current.trx",
-      "sha256": "ea8d458adc5e0bab1765267c6b758c1adeee2d00c9fc1116a7de6f5d44ab379f",
-      "scope": "Current related435 only,23 new; full2615 NOT_RUN. Historical full2446 remains separate."
+      "trx": "Docs/Design/TruceNegotiationV1/runtime-local/tests/truce-negotiation-current.trx",
+      "sha256": "314e4c2aa63fc38f40e183f325963caf536b6b12b8c01691f7a6d4b5f3365154",
+      "scope": "Current related458 only,23 new; full2638 NOT_RUN. Historical full2446 remains separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1550,7 +1554,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "浪人や直属家臣との現地の協力合意、一日20文の私的手当/未払い保持、二人分の実陸路移動、点検の委任と封書返報を接続。所属/主従/兵は変更しない。関連435件（新規23）・Gameビルド成功。実世代保存の途中移動/到着と将来世界が一致。画面なしGodot7組14世界/48Node3Dの座標・既存実戦データが一致。現GUI/外観と全2615件は未実施。",
+    "current_stage_summary": "不戦期間の提示→相手の承諾/30日の対案→同一版への返答→物理到達による成立→本人開封/成立確認→自家の敵対意思撤回を接続。関連458件（新規23）・Gameビルド成功。対案配送中/成立後の実世代復旧で世界/本人認識が一致。既存工程を含む画面なしGodot9組18世界/56Node3Dが一致。実兵100人と開封済み交戦許可があっても認識済みの不戦を攻撃根拠へ反映。現GUI/外観と全2638件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1573,8 +1577,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
-    "current_logic_verification": "Docs/Design/PersonalCompanionsV1/verification.json",
-    "current_logic_verification_sha256": "ff8b80922e16faed36c62de37ab76b9816ecd1f8949a635d3d16fd9fd53214e7",
+    "current_logic_verification": "Docs/Design/TruceNegotiationV1/verification.json",
+    "current_logic_verification_sha256": "583b6e7865c6ce49ba3531ade7e3edb17849ec82bb4fb45861517f1e02b9a88a",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1583,7 +1587,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連435件/画面なしNode3Dデータを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連458件/画面なしNode3Dデータを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1639,12 +1643,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "地域での実戦の入口：任務・接敵・損害・撤退・返報を一本つなぐ。上記の終了条件で区切る。",
-    "領地で暮らしと収支を回す：一地域で生産/収穫・在庫・徴収/支払い・使い道を一巡させる。",
-    "人を雇い、任せ、関係を変える：配下の加入/離脱・同行・仕事の委任・待遇と関係変化をつなぐ。",
-    "相手に働きかけて結果を変える：情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
-    "城・勢力・家を動的に変える：包囲/開城・支配の引渡し・独立・家督を、兵/家臣/資源/債務へ反映する。",
-    "全国を自律的に動かし、製品に仕上げる：全国史実データと活動NPC、身分別の一巡、正式素材、画面、調整、性能を統合する。"
+    "R4の続き：情報・人物関係を使う内応の限定交渉",
+    "R5：城・勢力・家督の変化と個別の履行",
+    "各地域の生産・人物・軍事・交渉の一巡を拡張",
+    "全国史実データと活動NPCを段階的に統合",
+    "正式素材・画面・性能・製品範囲の受入を整える"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"
