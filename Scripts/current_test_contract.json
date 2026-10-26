@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2668,
-  "baseline_passed": 2656,
+  "expected_passed": 2680,
+  "baseline_passed": 2668,
   "added": 12,
-  "scope": "Private individual standdown12 added; related607, actual generation recovery and Node3D26 worlds/13 pairs/74 nodes. Full2668 and GUI NOT_RUN."
+  "scope": "Private single-inspection12 added; related619, actual generation recovery and Node3D30 worlds/15 pairs/82 nodes. Full2680 and GUI NOT_RUN."
 }

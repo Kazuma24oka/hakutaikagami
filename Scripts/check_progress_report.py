@@ -18,7 +18,9 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- if logic["scope"]=="headless-private-individual-standdown-payment-expiry-real-muster":
+ if logic["scope"]=="headless-private-single-inspection-foreign-retainer-no-recruitment":
+  from verify_private_inspection import check as check_logic
+ elif logic["scope"]=="headless-private-individual-standdown-payment-expiry-real-muster":
   from verify_private_standdown import check as check_logic
  elif logic["scope"]=="headless-private-contact-dated-firsthand-information-personal-fee":
   from verify_private_information import check as check_logic
