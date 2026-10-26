@@ -1,6 +1,6 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
-public enum CompanionAction { Agree, EndAgreement, Pay, TravelTogether, Inspect, PrivateInspect }
+public enum CompanionAction { Agree, EndAgreement, Pay, TravelTogether, Inspect, PrivateInspect, PledgeService, ReleaseService }
 public sealed record CompanionInput(EntityId Id,EntityId Person,CompanionAction Action,long Amount=0,string? Destination=null);
 public sealed record CompanionOrder(CompanionInput Input,long At,long Revision,EntityId Site,Intent? Task,Intent? LeaderTask);
 public sealed record CompanionReport(EntityId Order,string Message,long At,long Revision,EntityId Site);
@@ -48,7 +48,8 @@ public static partial class PersonalCompanions
     {
         var i=q.Input;Need(EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Amount>=0&&q.At>=0&&q.At<=w.ElapsedSeconds&&q.Revision>0&&q.Revision<=w.CommitSequence&&w.Characters.Any(c=>c.Id==i.Person),"協力契約の入力が不正です");Need(SiteAt(w,w.PlayerControl,q.At,q.Revision)==q.Site&&SiteAt(w,i.Person,q.At,q.Revision)==q.Site,"面会・現物受渡しは現地で行います");Need(!Busy(w,i.Person,q.At,q.Revision),"先に相手の用件を終えてください");
         Need(!FactionStances.OtherIdUsed(w,i.Id,includeCompanions:false)&&!FactionStances.OwnIdUsed(w,i.Id)&&w.Military?.Requests.Any(r=>r.Input.Id==i.Id)!=true&&w.Career?.Requests.Any(r=>r.Input.Id==i.Id)!=true,"協力契約のIDが別の操作に使われています");bool active=Active(prior,i.Person);long owed=Owed(w,i.Person,q.At,q.Revision);
-        if(i.Action==CompanionAction.PrivateInspect){Need(w.NewGame?.CompanionPolicy==PrivateInspectionPolicy&&i.Amount==DailyPay&&owed==0&&!active&&CanCommission(w,i.Person,q.At,q.Revision),"面識と精算のある、仕事の空いた本人へ一件20文で点検を相談してください");}
+        if(i.Action is CompanionAction.PledgeService or CompanionAction.ReleaseService)CheckService(w,q);
+        else if(i.Action==CompanionAction.PrivateInspect){Need(SingleInspectionEnabled(w)&&i.Amount==DailyPay&&owed==0&&!active&&CanCommission(w,i.Person,q.At,q.Revision),"面識と精算のある、仕事の空いた本人へ一件20文で点検を相談してください");}
         else if(i.Action==CompanionAction.Agree){Need(!active&&owed==0&&Eligible(w,i.Person,q.At,q.Revision)&&w.Characters.Single(c=>c.Id==i.Person).WillObey&&i.Amount==DailyPay,"他家の家臣を無断で引き抜かず、協力可能な成人に一日20文を前払いします");}
         else if(i.Action==CompanionAction.Pay)Need(i.Amount>0&&i.Amount<=owed,"支払う未払い手当がありません");
         else{Need(active&&i.Amount==0,"有効な協力合意がありません");if(i.Action!=CompanionAction.EndAgreement)Need(owed==0&&Eligible(w,i.Person,q.At,q.Revision)&&w.Characters.Single(c=>c.Id==i.Person).WillObey,"支払い・担当・本人の協力意思を確認してください");}

@@ -7,7 +7,7 @@ public static partial class PersonalCompanions
     {
         PrivateInspectionReply No(string text)=>new(w.CommitSequence,false,DailyPay,text);
         if(actor!=w.PlayerControl||revision!=w.CommitSequence)return No("状況が変わりました。もう一度相談してください。");
-        if(w.NewGame?.CompanionPolicy!=PrivateInspectionPolicy||person==actor||!w.Characters.Any(c=>c.Id==person))return No("この相手には、この用件を相談できません。");
+        if(!SingleInspectionEnabled(w)||person==actor||!w.Characters.Any(c=>c.Id==person))return No("この相手には、この用件を相談できません。");
         var a=w.Locations.Single(l=>l.Actor==actor);var b=w.Locations.Single(l=>l.Actor==person);
         if(NewGameMilitary.Deployed(w)||a.Kind!=LocationKind.AtSite||b.Kind!=LocationKind.AtSite||a.Site==null||a.Site!=b.Site)return No("本人に現地で会って相談してください。");
         if(SiteAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1)==null)return No("先にご自身の用件を終えてから相談してください。");

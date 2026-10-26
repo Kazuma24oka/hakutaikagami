@@ -119,7 +119,7 @@ public static partial class NewGameService
     {
         var rows=original.ToList();var initial=Initial(w);if(initial!=null&&End(w,initial.Id) is {} e)for(int n=0;n<rows.Count;n++)if(rows[n].Subject==w.PlayerControl)rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};
         foreach(var c in State(w).Cases.Where(c=>!c.Initial))if(Event(w,c.Id,CareerEventKind.Joined) is {} join){var end=End(w,c.Id);rows.Add(new(new(kind+":service/"+Hash(c.Id.Value)),w.PlayerControl,kind=="membership"?c.House:c.Principal,kind,NewGameWorld.Basis,join.At,end?.At??long.MaxValue,end?.Revision??join.Revision));}
-        return rows.ToArray();
+        if(kind=="service")rows.AddRange(PersonalCompanions.PersonalServiceRelations(w));return rows.ToArray();
     }
-    internal static void Sync(ContractWorld w){if(!NewGameWorld.Enabled(w)||w.Service==null)return;var rel=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=Relations(w,rel.Members,"membership");w.ServiceBonds=Relations(w,rel.Bonds,"service");}
+    internal static void Sync(ContractWorld w){if(!NewGameWorld.Enabled(w)||w.Service==null&&w.NewGame?.CompanionPolicy!=PersonalCompanions.PersonalServicePolicy)return;var rel=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=Relations(w,rel.Members,"membership");w.ServiceBonds=Relations(w,rel.Bonds,"service");}
 }
