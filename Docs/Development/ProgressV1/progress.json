@@ -17,11 +17,11 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "f8f52b3296693690dbf2f2aff767a8e9f2c221620e09041aad8a49380fae6a31",
-    "Docs/Development/ProgressV1/estimate.json": "95c7f1ab750181886f4b625ee44fa698fa11fb2b074cc2dea37bc0fab29f1b2f",
+    "Docs/Development/OPERATING_POLICY.md": "a13b1730411818857f5c8303a7db62444880010daf07c74940f4f2ad34518e53",
+    "Docs/Development/ProgressV1/estimate.json": "da0380b837c3973cc536542fbe36384caf17c136026e8d35c264aa1f89e11188",
     "Scripts/build_progress_report.py": "53156166aaad513918de9173fb38d33f63f22beeaf27a48000490dc3c95e4956",
     "Scripts/check_progress_report.py": "6740ba6779b4d6604883c1aaaa423a4739fa7fa18fd84266a38c43ffd925ff21",
-    "Scripts/progress_estimate.py": "8d72cce05feaa4e59531596954a7fd8c32558ceb9f5beb3a030ef73705773df0"
+    "Scripts/progress_estimate.py": "7590b28cc6b72857d5d69d9be34a3dc6e72fe36da14826f006119288076ba34b"
   },
   "items": [
     {
@@ -1657,7 +1657,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "R4：不承諾時の本人の離脱意思と旧主側の認識・係争を分けて扱う",
+    "全60区分の実装/通常入口/残件と大工程の終了条件を再監査し、次の作業順を組み直す",
     "R5：城・勢力・家督の変化と個別の履行",
     "各地域の生産・人物・軍事・交渉の一巡を拡張",
     "全国史実データと活動NPCを段階的に統合",
