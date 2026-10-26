@@ -6,7 +6,7 @@ p=json.loads((R/'Docs/Development/ProgressV1/progress.json').read_bytes());d=jso
 ids=[i['id'] for g in d['groups'] for i in g['items']]
 assert len(d['groups'])==15 and len(ids)==60 and len(set(ids))==60
 assert [i['id'] for i in p['items']]==ids
-assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=33,isolated=3,foundation=12,design_only=11,management=1)
+assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=34,isolated=3,foundation=12,design_only=10,management=1)
 assert len(a['cases'])==170
 for i in p['items']:
  assert i['existing'] and i['remaining'] and i['evidence']
@@ -18,7 +18,9 @@ logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
  logic=json.loads((R/f).read_bytes())
- if logic["scope"]=="headless-old-lord-release-physical-consent-personal-known-notice":
+ if logic["scope"]=="headless-three-community-labor-season-food-relief-generation-recovery":
+  from verify_community_economy import check as check_logic
+ elif logic["scope"]=="headless-old-lord-release-physical-consent-personal-known-notice":
   from verify_retainer_release import check as check_logic
  elif logic["scope"]=="headless-personal-service-bond-independent-membership-debt-release":
   from verify_personal_service import check as check_logic
@@ -100,4 +102,6 @@ assert 0<=c['total']<=100 and c['total']%x['rounding_step']==0
 assert x['overall_range'][0]<=c['total']<=x['overall_range'][1]
 assert x['focus']['leaf'] in ids and 3<=len(x['focus']['exit'])<=5
 assert len(x['roadmap'])==6 and all(v['finish'] and v['why'] and v['status'] for v in x['roadmap'])
-print('PASS: weighted estimate / 6 large, 15 medium, 60 small entries / scope exits and roadmap')
+from check_approval_batch import check as check_batch
+check_batch()
+print('PASS: weighted estimate / immutable minimum1-point implementation batch / 6 large, 15 medium, 60 small entries')

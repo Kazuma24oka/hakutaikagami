@@ -157,7 +157,7 @@ public partial class NewGameRuntime
         buttons["private-contact"].Visible=PrivateInformation.Enabled(Snapshot());buttons["private-contact"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["truce-negotiation"].Visible=TruceNegotiations.Enabled(Snapshot())&&OwnPoliticalHouse(Snapshot())!=null;buttons["truce-negotiation"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["companions"].Visible=PersonalCompanions.Enabled(Snapshot());buttons["companions"].Disabled=IsSaving||IsClockControlling||IsDeparting;
-        buttons["economy"].Visible=Session.LocalEconomyView()!=null;buttons["economy"].Disabled=IsSaving||IsClockControlling||IsDeparting;
+        buttons["economy"].Visible=Session.LocalEconomyView()!=null||Session.CommunityEconomyView()!=null;buttons["economy"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["work-contact"].Visible=SelectWorkContact()!=null;
         buttons["work-contact"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["work-duty"].Visible=WorkDuty.Candidate(Snapshot())!=null||WorkDuty.Active(Snapshot())!=null;

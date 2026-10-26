@@ -5,6 +5,7 @@ public partial class NewGameRuntime
 {
     void ShowLocalEconomy()
     {
+        if(CommunityEconomy.Enabled(Snapshot())){ShowCommunityEconomy();return;}
         var v=Session.LocalEconomyView();if(v==null){message.Text="この地域の帳簿を現地で確認できる当主ではありません。";return;}
         var a=v.Accounts;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var box=new VBoxContainer{CustomMinimumSize=new(490,320)};panel.AddChild(box);
         box.AddChild(new Label{Text="清洲の村と家の蔵 — 現地帳簿"});box.AddChild(new Label{Text=$"村の米 {a.VillageRice}kg　家の蔵 {a.HouseRice}kg\n未徴収年貢 {a.Assessed-a.Collected}kg　水利 {a.Water}\n次の収穫まで約{Math.Max(1,(v.NextHarvest-v.ObservedAt+86399)/86400)}日"});

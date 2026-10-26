@@ -16,7 +16,7 @@ public partial class WorldClashProjectionCheck : Node
         try{
             if(DisplayServer.GetName()!="headless")throw new InvalidDataException("This check is headless-only");
             var dir=System.Environment.GetEnvironmentVariable("HAKUTAI_WORLD_CLASH_QA_DIR")??throw new InvalidDataException("Missing QA input directory");
-            int pairs=int.Parse(System.Environment.GetEnvironmentVariable("HAKUTAI_PROJECTION_EXPECTED_PAIRS")??"3");if(pairs is not(3 or 5 or 7 or 9 or 11 or 13 or 15 or 18 or 21))throw new InvalidDataException("Unknown projection scope");
+            int pairs=int.Parse(System.Environment.GetEnvironmentVariable("HAKUTAI_PROJECTION_EXPECTED_PAIRS")??"3");if(pairs is not(3 or 5 or 7 or 9 or 11 or 13 or 15 or 18 or 21 or 23))throw new InvalidDataException("Unknown projection scope");
             var files=Directory.GetFiles(dir,"*.json").Where(p=>p.EndsWith(".before.json",StringComparison.Ordinal)||p.EndsWith(".restored.json",StringComparison.Ordinal)).Order(StringComparer.Ordinal).ToArray();if(files.Length!=pairs*2)throw new InvalidDataException("Missing actual generation-recovery pairs");
             var results=new Dictionary<string,string>();int nodes=0;
             foreach(var path in files){
@@ -26,6 +26,7 @@ public partial class WorldClashProjectionCheck : Node
                 if(PrivateInformation.Enabled(w)&&!PersonalCompanions.Enabled(w)&&!TruceNegotiations.Enabled(w)){foreach(var person in new[]{w.PlayerControl}.Concat(w.PrivateInformation!.Quotes.Select(q=>q.Speaker)).Distinct())positions.Add((person.Value,FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,person,w.ElapsedSeconds)),0,false));}
                 if(TruceNegotiations.Enabled(w)&&!PersonalCompanions.Enabled(w)){foreach(var person in new[]{w.PlayerControl}.Concat(w.Truces!.Papers.SelectMany(p=>new[]{p.Author,p.Recipient})).Distinct())positions.Add((person.Value,FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,person,w.ElapsedSeconds)),0,false));}
                 if(PersonalCompanions.Enabled(w)){foreach(var person in new[]{w.PlayerControl}.Concat(w.Companions!.Orders.Where(q=>q.Input.Action==CompanionAction.Agree).Select(q=>q.Input.Person)).Concat(w.PrivateInformation?.Quotes.Select(q=>q.Speaker)??Array.Empty<EntityId>()).Distinct()){positions.Add((person.Value,FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,person,w.ElapsedSeconds)),0,false));}}
+                if(CommunityEconomy.Enabled(w)&&positions.All(p=>p.Id!=w.PlayerControl.Value))positions.Add((w.PlayerControl.Value,FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,w.ElapsedSeconds)),0,false));
                 foreach(var u in w.Units.Where(u=>w.NewMilitary!=null&&u.Organization==w.NewMilitary.Terms.Owner)){
                     int i=Array.IndexOf(NewGameMilitary.UnitIdsFor(w),u.Id);positions.Add((u.Id.Value,NewGameMilitary.Position(w,i,w.ElapsedSeconds),(int)u.Soldiers,WorldClashes.AttacksNow(w,u.Id)));
                 }
