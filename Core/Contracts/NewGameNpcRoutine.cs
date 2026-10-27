@@ -18,7 +18,7 @@ public static class NewGameNpcRoutine
             var point=RegionalCampaign.RoadActorPointAt(historical,actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);bool moving=requests.Any(r=>r.Intent.Executor==actor&&r.Intent.Action==ActionKind.Move&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));historical.Locations=w.Locations.Select(l=>l.Actor==actor?l with{Kind=node!=null&&!moving?LocationKind.AtSite:LocationKind.Traveling,Site=node!=null&&!moving?RegionalCampaign.Site(node.Id):null}:l).ToArray();w=historical;
         }
         var place=w.Locations.Single(l=>l.Actor==actor);bool local=place.Kind==LocationKind.AtSite&&place.Site!=null;long ready=0;
-        bool permit=!PersonalCompanions.Occupied(w,actor,at,revision)&&!NpcArmies.CommanderBusyAt(w,actor,at,revision)&&IsActor(w,actor)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult&&local&&WorldSession.Permits(w,actor,NewGameWorld.InspectFor(w,actor,"request:npc-routine-preview",at),at);
+        bool permit=!NpcFreight.Busy(w,actor,at,revision+1)&&!PersonalCompanions.Occupied(w,actor,at,revision)&&!NpcArmies.CommanderBusyAt(w,actor,at,revision)&&IsActor(w,actor)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult&&local&&WorldSession.Permits(w,actor,NewGameWorld.InspectFor(w,actor,"request:npc-routine-preview",at),at);
         return new(local,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready);
     }
     public static string Reason(NpcWorkInputs i)=>!i.LocalWitness?"not-at-own-site":!i.InspectionPermit?"no-personal-permit":!i.LastReportKnown?"await-own-report":i.OwnTasks.Length>0?"own-result-known":"inspect-own-site";

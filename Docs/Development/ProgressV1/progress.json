@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "0b1e7c0ee7532f33a6a2596cfc0b4389add07ac5a4557cfc5889a3ccb0acdc23",
-    "Docs/Development/ProgressV1/estimate.json": "fadb374a32622ade2da23861b31d2b32868f90e8b3221aa567ba63eb7f861045",
+    "Docs/Development/OPERATING_POLICY.md": "45c0ad3eeb410aacfbfc9f7b0aab669e3543f66e79bc123d664d915caedcc17e",
+    "Docs/Development/ProgressV1/estimate.json": "53e6dfe4cb8134abe906078d1ebd1f7b58446b5bd8d71919ec644fd2a3d3b273",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "7e6c9cb3918d57a70317d45334edbd8a2494e3a1d7fe88414620462f280121e7",
+    "Scripts/check_progress_report.py": "0d2517add951ec50bdbb086ad79bdd8c0cdf88593faada8fbc4d61e00455631e",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "a61fac12b463b2a24d31976e7bf724c6d6e544cd251686fa587fe4ccca742bc9",
+    "Scripts/check_approval_batch.py": "5192f5cd8f13f29d645cbbe3caed460debb1fb70e61e2986ee676c61266682e4",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -65,9 +65,14 @@
     "Scripts/verify_house_logistics.py": "0e695ebcb59b30733056abf1a9400d300084c35aa219413d75a03d1356c4035c",
     "Docs/Design/MilitaryEconomyV1/completion.json": "23c83a99fcfe5a130a861a3601eb082510cbcfa3d2f00ee07c90631849f3f855",
     "Docs/Design/MilitaryEconomyV1/README.md": "ea6d216b4d5dbe73f34c78730590515b119bf3de3948a191ac9ab1149f3e67ff",
-    "Docs/Design/MilitaryEconomyV1/integration.json": "11fa3510c092ffee5861429d1a6d3279c31f88a6abb3abf817b1f1316c995870",
+    "Docs/Design/MilitaryEconomyV1/integration.json": "3d6bd3a6a17c353d3e5078d479070424b0ebef9a576e2576a2921c76a517def6",
     "Docs/Development/ProgressV1/approval-baseline-v11.json": "9b8933857d88051b432dd6c610d32581e02fb1f1a2d55d075f5991bd98f956e6",
-    "Scripts/verify_military_economy.py": "9ffbdc1bfacd48d502ceee3d993285bf7ab82a07332f420fc41cc17dd51eacde"
+    "Scripts/verify_military_economy.py": "9ffbdc1bfacd48d502ceee3d993285bf7ab82a07332f420fc41cc17dd51eacde",
+    "Docs/Design/NpcFreightV1/completion.json": "bd591992fcf7fa5c9e37b9dd0c6ee5aee80e21b7ee1c3ff6134b08733696396a",
+    "Docs/Design/NpcFreightV1/README.md": "b4b3531073df4c24d025fc8831f6eb92b6e537159226aa9c13067f515efb0702",
+    "Docs/Design/NpcFreightV1/integration.json": "4115902c46d14ee8fdbbad03a4170452a6a84fb592a691228969e4add1b5b453",
+    "Docs/Development/ProgressV1/approval-baseline-v12.json": "90eacca09378f1058639b942ab34f6ece561aead63386ac47010eb7b9f359d2c",
+    "Scripts/verify_npc_freight.py": "35c18ecec80054733ee1620054068a9f1eaf663aca426c6d8d868d45cbbc481c"
   },
   "items": [
     {
@@ -230,9 +235,16 @@
     {
       "id": "BD-12",
       "status": "normal",
-      "existing": "直属関係を持つ主君/家臣の給付合意と個人の米を通常入口へ接続。未払い/主従/兵を分離し、実際の辞去後も旧債務を保持して支給できる。",
-      "remaining": "全国の名簿/自律的な家臣運営・広い待遇条件・指揮対象の一般化。",
+      "existing": "現地の協力意思を持つ成人直属家臣へ家の仕入れを一件任せ、既存の同行契約/軍務/他任務との重複と他人の財布の転用を拒否。",
+      "remaining": "配下の一般職務/家臣団組織、道中引継ぎ、継続生活と汎用の委任同値。",
       "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json",
         "Core/Contracts/HouseSalary.cs",
         "Tests/HouseSalaryTests.cs",
         "Game/Scripts/NewGameRuntime.Salary.cs",
@@ -622,14 +634,19 @@
     {
       "id": "BD-30",
       "status": "normal",
-      "existing": "仕入れ固有の前渡金と裁量範囲を固定し、一般の家財処分権は渡さない。新規v11の限定行政委任に現地の荷/余金受領を明示追加し、実効権限を再検査。",
-      "remaining": "一般の委任政策・複数階層監督、輸送人の再委任、広域NPC運搬と逸脱評価。",
+      "existing": "仕入先/品目/数量/前渡金/30日の現地合意を原本に固定し、家臣は共通移動で自律実行。実在庫不足は帰還し、帰還精算後の再依頼を許す。",
+      "remaining": "遠隔報告と取消配送/再委任、広域NPC判断と全任務種別の裁量/監督。",
       "evidence": [
+        "Core/Contracts/NpcFreight.cs",
         "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json",
         "Core/Contracts/HouseFreightReceiving.cs",
         "Tests/HouseLogisticsTests.cs",
         "Tests/HouseFreightReceivingTests.cs",
-        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
         "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
@@ -776,14 +793,19 @@
     {
       "id": "BD-35",
       "status": "normal",
-      "existing": "家の資金による遠隔仕入れを、遠隔の現在在庫を漏らさず現地買付と実運搬で接続。元の家への現物/余金精算と代理受領を保存復旧する。",
-      "remaining": "NPC隊商の自動運搬、複数輸送人/混載、信用買い・保証・担保、軍馬/弾薬と輸送事故。",
+      "existing": "家臣の100kg携行と家の前渡金を独立して運び、到着価格/実在庫で購入して元の蔵と金庫へ現物返納。本人の私的取引は別の枠で併用できる。",
+      "remaining": "一般商人の広域流通/輸送事故/契約譲渡、価格市場の調整と債務承継。",
       "evidence": [
+        "Core/Contracts/NpcFreight.cs",
         "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json",
         "Core/Contracts/HouseFreightReceiving.cs",
         "Tests/HouseLogisticsTests.cs",
         "Tests/HouseFreightReceivingTests.cs",
-        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
         "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/RegionalDomains.cs",
         "Core/Contracts/CommunityEconomy.cs",
@@ -810,7 +832,6 @@
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
         "Docs/Design/TransportWorkV1/verification.json",
-        "Core/Contracts/VoyageExpense.cs",
         "Tests/VoyageExpenseTests.cs",
         "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
         "Docs/Design/TravelExpenseV1/verification.json",
@@ -947,9 +968,16 @@
     {
       "id": "BD-40",
       "status": "normal",
-      "existing": "新規軍用倉の架空の初期10日分をなくし、家の実米だけで補充。現地の割当→既存携行→実消費→整数kg返納と端数保持をPC/NPCへ適用する。",
-      "remaining": "行軍する補給隊/長距離軍需輸送、軍馬飼料/弾薬/装備消耗、遮断・略奪・救済競合と能力への段階影響。",
+      "existing": "家の物資を家臣が陸路で運ぶ帰還補給を接続。架空在庫/瞬間補充を作らず、仕入不足/通行止めでも預り金/現物を保持する。",
+      "remaining": "前線部隊へ直接運ぶ補給隊、遮断/略奪/輸送事故、軍馬飼料/弾薬と段階的影響。",
       "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json",
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -1185,9 +1213,16 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "スタート/作成/ロード・地図・仕事/会話・軍務・書状・履歴が通常入口につながる。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
-      "remaining": "全制度の案内・戦後評価と、布陣などを含むキーボード操作/アクセシビリティを仕上げる。",
+      "existing": "既存の仕入れ画面で本人/現地家臣を選び、合意条件と帰還報告待ち/現地受領を区別。遠隔の現在価格/荷/現金は出さない。",
+      "remaining": "全画面の外観/操作受入、一覧の大規模検索、アクセシビリティと製品導線。",
       "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json",
         "Game/Scripts/NewGameFrontEnd.cs",
         "Game/Scripts/NewGameRuntime.UsableLayout.cs",
         "Game/Scripts/NewGameRuntime.WorkExperience.cs",
@@ -1197,7 +1232,6 @@
         "Tests/TransportWorkTests.cs",
         "Tests/TransportWorkLocationTests.cs",
         "Docs/Design/TransportWorkV1/verification.json",
-        "Core/Contracts/VoyageExpense.cs",
         "Tests/VoyageExpenseTests.cs",
         "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
         "Docs/Design/TravelExpenseV1/verification.json",
@@ -1219,7 +1253,6 @@
         "Docs/Design/MilitaryDebriefV1/verification.json",
         "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
         "Docs/Design/ServiceDirectionV1/verification.json",
-        "Game/Scripts/NewGameRuntime.WorkRelations.cs",
         "Docs/Design/WorkContactReviewV1/verification.json"
       ],
       "release_acceptance": "not_certified",
@@ -1228,9 +1261,16 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "NPC当主も現地の自由米と支援人手を検査して引受/待機。原資は自家の米、返納は部隊の実帰還でのみ行い、既存操作ID衝突でも処理を継続する。",
-      "remaining": "NPC輸送隊と再委任、軍事/経済/外交の総合優先度、遠方簡略と詳細の全機能同値。",
+      "existing": "NPC家臣が合意範囲の共通移動/現物購入/帰還精算を行い、別任務と競合し、本人を自動操作しない。",
+      "remaining": "NPC当主自身の広域物流判断、前線補給隊と再委任、総合優先度と遠方簡略の一般同値。",
       "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json",
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -1837,12 +1877,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 1098,
+      "passed": 1126,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/MilitaryEconomyV1/runtime-local/tests/military-economy-current.trx",
-      "sha256": "316e16fc24acb6420845df1615cedf8104f2789cfb58c303550009276b0c6ad9",
-      "scope": "Current related1098 only;38 new and88 additional existing military/supply cases; full3046/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/NpcFreightV1/runtime-local/tests/npc-freight-current.trx",
+      "sha256": "f80f4154c141703d46451fd7e79ccd26da1ca37c6409922099ea74d0a338ce08",
+      "scope": "Current related1126 only;28 new; full3074/GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1854,14 +1894,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 1098,
+      "passed": 1126,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/MilitaryEconomyV1/runtime-local/tests/military-economy-current.trx",
-      "sha256": "316e16fc24acb6420845df1615cedf8104f2789cfb58c303550009276b0c6ad9",
-      "scope": "Current related1098 only;38 new and88 additional existing military/supply cases; full3046/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/NpcFreightV1/runtime-local/tests/npc-freight-current.trx",
+      "sha256": "f80f4154c141703d46451fd7e79ccd26da1ca37c6409922099ea74d0a338ce08",
+      "scope": "Current related1126 only;28 new; full3074/GUI NOT_RUN; historical full2446 separate."
     },
-    "current_stage_summary": "PR21を承認head3762361と同じtreeでmain dc5a31aへ統合後、地域労働と家の実米を既存軍務へ接続。新規v12は100人編成の引受に補給支援20人を確保し、工房生産と積算した季節労働へ反映。本人退避や返還願い発送では人手を解放せず、部隊の実返還で戻す。軍用倉は0から開始し、現地で家の自由米を実移転して兵糧を用意。既存給付引当を保護し、整数kgで返納できない端数も軍用倉に保持する。試作配給0.6kg/兵/日で既存人秒台帳へ換算。NPCも自家の米120kgと支援人手で2日分を用意し、不足なら引受拒否、実徴収後に引受可能。未使用米の返納と人手回復は実帰還後。新規38件に加え既存軍務/兵糧88件を範囲拡張し、関連1098件、Gameビルド、10段階実世代復旧と将来一致、画面なしGodot75組150世界262Node3Dが成功。実際の旧v9/v10/v11保存15件も現行Coreで検証・再保存しバイト一致。外観/UI操作・全3046件は未実施。",
+    "current_stage_summary": "PR22を承認head8fa4aceと同じtreeでmain9baa4edへ統合後、現地当主から成人直属家臣へ任せる現物仕入れを接続。新規v13は本人の協力意思/在席/他任務/家の現金/月次枠/100kgを確認し、家臣自身が共通陸路で実移動→到着後の実在庫/価格で購入→実帰還して現物/余金を一度だけ返納。購入不足は預り金を保持して帰還、未知の封鎖は瞬間移動/遠隔情報公開なし。現地面会で取りやめを伝えられ、家臣と本人の携行枠/財布は別。精算後の再依頼も検査。派遣側は合意原本と現地受領証のみを見て、遠隔地の現在の荷/現金/相場を漏らさず、既知の受領証は移動後も保持。新規28/関連1126件、Gameビルド、5段階実世代復旧と将来一致、画面なしGodot80組160世界282Node3D、旧v9-v12実保存25件のバイト一致が成功。外観/UI操作・全3074件は未実施。前線へ直接運ぶ補給隊/遠隔取消配送/道中引継ぎは未実装。期限は導出台帳の保持を検査し30日間のNPC行程は未検査、NPCの実辞去/家の喪失も個別実行は未検査。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1883,9 +1923,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/MilitaryEconomyV1/integration.json",
-    "current_logic_verification": "Docs/Design/MilitaryEconomyV1/verification.json",
-    "current_logic_verification_sha256": "46cb8d1a4d1887ff6673e5c822d003c92119bd9edbf9a8f5393adc32a83844ae",
+    "integration": "Docs/Design/NpcFreightV1/integration.json",
+    "current_logic_verification": "Docs/Design/NpcFreightV1/verification.json",
+    "current_logic_verification_sha256": "8c04f3e7af17a0f5ed358ab6f3f0b2cbbc645dc160637e91f520fec652d41fb7",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1894,7 +1934,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連1098件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連1126件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1950,7 +1990,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "NPCによる物資輸送・補給隊と再委任を接続",
+    "NPC前線補給・物理報告/取消と再委任を接続",
     "身分別の継続プレイと収支・戦時負担を調整",
     "城の支配と家の変動を兵/家臣/資源へ接続",
     "全城/村と史実データを段階的に拡充",

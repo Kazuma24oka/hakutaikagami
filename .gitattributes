@@ -1972,3 +1972,8 @@ Game/Scripts/NewGameRuntime.MilitaryRice.cs -text
 
 Scripts/verify_military_economy.py -text
 Docs/Design/MilitaryEconomyV1/* -text
+
+Core/Contracts/NpcFreight.cs -text
+Tests/NpcFreightTests.cs -text
+Scripts/verify_npc_freight.py -text
+Docs/Design/NpcFreightV1/** -text
