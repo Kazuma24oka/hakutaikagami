@@ -327,7 +327,7 @@
     "BD-31": 70,
     "BD-40": 95,
     "BD-57": 55,
-    "BD-28": 75
+    "BD-28": 55
   },
   "criteria": [
     "New explicit v17 consensual direct-retainer road supply reserves actual free house rice at a physical home meeting, binds the same army/case/owner and fixed destination, and excludes other jobs without duplicating troops or grain",
@@ -338,5 +338,11 @@
   ],
   "target_meaning": "Consensual household retainer to fixed army assembly site over common land roads plus physical cancellation and dated reporting. Not generalized moving-unit interception, army sea transport, escort/robbery, horse/ammunition logistics or unrestricted remote house orders.",
   "prior_baseline": "Docs/Development/ProgressV1/approval-baseline-v15.json",
-  "prior_baseline_commit": "47de96d3cece81966d9baa68615c333e7e166d98"
+  "prior_baseline_commit": "47de96d3cece81966d9baa68615c333e7e166d98",
+  "pre_code_correction": {
+    "previous_plan_commit": "e44f9c04a7888125c5b38bd786223d498810d8e2",
+    "reason": "BD-28 target used an assumed starting value; corrected to the actual baseline plus5 before any implementation or progress credit",
+    "previous_target": 75,
+    "target": 55
+  }
 }
