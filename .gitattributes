@@ -1957,3 +1957,8 @@ Docs/Design/CommunityStewardshipV1/** -text
 Game/Scripts/NewGameRuntime.MaterialTrade.cs -text
 Scripts/verify_material_markets.py -text
 Docs/Design/MaterialMarketsV1/** -text
+
+Game/Scripts/NewGameRuntime.Treasury.cs -text
+
+Scripts/verify_regional_domains.py -text
+Docs/Design/RegionalDomainsV1/* -text
