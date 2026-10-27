@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Local principal and direct retainer explicitly agree scoped, bounded, expiring community administration without transferring ownership, general office or troops",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Player and NPC delegates operate only at the actual site within grant budgets; salary reservations, village consent and head absence remain consistent",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Delegate reports carry immutable dated local observations through existing physical sealed-message transport; remote principal never sees live accounts or delivery truth",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Revocation takes effect on physical arrival, with separate known acknowledgment; report retransmission repeats the same observation without double spending or fresh hidden data",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry and safe UI, v6 legacy bytes, real generation recovery and future equality for travel, report transit, revocation and delegated operation, Game build and headless Node3D",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN"
+}
