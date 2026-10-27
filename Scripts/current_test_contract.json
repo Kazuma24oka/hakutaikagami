@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2766,
-  "baseline_passed": 2741,
-  "added": 25,
-  "scope": "Regional trade25 added; related730; actual generation recovery, headless28 pairs/56 worlds/120 nodes. Full2766 and GUI NOT_RUN."
+  "expected_passed": 2790,
+  "baseline_passed": 2766,
+  "added": 24,
+  "scope": "House rice salary24 added; related754. Actual generation recovery and headless32 pairs/64 worlds/128 nodes. Full2790 and GUI NOT_RUN."
 }

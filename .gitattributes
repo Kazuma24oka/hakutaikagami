@@ -1940,3 +1940,7 @@ Scripts/probe_community_reports.py -text
 Game/Scripts/NewGameRuntime.Trade.cs -text
 Scripts/verify_regional_trade.py -text
 Docs/Design/RegionalTradeV1/** -text
+
+Game/Scripts/NewGameRuntime.Salary.cs -text
+Scripts/verify_house_salary.py -text
+Docs/Design/HouseSalaryV1/** -text

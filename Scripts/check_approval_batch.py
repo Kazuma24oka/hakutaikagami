@@ -3,7 +3,7 @@ from pathlib import Path
 from fractions import Fraction
 import json,subprocess
 R=Path(__file__).resolve().parents[1]
-BASELINES={1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json")}
+BASELINES={1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
 def calculate(a,d,leaves):
     groups={g["id"]:g for g in d["groups"]};total=Fraction(0)
     for domain in a["domains"]:
@@ -24,11 +24,16 @@ def check():
         probe();folder="CommunityEconomyV2"
         assert "CommunityEconomy.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert "Session.CommunityEconomyView()!=null" in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
-    else:
+    elif version==2:
         from verify_regional_trade import check as verify
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    else:
+        from verify_house_salary import check as verify
+        folder="HouseSalaryV1"
+        assert "HouseSalary.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
+        assert 'Session.SalaryView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
     v=json.loads((R/("Docs/Design/"+folder+"/verification.json")).read_bytes());verify(v)
     c=json.loads((R/("Docs/Design/"+folder+"/completion.json")).read_bytes());assert [x["contract"] for x in c["criteria"]]==b["criteria"]
     assert all(x["status"]=="PASSED" and x["evidence"] for x in c["criteria"])
