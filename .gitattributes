@@ -1953,3 +1953,7 @@ Docs/Design/VillageConsultationV1/** -text
 Game/Scripts/NewGameRuntime.Stewardship.cs -text
 Scripts/verify_community_stewardship.py -text
 Docs/Design/CommunityStewardshipV1/** -text
+
+Game/Scripts/NewGameRuntime.MaterialTrade.cs -text
+Scripts/verify_material_markets.py -text
+Docs/Design/MaterialMarketsV1/** -text

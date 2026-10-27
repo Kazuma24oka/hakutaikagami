@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-community-stewardship-and-local-npc-administration":
+ if logic["scope"]=="headless-material-markets-and-local-npc-administration":
+  from verify_material_markets import check as check_logic
+ elif logic["scope"]=="headless-community-stewardship-and-local-npc-administration":
   from verify_community_stewardship import check as check_logic
  elif logic["scope"]=="headless-village-consultation-and-local-npc-administration":
   from verify_village_consultation import check as check_logic

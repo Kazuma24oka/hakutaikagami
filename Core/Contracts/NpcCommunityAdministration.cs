@@ -8,7 +8,7 @@ public static class NpcCommunityAdministration
     public const string Policy="village-local-npc-community-administration-v6";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CommunityStewardship.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CommunityStewardship.Policy or MaterialMarkets.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.CommunityAdministration?.Decisions.Any(d=>d.Id==id)==true;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays(checked((int)(at/Day)));
     static int Period(ContractWorld w,long at){var d=Date(w,at);return d.Year*12+d.Month;}
@@ -27,6 +27,7 @@ public static class NpcCommunityAdministration
             else if(account.Water<130&&account.Reserved==0&&free>=CommunityEconomy.WorkCost+500){action=EconomyAction.ImproveWater;amount=CommunityEconomy.WorkCost;representative=VillageConsultation.Representative(site,at);reason="代表の食糧・空き労働条件に合意し家に500kgを残して水利工事";}
             else reason="不足なし、追加工事または徴収の条件なしのため待機";
         }
+        if(action==EconomyAction.ImproveWater&&MaterialMarkets.WoodAvailable(w,site,at,revision)<MaterialMarkets.WaterWood){action=null;amount=0;representative=null;reason="家の木材が不足しているため工事を待機";}
         if(action is {} a){amount=Math.Min(amount,CommunityStewardship.Budget(w,actor,site,a,at,revision));if(amount==0||a==EconomyAction.ImproveWater&&amount<CommunityEconomy.WorkCost){action=null;amount=0;representative=null;reason="合意した今月の処分枠を使い切ったため待機";}}
         return new(Id(w,site,at,revision),actor,site,at,revision,hash,action,amount,reason,representative);
     }
