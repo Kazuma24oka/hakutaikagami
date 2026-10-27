@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3074,
-  "baseline_passed": 3046,
-  "added": 28,
-  "scope": "Delegated freight28 added; related1126. Actual generation recovery and headless80 pairs/160 worlds/282 nodes. Full3074 and GUI NOT_RUN."
+  "expected_passed": 3115,
+  "baseline_passed": 3074,
+  "added": 41,
+  "scope": "Freight letters20 and camp supply21 added; related1167. Actual generation recovery and headless90 pairs/180 worlds/352 nodes. Full3115 and GUI NOT_RUN."
 }

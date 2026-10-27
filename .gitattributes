@@ -1977,3 +1977,11 @@ Core/Contracts/NpcFreight.cs -text
 Tests/NpcFreightTests.cs -text
 Scripts/verify_npc_freight.py -text
 Docs/Design/NpcFreightV1/** -text
+
+Core/Contracts/FreightOperations.cs -text
+Core/Contracts/FieldConvoy.cs -text
+Tests/FreightOperationsTests.cs -text
+Tests/FieldConvoyTests.cs -text
+Scripts/verify_freight_operations.py -text
+Docs/Design/FreightOperationsV1/** -text
+Game/Scripts/NewGameRuntime.CampSupply.cs -text

@@ -16,7 +16,7 @@ public static class RegionalDomains
     public const string Policy="nationwide-trial-domain-ledgers-bounded-local-house-procurement-v9";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy;
     internal static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
     internal static EntityId? Head(ContractWorld w,EntityId site)=>Owner(w,site) is {} owner&&w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==owner.Value) is {} f?new(f.Head):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
@@ -74,6 +74,7 @@ public static class RegionalDomains
     static bool AppendOnly<T>(T[] before,T[] after,Func<T,long> at,Func<T,long> rev,ContractWorld prior)=>after.Length>=before.Length&&after.Take(before.Length).SequenceEqual(before)&&after.Skip(before.Length).All(e=>at(e)>=prior.ElapsedSeconds&&rev(e)>prior.CommitSequence);
     internal static bool PastUnchanged(ContractWorld w,ContractWorld? prior)
     {
+        if(!FieldConvoy.PastUnchanged(w,prior))return false;
         if(!MilitaryEconomy.PastUnchanged(w,prior))return false;
         if(HouseLogistics.Enabled(w)&&ContractJson.CanonicalHash(w.HouseFreight)!=ContractJson.CanonicalHash(prior?.HouseFreight))return false;
         if(prior==null||!Enabled(w)||!Enabled(prior)||w.WorldId!=prior.WorldId||w.PlayerControl!=prior.PlayerControl||w.Seed!=prior.Seed||w.EpochDate!=prior.EpochDate||w.ElapsedSeconds<prior.ElapsedSeconds||w.CommitSequence<=prior.CommitSequence)return false;

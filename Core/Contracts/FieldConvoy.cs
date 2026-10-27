@@ -1,0 +1,81 @@
+namespace HakutaiKagami.Core.Contracts;
+public enum CampConvoyAction { Dispatch,CancelAtMeeting,Deliver,StartReturn,Return }
+public sealed record CampConvoyInput(EntityId Id,CampConvoyAction Action,EntityId? Job=null,EntityId? Carrier=null,FieldPoint? Camp=null,long RiceKg=0);
+public sealed record CampConvoyTerms(EntityId Id,EntityId Principal,EntityId Carrier,EntityId Owner,EntityId Home,EntityId Army,EntityId Carry,EntityId Case,FieldPoint Camp,long RiceKg,long At,long Until,long Revision,FieldLeg[] Outbound);
+public sealed record CampConvoyEntry(CampConvoyInput Input,long At,long Revision,CampConvoyTerms? Terms,FieldLeg[]? ReturnRoute);
+public sealed record CampConvoyState(int Schema,string Policy,CampConvoyEntry[] Entries);
+public sealed record CampConvoyJob(CampConvoyTerms Terms,long DeliveredKg,long CargoKg,CampConvoyEntry? ReturnStarted,CampConvoyEntry? Returned);
+public sealed record CampConvoyCard(EntityId Job,EntityId Carrier,FieldPoint Camp,long AgreedKg,string Status,bool CanCancel);
+public static class FieldConvoy
+{
+    public const string Policy="physical-local-camp-rice-convoy-v15";
+    static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
+    static CampConvoyEntry[] Entries(ContractWorld w,long at,long rev)=>w.CampConvoys?.Entries.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray()??[];
+    public static CampConvoyJob[] Jobs(ContractWorld w,long at,long rev)
+    {
+        if(!Enabled(w))return [];var es=Entries(w,at,rev);return es.Where(e=>e.Terms!=null).Select(e=>{var t=e.Terms!;bool delivered=es.Any(q=>q.Input.Job==t.Id&&q.Input.Action==CampConvoyAction.Deliver);var returned=es.SingleOrDefault(q=>q.Input.Job==t.Id&&q.Input.Action==CampConvoyAction.Return);return new CampConvoyJob(t,delivered?t.RiceKg:0,returned!=null||delivered?0:t.RiceKg,es.FirstOrDefault(q=>q.Input.Job==t.Id&&q.ReturnRoute!=null),returned);}).ToArray();
+    }
+    public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.CampConvoys?.Entries.Any(e=>e.Input.Id==id)==true;
+    internal static bool PastUnchanged(ContractWorld w,ContractWorld? prior)=>!Enabled(w)||prior!=null&&ContractJson.CanonicalHash(w.CampConvoys)==ContractJson.CanonicalHash(prior.CampConvoys);
+    internal static bool Busy(ContractWorld w,EntityId actor,long at,long rev)=>Enabled(w)&&Jobs(w,at,rev).Any(j=>j.Terms.Carrier==actor&&j.Returned==null);
+    static FieldPoint Home(ContractWorld w,CampConvoyTerms t)=>FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==t.Home).Position);
+    static FieldPoint Point(ContractWorld w,CampConvoyJob j,long at)=>j.ReturnStarted is {} back&&back.At<=at?RegionalGround.At(back.ReturnRoute!,j.ReturnStarted.ReturnRoute!.FirstOrDefault()?.From??Home(w,j.Terms),at):RegionalGround.At(j.Terms.Outbound,Home(w,j.Terms),at);
+    static CampConvoyJob? PositionJob(ContractWorld w,EntityId actor,long at,long rev)
+    {if(!Enabled(w))return null;var j=Jobs(w,at,rev).LastOrDefault(j=>j.Terms.Carrier==actor);if(j==null)return null;var road=w.Branches!.Journeys.LastOrDefault(q=>q.Actor==actor&&q.Legs[0].StartAt<=at);return road!=null&&road.Legs[0].StartAt>j.Terms.At?null:j;}
+    internal static FieldPoint? PositionAt(ContractWorld w,EntityId actor,long at,long rev)=>PositionJob(w,actor,at,rev) is {} j?Point(w,j,at):null;
+    internal static bool Controls(ContractWorld w,EntityId actor,long at)=>PositionJob(w,actor,at,w.CommitSequence+1)!=null;
+    public static double? WalkedDistance(ContractWorld w,EntityId actor,double at)
+    {var j=PositionJob(w,actor,(long)at,w.CommitSequence+1);if(j==null)return null;static double Distance(FieldLeg[] legs,double t)=>legs.Sum(l=>RegionalGround.Distance(l.From,l.To)*Math.Clamp((t-l.StartAt)/(l.EndAt-l.StartAt),0,1));return Distance(j.Terms.Outbound,at)+(j.ReturnStarted==null?0:Distance(j.ReturnStarted.ReturnRoute!,at));}
+    internal static bool Walking(ContractWorld w,EntityId actor,long at,long rev)=>PositionJob(w,actor,at,rev) is {} j&&Point(w,j,at)!=Point(w,j,at+1);
+    internal static BranchView? BranchView(ContractWorld w,ActorView known)
+    {if(PositionAt(w,known.Observer,w.ElapsedSeconds,w.CommitSequence+1) is not {} p)return null;var next=PositionAt(w,known.Observer,w.ElapsedSeconds+1,w.CommitSequence+1)??p;var a=FieldWorld.ToWorld(p);var b=FieldWorld.ToWorld(next);return new(known,a,new(b.EastMm-a.EastMm,b.NorthMm-a.NorthMm),0,p!=next,null,[],BranchRoutes.KnownBlocked(w,known.Observer),b,RegionalGround.Distance(p,next));}
+    internal static (long At,long Revision,long Amount)[] HouseTransfers(ContractWorld w,EntityId site,long at,long rev)
+    {if(!Enabled(w))return [];var jobs=Jobs(w,at,rev);return Entries(w,at,rev).Where(e=>e.Input.Action is CampConvoyAction.Dispatch or CampConvoyAction.Return).Select(e=>{var t=e.Terms??jobs.Single(j=>j.Terms.Id==e.Input.Job).Terms;long amount=e.Input.Action==CampConvoyAction.Dispatch?-t.RiceKg:jobs.Single(j=>j.Terms.Id==t.Id).DeliveredKg==0?t.RiceKg:0;return(t,e.At,e.Revision,Amount:amount);}).Where(e=>e.t.Home==site&&e.Amount!=0).Select(e=>(e.At,e.Revision,e.Amount)).ToArray();}
+    internal static (long At,long Revision,long Amount)[] Credits(ContractWorld w,EntityId carry,long at,long rev)=>!Enabled(w)?[]:Entries(w,at,rev).Where(e=>e.Input.Action==CampConvoyAction.Deliver).Select(e=>{var t=w.CampConvoys!.Entries.Single(q=>q.Terms?.Id==e.Input.Job).Terms!;return(t,e.At,e.Revision,Amount:checked(t.RiceKg*MilitaryEconomy.PersonSecondsPerKg));}).Where(e=>e.t.Carry==carry).Select(e=>(e.At,e.Revision,e.Amount)).ToArray();
+    internal static long Credit(ContractWorld w,EntityId carry,long at,long rev)=>Credits(w,carry,at,rev).Sum(e=>e.Amount);
+    internal static bool HasCreditAt(ContractWorld w,EntityId carry,long at)=>Credits(w,carry,at,w.CommitSequence+1).Any(e=>e.At==at);
+    internal static void Initialize(ContractWorld w){if(Enabled(w))w.CampConvoys=new(1,Policy,[]);}
+    static EntityId Effect(ContractWorld w,CampConvoyJob j,string action){string root="request:camp-convoy/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(j.Terms.Id.Value))+"/"+action;var id=new EntityId(root);int n=0;while(FactionStances.OtherIdUsed(w,id)||FactionStances.OwnIdUsed(w,id))id=new(root+"/n"+(++n));return id;}
+    static bool Meeting(ContractWorld w,CampConvoyJob j,long at,long rev)=>RegionalGround.Distance(FieldWorld.FromWorld(RegionalCampaign.ActorPointAt(w,w.PlayerControl,at)),Point(w,j,at))<=1000&&!Walking(w,j.Terms.Carrier,at,rev);
+    static bool CanDeliver(ContractWorld w,CampConvoyJob j,long at,long rev)
+    {
+        if(j.CargoKg==0||j.ReturnStarted!=null||at>=j.Terms.Until||Point(w,j,at)!=j.Terms.Camp)return false;
+        if(!NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Army==j.Terms.Army))return false;var c=NewGameMilitary.WorldEngagementBefore(w,j.Terms.Army,at,rev-1);return c.NewMilitary!=null&&NewGameMilitary.ConvoyCase(c)==j.Terms.Case&&c.NewMilitary.Terms.Owner==j.Terms.Owner&&NewGameMilitary.CustodyAt(c,at,rev)&&c.Units.Where(u=>u.Army==j.Terms.Army).Sum(u=>u.Soldiers)>0&&NewGameMilitary.Deployed(c)&&!NewGameMilitary.Detached(c)&&!NewGameMilitary.Moving(c)&&RegionalGround.Distance(NewGameMilitary.PersonPosition(c,at),j.Terms.Camp)<=1000&&Enumerable.Range(0,3).All(n=>RegionalGround.Distance(NewGameMilitary.Position(c,n,at),j.Terms.Camp)<=20000)&&NewGameMilitary.Capacity-NewGameMilitary.CarryAt(c,at,rev)>=checked(j.CargoKg*MilitaryEconomy.PersonSecondsPerKg);
+    }
+    static CampConvoyEntry Make(ContractWorld w,CampConvoyInput i,long at,long rev)
+    {
+        Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action),"補給依頼の形式が不正です");
+        if(i.Action==CampConvoyAction.Dispatch){Need(i.Job==null&&i.Carrier!=null&&i.Camp!=null&&i.RiceKg>0&&i.RiceKg<=100&&w.NewMilitary!=null,"現地の担当者・集合地点・100kg以内の米を指定してください");var c=NewGameMilitary.WorldEngagementBefore(w,w.NewMilitary!.Terms.Army,at,rev-1);var s=c.NewMilitary!;Need(s!=null&&s.Terms.Principal==w.PlayerControl&&NewGameMilitary.CustodyAt(c,at,rev)&&!NewGameMilitary.Deployed(c),"当主が現地で部隊を引き受けてから補給を合意します");var home=s.Terms.Site;var carrier=i.Carrier!.Value;Need(TransportWork.At(w,w.PlayerControl,home,at,rev,true)&&TransportWork.At(w,carrier,home,at,rev,true)&&!Busy(w,carrier,at,rev)&&!NpcFreight.Busy(w,carrier,at,rev),"担当者と当主の現地所在・他任務を確認してください");NpcFreight.CheckCarrier(w,new(i.Id,HouseFreightAction.Dispatch){Carrier=carrier},carrier,w.PlayerControl,home,at,rev);var point=FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==home).Position);Need(RegionalGround.Distance(point,i.Camp!) is >=5000 and <=120000&&RegionalGround.Walkable(i.Camp!,atlas:true),"既存戦場の5〜120mに通行可能な集合地点を指定してください");Need(CommunityEconomy.AccountAt(w,home,at,rev).HouseRice-HouseSalary.Reserved(w,home,at,rev)>=i.RiceKg,"家の未引当米が不足しています");var t=new CampConvoyTerms(i.Id,w.PlayerControl,carrier,s.Terms.Owner,home,s.Terms.Army,NewGameMilitary.CarryFor(c),NewGameMilitary.ConvoyCase(c),i.Camp!,i.RiceKg,at,at+86400,rev,RegionalGround.Plan(point,i.Camp!,at+1,atlas:true));return new(i,at,rev,t,null);}
+        Need(i.Job!=null&&i.Carrier==null&&i.Camp==null&&i.RiceKg==0,"同じ補給原本を指定してください");var j=Jobs(w,at,rev).Single(q=>q.Terms.Id==i.Job);Need(j.Returned==null,"現地で返納済みです");
+        if(i.Action==CampConvoyAction.Deliver){Need(CanDeliver(w,j,at,rev),"合意した部隊と集合地点・受入容量が一致しません");return new(i,at,rev,null,null);}
+        if(i.Action is CampConvoyAction.StartReturn or CampConvoyAction.CancelAtMeeting){Need(j.ReturnStarted==null&&(i.Action!=CampConvoyAction.CancelAtMeeting||Meeting(w,j,at,rev)),"帰路開始済み、または本人に会えていません");return new(i,at,rev,null,RegionalGround.Plan(Point(w,j,at),Home(w,j.Terms),at+1,atlas:true));}
+        Need(i.Action==CampConvoyAction.Return&&j.ReturnStarted!=null&&(j.ReturnStarted.ReturnRoute!.LastOrDefault()?.EndAt??j.ReturnStarted.At+1)<=at&&Point(w,j,at)==Home(w,j.Terms),"実際の帰還後に未使用米を返納してください");return new(i,at,rev,null,null);
+    }
+    internal static void Apply(ContractWorld w,CampConvoyInput i){var e=Make(w,i,w.ElapsedSeconds,w.CommitSequence);w.CampConvoys=w.CampConvoys! with{Entries=[..w.CampConvoys!.Entries,e]};SyncLocations(w);}
+    internal static void SyncLocations(ContractWorld w)
+    {
+        if(!Enabled(w))return;foreach(var actor in Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Select(j=>j.Terms.Carrier).Distinct()){if(PositionAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1) is not {} p)continue;var world=FieldWorld.ToWorld(p);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==world);LocationState loc;if(node!=null&&!Walking(w,actor,w.ElapsedSeconds,w.CommitSequence+1))loc=new(actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,w.CommitSequence);else{var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(world.EastMm,world.NorthMm));loc=new(actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(p),Policy,w.CommitSequence);}w.Locations=w.Locations.Select(l=>l.Actor==actor?loc:l).ToArray();}
+    }
+    internal static long? NextBoundary(ContractWorld w,long target)
+    {if(!Enabled(w))return null;var times=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Where(j=>j.Returned==null).SelectMany(j=>new[]{j.Terms.Outbound.LastOrDefault()?.EndAt??j.Terms.At+1,j.Terms.Until,j.ReturnStarted?.ReturnRoute?.LastOrDefault()?.EndAt??j.ReturnStarted?.At+1??long.MaxValue,j.DeliveredKg>0&&j.ReturnStarted==null?w.ElapsedSeconds+1:long.MaxValue});return times.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
+    internal static void TakeTurns(WorldSession session)
+    {
+        var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.Paused)return;foreach(var old in Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Where(j=>j.Returned==null)){w=session.DiagnosticSnapshot();var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Single(q=>q.Terms.Id==old.Terms.Id);if(j.ReturnStarted!=null){if((j.ReturnStarted.ReturnRoute!.LastOrDefault()?.EndAt??j.ReturnStarted.At+1)<=w.ElapsedSeconds)session.RunCampConvoy(new(Effect(w,j,"return"),CampConvoyAction.Return,j.Terms.Id));continue;}if(j.DeliveredKg>0||w.ElapsedSeconds>=j.Terms.Until){session.RunCampConvoy(new(Effect(w,j,"back"),CampConvoyAction.StartReturn,j.Terms.Id));continue;}if(CanDeliver(w,j,w.ElapsedSeconds,w.CommitSequence+1))session.RunCampConvoy(new(Effect(w,j,"deliver"),CampConvoyAction.Deliver,j.Terms.Id));}
+    }
+    public static CampConvoyCard[] View(ContractWorld w)=>!Enabled(w)?[]:Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Select(j=>new CampConvoyCard(j.Terms.Id,j.Terms.Carrier,j.Terms.Camp,j.Terms.RiceKg,j.DeliveredKg>0?"本人の部隊が現地で補給を受領":j.Returned!=null&&(TransportWork.At(w,w.PlayerControl,j.Terms.Home,j.Returned.At,j.Returned.Revision+1,true)||TransportWork.At(w,w.PlayerControl,j.Terms.Home,w.ElapsedSeconds,w.CommitSequence+1,true)||w.Branches!.Journeys.Any(q=>q.Actor==w.PlayerControl&&q.Legs[^1].To==RegionalCampaign.Destination(w,j.Terms.Home)&&w.Tasks.Any(t=>t.Id==q.Task&&t.Execution==ExecutionPhase.Completed&&t.FinishedAt>=j.Returned.At&&t.FinishedAt<=w.ElapsedSeconds)))?"現地で未使用米を返納":"合意した集合地点への補給を依頼中",j.Returned==null&&j.ReturnStarted==null&&Meeting(w,j,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
+    internal static void Validate(ContractWorld w)
+    {
+        if(!Enabled(w)){Need(w.CampConvoys==null,"旧版へ野営地補給を追加できません");return;}Need(w.CampConvoys is{Schema:1,Policy:Policy,Entries:not null},"野営地補給の原本がありません");var s=w.CampConvoys;long at=0,rev=0;var ids=new HashSet<EntityId>();foreach(var e in s.Entries){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&ids.Add(e.Input.Id)&&!FactionStances.OtherIdUsed(w,e.Input.Id,includeCampConvoy:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"補給原本のID/順序が不正です");var expected=Make(w,e.Input,e.At,e.Revision);Need(ContractJson.CanonicalHash(e)==ContractJson.CanonicalHash(expected),"補給合意・経路・実受渡しが当時の状態と違います");at=e.At;rev=e.Revision;}
+        foreach(var j in Jobs(w,w.ElapsedSeconds,w.CommitSequence+1)){Need(j.DeliveredKg>=0&&j.CargoKg>=0&&j.DeliveredKg<=j.Terms.RiceKg,"補給米の収支が不正です");RegionalGround.ValidatePath(j.Terms.Outbound,Home(w,j.Terms),j.Terms.Camp,false,false,true);if(j.ReturnStarted is {} back)RegionalGround.ValidatePath(back.ReturnRoute!,back.ReturnRoute!.FirstOrDefault()?.From??Home(w,j.Terms),Home(w,j.Terms),false,false,true);}
+        var copy=w.ForkTransportLocation();copy.Locations=w.Locations.ToArray();SyncLocations(copy);Need(ContractJson.CanonicalHash(copy.Locations)==ContractJson.CanonicalHash(w.Locations),"補給担当の表示位置と保存経路が違います");
+    }
+}
+public static partial class NewGameMilitary{internal static EntityId ConvoyCase(ContractWorld w)=>CaseStart(w)!.Input.Id;}
+public sealed partial class WorldSession
+{
+    public CampConvoyCard[] CampConvoyView(){lock(gate)return FieldConvoy.View(state);}
+    internal void RunCampConvoy(CampConvoyInput input){lock(gate)Change(w=>FieldConvoy.Apply(w,input));}
+    public CommandResult ManageCampConvoy(CampConvoyInput input,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!FieldConvoy.Enabled(state)||input.Action is not(CampConvoyAction.Dispatch or CampConvoyAction.CancelAtMeeting))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の現地合意ではありません");var old=state.CampConvoys!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"条件を読み直してください");try{Change(w=>FieldConvoy.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"合意した野営地への現物補給を記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
+}
