@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "New v14/v15 freight purchase and return observations are immutable dated sealed reports transported by the common courier; unopened or undelivered reports reveal no contents, known old reports retain observation time and do not become live stock views",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Tests/FreightOperationsTests.cs",
+        "Tests/FieldConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/FreightOperationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Cancellation is a physical sealed order to an agreed rendezvous, not remote mutation; only actual receipt changes subsequent buying/return behavior, with acknowledgement and idempotent same-original handling, failed/late reports and cancellation preserving assets",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Tests/FreightOperationsTests.cs",
+        "Tests/FieldConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/FreightOperationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "New v15 local field supply convoy uses actual unreserved house rice, a consenting local direct retainer and existing terrain paths; fixed agreed camp is within the existing120m military battlefield, and actor position matches actual outbound/return legs",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Tests/FreightOperationsTests.cs",
+        "Tests/FieldConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/FreightOperationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Only physical co-presence with the agreed active army and available carrying capacity transfers rice into real military consumption; refusal, changed camp, cancellation and return preserve remaining grain and never create supply, troops or remote replenishment",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Tests/FreightOperationsTests.cs",
+        "Tests/FieldConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/FreightOperationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry/UI, old v13 and earlier byte preservation, actual save/recovery and future equality before/after report/receipt/field transfer, Game build and headless3D coordinates are checked; GUI/full-suite limits and120m field scope explicit",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Tests/FreightOperationsTests.cs",
+        "Tests/FieldConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/FreightOperationsV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Physical household freight letters plus last-mile camp supply within the existing120m battlefield. Not nationwide player-army road marching, general front caravans, mounted logistics, escort fighting, robbery or casualties. Camp cancellation requires local meeting; remote cancellation applies to agreed household procurement rendezvous. GUI/full3115 NOT_RUN."
+}

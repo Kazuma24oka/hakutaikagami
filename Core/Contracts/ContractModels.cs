@@ -116,6 +116,8 @@ public sealed class ContractWorld
     public HouseFreightState? HouseFreight {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public MilitaryEconomyState? MilitaryEconomy {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public FreightOperationsState? FreightOperations {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CampConvoyState? CampConvoys {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RegionalTradeState? Trade {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]

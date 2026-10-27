@@ -12,17 +12,17 @@ public static partial class HouseLogistics
     public const string Policy="house-funded-physical-procurement-custody-return-v10";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy;
     static bool Before(HouseFreightEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static HouseFreightEntry[] Prefix(ContractWorld w,long at,long rev)=>w.HouseFreight?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.HouseFreight?.Entries.Any(e=>e.Input.Id==id)==true;
     public static bool Closed(HouseFreightJob j)=>j.Phase is HouseFreightPhase.Completed or HouseFreightPhase.Returned;
-    static Dictionary<EntityId,HouseFreightJob> Fold(IEnumerable<HouseFreightEntry> entries,long at)
+    static Dictionary<EntityId,HouseFreightJob> Fold(ContractWorld w,IEnumerable<HouseFreightEntry> entries,long at,long rev)
     {
         var jobs=new Dictionary<EntityId,HouseFreightJob>();foreach(var e in entries){if(e.Input.Action==HouseFreightAction.Dispatch){var t=e.Terms!;jobs.Add(t.Id,new(t,HouseFreightPhase.Outbound,0,t.Advance,0,null,null));continue;}var j=jobs[e.Input.Job!.Value];switch(e.Input.Action){case HouseFreightAction.Buy:long cost=checked(e.UnitPrice*j.Terms.Quantity);j=j with{Phase=HouseFreightPhase.Carrying,Spent=cost,Cash=j.Cash-cost,Cargo=j.Terms.Quantity,BoughtAt=e.At};break;case HouseFreightAction.Withdraw:j=j with{Phase=HouseFreightPhase.ReturnRequired};break;case HouseFreightAction.Receive:j=j with{Phase=j.Cargo>0?HouseFreightPhase.Completed:HouseFreightPhase.Returned,Cash=0,Cargo=0,ReceivedAt=e.At,Receipt=e.Receipt};break;}jobs[j.Terms.Id]=j;}
-        foreach(var j in jobs.Values.ToArray())if(!Closed(j)&&at>j.Terms.Until)jobs[j.Terms.Id]=j with{Phase=HouseFreightPhase.ReturnRequired};return jobs;
+        foreach(var j in jobs.Values.ToArray())if(!Closed(j)&&at>j.Terms.Until)jobs[j.Terms.Id]=j with{Phase=HouseFreightPhase.ReturnRequired};foreach(var j in jobs.Values.ToArray())if(!Closed(j)&&FreightOperations.Stopped(w,j.Terms.Id,at,rev))jobs[j.Terms.Id]=j with{Phase=HouseFreightPhase.ReturnRequired};return jobs;
     }
-    static HouseFreightJob[] Jobs(ContractWorld w,long at,long rev)=>Fold(Prefix(w,at,rev),at).Values.ToArray();
+    static HouseFreightJob[] Jobs(ContractWorld w,long at,long rev)=>Fold(w,Prefix(w,at,rev),at,rev).Values.ToArray();
     internal static bool Active(ContractWorld w,long at,long rev)=>Enabled(w)&&Jobs(w,at,rev).Any(j=>!Closed(j)&&j.Terms.Carrier==w.PlayerControl);
     internal static HouseFreightEntry[] Purchases(ContractWorld w,long at,long rev)=>Prefix(w,at,rev).Where(e=>e.Input.Action==HouseFreightAction.Buy).ToArray();
     internal static HouseFreightTerms Terms(ContractWorld w,EntityId id)=>w.HouseFreight!.Entries.Single(e=>e.Input.Id==id&&e.Input.Action==HouseFreightAction.Dispatch).Terms!;
@@ -48,12 +48,12 @@ public static partial class HouseLogistics
     }
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.HouseFreight=new(1,Policy,[]);}
     internal static void Apply(ContractWorld w,HouseFreightInput i)=>ApplyFor(w,i,i.Carrier??w.PlayerControl);
-    internal static void ApplyFor(ContractWorld w,HouseFreightInput i,EntityId actor){var e=Make(w,i,actor,w.ElapsedSeconds,w.CommitSequence,Fold(Prefix(w,w.ElapsedSeconds,w.CommitSequence),w.ElapsedSeconds));w.HouseFreight=w.HouseFreight! with{Entries=[..w.HouseFreight!.Entries,e]};NewGameWork.Sync(w);}
+    internal static void ApplyFor(ContractWorld w,HouseFreightInput i,EntityId actor){var e=Make(w,i,actor,w.ElapsedSeconds,w.CommitSequence,Fold(w,Prefix(w,w.ElapsedSeconds,w.CommitSequence),w.ElapsedSeconds,w.CommitSequence));w.HouseFreight=w.HouseFreight! with{Entries=[..w.HouseFreight!.Entries,e]};NewGameWork.Sync(w);}
     internal static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.HouseFreight==null,"旧世界へ家の運搬を追加できません");return;}Need(w.HouseFreight is{Schema:1,Policy:Policy,Entries:not null},"家の運搬原本がありません");var entries=new List<HouseFreightEntry>();var ids=new HashSet<EntityId>();long rev=0,at=0;
-        foreach(var e in w.HouseFreight.Entries){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&EntityId.IsValid(e.Input.Id.Value)&&ids.Add(e.Input.Id)&&!FactionStances.OtherIdUsed(w,e.Input.Id,includeFreight:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"家の運搬の原本ID・時点・順序が不正です");Need(e==Make(w,e.Input,e.Actor,e.At,e.Revision,Fold(entries,e.At)),"運搬の合意・仕入れ・受領が当時の条件と一致しません");entries.Add(e);rev=e.Revision;at=e.At;}
-        foreach(var j in Fold(entries,w.ElapsedSeconds).Values){Need(j.Cash>=0&&j.Cargo>=0&&j.Spent<=j.Terms.Advance,"預り金/現物が負です");if(!Closed(j))Need(j.Cash+j.Spent==j.Terms.Advance&&j.Cargo==(j.BoughtAt==null?0:j.Terms.Quantity),"預り金と仕入れの収支が不一致です");}
+        foreach(var e in w.HouseFreight.Entries){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&EntityId.IsValid(e.Input.Id.Value)&&ids.Add(e.Input.Id)&&!FactionStances.OtherIdUsed(w,e.Input.Id,includeFreight:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"家の運搬の原本ID・時点・順序が不正です");Need(e==Make(w,e.Input,e.Actor,e.At,e.Revision,Fold(w,entries,e.At,e.Revision)),"運搬の合意・仕入れ・受領が当時の条件と一致しません");entries.Add(e);rev=e.Revision;at=e.At;}
+        foreach(var j in Fold(w,entries,w.ElapsedSeconds,w.CommitSequence+1).Values){Need(j.Cash>=0&&j.Cargo>=0&&j.Spent<=j.Terms.Advance,"預り金/現物が負です");if(!Closed(j))Need(j.Cash+j.Spent==j.Terms.Advance&&j.Cargo==(j.BoughtAt==null?0:j.Terms.Quantity),"預り金と仕入れの収支が不一致です");}
     }
     internal static HouseFreightView? View(ContractWorld w)
     {

@@ -115,8 +115,9 @@ public partial class NewGameRuntime : Control
     }
     internal static double VisualDistance(ContractWorld world,EntityId actor,double phase)
     {
+        if(FieldConvoy.WalkedDistance(world,actor,world.ElapsedSeconds+phase) is {} convoyDistance)return convoyDistance;
         if(actor==world.PlayerControl&&NewGameMilitary.Detached(world)){var j=world.NewMilitary!.Withdrawal!.Journeys.Last();double t=world.ElapsedSeconds+phase;return j.Route.Sum(l=>RegionalGround.Distance(l.From,l.To)*Math.Clamp((t-l.StartAt)/(l.EndAt-l.StartAt),0,1));}
-        var journey=world.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor);if(NewGameMilitary.Deployed(world)){return MilitaryDistance(world,0,world.ElapsedSeconds+phase);}if(journey==null)return 0;
+        var journey=world.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor);if(actor==world.PlayerControl&&NewGameMilitary.Deployed(world)){return MilitaryDistance(world,0,world.ElapsedSeconds+phase);}if(journey==null)return 0;
         var nodes=BranchRoutes.GraphNodes(world);var edges=BranchRoutes.GraphEdges(world);double distance=0;
         foreach(var leg in journey.Legs){var a=nodes.Single(n=>n.Id==leg.From).Position;var b=nodes.Single(n=>n.Id==leg.To).Position;double dx=b.EastMm-a.EastMm,dy=b.NorthMm-a.NorthMm;double length=Math.Sqrt(dx*dx+dy*dy);var edge=edges.Single(e=>e.Id==leg.Edge);double p=TravelWorld.Progress(world,leg,world.ElapsedSeconds),next=TravelWorld.Progress(world,leg,world.ElapsedSeconds+1);distance+=length*Math.Clamp((p+(next-p)*phase)/edge.LengthMm,0,1);}
         return distance;

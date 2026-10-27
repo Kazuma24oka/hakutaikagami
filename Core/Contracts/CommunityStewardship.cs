@@ -15,7 +15,7 @@ public static class CommunityStewardship
     public const string Policy="local-bounded-stewardship-physical-reports-revocation-v7",ReportKind="steward-report",RevokeKind="steward-revoke",AckKind="steward-ack";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Stewardship?.Entries.Any(e=>e.Input.Id==id)==true;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     internal static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&CommunityEconomy.Local(w,actor,site,at,rev);

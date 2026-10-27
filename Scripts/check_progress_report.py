@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-delegated-retainer-physical-house-supply":
+ if logic["scope"]=="headless-physical-freight-reports-cancellation-and-local-camp-supply":
+  from verify_freight_operations import check as check_logic
+ elif logic["scope"]=="headless-delegated-retainer-physical-house-supply":
   from verify_npc_freight import check as check_logic
  elif logic["scope"]=="headless-regional-support-labor-real-house-rice-military-supply":
   from verify_military_economy import check as check_logic
