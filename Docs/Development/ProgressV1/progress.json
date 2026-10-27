@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "4d5820de40f17efee68dae9628998395cea9319ef027b5885b95d967267900e1",
-    "Docs/Development/ProgressV1/estimate.json": "24ae59cd19f2a53ea1f6ede58bb3ff2450521ad5416bbc4c576b7b70321cb86e",
+    "Docs/Development/ProgressV1/estimate.json": "4631fc37ccc465b1da803d0c9c3ed3a8eae933a11e0d1bbffa3ef0a6ab04f9fb",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "7ca5991012d36264885a9a531eab4af0fb7574c9d41c11205e3684bc959599e6",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -50,7 +50,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v6.json": "27cd3a8ea17fd3ab7e93b06f6dd645a1073d896cd936e20f60ad7074970e0f97",
     "Docs/Design/MaterialMarketsV1/completion.json": "c4e476056e99a6197a327002fde6b6e304b8ff0913250a357ce4b34937707dbc",
     "Docs/Design/MaterialMarketsV1/README.md": "2031a09a9eef2520f5543343d555bf55fe53b6aca2136cad36ba4a68a0a3ed85",
-    "Docs/Design/MaterialMarketsV1/integration.json": "93ed8cf03fbad8a8f45893971a4c4714ae01078ac9b3729df713d82d83d358f0",
+    "Docs/Design/MaterialMarketsV1/integration.json": "27a3c9f8ba601ead2cb292d9a48acb794f747a2939f9f884d4c185a26e0fc689",
     "Docs/Development/ProgressV1/approval-baseline-v7.json": "74d7b4a01c60dd95183c4b742d9679b9f360d0cf2844e1d50bc0cd5691fd9e7d"
   },
   "items": [
