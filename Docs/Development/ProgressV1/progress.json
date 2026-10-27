@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "0b1e7c0ee7532f33a6a2596cfc0b4389add07ac5a4557cfc5889a3ccb0acdc23",
-    "Docs/Development/ProgressV1/estimate.json": "fadb374a32622ade2da23861b31d2b32868f90e8b3221aa567ba63eb7f861045",
+    "Docs/Development/ProgressV1/estimate.json": "361b68b1d723755f1e0bbe4fa8fed33c35c3ebe9cc0d6bfa4cb188dec0faf36e",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "7e6c9cb3918d57a70317d45334edbd8a2494e3a1d7fe88414620462f280121e7",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -65,7 +65,7 @@
     "Scripts/verify_house_logistics.py": "0e695ebcb59b30733056abf1a9400d300084c35aa219413d75a03d1356c4035c",
     "Docs/Design/MilitaryEconomyV1/completion.json": "23c83a99fcfe5a130a861a3601eb082510cbcfa3d2f00ee07c90631849f3f855",
     "Docs/Design/MilitaryEconomyV1/README.md": "ea6d216b4d5dbe73f34c78730590515b119bf3de3948a191ac9ab1149f3e67ff",
-    "Docs/Design/MilitaryEconomyV1/integration.json": "11fa3510c092ffee5861429d1a6d3279c31f88a6abb3abf817b1f1316c995870",
+    "Docs/Design/MilitaryEconomyV1/integration.json": "3d6bd3a6a17c353d3e5078d479070424b0ebef9a576e2576a2921c76a517def6",
     "Docs/Development/ProgressV1/approval-baseline-v11.json": "9b8933857d88051b432dd6c610d32581e02fb1f1a2d55d075f5991bd98f956e6",
     "Scripts/verify_military_economy.py": "9ffbdc1bfacd48d502ceee3d993285bf7ab82a07332f420fc41cc17dd51eacde"
   },
