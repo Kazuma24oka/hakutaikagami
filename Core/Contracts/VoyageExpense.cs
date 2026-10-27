@@ -13,7 +13,7 @@ public static class VoyageExpense
     public static string[] PlanningExclusions(ContractWorld w,EntityId actor,bool walkOnly)=>BranchRoutes.KnownBlocked(w,actor).Concat(walkOnly?BranchRoutes.GraphEdges(w).Where(e=>NationalRoutes.Sea(e.Id)).Select(e=>e.Id):[]).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
     public static string[] PlanningExclusions(ContractWorld w,TaskState task,IEnumerable<string>? known=null)
     {
-        bool walk=w.Requests.Single(q=>q.Id==task.RequestId).Intent.RoutePolicy is WalkOnly or NpcArmies.LandRoute or PersonalCompanions.LandRoute or NpcFreight.LandRoute;
+        bool walk=w.Requests.Single(q=>q.Id==task.RequestId).Intent.RoutePolicy is WalkOnly or NpcArmies.LandRoute or PersonalCompanions.LandRoute or NpcFreight.LandRoute or ArmyRoadMarch.LandRoute;
         return (known??BranchRoutes.KnownBlocked(w,task.Executor)).Concat(walk?BranchRoutes.GraphEdges(w).Where(e=>NationalRoutes.Sea(e.Id)).Select(e=>e.Id):[]).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
     }
     static bool Before(long at,long rev,long time,long cut)=>at<time||at==time&&rev<cut;
@@ -45,7 +45,7 @@ public static class VoyageExpense
     public static void Validate(ContractWorld w)
     {
         ValidateRules(w.NewGame?.VoyageRules);var s=w.VoyageExpenses;
-        Need(w.Requests.All(q=>q.Intent.RoutePolicy==null||q.Intent.RoutePolicy==NpcFreight.LandRoute&&NpcFreight.Enabled(w)||q.Intent.RoutePolicy==PersonalCompanions.LandRoute&&PersonalCompanions.IsTask(w,q.Intent)||q.Intent.RoutePolicy==NpcArmies.LandRoute&&NpcArmies.IsMarch(w,q.Intent)||Enabled(w)),"Route choice requires pinned start rules");
+        Need(w.Requests.All(q=>q.Intent.RoutePolicy==null||q.Intent.RoutePolicy==ArmyRoadMarch.LandRoute&&ArmyRoadMarch.IsTrip(w,q.Intent)||q.Intent.RoutePolicy==NpcFreight.LandRoute&&NpcFreight.Enabled(w)||q.Intent.RoutePolicy==PersonalCompanions.LandRoute&&PersonalCompanions.IsTask(w,q.Intent)||q.Intent.RoutePolicy==NpcArmies.LandRoute&&NpcArmies.IsMarch(w,q.Intent)||Enabled(w)),"Route choice requires pinned start rules");
         if(!Enabled(w)){Need(s==null,"Unexpected voyage expenses");return;}Need(NewGameWork.Enabled(w),"Fare needs explicit private wallets");
         if(s!=null)Need(s.Schema==1&&s.Policy==Policy&&s.Payments.Length+s.Refusals.Length>0,"Unknown voyage ledger");
         var payments=s?.Payments??[];var refusals=s?.Refusals??[];Need(payments.Select(p=>p.Id).Distinct().Count()==payments.Length&&refusals.Select(p=>p.Task).Distinct().Count()==refusals.Length,"Duplicate fare receipt");
@@ -53,6 +53,6 @@ public static class VoyageExpense
         foreach(var p in payments){var task=w.Tasks.Single(t=>t.Id==p.Task);var journey=w.Branches!.Journeys.Single(j=>j.Task==p.Task);Need(p.LegIndex>=0&&p.LegIndex<journey.Legs.Length,"Missing paid sea leg");var l=journey.Legs[p.LegIndex];Need(task.Action==ActionKind.Move&&task.Executor==w.PlayerControl&&task.Issuer==w.PlayerControl&&p.Payer==w.PlayerControl&&p.Id==PaymentId(task.Id,p.LegIndex)&&p.Edge==l.Edge&&p.StartAt==l.StartAt&&p.Payee==Operator(l.Edge)&&NationalRoutes.Sea(l.Edge)&&p.At==TravelWorld.Departure(w,l.Edge,l.StartAt)&&p.At<=w.ElapsedSeconds&&p.Amount==w.NewGame!.VoyageRules!.FarePerPassage&&p.Revision>w.Requests.Single(q=>q.Id==task.RequestId).CommitSequence&&p.Revision<=w.CommitSequence&&!RegionalCampaign.BlockedAt(w,p.Edge,p.At)&&TransportWork.WalletBefore(w,p.Payer,p.At,p.Revision)>=p.Amount,"Invalid actual fare payment");}
         foreach(var j in w.Branches!.Journeys.Where(j=>j.Actor==w.PlayerControl)){var t=w.Tasks.Single(t=>t.Id==j.Task);var input=w.Requests.Single(q=>q.Id==t.RequestId).Intent;if(input.RoutePolicy==WalkOnly)Need(j.Legs.All(l=>!NationalRoutes.Sea(l.Edge)),"Walk-only route entered sea");for(int n=0;n<j.Legs.Length;n++){var l=j.Legs[n];if(!NationalRoutes.Sea(l.Edge))continue;var dep=TravelWorld.Departure(w,l.Edge,l.StartAt);bool boarded=dep<=w.ElapsedSeconds&&(t.FinishedAt==null||t.FinishedAt>dep);Need(payments.Any(p=>p.Id==PaymentId(j.Task,n))==boarded,"Boarded sea leg and paid receipt differ");}}
         foreach(var f in refusals){var stop=w.TrafficStops?.SingleOrDefault(s=>s.Task==f.Task&&s.Reason=="fare-insufficient")??throw new InvalidDataException("Refusal did not stop at port");ValidateStop(w,stop);Need(!payments.Any(p=>p.Task==f.Task&&p.LegIndex==f.LegIndex),"Refused boarding was charged");}
-        Need(w.ResourceLots.Where(l=>l.Kind=="money"&&l.Unit=="mon").Sum(l=>l.InitialQuantity)==checked(w.ResourceLots.Where(l=>l.Kind=="money"&&l.Unit=="mon").Sum(l=>l.Quantity)+payments.Sum(p=>p.Amount)),"Private money and operator receipts are not conserved");
+        Need(w.ResourceLots.Where(l=>l.Kind=="money"&&l.Unit=="mon").Sum(l=>l.InitialQuantity)==checked(w.ResourceLots.Where(l=>l.Kind=="money"&&l.Unit=="mon").Sum(l=>l.Quantity)+payments.Sum(p=>p.Amount)-ArmyRoadMarch.Net(w,NewGameWork.Wallet(w.PlayerControl))),"Private money and operator receipts are not conserved");
     }
 }

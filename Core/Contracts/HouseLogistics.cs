@@ -12,7 +12,7 @@ public static partial class HouseLogistics
     public const string Policy="house-funded-physical-procurement-custody-return-v10";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy;
     static bool Before(HouseFreightEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static HouseFreightEntry[] Prefix(ContractWorld w,long at,long rev)=>w.HouseFreight?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.HouseFreight?.Entries.Any(e=>e.Input.Id==id)==true;

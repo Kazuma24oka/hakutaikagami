@@ -118,6 +118,7 @@ public sealed class ContractWorld
     public MilitaryEconomyState? MilitaryEconomy {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public FreightOperationsState? FreightOperations {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CampConvoyState? CampConvoys {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public ArmyRoadState? ArmyRoad {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RegionalTradeState? Trade {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]

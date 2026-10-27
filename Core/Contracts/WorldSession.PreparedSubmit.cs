@@ -6,18 +6,21 @@ public sealed class SubmitCapture
 {
     internal readonly WorldSession Source;
     internal readonly ContractWorld World;
-    internal readonly Intent Input;
+    internal readonly Intent? Input;
+    internal readonly ArmyRoadInput? ArmyInput;
     internal readonly bool UnpauseAfterAcceptance;
     public long SourceRevision {get;}
     public long SourceSeconds {get;}
     internal SubmitCapture(WorldSession source,ContractWorld world,Intent input,bool unpause)
     {Source=source;World=world;Input=input;UnpauseAfterAcceptance=unpause;SourceRevision=world.CommitSequence;SourceSeconds=world.ElapsedSeconds;}
+    internal SubmitCapture(WorldSession source,ContractWorld world,ArmyRoadInput input,bool unpause)
+    {Source=source;World=world;ArmyInput=input;UnpauseAfterAcceptance=unpause;SourceRevision=world.CommitSequence;SourceSeconds=world.ElapsedSeconds;}
     public bool Matches(WorldSession session)=>ReferenceEquals(Source,session)&&session.MatchesSubmit(this);
     public PreparedSubmit Prepare(CancellationToken cancellation=default,Action? beforePublication=null)
     {
         cancellation.ThrowIfCancellationRequested();
         var future=new WorldSession(World);
-        var result=future.Submit(Input,SourceRevision);
+        var result=ArmyInput is {} army?future.ManageArmyRoad(army,future.PlayerControl,SourceRevision):future.Submit(Input!,SourceRevision);
         if(UnpauseAfterAcceptance&&(result.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted))future.SetPaused(false);
         cancellation.ThrowIfCancellationRequested();beforePublication?.Invoke();cancellation.ThrowIfCancellationRequested();
         var display=future.DiagnosticSnapshot();cancellation.ThrowIfCancellationRequested();
@@ -45,6 +48,8 @@ public sealed partial class WorldSession
         ArgumentNullException.ThrowIfNull(input);
         lock(gate){if(expectedRevision!=state.CommitSequence)throw new InvalidOperationException("Submit source changed");return new(this,state,input,unpauseAfterAcceptance);}
     }
+    public SubmitCapture CaptureArmyRoad(ArmyRoadInput input,long expectedRevision,bool unpauseAfterAcceptance=false)
+    {ArgumentNullException.ThrowIfNull(input);lock(gate){if(expectedRevision!=state.CommitSequence)throw new InvalidOperationException("Army march source changed");return new(this,state,input,unpauseAfterAcceptance);}}
     internal bool MatchesSubmit(SubmitCapture capture)
     {lock(gate)return ReferenceEquals(capture.Source,this)&&ReferenceEquals(capture.World,state)&&capture.SourceRevision==state.CommitSequence&&capture.SourceSeconds==state.ElapsedSeconds;}
     internal bool TryPublishSubmit(SubmitCapture capture,Action swap)

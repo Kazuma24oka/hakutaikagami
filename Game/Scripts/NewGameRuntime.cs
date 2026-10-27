@@ -37,7 +37,7 @@ public partial class NewGameRuntime : Control
     void Add(Node parent,string id,string text,Action action){var b=new Button{Text=text};parent.AddChild(b);buttons[id]=b;b.Pressed+=()=>{try{if(IsSaving||(IsClockControlling&&!ClockAllowed(id)))return;action();if(!IsClockControlling||id is "rotate" or "near" or "play-guide")Refresh();}catch(Exception e){message.Text="操作できません："+e.Message;RefreshWorkExperience();GD.Print("RUNTIME_REJECT "+e.Message);}};}
     void Submit(Intent intent)=>RequestLocalIntent(intent,intent.Action==ActionKind.Inspect?(intent.Actor==intent.Executor?"点検":"仕事の相談"):"操作");
     void Submit(CommandResult result){if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted))throw new InvalidDataException(result.VisibleReason);message.Text=result.VisibleReason;}
-    void Depart(){var w=Snapshot();RequestDeparture(TravelWorld.Move(w,"request:travel/"+Session.Revision,NationalRoutes.Nodes[destination.Selected].Id));}
+    void Depart(){if(TryArmyDeparture())return;var w=Snapshot();RequestDeparture(TravelWorld.Move(w,"request:travel/"+Session.Revision,NationalRoutes.Nodes[destination.Selected].Id));}
     TaskState? Awaiting(){var w=Snapshot();var known=Branch(w.PlayerControl).Knowledge.Tasks.Select(t=>t.Id).ToHashSet();return w.Tasks.FirstOrDefault(t=>known.Contains(t.Id)&&t.Executor==w.PlayerControl&&t.Agreement==AgreementPhase.AwaitingAssent);}
     void Assent(bool accept){var task=Awaiting()??throw new InvalidDataException("回答できる依頼はありません");Submit(Session.Assent(task.Id,Session.PlayerControl,accept,Session.Revision));}
     void Open()=>OpenSelectedMail();

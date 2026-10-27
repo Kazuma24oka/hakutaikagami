@@ -30,7 +30,12 @@ public partial class NewGameRuntime
     void RequestPreparedIntent(Intent input,bool unpause,string label,bool local)
     {
         if(IsSaving||IsClockControlling)return;
-        preparedLocalIntent=local;preparedIntentLabel=label;pendingDeparture=Session.CaptureSubmit(input,Session.Revision,unpause);departureResume=automatic;automatic=false;fraction=0;CancelAdvancePrefetch();advanceClockActive=false;
+        StartPreparedCapture(Session.CaptureSubmit(input,Session.Revision,unpause),label,local);
+    }
+    void StartPreparedCapture(SubmitCapture capture,string label,bool local)
+    {
+        if(IsSaving||IsClockControlling||IsDeparting)return;
+        preparedLocalIntent=local;preparedIntentLabel=label;pendingDeparture=capture;departureResume=automatic;automatic=false;fraction=0;CancelAdvancePrefetch();advanceClockActive=false;
         LastDepartureError=null;LastDepartureResult=null;DepartureRenderTicks=0;
         departureDisabled.Clear();var allowed=buttons.Where(p=>ClockAllowed(p.Key)).Select(p=>(BaseButton)p.Value).ToHashSet();
         foreach(var button in SaveDescendants(this).OfType<BaseButton>())if(!allowed.Contains(button)){departureDisabled.Add((button,button.Disabled));button.Disabled=true;}

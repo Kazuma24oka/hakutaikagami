@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "New v16 explicitly leads the same borrowed army on common land-only personal journeys; original house, home depot, roster and military case remain fixed, with no duplicated troops, new castle control or teleportation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/WorldSession.PreparedSubmit.cs",
+        "Tests/ArmyRoadTests.cs",
+        "Game/Scripts/NewGameRuntime.ArmyRoad.cs",
+        "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs",
+        "Docs/Design/ArmyRoadV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Army and commander follow actual shared roads, closures and known-only planning; arrival establishes a separate current assembly site, local120m formation/deployment/assembly and subsequent marches use that site while return/report remain bound to the original home",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/WorldSession.PreparedSubmit.cs",
+        "Tests/ArmyRoadTests.cs",
+        "Game/Scripts/NewGameRuntime.ArmyRoad.cs",
+        "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs",
+        "Docs/Design/ArmyRoadV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Actual soldier rations are consumed during road travel and outside-home campaign waiting without overlapping field consumption; an unfunded known trip is rejected and an unaffordable next edge stops at the actual node, preserving stock and physical position",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/WorldSession.PreparedSubmit.cs",
+        "Tests/ArmyRoadTests.cs",
+        "Game/Scripts/NewGameRuntime.ArmyRoad.cs",
+        "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs",
+        "Docs/Design/ArmyRoadV1/verification.json"
+      ]
+    },
+    {
+      "contract": "At an actually reached market, own private money buys real free rice stock into the same army capacity with dated price/payment evidence; no remote house wallet or free supply, and original-home return/unload/report/control return remain possible",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/WorldSession.PreparedSubmit.cs",
+        "Tests/ArmyRoadTests.cs",
+        "Game/Scripts/NewGameRuntime.ArmyRoad.cs",
+        "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs",
+        "Docs/Design/ArmyRoadV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry/UI, legacy v15 and earlier byte preservation, actual generation recovery/future equality through roads/closures/local deployment/procurement/return, Game build and headless3D coordinates are checked; GUI/full-suite and general convoy/escort limits explicit",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/WorldSession.PreparedSubmit.cs",
+        "Tests/ArmyRoadTests.cs",
+        "Game/Scripts/NewGameRuntime.ArmyRoad.cs",
+        "Game/Scripts/NewGameRuntime.ResponsiveDeparture.cs",
+        "Docs/Design/ArmyRoadV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Same borrowed player-led army on existing common land roads; local120m deployment at arrived assembly and private-money actual rice at reached markets. Carry cap remains2days. Not army sea transport, castle control/entry rights, detached personal evacuation away from original home and nationwide road travel, general NPC front caravan, escort or robbery. GUI/full3144 NOT_RUN."
+}
