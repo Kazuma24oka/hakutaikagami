@@ -1985,3 +1985,9 @@ Tests/FieldConvoyTests.cs -text
 Scripts/verify_freight_operations.py -text
 Docs/Design/FreightOperationsV1/** -text
 Game/Scripts/NewGameRuntime.CampSupply.cs -text
+
+Core/Contracts/ArmyRoadMarch.cs -text
+Tests/ArmyRoadTests.cs -text
+Game/Scripts/NewGameRuntime.ArmyRoad.cs -text
+Scripts/verify_army_road.py -text
+Docs/Design/ArmyRoadV1/** -text

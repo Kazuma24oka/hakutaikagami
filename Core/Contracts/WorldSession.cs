@@ -60,8 +60,9 @@ public sealed partial class WorldSession
             {
                 if(FieldConvoy.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1))throw new InvalidDataException("Carrier is busy with camp supply");
                 if(NpcFreight.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1)&&intent.RoutePolicy!=NpcFreight.LandRoute)throw new InvalidDataException("Carrier is busy with entrusted freight");
+                if(ArmyRoadMarch.ControlsParty(state)&&intent.Executor==state.PlayerControl&&intent.Action==ActionKind.Move&&intent.RoutePolicy!=ArmyRoadMarch.LandRoute)throw new InvalidDataException("Lead the held army through its march action");
                 if(intent.Executor==state.PlayerControl&&(FieldPresence.PlayerDeployed(state)||NewGameMilitary.Deployed(state)))throw new InvalidDataException("Return to the site before road travel");
-                if(NewGameWork.OwnIdUsed(state,intent.RequestId))return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"別の操作で使用したIDです");ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
+                if(NewGameWork.OwnIdUsed(state,intent.RequestId)&&!ArmyRoadMarch.RegisteredPending(state,intent))return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"別の操作で使用したIDです");ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
                 if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
                 if(FieldWorld.Enabled(state)&&state.Field!.Orders.Length>0&&Enumerable.Range(0,3).Any(i=>FieldWorld.Sample(state,i,state.ElapsedSeconds).Moving))throw new InvalidDataException("Local force still moving");
                 if(BranchRoutes.Enabled(state))BranchRoutes.ValidateOrder(state,intent);
@@ -152,7 +153,7 @@ public sealed partial class WorldSession
                 int cost=1+TruceNegotiations.BoundaryCost(state)+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);

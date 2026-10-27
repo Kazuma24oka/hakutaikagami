@@ -1,0 +1,8 @@
+using Godot;
+using System;
+using HakutaiKagami.Core.Contracts;
+public partial class NewGameRuntime
+{
+    bool TryArmyDeparture(){if(Session.ArmyRoadView()==null)return false;StartPreparedCapture(Session.CaptureArmyRoad(new(new("request:army-road-ui/"+Session.Revision),ArmyRoadAction.March,RegionalCampaign.Site(NationalRoutes.Nodes[destination.Selected].Id)),Session.Revision,true),"部隊の行軍",false);return true;}
+    void ShowArmyRice(){var v=Session.ArmyRoadView();if(v==null)return;long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var box=new VBoxContainer{CustomMinimumSize=new(460,0)};popup.AddChild(box);box.AddChild(new Label{Text=$"行軍用の携行米 {v.CarryKg}kg / 私財 {v.PrivateMoney}文"});box.AddChild(new Label{Text=v.Scope,AutowrapMode=TextServer.AutowrapMode.WordSmart});if(v.LocalRicePrice is {} price){box.AddChild(new Label{Text=$"この市場の自由米 {v.LocalFreeRice}kg / 1kg {price}文"});var kg=new SpinBox{MinValue=1,MaxValue=Math.Max(1,Math.Min(120,v.LocalFreeRice)),Step=1,Value=1,Suffix=" kg"};box.AddChild(kg);var buy=new Button{Text="私財で米を購入し部隊へ積む"};box.AddChild(buy);buy.Pressed+=()=>{popup.Hide();try{StartPreparedCapture(Session.CaptureArmyRoad(new(new("request:army-rice-ui/"+shown),ArmyRoadAction.BuyRice,RiceKg:(long)kg.Value),shown),"兵糧の現地購入",true);}catch(InvalidOperationException){message.Text="状況が変わりました。一時停止して兵糧購入を開き直してください。";Refresh();}};}else box.AddChild(new Label{Text="集合している市場で購入できます。"});var close=new Button{Text="地図へ戻る"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(500,300));}
+}

@@ -222,7 +222,10 @@ public static partial class RegionalCampaign
     public static RoutePoint RoadActorPointAt(ContractWorld w,EntityId actor,long at)
     {
         if(FieldConvoy.PositionAt(w,actor,at,w.CommitSequence+1) is {} convoyPoint)return FieldWorld.ToWorld(convoyPoint);
-        var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor,w):"castle");
+        var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor,w):"castle");return JourneyPointAt(w,j,at);
+    }
+    internal static RoutePoint JourneyPointAt(ContractWorld w,BranchJourney j,long at)
+    {
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
         var progress=Math.Clamp((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
         return new(a.EastMm+(b.EastMm-a.EastMm)*progress/edge.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*progress/edge.LengthMm);
