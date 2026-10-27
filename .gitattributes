@@ -1962,3 +1962,8 @@ Game/Scripts/NewGameRuntime.Treasury.cs -text
 
 Scripts/verify_regional_domains.py -text
 Docs/Design/RegionalDomainsV1/* -text
+
+Game/Scripts/NewGameRuntime.HouseFreight.cs -text
+
+Scripts/verify_house_logistics.py -text
+Docs/Design/HouseLogisticsV1/* -text

@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Local head and carrier agree explicit home/source/commodity/quantity/advance/30day scope, using house funds and shared monthly budget, never private money or undisclosed remote stock",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Actual carrier travel to source, local stock and live price check, separate entrusted cash/cargo, shared100kg capacity and no private resale or teleport delivery",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Actual home return and local head or explicitly scoped present proxy receipt transfer goods and unused advance to the original house exactly once, with immutable receiver evidence and merchant/house/cargo/private conservation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Carrier withdrawal, expiry, absence and lost authority prevent new buying while retaining entrusted cash/cargo and return obligations; physical proxy revocation blocks proxy receipt, with stale/repeated/forged inputs atomic",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Explicit v10 normal entry and bounded local UI, legacy v9 bytes, real generation recovery/future equality across dispatch/travel/purchase/withdrawal/receipt, Game build and headless Node3D; no GUI acceptance claim",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Actual proxy receipt tested with principal present; actual principal departure tests receiver eligibility and no carrier teleport. No claim that an absent-NPC-principal end-to-end transaction or GUI was exercised."
+}

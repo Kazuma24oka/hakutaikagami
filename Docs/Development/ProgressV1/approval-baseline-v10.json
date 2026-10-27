@@ -1,0 +1,342 @@
+{
+  "schema": 10,
+  "base_main": "8bfb9999d429f5a85ab3fed520b7e7ec73bb8799",
+  "base_code_head": "e94c1cfdb186ba66bb8a49ff5be4cff0e2f0853a",
+  "minimum_gain": 1,
+  "domains": [
+    {
+      "id": "life",
+      "title": "武将の人生と人のつながり",
+      "weight": 20,
+      "groups": [
+        "G02",
+        "G03",
+        "G04"
+      ],
+      "scope": "開始から身分・成長・主従・配下・継承まで、一人の人生を遊ぶ。"
+    },
+    {
+      "id": "economy",
+      "title": "領地の暮らしと地域社会",
+      "weight": 15,
+      "groups": [
+        "G09",
+        "G13"
+      ],
+      "scope": "生産・財政・交易と、村落・国人・寺社との関わりを動かす。"
+    },
+    {
+      "id": "conflict",
+      "title": "軍勢と支配の変動",
+      "weight": 15,
+      "groups": [
+        "G10",
+        "G12"
+      ],
+      "scope": "軍事行動、城の支配、独立や家督による勢力の変化をつなぐ。"
+    },
+    {
+      "id": "politics",
+      "title": "情報・交渉と政治",
+      "weight": 20,
+      "groups": [
+        "G07",
+        "G11",
+        "G14"
+      ],
+      "scope": "情報収集、外交・婚姻・人質、中央政治を通じて他者へ働きかける。"
+    },
+    {
+      "id": "world",
+      "title": "全国の世界と歴史",
+      "weight": 15,
+      "groups": [
+        "G01",
+        "G05"
+      ],
+      "scope": "全国地理・史実配置・開始条件と、歴史と自由行動の共存を整える。"
+    },
+    {
+      "id": "foundation",
+      "title": "共通の行動・操作と世界の稼働",
+      "weight": 15,
+      "groups": [
+        "G06",
+        "G08",
+        "G15"
+      ],
+      "scope": "世界時間・任務・委任・NPC・画面・外見を、製品全体で使える形にする。"
+    }
+  ],
+  "excluded_from_rollup": [
+    "BD-01",
+    "BD-60"
+  ],
+  "baseline_leaves": {
+    "BD-01": {
+      "percent": 20,
+      "basis": "全体接続の参照値です。全体を二重に加点しないため集計対象外。"
+    },
+    "BD-02": {
+      "percent": 10,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-03": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-04": {
+      "percent": 10,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-05": {
+      "percent": 60,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-06": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-07": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-08": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-09": {
+      "percent": 45,
+      "basis": "既存プレイヤーの仕官/辞去に加え、NPCの円満辞去を旧主通知/本人受領/結果認識と別加入まで実装。無断離反や全身分は未完。"
+    },
+    "BD-10": {
+      "percent": 35,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-11": {
+      "percent": 50,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-12": {
+      "percent": 50,
+      "basis": "直属関係を持つ相手と家の定期支給を合意し、本人の私有米/未払い/主従を分離。辞去後の旧債務も実手続きで確認。全国名簿/自律家臣運営は後続。"
+    },
+    "BD-13": {
+      "percent": 10,
+      "basis": "能力の入力はあるが、行動への反映と経験・技能成長はこれから。"
+    },
+    "BD-14": {
+      "percent": 20,
+      "basis": "NPC家臣から支給した家への限定的な履行信頼を、遅配/受領の履歴から算出して次の返答へ接続。PCの継続意思は強制せず、一般の性格/軍令への忠誠は未実装。"
+    },
+    "BD-15": {
+      "percent": 15,
+      "basis": "仕事上の縁は接続済み。感情・敵意・派閥・政治的な働きかけはこれから。"
+    },
+    "BD-16": {
+      "percent": 10,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-17": {
+      "percent": 65,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-18": {
+      "percent": 60,
+      "basis": "既存30拠点に試作人口/労働/季節収穫/不足/工房の地域台帳を適用。村落・商人・家を別IDで保持し、所有者未設定から領主や家財を生成しない。 全城/村と実在期間・所領境界/権益、史料人口/産地の採録、支配変動との連動。"
+    },
+    "BD-19": {
+      "percent": 65,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-20": {
+      "percent": 15,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-21": {
+      "percent": 35,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-22": {
+      "percent": 35,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-23": {
+      "percent": 65,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-24": {
+      "percent": 40,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-25": {
+      "percent": 65,
+      "basis": "代理官の観測日付き報告へ家の金銭・物資・予算を追加。現地観測を物理配送・開封後のみ提示し、再送も同じ古い値を保持。 一般の偵察網/風聞/改竄検知、全国情報の鮮度評価と訂正。"
+    },
+    "BD-26": {
+      "percent": 25,
+      "basis": "古い情報と現在の真実を分離し、私的な情報提供でも観測日を保つ。支払実績は当事者の次回条件に限る。虚報/訂正/一般信用は後続。"
+    },
+    "BD-27": {
+      "percent": 50,
+      "basis": "既存の期限/返報先つき行政委任に、家の資金による月200文の現地調達を新規v9だけ明示追加。予算変更は当主のみ、取消は到達後に効き認識は別。 主君宛の一般書状の代理受領/代理開封、代理外交や管轄別決裁の一般化。"
+    },
+    "BD-28": {
+      "percent": 40,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-29": {
+      "percent": 40,
+      "basis": "点検・運搬・軍務の限定的な一巡まで。任務全種別と正式評価の完成度ではない。"
+    },
+    "BD-30": {
+      "percent": 45,
+      "basis": "当主と直属家臣が現地で行政の範囲/期限/返報先を合意。代理官の処分枠、PC手動/NPC自律と物理報告、取消/期限終了を接続。 軍事/外交/複数階層の委任、再委任と案件別の裁量/逸脱評価の一般化。"
+    },
+    "BD-31": {
+      "percent": 45,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-32": {
+      "percent": 10,
+      "basis": "受領確認や次依頼への反映まで。責任審査・処分・政治的昇進はこれから。"
+    },
+    "BD-33": {
+      "percent": 90,
+      "basis": "3地域で確認した人口/収穫/不足/労働/木材武具生産を30拠点へ共通契約で展開。個別拠点の月次原本と現物収支を保存復旧する。 全国の全村落・史実人口/気候/産地、労働動員と戦時供給、本格的な普請と生産連鎖。"
+    },
+    "BD-34": {
+      "percent": 80,
+      "basis": "家の現地資金・月次調達予算・任意の私財拠出を分離。現地当主/明示代理官が実在庫を受け取り商人へ支払い、私財や旧給付債務を混ぜない。 徴税の金銭化・全国の俸禄/知行、家督/死亡時の債務承継、複数地域を束ねた本格所領財政。"
+    },
+    "BD-35": {
+      "percent": 80,
+      "basis": "個人運搬の既存契約に加え、権限ある家の現地即時調達を見積・受領・支払の別証拠で原子的に記録。長距離輸送へ瞬間移送を混ぜない。 家の長距離発注/運送・混載、軍馬/弾薬、保証/担保/履行不能の再交渉と商人専業。"
+    },
+    "BD-36": {
+      "percent": 85,
+      "basis": "家の資金/全体月予算/代理官月200文/本人私財/商人自由在庫/保護引当を別に検査。予算減額は過去の購入を消さず、資金不足やID衝突は原子的に拒否。 戦時転用・補償・同順位按分・広域予算配賦、消耗/損壊や荷重減速。"
+    },
+    "BD-37": {
+      "percent": 30,
+      "basis": "固定3部隊の貸与と主家別台帳まで。動員・兵種・編成変更・全国収支はこれから。"
+    },
+    "BD-38": {
+      "percent": 40,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-39": {
+      "percent": 20,
+      "basis": "実在NPC軍/受領交戦任務/自衛からの実損害、消費、撤退/帰還/返報までCore確認。復旧と3D座標データは一致。通常開始の有効化、実画面/全野戦/攻城は未完成。"
+    },
+    "BD-40": {
+      "percent": 25,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-41": {
+      "percent": 20,
+      "basis": "当主間の不戦期間で版/対案/同一版承諾/物理到達/成立と本人認識を通常入口に接続。一般条項/代理決裁/内応は後続。 個人の精算済み接触から本人だけの新規出撃見合わせへ接続。一般の内応や所属移転ではない。"
+    },
+    "BD-42": {
+      "percent": 10,
+      "basis": "認識した不戦義務を自家の撤回/新規出撃/有効な攻撃根拠へ反映。破棄・違約・信用・仲裁と一般同盟は未接続。"
+    },
+    "BD-43": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-44": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-45": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-46": {
+      "percent": 10,
+      "basis": "開始時の新勢力配置はあるが、ゲーム中の内応交渉・離反・独立は未接続。"
+    },
+    "BD-47": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-48": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-49": {
+      "percent": 50,
+      "basis": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。 代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。"
+    },
+    "BD-50": {
+      "percent": 20,
+      "basis": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。 国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。"
+    },
+    "BD-51": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-52": {
+      "percent": 55,
+      "basis": "固定Seedの不足と救済に、村との期限付き約束/部分履行/不信/次の返答、NPC現地救済を接続。 全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。"
+    },
+    "BD-53": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-54": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-55": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-56": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-57": {
+      "percent": 35,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-58": {
+      "percent": 70,
+      "basis": "全国台帳を共通の月次生産へ接続し、現地NPC当主/明示代理官が不足米→工事木材の順で実資金と予算内調達。不在・期限切れ・物理取消後は処分しない。 長距離の家の調達輸送、商人の移動、戦時動員/供給との優先順位、遠方簡略の同値性と全国の総合活動AI。"
+    },
+    "BD-59": {
+      "percent": 20,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-60": {
+      "percent": 0,
+      "basis": "基本設計の採用は完了。ここでの0%は製品範囲の受入完了をまだ認定していないことを表す管理上の参照値で、概算の全体集計には入れない。"
+    }
+  },
+  "baseline_raw_total": 30.561011904761905,
+  "reassessment_delta_excluded": 0,
+  "targets": {
+    "BD-21": 45,
+    "BD-22": 45,
+    "BD-29": 50,
+    "BD-30": 60,
+    "BD-31": 55,
+    "BD-34": 85,
+    "BD-35": 85,
+    "BD-36": 90,
+    "BD-25": 70,
+    "BD-27": 60
+  },
+  "criteria": [
+    "Local head and carrier agree explicit home/source/commodity/quantity/advance/30day scope, using house funds and shared monthly budget, never private money or undisclosed remote stock",
+    "Actual carrier travel to source, local stock and live price check, separate entrusted cash/cargo, shared100kg capacity and no private resale or teleport delivery",
+    "Actual home return and local head or explicitly scoped present proxy receipt transfer goods and unused advance to the original house exactly once, with immutable receiver evidence and merchant/house/cargo/private conservation",
+    "Carrier withdrawal, expiry, absence and lost authority prevent new buying while retaining entrusted cash/cargo and return obligations; physical proxy revocation blocks proxy receipt, with stale/repeated/forged inputs atomic",
+    "Explicit v10 normal entry and bounded local UI, legacy v9 bytes, real generation recovery/future equality across dispatch/travel/purchase/withdrawal/receipt, Game build and headless Node3D; no GUI acceptance claim"
+  ],
+  "target_meaning": "House-funded physical procurement carried by the player as head or direct retainer under a bounded local agreement. Not remote shopping, automated NPC caravans, private profit, generic principal remote cancellation or historic economics. Includes explicit v10 scoped proxy receipt of house cargo/unused cash and immutable dated receiving proof. No automatic NPC transport.",
+  "prior_baseline": "Docs/Development/ProgressV1/approval-baseline-v9.json",
+  "prior_baseline_commit": "5478a5d6644f1a2037d38a266ccb1d91b24acfd2",
+  "extension_meaning": "Extend the same physical procurement loop through locally authorized proxy receipt when the principal is absent. The old five criteria and targets remain preserved in v9; head receipt stays supported. No reassessment credit, weights or denominator change."
+}

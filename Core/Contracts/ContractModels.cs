@@ -112,6 +112,8 @@ public sealed class ContractWorld
     public MaterialState? Materials {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public DomainState? Domains {get;set;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public HouseFreightState? HouseFreight {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RegionalTradeState? Trade {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
