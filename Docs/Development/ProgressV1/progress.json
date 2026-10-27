@@ -17,8 +17,8 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "16098ef6a6360ba871d92c5f09420de9380bcbd4f89b139bf195b54c36433e87",
-    "Docs/Development/ProgressV1/estimate.json": "99af98a5ead44ae5aff006417504930686e2a1ca0ba7e2e6255afc39ebbc2282",
+    "Docs/Development/OPERATING_POLICY.md": "62ff5245121bea3373c875b2ac226bbb96cb55bd9fc7b87a07c4adbba5a4ef29",
+    "Docs/Development/ProgressV1/estimate.json": "d72eb163d38088e328ccbb6ce6ae9fde9ae32e4f839dc96a6637af68317da6b2",
     "Scripts/build_progress_report.py": "45053370d877087d0a54a5b2aa25d3f3aa89bf6191e9a14ea1d17e3c73a3ac12",
     "Scripts/check_progress_report.py": "3aedc43e26f7e3f9ef51fbc1220ab38fd61a027e2ce2ba927d29172ff0c658bb",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -31,7 +31,8 @@
     "Docs/Development/ProgressV1/approval-baseline-v2.json": "ea21effa4e4e8c785202abd2091942da42e416f2305011629f2a1c72fda0de6b",
     "Docs/Development/TradeStageV1.md": "3bc2c6949ea50f0b8ecdcb86aedcc80d92d4b67398dd400315dbfdfc94ebee0f",
     "Docs/Design/RegionalTradeV1/README.md": "e63fff7647694fcd4a71371daae8f578bebc25b1937ecf275c2697a40d933cdf",
-    "Docs/Design/RegionalTradeV1/completion.json": "155052482470cdf6edd4323246aa60b2afb2763ced3868e16844a8e9f0432c5b"
+    "Docs/Design/RegionalTradeV1/completion.json": "155052482470cdf6edd4323246aa60b2afb2763ced3868e16844a8e9f0432c5b",
+    "Docs/Design/RegionalTradeV1/integration.json": "674479ba0ae2ee4652deaa6d08cd5abcc476ff24b95199e00ac48999e4bcc61c"
   },
   "items": [
     {
@@ -1578,7 +1579,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "3地域の米売買を現地見積→合意/引当→代金支払と受取→既存道路移動→現地の買取見積→納入→代金債務→精算へ接続。未受取の取消/期限で引当解放、携行後は現物を保持し元の地域で再売却可能。本人の私有米は権限のある現地操作だけ家の蔵へ供給。新規25/関連730件・Gameビルド成功、引当中/運搬中/納入後/精算後/供給後の実世代復旧と将来世界一致。画面なしGodot28組56世界120Node3D一致。外観/UI操作・全2766件は未実施。",
+    "current_stage_summary": "3地域の米売買を現地見積→合意/引当→代金支払と受取→既存道路移動→現地の買取見積→納入→代金債務→精算へ接続。未受取の取消/期限で引当解放、携行後は現物を保持し元の地域で再売却可能。本人の私有米は権限のある現地操作だけ家の蔵へ供給。新規25/関連730件・Gameビルド成功、引当中/運搬中/納入後/精算後/供給後の実世代復旧と将来世界一致。画面なしGodot28組56世界120Node3D一致。外観/UI操作・全2766件は未実施。 PR #15を2026-10-27にコードと資料のみmainへ統合、承認headとツリー一致。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1600,7 +1601,7 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/CommunityEconomyV2/integration.json",
+    "integration": "Docs/Design/RegionalTradeV1/integration.json",
     "current_logic_verification": "Docs/Design/RegionalTradeV1/verification.json",
     "current_logic_verification_sha256": "f0e171c5fec9de2008db6657f784885ac90f279511e16dd0f5401e8c349d70f6",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",

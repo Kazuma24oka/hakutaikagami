@@ -322,7 +322,7 @@
   },
   "focus": {
     "leaf": "BD-35",
-    "status": "米一商品の3地域売買を5/5確認。main統合のみ個別承認。",
+    "status": "5/5完了・PR #15 main統合済み。次は家の収支と待遇の完成条件を実装前に固定。",
     "title": "現地売買・現物移送・納入後債務・精算の一巡",
     "exit": [
       "Local dated rice quotes and protected goods/coin reservations; no remote current-market disclosure",
@@ -490,6 +490,7 @@
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
-    "criteria_total": 5
+    "criteria_total": 5,
+    "integrated_main": "40a57287bee27d0ece551e8ef2574b6ce15da9de"
   }
 }
