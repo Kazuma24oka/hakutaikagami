@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "2d996237093be41a4909c126b6f077ea3982baeb6aba7dc24c9eddd3a534ebda",
-    "Docs/Development/ProgressV1/estimate.json": "30276cbb36bc5715621047456a508672d0e57b6ca84151ee0f71c8f677c3964d",
+    "Docs/Development/OPERATING_POLICY.md": "ea77da8bca5b1e6af6cc5bfead87d0b9fd5db8db91a6b50a1f5ef61e8642689c",
+    "Docs/Development/ProgressV1/estimate.json": "123c6d6c297d6a1e7e07e9120f6a7504c5aee28f675449528cb1a29ed512310b",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "0f24c84de8e6dc4fb2b240ecf26cb7c5abe540754129f57430cd41dd8d89d210",
+    "Scripts/check_progress_report.py": "43a1e8ad4535132e2c4285df10cdb8d64bbc18ec1f9b0dc5c7bef60164631761",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "775b2877deb5241f049be53de84913afc37a7003c5d13f98d746d82b566fd01c",
+    "Scripts/check_approval_batch.py": "64cd9d2cca346b9b911c98d91b8e184bf80c4f23748d70b5c92e6b5831121032",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -56,7 +56,13 @@
     "Docs/Design/RegionalDomainsV1/README.md": "f91d0e71161326e042d3a2f9d683ee48c250043b368202e402c406eef5933b9f",
     "Docs/Design/RegionalDomainsV1/integration.json": "7c4ac2a94f8cd427b4a360ea46cfdc47d9c2351a4721781ba3d3cc259ed67706",
     "Docs/Development/ProgressV1/approval-baseline-v8.json": "fe207278f5a71615712441504052632db168dd595edb3d6901b32748cc808fd3",
-    "Scripts/verify_regional_domains.py": "202cf8bb956c64c7080eaee8723b1b79fc05bd91bb34214b65717869838b6790"
+    "Scripts/verify_regional_domains.py": "202cf8bb956c64c7080eaee8723b1b79fc05bd91bb34214b65717869838b6790",
+    "Docs/Design/HouseLogisticsV1/completion.json": "df03ce7ce33a5ee8e199ef0dc7f6045e9113a4e5ba8548ab1b546f636221eec1",
+    "Docs/Design/HouseLogisticsV1/README.md": "00112918be38e9f0c7dae0da92e48beaa68fd017cfe6d18f937fc9d5499b6a1a",
+    "Docs/Design/HouseLogisticsV1/integration.json": "931e0e020c6602c308412c5cf9a8de51abdf574fc205e8f57d1516783231fb72",
+    "Docs/Development/ProgressV1/approval-baseline-v9.json": "b649684875dd5c87f24aaf4b1646d2abaa0e6ba23f2345cce0ba97a97a382aaa",
+    "Docs/Development/ProgressV1/approval-baseline-v10.json": "f6d3e02fc1de8a2f9dcf32d390f1b77e8a29f81118e1292c59ee08a54548a04e",
+    "Scripts/verify_house_logistics.py": "0e695ebcb59b30733056abf1a9400d300084c35aa219413d75a03d1356c4035c"
   },
   "items": [
     {
@@ -388,9 +394,15 @@
     {
       "id": "BD-21",
       "status": "normal",
-      "existing": "共通の拘束/実行状態と、移動・点検・本人と部隊の別行動を扱う。",
-      "remaining": "面会・療養・修行・普請等を増やし、併用表を全主行動/委任先へ適用する。",
+      "existing": "家の物理仕入れ中は個人取引と100kg携行枠を共有し、二つの運搬契約の二重利用を拒否。地図での既存移動と預り荷の保有を併用。",
+      "remaining": "全行動の併用表、軍務中の全携行/同行者負担、同時刻の一般競合解決。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/WorldSession.cs",
         "Core/Contracts/NewGameMilitary.Withdrawal.cs",
         "Tests/CommonContractTests.cs"
@@ -401,9 +413,15 @@
     {
       "id": "BD-22",
       "status": "normal",
-      "existing": "道中の変更待ち/取消、港待機、軍令取消と実際の停止を分ける。",
-      "remaining": "生産/普請の部分完成や担当交代、資材返還失敗/補償待ちを通常ゲームへ接続する。",
+      "existing": "家の仕入れを道中で返上しても預り金と現物を保持し、期限切れ後も元の拠点への返却義務を残す。道中/復路/返上/精算の実復旧と将来一致。",
+      "remaining": "一般任務の引継ぎと代替運搬人、捕縛/死亡/荷の損失、全機能の中断再開。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/TravelControl.cs",
         "Core/Contracts/NewGameMilitary.UnitDirective.cs",
         "Tests/DeadlineCancellationTests.cs",
@@ -446,9 +464,15 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "代理官の観測日付き報告へ家の金銭・物資・予算を追加。現地観測を物理配送・開封後のみ提示し、再送も同じ古い値を保持。",
-      "remaining": "一般の偵察網/風聞/改竄検知、全国情報の鮮度評価と訂正。",
+      "existing": "帰還受領に受領者・権限原本・日時・現物・余金の固定証拠を追加。現在の代理官への書換えや、遠隔の現在在庫/価格を表示しない。",
+      "remaining": "一般の偵察/風聞/訂正、全国情報の鮮度評価、家の全会計報告の統合。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/RegionalDomains.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/RegionalDomainTests.cs",
@@ -489,9 +513,15 @@
     {
       "id": "BD-27",
       "status": "normal",
-      "existing": "既存の期限/返報先つき行政委任に、家の資金による月200文の現地調達を新規v9だけ明示追加。予算変更は当主のみ、取消は到達後に効き認識は別。",
-      "remaining": "主君宛の一般書状の代理受領/代理開封、代理外交や管轄別決裁の一般化。",
+      "existing": "新規v11の合意済み現地代理官が家の仕入荷と未使用前渡金を受領でき、物理取消/期限/不在を検査。受領証はその時の本人と委任原本を固定。",
+      "remaining": "一般書状の代理開封/外交決裁、組織的な倉庫番・代理の再委任。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/RegionalDomains.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/RegionalDomainTests.cs",
@@ -524,9 +554,15 @@
     {
       "id": "BD-29",
       "status": "normal",
-      "existing": "命令と任意依頼・同意・期限・実行・返報・受領・点検報酬がつながる。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
-      "remaining": "運搬/普請/政治など任務種別を増やし、部分達成と正式な評価まで接続する。",
+      "existing": "家の仕入先/品目/数量/前渡金/30日の現地合意→実移動→現地買付→帰還受領/余金返却を一巡。完了証拠は実受領で一度だけ成立。",
+      "remaining": "全任務種別への統合、報酬/評価の一般化、長期任務の交代と同時受任。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/NewGameWork.cs",
         "Core/Contracts/LocalWorkDemand.cs",
         "Game/Scripts/NewGameRuntime.WorkCycle.cs",
@@ -567,9 +603,15 @@
     {
       "id": "BD-30",
       "status": "normal",
-      "existing": "当主と直属家臣が現地で行政の範囲/期限/返報先を合意。代理官の処分枠、PC手動/NPC自律と物理報告、取消/期限終了を接続。",
-      "remaining": "軍事/外交/複数階層の委任、再委任と案件別の裁量/逸脱評価の一般化。",
+      "existing": "仕入れ固有の前渡金と裁量範囲を固定し、一般の家財処分権は渡さない。新規v11の限定行政委任に現地の荷/余金受領を明示追加し、実効権限を再検査。",
+      "remaining": "一般の委任政策・複数階層監督、輸送人の再委任、広域NPC運搬と逸脱評価。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
         "Game/Scripts/NewGameRuntime.Stewardship.cs",
@@ -586,9 +628,15 @@
     {
       "id": "BD-31",
       "status": "normal",
-      "existing": "期限・取消原本・保持・遅着・再送・隊別の一度だけの効力を扱う。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。",
-      "remaining": "一般任務の担当交代/緊急判断まで同じ契約で接続し、全種別を統合検査する。",
+      "existing": "本人の道中返上・30日超過・実辞去後は新規買付を拒否して現物/預り金を保全。代理官への取消は物理到達後に受領権限を止め、発送/認識とは分離。",
+      "remaining": "仕入れ依頼自体の遠隔取消配送と変更交渉、緊急転用/代替受渡先、全命令の競合一般化。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/NewGameMilitary.UnitDirectiveCancelHolding.cs",
         "Core/Contracts/NewGameMilitary.UnitDirectiveCancelRetry.cs",
         "Tests/UnitDirectiveCancelHoldingTests.cs",
@@ -664,9 +712,15 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "家の現地資金・月次調達予算・任意の私財拠出を分離。現地当主/明示代理官が実在庫を受け取り商人へ支払い、私財や旧給付債務を混ぜない。",
-      "remaining": "徴税の金銭化・全国の俸禄/知行、家督/死亡時の債務承継、複数地域を束ねた本格所領財政。",
+      "existing": "家の金→本人が保管する預り金→商人への実支払→余金の家への返却を別に記録。私財へ混ぜず、辞去しても預り義務を消さない。",
+      "remaining": "現金給与・知行/家督財政・広域金庫と債務承継、一般の会計制度。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/RegionalDomains.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/RegionalDomainTests.cs",
@@ -691,9 +745,15 @@
     {
       "id": "BD-35",
       "status": "normal",
-      "existing": "個人運搬の既存契約に加え、権限ある家の現地即時調達を見積・受領・支払の別証拠で原子的に記録。長距離輸送へ瞬間移送を混ぜない。",
-      "remaining": "家の長距離発注/運送・混載、軍馬/弾薬、保証/担保/履行不能の再交渉と商人専業。",
+      "existing": "家の資金による遠隔仕入れを、遠隔の現在在庫を漏らさず現地買付と実運搬で接続。元の家への現物/余金精算と代理受領を保存復旧する。",
+      "remaining": "NPC隊商の自動運搬、複数輸送人/混載、信用買い・保証・担保、軍馬/弾薬と輸送事故。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/RegionalDomains.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/RegionalDomainTests.cs",
@@ -734,9 +794,15 @@
     {
       "id": "BD-36",
       "status": "normal",
-      "existing": "家の資金/全体月予算/代理官月200文/本人私財/商人自由在庫/保護引当を別に検査。予算減額は過去の購入を消さず、資金不足やID衝突は原子的に拒否。",
-      "remaining": "戦時転用・補償・同順位按分・広域予算配賦、消耗/損壊や荷重減速。",
+      "existing": "前渡金は家の現金と月予算を占有し、精算で未使用分だけ返す。個人取引/家の現地購入との資金・携行枠の二重利用を拒否し、予算減額でも旧預り金を消さない。",
+      "remaining": "広域の同順位配分、戦時転用と補償、荷重減速/破損/喪失、全資源の配分統合。",
       "evidence": [
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseLogisticsTests.cs",
+        "Tests/HouseFreightReceivingTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/HouseLogisticsV1/verification.json",
         "Core/Contracts/RegionalDomains.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/RegionalDomainTests.cs",
@@ -1716,12 +1782,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 918,
+      "passed": 972,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/RegionalDomainsV1/runtime-local/tests/regional-domains-current.trx",
-      "sha256": "42752168484f9f76dcf1c3df36d1e99057fd21ef936fad688e20f8ff4bba8302",
-      "scope": "Current related918 only,45 new; full2954/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/HouseLogisticsV1/runtime-local/tests/house-logistics-current.trx",
+      "sha256": "4fac7f1ec5ff041dee141fc7f4eb8cefe6b4e727865d56b060e34b76103e9d46",
+      "scope": "Current related972 only,54 new; full3008/GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1733,14 +1799,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 918,
+      "passed": 972,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/RegionalDomainsV1/runtime-local/tests/regional-domains-current.trx",
-      "sha256": "42752168484f9f76dcf1c3df36d1e99057fd21ef936fad688e20f8ff4bba8302",
-      "scope": "Current related918 only,45 new; full2954/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/HouseLogisticsV1/runtime-local/tests/house-logistics-current.trx",
+      "sha256": "4fac7f1ec5ff041dee141fc7f4eb8cefe6b4e727865d56b060e34b76103e9d46",
+      "scope": "Current related972 only,54 new; full3008/GUI NOT_RUN; historical full2446 separate."
     },
-    "current_stage_summary": "PR19を承認head fd494dfと同じtreeでmain101761dへ統合後、全国30拠点へ試作人口・食料・季節収穫・労働・工房を展開。未設定の領主や処分権は生成せず、未知所有地の家財は0。家の資金/本人私財/商人資金を分け、当主の現地予算設定・私財拠出、米/木材/武具の現地見積・受領・実支払を接続。NPC当主/期限付き代理官は、在庫引当・実資金・家全体予算/代理月200文の範囲で食糧不足と工事木材を調達。本人を自動操作しない。封書は観測時点の資金・物資・予算を保持し、到達/開封前は秘匿。新規45/関連918件、Gameビルド、6段階実世代復旧と将来一致、画面なしGodot56組112世界176Node3D成功。外観/UI操作・全2954件は未実施。",
+    "current_stage_summary": "PR20を承認head e94c1cfと同じtreeでmain8bfb999へ統合後、家の資金による物理仕入れ・運搬・帰還精算を実装。現地で当主と本人が仕入先/品目/数量/前渡金/30日を合意し、家の金を私財と別の預り金へ移す。本人が既存経路で到着して実在庫/価格で購入、現物と余金を元の家へ帰還受渡し。個人取引と100kg携行枠/家全体月予算を共有し、二重使用を拒否。道中返上・期限切れ・実辞去後も預り金/荷/返却義務を保持。新規v11は明示合意した現地代理官の受領と、受領者/権限原本/日時/現物/余金の不変証拠を追加。取消は物理到達後に効く。旧v9/v10保存を保持。新規54/関連972件、Gameビルド、9段階実世代復旧と将来一致、画面なしGodot65組130世界194Node3D成功。外観/UI操作・全3008件は未実施。当主不在は受領者の権限判定と運搬者の遠隔納入拒否を実移動で検査し、代理受領の実取引は当主在席で検査した。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1762,9 +1828,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/RegionalDomainsV1/integration.json",
-    "current_logic_verification": "Docs/Design/RegionalDomainsV1/verification.json",
-    "current_logic_verification_sha256": "cd0f368f62812aa7f40560c7bedec245638f1c90c2e663cdf509447c3a0eab6c",
+    "integration": "Docs/Design/HouseLogisticsV1/integration.json",
+    "current_logic_verification": "Docs/Design/HouseLogisticsV1/verification.json",
+    "current_logic_verification_sha256": "a09cc0a34fade6da53cb441c698facb5a187002ca360e5bf3a5992e284f135cc",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1773,7 +1839,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連918件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連972件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1829,8 +1895,8 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "家の長距離発注・物資運搬と現地受領を接続",
-    "平時の労働と戦時の動員/供給を接続",
+    "平時の労働と戦時の動員・兵糧供給を接続",
+    "NPCの家の物資輸送と再委任を接続",
     "身分別に継続して遊べる一巡を調整",
     "全城/村と史実データを段階的に拡充",
     "正式素材・画面・性能と製品受入"

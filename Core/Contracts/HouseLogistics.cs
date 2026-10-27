@@ -1,0 +1,68 @@
+namespace HakutaiKagami.Core.Contracts;
+public enum HouseFreightAction { Dispatch,Buy,Withdraw,Receive }
+public enum HouseFreightPhase { Outbound,Carrying,ReturnRequired,Completed,Returned }
+public sealed record HouseFreightInput(EntityId Id,HouseFreightAction Action,EntityId? Job=null,EntityId? Home=null,EntityId? Source=null,string? Commodity=null,long Quantity=0,long Advance=0) { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Receiver {get;init;} }
+public sealed record HouseFreightTerms(EntityId Id,EntityId Carrier,EntityId Principal,EntityId Owner,EntityId Home,EntityId Source,string? Commodity,long Quantity,long Advance,long At,long Until,long Revision);
+public sealed record HouseFreightEntry(HouseFreightInput Input,EntityId Actor,long At,long Revision,HouseFreightTerms? Terms,long UnitPrice) { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public HouseFreightReceipt? Receipt {get;init;} }
+public sealed record HouseFreightJob(HouseFreightTerms Terms,HouseFreightPhase Phase,long Spent,long Cash,long Cargo,long? BoughtAt,long? ReceivedAt) { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public HouseFreightReceipt? Receipt {get;init;} }
+public sealed record HouseFreightState(int Schema,string Policy,HouseFreightEntry[] Entries);
+public sealed record HouseFreightView(EntityId? Home,long ApprovedAdvance,bool CanDispatch,HouseFreightJob[] Jobs,string Scope);
+public static class HouseLogistics
+{
+    public const string Policy="house-funded-physical-procurement-custody-return-v10";
+    const long Day=86400;
+    static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseFreightReceiving.Policy;
+    static bool Before(HouseFreightEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
+    static HouseFreightEntry[] Prefix(ContractWorld w,long at,long rev)=>w.HouseFreight?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
+    public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.HouseFreight?.Entries.Any(e=>e.Input.Id==id)==true;
+    public static bool Closed(HouseFreightJob j)=>j.Phase is HouseFreightPhase.Completed or HouseFreightPhase.Returned;
+    static Dictionary<EntityId,HouseFreightJob> Fold(IEnumerable<HouseFreightEntry> entries,long at)
+    {
+        var jobs=new Dictionary<EntityId,HouseFreightJob>();foreach(var e in entries){if(e.Input.Action==HouseFreightAction.Dispatch){var t=e.Terms!;jobs.Add(t.Id,new(t,HouseFreightPhase.Outbound,0,t.Advance,0,null,null));continue;}var j=jobs[e.Input.Job!.Value];switch(e.Input.Action){case HouseFreightAction.Buy:long cost=checked(e.UnitPrice*j.Terms.Quantity);j=j with{Phase=HouseFreightPhase.Carrying,Spent=cost,Cash=j.Cash-cost,Cargo=j.Terms.Quantity,BoughtAt=e.At};break;case HouseFreightAction.Withdraw:j=j with{Phase=HouseFreightPhase.ReturnRequired};break;case HouseFreightAction.Receive:j=j with{Phase=j.Cargo>0?HouseFreightPhase.Completed:HouseFreightPhase.Returned,Cash=0,Cargo=0,ReceivedAt=e.At,Receipt=e.Receipt};break;}jobs[j.Terms.Id]=j;}
+        foreach(var j in jobs.Values.ToArray())if(!Closed(j)&&at>j.Terms.Until)jobs[j.Terms.Id]=j with{Phase=HouseFreightPhase.ReturnRequired};return jobs;
+    }
+    static HouseFreightJob[] Jobs(ContractWorld w,long at,long rev)=>Fold(Prefix(w,at,rev),at).Values.ToArray();
+    internal static bool Active(ContractWorld w,long at,long rev)=>Enabled(w)&&Jobs(w,at,rev).Any(j=>!Closed(j));
+    internal static HouseFreightEntry[] Purchases(ContractWorld w,long at,long rev)=>Prefix(w,at,rev).Where(e=>e.Input.Action==HouseFreightAction.Buy).ToArray();
+    internal static HouseFreightTerms Terms(ContractWorld w,EntityId id)=>w.HouseFreight!.Entries.Single(e=>e.Input.Id==id&&e.Input.Action==HouseFreightAction.Dispatch).Terms!;
+    internal static long CashNet(ContractWorld w,EntityId site,long at,long rev)
+    {long n=0;foreach(var e in Prefix(w,at,rev)){if(e.Input.Action==HouseFreightAction.Dispatch&&e.Terms!.Home==site)n-=e.Terms.Advance;else if(e.Input.Action==HouseFreightAction.Receive){var t=Terms(w,e.Input.Job!.Value);if(t.Home==site){var buy=Purchases(w,e.At,e.Revision).SingleOrDefault(p=>p.Input.Job==t.Id);n+=t.Advance-(buy==null?0:checked(buy.UnitPrice*t.Quantity));}}}return n;}
+    internal static long Supplied(ContractWorld w,EntityId site,string? kind,long at,long rev)=>Prefix(w,at,rev).Where(e=>e.Input.Action==HouseFreightAction.Receive).Sum(e=>{var t=Terms(w,e.Input.Job!.Value);return t.Home==site&&t.Commodity==kind&&Purchases(w,e.At,e.Revision).Any(p=>p.Input.Job==t.Id)?t.Quantity:0;});
+    internal static (long At,long Revision,long Amount)[] Deliveries(ContractWorld w,EntityId site,long at,long rev)=>Prefix(w,at,rev).Where(e=>e.Input.Action==HouseFreightAction.Receive).Where(e=>{var t=Terms(w,e.Input.Job!.Value);return t.Home==site&&t.Commodity==null&&Purchases(w,e.At,e.Revision).Any(p=>p.Input.Job==t.Id);}).Select(e=>(e.At,e.Revision,Terms(w,e.Input.Job!.Value).Quantity)).ToArray();
+    internal static TreasuryEntry[] MarketPurchases(ContractWorld w,long at,long rev)=>Purchases(w,at,rev).Select(e=>{var t=Terms(w,e.Input.Job!.Value);var input=new TreasuryInput(e.Input.Id,TreasuryAction.Buy,t.Source,t.Commodity,t.Quantity);return new TreasuryEntry(input,e.Actor,e.At,e.Revision,null,null,new(new("payment:freight/"+e.Input.Id.Value.Replace(':','/')),e.Input.Id,t.Owner,new("org:market/"+t.Source.Value.Replace(':','/')),checked(e.UnitPrice*t.Quantity),e.At,e.Revision));}).ToArray();
+    internal static long Spent(ContractWorld w,long at,long rev)=>Purchases(w,at,rev).Sum(e=>checked(e.UnitPrice*Terms(w,e.Input.Job!.Value).Quantity));
+    internal static long BudgetUsed(ContractWorld w,EntityId actor,EntityId site,long at,long rev,bool personal)
+    {var date=DateOnly.Parse(w.EpochDate).AddDays((int)(at/Day));return Jobs(w,at,rev).Where(j=>j.Terms.Home==site&&(!personal||j.Terms.Carrier==actor)).Where(j=>{var d=DateOnly.Parse(w.EpochDate).AddDays((int)(j.Terms.At/Day));return d.Year==date.Year&&d.Month==date.Month;}).Sum(j=>Closed(j)?j.Spent:j.Terms.Advance);}
+    static bool Bound(ContractWorld w,EntityId actor,EntityId head,long at,long rev)=>actor==head||w.ServiceBonds.Any(b=>b.Subject==actor&&b.Target==head&&b.From<=at&&(at<b.Until||at==b.Until&&rev<b.Revision));
+    static bool House(ContractWorld w,EntityId home,EntityId owner,EntityId head,long at,long rev)=>RegionalDomains.Owner(w,home)==owner&&RegionalDomains.Head(w,home)==head&&FactionStances.ResolveAuthority(w,head,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==home&&r.Kind=="control"&&r.From<=at&&at<r.Until);
+    static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&TransportWork.At(w,actor,site,at,rev,stableCompletion:true);
+    static HouseFreightEntry Make(ContractWorld w,HouseFreightInput i,EntityId actor,long at,long rev,Dictionary<EntityId,HouseFreightJob> jobs)
+    {
+        Need((i.Receiver==null||HouseFreightReceiving.Enabled(w)&&i.Action==HouseFreightAction.Receive)&&Enabled(w)&&actor==w.PlayerControl&&Enum.IsDefined(i.Action),"本人の家の運搬操作ではありません");
+        if(i.Action==HouseFreightAction.Dispatch){Need(i.Job==null&&i.Home is {}&&i.Source is {}&&i.Home!=i.Source&&MaterialMarkets.Sites(w).Contains(i.Source.Value)&&MaterialMarkets.Supported(i.Commodity)&&i.Quantity>0&&i.Quantity<=100/MaterialMarkets.MassKg(i.Commodity)&&i.Advance>0&&i.Advance<=1000&&!jobs.Values.Any(j=>!Closed(j)),"仕入先・携行100kg・前渡金・未精算の依頼を確認してください");var home=i.Home!.Value;var head=RegionalDomains.Head(w,home);var owner=RegionalDomains.Owner(w,home);Need(head!=null&&owner!=null&&House(w,home,owner.Value,head.Value,at,rev)&&Bound(w,actor,head.Value,at,rev)&&Local(w,actor,home,at,rev)&&Local(w,head.Value,home,at,rev),"当主と本人が現地で条件に合意できません");Need(!RegionalTrade.SnapshotAt(w,at,rev).Deals.Any(d=>d.Phase is not(TradePhase.Settled or TradePhase.Cancelled or TradePhase.Expired or TradePhase.Supplied)),"個人取引の携行枠を先に精算してください");Need(i.Advance<=RegionalDomains.Cash(w,home,at,rev)&&i.Advance<=RegionalDomains.Remaining(w,actor,home,at,rev),"家の自由資金または月次調達枠が不足しています");return new(i,actor,at,rev,new(i.Id,actor,head.Value,owner.Value,home,i.Source!.Value,i.Commodity,i.Quantity,i.Advance,at,checked(at+30*Day),rev),0);}
+        Need(i.Job!=null&&jobs.TryGetValue(i.Job.Value,out var found)&&i.Home==null&&i.Source==null&&i.Commodity==null&&i.Quantity==0&&i.Advance==0,"同じ引受原本を指定してください");var j=jobs[i.Job!.Value];var t=j.Terms;Need(!Closed(j)&&t.Carrier==actor,"精算済みまたは本人の荷ではありません");
+        if(i.Action==HouseFreightAction.Withdraw){Need(j.Phase!=HouseFreightPhase.ReturnRequired,"既に返却待ちです");return new(i,actor,at,rev,null,0);}
+        if(i.Action==HouseFreightAction.Buy){Need(j.Phase==HouseFreightPhase.Outbound&&at<=t.Until&&Bound(w,actor,t.Principal,at,rev)&&House(w,t.Home,t.Owner,t.Principal,at,rev)&&Local(w,actor,t.Source,at,rev),"現地未到着・期限・直属関係または権限を確認してください");var trade=RegionalTrade.SnapshotAt(w,at,rev);var m=trade.Markets.Single(m=>m.Site==t.Source);long price=RegionalTrade.QuotePrice(m,true,t.Commodity);Need(t.Quantity<=RegionalTrade.StockFree(trade,t.Source,t.Commodity)&&checked(price*t.Quantity)<=j.Cash,"現地の自由在庫または預り金が不足しています");return new(i,actor,at,rev,null,price);}
+        Need(i.Action==HouseFreightAction.Receive&&Local(w,actor,t.Home,at,rev)&&(HouseFreightReceiving.Enabled(w)||Local(w,t.Principal,t.Home,at,rev))&&House(w,t.Home,t.Owner,t.Principal,at,rev),"元の受渡先で当主または合意済み代理官と現物・余金を精算してください");return new(i,actor,at,rev,null,0){Receipt=HouseFreightReceiving.Enabled(w)?HouseFreightReceiving.Prepare(w,i,j,at,rev):null};
+    }
+    internal static void Initialize(ContractWorld w){if(Enabled(w))w.HouseFreight=new(1,Policy,[]);}
+    internal static void Apply(ContractWorld w,HouseFreightInput i){var e=Make(w,i,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence,Fold(Prefix(w,w.ElapsedSeconds,w.CommitSequence),w.ElapsedSeconds));w.HouseFreight=w.HouseFreight! with{Entries=[..w.HouseFreight!.Entries,e]};NewGameWork.Sync(w);}
+    internal static void Validate(ContractWorld w)
+    {
+        if(!Enabled(w)){Need(w.HouseFreight==null,"旧世界へ家の運搬を追加できません");return;}Need(w.HouseFreight is{Schema:1,Policy:Policy,Entries:not null},"家の運搬原本がありません");var entries=new List<HouseFreightEntry>();var ids=new HashSet<EntityId>();long rev=0,at=0;
+        foreach(var e in w.HouseFreight.Entries){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&EntityId.IsValid(e.Input.Id.Value)&&ids.Add(e.Input.Id)&&!FactionStances.OtherIdUsed(w,e.Input.Id,includeFreight:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"家の運搬の原本ID・時点・順序が不正です");Need(e==Make(w,e.Input,e.Actor,e.At,e.Revision,Fold(entries,e.At)),"運搬の合意・仕入れ・受領が当時の条件と一致しません");entries.Add(e);rev=e.Revision;at=e.At;}
+        foreach(var j in Fold(entries,w.ElapsedSeconds).Values){Need(j.Cash>=0&&j.Cargo>=0&&j.Spent<=j.Terms.Advance,"預り金/現物が負です");if(!Closed(j))Need(j.Cash+j.Spent==j.Terms.Advance&&j.Cargo==(j.BoughtAt==null?0:j.Terms.Quantity),"預り金と仕入れの収支が不一致です");}
+    }
+    internal static HouseFreightView? View(ContractWorld w)
+    {
+        if(!Enabled(w))return null;long rev=w.CommitSequence+1;var jobs=Jobs(w,w.ElapsedSeconds,rev);EntityId? home=w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;long limit=0;bool can=false;
+        if(home is {} site&&RegionalDomains.Head(w,site) is {} head&&RegionalDomains.Owner(w,site) is {} owner&&House(w,site,owner,head,w.ElapsedSeconds,rev)&&Bound(w,w.PlayerControl,head,w.ElapsedSeconds,rev)&&Local(w,w.PlayerControl,site,w.ElapsedSeconds,rev)&&Local(w,head,site,w.ElapsedSeconds,rev)){limit=Math.Max(0,Math.Min(RegionalDomains.Cash(w,site,w.ElapsedSeconds,rev),RegionalDomains.Remaining(w,w.PlayerControl,site,w.ElapsedSeconds,rev)));can=limit>0&&!jobs.Any(j=>!Closed(j));}else home=null;
+        return new(home,limit,can,jobs,"家の預り金で仕入先へ実移動し、現物と余金を元の当主へ帰還精算。30日・携行100kg、私財への転用と遠隔在庫の閲覧は不可。");
+    }
+}
+public sealed partial class WorldSession
+{
+    public HouseFreightView? HouseFreightView(){lock(gate)return HouseLogistics.View(state);}
+    public CommandResult ManageHouseFreight(HouseFreightInput input,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!HouseLogistics.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の運搬ではありません");var old=state.HouseFreight!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別原本で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"条件を読み直してください");try{Change(w=>HouseLogistics.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"家の預り金・荷・受渡しを記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
+}

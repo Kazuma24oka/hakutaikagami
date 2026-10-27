@@ -16,7 +16,7 @@ public static class RegionalDomains
     public const string Policy="nationwide-trial-domain-ledgers-bounded-local-house-procurement-v9";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy;
     internal static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
     internal static EntityId? Head(ContractWorld w,EntityId site)=>Owner(w,site) is {} owner&&w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==owner.Value) is {} f?new(f.Head):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
@@ -30,12 +30,12 @@ public static class RegionalDomains
     internal static TreasuryEntry[] Purchases(ContractWorld w,long at,long rev)=>Prefix(w,at,rev).Where(e=>e.Input.Action==TreasuryAction.Buy).ToArray();
     internal static long Purchased(ContractWorld w,EntityId site,string? kind,long at,long rev)=>Purchases(w,at,rev).Where(e=>e.Input.Site==site&&e.Input.Commodity==kind).Sum(e=>e.Input.Quantity);
     internal static long SpentAll(ContractWorld w,long at,long rev)=>Purchases(w,at,rev).Sum(e=>e.Payment!.Amount);
-    internal static long Cash(ContractWorld w,EntityId site,long at,long rev)=>(HasHouse(w,site)?500:0)+Prefix(w,at,rev).Where(e=>e.Input.Site==site).Sum(e=>e.Input.Action==TreasuryAction.Fund?e.Input.Amount:e.Input.Action==TreasuryAction.Buy?-e.Payment!.Amount:0);
+    internal static long Cash(ContractWorld w,EntityId site,long at,long rev)=>(HasHouse(w,site)?500:0)+HouseLogistics.CashNet(w,site,at,rev)+Prefix(w,at,rev).Where(e=>e.Input.Site==site).Sum(e=>e.Input.Action==TreasuryAction.Fund?e.Input.Amount:e.Input.Action==TreasuryAction.Buy?-e.Payment!.Amount:0);
     internal static long Budget(ContractWorld w,EntityId site,long at,long rev)=>Prefix(w,at,rev).LastOrDefault(e=>e.Input.Site==site&&e.Input.Action==TreasuryAction.SetBudget)?.Input.Amount??200;
     internal static long Remaining(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {
-        var es=Purchases(w,at,rev).Where(e=>e.Input.Site==site&&Month(w,e.At,at)).ToArray();long n=Math.Max(0,Budget(w,site,at,rev)-es.Sum(e=>e.Payment!.Amount));
-        if(Head(w,site)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>e.Actor==actor).Sum(e=>e.Payment!.Amount)));return n;
+        var es=Purchases(w,at,rev).Where(e=>e.Input.Site==site&&Month(w,e.At,at)).ToArray();long n=Math.Max(0,Budget(w,site,at,rev)-es.Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,false));
+        if(Head(w,site)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)));return n;
     }
     static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     internal static bool Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>HeadAuthority(w,actor,site,at,rev)||Owner(w,site) is {} owner&&CommunityStewardship.Authority(w,actor,owner,site,at,rev)!=null;
@@ -74,6 +74,7 @@ public static class RegionalDomains
     static bool AppendOnly<T>(T[] before,T[] after,Func<T,long> at,Func<T,long> rev,ContractWorld prior)=>after.Length>=before.Length&&after.Take(before.Length).SequenceEqual(before)&&after.Skip(before.Length).All(e=>at(e)>=prior.ElapsedSeconds&&rev(e)>prior.CommitSequence);
     internal static bool PastUnchanged(ContractWorld w,ContractWorld? prior)
     {
+        if(HouseLogistics.Enabled(w)&&ContractJson.CanonicalHash(w.HouseFreight)!=ContractJson.CanonicalHash(prior?.HouseFreight))return false;
         if(prior==null||!Enabled(w)||!Enabled(prior)||w.WorldId!=prior.WorldId||w.PlayerControl!=prior.PlayerControl||w.Seed!=prior.Seed||w.EpochDate!=prior.EpochDate||w.ElapsedSeconds<prior.ElapsedSeconds||w.CommitSequence<=prior.CommitSequence)return false;
         if(!w.Characters.SequenceEqual(prior.Characters)||!w.Locations.SequenceEqual(prior.Locations)||!w.Memberships.SequenceEqual(prior.Memberships)||!w.ServiceBonds.SequenceEqual(prior.ServiceBonds)||!w.Offices.SequenceEqual(prior.Offices)||!w.LandRights.SequenceEqual(prior.LandRights)||ContractJson.CanonicalHash(w.NewGame)!=ContractJson.CanonicalHash(prior.NewGame)||ContractJson.CanonicalHash(w.Tasks)!=ContractJson.CanonicalHash(prior.Tasks)||ContractJson.CanonicalHash(w.Branches)!=ContractJson.CanonicalHash(prior.Branches))return false;
         return AppendOnly(prior.Communities!.Orders,w.Communities!.Orders,e=>e.At,e=>e.Revision,prior)&&AppendOnly(prior.Trade!.Entries,w.Trade!.Entries,e=>e.At,e=>e.Revision,prior)&&AppendOnly(prior.Salary!.Entries,w.Salary!.Entries,e=>e.At,e=>e.Revision,prior)&&AppendOnly(prior.Domains!.Entries,w.Domains!.Entries,e=>e.At,e=>e.Revision,prior)&&w.Domains.Profiles.SequenceEqual(prior.Domains.Profiles);

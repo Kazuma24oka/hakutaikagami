@@ -3,7 +3,7 @@ from pathlib import Path
 from fractions import Fraction
 import json,subprocess
 R=Path(__file__).resolve().parents[1]
-BASELINES={8:("db56cc00bc6c55767432cf7ca6ab217e92b929c2","Docs/Development/ProgressV1/approval-baseline-v8.json"),7:("6e6b2fa87c9c205b024c494f430f9825be1d9252","Docs/Development/ProgressV1/approval-baseline-v7.json"),6:("5960dc7deb55f500a8f3e2708fc53be77bc4a18c","Docs/Development/ProgressV1/approval-baseline-v6.json"),5:("6c51f21f33cf7804ce5e7e51f6025b87fde670ab","Docs/Development/ProgressV1/approval-baseline-v5.json"),1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
+BASELINES={10:("c7a41f7f4c41dbe16b5a58c6d155028a35005882","Docs/Development/ProgressV1/approval-baseline-v10.json"),9:("5478a5d6644f1a2037d38a266ccb1d91b24acfd2","Docs/Development/ProgressV1/approval-baseline-v9.json"),8:("db56cc00bc6c55767432cf7ca6ab217e92b929c2","Docs/Development/ProgressV1/approval-baseline-v8.json"),7:("6e6b2fa87c9c205b024c494f430f9825be1d9252","Docs/Development/ProgressV1/approval-baseline-v7.json"),6:("5960dc7deb55f500a8f3e2708fc53be77bc4a18c","Docs/Development/ProgressV1/approval-baseline-v6.json"),5:("6c51f21f33cf7804ce5e7e51f6025b87fde670ab","Docs/Development/ProgressV1/approval-baseline-v5.json"),1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
 def calculate(a,d,leaves):
     groups={g["id"]:g for g in d["groups"]};total=Fraction(0)
     for domain in a["domains"]:
@@ -14,6 +14,13 @@ def check():
     a=json.loads((R/"Docs/Development/ProgressV1/estimate.json").read_bytes());version=a.get("approval_batch",{}).get("version",1);pin,base=BASELINES[version]
     frozen=subprocess.check_output(["git","show",pin+":"+base],cwd=R);assert (R/base).read_bytes()==frozen,"Frozen baseline changed"
     b=json.loads(frozen)
+    if version==10:
+        prior=b['prior_baseline'];prior_pin=b['prior_baseline_commit'];prior_bytes=subprocess.check_output(['git','show',prior_pin+':'+prior],cwd=R)
+        assert (R/prior).read_bytes()==prior_bytes,'Original freight pre-code baseline changed'
+        earlier=json.loads(prior_bytes);assert b['baseline_leaves']==earlier['baseline_leaves'] and b['domains']==earlier['domains'] and b['base_main']==earlier['base_main']
+        assert all(b['targets'][k]>=v for k,v in earlier['targets'].items())
+        for commit,file in [(prior_pin,'Core/Contracts/HouseLogistics.cs'),(pin,'Core/Contracts/HouseFreightReceiving.cs')]:
+            assert subprocess.run(['git','cat-file','-e',commit+':'+file],cwd=R,capture_output=True).returncode!=0,'Target not frozen before implementation'
     if version==5:
         prior=b['prior_baseline'];prior_pin=b['prior_baseline_commit'];prior_bytes=subprocess.check_output(['git','show',prior_pin+':'+prior],cwd=R)
         assert (R/prior).read_bytes()==prior_bytes,'Earlier village pre-code baseline changed'
@@ -37,6 +44,17 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==10:
+        from verify_house_logistics import check as verify
+        folder="HouseLogisticsV1"
+        assert "HouseFreightReceiving.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
+        assert 'Session.HouseFreightView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==9:
+        from verify_house_logistics import check as verify
+        folder="HouseLogisticsV1"
+        assert "HouseLogistics.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
+        assert 'Session.HouseFreightView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/HouseLogistics.cs'],cwd=R,capture_output=True).returncode!=0,'Freight targets not frozen before code'
     elif version==8:
         from verify_regional_domains import check as verify
         folder="RegionalDomainsV1"
