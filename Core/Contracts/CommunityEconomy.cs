@@ -16,7 +16,7 @@ public static class CommunityEconomy
     public const int Population=200,Workers=100,Crew=20;public const long InitialVillage=10000,InitialHouse=3000,BaseHarvest=20000,WorkCost=200,WorkSeconds=7*86400;
     public static readonly EntityId[] Sites=[new("site:castle"),new("site:kofu"),new("site:odawara")];
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy;
+    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Communities?.Orders.Any(q=>q.Input.Id==id)==true;
     static DateOnly Epoch(ContractWorld w)=>DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);
     static long Time(ContractWorld w,DateOnly date)=>checked((date.DayNumber-Epoch(w).DayNumber)*86400L);
@@ -52,7 +52,7 @@ public static class CommunityEconomy
             foreach(var op in operations){Advance(op.At);if(op.Order==null){house=checked(house+op.Amount);if(op.Amount>=0){imports=checked(imports+op.Amount);Event("private-rice-supplied",op.At,op.Amount);}else{payout=checked(payout-op.Amount);Event("salary-paid",op.At,-op.Amount);}continue;}var q=op.Order;var i=q.Input;long free=house-HouseSalary.Reserved(w,site,q.At,q.Revision);switch(i.Action){
                 case EconomyAction.CollectLevy:Need(hunger==0&&i.Amount<=assessed-collected&&i.Amount<=village-Population*5,"未徴収額と村の一月分の保護備蓄を超えた徴収はできません");village-=i.Amount;house=checked(house+i.Amount);collected=checked(collected+i.Amount);Event("levy-collected",q.At,i.Amount);break;
                 case EconomyAction.RelieveVillage:Need(i.Amount<=free,"家の蔵の米が不足しています");house-=i.Amount;village=checked(village+i.Amount);relief=checked(relief+i.Amount);Event("relief",q.At,i.Amount);Feed(q.At);break;
-                case EconomyAction.ImproveWater:Need(i.Amount==WorkCost&&free>=WorkCost&&reserved==0&&water<130&&hunger==0,"水利工事は米200kg/20人/7日、同時一件で、先に食糧不足を解消します");house-=WorkCost;spent=checked(spent+WorkCost);reserved=Crew;due=checked(q.At+WorkSeconds);Event("water-start",q.At,WorkCost);break;
+                case EconomyAction.ImproveWater:Need(!VillageConsultation.Enabled(w)||VillageConsultation.WorkAuthorized(w,i.Id,i.Site,q.At,q.Revision),"先に村との水利工事の合意を確認してください");Need(i.Amount==WorkCost&&free>=WorkCost&&reserved==0&&water<130&&hunger==0,"水利工事は米200kg/20人/7日、同時一件で、先に食糧不足を解消します");house-=WorkCost;spent=checked(spent+WorkCost);reserved=Crew;due=checked(q.At+WorkSeconds);Event("water-start",q.At,WorkCost);break;
             }}Advance(until);Need(village>=0&&house>=0&&village+house+consumed+spent+payout==InitialVillage+InitialHouse+harvested+imports,"地域の米収支が保存則に一致しません");accounts.Add(new(site,Population,Workers,reserved,village,house,assessed,collected,relief,spent,harvested,consumed,hunger,water,due,remaining,climate,climateAt));
         }return new(1,Policy,orders,events.OrderBy(e=>e.At).ThenBy(e=>e.Site.Value,StringComparer.Ordinal).ToArray(),accounts.ToArray(),notices);
     }

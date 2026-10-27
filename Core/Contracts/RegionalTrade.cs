@@ -13,7 +13,7 @@ public static class RegionalTrade
     public const string Policy="three-community-local-rice-contract-reserve-carry-debt-settle-v3";
     public const long InitialRice=2000,InitialCash=4000,Capacity=100;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseSalary.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseSalary.Policy or VillageConsultation.Policy;
     static bool Before(TradeEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static TradeEntry[] Prefix(ContractWorld w,long at,long rev){Need(w.Trade==null||w.Trade.Entries!=null&&w.Trade.Entries.All(e=>e!=null&&e.Input!=null),"Invalid trade entry array");return w.Trade?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];}
     internal static long SalaryLoaded(ContractWorld w,EntityId actor,long at,long rev)=>actor==w.PlayerControl?Prefix(w,at,rev).Where(e=>e.Input.Action==TradeAction.OfferOwnRice).Sum(e=>e.Input.Amount):0;
