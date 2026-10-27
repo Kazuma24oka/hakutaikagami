@@ -8,7 +8,7 @@ public static class NpcCommunityAdministration
     public const string Policy="village-local-npc-community-administration-v6";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.CommunityAdministration?.Decisions.Any(d=>d.Id==id)==true;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays(checked((int)(at/Day)));
     static int Period(ContractWorld w,long at){var d=Date(w,at);return d.Year*12+d.Month;}
@@ -24,7 +24,7 @@ public static class NpcCommunityAdministration
         if(account!=null){long free=account.HouseRice-reserved;
             if(account.Hunger>0){amount=Math.Min(account.Hunger,free);if(amount>0){action=EconomyAction.RelieveVillage;reason="現地で確認した食糧不足を家の自由米で救済";}else reason="食糧不足を確認、処分できる米がないため待機";}
             else if(account.Assessed>account.Collected&&account.VillageRice>CommunityEconomy.Population*5){amount=Math.Min(1000,Math.Min(account.Assessed-account.Collected,account.VillageRice-CommunityEconomy.Population*5));action=EconomyAction.CollectLevy;reason="既定年貢のうち村の一月分を残せる現物だけ徴収";}
-            else if(account.Water<130&&account.Reserved==0&&free>=CommunityEconomy.WorkCost+500){action=EconomyAction.ImproveWater;amount=CommunityEconomy.WorkCost;representative=VillageConsultation.Representative(site,at);reason="代表の食糧・空き労働条件に合意し家に500kgを残して水利工事";}
+            else if(account.Water<130&&account.Reserved==0&&account.Workforce>=CommunityEconomy.Crew&&free>=CommunityEconomy.WorkCost+500){action=EconomyAction.ImproveWater;amount=CommunityEconomy.WorkCost;representative=VillageConsultation.Representative(site,at);reason="代表の食糧・空き労働条件に合意し家に500kgを残して水利工事";}
             else reason="不足なし、追加工事または徴収の条件なしのため待機";
         }
         if(action==EconomyAction.ImproveWater&&MaterialMarkets.WoodAvailable(w,site,at,revision)<MaterialMarkets.WaterWood){action=null;amount=0;representative=null;reason="家の木材が不足しているため工事を待機";}

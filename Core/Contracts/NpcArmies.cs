@@ -8,7 +8,7 @@ public sealed record NpcArmyReturn(EntityId Muster,long At,long Revision,long Co
 public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Musters,NpcArmyMarch[] Marches,NpcArmyReturn[] Returns);
 
 // Actual garrison custody. No default wars, generated enemies, castle capture, or shared knowledge.
-public static class NpcArmies
+public static partial class NpcArmies
 {
     public const string CompactCombatPolicy="head-led-owned-garrison-sparse-local-combat-v3";
     public const string CombatPolicy="head-led-owned-garrison-local-combat-v2";
@@ -23,6 +23,7 @@ public static class NpcArmies
     static void CheckMuster(ContractWorld w,NpcArmyMuster m,IEnumerable<NpcArmyMuster> prior)
     {
         Need(Enabled(w)&&m.Commander!=w.PlayerControl&&m.At>=0&&m.At<=w.ElapsedSeconds&&m.Revision>0&&m.Revision<=w.CommitSequence&&EntityId.IsValid(m.Id.Value),"NPC軍の版・本人・時点が不正です");
+        Need(MilitaryEconomy.CanMuster(w,m.Site,m.At,m.Revision),"現地の支援人手または家の自由米が不足しています");
         Need(!PrivateStanddown.ShouldWait(w,m.Commander,m.At,m.Revision),"本人の新規軍引受は見合わせ期間中です");Need(!prior.Any(p=>p.Id==m.Id||p.Commander==m.Commander||p.Owner==m.Owner&&p.Site==m.Site),"同じ駐屯兵または指揮官を二重に割り当てられません");
         var authority=FactionStances.ResolveAuthority(w,m.Commander,m.Owner,m.At,m.Revision);
         Need(authority!=null&&authority==m.Authority&&authority.Home==m.Site,"当主・所属・拠点支配の根拠がありません");
@@ -40,7 +41,7 @@ public static class NpcArmies
     {
         var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);
         Need(a!=null,"当主権限がありません");var m=new NpcArmyMuster(id,commander,owner,a.Home,w.ElapsedSeconds,w.CommitSequence,a,objective);
-        Need(w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home),"現地で引き受けてください");CheckMuster(w,m,Musters(w));w.NpcArmies=new(1,Policy,[..Musters(w),m],w.NpcArmies?.Marches??[],w.NpcArmies?.Returns??[]);Sync(w);
+        Need(w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home),"現地で引き受けてください");CheckMuster(w,m,Musters(w));w.NpcArmies=new(1,Policy,[..Musters(w),m],w.NpcArmies?.Marches??[],w.NpcArmies?.Returns??[]);MilitaryEconomy.FundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
     }
     static bool ReturnedAt(ContractWorld w,NpcArmyMuster m,long at,long rev)=>w.NpcArmies?.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<=rev))==true;
     public static bool CommanderBusyAt(ContractWorld w,EntityId actor,long at,long revision)=>Musters(w).Any(m=>m.Commander==actor&&(m.At<at||m.At==at&&m.Revision<=revision)&&!ReturnedAt(w,m,at,revision));
@@ -71,12 +72,13 @@ public static class NpcArmies
     // No new sortie or automatic replenishment is created by loading this history.
     public static long Consumed(ContractWorld w,NpcArmyMuster m)
     {
+        if(MilitaryEconomy.Enabled(w))return ConsumedAt(w,m,w.ElapsedSeconds,w.CommitSequence+1);
         var starts=(w.NpcArmies?.Marches??[]).Where(q=>q.Muster==m.Id).Select(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt).Where(t=>t!=null).Select(t=>t!.Value).ToArray();
         var end=w.NpcArmies?.Returns.SingleOrDefault(q=>q.Muster==m.Id)?.At??w.ElapsedSeconds;return starts.Length==0?0:Math.Min(NewGameMilitary.Capacity,checked(100*(end-starts.Min())-WorldClashes.Losses(w,end).Where(l=>Binding(m).Units.Contains(l.Unit)&&l.At>=starts.Min()).Sum(l=>checked((end-l.At)*l.Soldiers))));
     }
     static ResourceLot[] Lots(ContractWorld w,NpcArmyMuster m)
     {
-        var b=Binding(m);var returned=ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence);return [new(b.Depot,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,NewGameMilitary.InitialStock-(returned?Consumed(w,m):NewGameMilitary.Capacity),NewGameMilitary.InitialStock,0),new(b.Carry,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,returned?0:NewGameMilitary.Capacity-Consumed(w,m),0,0,returned?null:m.Commander)];
+        var b=Binding(m);var returned=ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence);return [new(b.Depot,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,MilitaryEconomy.InitialStock(w)+MilitaryEconomy.Credit(w,b.Depot,w.ElapsedSeconds,w.CommitSequence+1)-(returned?Consumed(w,m):NewGameMilitary.Capacity),MilitaryEconomy.InitialStock(w),0),new(b.Carry,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,returned?0:NewGameMilitary.Capacity-Consumed(w,m),0,0,returned?null:m.Commander)];
     }
     public static long Net(ContractWorld w,EntityId lot)
     {
@@ -95,7 +97,7 @@ public static class NpcArmies
         var m=Musters(w).Single(m=>m.Id==muster);Need(!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence),"帰還済みです");
         var position=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
         Need(w.ElapsedSeconds>=m.At&&w.CommitSequence>m.Revision&&w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site)&&RegionalCampaign.RoadActorPointAt(w,m.Commander,w.ElapsedSeconds)==position&&!w.Tasks.Any(t=>t.Executor==m.Commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Failed or ExecutionPhase.Stopped)),"本人と軍が現地へ帰還し、移動任務を終えてから返納します");
-        var used=Consumed(w,m);w.NpcArmies=w.NpcArmies! with{Returns=[..w.NpcArmies.Returns,new(muster,w.ElapsedSeconds,w.CommitSequence,used)]};Sync(w);
+        var used=Consumed(w,m);w.NpcArmies=w.NpcArmies! with{Returns=[..w.NpcArmies.Returns,new(muster,w.ElapsedSeconds,w.CommitSequence,used)]};MilitaryEconomy.RefundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
     }
     static string Key(EntityId id)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value));
     static EntityId MusterId(FactionStanceClaim claim)=>new("decision:npc-army/"+Key(claim.Declaration));
@@ -105,7 +107,7 @@ public static class NpcArmies
     internal static NpcArmyObjective? Candidate(ContractWorld w,EntityId commander,EntityId owner)
     {
         if(PrivateStanddown.ShouldWait(w,commander,w.ElapsedSeconds,w.CommitSequence)||!Enabled(w)||commander==w.PlayerControl||Musters(w).Any(m=>m.Commander==commander)||NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==owner)||w.Tasks.Any(t=>t.Executor==commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)))return null;
-        var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);if(a==null||!w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home))return null;
+        var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);if(a==null||!MilitaryEconomy.CanMuster(w,a.Home,w.ElapsedSeconds,w.CommitSequence+1)||!w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home))return null;
         foreach(var known in FactionStances.KnownOwnDeclarations(w,commander).OrderBy(k=>k.Declaration.Value,StringComparer.Ordinal)){
             var claim=FactionStances.ClaimAt(w,owner,known.ToOwner,w.ElapsedSeconds,w.CommitSequence);if(claim==null||claim.Declaration!=known.Declaration)continue;
             if(TruceNegotiations.WillNotInitiate(w,owner,claim.ToOwner,w.ElapsedSeconds,w.CommitSequence))continue;var target=new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==claim.ToOwner.Value).Home);
