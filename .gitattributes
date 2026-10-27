@@ -1967,3 +1967,8 @@ Game/Scripts/NewGameRuntime.HouseFreight.cs -text
 
 Scripts/verify_house_logistics.py -text
 Docs/Design/HouseLogisticsV1/* -text
+
+Game/Scripts/NewGameRuntime.MilitaryRice.cs -text
+
+Scripts/verify_military_economy.py -text
+Docs/Design/MilitaryEconomyV1/* -text

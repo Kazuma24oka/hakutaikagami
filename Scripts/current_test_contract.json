@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3008,
-  "baseline_passed": 2954,
-  "added": 54,
-  "scope": "House logistics37 and scoped proxy receipt17 added; related972. Real generation recovery and headless65 pairs/130 worlds/194 nodes. Full3008 and GUI NOT_RUN."
+  "expected_passed": 3046,
+  "baseline_passed": 3008,
+  "added": 38,
+  "scope": "Military economy38 added; related1098 including88 extra pre-existing military/supply cases. Actual generation recovery and headless75 pairs/150 worlds/262 nodes. Full3046 and GUI NOT_RUN."
 }

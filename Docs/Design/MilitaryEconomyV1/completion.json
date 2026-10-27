@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Explicit v12 links existing100soldier player/NPC garrisons to20local support workers without creating troops or rewriting civilian census; support remains until actual army return, separate from personal departure and order sending",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Tests/MilitaryEconomyTests.cs",
+        "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
+        "Docs/Design/MilitaryEconomyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Support labor affects integrated seasonal harvest and current workshop capacity, competes with construction, and preserves community food/work/salary and production conservation without instant harvest-boundary exploits",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Tests/MilitaryEconomyTests.cs",
+        "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
+        "Docs/Design/MilitaryEconomyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Military depots start empty in v12; real local house rice is transferred at144000personseconds/kg (trial0.6kg/person/day), with permission/locality/reservation checks, actual consumption, whole-kg surplus return and preserved fractional depot grain",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Tests/MilitaryEconomyTests.cs",
+        "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
+        "Docs/Design/MilitaryEconomyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "NPC heads use their own local rice and support capacity for two-day supplies, wait when unavailable, and return unused grain/labor only on actual army return; shared garrison and private/house stock cannot be duplicated",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Tests/MilitaryEconomyTests.cs",
+        "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
+        "Docs/Design/MilitaryEconomyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry and local UI expose support and physical supply clearly; legacy v11 and older bytes, actual generation recovery/future equality across funding/deployment/personal retreat/return, Game build and headless Node3D data are checked; GUI/full-suite limits explicit",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/NewGameMilitary.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Tests/MilitaryEconomyTests.cs",
+        "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
+        "Docs/Design/MilitaryEconomyV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Existing100-soldier garrison model plus20 civilian support workers, not generic recruitment or historic population. No NPC supply caravans, ammo/horse ration or demographic casualty model."
+}

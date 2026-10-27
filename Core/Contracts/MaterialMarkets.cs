@@ -11,7 +11,7 @@ public static class MaterialMarkets
     public const string Policy="timber-weapons-local-workshops-national-hub-markets-v8";
     public const long InitialWood=200,InitialWeapons=40,RawWood=1000,RawWeapons=100,WorkerCash=300,HouseWood=20,HouseWeapons=10,WaterWood=10;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy;
     static readonly EntityId[] hubs=CommunityEconomy.Sites.Concat(NationalRoutes.Catalog.Nodes.Where(n=>n.Kind=="historic-site-candidate"||n.Id is "kyoto" or "sakai").Select(n=>new EntityId("site:"+n.Id))).Distinct().ToArray();
     public static EntityId[] Sites(ContractWorld w)=>Enabled(w)?[..hubs]:CommunityEconomy.Sites;
     public static bool Supported(string? kind)=>kind is null or "wood" or "weapons";
@@ -34,9 +34,9 @@ public static class MaterialMarkets
         long woodFree=RegionalTrade.StockFree(trade,site,"wood"),armsFree=RegionalTrade.StockFree(trade,site,"weapons"),cashFree=RegionalTrade.CashFree(trade,site);
         long funds=WorkerCash+previous.Sum(m=>m.Wages-m.Income),wood=RawWood-previous.Sum(m=>m.WoodMade),arms=RawWeapons-previous.Sum(m=>m.WeaponsMade),civil=previous.Sum(m=>m.WeaponsBought);
         var input=new WorkshopInputs(site,at,account,m,cashFree,woodFree,armsFree,funds,wood,arms,civil);long madeWood=0,madeArms=0,wages=0,boughtWood=0,boughtArms=0,income=0;
-        if(account.Hunger==0){int labor=account.Workforce-account.Reserved;
-            if(labor>=10){madeWood=Math.Max(0,Math.Min(Math.Min(20,220-Stock(m,"wood")),Math.Min(wood,cashFree*2)));if(madeWood>0){wages=(madeWood+1)/2;labor-=10;}}
-            if(labor>=5){madeArms=Math.Max(0,Math.Min(Math.Min(2,42-Stock(m,"weapons")),Math.Min(arms,(cashFree-wages)/5)));wages+=madeArms*5;}
+        if(account.Hunger==0){int labor=account.Workforce-account.Reserved;long woodLimit=MilitaryEconomy.Enabled(w)?20L*labor/CommunityEconomy.Workers:20,weaponLimit=MilitaryEconomy.Enabled(w)?2L*labor/CommunityEconomy.Workers:2;
+            if(labor>=10){madeWood=Math.Max(0,Math.Min(Math.Min(woodLimit,220-Stock(m,"wood")),Math.Min(wood,cashFree*2)));if(madeWood>0){wages=(madeWood+1)/2;labor-=10;}}
+            if(labor>=5){madeArms=Math.Max(0,Math.Min(Math.Min(weaponLimit,42-Stock(m,"weapons")),Math.Min(arms,(cashFree-wages)/5)));wages+=madeArms*5;}
             var after=Change(Change(m,"wood",madeWood),"weapons",madeArms);long price=RegionalTrade.QuotePrice(after,true,"wood");boughtWood=Math.Min(2,Math.Min(woodFree+madeWood,(funds+wages)/price));income=boughtWood*price;
             price=RegionalTrade.QuotePrice(after,true,"weapons");boughtArms=Math.Min(1,Math.Min(Math.Max(0,10-civil),Math.Min(armsFree+madeArms,(funds+wages-income)/price)));income+=boughtArms*price;
         }

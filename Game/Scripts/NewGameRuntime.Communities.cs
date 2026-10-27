@@ -11,6 +11,7 @@ public partial class NewGameRuntime
         box.AddChild(new Label{Text=NewGameWorld.SiteName(v.Site.Value)+" — 村と家の現地帳簿"});
         box.AddChild(new Label{Text=$"人口 {a.Population}人　働き手 {a.Workforce}人（工事 {a.Reserved}人）\n村の米 {a.VillageRice}kg　家の蔵 {a.HouseRice}kg（給付引当 {held}kg）\n食糧不足 {a.Hunger}kg　未徴収年貢 {a.Assessed-a.Collected}kg\n水利 {a.Water}　確認済みの作柄 {climate}"});
         box.AddChild(new Label{Text=a.WorkDue is {} due?$"工事完成まで約{Math.Max(1,(due-v.ObservedAt+86399)/86400)}日":a.WorkRemaining>0?"工事休止中。先に食糧不足を解消します。":"工事は20人・米200kg・7日。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(a.MilitaryWorkers is {} support)box.AddChild(new Label{Text=$"軍務の補給支援 {support}人（上の働き手から除外済み）。部隊が実際に帰還して指揮を返すまで戻りません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         if(MaterialMarkets.LocalHouse(Snapshot()) is {} materials)box.AddChild(new Label{Text=$"家の木材 {materials.Wood}kg・武具 {materials.Weapons}組（水利には木材10kgも使用）"});
         var amount=new SpinBox{MinValue=1,MaxValue=1000000,Step=1,Value=100,Prefix="米 ",Suffix=" kg"};box.AddChild(amount);
