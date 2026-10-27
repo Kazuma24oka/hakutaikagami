@@ -16,7 +16,7 @@ public static class CommunityEconomy
     public const int Population=200,Workers=100,Crew=20;public const long InitialVillage=10000,InitialHouse=3000,BaseHarvest=20000,WorkCost=200,WorkSeconds=7*86400;
     public static readonly EntityId[] Sites=[new("site:castle"),new("site:kofu"),new("site:odawara")];
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy;
+    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy or NpcCommunityAdministration.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Communities?.Orders.Any(q=>q.Input.Id==id)==true;
     static DateOnly Epoch(ContractWorld w)=>DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);
     static long Time(ContractWorld w,DateOnly date)=>checked((date.DayNumber-Epoch(w).DayNumber)*86400L);
@@ -24,7 +24,7 @@ public static class CommunityEconomy
     static int Period(ContractWorld w,long at){var d=Date(w,at);return d.Year*12+d.Month;}
     static (string Name,int Factor) Season(ContractWorld w,EntityId site,int year){var h=System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(w.Seed+"/community-weather/"+site.Value+"/"+year));int n=h[0]%100;return n<20?("干ばつ",50):n>=90?("洪水",70):("平年",100);}
     static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction is {} f?new(f):null;
-    static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
+    internal static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {
         var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position;if(RegionalCampaign.RoadActorPointAt(w,actor,at)!=point)return false;
         if(w.Branches!.Journeys.Any(j=>j.Actor==actor&&w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<rev))&&j.Legs.Any(l=>l.StartAt<=at&&at<l.EndAt)))return false;
@@ -36,7 +36,7 @@ public static class CommunityEconomy
     }
     static CommunityState Replay(ContractWorld w,CommunityOrder[] orders,CommunityNotice[] notices,long until,long revision)
     {
-        var ids=new HashSet<EntityId>();long prior=0,priorAt=0;foreach(var q in orders){Need(q.Actor==w.PlayerControl&&q.At>=priorAt&&q.At<=until&&q.Revision>prior&&q.Revision<=revision&&EntityId.IsValid(q.Input.Id.Value)&&ids.Add(q.Input.Id)&&Sites.Contains(q.Input.Site)&&Enum.IsDefined(q.Input.Action)&&q.Input.Amount>0,"地域帳簿の入力・時点・順序が不正です");Need(!FactionStances.OtherIdUsed(w,q.Input.Id,includeCommunities:false)&&!FactionStances.OwnIdUsed(w,q.Input.Id),"その原本IDは別の操作で使用済みです");Need(q.Authority==Authority(w,q.Actor,q.Input.Site,q.At,q.Revision)&&Local(w,q.Actor,q.Input.Site,q.At,q.Revision),"現地権限・引受原本が一致しません");prior=q.Revision;priorAt=q.At;}
+        var ids=new HashSet<EntityId>();long prior=0,priorAt=0;foreach(var q in orders){Need((q.Actor==w.PlayerControl||NpcCommunityAdministration.Authorized(w,q))&&q.At>=priorAt&&q.At<=until&&q.Revision>prior&&q.Revision<=revision&&EntityId.IsValid(q.Input.Id.Value)&&ids.Add(q.Input.Id)&&Sites.Contains(q.Input.Site)&&Enum.IsDefined(q.Input.Action)&&q.Input.Amount>0,"地域帳簿の入力・時点・順序が不正です");Need(!FactionStances.OtherIdUsed(w,q.Input.Id,includeCommunities:false)&&!FactionStances.OwnIdUsed(w,q.Input.Id),"その原本IDは別の操作で使用済みです");Need(q.Authority==Authority(w,q.Actor,q.Input.Site,q.At,q.Revision)&&Local(w,q.Actor,q.Input.Site,q.At,q.Revision),"現地権限・引受原本が一致しません");prior=q.Revision;priorAt=q.At;}
         var events=new List<CommunityEvent>();var accounts=new List<CommunityAccounts>();
         foreach(var site in Sites){long imports=0,payout=0;long village=InitialVillage,house=InitialHouse,assessed=0,collected=0,relief=0,spent=0,harvested=0,consumed=0,hunger=0,remaining=0;int water=100,reserved=0,factor=100;long? due=null,climateAt=null;string climate="未観測";var epoch=Epoch(w);long month=Time(w,new DateOnly(epoch.Year,epoch.Month,1).AddMonths(1)),weather=Time(w,new(epoch.Year,9,1)),harvest=Time(w,new(epoch.Year,10,1));
             void Event(string kind,long at,long n,string detail="")=>events.Add(new(site,kind,at,n,detail));
@@ -58,7 +58,8 @@ public static class CommunityEconomy
     }
     internal static CommunityAccounts AccountAt(ContractWorld w,EntityId site,long at,long revision)=>Replay(w,w.Communities!.Orders.Where(q=>q.At<at||q.At==at&&q.Revision<revision).ToArray(),[],at,revision-1).Accounts.Single(a=>a.Site==site);
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Communities=Replay(w,[],[],w.ElapsedSeconds,w.CommitSequence);}
-    internal static void Apply(ContractWorld w,CommunityInput input){Need(Enabled(w),"この保存では複数地域の帳簿は使用できません");var q=new CommunityOrder(input,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence,Authority(w,w.PlayerControl,input.Site,w.ElapsedSeconds,w.CommitSequence));w.Communities=Replay(w,[..w.Communities!.Orders,q],w.Communities.Notices,w.ElapsedSeconds,w.CommitSequence);}
+    internal static void Apply(ContractWorld w,CommunityInput input)=>ApplyFor(w,input,w.PlayerControl);
+    internal static void ApplyFor(ContractWorld w,CommunityInput input,EntityId actor){Need(Enabled(w),"この保存では複数地域の帳簿は使用できません");var q=new CommunityOrder(input,actor,w.ElapsedSeconds,w.CommitSequence,Authority(w,actor,input.Site,w.ElapsedSeconds,w.CommitSequence));w.Communities=Replay(w,[..w.Communities!.Orders,q],w.Communities.Notices,w.ElapsedSeconds,w.CommitSequence);}
     internal static void Tick(ContractWorld w)
     {
         if(!Enabled(w))return;w.Communities=Replay(w,w.Communities!.Orders,w.Communities.Notices,w.ElapsedSeconds,w.CommitSequence);int period=Period(w,w.ElapsedSeconds);

@@ -12,7 +12,7 @@ public static class HouseSalary
     public const string Policy="community-house-rice-three-month-local-consent-reliability-v4";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or VillageConsultation.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or VillageConsultation.Policy or NpcCommunityAdministration.Policy;
     static bool Before(SalaryEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static SalaryEntry[] Prefix(ContractWorld w,long at,long rev)=>w.Salary?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Salary?.Entries.Any(e=>e.Input.Id==id)==true;

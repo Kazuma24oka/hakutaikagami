@@ -8,18 +8,18 @@ public sealed record VillageProposal(EntityId Id,EntityId Site,EntityId Represen
 public sealed record VillagePromise(EntityId Id,EntityId Site,VillageAction Kind,long Amount,long ConfirmedAt,long DeliverBy,long Delivered,long? StartedAt,long? CancelledAt);
 public sealed record VillageState(int Schema,string Policy,VillageEntry[] Entries,VillageOrganization[] Organizations,VillageProposal[] Proposals,VillagePromise[] Promises);
 public sealed record VillageCard(EntityId Id,string Kind,long Amount,long Delivered,long DeliverBy,string Status);
-public sealed record VillageLocalView(EntityId Site,EntityId Organization,string Representative,int Term,long ObservedAt,bool CanPromise,string Reaction,VillageProposal[] Proposals,VillageCard[] Promises);
+public sealed record VillageLocalView(EntityId Site,EntityId Organization,string Representative,int Term,long ObservedAt,bool CanPromise,string Reaction,string Administration,VillageProposal[] Proposals,VillageCard[] Promises);
 // Trial village delegates are roles, not invented historical officers or player-controlled organizations.
 public static class VillageConsultation
 {
     public const string Policy="village-representative-relief-water-performance-v5";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Villages?.Entries.Any(e=>e.Input.Id==id)==true;
     static int Term(long at)=>checked((int)(at/(30*Day)));
     static VillageOrganization Organization(EntityId site)=>new(new("organization:village/"+site.Value.Replace(':','/') ),site,[new(new("person:village/"+site.Value.Replace(':','/')+"/a"),"村役人"),new(new("person:village/"+site.Value.Replace(':','/')+"/b"),"水利世話人")]);
-    static EntityId Representative(EntityId site,long at)=>Organization(site).Members[Term(at)%2].Id;
+    internal static EntityId Representative(EntityId site,long at)=>Organization(site).Members[Term(at)%2].Id;
     internal static EntityId Effect(EntityId id)=>new("request:village-effect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,w.PlayerControl,site,at,rev,stableCompletion:true);
     static bool Authority(ContractWorld w,EntityId site,long at,long rev)
@@ -31,7 +31,7 @@ public static class VillageConsultation
     static string Status(ContractWorld w,VillagePromise p,long at,long rev)
     {
         if(p.Kind==VillageAction.ProposeRelief&&p.Delivered==p.Amount)return "救済受領済み";
-        if(p.StartedAt is {} start){return w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>=start&&e.At<=at)?"工事完了":"工事中（食糧不足時は休止）";}
+        if(p.StartedAt is {} start){return w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>start&&e.At<=at)?"工事完了":"工事中（食糧不足時は休止）";}
         if(p.CancelledAt!=null)return p.Delivered>0?"一部履行で終了":"未履行で終了";
         return at>p.DeliverBy?(p.Delivered>0?"一部履行・期限超過":"未履行・期限超過"):"約束の履行待ち";
     }
@@ -39,12 +39,12 @@ public static class VillageConsultation
     {
         int n=70;foreach(var p in promises.Where(p=>p.Site==site)){
             bool done=p.Kind==VillageAction.ProposeWater?p.StartedAt!=null:p.Delivered==p.Amount;
-            if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>=p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
+            if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
         }return Math.Clamp(n,0,100);
     }
     internal static bool WorkAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long revision)
     {
-        if(!Enabled(w))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
+        if(!Enabled(w)||NpcCommunityAdministration.WaterAuthorized(w,effect,site,at,revision))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
         return e!=null&&w.Villages!.Proposals.Any(q=>q.Id==e.Input.Proposal&&q.Kind==VillageAction.ProposeWater)&&w.Villages.Entries.Any(c=>c.Input.Action==VillageAction.Confirm&&c.Input.Proposal==e.Input.Proposal&&c.Revision<revision);
     }
     static VillageState Replay(ContractWorld w,VillageEntry[] entries,long until,long revision)
@@ -111,7 +111,7 @@ public static class VillageConsultation
         if(site==null||!CommunityEconomy.Sites.Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
         var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds);
         var cards=s.Promises.Where(p=>p.Site==site).Select(p=>new VillageCard(p.Id,p.Kind==VillageAction.ProposeWater?"水利工事":"救済",p.Amount,p.Delivered,p.DeliverBy,Status(w,p,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
-        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1),trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
+        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1),trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
     }
 }
 public sealed partial class WorldSession

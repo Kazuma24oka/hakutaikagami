@@ -104,6 +104,8 @@ public sealed class ContractWorld
     public SalaryState? Salary {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public VillageState? Villages {get;set;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CommunityAdministrationState? CommunityAdministration {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RegionalTradeState? Trade {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]

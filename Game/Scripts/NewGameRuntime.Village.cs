@@ -11,6 +11,7 @@ public partial class NewGameRuntime
         var scroll=new ScrollContainer{CustomMinimumSize=new(500,350),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(490,0)};scroll.AddChild(box);
         box.AddChild(new Label{Text=NewGameWorld.SiteName(v.Site.Value)+" — 村との相談"});
         box.AddChild(new Label{Text=v.Representative+"「"+v.Reaction+"」",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(v.Administration!="")box.AddChild(new Label{Text=v.Administration,AutowrapMode=TextServer.AutowrapMode.WordSmart});
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(VillageAction action,EntityId? proposal=null,long amount=0){var r=Session.ConsultVillage(new(new("request:village-ui/"+shown),action,v.Site,proposal,amount),Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowVillage();}
         var amount=new SpinBox{MinValue=1,MaxValue=3000,Step=1,Value=200,Suffix=" kg"};box.AddChild(amount);
