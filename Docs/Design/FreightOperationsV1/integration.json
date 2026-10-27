@@ -2,5 +2,6 @@
   "status": "PENDING_USER_APPROVAL",
   "base_main": "1c58d8d6e937eef8ae392966af73788da3d4d773",
   "scope": "Code and documentation only; no model assets",
-  "pull_request": null
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/24",
+  "code_head": "7ab26f87f1dfc8194fcf96cfc21bda3d18c81951"
 }

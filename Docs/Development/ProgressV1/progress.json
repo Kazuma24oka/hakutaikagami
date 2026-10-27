@@ -75,7 +75,7 @@
     "Scripts/verify_npc_freight.py": "35c18ecec80054733ee1620054068a9f1eaf663aca426c6d8d868d45cbbc481c",
     "Docs/Design/FreightOperationsV1/completion.json": "5d71d38c2812e9b363bd10f2892ccb250220dc350f667ff75fb0b5e062cba330",
     "Docs/Design/FreightOperationsV1/README.md": "9bd431a45d1c068244965a1084bde96699fbb0c82c2f657c1ed4985e92800152",
-    "Docs/Design/FreightOperationsV1/integration.json": "7b1d9b659ed1186e51e0047f07a16167fe4f55178e289dc6276835095890facf",
+    "Docs/Design/FreightOperationsV1/integration.json": "c373ffc31f234b0d5e58667da0f5c0aa2e7f1f3ae7f602d2c63f0bddaa2ecf03",
     "Docs/Development/ProgressV1/approval-baseline-v13.json": "2397a8f65361fb04ca2ec6833de0692fd3b436639a0e47a1c8ee95b2ded2ffb3",
     "Scripts/verify_freight_operations.py": "a11e3f7d30fe5f8e8333878b586642ce34a143f3acb5a4790cf39a390d50016d"
   },
