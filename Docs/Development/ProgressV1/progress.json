@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "8ad6acb81d1446f94079a36d8ba50b1859811711e308643a865a8c386f0785eb",
-    "Docs/Development/ProgressV1/estimate.json": "9d6fa66a707210223b435971f91a053c0198e8b12c7ee12f9a8ab75eed219456",
+    "Docs/Development/ProgressV1/estimate.json": "d1dcd53e0707b9bc9fcdcef2454c49c40267a2aaeed93f9753cabd838f354095",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "6a21f702048e0517bd5e986010daba28580fd83f20fd9f34461d3e8cbf9bf747",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -46,7 +46,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v5.json": "05bef4769dc125655753d032bcb97a1a4054e2405dfb0ce1467a005dc8312981",
     "Docs/Design/CommunityStewardshipV1/completion.json": "1d8ac7d6128e6fa9ea7121632695cbe0a5903c24215dea78aef7913961815ee2",
     "Docs/Design/CommunityStewardshipV1/README.md": "b3e298f002a058077811c128fc607f050c56d98511996dfc91caad445d74369c",
-    "Docs/Design/CommunityStewardshipV1/integration.json": "d6417fca8bb4a106e4693bd7bdb8cd34abef78cf2a5b3c26bede219f1ba5a725",
+    "Docs/Design/CommunityStewardshipV1/integration.json": "cfbb58f11eef6589671fea6bbe492be3cd203dc2a751ce921eb06a7a81c7ade8",
     "Docs/Development/ProgressV1/approval-baseline-v6.json": "27cd3a8ea17fd3ab7e93b06f6dd645a1073d896cd936e20f60ad7074970e0f97"
   },
   "items": [
