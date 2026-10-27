@@ -1944,3 +1944,8 @@ Docs/Design/RegionalTradeV1/** -text
 Game/Scripts/NewGameRuntime.Salary.cs -text
 Scripts/verify_house_salary.py -text
 Docs/Design/HouseSalaryV1/** -text
+
+# Village consultation exact-byte sources and evidence.
+Game/Scripts/NewGameRuntime.Village.cs -text
+Scripts/verify_village_consultation.py -text
+Docs/Design/VillageConsultationV1/** -text

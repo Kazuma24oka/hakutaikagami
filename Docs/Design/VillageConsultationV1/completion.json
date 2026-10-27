@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Village organization, members and rotating representative are separate from site and house; local proposals record refusal and representative version",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs"
+      ]
+    },
+    {
+      "contract": "Explicit confirmation and bounded relief/work promises preserve expiry, cancellation and existing obligations across representative change",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs"
+      ]
+    },
+    {
+      "contract": "Actual relief and water labor use the existing conserved rice and workforce accounts; partial delivery and reserved salary cannot be duplicated or bypassed",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs"
+      ]
+    },
+    {
+      "contract": "Dated fulfillment and breach affect next village reply without forced general loyalty or remote disclosure",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs"
+      ]
+    },
+    {
+      "contract": "Local NPC heads autonomously relieve hunger, collect bounded assessed levy and agree water work from their own dated accounts; PC head control and salary reservations preserved; normal entry, real recovery/future equality and headless Node3D match",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN"
+}

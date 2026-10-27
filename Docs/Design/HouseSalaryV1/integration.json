@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-27",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/16",
+  "approved_head": "1fe7f7135e15acc2ce48d6ebbf721c160925edcc",
+  "main_commit": "ddc05e926ed52d3966c757ff3fa74b0843482a1c",
+  "approved_tree": "415e945905c6006b999ff22a0bc074da68e44f1f",
+  "main_tree": "415e945905c6006b999ff22a0bc074da68e44f1f",
+  "status": "MERGED_EXACT_TREE",
+  "scope": "code and documentation only; no model assets",
+  "verification": "Runtime unchanged; existing754 tests, actual generation recovery and32 pairs128 Node3D evidence retained. GUI/full2790 NOT_RUN.",
+  "authorization": "Explicit user approval of PR16 exact head; not blanket authorization for future main merges."
+}

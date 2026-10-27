@@ -25,14 +25,14 @@ public sealed partial class WorldSession
     private void Change(Action<ContractWorld> change, Action? beforeCommit = null)
     {
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
-        change(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);NewGameService.Sync(next);NewGameMilitary.Sync(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); NewGameMilitary.RecordMilitaryObservation(next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
+        change(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);NewGameService.Sync(next);NewGameMilitary.Sync(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); NewGameMilitary.RecordMilitaryObservation(next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
     }
     public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
     public CommandResult IssueRegional(RegionalRequest request,long revision){lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
     public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
-        if(HouseSalary.OwnIdUsed(state,request.Id)||RegionalTrade.OwnIdUsed(state,request.Id)||CommunityEconomy.OwnIdUsed(state,request.Id)||RegionalEconomy.OwnIdUsed(state,request.Id)||FactionNotices.OwnIdUsed(state,request.Id)||NpcArmies.Musters(state).Any(m=>m.Id==request.Id)||FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
+        if(NpcCommunityAdministration.OwnIdUsed(state,request.Id)||VillageConsultation.OwnIdUsed(state,request.Id)||HouseSalary.OwnIdUsed(state,request.Id)||RegionalTrade.OwnIdUsed(state,request.Id)||CommunityEconomy.OwnIdUsed(state,request.Id)||RegionalEconomy.OwnIdUsed(state,request.Id)||FactionNotices.OwnIdUsed(state,request.Id)||NpcArmies.Musters(state).Any(m=>m.Id==request.Id)||FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Region?.Commands.Any(c=>c.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         if(state.Field?.Orders.Any(o=>o.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
@@ -118,7 +118,7 @@ public sealed partial class WorldSession
                 PrivateInformation.RecordOpening(s,actor,m.Id);TruceNegotiations.RecordOpening(s,actor,m.Id);FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
-            TruceNegotiations.TakeTurns(this);return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
+            NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
         }
     }
     public CommandResult Assent(EntityId taskId, EntityId actor, bool accept, long expectedRevision)
@@ -165,7 +165,7 @@ public sealed partial class WorldSession
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                TruceNegotiations.TakeTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 processed+=cost;
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
@@ -180,6 +180,8 @@ public sealed partial class WorldSession
         if(PersonalCompanions.NextReleaseBoundary(s,target) is {} releaseBoundary)times.Add(releaseBoundary);
         if(PrivateStanddown.NextBoundary(s,target) is {} standdownBoundary)times.Add(standdownBoundary);
         if(TruceNegotiations.NextBoundary(s,target) is {} truceBoundary)times.Add(truceBoundary);
+        if(NpcCommunityAdministration.NextBoundary(s,target) is {} adminBoundary)times.Add(adminBoundary);
+        if(VillageConsultation.NextBoundary(s,target) is {} villageBoundary)times.Add(villageBoundary);
         if(HouseSalary.NextBoundary(s,target) is {} salaryBoundary)times.Add(salaryBoundary);
         if(RegionalTrade.NextBoundary(s,target) is {} tradeBoundary)times.Add(tradeBoundary);
         if(CommunityEconomy.NextBoundary(s,target) is {} communityBoundary)times.Add(communityBoundary);

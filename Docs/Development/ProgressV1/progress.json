@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "0af42f5c9ec691eb71965736ef7810fb93e62622a2b29a6bb847678d9e8abd92",
-    "Docs/Development/ProgressV1/estimate.json": "e7525bc809c5922a8a4318497fa5b8b0ebd42cf8823fb719ddb27f730d074e24",
-    "Scripts/build_progress_report.py": "d1434cb9ba837804bc0dd888625124ce3bd570104a3dba6106947c2a7c975e35",
-    "Scripts/check_progress_report.py": "1b9af8c607cade72bbc60dba8c0e3a60f6fb0dc994001ef60688ede440d5e1e0",
+    "Docs/Development/OPERATING_POLICY.md": "945a33c63812080157ff6ee21bee6e3740a61c35f59b2484917ad5e011b7d8ec",
+    "Docs/Development/ProgressV1/estimate.json": "14f918b7b07b2921b73092bf91f6f6f922e3b9dec2ff8e9340af49b88edc6fe5",
+    "Scripts/build_progress_report.py": "a77fd94972f3caeb37f3fc4c749a33d89cd582c9ecdf4b64b203316aeb291d23",
+    "Scripts/check_progress_report.py": "2f1958f94ff512c473ee928242fde1459f2beac61d7f89495b2ea6638d8de28d",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "9ffa02294a84e2a2f4c01fe6478e820a1eb43bf7ff7efe6e0b8759e5de3c83af",
+    "Scripts/check_approval_batch.py": "eb31287b30247be2071ee84c8445554967908d342a3b9ea6098c333c1ef99a7d",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -36,7 +36,14 @@
     "Docs/Development/ProgressV1/approval-baseline-v3.json": "9549b680b9065f25218155fac06b314077ce2a352f56afcf1017f6741cfc1bdd",
     "Docs/Development/SalaryStageV1.md": "ce0b32f10d2c733ffa7078c4a7cddb377179f0a07c385f7a87c481178ae32379",
     "Docs/Design/HouseSalaryV1/README.md": "6a5e5fd0510aa55f3c8287429d6e7310bc0d5c7376ad1f6b355ffa5f326eae2f",
-    "Docs/Design/HouseSalaryV1/completion.json": "f857e9b837ebd9f40ffc98b9bf8aca15a270b19b6a228dbd105d83aa92b48a60"
+    "Docs/Design/HouseSalaryV1/completion.json": "f857e9b837ebd9f40ffc98b9bf8aca15a270b19b6a228dbd105d83aa92b48a60",
+    "Docs/Design/HouseSalaryV1/integration.json": "4cb3a9dd9eee2668d1cf657054c4a4ee48f5717dda795641f91e6d9dcc4e2abb",
+    "Docs/Design/VillageConsultationV1/completion.json": "6dfbb2b2d8a0fcf69d3f7c3e529d11c88b8d827cb8c5da31132369157c197391",
+    "Docs/Design/VillageConsultationV1/README.md": "b66c85073bb732ff0f7866e16aef7cc63756a031e53545edbd1abfa11758b45e",
+    "Docs/Design/VillageConsultationV1/administration-plan.md": "000942ec66b985f95722e239c36fcfbefe919f704cac754bf651fc6161c115ef",
+    "Docs/Design/VillageConsultationV1/integration.json": "e85d6d72b0ac279566c6a9e18ce3afcc9e596d1bb126e1c53e81c30b9581c7de",
+    "Docs/Development/ProgressV1/approval-baseline-v4.json": "c1909ebbff226f7500e6d551ea334ebb3761ecf6fc1de4c7d860ab093a1633ae",
+    "Docs/Development/ProgressV1/approval-baseline-v5.json": "05bef4769dc125655753d032bcb97a1a4054e2405dfb0ce1467a005dc8312981"
   },
   "items": [
     {
@@ -582,9 +589,15 @@
     {
       "id": "BD-33",
       "status": "normal",
-      "existing": "3地域の人口/働き手/労働予約、月次食糧消費と作柄・収穫、水利工事を通常の新規開始へ接続。実世代復旧で工事/不足/再開後の将来が一致。",
-      "remaining": "人口変動/民兵動員/全国の村落台帳と地形・気候生産の一般化。",
+      "existing": "3地域の生産/労働へ村の水利協力合意、NPCの月次工事・上限管理を接続。休止/救済再開と複数工事の完成表示を回帰確認。",
+      "remaining": "全国の村落生産台帳、出生死亡/移住、地形気候と作物の一般化。",
       "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/CommunityEconomyTests.cs",
         "Game/Scripts/NewGameRuntime.Communities.cs",
@@ -654,9 +667,15 @@
     {
       "id": "BD-36",
       "status": "normal",
-      "existing": "売買の引当保護に、家の支払準備米を追加。工事/村の救済による二重支出を拒否し、準備の期限/取消では引当だけ解放。足りなければ未払いと一部支給を保持する。",
-      "remaining": "全用途/全物資の同時順位按分、緊急転用・補償、待機の一般的な再裁定。",
+      "existing": "村への部分受渡し/合意工事とNPCの救済/徴税/工事を共通台帳で裁定。給付引当と保護備蓄を守り、二重履行/支出を拒否。",
+      "remaining": "全物資/全用途の同順位按分、緊急転用・補償、一般の資源再裁定。",
       "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/HouseSalary.cs",
         "Tests/HouseSalaryTests.cs",
         "Game/Scripts/NewGameRuntime.Salary.cs",
@@ -854,9 +873,15 @@
     {
       "id": "BD-49",
       "status": "normal",
-      "existing": "通常軍務で当主の発令根拠と家の所有資源、本人の指揮権を分ける。",
-      "remaining": "国人/寺社の合議、代表交代・不在/代理、反対派と組織意思を実装する。",
+      "existing": "村落の独立組織/代表2役と交代、返答版/成立済み義務を分離し保存復旧。NPC当主の現地合意も別判断原本へ記録。",
+      "remaining": "国人/寺社の合議、多数の構成員/有力者、代理/反対派/代表選出の一般化。",
       "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/NewGameMilitaryAuthority.cs",
         "Core/Contracts/NewGameMilitary.Authority.cs",
         "Tests/MilitaryIssuerAuthorityTests.cs"
@@ -866,10 +891,16 @@
     },
     {
       "id": "BD-50",
-      "status": "foundation",
-      "existing": "初期の家・直属主君・役職と一時指揮を分けるデータがある。",
-      "remaining": "国人の自治・従属義務・派閥・戦時指揮が並行する政治運用を実装する。",
+      "status": "normal",
+      "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
+      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。",
       "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/ContractModels.cs"
       ],
@@ -890,9 +921,15 @@
     {
       "id": "BD-52",
       "status": "normal",
-      "existing": "固定Seedの干ばつ/洪水で収穫が変化し、食糧不足で工事休止。現地武将の観測時点を固定した封書と救済による残り工期再開を3地域の明示契約へ接続。",
-      "remaining": "全国の災害分布・人口の逃散/死亡、住民の政治反応、救済要請交渉・一揆。",
+      "existing": "固定Seedの不足と救済に、村との期限付き約束/部分履行/不信/次の返答、NPC現地救済を接続。",
+      "remaining": "全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。",
       "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/CommunityEconomyTests.cs",
         "Game/Scripts/NewGameRuntime.Communities.cs",
@@ -992,9 +1029,15 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "少数の史実NPCの初回点検/返報待機と、既知記録からの仕事需要がある。",
-      "remaining": "経済・軍事・外交・人物の目標から自律判断し、詳細/遠方簡略モードの状態一致を実現する。",
+      "existing": "月初の現地NPC当主が本人の帳簿から救済/既定徴税/合意工事/待機を選び、入力ハッシュと現物原本を保存。現地不在は情報を読まず待機。",
+      "remaining": "全国の目標/遠隔報告/代理行政/市場運営、軍事外交との優先順位、詳細と遠方簡略の同値性。",
       "evidence": [
+        "Core/Contracts/VillageConsultation.cs",
+        "Core/Contracts/NpcCommunityAdministration.cs",
+        "Tests/VillageConsultationTests.cs",
+        "Tests/NpcCommunityAdministrationTests.cs",
+        "Docs/Design/VillageConsultationV1/verification.json",
+        "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
         "Core/Contracts/LocalWorkDemand.cs",
         "Tests/NewGameNpcRoutineTests.cs",
@@ -1575,12 +1618,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 754,
+      "passed": 809,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/HouseSalaryV1/runtime-local/tests/house-salary-current.trx",
-      "sha256": "581c5fb8670f3038f75e9b9d2ead780484d74601c7a257ab6789be9f4c722bf1",
-      "scope": "Current related754 only,24 new; full2790 and GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/VillageConsultationV1/runtime-local/tests/village-consultation-current.trx",
+      "sha256": "512973aec572931515e53c000cdb896c7350453bd3f19e589ea1921ace9d323e",
+      "scope": "Current related809 only,55 new. Full2845/GUI NOT_RUN; historical full2446 remains separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1592,14 +1635,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 2392,
+      "passed": 809,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/HouseholdMilitaryV1/runtime-local/all-tests/all-current.trx",
-      "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
-      "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
+      "trx": "Docs/Design/VillageConsultationV1/runtime-local/tests/village-consultation-current.trx",
+      "sha256": "512973aec572931515e53c000cdb896c7350453bd3f19e589ea1921ace9d323e",
+      "scope": "Current related809 only,55 new. Full2845/GUI NOT_RUN; historical full2446 remains separate."
     },
-    "current_stage_summary": "現地の主君/直属家臣が相談→返答確認→月初三回の米給付を合意。期日と支払準備と実受領を分け、工事/救済の二重使用を拒否。不足/一部払い/終了/実辞去後も旧債務を保持し、受領米を既存市場で売却可能。NPC家臣の遅配履歴は次の返答へ反映し、PCの継続意思や一般の忠誠は変えない。新規24/関連754件・Gameビルド成功。主君/家臣側の実世代復旧と受領米売却後の将来世界一致、画面なしGodot32組64世界128Node3D一致。外観/UI操作・全2790件は未実施。",
+    "current_stage_summary": "村落共同体と施設/家を分離し、現地の代表返答→条件確認→救済の部分受渡し/合意した水利工事→履行/不履行の反応へ接続。代表交代は未確認返答だけを失効させ、成立済み約束を保持。NPC当主の現地月次判断も救済/既定年貢/水利/待機へ接続し、プレイヤー家と俸禄引当を保護。新規55/関連809件・Gameビルド・実世代復旧と将来世界一致・画面なしGodot40組80世界144Node3D一致。外観/UI操作・全2845件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1621,9 +1664,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/RegionalTradeV1/integration.json",
-    "current_logic_verification": "Docs/Design/HouseSalaryV1/verification.json",
-    "current_logic_verification_sha256": "a034e19be28a5bfc3d1dbc265fd1a826d263e7672ee10aeb58db0ba69ff8d42e",
+    "integration": "Docs/Design/VillageConsultationV1/integration.json",
+    "current_logic_verification": "Docs/Design/VillageConsultationV1/verification.json",
+    "current_logic_verification_sha256": "3529fac25e6b9ed9b8051fc83d82c0c35a966caa26cdf9bbeac7b9fddcb2703f",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1632,7 +1675,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連685件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連809件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1688,11 +1731,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "人口/労働/季節収支/凶作/救済を3地域でつなぐ。評価訂正分を除き1ポイント以上の実装増分まで統合承認を求めない。",
-    "R5：城・勢力・家督の変化と個別の履行",
-    "各地域の生産・人物・軍事・交渉の一巡を拡張",
-    "全国史実データと活動NPCを段階的に統合",
-    "正式素材・画面・性能・製品範囲の受入を整える"
+    "代理官と時点付き報告による不在当主の地域運営",
+    "米以外の物資と市場運営への拡張",
+    "同じ経済/社会契約を全国の地域データへ適用",
+    "平時・戦時の収支と住民/家臣の判断を通し調整",
+    "正式素材・画面・性能と製品範囲の受入"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

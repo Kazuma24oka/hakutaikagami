@@ -208,8 +208,8 @@
       "basis": "受領確認や次依頼への反映まで。責任審査・処分・政治的昇進はこれから。"
     },
     "BD-33": {
-      "percent": 40,
-      "basis": "3地域の独立台帳/人口/働き手/予約労働/作柄/月次食糧/工事と救済を接続。人口変動/民兵徴発/全国拡張は未完。"
+      "percent": 60,
+      "basis": "3地域の生産/労働へ村の水利協力合意、NPCの月次工事・上限管理を接続。休止/救済再開と複数工事の完成表示を回帰確認。 全国の村落生産台帳、出生死亡/移住、地形気候と作物の一般化。"
     },
     "BD-34": {
       "percent": 70,
@@ -220,8 +220,8 @@
       "basis": "米一商品の3地域売買を現地見積/合意/引当/支払と受取/実移動/納入/代金債務/精算へ接続。一般の他商品/商人AI/保証・担保/全国相場は後続。"
     },
     "BD-36": {
-      "percent": 45,
-      "basis": "売買の米/銭/納入後支払と、家の給付準備米を保護。工事/救済の二重使用を拒否し、期限や取消で予約だけ解放。一般の同順位按分/緊急転用・補償は後続。"
+      "percent": 55,
+      "basis": "村への部分受渡し/合意工事とNPCの救済/徴税/工事を共通台帳で裁定。給付引当と保護備蓄を守り、二重履行/支出を拒否。 全物資/全用途の同順位按分、緊急転用・補償、一般の資源再裁定。"
     },
     "BD-37": {
       "percent": 30,
@@ -272,20 +272,20 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-49": {
-      "percent": 10,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 40,
+      "basis": "村落の独立組織/代表2役と交代、返答版/成立済み義務を分離し保存復旧。NPC当主の現地合意も別判断原本へ記録。 国人/寺社の合議、多数の構成員/有力者、代理/反対派/代表選出の一般化。"
     },
     "BD-50": {
-      "percent": 5,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 20,
+      "basis": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。 国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。"
     },
     "BD-51": {
       "percent": 0,
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-52": {
-      "percent": 20,
-      "basis": "固定Seedの干ばつ/洪水/食糧不足、現地の時点付き封書、救済/工事再開を実装。全国災害/住民政治反応/一揆は未実装。"
+      "percent": 55,
+      "basis": "固定Seedの不足と救済に、村との期限付き約束/部分履行/不信/次の返答、NPC現地救済を接続。 全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。"
     },
     "BD-53": {
       "percent": 0,
@@ -308,8 +308,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-58": {
-      "percent": 10,
-      "basis": "少数NPCの点検需要まで。全国の経済・軍事・外交を自律運用するAIはこれから。"
+      "percent": 30,
+      "basis": "月初の現地NPC当主が本人の帳簿から救済/既定徴税/合意工事/待機を選び、入力ハッシュと現物原本を保存。現地不在は情報を読まず待機。 全国の目標/遠隔報告/代理行政/市場運営、軍事外交との優先順位、詳細と遠方簡略の同値性。"
     },
     "BD-59": {
       "percent": 20,
@@ -321,21 +321,21 @@
     }
   },
   "focus": {
-    "leaf": "BD-34",
-    "status": "家の給付と本人の収入の最小一巡5/5。main統合のみ個別承認。",
-    "title": "家の支給・未払い・受領米の売却・相手の返答",
+    "leaf": "BD-49",
+    "title": "村との相談・履行・反応とNPCの現地地域運営",
+    "status": "5/5完了。1ポイントで停止せず二工程を実装・検証。main統合だけ未承認。",
     "exit": [
-      "Local bilateral salary proposal and explicit confirmation with actual head/direct-service authority; no role or troop transfer",
-      "Three monthly rice obligations, bounded payment preparation and protected house inventory; unpaid debts survive end and affiliation changes",
-      "Physical payment credits employee private rice; existing market sale uses the same rice without minting money or sharing military supplies",
-      "Employee-to-employer salary reliability follows dated due/receipt history and affects next local proposal without remote private-attitude disclosure",
-      "Normal-entry head/employee UI, actual generation recovery and future equality, old-v3 bytes, Game build and headless Node3D placement"
+      "Village organization, members and rotating representative are separate from site and house; local proposals record refusal and representative version",
+      "Explicit confirmation and bounded relief/work promises preserve expiry, cancellation and existing obligations across representative change",
+      "Actual relief and water labor use the existing conserved rice and workforce accounts; partial delivery and reserved salary cannot be duplicated or bypassed",
+      "Dated fulfillment and breach affect next village reply without forced general loyalty or remote disclosure",
+      "Local NPC heads autonomously relieve hunger, collect bounded assessed levy and agree water work from their own dated accounts; PC head control and salary reservations preserved; normal entry, real recovery/future equality and headless Node3D match"
     ],
     "deferred": [
-      "全国の俸禄/知行/定期現金給与",
-      "一般の性格/忠誠と自律家臣運営",
-      "家督/死亡時の債務承継",
-      "全物資の同時按分と緊急転用"
+      "全国の自治/合議と政治反発",
+      "代理官/使者を使う遠隔行政",
+      "多商品の市場とNPC交易",
+      "製品範囲の外観/UI受入"
     ]
   },
   "roadmap": [
@@ -351,7 +351,7 @@
       "id": "R2",
       "title": "領地で暮らしと収支を回す",
       "domain": "領地の暮らしと地域社会",
-      "status": "3地域経済・米売買・家の給付の最小一巡Core/API完了。外観は未確認",
+      "status": "3地域の経済・取引・給付・村との合意・NPC現地運営の限定一巡まで接続。全国は後続",
       "finish": "家の米の収穫/徴収/支出に、現地売買・定期給付・未払い・本人の受領米売却を接続。全国経済は後続。",
       "why": "在庫を消費するだけの世界から、生活と領地の循環へ進む。"
     },
@@ -388,7 +388,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -482,14 +482,15 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 3,
-    "baseline_commit": "09806b77d0f372b7edb5e72031ddfca0d6d533b7",
-    "baseline": 22.443587662337663,
-    "current": 23.51650432900433,
-    "earned_gain": 1.0729166666666667,
+    "version": 5,
+    "baseline_commit": "6c51f21f33cf7804ce5e7e51f6025b87fde670ab",
+    "baseline": 23.51650432900433,
+    "current": 25.8517316017316,
+    "earned_gain": 2.335227272727273,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
-    "criteria_total": 5
+    "criteria_total": 5,
+    "integrated_main": null
   }
 }
