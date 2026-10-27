@@ -17,8 +17,8 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "0af42f5c9ec691eb71965736ef7810fb93e62622a2b29a6bb847678d9e8abd92",
-    "Docs/Development/ProgressV1/estimate.json": "e7525bc809c5922a8a4318497fa5b8b0ebd42cf8823fb719ddb27f730d074e24",
+    "Docs/Development/OPERATING_POLICY.md": "fce9e65be3c774b96eaebcb29b3aa31cd6007181d3aa316e27dc6822e6709338",
+    "Docs/Development/ProgressV1/estimate.json": "7b9d22eb30f914b63a710853f8e7b2a5444033370fd0afafcf01eb6fd7fbd49c",
     "Scripts/build_progress_report.py": "d1434cb9ba837804bc0dd888625124ce3bd570104a3dba6106947c2a7c975e35",
     "Scripts/check_progress_report.py": "1b9af8c607cade72bbc60dba8c0e3a60f6fb0dc994001ef60688ede440d5e1e0",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -36,7 +36,8 @@
     "Docs/Development/ProgressV1/approval-baseline-v3.json": "9549b680b9065f25218155fac06b314077ce2a352f56afcf1017f6741cfc1bdd",
     "Docs/Development/SalaryStageV1.md": "ce0b32f10d2c733ffa7078c4a7cddb377179f0a07c385f7a87c481178ae32379",
     "Docs/Design/HouseSalaryV1/README.md": "6a5e5fd0510aa55f3c8287429d6e7310bc0d5c7376ad1f6b355ffa5f326eae2f",
-    "Docs/Design/HouseSalaryV1/completion.json": "f857e9b837ebd9f40ffc98b9bf8aca15a270b19b6a228dbd105d83aa92b48a60"
+    "Docs/Design/HouseSalaryV1/completion.json": "f857e9b837ebd9f40ffc98b9bf8aca15a270b19b6a228dbd105d83aa92b48a60",
+    "Docs/Design/HouseSalaryV1/integration.json": "4cb3a9dd9eee2668d1cf657054c4a4ee48f5717dda795641f91e6d9dcc4e2abb"
   },
   "items": [
     {
@@ -1599,7 +1600,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "現地の主君/直属家臣が相談→返答確認→月初三回の米給付を合意。期日と支払準備と実受領を分け、工事/救済の二重使用を拒否。不足/一部払い/終了/実辞去後も旧債務を保持し、受領米を既存市場で売却可能。NPC家臣の遅配履歴は次の返答へ反映し、PCの継続意思や一般の忠誠は変えない。新規24/関連754件・Gameビルド成功。主君/家臣側の実世代復旧と受領米売却後の将来世界一致、画面なしGodot32組64世界128Node3D一致。外観/UI操作・全2790件は未実施。",
+    "current_stage_summary": "現地の主君/直属家臣が相談→返答確認→月初三回の米給付を合意。期日と支払準備と実受領を分け、工事/救済の二重使用を拒否。不足/一部払い/終了/実辞去後も旧債務を保持し、受領米を既存市場で売却可能。NPC家臣の遅配履歴は次の返答へ反映し、PCの継続意思や一般の忠誠は変えない。新規24/関連754件・Gameビルド成功。主君/家臣側の実世代復旧と受領米売却後の将来世界一致、画面なしGodot32組64世界128Node3D一致。外観/UI操作・全2790件は未実施。 PR #16を2026-10-27に明示承認でコードと資料のみmainへ統合、承認headとツリー一致。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1621,7 +1622,7 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/RegionalTradeV1/integration.json",
+    "integration": "Docs/Design/HouseSalaryV1/integration.json",
     "current_logic_verification": "Docs/Design/HouseSalaryV1/verification.json",
     "current_logic_verification_sha256": "a034e19be28a5bfc3d1dbc265fd1a826d263e7672ee10aeb58db0ba69ff8d42e",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",

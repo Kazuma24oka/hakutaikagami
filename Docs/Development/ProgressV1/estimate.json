@@ -322,7 +322,7 @@
   },
   "focus": {
     "leaf": "BD-34",
-    "status": "家の給付と本人の収入の最小一巡5/5。main統合のみ個別承認。",
+    "status": "5/5完了・PR #16 main統合済み。次は村落との相談/反応の完成条件を実装前に固定。",
     "title": "家の支給・未払い・受領米の売却・相手の返答",
     "exit": [
       "Local bilateral salary proposal and explicit confirmation with actual head/direct-service authority; no role or troop transfer",
@@ -490,6 +490,7 @@
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
-    "criteria_total": 5
+    "criteria_total": 5,
+    "integrated_main": "ddc05e926ed52d3966c757ff3fa74b0843482a1c"
   }
 }
