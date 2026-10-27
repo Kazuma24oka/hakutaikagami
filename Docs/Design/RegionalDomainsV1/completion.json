@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "All30 hubs have explicit trial community population, workforce, harvest, food, workshop and material ledgers; unknown ownership creates no lord, cash or disposal authority",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalDomains.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Tests/RegionalDomainTests.cs",
+        "Game/Scripts/NewGameRuntime.Treasury.cs",
+        "Docs/Design/RegionalDomainsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "House treasury is separate from private money and merchants, with local budget/funding control and actual local quote, receipt and payment conservation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalDomains.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Tests/RegionalDomainTests.cs",
+        "Game/Scripts/NewGameRuntime.Treasury.cs",
+        "Docs/Design/RegionalDomainsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Local NPC heads and explicitly scoped delegates procure only needed rice/timber within free stock, real house funds, monthly budget and protected reservations; player agency, absence, expiry and physical revocation preserved",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalDomains.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Tests/RegionalDomainTests.cs",
+        "Game/Scripts/NewGameRuntime.Treasury.cs",
+        "Docs/Design/RegionalDomainsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Delegate reports include immutable dated house cash/material/budget observations only after physical delivery/opening; no remote live balances or copied-report refresh",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalDomains.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Tests/RegionalDomainTests.cs",
+        "Game/Scripts/NewGameRuntime.Treasury.cs",
+        "Docs/Design/RegionalDomainsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry and local UI, legacy v8 bytes, actual generation recovery/future equality across nationwide production, funding, purchase, material shortage and revocation; Game build/headless Node3D; preserve causal validation while avoiding redundant full regional replay",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalDomains.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Tests/RegionalDomainTests.cs",
+        "Game/Scripts/NewGameRuntime.Treasury.cs",
+        "Docs/Design/RegionalDomainsV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN"
+}

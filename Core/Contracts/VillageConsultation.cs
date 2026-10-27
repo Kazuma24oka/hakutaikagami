@@ -15,7 +15,7 @@ public static class VillageConsultation
     public const string Policy="village-representative-relief-water-performance-v5";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy or MaterialMarkets.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Villages?.Entries.Any(e=>e.Input.Id==id)==true;
     static int Term(long at)=>checked((int)(at/(30*Day)));
     static VillageOrganization Organization(EntityId site)=>new(new("organization:village/"+site.Value.Replace(':','/') ),site,[new(new("person:village/"+site.Value.Replace(':','/')+"/a"),"村役人"),new(new("person:village/"+site.Value.Replace(':','/')+"/b"),"水利世話人")]);
@@ -51,7 +51,7 @@ public static class VillageConsultation
     {
         var proposals=new Dictionary<EntityId,VillageProposal>();var promises=new Dictionary<EntityId,VillagePromise>();var ids=new HashSet<EntityId>();long prev=0,priorAt=0;
         foreach(var e in entries){var i=e.Input;
-            Need(EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&e.Revision>prev&&e.Revision<=revision&&e.At>=priorAt&&e.At<=until&&CommunityEconomy.Sites.Contains(i.Site)&&Enum.IsDefined(i.Action),"村の原本・順序・地域が不正です");prev=e.Revision;priorAt=e.At;
+            Need(EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&e.Revision>prev&&e.Revision<=revision&&e.At>=priorAt&&e.At<=until&&CommunityEconomy.SitesFor(w).Contains(i.Site)&&Enum.IsDefined(i.Action),"村の原本・順序・地域が不正です");prev=e.Revision;priorAt=e.At;
             Need(!FactionStances.OtherIdUsed(w,i.Id,includeVillages:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
             Need(Local(w,i.Site,e.At,e.Revision)&&Authority(w,i.Site,e.At,e.Revision),"現地で家の処分権を持つ本人が相談してください");
             if(i.Action is VillageAction.ProposeWater or VillageAction.ProposeRelief){
@@ -82,7 +82,7 @@ public static class VillageConsultation
             }
         }
         Need(w.Communities!.Orders.Where(o=>o.Input.Id.Value.StartsWith("request:village-effect/",StringComparison.Ordinal)).All(o=>entries.Any(e=>e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==o.Input.Id)),"現物原本に対応する村との約束がありません");
-        return new(1,Policy,entries,CommunityEconomy.Sites.Select(Organization).ToArray(),proposals.Values.ToArray(),promises.Values.ToArray());
+        return new(1,Policy,entries,CommunityEconomy.SitesFor(w).Select(Organization).ToArray(),proposals.Values.ToArray(),promises.Values.ToArray());
     }
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Villages=Replay(w,[],w.ElapsedSeconds,w.CommitSequence);}
     internal static void Tick(ContractWorld w){if(Enabled(w))w.Villages=Replay(w,w.Villages!.Entries,w.ElapsedSeconds,w.CommitSequence);}
@@ -108,7 +108,7 @@ public static class VillageConsultation
     public static VillageLocalView? View(ContractWorld w)
     {
         if(!Enabled(w))return null;var site=w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;
-        if(site==null||!CommunityEconomy.Sites.Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
+        if(site==null||!CommunityEconomy.SitesFor(w).Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
         var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds);
         var cards=s.Promises.Where(p=>p.Site==site).Select(p=>new VillageCard(p.Id,p.Kind==VillageAction.ProposeWater?"水利工事":"救済",p.Amount,p.Delivered,p.DeliverBy,Status(w,p,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
         return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
