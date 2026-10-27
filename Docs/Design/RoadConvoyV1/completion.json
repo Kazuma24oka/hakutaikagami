@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "New explicit v17 consensual direct-retainer road supply reserves actual free house rice at a physical home meeting, binds the same army/case/owner and fixed destination, and excludes other jobs without duplicating troops or grain",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RoadConvoy.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/RegionalCampaign.cs",
+        "Tests/RoadConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.RoadSupply.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/RoadConvoyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Carrier uses common land roads and known-only route planning; unknown closure is observed physically, destination waits for actual same-case army/commander assembly and capacity, and only one actual meeting transfers rice Deliver only actual free capacity in whole kilograms, retaining all remainder on the carrier; simultaneous convoys cannot reserve or fill the same capacity twice.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RoadConvoy.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/RegionalCampaign.cs",
+        "Tests/RoadConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.RoadSupply.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/RoadConvoyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Physical cancellation receipt and expiry block later delivery without undoing earlier delivered grain; carrier completes its current road leg/journey safely and returns unused real grain to the original house Partial delivery followed by cancellation returns only unused cargo, preserving already consumed/delivered grain; completed carriers may be assigned again.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RoadConvoy.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/RegionalCampaign.cs",
+        "Tests/RoadConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.RoadSupply.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/RoadConvoyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Stop/delivery/return observations are immutable dated sealed reports through the existing courier system; opening and known failure/retry/cancellation acknowledgement remain distinct from actual cargo or effect, with no remote current-state leak",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RoadConvoy.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/RegionalCampaign.cs",
+        "Tests/RoadConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.RoadSupply.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/RoadConvoyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry/UI, explicit limits, legacy v16 and earlier actual save-byte preservation, actual generation recovery/future equality and headless Godot placement are checked; GUI/full suite remain explicitly unverified Supply report notification uses the existing delivery/attention pause, separated from report opening and physical receipt.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RoadConvoy.cs",
+        "Core/Contracts/FieldConvoy.cs",
+        "Core/Contracts/FreightOperations.cs",
+        "Core/Contracts/RegionalCampaign.cs",
+        "Tests/RoadConvoyTests.cs",
+        "Game/Scripts/NewGameRuntime.RoadSupply.cs",
+        "Game/Scripts/NewGameRuntime.CampSupply.cs",
+        "Docs/Design/RoadConvoyV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "New v17 only. Local principal and consenting adult direct retainer agree100kg or less of actual free house rice to the same army/case at a fixed land-connected assembly node within30days. Partial whole-kg receipts, remainder custody and physical return. Not all-faction autonomous dispatch planning, moving-army interception, sea transport, escort/robbery, casualties, horse/ammunition logistics or unrestricted remote house orders. GUI/full3186 NOT_RUN."
+}

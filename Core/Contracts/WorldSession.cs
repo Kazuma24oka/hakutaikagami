@@ -58,7 +58,7 @@ public sealed partial class WorldSession
             if (expectedRevision != state.CommitSequence) return new(ResultCode.StateChanged,intent.RequestId,state.CommitSequence,"表示を更新してください");
             try
             {
-                if(FieldConvoy.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1))throw new InvalidDataException("Carrier is busy with camp supply");
+                if(FieldConvoy.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1)&&intent.RoutePolicy!=RoadConvoy.LandRoute)throw new InvalidDataException("Carrier is busy with camp supply");
                 if(NpcFreight.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1)&&intent.RoutePolicy!=NpcFreight.LandRoute)throw new InvalidDataException("Carrier is busy with entrusted freight");
                 if(ArmyRoadMarch.ControlsParty(state)&&intent.Executor==state.PlayerControl&&intent.Action==ActionKind.Move&&intent.RoutePolicy!=ArmyRoadMarch.LandRoute)throw new InvalidDataException("Lead the held army through its march action");
                 if(intent.Executor==state.PlayerControl&&(FieldPresence.PlayerDeployed(state)||NewGameMilitary.Deployed(state)))throw new InvalidDataException("Return to the site before road travel");
@@ -168,7 +168,7 @@ public sealed partial class WorldSession
                     if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                FieldConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 processed+=cost;
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
@@ -182,6 +182,7 @@ public sealed partial class WorldSession
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
         if(PersonalCompanions.NextReleaseBoundary(s,target) is {} releaseBoundary)times.Add(releaseBoundary);
         if(FieldConvoy.NextBoundary(s,target) is {} convoyBoundary)times.Add(convoyBoundary);
+        if(RoadConvoy.NextBoundary(s,target) is {} roadSupplyBoundary)times.Add(roadSupplyBoundary);
         if(FreightOperations.NextBoundary(s,target) is {} freightMessageBoundary)times.Add(freightMessageBoundary);
         if(NpcFreight.NextBoundary(s,target) is {} freightBoundary)times.Add(freightBoundary);
         if(PrivateStanddown.NextBoundary(s,target) is {} standdownBoundary)times.Add(standdownBoundary);

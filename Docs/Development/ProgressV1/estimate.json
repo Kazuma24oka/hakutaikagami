@@ -152,20 +152,20 @@
       "basis": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 複数年代の正式史実データ/シナリオ差分と製品データ移行。"
     },
     "BD-19": {
-      "percent": 75,
-      "basis": "本人が率いる同じ3隊/名簿が共通の陸路・通行止め・行先変更に従う。元の軍用倉/家/原本と現在の集合地を分離。 軍勢の海上輸送、一般のNPC前線隊商、大規模な全軍行軍の性能受入。"
+      "percent": 85,
+      "basis": "担当家臣が本人と独立した共通陸路を移動し、停止/再開/待機/帰還の実位置を保持。補給担当者も同じGodot座標へ投影する。 軍勢の海上輸送、一般の多荷種隊商/道中引継ぎと全国規模の性能受入。"
     },
     "BD-20": {
       "percent": 15,
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-21": {
-      "percent": 65,
-      "basis": "部隊の受領/指揮権/同行/集合と本人の私的道路移動を排他にし、行軍中の遠隔買付と現地展開を拒否する。 全行動の一般競合表、療養/捕縛/奉行職と任務の一般併用。"
+      "percent": 70,
+      "basis": "街道補給担当者を私的用件/仕入れ/局所補給/軍指揮から排他にし、受領する本人/同じ部隊/集合/容量を実時点で確認する。 全行動の一般競合表、療養/捕縛/奉行職と任務の一般併用。"
     },
     "BD-22": {
-      "percent": 65,
-      "basis": "道路の行先変更と実兵糧の次区間判定を接続。集合地を変更しても元の家への返納/返報/指揮返還義務を保持。 軍勢の広域取消配送、道中の担当交代/再委任と一般補償。"
+      "percent": 80,
+      "basis": "面会取消/物理書状の受領後は次の受渡しを止める。部分受領済み米を巻き戻さず残りだけ実帰還返納し、実到達済み取消の受領履歴削除を拒否する。 全任務の一般取消/補償/担当交代、移動中部隊の追跡と引継ぎ。"
     },
     "BD-23": {
       "percent": 70,
@@ -176,32 +176,32 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-25": {
-      "percent": 80,
-      "basis": "運搬報告は観測原本を封書で実配送し、到達/開封までは購入結果を出さない。野営地の受取は本人の実接触で知る。 全情報種別の認識/偵察/流言、一般の地理発見と大規模索引。"
+      "percent": 85,
+      "basis": "停止/部分受渡し/帰還の当時の荷・累計・拠点を封書で届ける。開封前の現況を隠し、現地受領/倉の確認と遠隔返報を区別する。 全情報種別の偵察/流言/地理発見、遠方の認識と大規模索引。"
     },
     "BD-26": {
-      "percent": 35,
-      "basis": "購入/精算の観測時刻を固定し、再送しても内容と観測日を更新しない。既知の古い報告を現在の荷/在庫へ読み替えない。 全情報の信用/誤認/訂正、噂の伝播、出所間の競合と鮮度。"
+      "percent": 40,
+      "basis": "再送しても観測日時/当時の荷/累計受渡しを更新しない。開封した古い報告を現在値へ読み替えず、報告欄にも日時を明記する。 全情報の信用/誤認/訂正、噂の伝播、出所間の競合。"
     },
     "BD-27": {
-      "percent": 70,
-      "basis": "家臣への運搬取消と受領返報を共通の封書配送へ接続。使者の宛先と待合時刻を原本へ照合し、相手不在は不達とする。 一般書状の代理開封/差止めと全委任種別、移動先への受渡し一般化。"
+      "percent": 75,
+      "basis": "既存の封書配送を街道補給の停止/部分受渡し/帰還と取消/返報へ再利用。既知不達から同じ観測を最大三通まで再送し、移動中の受信者を自動追跡しない。 一般書状の代理開封/差止め/転送、全委任種別の宛先と受渡し。"
     },
     "BD-28": {
-      "percent": 50,
-      "basis": "封書到達時の既存自動停止と開封後の時点付き表示を接続。取消発送/受領返報確認/現物返納を画面で分ける。 通知優先度/一覧整理、全役職・大規模世界の注意喚起と自動停止設定。"
+      "percent": 55,
+      "basis": "補給報告の実到達で既存の注意喚起/自動停止へ接続し、開封して初めて当時の内容を表示する。取消発送/受領認識/現物返納を分ける。 全通知の優先度・検索・表示整理と大規模世界の注意喚起設定。"
     },
     "BD-29": {
       "percent": 50,
       "basis": "家の仕入先/品目/数量/前渡金/30日の現地合意→実移動→現地買付→帰還受領/余金返却を一巡。完了証拠は実受領で一度だけ成立。 全任務種別への統合、報酬/評価の一般化、長期任務の交代と同時受任。"
     },
     "BD-30": {
-      "percent": 80,
-      "basis": "現地合意した固定地点/米/原本で補給を任せ、NPC本人が地形を歩いて合流を待つ。原資/部隊/容量/期限を本人操作と共通台帳で検査する。 道中の再委任、全国の自軍行軍と広域補給隊、全任務の裁量/監督。"
+      "percent": 90,
+      "basis": "同意する家臣へ現物・固定拠点・同じ軍務・期限を任せ、本人不在なら待機し、容量分だけ渡して残米を持ち帰る条件付き委任を接続。実帰還後の再依頼も検査。 一般任務の裁量/監督/再委任、遠方の簡略進行と詳細進行の全機能同値。"
     },
     "BD-31": {
-      "percent": 65,
-      "basis": "取消発送と実受領と返報認識を分け、購入との前後競合を検査。不達を本人が知ってから同じ原本を再送し、精算済みの荷を巻き戻さない。 緊急逸脱/命令変更の全任務一般化、担当交代と補償の裁定。"
+      "percent": 70,
+      "basis": "未知の封鎖は現地で観測し、停止報告と既知不達再送を実行。現地の再開確認後に再出発し、取消と部分受渡しの前後関係を保存後も保持する。 全任務の緊急逸脱と引継ぎ、護衛戦/輸送事故/補償の一般裁定。"
     },
     "BD-32": {
       "percent": 10,
@@ -236,8 +236,8 @@
       "basis": "実在NPC軍/受領交戦任務/自衛からの実損害、消費、撤退/帰還/返報までCore確認。復旧と3D座標データは一致。通常開始の有効化、実画面/全野戦/攻城は未完成。"
     },
     "BD-40": {
-      "percent": 85,
-      "basis": "在外行軍と待機の実兵糧を消費し、既存展開消費と重ねない。到達市場の米を私財で実購入して軍の空き容量へ移す。 全国NPC前線補給網/護衛/略奪、軍馬飼料/弾薬/装備消耗。"
+      "percent": 95,
+      "basis": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。 移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。"
     },
     "BD-41": {
       "percent": 20,
@@ -304,8 +304,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-57": {
-      "percent": 50,
-      "basis": "通常の出発操作で引受部隊の陸路行軍へ切替、到着先から展開と現地米購入へ接続。取消可能な非同期受付で世界の部分変更を防ぐ。 外観/GUI操作の受入、全画面の情報整理/検索・アクセシビリティ。"
+      "percent": 55,
+      "basis": "既存補給画面に家臣・集合拠点・量の合意と、日時付きの開封報告を接続。現地累計受領と取消/返報を並べ、既知の返納を移動後も保持する。 外観/GUI操作の受入、全画面の情報整理/一覧検索・アクセシビリティ。"
     },
     "BD-58": {
       "percent": 95,
@@ -321,20 +321,20 @@
     }
   },
   "focus": {
-    "leaf": "BD-35",
-    "title": "同じ部隊の拠点間行軍と現地調達",
-    "status": "5/5完了。PR24承認統合後も続行し、共通陸路の行軍/在外待機/到着先布陣と実市場の米購入を接続。新しいmain統合は未承認。",
+    "leaf": "BD-40",
+    "title": "街道補給・部分受渡しと物理書状",
+    "status": "5/5完了。PR25承認統合後も続行し、街道運搬と複数便/部分受渡し/実返納、物理取消と時点付き返報をまとめて接続。新しいmain統合は未承認。",
     "exit": [
-      "New v16 explicitly leads the same borrowed army on common land-only personal journeys; original house, home depot, roster and military case remain fixed, with no duplicated troops, new castle control or teleportation",
-      "Army and commander follow actual shared roads, closures and known-only planning; arrival establishes a separate current assembly site, local120m formation/deployment/assembly and subsequent marches use that site while return/report remain bound to the original home",
-      "Actual soldier rations are consumed during road travel and outside-home campaign waiting without overlapping field consumption; an unfunded known trip is rejected and an unaffordable next edge stops at the actual node, preserving stock and physical position",
-      "At an actually reached market, own private money buys real free rice stock into the same army capacity with dated price/payment evidence; no remote house wallet or free supply, and original-home return/unload/report/control return remain possible",
-      "Normal entry/UI, legacy v15 and earlier byte preservation, actual generation recovery/future equality through roads/closures/local deployment/procurement/return, Game build and headless3D coordinates are checked; GUI/full-suite and general convoy/escort limits explicit"
+      "New explicit v17 consensual direct-retainer road supply reserves actual free house rice at a physical home meeting, binds the same army/case/owner and fixed destination, and excludes other jobs without duplicating troops or grain",
+      "Carrier uses common land roads and known-only route planning; unknown closure is observed physically, destination waits for actual same-case army/commander assembly and capacity, and only one actual meeting transfers rice Deliver only actual free capacity in whole kilograms, retaining all remainder on the carrier; simultaneous convoys cannot reserve or fill the same capacity twice.",
+      "Physical cancellation receipt and expiry block later delivery without undoing earlier delivered grain; carrier completes its current road leg/journey safely and returns unused real grain to the original house Partial delivery followed by cancellation returns only unused cargo, preserving already consumed/delivered grain; completed carriers may be assigned again.",
+      "Stop/delivery/return observations are immutable dated sealed reports through the existing courier system; opening and known failure/retry/cancellation acknowledgement remain distinct from actual cargo or effect, with no remote current-state leak",
+      "Normal entry/UI, explicit limits, legacy v16 and earlier actual save-byte preservation, actual generation recovery/future equality and headless Godot placement are checked; GUI/full suite remain explicitly unverified Supply report notification uses the existing delivery/attention pause, separated from report opening and physical receipt."
     ],
     "deferred": [
-      "全国NPC前線隊商・軍勢海上輸送",
-      "道中の担当交代/再委任、護衛/略奪/輸送事故",
-      "別行動中の個人広域移動と軍指揮",
+      "移動中部隊の追跡/道中引継ぎ",
+      "海上輸送/護衛/略奪/輸送事故",
+      "軍馬飼料/弾薬/装備消耗",
       "外観/GUI操作と全製品受入"
     ]
   },
@@ -343,7 +343,7 @@
       "id": "R1",
       "title": "地域での実戦の入口",
       "domain": "軍勢と支配の変動",
-      "status": "地域軍務と同じ本人軍勢の共通陸路行軍・到着先布陣・実兵糧調達を接続。海上輸送/一般前線隊商は未実装",
+      "status": "本人軍の共通陸路行軍・到着先布陣・現地調達と、家臣の固定拠点への街道補給/部分受渡し/帰還を接続。海上輸送/移動追跡/護衛は後続",
       "finish": "任務・接敵・損害・撤退・返報を一本つなぐ。上記の終了条件で区切る。",
       "why": "現在の軍務を実際の結果がある行動へつなぐ。"
     },
@@ -351,7 +351,7 @@
       "id": "R2",
       "title": "領地で暮らしと収支を回す",
       "domain": "領地の暮らしと地域社会",
-      "status": "本人が率いる同じ軍の在外消費と実市場の米を接続。NPC一般補給隊/輸送事故は後続",
+      "status": "家臣の実米運搬/待機/部分受渡し/残米返納と、取消の実受領・時点付き報告/既知不達再送を接続。一般の多荷種隊商と事故は後続",
       "finish": "家の米の収穫/徴収/支出に、現地売買・定期給付・未払い・本人の受領米売却を接続。全国経済は後続。",
       "why": "在庫を消費するだけの世界から、生活と領地の循環へ進む。"
     },
@@ -388,7 +388,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -482,15 +482,15 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 14,
-    "baseline_commit": "a6215cac61ac160c35f531165b7270cc673480bc",
-    "baseline": 35.94277597402598,
-    "current": 37.300324675324674,
-    "earned_gain": 1.3575487012987013,
+    "version": 16,
+    "baseline_commit": "1176c9fc5adde0511ccebafbf50e3c86a44dccf2",
+    "baseline": 37.300324675324674,
+    "current": 38.580898268398265,
+    "earned_gain": 1.280573593073593,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "2e548cc554a03824ec818ca61af56486f7ad0f25"
+    "integrated_main": null
   }
 }

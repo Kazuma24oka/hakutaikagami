@@ -11,7 +11,7 @@ public static class MilitaryEconomy
     public const int SupportWorkers=20;
     public const long PersonSecondsPerKg=144000,NpcRiceKg=NewGameMilitary.Capacity/PersonSecondsPerKg;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
     internal static MilitaryRiceEntry[] Transfers(ContractWorld w,long at,long rev)=>w.MilitaryEconomy?.Entries.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.MilitaryEconomy?.Entries.Any(e=>e.Input.Id==id)==true;

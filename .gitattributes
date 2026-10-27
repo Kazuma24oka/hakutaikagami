@@ -1991,3 +1991,9 @@ Tests/ArmyRoadTests.cs -text
 Game/Scripts/NewGameRuntime.ArmyRoad.cs -text
 Scripts/verify_army_road.py -text
 Docs/Design/ArmyRoadV1/** -text
+
+Core/Contracts/RoadConvoy.cs -text
+Tests/RoadConvoyTests.cs -text
+Game/Scripts/NewGameRuntime.RoadSupply.cs -text
+Scripts/verify_road_convoy.py -text
+Docs/Design/RoadConvoyV1/** -text

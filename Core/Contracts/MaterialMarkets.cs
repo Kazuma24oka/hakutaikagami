@@ -11,7 +11,7 @@ public static class MaterialMarkets
     public const string Policy="timber-weapons-local-workshops-national-hub-markets-v8";
     public const long InitialWood=200,InitialWeapons=40,RawWood=1000,RawWeapons=100,WorkerCash=300,HouseWood=20,HouseWeapons=10,WaterWood=10;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
     static readonly EntityId[] hubs=CommunityEconomy.Sites.Concat(NationalRoutes.Catalog.Nodes.Where(n=>n.Kind=="historic-site-candidate"||n.Id is "kyoto" or "sakai").Select(n=>new EntityId("site:"+n.Id))).Distinct().ToArray();
     public static EntityId[] Sites(ContractWorld w)=>Enabled(w)?[..hubs]:CommunityEconomy.Sites;
     public static bool Supported(string? kind)=>kind is null or "wood" or "weapons";
