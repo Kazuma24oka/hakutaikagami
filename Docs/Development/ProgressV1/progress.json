@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "945a33c63812080157ff6ee21bee6e3740a61c35f59b2484917ad5e011b7d8ec",
-    "Docs/Development/ProgressV1/estimate.json": "14f918b7b07b2921b73092bf91f6f6f922e3b9dec2ff8e9340af49b88edc6fe5",
-    "Scripts/build_progress_report.py": "a77fd94972f3caeb37f3fc4c749a33d89cd582c9ecdf4b64b203316aeb291d23",
-    "Scripts/check_progress_report.py": "2f1958f94ff512c473ee928242fde1459f2beac61d7f89495b2ea6638d8de28d",
+    "Docs/Development/OPERATING_POLICY.md": "8ad6acb81d1446f94079a36d8ba50b1859811711e308643a865a8c386f0785eb",
+    "Docs/Development/ProgressV1/estimate.json": "9d6fa66a707210223b435971f91a053c0198e8b12c7ee12f9a8ab75eed219456",
+    "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
+    "Scripts/check_progress_report.py": "6a21f702048e0517bd5e986010daba28580fd83f20fd9f34461d3e8cbf9bf747",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "eb31287b30247be2071ee84c8445554967908d342a3b9ea6098c333c1ef99a7d",
+    "Scripts/check_approval_batch.py": "b3a40ebb9015ec1d38201f4d6b7d2711acd1c7672c1724ea132c57896f97b03c",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -41,9 +41,13 @@
     "Docs/Design/VillageConsultationV1/completion.json": "6dfbb2b2d8a0fcf69d3f7c3e529d11c88b8d827cb8c5da31132369157c197391",
     "Docs/Design/VillageConsultationV1/README.md": "b66c85073bb732ff0f7866e16aef7cc63756a031e53545edbd1abfa11758b45e",
     "Docs/Design/VillageConsultationV1/administration-plan.md": "000942ec66b985f95722e239c36fcfbefe919f704cac754bf651fc6161c115ef",
-    "Docs/Design/VillageConsultationV1/integration.json": "e85d6d72b0ac279566c6a9e18ce3afcc9e596d1bb126e1c53e81c30b9581c7de",
+    "Docs/Design/VillageConsultationV1/integration.json": "9f9e9887259c789cbd213af6a4ac16c191cb4e0f78d7762ecfd04b500bd1a223",
     "Docs/Development/ProgressV1/approval-baseline-v4.json": "c1909ebbff226f7500e6d551ea334ebb3761ecf6fc1de4c7d860ab093a1633ae",
-    "Docs/Development/ProgressV1/approval-baseline-v5.json": "05bef4769dc125655753d032bcb97a1a4054e2405dfb0ce1467a005dc8312981"
+    "Docs/Development/ProgressV1/approval-baseline-v5.json": "05bef4769dc125655753d032bcb97a1a4054e2405dfb0ce1467a005dc8312981",
+    "Docs/Design/CommunityStewardshipV1/completion.json": "1d8ac7d6128e6fa9ea7121632695cbe0a5903c24215dea78aef7913961815ee2",
+    "Docs/Design/CommunityStewardshipV1/README.md": "b3e298f002a058077811c128fc607f050c56d98511996dfc91caad445d74369c",
+    "Docs/Design/CommunityStewardshipV1/integration.json": "d6417fca8bb4a106e4693bd7bdb8cd34abef78cf2a5b3c26bede219f1ba5a725",
+    "Docs/Development/ProgressV1/approval-baseline-v6.json": "27cd3a8ea17fd3ab7e93b06f6dd645a1073d896cd936e20f60ad7074970e0f97"
   },
   "items": [
     {
@@ -423,9 +427,13 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "点検の直接観測・原本配送・本人開封・確認日時を分ける。 現地で私的に受け取る本人の観測情報を原本/開封/観測日付きの経路知識へ接続。 精算済み面識の一般家臣への単発点検を実任務/本人観測/返報へ接続。 単発協力は現地の本人返答/同じ状態版での確認に分け、内心をUIへ返さない。",
-      "remaining": "諜報/噂/政治報告など全事実表示の出典と学習経路を接続する。",
+      "existing": "現地代理官の観測日/台帳を封書で物理配送し、開封後だけ当主へ提示。不達後の再送も同じ観測を保持し、現在値へ更新しない。",
+      "remaining": "一般の偵察網/風聞/改竄検知、全国情報の鮮度評価と訂正。",
       "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json",
         "Core/Contracts/LocalInspectionFindings.cs",
         "Core/Messaging/MessageFlow.cs",
         "Tests/LocalInspectionFindingsTests.cs",
@@ -456,10 +464,14 @@
     },
     {
       "id": "BD-27",
-      "status": "isolated",
-      "existing": "共通配送の代理受領/開封権/転送/本人の認識の試作がある。",
-      "remaining": "通常ゲームの留守居/代理任命・交代・重要書状の回答へ接続する。",
+      "status": "normal",
+      "existing": "現地の期限付き行政委任と固定返報先、代理官の封書報告/取消返報を通常入口に接続。領主本人の認識と代理官の効力を分離。",
+      "remaining": "主君宛の一般書状の代理受領/代理開封、代理外交や管轄別決裁の一般化。",
       "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json",
         "Core/Messaging/MessageFlow.cs",
         "Tests/SharedProtocolTests.cs",
         "Tests/CommonContractTests.cs"
@@ -526,9 +538,13 @@
     {
       "id": "BD-30",
       "status": "normal",
-      "existing": "隊別指示と受令、既知地点への命令/照会がある。独立試作にも委任原本がある。 現地合意した協力者へ共通Taskで点検を任せ、本人の返報を物理配送/開封する。",
-      "remaining": "人物ごとの裁量・予算/危険上限・自主計画・監督と逸脱理由を接続する。",
+      "existing": "当主と直属家臣が現地で行政の範囲/期限/返報先を合意。代理官の処分枠、PC手動/NPC自律と物理報告、取消/期限終了を接続。",
+      "remaining": "軍事/外交/複数階層の委任、再委任と案件別の裁量/逸脱評価の一般化。",
       "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json",
         "Core/Contracts/NewGameMilitary.UnitDirective.cs",
         "Core/Contracts/DelegationMission.cs",
         "Tests/UnitDirectiveTests.cs",
@@ -667,9 +683,13 @@
     {
       "id": "BD-36",
       "status": "normal",
-      "existing": "村への部分受渡し/合意工事とNPCの救済/徴税/工事を共通台帳で裁定。給付引当と保護備蓄を守り、二重履行/支出を拒否。",
-      "remaining": "全物資/全用途の同順位按分、緊急転用・補償、一般の資源再裁定。",
+      "existing": "代理官の月次救済500/徴税1000/水利200kgを既存台帳で上限制御。別操作経由の枠回避/給付引当との競合を拒否。",
+      "remaining": "全商品・全用途の同時按分、緊急転用/補償、複数地域予算の一般化。",
       "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json",
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
         "Tests/VillageConsultationTests.cs",
@@ -873,9 +893,13 @@
     {
       "id": "BD-49",
       "status": "normal",
-      "existing": "村落の独立組織/代表2役と交代、返答版/成立済み義務を分離し保存復旧。NPC当主の現地合意も別判断原本へ記録。",
-      "remaining": "国人/寺社の合議、多数の構成員/有力者、代理/反対派/代表選出の一般化。",
+      "existing": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。",
+      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。",
       "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json",
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
         "Tests/VillageConsultationTests.cs",
@@ -1029,9 +1053,13 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "月初の現地NPC当主が本人の帳簿から救済/既定徴税/合意工事/待機を選び、入力ハッシュと現物原本を保存。現地不在は情報を読まず待機。",
-      "remaining": "全国の目標/遠隔報告/代理行政/市場運営、軍事外交との優先順位、詳細と遠方簡略の同値性。",
+      "existing": "当主不在でも明示合意したNPC代理官が現地の処分枠内で判断。報告不達を本人が知ってから原本を再送し、未知の当主位置を追尾しない。",
+      "remaining": "全国の多分野目標・市場/外交AI、遠方簡略モードとの同値性と負荷。",
       "evidence": [
+        "Core/Contracts/CommunityStewardship.cs",
+        "Tests/CommunityStewardshipTests.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/CommunityStewardshipV1/verification.json",
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
         "Tests/VillageConsultationTests.cs",
@@ -1618,12 +1646,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 809,
+      "passed": 841,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/VillageConsultationV1/runtime-local/tests/village-consultation-current.trx",
-      "sha256": "512973aec572931515e53c000cdb896c7350453bd3f19e589ea1921ace9d323e",
-      "scope": "Current related809 only,55 new. Full2845/GUI NOT_RUN; historical full2446 remains separate."
+      "trx": "Docs/Design/CommunityStewardshipV1/runtime-local/tests/community-stewardship-current.trx",
+      "sha256": "b86ced8d902593b9e42cc5d87361f499d2fd5ac157c6aac64cf71ab2d7ec61d0",
+      "scope": "Current related841 only,32 new. Full2877/GUI NOT_RUN; historical full2446 remains separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1635,14 +1663,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 809,
+      "passed": 841,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/VillageConsultationV1/runtime-local/tests/village-consultation-current.trx",
-      "sha256": "512973aec572931515e53c000cdb896c7350453bd3f19e589ea1921ace9d323e",
-      "scope": "Current related809 only,55 new. Full2845/GUI NOT_RUN; historical full2446 remains separate."
+      "trx": "Docs/Design/CommunityStewardshipV1/runtime-local/tests/community-stewardship-current.trx",
+      "sha256": "b86ced8d902593b9e42cc5d87361f499d2fd5ac157c6aac64cf71ab2d7ec61d0",
+      "scope": "Current related841 only,32 new. Full2877/GUI NOT_RUN; historical full2446 remains separate."
     },
-    "current_stage_summary": "村落共同体と施設/家を分離し、現地の代表返答→条件確認→救済の部分受渡し/合意した水利工事→履行/不履行の反応へ接続。代表交代は未確認返答だけを失効させ、成立済み約束を保持。NPC当主の現地月次判断も救済/既定年貢/水利/待機へ接続し、プレイヤー家と俸禄引当を保護。新規55/関連809件・Gameビルド・実世代復旧と将来世界一致・画面なしGodot40組80世界144Node3D一致。外観/UI操作・全2845件は未実施。",
+    "current_stage_summary": "PR #17を承認head58619a7と同じtreeでmain0df60ccへ統合後、停止せず限定代理行政を実装。現地の当主/直属家臣が期限・月次処分枠・固定返報先を合意し、PC代理官の手動処分とNPC代理官の現地運営を接続。観測時点の封書を実配送し、開封前の内容/現在の台帳を秘匿。取消は物理到達して効き、返報認識と分離。不在による報告不達は代理官の既知の不達から同一観測を最大3通まで再送。新規32/関連841件・Gameビルド・実世代復旧と将来世界一致・画面なしGodot45組90世界154Node3D一致。外観/UI操作・全2877件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1664,9 +1692,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/VillageConsultationV1/integration.json",
-    "current_logic_verification": "Docs/Design/VillageConsultationV1/verification.json",
-    "current_logic_verification_sha256": "3529fac25e6b9ed9b8051fc83d82c0c35a966caa26cdf9bbeac7b9fddcb2703f",
+    "integration": "Docs/Design/CommunityStewardshipV1/integration.json",
+    "current_logic_verification": "Docs/Design/CommunityStewardshipV1/verification.json",
+    "current_logic_verification_sha256": "dd17aaad96c5fb05bebb638df71bdd22b2c3a685b038ec5a13896084c6158e09",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1675,7 +1703,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連809件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連841件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1731,11 +1759,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "代理官と時点付き報告による不在当主の地域運営",
-    "米以外の物資と市場運営への拡張",
-    "同じ経済/社会契約を全国の地域データへ適用",
-    "平時・戦時の収支と住民/家臣の判断を通し調整",
-    "正式素材・画面・性能と製品範囲の受入"
+    "米以外の物資と市場取引を既存の所有/携行/支払へ接続",
+    "NPCの地域生産と市場需要の一巡",
+    "同じ契約を全国の地域データへ適用",
+    "平時・戦時の収支/住民/家臣の判断を通し調整",
+    "正式素材・画面・性能と製品受入"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

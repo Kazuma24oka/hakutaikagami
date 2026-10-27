@@ -15,7 +15,7 @@ public static class VillageConsultation
     public const string Policy="village-representative-relief-water-performance-v5";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Villages?.Entries.Any(e=>e.Input.Id==id)==true;
     static int Term(long at)=>checked((int)(at/(30*Day)));
     static VillageOrganization Organization(EntityId site)=>new(new("organization:village/"+site.Value.Replace(':','/') ),site,[new(new("person:village/"+site.Value.Replace(':','/')+"/a"),"村役人"),new(new("person:village/"+site.Value.Replace(':','/')+"/b"),"水利世話人")]);
@@ -44,7 +44,7 @@ public static class VillageConsultation
     }
     internal static bool WorkAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long revision)
     {
-        if(!Enabled(w)||NpcCommunityAdministration.WaterAuthorized(w,effect,site,at,revision))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
+        if(!Enabled(w)||NpcCommunityAdministration.WaterAuthorized(w,effect,site,at,revision)||CommunityStewardship.WaterAuthorized(w,effect,site,at,revision))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
         return e!=null&&w.Villages!.Proposals.Any(q=>q.Id==e.Input.Proposal&&q.Kind==VillageAction.ProposeWater)&&w.Villages.Entries.Any(c=>c.Input.Action==VillageAction.Confirm&&c.Input.Proposal==e.Input.Proposal&&c.Revision<revision);
     }
     static VillageState Replay(ContractWorld w,VillageEntry[] entries,long until,long revision)
@@ -111,7 +111,7 @@ public static class VillageConsultation
         if(site==null||!CommunityEconomy.Sites.Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
         var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds);
         var cards=s.Promises.Where(p=>p.Site==site).Select(p=>new VillageCard(p.Id,p.Kind==VillageAction.ProposeWater?"水利工事":"救済",p.Amount,p.Delivered,p.DeliverBy,Status(w,p,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
-        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1),trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
+        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
     }
 }
 public sealed partial class WorldSession

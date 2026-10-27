@@ -1949,3 +1949,7 @@ Docs/Design/HouseSalaryV1/** -text
 Game/Scripts/NewGameRuntime.Village.cs -text
 Scripts/verify_village_consultation.py -text
 Docs/Design/VillageConsultationV1/** -text
+
+Game/Scripts/NewGameRuntime.Stewardship.cs -text
+Scripts/verify_community_stewardship.py -text
+Docs/Design/CommunityStewardshipV1/** -text

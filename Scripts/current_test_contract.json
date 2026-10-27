@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 2845,
-  "baseline_passed": 2790,
-  "added": 55,
-  "scope": "Village36 and local NPC administration19 added; related809. Real generation recovery and headless40 pairs/80 worlds/144 nodes. Full2845 and GUI NOT_RUN."
+  "expected_passed": 2877,
+  "baseline_passed": 2845,
+  "added": 32,
+  "scope": "Community stewardship32 added; related841. Real generation recovery and headless45 pairs/90 worlds/154 nodes. Full2877 and GUI NOT_RUN."
 }

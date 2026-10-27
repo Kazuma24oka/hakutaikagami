@@ -16,7 +16,7 @@ public static class CommunityEconomy
     public const int Population=200,Workers=100,Crew=20;public const long InitialVillage=10000,InitialHouse=3000,BaseHarvest=20000,WorkCost=200,WorkSeconds=7*86400;
     public static readonly EntityId[] Sites=[new("site:castle"),new("site:kofu"),new("site:odawara")];
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy or NpcCommunityAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Communities?.Orders.Any(q=>q.Input.Id==id)==true;
     static DateOnly Epoch(ContractWorld w)=>DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);
     static long Time(ContractWorld w,DateOnly date)=>checked((date.DayNumber-Epoch(w).DayNumber)*86400L);
@@ -32,7 +32,7 @@ public static class CommunityEconomy
     }
     static FactionStanceAuthority Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {
-        var owner=Owner(w,site);Need(owner!=null&&FactionStances.ResolveAuthority(w,actor,owner.Value,at,rev) is {} a&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"その地域の試作年貢契約と現地支配を持つ当主ではありません");return FactionStances.ResolveAuthority(w,actor,owner.Value,at,rev)!;
+        var owner=Owner(w,site);Need(owner!=null&&(FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev)) is {} a&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"その地域の試作年貢契約と現地支配を持つ当主ではありません");return (FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev))!;
     }
     static CommunityState Replay(ContractWorld w,CommunityOrder[] orders,CommunityNotice[] notices,long until,long revision)
     {
@@ -49,7 +49,7 @@ public static class CommunityEconomy
                 if(month==at){hunger=checked(hunger+Population*5);Feed(at);Event(hunger>0?"food-shortage":"monthly-food",at,hunger);month=Time(w,new DateOnly(Date(w,at).Year,Date(w,at).Month,1).AddMonths(1));}
             }}
             var operations=orders.Where(q=>q.Input.Site==site).Select(q=>(q.At,q.Revision,Order:(CommunityOrder?)q,Amount:0L)).Concat(RegionalTrade.Supplies(w,site,until,revision).Select(s=>(s.At,s.Revision,Order:(CommunityOrder?)null,s.Amount))).Concat(HouseSalary.Payouts(w,site,until,revision).Select(s=>(s.At,s.Revision,Order:(CommunityOrder?)null,Amount:-s.Amount))).OrderBy(x=>x.Revision);
-            foreach(var op in operations){Advance(op.At);if(op.Order==null){house=checked(house+op.Amount);if(op.Amount>=0){imports=checked(imports+op.Amount);Event("private-rice-supplied",op.At,op.Amount);}else{payout=checked(payout-op.Amount);Event("salary-paid",op.At,-op.Amount);}continue;}var q=op.Order;var i=q.Input;long free=house-HouseSalary.Reserved(w,site,q.At,q.Revision);switch(i.Action){
+            foreach(var op in operations){Advance(op.At);if(op.Order==null){house=checked(house+op.Amount);if(op.Amount>=0){imports=checked(imports+op.Amount);Event("private-rice-supplied",op.At,op.Amount);}else{payout=checked(payout-op.Amount);Event("salary-paid",op.At,-op.Amount);}continue;}var q=op.Order;var i=q.Input;Need(i.Amount<=CommunityStewardship.Budget(w,q.Actor,i.Site,i.Action,q.At,q.Revision),"今月の委任処分枠を超えています");long free=house-HouseSalary.Reserved(w,site,q.At,q.Revision);switch(i.Action){
                 case EconomyAction.CollectLevy:Need(hunger==0&&i.Amount<=assessed-collected&&i.Amount<=village-Population*5,"未徴収額と村の一月分の保護備蓄を超えた徴収はできません");village-=i.Amount;house=checked(house+i.Amount);collected=checked(collected+i.Amount);Event("levy-collected",q.At,i.Amount);break;
                 case EconomyAction.RelieveVillage:Need(i.Amount<=free,"家の蔵の米が不足しています");house-=i.Amount;village=checked(village+i.Amount);relief=checked(relief+i.Amount);Event("relief",q.At,i.Amount);Feed(q.At);break;
                 case EconomyAction.ImproveWater:Need(!VillageConsultation.Enabled(w)||VillageConsultation.WorkAuthorized(w,i.Id,i.Site,q.At,q.Revision),"先に村との水利工事の合意を確認してください");Need(i.Amount==WorkCost&&free>=WorkCost&&reserved==0&&water<130&&hunger==0,"水利工事は米200kg/20人/7日、同時一件で、先に食糧不足を解消します");house-=WorkCost;spent=checked(spent+WorkCost);reserved=Crew;due=checked(q.At+WorkSeconds);Event("water-start",q.At,WorkCost);break;
@@ -71,7 +71,7 @@ public static class CommunityEconomy
     }
     public static CommunityView? View(ContractWorld w,EntityId actor)
     {
-        if(!Enabled(w)||actor!=w.PlayerControl)return null;var l=w.Locations.Single(l=>l.Actor==actor);if(l.Kind!=LocationKind.AtSite||l.Site==null||!Sites.Contains(l.Site.Value)||!Local(w,actor,l.Site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;try{var a=Authority(w,actor,l.Site.Value,w.ElapsedSeconds,w.CommitSequence);return new(l.Site.Value,a.Owner,w.ElapsedSeconds,w.Communities!.Accounts.Single(a=>a.Site==l.Site),RegionalEconomy.NextHarvest(w,w.ElapsedSeconds),"3地域の試作契約。人口/米量/作柄は調整用データで史実値ではありません。村/家/私財/既存軍用備蓄は別。工事20人/200kg/7日。");}catch(InvalidDataException){return null;}
+        if(!Enabled(w)||actor!=w.PlayerControl)return null;var l=w.Locations.Single(l=>l.Actor==actor);if(l.Kind!=LocationKind.AtSite||l.Site==null||!Sites.Contains(l.Site.Value)||!Local(w,actor,l.Site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;try{var a=Authority(w,actor,l.Site.Value,w.ElapsedSeconds,w.CommitSequence+1);return new(l.Site.Value,a.Owner,w.ElapsedSeconds,w.Communities!.Accounts.Single(a=>a.Site==l.Site),RegionalEconomy.NextHarvest(w,w.ElapsedSeconds),"3地域の試作契約。人口/米量/作柄は調整用データで史実値ではありません。村/家/私財/既存軍用備蓄は別。工事20人/200kg/7日。");}catch(InvalidDataException){return null;}
     }
     public static string? Address(ContractWorld w,MessageEnvelope m)=>w.Communities?.Notices.SingleOrDefault(n=>n.Message==m.Id) is {} n?NewGameWorld.Node(n.Address.Value):null;
     internal static long? NextBoundary(ContractWorld w,long target)
