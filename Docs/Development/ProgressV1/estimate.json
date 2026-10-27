@@ -124,16 +124,16 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-12": {
-      "percent": 40,
-      "basis": "個人随行と実主従の加入/解消、NPC円満辞去後の別加入が存在。一般軍勢/遠隔/海上配下は未完。"
+      "percent": 50,
+      "basis": "直属関係を持つ相手と家の定期支給を合意し、本人の私有米/未払い/主従を分離。辞去後の旧債務も実手続きで確認。全国名簿/自律家臣運営は後続。"
     },
     "BD-13": {
       "percent": 10,
       "basis": "能力の入力はあるが、行動への反映と経験・技能成長はこれから。"
     },
     "BD-14": {
-      "percent": 5,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 20,
+      "basis": "NPC家臣から支給した家への限定的な履行信頼を、遅配/受領の履歴から算出して次の返答へ接続。PCの継続意思は強制せず、一般の性格/軍令への忠誠は未実装。"
     },
     "BD-15": {
       "percent": 15,
@@ -212,16 +212,16 @@
       "basis": "3地域の独立台帳/人口/働き手/予約労働/作柄/月次食糧/工事と救済を接続。人口変動/民兵徴発/全国拡張は未完。"
     },
     "BD-34": {
-      "percent": 50,
-      "basis": "現地売買の銭と米、私有米の家への供給を別取引として接続。本人の引当を他支払から保護。家の定期俸禄/未払い/全国所領財政は後続。"
+      "percent": 70,
+      "basis": "家の米による月初三回の給付を合意/期日/支払引当/現地受領/未払いへ分離し、受領米を既存市場で銭へ換えられる。現金定期給与/知行/全国財政は後続。"
     },
     "BD-35": {
       "percent": 45,
       "basis": "米一商品の3地域売買を現地見積/合意/引当/支払と受取/実移動/納入/代金債務/精算へ接続。一般の他商品/商人AI/保証・担保/全国相場は後続。"
     },
     "BD-36": {
-      "percent": 30,
-      "basis": "売買の米/本人の銭/商人の納入後支払資金の引当を保護し、他の手当支払・期限切れ・取消と競合を確認。全用途同順位按分/緊急転用・補償は未実装。"
+      "percent": 45,
+      "basis": "売買の米/銭/納入後支払と、家の給付準備米を保護。工事/救済の二重使用を拒否し、期限や取消で予約だけ解放。一般の同順位按分/緊急転用・補償は後続。"
     },
     "BD-37": {
       "percent": 30,
@@ -321,21 +321,21 @@
     }
   },
   "focus": {
-    "leaf": "BD-35",
-    "status": "米一商品の3地域売買を5/5確認。main統合のみ個別承認。",
-    "title": "現地売買・現物移送・納入後債務・精算の一巡",
+    "leaf": "BD-34",
+    "status": "家の給付と本人の収入の最小一巡5/5。main統合のみ個別承認。",
+    "title": "家の支給・未払い・受領米の売却・相手の返答",
     "exit": [
-      "Local dated rice quotes and protected goods/coin reservations; no remote current-market disclosure",
-      "Physical collection, common-route travel and local delivery; no instantaneous regional sharing",
-      "Delivery, merchant debt and settlement are separate; cancellation, local resale and explicit authorized house supply preserve ownership",
-      "Goods/cash conservation, cross-operation reservation protection, stale revisions and global ID reuse are validated",
-      "Actual generation recovery/future equality, legacy v2 preservation, normal-entry Game build and headless Node3D placement"
+      "Local bilateral salary proposal and explicit confirmation with actual head/direct-service authority; no role or troop transfer",
+      "Three monthly rice obligations, bounded payment preparation and protected house inventory; unpaid debts survive end and affiliation changes",
+      "Physical payment credits employee private rice; existing market sale uses the same rice without minting money or sharing military supplies",
+      "Employee-to-employer salary reliability follows dated due/receipt history and affects next local proposal without remote private-attitude disclosure",
+      "Normal-entry head/employee UI, actual generation recovery and future equality, old-v3 bytes, Game build and headless Node3D placement"
     ],
     "deferred": [
-      "他商品/全国相場/商人AI",
-      "荷役/荷駄/積載減速",
-      "保証人/担保と全用途同時配分",
-      "家の定期俸禄/一般債務"
+      "全国の俸禄/知行/定期現金給与",
+      "一般の性格/忠誠と自律家臣運営",
+      "家督/死亡時の債務承継",
+      "全物資の同時按分と緊急転用"
     ]
   },
   "roadmap": [
@@ -351,8 +351,8 @@
       "id": "R2",
       "title": "領地で暮らしと収支を回す",
       "domain": "領地の暮らしと地域社会",
-      "status": "3地域の暮らしと米売買の最小一巡Core/API完了。外観は未確認",
-      "finish": "人口/収穫/不足/救済に、米の現地売買/引当/実運搬/納入/債務/精算を接続。全国経済は後続。",
+      "status": "3地域経済・米売買・家の給付の最小一巡Core/API完了。外観は未確認",
+      "finish": "家の米の収穫/徴収/支出に、現地売買・定期給付・未払い・本人の受領米売却を接続。全国経済は後続。",
       "why": "在庫を消費するだけの世界から、生活と領地の循環へ進む。"
     },
     {
@@ -482,11 +482,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 2,
-    "baseline_commit": "c67b815170681d8453cd36a8d5e8aa1411be54ab",
-    "baseline": 21.318587662337663,
-    "current": 22.443587662337663,
-    "earned_gain": 1.125,
+    "version": 3,
+    "baseline_commit": "09806b77d0f372b7edb5e72031ddfca0d6d533b7",
+    "baseline": 22.443587662337663,
+    "current": 23.51650432900433,
+    "earned_gain": 1.0729166666666667,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,

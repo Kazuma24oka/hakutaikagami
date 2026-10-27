@@ -1,5 +1,5 @@
 namespace HakutaiKagami.Core.Contracts;
-public enum TradeAction { Quote,Accept,Collect,OfferSale,Deliver,Settle,Cancel,SupplyHouse }
+public enum TradeAction { Quote,Accept,Collect,OfferSale,Deliver,Settle,Cancel,SupplyHouse,OfferOwnRice }
 public enum TradePhase { Offered,Accepted,Carrying,SaleQuoted,Delivered,Settled,Cancelled,Expired,ReturnRequired,Supplied }
 public sealed record TradeInput(EntityId Id,TradeAction Action,EntityId Site,EntityId? Contract=null,EntityId? Destination=null,long Amount=0);
 public sealed record TradeEntry(TradeInput Input,EntityId Actor,long At,long Revision,long Price);
@@ -13,9 +13,10 @@ public static class RegionalTrade
     public const string Policy="three-community-local-rice-contract-reserve-carry-debt-settle-v3";
     public const long InitialRice=2000,InitialCash=4000,Capacity=100;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseSalary.Policy;
     static bool Before(TradeEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static TradeEntry[] Prefix(ContractWorld w,long at,long rev){Need(w.Trade==null||w.Trade.Entries!=null&&w.Trade.Entries.All(e=>e!=null&&e.Input!=null),"Invalid trade entry array");return w.Trade?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];}
+    internal static long SalaryLoaded(ContractWorld w,EntityId actor,long at,long rev)=>actor==w.PlayerControl?Prefix(w,at,rev).Where(e=>e.Input.Action==TradeAction.OfferOwnRice).Sum(e=>e.Input.Amount):0;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Trade?.Entries.Any(e=>e.Input.Id==id)==true;
     public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long rev=long.MaxValue)
     {
@@ -43,7 +44,8 @@ public static class RegionalTrade
     {
         var ms=CommunityEconomy.Sites.ToDictionary(s=>s,s=>new TradeMarket(s,InitialRice,InitialCash));var ds=new Dictionary<EntityId,TradeDeal>();var ids=new HashSet<EntityId>();long priorRev=0,priorAt=0;
         foreach(var e in es){var i=e.Input;Need(e.Actor==w.PlayerControl&&e.At>=priorAt&&e.At<=until&&e.Revision>priorRev&&e.Revision<=revision&&EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&Enum.IsDefined(i.Action)&&ms.ContainsKey(i.Site),"取引の主体・時点・原本IDが不正です");Need(!FactionStances.OtherIdUsed(w,i.Id,includeTrade:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使用済みの原本IDです");Need(TransportWork.At(w,e.Actor,i.Site,e.At,e.Revision,stableCompletion:true),"現地での取引ではありません");Expire(ds,e.At);var m=ms[i.Site];TradeDeal? d=null;
-            if(i.Action==TradeAction.Quote){Need(i.Contract==null&&i.Destination is {} to&&ms.ContainsKey(to)&&to!=i.Site&&i.Amount>0&&i.Amount<=Capacity&&!ds.Values.Any(d=>!Terminal(d.Phase)),"携行上限100kgまたは行先・未精算の取引を確認してください");Need(e.Price==Price(m,true),"現地の見積価格が一致しません");Need(i.Amount<=m.Rice-RiceReserved(ds.Values,i.Site),"商人の自由在庫が不足しています");ds.Add(i.Id,new(i.Id,i.Site,i.Destination!.Value,i.Amount,e.Price,e.At,checked(e.At+86400),checked(e.At+7*86400),TradePhase.Offered));}
+            if(i.Action==TradeAction.OfferOwnRice){Need(HouseSalary.Enabled(w)&&i.Contract==null&&i.Destination is {} ownTo&&ms.ContainsKey(ownTo)&&i.Amount>0&&i.Amount<=Capacity&&e.Price==0&&!ds.Values.Any(d=>!Terminal(d.Phase)),"Cannot offer this private salary rice");Need(i.Amount<=HouseSalary.PrivateRice(w,e.Actor,e.At,e.Revision),"No unspent private salary rice");ds.Add(i.Id,new(i.Id,i.Site,i.Destination!.Value,i.Amount,0,e.At,e.At,e.At,TradePhase.Carrying));}
+            else if(i.Action==TradeAction.Quote){Need(i.Contract==null&&i.Destination is {} to&&ms.ContainsKey(to)&&to!=i.Site&&i.Amount>0&&i.Amount<=Capacity&&!ds.Values.Any(d=>!Terminal(d.Phase)),"携行上限100kgまたは行先・未精算の取引を確認してください");Need(e.Price==Price(m,true),"現地の見積価格が一致しません");Need(i.Amount<=m.Rice-RiceReserved(ds.Values,i.Site),"商人の自由在庫が不足しています");ds.Add(i.Id,new(i.Id,i.Site,i.Destination!.Value,i.Amount,e.Price,e.At,checked(e.At+86400),checked(e.At+7*86400),TradePhase.Offered));}
             else{Need(i.Contract!=null&&ds.TryGetValue(i.Contract.Value,out d)&&i.Destination==null&&i.Amount==0,"対応する売買原本がありません");var deal=d!;long cost=checked(deal.Amount*deal.PurchasePrice);Need(i.Action==TradeAction.OfferSale||e.Price==0,"見積以外の価格を挿入できません");switch(i.Action){
                 case TradeAction.Accept:Need(deal.Phase==TradePhase.Offered&&i.Site==deal.Source&&deal.Amount<=m.Rice-RiceReserved(ds.Values,i.Site),"見積期限または自由在庫を確認してください");Need(TransportWork.WalletBefore(w,e.Actor,e.At,e.Revision)>=cost,"私財の自由残高が不足しています");deal=deal with{Phase=TradePhase.Accepted};break;
                 case TradeAction.Collect:Need(deal.Phase==TradePhase.Accepted&&i.Site==deal.Source&&m.Rice>=deal.Amount,"引当した米を現地で受け取ってください");Need(TransportWork.WalletBefore(w,e.Actor,e.At,e.Revision)+cost>=cost,"引当した代金を保護できていません");ms[i.Site]=m with{Rice=m.Rice-deal.Amount,Cash=checked(m.Cash+cost)};deal=deal with{Phase=TradePhase.Carrying};break;
@@ -55,7 +57,7 @@ public static class RegionalTrade
                 default:throw new InvalidDataException("未対応の売買操作です");
             }ds[deal.Id]=deal;}
             priorRev=e.Revision;priorAt=e.At;
-        }Expire(ds,until);long carried=ds.Values.Where(d=>d.Phase is TradePhase.Carrying or TradePhase.SaleQuoted or TradePhase.ReturnRequired).Sum(d=>d.Amount);long supplied=ds.Values.Where(d=>d.Phase==TradePhase.Supplied).Sum(d=>d.Amount);Need(ms.Values.All(m=>m.Rice>=0&&m.Cash>=CashReserved(ds.Values,m.Site))&&ms.Values.Sum(m=>m.Rice)+carried+supplied==InitialRice*ms.Count,"米の現物収支が一致しません");Need(ms.Values.Sum(m=>m.Cash)+Net(w,NewGameWork.Wallet(w.PlayerControl),until,revision+1)==InitialCash*ms.Count,"銭の実決済収支が一致しません");return new(1,Policy,es,ms.Values.ToArray(),ds.Values.ToArray());
+        }Expire(ds,until);long carried=ds.Values.Where(d=>d.Phase is TradePhase.Carrying or TradePhase.SaleQuoted or TradePhase.ReturnRequired).Sum(d=>d.Amount);long supplied=ds.Values.Where(d=>d.Phase==TradePhase.Supplied).Sum(d=>d.Amount);Need(ms.Values.All(m=>m.Rice>=0&&m.Cash>=CashReserved(ds.Values,m.Site))&&ms.Values.Sum(m=>m.Rice)+carried+supplied==InitialRice*ms.Count+SalaryLoaded(w,w.PlayerControl,until,revision+1),"米の現物収支が一致しません");Need(ms.Values.Sum(m=>m.Cash)+Net(w,NewGameWork.Wallet(w.PlayerControl),until,revision+1)==InitialCash*ms.Count,"銭の実決済収支が一致しません");return new(1,Policy,es,ms.Values.ToArray(),ds.Values.ToArray());
     }
     internal static void Initialize(ContractWorld w){if(Enabled(w)){w.TravelDecisions??=[];w.TrafficStops??=[];w.Trade=Replay(w,[],0,w.CommitSequence);}}
     internal static void Tick(ContractWorld w){if(Enabled(w))w.Trade=Replay(w,w.Trade!.Entries,w.ElapsedSeconds,w.CommitSequence);}

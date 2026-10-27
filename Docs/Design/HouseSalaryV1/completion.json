@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Local bilateral salary proposal and explicit confirmation with actual head/direct-service authority; no role or troop transfer",
+      "status": "PASSED",
+      "evidence": [
+        "BothHeadAndEmployeeCanConfirmLocalTermsWithoutTransferringRoles (2 cases)",
+        "CounterpartyCanRefuseTermsAndRefusalCannotBeConfirmed (2 cases)",
+        "TwoQuotedOffersCannotBecomeOverlappingConfirmedPromises"
+      ]
+    },
+    {
+      "contract": "Three monthly rice obligations, bounded payment preparation and protected house inventory; unpaid debts survive end and affiliation changes",
+      "status": "PASSED",
+      "evidence": [
+        "MonthlyDebtAndProtectedPreparationAreNotPayment",
+        "PreparationExpiresAndPastDebtSurvivesEnd",
+        "InsufficientHouseRiceKeepsDebtAndAllowsOnlyActualPartialPayment",
+        "ActualServiceReleaseKeepsOldHouseDebtAndAllowsLaterLocalSettlement"
+      ]
+    },
+    {
+      "contract": "Physical payment credits employee private rice; existing market sale uses the same rice without minting money or sharing military supplies",
+      "status": "PASSED",
+      "evidence": [
+        "PaidRiceIsPrivatePropertyAndCanBeSoldOnceThroughExistingMerchant",
+        "RepeatedIdsAndStaleRevisionCannotDoublePay",
+        "TamperedReceiptAndAmountsCannotBeLoaded"
+      ]
+    },
+    {
+      "contract": "Employee-to-employer salary reliability follows dated due/receipt history and affects next local proposal without remote private-attitude disclosure",
+      "status": "PASSED",
+      "evidence": [
+        "RepeatedLatePaymentChangesNextLocalCounterpartyDecision",
+        "PlayerEmployeeCanChooseToRenewAfterLateHistoryWithoutForcedNpcEmotions",
+        "RemoteCurrentAttitudeAndHouseStockAreNotDisclosedToEmployee (2 cases)"
+      ]
+    },
+    {
+      "contract": "Normal-entry head/employee UI, actual generation recovery and future equality, old-v3 bytes, Game build and headless Node3D placement",
+      "status": "PASSED",
+      "evidence": [
+        "NormalEntryProfileBuildsSalaryCommunityAndMerchantTogether",
+        "ActualGenerationRecoveryOfDebtPreparedAndPaidPreservesFuture (4 cases including employee income sale after recovery)",
+        "OldV3WorldStaysByteCompatibleAndRejectsInjectedSalary",
+        "verification.json:754 related tests/Game build/32 actual generation pairs/128 Node3D"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "limits": "Three rice payments and salary-specific NPC reliability only; no general personality/national payroll/estate succession/autonomous administration."
+}

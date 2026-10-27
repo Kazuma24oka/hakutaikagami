@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "16098ef6a6360ba871d92c5f09420de9380bcbd4f89b139bf195b54c36433e87",
-    "Docs/Development/ProgressV1/estimate.json": "99af98a5ead44ae5aff006417504930686e2a1ca0ba7e2e6255afc39ebbc2282",
-    "Scripts/build_progress_report.py": "45053370d877087d0a54a5b2aa25d3f3aa89bf6191e9a14ea1d17e3c73a3ac12",
-    "Scripts/check_progress_report.py": "3aedc43e26f7e3f9ef51fbc1220ab38fd61a027e2ce2ba927d29172ff0c658bb",
+    "Docs/Development/OPERATING_POLICY.md": "0af42f5c9ec691eb71965736ef7810fb93e62622a2b29a6bb847678d9e8abd92",
+    "Docs/Development/ProgressV1/estimate.json": "e7525bc809c5922a8a4318497fa5b8b0ebd42cf8823fb719ddb27f730d074e24",
+    "Scripts/build_progress_report.py": "d1434cb9ba837804bc0dd888625124ce3bd570104a3dba6106947c2a7c975e35",
+    "Scripts/check_progress_report.py": "1b9af8c607cade72bbc60dba8c0e3a60f6fb0dc994001ef60688ede440d5e1e0",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "0a496fc307756b5c0d0c9299a4d8548914c042ba398d0428674c927e03b8e931",
+    "Scripts/check_approval_batch.py": "9ffa02294a84e2a2f4c01fe6478e820a1eb43bf7ff7efe6e0b8759e5de3c83af",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -31,7 +31,12 @@
     "Docs/Development/ProgressV1/approval-baseline-v2.json": "ea21effa4e4e8c785202abd2091942da42e416f2305011629f2a1c72fda0de6b",
     "Docs/Development/TradeStageV1.md": "3bc2c6949ea50f0b8ecdcb86aedcc80d92d4b67398dd400315dbfdfc94ebee0f",
     "Docs/Design/RegionalTradeV1/README.md": "e63fff7647694fcd4a71371daae8f578bebc25b1937ecf275c2697a40d933cdf",
-    "Docs/Design/RegionalTradeV1/completion.json": "155052482470cdf6edd4323246aa60b2afb2763ced3868e16844a8e9f0432c5b"
+    "Docs/Design/RegionalTradeV1/completion.json": "155052482470cdf6edd4323246aa60b2afb2763ced3868e16844a8e9f0432c5b",
+    "Docs/Design/RegionalTradeV1/integration.json": "674479ba0ae2ee4652deaa6d08cd5abcc476ff24b95199e00ac48999e4bcc61c",
+    "Docs/Development/ProgressV1/approval-baseline-v3.json": "9549b680b9065f25218155fac06b314077ce2a352f56afcf1017f6741cfc1bdd",
+    "Docs/Development/SalaryStageV1.md": "ce0b32f10d2c733ffa7078c4a7cddb377179f0a07c385f7a87c481178ae32379",
+    "Docs/Design/HouseSalaryV1/README.md": "6a5e5fd0510aa55f3c8287429d6e7310bc0d5c7376ad1f6b355ffa5f326eae2f",
+    "Docs/Design/HouseSalaryV1/completion.json": "f857e9b837ebd9f40ffc98b9bf8aca15a270b19b6a228dbd105d83aa92b48a60"
   },
   "items": [
     {
@@ -194,9 +199,13 @@
     {
       "id": "BD-12",
       "status": "normal",
-      "existing": "初期の個人随行の階層と、主家の兵/一時指揮の名簿を分ける。 個人随行協力の現地加入/終了・手当/未払い・本人と別々の実陸路移動・点検委任/返報を通常開始に接続。所属/主従/兵は変更しない。 無所属者と実仕事/開封返報を経て個人の実主従を追加/解消。手当・債務・組織所属を分離。 円満辞去した本人を、別の直属合意で迎えられる。",
-      "remaining": "一般の家臣層/非円満離反、海上/遠隔の指示、大集団と外観受入への拡張。",
+      "existing": "直属関係を持つ主君/家臣の給付合意と個人の米を通常入口へ接続。未払い/主従/兵を分離し、実際の辞去後も旧債務を保持して支給できる。",
+      "remaining": "全国の名簿/自律的な家臣運営・広い待遇条件・指揮対象の一般化。",
       "evidence": [
+        "Core/Contracts/HouseSalary.cs",
+        "Tests/HouseSalaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Salary.cs",
+        "Docs/Design/HouseSalaryV1/verification.json",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameMilitary.cs",
         "Tests/NewGameSetupTests.cs",
@@ -224,10 +233,14 @@
     },
     {
       "id": "BD-14",
-      "status": "foundation",
-      "existing": "共通人物状態のWillObeyという単純な服従判定がある。",
-      "remaining": "性格・対象別忠誠・認識・補給から判断し、内部理由と本人への説明を分ける。",
+      "status": "normal",
+      "existing": "NPC家臣から支給した家への限定的な信頼を、期日と受領の履歴で更新。遅配後の次の合意判断へ参照する。現地以外では現在の相手の返答を表示せず、PC自身の継続意思を強制しない。",
+      "remaining": "一般の性格/価値観・対象別忠誠・軍令判断への統合。",
       "evidence": [
+        "Core/Contracts/HouseSalary.cs",
+        "Tests/HouseSalaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Salary.cs",
+        "Docs/Design/HouseSalaryV1/verification.json",
         "Core/Contracts/ContractModels.cs",
         "Tests/CommonContractTests.cs"
       ],
@@ -584,9 +597,13 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "個人財布/運賃/報酬/家の蔵を分離。3地域で現地売買の実決済と、私物の米から家の蔵への明示供給を接続。予約した代金を手当/情報料/船賃の自由残高から除外。",
-      "remaining": "家の定期俸禄/未払い債務・全国所領財政・軍用割当と一般の物資換算。",
+      "existing": "私財/家財/軍用備蓄を分離した3地域の経済へ、主君/家臣双方からの定期給付相談・月初債務・支払準備・現地受領・一部支給を接続。受領米は既存市場で売却し本人の銭になる。終了と辞去で過去債務を消さない。",
+      "remaining": "全国の俸禄/知行・定期現金給与・家督/死亡時の債務承継・一般の所領財政。",
       "evidence": [
+        "Core/Contracts/HouseSalary.cs",
+        "Tests/HouseSalaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Salary.cs",
+        "Docs/Design/HouseSalaryV1/verification.json",
         "Core/Contracts/RegionalTrade.cs",
         "Tests/RegionalTradeTests.cs",
         "Game/Scripts/NewGameRuntime.Trade.cs",
@@ -637,9 +654,13 @@
     {
       "id": "BD-36",
       "status": "normal",
-      "existing": "独立した汎用配分の基盤に加え、通常の米売買で商人の米・本人の銭・納入後の商人支払資金を保護。他用途の手当支払を拒否し、期限/取消で解放。納入済み債務は削除しない。",
-      "remaining": "全物資/全用途の同時刻按分、既存引当の緊急転用と補償、待機の再裁定を通常世界へ一般化。",
+      "existing": "売買の引当保護に、家の支払準備米を追加。工事/村の救済による二重支出を拒否し、準備の期限/取消では引当だけ解放。足りなければ未払いと一部支給を保持する。",
+      "remaining": "全用途/全物資の同時順位按分、緊急転用・補償、待機の一般的な再裁定。",
       "evidence": [
+        "Core/Contracts/HouseSalary.cs",
+        "Tests/HouseSalaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Salary.cs",
+        "Docs/Design/HouseSalaryV1/verification.json",
         "Core/Contracts/RegionalTrade.cs",
         "Tests/RegionalTradeTests.cs",
         "Game/Scripts/NewGameRuntime.Trade.cs",
@@ -1554,12 +1575,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 730,
+      "passed": 754,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/RegionalTradeV1/runtime-local/tests/regional-trade-current.trx",
-      "sha256": "d4ae55c4b370dbc3c542b0761d9f6671a17a18dc145c159bb91aa752fbaf3d54",
-      "scope": "Current related730 only,25 new. Full2766/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/HouseSalaryV1/runtime-local/tests/house-salary-current.trx",
+      "sha256": "581c5fb8670f3038f75e9b9d2ead780484d74601c7a257ab6789be9f4c722bf1",
+      "scope": "Current related754 only,24 new; full2790 and GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1578,7 +1599,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "3地域の米売買を現地見積→合意/引当→代金支払と受取→既存道路移動→現地の買取見積→納入→代金債務→精算へ接続。未受取の取消/期限で引当解放、携行後は現物を保持し元の地域で再売却可能。本人の私有米は権限のある現地操作だけ家の蔵へ供給。新規25/関連730件・Gameビルド成功、引当中/運搬中/納入後/精算後/供給後の実世代復旧と将来世界一致。画面なしGodot28組56世界120Node3D一致。外観/UI操作・全2766件は未実施。",
+    "current_stage_summary": "現地の主君/直属家臣が相談→返答確認→月初三回の米給付を合意。期日と支払準備と実受領を分け、工事/救済の二重使用を拒否。不足/一部払い/終了/実辞去後も旧債務を保持し、受領米を既存市場で売却可能。NPC家臣の遅配履歴は次の返答へ反映し、PCの継続意思や一般の忠誠は変えない。新規24/関連754件・Gameビルド成功。主君/家臣側の実世代復旧と受領米売却後の将来世界一致、画面なしGodot32組64世界128Node3D一致。外観/UI操作・全2790件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1600,9 +1621,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/CommunityEconomyV2/integration.json",
-    "current_logic_verification": "Docs/Design/RegionalTradeV1/verification.json",
-    "current_logic_verification_sha256": "f0e171c5fec9de2008db6657f784885ac90f279511e16dd0f5401e8c349d70f6",
+    "integration": "Docs/Design/RegionalTradeV1/integration.json",
+    "current_logic_verification": "Docs/Design/HouseSalaryV1/verification.json",
+    "current_logic_verification_sha256": "a034e19be28a5bfc3d1dbc265fd1a826d263e7672ee10aeb58db0ba69ff8d42e",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
