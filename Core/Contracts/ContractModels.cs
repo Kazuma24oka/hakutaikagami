@@ -108,6 +108,8 @@ public sealed class ContractWorld
     public CommunityAdministrationState? CommunityAdministration {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public StewardState? Stewardship {get;set;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public MaterialState? Materials {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public RegionalTradeState? Trade {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]

@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Rice timber and weapon-set contracts share physical stock, money reservation, capacity, local receipt, debt and settlement; old v7 bytes remain unchanged",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Finite workshop inputs, paid labor and bounded civilian purchases run from dated local food/workforce and protected merchant funds with per-commodity and cash conservation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Private timber supplied to the rightful house funds actual water-work material use; insufficient material cannot spend rice or labor; weapons remain inventory and never spawn soldiers",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The same local contracts apply at national historic-site candidate hubs and selected town anchors using explicit trial market profiles without revealing remote live stock or inventing historical certainty",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal-entry UI and settings, old contracts, generation recovery and future equality across production/carrying/debt/material shortage, Game build and headless Node3D placement",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN"
+}

@@ -6,6 +6,7 @@ public partial class NewGameRuntime
 {
     void ShowRegionalTrade()
     {
+        if(MaterialMarkets.Enabled(Snapshot())){ShowMaterialTrade();return;}
         var v=Session.RegionalTradeView();if(v==null){message.Text="現地の商人に会ってから取引してください。";return;}long shown=Session.Revision;
         var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var box=new VBoxContainer{CustomMinimumSize=new(500,300)};panel.AddChild(box);
         box.AddChild(new Label{Text=NewGameWorld.SiteName(v.Site.Value)+" — 米の取引"});box.AddChild(new Label{Text=$"現地の売値 {v.BuyPrice}文/kg・買取 {v.SellPrice}文/kg\n自由在庫 {v.RiceAvailable}kg　商人の自由支払資金 {v.CashAvailable}文\n本人の使える私財 {v.PrivateAvailable}文（引当分を除く）"});

@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "8ad6acb81d1446f94079a36d8ba50b1859811711e308643a865a8c386f0785eb",
-    "Docs/Development/ProgressV1/estimate.json": "d1dcd53e0707b9bc9fcdcef2454c49c40267a2aaeed93f9753cabd838f354095",
+    "Docs/Development/OPERATING_POLICY.md": "4d5820de40f17efee68dae9628998395cea9319ef027b5885b95d967267900e1",
+    "Docs/Development/ProgressV1/estimate.json": "24ae59cd19f2a53ea1f6ede58bb3ff2450521ad5416bbc4c576b7b70321cb86e",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "6a21f702048e0517bd5e986010daba28580fd83f20fd9f34461d3e8cbf9bf747",
+    "Scripts/check_progress_report.py": "7ca5991012d36264885a9a531eab4af0fb7574c9d41c11205e3684bc959599e6",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "b3a40ebb9015ec1d38201f4d6b7d2711acd1c7672c1724ea132c57896f97b03c",
+    "Scripts/check_approval_batch.py": "a8db179fdbf420444b73dae3249c364dd16f20ff73c6b423af49f3581f814e69",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -47,7 +47,11 @@
     "Docs/Design/CommunityStewardshipV1/completion.json": "1d8ac7d6128e6fa9ea7121632695cbe0a5903c24215dea78aef7913961815ee2",
     "Docs/Design/CommunityStewardshipV1/README.md": "b3e298f002a058077811c128fc607f050c56d98511996dfc91caad445d74369c",
     "Docs/Design/CommunityStewardshipV1/integration.json": "cfbb58f11eef6589671fea6bbe492be3cd203dc2a751ce921eb06a7a81c7ade8",
-    "Docs/Development/ProgressV1/approval-baseline-v6.json": "27cd3a8ea17fd3ab7e93b06f6dd645a1073d896cd936e20f60ad7074970e0f97"
+    "Docs/Development/ProgressV1/approval-baseline-v6.json": "27cd3a8ea17fd3ab7e93b06f6dd645a1073d896cd936e20f60ad7074970e0f97",
+    "Docs/Design/MaterialMarketsV1/completion.json": "c4e476056e99a6197a327002fde6b6e304b8ff0913250a357ce4b34937707dbc",
+    "Docs/Design/MaterialMarketsV1/README.md": "2031a09a9eef2520f5543343d555bf55fe53b6aca2136cad36ba4a68a0a3ed85",
+    "Docs/Design/MaterialMarketsV1/integration.json": "3b2ecc66f663df96b37acb21b1edcd6629bea0cf4d59114a367d39b91fd69afb",
+    "Docs/Development/ProgressV1/approval-baseline-v7.json": "74d7b4a01c60dd95183c4b742d9679b9f360d0cf2844e1d50bc0cd5691fd9e7d"
   },
   "items": [
     {
@@ -318,9 +322,14 @@
     {
       "id": "BD-18",
       "status": "normal",
-      "existing": "拠点・組織・役職・初期領地を分離し、城/人物を地図から選べる。",
-      "remaining": "施設・村落・領地・実支配・権利主張と係争をゲーム中に更新/表示する。",
+      "existing": "城館候補27地点と既存3地域・京都/堺を重複整理した30拠点に、所在地/市場施設/商人組織を別IDで置き同じ取引を接続。",
+      "remaining": "全国の所領境界/権益・人口生産台帳、全村の再現、各市場の実在時期/規模の史料採録。",
       "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameWorld.cs",
         "Game/Scripts/NewGameMap.cs"
@@ -605,9 +614,14 @@
     {
       "id": "BD-33",
       "status": "normal",
-      "existing": "3地域の生産/労働へ村の水利協力合意、NPCの月次工事・上限管理を接続。休止/救済再開と複数工事の完成表示を回帰確認。",
-      "remaining": "全国の村落生産台帳、出生死亡/移住、地形気候と作物の一般化。",
+      "existing": "米の生産に加え、3地域の有限加工前木材/武具、空き労働、食糧不足、実賃金から工房生産を接続。家の木材を水利工事で実消費。",
+      "remaining": "全国の農業/人口変動/動員労働、作物/地形/気候と資源産地、荷役や本格的な普請。",
       "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json",
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
         "Tests/VillageConsultationTests.cs",
@@ -649,10 +663,14 @@
     {
       "id": "BD-35",
       "status": "normal",
-      "existing": "通常新規開始で3地域の米売買を、現地見積・引当・支払/受取・実移動・納入・代金債務・精算へ接続。現地在庫で新見積が変わり、過去の約定は固定。期限/取消/元地域への再売却と5段階の実保存復旧を確認。",
-      "remaining": "他商品/市場の全国化・商人AI・保証人/担保・一般の違約/再交渉・積載と荷役。",
+      "existing": "米・木材・武具を同一の契約/私財/100kg携行枠で見積→引当→受取→実運搬→納入債務→精算し、全国30拠点へ適用。",
+      "remaining": "軍馬/火薬弾薬など残る物資、混載/複数輸送、保証・担保と履行不能/再交渉、商人専業。",
       "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
         "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json",
         "Tests/RegionalTradeTests.cs",
         "Game/Scripts/NewGameRuntime.Trade.cs",
         "Docs/Design/RegionalTradeV1/verification.json",
@@ -683,9 +701,14 @@
     {
       "id": "BD-36",
       "status": "normal",
-      "existing": "代理官の月次救済500/徴税1000/水利200kgを既存台帳で上限制御。別操作経由の枠回避/給付引当との競合を拒否。",
-      "remaining": "全商品・全用途の同時按分、緊急転用/補償、複数地域予算の一般化。",
+      "existing": "商品別現物と共有銭、住民資金、有限加工前在庫、売却代金/購入引当、家の木材実消費を保存則で照合。材料不足なら米と労働も原子的に保持。",
+      "remaining": "全用途の同順位按分、緊急転用/補償、複数地域予算の再裁定、消耗/損壊や荷重減速。",
       "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json",
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
         "Game/Scripts/NewGameRuntime.Stewardship.cs",
@@ -700,7 +723,6 @@
         "Tests/HouseSalaryTests.cs",
         "Game/Scripts/NewGameRuntime.Salary.cs",
         "Docs/Design/HouseSalaryV1/verification.json",
-        "Core/Contracts/RegionalTrade.cs",
         "Tests/RegionalTradeTests.cs",
         "Game/Scripts/NewGameRuntime.Trade.cs",
         "Docs/Design/RegionalTradeV1/verification.json",
@@ -1053,9 +1075,14 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "当主不在でも明示合意したNPC代理官が現地の処分枠内で判断。報告不達を本人が知ってから原本を再送し、未知の当主位置を追尾しない。",
-      "remaining": "全国の多分野目標・市場/外交AI、遠方簡略モードとの同値性と負荷。",
+      "existing": "既存の当主/代理官判断に、3地域の工房生産と住民購入を接続。空き労働/不足/保護資金/有限在庫/住民の財布で生産・購入・待機を判断。",
+      "remaining": "全国の人口生産/輸送/商人の活動、家の自律的な物資調達、軍事外交目標との優先順位、遠方簡略の同値性。",
       "evidence": [
+        "Core/Contracts/MaterialMarkets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/MaterialMarketTests.cs",
+        "Game/Scripts/NewGameRuntime.MaterialTrade.cs",
+        "Docs/Design/MaterialMarketsV1/verification.json",
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
         "Game/Scripts/NewGameRuntime.Stewardship.cs",
@@ -1646,12 +1673,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 841,
+      "passed": 873,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/CommunityStewardshipV1/runtime-local/tests/community-stewardship-current.trx",
-      "sha256": "b86ced8d902593b9e42cc5d87361f499d2fd5ac157c6aac64cf71ab2d7ec61d0",
-      "scope": "Current related841 only,32 new. Full2877/GUI NOT_RUN; historical full2446 remains separate."
+      "trx": "Docs/Design/MaterialMarketsV1/runtime-local/tests/material-markets-current.trx",
+      "sha256": "db17c86c9b5eb6c722086a80b4b34a7f7c425c10b322a2a1270eb73c2ecf5a98",
+      "scope": "Current related873 only,32 new; full2909/GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1663,14 +1690,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 841,
+      "passed": 873,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/CommunityStewardshipV1/runtime-local/tests/community-stewardship-current.trx",
-      "sha256": "b86ced8d902593b9e42cc5d87361f499d2fd5ac157c6aac64cf71ab2d7ec61d0",
-      "scope": "Current related841 only,32 new. Full2877/GUI NOT_RUN; historical full2446 remains separate."
+      "trx": "Docs/Design/MaterialMarketsV1/runtime-local/tests/material-markets-current.trx",
+      "sha256": "db17c86c9b5eb6c722086a80b4b34a7f7c425c10b322a2a1270eb73c2ecf5a98",
+      "scope": "Current related873 only,32 new; full2909/GUI NOT_RUN; historical full2446 separate."
     },
-    "current_stage_summary": "PR #17を承認head58619a7と同じtreeでmain0df60ccへ統合後、停止せず限定代理行政を実装。現地の当主/直属家臣が期限・月次処分枠・固定返報先を合意し、PC代理官の手動処分とNPC代理官の現地運営を接続。観測時点の封書を実配送し、開封前の内容/現在の台帳を秘匿。取消は物理到達して効き、返報認識と分離。不在による報告不達は代理官の既知の不達から同一観測を最大3通まで再送。新規32/関連841件・Gameビルド・実世代復旧と将来世界一致・画面なしGodot45組90世界154Node3D一致。外観/UI操作・全2877件は未実施。",
+    "current_stage_summary": "PR18を承認head136d672と同じtreeでmain86a6523へ統合後、停止せず物資と市場を実装。米・木材・武具が同じ財布/引当/重量上限/運搬/納入/代金債務/精算を使い、30拠点の市場へ展開。3地域の有限加工前在庫と労働から生産し、商人→村落の住民財布へ賃金、住民購入→商人へ実支払を接続。家へ納入した木材を水利工事に10kg実消費し、不足なら米/労働も消費しない。武具在庫は兵を生成しない。新規32/関連873件・Gameビルド・5段階実世代復旧と将来世界一致・画面なしGodot50組100世界164Node3D一致。外観/UI操作・全2909件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1692,9 +1719,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/CommunityStewardshipV1/integration.json",
-    "current_logic_verification": "Docs/Design/CommunityStewardshipV1/verification.json",
-    "current_logic_verification_sha256": "dd17aaad96c5fb05bebb638df71bdd22b2c3a685b038ec5a13896084c6158e09",
+    "integration": "Docs/Design/MaterialMarketsV1/integration.json",
+    "current_logic_verification": "Docs/Design/MaterialMarketsV1/verification.json",
+    "current_logic_verification_sha256": "c25a293cf207bc944f90e3017d3f5657a6143afcd4a9b6b2fe07ba1fd063f27e",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -1703,7 +1730,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連841件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連873件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -1759,10 +1786,10 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "米以外の物資と市場取引を既存の所有/携行/支払へ接続",
-    "NPCの地域生産と市場需要の一巡",
-    "同じ契約を全国の地域データへ適用",
-    "平時・戦時の収支/住民/家臣の判断を通し調整",
+    "全国の地域台帳へ人口/生産/需要を段階的に適用",
+    "家の権限と予算に沿う自律調達と物資輸送",
+    "平時の生産と戦時の動員/供給の接続",
+    "身分別に継続して遊べる一巡の調整",
     "正式素材・画面・性能と製品受入"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",

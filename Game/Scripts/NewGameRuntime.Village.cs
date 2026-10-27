@@ -12,6 +12,7 @@ public partial class NewGameRuntime
         box.AddChild(new Label{Text=NewGameWorld.SiteName(v.Site.Value)+" — 村との相談"});
         box.AddChild(new Label{Text=v.Representative+"「"+v.Reaction+"」",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         if(v.Administration!="")box.AddChild(new Label{Text=v.Administration,AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(MaterialMarkets.Enabled(Snapshot()))box.AddChild(new Label{Text="水利工事は家の木材10kgも使用します。"});
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(VillageAction action,EntityId? proposal=null,long amount=0){var r=Session.ConsultVillage(new(new("request:village-ui/"+shown),action,v.Site,proposal,amount),Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowVillage();}
         var amount=new SpinBox{MinValue=1,MaxValue=3000,Step=1,Value=200,Suffix=" kg"};box.AddChild(amount);
