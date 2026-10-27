@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Local dated rice quotes and protected goods/coin reservations; no remote current-market disclosure",
+      "status": "PASSED",
+      "evidence": [
+        "QuoteDoesNotSpendAcceptProtectsThenCollectMovesActualRiceAndCoins",
+        "LocalDemandChangesNewQuoteButDoesNotRewriteOlderContractPrice",
+        "AcceptedCancellationOrExpiryReleasesBothReservations"
+      ]
+    },
+    {
+      "contract": "Physical collection, common-route travel and local delivery; no instantaneous regional sharing",
+      "status": "PASSED",
+      "evidence": [
+        "PhysicalRouteArrivalDeliveryDebtAndSettlementAreSeparate",
+        "NoFreshRemoteMarketOrInstantDeliveryWhileOnRoad",
+        "UnknownClosureDoesNotChangeQuoteOrPlannedJourneyAndDoesNotTeleportCargo"
+      ]
+    },
+    {
+      "contract": "Delivery, merchant debt and settlement are separate; cancellation, local resale and explicit authorized house supply preserve ownership",
+      "status": "PASSED",
+      "evidence": [
+        "DeliveredDebtProtectsMerchantCashAndSurvivesTimeAndCannotBeCancelled",
+        "CarriedCancellationPreservesGoodsAndAllowsLocalResaleAtCurrentPrice",
+        "ExplicitHouseSupplyMovesPrivateRiceWithoutChangingMilitaryOrPrivateCoins",
+        "ForeignHouseCannotReceivePrivateCargoWithoutDispositionAuthority"
+      ]
+    },
+    {
+      "contract": "Goods/cash conservation, cross-operation reservation protection, stale revisions and global ID reuse are validated",
+      "status": "PASSED",
+      "evidence": [
+        "ExistingCompanionPaymentCannotConsumeTradeReservationThenExpiryRestoresFreedom",
+        "WrongActorRemoteSiteAndDuplicateOriginalCannotSpend",
+        "MarketAndPriceTamperingCannotLoad",
+        "SuppliesAreActualHouseRiceAvailableForLaterWorkAndRelief"
+      ]
+    },
+    {
+      "contract": "Actual generation recovery/future equality, legacy v2 preservation, normal-entry Game build and headless Node3D placement",
+      "status": "PASSED",
+      "evidence": [
+        "ActualGenerationRecoveryAtEachPhysicalStageHasIdenticalFuture (5 cases)",
+        "PreviousV2WorldKeepsBytesAndRejectsTradeStateInjection",
+        "NormalEntryProfilePersistsNewPolicyAndBuildsMarketAndCommunityWithoutOldSaveMigration",
+        "verification.json:730 tests/Game build/28 generation pairs/120 Node3D"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "limits": "One rice commodity/three authored merchants; no all-product market/general collateral/universal simultaneous allocation/load-speed model."
+}

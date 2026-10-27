@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-10-26",
+  "date": "2026-10-27",
   "title": "百代鏡 全体進捗表",
   "audit_base_commit": "bbbba953ce8172a576060c6ab4a03c5ff4138481",
   "classification": "AIによる一次監査。通常入口・主要Core/テスト・検証記録の対応を確認。製品受入の代わりではない。",
@@ -17,16 +17,21 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "b6e59d2893a8466f6bb38d7335a409da5863320fec240da1813e70c06bb59402",
-    "Docs/Development/ProgressV1/estimate.json": "02a0a9f9891698e451a7a68b0580a879d6f6e060ce0ea9a0618705119afc0f26",
-    "Scripts/build_progress_report.py": "5b5be43fee560558e42fbfa8e7d6a59790883531c4a60b33bc245e05e966aafe",
-    "Scripts/check_progress_report.py": "a69edf2b773b26cab34df39de737b2fa1e937c716ad2fca7521ce2e42028f703",
-    "Scripts/progress_estimate.py": "76426907be571d188164da6518c83ac22e299be38caf55c92fa4a3629cef578d",
-    "Scripts/check_approval_batch.py": "e497fb479324915340a8c96633e8517b27118a1d1a538661f7ee0a79ecff75cf",
+    "Docs/Development/OPERATING_POLICY.md": "16098ef6a6360ba871d92c5f09420de9380bcbd4f89b139bf195b54c36433e87",
+    "Docs/Development/ProgressV1/estimate.json": "99af98a5ead44ae5aff006417504930686e2a1ca0ba7e2e6255afc39ebbc2282",
+    "Scripts/build_progress_report.py": "45053370d877087d0a54a5b2aa25d3f3aa89bf6191e9a14ea1d17e3c73a3ac12",
+    "Scripts/check_progress_report.py": "3aedc43e26f7e3f9ef51fbc1220ab38fd61a027e2ce2ba927d29172ff0c658bb",
+    "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
+    "Scripts/check_approval_batch.py": "0a496fc307756b5c0d0c9299a4d8548914c042ba398d0428674c927e03b8e931",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
-    "Docs/Design/CommunityEconomyV2/README.md": "16cfe6c1c02668937acd4971586f88cde4d89ae3554740080edb5db215082854"
+    "Docs/Design/CommunityEconomyV2/README.md": "16cfe6c1c02668937acd4971586f88cde4d89ae3554740080edb5db215082854",
+    "Docs/Design/CommunityEconomyV2/integration.json": "77e7473b96fd650967ab378351d016c8d437e92914fa3d1f4036c275166dda6e",
+    "Docs/Development/ProgressV1/approval-baseline-v2.json": "ea21effa4e4e8c785202abd2091942da42e416f2305011629f2a1c72fda0de6b",
+    "Docs/Development/TradeStageV1.md": "3bc2c6949ea50f0b8ecdcb86aedcc80d92d4b67398dd400315dbfdfc94ebee0f",
+    "Docs/Design/RegionalTradeV1/README.md": "e63fff7647694fcd4a71371daae8f578bebc25b1937ecf275c2697a40d933cdf",
+    "Docs/Design/RegionalTradeV1/completion.json": "155052482470cdf6edd4323246aa60b2afb2763ced3868e16844a8e9f0432c5b"
   },
   "items": [
     {
@@ -579,9 +584,13 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "個人財布/報酬/船賃/運搬預り金と主家在庫を分離。3地域で収穫年貢の計上・徴収、家の現物支出、村の保護備蓄、救済消費を接続。工事/徴収/救済はIDと表示時の状態版を検査して二重支出を防ぐ。",
-      "remaining": "定期俸禄/未払い債務・相場/市場・全国所領財政・現物の軍用割当。",
+      "existing": "個人財布/運賃/報酬/家の蔵を分離。3地域で現地売買の実決済と、私物の米から家の蔵への明示供給を接続。予約した代金を手当/情報料/船賃の自由残高から除外。",
+      "remaining": "家の定期俸禄/未払い債務・全国所領財政・軍用割当と一般の物資換算。",
       "evidence": [
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/RegionalTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.Trade.cs",
+        "Docs/Design/RegionalTradeV1/verification.json",
         "Core/Contracts/CommunityEconomy.cs",
         "Tests/CommunityEconomyTests.cs",
         "Game/Scripts/NewGameRuntime.Communities.cs",
@@ -593,10 +602,14 @@
     },
     {
       "id": "BD-35",
-      "status": "foundation",
-      "existing": "引当・現物移動・債務のデータと、点検報酬の未払い処理がある。 運搬の固定受渡し契約を独立実装し、期限/取消/返却/債務/再送/ファイル復旧を検査（L1）。世界の現地/在庫との接続はL2。 小口送金の運搬を通常会話・実移動・実受渡し・報告/運賃へ接続。私財/預り金/軍務を分離し、途中停止と世代復旧も検査（L2）。 新規開始の船賃規則、実出航での一回決済、私財不足時の港待機と無料陸路、仕事/仕官/軍務/帰還の同一人物一巡を検証（L3）。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
-      "remaining": "市場価格・見積・売買合意・運搬・受渡し・決済という交易の一巡を実装する。",
+      "status": "normal",
+      "existing": "通常新規開始で3地域の米売買を、現地見積・引当・支払/受取・実移動・納入・代金債務・精算へ接続。現地在庫で新見積が変わり、過去の約定は固定。期限/取消/元地域への再売却と5段階の実保存復旧を確認。",
+      "remaining": "他商品/市場の全国化・商人AI・保証人/担保・一般の違約/再交渉・積載と荷役。",
       "evidence": [
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/RegionalTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.Trade.cs",
+        "Docs/Design/RegionalTradeV1/verification.json",
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameWork.cs",
         "Tests/NewGameWorkTests.cs",
@@ -623,10 +636,14 @@
     },
     {
       "id": "BD-36",
-      "status": "isolated",
-      "existing": "独立試作で徴税/資源要求の競合、二重消費防止や未使用引当解放を扱う。",
-      "remaining": "制度別優先順位・同順位按分・不可分抽選・緊急転用・補償を実装/通常接続する。",
+      "status": "normal",
+      "existing": "独立した汎用配分の基盤に加え、通常の米売買で商人の米・本人の銭・納入後の商人支払資金を保護。他用途の手当支払を拒否し、期限/取消で解放。納入済み債務は削除しない。",
+      "remaining": "全物資/全用途の同時刻按分、既存引当の緊急転用と補償、待機の再裁定を通常世界へ一般化。",
       "evidence": [
+        "Core/Contracts/RegionalTrade.cs",
+        "Tests/RegionalTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.Trade.cs",
+        "Docs/Design/RegionalTradeV1/verification.json",
         "Core/Simulation/TaxSimulation.cs",
         "Core/Contracts/WorldSession.cs",
         "Tests/TaxSimulationTests.cs",
@@ -1537,12 +1554,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 705,
+      "passed": 730,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/CommunityEconomyV2/runtime-local/tests/community-economy-current.trx",
-      "sha256": "a240a9a5ad63c70ebcc43080e39ba5d91d567bbf9948c9c903d15df817387c42",
-      "scope": "Current related705 only,20 new plus supplemental normal-entry/report recovery probe; full2741 and GUI NOT_RUN. Historical full2446 separate."
+      "trx": "Docs/Design/RegionalTradeV1/runtime-local/tests/regional-trade-current.trx",
+      "sha256": "d4ae55c4b370dbc3c542b0761d9f6671a17a18dc145c159bb91aa752fbaf3d54",
+      "scope": "Current related730 only,25 new. Full2766/GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -1561,7 +1578,7 @@
       "trx_sha256": "7c130f2c3421a8061c77d51ff9c647517957e8b2519d13d6cb6021f8f50bdb39",
       "scope": "All current Core2392 success; game/test Core DLL exact match; code838f2e5"
     },
-    "current_stage_summary": "3地域の独立した人口/働き手/収穫/月次食糧/年貢/救済/工事を接続。新規20/関連705件・Gameビルド成功。実世代復旧（工事中/食糧不足で休止/再開/開封済み報告）と将来世界一致。Godot画面なし23組46世界110Node3D一致。通常入口プロフィールと封書の物理受領/開封もCLIで確認。外観/UI操作と全2741件は未実施。",
+    "current_stage_summary": "3地域の米売買を現地見積→合意/引当→代金支払と受取→既存道路移動→現地の買取見積→納入→代金債務→精算へ接続。未受取の取消/期限で引当解放、携行後は現物を保持し元の地域で再売却可能。本人の私有米は権限のある現地操作だけ家の蔵へ供給。新規25/関連730件・Gameビルド成功、引当中/運搬中/納入後/精算後/供給後の実世代復旧と将来世界一致。画面なしGodot28組56世界120Node3D一致。外観/UI操作・全2766件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -1583,9 +1600,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/EngagementTaskDeliveryV1/integration.json",
-    "current_logic_verification": "Docs/Design/CommunityEconomyV2/verification.json",
-    "current_logic_verification_sha256": "63c7b67a030e27c6ed208ec67d9f775a53e6f01b79ead5c9c880dfde3f4a97cc",
+    "integration": "Docs/Design/CommunityEconomyV2/integration.json",
+    "current_logic_verification": "Docs/Design/RegionalTradeV1/verification.json",
+    "current_logic_verification_sha256": "f0e171c5fec9de2008db6657f784885ac90f279511e16dd0f5401e8c349d70f6",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
