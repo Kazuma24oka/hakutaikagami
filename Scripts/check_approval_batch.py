@@ -3,7 +3,7 @@ from pathlib import Path
 from fractions import Fraction
 import json,subprocess
 R=Path(__file__).resolve().parents[1]
-BASELINES={11:("1801e0b799e1ebda2ffb2db0ff2d8455657401c1","Docs/Development/ProgressV1/approval-baseline-v11.json"),10:("c7a41f7f4c41dbe16b5a58c6d155028a35005882","Docs/Development/ProgressV1/approval-baseline-v10.json"),9:("5478a5d6644f1a2037d38a266ccb1d91b24acfd2","Docs/Development/ProgressV1/approval-baseline-v9.json"),8:("db56cc00bc6c55767432cf7ca6ab217e92b929c2","Docs/Development/ProgressV1/approval-baseline-v8.json"),7:("6e6b2fa87c9c205b024c494f430f9825be1d9252","Docs/Development/ProgressV1/approval-baseline-v7.json"),6:("5960dc7deb55f500a8f3e2708fc53be77bc4a18c","Docs/Development/ProgressV1/approval-baseline-v6.json"),5:("6c51f21f33cf7804ce5e7e51f6025b87fde670ab","Docs/Development/ProgressV1/approval-baseline-v5.json"),1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
+BASELINES={12:("d332fe3fba5cf9b330db0f5dd14ae573179010e3","Docs/Development/ProgressV1/approval-baseline-v12.json"),11:("1801e0b799e1ebda2ffb2db0ff2d8455657401c1","Docs/Development/ProgressV1/approval-baseline-v11.json"),10:("c7a41f7f4c41dbe16b5a58c6d155028a35005882","Docs/Development/ProgressV1/approval-baseline-v10.json"),9:("5478a5d6644f1a2037d38a266ccb1d91b24acfd2","Docs/Development/ProgressV1/approval-baseline-v9.json"),8:("db56cc00bc6c55767432cf7ca6ab217e92b929c2","Docs/Development/ProgressV1/approval-baseline-v8.json"),7:("6e6b2fa87c9c205b024c494f430f9825be1d9252","Docs/Development/ProgressV1/approval-baseline-v7.json"),6:("5960dc7deb55f500a8f3e2708fc53be77bc4a18c","Docs/Development/ProgressV1/approval-baseline-v6.json"),5:("6c51f21f33cf7804ce5e7e51f6025b87fde670ab","Docs/Development/ProgressV1/approval-baseline-v5.json"),1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
 def calculate(a,d,leaves):
     groups={g["id"]:g for g in d["groups"]};total=Fraction(0)
     for domain in a["domains"]:
@@ -44,6 +44,12 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==12:
+        from verify_npc_freight import check as verify
+        folder="NpcFreightV1"
+        assert "NpcFreight.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
+        assert 'Session.DelegatedFreightView()' in (R/"Game/Scripts/NewGameRuntime.HouseFreight.cs").read_text(encoding="utf-8")
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/NpcFreight.cs'],cwd=R,capture_output=True).returncode!=0,'Delegated freight targets not frozen before code'
     elif version==11:
         from verify_military_economy import check as verify
         folder="MilitaryEconomyV1"

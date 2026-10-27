@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Explicit v13 permits a local head to agree bounded household procurement with a willing adult direct retainer; actor/capacity/authority/cash/monthly budget checked without automating player travel",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The retainer uses common land journeys to source and home, buys only on actual arrival with actual stock and entrusted cash, returns unused cash and cargo once; no teleportation or resource creation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Source shortage, closed roads, expiry and service/authority loss preserve entrusted assets and return obligations; busy carriers cannot accept overlapping tasks; after settlement another bounded job can be agreed",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Player view distinguishes known dispatch from local returned receipt, conceals remote current purchase/stock/cash and allows no remote cancellation effect or arbitrary NPC impersonation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry/UI and saved recovery/future equality, legacy v12 bytes, Game build and headless 3D placement are verified with honest GUI/full-suite limits",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcFreight.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/TravelWorld.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/NpcFreightTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseFreight.cs",
+        "Docs/Design/NpcFreightV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Bounded local head/direct-retainer procurement and return, not generic autonomous merchants or forward battlefield convoys. No remote cancellation or route handover. Road blocking tested with real travel; expiry derived-fold tested, not a30-day NPC journey; actual NPC service/house loss is not separately exercised. GUI/full-suite NOT_RUN."
+}
