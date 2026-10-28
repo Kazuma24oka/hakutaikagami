@@ -1,0 +1,392 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "scope": "47 current personal-life executable cases mapped to five stage criteria; partial support for seven basic-design items, not formal completion of170 product scenarios",
+  "test_count": 47,
+  "trx": "Docs/Design/PersonalLifeV1/runtime-local/tests/personal-life-current.trx",
+  "trx_sha256": "7f1bc94cbca3792737ab728a5b9f9c49ac7a2d7cb6e89bdc0d31375b74968358",
+  "test_source_sha256": "05347a0e19784bf88c17817cf8a011e05df34f8f35b2e025732259475bec9f91",
+  "criteria": [
+    "Explicit v18 personal living choices use the same personal wallet, salary rice and local merchant rice; private food consumption cannot double-sell, spend reserved funds or raid house/army stock",
+    "Paid inn and free outdoor rest use one world clock at a stable site; cancellation preserves elapsed time and fees, departure is blocked only during actual remaining rest, and poverty never prevents walking/work",
+    "Known service role, personal pay/arrears and held military/cargo obligations are separated in one personal-life view without revealing remote current stores or granting authority by title",
+    "Player-selected personal goals for earned work pay, received stipend and paid stipend progress only from actual post-selection receipts and remain achieved after later spending; reaching a goal never ends the game",
+    "Idempotence, forged entries, same-time ordering, actual generation recovery and future progress equality are tested for roles, food, partial rest, cancellation and goals; old saves retain their original bytes and GUI remains separate"
+  ],
+  "cases": [
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.AReservedPurchaseCannotBeUsedAsInnMoney",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 0)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 1)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 2)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 3)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 4)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 5)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 6)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ActualGenerationRestMealGoalRecoveryAndFuture(phase: 7)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.AfterEatingOnlyRemainingPrivateRiceCanBeLoadedForSale",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.CreatedRoninUsesSameLifeRulesWithoutGainingHouseAuthority",
+      "outcome": "Passed",
+      "criteria": [
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.EmptyPrivateRiceDoesNotTakeFromHouse",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.EntrustedFreightIsAContinuingObligationAndBlocksRest",
+      "outcome": "Passed",
+      "criteria": [
+        2,
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.FoodAndTradeDuringRestAreAtomicRejections",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ForgedFeeSiteOrGoalIsRejected(kind: 0)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ForgedFeeSiteOrGoalIsRejected(kind: 1)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ForgedFeeSiteOrGoalIsRejected(kind: 2)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        4,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.GoalCountsOnlyRealPostSelectionSalaryReceipt(employee: False)",
+      "outcome": "Passed",
+      "criteria": [
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.GoalCountsOnlyRealPostSelectionSalaryReceipt(employee: True)",
+      "outcome": "Passed",
+      "criteria": [
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.GoalDoesNotCountOlderReceiptsAndCanBeChanged",
+      "outcome": "Passed",
+      "criteria": [
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.HeldArmyIsShownAsAnObligationAndPreventsPrivateRest",
+      "outcome": "Passed",
+      "criteria": [
+        2,
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.InvalidGoalAmountsAreAtomic(n: -1)",
+      "outcome": "Passed",
+      "criteria": [
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.InvalidGoalAmountsAreAtomic(n: 0)",
+      "outcome": "Passed",
+      "criteria": [
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.InvalidGoalAmountsAreAtomic(n: 5001)",
+      "outcome": "Passed",
+      "criteria": [
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.KnownCreatedRoleIsNotFlattenedIntoOrdinaryRetainer(role: Castellan)",
+      "outcome": "Passed",
+      "criteria": [
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.KnownCreatedRoleIsNotFlattenedIntoOrdinaryRetainer(role: LocalLord)",
+      "outcome": "Passed",
+      "criteria": [
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.KnownCreatedRoleIsNotFlattenedIntoOrdinaryRetainer(role: Subretainer)",
+      "outcome": "Passed",
+      "criteria": [
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.LargeCargoCannotBeDestroyedAsAMeal",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.LifeIdsCannotBeReusedForTrade",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.NormalProfileBuildEnablesLifeWithoutChangingLegacy",
+      "outcome": "Passed",
+      "criteria": [
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.OldVersionKeepsNoLifeLedgerAndRejectsConsumption",
+      "outcome": "Passed",
+      "criteria": [
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.OtherActorStaleRevisionAndRemoteSiteCannotRest",
+      "outcome": "Passed",
+      "criteria": [
+        2,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.PartialCancellationKeepsFeeAndElapsedTime",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.PurchasedFoodConsumesRealMerchantRiceAndCoins(n: 1)",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.PurchasedFoodConsumesRealMerchantRiceAndCoins(n: 3)",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RestBlocksMoveAndInspectUntilExactEnd",
+      "outcome": "Passed",
+      "criteria": [
+        2
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RestChunkSizeKeepsSameElapsedRestAndBalance",
+      "outcome": "Passed",
+      "criteria": [
+        2
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RestDoesNotJumpClockOrTransferAnyHouseRice(inn: False)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RestDoesNotJumpClockOrTransferAnyHouseRice(inn: True)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RetryCannotChargeTwiceOrChangePayload",
+      "outcome": "Passed",
+      "criteria": [
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RolesKeepPrivatePurseSeparateFromHouseAndArmy(employee: False)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.RolesKeepPrivatePurseSeparateFromHouseAndArmy(employee: True)",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.SalaryArrearsRemainSeparateAfterEndingService",
+      "outcome": "Passed",
+      "criteria": [
+        3
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.SalaryMealConsumesOnlyPrivateRiceAndCannotBeSoldAgain",
+      "outcome": "Passed",
+      "criteria": [
+        1
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.TradeIdsCannotBeReusedForLife",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        5
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.WorkGoalRequiresActualPersonalReceiptAndSurvivesLaterSpending",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        4
+      ]
+    },
+    {
+      "test": "HakutaiKagami.Tests.PersonalLifeTests.ZeroMoneyStillAllowsFreeRestWalkingAndWorkSearch",
+      "outcome": "Passed",
+      "criteria": [
+        1,
+        2
+      ]
+    }
+  ],
+  "product_acceptance": "PLANNED_NOT_EXECUTED",
+  "gui": "NOT_RUN"
+}

@@ -58,6 +58,7 @@ public sealed partial class WorldSession
             if (expectedRevision != state.CommitSequence) return new(ResultCode.StateChanged,intent.RequestId,state.CommitSequence,"表示を更新してください");
             try
             {
+                if(intent.Executor==state.PlayerControl&&PersonalLife.Resting(state,state.ElapsedSeconds,state.CommitSequence+1))throw new InvalidDataException("休息を終えるか中止してから実務を始めてください");
                 if(FieldConvoy.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1)&&intent.RoutePolicy!=RoadConvoy.LandRoute)throw new InvalidDataException("Carrier is busy with camp supply");
                 if(NpcFreight.Busy(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1)&&intent.RoutePolicy!=NpcFreight.LandRoute)throw new InvalidDataException("Carrier is busy with entrusted freight");
                 if(ArmyRoadMarch.ControlsParty(state)&&intent.Executor==state.PlayerControl&&intent.Action==ActionKind.Move&&intent.RoutePolicy!=ArmyRoadMarch.LandRoute)throw new InvalidDataException("Lead the held army through its march action");
@@ -182,6 +183,7 @@ public sealed partial class WorldSession
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
         if(PersonalCompanions.NextReleaseBoundary(s,target) is {} releaseBoundary)times.Add(releaseBoundary);
         if(FieldConvoy.NextBoundary(s,target) is {} convoyBoundary)times.Add(convoyBoundary);
+        if(PersonalLife.NextBoundary(s,target) is {} lifeBoundary)times.Add(lifeBoundary);
         if(RoadConvoy.NextBoundary(s,target) is {} roadSupplyBoundary)times.Add(roadSupplyBoundary);
         if(FreightOperations.NextBoundary(s,target) is {} freightMessageBoundary)times.Add(freightMessageBoundary);
         if(NpcFreight.NextBoundary(s,target) is {} freightBoundary)times.Add(freightBoundary);

@@ -96,8 +96,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-05": {
-      "percent": 60,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 65,
+      "basis": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。"
     },
     "BD-06": {
       "percent": 5,
@@ -108,8 +108,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-08": {
-      "percent": 0,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 35,
+      "basis": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。"
     },
     "BD-09": {
       "percent": 45,
@@ -160,16 +160,16 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-21": {
-      "percent": 70,
-      "basis": "街道補給担当者を私的用件/仕入れ/局所補給/軍指揮から排他にし、受領する本人/同じ部隊/集合/容量を実時点で確認する。 全行動の一般競合表、療養/捕縛/奉行職と任務の一般併用。"
+      "percent": 75,
+      "basis": "残り休息時間中の移動/点検/現物取引を拒否。預かった軍と家の運搬物の引継ぎ/精算を先に求め、書状の受領/閲覧と個人実務を区別。 全任務/療養/捕縛/役職の一般併用表と複数人による引継ぎ。"
     },
     "BD-22": {
-      "percent": 80,
-      "basis": "面会取消/物理書状の受領後は次の受渡しを止める。部分受領済み米を巻き戻さず残りだけ実帰還返納し、実到達済み取消の受領履歴削除を拒否する。 全任務の一般取消/補償/担当交代、移動中部隊の追跡と引継ぎ。"
+      "percent": 85,
+      "basis": "休息を途中中止しても実経過と宿代を返さず、残り時間の排他だけを終了。食べた米の再売却/再消費、同じ操作の再課金を拒否。 一般任務の補償/担当交代、健康/捕縛/戦闘中断と再開。"
     },
     "BD-23": {
-      "percent": 70,
-      "basis": "行軍/在外待機/局所展開の時間と実消費を接続。時計の刻み幅を変えても経路・位置・米の消費が一致する。 全国の全生活費/戦時負担・季節天候を含む長期の通し調整。"
+      "percent": 80,
+      "basis": "個人休息も共通世界の秒で進め、完了境界/途中中止/進行幅を変えた結果を照合。食事と船賃/現地取引を同じ実会計へ接続。 全国の全生活費/全NPCの生活・季節天候/戦時負担を含む長期通し調整。"
     },
     "BD-24": {
       "percent": 40,
@@ -212,8 +212,8 @@
       "basis": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。 地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。"
     },
     "BD-34": {
-      "percent": 90,
-      "basis": "家の自由米→軍用倉→携行兵糧→実消費/未使用米返納を分離。俸禄の既引当を保護し、私財へ混ぜず旧家の現物を移し替えない。 現金給与・知行/家督財政・広域金庫、一般会計/債務承継。"
+      "percent": 95,
+      "basis": "私有扶持米を食事で実消費し、給付/個人取引/家の米/軍の兵糧を分離。宿代は私財の自由残高だけから実支払い、給付債権/債務は辞去でも保持。 知行収益・現金俸禄・全国の制度差・家督時の債務承継と待遇調整。"
     },
     "BD-35": {
       "percent": 95,
@@ -304,8 +304,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-57": {
-      "percent": 55,
-      "basis": "既存補給画面に家臣・集合拠点・量の合意と、日時付きの開封報告を接続。現地累計受領と取消/返報を並べ、既知の返納を移動後も保持する。 外観/GUI操作の受入、全画面の情報整理/一覧検索・アクセシビリティ。"
+      "percent": 60,
+      "basis": "暮らし・待遇画面に認識済み身分、私財/私有米、給付の未収/未払、軍/預り物の責任、食事・休息・当面の目標を集約。履歴を大量表示せず今の操作を提示。 GUI/外観の受入、全画面の情報整理・一覧検索とアクセシビリティ。"
     },
     "BD-58": {
       "percent": 95,
@@ -321,21 +321,22 @@
     }
   },
   "focus": {
-    "leaf": "BD-40",
-    "title": "街道補給・部分受渡しと物理書状",
-    "status": "5/5完了。PR25承認統合後も続行し、街道運搬と複数便/部分受渡し/実返納、物理取消と時点付き返報をまとめて接続。新しいmain統合は未承認。",
+    "leaf": "BD-08",
+    "title": "身分別の生活・待遇・引受中の負担",
+    "status": "5/5完了。PR26承認統合後も生活/実会計/休息/受領目標まで続行。新しいmain統合は未承認。",
     "exit": [
-      "New explicit v17 consensual direct-retainer road supply reserves actual free house rice at a physical home meeting, binds the same army/case/owner and fixed destination, and excludes other jobs without duplicating troops or grain",
-      "Carrier uses common land roads and known-only route planning; unknown closure is observed physically, destination waits for actual same-case army/commander assembly and capacity, and only one actual meeting transfers rice Deliver only actual free capacity in whole kilograms, retaining all remainder on the carrier; simultaneous convoys cannot reserve or fill the same capacity twice.",
-      "Physical cancellation receipt and expiry block later delivery without undoing earlier delivered grain; carrier completes its current road leg/journey safely and returns unused real grain to the original house Partial delivery followed by cancellation returns only unused cargo, preserving already consumed/delivered grain; completed carriers may be assigned again.",
-      "Stop/delivery/return observations are immutable dated sealed reports through the existing courier system; opening and known failure/retry/cancellation acknowledgement remain distinct from actual cargo or effect, with no remote current-state leak",
-      "Normal entry/UI, explicit limits, legacy v16 and earlier actual save-byte preservation, actual generation recovery/future equality and headless Godot placement are checked; GUI/full suite remain explicitly unverified Supply report notification uses the existing delivery/attention pause, separated from report opening and physical receipt."
+      "Explicit v18 personal living choices use the same personal wallet, salary rice and local merchant rice; private food consumption cannot double-sell, spend reserved funds or raid house/army stock",
+      "Paid inn and free outdoor rest use one world clock at a stable site; cancellation preserves elapsed time and fees, departure is blocked only during actual remaining rest, and poverty never prevents walking/work",
+      "Known service role, personal pay/arrears and held military/cargo obligations are separated in one personal-life view without revealing remote current stores or granting authority by title",
+      "Player-selected personal goals for earned work pay, received stipend and paid stipend progress only from actual post-selection receipts and remain achieved after later spending; reaching a goal never ends the game",
+      "Idempotence, forged entries, same-time ordering, actual generation recovery and future progress equality are tested for roles, food, partial rest, cancellation and goals; old saves retain their original bytes and GUI remains separate"
     ],
     "deferred": [
-      "移動中部隊の追跡/道中引継ぎ",
-      "海上輸送/護衛/略奪/輸送事故",
-      "軍馬飼料/弾薬/装備消耗",
-      "外観/GUI操作と全製品受入"
+      "飢餓/健康/負傷治療/疲労の速度影響",
+      "全NPCの日常生活と全国の待遇制度",
+      "家督/城と家の変動/一般債務承継",
+      "全目標/死亡/後継と1650年総括",
+      "GUI/外観と全製品受入"
     ]
   },
   "roadmap": [
@@ -343,7 +344,7 @@
       "id": "R1",
       "title": "地域での実戦の入口",
       "domain": "軍勢と支配の変動",
-      "status": "本人軍の共通陸路行軍・到着先布陣・現地調達と、家臣の固定拠点への街道補給/部分受渡し/帰還を接続。海上輸送/移動追跡/護衛は後続",
+      "status": "本人軍の共通陸路行軍・到着先布陣・現地調達と、家臣の固定拠点への街道補給/部分受渡し/帰還を接続。海上輸送/移動追跡/護衛は後続 本人の食事/有料と無料の休息/当面の受領目標・軍務負担を接続。",
       "finish": "任務・接敵・損害・撤退・返報を一本つなぐ。上記の終了条件で区切る。",
       "why": "現在の軍務を実際の結果がある行動へつなぐ。"
     },
@@ -388,7 +389,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -482,11 +483,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 16,
-    "baseline_commit": "1176c9fc5adde0511ccebafbf50e3c86a44dccf2",
-    "baseline": 37.300324675324674,
-    "current": 38.580898268398265,
-    "earned_gain": 1.280573593073593,
+    "version": 17,
+    "baseline_commit": "b129764c5bb515180fecb0f980a95471786677c5",
+    "baseline": 38.580898268398265,
+    "current": 39.68222402597402,
+    "earned_gain": 1.1013257575757576,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,

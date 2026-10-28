@@ -4,7 +4,7 @@ public static class RoadConvoy
     public const string Policy="common-land-retainer-partial-rice-supply-fixed-assembly-v17",LandRoute="house-rice-road-supply-trip-v1";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or PersonalLife.Policy;
     internal static bool IsRoad(CampConvoyJob j)=>j.Terms.RoadDestination!=null;
     static CampConvoyJob[] Jobs(ContractWorld w,long at,long rev)=>FieldConvoy.Jobs(w,at,rev).Where(IsRoad).ToArray();
     static bool Free(ContractWorld w,EntityId actor,long at,long rev)=>!w.Requests.Any(r=>r.Intent.Executor==actor&&r.CreatedAt<=at&&r.CommitSequence<rev&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));

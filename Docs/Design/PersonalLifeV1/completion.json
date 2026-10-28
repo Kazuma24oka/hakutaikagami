@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Explicit v18 personal living choices use the same personal wallet, salary rice and local merchant rice; private food consumption cannot double-sell, spend reserved funds or raid house/army stock",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json"
+      ]
+    },
+    {
+      "contract": "Paid inn and free outdoor rest use one world clock at a stable site; cancellation preserves elapsed time and fees, departure is blocked only during actual remaining rest, and poverty never prevents walking/work",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json"
+      ]
+    },
+    {
+      "contract": "Known service role, personal pay/arrears and held military/cargo obligations are separated in one personal-life view without revealing remote current stores or granting authority by title",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json"
+      ]
+    },
+    {
+      "contract": "Player-selected personal goals for earned work pay, received stipend and paid stipend progress only from actual post-selection receipts and remain achieved after later spending; reaching a goal never ends the game",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json"
+      ]
+    },
+    {
+      "contract": "Idempotence, forged entries, same-time ordering, actual generation recovery and future progress equality are tested for roles, food, partial rest, cancellation and goals; old saves retain their original bytes and GUI remains separate",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Explicit new v18 only. Adult ronin/retainer/subretainer/castellan/local lord/daimyo share personal rules; known roles do not grant rights. Explicit meals from private stipend rice or actually purchased local merchant rice1-3kg. Trial free outdoor rest4h or inn10mon/2h uses the shared clock; no forced starvation/death, healing, stat boosts or automatic time jump. Three post-selection receipt goals; no general succession, life ending, injury treatment, NPC daily needs or historical inn economy. Current related1323 only; full3233 and GUI NOT_RUN."
+}

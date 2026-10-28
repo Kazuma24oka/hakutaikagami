@@ -15,7 +15,7 @@ public static class VillageConsultation
     public const string Policy="village-representative-relief-water-performance-v5";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Villages?.Entries.Any(e=>e.Input.Id==id)==true;
     static int Term(long at)=>checked((int)(at/(30*Day)));
     static VillageOrganization Organization(EntityId site)=>new(new("organization:village/"+site.Value.Replace(':','/') ),site,[new(new("person:village/"+site.Value.Replace(':','/')+"/a"),"村役人"),new(new("person:village/"+site.Value.Replace(':','/')+"/b"),"水利世話人")]);
