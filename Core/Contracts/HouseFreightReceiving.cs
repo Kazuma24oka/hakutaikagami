@@ -3,7 +3,7 @@ public sealed record HouseFreightReceipt(EntityId Operation,EntityId Job,EntityI
 public static class HouseFreightReceiving
 {
     public const string Policy="house-physical-procurement-explicit-local-proxy-receipt-v11";
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
     static bool Local(ContractWorld w,EntityId person,EntityId home,long at,long rev)=>w.Characters.Any(c=>c.Id==person&&c.Life==LifeState.Adult)&&TransportWork.At(w,person,home,at,rev,stableCompletion:true);
     public static HouseFreightReceipt Prepare(ContractWorld w,HouseFreightInput input,HouseFreightJob job,long at,long rev)

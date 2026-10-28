@@ -1997,3 +1997,8 @@ Tests/RoadConvoyTests.cs -text
 Game/Scripts/NewGameRuntime.RoadSupply.cs -text
 Scripts/verify_road_convoy.py -text
 Docs/Design/RoadConvoyV1/** -text
+
+Core/Contracts/PersonalLife.cs -text
+Tests/PersonalLifeTests.cs -text
+Game/Scripts/NewGameRuntime.PersonalLife.cs -text
+Scripts/verify_personal_life.py -text

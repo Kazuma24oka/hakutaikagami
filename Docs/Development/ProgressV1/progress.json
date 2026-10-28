@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "439be18f93129bdfb8b7eac8e62052417e28da8f6a2f27681222482e62746ce6",
-    "Docs/Development/ProgressV1/estimate.json": "475126f1af889866e273f5cf98d590f721f818d413cfcb995dbf9a35b1a6ad0e",
+    "Docs/Development/OPERATING_POLICY.md": "0f275fb708ee17fff62b6ba70dae13573f828aa782f2dd7a7ab50b6560d12f13",
+    "Docs/Development/ProgressV1/estimate.json": "f4e8831a1c8ef01a6cbe1c4d52d36cdb83e9d39063b66287ca931f0f7b82c462",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "faf7a5a4df2293ad6f095180c8f56769296726577dfb26b4200114224b588f8b",
+    "Scripts/check_progress_report.py": "f5e8fb417a6b402a1d54193e8e66898291bec4a4eea490862303ee6b65c2c5ac",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "c40bc9c8101e7cbdff6e77d05ee2d1dd93fa297e9b3da4432320ff070cf11a5a",
+    "Scripts/check_approval_batch.py": "54beb6493c9bc8dfe74e1b5975c8ea89a36df2198acf28bcddd485cfe03eac4d",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -88,7 +88,13 @@
     "Docs/Design/RoadConvoyV1/integration.json": "b2d0f17ddbf97fb2a1c678f292018d80910dd470e248705323513fb035920a1e",
     "Docs/Development/ProgressV1/approval-baseline-v16.json": "d850bdac2a453cb9d4ad4985a390900a63ff5effd5c4596627c566e2551b9ce0",
     "Docs/Development/ProgressV1/approval-baseline-v15.json": "63a6cbd299852ffa8e0b3337d69aafe91b297e2e7778a12ff4197077edebbd22",
-    "Scripts/verify_road_convoy.py": "82ea1af5d8c00f6f68982b47144020d5e3020d9de12fb001aca412dd56fd673e"
+    "Scripts/verify_road_convoy.py": "82ea1af5d8c00f6f68982b47144020d5e3020d9de12fb001aca412dd56fd673e",
+    "Docs/Design/PersonalLifeV1/completion.json": "afb32c10866ce199c7936dd6109b2d55b6a390ae314c13184b370d38f07ae7a3",
+    "Docs/Design/PersonalLifeV1/README.md": "ab6c19aac034be62d56bc8e5e8a754487d48f1f7db9dba5e3625f2c259f893a9",
+    "Docs/Design/PersonalLifeV1/traceability.json": "993a51d96a20f4d772ea5f15781c98f79fb10a114b653cea3a6e6749cc03d593",
+    "Docs/Design/PersonalLifeV1/integration.json": "3afa6b48c266c2d5398a313e349035d276ac0b603f7c175468ab2c8d671effc1",
+    "Docs/Development/ProgressV1/approval-baseline-v17.json": "63009f1178c66e79b3e230c7d8ede99ff24361936769ae0efdab2f16f9fa0d1d",
+    "Scripts/verify_personal_life.py": "d602bc0542ecd55b5f38bfb05af0d772c83b71b65f40cc0c91a5cfd2f7830e8c"
   },
   "items": [
     {
@@ -148,9 +154,17 @@
     {
       "id": "BD-05",
       "status": "normal",
-      "existing": "新規/ロード/武将作成、グループ複製、城/人物選択と開始配置の整合検査がある。",
-      "remaining": "全開始身分をその後の遊びへ接続し、全国の史実配置と作成武将を製品データで確認する。",
+      "existing": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。",
+      "remaining": "全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/OfficerLibraryStore.cs",
         "Game/Scripts/NewGameFrontEnd.cs",
@@ -188,9 +202,17 @@
     {
       "id": "BD-08",
       "status": "design_only",
-      "existing": "個人目標と年代記の終了条件は基本設計にある。",
-      "remaining": "目標達成、失職/主家滅亡、1650年、本人死亡について終了/継続を遊びとして接続する。",
+      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。",
+      "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Docs/Design/basic-design-v1.json"
       ],
       "release_acceptance": "not_certified",
@@ -467,9 +489,17 @@
     {
       "id": "BD-21",
       "status": "normal",
-      "existing": "街道補給担当者を私的用件/仕入れ/局所補給/軍指揮から排他にし、受領する本人/同じ部隊/集合/容量を実時点で確認する。",
-      "remaining": "全行動の一般競合表、療養/捕縛/奉行職と任務の一般併用。",
+      "existing": "残り休息時間中の移動/点検/現物取引を拒否。預かった軍と家の運搬物の引継ぎ/精算を先に求め、書状の受領/閲覧と個人実務を区別。",
+      "remaining": "全任務/療養/捕縛/役職の一般併用表と複数人による引継ぎ。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
         "Core/Contracts/FreightOperations.cs",
@@ -511,9 +541,17 @@
     {
       "id": "BD-22",
       "status": "normal",
-      "existing": "面会取消/物理書状の受領後は次の受渡しを止める。部分受領済み米を巻き戻さず残りだけ実帰還返納し、実到達済み取消の受領履歴削除を拒否する。",
-      "remaining": "全任務の一般取消/補償/担当交代、移動中部隊の追跡と引継ぎ。",
+      "existing": "休息を途中中止しても実経過と宿代を返さず、残り時間の排他だけを終了。食べた米の再売却/再消費、同じ操作の再課金を拒否。",
+      "remaining": "一般任務の補償/担当交代、健康/捕縛/戦闘中断と再開。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
         "Core/Contracts/FreightOperations.cs",
@@ -556,9 +594,17 @@
     {
       "id": "BD-23",
       "status": "normal",
-      "existing": "行軍/在外待機/局所展開の時間と実消費を接続。時計の刻み幅を変えても経路・位置・米の消費が一致する。",
-      "remaining": "全国の全生活費/戦時負担・季節天候を含む長期の通し調整。",
+      "existing": "個人休息も共通世界の秒で進め、完了境界/途中中止/進行幅を変えた結果を照合。食事と船賃/現地取引を同じ実会計へ接続。",
+      "remaining": "全国の全生活費/全NPCの生活・季節天候/戦時負担を含む長期通し調整。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Core/Contracts/ArmyRoadMarch.cs",
         "Core/Contracts/NewGameMilitary.cs",
         "Core/Contracts/NewGameMilitary.Validation.cs",
@@ -571,7 +617,6 @@
         "Game/Scripts/NewGameRuntime.ResponsiveClock.cs",
         "Tests/PreparedAdvanceIntegrationTests.cs",
         "Tests/PreparedPauseTests.cs",
-        "Core/Contracts/VoyageExpense.cs",
         "Tests/VoyageExpenseTests.cs",
         "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
         "Docs/Design/TravelExpenseV1/verification.json"
@@ -936,9 +981,17 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "家の自由米→軍用倉→携行兵糧→実消費/未使用米返納を分離。俸禄の既引当を保護し、私財へ混ぜず旧家の現物を移し替えない。",
-      "remaining": "現金給与・知行/家督財政・広域金庫、一般会計/債務承継。",
+      "existing": "私有扶持米を食事で実消費し、給付/個人取引/家の米/軍の兵糧を分離。宿代は私財の自由残高だけから実支払い、給付債権/債務は辞去でも保持。",
+      "remaining": "知行収益・現金俸禄・全国の制度差・家督時の債務承継と待遇調整。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -956,11 +1009,9 @@
         "Tests/RegionalDomainTests.cs",
         "Game/Scripts/NewGameRuntime.Treasury.cs",
         "Docs/Design/RegionalDomainsV1/verification.json",
-        "Core/Contracts/HouseSalary.cs",
         "Tests/HouseSalaryTests.cs",
         "Game/Scripts/NewGameRuntime.Salary.cs",
         "Docs/Design/HouseSalaryV1/verification.json",
-        "Core/Contracts/RegionalTrade.cs",
         "Tests/RegionalTradeTests.cs",
         "Game/Scripts/NewGameRuntime.Trade.cs",
         "Docs/Design/RegionalTradeV1/verification.json",
@@ -1436,9 +1487,17 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "既存補給画面に家臣・集合拠点・量の合意と、日時付きの開封報告を接続。現地累計受領と取消/返報を並べ、既知の返納を移動後も保持する。",
-      "remaining": "外観/GUI操作の受入、全画面の情報整理/一覧検索・アクセシビリティ。",
+      "existing": "暮らし・待遇画面に認識済み身分、私財/私有米、給付の未収/未払、軍/預り物の責任、食事・休息・当面の目標を集約。履歴を大量表示せず今の操作を提示。",
+      "remaining": "GUI/外観の受入、全画面の情報整理・一覧検索とアクセシビリティ。",
       "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/VoyageExpense.cs",
+        "Tests/PersonalLifeTests.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Docs/Design/PersonalLifeV1/verification.json",
+        "Docs/Design/PersonalLifeV1/traceability.json",
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
         "Core/Contracts/FreightOperations.cs",
@@ -1462,7 +1521,6 @@
         "Docs/Design/FreightOperationsV1/verification.json",
         "Core/Contracts/NpcFreight.cs",
         "Core/Contracts/TravelWorld.cs",
-        "Core/Contracts/VoyageExpense.cs",
         "Tests/NpcFreightTests.cs",
         "Docs/Design/NpcFreightV1/verification.json",
         "Game/Scripts/NewGameFrontEnd.cs",
@@ -2126,12 +2184,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 1276,
+      "passed": 1323,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/RoadConvoyV1/runtime-local/tests/road-convoy-current.trx",
-      "sha256": "a76318605e33eeaf06a70d7cf460db6e6ec3b72f0ed75cdf40435c091caac8ec",
-      "scope": "Current related1276 only;42 new; existing PreparedSubmit21/TrafficWorld17 included. Full3186/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/PersonalLifeV1/runtime-local/tests/personal-life-current.trx",
+      "sha256": "7f1bc94cbca3792737ab728a5b9f9c49ac7a2d7cb6e89bdc0d31375b74968358",
+      "scope": "Current related1323 only;47 new personal life. Full3233/GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -2143,14 +2201,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 1276,
+      "passed": 1323,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/RoadConvoyV1/runtime-local/tests/road-convoy-current.trx",
-      "sha256": "a76318605e33eeaf06a70d7cf460db6e6ec3b72f0ed75cdf40435c091caac8ec",
-      "scope": "Current related1276 only;42 new; existing PreparedSubmit21/TrafficWorld17 included. Full3186/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/PersonalLifeV1/runtime-local/tests/personal-life-current.trx",
+      "sha256": "7f1bc94cbca3792737ab728a5b9f9c49ac7a2d7cb6e89bdc0d31375b74968358",
+      "scope": "Current related1323 only;47 new personal life. Full3233/GUI NOT_RUN; historical full2446 separate."
     },
-    "current_stage_summary": "PR25を承認head44919e3と同じtreeでmain2e548ccへ統合後も続行。v17は元の家で同意した成人直属家臣が、家の未引当米を持って共通の陸路で固定集合拠点へ実移動する。同じ軍/軍務/所有家と本人の再集合を確認し、容量分だけ整数kgで部分受渡し、複数便の容量二重使用を拒否。残りは担当者が保持し、物理取消受領/期限後は進行中の街道行程を終えて実帰還し、未使用米だけ返納する。別軍務への誤補給を拒否し、帰還後は再依頼できる。停止/受渡し/帰還の観測を既存の封書で実配送し、到達通知/自動停止と開封を分離。既知不達から同じ観測を三通まで再送し、後の日時や荷へ読み替えない。通行再開は本人が現地で再確認。不達返報の固定発送地点を優先し、移動中の家臣を宛先として探す際の例外を修正。新規42/関連1276件・Gameビルド・9段階実世代保存復旧と将来一致・画面なしGodot106組212世界498Node3D・旧v9-v16実保存47件のバイト一致が成功。外観/GUI操作・全3186件は未実施。固定拠点での受渡しが対象で、移動部隊の追跡/海上輸送/護衛/略奪/軍馬/弾薬は後続。",
+    "current_stage_summary": "PR26を承認headaf869ccと同じtreeでmain2aa0744へ統合後も続行。新規v18に私有米の食事、現地購入した米1〜3kgの実消費、無料野外4時間/宿10文2時間の休息を接続。世界時計を自動で飛ばさず、残り時間中の実務/移動を拒否し、中止しても経過時間と宿代を巻き戻さない。金欠時の無料休息・徒歩実移動・仕事探しを検査。預かった軍/家の運搬物と本人私財を区別し、部隊や預り物がある時の私的休息を拒否。認識済み所属と陪臣/城主/国人領主の開始資格を表示し、肩書で権限を追加しない。給付の未払いと既受領米は辞去後も保持。仕事報酬/扶持受領/扶持支払の個人目標は設定後の実受領だけで進み、消費後も既達成を維持し達成しても継続できる。生活画面から操作。船賃と現地取引を併用した際の外部決済照合も修正。新規47/関連1323件・Gameビルド・8段階実世代復旧と将来一致・画面なしGodot114組228世界514Node3D・旧v9-v17実保存56件のバイト一致が成功。GUI/外観と全3233件は未実施。休養は記録のみで治療/能力強化/速度補正ではない。飢餓/健康/全NPCの生活と全国の待遇収支・家督は後続。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -2172,9 +2230,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/RoadConvoyV1/integration.json",
-    "current_logic_verification": "Docs/Design/RoadConvoyV1/verification.json",
-    "current_logic_verification_sha256": "ae0feabf3daf4010db9603874fddb980d18e1df7806b0e52db2d0147ce0d0b98",
+    "integration": "Docs/Design/PersonalLifeV1/integration.json",
+    "current_logic_verification": "Docs/Design/PersonalLifeV1/verification.json",
+    "current_logic_verification_sha256": "731f8849420426e04b5770a55affc76140f24388f9ac1eaa9af0cd47310225d4",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -2183,7 +2241,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連1276件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連1323件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -2239,10 +2297,10 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "身分別の継続プレイと生活・待遇・戦時負担の一巡を調整",
-    "城/家の変動を権限・兵・家臣・資源/債務へ接続",
-    "全城/村と史実配置・年代データを拡充",
-    "正式素材と全画面の情報整理・操作導線を受入",
+    "城の占有・支配変動と権限/兵/家臣/蔵/債務を個別接続",
+    "家の変動と奉公・給付・預り物の引継ぎ",
+    "全城/村・史実配置/年代と制度のデータ拡充",
+    "正式素材・全画面の操作導線と外観受入",
     "全国規模の長期進行・性能と製品受入"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
