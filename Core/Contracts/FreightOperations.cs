@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public enum FreightLetterAction { Cancel,ResendCancellation }
 public sealed record FreightLetterInput(EntityId Id,EntityId Job,FreightLetterAction Action,EntityId Address,long MeetAt,string? Original=null);
 public sealed record FreightLetterEntry(FreightLetterInput Input,EntityId Actor,long At,long Revision);
-public sealed record FreightObservation(EntityId Operation,long ObservedAt,string Statement,long Cargo,long Cash,HouseFreightPhase Phase);
+public sealed record FreightObservation(EntityId Operation,long ObservedAt,string Statement,long Cargo,long Cash,HouseFreightPhase Phase) { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? AtSite {get;init;} [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public long? SupplyDeliveredKg {get;init;} };
 public sealed record FreightPaper(string Id,EntityId Job,string Kind,EntityId Sender,EntityId Recipient,EntityId Address,long MeetAt,long At,long Revision,FreightObservation? Observation,string? Original);
 public sealed record FreightLetterReceipt(string Message,long At,long Revision);
 public sealed record FreightOperationsState(int Schema,string Policy,FreightLetterEntry[] Entries,FreightPaper[] Papers,FreightLetterReceipt[] Receipts);
@@ -11,12 +11,13 @@ public static class FreightOperations
 {
     public const string Policy="physical-freight-dated-reports-rendezvous-cancellation-v14",ReportKind="freight-status-report",CancelKind="freight-cancel-order",AckKind="freight-cancel-ack";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
     static string Hash(string s)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(s));
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.FreightOperations?.Entries.Any(e=>e.Input.Id==id)==true;
     internal static bool Stopped(ContractWorld w,EntityId job,long at,long rev)=>Enabled(w)&&w.FreightOperations!.Receipts.Any(r=>Before(r.At,r.Revision,at,rev)&&w.FreightOperations.Papers.Any(p=>p.Id==r.Message&&p.Job==job&&p.Kind==CancelKind));
-    static HouseFreightTerms Terms(ContractWorld w,EntityId job)=>HouseLogistics.FreightTerms(w,job);
+    static HouseFreightTerms Terms(ContractWorld w,EntityId job)
+    {var normal=w.HouseFreight?.Entries.SingleOrDefault(e=>e.Terms?.Id==job);if(normal!=null)return normal.Terms!;var supply=w.CampConvoys?.Entries.SingleOrDefault(e=>e.Terms?.Id==job)?.Terms;Need(RoadConvoy.Enabled(w)&&supply?.RoadDestination!=null,"有効な運搬または街道補給原本がありません");return new(supply.Id,supply.Carrier,supply.Principal,supply.Owner,supply.Home,supply.RoadDestination.Value,null,supply.RiceKg,0,supply.At,supply.Until,supply.Revision);}
     static MessageEnvelope Envelope(FreightPaper p)=>new(p.Id,p.Job.Value,p.Kind,p.Sender.Value,p.Recipient.Value,System.Text.Encoding.UTF8.GetString(ContractJson.Write(p)),p.Address.Value,p.At);
     static void Send(ContractWorld w,FreightPaper p){Need(!w.Messaging.Messages.Any(m=>m.Id==p.Id),"発送原本IDが重複しています");w.FreightOperations=w.FreightOperations! with{Papers=[..w.FreightOperations!.Papers,p]};MessageFlow.Send(w.Messaging,Envelope(p),p.At,1);w.SealedMessages=[..w.SealedMessages,new(p.Id)];}
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.FreightOperations=new(1,Policy,[],[],[]);}
@@ -34,12 +35,25 @@ public static class FreightOperations
         var t=e.Terms??Terms(w,e.Input.Job!.Value);var j=HouseLogistics.FreightJobs(w,e.At,e.Revision+1).Single(j=>j.Terms.Id==t.Id);return new(e.Input.Id,e.At,e.Input.Action==HouseFreightAction.Buy?"現地で仕入れた":e.Input.Action==HouseFreightAction.Withdraw?"新規の仕入れを取りやめ、現物と余金を返す":"元の家で現物と余金を精算した",j.Cargo,j.Cash,j.Phase);
     }
     static FreightPaper StatusPaper(ContractWorld w,HouseFreightEntry e){var t=Terms(w,e.Input.Job!.Value);return new("message:freight-status/"+Hash(e.Input.Id.Value),t.Id,ReportKind,t.Carrier,t.Principal,t.Home,e.At+1,e.At,e.Revision,Observe(w,e),e.Input.Id.Value);}
+    static FreightPaper StatusPaper(ContractWorld w,CampConvoyEntry e)
+    {
+        var t=w.CampConvoys!.Entries.Single(q=>q.Terms?.Id==e.Input.Job).Terms!;var j=FieldConvoy.Jobs(w,e.At,e.Revision+1).Single(q=>q.Terms.Id==t.Id);
+        string statement=e.Input.Action switch{CampConvoyAction.Deliver=>"集合拠点で"+e.TransferredKg+"kgを受渡し",CampConvoyAction.Return=>"元の家で残米"+e.ReturnedKg+"kgを返納",CampConvoyAction.ReportStop=>"街道の通行止めで停止し経路を再検討",CampConvoyAction.CancelAtMeeting=>"現地で取消を受領し残米を返す",_=>"残米を保持して元の家へ帰還"};
+        var phase=j.Returned!=null?(j.DeliveredKg>0?HouseFreightPhase.Completed:HouseFreightPhase.Returned):j.ReturnStarted!=null?HouseFreightPhase.ReturnRequired:HouseFreightPhase.Carrying;
+        var point=RegionalCampaign.RoadActorPointAt(w,t.Carrier,e.At);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);var observation=new FreightObservation(e.Input.Id,e.At,statement,j.CargoKg,0,phase){AtSite=node==null?null:RegionalCampaign.Site(node.Id),SupplyDeliveredKg=j.DeliveredKg};
+        return new("message:freight-status/"+Hash(e.Input.Id.Value),t.Id,ReportKind,t.Carrier,t.Principal,t.Home,e.At+1,e.At,e.Revision,observation,e.Input.Id.Value);
+    }
+    static FreightPaper StatusOriginal(ContractWorld w,string original)
+    {var e=w.HouseFreight!.Entries.SingleOrDefault(e=>e.Input.Id.Value==original);return e!=null?StatusPaper(w,e):StatusPaper(w,w.CampConvoys!.Entries.Single(e=>e.Input.Id.Value==original));}
     static MessageEnvelope? KnownFailure(ContractWorld w,FreightPaper p,long at)=>w.Messaging.Messages.FirstOrDefault(m=>m.Kind=="delivery-failure"&&m.RecipientId==p.Sender.Value&&w.Messaging.Attempts.Any(a=>a.Id==m.Body&&a.MessageId==p.Id)&&MessageFlow.LearnedAt(w.Messaging,m.Id,p.Sender.Value) is {} learned&&learned<=at);
     static long RetryAt(ContractWorld w,FreightPaper p,MessageEnvelope failure)=>checked(MessageFlow.LearnedAt(w.Messaging,failure.Id,p.Sender.Value)!.Value+60);
     internal static void Tick(ContractWorld w)
     {
         if(!Enabled(w))return;
         foreach(var e in w.HouseFreight!.Entries.Where(e=>e.Actor!=w.PlayerControl&&e.Input.Action is HouseFreightAction.Buy or HouseFreightAction.Withdraw or HouseFreightAction.Receive).ToArray()){
+            var p=StatusPaper(w,e);if(!w.FreightOperations!.Papers.Any(q=>q.Id==p.Id))Send(w,p);
+        }
+        if(RoadConvoy.Enabled(w))foreach(var e in w.CampConvoys!.Entries.Where(e=>e.Input.Job!=null&&e.Input.Action is CampConvoyAction.Deliver or CampConvoyAction.StartReturn or CampConvoyAction.CancelAtMeeting or CampConvoyAction.Return or CampConvoyAction.ReportStop).Where(e=>w.CampConvoys.Entries.Any(q=>q.Terms?.Id==e.Input.Job&&q.Terms?.RoadDestination!=null)).ToArray()){
             var p=StatusPaper(w,e);if(!w.FreightOperations!.Papers.Any(q=>q.Id==p.Id))Send(w,p);
         }
         foreach(var p in w.FreightOperations!.Papers.Where(p=>p.Kind==CancelKind).ToArray()){
@@ -70,10 +84,11 @@ public static class FreightOperations
         foreach(var p in s.Papers){Need(p.At<=w.ElapsedSeconds&&p.Revision>0&&p.Revision<=w.CommitSequence&&w.Messaging.Messages.Contains(Envelope(p))&&w.SealedMessages.Contains(new(p.Id)),"共通配送の封書原本が違います");
             if(p.Kind==CancelKind)Need(s.Entries.Any(e=>Cancellation(w,e)==p),"取消に本人の発送操作がありません");
             else if(p.Kind==AckKind){var r=s.Receipts.Single(r=>r.Message==p.Original);var old=s.Papers.Single(o=>o.Id==r.Message);var t=Terms(w,p.Job);Need(p==new FreightPaper("message:freight-ack/"+Hash(old.Id),old.Job,AckKind,t.Carrier,t.Principal,t.Home,r.At+1,r.At,r.Revision,null,old.Id),"取消返報と受領が違います");}
-            else{Need(p.Kind==ReportKind&&p.Observation!=null,"未知の運搬書状です");if(p.Id.StartsWith("message:freight-status/",StringComparison.Ordinal)){var e=w.HouseFreight!.Entries.Single(e=>e.Input.Id.Value==p.Original);Need(p==StatusPaper(w,e),"報告が当時の現物観測と違います");}else{var old=s.Papers.Single(o=>o.Id==p.Original&&o.Kind==ReportKind);var fail=KnownFailure(w,old,p.At);Need(fail!=null&&p.Id=="message:freight-retry/"+Hash(old.Id+"/"+fail.Id)&&p.At>=RetryAt(w,old,fail)&&p.Sender==old.Sender&&p.Recipient==old.Recipient&&p.Address==old.Address&&p.Job==old.Job&&p.Observation==old.Observation&&p.MeetAt==p.At+1&&p.Revision>=old.Revision,"再送が既知の不達/同じ観測と違います");}Need(s.Papers.Count(q=>q.Job==p.Job&&q.Observation==p.Observation)<=3,"報告の再送上限を超えました");}
+            else{Need(p.Kind==ReportKind&&p.Observation!=null,"未知の運搬書状です");if(p.Id.StartsWith("message:freight-status/",StringComparison.Ordinal)){Need(p==StatusOriginal(w,p.Original!),"報告が当時の現物観測と違います");}else{var old=s.Papers.Single(o=>o.Id==p.Original&&o.Kind==ReportKind);var fail=KnownFailure(w,old,p.At);Need(fail!=null&&p.Id=="message:freight-retry/"+Hash(old.Id+"/"+fail.Id)&&p.At>=RetryAt(w,old,fail)&&p.Sender==old.Sender&&p.Recipient==old.Recipient&&p.Address==old.Address&&p.Job==old.Job&&p.Observation==old.Observation&&p.MeetAt==p.At+1&&p.Revision>=old.Revision,"再送が既知の不達/同じ観測と違います");}Need(s.Papers.Count(q=>q.Job==p.Job&&q.Observation==p.Observation)<=3,"報告の再送上限を超えました");}
         }
         foreach(var paper in s.Papers)foreach(var attempt in w.Messaging.Attempts.Where(a=>a.MessageId==paper.Id)){var courier=w.Couriers!.Missions.Single(c=>c.Attempt==attempt.Id);Need(courier.Destination==RegionalCampaign.Destination(w,paper.Address)&&courier.Appointment==paper.MeetAt,"Freight courier differs from its original agreed address/time");}
         foreach(var r in s.Receipts){var p=s.Papers.Single(p=>p.Id==r.Message&&p.Kind==CancelKind);Need(r.At>=p.At&&r.At<=w.ElapsedSeconds&&r.Revision>=p.Revision&&r.Revision<=w.CommitSequence&&w.Messaging.Attempts.Any(a=>a.MessageId==r.Message&&a.ReceiverId==p.Recipient.Value&&a.Status==AttemptStatus.Delivered&&a.FinishedAt==r.At)&&MessageFlow.Knows(w.Messaging,p.Id,p.Recipient.Value),"取消受領が物理到達と違います");}
+        if(RoadConvoy.Enabled(w))foreach(var p in s.Papers.Where(p=>p.Kind==CancelKind&&w.CampConvoys!.Entries.Any(e=>e.Terms?.Id==p.Job&&e.Terms?.RoadDestination!=null))){var reached=w.Messaging.Attempts.Where(a=>a.MessageId==p.Id&&a.ReceiverId==p.Recipient.Value&&a.Status==AttemptStatus.Delivered&&a.FinishedAt<=w.ElapsedSeconds).OrderBy(a=>a.FinishedAt).FirstOrDefault();Need(reached==null?!s.Receipts.Any(r=>r.Message==p.Id):s.Receipts.Any(r=>r.Message==p.Id&&r.At==reached.FinishedAt),"取消の物理到達と受領記録が一致しません");}
         Need(w.Messaging.Messages.Count(m=>m.Kind is ReportKind or CancelKind or AckKind)==s.Papers.Length,"発送原本のない運搬書状があります");
     }
 }

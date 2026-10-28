@@ -1,0 +1,348 @@
+{
+  "schema": 16,
+  "base_main": "2e548cc554a03824ec818ca61af56486f7ad0f25",
+  "base_code_head": "44919e31c9cb12294cbeef530a15b7e89f2c0df1",
+  "minimum_gain": 1,
+  "domains": [
+    {
+      "id": "life",
+      "title": "武将の人生と人のつながり",
+      "weight": 20,
+      "groups": [
+        "G02",
+        "G03",
+        "G04"
+      ],
+      "scope": "開始から身分・成長・主従・配下・継承まで、一人の人生を遊ぶ。"
+    },
+    {
+      "id": "economy",
+      "title": "領地の暮らしと地域社会",
+      "weight": 15,
+      "groups": [
+        "G09",
+        "G13"
+      ],
+      "scope": "生産・財政・交易と、村落・国人・寺社との関わりを動かす。"
+    },
+    {
+      "id": "conflict",
+      "title": "軍勢と支配の変動",
+      "weight": 15,
+      "groups": [
+        "G10",
+        "G12"
+      ],
+      "scope": "軍事行動、城の支配、独立や家督による勢力の変化をつなぐ。"
+    },
+    {
+      "id": "politics",
+      "title": "情報・交渉と政治",
+      "weight": 20,
+      "groups": [
+        "G07",
+        "G11",
+        "G14"
+      ],
+      "scope": "情報収集、外交・婚姻・人質、中央政治を通じて他者へ働きかける。"
+    },
+    {
+      "id": "world",
+      "title": "全国の世界と歴史",
+      "weight": 15,
+      "groups": [
+        "G01",
+        "G05"
+      ],
+      "scope": "全国地理・史実配置・開始条件と、歴史と自由行動の共存を整える。"
+    },
+    {
+      "id": "foundation",
+      "title": "共通の行動・操作と世界の稼働",
+      "weight": 15,
+      "groups": [
+        "G06",
+        "G08",
+        "G15"
+      ],
+      "scope": "世界時間・任務・委任・NPC・画面・外見を、製品全体で使える形にする。"
+    }
+  ],
+  "excluded_from_rollup": [
+    "BD-01",
+    "BD-60"
+  ],
+  "baseline_leaves": {
+    "BD-01": {
+      "percent": 20,
+      "basis": "全体接続の参照値です。全体を二重に加点しないため集計対象外。"
+    },
+    "BD-02": {
+      "percent": 10,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-03": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-04": {
+      "percent": 10,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-05": {
+      "percent": 60,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-06": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-07": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-08": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-09": {
+      "percent": 45,
+      "basis": "既存プレイヤーの仕官/辞去に加え、NPCの円満辞去を旧主通知/本人受領/結果認識と別加入まで実装。無断離反や全身分は未完。"
+    },
+    "BD-10": {
+      "percent": 35,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-11": {
+      "percent": 50,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-12": {
+      "percent": 65,
+      "basis": "現地の協力意思を持つ成人直属家臣へ家の仕入れを一件任せ、既存の同行契約/軍務/他任務との重複と他人の財布の転用を拒否。 配下の一般職務/家臣団組織、道中引継ぎ、継続生活と汎用の委任同値。"
+    },
+    "BD-13": {
+      "percent": 10,
+      "basis": "能力の入力はあるが、行動への反映と経験・技能成長はこれから。"
+    },
+    "BD-14": {
+      "percent": 20,
+      "basis": "NPC家臣から支給した家への限定的な履行信頼を、遅配/受領の履歴から算出して次の返答へ接続。PCの継続意思は強制せず、一般の性格/軍令への忠誠は未実装。"
+    },
+    "BD-15": {
+      "percent": 15,
+      "basis": "仕事上の縁は接続済み。感情・敵意・派閥・政治的な働きかけはこれから。"
+    },
+    "BD-16": {
+      "percent": 10,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-17": {
+      "percent": 75,
+      "basis": "同じ軍勢と本人を共通陸路の実位置へ接続し、復旧前後の実Node3Dを照合。到着先の集合地から局所布陣へ連続する。 全国地形LOD/起伏精細化と海域詳細、大規模世界の描画最適化。"
+    },
+    "BD-18": {
+      "percent": 65,
+      "basis": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 複数年代の正式史実データ/シナリオ差分と製品データ移行。"
+    },
+    "BD-19": {
+      "percent": 75,
+      "basis": "本人が率いる同じ3隊/名簿が共通の陸路・通行止め・行先変更に従う。元の軍用倉/家/原本と現在の集合地を分離。 軍勢の海上輸送、一般のNPC前線隊商、大規模な全軍行軍の性能受入。"
+    },
+    "BD-20": {
+      "percent": 15,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-21": {
+      "percent": 65,
+      "basis": "部隊の受領/指揮権/同行/集合と本人の私的道路移動を排他にし、行軍中の遠隔買付と現地展開を拒否する。 全行動の一般競合表、療養/捕縛/奉行職と任務の一般併用。"
+    },
+    "BD-22": {
+      "percent": 65,
+      "basis": "道路の行先変更と実兵糧の次区間判定を接続。集合地を変更しても元の家への返納/返報/指揮返還義務を保持。 軍勢の広域取消配送、道中の担当交代/再委任と一般補償。"
+    },
+    "BD-23": {
+      "percent": 70,
+      "basis": "行軍/在外待機/局所展開の時間と実消費を接続。時計の刻み幅を変えても経路・位置・米の消費が一致する。 全国の全生活費/戦時負担・季節天候を含む長期の通し調整。"
+    },
+    "BD-24": {
+      "percent": 40,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-25": {
+      "percent": 80,
+      "basis": "運搬報告は観測原本を封書で実配送し、到達/開封までは購入結果を出さない。野営地の受取は本人の実接触で知る。 全情報種別の認識/偵察/流言、一般の地理発見と大規模索引。"
+    },
+    "BD-26": {
+      "percent": 35,
+      "basis": "購入/精算の観測時刻を固定し、再送しても内容と観測日を更新しない。既知の古い報告を現在の荷/在庫へ読み替えない。 全情報の信用/誤認/訂正、噂の伝播、出所間の競合と鮮度。"
+    },
+    "BD-27": {
+      "percent": 70,
+      "basis": "家臣への運搬取消と受領返報を共通の封書配送へ接続。使者の宛先と待合時刻を原本へ照合し、相手不在は不達とする。 一般書状の代理開封/差止めと全委任種別、移動先への受渡し一般化。"
+    },
+    "BD-28": {
+      "percent": 50,
+      "basis": "封書到達時の既存自動停止と開封後の時点付き表示を接続。取消発送/受領返報確認/現物返納を画面で分ける。 通知優先度/一覧整理、全役職・大規模世界の注意喚起と自動停止設定。"
+    },
+    "BD-29": {
+      "percent": 50,
+      "basis": "家の仕入先/品目/数量/前渡金/30日の現地合意→実移動→現地買付→帰還受領/余金返却を一巡。完了証拠は実受領で一度だけ成立。 全任務種別への統合、報酬/評価の一般化、長期任務の交代と同時受任。"
+    },
+    "BD-30": {
+      "percent": 80,
+      "basis": "現地合意した固定地点/米/原本で補給を任せ、NPC本人が地形を歩いて合流を待つ。原資/部隊/容量/期限を本人操作と共通台帳で検査する。 道中の再委任、全国の自軍行軍と広域補給隊、全任務の裁量/監督。"
+    },
+    "BD-31": {
+      "percent": 65,
+      "basis": "取消発送と実受領と返報認識を分け、購入との前後競合を検査。不達を本人が知ってから同じ原本を再送し、精算済みの荷を巻き戻さない。 緊急逸脱/命令変更の全任務一般化、担当交代と補償の裁定。"
+    },
+    "BD-32": {
+      "percent": 10,
+      "basis": "受領確認や次依頼への反映まで。責任審査・処分・政治的昇進はこれから。"
+    },
+    "BD-33": {
+      "percent": 95,
+      "basis": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。 地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。"
+    },
+    "BD-34": {
+      "percent": 90,
+      "basis": "家の自由米→軍用倉→携行兵糧→実消費/未使用米返納を分離。俸禄の既引当を保護し、私財へ混ぜず旧家の現物を移し替えない。 現金給与・知行/家督財政・広域金庫、一般会計/債務承継。"
+    },
+    "BD-35": {
+      "percent": 95,
+      "basis": "引受名簿と元の家/軍用倉を変えず、本人が共通陸路で3隊を率い、到着拠点周辺で再集合/再出発する。 軍勢海上輸送・一般隊商、別行動中の広域指揮と全国性能。"
+    },
+    "BD-36": {
+      "percent": 95,
+      "basis": "家の給付引当、工事労働、軍務支援、倉と携行の容量を照合。端数米は軍用倉の整数人秒に残し、二重出庫/過剰返納を拒否する。 同順位按分・不可分裁定・緊急転用/補償、荷重減速/破損/喪失の一般化。"
+    },
+    "BD-37": {
+      "percent": 65,
+      "basis": "到着先へ現在の集合地と局所120mの配置中心を移し、実際に線を引いて布陣後、再集合して同じ隊で帰還できる。 全国の多軍同時布陣/戦場統合と遠方簡略、攻城・陣地構築。"
+    },
+    "BD-38": {
+      "percent": 50,
+      "basis": "軍勢の共通道路進行・現地封鎖観測・迂回/行先変更を接続。次の区間分を賄えない時は実際の節点で止まる。 軍勢の海上行程・一般渡河/工作/道路外の長距離計画と輸送事故。"
+    },
+    "BD-39": {
+      "percent": 20,
+      "basis": "実在NPC軍/受領交戦任務/自衛からの実損害、消費、撤退/帰還/返報までCore確認。復旧と3D座標データは一致。通常開始の有効化、実画面/全野戦/攻城は未完成。"
+    },
+    "BD-40": {
+      "percent": 85,
+      "basis": "在外行軍と待機の実兵糧を消費し、既存展開消費と重ねない。到達市場の米を私財で実購入して軍の空き容量へ移す。 全国NPC前線補給網/護衛/略奪、軍馬飼料/弾薬/装備消耗。"
+    },
+    "BD-41": {
+      "percent": 20,
+      "basis": "当主間の不戦期間で版/対案/同一版承諾/物理到達/成立と本人認識を通常入口に接続。一般条項/代理決裁/内応は後続。 個人の精算済み接触から本人だけの新規出撃見合わせへ接続。一般の内応や所属移転ではない。"
+    },
+    "BD-42": {
+      "percent": 10,
+      "basis": "認識した不戦義務を自家の撤回/新規出撃/有効な攻撃根拠へ反映。破棄・違約・信用・仲裁と一般同盟は未接続。"
+    },
+    "BD-43": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-44": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-45": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-46": {
+      "percent": 10,
+      "basis": "開始時の新勢力配置はあるが、ゲーム中の内応交渉・離反・独立は未接続。"
+    },
+    "BD-47": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-48": {
+      "percent": 5,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-49": {
+      "percent": 50,
+      "basis": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。 代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。"
+    },
+    "BD-50": {
+      "percent": 20,
+      "basis": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。 国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。"
+    },
+    "BD-51": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-52": {
+      "percent": 55,
+      "basis": "固定Seedの不足と救済に、村との期限付き約束/部分履行/不信/次の返答、NPC現地救済を接続。 全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。"
+    },
+    "BD-53": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-54": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-55": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-56": {
+      "percent": 0,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-57": {
+      "percent": 50,
+      "basis": "通常の出発操作で引受部隊の陸路行軍へ切替、到着先から展開と現地米購入へ接続。取消可能な非同期受付で世界の部分変更を防ぐ。 外観/GUI操作の受入、全画面の情報整理/検索・アクセシビリティ。"
+    },
+    "BD-58": {
+      "percent": 95,
+      "basis": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 NPCの総合優先度、全国の前線隊商/再委任、遠方簡略と詳細の全機能同値。"
+    },
+    "BD-59": {
+      "percent": 20,
+      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+    },
+    "BD-60": {
+      "percent": 0,
+      "basis": "基本設計の採用は完了。ここでの0%は製品範囲の受入完了をまだ認定していないことを表す管理上の参照値で、概算の全体集計には入れない。"
+    }
+  },
+  "baseline_raw_total": 37.300324675324674,
+  "reassessment_delta_excluded": 0,
+  "targets": {
+    "BD-19": 85,
+    "BD-21": 70,
+    "BD-22": 80,
+    "BD-25": 85,
+    "BD-26": 40,
+    "BD-27": 75,
+    "BD-30": 90,
+    "BD-31": 70,
+    "BD-40": 95,
+    "BD-57": 55,
+    "BD-28": 55
+  },
+  "criteria": [
+    "New explicit v17 consensual direct-retainer road supply reserves actual free house rice at a physical home meeting, binds the same army/case/owner and fixed destination, and excludes other jobs without duplicating troops or grain",
+    "Carrier uses common land roads and known-only route planning; unknown closure is observed physically, destination waits for actual same-case army/commander assembly and capacity, and only one actual meeting transfers rice Deliver only actual free capacity in whole kilograms, retaining all remainder on the carrier; simultaneous convoys cannot reserve or fill the same capacity twice.",
+    "Physical cancellation receipt and expiry block later delivery without undoing earlier delivered grain; carrier completes its current road leg/journey safely and returns unused real grain to the original house Partial delivery followed by cancellation returns only unused cargo, preserving already consumed/delivered grain; completed carriers may be assigned again.",
+    "Stop/delivery/return observations are immutable dated sealed reports through the existing courier system; opening and known failure/retry/cancellation acknowledgement remain distinct from actual cargo or effect, with no remote current-state leak",
+    "Normal entry/UI, explicit limits, legacy v16 and earlier actual save-byte preservation, actual generation recovery/future equality and headless Godot placement are checked; GUI/full suite remain explicitly unverified Supply report notification uses the existing delivery/attention pause, separated from report opening and physical receipt."
+  ],
+  "target_meaning": "Consensual household retainer to fixed army assembly site over common land roads plus physical cancellation and dated reporting. Not generalized moving-unit interception, army sea transport, escort/robbery, horse/ammunition logistics or unrestricted remote house orders.",
+  "prior_baseline": "Docs/Development/ProgressV1/approval-baseline-v15.json",
+  "prior_baseline_commit": "47de96d3cece81966d9baa68615c333e7e166d98",
+  "pre_code_correction": {
+    "previous_plan_commit": "e44f9c04a7888125c5b38bd786223d498810d8e2",
+    "reason": "BD-28 target used an assumed starting value; corrected to the actual baseline plus5 before any implementation or progress credit",
+    "previous_target": 75,
+    "target": 55
+  }
+}

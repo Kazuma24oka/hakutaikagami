@@ -16,7 +16,7 @@ public static class RegionalDomains
     public const string Policy="nationwide-trial-domain-ledgers-bounded-local-house-procurement-v9";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
     internal static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
     internal static EntityId? Head(ContractWorld w,EntityId site)=>Owner(w,site) is {} owner&&w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==owner.Value) is {} f?new(f.Head):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;

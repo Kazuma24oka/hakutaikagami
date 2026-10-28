@@ -5,7 +5,7 @@ public static class NpcFreight
     public const string Policy="local-consenting-retainer-physical-house-freight-v13",LandRoute="house-freight-own-land-trip-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
     internal static bool IsTrip(ContractWorld w,Intent i)=>Enabled(w)&&i.RoutePolicy==LandRoute&&w.Requests.Any(r=>r.Intent==i)&&Jobs(w,w.Requests.Single(r=>r.Intent==i).CreatedAt,w.Requests.Single(r=>r.Intent==i).CommitSequence).Any(j=>j.Terms.Carrier==i.Actor&&!HouseLogistics.Closed(j));
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy;
     static bool Before(HouseFreightEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     internal static HouseFreightJob[] Jobs(ContractWorld w,long at,long rev)=>HouseLogistics.FreightJobs(w,at,rev).Where(j=>j.Terms.Carrier!=w.PlayerControl).ToArray();
     internal static bool Busy(ContractWorld w,EntityId actor,long at,long rev)=>Enabled(w)&&Jobs(w,at,rev).Any(j=>j.Terms.Carrier==actor&&!HouseLogistics.Closed(j));

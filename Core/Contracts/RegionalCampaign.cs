@@ -86,7 +86,7 @@ public static partial class RegionalCampaign
     {
         foreach(var a in w.Messaging.Attempts.Where(a=>!w.Couriers!.Missions.Any(c=>c.Attempt==a.Id)).ToArray()){
             if(RegionalBattle.Handles(w,a.MessageId)||NewGameMilitary.HandlesUnitMessage(w,a.MessageId)||NewGameMilitary.HandlesInternalAuthorityMessage(w,a.MessageId))continue;
-            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=NewGameWorld.Address(w,m)??RegionalWork.Address(w,m)??(TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle");long appointment=FreightOperations.Appointment(w,m)??(a.SentAt+1);RoutePoint? origin=null;
+            var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=m.Kind=="delivery-failure"&&TrafficWorld.Enabled(w)?TrafficWorld.FailureAddress(w,m.Body):(NewGameWorld.Address(w,m)??RegionalWork.Address(w,m)??(TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle"));long appointment=FreightOperations.Appointment(w,m)??(a.SentAt+1);RoutePoint? origin=null;
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);
             if(t?.Action is ActionKind.Cancel or ActionKind.Redirect){var target=w.Tasks.Single(x=>x.Id==w.Requests.Single(r=>r.Id==t.RequestId).Intent.TargetTask);destination=Meeting(w,target);appointment=Appointment(w,target);}
             if(m.Kind=="delivery-failure"){origin=Position(w,w.Couriers!.Missions.Single(c=>c.Attempt==m.Body),a.SentAt);if(TrafficWorld.Enabled(w))destination=TrafficWorld.FailureAddress(w,m.Body);}

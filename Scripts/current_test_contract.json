@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3144,
-  "baseline_passed": 3115,
-  "added": 29,
-  "scope": "Army road29 added; related1217 includes existing PreparedSubmit21. Actual generation recovery and headless97 pairs/194 worlds/408 nodes. Full3144 and GUI NOT_RUN."
+  "expected_passed": 3186,
+  "baseline_passed": 3144,
+  "added": 42,
+  "scope": "Road convoy42 added; related1276 includes existing PreparedSubmit21 and TrafficWorld17. Actual generation recovery and headless106 pairs/212 worlds/498 nodes. Full3186 and GUI NOT_RUN."
 }
