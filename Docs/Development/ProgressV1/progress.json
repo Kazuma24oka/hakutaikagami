@@ -17,7 +17,7 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "f16067618153f0dadf213c08eb009351ff99fbaca354753fd404b9f6d6769079",
+    "Docs/Development/OPERATING_POLICY.md": "66b69892d10552725e452d1ecbd5a913446862c02ec3795a97fbee60c0487415",
     "Docs/Development/ProgressV1/estimate.json": "3c7ca5c15f1960919d9784c904e5d8cedb985a57cdbaf2e90ee681f0fb883ad8",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "cb5a922e66bf436a256dd9a70215c7b4be671de32f117c528640f3e4d792ade8",
@@ -115,10 +115,12 @@
     "Docs/Design/CastleAdministrationV1/verification.json": "d745958e172dc5a5c940d3c78d35f4a691b36f00045849db25111eececa2d618",
     "Docs/Design/CastleAdministrationV1/completion.json": "4258630007d26ba09719f15bbe5369afbbc7b2a324cc124bb1314daf21aeef74",
     "Docs/Design/CastleAdministrationV1/README.md": "0c75e2e2b555834d2869e73145b71ade8e88e394a778c0001faac57149fd3588",
-    "Docs/Design/CastleAdministrationV1/integration.json": "fd3a2695a4352c2bd3e63963f84d4936ae3554826821d3ac052cc98d8904771f",
+    "Docs/Design/CastleAdministrationV1/integration.json": "bce8bee6cb867157dbfc0bd1bf00734f5de79766495c4a5f52b46fe8d06fa722",
     "Docs/Design/CastleAdministrationV1/legacy-sources.json": "3939e5348bf49312c64530ba7743b0291e8e69ce8ecea027a9d1ab8657ea7330",
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
-    "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f"
+    "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
+    "AGENTS.md": "911656573288f03c203824a486ceeb6335953f329fb75418a988350cc26c9146",
+    "Docs/Development/CURRENT_STAGE.md": "8399d4743e0ee1058713955531e6a9fa6f46932bb09fd8ae3615c7b9de7a74bb"
   },
   "items": [
     {
@@ -2342,7 +2344,7 @@
       "sha256": "220d2a61fe6548f4b68ddf4329b47ca2614665a459cbacf9d6d403662cd0d199",
       "scope": "Current related1417 only;51 new castellan/report cases. Full3327/GUI NOT_RUN."
     },
-    "current_stage_summary": "PR28を承認headdf28825と同じ内容でmain67e117dへ統合後も続行。新規v20で当主と現地の成人直属家臣が同意する1〜30日の城主任命・交代・解除を接続。軍事占有・記録所有・城主の行政担当・現物保管を分離し、政治権限/直属/兵/家財/私財/未払いを移転しない。既存の処分枠と現地調達/代理受領を再利用し、再任命で月枠を回復させず、期限後に前任者を復活させない。保管確認は所有家と当時の数量を記録するだけで現物を増やさない。任命された担当者が実運搬の荷と余金を現地受領すること、別人物への実交代、NPC現地行政と本人の非自動操作を確認。他家が城門を実占有する地点の新規地域処分/調達/運搬受領を保留し、過去の履行原本は保持。通常入口に操作/生活上の担当/行政マーカーを接続。新規51（城主31/報告20）・関連1417件・Gameビルド・8段階実世代復旧と将来一致・画面なしGodot130組260世界600Node3D・旧保存72件のバイト一致が成功。外観/GUI操作・全3327件は未実施。家督/領有移転/全国の城主政策/NPCの現地行政判断に基づく時点付き封書と開封、担当者本人の既知不達後の同じ観測の再送（三通まで）を接続。不在NPCは現地在庫を報告せず、後で知った不達による過去時刻の再送偽装と自動報告ID衝突も拒否。家督/領有移転/全国の城主政策/NPC自動再送は後続。",
+    "current_stage_summary": "PR28を承認headdf28825と同じ内容でmain67e117dへ統合後も続行。新規v20で当主と現地の成人直属家臣が同意する1〜30日の城主任命・交代・解除を接続。軍事占有・記録所有・城主の行政担当・現物保管を分離し、政治権限/直属/兵/家財/私財/未払いを移転しない。既存の処分枠と現地調達/代理受領を再利用し、再任命で月枠を回復させず、期限後に前任者を復活させない。保管確認は所有家と当時の数量を記録するだけで現物を増やさない。任命された担当者が実運搬の荷と余金を現地受領すること、別人物への実交代、NPC現地行政と本人の非自動操作を確認。他家が城門を実占有する地点の新規地域処分/調達/運搬受領を保留し、過去の履行原本は保持。通常入口に操作/生活上の担当/行政マーカーを接続。新規51（城主31/報告20）・関連1417件・Gameビルド・8段階実世代復旧と将来一致・画面なしGodot130組260世界600Node3D・旧保存72件のバイト一致が成功。外観/GUI操作・全3327件は未実施。NPCの現地行政判断に基づく時点付き封書と開封、担当者本人の既知不達後の同じ観測の再送（三通まで）を接続。不在NPCは現地在庫を報告せず、後で知った不達による過去時刻の再送偽装と自動報告ID衝突も拒否。家督/領有移転/全国の城主政策/NPC自動再送は後続。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
