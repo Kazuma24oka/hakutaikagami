@@ -7,7 +7,7 @@ public static class CourierRecovery
 {
     public const string Contract="registered-local-land-original-recovery-from-failed-courier-to-known-address-v1";
     public static bool Registered(ContractWorld w,string attempt)=>(CareerMilitary.Enabled(w)||TruceConfirmations.Enabled(w))&&w.CourierRecoveries?.Any(r=>r.Attempt==attempt)==true;
-    static bool Supported(ContractWorld w,MessageEnvelope m)=>w.TruceConfirmations?.Papers.Any(p=>p.Id==m.Id&&p.Kind==TruceConfirmationKind.Confirmation)==true||CareerMilitary.Enabled(w)&&(w.Military!.Requests.Any(q=>q.Message==m.Id)||w.Military.Events.Any(e=>e.Message==m.Id));
+    static bool Supported(ContractWorld w,MessageEnvelope m)=>w.TruceConfirmations?.Papers.Any(p=>p.Id==m.Id&&(p.Kind is TruceConfirmationKind.Confirmation or TruceConfirmationKind.RepresentativeInquiry))==true||CareerMilitary.Enabled(w)&&(w.Military!.Requests.Any(q=>q.Message==m.Id)||w.Military.Events.Any(e=>e.Message==m.Id));
     public static RoutePoint? Position(ContractWorld w,string attempt,long at){var r=w.CourierRecoveries?.SingleOrDefault(r=>r.Attempt==attempt&&r.FoundAt<=at);return r==null?null:FieldWorld.ToWorld(RegionalGround.At(r.Path,r.Origin,at));}
     public static bool Moving(ContractWorld w,long at)=>w.CourierRecoveries?.Any(r=>r.FoundAt<=at&&r.Path.Any(l=>l.EndAt>at))==true;
     internal static void Start(ContractWorld w,string message,int number)

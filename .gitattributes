@@ -2044,3 +2044,7 @@ Game/Scripts/NewGameRuntime.TruceConfirmations.cs -text
 Scripts/verify_truce_confirmation.py -text
 
 Core/Contracts/TruceConfirmations.ReportRetries.cs -text
+
+Core/Contracts/RepresentativeKnowledge.cs -text
+Core/Contracts/TruceConfirmations.Representatives.cs -text
+Tests/RepresentativeContactTests.cs -text
