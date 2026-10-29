@@ -180,16 +180,16 @@
       "basis": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 一般偵察/流言/地理発見と情報の全国索引。"
     },
     "BD-26": {
-      "percent": 55,
-      "basis": "確認書と返報の作成/開封/観測日時を分け、返報の写しでも元の観測と根拠を固定。受領返報を知るまでは遠隔の到達を断定せず、不達と後の遅着を両立して保持する。 一般情報の多出典比較・信用評価・意図的虚偽・訂正と全国NPCの知識運用。"
+      "percent": 80,
+      "basis": "代表者の複数出典を署名・観測時点と本人学習日時で保持し、新しい署名の後に古い原本や写しが到着しても認識を巻き戻さない。隠れた現代表者の真実を認識表示へ混入しない。 一般の信用評価・虚偽/流言・矛盾内容の比較操作・訂正情報と全国NPCの知識運用。"
     },
     "BD-27": {
       "percent": 90,
       "basis": "現当主の政治署名と現地手配の依頼者を別記し、固定宛先の確認書/受領返報/不達返報を物理配送。実署名者の認識を経て依頼者へ伝え、原本と写しは元の条件・日時・根拠を保持する。 一般の代理開封/再委任と全種類の重要書状、本人差出人の返報再送操作とGUI受入。"
     },
     "BD-28": {
-      "percent": 70,
-      "basis": "封書の到達と本人開封、現当主の認識と相手の認識を分離。不達を知る前の再送と、受領返報既知後の不要な再送を拒否。返報自身もNPCが物理不達を認識後だけ三通まで写しを送る。 通知全種の表示/優先度/自動停止設定、本人の返報再送操作と全画面受入。"
+      "percent": 75,
+      "basis": "照会/直接返書/依頼者返報を別配送とし、本人宛ての到着と開封を分ける。現当主が本人の場合も自動開封/政治返答せず、未開封の署名情報を表示しない。 通知全種の優先度/停止設定・全画面受入と本人差出人の返報再送操作。"
     },
     "BD-29": {
       "percent": 60,
@@ -240,8 +240,8 @@
       "basis": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。 移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。"
     },
     "BD-41": {
-      "percent": 55,
-      "basis": "成立済み組織間不戦原本を新当主が別書状で確認し、同じ版・条件・元期限を相手へ伝える。受領返報と不達返報までつなぎ、未知の新代表者や現在地へ勝手に宛先変更しない。 代表変更を知った後の再確認、一般条約/同盟条件、複数世代の外交連鎖。"
+      "percent": 80,
+      "basis": "現当主が知る代表者へ成立原本を照会し、相手現代表者が同じ版/元期限の直接返書を送る。依頼者への返報を分離し、未通知の交代先を探知せず旧宛先を保持する。 一般条約/同盟/人質・複数条項の交渉・一般代理決裁・全国NPCの自主交渉。"
     },
     "BD-42": {
       "percent": 30,
@@ -256,8 +256,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-45": {
-      "percent": 70,
-      "basis": "生前当主交代を、個別奉公の受入・城主/保管の再確認・成立済み不戦原本の現地確認まで接続。旧命令や相手の認識を一括更新しない。 死亡/血統/養子/遺言/係争/暫定統治と全国家督政策。"
+      "percent": 75,
+      "basis": "生前の合意による再交代後にも本人立会の認識と外国の旧認識を分離し、新当主本人の既知原本照会へ接続。旧署名者宛ての返書を新当主へすり替えず、退任者の政治返答を拒否する。 死亡/血統/養子/遺言/係争/暫定統治・一般世代継承と全国NPC家督政策。"
     },
     "BD-46": {
       "percent": 10,
@@ -322,20 +322,19 @@
   },
   "focus": {
     "leaf": "BD-41",
-    "title": "現当主の不戦確認書・受領/不達返報と写しの再送",
-    "status": "完成条件5/5。PR33統合後も返報自体の再送まで継続。新しいmain統合のみ承認待ち。",
+    "title": "代表者の時点付き認識と不戦原本の直接再確認",
+    "status": "完成条件5/5。PR34統合後も実装・検証・pushまで続行。PR35の新しいmain統合だけ個別承認待ち。",
     "exit": [
-      "After an actual inherited formed truce, a current head explicitly signs a distinct physical confirmation at the local home, with known original terms/expiry and fixed current opposite representative/address; a retired player may arrange this only through the consenting actual local head and requester provenance is recorded without impersonation",
-      "Recipient knowledge changes only after physical receipt/opening; a separately delivered dated receipt returns to the explicitly named requester at the original return address; old acceptance recipients, versions, original expiry, assets and declarations stay unchanged",
-      "A failed confirmation first reports physically to its actual signer and then a distinct dated failure notice travels to the named requester; only personally learned failure permits bounded same-original resends, with no remote tracking or altered recipient/terms/expiry; Dated receipt and failure-notice papers themselves use at most three physical copies only after their actual NPC sender personally receives the failure report; copies preserve observed time, evidence, terms, recipient and fixed return address, and never sign a new political promise",
-      "Late originals and copies do not repeat knowledge-driven execution or receipt creation; changed current political authority, expiry, absence, refusal, stale/repeated/conflicting IDs and forged provenance are rejected; ordinary entry screens expose only personally known papers",
-      "Focused and relevant regression tests, actual generation recovery/future equality, old-save byte compatibility, Game build and headless Node3D positions are verified separately from GUI/appearance; bounded report relay retry is included; generalized treaties remain explicit later scope"
+      "本人が知った代表者だけを、出典と観測・認識日時付きで表示する",
+      "古い署名や返書の遅着で、新しい代表認識を巻き戻さない",
+      "既知の宛先への照会・直接返書・依頼者返報を別々に実配送する",
+      "再交代・不達・再送・重複・期限切れでも、旧原本や元期限を保持する",
+      "実保存復旧・関連検査・旧保存互換・画面なし3D配置を確認する"
     ],
     "deferred": [
-      "相手代表の変更通知・再確認と一般条約/人質",
-      "本人差出人の返報再送操作・複数世代外交",
-      "活動軍/複数拠点と全国NPC家督",
-      "正式素材/全画面/全国長期受入"
+      "一般条約/同盟/人質・全国NPC自主交渉",
+      "活動軍/複数拠点の指揮引継ぎ",
+      "全国NPC家督・正式素材・全画面・全国長期受入"
     ]
   },
   "roadmap": [
@@ -367,7 +366,7 @@
       "id": "R4",
       "title": "相手に働きかけて結果を変える",
       "domain": "情報・交渉と政治／武将の人生",
-      "status": "成立済み不戦原本の現地引継ぎから、新当主の確認書・受領返報・不達返報と各写しの物理配送を接続。相手代表の変更通知・一般条約/同盟/人質と内応拡張は後続。",
+      "status": "既知の相手代表への照会、現代表者の直接返書と依頼者返報まで接続。署名/観測と学習の時点を分け、古い署名の遅着で認識を戻さない。一般条約/同盟/人質と内応拡張は後続。",
       "finish": "情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
       "why": "前工程の資源と人物関係を交渉材料にする。"
     },
@@ -482,11 +481,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 29,
-    "baseline_commit": "c64a4c3",
-    "baseline": 46.52426948051948,
-    "current": 47.951352813852814,
-    "earned_gain": 1.4270833333333333,
+    "version": 30,
+    "baseline_commit": "deb4910",
+    "baseline": 47.951352813852814,
+    "current": 48.96176948051948,
+    "earned_gain": 1.0104166666666667,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,

@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-signed-truce-confirmation-physical-receipts-failure-and-report-retry":
+ if logic["scope"]=="headless-dated-representative-inquiry-direct-reconfirmation-personal-evidence":
+  from verify_representative_contact import check as check_logic
+ elif logic["scope"]=="headless-signed-truce-confirmation-physical-receipts-failure-and-report-retry":
   from verify_truce_confirmation import check as check_logic
  elif logic["scope"]=="headless-castellan-and-truce-succession":
   from verify_castellan_succession import check as check_logic

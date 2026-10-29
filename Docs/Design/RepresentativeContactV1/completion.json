@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Dated personal representative observations derive only from initial scenario, local witnessed succession and personally opened signed papers; foreign live truth is not consulted and late old signatures cannot roll knowledge back",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceConfirmations.Representatives.cs",
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Tests/RepresentativeContactTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Docs/Design/RepresentativeContactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Known-address inquiry and direct current-head reconfirmation preserve the formed version and original expiry; requester receipt travels separately, without PlayerControl impersonation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceConfirmations.Representatives.cs",
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Tests/RepresentativeContactTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Docs/Design/RepresentativeContactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Unknown foreign succession, stale addressee, lost inquiry/response, fixed-address bounded retries and duplicates preserve provenance without exposing new authority or creating a new treaty",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceConfirmations.Representatives.cs",
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Tests/RepresentativeContactTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Docs/Design/RepresentativeContactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Successive locally agreed representative changes retain old papers and personal observations; stale authority cannot answer politically and historical prefixes cannot borrow later same-second information",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceConfirmations.Representatives.cs",
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Tests/RepresentativeContactTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Docs/Design/RepresentativeContactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Focused and related tests, real generation recovery/future equality, old-save bytes, Game build and headless Node3D equality are checked; GUI/appearance are explicitly separate",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceConfirmations.Representatives.cs",
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Tests/RepresentativeContactTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Docs/Design/RepresentativeContactV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Dated representative observations: scenario baseline, local actual succession witnesses and personally opened signed truce/stance/contact papers only. New representative inquiry routes by the signer personal knowledge, not live foreign truth; old legacy normal-confirmation guard remains bounded as in PR34. One inquiry root per known representative pair/original acceptance, same-address resends max3 after personal failure recognition. Direct signed reconfirmation response retains original terms/expiry and fixed signer address; requester receipt is separate. NPC response copies preserve original signature/evidence and max3. Successive two-person agreed changes tested; no general foreign NPC succession, death/disputes, general treaty/alliance/hostage, player factual-report retry, GUI/appearance or full3600 execution."
+}
