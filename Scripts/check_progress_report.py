@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-returned-garrison-case-issuer-succession":
+ if logic["scope"]=="headless-post-succession-administration-personal-service-shared-delegation-budgets":
+  from verify_steward_succession import check as check_logic
+ elif logic["scope"]=="headless-returned-garrison-case-issuer-succession":
   from verify_military_succession import check as check_logic
  elif logic["scope"]=="headless-living-head-office-individual-house-obligations":
   from verify_house_succession import check as check_logic

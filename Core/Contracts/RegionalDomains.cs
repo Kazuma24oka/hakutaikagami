@@ -35,7 +35,7 @@ public static class RegionalDomains
     internal static long Remaining(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {
         var es=Purchases(w,at,rev).Where(e=>e.Input.Site==site&&Month(w,e.At,at)).ToArray();long n=Math.Max(0,Budget(w,site,at,rev)-es.Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,false));
-        if(Head(w,site,at,rev)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)));return n;
+        if(Head(w,site,at,rev)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>CommunityStewardship.SharedDelegationBudget(w,site,at,rev)?CommunityStewardship.DelegatedCharge(w,e.Actor,site,e.At,e.Revision):e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)));return n;
     }
     static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     internal static bool Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>!CastleAdministration.Blocked(w,site,at,rev)&&(HeadAuthority(w,actor,site,at,rev)||Owner(w,site) is {} owner&&CommunityStewardship.Authority(w,actor,owner,site,at,rev)!=null);

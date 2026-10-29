@@ -33,7 +33,7 @@ public static partial class NewGameService
     static CareerEvent? Joined(ContractWorld w,ServiceCase c)=>c.Initial?new(new("service-event:initial"),c.Id,CareerEventKind.Joined,0,0,"",""):Event(w,c.Id,CareerEventKind.Joined);
     static bool Active(ContractWorld w,ServiceCase c,long at,long rev)=>Joined(w,c) is {} j&&Before(j,at,rev)&&(End(w,c.Id) is not {} end||!Before(end,at,rev));
     public static bool KnownBoundAt(ContractWorld w,EntityId principal,long at,long revision)=>View(w,at,revision).Principal==principal;
-    public static bool BoundAt(ContractWorld w,EntityId principal,long at,long revision)=>NewGameWorld.Enabled(w)&&Cases(w).Any(c=>c.Principal==principal&&Active(w,c,at,revision));
+    public static bool BoundAt(ContractWorld w,EntityId principal,long at,long revision)=>NewGameWorld.Enabled(w)&&(HouseholdService.BoundOverride(w,principal,at,revision)??Cases(w).Any(c=>c.Principal==principal&&Active(w,c,at,revision)));
     static bool ReadAt(ContractWorld w,CareerEvent e,long at,long rev)=>State(w).Openings.Any(o=>o.Message==e.Message&&Before(o.At,o.Revision,at,rev));
     static string Name(ContractWorld w,EntityId id)=>w.Definitions.Characters.Single(p=>p.Id==id).Name;
     static string HouseName(ContractWorld w,EntityId id)=>w.Definitions.Organizations.Single(p=>p.Id==id).Name;
@@ -57,7 +57,7 @@ public static partial class NewGameService
             if(!c.Initial&&!closed&&!employed)pending=true;
         }
         string role=house==null?"浪人":lord==null?NewGameWorld.RoleName(p.InitialRole??StartTemplate.Daimyo):"家臣・随行";
-        return new(role,house,lord,house==null&&lord==null&&!pending&&FreeOfOffice(w),cards.ToArray());
+        return HouseholdService.Decorate(w,t,r,new(role,house,lord,house==null&&lord==null&&!pending&&FreeOfOffice(w),cards.ToArray()));
     }
     public static EntityId[] LocalPrincipals(ContractWorld w)
     {
@@ -115,11 +115,11 @@ public static partial class NewGameService
     internal static void RecordOpening(ContractWorld w,EntityId actor,string id){if(actor!=w.PlayerControl||w.Service==null||!w.Service.Events.Any(e=>e.Message==id)||w.Service.Openings.Any(o=>o.Message==id))return;w.Service=w.Service with{Openings=[..w.Service.Openings,new(id,w.ElapsedSeconds,w.CommitSequence)]};}
     public static string? Address(ContractWorld w,MessageEnvelope m)=>w.Service?.Cases.FirstOrDefault(c=>c.Id.Value==m.CorrelationId&&m.Kind is "service-request" or "service-notice") is {} c?NewGameWorld.Node(c.Site.Value):null;
     internal static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Service?.Requests.Any(q=>q.Input.Id==id)==true;
-    internal static TimedRelation[] Relations(ContractWorld w,TimedRelation[] original,string kind)
+    internal static TimedRelation[] Relations(ContractWorld w,TimedRelation[] original,string kind,bool household=true)
     {
         var rows=PersonalCompanions.CloseOldService(w,original).ToList();var initial=Initial(w);if(initial!=null&&End(w,initial.Id) is {} e)for(int n=0;n<rows.Count;n++)if(rows[n].Subject==w.PlayerControl)rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};
         foreach(var c in State(w).Cases.Where(c=>!c.Initial))if(Event(w,c.Id,CareerEventKind.Joined) is {} join){var end=End(w,c.Id);rows.Add(new(new(kind+":service/"+Hash(c.Id.Value)),w.PlayerControl,kind=="membership"?c.House:c.Principal,kind,NewGameWorld.Basis,join.At,end?.At??long.MaxValue,end?.Revision??join.Revision));}
-        if(kind=="service")rows.AddRange(PersonalCompanions.PersonalServiceRelations(w));return rows.ToArray();
+        if(kind=="service")rows.AddRange(PersonalCompanions.PersonalServiceRelations(w));return kind=="service"&&household?HouseholdService.Relations(w,rows.ToArray(),w.ElapsedSeconds,w.CommitSequence):rows.ToArray();
     }
-    internal static void Sync(ContractWorld w){if(!NewGameWorld.Enabled(w)||w.Service==null&&!PersonalCompanions.PersonalServiceEnabled(w))return;var rel=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=Relations(w,rel.Members,"membership");w.ServiceBonds=Relations(w,rel.Bonds,"service");}
+    internal static void Sync(ContractWorld w){if(!NewGameWorld.Enabled(w)||w.Service==null&&!PersonalCompanions.PersonalServiceEnabled(w)&&w.HouseService==null)return;var rel=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=Relations(w,rel.Members,"membership");w.ServiceBonds=Relations(w,rel.Bonds,"service");}
 }
