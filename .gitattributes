@@ -2037,3 +2037,10 @@ Scripts/verify_castellan_succession.py -text
 
 Core/Contracts/TruceSuccession.cs -text
 Tests/TruceSuccessionTests.cs -text
+
+Core/Contracts/TruceConfirmations.cs -text
+Tests/TruceConfirmationTests.cs -text
+Game/Scripts/NewGameRuntime.TruceConfirmations.cs -text
+Scripts/verify_truce_confirmation.py -text
+
+Core/Contracts/TruceConfirmations.ReportRetries.cs -text

@@ -28,6 +28,7 @@ public partial class NewGameRuntime
         foreach(var o in v.Obligations.Take(5)){Text((o.Kind=="salary"?"家の給付原本":"家の運搬原本")+" ／ "+CastleOwnerName(w,o.Owner)+"\n元の当事者："+SuccessionPerson(w,o.OriginalPrincipal)+" ／ 相手："+SuccessionPerson(w,o.Counterparty)+"\n"+(o.Amount is {} amount?(o.Kind=="salary"?$"未払い {amount}kg":$"現地で確認した荷 {amount}"):"現況は未確認")+" ／ "+(o.Acknowledged?"現当主が原本を確認済み":"原本ごとの確認待ち"));Button("現地でこの原本の引継ぎを確認",()=>Run(new(new("request:house-ack-ui/"+shown),HouseSuccessionAction.Acknowledge,o.Owner,Original:o.Id)),!o.CanAcknowledge);}
         if(Session.HouseholdServiceView()!=null)Button("個人の奉公を整理する（所属は保持）",()=>{popup.Hide();ShowHouseholdService();});Button("行政委任の原本を確認",()=>{popup.Hide();ShowStewardship();});
         foreach(var t in Session.TruceSuccessionView()){Text("成立済み不戦原本："+SuccessionPerson(w,t.Previous)+" → "+SuccessionPerson(w,t.Successor)+(t.Until is {} until?$" ／ 元期限 {until}秒":" ／ 本文は現地確認後"));Button("旧代表者が原本を示し、新当主が確認",()=>{var r=Session.ReadInheritedTruce(new(new("request:truce-inheritance-ui/"+shown),t.Owner,t.Acceptance),Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();},!t.CanRead);}
+        AppendTruceConfirmations(box,popup,feedback,shown);
         Text("交代後の支払いは「家の支給・待遇」、荷と余金の受渡しは「家の仕入れ・運搬」で行います。予定後も世界は通常の進行操作で進みます。");Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(610,540));
     }
 }
