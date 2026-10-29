@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Same-owner head and physically present consenting adult direct retainer agree on a bounded castellan appointment, replacing earlier appointments without transferring ownership, service, troops or debts",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/CastleAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Tests/CastellanReportsTests.cs",
+        "Game/Scripts/NewGameRuntime.CastellanReports.cs",
+        "Docs/Design/CastleAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Appointment history grants only local administration and store receipt within existing monthly limits; head-only political acts and budget changes remain restricted",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/CastleAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Tests/CastellanReportsTests.cs",
+        "Game/Scripts/NewGameRuntime.CastellanReports.cs",
+        "Docs/Design/CastleAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Explicit local store custody acceptance records dated owner-separated quantities without creating stock or claiming ownership; replacement preserves prior records and outstanding freight",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/CastleAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Tests/CastellanReportsTests.cs",
+        "Game/Scripts/NewGameRuntime.CastellanReports.cs",
+        "Docs/Design/CastleAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Military possession conflicting with recorded owner suspends new administrative disposals and deliveries at the actual site; no historical operation is retroactively invalidated",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/CastleAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Tests/CastellanReportsTests.cs",
+        "Game/Scripts/NewGameRuntime.CastellanReports.cs",
+        "Docs/Design/CastleAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Castellan reports bind to the original appointment and dated owner-separated stock; physical delivery/opening controls remote knowledge, known failure permits bounded same-observation resend, NPC reports derive from actual local administration, and generation recovery/future equality covers both office and letters",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/CastleAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Tests/CastellanReportsTests.cs",
+        "Game/Scripts/NewGameRuntime.CastellanReports.cs",
+        "Docs/Design/CastleAdministrationV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Explicit v20 only. Same-owner local head/consenting adult direct retainer agree bounded castellan administration and owner-separated dated custody. No legal annexation, general hereditary succession, political head power or automatic transfer of troops/property/debts. Store acknowledgment does not physically move stock; actual freight receipt separately uses the appointed local receiver. Occupation blocks new community/treasury disposals and house freight receipt; not all military/private property transactions. NPC reports require actual local administration and present authority; manual resend requires failure knowledge at that time and preserves the original observation. NPC automatic resend is deferred; earlier stewardship reports remain separate. Full3327/GUI NOT_RUN."
+}

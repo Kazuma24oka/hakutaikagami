@@ -120,8 +120,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-11": {
-      "percent": 50,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 75,
+      "basis": "同意する現地成人直属家臣への期限付き城主任命・別人への交代・解除を追加。政治当主権・直属・軍・財産を混同せず、期限と再任命の月枠を保持。 一般の昇進/恩賞/知行/失職/家督と全身分の職務分担。"
     },
     "BD-12": {
       "percent": 65,
@@ -168,16 +168,16 @@
       "basis": "門引渡し前の取消と、既渡し門の不可逆性を分離。本丸未引渡しは旧主側部隊/不在/期限で保留し、再申込と既成立後の係争を分ける。 一般任務の補償/担当交代、全工事/戦闘/健康/捕縛の中断再開。"
     },
     "BD-23": {
-      "percent": 80,
-      "basis": "個人休息も共通世界の秒で進め、完了境界/途中中止/進行幅を変えた結果を照合。食事と船賃/現地取引を同じ実会計へ接続。 全国の全生活費/全NPCの生活・季節天候/戦時負担を含む長期通し調整。"
+      "percent": 90,
+      "basis": "城主任命原本と結び付いた現地保管報告を実配送し、到達と開封を分離。既知不達後のみ同じ時点の観測を三通まで再送し、ID衝突と過去時刻偽装を拒否。 全種書状の統一画面と全国負荷、NPC城主報告の自動再送。"
     },
     "BD-24": {
       "percent": 40,
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-25": {
-      "percent": 90,
-      "basis": "占有の立会日時と現在の現地確認を区別し、離れた後は現在兵数を隠す。遠隔相手の現在移動が異なっても自分の記録表示は同一。 全情報の偵察/流言/地理発見と遠方知識の大規模索引。"
+      "percent": 95,
+      "basis": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 一般偵察/流言/地理発見と情報の全国索引。"
     },
     "BD-26": {
       "percent": 40,
@@ -213,7 +213,7 @@
     },
     "BD-34": {
       "percent": 95,
-      "basis": "私有扶持米を食事で実消費し、給付/個人取引/家の米/軍の兵糧を分離。宿代は私財の自由残高だけから実支払い、給付債権/債務は辞去でも保持。 知行収益・現金俸禄・全国の制度差・家督時の債務承継と待遇調整。"
+      "basis": "行政担当の交代後も同じ所有家の帳簿/処分枠を継続し、米/木材/武具/家金の時点付き保管確認と実運搬の代理受領を接続。 全家の歴史的収入制度、長期収支調整と全国規模の製品受入。"
     },
     "BD-35": {
       "percent": 95,
@@ -264,12 +264,12 @@
       "basis": "開始時の新勢力配置はあるが、ゲーム中の内応交渉・離反・独立は未接続。"
     },
     "BD-47": {
-      "percent": 30,
-      "basis": "旧主側本人による現地の同一条件合意→城門→予定本丸引渡し→軍事占有原本を接続。実登録軍/本人の不在、旧主側部隊と取消/期限の競合を保存後も保持する。 全国城郭/門・区画の実地形、敵AIの自主開城判断、攻城戦、第三者救援と守備分裂の一般化。"
+      "percent": 40,
+      "basis": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。 全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。"
     },
     "BD-48": {
-      "percent": 15,
-      "basis": "軍事占有が変わっても旧所有/直属/役職/兵/資金/給付債務を一括移転せず、蔵と第三者財産を範囲外に保持。引渡し後も旧主側の未払いを消さない。 法的領有/城主交代/家督での契約・兵・人質・債務の個別承継、異議と係争。"
+      "percent": 25,
+      "basis": "行政職/保管確認/家の所有を分離して交代。任命後も所有/直属/兵/債務を一括移転せず、旧原本と実運搬受領の根拠を保持。 家督・死亡・領有移転と契約/人質/債務の一般承継、異議/係争。"
     },
     "BD-49": {
       "percent": 50,
@@ -304,8 +304,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-57": {
-      "percent": 65,
-      "basis": "城引渡し画面で合意/門/本丸/保留/係争を区別。現地の軍事占有マーカーは所有記録と別に表示し、遠隔は立会日時の記録に限定する。 GUI/外観の受入、全画面の情報整理・検索とアクセシビリティ。"
+      "percent": 70,
+      "basis": "城主・保管画面に現在の担当/期限/交代と時点付き保管記録を表示し、通常地図の軍事占有マーカーと行政担当マーカーを別表示。 全画面の情報設計・操作/外観受入・アクセシビリティ。"
     },
     "BD-58": {
       "percent": 95,
@@ -321,22 +321,21 @@
     }
   },
   "focus": {
-    "leaf": "BD-47",
-    "title": "合意による城門・本丸引渡しと財産の分離",
-    "status": "5/5完了。PR27承認統合後も現地合意/段階引渡し/旧主側部隊との競合/占有原本と財産分離へ続行。新しいmain統合は未承認。",
+    "leaf": "BD-11",
+    "title": "城主交代と行政・保管の引継ぎ",
+    "status": "完成条件5/5。PR28統合後も実装・実保存復旧まで続行。新しいmain統合だけ承認待ち。",
     "exit": [
-      "Explicit v19 local same-version surrender agreement requires the player incumbent head/control, a physically present consenting foreign commander and actual registered army; confirmation alone does not occupy the castle",
-      "Gate handover and scheduled keep handover are separate physical steps; existing owner forces/relief at the keep or absent recipient block the remaining handover, and already transferred gate possession is never rolled back",
-      "Military possession never transfers original land ownership, memberships, service bonds, soldiers, house grain, private money, contracts or salary debts; warehouse/property remain explicitly outside the handover",
-      "Only the local participants can perform and observe handover; remote view shows dated own witness records and never current remote troops/stores; the game distinguishes military possession from recorded ownership",
-      "Invalid/stale/duplicate/tampered agreements, relief timing, partial withdrawal and actual generation recovery/future equality are tested; old versions keep original bytes and headless3D projection is separate from GUI/appearance"
+      "Same-owner head and physically present consenting adult direct retainer agree on a bounded castellan appointment, replacing earlier appointments without transferring ownership, service, troops or debts",
+      "Appointment history grants only local administration and store receipt within existing monthly limits; head-only political acts and budget changes remain restricted",
+      "Explicit local store custody acceptance records dated owner-separated quantities without creating stock or claiming ownership; replacement preserves prior records and outstanding freight",
+      "Military possession conflicting with recorded owner suspends new administrative disposals and deliveries at the actual site; no historical operation is retroactively invalidated",
+      "Castellan reports bind to the original appointment and dated owner-separated stock; physical delivery/opening controls remote knowledge, known failure permits bounded same-observation resend, NPC reports derive from actual local administration, and generation recovery/future equality covers both office and letters"
     ],
     "deferred": [
-      "全国AIの自主開城・攻城戦・城郭の実区画",
-      "第三者救援/守備分裂の一般化",
-      "領有/城主交代と契約/兵/財産/債務の個別承継",
-      "家督/死亡と一般相続",
-      "GUI/外観と全製品受入"
+      "家督/死亡/領有移転と一般承継",
+      "全国の城主政策とNPC自動再送",
+      "正式素材/GUI受入",
+      "全国長期/性能受入"
     ]
   },
   "roadmap": [
@@ -389,7 +388,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。 2026-10-29：PR28統合後も城主交代と行政/保管へ継続。67f7209の基準固定、過大な財政完成扱いを実装前に訂正。再評価/重み変更の加点なし。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -483,11 +482,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 18,
-    "baseline_commit": "cc546dafb7ec6ff954a70a351ba7da39ddd5357f",
-    "baseline": 39.68222402597402,
-    "current": 40.85646645021645,
-    "earned_gain": 1.1742424242424243,
+    "version": 20,
+    "baseline_commit": "e725e29170092c0f01cbc3b7d4dd69d25f90a28b",
+    "baseline": 40.85646645021645,
+    "current": 41.936011904761905,
+    "earned_gain": 1.0795454545454546,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
