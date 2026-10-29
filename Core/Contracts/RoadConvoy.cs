@@ -4,7 +4,7 @@ public static class RoadConvoy
     public const string Policy="common-land-retainer-partial-rice-supply-fixed-assembly-v17",LandRoute="house-rice-road-supply-trip-v1";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     internal static bool IsRoad(CampConvoyJob j)=>j.Terms.RoadDestination!=null;
     static CampConvoyJob[] Jobs(ContractWorld w,long at,long rev)=>FieldConvoy.Jobs(w,at,rev).Where(IsRoad).ToArray();
     static bool Free(ContractWorld w,EntityId actor,long at,long rev)=>!w.Requests.Any(r=>r.Intent.Executor==actor&&r.CreatedAt<=at&&r.CommitSequence<rev&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));
@@ -18,7 +18,7 @@ public static class RoadConvoy
         var c=NewGameMilitary.WorldEngagementBefore(w,w.NewMilitary!.Terms.Army,at,rev-1);var s=c.NewMilitary;
         Need(s!=null&&s.Terms.Principal==w.PlayerControl&&NewGameMilitary.RoadMayLead(c)&&!NewGameMilitary.Deployed(c),"当主が現地で同じ部隊を引き受けてから補給を合意します");
         var home=s.Terms.Site;var carrier=i.Carrier!.Value;var destination=i.DestinationSite!.Value;
-        Need(destination!=home&&w.Definitions.Sites.Any(n=>n.Id==destination)&&RegionalDomains.Owner(w,home)==s.Terms.Owner&&RegionalDomains.Head(w,home)==w.PlayerControl&&RegionalDomains.Authority(w,w.PlayerControl,home,at,rev),"元の家の処分権と、別の集合拠点を確認してください");
+        Need(destination!=home&&w.Definitions.Sites.Any(n=>n.Id==destination)&&RegionalDomains.Owner(w,home)==s.Terms.Owner&&RegionalDomains.Head(w,home,at,rev)==w.PlayerControl&&RegionalDomains.Authority(w,w.PlayerControl,home,at,rev),"元の家の処分権と、別の集合拠点を確認してください");
         Need(At(w,w.PlayerControl,home,at,rev)&&At(w,carrier,home,at,rev)&&!FieldConvoy.Busy(w,carrier,at,rev)&&!NpcFreight.Busy(w,carrier,at,rev),"家臣と当主が元の拠点で合流し、他の運搬を終えてください");
         NpcFreight.CheckCarrier(w,new(i.Id,HouseFreightAction.Dispatch){Carrier=carrier},carrier,w.PlayerControl,home,at,rev);
         try{BranchRoutes.Plan(RegionalCampaign.Destination(w,home),RegionalCampaign.Destination(w,destination),BranchRoutes.GraphEdges(w).Where(e=>NationalRoutes.Sea(e.Id)).Select(e=>e.Id),w:w,departureAt:at);}catch(InvalidDataException){throw new InvalidDataException("この集合拠点へは陸路で運べません");}

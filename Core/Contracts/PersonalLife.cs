@@ -14,7 +14,7 @@ public static class PersonalLife
     public const string Policy="personal-life-private-food-local-rest-receipt-goals-v18";
     public const long InnCost=10,InnSeconds=7200,OutsideSeconds=14400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     static bool Before(LifeEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static LifeEntry[] Entries(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue)=>w.Life?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Life?.Entries.Any(e=>e.Input.Id==id)==true;
@@ -72,8 +72,8 @@ public static class PersonalLife
         if(HouseLogistics.Active(w,w.ElapsedSeconds,w.CommitSequence+1))burden+=" 家から預かった運搬物・前渡金は帰還精算が必要です。";
         long meals=RiceConsumed(w,w.PlayerControl)+(w.Trade?.Deals.Where(d=>d.Phase==TradePhase.Consumed).Sum(d=>d.Amount)??0);
         long rest=es.Where(Rest).Sum(e=>Math.Max(0,Math.Min(w.ElapsedSeconds,End(e,es))-e.At));
-        var start=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);string role=service.Role;if(service.House?.Value==start.Faction&&service.Principal?.Value==start.Lord&&service.House!=null&&start.InitialRole is StartTemplate.Subretainer or StartTemplate.Castellan or StartTemplate.LocalLord)role=NewGameWorld.RoleName(start.InitialRole.Value);if(CastleAdministration.Enabled(w)&&start.InitialRole==StartTemplate.Castellan&&w.Castellan!.Entries.Any(e=>e.Input.Site.Value==start.Site&&e.Input.Action==CastellanAction.Appoint))role=service.Role;role=CastleAdministration.Role(w,w.PlayerControl)??role;
-        return new(role,service.House,service.Principal,stable?site:null,NewGameWork.Balance(w,w.PlayerControl),HouseSalary.PrivateRice(w,w.PlayerControl),meals,rest,active==null?null:End(active,es),active?.Input.Id,stable&&active==null&&Free(w,w.ElapsedSeconds,w.CommitSequence+1),terms.Where(t=>t.Employee==w.PlayerControl).Sum(due),terms.Where(t=>t.Employer==w.PlayerControl).Sum(due),held,burden,es.Where(e=>e.Input.Action==LifeAction.SetGoal).Select(e=>Goal(w,e,es)).ToArray());
+        var start=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);string role=service.Role;if(service.House?.Value==start.Faction&&service.Principal?.Value==start.Lord&&service.House!=null&&start.InitialRole is StartTemplate.Subretainer or StartTemplate.Castellan or StartTemplate.LocalLord)role=NewGameWorld.RoleName(start.InitialRole.Value);if(CastleAdministration.Enabled(w)&&start.InitialRole==StartTemplate.Castellan&&w.Castellan!.Entries.Any(e=>e.Input.Site.Value==start.Site&&e.Input.Action==CastellanAction.Appoint))role=service.Role;role=CastleAdministration.Role(w,w.PlayerControl)??role;role=HouseSuccession.Role(w)??role;
+        return new(role,service.House,service.Principal,stable?site:null,NewGameWork.Balance(w,w.PlayerControl),HouseSalary.PrivateRice(w,w.PlayerControl),meals,rest,active==null?null:End(active,es),active?.Input.Id,stable&&active==null&&Free(w,w.ElapsedSeconds,w.CommitSequence+1),terms.Where(t=>t.Employee==w.PlayerControl).Sum(due),terms.Where(t=>HouseSuccession.Enabled(w)?HouseSuccession.Head(w,t.Owner)==w.PlayerControl:t.Employer==w.PlayerControl).Sum(due),held,burden,es.Where(e=>e.Input.Action==LifeAction.SetGoal).Select(e=>Goal(w,e,es)).ToArray());
     }
 }
 public sealed partial class WorldSession

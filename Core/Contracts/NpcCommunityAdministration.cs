@@ -8,16 +8,16 @@ public static class NpcCommunityAdministration
     public const string Policy="village-local-npc-community-administration-v6";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.CommunityAdministration?.Decisions.Any(d=>d.Id==id)==true;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays(checked((int)(at/Day)));
     static int Period(ContractWorld w,long at){var d=Date(w,at);return d.Year*12+d.Month;}
-    static EntityId? Principal(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} owner&&w.NewGame.Start.Factions.SingleOrDefault(f=>f.Id==owner) is {} f?new(f.Head):null;
+    static EntityId? Principal(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} owner?HouseSuccession.Head(w,new(owner),at,rev):null;
     static EntityId Id(ContractWorld w,EntityId site,long at,long revision=long.MaxValue)=>new("decision:npc-community/"+site.Value.Replace(':','/')+"/"+(!CommunityStewardship.Enabled(w)?Period(w,at).ToString():CommunityStewardship.GrantAt(w,site,at,revision)!=null?"d"+(at/Day):"m"+Period(w,at)));
     static EntityId Effect(EntityId id)=>new("request:npc-community/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static CommunityDecision Decide(ContractWorld w,EntityId site,long at,long revision)
     {
-        var actor=CommunityStewardship.Delegate(w,site,at,revision)??Principal(w,site)??throw new InvalidDataException("No configured principal");bool adult=w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult);
+        var actor=CommunityStewardship.Delegate(w,site,at,revision)??Principal(w,site,at,revision)??throw new InvalidDataException("No configured principal");bool adult=w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult);
         bool local=adult&&CommunityEconomy.Local(w,actor,site,at,revision);bool authority=!CastleAdministration.Blocked(w,site,at,revision)&&(FactionStances.ResolveAuthority(w,actor,new(w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction!),at,revision)!=null||CommunityStewardship.Authority(w,actor,new(w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction!),site,at,revision)!=null)&&w.LandRights.Any(r=>r.Subject.Value==w.NewGame.Start.Castles.Single(c=>c.Id==site.Value).Faction&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
         CommunityAccounts? account=local&&authority?CommunityEconomy.AccountAt(w,site,at,revision):null;long reserved=account==null?0:HouseSalary.Reserved(w,site,at,revision);
         string hash=ContractJson.CanonicalHash(new CommunityDecisionInputs(actor,site,at,local,authority,account,reserved));EconomyAction? action=null;long amount=0;string reason="当主が現地で確認できる状態になるまで待機";EntityId? representative=null;

@@ -10,7 +10,7 @@ public static class FieldConvoy
 {
     public const string Policy="physical-local-camp-rice-convoy-v15";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
     static CampConvoyEntry[] Entries(ContractWorld w,long at,long rev)=>w.CampConvoys?.Entries.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray()??[];
     public static CampConvoyJob[] Jobs(ContractWorld w,long at,long rev)

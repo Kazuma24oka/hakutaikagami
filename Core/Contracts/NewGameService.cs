@@ -22,7 +22,7 @@ public static partial class NewGameService
     static string NoticeId(EntityId id,CareerEventKind kind,string related)=>"message:service/notice/"+Hash(id.Value+"/"+kind+"/"+related);
     static ServiceState State(ContractWorld w)=>w.Service??new(1,Contract,[],[],[],[]);
     static SetupPerson Player(ContractWorld w)=>w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);
-    static bool FreeOfOffice(ContractWorld w)=>!w.Offices.Any(r=>r.Subject==w.PlayerControl)&&!w.LandRights.Any(r=>r.Subject==w.PlayerControl);
+    static bool FreeOfOffice(ContractWorld w)=>!w.Offices.Any(r=>r.Subject==w.PlayerControl&&(!HouseSuccession.Enabled(w)||r.From<=w.ElapsedSeconds&&w.ElapsedSeconds<r.Until))&&!w.LandRights.Any(r=>r.Subject==w.PlayerControl);
     static ServiceCase? Initial(ContractWorld w)
     {
         var p=Player(w);return p.Lord==null||p.Faction==null?null:new(new("service-case:initial/"+Hash(p.Id)),new(p.Lord),new(p.Faction),new(p.Site),true);
@@ -63,12 +63,12 @@ public static partial class NewGameService
     {
         if(!NewGameWorld.Enabled(w))return [];
         var own=w.Locations.Single(l=>l.Actor==w.PlayerControl);if(own.Kind!=LocationKind.AtSite)return [];
-        return w.NewGame!.Start.Factions.Select(f=>new EntityId(f.Head)).Where(id=>id!=w.PlayerControl&&w.Characters.Single(p=>p.Id==id).Life==LifeState.Adult&&w.Locations.Any(l=>l.Actor==id&&l.Kind==LocationKind.AtSite&&l.Site==own.Site)).OrderBy(id=>id.Value,StringComparer.Ordinal).ToArray();
+        return HouseSuccession.Factions(w).Select(f=>new EntityId(f.Head)).Where(id=>id!=w.PlayerControl&&w.Characters.Single(p=>p.Id==id).Life==LifeState.Adult&&w.Locations.Any(l=>l.Actor==id&&l.Kind==LocationKind.AtSite&&l.Site==own.Site)).OrderBy(id=>id.Value,StringComparer.Ordinal).ToArray();
     }
     static bool LocalAt(ContractWorld w,ServiceCase c,long at)=>RegionalCampaign.ActorPointAt(w,w.PlayerControl,at)==BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==c.Site).Position&&RegionalCampaign.ActorPointAt(w,c.Principal,at)==RegionalCampaign.ActorPointAt(w,w.PlayerControl,at);
     static ServiceCase NewCase(ContractWorld w,ServiceInput input)
     {
-        Need(input.Principal!=null&&LocalPrincipals(w).Contains(input.Principal.Value),"到着した拠点で会える勢力代表を選んでください");var f=w.NewGame!.Start.Factions.Single(f=>f.Head==input.Principal.Value.Value);var loc=w.Locations.Single(l=>l.Actor==w.PlayerControl);
+        Need(input.Principal!=null&&LocalPrincipals(w).Contains(input.Principal.Value),"到着した拠点で会える勢力代表を選んでください");var f=HouseSuccession.Factions(w).Single(f=>f.Head==input.Principal.Value.Value);var loc=w.Locations.Single(l=>l.Actor==w.PlayerControl);
         return new(input.Id,input.Principal.Value,new(f.Id),loc.Site!.Value,false);
     }
     internal static void Dispatch(ContractWorld w,ServiceInput input)

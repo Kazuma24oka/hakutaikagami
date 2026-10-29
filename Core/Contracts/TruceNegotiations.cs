@@ -26,7 +26,7 @@ public static class TruceNegotiations
     static TrucePaper[] PapersAt(ContractWorld w,long at,long rev)=>State(w).Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray();
     static TrucePaper Prepare(ContractWorld w,TruceInput i,EntityId actor,long at,long rev)
     {
-        Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==i.Target.Value);Need(target!=null,"相手の当事者が不明です");TruceTerms terms;
+        Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=HouseSuccession.Factions(w,at,rev).SingleOrDefault(f=>f.Id==i.Target.Value);Need(target!=null,"相手の当事者が不明です");TruceTerms terms;
         if(i.Action==TruceAction.Propose){Need(actor==w.PlayerControl,"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day));}
         else{
             var source=PapersAt(w,at,rev).SingleOrDefault(p=>p.Input.Id==i.Source);Need(source!=null&&source.Recipient==actor&&source.Input.Owner==i.Target&&source.Input.Target==i.Owner&&Opened(w,source,actor,at,rev),"本人に到達して開封した同一原本が必要です");
@@ -80,7 +80,7 @@ public static class TruceNegotiations
         w.Truces=State(w) with{Fulfillments=[..State(w).Fulfillments,new(f.Acceptance,actor,w.ElapsedSeconds,w.CommitSequence,decision)]};
     }
     public static bool WillNotInitiate(ContractWorld w,EntityId owner,EntityId target,long at,long revision)
-    {if(!Enabled(w))return false;var head=w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
+    {if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
     internal static long? NextBoundary(ContractWorld w,long target)
     {if(!Enabled(w))return null;var times=State(w).Papers.SelectMany(p=>new[]{p.Terms.ReplyBy+1,p.Terms.Until}).ToList();if(Next(w,true)!=null)times.Add(w.ElapsedSeconds+1);return times.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
     internal static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)=>State(w).Papers.Select(p=>(p.At,p.Revision)).Concat(State(w).Openings.Where(o=>o.Actor==w.PlayerControl).Select(o=>(o.At,o.Revision))).Concat(State(w).Fulfillments.Select(f=>(f.At,f.Revision)));

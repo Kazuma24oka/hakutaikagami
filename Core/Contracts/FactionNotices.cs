@@ -18,7 +18,7 @@ public static class FactionNotices
         var original=w.FactionStances?.Decisions.SingleOrDefault(d=>d.Input.Id==input.Original&&d.Input.Action==FactionStanceAction.DeclareHostile&&d.Authority.Issuer==sender&&(d.At<at||d.At==at&&d.Revision<=rev));
         Need(original!=null,"本人が記録した自家の原判断を指定してください");
         var a=FactionStances.ResolveAuthority(w,sender,original.Input.Owner,at,rev);Need(a!=null,"自家の方針を通知する当主権限がありません");
-        var target=w.NewGame!.Start.Factions.Single(f=>f.Id==original.Input.Target.Value);var claim=FactionStances.OwnAt(w,sender,at,rev).Single(c=>c.Declaration==input.Original);
+        var target=HouseSuccession.Factions(w,at,rev).Single(f=>f.Id==original.Input.Target.Value);var claim=FactionStances.OwnAt(w,sender,at,rev).Single(c=>c.Declaration==input.Original);
         return new(input,sender,new(target.Head),new(target.Home),at,rev,claim,a,MessageId(input.Id));
     }
     static MessageEnvelope Envelope(FactionNoticeRequest q)=>new(q.Message,q.Input.Id.Value,Kind,q.Sender.Value,q.Recipient.Value,System.Text.Encoding.UTF8.GetString(ContractJson.Write(q.Claim)),q.Address.Value,q.At);

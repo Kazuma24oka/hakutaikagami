@@ -10,7 +10,7 @@ public static class NewGameMilitaryAuthority
     public static MilitaryIssuerAuthorityBasis? Resolve(ContractWorld w,EntityId issuer,EntityId agent,EntityId owner,EntityId site)
     {
         if(!NewGameWorld.Enabled(w)||w.Characters.SingleOrDefault(p=>p.Id==issuer)?.Life!=LifeState.Adult||w.Characters.SingleOrDefault(p=>p.Id==agent)?.Life!=LifeState.Adult)return null;
-        var faction=w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==owner.Value&&f.Head==issuer.Value);if(faction==null)return null;
+        var faction=HouseSuccession.Factions(w).SingleOrDefault(f=>f.Id==owner.Value&&f.Head==issuer.Value);if(faction==null)return null;
         var member=w.Memberships.SingleOrDefault(r=>r.Subject==issuer&&r.Target==owner&&r.Kind=="membership"&&Active(r,w));
         var office=w.Offices.SingleOrDefault(r=>r.Subject==issuer&&r.Kind=="house-head"&&r.Target.Value==faction.Home&&Active(r,w));
         var control=w.LandRights.SingleOrDefault(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&Active(r,w));
