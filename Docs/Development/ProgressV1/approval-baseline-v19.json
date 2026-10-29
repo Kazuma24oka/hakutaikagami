@@ -318,7 +318,7 @@
   "reassessment_delta_excluded": 0,
   "targets": {
     "BD-11": 65,
-    "BD-34": 100,
+    "BD-34": 95,
     "BD-47": 40,
     "BD-48": 25,
     "BD-57": 70
@@ -330,5 +330,11 @@
     "Military possession conflicting with recorded owner suspends new administrative disposals and deliveries at the actual site; no historical operation is retroactively invalidated",
     "Normal-entry UI, stale/duplicate/forged input rejection, actual generation recovery/future equivalence and old version byte preservation are checked separately from appearance"
   ],
-  "target_meaning": "Local same-owner castellan appointment and separate physical store custody. Not legal annexation, automatic inheritance, nationwide succession or general siege AI."
+  "target_meaning": "Local same-owner castellan appointment and separate physical store custody. Not legal annexation, automatic inheritance, nationwide succession or general siege AI.",
+  "pre_code_correction": {
+    "previous_plan_commit": "5504c12",
+    "reason": "Bounded local administration does not complete all fiscal gameplay; cap target at95 before implementation",
+    "previous_target": 100,
+    "target": 95
+  }
 }
