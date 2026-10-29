@@ -11,9 +11,9 @@ public static partial class NewGameMilitary
             var end=s.Events.SingleOrDefault(e=>e.Effect==MilitaryEffect.Returned&&EventCase(w,e)==c.Id&&Before(e.At,e.Revision,t,r));if(end==null)continue;
             var notice=s.Events.Where(e=>EventCase(w,e)==c.Id&&Before(e.At,e.Revision,t,r)&&Known(w,e,t,r)).Where(e=>e.Effect==MilitaryEffect.Returned||e.Effect==MilitaryEffect.StatusSent&&Read(w,e).Effect==MilitaryEffect.Returned&&Read(w,e).EffectiveAt==end.At).OrderBy(e=>e.Revision).FirstOrDefault();if(knownOnly&&notice==null)continue;
             var next=Cases(w).Where(x=>x.Revision>c.Revision).Select(x=>x.Revision).DefaultIfEmpty(long.MaxValue).Min();var requests=s.Requests.Where(q=>q.Revision>=c.Revision&&q.Revision<next).ToArray();var pickup=requests.SingleOrDefault(q=>q.Input.Action==NewMilitaryAction.Pickup);if(pickup==null)continue;
-            var report=s.Reports.Where(p=>p.Revision>=c.Revision&&p.Revision<end.Revision&&p.Carry==0&&MessageFlow.LearnedAt(w.Messaging,p.Message,s.Terms.Principal.Value) is {} received&&received<=end.At).OrderByDescending(p=>p.Revision).FirstOrDefault();if(report==null)continue;
+            var report=s.Reports.Where(p=>p.Revision>=c.Revision&&p.Revision<end.Revision&&p.Carry==0&&MessageFlow.LearnedAt(w.Messaging,p.Message,CasePrincipal(w,c.At,c.Revision).Value) is {} received&&received<=end.At).OrderByDescending(p=>p.Revision).FirstOrDefault();if(report==null)continue;
             int start=TotalStrength(w,pickup.At),loss=Math.Max(0,start-report.Soldiers);var ids=requests.Select(q=>q.Input.Id).ToHashSet();long used=s.Moves.Where(m=>ids.Contains(m.Id)).Sum(m=>m.Loading?m.Amount:-m.Amount);
-            result.Add(new(c.Id,s.Terms.Principal,new(notice?.Message??end.Message),report.Message,end.At,end.Revision,start,report.Soldiers,loss,used,requests.Any(q=>q.Input.Action==NewMilitaryAction.Deploy),loss>0?"近場で隊列を確かめ、兵を立て直す軍務":"次の布陣の軍務"));
+            result.Add(new(c.Id,CasePrincipal(w,c.At,c.Revision),new(notice?.Message??end.Message),report.Message,end.At,end.Revision,start,report.Soldiers,loss,used,requests.Any(q=>q.Input.Action==NewMilitaryAction.Deploy),loss>0?"近場で隊列を確かめ、兵を立て直す軍務":"次の布陣の軍務"));
         }
         return result.OrderBy(x=>x.Revision).ToArray();
     }

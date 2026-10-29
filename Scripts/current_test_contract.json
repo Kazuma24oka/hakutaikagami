@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3363,
-  "baseline_passed": 3327,
-  "added": 36,
-  "scope": "House succession36 added; current related1453; ten new actual generation recovery phases/future equality; headless140 pairs. Full3363/GUI NOT_RUN."
+  "expected_passed": 3403,
+  "baseline_passed": 3363,
+  "added": 40,
+  "scope": "Military issuer succession40 added; related1493; ten actual generation recovery phases/future equality; headless150pairs. Full3403/GUI NOT_RUN."
 }

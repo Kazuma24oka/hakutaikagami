@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "An explicit new-head request renews the same returned garrison using a new case issuer without rewriting initial military terms, old commands, letters or proofs",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitaryAuthority.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Tests/MilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Military.cs",
+        "Docs/Design/MilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Only a present actual successor head may request handover after known closure, return of custody and supplies; active, remote, stale and forged handovers are refused A present household member, including the retired head, may explicitly request a fresh successor-issued offer/permission without silently changing personal service; prior custody still blocks takeover.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitaryAuthority.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Tests/MilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Military.cs",
+        "Docs/Design/MilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Repeated loans, casualties, food use and depot transfers retain one physical lifetime ledger and no duplicated troops, stocks or command grants",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitaryAuthority.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Tests/MilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Military.cs",
+        "Docs/Design/MilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Current and historical military issuers, permissions, physical reports and old inquiries retain the correct case/time; personal service remains separate",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitaryAuthority.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Tests/MilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Military.cs",
+        "Docs/Design/MilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry and save/recovery/future equality, old save byte compatibility and headless Node3D data are checked separately from appearance acceptance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitaryAuthority.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Tests/MilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Military.cs",
+        "Docs/Design/MilitarySuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Current selected returned garrison only. Explicit successor-issued new military case, same lifetime physical ledger, no automatic personal service. Original terms/commands/proofs/letters/food/casualties retained. No active army takeover, archived garrison issuer handover across house switches, general NPC garrison reissue, old administrative delegation reauthorization, treaty/hostage assumption, death or contested succession. Full3403/GUI NOT_RUN."
+}

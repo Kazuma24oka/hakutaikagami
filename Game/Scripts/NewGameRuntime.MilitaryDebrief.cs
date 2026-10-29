@@ -21,7 +21,7 @@ public partial class NewGameRuntime
         var d=NewGameMilitary.Debriefs(Snapshot()).LastOrDefault(x=>militaryCase==null||x.Case==militaryCase);if(d==null)return;shownWork=null;
         string speech=d.Losses>0?"帰還と兵糧の返納、返報を確認した。兵の損耗は報告どおり受け取る。次は兵を立て直し、近場で隊列を確かめよう。":"帰還と兵糧の返納、返報を確認した。今回の返報では兵の損耗はない。次の布陣についても相談してほしい。";
         PresentWork("帰還後の返答",speech,$"帰還兵 {d.Returned}／引受時 {d.Started}、今回の損耗 {d.Losses}。消費兵糧 {d.Used}人秒分。\n次の相談：{d.Next}。損耗の理由・責任・戦功は別に確認します。",d.Principal,d.Principal,"確認済みの返答","次の働き方");workCardHeading.Text="返報と現地返納に基づく";
-        if(Snapshot().NewMilitary?.Terms.Principal==d.Principal&&NewGameMilitary.Cases(Snapshot()).Any(c=>c.Id==d.Case)&&NewGameMilitary.ViewWithAuthority(Snapshot()).CanRequest)Choice("work-debrief-next",d.Losses>0?"兵を立て直す次の軍務を相談しよう":"次の布陣の軍務を相談しよう",()=>{CloseBottomTalk();ChooseMilitary(NewMilitaryAction.Request);ShowMilitaryWork();});
+        if(Snapshot().NewMilitary!=null&&NewGameMilitary.CasePrincipal(Snapshot())==d.Principal&&NewGameMilitary.Cases(Snapshot()).Any(c=>c.Id==d.Case)&&NewGameMilitary.ViewWithAuthority(Snapshot()).CanRequest)Choice("work-debrief-next",d.Losses>0?"兵を立て直す次の軍務を相談しよう":"次の布陣の軍務を相談しよう",()=>{CloseBottomTalk();ChooseMilitary(NewMilitaryAction.Request);ShowMilitaryWork();});
         Choice("work-debrief-back","地図へ戻る",CloseBottomTalk);
     }
     void ShowMilitaryFollowupLine()
