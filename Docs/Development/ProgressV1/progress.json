@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "05bac36b39d0b15972f3280635db56f98d250a387d5442c3dd813f8247aa7a06",
-    "Docs/Development/ProgressV1/estimate.json": "0817f72c4a0a7d14866b6b643169f647b5fca26ecc06bac0ab8e7e0358c51607",
+    "Docs/Development/ProgressV1/estimate.json": "ad144b802e97b763aeeea41cb4e432c93779f069eaece4c7426e096777d0d94e",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "7ed81dc89ec38e6b98bde05927bc039171b80a860319c9d93e526058ae3d91eb",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -201,7 +201,7 @@
     "Docs/Design/RepresentativeContactV1/verification.json": "6c1517faf117169499bb2a1e2655f0cc5e538920cc7af06514ccaae1c6e663b3",
     "Docs/Design/RepresentativeContactV1/completion.json": "3f54e06ef9817eede6fd5cbec2707948537bb284a9af02e89fbc2b5b9c354dc5",
     "Docs/Design/RepresentativeContactV1/README.md": "972fa293f989d2bbff2b07bb7fca91486434e76d5ad525385abb603c1d7f5fe0",
-    "Docs/Design/RepresentativeContactV1/integration.json": "e6dfa85d0a960e80bf9e34b6f4847982809fc89f59f570feb6414d2b57ea0a7e",
+    "Docs/Design/RepresentativeContactV1/integration.json": "b93073db895bf8effc8fc558bed1edd8ecfb22c20c07750a368d6dc5f49bff33",
     "Docs/Design/RepresentativeContactV1/legacy-sources.json": "551144977e18e0937623b92d0f88b77fcb8dedcb18d1d11d072c9a8a13e0abd9",
     "Docs/Development/ProgressV1/approval-baseline-v30.json": "b0c31a5855743f6a320a3b2200d9457acf87e643d51b8a6ac168537ad057756c",
     "Scripts/verify_representative_contact.py": "ec1a9af6784e44c77d7f16451a7f0fdcc85fdb6a429ca60d48be80c13127ae2c"
@@ -2725,7 +2725,7 @@
       "sha256": "b8b4b4567d6b435998d245ecd3b3e430b266a928dd9f3667b56011adfe7caa36",
       "scope": "Current related1715 only;41 new representative evidence/contact cases;10 actual generation recoveries;headless194pairs. Full3600/GUI NOT_RUN."
     },
-    "current_stage_summary": "PR34を承認head a17c0717と同じtreeでmain31567f19へ統合後も続行。代表者の認識を、開始時の公知情報・本人が立ち会った交代・本人開封した署名から時点付きで導出。相手家の未通知の現当主を参照せず、観測日時/署名時点と本人学習日時/出典を分離する。署名者本人が知る代表者と本拠へ、成立済み不戦原本の照会を実配送。現代表者は開封後、同じ版/条件/元期限を元の署名者へ直接返書し、その本人開封から別の返報を依頼者へ送る。本人が現当主のときは開封/返答を自動操作しない。旧署名や返書の写しが遅着しても新しい代表認識を巻き戻さず、未開封/不達から新代表者や現在地を漏らさない。実際の再交代後も旧原本と宛先を保持し、退任者が政治返答しない。不達認識後の同宛先再送・返書三通上限・原本回収と写しの重複・期限後到達を検査。新規41/関連1715件、Gameビルド、10段階の実保存復旧と将来一致、旧保存134件のバイト一致、画面なしGodot194組388世界1014Node3Dが成功。外観/GUI操作と全3600件実行は未実施。一般条約/人質/全国NPC家督/活動軍の引継ぎは後続。",
+    "current_stage_summary": "PR34を承認head a17c0717と同じtreeでmain31567f19へ統合後も続行。代表者の認識を、開始時の公知情報・本人が立ち会った交代・本人開封した署名から時点付きで導出。相手家の未通知の現当主を参照せず、観測日時/署名時点と本人学習日時/出典を分離する。署名者本人が知る代表者と本拠へ、成立済み不戦原本の照会を実配送。現代表者は開封後、同じ版/条件/元期限を元の署名者へ直接返書し、その本人開封から別の返報を依頼者へ送る。本人が現当主のときは開封/返答を自動操作しない。旧署名や返書の写しが遅着しても新しい代表認識を巻き戻さず、未開封/不達から新代表者や現在地を漏らさない。実際の再交代後も旧原本と宛先を保持し、退任者が政治返答しない。不達認識後の同宛先再送・返書三通上限・原本回収と写しの重複・期限後到達を検査。新規41/関連1715件、Gameビルド、10段階の実保存復旧と将来一致、旧保存134件のバイト一致、画面なしGodot194組388世界1014Node3Dが成功。外観/GUI操作と全3600件実行は未実施。一般条約/人質/全国NPC家督/活動軍の引継ぎは後続。 PR35へコードと資料のみpush済み。新しいmain統合だけ個別承認待ち。承認後は活動軍・複数拠点へ続行する。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
