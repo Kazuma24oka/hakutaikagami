@@ -34,20 +34,20 @@ public static partial class NewGameMilitary
     static EngagementTaskTerms EngagementTermsFor(ContractWorld w,string source)
     {
         var s=w.NewMilitary!;var q=CaseRequests(w).Single(q=>q.Message==source);var x=q.Input.Engagement!;
-        var authority=NewGameMilitaryAuthority.Resolve(w,s.Terms.Principal,w.PlayerControl,s.Terms.Owner,s.Terms.Site);
+        var authority=NewGameMilitaryAuthority.Resolve(w,CasePrincipal(w),w.PlayerControl,s.Terms.Owner,s.Terms.Site);
         Need(authority!=null,"主君の実在の発令権限がありません");
-        return new(q.Input.Id,s.Terms.Principal,w.PlayerControl,s.Terms.Owner,s.Terms.Army,x.TargetOwner,
+        return new(q.Input.Id,CasePrincipal(w),w.PlayerControl,s.Terms.Owner,s.Terms.Army,x.TargetOwner,
             [..UnitIdsFor(w)],w.ElapsedSeconds,Math.Max(w.ElapsedSeconds,x.EffectiveFrom),x.Until,authority,FactionStances.ClaimAt(w,s.Terms.Owner,x.TargetOwner,w.ElapsedSeconds,w.CommitSequence));
     }
     static void UpdateEngagementTasks(ContractWorld w)
     {
         var s=w.NewMilitary;if(s==null)return;
-        foreach(var q in CaseRequests(w).Where(q=>q.Input.Action is NewMilitaryAction.RequestEngagement or NewMilitaryAction.CancelEngagement&&q.Message!=null&&MessageFlow.Knows(w.Messaging,q.Message,s.Terms.Principal.Value)).ToArray()){
+        foreach(var q in CaseRequests(w).Where(q=>q.Input.Action is NewMilitaryAction.RequestEngagement or NewMilitaryAction.CancelEngagement&&q.Message!=null&&MessageFlow.Knows(w.Messaging,q.Message,CasePrincipal(w).Value)).ToArray()){
             if(q.Input.Action==NewMilitaryAction.RequestEngagement){
                 if(Has(w,MilitaryEffect.EngagementPermission)||Has(w,MilitaryEffect.EngagementRejected))continue;
                 bool valid=!Has(w,MilitaryEffect.EngagementCancelled)&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&!Returning(w,w.ElapsedSeconds,w.CommitSequence)&&
                     q.Input.Engagement!.Until>w.ElapsedSeconds&&MilitaryBoundAt(w,w.ElapsedSeconds,w.CommitSequence)&&
-                    NewGameMilitaryAuthority.Resolve(w,s.Terms.Principal,w.PlayerControl,s.Terms.Owner,s.Terms.Site)!=null;
+                    NewGameMilitaryAuthority.Resolve(w,CasePrincipal(w),w.PlayerControl,s.Terms.Owner,s.Terms.Site)!=null;
                 Announce(w,valid?MilitaryEffect.EngagementPermission:MilitaryEffect.EngagementRejected,q.Message!);
             }else if(!Has(w,MilitaryEffect.EngagementCancelled))Announce(w,MilitaryEffect.EngagementCancelled,q.Message!);
         }

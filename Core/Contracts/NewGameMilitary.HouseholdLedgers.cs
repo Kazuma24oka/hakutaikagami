@@ -36,7 +36,7 @@ public static partial class NewGameMilitary
     }
     static NewMilitaryTerms? CurrentHouseTarget(ContractWorld w)
     {
-        try{return Terms(w,new("request:military-ledger-preview"),AuthorityContract,LedgerIdentityContract);}
+        try{if(CanAssumeReturnedGarrison(w)){var s=w.NewMilitary!;return new(HouseSuccession.Head(w,s.Terms.Owner),s.Terms.Owner,s.Terms.Site,s.Terms.Army,new("request:military-ledger-preview"));}return Terms(w,new("request:military-ledger-preview"),AuthorityContract,LedgerIdentityContract);}
         catch(InvalidDataException){return null;}
     }
     public static bool CanSwitchToCurrentHouse(ContractWorld w)
@@ -44,11 +44,11 @@ public static partial class NewGameMilitary
         var target=CurrentHouseTarget(w);
         return target!=null&&w.NewMilitary is {} s&&!SameGarrison(s,target)&&ClosedForSwitch(w);
     }
-    public static bool CanConsultCurrentHouse(ContractWorld w,EntityId principal)=>w.NewMilitary==null||w.NewMilitary.Terms.Principal==principal||CurrentHouseTarget(w)?.Principal==principal&&CanSwitchToCurrentHouse(w);
+    public static bool CanConsultCurrentHouse(ContractWorld w,EntityId principal)=>w.NewMilitary==null||CasePrincipal(w)==principal||CurrentHouseTarget(w)?.Principal==principal&&CanSwitchToCurrentHouse(w);
     public static string? CycleForCurrentHouse(ContractWorld w)
     {
         var target=CurrentHouseTarget(w);
-        return target!=null&&LedgerStates(w).Any(s=>SameGarrison(s,target))?RenewalContract:null;
+        return CanAssumeReturnedGarrison(w)||target!=null&&LedgerStates(w).Any(s=>SameGarrison(s,target))?RenewalContract:null;
     }
     public static EntityId? SourceForCurrentHouse(ContractWorld w)=>CanSwitchToCurrentHouse(w)?ExistingLedgerIdentity(w)!.Ledger:null;
     static void ValidateSelectionSources(ContractWorld w)
@@ -64,12 +64,12 @@ public static partial class NewGameMilitary
     static void SelectRequestedLedger(ContractWorld w,NewMilitaryInput input)
     {
         if(input.Action!=NewMilitaryAction.Request||input.LedgerPolicy!=LedgerIdentityContract||w.NewMilitary==null)return;
-        var target=Terms(w,input.Id,input.AuthorityPolicy,input.LedgerPolicy);
+        var target=Terms(w,input.Id,input.AuthorityPolicy,input.LedgerPolicy,input.IssuerPolicy);
         if(SameGarrison(w.NewMilitary,target))return;
         Need(ClosedForSwitch(w),"旧主家の指揮・兵糧・返報の返納と終了通知を確認してください");
         Need(input.FromLedger==ExistingLedgerIdentity(w)!.Ledger,"表示した元台帳と現在の軍台帳が違います");
         var old=w.NewMilitary;var others=w.OtherMilitaryLedgers??[];var selected=others.SingleOrDefault(s=>SameGarrison(s,target));
-        Need(selected==null||selected.Terms.Principal==target.Principal,"この駐屯軍の発令者変更は未対応です");
+        Need(selected==null||PrincipalOf(w,selected)==target.Principal,"この駐屯軍の発令者変更は未対応です");
         w.NewMilitary=selected;w.OtherMilitaryLedgers=[..others.Where(s=>s!=selected),old];
     }
     static void ForEachLedger(ContractWorld w,Action<ContractWorld> action)

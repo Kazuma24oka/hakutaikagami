@@ -12,7 +12,7 @@ public static partial class NewGameMilitary
         foreach(var p in proofs){
             Need(p.Effect is MilitaryEffect.Offered or MilitaryEffect.Permission&&s.Events.Any(e=>e.Effect==p.Effect&&e.At==p.At&&e.Revision==p.Revision&&EventCase(w,e)==p.Case),"実際の軍務提示・許可のない発令根拠です");
             var prior=BeforeState(w,p.At,p.Revision-1);prior.CommitSequence=p.Revision;
-            var expected=NewGameMilitaryAuthority.Resolve(prior,s.Terms.Principal,w.PlayerControl,s.Terms.Owner,s.Terms.Site);
+            var expected=NewGameMilitaryAuthority.Resolve(prior,CasePrincipal(prior),w.PlayerControl,s.Terms.Owner,s.Terms.Site);
             Need(expected!=null&&expected==p.Source,"許可時点の主君・所属・役職・城の権限を再現できません");
         }
         return DeriveAuthorityScopes(w,proofs);

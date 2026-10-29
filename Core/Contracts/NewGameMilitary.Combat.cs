@@ -5,7 +5,7 @@ public static partial class NewGameMilitary
 {
     // Explicit synthetic exercise only. This grants no authority to attack a historical house.
     public const string CombatContract="explicit-synthetic-local-contact-simultaneous-loss-morale-person-seconds-v1";
-    static CombatAuthorization CombatTerms(ContractWorld w,long from)=>new(w.NewMilitary!.Terms.Principal,w.PlayerControl,new("exercise:local-contact"),CaseStart(w)!.Input.Id,from,from+CombatPermitDuration,CaseRequests(w,from).Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit&&q.Input.ExercisePolicy==RepeatedExerciseContract)?RepeatedExerciseContract:CombatContract);
+    static CombatAuthorization CombatTerms(ContractWorld w,long from)=>new(CasePrincipal(w,from),w.PlayerControl,new("exercise:local-contact"),CaseStart(w)!.Input.Id,from,from+CombatPermitDuration,CaseRequests(w,from).Any(q=>q.Input.Action==NewMilitaryAction.CombatPermit&&q.Input.ExercisePolicy==RepeatedExerciseContract)?RepeatedExerciseContract:CombatContract);
     public const int CombatDuration=30,CombatPermitDuration=120;
     public static readonly EntityId[] ExerciseIds=[new("unit:exercise/0"),new("unit:exercise/1"),new("unit:exercise/2")];
     static NewMilitaryRequest? CombatStart(ContractWorld w)=>w.NewMilitary?.Requests.LastOrDefault(q=>q.Input.Action==NewMilitaryAction.CombatStart);

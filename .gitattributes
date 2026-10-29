@@ -2020,3 +2020,7 @@ Core/Contracts/HouseSuccession.cs -text
 Tests/HouseSuccessionTests.cs -text
 Game/Scripts/NewGameRuntime.HouseSuccession.cs -text
 Scripts/verify_house_succession.py -text
+
+Core/Contracts/NewGameMilitary.IssuerSuccession.cs -text
+Tests/MilitarySuccessionTests.cs -text
+Scripts/verify_military_succession.py -text
