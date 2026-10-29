@@ -1,5 +1,5 @@
 namespace HakutaiKagami.Core.Contracts;
-public enum HouseholdServiceAction { Release,Pledge }
+public enum HouseholdServiceAction { Release,Pledge,AcceptPledge }
 public sealed record HouseholdServiceInput(EntityId Id,HouseholdServiceAction Action,EntityId Owner,EntityId Other,EntityId? Source=null);
 public sealed record HouseholdServiceEntry(HouseholdServiceInput Input,EntityId Subject,EntityId Site,long At,long Revision);
 public sealed record HouseholdServiceState(int Schema,string Policy,HouseholdServiceEntry[] Entries);
@@ -19,7 +19,7 @@ public static class HouseholdService
     {
         var rows=original.ToList();foreach(var e in Entries(w,at,rev)){
             if(e.Input.Action==HouseholdServiceAction.Release){int n=rows.FindIndex(b=>b.Id==e.Input.Source&&b.Subject==e.Subject);Need(n>=0&&rows[n].From<e.At&&e.At<=rows[n].Until,"個人奉公の元の期間がありません");rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};}
-            else rows.Add(new(BondId(e.Input.Id),e.Subject,e.Input.Other,"service",NewGameWorld.Basis,e.At,long.MaxValue,e.Revision));
+            else rows.Add(new(BondId(e.Input.Id),e.Subject,e.Input.Action==HouseholdServiceAction.AcceptPledge?HouseSuccession.Head(w,e.Input.Owner,e.At,e.Revision-1):e.Input.Other,"service",NewGameWorld.Basis,e.At,long.MaxValue,e.Revision));
         }return rows.ToArray();
     }
     internal static TimedRelation[] BondsAt(ContractWorld w,long at,long rev)=>w.HouseService==null?w.ServiceBonds:Relations(w,Base(w),at,Math.Min(rev,w.CommitSequence));
@@ -35,8 +35,9 @@ public static class HouseholdService
         Need(HouseSuccession.Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&ChangedHouse(w,i.Owner,at,rev-1)&&Owner(w,at,rev-1)==i.Owner&&i.Other!=w.PlayerControl,"当主交代後の同じ家で本人の奉公を個別確認してください");
         var f=HouseSuccession.Factions(w,at,rev-1).Single(f=>f.Id==i.Owner.Value);var site=new EntityId(f.Home);
         Need(Local(w,w.PlayerControl,site,at,rev)&&Local(w,i.Other,site,at,rev)&&!CastleAdministration.Blocked(w,site,at,rev)&&w.Characters.Single(c=>c.Id==i.Other).WillObey,"現地の同意・所在と返納済みの実務を確認してください");
-        var bonds=Relations(w,Base(w),at,rev-1);var source=i.Action==HouseholdServiceAction.Release?bonds.SingleOrDefault(b=>b.Id==i.Source&&Active(b,at,rev-1)):Bond(w,at,rev-1);var subject=i.Action==HouseholdServiceAction.Release?source?.Subject??w.PlayerControl:w.PlayerControl;Need(Clear(w,subject,at,rev-1),"当事者の返納と未完了実務を確認してください");
+        var bonds=Relations(w,Base(w),at,rev-1);var source=i.Action==HouseholdServiceAction.Release?bonds.SingleOrDefault(b=>b.Id==i.Source&&Active(b,at,rev-1)):Bond(w,at,rev-1);var subject=i.Action==HouseholdServiceAction.Release?source?.Subject??w.PlayerControl:i.Action==HouseholdServiceAction.AcceptPledge?i.Other:w.PlayerControl;Need(Clear(w,subject,at,rev-1),"当事者の返納と未完了実務を確認してください");
         if(i.Action==HouseholdServiceAction.Release){Need(source!=null&&source.Id==i.Source&&((source.Subject==w.PlayerControl&&source.Target==i.Other)||(source.Subject==i.Other&&source.Target==w.PlayerControl))&&source.From<at&&w.Memberships.Any(m=>m.Subject==source.Subject&&m.Target==i.Owner&&Active(m,at,rev-1))&&ReportsReady(w,source.Subject,source.Target,at,rev-1),"元の奉公と未着の返報・期間を確認してください");}
+        else if(i.Action==HouseholdServiceAction.AcceptPledge)Need(i.Source==null&&w.PlayerControl==new EntityId(f.Head)&&FactionStances.ResolveAuthority(w,w.PlayerControl,i.Owner,at,Math.Min(rev-1,w.CommitSequence))!=null&&w.Characters.Any(c=>c.Id==subject&&c.Life==LifeState.Adult)&&w.Memberships.Any(m=>m.Subject==subject&&m.Target==i.Owner&&Active(m,at,rev-1))&&!bonds.Any(b=>b.Subject==subject&&b.Kind=="service"&&Active(b,at,rev-1))&&!Cycle(bonds,subject,w.PlayerControl,at,rev-1),"現当主と同じ家の成人本人が新しい奉公に同意してください");
         else Need(i.Source==null&&source==null&&!Cycle(bonds,w.PlayerControl,i.Other,at,rev-1)&&i.Other==new EntityId(f.Head)&&FactionStances.ResolveAuthority(w,i.Other,i.Owner,at,Math.Min(rev-1,w.CommitSequence))!=null,"現当主との新しい個人奉公だけを合意できます");
         return new(i,subject,site,at,rev);
     }
@@ -56,12 +57,14 @@ public static class HouseholdService
         var releases=new List<HouseholdServiceRelease>();foreach(var b in Relations(w,Base(w),at,rev).Where(b=>b.Kind=="service"&&Active(b,at,rev)&&(b.Subject==w.PlayerControl||b.Target==w.PlayerControl))){var other=b.Subject==w.PlayerControl?b.Target:b.Subject;bool can=false;try{Make(w,new(new("request:house-service-preview"),HouseholdServiceAction.Release,owner.Value,other,b.Id),at,rev+1);can=true;}catch(InvalidDataException){}releases.Add(new(b.Id,b.Subject,b.Target,other,can));}
         return new(owner,local?home:null,bond?.Target,bond?.Id,release,pledge,bond==null?"所属は家に保持・個人的な直属奉公はなし":"個人奉公の相手を保持。家の行政・軍務は別の原本",releases.ToArray());
     }
+    public static EntityId[] PledgeCandidates(ContractWorld w){if(!HouseSuccession.Enabled(w))return [];var owner=Owner(w,w.ElapsedSeconds,w.CommitSequence);if(owner==null)return [];var result=new List<EntityId>();foreach(var c in w.Characters.Where(c=>c.Id!=w.PlayerControl)){try{Make(w,new(new("request:accept-pledge-preview"),HouseholdServiceAction.AcceptPledge,owner.Value,c.Id),w.ElapsedSeconds,w.CommitSequence+1);result.Add(c.Id);}catch(InvalidDataException){}}return result.ToArray();}
     internal static void Validate(ContractWorld w)
     {
         if(w.HouseService==null)return;Need(HouseSuccession.Enabled(w)&&w.HouseService is {Schema:1,Policy:Policy,Entries:not null},"個人奉公の版が不正です");long at=0,rev=0;var ids=new HashSet<EntityId>();foreach(var e in w.HouseService.Entries){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&ids.Add(e.Input.Id)&&!FactionStances.OtherIdUsed(w,e.Input.Id,includeHouseService:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"個人奉公の原本順序・IDが不正です");Need(e==Make(w,e.Input,e.At,e.Revision),"個人奉公の同意・所属・引継ぎが原本と一致しません");at=e.At;rev=e.Revision;}}
 }
 public sealed partial class WorldSession
 {
+    public EntityId[] HouseholdPledgeCandidates(){lock(gate)return HouseholdService.PledgeCandidates(state);}
     public HouseholdServiceView? HouseholdServiceView(){lock(gate)return HouseholdService.View(state);}
     public CommandResult ManageHouseholdService(HouseholdServiceInput i,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!HouseSuccession.Enabled(state))return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の個人奉公ではありません");var old=state.HouseService?.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別の原本です");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>HouseholdService.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"所属と別に個人奉公の合意を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
 }

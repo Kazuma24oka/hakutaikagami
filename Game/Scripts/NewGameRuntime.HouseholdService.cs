@@ -12,6 +12,7 @@ public partial class NewGameRuntime
         void Run(HouseholdServiceInput i){var r=Session.ManageHouseholdService(i,Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowHouseholdService();}
         foreach(var b in v.Releases){Text(SuccessionPerson(w,b.Subject)+" → "+SuccessionPerson(w,b.Principal));Button("両者の同意で、この奉公だけを解く",()=>Run(new(new("request:house-personal-release-ui/"+shown),HouseholdServiceAction.Release,v.Owner!.Value,b.Other,b.Source)),!b.CanRelease);}
         if(v.Owner is {} owner){var head=HouseSuccession.Head(w,owner);Button(SuccessionPerson(w,head)+"への個人奉公を新たに合意する",()=>Run(new(new("request:house-personal-pledge-ui/"+shown),HouseholdServiceAction.Pledge,owner,head)),!v.CanPledge);}
+        if(v.Owner is {} pledgeOwner)foreach(var person in Session.HouseholdPledgeCandidates())Button(SuccessionPerson(w,person)+"の個人奉公を本人の同意で受け入れる",()=>Run(new(new("request:house-personal-accept-ui/"+shown),HouseholdServiceAction.AcceptPledge,pledgeOwner,person)));
         Text("当事者の現地立会いと同意、軍務・返報の引継ぎが必要です。行政と軍務は、それぞれの原本で確認します。");Button("家督・引継ぎへ戻る",()=>{popup.Hide();ShowHouseSuccession();});Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(570,460));
     }
 }
