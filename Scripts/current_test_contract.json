@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3464,
-  "baseline_passed": 3403,
-  "added": 61,
-  "scope": "Administrative succession/personal household service61 added; related1554; twelve actual generation recoveries/future equality; headless162pairs. Full3464/GUI NOT_RUN."
+  "expected_passed": 3511,
+  "baseline_passed": 3464,
+  "added": 47,
+  "scope": "Castellan succession27 and truce inheritance20 added; related1601; ten additional actual generation recovery phases; headless172pairs. Full3511/GUI NOT_RUN."
 }

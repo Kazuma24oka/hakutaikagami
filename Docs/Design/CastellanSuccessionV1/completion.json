@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Current head may accept an explicitly consenting local household member personal pledge after the original reciprocal service is individually released; membership, office, private assets and obligations remain separate and busy subjects cannot silently change service",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.Succession.cs",
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/TruceSuccession.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Tests/CastellanSuccessionTests.cs",
+        "Tests/TruceSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Docs/Design/CastellanSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "After actual head succession an unexpired old castellan original can be reauthorized once by local current head and directly bound consenting agent; preserve original expiry, ownership, old receipts and dated authority without reviving superseded appointments",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.Succession.cs",
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/TruceSuccession.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Tests/CastellanSuccessionTests.cs",
+        "Tests/TruceSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Docs/Design/CastellanSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Reauthorized castellan custody, local NPC administration, procurement/freight delegated budgets, dated sealed report recipients and late old reports stay attached to their distinct originals; no inventory duplication or monthly reset; An actually formed, personally known organization-party truce may be locally shown by the old representative to the actual successor, preserving exact terms/expiry and sealed old recipients; pending old-address papers do not become successor consent and retired signers cannot automatically exercise new political authority",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.Succession.cs",
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/TruceSuccession.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Tests/CastellanSuccessionTests.cs",
+        "Tests/TruceSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Docs/Design/CastellanSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal castle and personal-service screens expose valid local operations and distinguish ineffective old appointment from effective authority; unknown remote stock and unconsenting candidates are not disclosed",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.Succession.cs",
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/TruceSuccession.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Tests/CastellanSuccessionTests.cs",
+        "Tests/TruceSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Docs/Design/CastellanSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Wrong/stale/repeated/absent/refused/expired/forged operations, actual generation recovery and future equality, old-save compatibility and headless 3D data are verified; GUI appearance remains separate",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleAdministration.Succession.cs",
+        "Core/Contracts/CastleAdministration.cs",
+        "Core/Contracts/CastellanReports.cs",
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/TruceSuccession.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Tests/CastellanSuccessionTests.cs",
+        "Tests/TruceSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.CastleAdministration.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Docs/Design/CastellanSuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Living-head succession only: local personal pledge acceptance, unexpired formal castellan/custody reauthorization, and a formed organization-party nonaggression agreement locally shown by its original informed representative to the actual successor. No automatic personal allegiance, political authority, property, troops or old paper recipient transfer. No general alliance/hostage/marriage, multi-generation diplomatic chain, new successor confirmation courier, active-army takeover, NPC autonomous succession, death/disputes or full nationwide behavior. Full3511/GUI NOT_RUN."
+}

@@ -19,7 +19,7 @@ public static partial class CommunityStewardship
         var castle=CastleAdministration.Grant(w,old.Site,e.At,e.Revision);Need(castle==null||!LiveSource(w,castle,e.At,e.Revision),"有効な城主任命と重複できません");
         return new(i.Id,head,agent,old.Owner,old.Site,i.ReturnAddress!.Value,e.At,Math.Min(old.Until,checked(e.At+i.Days*Day)),e.Revision);
     }
-    internal static bool SharedDelegationBudget(ContractWorld w,EntityId site,long at,long rev)=>w.Stewardship?.Entries.Any(e=>e.Input.Action==StewardAction.Reauthorize&&e.Input.Site==site&&Before(e.At,e.Revision,at,rev))==true;
+    internal static bool SharedDelegationBudget(ContractWorld w,EntityId site,long at,long rev)=>w.Stewardship?.Entries.Any(e=>e.Input.Action==StewardAction.Reauthorize&&e.Input.Site==site&&Before(e.At,e.Revision,at,rev))==true||CastleAdministration.SharedBudget(w,site,at,rev);
     internal static bool DelegatedCharge(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>GrantAt(w,site,at,rev) is {} g&&g.Agent==actor;
     public static StewardReauthorizationCard[] ReauthorizationView(ContractWorld w)
     {

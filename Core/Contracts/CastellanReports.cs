@@ -13,7 +13,7 @@ public static class CastellanReports
     static string Hash(string s)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(s));
     static bool Before(CastellanReportPaper p,long at,long rev)=>p.At<at||p.At==at&&p.Revision<rev;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.CastellanReports?.Entries.Any(e=>e.Input.Id==id)==true||w.CastellanReports?.Papers.Any(p=>p.Request==id)==true;
-    static CastellanEntry Appointment(ContractWorld w,EntityId id)=>w.Castellan!.Entries.Single(e=>e.Input.Id==id&&e.Input.Action==CastellanAction.Appoint);
+    static CastellanEntry Appointment(ContractWorld w,EntityId id)=>w.Castellan!.Entries.Single(e=>e.Input.Id==id&&CastleAdministration.IsAppointment(e.Input.Action));
     static CastellanReportPaper Make(ContractWorld w,CastellanReportInput i,long at,long rev){var e=Appointment(w,i.Appointment);Need(!PersonalLife.Resting(w,at,rev)&&Enum.IsDefined(i.Action)&&e.At<=at&&e.Revision<rev&&CommunityStewardship.Local(w,e.Agent,e.Input.Site,at,rev)&&e.Agent==w.PlayerControl,"現地の担当者本人が報告してください");
         CastellanReceipt observation;
         if(i.Action==CastellanReportAction.Report){Need(i.Original==null&&CastleAdministration.Grant(w,e.Input.Site,at,rev)?.Id==i.Appointment,"有効な任命原本がありません");observation=CastleAdministration.Store(w,e.Input.Site,at,rev);}
