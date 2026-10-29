@@ -16,9 +16,9 @@ public static class RegionalDomains
     public const string Policy="nationwide-trial-domain-ledgers-bounded-local-house-procurement-v9";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     internal static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
-    internal static EntityId? Head(ContractWorld w,EntityId site)=>Owner(w,site) is {} owner&&w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Id==owner.Value) is {} f?new(f.Head):null;
+    internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>Owner(w,site) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays((int)(at/Day));
@@ -35,7 +35,7 @@ public static class RegionalDomains
     internal static long Remaining(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {
         var es=Purchases(w,at,rev).Where(e=>e.Input.Site==site&&Month(w,e.At,at)).ToArray();long n=Math.Max(0,Budget(w,site,at,rev)-es.Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,false));
-        if(Head(w,site)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)));return n;
+        if(Head(w,site,at,rev)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)));return n;
     }
     static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     internal static bool Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>!CastleAdministration.Blocked(w,site,at,rev)&&(HeadAuthority(w,actor,site,at,rev)||Owner(w,site) is {} owner&&CommunityStewardship.Authority(w,actor,owner,site,at,rev)!=null);
@@ -48,7 +48,7 @@ public static class RegionalDomains
         Need(i.Quantity<=RegionalTrade.StockFree(trade,i.Site,i.Commodity)&&cost<=Cash(w,i.Site,at,rev)&&cost<=Remaining(w,actor,i.Site,at,rev),"商人の自由在庫・家の資金・今月の調達枠が不足しています");var quote=new SpotQuote(Child("quote",i.Id),i.Commodity,i.Quantity,price,at,rev);var owner=Owner(w,i.Site)!.Value;var m=w.Materials!.Profiles.Single(p=>p.Site==i.Site);
         return new(i,actor,at,rev,quote,new(Child("receipt",i.Id),quote.Id,owner,i.Site,i.Commodity,i.Quantity,at,rev),new(Child("payment",i.Id),quote.Id,owner,m.Merchant,cost,at,rev));
     }
-    static EntityId? Controller(ContractWorld w,EntityId site,long at,long rev)=>CommunityStewardship.Delegate(w,site,at,rev)??Head(w,site);
+    static EntityId? Controller(ContractWorld w,EntityId site,long at,long rev)=>CommunityStewardship.Delegate(w,site,at,rev)??Head(w,site,at,rev);
     static EntityId DecisionId(ContractWorld w,EntityId site,long at,long rev){string root="decision:house-procure/"+site.Value.Replace(':','/')+"/"+(CommunityStewardship.GrantAt(w,site,at,rev)!=null?"d"+(at/Day):"m"+(Date(w,at).Year*12+Date(w,at).Month));var id=new EntityId(root);int n=0;while(FactionStances.OtherIdUsed(w,id,includeDomains:false)||FactionStances.OwnIdUsed(w,id))id=new(root+"/n"+(++n));return id;}
     static ProcurementDecision Decide(ContractWorld w,EntityId site,long at,long rev)
     {

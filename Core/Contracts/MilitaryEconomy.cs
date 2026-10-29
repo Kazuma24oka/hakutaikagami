@@ -11,7 +11,7 @@ public static class MilitaryEconomy
     public const int SupportWorkers=20;
     public const long PersonSecondsPerKg=144000,NpcRiceKg=NewGameMilitary.Capacity/PersonSecondsPerKg;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
     internal static MilitaryRiceEntry[] Transfers(ContractWorld w,long at,long rev)=>w.MilitaryEconomy?.Entries.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.MilitaryEconomy?.Entries.Any(e=>e.Input.Id==id)==true;
@@ -35,7 +35,7 @@ public static class MilitaryEconomy
     static EntityId AutoId(ContractWorld w,EntityId muster,bool returning){string root="request:military-rice/"+(returning?"return/":"fund/")+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(muster.Value));var id=new EntityId(root);int n=0;while(FactionStances.OtherIdUsed(w,id,includeMilitaryEconomy:false)||FactionStances.OwnIdUsed(w,id))id=new(root+"/n"+(++n));return id;}
     static MilitaryRiceEntry Make(ContractWorld w,MilitaryRiceInput i,EntityId actor,long at,long rev)
     {
-        Need(Enabled(w)&&i.RiceKg>0&&i.RiceKg<=1000,"米は1〜1000kgの整数で指定してください");var b=Binding(w,i.Depot);Need(RegionalDomains.Owner(w,b.Site)==b.Owner&&RegionalDomains.Head(w,b.Site)==b.Principal&&FactionStances.ResolveAuthority(w,b.Principal,b.Owner,at,Math.Min(rev,w.CommitSequence))!=null,"元の家と軍用倉の処分権がありません");
+        Need(Enabled(w)&&i.RiceKg>0&&i.RiceKg<=1000,"米は1〜1000kgの整数で指定してください");var b=Binding(w,i.Depot);Need(RegionalDomains.Owner(w,b.Site)==b.Owner&&RegionalDomains.Head(w,b.Site,at,rev)==b.Principal&&FactionStances.ResolveAuthority(w,b.Principal,b.Owner,at,Math.Min(rev,w.CommitSequence))!=null,"元の家と軍用倉の処分権がありません");
         bool automatic=i.Muster!=null;
         if(automatic){Need(b.Npc!=null&&b.Npc.Id==i.Muster&&actor==b.Principal&&actor!=w.PlayerControl&&i.Id==AutoId(w,i.Muster!.Value,i.Returning),"NPC軍の根拠原本がありません");var m=b.Npc!;if(i.Returning){Need(w.NpcArmies!.Returns.Any(r=>r.Muster==m.Id&&r.At==at&&r.Revision==rev),"部隊の実帰還前には返納できません");Need(i.RiceKg==DepotAt(w,i.Depot,at,rev,true)/PersonSecondsPerKg,"NPCの未使用兵糧の整数kgと一致しません");}else Need(m.At==at&&m.Revision==rev&&i.RiceKg==NpcRiceKg,"引受と同時に既定2日分だけ用意します");}
         else Need(actor==w.PlayerControl&&b.Player!=null&&NewGameMilitary.SupplyAllowed(w,b.Player,actor,at,rev,!i.Returning),"現地の軍務許可と元の当主との受渡しを確認してください");

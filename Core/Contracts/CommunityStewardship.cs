@@ -15,7 +15,7 @@ public static class CommunityStewardship
     public const string Policy="local-bounded-stewardship-physical-reports-revocation-v7",ReportKind="steward-report",RevokeKind="steward-revoke",AckKind="steward-ack";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Stewardship?.Entries.Any(e=>e.Input.Id==id)==true;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     internal static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&CommunityEconomy.Local(w,actor,site,at,rev);
@@ -45,7 +45,7 @@ public static class CommunityStewardship
     static StewardGrant MakeGrant(ContractWorld w,StewardEntry e)
     {
         var i=e.Input;Need(i.Other!=null&&i.Other!=w.PlayerControl&&i.Days>=1&&i.Days<=30&&i.ReturnAddress!=null&&w.Definitions.Sites.Any(s=>s.Id==i.ReturnAddress)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"委任先・期限・返報先を指定してください");
-        var f=w.NewGame!.Start.Factions.Single(f=>f.Id==w.NewGame.Start.Castles.Single(c=>c.Id==i.Site.Value).Faction);var head=new EntityId(f.Head);var agent=head==w.PlayerControl?i.Other!.Value:w.PlayerControl;
+        var f=HouseSuccession.Factions(w,e.At,e.Revision).Single(f=>f.Id==w.NewGame!.Start.Castles.Single(c=>c.Id==i.Site.Value).Faction);var head=new EntityId(f.Head);var agent=head==w.PlayerControl?i.Other!.Value:w.PlayerControl;
         Need(CastleAdministration.Grant(w,i.Site,e.At,e.Revision)==null,"有効な城主任命があるため別の代理行政委任は作れません");Need(head==w.PlayerControl||head==i.Other,"当主と直属家臣が現地で合意してください");
         var g=new StewardGrant(i.Id,head,agent,new(f.Id),i.Site,i.ReturnAddress!.Value,e.At,checked(e.At+i.Days*Day),e.Revision);
         Need(Local(w,head,i.Site,e.At,e.Revision)&&Local(w,agent,i.Site,e.At,e.Revision)&&Bound(w,g,e.At,e.Revision)&&FactionStances.ResolveAuthority(w,head,g.Owner,e.At,e.Revision)!=null,"当事者の現地所在・直属関係・家の権限を確認できません");return g;

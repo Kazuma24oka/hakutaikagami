@@ -10,7 +10,7 @@ public sealed record CastellanView(EntityId? Site,EntityId[] Candidates,Castella
 public static class CastleAdministration
 {
     public const string Policy="local-consented-castellan-and-separate-store-custody-v20";
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseSuccession.Policy;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
     static bool Before(CastellanEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static CastellanEntry[] Prefix(ContractWorld w,long at,long rev)=>w.Castellan?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
@@ -27,7 +27,7 @@ public static class CastleAdministration
     static CastellanEntry Prepare(ContractWorld w,CastellanInput i,long at,long rev)
     {
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"城主操作の対象が不正です");
-        var owner=Owner(w,i.Site);var principal=new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==owner.Value).Head);
+        var owner=Owner(w,i.Site);var principal=HouseSuccession.Head(w,owner,at,rev);
         Need(Local(w,w.PlayerControl,i.Site,at,rev)&&!PersonalLife.Resting(w,at,rev)&&!Blocked(w,i.Site,at,rev),"現地で実務できる支配状況ではありません");
         if(i.Action==CastellanAction.Appoint){Need(i.Person is {}&&i.Person!=principal&&i.Appointment==null&&i.Days>=1&&i.Days<=30,"同意する担当者と1〜30日の期間を指定してください");var agent=i.Person!.Value;
             Need((w.PlayerControl==principal||w.PlayerControl==agent)&&Local(w,principal,i.Site,at,rev)&&Local(w,agent,i.Site,at,rev)&&Bound(w,agent,principal,owner,at,rev)&&FactionStances.ResolveAuthority(w,principal,owner,at,Math.Min(rev,w.CommitSequence))!=null,"現地当主と成人直属家臣の権限が必要です");

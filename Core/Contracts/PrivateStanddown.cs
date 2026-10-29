@@ -18,7 +18,7 @@ public static class PrivateStanddown
     public static bool ShouldWait(ContractWorld w,EntityId person,long at,long revision)
     {if(!Enabled(w))return false;return State(w).Quotes.Where(q=>q.Person==person).Any(q=>Acceptance(w,q.Id,at,revision+1) is {} o&&at<checked(o.At+q.Hours*3600L));}
     static FactionStanceAuthority Authority(ContractWorld w,EntityId person,long at,long revision)
-    {var f=w.NewGame!.Start.Factions.SingleOrDefault(f=>f.Head==person.Value);Need(person!=w.PlayerControl&&f!=null,"この条件は当主本人の次の軍引受だけを扱います");var a=FactionStances.ResolveAuthority(w,person,new(f.Id),at,revision);Need(a!=null,"本人に現地の当主権限がありません");return a;}
+    {var f=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Head==person.Value);Need(person!=w.PlayerControl&&f!=null,"この条件は当主本人の次の軍引受だけを扱います");var a=FactionStances.ResolveAuthority(w,person,new(f.Id),at,revision);Need(a!=null,"本人に現地の当主権限がありません");return a;}
     static void Available(ContractWorld w,EntityId person,EntityId site,long at,long revision)
     {Need(PrivateInformation.Local(w,person,site,at,revision),"現地で本人に会って相談してください");Need(!NpcArmies.Musters(w).Any(m=>m.Commander==person&&Before(m.At,m.Revision,at,revision))&&!NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Principal==person&&s.Requests.Any(r=>Before(r.At,r.Revision,at,revision))),"既に引き受けた軍や他人が預かる兵は、この約束で止めません");Need(!ShouldWait(w,person,at,revision-1),"本人との見合わせ協力は既に有効です");}
     static StanddownQuote Prepare(ContractWorld w,StanddownOrder o,EntityId site)
