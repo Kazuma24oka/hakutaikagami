@@ -38,29 +38,44 @@ def projection_counts(path):
             for p in w.get('TruceConfirmations',{}).get('Papers',[]):actors.update([p['Sender'],p['Recipient']])
             here=next(l for l in w['Locations'] if l['Actor']==w['PlayerControl'])
             expected[key]=len(actors)+sum(e['Terms'] is not None and e['Terms']['Home']==here['Site'] and here['Kind']=='AtSite' for e in w['Succession']['Entries'])
-    assert n['Status']=='PASSED' and n['Files']==418 and n['Pairs']==194 and set(n['Results'])==set(expected)
+    assert n['Status']=='PASSED' and n['Files']==388 and n['Pairs']==194 and set(n['Results'])==set(expected)
     assert all(len(json.loads(row)['Actors'])==expected[k] for k,row in n['Results'].items()),'Actual saved-world actor inventory differs'
     assert n['Nodes']==sum(expected.values());return dict(files=388,pairs=194,nodes=n['Nodes'],gui='NOT_USED',screens='NOT_CAPTURED')
 
 def check(v):
+    if v.get('test_stage'):assert v['test_stage']==check_test_stage()
     assert v['status']=='PASSED' and v['scope']=='headless-dated-representative-inquiry-direct-reconfirmation-personal-evidence'
     assert v['sources']==sources(),'current source changed'
     assert v['sources']==json.loads((OUT/'run-inputs.json').read_bytes()),'Run input checkpoint differs'
     for group in ['binaries','proofs']:
         for p,h in v[group].items():assert sha(ROOT/p)==h,p
-    r=ET.parse(OUT/'tests/truce-confirmation-current.trx');c=r.find('.//{*}Counters').attrib
+    r=ET.parse(OUT/'tests/representative-contact-current.trx');c=r.find('.//{*}Counters').attrib
     assert int(c['passed'])==1715 and c['passed']==c['total'] and c['failed']==c['notExecuted']=='0' and c==v['tests']['counters'],c
     counts=collections.Counter(m.attrib['className'].rsplit('.',1)[-1] for m in r.findall('.//{*}TestMethod'))
-    assert counts['RepresentativeContactTests']==41 and counts['TruceConfirmationTests']==48 and counts['MilitaryInquiryTests']==25 and counts['TruceSuccessionTests']==20 and counts['CastellanSuccessionTests']==27 and counts['StewardSuccessionTests']==61 and counts['MilitarySuccessionTests']==40 and counts['HouseSuccessionTests']==36 and counts['CastellanReportsTests']==20 and counts['CastleAdministrationTests']==31 and counts['CastleHandoverTests']==43 and counts['PersonalLifeTests']==47 and counts['RoadConvoyTests']==42 and counts['TrafficWorldTests']==17 and counts['ArmyRoadTests']==29 and counts['PreparedSubmitTests']==21 and counts['MilitaryEconomyTests']==41 and counts['NpcFreightTests']==28 and counts['FreightOperationsTests']==20 and counts['FieldConvoyTests']==21 and counts['NewGameMilitaryTests']==28 and counts['MilitaryDebriefTests']==11 and counts['MilitaryRenewalTests']==23 and counts['FieldSupplyTests']==26 and counts['HouseFreightReceivingTests']==17 and counts['HouseLogisticsTests']==37 and counts['RegionalDomainTests']==45 and counts['HouseSalaryTests']==24 and counts['VillageConsultationTests']==36 and counts['NpcCommunityAdministrationTests']==19 and counts['CommunityStewardshipTests']==32 and counts['MaterialMarketTests']==32 and counts['RegionalTradeTests']==25 and counts['CommunityEconomyTests']==20 and counts['RetainerReleaseTests']==14 and counts['PersonalServiceTests']==15 and counts['NewGameServiceTests']==25 and counts['CooperationTalkTests']==12 and counts['PrivateInspectionTests']==12 and counts['PrivateStanddownTests']==12 and counts['FactionStanceTests']==24 and counts['FactionStanceKnowledgeTests']==9 and counts['NpcArmyTests']==48 and counts['FieldEngagementTests']==35 and counts['FactionNoticeTests']==15 and counts['FactionReactionTests']==14 and counts['FactionProclamationTests']==5 and counts['SparseCombatTests']==9 and counts['RegionalEconomyTests']==19 and counts['PersonalCompanionTests']==23 and counts['TruceNegotiationTests']==23 and counts['PrivateInformationTests']==18 and counts['BranchRouteTests']==29 and counts['LocalInspectionFindingsTests']==21 and counts['NewGameWorkTests']==40 and counts['TransportWorkTests']==26 and counts['TransportWorkLocationTests']==3,counts
+    assert counts['RepresentativeContactTests']==41 and counts['TruceConfirmationTests']==48 and counts['MilitaryInquiryTests']==25 and counts['TruceSuccessionTests']==20 and counts['CastellanSuccessionTests']==27 and counts['StewardSuccessionTests']==61 and counts['MilitarySuccessionTests']==40 and counts['HouseSuccessionTests']==36 and counts['CastellanReportsTests']==20 and counts['CastleAdministrationTests']==31 and counts['CastleHandoverTests']==43 and counts['PersonalLifeTests']==47 and counts['RoadConvoyTests']==42 and counts['TrafficWorldTests']==17 and counts['ArmyRoadTests']==29 and counts['PreparedSubmitTests']==21 and counts['MilitaryEconomyTests']==38 and counts['NpcFreightTests']==28 and counts['FreightOperationsTests']==20 and counts['FieldConvoyTests']==21 and counts['NewGameMilitaryTests']==28 and counts['MilitaryDebriefTests']==11 and counts['MilitaryRenewalTests']==23 and counts['FieldSupplyTests']==26 and counts['HouseFreightReceivingTests']==17 and counts['HouseLogisticsTests']==37 and counts['RegionalDomainTests']==45 and counts['HouseSalaryTests']==24 and counts['VillageConsultationTests']==36 and counts['NpcCommunityAdministrationTests']==19 and counts['CommunityStewardshipTests']==32 and counts['MaterialMarketTests']==32 and counts['RegionalTradeTests']==25 and counts['CommunityEconomyTests']==20 and counts['RetainerReleaseTests']==14 and counts['PersonalServiceTests']==15 and counts['NewGameServiceTests']==25 and counts['CooperationTalkTests']==12 and counts['PrivateInspectionTests']==12 and counts['PrivateStanddownTests']==12 and counts['FactionStanceTests']==24 and counts['FactionStanceKnowledgeTests']==9 and counts['NpcArmyTests']==48 and counts['FieldEngagementTests']==35 and counts['FactionNoticeTests']==15 and counts['FactionReactionTests']==14 and counts['FactionProclamationTests']==5 and counts['SparseCombatTests']==9 and counts['RegionalEconomyTests']==19 and counts['PersonalCompanionTests']==23 and counts['TruceNegotiationTests']==23 and counts['PrivateInformationTests']==18 and counts['BranchRouteTests']==29 and counts['LocalInspectionFindingsTests']==21 and counts['NewGameWorkTests']==40 and counts['TransportWorkTests']==26 and counts['TransportWorkLocationTests']==3,counts
     assert v['gui']=='NOT_RUN' and v['full_core_suite']=='NOT_RUN'
     assert v['node3d']==projection_counts(ROOT/v['projection_result'])
     assert v['binaries']['Core/bin/Debug/net8.0/HakutaiKagami.Core.dll']==v['binaries']['Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll']==v['binaries']['Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll']
+def check_test_stage():
+    evidence=json.loads((OUT/'test-stage.json').read_bytes());old=evidence['sources'];current=sources()
+    allowed={'Game/Scripts/WorldClashProjectionCheck.cs','Scripts/verify_representative_contact.py'}
+    assert set(old)==set(current) and all(current[f]==h for f,h in old.items() if f not in allowed),'Core/test stage source changed'
+    assert old==json.loads((OUT/'test-inputs.json').read_bytes())
+    game=(OUT/'projection-source.before.cs').read_bytes();assert hashlib.sha256(game).hexdigest()==old['Game/Scripts/WorldClashProjectionCheck.cs']
+    assert game.replace(b'or 172 or 184))',b'or 172 or 184 or 194))')==(ROOT/'Game/Scripts/WorldClashProjectionCheck.cs').read_bytes(),'Only diagnostic whitelist may change'
+    assert sha(OUT/'verifier.before.py')==old['Scripts/verify_representative_contact.py']
+    for f,h in evidence['binaries'].items():assert sha(ROOT/f)==h,'Tested binary changed'
+    assert sha(OUT/'tests/representative-contact-current.trx')==evidence['trx_sha256']
+    return evidence
+
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--check-only',action='store_true');a=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--check-only',action='store_true');parser.add_argument('--projection-only',action='store_true');a=parser.parse_args()
     manifest=BASE/'verification.json'
     if a.check_only:check(json.loads(manifest.read_bytes()));print('PASS current physical truce confirmation verification');return
-    OUT.mkdir(parents=True,exist_ok=True);before=sources();(OUT/'run-inputs.json').write_bytes((json.dumps(before,ensure_ascii=False,indent=2)+'\n').encode());projection=OUT/"projection"/uuid.uuid4().hex;projection.mkdir(parents=True);economy=projection/"economy";economy.mkdir();os.environ["HAKUTAI_ECONOMY_QA_DIR"]=str(economy);os.environ["HAKUTAI_WORLD_CLASH_QA_DIR"]=str(projection);os.environ["HAKUTAI_PROJECTION_EXPECTED_PAIRS"]="194"
-    run(['dotnet','test','Tests/HakutaiKagami.Tests.csproj','--filter','|'.join('FullyQualifiedName~'+x for x in CLASSES),'--logger','trx;LogFileName=representative-contact-current.trx','--results-directory',str(OUT/'tests'),'--nologo','--verbosity','minimal'],OUT/'tests.log')
+    if a.projection_only:check_test_stage()
+    OUT.mkdir(parents=True,exist_ok=True);before=sources();(OUT/'run-inputs.json').write_bytes((json.dumps(before,ensure_ascii=False,indent=2)+'\n').encode());projection=sorted((OUT/"projection").iterdir(),key=lambda p:p.stat().st_mtime)[-1] if a.projection_only else OUT/"projection"/uuid.uuid4().hex;projection.mkdir(parents=True,exist_ok=True);economy=projection/"economy";economy.mkdir(exist_ok=True);os.environ["HAKUTAI_ECONOMY_QA_DIR"]=str(economy);os.environ["HAKUTAI_WORLD_CLASH_QA_DIR"]=str(projection);os.environ["HAKUTAI_PROJECTION_EXPECTED_PAIRS"]="194"
+    if not a.projection_only:
+        run(['dotnet','test','Tests/HakutaiKagami.Tests.csproj','--filter','|'.join('FullyQualifiedName~'+x for x in CLASSES),'--logger','trx;LogFileName=representative-contact-current.trx','--results-directory',str(OUT/'tests'),'--nologo','--verbosity','minimal'],OUT/'tests.log')
     run(['dotnet','build','Game/HakutaiKagami.Game.csproj','--no-restore','--nologo','--verbosity','quiet'],OUT/'game-build.log')
     exe=ROOT/'.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64_console.exe'
     run([str(exe),'--headless','--path',str(ROOT/'Game'),'res://Scenes/WorldClashProjectionCheck.tscn'],OUT/'node3d.log')
@@ -71,12 +86,15 @@ def main():
     for name in ['work','collected']:
         for suffix in ['.json','.view.json']:
             assert (economy/(name+'.before'+suffix)).read_bytes()==(economy/(name+'.restored'+suffix)).read_bytes(),name
-    c=ET.parse(OUT/'tests/truce-confirmation-current.trx').find('.//{*}Counters').attrib
+    c=ET.parse(OUT/'tests/representative-contact-current.trx').find('.//{*}Counters').attrib
     binaries=['Core/bin/Debug/net8.0/HakutaiKagami.Core.dll','Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll','Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll','Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll','Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll']
     v=dict(schema=1,status='PASSED',scope='headless-dated-representative-inquiry-direct-reconfirmation-personal-evidence',gui='NOT_RUN',full_core_suite='NOT_RUN',
            baseline_main='31567f19dd53ad7a8eb4f9d8e2f9f60718e815e1',tests=dict(passed=int(c['passed']),failed=0,skipped=0,counters=c),
            new_tests=41,supplemental_legacy_tests=73,sources=before,binaries={p:sha(ROOT/p) for p in binaries},
-           projection_result=(projection/'projection-result.json').relative_to(ROOT).as_posix(),node3d=node3d,proofs={p.relative_to(ROOT).as_posix():sha(p) for p in [*prior_projection()[:2],OUT/'run-inputs.json',OUT/'tests.log',OUT/'tests/truce-confirmation-current.trx',OUT/'game-build.log',OUT/'node3d.log',*projection.glob('*.json'),*economy.glob('*.json')]})
+           projection_result=(projection/'projection-result.json').relative_to(ROOT).as_posix(),node3d=node3d,proofs={p.relative_to(ROOT).as_posix():sha(p) for p in [*prior_projection()[:2],OUT/'run-inputs.json',OUT/'tests.log',OUT/'tests/representative-contact-current.trx',OUT/'game-build.log',OUT/'node3d.log',*projection.glob('*.json'),*economy.glob('*.json')]})
+    if a.projection_only:
+        v['test_stage']=check_test_stage()
+        for name in ['test-stage.json','test-inputs.json','projection-source.before.cs','verifier.before.py','node3d-initial-scope-failure.log']:v['proofs'][(OUT/name).relative_to(ROOT).as_posix()]=sha(OUT/name)
     manifest.write_bytes((json.dumps(v,ensure_ascii=False,indent=2)+'\n').encode('utf-8'))
     check(v);print('PASS '+c['passed']+' related Core tests,41 new representative contact cases plus existing prepared submit/traffic cases; Game build and headless Node3D data; no screen/GUI operation',flush=True)
 if __name__=='__main__':main()

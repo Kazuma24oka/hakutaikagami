@@ -2048,3 +2048,5 @@ Core/Contracts/TruceConfirmations.ReportRetries.cs -text
 Core/Contracts/RepresentativeKnowledge.cs -text
 Core/Contracts/TruceConfirmations.Representatives.cs -text
 Tests/RepresentativeContactTests.cs -text
+
+Scripts/verify_representative_contact.py -text
