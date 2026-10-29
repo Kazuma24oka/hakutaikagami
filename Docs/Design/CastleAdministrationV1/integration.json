@@ -1,7 +1,10 @@
 {
-  "status": "PENDING_USER_APPROVAL",
+  "status": "MERGED",
   "base_main": "67e117df87abfc6b9009b9896906a69264452310",
   "scope": "Code and documentation only; no model assets",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/29",
-  "code_head": "12adad09cc9d030045001aee75ca74682b1024d6"
+  "code_head": "12adad09cc9d030045001aee75ca74682b1024d6",
+  "approved_head": "c436d3fe4698d38640e0b9ed514a8463e2cc6c57",
+  "main_commit": "69098a960af3503f774a53edd36b2e03df6f9779",
+  "approval": "Explicit user approval of PR29 exact head on2026-10-29"
 }
