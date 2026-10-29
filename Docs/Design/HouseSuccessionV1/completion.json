@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "A living incumbent and local consenting adult direct household member nominate and separately confirm a voluntary head-office succession; nomination alone changes no authority and no personal membership/service/troops/property is automatically transferred",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/HouseSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Runtime head authority uses dated office history across political, administrative, military and new service entry points while initial scenario and past proofs remain unchanged; former head loses fresh head authority",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/HouseSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "House salary debts and outstanding freight retain original owner, principal, receiver, stock and obligation; the new head and relevant counterparty individually acknowledge an original before current-house payment or fixed-site settlement, without forgiving or duplicating debts or cargo",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/HouseSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Old personal service, active military commands, dated correspondence and prior delegation records are preserved as original agreements rather than rewritten to the successor; pending/unknown remote succession is not shown as live player knowledge",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/HouseSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry, stale/duplicate/refused/absent/tampered operations, actual generation recovery/future equality, old version byte compatibility and headless3D data are verified separately from GUI/appearance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/HouseFreightReceiving.cs",
+        "Tests/HouseSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/HouseSuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Explicit v21 local living incumbent and consenting adult direct member only. Nominate/confirm/scheduled resolution; actual office history, immutable scenario/organization ownership/personal bonds/troops/assets. Original salary/freight individually acknowledged and settled, not mass-transferred. Death, lineage/adoption/wills, contested succession, annexation, same-garrison military issuer transition, incumbent personal-service cleanup, old delegation reauthorization and treaty/hostage succession remain deferred. Existing military principal/proofs are not rewritten. Full3363/GUI NOT_RUN."
+}
