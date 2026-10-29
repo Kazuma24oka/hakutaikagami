@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3491,
+  "expected_passed": 3511,
   "baseline_passed": 3464,
-  "added": 27,
-  "scope": "Castellan succession27 added; related1581; six additional actual generation recovery phases; headless168pairs. Full3491/GUI NOT_RUN."
+  "added": 47,
+  "scope": "Castellan succession27 and truce inheritance20 added; related1601; ten additional actual generation recovery phases; headless172pairs. Full3511/GUI NOT_RUN."
 }

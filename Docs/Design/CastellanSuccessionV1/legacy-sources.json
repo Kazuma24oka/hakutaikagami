@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "expected_count": 112,
+  "expected_count": 118,
   "sources": [
     {
       "manifest": "Docs/Design/RegionalDomainsV1/verification.json",
@@ -91,6 +91,11 @@
       "manifest": "Docs/Design/StewardSuccessionV1/verification.json",
       "prefix": "household-service",
       "count": 4
+    },
+    {
+      "manifest": "Docs/Design/CastellanSuccessionV1/castle-stage-verification.json",
+      "prefix": "castle-succession",
+      "count": 6
     }
   ]
 }

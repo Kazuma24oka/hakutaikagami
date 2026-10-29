@@ -2034,3 +2034,6 @@ Scripts/verify_steward_succession.py -text
 Core/Contracts/CastleAdministration.Succession.cs -text
 Tests/CastellanSuccessionTests.cs -text
 Scripts/verify_castellan_succession.py -text
+
+Core/Contracts/TruceSuccession.cs -text
+Tests/TruceSuccessionTests.cs -text
