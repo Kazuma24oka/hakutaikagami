@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Explicit v19 local same-version surrender agreement requires the player incumbent head/control, a physically present consenting foreign commander and actual registered army; confirmation alone does not occupy the castle",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Gate handover and scheduled keep handover are separate physical steps; existing owner forces/relief at the keep or absent recipient block the remaining handover, and already transferred gate possession is never rolled back",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Military possession never transfers original land ownership, memberships, service bonds, soldiers, house grain, private money, contracts or salary debts; warehouse/property remain explicitly outside the handover",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Only the local participants can perform and observe handover; remote view shows dated own witness records and never current remote troops/stores; the game distinguishes military possession from recorded ownership",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Invalid/stale/duplicate/tampered agreements, relief timing, partial withdrawal and actual generation recovery/future equality are tested; old versions keep original bytes and headless3D projection is separate from GUI/appearance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Explicit v19 only. Player incumbent head offers a local same-version handover to a consenting physically present foreign commander with an existing registered army. Warehouse/property, ownership, memberships, services, officers, soldiers and debts are outside the handover. Gate/keep are logical sectors at the same current world site; not general castle collision geometry or completed siege warfare. No general NPC surrender strategy, legal annexation, succession or asset inheritance. All current1366 related tests passed; full3276/GUI NOT_RUN."
+}

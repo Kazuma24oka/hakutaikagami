@@ -116,7 +116,7 @@ public static partial class NpcArmies
     }
     internal static bool NeedsTurn(ContractWorld w,NpcArmyMuster m)
     {
-        if(m.Objective==null||ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence))return false;
+        if(CastleHandover.HoldsNpc(w,m.Id)||m.Objective==null||ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence))return false;
         var qs=w.NpcArmies!.Marches.Where(q=>q.Muster==m.Id).ToArray();if(qs.Length==0)return true;
         var t=w.Tasks.Single(t=>t.RequestId==qs[^1].Input.RequestId);if(t.FinishedAt==null)return false;
         if(qs[^1].Input.RequestId.Value==MarchId(m,true))return w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site);
@@ -131,6 +131,7 @@ public static partial class NpcArmies
         if(!Enabled(w))return null;var times=new List<long>();
         foreach(var f in DecidingHeads(w))if(Candidate(w,new(f.Head),new(f.Id))!=null)times.Add(w.ElapsedSeconds+1);
         foreach(var m in Musters(w)){
+            if(CastleHandover.HoldsNpc(w,m.Id))continue;
             if(NeedsTurn(w,m))times.Add(w.ElapsedSeconds+1);
             else if(m.Objective!=null&&!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)){
                 var q=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==m.Id);var t=q==null?null:w.Tasks.Single(t=>t.RequestId==q.Input.RequestId);

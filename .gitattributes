@@ -2002,3 +2002,8 @@ Core/Contracts/PersonalLife.cs -text
 Tests/PersonalLifeTests.cs -text
 Game/Scripts/NewGameRuntime.PersonalLife.cs -text
 Scripts/verify_personal_life.py -text
+
+Core/Contracts/CastleHandover.cs -text
+Tests/CastleHandoverTests.cs -text
+Game/Scripts/NewGameRuntime.CastleHandover.cs -text
+Scripts/verify_castle_handover.py -text

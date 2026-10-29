@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "0f275fb708ee17fff62b6ba70dae13573f828aa782f2dd7a7ab50b6560d12f13",
-    "Docs/Development/ProgressV1/estimate.json": "f4e8831a1c8ef01a6cbe1c4d52d36cdb83e9d39063b66287ca931f0f7b82c462",
+    "Docs/Development/OPERATING_POLICY.md": "cba89fa9f39b257fb3c12bb4386d0bd163eb92189f0a4be687ace1a0438b9797",
+    "Docs/Development/ProgressV1/estimate.json": "4f3d8da3c41d523573581b73ffa3f457ad94b1e26cc7622eff3da6754cbb97a1",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "f5e8fb417a6b402a1d54193e8e66898291bec4a4eea490862303ee6b65c2c5ac",
+    "Scripts/check_progress_report.py": "090302f649a8793e48fb0490afd8e19b29b1004cd37a7a31e5e8c53ce0e4c7ee",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "54beb6493c9bc8dfe74e1b5975c8ea89a36df2198acf28bcddd485cfe03eac4d",
+    "Scripts/check_approval_batch.py": "c9166aad0d50459989e2319f393a2cadba543bd02051d054b41d7ea6dfdc57a4",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -94,7 +94,15 @@
     "Docs/Design/PersonalLifeV1/traceability.json": "993a51d96a20f4d772ea5f15781c98f79fb10a114b653cea3a6e6749cc03d593",
     "Docs/Design/PersonalLifeV1/integration.json": "871aa98ef21b3f2f92c5d0604a8c3c726fa4980a18b1839b5772d47cc44a5b28",
     "Docs/Development/ProgressV1/approval-baseline-v17.json": "63009f1178c66e79b3e230c7d8ede99ff24361936769ae0efdab2f16f9fa0d1d",
-    "Scripts/verify_personal_life.py": "d602bc0542ecd55b5f38bfb05af0d772c83b71b65f40cc0c91a5cfd2f7830e8c"
+    "Scripts/verify_personal_life.py": "d602bc0542ecd55b5f38bfb05af0d772c83b71b65f40cc0c91a5cfd2f7830e8c",
+    "Docs/Design/CastleHandoverV1/completion.json": "e9c7c0723ff8147965fe1cc11b23333aacb684b0fef9a557554740e10a253195",
+    "Docs/Design/CastleHandoverV1/README.md": "9f9b641b45c04a40976cd02e6e567d45a3900175de38746df181f214031d2813",
+    "Docs/Design/CastleHandoverV1/integration.json": "ad6275e7bc3e255ab8534652f404b8e5c8b124ceb8a58a64f631573891ccdcbf",
+    "Docs/Development/ProgressV1/approval-baseline-v18.json": "651f9e6312615c1a4a91f0189e09afc9e57d396aeb1af0af717346747dd6e848",
+    "Scripts/verify_castle_handover.py": "ad46504bd87b0b017d5a9f0546c56e6c62e905daabe770e36c511f101bd083c6",
+    "Docs/Design/CastleHandoverV1/verification.json": "64956addf4e56f98de1199c991dcbea896906170aea256624335d3b7e4d9f9ec",
+    "Scripts/probe_saved_worlds.py": "fa01d5a1923c6a158901b58e8f2bc08545482831f8c3b7493a8cc5d4e369e5a5",
+    "Docs/Design/CastleHandoverV1/legacy-sources.json": "c13c90f2ad4ba4e298b029983d5184b1a2794fd9a86003918f6dea10e2fa151c"
   },
   "items": [
     {
@@ -489,9 +497,16 @@
     {
       "id": "BD-21",
       "status": "normal",
-      "existing": "残り休息時間中の移動/点検/現物取引を拒否。預かった軍と家の運搬物の引継ぎ/精算を先に求め、書状の受領/閲覧と個人実務を区別。",
-      "remaining": "全任務/療養/捕縛/役職の一般併用表と複数人による引継ぎ。",
+      "existing": "現地締結権者/指揮官/実在登録軍の立会いと本丸引渡し予定を確認し、休息との競合や不在時の履行を拒否する。",
+      "remaining": "全任務/療養/捕縛/役職の一般併用表と複数人の引継ぎ。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Core/Contracts/PersonalLife.cs",
         "Core/Contracts/RegionalTrade.cs",
         "Core/Contracts/HouseSalary.cs",
@@ -523,7 +538,6 @@
         "Docs/Design/FreightOperationsV1/verification.json",
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
-        "Core/Contracts/NpcArmies.cs",
         "Tests/MilitaryEconomyTests.cs",
         "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
         "Docs/Design/MilitaryEconomyV1/verification.json",
@@ -541,9 +555,16 @@
     {
       "id": "BD-22",
       "status": "normal",
-      "existing": "休息を途中中止しても実経過と宿代を返さず、残り時間の排他だけを終了。食べた米の再売却/再消費、同じ操作の再課金を拒否。",
-      "remaining": "一般任務の補償/担当交代、健康/捕縛/戦闘中断と再開。",
+      "existing": "門引渡し前の取消と、既渡し門の不可逆性を分離。本丸未引渡しは旧主側部隊/不在/期限で保留し、再申込と既成立後の係争を分ける。",
+      "remaining": "一般任務の補償/担当交代、全工事/戦闘/健康/捕縛の中断再開。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Core/Contracts/PersonalLife.cs",
         "Core/Contracts/RegionalTrade.cs",
         "Core/Contracts/HouseSalary.cs",
@@ -575,7 +596,6 @@
         "Docs/Design/FreightOperationsV1/verification.json",
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
-        "Core/Contracts/NpcArmies.cs",
         "Tests/MilitaryEconomyTests.cs",
         "Game/Scripts/NewGameRuntime.MilitaryRice.cs",
         "Docs/Design/MilitaryEconomyV1/verification.json",
@@ -640,9 +660,16 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "停止/部分受渡し/帰還の当時の荷・累計・拠点を封書で届ける。開封前の現況を隠し、現地受領/倉の確認と遠隔返報を区別する。",
-      "remaining": "全情報種別の偵察/流言/地理発見、遠方の認識と大規模索引。",
+      "existing": "占有の立会日時と現在の現地確認を区別し、離れた後は現在兵数を隠す。遠隔相手の現在移動が異なっても自分の記録表示は同一。",
+      "remaining": "全情報の偵察/流言/地理発見と遠方知識の大規模索引。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
         "Core/Contracts/FreightOperations.cs",
@@ -878,9 +905,16 @@
     {
       "id": "BD-31",
       "status": "normal",
-      "existing": "未知の封鎖は現地で観測し、停止報告と既知不達再送を実行。現地の再開確認後に再出発し、取消と部分受渡しの前後関係を保存後も保持する。",
-      "remaining": "全任務の緊急逸脱と引継ぎ、護衛戦/輸送事故/補償の一般裁定。",
+      "existing": "次秒に予定した本丸引渡しを、その時点の当事者と現地旧主側部隊で照合。先に部隊が残れば保留し、既成立後の動員では過去を巻き戻さず係争を表示する。",
+      "remaining": "全国の救援/攻城/緊急逸脱、一般任務の指揮交代と補償。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
         "Core/Contracts/FreightOperations.cs",
@@ -1346,9 +1380,16 @@
     {
       "id": "BD-47",
       "status": "design_only",
-      "existing": "城主/支配の初期データと、開城/救援の設計がある。",
-      "remaining": "合意・引渡し・占有・守備分裂・救援と、実際の城の支配変化を実装する。",
+      "existing": "旧主側本人による現地の同一条件合意→城門→予定本丸引渡し→軍事占有原本を接続。実登録軍/本人の不在、旧主側部隊と取消/期限の競合を保存後も保持する。",
+      "remaining": "全国城郭/門・区画の実地形、敵AIの自主開城判断、攻城戦、第三者救援と守備分裂の一般化。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Docs/Design/basic-design-v1.json",
         "Core/Castles/Castle.cs"
       ],
@@ -1358,9 +1399,16 @@
     {
       "id": "BD-48",
       "status": "foundation",
-      "existing": "対象別の所属・指揮・資源・債務を分けるデータがある。",
-      "remaining": "家督/滅亡時に条約・兵・家臣・人質・債務を別々に承継/同意待ち/係争へ移す。",
+      "existing": "軍事占有が変わっても旧所有/直属/役職/兵/資金/給付債務を一括移転せず、蔵と第三者財産を範囲外に保持。引渡し後も旧主側の未払いを消さない。",
+      "remaining": "法的領有/城主交代/家督での契約・兵・人質・債務の個別承継、異議と係争。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameSetup.cs"
       ],
@@ -1487,9 +1535,16 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "暮らし・待遇画面に認識済み身分、私財/私有米、給付の未収/未払、軍/預り物の責任、食事・休息・当面の目標を集約。履歴を大量表示せず今の操作を提示。",
-      "remaining": "GUI/外観の受入、全画面の情報整理・一覧検索とアクセシビリティ。",
+      "existing": "城引渡し画面で合意/門/本丸/保留/係争を区別。現地の軍事占有マーカーは所有記録と別に表示し、遠隔は立会日時の記録に限定する。",
+      "remaining": "GUI/外観の受入、全画面の情報整理・検索とアクセシビリティ。",
       "evidence": [
+        "Core/Contracts/CastleHandover.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/ContractJson.cs",
+        "Tests/CastleHandoverTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleHandover.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/CastleHandoverV1/verification.json",
         "Core/Contracts/PersonalLife.cs",
         "Core/Contracts/RegionalTrade.cs",
         "Core/Contracts/HouseSalary.cs",
@@ -2184,12 +2239,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 1323,
+      "passed": 1366,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/PersonalLifeV1/runtime-local/tests/personal-life-current.trx",
-      "sha256": "7f1bc94cbca3792737ab728a5b9f9c49ac7a2d7cb6e89bdc0d31375b74968358",
-      "scope": "Current related1323 only;47 new personal life. Full3233/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/CastleHandoverV1/runtime-local/tests/castle-handover-current.trx",
+      "sha256": "2e22668e227637fc2951249684f27577c55797ab62a3f361186a1baae2e9272b",
+      "scope": "Current related1366 only;43 new castle handover. Full3276/GUI NOT_RUN; historical full2446 separate."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -2201,14 +2256,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 1323,
+      "passed": 1366,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/PersonalLifeV1/runtime-local/tests/personal-life-current.trx",
-      "sha256": "7f1bc94cbca3792737ab728a5b9f9c49ac7a2d7cb6e89bdc0d31375b74968358",
-      "scope": "Current related1323 only;47 new personal life. Full3233/GUI NOT_RUN; historical full2446 separate."
+      "trx": "Docs/Design/CastleHandoverV1/runtime-local/tests/castle-handover-current.trx",
+      "sha256": "2e22668e227637fc2951249684f27577c55797ab62a3f361186a1baae2e9272b",
+      "scope": "Current related1366 only;43 new castle handover. Full3276/GUI NOT_RUN; historical full2446 separate."
     },
-    "current_stage_summary": "PR26を承認headaf869ccと同じtreeでmain2aa0744へ統合後も続行。新規v18に私有米の食事、現地購入した米1〜3kgの実消費、無料野外4時間/宿10文2時間の休息を接続。世界時計を自動で飛ばさず、残り時間中の実務/移動を拒否し、中止しても経過時間と宿代を巻き戻さない。金欠時の無料休息・徒歩実移動・仕事探しを検査。預かった軍/家の運搬物と本人私財を区別し、部隊や預り物がある時の私的休息を拒否。認識済み所属と陪臣/城主/国人領主の開始資格を表示し、肩書で権限を追加しない。給付の未払いと既受領米は辞去後も保持。仕事報酬/扶持受領/扶持支払の個人目標は設定後の実受領だけで進み、消費後も既達成を維持し達成しても継続できる。生活画面から操作。船賃と現地取引を併用した際の外部決済照合も修正。新規47/関連1323件・Gameビルド・8段階実世代復旧と将来一致・画面なしGodot114組228世界514Node3D・旧v9-v17実保存56件のバイト一致が成功。GUI/外観と全3233件は未実施。休養は記録のみで治療/能力強化/速度補正ではない。飢餓/健康/全NPCの生活と全国の待遇収支・家督は後続。",
+    "current_stage_summary": "PR27を承認headdfcfeeeと同じtreeでmain9fb165eへ統合後も続行。新規v19で本人が旧主側締結権者として、現地の外国指揮官と実在する登録軍へ安全退出/財産保全の同一条件を提示・本人確認する。合意だけでは占有せず、城門引渡し→次の1秒境界の本丸引渡しを分離。旧主側部隊が残れば未引渡しを保留し、引渡し後の新たな動員は原本を消さず係争表示。本人/受取軍の不在や期限切れでも既渡しの門を巻き戻さない。占有で領有/所属/直属/役職/兵/家財/私財/給付債務を移さず、蔵と旧主の財産を引渡し範囲外に保持。現地の所有記録と軍事占有を別のマーカー/画面で表示し、遠隔は自分の立会日時までの記録として現在兵数を隠す。実際の自律出撃→到着→合意中待機→取消後の帰還再開も確認。任意の世界保存拡張が人物の生死や画面配列の必須項目まで緩めないよう型を限定。新規43/関連1366件、Gameビルド、8段階実世代復旧と将来一致、画面なしGodot122組244世界568Node3D、旧v9-v18実保存64件のバイト一致が成功。GUI/外観・全3276件は未実施。城門/本丸は共通拠点内の論理区画で、全国の攻城/城郭形状/敵AI自主開城/法的領有移転/一般承継は後続。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -2230,9 +2285,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/PersonalLifeV1/integration.json",
-    "current_logic_verification": "Docs/Design/PersonalLifeV1/verification.json",
-    "current_logic_verification_sha256": "731f8849420426e04b5770a55affc76140f24388f9ac1eaa9af0cd47310225d4",
+    "integration": "Docs/Design/CastleHandoverV1/integration.json",
+    "current_logic_verification": "Docs/Design/CastleHandoverV1/verification.json",
+    "current_logic_verification_sha256": "64956addf4e56f98de1199c991dcbea896906170aea256624335d3b7e4d9f9ec",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
   },
@@ -2241,7 +2296,7 @@
     "certified_complete": 0,
     "meaning": "今回、製品範囲での受入完了を認定したゲーム項目は0。接続済み機能や試作を0扱いにする意味ではない。",
     "planned_cases": 170,
-    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連1323件/画面なしNode3Dを分離。"
+    "formal_case_mapping": "基本設計170ケースの正式全対応は未整備。過去全2446件と現コード関連1366件/画面なしNode3Dを分離。"
   },
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
@@ -2297,9 +2352,9 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "城の占有・支配変動と権限/兵/家臣/蔵/債務を個別接続",
-    "家の変動と奉公・給付・預り物の引継ぎ",
-    "全城/村・史実配置/年代と制度のデータ拡充",
+    "城主交代と行政/保管の個別引継ぎ",
+    "家の変動と奉公・兵・契約/債務の個別承継",
+    "全城/村・史実配置/年代と制度データ拡充",
     "正式素材・全画面の操作導線と外観受入",
     "全国規模の長期進行・性能と製品受入"
   ],
