@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-castle-gate-keep-possession-separate-property":
+ if logic["scope"]=="headless-castellan-administration-separate-custody":
+  from verify_castle_administration import check as check_logic
+ elif logic["scope"]=="headless-castle-gate-keep-possession-separate-property":
   from verify_castle_handover import check as check_logic
  elif logic["scope"]=="headless-personal-life-food-rest-goals-known-obligations":
   from verify_personal_life import check as check_logic

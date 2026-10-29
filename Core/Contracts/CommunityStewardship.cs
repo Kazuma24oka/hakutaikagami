@@ -15,7 +15,7 @@ public static class CommunityStewardship
     public const string Policy="local-bounded-stewardship-physical-reports-revocation-v7",ReportKind="steward-report",RevokeKind="steward-revoke",AckKind="steward-ack";
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Stewardship?.Entries.Any(e=>e.Input.Id==id)==true;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     internal static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&CommunityEconomy.Local(w,actor,site,at,rev);
@@ -24,7 +24,7 @@ public static class CommunityStewardship
     static bool Bound(ContractWorld w,StewardGrant g,long at,long rev)=>w.ServiceBonds.Any(b=>b.Subject==g.Agent&&b.Target==g.Principal&&b.From<=at&&(at<b.Until||at==b.Until&&rev<b.Revision));
     static bool Stopped(ContractWorld w,StewardGrant g,long at,long rev)=>w.Stewardship!.Receipts.Any(r=>Before(r.At,r.Revision,at,rev)&&w.Stewardship.Papers.Any(p=>p.Id==r.Message&&p.Grant==g.Id&&p.Kind==RevokeKind));
     internal static bool Active(ContractWorld w,StewardGrant g,long at,long rev)=>g.From<=at&&at<g.Until&&Before(g.From,g.Revision,at,rev)&&Bound(w,g,at,rev)&&!Stopped(w,g,at,rev);
-    internal static StewardGrant? GrantAt(ContractWorld w,EntityId site,long at,long rev)=>Enabled(w)?w.Stewardship!.Grants.LastOrDefault(g=>g.Site==site&&Active(w,g,at,rev)):null;
+    internal static StewardGrant? GrantAt(ContractWorld w,EntityId site,long at,long rev)=>Enabled(w)?CastleAdministration.Grant(w,site,at,rev)??w.Stewardship!.Grants.LastOrDefault(g=>g.Site==site&&Active(w,g,at,rev)):null;
     internal static EntityId? Delegate(ContractWorld w,EntityId site,long at,long rev)=>GrantAt(w,site,at,rev)?.Agent;
     static bool SameMonth(ContractWorld w,long a,long b){var epoch=DateOnly.Parse(w.EpochDate);var x=epoch.AddDays((int)(a/Day));var y=epoch.AddDays((int)(b/Day));return x.Year==y.Year&&x.Month==y.Month;}
     internal static long Budget(ContractWorld w,EntityId actor,EntityId site,EconomyAction action,long at,long rev)
@@ -36,7 +36,7 @@ public static class CommunityStewardship
     }
     internal static FactionStanceAuthority? Authority(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev)
     {
-        if(!Enabled(w))return null;var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor||g.Owner!=owner)return null;
+        if(!Enabled(w)||CastleAdministration.Blocked(w,site,at,rev))return null;var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor||g.Owner!=owner)return null;
         var source=FactionStances.ResolveAuthority(w,g.Principal,owner,at,Math.Min(rev,w.CommitSequence));if(source==null)return null;
         var member=w.Memberships.LastOrDefault(m=>m.Subject==actor&&m.Target==owner&&m.From<=at&&at<m.Until);if(member==null)return null;
         return source with{Issuer=actor,Office=g.Id,Membership=member.Id};
@@ -46,7 +46,7 @@ public static class CommunityStewardship
     {
         var i=e.Input;Need(i.Other!=null&&i.Other!=w.PlayerControl&&i.Days>=1&&i.Days<=30&&i.ReturnAddress!=null&&w.Definitions.Sites.Any(s=>s.Id==i.ReturnAddress)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"委任先・期限・返報先を指定してください");
         var f=w.NewGame!.Start.Factions.Single(f=>f.Id==w.NewGame.Start.Castles.Single(c=>c.Id==i.Site.Value).Faction);var head=new EntityId(f.Head);var agent=head==w.PlayerControl?i.Other!.Value:w.PlayerControl;
-        Need(head==w.PlayerControl||head==i.Other,"当主と直属家臣が現地で合意してください");
+        Need(CastleAdministration.Grant(w,i.Site,e.At,e.Revision)==null,"有効な城主任命があるため別の代理行政委任は作れません");Need(head==w.PlayerControl||head==i.Other,"当主と直属家臣が現地で合意してください");
         var g=new StewardGrant(i.Id,head,agent,new(f.Id),i.Site,i.ReturnAddress!.Value,e.At,checked(e.At+i.Days*Day),e.Revision);
         Need(Local(w,head,i.Site,e.At,e.Revision)&&Local(w,agent,i.Site,e.At,e.Revision)&&Bound(w,g,e.At,e.Revision)&&FactionStances.ResolveAuthority(w,head,g.Owner,e.At,e.Revision)!=null,"当事者の現地所在・直属関係・家の権限を確認できません");return g;
     }
@@ -85,7 +85,7 @@ public static class CommunityStewardship
             Send(w,new(id,g.Id,ReportKind,g.Agent,g.Principal,g.Address,w.ElapsedSeconds,w.CommitSequence,old.Observation,old.Id));
         }
         foreach(var d in w.CommunityAdministration!.Decisions.ToArray()){
-            var g=GrantAt(w,d.Site,d.At,d.Revision);if(g==null||g.Agent!=d.Actor||d.Action==null)continue;string id="message:steward-npc/"+Hash(d.Id.Value);if(w.Stewardship.Papers.Any(p=>p.Id==id))continue;
+            var g=GrantAt(w,d.Site,d.At,d.Revision);if(g==null||g.Agent!=d.Actor||d.Action==null||!w.Stewardship!.Grants.Any(x=>x.Id==g.Id))continue;string id="message:steward-npc/"+Hash(d.Id.Value);if(w.Stewardship.Papers.Any(p=>p.Id==id))continue;
             Send(w,new(id,g.Id,ReportKind,g.Agent,g.Principal,g.Address,d.At,d.Revision,Observe(w,g,d.At,d.Revision+1,d.Reason),d.Id.Value));
         }
     }

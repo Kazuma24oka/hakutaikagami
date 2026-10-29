@@ -2007,3 +2007,11 @@ Core/Contracts/CastleHandover.cs -text
 Tests/CastleHandoverTests.cs -text
 Game/Scripts/NewGameRuntime.CastleHandover.cs -text
 Scripts/verify_castle_handover.py -text
+
+Core/Contracts/CastleAdministration.cs -text
+Tests/CastleAdministrationTests.cs -text
+Game/Scripts/NewGameRuntime.CastleAdministration.cs -text
+Scripts/verify_castle_administration.py -text
+Core/Contracts/CastellanReports.cs -text
+Tests/CastellanReportsTests.cs -text
+Game/Scripts/NewGameRuntime.CastellanReports.cs -text

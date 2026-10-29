@@ -11,7 +11,7 @@ public static class FreightOperations
 {
     public const string Policy="physical-freight-dated-reports-rendezvous-cancellation-v14",ReportKind="freight-status-report",CancelKind="freight-cancel-order",AckKind="freight-cancel-ack";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
     static string Hash(string s)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(s));
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.FreightOperations?.Entries.Any(e=>e.Input.Id==id)==true;

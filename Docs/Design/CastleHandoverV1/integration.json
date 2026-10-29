@@ -1,7 +1,10 @@
 {
-  "status": "PENDING_USER_APPROVAL",
+  "status": "MERGED",
   "base_main": "9fb165e0ecf8fcc12edae6f1fbd2d3f72915613d",
   "scope": "Code and documentation only; no model assets",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/28",
-  "code_head": "2ecbbbb9cb68e50cb932e1caae715b36e4012e5f"
+  "code_head": "2ecbbbb9cb68e50cb932e1caae715b36e4012e5f",
+  "approved_head": "df288252a7678cd5705c503bf2e7f53f216e0402",
+  "main_commit": "67e117df87abfc6b9009b9896906a69264452310",
+  "approval": "User instructed すすめて after exact PR28 integration question;2026-10-29"
 }
