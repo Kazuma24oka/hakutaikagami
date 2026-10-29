@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3276,
-  "baseline_passed": 3233,
-  "added": 43,
-  "scope": "Castle handover43 added; current related1366 including autonomous raid/confirmed wait/cancel return; eight new actual recovery phases; headless122 pairs/244 worlds/568 nodes. Full3276/GUI NOT_RUN."
+  "expected_passed": 3327,
+  "baseline_passed": 3276,
+  "added": 51,
+  "scope": "Castellan31 and physical report20 added; related1417; eight new actual generation recovery phases/future equality; headless130 pairs. Full3327/GUI NOT_RUN."
 }

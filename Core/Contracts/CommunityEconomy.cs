@@ -18,7 +18,7 @@ public static class CommunityEconomy
     public static EntityId[] SitesFor(ContractWorld w)=>RegionalDomains.Enabled(w)?MaterialMarkets.Sites(w):Sites;
     static long InitialHouseFor(ContractWorld w,EntityId site)=>RegionalDomains.HasHouse(w,site)?InitialHouse:0;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy;
+    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.EconomyPolicy is Policy or RegionalTrade.Policy or HouseSalary.Policy or VillageConsultation.Policy or NpcCommunityAdministration.Policy or CommunityStewardship.Policy or MaterialMarkets.Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Communities?.Orders.Any(q=>q.Input.Id==id)==true;
     static DateOnly Epoch(ContractWorld w)=>DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);
     static long Time(ContractWorld w,DateOnly date)=>checked((date.DayNumber-Epoch(w).DayNumber)*86400L);
@@ -34,7 +34,7 @@ public static class CommunityEconomy
     }
     static FactionStanceAuthority Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {
-        var owner=Owner(w,site);Need(owner!=null&&(FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev)) is {} a&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"その地域の試作年貢契約と現地支配を持つ当主ではありません");return (FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev))!;
+        var owner=Owner(w,site);Need(!CastleAdministration.Blocked(w,site,at,rev)&&owner!=null&&(FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev)) is {} a&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"その地域の試作年貢契約と現地支配を持つ当主ではありません");return (FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev))!;
     }
     static CommunityState Replay(ContractWorld w,CommunityOrder[] orders,CommunityNotice[] notices,long until,long revision,EntityId? onlySite=null)
     {

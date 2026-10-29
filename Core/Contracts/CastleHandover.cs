@@ -11,7 +11,7 @@ public static class CastleHandover
 {
     public const string Policy="local-incumbent-consensual-gate-keep-occupation-separate-property-v19";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CastleAdministration.Policy;
     static bool Before(CastleEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static CastleEntry[] Entries(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue)=>w.Castles?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Castles?.Entries.Any(e=>e.Input.Id==id)==true;
