@@ -2018,3 +2018,5 @@ Game/Scripts/NewGameRuntime.CastellanReports.cs -text
 
 Core/Contracts/HouseSuccession.cs -text
 Tests/HouseSuccessionTests.cs -text
+Game/Scripts/NewGameRuntime.HouseSuccession.cs -text
+Scripts/verify_house_succession.py -text

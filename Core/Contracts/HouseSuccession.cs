@@ -6,6 +6,10 @@ public sealed record HouseSuccessionEntry(HouseSuccessionInput Input,long At,lon
 public sealed record HouseSuccessionState(int Schema,string Policy,HouseSuccessionEntry[] Entries);
 public sealed record HouseSuccessionJob(HouseSuccessionTerms Terms,HouseSuccessionEntry? Pending,HouseSuccessionEntry? Resolution,HouseSuccessionEntry? Applied,HouseSuccessionEntry? Cancelled);
 public sealed record HouseSuccessionObligation(EntityId Id,EntityId Owner,EntityId Site,EntityId OriginalPrincipal,EntityId Counterparty,string Kind,long Outstanding);
+public sealed record HouseSuccessionCandidate(EntityId Owner,EntityId Person,EntityId Home);
+public sealed record HouseSuccessionCard(EntityId Id,EntityId Owner,EntityId Incumbent,EntityId Heir,EntityId Home,long ProposedAt,long? EffectiveAt,string Status,bool Local,bool CanConfirm,bool CanCancel);
+public sealed record HouseObligationCard(EntityId Id,EntityId Owner,EntityId Site,EntityId OriginalPrincipal,EntityId Counterparty,string Kind,long? Amount,bool CanAcknowledge,bool Acknowledged);
+public sealed record HouseSuccessionView(EntityId? Site,HouseSuccessionCandidate[] Candidates,HouseSuccessionCard[] Changes,HouseObligationCard[] Obligations);
 public static class HouseSuccession
 {
     public const string Policy="local-living-head-succession-individual-house-obligation-acknowledgment-v21";
@@ -38,6 +42,15 @@ public static class HouseSuccession
         Need(i.Action==HouseSuccessionAction.Confirm&&job.Pending==null&&terms.Agreed&&Outcome(w,terms,at,before)=="confirmed","同意・所在・権限・軍務の条件を再確認してください");return new(i,at,rev,null,checked(at+1),null,null,null,null);
     }
     static EntityId ResolutionId(HouseSuccessionEntry e)=>new("decision:house-succession/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(e.Input.Id.Value)));
+    public static HouseSuccessionView? ViewForProjection(ContractWorld w)=>View(w,false);
+    internal static HouseSuccessionView? View(ContractWorld w,bool obligations=true)
+    {
+        if(!Enabled(w))return null;long at=w.ElapsedSeconds,rev=w.CommitSequence;var loc=w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;bool stable=loc is {} site&&Local(w,w.PlayerControl,site,at,rev+1);bool resting=PersonalLife.Resting(w,at,rev+1);var candidates=new List<HouseSuccessionCandidate>();
+        if(stable&&!resting&&!Jobs(w).Any(j=>j.Pending!=null||j.Applied==null&&j.Cancelled==null&&at<=j.Terms.Until))foreach(var f in Factions(w)){var owner=new EntityId(f.Id);var head=new EntityId(f.Head);var home=new EntityId(f.Home);if(loc!=home||!Local(w,head,home,at,rev+1)||CastleAdministration.Blocked(w,home,at,rev+1))continue;foreach(var heir in w.Characters.Where(c=>c.Id!=head&&c.Life==LifeState.Adult).Select(c=>c.Id)){if((w.PlayerControl==head||w.PlayerControl==heir)&&Member(w,heir,owner,at,rev+1)&&Direct(w,heir,head,at,rev+1)&&Local(w,heir,home,at,rev+1)&&!Factions(w).Any(x=>x.Head==heir.Value))candidates.Add(new(owner,heir,home));}}
+        var cards=Jobs(w).Select(j=>{var t=j.Terms;bool here=stable&&loc==t.Home;bool witnessed=j.Resolution!=null&&Local(w,w.PlayerControl,t.Home,j.Resolution.At,j.Resolution.Revision);string status=j.Cancelled!=null?"交代を取りやめ":j.Applied!=null?"生前合意による当主職交代を立会確認":j.Pending!=null?"次の時刻に当主職の交代を予定":j.Resolution!=null?(here||witnessed?"現地条件が整わず交代保留":"交代予定・結果は現地確認待ち"):at>t.Until?"確認期限を終了":t.Agreed?"当事者の同意あり・職の引渡し前":"相手はこの交代に不承諾";bool can=here&&!resting&&j.Applied==null&&j.Cancelled==null;return new HouseSuccessionCard(t.Id,t.Owner,t.Incumbent,t.Heir,t.Home,Entries(w,long.MaxValue,long.MaxValue).Single(e=>e.Input.Id==t.Id).At,j.Applied?.At,status,here,can&&j.Pending==null&&t.Agreed&&Outcome(w,t,at,rev)=="confirmed",can);}).ToArray();
+        var result=new List<HouseObligationCard>();if(obligations){var ids=w.Salary!.Terms.Select(t=>t.Id).Concat(HouseLogistics.FreightJobs(w,at,rev+1).Select(j=>j.Terms.Id));foreach(var id in ids){HouseSuccessionObligation o;try{o=Obligation(w,id,at,rev);}catch(InvalidDataException){continue;}var head=Head(w,o.Owner);if(o.OriginalPrincipal==head||w.PlayerControl!=head&&w.PlayerControl!=o.Counterparty)continue;bool here=stable&&loc==o.Site;var ack=Acknowledged(w,id,o.Owner,at,rev);bool both=here&&Local(w,head,o.Site,at,rev+1)&&Local(w,o.Counterparty,o.Site,at,rev+1);result.Add(new(id,o.Owner,o.Site,o.OriginalPrincipal,o.Counterparty,o.Kind,both?o.Outstanding:null,both&&!resting&&ack==null&&!CastleAdministration.Blocked(w,o.Site,at,rev+1),ack!=null));}}
+        return new(stable?loc:null,candidates.ToArray(),cards,result.ToArray());
+    }
     internal static string? Role(ContractWorld w){if(!Enabled(w))return null;var jobs=Jobs(w).Where(j=>j.Applied!=null&&(j.Terms.Heir==w.PlayerControl||j.Terms.Incumbent==w.PlayerControl)).ToArray();if(jobs.Length==0)return null;return jobs.Any(j=>Head(w,j.Terms.Owner)==w.PlayerControl)?"当主（個人の奉公・指揮は別の原本）":"隠居（個人の約束と家の義務は別）";}
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Succession=new(1,Policy,[]);}
     internal static void Apply(ContractWorld w,HouseSuccessionInput i){var e=Prepare(w,i,w.ElapsedSeconds,w.CommitSequence);w.Succession=w.Succession! with{Entries=[..w.Succession.Entries,e]};Sync(w);}
@@ -47,5 +60,6 @@ public static class HouseSuccession
 }
 public sealed partial class WorldSession
 {
+    public HouseSuccessionView? HouseSuccessionView(){lock(gate)return HouseSuccession.View(state);}
     public CommandResult ManageHouseSuccession(HouseSuccessionInput i,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!HouseSuccession.Enabled(state)||i.Action==HouseSuccessionAction.Resolve)return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の当主交代操作ではありません");var old=state.Succession!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別の原本IDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>HouseSuccession.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"当主職と個別原本を記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
 }
