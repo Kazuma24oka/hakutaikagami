@@ -491,7 +491,7 @@
     "minimum": 1,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null,
+    "integrated_main": "7704391da64e02302df23c87e5785a86bde93b47",
     "conservative_target_cap": {
       "BD-34": {
         "planned": 100,
