@@ -491,7 +491,7 @@
     "minimum": 1,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "3e431a643f02fd9551ed7ed150a7f280d771b010"
   },
   "range_note": "2026-10-29: Fixed-weight earned estimate crossed the previous display band; move the rough display range from30-40 to40-50. No leaf, weight, denominator or earned-gain change."
 }
