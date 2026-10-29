@@ -14,7 +14,7 @@ public static class PersonalLife
     public const string Policy="personal-life-private-food-local-rest-receipt-goals-v18";
     public const long InnCost=10,InnSeconds=7200,OutsideSeconds=14400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CastleHandover.Policy;
     static bool Before(LifeEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static LifeEntry[] Entries(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue)=>w.Life?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Life?.Entries.Any(e=>e.Input.Id==id)==true;
@@ -26,7 +26,7 @@ public static class PersonalLife
     public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long rev=long.MaxValue)=>wallet==NewGameWork.Wallet(w.PlayerControl)?-Entries(w,at,rev).Sum(e=>e.Paid):0;
     public static long RiceConsumed(ContractWorld w,EntityId actor,long at=long.MaxValue,long rev=long.MaxValue)=>actor==w.PlayerControl?Entries(w,at,rev).LongCount(e=>e.Input.Action==LifeAction.EatPrivateRice):0;
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Life=new(1,Policy,[]);}
-    static bool Free(ContractWorld w,long at,long rev)=>!HouseLogistics.Active(w,at,rev)&&!NewGameMilitary.LedgerStates(w).Any(s=>{var past=w.ForkMilitaryObservation();past.NewMilitary=s;return NewGameMilitary.CustodyAt(past,at,rev);})&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&w.Requests.Any(r=>r.Id==t.RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<rev))&&(t.FinishedAt==null||t.FinishedAt>at)&&t.Execution is not(ExecutionPhase.Stopped or ExecutionPhase.Completed));
+    static bool Free(ContractWorld w,long at,long rev)=>!CastleHandover.Jobs(w,at,rev).Any(j=>j.Pending!=null)&&!HouseLogistics.Active(w,at,rev)&&!NewGameMilitary.LedgerStates(w).Any(s=>{var past=w.ForkMilitaryObservation();past.NewMilitary=s;return NewGameMilitary.CustodyAt(past,at,rev);})&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&w.Requests.Any(r=>r.Id==t.RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<rev))&&(t.FinishedAt==null||t.FinishedAt>at)&&t.Execution is not(ExecutionPhase.Stopped or ExecutionPhase.Completed));
     static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,w.PlayerControl,site,at,rev,stableCompletion:true);
     internal static void Apply(ContractWorld w,LifeInput i)
     {

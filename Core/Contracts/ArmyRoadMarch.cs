@@ -11,7 +11,7 @@ public static class ArmyRoadMarch
 {
     public const string Policy="same-army-common-land-march-current-assembly-local-private-rice-v16",LandRoute="same-borrowed-army-land-trip-v1",FoodStop="army-ration-insufficient";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RoadConvoy.Policy or PersonalLife.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     static ArmyRoadEntry[] Entries(ContractWorld w,long at,long rev)=>w.ArmyRoad?.Entries.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.ArmyRoad?.Entries.Any(e=>e.Input.Id==id)==true;

@@ -160,12 +160,12 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-21": {
-      "percent": 75,
-      "basis": "残り休息時間中の移動/点検/現物取引を拒否。預かった軍と家の運搬物の引継ぎ/精算を先に求め、書状の受領/閲覧と個人実務を区別。 全任務/療養/捕縛/役職の一般併用表と複数人による引継ぎ。"
+      "percent": 80,
+      "basis": "現地締結権者/指揮官/実在登録軍の立会いと本丸引渡し予定を確認し、休息との競合や不在時の履行を拒否する。 全任務/療養/捕縛/役職の一般併用表と複数人の引継ぎ。"
     },
     "BD-22": {
-      "percent": 85,
-      "basis": "休息を途中中止しても実経過と宿代を返さず、残り時間の排他だけを終了。食べた米の再売却/再消費、同じ操作の再課金を拒否。 一般任務の補償/担当交代、健康/捕縛/戦闘中断と再開。"
+      "percent": 90,
+      "basis": "門引渡し前の取消と、既渡し門の不可逆性を分離。本丸未引渡しは旧主側部隊/不在/期限で保留し、再申込と既成立後の係争を分ける。 一般任務の補償/担当交代、全工事/戦闘/健康/捕縛の中断再開。"
     },
     "BD-23": {
       "percent": 80,
@@ -176,8 +176,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-25": {
-      "percent": 85,
-      "basis": "停止/部分受渡し/帰還の当時の荷・累計・拠点を封書で届ける。開封前の現況を隠し、現地受領/倉の確認と遠隔返報を区別する。 全情報種別の偵察/流言/地理発見、遠方の認識と大規模索引。"
+      "percent": 90,
+      "basis": "占有の立会日時と現在の現地確認を区別し、離れた後は現在兵数を隠す。遠隔相手の現在移動が異なっても自分の記録表示は同一。 全情報の偵察/流言/地理発見と遠方知識の大規模索引。"
     },
     "BD-26": {
       "percent": 40,
@@ -200,8 +200,8 @@
       "basis": "同意する家臣へ現物・固定拠点・同じ軍務・期限を任せ、本人不在なら待機し、容量分だけ渡して残米を持ち帰る条件付き委任を接続。実帰還後の再依頼も検査。 一般任務の裁量/監督/再委任、遠方の簡略進行と詳細進行の全機能同値。"
     },
     "BD-31": {
-      "percent": 70,
-      "basis": "未知の封鎖は現地で観測し、停止報告と既知不達再送を実行。現地の再開確認後に再出発し、取消と部分受渡しの前後関係を保存後も保持する。 全任務の緊急逸脱と引継ぎ、護衛戦/輸送事故/補償の一般裁定。"
+      "percent": 80,
+      "basis": "次秒に予定した本丸引渡しを、その時点の当事者と現地旧主側部隊で照合。先に部隊が残れば保留し、既成立後の動員では過去を巻き戻さず係争を表示する。 全国の救援/攻城/緊急逸脱、一般任務の指揮交代と補償。"
     },
     "BD-32": {
       "percent": 10,
@@ -264,12 +264,12 @@
       "basis": "開始時の新勢力配置はあるが、ゲーム中の内応交渉・離反・独立は未接続。"
     },
     "BD-47": {
-      "percent": 0,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 30,
+      "basis": "旧主側本人による現地の同一条件合意→城門→予定本丸引渡し→軍事占有原本を接続。実登録軍/本人の不在、旧主側部隊と取消/期限の競合を保存後も保持する。 全国城郭/門・区画の実地形、敵AIの自主開城判断、攻城戦、第三者救援と守備分裂の一般化。"
     },
     "BD-48": {
-      "percent": 5,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 15,
+      "basis": "軍事占有が変わっても旧所有/直属/役職/兵/資金/給付債務を一括移転せず、蔵と第三者財産を範囲外に保持。引渡し後も旧主側の未払いを消さない。 法的領有/城主交代/家督での契約・兵・人質・債務の個別承継、異議と係争。"
     },
     "BD-49": {
       "percent": 50,
@@ -304,8 +304,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-57": {
-      "percent": 60,
-      "basis": "暮らし・待遇画面に認識済み身分、私財/私有米、給付の未収/未払、軍/預り物の責任、食事・休息・当面の目標を集約。履歴を大量表示せず今の操作を提示。 GUI/外観の受入、全画面の情報整理・一覧検索とアクセシビリティ。"
+      "percent": 65,
+      "basis": "城引渡し画面で合意/門/本丸/保留/係争を区別。現地の軍事占有マーカーは所有記録と別に表示し、遠隔は立会日時の記録に限定する。 GUI/外観の受入、全画面の情報整理・検索とアクセシビリティ。"
     },
     "BD-58": {
       "percent": 95,
@@ -321,21 +321,21 @@
     }
   },
   "focus": {
-    "leaf": "BD-08",
-    "title": "身分別の生活・待遇・引受中の負担",
-    "status": "5/5完了。PR26承認統合後も生活/実会計/休息/受領目標まで続行。新しいmain統合は未承認。",
+    "leaf": "BD-47",
+    "title": "合意による城門・本丸引渡しと財産の分離",
+    "status": "5/5完了。PR27承認統合後も現地合意/段階引渡し/旧主側部隊との競合/占有原本と財産分離へ続行。新しいmain統合は未承認。",
     "exit": [
-      "Explicit v18 personal living choices use the same personal wallet, salary rice and local merchant rice; private food consumption cannot double-sell, spend reserved funds or raid house/army stock",
-      "Paid inn and free outdoor rest use one world clock at a stable site; cancellation preserves elapsed time and fees, departure is blocked only during actual remaining rest, and poverty never prevents walking/work",
-      "Known service role, personal pay/arrears and held military/cargo obligations are separated in one personal-life view without revealing remote current stores or granting authority by title",
-      "Player-selected personal goals for earned work pay, received stipend and paid stipend progress only from actual post-selection receipts and remain achieved after later spending; reaching a goal never ends the game",
-      "Idempotence, forged entries, same-time ordering, actual generation recovery and future progress equality are tested for roles, food, partial rest, cancellation and goals; old saves retain their original bytes and GUI remains separate"
+      "Explicit v19 local same-version surrender agreement requires the player incumbent head/control, a physically present consenting foreign commander and actual registered army; confirmation alone does not occupy the castle",
+      "Gate handover and scheduled keep handover are separate physical steps; existing owner forces/relief at the keep or absent recipient block the remaining handover, and already transferred gate possession is never rolled back",
+      "Military possession never transfers original land ownership, memberships, service bonds, soldiers, house grain, private money, contracts or salary debts; warehouse/property remain explicitly outside the handover",
+      "Only the local participants can perform and observe handover; remote view shows dated own witness records and never current remote troops/stores; the game distinguishes military possession from recorded ownership",
+      "Invalid/stale/duplicate/tampered agreements, relief timing, partial withdrawal and actual generation recovery/future equality are tested; old versions keep original bytes and headless3D projection is separate from GUI/appearance"
     ],
     "deferred": [
-      "飢餓/健康/負傷治療/疲労の速度影響",
-      "全NPCの日常生活と全国の待遇制度",
-      "家督/城と家の変動/一般債務承継",
-      "全目標/死亡/後継と1650年総括",
+      "全国AIの自主開城・攻城戦・城郭の実区画",
+      "第三者救援/守備分裂の一般化",
+      "領有/城主交代と契約/兵/財産/債務の個別承継",
+      "家督/死亡と一般相続",
       "GUI/外観と全製品受入"
     ]
   },
@@ -389,7 +389,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -483,11 +483,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 17,
-    "baseline_commit": "b129764c5bb515180fecb0f980a95471786677c5",
-    "baseline": 38.580898268398265,
-    "current": 39.68222402597402,
-    "earned_gain": 1.1013257575757576,
+    "version": 18,
+    "baseline_commit": "cc546dafb7ec6ff954a70a351ba7da39ddd5357f",
+    "baseline": 39.68222402597402,
+    "current": 40.85646645021645,
+    "earned_gain": 1.1742424242424243,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,

@@ -3,7 +3,7 @@ from pathlib import Path
 from fractions import Fraction
 import json,subprocess
 R=Path(__file__).resolve().parents[1]
-BASELINES={17:("b129764c5bb515180fecb0f980a95471786677c5","Docs/Development/ProgressV1/approval-baseline-v17.json"),16:("1176c9fc5adde0511ccebafbf50e3c86a44dccf2","Docs/Development/ProgressV1/approval-baseline-v16.json"),14:("a6215cac61ac160c35f531165b7270cc673480bc","Docs/Development/ProgressV1/approval-baseline-v14.json"),13:("8c6d86061101dee5aea78c908fccb9d7de965e35","Docs/Development/ProgressV1/approval-baseline-v13.json"),12:("d332fe3fba5cf9b330db0f5dd14ae573179010e3","Docs/Development/ProgressV1/approval-baseline-v12.json"),11:("1801e0b799e1ebda2ffb2db0ff2d8455657401c1","Docs/Development/ProgressV1/approval-baseline-v11.json"),10:("c7a41f7f4c41dbe16b5a58c6d155028a35005882","Docs/Development/ProgressV1/approval-baseline-v10.json"),9:("5478a5d6644f1a2037d38a266ccb1d91b24acfd2","Docs/Development/ProgressV1/approval-baseline-v9.json"),8:("db56cc00bc6c55767432cf7ca6ab217e92b929c2","Docs/Development/ProgressV1/approval-baseline-v8.json"),7:("6e6b2fa87c9c205b024c494f430f9825be1d9252","Docs/Development/ProgressV1/approval-baseline-v7.json"),6:("5960dc7deb55f500a8f3e2708fc53be77bc4a18c","Docs/Development/ProgressV1/approval-baseline-v6.json"),5:("6c51f21f33cf7804ce5e7e51f6025b87fde670ab","Docs/Development/ProgressV1/approval-baseline-v5.json"),1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
+BASELINES={18:("cc546dafb7ec6ff954a70a351ba7da39ddd5357f","Docs/Development/ProgressV1/approval-baseline-v18.json"),17:("b129764c5bb515180fecb0f980a95471786677c5","Docs/Development/ProgressV1/approval-baseline-v17.json"),16:("1176c9fc5adde0511ccebafbf50e3c86a44dccf2","Docs/Development/ProgressV1/approval-baseline-v16.json"),14:("a6215cac61ac160c35f531165b7270cc673480bc","Docs/Development/ProgressV1/approval-baseline-v14.json"),13:("8c6d86061101dee5aea78c908fccb9d7de965e35","Docs/Development/ProgressV1/approval-baseline-v13.json"),12:("d332fe3fba5cf9b330db0f5dd14ae573179010e3","Docs/Development/ProgressV1/approval-baseline-v12.json"),11:("1801e0b799e1ebda2ffb2db0ff2d8455657401c1","Docs/Development/ProgressV1/approval-baseline-v11.json"),10:("c7a41f7f4c41dbe16b5a58c6d155028a35005882","Docs/Development/ProgressV1/approval-baseline-v10.json"),9:("5478a5d6644f1a2037d38a266ccb1d91b24acfd2","Docs/Development/ProgressV1/approval-baseline-v9.json"),8:("db56cc00bc6c55767432cf7ca6ab217e92b929c2","Docs/Development/ProgressV1/approval-baseline-v8.json"),7:("6e6b2fa87c9c205b024c494f430f9825be1d9252","Docs/Development/ProgressV1/approval-baseline-v7.json"),6:("5960dc7deb55f500a8f3e2708fc53be77bc4a18c","Docs/Development/ProgressV1/approval-baseline-v6.json"),5:("6c51f21f33cf7804ce5e7e51f6025b87fde670ab","Docs/Development/ProgressV1/approval-baseline-v5.json"),1:("e304cb0018cbeb870a31b82b208ee1c3c18932a7","Docs/Development/ProgressV1/approval-baseline-v1.json"),2:("c67b815170681d8453cd36a8d5e8aa1411be54ab","Docs/Development/ProgressV1/approval-baseline-v2.json"),3:("09806b77d0f372b7edb5e72031ddfca0d6d533b7","Docs/Development/ProgressV1/approval-baseline-v3.json")}
 def calculate(a,d,leaves):
     groups={g["id"]:g for g in d["groups"]};total=Fraction(0)
     for domain in a["domains"]:
@@ -50,6 +50,13 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==18:
+        from verify_castle_handover import check as verify
+        folder="CastleHandoverV1"
+        assert "CastleHandover.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
+        assert "ShowCastleHandover" in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+        assert "RefreshCastleMarkers" in (R/"Game/Scripts/NewGameRuntime.cs").read_text(encoding="utf-8")
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/CastleHandover.cs'],cwd=R,capture_output=True).returncode!=0,'Castle scope not frozen before code'
     elif version==17:
         from verify_personal_life import check as verify
         folder="PersonalLifeV1"
