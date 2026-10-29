@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3511,
-  "baseline_passed": 3464,
-  "added": 47,
-  "scope": "Castellan succession27 and truce inheritance20 added; related1601; ten additional actual generation recovery phases; headless172pairs. Full3511/GUI NOT_RUN."
+  "expected_passed": 3559,
+  "baseline_passed": 3511,
+  "added": 48,
+  "scope": "Physical successor confirmation, receipt/failure relay and bounded factual report retry48 added; related1674 includes25 existing military inquiry/recovery cases;12 actual generation recovery phases; headless184pairs. Full3559/GUI NOT_RUN."
 }
