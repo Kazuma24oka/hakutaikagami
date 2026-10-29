@@ -107,6 +107,7 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CastellanState? Castellan {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CastellanReportState? CastellanReports {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HouseSuccessionState? Succession {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HouseholdServiceState? HouseService {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public VillageState? Villages {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]

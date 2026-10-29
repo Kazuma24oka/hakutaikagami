@@ -112,20 +112,20 @@
       "basis": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。"
     },
     "BD-09": {
-      "percent": 55,
-      "basis": "生前合意による当主職交代で旧当主は存命の隠居として操作を続け、新当主の実権と旧個人奉公を分離。元の所属/直属/私財を一括変更しない。 失職/捕縛/死亡と後継操作、在任者の個人的奉公の整理、全身分の人生接続。"
+      "percent": 70,
+      "basis": "当主職交代後の家中で、個人奉公を当事者の現地同意で一件ずつ解き、現当主と新たに合意する。所属/役職/土地/未払いを保持し、隠居と新当主の循環する主従を拒否する。 家への所属離脱/移籍/臣従/解任/離反と、全国NPCの長期判断。"
     },
     "BD-10": {
-      "percent": 35,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 45,
+      "basis": "再承認した行政原本と個人の奉公、当主職、軍務を分け、当事者と権限を各操作時点で検査する。新担当者は限定枠だけを扱い、旧主や相談の取次人に新当主の政治権を与えない。 一般役職・代理決裁・中央政治までの権限と全身分の総合受入。"
     },
     "BD-11": {
       "percent": 85,
       "basis": "新旧軍務案件の発令者を時点別に分け、旧主の命令/許可/照会/返報を新当主の新案件へ読み替えない。新しい指揮は条件提示/同意/開封/現地引受後だけ。 全国の競合命令・現場裁量と複数指揮系統の総合受入。"
     },
     "BD-12": {
-      "percent": 80,
-      "basis": "家中の本人や隠居が、新当主の個人的家臣になることなく限定軍務だけを明示再合意する。同じ現物兵と個人奉公を分離し、活動中の軍の自動移譲を拒否。 個別追随/拒否/分裂、一般NPC軍の再動員・活動中の軍と大集団の運用。"
+      "percent": 85,
+      "basis": "新担当者との限定行政合意は個人奉公を自動で替えない。個人奉公も本人/元主双方が一件ずつ整理し、未返納の軍/荷/仕事を放置した解除を拒否する。 配下の個別追随/拒否/分裂、全NPC集団と活動中の軍の運用。"
     },
     "BD-13": {
       "percent": 10,
@@ -212,8 +212,8 @@
       "basis": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。 地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。"
     },
     "BD-34": {
-      "percent": 95,
-      "basis": "行政担当の交代後も同じ所有家の帳簿/処分枠を継続し、米/木材/武具/家金の時点付き保管確認と実運搬の代理受領を接続。 全家の歴史的収入制度、長期収支調整と全国規模の製品受入。"
+      "percent": 99,
+      "basis": "担当者交代後も同じ家の処分・調達枠を共有し、既存運搬の実前渡金と購入履歴を控除。個人奉公を解いても既存給付の未払いは残し、私財/家財を移さない。 全画面/GUIと全国長期の収支受入は未完了のため、事前計画の上限100に対し概算99で保留する。"
     },
     "BD-35": {
       "percent": 95,
@@ -256,8 +256,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-45": {
-      "percent": 45,
-      "basis": "生前当主職交代を、返納済み駐屯軍の現地再合意と隠居本人の継続軍務へ接続。原初の当主と現当主、本人の奉公と限定軍務を分離する。 死亡/血統/養子/遺言/家法/係争/暫定統治と全国の家督政策。"
+      "percent": 55,
+      "basis": "生前当主職交代を、旧行政原本の再承認と相互の旧主従の整理へ接続。新担当者自身の合意を確認し、同一秒の奉公変更を過去の任命根拠にしない。 死亡/血統/養子/遺言/係争/暫定統治と全国の家督政策。"
     },
     "BD-46": {
       "percent": 10,
@@ -268,8 +268,8 @@
       "basis": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。 全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。"
     },
     "BD-48": {
-      "percent": 65,
-      "basis": "給付/運搬の個別精算に続き、返納済み駐屯軍の新しい発令者を案件別に記録。同じ兵/倉/損耗/消費を保持し、旧命令/権限/書状を保持したまま再任/精算する。 活動中の軍とNPC一般再動員、旧行政委任/条約/人質/保証と一般相続の個別承継。"
+      "percent": 75,
+      "basis": "旧代理行政の原本/観測/取消/報告を保持して新原本を作り、期限と月枠、調達/運搬引当を継承。旧取消・報告の遅着を新しい合意へ読み替えず、給付債務/運搬/軍務も保持する。 旧城主任命/保管の一般再任命、条約/人質/保証、活動中の軍と一般相続の個別承継。"
     },
     "BD-49": {
       "percent": 50,
@@ -304,8 +304,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-57": {
-      "percent": 75,
-      "basis": "家督・引継ぎ画面で合意/予定/職引渡し/未成立と原本ごとの確認を区別。生活画面の当主/隠居と現地マーカーを接続し、遠隔の現在荷量を隠す。 全画面の情報整理・GUI操作/外観受入とアクセシビリティ。"
+      "percent": 80,
+      "basis": "既存の家督画面へ当事者別の奉公解除/新奉公をまとめ、行政画面へ旧原本/担当者/再承認を接続。旧履歴・新権限・同意・月枠と届いた観測を分ける。 全画面の情報整理・外観/GUI操作の受入とアクセシビリティ。"
     },
     "BD-58": {
       "percent": 95,
@@ -322,19 +322,19 @@
   },
   "focus": {
     "leaf": "BD-48",
-    "title": "返納済み駐屯軍の発令者引継ぎと家中の軍務再合意",
-    "status": "完成条件5/5。PR30統合後も実装/保存復旧へ続行。新しいmain統合のみ承認待ち。",
+    "title": "旧行政原本の再承認と個人奉公の整理",
+    "status": "完成条件5/5。PR31統合後も実装/保存復旧へ続行。新しいmain統合のみ承認待ち。",
     "exit": [
-      "An explicit new-head request renews the same returned garrison using a new case issuer without rewriting initial military terms, old commands, letters or proofs",
-      "Only a present actual successor head may request handover after known closure, return of custody and supplies; active, remote, stale and forged handovers are refused A present household member, including the retired head, may explicitly request a fresh successor-issued offer/permission without silently changing personal service; prior custody still blocks takeover.",
-      "Repeated loans, casualties, food use and depot transfers retain one physical lifetime ledger and no duplicated troops, stocks or command grants",
-      "Current and historical military issuers, permissions, physical reports and old inquiries retain the correct case/time; personal service remains separate",
-      "Normal entry and save/recovery/future equality, old save byte compatibility and headless Node3D data are checked separately from appearance acceptance"
+      "After an actual head succession, current head and a local household agent explicitly reauthorize an unexpired old administrative original; old grants, observations, papers and original expiry are retained, without political office, personal service or property transfer",
+      "New grants may retain or replace the local agent with consent, but a shared site/month delegation budget and procurement/freight reservations do not reset; old revocation or late reports never cancel or rewrite a distinct new original",
+      "The player may separately end a retired lords personal service or explicitly pledge the current head by local mutual consent; membership, office, land, private assets, debts and existing military originals remain separate, and busy/unreturned duties block premature release",
+      "Actual dated authority, current versus historical service, known local handover and sealed remote reports are projected consistently; NPC local administration follows only an effective reauthorized original and never auto-controls the player",
+      "Normal entry, wrong/stale/repeated/refused/expired/absent/tampered operations, actual generation recovery/future equality, old-save byte compatibility and headless Node3D data are verified separately from GUI/appearance"
     ],
     "deferred": [
-      "旧行政委任の再承認と個人的奉公の整理",
-      "活動中の軍/別台帳への再切替とNPC再動員",
-      "条約/人質と死亡/争いの個別承継",
+      "城主任命と保管原本の一般再任命",
+      "条約/人質と所属の離脱/移籍",
+      "活動中の軍とNPC一般家督/再動員",
       "全画面/正式素材/全国長期受入"
     ]
   },
@@ -388,7 +388,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。 2026-10-29：PR28統合後も城主交代と行政/保管へ継続。67f7209の基準固定、過大な財政完成扱いを実装前に訂正。再評価/重み変更の加点なし。 2026-10-29：PR29統合後も当主職交代と個別給付/運搬へ継続。9aed08cの実装前基準を固定し、再評価/重み変更の加点なし。 2026-10-29：PR30統合後も返納済み軍務の発令者引継ぎと家中の再合意へ継続。e57bb49とf728123の実装前固定基準を保持し、再評価/重み変更の加点なし。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。 2026-10-29：PR28統合後も城主交代と行政/保管へ継続。67f7209の基準固定、過大な財政完成扱いを実装前に訂正。再評価/重み変更の加点なし。 2026-10-29：PR29統合後も当主職交代と個別給付/運搬へ継続。9aed08cの実装前基準を固定し、再評価/重み変更の加点なし。 2026-10-29：PR30統合後も返納済み軍務の発令者引継ぎと家中の再合意へ継続。e57bb49とf728123の実装前固定基準を保持し、再評価/重み変更の加点なし。 2026-10-29：PR31統合後も旧代理行政/個人奉公へ継続。85549beと0ef5541の実装前固定基準を保持し、重み/分母変更や再評価加点なし。財政区分は事前上限100から99へ保守的に控えて計上。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -482,16 +482,23 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 23,
-    "baseline_commit": "f728123",
-    "baseline": 43.275027056277054,
-    "current": 44.36025432900433,
-    "earned_gain": 1.0852272727272727,
+    "version": 25,
+    "baseline_commit": "0ef5541",
+    "baseline": 44.36025432900433,
+    "current": 45.37843614718615,
+    "earned_gain": 1.018181818181818,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": null,
+    "conservative_target_cap": {
+      "BD-34": {
+        "planned": 100,
+        "reported": 99,
+        "reason": "GUI/full nationwide fiscal acceptance remains incomplete; no baseline re-rating or extra credit"
+      }
+    }
   },
   "range_note": "2026-10-29: Fixed-weight earned estimate crossed the previous display band; move the rough display range from30-40 to40-50. No leaf, weight, denominator or earned-gain change."
 }

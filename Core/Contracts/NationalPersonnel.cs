@@ -45,7 +45,7 @@ public static class NationalPersonnel
         bool AtSite(EntityId actor)=>w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==t.Site);
         if(!AtSite(t.Issuer)||!AtSite(t.Recipient)||OfficerLoop.Busy(w,t.Recipient))return false;
         EntityId subject=t.Subordinate?t.Issuer:t.Recipient,target=t.Subordinate?t.Recipient:t.Issuer;
-        if(!w.ServiceBonds.Any(b=>b.Subject==subject&&b.Target==target&&b.From<=w.ElapsedSeconds&&w.ElapsedSeconds<b.Until))return false;
+        if(!HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence+1).Any(b=>b.Subject==subject&&b.Target==target&&b.From<=w.ElapsedSeconds&&w.ElapsedSeconds<b.Until))return false;
         var i=IncomingMission.Build(w,"request:personnel-preview",t.Subordinate);
         return WorldSession.Permits(w,t.Issuer,i,w.ElapsedSeconds)&&WorldSession.Permits(w,t.Recipient,i,w.ElapsedSeconds);
     }

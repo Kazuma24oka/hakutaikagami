@@ -18,13 +18,13 @@ public static class WorkDuty
     public static WorkDutyAgreement? Active(ContractWorld w,long? at=null,long? revision=null)
     {
         long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;
-        return Rows(w).LastOrDefault(a=>Prior(a.At,a.Revision,t,r)&&w.ServiceBonds.Any(b=>b.Id==a.Bond&&BondActive(w,b,t,r)));
+        return Rows(w).LastOrDefault(a=>Prior(a.At,a.Revision,t,r)&&HouseholdService.BondsAt(w,t,r).Any(b=>b.Id==a.Bond&&BondActive(w,b,t,r)));
     }
     public static EntityId? Candidate(ContractWorld w,long? at=null,long? revision=null)
     {
         if(!WorkProgression.Enabled(w))return null;long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;
         var p=NewGameService.View(w,t,r).Principal;if(p==null||WorkProgression.Recognized(w,p.Value,t,r+1)==0)return null;
-        var b=w.ServiceBonds.SingleOrDefault(b=>b.Subject==w.PlayerControl&&b.Target==p&&BondActive(w,b,t,r));
+        var b=HouseholdService.BondsAt(w,t,r).SingleOrDefault(b=>b.Subject==w.PlayerControl&&b.Target==p&&BondActive(w,b,t,r));
         if(b==null||Rows(w).Any(a=>a.Bond==b.Id&&Prior(a.At,a.Revision,t,r)))return null;
         var own=RegionalCampaign.ActorPointAt(w,w.PlayerControl,t);var lord=RegionalCampaign.ActorPointAt(w,p.Value,t);
         var location=w.Locations.Single(l=>l.Actor==w.PlayerControl);
@@ -33,7 +33,7 @@ public static class WorkDuty
     internal static void Accept(ContractWorld w,EntityId id,EntityId principal)
     {
         if(Candidate(w,w.ElapsedSeconds,w.CommitSequence-1)!=principal)throw new InvalidDataException("主君の評価・同じ拠点での面会を確認してください");
-        var b=w.ServiceBonds.Single(b=>b.Subject==w.PlayerControl&&b.Target==principal&&BondActive(w,b,w.ElapsedSeconds,w.CommitSequence-1));
+        var b=HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence-1).Single(b=>b.Subject==w.PlayerControl&&b.Target==principal&&BondActive(w,b,w.ElapsedSeconds,w.CommitSequence-1));
         var a=new WorkDutyAgreement(id,principal,b.Id,w.Locations.Single(l=>l.Actor==w.PlayerControl).Site!.Value,Fee,w.ElapsedSeconds,w.CommitSequence);
         w.WorkCycle=w.WorkCycle! with{Duties=[..Rows(w),a]};
     }
@@ -51,7 +51,7 @@ public static class WorkDuty
         long last=0;
         foreach(var a in rows){
             Need(EntityId.IsValid(a.Id.Value)&&a.Revision>last&&a.Revision<=w.CommitSequence&&a.At>=0&&a.At<=w.ElapsedSeconds&&a.Fee==Fee);last=a.Revision;
-            var b=w.ServiceBonds.Single(b=>b.Id==a.Bond);Need(b.Subject==w.PlayerControl&&b.Target==a.Principal&&BondActive(w,b,a.At,a.Revision-1));
+            var b=HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence-1).Single(b=>b.Id==a.Bond);Need(b.Subject==w.PlayerControl&&b.Target==a.Principal&&BondActive(w,b,a.At,a.Revision-1));
             Need(NewGameService.View(w,a.At,a.Revision-1).Principal==a.Principal&&WorkProgression.Recognized(w,a.Principal,a.At,a.Revision)>0);
             var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==a.Site).Position;
             Need(RegionalCampaign.ActorPointAt(w,w.PlayerControl,a.At)==point&&RegionalCampaign.ActorPointAt(w,a.Principal,a.At)==point);

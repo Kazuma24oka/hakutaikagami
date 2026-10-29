@@ -13,7 +13,7 @@ public static class NpcFreight
     internal static void CheckCarrier(ContractWorld w,HouseFreightInput i,EntityId actor,EntityId head,EntityId site,long at,long rev)
     {
         if(actor==w.PlayerControl){Need(i.Carrier==null,"本人の運搬は運搬者指定を省略してください");return;}
-        Need(Enabled(w)&&i.Carrier==actor&&head==w.PlayerControl&&w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult&&c.WillObey)&&w.ServiceBonds.Any(b=>b.Subject==actor&&b.Target==head&&b.From<=at&&at<b.Until),"現地の協力意思を持つ成人直属家臣と当主が合意してください");
+        Need(Enabled(w)&&i.Carrier==actor&&head==w.PlayerControl&&w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult&&c.WillObey)&&HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==actor&&b.Target==head&&b.From<=at&&at<b.Until),"現地の協力意思を持つ成人直属家臣と当主が合意してください");
         Need(!FieldConvoy.Busy(w,actor,at,rev)&&!TaskBusy(w,actor,at,rev)&&!PersonalCompanions.Occupied(w,actor,at,rev)&&!NpcArmies.CommanderBusyAt(w,actor,at,rev),"家臣は別の用件を先に終えてください");
     }
     static EntityId Id(ContractWorld w,HouseFreightJob j,string action)
@@ -62,7 +62,7 @@ public static class NpcFreight
             var j=Jobs(w,r.CreatedAt,r.CommitSequence).SingleOrDefault(j=>j.Terms.Carrier==r.Intent.Actor&&!HouseLogistics.Closed(j));Need(j!=null&&r.Intent.Actor==r.Intent.Executor&&r.Intent.DestinationSite==(j.Phase==HouseFreightPhase.Outbound?j.Terms.Source:j.Terms.Home),"運搬経路が当時の合意と一致しません");
         }
     }
-    public static EntityId[] Candidates(ContractWorld w,EntityId home)=>!Enabled(w)||RegionalDomains.Head(w,home)!=w.PlayerControl?[]:w.Characters.Where(c=>c.Id!=w.PlayerControl&&c.Life==LifeState.Adult&&c.WillObey&&Local(w,c.Id,home,w.ElapsedSeconds,w.CommitSequence+1)&&w.ServiceBonds.Any(b=>b.Subject==c.Id&&b.Target==w.PlayerControl&&b.From<=w.ElapsedSeconds&&w.ElapsedSeconds<b.Until)&&!FieldConvoy.Busy(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!Busy(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!TaskBusy(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!PersonalCompanions.Occupied(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!NpcArmies.CommanderBusyAt(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)).Select(c=>c.Id).OrderBy(c=>c.Value,StringComparer.Ordinal).ToArray();
+    public static EntityId[] Candidates(ContractWorld w,EntityId home)=>!Enabled(w)||RegionalDomains.Head(w,home)!=w.PlayerControl?[]:w.Characters.Where(c=>c.Id!=w.PlayerControl&&c.Life==LifeState.Adult&&c.WillObey&&Local(w,c.Id,home,w.ElapsedSeconds,w.CommitSequence+1)&&HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence+1).Any(b=>b.Subject==c.Id&&b.Target==w.PlayerControl&&b.From<=w.ElapsedSeconds&&w.ElapsedSeconds<b.Until)&&!FieldConvoy.Busy(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!Busy(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!TaskBusy(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!PersonalCompanions.Occupied(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)&&!NpcArmies.CommanderBusyAt(w,c.Id,w.ElapsedSeconds,w.CommitSequence+1)).Select(c=>c.Id).OrderBy(c=>c.Value,StringComparer.Ordinal).ToArray();
     public static bool CanRecallAtMeeting(ContractWorld w,EntityId job){var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).SingleOrDefault(j=>j.Terms.Id==job&&!HouseLogistics.Closed(j));return j!=null&&w.Locations.Single(l=>l.Actor==w.PlayerControl).Site is {} site&&Local(w,w.PlayerControl,site,w.ElapsedSeconds,w.CommitSequence+1)&&Local(w,j.Terms.Carrier,site,w.ElapsedSeconds,w.CommitSequence+1);}
     public static DelegatedFreightCard[] View(ContractWorld w)
     {
