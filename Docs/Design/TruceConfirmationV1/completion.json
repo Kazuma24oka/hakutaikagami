@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "After an actual inherited formed truce, a current head explicitly signs a distinct physical confirmation at the local home, with known original terms/expiry and fixed current opposite representative/address; a retired player may arrange this only through the consenting actual local head and requester provenance is recorded without impersonation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TruceConfirmationTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/NewGameRuntime.WorkCycle.cs",
+        "Docs/Design/TruceConfirmationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Recipient knowledge changes only after physical receipt/opening; a separately delivered dated receipt returns to the explicitly named requester at the original return address; old acceptance recipients, versions, original expiry, assets and declarations stay unchanged",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TruceConfirmationTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/NewGameRuntime.WorkCycle.cs",
+        "Docs/Design/TruceConfirmationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "A failed confirmation first reports physically to its actual signer and then a distinct dated failure notice travels to the named requester; only personally learned failure permits bounded same-original resends, with no remote tracking or altered recipient/terms/expiry; Dated receipt and failure-notice papers themselves use at most three physical copies only after their actual NPC sender personally receives the failure report; copies preserve observed time, evidence, terms, recipient and fixed return address, and never sign a new political promise",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TruceConfirmationTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/NewGameRuntime.WorkCycle.cs",
+        "Docs/Design/TruceConfirmationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Late originals and copies do not repeat knowledge-driven execution or receipt creation; changed current political authority, expiry, absence, refusal, stale/repeated/conflicting IDs and forged provenance are rejected; ordinary entry screens expose only personally known papers",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TruceConfirmationTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/NewGameRuntime.WorkCycle.cs",
+        "Docs/Design/TruceConfirmationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Focused and relevant regression tests, actual generation recovery/future equality, old-save byte compatibility, Game build and headless Node3D positions are verified separately from GUI/appearance; bounded report relay retry is included; generalized treaties remain explicit later scope",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TruceConfirmations.cs",
+        "Core/Contracts/TruceConfirmations.ReportRetries.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TruceConfirmationTests.cs",
+        "Game/Scripts/NewGameRuntime.TruceConfirmations.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/NewGameRuntime.WorkCycle.cs",
+        "Docs/Design/TruceConfirmationV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Only an actually inherited formed organization-party nonaggression agreement, explicitly consenting current local head and named requester. Fixed known opposite representative/home and original terms/until. Changed unknown opposite representative is rejected, not secretly tracked. Original political confirmation copies require local actual signer and personally learned failure, max3. NPC factual receipt/failure-notice copies also max3 after actual personal failure recognition, retaining original observation/evidence/signature/recipient. No automatic player signing/return-report retry, arbitrary NPC diplomacy, general treaty/alliance/hostage/marriage, multigeneration diplomatic chain, active army takeover or general NPC succession/death/disputes. Full3559/GUI NOT_RUN."
+}

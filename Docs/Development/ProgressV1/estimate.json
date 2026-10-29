@@ -180,16 +180,16 @@
       "basis": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 一般偵察/流言/地理発見と情報の全国索引。"
     },
     "BD-26": {
-      "percent": 40,
-      "basis": "再送しても観測日時/当時の荷/累計受渡しを更新しない。開封した古い報告を現在値へ読み替えず、報告欄にも日時を明記する。 全情報の信用/誤認/訂正、噂の伝播、出所間の競合。"
+      "percent": 55,
+      "basis": "確認書と返報の作成/開封/観測日時を分け、返報の写しでも元の観測と根拠を固定。受領返報を知るまでは遠隔の到達を断定せず、不達と後の遅着を両立して保持する。 一般情報の多出典比較・信用評価・意図的虚偽・訂正と全国NPCの知識運用。"
     },
     "BD-27": {
-      "percent": 75,
-      "basis": "既存の封書配送を街道補給の停止/部分受渡し/帰還と取消/返報へ再利用。既知不達から同じ観測を最大三通まで再送し、移動中の受信者を自動追跡しない。 一般書状の代理開封/差止め/転送、全委任種別の宛先と受渡し。"
+      "percent": 90,
+      "basis": "現当主の政治署名と現地手配の依頼者を別記し、固定宛先の確認書/受領返報/不達返報を物理配送。実署名者の認識を経て依頼者へ伝え、原本と写しは元の条件・日時・根拠を保持する。 一般の代理開封/再委任と全種類の重要書状、本人差出人の返報再送操作とGUI受入。"
     },
     "BD-28": {
-      "percent": 55,
-      "basis": "補給報告の実到達で既存の注意喚起/自動停止へ接続し、開封して初めて当時の内容を表示する。取消発送/受領認識/現物返納を分ける。 全通知の優先度・検索・表示整理と大規模世界の注意喚起設定。"
+      "percent": 70,
+      "basis": "封書の到達と本人開封、現当主の認識と相手の認識を分離。不達を知る前の再送と、受領返報既知後の不要な再送を拒否。返報自身もNPCが物理不達を認識後だけ三通まで写しを送る。 通知全種の表示/優先度/自動停止設定、本人の返報再送操作と全画面受入。"
     },
     "BD-29": {
       "percent": 60,
@@ -240,12 +240,12 @@
       "basis": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。 移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。"
     },
     "BD-41": {
-      "percent": 35,
-      "basis": "成立済み組織間不戦合意の知識を、旧代表者が現地で新当主へ示す。元の条件/期限を保持し、旧宛先・未開封・未成立の交渉を新当主の承諾へ読み替えない。 一般条約/同盟条件、複数世代の連鎖と新代表者の追加確認書配送。"
+      "percent": 55,
+      "basis": "成立済み組織間不戦原本を新当主が別書状で確認し、同じ版・条件・元期限を相手へ伝える。受領返報と不達返報までつなぎ、未知の新代表者や現在地へ勝手に宛先変更しない。 代表変更を知った後の再確認、一般条約/同盟条件、複数世代の外交連鎖。"
     },
     "BD-42": {
-      "percent": 15,
-      "basis": "不戦合意の成立と新当主の認識、相手の認識を分ける。現地確認後だけ新当主の自家新規交戦判断に反映し、元期限で終了。旧代表者の権限外自動返答を止める。 一般同盟義務/破棄/違反/制裁とNPCの長期履行判断。"
+      "percent": 30,
+      "basis": "相手本人が確認書を開封してから既存の自家履行判断へ反映。実原本の回収と再送分の重複到達でも返報・履行を二重にせず、期限後の遅着や返報の写しで不戦期間を延長しない。 一般同盟義務/破棄/違反/制裁とNPCの長期的な履行判断。"
     },
     "BD-43": {
       "percent": 0,
@@ -268,8 +268,8 @@
       "basis": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。 全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。"
     },
     "BD-48": {
-      "percent": 90,
-      "basis": "旧城主任命・保管観測・報告の原本を保持して新任命を別作成。処分/調達/引当枠を共有し、組織当事者の不戦条件/期限と旧宛先を保持して新当主の認識を記録する。 一般条約/人質/保証、活動軍、複数世代と一般相続の個別承継。"
+      "percent": 95,
+      "basis": "当主交代後の組織間不戦条件と署名原本を保持し、新署名者の確認書、元当事者宛ての旧書状、依頼者への返報を別原本で接続。返報再送でも根拠/観測/元期限/財産を継承する。 一般条約/人質/保証、活動軍、複数世代と一般相続の個別承継。"
     },
     "BD-49": {
       "percent": 50,
@@ -321,20 +321,20 @@
     }
   },
   "focus": {
-    "leaf": "BD-48",
-    "title": "城主・保管・成立済み不戦原本の個別引継ぎ",
-    "status": "完成条件5/5。PR32統合後も城主/不戦合意まで続行。新しいmain統合のみ承認待ち。",
+    "leaf": "BD-41",
+    "title": "現当主の不戦確認書・受領/不達返報と写しの再送",
+    "status": "完成条件5/5。PR33統合後も返報自体の再送まで継続。新しいmain統合のみ承認待ち。",
     "exit": [
-      "Current head may accept an explicitly consenting local household member personal pledge after the original reciprocal service is individually released; membership, office, private assets and obligations remain separate and busy subjects cannot silently change service",
-      "After actual head succession an unexpired old castellan original can be reauthorized once by local current head and directly bound consenting agent; preserve original expiry, ownership, old receipts and dated authority without reviving superseded appointments",
-      "Reauthorized castellan custody, local NPC administration, procurement/freight delegated budgets, dated sealed report recipients and late old reports stay attached to their distinct originals; no inventory duplication or monthly reset; An actually formed, personally known organization-party truce may be locally shown by the old representative to the actual successor, preserving exact terms/expiry and sealed old recipients; pending old-address papers do not become successor consent and retired signers cannot automatically exercise new political authority",
-      "Normal castle and personal-service screens expose valid local operations and distinguish ineffective old appointment from effective authority; unknown remote stock and unconsenting candidates are not disclosed",
-      "Wrong/stale/repeated/absent/refused/expired/forged operations, actual generation recovery and future equality, old-save compatibility and headless 3D data are verified; GUI appearance remains separate"
+      "After an actual inherited formed truce, a current head explicitly signs a distinct physical confirmation at the local home, with known original terms/expiry and fixed current opposite representative/address; a retired player may arrange this only through the consenting actual local head and requester provenance is recorded without impersonation",
+      "Recipient knowledge changes only after physical receipt/opening; a separately delivered dated receipt returns to the explicitly named requester at the original return address; old acceptance recipients, versions, original expiry, assets and declarations stay unchanged",
+      "A failed confirmation first reports physically to its actual signer and then a distinct dated failure notice travels to the named requester; only personally learned failure permits bounded same-original resends, with no remote tracking or altered recipient/terms/expiry; Dated receipt and failure-notice papers themselves use at most three physical copies only after their actual NPC sender personally receives the failure report; copies preserve observed time, evidence, terms, recipient and fixed return address, and never sign a new political promise",
+      "Late originals and copies do not repeat knowledge-driven execution or receipt creation; changed current political authority, expiry, absence, refusal, stale/repeated/conflicting IDs and forged provenance are rejected; ordinary entry screens expose only personally known papers",
+      "Focused and relevant regression tests, actual generation recovery/future equality, old-save byte compatibility, Game build and headless Node3D positions are verified separately from GUI/appearance; bounded report relay retry is included; generalized treaties remain explicit later scope"
     ],
     "deferred": [
-      "一般条約/人質/保証と外交確認書配送",
+      "相手代表の変更通知・再確認と一般条約/人質",
+      "本人差出人の返報再送操作・複数世代外交",
       "活動軍/複数拠点と全国NPC家督",
-      "死亡/係争と一般相続",
       "正式素材/全画面/全国長期受入"
     ]
   },
@@ -367,7 +367,7 @@
       "id": "R4",
       "title": "相手に働きかけて結果を変える",
       "domain": "情報・交渉と政治／武将の人生",
-      "status": "情報料/私的協力と不戦交渉の基盤に、成立済み不戦原本の新当主による現地確認を接続。相手への追加確認書・一般条約/同盟/人質/支持と内応の拡張は後続。",
+      "status": "成立済み不戦原本の現地引継ぎから、新当主の確認書・受領返報・不達返報と各写しの物理配送を接続。相手代表の変更通知・一般条約/同盟/人質と内応拡張は後続。",
       "finish": "情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
       "why": "前工程の資源と人物関係を交渉材料にする。"
     },
@@ -388,7 +388,7 @@
       "why": "各地域の一巡を全国へ広げる。データ整理など独立作業は途中から並行する。"
     }
   ],
-  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。 2026-10-29：PR28統合後も城主交代と行政/保管へ継続。67f7209の基準固定、過大な財政完成扱いを実装前に訂正。再評価/重み変更の加点なし。 2026-10-29：PR29統合後も当主職交代と個別給付/運搬へ継続。9aed08cの実装前基準を固定し、再評価/重み変更の加点なし。 2026-10-29：PR30統合後も返納済み軍務の発令者引継ぎと家中の再合意へ継続。e57bb49とf728123の実装前固定基準を保持し、再評価/重み変更の加点なし。 2026-10-29：PR31統合後も旧代理行政/個人奉公へ継続。85549beと0ef5541の実装前固定基準を保持し、重み/分母変更や再評価加点なし。財政区分は事前上限100から99へ保守的に控えて計上。 2026-10-29：城主・保管だけで区切らず、成立済み不戦原本の引継ぎまで継続。実装前基準26/27を保持し、重み/分母・既存評価は変更しない。 既に実装した城/家の変動を「計画・未着手」としていた古い工程表示も実装状況へ訂正した。説明の訂正に伴う％加点はない。",
+  "roadmap_note": "これは次に渡る分野を見えるようにした実装順の計画で、日付・所要期間の約束ではない。各分野は一巡を接続して次へ渡り、後続工程で再び拡張する。質問された分野だけを理由に順番を変更せず、変更時は依存関係と理由をここへ記録する。 2026-10-27：1ポイントは停止目標ではなく最低条件。村落相談からNPC地域運営まで連続実装し、二つの実装前固定基準で増分を合算。 2026-10-27：PR17の承認統合後も停止せず、限定代理行政と実配送・不達報告再送まで続行。 2026-10-27：PR18統合後も継続し、物資の実消費と3地域の生産/住民購入、全国30市場までまとめて実装。市場データは調整用で史実存在の証明ではない。 2026-10-27：PR19承認統合後も継続し、全国30拠点の試作台帳と家の現地自律調達まで実装。1ポイントは区切りにせず、完成条件を満たすまとまりで進行。 2026-10-27：PR20承認統合後も継続。家の物理仕入れから現地代理受領までまとめ、二つの実装前基準を保持して計算。評価変更や分母変更の加点なし。 2026-10-27：PR21承認統合後も継続。地域労働・実米の軍務接続をPC/NPCと端数返納までまとめ、実装前基準の重み/分母を維持。 2026-10-27：PR22承認統合後も継続し、同意した家臣の物理仕入れ/帰還と情報秘匿を接続。重み/分母は固定。 2026-10-27：PR23承認統合後も継続し、物理報告/取消と実補給の二工程をまとめた。全国の軍道路行軍と現行120m戦場を区別し、重み/分母を維持。 2026-10-28：PR24統合後も行軍と現地調達をまとめて継続。原本/家/倉と現在の集合地を分離し、固定重み/分母を維持。 2026-10-28：PR25承認統合後も街道補給と部分受渡し/書状まで継続。固定基準はコード前に拡張し、BD-28の仮定値を実値+5へ事前訂正。進捗加点前であり再評価加点なし。 2026-10-28：PR26承認統合後も生活・待遇・軍務負担へ続行。b129764の実装前基準に固定。再評価/重み/分母変更による加点なし。 2026-10-28：PR27承認統合後も、城の現地合意/門と本丸/軍事占有と財産分離へ続行。cc546daの実装前基準に固定し、重み/分母変更・再評価の加点なし。 2026-10-29：PR28統合後も城主交代と行政/保管へ継続。67f7209の基準固定、過大な財政完成扱いを実装前に訂正。再評価/重み変更の加点なし。 2026-10-29：PR29統合後も当主職交代と個別給付/運搬へ継続。9aed08cの実装前基準を固定し、再評価/重み変更の加点なし。 2026-10-29：PR30統合後も返納済み軍務の発令者引継ぎと家中の再合意へ継続。e57bb49とf728123の実装前固定基準を保持し、再評価/重み変更の加点なし。 2026-10-29：PR31統合後も旧代理行政/個人奉公へ継続。85549beと0ef5541の実装前固定基準を保持し、重み/分母変更や再評価加点なし。財政区分は事前上限100から99へ保守的に控えて計上。 2026-10-29：城主・保管だけで区切らず、成立済み不戦原本の引継ぎまで継続。実装前基準26/27を保持し、重み/分母・既存評価は変更しない。 既に実装した城/家の変動を「計画・未着手」としていた古い工程表示も実装状況へ訂正した。説明の訂正に伴う％加点はない。 2026-10-29：確認書の送付だけで区切らず、返報の紛失・認識後の写し再送まで継続。実装前基準28/29を保持し、重み/分母変更や既存評価の再加点なし。",
   "crosscut_notes": [
     {
       "title": "謀略・内応の現在位置",
@@ -482,16 +482,16 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 27,
-    "baseline_commit": "eaf8d11",
-    "baseline": 45.37843614718615,
-    "current": 46.52426948051948,
-    "earned_gain": 1.1458333333333333,
+    "version": 29,
+    "baseline_commit": "c64a4c3",
+    "baseline": 46.52426948051948,
+    "current": 47.951352813852814,
+    "earned_gain": 1.4270833333333333,
     "excluded_reassessment": 0,
     "minimum": 1,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "9b12f14b342092c29a9c83649078788a77c0add8"
+    "integrated_main": null
   },
   "range_note": "2026-10-29: Fixed-weight earned estimate crossed the previous display band; move the rough display range from30-40 to40-50. No leaf, weight, denominator or earned-gain change."
 }
