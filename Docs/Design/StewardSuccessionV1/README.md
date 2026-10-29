@@ -7,3 +7,12 @@
 3. The player may separately end a retired lords personal service or explicitly pledge the current head by local mutual consent; membership, office, land, private assets, debts and existing military originals remain separate, and busy/unreturned duties block premature release
 4. Actual dated authority, current versus historical service, known local handover and sealed remote reports are projected consistently; NPC local administration follows only an effective reauthorized original and never auto-controls the player
 5. Normal entry, wrong/stale/repeated/refused/expired/absent/tampered operations, actual generation recovery/future equality, old-save byte compatibility and headless Node3D data are verified separately from GUI/appearance
+
+
+## 具体例と今回の境界
+
+AからBへ当主職を渡しても、BからAへの元の個人奉公は自動で消さない。AがBへ個人奉公する場合は、まずAとBが元の一件を解き、その後でAからBへの別の奉公を合意する。行政だけなら、この個人奉公の変更を経ず、BからAへの限定行政原本を再承認できる。
+
+再承認は元の期限を越えず、同じ場所・月の処分枠と調達枠を共有する。前の担当者の購入履歴と運搬前渡金も控除する。旧取消・旧報告は元の原本・観測時点・宛先のまま扱う。
+
+個人奉公の整理は所属の離脱/移籍ではない。旧城主任命・保管担当の一般再任命、条約/人質、活動中の軍の指揮移譲、全国NPCの自律家督、死亡/係争は未実装範囲として残す。NPCが新当主と旧運搬者を兼ねる場合の、自律的な承継確認と精算も後続であり、今回の共有予算テストは元の前渡金を保持して控除するところまでである。

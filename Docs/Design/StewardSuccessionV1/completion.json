@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "After an actual head succession, current head and a local household agent explicitly reauthorize an unexpired old administrative original; old grants, observations, papers and original expiry are retained, without political office, personal service or property transfer",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/RegionalDomains.cs",
+        "Tests/StewardSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/StewardSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "New grants may retain or replace the local agent with consent, but a shared site/month delegation budget and procurement/freight reservations do not reset; old revocation or late reports never cancel or rewrite a distinct new original",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/RegionalDomains.cs",
+        "Tests/StewardSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/StewardSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The player may separately end a retired lords personal service or explicitly pledge the current head by local mutual consent; membership, office, land, private assets, debts and existing military originals remain separate, and busy/unreturned duties block premature release",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/RegionalDomains.cs",
+        "Tests/StewardSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/StewardSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Actual dated authority, current versus historical service, known local handover and sealed remote reports are projected consistently; NPC local administration follows only an effective reauthorized original and never auto-controls the player",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/RegionalDomains.cs",
+        "Tests/StewardSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/StewardSuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Normal entry, wrong/stale/repeated/refused/expired/absent/tampered operations, actual generation recovery/future equality, old-save byte compatibility and headless Node3D data are verified separately from GUI/appearance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityStewardship.Succession.cs",
+        "Core/Contracts/HouseholdService.cs",
+        "Core/Contracts/CommunityStewardship.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/HouseLogistics.cs",
+        "Core/Contracts/RegionalDomains.cs",
+        "Tests/StewardSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdService.cs",
+        "Game/Scripts/NewGameRuntime.Stewardship.cs",
+        "Docs/Design/StewardSuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "Local bounded steward reauthorization and explicit personal service after an actual living-head succession. New administrative original retains old expiry and shared site/month disposal/procurement/freight reservations. No automatic personal allegiance, membership/office/land/troop/debt transfer. Current-player and directly related personal bonds only, at faction home. Old formal castellan/store appointments, house exit/transfer, treaty/hostage assumption, active-army takeover, general NPC succession, death/disputes and full nationwide behavior remain deferred. Full3464/GUI NOT_RUN."
+}

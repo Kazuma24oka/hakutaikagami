@@ -43,6 +43,11 @@ def check():
     p=json.loads((R/"Docs/Development/ProgressV1/progress.json").read_bytes());assert a["domains"]==b["domains"] and a["excluded_from_rollup"]==b["excluded_from_rollup"],"Weights/exclusions changed"
     design=p["design_source"];assert (R/design).read_bytes()==subprocess.check_output(["git","show",pin+":"+design],cwd=R),"Design denominator changed"
     d=json.loads((R/design).read_bytes());expected={k:v["percent"] for k,v in b["baseline_leaves"].items()};expected.update(b["targets"])
+    if version==25:
+        assert b['baseline_leaves']['BD-34']['percent']==95 and b['targets']['BD-34']==100
+        # A conservative under-report against a frozen maximum never adds credit.
+        expected['BD-34']=99
+        assert a['approval_batch']['conservative_target_cap']['BD-34']['reported']==99
     assert {k:v["percent"] for k,v in a["leaves"].items()}==expected,"Only predeclared targets eligible"
     old=calculate(b,d,b["baseline_leaves"]);new=calculate(b,d,a["leaves"]);gain=new-old;assert gain>=Fraction(str(b["minimum_gain"])),"Less than1 earned point"
     if version==1:
