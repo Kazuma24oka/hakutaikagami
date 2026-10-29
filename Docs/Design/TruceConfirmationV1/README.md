@@ -7,3 +7,7 @@ PR33を承認内容でmain9b12f14へ統合しtree一致を確認後、同じブ�
 3. A failed confirmation first reports physically to its actual signer and then a distinct dated failure notice travels to the named requester; only personally learned failure permits bounded same-original resends, with no remote tracking or altered recipient/terms/expiry
 4. Late originals and copies do not repeat knowledge-driven execution or receipt creation; changed current political authority, expiry, absence, refusal, stale/repeated/conflicting IDs and forged provenance are rejected; ordinary entry screens expose only personally known papers
 5. Focused and relevant regression tests, actual generation recovery/future equality, old-save byte compatibility, Game build and headless Node3D positions are verified separately from GUI/appearance; report relay retries and generalized treaties remain explicit later scope
+
+## 返報自体の再送（実装前の追加範囲）
+
+署名者・宛先・期限を固定した確認書と返報の36件が成功後も続行。返報自体が失われた場合、NPC差出人が実際の不達返報を受け取ってから、同じ観測日時・内容・根拠・宛先で合計三通まで再送する。過去の事実の写しであり、新しい政治合意ではない。実装前基準28を保持して29へ追加し、重み・分母・既存評価は変更しない。
