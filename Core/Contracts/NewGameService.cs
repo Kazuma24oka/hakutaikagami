@@ -22,7 +22,7 @@ public static partial class NewGameService
     static string NoticeId(EntityId id,CareerEventKind kind,string related)=>"message:service/notice/"+Hash(id.Value+"/"+kind+"/"+related);
     static ServiceState State(ContractWorld w)=>w.Service??new(1,Contract,[],[],[],[]);
     static SetupPerson Player(ContractWorld w)=>w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);
-    static bool FreeOfOffice(ContractWorld w)=>!w.Offices.Any(r=>r.Subject==w.PlayerControl&&(!HouseSuccession.Enabled(w)||r.From<=w.ElapsedSeconds&&w.ElapsedSeconds<r.Until))&&!w.LandRights.Any(r=>r.Subject==w.PlayerControl);
+    static bool FreeOfOffice(ContractWorld w,long? at=null,long? revision=null){long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;if(!HouseSuccession.Enabled(w))return !w.Offices.Any(o=>o.Subject==w.PlayerControl)&&!w.LandRights.Any(l=>l.Subject==w.PlayerControl);var offices=w.Offices;if(w.Succession?.Entries.Any(e=>e.Input.Action==HouseSuccessionAction.Resolve&&e.Outcome=="confirmed")==true){var past=w.ForkMilitaryLedger();if(w.Succession is {} succession)past.Succession=succession with{Entries=succession.Entries.Where(e=>e.At<t||e.At==t&&e.Revision<=r).ToArray()};offices=HouseSuccession.Offices(past,NewGameWorld.InitialRelations(w.NewGame!).Offices);}return !offices.Any(o=>o.Subject==w.PlayerControl&&o.From<=t&&t<o.Until)&&!w.LandRights.Any(l=>l.Subject==w.PlayerControl&&l.From<=t&&t<l.Until);}
     static ServiceCase? Initial(ContractWorld w)
     {
         var p=Player(w);return p.Lord==null||p.Faction==null?null:new(new("service-case:initial/"+Hash(p.Id)),new(p.Lord),new(p.Faction),new(p.Site),true);
@@ -53,11 +53,11 @@ public static partial class NewGameService
             bool valid=offer!=null&&t<offer.At+OfferSeconds&&!answered&&!closed;
             string status=employed?"所属・直属を認識":(known.LastOrDefault() is {} last?Notice(last).Statement:CareerStatement.NoAgreement) switch{CareerStatement.Offered=>answered?"回答発送・成立通知待ち":valid?"仕官条件を確認・回答可能":"回答期限を経過",CareerStatement.Declined=>"辞退を確認",CareerStatement.Expired=>"期限切れを確認",CareerStatement.Refused=>"不承諾を確認",CareerStatement.Ended=>"辞去成立を確認",_=>"申し出発送・返答未確認"};
             if(own.Any(q=>q.Input.Action==CareerAction.RequestRelease)&&!known.Any(e=>e.Kind==CareerEventKind.Released))status=known.Any(e=>e.Kind==CareerEventKind.ReleaseWaiting)?"引継ぎの返報待ち":"辞去願い発送・返答未確認";
-            cards.Add(new(c.Id,c.Principal,Name(w,c.Principal)+"："+status,valid,valid,employed&&FreeOfOffice(w)&&!own.Any(q=>q.Input.Action==CareerAction.RequestRelease)));
+            cards.Add(new(c.Id,c.Principal,Name(w,c.Principal)+"："+status,valid,valid,employed&&FreeOfOffice(w,t,r)&&!own.Any(q=>q.Input.Action==CareerAction.RequestRelease)));
             if(!c.Initial&&!closed&&!employed)pending=true;
         }
         string role=house==null?"浪人":lord==null?NewGameWorld.RoleName(p.InitialRole??StartTemplate.Daimyo):"家臣・随行";
-        return HouseholdService.Decorate(w,t,r,new(role,house,lord,house==null&&lord==null&&!pending&&FreeOfOffice(w),cards.ToArray()));
+        return HouseholdService.Decorate(w,t,r,new(role,house,lord,house==null&&lord==null&&!pending&&FreeOfOffice(w,t,r),cards.ToArray()));
     }
     public static EntityId[] LocalPrincipals(ContractWorld w)
     {

@@ -29,7 +29,7 @@ public static partial class NewGameService
                 case CareerEventKind.Declined:Need(!c.Initial&&offer!=null&&Source(CareerAction.Decline)&&!Resolved(),"辞退の受領がありません");statement=CareerStatement.Declined;break;
                 case CareerEventKind.Expired:Need(!c.Initial&&offer!=null&&e.At>=offer.At+OfferSeconds&&!Resolved()&&(e.Related==offer.Message||Source(CareerAction.Accept)),"期限切れの根拠がありません");statement=CareerStatement.Expired;break;
                 case CareerEventKind.ReleaseWaiting:Need(Source(CareerAction.RequestRelease)&&Active(w,c,e.At,e.Revision-1)&&!ReportsKnown(w,c,e.At,e.Revision-1),"未着返報の引継ぎ待ちではありません");statement=CareerStatement.AwaitingReports;break;
-                case CareerEventKind.Released:Need(Source(CareerAction.RequestRelease)&&Active(w,c,e.At,e.Revision-1)&&e.At>Joined(w,c)!.At&&ReportsKnown(w,c,e.At,e.Revision)&&FreeOfOffice(w),"辞去の受領・実際の返報・役職引継ぎが不足しています");statement=CareerStatement.Ended;effective=e.At;break;
+                case CareerEventKind.Released:Need(Source(CareerAction.RequestRelease)&&Active(w,c,e.At,e.Revision-1)&&e.At>Joined(w,c)!.At&&ReportsKnown(w,c,e.At,e.Revision)&&FreeOfOffice(w,e.At,e.Revision-1),"辞去の受領・実際の返報・役職引継ぎが不足しています");statement=CareerStatement.Ended;effective=e.At;break;
                 case CareerEventKind.StatusSent:Need(Source(CareerAction.Inquire),"照会原本がありません");var status=Status(w,c,e.At,e.Revision-1);statement=status.State;effective=status.Effective;break;
                 default:throw new InvalidDataException("未対応の仕官出来事です");
             }
