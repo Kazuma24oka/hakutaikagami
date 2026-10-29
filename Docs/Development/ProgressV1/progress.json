@@ -145,11 +145,12 @@
     "Docs/Design/MilitarySuccessionV1/verification.json": "0af75165a152ea551fd094bfb6113da118a1faf8db7fb741685417ee21f65a3b",
     "Docs/Design/MilitarySuccessionV1/completion.json": "e2391db89186c871e472e035e4c72343af5f790b2ccb1e1c913a563987fd8bdc",
     "Docs/Design/MilitarySuccessionV1/README.md": "622e4c9e0e2fe7777d424b942704a5a2a5d5f8fdab82c83248e5f9643065e794",
-    "Docs/Design/MilitarySuccessionV1/integration.json": "d6158bbb1fe48317980cd79bc581acf130d573cee26f54e6ddcd135c36054a3b",
+    "Docs/Design/MilitarySuccessionV1/integration.json": "1a746921420d6db85402ab2241508ad50048671296276d5164769709b2783e69",
     "Docs/Design/MilitarySuccessionV1/legacy-sources.json": "1cbc5a4187f3bf3dd8fd3fd7ee908b02a1522c7350483a648273d98158fcdc0a",
     "Docs/Development/ProgressV1/approval-baseline-v22.json": "c402483c38ad15137261d6c1161099633a7ff7870e8f410710eb060a87e1deb6",
     "Docs/Development/ProgressV1/approval-baseline-v23.json": "f8cf94b56cfb657a9ae5756d35a7d22c80427bdb3e537beeb3df9fc0661d0c71",
-    "Scripts/verify_military_succession.py": "6779736c066560ec047f6bbb270410e687eefb80a2b62fbcb2112936473a375b"
+    "Scripts/verify_military_succession.py": "6779736c066560ec047f6bbb270410e687eefb80a2b62fbcb2112936473a375b",
+    "Scripts/.gitattributes": "5a682c5ffb88bc4e34382404a8a0ecb0f3cb1c24b51b82aa30ede5ad8052dd41"
   },
   "items": [
     {
