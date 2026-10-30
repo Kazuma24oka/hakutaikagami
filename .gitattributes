@@ -2129,3 +2129,6 @@ Scripts/verify_progress_scope.py -text
 Docs/Development/ProgressV1/approval-baseline-v47-scope.json -text
 Docs/Development/ProgressV1/approval-baseline-v48.json -text
 Docs/Design/ProgressScopeV2/** -text
+Docs/Development/ProgressV1/approval-baseline-v48-scope.json -text
+Docs/Development/ProgressV1/approval-baseline-v49.json -text
+Docs/Design/ProgressScopeV3/** -text

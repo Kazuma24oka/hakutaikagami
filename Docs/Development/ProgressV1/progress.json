@@ -18,11 +18,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "b4e29df5c8ff0d66cdf1096857d882d02bc717bc9aa5f7a00e0abeebca64666c",
-    "Docs/Development/ProgressV1/estimate.json": "52224d68b8c973c64f1d1bc6fba9e2af9cba137becd9de30bacfb53a93a3e5b5",
+    "Docs/Development/ProgressV1/estimate.json": "fedf338972714c87b970d5ae425498b128735245f55852e42d4092a506071616",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "619faa7722dd1f0f4e35e0d02d412bd5eb9d7ce73a6d6d7c3ccd6c5b7eaa8c0c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "c48557c51d612f4cfb2f076c5cac290352af1564c98287745a8530ec9fdd7606",
+    "Scripts/check_approval_batch.py": "22a4b668d808ca0898c030f9053e871d66044875b31c5db4dfbc859e1fee6031",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -119,8 +119,8 @@
     "Docs/Design/CastleAdministrationV1/legacy-sources.json": "3939e5348bf49312c64530ba7743b0291e8e69ce8ecea027a9d1ab8657ea7330",
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
-    "AGENTS.md": "3aee5149d6c68cf76a5cada851c9b69e84e1e100a23442d375942d84be54a760",
-    "Docs/Development/CURRENT_STAGE.md": "a3da959f06c5229f331616099568d53f6136a16d606864816200c20dcde695cd",
+    "AGENTS.md": "f06a6c78008a285506a36f34d509e0ee04b8a3524b1bf926b121b90e35878da6",
+    "Docs/Development/CURRENT_STAGE.md": "2c69eb496ac30939d3c12e6598194ca043db771079d6dd1e2296198a448652f0",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "0c049a93e380024c028abb22981fded7fdfe39b95eaf5858852308d2eb6b9b34",
@@ -374,7 +374,7 @@
     "Docs/Design/NpcPerformanceV1/README.md": "d786282e8fb2227561d4afa7596d0305e5d8e675d25b6d4485550b468a51fd49",
     "Docs/Development/ProgressV1/approval-baseline-v45.json": "3319e5a9082421f8d7f0604bf5adff6a08b2c08fc6c4cd23ebf7b906ca966c1c",
     "Scripts/verify_npc_performance.py": "bab617bb32020642bf9ac4036af9665009b41275de5c2f79067c98d575077d64",
-    "Docs/Development/PROCESS_V2.md": "53679513ab6e91e08e46dca16bd752a5da01381b325f7288c4d8f664336f834a",
+    "Docs/Development/PROCESS_V2.md": "431c777658877bb73f8d908883ea0ef38e48144937f38bf4e22ee96a58875963",
     "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328",
     "Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md": "fa5c29ab25b2310610f006f0e3fc352a4a38fb0d8bb300d4aed61c7fa13edbd8",
     "Docs/Archive/OPERATING_POLICY_HISTORY_TO_2026-10-31.md": "faaba696501198776822d8fe9908edc5d35f3716fd40f0630cc7b6aaf667242b",
@@ -385,13 +385,20 @@
     "Docs/Design/ProgressScopeV1/README.md": "dd3a78d8a9b22a49140fa4e1bb471440476ad0aaa972da8b852c76846668a383",
     "Docs/Design/ProgressScopeV1/completion.json": "1a981e30032346706250d23a736d8eefe244f994a03ddbf4a496e509cfcc9ecb",
     "Docs/Design/ProgressScopeV1/verification.json": "52d982ed9667e06d995c5ab1906b4d0b592edb020800c76cdaefa7b1575ac80d",
-    "Scripts/verify_progress_scope.py": "9bbff4332b85632091532386967f0fd257f1aac1fa3c544cfe205d8e70ff732c",
+    "Scripts/verify_progress_scope.py": "47337bc14f7d1f0d7b9d6f217a93bda04394d9bd2c91d5503a974d7e1b4b503e",
     "Docs/Development/ProgressV1/approval-baseline-v47-scope.json": "019fe116ab3b1e302a48e877e0f608451b60090fdf5078b1066b9e8c64cd319f",
     "Docs/Development/ProgressV1/approval-baseline-v48.json": "44f0b2b446e5c16793793b2875f19ab463aceaf8c3fc616f0ffa85b6a9c93a00",
     "Docs/Design/ProgressScopeV2/scope.md": "0b9a4c2a15ba9b0befcdfd3152cd0fb823de9721f7944c14a3ac9ebdc5ee761a",
     "Docs/Design/ProgressScopeV2/README.md": "813c6bb624fedfd187ca9482294ccca8cc39778e24538bd977a3572857a486fd",
     "Docs/Design/ProgressScopeV2/completion.json": "601f7126eded05a9fd56bfd240b9233997cef7bc8fa89db16c15c1d5eb3bfc8f",
-    "Docs/Design/ProgressScopeV2/verification.json": "cb7708e20148251f8d315b75699334b3e3cd499645b165fe1f1d922cdbee5ba8"
+    "Docs/Design/ProgressScopeV2/verification.json": "cb7708e20148251f8d315b75699334b3e3cd499645b165fe1f1d922cdbee5ba8",
+    "Docs/Development/ProgressV1/approval-baseline-v48-scope.json": "f2cfdb1e4754dd5cd511ebf030aebbf1e45606f093cf35c965b30cac24e88192",
+    "Docs/Development/ProgressV1/approval-baseline-v49.json": "10769a9df3187f3c4aa11e564daac2700c551d77da9aaf6b16bbe165aced1032",
+    "Docs/Design/ProgressScopeV3/scope.md": "fe33d1a88f6f019add9696275b7c664c4ec2bf487f55f7eb118820de9461accb",
+    "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
+    "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
+    "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "5a6a90ed017df6c5a6ba3df797146a480d2efc5d2794e2d99582acd0d901052c"
   },
   "items": [
     {
@@ -480,7 +487,7 @@
       "id": "BD-05",
       "status": "normal",
       "existing": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。",
-      "remaining": "全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。",
+      "remaining": "全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。 統合案で追加：作成武将での新しい項目の設定（生年・家系・兵科適性・志・信仰など。Proposals/CHARACTER_DATA_FIELDS_V1）。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
         "Core/Contracts/RegionalTrade.cs",
@@ -493,7 +500,8 @@
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/OfficerLibraryStore.cs",
         "Game/Scripts/NewGameFrontEnd.cs",
-        "Tests/NewGameSetupTests.cs"
+        "Tests/NewGameSetupTests.cs",
+        "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -913,7 +921,7 @@
       "id": "BD-18",
       "status": "normal",
       "existing": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。",
-      "remaining": "複数年代の正式史実データ/シナリオ差分と製品データ移行。",
+      "remaining": "複数年代の正式史実データ/シナリオ差分と製品データ移行。 統合案で追加：拠点の新しい値の持ち方（開発の4軸と上限・民心・治安・門徒・城の区画の堅さ・寺社の組織・職人集団・名物の所在。CHARACTER_DATA_FIELDS_V1 §3）。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -935,7 +943,8 @@
         "Docs/Design/MaterialMarketsV1/verification.json",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameWorld.cs",
-        "Game/Scripts/NewGameMap.cs"
+        "Game/Scripts/NewGameMap.cs",
+        "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -984,12 +993,13 @@
       "id": "BD-20",
       "status": "normal",
       "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。",
-      "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。 統合案で追加：§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1）。",
+      "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。 統合案で追加：§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1）・史実人物の新しい項目の採録（生年・没年・血縁・家系・兵科適性・志・席次・官位・初期の名物など）と拠点の新しい値の初期データ（CHARACTER_DATA_FIELDS_V1）。",
       "evidence": [
         "Core/Contracts/NationalRoutes.cs",
         "Core/Contracts/HistoricalRoads.cs",
         "Core/Contracts/HistoricalStartCatalog.cs",
-        "Tests/HistoricalRoadTests.cs"
+        "Tests/HistoricalRoadTests.cs",
+        "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3303,7 +3313,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "NPCの既知の用件と空き時間の修行（凍結済み：NpcPurposeV1・基準v48）",
+    "NPCの既知の用件と空き時間の修行（凍結済み：NpcPurposeV1・基準v49）",
     "統合案第14節 0a 時間の仕組み（日の速度・次の出来事まで・自動停止）",
     "0b NPCの判断の土台",
     "0c 史実の事件の仕組みと年代記",

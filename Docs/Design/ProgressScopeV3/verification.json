@@ -1,0 +1,20 @@
+{
+  "status": "PASSED",
+  "scope": "integration-scope-reassessment",
+  "round": "ProgressScopeV3",
+  "inputs": {
+    "Docs/Development/ProgressV1/approval-baseline-v48-scope.json": "f2cfdb1e4754dd5cd511ebf030aebbf1e45606f093cf35c965b30cac24e88192",
+    "Docs/Development/ProgressV1/approval-baseline-v49.json": "10769a9df3187f3c4aa11e564daac2700c551d77da9aaf6b16bbe165aced1032",
+    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328",
+    "Docs/Proposals/GETENROKU_INTEGRATION_V1.md": "98ab77528740c1ec5053d0c4ba612d603a79d194a1c694bc931f3440ca81569b",
+    "Docs/References/GETENROKU_BACKLOG.md": "b5a228a98cf6f37109799f6952726990ea00366cea60470c4a3d059c548548ea",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "5a6a90ed017df6c5a6ba3df797146a480d2efc5d2794e2d99582acd0d901052c"
+  },
+  "previous_total": 48.960633116883116,
+  "reassessed_total": 48.38682359307359,
+  "reassessment_delta_excluded": -0.5738095238095227,
+  "reviewed_items": 3,
+  "changed_items": 3,
+  "tests": "NOT_RUN (documentation only)",
+  "gui": "NOT_RUN"
+}

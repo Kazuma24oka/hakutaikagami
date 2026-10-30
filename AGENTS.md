@@ -17,6 +17,7 @@
 | 新機能のバックログ | Docs/References/GETENROKU_BACKLOG.md |
 | 位階・官職・幕府職・家中職の表 | Docs/Proposals/RANKS_AND_OFFICES_V1.md |
 | 人質・従属の引き継ぎ | Docs/Proposals/GETENROKU_HANDOFF_D3_D4.md |
+| 人物・家・拠点に持たせる項目（データの形・史実の採録・作成武将） | Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md |
 | 共通契約（時計・配送・保存など） | Docs/Design/CommonContractV1/common-contract-v1.json |
 | 平時・戦時の操作の骨格（PW01〜07） | Docs/Decisions/2026-10-19_PLAYER_PEACE_WAR_FLOW.md |
 | 現行方針の優先 | Docs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md（旧 Confirmed と食い違う範囲は現行方針が正） |

@@ -96,8 +96,8 @@
       "basis": "登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変、加点なし）。 3000活動人物/1000拠点/500軍と実機FPSの受入。"
     },
     "BD-05": {
-      "percent": 65,
-      "basis": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。"
+      "percent": 55,
+      "basis": "2026-10-31（3回目）データの側の範囲（作成武将での新しい項目の設定（生年・家系・兵科適性・志・信仰など。Proposals/CHARACTER_DATA_FIELDS_V1））を追加して再評価（旧65%）。 既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。"
     },
     "BD-06": {
       "percent": 14,
@@ -148,16 +148,16 @@
       "basis": "同じ軍勢と本人を共通陸路の実位置へ接続し、復旧前後の実Node3Dを照合。到着先の集合地から局所布陣へ連続する。 全国地形LOD/起伏精細化と海域詳細、大規模世界の描画最適化。"
     },
     "BD-18": {
-      "percent": 65,
-      "basis": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 複数年代の正式史実データ/シナリオ差分と製品データ移行。"
+      "percent": 50,
+      "basis": "2026-10-31（3回目）データの側の範囲（拠点の新しい値の持ち方（開発の4軸と上限・民心・治安・門徒・城の区画の堅さ・寺社の組織・職人集団・名物の所在。CHARACTER_DATA_FIELDS_V1 §3））を追加して再評価（旧65%）。 新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 複数年代の正式史実データ/シナリオ差分と製品データ移行。"
     },
     "BD-19": {
       "percent": 85,
       "basis": "担当家臣が本人と独立した共通陸路を移動し、停止/再開/待機/帰還の実位置を保持。補給担当者も同じGodot座標へ投影する。 軍勢の海上輸送、一般の多荷種隊商/道中引継ぎと全国規模の性能受入。"
     },
     "BD-20": {
-      "percent": 12,
-      "basis": "2026-10-31（2回目）統合案・バックログの範囲（§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1））を追加して再評価（旧15%）。 進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 8,
+      "basis": "2026-10-31（3回目）データの側の範囲（史実人物の新しい項目の採録（生年・没年・血縁・家系・兵科適性・志・席次・官位・初期の名物など）と拠点の新しい値の初期データ（CHARACTER_DATA_FIELDS_V1））を追加して再評価（旧12%）。 2026-10-31（2回目）統合案・バックログの範囲（§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1））を追加して再評価（旧15%）。 進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-21": {
       "percent": 75,
@@ -322,17 +322,17 @@
   },
   "focus": {
     "leaf": "BD-60",
-    "title": "統合案・バックログの範囲の追加（2回目の再評価）",
-    "status": "完成条件5/5。1回目で漏れた範囲（計略の破壊系・暗殺・発覚、仕事の種類、能力、死亡・出生、一族部隊、登用、治安、自動停止、婚姻同盟、画面の個別改善、音など）を19枠に足して下方再評価（51.4%→49.0%、加点ではない）。次はNPCの既知の用件と空き時間の修行（基準v48）。",
+    "title": "データの側の範囲の追加（3回目の再評価）",
+    "status": "完成条件5/5。採用した機能のデータの側（史実人物の値の採録・拠点の新しい値・作成武将での設定）をBD-05・18・20に足して下方再評価（49.0%→48.4%、加点ではない）。項目の一覧はCHARACTER_DATA_FIELDS_V1。次はNPCの既知の用件と空き時間の修行（基準v49）。",
     "exit": [
-      "Add the integration-proposal and adopted-backlog scope that the first reassessment missed (plots, work types, abilities, life events, clan units, appointments, public order, auto-stop, marriage alliance, screen issues, sound) to the affected existing items without changing the 60 items or weights.",
+      "Add the data side of the adopted features (field list Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md: historical value collection, site values, character-creation settings) to the affected existing items without changing the 60 items or weights.",
       "Re-rate only the affected items downward in proportion to the added scope; record old and new percentages, the added scope and the reason for each item.",
       "Record the total change as an excluded reassessment, never as earned implementation progress; no code, tests or assets change.",
-      "Re-freeze the next implementation stage (NPC purpose) on the second re-rated baseline before its code exists, keeping its per-item target increments.",
+      "Re-freeze the next implementation stage (NPC purpose) on the third re-rated baseline before its code exists, keeping its per-item target increments.",
       "Regenerate the progress view and pass the existing progress and approval-batch checks."
     ],
     "deferred": [
-      "NPCの既知の用件と空き時間の修行（approval-baseline-v48）",
+      "NPCの既知の用件と空き時間の修行（approval-baseline-v49）",
       "統合案第14節 0a 時間の仕組みから",
       "活動3000人/1000拠点/500軍と実機性能"
     ]
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 47,
-    "baseline_commit": "3f0b74ae3ca2a2c1afa49ffded3d30db737e2497",
-    "baseline": 48.960633116883116,
-    "current": 48.960633116883116,
+    "version": 48,
+    "baseline_commit": "1b973fee53d6ccad3fa00019bb8d7f3ac458edb5",
+    "baseline": 48.38682359307359,
+    "current": 48.38682359307359,
     "earned_gain": 0.0,
-    "excluded_reassessment": -2.420562770562775,
+    "excluded_reassessment": -0.5738095238095227,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
     "integrated_main": null
   },
-  "range_note": "2026-10-31: Two integration-scope reassessments lowered the raw estimate 57.677435% -> 51.381196% -> 48.960633%. Display band 45-55. These earn no progress and change no weights or denominator."
+  "range_note": "2026-10-31: Three integration-scope reassessments lowered the raw estimate 57.677435% -> 51.381196% -> 48.960633% -> 48.386824%. Display band 45-55. These earn no progress and change no weights or denominator."
 }
