@@ -2100,5 +2100,7 @@ Scripts/verify_adult_marriage.py -text
 
 Core/Contracts/HostageCustody.cs -text
 Tests/HostageCustodyTests.cs -text
+Tests/CustodySuccessionTests.cs -text
+Scripts/verify_custody_succession.py -text
 Game/Scripts/NewGameRuntime.Custody.cs -text
 Scripts/verify_hostage_custody.py -text
