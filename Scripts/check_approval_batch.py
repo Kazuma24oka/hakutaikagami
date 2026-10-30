@@ -61,6 +61,13 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==32:
+        from verify_remote_military_succession import check as verify
+        folder="RemoteMilitarySuccessionV1"
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/NewGameMilitary.RemoteSuccession.cs'],cwd=R,capture_output=True).returncode!=0,'Remote military scope not frozen before implementation'
+        assert 'AppendRemoteMilitary' in (R/'Game/Scripts/NewGameRuntime.HouseSuccession.cs').read_text(encoding='utf-8')
+        assert 'ShowRemoteMilitaryLetter' in (R/'Game/Scripts/NewGameRuntime.Mail.cs').read_text(encoding='utf-8')
+        assert 'SendRemoteMilitary' in (R/'Game/Scripts/NewGameRuntime.RemoteMilitarySuccession.cs').read_text(encoding='utf-8')
     elif version==31:
         from verify_active_military_succession import check as verify
         folder="ActiveMilitarySuccessionV1"

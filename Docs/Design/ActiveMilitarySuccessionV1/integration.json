@@ -1,7 +1,10 @@
 {
-  "status": "PENDING_USER_APPROVAL",
+  "status": "MERGED",
   "base_main": "e4f126be1a78b5835d362810c6985a9855680a3c",
   "scope": "Code and documentation only; no model assets",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/36",
-  "code_head": "5f610281bf4b8d2d8e5a54f53a9a6c5861514ceb"
+  "code_head": "5f610281bf4b8d2d8e5a54f53a9a6c5861514ceb",
+  "approved_head": "77bff7f91ed322ccc5074ab5b98b2c18a165e8df",
+  "integrated_main": "3fa9483745fe97a7b91a4bd0a3000d1bc7930f2f",
+  "approved_tree": "bf414126523aa4d5a00fee69083d1ed0db95e676"
 }

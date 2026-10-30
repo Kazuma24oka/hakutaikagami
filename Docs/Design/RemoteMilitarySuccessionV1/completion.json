@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "A current consenting head and player arrange a signed same-case military succession offer locally; it has a fixed named site, appointment, expiry and original signature, never a live receiver position",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/RemoteMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.RemoteMilitarySuccession.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+        "Scripts/probe_remote_military_road.py"
+      ]
+    },
+    {
+      "contract": "Physical arrival and personal opening alone do not change command; explicit player acceptance while deployed or on the same army road journey changes only the dated mandate, preserving route, units, case, supplies and original papers",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/RemoteMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.RemoteMilitarySuccession.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+        "Scripts/probe_remote_military_road.py"
+      ]
+    },
+    {
+      "contract": "Failures travel to the actual sender, then a dated fixed-address failure report travels to the player; known failure alone permits at most three original copies; explicit acceptance sends a separate physical receipt, with bounded personally-known failure retries",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/RemoteMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.RemoteMilitarySuccession.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+        "Scripts/probe_remote_military_road.py"
+      ]
+    },
+    {
+      "contract": "Duplicate and late originals/copies activate once, expiry/return/new case/authority changes and forged historical evidence fail; receipt knowledge and source timestamps are separate and player signing/opening is never automatic",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/RemoteMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.RemoteMilitarySuccession.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+        "Scripts/probe_remote_military_road.py"
+      ]
+    },
+    {
+      "contract": "Focused/related tests, real generation recovery and future equality, historical save byte compatibility, Game build and actual headless Node3D positions are verified separately from GUI/appearance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/ArmyRoadMarch.cs",
+        "Core/Contracts/CourierRecovery.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/RemoteMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.RemoteMilitarySuccession.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+        "Scripts/probe_remote_military_road.py"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "現地で本人と同意する現当主が、同じ軍務案件の書状を出発前に手配する範囲。指定拠点・待合日時・期限は固定で、遠隔追尾しない。署名済み手配が期限内の同じ軍の行軍継続を認めるが、新しい兵や軍務を貸与しない。遠隔からの初回合意手配、一般NPC軍の指揮移譲・全国NPC家督・死亡・係争・一般条約/人質は後続。外観/GUI操作・全3674件実行は未実施。"
+}
