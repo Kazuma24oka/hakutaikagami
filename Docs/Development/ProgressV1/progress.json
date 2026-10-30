@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "493dbd75159d33892cf34d246eaad3ade74a859404c86548e49bfd4e9a8440a1",
-    "Docs/Development/ProgressV1/estimate.json": "aed0b92c5bf56c764841f3c3626083ba7ea8eafa4dadfc2c29d9f369e30ed722",
+    "Docs/Development/OPERATING_POLICY.md": "70c6675c61a3f5410fa5fc50bfa89427d520ce3f1c3bd97927ebd539d969ef33",
+    "Docs/Development/ProgressV1/estimate.json": "488c3939f6ec9285949dd67944af705f29b69e8ae28163704ee96711455741bc",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "39e03db5041d37a55143064ab44b83c18254174a6ef89710d7a4690d6eb5d744",
+    "Scripts/check_progress_report.py": "0a8d7cb044e66a131b5f1c5fd7718aa716eb85b64c200955bb42150b19babfe6",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "f1ce7665a4977b79ea43ce393fee06089f8ae71fc9dfe18d342aaa4b71b4d69b",
+    "Scripts/check_approval_batch.py": "54891fd99914922127c73c21a5ea039fe75657b2ac3fabf325826cd64a922013",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -108,7 +108,7 @@
     "Core/Contracts/HouseFreightReceiving.cs": "3f7174f64a684269552a922a9943e8451fc162d7dfe90a56de673421f8bb8efe",
     "Tests/CastleAdministrationTests.cs": "fadfad6cb93590fefdd1b92652b788858e276c2089ebf6b22972b907db22fdf8",
     "Game/Scripts/NewGameRuntime.CastleAdministration.cs": "98ace8a0d14ee355105f7c48bb835d2f70fa1e6d229b8edb4f4824a7ba356b16",
-    "Game/Scripts/WorldClashProjectionCheck.cs": "9983a45aff2d84b014fa0f1179757adcd8ac20badf1a3bfd9e8ead5a835f5c7b",
+    "Game/Scripts/WorldClashProjectionCheck.cs": "ba00613e8362eb1a23663ca0c0b7d3fc363ca7b4b3e81d375f76e033ca744ed1",
     "Core/Contracts/CastellanReports.cs": "0685a89b8f1e99e78c05464d619c92fe3d2d5456da9aaffcd333ec232f1d66d9",
     "Tests/CastellanReportsTests.cs": "4102f7b623000459c0c6ea55252d70395df0e58a395093464b4a21fa7ec1943f",
     "Game/Scripts/NewGameRuntime.CastellanReports.cs": "63d266406daaffdbbe7720a62dbc7cde52cd4402dbf0f8f7e7fe48ca7558ed4d",
@@ -119,8 +119,8 @@
     "Docs/Design/CastleAdministrationV1/legacy-sources.json": "3939e5348bf49312c64530ba7743b0291e8e69ce8ecea027a9d1ab8657ea7330",
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
-    "AGENTS.md": "fd4aabdb7fcbd0b4ccb7ce22ab9a30df3269c2e26ac377db5b50ee1f65d5274b",
-    "Docs/Development/CURRENT_STAGE.md": "2a6c6d0dcfd58ef43a60fb990a1ecccedb30b1932f5f01f04b9503c6d67ec2a5",
+    "AGENTS.md": "dd4884bc85d959aed1fd1cc430707d21d91bb037f39babe76a27c811a3199dbe",
+    "Docs/Development/CURRENT_STAGE.md": "625e21b4a476be772cfc0de82ac1f2e9ae083771806d04b8dd6ab560118ef025",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "cfffe8acb65dc8dca22a96318b004700a079115f0c3847beb9904a865db551d9",
@@ -279,7 +279,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v36.json": "99e123577e5af0312af16a05f6b91b4cd14a7fd5b4f195aee16952f54dbb3db7",
     "Scripts/verify_character_development.py": "b5cb742e17286bcedfae31384de20fb6d2d01782f9a960909bf765c156eb2a9e",
     "Core/Contracts/CharacterRelations.cs": "162f0d181064bbc028e25b92c0f8e83d67cf96d2a8e69288051c99f44ae82dec",
-    "Core/Contracts/PersonalCompanions.cs": "0798b4daf3b8f467a68bb922f60790153e9bff83d6f48d0d3759fce7c02e9b0b",
+    "Core/Contracts/PersonalCompanions.cs": "c8eefb97f21be2b576a8c4807ac40edfda83bd7768aafa4f14dba036171fe34e",
     "Tests/CharacterRelationsTests.cs": "3a1be55f4ae0294d68af825206a60828510e6532ed0605fa41032b4a926e3321",
     "Docs/Design/CharacterRelationsV1/verification.json": "73daef5c270881566fc00548be7132ed6c3b7323263b4deaaed3daa029e931f1",
     "Docs/Design/CharacterRelationsV1/completion.json": "32c7aaa941928aee9f6c9ccb272b281b878cbdcaccd1f454b61b7139390397a0",
@@ -309,17 +309,25 @@
     "Docs/Design/AdultMarriageV1/legacy-sources.json": "d6d7e5376fce0dc00e2bedff22e185d1c96d00ce65eeaa762e90b2cdeb5fabb3",
     "Docs/Development/ProgressV1/approval-baseline-v39.json": "b02330d69ede4625f6831df7d5323c84f307aa331b0bf8125866eedb6f15b917",
     "Scripts/verify_adult_marriage.py": "61430a9386fb68a645b2465fc5824ef8a49f21d9dc6cee90cfc8131596f765bd",
-    "Core/Contracts/HostageCustody.cs": "1bba2062d36d123af8d7489c025c518cf18b98589b6f0a7748d8eea7ce68ae44",
+    "Core/Contracts/HostageCustody.cs": "5bfb71818aeb8c36607abdd2a52142c557d4091eaa6698914f7665fb0a96a06d",
     "Core/Contracts/ContractValidation.cs": "61c511f800b5f53752adcf064431e902bec8ec9f10a1b9fc7656406ac31864b0",
     "Tests/HostageCustodyTests.cs": "789842f58e12850257e5d66917a0dc844b1937bdaf64ed9ae92deb435d06c375",
-    "Game/Scripts/NewGameRuntime.Custody.cs": "bca89843c67b5d109562b040638e4dd018b59fd390492f140e86710d114acdc3",
+    "Game/Scripts/NewGameRuntime.Custody.cs": "c51be011a01d4d6e1d8f4dea755193bdce4f0aabd187276bf738c5842b52ecde",
     "Docs/Design/HostageCustodyV1/verification.json": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
     "Docs/Design/HostageCustodyV1/completion.json": "efc17c6cf942f1a3a5b71d58ecabff4ce9c44fcc3cf2a1f904852b964ac3f073",
     "Docs/Design/HostageCustodyV1/integration.json": "104e31334e04eac3f713644a99822211d83672c54cf540abd2f6c75bbe48871f",
     "Docs/Design/HostageCustodyV1/README.md": "45ad236bd54b86da5f659d1304326681fe74debd9a41c75b06bcf08382225c0b",
     "Docs/Design/HostageCustodyV1/legacy-sources.json": "604c63687216a7ca96bbe70e01396a3d907458232efe365b34014b9111f2f281",
     "Docs/Development/ProgressV1/approval-baseline-v40.json": "c666d2ef60dd1d06fbab3a54356d3da4ed77f32e36911236c0f0ac1bc421f22f",
-    "Scripts/verify_hostage_custody.py": "f6b771984336c86f200870b5ce1c85cd0e9b0e920f4d1634d2a2e201744f5a20"
+    "Scripts/verify_hostage_custody.py": "f6b771984336c86f200870b5ce1c85cd0e9b0e920f4d1634d2a2e201744f5a20",
+    "Tests/CustodySuccessionTests.cs": "0d7f8bd14ae7567bd543f787f8ed8efbf5262141cb116155e923d8fccb0d14c3",
+    "Docs/Design/CustodySuccessionV1/verification.json": "4b9ab4831fa4b513e0fbba1fc225d52aafae6dfa3a5566952a6c2ece8967d889",
+    "Docs/Design/CustodySuccessionV1/completion.json": "f2aa56e8545d7614422216d0988f1286d954f1934e03ec8d61be850a5d099de4",
+    "Docs/Design/CustodySuccessionV1/integration.json": "80644efe1bc99ad37fca3f76f2a77cad60c296395d9d3d570242f1260862a326",
+    "Docs/Design/CustodySuccessionV1/README.md": "c6a5565eff26b396e25f2701e5cc996a27eef7937d53a19142fb70413d6425b3",
+    "Docs/Design/CustodySuccessionV1/legacy-sources.json": "7aa8d6845f2d6bc23c380746f73f5e5822816650a68e3011a91fe9d9d39d5201",
+    "Docs/Development/ProgressV1/approval-baseline-v41.json": "ef8e6d299c8490d3ded3d86b7260d080b8d090441f8b2e46398a2ccb62362b33",
+    "Scripts/verify_custody_succession.py": "fe77ec3c381e06eaa15b70fc5e83675121a44c97c8850798b8aeea6065e7c856"
   },
   "items": [
     {
@@ -1999,8 +2007,8 @@
     {
       "id": "BD-44",
       "status": "design_only",
-      "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。",
-      "remaining": "戦闘捕縛・護送・交換・身代金・待遇の実消費・権限者交代の受渡し。",
+      "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。",
+      "remaining": "待遇の実物消費、戦闘捕縛・護送・交換・身代金、NPC受入側の自律当主交代。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -2008,8 +2016,10 @@
         "Core/Contracts/WorldSession.cs",
         "Core/Contracts/ContractValidation.cs",
         "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
         "Game/Scripts/NewGameRuntime.Custody.cs",
         "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodySuccessionV1/verification.json",
         "Docs/Design/HostageCustodyV1/verification.json",
         "Docs/Design/basic-design-v1.json"
       ],
@@ -3040,12 +3050,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 536,
+      "passed": 547,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/HostageCustodyV1/runtime-local/tests/hostage-custody-current.trx",
-      "sha256": "70a661bcde94e58bae3c68ac5ebd92a8b5c75be5dd50e83b6fc96a8b7a54e4af",
-      "scope": "Current related536/new28;6 actual recoveries;230 old saves;283 headless pairs. Full current3925 and GUI NOT_RUN."
+      "trx": "Docs/Design/CustodySuccessionV1/runtime-local/tests/custody-succession-current.trx",
+      "sha256": "7dbee72bfdea5363b3ce1200ef130f225e7061e18c750bcdb812a7e1010e5f8e",
+      "scope": "Current related547/new11;3 actual recoveries;236 old saves;286 headless pairs. Full current3936 and GUI NOT_RUN."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3057,14 +3067,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 536,
+      "passed": 547,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/HostageCustodyV1/runtime-local/tests/hostage-custody-current.trx",
-      "sha256": "70a661bcde94e58bae3c68ac5ebd92a8b5c75be5dd50e83b6fc96a8b7a54e4af",
-      "scope": "Current related536/new28;6 actual recoveries;230 old saves;283 headless pairs. Full current3925 and GUI NOT_RUN."
+      "trx": "Docs/Design/CustodySuccessionV1/runtime-local/tests/custody-succession-current.trx",
+      "sha256": "7dbee72bfdea5363b3ce1200ef130f225e7061e18c750bcdb812a7e1010e5f8e",
+      "scope": "Current related547/new11;3 actual recoveries;236 old saves;286 headless pairs. Full current3936 and GUI NOT_RUN."
     },
-    "current_stage_summary": "採用済みBD-44に沿って、人質の本人同意・受入先承諾・現地受入・現地解放を分離。成人の直属登録家臣を対象に、保証原本・所在・当事者・待遇義務・返還期限を保持し、拘束中の通常仕事/移動を禁止。期限超過で死亡・消失・自動返送させず、所属/役職/所領/財産も変更しない。関連536件（新規28）・6段階の実保存復旧と将来一致・旧保存230件バイト一致・Gameビルド・画面なしGodot283組566世界1576Node3Dが成功。外観/GUI操作・現行全3925件は未実施。",
+    "current_stage_summary": "人質の預かり中に当主が交代しても、元の保証原本・本人同意・所在・期限を保持。現地で新代表者の了承を別記録に残すまで解放できない。新当主が別拠点にいる場合は、現在同席する本人の了承で保証原本の預かり先へ同行し、共通の道路移動で到着する。雇用・手当・遠隔呼出し・瞬間移動は追加しない。関連547件（新規11）・3段階の実保存復旧と将来一致・旧保存236件バイト一致・Gameビルド・画面なしGodot286組572世界1600Node3Dが成功。外観/GUI操作・現行全3936件は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3086,9 +3096,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/HostageCustodyV1/integration.json",
-    "current_logic_verification": "Docs/Design/HostageCustodyV1/verification.json",
-    "current_logic_verification_sha256": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
+    "integration": "Docs/Design/CustodySuccessionV1/integration.json",
+    "current_logic_verification": "Docs/Design/CustodySuccessionV1/verification.json",
+    "current_logic_verification_sha256": "4b9ab4831fa4b513e0fbba1fc225d52aafae6dfa3a5566952a6c2ece8967d889",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3154,7 +3164,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "身柄受渡しの権限者交代・待遇履行",
+    "人質の待遇義務と家の現物支給",
     "親族の遠隔合意と史実家族情報",
     "派閥・噂訂正と既知の軍務判断",
     "全国NPCの生涯・独立/攻城と支配変動",

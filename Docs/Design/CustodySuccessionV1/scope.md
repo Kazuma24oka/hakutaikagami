@@ -11,3 +11,5 @@
 4. Expose local reconfirmation in the existing custody UI without revealing absent representatives through remote views. Reject spoofed, stale, duplicate-conflicting and invalid reconfirmations atomically.
 
 5. Verify actual house succession, refusal/absence, release, old saved bytes, generation recovery and equal futures, and headless Godot position. Capture/escort/ransom/exchange and actual food consumption remain unfinished.
+
+実装時に確認した依存事項：新当主の現地確認には実移動が必要。既存の共通同行任務を使い、現在同席する新代表者本人の了承による、保証原本の預かり先限定の同行を追加する。雇用・遠隔呼出し・自由なNPC操作・自動移動は追加しない。進捗の目標値と分母は変更しない。

@@ -252,8 +252,8 @@
       "basis": "明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。"
     },
     "BD-44": {
-      "percent": 25,
-      "basis": "人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 戦闘捕縛・護送・交換・身代金・待遇の実消費・権限者交代の受渡し。"
+      "percent": 35,
+      "basis": "当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 待遇の実物消費、戦闘捕縛・護送・交換・身代金、NPC受入側の自律当主交代。"
     },
     "BD-45": {
       "percent": 85,
@@ -322,14 +322,14 @@
   },
   "focus": {
     "leaf": "BD-44",
-    "title": "人質の現地預かりと解放",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。身柄受渡しの権限者交代と待遇履行へ続行。",
+    "title": "人質保証の当主交代と現地再確認",
+    "status": "完成条件5/5。人質保証の当主交代と現地再確認を検証し、自動統合後も続行。",
     "exit": [
-      "Implement the already adopted BD-44 hostage category separately from military capture. Start with a locally present adult registered personal retainer, an explicit guarantee original, the person consent and current household custodians; no custody is inferred from loss of troops or unknown captivity.",
-      "Admission requires actual local presence, valid authority and no existing task, military command, another custody or conflicting undertaking. Record the same person, fixed holding site, custodian, guardian, treatment and return obligation without changing affiliation, office, property or life state.",
-      "During custody, shared availability checks prevent ordinary movement, work or military use of the held person. Do not impersonate the player, move people instantly, expose remote hidden state or invalidate earlier lawful records.",
-      "Release is a separate physically local action with current lawful custodian and return recipient. Deadline produces an overdue obligation rather than disappearance, automatic execution or teleport. Withdrawal before admission and duplicate inputs are atomic.",
-      "Connect the actual player-facing local admission and release flow. Verify consent/refusal/busy/deadline/release, old saved bytes, actual generation recovery/equal future and headless Godot location. Military capture, escorts, exchange and ransom remain explicitly unfinished."
+      "Preserve the original hostage guarantee, personal consent, location and custody when a household representative changes; no automatic release or transfer of ownership.",
+      "Add a separate local reconfirmation record naming current lawful household representatives. Require the original player guardian and held person at the original site, both current representatives physically present and consenting. Never rewrite original signatures or retarget them remotely.",
+      "Release uses only the latest explicitly reconfirmed representatives; another head change holds release again. Reconfirmation cannot renew expiry, erase overdue duties, change treatment, create another hostage or teleport anyone.",
+      "Expose local reconfirmation in the existing custody UI without revealing absent representatives through remote views. Reject spoofed, stale, duplicate-conflicting and invalid reconfirmations atomically.",
+      "Verify actual house succession, refusal/absence, release, old saved bytes, generation recovery and equal futures, and headless Godot position. Capture/escort/ransom/exchange and actual food consumption remain unfinished."
     ],
     "deferred": [
       "史実家族・離縁・出生・遠隔相談",
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 40,
-    "baseline_commit": "a0656ca562bc39f67765000478e94f7d1080f6f3",
-    "baseline": 56.30665584415584,
-    "current": 56.88998917748918,
-    "earned_gain": 0.5833333333333334,
+    "version": 41,
+    "baseline_commit": "1905ae8af54470180f0f97a4cde5014e7aa41d7f",
+    "baseline": 56.88998917748918,
+    "current": 57.05665584415584,
+    "earned_gain": 0.16666666666666666,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "49c07d02c7e4cd555571058054b645b84ae45051"
+    "integrated_main": null
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }

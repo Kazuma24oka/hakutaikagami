@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Preserve the original hostage guarantee, personal consent, location and custody when a household representative changes; no automatic release or transfer of ownership.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Add a separate local reconfirmation record naming current lawful household representatives. Require the original player guardian and held person at the original site, both current representatives physically present and consenting. Never rewrite original signatures or retarget them remotely.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Release uses only the latest explicitly reconfirmed representatives; another head change holds release again. Reconfirmation cannot renew expiry, erase overdue duties, change treatment, create another hostage or teleport anyone.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Expose local reconfirmation in the existing custody UI without revealing absent representatives through remote views. Reject spoofed, stale, duplicate-conflicting and invalid reconfirmations atomically.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify actual house succession, refusal/absence, release, old saved bytes, generation recovery and equal futures, and headless Godot position. Capture/escort/ransom/exchange and actual food consumption remain unfinished.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodySuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "今回の実交代検証は元の打診者であるプレイヤーの生前引退と新当主。両家代表者の再確認記録は両側を保持するが、NPC受入側の自律当主交代は未実装。同行は同席する新代表者から保証原本の預かり先への片道限定で、拒否テストの一つは現在の意思入力に対する判定単体検査。拒否イベントの動的生成を追加したものではない。待遇の実物消費・軍事捕縛・護送・交換・身代金・遠隔合意は後続。"
+}
