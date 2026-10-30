@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-58",
     "title": "登録武将を含むNPCの必要に応じた継続行動",
-    "status": "完成条件5/5。登録武将を含むNPCの必要に応じた継続行動を検証し、自動統合後も続行。",
+    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
       "Pin a new opt-in NPC policy in new games. Keep previous first-inspection-only and null policies byte-compatible. Registered adult NPCs and authored historical adults use the same existing command and report pipeline; never control the player or minors.",
       "Choose a local inspection only from the NPC own missing/stale road observations, actual available permission and own received result. At most one new autonomous inspection per person per day. Fresh observations, pending reports, military/custody/companion tasks prevent inappropriate work; never read hidden road truth to plan.",
