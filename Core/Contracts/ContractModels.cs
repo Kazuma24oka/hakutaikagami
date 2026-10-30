@@ -138,6 +138,8 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public TruceState? Truces {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public TreatyState? Treaties {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public PrivateInformationState? PrivateInformation {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public StanddownState? Standdown {get;set;}

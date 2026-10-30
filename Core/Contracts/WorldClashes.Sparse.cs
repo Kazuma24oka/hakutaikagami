@@ -7,7 +7,7 @@ public static partial class WorldClashes
     sealed record Window(EntityId Army,long From,long Until,long Barrier);
     static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)
     {
-        return TruceNegotiations.ExternalInputs(w).Concat(NewGameMilitary.ActiveInputs(w)).Concat(NewGameMilitary.RemoteInputs(w)).Concat(w.Requests.Select(q=>(q.CreatedAt,q.CommitSequence)))
+        return TreatyNegotiations.ExternalInputs(w).Concat(TruceNegotiations.ExternalInputs(w)).Concat(NewGameMilitary.ActiveInputs(w)).Concat(NewGameMilitary.RemoteInputs(w)).Concat(w.Requests.Select(q=>(q.CreatedAt,q.CommitSequence)))
             .Concat(NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests.Where(q=>q.Input.Action!=NewMilitaryAction.AutoRout).Select(q=>(q.At,q.Revision))))
             .Concat(NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Openings.Select(q=>(q.At,q.Revision))))
             .Concat((w.FactionStances?.Decisions??[]).Select(q=>(q.At,q.Revision)))
@@ -32,7 +32,7 @@ public static partial class WorldClashes
     static IEnumerable<long> Changes(ContractWorld w,NewMilitaryState ledger,long from,long until)
     {
         var times=new List<long>{from,until};
-        times.AddRange(TruceNegotiations.Changes(w));times.AddRange(ledger.Requests.Select(q=>q.At));times.AddRange(ledger.Events.Select(q=>q.At));times.AddRange(ledger.Openings.Select(q=>q.At));times.AddRange(ledger.Orders.Select(q=>q.At));
+        times.AddRange(TruceNegotiations.Changes(w));times.AddRange(TreatyNegotiations.Changes(w));times.AddRange(ledger.Requests.Select(q=>q.At));times.AddRange(ledger.Events.Select(q=>q.At));times.AddRange(ledger.Openings.Select(q=>q.At));times.AddRange(ledger.Orders.Select(q=>q.At));
         times.AddRange(ledger.Orders.SelectMany(o=>o.Routes.SelectMany(a=>a).SelectMany(l=>new[]{l.StartAt,l.EndAt})));
         var letters=ledger.Events.Select(e=>e.Message).ToHashSet(StringComparer.Ordinal);
         foreach(var m in w.Messaging.Messages.Where(m=>letters.Contains(m.Id))){var n=ContractJson.Read<MilitaryNotice>(System.Text.Encoding.UTF8.GetBytes(m.Body));if(n.Engagement is {} e){times.Add(e.EffectiveFrom);times.Add(e.Until);}}

@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Versioned independent nonaggression, passage, supply and defense clauses are signed by actual authorities and delivered to fixed personally-known representatives; the same version must arrive to form a treaty; player opening/signing is explicit",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/TreatyNegotiations.Operations.cs",
+        "Core/Contracts/WorldSession.Treaty.cs",
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyNegotiationsTests.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Truce.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Effective treaty truth, personal knowledge and use of each individual clause are separate; only known nonaggression affects existing NPC and engagement decisions; a passage/supply/defense promise alone never creates territorial ownership, goods or an army",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/TreatyNegotiations.Operations.cs",
+        "Core/Contracts/WorldSession.Treaty.cs",
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyNegotiationsTests.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Truce.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Explicit termination notice retains the original terms and has a declared notice period; dispatch, physical arrival, effective end and personal learning are distinct; lost, late and duplicate notices do not end or revive unrelated treaties",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/TreatyNegotiations.Operations.cs",
+        "Core/Contracts/WorldSession.Treaty.cs",
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyNegotiationsTests.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Truce.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Clause-bound defense/supply requests and their dated acknowledgments are physical letters, distinguish requested/received/declined from executed, and preserve original actors/evidence without automatic player responses or teleportation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/TreatyNegotiations.Operations.cs",
+        "Core/Contracts/WorldSession.Treaty.cs",
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyNegotiationsTests.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Truce.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Focused and related tests, actual generation recovery and equal future, historical save bytes, Game build and real headless Node3D positions are checked separately from GUI appearance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/TreatyNegotiations.Operations.cs",
+        "Core/Contracts/WorldSession.Treaty.cs",
+        "Core/Contracts/RepresentativeKnowledge.cs",
+        "Core/Contracts/TruceNegotiations.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyNegotiationsTests.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Truce.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "独立条項は不侵略・通行・補給・防衛援軍。本文の版、同一版の承諾到達、指定期間と本人認識を分離し、不侵略のみ既存NPC/交戦判断へ実接続する。通行軍の個別対応、実際の援軍出陣/到着と補給物資の供与は後続。援軍/補給は要請量・期限・理由と受領/辞退までで、受領を実行完了としない。共通の期間/解除予告期間を持つ条約一式の解除で、条項別の変更/違反裁定/制裁、一般代理決裁、人質/婚姻/保証、全国NPC自主交渉と代表交代の一般継承は後続。外観/GUI操作・全3723件実行は未実施。"
+}

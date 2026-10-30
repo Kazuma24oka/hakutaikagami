@@ -2060,3 +2060,10 @@ Scripts/verify_active_military_succession.py -text
 
 Core/Contracts/NewGameMilitary.RemoteSuccession.cs -text
 Tests/RemoteMilitarySuccessionTests.cs -text
+
+Core/Contracts/TreatyNegotiations.cs -text
+Core/Contracts/TreatyNegotiations.Operations.cs -text
+Core/Contracts/WorldSession.Treaty.cs -text
+Tests/TreatyNegotiationsTests.cs -text
+Game/Scripts/NewGameRuntime.Treaty.cs -text
+Scripts/verify_treaty.py -text

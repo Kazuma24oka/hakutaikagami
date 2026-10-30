@@ -80,7 +80,7 @@ public static class TruceNegotiations
         w.Truces=State(w) with{Fulfillments=[..State(w).Fulfillments,new(f.Acceptance,actor,w.ElapsedSeconds,w.CommitSequence,decision)]};
     }
     public static bool WillNotInitiate(ContractWorld w,EntityId owner,EntityId target,long at,long revision)
-    {if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
+    {if(TreatyNegotiations.WillNotInitiate(w,owner,target,at,revision))return true;if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
     internal static long? NextBoundary(ContractWorld w,long target)
     {if(!Enabled(w))return null;var times=State(w).Papers.SelectMany(p=>new[]{p.Terms.ReplyBy+1,p.Terms.Until}).ToList();if(Next(w,true)!=null||TruceConfirmations.Pending(w))times.Add(w.ElapsedSeconds+1);return times.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
     internal static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)=>State(w).Papers.Select(p=>(p.At,p.Revision)).Concat(State(w).Openings.Where(o=>o.Actor==w.PlayerControl).Select(o=>(o.At,o.Revision))).Concat(State(w).Fulfillments.Select(f=>(f.At,f.Revision))).Concat(TruceSuccession.Inputs(w)).Concat(TruceConfirmations.Inputs(w));
