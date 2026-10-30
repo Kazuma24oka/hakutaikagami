@@ -3,5 +3,6 @@
   "standing_authorization": "User 2026-10-30 delegated future main code/docs merges",
   "base_main": "dc2b903b125740ede2dee21e1cf5fa75e2fa1f89",
   "scope": "Code and documentation only; no model assets",
-  "pull_request": null
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/41",
+  "code_head": "fcccf9351b77e498e27882abae4344bfa4c75df2"
 }
