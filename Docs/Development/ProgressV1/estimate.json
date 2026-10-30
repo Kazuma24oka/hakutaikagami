@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-43",
     "title": "成人養子の本人・家の合意と実施",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。婚姻・身柄と当事者の合意へ続行。",
+    "status": "完成条件5/5、PR43をmainへ同一内容で統合済み。次の成人婚姻は自動承認レビュー拒否による確認待ち。",
     "exit": [
       "Introduce an explicit new-game adult adoption policy and versioned case/relationship records. Separate proposer personal assent, the other adult personal answer, required house authority assent, implementation and existing succession/office/land systems. Preserve old saves without automatic migration.",
       "A proposal records the exact parent/child roles, fixed local meeting site, known house representatives, original deadline and version. Both individuals must actually be adult and present for personal consultation; NPC answers are deterministic personal choices and never override player decisions.",

@@ -3036,7 +3036,8 @@
     "current_logic_verification": "Docs/Design/AdultAdoptionV1/verification.json",
     "current_logic_verification_sha256": "81ae850bdf0a33538ae7eea93ed7dfa392a16362502b1faec66c421537188cac",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
-    "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005"
+    "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
+    "next_work_hold": "成人婚姻の実装ベースライン記録/commitは自動承認レビューに2回拒否された。採用済みBD-43と既存実装委任を提示した再確認も拒否。新しいmain統合への個別承認ではなく、成人婚姻の具体的実装についてユーザー確認中。基準39・婚姻実装は未着手。"
   },
   "release": {
     "functional_items": 59,
@@ -3099,7 +3100,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "婚姻・親族と当事者の合意",
+    "成人婚姻：自動承認レビューによる明示確認待ち（main統合の再承認ではない）",
     "人質/捕虜の身柄・解放と履行",
     "派閥・噂訂正と既知の軍務判断",
     "全国NPCの生涯・独立/攻城と支配変動",
