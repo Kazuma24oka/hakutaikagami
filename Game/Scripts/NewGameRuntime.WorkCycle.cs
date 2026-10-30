@@ -34,7 +34,7 @@ public partial class NewGameRuntime
     string ReadableWorkLetter(VisibleMessage letter)
     {
         var m=Snapshot().Messaging.Messages.Single(m=>m.Id==letter.Id.Value);
-        return m.Kind switch{NewGameMilitary.RemoteSuccessionKind=>"軍務の指揮引継ぎ・返報",TreatySupply.Kind=>"条約補給の実物受取・供与返書",TreatyNegotiations.Kind=>"正式条約の条件・返答",TreatyNegotiations.OperationKind=>"条約の解除通知・援軍と補給の要請",TruceConfirmations.Kind=>"不戦確認書・受領と不達の返報",PrivateInformation.Kind=>"相手から受け取った道の情報",TruceNegotiations.Kind=>"不戦交渉の条件・返答",PersonalCompanions.ReportKind=>"協力者からの現地返報",FactionNotices.Kind=>"対外方針に関する通知",AssessmentNotice.Kind=>"依頼主から結果への返答",AssessmentNotice.ResponseKind=>"返答を承知した旨の書状","route-observation"=>letter.KnownBody!.StartsWith("route-block:")?"通行不可の点検記録":"通行可の点検記録","delivery-failure"=>"配送不達の報告","service-notice"=>"仕官に関する返答",_=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)?"軍務に関する書状":letter.KnownBody!};
+        return m.Kind switch{NewGameMilitary.RemoteSuccessionKind=>"軍務の指揮引継ぎ・返報",TreatyDefense.Kind=>"防衛援軍の出陣・到着・帰還報告",TreatySupply.Kind=>"条約補給の実物受取・供与返書",TreatyNegotiations.Kind=>"正式条約の条件・返答",TreatyNegotiations.OperationKind=>"条約の解除通知・援軍と補給の要請",TruceConfirmations.Kind=>"不戦確認書・受領と不達の返報",PrivateInformation.Kind=>"相手から受け取った道の情報",TruceNegotiations.Kind=>"不戦交渉の条件・返答",PersonalCompanions.ReportKind=>"協力者からの現地返報",FactionNotices.Kind=>"対外方針に関する通知",AssessmentNotice.Kind=>"依頼主から結果への返答",AssessmentNotice.ResponseKind=>"返答を承知した旨の書状","route-observation"=>letter.KnownBody!.StartsWith("route-block:")?"通行不可の点検記録":"通行可の点検記録","delivery-failure"=>"配送不達の報告","service-notice"=>"仕官に関する返答",_=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)?"軍務に関する書状":letter.KnownBody!};
     }
     internal long ReviewPrivateCoins=>NewGameWork.Balance(Snapshot(),Session.PlayerControl);
 }

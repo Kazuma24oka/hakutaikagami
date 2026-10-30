@@ -1,0 +1,12 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "User instruction 2026-10-30 delegates future main code/docs integrations",
+  "base_main": "19a5c2cd49b9228dfcf492d8206693dc17504ed6",
+  "scope": "Code and documentation only; no model assets",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/40",
+  "concurrent_documentation_commits": [
+    "e8b545e"
+  ],
+  "concurrent_documentation_note": "Separate future diplomacy design/reference documentation retained; not counted as implemented features.",
+  "code_head": "e2c4c49565f547dc8c42178e1cc2f47ff3b7246f"
+}
