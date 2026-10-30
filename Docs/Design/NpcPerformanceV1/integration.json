@@ -1,8 +1,12 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "standing_authorization": "User delegated future main code/docs merges; on 2026-10-31 the user asked Claude Code to carry this paused verified work through main integration",
   "base_main": "ea0b93f121539f6f6e2a8c5850162d09ab9e339b",
   "scope": "Code and documentation only; no model assets",
   "pull_request": null,
-  "code_head": null
+  "code_head": "21f2c71cf693080279bd255b74df830ad25bebcb",
+  "method": "Local squash commit pushed to main (GitHub CLI unavailable); tree verified identical to the branch head",
+  "integrated_head": "21f2c71cf693080279bd255b74df830ad25bebcb",
+  "integrated_main": "c089fc521f8018359910e0a665a78d614f23ebc0",
+  "integrated_tree": "9baab05bf251205f0e415f3e41a995abc3b3c59e"
 }

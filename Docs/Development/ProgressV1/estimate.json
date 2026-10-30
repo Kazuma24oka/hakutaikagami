@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-04",
     "title": "NPC継続行動の処理負荷低減",
-    "status": "完成条件5/5。行動を変えない処理負荷の低減を検証し、自動統合後も続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。次はNPCの既知の用件と空き時間の修行（凍結済み）。",
     "exit": [
       "Measure the same 29 active NPC scenario in three sequential standalone test processes before and after, with no other agent-started tests/builds/probes running; record wall time, binary hashes and conditions, not FPS.",
       "Remove redundant NPC population scans and diagnostic world copies without exposing mutable state or changing actor order, decisions, revisions, clocks or event budgets.",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "c089fc521f8018359910e0a665a78d614f23ebc0"
   },
   "range_note": "2026-10-30: The unchanged fixed-weight raw estimate is57.677435%; the historical five-point rounded value is60. The display uncertainty band is55-65 instead of45-55. This display-band update earns no progress and changes no leaves, weights or denominator."
 }

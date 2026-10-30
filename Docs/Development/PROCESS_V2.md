@@ -23,13 +23,14 @@ main 統合の包括委任（AGENTS.md 冒頭、2026-10-30）と、事前確認�
 
 ## P4 全テスト
 - PR の作業中は関連テストだけでよい。
+- 資料だけの変更（コード・テスト・ゲームの資産を含まない PR）は、全件の再実行を省いてよい。その場合は「資料のみ、テスト未再実行」と記録する。
 - main へ統合する前に、必ず Core の全件をローカルで流す。失敗があれば統合しない。
 - GitHub Actions など費用の可能性がある自動実行は使わない。
 
-## P5 AGENTS.md（未実施）
-- AGENTS.md を今有効な規則だけの約100行にし、過去の作業記録は削除せず Docs/Archive へ移す。OPERATING_POLICY.md・CURRENT_STAGE.md の作業記録も同様に整理する。
-- 進捗表の検査（Scripts/check_progress_report.py）は AGENTS.md・OPERATING_POLICY.md・CURRENT_STAGE.md のハッシュを持つので、整理と同時に progress.json の source_hashes を更新する。
-- 本線の工程の区切りで、本線自身かユーザーの依頼で行う。
+## P5 AGENTS.md（2026-10-31 実施済み）
+- AGENTS.md を今有効なルールだけにし、過去の作業記録は削除せず Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md へ移した。OPERATING_POLICY.md・CURRENT_STAGE.md も同様（Docs/Archive/〈名前〉_HISTORY_TO_2026-10-31.md）。
+- 以後、工程ごとの記録は AGENTS.md に追記しない。CURRENT_STAGE.md の「完了した工程」の表に1行足し、詳しくは各 Docs/Design フォルダの README.md に書く。
+- 進捗表の検査（Scripts/check_progress_report.py）は AGENTS.md・OPERATING_POLICY.md・CURRENT_STAGE.md のハッシュを持つので、これらを変えたら progress.json の source_hashes を更新する。
 
 ## P6 作業フォルダ（未実施・事前確認が必要）
 - runtime-local の証跡、ComfyUI の作業コピー（.utmp）、Godot 本体（.tools）をリポジトリの外へ移す。verification.json には移した先とハッシュを残す。
@@ -43,4 +44,11 @@ main 統合の包括委任（AGENTS.md 冒頭、2026-10-30）と、事前確認�
 ## P8 基本設計との食い違い
 - 統合案の決定は、ユーザーとの相談で採用済み。食い違う基本設計（BD）は [Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md](../Decisions/2026-10-31_GETENROKU_BD_CHANGES.md) に変更記録がある。その記録に沿って実装してよい。
 - 統合案にない新しい根本変更は、引き続き事前確認。
-- 進捗表の分母（基本設計60枠）は、変更記録だけでは変えない。統合案の追加範囲を進捗に入れるかどうかは、別途ユーザーに確認する。
+- 進捗表の分母（基本設計60枠）は、変更記録だけでは変えない。統合案の追加範囲の扱いは次の「進捗表の範囲」に従う。
+
+## 進捗表の範囲（2026-10-31 ユーザー決定）
+- 統合案の新機能群は、**60枠の数と重みを変えずに、関係する各枠の完成範囲と「残り」に足す**。進捗表の100%は「新機能も入った完成版」を意味する。
+- 完成範囲が広がるので、関係する枠の％は一度下がる（全体は57.7%から数ポイント下がる見込み）。
+- ％の付け直しは、固定基準の仕組みに合わせて行う。estimate.json の各枠の％は、現在の固定基準（approval-baseline）と一致しないと検査が通らないため、途中で書き換えない。次の工程の固定基準（v46、NpcPurposeV1）を実装前に凍結し直すときに、付け直した％を baseline_leaves に入れ、各枠の basis に「統合案の範囲を追加、どの節か」を書く。付け直しは加点ではなく、再評価として記録する（reassessment_delta_excluded に下げ幅を記録）。
+- 枠ごとの対応は Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md の表（変更・拡張・追加）を使う。
+- 付け直しが済むまでは、progress.json の各枠の「残り」の文章に統合案の範囲を書き足すだけにとどめる。
