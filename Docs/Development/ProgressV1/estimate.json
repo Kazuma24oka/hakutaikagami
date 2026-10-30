@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-14",
     "title": "性格・対象別忠誠と非対称の関係",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。親族・当事者の合意へ続行。",
     "exit": [
       "6性格と対象別忠誠・非対称関係を分離する",
       "本人が実際に知った出来事だけで一度反応する",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "1b78646ef8946b0b247a192d3df47556c7c71c0c"
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
