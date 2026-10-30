@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-44",
     "title": "人質保証の当主交代と現地再確認",
-    "status": "完成条件5/5。人質保証の当主交代と現地再確認を検証し、自動統合後も続行。",
+    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
       "Preserve the original hostage guarantee, personal consent, location and custody when a household representative changes; no automatic release or transfer of ownership.",
       "Add a separate local reconfirmation record naming current lawful household representatives. Require the original player guardian and held person at the original site, both current representatives physically present and consenting. Never rewrite original signatures or retarget them remotely.",
