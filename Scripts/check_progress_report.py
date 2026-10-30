@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-adult-adoption-personal-house-separate-implementation":
+ if logic["scope"]=="headless-declared-unmarried-adult-marriage-shared-family-consent":
+  from verify_adult_marriage import check as check_logic
+ elif logic["scope"]=="headless-adult-adoption-personal-house-separate-implementation":
   from verify_adult_adoption import check as check_logic
  elif logic["scope"]=="headless-directed-known-relations-contextual-consent":
   from verify_character_relations import check as check_logic

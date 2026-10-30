@@ -2091,3 +2091,9 @@ Core/Contracts/AdultAdoption.cs -text
 Tests/AdultAdoptionTests.cs -text
 Game/Scripts/NewGameRuntime.Adoption.cs -text
 Scripts/verify_adult_adoption.py -text
+
+Core/Contracts/AdultMarriage.cs -text
+Core/Contracts/FamilyConsentRules.cs -text
+Tests/AdultMarriageTests.cs -text
+Game/Scripts/NewGameRuntime.Marriage.cs -text
+Scripts/verify_adult_marriage.py -text

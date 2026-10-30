@@ -1,3 +1,4 @@
+using static HakutaiKagami.Core.Contracts.FamilyConsentRules;
 namespace HakutaiKagami.Core.Contracts;
 public enum AdoptionAction { Propose, PersonalYes, PersonalNo, ApproveHouse, Implement, Withdraw }
 public sealed record AdoptionInput(EntityId Id,AdoptionAction Action,EntityId? Other=null,bool AsParent=true,EntityId? Original=null,EntityId? House=null);
@@ -16,19 +17,9 @@ public static class AdultAdoption
     static AdoptionEntry[] Entries(ContractWorld w)=>w.Adoption?.Entries??[];
     static AdoptionEntry[] Case(AdoptionEntry[] rows,EntityId root)=>rows.Where(e=>e.Input.Id==root||e.Input.Original==root).ToArray();
     static bool Closed(AdoptionEntry[] rows,AdoptionTerms t,long at)=>at>t.Until||Case(rows,t.Id).Any(e=>e.Input.Action is AdoptionAction.PersonalNo or AdoptionAction.Withdraw or AdoptionAction.Implement);
-    static bool Present(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&PersonalCompanions.SiteAt(w,actor,at,rev)==site&&!NpcArmies.CommanderBusyAt(w,actor,at,rev);
-    static string? AuthoredHouse(ContractWorld w,EntityId person)=>w.NewGame!.Start.People.Single(p=>p.Id==person.Value).Faction;
-    static bool SameHouse(ContractWorld w,EntityId person,long at,long rev)=>w.Memberships.Where(m=>m.Subject==person&&m.From<=at&&(at<m.Until||at==m.Until&&rev<m.Revision)).Select(m=>m.Target.Value).SingleOrDefault()==AuthoredHouse(w,person);
-    static AdoptionHouse[] KnownHouses(ContractWorld w,EntityId parent,EntityId child,long at,long rev)=>new[]{parent,child}.Select(p=>AuthoredHouse(w,p)).Where(o=>o!=null).Distinct().Select(o=>{
-        var known=RepresentativeKnowledge.Known(w,w.PlayerControl,new(o!),at,Math.Min(rev,w.CommitSequence))??throw new InvalidDataException("家の代表者を確認できません");return new AdoptionHouse(new(o!),known.Person,known.ObservedAt,known.Source);
-    }).OrderBy(h=>h.Owner.Value,StringComparer.Ordinal).ToArray();
-    static bool FamilyAvailable(AdoptionEntry[] rows,EntityId parent,EntityId child){
-        var actual=rows.Where(e=>e.Input.Action==AdoptionAction.Implement).Select(e=>rows.Single(q=>q.Input.Id==e.Input.Original).Terms!).ToArray();if(actual.Any(t=>t.Child==child))return false;
+    static bool FamilyAvailable(ContractWorld w,AdoptionEntry[] rows,EntityId parent,EntityId child,long at,long rev){
+        if(MarriageConflict(w,parent,child,at,rev))return false;var actual=rows.Where(e=>e.Input.Action==AdoptionAction.Implement).Select(e=>rows.Single(q=>q.Input.Id==e.Input.Original).Terms!).ToArray();if(actual.Any(t=>t.Child==child))return false;
         var ancestors=new HashSet<EntityId>();var next=parent;while(ancestors.Add(next)){if(next==child)return false;var p=actual.SingleOrDefault(t=>t.Child==next);if(p==null)return true;next=p.Parent;}return false;
-    }
-    static bool IndividualAccepts(ContractWorld w,EntityId actor,EntityId other,long at,long rev){
-        if(!w.Characters.Single(c=>c.Id==actor).WillObey)return false;var score=CharacterRelations.DiagnosticScores(w,actor,other,at,rev);
-        return CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Affection)+score.Trust-score.Hostility>=80;
     }
     static bool Ready(ContractWorld w,AdoptionTerms t,AdoptionEntry[] rows,long at,long rev){
         if(Closed(rows,t,at)||!Present(w,t.Parent,t.Site,at,rev)||!Present(w,t.Child,t.Site,at,rev)||!SameHouse(w,t.Parent,at,rev)||!SameHouse(w,t.Child,at,rev))return false;
@@ -42,12 +33,12 @@ public static class AdultAdoption
             Need(e.Actor==w.PlayerControl&&i.Other!=null&&i.Other!=e.Actor&&i.Original==null&&i.House==null,"本人の養子相談を指定してください");var t=e.Terms;Need(t!=null&&t.Id==i.Id&&t.Parent==(i.AsParent?e.Actor:i.Other.Value)&&t.Child==(i.AsParent?i.Other.Value:e.Actor)&&t.Until==e.At+7*86400,"養子の役割・期限が不正です");
             Need(Present(w,t.Parent,t.Site,e.At,e.Revision)&&Present(w,t.Child,t.Site,e.At,e.Revision)&&SameHouse(w,t.Parent,e.At,e.Revision)&&SameHouse(w,t.Child,e.At,e.Revision),"双方の成人・所在と既知の所属を確認してください");
             Need(t.Houses.SequenceEqual(KnownHouses(w,t.Parent,t.Child,e.At,e.Revision-1)),"家の既知代表者が一致しません");
-            Need(FamilyAvailable(prior,t.Parent,t.Child)&&!prior.Where(q=>q.Terms!=null).Any(q=>q.Terms!.Child==t.Child&&!Closed(prior,q.Terms,e.At)),"既存の養子関係または相談と競合します");return;
+            Need(FamilyAvailable(w,prior,t.Parent,t.Child,e.At,e.Revision)&&!prior.Where(q=>q.Terms!=null).Any(q=>q.Terms!.Child==t.Child&&!Closed(prior,q.Terms,e.At)),"既存の養子関係または相談と競合します");return;
         }
         Need(i.Other==null&&i.AsParent&&i.Original!=null&&e.Terms==null,"合意原本を指定してください");var proposal=prior.SingleOrDefault(p=>p.Input.Id==i.Original&&p.Terms!=null);Need(proposal!=null,"原本がありません");var terms=proposal.Terms!;var current=Case(prior,terms.Id);Need(!Closed(prior,terms,e.At),"相談は終了しています");
         if(i.Action is AdoptionAction.PersonalYes or AdoptionAction.PersonalNo){var actor=proposal.Actor==terms.Parent?terms.Child:terms.Parent;Need(e.Actor==actor&&actor!=w.PlayerControl&&i.House==null&&e.At>=proposal.At+1&&!current.Any(p=>p.Input.Action is AdoptionAction.PersonalYes or AdoptionAction.PersonalNo),"本人返答が重複または未着です");Need(Present(w,actor,terms.Site,e.At,e.Revision)&&Present(w,proposal.Actor,terms.Site,e.At,e.Revision),"本人への現地相談が必要です");bool yes=SameHouse(w,actor,e.At,e.Revision)&&IndividualAccepts(w,actor,proposal.Actor,e.At,e.Revision);Need((i.Action==AdoptionAction.PersonalYes)==yes,"本人の意思が一致しません");}
         else if(i.Action==AdoptionAction.ApproveHouse){var h=terms.Houses.SingleOrDefault(h=>h.Owner==i.House&&h.Representative==e.Actor);Need(h!=null&&current.Any(p=>p.Input.Action==AdoptionAction.PersonalYes)&&!current.Any(p=>p.Input.Action==AdoptionAction.ApproveHouse&&p.Input.House==h.Owner),"家の承諾者・順序が不正です");Need(Present(w,e.Actor,terms.Site,e.At,e.Revision)&&Present(w,proposal.Actor,terms.Site,e.At,e.Revision)&&FactionStances.ResolveAuthority(w,e.Actor,h.Owner,e.At,e.Revision)!=null,"家の現地承諾または権限がありません");Need(e.Actor==w.PlayerControl||w.Characters.Single(c=>c.Id==e.Actor).WillObey,"家の承諾はありません");}
-        else if(i.Action==AdoptionAction.Implement){Need(e.Actor==w.PlayerControl&&i.House==null&&Ready(w,terms,prior,e.At,e.Revision)&&FamilyAvailable(prior,terms.Parent,terms.Child),"当人・家の承諾、所在、権限を再確認してください");}
+        else if(i.Action==AdoptionAction.Implement){Need(e.Actor==w.PlayerControl&&i.House==null&&Ready(w,terms,prior,e.At,e.Revision)&&FamilyAvailable(w,prior,terms.Parent,terms.Child,e.At,e.Revision),"当人・家の承諾、所在、権限を再確認してください");}
         else if(i.Action==AdoptionAction.Withdraw)Need(e.Actor==proposal.Actor&&i.House==null,"打診した本人だけが取り下げられます");
         else throw new InvalidDataException("Unknown adoption action");
     }
