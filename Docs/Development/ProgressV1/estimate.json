@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-44",
     "title": "人質の現地食事と家の実在米",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。返還時の実護送へ続行。",
     "exit": [
       "Fulfil the existing recorded food obligation as an explicit local meal request, using the existing prototype rice unit (1 kg) and a one-day interval after actual receipt. Do not introduce automatic hunger, death or execution.",
       "Consume actual unreserved rice from the custodian household at the holding site. Preserve household ownership and existing salary/treaty reservations; no private money or rice is created. Record an unfulfilled request if free stock is insufficient.",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "3964df813fd82925fe61ea6e030e340f9013ab44"
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
