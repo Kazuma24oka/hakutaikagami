@@ -16,6 +16,7 @@ public static class RepresentativeKnowledge
             var o=openings.SingleOrDefault(o=>o.Message==id&&o.Actor==actor&&Before(o.At,o.Revision,t,r));
             if(o!=null)rows.Add(new(a.Owner,a.Issuer,a.Home,a.At,o.At,a.Revision,id,"本人開封した署名"));
         }
+        foreach(var p in w.Treaties?.Papers??[])if(Before(p.At,p.Revision,t,r))Signed(p.Authority,p.Message,w.Treaties!.Openings);
         foreach(var p in w.Truces?.Papers??[])if(Before(p.At,p.Revision,t,r))Signed(p.Authority,p.Message,w.Truces!.Openings);
         foreach(var p in w.FactionNotices?.Requests??[])if(Before(p.At,p.Revision,t,r))Signed(p.Authority,p.Message,w.FactionNotices!.Openings);
         foreach(var p in w.TruceConfirmations?.Papers??[])if(Before(p.At,p.Revision,t,r))Signed(p.Authority,p.Id,w.TruceConfirmations!.Openings);
