@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-13",
     "title": "武将の能力・技能・実行による成長",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。非対称関係・対象別忠誠へ続行。",
     "exit": [
       "5能力・7技能と旧4能力の互換を維持する",
       "完了した修行と実務だけを一度加算する",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "5c93a36f980be917fcb7ac6e5c48023aaafec0a9"
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
