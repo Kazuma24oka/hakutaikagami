@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Add an explicit new-game social policy with stable ambition, duty, caution, courage, affection and gain-seeking traits; keep person/house/organization loyalty and five directed relationship dimensions separate. Old saves and old consent behavior remain unchanged without opt-in.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterRelations.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterRelationsTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterRelationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Actual local payment and personally learned completion/failure reports create one directed reaction with immutable source, observation/learning time and revision. Unknown events never update third parties; reverse relationships are independent; loading and repeated opening cannot duplicate reactions.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterRelations.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterRelationsTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterRelationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Use the NPC own stable traits, directed trust, known duty/payment and supported local context in a representative voluntary companion agreement decision. No random reroll or hidden enemy truth; do not override player choices or grant authority. Historic accepted contracts remain valid after later relationship changes.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterRelations.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterRelationsTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterRelationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Show the player only personally known interaction outcomes and dated sources; never expose hidden personality, exact other-party loyalty or live inner scores. A change to unobserved private traits/feelings must not change the public view.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterRelations.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterRelationsTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterRelationsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify asymmetric effects, refusal without payment, acceptance and real payment, repeat/open/load stability, actual generation recovery/equal future, old saves and headless Godot positions; build and auto-integrate code/docs then continue.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterRelations.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterRelationsTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterRelationsV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "初回の判断適用は任意の継続協力。一般軍務の危険/補給判断、派閥の加入/脱退、親族/師弟、噂/訂正、重大経験による性格変化は後続。忠誠は開始時の個人主従・家・組織を別対象に持ち、感情変化で正式所属を変更しない。固定性格と判断係数は試作値であり史実評価ではない。未達報告の反応は本人の認識で、責任認定ではない。"
+}
