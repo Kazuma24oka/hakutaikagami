@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "42c4174a3fd5a9f854aa9a6b2c630b03d528d6c62fce6841c0b3f6a5f053794e",
-    "Docs/Development/ProgressV1/estimate.json": "5a44dfdd7e71284434a28c0e8b194479dbd1f00bf328fba6b08db31b6374cffa",
+    "Docs/Development/ProgressV1/estimate.json": "caaed21e63757219c1fd0c43fe6d3f543d6ede32638c23215743af79b85f6649",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "1bcb09554c8d84c124c1d69093ce5858969ef483e76fe5cc4db498db199a1557",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
