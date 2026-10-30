@@ -22,7 +22,7 @@ public static partial class PersonalCompanions
     }
     public static long Net(ContractWorld w,EntityId lot,long at=long.MaxValue,long revision=long.MaxValue)
     {long n=0;foreach(var q in Orders(w).Where(q=>Before(q,at,revision)&&q.Input.Action is CompanionAction.Agree or CompanionAction.Pay or CompanionAction.PrivateInspect)){if(lot==NewGameWork.Wallet(w.PlayerControl))n=checked(n-q.Input.Amount);if(lot==NewGameWork.Wallet(q.Input.Person))n=checked(n+q.Input.Amount);}return n;}
-    static EntityId? SiteAt(ContractWorld w,EntityId actor,long at,long rev)
+    internal static EntityId? SiteAt(ContractWorld w,EntityId actor,long at,long rev)
     {
         if(w.Requests.Any(r=>r.Intent.Executor==actor&&r.CommitSequence<rev&&r.CreatedAt<=at&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at))))return null;
         if(actor==w.PlayerControl&&NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<rev&&q.At<=at).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return null;
