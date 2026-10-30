@@ -4,7 +4,7 @@
 
 ## 今の工程：NPCの既知の用件と空き時間の修行（未着手・完成条件は凍結済み）
 - 完成条件：[Docs/Design/NpcPurposeV1/scope.md](../Design/NpcPurposeV1/scope.md)
-- 固定基準：Docs/Development/ProgressV1/approval-baseline-v49.json（commit 1b973fe で3回目の再評価後の基準に凍結し直し。v46〜v48 は置き換え済み）。実装時に Scripts/check_approval_batch.py の BASELINES へ 49 を足す。目標は BD-13 60・BD-58 71。
+- 固定基準：Docs/Development/ProgressV1/approval-baseline-v50.json（commit 442c0e2 で4回目の再評価後の基準に凍結し直し。v46〜v49 は置き換え済み）。実装時に Scripts/check_approval_batch.py の BASELINES へ 50 を足す。目標は BD-13 60・BD-58 56。
 - 進め方は PROCESS_V2.md に従う（遊べる一巡を完成条件に入れる、例外は代表1〜2件。2026-10-31 からは P9〜P12 の軽い進め方：工程は統合案の一段ごと、重い検証と記録は一段に1回、試し遊びは遊べる版ごと）。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
@@ -19,12 +19,13 @@
 本線がすでに作った部分（条約・人質・能力・関係・婚姻・養子・NPCの継続行動など）は、各段と突き合わせて重複を除く。人質・従属は GETENROKU_HANDOFF_D3_D4.md を入力にする。
 
 ## 進捗表の範囲（2026-10-31 ユーザー決定）
-統合案の新機能群は、60枠の数と重みを変えずに、関係する各枠の「残り」と完成範囲に足す。完成範囲が広がるので、関係する枠の％は一度下がる。2026-10-31 に2回に分けて付け直し済み：1回目で29枠、2回目で19枠、3回目（データの側）で3枠を下げ、全体は57.7%→51.4%→49.0%→48.4%（Docs/Design/ProgressScopeV1〜V3）。人物・家・拠点に持たせる項目の一覧は Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md。
+統合案の新機能群は、60枠の数と重みを変えずに、関係する各枠の「残り」と完成範囲に足す。完成範囲が広がるので、関係する枠の％は一度下がる。2026-10-31 に2回に分けて付け直し済み：1回目で29枠、2回目で19枠、3回目（データの側）で3枠、4回目（横断的な作業）で9枠を下げ、全体は57.7%→51.4%→49.0%→48.4%→47.4%（Docs/Design/ProgressScopeV1〜V4）。人物・家・拠点に持たせる項目の一覧は Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md。
 
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-10-31 | データの側の範囲の追加（3回目の再評価、49.0%→48.4%、加点なし） | Docs/Design/ProgressScopeV3/ | （この PR） |
+| 2026-10-31 | 横断的な範囲の追加（4回目の再評価、48.4%→47.4%、加点なし） | Docs/Design/ProgressScopeV4/ | （この PR） |
+| 2026-10-31 | データの側の範囲の追加（3回目の再評価、49.0%→48.4%、加点なし） | Docs/Design/ProgressScopeV3/ | b1353c4（PR54） |
 | 2026-10-31 | 統合案・バックログの範囲の追加（2回目の再評価、51.4%→49.0%、加点なし） | Docs/Design/ProgressScopeV2/ | 908fb4c（PR52） |
 | 2026-10-31 | 統合案の範囲を進捗表へ加える再評価（57.7%→51.4%、加点なし） | Docs/Design/ProgressScopeV1/ | 559fd9e（PR51） |
 | 2026-10-31 | NPC継続行動の処理負荷低減（行動不変、29 NPC場面の中央値6404ms→5558ms、加点なし） | Docs/Design/NpcPerformanceV1/ | c089fc5 |
