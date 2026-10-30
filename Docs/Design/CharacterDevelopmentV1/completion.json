@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Introduce an explicit versioned new-game development policy and separately validated optional state. Preserve old saves and libraries byte-identically when that policy is absent. Keep registered legacy four-ability data; add compatible explicit negotiation authoring and correct five-ability UI without silently overwriting old files or assigning office/land.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterDevelopment.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterDevelopmentTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterDevelopmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Separate five base abilities, seven skills, experience and merit. Seed stable provisional NPC game values reproducibly and label their balancing provenance. Actual completed practice and representative work award actor-specific, time-backed experience once; replay/resend/load/chunking cannot farm duplicate growth or automatically grant status.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterDevelopment.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterDevelopmentTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterDevelopmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Connect practice and representative practical work to the common world clock, existing explicit meal/rest/busy/movement/cancel rules and deterministic bounded ability/skill/situation calculations. Poor characters must retain free practice, walking and work access; introduce no automatic starvation/death or mandatory paid service. Explain the basis in the action and own character sheet; do not invent virtual completed work or change old task timing retroactively.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterDevelopment.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterDevelopmentTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterDevelopmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Show exact own abilities/skills and progress, but other people only receive unknown or dated evidence-based estimates. Never derive an estimate directly from hidden true values. Known reports, observations and correction have sources/dates, and counterfactual hidden-profile changes leave the uninformed observer view unchanged.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterDevelopment.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterDevelopmentTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterDevelopmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify normal new-game authoring through practice/work and visible data DTOs, interruption/recovery/equal future, old saves/libraries and actual Godot placement. Build and integrate tested code/docs automatically, leave GUI appearance unclaimed, then continue into personalities, directed relationships and loyalty.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterDevelopment.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/CharacterDevelopmentTests.cs",
+        "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CharacterDevelopmentV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "技能の実務適用は現時点で点検、自由修行は7技能。健康/負傷/加齢補正、教育者、全職種の成果/所要時間への能力参照、噂・訂正の人物能力推定は後続。NPCの未採録能力は固定Seedによる試作調整値で、史実の評価とは扱わない。相手の基礎能力は不明のまま、既知報告から点検実績だけを示す。旧ゲームの方式は自動移行しない。"
+}
