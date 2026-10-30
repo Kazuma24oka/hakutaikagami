@@ -136,8 +136,8 @@
       "basis": "6性格を固定し、個人/家/組織への忠誠を分離。任意の継続協力に性格・既知の主従/実績/手当を用いた本人返答を接続。乱数で拒否を再抽選せず、過去合意を後日の関係で無効化しない。 一般軍務の危険・補給・提言、重大経験による性格変化、全NPCの横断判断。"
     },
     "BD-15": {
-      "percent": 50,
-      "basis": "実施済み養子を親子の方向付き関係として保存。提案段階や本人同意だけでは親族にしない。 血縁/婚姻/師弟、派閥形成、噂と訂正の連動。"
+      "percent": 55,
+      "basis": "配偶と養親子を別原本に保持し、養子で形成した共通祖先と婚姻の競合を判定。提案や本人同意だけで関係を確定しない。 史実血縁/師弟、派閥形成、噂と訂正、関係解消の履歴。"
     },
     "BD-16": {
       "percent": 50,
@@ -248,8 +248,8 @@
       "basis": "補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。 一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。"
     },
     "BD-43": {
-      "percent": 40,
-      "basis": "成人養子の本人・家の承諾・実施を分離し、役割/既知代表者/期限を固定。移動/不在/辞退/期限/重複/循環を確認し、所属/役職/所領を変えない。 婚姻・未成年予約・史実血縁・遠隔相談・所属変更後の再確認。"
+      "percent": 60,
+      "basis": "明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。"
     },
     "BD-44": {
       "percent": 0,
@@ -322,18 +322,18 @@
   },
   "focus": {
     "leaf": "BD-43",
-    "title": "成人養子の本人・家の合意と実施",
+    "title": "成人婚姻と開始時の明示情報",
     "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
-      "Introduce an explicit new-game adult adoption policy and versioned case/relationship records. Separate proposer personal assent, the other adult personal answer, required house authority assent, implementation and existing succession/office/land systems. Preserve old saves without automatic migration.",
-      "A proposal records the exact parent/child roles, fixed local meeting site, known house representatives, original deadline and version. Both individuals must actually be adult and present for personal consultation; NPC answers are deterministic personal choices and never override player decisions.",
-      "Required house consents are distinct from personal consent and require actual local authority; player house consent is an explicit action. Missing/changed authority or absent people leave pending/unavailable rather than substituting a hidden new representative. Implementation rechecks all current consents and presence.",
-      "Withdrawal, deadline, refusals, duplicate actions and competing/cyclic adoption are validated without teleport, duplicate relation, automatic membership/office/land transfer or automatic heir entitlement. Completed relationship remains separately recorded; proposals are not already family.",
-      "Verify real proposal/answer/house approval/implementation and refusal paths, unchanged money and legal rights, actual generation recovery/equal future, old saved worlds and headless Godot positions; integrate tested code/docs automatically and continue."
+      "Add explicit optional authoring declaration of unmarried status for registered adults. Unknown historical or legacy marital status remains unknown; preserve imports, group copies, profile rebuild and old saved bytes without automatic rewriting.",
+      "Use the shared local adult family-consent rules for marriage and adoption: known representatives, actual presence, stable personal answer, separate house consent and explicit implementation. Preserve prior adoption behavior and original terms.",
+      "Reject existing/pending conflicting marriages and recorded adoptive ancestor/sibling marriage in either operation order. Proposal or consent is not yet a spouse relationship; marriage never changes other treaties, membership, office, land or money.",
+      "Connect the authoring declaration and local consultation/status/actions to the normal entry and runtime. Player decisions remain explicit; unknown or unavailable people are not presented as verified eligible.",
+      "Verify normal/refused/withdrawn/expired and house consent paths, both operation orders with adoption, real generation recovery/equal future, exact old saves and headless Godot positions. Merge tested code/docs and continue."
     ],
     "deferred": [
-      "婚姻・史実血縁・遠隔相談",
-      "所属変更後の再確認",
+      "史実家族・離縁・出生・遠隔相談",
+      "人質/捕虜の身柄と履行",
       "GUI/正式素材・全国長期/性能受入"
     ]
   },
@@ -481,11 +481,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 38,
-    "baseline_commit": "889b983da594615e5aade9fcb8fe9a6b26484d1a",
-    "baseline": 55.13998917748918,
-    "current": 55.88998917748918,
-    "earned_gain": 0.75,
+    "version": 39,
+    "baseline_commit": "30298c9e03cab33eedf183a44222277d5946cac1",
+    "baseline": 55.88998917748918,
+    "current": 56.30665584415584,
+    "earned_gain": 0.4166666666666667,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,

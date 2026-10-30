@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Add explicit optional authoring declaration of unmarried status for registered adults. Unknown historical or legacy marital status remains unknown; preserve imports, group copies, profile rebuild and old saved bytes without automatic rewriting.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AdultMarriage.cs",
+        "Core/Contracts/FamilyConsentRules.cs",
+        "Core/Contracts/AdultAdoption.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Tests/AdultMarriageTests.cs",
+        "Game/Scripts/NewGameRuntime.Marriage.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/AdultMarriageV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Use the shared local adult family-consent rules for marriage and adoption: known representatives, actual presence, stable personal answer, separate house consent and explicit implementation. Preserve prior adoption behavior and original terms.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AdultMarriage.cs",
+        "Core/Contracts/FamilyConsentRules.cs",
+        "Core/Contracts/AdultAdoption.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Tests/AdultMarriageTests.cs",
+        "Game/Scripts/NewGameRuntime.Marriage.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/AdultMarriageV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Reject existing/pending conflicting marriages and recorded adoptive ancestor/sibling marriage in either operation order. Proposal or consent is not yet a spouse relationship; marriage never changes other treaties, membership, office, land or money.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AdultMarriage.cs",
+        "Core/Contracts/FamilyConsentRules.cs",
+        "Core/Contracts/AdultAdoption.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Tests/AdultMarriageTests.cs",
+        "Game/Scripts/NewGameRuntime.Marriage.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/AdultMarriageV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Connect the authoring declaration and local consultation/status/actions to the normal entry and runtime. Player decisions remain explicit; unknown or unavailable people are not presented as verified eligible.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AdultMarriage.cs",
+        "Core/Contracts/FamilyConsentRules.cs",
+        "Core/Contracts/AdultAdoption.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Tests/AdultMarriageTests.cs",
+        "Game/Scripts/NewGameRuntime.Marriage.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/AdultMarriageV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify normal/refused/withdrawn/expired and house consent paths, both operation orders with adoption, real generation recovery/equal future, exact old saves and headless Godot positions. Merge tested code/docs and continue.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AdultMarriage.cs",
+        "Core/Contracts/FamilyConsentRules.cs",
+        "Core/Contracts/AdultAdoption.cs",
+        "Core/Contracts/NewGameSetup.cs",
+        "Core/Contracts/NewCampaignStore.cs",
+        "Tests/AdultMarriageTests.cs",
+        "Game/Scripts/NewGameRuntime.Marriage.cs",
+        "Game/Scripts/OfficerLibraryTrial.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/AdultMarriageV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "対象は開始時未婚と明示された成人登録武将の現地婚姻。史実の配偶者/血縁採録、出生、離縁、未成年予約、遠隔交渉、所属変更後の家再確認、婚姻後の相続資格は後続。性別・生殖のシミュレーションや史実家族関係を追加したものではない。既存の未設定登録や保存へ未婚・婚姻方式を自動追加しない。"
+}
