@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-44",
     "title": "人質の実護送と到着後の返還確認",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。全国NPCの役割と人物行動へ続行。",
     "exit": [
       "Start a locally approved return of the existing held adult to the guardian household home, with current reconfirmed representatives. Preserve original guarantee, identity and expiry. The original player guardian escorts on foot; military capture and armed escort forces are out of scope.",
       "Use one canonical land journey for escort and held person so route changes, closure, stops and restored state cannot split or duplicate them. Ordinary unrelated travel cannot abandon the held person mid-return.",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "b659ed0fd27a013b4481254ab7e8e6175c3e3258"
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
