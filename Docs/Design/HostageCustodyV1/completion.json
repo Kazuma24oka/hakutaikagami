@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Implement the already adopted BD-44 hostage category separately from military capture. Start with a locally present adult registered personal retainer, an explicit guarantee original, the person consent and current household custodians; no custody is inferred from loss of troops or unknown captivity.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/HostageCustodyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Admission requires actual local presence, valid authority and no existing task, military command, another custody or conflicting undertaking. Record the same person, fixed holding site, custodian, guardian, treatment and return obligation without changing affiliation, office, property or life state.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/HostageCustodyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "During custody, shared availability checks prevent ordinary movement, work or military use of the held person. Do not impersonate the player, move people instantly, expose remote hidden state or invalidate earlier lawful records.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/HostageCustodyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Release is a separate physically local action with current lawful custodian and return recipient. Deadline produces an overdue obligation rather than disappearance, automatic execution or teleport. Withdrawal before admission and duplicate inputs are atomic.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/HostageCustodyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Connect the actual player-facing local admission and release flow. Verify consent/refusal/busy/deadline/release, old saved bytes, actual generation recovery/equal future and headless Godot location. Military capture, escorts, exchange and ransom remain explicitly unfinished.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/HostageCustodyV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "今回は成人の直属登録家臣と両家の現権限者が同じ場所にいる場合の人質契約。待遇は宿泊/食事の提供義務の記録で、実物食糧消費は未接続。原本の当事者が交代した場合は解放を保留し、自動で別の代表者へ差し替えない。軍事捕縛・護送・交換・身代金・遠隔合意・代表者交代後の受渡しは未実装。"
+}

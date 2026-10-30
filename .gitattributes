@@ -2097,3 +2097,8 @@ Core/Contracts/FamilyConsentRules.cs -text
 Tests/AdultMarriageTests.cs -text
 Game/Scripts/NewGameRuntime.Marriage.cs -text
 Scripts/verify_adult_marriage.py -text
+
+Core/Contracts/HostageCustody.cs -text
+Tests/HostageCustodyTests.cs -text
+Game/Scripts/NewGameRuntime.Custody.cs -text
+Scripts/verify_hostage_custody.py -text

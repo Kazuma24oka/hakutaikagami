@@ -97,6 +97,7 @@ public sealed class ContractWorld
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public SocialState? Social {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public AdoptionState? Adoption {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public MarriageState? Marriage {get;set;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public CustodyState? Custody {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public FactionNoticeState? FactionNotices {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
