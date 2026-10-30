@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-44",
     "title": "人質の現地預かりと解放",
-    "status": "完成条件5/5。人質の現地受入と解放を検証し、自動統合後も続行。",
+    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
       "Implement the already adopted BD-44 hostage category separately from military capture. Start with a locally present adult registered personal retainer, an explicit guarantee original, the person consent and current household custodians; no custody is inferred from loss of troops or unknown captivity.",
       "Admission requires actual local presence, valid authority and no existing task, military command, another custody or conflicting undertaking. Record the same person, fixed holding site, custodian, guardian, treatment and return obligation without changing affiliation, office, property or life state.",
