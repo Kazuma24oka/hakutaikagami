@@ -78,7 +78,7 @@ public static class ArmyRoadMarch
 public static partial class NewGameMilitary
 {
     internal static EntityId? RoadCase(ContractWorld w,long at,long rev)=>CaseStart(w,at,rev)?.Input.Id;
-    internal static bool RoadMayLead(ContractWorld w)=>CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&CurrentPlacementAuthority(w)&&MilitaryBoundAt(w,w.ElapsedSeconds,w.CommitSequence)&&!Detached(w);
+    internal static bool RoadMayLead(ContractWorld w)=>CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&CurrentPlacementAuthority(w)&&(MilitaryBoundAt(w,w.ElapsedSeconds,w.CommitSequence)||RemotePendingAllows(w))&&!Detached(w);
     internal static bool RoadReturning(ContractWorld w)=>Returning(w,w.ElapsedSeconds,w.CommitSequence);
     internal static bool RoadOrderAfter(ContractWorld w,int n,long at,long end,long revision)=>EffectiveOrder(w,n,at) is {} o&&o.At>=end&&o.Revision>revision;
 }

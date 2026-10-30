@@ -31,6 +31,7 @@ public partial class NewGameRuntime
         foreach(var target in NewGameMilitary.StoredSuccessionCandidates(w))Button("返納済み駐屯軍を現当主と再確認（"+NewGameWorld.SiteName(target.Site.Value)+"）",()=>{var result=Session.DecideNewMilitary(NewGameMilitary.StoredSuccessionRequest(w,new("request:stored-military-ui/"+shown+"/"+target.Ledger.Value),target.Ledger),Session.PlayerControl,shown);if(result.Code!=ResultCode.Accepted){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();});
         foreach(var e in w.NewMilitary?.ActiveSuccession?.Entries.TakeLast(3)??Enumerable.Empty<ActiveMilitaryAgreement>())Text("活動軍の指揮原本："+SuccessionPerson(w,e.Previous)+" → "+SuccessionPerson(w,e.Principal)+" ／ 現地確認 "+e.At+"秒。兵・兵糧は同じ家の同じ台帳に保持。");
         if(Session.CanAgreeActiveMilitary())Button("現当主と、預かっている同じ軍の指揮原本を確認",()=>{var root=NewGameMilitary.Cases(w).Last().Id;var result=Session.AgreeActiveMilitary(new(new("request:active-military-ui/"+shown),root),Session.PlayerControl,shown);if(result.Code!=ResultCode.Accepted){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();});
+        AppendRemoteMilitary(box,popup,feedback,shown);
         AppendTruceConfirmations(box,popup,feedback,shown);
         Text("交代後の支払いは「家の支給・待遇」、荷と余金の受渡しは「家の仕入れ・運搬」で行います。予定後も世界は通常の進行操作で進みます。");Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(610,540));
     }

@@ -2057,3 +2057,6 @@ Tests/ActiveMilitarySuccessionTests.cs -text
 Core/Contracts/NewGameMilitary.StoredSuccession.cs -text
 
 Scripts/verify_active_military_succession.py -text
+
+Core/Contracts/NewGameMilitary.RemoteSuccession.cs -text
+Tests/RemoteMilitarySuccessionTests.cs -text

@@ -27,7 +27,7 @@ public static partial class NewGameMilitary
         c.ResourceLots=w.ResourceLots.Where(l=>!NpcArmies.IsLot(w,l)&&(!allLots.Contains(l.Id)||l.Id==DepotFor(c)||l.Id==CarryFor(c))).ToArray();
         return c;
     }
-    static bool MilitaryEnvelope(MessageEnvelope m)=>m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m);
+    static bool MilitaryEnvelope(MessageEnvelope m)=>m.Kind==RemoteSuccessionKind||m.Kind.StartsWith("new-military-",StringComparison.Ordinal)||UnitEnvelope(m);
     static bool ClosedForSwitch(ContractWorld w)
     {
         if(w.NewMilitary==null)return true;
@@ -121,7 +121,7 @@ public static partial class NewGameMilitary
     }
     internal static void Validate(ContractWorld w,ContractWorld? trustedPrior)
     {
-        var inputIds=LedgerStates(w).SelectMany(s=>s.Requests.Select(q=>q.Input.Id).Concat((s.ActiveSuccession?.Entries??[]).Select(e=>e.Input.Id))).ToArray();Need(inputIds.Distinct().Count()==inputIds.Length,"Military request and active agreement IDs overlap");
+        var inputIds=LedgerStates(w).SelectMany(s=>s.Requests.Select(q=>q.Input.Id).Concat((s.ActiveSuccession?.Entries??[]).Select(e=>e.Input.Id)).Concat((s.RemoteSuccession?.Entries??[]).Where(e=>e.Input.Action!=RemoteMilitaryAction.Accept).Select(e=>e.Input.Id))).ToArray();Need(inputIds.Distinct().Count()==inputIds.Length,"Military request and active agreement IDs overlap");
         ValidateSelectionSources(w);
         if(w.OtherMilitaryLedgers==null){if(w.NewMilitary is {} only&&NpcArmies.Musters(w).Length>0)ValidateLedger(LedgerContext(w,only,true),null);else ValidateLedger(w,trustedPrior);return;}
         Need(w.NewMilitary!=null&&w.OtherMilitaryLedgers.Length>0,"操作対象のない軍台帳です");
