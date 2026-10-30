@@ -27,7 +27,9 @@ public static partial class PersonalCompanions
     {
         if(w.Requests.Any(r=>r.Intent.Executor==actor&&r.CommitSequence<rev&&r.CreatedAt<=at&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at))))return null;
         if(actor==w.PlayerControl&&NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<rev&&q.At<=at).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return null;
+        if(HostageCustody.ReturnJourney(w,actor,at,rev)!=null)return HostageCustody.ReturnSite(w,actor,at,rev);
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&w.Tasks.Any(t=>t.Id==j.Task&&t.FinishedAt<=at&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<rev)));
+        if(j!=null&&w.Requests.Any(r=>r.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId&&HostageCustody.IsReturnTask(w,r.Intent))&&TrafficWorld.StoppedNode(w,j.Task) is {} stopped)return RegionalCampaign.Site(stopped);
         return j==null?new(w.NewGame!.Start.People.Single(p=>p.Id==actor.Value).Site):RegionalCampaign.Site(j.Legs[^1].To);
     }
     static bool Eligible(ContractWorld w,EntityId person,long at,long rev)
@@ -68,7 +70,7 @@ public static partial class PersonalCompanions
     public static bool IsTask(ContractWorld w,Intent i)=>Orders(w).Any(q=>q.Task==i||q.LeaderTask==i);
     static Intent LeaderInput(ContractWorld w,CompanionInput i)=>TravelWorld.ActorMove(w,"request:companion-leader/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(i.Id.Value)),w.PlayerControl,i.Destination!,true,LandRoute);
     internal static void ValidatePending(ContractWorld w,Intent i){var q=Orders(w).SingleOrDefault(q=>q.Task==i||q.LeaderTask==i)??throw new InvalidDataException("引受原本がありません");Need(i==(q.Task==i?TaskInput(w,q.Input):LeaderInput(w,q.Input)),"引受時の移動・点検条件が変わりました");}
-    static ContractWorld BeforeTask(ContractWorld w,CompanionOrder q)
+    internal static ContractWorld BeforeTask(ContractWorld w,CompanionOrder q)
     {
         var c=w.ForkTransportLocation();c.ElapsedSeconds=q.At;c.CommitSequence=q.Revision-1;c.Requests=w.Requests.Where(r=>r.CommitSequence<q.Revision).ToArray();c.Tasks=w.Tasks.Where(t=>c.Requests.Any(r=>r.Id==t.RequestId)).ToArray();c.Branches=w.Branches! with{Journeys=w.Branches!.Journeys.Where(j=>c.Tasks.Any(t=>t.Id==j.Task)).ToArray()};c.Locations=w.Locations.Select(l=>SiteAt(w,l.Actor,q.At,q.Revision) is {} site?new LocationState(l.Actor,LocationKind.AtSite,site,null,0,0,null,null,null,null,0):l).ToArray();c.Evidence=w.Evidence.Where(e=>e.RecordedAt<=q.At).ToArray();c.Knowledge=w.Knowledge.Where(k=>k.LearnedAt<=q.At&&c.Evidence.Any(e=>e.Id==k.Evidence)).ToArray();return c;
     }

@@ -100,8 +100,8 @@
       "basis": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。"
     },
     "BD-06": {
-      "percent": 15,
-      "basis": "身柄の預かりを本人の現地所在と共通の行動可否へ接続し、解放しても自動移動しない。 負傷/死亡/病気、軍事捕縛からの拘束、長期生涯と各状態の遊び。"
+      "percent": 20,
+      "basis": "拘束と実護送・到着後の待機・受領後の通常同行を同じ人物の位置へ接続。 負傷/病気/死亡、軍事捕縛、長期生涯。"
     },
     "BD-07": {
       "percent": 5,
@@ -252,8 +252,8 @@
       "basis": "明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。"
     },
     "BD-44": {
-      "percent": 45,
-      "basis": "人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 宿泊/医療、軍事捕縛・護送・交換・身代金、NPC自律交代、実不足シナリオの全経路。"
+      "percent": 55,
+      "basis": "保証原本に基づく同じ本人の実護送・停止/再開・到着先の明示受領を接続。 軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。"
     },
     "BD-45": {
       "percent": 85,
@@ -322,14 +322,14 @@
   },
   "focus": {
     "leaf": "BD-44",
-    "title": "人質の現地食事と家の実在米",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。返還時の実護送へ続行。",
+    "title": "人質の実護送と到着後の返還確認",
+    "status": "完成条件5/5。人質の実護送と到着後の返還確認を検証し、自動統合後も続行。",
     "exit": [
-      "Fulfil the existing recorded food obligation as an explicit local meal request, using the existing prototype rice unit (1 kg) and a one-day interval after actual receipt. Do not introduce automatic hunger, death or execution.",
-      "Consume actual unreserved rice from the custodian household at the holding site. Preserve household ownership and existing salary/treaty reservations; no private money or rice is created. Record an unfulfilled request if free stock is insufficient.",
-      "Require the original guardian, held person and confirmed current representatives locally; reconfirm after succession. Release closes meal eligibility. Duplicate requests and same-day duplicate receipt cannot consume twice; shortage may be retried after replenishment.",
-      "Show the witnessed meal receipt or shortage in the existing custody UI. Keep original guarantee, expiry and immutable earlier records. Do not reveal current remote warehouse balances.",
-      "Verify actual warehouse debit, succession/release, request identity, balance/shortage boundaries, old-save compatibility, real generation recovery/equal futures and headless Godot. State precisely whether shortage is tested through a full campaign or as a calculation boundary."
+      "Start a locally approved return of the existing held adult to the guardian household home, with current reconfirmed representatives. Preserve original guarantee, identity and expiry. The original player guardian escorts on foot; military capture and armed escort forces are out of scope.",
+      "Use one canonical land journey for escort and held person so route changes, closure, stops and restored state cannot split or duplicate them. Ordinary unrelated travel cannot abandon the held person mid-return.",
+      "If a road closure stops the return, retain custody, actual shared location and outstanding obligation. Resume only toward the original fixed recipient site from the actual stopped position; never teleport or automatically treat delay as death.",
+      "Arrival and handover are separate. Release only after the current entitled recipient physically accepts the same person at the original destination. A changed/absent recipient holds handover; do not rewrite signatures or expiry.",
+      "Verify actual travel, road-stop/resume, duplicate inputs, return receipt, generation recovery during movement and at arrival, old-save byte compatibility and headless Godot shared positions. Keep military capture/exchange/ransom and GUI appearance unfinished."
     ],
     "deferred": [
       "史実家族・離縁・出生・遠隔相談",
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 42,
-    "baseline_commit": "fc6748cd8460b77c48d1faf40e516510819528fd",
-    "baseline": 57.05665584415584,
-    "current": 57.22332251082251,
-    "earned_gain": 0.16666666666666666,
+    "version": 43,
+    "baseline_commit": "a94d9ae5b445e0fa1c873a338845b5490a3b3085",
+    "baseline": 57.22332251082251,
+    "current": 57.47332251082251,
+    "earned_gain": 0.25,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "3964df813fd82925fe61ea6e030e340f9013ab44"
+    "integrated_main": null
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }

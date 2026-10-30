@@ -19,6 +19,9 @@ public partial class NewGameRuntime
             foreach(var meal in HostageCustody.Meals(world).Where(m=>m.Original==card.Id))Text(TreatyDate(meal.ObservedAt)+" 食事提供："+(meal.RiceKg==1?"家の米1kgを実消費":"未履行（自由在庫不足）。米の引当は解除していません"));
             if(HostageCustody.CanRequestMeal(world,card.Id))Button("現地で食事の提供を確認する（試作1kg・一日間隔）",()=>Act(CustodyAction.RequestMeal,original:card.Id));
             if(card.CanAdmit)Button("現地で受入を実施する",()=>Act(CustodyAction.Admit,original:card.Id));
+            if(HostageCustody.CanStartReturn(world,card.Id))Button("同じ本人を元の家の本拠へ護送する",()=>Act(CustodyAction.StartReturn,original:card.Id));
+            if(HostageCustody.CanResumeReturn(world,card.Id))Button("停止地点から同じ返還先への護送を再開する",()=>Act(CustodyAction.ResumeReturn,original:card.Id));
+            if(HostageCustody.CanReceiveReturn(world,card.Id))Button("返還先で現在の受領者へ本人を引き渡す",()=>Act(CustodyAction.ReceiveReturn,original:card.Id));
             if(card.CanReconfirm)Button("当主交代後の両家の代表者を現地で再確認する",()=>Act(CustodyAction.Reconfirm,original:card.Id));
             if(card.CanRelease)Button("現地で解放・返還を受ける",()=>Act(CustodyAction.Release,original:card.Id));
             if(card.CanWithdraw)Button("受入前の相談を取り下げる",()=>Act(CustodyAction.Withdraw,original:card.Id));
