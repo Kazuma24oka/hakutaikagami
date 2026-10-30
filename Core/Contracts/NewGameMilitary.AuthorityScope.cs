@@ -27,7 +27,7 @@ public static partial class NewGameMilitary
             var mandate=new CommandMandate(new("mandate:new-military/"+Hash(p.Case.Value)),p.Source.Issuer,p.Source.Agent,s.Terms.Army,[..UnitIdsFor(w)],[RegionalAction.Move,RegionalAction.Hold,RegionalAction.Retreat],NewGameWorld.Basis,pickup.At,end?.At??long.MaxValue);
             grants.Add(new(p.Case,p.Source.Owner,mandate,pickup.Revision,end?.Revision));
         }
-        return grants.OrderBy(g=>g.Mandate.From).ThenBy(g=>g.FromRevision).ToArray();
+        return ActiveGrants(w,grants.OrderBy(g=>g.Mandate.From).ThenBy(g=>g.FromRevision).ToArray());
     }
     public static bool ScopedAuthorityAllows(MilitaryScopedGrant grant,EntityId militaryCase,EntityId actor,EntityId army,EntityId unit,RegionalAction action,long at,long revision)=>grant.Case==militaryCase&&grant.Mandate.Agent==actor&&grant.Mandate.Army==army&&grant.Mandate.Units.Contains(unit)&&grant.Mandate.Actions.Contains(action)&&(grant.Mandate.From<at||grant.Mandate.From==at&&grant.FromRevision<=revision)&&(at<grant.Mandate.Until||at==grant.Mandate.Until&&grant.UntilRevision is {} end&&revision<end);
 }

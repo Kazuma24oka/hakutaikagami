@@ -64,12 +64,12 @@ public static partial class NewGameMilitary
     static void SelectRequestedLedger(ContractWorld w,NewMilitaryInput input)
     {
         if(input.Action!=NewMilitaryAction.Request||input.LedgerPolicy!=LedgerIdentityContract||w.NewMilitary==null)return;
-        var target=Terms(w,input.Id,input.AuthorityPolicy,input.LedgerPolicy,input.IssuerPolicy);
+        var target=Terms(w,input.Id,input.AuthorityPolicy,input.LedgerPolicy,input.IssuerPolicy,input.TargetLedger);
         if(SameGarrison(w.NewMilitary,target))return;
         Need(ClosedForSwitch(w),"旧主家の指揮・兵糧・返報の返納と終了通知を確認してください");
         Need(input.FromLedger==ExistingLedgerIdentity(w)!.Ledger,"表示した元台帳と現在の軍台帳が違います");
         var old=w.NewMilitary;var others=w.OtherMilitaryLedgers??[];var selected=others.SingleOrDefault(s=>SameGarrison(s,target));
-        Need(selected==null||PrincipalOf(w,selected)==target.Principal,"この駐屯軍の発令者変更は未対応です");
+        Need(selected==null||PrincipalOf(w,selected)==target.Principal||input.IssuerPolicy==StoredSuccessionContract&&selected.Binding?.Ledger==input.TargetLedger,"この駐屯軍の発令者変更は未対応です");
         w.NewMilitary=selected;w.OtherMilitaryLedgers=[..others.Where(s=>s!=selected),old];
     }
     static void ForEachLedger(ContractWorld w,Action<ContractWorld> action)
@@ -121,6 +121,7 @@ public static partial class NewGameMilitary
     }
     internal static void Validate(ContractWorld w,ContractWorld? trustedPrior)
     {
+        var inputIds=LedgerStates(w).SelectMany(s=>s.Requests.Select(q=>q.Input.Id).Concat((s.ActiveSuccession?.Entries??[]).Select(e=>e.Input.Id))).ToArray();Need(inputIds.Distinct().Count()==inputIds.Length,"Military request and active agreement IDs overlap");
         ValidateSelectionSources(w);
         if(w.OtherMilitaryLedgers==null){if(w.NewMilitary is {} only&&NpcArmies.Musters(w).Length>0)ValidateLedger(LedgerContext(w,only,true),null);else ValidateLedger(w,trustedPrior);return;}
         Need(w.NewMilitary!=null&&w.OtherMilitaryLedgers.Length>0,"操作対象のない軍台帳です");

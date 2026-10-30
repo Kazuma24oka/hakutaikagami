@@ -7,7 +7,7 @@ public static partial class WorldClashes
     sealed record Window(EntityId Army,long From,long Until,long Barrier);
     static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)
     {
-        return TruceNegotiations.ExternalInputs(w).Concat(w.Requests.Select(q=>(q.CreatedAt,q.CommitSequence)))
+        return TruceNegotiations.ExternalInputs(w).Concat(NewGameMilitary.ActiveInputs(w)).Concat(w.Requests.Select(q=>(q.CreatedAt,q.CommitSequence)))
             .Concat(NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests.Where(q=>q.Input.Action!=NewMilitaryAction.AutoRout).Select(q=>(q.At,q.Revision))))
             .Concat(NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Openings.Select(q=>(q.At,q.Revision))))
             .Concat((w.FactionStances?.Decisions??[]).Select(q=>(q.At,q.Revision)))
