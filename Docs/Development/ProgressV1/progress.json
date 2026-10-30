@@ -17,7 +17,7 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "faaba696501198776822d8fe9908edc5d35f3716fd40f0630cc7b6aaf667242b",
+    "Docs/Development/OPERATING_POLICY.md": "b4e29df5c8ff0d66cdf1096857d882d02bc717bc9aa5f7a00e0abeebca64666c",
     "Docs/Development/ProgressV1/estimate.json": "1dbc76e1ff1b459f2b154ac5ec4a959d34d57024e078613aa8d726fd5cd3f64f",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "619faa7722dd1f0f4e35e0d02d412bd5eb9d7ce73a6d6d7c3ccd6c5b7eaa8c0c",
@@ -119,8 +119,8 @@
     "Docs/Design/CastleAdministrationV1/legacy-sources.json": "3939e5348bf49312c64530ba7743b0291e8e69ce8ecea027a9d1ab8657ea7330",
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
-    "AGENTS.md": "fa5c29ab25b2310610f006f0e3fc352a4a38fb0d8bb300d4aed61c7fa13edbd8",
-    "Docs/Development/CURRENT_STAGE.md": "fbebbfee53573e6e72c95aa2effbeffc89e607f4733905b170384fd03bb173b7",
+    "AGENTS.md": "4026b21ba67806040f0aff3025073d4ce99d3d8c01e51ce32ad03afeebd62494",
+    "Docs/Development/CURRENT_STAGE.md": "690a1eda2c7b81c40febd63ab979bf2058da2ca0c35b8eff3413f1b6a1d4440c",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "0c049a93e380024c028abb22981fded7fdfe39b95eaf5858852308d2eb6b9b34",
@@ -374,8 +374,11 @@
     "Docs/Design/NpcPerformanceV1/README.md": "d786282e8fb2227561d4afa7596d0305e5d8e675d25b6d4485550b468a51fd49",
     "Docs/Development/ProgressV1/approval-baseline-v45.json": "3319e5a9082421f8d7f0604bf5adff6a08b2c08fc6c4cd23ebf7b906ca966c1c",
     "Scripts/verify_npc_performance.py": "bab617bb32020642bf9ac4036af9665009b41275de5c2f79067c98d575077d64",
-    "Docs/Development/PROCESS_V2.md": "714ae47b87eaa6c4e3a598c44be703aecdfe8288f98595ec7315a7418decc9bd",
-    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328"
+    "Docs/Development/PROCESS_V2.md": "e8d606684bc48320cc4f18d73060b6313041c16eb79215d6dc35900436c9c5f9",
+    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328",
+    "Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md": "fa5c29ab25b2310610f006f0e3fc352a4a38fb0d8bb300d4aed61c7fa13edbd8",
+    "Docs/Archive/OPERATING_POLICY_HISTORY_TO_2026-10-31.md": "faaba696501198776822d8fe9908edc5d35f3716fd40f0630cc7b6aaf667242b",
+    "Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md": "fbebbfee53573e6e72c95aa2effbeffc89e607f4733905b170384fd03bb173b7"
   },
   "items": [
     {
@@ -409,7 +412,7 @@
       "id": "BD-02",
       "status": "foundation",
       "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。",
-      "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。",
+      "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。 統合案で追加：§9決定1・§20 W7 難易度（勲功の量・NPCの関わり方）。",
       "evidence": [
         "Core/Contracts/StartConfiguration.cs",
         "Core/Contracts/HistoricalStartCatalog.cs",
@@ -422,7 +425,7 @@
       "id": "BD-03",
       "status": "design_only",
       "existing": "基本方針と受入予定がある。",
-      "remaining": "史実事件の前提・人物行動との競合・分岐を実装し、全モードで強制上書きがないことを検査する。",
+      "remaining": "史実事件の前提・人物行動との競合・分岐を実装し、全モードで強制上書きがないことを検査する。 統合案で追加：§22 史実の事件（前提と判断の重み・不発・年代記）。",
       "evidence": [
         "Docs/Design/basic-design-v1.json",
         "Core/Contracts/StartConfiguration.cs"
@@ -520,7 +523,7 @@
       "id": "BD-07",
       "status": "foundation",
       "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。",
-      "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。",
+      "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。 統合案で追加：§12 後継順位・誓紙・家督争い・後見。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameWorld.cs",
@@ -533,7 +536,7 @@
       "id": "BD-08",
       "status": "design_only",
       "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。",
-      "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。",
+      "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。 統合案で追加：§19 年代記と開始年のシナリオ。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
         "Core/Contracts/RegionalTrade.cs",
@@ -552,7 +555,7 @@
       "id": "BD-09",
       "status": "normal",
       "existing": "現当主が、同じ家の成人本人の同意で個人奉公を受け入れる。相互の旧主従は先に個別解除し、所属/役職/財産/未払いは保持する。",
-      "remaining": "所属離脱/移籍/一般臣従/解任/離反と全国NPCの判断。",
+      "remaining": "所属離脱/移籍/一般臣従/解任/離反と全国NPCの判断。 統合案で追加：§9 勲功帳・恩賞・顔。",
       "evidence": [
         "Core/Contracts/CastleAdministration.Succession.cs",
         "Core/Contracts/CastleAdministration.cs",
@@ -772,7 +775,7 @@
       "id": "BD-14",
       "status": "normal",
       "existing": "NPC家臣から支給した家への限定的な信頼を、期日と受領の履歴で更新。遅配後の次の合意判断へ参照する。現地以外では現在の相手の返答を表示せず、PC自身の継続意思を強制しない。 6性格を固定し、個人/家/組織への忠誠を分離。任意の継続協力に性格・既知の主従/実績/手当を用いた本人返答を接続。乱数で拒否を再抽選せず、過去合意を後日の関係で無効化しない。",
-      "remaining": "一般軍務の危険・補給・提言、重大経験による性格変化、全NPCの横断判断。",
+      "remaining": "一般軍務の危険・補給・提言、重大経験による性格変化、全NPCの横断判断。 統合案で追加：§20 W5 史実人物の志。",
       "evidence": [
         "Core/Contracts/CharacterRelations.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -797,7 +800,7 @@
       "id": "BD-15",
       "status": "normal",
       "existing": "点検の評価/実報酬/運搬報告から非対称の仕事上の信頼根拠を導き、本人の確認済みの縁から仕官・担当・軍務相談へ通常入口で接続。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。 5方向の非対称関係を分離。実手当受領・読んだ報告だけから本人側へ一度反応し、未知の第三者や逆向きへ漏らさない。表示は本人が知る出来事と日時だけ。 実施済み養子を親子の方向付き関係として保存。提案段階や本人同意だけでは親族にしない。 配偶と養親子を別原本に保持し、養子で形成した共通祖先と婚姻の競合を判定。提案や本人同意だけで関係を確定しない。",
-      "remaining": "史実血縁/師弟、派閥形成、噂と訂正、関係解消の履歴。",
+      "remaining": "史実血縁/師弟、派閥形成、噂と訂正、関係解消の履歴。 統合案で追加：§9 顔・§24 名声と茶会。",
       "evidence": [
         "Core/Contracts/AdultMarriage.cs",
         "Core/Contracts/FamilyConsentRules.cs",
@@ -1099,7 +1102,7 @@
       "id": "BD-23",
       "status": "normal",
       "existing": "城主任命原本と結び付いた現地保管報告を実配送し、到達と開封を分離。既知不達後のみ同じ時点の観測を三通まで再送し、ID衝突と過去時刻偽装を拒否。",
-      "remaining": "全種書状の統一画面と全国負荷、NPC城主報告の自動再送。",
+      "remaining": "全種書状の統一画面と全国負荷、NPC城主報告の自動再送。 統合案で追加：§19 日の速度・次の出来事まで・自動の停止と減速。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
         "Core/Contracts/CommunityStewardship.cs",
@@ -1155,7 +1158,7 @@
       "id": "BD-25",
       "status": "normal",
       "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。",
-      "remaining": "一般偵察/流言/地理発見と情報の全国索引。",
+      "remaining": "一般偵察/流言/地理発見と情報の全国索引。 統合案で追加：§10 情報系の計略・§24 名声（噂の事実）。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
         "Core/Contracts/CommunityStewardship.cs",
@@ -1216,7 +1219,7 @@
       "id": "BD-26",
       "status": "normal",
       "existing": "新当主と本人が現地で署名書状を手配し、指定先の待合日時・期限を固定する。行軍者の実現在地を使って遠隔追尾しない。",
-      "remaining": "遠隔から初回手配する合意・全国NPCの一般配送判断と全画面受入。",
+      "remaining": "遠隔から初回手配する合意・全国NPCの一般配送判断と全画面受入。 統合案で追加：§24 名声の風化。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -1454,7 +1457,7 @@
       "id": "BD-30",
       "status": "normal",
       "existing": "当主の政治権限と本人の個人奉公を分け、新当主が同じ家の武将へ軍務範囲だけの新しい指揮を許可する。案件別発令根拠/部隊/配置範囲と終了時点を記録。",
-      "remaining": "旧行政代理委任の再承認、全国の代理裁量・監督と多階層統制。",
+      "remaining": "旧行政代理委任の再承認、全国の代理裁量・監督と多階層統制。 統合案で追加：§13 奉行の常置。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
         "Core/Contracts/NewGameMilitaryAuthority.cs",
@@ -1563,7 +1566,7 @@
       "id": "BD-32",
       "status": "isolated",
       "existing": "独立試作で中断理由書状と暫定レビューを分ける。通常の点検返答は受領確認まで。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
-      "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。",
+      "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。 統合案で追加：§9 勲功帳と論功行賞。",
       "evidence": [
         "Core/Contracts/MissionReview.cs",
         "Core/Contracts/AssessmentNotice.cs",
@@ -1589,7 +1592,7 @@
       "id": "BD-33",
       "status": "normal",
       "existing": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。",
-      "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。",
+      "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。 統合案で追加：§13 内政の4軸・開発の普請・§16 技術。",
       "evidence": [
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
@@ -1625,7 +1628,7 @@
       "id": "BD-34",
       "status": "normal",
       "existing": "担当者交代後も同じ家の処分・調達枠を共有し、既存運搬の実前渡金と購入履歴を控除。個人奉公を解いても既存給付の未払いは残し、私財/家財を移さない。",
-      "remaining": "全画面/GUIと全国長期の収支受入は未完了のため、事前計画の上限100に対し概算99で保留する。",
+      "remaining": "全画面/GUIと全国長期の収支受入は未完了のため、事前計画の上限100に対し概算99で保留する。 統合案で追加：§13 指出・検地・§16 改革。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
         "Core/Contracts/HouseholdService.cs",
@@ -1686,7 +1689,7 @@
       "id": "BD-35",
       "status": "normal",
       "existing": "引受名簿と元の家/軍用倉を変えず、本人が共通陸路で3隊を率い、到着拠点周辺で再集合/再出発する。",
-      "remaining": "軍勢海上輸送・一般隊商、別行動中の広域指揮と全国性能。",
+      "remaining": "軍勢海上輸送・一般隊商、別行動中の広域指揮と全国性能。 統合案で追加：§24 名物の売買。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -1800,7 +1803,7 @@
       "id": "BD-37",
       "status": "normal",
       "existing": "同じ本人保管軍について新当主が署名した手配を根拠に旧指揮で行軍し、本人承諾から同じ軍・部隊の新権限を開始する。兵・米を再貸与しない。",
-      "remaining": "一般NPC軍の指揮移譲・全国編成/募兵/多段指揮。",
+      "remaining": "一般NPC軍の指揮移譲・全国編成/募兵/多段指揮。 統合案で追加：§21 装備で決まる兵種・§13 募兵。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -1849,7 +1852,7 @@
       "id": "BD-38",
       "status": "normal",
       "existing": "展開中と実街道行軍中の承諾で位置・経路・兵・米を保持。保存前後の本人/部隊/署名者の実Node3D配置を照合する。",
-      "remaining": "全国多数軍の複数線と優先度・GUI操作と長期受入。",
+      "remaining": "全国多数軍の複数線と優先度・GUI操作と長期受入。 統合案で追加：§21 陣形（作戦線の型）。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -1891,7 +1894,7 @@
       "id": "BD-39",
       "status": "normal",
       "existing": "通常の新規開始を明示v3へ接続。当主の通知発送→物理到達/開封→NPC独自判断/返書→実出陣/接触/損害→撤退/帰還/返納/返報/指揮返還を公開プレイヤーAPIで一巡。関連393件成功、Gameビルド成功、保存復旧5組/40個の実Node3D座標・兵数・攻撃用データ一致。GUI操作/見た目と現コード全2573件は未実施。全体概算20%据置。 条約の防衛援軍を実在の同じ駐屯兵100人へ接続。実米からの署名付き兵糧と共通陸路で守備先へ到着し、実守備・帰還・現地返納する。未知の封鎖を実進入で知り同じ軍が迂回する。架空の敵対宣言や軍を作らない。",
-      "remaining": "同じ駐屯兵の繰り返し再動員、一般野戦/攻城/救援の拡張、全国NPCによる自主攻防と長期受入。",
+      "remaining": "同じ駐屯兵の繰り返し再動員、一般野戦/攻城/救援の拡張、全国NPCによる自主攻防と長期受入。 統合案で追加：§21 天候と地形・負傷兵・区画を順に攻める攻城。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
         "Core/Contracts/NpcArmies.cs",
@@ -1933,7 +1936,7 @@
       "id": "BD-40",
       "status": "normal",
       "existing": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。",
-      "remaining": "移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。",
+      "remaining": "移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。 統合案で追加：§21 負傷兵の回復と兵糧。",
       "evidence": [
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
@@ -1979,7 +1982,7 @@
       "id": "BD-41",
       "status": "normal",
       "existing": "正式条約の独立条項/版/実権者/既知代表者/固定本拠を記録。同一版の承諾到達で成立し、本人開封と本人による成立確認の返書を分離する。対案は元の条項/解除予告期間を保持し、未通知の代表者を探知しない。",
-      "remaining": "条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。",
+      "remaining": "条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。 統合案で追加：§15 外交・勧告。",
       "evidence": [
         "Core/Contracts/TreatyNegotiations.cs",
         "Core/Contracts/TreatyNegotiations.Operations.cs",
@@ -2026,7 +2029,7 @@
       "id": "BD-42",
       "status": "foundation",
       "existing": "不侵略・通行・補給・防衛援軍を独立条項にする。既知の不侵略を実NPC/交戦判断へ接続し、解除意思・物理的法的到達・予告期間の効力・本人の認識を分離。不達再送と現物回収の重複でも同じ通知を一意に扱う。援軍/補給は条項別の量・期限・理由を持つ物理要請/受領/辞退まで接続し、実行完了としない。 補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。",
-      "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。",
+      "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。 統合案で追加：§15 従属の条項と違反（HANDOFF_D3_D4）。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
         "Core/Contracts/NpcArmies.cs",
@@ -2107,7 +2110,7 @@
       "id": "BD-44",
       "status": "design_only",
       "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 保証原本に基づく同じ本人の実護送・停止/再開・到着先の明示受領を接続。",
-      "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。",
+      "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。 統合案で追加：§21 捕虜の処遇・§15 人質（HANDOFF_D3_D4）。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -2141,7 +2144,7 @@
       "id": "BD-45",
       "status": "foundation",
       "existing": "明示した方針だけで本拠集合軍の保管を継続した生前交代を許し、交代と軍務再合意を分離する。後の就任で過去の仕官/辞去資格を変えず、当時の役職履歴から再検証する。",
-      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。",
+      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。 統合案で追加：§12 家督の3段・後見。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
         "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
@@ -2204,7 +2207,7 @@
       "id": "BD-46",
       "status": "foundation",
       "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。",
-      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。",
+      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameService.cs",
@@ -2217,7 +2220,7 @@
       "id": "BD-47",
       "status": "design_only",
       "existing": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。",
-      "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。",
+      "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。 統合案で追加：§21 開城の判断と条件の交渉。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
         "Core/Contracts/CommunityStewardship.cs",
@@ -2318,7 +2321,7 @@
       "id": "BD-49",
       "status": "normal",
       "existing": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。",
-      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。",
+      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。 統合案で追加：§11 家中職と評定・§16 集権化。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
@@ -2341,7 +2344,7 @@
       "id": "BD-50",
       "status": "normal",
       "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
-      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。",
+      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2359,7 +2362,7 @@
       "id": "BD-51",
       "status": "design_only",
       "existing": "寺社権益の基本方針がある。",
-      "remaining": "寺社の要求・正式権益・実支配・協力/不服従と交渉を実装する。",
+      "remaining": "寺社の要求・正式権益・実支配・協力/不服従と交渉を実装する。 統合案で追加：§23 寺社（大寺社の組織・寄進・権益・キリスト教）。",
       "evidence": [
         "Docs/Design/basic-design-v1.json"
       ],
@@ -2370,7 +2373,7 @@
       "id": "BD-52",
       "status": "normal",
       "existing": "固定Seedの不足と救済に、村との期限付き約束/部分履行/不信/次の返答、NPC現地救済を接続。",
-      "remaining": "全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。",
+      "remaining": "全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。 統合案で追加：§13 一揆の段階・§23 一向宗の檄。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2391,7 +2394,7 @@
       "id": "BD-53",
       "status": "design_only",
       "existing": "朝廷/幕府への働きかけの基本方針がある。",
-      "remaining": "中央固有の決裁権と交渉案件を実装する。",
+      "remaining": "中央固有の決裁権と交渉案件を実装する。 統合案で追加：§15 朝廷・将軍への取次。",
       "evidence": [
         "Docs/Design/basic-design-v1.json"
       ],
@@ -2402,7 +2405,7 @@
       "id": "BD-54",
       "status": "design_only",
       "existing": "称号・任官・実権を分ける基本方針がある。",
-      "remaining": "中央任官の正式地位・名乗り・他者認識・実権を実装する。",
+      "remaining": "中央任官の正式地位・名乗り・他者認識・実権を実装する。 統合案で追加：§11 官位・幕府職・家中職（RANKS_AND_OFFICES_V1）・§24 与姓・偏諱。",
       "evidence": [
         "Docs/Design/basic-design-v1.json"
       ],
@@ -2413,7 +2416,7 @@
       "id": "BD-55",
       "status": "design_only",
       "existing": "将軍継承・擁立の基本方針がある。",
-      "remaining": "候補資格・支持・名目就任・実権・服従関係の変化を実装する。",
+      "remaining": "候補資格・支持・名目就任・実権・服従関係の変化を実装する。 統合案で追加：§17 征夷大将軍への道（BD-55 の変更）。",
       "evidence": [
         "Docs/Design/basic-design-v1.json"
       ],
@@ -2424,7 +2427,7 @@
       "id": "BD-56",
       "status": "design_only",
       "existing": "仲裁・服従の基本方針がある。",
-      "remaining": "発給・到達・受容・履行・政治評価と、不達時の扱いを実装する。",
+      "remaining": "発給・到達・受容・履行・政治評価と、不達時の扱いを実装する。 統合案で追加：§15 仲裁。",
       "evidence": [
         "Docs/Design/basic-design-v1.json"
       ],
@@ -2435,7 +2438,7 @@
       "id": "BD-57",
       "status": "normal",
       "existing": "既存の家督画面へ当事者別の奉公解除/新奉公をまとめ、行政画面へ旧原本/担当者/再承認を接続。旧履歴・新権限・同意・月枠と届いた観測を分ける。",
-      "remaining": "全画面の情報整理・外観/GUI操作の受入とアクセシビリティ。",
+      "remaining": "全画面の情報整理・外観/GUI操作の受入とアクセシビリティ。 統合案で追加：§18 4つの動詞・手帳・定例の評定・陣触れ。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
         "Core/Contracts/HouseholdService.cs",
@@ -2539,7 +2542,7 @@
       "id": "BD-58",
       "status": "normal",
       "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。",
-      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。",
+      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",

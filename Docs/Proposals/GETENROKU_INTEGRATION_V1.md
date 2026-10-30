@@ -1035,6 +1035,7 @@
 ### 実施の状況（2026-10-31 更新）
 - 本線の運用方針への反映（P1〜P4・P7）：済。Docs/Development/PROCESS_V2.md にまとめ、AGENTS.md・CURRENT_STAGE.md・OPERATING_POLICY.md の最新の節から参照した。
 - 基本設計の変更記録（P8）：済。Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md。
-- AGENTS.md と OPERATING_POLICY.md の整理（P5）：未実施。進捗表の検査がこれらのハッシュを持つため、本線の工程の区切りで source_hashes と一緒に更新する。
+- AGENTS.md・OPERATING_POLICY.md・CURRENT_STAGE.md の整理（P5）：済（2026-10-31）。過去の記録は Docs/Archive/〈名前〉_HISTORY_TO_2026-10-31.md へそのまま移した。
+- 進捗表の範囲：統合案の新機能群は60枠の各枠の完成範囲と「残り」に足す（2026-10-31 ユーザー決定）。35枠の「残り」に書き足し済み。％の付け直しは次の固定基準（v46）の凍結し直しで行う（PROCESS_V2.md「進捗表の範囲」）。
 - 証跡とツールの移動（P6）：未実施。検証スクリプトが runtime-local と .tools のパスを直接参照しているので、移す前にパスの扱いを決め、ユーザーに対象と移動先を確認する。
 
