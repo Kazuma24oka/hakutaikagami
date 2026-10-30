@@ -100,8 +100,8 @@
       "basis": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。"
     },
     "BD-06": {
-      "percent": 5,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 15,
+      "basis": "身柄の預かりを本人の現地所在と共通の行動可否へ接続し、解放しても自動移動しない。 負傷/死亡/病気、軍事捕縛からの拘束、長期生涯と各状態の遊び。"
     },
     "BD-07": {
       "percent": 5,
@@ -252,8 +252,8 @@
       "basis": "明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。"
     },
     "BD-44": {
-      "percent": 0,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 25,
+      "basis": "人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 戦闘捕縛・護送・交換・身代金・待遇の実消費・権限者交代の受渡し。"
     },
     "BD-45": {
       "percent": 85,
@@ -321,15 +321,15 @@
     }
   },
   "focus": {
-    "leaf": "BD-43",
-    "title": "成人婚姻と開始時の明示情報",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。人質・捕虜の身柄と履行へ続行。",
+    "leaf": "BD-44",
+    "title": "人質の現地預かりと解放",
+    "status": "完成条件5/5。人質の現地受入と解放を検証し、自動統合後も続行。",
     "exit": [
-      "Add explicit optional authoring declaration of unmarried status for registered adults. Unknown historical or legacy marital status remains unknown; preserve imports, group copies, profile rebuild and old saved bytes without automatic rewriting.",
-      "Use the shared local adult family-consent rules for marriage and adoption: known representatives, actual presence, stable personal answer, separate house consent and explicit implementation. Preserve prior adoption behavior and original terms.",
-      "Reject existing/pending conflicting marriages and recorded adoptive ancestor/sibling marriage in either operation order. Proposal or consent is not yet a spouse relationship; marriage never changes other treaties, membership, office, land or money.",
-      "Connect the authoring declaration and local consultation/status/actions to the normal entry and runtime. Player decisions remain explicit; unknown or unavailable people are not presented as verified eligible.",
-      "Verify normal/refused/withdrawn/expired and house consent paths, both operation orders with adoption, real generation recovery/equal future, exact old saves and headless Godot positions. Merge tested code/docs and continue."
+      "Implement the already adopted BD-44 hostage category separately from military capture. Start with a locally present adult registered personal retainer, an explicit guarantee original, the person consent and current household custodians; no custody is inferred from loss of troops or unknown captivity.",
+      "Admission requires actual local presence, valid authority and no existing task, military command, another custody or conflicting undertaking. Record the same person, fixed holding site, custodian, guardian, treatment and return obligation without changing affiliation, office, property or life state.",
+      "During custody, shared availability checks prevent ordinary movement, work or military use of the held person. Do not impersonate the player, move people instantly, expose remote hidden state or invalidate earlier lawful records.",
+      "Release is a separate physically local action with current lawful custodian and return recipient. Deadline produces an overdue obligation rather than disappearance, automatic execution or teleport. Withdrawal before admission and duplicate inputs are atomic.",
+      "Connect the actual player-facing local admission and release flow. Verify consent/refusal/busy/deadline/release, old saved bytes, actual generation recovery/equal future and headless Godot location. Military capture, escorts, exchange and ransom remain explicitly unfinished."
     ],
     "deferred": [
       "史実家族・離縁・出生・遠隔相談",
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 39,
-    "baseline_commit": "30298c9e03cab33eedf183a44222277d5946cac1",
-    "baseline": 55.88998917748918,
-    "current": 56.30665584415584,
-    "earned_gain": 0.4166666666666667,
+    "version": 40,
+    "baseline_commit": "a0656ca562bc39f67765000478e94f7d1080f6f3",
+    "baseline": 56.30665584415584,
+    "current": 56.88998917748918,
+    "earned_gain": 0.5833333333333334,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "8325ad6c91477bd05fe19c99feb055851367afc0"
+    "integrated_main": null
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
