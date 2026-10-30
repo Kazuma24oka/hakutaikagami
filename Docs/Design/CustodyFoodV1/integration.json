@@ -3,5 +3,6 @@
   "standing_authorization": "User delegated future main code/docs merges; adopted BD-44 local custody scope",
   "base_main": "7e44e9016c6831883d21ddecde27f825356544d8",
   "scope": "Code and documentation only; no model assets",
-  "pull_request": null
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/47",
+  "code_head": "f20df6b69ab2e69fd54f072122541600bba407f1"
 }
