@@ -1,0 +1,8 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "User delegated future main code/docs merges; on 2026-10-31 the user asked Claude Code to carry this paused verified work through main integration",
+  "base_main": "ea0b93f121539f6f6e2a8c5850162d09ab9e339b",
+  "scope": "Code and documentation only; no model assets",
+  "pull_request": null,
+  "code_head": null
+}

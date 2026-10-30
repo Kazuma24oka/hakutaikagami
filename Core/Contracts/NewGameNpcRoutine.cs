@@ -1,12 +1,17 @@
 namespace HakutaiKagami.Core.Contracts;
-// Opt-in personal work for at most eight authored historical NPCs. Existing task/transport/clock only.
+// Versioned personal work using the existing task, transport and clock contracts.
 public static partial class NewGameNpcRoutine
 {
     public const string Policy="historical-own-site-first-inspection-v1";
     public const int MaximumActors=8;
     public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&Supported(w.NewGame?.NpcRoutinePolicy);
-    static EntityId[] Actors(ContractWorld w)=>!Enabled(w)?[]:w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id.Value==p.Id).Life==LifeState.Adult:!p.Created)).Select(p=>new EntityId(p.Id)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
-    public static bool IsActor(ContractWorld w,EntityId actor)=>Actors(w).Contains(actor);
+    internal static EntityId[] Actors(ContractWorld w)
+    {
+        if(!Enabled(w))return [];
+        var adults=Continuing(w)?w.Characters.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id.Value).ToHashSet(StringComparer.Ordinal):null;
+        return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
+    }
+    public static bool IsActor(ContractWorld w,EntityId actor)=>Enabled(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult:!p.Created));
     public static int BoundaryCost(ContractWorld w)=>2*Actors(w).Length;
     public static NpcWorkInputs Inputs(ContractWorld w,EntityId actor,long at,long revision)
     {
@@ -29,13 +34,7 @@ public static partial class NewGameNpcRoutine
         foreach(var actor in Actors(w)){var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(checked(w.ElapsedSeconds+1));else if(ContinuingBoundary(w,i) is {} next)times.Add(next);}
         return times.Where(t=>t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     }
-    internal static void TakeTurns(WorldSession session)
-    {
-        foreach(var actor in Actors(session.DiagnosticSnapshot())){var w=session.DiagnosticSnapshot();if(w.Paused)return;var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var hash=ContractJson.CanonicalHash(i);if(w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor)?.InputHash==hash)continue;var reason=Reason(i);EntityId? request=null;ResultCode result=ResultCode.NotAvailable;
-            if(reason=="inspect-own-site"){request=new("request:npc-routine/"+actor.Value.Replace(':','/')+"/"+(i.OwnTasks.Length+1));result=session.Submit(NewGameWorld.InspectFor(w,actor,request.Value.Value,w.ElapsedSeconds),session.Revision).Code;}
-            session.RecordNpcWork(actor,w.CommitSequence,i,hash,reason,request,result);
-        }
-    }
+    internal static void TakeTurns(WorldSession session)=>session.TakeNewGameNpcTurns();
     public static void Validate(ContractWorld w)
     {
         if(!Enabled(w)||w.NpcWork==null||Actors(w).Length>(Continuing(w)?ContinuingMaximumActors:MaximumActors))throw new InvalidDataException("NPC routine policy/module mismatch");var ds=w.NpcWork.Decisions;if(ds.Select(d=>d.Id).Distinct().Count()!=ds.Length)throw new InvalidDataException("Duplicate NPC routine decision");

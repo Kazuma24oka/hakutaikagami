@@ -1032,10 +1032,9 @@
   → 試し遊びの録画をお願いします
 ```
 
-### まだ実施していない作業
-この節は方針の決定だけを記録した。次の作業はまだ行っていない。
-- AGENTS.md と OPERATING_POLICY.md の整理（P5）
-- 証跡とツールの移動（P6。実施前に対象と移動先を確認）
-- 基本設計の変更記録の作成（P8）
-- 本線の運用方針（AGENTS.md・OPERATING_POLICY.md）への P1〜P4・P7 の反映
+### 実施の状況（2026-10-31 更新）
+- 本線の運用方針への反映（P1〜P4・P7）：済。Docs/Development/PROCESS_V2.md にまとめ、AGENTS.md・CURRENT_STAGE.md・OPERATING_POLICY.md の最新の節から参照した。
+- 基本設計の変更記録（P8）：済。Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md。
+- AGENTS.md と OPERATING_POLICY.md の整理（P5）：未実施。進捗表の検査がこれらのハッシュを持つため、本線の工程の区切りで source_hashes と一緒に更新する。
+- 証跡とツールの移動（P6）：未実施。検証スクリプトが runtime-local と .tools のパスを直接参照しているので、移す前にパスの扱いを決め、ユーザーに対象と移動先を確認する。
 

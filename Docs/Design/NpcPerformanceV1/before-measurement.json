@@ -1,0 +1,13 @@
+{
+  "milliseconds": [
+    6429,
+    6404,
+    6362
+  ],
+  "median_ms": 6404,
+  "scope": "29 active NPCs, world creation plus 20 game seconds; three standalone processes, no concurrent agent tests/builds/probes; not FPS",
+  "binaries": {
+    "Core/bin/Debug/net8.0/HakutaiKagami.Core.dll": "f4561aa5cd7785828d406c3a4d9cf4c828e6d047a01b5ba02f03831090490dff",
+    "Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll": "59dc1f2c4b1bc447964db391cf7c6eec8c6d4dc999a709a4c51b8bfd7ec201e5"
+  }
+}

@@ -93,7 +93,7 @@
     },
     "BD-04": {
       "percent": 15,
-      "basis": "登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 3000活動人物/1000拠点/500軍と実機FPSの受入。"
+      "basis": "登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変、加点なし）。 3000活動人物/1000拠点/500軍と実機FPSの受入。"
     },
     "BD-05": {
       "percent": 65,
@@ -321,20 +321,20 @@
     }
   },
   "focus": {
-    "leaf": "BD-58",
-    "title": "登録武将を含むNPCの必要に応じた継続行動",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。NPCの処理負荷低減へ続行。",
+    "leaf": "BD-04",
+    "title": "NPC継続行動の処理負荷低減",
+    "status": "完成条件5/5。行動を変えない処理負荷の低減を検証し、自動統合後も続行。",
     "exit": [
-      "Pin a new opt-in NPC policy in new games. Keep previous first-inspection-only and null policies byte-compatible. Registered adult NPCs and authored historical adults use the same existing command and report pipeline; never control the player or minors.",
-      "Choose a local inspection only from the NPC own missing/stale road observations, actual available permission and own received result. At most one new autonomous inspection per person per day. Fresh observations, pending reports, military/custody/companion tasks prevent inappropriate work; never read hidden road truth to plan.",
-      "Continue across days and local positions with immutable decision input snapshots and deterministic ordering. Actual completed work can earn existing skill experience; no invented offices, army, wealth or automatic relationships.",
-      "Exercise multiple active registered NPCs across the existing national nodes and bounded event budgets. Record measured scope; do not claim the product target of 3000 active people, 1000 sites and 500 armies was reached.",
-      "Verify current public APIs, stale/hidden knowledge, occupancy, same future after real generation recovery, old-save bytes, entry policy and headless Godot data projection. GUI appearance and full nationwide strategic AI remain unfinished."
+      "Measure the same 29 active NPC scenario in three sequential standalone test processes before and after, with no other agent-started tests/builds/probes running; record wall time, binary hashes and conditions, not FPS.",
+      "Remove redundant NPC population scans and diagnostic world copies without exposing mutable state or changing actor order, decisions, revisions, clocks or event budgets.",
+      "Preserve exact saved bytes and future results for the previous continuing-policy recovery generations, as well as earlier saved policies; verify hidden information and occupancy regressions.",
+      "Run the full Core test suite and build Game; verify actual headless Godot saved/restored projection equality. GUI appearance remains untested.",
+      "Publish measured gains and any limits, commit and push code/docs and integrate only after successful checks; do not change fixed progress weights or claim the nationwide product load target."
     ],
     "deferred": [
-      "全国の役割別の目的と自律軍事/外交",
-      "活動3000人/1000拠点/500軍と実機性能",
-      "GUI/正式素材・全国長期の製品受入"
+      "NPCの既知の用件と空き時間の修行（凍結済みの次工程）",
+      "統合案第14節の順番（0a 時間の仕組みから）へ移行",
+      "活動3000人/1000拠点/500軍と実機性能"
     ]
   },
   "roadmap": [
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 44,
-    "baseline_commit": "aa329cd31227dd80bb6eeeaebb8ec6d1ee5d46a6",
-    "baseline": 57.47332251082251,
+    "version": 45,
+    "baseline_commit": "7b7585ca51f24b1ca9aaf56d6e56dee7eedc72b6",
+    "baseline": 57.67743506493507,
     "current": 57.67743506493507,
-    "earned_gain": 0.2041125541125541,
+    "earned_gain": 0.0,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "ea0b93f121539f6f6e2a8c5850162d09ab9e339b"
+    "integrated_main": null
   },
   "range_note": "2026-10-30: The unchanged fixed-weight raw estimate is57.677435%; the historical five-point rounded value is60. The display uncertainty band is55-65 instead of45-55. This display-band update earns no progress and changes no leaves, weights or denominator."
 }

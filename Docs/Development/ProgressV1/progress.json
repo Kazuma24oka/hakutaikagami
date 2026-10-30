@@ -17,12 +17,12 @@
   "source_hashes": {
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
-    "Docs/Development/OPERATING_POLICY.md": "129b3567c25e9679e892255026682be68127db8226699111622437b3e108ceaa",
-    "Docs/Development/ProgressV1/estimate.json": "4d48d0c72e0d3af7e7ca314240e27560250d3ce51514a1cf0b2876e3b8b75ee2",
+    "Docs/Development/OPERATING_POLICY.md": "faaba696501198776822d8fe9908edc5d35f3716fd40f0630cc7b6aaf667242b",
+    "Docs/Development/ProgressV1/estimate.json": "ee51801205286c6b140081ab97cadab72284957122f17f6978a11c98c89333ab",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "5c224466f3248996bf8dd81e919570c3a07403fb1d996222fa7f6a85b01a0278",
+    "Scripts/check_progress_report.py": "619faa7722dd1f0f4e35e0d02d412bd5eb9d7ce73a6d6d7c3ccd6c5b7eaa8c0c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "324262acc3de31d0a2adda4b2c2d82f2c39a85111b46f38efc344a1c65d992d2",
+    "Scripts/check_approval_batch.py": "ee3723a1e11cd83c260085b6bbd4054ac7052fe12021586c68bd520a7bd9421e",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -119,8 +119,8 @@
     "Docs/Design/CastleAdministrationV1/legacy-sources.json": "3939e5348bf49312c64530ba7743b0291e8e69ce8ecea027a9d1ab8657ea7330",
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
-    "AGENTS.md": "f5a94601a0dcf368a00dbeb0c6c07ef27576b58b3ed780c6c19550c57c85f2d2",
-    "Docs/Development/CURRENT_STAGE.md": "2ddce23bb40d41174b6f5922cd72d54c7003e01f5f668046474057b8d7030ccf",
+    "AGENTS.md": "fa5c29ab25b2310610f006f0e3fc352a4a38fb0d8bb300d4aed61c7fa13edbd8",
+    "Docs/Development/CURRENT_STAGE.md": "fbebbfee53573e6e72c95aa2effbeffc89e607f4733905b170384fd03bb173b7",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "0c049a93e380024c028abb22981fded7fdfe39b95eaf5858852308d2eb6b9b34",
@@ -351,7 +351,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v43.json": "5e1d225e157458ab0852f593dab17c0a819529eb704ed168ba8e607d5f8b8398",
     "Scripts/verify_custody_return.py": "f44014b52506c46285c547a380fb4921791b94829a364d5dfd31a85f1f21ee0a",
     "Core/Contracts/NpcContinuing.cs": "d34df84e79433c03d8e50c64a8298a9b637121c936d967515ac867cb5a89d6d1",
-    "Core/Contracts/NewGameNpcRoutine.cs": "d97e36693d515f5221aec462fc31f62503bcc5198c8325882cd101650cc9924e",
+    "Core/Contracts/NewGameNpcRoutine.cs": "8ab90663efe708abb33fccb79e228dbca7d420abbe2ece8f2df9f601acb2f7e5",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
     "Core/Contracts/ContractJson.cs": "3606d2b75fc8577fa8e2cc29d3cfb34fe5cf3aa1888bd4655241fb0d3be7307a",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
@@ -364,7 +364,18 @@
     "Docs/Design/NpcContinuingV1/README.md": "e27d78e10c96d4bf09c8fa1fd64fd64591ccde1d581eefbe98820f083e3e1b8a",
     "Docs/Design/NpcContinuingV1/legacy-sources.json": "964215d428fc2d10bf85c54a72e0038cdb05fe9c8a3f0e93aff9d08fb717df6b",
     "Docs/Development/ProgressV1/approval-baseline-v44.json": "d21de1499149d955ed0777b6069dfd45413fb4dc4b5e1ab06b247b2941f79c46",
-    "Scripts/verify_npc_continuing.py": "d6e5919238329b373460acc1bc9c606d4161170204bcff1372ef2686db0943f8"
+    "Scripts/verify_npc_continuing.py": "d6e5919238329b373460acc1bc9c606d4161170204bcff1372ef2686db0943f8",
+    "Core/Contracts/WorldSession.NpcRoutine.cs": "70e3a145f9a1a3db18f0540584d815a148780c77534fb6adde549662f579a094",
+    "Docs/Design/NpcPerformanceV1/verification.json": "14d1d8ca90e74c72c9145b6b04538afa76969e35565a113901a03723c48f1cd4",
+    "Docs/Design/NpcPerformanceV1/before-measurement.json": "9d9d3d004fc82f9c9bf3d26ce00c3dc0fe32218f1ff0e6ed09dc1b61e630b6a5",
+    "Docs/Design/NpcPerformanceV1/legacy-sources.json": "6fa434fc9930b1f3110b0df97b4c614fc18410bcfbaca2d2836d450174f38c16",
+    "Docs/Design/NpcPerformanceV1/completion.json": "4401c675a88bb54ba12f42dd967c729a72adbfcfeee9ae0f5b675aa36f14a987",
+    "Docs/Design/NpcPerformanceV1/integration.json": "01ec059159c8b12e070f9edd0150c847c870e5fece37b47d835797f9249ffd28",
+    "Docs/Design/NpcPerformanceV1/README.md": "d786282e8fb2227561d4afa7596d0305e5d8e675d25b6d4485550b468a51fd49",
+    "Docs/Development/ProgressV1/approval-baseline-v45.json": "3319e5a9082421f8d7f0604bf5adff6a08b2c08fc6c4cd23ebf7b906ca966c1c",
+    "Scripts/verify_npc_performance.py": "bab617bb32020642bf9ac4036af9665009b41275de5c2f79067c98d575077d64",
+    "Docs/Development/PROCESS_V2.md": "714ae47b87eaa6c4e3a598c44be703aecdfe8288f98595ec7315a7418decc9bd",
+    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328"
   },
   "items": [
     {
@@ -422,7 +433,7 @@
     {
       "id": "BD-04",
       "status": "normal",
-      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。 登録24人を含む活動29 NPCを複数拠点の共通任務で実測。",
+      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。 登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変）。",
       "remaining": "3000活動人物/1000拠点/500軍と実機FPSの受入。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
@@ -441,7 +452,10 @@
         "Core/World/JapanGeography.cs",
         "Game/Scripts/NewGameFrontEnd.CapacityChecks.cs",
         "Game/Scripts/NewGameFrontEnd.NpcRoutineChecks.cs",
-        "Docs/Design/SupplyWorkV1/verification.json"
+        "Docs/Design/SupplyWorkV1/verification.json",
+        "Core/Contracts/WorldSession.NpcRoutine.cs",
+        "Docs/Design/NpcPerformanceV1/verification.json",
+        "Docs/Design/NpcPerformanceV1/before-measurement.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2580,7 +2594,9 @@
         "Tests/NpcCommunityAdministrationTests.cs",
         "Docs/Design/VillageConsultationV1/verification.json",
         "Game/Scripts/NewGameRuntime.Village.cs",
-        "Tests/LocalWorkDemandTests.cs"
+        "Tests/LocalWorkDemandTests.cs",
+        "Core/Contracts/WorldSession.NpcRoutine.cs",
+        "Docs/Design/NpcPerformanceV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3157,12 +3173,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 917,
+      "passed": 3994,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/NpcContinuingV1/runtime-local/tests/npc-continuing-current.trx",
-      "sha256": "5a09eaa28bbb3c896826acb8cfaab19b40a014d99719e4c8989b4f632eb23ccd",
-      "scope": "Current related917/new18;5 actual recoveries;249 old saves;301 headless pairs. Full current3994 and GUI NOT_RUN."
+      "trx": "Docs/Design/NpcPerformanceV1/runtime-local/full/full.trx",
+      "sha256": "366456b495e85efd6066f35b099c44c7e96c2c6bf644eefb65e99e02183d4db4",
+      "scope": "Full current Core 3994 passed; three standalone 29-NPC measurements; 5 continuing recovery generations; 301 headless pairs. GUI NOT_RUN."
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3174,14 +3190,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 917,
+      "passed": 3994,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/NpcContinuingV1/runtime-local/tests/npc-continuing-current.trx",
-      "sha256": "5a09eaa28bbb3c896826acb8cfaab19b40a014d99719e4c8989b4f632eb23ccd",
-      "scope": "Current related917/new18;5 actual recoveries;249 old saves;301 headless pairs. Full current3994 and GUI NOT_RUN."
+      "trx": "Docs/Design/NpcPerformanceV1/runtime-local/full/full.trx",
+      "sha256": "366456b495e85efd6066f35b099c44c7e96c2c6bf644eefb65e99e02183d4db4",
+      "scope": "Full current Core 3994 passed; three standalone 29-NPC measurements; 5 continuing recovery generations; 301 headless pairs. GUI NOT_RUN."
     },
-    "current_stage_summary": "新規ゲームに登録成人を含むNPCの継続行動方式を保存し、従来の初回点検だけの保存は保持。NPCは本人の道の観測が不足/古い場合だけ共通任務で点検し、受領した自分の結果から次の判断へ進む。一人一日一件までとし、新鮮な記録・未達返報・拘束・同行中は不要な仕事を抑える。実完了した点検には既存の技能経験を接続し、プレイヤーや未成年を自動操作しない。関連917件（新規18）・5段階の実保存復旧と将来一致・旧保存249件バイト一致・Gameビルド・画面なしGodot301組602世界1742Node3Dが成功。外観/GUI操作・現行全3994件は未実施。",
+    "current_stage_summary": "NPC継続行動の毎回の人数走査と行為者ごとの診断用世界コピーを除き、同じ順序・入力・判断・改訂番号・時計・イベント予算のまま処理する。同じ29活動NPCの場面の単独3回測定で中央値6404ms→5558ms。前段の実保存世代と将来結果、旧方式の保存をバイト一致で保持。Core全3994件・Gameビルド・画面なしGodot301組602世界1742Node3Dが成功。外観/GUI操作は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3203,9 +3219,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/NpcContinuingV1/integration.json",
-    "current_logic_verification": "Docs/Design/NpcContinuingV1/verification.json",
-    "current_logic_verification_sha256": "3147dfd018ca47daed0bbdd94ae820dc0bd7ab11d178cc6caa307352725c2439",
+    "integration": "Docs/Design/NpcPerformanceV1/integration.json",
+    "current_logic_verification": "Docs/Design/NpcPerformanceV1/verification.json",
+    "current_logic_verification_sha256": "14d1d8ca90e74c72c9145b6b04538afa76969e35565a113901a03723c48f1cd4",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3271,11 +3287,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "NPCの判断・保存処理の負荷低減（行動と復旧結果は同じ）",
-    "役職/功績の評価と処遇",
-    "派閥・噂訂正と既知の軍務判断",
-    "全国NPCの生涯・独立/攻城と支配変動",
-    "中央政治・全国長期・画面/正式素材の製品受入"
+    "NPCの既知の用件と空き時間の修行（凍結済み：NpcPurposeV1・基準v46）",
+    "統合案第14節 0a 時間の仕組み（日の速度・次の出来事まで・自動停止）",
+    "0b NPCの判断の土台",
+    "0c 史実の事件の仕組みと年代記",
+    "0 画面の土台（4つの動詞・手帳）"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

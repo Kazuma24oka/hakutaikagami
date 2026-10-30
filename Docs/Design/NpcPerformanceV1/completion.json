@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Measure the same 29 active NPC scenario in three sequential standalone test processes before and after, with no other agent-started tests/builds/probes running; record wall time, binary hashes and conditions, not FPS.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NpcPerformanceV1/before-measurement.json",
+        "Docs/Design/NpcPerformanceV1/verification.json",
+        "Scripts/verify_npc_performance.py"
+      ]
+    },
+    {
+      "contract": "Remove redundant NPC population scans and diagnostic world copies without exposing mutable state or changing actor order, decisions, revisions, clocks or event budgets.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/WorldSession.NpcRoutine.cs",
+        "Core/Contracts/NewGameNpcRoutine.cs",
+        "Docs/Design/NpcPerformanceV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Preserve exact saved bytes and future results for the previous continuing-policy recovery generations, as well as earlier saved policies; verify hidden information and occupancy regressions.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NpcPerformanceV1/legacy-sources.json",
+        "Docs/Design/NpcPerformanceV1/verification.json",
+        "Scripts/verify_npc_performance.py"
+      ]
+    },
+    {
+      "contract": "Run the full Core test suite and build Game; verify actual headless Godot saved/restored projection equality. GUI appearance remains untested.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NpcPerformanceV1/verification.json",
+        "Scripts/verify_npc_performance.py"
+      ]
+    },
+    {
+      "contract": "Publish measured gains and any limits, commit and push code/docs and integrate only after successful checks; do not change fixed progress weights or claim the nationwide product load target.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NpcPerformanceV1/README.md",
+        "Docs/Design/NpcPerformanceV1/integration.json",
+        "Docs/Development/ProgressV1/estimate.json"
+      ]
+    }
+  ]
+}
