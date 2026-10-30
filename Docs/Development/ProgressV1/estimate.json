@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-43",
     "title": "成人婚姻と開始時の明示情報",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。人質・捕虜の身柄と履行へ続行。",
     "exit": [
       "Add explicit optional authoring declaration of unmarried status for registered adults. Unknown historical or legacy marital status remains unknown; preserve imports, group copies, profile rebuild and old saved bytes without automatic rewriting.",
       "Use the shared local adult family-consent rules for marriage and adoption: known representatives, actual presence, stable personal answer, separate house consent and explicit implementation. Preserve prior adoption behavior and original terms.",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "8325ad6c91477bd05fe19c99feb055851367afc0"
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
