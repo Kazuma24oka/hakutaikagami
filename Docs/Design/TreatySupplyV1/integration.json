@@ -1,5 +1,5 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "standing_authorization": "User instruction 2026-10-30 delegates future main code/docs integrations",
   "base_main": "5667994b3bac527ee39532a86011f2c1b79d3121",
   "scope": "Code and documentation only; no model assets",
@@ -9,5 +9,8 @@
     "2dd3361"
   ],
   "concurrent_documentation_note": "Separate personnel and succession design documentation retained; not counted as implemented features.",
-  "code_head": "6e11f54d4dc5883dce01f286c681a86df2b17b51"
+  "code_head": "6e11f54d4dc5883dce01f286c681a86df2b17b51",
+  "integrated_head": "135b15e8cc4dca8e8249a1615b4fdf3f2003f3ad",
+  "integrated_main": "19a5c2cd49b9228dfcf492d8206693dc17504ed6",
+  "integrated_tree": "4e76fe8139fff9e3463c47d009f9a6d34b3a3622"
 }
