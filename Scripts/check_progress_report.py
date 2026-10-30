@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-versioned-multiclause-treaty-termination-and-requests":
+ if logic["scope"]=="headless-real-treaty-supply-carrier-custody-physical-retry":
+  from verify_treaty_supply import check as check_logic
+ elif logic["scope"]=="headless-versioned-multiclause-treaty-termination-and-requests":
   from verify_treaty import check as check_logic
  elif logic["scope"]=="headless-physical-remote-military-command-succession":
   from verify_remote_military_succession import check as check_logic
@@ -155,4 +157,4 @@ assert x['focus']['leaf'] in ids and 3<=len(x['focus']['exit'])<=5
 assert len(x['roadmap'])==6 and all(v['finish'] and v['why'] and v['status'] for v in x['roadmap'])
 from check_approval_batch import check as check_batch
 check_batch()
-print('PASS: weighted estimate / immutable minimum1-point implementation batch / 6 large, 15 medium, 60 small entries')
+print('PASS: weighted estimate / immutable pre-code evidence-point implementation batch / 6 large, 15 medium, 60 small entries')

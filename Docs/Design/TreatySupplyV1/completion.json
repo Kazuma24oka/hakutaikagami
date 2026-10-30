@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "An explicitly arranged physical supplement to a known treaty supply request reaches its original supplier; the NPC signs an actual bounded stock-backed offer or a dated refusal and returns it to the original fixed address; no implicit mutation of old saves",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatySupply.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatySupplyTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatySupply.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatySupplyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The offer reserves real supplier house rice, sharing free-stock checks with salary, relief, procurement and military supply; the carrier personally opens the offer and physically collects it at the supplier site under the live giver authority",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatySupply.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatySupplyTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatySupply.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatySupplyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The same person carries supplier-owned cargo along ordinary travel routes and personally delivers partial quantities to the named recipient house; the actual local receiver authority, stock debit/credit, custody and cargo conservation are recorded without private resale or parallel cargo-capacity reuse",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatySupply.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatySupplyTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatySupply.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatySupplyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Expiry, treaty ending, physically delivered cancellation and authority changes stop new supply actions without teleporting already collected cargo; unspent supplier-owned rice returns physically, duplicate inputs cannot repeat a transfer, and returned stock does not revive an expired offer",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatySupply.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatySupplyTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatySupply.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatySupplyV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Focused and relevant tests, actual generation recovery/future equality, old-save byte identity, Game build and actual headless Node3D positions verify the flow separately from appearance; verified code/docs are integrated autonomously under the user delegation",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatySupply.cs",
+        "Core/Contracts/HouseSalary.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatySupplyTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatySupply.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatySupplyV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "本人の受取手配による供与元の家の米・本人携行100kg上限・指定先の家への現地納入を対象とする。受取手配は元条約と14日以内、供与者の現権限/在席/同意/未引当在庫から数量を決める。一般NPC間の自律調達、代理輸送、海上軍用輸送、援軍の実出陣、通行軍の受入、違反裁定は後続。外観/GUI操作・全3758件は未実施。"
+}

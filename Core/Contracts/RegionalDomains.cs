@@ -74,6 +74,7 @@ public static class RegionalDomains
     static bool AppendOnly<T>(T[] before,T[] after,Func<T,long> at,Func<T,long> rev,ContractWorld prior)=>after.Length>=before.Length&&after.Take(before.Length).SequenceEqual(before)&&after.Skip(before.Length).All(e=>at(e)>=prior.ElapsedSeconds&&rev(e)>prior.CommitSequence);
     internal static bool PastUnchanged(ContractWorld w,ContractWorld? prior)
     {
+        if(ContractJson.CanonicalHash(w.Treaties?.Supply)!=ContractJson.CanonicalHash(prior?.Treaties?.Supply))return false;
         if(!ArmyRoadMarch.PastUnchanged(w,prior))return false;
         if(!FieldConvoy.PastUnchanged(w,prior))return false;
         if(!MilitaryEconomy.PastUnchanged(w,prior))return false;

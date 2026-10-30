@@ -173,7 +173,7 @@ public static partial class NewGameMilitary
         Need(input.Action switch{
             NewMilitaryAction.RequestEngagement=>CanRequestEngagement(w),NewMilitaryAction.CancelEngagement=>CanCancelEngagement(w,input.EngagementOriginal!.Value),
             NewMilitaryAction.ObserveField=>input.ObservationPolicy==ObservationContract&&!RecognitionEnabled(w),NewMilitaryAction.Request=>true,NewMilitaryAction.Accept=>v.CanAccept,
-            NewMilitaryAction.Pickup=>v.CanPickup&&!returning&&Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Returned)&&Local(w)&&AtHome(w)&&MilitaryBoundAt(w,w.ElapsedSeconds,w.CommitSequence)&&!TravelWorld.Active(w),
+            NewMilitaryAction.Pickup=>!TreatySupply.Carrying(w,w.ElapsedSeconds,w.CommitSequence)&&v.CanPickup&&!returning&&Has(w,MilitaryEffect.Permission)&&!Has(w,MilitaryEffect.Returned)&&Local(w)&&AtHome(w)&&MilitaryBoundAt(w,w.ElapsedSeconds,w.CommitSequence)&&!TravelWorld.Active(w),
             NewMilitaryAction.Load or NewMilitaryAction.Unload=>custody&&!deployed&&Local(w)&&AtHome(w)&&(input.Action==NewMilitaryAction.Unload||!returning),
             NewMilitaryAction.Deploy=>custody&&!deployed&&(ArmyRoadMarch.Enabled(w)?ArmyRoadMarch.AtAssembly(w):Local(w)&&AtHome(w))&&v.Carry>0&&!returning&&!TravelWorld.Active(w)&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&t.Execution is ExecutionPhase.Running or ExecutionPhase.Waiting),
             NewMilitaryAction.Form or NewMilitaryAction.Hold=>(!RecognitionEnabled(w)||AllOwnCurrentlySeen(w))&&custody&&deployed&&!Detached(w)&&!returning&&v.Carry>0&&!CombatActive(w)&&!RoutActive(w),
