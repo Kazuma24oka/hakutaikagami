@@ -22,7 +22,7 @@
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "619faa7722dd1f0f4e35e0d02d412bd5eb9d7ce73a6d6d7c3ccd6c5b7eaa8c0c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "a2592aeadd6f1c5c38d8cc36bd5c96ac0ba3ff06bc60c87ef82962cbee3cc9c7",
+    "Scripts/check_approval_batch.py": "851610725a1b8e7a98b5edef9ebe589533b58d763efbee742f4ca1eb0b4f355c",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
