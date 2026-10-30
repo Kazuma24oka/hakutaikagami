@@ -23,6 +23,12 @@ public partial class NewGameRuntime
         Text("技能（経験・勲功・役職とは別）");
         foreach(var value in card.Skills)Text(value.Name+"："+(value.Value?.ToString()??value.Confidence)+(card.Own?$" ／ 経験 {value.Experience}":value.ObservedAt is {} at?$" ／ {TreatyDate(at)}・{value.Source}":""));
         Text(card.Note);
+        if(CharacterRelations.View(Snapshot(),person) is {} relation){
+            Text("この相手との、知っている出来事");
+            if(relation.Known.Length==0)Text("確認できるやり取りの記録はまだありません。");
+            foreach(var known in relation.Known.Reverse().Take(8))Text(known.Description+" ／ 出来事 "+TreatyDate(known.ObservedAt)+"・認識 "+TreatyDate(known.LearnedAt));
+            Text(relation.Note);
+        }
         if(card.Own){
             var world=Snapshot();var active=world.Tasks.LastOrDefault(t=>t.Executor==person&&t.Action==ActionKind.Train&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));long shown=Session.Revision;
             var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);

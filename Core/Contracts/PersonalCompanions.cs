@@ -54,7 +54,7 @@ public static partial class PersonalCompanions
         else if(i.Action==CompanionAction.RequestLordRelease)Need(i.Amount==0&&CanAskRelease(w,i.Person,q.At,q.Revision),"先に本人との情報交換・仕事・返報と立場を確認してください");
         else if(i.Action is CompanionAction.PledgeService or CompanionAction.ReleaseService)CheckService(w,q);
         else if(i.Action==CompanionAction.PrivateInspect){Need(SingleInspectionEnabled(w)&&i.Amount==DailyPay&&owed==0&&!active&&CanCommission(w,i.Person,q.At,q.Revision),"面識と精算のある、仕事の空いた本人へ一件20文で点検を相談してください");}
-        else if(i.Action==CompanionAction.Agree){Need(!active&&owed==0&&Eligible(w,i.Person,q.At,q.Revision)&&w.Characters.Single(c=>c.Id==i.Person).WillObey&&i.Amount==DailyPay,"他家の家臣を無断で引き抜かず、協力可能な成人に一日20文を前払いします");}
+        else if(i.Action==CompanionAction.Agree){Need(CharacterRelations.AcceptsCompanion(w,i.Person,i.Amount,q.At,q.Revision),"本人は今の条件で継続協力を引き受けないと答えました。条件や実績を変えずに聞き直しても返答は同じです");Need(!active&&owed==0&&Eligible(w,i.Person,q.At,q.Revision)&&w.Characters.Single(c=>c.Id==i.Person).WillObey&&i.Amount==DailyPay,"他家の家臣を無断で引き抜かず、協力可能な成人に一日20文を前払いします");}
         else if(i.Action==CompanionAction.Pay)Need(i.Amount>0&&i.Amount<=owed,"支払う未払い手当がありません");
         else{Need(active&&i.Amount==0,"有効な協力合意がありません");if(i.Action!=CompanionAction.EndAgreement)Need(owed==0&&Eligible(w,i.Person,q.At,q.Revision)&&w.Characters.Single(c=>c.Id==i.Person).WillObey,"支払い・担当・本人の協力意思を確認してください");}
         if(i.Action is CompanionAction.Agree or CompanionAction.Pay or CompanionAction.PrivateInspect)Need(TransportWork.WalletBefore(w,w.PlayerControl,q.At,q.Revision)>=i.Amount,"私財が足りません。手当の未払いは消えません");

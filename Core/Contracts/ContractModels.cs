@@ -94,6 +94,7 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 public sealed class ContractWorld
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public DevelopmentState? Development {get;set;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public SocialState? Social {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public FactionNoticeState? FactionNotices {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
