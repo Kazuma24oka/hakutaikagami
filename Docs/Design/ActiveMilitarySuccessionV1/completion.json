@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Explicit opt-in living succession may retain a player-custodied army only locally at home, not deployed/marching/returning or NPC-commanded; office transfer alone does not change original military issuer, papers, units or supplies",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/NewGameService.Validation.cs",
+        "Tests/ActiveMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/ActiveMilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The actual current head and local player commander explicitly agree one active-case command succession; original case/terms/property remain; old placement mandate closes at the agreement and a separate dated mandate starts for the same actual army and units",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/NewGameService.Validation.cs",
+        "Tests/ActiveMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/ActiveMilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Future requests/reports and return settlement use the explicitly acknowledged issuer while old letters and historical authority remain at their original times and recipients; absent, unwilling, busy, stale/conflicting/duplicate and forged acknowledgments fail",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/NewGameService.Validation.cs",
+        "Tests/ActiveMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/ActiveMilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Closed stored garrison ledgers can be revisited and explicitly agreed under a new head without duplicating resources or exposing remote current quantities; actual formation/return and known status use the same case-specific authority",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/NewGameService.Validation.cs",
+        "Tests/ActiveMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/ActiveMilitarySuccessionV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Focused/regression tests, generation save recovery/future equality, historical save bytes, Game build and headless Node3D are verified; local assembled army scope is distinguished from deployed field takeover, arbitrary NPC succession and GUI acceptance",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
+        "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
+        "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
+        "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
+        "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs",
+        "Core/Contracts/NewGameMilitary.Validation.cs",
+        "Core/Contracts/HouseSuccession.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Core/Contracts/NewGameService.Validation.cs",
+        "Tests/ActiveMilitarySuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/ActiveMilitarySuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "本拠で集合中・本人が保管中の軍が対象。展開・街道行軍・指揮返還中・未達の申出・交戦任務付きの軍は引継ぎを拒否。分隊別の保留原本と交代の競合は未検証で後続。旧既定の軍務中交代拒否は維持し、新しい明示方針だけで集合軍の保管を継続する。遠隔の展開軍/NPC軍の一般指揮移譲、全国NPC家督/死亡/係争、一般相続・条約・人質は後続。別拠点台帳は実際の仕官/辞去で作った甲府/小田原を検証し、史実の城の所属を追加していない。3Dは画面なしの実Node3D配置データ照合で、外観/GUI操作・全3641件実行は未実施。"
+}
