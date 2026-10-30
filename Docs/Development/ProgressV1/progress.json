@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "770dbe83f44d99e82d8c408c048ccaf01c879420afaafce82edb419eb0817583",
-    "Docs/Development/ProgressV1/estimate.json": "6df4a5545774d5b6855536696ddee931dba72d6b744396905c3978da38750b38",
+    "Docs/Development/ProgressV1/estimate.json": "072dbc935f40da5964027902b562a809647e4107178be2b76d790239e08a5cea",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a2d648181d4c839b58a5a06b2c13aa7886925f270b7ca10d3a1e12873732ec19",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -213,7 +213,7 @@
     "Docs/Design/ActiveMilitarySuccessionV1/verification.json": "9f957356f64f9680548c555762f27a8deef2fa6cac49a891f3b229d959a5a31e",
     "Docs/Design/ActiveMilitarySuccessionV1/completion.json": "38ade69427fef4e5cf6c73416897f289955b8efb1efa7f44e28b40bf87d8ac70",
     "Docs/Design/ActiveMilitarySuccessionV1/README.md": "f606a16148f0294f6cc291a398da3432a996519d8aa138579904d7bf45b8b27c",
-    "Docs/Design/ActiveMilitarySuccessionV1/integration.json": "81b4fd24b1fa20c5281cd1857897026789640ad8418c8dbb57e453d9556ac9fc",
+    "Docs/Design/ActiveMilitarySuccessionV1/integration.json": "d03dc8721262bd93478b5b068592807f6fe672e2485fc0e868389a6aba51e485",
     "Docs/Design/ActiveMilitarySuccessionV1/legacy-sources.json": "3cf9c3e7878c0c807a334137981aabef1d245272fd8df9e4a3fb6cc34e98fd07",
     "Docs/Development/ProgressV1/approval-baseline-v31.json": "1ed310e729e9eeeebebeebcb299274dbc8158fc57715407c2ad545f2edfffcb5",
     "Scripts/verify_active_military_succession.py": "feea93f3d855f48f62fae8d09c2620e94f01ed1d784287125e94d208d77ebe7c"
@@ -2782,7 +2782,7 @@
       "sha256": "d667ad9109cd46c14e54baf090a8ce7ea6c55ca480235ed55ee03cd99e78be19",
       "scope": "Current related1756 only;41 new active/stored garrison cases;12 real generation recoveries;headless206pairs. Full3641/GUI NOT_RUN."
     },
-    "current_stage_summary": "PR35を承認head cc967235と同一treeでmain e4f126beへ統合後も続行。本拠で集合中・本人が保管中の軍に限り、明示した方針で生前当主交代を行える。交代だけでは旧軍務発令者を変えず、新当主と本人が現地で同じ活動軍・案件の指揮原本を別途確認する。旧配置権限を確認時点で閉じ、同じ軍/部隊への新しい権限を開始。旧案件/許可署名/書状/宛先/兵/軍用倉/携行米/所有家は保持し、返して借り直したことにしない。以後の新たな申出・返報・指揮返還は確認済みの発令者へ接続し、返還後の別軍務にも新しい条件提示/同意/許可を必要とする。実際の布陣・集合・帰還・荷降ろし・返報・返還を確認。実仕官/辞去による甲府と小田原の二台帳から、返納済みの元駐屯軍を新当主と明示再合意し、他台帳の兵/米を保持する。後の就任を過去の辞去資格へ借用しないよう仕官の役職判定を時点付きに修正。3D検査は各部隊自身の台帳から座標を引き、別軍の番号で計算しない。新規41/関連1756件・Gameビルド・新規12段階の実保存復旧と将来一致・旧保存144件のバイト一致・画面なしGodot206組412世界1164Node3Dが成功。外観/GUI操作・全3641件実行は未実施。遠隔展開軍/一般NPC家督/死亡/係争/一般条約は後続。",
+    "current_stage_summary": "PR35を承認head cc967235と同一treeでmain e4f126beへ統合後も続行。本拠で集合中・本人が保管中の軍に限り、明示した方針で生前当主交代を行える。交代だけでは旧軍務発令者を変えず、新当主と本人が現地で同じ活動軍・案件の指揮原本を別途確認する。旧配置権限を確認時点で閉じ、同じ軍/部隊への新しい権限を開始。旧案件/許可署名/書状/宛先/兵/軍用倉/携行米/所有家は保持し、返して借り直したことにしない。以後の新たな申出・返報・指揮返還は確認済みの発令者へ接続し、返還後の別軍務にも新しい条件提示/同意/許可を必要とする。実際の布陣・集合・帰還・荷降ろし・返報・返還を確認。実仕官/辞去による甲府と小田原の二台帳から、返納済みの元駐屯軍を新当主と明示再合意し、他台帳の兵/米を保持する。後の就任を過去の辞去資格へ借用しないよう仕官の役職判定を時点付きに修正。3D検査は各部隊自身の台帳から座標を引き、別軍の番号で計算しない。新規41/関連1756件・Gameビルド・新規12段階の実保存復旧と将来一致・旧保存144件のバイト一致・画面なしGodot206組412世界1164Node3Dが成功。外観/GUI操作・全3641件実行は未実施。遠隔展開軍/一般NPC家督/死亡/係争/一般条約は後続。 PR36へコードと資料のみpush済み。新しいmain統合だけ個別承認待ち。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
