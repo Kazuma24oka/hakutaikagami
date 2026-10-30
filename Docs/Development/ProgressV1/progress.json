@@ -18,11 +18,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "b4e29df5c8ff0d66cdf1096857d882d02bc717bc9aa5f7a00e0abeebca64666c",
-    "Docs/Development/ProgressV1/estimate.json": "1dbc76e1ff1b459f2b154ac5ec4a959d34d57024e078613aa8d726fd5cd3f64f",
+    "Docs/Development/ProgressV1/estimate.json": "29b3dc9fe60514ff4fbf9168e97e2f10844209df77cad617f6b70506918b8579",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "619faa7722dd1f0f4e35e0d02d412bd5eb9d7ce73a6d6d7c3ccd6c5b7eaa8c0c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "ee3723a1e11cd83c260085b6bbd4054ac7052fe12021586c68bd520a7bd9421e",
+    "Scripts/check_approval_batch.py": "a2592aeadd6f1c5c38d8cc36bd5c96ac0ba3ff06bc60c87ef82962cbee3cc9c7",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -120,7 +120,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "4026b21ba67806040f0aff3025073d4ce99d3d8c01e51ce32ad03afeebd62494",
-    "Docs/Development/CURRENT_STAGE.md": "690a1eda2c7b81c40febd63ab979bf2058da2ca0c35b8eff3413f1b6a1d4440c",
+    "Docs/Development/CURRENT_STAGE.md": "47e0820ee0e188f78c26fb359ce2ec999acd2cd2517d3fa1e578b3f9c0f8a964",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "0c049a93e380024c028abb22981fded7fdfe39b95eaf5858852308d2eb6b9b34",
@@ -374,11 +374,18 @@
     "Docs/Design/NpcPerformanceV1/README.md": "d786282e8fb2227561d4afa7596d0305e5d8e675d25b6d4485550b468a51fd49",
     "Docs/Development/ProgressV1/approval-baseline-v45.json": "3319e5a9082421f8d7f0604bf5adff6a08b2c08fc6c4cd23ebf7b906ca966c1c",
     "Scripts/verify_npc_performance.py": "bab617bb32020642bf9ac4036af9665009b41275de5c2f79067c98d575077d64",
-    "Docs/Development/PROCESS_V2.md": "e8d606684bc48320cc4f18d73060b6313041c16eb79215d6dc35900436c9c5f9",
+    "Docs/Development/PROCESS_V2.md": "af274ca1ed216b6701b3bd6caa3642f58036b4f5863fb6d74b75e26fa82b6d24",
     "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328",
     "Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md": "fa5c29ab25b2310610f006f0e3fc352a4a38fb0d8bb300d4aed61c7fa13edbd8",
     "Docs/Archive/OPERATING_POLICY_HISTORY_TO_2026-10-31.md": "faaba696501198776822d8fe9908edc5d35f3716fd40f0630cc7b6aaf667242b",
-    "Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md": "fbebbfee53573e6e72c95aa2effbeffc89e607f4733905b170384fd03bb173b7"
+    "Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md": "fbebbfee53573e6e72c95aa2effbeffc89e607f4733905b170384fd03bb173b7",
+    "Docs/Development/ProgressV1/approval-baseline-v46-scope.json": "5f7eda661e8a9b411c59e280265da2f6ee898f6de7ed878aad506937b97f8923",
+    "Docs/Development/ProgressV1/approval-baseline-v47.json": "bee1b5b483ec3ae0541f2163cb12b2e7f54ec4f3d175a4102cc00dbb1309dc00",
+    "Docs/Design/ProgressScopeV1/scope.md": "14a8485b6ef5fd64117727313c7a80baa7a1598e9f6525a59248d0ca5493162c",
+    "Docs/Design/ProgressScopeV1/README.md": "dd3a78d8a9b22a49140fa4e1bb471440476ad0aaa972da8b852c76846668a383",
+    "Docs/Design/ProgressScopeV1/completion.json": "1a981e30032346706250d23a736d8eefe244f994a03ddbf4a496e509cfcc9ecb",
+    "Docs/Design/ProgressScopeV1/verification.json": "52d982ed9667e06d995c5ab1906b4d0b592edb020800c76cdaefa7b1575ac80d",
+    "Scripts/verify_progress_scope.py": "40f8914331ec1e96cab333db9bac5f2c2a131819c4d3357bcc0692a27e517acf"
   },
   "items": [
     {
@@ -3290,7 +3297,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "NPCの既知の用件と空き時間の修行（凍結済み：NpcPurposeV1・基準v46）",
+    "NPCの既知の用件と空き時間の修行（凍結済み：NpcPurposeV1・基準v47）",
     "統合案第14節 0a 時間の仕組み（日の速度・次の出来事まで・自動停止）",
     "0b NPCの判断の土台",
     "0c 史実の事件の仕組みと年代記",

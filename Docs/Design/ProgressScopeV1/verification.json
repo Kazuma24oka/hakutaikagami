@@ -1,0 +1,17 @@
+{
+  "status": "PASSED",
+  "scope": "integration-scope-reassessment",
+  "inputs": {
+    "Docs/Development/ProgressV1/approval-baseline-v46-scope.json": "5f7eda661e8a9b411c59e280265da2f6ee898f6de7ed878aad506937b97f8923",
+    "Docs/Development/ProgressV1/approval-baseline-v47.json": "bee1b5b483ec3ae0541f2163cb12b2e7f54ec4f3d175a4102cc00dbb1309dc00",
+    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "093b36f26262fbae0a6b521a5b54307d8d3fdee5c74fb80ae7b12bd8b3252328",
+    "Docs/Proposals/GETENROKU_INTEGRATION_V1.md": "98ab77528740c1ec5053d0c4ba612d603a79d194a1c694bc931f3440ca81569b"
+  },
+  "previous_total": 57.67743506493506,
+  "reassessed_total": 51.38119588744589,
+  "reassessment_delta_excluded": -6.29623917748917,
+  "reviewed_items": 35,
+  "changed_items": 29,
+  "tests": "NOT_RUN (documentation only)",
+  "gui": "NOT_RUN"
+}
