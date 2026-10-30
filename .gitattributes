@@ -2067,3 +2067,9 @@ Core/Contracts/WorldSession.Treaty.cs -text
 Tests/TreatyNegotiationsTests.cs -text
 Game/Scripts/NewGameRuntime.Treaty.cs -text
 Scripts/verify_treaty.py -text
+
+Core/Contracts/TreatySupply.cs -text
+Tests/TreatySupplyTests.cs -text
+Game/Scripts/NewGameRuntime.TreatySupply.cs -text
+
+Scripts/verify_treaty_supply.py -text

@@ -244,8 +244,8 @@
       "basis": "正式条約の独立条項/版/実権者/既知代表者/固定本拠を記録。同一版の承諾到達で成立し、本人開封と本人による成立確認の返書を分離する。対案は元の条項/解除予告期間を保持し、未通知の代表者を探知しない。 条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。"
     },
     "BD-42": {
-      "percent": 80,
-      "basis": "不侵略・通行・補給・防衛援軍を独立条項にする。既知の不侵略を実NPC/交戦判断へ接続し、解除意思・物理的法的到達・予告期間の効力・本人の認識を分離。不達再送と現物回収の重複でも同じ通知を一意に扱う。援軍/補給は条項別の量・期限・理由を持つ物理要請/受領/辞退まで接続し、実行完了としない。 実援軍の出陣/到着・補給供与・通行軍対応、履行不能/免責/違反裁定/制裁・解除条件の多様化と全国NPC長期判断。"
+      "percent": 85,
+      "basis": "補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 防衛援軍の実出陣/到着・通行軍対応・全国NPCの自主履行・違反裁定/制裁・条項変更と長期判断。"
     },
     "BD-43": {
       "percent": 0,
@@ -322,18 +322,18 @@
   },
   "focus": {
     "leaf": "BD-42",
-    "title": "正式条約・解除通知・援軍/補給の物理要請",
-    "status": "完成条件5/5。PR37統合後も実装・検証まで継続。新しいmain統合のみ個別承認待ち。",
+    "title": "条約補給の実物受取・実運搬・納入",
+    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
-      "独立条項と同一版の承諾を実権者・既知代表者間で実配送する",
-      "到達/本人開封/成立確認を分け、本人の確認署名を自動操作しない",
-      "解除の予告・法的到達・効力と本人認識を分離する",
-      "援軍/補給の要請と受領/辞退を実配送し、実行完了と誤認しない",
-      "実保存復旧・関連検査・旧保存互換・画面なし3D配置を確認する"
+      "An explicitly arranged physical supplement to a known treaty supply request reaches its original supplier; the NPC signs an actual bounded stock-backed offer or a dated refusal and returns it to the original fixed address; no implicit mutation of old saves",
+      "The offer reserves real supplier house rice, sharing free-stock checks with salary, relief, procurement and military supply; the carrier personally opens the offer and physically collects it at the supplier site under the live giver authority",
+      "The same person carries supplier-owned cargo along ordinary travel routes and personally delivers partial quantities to the named recipient house; the actual local receiver authority, stock debit/credit, custody and cargo conservation are recorded without private resale or parallel cargo-capacity reuse",
+      "Expiry, treaty ending, physically delivered cancellation and authority changes stop new supply actions without teleporting already collected cargo; unspent supplier-owned rice returns physically, duplicate inputs cannot repeat a transfer, and returned stock does not revive an expired offer",
+      "Focused and relevant tests, actual generation recovery/future equality, old-save byte identity, Game build and actual headless Node3D positions verify the flow separately from appearance; verified code/docs are integrated autonomously under the user delegation"
     ],
     "deferred": [
-      "実援軍出陣/到着・補給供与・通行軍対応",
-      "違反裁定/制裁・一般代理決裁・人質/婚姻・全国NPC自主交渉",
+      "防衛援軍の実出陣・到着と帰還",
+      "通行軍・全国NPCの自主外交と支配変動",
       "正式素材・GUI受入・全国長期/性能受入"
     ]
   },
@@ -366,7 +366,7 @@
       "id": "R4",
       "title": "相手に働きかけて結果を変える",
       "domain": "情報・交渉と政治／武将の人生",
-      "status": "正式条約の独立条項と解除通知を版付き物理書状へ接続。援軍/補給は要請・受領/辞退までで、実出陣/供与と全国NPC判断は後続。",
+      "status": "正式条約と解除・物理要請から補給実物の受取/運搬/納入へ接続。防衛援軍の実出陣、通行軍対応と全国NPC判断は後続。",
       "finish": "情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
       "why": "前工程の資源と人物関係を交渉材料にする。"
     },
@@ -481,13 +481,14 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 33,
-    "baseline_commit": "7236506",
-    "baseline": 51.37957251082251,
-    "current": 52.37957251082251,
-    "earned_gain": 1.0,
+    "version": 34,
+    "baseline_commit": "4a44fac29fff821c34f514a2128deb63a76d55f9",
+    "baseline": 52.37957251082251,
+    "current": 52.46290584415584,
+    "earned_gain": 0.08333333333333333,
     "excluded_reassessment": 0,
-    "minimum": 1,
+    "minimum": 0,
+    "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
     "integrated_main": null

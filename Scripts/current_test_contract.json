@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3723,
-  "baseline_passed": 3674,
-  "added": 49,
-  "scope": "General treaty clauses/termination/request receipts49 new;related1838,12 actual generation recoveries,headless230pairs. Full3723/GUI NOT_RUN."
+  "expected_passed": 3758,
+  "baseline_passed": 3723,
+  "added": 35,
+  "scope": "Treaty supply custody and physical retry35 new;related1873,12 actual generation recoveries,headless242pairs. Full3758/GUI NOT_RUN."
 }

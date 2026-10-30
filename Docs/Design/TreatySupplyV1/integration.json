@@ -1,0 +1,13 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "User instruction 2026-10-30 delegates future main code/docs integrations",
+  "base_main": "5667994b3bac527ee39532a86011f2c1b79d3121",
+  "scope": "Code and documentation only; no model assets",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/39",
+  "concurrent_documentation_commits": [
+    "5d59842",
+    "2dd3361"
+  ],
+  "concurrent_documentation_note": "Separate personnel and succession design documentation retained; not counted as implemented features.",
+  "code_head": "6e11f54d4dc5883dce01f286c681a86df2b17b51"
+}

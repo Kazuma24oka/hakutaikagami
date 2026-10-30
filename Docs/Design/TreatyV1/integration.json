@@ -1,9 +1,12 @@
 {
-  "status": "PENDING_USER_APPROVAL",
+  "status": "MERGED",
   "base_main": "7f741be1fc830a6462faa2e7322a5a009df7b137",
   "scope": "Code and documentation only; no model assets",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/38",
   "concurrent_documentation_commit": "7c8c7a2960c593ee830dcb351b968d31ba0ca016",
   "concurrent_documentation_note": "Existing separate documentation commit preserved; proposals/reference material were not promoted into confirmed game rules or credited as implementation.",
-  "code_head": "ed9bd284bad352622bac99150fd9b2e98c7661ff"
+  "code_head": "ed9bd284bad352622bac99150fd9b2e98c7661ff",
+  "approved_head": "f879ec28e260487f5cf06818013173840f6904ec",
+  "integrated_main": "5667994b3bac527ee39532a86011f2c1b79d3121",
+  "approved_tree": "c537b7e849ad17111d90719f20d73cefb20db7ed"
 }
