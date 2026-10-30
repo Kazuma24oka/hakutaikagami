@@ -25,7 +25,7 @@ public readonly record struct SimTime(long Seconds)
 public enum LifeState { Adult, Minor, Dead }
 public enum LocationKind { AtSite, Traveling, AtPosition }
 public enum TaskKind { BindingOrder, VoluntaryRequest }
-public enum ActionKind { Inspect, Transfer, Move, Cancel, Redirect }
+public enum ActionKind { Inspect, Transfer, Move, Cancel, Redirect, Train }
 public enum ExecutionPhase { NotStarted, Waiting, Running, Suspended, PartiallyCompleted, Completed, Stopped, Failed }
 public enum AgreementPhase { Issued, AwaitingReceipt, AwaitingRecognition, AwaitingAssent, Active, Declined, Expired }
 public enum ReportingPhase { NotCreated, Queued, InTransit, KnownByRecipient }
@@ -68,6 +68,7 @@ public sealed record Intent(EntityId RequestId, EntityId Actor, EntityId Executo
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? RoutePolicy {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public DevelopmentSkill? TrainingSkill {get;init;}
 }
 public sealed record RequestReceipt(EntityId Id, string BodyHash, Intent Intent, long CreatedAt, long CommitSequence);
 public sealed record TaskState(EntityId Id, EntityId RequestId, EntityId Issuer, EntityId Executor, EntityId Scope,
@@ -92,6 +93,7 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 // All sections are required even when empty. Mutable DTO never escapes a live session.
 public sealed class ContractWorld
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public DevelopmentState? Development {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public FactionNoticeState? FactionNotices {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "expected_passed": 3793,
-  "baseline_passed": 3758,
-  "added": 35,
-  "scope": "Defense actual garrison/stock-backed provisions/physical reports35 new;related1908;14 actual generation recoveries;headless256pairs. Full Core3793 expected; GUI NOT_RUN."
+  "expected_passed": 3824,
+  "baseline_passed": 3793,
+  "added": 31,
+  "scope": "Five abilities/seven skills/time-backed growth31 new; current related335;5 real generation recoveries and prior256 pair replay. Full current3824 NOT_RUN; prior3793 passed at PR40;GUI NOT_RUN."
 }

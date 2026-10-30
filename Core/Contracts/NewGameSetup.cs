@@ -1,7 +1,10 @@
 namespace HakutaiKagami.Core.Contracts;
 
 // Authoring data and a scenario projection, not runtime permissions or a ContractWorld.
-public sealed record OfficerAttributes(int Leadership, int Valor, int Intelligence, int Politics);
+public sealed record OfficerAttributes(int Leadership, int Valor, int Intelligence, int Politics)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public int? Negotiation {get;init;}
+}
 public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Name, int BirthYear,
     OfficerAttributes Attributes, StartTemplate Role, string Site, string? Lord, string? FactionName, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] HakutaiKagami.Core.Appearance.OfficerAppearance? Look = null);
 public sealed record OfficerGroup(string Id, string Name, RegisteredOfficer[] Officers);
@@ -29,7 +32,7 @@ public static class NewGameSetup
         Need(p != null && Key(p.Id) && p.Id.StartsWith("created:",StringComparison.Ordinal),"登録武将のIDが不正です");
         Need(Text(p.Name) && Key(p.Site) && Enum.IsDefined(p.Role),"登録武将の名前・立場・場所が不正です");
         Need(p.BirthYear is >= 1 and <= 9999 && p.Attributes != null,"生年・能力が不正です");
-        Need(new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics}.All(n=>n>=0),"能力は負数にできません");
+        Need(new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0}.All(n=>n>=0),"能力は負数にできません");
         Need(p.CopiedFrom == null || (Key(p.CopiedFrom) && p.CopiedFrom != p.Id),"複製元が不正です");
         Need(p.Lord == null || (Key(p.Lord) && p.Lord != p.Id),"直属主君が不正です");
         Need(p.Role != StartTemplate.Daimyo || (Text(p.FactionName) && p.Lord == null),"大名の勢力名・主従が不正です");
@@ -66,7 +69,7 @@ public static class NewGameSetup
         Need(s.People.All(p=>p!=null) && s.Castles.All(c=>c!=null) && s.Factions.All(f=>f!=null),"開始世界の項目が欠落しています");
         Unique(s.People.Select(p=>p.Id));Unique(s.Castles.Select(c=>c.Id));Unique(s.Factions.Select(f=>f.Id));
         Need(s.People.All(p=>Text(p.Name) && Key(p.Site) && (p.Faction==null || s.Factions.Any(f=>f.Id==p.Faction)) && (p.Lord==null || s.People.Any(q=>q.Id==p.Lord))),"人物の所属・主従・場所が不正です");
-        Need(s.People.Where(p=>p.Created).All(p=>p.BirthYear is >=1 and <=9999 && p.Attributes!=null && p.InitialRole!=null && Enum.IsDefined(p.InitialRole.Value) && new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics}.All(n=>n>=0)),"登録人物の生年・能力・開始立場がありません");
+        Need(s.People.Where(p=>p.Created).All(p=>p.BirthYear is >=1 and <=9999 && p.Attributes!=null && p.InitialRole!=null && Enum.IsDefined(p.InitialRole.Value) && new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0}.All(n=>n>=0)),"登録人物の生年・能力・開始立場がありません");
         Need(s.Castles.All(c=>c.Faction==null || s.Factions.Any(f=>f.Id==c.Faction)),"城の所有勢力がありません");
         Need(s.Factions.All(f=>Text(f.Name) && s.People.Any(p=>p.Id==f.Head && p.Faction==f.Id && p.Lord==null) && s.Castles.Any(c=>c.Id==f.Home && c.Faction==f.Id)),"大名または本拠が不正です");
         foreach(var p in s.People){var seen=new HashSet<string>();var q=p;while(q.Lord!=null){Need(seen.Add(q.Id),"主従が循環しています");var lord=s.People.Single(x=>x.Id==q.Lord);Need(q.Faction==lord.Faction,"主従の所属が矛盾します");q=lord;}}

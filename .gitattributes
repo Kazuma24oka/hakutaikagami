@@ -2077,3 +2077,9 @@ Core/Contracts/TreatyDefense.cs -text
 Tests/TreatyDefenseTests.cs -text
 Game/Scripts/NewGameRuntime.TreatyDefense.cs -text
 Scripts/verify_treaty_defense.py -text
+
+Core/Contracts/CharacterDevelopment.cs -text
+Tests/CharacterDevelopmentTests.cs -text
+Game/Scripts/NewGameRuntime.CharacterDevelopment.cs -text
+Scripts/verify_character_development.py -text
+Scripts/probe_saved_worlds.py -text
