@@ -16,6 +16,8 @@ public partial class NewGameRuntime
         foreach(var visit in HostageCustody.Visits(world))Button(PersonName(visit.Person)+"と保証原本の預かり先へ同行する",()=>{var result=Session.ManageCompanion(new(new("request:custody-visit/"+Guid.NewGuid().ToString("N")),visit.Person,CompanionAction.VisitCustodySite,Destination:visit.Destination),Session.PlayerControl,revision);if(result.Code!=ResultCode.Accepted){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();});
         foreach(var card in HostageCustody.View(world)){
             Text(PersonName(card.Person)+" ／ "+card.Status);Text("最終確認："+TreatyDate(card.LastObservedAt)+" ／ 返還期限："+TreatyDate(card.Until));Text("受入先："+PersonName(card.Custodian)+" ／ "+card.Treatment);Text("保証内容："+card.Guarantee);
+            foreach(var meal in HostageCustody.Meals(world).Where(m=>m.Original==card.Id))Text(TreatyDate(meal.ObservedAt)+" 食事提供："+(meal.RiceKg==1?"家の米1kgを実消費":"未履行（自由在庫不足）。米の引当は解除していません"));
+            if(HostageCustody.CanRequestMeal(world,card.Id))Button("現地で食事の提供を確認する（試作1kg・一日間隔）",()=>Act(CustodyAction.RequestMeal,original:card.Id));
             if(card.CanAdmit)Button("現地で受入を実施する",()=>Act(CustodyAction.Admit,original:card.Id));
             if(card.CanReconfirm)Button("当主交代後の両家の代表者を現地で再確認する",()=>Act(CustodyAction.Reconfirm,original:card.Id));
             if(card.CanRelease)Button("現地で解放・返還を受ける",()=>Act(CustodyAction.Release,original:card.Id));

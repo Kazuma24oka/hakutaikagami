@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Fulfil the existing recorded food obligation as an explicit local meal request, using the existing prototype rice unit (1 kg) and a one-day interval after actual receipt. Do not introduce automatic hunger, death or execution.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Tests/CustodyFoodTests.cs",
+        "Core/Contracts/HostageCustody.Food.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodyFoodV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Consume actual unreserved rice from the custodian household at the holding site. Preserve household ownership and existing salary/treaty reservations; no private money or rice is created. Record an unfulfilled request if free stock is insufficient.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Tests/CustodyFoodTests.cs",
+        "Core/Contracts/HostageCustody.Food.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodyFoodV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Require the original guardian, held person and confirmed current representatives locally; reconfirm after succession. Release closes meal eligibility. Duplicate requests and same-day duplicate receipt cannot consume twice; shortage may be retried after replenishment.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Tests/CustodyFoodTests.cs",
+        "Core/Contracts/HostageCustody.Food.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodyFoodV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Show the witnessed meal receipt or shortage in the existing custody UI. Keep original guarantee, expiry and immutable earlier records. Do not reveal current remote warehouse balances.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Tests/CustodyFoodTests.cs",
+        "Core/Contracts/HostageCustody.Food.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodyFoodV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify actual warehouse debit, succession/release, request identity, balance/shortage boundaries, old-save compatibility, real generation recovery/equal futures and headless Godot. State precisely whether shortage is tested through a full campaign or as a calculation boundary.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HostageCustody.cs",
+        "Core/Contracts/PersonalCompanions.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Core/Contracts/ContractValidation.cs",
+        "Tests/HostageCustodyTests.cs",
+        "Tests/CustodySuccessionTests.cs",
+        "Tests/CustodyFoodTests.cs",
+        "Core/Contracts/HostageCustody.Food.cs",
+        "Core/Contracts/CommunityEconomy.cs",
+        "Game/Scripts/NewGameRuntime.Custody.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/CustodyFoodV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "NOT_RUN",
+  "limits": "1kg・一日間隔は既存個人食事に合わせた試作単位で、史実の摂食量の主張ではない。支給は明示的な現地操作で、自動飢餓/死亡や処刑・解放を追加しない。在庫不足は引当を含む数量境界の単体検査であり、ゲーム進行で受入側の蔵を空にする全経路は未実施。宿泊設備・医療・護送・軍事捕縛・交換・身代金・NPC受入側の自律交代は後続。"
+}

@@ -1,0 +1,7 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "User delegated future main code/docs merges; adopted BD-44 local custody scope",
+  "base_main": "7e44e9016c6831883d21ddecde27f825356544d8",
+  "scope": "Code and documentation only; no model assets",
+  "pull_request": null
+}

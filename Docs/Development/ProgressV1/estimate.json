@@ -252,8 +252,8 @@
       "basis": "明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。"
     },
     "BD-44": {
-      "percent": 35,
-      "basis": "当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 待遇の実物消費、戦闘捕縛・護送・交換・身代金、NPC受入側の自律当主交代。"
+      "percent": 45,
+      "basis": "人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 宿泊/医療、軍事捕縛・護送・交換・身代金、NPC自律交代、実不足シナリオの全経路。"
     },
     "BD-45": {
       "percent": 85,
@@ -322,14 +322,14 @@
   },
   "focus": {
     "leaf": "BD-44",
-    "title": "人質保証の当主交代と現地再確認",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。待遇の現物支給へ続行。",
+    "title": "人質の現地食事と家の実在米",
+    "status": "完成条件5/5。人質の現地食事と家の実在米を検証し、自動統合後も続行。",
     "exit": [
-      "Preserve the original hostage guarantee, personal consent, location and custody when a household representative changes; no automatic release or transfer of ownership.",
-      "Add a separate local reconfirmation record naming current lawful household representatives. Require the original player guardian and held person at the original site, both current representatives physically present and consenting. Never rewrite original signatures or retarget them remotely.",
-      "Release uses only the latest explicitly reconfirmed representatives; another head change holds release again. Reconfirmation cannot renew expiry, erase overdue duties, change treatment, create another hostage or teleport anyone.",
-      "Expose local reconfirmation in the existing custody UI without revealing absent representatives through remote views. Reject spoofed, stale, duplicate-conflicting and invalid reconfirmations atomically.",
-      "Verify actual house succession, refusal/absence, release, old saved bytes, generation recovery and equal futures, and headless Godot position. Capture/escort/ransom/exchange and actual food consumption remain unfinished."
+      "Fulfil the existing recorded food obligation as an explicit local meal request, using the existing prototype rice unit (1 kg) and a one-day interval after actual receipt. Do not introduce automatic hunger, death or execution.",
+      "Consume actual unreserved rice from the custodian household at the holding site. Preserve household ownership and existing salary/treaty reservations; no private money or rice is created. Record an unfulfilled request if free stock is insufficient.",
+      "Require the original guardian, held person and confirmed current representatives locally; reconfirm after succession. Release closes meal eligibility. Duplicate requests and same-day duplicate receipt cannot consume twice; shortage may be retried after replenishment.",
+      "Show the witnessed meal receipt or shortage in the existing custody UI. Keep original guarantee, expiry and immutable earlier records. Do not reveal current remote warehouse balances.",
+      "Verify actual warehouse debit, succession/release, request identity, balance/shortage boundaries, old-save compatibility, real generation recovery/equal futures and headless Godot. State precisely whether shortage is tested through a full campaign or as a calculation boundary."
     ],
     "deferred": [
       "史実家族・離縁・出生・遠隔相談",
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 41,
-    "baseline_commit": "1905ae8af54470180f0f97a4cde5014e7aa41d7f",
-    "baseline": 56.88998917748918,
-    "current": 57.05665584415584,
+    "version": 42,
+    "baseline_commit": "fc6748cd8460b77c48d1faf40e516510819528fd",
+    "baseline": 57.05665584415584,
+    "current": 57.22332251082251,
     "earned_gain": 0.16666666666666666,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "7e44e9016c6831883d21ddecde27f825356544d8"
+    "integrated_main": null
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }
