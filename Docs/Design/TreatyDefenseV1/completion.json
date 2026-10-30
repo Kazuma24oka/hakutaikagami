@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "A personally opened acknowledgment of a signed defense request can be followed by an explicit physical arrangement. Original requester, owner, amount, fixed destination, original expiry and evidence are retained; old saves never start a sortie merely by loading.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyDefense.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyDefenseTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatyDefense.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyDefenseV1/verification.json"
+      ]
+    },
+    {
+      "contract": "The actual NPC head chooses after personal physical receipt, checking current authority, presence, consent, private standdown, actual unassigned garrison, common labor and free rice, supported troop quantity and land round-trip food budget. Decline is a physical reasoned response; acknowledgment is not dispatch.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyDefense.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyDefenseTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatyDefense.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyDefenseV1/verification.json"
+      ]
+    },
+    {
+      "contract": "An accepted sortie uses the existing garrison ledger, original unit IDs and actual funding, travels through the common route system, and has separately dated dispatch, local arrival and return observations communicated by physical papers. The receiver sees only opened reports and local observations.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyDefense.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyDefenseTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatyDefense.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyDefenseV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Fixed duty expiry, personally delivered cancellation and loss of current authority stop new sorties; an existing army keeps its owner, soldiers and cargo and returns through actual routes. Unknown closures do not leak into planning and no teleport or duplicate muster is introduced.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyDefense.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyDefenseTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatyDefense.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyDefenseV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify physical refusal, dispatch, route interruption, arrival, return, duplicate notices, generation recovery and equal future, unchanged old saves and real Godot Node3D positions. Build and integrate only tested code/docs; leave GUI appearance unclaimed and continue automatically.",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/TreatyDefense.cs",
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/MilitaryEconomy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TreatyDefenseTests.cs",
+        "Game/Scripts/NewGameRuntime.TreatyDefense.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Game/Scripts/NewGameRuntime.Mail.cs",
+        "Game/Scripts/WorldClashProjectionCheck.cs",
+        "Docs/Design/TreatyDefenseV1/verification.json"
+      ]
+    }
+  ],
+  "gui": "NOT_RUN",
+  "full_core_suite": "PASSED",
+  "limits": "本人が開封した防衛要請の受領返書から、固定された受入拠点への実出陣を明示手配する。既存の未割当駐屯兵100人、実米からの署名付き2〜7日分、最大1日間の守備が対象。未対応の兵数、在庫・人手・実権・同意・陸路行程の不足は辞退する。同じ駐屯兵を返納後に繰り返し再動員する一般運用、攻城と全国NPC自主戦争、一般通行軍・代理外交・婚姻/人質等は後続。外観/GUI操作は未実施。"
+}

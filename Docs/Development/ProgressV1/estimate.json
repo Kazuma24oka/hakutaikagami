@@ -232,8 +232,8 @@
       "basis": "展開中と実街道行軍中の承諾で位置・経路・兵・米を保持。保存前後の本人/部隊/署名者の実Node3D配置を照合する。 全国多数軍の複数線と優先度・GUI操作と長期受入。"
     },
     "BD-39": {
-      "percent": 20,
-      "basis": "実在NPC軍/受領交戦任務/自衛からの実損害、消費、撤退/帰還/返報までCore確認。復旧と3D座標データは一致。通常開始の有効化、実画面/全野戦/攻城は未完成。"
+      "percent": 25,
+      "basis": "条約の防衛援軍を実在の同じ駐屯兵100人へ接続。実米からの署名付き兵糧と共通陸路で守備先へ到着し、実守備・帰還・現地返納する。未知の封鎖を実進入で知り同じ軍が迂回する。架空の敵対宣言や軍を作らない。 同じ駐屯兵の繰り返し再動員、一般野戦/攻城/救援の拡張、全国NPCによる自主攻防と長期受入。"
     },
     "BD-40": {
       "percent": 95,
@@ -244,8 +244,8 @@
       "basis": "正式条約の独立条項/版/実権者/既知代表者/固定本拠を記録。同一版の承諾到達で成立し、本人開封と本人による成立確認の返書を分離する。対案は元の条項/解除予告期間を保持し、未通知の代表者を探知しない。 条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。"
     },
     "BD-42": {
-      "percent": 85,
-      "basis": "補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 防衛援軍の実出陣/到着・通行軍対応・全国NPCの自主履行・違反裁定/制裁・条項変更と長期判断。"
+      "percent": 90,
+      "basis": "補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。 一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。"
     },
     "BD-43": {
       "percent": 0,
@@ -322,18 +322,18 @@
   },
   "focus": {
     "leaf": "BD-42",
-    "title": "条約補給の実物受取・実運搬・納入",
-    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。防衛援軍の実出陣へ続行。",
+    "title": "防衛援軍の実出陣・実兵糧・帰還",
+    "status": "完成条件5/5。Core全件・実保存復旧・旧保存・3D座標を確認。自動統合後も武将の能力・技能・成長へ続行。",
     "exit": [
-      "An explicitly arranged physical supplement to a known treaty supply request reaches its original supplier; the NPC signs an actual bounded stock-backed offer or a dated refusal and returns it to the original fixed address; no implicit mutation of old saves",
-      "The offer reserves real supplier house rice, sharing free-stock checks with salary, relief, procurement and military supply; the carrier personally opens the offer and physically collects it at the supplier site under the live giver authority",
-      "The same person carries supplier-owned cargo along ordinary travel routes and personally delivers partial quantities to the named recipient house; the actual local receiver authority, stock debit/credit, custody and cargo conservation are recorded without private resale or parallel cargo-capacity reuse",
-      "Expiry, treaty ending, physically delivered cancellation and authority changes stop new supply actions without teleporting already collected cargo; unspent supplier-owned rice returns physically, duplicate inputs cannot repeat a transfer, and returned stock does not revive an expired offer",
-      "Focused and relevant tests, actual generation recovery/future equality, old-save byte identity, Game build and actual headless Node3D positions verify the flow separately from appearance; verified code/docs are integrated autonomously under the user delegation"
+      "受領返書の開封後に、本人が実出陣を手配できる",
+      "同じ駐屯兵と家の実米を使い、条件不足なら辞退する",
+      "出発・到着・守備・帰還を実行し、日時付きの書状で報告する",
+      "取消・不達・未知の封鎖でも、知らない情報や部隊の複製を使わない",
+      "全Core検査・実保存復旧・旧保存・3D配置の一致を確認する"
     ],
     "deferred": [
-      "防衛援軍の実出陣・到着と帰還",
-      "通行軍・全国NPCの自主外交と支配変動",
+      "一般再動員・攻城・全国NPCの戦争と支配変動",
+      "通行軍・一般代理外交・婚姻/人質",
       "正式素材・GUI受入・全国長期/性能受入"
     ]
   },
@@ -366,7 +366,7 @@
       "id": "R4",
       "title": "相手に働きかけて結果を変える",
       "domain": "情報・交渉と政治／武将の人生",
-      "status": "正式条約と解除・物理要請から補給実物の受取/運搬/納入へ接続。防衛援軍の実出陣、通行軍対応と全国NPC判断は後続。",
+      "status": "正式条約の補給実物供与と、防衛援軍の実兵・実米による出陣/到着/帰還へ接続。一般再動員・通行軍と全国NPCの戦争/支配変動は後続。",
       "finish": "情報・関係・利害を使い、外交交渉と内応の限定的な一巡をつなぐ。",
       "why": "前工程の資源と人物関係を交渉材料にする。"
     },
@@ -481,17 +481,17 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 34,
-    "baseline_commit": "4a44fac29fff821c34f514a2128deb63a76d55f9",
-    "baseline": 52.37957251082251,
-    "current": 52.46290584415584,
-    "earned_gain": 0.08333333333333333,
+    "version": 35,
+    "baseline_commit": "65c6a0e2f6b8023dfd08e55143f5c065bb612f7f",
+    "baseline": 52.46290584415584,
+    "current": 52.63998917748918,
+    "earned_gain": 0.17708333333333334,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": "19a5c2cd49b9228dfcf492d8206693dc17504ed6"
+    "integrated_main": null
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }

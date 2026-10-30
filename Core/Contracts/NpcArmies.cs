@@ -43,6 +43,7 @@ public static partial class NpcArmies
         Need(a!=null,"当主権限がありません");var m=new NpcArmyMuster(id,commander,owner,a.Home,w.ElapsedSeconds,w.CommitSequence,a,objective);
         Need(w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home),"現地で引き受けてください");CheckMuster(w,m,Musters(w));w.NpcArmies=new(1,Policy,[..Musters(w),m],w.NpcArmies?.Marches??[],w.NpcArmies?.Returns??[]);MilitaryEconomy.FundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
     }
+    internal static long CarryCapacity(ContractWorld w,NpcArmyMuster m)=>TreatyDefense.CarryCapacity(w,m);
     static bool ReturnedAt(ContractWorld w,NpcArmyMuster m,long at,long rev)=>w.NpcArmies?.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<=rev))==true;
     public static bool CommanderBusyAt(ContractWorld w,EntityId actor,long at,long revision)=>Musters(w).Any(m=>m.Commander==actor&&(m.At<at||m.At==at&&m.Revision<=revision)&&!ReturnedAt(w,m,at,revision));
     public static bool IsMarch(ContractWorld w,Intent i)=>i.RoutePolicy==LandRoute&&w.NpcArmies?.Marches.Any(m=>m.Input==i)==true;
@@ -74,15 +75,15 @@ public static partial class NpcArmies
     {
         if(MilitaryEconomy.Enabled(w))return ConsumedAt(w,m,w.ElapsedSeconds,w.CommitSequence+1);
         var starts=(w.NpcArmies?.Marches??[]).Where(q=>q.Muster==m.Id).Select(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt).Where(t=>t!=null).Select(t=>t!.Value).ToArray();
-        var end=w.NpcArmies?.Returns.SingleOrDefault(q=>q.Muster==m.Id)?.At??w.ElapsedSeconds;return starts.Length==0?0:Math.Min(NewGameMilitary.Capacity,checked(100*(end-starts.Min())-WorldClashes.Losses(w,end).Where(l=>Binding(m).Units.Contains(l.Unit)&&l.At>=starts.Min()).Sum(l=>checked((end-l.At)*l.Soldiers))));
+        var end=w.NpcArmies?.Returns.SingleOrDefault(q=>q.Muster==m.Id)?.At??w.ElapsedSeconds;return starts.Length==0?0:Math.Min(CarryCapacity(w,m),checked(100*(end-starts.Min())-WorldClashes.Losses(w,end).Where(l=>Binding(m).Units.Contains(l.Unit)&&l.At>=starts.Min()).Sum(l=>checked((end-l.At)*l.Soldiers))));
     }
     static ResourceLot[] Lots(ContractWorld w,NpcArmyMuster m)
     {
-        var b=Binding(m);var returned=ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence);return [new(b.Depot,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,MilitaryEconomy.InitialStock(w)+MilitaryEconomy.Credit(w,b.Depot,w.ElapsedSeconds,w.CommitSequence+1)-(returned?Consumed(w,m):NewGameMilitary.Capacity),MilitaryEconomy.InitialStock(w),0),new(b.Carry,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,returned?0:NewGameMilitary.Capacity-Consumed(w,m),0,0,returned?null:m.Commander)];
+        var b=Binding(m);var returned=ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence);return [new(b.Depot,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,MilitaryEconomy.InitialStock(w)+MilitaryEconomy.Credit(w,b.Depot,w.ElapsedSeconds,w.CommitSequence+1)-(returned?Consumed(w,m):CarryCapacity(w,m)),MilitaryEconomy.InitialStock(w),0),new(b.Carry,"rice",m.Owner,m.Owner,m.Site,FieldSupply.Unit,returned?0:CarryCapacity(w,m)-Consumed(w,m),0,0,returned?null:m.Commander)];
     }
     public static long Net(ContractWorld w,EntityId lot)
     {
-        foreach(var m in Musters(w)){var b=Binding(m);if(lot==b.Depot)return -(ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)?Consumed(w,m):NewGameMilitary.Capacity);if(lot==b.Carry)return ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)?0:NewGameMilitary.Capacity-Consumed(w,m);}return 0;
+        foreach(var m in Musters(w)){var b=Binding(m);if(lot==b.Depot)return -(ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)?Consumed(w,m):CarryCapacity(w,m));if(lot==b.Carry)return ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)?0:CarryCapacity(w,m)-Consumed(w,m);}return 0;
     }
     public static bool IsLot(ContractWorld w,ResourceLot l)=>Musters(w).Any(m=>l.Id==Binding(m).Depot||l.Id==Binding(m).Carry);
     public static bool AllowsMobileLot(ContractWorld w,ResourceLot l)=>Musters(w).Any(m=>l.Id==Binding(m).Carry&&l.MobileHolder==m.Commander);

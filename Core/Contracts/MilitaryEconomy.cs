@@ -28,7 +28,7 @@ public static class MilitaryEconomy
     internal static void CheckPickup(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return;var a=CommunityEconomy.AccountAt(w,site,at,rev);Need(a.Workforce-a.Reserved>=SupportWorkers,"地域の補給支援20人を確保できません");}
     internal static bool CanMuster(ContractWorld w,EntityId site,long at,long rev)
     {if(!Enabled(w))return true;var a=CommunityEconomy.AccountAt(w,site,at,rev);return a.Workforce-a.Reserved>=SupportWorkers&&a.HouseRice-HouseSalary.Reserved(w,site,at,rev)>=NpcRiceKg;}
-    static MilitaryDepotRef Binding(ContractWorld w,EntityId depot,long? at=null,long? rev=null)=>NewGameMilitary.SupplyBinding(w,depot,at,rev)??NpcArmies.SupplyBinding(w,depot)??throw new InvalidDataException("元の軍用倉がありません");
+    static MilitaryDepotRef Binding(ContractWorld w,EntityId depot,long? at=null,long? rev=null)=>NewGameMilitary.SupplyBinding(w,depot,at,rev)??NpcArmies.SupplyBinding(w,depot,at,rev)??throw new InvalidDataException("元の軍用倉がありません");
     internal static long DepotAt(ContractWorld w,EntityId depot,long at,long rev,bool correlatedReturn=false)
     {var b=Binding(w,depot);return checked(InitialStock(w)+Credit(w,depot,at,rev)+(b.Player!=null?NewGameMilitary.DepotNetAt(w,b.Player,at,rev):NpcArmies.DepotNetAt(w,b.Npc!,at,rev,correlatedReturn)));}
     static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&TransportWork.At(w,actor,site,at,rev,stableCompletion:true);
@@ -37,7 +37,7 @@ public static class MilitaryEconomy
     {
         Need(Enabled(w)&&i.RiceKg>0&&i.RiceKg<=1000,"米は1〜1000kgの整数で指定してください");var b=Binding(w,i.Depot,at,rev);Need(RegionalDomains.Owner(w,b.Site)==b.Owner&&RegionalDomains.Head(w,b.Site,at,rev)==b.Principal&&FactionStances.ResolveAuthority(w,b.Principal,b.Owner,at,Math.Min(rev,w.CommitSequence))!=null,"元の家と軍用倉の処分権がありません");
         bool automatic=i.Muster!=null;
-        if(automatic){Need(b.Npc!=null&&b.Npc.Id==i.Muster&&actor==b.Principal&&actor!=w.PlayerControl&&i.Id==AutoId(w,i.Muster!.Value,i.Returning),"NPC軍の根拠原本がありません");var m=b.Npc!;if(i.Returning){Need(w.NpcArmies!.Returns.Any(r=>r.Muster==m.Id&&r.At==at&&r.Revision==rev),"部隊の実帰還前には返納できません");Need(i.RiceKg==DepotAt(w,i.Depot,at,rev,true)/PersonSecondsPerKg,"NPCの未使用兵糧の整数kgと一致しません");}else Need(m.At==at&&m.Revision==rev&&i.RiceKg==NpcRiceKg,"引受と同時に既定2日分だけ用意します");}
+        if(automatic){Need(b.Npc!=null&&b.Npc.Id==i.Muster&&actor==b.Principal&&actor!=w.PlayerControl&&i.Id==AutoId(w,i.Muster!.Value,i.Returning),"NPC軍の根拠原本がありません");var m=b.Npc!;if(i.Returning){Need(w.NpcArmies!.Returns.Any(r=>r.Muster==m.Id&&r.At==at&&r.Revision==rev),"部隊の実帰還前には返納できません");Need(i.RiceKg==DepotAt(w,i.Depot,at,rev,true)/PersonSecondsPerKg,"NPCの未使用兵糧の整数kgと一致しません");}else Need(m.At==at&&m.Revision==rev&&i.RiceKg==NpcArmies.CarryCapacity(w,m)/PersonSecondsPerKg,"引受原本で固定した携行分だけ実米から用意します");}
         else Need(actor==w.PlayerControl&&b.Player!=null&&NewGameMilitary.SupplyAllowed(w,b.Player,actor,at,rev,!i.Returning),"現地の軍務許可と元の当主との受渡しを確認してください");
         Need(Local(w,actor,b.Site,at,rev)&&Local(w,b.Principal,b.Site,at,rev),"元の拠点で当事者の現地受渡しが必要です");
         long stock=DepotAt(w,i.Depot,at,rev,automatic&&i.Returning);
@@ -47,8 +47,8 @@ public static class MilitaryEconomy
     }
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.MilitaryEconomy=new(1,Policy,[]);}
     internal static void Apply(ContractWorld w,MilitaryRiceInput i,EntityId actor){var e=Make(w,i,actor,w.ElapsedSeconds,w.CommitSequence);w.MilitaryEconomy=w.MilitaryEconomy! with{Entries=[..w.MilitaryEconomy!.Entries,e]};}
-    internal static void FundNpc(ContractWorld w,NpcArmyMuster m){if(Enabled(w))Apply(w,new(AutoId(w,m.Id,false),NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot,NpcRiceKg,false,m.Id),m.Commander);}
-    internal static void RefundNpc(ContractWorld w,NpcArmyMuster m){if(!Enabled(w))return;var depot=NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot;long kg=DepotAt(w,depot,w.ElapsedSeconds,w.CommitSequence,true)/PersonSecondsPerKg;if(kg>0)Apply(w,new(AutoId(w,m.Id,true),depot,kg,true,m.Id),m.Commander);}
+    internal static void FundNpc(ContractWorld w,NpcArmyMuster m){if(Enabled(w))Apply(w,new(AutoId(w,m.Id,false),NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot,NpcArmies.CarryCapacity(w,m)/PersonSecondsPerKg,false,m.Id),m.Commander);}
+    internal static void RefundNpc(ContractWorld w,NpcArmyMuster m){if(!Enabled(w))return;var depot=NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot;long kg=DepotAt(w,depot,w.ElapsedSeconds,w.CommitSequence,true)/PersonSecondsPerKg;if(kg>0)Apply(w,new(AutoId(w,m.Id,true),depot,kg,true,m.Id),TreatyDefense.Custodian(w,m,w.ElapsedSeconds,w.CommitSequence));}
     internal static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.MilitaryEconomy==null,"旧世界へ軍用米割当を追加できません");return;}Need(w.MilitaryEconomy is{Schema:1,Policy:Policy,Entries:not null},"軍用米の原本がありません");long at=0,rev=0;var ids=new HashSet<EntityId>();foreach(var e in w.MilitaryEconomy.Entries){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&EntityId.IsValid(e.Input.Id.Value)&&ids.Add(e.Input.Id)&&!FactionStances.OtherIdUsed(w,e.Input.Id,includeMilitaryEconomy:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"軍用米のID・順序・時点が不正です");Need(e==Make(w,e.Input,e.Actor,e.At,e.Revision),"軍用米の原資・返納が当時の入力と一致しません");at=e.At;rev=e.Revision;}
@@ -70,10 +70,10 @@ public static partial class NewGameMilitary
 public static partial class NpcArmies
 {
     internal static MilitaryLaborWindow[] SupportWindows(ContractWorld w)=>Musters(w).Select(m=>{var r=w.NpcArmies!.Returns.SingleOrDefault(r=>r.Muster==m.Id);return new MilitaryLaborWindow(m.Site,m.At,m.Revision,r?.At,r?.Revision);}).ToArray();
-    internal static MilitaryDepotRef? SupplyBinding(ContractWorld w,EntityId depot){var m=Musters(w).SingleOrDefault(m=>Binding(m).Depot==depot);return m==null?null:new(depot,m.Owner,m.Site,m.Commander,null,m);}
+    internal static MilitaryDepotRef? SupplyBinding(ContractWorld w,EntityId depot,long? at=null,long? rev=null){var m=Musters(w).SingleOrDefault(m=>Binding(m).Depot==depot);return m==null?null:new(depot,m.Owner,m.Site,TreatyDefense.Custodian(w,m,at??w.ElapsedSeconds,rev??w.CommitSequence),null,m);}
     internal static long ConsumedAt(ContractWorld w,NpcArmyMuster m,long at,long rev)
-    {var starts=w.NpcArmies!.Marches.Where(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<rev)).Select(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt).Where(t=>t!=null&&t<=at).Select(t=>t!.Value).ToArray();if(starts.Length==0)return 0;long start=starts.Min();var returned=w.NpcArmies.Returns.SingleOrDefault(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<rev));long end=Math.Min(at,returned?.At??at);return Math.Clamp(checked(100*(end-start)-WorldClashes.Losses(w,end).Where(l=>Binding(m).Units.Contains(l.Unit)&&l.At>=start).Sum(l=>checked((end-l.At)*l.Soldiers))),0,NewGameMilitary.Capacity);}
-    internal static long DepotNetAt(ContractWorld w,NpcArmyMuster m,long at,long rev,bool includeReturn){if(m.At>at||m.At==at&&m.Revision>=rev)return 0;bool returned=w.NpcArmies!.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&(q.Revision<rev||includeReturn&&q.Revision==rev)));return returned?-ConsumedAt(w,m,at,includeReturn?rev+1:rev):-NewGameMilitary.Capacity;}
+    {var starts=w.NpcArmies!.Marches.Where(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<rev)).Select(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt).Where(t=>t!=null&&t<=at).Select(t=>t!.Value).ToArray();if(starts.Length==0)return 0;long start=starts.Min();var returned=w.NpcArmies.Returns.SingleOrDefault(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<rev));long end=Math.Min(at,returned?.At??at);return Math.Clamp(checked(100*(end-start)-WorldClashes.Losses(w,end).Where(l=>Binding(m).Units.Contains(l.Unit)&&l.At>=start).Sum(l=>checked((end-l.At)*l.Soldiers))),0,CarryCapacity(w,m));}
+    internal static long DepotNetAt(ContractWorld w,NpcArmyMuster m,long at,long rev,bool includeReturn){if(m.At>at||m.At==at&&m.Revision>=rev)return 0;bool returned=w.NpcArmies!.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&(q.Revision<rev||includeReturn&&q.Revision==rev)));return returned?-ConsumedAt(w,m,at,includeReturn?rev+1:rev):-CarryCapacity(w,m);}
 }
 public sealed partial class WorldSession
 {

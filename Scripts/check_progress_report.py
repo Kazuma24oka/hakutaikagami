@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-real-treaty-supply-carrier-custody-physical-retry":
+ if logic["scope"]=="headless-stock-backed-owned-garrison-defense-duty-physical-reports":
+  from verify_treaty_defense import check as check_logic
+ elif logic["scope"]=="headless-real-treaty-supply-carrier-custody-physical-retry":
   from verify_treaty_supply import check as check_logic
  elif logic["scope"]=="headless-versioned-multiclause-treaty-termination-and-requests":
   from verify_treaty import check as check_logic

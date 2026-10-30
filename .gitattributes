@@ -2073,3 +2073,7 @@ Tests/TreatySupplyTests.cs -text
 Game/Scripts/NewGameRuntime.TreatySupply.cs -text
 
 Scripts/verify_treaty_supply.py -text
+Core/Contracts/TreatyDefense.cs -text
+Tests/TreatyDefenseTests.cs -text
+Game/Scripts/NewGameRuntime.TreatyDefense.cs -text
+Scripts/verify_treaty_defense.py -text
