@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "expected_count": 218,
+  "sources": [
+    {
+      "manifest": "Docs/Design/RegionalDomainsV1/verification.json",
+      "prefix": "domains",
+      "count": 6
+    },
+    {
+      "manifest": "Docs/Design/HouseLogisticsV1/verification.json",
+      "prefix": "freight",
+      "count": 6
+    },
+    {
+      "manifest": "Docs/Design/HouseLogisticsV1/verification.json",
+      "prefix": "proxy-freight",
+      "count": 3
+    },
+    {
+      "manifest": "Docs/Design/MilitaryEconomyV1/verification.json",
+      "prefix": "mil-econ",
+      "count": 10
+    },
+    {
+      "manifest": "Docs/Design/NpcFreightV1/verification.json",
+      "prefix": "npc-freight",
+      "count": 5
+    },
+    {
+      "manifest": "Docs/Design/FreightOperationsV1/verification.json",
+      "prefix": "freight-letters",
+      "count": 5
+    },
+    {
+      "manifest": "Docs/Design/FreightOperationsV1/verification.json",
+      "prefix": "camp-convoy",
+      "count": 5
+    },
+    {
+      "manifest": "Docs/Design/ArmyRoadV1/verification.json",
+      "prefix": "army-road",
+      "count": 7
+    },
+    {
+      "manifest": "Docs/Design/RoadConvoyV1/verification.json",
+      "prefix": "road-supply",
+      "count": 9
+    },
+    {
+      "manifest": "Docs/Design/PersonalLifeV1/verification.json",
+      "prefix": "personal-life",
+      "count": 8
+    },
+    {
+      "manifest": "Docs/Design/CastleHandoverV1/verification.json",
+      "prefix": "castle-handover",
+      "count": 8
+    },
+    {
+      "manifest": "Docs/Design/CastleAdministrationV1/verification.json",
+      "prefix": "castellan",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/CastleAdministrationV1/verification.json",
+      "prefix": "castellan-report",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/HouseSuccessionV1/verification.json",
+      "prefix": "house-succession",
+      "count": 10
+    },
+    {
+      "manifest": "Docs/Design/MilitarySuccessionV1/verification.json",
+      "prefix": "military-succession",
+      "count": 6
+    },
+    {
+      "manifest": "Docs/Design/MilitarySuccessionV1/verification.json",
+      "prefix": "retired-military",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/StewardSuccessionV1/verification.json",
+      "prefix": "steward-succession",
+      "count": 8
+    },
+    {
+      "manifest": "Docs/Design/StewardSuccessionV1/verification.json",
+      "prefix": "household-service",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/CastellanSuccessionV1/castle-stage-verification.json",
+      "prefix": "castle-succession",
+      "count": 6
+    },
+    {
+      "manifest": "Docs/Design/CastellanSuccessionV1/verification.json",
+      "prefix": "truce-inheritance",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/TruceConfirmationV1/verification.json",
+      "prefix": "truce-confirmation",
+      "count": 8
+    },
+    {
+      "manifest": "Docs/Design/TruceConfirmationV1/verification.json",
+      "prefix": "truce-report-retry",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/RepresentativeContactV1/verification.json",
+      "prefix": "representative-contact",
+      "count": 10
+    },
+    {
+      "manifest": "Docs/Design/ActiveMilitarySuccessionV1/verification.json",
+      "prefix": "active-military",
+      "count": 8
+    },
+    {
+      "manifest": "Docs/Design/ActiveMilitarySuccessionV1/verification.json",
+      "prefix": "stored-military",
+      "count": 4
+    },
+    {
+      "manifest": "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+      "prefix": "remote-military",
+      "count": 12
+    },
+    {
+      "manifest": "Docs/Design/RemoteMilitarySuccessionV1/verification.json",
+      "prefix": "road",
+      "count": 3
+    },
+    {
+      "manifest": "Docs/Design/TreatyV1/verification.json",
+      "prefix": "treaty",
+      "count": 12
+    },
+    {
+      "manifest": "Docs/Design/TreatySupplyV1/verification.json",
+      "prefix": "treaty-supply",
+      "count": 12
+    },
+    {
+      "manifest": "Docs/Design/TreatyDefenseV1/verification.json",
+      "prefix": "treaty-defense",
+      "count": 14
+    },
+    {
+      "manifest": "Docs/Design/CharacterDevelopmentV1/verification.json",
+      "prefix": "character-development",
+      "count": 5
+    },
+    {
+      "manifest": "Docs/Design/CharacterRelationsV1/verification.json",
+      "prefix": "character-relations",
+      "count": 4
+    }
+  ]
+}

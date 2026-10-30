@@ -2086,3 +2086,8 @@ Scripts/probe_saved_worlds.py -text
 Core/Contracts/CharacterRelations.cs -text
 Tests/CharacterRelationsTests.cs -text
 Scripts/verify_character_relations.py -text
+
+Core/Contracts/AdultAdoption.cs -text
+Tests/AdultAdoptionTests.cs -text
+Game/Scripts/NewGameRuntime.Adoption.cs -text
+Scripts/verify_adult_adoption.py -text

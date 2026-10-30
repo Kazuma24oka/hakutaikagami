@@ -136,8 +136,8 @@
       "basis": "6性格を固定し、個人/家/組織への忠誠を分離。任意の継続協力に性格・既知の主従/実績/手当を用いた本人返答を接続。乱数で拒否を再抽選せず、過去合意を後日の関係で無効化しない。 一般軍務の危険・補給・提言、重大経験による性格変化、全NPCの横断判断。"
     },
     "BD-15": {
-      "percent": 45,
-      "basis": "5方向の非対称関係を分離。実手当受領・読んだ報告だけから本人側へ一度反応し、未知の第三者や逆向きへ漏らさない。表示は本人が知る出来事と日時だけ。 派閥形成/加入/脱退、親族/師弟、訂正報と被害の分離、全社会関係への適用。"
+      "percent": 50,
+      "basis": "実施済み養子を親子の方向付き関係として保存。提案段階や本人同意だけでは親族にしない。 血縁/婚姻/師弟、派閥形成、噂と訂正の連動。"
     },
     "BD-16": {
       "percent": 50,
@@ -248,8 +248,8 @@
       "basis": "補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。 一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。"
     },
     "BD-43": {
-      "percent": 0,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 40,
+      "basis": "成人養子の本人・家の承諾・実施を分離し、役割/既知代表者/期限を固定。移動/不在/辞退/期限/重複/循環を確認し、所属/役職/所領を変えない。 婚姻・未成年予約・史実血縁・遠隔相談・所属変更後の再確認。"
     },
     "BD-44": {
       "percent": 0,
@@ -321,19 +321,19 @@
     }
   },
   "focus": {
-    "leaf": "BD-14",
-    "title": "性格・対象別忠誠と非対称の関係",
+    "leaf": "BD-43",
+    "title": "成人養子の本人・家の合意と実施",
     "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
-      "6性格と対象別忠誠・非対称関係を分離する",
-      "本人が実際に知った出来事だけで一度反応する",
-      "任意の協力に既知条件による本人返答を接続する",
-      "内心の数値を表示せず、知る出来事だけを示す",
-      "保存復旧・旧保存・3D配置を検査する"
+      "Introduce an explicit new-game adult adoption policy and versioned case/relationship records. Separate proposer personal assent, the other adult personal answer, required house authority assent, implementation and existing succession/office/land systems. Preserve old saves without automatic migration.",
+      "A proposal records the exact parent/child roles, fixed local meeting site, known house representatives, original deadline and version. Both individuals must actually be adult and present for personal consultation; NPC answers are deterministic personal choices and never override player decisions.",
+      "Required house consents are distinct from personal consent and require actual local authority; player house consent is an explicit action. Missing/changed authority or absent people leave pending/unavailable rather than substituting a hidden new representative. Implementation rechecks all current consents and presence.",
+      "Withdrawal, deadline, refusals, duplicate actions and competing/cyclic adoption are validated without teleport, duplicate relation, automatic membership/office/land transfer or automatic heir entitlement. Completed relationship remains separately recorded; proposals are not already family.",
+      "Verify real proposal/answer/house approval/implementation and refusal paths, unchanged money and legal rights, actual generation recovery/equal future, old saved worlds and headless Godot positions; integrate tested code/docs automatically and continue."
     ],
     "deferred": [
-      "一般軍務・重大経験・全NPC判断",
-      "派閥・親族・噂訂正",
+      "婚姻・史実血縁・遠隔相談",
+      "所属変更後の再確認",
       "GUI/正式素材・全国長期/性能受入"
     ]
   },
@@ -481,11 +481,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 37,
-    "baseline_commit": "c39f7eb77e70f2adafbfa9393b34b24c3fca4dbc",
-    "baseline": 54.13998917748918,
-    "current": 55.13998917748918,
-    "earned_gain": 1.0,
+    "version": 38,
+    "baseline_commit": "889b983da594615e5aade9fcb8fe9a6b26484d1a",
+    "baseline": 55.13998917748918,
+    "current": 55.88998917748918,
+    "earned_gain": 0.75,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
