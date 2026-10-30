@@ -221,6 +221,7 @@ public static partial class RegionalCampaign
     }
     public static RoutePoint RoadActorPointAt(ContractWorld w,EntityId actor,long at)
     {
+        if(HostageCustody.ReturnPoint(w,actor,at,w.CommitSequence+1) is {} custodyPoint)return custodyPoint;
         if(FieldConvoy.PositionAt(w,actor,at,w.CommitSequence+1) is {} convoyPoint)return FieldWorld.ToWorld(convoyPoint);
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor,w):"castle");return JourneyPointAt(w,j,at);
     }

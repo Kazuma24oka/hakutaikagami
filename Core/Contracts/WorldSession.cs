@@ -37,6 +37,7 @@ public sealed partial class WorldSession
         if(state.Field?.Orders.Any(o=>o.Request.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
         var old=state.TravelDecisions?.SingleOrDefault(d=>d.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済みの判断です");
         if(expectedRevision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");
+        if(HostageCustody.ActiveReturn(state))return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"護送中は同じ返還先へ進んでください");
         try{if(state.Requests.Any(r=>r.Id==request.Id))throw new InvalidDataException("ID already used");var decision=TravelControl.Prepare(state,request);Change(s=>{s.TravelDecisions=[..s.TravelDecisions!,decision];TravelControl.ApplyDue(s);FlushOutbox(s);},beforeCommit);return new(ResultCode.Accepted,request.Id,state.CommitSequence,request.Destination==null?"出航を取りやめ、この港に留まりました":"次の拠点で行先を変更します");}
         catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}
     }}
@@ -56,6 +57,7 @@ public sealed partial class WorldSession
             if (old != null) return new(old.BodyHash == hash ? ResultCode.AlreadyAccepted : ResultCode.IdPayloadConflict,
                 intent.RequestId,old.CommitSequence,old.BodyHash == hash ? "受付済み" : "同一IDの内容が異なります");
             if (expectedRevision != state.CommitSequence) return new(ResultCode.StateChanged,intent.RequestId,state.CommitSequence,"表示を更新してください");
+            if(HostageCustody.ActiveReturn(state)&&intent.Executor==state.PlayerControl&&!HostageCustody.IsReturnTask(state,intent))return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"返還先で受領を終えてから別の用件を始めてください");
             try
             {
                 if(intent.Executor==state.PlayerControl&&PersonalLife.Resting(state,state.ElapsedSeconds,state.CommitSequence+1))throw new InvalidDataException("休息を終えるか中止してから実務を始めてください");

@@ -155,13 +155,14 @@ public static partial class NewGameWorld
         Need(ContractJson.CanonicalHash(w.Definitions.Characters)==projection.CharactersHash&&ContractJson.CanonicalHash(w.Definitions.Organizations)==projection.OrganizationsHash,"世界の人物・勢力が開始定義と一致しません");
         Need(w.Definitions.Armies.Length==0,"開始定義へ軍務の動的名簿を混在させることはできません");
         var rel=projection.Relations;Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&ContractJson.CanonicalHash(w.Offices)==ContractJson.CanonicalHash(HouseSuccession.Offices(w,rel.Offices))&&ContractJson.CanonicalHash(w.LandRights)==projection.LandsHash&&ContractJson.CanonicalHash(w.Grants)==projection.GrantsHash&&(w.NewMilitary!=null||w.Units.All(u=>NpcArmies.Armies(w).Any(a=>a.Id==u.Army))&&w.ResourceLots.All(l=>NewGameWork.IsWallet(w,l)||TransportWork.IsLot(l)||NpcArmies.IsLot(w,l))),"開始時の主従・土地・権限を無断変更できません");
-        foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==projection.People[p.Id].Appearance&&c.Life==projection.People[p.Id].Life,"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id)&&!FieldConvoy.Controls(w,c.Id,w.ElapsedSeconds))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
+        foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==projection.People[p.Id].Appearance&&c.Life==projection.People[p.Id].Life,"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id)&&!FieldConvoy.Controls(w,c.Id,w.ElapsedSeconds)&&!HostageCustody.HasReturnHistory(w,c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
         foreach(var r in w.Requests)ValidateOrderAt(w,r.Intent,r.CreatedAt);
     }
     public static Intent Inspect(ContractWorld w,string id)=>InspectFor(w,w.PlayerControl,id,w.ElapsedSeconds);
     internal static Intent InspectFor(ContractWorld w,EntityId actor,string id,long at)=>new(new(id),actor,actor,w.Locations.Single(l=>l.Actor==actor).Site??throw new InvalidDataException("到着してから点検してください"),ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+60,false,null,at+60),at,1,4,1,false,TaskKind.BindingOrder);
     public static void ValidateOrder(ContractWorld w,Intent i)
     {
+        if(HostageCustody.IsReturnTask(w,i))return;
         if(i.Action==ActionKind.Train){CharacterDevelopment.ValidatePractice(w,i,w.ElapsedSeconds,true);return;}if(PersonalCompanions.IsTask(w,i)){PersonalCompanions.ValidatePending(w,i);return;}if(i.Action==ActionKind.Move){TravelWorld.ValidateOrder(w,i);return;}
         if(i.Actor==i.Executor&&i.Executor!=w.PlayerControl){Need(NewGameNpcRoutine.IsActor(w,i.Actor)&&i==InspectFor(w,i.Actor,i.RequestId.Value,w.ElapsedSeconds),"NPC personal inspection lacks declared policy");return;}
         if(i.Actor!=i.Executor){Need(i==LocalWork(w,i.RequestId.Value),"現地で相談した任意依頼の条件が違います");return;}

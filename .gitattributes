@@ -2107,3 +2107,7 @@ Scripts/verify_custody_food.py -text
 Scripts/verify_custody_succession.py -text
 Game/Scripts/NewGameRuntime.Custody.cs -text
 Scripts/verify_hostage_custody.py -text
+
+Core/Contracts/HostageCustody.Return.cs -text
+Tests/CustodyReturnTests.cs -text
+Scripts/verify_custody_return.py -text
