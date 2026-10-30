@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-58",
     "title": "登録武将を含むNPCの必要に応じた継続行動",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。NPCの処理負荷低減へ続行。",
     "exit": [
       "Pin a new opt-in NPC policy in new games. Keep previous first-inspection-only and null policies byte-compatible. Registered adult NPCs and authored historical adults use the same existing command and report pipeline; never control the player or minors.",
       "Choose a local inspection only from the NPC own missing/stale road observations, actual available permission and own received result. At most one new autonomous inspection per person per day. Fresh observations, pending reports, military/custody/companion tasks prevent inappropriate work; never read hidden road truth to plan.",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "ea0b93f121539f6f6e2a8c5850162d09ab9e339b"
   },
   "range_note": "2026-10-30: The unchanged fixed-weight raw estimate is57.677435%; the historical five-point rounded value is60. The display uncertainty band is55-65 instead of45-55. This display-band update earns no progress and changes no leaves, weights or denominator."
 }

@@ -1,8 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "standing_authorization": "User delegated future main code/docs merges; adopted common NPC knowledge and action contracts",
   "base_main": "b659ed0fd27a013b4481254ab7e8e6175c3e3258",
   "scope": "Code and documentation only; no model assets",
   "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/49",
-  "code_head": "df5d2d86149e54c92129d9ccd2f250628432ab3b"
+  "code_head": "df5d2d86149e54c92129d9ccd2f250628432ab3b",
+  "integrated_head": "e7823cb8f69aad7e8fcc4679b18d224fbf8e0a49",
+  "integrated_main": "ea0b93f121539f6f6e2a8c5850162d09ab9e339b",
+  "integrated_tree": "2089a04a74cd0133cbb7ed866f9610a51fe7a6f7"
 }
