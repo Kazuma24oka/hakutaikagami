@@ -1,13 +1,13 @@
 using static HakutaiKagami.Core.Contracts.FamilyConsentRules;
 namespace HakutaiKagami.Core.Contracts;
-public enum CustodyAction { Propose, PersonalAccept, PersonalRefuse, ReceiverAccept, ReceiverRefuse, Admit, Withdraw, Release, Reconfirm }
+public enum CustodyAction { Propose, PersonalAccept, PersonalRefuse, ReceiverAccept, ReceiverRefuse, Admit, Withdraw, Release, Reconfirm, RequestMeal }
 public sealed record CustodyInput(EntityId Id,CustodyAction Action,EntityId? Person=null,EntityId? ReceiverHouse=null,EntityId? Original=null,int Days=0,string? Guarantee=null);
 public sealed record CustodyTerms(EntityId Id,EntityId Person,EntityId Guardian,EntityId GuardianHouse,EntityId Custodian,EntityId CustodianHouse,EntityId Site,long Until,string Guarantee,string Treatment,AdoptionHouse KnownReceiver);
 public sealed record CustodyRepresentatives(EntityId Guardian,EntityId Custodian);
-public sealed record CustodyEntry(CustodyInput Input,EntityId Actor,long At,long Revision,CustodyTerms? Terms){[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public CustodyRepresentatives? Representatives{get;init;}}
+public sealed record CustodyEntry(CustodyInput Input,EntityId Actor,long At,long Revision,CustodyTerms? Terms){[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public CustodyRepresentatives? Representatives{get;init;}[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public CustodyMeal? Meal{get;init;}}
 public sealed record CustodyState(int Schema,string Policy,CustodyEntry[] Entries);
 public sealed record CustodyCard(EntityId Id,EntityId Person,EntityId Site,string Status,long LastObservedAt,EntityId Custodian,long Until,string Guarantee,string Treatment,bool CanAdmit,bool CanWithdraw,bool CanRelease,bool CanReconfirm);
-public static class HostageCustody
+public static partial class HostageCustody
 {
     public const string Policy="local-adult-consenting-hostage-distinct-custody-release-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
@@ -39,7 +39,7 @@ public static class HostageCustody
     static AdoptionHouse Known(ContractWorld w,EntityId owner,long at,long rev){var k=RepresentativeKnowledge.Known(w,w.PlayerControl,owner,at,Math.Min(rev,w.CommitSequence))??throw new InvalidDataException("相手の家の代表者を確認してください");return new(owner,k.Person,k.ObservedAt,k.Source);}
     static bool Ready(ContractWorld w,CustodyTerms t,CustodyEntry[] rows,long at,long rev)=>!Closed(rows,t,at)&&!Held(rows,t.Id)&&at<=t.Until&&LocalAuthorities(w,t,at,rev)&&Free(w,t.Person,t.Site,at,rev)&&PersonalRetainer(w,t.Person,t.Guardian,at,rev)&&Case(rows,t.Id).Any(e=>e.Input.Action==CustodyAction.PersonalAccept)&&Case(rows,t.Id).Any(e=>e.Input.Action==CustodyAction.ReceiverAccept);
     static void Check(ContractWorld w,CustodyEntry e,CustodyEntry[] prior){
-        var i=e.Input;Need((i.Action==CustodyAction.Reconfirm)==(e.Representatives!=null),"再確認当事者の記録が不正です");Need(Enabled(w)&&Enum.IsDefined(i.Action)&&EntityId.IsValid(i.Id.Value)&&e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence,"Invalid custody input");
+        var i=e.Input;Need((i.Action==CustodyAction.RequestMeal)==(e.Meal!=null),"食事提供記録が不正です");Need((i.Action==CustodyAction.Reconfirm)==(e.Representatives!=null),"再確認当事者の記録が不正です");Need(Enabled(w)&&Enum.IsDefined(i.Action)&&EntityId.IsValid(i.Id.Value)&&e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence,"Invalid custody input");
         Need(!prior.Any(x=>x.Input.Id==i.Id)&&!FactionStances.OtherIdUsed(w,i.Id,includeCustody:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
         if(i.Action==CustodyAction.Propose){
             var t=e.Terms;Need(e.Actor==w.PlayerControl&&t!=null&&i.Person==t.Person&&i.ReceiverHouse==t.CustodianHouse&&i.Original==null&&i.Days is >=1 and <=7&&i.Guarantee!=null&&i.Guarantee.Length is >0 and <=200&&!string.IsNullOrWhiteSpace(i.Guarantee)&&!i.Guarantee.Any(char.IsControl),"預かりの当事者と保証内容を指定してください");
@@ -48,6 +48,7 @@ public static class HostageCustody
             Need(!prior.Where(p=>p.Terms?.Person==t.Person).Any(p=>!Closed(prior,p.Terms!,e.At)),"既存の身柄契約と競合します");return;
         }
         Need(i.Person==null&&i.ReceiverHouse==null&&i.Original!=null&&i.Days==0&&i.Guarantee==null&&e.Terms==null,"同じ保証原本を指定してください");var p=prior.SingleOrDefault(p=>p.Input.Id==i.Original&&p.Terms!=null);Need(p!=null,"保証原本がありません");var terms=p.Terms!;var current=Case(prior,terms.Id);
+        if(i.Action==CustodyAction.RequestMeal){Need(e.Actor==terms.Guardian&&e.Meal==PrepareMeal(w,terms,prior,e.At,e.Revision),"食事の原本・家の米・引当・現地権限が一致しません");return;}
         if(i.Action==CustodyAction.Reconfirm){Need(e.Actor==terms.Guardian&&Held(prior,terms.Id)&&LocalOriginal(w,terms,e.At,e.Revision),"元の打診者と同じ本人を現地で確認してください");var r=e.Representatives!;var actual=new CustodyRepresentatives(HouseSuccession.Head(w,terms.GuardianHouse,e.At,e.Revision-1),HouseSuccession.Head(w,terms.CustodianHouse,e.At,e.Revision-1));Need(r==actual&&r!=Representatives(terms,prior),"現在の代表者が変わった場合だけ再確認します");Need(LocalAuthorities(w,terms with{Guardian=r.Guardian,Custodian=r.Custodian},e.At,e.Revision)&&new[]{r.Guardian,r.Custodian}.All(id=>id==w.PlayerControl||w.Characters.Single(c=>c.Id==id).WillObey),"両家の現在の代表者の現地承諾が必要です");return;}
         if(i.Action==CustodyAction.Release){Need(e.Actor==terms.Guardian&&Held(prior,terms.Id)&&LocalAuthorities(w,Effective(terms,prior),e.At,e.Revision)&&PersonalCompanions.PhysicalSiteAt(w,terms.Person,e.At,e.Revision)==terms.Site,"現地の現在の権限者と同じ本人を確認してください");return;}
         Need(!Closed(prior,terms,e.At)&&!Held(prior,terms.Id),"受入前の保証案件ではありません");
@@ -57,12 +58,13 @@ public static class HostageCustody
         else if(i.Action==CustodyAction.Withdraw)Need(e.Actor==terms.Guardian,"打診者本人だけが取り下げられます");
         else throw new InvalidDataException("Unsupported custody action");
     }
-    static void Add(ContractWorld w,CustodyInput i,EntityId actor,CustodyTerms? terms=null,CustodyRepresentatives? representatives=null){var e=new CustodyEntry(i,actor,w.ElapsedSeconds,w.CommitSequence,terms){Representatives=representatives};Check(w,e,Entries(w));w.Custody=w.Custody! with{Entries=[..w.Custody.Entries,e]};}
+    static void Add(ContractWorld w,CustodyInput i,EntityId actor,CustodyTerms? terms=null,CustodyRepresentatives? representatives=null,CustodyMeal? meal=null){var e=new CustodyEntry(i,actor,w.ElapsedSeconds,w.CommitSequence,terms){Representatives=representatives,Meal=meal};Check(w,e,Entries(w));w.Custody=w.Custody! with{Entries=[..w.Custody.Entries,e]};}
     internal static void Apply(ContractWorld w,CustodyInput i){
-        Need(i.Action is CustodyAction.Propose or CustodyAction.Admit or CustodyAction.Withdraw or CustodyAction.Release or CustodyAction.Reconfirm,"本人・受入先の返答を代行できません");CustodyTerms? t=null;
+        Need(i.Action is CustodyAction.Propose or CustodyAction.Admit or CustodyAction.Withdraw or CustodyAction.Release or CustodyAction.Reconfirm or CustodyAction.RequestMeal,"本人・受入先の返答を代行できません");CustodyTerms? t=null;
         if(i.Action==CustodyAction.Propose){Need(i.Person!=null&&i.ReceiverHouse!=null,"当事者を指定してください");var site=PersonalCompanions.SiteAt(w,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence)??throw new InvalidDataException("現地で用件を終えてください");var owner=w.NewGame!.Start.Factions.Select(f=>new EntityId(f.Id)).SingleOrDefault(o=>FactionStances.ResolveAuthority(w,w.PlayerControl,o,w.ElapsedSeconds,w.CommitSequence)!=null);Need(EntityId.IsValid(owner.Value),"家の現地権限がありません");var known=Known(w,i.ReceiverHouse.Value,w.ElapsedSeconds,w.CommitSequence-1);t=new(i.Id,i.Person.Value,w.PlayerControl,owner,known.Representative,i.ReceiverHouse.Value,site,checked(w.ElapsedSeconds+i.Days*86400L),i.Guarantee!,"通常の宿泊・食事の提供義務",known);}
         CustodyRepresentatives? representatives=null;if(i.Action==CustodyAction.Reconfirm){var original=Entries(w).SingleOrDefault(e=>e.Input.Id==i.Original&&e.Terms!=null)?.Terms??throw new InvalidDataException("保証原本がありません");Need(LocalOriginal(w,original,w.ElapsedSeconds,w.CommitSequence),"原本の当事者と本人を現地で確認してください");representatives=new(HouseSuccession.Head(w,original.GuardianHouse,w.ElapsedSeconds,w.CommitSequence-1),HouseSuccession.Head(w,original.CustodianHouse,w.ElapsedSeconds,w.CommitSequence-1));}
-        Add(w,i,w.PlayerControl,t,representatives);
+        CustodyMeal? meal=null;if(i.Action==CustodyAction.RequestMeal){var original=Entries(w).SingleOrDefault(e=>e.Input.Id==i.Original&&e.Terms!=null)?.Terms??throw new InvalidDataException("保証原本がありません");meal=PrepareMeal(w,original,Entries(w),w.ElapsedSeconds,w.CommitSequence);}
+        Add(w,i,w.PlayerControl,t,representatives,meal);if(meal!=null)CommunityEconomy.Tick(w);
     }
     internal static void Update(ContractWorld w){if(!Enabled(w))return;foreach(var p in Entries(w).Where(e=>e.Terms!=null).ToArray()){
         var t=p.Terms!;if(Closed(Entries(w),t,w.ElapsedSeconds)||Held(Entries(w),t.Id)||w.ElapsedSeconds<p.At+1)continue;var rows=Case(Entries(w),t.Id);
