@@ -1,0 +1,8 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "User delegated future main code/docs merges; adopted common NPC knowledge and action contracts",
+  "base_main": "b659ed0fd27a013b4481254ab7e8e6175c3e3258",
+  "scope": "Code and documentation only; no model assets",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/49",
+  "code_head": "df5d2d86149e54c92129d9ccd2f250628432ab3b"
+}

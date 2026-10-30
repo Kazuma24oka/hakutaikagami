@@ -21,7 +21,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-custody-single-journey-escort-stop-resume-local-receipt":
+ if logic["scope"]=="headless-adult-npc-own-demand-continuing-work-and-occupancy":
+  from verify_npc_continuing import check as check_logic
+ elif logic["scope"]=="headless-custody-single-journey-escort-stop-resume-local-receipt":
   from verify_custody_return import check as check_logic
  elif logic["scope"]=="headless-custody-local-house-rice-meal-and-reservation-conservation":
   from verify_custody_food import check as check_logic

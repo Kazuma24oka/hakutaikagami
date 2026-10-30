@@ -5,8 +5,8 @@
   "meaning": "最初の全国製品版を100%とした、実装と接続状況に基づくCodexの概算。工数消化率・発売可能性の認定ではない。",
   "rounding_step": 5,
   "overall_range": [
-    45,
-    55
+    55,
+    65
   ],
   "aggregation": "小区分の概算を中/大区分へ同じ重みで集計。全体は元の値から小数1位を表示し、増分判定は丸め前で行う。旧5%刻み値は履歴比較用に保持。表示桁の変更は進捗の加点ではない。 2026-10-27の幅25〜35%への更新は表示用の不確実性幅で、実装増分の加点ではない。 2026-10-27：表示の概算幅を30〜40%へ更新。幅の更新は進捗加点に含めない。",
   "excluded_from_rollup": [
@@ -80,8 +80,8 @@
   ],
   "leaves": {
     "BD-01": {
-      "percent": 20,
-      "basis": "全体接続の参照値です。全体を二重に加点しないため集計対象外。"
+      "percent": 25,
+      "basis": "登録成人NPCが既知の現地需要に応じて共通任務を継続する。 全国の人生・自主軍事/外交・支配変動と全画面受入。"
     },
     "BD-02": {
       "percent": 10,
@@ -92,8 +92,8 @@
       "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
     },
     "BD-04": {
-      "percent": 10,
-      "basis": "進捗表の「現在」と「残り」を比較した、完成版の適用範囲に対する概算。"
+      "percent": 15,
+      "basis": "登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 3000活動人物/1000拠点/500軍と実機FPSの受入。"
     },
     "BD-05": {
       "percent": 65,
@@ -128,8 +128,8 @@
       "basis": "旧主従の一件と新しい直属奉公、行政担当と兵を別に保持。新当主が家臣本人の合意を受け入れても軍/家財を私有化せず、旧担当の未返納実務も保持。 個別追随/拒否/分裂、全国NPC集団と活動軍の運用。"
     },
     "BD-13": {
-      "percent": 60,
-      "basis": "5基礎能力と7技能を分離。新規ゲーム方式・無料修行・点検の実時間を一度加算し、重複/中断/日上限/保存復旧を検査。実行時点の能力・熟練を参照して成長効率を計算。役職/所領/報酬とは別。 教育者、健康/加齢/負傷、全職種と戦闘成果への能力・状況補正、長期バランス。"
+      "percent": 65,
+      "basis": "NPC本人の実完了点検も既存の経験へ接続し、未完了/重複を加算しない。 負傷/加齢/教育者/全職種の実務適用。"
     },
     "BD-14": {
       "percent": 50,
@@ -308,8 +308,8 @@
       "basis": "既存の家督画面へ当事者別の奉公解除/新奉公をまとめ、行政画面へ旧原本/担当者/再承認を接続。旧履歴・新権限・同意・月枠と届いた観測を分ける。 全画面の情報整理・外観/GUI操作の受入とアクセシビリティ。"
     },
     "BD-58": {
-      "percent": 95,
-      "basis": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 NPCの総合優先度、全国の前線隊商/再委任、遠方簡略と詳細の全機能同値。"
+      "percent": 96,
+      "basis": "自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。 全国の総合優先順位、役割別目的、遠方簡略との同値検査。"
     },
     "BD-59": {
       "percent": 20,
@@ -321,20 +321,20 @@
     }
   },
   "focus": {
-    "leaf": "BD-44",
-    "title": "人質の実護送と到着後の返還確認",
+    "leaf": "BD-58",
+    "title": "登録武将を含むNPCの必要に応じた継続行動",
     "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
     "exit": [
-      "Start a locally approved return of the existing held adult to the guardian household home, with current reconfirmed representatives. Preserve original guarantee, identity and expiry. The original player guardian escorts on foot; military capture and armed escort forces are out of scope.",
-      "Use one canonical land journey for escort and held person so route changes, closure, stops and restored state cannot split or duplicate them. Ordinary unrelated travel cannot abandon the held person mid-return.",
-      "If a road closure stops the return, retain custody, actual shared location and outstanding obligation. Resume only toward the original fixed recipient site from the actual stopped position; never teleport or automatically treat delay as death.",
-      "Arrival and handover are separate. Release only after the current entitled recipient physically accepts the same person at the original destination. A changed/absent recipient holds handover; do not rewrite signatures or expiry.",
-      "Verify actual travel, road-stop/resume, duplicate inputs, return receipt, generation recovery during movement and at arrival, old-save byte compatibility and headless Godot shared positions. Keep military capture/exchange/ransom and GUI appearance unfinished."
+      "Pin a new opt-in NPC policy in new games. Keep previous first-inspection-only and null policies byte-compatible. Registered adult NPCs and authored historical adults use the same existing command and report pipeline; never control the player or minors.",
+      "Choose a local inspection only from the NPC own missing/stale road observations, actual available permission and own received result. At most one new autonomous inspection per person per day. Fresh observations, pending reports, military/custody/companion tasks prevent inappropriate work; never read hidden road truth to plan.",
+      "Continue across days and local positions with immutable decision input snapshots and deterministic ordering. Actual completed work can earn existing skill experience; no invented offices, army, wealth or automatic relationships.",
+      "Exercise multiple active registered NPCs across the existing national nodes and bounded event budgets. Record measured scope; do not claim the product target of 3000 active people, 1000 sites and 500 armies was reached.",
+      "Verify current public APIs, stale/hidden knowledge, occupancy, same future after real generation recovery, old-save bytes, entry policy and headless Godot data projection. GUI appearance and full nationwide strategic AI remain unfinished."
     ],
     "deferred": [
-      "史実家族・離縁・出生・遠隔相談",
-      "人質/捕虜の身柄と履行",
-      "GUI/正式素材・全国長期/性能受入"
+      "全国の役割別の目的と自律軍事/外交",
+      "活動3000人/1000拠点/500軍と実機性能",
+      "GUI/正式素材・全国長期の製品受入"
     ]
   },
   "roadmap": [
@@ -481,11 +481,11 @@
     "note": "60区分の現コード/通常入口参照/検証資料を一次静的監査。全製品動作/現GUIの受入ではない。評価訂正分は新実装の進捗に数えず、固定基準から1ポイント以上の実装増分でのみ通常のmain承認を求める。"
   },
   "approval_batch": {
-    "version": 43,
-    "baseline_commit": "a94d9ae5b445e0fa1c873a338845b5490a3b3085",
-    "baseline": 57.22332251082251,
-    "current": 57.47332251082251,
-    "earned_gain": 0.25,
+    "version": 44,
+    "baseline_commit": "aa329cd31227dd80bb6eeeaebb8ec6d1ee5d46a6",
+    "baseline": 57.47332251082251,
+    "current": 57.67743506493507,
+    "earned_gain": 0.2041125541125541,
     "excluded_reassessment": 0,
     "minimum": 0,
     "automatic_main": true,
@@ -493,5 +493,5 @@
     "criteria_total": 5,
     "integrated_main": null
   },
-  "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
+  "range_note": "2026-10-30: The unchanged fixed-weight raw estimate is57.677435%; the historical five-point rounded value is60. The display uncertainty band is55-65 instead of45-55. This display-band update earns no progress and changes no leaves, weights or denominator."
 }

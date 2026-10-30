@@ -2111,3 +2111,7 @@ Scripts/verify_hostage_custody.py -text
 Core/Contracts/HostageCustody.Return.cs -text
 Tests/CustodyReturnTests.cs -text
 Scripts/verify_custody_return.py -text
+
+Core/Contracts/NpcContinuing.cs -text
+Tests/NpcContinuingTests.cs -text
+Scripts/verify_npc_continuing.py -text

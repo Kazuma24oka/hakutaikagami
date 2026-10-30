@@ -1,0 +1,13 @@
+{
+  "scope": "World creation plus common-clock advance to 20 seconds; one focused test, old-save probe also running; not FPS or product load target",
+  "active_npcs": 29,
+  "registered_npcs": 24,
+  "world_seconds": 20,
+  "elapsed_wall_ms": 6451,
+  "core_sha256": "f4561aa5cd7785828d406c3a4d9cf4c828e6d047a01b5ba02f03831090490dff",
+  "test_sha256": "59dc1f2c4b1bc447964db391cf7c6eec8c6d4dc999a709a4c51b8bfd7ec201e5",
+  "trx": "Docs/Design/NpcContinuingV1/runtime-local/isolated-population/isolated-population.trx",
+  "trx_sha256": "50f0b777601579eebf6a40d0bd634d158c11565323df5a4f2acd7aca898ac1e2",
+  "raw": "Docs/Design/NpcContinuingV1/runtime-local/isolated-population/npc-continuing-active-population-measurement.txt",
+  "raw_sha256": "16b56c6236558774d50d57474285ccd40023de4e8a75aa82ed2129c71a03f0fa"
+}

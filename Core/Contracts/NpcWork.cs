@@ -1,6 +1,6 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
-public sealed record NpcWorkInputs(bool LocalWitness,bool InspectionPermit,EntityId[] OwnTasks,bool LastReportKnown,string? KnownResult,long ReadyAt,bool CooldownElapsed,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool DialoguePending=false);
+public sealed record NpcWorkInputs(bool LocalWitness,bool InspectionPermit,EntityId[] OwnTasks,bool LastReportKnown,string? KnownResult,long ReadyAt,bool CooldownElapsed,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool DialoguePending=false){[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public NpcRoutineSituation? Routine{get;init;}}
 public sealed record NpcWorkDecision(EntityId Id,EntityId Actor,long At,long InputRevision,NpcWorkInputs Inputs,string InputHash,string Reason,EntityId? Request,ResultCode Result);
 public sealed record NpcWorkState(NpcWorkDecision[] Decisions);
 // A bounded knowledge-based planner, opt-in only. No second clock, transport or task implementation.
