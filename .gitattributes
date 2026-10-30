@@ -2115,3 +2115,8 @@ Scripts/verify_custody_return.py -text
 Core/Contracts/NpcContinuing.cs -text
 Tests/NpcContinuingTests.cs -text
 Scripts/verify_npc_continuing.py -text
+
+Core/Contracts/WorldSession.NpcRoutine.cs -text
+Scripts/verify_npc_performance.py -text
+Docs/Design/NpcPerformanceV1/** -text
+Docs/Development/ProgressV1/approval-baseline-v45.json -text
