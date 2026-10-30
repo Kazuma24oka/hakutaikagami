@@ -323,7 +323,7 @@
   "focus": {
     "leaf": "BD-42",
     "title": "防衛援軍の実出陣・実兵糧・帰還",
-    "status": "完成条件5/5。包括委任により確認済みコード/資料を自動統合して続行。",
+    "status": "完成条件5/5。コード/資料はmainへ同一内容で統合済み。武将の能力・技能・成長へ続行。",
     "exit": [
       "受領返書の開封後に、本人が実出陣を手配できる",
       "同じ駐屯兵と家の実米を使い、条件不足なら辞退する",
@@ -491,7 +491,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "dc2b903b125740ede2dee21e1cf5fa75e2fa1f89"
   },
   "range_note": "2026-10-30: Raw fixed-weight estimate crossed50; rough display band moved40-50 to45-55 without any leaf/weight/denominator re-rating."
 }

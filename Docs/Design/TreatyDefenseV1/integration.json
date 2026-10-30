@@ -1,5 +1,5 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "standing_authorization": "User instruction 2026-10-30 delegates future main code/docs integrations",
   "base_main": "19a5c2cd49b9228dfcf492d8206693dc17504ed6",
   "scope": "Code and documentation only; no model assets",
@@ -8,5 +8,8 @@
     "e8b545e"
   ],
   "concurrent_documentation_note": "Separate future diplomacy design/reference documentation retained; not counted as implemented features.",
-  "code_head": "e2c4c49565f547dc8c42178e1cc2f47ff3b7246f"
+  "code_head": "e2c4c49565f547dc8c42178e1cc2f47ff3b7246f",
+  "integrated_head": "9b6a0d4ce65b41b097e6f186bb1f1a7ad95d4e97",
+  "integrated_main": "dc2b903b125740ede2dee21e1cf5fa75e2fa1f89",
+  "integrated_tree": "d638afc1576f671203c32ed1849e5a3d7e9f79c1"
 }
