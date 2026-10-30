@@ -91,6 +91,8 @@ public sealed record NewMilitaryState(int Schema,string Contract,NewMilitaryTerm
     public NewMilitaryAuthorityState? Authority {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public ActiveMilitaryState? ActiveSuccession {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public RemoteMilitaryState? RemoteSuccession {get;init;}
 }
 public sealed record NewMilitaryView(string Status,bool CanRequest,bool CanAccept,bool CanPickup,bool Custody,bool Deployed,bool Returning,long Carry,bool CanEnter);
 
