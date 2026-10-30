@@ -18,7 +18,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "d29b80210b727d2762a85df8e0f0512d1ca3d3a4dd10fbeda6500dbf5e31b55f",
-    "Docs/Development/ProgressV1/estimate.json": "cc386fe48a37cfe567e61afaba56752fdd94d83a10ef193f56e3a086ecb1bd4b",
+    "Docs/Development/ProgressV1/estimate.json": "82a435a9dad6ba80f599a4f64440ca41f22304c9479bd522769b3ab172575cf7",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a4b855f8721903e1dbcd83511f37f85d3591541fbcdc76f557ebb88144795565",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -260,7 +260,7 @@
     "Docs/Design/TreatyDefenseV1/verification.json": "56e9b97aeb1d69a7aa90d4d78a24d6245aa4d7bafa99ec95c222c7b00a0e4e3b",
     "Docs/Design/TreatyDefenseV1/completion.json": "6e8402cf77042632d697020d47d6d42f367974a94cf831f91903bb8fd2f36e0e",
     "Docs/Design/TreatyDefenseV1/README.md": "98a73ad21223b49321051ceaf82913d853a62e1caec05bc379f67bd3e119fa19",
-    "Docs/Design/TreatyDefenseV1/integration.json": "6df10b40826828e64a2c9d8341fbee2fb938d7fad0e08542c3e855af733c9602",
+    "Docs/Design/TreatyDefenseV1/integration.json": "38cf7aec71b094956a5a32205556486b9134ad39762f7acce360033cd70e53e3",
     "Docs/Design/TreatyDefenseV1/legacy-sources.json": "1e53f5356fe677932658bbd4309f6b82f73967adabd8082f9a45a4740dde07a7",
     "Docs/Development/ProgressV1/approval-baseline-v35.json": "8f97fb6c907a7741030f67db9262539e76609a2abe593f3416758c02a25d79d1",
     "Scripts/verify_treaty_defense.py": "3d0336490737211dcdce08f31d012a6107f5056a55fe482f721c956efb83b8f2"
