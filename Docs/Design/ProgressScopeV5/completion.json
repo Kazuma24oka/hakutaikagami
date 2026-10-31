@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Add the scope of the features adopted from the other reference games (Sengokushi SE and Sengoku Jidai Light/DX; integration proposal section 26, Z1-Z14) to the affected existing items without changing the 60 items or weights.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Development/ProgressV1/approval-baseline-v50-scope.json",
+        "Docs/Design/ProgressScopeV5/verification.json",
+        "Docs/Proposals/GETENROKU_INTEGRATION_V1.md",
+        "Docs/References/GETENROKU_BACKLOG.md"
+      ]
+    },
+    {
+      "contract": "Re-rate only the affected items downward in proportion to the added scope; record old and new percentages, the added scope and the reason for each item.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Development/ProgressV1/approval-baseline-v50-scope.json",
+        "Docs/Design/ProgressScopeV5/verification.json",
+        "Docs/Proposals/GETENROKU_INTEGRATION_V1.md",
+        "Docs/References/GETENROKU_BACKLOG.md"
+      ]
+    },
+    {
+      "contract": "Record the total change as an excluded reassessment, never as earned implementation progress; no code, tests or assets change.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Development/ProgressV1/approval-baseline-v50-scope.json",
+        "Docs/Design/ProgressScopeV5/verification.json",
+        "Docs/Proposals/GETENROKU_INTEGRATION_V1.md",
+        "Docs/References/GETENROKU_BACKLOG.md"
+      ]
+    },
+    {
+      "contract": "Re-freeze the next implementation stage (NPC purpose) on the fifth re-rated baseline before its code exists, keeping its per-item target increments.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Development/ProgressV1/approval-baseline-v50-scope.json",
+        "Docs/Design/ProgressScopeV5/verification.json",
+        "Docs/Proposals/GETENROKU_INTEGRATION_V1.md",
+        "Docs/References/GETENROKU_BACKLOG.md",
+        "Docs/Development/ProgressV1/approval-baseline-v51.json"
+      ]
+    },
+    {
+      "contract": "Regenerate the progress view and pass the existing progress and approval-batch checks.",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Development/ProgressV1/approval-baseline-v50-scope.json",
+        "Docs/Design/ProgressScopeV5/verification.json",
+        "Docs/Proposals/GETENROKU_INTEGRATION_V1.md",
+        "Docs/References/GETENROKU_BACKLOG.md"
+      ]
+    }
+  ]
+}
