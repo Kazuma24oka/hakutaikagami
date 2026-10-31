@@ -18,11 +18,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "b4e29df5c8ff0d66cdf1096857d882d02bc717bc9aa5f7a00e0abeebca64666c",
-    "Docs/Development/ProgressV1/estimate.json": "d6715f9f651ea2ee977778bbe35f25235787e79221f4ddc25b0b7b842b6085fc",
+    "Docs/Development/ProgressV1/estimate.json": "2bceb35eae83896594d699b8869548ecb48bf37ac979202ca5a0b14e221476fb",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "619faa7722dd1f0f4e35e0d02d412bd5eb9d7ce73a6d6d7c3ccd6c5b7eaa8c0c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "668ac614abececc41b16152b43e447a4dbe11a1b6b380e9ec2b3f3c076917ada",
+    "Scripts/check_approval_batch.py": "26b7cdb87c12a12bf6672d7100ffbaf23fcb5881f00b2c31e674b07281f83f07",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -120,7 +120,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f06a6c78008a285506a36f34d509e0ee04b8a3524b1bf926b121b90e35878da6",
-    "Docs/Development/CURRENT_STAGE.md": "42c7a41a0497ecc851e657a568c4827b8aac9b6bd9c4974fccfd0f6c814765c0",
+    "Docs/Development/CURRENT_STAGE.md": "ffb176d95e2f5e8f78cc5c89bf4379eb1da5521506380d10f87fea4ba22331fb",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "0c049a93e380024c028abb22981fded7fdfe39b95eaf5858852308d2eb6b9b34",
@@ -385,7 +385,7 @@
     "Docs/Design/ProgressScopeV1/README.md": "dd3a78d8a9b22a49140fa4e1bb471440476ad0aaa972da8b852c76846668a383",
     "Docs/Design/ProgressScopeV1/completion.json": "1a981e30032346706250d23a736d8eefe244f994a03ddbf4a496e509cfcc9ecb",
     "Docs/Design/ProgressScopeV1/verification.json": "52d982ed9667e06d995c5ab1906b4d0b592edb020800c76cdaefa7b1575ac80d",
-    "Scripts/verify_progress_scope.py": "43b823403d3d0ed8b463451bbf3ffa1987fe7c2bfa89ac130acccd407b704752",
+    "Scripts/verify_progress_scope.py": "4ebb3df6e76a6175b4910137f973a762008efca633c099bc0c800525efc88564",
     "Docs/Development/ProgressV1/approval-baseline-v47-scope.json": "019fe116ab3b1e302a48e877e0f608451b60090fdf5078b1066b9e8c64cd319f",
     "Docs/Development/ProgressV1/approval-baseline-v48.json": "44f0b2b446e5c16793793b2875f19ab463aceaf8c3fc616f0ffa85b6a9c93a00",
     "Docs/Design/ProgressScopeV2/scope.md": "0b9a4c2a15ba9b0befcdfd3152cd0fb823de9721f7944c14a3ac9ebdc5ee761a",
@@ -404,7 +404,13 @@
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
     "Docs/Design/ProgressScopeV4/README.md": "e0296c13799fbf874600f6a18daad95bbba84842316a57575bc9976cc171843f",
     "Docs/Design/ProgressScopeV4/completion.json": "b1d9359f9a8185a42e568022ba87180651eae123c2e667f5ccddc6bdccc3328d",
-    "Docs/Design/ProgressScopeV4/verification.json": "fa8802bc9025d36074e7e46ba89c4876213091ca79485614f5d007d345b4ff25"
+    "Docs/Design/ProgressScopeV4/verification.json": "fa8802bc9025d36074e7e46ba89c4876213091ca79485614f5d007d345b4ff25",
+    "Docs/Development/ProgressV1/approval-baseline-v50-scope.json": "2e20df4626aa1fb56d404c495acc5cf6d4ec626d7aca3d2dbc50e96dafc68305",
+    "Docs/Development/ProgressV1/approval-baseline-v51.json": "1094f0a262ffdb1482a18552746cec28af18767f53f16f3cf48eea20b5f8b085",
+    "Docs/Design/ProgressScopeV5/scope.md": "f0b11012bbc52ca77e184b35d49be57090ef5f9b034a731065d1322790222a92",
+    "Docs/Design/ProgressScopeV5/README.md": "b96836f70ff26229171b8549262915495262a45de431e3561f034b2490d0f33e",
+    "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
+    "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779"
   },
   "items": [
     {
@@ -563,7 +569,7 @@
       "id": "BD-08",
       "status": "design_only",
       "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。",
-      "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。 統合案で追加：§19 年代記と開始年のシナリオ。",
+      "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。 統合案で追加：§19 年代記と開始年のシナリオ・§26 Z11 家ごとの年表。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
         "Core/Contracts/RegionalTrade.cs",
@@ -959,7 +965,7 @@
       "id": "BD-19",
       "status": "normal",
       "existing": "担当家臣が本人と独立した共通陸路を移動し、停止/再開/待機/帰還の実位置を保持。補給担当者も同じGodot座標へ投影する。",
-      "remaining": "軍勢の海上輸送、一般の多荷種隊商/道中引継ぎと全国規模の性能受入。",
+      "remaining": "軍勢の海上輸送、一般の多荷種隊商/道中引継ぎと全国規模の性能受入。 統合案で追加：§26 Z2 水路と軍船の航路・Z7 交易船の航路。",
       "evidence": [
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
@@ -1621,7 +1627,7 @@
       "id": "BD-33",
       "status": "normal",
       "existing": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。",
-      "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。 統合案で追加：§13 内政の4軸・開発の普請・§16 技術・新しい物資の生産（鉄砲・火薬・硝石・金銀・軍馬。CHARACTER_DATA_FIELDS_V1 §4）。",
+      "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。 統合案で追加：§13 内政の4軸・開発の普請・§16 技術・新しい物資の生産（鉄砲・火薬・硝石・金銀・軍馬。CHARACTER_DATA_FIELDS_V1 §4）・§26 Z3 災害による田畑・町・城の区画の被害と普請での回復。",
       "evidence": [
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
@@ -1658,7 +1664,7 @@
       "id": "BD-34",
       "status": "normal",
       "existing": "担当者交代後も同じ家の処分・調達枠を共有し、既存運搬の実前渡金と購入履歴を控除。個人奉公を解いても既存給付の未払いは残し、私財/家財を移さない。",
-      "remaining": "全画面/GUIと全国長期の収支受入は未完了のため、事前計画の上限100に対し概算99で保留する。 統合案で追加：§13 指出・検地・§16 改革。",
+      "remaining": "全画面/GUIと全国長期の収支受入は未完了のため、事前計画の上限100に対し概算99で保留する。 統合案で追加：§13 指出・検地・§16 改革・§26 Z12 年貢の方針（段階と布告）・Z8 陣中の私有の兵糧。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
         "Core/Contracts/HouseholdService.cs",
@@ -1719,7 +1725,7 @@
       "id": "BD-35",
       "status": "normal",
       "existing": "引受名簿と元の家/軍用倉を変えず、本人が共通陸路で3隊を率い、到着拠点周辺で再集合/再出発する。",
-      "remaining": "軍勢海上輸送・一般隊商、別行動中の広域指揮と全国性能。 統合案で追加：§24 名物の売買・新しい物資の取引と運搬（槍・弓・鉄砲・軍馬・飼料・火薬・玉・硝石・金銀。CHARACTER_DATA_FIELDS_V1 §4）。",
+      "remaining": "軍勢海上輸送・一般隊商、別行動中の広域指揮と全国性能。 統合案で追加：§24 名物の売買・新しい物資の取引と運搬（槍・弓・鉄砲・軍馬・飼料・火薬・玉・硝石・金銀。CHARACTER_DATA_FIELDS_V1 §4）・§26 Z7 交易船の派遣・航海・難破と鉄砲の到着日数。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
         "Core/Contracts/NewGameMilitary.cs",
@@ -1925,7 +1931,7 @@
       "id": "BD-39",
       "status": "normal",
       "existing": "通常の新規開始を明示v3へ接続。当主の通知発送→物理到達/開封→NPC独自判断/返書→実出陣/接触/損害→撤退/帰還/返納/返報/指揮返還を公開プレイヤーAPIで一巡。関連393件成功、Gameビルド成功、保存復旧5組/40個の実Node3D座標・兵数・攻撃用データ一致。GUI操作/見た目と現コード全2573件は未実施。全体概算20%据置。 条約の防衛援軍を実在の同じ駐屯兵100人へ接続。実米からの署名付き兵糧と共通陸路で守備先へ到着し、実守備・帰還・現地返納する。未知の封鎖を実進入で知り同じ軍が迂回する。架空の敵対宣言や軍を作らない。",
-      "remaining": "同じ駐屯兵の繰り返し再動員、一般野戦/攻城/救援の拡張、全国NPCによる自主攻防と長期受入。 統合案で追加：§21 天候と地形・負傷兵・区画を順に攻める攻城・§9 決定6 賊との少人数の接触戦。",
+      "remaining": "同じ駐屯兵の繰り返し再動員、一般野戦/攻城/救援の拡張、全国NPCによる自主攻防と長期受入。 統合案で追加：§21 天候と地形・負傷兵・区画を順に攻める攻城・§9 決定6 賊との少人数の接触戦・§26 Z1 攻める側の補給と強襲を続けられる長さ。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
         "Core/Contracts/NpcArmies.cs",
@@ -1967,7 +1973,7 @@
       "id": "BD-40",
       "status": "normal",
       "existing": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。",
-      "remaining": "移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。 統合案で追加：§21 負傷兵の回復と兵糧。",
+      "remaining": "移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。 統合案で追加：§21 負傷兵の回復と兵糧・§26 Z1 攻め手の陣への補給・Z2 水路の補給と封鎖の維持・Z8 陣中の兵糧の消費。",
       "evidence": [
         "Core/Contracts/RoadConvoy.cs",
         "Core/Contracts/FieldConvoy.cs",
@@ -2013,7 +2019,7 @@
       "id": "BD-41",
       "status": "normal",
       "existing": "正式条約の独立条項/版/実権者/既知代表者/固定本拠を記録。同一版の承諾到達で成立し、本人開封と本人による成立確認の返書を分離する。対案は元の条項/解除予告期間を保持し、未通知の代表者を探知しない。",
-      "remaining": "条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。 統合案で追加：§15 外交・勧告・§15 D1 贈り物。",
+      "remaining": "条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。 統合案で追加：§15 外交・勧告・§15 D1 贈り物・§26 Z10 家の格と外交・Z13 包囲網の呼びかけと多者の盟約。",
       "evidence": [
         "Core/Contracts/TreatyNegotiations.cs",
         "Core/Contracts/TreatyNegotiations.Operations.cs",
@@ -2060,7 +2066,7 @@
       "id": "BD-42",
       "status": "foundation",
       "existing": "不侵略・通行・補給・防衛援軍を独立条項にする。既知の不侵略を実NPC/交戦判断へ接続し、解除意思・物理的法的到達・予告期間の効力・本人の認識を分離。不達再送と現物回収の重複でも同じ通知を一意に扱う。援軍/補給は条項別の量・期限・理由を持つ物理要請/受領/辞退まで接続し、実行完了としない。 補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。",
-      "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。 統合案で追加：§15 従属の条項と違反（HANDOFF_D3_D4）。",
+      "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。 統合案で追加：§15 従属の条項と違反（HANDOFF_D3_D4）・§26 Z13 盟約の取り決め（同じ頃の出兵・単独で和睦しない）と破約。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
         "Core/Contracts/NpcArmies.cs",
@@ -2141,7 +2147,7 @@
       "id": "BD-44",
       "status": "design_only",
       "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 保証原本に基づく同じ本人の実護送・停止/再開・到着先の明示受領を接続。",
-      "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。 統合案で追加：§21 捕虜の処遇・§15 人質（HANDOFF_D3_D4）。",
+      "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。 統合案で追加：§21 捕虜の処遇・§15 人質（HANDOFF_D3_D4）・§26 Z5 捕虜交換の交渉と受け渡し。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -2238,7 +2244,7 @@
       "id": "BD-46",
       "status": "foundation",
       "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。",
-      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱。",
+      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameService.cs",
@@ -2251,7 +2257,7 @@
       "id": "BD-47",
       "status": "design_only",
       "existing": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。",
-      "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。 統合案で追加：§21 開城の判断と条件の交渉。",
+      "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。 統合案で追加：§21 開城の判断と条件の交渉・§26 Z2 水路から届く米と開城の判断。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
         "Core/Contracts/CommunityStewardship.cs",
@@ -2375,7 +2381,7 @@
       "id": "BD-50",
       "status": "normal",
       "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
-      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革。",
+      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2404,7 +2410,7 @@
       "id": "BD-52",
       "status": "normal",
       "existing": "固定Seedの不足と救済に、村との期限付き約束/部分履行/不信/次の返答、NPC現地救済を接続。",
-      "remaining": "全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。 統合案で追加：§13 一揆の段階・§23 一向宗の檄・§13 N4 治安と警固・賊。",
+      "remaining": "全国の災害・人口逃散/死亡、一揆/政治的要求/広域救済と不在時の代理交渉。 統合案で追加：§13 一揆の段階・§23 一向宗の檄・§13 N4 治安と警固・賊・§26 Z3 地方ごとの豊作と凶作・季節の災害・Z12 減免と年貢の布告への村の反応。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2573,7 +2579,7 @@
       "id": "BD-58",
       "status": "normal",
       "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。",
-      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）。",
+      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
