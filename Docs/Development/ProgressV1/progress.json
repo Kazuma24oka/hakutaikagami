@@ -411,7 +411,9 @@
     "Docs/Design/ProgressScopeV5/scope.md": "f0b11012bbc52ca77e184b35d49be57090ef5f9b034a731065d1322790222a92",
     "Docs/Design/ProgressScopeV5/README.md": "b96836f70ff26229171b8549262915495262a45de431e3561f034b2490d0f33e",
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
-    "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779"
+    "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
+    "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "fdf4e0990c2cfcf12408a0617b1c959533694e87e60280e1c960c50131947e3b"
   },
   "items": [
     {
@@ -2384,7 +2386,7 @@
       "id": "BD-50",
       "status": "normal",
       "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
-      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。 2026-11-05 明確化：家法の適用範囲と自治留保、条件改定案の拒否と既存義務への不履行を分離。G-H3の家法承継の既定値を接続する（実装未完了）。",
+      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。 2026-11-05 明確化：家法の適用範囲と自治留保、条件改定案の拒否と既存義務への不履行を分離。G-H3の家法承継の既定値を接続する（実装未完了）。 2026-11-05 A案採用：改革は条件が整った独立範囲から段階導入し、一括・交換条件を保持する。成立・発効・通知・実施・完了確認を分離する（実装未完了）。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2394,7 +2396,9 @@
         "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/ContractModels.cs",
-        "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md"
+        "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md",
+        "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md",
+        "Docs/References/MORI_MOTONARI_RESEARCH.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
