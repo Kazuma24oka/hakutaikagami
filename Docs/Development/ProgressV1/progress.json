@@ -15,6 +15,7 @@
   "design_source": "Docs/Design/basic-design-v1.json",
   "acceptance_source": "Docs/Design/basic-design-acceptance.json",
   "source_hashes": {
+    "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md": "213f5c64d055865436a69d7d1834b1c7a183bd87129768a9de8e49bfbba2a451",
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "b4e29df5c8ff0d66cdf1096857d882d02bc717bc9aa5f7a00e0abeebca64666c",
@@ -2066,7 +2067,7 @@
       "id": "BD-42",
       "status": "foundation",
       "existing": "不侵略・通行・補給・防衛援軍を独立条項にする。既知の不侵略を実NPC/交戦判断へ接続し、解除意思・物理的法的到達・予告期間の効力・本人の認識を分離。不達再送と現物回収の重複でも同じ通知を一意に扱う。援軍/補給は条項別の量・期限・理由を持つ物理要請/受領/辞退まで接続し、実行完了としない。 補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。",
-      "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。 統合案で追加：§15 従属の条項と違反（HANDOFF_D3_D4）・§26 Z13 盟約の取り決め（同じ頃の出兵・単独で和睦しない）と破約。",
+      "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。 統合案で追加：§15 従属の条項と違反（HANDOFF_D3_D4）・§26 Z13 盟約の取り決め（同じ頃の出兵・単独で和睦しない）と破約。 2026-11-05 明確化：不履行の発生・証拠・本人認識・責任と処遇の判断を分離する（家法承継の決定§2、実装未完了）。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
         "Core/Contracts/NpcArmies.cs",
@@ -2112,7 +2113,8 @@
         "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
         "Docs/Design/CastellanSuccessionV1/verification.json",
         "Core/Contracts/WorldEngagement.cs",
-        "Docs/Design/TruceNegotiationV1/verification.json"
+        "Docs/Design/TruceNegotiationV1/verification.json",
+        "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2181,7 +2183,7 @@
       "id": "BD-45",
       "status": "foundation",
       "existing": "明示した方針だけで本拠集合軍の保管を継続した生前交代を許し、交代と軍務再合意を分離する。後の就任で過去の仕官/辞去資格を変えず、当時の役職履歴から再検証する。",
-      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。 統合案で追加：§12 家督の3段・後見。",
+      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。 統合案で追加：§12 家督の3段・後見。 2026-11-05 A案採用：明示承継条件のない有効な統治上の家法は家の規則として継続し、新当主の権限・本人認識・服従を別に扱う（実装未完了）。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
         "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
@@ -2235,7 +2237,8 @@
         "Docs/Design/HouseSuccessionV1/verification.json",
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/ContractModels.cs",
-        "Tests/NewGameSetupTests.cs"
+        "Tests/NewGameSetupTests.cs",
+        "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2381,7 +2384,7 @@
       "id": "BD-50",
       "status": "normal",
       "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
-      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。",
+      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。 2026-11-05 明確化：家法の適用範囲と自治留保、条件改定案の拒否と既存義務への不履行を分離。G-H3の家法承継の既定値を接続する（実装未完了）。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2390,7 +2393,8 @@
         "Docs/Design/VillageConsultationV1/verification.json",
         "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/NewGameSetup.cs",
-        "Core/Contracts/ContractModels.cs"
+        "Core/Contracts/ContractModels.cs",
+        "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
