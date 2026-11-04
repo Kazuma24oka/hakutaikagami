@@ -413,8 +413,9 @@
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
     "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
     "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
-    "Docs/References/MORI_MOTONARI_RESEARCH.md": "65ef1ce238300eb49382d739c289a1950a9796f2e19e7ef1f6e9182c548472de",
-    "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938"
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "6e609a958b9aee5d440b3ff12e9bb0909ce6ea74d61cccf4a58e84d844c1c559",
+    "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938",
+    "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md": "9dae6aca4c6e7a686313c67dbf05bcdff8ae77537c676eafc03ef5cbcd7d65af"
   },
   "items": [
     {
@@ -1632,7 +1633,7 @@
       "id": "BD-33",
       "status": "normal",
       "existing": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。",
-      "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。 統合案で追加：§13 内政の4軸・開発の普請・§16 技術・新しい物資の生産（鉄砲・火薬・硝石・金銀・軍馬。CHARACTER_DATA_FIELDS_V1 §4）・§26 Z3 災害による田畑・町・城の区画の被害と普請での回復。",
+      "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。 統合案で追加：§13 内政の4軸・開発の普請・§16 技術・新しい物資の生産（鉄砲・火薬・硝石・金銀・軍馬。CHARACTER_DATA_FIELDS_V1 §4）・§26 Z3 災害による田畑・町・城の区画の被害と普請での回復。 2026-11-05 既存仕様の具体化：水利・土地の案件判断を、調査と普請の任務、村の協力・資源・工期・給付の実履行へ接続する（MORI_MOTONARI_WATER_DISPUTES、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/MilitaryEconomy.cs",
         "Core/Contracts/CommunityEconomy.cs",
@@ -1660,7 +1661,8 @@
         "Game/Scripts/NewGameRuntime.Communities.cs",
         "Docs/Design/CommunityEconomyV2/verification.json",
         "Scripts/probe_community_reports.py",
-        "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md"
+        "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md",
+        "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2365,7 +2367,7 @@
       "id": "BD-49",
       "status": "normal",
       "existing": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。",
-      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。 統合案で追加：§11 家中職と評定・§16 集権化。 2026-11-05 既存仕様の具体化：家臣の申立て、取次人の権限、評定の判断、返答と実履行を分離した一巡を接続する（MORI_MOTONARI_GOVERNANCE_CASES、実装・シナリオ検査は未実施）。",
+      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。 統合案で追加：§11 家中職と評定・§16 集権化。 2026-11-05 既存仕様の具体化：家臣の申立て、取次人の権限、評定の判断、返答と実履行を分離した一巡を接続する（MORI_MOTONARI_GOVERNANCE_CASES、実装・シナリオ検査は未実施）。 2026-11-05 既存仕様の具体化：合意を取り持つ仲裁案と既存管轄による裁定を分け、異議・通知・協力・実履行を独立に扱う（MORI_MOTONARI_WATER_DISPUTES、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
@@ -2380,7 +2382,8 @@
         "Core/Contracts/NewGameMilitaryAuthority.cs",
         "Core/Contracts/NewGameMilitary.Authority.cs",
         "Tests/MilitaryIssuerAuthorityTests.cs",
-        "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md"
+        "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md",
+        "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
