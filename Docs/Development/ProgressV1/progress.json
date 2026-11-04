@@ -413,7 +413,8 @@
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
     "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
     "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
-    "Docs/References/MORI_MOTONARI_RESEARCH.md": "fdf4e0990c2cfcf12408a0617b1c959533694e87e60280e1c960c50131947e3b"
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "65ef1ce238300eb49382d739c289a1950a9796f2e19e7ef1f6e9182c548472de",
+    "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938"
   },
   "items": [
     {
@@ -1604,7 +1605,7 @@
       "id": "BD-32",
       "status": "isolated",
       "existing": "独立試作で中断理由書状と暫定レビューを分ける。通常の点検返答は受領確認まで。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
-      "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。 統合案で追加：§9 勲功帳と論功行賞。",
+      "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。 統合案で追加：§9 勲功帳と論功行賞。 2026-11-05 既存仕様の具体化：恩賞への期待と成立済みの給付義務を区別し、申立て・評価・支給の実履行へつなぐ（MORI_MOTONARI_GOVERNANCE_CASES、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/MissionReview.cs",
         "Core/Contracts/AssessmentNotice.cs",
@@ -1621,7 +1622,8 @@
         "Core/Contracts/NewGameMilitary.Debrief.cs",
         "Tests/MilitaryDebriefTests.cs",
         "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
-        "Docs/Design/MilitaryDebriefV1/verification.json"
+        "Docs/Design/MilitaryDebriefV1/verification.json",
+        "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2363,7 +2365,7 @@
       "id": "BD-49",
       "status": "normal",
       "existing": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。",
-      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。 統合案で追加：§11 家中職と評定・§16 集権化。",
+      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。 統合案で追加：§11 家中職と評定・§16 集権化。 2026-11-05 既存仕様の具体化：家臣の申立て、取次人の権限、評定の判断、返答と実履行を分離した一巡を接続する（MORI_MOTONARI_GOVERNANCE_CASES、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
@@ -2377,7 +2379,8 @@
         "Game/Scripts/NewGameRuntime.Village.cs",
         "Core/Contracts/NewGameMilitaryAuthority.cs",
         "Core/Contracts/NewGameMilitary.Authority.cs",
-        "Tests/MilitaryIssuerAuthorityTests.cs"
+        "Tests/MilitaryIssuerAuthorityTests.cs",
+        "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
