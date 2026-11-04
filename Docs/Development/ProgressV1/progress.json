@@ -413,9 +413,10 @@
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
     "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
     "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
-    "Docs/References/MORI_MOTONARI_RESEARCH.md": "6e609a958b9aee5d440b3ff12e9bb0909ce6ea74d61cccf4a58e84d844c1c559",
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "12120e7dab8b522d997e9cb3ac955018054b9be08ef2db3ff5c042d70cf7a927",
     "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938",
-    "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md": "9dae6aca4c6e7a686313c67dbf05bcdff8ae77537c676eafc03ef5cbcd7d65af"
+    "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md": "9dae6aca4c6e7a686313c67dbf05bcdff8ae77537c676eafc03ef5cbcd7d65af",
+    "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md": "ce42569b42447de7782550696dbdec6d0686e2eb979bb9db7cf0eda68d848a5c"
   },
   "items": [
     {
@@ -2445,9 +2446,10 @@
       "id": "BD-53",
       "status": "design_only",
       "existing": "朝廷/幕府への働きかけの基本方針がある。",
-      "remaining": "中央固有の決裁権と交渉案件を実装する。 統合案で追加：§15 朝廷・将軍への取次。",
+      "remaining": "中央固有の決裁権と交渉案件を実装する。 統合案で追加：§15 朝廷・将軍への取次。 既存仕様の具体化：中央への取次、範囲付き交渉、申請・審査・発給・物理的な返答と各主体の権限を接続する資料を追加（MORI_MOTONARI_CENTRAL_MEDIATION.md）。仲介だけで承諾権・保証義務を与えず、制度的効力と現地履行を分ける。実装・シナリオ検査は未実施。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json"
+        "Docs/Design/basic-design-v1.json",
+        "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2478,9 +2480,10 @@
       "id": "BD-56",
       "status": "design_only",
       "existing": "仲裁・服従の基本方針がある。",
-      "remaining": "発給・到達・受容・履行・政治評価と、不達時の扱いを実装する。 統合案で追加：§15 仲裁。",
+      "remaining": "発給・到達・受容・履行・政治評価と、不達時の扱いを実装する。 統合案で追加：§15 仲裁。 既存仕様の具体化：中央仲裁による個別和平と全体合意条件、同じ版への必要な合意・到達、現地履行を接続する資料を追加（MORI_MOTONARI_CENTRAL_MEDIATION.md）。未成立の拒否と成立後の不履行、違反の訴えと各主体の認識を区別し、既存義務との抵触は別に照合する。実装・シナリオ検査は未実施。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json"
+        "Docs/Design/basic-design-v1.json",
+        "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
