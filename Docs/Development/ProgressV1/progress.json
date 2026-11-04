@@ -413,11 +413,12 @@
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
     "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
     "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
-    "Docs/References/MORI_MOTONARI_RESEARCH.md": "ff381807ad3dcd15c0c4de4c6cde3658183aa3f01e420af518e61d89a7456d07",
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "5a19428d72d599264c51c840da562cf37f8f3348233fe790e1e0fe090e7790d6",
     "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938",
     "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md": "9dae6aca4c6e7a686313c67dbf05bcdff8ae77537c676eafc03ef5cbcd7d65af",
     "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md": "ce42569b42447de7782550696dbdec6d0686e2eb979bb9db7cf0eda68d848a5c",
-    "Docs/Proposals/MORI_MOTONARI_RETAINER_INCIDENTS.md": "e131eb310ca7765a28224971c66d2ca961ae50ca204305a8e2b6d4105bab0bbd"
+    "Docs/Proposals/MORI_MOTONARI_RETAINER_INCIDENTS.md": "e131eb310ca7765a28224971c66d2ca961ae50ca204305a8e2b6d4105bab0bbd",
+    "Docs/Proposals/MORI_MOTONARI_ALLEGIANCE_CHANGES.md": "983d42574e9a81ec070a4855ace22e08840642d94521da26e9424fed15454d1f"
   },
   "items": [
     {
@@ -2256,11 +2257,12 @@
       "id": "BD-46",
       "status": "foundation",
       "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。",
-      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。",
+      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。 既存仕様の具体化：国人の接近・支持・新条約・旧関係の解除通知と効力・実離脱・最初の履行を接続する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。家の従属先変更と個人仕官・家の吸収を分け、旧主の一律許可制や全員・全資源の自動移転を追加しない。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameService.cs",
-        "Tests/NewGameSetupTests.cs"
+        "Tests/NewGameSetupTests.cs",
+        "Docs/Proposals/MORI_MOTONARI_ALLEGIANCE_CHANGES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2395,7 +2397,7 @@
       "id": "BD-50",
       "status": "normal",
       "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
-      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。 2026-11-05 明確化：家法の適用範囲と自治留保、条件改定案の拒否と既存義務への不履行を分離。G-H3の家法承継の既定値を接続する（実装未完了）。 2026-11-05 A案採用：改革は条件が整った独立範囲から段階導入し、一括・交換条件を保持する。成立・発効・通知・実施・完了確認を分離する（実装未完了）。 既存仕様の具体化：国人の攻撃に関し、別家の自治・従属条項・当該指揮委任と主家自身の対外義務を照合し、新しい制限の拒否と既存違反を区別する（MORI_MOTONARI_RETAINER_INCIDENTS.md）。所属だけで権限や義務を拡張せず、実装・シナリオ検査は未実施。",
+      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。 2026-11-05 明確化：家法の適用範囲と自治留保、条件改定案の拒否と既存義務への不履行を分離。G-H3の家法承継の既定値を接続する（実装未完了）。 2026-11-05 A案採用：改革は条件が整った独立範囲から段階導入し、一括・交換条件を保持する。成立・発効・通知・実施・完了確認を分離する（実装未完了）。 既存仕様の具体化：国人の攻撃に関し、別家の自治・従属条項・当該指揮委任と主家自身の対外義務を照合し、新しい制限の拒否と既存違反を区別する（MORI_MOTONARI_RETAINER_INCIDENTS.md）。所属だけで権限や義務を拡張せず、実装・シナリオ検査は未実施。 既存仕様の具体化：従属先変更の新旧条約・自治留保・代表権と実服従、接触への制限、所領・人質・債務の残存を区別する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。旧義務違反と無権代理を分け、主家変更だけで権利・義務を一括移転・消滅させない。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2408,7 +2410,8 @@
         "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md",
         "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md",
         "Docs/References/MORI_MOTONARI_RESEARCH.md",
-        "Docs/Proposals/MORI_MOTONARI_RETAINER_INCIDENTS.md"
+        "Docs/Proposals/MORI_MOTONARI_RETAINER_INCIDENTS.md",
+        "Docs/Proposals/MORI_MOTONARI_ALLEGIANCE_CHANGES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
