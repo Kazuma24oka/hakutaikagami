@@ -399,7 +399,7 @@
     "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
     "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
     "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
-    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "2af73b747edb1fd9d21415ca216ca6b6c69200a077812619b78311ee40c6a3c1",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "1239a2dd9c999c46752dfdf2733c166c1cd216dbd30b33758d4580080d322931",
     "Docs/Development/ProgressV1/approval-baseline-v49-scope.json": "e33a8dc9ea47c2553aca2d30f3255bc0a9b9cb3730bc7e1c06c85af13ded1f90",
     "Docs/Development/ProgressV1/approval-baseline-v50.json": "a2d6a868839b7752fa3701dd81307d602de60f60b3dd6ade2428f95c9736da44",
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
@@ -413,7 +413,7 @@
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
     "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
     "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
-    "Docs/References/MORI_MOTONARI_RESEARCH.md": "43d0ab6b4157d3ede3eb5b2887ba307ddc91fa12cd40372cce6bb96e6725c3a5",
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "dac7901be3d390fc2175e30c86f8fb549bd7f27de470ec3264de9aab83e479e7",
     "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md": "63ed23ac2aeb25f1ef61480f5a92321ca801b52221bbc3c97265690fbd513201",
     "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938",
     "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md": "9dae6aca4c6e7a686313c67dbf05bcdff8ae77537c676eafc03ef5cbcd7d65af",
@@ -422,9 +422,10 @@
     "Docs/Proposals/MORI_MOTONARI_ALLEGIANCE_CHANGES.md": "b746a9577ec476c3056c8783d0a4a529c122a486dc0b8ec95b613178bf75decb",
     "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md": "8ec3841387d46230f1693f33cfb5369bfe2d6a2a1639828308693a870cff1afa",
     "Docs/Proposals/MORI_MOTONARI_DOMAIN_TRANSFERS.md": "5a92fce82fe53319d6693a90fd14f98583e438c777a353cefedc9bd21e8dc171",
-    "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md": "8d7bfd016d33f4bd0350eca1c531c11783af336e4bed21b0bfcc9e1cc65dec24",
+    "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md": "80e25bd47f7bf1eee399355786796408e4fc8845503b43b86c6f338d7a7feeb1",
     "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md": "c2e439e1a302efdf7e5afc812c98429d341bfa6898dbc63a6072ea7bc2a31573",
-    "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md": "1a57f63d1231c90f93f8e3e2050dbf5c195849ce635b911381d39bce832d7ad4"
+    "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md": "1a57f63d1231c90f93f8e3e2050dbf5c195849ce635b911381d39bce832d7ad4",
+    "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md": "79c645ec6e1a2fae7abebd46a967dc4f37301cbb402da8d8d0033c847780aa0e"
   },
   "items": [
     {
@@ -2210,7 +2211,7 @@
       "id": "BD-45",
       "status": "foundation",
       "existing": "明示した方針だけで本拠集合軍の保管を継続した生前交代を許し、交代と軍務再合意を分離する。後の就任で過去の仕官/辞去資格を変えず、当時の役職履歴から再検証する。",
-      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。 統合案で追加：§12 家督の3段・後見。 2026-11-05 A案採用：明示承継条件のない有効な統治上の家法は家の規則として継続し、新当主の権限・本人認識・服従を別に扱う（実装未完了）。 2026-11-05 既存仕様の具体化：家督と実支配、隠居条件の履行、旧当主と新当主の指示競合、元服による後見権限終了と実返還を接続する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。常設職の個別再確認・安全維持委任・家法の継続を混同しない。実装・シナリオ検査は未実施。",
+      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。 統合案で追加：§12 家督の3段・後見。 2026-11-05 A案採用：明示承継条件のない有効な統治上の家法は家の規則として継続し、新当主の権限・本人認識・服従を別に扱う（実装未完了）。 2026-11-05 既存仕様の具体化：家督と実支配、隠居条件の履行、旧当主と新当主の指示競合、元服による後見権限終了と実返還を接続する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。常設職の個別再確認・安全維持委任・家法の継続を混同しない。実装・シナリオ検査は未実施。 2026-11-05 A案採用：吸収・解散後も既存の継承・係争規則に従って同じ家として再興できる。継承根拠、代表権、各人の認識・支持を分け、一律の承認者や支持人数の条件を新設しない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
         "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
@@ -2266,7 +2267,8 @@
         "Core/Contracts/ContractModels.cs",
         "Tests/NewGameSetupTests.cs",
         "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md",
-        "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md"
+        "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2275,13 +2277,14 @@
       "id": "BD-46",
       "status": "foundation",
       "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。",
-      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。 既存仕様の具体化：国人の接近・支持・新条約・旧関係の解除通知と効力・実離脱・最初の履行を接続する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。家の従属先変更と個人仕官・家の吸収を分け、旧主の一律許可制や全員・全資源の自動移転を追加しない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：家の記録と原本が存続する開始条件で、再興の志・支持・後援・実集合・補給・部分回復または撤退を接続する（MORI_MOTONARI_HOUSE_RESTORATION.md）。旧所属だけで臣下や所領を復活させず、家IDや消滅債務の復活規則を新設しない。実装・シナリオ検査は未実施。",
+      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。 既存仕様の具体化：国人の接近・支持・新条約・旧関係の解除通知と効力・実離脱・最初の履行を接続する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。家の従属先変更と個人仕官・家の吸収を分け、旧主の一律許可制や全員・全資源の自動移転を追加しない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：家の記録と原本が存続する開始条件で、再興の志・支持・後援・実集合・補給・部分回復または撤退を接続する（MORI_MOTONARI_HOUSE_RESTORATION.md）。旧所属だけで臣下や所領を復活させず、家IDや消滅債務の復活規則を新設しない。実装・シナリオ検査は未実施。 2026-11-05 A案採用：存続中の家を扱う従来例に、吸収・解散後の同じ家としての再興を追加する。旧臣・旧領・部隊の帰属や実支配を自動復帰させず、本人の選択と実際の行動を必要とする（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameService.cs",
         "Tests/NewGameSetupTests.cs",
         "Docs/Proposals/MORI_MOTONARI_ALLEGIANCE_CHANGES.md",
-        "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md"
+        "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md",
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2319,7 +2322,7 @@
       "id": "BD-48",
       "status": "foundation",
       "existing": "活動軍を返して借り直さず、同じ案件・兵・軍用倉・携行米を保持して指揮原本を別途再合意する。旧書状/署名は保持し、複数拠点の返納済み台帳も元の家・元の数量から再開する。",
-      "remaining": "遠隔展開軍/NPC軍、一般条約/人質/保証・死亡時の財産と一般相続。 2026-11-05 既存仕様の具体化：存命隠居時の私財・個人債務、家の義務、扶持の実給付、拠点と第三者所有を区別する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。養子・家督交代だけで全財産と契約を一括移転せず、適法に完了した履行や消費を巻き戻さない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：客将本人・元の家・受入側の所有、貸与物、未払いと返還義務を保ち、帰還や指揮の終了で契約・債務を自動消去しない（MORI_MOTONARI_GUEST_SERVICE.md）。実装・シナリオ検査は未実施。",
+      "remaining": "遠隔展開軍/NPC軍、一般条約/人質/保証・死亡時の財産と一般相続。 2026-11-05 既存仕様の具体化：存命隠居時の私財・個人債務、家の義務、扶持の実給付、拠点と第三者所有を区別する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。養子・家督交代だけで全財産と契約を一括移転せず、適法に完了した履行や消費を巻き戻さない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：客将本人・元の家・受入側の所有、貸与物、未払いと返還義務を保ち、帰還や指揮の終了で契約・債務を自動消去しない（MORI_MOTONARI_GUEST_SERVICE.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興時に有効に残る家の権利と未払い・約束を原本ごとに照合し、継続・承継同意待ち・係争を扱う。有効な移転・引受け・清算を巻き戻さず、個人債務を家へ一括変更せず、履行済みの請求を二重計上しない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
         "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
@@ -2385,7 +2388,8 @@
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameSetup.cs",
         "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
-        "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md"
+        "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md",
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2629,7 +2633,7 @@
       "id": "BD-58",
       "status": "normal",
       "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。",
-      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。 2026-11-05 既存仕様の具体化：再興を志すNPCが、自分の知る情勢・支援・残量から待機、進出、目標縮小、撤退を判断し直す（MORI_MOTONARI_HOUSE_RESTORATION.md）。史実の志だけで挙兵を強制せず、世界の真実・未到着の兵糧を先取りしない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が受け取った補給・救援・遮断の情報と自分の任務をもとに継戦・照会・待機・撤退を判断し、未着の報告や支援を先取りしない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。",
+      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。 2026-11-05 既存仕様の具体化：再興を志すNPCが、自分の知る情勢・支援・残量から待機、進出、目標縮小、撤退を判断し直す（MORI_MOTONARI_HOUSE_RESTORATION.md）。史実の志だけで挙兵を強制せず、世界の真実・未到着の兵糧を先取りしない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が受け取った補給・救援・遮断の情報と自分の任務をもとに継戦・照会・待機・撤退を判断し、未着の報告や支援を先取りしない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興後に届く継承根拠・旧来の請求・履行報告と実在する資源を踏まえ、照会・交渉・支払・支援計画を本人が判断し直す。未知の原本や未着の支援を先取りせず、自動蜂起・自動精算を行わない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
@@ -2688,7 +2692,8 @@
         "Core/Contracts/WorldSession.NpcRoutine.cs",
         "Docs/Design/NpcPerformanceV1/verification.json",
         "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md",
-        "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md"
+        "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md",
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
