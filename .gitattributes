@@ -2233,3 +2233,8 @@ Docs/Design/HouseholdCourtV1/*.md -text
 Docs/Development/ProgressV1/approval-baseline-v60.json -text
 
 Docs/Development/WorkBatchSocialV1/*.md -text
+
+Docs/Development/ProgressV1/approval-baseline-v61.json -text
+Docs/Design/BrokerWorkV1/* -text
+Core/Contracts/BrokerWork.cs -text
+Tests/BrokerWorkTests.cs -text
