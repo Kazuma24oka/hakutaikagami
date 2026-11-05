@@ -1,7 +1,12 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "standing_authorization": "コードと資料のmain統合を包括委任。2026-11-05の再開指示により、0bを統合して次工程へ進める。",
   "base_main": "9778e6d0d58f39f2367ca748563033c6ab090dc5",
   "scope": "コードと資料のみ。仮モデル・素材・描画画像は含めない。",
-  "pull_request": null
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/59",
+  "integrated_head": "3fa676965b39d5e3449a49382d5a9a9f56a5d7bd",
+  "integrated_main": "068a82a099f3824d29182815ad913e42cc3f63c3",
+  "integrated_tree": "f80433668b850c31446445aafda1a9dbe36c512a",
+  "verification": "関連40件・実保存復旧6段階・旧保存270件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "ユーザーの希望により一時停止。再開後は0c。"
 }
