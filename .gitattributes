@@ -2209,3 +2209,14 @@ Scripts/verify_merit_rewards.py -text
 Docs/Design/MeritRewardsV1/*.json -text
 Docs/Design/MeritRewardsV1/*.md -text
 Docs/Development/ProgressV1/approval-baseline-v58.json -text
+
+Core/Contracts/InformationSchemes.cs -text
+Core/Contracts/WorldSession.SchemeCouriers.cs -text
+Tests/InformationSchemeTests.cs -text
+Game/Scripts/NewGameRuntime.InformationSchemes.cs -text
+Game/Scripts/InformationSchemesCheck.cs -text
+Game/Scenes/InformationSchemesCheck.tscn -text
+Scripts/verify_information_schemes.py -text
+Docs/Design/InformationSchemesV1/*.json -text
+Docs/Design/InformationSchemesV1/*.md -text
+Docs/Development/ProgressV1/approval-baseline-v59.json -text
