@@ -1,0 +1,62 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "前提が成立した事件だけが本人に既知かつ実行可能な候補へ重みを加え、本人の選択・権限を上書きしない。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Tests/HistoricalEventRulesTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Docs/Design/HistoricalChronicleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "史実尊重・準史実・仮想で重みが変わり、前提不成立は不発、1650年後の明示継続では史実加重を外す。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Tests/HistoricalEventRulesTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Docs/Design/HistoricalChronicleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "本人の認識済みの記録だけを出典・発生日と認識日時付きで年代記と家別表示に出す。未開封・未受領・他人の秘密を漏らさない。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Tests/HistoricalEventRulesTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Docs/Design/HistoricalChronicleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常のゲーム画面から年代記を開いて記録を振り返る一巡を内部操作と自前描画で確認する。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Tests/HistoricalEventRulesTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Docs/Design/HistoricalChronicleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "関連する重大不具合、代表保存復旧と同じ未来、影響する旧保存形式の互換をP13に従って確認する。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Tests/HistoricalEventRulesTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Docs/Design/HistoricalChronicleV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "史実事件の個別データ30〜50件と各行動への候補登録は、関係する合戦・調略等の工程で追加する。今回の前提ゲートはそのための共通APIであり、未登録の史実事件を自動実行しない。家別表示は本人の認識済み証拠がその家を対象とする記録のみ。未採録の家の年表を生成しない。全件・全国長期性能・ユーザー試し遊びは未実施。",
+  "full_core_suite": "未実施（P13）"
+}

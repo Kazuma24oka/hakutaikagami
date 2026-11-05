@@ -12,6 +12,7 @@ public partial class NewGameRuntime
     void BuildWorldTime(HFlowContainer bar)
     {
         if(!WorldTimeControl.Enabled(Snapshot()))return;
+        Add(bar,"chronicle","年代記",ShowPersonalChronicle);
         Add(bar,"time-next","次の知らせまで",()=>RequestManualAdvance(checked(Session.Seconds+NextNoticeChunkSeconds),true));
         Add(bar,"time-settings","時間の設定",ShowTimeSettings);
         Add(bar,"history-summary","1650年の総括",ShowHistorySummary);
@@ -47,5 +48,19 @@ public partial class NewGameRuntime
         historySummary.OkButtonText="閉じる（停止を維持）";
         if(w.TimeControl.ContinuedAt==null){var b=historySummary.AddButton("仮想の世界として継続",true,"continue");historySummary.CustomAction+=a=>{if(a!="continue")return;CancelAdvancePrefetch();Submit(Session.ContinueAfterHistory(Session.Revision));historySummary.Hide();Refresh();};}
         historySummary.PopupCentered(new(580,300));
+    }
+    void ShowPersonalChronicle()
+    {
+        RequestClockPause(true);
+        var dialog=new AcceptDialog{Title="年代記：本人が知った経緯"};AddChild(dialog);
+        var scroll=new ScrollContainer{CustomMinimumSize=new(660,420)};dialog.AddChild(scroll);
+        var box=new VBoxContainer();scroll.AddChild(box);
+        var rows=Session.PersonalChronicle(Session.PlayerControl);
+        var house=new OptionButton();house.AddItem("すべての既知記録");var houses=rows.Where(r=>r.House!=null).Select(r=>r.House!).Distinct().ToArray();foreach(var id in houses)house.AddItem(Snapshot().Definitions.Organizations.Single(o=>o.Id.Value==id).Name);box.AddChild(house);
+        var entries=new VBoxContainer();box.AddChild(entries);
+        string Readable(PersonalChronicleRow r)=>r.Text.StartsWith("initial-self-role:")?"開始時の本人の立場を確認":r.Text.StartsWith("task:")?"届いた依頼の内容を確認":r.Text.StartsWith("route-open:")?"道の通行情報を確認":r.Text.StartsWith("返報を認識:")?"任務の返報を読み、結果を確認":r.Kind=="認識した記録"?"現地の事情を確認（詳細は受信記録を参照）":r.Text;
+        void Draw(){foreach(var child in entries.GetChildren())child.QueueFree();var selected=house.Selected==0?rows:rows.Where(r=>r.House==houses[house.Selected-1]).ToArray();if(selected.Length==0)entries.AddChild(new Label{Text="まだ振り返る記録はありません。"});foreach(var row in selected)entries.AddChild(new Label{Text=$"{WorldCalendar.Display(Snapshot().EpochDate,row.LearnedAt)} 認識\n{row.Kind}：{Readable(row)}\n発生時点：{(row.OccurredAt is {} at?WorldCalendar.Display(Snapshot().EpochDate,at):"記録からは不明")}\n出典：{(row.Source.StartsWith("書状:")||row.Source.StartsWith("message:")?"本人が認識した書状":"本人の記録・目撃")}",AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(620,0)});}
+        house.ItemSelected+=_=>Draw();Draw();
+        dialog.CloseRequested+=()=>dialog.QueueFree();dialog.Confirmed+=()=>dialog.QueueFree();dialog.PopupCentered(new(700,490));
     }
 }

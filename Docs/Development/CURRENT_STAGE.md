@@ -2,10 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：0c 史実の事件と年代記（着手）
-- 固定基準v54、完成条件はHistoricalChronicleV1/scope.md。仕組みと通常画面の年代記を一工程で接続する。
-- 0bはPR59で統合済み。P13に従って必要な重大不具合検査に絞る。
-- 0cの実装・検証・進捗加点はまだ未完了。個別の史実事件は関係する機能と一緒に追加する。
+## 今の工程：0c完了・次は0系の画面の土台
+- 事件の前提ゲート、本人の既知記録だけの年代記、関連検査と実保存復旧を確認。
+- 個別事件の登録は合戦・調略等の対応工程で追加する。未登録事件を起こしたとは扱わない。
+- 詳細と未実施はHistoricalChronicleV1/README.md、統合先はintegration.json。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
 1. 0a 時間の仕組み：日の速度・次の出来事まで・自動の停止と減速・出来事ごとにまとめて進める計算（統合案 第19節 T1〜T6）
@@ -24,6 +24,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-05 | 0c 事件の前提と年代記 | Docs/Design/HistoricalChronicleV1/ | integration.json参照 |
 | 2026-11-05 | 0b NPCの判断の土台 | Docs/Design/NpcJudgmentV1/ | 068a82a（PR59） |
 | 2026-11-05 | 0a 時間の仕組み（T1〜T6） | Docs/Design/WorldTimeV1/ | 9778e6d（PR58） |
 | 2026-11-05 | NPCの既知の用件と空き時間の修行 | Docs/Design/NpcPurposeV1/ | 411b0b2（PR57） |
