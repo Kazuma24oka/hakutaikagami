@@ -10,7 +10,7 @@ public static partial class WorldClashes
     static void Need(bool b,string why){if(!b)throw new InvalidDataException(why);}
     public static RegionalLoss[] Losses(ContractWorld w,long at)=>w.WorldClashes?.Steps.Where(s=>s.At<=at).SelectMany(s=>s.Result.Losses).ToArray()??[];
     public static bool AttacksNow(ContractWorld w,EntityId unit)=>Enabled(w)&&w.WorldClashes?.Steps.LastOrDefault() is {} step&&step.At==w.ElapsedSeconds&&step.Result.Strikes.Any(h=>h.Attacker==unit);
-    public static int SoldiersLost(ContractWorld w,EntityId unit,long at)=>Losses(w,at).Where(l=>l.Unit==unit).Sum(l=>l.Soldiers);
+    public static int SoldiersLost(ContractWorld w,EntityId unit,long at)=>Losses(w,at).Where(l=>l.Unit==unit).Sum(l=>l.Soldiers)-BattlefieldRules.Recovered(w,unit,at);
     public static int MoraleLost(ContractWorld w,EntityId unit,long at)=>Losses(w,at).Where(l=>l.Unit==unit).Sum(l=>l.Morale);
     internal static void Tick(ContractWorld w,long from)
     {
