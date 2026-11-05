@@ -2189,3 +2189,13 @@ Game/Scenes/SocialWorldCheck.tscn -text
 Scripts/verify_social_world.py -text
 Docs/Design/SocialWorldV1/** -text
 Docs/Development/ProgressV1/approval-baseline-v56.json -text
+
+Core/Contracts/SocialAssets.cs -text
+Tests/SocialAssetTests.cs -text
+Game/Scripts/NewGameRuntime.SocialAssets.cs -text
+Game/Scripts/SocialAssetsCheck.cs -text
+Game/Scenes/SocialAssetsCheck.tscn -text
+Scripts/verify_social_assets.py -text
+Docs/Design/SocialAssetsV1/*.json -text
+Docs/Design/SocialAssetsV1/*.md -text
+Docs/Development/ProgressV1/approval-baseline-v57.json -text

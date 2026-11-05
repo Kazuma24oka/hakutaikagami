@@ -249,6 +249,7 @@ public sealed class ContractWorld
     public required ConflictDecision[] ConflictDecisions { get; set; }
     public required EntityId PlayerControl { get; set; }
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialWorldState? SocialWorld {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialAssetState? SocialAssets {get;set;}
     public required ChronicleEntry[] Chronicle { get; set; }
     public required RequestReceipt[] Requests { get; set; }
 }

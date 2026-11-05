@@ -1,0 +1,72 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "私有米・木材・武具と一点物を現物の所在・所有・履歴を保って贈答し、二重使用を拒否する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialAssets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/SocialWorld.cs",
+        "Game/Scripts/NewGameRuntime.SocialAssets.cs",
+        "Game/Scripts/SocialAssetsCheck.cs",
+        "Tests/SocialAssetTests.cs",
+        "Docs/Design/SocialAssetsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "紹介状は紹介者が実際に知る相手に限り、本人が実物を届けて使う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialAssets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/SocialWorld.cs",
+        "Game/Scripts/NewGameRuntime.SocialAssets.cs",
+        "Game/Scripts/SocialAssetsCheck.cs",
+        "Tests/SocialAssetTests.cs",
+        "Docs/Design/SocialAssetsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "茶会は招待状の受領・本人の承諾と実際の参集を分け、同席者の関係と既知文名へ反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialAssets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/SocialWorld.cs",
+        "Game/Scripts/NewGameRuntime.SocialAssets.cs",
+        "Game/Scripts/SocialAssetsCheck.cs",
+        "Tests/SocialAssetTests.cs",
+        "Docs/Design/SocialAssetsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面で購入・物の贈答・紹介・茶会を操作できる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialAssets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/SocialWorld.cs",
+        "Game/Scripts/NewGameRuntime.SocialAssets.cs",
+        "Game/Scripts/SocialAssetsCheck.cs",
+        "Tests/SocialAssetTests.cs",
+        "Docs/Design/SocialAssetsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "関連重大不具合・代表保存復旧・影響旧形式の互換を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialAssets.cs",
+        "Core/Contracts/RegionalTrade.cs",
+        "Core/Contracts/SocialWorld.cs",
+        "Game/Scripts/NewGameRuntime.SocialAssets.cs",
+        "Game/Scripts/SocialAssetsCheck.cs",
+        "Tests/SocialAssetTests.cs",
+        "Docs/Design/SocialAssetsV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "名物は架空の試作一点物。茶会は地元での実参集を対象とし、遠方のNPC客は欠席を選ぶ。贈った物の転売・史実名物・名馬・宗教紛争・軍事協力・全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業は継続中。",
+  "full_core_suite": "未実施（P13）"
+}

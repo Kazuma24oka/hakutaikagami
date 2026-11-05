@@ -7,7 +7,7 @@ public partial class NewGameRuntime
     AcceptDialog? verbDialog;
     readonly Dictionary<string,List<Control>> verbControls=new();
     internal bool ReviewNotebookHasGoals=>verbControls.GetValueOrDefault("notebook")?.Contains(buttons["personal-life"])==true;
-    string VerbFor(string id)=>id is "renown-world" or "chronicle" or "play-guide" or "personal-life" or "salary" or "history"||id.Contains("goal")?"notebook":id.Contains("delegate")||id.Contains("steward")||id.Contains("convoy")||id.Contains("freight")?"entrust":id.Contains("mail")||id.Contains("treaty")||id.Contains("truce")||id.Contains("inquir")?"write":id is "social-world" or "temple-world"||id.Contains("talk")||id.Contains("private")||id.Contains("marriage")||id.Contains("adoption")||id.Contains("companion")||id.Contains("village")||id.Contains("career")?"meet":"list";
+    string VerbFor(string id)=>id is "renown-world" or "chronicle" or "play-guide" or "personal-life" or "salary" or "history"||id.Contains("goal")?"notebook":id.Contains("delegate")||id.Contains("steward")||id.Contains("convoy")||id.Contains("freight")?"entrust":id.Contains("mail")||id.Contains("treaty")||id.Contains("truce")||id.Contains("inquir")?"write":id is "social-assets" or "social-world" or "temple-world"||id.Contains("talk")||id.Contains("private")||id.Contains("marriage")||id.Contains("adoption")||id.Contains("companion")||id.Contains("village")||id.Contains("career")?"meet":"list";
     void BuildVerbNotebook(VBoxContainer root,HFlowContainer toolbar)
     {
         var keep=new[]{"menu","ten","auto","pause","rotate","near","nation","save","load","time-next","time-settings","history-summary"}.ToHashSet();
