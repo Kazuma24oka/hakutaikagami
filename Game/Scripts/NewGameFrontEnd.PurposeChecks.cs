@@ -8,7 +8,7 @@ public partial class NewGameFrontEnd
     // 通常入口の配置確認をそのまま実行する。ユーザーのデータやOSには触れない。
     internal void VerifyPurposePreview()
     {
-        if(TestKey!=null||NpcPolicyForEntry!=NewGameNpcRoutine.PurposePolicy)throw new InvalidOperationException("通常入口の方針ではありません");
+        if(TestKey!=null||NpcPolicyForEntry!=NpcJudgment.Policy)throw new InvalidOperationException("通常入口の方針ではありません");
         var next=new Button();var text=new Label();buttons["next"]=next;previewText=text;
         try{
             UpdatePreview();
@@ -17,7 +17,7 @@ public partial class NewGameFrontEnd
             campaigns=new NewCampaignStore(Path.Combine(Path.GetTempPath(),"npc-purpose-entry-"+Guid.NewGuid().ToString("N")));
             var first=confirmed.People.First(p=>NewGameWorld.CanPlay(confirmed,p));
             var profile=CreateSelectedCampaign(first.Id);var world=NewCampaignStore.Build(profile);
-            if(world.NewGame?.NpcRoutinePolicy!=NewGameNpcRoutine.PurposePolicy||!CharacterDevelopment.Enabled(world))throw new InvalidOperationException("開始データの方針が一致しません");
+            if(world.NewGame?.NpcRoutinePolicy!=NpcJudgment.Policy||!CharacterDevelopment.Enabled(world))throw new InvalidOperationException("開始データの方針が一致しません");
             var session=new WorldSession(world);session.SetPaused(false);session.AdvanceTo(20);
             if(session.DiagnosticSnapshot().NpcWork!.Decisions.Length==0)throw new InvalidOperationException("通常開始でNPCが判断していません");
             GD.Print("NPC_PURPOSE_ENTRY_PREVIEW_PASS");

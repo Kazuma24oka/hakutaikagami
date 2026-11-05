@@ -2,10 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：0b NPCの判断の土台（次に着手）
-- 0aは工程末尾の全件・保存・内部操作・描画検査を完了。統合先はWorldTimeV1/integration.json。
-- 次はW1〜W8のうち判断基盤を一工程とし、評定・開戦・遠方合戦の拡張は統合案の指定工程へ接続する。
-- 第1版（0系）が揃うまで個別機能の試し遊びは依頼しない。
+## 今の工程：0b完了・次は0c
+- 0bの関連40件・保存・旧保存・通常入口の内部操作と自前描画を確認。統合先はNpcJudgmentV1/integration.json。
+- 2026-11-05の再開指示を反映。0b統合後は0cへ進める。
+- 再開後は0c。0cの実装は未着手。第1版が揃うまで個別機能の試し遊びを依頼しない。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
 1. 0a 時間の仕組み：日の速度・次の出来事まで・自動の停止と減速・出来事ごとにまとめて進める計算（統合案 第19節 T1〜T6）
@@ -24,7 +24,8 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-05 | 0a 時間の仕組み（T1〜T6） | Docs/Design/WorldTimeV1/ | integration.json参照 |
+| 2026-11-05 | 0b NPCの判断の土台 | Docs/Design/NpcJudgmentV1/ | integration.json参照 |
+| 2026-11-05 | 0a 時間の仕組み（T1〜T6） | Docs/Design/WorldTimeV1/ | 9778e6d（PR58） |
 | 2026-11-05 | NPCの既知の用件と空き時間の修行 | Docs/Design/NpcPurposeV1/ | 411b0b2（PR57） |
 | 2026-10-31 | 他の参考作品からの範囲の追加（5回目の再評価、47.4%→46.4%、加点なし） | Docs/Design/ProgressScopeV5/ | 8b3171e（PR56） |
 | 2026-10-31 | 横断的な範囲の追加（4回目の再評価、48.4%→47.4%、加点なし） | Docs/Design/ProgressScopeV4/ | e9f580f（PR55） |

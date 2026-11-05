@@ -2146,3 +2146,21 @@ Docs/Design/NpcPurposeV1/** -text
 Game/Scripts/NewGameFrontEnd.PurposeChecks.cs -text
 Game/Scripts/NpcPurposeEntryCheck.cs -text
 Game/Scenes/NpcPurposeEntryCheck.tscn -text
+
+# 0b NPC判断と工程の証跡に結び付く正確な入力バイト。
+Core/Contracts/NpcChoiceRanking.cs -text
+Core/Contracts/NpcJudgment.cs -text
+Core/Contracts/NpcLocalOffers.cs -text
+Core/Contracts/NpcAspirationProfiles.cs -text
+Tests/NpcChoiceRankingTests.cs -text
+Tests/NpcJudgmentTests.cs -text
+Tests/NpcLocalOfferTests.cs -text
+Tests/NpcJudgmentAcceptanceTests.cs -text
+Game/Scripts/NewGameFrontEnd.Judgment.cs -text
+Game/Scripts/NpcJudgmentCheck.cs -text
+Game/Scenes/NpcJudgmentCheck.tscn -text
+Scripts/verify_npc_judgment.py -text
+Docs/Design/NpcJudgmentV1/** -text
+Docs/Development/ProgressV1/approval-baseline-v53.json -text
+
+Game/Scripts/WorldTimeCheck.cs -text

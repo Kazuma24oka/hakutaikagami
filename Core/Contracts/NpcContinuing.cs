@@ -1,6 +1,6 @@
 namespace HakutaiKagami.Core.Contracts;
 
-public sealed record NpcRoutineSituation(string Policy,LocalInspectionNeed? Need){[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public NpcPurposeInputs? Purpose{get;init;}}
+public sealed record NpcRoutineSituation(string Policy,LocalInspectionNeed? Need){[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public NpcPurposeInputs? Purpose{get;init;}[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]public NpcJudgmentInputs? Judgment{get;init;}}
 
 public static partial class NewGameNpcRoutine
 {
@@ -8,8 +8,8 @@ public static partial class NewGameNpcRoutine
     public const int ContinuingMaximumActors=3000;
     public const long ContinuingInterval=86400;
     public static bool Continuing(ContractWorld w)=>NewGameWorld.Enabled(w)&&ContinuingRules(w.NewGame?.NpcRoutinePolicy);
-    public static bool ContinuingRules(string? policy)=>policy is ContinuingPolicy or PurposePolicy;
-    public static bool Supported(string? policy)=>policy is Policy or ContinuingPolicy or PurposePolicy;
+    public static bool ContinuingRules(string? policy)=>policy is ContinuingPolicy or PurposePolicy or NpcJudgment.Policy;
+    public static bool Supported(string? policy)=>policy is Policy or ContinuingPolicy or PurposePolicy or NpcJudgment.Policy;
 
     // The planner receives only the actor's observed need, received result and
     // currently available personal action. Scheduled road truth is not an input.

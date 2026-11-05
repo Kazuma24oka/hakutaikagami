@@ -1,0 +1,7 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "コードと資料のmain統合を包括委任。2026-11-05の再開指示により、0bを統合して次工程へ進める。",
+  "base_main": "9778e6d0d58f39f2367ca748563033c6ab090dc5",
+  "scope": "コードと資料のみ。仮モデル・素材・描画画像は含めない。",
+  "pull_request": null
+}

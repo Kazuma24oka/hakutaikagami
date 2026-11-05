@@ -1,7 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "standing_authorization": "コードと資料のmain統合を包括委任。PROCESS_V2に従い工程単位で統合。",
   "base_main": "411b0b2a406cd05ae011c289472c8083fd908e65",
   "scope": "コードと資料のみ。仮モデル・素材・描画画像は含めない。",
-  "pull_request": null
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/58",
+  "integrated_head": "7a23caeea71300c5772ce8c9015679ceb1fb50db",
+  "integrated_main": "9778e6d0d58f39f2367ca748563033c6ab090dc5",
+  "integrated_tree": "fbd9128767286db59e5d057bffcf49ad49c41934",
+  "verification": "全件4053・実保存復旧9段階・旧保存261件・Godot配置3組・通常入口の内部操作と自前描画が成功。統合前後のGitツリー一致を確認。"
 }

@@ -27,7 +27,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="world-time-own-notices-calendar-internal-ui":
+ if logic["scope"]=="npc-judgment-cadence-personality-local-offer-internal-ui":
+  from verify_npc_judgment import check as check_logic
+ elif logic["scope"]=="world-time-own-notices-calendar-internal-ui":
   from verify_world_time import check as check_logic
  elif logic["scope"]=="headless-npc-duty-priority-idle-practice":
   from verify_npc_purpose import check as check_logic
