@@ -1,5 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "0096bb0c0c560b4143f3730acf608e657396cf19",
-  "scope": "コード・資料のみ。モデル・実行画像はローカル。"
+  "scope": "コード・資料のみ。モデル・実行画像はローカル。",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/70",
+  "integrated_head": "79cafae02646d198d5d4ccbddfb5b8e5e1c505d7",
+  "integrated_main": "f7efc985cba284e68a2b0b671925300cf34a6c53",
+  "integrated_tree": "e1d404a5b181a2087d3b9fe06ccb17aaf5a61363",
+  "verification": "関連18件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "約10ポイントのまとめ作業は継続中。次は3d指出・検地と年貢の方針。"
 }

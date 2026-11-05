@@ -37,7 +37,7 @@ public static class VillageConsultation
     }
     static int Trust(ContractWorld w,IEnumerable<VillagePromise> promises,EntityId site,long at)
     {
-        int n=70;foreach(var p in promises.Where(p=>p.Site==site)){
+        int n=70-LandSurvey.Pressure(w,site,at);foreach(var p in promises.Where(p=>p.Site==site)){
             bool done=p.Kind==VillageAction.ProposeWater?p.StartedAt!=null:p.Delivered==p.Amount;
             if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
         }return Math.Clamp(n,0,100);
@@ -112,7 +112,7 @@ public static class VillageConsultation
         if(site==null||!CommunityEconomy.SitesFor(w).Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
         var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds);
         var cards=s.Promises.Where(p=>p.Site==site).Select(p=>new VillageCard(p.Id,p.Kind==VillageAction.ProposeWater?"水利工事":"救済",p.Amount,p.Delivered,p.DeliverBy,Status(w,p,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
-        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
+        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),LandSurvey.Pressure(w,site.Value,w.ElapsedSeconds)>0?"重い年貢の布告が続き、労働協力を慎重に判断しています。":trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
     }
 }
 public sealed partial class WorldSession
