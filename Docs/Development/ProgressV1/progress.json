@@ -413,7 +413,7 @@
     "Docs/Design/ProgressScopeV5/completion.json": "76453799279f3e7ffb8c7d007a1d6935d1e8b8bf6e474b5cf68e90698dd9642e",
     "Docs/Design/ProgressScopeV5/verification.json": "39bb5867e0a4d73605007dacd8c3ec5a74f0c50ed6521e5bf0eea95991fd6779",
     "Docs/Decisions/2026-11-05_REFORM_ROLLOUT_UNITS.md": "43becb850095de4befb9a0725f08bab6340ef852f87c19bfda721ba8e9a0e46b",
-    "Docs/References/MORI_MOTONARI_RESEARCH.md": "dac7901be3d390fc2175e30c86f8fb549bd7f27de470ec3264de9aab83e479e7",
+    "Docs/References/MORI_MOTONARI_RESEARCH.md": "e8e422dd38fb11e285a0941bfef17848c3f9bc48c157c28c567984cea76874c1",
     "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md": "63ed23ac2aeb25f1ef61480f5a92321ca801b52221bbc3c97265690fbd513201",
     "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md": "5ee68b71ee5b413592ff03aa7dea52ce16ec819b5835c004b12b8ec9a4a20938",
     "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md": "9dae6aca4c6e7a686313c67dbf05bcdff8ae77537c676eafc03ef5cbcd7d65af",
@@ -425,7 +425,9 @@
     "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md": "80e25bd47f7bf1eee399355786796408e4fc8845503b43b86c6f338d7a7feeb1",
     "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md": "c2e439e1a302efdf7e5afc812c98429d341bfa6898dbc63a6072ea7bc2a31573",
     "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md": "1a57f63d1231c90f93f8e3e2050dbf5c195849ce635b911381d39bce832d7ad4",
-    "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md": "79c645ec6e1a2fae7abebd46a967dc4f37301cbb402da8d8d0033c847780aa0e"
+    "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md": "79c645ec6e1a2fae7abebd46a967dc4f37301cbb402da8d8d0033c847780aa0e",
+    "Docs/Proposals/MORI_MOTONARI_CAPTIVE_EXCHANGE.md": "93a185db1c5cddc84c8b29e6e7a835500e0381fb11898671ce9964ed78881ebf",
+    "Docs/Proposals/MORI_MOTONARI_SURRENDER_HANDOVER.md": "a313695b0518eed20040bdf65421ca1a1cedd900f50722a2161c33ed42cf4756"
   },
   "items": [
     {
@@ -2177,7 +2179,7 @@
       "id": "BD-44",
       "status": "design_only",
       "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 保証原本に基づく同じ本人の実護送・停止/再開・到着先の明示受領を接続。",
-      "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。 統合案で追加：§21 捕虜の処遇・§15 人質（HANDOFF_D3_D4）・§26 Z5 捕虜交換の交渉と受け渡し。",
+      "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。 統合案で追加：§21 捕虜の処遇・§15 人質（HANDOFF_D3_D4）・§26 Z5 捕虜交換の交渉と受け渡し。 2026-11-05 既存仕様の具体化：捕虜交換の条件交渉・実護送・受渡し・帰還と残件、人質の既存返還義務に基づく履行をつなぐ。人質と捕虜の成立根拠を混ぜず、不要な再合意や自動登用を行わない（MORI_MOTONARI_CAPTIVE_EXCHANGE.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -2202,7 +2204,8 @@
         "Docs/Design/CustodyFoodV1/verification.json",
         "Docs/Design/CustodySuccessionV1/verification.json",
         "Docs/Design/HostageCustodyV1/verification.json",
-        "Docs/Design/basic-design-v1.json"
+        "Docs/Design/basic-design-v1.json",
+        "Docs/Proposals/MORI_MOTONARI_CAPTIVE_EXCHANGE.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2293,7 +2296,7 @@
       "id": "BD-47",
       "status": "design_only",
       "existing": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。",
-      "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。 統合案で追加：§21 開城の判断と条件の交渉・§26 Z2 水路から届く米と開城の判断。 2026-11-05 既存仕様の具体化：補給と救援についての既知情報から継戦・条件交渉・撤退を判断し、開城合意と区画の実引渡し、救援到着との競合を分ける（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。",
+      "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。 統合案で追加：§21 開城の判断と条件の交渉・§26 Z2 水路から届く米と開城の判断。 2026-11-05 既存仕様の具体化：補給と救援についての既知情報から継戦・条件交渉・撤退を判断し、開城合意と区画の実引渡し、救援到着との競合を分ける（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：開城条件、門・本丸の実引渡し、城兵の安全な退去、在庫の受取、残件と統治開始を分ける。救援の有効な介入と一部守兵の拒否では未完了部分を扱い、全住人の捕虜化や完了効果の巻戻しを行わない（MORI_MOTONARI_SURRENDER_HANDOVER.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
         "Core/Contracts/CommunityStewardship.cs",
@@ -2313,7 +2316,8 @@
         "Docs/Design/CastleHandoverV1/verification.json",
         "Docs/Design/basic-design-v1.json",
         "Core/Castles/Castle.cs",
-        "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md"
+        "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md",
+        "Docs/Proposals/MORI_MOTONARI_SURRENDER_HANDOVER.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2633,7 +2637,7 @@
       "id": "BD-58",
       "status": "normal",
       "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。",
-      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。 2026-11-05 既存仕様の具体化：再興を志すNPCが、自分の知る情勢・支援・残量から待機、進出、目標縮小、撤退を判断し直す（MORI_MOTONARI_HOUSE_RESTORATION.md）。史実の志だけで挙兵を強制せず、世界の真実・未到着の兵糧を先取りしない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が受け取った補給・救援・遮断の情報と自分の任務をもとに継戦・照会・待機・撤退を判断し、未着の報告や支援を先取りしない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興後に届く継承根拠・旧来の請求・履行報告と実在する資源を踏まえ、照会・交渉・支払・支援計画を本人が判断し直す。未知の原本や未着の支援を先取りせず、自動蜂起・自動精算を行わない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
+      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。 2026-11-05 既存仕様の具体化：再興を志すNPCが、自分の知る情勢・支援・残量から待機、進出、目標縮小、撤退を判断し直す（MORI_MOTONARI_HOUSE_RESTORATION.md）。史実の志だけで挙兵を強制せず、世界の真実・未到着の兵糧を先取りしない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が受け取った補給・救援・遮断の情報と自分の任務をもとに継戦・照会・待機・撤退を判断し、未着の報告や支援を先取りしない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興後に届く継承根拠・旧来の請求・履行報告と実在する資源を踏まえ、照会・交渉・支払・支援計画を本人が判断し直す。未知の原本や未着の支援を先取りせず、自動蜂起・自動精算を行わない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が知る兵糧・救援・条件・安否と実資源から、開城交渉、退去手配、交換・返還、護送の待機・照会、帰還後の行動を判断する。未着の報告を先取りせず、解放を自動登用・復職・再興参加へ変えない（MORI_MOTONARI_SURRENDER_HANDOVER.md、MORI_MOTONARI_CAPTIVE_EXCHANGE.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
@@ -2693,7 +2697,9 @@
         "Docs/Design/NpcPerformanceV1/verification.json",
         "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md",
         "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md",
-        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md",
+        "Docs/Proposals/MORI_MOTONARI_SURRENDER_HANDOVER.md",
+        "Docs/Proposals/MORI_MOTONARI_CAPTIVE_EXCHANGE.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
