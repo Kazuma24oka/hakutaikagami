@@ -1,0 +1,7 @@
+{
+  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "standing_authorization": "コードと資料のmain統合を包括委任。PROCESS_V2に従い工程単位で統合。",
+  "base_main": "411b0b2a406cd05ae011c289472c8083fd908e65",
+  "scope": "コードと資料のみ。仮モデル・素材・描画画像は含めない。",
+  "pull_request": null
+}
