@@ -2162,3 +2162,5 @@ Game/Scenes/NpcJudgmentCheck.tscn -text
 Scripts/verify_npc_judgment.py -text
 Docs/Design/NpcJudgmentV1/** -text
 Docs/Development/ProgressV1/approval-baseline-v53.json -text
+
+Game/Scripts/WorldTimeCheck.cs -text

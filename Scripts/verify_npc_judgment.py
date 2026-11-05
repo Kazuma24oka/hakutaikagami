@@ -1,6 +1,6 @@
 """0b工程末尾の全件・保存・旧保存・通常入口を一度に照合する。"""
 from pathlib import Path
-import argparse,hashlib,json,os,subprocess,xml.etree.ElementTree as ET
+import argparse,hashlib,json,os,re,subprocess,xml.etree.ElementTree as ET
 R=Path(__file__).resolve().parents[1];D=R/'Docs/Design/NpcJudgmentV1';O=D/'runtime-local'
 G=Path('C:/Workspace/Projects/Games/hakutaikagami/.tools/godot-4.5.2/Godot_v4.5.2-stable_mono_win64/Godot_v4.5.2-stable_mono_win64_console.exe')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -16,11 +16,12 @@ def check(v):
  assert int(c['total'])==int(c['passed'])==4093 and int(c['failed'])==int(c['notExecuted'])==0
  assert v['legacy_count']==270 and v['recovery_phases']==6 and v['game_internal_input']=='PASSED' and v['self_render']=='PASSED'
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--collect-only',action='store_true');ap.add_argument('--check-only',action='store_true');a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--collect-only',action='store_true');ap.add_argument('--check-only',action='store_true');ap.add_argument('--run-id',default='full');a=ap.parse_args()
+ assert re.fullmatch(r'[a-zA-Z0-9_-]+',a.run_id),'実行先は単一のフォルダ名にしてください'
  if a.check_only:check(json.loads((D/'verification.json').read_bytes()));print('0b検証記録の照合成功');return
- O.mkdir(exist_ok=True);full=O/'full';full.mkdir(exist_ok=True)
+ O.mkdir(exist_ok=True);full=O/a.run_id;full.mkdir(exist_ok=True)
  if not a.collect_only:
-  assert not (full/'full.trx').exists(),'既存の全件証跡は上書きしません'
+  assert not any(full.iterdir()),'既存の証跡は上書きしません。新しい --run-id を指定してください'
   run(['dotnet','build','Tests/HakutaiKagami.Tests.csproj','--no-restore','--verbosity','quiet'],O/'build-tests.log')
   run(['dotnet','build','Game/HakutaiKagami.Game.csproj','--no-restore','--verbosity','quiet'],O/'build-game.log')
   put(full/'run-inputs.json',{k:v for k,v in sources().items() if k.startswith(('Core/','Tests/'))})

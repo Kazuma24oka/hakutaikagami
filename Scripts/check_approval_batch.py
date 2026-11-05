@@ -61,6 +61,13 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==53:
+        from verify_npc_judgment import check as verify
+        folder="NpcJudgmentV1"
+        assert b.get('automatic_main') is True and b['minimum_gain']==0
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/NpcJudgment.cs'],cwd=R,capture_output=True).returncode!=0
+        assert abs(float(old)-47.00286796536797)<1e-10
+        assert 'NpcPolicyForEntry=>TestKey==null?NpcJudgment.Policy:NewGameNpcRoutine.Policy' in (R/'Game/Scripts/NewGameFrontEnd.cs').read_text(encoding='utf-8')
     elif version==52:
         from verify_world_time import check as verify
         folder="WorldTimeV1"
