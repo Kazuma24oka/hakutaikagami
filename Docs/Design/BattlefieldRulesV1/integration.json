@@ -1,5 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "2498ca91b8a4b962f57318f091c436001df0a47d",
-  "scope": "コード・資料のみ。モデル・実行画像はローカル。"
+  "scope": "コード・資料のみ。モデル・実行画像はローカル。",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/75",
+  "integrated_head": "cfc8598cf6f961a6a9ff05d51f04a9ed7983c238",
+  "integrated_main": "9214d60ae03750d5666d4465225cb24bc86316de",
+  "integrated_tree": "8ceb35f88fa2d25a3ede9798a40db4c4f79eb69a",
+  "verification": "関連10件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "100%またはユーザー判断まで続行。次は治安と警固・城の普請。"
 }
