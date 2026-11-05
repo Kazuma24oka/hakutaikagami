@@ -24,6 +24,12 @@ def main():
     trx=O/'full/full.trx';c=ET.parse(trx).find('.//{*}Counters').attrib
     assert c['total']==c['passed']=='4017' and c['failed']==c['notExecuted']=='0',c
     before=sources(); proofs={trx.relative_to(R).as_posix():sha(trx)}
+    frozen=json.loads((O/'run-inputs.json').read_bytes())
+    assert {k:v for k,v in frozen.items() if k.startswith(('Core/','Tests/'))}=={k:v for k,v in before.items() if k.startswith(('Core/','Tests/'))}
+    proofs[(O/'run-inputs.json').relative_to(R).as_posix()]=sha(O/'run-inputs.json')
+    run([str(a.godot),'--headless','--path',str(R/'Game'),'res://Scenes/NpcPurposeEntryCheck.tscn'],O/'entry.log')
+    assert 'NPC_PURPOSE_ENTRY_PREVIEW_PASS' in (O/'entry.log').read_text(encoding='utf-8')
+    proofs[(O/'entry.log').relative_to(R).as_posix()]=sha(O/'entry.log')
     projection=O/'projection';projection.mkdir(exist_ok=True)
     for phase in range(7):
         raw=(O/f'full/npc-purpose-{phase}.before.json').read_bytes()

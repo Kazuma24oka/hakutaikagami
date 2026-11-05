@@ -61,6 +61,12 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==51:
+        from verify_npc_purpose import check as verify
+        folder="NpcPurposeV1"
+        assert b.get('automatic_main') is True and b['minimum_gain']==0
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/NpcPurpose.cs'],cwd=R,capture_output=True).returncode!=0
+        assert 'NpcPolicyForEntry=>TestKey==null?NewGameNpcRoutine.PurposePolicy:NewGameNpcRoutine.Policy' in (R/'Game/Scripts/NewGameFrontEnd.cs').read_text(encoding='utf-8')
     elif version==50:
         from verify_progress_scope import check as verify
         folder="ProgressScopeV5"

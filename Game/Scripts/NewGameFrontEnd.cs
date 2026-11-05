@@ -95,7 +95,7 @@ public partial class NewGameFrontEnd : Control
     void UpdatePreview()
     {
         preview=NewGameSetup.Preview(NewGameWorld.Scenario(HistoricalStartCatalog.Current),Request());string[] errors=preview.Errors;
-        if(preview.IsEligible())try{var first=preview.World!.People.First(p=>NewGameWorld.CanPlay(preview.World,p));NewGameWorld.Create(preview.World,chosen,first.Id,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry);}catch(InvalidDataException e){errors=[e.Message];}
+        if(preview.IsEligible())try{var first=preview.World!.People.First(p=>NewGameWorld.CanPlay(preview.World,p));NewGameWorld.Create(preview.World,chosen,first.Id,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,developmentPolicy:NpcPolicyForEntry==NewGameNpcRoutine.PurposePolicy?CharacterDevelopment.Policy:null);}catch(InvalidDataException e){errors=[e.Message];}
         buttons["next"].Disabled=errors.Length>0;previewText.Text=errors.Length>0?"配置の競合・不整合：\n"+string.Join("\n",errors):"配置の競合：なし\n登録武将："+chosen.Length+"人\n新勢力："+claims.Count+"勢力\n"+string.Join("\n",preview.Changes.Select(c=>NewGameWorld.Scenario(HistoricalStartCatalog.Current).People.Single(p=>p.Id==c.Person).Name+" → "+(c.Kind=="relocated"?"残った城へ移転":c.Kind=="incorporated"?"新勢力の家臣":"随行家臣と浪人")));
         if(map!=null){map.SetSetup(preview.World??NewGameWorld.Scenario(HistoricalStartCatalog.Current));}
     }
