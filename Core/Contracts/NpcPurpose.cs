@@ -11,7 +11,7 @@ public static partial class NewGameNpcRoutine
     {
         var basis=ContinuingInputs(w,actor,at,revision);
         var requests=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision).ToArray();
-        var own=requests.Where(r=>r.Intent.Actor==actor&&r.Intent.Executor==actor&&r.Intent.Action is ActionKind.Inspect or ActionKind.Train).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
+        var own=requests.Where(r=>r.Intent.Actor==actor&&(r.Intent.Executor==actor||NpcJudgment.Enabled(w)&&r.Intent.Action==ActionKind.Inspect)&&r.Intent.Action is ActionKind.Inspect or ActionKind.Train).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
         var practices=own.Where(r=>r.Intent.Action==ActionKind.Train).ToArray();
         bool Active(TaskState t)=>t.FinishedAt==null||t.FinishedAt>=at;
         bool Heard(TaskState t)=>w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.MessageId==WorldSession.Child("message",t.Id,"order").Value&&k.LearnedAt<at);
@@ -36,7 +36,7 @@ public static partial class NewGameNpcRoutine
         if(p.KnownDuties.Length>0||p.OtherWork)return "existing-duty-first";
         if(p.ActivePractice!=null)return "continue-personal-practice";
         if(!i.LastReportKnown)return "await-own-report";
-        if(i.Routine.Judgment is {} judgment)return judgment.Due?judgment.Choice switch{"inspect"=>"inspect-own-site",null=>"no-discretionary-work-due",_=>"practice-own-skill"}:"scheduled-review-pending";
+        if(i.Routine.Judgment is {} judgment)return judgment.Due?judgment.Choice switch{"inspect"=>judgment.Recipient is {} recipient&&recipient!=judgment.ChoiceInput.Actor?"offer-local-inspection":"inspect-own-site",null=>"no-discretionary-work-due",_=>"practice-own-skill"}:"scheduled-review-pending";
         if(i.CooldownElapsed&&i.Routine.Need?.Needed==true)return "inspect-own-site";
         // The practice ready flag is fixed by the same input clock, not a UI tick.
         if(p.PracticeDue)return "practice-own-skill";

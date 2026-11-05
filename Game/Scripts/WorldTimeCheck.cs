@@ -19,7 +19,7 @@ public partial class WorldTimeCheck:Node
             output=ProjectSettings.GlobalizePath("res://../Docs/Design/WorldTimeV1/runtime-local/ui");Directory.CreateDirectory(output);
             var entry=new NewGameFrontEnd();var campaign=entry.CreateWorldTimeReview(Path.Combine(Path.GetTempPath(),"world-time-ui-"+Guid.NewGuid().ToString("N")));entry.Free();
             game=new();game.Configure(campaign.Store,campaign.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Frame();
-            Check(game.Session.DiagnosticSnapshot().NewGame!.NpcRoutinePolicy==NewGameNpcRoutine.PurposePolicy,"通常開始のNPC方針");Check(game.Session.DiagnosticSnapshot().TimeControl!=null,"通常開始の時間方針");
+            Check(game.Session.DiagnosticSnapshot().NewGame!.NpcRoutinePolicy==NpcJudgment.Policy,"通常開始のNPC方針");Check(game.Session.DiagnosticSnapshot().TimeControl!=null,"通常開始の時間方針");
             game.ReviewSelectSpeed(86400);Check(game.ReviewSpeed==86400,"日の速度を選択");
             game.SetDestination("fork");game.Press("depart");await Until(()=>!game.IsDeparting&&!game.DepartureWorkerPending,"出発確定");Check(game.LastDepartureResult==ResultCode.Accepted,"出発受付");
             var timer=Stopwatch.StartNew();game.Press("auto");await Until(()=>!game.IsClockControlling,"自動進行開始");

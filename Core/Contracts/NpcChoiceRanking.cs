@@ -4,7 +4,7 @@ namespace HakutaiKagami.Core.Contracts;
 
 public enum NpcAttention { Beginner, Standard, Equal }
 public enum NpcCadence { Daily, Weekly, Monthly }
-public enum NpcAspiration { Unspecified, PreserveHouse, UpholdOrder }
+public enum NpcAspiration { Unspecified, PreserveHouse, UpholdOrder, ProsperDomain, EncourageTrade }
 public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAttention Attention);
 public sealed record NpcPersonality(int Ambition,int Duty,int Caution,int Courage,int Affection,int GainSeeking);
 public sealed record NpcChoiceCandidate(string Id,bool Known,bool Permitted,int Utility,
@@ -31,7 +31,7 @@ public static class NpcChoiceRanking
         long trait=((long)(p.Ambition-50)*k.Ambition+(p.Duty-50)*k.Duty+
             (p.Caution-50)*k.Caution+(p.Courage-50)*k.Courage+
             (p.Affection-50)*k.Affection+(p.GainSeeking-50)*k.GainSeeking)/50;
-        return candidate.Utility+trait+(candidate.MatchesAspiration?15:0)+
+        return candidate.Utility+trait+(candidate.MatchesAspiration&&input.Aspiration!=NpcAspiration.Unspecified?15:0)+
             (candidate.MatchesHistoricalGoal?HistoricalWeight(input.History):0)+
             (candidate.PlayerRecipient?RecipientWeight(input.Attention):0);
     }

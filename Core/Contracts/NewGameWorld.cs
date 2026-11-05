@@ -165,6 +165,7 @@ public static partial class NewGameWorld
     public static void ValidateOrder(ContractWorld w,Intent i)
     {
         if(HostageCustody.IsReturnTask(w,i))return;
+        if(NpcLocalOffers.IsOffer(w,i)){NpcLocalOffers.Validate(w,i,w.ElapsedSeconds,w.CommitSequence);return;}
         if(i.Action==ActionKind.Train){CharacterDevelopment.ValidatePractice(w,i,w.ElapsedSeconds,true);return;}if(PersonalCompanions.IsTask(w,i)){PersonalCompanions.ValidatePending(w,i);return;}if(i.Action==ActionKind.Move){TravelWorld.ValidateOrder(w,i);return;}
         if(i.Actor==i.Executor&&i.Executor!=w.PlayerControl){Need(NewGameNpcRoutine.IsActor(w,i.Actor)&&i==InspectFor(w,i.Actor,i.RequestId.Value,w.ElapsedSeconds),"NPC personal inspection lacks declared policy");return;}
         if(i.Actor!=i.Executor){Need(i==LocalWork(w,i.RequestId.Value),"現地で相談した任意依頼の条件が違います");return;}
@@ -172,6 +173,7 @@ public static partial class NewGameWorld
     }
     static void ValidateOrderAt(ContractWorld w,Intent i,long at)
     {
+        if(NpcLocalOffers.IsOffer(w,i)){NpcLocalOffers.Validate(w,i,at,w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence-1);return;}
         if(i.Action==ActionKind.Train){CharacterDevelopment.ValidatePractice(w,i,at,false);return;}if(PersonalCompanions.IsTask(w,i))return;Need((i.Executor==w.PlayerControl||(ArmyRoadMarch.IsTrip(w,i)||RoadConvoy.IsTrip(w,i))||NpcFreight.IsTrip(w,i)||NpcArmies.IsMarch(w,i)||i.Actor==i.Executor&&i.Action==ActionKind.Inspect&&NewGameNpcRoutine.IsActor(w,i.Actor))&&i.Action is ActionKind.Move or ActionKind.Inspect,"本人以外の指揮・徴収は開始だけではできません");
         if(i.Actor!=i.Executor){Need(NewGameWork.ScopeSupported(w,i.Scope),"Unmapped local inspection offer");Need(LocalWorkDemand.At(w,i.Actor,i.Scope,at,w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence-1).Needed,"Local inspection lacks known demand at issue");Need(i.Action==ActionKind.Inspect&&(i.Kind==TaskKind.VoluntaryRequest||i.Kind==TaskKind.BindingOrder&&NewGameService.BoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1)&&NewGameService.KnownBoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1))&&i.Important&&i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Executor,at)&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+120,"現地相談の物理所在・任意依頼・期限が不正です");}
         else if(i.Action==ActionKind.Inspect)Need(i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+60,"自己点検の場所・期限が不正です");
