@@ -200,6 +200,7 @@ public sealed partial class WorldSession
         if(AdultAdoption.NextBoundary(s,target) is {} adoptionBoundary)times.Add(adoptionBoundary);
         if(AdultMarriage.NextBoundary(s,target) is {} marriageBoundary)times.Add(marriageBoundary);
         if(HostageCustody.NextBoundary(s,target) is {} custodyBoundary)times.Add(custodyBoundary);
+        if(RegionalWeather.NextBoundary(s,target) is {} weatherBoundary)times.Add(weatherBoundary);
         if(LandSurvey.NextBoundary(s,target) is {} surveyBoundary)times.Add(surveyBoundary);
         if(CraftTrade.NextBoundary(s,target) is {} craftsBoundary)times.Add(craftsBoundary);
         if(StandingAdministration.NextBoundary(s,target) is {} administrationBoundary)times.Add(administrationBoundary);

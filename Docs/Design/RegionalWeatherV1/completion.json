@@ -1,0 +1,71 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "固定Seedと世界暦から地域と季節に合う災害・作柄を決め、旧開始の規則は維持する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalWeather.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/RegionalWeatherTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/RegionalWeatherCheck.cs",
+        "Docs/Design/RegionalWeatherV1/verification.json"
+      ]
+    },
+    {
+      "contract": "田畑・町・城の被害を持続状態として残し、実費と工期の普請で回復する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalWeather.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/RegionalWeatherTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/RegionalWeatherCheck.cs",
+        "Docs/Design/RegionalWeatherV1/verification.json"
+      ]
+    },
+    {
+      "contract": "本人の現地観測と届いた知らせだけを画面とNPC判断に使う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalWeather.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/RegionalWeatherTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/RegionalWeatherCheck.cs",
+        "Docs/Design/RegionalWeatherV1/verification.json"
+      ]
+    },
+    {
+      "contract": "収穫と地域運営へ被害を反映し、NPCも現地で復旧を選ぶ",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalWeather.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/RegionalWeatherTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/RegionalWeatherCheck.cs",
+        "Docs/Design/RegionalWeatherV1/verification.json"
+      ]
+    },
+    {
+      "contract": "途中保存の同じ未来・重大不具合・代表旧保存・通常画面を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalWeather.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/RegionalWeatherTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/RegionalWeatherCheck.cs",
+        "Docs/Design/RegionalWeatherV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "災害頻度・地域区分・被害値は試作値。現地表示・田畑収穫・町生産・既存月報と復旧普請へ接続。城の被害は保存状態として算出し、攻城防御への効果は5fで接続する。行軍と兵種への日々の天候効果は5e。全件・長期全国性能・ユーザー試遊は未実施。"
+}
