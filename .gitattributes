@@ -2270,3 +2270,8 @@ Docs/Development/ProgressV1/approval-baseline-v66.json -text
 Docs/Design/RegionalWeatherV1/* -text
 Core/Contracts/RegionalWeather.cs -text
 Tests/RegionalWeatherTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v67.json -text
+Docs/Design/AbilityEffectsV1/* -text
+Core/Contracts/AbilityEffects.cs -text
+Tests/AbilityEffectsTests.cs -text
