@@ -27,7 +27,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="known-local-broker-sealed-letter-escrow-purchase":
+ if logic["scope"]=="land-capacity-funded-public-works-owned-ships":
+  from verify_public_works import check as check_logic
+ elif logic["scope"]=="known-local-broker-sealed-letter-escrow-purchase":
   from verify_broker_work import check as check_logic
  elif logic["scope"]=="physical-recruitment-standing-office-local-council":
   from verify_household_court import check as check_logic

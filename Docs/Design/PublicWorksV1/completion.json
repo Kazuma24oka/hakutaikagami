@@ -1,0 +1,61 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "現地で村の協力と人手・米・木材・銭を確認して普請を引き受け、工期後に施設を得る",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/PublicWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/PublicWorksCheck.cs",
+        "Docs/Design/PublicWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "農業・商業・工房と土地条件に依存する牧場・鉱山・港を人口と地形の上限で制限する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/PublicWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/PublicWorksCheck.cs",
+        "Docs/Design/PublicWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "港だけで交易船・軍船を造り、実在船の所有と保守費を別に記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/PublicWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/PublicWorksCheck.cs",
+        "Docs/Design/PublicWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "完成した開発を収穫・工房の実生産へ反映し、NPCも同じ資源から普請する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/PublicWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/PublicWorksCheck.cs",
+        "Docs/Design/PublicWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "重大不具合・途中保存の同じ未来・通常入口と代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/PublicWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.PublicWorks.cs",
+        "Game/Scripts/PublicWorksCheck.cs",
+        "Docs/Design/PublicWorksV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "土地容量・費用・産出倍率は試作値。牧場と鉱山は施設整備までで産出と職人の接続は3c。完成効果は農業と既存工房・市場の上限に接続。船の保守は現地の30日分前払い。船の配置・戦闘封鎖・実航海と遠隔月報は後続。全件・全国長期性能・ユーザー試し遊びは未実施。"
+}
