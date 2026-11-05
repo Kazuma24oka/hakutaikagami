@@ -1,5 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "e701bd541957652a8b2fb90d53b421e478db9caf",
-  "scope": "コード・資料のみ。モデル・実行画像はローカル。"
+  "scope": "コード・資料のみ。モデル・実行画像はローカル。",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/74",
+  "integrated_head": "aae54c19d42ff047e12e5f4e71dce0ccba57930b",
+  "integrated_main": "2498ca91b8a4b962f57318f091c436001df0a47d",
+  "integrated_tree": "111d23833742ebe205830430dc3bd3e0fb918e8e",
+  "verification": "関連9件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "100%またはユーザー判断まで続行。次は兵種・天候地形・負傷兵・陣形と陣中補給。"
 }

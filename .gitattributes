@@ -2280,3 +2280,8 @@ Docs/Development/ProgressV1/approval-baseline-v68.json -text
 Docs/Design/BanditEncounterV1/* -text
 Core/Contracts/BanditEncounter.cs -text
 Tests/BanditEncounterTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v69.json -text
+Docs/Design/BattlefieldRulesV1/* -text
+Core/Contracts/BattlefieldRules*.cs -text
+Tests/BattlefieldRulesTests.cs -text

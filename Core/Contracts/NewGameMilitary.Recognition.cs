@@ -8,20 +8,20 @@ public static partial class NewGameMilitary
 {
     public const long RecognitionRangeMm=80000; // Existing regional trial coefficient, not final terrain visibility.
     static FieldPoint RecognitionOrigin(ContractWorld w)=>FieldWorld.FromWorld(RegionalCampaign.ActorPointAt(w,w.PlayerControl,w.ElapsedSeconds));
-    static bool InRecognitionRange(FieldPoint observer,FieldPoint p)=>RegionalGround.Distance(observer,p)<=RecognitionRangeMm;
+    static bool InRecognitionRange(ContractWorld w,FieldPoint observer,FieldPoint p)=>RegionalGround.Distance(observer,p)<=BattlefieldRules.SightRange(w,observer,w.ElapsedSeconds);
     static MilitarySeenUnit[] DirectMilitarySamples(ContractWorld w)
     {
         if(w.NewMilitary==null)return [];
         var observer=RecognitionOrigin(w);var rows=new List<MilitarySeenUnit>();var strength=OwnCombatReport(w,w.ElapsedSeconds);
         for(int i=0;i<3;i++){
-            var p=Position(w,i,w.ElapsedSeconds);if(!InRecognitionRange(observer,p))continue;
+            var p=Position(w,i,w.ElapsedSeconds);if(!InRecognitionRange(w,observer,p))continue;
             var next=Position(w,i,w.ElapsedSeconds+1);
             rows.Add(new(UnitIdsFor(w)[i],w.ElapsedSeconds,w.CommitSequence,p,new(next.X-p.X,next.Y-p.Y),strength[i].Soldiers,strength[i].Morale,strength[i].Soldiers==0?"destroyed":RoutPhase(w,i),"own"));
         }
         if(Deployed(w)&&ExerciseVisible(w)){
             var opponent=ExerciseState(w,w.ElapsedSeconds).Opponents;
             for(int i=0;i<3;i++){
-                var p=ExercisePosition(w,i);if(!InRecognitionRange(observer,p))continue;
+                var p=ExercisePosition(w,i);if(!InRecognitionRange(w,observer,p))continue;
                 rows.Add(new(opponent[i].Unit,w.ElapsedSeconds,w.CommitSequence,p,new(-1,0),opponent[i].Soldiers,opponent[i].Morale,"standing","exercise"));
             }
         }
@@ -55,7 +55,7 @@ public static partial class NewGameMilitary
     public static MilitarySeenCourier[] ProjectNearbyMilitaryCouriers(ContractWorld w)
     {
         var observer=RecognitionOrigin(w);
-        return CourierFrames(w,w.ElapsedSeconds).Where(f=>InRecognitionRange(observer,f.Position))
+        return CourierFrames(w,w.ElapsedSeconds).Where(f=>InRecognitionRange(w,observer,f.Position))
             .Select(f=>new MilitarySeenCourier("courier:observed/"+Hash(f.Carrier.Value),f.Position,f.Next)).ToArray();
     }
 }

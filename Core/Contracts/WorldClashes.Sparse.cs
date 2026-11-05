@@ -7,7 +7,7 @@ public static partial class WorldClashes
     sealed record Window(EntityId Army,long From,long Until,long Barrier);
     static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)
     {
-        return TreatyNegotiations.ExternalInputs(w).Concat(TruceNegotiations.ExternalInputs(w)).Concat(NewGameMilitary.ActiveInputs(w)).Concat(NewGameMilitary.RemoteInputs(w)).Concat(w.Requests.Select(q=>(q.CreatedAt,q.CommitSequence)))
+        return TempleMilitary.Orders(w).Select(o=>(o.At,o.Revision)).Concat(BattlefieldRules.Orders(w).Select(o=>(o.At,o.Revision))).Concat(TreatyNegotiations.ExternalInputs(w)).Concat(TruceNegotiations.ExternalInputs(w)).Concat(NewGameMilitary.ActiveInputs(w)).Concat(NewGameMilitary.RemoteInputs(w)).Concat(w.Requests.Select(q=>(q.CreatedAt,q.CommitSequence)))
             .Concat(NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests.Where(q=>q.Input.Action!=NewMilitaryAction.AutoRout).Select(q=>(q.At,q.Revision))))
             .Concat(NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Openings.Select(q=>(q.At,q.Revision))))
             .Concat((w.FactionStances?.Decisions??[]).Select(q=>(q.At,q.Revision)))
@@ -32,7 +32,7 @@ public static partial class WorldClashes
     static IEnumerable<long> Changes(ContractWorld w,NewMilitaryState ledger,long from,long until)
     {
         var times=new List<long>{from,until};
-        times.AddRange(TruceNegotiations.Changes(w));times.AddRange(TreatyNegotiations.Changes(w));times.AddRange(ledger.Requests.Select(q=>q.At));times.AddRange(ledger.Events.Select(q=>q.At));times.AddRange(ledger.Openings.Select(q=>q.At));times.AddRange(ledger.Orders.Select(q=>q.At));
+        times.AddRange(TempleMilitary.Orders(w).SelectMany(o=>new[]{o.At,o.At+3600,o.At+86400}));times.AddRange(TruceNegotiations.Changes(w));times.AddRange(TreatyNegotiations.Changes(w));times.AddRange(ledger.Requests.Select(q=>q.At));times.AddRange(ledger.Events.Select(q=>q.At));times.AddRange(ledger.Openings.Select(q=>q.At));times.AddRange(ledger.Orders.Select(q=>q.At));
         times.AddRange(ledger.Orders.SelectMany(o=>o.Routes.SelectMany(a=>a).SelectMany(l=>new[]{l.StartAt,l.EndAt})));
         var letters=ledger.Events.Select(e=>e.Message).ToHashSet(StringComparer.Ordinal);
         foreach(var m in w.Messaging.Messages.Where(m=>letters.Contains(m.Id))){var n=ContractJson.Read<MilitaryNotice>(System.Text.Encoding.UTF8.GetBytes(m.Body));if(n.Engagement is {} e){times.Add(e.EffectiveFrom);times.Add(e.Until);}}
@@ -44,13 +44,13 @@ public static partial class WorldClashes
         times.AddRange(w.Grants.SelectMany(t=>new[]{t.From,t.Until}));
         return times.Where(t=>t>=from&&t<=until).Distinct().Order();
     }
-    static (long From,long Until)? NearWindow(FieldPoint a,FieldPoint b,FieldPoint c,FieldPoint d,long from,long until)
+    static (long From,long Until)? NearWindow(FieldPoint a,FieldPoint b,FieldPoint c,FieldPoint d,long from,long until,long radiusMm=ContactCombat.RadiusMm)
     {
         if(until-from<2)return null;long lo=from+1,hi=until-1;
         // Conservative fallback outside normal historical coordinate/time scales.
         if(from>1000000000000L||new[]{a.X,a.Y,b.X,b.Y,c.X,c.Y,d.X,d.Y}.Any(v=>System.Numerics.BigInteger.Abs(v)>100000000000000L))return(lo,hi);
         double ax=(double)a.X-c.X,ay=(double)a.Y-c.Y,dx=((double)b.X-d.X)-ax,dy=((double)b.Y-d.Y)-ay;
-        double radius=ContactCombat.RadiusMm+4,aa=dx*dx+dy*dy,cc=ax*ax+ay*ay-radius*radius;
+        double radius=radiusMm+4,aa=dx*dx+dy*dy,cc=ax*ax+ay*ay-radius*radius;
         if(aa==0)return cc<=0?(lo,hi):null;
         // Closest-point form avoids catastrophic cancellation of b²-4ac on long roads.
         double closest=-(ax*dx+ay*dy)/aa,perpendicular=(ax*dy-ay*dx)/Math.Sqrt(aa),remaining=radius*radius-perpendicular*perpendicular;if(remaining<0)return null;
@@ -61,14 +61,15 @@ public static partial class WorldClashes
     static IEnumerable<Window> Windows(ContractWorld w,NewMilitaryState ledger,SupplySortie sortie)
     {
         long from=sortie.From,until=sortie.Until??w.ElapsedSeconds;if(until<=from)yield break;
-        var opponents=NpcArmies.Musters(w).Where(m=>m.At<=until&&m.Owner!=ledger.Terms.Owner&&PotentialHostility(w,ledger.Terms.Owner,m.Owner,from,until)).ToArray();if(opponents.Length==0)yield break;
+        var opponents=NpcArmies.Musters(w).Where(m=>m.At<=until&&m.Owner!=ledger.Terms.Owner&&PotentialHostility(w,ledger.Terms.Owner,m.Owner,from,until)).ToArray();if(opponents.Length==0&&!BattlefieldRules.Enabled(w))yield break;
         var context=NewGameMilitary.WorldEngagementContext(w,ledger.Terms.Army);var times=Changes(w,ledger,from,until).ToArray();
         for(int n=1;n<times.Length;n++){
             long start=times[n-1],end=times[n];var ranges=new List<(long From,long Until)>();
             foreach(var m in opponents.Where(m=>m.At<=end)){
                 var c=FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,m.Commander,start));var d=FieldWorld.FromWorld(RegionalCampaign.RoadActorPointAt(w,m.Commander,end));
-                for(int i=0;i<3;i++)if(NearWindow(NewGameMilitary.Position(context,i,start),NewGameMilitary.Position(context,i,end),c,d,start,end) is {} window)ranges.Add(window);
+                for(int i=0;i<3;i++)if(NearWindow(NewGameMilitary.Position(context,i,start),NewGameMilitary.Position(context,i,end),c,d,start,end,BattlefieldRules.Enabled(w)?80000:ContactCombat.RadiusMm) is {} window)ranges.Add(window);
             }
+            if(BattlefieldRules.Enabled(w)){var temple=TempleMilitary.Position(w);for(int i=0;i<3;i++)if(NearWindow(NewGameMilitary.Position(context,i,start),NewGameMilitary.Position(context,i,end),temple,temple,start,end,80000) is {} near)ranges.Add(near);}
             long? first=null;long last=0;foreach(var range in ranges.OrderBy(v=>v.From).ThenBy(v=>v.Until)){
                 if(first==null){first=range.From;last=range.Until;continue;}if(range.From<=last+1){last=Math.Max(last,range.Until);continue;}
                 yield return new(ledger.Terms.Army,first.Value,last,end);first=range.From;last=range.Until;
@@ -95,7 +96,7 @@ public static partial class WorldClashes
         foreach(var entry in sorties)foreach(var window in Windows(w,entry.Ledger,entry.Sortie)){
             long at=window.From;while(true){Need(index>=s.Steps.Length||s.Steps[index].At>=at,"接触不能な時刻へ損害を追加しています");
                 bool recorded=index<s.Steps.Length&&s.Steps[index].At==at;long revision=recorded?s.Steps[index].Revision:ReplayRevision(w,at);
-                var candidate=new WorldClashStep(window.Army,at-1,at,revision,new(at,[],[]));var context=Before(w,candidate,index);var snapshot=WorldEngagement.Snapshot(context);var result=FieldEngagement.Resolve(at,snapshot.Units,snapshot.Mandates,snapshot.Hostilities);
+                var candidate=new WorldClashStep(window.Army,at-1,at,revision,new(at,[],[]));var context=Before(w,candidate,index);var snapshot=WorldEngagement.Snapshot(context);var result=WorldEngagement.Resolve(context);
                 Need(recorded==(result.Strikes.Length>0),"移動・受領原本から必要な実損害が欠落・追加されています");
                 if(recorded){Need(s.Steps[index].Army==window.Army&&ContractJson.CanonicalHash(s.Steps[index].Result)==ContractJson.CanonicalHash(result),"元の時点の実接触を再現できません");index++;}
                 if(at==window.Until||!recorded&&NoPrimaryAttack(snapshot))break;at++;

@@ -1,0 +1,71 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "装備の実在在庫と受渡しで槍・弓・鉄砲・騎馬・輸送を編成し、火薬・玉・飼料を実消費する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BattlefieldRules.cs",
+        "Core/Contracts/TempleMilitary.cs",
+        "Tests/BattlefieldRulesTests.cs",
+        "Tests/TempleMilitaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Battlefield.cs",
+        "Game/Scripts/BattlefieldRulesCheck.cs",
+        "Docs/Design/BattlefieldRulesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "同じ世界時計で兵種別の接触・射撃と日ごとの天候・地形・視認範囲を反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BattlefieldRules.cs",
+        "Core/Contracts/TempleMilitary.cs",
+        "Tests/BattlefieldRulesTests.cs",
+        "Tests/TempleMilitaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Battlefield.cs",
+        "Game/Scripts/BattlefieldRulesCheck.cs",
+        "Docs/Design/BattlefieldRulesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "陣形を実際の作戦線・分隊位置へ適用し、負傷・戦死・逃亡を分けて兵糧による回復を行う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BattlefieldRules.cs",
+        "Core/Contracts/TempleMilitary.cs",
+        "Tests/BattlefieldRulesTests.cs",
+        "Tests/TempleMilitaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Battlefield.cs",
+        "Game/Scripts/BattlefieldRulesCheck.cs",
+        "Docs/Design/BattlefieldRulesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "寺社との条件付き武装協力と寺社への武力行使を本人の判断・実際の兵と供給へ接続する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BattlefieldRules.cs",
+        "Core/Contracts/TempleMilitary.cs",
+        "Tests/BattlefieldRulesTests.cs",
+        "Tests/TempleMilitaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Battlefield.cs",
+        "Game/Scripts/BattlefieldRulesCheck.cs",
+        "Docs/Design/BattlefieldRulesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "代表一巡・重大不具合・途中復旧・代表旧保存・通常3D表示を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BattlefieldRules.cs",
+        "Core/Contracts/TempleMilitary.cs",
+        "Tests/BattlefieldRulesTests.cs",
+        "Tests/TempleMilitaryTests.cs",
+        "Game/Scripts/NewGameRuntime.Battlefield.cs",
+        "Game/Scripts/BattlefieldRulesCheck.cs",
+        "Docs/Design/BattlefieldRulesV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "兵数・装備在庫・性能・一日米量は試作値。兵種専用3D、天候演出、任意方向の陣形軸編集は後続。飼料消費は交戦中の分境界のみ、遠征全行程の馬飼養は未実装。離脱兵は予定帰路の経過で帰村する段階で、途中の新規封鎖・捕縛は後続。堺の寺院は架空の武装組織20人、協力は一日・現地防衛限定、保護破棄への局地敵対のみ。全件・全国長期性能・ユーザー試遊は未実施。"
+}
