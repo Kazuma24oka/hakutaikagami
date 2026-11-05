@@ -2,9 +2,9 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：0a 時間の仕組み（次に着手）
+## 今の工程：0a 時間の仕組み（実装中）
 - NPCの既知の用件と空き時間の修行は完成条件5/5と工程末尾の全件・保存検証を完了。統合先はNpcPurposeV1/integration.json。
-- 次はT1〜T6を一工程とし、開始時に基準を固定、末尾に重い検証・進捗更新・PRをまとめる。
+- T1〜T6を一工程とし、WorldTimeV1/scope.mdとapproval-baseline-v52.jsonに完成条件・基準を固定。末尾に重い検証・進捗更新・PRをまとめる。
 - 第1版（0系）がそろうまで個別機能の試し遊びを依頼しない。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
