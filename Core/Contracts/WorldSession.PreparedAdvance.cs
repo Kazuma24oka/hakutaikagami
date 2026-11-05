@@ -7,11 +7,12 @@ public sealed class AdvanceCapture
     internal readonly WorldSession Source;
     internal readonly ContractWorld World;
     internal readonly int Budget;
+    internal readonly bool StopAtNotice;
     public long SourceRevision { get; }
     public long SourceSeconds { get; }
     public long Target { get; }
-    internal AdvanceCapture(WorldSession source,ContractWorld world,long target,int budget)
-    {Source=source;World=world;SourceRevision=world.CommitSequence;SourceSeconds=world.ElapsedSeconds;Target=target;Budget=budget;}
+    internal AdvanceCapture(WorldSession source,ContractWorld world,long target,int budget,bool stopAtNotice)
+    {Source=source;World=world;SourceRevision=world.CommitSequence;SourceSeconds=world.ElapsedSeconds;Target=target;Budget=budget;StopAtNotice=stopAtNotice;}
     public bool Matches(WorldSession session)=>ReferenceEquals(Source,session)&&session.MatchesAdvance(this);
     public PreparedAdvance Prepare(CancellationToken cancellation=default,Action? beforeFutureCommit=null)
     {
@@ -20,7 +21,7 @@ public sealed class AdvanceCapture
         // deep copy; Change changes another deep copy and only then replaces state.
         // The captured generation stays private and is never edited by a worker.
         var future=new WorldSession(World);
-        var result=future.AdvanceTo(Target,Budget,()=>{cancellation.ThrowIfCancellationRequested();beforeFutureCommit?.Invoke();cancellation.ThrowIfCancellationRequested();});
+        var result=future.AdvanceTo(Target,Budget,()=>{cancellation.ThrowIfCancellationRequested();beforeFutureCommit?.Invoke();cancellation.ThrowIfCancellationRequested();},StopAtNotice);
         var display=future.DiagnosticSnapshot();cancellation.ThrowIfCancellationRequested();
         return new(this,future,display,result,cancellation);
     }
@@ -41,9 +42,9 @@ public sealed class PreparedAdvance
 public sealed record AdvancePublication(AdvanceResult Result,ContractWorld Display);
 public sealed partial class WorldSession
 {
-    public AdvanceCapture CaptureAdvance(long target,long expectedRevision,int eventBudget=10000)
+    public AdvanceCapture CaptureAdvance(long target,long expectedRevision,int eventBudget=10000,bool stopAtNotice=false)
     {
-        lock(gate){if(expectedRevision!=state.CommitSequence)throw new InvalidOperationException("Advance source changed");if(target<state.ElapsedSeconds||eventBudget<1)throw new ArgumentOutOfRangeException(nameof(target));return new(this,state,target,eventBudget);}
+        lock(gate){if(expectedRevision!=state.CommitSequence)throw new InvalidOperationException("Advance source changed");if(target<state.ElapsedSeconds||eventBudget<1)throw new ArgumentOutOfRangeException(nameof(target));return new(this,state,target,eventBudget,stopAtNotice);}
     }
     internal bool MatchesAdvance(AdvanceCapture capture)
     {lock(gate)return ReferenceEquals(capture.Source,this)&&ReferenceEquals(capture.World,state)&&capture.SourceRevision==state.CommitSequence&&capture.SourceSeconds==state.ElapsedSeconds;}

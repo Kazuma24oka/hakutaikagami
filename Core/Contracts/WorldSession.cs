@@ -25,7 +25,7 @@ public sealed partial class WorldSession
     private void Change(Action<ContractWorld> change, Action? beforeCommit = null)
     {
         var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
-        change(next);HouseSuccession.Tick(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);TreatyNegotiations.Update(next);TreatySupply.Update(next);TreatyDefense.Update(next);TruceConfirmations.Update(next);NewGameMilitary.UpdateRemote(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);MaterialMarkets.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);CommunityStewardship.Tick(next);CastellanReports.Tick(next);FreightOperations.Tick(next);NewGameService.Sync(next);HouseSuccession.Sync(next);NewGameMilitary.Sync(next);FieldConvoy.SyncLocations(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); NewGameMilitary.RecordMilitaryObservation(next);CastleHandover.Tick(next);CharacterDevelopment.Sync(next);CharacterRelations.Sync(next);AdultAdoption.Update(next);AdultMarriage.Update(next);HostageCustody.Update(next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
+        change(next);HouseSuccession.Tick(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);TreatyNegotiations.Update(next);TreatySupply.Update(next);TreatyDefense.Update(next);TruceConfirmations.Update(next);NewGameMilitary.UpdateRemote(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);MaterialMarkets.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);CommunityStewardship.Tick(next);CastellanReports.Tick(next);FreightOperations.Tick(next);NewGameService.Sync(next);HouseSuccession.Sync(next);NewGameMilitary.Sync(next);FieldConvoy.SyncLocations(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); NewGameMilitary.RecordMilitaryObservation(next);CastleHandover.Tick(next);CharacterDevelopment.Sync(next);CharacterRelations.Sync(next);AdultAdoption.Update(next);AdultMarriage.Update(next);HostageCustody.Update(next); WorldTimeControl.Observe(state,next); ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;
     }
     public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
     public CommandResult IssueRegional(RegionalRequest request,long revision){lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
@@ -107,7 +107,10 @@ public sealed partial class WorldSession
     private static Intent IntentFor(ContractWorld s, TaskState task) => s.Requests.Single(r=>r.Id==task.RequestId).Intent;
     private static void Replace(ContractWorld s, TaskState task) => s.Tasks = s.Tasks.Select(t=>t.Id==task.Id?task:t).ToArray();
     private static bool Terminal(TaskState t) => t.Execution is ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed;
-    public void SetPaused(bool paused) { lock(gate) if(state.Paused!=paused) Change(s=>s.Paused=paused); }
+    public void SetPaused(bool paused) { lock(gate) {
+        if(!paused&&state.TimeControl is {SummaryAt:not null,ContinuedAt:null})return;
+        if(state.Paused!=paused)Change(s=>{s.Paused=paused;if(!paused&&s.TimeControl is {} t)s.TimeControl=t with{Pending=null};});
+    } }
     public CommandResult Open(EntityId actor, EntityId message, long expectedRevision)
     {
         lock(gate)
@@ -145,12 +148,12 @@ public sealed partial class WorldSession
             return new(ResultCode.Accepted,taskId,state.CommitSequence,accept?"受諾しました":"辞退しました");
         }
     }
-    public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null)
+    public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null,bool stopAtNotice=false)
     {
         lock(gate)
         {
             if(target<state.ElapsedSeconds||eventBudget<1)throw new ArgumentOutOfRangeException(nameof(target));
-            int processed=0;
+            int processed=0;int initialNotices=state.TimeControl?.Notices.Length??0;
             while(state.ElapsedSeconds<target)
             {
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
@@ -170,11 +173,12 @@ public sealed partial class WorldSession
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
                     TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
-                    if(s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
+                    if(!WorldTimeControl.Enabled(s)&&s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
                 FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 processed+=cost;
+                if(stopAtNotice&&(state.TimeControl?.Notices.Length??0)>initialNotices)return new(state.ElapsedSeconds,processed,"Notice");
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
         }
@@ -225,7 +229,8 @@ public sealed partial class WorldSession
             long deadline=ExpiryLimit(s,t);
             if(deadline<long.MaxValue&&deadline>=s.ElapsedSeconds&&deadline<target)times.Add(deadline+1);
         }
-        return times.Count==0?target:times.Min();
+        if(WorldTimeControl.NextBoundary(s,target) is {} timeBoundary)times.Add(timeBoundary);
+        return TimeObservationSweep.Boundary(s,times.Count==0?target:times.Min());
     }
     internal static long ExpiryLimit(ContractWorld s,TaskState t)
     {

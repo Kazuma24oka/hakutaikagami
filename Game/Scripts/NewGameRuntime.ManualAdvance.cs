@@ -8,6 +8,7 @@ using HakutaiKagami.Core.Contracts;
 public partial class NewGameRuntime
 {
     long? manualAdvanceTarget;
+    bool manualNextNotice,manualNoticeReached;
     int manualAdvancePhase;
     Task<PreparedPause>? manualAdvancePause;
     Task<PreparedAdvance>? manualAdvanceWork;
@@ -19,11 +20,11 @@ public partial class NewGameRuntime
     internal string? LastManualAdvanceError {get;private set;}
     internal long ManualAdvanceRenderTicks {get;private set;}
     internal long ManualAdvancePublications {get;private set;}
-    void RequestManualAdvance(long to)
+    void RequestManualAdvance(long to,bool nextNotice=false)
     {
         if(IsSaving||IsClockControlling||to<=Session.Seconds)return;
         automatic=false;fraction=0;CancelAdvancePrefetch();advanceClockActive=false;
-        manualAdvanceTarget=to;manualAdvancePhase=0;LastManualAdvanceError=null;ManualAdvanceRenderTicks=0;
+        manualAdvanceTarget=to;manualNextNotice=nextNotice;manualNoticeReached=false;manualAdvancePhase=0;LastManualAdvanceError=null;ManualAdvanceRenderTicks=0;
         manualAdvanceDisabled.Clear();var allowed=buttons.Where(p=>ClockAllowed(p.Key)).Select(p=>(BaseButton)p.Value).ToHashSet();
         foreach(var button in SaveDescendants(this).OfType<BaseButton>())if(!allowed.Contains(button)){manualAdvanceDisabled.Add((button,button.Disabled));button.Disabled=true;}
         message.Text="指定時刻まで進行を確認中… 停止すると、確定済みの現在位置で止まります。";
@@ -59,14 +60,14 @@ public partial class NewGameRuntime
                 if(!manualAdvancePause.IsCompleted)return true;
                 var ready=manualAdvancePause.GetAwaiter().GetResult();if(host.CommitPause(ready,out var display)!=ResultCode.Accepted)throw new InvalidOperationException("Manual pause source changed");
                 InstallWorldDisplay(display!);manualAdvancePause=null;manualAdvanceStop!.Dispose();manualAdvanceStop=null;
-                if(paused){bool failed=LastManualAdvanceError!=null;ReleaseManualAdvanceUi();message.Text=failed?"時間を進められませんでした。確定済みの世界を停止しました。再操作できます。":"指定時刻または停止すべき出来事で止まりました。";Refresh();return true;}
+                if(paused){bool failed=LastManualAdvanceError!=null;ReleaseManualAdvanceUi();message.Text=failed?"時間を進められませんでした。確定済みの世界を停止しました。再操作できます。":manualNextNotice?(manualNoticeReached?"本人への知らせで止まりました。書状・期限を確認できます。":"3日間進めましたが、本人向けの新しい知らせはありませんでした。") :"指定時刻または停止すべき出来事で止まりました。";Refresh();return true;}
                 manualAdvancePhase=1;Refresh();return true;
             }
-            if(manualAdvanceWork==null){var capture=Session.CaptureAdvance(target,Session.Revision);manualAdvanceStop=new();var token=manualAdvanceStop.Token;var fault=ManualAdvanceTestFault;manualAdvanceWork=preparations.Run(()=>capture.Prepare(token,fault),token);}
+            if(manualAdvanceWork==null){var capture=Session.CaptureAdvance(target,Session.Revision,stopAtNotice:manualNextNotice);manualAdvanceStop=new();var token=manualAdvanceStop.Token;var fault=ManualAdvanceTestFault;manualAdvanceWork=preparations.Run(()=>capture.Prepare(token,fault),token);}
             if(!manualAdvanceWork.IsCompleted)return true;
             long prior=Session.Seconds;var prepared=manualAdvanceWork.GetAwaiter().GetResult();if(host.CommitAdvance(prepared,out var publication)!=ResultCode.Accepted)throw new InvalidOperationException("Manual advance source changed");
-            InstallAdvanceDisplay(publication!);ManualAdvancePublications++;manualAdvanceWork=null;manualAdvanceStop!.Dispose();manualAdvanceStop=null;
-            if(Session.Paused||Session.Seconds>=target)manualAdvancePhase=2;
+            InstallAdvanceDisplay(publication!);manualNoticeReached|=publication!.Result.StopReason=="Notice"||WorldTimeControl.Pending(publication.Display)!=null;ManualAdvancePublications++;manualAdvanceWork=null;manualAdvanceStop!.Dispose();manualAdvanceStop=null;
+            if(Session.Paused||Session.Seconds>=target||publication!.Result.StopReason=="Notice")manualAdvancePhase=2;
             else if(Session.Seconds==prior)throw new InvalidOperationException("Manual time made no progress");
             Refresh();return true;
         }catch(Exception error){

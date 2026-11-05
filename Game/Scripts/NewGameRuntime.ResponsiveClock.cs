@@ -56,7 +56,7 @@ public partial class NewGameRuntime
             if(!clockJob.IsCompleted)return true;
             var ready=clockJob.GetAwaiter().GetResult();var code=host.CommitPause(ready,out var display);
             if(code!=ResultCode.Accepted)throw new InvalidOperationException("Clock source changed");
-            InstallWorldDisplay(display!);ClockPublications++;automatic=!clockDesired.Value;advanceClockActive=false;
+            InstallWorldDisplay(display!);ClockPublications++;automatic=!clockDesired.Value&&!Session.Paused;advanceClockActive=false;
             message.Text=clockDesired.Value?"世界時間を停止しました。":"自動進行を開始しました。";ReleaseClockUi();Refresh();return true;
         }catch(Exception error){
             LastClockError=error.GetType().Name;automatic=false;clockStop?.Cancel();ReleaseClockUi();
