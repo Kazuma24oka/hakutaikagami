@@ -26,7 +26,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-05 | 登用・常設職・評定 | Docs/Design/HouseholdCourtV1/ | integration.json参照 |
+| 2026-11-05 | 登用・常設職・評定 | Docs/Design/HouseholdCourtV1/ | 0942fc3（PR66） |
 | 2026-11-05 | 情報系計略・書状照合・密偵 | Docs/Design/InformationSchemesV1/ | 3a580e1（PR65） |
 | 2026-11-05 | 勲功・恩賞・不満と顔 | Docs/Design/MeritRewardsV1/ | 9f10959（PR64） |
 | 2026-11-05 | 私有物・紹介状・名物と茶会 | Docs/Design/SocialAssetsV1/ | 573f883（PR63） |
