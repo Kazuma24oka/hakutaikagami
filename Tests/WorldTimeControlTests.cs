@@ -54,4 +54,17 @@ public sealed class WorldTimeControlTests
         var current=store.New(setup,[],"person:nobunaga",1,timePolicy:WorldTimeControl.Policy);Assert.NotNull(NewCampaignStore.Build(current).TimeControl);
         var forged=NewCampaignStore.Build(old);forged.TimeControl=WorldTimeControl.Initial();Assert.Throws<InvalidDataException>(()=>new WorldSession(forged));
     }
+
+    [Fact]public void PausePreferenceCannotDelayNpcDecisionAtSameWorldSecond()
+    {
+        var old=NpcPurposeTests.Start();var d=old.NewGame!;var w=NewGameWorld.Create(d.Start,d.Registered,d.Selected.Value,old.Seed,personalAuthorityLayout:d.PersonalAuthorityLayout,historicalCatalog:d.HistoricalCatalog,npcRoutinePolicy:d.NpcRoutinePolicy,inspectionPolicy:d.InspectionPolicy,workPolicy:d.WorkPolicy,demandPolicy:d.DemandPolicy,developmentPolicy:d.DevelopmentPolicy,timePolicy:WorldTimeControl.Policy);
+        var a=new WorldSession(w);var b=new WorldSession(w);Off(b);
+        foreach(var x in new[]{a,b}){var intent=NewGameWorld.LocalWork(x.DiagnosticSnapshot(),"request:clock-known");Assert.Equal(ResultCode.Accepted,x.Submit(intent,x.Revision).Code);x.SetPaused(false);}
+        a.AdvanceTo(1);b.AdvanceTo(1);
+        Assert.True(a.Paused);Assert.Equal(TimeNoticeKind.ImportantLetter,WorldTimeControl.Pending(a.DiagnosticSnapshot())!.Kind);
+        var aa=a.DiagnosticSnapshot();var bb=b.DiagnosticSnapshot();Assert.NotEmpty(aa.NpcWork!.Decisions);
+        Assert.Equal(aa.NpcWork!.Decisions.Select(d=>(d.Actor,d.At,d.Reason,d.Request)),bb.NpcWork!.Decisions.Select(d=>(d.Actor,d.At,d.Reason,d.Request)));
+        a.SetPaused(false);a.AdvanceTo(20);b.AdvanceTo(20);
+        Assert.Equal(a.DiagnosticSnapshot().NpcWork!.Decisions.Select(d=>(d.Actor,d.At,d.Reason,d.Request)),b.DiagnosticSnapshot().NpcWork!.Decisions.Select(d=>(d.Actor,d.At,d.Reason,d.Request)));
+    }
 }

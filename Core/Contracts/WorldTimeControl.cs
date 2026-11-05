@@ -48,7 +48,7 @@ public static class WorldTimeControl
         int? pending=state.Pending;
         if(response!=TimeResponse.Off){
             if(pending==null||response>state.Notices[pending.Value].Response)pending=state.Notices.Length;
-            w.Paused=true;
+
         }
         w.TimeControl=state with{Notices=[..state.Notices,notice],Pending=pending};
     }
@@ -78,7 +78,7 @@ public static class WorldTimeControl
             w.TimeControl=w.TimeControl with{SummaryAt=w.ElapsedSeconds,Summary=new(w.Tasks.Count(t=>t.Executor==w.PlayerControl&&t.Execution==ExecutionPhase.Completed),w.Knowledge.Count(k=>k.Character==w.PlayerControl))};Add(w,TimeNoticeKind.HistoricalEnd,"calendar:1650");
         }
     }
-    public static void Validate(ContractWorld w)
+    public static void Validate(ContractWorld w,bool intermediate=false)
     {
         if(NewGameWorld.Enabled(w))Need((w.NewGame!.TimePolicy==Policy)==(w.TimeControl!=null)&&w.NewGame.TimePolicy is null or Policy,"開始方針と時間設定が一致しません");
         if(w.TimeControl is not {} s)return;
@@ -86,7 +86,7 @@ public static class WorldTimeControl
         Need(s.Rules!.Length==Enum.GetValues<TimeNoticeKind>().Length&&s.Rules.Select(r=>r.Kind).Distinct().Count()==s.Rules.Length&&s.Rules.All(r=>Enum.IsDefined(r.Kind)&&Enum.IsDefined(r.Response)),"時間設定が欠落しています");
         Need(s.Notices!.All(n=>Enum.IsDefined(n.Kind)&&Enum.IsDefined(n.Response)&&!string.IsNullOrWhiteSpace(n.Source)&&n.At>=0&&n.At<=w.ElapsedSeconds)&&s.Notices.Select(n=>(n.Kind,n.Source)).Distinct().Count()==s.Notices.Length,"通知記録が不正です");
         Need(s.Notices.Zip(s.Notices.Skip(1)).All(p=>p.First.At<=p.Second.At),"通知の時刻が逆転しています");
-        Need(s.Pending==null||s.Pending>=0&&s.Pending<s.Notices.Length&&s.Notices[s.Pending.Value].Response!=TimeResponse.Off&&w.Paused,"停止通知が不正です");
+        Need(s.Pending==null||s.Pending>=0&&s.Pending<s.Notices.Length&&s.Notices[s.Pending.Value].Response!=TimeResponse.Off&&(w.Paused||intermediate),"停止通知が不正です");
         Need(s.SummaryAt==null?s.ContinuedAt==null: s.SummaryAt>=WorldCalendar.HistoricalEndSeconds(w.EpochDate)&&s.SummaryAt<=w.ElapsedSeconds,"総括の時刻が不正です");
         Need((s.SummaryAt==null)==(s.Summary==null)&& (s.Summary==null||s.Summary.CompletedOwnTasks>=0&&s.Summary.KnownRecords>=0),"総括の記録が不正です");
         Need(s.ContinuedAt==null||s.ContinuedAt>=s.SummaryAt&&s.ContinuedAt<=w.ElapsedSeconds,"継続の時刻が不正です");

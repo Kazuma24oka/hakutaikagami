@@ -12,25 +12,25 @@ def check(v):
     for group in ['proofs','binaries']:
         for p,h in v[group].items():assert sha(R/p)==h,p
     c=ET.parse(R/v['trx']).find('.//{*}Counters').attrib
-    assert int(c['total'])==int(c['passed'])==4052 and int(c['failed'])==int(c['notExecuted'])==0
+    assert int(c['total'])==int(c['passed'])==4053 and int(c['failed'])==int(c['notExecuted'])==0
     assert v['legacy_count']==261 and v['recovery_phases']==9 and v['projection']['Pairs']==3
     assert v['game_internal_input']=='PASSED' and v['self_render']=='PASSED'
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--legacy-root',type=Path);ap.add_argument('--godot',type=Path);ap.add_argument('--check-only',action='store_true');a=ap.parse_args()
     if a.check_only:check(json.loads((D/'verification.json').read_bytes()));print('0a検証記録の照合成功');return
-    trx=O/'full/full.trx';c=ET.parse(trx).find('.//{*}Counters').attrib
-    assert c['total']==c['passed']=='4052' and c['failed']==c['notExecuted']=='0',c
-    before=sources();frozen=json.loads((O/'full/run-inputs.json').read_bytes());assert frozen=={k:v for k,v in before.items() if k.startswith(('Core/','Tests/'))}
+    trx=O/'full-fixed/full.trx';c=ET.parse(trx).find('.//{*}Counters').attrib
+    assert c['total']==c['passed']=='4053' and c['failed']==c['notExecuted']=='0',c
+    before=sources();frozen=json.loads((O/'full-fixed/run-inputs.json').read_bytes());assert frozen=={k:v for k,v in before.items() if k.startswith(('Core/','Tests/'))}
     proofs={}
     def proof(p):proofs[str(p.relative_to(R)) if p.is_relative_to(R) else str(p)]=sha(p)
-    proof(trx);proof(O/'full/run-inputs.json')
+    proof(trx);proof(O/'full-fixed/run-inputs.json')
     for name,count in [('time-control',6),('time-travel',3)]:
         for n in range(count):
-            p=O/f'full/{name}-{n}.before.json';q=O/f'full/{name}-{n}.restored.json';assert p.read_bytes()==q.read_bytes();proof(p);proof(q)
+            p=O/f'full-fixed/{name}-{n}.before.json';q=O/f'full-fixed/{name}-{n}.restored.json';assert p.read_bytes()==q.read_bytes();proof(p);proof(q)
     projection=O/'projection';projection.mkdir(exist_ok=True)
     for n in range(3):
         for suffix in ['before','restored']:
-            p=projection/f'time-travel-{n}.{suffix}.json';p.write_bytes((O/f'full/time-travel-{n}.{suffix}.json').read_bytes());proof(p)
+            p=projection/f'time-travel-{n}.{suffix}.json';p.write_bytes((O/f'full-fixed/time-travel-{n}.{suffix}.json').read_bytes());proof(p)
     env=dict(os.environ,HAKUTAI_WORLD_CLASH_QA_DIR=str(projection),HAKUTAI_PROJECTION_EXPECTED_PAIRS='3')
     run([str(a.godot),'--headless','--path',str(R/'Game'),'res://Scenes/WorldClashProjectionCheck.tscn'],O/'projection.log',env)
     projection_result=json.loads((projection/'projection-result.json').read_bytes());assert projection_result['Status']=='PASSED' and projection_result['Pairs']==3
@@ -65,6 +65,6 @@ Console.WriteLine(JsonSerializer.Serialize(new{Legacy=files.Length,QuietFixtureY
     assert before==sources()
     binary_paths=['Core/bin/Debug/net8.0/HakutaiKagami.Core.dll','Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll','Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll','Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll','Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll']
     assert len({sha(R/p) for p in binary_paths if p.endswith('/HakutaiKagami.Core.dll')})==1
-    v=dict(status='PASSED',sources=before,proofs=proofs,binaries={p:sha(R/p) for p in binary_paths},trx=trx.relative_to(R).as_posix(),tests=dict(passed=4052,failed=0,skipped=0),new_tests=35,recovery_phases=9,legacy_count=261,projection=projection_result,game_internal_input='PASSED',self_render='PASSED',computer_use='未使用',user_playtest='未依頼（第1版の完成時）',normal_entry_elapsed_ms=ui['ElapsedMilliseconds'],normal_entry_game_seconds=ui['Seconds'],note='1年約1時間は遊び方の目標。全国NPCの90年連続負荷・未実装の評定/訃報/襲撃発生源は本工程の達成に含めない。')
+    v=dict(status='PASSED',scope='world-time-own-notices-calendar-internal-ui',sources=before,proofs=proofs,binaries={p:sha(R/p) for p in binary_paths},trx=trx.relative_to(R).as_posix(),tests=dict(passed=4053,failed=0,skipped=0),new_tests=36,recovery_phases=9,legacy_count=261,projection=projection_result,game_internal_input='PASSED',self_render='PASSED',computer_use='未使用',user_playtest='未依頼（第1版の完成時）',normal_entry_elapsed_ms=ui['ElapsedMilliseconds'],normal_entry_game_seconds=ui['Seconds'],note='1年約1時間は遊び方の目標。全国NPCの90年連続負荷・未実装の評定/訃報/襲撃発生源は本工程の達成に含めない。')
     put(D/'verification.json',v);check(v);print('0aの全件・保存・内部操作照合成功')
 if __name__=='__main__':main()
