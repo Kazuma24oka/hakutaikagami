@@ -1,0 +1,72 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "登用の条件書・実物の支度金・本人の引受を分け、所属と直属だけを個別に成立させる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdCourt.cs",
+        "Game/Scripts/HouseholdCourtCheck.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Docs/Design/HouseholdCourtV1/verification.json"
+      ]
+    },
+    {
+      "contract": "席次と家の規模を区別し、常設職は任命文書の受領と本人承諾の後にだけ効力を持つ",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdCourt.cs",
+        "Game/Scripts/HouseholdCourtCheck.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Docs/Design/HouseholdCourtV1/verification.json"
+      ]
+    },
+    {
+      "contract": "常設職の権限を拠点と役割・月枠に限り、解任・辞任・当主交代時の個別再確認を保つ",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdCourt.cs",
+        "Game/Scripts/HouseholdCourtCheck.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Docs/Design/HouseholdCourtV1/verification.json"
+      ]
+    },
+    {
+      "contract": "実際に集まる評定で本人に届いた上申だけを審査し、認めた調達・救済を実在資源へ反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdCourt.cs",
+        "Game/Scripts/HouseholdCourtCheck.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Docs/Design/HouseholdCourtV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面・NPCの同じ仕組み・重大不具合・途中保存と同じ未来・旧形式の代表互換を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Core/Contracts/NewGameService.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdCourt.cs",
+        "Game/Scripts/HouseholdCourtCheck.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Docs/Design/HouseholdCourtV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "登用は一度の支度金と所属・直属。扶持・知行・軍の指揮は別契約。常設職の主要接続は家老の招集と代官・城主の現地行政。家別職名・遠隔赴任・定例評定と家の方針・NPC自発登用・全件・全国長期性能・ユーザー試し遊びは未実施。",
+  "full_core_suite": "未実施（P13）"
+}

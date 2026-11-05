@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "15c64badaad47621d1a34b33dd25e18fad50da1a2d0f87f3c3ef40b450ca14fd",
+    "Docs/Development/ProgressV1/estimate.json": "e5916a85dc09e7dd508d7a3b5ed43bd6fcf3d79f9867777b83a757996a5a50ee",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "354a5335ef4accabb40c4883f00d0f91bbba611d79c740ae5ce4067d1032d969",
+    "Scripts/check_progress_report.py": "ef073be4a4a162175b6e5cebf936406571329ca888b002d88c4757b87b1303ea",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "263e8061014ff685ea2bbf5f88020a19405bc895fde1b2a5d93c86abdb621543",
+    "Scripts/check_approval_batch.py": "abd7f908b194cde81f3bf535e59c97895fa23a416af89fc9e6decc62c9c148b0",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -105,7 +105,7 @@
     "Scripts/probe_saved_worlds.py": "b5c3d20e625362c3b0e7498a27b8bf7b280ea65d6b8418d4b58dbe9f9d320b02",
     "Docs/Design/CastleHandoverV1/legacy-sources.json": "c13c90f2ad4ba4e298b029983d5184b1a2794fd9a86003918f6dea10e2fa151c",
     "Core/Contracts/CastleAdministration.cs": "148d986462bc45aed1ced4a3cdaea9df3b635b7b423d93351c4851eaf3ae1c2a",
-    "Core/Contracts/CommunityStewardship.cs": "363ebbee3623c3d834d7711458c10436644980bc489e711123609787313c90fb",
+    "Core/Contracts/CommunityStewardship.cs": "ee00bd002ceff7c7a4cdc07a893c18448ebce04017d23a634e9810f0eb785c56",
     "Core/Contracts/HouseFreightReceiving.cs": "3f7174f64a684269552a922a9943e8451fc162d7dfe90a56de673421f8bb8efe",
     "Tests/CastleAdministrationTests.cs": "fadfad6cb93590fefdd1b92652b788858e276c2089ebf6b22972b907db22fdf8",
     "Game/Scripts/NewGameRuntime.CastleAdministration.cs": "98ace8a0d14ee355105f7c48bb835d2f70fa1e6d229b8edb4f4824a7ba356b16",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "089a57cd58cb8cef4c89d1a5586ae542b27b26187da656d5c227fe496651f249",
+    "Docs/Development/CURRENT_STAGE.md": "498f6dd43661742b468e9c2c15a49b7f6f03c6f8840b45782ea9db5285ce01ce",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
-    "Core/Contracts/NewGameWorld.cs": "fbf4eb52e7bf1e2dd0944a8f10857ee9552535a6427f204c61aaf5fc957c7d4b",
+    "Core/Contracts/NewGameWorld.cs": "afbd91db27c6bce90ab2de214a069b35511330b73f2500c9228a7b0ff1784996",
     "Core/Contracts/HouseSalary.cs": "3fb2c219bc721ec43a44735e296b1488b2212339540132e510dfa4b6dafc653e",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",
@@ -154,8 +154,8 @@
     "Scripts/.gitattributes": "5a682c5ffb88bc4e34382404a8a0ecb0f3cb1c24b51b82aa30ede5ad8052dd41",
     "Core/Contracts/CommunityStewardship.Succession.cs": "eb65f68359665e3c159e3293c9dab3c364dc59d9dc3566ec260bb88a967a6d33",
     "Core/Contracts/HouseholdService.cs": "e96313cdbc3d0715bb87f7fedda9a3bec6aabbeca05185fcad523715d47d9f6d",
-    "Core/Contracts/NewGameService.cs": "cc650dd8cee2487edea64ff1eb76156f6ec14ca2bd7175c68e3997eb365fbcc6",
-    "Core/Contracts/RegionalDomains.cs": "e6371b3d89854e51586d284af88a561c4a6ab5cba32cd054cab1dcead37271c7",
+    "Core/Contracts/NewGameService.cs": "78ec925f0cc2e29d4418820813f8bc79e398751eef36f93e875dda620640bdf7",
+    "Core/Contracts/RegionalDomains.cs": "daf3ddc4069e6f1cb4e81c828890126d27c0e34c58a1bbfd519a3008c690441b",
     "Tests/StewardSuccessionTests.cs": "fd02ba095bd23696c7867ec390a65a39ba2ccba718e6a298c145c32cfdcb1f30",
     "Game/Scripts/NewGameRuntime.HouseholdService.cs": "d710b6aaff4375c3b483fc26f84f36e26809fc00a87228299cc4c2719beccbce",
     "Game/Scripts/NewGameRuntime.Stewardship.cs": "f9f862d1f2b6696cc49d95523e6866b132f65d8ba1e6c60da2ab996a4a37e06f",
@@ -183,7 +183,7 @@
     "Core/Contracts/TruceConfirmations.cs": "203ae363acbd6be57a299c53de4d2cd18ef85c018b3688ba0946d78ab3b71adf",
     "Core/Contracts/TruceConfirmations.ReportRetries.cs": "30066fe0cddaf5b43f7714d3ede0f549f32dd7b4f4ff17faafb752a372eeb48c",
     "Core/Contracts/CourierRecovery.cs": "77d34edfc0198c258ca9170076dea4abfb59304db5c46e691fa20c8938419e31",
-    "Core/Contracts/WorldSession.cs": "65c215f278592fda091cf24f298c28e49a8ba8831e9e0d2bd7d451b35682ea7f",
+    "Core/Contracts/WorldSession.cs": "372ec57e1e59689f1568d30af311b993a50843dfc7254541c271389d1ec459cf",
     "Tests/TruceConfirmationTests.cs": "d2207c87825dfdfaa7558d4568f2368ea6c2ff16df7a5d77880c73bc2b1c2431",
     "Game/Scripts/NewGameRuntime.TruceConfirmations.cs": "03e228ac0696a65b4b9196a8591949a49045c22dcd69ccd8e8d61f3f278fcfea",
     "Game/Scripts/NewGameRuntime.Mail.cs": "d8c7a817571f2cafd1ff2818be9e815c2668b81817fa7e06af2d67462e69b711",
@@ -311,7 +311,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v39.json": "b02330d69ede4625f6831df7d5323c84f307aa331b0bf8125866eedb6f15b917",
     "Scripts/verify_adult_marriage.py": "61430a9386fb68a645b2465fc5824ef8a49f21d9dc6cee90cfc8131596f765bd",
     "Core/Contracts/HostageCustody.cs": "fb8adf638fb098dbe938a5bc0ff116331ee34b7ced03cf94d00fed3fc429f781",
-    "Core/Contracts/ContractValidation.cs": "5d8305cb31fa6ddd713cf421717ea5983042815bbd8d64926daa564b022a887f",
+    "Core/Contracts/ContractValidation.cs": "a1b62a411568bb487e6580e3bbf1970bb47ada1a75a1a5633fa2fb87a4d11b92",
     "Tests/HostageCustodyTests.cs": "789842f58e12850257e5d66917a0dc844b1937bdaf64ed9ae92deb435d06c375",
     "Game/Scripts/NewGameRuntime.Custody.cs": "748b30b7902bf9485da317da4ff12269473ee70305b4b3d6c040a04f2b38f886",
     "Docs/Design/HostageCustodyV1/verification.json": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "02b53ac423b34d1c09d370329157ab3692e8578f27db6154cbbc113eb1c3d0ea",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "f532f4ff675f7bac4f994c80b0d0a9a8b52b584a542f49a8b023d59aa08bee29",
+    "Core/Contracts/ContractJson.cs": "4e684eddf5a57df5f27794ac6586107ec3da3b584f5e5a8c28595cb05981c32a",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -481,7 +481,7 @@
     "Docs/Design/HistoricalChronicleV1/integration.json": "276026b44f44f2d45c91aaca4c01588d12459f0936da83acff4e5712658223c4",
     "Docs/Design/HistoricalChronicleV1/README.md": "426335930c1efff9acd1ab0da3b45c3daf20ebe7c0209cdc14cc9ffed989cca1",
     "Scripts/verify_historical_chronicle.py": "301c16651b872992e34e17bb99b2e09c2b795efc89ac37f588c6165e01dc93af",
-    "Game/Scripts/NewGameRuntime.VerbNotebook.cs": "e3f555b9360640b91472ea902c9d33a48b77f6d66a09c7f46e1fa164e8b78357",
+    "Game/Scripts/NewGameRuntime.VerbNotebook.cs": "0c13a9a683625df044170f971cc4f0255756939a02c922fdd6d69fd2ae6ca5e4",
     "Game/Scripts/VerbNotebookCheck.cs": "b67aa454a5625330fc5d19ebf0afa3b2accbb7f2a5df615cb96baa738e81631c",
     "Game/Scripts/NewGameRuntime.cs": "54c35d22b0e39bacc31d2a5ed310dd5b3c46d185511c65b26a0cabd3934e7376",
     "Docs/Design/VerbNotebookV1/verification.json": "2d34e856be74d87c4a4bab22092c248a2c3f19800e7c0630a845bee80ce73363",
@@ -491,7 +491,7 @@
     "Docs/Design/VerbNotebookV1/scope.md": "e367625aac63ed53753570194371ad39010232293ef37078f89d6b8cc0ab7728",
     "Scripts/verify_verb_notebook.py": "1f0b5ef15fbb146ed4d9f578dbf13396a295c5aacc002af38efe75deb1459986",
     "Docs/Development/ProgressV1/approval-baseline-v55.json": "ddc300f6495fe539b5bdbf942a81f77d372268ef2a475c5042ecff1e2a672e02",
-    "Core/Contracts/SocialWorld.cs": "53d39e9f6834859979cd0f0625b149bf61c2b28d4c2b2480b4c42c22400fe4a3",
+    "Core/Contracts/SocialWorld.cs": "1eff92f9b9e02b9df459b761210115bce929135e26485909e164b180036bc437",
     "Core/Contracts/WorldSession.SocialCouriers.cs": "054330ed85ec0d20bb3c40ddcb5854861836829609885ac5b2affb9658557a53",
     "Game/Scripts/NewGameRuntime.SocialWorld.cs": "af34e74d458da573b35af0c4138bb1fe08bf223c606874f90f835fbcc40bcf41",
     "Game/Scripts/SocialWorldCheck.cs": "0f02289fec1f31f6e443b3a3750115747d42bce672a8860b947da3e04319e1d1",
@@ -503,7 +503,7 @@
     "Docs/Design/SocialWorldV1/scope.md": "6f696fce5290409affa2d137dc4a2b3c433905366cfbc7df3062bace53365f0e",
     "Scripts/verify_social_world.py": "38c31b845aa82fb2eb4ef6f9211bb63af8a0ce7ec45a4880c9ea08459f2e5bbc",
     "Docs/Development/ProgressV1/approval-baseline-v56.json": "73910376bc6f8b15d913f1fb7be570c5e332b1a5f3e98a9b5ff6271142b4e985",
-    "Core/Contracts/SocialAssets.cs": "db618e25c6ac8f6848a41558a859c0be66702af191685c0932e78fce02dc2c8f",
+    "Core/Contracts/SocialAssets.cs": "f0526383d4b99b2e8d6a14ff20ec40517705636d272b71e460e2414de94c3132",
     "Core/Contracts/RegionalTrade.cs": "87c6151447713ac6caff0b965a422650dbb6183943556490e47af06d4ad5bf3b",
     "Game/Scripts/NewGameRuntime.SocialAssets.cs": "b7b2ad78fdc2b3edbea0844c0eec85c3a1b672a0f71fa5978a9b42f389e63c15",
     "Game/Scripts/SocialAssetsCheck.cs": "4b37e47dd220964d33373b6b8aa57aae688dc1885e7b2e91b59b798dffe27bb9",
@@ -515,7 +515,7 @@
     "Docs/Design/SocialAssetsV1/scope.md": "a37a4547f3df2d45b613b831d14b7776f8d1979f1b2d87f65e191ba9ea012e12",
     "Scripts/verify_social_assets.py": "fb102fa250d7fecd5cc393085a080de5eda558a92a3f2459a5dee353f9d62255",
     "Docs/Development/ProgressV1/approval-baseline-v57.json": "74215ef997c2cfeb586825b8fa06642513a3fee99a4dd6ca248fb73b6031802d",
-    "Core/Contracts/MeritRewards.cs": "13464097f2cc13cb159a47c9ce85e98c067d4412b0c1dafe1a1714cb9baceb08",
+    "Core/Contracts/MeritRewards.cs": "788f442167781959bc7195c7b2a9509517c257a209080afbafdb102cffd7d00a",
     "Game/Scripts/NewGameRuntime.MeritRewards.cs": "0b7ac573f88eca10d362cc64abc715afdfb32ec5a7cd059826051edeb7dc8c3d",
     "Game/Scripts/MeritRewardsCheck.cs": "6887a4781ad39d5913a7ae7eeddea9db7135b9388b233c754d127f4b0a381309",
     "Tests/MeritRewardTests.cs": "79315afdd3f6fce6edf39cee59a2151f79bdff11621d982fb28f409e8b7dbc80",
@@ -526,18 +526,31 @@
     "Docs/Design/MeritRewardsV1/scope.md": "b575ae80c2c4b6d6c5adc991f30b798505572adbc28019e40dba009985c5ed8c",
     "Scripts/verify_merit_rewards.py": "128c46ae7a361367057df4c5ad5c88d49fae0af2a72af9f5e7f4063f969bb146",
     "Docs/Development/ProgressV1/approval-baseline-v58.json": "d1796d7c211e94212f763d7d4a9091c5043abaf6cc5b5621b6d1b44af696ac62",
-    "Core/Contracts/InformationSchemes.cs": "d6ccee23edc4390cf02dc9d1c6b6ea1203f7731294652123d84d1d71794142df",
+    "Core/Contracts/InformationSchemes.cs": "d91e938c25985a9e620a5d376f602b6ffbb8d28b8b597697963d1714196a31c1",
     "Core/Contracts/WorldSession.SchemeCouriers.cs": "0ee68946232a67b331e2c7d10ef263cf3e5ec706f83933dfcbe224d363ffeec3",
     "Game/Scripts/NewGameRuntime.InformationSchemes.cs": "d6000088012dacd88a2f0aeb8f2d04c14a40b1e307fc7d91b7d13d9b0d22d5fe",
     "Game/Scripts/InformationSchemesCheck.cs": "9e639d12654342a43f5cdd877e7be5d7f164259255100045bd2b90a27c2394eb",
     "Tests/InformationSchemeTests.cs": "b5d11fd55527b07879c08f34dc4b6fdaaa443041dc726b45aa6c66266786a9f4",
     "Docs/Design/InformationSchemesV1/verification.json": "30737da5f7bc66cf8fac91bb39758e441f2783a046e89d3e0d5304628f3e7a99",
     "Docs/Design/InformationSchemesV1/completion.json": "4b439bf289d905f4df761e8bfdae3bfb4e7f67551dd8970fe68244463bc2c3b5",
-    "Docs/Design/InformationSchemesV1/integration.json": "2ecc31a4ce565ddbb64db5e8e26b382128ff9afb903ca186b95adae8c3d40573",
+    "Docs/Design/InformationSchemesV1/integration.json": "65d5756c62c72c0f8521945b45e81888e79ed44cf914a578d56bb05db3b84b11",
     "Docs/Design/InformationSchemesV1/README.md": "9baa545835760a57e9fe8bac7ae8c89fc0a4f2a3202eea15c826a8e35e96a3c1",
     "Docs/Design/InformationSchemesV1/scope.md": "d83ccc5f060419fcebfa0eea907dabd4fc56c2f3c2d3a1e7ed97cceb3b3b5755",
     "Scripts/verify_information_schemes.py": "edded9dced2393c6b4ef6184e33cc18d75b6b8aa6d69358f78784c98e2236fbd",
-    "Docs/Development/ProgressV1/approval-baseline-v59.json": "7c40e08ae624a35152466430ac2dbf6d25698427be888cc360654b83463bfd72"
+    "Docs/Development/ProgressV1/approval-baseline-v59.json": "7c40e08ae624a35152466430ac2dbf6d25698427be888cc360654b83463bfd72",
+    "Core/Contracts/HouseholdCourt.cs": "ad2a8f2dfdcb1714a5605316f11de1af202192823624ed6de06d2c5d4cfb5854",
+    "Core/Contracts/TransactionalWorld.cs": "18109a70845342f384f73d981876edb675a19805147d909efaf6a5095902f457",
+    "Game/Scripts/NewGameRuntime.HouseholdCourt.cs": "2407acc8cc4d4a5e40156428f3a2fa3f9090714363e4cff67c4f9404bb86b025",
+    "Game/Scripts/HouseholdCourtCheck.cs": "5549229a8c4ad58dd59af85fbaef66b68f32c11afd71d94006296f5e52a060d1",
+    "Tests/HouseholdCourtTests.cs": "2ad797d38c3714e29bea8569c10d361640e7828dcde2c023a4dac6a3b9351223",
+    "Docs/Design/HouseholdCourtV1/verification.json": "4b018907a078667e1408e1710b216df2549130790344f42bff797e8b2535f636",
+    "Docs/Design/HouseholdCourtV1/completion.json": "e828d42199b00ccaf9913accfc448475b7cc7064b93fe9b588aa031f3e47c1f0",
+    "Docs/Design/HouseholdCourtV1/integration.json": "d2d2f51dab55c9374d454b431b06799cc9aac8ef1dbcc1184e871a0a7b7074e6",
+    "Docs/Design/HouseholdCourtV1/README.md": "a3e2f36749a84b4df929c259d2d3b3f57e2f6271a27636083d4b402c1f183341",
+    "Docs/Design/HouseholdCourtV1/scope.md": "be94b2231ad2bebbb1e14a35601e487eea04fbded929fec5a7dfbf1f4af404a5",
+    "Scripts/verify_household_court.py": "f751463e6e3e38b67770b6a6104e17c40377840ff30574f106240bc93d0d8132",
+    "Docs/Development/ProgressV1/approval-baseline-v60.json": "39b85f520ea4b12adb7739054eaaae84684651f798dda8531712652e7c1afb03",
+    "Docs/Development/WorkBatchSocialV1/README.md": "dbcf614bbf09f78a75e057b2dde1969d0497b3e6419b67fa6a0533adc5bb0703"
   },
   "items": [
     {
@@ -741,8 +754,8 @@
     {
       "id": "BD-09",
       "status": "normal",
-      "existing": "現当主が、同じ家の成人本人の同意で個人奉公を受け入れる。相互の旧主従は先に個別解除し、所属/役職/財産/未払いは保持する。",
-      "remaining": "所属離脱/移籍/一般臣従/解任/離反と全国NPCの判断。 統合案で追加：§9 勲功帳・恩賞・顔・§11 J2 席次・J3 任命と上申・J7 登用の条件提示。 2026-11-05 既存仕様の具体化：客将の招請では成人本人の判断と元の所属・主従を保ち、通常の移籍や新たな個人奉公と区別する（MORI_MOTONARI_GUEST_SERVICE.md）。実装・シナリオ検査は未実施。",
+      "existing": "実物の条件書・支度金・本人承諾から所属と直属を個別に成立。",
+      "remaining": "登用条件の拡張、遠隔の辞去・転籍、例外の網羅。",
       "evidence": [
         "Core/Contracts/CastleAdministration.Succession.cs",
         "Core/Contracts/CastleAdministration.cs",
@@ -786,7 +799,9 @@
         "Docs/Design/WorkContactReviewV1/verification.json",
         "Core/Contracts/PersonalCompanions.RetainerRelease.cs",
         "Docs/Design/RetainerReleaseV1/verification.json",
-        "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md"
+        "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -794,8 +809,8 @@
     {
       "id": "BD-10",
       "status": "normal",
-      "existing": "奉公受入と城主再任命の当事者/現権限/直属を時点ごとに検査。旧代表者の自動外交返答に現政治権限を要求し、肩書だけで実権を復活させない。",
-      "remaining": "一般役職/代理決裁/中央政治と全身分の総合受入。",
+      "existing": "常設職の署名と本人承諾を根拠に現地行政へ接続。政治・軍の指揮権は分離。",
+      "remaining": "全役職の専門行動と地域別・時代別権限。",
       "evidence": [
         "Core/Contracts/CastleAdministration.Succession.cs",
         "Core/Contracts/CastleAdministration.cs",
@@ -819,7 +834,9 @@
         "Docs/Design/StewardSuccessionV1/verification.json",
         "Core/Contracts/NewGameWorld.CompactAuthority.cs",
         "Core/Contracts/NewGameMilitary.AuthorityScope.cs",
-        "Tests/MilitaryAuthorityScopeTests.cs"
+        "Tests/MilitaryAuthorityScopeTests.cs",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 43
@@ -866,8 +883,8 @@
     {
       "id": "BD-12",
       "status": "normal",
-      "existing": "旧主従の一件と新しい直属奉公、行政担当と兵を別に保持。新当主が家臣本人の合意を受け入れても軍/家財を私有化せず、旧担当の未返納実務も保持。",
-      "remaining": "個別追随/拒否/分裂、全国NPC集団と活動軍の運用。 統合案で追加：§5 一族の分隊と自前の兵（決定10）。",
+      "existing": "家中の席次と役職、所属と直属、兵・指揮の別契約を分離。",
+      "remaining": "軍団・一族の分隊・動員の本格接続。",
       "evidence": [
         "Core/Contracts/CastleAdministration.Succession.cs",
         "Core/Contracts/CastleAdministration.cs",
@@ -922,7 +939,9 @@
         "Docs/Design/PersonalCompanionsV1/verification.json",
         "Core/Contracts/PersonalCompanions.Service.cs",
         "Docs/Design/PersonalServiceV1/verification.json",
-        "Docs/Design/RetainerReleaseV1/verification.json"
+        "Docs/Design/RetainerReleaseV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -965,8 +984,8 @@
     {
       "id": "BD-14",
       "status": "normal",
-      "existing": "NPC家臣から支給した家への限定的な信頼を、期日と受領の履歴で更新。遅配後の次の合意判断へ参照する。現地以外では現在の相手の返答を表示せず、PC自身の継続意思を強制しない。 6性格を固定し、個人/家/組織への忠誠を分離。任意の継続協力に性格・既知の主従/実績/手当を用いた本人返答を接続。乱数で拒否を再抽選せず、過去合意を後日の関係で無効化しない。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
-      "remaining": "一般軍務の危険・補給・提言、重大経験による性格変化、全NPCの横断判断。 統合案で追加：§20 W5 史実人物の志。",
+      "existing": "関係の事実、不満と上申、本人の既知情報と性格による返答。",
+      "remaining": "全国の総合的な目的選択と継続的な忠誠判断。",
       "evidence": [
         "Core/Contracts/CharacterRelations.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -992,7 +1011,9 @@
         "Tests/NpcLocalOfferTests.cs",
         "Game/Scripts/NewGameFrontEnd.Judgment.cs",
         "Game/Scripts/NpcJudgmentCheck.cs",
-        "Docs/Design/NpcJudgmentV1/verification.json"
+        "Docs/Design/NpcJudgmentV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1000,8 +1021,8 @@
     {
       "id": "BD-15",
       "status": "normal",
-      "existing": "点検の評価/実報酬/運搬報告から非対称の仕事上の信頼根拠を導き、本人の確認済みの縁から仕官・担当・軍務相談へ通常入口で接続。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。 会話で継続/辞去を選び、軍務の実引継ぎを待ち、同じ武将が浪人移動から別の家へ再仕官する流れを接続。新規案件選択も修正。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。 5方向の非対称関係を分離。実手当受領・読んだ報告だけから本人側へ一度反応し、未知の第三者や逆向きへ漏らさない。表示は本人が知る出来事と日時だけ。 実施済み養子を親子の方向付き関係として保存。提案段階や本人同意だけでは親族にしない。 配偶と養親子を別原本に保持し、養子で形成した共通祖先と婚姻の競合を判定。提案や本人同意だけで関係を確定しない。",
-      "remaining": "史実血縁/師弟、派閥形成、噂と訂正、関係解消の履歴。 統合案で追加：§9 顔・§24 名声と茶会・§9 決定11 関係の内部4軸と紹介状。",
+      "existing": "方向別の関係4軸、紹介・贈答・茶会・評定での実際の経緯。",
+      "remaining": "継続的な派閥形成と駆け引き、調整。",
       "evidence": [
         "Core/Contracts/AdultMarriage.cs",
         "Core/Contracts/FamilyConsentRules.cs",
@@ -1034,7 +1055,9 @@
         "Docs/Design/MilitaryDebriefV1/verification.json",
         "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
         "Docs/Design/ServiceDirectionV1/verification.json",
-        "Docs/Design/WorkContactReviewV1/verification.json"
+        "Docs/Design/WorkContactReviewV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1042,8 +1065,8 @@
     {
       "id": "BD-16",
       "status": "foundation",
-      "existing": "一般の既知/未知情報、古い部隊情報を分ける表示基盤がある。 仕事の縁の会話から仕官の申出/条件回答・担当・軍務相談へ接続。NPCの内心値ではなく本人の確認済み根拠を表示。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。 本人の5能力/7技能/経験を正確表示。相手は受領済み点検報告の日時と出典から実績だけを表示し、基礎能力は不明。未認識の能力と経験を変えても他者表示が同一。",
-      "remaining": "評判・噂・訂正と接触継続に基づく幅付き能力推定、感情/対象別忠誠の表示、GUI受入。 統合案で追加：§9 決定3・7 勲功と他人の能力の推定幅の見せ方・§10 K4 手応えの表示・G-U4。",
+      "existing": "内心の数値を出さず、既知の経緯と手応え・受領した評価を表示。",
+      "remaining": "全場面の文面と見え方の統一。",
       "evidence": [
         "Core/Contracts/CharacterDevelopment.cs",
         "Core/Contracts/NewGameSetup.cs",
@@ -1062,7 +1085,9 @@
         "Tests/WorkRelationsTests.cs",
         "Game/Scripts/NewGameRuntime.WorkRelations.cs",
         "Docs/Design/WorkRelationsV1/verification.json",
-        "Docs/Design/WorkContactReviewV1/verification.json"
+        "Docs/Design/WorkContactReviewV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1355,12 +1380,14 @@
     {
       "id": "BD-24",
       "status": "normal",
-      "existing": "下部会話・未確定の本人返答・続ける・ロード時の破棄を扱う。",
-      "remaining": "長時間の面会/交渉と会話の拘束時間、全国同時進行を製品の会話へ接続する。",
+      "existing": "会話・本人の返答・役職引受と時計を分離し、実際の参集で評定を開催。",
+      "remaining": "全会話の演出・自動停止・操作感の受入。",
       "evidence": [
         "Game/Scripts/NewGameRuntime.WorkExperience.cs",
         "Game/Scripts/NewGameRuntime.SupplyWork.cs",
-        "Docs/Design/SupplyWorkV1/verification.json"
+        "Docs/Design/SupplyWorkV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1601,8 +1628,8 @@
     {
       "id": "BD-29",
       "status": "normal",
-      "existing": "引継ぎ書状の到達だけでは案件を進めず、本人の承諾時点で同じ軍務の指揮原本を切り替える。期限切れや重複承諾を拒否する。",
-      "remaining": "全国の任務種類・複数主体の競合・汎用完了条件と全画面受入。 統合案で追加：§9 決定5・6 仕事4種（使い・買付・護衛・賊の討伐）と口入れ・§10 K1 計略の任務。",
+      "existing": "既知の評価・恩賞・上申案件の審査と実処分を区別。",
+      "remaining": "仕事の種類追加と口入れ・探物の一巡。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -1669,7 +1696,9 @@
         "Core/Contracts/NewGameMilitary.Debrief.cs",
         "Tests/MilitaryDebriefTests.cs",
         "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
-        "Docs/Design/MilitaryDebriefV1/verification.json"
+        "Docs/Design/MilitaryDebriefV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1787,8 +1816,8 @@
     {
       "id": "BD-32",
       "status": "isolated",
-      "existing": "独立試作で中断理由書状と暫定レビューを分ける。通常の点検返答は受領確認まで。 依頼主の履行評価を開封後、200文/報酬30文の次の運搬へ通常会話から接続。責任処分・昇進は別。 主君の評価から現地点検担当の引受・新規命令の20文手当・辞去での担当終了まで通常入口に接続。政治役職の昇進とは別。 V3では運搬完了後に次の預り額/運賃を増やし、現物返却後は小口から再開。理由を会話に表示し、未精算の重複発注を防ぐ。 軍務帰還の実返報/返納/指揮返還を開封済み会話に表示し、次案件の再許可と無損耗/損耗別の実配置へ接続。",
-      "remaining": "政治的な責任審査・功績・処分・昇進と、その後の関係変化を実装する。 統合案で追加：§9 勲功帳と論功行賞。 2026-11-05 既存仕様の具体化：恩賞への期待と成立済みの給付義務を区別し、申立て・評価・支給の実履行へつなぐ（MORI_MOTONARI_GOVERNANCE_CASES、実装・シナリオ検査は未実施）。 2026-11-05 既存仕様の具体化：連合軍の実負担・既存債務・裁量的恩賞、他家との費用精算と自家の論功、決定と実給付を分ける（MORI_MOTONARI_COALITION_OPERATIONS.md、実装・シナリオ検査は未実施）。",
+      "existing": "主君が知る評価原本の勲功帳、実物恩賞、未報奨への不満と上申。",
+      "remaining": "実戦・輸送の勲功、知行の恩賞と戦後の裁定。",
       "evidence": [
         "Core/Contracts/MissionReview.cs",
         "Core/Contracts/AssessmentNotice.cs",
@@ -1807,7 +1836,9 @@
         "Game/Scripts/NewGameRuntime.MilitaryDebrief.cs",
         "Docs/Design/MilitaryDebriefV1/verification.json",
         "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md",
-        "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md"
+        "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1853,8 +1884,8 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "担当者交代後も同じ家の処分・調達枠を共有し、既存運搬の実前渡金と購入履歴を控除。個人奉公を解いても既存給付の未払いは残し、私財/家財を移さない。",
-      "remaining": "全画面/GUIと全国長期の収支受入は未完了のため、事前計画の上限100に対し概算99で保留する。 統合案で追加：§13 指出・検地・§16 改革・§26 Z12 年貢の方針（段階と布告）・Z8 陣中の私有の兵糧。",
+      "existing": "私財の銭・支度金の預りと実返還を区別。扶持債務は別に保持。",
+      "remaining": "長期の家計調整・知行と給付の拡張。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
         "Core/Contracts/HouseholdService.cs",
@@ -1906,7 +1937,9 @@
         "Tests/CommunityEconomyTests.cs",
         "Game/Scripts/NewGameRuntime.Communities.cs",
         "Docs/Design/CommunityEconomyV2/verification.json",
-        "Scripts/probe_community_reports.py"
+        "Scripts/probe_community_reports.py",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2378,8 +2411,8 @@
     {
       "id": "BD-45",
       "status": "foundation",
-      "existing": "明示した方針だけで本拠集合軍の保管を継続した生前交代を許し、交代と軍務再合意を分離する。後の就任で過去の仕官/辞去資格を変えず、当時の役職履歴から再検証する。",
-      "remaining": "死亡/養子/血統/遺言/係争/暫定統治と全国NPCの家督判断。 統合案で追加：§12 家督の3段・後見。 2026-11-05 A案採用：明示承継条件のない有効な統治上の家法は家の規則として継続し、新当主の権限・本人認識・服従を別に扱う（実装未完了）。 2026-11-05 既存仕様の具体化：家督と実支配、隠居条件の履行、旧当主と新当主の指示競合、元服による後見権限終了と実返還を接続する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。常設職の個別再確認・安全維持委任・家法の継続を混同しない。実装・シナリオ検査は未実施。 2026-11-05 A案採用：吸収・解散後も既存の継承・係争規則に従って同じ家として再興できる。継承根拠、代表権、各人の認識・支持を分け、一律の承認者や支持人数の条件を新設しない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
+      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。",
+      "remaining": "死亡・争いを伴う家督と全契約の承継。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
         "Core/Contracts/NewGameMilitary.StoredSuccession.cs",
@@ -2436,7 +2469,9 @@
         "Tests/NewGameSetupTests.cs",
         "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md",
         "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
-        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2566,8 +2601,8 @@
     {
       "id": "BD-49",
       "status": "normal",
-      "existing": "村と家に加え期限付き代理官を別主体として扱い、当主不在中も権限内の現地判断と時点付き報告を継続。",
-      "remaining": "代表選出/国人寺社の合議/反対派、死亡や交代に伴う組織規則の一般化。 統合案で追加：§11 家中職と評定・§16 集権化。 2026-11-05 既存仕様の具体化：家臣の申立て、取次人の権限、評定の判断、返答と実履行を分離した一巡を接続する（MORI_MOTONARI_GOVERNANCE_CASES、実装・シナリオ検査は未実施）。 2026-11-05 既存仕様の具体化：合意を取り持つ仲裁案と既存管轄による裁定を分け、異議・通知・協力・実履行を独立に扱う（MORI_MOTONARI_WATER_DISPUTES、実装・シナリオ検査は未実施）。 2026-11-05 既存仕様の具体化：国人連合の議案・既存の合議規則・代表権・有効な決議と各家への通知・実行を分ける。共通の多数決・全会一致の既定値は追加しない（MORI_MOTONARI_COALITION_OPERATIONS.md、実装・シナリオ検査は未実施）。",
+      "existing": "当主の判断と家中本人の引受・現地評定を分離。所属と役職・私財を一括移転しない。",
+      "remaining": "家全体の定例方針・改革・専門職の常置。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.cs",
         "Tests/CommunityStewardshipTests.cs",
@@ -2584,7 +2619,9 @@
         "Tests/MilitaryIssuerAuthorityTests.cs",
         "Docs/Proposals/MORI_MOTONARI_GOVERNANCE_CASES.md",
         "Docs/Proposals/MORI_MOTONARI_WATER_DISPUTES.md",
-        "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md"
+        "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2592,8 +2629,8 @@
     {
       "id": "BD-50",
       "status": "normal",
-      "existing": "村が水利労働への協力を食糧/空き/履行履歴から拒否できる限定契約を接続。領主の資源権と共同体の協力意思を分離。",
-      "remaining": "国人の自治条項/従属義務/複数支持/派閥と政治的離脱の一般運用。 統合案で追加：§15 国人衆の合議・従属・§16 改革・§26 Z6 客将の招請・Z9 所領の組み替え（直臣化・移封・改易・国割り）。 2026-11-05 明確化：家法の適用範囲と自治留保、条件改定案の拒否と既存義務への不履行を分離。G-H3の家法承継の既定値を接続する（実装未完了）。 2026-11-05 A案採用：改革は条件が整った独立範囲から段階導入し、一括・交換条件を保持する。成立・発効・通知・実施・完了確認を分離する（実装未完了）。 既存仕様の具体化：国人の攻撃に関し、別家の自治・従属条項・当該指揮委任と主家自身の対外義務を照合し、新しい制限の拒否と既存違反を区別する（MORI_MOTONARI_RETAINER_INCIDENTS.md）。所属だけで権限や義務を拡張せず、実装・シナリオ検査は未実施。 既存仕様の具体化：従属先変更の新旧条約・自治留保・代表権と実服従、接触への制限、所領・人質・債務の残存を区別する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。旧義務違反と無権代理を分け、主家変更だけで権利・義務を一括移転・消滅させない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：国人連合の決議と個別交渉、援軍の指揮委任、各家の物資・負担・残存義務を接続する。盟約参加だけで全軍指揮・共同所有・連帯債務を作らない（MORI_MOTONARI_COALITION_OPERATIONS.md、実装・シナリオ検査は未実施）。 2026-11-05 既存仕様の具体化：養子・隠居条件と家臣の個別支持、旧領の引継ぎ、人・兵・私財の移動、新領への着任・統治開始を接続する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md、MORI_MOTONARI_DOMAIN_TRANSFERS.md）。既存権限と交換条件を保ち、強い家の要求だけで処分権や全地域の実服従を作らない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：主家からの招請と従属家の当主・成人本人の個別判断をつなぎ、赴任・限定指揮・期間・帰還条件を所属の一括移転から分ける（MORI_MOTONARI_GUEST_SERVICE.md）。実装・シナリオ検査は未実施。",
+      "existing": "席次と常設職、本人の上申・条件見直しと当主の審査を接続。",
+      "remaining": "国人の自治・従属・継続的な派閥形成。",
       "evidence": [
         "Core/Contracts/VillageConsultation.cs",
         "Core/Contracts/NpcCommunityAdministration.cs",
@@ -2611,7 +2648,9 @@
         "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md",
         "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
         "Docs/Proposals/MORI_MOTONARI_DOMAIN_TRANSFERS.md",
-        "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md"
+        "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2619,10 +2658,12 @@
     {
       "id": "BD-51",
       "status": "design_only",
-      "existing": "寺社権益の基本方針がある。",
-      "remaining": "寺社の要求・正式権益・実支配・協力/不服従と交渉を実装する。 統合案で追加：§23 寺社（大寺社の組織・寄進・権益・キリスト教）。",
+      "existing": "小寺社の組織・代表者・寄進・保護・禁制と本人が知る情報を接続。",
+      "remaining": "実名大寺社の採録・権益・宗教紛争と武装協力。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json"
+        "Docs/Design/basic-design-v1.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2697,8 +2738,8 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "既存の家督画面へ当事者別の奉公解除/新奉公をまとめ、行政画面へ旧原本/担当者/再承認を接続。旧履歴・新権限・同意・月枠と届いた観測を分ける。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
-      "remaining": "全画面の情報整理・外観/GUI操作の受入とアクセシビリティ。 統合案で追加：§18 4つの動詞・手帳・定例の評定・陣触れ・バックログ G-G1〜G-G12 画面の個別改善・G-U1〜U6・G-X2/X3/X16/X18（待ち時間・書状の行方・導線・設定）・G-X8 音。",
+      "existing": "会う・書く・任せる・動く・手帳と、贈答・恩賞・計略・家中・評定の入口。",
+      "remaining": "全画面の仕上げ・操作感・アクセシビリティと試し遊び。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
         "Core/Contracts/HouseholdService.cs",
@@ -2801,7 +2842,9 @@
         "Tests/WorldTimeTravelTests.cs",
         "Game/Scripts/NewGameRuntime.WorldTime.cs",
         "Game/Scripts/WorldTimeCheck.cs",
-        "Docs/Design/WorldTimeV1/verification.json"
+        "Docs/Design/WorldTimeV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2809,8 +2852,8 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。 成人NPCが本人の既知の用件と点検の必要を優先し、空き時間に30分の修行を選ぶ。引受済みの協力・同行では修行を中断し、実完了した場合だけ技能経験を得る。全件4,017件、7段階の実保存復旧と同じ未来、旧保存254件のバイト一致、Gameビルド、通常入口の配置確認・実データ作成・20秒のNPC判断、Godot配置7組が成功。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
-      "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。 2026-11-05 既存仕様の具体化：再興を志すNPCが、自分の知る情勢・支援・残量から待機、進出、目標縮小、撤退を判断し直す（MORI_MOTONARI_HOUSE_RESTORATION.md）。史実の志だけで挙兵を強制せず、世界の真実・未到着の兵糧を先取りしない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が受け取った補給・救援・遮断の情報と自分の任務をもとに継戦・照会・待機・撤退を判断し、未着の報告や支援を先取りしない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興後に届く継承根拠・旧来の請求・履行報告と実在する資源を踏まえ、照会・交渉・支払・支援計画を本人が判断し直す。未知の原本や未着の支援を先取りせず、自動蜂起・自動精算を行わない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が知る兵糧・救援・条件・安否と実資源から、開城交渉、退去手配、交換・返還、護送の待機・照会、帰還後の行動を判断する。未着の報告を先取りせず、解放を自動登用・復職・再興参加へ変えない（MORI_MOTONARI_SURRENDER_HANDOVER.md、MORI_MOTONARI_CAPTIVE_EXCHANGE.md）。実装・シナリオ検査は未実施。",
+      "existing": "既知の情報と本人の判断で贈答・茶会・伝聞・否認・上申・評定を使用。",
+      "remaining": "NPCの自発登用・全役職の目標・全国長期性能。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
@@ -2885,7 +2928,9 @@
         "Tests/NpcLocalOfferTests.cs",
         "Game/Scripts/NewGameFrontEnd.Judgment.cs",
         "Game/Scripts/NpcJudgmentCheck.cs",
-        "Docs/Design/NpcJudgmentV1/verification.json"
+        "Docs/Design/NpcJudgmentV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2893,14 +2938,16 @@
     {
       "id": "BD-59",
       "status": "normal",
-      "existing": "共通3D骨格/装備/配色、武将作成と会話の顔表示が通常入口につながる。 新旧の主君を選び、遠方の相手は本人の確認済み記録として表示。新主家の点検評価と担当を別に獲得し、旧軍を流用しない。",
-      "remaining": "製品品質の人物/装備の種類、肖像・素材利用権の一覧と全組合せ/全周の受入を整える。 統合案で追加：兵種ごとの装備の見た目・名物などの素材と、新しい場面（茶会・評定・登用・勧告・檄・訃報など）の会話と書状の文面。",
+      "existing": "贈答・紹介状・茶会・恩賞・計略・登用・任命・評定の文面と操作を追加。",
+      "remaining": "人物・家別の文面、史実職名、外観・演出の仕上げ。",
       "evidence": [
         "Core/Appearance/OfficerAppearance.cs",
         "Game/Scripts/NewGameRuntime.WorkExperience.cs",
         "Docs/Design/SupplyWorkV1/verification.json",
         "Game/Scripts/NewGameRuntime.WorkRelations.cs",
-        "Docs/Design/WorkContactReviewV1/verification.json"
+        "Docs/Design/WorkContactReviewV1/verification.json",
+        "Docs/Design/HouseholdCourtV1/README.md",
+        "Docs/Design/HouseholdCourtV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3462,12 +3509,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 43,
+      "passed": 26,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/InformationSchemesV1/runtime-local/final/full.trx",
-      "sha256": "ec229f28a4bcff29cca30a33b8d94df42820f7cdcbe8af97a6252d07a4beafa0",
-      "scope": "新規11件・贈答30件・茶会後の操作1件・勲功の基礎1件。全件は未実施。"
+      "trx": "Docs/Design/HouseholdCourtV1/runtime-local/final/full.trx",
+      "sha256": "e8e20a8046a01c6f1efcc62d1a036f6e59824d8b4570a309e51611b274f4e1e8",
+      "scope": "新規20件・仕官2件・旧当主権限1件・恩賞1件・現物贈答1件・密偵復旧1件。全件は未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3479,14 +3526,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 43,
+      "passed": 26,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/InformationSchemesV1/runtime-local/final/full.trx",
-      "sha256": "ec229f28a4bcff29cca30a33b8d94df42820f7cdcbe8af97a6252d07a4beafa0",
-      "scope": "新規11件・贈答30件・茶会後の操作1件・勲功の基礎1件。全件は未実施。"
+      "trx": "Docs/Design/HouseholdCourtV1/runtime-local/final/full.trx",
+      "sha256": "e8e20a8046a01c6f1efcc62d1a036f6e59824d8b4570a309e51611b274f4e1e8",
+      "scope": "新規20件・仕官2件・旧当主権限1件・恩賞1件・現物贈答1件・密偵復旧1件。全件は未実施。"
     },
-    "current_stage_summary": "流言と真実・書状の名義と持参者・本人の照合を分離。聞いた人だけの伝聞と判断、寺社の既知情報、同意した密偵の実往復・現地の陸路観測・帰還返報と開封後の地図反映を実装。関連43件・実保存復旧・代表旧保存3件・通常画面の内部操作と自前描画が成功。 流言は定型の未確認情報。密偵の観測は陸路と到着拠点に隣接する道路が対象。帰路の救助・返報自体の不達再送・NPC自発派遣・破壊や処分・全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業は継続中。",
+    "current_stage_summary": "条件書・支度金・本人承諾から所属と直属だけを成立させ、席次・常設職・月枠付き現地行政・当主交代時の個別再確認へ接続。家老の評定招集、実参集、NPCの上申と審査、承認から実在米の救済と木材買付を実装。関連26件・実保存復旧・代表旧保存3件・通常画面の内部操作と自前描画が成功。 登用は一度の支度金と所属・直属。扶持・知行・軍の指揮は別契約。常設職の主要接続は家老の招集と代官・城主の現地行政。家別職名・遠隔赴任・定例評定と家の方針・NPC自発登用・全件・全国長期性能・ユーザー試し遊びは未実施。 まとめ作業は全体48.4%→57.8%（+9.4316ポイント）。工程5組・完成条件25/25。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3508,9 +3555,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/InformationSchemesV1/integration.json",
-    "current_logic_verification": "Docs/Design/InformationSchemesV1/verification.json",
-    "current_logic_verification_sha256": "30737da5f7bc66cf8fac91bb39758e441f2783a046e89d3e0d5304628f3e7a99",
+    "integration": "Docs/Design/HouseholdCourtV1/integration.json",
+    "current_logic_verification": "Docs/Design/HouseholdCourtV1/verification.json",
+    "current_logic_verification_sha256": "4b018907a078667e1408e1710b216df2549130790344f42bff797e8b2535f636",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3576,11 +3623,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "席次と登用",
-    "家中職と評定",
-    "書状の使い・買付納品・口入れ",
-    "開発の普請と奉行の常置",
-    "職人・技術・港の航海"
+    "仕事：書状の使い・買付納品・口入れ",
+    "開発の普請・港の造船",
+    "奉行の常置・定例評定と家の方針",
+    "職人・技術・交易船の航海",
+    "指出・検地と年貢の方針"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

@@ -29,14 +29,14 @@ public static partial class CommunityStewardship
     static bool SameMonth(ContractWorld w,long a,long b){var epoch=DateOnly.Parse(w.EpochDate);var x=epoch.AddDays((int)(a/Day));var y=epoch.AddDays((int)(b/Day));return x.Year==y.Year&&x.Month==y.Month;}
     internal static long Budget(ContractWorld w,EntityId actor,EntityId site,EconomyAction action,long at,long rev)
     {
-        var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor)return long.MaxValue;
+        var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor){if(RegionalDomains.Owner(w,site) is {} owner&&HouseholdCourt.Authority(w,actor,owner,site,at,rev)!=null)return HouseholdCourt.Budget(w,actor,site,action,at,rev);return long.MaxValue;}
         long cap=action==EconomyAction.RelieveVillage?500:action==EconomyAction.CollectLevy?1000:200;
         long used=w.Communities!.Orders.Where(o=>(SharedDelegationBudget(w,site,at,rev)?DelegatedCharge(w,o.Actor,site,o.At,o.Revision):o.Actor==actor)&&o.Input.Site==site&&o.Input.Action==action&&Before(o.At,o.Revision,at,rev)&&SameMonth(w,o.At,at)).Sum(o=>o.Input.Amount);
         return Math.Max(0,cap-used);
     }
     internal static FactionStanceAuthority? Authority(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev)
     {
-        if(!Enabled(w)||CastleAdministration.Blocked(w,site,at,rev))return null;var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor||g.Owner!=owner)return null;
+        if(HouseholdCourt.Authority(w,actor,owner,site,at,rev) is {} court)return court;if(!Enabled(w)||CastleAdministration.Blocked(w,site,at,rev))return null;var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor||g.Owner!=owner)return null;
         var source=FactionStances.ResolveAuthority(w,g.Principal,owner,at,Math.Min(rev,w.CommitSequence));if(source==null)return null;
         var member=w.Memberships.LastOrDefault(m=>m.Subject==actor&&m.Target==owner&&m.From<=at&&at<m.Until);if(member==null)return null;
         return source with{Issuer=actor,Office=g.Id,Membership=member.Id};
