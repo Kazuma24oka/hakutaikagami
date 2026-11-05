@@ -2253,3 +2253,10 @@ Docs/Development/ProgressV1/approval-baseline-v64.json -text
 Docs/Design/CraftTradeV1/* -text
 Core/Contracts/CraftTrade.cs -text
 Tests/CraftTradeTests.cs -text
+
+Core/Contracts/CraftTrade.Commands.cs -text
+Game/Scripts/NewGameRuntime.CraftTrade.cs -text
+Game/Scripts/NewGameFrontEnd.CraftReview.cs -text
+Game/Scripts/CraftTradeCheck.cs -text
+Game/Scenes/CraftTradeCheck.tscn -text
+Scripts/verify_craft_trade.py -text
