@@ -2248,3 +2248,8 @@ Docs/Development/ProgressV1/approval-baseline-v63.json -text
 Docs/Design/StandingAdministrationV1/* -text
 Core/Contracts/StandingAdministration.cs -text
 Tests/StandingAdministrationTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v64.json -text
+Docs/Design/CraftTradeV1/* -text
+Core/Contracts/CraftTrade.cs -text
+Tests/CraftTradeTests.cs -text
