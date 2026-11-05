@@ -120,7 +120,7 @@ public static class HouseholdCourt
   }
  }
  internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action==CourtAction.Convene).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
- internal static void Rewind(ContractWorld w,long at,long rev){BrokerWork.Rewind(w,at,rev);if(w.Court!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray();w.Court=es.Length==0?null:w.Court with{Events=es};}}
+ internal static void Rewind(ContractWorld w,long at,long rev){CraftTrade.Rewind(w,at,rev);BrokerWork.Rewind(w,at,rev);if(w.Court!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray();w.Court=es.Length==0?null:w.Court with{Events=es};}}
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
   if(w.Court==null){Need(prior?.Court==null,"家中の記録が消えています");return;}Need(NewGameWork.Enabled(w)&&w.Court.Schema==1&&w.Court.Policy==Policy,"家中の版が不正です");var es=Events(w);Need(es.Select(e=>e.Input.Id).Distinct().Count()==es.Length&&es.All(e=>e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence&&e.Input.Amount>=0&&Enum.IsDefined(e.Input.Action)&&Enum.IsDefined(e.Input.Role)&&Enum.IsDefined(e.Input.Case)&&Enum.IsDefined(e.Input.Scale)&&w.Characters.Any(c=>c.Id==e.Actor)&&w.Definitions.Sites.Any(s=>s.Id==e.Place)),"家中の原本が不正です");if(prior?.Court!=null)Need(ContractJson.CanonicalHash(es.Take(prior.Court.Events.Length).ToArray())==ContractJson.CanonicalHash(prior.Court.Events),"過去の家中の記録が変更されています");

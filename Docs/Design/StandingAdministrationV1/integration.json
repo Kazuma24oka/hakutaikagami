@@ -1,5 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "bfed5dc03c37d1b9c5fe8c1d3b7cbac9a16ecf76",
-  "scope": "コード・資料のみ。モデル・実行画像はローカル。"
+  "scope": "コード・資料のみ。モデル・実行画像はローカル。",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/69",
+  "integrated_head": "15a26df5e9f6bfa35174ba149b20fb375514e378",
+  "integrated_main": "0096bb0c0c560b4143f3730acf608e657396cf19",
+  "integrated_tree": "bb26dc9006e48adb9b142773783ce17b9007f0b0",
+  "verification": "関連14件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "約10ポイントのまとめ作業は継続中。次は3c職人・技術・交易船の航海。"
 }

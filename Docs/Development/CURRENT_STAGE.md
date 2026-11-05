@@ -2,10 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：3b常設奉行・定例評定を完了し、3cへ続行
-- 開発と造船は完成条件5/5。関連14件・保存復旧・通常画面が成功。
+## 今の工程：3c職人・技術・教会・交易船を完了し、3dへ続行
+- 開発と造船は完成条件5/5。関連18件・保存復旧・通常画面が成功。
 - まとめ作業の開始は57.8137%。途中統合を停止理由にしない。
-- 次は職人集団・技術・交易船の航海。
+- 次は指出・検地と年貢の方針。
 
 ## 次の5工程（統合案第14節）
 1. 3：書状の使い・買付納品・口入れ。
@@ -26,7 +26,8 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-05 | 常設奉行・定例評定と家の方針 | Docs/Design/StandingAdministrationV1/ | integration.json参照 |
+| 2026-11-05 | 職人・技術・教会と交易船 | Docs/Design/CraftTradeV1/ | integration.json参照 |
+| 2026-11-05 | 常設奉行・定例評定と家の方針 | Docs/Design/StandingAdministrationV1/ | 0096bb0（PR69） |
 | 2026-11-05 | 開発の普請・造船 | Docs/Design/PublicWorksV1/ | bfed5dc（PR68） |
 | 2026-11-05 | 書状の使い・買付納品・口入れ | Docs/Design/BrokerWorkV1/ | 04b3a69（PR67） |
 | 2026-11-05 | 登用・常設職・評定 | Docs/Design/HouseholdCourtV1/ | 0942fc3（PR66） |

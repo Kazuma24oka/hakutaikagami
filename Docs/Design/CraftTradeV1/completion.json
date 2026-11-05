@@ -1,0 +1,71 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "実体を持つ試作職人集団の条件交渉・実移動・現地設備を分け、職人だけで技術が瞬間拡散しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CraftTrade.cs",
+        "Core/Contracts/CraftTrade.Commands.cs",
+        "Game/Scripts/NewGameFrontEnd.CraftReview.cs",
+        "Tests/CraftTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.CraftTrade.cs",
+        "Game/Scripts/CraftTradeCheck.cs",
+        "Docs/Design/CraftTradeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "原料の現地購入・輸送・製作時間と鉄砲・火薬・鉱山・石工・南蛮技術の実在庫を接続する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CraftTrade.cs",
+        "Core/Contracts/CraftTrade.Commands.cs",
+        "Game/Scripts/NewGameFrontEnd.CraftReview.cs",
+        "Tests/CraftTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.CraftTrade.cs",
+        "Game/Scripts/CraftTradeCheck.cs",
+        "Docs/Design/CraftTradeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "港の実在する交易船・荷・資金を出し、実航海と帰港でのみ収支を確定する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CraftTrade.cs",
+        "Core/Contracts/CraftTrade.Commands.cs",
+        "Game/Scripts/NewGameFrontEnd.CraftReview.cs",
+        "Tests/CraftTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.CraftTrade.cs",
+        "Game/Scripts/CraftTradeCheck.cs",
+        "Docs/Design/CraftTradeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "宣教師・教会の組織、布教許可と個人の入信・商人との関係を分け、NPCも同じ条件で使う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CraftTrade.cs",
+        "Core/Contracts/CraftTrade.Commands.cs",
+        "Game/Scripts/NewGameFrontEnd.CraftReview.cs",
+        "Tests/CraftTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.CraftTrade.cs",
+        "Game/Scripts/CraftTradeCheck.cs",
+        "Docs/Design/CraftTradeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "関連重大不具合・途中保存の同じ未来・通常入口と代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CraftTrade.cs",
+        "Core/Contracts/CraftTrade.Commands.cs",
+        "Game/Scripts/NewGameFrontEnd.CraftReview.cs",
+        "Tests/CraftTradeTests.cs",
+        "Game/Scripts/NewGameRuntime.CraftTrade.cs",
+        "Game/Scripts/CraftTradeCheck.cs",
+        "Docs/Design/CraftTradeV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "職人・商人・教会・価格・船足は試作定義。史実採録と歴史モード別の追加出現、弟子育成、征服時引継ぎ、難破・海賊、遠洋航海、航海の3D船モデル、未払い回収分岐の通しは後続。通常画面の通しは工房・職人・製作・教会と保存復旧、実航海と運休・原料運搬はCoreで確認。全レシピの個別通し・全件・全国長期性能・ユーザー試遊は未実施。"
+}
