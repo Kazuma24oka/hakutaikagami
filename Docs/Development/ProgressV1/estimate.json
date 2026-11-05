@@ -490,7 +490,7 @@
     "automatic_main": true,
     "criteria_passed": 5,
     "criteria_total": 5,
-    "integrated_main": null
+    "integrated_main": "411b0b2a406cd05ae011c289472c8083fd908e65"
   },
   "range_note": "2026-10-31: Five integration-scope reassessments lowered the raw estimate 57.677435% -> 51.381196% -> 48.960633% -> 48.386824% -> 47.422430% -> 46.443128%. Display band 45-55. These earn no progress and change no weights or denominator."
 }
