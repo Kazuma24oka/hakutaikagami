@@ -250,6 +250,7 @@ public sealed class ContractWorld
     public required EntityId PlayerControl { get; set; }
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialWorldState? SocialWorld {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialAssetState? SocialAssets {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public MeritState? Merits {get;set;}
     public required ChronicleEntry[] Chronicle { get; set; }
     public required RequestReceipt[] Requests { get; set; }
 }

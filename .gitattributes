@@ -2199,3 +2199,13 @@ Scripts/verify_social_assets.py -text
 Docs/Design/SocialAssetsV1/*.json -text
 Docs/Design/SocialAssetsV1/*.md -text
 Docs/Development/ProgressV1/approval-baseline-v57.json -text
+
+Core/Contracts/MeritRewards.cs -text
+Tests/MeritRewardTests.cs -text
+Game/Scripts/NewGameRuntime.MeritRewards.cs -text
+Game/Scripts/MeritRewardsCheck.cs -text
+Game/Scenes/MeritRewardsCheck.tscn -text
+Scripts/verify_merit_rewards.py -text
+Docs/Design/MeritRewardsV1/*.json -text
+Docs/Design/MeritRewardsV1/*.md -text
+Docs/Development/ProgressV1/approval-baseline-v58.json -text

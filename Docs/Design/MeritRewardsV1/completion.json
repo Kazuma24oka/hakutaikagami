@@ -1,0 +1,67 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "主君の受領した評価原本だけを勲功帳へ集め、本人には開封済みの評価だけを表示する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MeritRewards.cs",
+        "Core/Contracts/SocialAssets.cs",
+        "Game/Scripts/NewGameRuntime.MeritRewards.cs",
+        "Game/Scripts/MeritRewardsCheck.cs",
+        "Tests/MeritRewardTests.cs",
+        "Docs/Design/MeritRewardsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "銭・私有物・感状・与姓と偏諱は実際の申し渡しと受領を経て確定し、受領前に恩賞済みとしない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MeritRewards.cs",
+        "Core/Contracts/SocialAssets.cs",
+        "Game/Scripts/NewGameRuntime.MeritRewards.cs",
+        "Game/Scripts/MeritRewardsCheck.cs",
+        "Tests/MeritRewardTests.cs",
+        "Docs/Design/MeritRewardsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "未報奨への不満と顔を既知の経緯から導き、上申・NPCの判断と結び付ける",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MeritRewards.cs",
+        "Core/Contracts/SocialAssets.cs",
+        "Game/Scripts/NewGameRuntime.MeritRewards.cs",
+        "Game/Scripts/MeritRewardsCheck.cs",
+        "Tests/MeritRewardTests.cs",
+        "Docs/Design/MeritRewardsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "既存の給与・任命契約は権限と同意を保って論功の画面から利用できる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MeritRewards.cs",
+        "Core/Contracts/SocialAssets.cs",
+        "Game/Scripts/NewGameRuntime.MeritRewards.cs",
+        "Game/Scripts/MeritRewardsCheck.cs",
+        "Tests/MeritRewardTests.cs",
+        "Docs/Design/MeritRewardsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "関連重大不具合・途中保存の同じ未来・旧形式の代表互換と通常画面の一巡を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/MeritRewards.cs",
+        "Core/Contracts/SocialAssets.cs",
+        "Game/Scripts/NewGameRuntime.MeritRewards.cs",
+        "Game/Scripts/MeritRewardsCheck.cs",
+        "Tests/MeritRewardTests.cs",
+        "Docs/Design/MeritRewardsV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "勲功の対象は点検の評価と同行者の点検返報。実戦・輸送の勲功、知行の恩賞、返却後の再沙汰、家中全体の論功と正式官位は後続。拝領字は別名札として記録し元の名と同じ人物IDを維持。全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業は継続中。",
+  "full_core_suite": "未実施（P13）"
+}
