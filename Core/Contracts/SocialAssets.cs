@@ -23,7 +23,7 @@ public static class SocialAssets
  public static long HospitalityExpense(ContractWorld w)=>Events(w).Where(e=>e.Input.Action==SocialAssetAction.HoldTea).Sum(e=>e.Cost);
  public static PersonalObject[] Objects(ContractWorld w,long beforeRevision=long.MaxValue)
  {
-  var rows=MeritRewards.Documents(w,beforeRevision).ToDictionary(o=>o.Id);
+  var rows=MeritRewards.Documents(w,beforeRevision).Concat(InformationSchemes.Documents(w,beforeRevision)).ToDictionary(o=>o.Id);
   void Make(EntityId id,string name,string kind,long quantity,EntityId owner,EntityId site,string origin){Need(!rows.ContainsKey(id),"同じ物の原本が重複しています");rows.Add(id,new(id,name,kind,quantity,owner,owner,site,null,false,[origin]));}
   foreach(var e in w.Trade?.Entries.Where(e=>e.Input.Action==TradeAction.GiftOut&&e.Revision<=beforeRevision)??[]){var deal=w.Trade!.Deals.Single(d=>d.Id==e.Input.Contract);Make(deal.Id,MaterialMarkets.Name(deal.Commodity),deal.Commodity??"rice",deal.Amount,e.Actor,e.Input.Site,"私有の買付原本 "+deal.Id.Value);}
   foreach(var e in Events(w).Where(e=>e.Revision<=beforeRevision)){
@@ -40,9 +40,9 @@ public static class SocialAssets
   foreach(var e in Events(w).Where(e=>e.Revision<beforeRevision&&e.Input.Action==SocialAssetAction.PresentIntroduction)){var id=e.Input.Reference!.Value;Need(rows.TryGetValue(id,out var o)&&o.Owner==e.Actor&&!o.Consumed&&o.Gift==null,"使用済みの紹介状です");rows[id]=o with{Consumed=true,History=[..o.History,"宛先本人に提示・使用済み"]};}
   return rows.Values.ToArray();
  }
- public static long CarryingMass(ContractWorld w,EntityId actor,long beforeRevision=long.MaxValue)=>Objects(w,beforeRevision).Where(o=>o.Holder==actor&&!o.Consumed).Sum(o=>o.Quantity*(o.Kind is "introduction" or "invitation" or "commendation"?0:o.Kind=="weapons"?5:1));
+ public static long CarryingMass(ContractWorld w,EntityId actor,long beforeRevision=long.MaxValue)=>Objects(w,beforeRevision).Where(o=>o.Holder==actor&&!o.Consumed).Sum(o=>o.Quantity*(o.Kind is "introduction" or "invitation" or "commendation" or "scheme-letter"?0:o.Kind=="weapons"?5:1));
  static long TradeMass(ContractWorld w,EntityId actor)=>actor!=w.PlayerControl?0:w.Trade?.Deals.Where(d=>d.Phase is TradePhase.Carrying or TradePhase.SaleQuoted or TradePhase.ReturnRequired).Sum(d=>d.Amount*MaterialMarkets.MassKg(d.Commodity))??0;
- internal static bool CanReceive(ContractWorld w,EntityId recipient,EntityId gift){var entry=SocialWorld.Ledger(w).Single(e=>e.Input.Id==gift);if(entry.Input.Asset is not {} id)return true;var o=Objects(w).Single(o=>o.Id==id);long added=o.Holder==recipient?0:o.Quantity*(o.Kind is "introduction" or "invitation" or "commendation"?0:o.Kind=="weapons"?5:1);return CarryingMass(w,recipient)+TradeMass(w,recipient)+added<=RegionalTrade.Capacity;}
+ internal static bool CanReceive(ContractWorld w,EntityId recipient,EntityId gift){var entry=SocialWorld.Ledger(w).Single(e=>e.Input.Id==gift);if(entry.Input.Asset is not {} id)return true;var o=Objects(w).Single(o=>o.Id==id);long added=o.Holder==recipient?0:o.Quantity*(o.Kind is "introduction" or "invitation" or "commendation" or "scheme-letter"?0:o.Kind=="weapons"?5:1);return CarryingMass(w,recipient)+TradeMass(w,recipient)+added<=RegionalTrade.Capacity;}
  public static PersonalObject[] Inventory(ContractWorld w,EntityId owner)=>Objects(w).Where(o=>o.Owner==owner&&o.Holder==owner&&o.Gift==null&&!o.Consumed).ToArray();
  internal static void Attach(ContractWorld w,SocialWorldInput input,EntityId actor,EntityId site)
  {

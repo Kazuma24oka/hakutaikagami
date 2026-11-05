@@ -1,0 +1,72 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "流言と偽書を真実と別の伝聞として、実際に聞いた人物だけの認識と判断へ反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/InformationSchemes.cs",
+        "Core/Contracts/WorldSession.SchemeCouriers.cs",
+        "Core/Contracts/BranchRoutes.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/InformationSchemesCheck.cs",
+        "Tests/InformationSchemeTests.cs",
+        "Docs/Design/InformationSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "書状の実物・名義・持参者を区別し、本人の現地照合と伝達された否認だけで訂正する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/InformationSchemes.cs",
+        "Core/Contracts/WorldSession.SchemeCouriers.cs",
+        "Core/Contracts/BranchRoutes.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/InformationSchemesCheck.cs",
+        "Tests/InformationSchemeTests.cs",
+        "Docs/Design/InformationSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "本人または同意した密偵が実移動し、現地の観測を物理帰還と開封の後にだけ依頼者が知る",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/InformationSchemes.cs",
+        "Core/Contracts/WorldSession.SchemeCouriers.cs",
+        "Core/Contracts/BranchRoutes.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/InformationSchemesCheck.cs",
+        "Tests/InformationSchemeTests.cs",
+        "Docs/Design/InformationSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "寺社は自分が現地で認識した噂・寄進・保護の情報だけを本人へ伝える",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/InformationSchemes.cs",
+        "Core/Contracts/WorldSession.SchemeCouriers.cs",
+        "Core/Contracts/BranchRoutes.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/InformationSchemesCheck.cs",
+        "Tests/InformationSchemeTests.cs",
+        "Docs/Design/InformationSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面の代表一巡・重大不具合・途中保存と同じ未来・旧形式の代表互換を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/InformationSchemes.cs",
+        "Core/Contracts/WorldSession.SchemeCouriers.cs",
+        "Core/Contracts/BranchRoutes.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/InformationSchemesCheck.cs",
+        "Tests/InformationSchemeTests.cs",
+        "Docs/Design/InformationSchemesV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "流言は定型の未確認情報。密偵の観測は陸路と到着拠点に隣接する道路が対象。帰路の救助・返報自体の不達再送・NPC自発派遣・破壊や処分・全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業は継続中。",
+  "full_core_suite": "未実施（P13）"
+}

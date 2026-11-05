@@ -118,6 +118,9 @@ public static class BranchRoutes
     public static LocationState Location(ContractWorld w,TaskState task)
     {
         var j=w.Branches!.Journeys.Single(j=>j.Task==task.Id);var sample=Sample(w,j);
+        // 新しい密偵方針だけに適用。道の端点で進路を失った本人を、その実在端点に戻す。旧保存の停止位置は読み替えない。
+        if(task.Execution is ExecutionPhase.Failed or ExecutionPhase.Stopped&&w.Requests.Single(r=>r.Id==task.RequestId).Intent.RoutePolicy==InformationSchemes.LandRoute){var edge=GraphEdges(w).Single(e=>e.Id==sample.Leg.Edge);string? node=sample.Progress==0?sample.Leg.From:sample.Progress==edge.LengthMm?sample.Leg.To:null;if(node!=null)return new(task.Executor,LocationKind.AtSite,RegionalCampaign.Site(node),null,0,0,null,null,null,null,w.CommitSequence);}
+
         return new(task.Executor,LocationKind.Traveling,null,WorldSession.Child("route",task.Id,"graph"),sample.Index,sample.Progress,null,null,null,RegionalBranch.Enabled(w)?RegionalBranch.Version:Version,w.CommitSequence);
     }
     static RoutePoint Node(string id,ContractWorld w)=>GraphNodes(w).Single(n=>n.Id==id).Position;
@@ -161,7 +164,7 @@ public static class BranchRoutes
         foreach(var evidence in w.Evidence.Where(e=>(e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||RegionalCampaign.Enabled(w)&&e.Claim.StartsWith("route-open:",StringComparison.Ordinal)))){
             var edge=GraphEdges(w).Single(e=>e.Id==evidence.Claim[(evidence.Claim.StartsWith("route-open:")?11:12)..]);
             if(!w.Knowledge.Any(k=>k.Character==evidence.Observer&&k.Evidence==evidence.Id))throw new InvalidDataException("Closure claim lacks personal knowledge");
-            if(PrivateInformation.IsSourceReport(w,evidence))continue;
+            if(InformationSchemes.IsSourceReport(w,evidence)||PrivateInformation.IsSourceReport(w,evidence))continue;
             if(evidence.Message is {} message){var m=w.Messaging.Messages.Single(m=>m.Id==message.Value);
                 if(m.Kind!="route-observation"||m.Body!=evidence.Claim||m.CreatedAt!=evidence.ObservedAt||
                     !w.Evidence.Any(e=>e.Message==null&&e.Observer.Value==m.SenderId&&e.Claim==m.Body&&e.ObservedAt==m.CreatedAt))throw new InvalidDataException("Closure report lacks source observation");}

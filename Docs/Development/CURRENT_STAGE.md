@@ -2,10 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：勲功・恩賞・不満と顔を接続・後続へ続行
-- 評価の認識・実物の恩賞・本人だけの不満と上申・実保存復旧を確認。
+## 今の工程：情報系計略を接続・登用と評定へ続行
+- 流言・書状照合・寺社の情報・密偵の実往復と実保存復旧を確認。
 - 約10ポイント分をまとめる方針で後続へ続行する。
-- 詳細と未実施はMeritRewardsV1/README.md、統合先はintegration.json。
+- 詳細と未実施はInformationSchemesV1/README.md、統合先はintegration.json。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
 1. 0a 時間の仕組み：日の速度・次の出来事まで・自動の停止と減速・出来事ごとにまとめて進める計算（統合案 第19節 T1〜T6）
@@ -24,6 +24,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-05 | 情報系計略・書状照合・密偵 | Docs/Design/InformationSchemesV1/ | integration.json参照 |
 | 2026-11-05 | 勲功・恩賞・不満と顔 | Docs/Design/MeritRewardsV1/ | 9f10959（PR64） |
 | 2026-11-05 | 私有物・紹介状・名物と茶会 | Docs/Design/SocialAssetsV1/ | 573f883（PR63） |
 | 2026-11-05 | 人物関係・贈答・寺社・名声 | Docs/Design/SocialWorldV1/ | 417d5a9（PR62） |
