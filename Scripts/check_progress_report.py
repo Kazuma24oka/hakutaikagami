@@ -27,7 +27,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="seasonal-local-disaster-repair":
+ if logic["scope"]=="five-ability-preparation-inspection-fee":
+  from verify_ability_effects import check as check_logic
+ elif logic["scope"]=="seasonal-local-disaster-repair":
   from verify_regional_weather import check as check_logic
  elif logic["scope"]=="local-survey-prospective-tax":
   from verify_land_survey import check as check_logic

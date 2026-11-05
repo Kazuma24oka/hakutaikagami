@@ -2,10 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：3e地域災害を完了し、4へ続行
-- 地域災害は完成条件5/5。関連26件・保存復旧・通常画面が成功。
+## 今の工程：4能力効果を完了し、5へ続行
+- 能力効果は完成条件5/5。関連9件・保存復旧・通常画面が成功。
 - まとめ作業の開始は57.8137%。途中統合を停止理由にしない。
-- 次は能力5つの行動効果。
+- 次は賊の接触戦・護衛・討伐。
 
 ## 次の5工程（統合案第14節）
 1. 3e：季節・地域災害と被害の普請。
@@ -26,7 +26,8 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-05 | 季節・地域災害 | Docs/Design/RegionalWeatherV1/ | integration.json参照 |
+| 2026-11-05 | 能力と仕事 | Docs/Design/AbilityEffectsV1/ | integration.json参照 |
+| 2026-11-05 | 季節・地域災害 | Docs/Design/RegionalWeatherV1/ | b20f90f（PR72） |
 | 2026-11-05 | 指出・検地・年貢 | Docs/Design/LandSurveyV1/ | a022b2f（PR71） |
 | 2026-11-05 | 職人・技術・教会と交易船 | Docs/Design/CraftTradeV1/ | f7efc98（PR70） |
 | 2026-11-05 | 常設奉行・定例評定と家の方針 | Docs/Design/StandingAdministrationV1/ | 0096bb0（PR69） |

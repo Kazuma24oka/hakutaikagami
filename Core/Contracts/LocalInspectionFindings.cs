@@ -14,6 +14,7 @@ public static class LocalInspectionFindings
         if(!Enabled(w)||task.Action!=ActionKind.Inspect)return;
         string node=NewGameWorld.Node(task.Scope.Value);var point=BranchRoutes.GraphNodes(w).Single(n=>n.Id==node).Position;
         if(RegionalCampaign.ActorPointAt(w,task.Executor,w.ElapsedSeconds)!=point)throw new InvalidDataException("Inspection observations require physical local presence");
+        AbilityEffects.RecordInspection(w,task);
         foreach(var edge in Roads(w,task)){
             var id=EvidenceId(task,edge.Id);if(w.Evidence.Any(e=>e.Id==id))continue;
             bool blocked=RegionalCampaign.BlockedAt(w,edge.Id,w.ElapsedSeconds);string claim=(blocked?"route-block:":"route-open:")+edge.Id;
@@ -32,6 +33,7 @@ public static class LocalInspectionFindings
     }
     public static void Validate(ContractWorld w)
     {
+        AbilityEffects.ValidateInspection(w);
         bool on=Enabled(w);var authored=w.Evidence.Where(e=>e.Id.Value.Contains("/inspected-road/",StringComparison.Ordinal)&&e.Message==null).ToArray();
         if(!on){if(authored.Length!=0||w.Outbox.Any(o=>o.Kind=="route-observation"&&o.Id.Value.Contains("/inspected-road/",StringComparison.Ordinal)))throw new InvalidDataException("Inspection results without policy");return;}
         var expected=new HashSet<EntityId>();

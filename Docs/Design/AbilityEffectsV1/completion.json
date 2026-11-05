@@ -1,0 +1,71 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "能力5つと成長の既存台帳を使い、低能力を無作為の失敗へ変換しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AbilityEffects.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/AbilityEffectsTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/AbilityEffectsCheck.cs",
+        "Docs/Design/AbilityEffectsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "政務で買付の準備時間、交渉で提示報酬を変え、実際の預り金と精算に反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AbilityEffects.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/AbilityEffectsTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/AbilityEffectsCheck.cs",
+        "Docs/Design/AbilityEffectsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "知略による点検の追加観測を本人と物理報告の受信者だけへ伝える",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AbilityEffects.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/AbilityEffectsTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/AbilityEffectsCheck.cs",
+        "Docs/Design/AbilityEffectsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "本人の正確値と他人の根拠付き推定を維持し、通常画面で時間・条件の差が分かる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AbilityEffects.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/AbilityEffectsTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/AbilityEffectsCheck.cs",
+        "Docs/Design/AbilityEffectsV1/verification.json"
+      ]
+    },
+    {
+      "contract": "代表的な能力差・金品保存・途中復旧・旧保存・通常入口を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/AbilityEffects.cs",
+        "Core/Contracts/LiveTerritory.cs",
+        "Core/Contracts/TransactionalWorld.cs",
+        "Tests/AbilityEffectsTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/AbilityEffectsCheck.cs",
+        "Docs/Design/AbilityEffectsV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "能力5つの既存台帳を使用。今回の実効果は政務の準備時間・交渉の報酬・知略の現地追加観測。統率と武勇の戦闘効果は5・5e、特技の個別付与と史実値の採録は後続。全件・全国長期性能・ユーザー試遊は未実施。"
+}

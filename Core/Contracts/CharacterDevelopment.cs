@@ -50,6 +50,7 @@ public static class CharacterDevelopment
         }
         return rows.ToArray();
     }
+    internal static int EffectiveAt(ContractWorld w,EntityId actor,DevelopmentAbility ability,long at)=>Math.Clamp(Value(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,ability),1,100);
     internal static void Sync(ContractWorld w){if(Enabled(w))w.Development=w.Development! with{Awards=Derive(w)};}
     internal static DevelopmentSkill PreferredPractice(ContractWorld w,EntityId actor)=>Enum.GetValues<DevelopmentSkill>().OrderByDescending(s=>Base(w,actor,Ability(s))).ThenBy(s=>ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/practice/"+w.Seed+"/"+actor.Value+"/"+s)),StringComparer.Ordinal).First();
     internal static Intent PracticeForNpc(ContractWorld w,EntityId actor,string id,DevelopmentSkill skill){
