@@ -1,5 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "b20f90f6335174077d97707be77b462239970b76",
-  "scope": "コード・資料のみ。モデル・実行画像はローカル。"
+  "scope": "コード・資料のみ。モデル・実行画像はローカル。",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/73",
+  "integrated_head": "1419153d0d2541029426e6260572f68492987416",
+  "integrated_main": "e701bd541957652a8b2fb90d53b421e478db9caf",
+  "integrated_tree": "afd8d7631dabed1520f675d20a7c980f5e93aa31",
+  "verification": "関連9件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "100%またはユーザー判断まで続行。次は賊の接触戦・護衛・討伐。"
 }
