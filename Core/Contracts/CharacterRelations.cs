@@ -57,7 +57,7 @@ public static class CharacterRelations
         var relation=DiagnosticScores(w,person,w.PlayerControl,at,revision);
         int score=45+(DiagnosticTrait(w,person,SocialTrait.Duty)-50)/5+(DiagnosticTrait(w,person,SocialTrait.Affection)-50)/5+(DiagnosticTrait(w,person,SocialTrait.GainSeeking)-50)/5
             -DiagnosticTrait(w,person,SocialTrait.Caution)/10+(DiagnosticTrait(w,person,SocialTrait.Courage)-50)/10+(DiagnosticTrait(w,person,SocialTrait.Ambition)-50)/10
-            +relation.Trust/2-relation.Hostility/2+DiagnosticLoyalty(w,person,LoyaltyTarget.Person,w.PlayerControl,at,revision)/10+(int)Math.Min(10,amount/2);
+            +SocialWorld.ConsentBonus(w,person,w.PlayerControl,at,revision)+relation.Trust/2-relation.Hostility/2+DiagnosticLoyalty(w,person,LoyaltyTarget.Person,w.PlayerControl,at,revision)/10+(int)Math.Min(10,amount/2);
         return score>=50;
     }
     public static SocialCard? View(ContractWorld w,EntityId person){

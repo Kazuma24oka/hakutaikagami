@@ -1,0 +1,67 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "面識・仕事・恩と不満の根拠を方向別に集約し、内部4軸と画面の事実・手応えを分離する。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialWorld.cs",
+        "Core/Contracts/WorldSession.SocialCouriers.cs",
+        "Game/Scripts/NewGameRuntime.SocialWorld.cs",
+        "Game/Scripts/SocialWorldCheck.cs",
+        "Tests/SocialWorldTests.cs",
+        "Docs/Design/SocialWorldV1/verification.json"
+      ]
+    },
+    {
+      "contract": "実在の銭を差し出し、本人または同意した運搬者が運び、相手の受領・拒否・返却を経て贈答を確定する。二重受領や資金増殖を起こさない。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialWorld.cs",
+        "Core/Contracts/WorldSession.SocialCouriers.cs",
+        "Game/Scripts/NewGameRuntime.SocialWorld.cs",
+        "Game/Scripts/SocialWorldCheck.cs",
+        "Tests/SocialWorldTests.cs",
+        "Docs/Design/SocialWorldV1/verification.json"
+      ]
+    },
+    {
+      "contract": "寺社の建物・組織・代表者を分け、寄進・保護・禁制を別案件として扱う。権限と実効の範囲を保ち、寄進で服従を買えない。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialWorld.cs",
+        "Core/Contracts/WorldSession.SocialCouriers.cs",
+        "Game/Scripts/NewGameRuntime.SocialWorld.cs",
+        "Game/Scripts/SocialWorldCheck.cs",
+        "Tests/SocialWorldTests.cs",
+        "Docs/Design/SocialWorldV1/verification.json"
+      ]
+    },
+    {
+      "contract": "武名・仁徳・悪名・文名を本人に届いた事実から評価し、古い噂の風化と地域差・判断への影響を持たせる。未受領の情報は漏らさない。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialWorld.cs",
+        "Core/Contracts/WorldSession.SocialCouriers.cs",
+        "Game/Scripts/NewGameRuntime.SocialWorld.cs",
+        "Game/Scripts/SocialWorldCheck.cs",
+        "Tests/SocialWorldTests.cs",
+        "Docs/Design/SocialWorldV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面から4機能の一巡を操作し、重大な不具合・代表途中保存の同じ未来・影響する旧保存互換を確認する。",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/SocialWorld.cs",
+        "Core/Contracts/WorldSession.SocialCouriers.cs",
+        "Game/Scripts/NewGameRuntime.SocialWorld.cs",
+        "Game/Scripts/SocialWorldCheck.cs",
+        "Tests/SocialWorldTests.cs",
+        "Docs/Design/SocialWorldV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "贈答品は銭のみ。寺社は地域の小寺社の試作代表で、史実大寺社と人物は未採録。修行の武名は戦功と区別。宗教紛争・軍事協力・全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業単位は継続中。",
+  "full_core_suite": "未実施（P13）"
+}

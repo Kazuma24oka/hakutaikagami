@@ -248,6 +248,7 @@ public sealed class ContractWorld
     public required Dictionary<string, long> IdCounters { get; set; }
     public required ConflictDecision[] ConflictDecisions { get; set; }
     public required EntityId PlayerControl { get; set; }
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialWorldState? SocialWorld {get;set;}
     public required ChronicleEntry[] Chronicle { get; set; }
     public required RequestReceipt[] Requests { get; set; }
 }
