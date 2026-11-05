@@ -1,0 +1,61 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "封書の引受・現地手渡し・受領証の持帰り・実報酬を一巡する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BrokerWork.cs",
+        "Tests/BrokerWorkTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/BrokerWorkCheck.cs",
+        "Docs/Design/BrokerWorkV1/verification.json"
+      ]
+    },
+    {
+      "contract": "依頼主の実在銭を私財と分け、実市場の買付・納品・返金を保存する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BrokerWork.cs",
+        "Tests/BrokerWorkTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/BrokerWorkCheck.cs",
+        "Docs/Design/BrokerWorkV1/verification.json"
+      ]
+    },
+    {
+      "contract": "面識不要の小口と既知の信頼に応じた個別相談を分け、NPCも同じ操作を使う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BrokerWork.cs",
+        "Tests/BrokerWorkTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/BrokerWorkCheck.cs",
+        "Docs/Design/BrokerWorkV1/verification.json"
+      ]
+    },
+    {
+      "contract": "期限超過・二重精算・遠隔手渡し・資源増殖を代表確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BrokerWork.cs",
+        "Tests/BrokerWorkTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/BrokerWorkCheck.cs",
+        "Docs/Design/BrokerWorkV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常入口・途中保存復旧・代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BrokerWork.cs",
+        "Tests/BrokerWorkTests.cs",
+        "Game/Scripts/NewGameRuntime.BrokerWork.cs",
+        "Game/Scripts/BrokerWorkCheck.cs",
+        "Docs/Design/BrokerWorkV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "買付は木材の小口と個別相談。納品先は依頼主の蔵で所有権を記録する。NPCの自発受注は同地の既知の同家人物間。寺社組織独自の仕事財布・米の買付・遠方NPCの自発書状運搬・護衛討伐は後続。全件・全国長期性能・ユーザー試し遊びは未実施。"
+}

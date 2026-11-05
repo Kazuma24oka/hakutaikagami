@@ -1,6 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "3a580e141239be67deee6399b8eaef963af91440",
-  "pull_request": null,
-  "scope": "コード・資料のみ。仮素材と描画画像を含めない。"
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/66",
+  "scope": "コード・資料のみ。仮素材と描画画像を含めない。",
+  "integrated_head": "3dc715b3a4698b49007d5d8b8f86997f0a214cf2",
+  "integrated_main": "0942fc32cb2234c6399c8d8887bee0bf4f46256b",
+  "integrated_tree": "39b48d6ca24848e541bcb723d3d3d1a9c714c207",
+  "verification": "関連26件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "ユーザー指定の約10ポイント分を完了。次は3系の書状の使い・買付納品・口入れ。"
 }
