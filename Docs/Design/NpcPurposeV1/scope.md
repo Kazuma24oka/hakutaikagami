@@ -1,13 +1,19 @@
 # NPCの既知の用件と空き時間の修行
 
-採用済みBD-13・BD-58に従う。前段の性能検証中は設計を固定し、検証対象のコードには混在させない。
+採用済みBD-13・BD-58に従う。固定基準は approval-baseline-v51.json（3614d39）。旧v46〜v50を再利用しない。下記は凍結済みの5条件を日本語化したもので、対象・目標値は変更しない。
 
-1. Add an explicit new-game purpose policy for adult NPCs using existing task, time, report and development contracts. Preserve earlier/null policies and saved generations; never control the player or minors.
+1. 成人NPC向けの新規開始方針を追加し、既存の仕事・時間・報告・成長の契約を使う。旧方針・未指定方針・旧保存を保持し、プレイヤーと未成年を自動操作しない。
+2. 引受済みの仕事・移動・拘束を自由行動より優先する。本人が観測した点検の必要と受領済みの結果だけを使い、空き時間は本人の能力から決定的に修行を選ぶ。他人の隠れた値を使わない。
+3. 修行は通常の30分の本人仕事として24時間に1回まで。実際に完了した時間だけ経験へ反映し、物資・身分・役職・関係を生成しない。新たに実行できる外部の用件があれば既存の仕事契約で中断する。
+4. 判断入力・識別子・優先順位を保存して再構成できること。毎刻の再発注・二重加算・未知の道路状況による判断変更を防ぎ、同じ入力では同じ行動になること。
+5. 中断・旧方針互換・実保存からの復旧と同じ未来・Gameビルド・Godotの配置を検査する。全国戦略AIと画面外観の未完成部分は明記する。
 
-2. Prefer active accepted duties, movement and custody over discretionary work. Use only own observed inspection need and own completed/received results; select bounded personal practice during idle time with deterministic own-ability preference, not hidden third-party values.
+## 再開時の実施方針（2026-11-05）
 
-3. Run practice as an ordinary 30-minute self-task, at most once per day, and credit only actual completed time. Do not mint resources, rank, offices or relationships. Newly actionable outside duty interrupts discretionary practice through the existing task contract.
+PROCESS_V2 P9の既存工程の例外に従い、本工程を独立して完了させてから0aへ進む。0bへまとめるために順序を変えず、0bでは本工程と重複する仕事選択を再実装しない。
 
-4. Persist reconstructible decision inputs, stable identities and priorities. Prevent repeated work each tick, duplicate awards and changes caused by unknown road conditions; the same input must choose the same action.
+遊べる一巡は「通常の新規開始で成人NPCが点検を終え、空き時間に修行し、本人が引き受ける協力・同行を依頼すると修行を中断してその用件に移る」。ユーザーの試し遊び依頼は0系がまとまるまで行わない。
 
-5. Verify interruption, old-policy compatibility, real generation recovery and identical future, Game build and actual headless Godot positions. State incomplete strategic national AI and GUI appearance explicitly.
+作業中は関連テストとビルドを実行する。統合前に全件テスト・途中保存と同じ未来・旧保存互換を一度まとめる。人物の所在と同行の扱いを変更するため、今回はGodot配置照合も実施する。細かい不達・再送・取消競合の組合せは後続の例外網羅へ回し、今回は協力の中断と無効依頼の取り消しを代表例とする。
+
+元の作業フォルダはtrial/anime-toon-shaderと未コミット変更を保持。本線prototype/godot-foundationをC:/Workspace/Projects/Games/hakutaikagami-coreへ独立展開した。既存素材・検証証跡・ツールは移動していない。

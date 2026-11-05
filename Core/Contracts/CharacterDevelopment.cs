@@ -51,6 +51,12 @@ public static class CharacterDevelopment
         return rows.ToArray();
     }
     internal static void Sync(ContractWorld w){if(Enabled(w))w.Development=w.Development! with{Awards=Derive(w)};}
+    internal static DevelopmentSkill PreferredPractice(ContractWorld w,EntityId actor)=>Enum.GetValues<DevelopmentSkill>().OrderByDescending(s=>Base(w,actor,Ability(s))).ThenBy(s=>ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/practice/"+w.Seed+"/"+actor.Value+"/"+s)),StringComparer.Ordinal).First();
+    internal static Intent PracticeForNpc(ContractWorld w,EntityId actor,string id,DevelopmentSkill skill){
+        Need(Enabled(w)&&NewGameNpcRoutine.PurposeEnabled(w)&&NewGameNpcRoutine.IsActor(w,actor)&&Enum.IsDefined(skill),"NPC practice policy is required");
+        var site=PersonalCompanions.PhysicalSiteAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1);Need(site!=null,"NPC must be at a site");long at=w.ElapsedSeconds;
+        return new(new(id),actor,actor,site!.Value,ActionKind.Train,null,null,0,null,new(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),at,1,PracticeSeconds,1,false,TaskKind.BindingOrder){TrainingSkill=skill};
+    }
     public static Intent Practice(ContractWorld w,string id,DevelopmentSkill skill){
         Need(Enabled(w)&&Enum.IsDefined(skill),"修行方式が有効ではありません");
         var site=w.Locations.Single(l=>l.Actor==w.PlayerControl);Need(site.Kind==LocationKind.AtSite&&site.Site!=null,"拠点に到着してから修行してください");
@@ -58,9 +64,9 @@ public static class CharacterDevelopment
         return new(new(id),w.PlayerControl,w.PlayerControl,site.Site!.Value,ActionKind.Train,null,null,0,null,new(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),at,1,PracticeSeconds,1,false,TaskKind.BindingOrder){TrainingSkill=skill};
     }
     internal static void ValidatePractice(ContractWorld w,Intent i,long at,bool pending){
-        Need(Enabled(w)&&i.Actor==w.PlayerControl&&i.Executor==i.Actor&&i.Action==ActionKind.Train&&i.TrainingSkill!=null&&Enum.IsDefined(i.TrainingSkill.Value),"Invalid personal training");
+        Need(Enabled(w)&&(i.Actor==w.PlayerControl||NewGameNpcRoutine.PurposeEnabled(w)&&NewGameNpcRoutine.IsActor(w,i.Actor))&&i.Executor==i.Actor&&i.Action==ActionKind.Train&&i.TrainingSkill!=null&&Enum.IsDefined(i.TrainingSkill.Value),"Invalid personal training");
         Need(i.WorkSeconds==PracticeSeconds&&i.EffectiveAt==at&&i.DeliverySeconds==1&&i.ReportSeconds==1&&!i.Important&&i.Kind==TaskKind.BindingOrder&&i.Deadline==new DeadlinePolicy(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),"Training duration or deadline changed");
-        if(pending){Need(i==Practice(w,i.RequestId.Value,i.TrainingSkill!.Value),"Training location changed");Need(!w.Tasks.Any(t=>t.Executor==i.Actor&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)),"先に現在の用件を終えるか中断してください");}
+        if(pending){Need(i==(i.Actor==w.PlayerControl?Practice(w,i.RequestId.Value,i.TrainingSkill!.Value):PracticeForNpc(w,i.Actor,i.RequestId.Value,i.TrainingSkill!.Value)),"Training location changed");Need(!w.Tasks.Any(t=>t.Executor==i.Actor&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)),"先に現在の用件を終えるか中断してください");}
     }
     public static DevelopmentCard? View(ContractWorld w,EntityId observer,EntityId person){
         if(!Enabled(w)||!w.Characters.Any(c=>c.Id==observer)||!w.Characters.Any(c=>c.Id==person))return null;

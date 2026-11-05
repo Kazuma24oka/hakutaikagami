@@ -2138,3 +2138,8 @@ Docs/Design/ProgressScopeV4/** -text
 Docs/Development/ProgressV1/approval-baseline-v50-scope.json -text
 Docs/Development/ProgressV1/approval-baseline-v51.json -text
 Docs/Design/ProgressScopeV5/** -text
+
+Core/Contracts/NpcPurpose.cs -text
+Tests/NpcPurposeTests.cs -text
+Scripts/verify_npc_purpose.py -text
+Docs/Design/NpcPurposeV1/** -text

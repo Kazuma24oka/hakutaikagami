@@ -15,6 +15,7 @@ public static partial class NewGameNpcRoutine
     public static int BoundaryCost(ContractWorld w)=>2*Actors(w).Length;
     public static NpcWorkInputs Inputs(ContractWorld w,EntityId actor,long at,long revision)
     {
+        if(PurposeEnabled(w))return PurposeInputs(w,actor,at,revision);
         if(Continuing(w))return ContinuingInputs(w,actor,at,revision);
         var own=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision&&r.Intent.Actor==actor&&(r.Intent.Executor==actor||LocalWorkDemand.Enabled(w))&&r.Intent.Action==ActionKind.Inspect).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
         bool known=true;string? result=null;
@@ -27,11 +28,11 @@ public static partial class NewGameNpcRoutine
         bool permit=!FieldConvoy.Busy(w,actor,at,revision+1)&&!NpcFreight.Busy(w,actor,at,revision+1)&&!PersonalCompanions.Occupied(w,actor,at,revision)&&!NpcArmies.CommanderBusyAt(w,actor,at,revision)&&IsActor(w,actor)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult&&local&&WorldSession.Permits(w,actor,NewGameWorld.InspectFor(w,actor,"request:npc-routine-preview",at),at);
         return new(local,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready);
     }
-    public static string Reason(NpcWorkInputs i)=>i.Routine!=null?ContinuingReason(i):!i.LocalWitness?"not-at-own-site":!i.InspectionPermit?"no-personal-permit":!i.LastReportKnown?"await-own-report":i.OwnTasks.Length>0?"own-result-known":"inspect-own-site";
+    public static string Reason(NpcWorkInputs i)=>i.Routine?.Purpose!=null?PurposeReason(i):i.Routine!=null?ContinuingReason(i):!i.LocalWitness?"not-at-own-site":!i.InspectionPermit?"no-personal-permit":!i.LastReportKnown?"await-own-report":i.OwnTasks.Length>0?"own-result-known":"inspect-own-site";
     public static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w))return null;var times=new List<long>();
-        foreach(var actor in Actors(w)){var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(checked(w.ElapsedSeconds+1));else if(ContinuingBoundary(w,i) is {} next)times.Add(next);}
+        foreach(var actor in Actors(w)){var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(checked(w.ElapsedSeconds+1));else if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)times.Add(next);}
         return times.Where(t=>t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     }
     internal static void TakeTurns(WorldSession session)=>session.TakeNewGameNpcTurns();
@@ -39,8 +40,8 @@ public static partial class NewGameNpcRoutine
     {
         if(!Enabled(w)||w.NpcWork==null||Actors(w).Length>(Continuing(w)?ContinuingMaximumActors:MaximumActors))throw new InvalidDataException("NPC routine policy/module mismatch");var ds=w.NpcWork.Decisions;if(ds.Select(d=>d.Id).Distinct().Count()!=ds.Length)throw new InvalidDataException("Duplicate NPC routine decision");
         for(int n=0;n<ds.Length;n++){var d=ds[n];if(d.Id!=new EntityId("decision:npc-work/"+(n+1))||!IsActor(w,d.Actor)||d.At<0||d.At>w.ElapsedSeconds||d.InputRevision<0||d.InputRevision>w.CommitSequence||n>0&&d.At<ds[n-1].At||d.InputHash!=ContractJson.CanonicalHash(d.Inputs)||d.InputHash!=ContractJson.CanonicalHash(Inputs(w,d.Actor,d.At,d.InputRevision))||d.Reason!=Reason(d.Inputs))throw new InvalidDataException("NPC routine lacks its own historical inputs");
-            if(d.Request is {} id){if(d.Reason!="inspect-own-site"||id!=new EntityId("request:npc-routine/"+d.Actor.Value.Replace(':','/')+"/"+(d.Inputs.OwnTasks.Length+1)))throw new InvalidDataException("Invalid NPC routine request identity");if(d.Result is ResultCode.Accepted or ResultCode.AlreadyAccepted){var request=w.Requests.Single(r=>r.Id==id);if(request.CreatedAt!=d.At||request.Intent.Actor!=d.Actor||request.Intent.Executor!=d.Actor)throw new InvalidDataException("NPC routine dispatch differs from decision");}}
-            else if(d.Reason=="inspect-own-site"||d.Result!=ResultCode.NotAvailable)throw new InvalidDataException("NPC routine wait has dispatch result");
+            if(d.Request is {} id){if((d.Reason!="inspect-own-site"&&(!PurposeEnabled(w)||d.Reason!="practice-own-skill"))||id!=new EntityId("request:npc-routine/"+d.Actor.Value.Replace(':','/')+"/"+(d.Inputs.OwnTasks.Length+1)))throw new InvalidDataException("Invalid NPC routine request identity");if(d.Result is ResultCode.Accepted or ResultCode.AlreadyAccepted){var request=w.Requests.Single(r=>r.Id==id);if(PurposeEnabled(w)&&(request.Intent.Action!=(d.Reason=="practice-own-skill"?ActionKind.Train:ActionKind.Inspect)||d.Reason=="practice-own-skill"&&request.Intent.TrainingSkill!=d.Inputs.Routine!.Purpose!.Skill))throw new InvalidDataException("NPC purpose dispatch differs from chosen action");if(request.CreatedAt!=d.At||request.Intent.Actor!=d.Actor||request.Intent.Executor!=d.Actor)throw new InvalidDataException("NPC routine dispatch differs from decision");}}
+            else if(d.Reason is "inspect-own-site" or "practice-own-skill"||d.Result!=ResultCode.NotAvailable)throw new InvalidDataException("NPC routine wait has dispatch result");
         }
     }
 }
