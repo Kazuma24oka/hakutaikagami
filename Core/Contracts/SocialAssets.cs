@@ -23,7 +23,7 @@ public static class SocialAssets
  public static long HospitalityExpense(ContractWorld w)=>Events(w).Where(e=>e.Input.Action==SocialAssetAction.HoldTea).Sum(e=>e.Cost);
  public static PersonalObject[] Objects(ContractWorld w,long beforeRevision=long.MaxValue)
  {
-  var rows=new Dictionary<EntityId,PersonalObject>();
+  var rows=MeritRewards.Documents(w,beforeRevision).ToDictionary(o=>o.Id);
   void Make(EntityId id,string name,string kind,long quantity,EntityId owner,EntityId site,string origin){Need(!rows.ContainsKey(id),"同じ物の原本が重複しています");rows.Add(id,new(id,name,kind,quantity,owner,owner,site,null,false,[origin]));}
   foreach(var e in w.Trade?.Entries.Where(e=>e.Input.Action==TradeAction.GiftOut&&e.Revision<=beforeRevision)??[]){var deal=w.Trade!.Deals.Single(d=>d.Id==e.Input.Contract);Make(deal.Id,MaterialMarkets.Name(deal.Commodity),deal.Commodity??"rice",deal.Amount,e.Actor,e.Input.Site,"私有の買付原本 "+deal.Id.Value);}
   foreach(var e in Events(w).Where(e=>e.Revision<=beforeRevision)){
@@ -40,9 +40,9 @@ public static class SocialAssets
   foreach(var e in Events(w).Where(e=>e.Revision<beforeRevision&&e.Input.Action==SocialAssetAction.PresentIntroduction)){var id=e.Input.Reference!.Value;Need(rows.TryGetValue(id,out var o)&&o.Owner==e.Actor&&!o.Consumed&&o.Gift==null,"使用済みの紹介状です");rows[id]=o with{Consumed=true,History=[..o.History,"宛先本人に提示・使用済み"]};}
   return rows.Values.ToArray();
  }
- public static long CarryingMass(ContractWorld w,EntityId actor,long beforeRevision=long.MaxValue)=>Objects(w,beforeRevision).Where(o=>o.Holder==actor&&!o.Consumed).Sum(o=>o.Quantity*(o.Kind is "introduction" or "invitation"?0:o.Kind=="weapons"?5:1));
+ public static long CarryingMass(ContractWorld w,EntityId actor,long beforeRevision=long.MaxValue)=>Objects(w,beforeRevision).Where(o=>o.Holder==actor&&!o.Consumed).Sum(o=>o.Quantity*(o.Kind is "introduction" or "invitation" or "commendation"?0:o.Kind=="weapons"?5:1));
  static long TradeMass(ContractWorld w,EntityId actor)=>actor!=w.PlayerControl?0:w.Trade?.Deals.Where(d=>d.Phase is TradePhase.Carrying or TradePhase.SaleQuoted or TradePhase.ReturnRequired).Sum(d=>d.Amount*MaterialMarkets.MassKg(d.Commodity))??0;
- internal static bool CanReceive(ContractWorld w,EntityId recipient,EntityId gift){var entry=SocialWorld.Ledger(w).Single(e=>e.Input.Id==gift);if(entry.Input.Asset is not {} id)return true;var o=Objects(w).Single(o=>o.Id==id);long added=o.Holder==recipient?0:o.Quantity*(o.Kind is "introduction" or "invitation"?0:o.Kind=="weapons"?5:1);return CarryingMass(w,recipient)+TradeMass(w,recipient)+added<=RegionalTrade.Capacity;}
+ internal static bool CanReceive(ContractWorld w,EntityId recipient,EntityId gift){var entry=SocialWorld.Ledger(w).Single(e=>e.Input.Id==gift);if(entry.Input.Asset is not {} id)return true;var o=Objects(w).Single(o=>o.Id==id);long added=o.Holder==recipient?0:o.Quantity*(o.Kind is "introduction" or "invitation" or "commendation"?0:o.Kind=="weapons"?5:1);return CarryingMass(w,recipient)+TradeMass(w,recipient)+added<=RegionalTrade.Capacity;}
  public static PersonalObject[] Inventory(ContractWorld w,EntityId owner)=>Objects(w).Where(o=>o.Owner==owner&&o.Holder==owner&&o.Gift==null&&!o.Consumed).ToArray();
  internal static void Attach(ContractWorld w,SocialWorldInput input,EntityId actor,EntityId site)
  {
@@ -123,7 +123,7 @@ public static class SocialAssets
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
   if(w.SocialAssets==null){Need(prior?.SocialAssets==null,"私有物の記録が消えています");return;}Need(w.SocialAssets.Schema==1&&w.SocialAssets.Policy==Policy,"私有物の版が不正です");var es=Events(w);Need(es.Select(e=>e.Input.Id).Distinct().Count()==es.Length&&es.All(e=>e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence&&e.Cost>=0&&Enum.IsDefined(e.Input.Action)&&w.Characters.Any(c=>c.Id==e.Actor)),"私有物の原本が不正です");
-  if(prior?.SocialAssets!=null)Need(es.Take(prior.SocialAssets.Events.Length).SequenceEqual(prior.SocialAssets.Events),"過去の私有物の記録が変更されています");
+  if(prior?.SocialAssets!=null)Need(ContractJson.CanonicalHash(es.Take(prior.SocialAssets.Events.Length).ToArray())==ContractJson.CanonicalHash(prior.SocialAssets.Events),"過去の私有物の記録が変更されています");
   Need(es.Where(e=>e.Input.Action==SocialAssetAction.Buy).GroupBy(e=>e.Input.Reference).All(g=>g.Count()==1),"一点物が二重購入されています");
   foreach(var e in es){if(e.Input.Action==SocialAssetAction.Buy)Need(Catalog(w,e.Site).Any(a=>a.Id==e.Input.Reference&&a.Price==e.Cost),"名物の取得価格が違います");if(e.Input.Action==SocialAssetAction.HoldTea){var plan=Source(w,e.Input.Reference!.Value,SocialAssetAction.PlanTea);Need(e.Input.People is {Length:>=2} people&&people.Distinct().Count()==people.Length&&people.Contains(e.Actor)&&e.Cost==people.Length*5,"茶会の同席記録が不正です");Need(plan.Actor==e.Actor&&plan.Site==e.Site&&plan.Input.When<=e.At&&e.At<=plan.Input.When+3600,"開催原本と違います");foreach(var guest in e.Input.People!.Where(p=>p!=e.Actor))Need(Events(w).Any(reply=>reply.Input.Action==SocialAssetAction.AcceptTea&&reply.Actor==guest&&reply.Revision<=e.Revision&&SameTea(Source(w,reply.Input.Reference!.Value,SocialAssetAction.PlanTea),plan))&&TransportWork.At(w,guest,e.Site,e.At,e.Revision,stableCompletion:true),"未承諾・未到着の客が同席しています");}}
   _=Objects(w);foreach(var actor in w.Characters.Select(c=>c.Id))Need(CarryingMass(w,actor)+TradeMass(w,actor)<=RegionalTrade.Capacity,"私有物と贈答の携行上限100kgを超えています");
