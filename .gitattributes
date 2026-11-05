@@ -2238,3 +2238,8 @@ Docs/Development/ProgressV1/approval-baseline-v61.json -text
 Docs/Design/BrokerWorkV1/* -text
 Core/Contracts/BrokerWork.cs -text
 Tests/BrokerWorkTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v62.json -text
+Docs/Design/PublicWorksV1/* -text
+Core/Contracts/PublicWorks.cs -text
+Tests/PublicWorksTests.cs -text
