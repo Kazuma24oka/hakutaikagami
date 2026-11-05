@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "c4ab498ea4c78f282a19d69211a7f34370814ac1b66bb1bfb0e71d358abba87f",
-    "Docs/Development/CURRENT_STAGE.md": "3eb21d97298b563b8a6adb958a5c1f96be3e9b20c2a602d59f5c2722959d5c26",
+    "Docs/Development/CURRENT_STAGE.md": "dc9c5db830577b68ca20b55afe83b71a008b5282b514885dcf151f0cf3c3b1cf",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "f9277b293aea610b24c86745670c637a4b67e55729a5b6c15143b6ac7bfc3c12",
@@ -470,7 +470,9 @@
     "Docs/Design/NpcJudgmentV1/aspiration-sources.md": "a3e0da9be4f9502decd8a059f7b0dd28da5e49cab90fe87e835bb6a79bd5ff9d",
     "Docs/Design/NpcJudgmentV1/baseline-erratum.md": "a1c4eaff37f94e2c559c362a01a2479c64e502ce78415a8fd13ff00ee0ad2ad8",
     "Scripts/verify_npc_judgment.py": "105c51304cbfe9b1dd6c3607976e449fbbd9a268fb9df2a4b95a10af2a316d9a",
-    "Docs/Development/ProgressV1/approval-baseline-v53.json": "9ef006fa6c2117549fe41d0e58b818208aa5027b56f3c9bb1fb9b1b1532bde4b"
+    "Docs/Development/ProgressV1/approval-baseline-v53.json": "9ef006fa6c2117549fe41d0e58b818208aa5027b56f3c9bb1fb9b1b1532bde4b",
+    "Docs/Design/HistoricalChronicleV1/scope.md": "c4772d2f18c7b93d2c1de4a72caccb62180cbc6bce1d08f975780795caa53b55",
+    "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d"
   },
   "items": [
     {
