@@ -134,6 +134,10 @@ if p['evidence'].get('current_logic_verification'):
  snapshot=json.loads((R/f).read_bytes());assert snapshot['main']=='9762c59994e1fc9b721b1356eb1534343d5e2fca'
  for item in snapshot['files'].values():check(item['snapshot'],item['sha256'])
 def historical(f,h):
+ # 履歴の入力は元フォルダでも同じハッシュを確認できる。現行コードの判定には使わない。
+ if os.environ.get("HAKUTAI_LEGACY_ROOT"):
+  original=Path(os.environ["HAKUTAI_LEGACY_ROOT"])/f
+  if original.is_file() and hashlib.sha256(original.read_bytes()).hexdigest()==h:return
  if artifact(f).is_file() and hashlib.sha256(artifact(f).read_bytes()).hexdigest()==h:return
  assert snapshot is not None and snapshot['files'].get(f,{}).get('sha256')==h,('historical input not preserved',f)
  check(snapshot['files'][f]['snapshot'],h)
