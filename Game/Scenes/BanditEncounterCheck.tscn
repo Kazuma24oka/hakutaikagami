@@ -1,0 +1,4 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://Scripts/BanditEncounterCheck.cs" id="1"]
+[node name="BanditEncounterCheck" type="Node"]
+script = ExtResource("1")

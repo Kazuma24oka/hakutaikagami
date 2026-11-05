@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "実在する試作賊集団と個体・所在・負傷を保存し、接触時に停止して戦う・退く・銭を渡すを選べる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BanditEncounter.cs",
+        "Core/Contracts/GuardJobs.cs",
+        "Tests/BanditEncounterTests.cs",
+        "Game/Scripts/NewGameRuntime.Bandits.cs",
+        "Game/Scripts/BanditEncounterCheck.cs",
+        "Docs/Design/BanditEncounterV1/verification.json"
+      ]
+    },
+    {
+      "contract": "同じ世界時計の少人数接触戦で能力と同行者を反映し、負傷と賊の敗走を保持する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BanditEncounter.cs",
+        "Core/Contracts/GuardJobs.cs",
+        "Tests/BanditEncounterTests.cs",
+        "Game/Scripts/NewGameRuntime.Bandits.cs",
+        "Game/Scripts/BanditEncounterCheck.cs",
+        "Docs/Design/BanditEncounterV1/verification.json"
+      ]
+    },
+    {
+      "contract": "護衛・討伐を依頼主の実在報酬と現地受渡しへ接続する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BanditEncounter.cs",
+        "Core/Contracts/GuardJobs.cs",
+        "Tests/BanditEncounterTests.cs",
+        "Game/Scripts/NewGameRuntime.Bandits.cs",
+        "Game/Scripts/BanditEncounterCheck.cs",
+        "Docs/Design/BanditEncounterV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常3D画面で接触・戦闘・離脱と結果を確認でき、遠方の未確認状態は漏らさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BanditEncounter.cs",
+        "Core/Contracts/GuardJobs.cs",
+        "Tests/BanditEncounterTests.cs",
+        "Game/Scripts/NewGameRuntime.Bandits.cs",
+        "Game/Scripts/BanditEncounterCheck.cs",
+        "Docs/Design/BanditEncounterV1/verification.json"
+      ]
+    },
+    {
+      "contract": "金品と人数の保存・二重実行・途中復旧・旧保存と通常画面を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BanditEncounter.cs",
+        "Core/Contracts/GuardJobs.cs",
+        "Tests/BanditEncounterTests.cs",
+        "Game/Scripts/NewGameRuntime.Bandits.cs",
+        "Game/Scripts/BanditEncounterCheck.cs",
+        "Docs/Design/BanditEncounterV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "賊は3拠点に固定配置する試作集団。接触は拠点の道の入口で、敗走・負傷・通行銭を個体と集団に保持する。退避後の次の出発は安全に避けて通る扱い。護衛は隣接陸路、討伐は現地。装備別補正・道の途中の襲撃・NPCの自律討伐・回復は後続。全件・全国長期性能・ユーザー試遊は未実施。"
+}
