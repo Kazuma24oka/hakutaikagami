@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "dd73a5097875ff4049fcebb65d9e9e601ae05b6942a06571e637423586954356",
+    "Docs/Development/ProgressV1/estimate.json": "2892565176e1877319817829837081e25111dd9def8f43601accb019b516e924",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "edf3e40668fc9c1974fab9129666bb48711752d4af2732f62b1dab7c1bbf3466",
+    "Scripts/check_progress_report.py": "f88e5b4fcae9ab811ba45c9b56aa90344d553489c0be56b943506cefe226b536",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "e2f501560445d36c1cd7428a0aed04c4a677cc681a7f42b38d1a21a903403bc0",
+    "Scripts/check_approval_batch.py": "9ae00ea326bd6f5daa02646ab9b0c346b07ca33f522f152a8a2d9d4759ecaadc",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -120,8 +120,8 @@
     "Docs/Design/CastleAdministrationV1/legacy-sources.json": "3939e5348bf49312c64530ba7743b0291e8e69ce8ecea027a9d1ab8657ea7330",
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
-    "AGENTS.md": "c4ab498ea4c78f282a19d69211a7f34370814ac1b66bb1bfb0e71d358abba87f",
-    "Docs/Development/CURRENT_STAGE.md": "4eca44267a24b25986bd70c3e42dfd386299f677773ab2c753cc0758901971d0",
+    "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
+    "Docs/Development/CURRENT_STAGE.md": "9884c864d760cc872dcf662c1f9b24fb6e27acda9fe36da377cd6ddbe02a5b36",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "f9277b293aea610b24c86745670c637a4b67e55729a5b6c15143b6ac7bfc3c12",
@@ -375,7 +375,7 @@
     "Docs/Design/NpcPerformanceV1/README.md": "d786282e8fb2227561d4afa7596d0305e5d8e675d25b6d4485550b468a51fd49",
     "Docs/Development/ProgressV1/approval-baseline-v45.json": "3319e5a9082421f8d7f0604bf5adff6a08b2c08fc6c4cd23ebf7b906ca966c1c",
     "Scripts/verify_npc_performance.py": "bab617bb32020642bf9ac4036af9665009b41275de5c2f79067c98d575077d64",
-    "Docs/Development/PROCESS_V2.md": "3986446486dc4c3d94932f544d776b95a2be4afb5054e558e7b8e8e580cef7e9",
+    "Docs/Development/PROCESS_V2.md": "a527f841e15c02451f673925895aa17fc8e7f8b254d16689f0c5c1cfa924ba8a",
     "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "2a4a2f8248e0b184027c032222da7e30e4ccfd77d7b2f2ef1f83f9bc6349a987",
     "Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md": "9bed8c72bcc567bb16b1559afa77dd744bdfcf12713aa401ac89b4650dbfbd55",
     "Docs/Archive/OPERATING_POLICY_HISTORY_TO_2026-10-31.md": "b4628b87ec463959146af3134798acb464bbc92aeaab57e228142778dfb71ceb",
@@ -478,9 +478,19 @@
     "Game/Scripts/HistoricalChronicleCheck.cs": "1e74f85a133c4f42a0ea245595def63708a68e4251cf4801e03bfd61986591d0",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
     "Docs/Design/HistoricalChronicleV1/completion.json": "5a38337b0f346bde4d92ef6f9563b86c4a5cb22be451b5d21fa9deed473209d9",
-    "Docs/Design/HistoricalChronicleV1/integration.json": "29989cc91a468a7ed5bdf19e5d8034b86e16e6a73deaa9aec28091708675942f",
+    "Docs/Design/HistoricalChronicleV1/integration.json": "276026b44f44f2d45c91aaca4c01588d12459f0936da83acff4e5712658223c4",
     "Docs/Design/HistoricalChronicleV1/README.md": "426335930c1efff9acd1ab0da3b45c3daf20ebe7c0209cdc14cc9ffed989cca1",
-    "Scripts/verify_historical_chronicle.py": "301c16651b872992e34e17bb99b2e09c2b795efc89ac37f588c6165e01dc93af"
+    "Scripts/verify_historical_chronicle.py": "301c16651b872992e34e17bb99b2e09c2b795efc89ac37f588c6165e01dc93af",
+    "Game/Scripts/NewGameRuntime.VerbNotebook.cs": "ea7bf90b1c384d600baff345a251faa0139d50f3231c9e3b8933d8a2da3d2228",
+    "Game/Scripts/VerbNotebookCheck.cs": "b67aa454a5625330fc5d19ebf0afa3b2accbb7f2a5df615cb96baa738e81631c",
+    "Game/Scripts/NewGameRuntime.cs": "89159177f031634d4a8f29ec55638237bd32d9ea014da6298a963d1ea9f19348",
+    "Docs/Design/VerbNotebookV1/verification.json": "2d34e856be74d87c4a4bab22092c248a2c3f19800e7c0630a845bee80ce73363",
+    "Docs/Design/VerbNotebookV1/completion.json": "b90d279ab418eda2ef85eabd458141f924b0208db072bc070cde157590cea5aa",
+    "Docs/Design/VerbNotebookV1/integration.json": "e1d6f056f803a1f66f4dc7b1dfe63699885e6793b1382dff2d21db8929a89874",
+    "Docs/Design/VerbNotebookV1/README.md": "35b260c974a192a77be91a2b68dd0a8b8b831a6c2b954a878f5548611090bf5b",
+    "Docs/Design/VerbNotebookV1/scope.md": "e367625aac63ed53753570194371ad39010232293ef37078f89d6b8cc0ab7728",
+    "Scripts/verify_verb_notebook.py": "1f0b5ef15fbb146ed4d9f578dbf13396a295c5aacc002af38efe75deb1459986",
+    "Docs/Development/ProgressV1/approval-baseline-v55.json": "ddc300f6495fe539b5bdbf942a81f77d372268ef2a475c5042ecff1e2a672e02"
   },
   "items": [
     {
@@ -3429,7 +3439,7 @@
       "sha256": "b241bce310c0566f6b4b0b1b8d4273ba47b207d63e7fe19239391bba13bf7184",
       "scope": "0cの関連9件。全件は未実施。"
     },
-    "current_stage_summary": "0cの事件前提ゲートと本人の既知記録だけの年代記を実装。関連9件、通常入口の内部入力・実保存復旧・自前描画、旧保存270件のバイト一致が成功。 史実事件の個別データ30〜50件と各行動への候補登録は、関係する合戦・調略等の工程で追加する。今回の前提ゲートはそのための共通APIであり、未登録の史実事件を自動実行しない。家別表示は本人の認識済み証拠がその家を対象とする記録のみ。未採録の家の年表を生成しない。全件・全国長期性能・ユーザー試し遊びは未実施。",
+    "current_stage_summary": "地図下の動詞・手帳・予備一覧を実装。内部入力による通常開始の仕事・全入口・実保存復旧と3D表示一致に成功。Core不変を確認し前段の関連9件・旧保存270件は再利用。 評定・家の方針・陣触れは2c・3b・7で追加する。今回は既存操作の入口整理で新しい行動権限は加えない。全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業単位は継続中。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3451,9 +3461,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/HistoricalChronicleV1/integration.json",
-    "current_logic_verification": "Docs/Design/HistoricalChronicleV1/verification.json",
-    "current_logic_verification_sha256": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
+    "integration": "Docs/Design/VerbNotebookV1/integration.json",
+    "current_logic_verification": "Docs/Design/VerbNotebookV1/verification.json",
+    "current_logic_verification_sha256": "2d34e856be74d87c4a4bab22092c248a2c3f19800e7c0630a845bee80ce73363",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3519,9 +3529,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "0系：4つの動詞と手帳",
-    "第1版を通して試し遊び",
-    "1〜3系：関係・寺社・評定と仕事"
+    "関係の事実と4軸",
+    "贈り物の実配送",
+    "寺社と寄進・禁制",
+    "名声と噂",
+    "名物と茶会"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

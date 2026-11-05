@@ -27,7 +27,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="historical-event-premise-personal-chronicle":
+ if logic["scope"]=="verb-notebook-normal-entry-ui":
+  from verify_verb_notebook import check as check_logic
+ elif logic["scope"]=="historical-event-premise-personal-chronicle":
   from verify_historical_chronicle import check as check_logic
  elif logic["scope"]=="npc-judgment-cadence-personality-local-offer-internal-ui":
   from verify_npc_judgment import check as check_logic
