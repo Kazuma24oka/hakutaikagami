@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "Add an explicit new-game purpose policy for adult NPCs using existing task, time, report and development contracts. Preserve earlier/null policies and saved generations; never control the player or minors.",
+      "title": "新規開始の成人NPC方針と旧保存の保持",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcPurpose.cs",
+        "Tests/NpcPurposeTests.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/NpcPurposeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Prefer active accepted duties, movement and custody over discretionary work. Use only own observed inspection need and own completed/received results; select bounded personal practice during idle time with deterministic own-ability preference, not hidden third-party values.",
+      "title": "本人の知識・既知の用件・所在地を優先",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcPurpose.cs",
+        "Tests/NpcPurposeTests.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/NpcPurposeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Run practice as an ordinary 30-minute self-task, at most once per day, and credit only actual completed time. Do not mint resources, rank, offices or relationships. Newly actionable outside duty interrupts discretionary practice through the existing task contract.",
+      "title": "共通の修行仕事・実完了経験・用件による中断",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcPurpose.cs",
+        "Tests/NpcPurposeTests.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/NpcPurposeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Persist reconstructible decision inputs, stable identities and priorities. Prevent repeated work each tick, duplicate awards and changes caused by unknown road conditions; the same input must choose the same action.",
+      "title": "判断入力・識別子の保存と重複防止",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcPurpose.cs",
+        "Tests/NpcPurposeTests.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/NpcPurposeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "Verify interruption, old-policy compatibility, real generation recovery and identical future, Game build and actual headless Godot positions. State incomplete strategic national AI and GUI appearance explicitly.",
+      "title": "実保存と同じ未来・旧保存・GameとGodot配置",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcPurpose.cs",
+        "Tests/NpcPurposeTests.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Docs/Design/NpcPurposeV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "外観・GUI操作は未実施。全国の戦略的な目的選択や役割別の判断頻度は後続0b。旧保存の行動方針は変更しない。修行中断分には経験を付けない。",
+  "gui": "NOT_RUN",
+  "full_core_suite": "PASSED"
+}
