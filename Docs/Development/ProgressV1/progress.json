@@ -431,12 +431,12 @@
     "Docs/References/MORI_MOTONARI_EPISODE_INDEX.md": "e7a7fd7baa2983831fd88a1d407090b1559cec6993e8d876459771d4b20c57d6",
     "Core/Contracts/NpcPurpose.cs": "e9528ed2efad34b04526b895e8abba16100f91d9dbe48c64fd65d20aa2a3b846",
     "Tests/NpcPurposeTests.cs": "fcd60986beae56039cc6e5ddf164d8786ec531f7148501a1da2a4f05db457c1c",
-    "Docs/Design/NpcPurposeV1/verification.json": "4e81ef96a69270cb78637180ad85f19e79bad3991ab7acfd5a2b1f77d76b1676",
+    "Docs/Design/NpcPurposeV1/verification.json": "332fcd3d0b92acac8d9601a46d94a5bac65e42442e667e52e734408a76c82c5a",
     "Docs/Design/NpcPurposeV1/completion.json": "2e9ace2047c4832d1d5575c72061f447f8d1393751dcf14cc36337ee476844fe",
     "Docs/Design/NpcPurposeV1/integration.json": "2815c4cf3b15a65f629ec4907cd100033d836b107593c66c18718c72ff4ac023",
     "Docs/Design/NpcPurposeV1/README.md": "89095965e463be5718f058e54c80b131462943fbf3e596691ffc9cc43bae09a9",
     "Docs/Design/NpcPurposeV1/scope.md": "0f9def6f76d77ad33c1d21693c625aeac488bfd0a99377f887cd24d999cd8eb7",
-    "Scripts/verify_npc_purpose.py": "cad54d80bb81e09db081524c3472c8dd24dcff5bdc1527fe2acc2f60db9abad8"
+    "Scripts/verify_npc_purpose.py": "c2c4f5052f18fa2f7a6b4d1a99f176a9556eb06a73a9d3e98fcb6e09cee87417"
   },
   "items": [
     {
@@ -3339,7 +3339,7 @@
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/NpcPurposeV1/integration.json",
     "current_logic_verification": "Docs/Design/NpcPurposeV1/verification.json",
-    "current_logic_verification_sha256": "4e81ef96a69270cb78637180ad85f19e79bad3991ab7acfd5a2b1f77d76b1676",
+    "current_logic_verification_sha256": "332fcd3d0b92acac8d9601a46d94a5bac65e42442e667e52e734408a76c82c5a",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"

@@ -4,7 +4,7 @@ import argparse, hashlib, json, os, subprocess, xml.etree.ElementTree as ET
 R=Path(__file__).resolve().parents[1]
 D=R/'Docs/Design/NpcPurposeV1'; O=D/'runtime-local'
 def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-def put(p,v): p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+def put(p,v): p.write_bytes((json.dumps(v,ensure_ascii=False,indent=2)+'\n').encode('utf-8'))
 def sources():
     return {p.relative_to(R).as_posix():sha(p) for base in ['Core','Tests','Game'] for p in sorted((R/base).rglob('*.cs')) if not {'bin','obj','.godot'}.intersection(p.parts)}
 def run(args,log,env=None):
