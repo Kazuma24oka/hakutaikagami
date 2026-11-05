@@ -28,6 +28,14 @@ public partial class WorldTimeCheck:Node
             Check(game.LastAdvanceError==null,"先読み失敗なし");game.ReviewFraction(0);game.Press("save");await Until(()=>!game.IsSaving,"実保存");
             string pose=game.Pose();var bytes=ContractJson.Write(game.Session.DiagnosticSnapshot());game.Press("load");await Frame();game.ReviewFraction(0);
             Check(pose==game.Pose(),"保存復旧後の3D配置と表示速度一致");Check(bytes.SequenceEqual(ContractJson.Write(game.Session.DiagnosticSnapshot())),"保存世界の完全一致");
+            long waitingFrom=game.Session.Seconds,publications=game.ManualAdvancePublications;
+            game.SetDestination("castle");game.Press("depart");await Until(()=>!game.IsDeparting&&!game.DepartureWorkerPending,"帰路の出発確定");
+            game.NextNoticeChunkSeconds=1000;game.Press("time-next");
+            await Until(()=>!game.IsManualAdvancing&&!game.ManualAdvanceWorkerPending,"計算区切りを越えて次の到着通知まで継続");
+            Check(game.Session.Seconds>waitingFrom+1000&&game.ManualAdvancePublications-publications>1,"区切りだけでは待機を終了しない");
+            Check(WorldTimeControl.Pending(game.Session.DiagnosticSnapshot())?.Kind==TimeNoticeKind.Arrival,"実際の到着通知で終了");
+            Check(game.Session.GetActorView(game.Session.PlayerControl).Location.Site==new EntityId("site:castle"),"帰路の実到着");
+            game.NextNoticeChunkSeconds=3*WorldCalendar.SecondsPerDay;
             game.Press("time-settings");await Until(()=>!game.IsClockControlling,"時間設定の停止");
             var dialog=Officer3DCustomActor.Descendants(game).OfType<AcceptDialog>().Single(d=>d.Title=="自動進行の停止・減速");
             var option=Officer3DCustomActor.Descendants(dialog).OfType<OptionButton>().First();option.Select(0);option.EmitSignal(OptionButton.SignalName.ItemSelected,0L);dialog.Hide();

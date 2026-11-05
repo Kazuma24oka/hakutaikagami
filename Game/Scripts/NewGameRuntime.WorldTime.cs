@@ -12,7 +12,7 @@ public partial class NewGameRuntime
     void BuildWorldTime(HFlowContainer bar)
     {
         if(!WorldTimeControl.Enabled(Snapshot()))return;
-        Add(bar,"time-next","次の知らせまで",()=>RequestManualAdvance(checked(Session.Seconds+3*WorldCalendar.SecondsPerDay),true));
+        Add(bar,"time-next","次の知らせまで",()=>RequestManualAdvance(checked(Session.Seconds+NextNoticeChunkSeconds),true));
         Add(bar,"time-settings","時間の設定",ShowTimeSettings);
         Add(bar,"history-summary","1650年の総括",ShowHistorySummary);
     }
@@ -21,7 +21,7 @@ public partial class NewGameRuntime
         RequestClockPause(true);
         timeSettings?.QueueFree();timeSettings=new(){Title="自動進行の停止・減速",Exclusive=true};AddChild(timeSettings);
         var box=new VBoxContainer();timeSettings.AddChild(box);
-        box.AddChild(new Label{Text="本人が知った出来事だけが対象です。\n「次の知らせまで」は設定にかかわらず止まります（最大3日）。"});
+        box.AddChild(new Label{Text="本人が知った出来事だけが対象です。\n「次の知らせまで」は設定にかかわらず止まります。停止で中断できます。"});
         foreach(var rule in Snapshot().TimeControl!.Rules.Where(r=>r.Kind!=TimeNoticeKind.HistoricalEnd)){
             var row=new HBoxContainer();box.AddChild(row);row.AddChild(new Label{Text=TimeKindName(rule.Kind),CustomMinimumSize=new(210,0)});
             var choice=new OptionButton();foreach(var name in new[]{"通知のみ","60倍へ減速","停止"})choice.AddItem(name);choice.Select((int)rule.Response);row.AddChild(choice);
