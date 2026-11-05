@@ -15,6 +15,7 @@ public static partial class NewGameNpcRoutine
     public static int BoundaryCost(ContractWorld w)=>2*Actors(w).Length;
     public static NpcWorkInputs Inputs(ContractWorld w,EntityId actor,long at,long revision)
     {
+        if(NpcJudgment.Enabled(w))return NpcJudgment.Apply(w,actor,at,revision,PurposeInputs(w,actor,at,revision));
         if(PurposeEnabled(w))return PurposeInputs(w,actor,at,revision);
         if(Continuing(w))return ContinuingInputs(w,actor,at,revision);
         var own=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision&&r.Intent.Actor==actor&&(r.Intent.Executor==actor||LocalWorkDemand.Enabled(w))&&r.Intent.Action==ActionKind.Inspect).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();

@@ -5,7 +5,7 @@ public sealed record NpcPurposeInputs(EntityId[] PracticeTasks,EntityId? ActiveP
 public static partial class NewGameNpcRoutine
 {
     public const string PurposePolicy="adult-own-duty-inspection-idle-practice-v3";
-    public static bool PurposeEnabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.NpcRoutinePolicy==PurposePolicy;
+    public static bool PurposeEnabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.NpcRoutinePolicy is PurposePolicy or NpcJudgment.Policy;
     internal static bool DiscretionaryPractice(ContractWorld w,Intent i)=>PurposeEnabled(w)&&i.Actor!=w.PlayerControl&&i.Actor==i.Executor&&i.Action==ActionKind.Train;
     static NpcWorkInputs PurposeInputs(ContractWorld w,EntityId actor,long at,long revision)
     {
@@ -36,6 +36,7 @@ public static partial class NewGameNpcRoutine
         if(p.KnownDuties.Length>0||p.OtherWork)return "existing-duty-first";
         if(p.ActivePractice!=null)return "continue-personal-practice";
         if(!i.LastReportKnown)return "await-own-report";
+        if(i.Routine.Judgment is {} judgment)return judgment.Due?judgment.Choice switch{"inspect"=>"inspect-own-site",null=>"no-discretionary-work-due",_=>"practice-own-skill"}:"scheduled-review-pending";
         if(i.CooldownElapsed&&i.Routine.Need?.Needed==true)return "inspect-own-site";
         // The practice ready flag is fixed by the same input clock, not a UI tick.
         if(p.PracticeDue)return "practice-own-skill";
@@ -46,6 +47,7 @@ public static partial class NewGameNpcRoutine
         var times=new List<long>();long at=w.ElapsedSeconds;
         if(w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.LearnedAt==at)||w.Tasks.Any(t=>t.Executor==actor&&t.FinishedAt==at))times.Add(checked(at+1));
         var p=input.Routine!.Purpose!;
+        if(input.Routine.Judgment is {} judgment){if(judgment.ReadyAt>at)times.Add(judgment.ReadyAt);return times.Order().Select(x=>(long?)x).FirstOrDefault();}
         if(input.LocalWitness&&input.InspectionPermit&&input.LastReportKnown&&!p.OtherWork&&p.ActivePractice==null&&p.KnownDuties.Length==0){if(input.ReadyAt>at)times.Add(input.ReadyAt);if(p.PracticeReadyAt>at)times.Add(p.PracticeReadyAt);times.Add(checked((at/LocalWorkDemand.RecordAge+1)*LocalWorkDemand.RecordAge));}
         return times.Order().Select(x=>(long?)x).FirstOrDefault();
     }
