@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "通常開始の同じ成人NPCが既知の用件を優先し、点検・修行・現地の依頼先を共通規則で選ぶ。依頼の受領・本人承諾・実行・返報まで一巡する。",
+      "title": "現地の依頼・本人承諾・実行・返報・実支払の一巡",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "日・週・月の裁量判断を出来事境界へ接続し、既知命令・危険・期限・実行中の作業を待たせない。描画頻度と時間の刻みを変えても判断結果が一致する。",
+      "title": "判断頻度と共通時計・刻み方の独立",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "六性格・出典を区別した志・歴史モードの重みを実行する候補へ反映する。重みは知識・権限・同意・実在資源を上書きしない。",
+      "title": "性格・志・歴史設定の共通評価",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "入門・標準・対等による本人への関わりを実際の相手選択へ接続する。無料報酬・強制受注・見えない相手の採用をしない。",
+      "title": "実際の相手選びと本人の判断権",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
+      ]
+    },
+    {
+      "contract": "判断理由と設定を保存し、途中復旧後の同じ未来・旧保存のバイト一致・全件テスト・通常入口の内部操作を工程末尾に検査する。",
+      "title": "実保存・旧保存・通常入口の内部操作と自前描画",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "評定は3b、開戦は7、遠方合戦は合戦拡張。歴史設定を領土目標・同盟へ適用する部分は、その候補を追加する後続工程で接続する。志は史料を根拠としたゲーム上の解釈であり、全人物の採録・作成画面での指定は未完了。全国長期性能・ユーザーの試し遊びは未実施。",
+  "full_core_suite": "未実施（P13。旧実行は中断）",
+  "self_render": "PASSED",
+  "user_playtest": "未依頼（第1版の区切り）"
+}

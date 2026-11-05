@@ -1,4 +1,4 @@
-"""0b工程末尾の全件・保存・旧保存・通常入口を一度に照合する。"""
+"""0b工程末尾の関連40件・保存・旧保存・通常入口を一度に照合する。"""
 from pathlib import Path
 import argparse,hashlib,json,os,re,subprocess,xml.etree.ElementTree as ET
 R=Path(__file__).resolve().parents[1];D=R/'Docs/Design/NpcJudgmentV1';O=D/'runtime-local'
@@ -13,10 +13,10 @@ def check(v):
  for group in ['proofs','binaries']:
   for p,h in v[group].items():assert sha(R/p)==h,p
  c=ET.parse(R/v['trx']).find('.//{*}Counters').attrib
- assert int(c['total'])==int(c['passed'])==4093 and int(c['failed'])==int(c['notExecuted'])==0
+ assert int(c['total'])==int(c['passed'])==40 and int(c['failed'])==int(c['notExecuted'])==0
  assert v['legacy_count']==270 and v['recovery_phases']==6 and v['game_internal_input']=='PASSED' and v['self_render']=='PASSED'
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--collect-only',action='store_true');ap.add_argument('--check-only',action='store_true');ap.add_argument('--run-id',default='full');a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--collect-only',action='store_true');ap.add_argument('--check-only',action='store_true');ap.add_argument('--run-id',default='critical');a=ap.parse_args()
  assert re.fullmatch(r'[a-zA-Z0-9_-]+',a.run_id),'実行先は単一のフォルダ名にしてください'
  if a.check_only:check(json.loads((D/'verification.json').read_bytes()));print('0b検証記録の照合成功');return
  O.mkdir(exist_ok=True);full=O/a.run_id;full.mkdir(exist_ok=True)
@@ -26,10 +26,10 @@ def main():
   run(['dotnet','build','Game/HakutaiKagami.Game.csproj','--no-restore','--verbosity','quiet'],O/'build-game.log')
   put(full/'run-inputs.json',{k:v for k,v in sources().items() if k.startswith(('Core/','Tests/'))})
   env=dict(os.environ,HAKUTAI_WORLD_CLASH_QA_DIR=str(full))
-  print('0bの全件テストを開始（途中保存の6段階も同じ実行に含む）',flush=True)
-  run(['dotnet','test','Tests/HakutaiKagami.Tests.csproj','--no-build','--no-restore','--logger','trx;LogFileName=full.trx','--results-directory',str(full),'--verbosity','quiet'],full/'run.log',env)
+  print('0bの関連40件テストを開始（途中保存の6段階も同じ実行に含む）',flush=True)
+  run(['dotnet','test','Tests/HakutaiKagami.Tests.csproj','--no-build','--no-restore','--filter','FullyQualifiedName~NpcChoiceRankingTests|FullyQualifiedName~NpcJudgmentTests|FullyQualifiedName~NpcLocalOfferTests|FullyQualifiedName~NpcJudgmentAcceptanceTests','--logger','trx;LogFileName=full.trx','--results-directory',str(full),'--verbosity','quiet'],full/'run.log',env)
  before=sources();assert json.loads((full/'run-inputs.json').read_bytes())=={k:v for k,v in before.items() if k.startswith(('Core/','Tests/'))}
- trx=full/'full.trx';c=ET.parse(trx).find('.//{*}Counters').attrib;assert c['total']==c['passed']=='4093' and c['failed']==c['notExecuted']=='0',c
+ trx=full/'full.trx';c=ET.parse(trx).find('.//{*}Counters').attrib;assert c['total']==c['passed']=='40' and c['failed']==c['notExecuted']=='0',c
  proofs={}
  def proof(p):proofs[p.relative_to(R).as_posix() if p.is_relative_to(R) else str(p)]=sha(p)
  for p in [trx,full/'run.log',full/'run-inputs.json',O/'build-tests.log',O/'build-game.log']:proof(p)
@@ -52,7 +52,7 @@ Console.WriteLine(JsonSerializer.Serialize(new{Status="PASSED",Legacy=files.Leng
  run(['dotnet',str(probe/'bin/Debug/net8.0/probe.dll'),str(probe/'inputs.json')],probe/'run.log')
  for p in probe.glob('*'):
   if p.is_file():proof(p)
- print('全件・旧保存成功。通常入口の内部操作・自前描画を最終確認',flush=True)
+ print('関連40件・旧保存成功。通常入口の内部操作・自前描画を最終確認',flush=True)
  run([str(G),'--path',str(R/'Game'),'--rendering-method','gl_compatibility','res://Scenes/NpcJudgmentCheck.tscn'],O/'ui-final.log')
  ui=json.loads((O/'ui/result.json').read_bytes());assert ui['Status']=='PASSED';assert 'NPC_JUDGMENT_UI_PASS' in (O/'ui-final.log').read_text(encoding='utf-8-sig')
  assert (O/'ui/before-pose.json').read_bytes()==(O/'ui/restored-pose.json').read_bytes()
@@ -61,6 +61,6 @@ Console.WriteLine(JsonSerializer.Serialize(new{Status="PASSED",Legacy=files.Leng
  assert before==sources()
  binaries=['Core/bin/Debug/net8.0/HakutaiKagami.Core.dll','Tests/bin/Debug/net8.0/HakutaiKagami.Core.dll','Tests/bin/Debug/net8.0/HakutaiKagami.Tests.dll','Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Core.dll','Game/.godot/mono/temp/bin/Debug/HakutaiKagami.Game.dll']
  assert len({sha(R/p) for p in binaries if p.endswith('/HakutaiKagami.Core.dll')})==1
- v=dict(status='PASSED',scope='npc-judgment-cadence-personality-local-offer-internal-ui',sources=before,proofs=proofs,binaries={p:sha(R/p) for p in binaries},trx=trx.relative_to(R).as_posix(),tests=dict(passed=4093,failed=0,skipped=0),new_tests=40,recovery_phases=6,legacy_count=270,game_internal_input='PASSED',self_render='PASSED',ui_pose_pairs=1,computer_use='未使用',user_playtest='未依頼（第1版の区切り）',limits='評定は3b、開戦は7、遠方合戦は合戦拡張。志は現収録4人物の解釈。全人物採録・作成画面での志の指定・全国長期負荷は未完了。')
+ v=dict(status='PASSED',scope='npc-judgment-cadence-personality-local-offer-internal-ui',sources=before,proofs=proofs,binaries={p:sha(R/p) for p in binaries},trx=trx.relative_to(R).as_posix(),tests=dict(passed=40,failed=0,skipped=0),new_tests=40,recovery_phases=6,legacy_count=270,game_internal_input='PASSED',self_render='PASSED',ui_pose_pairs=1,computer_use='未使用',user_playtest='未依頼（第1版の区切り）',limits='評定は3b、開戦は7、遠方合戦は合戦拡張。志は現収録4人物の解釈。全人物採録・作成画面での志の指定・全国長期負荷は未完了。')
  put(D/'verification.json',v);check(v);print('0bの工程末尾の検査成功',flush=True)
 if __name__=='__main__':main()

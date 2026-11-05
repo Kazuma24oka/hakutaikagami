@@ -19,7 +19,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "ba3e860b80eb4f041a3baeafcdf70f96b030ca14be917fce014da9cb1315b769",
+    "Docs/Development/ProgressV1/estimate.json": "8732f5e0f8f2e9a3ebf69483804d48529116653257654983bd0888d287155f59",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "89e1a67e5e56f26fcb8aef7381b801ffc425abb734a582883fca55a937a0c4d3",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "c4ab498ea4c78f282a19d69211a7f34370814ac1b66bb1bfb0e71d358abba87f",
-    "Docs/Development/CURRENT_STAGE.md": "b85c6089759d9d362789f7441451be6e3e3a5c9bcb0d0b4613a0db92ad244f5f",
+    "Docs/Development/CURRENT_STAGE.md": "ccd2b24b184f61a5ae05f09f2695dbb58be32402508bc0bd998eea930af4f334",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
     "Core/Contracts/NewGameWorld.cs": "f9277b293aea610b24c86745670c637a4b67e55729a5b6c15143b6ac7bfc3c12",
@@ -451,9 +451,26 @@
     "Docs/Design/WorldTimeV1/scope.md": "318c32487ef9ea04b16b5515ecca5c2478e773d1dac6c5e32a913a2e41661556",
     "Scripts/verify_world_time.py": "40ccfbe0aa3559e68dbce8e5a0441fd379e1b0afdb9f69ac1aa982b7274c855f",
     "Docs/Development/ProgressV1/approval-baseline-v52.json": "8e5bddd728383736060764997a98a351eae705cbb1cad2da166c35d774645e64",
-    "Docs/Design/NpcJudgmentV1/README.md": "d93352255e622650f9ac04a3617fd8a81edfefdd4eb6edf55e0b0c97afa278b1",
+    "Docs/Design/NpcJudgmentV1/README.md": "2e2f11ea15f69c3f8869aa34c1236a71a0ba26e3a96c75f663ffc58a771afee7",
     "Docs/Design/NpcJudgmentV1/pause.json": "533d42ee1dfc42ab44253e75fdf98c27d639f0e15298d32c16469d5a4b7b3af0",
-    "Docs/Decisions/2026-11-05_CRITICAL_TEST_POLICY.md": "103494fd68d653bb79534a2fc514dcf2de66e7d5bb88f45e5b13152dbb431001"
+    "Docs/Decisions/2026-11-05_CRITICAL_TEST_POLICY.md": "103494fd68d653bb79534a2fc514dcf2de66e7d5bb88f45e5b13152dbb431001",
+    "Core/Contracts/NpcJudgment.cs": "47354426ddf466c43c2319a2b8d580df669d4993c15e7d23121d3e673bd2ca10",
+    "Core/Contracts/NpcLocalOffers.cs": "65e2252a9af054cac99a772a7fa4e6bdc33bef104f9735ae400898a1e925b665",
+    "Core/Contracts/NpcChoiceRanking.cs": "59c6a72738c1b2c52bcef9e7079e23c198df61d12e55cade3bd9767af1e29d8c",
+    "Core/Contracts/NpcAspirationProfiles.cs": "d59308c08bab9c8b16079a8c10b964390d58898d60dbd50dd0beda9519cc0f79",
+    "Tests/NpcJudgmentTests.cs": "4295f555b75c41e0315e850185c8221bbc4e3fbab7262e739cdd83ea6d5be833",
+    "Tests/NpcJudgmentAcceptanceTests.cs": "56ab79ecabfd06d20945ca8e7065740347b310716a90642c9b2755f1ec2b4892",
+    "Tests/NpcLocalOfferTests.cs": "27e9d100c176610544ca0727888f2aa237f56eed3c9eee01757ffbaac68766f7",
+    "Game/Scripts/NewGameFrontEnd.Judgment.cs": "8cf1b6c33dbb47d0299ee00acb3097ac2335106c11ba8134781abe2c9373a030",
+    "Game/Scripts/NpcJudgmentCheck.cs": "633b50eacaaab75efa4b85565374c90600cadec2a93527933b3567624d2fe34f",
+    "Docs/Design/NpcJudgmentV1/verification.json": "7c6c64e8fcaff4b71f6f09e26587231c33107f6d2bd82f6ac5798b1905f7ab76",
+    "Docs/Design/NpcJudgmentV1/completion.json": "38cdeb981498e53eeed316b0756d8932533705a3a4788103827d572507bef69e",
+    "Docs/Design/NpcJudgmentV1/integration.json": "3911e5e5955b5fd4992d0a80740a2a3a709582b74f6e583d13b558c2f7ab567c",
+    "Docs/Design/NpcJudgmentV1/scope.md": "bfd533c79488062fec1a8460c06d1ff162ef01c727b8af0af7c40fae98bb4a34",
+    "Docs/Design/NpcJudgmentV1/aspiration-sources.md": "a3e0da9be4f9502decd8a059f7b0dd28da5e49cab90fe87e835bb6a79bd5ff9d",
+    "Docs/Design/NpcJudgmentV1/baseline-erratum.md": "a1c4eaff37f94e2c559c362a01a2479c64e502ce78415a8fd13ff00ee0ad2ad8",
+    "Scripts/verify_npc_judgment.py": "105c51304cbfe9b1dd6c3607976e449fbbd9a268fb9df2a4b95a10af2a316d9a",
+    "Docs/Development/ProgressV1/approval-baseline-v53.json": "9ef006fa6c2117549fe41d0e58b818208aa5027b56f3c9bb1fb9b1b1532bde4b"
   },
   "items": [
     {
@@ -486,12 +503,22 @@
     {
       "id": "BD-02",
       "status": "foundation",
-      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。",
+      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
       "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。 統合案で追加：§9決定1・§20 W7 難易度（勲功の量・NPCの関わり方）・G-B9 ルール設定の個別つまみ・§20 W6 歴史モードでのNPCの史実志向の差。",
       "evidence": [
         "Core/Contracts/StartConfiguration.cs",
         "Core/Contracts/HistoricalStartCatalog.cs",
-        "Tests/StartConfigurationTests.cs"
+        "Tests/StartConfigurationTests.cs",
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -871,7 +898,7 @@
     {
       "id": "BD-14",
       "status": "normal",
-      "existing": "NPC家臣から支給した家への限定的な信頼を、期日と受領の履歴で更新。遅配後の次の合意判断へ参照する。現地以外では現在の相手の返答を表示せず、PC自身の継続意思を強制しない。 6性格を固定し、個人/家/組織への忠誠を分離。任意の継続協力に性格・既知の主従/実績/手当を用いた本人返答を接続。乱数で拒否を再抽選せず、過去合意を後日の関係で無効化しない。",
+      "existing": "NPC家臣から支給した家への限定的な信頼を、期日と受領の履歴で更新。遅配後の次の合意判断へ参照する。現地以外では現在の相手の返答を表示せず、PC自身の継続意思を強制しない。 6性格を固定し、個人/家/組織への忠誠を分離。任意の継続協力に性格・既知の主従/実績/手当を用いた本人返答を接続。乱数で拒否を再抽選せず、過去合意を後日の関係で無効化しない。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
       "remaining": "一般軍務の危険・補給・提言、重大経験による性格変化、全NPCの横断判断。 統合案で追加：§20 W5 史実人物の志。",
       "evidence": [
         "Core/Contracts/CharacterRelations.cs",
@@ -888,7 +915,17 @@
         "Game/Scripts/NewGameRuntime.Salary.cs",
         "Docs/Design/HouseSalaryV1/verification.json",
         "Core/Contracts/ContractModels.cs",
-        "Tests/CommonContractTests.cs"
+        "Tests/CommonContractTests.cs",
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -2705,7 +2742,7 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。 成人NPCが本人の既知の用件と点検の必要を優先し、空き時間に30分の修行を選ぶ。引受済みの協力・同行では修行を中断し、実完了した場合だけ技能経験を得る。全件4,017件、7段階の実保存復旧と同じ未来、旧保存254件のバイト一致、Gameビルド、通常入口の配置確認・実データ作成・20秒のNPC判断、Godot配置7組が成功。",
+      "existing": "家臣の共通移動・不達報告・同じ観測の再送・実受領後の帰還を接続。野営地補給も原資・地形・実接触・容量に従い主人公を自動操作しない。 自分の観測と受領結果に基づく現地の反復判断、拘束/同行競合と実保存復旧を接続。 成人NPCが本人の既知の用件と点検の必要を優先し、空き時間に30分の修行を選ぶ。引受済みの協力・同行では修行を中断し、実完了した場合だけ技能経験を得る。全件4,017件、7段階の実保存復旧と同じ未来、旧保存254件のバイト一致、Gameビルド、通常入口の配置確認・実データ作成・20秒のNPC判断、Godot配置7組が成功。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
       "remaining": "全国の総合優先順位、役割別目的、遠方簡略との同値検査。 統合案で追加：§20 全国NPC（全員同じ仕組み・評定・開戦の判断）・§20 W8 各機能をNPCが自分から使う判断（計略・婚姻と同盟・登用・改革・寄進・茶会・勧告など）・§26 Z4・Z13 NPCが自分から行う判断（再興の挙兵・脅威の見積もり・包囲網の呼びかけと参加）。 2026-11-05 既存仕様の具体化：再興を志すNPCが、自分の知る情勢・支援・残量から待機、進出、目標縮小、撤退を判断し直す（MORI_MOTONARI_HOUSE_RESTORATION.md）。史実の志だけで挙兵を強制せず、世界の真実・未到着の兵糧を先取りしない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が受け取った補給・救援・遮断の情報と自分の任務をもとに継戦・照会・待機・撤退を判断し、未着の報告や支援を先取りしない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興後に届く継承根拠・旧来の請求・履行報告と実在する資源を踏まえ、照会・交渉・支払・支援計画を本人が判断し直す。未知の原本や未着の支援を先取りせず、自動蜂起・自動精算を行わない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：各人が知る兵糧・救援・条件・安否と実資源から、開城交渉、退去手配、交換・返還、護送の待機・照会、帰還後の行動を判断する。未着の報告を先取りせず、解放を自動登用・復職・再興参加へ変えない（MORI_MOTONARI_SURRENDER_HANDOVER.md、MORI_MOTONARI_CAPTIVE_EXCHANGE.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
@@ -2771,7 +2808,17 @@
         "Docs/Proposals/MORI_MOTONARI_CAPTIVE_EXCHANGE.md",
         "Core/Contracts/NpcPurpose.cs",
         "Tests/NpcPurposeTests.cs",
-        "Docs/Design/NpcPurposeV1/verification.json"
+        "Docs/Design/NpcPurposeV1/verification.json",
+        "Core/Contracts/NpcJudgment.cs",
+        "Core/Contracts/NpcLocalOffers.cs",
+        "Core/Contracts/NpcChoiceRanking.cs",
+        "Core/Contracts/NpcAspirationProfiles.cs",
+        "Tests/NpcJudgmentTests.cs",
+        "Tests/NpcJudgmentAcceptanceTests.cs",
+        "Tests/NpcLocalOfferTests.cs",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs",
+        "Game/Scripts/NpcJudgmentCheck.cs",
+        "Docs/Design/NpcJudgmentV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3348,12 +3395,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 4053,
+      "passed": 40,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/WorldTimeV1/runtime-local/full-fixed/full.trx",
-      "sha256": "7b3525b1b84b1c6e8b149a4dd087ec8800b97bafbdffccbcf6278c8153c92a95",
-      "scope": "現行Core全件。実保存復旧と同じ未来を含む。"
+      "trx": "Docs/Design/NpcJudgmentV1/runtime-local/critical-1/full.trx",
+      "sha256": "d8dba14140a2e33002bbe179d8e39d71254ecbd8528d22de009d16e598b2990f",
+      "scope": "P13で選定した今回の関連40件。実保存復旧を含む。全件は未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3365,14 +3412,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 4053,
+      "passed": 40,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/WorldTimeV1/runtime-local/full-fixed/full.trx",
-      "sha256": "7b3525b1b84b1c6e8b149a4dd087ec8800b97bafbdffccbcf6278c8153c92a95",
-      "scope": "現行Core全件。実保存復旧と同じ未来を含む。"
+      "trx": "Docs/Design/NpcJudgmentV1/runtime-local/critical-1/full.trx",
+      "sha256": "d8dba14140a2e33002bbe179d8e39d71254ecbd8528d22de009d16e598b2990f",
+      "scope": "P13で選定した今回の関連40件。実保存復旧を含む。全件は未実施。"
     },
-    "current_stage_summary": "通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 1年約1時間は遊び方の目標であり、全国NPCの90年性能を達成した意味ではない。開始データは1560年。評定・訃報・襲撃の発生源は後続工程。次の知らせ待ちは3日ごとに計算を区切って通知まで続行し、途中で中断可能。ユーザーの試し遊びは0系が揃ってから。",
+    "current_stage_summary": "通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。 評定は3b、開戦は7、遠方合戦は合戦拡張。歴史設定を領土目標・同盟へ適用する部分は、その候補を追加する後続工程で接続する。志は史料を根拠としたゲーム上の解釈であり、全人物の採録・作成画面での指定は未完了。全国長期性能・ユーザーの試し遊びは未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3394,9 +3441,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/WorldTimeV1/integration.json",
-    "current_logic_verification": "Docs/Design/WorldTimeV1/verification.json",
-    "current_logic_verification_sha256": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
+    "integration": "Docs/Design/NpcJudgmentV1/integration.json",
+    "current_logic_verification": "Docs/Design/NpcJudgmentV1/verification.json",
+    "current_logic_verification_sha256": "7c6c64e8fcaff4b71f6f09e26587231c33107f6d2bd82f6ac5798b1905f7ab76",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3462,11 +3509,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "一時停止中。再開後は0bの全件・保存復旧・旧保存検査と統合",
-    "0c 史実の事件と年代記",
-    "0 4つの動詞と手帳",
+    "再開後：0c 史実の事件と年代記（E1〜E8）",
+    "0 4つの動詞と手帳（U1〜U9）",
     "第1版を通して試し遊び",
-    "1〜3系の実装"
+    "1〜3系：関係・寺社・名声・評定と仕事",
+    "4〜5系：能力・兵種・合戦・城の普請と攻城"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"
