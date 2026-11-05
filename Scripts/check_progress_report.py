@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,hashlib,collections
+import json,hashlib,collections,os
 from build_progress_report import render
 R=Path(__file__).resolve().parents[1]
 p=json.loads((R/'Docs/Development/ProgressV1/progress.json').read_bytes());d=json.loads((R/p['design_source']).read_bytes());a=json.loads((R/p['acceptance_source']).read_bytes())
@@ -12,7 +12,13 @@ for i in p['items']:
  assert i['existing'] and i['remaining'] and i['evidence']
  assert i['planned_acceptance_cases']==sum(c['design_id']==i['id'] for c in a['cases'])
  for f in i['evidence']:assert (R/f).is_file(),f
-def check(f,h):assert hashlib.sha256((R/f).read_bytes()).hexdigest()==h,f
+def artifact(f):
+ # 過去証跡は移動せず、指定された元の作業フォルダからハッシュ照合する。
+ p=R/f
+ if not p.is_file() and "runtime-local" in Path(f).parts and os.environ.get("HAKUTAI_LEGACY_ROOT"):
+  return Path(os.environ["HAKUTAI_LEGACY_ROOT"])/f
+ return p
+def check(f,h):assert hashlib.sha256(artifact(f).read_bytes()).hexdigest()==h,f
 for f,h in p['source_hashes'].items():check(f,h)
 logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
@@ -21,7 +27,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="headless-npc-performance-identical-behavior":
+ if logic["scope"]=="headless-npc-duty-priority-idle-practice":
+  from verify_npc_purpose import check as check_logic
+ elif logic["scope"]=="headless-npc-performance-identical-behavior":
   from verify_npc_performance import check as check_logic
  elif logic["scope"]=="headless-adult-npc-own-demand-continuing-work-and-occupancy":
   from verify_npc_continuing import check as check_logic
@@ -126,7 +134,11 @@ if p['evidence'].get('current_logic_verification'):
  snapshot=json.loads((R/f).read_bytes());assert snapshot['main']=='9762c59994e1fc9b721b1356eb1534343d5e2fca'
  for item in snapshot['files'].values():check(item['snapshot'],item['sha256'])
 def historical(f,h):
- if hashlib.sha256((R/f).read_bytes()).hexdigest()==h:return
+ # 履歴の入力は元フォルダでも同じハッシュを確認できる。現行コードの判定には使わない。
+ if os.environ.get("HAKUTAI_LEGACY_ROOT"):
+  original=Path(os.environ["HAKUTAI_LEGACY_ROOT"])/f
+  if original.is_file() and hashlib.sha256(original.read_bytes()).hexdigest()==h:return
+ if artifact(f).is_file() and hashlib.sha256(artifact(f).read_bytes()).hexdigest()==h:return
  assert snapshot is not None and snapshot['files'].get(f,{}).get('sha256')==h,('historical input not preserved',f)
  check(snapshot['files'][f]['snapshot'],h)
 for f,h in p['evidence']['runtime_source_hashes'].items():historical(f,h)

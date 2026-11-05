@@ -273,3 +273,6 @@ Docs/Design/MilitarySuccessionV1/runtime-local/
 
 Docs/Design/StewardSuccessionV1/runtime-local/
 Docs/Design/StewardSuccessionV1-focus.log
+
+/.test-results/
+/Docs/Design/NpcPurposeV1/runtime-local/

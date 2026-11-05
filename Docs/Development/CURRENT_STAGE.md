@@ -2,10 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：NPCの既知の用件と空き時間の修行（未着手・完成条件は凍結済み）
-- 完成条件：[Docs/Design/NpcPurposeV1/scope.md](../Design/NpcPurposeV1/scope.md)
-- 固定基準：Docs/Development/ProgressV1/approval-baseline-v51.json（commit 3614d39 で5回目の再評価後の基準に凍結し直し。v46〜v50 は置き換え済み）。実装時に Scripts/check_approval_batch.py の BASELINES へ 51 を足す。目標は BD-13 60・BD-58 53。
-- 進め方は PROCESS_V2.md に従う（遊べる一巡を完成条件に入れる、例外は代表1〜2件。2026-10-31 からは P9〜P12 の軽い進め方：工程は統合案の一段ごと、重い検証と記録は一段に1回、試し遊びは遊べる版ごと）。
+## 今の工程：0a 時間の仕組み（次に着手）
+- NPCの既知の用件と空き時間の修行は完成条件5/5と工程末尾の全件・保存検証を完了。統合先はNpcPurposeV1/integration.json。
+- 次はT1〜T6を一工程とし、開始時に基準を固定、末尾に重い検証・進捗更新・PRをまとめる。
+- 第1版（0系）がそろうまで個別機能の試し遊びを依頼しない。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
 1. 0a 時間の仕組み：日の速度・次の出来事まで・自動の停止と減速・出来事ごとにまとめて進める計算（統合案 第19節 T1〜T6）
@@ -24,7 +24,8 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-10-31 | 他の参考作品からの範囲の追加（5回目の再評価、47.4%→46.4%、加点なし） | Docs/Design/ProgressScopeV5/ | （この PR） |
+| 2026-11-05 | NPCの既知の用件と空き時間の修行 | Docs/Design/NpcPurposeV1/ | integration.json参照 |
+| 2026-10-31 | 他の参考作品からの範囲の追加（5回目の再評価、47.4%→46.4%、加点なし） | Docs/Design/ProgressScopeV5/ | 8b3171e（PR56） |
 | 2026-10-31 | 横断的な範囲の追加（4回目の再評価、48.4%→47.4%、加点なし） | Docs/Design/ProgressScopeV4/ | e9f580f（PR55） |
 | 2026-10-31 | データの側の範囲の追加（3回目の再評価、49.0%→48.4%、加点なし） | Docs/Design/ProgressScopeV3/ | b1353c4（PR54） |
 | 2026-10-31 | 統合案・バックログの範囲の追加（2回目の再評価、51.4%→49.0%、加点なし） | Docs/Design/ProgressScopeV2/ | 908fb4c（PR52） |
