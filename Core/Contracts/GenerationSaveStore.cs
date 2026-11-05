@@ -213,7 +213,7 @@ public sealed class GenerationSaveStore
         if(p.MilitaryOriginal!=null&&(!EntityId.IsValid(p.MilitaryOriginal)||p.MilitaryOriginal.Length>256))throw new InvalidDataException("Invalid selected military original ID");
         if(p.MilitaryCancellation!=null&&(!EntityId.IsValid(p.MilitaryCancellation)||p.MilitaryCancellation.Length>256))throw new InvalidDataException("Invalid selected military cancellation ID");
         if(p.ScenerySkin!=null&&!Regex.IsMatch(p.ScenerySkin,"^skin:[a-z0-9_-]{1,64}$"))throw new InvalidDataException("Invalid scenery skin ID");
-        if(!double.IsFinite(p.DisplayFraction)||p.DisplayFraction<0||p.DisplayFraction>=1||!new[]{1,10,60,360}.Contains(p.DisplaySpeed))throw new InvalidDataException("Invalid presentation phase/speed.");
+        if(!double.IsFinite(p.DisplayFraction)||p.DisplayFraction<0||p.DisplayFraction>=1||!WorldTimeControl.Speeds.Contains(p.DisplaySpeed))throw new InvalidDataException("Invalid presentation phase/speed.");
     }
     public RecoveryCandidate[] RecoveryOptions(string slot)
     {

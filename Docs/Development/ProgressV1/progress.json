@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "b4e29df5c8ff0d66cdf1096857d882d02bc717bc9aa5f7a00e0abeebca64666c",
-    "Docs/Development/ProgressV1/estimate.json": "b7e55548b1847bfbe1a1906cbe863961cc65fb62eb170699c62d0ba343db724e",
+    "Docs/Development/ProgressV1/estimate.json": "d6efc3c37743d694e162ac19d75867c188779849bf4462d31cb4047d2afc8418",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "e762e1aed00a5fb19a5a8beedd11c051c6052d59a8475bae4c75495ce664ae2e",
+    "Scripts/check_progress_report.py": "d451f37954cce558cab8ad77c28fb184c8a96cf5f80dabd0f80c0f1b90f90345",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "8c8d977ea9df9d9b8b300e922c633f20a9fd40b3a8e6b5f7487280bb54d085f9",
+    "Scripts/check_approval_batch.py": "71af9fc23ed233a3d82b1ef8f79c200df4be3ae8b46c107769d65a68cca127f1",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f06a6c78008a285506a36f34d509e0ee04b8a3524b1bf926b121b90e35878da6",
-    "Docs/Development/CURRENT_STAGE.md": "0700f75fb705f604b5a64f911cc77353b95a710bcc32e16d9f41f181ede74572",
+    "Docs/Development/CURRENT_STAGE.md": "dd9a80b0c6ae91d4f9b1cb048255960d24e095a4ea4e98f2e05ee2372e0c71fa",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "041096ccd0a467f27a8b4365e0cc7e28fe2368826cfe6452dd2c1343953e4aab",
-    "Core/Contracts/NewGameWorld.cs": "b1b3f778546597a161cb1175cfe9e7f4d7c312a365b961f84f6337f018e750ac",
+    "Core/Contracts/NewGameWorld.cs": "821bd844ba034f0a90a8bfab3e7f6db388b8c4278e3375a7f9b19461d73606b6",
     "Core/Contracts/HouseSalary.cs": "3fb2c219bc721ec43a44735e296b1488b2212339540132e510dfa4b6dafc653e",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",
@@ -183,7 +183,7 @@
     "Core/Contracts/TruceConfirmations.cs": "203ae363acbd6be57a299c53de4d2cd18ef85c018b3688ba0946d78ab3b71adf",
     "Core/Contracts/TruceConfirmations.ReportRetries.cs": "30066fe0cddaf5b43f7714d3ede0f549f32dd7b4f4ff17faafb752a372eeb48c",
     "Core/Contracts/CourierRecovery.cs": "77d34edfc0198c258ca9170076dea4abfb59304db5c46e691fa20c8938419e31",
-    "Core/Contracts/WorldSession.cs": "40dd0606e039f71aac54abd55bc397007e8ea7eabbf3727faf9ee2bf27829067",
+    "Core/Contracts/WorldSession.cs": "707934d50891bb71447f7aea47362a08abcf683281f04a6945a97146f63ccd68",
     "Tests/TruceConfirmationTests.cs": "d2207c87825dfdfaa7558d4568f2368ea6c2ff16df7a5d77880c73bc2b1c2431",
     "Game/Scripts/NewGameRuntime.TruceConfirmations.cs": "03e228ac0696a65b4b9196a8591949a49045c22dcd69ccd8e8d61f3f278fcfea",
     "Game/Scripts/NewGameRuntime.Mail.cs": "d8c7a817571f2cafd1ff2818be9e815c2668b81817fa7e06af2d67462e69b711",
@@ -267,11 +267,11 @@
     "Scripts/verify_treaty_defense.py": "3d0336490737211dcdce08f31d012a6107f5056a55fe482f721c956efb83b8f2",
     "Core/Contracts/CharacterDevelopment.cs": "fba61f081e2531f73a88b5be2d1a98756e61c13c5f81ad04ae9b759ab2c510c5",
     "Core/Contracts/NewGameSetup.cs": "6669b0f3d16476eb8ea947e7103c2aa8c4781f143ed53c907bd7ef86d1b8325a",
-    "Core/Contracts/NewCampaignStore.cs": "e3884e17547080f76cbeacc50ce1a52183774e337aad32dd071a9966216fd7c6",
+    "Core/Contracts/NewCampaignStore.cs": "b50c910559717c94d6763aa1d7803f03b550c7eba2b04a62055eee2870c742a8",
     "Tests/CharacterDevelopmentTests.cs": "a99e6cbdab3ccde651998bf8968de1b418cb82d7ab2ca44747e8ea4057a8b98f",
     "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "2af43c6c8505eb2b04c9a116658707c312f79f91030ca7ed268df3b35cc20725",
     "Game/Scripts/OfficerLibraryTrial.cs": "7f51d05a4b4034201cae396d07c3cb9d6d5964f0e983293bc3c99997d1317539",
-    "Game/Scripts/NewGameFrontEnd.cs": "b24fd4caef6c334f2d378856239a816dbabf87f84023c27c36d1d844afbc2531",
+    "Game/Scripts/NewGameFrontEnd.cs": "179cd8ba839929877e5b3835340d4a3700f079b94c004c323204cd966167ea58",
     "Docs/Design/CharacterDevelopmentV1/verification.json": "2465c82c2592674c00430078fd41588277d4d4c46ee331d342e52ae8165fc16c",
     "Docs/Design/CharacterDevelopmentV1/completion.json": "ffc5ef8d2ff1204e0400401ca15fc7f40eb32b73725e88000be3d2f5b679d541",
     "Docs/Design/CharacterDevelopmentV1/integration.json": "b5991bdd81c590452faaee7234e6b21e06aac40dab96300089203b62629effc1",
@@ -311,7 +311,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v39.json": "b02330d69ede4625f6831df7d5323c84f307aa331b0bf8125866eedb6f15b917",
     "Scripts/verify_adult_marriage.py": "61430a9386fb68a645b2465fc5824ef8a49f21d9dc6cee90cfc8131596f765bd",
     "Core/Contracts/HostageCustody.cs": "fb8adf638fb098dbe938a5bc0ff116331ee34b7ced03cf94d00fed3fc429f781",
-    "Core/Contracts/ContractValidation.cs": "61c511f800b5f53752adcf064431e902bec8ec9f10a1b9fc7656406ac31864b0",
+    "Core/Contracts/ContractValidation.cs": "56b088e9e587f29c23a541856f9af2891c29594b77abcbebe5d7b4e7e0333311",
     "Tests/HostageCustodyTests.cs": "789842f58e12850257e5d66917a0dc844b1937bdaf64ed9ae92deb435d06c375",
     "Game/Scripts/NewGameRuntime.Custody.cs": "748b30b7902bf9485da317da4ff12269473ee70305b4b3d6c040a04f2b38f886",
     "Docs/Design/HostageCustodyV1/verification.json": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "2a97d7df170b5d5a84ae5a733293b8c0cae58c3d2bbce452f7a9c178dad8bab3",
     "Core/Contracts/NewGameNpcRoutine.cs": "6f4abac9984d152965d7126e5460815bf372d99fbfada2544c6622b00bbc578b",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "61bbb2d886e846b5d405d6c0cc0c1bf1e688215a3d8126fa62b0c9ae9acfd03d",
+    "Core/Contracts/ContractJson.cs": "2af14afadc9f592d76659634444dced31486000a80f24d406c9ba792e52c5d12",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -433,10 +433,24 @@
     "Tests/NpcPurposeTests.cs": "fcd60986beae56039cc6e5ddf164d8786ec531f7148501a1da2a4f05db457c1c",
     "Docs/Design/NpcPurposeV1/verification.json": "332fcd3d0b92acac8d9601a46d94a5bac65e42442e667e52e734408a76c82c5a",
     "Docs/Design/NpcPurposeV1/completion.json": "2e9ace2047c4832d1d5575c72061f447f8d1393751dcf14cc36337ee476844fe",
-    "Docs/Design/NpcPurposeV1/integration.json": "2815c4cf3b15a65f629ec4907cd100033d836b107593c66c18718c72ff4ac023",
+    "Docs/Design/NpcPurposeV1/integration.json": "b1918a707c4faaf5f09c112c10a28106cc8075437a0554ffe269b1597d5b01cc",
     "Docs/Design/NpcPurposeV1/README.md": "89095965e463be5718f058e54c80b131462943fbf3e596691ffc9cc43bae09a9",
     "Docs/Design/NpcPurposeV1/scope.md": "0f9def6f76d77ad33c1d21693c625aeac488bfd0a99377f887cd24d999cd8eb7",
-    "Scripts/verify_npc_purpose.py": "c2c4f5052f18fa2f7a6b4d1a99f176a9556eb06a73a9d3e98fcb6e09cee87417"
+    "Scripts/verify_npc_purpose.py": "c2c4f5052f18fa2f7a6b4d1a99f176a9556eb06a73a9d3e98fcb6e09cee87417",
+    "Core/Contracts/WorldTimeControl.cs": "538f0f937c16987a51ee30f6bf4f578fd3280abd54ddf8cc668818a0204beec1",
+    "Core/Contracts/WorldCalendar.cs": "46032b636ea9fdb4d27b7974413dfe7d7d99c9ad5ece9d922c092d9871527a9a",
+    "Core/Contracts/TimeObservationSweep.cs": "a0827645e5ba4afa61d90c4ecc5dcdee4b0f263743a5821c8f32d4f528590cc5",
+    "Tests/WorldTimeControlTests.cs": "b49cba2abf6c1a601fc45b9a4a2df81a8650e8f7d5ac2dac48c838f6dee90fd1",
+    "Tests/WorldTimeTravelTests.cs": "d74bc40427190f641f0df372b40b1c1d7c83e4b850acf4443edc338791b76cc7",
+    "Game/Scripts/NewGameRuntime.WorldTime.cs": "cd9664b1e230fb1da7d4bb0508a8b734cf34e78f14810bd66e5efd169897b83f",
+    "Game/Scripts/WorldTimeCheck.cs": "2513f64cdcfc35792eca637d9e9248aa36f859ebac6f08a5994aa9ee3b7a5a53",
+    "Docs/Design/WorldTimeV1/verification.json": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
+    "Docs/Design/WorldTimeV1/completion.json": "c9dbef24f4d04462d73c0a295d53abf8508f4a84923f601df3eb6b60601e49f8",
+    "Docs/Design/WorldTimeV1/integration.json": "54f5bc9da3349d86753726bd5d5a3bb279fa151ae5267a95fc03bdf9f34ac184",
+    "Docs/Design/WorldTimeV1/README.md": "8d8803988172e6f06659513d480eec820e66fa7459eecd3312b327ee34e1a745",
+    "Docs/Design/WorldTimeV1/scope.md": "318c32487ef9ea04b16b5515ecca5c2478e773d1dac6c5e32a913a2e41661556",
+    "Scripts/verify_world_time.py": "40ccfbe0aa3559e68dbce8e5a0441fd379e1b0afdb9f69ac1aa982b7274c855f",
+    "Docs/Development/ProgressV1/approval-baseline-v52.json": "8e5bddd728383736060764997a98a351eae705cbb1cad2da166c35d774645e64"
   },
   "items": [
     {
@@ -494,7 +508,7 @@
     {
       "id": "BD-04",
       "status": "normal",
-      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。 登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変）。",
+      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。 登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変）。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
       "remaining": "3000活動人物/1000拠点/500軍と実機FPSの受入。 統合案で追加：§20 W1 全国NPCの判断・W4 遠方の合戦の簡略計算・§19 T6 まとめて進める計算の負荷。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
@@ -516,7 +530,15 @@
         "Docs/Design/SupplyWorkV1/verification.json",
         "Core/Contracts/WorldSession.NpcRoutine.cs",
         "Docs/Design/NpcPerformanceV1/verification.json",
-        "Docs/Design/NpcPerformanceV1/before-measurement.json"
+        "Docs/Design/NpcPerformanceV1/before-measurement.json",
+        "Core/Contracts/WorldTimeControl.cs",
+        "Core/Contracts/WorldCalendar.cs",
+        "Core/Contracts/TimeObservationSweep.cs",
+        "Tests/WorldTimeControlTests.cs",
+        "Tests/WorldTimeTravelTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/WorldTimeCheck.cs",
+        "Docs/Design/WorldTimeV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -595,7 +617,7 @@
     {
       "id": "BD-08",
       "status": "design_only",
-      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。",
+      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
       "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。 統合案で追加：§19 年代記と開始年のシナリオ・§26 Z11 家ごとの年表。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
@@ -606,7 +628,15 @@
         "Game/Scripts/NewGameRuntime.PersonalLife.cs",
         "Docs/Design/PersonalLifeV1/verification.json",
         "Docs/Design/PersonalLifeV1/traceability.json",
-        "Docs/Design/basic-design-v1.json"
+        "Docs/Design/basic-design-v1.json",
+        "Core/Contracts/WorldTimeControl.cs",
+        "Core/Contracts/WorldCalendar.cs",
+        "Core/Contracts/TimeObservationSweep.cs",
+        "Tests/WorldTimeControlTests.cs",
+        "Tests/WorldTimeTravelTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/WorldTimeCheck.cs",
+        "Docs/Design/WorldTimeV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1167,7 +1197,7 @@
     {
       "id": "BD-23",
       "status": "normal",
-      "existing": "城主任命原本と結び付いた現地保管報告を実配送し、到達と開封を分離。既知不達後のみ同じ時点の観測を三通まで再送し、ID衝突と過去時刻偽装を拒否。",
+      "existing": "城主任命原本と結び付いた現地保管報告を実配送し、到達と開封を分離。既知不達後のみ同じ時点の観測を三通まで再送し、ID衝突と過去時刻偽装を拒否。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
       "remaining": "全種書状の統一画面と全国負荷、NPC城主報告の自動再送。 統合案で追加：§19 日の速度・次の出来事まで・自動の停止と減速。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
@@ -1202,7 +1232,15 @@
         "Tests/PreparedPauseTests.cs",
         "Tests/VoyageExpenseTests.cs",
         "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
-        "Docs/Design/TravelExpenseV1/verification.json"
+        "Docs/Design/TravelExpenseV1/verification.json",
+        "Core/Contracts/WorldTimeControl.cs",
+        "Core/Contracts/WorldCalendar.cs",
+        "Core/Contracts/TimeObservationSweep.cs",
+        "Tests/WorldTimeControlTests.cs",
+        "Tests/WorldTimeTravelTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/WorldTimeCheck.cs",
+        "Docs/Design/WorldTimeV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1399,7 +1437,7 @@
     {
       "id": "BD-28",
       "status": "normal",
-      "existing": "実差出人への不達返報、本人への時点付き失敗通知、本人認識後の同宛先・同署名再送を実配送。承諾返書自体も不達を本人開封してから再送する。",
+      "existing": "実差出人への不達返報、本人への時点付き失敗通知、本人認識後の同宛先・同署名再送を実配送。承諾返書自体も不達を本人開封してから再送する。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
       "remaining": "一般の多段使者・全国規模の配送混雑と全画面受入。 統合案で追加：§19 T5 自動の停止と減速・§4 訃報の書状と自動停止。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
@@ -1440,7 +1478,15 @@
         "Tests/FieldConvoyTests.cs",
         "Game/Scripts/NewGameRuntime.HouseFreight.cs",
         "Docs/Design/FreightOperationsV1/verification.json",
-        "Tests/PreparedAdvanceIntegrationTests.cs"
+        "Tests/PreparedAdvanceIntegrationTests.cs",
+        "Core/Contracts/WorldTimeControl.cs",
+        "Core/Contracts/WorldCalendar.cs",
+        "Core/Contracts/TimeObservationSweep.cs",
+        "Tests/WorldTimeControlTests.cs",
+        "Tests/WorldTimeTravelTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/WorldTimeCheck.cs",
+        "Docs/Design/WorldTimeV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2544,7 +2590,7 @@
     {
       "id": "BD-57",
       "status": "normal",
-      "existing": "既存の家督画面へ当事者別の奉公解除/新奉公をまとめ、行政画面へ旧原本/担当者/再承認を接続。旧履歴・新権限・同意・月枠と届いた観測を分ける。",
+      "existing": "既存の家督画面へ当事者別の奉公解除/新奉公をまとめ、行政画面へ旧原本/担当者/再承認を接続。旧履歴・新権限・同意・月枠と届いた観測を分ける。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
       "remaining": "全画面の情報整理・外観/GUI操作の受入とアクセシビリティ。 統合案で追加：§18 4つの動詞・手帳・定例の評定・陣触れ・バックログ G-G1〜G-G12 画面の個別改善・G-U1〜U6・G-X2/X3/X16/X18（待ち時間・書状の行方・導線・設定）・G-X8 音。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
@@ -2640,7 +2686,15 @@
         "Docs/Design/MilitaryDebriefV1/verification.json",
         "Game/Scripts/NewGameRuntime.ServiceDirection.cs",
         "Docs/Design/ServiceDirectionV1/verification.json",
-        "Docs/Design/WorkContactReviewV1/verification.json"
+        "Docs/Design/WorkContactReviewV1/verification.json",
+        "Core/Contracts/WorldTimeControl.cs",
+        "Core/Contracts/WorldCalendar.cs",
+        "Core/Contracts/TimeObservationSweep.cs",
+        "Tests/WorldTimeControlTests.cs",
+        "Tests/WorldTimeTravelTests.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/WorldTimeCheck.cs",
+        "Docs/Design/WorldTimeV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3291,11 +3345,11 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 4017,
+      "passed": 4053,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/NpcPurposeV1/runtime-local/full/full.trx",
-      "sha256": "de7c7288773e83e9de88bc60a491cc322cda1b2ba566cf5ebf0e7b12f39a58a7",
+      "trx": "Docs/Design/WorldTimeV1/runtime-local/full-fixed/full.trx",
+      "sha256": "7b3525b1b84b1c6e8b149a4dd087ec8800b97bafbdffccbcf6278c8153c92a95",
       "scope": "現行Core全件。実保存復旧と同じ未来を含む。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
@@ -3308,14 +3362,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 4017,
+      "passed": 4053,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/NpcPurposeV1/runtime-local/full/full.trx",
-      "sha256": "de7c7288773e83e9de88bc60a491cc322cda1b2ba566cf5ebf0e7b12f39a58a7",
+      "trx": "Docs/Design/WorldTimeV1/runtime-local/full-fixed/full.trx",
+      "sha256": "7b3525b1b84b1c6e8b149a4dd087ec8800b97bafbdffccbcf6278c8153c92a95",
       "scope": "現行Core全件。実保存復旧と同じ未来を含む。"
     },
-    "current_stage_summary": "成人NPCが本人の既知の用件と点検の必要を優先し、空き時間に30分の修行を選ぶ。引受済みの協力・同行では修行を中断し、実完了した場合だけ技能経験を得る。全件4,017件、7段階の実保存復旧と同じ未来、旧保存254件のバイト一致、Gameビルド、通常入口の配置確認・実データ作成・20秒のNPC判断、Godot配置7組が成功。 外観・GUI操作は未実施。全国の戦略的な目的選択や役割別の判断頻度は後続0b。旧保存の行動方針は変更しない。修行中断分には経験を付けない。",
+    "current_stage_summary": "通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 1年約1時間は遊び方の目標であり、全国NPCの90年性能を達成した意味ではない。開始データは1560年。評定・訃報・襲撃の発生源は後続工程。次の知らせ待ちは3日ごとに計算を区切って通知まで続行し、途中で中断可能。ユーザーの試し遊びは0系が揃ってから。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3337,9 +3391,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/NpcPurposeV1/integration.json",
-    "current_logic_verification": "Docs/Design/NpcPurposeV1/verification.json",
-    "current_logic_verification_sha256": "332fcd3d0b92acac8d9601a46d94a5bac65e42442e667e52e734408a76c82c5a",
+    "integration": "Docs/Design/WorldTimeV1/integration.json",
+    "current_logic_verification": "Docs/Design/WorldTimeV1/verification.json",
+    "current_logic_verification_sha256": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3405,11 +3459,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "0a 時間の仕組み（T1〜T6）",
     "0b NPCの判断の土台（W1〜W8）",
     "0c 史実の事件と年代記（E1〜E8）",
     "0 4つの動詞と手帳（U1〜U9）",
-    "第1版を通して試し遊び"
+    "第1版を通して試し遊び",
+    "1〜3系：関係・寺社・名声・評定と仕事"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

@@ -93,6 +93,7 @@ public sealed record ChronicleEntry(EntityId Id, EntityId Actor, string Text, lo
 // All sections are required even when empty. Mutable DTO never escapes a live session.
 public sealed class ContractWorld
 {
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public WorldTimeState? TimeControl {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public DevelopmentState? Development {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public SocialState? Social {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public AdoptionState? Adoption {get;set;}

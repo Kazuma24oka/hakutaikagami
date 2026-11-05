@@ -41,7 +41,7 @@ public partial class NewGameRuntime
         // Core only: no Godot nodes, live-session mutation or future view access.
         advanceJob=preparations.Run(()=>capture.Prepare(token,fault),token);
     }
-    void InstallAdvanceDisplay(AdvancePublication publication)=>InstallWorldDisplay(publication.Display);
+    void InstallAdvanceDisplay(AdvancePublication publication){InstallWorldDisplay(publication.Display);if(WorldTimeControl.Pending(publication.Display)?.Response==TimeResponse.Slow){speed=Math.Min(speed,60);speedChoice.Select(Array.IndexOf(WorldTimeControl.Speeds,speed));}}
     void InstallWorldDisplay(ContractWorld display)
     {
         // Independent display copy was built on the worker, not on this frame.
@@ -69,7 +69,7 @@ public partial class NewGameRuntime
                     InstallAdvanceDisplay(publication);AdvancePublications++;advanceClock=Math.Max(0,advanceClock-moved);
                     AdvancePublishedTestHook?.Invoke(captured.SourceSeconds,captured.Target,publication.Result.ReachedAt,publication.Result.Processed,publication.Result.StopReason);
                     if(LastAdvanceError!=null){LastAdvanceError=null;message.Text="自動進行を再開しました。";}
-                    if(Session.Paused){automatic=false;advanceClock=0;}
+                    if(Session.Paused){automatic=false;advanceClock=0;if(WorldTimeControl.Pending(publication.Display)?.Response==TimeResponse.Slow){speed=Math.Min(speed,60);speedChoice.Select(Array.IndexOf(WorldTimeControl.Speeds,speed));RequestClockPause(false);}}
                     if(moved==0&&!Session.Paused)throw new InvalidOperationException("Time update made no progress");
                 }else AdvanceDiscards++;
                 ClearCompletedAdvance();
