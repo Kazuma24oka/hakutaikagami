@@ -22,6 +22,7 @@ public static class WorkRelations
         }
         foreach(var p in w.WorkCycle!.Payments){var task=w.Tasks.Single(t=>t.Id==p.Task);if(task.Executor==observer&&task.Issuer==subject)facts.Add(new(observer,subject,p.Id.Value,"約束の点検報酬を実際に受領",p.At));}
         foreach(var d in NewGameMilitary.Debriefs(w,false))if(d.Principal==observer&&w.PlayerControl==subject)facts.Add(new(observer,subject,d.Notice.Value,"軍務の帰還・返納・返報を確認",d.At));
+        foreach(var e in BrokerWork.Entries(w).Where(e=>e.Input.Action==BrokerAction.Settle)){var j=BrokerWork.Jobs(w,e.At,e.Revision).Single(j=>j.Terms.Id==e.Input.Job);if(j.Success&&j.Terms.Issuer==observer&&j.Terms.Worker==subject)facts.Add(new(observer,subject,e.Input.Id.Value,"封書・買付の履行と受領証を現地で確認",e.At));if(j.Success&&j.Terms.Worker==observer&&j.Terms.Issuer==subject)facts.Add(new(observer,subject,e.Input.Id.Value,"口入れの約束の報酬を実際に受領",e.At));}
         return facts.OrderBy(f=>f.At).ThenBy(f=>f.Basis,StringComparer.Ordinal).ToArray();
     }
     // The player's view is testimony and mutual handovers, never a projection of NPC Facts.
