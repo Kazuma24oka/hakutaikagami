@@ -21,7 +21,7 @@ public partial class NewGameRuntime
    // 最初の現地相手を内部操作検査からも同じボタンで選ぶ。
    socialOpenPerson=()=>b.EmitSignal(Button.SignalName.Pressed);
   }else SocialText(box,"まだ現地の相手や面識のある人物がいません。人のいる拠点へ移動してください。");
-  foreach(var g in SocialWorld.Gifts(w,player)){SocialText(box,$"贈り物：銭{g.Amount}文 — {g.Phase}");if(g.Recipient==player&&g.Phase=="運搬・受領待ち"){SocialButton(box,"実物を受け取る",SocialWorldAction.ReceiveGift,g.Sender,rev,reference:g.Id);SocialButton(box,"受取を断る",SocialWorldAction.RefuseGift,g.Sender,rev,reference:g.Id);}if(g.Carrier==player&&g.Phase=="返却待ち")SocialButton(box,"贈り主へ実物を返す",SocialWorldAction.ReturnGift,g.Sender,rev,reference:g.Id);}
+  foreach(var g in SocialWorld.Gifts(w,player)){var parcel=w.SocialWorld!.Events.Single(e=>e.Input.Id==g.Id).Input.Asset;string contents=parcel is {} id?SocialAssets.Objects(w).Single(o=>o.Id==id).Name:$"銭{g.Amount}文";SocialText(box,$"贈り物：{contents} — {g.Phase}");if(g.Recipient==player&&g.Phase=="運搬・受領待ち"){SocialButton(box,"実物を受け取る",SocialWorldAction.ReceiveGift,g.Sender,rev,reference:g.Id);SocialButton(box,"受取を断る",SocialWorldAction.RefuseGift,g.Sender,rev,reference:g.Id);}if(g.Carrier==player&&g.Phase=="返却待ち")SocialButton(box,"贈り主へ実物を返す",SocialWorldAction.ReturnGift,g.Sender,rev,reference:g.Id);}
  }
  Action? socialOpenPerson;internal void ReviewSocialOpenPerson()=>socialOpenPerson?.Invoke();
  void ShowSocialPerson(EntityId person){var(box,rev)=SocialWindow("現地の用件とこれまでの経緯");var w=Snapshot();var player=Session.PlayerControl;SocialText(box,w.Definitions.Characters.Single(p=>p.Id==person).Name+"\n"+SocialWorld.Impression(w,player,person));foreach(var f in SocialWorld.Facts(w,player,person).TakeLast(8))SocialText(box,$"{WorldCalendar.Display(w.EpochDate,f.LearnedAt)}：{f.Description}");

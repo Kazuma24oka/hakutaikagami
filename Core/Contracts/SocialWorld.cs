@@ -2,7 +2,7 @@ namespace HakutaiKagami.Core.Contracts;
 
 public enum SocialWorldAction { Visit, DispatchGift, ReceiveGift, RefuseGift, ReturnGift, Donate, Protect, IssueBan, TellRumor, BreakProtection, AcknowledgeGiftReport, CourierBlocked, StartCourierReturn, CourierReturnBlocked }
 public enum RenownKind { Valor, Benevolence, Infamy, Culture }
-public sealed record SocialWorldInput(EntityId Id,SocialWorldAction Action,EntityId Person,EntityId? Carrier=null,long Amount=0,EntityId? Reference=null);
+public sealed record SocialWorldInput(EntityId Id,SocialWorldAction Action,EntityId Person,EntityId? Carrier=null,long Amount=0,EntityId? Reference=null) { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Asset {get;init;} }
 public sealed record SocialGiftTerms(EntityId Destination,Intent? Movement,int SenderRank,int CourierRank);
 public sealed record SocialWorldEvent(SocialWorldInput Input,EntityId Actor,EntityId Site,long At,long Revision,[property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] SocialGiftTerms? GiftTerms=null);
 public sealed record SocialWorldState(int Schema,string Policy,SocialWorldEvent[] Events);
@@ -37,7 +37,7 @@ public static class SocialWorld
     public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long revision=long.MaxValue){long net=0;foreach(var e in Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<revision)){
         if(e.Input.Action is SocialWorldAction.DispatchGift or SocialWorldAction.Donate){if(NewGameWork.Wallet(e.Actor)==wallet)net=checked(net-e.Input.Amount);}
         if(e.Input.Action is SocialWorldAction.ReceiveGift or SocialWorldAction.ReturnGift){var g=GiftRows(w).Single(g=>g.Id==e.Input.Reference);if(NewGameWork.Wallet(e.Input.Action==SocialWorldAction.ReceiveGift?g.Recipient:g.Sender)==wallet)net=checked(net+g.Amount);}
-    }return net;}
+    }return checked(net+SocialAssets.Net(w,wallet,at,revision));}
     public static long TempleFunds(ContractWorld w,EntityId site)=>Events(w).Where(e=>e.Site==site&&e.Input.Action==SocialWorldAction.Donate).Sum(e=>e.Input.Amount);
     public static long InTransitCoins(ContractWorld w)=>GiftRows(w).Where(g=>g.Phase is "運搬・受領待ち" or "返却待ち").Sum(g=>g.Amount);
     public static string TempleDecision(ContractWorld w,EntityId representative,EntityId donor,SocialWorldAction action){int Known(RenownKind k)=>RenownStrength(w,representative,donor,k);var h=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(Policy+"/temple/"+w.Seed+"/"+representative.Value));int Trait(int n)=>20+(int)(Convert.ToUInt32(h.Substring(n,4),16)%61);var personality=new NpcPersonality(Trait(0),Trait(4),Trait(8),Trait(12),Trait(16),Trait(20));var zero=new NpcPersonality(0,0,0,0,0,0);int utility=(action==SocialWorldAction.Donate?55:45)+Math.Min(10,Known(RenownKind.Benevolence)/5)-Math.Min(50,Known(RenownKind.Infamy)*2);var input=new NpcChoiceInput(representative,w.Seed,w.ElapsedSeconds,personality,NpcAspiration.PreserveHouse,HistoryMode.Fictional,NpcAttention.Equal,[new("accept",true,true,utility,new(0,2,-2,0,1,1),true,false,false),new("decline",true,true,20,new(0,0,3,0,0,0),false,false,false)]);return NpcChoiceRanking.Choose(input)!;}
@@ -55,13 +55,13 @@ public static class SocialWorld
         var site=Site(w,actor);Need(site!=null,"現地に到着してから相談してください");
         Need(i.Id.Value!=null&&i.Amount>=0,"入力が不正です");
         Need(i.Action is SocialWorldAction.DispatchGift or SocialWorldAction.Donate||i.Amount==0,"この用件には銭を添付できません");
-        Need(i.Action==SocialWorldAction.DispatchGift||i.Carrier==null,"この用件に運搬者は指定できません");
+        Need(i.Asset==null||i.Action==SocialWorldAction.DispatchGift,"物の添付は贈答だけです");Need(i.Action==SocialWorldAction.DispatchGift||i.Carrier==null,"この用件に運搬者は指定できません");
         Need(i.Action is not(SocialWorldAction.AcknowledgeGiftReport or SocialWorldAction.CourierBlocked or SocialWorldAction.StartCourierReturn or SocialWorldAction.CourierReturnBlocked),"受領結果は使者の現地報告から認識します");
         if(i.Action==SocialWorldAction.Visit){Need(Is(w,i.Person)&&i.Person!=actor&&Local(w,actor,i.Person),"相手と現地で会ってください");Need(!Events(w).Any(e=>e.Actor==actor&&e.Input.Person==i.Person&&e.Input.Action==i.Action&&e.At/86400==w.ElapsedSeconds/86400),"今日は既に面会しました");}
         else if(i.Action==SocialWorldAction.DispatchGift){
             var carrier=i.Carrier??actor;Need(Is(w,i.Person)&&i.Person!=actor&&Is(w,carrier)&&Local(w,actor,carrier),"贈り先と現地の運搬者を確認してください");
             Need(carrier==actor||CarrierChoices(w,actor).Contains(carrier),"運搬を任せるには同意した同行者が必要です");
-            Need(Local(w,actor,i.Person)||Facts(w,actor,i.Person).Length>0,"面識か本人の既知の根拠が必要です");Need(i.Amount>0&&i.Amount<=NewGameWork.Balance(w,actor),"手持ちの銭が足りません");
+            Need(Local(w,actor,i.Person)||Facts(w,actor,i.Person).Length>0,"面識か本人の既知の根拠が必要です");Need(i.Asset!=null&&i.Amount==0||i.Asset==null&&i.Amount>0&&i.Amount<=NewGameWork.Balance(w,actor),"手持ちの銭か私有物を指定してください");SocialAssets.Attach(w,i,actor,site!.Value);
         }
         else if(i.Action is SocialWorldAction.ReceiveGift or SocialWorldAction.RefuseGift or SocialWorldAction.ReturnGift){
             Need(i.Reference!=null,"運搬中の贈り物を選んでください");var g=GiftRows(w).SingleOrDefault(g=>g.Id==i.Reference);Need(g!=null,"贈り物が見つかりません");
@@ -83,7 +83,7 @@ public static class SocialWorld
         if(w.SocialWorld==null)return;
         foreach(var g in GiftRows(w).Where(g=>g.Phase=="運搬・受領待ち"&&g.Recipient!=w.PlayerControl&&Is(w,g.Recipient)&&Is(w,g.Carrier)&&Local(w,g.Carrier,g.Recipient)).ToArray()){
             // 本人が現地で現物を見たときだけ判断。主従や役職は変わらない。
-            var axes=Axes(w,g.Recipient,g.Sender);int caution=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticTrait(w,g.Recipient,SocialTrait.Caution):50;int gain=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticTrait(w,g.Recipient,SocialTrait.GainSeeking):50;bool accept=50+axes.Affection-axes.Hostility+(gain-caution)/5>=45;
+            var axes=Axes(w,g.Recipient,g.Sender);int caution=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticTrait(w,g.Recipient,SocialTrait.Caution):50;int gain=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticTrait(w,g.Recipient,SocialTrait.GainSeeking):50;bool accept=50+axes.Affection-axes.Hostility+(gain-caution)/5>=45&&SocialAssets.CanReceive(w,g.Recipient,g.Id);
             Add(w,new(new("social:gift-response/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(g.Id.Value))[..32]),accept?SocialWorldAction.ReceiveGift:SocialWorldAction.RefuseGift,g.Sender,Reference:g.Id),g.Recipient,Site(w,g.Recipient)!.Value);
         }
         foreach(var entry in Events(w).Where(e=>e.Input.Action==SocialWorldAction.DispatchGift&&e.GiftTerms?.Movement!=null).ToArray()){
@@ -109,7 +109,7 @@ public static class SocialWorld
             Tick(w,false);
         }
     }
-    public static bool CarrierBusy(ContractWorld w,EntityId actor,long at,long revision){if(w.SocialWorld==null||actor==w.PlayerControl)return false;var c=w.ForkTransportLocation();c.SocialWorld=w.SocialWorld with{Events=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};return GiftRows(c).Any(g=>g.Carrier==actor&&g.Sender!=actor&&Events(c).Single(e=>e.Input.Id==g.Id).GiftTerms?.Movement!=null&&!Events(c).Any(e=>e.Input.Reference==g.Id&&e.Input.Action is SocialWorldAction.AcknowledgeGiftReport or SocialWorldAction.ReturnGift));}
+    public static bool CarrierBusy(ContractWorld w,EntityId actor,long at,long revision){if(w.SocialWorld==null||actor==w.PlayerControl)return false;var c=w.ForkTransportLocation();if(w.SocialWorld!=null)c.SocialWorld=w.SocialWorld with{Events=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};return GiftRows(c).Any(g=>g.Carrier==actor&&g.Sender!=actor&&Events(c).Single(e=>e.Input.Id==g.Id).GiftTerms?.Movement!=null&&!Events(c).Any(e=>e.Input.Reference==g.Id&&e.Input.Action is SocialWorldAction.AcknowledgeGiftReport or SocialWorldAction.ReturnGift));}
     internal static long? NextBoundary(ContractWorld w,long target){if(w.SocialWorld==null)return null;var times=new List<long>{checked((w.ElapsedSeconds/86400+1)*86400)};foreach(var e in Events(w).Where(e=>e.Input.Action==SocialWorldAction.DispatchGift&&e.GiftTerms?.Movement!=null)){var g=GiftRows(w).Single(g=>g.Id==e.Input.Id);if(g.Phase!="運搬・受領待ち"||g.Carrier==w.PlayerControl||g.Recipient==w.PlayerControl&&Site(w,g.Recipient)==g.Destination)continue;var t=w.Tasks.SingleOrDefault(t=>t.RequestId==e.GiftTerms!.Movement!.RequestId);if(t?.FinishedAt is {} at&&at+3600>w.ElapsedSeconds)times.Add(at+3600);}return times.Where(t=>t>w.ElapsedSeconds&&t<=target).Select(t=>(long?)t).OrderBy(t=>t).FirstOrDefault();}
 
     public static RelationshipFact[] Facts(ContractWorld w,EntityId observer,EntityId subject)
@@ -126,10 +126,10 @@ public static class SocialWorld
             if(e.Input.Action==SocialWorldAction.AcknowledgeGiftReport&&e.Actor==observer&&e.Input.Person==subject)rows.Add(new(observer,subject,e.Input.Id.Value,"使者の現地報告で贈答の結果を確認した",e.At,e.At,1,0,0,0));
             if(e.Actor==subject&&TemplePerson(w,observer,e.Site)&&e.Input.Action is SocialWorldAction.Donate or SocialWorldAction.Protect or SocialWorldAction.IssueBan)rows.Add(new(observer,subject,e.Input.Id.Value,e.Input.Action==SocialWorldAction.Donate?"寄進の銭を実際に受領した":e.Input.Action==SocialWorldAction.Protect?"この拠点の保護を取り交わした":"この拠点の禁制を取り交わした",e.At,e.At,e.Input.Action==SocialWorldAction.Donate?3:2,2,0,0));
         }
-        return rows.DistinctBy(r=>r.Source).OrderBy(r=>r.LearnedAt).ThenBy(r=>r.Source,StringComparer.Ordinal).ToArray();
+        rows.AddRange(SocialAssets.Facts(w,observer,subject));return rows.DistinctBy(r=>r.Source).OrderBy(r=>r.LearnedAt).ThenBy(r=>r.Source,StringComparer.Ordinal).ToArray();
     }
     public static RelationshipAxes Axes(ContractWorld w,EntityId observer,EntityId subject){var rows=Facts(w,observer,subject);int Sum(Func<RelationshipFact,int> f)=>Math.Clamp(rows.Sum(f),-100,100);return new(Sum(r=>r.Affection),Sum(r=>r.Respect),Sum(r=>r.Fear),Sum(r=>r.Hostility));}
-    public static int ConsentBonus(ContractWorld w,EntityId observer,EntityId subject,long at,long revision){if(w.SocialWorld==null)return 0;var c=w.ForkTransportLocation();c.ElapsedSeconds=Math.Min(w.ElapsedSeconds,at);c.SocialWorld=w.SocialWorld with{Events=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};if(c.Marriage!=null)c.Marriage=c.Marriage with{Entries=c.Marriage.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};if(c.Adoption!=null)c.Adoption=c.Adoption with{Entries=c.Adoption.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};var own=Facts(c,observer,subject).Where(f=>f.Source.StartsWith("kinship:")||Events(c).Any(e=>e.Input.Id.Value==f.Source)).ToArray();int relation=own.Sum(f=>f.Affection+f.Respect-f.Hostility);int fame=RenownStrength(c,observer,subject,RenownKind.Benevolence)-RenownStrength(c,observer,subject,RenownKind.Infamy);return Math.Clamp(relation/2+fame/10,-15,15);}
+    public static int ConsentBonus(ContractWorld w,EntityId observer,EntityId subject,long at,long revision){if(w.SocialWorld==null&&w.SocialAssets==null)return 0;var c=w.ForkTransportLocation();c.ElapsedSeconds=Math.Min(w.ElapsedSeconds,at);if(w.SocialWorld!=null)c.SocialWorld=w.SocialWorld with{Events=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};if(c.Marriage!=null)c.Marriage=c.Marriage with{Entries=c.Marriage.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};if(c.Adoption!=null)c.Adoption=c.Adoption with{Entries=c.Adoption.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<revision).ToArray()};SocialAssets.Rewind(c,c.ElapsedSeconds,revision-1);var own=Facts(c,observer,subject).Where(f=>f.Source.StartsWith("kinship:")||Events(c).Any(e=>e.Input.Id.Value==f.Source)||SocialAssets.Events(c).Any(e=>e.Input.Id.Value==f.Source)).ToArray();int relation=own.Sum(f=>f.Affection+f.Respect-f.Hostility);int fame=RenownStrength(c,observer,subject,RenownKind.Benevolence)-RenownStrength(c,observer,subject,RenownKind.Infamy);return Math.Clamp(relation/2+fame/10,-15,15);}
     public static string Impression(ContractWorld w,EntityId observer,EntityId subject){var x=Axes(w,observer,subject);return x.Hostility>=40?"警戒し、距離を置いている":x.Affection>=5?"親しみのあるやり取りがある":Facts(w,observer,subject).Length>0?"面識ややり取りの根拠がある":"まだ判断できる根拠がない";}
     public static RenownFact[] Renown(ContractWorld w,EntityId observer)
     {
@@ -143,9 +143,9 @@ public static class SocialWorld
             if(e.Input.Person!=observer)continue;
             var original=RenownBefore(w,e.Actor,e.Input.Reference!.Value,e.Revision);if(original!=null)facts.Add(original with{Observer=observer,LearnedAt=e.At,Region=e.Site,Source=e.Input.Id.Value});
         }
-        return facts.DistinctBy(f=>f.Id).ToArray();
+        facts.AddRange(SocialAssets.Renown(w,observer));return facts.DistinctBy(f=>f.Id).ToArray();
     }
-    static RenownFact? RenownBefore(ContractWorld w,EntityId observer,EntityId source,long revision){var copy=w.ForkTransportLocation();copy.ElapsedSeconds=Events(w).Where(e=>e.Revision==revision).Select(e=>e.At).DefaultIfEmpty(w.ElapsedSeconds).Min();copy.SocialWorld=w.SocialWorld! with{Events=Events(w).Where(e=>e.Revision<revision).ToArray()};return Renown(copy,observer).SingleOrDefault(f=>f.Id==source.Value);}
+    static RenownFact? RenownBefore(ContractWorld w,EntityId observer,EntityId source,long revision){var copy=w.ForkTransportLocation();copy.ElapsedSeconds=Events(w).Where(e=>e.Revision==revision).Select(e=>e.At).DefaultIfEmpty(w.ElapsedSeconds).Min();SocialAssets.Rewind(copy,copy.ElapsedSeconds,revision-1);copy.SocialWorld=w.SocialWorld! with{Events=Events(w).Where(e=>e.Revision<revision).ToArray()};return Renown(copy,observer).SingleOrDefault(f=>f.Id==source.Value);}
     public static int RenownStrength(ContractWorld w,EntityId observer,EntityId subject,RenownKind kind,EntityId? region=null){var all=Renown(w,observer).Where(f=>f.Subject==subject&&(region==null||f.Region==region)).ToArray();var rows=all.Where(f=>f.Kind==kind).GroupBy(f=>(f.Region,Day:f.OccurredAt/86400)).Select(g=>g.OrderByDescending(f=>f.Major).First()).ToArray();int value=rows.Sum(f=>Math.Max(0,(f.Major?30:10)-(int)Math.Min(100,(w.ElapsedSeconds-f.OccurredAt)/(f.Major?31536000L:2592000L))));if(kind==RenownKind.Infamy&&rows.Length>0){long last=rows.Max(f=>f.OccurredAt);int goodDays=all.Where(f=>f.Kind==RenownKind.Benevolence&&f.OccurredAt>last).Select(f=>f.OccurredAt/86400).Distinct().Count();value-=Math.Min(value/2,goodDays);}return value;}
 
     public static string RenownImpression(ContractWorld w,EntityId observer,EntityId subject,RenownKind kind,EntityId? region=null)=>RenownStrength(w,observer,subject,kind,region)>0?"この地域で聞いた評判が記録されている":"聞き知った評判はまだない";
@@ -159,7 +159,7 @@ public static class SocialWorld
         Need(es.Select(e=>e.Input.Id).Distinct().Count()==es.Length,"同じ取引が重複しています");
         foreach(var e in es){
             if(e.GiftTerms is {} terms){Need(w.Definitions.Sites.Any(s=>s.Id==terms.Destination)&&terms.SenderRank is >=0 and <=5&&terms.CourierRank is >=0 and <=5,"使者の原本が不正です");if(terms.Movement is {} move){Need(move.RoutePolicy==LandRoute&&move.DestinationSite==terms.Destination,"使者の行先が原本と違います");var issued=w.Requests.SingleOrDefault(r=>r.Id==move.RequestId);Need(issued!=null&&issued.Intent==move||e.Revision==w.CommitSequence||es.Any(f=>f.Input.Reference==(e.Input.Action==SocialWorldAction.DispatchGift?e.Input.Id:e.Input.Reference)&&f.Input.Action is SocialWorldAction.CourierBlocked or SocialWorldAction.CourierReturnBlocked),"使者の実移動がありません");}}
-            if(e.Input.Action is SocialWorldAction.DispatchGift or SocialWorldAction.Donate)Need(e.Input.Amount>0,"贈答の数量が不正です");
+            if(e.Input.Action is SocialWorldAction.DispatchGift or SocialWorldAction.Donate)Need(e.Input.Asset!=null&&e.Input.Amount==0||e.Input.Asset==null&&e.Input.Amount>0,"贈答の数量が不正です");
             if(e.Input.Action==SocialWorldAction.DispatchGift){var carrier=e.Input.Carrier??e.Actor;Need(w.Characters.Any(c=>c.Id==carrier)&&w.Characters.Any(c=>c.Id==e.Input.Person)&&e.Actor!=e.Input.Person,"使者と贈り先が不正です");if(carrier!=e.Actor){Need(e.Actor==w.PlayerControl&&w.Companions?.Orders.Where(q=>q.Input.Person==carrier&&(q.At<e.At||q.At==e.At&&q.Revision<e.Revision)&&q.Input.Action is CompanionAction.Agree or CompanionAction.EndAgreement).OrderBy(q=>q.Revision).LastOrDefault()?.Input.Action==CompanionAction.Agree,"使者の事前同意がありません");}}
 
             if(e.Input.Action is SocialWorldAction.ReceiveGift or SocialWorldAction.RefuseGift or SocialWorldAction.ReturnGift){var origin=es.SingleOrDefault(x=>x.Input.Id==e.Input.Reference&&x.Input.Action==SocialWorldAction.DispatchGift);Need(origin!=null&&origin.Revision<=e.Revision,"運搬の原本がありません");if(e.Input.Action!=SocialWorldAction.ReturnGift)Need(e.Actor==origin!.Input.Person,"別人が贈り物を受け取っています");else Need(e.Actor==(origin!.Input.Carrier??origin.Actor),"運搬者が違います");}
