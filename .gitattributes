@@ -2243,3 +2243,8 @@ Docs/Development/ProgressV1/approval-baseline-v62.json -text
 Docs/Design/PublicWorksV1/* -text
 Core/Contracts/PublicWorks.cs -text
 Tests/PublicWorksTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v63.json -text
+Docs/Design/StandingAdministrationV1/* -text
+Core/Contracts/StandingAdministration.cs -text
+Tests/StandingAdministrationTests.cs -text

@@ -1,0 +1,61 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "常設奉行に年度経費と優先分野・収穫期の回避を示し、本人受領・承諾後だけ普請を任せる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/StandingAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.StandingAdministration.cs",
+        "Game/Scripts/StandingAdministrationCheck.cs",
+        "Docs/Design/StandingAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "奉行が現地の既知資源・労働・年度残枠から同じ普請を実行し、現地の観測月報を物理配送する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/StandingAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.StandingAdministration.cs",
+        "Game/Scripts/StandingAdministrationCheck.cs",
+        "Docs/Design/StandingAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "年始と毎月朔日の定例評定を既存の招集・実参集に接続し、NPC当主も同じ評定を使う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/StandingAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.StandingAdministration.cs",
+        "Game/Scripts/StandingAdministrationCheck.cs",
+        "Docs/Design/StandingAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "評定で決めた家の方針は本人の受領後に判断へ反映し、遠方の結果・未受領方針を漏らさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/StandingAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.StandingAdministration.cs",
+        "Game/Scripts/StandingAdministrationCheck.cs",
+        "Docs/Design/StandingAdministrationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "関連重大不具合・途中保存の同じ未来・通常入口と代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/StandingAdministrationTests.cs",
+        "Game/Scripts/NewGameRuntime.StandingAdministration.cs",
+        "Game/Scripts/StandingAdministrationCheck.cs",
+        "Docs/Design/StandingAdministrationV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "普請委任は既存の代官・城主職の引受を土台に年度銭枠・優先分野・収穫期回避を付ける。外交・軍事・人事の全判断への方針接続、遠方からの評定意見書・連続欠席の評価、不達月報の再送は後続。全件・全国長期性能・ユーザー試し遊びは未実施。"
+}
