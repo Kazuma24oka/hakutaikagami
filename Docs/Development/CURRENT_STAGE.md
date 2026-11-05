@@ -2,11 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：0系の画面の土台へ着手（複数工程を続行）
-- 事件の前提ゲート、本人の既知記録だけの年代記、関連検査と実保存復旧を確認。
-- 個別事件の登録は合戦・調略等の対応工程で追加する。未登録事件を起こしたとは扱わない。
-- 詳細と未実施はHistoricalChronicleV1/README.md、統合先はintegration.json。
-- 今回のまとまりは47.859%から約10ポイントを目安とし、0系の画面→関係→贈り物→寺社→名声の順で既存実装との差分を進める。P14に従い工程区切りで停止しない。
+## 今の工程：0系の画面の土台を完了・関係へ続行
+- 動詞・手帳・一覧の内部操作と実保存復旧を確認。
+- 約10ポイント分をまとめる方針で後続へ続行する。
+- 詳細と未実施はVerbNotebookV1/README.md、統合先はintegration.json。
 
 ## その次：統合案 第14節の順番へ移る（PROCESS_V2 P2）
 1. 0a 時間の仕組み：日の速度・次の出来事まで・自動の停止と減速・出来事ごとにまとめて進める計算（統合案 第19節 T1〜T6）
@@ -25,6 +24,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-05 | 0系 動詞と手帳 | Docs/Design/VerbNotebookV1/ | integration.json参照 |
 | 2026-11-05 | 0c 事件の前提と年代記 | Docs/Design/HistoricalChronicleV1/ | f62af8c（PR60） |
 | 2026-11-05 | 0b NPCの判断の土台 | Docs/Design/NpcJudgmentV1/ | 068a82a（PR59） |
 | 2026-11-05 | 0a 時間の仕組み（T1〜T6） | Docs/Design/WorldTimeV1/ | 9778e6d（PR58） |

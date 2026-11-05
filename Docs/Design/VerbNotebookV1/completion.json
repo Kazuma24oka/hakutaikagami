@@ -1,0 +1,62 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "地図下の動詞から既存の会話・書状・委任・移動へ到達し、予備一覧から従来操作へ戻れる。",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameRuntime.VerbNotebook.cs",
+        "Game/Scripts/VerbNotebookCheck.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/NewGameRuntime.cs",
+        "Docs/Design/VerbNotebookV1/verification.json"
+      ]
+    },
+    {
+      "contract": "相手の実在する秘密の所在を使わず、既存の本人知識と許可判定を保持する。",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameRuntime.VerbNotebook.cs",
+        "Game/Scripts/VerbNotebookCheck.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/NewGameRuntime.cs",
+        "Docs/Design/VerbNotebookV1/verification.json"
+      ]
+    },
+    {
+      "contract": "手帳に既存の個人目標と年代記・手引きをまとめ、未実装評定は理由付きで示す。",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameRuntime.VerbNotebook.cs",
+        "Game/Scripts/VerbNotebookCheck.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/NewGameRuntime.cs",
+        "Docs/Design/VerbNotebookV1/verification.json"
+      ]
+    },
+    {
+      "contract": "下部会話・操作中・保存中の既存制約を維持し、二重実行や進行不能を起こさない。",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameRuntime.VerbNotebook.cs",
+        "Game/Scripts/VerbNotebookCheck.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/NewGameRuntime.cs",
+        "Docs/Design/VerbNotebookV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常開始から代表操作・実保存復旧・自前描画をP13で確認する。",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameRuntime.VerbNotebook.cs",
+        "Game/Scripts/VerbNotebookCheck.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Game/Scripts/NewGameRuntime.cs",
+        "Docs/Design/VerbNotebookV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "評定・家の方針・陣触れは2c・3b・7で追加する。今回は既存操作の入口整理で新しい行動権限は加えない。全件・全国長期性能・ユーザー試し遊びは未実施。約10ポイントの作業単位は継続中。",
+  "full_core_suite": "未実施（P13）"
+}
