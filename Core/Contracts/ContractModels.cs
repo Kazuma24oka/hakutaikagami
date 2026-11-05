@@ -255,6 +255,7 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CourtState? Court {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public BrokerState? BrokerWork {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public WorksState? PublicWorks {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public AdministrationState? Administration {get;set;}
     public required ChronicleEntry[] Chronicle { get; set; }
     public required RequestReceipt[] Requests { get; set; }
 }
