@@ -2220,3 +2220,16 @@ Scripts/verify_information_schemes.py -text
 Docs/Design/InformationSchemesV1/*.json -text
 Docs/Design/InformationSchemesV1/*.md -text
 Docs/Development/ProgressV1/approval-baseline-v59.json -text
+
+Core/Contracts/HouseholdCourt.cs -text
+Core/Contracts/TransactionalWorld.cs -text
+Tests/HouseholdCourtTests.cs -text
+Game/Scripts/NewGameRuntime.HouseholdCourt.cs -text
+Game/Scripts/HouseholdCourtCheck.cs -text
+Game/Scenes/HouseholdCourtCheck.tscn -text
+Scripts/verify_household_court.py -text
+Docs/Design/HouseholdCourtV1/*.json -text
+Docs/Design/HouseholdCourtV1/*.md -text
+Docs/Development/ProgressV1/approval-baseline-v60.json -text
+
+Docs/Development/WorkBatchSocialV1/*.md -text
