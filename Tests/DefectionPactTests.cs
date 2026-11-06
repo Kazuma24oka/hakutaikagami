@@ -6,12 +6,12 @@ namespace HakutaiKagami.Tests;
 public class DefectionPactTests
 {
     static readonly EntityId Actor=new("created:test"),Partner=new("created:partner");
-    static ContractWorld Start(ulong seed,bool foreign=false,bool castellan=false)
+    static ContractWorld Start(ulong seed,bool foreign=false,bool castellan=false,RegisteredOfficer? other=null)
     {
         var actor=NewGameWorldTests.Officer(role:castellan?StartTemplate.Castellan:StartTemplate.Retainer,lord:"person:nobunaga");
         var partner=NewGameWorldTests.Officer(Partner.Value,StartTemplate.Retainer,foreign?"site:kofu":actor.Site,
             foreign?"person:shingen":"person:nobunaga");
-        var setup=NewGameWorldTests.Setup([actor,partner]);
+        var setup=NewGameWorldTests.Setup(other==null?[actor,partner]:[actor,partner,other]);
         return NewGameWorld.Create(setup.World,setup.Registered,actor.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,
             workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
             socialPolicy:CharacterRelations.Policy,comingOfAge:15);
@@ -380,6 +380,102 @@ public class DefectionPactTests
 
             }
             finally { directory.Delete(true); }
+            return;
+        }
+        Assert.Fail("独立に合意する開始条件がありません");
+    }
+
+    [Fact]
+    public void RemoteRetainerAnswersOnlyAfterMeetingAndReading()
+    {
+        var contact=NewGameWorldTests.Officer("created:castle-contact",StartTemplate.Retainer,"site:fork","person:nobunaga");
+        var recipient=new EntityId(contact.Id);
+        for(ulong seed=0;seed<32;seed++){
+            var w=Start(seed,castellan:true,other:contact);var session=new WorldSession(w);
+            EntityId pact=new("request:original-private-pact");
+            Assert.Equal(ResultCode.Accepted,session.NegotiatePact(pact,Partner,PactPurpose.RiseTogether,session.Revision).Code);
+            if(!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
+            Assert.Equal(ResultCode.Accepted,session.SignalPact(pact,session.Revision).Code);
+            Assert.DoesNotContain(IndependenceLetters.Choices(session.DiagnosticSnapshot(),Actor),i=>i.Person==recipient);
+            void Travel(string node){
+                var trip=TravelWorld.Move(session.DiagnosticSnapshot(),"request:contact-trip/"+node,node);
+                Assert.Equal(ResultCode.Accepted,session.Submit(trip,session.Revision).Code);
+                NewGameWorldTests.At(session,session.Seconds+2);NewGameWorldTests.At(session,session.GetBranchView(Actor).ArrivalAt!.Value+1);
+            }
+            Travel("fork");
+            for(int day=0;day<2;day++){
+                var visit=session.ManageSocial(new(new("request:visit-contact/"+day),SocialWorldAction.Visit,recipient),session.Revision);
+                Assert.True(visit.Code==ResultCode.Accepted,visit.VisibleReason);
+                if(day==0)NewGameWorldTests.At(session,session.Seconds+86400);
+            }
+            Travel("castle");var before=session.DiagnosticSnapshot();
+            var call=IndependenceLetters.Choices(before,Actor).Single(i=>i.Person==recipient && i.Action==CourtAction.SeekDeclaredSupport);
+            var issued=session.ManageCourt(call,session.Revision);Assert.True(issued.Code==ResultCode.Accepted,issued.VisibleReason);
+            var sent=session.DiagnosticSnapshot();var letter=sent.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.Kind);
+            var courier=sent.Couriers!.Missions.Single(m=>sent.Messaging.Attempts.Any(a=>a.MessageId==letter.Id && a.Id==m.Attempt));
+            Assert.Equal("fork",courier.Destination);
+            NewGameWorldTests.At(session,courier.ReadyAt+1);
+            var after=session.DiagnosticSnapshot();var joined=Assert.Single(after.Court!.Events,e=>e.Input.Action==CourtAction.JoinDeclaredHouse);
+            Assert.Equal(recipient,joined.Actor);
+            Assert.Contains(after.Memberships,r=>r.Subject==recipient && r.Target==call.Owner && r.Until==long.MaxValue);
+            Assert.Contains(after.ServiceBonds,r=>r.Subject==recipient && r.Target==Actor && r.Until==long.MaxValue);
+            Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
+            var replay=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+            Assert.Equal(ContractJson.Write(after.Memberships),ContractJson.Write(replay.DiagnosticSnapshot().Memberships));
+            return;
+        }
+        Assert.Fail("独立原本を作成できませんでした");
+    }
+
+    [Fact]
+    public void PublicDeclarationUsesKnownCastleAndCarriesNoSecretPact()
+    {
+        for(ulong seed=0;seed<32;seed++){
+            var initial=Start(seed,castellan:true);var session=new WorldSession(initial);
+            EntityId pact=new("request:private-signatures");
+            Assert.Equal(ResultCode.Accepted,session.NegotiatePact(pact,Partner,PactPurpose.RiseTogether,session.Revision).Code);
+            if(!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
+            Assert.Equal(ResultCode.Accepted,session.SignalPact(pact,session.Revision).Code);
+            var declared=session.DiagnosticSnapshot();
+            var choices=IndependenceLetters.Choices(declared,Actor).Where(i=>i.Person.Value=="person:shingen").ToArray();
+            Assert.Equal(2,choices.Length);
+            foreach(var input in choices){
+                var sender=new WorldSession(ContractJson.Copy(declared));
+                Assert.Equal(ResultCode.NotAvailable,sender.ManageCourt(input with{Site=new("site:odawara")},sender.Revision).Code);
+                var sent=sender.ManageCourt(input,sender.Revision);Assert.True(sent.Code==ResultCode.Accepted,sent.VisibleReason);
+                Assert.Equal(ResultCode.AlreadyAccepted,sender.ManageCourt(input,sender.Revision).Code);
+                var world=sender.DiagnosticSnapshot();var letter=Assert.Single(world.Messaging.Messages,m=>m.Kind==IndependenceLetters.Kind);
+                Assert.Equal("site:kofu",letter.DeliverySite);Assert.Equal(input.Id.Value,letter.CorrelationId);
+                Assert.DoesNotContain(pact.Value,letter.Body);Assert.DoesNotContain(Partner.Value,letter.Body);
+                Assert.Equal(input.Action==CourtAction.SeekDeclaredSupport,letter.Body.Contains("支持を求めます"));
+                Assert.DoesNotContain(world.Messaging.Knowledge,k=>k.MessageId==letter.Id && k.CharacterId==input.Person.Value);
+                var mission=Assert.Single(world.Couriers!.Missions,m=>world.Messaging.Attempts.Any(a=>a.MessageId==letter.Id && a.Id==m.Attempt));
+                Assert.Equal("kofu",mission.Destination);
+                var resumed=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(world)));
+                NewGameWorldTests.At(resumed,mission.ReadyAt+1);
+                Assert.Contains(resumed.DiagnosticSnapshot().Messaging.Receipts,r=>r.MessageId==letter.Id && r.ReceiverId==input.Person.Value);
+                var reached=resumed.DiagnosticSnapshot();
+                Assert.Empty(DefectionPacts.Known(reached,input.Person));
+                var replies=reached.Messaging.Messages.Where(m=>m.Kind==IndependenceLetters.Reply).ToArray();
+                if(input.Action==CourtAction.AnnounceIndependence){Assert.Empty(replies);continue;}
+                var answer=Assert.Single(replies);
+                Assert.Equal(input.Person.Value,answer.SenderId);Assert.Equal(Actor.Value,answer.RecipientId);
+                var courier=Assert.Single(reached.Couriers!.Missions,m=>reached.Messaging.Attempts.Any(a=>a.MessageId==answer.Id && a.Id==m.Attempt));
+                Assert.Equal("castle",courier.Destination);
+                var disk=Directory.CreateTempSubdirectory("independence-reply-");
+                try{
+                    resumed.SetPaused(true);var store=new GenerationSaveStore(disk.FullName,initial.Definitions);
+                    Assert.True(store.Save(resumed,"reply",initial.WorldId).Published);
+                    var host=new WorldSessionHost(new WorldSession(initial));
+                    Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("reply"),host.Current,host.Current.Revision));
+                    NewGameWorldTests.At(host.Current,courier.ReadyAt+1);
+                    var unopened=Assert.Single(IndependenceLetters.Delivered(host.Current.DiagnosticSnapshot(),Actor));
+                    Assert.Null(unopened.Body);
+                    Assert.Equal(ResultCode.Accepted,host.Current.Open(Actor,new(answer.Id),host.Current.Revision).Code);
+                    Assert.Equal(answer.Body,Assert.Single(IndependenceLetters.Delivered(host.Current.DiagnosticSnapshot(),Actor)).Body);
+                }finally{disk.Delete(true);}
+            }
             return;
         }
         Assert.Fail("独立に合意する開始条件がありません");

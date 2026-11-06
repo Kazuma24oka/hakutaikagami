@@ -40,6 +40,18 @@ public partial class NewGameRuntime
       if(guard.FormerTroopsPresent)SocialText(box,house+"所属の兵がこの城にいます。");
       SocialText(box,guard.ControlsCastle?"この城の支配は自家に移りました。":"この城の支配は自家に移っていません。");
   }
+  foreach(var letter in IndependenceLetters.Delivered(w,actor)){
+      if(letter.Body==null)Button(letter.Id,"独立について届いた封書を開く",()=>{Session.Open(actor,new(letter.Id),rev);Refresh();ShowInformationSchemes();});
+      else SocialText(box,letter.Body);
+  }
+  foreach(var response in IndependenceLetters.Responses(w,actor))
+      Button(response.Id.Value,IndependenceLetters.Label(response.Action),()=>{var result=Session.ManageCourt(response,rev);message.Text=result.VisibleReason;Refresh();ShowInformationSchemes();});
+  foreach(var option in IndependenceLetters.Choices(w,actor)){
+      var recipient=FamilyBirth.People(w).Single(p=>p.Id==option.Person.Value);
+      var purpose=option.Action==CourtAction.AnnounceIndependence?"独立を知らせる":"独立への支持を求める";
+      Button(option.Id.Value,recipient.Name+"（"+NewGameWorld.SiteName(option.Site.Value)+"）に"+purpose,
+          ()=>{var result=Session.ManageCourt(option,rev);message.Text=result.VisibleReason;Refresh();ShowInformationSchemes();});
+  }
   if(site==null)return; // 部隊から帰城した当事者には城の立会いだけを表示する。
   if(CharacterRelations.Enabled(w))
   {

@@ -35,6 +35,8 @@ public static class JointIndependence
         foreach(var d in w.Declarations)
         {
             Join(d.Founder,d.At,d.Revision,d);
+            foreach(var answer in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.JoinDeclaredHouse && e.Input.Owner==d.House))
+                Join(answer.Actor,answer.At,answer.Revision,d);
             foreach(var response in w.PactResponses??[])
             {
                 if(!response.Acted)continue;
