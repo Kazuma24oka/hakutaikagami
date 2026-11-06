@@ -7,9 +7,9 @@ internal static class FamilyConsentRules
     internal static AdoptionHouse[] KnownHouses(ContractWorld w,EntityId parent,EntityId child,long at,long rev)=>new[]{parent,child}.Select(p=>AuthoredHouse(w,p)).Where(o=>o!=null).Distinct().Select(o=>{
         var known=RepresentativeKnowledge.Known(w,w.PlayerControl,new(o!),at,Math.Min(rev,w.CommitSequence))??throw new InvalidDataException("家の代表者を確認できません");return new AdoptionHouse(new(o!),known.Person,known.ObservedAt,known.Source);
     }).OrderBy(h=>h.Owner.Value,StringComparer.Ordinal).ToArray();
-    internal static bool IndividualAccepts(ContractWorld w,EntityId actor,EntityId other,long at,long rev){
+    internal static bool IndividualAccepts(ContractWorld w,EntityId actor,EntityId other,long at,long rev,int requiredScore=80){
         if(!w.Characters.Single(c=>c.Id==actor).WillObey)return false;var score=CharacterRelations.DiagnosticScores(w,actor,other,at,rev);
-        return CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Affection)+score.Trust-score.Hostility>=80;
+        return CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Affection)+score.Trust-score.Hostility>=requiredScore;
     }
 
     internal static List<(EntityId Parent,EntityId Child)> ParentLinks(ContractWorld w,long at,long rev)

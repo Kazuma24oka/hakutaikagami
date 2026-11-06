@@ -26,7 +26,20 @@ public sealed class AdultAdoptionTests
         Assert.Equal(new EntityId("created:younger"),candidates[0].Person);
         Assert.Equal(Other,candidates[1].Person);
         Good(s.DesignateHeir(house,Other,s.Revision));
-        Assert.Equal(Other,Assert.Single(s.DiagnosticSnapshot().HeirNominations!).Heir);
+        var paper=Assert.Single(s.DiagnosticSnapshot().HeirNominations!);
+        Assert.Equal(Other,paper.Heir);
+        Good(s.RequestHeirPledge(paper,member,s.Revision));
+        var sent=s.DiagnosticSnapshot();
+        Assert.Contains("家法の第一候補と異なる",Assert.Single(sent.Messaging.Messages,m=>m.Kind==HeirPledges.RequestKind).Body);
+        Assert.DoesNotContain(sent.Messaging.Messages,m=>m.Kind==HeirPledges.ReplyKind);
+        s=new WorldSession(ContractJson.Copy(sent));
+        At(s,s.Seconds+240);
+        var reply=Assert.Single(s.DiagnosticSnapshot().Messaging.Messages,m=>m.Kind==HeirPledges.ReplyKind);
+        Assert.Contains("第一候補を外す",reply.Body);
+        var score=CharacterRelations.DiagnosticScores(sent,member,Other);
+        var support=sent.Characters.Single(c=>c.Id==member).WillObey &&
+            CharacterRelations.DiagnosticTrait(sent,member,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(sent,member,SocialTrait.Affection)+score.Trust-score.Hostility>=100;
+        Assert.Equal(support,reply.Body.Contains("支持すると誓います"));
     }
     static readonly Lazy<ulong> Yes=new(()=>Find(true)),No=new(()=>Find(false));
     static ulong Find(bool yes){for(ulong n=1;n<100;n++){var w=Start(n).DiagnosticSnapshot();var score=CharacterRelations.DiagnosticScores(w,Other,Player);if((CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Affection)+score.Trust-score.Hostility>=80)==yes)return n;}throw new Exception("No branch seed");}
