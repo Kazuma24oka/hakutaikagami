@@ -215,6 +215,7 @@ public sealed partial class WorldSession
         if(CraftTrade.NextBoundary(s,target) is {} craftsBoundary)times.Add(craftsBoundary);
         if(StandingAdministration.NextBoundary(s,target) is {} administrationBoundary)times.Add(administrationBoundary);
         if(PublicWorks.NextBoundary(s,target) is {} worksBoundary)times.Add(worksBoundary);
+        if(HouseRestoration.NextDecision(s,target) is {} restorationBoundary)times.Add(restorationBoundary);
         if(HouseholdCourt.NextBoundary(s,target) is {} courtBoundary)times.Add(courtBoundary);
         if(FamilyBirth.Next(s,target) is {} birth)times.Add(birth);
         if(FamilyMortality.Next(s,target) is {} naturalDeath)times.Add(naturalDeath);

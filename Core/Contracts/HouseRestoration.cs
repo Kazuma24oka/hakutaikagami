@@ -294,12 +294,57 @@ public static class HouseRestoration
             throw new InvalidDataException("約束した数量の私有米を持参してください");
     }
 
+    // 面識のある現地の相手に限り、交際歴がないときは本人の気質から決める。
+    static bool WillDiscuss(ContractWorld world, EntityId person, SocialScores opinion)
+    {
+        if (opinion.Trust != opinion.Hostility) return opinion.Trust > opinion.Hostility;
+        return CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Ambition) >
+            CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Caution) &&
+            CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Affection) >
+            CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Duty);
+    }
+
+    internal static long? NextDecision(ContractWorld world, long target)
+    {
+        if (!NewGameWork.Enabled(world) || !CharacterRelations.Enabled(world) || !NewGameNpcRoutine.Enabled(world) ||
+            (!world.LandRights.Any(r => r.Kind == "control" && r.Until <= world.ElapsedSeconds) && BeforePlacement(world) == null)) return null;
+        long day = world.ElapsedSeconds / 86400;
+        return target / 86400 > day ? (day + 1) * 86400 : null;
+    }
+
     internal static void SeekLocalSupport(ContractWorld world, long previousTime)
     {
         if (previousTime / 86400 == world.ElapsedSeconds / 86400 || !NewGameWork.Enabled(world) ||
             !CharacterRelations.Enabled(world) || !NewGameNpcRoutine.Enabled(world) ||
             (!world.LandRights.Any(r => r.Kind == "control" && r.Until <= world.ElapsedSeconds) && BeforePlacement(world) == null)) return;
         var history = HouseholdCourt.Events(world);
+        foreach (var support in history.Where(e => e.Input.Action == CourtAction.SupportRestoration))
+        {
+            var request = history.Single(e => e.Input.Id == support.Input.Reference);
+            var claimant = request.Actor;
+            var supporter = support.Actor;
+            if (claimant == world.PlayerControl || supporter == world.PlayerControl ||
+                SocialWorld.Site(world, claimant) != request.Place || SocialWorld.Site(world, supporter) != request.Place ||
+                HostageCustody.HeldAt(world, claimant, world.ElapsedSeconds, world.CommitSequence) ||
+                Assassination.DeadAt(world, claimant, world.ElapsedSeconds, world.CommitSequence) ||
+                !ObserveFormerSeat(world, claimant).Any(o => o.House == request.Input.Owner && o.Site == request.Place)) continue;
+            var formerHead = NamesFormerHouse(world, request.Input)
+                ? new EntityId(BeforePlacement(world)!.Factions.Single(f => f.Id == request.Input.Owner.Value).Head)
+                : HouseSuccession.Head(world, request.Input.Owner);
+            if (claimant != formerHead) continue;
+            var pactId = HouseholdCourt.Id("request", "restore-pact/" + request.Input.Id.Value);
+            var pact = (world.SecretPacts ?? []).SingleOrDefault(p => p.Id == pactId);
+            if (pact == null)
+            {
+                pact = DefectionPacts.Negotiate(world, pactId, claimant, supporter, PactPurpose.RiseTogether, world.ElapsedSeconds, world.CommitSequence);
+                if (pact == null || (world.SecretPacts ?? []).Any(p => p.Proposer == claimant && p.Partner == supporter &&
+                    p.House == pact.House && p.Purpose == pact.Purpose && (p.Accepted || p.At == pact.At))) continue;
+                TransactionalWorld.TryApply(world, copy => copy.SecretPacts = [..copy.SecretPacts ?? [], pact]);
+            }
+            else if (pact.Accepted && !PactSignals.Sent(world, pact) &&
+                DefectionPacts.HouseAt(world, claimant, world.ElapsedSeconds, world.CommitSequence) == pact.House)
+                TransactionalWorld.TryApply(world, copy => PactSignals.Dispatch(copy, pact));
+        }
         foreach (var person in world.Characters.Where(c => c.Life == LifeState.Adult && c.Id != world.PlayerControl)
             .OrderBy(c => c.Id.Value, StringComparer.Ordinal))
         {
@@ -312,7 +357,7 @@ public static class HouseRestoration
                 !history.Any(e => e.Actor == actor && e.Input.Person == c.Id && e.Place == seen.Site &&
                     e.Input.Owner == seen.House && e.Input.Action == CourtAction.SeekRestorationSupport))
                 .Select(c => (c.Id, Opinion: CharacterRelations.DiagnosticScores(world, actor, c.Id)))
-                .Where(c => c.Opinion.Trust > c.Opinion.Hostility)
+                .Where(c => WillDiscuss(world, actor, c.Opinion))
                 .OrderByDescending(c => c.Opinion.Trust - c.Opinion.Hostility)
                 .ThenBy(c => c.Id.Value, StringComparer.Ordinal).FirstOrDefault();
             if (peer.Id.Value == null) continue;
@@ -357,7 +402,7 @@ public static class HouseRestoration
                 SocialWorld.Site(world, person) != ask.Place || SocialWorld.Site(world, ask.Actor) != ask.Place)
                 continue;
             var supports = CharacterRelations.Enabled(world) &&
-                CharacterRelations.DiagnosticScores(world, person, ask.Actor) is var view && view.Trust > view.Hostility;
+                CharacterRelations.DiagnosticScores(world, person, ask.Actor) is var view && WillDiscuss(world, person, view);
             var reply = new CourtInput(HouseholdCourt.Id("request", ask.Input.Id.Value + "/support"),
                 supports ? CourtAction.SupportRestoration : CourtAction.ReserveRestoration,
                 ask.Actor, ask.Input.Owner, ask.Place, Reference: ask.Input.Id);

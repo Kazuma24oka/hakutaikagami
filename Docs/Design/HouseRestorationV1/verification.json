@@ -1,0 +1,12 @@
+{
+  "passed": 90,
+  "proofs": {
+    "Docs/Design/HouseRestorationV1/runtime-local/critical/critical.trx": "4501f00e4e3f6ec69997f5df176eea93f25b226866fc3a654e8de60e5eaec227",
+    "Docs/Design/HouseRestorationV1/entry-verification.md": "e93b89a229492dbfb72da45ae4cd89940f0a4282e9aeb643152bd16f815b377c",
+    "Tests/HouseRestorationTests.cs": "a2956245a3e91d83c312bc996b3ff53f9c1a082b46049741a6c92f5274796781",
+    "Tests/DefectionPactTests.cs": "999c9a65d2b555d04577a8ab536958a8f4518e58787a74938bfb4c06b02d0dc7",
+    "Game/Scripts/HouseRestorationCheck.cs": "51ee8ec091650a8be9679426bc8ed988d961281ab23a33ecc7475155d2a61bf7"
+  },
+  "legacy": 3,
+  "visual_review": false
+}

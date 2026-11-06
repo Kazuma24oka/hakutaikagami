@@ -65,6 +65,38 @@ public class DefectionPactTests
         Assert.Fail("旧大名と城主の共同挙兵に至る開始条件がありません");
     }
 
+    [Fact]
+    public void FormerLordAsNpcCanSendHisOwnCallAfterWinningLocalSupport()
+    {
+        var daimyo = NewGameWorldTests.Officer(role: StartTemplate.Daimyo);
+        var partner = NewGameWorldTests.Officer(Partner.Value, StartTemplate.Castellan, lord: daimyo.Id);
+        var setup = NewGameWorldTests.Setup([daimyo, partner], [new(daimyo.Id, "org:replacement", [daimyo.Site], true)]);
+        EntityId lord = new("person:nobunaga");
+        for (ulong seed = 0; seed < 256; seed++)
+        {
+            var world = NewGameWorld.Create(setup.World, setup.Registered, daimyo.Id, seed, npcRoutinePolicy: NewGameNpcRoutine.Policy,
+                inspectionPolicy: LocalInspectionFindings.Policy, workPolicy: WorkFollowup.Policy, companionPolicy: PersonalCompanions.Policy,
+                developmentPolicy: CharacterDevelopment.Policy, socialPolicy: CharacterRelations.Policy, comingOfAge: 15);
+            var opinion = CharacterRelations.DiagnosticScores(world, lord, Partner);
+            var reverse = CharacterRelations.DiagnosticScores(world, Partner, lord);
+            var loyalty = CharacterRelations.DiagnosticScores(world, Partner, new(daimyo.Id));
+            bool Open(EntityId person) => CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Ambition) > CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Caution) && CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Affection) > CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Duty);
+            if (!Open(lord) || !Open(Partner) ||
+                CharacterRelations.DiagnosticTrait(world, Partner, SocialTrait.Ambition) + reverse.Trust + loyalty.Hostility <
+                CharacterRelations.DiagnosticTrait(world, Partner, SocialTrait.Duty) + loyalty.Trust + reverse.Hostility) continue;
+            var session = new WorldSession(world);
+            NewGameWorldTests.At(session, 86400 * 5 + 120);
+            var after = session.DiagnosticSnapshot();
+            var pact = Assert.Single(after.SecretPacts ?? [], p => p.Proposer == lord && p.Partner == Partner);
+            Assert.True(PactSignals.Sent(after, pact));
+            Assert.Contains(after.Declarations!, d => d.Pact == pact.Id);
+            Assert.Contains(after.PactResponses!, r => r.Pact == pact.Id && r.Acted);
+            Assert.NotNull(HouseRestoration.SuccessorOrganization(after, new("org:oda"), after.ElapsedSeconds, after.CommitSequence+1));
+            return;
+        }
+        Assert.Fail("互いに支持し共同挙兵を選ぶ条件がありません");
+    }
+
     [Theory]
     [InlineData(PactPurpose.WithholdService)]
     [InlineData(PactPurpose.LeaveHouse)]
