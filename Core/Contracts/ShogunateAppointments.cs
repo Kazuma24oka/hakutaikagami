@@ -40,6 +40,9 @@ public static class ShogunateAppointments
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || place!=Kyoto || HouseTerritoryScale.Province(i.Site)==null ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で対象国と申請本人を確認してください");
+        if((Ruling(i.Action) && SupremeOffice.ShogunAt(w,at,rev-1)!=actor) ||
+            (i.Action==CourtAction.RecommendShugo && SupremeOffice.ShogunAt(w,at,rev-1)==null))
+            throw new InvalidDataException("守護補任を決裁する在職中の将軍が必要です");
         var prior=HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action) && e.At<=at && e.Revision<rev).ToArray();
         if(i.Action==CourtAction.AskShugo){
             if(i.Person!=Broker || i.Reference!=null || actor==Broker || actor==Shogun || HouseSuccession.Head(w,i.Owner,at,rev-1)!=actor ||

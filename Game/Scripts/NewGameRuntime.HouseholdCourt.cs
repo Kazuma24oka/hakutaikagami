@@ -57,6 +57,8 @@ public partial class NewGameRuntime
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
       }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
+          if(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,rev)==actor)
+              Button("shogun-resign","将軍職を辞任する",()=>Run(new(Nonce("shogun-resign"),CourtAction.ResignShogun,actor,SupremeOffice.Bakufu,site.Value)));
           foreach(var answer in ShogunateAppointments.AvailableAnswers(w,actor)){
               var subject=MeritRewards.DisplayName(w,actor,answer.Person)+"の"+HouseTerritoryScale.Province(answer.Site)+"守護補任";
               var text=answer.Action switch{CourtAction.RecommendShugo=>"を将軍に取り次ぐ",CourtAction.DeclineShugo=>"の取次を断る",
