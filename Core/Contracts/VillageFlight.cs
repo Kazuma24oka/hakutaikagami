@@ -66,7 +66,7 @@ public sealed partial record VillageFlight(string Petition,EntityId From,EntityI
             if(site==f.From && call.Answer is {} answer)reports.Add((answer.At,answer.Joined?"本願寺の檄を受け取り、村は蜂起に加わると答えました。":"本願寺の檄を受け取りましたが、村は蜂起を見送りました。"));
         }
         foreach(var f in w.Communities?.Flights??[])
-            if(f.From==site && f.Proclamation?.Dispersed is {} d)reports.Add((d.At,"村は蜂起を解き、参加した働き手が生業に戻りました。"));
+            if(f.From==site && f.Proclamation?.Dispersed is {} d)reports.Add((d.At,Suppression(w,f)!=null?"現地の兵に蜂起を鎮められました。領主への不信が残っています。":"村は蜂起を解き、参加した働き手が生業に戻りました。"));
         return reports.Count==0?"":reports.OrderBy(r=>r.At).Last().Text;
     }
 

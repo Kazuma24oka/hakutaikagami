@@ -1,5 +1,5 @@
 namespace HakutaiKagami.Core.Contracts;
-public enum VillageAction { ProposeRelief,ProposeWater,Confirm,Deliver,Cancel }
+public enum VillageAction { ProposeRelief,ProposeWater,Confirm,Deliver,Cancel,SuppressUprising }
 public sealed record VillageInput(EntityId Id,VillageAction Action,EntityId Site,EntityId? Proposal=null,long Amount=0);
 public sealed record VillageEntry(VillageInput Input,long At,long Revision);
 public sealed record VillageMember(EntityId Id,string Name);
@@ -37,7 +37,7 @@ public static class VillageConsultation
     }
     static int Trust(ContractWorld w,IEnumerable<VillagePromise> promises,EntityId site,long at,long rev)
     {
-        int n=70-LandSurvey.Pressure(w,site,at)-(LocalSecurity.MarketAvoided(w,site,at,rev)?25:0);foreach(var p in promises.Where(p=>p.Site==site)){
+        int n=70-((w.Villages?.Entries??[]).Any(e=>e.Input.Action==VillageAction.SuppressUprising && e.Input.Site==site && e.Revision<rev && e.At<=at)?30:0)-LandSurvey.Pressure(w,site,at)-(LocalSecurity.MarketAvoided(w,site,at,rev)?25:0);foreach(var p in promises.Where(p=>p.Site==site)){
             bool done=p.Kind==VillageAction.ProposeWater?p.StartedAt!=null:p.Delivered==p.Amount;
             if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
         }return Math.Clamp(n,0,100);
@@ -65,6 +65,17 @@ public static class VillageConsultation
             Need(EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&e.Revision>prev&&e.Revision<=revision&&e.At>=priorAt&&e.At<=until&&CommunityEconomy.SitesFor(w).Contains(i.Site)&&Enum.IsDefined(i.Action),"村の原本・順序・地域が不正です");prev=e.Revision;priorAt=e.At;
             Need(!FactionStances.OtherIdUsed(w,i.Id,includeVillages:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
             Need(Local(w,i.Site,e.At,e.Revision)&&Authority(w,i.Site,e.At,e.Revision),"現地で家の処分権を持つ本人が相談してください");
+            if(i.Action==VillageAction.SuppressUprising){
+                var f=w.Communities?.Flights?.SingleOrDefault(f=>f.From==i.Site && f.Letter?.Id==i.Proposal);
+                var call=f?.Proclamation;
+                Need(call?.Mustered is >0 && call.Answer!.Revision<e.Revision &&
+                    (call.Dispersed==null || call.Dispersed.Revision>=e.Revision) && i.Amount==0 &&
+                    !entries.Any(x=>x.Input.Action==i.Action && x.Input.Proposal==i.Proposal && x.Revision<e.Revision),"現地で継続中の蜂起を指定してください");
+                var owner=RegionalDomains.Owner(w,i.Site)!.Value;
+                int forces=CastleHandover.CommandedAt(w,owner,i.Site,e.At,e.Revision)+PrivateRecruitment.Soldiers(w,w.PlayerControl,i.Site,e.At,e.Revision);
+                Need(forces>=call.Mustered,"自分が現地で指揮する兵が足りません");
+                continue;
+            }
             if(i.Action is VillageAction.ProposeWater or VillageAction.ProposeRelief){
                 Need(i.Proposal==null&&(i.Action==VillageAction.ProposeWater?i.Amount==CommunityEconomy.WorkCost:i.Amount>0&&i.Amount<=3000),"救済量または工事条件が不正です");
                 Need(!promises.Values.Any(p=>p.Site==i.Site&&p.CancelledAt==null&&p.StartedAt==null&&p.Delivered<p.Amount&&e.At<=p.DeliverBy),"先に現在の約束を履行するか終了してください");

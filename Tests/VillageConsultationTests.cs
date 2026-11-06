@@ -11,6 +11,26 @@ public sealed class VillageConsultationTests
     static EntityId Agree(WorldSession s,bool water=false,long amount=200){var q=Propose(s,water,amount);Accepted(Act(s,VillageAction.Confirm,q));return q;}
     static void Advance(WorldSession s,long at){while(s.Seconds<at){long old=s.Seconds;s.SetPaused(false);s.AdvanceTo(at,100000);Assert.True(s.Seconds>old);}}
     static CommunityAccounts A(WorldSession s)=>s.DiagnosticSnapshot().Communities!.Accounts.Single(a=>a.Site==Site);
+    [Fact]
+    public void HungerPetitionKeepsOnlyUndeliveredReliefAtObservation()
+    {
+        var session=Start(seed:285);
+        var proposal=Agree(session,amount:200);
+        Accepted(Act(session,VillageAction.Deliver,proposal,50));
+        Accepted(Act(session,VillageAction.Cancel,proposal));
+        var epoch=DateOnly.Parse(session.DiagnosticSnapshot().EpochDate);
+        long At(int year,int month)=>(new DateOnly(year,month,1).DayNumber-epoch.DayNumber)*86400L;
+        Advance(session,At(epoch.Year,10));
+        var levy=A(session).Assessed;
+        Accepted(session.ManageCommunity(new(new("request:levy-for-petition"),Site,EconomyAction.CollectLevy,levy),session.PlayerControl,session.Revision));
+        Advance(session,At(epoch.Year+1,9));
+        var world=session.DiagnosticSnapshot();
+        var petition=Assert.Single(world.Communities!.Notices.Where(n=>n.Site==Site && n.Petition?.Relief?.Promise==proposal).Take(1));
+        Assert.Equal(150,petition.Petition!.Relief!.Unpaid);
+        Assert.True(petition.Need>0);
+        var bytes=ContractJson.Write(world);
+        Assert.Equal(bytes,ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot()));
+    }
     [Fact]public void OrganizationMembersRepresentativeAndSiteHaveDifferentIdentity(){var s=Start();var org=s.DiagnosticSnapshot().Villages!.Organizations.Single(o=>o.Site==Site);Assert.NotEqual(org.Id,Site);Assert.Equal(2,org.Members.Select(m=>m.Id).Distinct().Count());Assert.DoesNotContain(s.PlayerControl,org.Members.Select(m=>m.Id));Assert.Equal(3,s.DiagnosticSnapshot().Villages!.Organizations.Length);}
     [Fact]public void PromiseDoesNotMoveRiceRolesOrLabor(){var s=Start();var before=s.DiagnosticSnapshot();Agree(s,true);var after=s.DiagnosticSnapshot();Assert.Equal(ContractJson.Write(before.Communities),ContractJson.Write(after.Communities));Assert.Equal(ContractJson.Write(before.ServiceBonds),ContractJson.Write(after.ServiceBonds));Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));}
     [Fact]public void WaterStartsOnlyFromAgreementAndFinishesAfterActualSevenDays(){var s=Start();Assert.Equal(ResultCode.NotAvailable,s.ManageCommunity(new(new("request:water-bypass"),Site,EconomyAction.ImproveWater,200),s.PlayerControl,s.Revision).Code);var q=Agree(s,true);Accepted(Act(s,VillageAction.Deliver,q,200));Assert.Equal(2800,A(s).HouseRice);Assert.Equal(20,A(s).Reserved);Assert.Contains("工事中",s.VillageView()!.Promises.Single().Status);Advance(s,7*86400);Assert.Equal(110,A(s).Water);Assert.Equal("工事完了",s.VillageView()!.Promises.Single().Status);Assert.Equal(0,A(s).Reserved);}

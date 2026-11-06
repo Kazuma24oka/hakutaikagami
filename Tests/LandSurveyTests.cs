@@ -8,15 +8,16 @@ public sealed class LandSurveyTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static SurveyInput Input(WorldSession s,SurveyAction action,EntityId? reference=null,LandTaxRate rate=LandTaxRate.Ordinary)=>new(new("request:survey/"+s.Revision),action,Owner,Site,reference,rate);
  [Theory]
- [InlineData(false)]
- [InlineData(true)]
- public void NeighborUnderItsOwnHeavyDecreeJoinsOnlyAfterReceivingTheLetter(bool relieveBeforeTempleCall)
+ [InlineData(false,false)]
+ [InlineData(true,false)]
+ [InlineData(false,true)]
+ public void NeighborUnderItsOwnHeavyDecreeJoinsOnlyAfterReceivingTheLetter(bool relieveBeforeTempleCall,bool suppress)
  {
      var sender=NewGameWorldTests.Officer("created:sender",StartTemplate.Daimyo,"site:sakai");
      var receiver=NewGameWorldTests.Officer("created:receiver",StartTemplate.Daimyo,"site:ishiyama");
      var setup=NewGameWorldTests.Setup([sender,receiver],[new(sender.Id,"org:sender",[sender.Site],false),new(receiver.Id,"org:receiver",[receiver.Site],false)]);
      var w=NewGameWorld.Create(setup.World,setup.Registered,sender.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
-         workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+         workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy);
      var s=new WorldSession(w);
      Good(s.ManageLandSurvey(new(new("request:sender-heavy"),SurveyAction.PostRate,new("org:sender"),new(sender.Site),Rate:LandTaxRate.Heavy),s.Revision));
      NewGameWorldTests.At(s,60*86400);
@@ -50,9 +51,29 @@ public sealed class LandSurveyTests
          if(!relieveBeforeTempleCall){
              int workers=ledger.Accounts.Single(a=>a.Site==flight.From).Workforce;
              NewGameWorldTests.At(run,run.Seconds+1);
-             Good(run.ManageCommunity(new(new("request:relieve-uprising"),flight.From,EconomyAction.RelieveVillage,200),run.PlayerControl,run.Revision));
-             Assert.Equal(workers+10,run.CommunityEconomyView()!.Accounts.Workforce);
-             Assert.Contains("蜂起を解き",run.VillageView()!.Administration);
+             var action=new VillageInput(new("request:quell"),VillageAction.SuppressUprising,flight.From,flight.Letter!.Id);
+             Assert.Equal(ResultCode.NotAvailable,run.ConsultVillage(action,run.PlayerControl,run.Revision).Code);
+             if(suppress){
+                 void Military(NewMilitaryAction step){
+                     var world=run.DiagnosticSnapshot();
+                     var input=new NewMilitaryInput(new("request:quell-duty/"+step),step);
+                     if(step==NewMilitaryAction.Request)input=input with {AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract,FromLedger=NewGameMilitary.SourceForCurrentHouse(world),CycleContract=NewGameMilitary.CycleForCurrentHouse(world)};
+                     Good(run.DecideNewMilitary(input,run.PlayerControl,run.Revision));
+                 }
+                 void Read(){NewGameWorldTests.At(run,run.Seconds+2);foreach(var m in run.GetActorView(run.PlayerControl).Messages.Where(m=>m.KnownBody==null))Good(run.Open(run.PlayerControl,m.Id,run.Revision));}
+                 Military(NewMilitaryAction.Request);Read();Military(NewMilitaryAction.Accept);Read();Military(NewMilitaryAction.Pickup);
+                 if(Environment.GetEnvironmentVariable("HAKUTAI_VILLAGE_RESISTANCE_FIXTURE") is {Length:>0} path)
+                     File.WriteAllBytes(path,ContractJson.Write(run.DiagnosticSnapshot()));
+                 int before=run.CommunityEconomyView()!.Accounts.Workforce;
+                 Good(run.ConsultVillage(action,run.PlayerControl,run.Revision));
+                 Assert.Equal(before+10,run.CommunityEconomyView()!.Accounts.Workforce);
+                 Assert.Contains("不信",run.VillageView()!.Administration);
+                 Assert.Equal(ResultCode.AlreadyAccepted,run.ConsultVillage(action,run.PlayerControl,run.Revision).Code);
+             }else{
+                 Good(run.ManageCommunity(new(new("request:relieve-uprising"),flight.From,EconomyAction.RelieveVillage,200),run.PlayerControl,run.Revision));
+                 Assert.Equal(workers+10,run.CommunityEconomyView()!.Accounts.Workforce);
+                 Assert.Contains("蜂起を解き",run.VillageView()!.Administration);
+             }
          }
      }
      Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));

@@ -25,6 +25,13 @@ public static class CastleHandover
         var c=PastLosses(w,at,rev);var anchor=FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position);int n=0;
         foreach(var m in NpcArmies.Musters(w).Where(m=>m.Owner==owner&&(m.At<at||m.At==at&&m.Revision<rev)&&!w.NpcArmies!.Returns.Any(r=>r.Muster==m.Id&&(r.At<at||r.At==at&&r.Revision<rev)))){
             var b=NewGameMilitary.LedgerIdentity(m.Owner,m.Site);if(NpcArmies.Position(w,b.Army,at)!=FieldWorld.ToWorld(anchor))continue;n+=b.Units.Select((id,i)=>Math.Max(0,(i==0?40:30)-WorldClashes.SoldiersLost(c,id,at))).Sum();}
+        return n+CommandedAt(w,owner,site,at,rev);
+    }
+    internal static int CommandedAt(ContractWorld w,EntityId owner,EntityId site,long at,long rev)
+    {
+        var c=PastLosses(w,at,rev);
+        var anchor=FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position);
+        int n=0;
         foreach(var s in NewGameMilitary.LedgerStates(w).Where(s=>s.Terms.Owner==owner)){var p=c.ForkMilitaryObservation();p.NewMilitary=s;if(!NewGameMilitary.CustodyAt(p,at,rev))continue;for(int i=0;i<3;i++)if(RegionalGround.Distance(NewGameMilitary.Position(p,i,at),anchor)<=20000)n+=Math.Max(0,NewGameMilitary.StrengthAt(p,i,at));}
         return n;
     }

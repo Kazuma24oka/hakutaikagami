@@ -1,0 +1,41 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "村の代表が実際の飢え・年貢・動員・被害と履行履歴を基に嘆願し、書状の到着後に当事者が知る",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CommunityEconomy.cs"
+      ]
+    },
+    {
+      "contract": "救済・減免と普請拒否を段階に接続し、履行と武力鎮圧の後に村の反応を区別する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageConsultation.cs"
+      ]
+    },
+    {
+      "contract": "逃散者が実際に隣村へ移り、出発・到着・帰村で人口と働き手を二重計上しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageFlight.cs"
+      ]
+    },
+    {
+      "contract": "隣村や寺社に檄が実際に届き、本人の判断によって連合・武装へ進む",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/VillageFlight.Temple.cs"
+      ]
+    },
+    {
+      "contract": "通常画面・途中保存復旧・代表旧保存と重大な不整合を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/VillageResistanceCheck.cs",
+        "Tests/LandSurveyTests.cs"
+      ]
+    }
+  ]
+}

@@ -45,6 +45,8 @@ public sealed partial record VillageFlight
             int members=answer.Joined?Math.Clamp(account.Workforce-account.Reserved,0,10):0;
             return f with {Proclamation=call with {Answer=answer,Mustered=members}};
         }
+        if(f.Proclamation is {Mustered:>0,Dispersed:null} rising && Suppression(w,f) is {} order)
+            return f with {Proclamation=rising with {Dispersed=new(VillageConsultation.Representative(f.From,order.At),order.At,order.Revision,false)}};
         if(f.Proclamation is {Mustered:>0,Dispersed:null,Answer:{} signed} active && at>signed.At){
             var present=HearTemple(w,f,at,w.CommitSequence);
             if(!present.Joined)return f with {Proclamation=active with {Dispersed=present}};
@@ -55,6 +57,9 @@ public sealed partial record VillageFlight
         if(path.Any(id=>RegionalCampaign.BlockedAt(w,id,at)))return f;
         return f with {Proclamation=new(Honganji,f.Letter.Id,BranchRoutes.Schedule(NewGameWorld.Node(f.To.Value),path,at,w),w.CommitSequence)};
     }
+
+    internal static VillageEntry? Suppression(ContractWorld w,VillageFlight f)=>w.Villages?.Entries.SingleOrDefault(e=>
+        e.Input.Action==VillageAction.SuppressUprising && e.Input.Site==f.From && f.Letter!=null && e.Input.Proposal==f.Letter.Id);
 
     static void ValidateProclamation(ContractWorld w,VillageFlight f)
     {
@@ -73,7 +78,10 @@ public sealed partial record VillageFlight
             if(count!=(answerAt.Joined?Math.Clamp(account.Workforce-account.Reserved,0,10):0))
                 throw new InvalidDataException("蜂起人数が村の動ける人手と一致しません");
         }
-        if(call.Dispersed is {} d && (call.Mustered is not >0 || d.At<=call.Answer!.At ||
+        if(Suppression(w,f) is {} action){
+            if(call.Dispersed!=new AllianceReply(VillageConsultation.Representative(f.From,action.At),action.At,action.Revision,false))
+                throw new InvalidDataException("鎮圧の原本と解散時点が一致しません");
+        }else if(call.Dispersed is {} d && (call.Mustered is not >0 || d.At<=call.Answer!.At ||
             d.Revision<=call.Answer.Revision || d.Revision>w.CommitSequence || d.At>w.ElapsedSeconds ||
             d.Joined || d!=HearTemple(w,f,d.At,d.Revision)))
             throw new InvalidDataException("村が蜂起を解いた時点と事情が一致しません");
