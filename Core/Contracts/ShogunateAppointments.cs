@@ -66,6 +66,23 @@ public static class ShogunateAppointments
             HouseTerritoryScale.Province(e.Input.Site)==HouseTerritoryScale.Province(i.Site) && !Assassination.DeadAt(w,e.Input.Person,at,rev)))
             throw new InvalidDataException("その国の現任守護がいます");
     }
+    public static IEnumerable<CourtInput> AvailableAnswers(ContractWorld w,EntityId actor)
+    {
+        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition || actor!=w.PlayerControl ||
+            (actor!=Shogun && actor!=Broker))yield break;
+        bool ruling=actor==Shogun;
+        var wanted=ruling?CourtAction.RecommendShugo:CourtAction.AskShugo;
+        foreach(var source in HouseholdCourt.Events(w).Where(e=>e.Input.Action==wanted)){
+            if(ruling && !MessageFlow.Knows(w.Messaging,Letter(source.Input),actor.Value))continue;
+            var applicant=ruling?source.Input.Person:source.Actor;
+            foreach(var action in ruling?new[]{CourtAction.AppointShugo,CourtAction.RejectShugo}:new[]{CourtAction.RecommendShugo,CourtAction.DeclineShugo}){
+                var answer=new CourtInput(HouseholdCourt.Id(action.ToString(),source.Input.Id.Value),action,applicant,source.Input.Owner,source.Input.Site,Reference:source.Input.Id);
+                try{Check(w,answer,actor,Kyoto,w.ElapsedSeconds,w.CommitSequence+1);}
+                catch(InvalidDataException){continue;}
+                yield return answer;
+            }
+        }
+    }
     internal static void Process(ContractWorld w)
     {
         if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition)return;

@@ -42,6 +42,19 @@ public static class CentralMediation
             throw new InvalidDataException("取次本人が知る依頼人との関係に合わない返答です");
     }
 
+    public static IEnumerable<CourtInput> AvailableAnswers(ContractWorld w)
+    {
+        if(w.PlayerControl!=CentralCourtCatalog.CourtBroker || !CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog))yield break;
+        var rows=Earlier(w,w.ElapsedSeconds,w.CommitSequence+1).ToArray();
+        foreach(var petition in rows.Where(e=>e.Input.Action==CourtAction.AskCourtIntroduction && e.At<w.ElapsedSeconds &&
+            !rows.Any(r=>r.Input.Reference==e.Input.Id))){
+            if(!TransportWork.At(w,petition.Actor,petition.Place,w.ElapsedSeconds,w.CommitSequence+1,true) ||
+                Assassination.DeadAt(w,petition.Actor,w.ElapsedSeconds,w.CommitSequence))continue;
+            foreach(var action in new[]{CourtAction.AcceptCourtIntroduction,CourtAction.DeclineCourtIntroduction})
+                yield return new(HouseholdCourt.Id(action.ToString(),petition.Input.Id.Value),action,petition.Actor,
+                    petition.Input.Owner,petition.Place,Reference:petition.Input.Id);
+        }
+    }
     internal static IEnumerable<CourtInput> Pending(ContractWorld w)
     {
         var broker=CentralCourtCatalog.CourtBroker;
