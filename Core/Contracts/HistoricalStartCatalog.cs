@@ -6,7 +6,7 @@ public sealed record HistoricalStartEdition(int Schema,string Id,int WorldYear,s
 public static class HistoricalStartCatalog
 {
     public const string Western="historical-start-west-v2";
-    public const string Current=CentralCourtCatalog.TempleEdition;
+    public const string Current=CentralCourtCatalog.RegentEdition;
     static readonly HistoricalStartEdition current=Read();
     public static HistoricalStartEdition Edition=>ContractJson.Copy(current);
     static HistoricalStartEdition Read()
@@ -23,6 +23,7 @@ public static class HistoricalStartCatalog
     }
     public static SetupScenario Scenario(string edition)
     {
+        if(edition==CentralCourtCatalog.RegentEdition)return CentralCourtCatalog.RegentScenario();
         if(edition==CentralCourtCatalog.TempleEdition)return CentralCourtCatalog.TempleScenario();
         if(edition==CentralCourtCatalog.ShogunateEdition)return CentralCourtCatalog.ShogunateScenario();
         if(edition==CentralCourtCatalog.Id)return CentralCourtCatalog.Scenario();

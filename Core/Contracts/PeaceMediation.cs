@@ -10,9 +10,13 @@ public static class PeaceMediation
     static bool IsVote(CourtAction a)=>a is CourtAction.AcceptPeaceProposal or CourtAction.RejectPeaceProposal;
     internal static bool Handles(CourtAction a)=>a is CourtAction.ReportPeaceRefusal or CourtAction.CertifyPeaceAgreement || IsVote(a) || a is CourtAction.AskPeaceMediation or CourtAction.SendPeaceProposal or CourtAction.DeclinePeaceMediation;
     static EntityId Office(EntityId broker)=>broker==CentralCourtCatalog.TempleBroker?TempleMilitary.Site:CentralCourtCatalog.Kyoto;
-    public static IEnumerable<EntityId> Brokers(ContractWorld w){
+    public static IEnumerable<EntityId> Brokers(ContractWorld w)=>Brokers(w,w.ElapsedSeconds,w.CommitSequence);
+    static IEnumerable<EntityId> Brokers(ContractWorld w,long at,long revision){
         yield return CentralCourtCatalog.CourtBroker;yield return CentralCourtCatalog.ShogunBroker;
-        if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.TempleEdition)yield return CentralCourtCatalog.TempleBroker;
+        var incumbent=SupremeOffice.ShogunAt(w,at,revision);
+        if(incumbent is {} shogun && shogun!=CentralCourtCatalog.CourtBroker && shogun!=CentralCourtCatalog.ShogunBroker &&
+            shogun!=CentralCourtCatalog.TempleBroker)yield return shogun;
+        if(w.NewGame?.HistoricalCatalog is CentralCourtCatalog.TempleEdition or CentralCourtCatalog.RegentEdition)yield return CentralCourtCatalog.TempleBroker;
     }
     static bool Supports(ContractWorld w,EntityId broker,EntityId applicant,long at,long rev)=>SocialWorld.ConsentBonus(w,broker,applicant,at,rev)>=2;
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
@@ -27,7 +31,7 @@ public static class PeaceMediation
             throw new InvalidDataException("取次の拠点で異なる二家と1〜90日の不戦期間を指定してください");
         var prior=HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action) && e.At<=at && e.Revision<rev).ToArray();
         if(i.Action==CourtAction.AskPeaceMediation){
-            if(actor==i.Person || !Brokers(w).Contains(i.Person) || i.Reference!=null || HouseSuccession.Head(w,i.Owner,at,rev-1)!=actor ||
+            if(actor==i.Person || !Brokers(w,at,rev-1).Contains(i.Person) || i.Reference!=null || HouseSuccession.Head(w,i.Owner,at,rev-1)!=actor ||
                 !TransportWork.At(w,i.Person,place,at,rev,true) || Assassination.DeadAt(w,i.Person,at,rev) ||
                 !SocialWorld.Ledger(w).Any(e=>e.Input.Action==SocialWorldAction.Visit && e.Actor==actor && e.Input.Person==i.Person && e.Revision<rev) ||
                 prior.Any(e=>e.Actor==actor && e.Input.Action==i.Action && e.Input.OtherHouse==other && e.Input.Person==i.Person &&
@@ -36,7 +40,7 @@ public static class PeaceMediation
             return;
         }
         var request=prior.SingleOrDefault(e=>e.Input.Id==i.Reference && e.Input.Action==CourtAction.AskPeaceMediation);
-        if(request==null || request.Input.Person!=actor || request.Actor!=i.Person || request.Input.Owner!=i.Owner ||
+        if(request==null || !Brokers(w,at,rev-1).Contains(actor) || request.Input.Person!=actor || request.Actor!=i.Person || request.Input.Owner!=i.Owner ||
             request.Input.OtherHouse!=other || request.Input.Amount!=i.Amount || request.At>=at || prior.Any(e=>e.Input.Reference==request.Input.Id) ||
             (actor!=w.PlayerControl && (i.Action==CourtAction.SendPeaceProposal)!=Supports(w,actor,i.Person,at,rev)))
             throw new InvalidDataException("取次本人が依頼原本と同じ二家・期間について回答してください");
@@ -46,6 +50,7 @@ public static class PeaceMediation
         var rows=HouseholdCourt.Events(w);
         foreach(var e in rows.Where(e=>e.Input.Action==CourtAction.AskPeaceMediation && (e.Input.Person==w.PlayerControl)==player &&
             e.At<w.ElapsedSeconds && !rows.Any(r=>Handles(r.Input.Action) && r.Input.Reference==e.Input.Id))){
+            if(!Brokers(w).Contains(e.Input.Person))continue;
             foreach(var action in new[]{CourtAction.SendPeaceProposal,CourtAction.DeclinePeaceMediation}){
                 if(!player && (action==CourtAction.SendPeaceProposal)!=Supports(w,e.Input.Person,e.Actor,w.ElapsedSeconds,w.CommitSequence))continue;
                 yield return e.Input with{Id=HouseholdCourt.Id(action.ToString(),e.Input.Id.Value),Action=action,Person=e.Actor,Reference=e.Input.Id};
@@ -115,7 +120,7 @@ public static class PeaceMediation
     {
         var prior=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev);
         var vote=prior.SingleOrDefault(e=>e.Input.Id==input.Reference && e.Input.Action==CourtAction.RejectPeaceProposal);
-        if(vote==null || RefusalReport(vote)!=input || vote.Input.Person!=actor || site!=input.Site ||
+        if(vote==null || !Brokers(w,at,rev-1).Contains(actor) || RefusalReport(vote)!=input || vote.Input.Person!=actor || site!=input.Site ||
             !TransportWork.At(w,actor,site,at,rev,true) || Assassination.DeadAt(w,actor,at,rev) ||
             prior.Any(e=>e.Input.Action==input.Action && e.Input.Reference==input.Reference) ||
             MessageFlow.LearnedAt(w.Messaging,Reply(vote.Input,vote.Actor,vote.At).Id,actor.Value) is not {} opened || opened>at)
@@ -138,7 +143,7 @@ public static class PeaceMediation
     {
         var prior=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev).ToArray();
         var source=prior.SingleOrDefault(e=>e.Input.Action==CourtAction.SendPeaceProposal && e.Input.Id==input.Reference);
-        if(source==null || source.Actor!=actor || Agreement(source)!=input || place!=Office(actor) ||
+        if(source==null || !Brokers(w,at,rev-1).Contains(actor) || source.Actor!=actor || Agreement(source)!=input || place!=Office(actor) ||
             Assassination.DeadAt(w,actor,at,rev) || !TransportWork.At(w,actor,place,at,rev,true) ||
             prior.Any(e=>e.Input.Action==CourtAction.CertifyPeaceAgreement && e.Input.Reference==input.Reference))
             throw new InvalidDataException("現地の取次本人が同一の仲裁案を一度だけ確定してください");

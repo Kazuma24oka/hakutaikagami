@@ -16,6 +16,43 @@ public partial class NewGameRuntime
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
+      foreach(var (offer,letter,known) in CourtInvitation.Available(w,actor)){
+          if(!known){Button(letter,"朝廷から届いた打診を開く",()=>{Session.Open(actor,new(letter),rev);Refresh();ShowHouseholdCourt();});continue;}
+          if(site!=offer.Input.Site){SocialText(box,"朝廷への返答は本拠で行えます。");continue;}
+          foreach(var action in SupremeInvestiture.Petitions.Concat(new[]{CourtAction.DeferInvitation,CourtAction.DeclineImperialInvitation})){
+              var selection=new CourtInput(Nonce(action+"/"+offer.Input.Id),action,CentralCourtCatalog.CourtBroker,offer.Input.Owner,site.Value,Reference:offer.Input.Id);
+              if(action==CourtAction.DeferInvitation && w.Court!.Events.Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action==action))continue;
+              bool title=SupremeInvestiture.Petitions.Contains(action);
+              if(title && !SupremeInvestiture.CanPetition(w,selection,actor))continue;
+              Button(selection.Id.Value,title?SupremeInvestiture.Title(action)+"を希望する":action==CourtAction.DeferInvitation?"返答を保留する":"推任を辞退する",()=>Run(selection));
+          }
+      }
+      if(site==CentralCourtCatalog.Kyoto){
+          foreach(var sponsor in SupremeOffice.Sponsors(w,actor,w.ElapsedSeconds,rev).Distinct().Where(h=>HouseSuccession.Head(w,h)!=actor)){
+              var petition=new CourtInput(Nonce("supported-shogun/"+sponsor.Value),CourtAction.PetitionShogun,CentralCourtCatalog.CourtBroker,sponsor,site.Value);
+              if(SupremeInvestiture.CanPetition(w,petition,actor))
+                  Button(petition.Id.Value,"擁立の申し出を受けて将軍就任を奏請する",()=>Run(petition));
+          }
+      }
+      foreach(var notice in SupremeInvestiture.Notices(w,actor)){
+          if(notice.Known is {} decision)SocialText(box,decision);
+          else Button(notice.Id,"朝廷から届いた裁可の書状を開く",()=>{Session.Open(actor,new(notice.Id),rev);Refresh();ShowHouseholdCourt();});
+      }
+      if(site==CentralCourtCatalog.Kyoto){
+          if(actor==CentralCourtCatalog.CourtBroker){
+              foreach(var answer in SupremeInvestiture.Responses(w)){
+                  var appointmentPetition=w.Court!.Events.Single(e=>e.Input.Id==answer.Reference);
+                  Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+"の"+SupremeInvestiture.Title(appointmentPetition.Input.Action)+"奏請を"+
+                      (answer.Action==CourtAction.GrantHighOffice?"裁可する":"退ける"),()=>Run(answer));
+              }
+          }else if(CentralMediation.ApplicantHouse(w,actor) is {} officeHouse){
+              foreach(var title in SupremeInvestiture.Petitions){
+                  var petition=new CourtInput(Nonce(title.ToString()),title,CentralCourtCatalog.CourtBroker,officeHouse,site.Value);
+                  if(SupremeInvestiture.CanPetition(w,petition,actor))
+                      Button(title.ToString(),SupremeInvestiture.Title(title)+"への任官を奏請する",()=>Run(petition));
+              }
+          }
+      }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
           if(CentralMediation.ApplicantHouse(w,actor) is {} petitionHouse && HouseSuccession.Head(w,petitionHouse) is {} lord &&
               lord!=actor && SocialWorld.Site(w,lord)==site)
@@ -28,6 +65,28 @@ public partial class NewGameRuntime
               }
           }
       }
+      if(site==CentralCourtCatalog.Kyoto && w.NewGame?.HistoricalCatalog==CentralCourtCatalog.RegentEdition){
+          if(actor==CentralCourtCatalog.Konoe){
+              foreach(var answer in RegentKin.Answers(w))
+                  Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+(answer.Action==CourtAction.AcceptRegentKin?"を猶子に迎える":"の申し出を断る"),()=>Run(answer));
+          }else if(RegentKin.Qualified(w,actor,w.ElapsedSeconds,rev))SocialText(box,"近衛家の猶子として関白候補の資格があります。");
+          else if(CentralMediation.ApplicantHouse(w,actor) is {} kinHouse)
+              Button("request-regent-kin","近衛前久に猶子の縁を願う",()=>Run(new(Nonce("request-regent-kin"),CourtAction.RequestRegentKin,CentralCourtCatalog.Konoe,kinHouse,site.Value)));
+      }
+      foreach(var (report,_) in CourtPedigree.Reports(w,true))
+          Button(report.Id.Value,report.Action==CourtAction.RecognizePedigree?"提出された系図を認定する":"調査した系図の根拠を本人に伝える",()=>Run(report));
+      if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && CentralMediation.ApplicantHouse(w,actor) is {} genealogyHouse){
+          var registrar=site==CentralCourtCatalog.Kyoto?CentralCourtCatalog.CourtBroker:CentralCourtCatalog.TempleBroker;
+          if((site==CentralCourtCatalog.Kyoto || site==TempleMilitary.Site) && registrar!=actor && SocialWorld.Site(w,registrar)==site)
+              Button("ask-pedigree","源氏の系図を調べてもらう",()=>Run(new(Nonce("ask-pedigree"),CourtAction.AskPedigree,registrar,genealogyHouse,site.Value)));
+          foreach(var report in (w.Court?.Events??[]).Where(e=>e.Input.Person==actor && e.Input.Action is CourtAction.AttestPedigree or CourtAction.ReportMissingPedigree).TakeLast(1)){
+              SocialText(box,report.Input.Action==CourtAction.AttestPedigree?"系図調査で源氏との縁を確認しました。":"今回の調査では源氏との縁を確認できませんでした。");
+              if(site==CentralCourtCatalog.Kyoto && report.Input.Action==CourtAction.AttestPedigree)
+                  Button("file-pedigree","調査済みの系図を朝廷に提出する",()=>Run(new(Nonce("file-pedigree"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBroker,report.Input.Owner,site.Value,Reference:report.Input.Id)));
+          }
+      }
+      foreach(var (letter,_) in ExileLetters.Pending(w,true))
+          Button(letter.Id.Value,"京の当主に将軍職の正統を主張する御内書を送る",()=>Run(letter));
       foreach(var agreement in PeaceMediation.Agreements(w,actor))
           Button(agreement.Id.Value,agreement.Action==CourtAction.ReportPeaceRefusal?"拒否の返書を確認し相手方に知らせる":"両家の承諾を確認し成立通知を送る",()=>Run(agreement));
       foreach(var pact in PeaceMediation.Known(w,actor,w.ElapsedSeconds,rev))
@@ -57,12 +116,27 @@ public partial class NewGameRuntime
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
       }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
+          foreach(var (answer,_) in SupremeOffice.SupportAnswers(w,true))
+              Button(answer.Id.Value,answer.Action==CourtAction.AcceptShogunSupport?"擁立を引き受ける":"擁立の申し出を断る",()=>Run(answer));
+          if(CentralMediation.ApplicantHouse(w,actor) is {} sponsorHouse && SupremeOffice.ControlsKyoto(w,actor,sponsorHouse,w.ElapsedSeconds,rev)){
+              if(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,rev) is {} incumbent && incumbent!=actor && SocialWorld.Site(w,incumbent)==site)
+                  Button("expel-shogun","現将軍を京から堺へ追放する",()=>Run(new(Nonce("expel-shogun"),CourtAction.ExpelShogun,incumbent,sponsorHouse,TempleMilitary.Site)));
+              foreach(var candidate in w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site)){
+                  var key="shogun-support/"+candidate.Id.Value;
+                  Button(key,MeritRewards.DisplayName(w,actor,candidate.Id)+"に将軍候補としての支持を申し出る",()=>Run(new(Nonce(key),CourtAction.OfferShogunSupport,candidate.Id,sponsorHouse,site.Value)));
+              }
+          }
+          if(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,rev)==actor)
+              Button("shogun-resign","将軍職を辞任する",()=>Run(new(Nonce("shogun-resign"),CourtAction.ResignShogun,actor,SupremeOffice.Bakufu,site.Value)));
           foreach(var answer in ShogunateAppointments.AvailableAnswers(w,actor)){
               var subject=MeritRewards.DisplayName(w,actor,answer.Person)+"の"+HouseTerritoryScale.Province(answer.Site)+"守護補任";
               var text=answer.Action switch{CourtAction.RecommendShugo=>"を将軍に取り次ぐ",CourtAction.DeclineShugo=>"の取次を断る",
                   CourtAction.AppointShugo=>"を認める",_=>"を退ける"};
               Button(answer.Id.Value,subject+text,()=>Run(answer));
           }
+          foreach(var honor in ShogunateHonors.Available(w,actor))
+              Button(honor.Id.Value,MeritRewards.DisplayName(w,actor,honor.Person)+"に"+ShogunateHonors.Name(honor.Action)+"を授ける",()=>Run(honor));
+          foreach(var honor in ShogunateHonors.Witnessed(w,actor))SocialText(box,"授与に立ち会った栄典　"+honor);
           foreach(var office in ShogunateAppointments.KnownOffices(w,actor))SocialText(box,"幕府の補任状　"+office);
           if(CentralMediation.ApplicantHouse(w,actor) is {} applicantOwner){
               foreach(var district in ShogunateAppointments.Districts(w,applicantOwner)){

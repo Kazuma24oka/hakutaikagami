@@ -6,7 +6,7 @@ p=json.loads((R/'Docs/Development/ProgressV1/progress.json').read_bytes());d=jso
 ids=[i['id'] for g in d['groups'] for i in g['items']]
 assert len(d['groups'])==15 and len(ids)==60 and len(set(ids))==60
 assert [i['id'] for i in p['items']]==ids
-assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=39,isolated=1,foundation=9,design_only=10,management=1)
+assert dict(collections.Counter(i['status'] for i in p['items']))==dict(normal=40,isolated=1,foundation=9,design_only=9,management=1)
 assert len(a['cases'])==170
 for i in p['items']:
  assert i['existing'] and i['remaining'] and i['evidence']
@@ -19,7 +19,12 @@ def artifact(f):
   return Path(os.environ["HAKUTAI_LEGACY_ROOT"])/f
  return p
 def check(f,h):assert hashlib.sha256(artifact(f).read_bytes()).hexdigest()==h,f
-for f,h in p['source_hashes'].items():check(f,h)
+# 現行テキストのチェックアウト時の改行だけを正規化する。保存・実測証跡はバイト列で検査する。
+for name,expected in p['source_hashes'].items():
+ data=artifact(name).read_bytes()
+ if hashlib.sha256(data).hexdigest()!=expected:
+  assert Path(name).suffix in {'.cs','.md','.json','.py','.html','.tscn','.godot','.csproj','.js','.cjs'},name
+  assert hashlib.sha256(data.replace(b'\r\n',b'\n')).hexdigest()==expected,name
 logic=None;snapshot=None
 if p['evidence'].get('current_logic_verification'):
  f=p['evidence']['current_logic_verification'];check(f,p['evidence']['current_logic_verification_sha256'])
@@ -27,7 +32,12 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="house-scale":
+ if logic["scope"]=="supreme-office":
+  def check_logic(record):
+   for name,digest in record["proofs"].items():check(name,digest)
+   assert "SUPREME_OFFICE_UI_PASS" in artifact(record["ui"]).read_text(encoding="utf-8-sig")
+   assert record["tests"]["passed"]==8
+ elif logic["scope"]=="house-scale":
   from verify_house_scale import check as check_logic
  elif logic["scope"]=="defection-pacts":
   from verify_defection_pacts import check as check_logic

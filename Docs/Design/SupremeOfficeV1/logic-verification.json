@@ -1,0 +1,13 @@
+{
+  "scope": "supreme-office",
+  "ui": "Docs/Design/SupremeOfficeV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 8
+  },
+  "proofs": {
+    "Docs/Design/SupremeOfficeV1/runtime-local/stage9a-final.trx": "0b2ab92e7e82de250784a50ff42c1eb12fafd9fdfac10b247a3a3b51aaa3c743",
+    "Docs/Design/SupremeOfficeV1/runtime-local/ui.log": "d0d81e283eb13e5ff0f9636194b6980e4ecc7b2638c4ac427681fd93ad507d54",
+    "Docs/Design/SupremeOfficeV1/verification.json": "28c6537ff072aa680b579113e2287543d38e56e221ef3f4f4e7988932d9f8b23",
+    "Docs/Design/SupremeOfficeV1/completion.json": "5a62246aba5e446ff3f164e8da76bc0cef9b902ebc9032b8b57799b99a610f6f"
+  }
+}
