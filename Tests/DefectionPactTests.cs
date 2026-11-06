@@ -164,6 +164,9 @@ public class DefectionPactTests
             Assert.Equal(ResultCode.Accepted,s.SignalPact(id,s.Revision).Code);
             var after=s.DiagnosticSnapshot();
             var declaration=Assert.Single(after.Declarations!);
+            Assert.True(HouseRestoration.RepresentsFoundation(after, declaration, declaration.Founder, after.ElapsedSeconds, after.CommitSequence));
+            Assert.False(HouseRestoration.RepresentsFoundation(after, declaration, Partner, after.ElapsedSeconds, after.CommitSequence));
+            Assert.Null(HouseRestoration.SuccessorOrganization(after, declaration.FormerHouse, after.ElapsedSeconds, after.CommitSequence + 1));
             var control=Assert.Single(after.LandRights,r=>r.Subject==declaration.House);
             Assert.Equal(declaration.Site,control.Target);
             Assert.Equal("control",control.Kind);

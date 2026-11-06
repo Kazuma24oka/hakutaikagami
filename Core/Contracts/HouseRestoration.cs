@@ -39,11 +39,47 @@ public static class HouseRestoration
             throw new InvalidDataException("自分に届いた未回答の相談を選んでください");
     }
 
+    public static EntityId? SuccessorOrganization(ContractWorld world, EntityId original, long at, long revision)
+    {
+        var recognition = HouseholdCourt.Events(world).LastOrDefault(e => e.Input.Action == CourtAction.RecognizeHouseContinuity &&
+            e.Input.Owner == original && e.At <= at && e.Revision < revision);
+        return recognition == null ? null : world.Declarations?.Single(d => d.Pact == recognition.Input.Reference).House;
+    }
+
+    public static bool RepresentsFoundation(ContractWorld world, IndependenceDeclaration declaration, EntityId actor, long at, long revision)
+    {
+        if (declaration.Revision > revision || declaration.At > at ||
+            Assassination.DeadAt(world, actor, at, revision) || HostageCustody.HeldAt(world, actor, at, revision) ||
+            HouseSuccession.Head(world, declaration.House, at, revision) != actor ||
+            DefectionPacts.HouseAt(world, actor, at, revision) != declaration.House) return false;
+        // 独立時の創設原本は従来の当主任命状と別。実際に引き渡された拠点だけを対象とする。
+        return world.LandRights.Any(r => r.Subject == declaration.House && r.Kind == "control" &&
+            r.Target == declaration.Site && r.From <= at && (r.From < at || r.Revision <= revision) &&
+            (at < r.Until || at == r.Until && revision < r.Revision)) &&
+            !CastleAdministration.Blocked(world, declaration.Site, at, revision);
+    }
+
+    internal static void CheckContinuity(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
+    {
+        var declaration = world.Declarations?.SingleOrDefault(d => d.Pact == input.Reference && d.At <= at && d.Revision < revision);
+        if (declaration == null || declaration.House == input.Owner || declaration.Site != place || input.Site != place ||
+            actor != input.Person || !TransportWork.At(world, actor, place, at, revision, true) ||
+            HouseSuccession.Head(world, input.Owner, at, revision - 1) != actor ||
+            !RepresentsFoundation(world, declaration, actor, at, revision - 1) ||
+            world.LandRights.Any(r => r.Subject == input.Owner && r.Kind == "control" && r.From <= at &&
+                (at < r.Until || at == r.Until && revision < r.Revision)) ||
+            !HouseholdCourt.Events(world).Any(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
+                e.Actor == actor && e.Input.Owner == input.Owner && e.Place == place && e.Revision < revision) ||
+            HouseholdCourt.Events(world).Any(e => e.Input.Action == CourtAction.RecognizeHouseContinuity && e.Revision < revision &&
+                (e.Input.Owner == input.Owner || e.Input.Reference == input.Reference)))
+            throw new InvalidDataException("旧家の当主・継承記録と現地の新しい家の代表権を同じ人物について照合してください");
+    }
+
     // 本丸を取った最新の原本と、今そこを守る実兵を両方照合する。
     public static EntityId? SecuredKeep(ContractWorld world, EntityId observer, EntityId house, EntityId site)
     {
         if (SocialWorld.Site(world, observer) != site) return null;
-        return OccupationSource(world, house, site, world.ElapsedSeconds, world.CommitSequence + 1);
+        return OccupationSource(world, SuccessorOrganization(world, house, world.ElapsedSeconds, world.CommitSequence + 1) ?? house, site, world.ElapsedSeconds, world.CommitSequence + 1);
     }
 
     static EntityId? OccupationSource(ContractWorld world, EntityId house, EntityId site, long at, long revision)
@@ -119,7 +155,7 @@ public static class HouseRestoration
             !past.Any(e => e.Input.Action == CourtAction.SeekRestorationSupport && e.Actor == actor &&
                 e.Input.Owner == input.Owner && e.Place == place) ||
             past.Any(e => e.Input.Action == input.Action && e.Actor == actor && e.Input.Reference == input.Reference) ||
-            OccupationSource(world, input.Owner, place, at, revision) != input.Reference)
+            OccupationSource(world, SuccessorOrganization(world, input.Owner, at, revision) ?? input.Owner, place, at, revision) != input.Reference)
             throw new InvalidDataException("旧領の本丸引渡しと現地の守備を、再興を呼びかけた本人が確認してください");
     }
 
