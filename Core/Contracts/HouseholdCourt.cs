@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -414,6 +414,7 @@ public static class HouseholdCourt
   else if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(PrivateRecruitment.Contract(i.Action))PrivateRecruitment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.PresentRestorationArrears)HouseRestoration.CheckArrears(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -475,6 +476,7 @@ public static class HouseholdCourt
  {
   if(w.Court==null)return;
   MusterNotices.Assemble(w);
+  foreach(var reply in HouseholdDetachment.Replies(w))Attempt(w,reply.Input,reply.Actor);
   foreach(var doc in DocumentRows(w).Where(d=>d.Recipient!=w.PlayerControl&&Received(w,d.Id,d.Recipient)).ToArray()){
    var source=doc.Source;var p=doc.Recipient;if(SocialWorld.Site(w,p) is not {} site)continue;CourtAction? action=source.Input.Action switch{CourtAction.RecruitOffer=>FreeToJoin(w,p,source.Actor)&&HeadAuthority(w,source.Actor,source.Input.Owner,source.Input.Site,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.RecruitAccept:CourtAction.RecruitDecline,CourtAction.Nominate=>Vacancy(w,source.Input.Owner,source.Input.Site,source.Input.Role,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.AcceptOffice:CourtAction.DeclineOffice,CourtAction.Convene=>site==source.Place?CourtAction.AcceptInvitation:CourtAction.DeclineInvitation,_=>null};if(action==null)continue;
    var answers=source.Input.Action==CourtAction.RecruitOffer?new[]{CourtAction.RecruitAccept,CourtAction.RecruitDecline}:source.Input.Action==CourtAction.Nominate?new[]{CourtAction.AcceptOffice,CourtAction.DeclineOffice}:new[]{CourtAction.AcceptInvitation,CourtAction.DeclineInvitation};EntityId reference=source.Input.Action==CourtAction.Convene?doc.Id:source.Input.Id;if(Events(w).Any(e=>e.Actor==p&&e.Input.Reference==reference&&answers.Contains(e.Input.Action)))continue;
@@ -529,6 +531,7 @@ public static class HouseholdCourt
    if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(PrivateRecruitment.Contract(i.Action))PrivateRecruitment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.PresentRestorationArrears)HouseRestoration.CheckArrears(w,i,e.Actor,e.Place,e.At,e.Revision);

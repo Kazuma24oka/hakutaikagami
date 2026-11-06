@@ -9,6 +9,28 @@ public sealed class HouseholdMilitaryTests
     static NewMilitaryInput Input(WorldSession s,NewMilitaryAction action,long amount=0,bool scoped=true)=>new(new("request:house-military/"+s.Revision+"/"+action),action,amount){ObservationPolicy=action==NewMilitaryAction.Request?NewGameMilitary.ObservationContract:null,AuthorityPolicy=action==NewMilitaryAction.Request?NewGameMilitary.AuthorityContract:null,FromLedger=action==NewMilitaryAction.Request?NewGameMilitary.SourceForCurrentHouse(s.DiagnosticSnapshot()):null,LedgerPolicy=action==NewMilitaryAction.Request&&scoped?NewGameMilitary.LedgerIdentityContract:null,CycleContract=action==NewMilitaryAction.Request?NewGameMilitary.CycleForCurrentHouse(s.DiagnosticSnapshot()):null};
     static void Send(WorldSession s,NewMilitaryAction a,long amount=0,bool scoped=true){var result=s.DecideNewMilitary(Input(s,a,amount,scoped),s.PlayerControl,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);}
     static void Permit(WorldSession s,bool scoped=true){Send(s,NewMilitaryAction.Request,scoped:scoped);At(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Accept);At(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Pickup);}
+    [Fact]
+    public void ConsentingDirectFollowerCommandsOneBorrowedUnitUntilReturn()
+    {
+        var setup=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var s=new WorldSession(NewGameWorld.Create(setup,[],"person:shingen",historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy));
+        var person=new EntityId(setup.People.First(p=>p.Lord=="person:shingen").Id);
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        Good(s.ManageCompanion(new(new("request:follow-captain"),person,CompanionAction.Agree,20),s.PlayerControl,s.Revision));
+        Permit(s);
+        var w=s.DiagnosticSnapshot();var terms=w.NewMilitary!.Terms;var unit=NewGameMilitary.UnitIdsFor(w)[1];
+        var pickup=w.NewMilitary.Requests.Last(q=>q.Input.Action==NewMilitaryAction.Pickup);
+        var offer=new CourtInput(new("request:assign-captain"),CourtAction.OfferDetachment,person,terms.Owner,terms.Site,Reference:pickup.Input.Id,Carrier:unit);
+        Good(s.ManageCourt(offer,s.Revision));At(s,s.Seconds+2);
+        var after=s.DiagnosticSnapshot();var accepted=HouseholdDetachment.Appointment(after,unit,s.Seconds,s.Revision+1);
+        Assert.Equal(person,accepted?.Actor);Assert.Equal(w.Units.Sum(u=>u.Soldiers),after.Units.Sum(u=>u.Soldiers));
+        Assert.Equal(terms.Owner,after.NewMilitary!.Terms.Owner);
+        var next=offer with{Id=new("request:double-command"),Carrier=NewGameMilitary.UnitIdsFor(w)[2]};
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(next,s.Revision).Code);
+        s=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+        Finish(s);Assert.Null(HouseholdDetachment.Appointment(s.DiagnosticSnapshot(),unit,s.Seconds,s.Revision+1));
+    }
     static void Finish(WorldSession s){long carry=NewGameMilitary.View(s.DiagnosticSnapshot()).Carry;if(carry>0)Send(s,NewMilitaryAction.Unload,carry);Send(s,NewMilitaryAction.Report);Send(s,NewMilitaryAction.Return);At(s,s.Seconds+3);Open(s);}
     static void ChangeHouse(WorldSession s,string node,string lord){if(NewGameService.View(s.DiagnosticSnapshot()).Principal!=null){var current=NewGameService.View(s.DiagnosticSnapshot()).Cases.Last(c=>c.Principal==NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-leave/"+s.Revision),CareerAction.RequestRelease,current.Case),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}Assert.Null(NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:house-travel/"+s.Revision,node),s.Revision).Code);At(s,s.Seconds+2);At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);var id=new EntityId("request:house-apply/"+s.Revision);Assert.Equal(ResultCode.Accepted,s.DecideService(new(id,CareerAction.Apply,Principal:new(lord)),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-accept/"+s.Revision),CareerAction.Accept,id),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}
     static WorldSession AtSecondHouse(bool legacy=false){var s=Start();Permit(s,!legacy);Send(s,NewMilitaryAction.Load,100000);Finish(s);ChangeHouse(s,"odawara","person:ujiyasu");return s;}

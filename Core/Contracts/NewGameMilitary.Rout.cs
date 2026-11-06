@@ -30,7 +30,7 @@ public static partial class NewGameMilitary
     {
         if(w.NewMilitary?.Rout is not {} s||!Deployed(w))return;
         var own=OwnCombatReport(w,w.ElapsedSeconds);var scoped=RoutScope(w,s);
-        var trigger=Enumerable.Range(0,3).Where(i=>own[i].Soldiers>0&&own[i].Morale<=25&&!scoped.Retreats.Any(r=>r.Units.Contains(i))).ToArray();
+        var trigger=Enumerable.Range(0,3).Where(i=>own[i].Soldiers>0&&own[i].Morale<=25-HouseholdDetachment.Leadership(w,UnitIdsFor(w)[i],w.ElapsedSeconds,w.CommitSequence+1)/10&&!scoped.Retreats.Any(r=>r.Units.Contains(i))).ToArray();
         if(trigger.Length>0){
             var origins=Enumerable.Range(0,3).Select(i=>Position(w,i,w.ElapsedSeconds)).ToArray();
             var old=w.NewMilitary.Orders.LastOrDefault();
@@ -59,8 +59,9 @@ public static partial class NewGameMilitary
             if(Position(w,i,w.ElapsedSeconds)!=Home(w,i))continue;
             if(!RoutScope(w,w.NewMilitary.Rout).Arrivals.Any(a=>a.Unit==i))w.NewMilitary=w.NewMilitary with{Rout=w.NewMilitary.Rout with{Arrivals=[..w.NewMilitary.Rout.Arrivals,new(i,w.ElapsedSeconds,w.CommitSequence)]}};
             long arrival=RoutScope(w,w.NewMilitary.Rout).Arrivals.Single(a=>a.Unit==i).At;
-            if(w.ElapsedSeconds<arrival+RegroupSeconds||CombatActive(w))continue;
-            w.NewMilitary=w.NewMilitary with{Rout=w.NewMilitary.Rout with{Regroups=[..w.NewMilitary.Rout.Regroups,new(i,w.ElapsedSeconds,w.CommitSequence,RegroupMorale)]}};
+            int leadership=HouseholdDetachment.Leadership(w,UnitIdsFor(w)[i],w.ElapsedSeconds,w.CommitSequence+1);
+            if(w.ElapsedSeconds<arrival+RegroupSeconds-leadership/4||CombatActive(w))continue;
+            w.NewMilitary=w.NewMilitary with{Rout=w.NewMilitary.Rout with{Regroups=[..w.NewMilitary.Rout.Regroups,new(i,w.ElapsedSeconds,w.CommitSequence,RegroupMorale+leadership/10)]}};
         }
     }
     static void ValidateRout(ContractWorld w,bool replay)
