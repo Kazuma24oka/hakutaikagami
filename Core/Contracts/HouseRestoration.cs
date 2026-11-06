@@ -13,6 +13,19 @@ public static class HouseRestoration
         return ObserveAt(world, observer, site, world.ElapsedSeconds, world.CommitSequence + 1);
     }
 
+    static SetupScenario? BeforePlacement(ContractWorld world) =>
+        world.NewGame is {} start && start.Registered.Any(r => r.Role == StartTemplate.Daimyo)
+            ? NewGameWorld.Scenario(start.HistoricalCatalog) : null;
+
+    internal static bool NamesFormerHouse(ContractWorld world, CourtInput input)
+    {
+        if (input.Action is not (CourtAction.SeekRestorationSupport or CourtAction.SupportRestoration or
+            CourtAction.ReserveRestoration or CourtAction.PledgeRestorationRice or CourtAction.HandOverRestorationRice or
+            CourtAction.RecognizeHouseContinuity or CourtAction.RecordRecoveredSeat)) return false;
+        return BeforePlacement(world)?.Factions.Any(f => f.Id == input.Owner.Value) == true &&
+            !world.NewGame!.Start.Factions.Any(f => f.Id == input.Owner.Value);
+    }
+
     internal static bool IsSupport(CourtAction action) => action is CourtAction.SeekRestorationSupport
         or CourtAction.SupportRestoration or CourtAction.ReserveRestoration;
 
@@ -85,7 +98,8 @@ public static class HouseRestoration
         var declaration = world.Declarations?.SingleOrDefault(d => d.Pact == input.Reference && d.At <= at && d.Revision < revision);
         if (declaration == null || declaration.House == input.Owner || declaration.Site != place || input.Site != place ||
             actor != input.Person || !TransportWork.At(world, actor, place, at, revision, true) ||
-            HouseSuccession.Head(world, input.Owner, at, revision - 1) != actor ||
+            (NamesFormerHouse(world, input) ? BeforePlacement(world)!.Factions.Single(f => f.Id == input.Owner.Value).Head != actor.Value :
+                HouseSuccession.Head(world, input.Owner, at, revision - 1) != actor) ||
             !RepresentsFoundation(world, declaration, actor, at, revision - 1) ||
             world.LandRights.Any(r => r.Subject == input.Owner && r.Kind == "control" && r.From <= at && (r.From < at || r.Until != long.MaxValue || r.Revision < revision) &&
                 (at < r.Until || at == r.Until && revision < r.Revision)) ||
@@ -284,7 +298,7 @@ public static class HouseRestoration
     {
         if (previousTime / 86400 == world.ElapsedSeconds / 86400 || !NewGameWork.Enabled(world) ||
             !CharacterRelations.Enabled(world) || !NewGameNpcRoutine.Enabled(world) ||
-            !world.LandRights.Any(r => r.Kind == "control" && r.Until <= world.ElapsedSeconds)) return;
+            (!world.LandRights.Any(r => r.Kind == "control" && r.Until <= world.ElapsedSeconds) && BeforePlacement(world) == null)) return;
         var history = HouseholdCourt.Events(world);
         foreach (var person in world.Characters.Where(c => c.Life == LifeState.Adult && c.Id != world.PlayerControl)
             .OrderBy(c => c.Id.Value, StringComparer.Ordinal))
@@ -437,6 +451,17 @@ public static class HouseRestoration
             }));
             if (witnessed)
                 observations.Add(new(house, site, now));
+        }
+        if (BeforePlacement(world) is {} original)
+        {
+            var oldSeat = original.Castles.SingleOrDefault(c => c.Id == site.Value);
+            var oldHouse = original.Factions.SingleOrDefault(f => f.Id == oldSeat?.Faction);
+            var resident = original.People.SingleOrDefault(p => p.Id == observer.Value);
+            if (oldHouse != null && !world.NewGame!.Start.Factions.Any(f => f.Id == oldHouse.Id) &&
+                (resident?.Site == site.Value && resident.Faction == oldHouse.Id ||
+                 world.NewGame.Start.People.Any(p => p.Id == observer.Value && p.Site == site.Value) && parents.Contains(new EntityId(oldHouse.Head)) &&
+                 (person.BirthParents ?? []).Contains(oldHouse.Head)))
+                observations.Add(new(new(oldHouse.Id), site, now));
         }
         return observations.OrderBy(row => row.House.Value, StringComparer.Ordinal).ToArray();
     }

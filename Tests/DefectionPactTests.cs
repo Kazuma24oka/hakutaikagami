@@ -17,6 +17,54 @@ public class DefectionPactTests
             socialPolicy:CharacterRelations.Policy,comingOfAge:15);
     }
 
+    [Fact]
+    public void DisplacedLordCanRestoreHisHouseWithTheLocalCastellanAfterLoading()
+    {
+        var replacement = NewGameWorldTests.Officer(role: StartTemplate.Daimyo);
+        var partner = NewGameWorldTests.Officer(Partner.Value, StartTemplate.Castellan, lord: replacement.Id);
+        var setup = NewGameWorldTests.Setup([replacement, partner], [new(replacement.Id, "org:replacement", [replacement.Site], true)]);
+        EntityId lord = new("person:nobunaga");
+        for (ulong seed = 0; seed < 32; seed++)
+        {
+            var start = NewGameWorld.Create(setup.World, setup.Registered, lord.Value, seed, inspectionPolicy: LocalInspectionFindings.Policy,
+                workPolicy: WorkFollowup.Policy, companionPolicy: PersonalCompanions.Policy, developmentPolicy: CharacterDevelopment.Policy,
+                socialPolicy: CharacterRelations.Policy, comingOfAge: 15);
+            var session = new WorldSession(start);
+            var seen = Assert.Single(HouseRestoration.ObserveFormerSeat(start, lord));
+            var inquiry = new CourtInput(new("request:former-seat-inquiry"), CourtAction.SeekRestorationSupport, Partner, seen.House, seen.Site);
+            var result = session.ManageCourt(inquiry, session.Revision);
+            Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+            EntityId pact = new("request:former-seat-pact");
+            result = session.NegotiatePact(pact, Partner, PactPurpose.RiseTogether, session.Revision);
+            Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+            if (!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted) continue;
+            Assert.Equal(ResultCode.Accepted, session.SignalPact(pact, session.Revision).Code);
+            session.SetPaused(true);
+            var directory = Directory.CreateTempSubdirectory("hakutai-former-seat-");
+            try
+            {
+                var store = new GenerationSaveStore(directory.FullName, start.Definitions);
+                Assert.True(store.Save(session, "rebellion", start.WorldId).Published);
+                var host = new WorldSessionHost(new WorldSession(start));
+                Assert.Equal(ResultCode.Accepted, host.CommitLoad(store.Prepare("rebellion"), host.Current, host.Current.Revision));
+                foreach (var run in new[] {session, host.Current})
+                {
+                    NewGameWorldTests.At(run, 120);
+                    var world = run.DiagnosticSnapshot();
+                    var application = Assert.Single(HouseRestoration.ContinuityApplications(world, lord));
+                    var filed = run.ManageCourt(application, run.Revision);
+                    Assert.True(filed.Code == ResultCode.Accepted, filed.VisibleReason);
+                    world = run.DiagnosticSnapshot();
+                    Assert.Equal(world.Declarations!.Single().House, HouseRestoration.SuccessorOrganization(world, seen.House, 120, world.CommitSequence + 1));
+                }
+                Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()), ContractJson.Write(host.Current.DiagnosticSnapshot()));
+                return;
+            }
+            finally { directory.Delete(true); }
+        }
+        Assert.Fail("旧大名と城主の共同挙兵に至る開始条件がありません");
+    }
+
     [Theory]
     [InlineData(PactPurpose.WithholdService)]
     [InlineData(PactPurpose.LeaveHouse)]
