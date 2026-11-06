@@ -36,10 +36,20 @@ public partial class NewGameRuntime
         void CoalitionCommand(CourtInput input){Submit(Session.ManageCourt(input,shown));ReturnToDiplomacy();}
         foreach(var paper in CoalitionPacts.DeliveredPapers(w,Session.PlayerControl)){
             if(paper.Body!=null)coalition.AddChild(new Label{Text=paper.Body,AutowrapMode=TextServer.AutowrapMode.WordSmart});
-            else CoalitionButton("包囲網の返書・成立通知を開く",()=>{Submit(Session.Open(Session.PlayerControl,new(paper.Id),shown));ReturnToDiplomacy();});
+            else CoalitionButton("包囲網について届いた書状を開く",()=>{Submit(Session.Open(Session.PlayerControl,new(paper.Id),shown));ReturnToDiplomacy();});
         }
         foreach(var pact in CoalitionPacts.Known(w,Session.PlayerControl))
             coalition.AddChild(new Label{Text=HouseName(pact.Target)+"を対象とする盟約　確認済みの署名："+string.Join("、",pact.Houses.Select(HouseName)),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        foreach(var departure in CoalitionPacts.Withdrawals(w,Session.PlayerControl))
+            {
+                var signed=w.Court!.Events.Single(e=>e.Input.Id==departure.Reference);
+                var original=w.Court.Events.Single(e=>e.Input.Id==signed.Input.Reference);
+                CoalitionButton(HouseName(original.Input.Coalition!.Target)+"への包囲網から離脱する",()=>CoalitionCommand(departure));
+            }
+        foreach(var warning in CoalitionPacts.Warnings(w,Session.PlayerControl)){
+            var terms=w.Court!.Events.Single(e=>e.Input.Id==warning.Reference).Input.Coalition!;
+            CoalitionButton(HouseName(terms.Target)+"に招請状の内容を密告する",()=>CoalitionCommand(warning));
+        }
         foreach(var confirmation in CoalitionPacts.Confirmations(w,Session.PlayerControl))
             CoalitionButton("開封した加盟返書を取りまとめ、署名各家へ通知する",()=>CoalitionCommand(confirmation));
         foreach(var item in CoalitionPacts.Invitations(w,Session.PlayerControl)){

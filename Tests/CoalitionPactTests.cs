@@ -44,6 +44,22 @@ public sealed class CoalitionPactTests
             invited.CommitSequence++;
             HouseholdCourt.Execute(invited,answer,actor);
         }
+        // 加盟の返書とは独立して、自分に届いた招請の内容だけを別の世界で密告する。
+        var tipped=ContractJson.Copy(invited);
+        var informant=new EntityId(houses[2].Head);var target=new EntityId(houses[1].Head);
+        var warning=Assert.Single(CoalitionPacts.Warnings(tipped,informant));
+        tipped.CommitSequence++;HouseholdCourt.Execute(tipped,warning,informant);
+        Assert.Empty(CoalitionPacts.Warnings(tipped,informant));
+        var secret=Assert.Single(tipped.Messaging.Messages,m=>m.Kind==CoalitionPacts.Warning);
+        Assert.Equal(target.Value,secret.RecipientId);
+        Assert.DoesNotContain(houses[3].Name,secret.Body);
+        Assert.Empty(CoalitionPacts.DeliveredPapers(tipped,target));
+        var confidential=new WorldSession(ContractJson.Copy(tipped));
+        NewGameWorldTests.At(confidential,Delivery(tipped,CoalitionPacts.Warning)+2);
+        var learned=confidential.DiagnosticSnapshot();
+        Assert.Contains(CoalitionPacts.DeliveredPapers(learned,target),m=>m.Id==secret.Id && m.Body==secret.Body);
+        Assert.DoesNotContain(CoalitionPacts.DeliveredPapers(learned,new(houses[3].Head)),m=>m.Id==secret.Id);
+        Assert.Empty(CoalitionPacts.Known(learned,target));
         var waiting=new WorldSession(ContractJson.Copy(invited));
         Assert.Empty(CoalitionPacts.Confirmations(invited,waiting.PlayerControl));
         NewGameWorldTests.At(waiting,Delivery(invited,CoalitionPacts.Reply)+1);
@@ -74,6 +90,22 @@ public sealed class CoalitionPactTests
                 Assert.Equal(3,Assert.Single(CoalitionPacts.Known(end,new(member.Head))).Houses.Length);
             }
             Assert.Empty(CoalitionPacts.Known(end,new(houses[1].Head)));
+            var departing=new EntityId(houses[2].Head);
+            var withdrawal=Assert.Single(CoalitionPacts.Withdrawals(end,departing));
+            end.CommitSequence++;HouseholdCourt.Execute(end,withdrawal,departing);
+            Assert.DoesNotContain(members[0],Assert.Single(CoalitionPacts.Known(end,departing)).Houses);
+            Assert.Contains(members[0],Assert.Single(CoalitionPacts.Known(end,s.PlayerControl)).Houses);
+            Assert.Empty(CoalitionPacts.Withdrawals(end,departing));
+            var notices=end.Messaging.Messages.Where(m=>m.Kind==CoalitionPacts.Withdrawal).ToArray();
+            Assert.Equal(2,notices.Length);Assert.DoesNotContain(notices,m=>m.RecipientId==houses[1].Head);
+            File.WriteAllBytes(path,ContractJson.Write(end));
+            var afterDeparture=new WorldSession(ContractJson.Read<ContractWorld>(File.ReadAllBytes(path)));
+            NewGameWorldTests.At(afterDeparture,Delivery(end,CoalitionPacts.Withdrawal)+1);
+            var sealedState=afterDeparture.DiagnosticSnapshot();
+            Assert.Contains(members[0],Assert.Single(CoalitionPacts.Known(sealedState,s.PlayerControl)).Houses);
+            var myNotice=Assert.Single(notices,m=>m.RecipientId==s.PlayerControl.Value);
+            Assert.Equal(ResultCode.Accepted,afterDeparture.Open(s.PlayerControl,new(myNotice.Id),afterDeparture.Revision).Code);
+            Assert.DoesNotContain(members[0],Assert.Single(CoalitionPacts.Known(afterDeparture.DiagnosticSnapshot(),s.PlayerControl)).Houses);
         }finally{File.Delete(path);}
     }
 }

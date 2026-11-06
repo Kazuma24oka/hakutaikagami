@@ -7,8 +7,8 @@ public sealed record CoalitionTerms(EntityId Target,EntityId[] Invitees,Coalitio
 
 public static partial class CoalitionPacts
 {
-    public const string Invitation="coalition-invitation",Reply="coalition-reply";
-    internal static bool Handles(CourtAction action)=>action is CourtAction.ConfirmCoalition or CourtAction.ProposeCoalition or CourtAction.JoinCoalition or CourtAction.RefuseCoalition or CourtAction.DeferCoalition;
+    public const string Withdrawal="coalition-withdrawal",Warning="coalition-private-warning",Invitation="coalition-invitation",Reply="coalition-reply";
+    internal static bool Handles(CourtAction action)=>action is CourtAction.LeaveCoalition or CourtAction.WarnCoalitionTarget or CourtAction.ConfirmCoalition or CourtAction.ProposeCoalition or CourtAction.JoinCoalition or CourtAction.RefuseCoalition or CourtAction.DeferCoalition;
     static bool Final(CourtAction action)=>action is CourtAction.JoinCoalition or CourtAction.RefuseCoalition;
     public static string TermsLabel(CoalitionTerms terms)=>terms.Purpose switch{
         CoalitionPurpose.CoordinateSorties=>"同時期の出兵",CoalitionPurpose.ForbidSeparatePeace=>"単独で和睦しない",_=>"同時期の出兵と単独和睦の禁止"};
@@ -23,6 +23,15 @@ public static partial class CoalitionPacts
                 yield return new MessageEnvelope(InvitationId(i,house),i.Id.Value,Invitation,e.Actor.Value,recipient.Person.Value,
                     w.Definitions.Organizations.Single(o=>o.Id==i.Coalition.Target).Name+"を対象に"+TermsLabel(i.Coalition)+"を提案する。期日 "+i.Coalition.AssemblyAt,recipient.Home.Value,e.At){DeliverySite=recipient.Home.Value};
             }
+        }else if(i.Action==CourtAction.LeaveCoalition){
+            foreach(var letter in WithdrawalLetters(w,e))yield return letter;
+        }else if(i.Action==CourtAction.WarnCoalitionTarget){
+            var offer=HouseholdCourt.Events(w).Single(x=>x.Input.Id==i.Reference);
+            var target=RepresentativeKnowledge.Known(w,e.Actor,offer.Input.Coalition!.Target,e.At,e.Revision-1)!;
+            var founder=w.Definitions.Organizations.Single(o=>o.Id==offer.Input.Owner).Name;
+            yield return new MessageEnvelope(HouseholdCourt.Id("coalition-warning",i.Id.Value).Value,offer.Input.Id.Value,Warning,e.Actor.Value,target.Person.Value,
+                founder+"から貴家を対象とする招請状が私に届いた。条件は"+TermsLabel(offer.Input.Coalition)+"。期日 "+offer.Input.Coalition.AssemblyAt,
+                target.Home.Value,e.At){DeliverySite=target.Home.Value};
         }else if(i.Action==CourtAction.ConfirmCoalition){
             foreach(var notice in Certificates(w,e))yield return notice;
         }else if(Final(i.Action)){
@@ -36,6 +45,7 @@ public static partial class CoalitionPacts
         if(!TruceNegotiations.Enabled(w) || house?.Head!=actor.Value || house.Home!=place.Value || place!=i.Site ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("本人が本拠で家を代表して包囲網の書状を扱ってください");
+        if(i.Action==CourtAction.LeaveCoalition){CheckWithdrawal(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.ConfirmCoalition){CheckConfirmation(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.ProposeCoalition){
             var t=i.Coalition;
@@ -48,11 +58,27 @@ public static partial class CoalitionPacts
         }
         var prior=HouseholdCourt.Events(w).Where(e=>e.Revision<rev && e.At<=at).ToArray();
         var offer=prior.SingleOrDefault(e=>e.Input.Id==i.Reference && e.Input.Action==CourtAction.ProposeCoalition);
-        if(offer==null || i.Coalition!=null || i.Person!=offer.Actor || offer.Input.Coalition!.AssemblyAt<=at ||
+        bool warning=i.Action==CourtAction.WarnCoalitionTarget;
+        var correspondent=warning && offer!=null?RepresentativeKnowledge.Known(w,actor,offer.Input.Coalition!.Target,at,rev-1)?.Person:offer?.Actor;
+        if(offer==null || i.Coalition!=null || i.Person!=correspondent || offer.Input.Coalition!.AssemblyAt<=at ||
             !offer.Input.Coalition.Invitees.Contains(i.Owner) || Address(w,offer,i.Owner)?.Person!=actor ||
             MessageFlow.LearnedAt(w.Messaging,InvitationId(offer.Input,i.Owner),actor.Value) is not {} opened || opened>at ||
-            prior.Any(e=>e.Input.Reference==i.Reference && e.Input.Owner==i.Owner && (Final(e.Input.Action)||e.Input.Action==i.Action)))
+            prior.Any(e=>e.Input.Reference==i.Reference && e.Input.Owner==i.Owner && ((!warning && Final(e.Input.Action))||e.Input.Action==i.Action)))
             throw new InvalidDataException("本人が開封した期限内の同じ盟約に一度だけ回答できます");
+    }
+    public static IEnumerable<CourtInput> Warnings(ContractWorld w,EntityId actor){
+        foreach(var e in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ProposeCoalition && e.Input.Coalition!.AssemblyAt>w.ElapsedSeconds)){
+            var t=e.Input.Coalition!;
+            foreach(var owner in t.Invitees){
+                var letter=InvitationId(e.Input,owner);
+                if(!MessageFlow.Knows(w.Messaging,letter,actor.Value))continue;
+                var target=RepresentativeKnowledge.Known(w,actor,t.Target,w.ElapsedSeconds,w.CommitSequence);
+                var home=SocialWorld.Site(w,actor);if(target==null || home==null)continue;
+                var i=new CourtInput(HouseholdCourt.Id("warn-coalition",letter),CourtAction.WarnCoalitionTarget,target.Person,owner,home.Value,Reference:e.Input.Id);
+                try{Check(w,i,actor,home.Value,w.ElapsedSeconds,w.CommitSequence+1);}catch(InvalidDataException){continue;}
+                yield return i;
+            }
+        }
     }
     public static IEnumerable<(string Letter,CourtInput? Answer)> Invitations(ContractWorld w,EntityId actor){
         var events=HouseholdCourt.Events(w);
@@ -84,6 +110,11 @@ public static partial class CoalitionPacts
                 if(!MessageFlow.Knows(w.Messaging,id,actor.Value))w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(id,actor.Value,w.ElapsedSeconds,id)];
                 var threat=FactionStances.Known(w,actor).Any(k=>k.FromOwner==terms.Target && k.ToOwner==owner && k.EffectiveFrom<=w.ElapsedSeconds && w.ElapsedSeconds<k.Until);
                 var trust=SocialWorld.ConsentBonus(w,actor,offer.Actor,w.ElapsedSeconds,w.CommitSequence);
+                var target=RepresentativeKnowledge.Known(w,actor,terms.Target,w.ElapsedSeconds,w.CommitSequence);
+                if(!threat && target!=null && SocialWorld.ConsentBonus(w,actor,target.Person,w.ElapsedSeconds,w.CommitSequence)>=Math.Max(2,trust+2)){
+                    var warning=Warnings(w,actor).FirstOrDefault(i=>i.Reference==offer.Input.Id);
+                    if(warning!=null)yield return(warning,actor);
+                }
                 var action=threat || trust>=2?CourtAction.JoinCoalition:trust<0?CourtAction.RefuseCoalition:CourtAction.DeferCoalition;
                 if(action==CourtAction.DeferCoalition && HouseholdCourt.Events(w).Any(e=>e.Input.Action==action && e.Input.Reference==offer.Input.Id && e.Input.Owner==owner))continue;
                 yield return(new(HouseholdCourt.Id(action.ToString(),id),action,offer.Actor,owner,recipient.Home,Reference:offer.Input.Id),actor);
