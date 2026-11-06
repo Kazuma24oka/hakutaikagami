@@ -5,7 +5,11 @@ namespace HakutaiKagami.Core.Contracts;
 public enum NpcAttention { Beginner, Standard, Equal }
 public enum NpcCadence { Daily, Weekly, Monthly }
 public enum NpcAspiration { Unspecified, PreserveHouse, UpholdOrder, ProsperDomain, EncourageTrade }
-public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAttention Attention);
+public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAttention Attention)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? EventEdition {get;init;}
+}
 public sealed record NpcPersonality(int Ambition,int Duty,int Caution,int Courage,int Affection,int GainSeeking);
 public sealed record NpcChoiceCandidate(string Id,bool Known,bool Permitted,int Utility,
     NpcPersonality Weights,bool MatchesAspiration,bool MatchesHistoricalGoal,bool PlayerRecipient);

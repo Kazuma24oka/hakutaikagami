@@ -4,6 +4,18 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record HistoricalEventPremise(string Id,string Candidate,string Source,bool PhysicallyPossible,bool KnownByActor);
 public static class HistoricalEventRules
 {
+    public const string OwariEdition="owari-road-observation-1560-v1";
+    public static HistoricalEventPremise? OwariScouting(ContractWorld world,EntityId actor,long at,long revision)
+    {
+        if(world.NewGame?.Judgment?.EventEdition!=OwariEdition || actor.Value!="person:nobunaga" ||
+            world.EpochDate!="1560-01-01" || at<0 || at>=366L*86400)return null;
+        var castle=RegionalEconomy.Site;
+        if(!TransportWork.At(world,actor,castle,at,revision,true) || Assassination.DeadAt(world,actor,at,revision) ||
+            HouseSuccession.Head(world,new("org:oda"),at,revision)!=actor || !LocalWorkDemand.Enabled(world))return null;
+        var need=LocalWorkDemand.At(world,actor,castle,at,revision);
+        if(!need.Needed || need.MissingEdges.Length+need.StaleEdges.Length==0)return null;
+        return new("owari-road-observation","inspect","kiyosu-city",true,true);
+    }
     public static NpcChoiceInput Apply(NpcChoiceInput input,HistoricalEventPremise[] premises,bool playerDecision,bool continuedAfterHistory)
     {
         if(premises==null||premises.Any(p=>p==null||string.IsNullOrWhiteSpace(p.Id)||string.IsNullOrWhiteSpace(p.Candidate)||string.IsNullOrWhiteSpace(p.Source))||premises.Select(p=>p.Id).Distinct(StringComparer.Ordinal).Count()!=premises.Length)throw new InvalidDataException("事件の前提と出典が不正です");

@@ -9,7 +9,7 @@ public static class NpcJudgment
     {
         var s=data.Judgment;
         if(data.NpcRoutinePolicy!=Policy){if(s!=null)throw new InvalidDataException("旧NPC方針に判断設定を追加できません");return;}
-        if(s==null||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
+        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
             throw new InvalidDataException("NPC判断には版付き設定・修行・性格の方針が必要です");
     }
     public static NpcPersonality Personality(ContractWorld w,EntityId actor)=>new(
@@ -43,6 +43,8 @@ public static class NpcJudgment
         var settings=w.NewGame!.Judgment!;var mode=w.TimeControl?.ContinuedAt is {} continued&&continued<at?HistoryMode.Fictional:settings.History;
         // 同じ裁量窓では時刻の刻みを同点処理へ混ぜない。
         var input=new NpcChoiceInput(actor,w.Seed,ready,Personality(w,actor),aspiration?.Aspiration??NpcAspiration.Unspecified,mode,settings.Attention,candidates.ToArray());
+        if(candidates.Any(c=>c.Id=="inspect" && c.Permitted) && HistoricalEventRules.OwariScouting(w,actor,at,revision) is {} opportunity)
+            input=HistoricalEventRules.Apply(input,[opportunity],actor==w.PlayerControl,mode==HistoryMode.Fictional);
         var choice=NpcChoiceRanking.Choose(input);
         if(choice?.StartsWith("practice:",StringComparison.Ordinal)==true)purpose=purpose with{Skill=Enum.Parse<DevelopmentSkill>(choice[9..])};
         var recipients=choice=="inspect"?NpcLocalOffers.Recipients(w,actor,at,revision,ready):null;
