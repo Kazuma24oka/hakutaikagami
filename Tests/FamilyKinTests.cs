@@ -3,6 +3,27 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public class FamilyKinTests
 {
+    [Fact] public void NewYearMaturesOnceWithoutAppointingChildAndLegacyKeepsItsRule()
+    {
+        var child=NewGameWorldTests.Officer("created:junior") with{BirthYear=1546};
+        var start=NewGameWorldTests.Setup([NewGameWorldTests.Officer(),child]);
+        const long newYear=366L*86400;
+        foreach(int age in new[]{FamilyKin.ComingOfAge,NewGameWorld.TrialAdultAge})
+        {
+            var w=NewGameWorld.Create(start.World,start.Registered,"created:test",comingOfAge:age);
+            w.ElapsedSeconds=newYear-1;
+            var session=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+            Assert.Equal(LifeState.Minor,session.DiagnosticSnapshot().Characters.Single(c=>c.Id.Value==child.Id).Life);
+            NewGameWorldTests.At(session,newYear);
+            var after=session.DiagnosticSnapshot();
+            var person=after.Characters.Single(c=>c.Id.Value==child.Id);
+            Assert.Equal(age==15?LifeState.Adult:LifeState.Minor,person.Life);
+            Assert.DoesNotContain(after.ServiceBonds,b=>b.Subject==person.Id);
+            var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+            NewGameWorldTests.At(restored,newYear+1);
+            Assert.Equal(person,restored.DiagnosticSnapshot().Characters.Single(c=>c.Id==person.Id));
+        }
+    }
     [Fact] public void KnownParentSurvivesStartAndLoadWithoutInventingASecondParent()
     {
         var parent=NewGameWorld.Scenario().People.First(p=>!p.Created);

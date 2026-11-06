@@ -2,6 +2,31 @@ namespace HakutaiKagami.Core.Contracts;
 
 public static class FamilyKin
 {
+    public const int ComingOfAge=15;
+    internal static LifeState LifeAt(NewGameState data,SetupPerson person,long at)
+    {
+        if(NewGameWorld.CanPlay(data.Start,person,data.AdultAge))return LifeState.Adult;
+        if(data.AdultAge!=ComingOfAge || person.BirthYear is not int born)return LifeState.Minor;
+        return WorldCalendar.At(data.Start.EpochDate,at).Year-born>=ComingOfAge ? LifeState.Adult : LifeState.Minor;
+    }
+    internal static long? NextAdulthood(ContractWorld world,long target)
+    {
+        if(world.NewGame is not {AdultAge:ComingOfAge} data)return null;
+        var epoch=DateOnly.ParseExact(data.Start.EpochDate,"yyyy-MM-dd");
+        var minors=world.Characters.Where(c=>c.Life==LifeState.Minor).Select(c=>c.Id.Value).ToHashSet();
+        return data.Start.People.Where(p=>minors.Contains(p.Id) && p.BirthYear is >=1 and <=9984)
+            .Select(p=>(long)(new DateOnly(p.BirthYear!.Value+ComingOfAge,1,1).DayNumber-epoch.DayNumber)*86400)
+            .Where(t=>world.ElapsedSeconds<t && t<=target).Select(t=>(long?)t).Min();
+    }
+    internal static void Mature(ContractWorld world)
+    {
+        if(world.NewGame is not {AdultAge:ComingOfAge} data || world.ElapsedSeconds%86400!=0)return;
+        var date=WorldCalendar.At(data.Start.EpochDate,world.ElapsedSeconds);
+        if(date.Month!=1 || date.Day!=1)return;
+        world.Characters=world.Characters.Select(c=>c.Life==LifeState.Minor &&
+            LifeAt(data,data.Start.People.Single(p=>p.Id==c.Id.Value),world.ElapsedSeconds)==LifeState.Adult
+            ? c with{Life=LifeState.Adult,Revision=world.CommitSequence}:c).ToArray();
+    }
     internal static void Validate(SetupPerson[] people)
     {
         if(!people.Any(p=>p.BirthParents!=null))return;

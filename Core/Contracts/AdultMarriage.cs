@@ -18,6 +18,9 @@ public static class AdultMarriage
     static bool Closed(MarriageEntry[] rows,MarriageTerms t,long at)=>at>t.Until||Case(rows,t.Id).Any(e=>e.Input.Action is MarriageAction.PersonalNo or MarriageAction.Withdraw or MarriageAction.Implement);
     static bool FamilyAvailable(ContractWorld w,MarriageEntry[] rows,EntityId first,EntityId second,long at,long rev){
         if(first==second||Related(w,first,second,at,rev))return false;
+        var year=WorldCalendar.At(w.EpochDate,at).Year;
+        if(new[]{first,second}.Any(id=>w.NewGame!.Registered.SingleOrDefault(p=>p.Id==id.Value) is {} p &&
+            year-p.BirthYear<NewGameWorld.TrialAdultAge))return false;
         if(new[]{first,second}.Any(id=>w.NewGame!.Registered.SingleOrDefault(p=>p.Id==id.Value)?.InitialMaritalStatus!=InitialMaritalStatus.Unmarried))return false;
         return !rows.Where(p=>p.Terms!=null).Any(p=>{var events=Case(rows,p.Input.Id);bool active=events.Any(e=>e.Input.Action==MarriageAction.Implement)||!Closed(rows,p.Terms!,at);return active&&(p.Terms!.First==first||p.Terms.Second==first||p.Terms.First==second||p.Terms.Second==second);});
     }

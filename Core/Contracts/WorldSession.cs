@@ -168,7 +168,7 @@ public sealed partial class WorldSession
                 deferTimePause=WorldTimeControl.Enabled(state);
                 try{
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;ArmyRoadMarch.Tick(s,priorAt);
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
@@ -214,6 +214,7 @@ public sealed partial class WorldSession
         if(StandingAdministration.NextBoundary(s,target) is {} administrationBoundary)times.Add(administrationBoundary);
         if(PublicWorks.NextBoundary(s,target) is {} worksBoundary)times.Add(worksBoundary);
         if(HouseholdCourt.NextBoundary(s,target) is {} courtBoundary)times.Add(courtBoundary);
+        if(FamilyKin.NextAdulthood(s,target) is {} comingOfAge)times.Add(comingOfAge);
         if(InformationSchemes.NextBoundary(s,target) is {} schemeBoundary)times.Add(schemeBoundary);
         if(MeritRewards.NextBoundary(s,target) is {} meritBoundary)times.Add(meritBoundary);
         if(SocialAssets.NextBoundary(s,target) is {} teaBoundary)times.Add(teaBoundary);
