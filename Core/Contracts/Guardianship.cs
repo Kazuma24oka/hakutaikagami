@@ -4,6 +4,7 @@ namespace HakutaiKagami.Core.Contracts;
 
 public sealed record SuccessionOpening(EntityId House,EntityId Deceased,EntityId Home,long At,long Revision);
 public sealed record HouseClaim(EntityId House,EntityId Deceased,EntityId Claimant,long At,long Revision);
+public sealed record ClaimOpinion(long ClaimRevision,EntityId Speaker,bool Supports,long At,long Revision);
 public sealed record KnownSuccession(SuccessionOpening Opening,bool OwnClaim,HeirNomination? KnownNomination);
 
 public static class Guardianship
@@ -38,7 +39,38 @@ public static class Guardianship
                 throw new InvalidDataException("申立人・死亡原本・現地立会の時点が一致しません");
             revision=c.Revision;
         }
+        var opinions=w.ClaimOpinions??[];
+        var previous=prior?.ClaimOpinions??[];
+        if(!opinions.Take(previous.Length).SequenceEqual(previous) ||
+            opinions.DistinctBy(o=>(o.ClaimRevision,o.Speaker)).Count()!=opinions.Length)
+            throw new InvalidDataException("家臣の意向原本が変更または重複しています");
+        long last=0;
+        foreach(var opinion in opinions)
+        {
+            var claim=rows.SingleOrDefault(c=>c.Revision==opinion.ClaimRevision);
+            if(claim==null || opinion.Revision<=claim.Revision || opinion.Revision<=last || opinion.Revision>w.CommitSequence ||
+                opinion.At<claim.At || opinion.At>w.ElapsedSeconds || !CanAnswer(w,claim,opinion.Speaker,opinion.At,opinion.Revision) ||
+                opinion.Supports!=FamilyConsentRules.IndividualAccepts(w,opinion.Speaker,claim.Claimant,opinion.At,opinion.Revision-1))
+                throw new InvalidDataException("申立・現地の家臣・本人の返答が一致しません");
+            last=opinion.Revision;
+        }
     }
+
+    internal static bool CanAnswer(ContractWorld w,HouseClaim claim,EntityId speaker,long at,long revision)
+    {
+        if(speaker==claim.Claimant || speaker==claim.Deceased || !CharacterRelations.Enabled(w) || w.NewGame==null)return false;
+        var member=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==speaker.Value);
+        var home=new EntityId(w.NewGame.Start.Factions.Single(h=>h.Id==claim.House.Value).Home);
+        return member!=null && FamilyKin.LifeAt(w.NewGame,member,at)==LifeState.Adult &&
+            !Assassination.DeadAt(w,speaker,at,revision) && !Assassination.DeadAt(w,claim.Claimant,at,revision) &&
+            w.Memberships.Any(m=>m.Subject==speaker && m.Target==claim.House && m.From<=at && at<m.Until) &&
+            TransportWork.At(w,speaker,home,at,revision,true) && TransportWork.At(w,claim.Claimant,home,at,revision,true);
+    }
+
+    public static IEnumerable<ClaimOpinion> HeardOpinions(ContractWorld w,HouseClaim claim,EntityId observer)=>
+        (w.ClaimOpinions??[]).Where(o=>o.ClaimRevision==claim.Revision && (o.Speaker==observer ||
+            !Assassination.DeadAt(w,observer,o.At,o.Revision) && TransportWork.At(w,observer,
+                new(w.NewGame!.Start.Factions.Single(h=>h.Id==claim.House.Value).Home),o.At,o.Revision,true)));
 
     public static IEnumerable<HouseClaim> WitnessedClaims(ContractWorld w,SuccessionOpening opening,EntityId observer)=>
         (w.HouseClaims??[]).Where(c=>c.House==opening.House && c.Deceased==opening.Deceased &&
@@ -65,6 +97,23 @@ public static class Guardianship
 
 public sealed partial class WorldSession
 {
+    public CommandResult ConsultHouseMember(long claimRevision,EntityId speaker,long shown)
+    {
+        lock(gate)
+        {
+            var claim=state.HouseClaims?.SingleOrDefault(c=>c.Revision==claimRevision && c.Claimant==state.PlayerControl);
+            if(claim==null)return new(ResultCode.NotAvailable,speaker,state.CommitSequence,"自分の申立を指定してください");
+            if((state.ClaimOpinions??[]).Any(o=>o.ClaimRevision==claimRevision && o.Speaker==speaker))
+                return new(ResultCode.AlreadyAccepted,speaker,state.CommitSequence,"この申立への返答は記録済みです");
+            if(shown!=state.CommitSequence)return new(ResultCode.StateChanged,speaker,state.CommitSequence,"表示を更新してください");
+            if(!Guardianship.CanAnswer(state,claim,speaker,state.ElapsedSeconds,shown))
+                return new(ResultCode.NotAvailable,speaker,shown,"本拠にいる家臣本人に会ってください");
+            var support=FamilyConsentRules.IndividualAccepts(state,speaker,claim.Claimant,state.ElapsedSeconds,shown);
+            Change(w=>w.ClaimOpinions=[..w.ClaimOpinions??[],new(claimRevision,speaker,support,w.ElapsedSeconds,w.CommitSequence)]);
+            return new(ResultCode.Accepted,speaker,state.CommitSequence,"家臣の返答を記録しました");
+        }
+    }
+
     public CommandResult ClaimSuccession(EntityId house,EntityId deceased,long revision)
     {
         lock(gate)

@@ -81,7 +81,7 @@ public sealed partial class WorldSession
                 return new(ResultCode.AlreadyAccepted,signer,state.CommitSequence,"この指名への書状は送付済みです");
             if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,signer,state.CommitSequence,"指名を再確認してください");
             var contact=HeirPledges.Contacts(state,paper).SingleOrDefault(p=>p.Id==signer.Value);
-            if(contact==null || SocialWorld.Site(state,paper.Head)==null ||
+            if(!CharacterRelations.Enabled(state) || contact==null || SocialWorld.Site(state,paper.Head)==null ||
                 Assassination.DeadAt(state,paper.Head,state.ElapsedSeconds,revision))
                 return new(ResultCode.NotAvailable,signer,state.CommitSequence,"差出人の所在と家臣の宛先を確認してください");
             Change(w=>HeirPledges.Request(w,paper,contact));

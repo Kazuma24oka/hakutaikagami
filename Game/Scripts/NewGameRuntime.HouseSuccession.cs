@@ -27,7 +27,24 @@ public partial class NewGameRuntime
         {
             Text(CastleOwnerName(w,dispute.Opening.House)+"の当主が死去："+SuccessionPerson(w,dispute.Opening.Deceased));
             var claims=Guardianship.WitnessedClaims(w,dispute.Opening,w.PlayerControl).ToArray();
-            foreach(var claim in claims)Text("現地での家督申立："+SuccessionPerson(w,claim.Claimant));
+            foreach(var claim in claims)
+            {
+                Text("現地での家督申立："+SuccessionPerson(w,claim.Claimant));
+                var opinions=Guardianship.HeardOpinions(w,claim,w.PlayerControl).ToArray();
+                foreach(var opinion in opinions)Text(PersonName(opinion.Speaker)+(opinion.Supports?"：申立を支持":"：申立に異議"));
+                if(claim.Claimant!=w.PlayerControl || SocialWorld.Site(w,w.PlayerControl)!=dispute.Opening.Home)continue;
+                foreach(var member in w.Memberships.Where(m=>m.Target==claim.House && m.From<=w.ElapsedSeconds && w.ElapsedSeconds<m.Until))
+                {
+                    var speaker=member.Subject;
+                    if(speaker==claim.Claimant || speaker==claim.Deceased || opinions.Any(o=>o.Speaker==speaker) ||
+                        SocialWorld.Site(w,speaker)!=dispute.Opening.Home)continue;
+                    Button(PersonName(speaker)+"に意向を尋ねる",()=>{
+                        var r=Session.ConsultHouseMember(claim.Revision,speaker,shown);
+                        if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                        popup.Hide();Refresh();ShowHouseSuccession();
+                    });
+                }
+            }
             if(dispute.OwnClaim && !claims.Any(c=>c.Claimant==w.PlayerControl))
                 Button("本拠で家督を申し立てる",()=>{
                     var r=Session.ClaimSuccession(dispute.Opening.House,dispute.Opening.Deceased,shown);
