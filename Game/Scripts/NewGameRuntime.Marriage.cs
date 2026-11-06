@@ -16,6 +16,8 @@ public partial class NewGameRuntime
             var r=Session.DecideMarriage(new(new("request:marriage-ui/"+Guid.NewGuid().ToString("N")),action,other,root,house),Session.PlayerControl,revision);
             if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowMarriage();
         }
+        foreach(var connection in HeirDesignation.WitnessedConnections(world))
+            Text($"婚姻による縁戚：{CastleOwnerName(world,connection.FirstHouse)}と{CastleOwnerName(world,connection.SecondHouse)}");
         foreach(var card in AdultMarriage.View(world)){
             Text("当人："+PersonName(card.First)+" ／ 相手："+PersonName(card.Second));Text(card.Status);
             foreach(var house in card.OwnHouseApprovals)Button("自分が代表する家として承諾する",()=>Act(MarriageAction.ApproveHouse,root:card.Id,house:house));

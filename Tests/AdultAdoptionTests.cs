@@ -18,6 +18,27 @@ public sealed class AdultAdoptionTests
     [Fact]public void ProposalIsNotFamilyAndDoesNotImpersonateTheOtherAdult(){var s=Start(Yes.Value);Propose(s);Assert.Single(s.DiagnosticSnapshot().Adoption!.Entries);Assert.False(AdultAdoption.View(s.DiagnosticSnapshot()).Single().CanImplement);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.PersonalYes).Code);}
     [Fact]public void PersonalAgreementRequiresSeparateImplementationWithoutChangingRights(){var s=Agreed();var before=s.DiagnosticSnapshot();var card=Assert.Single(AdultAdoption.View(before));Assert.True(card.CanImplement);Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.Implement,card.Id).Code);var after=s.DiagnosticSnapshot();Assert.Single(after.Adoption!.Entries,e=>e.Input.Action==AdoptionAction.Implement);Assert.Equal(ContractJson.Write(before.Memberships),ContractJson.Write(after.Memberships));Assert.Equal(ContractJson.Write(before.Offices),ContractJson.Write(after.Offices));Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));Assert.Equal(NewGameWork.Balance(before,Player),NewGameWork.Balance(after,Player));Assert.False(AdultAdoption.View(after).Single().CanImplement);}
     [Fact]public void PlayerHouseConsentIsNotImpliedByPersonalProposal(){var s=Agreed(true);var w=s.DiagnosticSnapshot();var t=w.Adoption!.Entries.First().Terms!;Assert.Single(t.Houses);Assert.DoesNotContain(w.Adoption.Entries,e=>e.Input.Action==AdoptionAction.ApproveHouse);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Implement,t.Id).Code);Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.ApproveHouse,t.Id,t.Houses[0].Owner).Code);Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.Implement,t.Id).Code);}
+    [Fact]
+    public void AdoptedHeirIsVisibleForOwnHouseAfterImplementationAndLoad()
+    {
+        var session=Agreed(true);
+        var w=session.DiagnosticSnapshot();
+        var terms=w.Adoption!.Entries.First().Terms!;
+        var house=Assert.Single(terms.Houses).Owner;
+        Assert.Empty(HeirDesignation.KnownChildren(w,house));
+        Assert.Equal(ResultCode.Accepted,Act(session,AdoptionAction.ApproveHouse,terms.Id,house).Code);
+        Assert.Empty(HeirDesignation.KnownChildren(session.DiagnosticSnapshot(),house));
+        Assert.Equal(ResultCode.Accepted,Act(session,AdoptionAction.Implement,terms.Id).Code);
+        w=session.DiagnosticSnapshot();
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w))).DiagnosticSnapshot();
+        foreach(var state in new[]{w,restored})
+        {
+            var heir=Assert.Single(HeirDesignation.KnownChildren(state,house));
+            Assert.True(heir.Adopted);
+            Assert.Equal(Other,heir.Person);
+            Assert.Empty(HeirDesignation.KnownChildren(state,new("org:takeda")));
+        }
+    }
     [Fact]public void HouseApprovalCannotPrecedePersonalAnswer(){var s=Start(Yes.Value,lord:true);var root=Propose(s);var t=s.DiagnosticSnapshot().Adoption!.Entries.First().Terms!;Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.ApproveHouse,root,t.Houses[0].Owner).Code);}
     [Fact]public void RefusalIsStableAndCannotBeImplemented(){var s=Start(No.Value);var root=Propose(s);At(s,1);Assert.Contains(s.DiagnosticSnapshot().Adoption!.Entries,e=>e.Input.Action==AdoptionAction.PersonalNo);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Implement,root).Code);At(s,5);Assert.Single(s.DiagnosticSnapshot().Adoption!.Entries,e=>e.Input.Action==AdoptionAction.PersonalNo);}
     [Fact]public void WithdrawalBeforeReplyPreventsNpcAnswer(){var s=Start(Yes.Value);var root=Propose(s);Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.Withdraw,root).Code);At(s,2);Assert.Equal(2,s.DiagnosticSnapshot().Adoption!.Entries.Length);Assert.False(AdultAdoption.View(s.DiagnosticSnapshot()).Single().CanWithdraw);}
@@ -25,6 +46,21 @@ public sealed class AdultAdoptionTests
     [Fact]public void DuplicateOriginalIsIdempotentAndPayloadConflictIsRejected(){var s=Start(Yes.Value);var root=Propose(s);Assert.Equal(ResultCode.AlreadyAccepted,Act(s,AdoptionAction.Propose,id:root.Value).Code);Assert.Equal(ResultCode.IdPayloadConflict,Act(s,AdoptionAction.Propose,parent:false,id:root.Value).Code);Assert.Single(s.DiagnosticSnapshot().Adoption!.Entries);}
     [Fact]public void AChildCannotHaveTwoPendingProposals(){var s=Start(Yes.Value);Propose(s);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Propose).Code);}
     [Fact]public void ExistingRelationshipCannotBeDuplicatedOrCycled(){var s=Agreed();var root=s.DiagnosticSnapshot().Adoption!.Entries.First().Input.Id;Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.Implement,root).Code);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Propose).Code);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Propose,parent:false).Code);}
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void BirthParentCannotBeDuplicatedOrBecomeOwnDescendant(bool asParent)
+    {
+        var parent=NewGameWorldTests.Officer() with{BirthYear=1490};
+        var child=NewGameWorldTests.Officer(Other.Value) with{BirthParents=[parent.Id]};
+        var setup=NewGameWorldTests.Setup([parent,child]);
+        var session=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,parent.Id,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+            socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy));
+        Assert.Equal(ResultCode.NotAvailable,Act(session,AdoptionAction.Propose,parent:asParent).Code);
+        Assert.Empty(session.DiagnosticSnapshot().Adoption!.Entries);
+    }
     [Theory][InlineData(true,"site:castle")][InlineData(false,"site:kofu")]
     public void MinorOrAbsentAdultCannotBeProposed(bool minor,string site){var s=Start(Yes.Value,minor:minor,site:site);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Propose).Code);Assert.DoesNotContain(Other,AdultAdoption.Candidates(s.DiagnosticSnapshot()));}
     [Fact]public void CompletedRelationRetainsItsRolesAfterTimePasses(){var s=Agreed();var root=s.DiagnosticSnapshot().Adoption!.Entries.First().Input.Id;Act(s,AdoptionAction.Implement,root);At(s,20);var t=s.DiagnosticSnapshot().Adoption!.Entries.First().Terms!;Assert.Equal(Player,t.Parent);Assert.Equal(Other,t.Child);new WorldSession(s.DiagnosticSnapshot());}

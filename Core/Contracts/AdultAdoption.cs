@@ -19,7 +19,8 @@ public static class AdultAdoption
     static bool Closed(AdoptionEntry[] rows,AdoptionTerms t,long at)=>at>t.Until||Case(rows,t.Id).Any(e=>e.Input.Action is AdoptionAction.PersonalNo or AdoptionAction.Withdraw or AdoptionAction.Implement);
     static bool FamilyAvailable(ContractWorld w,AdoptionEntry[] rows,EntityId parent,EntityId child,long at,long rev){
         if(MarriageConflict(w,parent,child,at,rev))return false;var actual=rows.Where(e=>e.Input.Action==AdoptionAction.Implement).Select(e=>rows.Single(q=>q.Input.Id==e.Input.Original).Terms!).ToArray();if(actual.Any(t=>t.Child==child))return false;
-        var ancestors=new HashSet<EntityId>();var next=parent;while(ancestors.Add(next)){if(next==child)return false;var p=actual.SingleOrDefault(t=>t.Child==next);if(p==null)return true;next=p.Parent;}return false;
+        var links=ParentLinks(w,at,rev);
+        return !links.Contains((parent,child)) && !Ancestors(links,parent).Contains(child);
     }
     static bool Ready(ContractWorld w,AdoptionTerms t,AdoptionEntry[] rows,long at,long rev){
         if(Closed(rows,t,at)||!Present(w,t.Parent,t.Site,at,rev)||!Present(w,t.Child,t.Site,at,rev)||!SameHouse(w,t.Parent,at,rev)||!SameHouse(w,t.Child,at,rev))return false;
