@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment,AskCourtIntroduction,AcceptCourtIntroduction,DeclineCourtIntroduction }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -416,6 +416,7 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.PrivateCompanyPayment)throw new InvalidDataException("糧食の精算は契約満了時に自動で行います");
   else if(i.Action==CourtAction.KeepPrivateCompany)PrivateRecruitment.CheckStanding(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(CentralMediation.Handles(i.Action))CentralMediation.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(PrivateRecruitment.Contract(i.Action))PrivateRecruitment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -479,6 +480,7 @@ public static class HouseholdCourt
   if(w.Court==null)return;
   PrivateRecruitment.SettleDue(w);
   MusterNotices.Assemble(w);
+  foreach(var reply in CentralMediation.Pending(w))Attempt(w,reply,CentralCourtCatalog.CourtBroker);
   foreach(var reply in HouseholdDetachment.Replies(w))Attempt(w,reply.Input,reply.Actor);
   foreach(var doc in DocumentRows(w).Where(d=>d.Recipient!=w.PlayerControl&&Received(w,d.Id,d.Recipient)).ToArray()){
    var source=doc.Source;var p=doc.Recipient;if(SocialWorld.Site(w,p) is not {} site)continue;CourtAction? action=source.Input.Action switch{CourtAction.RecruitOffer=>FreeToJoin(w,p,source.Actor)&&HeadAuthority(w,source.Actor,source.Input.Owner,source.Input.Site,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.RecruitAccept:CourtAction.RecruitDecline,CourtAction.Nominate=>Vacancy(w,source.Input.Owner,source.Input.Site,source.Input.Role,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.AcceptOffice:CourtAction.DeclineOffice,CourtAction.Convene=>site==source.Place?CourtAction.AcceptInvitation:CourtAction.DeclineInvitation,_=>null};if(action==null)continue;
@@ -536,6 +538,7 @@ public static class HouseholdCourt
    if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(CentralMediation.Handles(i.Action))CentralMediation.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.KeepPrivateCompany)PrivateRecruitment.CheckStanding(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.PrivateCompanyPayment)PrivateRecruitment.ValidatePayment(w,e);
    if(PrivateRecruitment.Contract(i.Action))PrivateRecruitment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);

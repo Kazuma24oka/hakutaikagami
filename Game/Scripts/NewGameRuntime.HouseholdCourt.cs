@@ -14,7 +14,21 @@ public partial class NewGameRuntime
   void Button(string key,string text,Action action){var b=new Button{Text=text};box.AddChild(b);courtReviewButtons[key]=b;b.Pressed+=action;}
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
-  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  if(courtCategory==5){
+      if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id || site!=CentralCourtCatalog.Kyoto){
+          SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
+      }
+      var original=w.Court?.Events.LastOrDefault(e=>e.Actor==actor && e.Input.Action==CourtAction.AskCourtIntroduction);
+      var reply=original==null?null:w.Court!.Events.SingleOrDefault(e=>e.Input.Reference==original.Input.Id &&
+          e.Input.Action is CourtAction.AcceptCourtIntroduction or CourtAction.DeclineCourtIntroduction);
+      if(original!=null)SocialText(box,reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"山科言継が奏請の取次を引き受けました。",CourtAction.DeclineCourtIntroduction=>"山科言継は今回の取次を辞退しました。",_=>"山科言継の返事を待っています。"});
+      if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction) &&
+          CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
+          Button("court-introduction","山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
+              CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value)));
+      return;
+  }
   if(courtCategory==4){
    var control=w.LandRights.SingleOrDefault(r=>r.Kind=="control" && r.Target==site && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until);
    foreach(var reservation in MusterNotices.Reservations(w,actor,w.ElapsedSeconds,rev+1)){
