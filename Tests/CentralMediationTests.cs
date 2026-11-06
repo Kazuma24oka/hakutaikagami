@@ -144,6 +144,17 @@ public sealed class CentralMediationTests
             var settled=run.DiagnosticSnapshot();
             Assert.Equal(agree?1:0,settled.Court!.Events.Count(e=>e.Input.Action==CourtAction.CertifyPeaceAgreement));
             Assert.False(TruceNegotiations.WillNotInitiate(settled,owner,target,run.Seconds,run.Revision));
+            if(!agree){
+                var notice=Assert.Single(settled.Messaging.Messages,m=>m.Kind==PeaceMediation.RefusalNotice);
+                var recipient=new EntityId(notice.RecipientId);
+                var arrival=Arrival(notice.Id);
+                Assert.False(PeaceMediation.KnowsRefusal(settled,recipient,owner,target,arrival-1,run.Revision));
+                NewGameWorldTests.At(run,Math.Max(run.Seconds,Arrival(notice.Id))+2);
+                var known=run.DiagnosticSnapshot();
+                Assert.True(PeaceMediation.KnowsRefusal(known,recipient,owner,target,run.Seconds,run.Revision));
+                Assert.False(PeaceMediation.KnowsRefusal(known,CentralCourtCatalog.Shogun,owner,target,run.Seconds,run.Revision));
+                _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(known)));
+            }
             if(agree){
                 var certificate=settled.Messaging.Messages.Single(m=>m.Kind==PeaceMediation.Certificate && m.RecipientId==run.PlayerControl.Value);
                 NewGameWorldTests.At(run,Math.Max(run.Seconds,Arrival(certificate.Id))+1);

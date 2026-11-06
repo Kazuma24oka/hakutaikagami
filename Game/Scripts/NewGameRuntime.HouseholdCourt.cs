@@ -29,7 +29,7 @@ public partial class NewGameRuntime
           }
       }
       foreach(var agreement in PeaceMediation.Agreements(w,actor))
-          Button(agreement.Id.Value,"両家の承諾を確認し成立通知を送る",()=>Run(agreement));
+          Button(agreement.Id.Value,agreement.Action==CourtAction.ReportPeaceRefusal?"拒否の返書を確認し相手方に知らせる":"両家の承諾を確認し成立通知を送る",()=>Run(agreement));
       foreach(var pact in PeaceMediation.Known(w,actor,w.ElapsedSeconds,rev))
           SocialText(box,"成立通知を開封。不戦期限 "+WorldCalendar.Display(w.EpochDate,pact.Terms.Until));
       foreach(var vote in PeaceMediation.Votes(w,actor)){
