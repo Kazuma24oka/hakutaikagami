@@ -77,6 +77,13 @@ public static class HouseReforms
     internal static void Send(ContractWorld w,CourtInput input,EntityId actor)=>
         Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。");
 
+    public static string ReplyText(CourtAction action)=>action switch{
+        CourtAction.AssentReform=>"従う",CourtAction.CounterReform=>"条件を再協議したい",
+        CourtAction.RejectReform=>"拒む",_=>throw new ArgumentOutOfRangeException(nameof(action))};
+    internal static void Reply(ContractWorld w,CourtEvent proposal,string response)=>
+        Dispatch(w,proposal.Input,Answer,proposal.Input.Person,proposal.Actor,
+            Name(proposal.Input.Reform!.Value)+"への返答："+response);
+
     internal static void Receive(ContractWorld w)
     {
         foreach(var e in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ConsultReform))
@@ -95,7 +102,7 @@ public static class HouseReforms
                 w.ElapsedSeconds<r.Until) && i.Reform is ReformKind.Confiscate or ReformKind.ChangeFief or ReformKind.Relocate)score-=40;
             var response=DefectionPacts.HouseAt(w,recipient,w.ElapsedSeconds,w.CommitSequence)!=i.Owner||score< -15?"拒む":
                 score<15?"条件を再協議したい":"従う";
-            Dispatch(w,i,Answer,recipient,e.Actor,Name(i.Reform!.Value)+"への返答："+response);
+            Reply(w,e,response);
         }
     }
 }

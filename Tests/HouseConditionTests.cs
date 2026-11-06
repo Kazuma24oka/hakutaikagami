@@ -4,6 +4,33 @@ namespace HakutaiKagami.Tests;
 
 public sealed class HouseConditionTests
 {
+    [Theory]
+    [InlineData(CourtAction.AssentReform)]
+    [InlineData(CourtAction.CounterReform)]
+    [InlineData(CourtAction.RejectReform)]
+    public void AddressedOfficerChoosesOneReplyOnlyAfterReading(CourtAction choice)
+    {
+        var officer=HouseholdCourtTests.Retainer;
+        var lord=new EntityId("person:nobunaga");
+        var w=HouseholdCourtTests.Start(officer.Value).DiagnosticSnapshot();
+        var proposal=new CourtInput(new("request:personal-consult"),CourtAction.ConsultReform,officer,
+            HouseholdCourtTests.Owner,HouseholdCourtTests.Site){Reform=ReformKind.OpenMarket};
+        w.CommitSequence++;HouseholdCourt.Execute(w,proposal,lord);
+        var s=new WorldSession(w);
+        var reply=new CourtInput(new("request:my-response"),choice,lord,proposal.Owner,proposal.Site,Reference:proposal.Id);
+        NewGameWorldTests.At(s,120);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(reply,s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.Open(officer,new(HouseReforms.Letter(proposal,HouseReforms.Proposal)),s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(reply,s.Revision).Code);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(reply with{Id=new("request:changed-answer")},s.Revision).Code);
+        var restored=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+        var id=new EntityId(HouseReforms.Letter(proposal,HouseReforms.Answer));
+        Assert.Equal(ResultCode.NotAvailable,restored.Open(lord,id,restored.Revision).Code);
+        NewGameWorldTests.At(restored,240);
+        Assert.Equal(ResultCode.Accepted,restored.Open(lord,id,restored.Revision).Code);
+        Assert.EndsWith(HouseReforms.ReplyText(choice),restored.DiagnosticSnapshot().Messaging.Messages.Single(m=>m.Id==id.Value).Body);
+    }
+
     [Fact]
     public void RelocationLetterNamesTheTwoEstatesWithoutMovingTheCastellan()
     {

@@ -31,6 +31,19 @@ public partial class NewGameRuntime
     SocialText(box,"評定の招待："+WorldCalendar.Display(w.EpochDate,src.Input.When)+" / "+NewGameWorld.SiteName(src.Input.Site.Value));Button("accept-invitation","出席を承諾する（移動は別）",()=>Run(Input("meeting-yes",CourtAction.AcceptInvitation,doc.Id)));Button("decline-invitation","出席を断る",()=>Run(Input("meeting-no",CourtAction.DeclineInvitation,doc.Id)));
    }
   }
+  foreach(var proposal in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.ConsultReform && e.Input.Person==actor)??[]){
+   var input=proposal.Input;var letter=HouseReforms.Letter(input,HouseReforms.Proposal);
+   if(!w.Messaging.Receipts.Any(r=>r.MessageId==letter && r.ReceiverId==actor.Value) ||
+       w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(input,HouseReforms.Answer)))continue;
+   if(!HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,letter,actor.Value)){
+    Button("open-reform-"+input.Id,"届いた改革の相談状を開く",()=>{Session.Open(actor,new(letter),rev);Refresh();ShowHouseholdCourt();});
+    continue;
+   }
+   SocialText(box,w.Messaging.Messages.Single(m=>m.Id==letter).Body);
+   foreach(var choice in new[]{CourtAction.AssentReform,CourtAction.CounterReform,CourtAction.RejectReform})
+    Button("reply-"+input.Id+choice,HouseReforms.ReplyText(choice),()=>Run(new(Nonce("reply/"+input.Id+choice),choice,
+        proposal.Actor,input.Owner,input.Site,Reference:input.Id)));
+  }
   var owner=HouseSuccession.Factions(w,w.ElapsedSeconds,w.CommitSequence+1).FirstOrDefault(f=>f.Head==actor.Value&&w.LandRights.Any(l=>l.Subject.Value==f.Id&&l.Target==site&&l.Kind=="control"&&l.From<=w.ElapsedSeconds&&w.ElapsedSeconds<l.Until))?.Id??ServiceDisplay().House?.Value;
   if(owner==null){SocialText(box,"まだ家中に所属していません。届いた条件書を確認するか、現地で仕官を相談できます。");return;}var house=new EntityId(owner);bool head=HouseSuccession.Head(w,house)==actor;
   CourtInput Command(string key,CourtAction action,EntityId person,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0,CourtCaseKind kind=CourtCaseKind.RelieveVillage)=>new(Nonce(key),action,person,house,site.Value,role,amount,reference,when,kind);
