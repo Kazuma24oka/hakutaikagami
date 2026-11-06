@@ -5,6 +5,36 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseScaleTests
 {
     [Fact]
+    public void ARegionalLordCanProposeEqualDefenseAndReceiveShorterTermsFromALargerHouse()
+    {
+        var proposer=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");
+        var senior=NewGameWorldTests.Officer("created:senior",StartTemplate.Daimyo) with{Attributes=new(30,30,30,30)};
+        EntityId own=new("org:negotiator"),other=new("org:senior");
+        var castles=NewGameWorld.Scenario().Castles.Where(c=>c.Id!=proposer.Site && c.Id!=senior.Site)
+            .Take(7).Select(c=>c.Id).Prepend(senior.Site).ToArray();
+        var setup=NewGameWorldTests.Setup([proposer,senior],[new(proposer.Id,own.Value,[proposer.Site],false),new(senior.Id,other.Value,castles,false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,proposer.Id,42,worldArmyPolicy:NpcArmies.CompactCombatPolicy,
+            trucePolicy:TruceNegotiations.Policy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy);
+        w.CommitSequence++;
+        HouseholdCourt.Execute(w,new(new("request:senior-scale"),CourtAction.DeclareScale,new(senior.Id),other,new(senior.Site),Scale:CourtScale.Great),new(senior.Id));
+        var session=new WorldSession(w);
+        var offer=new TreatyInput(new("request:defense"),TreatyAction.Propose,own,other,Days:30,Clauses:TreatyClause.Defense,NoticeDays:1){AttachHouseScale=true};
+        var result=session.NegotiateTreaty(offer,session.PlayerControl,session.Revision);
+        Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var sent=session.DiagnosticSnapshot();
+        var paper=Assert.Single(sent.Treaties!.Papers);
+        Assert.Equal(CourtScale.Local,paper.Terms.DeclaredScale);
+        var arrival=sent.Couriers!.Missions.Single(c=>sent.Messaging.Attempts.Any(a=>a.Id==c.Attempt && a.MessageId==paper.Message)).ReadyAt;
+        TruceNegotiationTests.Advance(session,arrival+1);
+        var received=session.DiagnosticSnapshot();
+        var counter=Assert.Single(received.Treaties!.Papers,p=>p.Input.Action==TreatyAction.Counter);
+        Assert.Equal(TreatyClause.Defense,counter.Terms.Clauses);
+        Assert.Equal(16*86400,counter.Terms.Until-counter.Terms.From);
+        Assert.Empty(received.Treaties.Formations);
+        Assert.Equal(ContractJson.Write(received),ContractJson.Write(new WorldSession(ContractJson.Copy(received)).DiagnosticSnapshot()));
+    }
+
+    [Fact]
     public void ThreeCastlesEnableDeclarationAndSecondSeatButDoNotNotifyInstantly()
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
