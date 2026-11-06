@@ -14,6 +14,21 @@ public partial class NewGameRuntime
   void Run(SchemeInput i){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageScheme(i,rev);message.Text=r.VisibleReason;GD.Print("SCHEME_RESULT "+i.Action+" "+r.Code+" "+r.VisibleReason);Refresh();ShowInformationSchemes();}
   EntityId Nonce(string key)=>new("request:scheme-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   SocialText(box,"噂・書状の記載・本人の照合結果は別です。未確認情報で処分・離反・開戦を自動的に決めません。");
+  if(CharacterRelations.Enabled(w))
+  {
+      var partners=w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site).ToArray();
+      if(partners.Length>0)
+      {
+          var who=new OptionButton();foreach(var c in partners)who.AddItem(PersonName(c.Id));box.AddChild(who);
+          var purposes=Enum.GetValues<PactPurpose>();var terms=new OptionButton();foreach(var p in purposes)terms.AddItem(DefectionPacts.Name(p));box.AddChild(terms);
+          Button("consult-pact","選んだ条件で密かに相談",()=>{
+              var r=Session.NegotiatePact(Nonce("pact"),partners[who.Selected].Id,purposes[terms.Selected],rev);
+              message.Text=r.VisibleReason;Refresh();ShowInformationSchemes();
+          });
+      }
+      foreach(var pact in DefectionPacts.Known(w,actor).Reverse().Take(5))
+          SocialText(box,PersonName(pact.Partner)+" ／ "+DefectionPacts.Name(pact.Purpose)+(pact.Accepted?"：合意":"：拒否"));
+  }
   if(CastleSiege.Enabled(w)&&MaterialMarkets.Sites(w).Contains(site.Value))
   {
       var operations=Enum.GetValues<SchemeTopic>().Where(DestructiveSchemes.Operation).ToArray();
