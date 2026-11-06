@@ -166,7 +166,7 @@ public static class HouseholdCourt
        r.Id==input.FormerOffice && r.From<at && InOffice(r)),"旧城で現在の城主職の原本を指定してください");
   }else Need(place==terms.NewEstate && releases.Length==1 && releases[0].At<at && input.FormerOffice==null &&
        !offices.Any(r=>r.Target==place && InOffice(r)) &&
-       CastleAdministration.Grant(w,place,at,rev)==null &&
+       (CastleAdministration.Grant(w,place,at,rev) is not {} administration || administration.Agent==actor) &&
        !Events(w).Any(e=>e.Revision<rev && e.Input.Reference==order.Input.Id && e.Input.Action==CourtAction.EnterCastleOffice),
        "旧職の引渡し後、空席の新城へ実際に到着してください");
  }

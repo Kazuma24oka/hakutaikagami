@@ -53,7 +53,15 @@ public partial class NewGameRuntime
    }
    var terms=w.Court!.Events.Single(e=>e.Input.Id==order.Input.Reference).Input;
    var released=w.Court.Events.Any(e=>e.Input.Action==CourtAction.ReleaseCastleOffice && e.Input.Reference==order.Input.Id);
-   if(w.Court.Events.Any(e=>e.Input.Action==CourtAction.EnterCastleOffice && e.Input.Reference==order.Input.Id))continue;
+   var entered=w.Court.Events.Any(e=>e.Input.Action==CourtAction.EnterCastleOffice && e.Input.Reference==order.Input.Id);
+   if(site==terms.NewEstate && Session.CastellanView() is {} administration){
+    var custody=administration.Appointments.LastOrDefault(c=>c.Site==site && c.Person==actor && c.CanReceive);
+    if(custody?.Receipt is {} receipt)
+     SocialText(box,$"自分が最後に確認した蔵の数量（{WorldCalendar.Display(w.EpochDate,receipt.ObservedAt)}）：米{receipt.Rice}kg、木材{receipt.Wood}、武具{receipt.Arms}、家金{receipt.Cash}文");
+    else SocialText(box,custody==null?"蔵の受領には、現地で当主と行政・保管の担当を取り決める必要があります。":"行政・保管の担当原本があります。現地の蔵を確認できます。");
+    Button("transfer-store-"+order.Input.Id,"行政・保管の引継ぎを開く",ShowCastleAdministration);
+   }
+   if(entered)continue;
    SocialText(box,w.Messaging.Messages.Single(m=>m.Id==id).Body);
    if(!released && site==terms.Site && w.Offices.FirstOrDefault(o=>o.Subject==actor && o.Target==site &&
        o.From<=w.ElapsedSeconds && w.ElapsedSeconds<o.Until && (o.Kind is "house-castellan" or "castellan")) is {} office)

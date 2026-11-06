@@ -95,9 +95,16 @@ public sealed class HouseConditionTests
                 s=new WorldSession(ContractJson.Copy(w));
                 Assert.True(s.DiagnosticSnapshot().Offices.Single(o=>o.Id==post.Id).Until<=s.Seconds);
             }
+            var beforeEntry=s.DiagnosticSnapshot();
             var arrived=s.ManageCourt(enter,s.Revision);
             Assert.True(arrived.Code==ResultCode.Accepted,arrived.VisibleReason);
             var after=s.DiagnosticSnapshot();
+            Assert.Equal(ContractJson.Write(beforeEntry.Castellan!),ContractJson.Write(after.Castellan!));
+            Assert.Equal(ContractJson.Write(beforeEntry.Materials!),ContractJson.Write(after.Materials!));
+            Assert.Equal(ContractJson.Write(beforeEntry.Communities!),ContractJson.Write(after.Communities!));
+            var unauthorized=s.ManageCastellan(new(new("request:store-with-office-alone"),CastellanAction.ReceiveStore,
+                enter.Site,Appointment:enter.Id),person,s.Revision);
+            Assert.Equal(ResultCode.NotAvailable,unauthorized.Code);
             Assert.Equal(enter.Site,after.Offices.Single(o=>o.Kind=="castellan" && o.Subject==person && o.Until==long.MaxValue).Target);
             Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
             Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter with{Id=new("request:repeat-entry")},s.Revision).Code);
