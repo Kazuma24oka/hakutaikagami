@@ -44,6 +44,15 @@ public static class SupremeOffice
             }
         }
     }
+    public static IEnumerable<EntityId> Sponsors(ContractWorld w,EntityId candidate,long at,long revision)
+    {
+        var events=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<=revision).ToArray();
+        foreach(var answer in events.Where(e=>e.Input.Action==CourtAction.AcceptShogunSupport && e.Actor==candidate)){
+            var sponsor=answer.Input.Person;
+            if(!Assassination.DeadAt(w,sponsor,at,revision) && ControlsKyoto(w,sponsor,answer.Input.Owner,at,revision))
+                yield return answer.Input.Owner;
+        }
+    }
     internal static void CheckResignation(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
     {
         if(input.Owner!=Bakufu || input.Site!=CentralCourtCatalog.Kyoto || place!=input.Site || input.Person!=actor ||

@@ -17,6 +17,17 @@ public static class ShogunExile
         Orders(w).Where(e=>e.Input.Person==incumbent && e.Revision>afterRevision && e.Revision<=revision && e.At<=at).Any(e=>
             w.Requests.Any(r=>r.Id==Trip(e) && r.CommitSequence<=revision) &&
             w.Tasks.Any(t=>t.RequestId==Trip(e) && t.StartedAt is {} start && start<=at));
+    internal static IEnumerable<RenownFact> KnownExpulsions(ContractWorld w,EntityId observer)
+    {
+        foreach(var order in Orders(w).Where(e=>e.Revision<=w.CommitSequence && e.At<=w.ElapsedSeconds &&
+            (e.Actor==observer || e.Input.Person==observer))){
+            var trip=Trip(order);
+            var departure=w.Tasks.SingleOrDefault(t=>t.RequestId==trip)?.StartedAt;
+            if(departure is {} departed && departed<=w.ElapsedSeconds)
+                yield return new(order.Input.Id.Value,observer,order.Actor,RenownKind.Infamy,departed,departed,
+                    CentralCourtCatalog.Kyoto,"将軍を京から追放した",true);
+        }
+    }
     internal static bool IsJourney(ContractWorld w,Intent i)=>i.RoutePolicy==Route && i.Action==ActionKind.Move && i.Actor==i.Executor &&
         Orders(w).Any(e=>e.Input.Person==i.Actor && Trip(e)==i.RequestId && e.Input.Site==i.DestinationSite && e.At<=i.EffectiveAt);
     internal static Intent Move(ContractWorld w,CourtEvent e)=>TravelWorld.ActorMove(w,Trip(e).Value,e.Input.Person,NewGameWorld.Node(e.Input.Site.Value),true,Route);

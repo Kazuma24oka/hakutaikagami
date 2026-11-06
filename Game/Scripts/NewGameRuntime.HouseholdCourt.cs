@@ -27,6 +27,13 @@ public partial class NewGameRuntime
               Button(selection.Id.Value,title?SupremeInvestiture.Title(action)+"を希望する":action==CourtAction.DeferInvitation?"返答を保留する":"推任を辞退する",()=>Run(selection));
           }
       }
+      if(site==CentralCourtCatalog.Kyoto){
+          foreach(var sponsor in SupremeOffice.Sponsors(w,actor,w.ElapsedSeconds,rev).Distinct().Where(h=>HouseSuccession.Head(w,h)!=actor)){
+              var petition=new CourtInput(Nonce("supported-shogun/"+sponsor.Value),CourtAction.PetitionShogun,CentralCourtCatalog.CourtBroker,sponsor,site.Value);
+              if(SupremeInvestiture.CanPetition(w,petition,actor))
+                  Button(petition.Id.Value,"擁立の申し出を受けて将軍就任を奏請する",()=>Run(petition));
+          }
+      }
       foreach(var notice in SupremeInvestiture.Notices(w,actor)){
           if(notice.Known is {} decision)SocialText(box,decision);
           else Button(notice.Id,"朝廷から届いた裁可の書状を開く",()=>{Session.Open(actor,new(notice.Id),rev);Refresh();ShowHouseholdCourt();});

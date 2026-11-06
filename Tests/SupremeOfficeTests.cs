@@ -231,6 +231,7 @@ public sealed class SupremeOfficeTests
             var w=run.DiagnosticSnapshot();
             Assert.Single(w.Court!.Events,e=>e.Input.Action==CourtAction.AcceptShogunSupport && e.Actor==candidate && e.Input.Reference==offer.Id);
             Assert.Equal(CentralCourtCatalog.Shogun,SupremeOffice.ShogunAt(w,run.Seconds,run.Revision));
+            Assert.Contains(house,SupremeOffice.Sponsors(w,candidate,run.Seconds,run.Revision));
             Assert.Equal(ResultCode.NotAvailable,run.ManageCourt(offer with{Id=new("request:duplicate-offer")},run.Revision).Code);
         }
         Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
@@ -239,6 +240,8 @@ public sealed class SupremeOfficeTests
         Assert.Equal(CentralCourtCatalog.Shogun,SupremeOffice.ShogunAt(game.DiagnosticSnapshot(),game.Seconds,game.Revision));
         NewGameWorldTests.At(game,game.Seconds+1);NewGameWorldTests.At(game,game.Seconds+2);
         var moving=game.DiagnosticSnapshot();
+        Assert.Contains(SocialWorld.Renown(moving,CentralCourtCatalog.Shogun),f=>f.Id==expel.Id.Value && f.Kind==RenownKind.Infamy && f.Major);
+        Assert.DoesNotContain(SocialWorld.Renown(moving,CentralCourtCatalog.CourtBroker),f=>f.Id==expel.Id.Value);
         var trip=Assert.Single(moving.Branches!.Journeys,j=>j.Actor==CentralCourtCatalog.Shogun);
         Assert.Null(SupremeOffice.ShogunAt(moving,game.Seconds,game.Revision));
         var travellingSave=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(moving)));

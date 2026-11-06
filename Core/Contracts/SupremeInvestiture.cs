@@ -20,7 +20,9 @@ public static class SupremeInvestiture
     }
     static bool Eligible(ContractWorld w,CourtAction title,EntityId applicant,EntityId house,long at,long rev)
     {
-        if(HouseSuccession.Head(w,house,at,rev)!=applicant || Assassination.DeadAt(w,applicant,at,rev))return false;
+        if(Assassination.DeadAt(w,applicant,at,rev))return false;
+        if(HouseSuccession.Head(w,house,at,rev)!=applicant &&
+            !(title==CourtAction.PetitionShogun && SupremeOffice.Sponsors(w,applicant,at,rev).Contains(house)))return false;
         if(title==CourtAction.PetitionShogun)return SupremeOffice.ShogunAt(w,at,rev)==null && CourtPedigree.Qualified(w,applicant,at,rev);
         var holder=LastGrant(w,title,at,rev)?.Input.Person;
         if(title==CourtAction.PetitionRegent){
