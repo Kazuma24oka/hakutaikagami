@@ -32,6 +32,38 @@ public sealed class HouseConditionTests
     }
 
     [Fact]
+    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer()
+    {
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+        var officer=NewGameWorldTests.Officer("created:transfer-officer",StartTemplate.Castellan,lord:head.Id);
+        var owner=new EntityId("org:transfer-test");
+        var setup=NewGameWorldTests.Setup([head,officer],[new(head.Id,owner.Value,[head.Site,"site:fork"],false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,officer.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        EntityId lord=new(head.Id),person=new(officer.Id);
+        var proposal=new CourtInput(new("request:actual-transfer"),CourtAction.ConsultReform,person,owner,new(head.Site)){
+            Reform=ReformKind.Relocate,NewEstate=new("site:fork")};
+        w.CommitSequence++;HouseholdCourt.Execute(w,proposal,lord);
+        var s=new WorldSession(w);
+        NewGameWorldTests.At(s,120);
+        Assert.Equal(ResultCode.Accepted,s.Open(person,new(HouseReforms.Letter(proposal,HouseReforms.Proposal)),s.Revision).Code);
+        var reply=new CourtInput(new("request:transfer-yes"),CourtAction.AssentReform,lord,owner,proposal.Site,Reference:proposal.Id);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(reply,s.Revision).Code);
+        var order=new CourtInput(new("request:transfer-order"),CourtAction.IssueTransfer,person,owner,proposal.Site,Reference:proposal.Id);
+        var early=s.DiagnosticSnapshot();early.CommitSequence++;
+        Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(early,order,lord));
+        NewGameWorldTests.At(s,240);
+        Assert.Equal(ResultCode.Accepted,s.Open(lord,new(HouseReforms.Letter(proposal,HouseReforms.Answer)),s.Revision).Code);
+        w=s.DiagnosticSnapshot();w.CommitSequence++;HouseholdCourt.Execute(w,order,lord);
+        s=new WorldSession(ContractJson.Copy(w));
+        EntityId document=new(HouseReforms.Letter(order,HouseReforms.TransferOrder));
+        Assert.Equal(ResultCode.NotAvailable,s.Open(person,document,s.Revision).Code);
+        NewGameWorldTests.At(s,360);
+        Assert.Equal(ResultCode.Accepted,s.Open(person,document,s.Revision).Code);
+        Assert.Equal(proposal.Site,SocialWorld.Site(s.DiagnosticSnapshot(),person));
+    }
+
+    [Fact]
     public void RelocationLetterNamesTheTwoEstatesWithoutMovingTheCastellan()
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);

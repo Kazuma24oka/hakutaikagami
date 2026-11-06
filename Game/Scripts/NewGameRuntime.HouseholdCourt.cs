@@ -102,7 +102,9 @@ public partial class NewGameRuntime
     var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);
     if(HouseReforms.AnswerKnown(w,e,actor)){
      SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
-     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.AbolishBarrier&&d.Input.Reference==e.Input.Id))
+     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.IssueTransfer&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"承諾済みの条件で移封の命令書を発送済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.AbolishBarrier&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この道路の関所を撤廃済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactLetterLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この拠点で他国との私信を禁じる家法が発効済み");
@@ -111,6 +113,8 @@ public partial class NewGameRuntime
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この相談案は見送り済み");
      else if(head && site==e.Input.Site && house==e.Input.Owner){
+      if(e.Input.NewEstate!=null && w.Messaging.Messages.Single(m=>m.Id==id).Body==HouseReforms.Name(e.Input.Reform!.Value)+"への返答："+HouseReforms.ReplyText(CourtAction.AssentReform))
+       Button("transfer-"+e.Input.Id,"承諾された条件で移封を発令する",()=>Run(Command("issue-transfer/"+e.Input.Id,CourtAction.IssueTransfer,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.RemoveBarrier && e.Input.BarrierEdge is {} edge && HouseReforms.BarrierAt(w,edge,w.ElapsedSeconds,rev+1)!=null)
        Button("remove-barrier-"+e.Input.Id,"相談した道路の関所を撤廃する",()=>Run(Command("remove-barrier/"+e.Input.Id,CourtAction.AbolishBarrier,e.Input.Person,reference:e.Input.Id) with{BarrierEdge=edge}));
       if(e.Input.Reform==ReformKind.ForeignLetters && !HouseReforms.LetterLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))

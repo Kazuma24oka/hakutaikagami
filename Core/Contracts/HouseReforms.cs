@@ -6,7 +6,7 @@ public enum ReformKind { ForeignLetters,MarriagePermission,SuccessionOrder,Equal
 
 public static class HouseReforms
 {
-    public const string Proposal="house-reform-proposal",Answer="house-reform-answer";
+    public const string Proposal="house-reform-proposal",Answer="house-reform-answer",TransferOrder="estate-transfer-order";
     public static string Name(ReformKind kind)=>kind switch
     {
         ReformKind.ForeignLetters=>"他国との私的書状を禁じる",ReformKind.MarriagePermission=>"婚姻を許可制にする",
@@ -74,6 +74,11 @@ public static class HouseReforms
         w.SealedMessages=[..w.SealedMessages,new(letter.Id)];
         RegionalCampaign.Bind(w);
     }
+    internal static void SendTransfer(ContractWorld w,CourtEvent proposal,CourtInput order,EntityId actor)=>
+        Dispatch(w,order,TransferOrder,actor,proposal.Input.Person,
+            NewGameWorld.SiteName(proposal.Input.Site.Value)+"で旧職を引き継ぎ、"+
+            NewGameWorld.SiteName(proposal.Input.NewEstate!.Value.Value)+"へ赴任せよ。原本："+proposal.Input.Id.Value);
+
     internal static void Send(ContractWorld w,CourtInput input,EntityId actor)=>
         Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。");
 
