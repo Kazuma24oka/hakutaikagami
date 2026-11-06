@@ -16,7 +16,7 @@ public static class JointIndependence
     public static LocalGuard? ObserveOwnCastle(ContractWorld w,EntityId observer)
     {
         var declaration=w.Declarations?.LastOrDefault(d=>d.Founder==observer && d.CheckGarrison==true);
-        if(declaration==null || SocialWorld.Site(w,observer)!=declaration.Site ||
+        if(declaration==null || IndependenceGate.MeetingSite(w,observer)!=declaration.Site ||
             Assassination.DeadAt(w,observer,w.ElapsedSeconds,w.CommitSequence))return null;
         var site=declaration.Site;
         bool formerTroops=CastleHandover.HasGarrison(w,declaration.FormerHouse,site,w.ElapsedSeconds,w.CommitSequence+1);

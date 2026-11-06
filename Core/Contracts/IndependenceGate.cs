@@ -4,8 +4,29 @@ public static class IndependenceGate
 {
     public static bool Handles(CourtAction action)=>action is CourtAction.RequestIndependentGate or CourtAction.AllowIndependentGate
         or CourtAction.RefuseIndependentGate or CourtAction.ReceiveIndependentGate or CourtAction.ReceiveIndependentKeep;
+    // 指揮官が隊を離れて城に戻った場合、本人の到着と各隊の位置を別々に確認する。
+    static bool ReturnedInPerson(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
+    {
+        if(actor!=w.PlayerControl)return false;
+        var state=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests.Select(q=>(Ledger:s,Request:q)))
+            .Where(x=>(x.Request.At,x.Request.Revision).CompareTo((at,rev))<0 &&
+                x.Request.Input.Action is NewMilitaryAction.Withdraw or NewMilitaryAction.Attach or NewMilitaryAction.Enter)
+            .OrderByDescending(x=>x.Request.Revision).FirstOrDefault();
+        if(state.Request?.Input.Action!=NewMilitaryAction.Withdraw || state.Ledger.Terms.Site!=site)return false;
+        var journey=state.Ledger.Withdrawal?.Journeys.LastOrDefault(j=>j.Revision>=state.Request.Revision &&
+            (j.At,j.Revision).CompareTo((at,rev))<0);
+        if(journey==null || journey.Route.Any(l=>l.EndAt>at))return false;
+        var anchor=FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position);
+        return RegionalGround.At(journey.Route,journey.Origin,at)==anchor;
+    }
+    public static EntityId? MeetingSite(ContractWorld w,EntityId actor)
+    {
+        if(SocialWorld.Site(w,actor) is {} site)return site;
+        return w.Declarations?.LastOrDefault(d=>d.CheckGarrison==true && d.Founder==actor &&
+            ReturnedInPerson(w,actor,d.Site,w.ElapsedSeconds,w.CommitSequence+1))?.Site;
+    }
     static bool At(ContractWorld w,EntityId actor,IndependenceDeclaration d,long at,long rev)=>
-        !Assassination.DeadAt(w,actor,at,rev) && TransportWork.At(w,actor,d.Site,at,rev,true);
+        !Assassination.DeadAt(w,actor,at,rev) && (TransportWork.At(w,actor,d.Site,at,rev,true) || ReturnedInPerson(w,actor,d.Site,at,rev));
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId site,long at,long rev)
     {
         var d=w.Declarations?.SingleOrDefault(d=>d.CheckGarrison==true && d.Pact==i.Reference && d.Revision<rev);
@@ -40,9 +61,16 @@ public static class IndependenceGate
             if(answer!=null)yield return(answer,lord);
         }
     }
+    public static CourtAction? LastWitnessed(ContractWorld w,EntityId actor)
+    {
+        var site=MeetingSite(w,actor);
+        if(site==null)return null;
+        return HouseholdCourt.Events(w).LastOrDefault(e=>Handles(e.Input.Action) && e.Place==site &&
+            (e.Actor==actor || e.Input.Person==actor))?.Input.Action;
+    }
     public static IEnumerable<CourtInput> Available(ContractWorld w,EntityId actor)
     {
-        if(SocialWorld.Site(w,actor) is not {} site)yield break;
+        if(MeetingSite(w,actor) is not {} site)yield break;
         foreach(var d in w.Declarations??[]){
             if(d.CheckGarrison!=true || d.Site!=site)continue;
             var lord=HouseSuccession.Head(w,d.FormerHouse);
