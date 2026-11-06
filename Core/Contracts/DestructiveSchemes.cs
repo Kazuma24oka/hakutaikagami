@@ -22,6 +22,15 @@ public static class DestructiveSchemes
         return SHA256.HashData(Encoding.UTF8.GetBytes(key))[0]*100/256;
     }
 
+    internal static bool Accepts(ContractWorld world,SchemeInput mission,long at,long revision)
+    {
+        var agent=world.NewGame!.Start.People.Single(p=>p.Id==mission.Person.Value);
+        var target=mission.Destination!.Value;
+        bool ownHouse=agent.Faction!=null && world.NewGame.Start.Castles.Any(c=>c.Id==target.Value && c.Faction==agent.Faction);
+        var decision=new SchemeEvent(mission,mission.Person,target,at,revision,null,[]);
+        int willingness=50+(agent.Attributes?.Intelligence??50)/3-(ownHouse?25:0);
+        return world.Characters.Single(c=>c.Id==mission.Person).WillObey && Roll(world,decision,"consent")<willingness;
+    }
     static bool Succeeded(ContractWorld world, SchemeEvent attempt)
     {
         var officer=world.NewGame!.Start.People.Single(p=>p.Id==attempt.Actor.Value);

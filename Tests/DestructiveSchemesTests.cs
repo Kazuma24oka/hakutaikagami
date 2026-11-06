@@ -46,6 +46,9 @@ public sealed class DestructiveSchemesTests
         void Good(CommandResult result)=>Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
         Good(s.ManageCompanion(new(new("request:escort"),agent,CompanionAction.Agree,20),s.PlayerControl,s.Revision));
         var input=new SchemeInput(new("request:send-agent"),SchemeAction.SendScout,agent,s.PlayerControl,SchemeTopic.Sabotage,Destination:target);
+        var decline=input with{Id=new("request:declined"),Topic=SchemeTopic.Arson};
+        Assert.Equal(ResultCode.NotAvailable,s.ManageScheme(decline,s.Revision).Code);
+        Assert.Empty(s.DiagnosticSnapshot().Schemes?.Events??[]);
         Good(s.ManageScheme(input,s.Revision));
         var outward=s.DiagnosticSnapshot().Schemes!.Events.Single(e=>e.Input.Id==input.Id).Movement!;
         NewGameWorldTests.At(s,outward.EffectiveAt+outward.DeliverySeconds+outward.WorkSeconds);
@@ -72,5 +75,26 @@ public sealed class DestructiveSchemesTests
             Assert.Contains(branch.DiagnosticSnapshot().Evidence,e=>e.Observer==branch.PlayerControl&&e.Message==report&&e.Claim==DestructiveSchemes.Outcome(w,attempt));
         }
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+    }
+    [Fact] public void WitnessKnowsLocallyAndListenerLearnsOnlyAfterHearing()
+    {
+        EntityId site=new("site:sakai"),actor=new("created:actor"),witness=new("created:witness"),away=new("created:away"),listener=new("created:listener");
+        var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(actor.Value,site:site.Value),NewGameWorldTests.Officer(witness.Value,site:site.Value),
+            NewGameWorldTests.Officer(away.Value,site:"site:kyoto"),NewGameWorldTests.Officer(listener.Value,site:site.Value)]);
+        var s=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,actor.Value,23,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleSiege.Policy,weatherPolicy:RegionalWeather.Policy));
+        var input=new SchemeInput(new("request:local-fire"),SchemeAction.ExecuteOperation,actor,site,SchemeTopic.Arson);
+        Assert.Equal(ResultCode.Accepted,s.ManageScheme(input,s.Revision).Code);
+        var w=s.DiagnosticSnapshot();
+        Assert.Single(InformationSchemes.Claims(w,witness),q=>q.Id==input.Id);
+        Assert.Empty(InformationSchemes.Claims(w,away));
+        Assert.Empty(InformationSchemes.Claims(w,listener));
+        w.CommitSequence++;
+        InformationSchemes.Execute(w,new(new("request:relay"),SchemeAction.Forward,listener,actor,Reference:input.Id),witness);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w))).DiagnosticSnapshot();
+        var claim=Assert.Single(InformationSchemes.Claims(restored,listener));
+        Assert.Equal(witness,claim.Speaker);
+        Assert.Contains("伝聞",claim.Standing);
+        Assert.Empty(InformationSchemes.Claims(restored,away));
     }
 }
