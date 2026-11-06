@@ -133,6 +133,26 @@ public sealed class CentralMediationTests
             Assert.Single(answered.Messaging.Messages,m=>m.Kind==PeaceMediation.Response && m.SenderId==run.PlayerControl.Value);
             Assert.Empty(answered.Truces!.Formations);
             _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(answered)));
+            long Arrival(string id){
+                var snapshot=run.DiagnosticSnapshot();
+                return snapshot.Couriers!.Missions.Single(c=>snapshot.Messaging.Attempts.Any(a=>a.Id==c.Attempt && a.MessageId==id)).ReadyAt;
+            }
+            NewGameWorldTests.At(run,Math.Max(run.Seconds,Arrival(letters.Single(m=>m.RecipientId!=run.PlayerControl.Value).Id))+2);
+            var answers=run.DiagnosticSnapshot().Messaging.Messages.Where(m=>m.Kind==PeaceMediation.Response).ToArray();
+            Assert.Equal(2,answers.Length);
+            NewGameWorldTests.At(run,Math.Max(run.Seconds,answers.Max(m=>Arrival(m.Id)))+3);
+            var settled=run.DiagnosticSnapshot();
+            Assert.Equal(agree?1:0,settled.Court!.Events.Count(e=>e.Input.Action==CourtAction.CertifyPeaceAgreement));
+            Assert.False(TruceNegotiations.WillNotInitiate(settled,owner,target,run.Seconds,run.Revision));
+            if(agree){
+                var certificate=settled.Messaging.Messages.Single(m=>m.Kind==PeaceMediation.Certificate && m.RecipientId==run.PlayerControl.Value);
+                NewGameWorldTests.At(run,Math.Max(run.Seconds,Arrival(certificate.Id))+1);
+                Good(run.Open(run.PlayerControl,new(certificate.Id),run.Revision));
+                var final=run.DiagnosticSnapshot();
+                Assert.True(TruceNegotiations.WillNotInitiate(final,owner,target,run.Seconds,run.Revision));
+                var loaded=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(final)));
+                Assert.True(TruceNegotiations.WillNotInitiate(loaded.DiagnosticSnapshot(),owner,target,loaded.Seconds,loaded.Revision));
+            }
         }
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
