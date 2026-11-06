@@ -3,6 +3,28 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public class FamilyKinTests
 {
+    [Theory]
+    [InlineData(HistoryMode.Historical,true)]
+    [InlineData(HistoryMode.Fictional,false)]
+    public void SourcedDeathYearDependsOnHistoryMode(HistoryMode mode,bool expectedDeath)
+    {
+        var scenario=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        const ulong seed=0;
+        var w=NewGameWorld.Create(scenario,[],"person:nobunaga",seed,historicalCatalog:HistoricalStartCatalog.Current,
+            npcRoutinePolicy:NpcJudgment.Policy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            demandPolicy:LocalWorkDemand.Policy,developmentPolicy:CharacterDevelopment.Policy,companionPolicy:PersonalCompanions.Policy,
+            socialPolicy:CharacterRelations.Policy,judgment:new(NpcJudgment.Policy,mode,NpcAttention.Beginner),comingOfAge:15);
+        var digest=System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes("natural-death-v1/0/person:yoshishige/1587"));
+        var day=System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(digest.AsSpan(4))%365;
+        long at=((long)new DateOnly(1587,1,1).DayNumber-new DateOnly(1560,1,1).DayNumber+day)*86400+43200;
+        w.ElapsedSeconds=at-1;
+        var s=new WorldSession(w);
+        NewGameWorldTests.At(s,at);
+        var state=s.DiagnosticSnapshot();
+        Assert.Equal(expectedDeath,state.Characters.Single(c=>c.Id.Value=="person:yoshishige").Life==LifeState.Dead);
+        Assert.Equal(ContractJson.Write(state),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(state))).DiagnosticSnapshot()));
+    }
+
     [Fact] public void YoungOfficerWritesHomeOnComingOfAgeWithoutEnteringService()
     {
         var parent=NewGameWorldTests.Officer(site:"site:akutagawa");
