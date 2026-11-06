@@ -77,6 +77,56 @@ public class DefectionPactTests
     }
 
     [Fact]
+    public void CaptorFindsOnlyTheSignedCopyCarriedByThePrisoner()
+    {
+        EntityId target=new("created:contact"), pactId=new("request:private-agreement");
+        const string site="site:kyoto";
+        var actors=new[]{NewGameWorldTests.Officer(site:site,role:StartTemplate.Retainer,lord:"person:nobunaga"),
+            NewGameWorldTests.Officer(Partner.Value,StartTemplate.Retainer,site,"person:nobunaga"),
+            NewGameWorldTests.Officer(target.Value,site:site)};
+        var setup=NewGameWorldTests.Setup(actors);
+        for(ulong seed=0;seed<128;seed++)
+        {
+            var w=NewGameWorld.Create(setup.World,setup.Registered,Actor.Value,seed,inspectionPolicy:LocalInspectionFindings.Policy,
+                workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleSiege.Policy,companionPolicy:PersonalCompanions.Policy,
+                developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy);
+            var session=new WorldSession(w);
+            Assert.Equal(ResultCode.Accepted,session.NegotiatePact(pactId,Partner,PactPurpose.WithholdService,session.Revision).Code);
+            var signed=session.DiagnosticSnapshot();
+            if(!signed.SecretPacts!.Single().Accepted)continue;
+            Assert.Empty(DefectionPacts.Known(signed,target));
+            var sight=new SchemeInput(new("request:sight"),SchemeAction.ObservePerson,Actor,target);
+            var contact=sight with{Id=new("request:contact"),Action=SchemeAction.SeekContact,Reference=sight.Id};
+            var attack=contact with{Id=new("request:attack"),Action=SchemeAction.AttemptAssassination,Reference=contact.Id};
+            foreach(var input in new[]{sight,contact,attack})Assert.Equal(ResultCode.Accepted,session.ManageScheme(input,session.Revision).Code);
+            session.SetPaused(true);
+            var after=session.DiagnosticSnapshot();
+            if(!after.Schemes!.Events.Any(e=>e.Input.Action==SchemeAction.CaughtInEncounter))continue;
+            var directory=Directory.CreateTempSubdirectory("hakutai-seizure-");
+            try
+            {
+                var store=new GenerationSaveStore(directory.FullName,w.Definitions);
+                Assert.True(store.Save(session,"discovery",w.WorldId).Published);
+                var host=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("discovery"),host.Current,host.Current.Revision));
+                foreach(var world in new[]{after,host.Current.DiagnosticSnapshot()})
+                {
+                    var evidence=Assert.Single(PactDocuments.Evidence(world,target));
+                    Assert.Equal(pactId,Assert.Single(DefectionPacts.Known(world,target)).Id);
+                    Assert.Empty(DefectionPacts.Known(world,new("person:nobunaga")));
+                    var copies=SocialAssets.Objects(world).Where(o=>o.Kind=="secret-pact").ToArray();
+                    Assert.Equal(2,copies.Length);
+                    Assert.Contains(copies,p=>p.Id==evidence.Document && p.Owner==Actor && p.Holder==target);
+                    Assert.Contains(copies,p=>p.Owner==Partner && p.Holder==Partner);
+                }
+                return;
+            }
+            finally{directory.Delete(true);}
+        }
+        Assert.Fail("承諾後に捕縛される開始条件がありません");
+    }
+
+    [Fact]
     public void BothAnswersArePrivateAndAPromiseAloneDoesNotChangeMembership()
     {
         var outcomes=new HashSet<bool>();

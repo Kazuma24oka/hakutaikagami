@@ -34,8 +34,11 @@ public static class DefectionPacts
         return new(id,actor,partner,house.Value,site.Value,purpose,interest>=reluctance,at,rev+1);
     }
 
-    public static IEnumerable<SecretPact> Known(ContractWorld w,EntityId observer)=>
-        (w.SecretPacts??[]).Where(p=>p.Proposer==observer || p.Partner==observer);
+    public static IEnumerable<SecretPact> Known(ContractWorld w,EntityId observer)
+    {
+        var observed=PactDocuments.Evidence(w,observer).Select(e=>e.Pact).ToHashSet();
+        return (w.SecretPacts??[]).Where(p=>p.Proposer==observer || p.Partner==observer || observed.Contains(p.Id));
+    }
 
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {

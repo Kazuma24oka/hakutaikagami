@@ -28,6 +28,8 @@ public partial class NewGameRuntime
       }
       foreach(var pact in DefectionPacts.Known(w,actor).Reverse().Take(5))
       {
+          var evidence=PactDocuments.Evidence(w,actor).FirstOrDefault(e=>e.Pact==pact.Id);
+          if(evidence!=null)SocialText(box,"押収した密書 ／ "+PersonName(pact.Proposer)+" と "+PersonName(pact.Partner)+" ／ "+evidence.At+" 秒時点");
           SocialText(box,PersonName(pact.Partner)+" ／ "+DefectionPacts.Name(pact.Purpose)+(pact.Accepted?"：合意":"：拒否"));
           string JointIndependenceLabel()=>w.Declarations?.Any(d=>d.Founder==actor && d.FormerHouse==pact.House)==true?"独立への参加を呼びかける":"独立を宣言し、参加を呼びかける";
           if(pact.Accepted && pact.Proposer==actor && !PactSignals.Sent(w,pact))
