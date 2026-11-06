@@ -8,6 +8,53 @@ public sealed class LandSurveyTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static SurveyInput Input(WorldSession s,SurveyAction action,EntityId? reference=null,LandTaxRate rate=LandTaxRate.Ordinary)=>new(new("request:survey/"+s.Revision),action,Owner,Site,reference,rate);
  [Fact]
+ public void FlightRemovesWorkersDuringJourneyAndRestoresOnlyAtDestination()
+ {
+     var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));
+     NewGameWorldTests.At(s,67*86400-1);
+     var before=s.DiagnosticSnapshot().Communities!;
+     NewGameWorldTests.At(s,67*86400);
+     var traveling=s.DiagnosticSnapshot().Communities!;
+     var f=Assert.Single(traveling.Flights!);
+     Assert.Equal(10,f.People);
+     Assert.Contains("10人が村を離れました",s.VillageView()!.Administration);
+     Assert.Equal(before.Accounts.Sum(a=>a.Population)-10,traveling.Accounts.Sum(a=>a.Population));
+     Assert.Equal(before.Accounts.Single(a=>a.Site==f.From).Workforce-10,traveling.Accounts.Single(a=>a.Site==f.From).Workforce);
+     WorldSession RestoreFromDisk(WorldSession source){
+         source.SetPaused(true);var w=source.DiagnosticSnapshot();
+         var directory=Directory.CreateTempSubdirectory("hakutai-flight-");
+         try{
+             var store=new GenerationSaveStore(directory.FullName,w.Definitions);
+             Assert.True(store.Save(source,"journey",w.WorldId).Published);
+             var host=new WorldSessionHost(Start());Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("journey"),host.Current,host.Current.Revision));return host.Current;
+         }finally{directory.Delete(true);}
+     }
+     var fork=RestoreFromDisk(s);
+     foreach(var run in new[]{s,fork}){
+         NewGameWorldTests.At(run,f.Route[^1].EndAt);
+         var arrived=run.DiagnosticSnapshot().Communities!;
+         Assert.Equal(before.Accounts.Sum(a=>a.Population),arrived.Accounts.Sum(a=>a.Population));
+         Assert.Equal(before.Accounts.Single(a=>a.Site==f.To).Workforce+10,arrived.Accounts.Single(a=>a.Site==f.To).Workforce);
+     }
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(fork.DiagnosticSnapshot()));
+     Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Gentle),s.Revision));
+     NewGameWorldTests.At(s,s.Seconds+7*86400);
+     Assert.Null(Assert.Single(s.DiagnosticSnapshot().Communities!.Flights!).Return);
+     var visit=TravelWorld.Move(s.DiagnosticSnapshot(),"request:bring-remission",NewGameWorld.Node(f.To.Value));
+     Good(s.Submit(visit,s.Revision));NewGameWorldTests.At(s,s.Seconds+visit.DeliverySeconds+visit.WorkSeconds+2);
+     var returning=Assert.Single(s.DiagnosticSnapshot().Communities!.Flights!).Return!;
+     Assert.NotNull(returning);
+     Assert.Contains("帰路につきました",s.VillageView()!.Administration);
+     var saved=RestoreFromDisk(s);
+     foreach(var run in new[]{s,saved}){
+         NewGameWorldTests.At(run,returning.Route[^1].EndAt);
+         var home=run.DiagnosticSnapshot().Communities!.Accounts;
+         foreach(var site in new[]{f.From,f.To})Assert.Equal(before.Accounts.Single(a=>a.Site==site).Population,home.Single(a=>a.Site==site).Population);
+     }
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(saved.DiagnosticSnapshot()));
+
+ }
+ [Fact]
  public void UnansweredVillagePetitionStopsWorksUntilRiceIsActuallyDelivered()
  {
      var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));
