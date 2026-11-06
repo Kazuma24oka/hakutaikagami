@@ -1,0 +1,34 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "1560年の今川家、氏真、義元、駿府の本拠候補を出典に結び、採用した家督解釈と開始時点の仮定を明記する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Data/imagawa-personnel-v1.json",
+        "Docs/Design/ImagawaStartV1/scope.md"
+      ]
+    },
+    {
+      "contract": "新規開始の一覧と全国地図の駿府から両名を選べ、開始人物・所属・開始位置が一致する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs"
+      ]
+    },
+    {
+      "contract": "シナリオで定める当主にのみ当主権限を与え、他の武将の兵力・権限は実際の任命に従う",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/ImagawaStartTests.cs"
+      ]
+    },
+    {
+      "contract": "旧版の人物・家・初期配置を保存復旧で保持し、新版の開始と再開でも同じ人物と位置を示す",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/ImagawaStartV1/verification.json"
+      ]
+    }
+  ]
+}

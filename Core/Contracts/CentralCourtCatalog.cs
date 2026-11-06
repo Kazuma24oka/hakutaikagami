@@ -8,7 +8,8 @@ public static class CentralCourtCatalog
     public const string TempleEdition="historical-start-central-v6";
     public const string RegentEdition="historical-start-central-v7";
     public static readonly EntityId Konoe=new("person:konoe-sakihisa");
-    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition or RegentEdition;
+    public static bool HasRegent(string? edition)=>edition is RegentEdition or HistoricalStartCatalog.ImagawaEdition;
+    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition || HasRegent(edition);
     internal static SetupScenario RegentScenario(){
         var prior=TempleScenario();
         var next=prior with{People=[..prior.People,new SetupPerson(Konoe.Value,"近衛前久",Kyoto.Value,null,null,false,false,1536)]};

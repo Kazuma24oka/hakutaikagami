@@ -1,0 +1,13 @@
+{
+  "scope": "imagawa-start",
+  "ui": "Docs/Design/ImagawaStartV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 7
+  },
+  "proofs": {
+    "Docs/Design/ImagawaStartV1/runtime-local/start.trx": "eb391acb82ea48db968c256ad923cecd69861b7461d882cf5a84b489287364c5",
+    "Docs/Design/ImagawaStartV1/runtime-local/ui.log": "1524131c207f7ab0bb3aebebb1f4943d6153f02df95fbd6f61739d818516dc3e",
+    "Docs/Design/ImagawaStartV1/verification.json": "2376cb5372cf8a4f6b3f21534e62b070e1b4b68fd3fca9f9983a3af5f3c06e99",
+    "Docs/Design/ImagawaStartV1/completion.json": "0996d09fb3c5447164170cff71862987da61bfdb2efefa42d03d6ff0bd841919"
+  }
+}

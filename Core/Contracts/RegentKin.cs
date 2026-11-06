@@ -10,7 +10,7 @@ public static class RegentKin
     {
         bool asking=i.Action==CourtAction.RequestRegentKin;
         var applicant=asking?actor:i.Person;var patron=asking?i.Person:actor;
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.RegentEdition || patron!=CentralCourtCatalog.Konoe || applicant==patron ||
+        if(!CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog) || patron!=CentralCourtCatalog.Konoe || applicant==patron ||
             place!=CentralCourtCatalog.Kyoto || i.Site!=place || DefectionPacts.HouseAt(w,applicant,at,rev-1)!=i.Owner ||
             new[]{applicant,patron}.Any(p=>Assassination.DeadAt(w,p,at,rev) || !TransportWork.At(w,p,place,at,rev,true)) ||
             Qualified(w,applicant,at,rev-1))throw new InvalidDataException("京で近衛家当主と本人が猶子の縁を相談してください");

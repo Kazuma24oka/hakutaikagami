@@ -1,0 +1,59 @@
+{
+  "Schema": 1,
+  "WorldYear": 1560,
+  "Faction": "org:imagawa",
+  "FactionName": "今川家",
+  "HomeCandidate": "sunpu",
+  "HomeSource": "suruga-home",
+  "Sources": [
+    {
+      "Id": "suruga-home",
+      "Title": "静岡市歴史博物館・基本展示",
+      "Url": "https://scmh.jp/basic_exhibition.html",
+      "CheckedOn": "2026-11-06",
+      "Fact": "駿府は今川氏の本拠。開始日の各人の在所を示す記録ではない。"
+    },
+    {
+      "Id": "suruga-yoshimoto",
+      "Title": "静岡市歴史博物館・今川義元展",
+      "Url": "https://scmh.jp/special_exhibition/20240427.html",
+      "CheckedOn": "2026-11-06",
+      "Fact": "義元は1519年生。年譜は1557年の氏真への家督譲渡と1560年の義元の出陣を別記する。"
+    },
+    {
+      "Id": "suruga-ujizane",
+      "Title": "国史大辞典・今川氏真",
+      "Url": "https://japanknowledge.com/introduction/keyword.html?i=587",
+      "CheckedOn": "2026-11-06",
+      "Fact": "義元の子。1558年には駿河で文書を発給。家督相続の時点を討死後とする解釈がある。"
+    },
+    {
+      "Id": "suruga-birth",
+      "Title": "コトバンク・今川氏真（日本人名大辞典ほか）",
+      "Url": "https://kotobank.jp/word/今川氏真-32207",
+      "CheckedOn": "2026-11-06",
+      "Fact": "氏真の生年は1538年。"
+    }
+  ],
+  "People": [
+    {
+      "Id": "person:imagawa-yoshimoto",
+      "Name": "今川義元",
+      "BirthYear": 1519,
+      "Father": null,
+      "SourceIds": [
+        "suruga-yoshimoto"
+      ]
+    },
+    {
+      "Id": "person:imagawa-ujizane",
+      "Name": "今川氏真",
+      "BirthYear": 1538,
+      "Father": "person:imagawa-yoshimoto",
+      "SourceIds": [
+        "suruga-ujizane",
+        "suruga-birth"
+      ]
+    }
+  ]
+}

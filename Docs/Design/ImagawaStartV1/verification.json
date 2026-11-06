@@ -1,0 +1,14 @@
+{
+  "passed": 7,
+  "tests": [
+    "HakutaiKagami.Tests.ImagawaStartTests.DocumentedFamilySharesAnExistingHomeCandidate",
+    "HakutaiKagami.Tests.ImagawaStartTests.InitialHeirAndAuthoritySurviveRestore(player: \"person:imagawa-yoshimoto\")",
+    "HakutaiKagami.Tests.ImagawaStartTests.RegentEditionRetainsItsOriginalScenario",
+    "HakutaiKagami.Tests.ImagawaStartTests.PlacementKeepsBothPeopleSelectableAndOnlyAssignsSunpu(head: \"person:imagawa-ujizane\")",
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.ImagawaStartTests.PlacementKeepsBothPeopleSelectableAndOnlyAssignsSunpu(head: \"person:imagawa-yoshimoto\")",
+    "HakutaiKagami.Tests.ImagawaStartTests.InitialHeirAndAuthoritySurviveRestore(player: \"person:imagawa-ujizane\")"
+  ],
+  "ui": "IMAGAWA_START_PASS",
+  "result": "1560年の駿府に今川義元・氏真を配置。義元に当主の決裁権、氏真に後継指名があり、双方の主人公で途中復旧後の世界・3D配置が一致。"
+}

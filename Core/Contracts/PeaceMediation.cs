@@ -16,7 +16,7 @@ public static class PeaceMediation
         var incumbent=SupremeOffice.ShogunAt(w,at,revision);
         if(incumbent is {} shogun && shogun!=CentralCourtCatalog.CourtBroker && shogun!=CentralCourtCatalog.ShogunBroker &&
             shogun!=CentralCourtCatalog.TempleBroker)yield return shogun;
-        if(w.NewGame?.HistoricalCatalog is CentralCourtCatalog.TempleEdition or CentralCourtCatalog.RegentEdition)yield return CentralCourtCatalog.TempleBroker;
+        if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.TempleEdition || CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog))yield return CentralCourtCatalog.TempleBroker;
     }
     static bool Supports(ContractWorld w,EntityId broker,EntityId applicant,long at,long rev)=>SocialWorld.ConsentBonus(w,broker,applicant,at,rev)>=2;
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
