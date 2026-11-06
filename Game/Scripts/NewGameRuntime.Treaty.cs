@@ -5,6 +5,8 @@ using HakutaiKagami.Core.Contracts;
 public partial class NewGameRuntime
 {
     static string TreatyClauses(TreatyClause clauses)=>string.Join("・",new[]{(TreatyClause.NonAggression,"不侵略"),(TreatyClause.Passage,"通行"),(TreatyClause.Supply,"補給協議"),(TreatyClause.Defense,"防衛援軍協議")}.Where(p=>(clauses&p.Item1)!=0).Select(p=>p.Item2));
+    static string CharterText(CouncilCharter? charter)=>charter==null?"":charter.Rule switch{
+        CouncilRule.Majority=>" ／ 契状の議決は過半数",CouncilRule.TwoThirds=>" ／ 契状の議決は三分の二以上",_=>" ／ 契状の議決は全会一致"};
     static string SubmissionText(ContractWorld world,TreatyTerms terms)
     {
         if(terms.Submission is not {} d)return "";
@@ -24,6 +26,26 @@ public partial class NewGameRuntime
         var options=new[]{(TreatyClause.NonAggression,"互いに新たな戦を仕掛けない"),(TreatyClause.Passage,"通行の約束"),(TreatyClause.Supply,"補給を協議する条項"),(TreatyClause.Defense,"防衛援軍を協議する条項")}.Select(t=>(t.Item1,Box:new CheckBox{Text=t.Item2,ButtonPressed=t.Item1==TreatyClause.NonAggression})).ToArray();foreach(var item in options)box.AddChild(item.Box);
         var days=new SpinBox{MinValue=1,MaxValue=90,Value=30,Step=1,Suffix="日間"};box.AddChild(days);var notice=new SpinBox{MinValue=1,MaxValue=7,Value=1,Step=1,Suffix="日前に解除予告"};box.AddChild(notice);
         Button("この版の条件を発送",()=>{if(targets.Length==0)return;var clauses=options.Where(x=>x.Box.ButtonPressed).Aggregate(TreatyClause.None,(a,x)=>a|x.Item1);Submit(Session.NegotiateTreaty(new(new("request:treaty-ui/"+shown),TreatyAction.Propose,own,targets[target.Selected].Id,Days:(int)days.Value,Clauses:clauses,NoticeDays:(int)notice.Value){AttachHouseScale=true},Session.PlayerControl,shown));popup.Hide();Refresh();});
+        var leagueToggle=new CheckButton{Text="国人衆の契状を送る"};box.AddChild(leagueToggle);
+        var league=new VBoxContainer{Visible=false};box.AddChild(league);leagueToggle.Toggled+=open=>league.Visible=open;
+        var charterSelect=new OptionButton();league.AddChild(charterSelect);charterSelect.AddItem("新しい契状を起草");
+        var existing=(w.Treaties?.Papers??[]).Where(p=>p.Author==Session.PlayerControl && p.Input.Owner==own &&
+            p.Input.Charter?.Origin==p.Input.Id && Session.Seconds<p.Terms.Until).ToArray();
+        foreach(var first in existing)charterSelect.AddItem($"既存の契状（{first.At}秒起草）");
+        var rules=new OptionButton();rules.AddItem("過半数");rules.AddItem("三分の二以上");rules.AddItem("全会一致");league.AddChild(rules);
+        charterSelect.ItemSelected+=index=>{
+            rules.Disabled=index>0;
+            if(index>0)rules.Select((int)existing[(int)index-1].Input.Charter!.Rule);
+        };
+        var invite=new Button{Text="選んだ家に署名を求める",Disabled=targets.Length==0};league.AddChild(invite);
+        invite.Pressed+=()=>{
+            var id=new EntityId("request:charter-ui/"+shown);
+            var first=charterSelect.Selected>0?existing[charterSelect.Selected-1]:null;
+            var charter=first?.Input.Charter??new CouncilCharter(id,(CouncilRule)rules.Selected);
+            int duration=first==null?Math.Min(30,(int)days.Value):(int)((first.Terms.Until-Session.Seconds)/TreatyNegotiations.Day);
+            Submit(Session.NegotiateTreaty(new(id,TreatyAction.Propose,own,targets[target.Selected].Id,Days:duration,NoticeDays:(int)notice.Value){Charter=charter},Session.PlayerControl,shown));
+            popup.Hide();Refresh();
+        };
         var expand=new CheckButton{Text="従属を勧告する"};box.AddChild(expand);
         var demand=new VBoxContainer{Visible=false};box.AddChild(demand);
         expand.Toggled+=open=>demand.Visible=open;
@@ -57,7 +79,9 @@ public partial class NewGameRuntime
             Submit(Session.NegotiateTreaty(new(new("request:submission-ui/"+shown),TreatyAction.Propose,own,targets[target.Selected].Id,Days:(int)days.Value,Clauses:clauses,NoticeDays:(int)notice.Value){Submission=conditions,AttachHouseScale=true},Session.PlayerControl,shown));
             popup.Hide();Refresh();
         };
-        foreach(var f in TreatyNegotiations.Known(w,Session.PlayerControl)){var other=f.Terms.A==own?f.Terms.B:f.Terms.A;Text("確認した条約 第"+f.Terms.Version+"版 ／ "+TreatyClauses(f.Terms.Clauses)+SubmissionText(w,f.Terms)+" ／ 期限 "+f.Terms.Until+"秒");
+        foreach(var f in TreatyNegotiations.Known(w,Session.PlayerControl)){var other=f.Terms.A==own?f.Terms.B:f.Terms.A;Text("確認した条約 第"+f.Terms.Version+"版 ／ "+TreatyClauses(f.Terms.Clauses)+SubmissionText(w,f.Terms)+CharterText(f.Terms.Charter)+" ／ 期限 "+f.Terms.Until+"秒");
+            if(f.Terms.Charter!=null && own==f.Terms.B && KokujinCouncil.Departure(w,f,Session.PlayerControl,Session.Seconds,shown) is {} leave)
+                Button("個別の従属を明記して契状からの離脱を通知",()=>Run(leave),!TreatyNegotiations.CanOperate(w,leave,Session.PlayerControl));
             var end=new TreatyOperationInput(new("request:treaty-end-ui/"+shown+"/"+f.Acceptance.Value),TreatyOperation.Terminate,f.Acceptance,own,other,EffectiveAt:Session.Seconds+f.Terms.NoticeSeconds);Button("通知期間を守って解除を予告",()=>Run(end),!TreatyNegotiations.CanOperate(w,end,Session.PlayerControl));
             foreach(var kind in new[]{TreatyOperation.RequestDefense,TreatyOperation.RequestSupply}){var i=new TreatyOperationInput(new("request:treaty-request-ui/"+shown+"/"+kind+"/"+f.Acceptance.Value),kind,f.Acceptance,own,other,ReplyBy:Math.Min(f.Terms.Until,Session.Seconds+3*86400),Amount:kind==TreatyOperation.RequestDefense?100:20,Evidence:kind==TreatyOperation.RequestDefense?"防衛の援軍について協議したい":"補給米20kgについて協議したい");Button(kind==TreatyOperation.RequestDefense?"防衛援軍100人の相談を発送（受領確認まで）":"補給米20kgの相談を発送（受領確認まで）",()=>Run(i),!TreatyNegotiations.CanOperate(w,i,Session.PlayerControl));}}
         foreach(var request in w.Treaties?.Operations.Where(p=>p.Kind==TreatyOperation.RequestSupply&&p.Author==Session.PlayerControl)??Enumerable.Empty<TreatyOperationPaper>()){var arrange=new TreatySupplyInput(new("request:supply-arrange-ui/"+shown+"/"+request.Input.Id.Value),TreatySupplyAction.Arrange,request.Input.Id);if(TreatySupply.Can(w,arrange,Session.PlayerControl))Button("開封した受領返書に続けて、実物の受取を手配",()=>{Submit(Session.ManageTreatySupply(arrange,Session.PlayerControl,shown));popup.Hide();Refresh();});}if(TreatySupply.View(w).Length>0)Button("条約の預かり米・受取先を確認",()=>{popup.Hide();ShowTreatySupply();});
@@ -65,11 +89,37 @@ public partial class NewGameRuntime
         foreach(var card in TreatyNegotiations.OperationView(w).TakeLast(4)){Text(card.Status);if(card.CanResend){var p=w.Treaties!.Operations.Single(p=>p.Input.Id==card.Id);var i=new TreatyOperationInput(new("request:treaty-retry-ui/"+shown+"/"+card.Id.Value),TreatyOperation.Resend,p.Input.Acceptance,p.Input.Owner,p.Input.Target,p.Input.Id);Button("本人が不達を知った同じ原本を再送",()=>Run(i));}}
         Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(600,500));
     }
+    void CouncilChoices(ContractWorld w,TreatyPaper demand,EntityId own,long revision)
+    {
+        if(demand.Input.Action!=TreatyAction.Propose || demand.Terms.Submission is not {} terms)return;
+        var prior=w.Treaties!.Papers.Where(p=>p.Input.Ballot?.Demand==demand.Input.Id && p.Author==Session.PlayerControl).ToArray();
+        var charters=TreatyNegotiations.Known(w,Session.PlayerControl).Select(f=>f.Terms.Charter).OfType<CouncilCharter>().Distinct();
+        foreach(var charter in charters){
+            if(prior.Length>0 && prior[0].Input.Ballot!.Charter!=charter)continue;
+            foreach(var house in KokujinCouncil.KnownMembers(w,Session.PlayerControl,charter,Session.Seconds,revision)
+                .Where(h=>h!=own && h!=demand.Input.Owner && !prior.Any(p=>p.Input.Target==h))){
+                var name=w.Definitions.Organizations.Single(o=>o.Id==house).Name;
+                foreach(bool support in prior.Length==0?new[]{true,false}:new[]{prior[0].Input.Ballot!.ChairSupports}){
+                    var input=new TreatyInput(new("request:council-consult/"+revision),TreatyAction.Propose,own,house,Days:7,NoticeDays:1)
+                        {Ballot=new(charter,demand.Input.Id,demand.Input.Owner,terms,support)};
+                    Choice("council-"+charter.Origin.Value+house.Value+support,$"{name}に賛否を問う（自家は{(support?"賛成":"反対")}）",()=>{
+                        Submit(Session.NegotiateTreaty(input,Session.PlayerControl,revision));CloseBottomTalk();
+                    });
+                }
+            }
+        }
+    }
     void ShowTreatyLetter(EntityId id)
     {
         var known=Branch(Session.PlayerControl).Knowledge.Messages.Single(m=>m.Id==id);if(known.KnownBody==null)return;var w=Snapshot();long shown=Session.Revision;
-        if(w.Treaties!.Operations.SingleOrDefault(p=>p.Message==id.Value) is {} op){string line=op.Kind switch{TreatyOperation.Terminate=>"条約に定めた予告期間を置き、この原本の解除を通知する。発送だけで即時解除にはならない。",TreatyOperation.TerminationReceipt=>"解除通知を受領した。法的な受領資格と通知時点を記録して返す。",TreatyOperation.RequestDefense=>"防衛援軍について協議したい。受領返書と実際の出陣・到着は別に確認する。",TreatyOperation.RequestSupply=>"補給について協議したい。受領返書だけで米が届いたことにはしない。",TreatyOperation.Decline=>"この要請は辞退する。",_=>"要請を受領した。援軍・補給の実行が終わったという返答ではない。"};var origin=op.Kind is TreatyOperation.TerminationReceipt or TreatyOperation.Acknowledge or TreatyOperation.Decline?w.Treaties.Operations.Single(p=>p.Input.Id==op.Input.Original):op;var intent=origin.Intent;string timing=origin.Kind==TreatyOperation.Terminate?" ／ 解除予定 "+intent.EffectiveAt+"秒":" ／ 要請量 "+intent.Amount+(origin.Kind==TreatyOperation.RequestSupply?"kg":"人")+" ／ 返答期限 "+intent.ReplyBy+"秒";PresentWork("条約の通知・要請",line,TreatyClauses(op.Terms.Clauses)+timing+(op.ObservedAt is {} observed?" ／ 観測 "+observed+"秒":"")+" ／ 元の条約期限 "+op.Terms.Until+"秒",op.Author,op.Author,"本人開封した差出人","確認した書状");var kind=op.Kind==TreatyOperation.Terminate?TreatyOperation.TerminationReceipt:TreatyOperation.Acknowledge;foreach(var action in new[]{kind,TreatyOperation.Decline}){var i=new TreatyOperationInput(new("request:treaty-letter-response/"+shown+"/"+action),action,op.Input.Acceptance,op.Input.Target,op.Input.Owner,op.Input.Id);if(TreatyNegotiations.CanOperate(w,i,Session.PlayerControl))Choice("treaty-"+action,action==TreatyOperation.Decline?"要請を辞退する":"受領したことを返書する",()=>{Submit(Session.OperateTreaty(i,Session.PlayerControl,shown));CloseBottomTalk();});}}
-        else{var p=w.Treaties.Papers.Single(p=>p.Message==id.Value);var card=Session.TreatyView().SingleOrDefault(c=>c.Paper==p.Input.Id);string line=p.Input.Action switch{TreatyAction.Counter=>"同じ独立条項を保ち、30日以内の条件を対案として示す。",TreatyAction.Accept=>"この版の条件に承諾する。",TreatyAction.Confirm=>"承諾書が届き、この版の成立を確認した。",TreatyAction.Decline=>"この条件には承諾できない。",_=>"この独立条項と期間で条約を結びたい。"};PresentWork(p.Terms.Submission==null?"正式条約の書状":"従属勧告の書状",p.Terms.Submission!=null&&p.Input.Action==TreatyAction.Propose?"記した条件により、当家への従属を求める。":line,"第"+p.Terms.Version+"版 ／ "+TreatyClauses(p.Terms.Clauses)+SubmissionText(w,p.Terms)+" ／ 解除予告 "+p.Terms.NoticeSeconds/86400+"日前"+(p.Terms.DeclaredScale is {} rank?" ／ 差出時の家格 "+HouseScaleNotices.Name(rank):"")+" ／ 元期限 "+p.Terms.Until+"秒",p.Author,p.Author,"条約の差出人","開封した本文");if(OwnPoliticalHouse(w) is {} own){void Answer(TreatyAction action){Submit(Session.NegotiateTreaty(new(new("request:treaty-answer-ui/"+shown+"/"+action),action,own,p.Input.Owner,p.Input.Id),Session.PlayerControl,shown));CloseBottomTalk();}if(card?.CanAccept==true){Choice("treaty-accept","この版に承諾して返書する",()=>Answer(TreatyAction.Accept));Choice("treaty-decline","この版は辞退する",()=>Answer(TreatyAction.Decline));}if(p.Input.Action==TreatyAction.Accept&&!w.Treaties.Papers.Any(q=>q.Input.Source==p.Input.Id&&q.Author==Session.PlayerControl))Choice("treaty-confirm","承諾の到達と成立を確認して返書する",()=>Answer(TreatyAction.Confirm));}}
+        if(w.Treaties!.Operations.SingleOrDefault(p=>p.Message==id.Value) is {} op){string line=op.Kind switch{TreatyOperation.Terminate=>"条約に定めた予告期間を置き、この原本の解除を通知する。発送だけで即時解除にはならない。",TreatyOperation.TerminationReceipt=>"解除通知を受領した。法的な受領資格と通知時点を記録して返す。",TreatyOperation.RequestDefense=>"防衛援軍について協議したい。受領返書と実際の出陣・到着は別に確認する。",TreatyOperation.RequestSupply=>"補給について協議したい。受領返書だけで米が届いたことにはしない。",TreatyOperation.Decline=>"この要請は辞退する。",_=>"要請を受領した。援軍・補給の実行が終わったという返答ではない。"};var origin=op.Kind is TreatyOperation.TerminationReceipt or TreatyOperation.Acknowledge or TreatyOperation.Decline?w.Treaties.Operations.Single(p=>p.Input.Id==op.Input.Original):op;var intent=origin.Intent;string timing=origin.Kind==TreatyOperation.Terminate?" ／ 解除予定 "+intent.EffectiveAt+"秒":" ／ 要請量 "+intent.Amount+(origin.Kind==TreatyOperation.RequestSupply?"kg":"人")+" ／ 返答期限 "+intent.ReplyBy+"秒";PresentWork("条約の通知・要請",op.Kind==TreatyOperation.Terminate&&op.Terms.Charter!=null&&op.Intent.Evidence!=null?"別の家への従属が成立したため、契状からの離脱を予告する。":line,TreatyClauses(op.Terms.Clauses)+timing+(op.ObservedAt is {} observed?" ／ 観測 "+observed+"秒":"")+" ／ 元の条約期限 "+op.Terms.Until+"秒",op.Author,op.Author,"本人開封した差出人","確認した書状");foreach(var copy in TreatyNegotiations.DepartureCopies(w,op,Session.PlayerControl,Session.Seconds,shown)){
+            var name=w.Definitions.Organizations.Single(o=>o.Id==copy.Target).Name;
+            Choice("forward-"+copy.Target.Value,name+"に離脱を知らせる",()=>{Submit(Session.NegotiateTreaty(copy,Session.PlayerControl,shown));CloseBottomTalk();});
+        }
+        var kind=op.Kind==TreatyOperation.Terminate?TreatyOperation.TerminationReceipt:TreatyOperation.Acknowledge;foreach(var action in new[]{kind,TreatyOperation.Decline}){var i=new TreatyOperationInput(new("request:treaty-letter-response/"+shown+"/"+action),action,op.Input.Acceptance,op.Input.Target,op.Input.Owner,op.Input.Id);if(TreatyNegotiations.CanOperate(w,i,Session.PlayerControl))Choice("treaty-"+action,action==TreatyOperation.Decline?"要請を辞退する":"受領したことを返書する",()=>{Submit(Session.OperateTreaty(i,Session.PlayerControl,shown));CloseBottomTalk();});}}
+        else{var p=w.Treaties.Papers.Single(p=>p.Message==id.Value);var card=Session.TreatyView().SingleOrDefault(c=>c.Paper==p.Input.Id);string line=p.Input.Action switch{TreatyAction.Counter=>"同じ独立条項を保ち、30日以内の条件を対案として示す。",TreatyAction.Accept=>"この版の条件に承諾する。",TreatyAction.Confirm=>"承諾書が届き、この版の成立を確認した。",TreatyAction.Decline=>"この条件には承諾できない。",_=>"この独立条項と期間で条約を結びたい。"};PresentWork(p.Terms.DepartureCopy!=null?"加盟家からの離脱通知":p.Terms.Ballot!=null?"国人衆の投票書状":p.Terms.Charter!=null?"国人衆の契状":p.Terms.Submission==null?"正式条約の書状":"従属勧告の書状",p.Terms.DepartureCopy is {} copy?$"{w.Definitions.Organizations.Single(o=>o.Id==copy.DepartingHouse).Name}が別の家に従属し、契状からの離脱を届け出た。":p.Terms.Ballot is {} ballot&&p.Input.Action==TreatyAction.Propose?$"勧告を受けた。軍役{ballot.Conditions.MusterMen}人・献上米{ballot.Conditions.TributeRice}kgの条件について、貴家の賛否を伺いたい。":p.Terms.Charter!=null&&p.Input.Action==TreatyAction.Propose?"この議決規則で寄り合いたい。契状への署名を願う。":p.Terms.Submission!=null&&p.Input.Action==TreatyAction.Propose?"記した条件により、当家への従属を求める。":line,"第"+p.Terms.Version+"版 ／ "+TreatyClauses(p.Terms.Clauses)+SubmissionText(w,p.Terms)+CharterText(p.Terms.Charter)+" ／ 解除予告 "+p.Terms.NoticeSeconds/86400+"日前"+(p.Terms.DeclaredScale is {} rank?" ／ 差出時の家格 "+HouseScaleNotices.Name(rank):"")+" ／ 元期限 "+p.Terms.Until+"秒",p.Author,p.Author,"条約の差出人","開封した本文");if(OwnPoliticalHouse(w) is {} own){void Answer(TreatyAction action){Submit(Session.NegotiateTreaty(new(new("request:treaty-answer-ui/"+shown+"/"+action),action,own,p.Input.Owner,p.Input.Id),Session.PlayerControl,shown));CloseBottomTalk();}if(card?.CanAccept==true){CouncilChoices(w,p,own,shown);
+            var count=KokujinCouncil.Tally(w,Session.PlayerControl,p.Input.Id,Session.Seconds,shown);
+            if(count==null||count.Verdict==TreatyAction.Accept)Choice("treaty-accept","この版に承諾して返書する",()=>Answer(TreatyAction.Accept));if(count==null||count.Verdict==TreatyAction.Decline)Choice("treaty-decline","この版は辞退する",()=>Answer(TreatyAction.Decline));}if(p.Terms.Ballot==null&&p.Input.Action==TreatyAction.Accept&&!w.Treaties.Papers.Any(q=>q.Input.Source==p.Input.Id&&q.Author==Session.PlayerControl))Choice("treaty-confirm","承諾の到達と成立を確認して返書する",()=>Answer(TreatyAction.Confirm));}}
         Choice("treaty-map","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
     }
 }

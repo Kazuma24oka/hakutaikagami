@@ -2,7 +2,9 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 今の工程：7c 国人衆の合議
+## 今の工程：8 一族の分隊と自前の兵
+
+[工程7cの実測](../Design/KokujinCouncilV1/entry-verification.md)。
 
 [工程7bの実測](../Design/SubmissionDemandV1/entry-verification.md)。
 
@@ -11,7 +13,7 @@
 募兵・陣触れ・開戦の代表経路を確認した。[工程7の実測](../Design/RecruitmentMusterV1/entry-verification.md)。
 
 ## 次の工程（統合案第14節）
-1. 7c：国人衆の合議
+1. 8：一族の分隊と自前の兵
 2. 第14節の後続段へ進む。
 
 ユーザーへの試し遊びの依頼は、遊べる版（第1版＝0系、第2版＝1〜3系、第3版＝4〜5系、第4版＝6〜7系、第5版＝8〜9系）がまとまったときだけ（PROCESS_V2 P12）。

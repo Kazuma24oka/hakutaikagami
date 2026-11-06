@@ -1,0 +1,33 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "独立した複数の家が一揆契状を承認し、加盟家と議決条件を確定する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/TreatyNegotiationsTests.cs"
+      ]
+    },
+    {
+      "contract": "外からの勧告を各家へ実際に知らせ、当主自身の賛否だけを集計し、契状の規定に従って返答する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/TreatyDefenseTests.cs"
+      ]
+    },
+    {
+      "contract": "個別の従属と離脱はその家だけに効き、通知を受けた同盟家の評価と次の合議に反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/KokujinCouncil.cs"
+      ]
+    },
+    {
+      "contract": "途中保存から復旧し、重複投票・未着票の漏えい・通常画面・代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/KokujinCouncilCheck.cs"
+      ]
+    }
+  ]
+}
