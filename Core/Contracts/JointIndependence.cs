@@ -60,6 +60,13 @@ public static class JointIndependence
         }
     }
 
+    internal static bool CommandedCastle(ContractWorld w,EntityId person,EntityId site,long at,long rev)
+    {
+        var latest=w.Castellan?.Entries.LastOrDefault(e=>e.Input.Site==site && e.Revision<rev &&
+            e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);
+        return latest!=null ? CastleAdministration.Grant(w,site,at,rev)?.Agent==person :
+            w.Offices.Any(o=>o.Subject==person && o.Target==site && o.Kind=="castellan" && o.From<=at && at<o.Until);
+    }
     internal static TimedRelation[] CastleControl(ContractWorld w,TimedRelation[] original)
     {
         if(w.Declarations==null)return original;
@@ -67,6 +74,8 @@ public static class JointIndependence
         foreach(var d in w.Declarations)
         {
             Transfer(d,d.Founder,d.Site,d.At,d.Revision);
+            var receipt=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Action==CourtAction.ReceiveIndependentKeep && e.Input.Reference==d.Pact);
+            if(receipt!=null)Transfer(d,d.Founder,d.Site,receipt.At,receipt.Revision,true);
             foreach(var response in w.PactResponses??[])
             {
                 if(!response.Acted)continue;
@@ -78,16 +87,12 @@ public static class JointIndependence
         }
         return rows.ToArray();
 
-        void Transfer(IndependenceDeclaration d,EntityId person,EntityId site,long at,long rev)
+        void Transfer(IndependenceDeclaration d,EntityId person,EntityId site,long at,long rev,bool delivered=false)
         {
             var index=rows.FindIndex(row=>row.Subject==d.FormerHouse && row.Target==site && row.Kind=="control" &&
                 row.From<=at && at<row.Until);
             if(index<0 || CastleAdministration.Blocked(w,site,at,rev))return;
-            var latest=w.Castellan?.Entries.LastOrDefault(e=>e.Input.Site==site && e.Revision<rev &&
-                e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);
-            bool commands=latest!=null ? CastleAdministration.Grant(w,site,at,rev)?.Agent==person :
-                w.Offices.Any(o=>o.Subject==person && o.Target==site && o.Kind=="castellan" && o.From<=at && at<o.Until);
-            if(!commands)return;
+            if(!CommandedCastle(w,person,site,at,rev) && !delivered)return;
             if(d.CheckGarrison==true && CastleHandover.Forces(w,d.FormerHouse,site,at,rev)>0)return;
             var former=rows[index];
             rows[index]=former with{Until=at,Revision=rev};

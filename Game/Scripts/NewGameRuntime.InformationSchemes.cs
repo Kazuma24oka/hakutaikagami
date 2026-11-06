@@ -14,6 +14,17 @@ public partial class NewGameRuntime
   void Run(SchemeInput i){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageScheme(i,rev);message.Text=r.VisibleReason;GD.Print("SCHEME_RESULT "+i.Action+" "+r.Code+" "+r.VisibleReason);Refresh();ShowInformationSchemes();}
   EntityId Nonce(string key)=>new("request:scheme-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   SocialText(box,"噂・書状の記載・本人の照合結果は別です。未確認情報で処分・離反・開戦を自動的に決めません。");
+  foreach(var option in IndependenceGate.Available(w,actor)){
+      string label=option.Action switch{
+          CourtAction.RequestIndependentGate=>"旧主に城門の引渡しを申し入れる",
+          CourtAction.AllowIndependentGate=>"城門の引渡しに同意する",
+          CourtAction.RefuseIndependentGate=>"城門の引渡しを断る",
+          CourtAction.ReceiveIndependentGate=>"立会いのもとで城門を受け取る",
+          CourtAction.ReceiveIndependentKeep=>"守備の退去を確認し、本丸を受け取る",
+          _=>throw new InvalidOperationException()
+      };
+      Button(option.Id.Value,label,()=>{var result=Session.ManageCourt(option,rev);message.Text=result.VisibleReason;Refresh();ShowInformationSchemes();});
+  }
   if(JointIndependence.ObserveOwnCastle(w,actor) is {} guard)
   {
       var house=w.Definitions.Organizations.SingleOrDefault(h=>h.Id==guard.FormerHouse)?.Name??"旧主家";

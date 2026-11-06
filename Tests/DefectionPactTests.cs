@@ -244,6 +244,32 @@ public class DefectionPactTests
                 Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(recovered));
                 Assert.Equal(observation,JointIndependence.ObserveOwnCastle(recovered,Actor));
                 Assert.Null(JointIndependence.ObserveOwnCastle(recovered,new("person:shingen")));
+                var play=host.Current;
+                var request=Assert.Single(IndependenceGate.Available(recovered,Actor));
+                Assert.Equal(CourtAction.RequestIndependentGate,request.Action);
+                var reply=play.ManageCourt(request,play.Revision);
+                Assert.True(reply.Code==ResultCode.Accepted,reply.VisibleReason);
+                Assert.Empty(IndependenceGate.Available(play.DiagnosticSnapshot(),new("person:shingen")));
+                NewGameWorldTests.At(play,play.Seconds+2);
+                var record=play.DiagnosticSnapshot();
+                var answer=Assert.Single(record.Court!.Events,e=>e.Input.Reference==declaration.Pact &&
+                    e.Input.Action is CourtAction.AllowIndependentGate or CourtAction.RefuseIndependentGate);
+                Assert.Equal(new EntityId("person:nobunaga"),answer.Actor);
+                if(answer.Input.Action==CourtAction.AllowIndependentGate)
+                {
+                    var gate=Assert.Single(IndependenceGate.Available(record,Actor));
+                    Assert.Equal(CourtAction.ReceiveIndependentGate,gate.Action);
+                    Assert.Equal(ResultCode.Accepted,play.ManageCourt(gate,play.Revision).Code);
+                }
+                var contested=play.DiagnosticSnapshot();
+                Assert.Empty(IndependenceGate.Available(contested,Actor));
+                Assert.Equal(ContractJson.Write(after.LandRights),ContractJson.Write(contested.LandRights));
+                Assert.Equal(observation,JointIndependence.ObserveOwnCastle(contested,Actor));
+                play.SetPaused(true);
+                Assert.True(store.Save(play,"after-gate",after.WorldId).Published);
+                var resumed=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,resumed.CommitLoad(store.Prepare("after-gate"),resumed.Current,resumed.Current.Revision));
+                Assert.Equal(ContractJson.Write(play.DiagnosticSnapshot()),ContractJson.Write(resumed.Current.DiagnosticSnapshot()));
             }
             finally{storeDirectory.Delete(true);}
             return;
