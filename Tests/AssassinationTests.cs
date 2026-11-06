@@ -76,4 +76,55 @@ public sealed class AssassinationTests
         var moved=free.Submit(TravelWorld.Move(w,"request:travel","akutagawa"),free.Revision);
         Assert.True(moved.Code==ResultCode.Accepted,moved.VisibleReason);
     }
+    [Theory][InlineData(0,false)][InlineData(28,true)] public void ScoutLocationIsKnownOnlyAfterOpeningReportAndKeepsObservationTime(int seed,bool captured)
+    {
+        EntityId agent=new("created:agent"),target=new("created:target"),dest=new("site:akutagawa");
+        var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(site:"site:kyoto"),NewGameWorldTests.Officer(agent.Value,site:"site:kyoto"),NewGameWorldTests.Officer(target.Value,site:dest.Value)]);
+        var s=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,"created:test",(ulong)seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleSiege.Policy));
+        void Good(CommandResult result)=>Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        Good(s.ManageCompanion(new(new("request:hire"),agent,CompanionAction.Agree,20),s.PlayerControl,s.Revision));
+        var input=new SchemeInput(new("request:recon"),SchemeAction.SendScout,agent,s.PlayerControl,Destination:dest);
+        Good(s.ManageScheme(input,s.Revision));
+        var outward=s.DiagnosticSnapshot().Schemes!.Events.Single(e=>e.Input.Id==input.Id).Movement!;
+        NewGameWorldTests.At(s,outward.EffectiveAt+outward.DeliverySeconds+outward.WorkSeconds);
+        var w=s.DiagnosticSnapshot();
+        var personal=Assert.Single(Assassination.Sightings(w,agent),e=>e.Person==target);
+        Assert.Empty(Assassination.Sightings(w,s.PlayerControl));
+        var back=w.Schemes!.Events.Single(e=>e.Input.Action==SchemeAction.PlanReturn).Movement!;
+        NewGameWorldTests.At(s,back.EffectiveAt+back.DeliverySeconds+back.WorkSeconds+2);
+        Assert.Empty(Assassination.Sightings(s.DiagnosticSnapshot(),s.PlayerControl));
+        Good(s.Open(s.PlayerControl,new(InformationSchemes.ReportId(input.Id)),s.Revision));
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(s.DiagnosticSnapshot())));
+        Assert.Equal(personal,Assert.Single(Assassination.Sightings(restored.DiagnosticSnapshot(),s.PlayerControl),e=>e.Person==target));
+        var assignment=new SchemeInput(new("request:assassin"),SchemeAction.SendScout,agent,target,SchemeTopic.Assassination,personal.Original,dest);
+        Good(restored.ManageScheme(assignment,restored.Revision));
+        var departure=restored.DiagnosticSnapshot().Schemes!.Events.Single(e=>e.Input.Id==assignment.Id).Movement!;
+        NewGameWorldTests.At(restored,departure.EffectiveAt+departure.DeliverySeconds+departure.WorkSeconds);
+        var arrived=restored.DiagnosticSnapshot();
+        var result=Assert.Single(arrived.Schemes!.Events,e=>Assassination.IsConclusion(e.Input.Action));
+        Assert.Equal(captured,result.Input.Action==SchemeAction.CaughtInEncounter);
+        var store=new GenerationSaveStore(Path.Combine(Path.GetTempPath(),"assassin-"+Guid.NewGuid().ToString("N")),arrived.Definitions);
+        restored.SetPaused(true);Assert.True(store.Save(restored,"mission",arrived.WorldId).Published);
+        var host=new WorldSessionHost(new WorldSession(arrived));
+        Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("mission"),host.Current,host.Current.Revision));
+        foreach(var branch in new[]{restored,host.Current})
+        {
+            var message=new EntityId(InformationSchemes.ReportId(assignment.Id));
+            if(captured)
+            {
+                NewGameWorldTests.At(branch,branch.Seconds+30);
+                Assert.DoesNotContain(branch.DiagnosticSnapshot().Messaging.Messages,m=>m.Id==message.Value);
+                Assert.NotNull(Assassination.CaptivityAt(branch.DiagnosticSnapshot(),agent,branch.Seconds,branch.Revision+1));
+            }
+            else
+            {
+                var returnTrip=arrived.Schemes.Events.Single(e=>e.Input.Action==SchemeAction.PlanReturn&&e.Input.Reference==assignment.Id).Movement!;
+                NewGameWorldTests.At(branch,returnTrip.EffectiveAt+returnTrip.DeliverySeconds+returnTrip.WorkSeconds+2);
+                Assert.DoesNotContain(branch.DiagnosticSnapshot().Evidence,e=>e.Observer==branch.PlayerControl&&e.Message==message);
+                Good(branch.Open(branch.PlayerControl,message,branch.Revision));
+                Assert.Contains(branch.DiagnosticSnapshot().Evidence,e=>e.Observer==branch.PlayerControl&&e.Message==message);
+            }
+        }
+        Assert.Equal(ContractJson.Write(restored.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+    }
 }

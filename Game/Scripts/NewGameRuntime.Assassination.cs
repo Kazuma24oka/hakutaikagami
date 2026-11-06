@@ -51,7 +51,25 @@ public partial class NewGameRuntime
         foreach(var prisoner in history.Where(e=>e.Input.Action==SchemeAction.CaughtInEncounter && e.Input.Subject==actor &&
             e.Site==site && Assassination.CaptivityAt(world,e.Actor,world.ElapsedSeconds,revision+1)?.Input.Id==e.Input.Id))
             Offer("release-"+prisoner.Actor.Value.Replace(':','-'),MeritRewards.DisplayName(world,actor,prisoner.Actor)+"を解放する",SchemeAction.ReleaseCaptive,prisoner.Actor,prisoner.Input.Id);
+        var delegates=SocialWorld.CarrierChoices(world,actor).Where(p=>p!=actor).ToArray();
         foreach(var last in Assassination.Sightings(world,actor).GroupBy(q=>q.Person).Select(g=>g.Last()))
-            SocialText(panel,MeritRewards.DisplayName(world,actor,last.Person)+"の最終目撃　"+NewGameWorld.SiteName(last.Site.Value)+"・開始から"+last.ObservedAt/86400+"日目");
+        {
+            string name=MeritRewards.DisplayName(world,actor,last.Person);
+            SocialText(panel,name+"の最終目撃　"+NewGameWorld.SiteName(last.Site.Value)+"・開始から"+last.ObservedAt/86400+"日目");
+            if(last.Site==site||delegates.Length==0)continue;
+            var who=new OptionButton();
+            foreach(var agent in delegates)who.AddItem(MeritRewards.DisplayName(world,actor,agent));
+            panel.AddChild(who);
+            var button=new Button{Text="この目撃情報で"+name+"への暗殺を依頼する"};
+            panel.AddChild(button);
+            button.Pressed+=()=>
+            {
+                CancelAdvancePrefetch();
+                var request=new SchemeInput(new("request:commission-ui/"+revision),SchemeAction.SendScout,delegates[who.Selected],last.Person,
+                    SchemeTopic.Assassination,last.Original,last.Site);
+                var answer=Session.ManageScheme(request,revision);Refresh();
+                RenderPersonalContact(answer.Code==ResultCode.Accepted?"配下が依頼を引き受け、現地へ向かいます。":answer.VisibleReason);
+            };
+        }
     }
 }
