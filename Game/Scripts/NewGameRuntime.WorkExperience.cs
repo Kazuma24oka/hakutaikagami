@@ -144,7 +144,8 @@ public partial class NewGameRuntime
             if(t.Issuer==Session.PlayerControl){workTitle.Text="点検記録";workDetails.Text=shownRoads.Length>0?"確認：開始から"+shownRoads[0].ObservedAt+"秒　／　自分の行動判断用の記録":"この拠点の陸路は、まだ点検対象が設定されていません。";}Choice("work-finish","地図へ戻る",CloseBottomTalk);return;
         }
         if(awaiting){
-            PresentWork("点検を引き受けますか","この拠点から出る陸路を点検してくれないか。",WorkTerms(task.Scope,t.DeadlineAt,false,task.Kind,NewGameWork.Reward(Snapshot(),task)),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
+            var owari=HistoricalEventRules.IsOwariOrder(Snapshot(),task.RequestId);
+            PresentWork("点検を引き受けますか",owari?"清洲を出る道の様子を知りたい。自分の目で確かめて、知らせてくれぬか。":"この拠点から出る陸路を点検してくれないか。",WorkTerms(task.Scope,t.DeadlineAt,false,task.Kind,NewGameWork.Reward(Snapshot(),task)),t.Issuer,t.Issuer,"引受  /  返答すると仕事が始まります","あなたの返答");
             workCardHeading.Text="依頼の要点";Choice("work-assent","引き受けよう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(true);ShowKnownWork();});Choice("work-refuse","今回は断ろう",()=>{if(Awaiting()?.Id!=t.Id)throw new InvalidOperationException("用件が変わりました。確認し直してください。");Assent(false);ShowKnownWork();});return;
         }
         bool declined=task.Agreement==AgreementPhase.Declined;

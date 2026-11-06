@@ -12,6 +12,10 @@ public static class NpcLocalOffers
         var candidates=new List<NpcChoiceCandidate>{new(issuer.Value,true,true,-10,new(0,0,0,0,0,0),false,false,false)};
         if(site!=null)
         foreach(var person in w.Characters.Where(c=>c.Id!=issuer&&c.Life==LifeState.Adult).OrderBy(c=>c.Id.Value,StringComparer.Ordinal)){
+            // 新版では作業終了と同じ秒の相手を翌秒まで候補に戻さない。
+            if(w.NewGame?.Judgment?.EventEdition==HistoricalEventRules.OwariEdition &&
+                w.Tasks.Any(t=>t.Executor==person.Id && t.FinishedAt==at && w.Requests.Any(r=>r.Id==t.RequestId &&
+                    r.CommitSequence<=revision && !NewGameNpcRoutine.DiscretionaryPractice(w,r.Intent))))continue;
             if(PersonalCompanions.PhysicalSiteAt(w,person.Id,at,revision+1)!=site)continue;
             bool busy=w.Tasks.Any(t=>t.Executor==person.Id&&(t.FinishedAt==null||t.FinishedAt>=at)&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CreatedAt<=at&&r.CommitSequence<=revision));
             var permissions=w.ForkTransportLocation();permissions.CommitSequence=revision;

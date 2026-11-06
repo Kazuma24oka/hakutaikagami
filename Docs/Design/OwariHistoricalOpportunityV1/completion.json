@@ -1,0 +1,41 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "1560年の尾張について出典、対象人物、ゲーム上の成立条件を分け、史実の勝敗や未来の敵位置を開始情報に混入しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Tests/HistoricalEventRulesTests.cs"
+      ]
+    },
+    {
+      "contract": "通常の新規開始で、本人の所在・認識済みの現地情報・既存の権限から尾張の偵察機会が現れ、本人が引き受けるか自由に決められる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Tests/HistoricalEventRulesTests.cs"
+      ]
+    },
+    {
+      "contract": "NPCは既知かつ実行可能な候補だけを歴史モードに応じて重み付けし、同じ世界の点検・報告・本人の年代記につなぐ",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Tests/HistoricalEventRulesTests.cs"
+      ]
+    },
+    {
+      "contract": "途中保存・復旧後も知識・実行・報告が一致し、既存保存の判断規則を維持する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Game/Scripts/HistoricalChronicleCheck.cs",
+        "Tests/HistoricalEventRulesTests.cs"
+      ]
+    }
+  ]
+}

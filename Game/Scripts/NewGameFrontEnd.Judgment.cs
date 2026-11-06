@@ -14,17 +14,18 @@ public partial class NewGameFrontEnd
         attention.Select((int)npcAttention);attention.ItemSelected+=index=>npcAttention=(NpcAttention)index;page.AddChild(attention);
         page.AddChild(new Label{Text="本人が知っている事情と実行できる範囲で判断します。\n依頼は断れます。報酬や権限が増える設定ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
     }
-    internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root)
+    internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false)
     {
         if(TestKey!=null)throw new System.InvalidOperationException("通常の入口で検査してください");
         Conditions();
         var histories=GetNode<OptionButton>(page.GetPath()+"/HistoryMode");
-        histories.Select((int)HistoryMode.Fictional);histories.EmitSignal(OptionButton.SignalName.ItemSelected,(long)HistoryMode.Fictional);
+        var mode=owari?HistoryMode.Historical:HistoryMode.Fictional;
+        histories.Select((int)mode);histories.EmitSignal(OptionButton.SignalName.ItemSelected,(long)mode);
         var attention=GetNode<OptionButton>(page.GetPath()+"/NpcAttention");
         attention.Select((int)NpcAttention.Beginner);attention.EmitSignal(OptionButton.SignalName.ItemSelected,(long)NpcAttention.Beginner);
         chosen=NewGameWorld.Normalize([new("created:judgment-ui",null,"確認用の浪人",1520,new(60,50,70,40),StartTemplate.Ronin,"site:castle",null,null,HakutaiKagami.Core.Appearance.AppearanceCatalog.Default(1))]);
         var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);var setup=new WorldSetupRequest(chosen,[]);
         confirmed=NewGameSetup.Confirm(raw,setup,NewGameSetup.Preview(raw,setup));campaigns=new NewCampaignStore(root);
-        return (campaigns,CreateSelectedCampaign("person:nobunaga"));
+        return (campaigns,CreateSelectedCampaign(owari?"created:judgment-ui":"person:nobunaga"));
     }
 }

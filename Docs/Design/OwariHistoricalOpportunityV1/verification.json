@@ -1,0 +1,18 @@
+{
+  "passed": 11,
+  "tests": [
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ModeChangesWeightOnly(mode: SemiHistorical, expected: \"ordinary\")",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ImpossibleOrUnknownCannotBiasChoice(physical: True, known: False)",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ChronicleFiltersOthersAndSurvivesRestoreWithoutMutation",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ImpossibleOrUnknownCannotBiasChoice(physical: False, known: True)",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.OwariRequiresPresentNobunagaAndTheNewEdition",
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ModeChangesWeightOnly(mode: Fictional, expected: \"ordinary\")",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.UnknownOrForbiddenCandidateCannotBecomeLegal",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ImpossibleOrUnknownCannotBiasChoice(physical: False, known: False)",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.PlayerDecisionAndContinuationAreRespected",
+    "HakutaiKagami.Tests.HistoricalEventRulesTests.ModeChangesWeightOnly(mode: Historical, expected: \"event\")"
+  ],
+  "ui": "OWARI_SCOUTING_UI_PASS",
+  "result": "清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。"
+}
