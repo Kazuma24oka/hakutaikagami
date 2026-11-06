@@ -45,6 +45,20 @@ public static class HouseReforms
             (e.Input.Action is CourtAction.ChallengeSeat or CourtAction.InsistSeat or CourtAction.SettleSeat) &&
             (e.At<at || e.At==at && e.Revision<revision));
 
+    public static BranchEdge[] LocalRoads(ContractWorld w,EntityId site)
+    {
+        var node=NewGameWorld.Node(site.Value);
+        return BranchRoutes.GraphEdges(w).Where(e=>!NationalRoutes.Sea(e.Id) && (e.From==node || e.To==node)).ToArray();
+    }
+
+    public static CourtEvent? BarrierAt(ContractWorld w,string edge,long at,long revision)
+    {
+        var last=HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.BarrierEdge==edge &&
+            (e.Input.Action is CourtAction.EstablishBarrier or CourtAction.AbolishBarrier) &&
+            (e.At<at || e.At==at && e.Revision<revision));
+        return last?.Input.Action==CourtAction.EstablishBarrier?last:null;
+    }
+
     public static long WoodPurchaseLimit(ContractWorld w,EntityId site,long at,long revision)
     {
         if(!OpenMarketAt(w,site,at,revision))return 2;

@@ -5,6 +5,27 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void BarrierReformNamesOneRoadAndCannotRemoveAnother()
+    {
+        var s=HouseholdCourtTests.Start();
+        var roads=HouseReforms.LocalRoads(s.DiagnosticSnapshot(),HouseholdCourtTests.Site);
+        var gate=new CourtInput(new("request:road-gate"),CourtAction.EstablishBarrier,s.PlayerControl,
+            HouseholdCourtTests.Owner,HouseholdCourtTests.Site){BarrierEdge=roads[0].Id};
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(gate,s.Revision).Code);
+        var consult=gate with{Id=new("request:gate-consult"),Action=CourtAction.ConsultReform,
+            Person=HouseholdCourtTests.Retainer,Reform=ReformKind.RemoveBarrier};
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(consult,s.Revision).Code);
+        NewGameWorldTests.At(s,120);
+        Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,new(HouseReforms.Letter(consult,HouseReforms.Answer)),s.Revision).Code);
+        var remove=consult with{Id=new("request:remove"),Action=CourtAction.AbolishBarrier,Reform=null,Reference=consult.Id};
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(remove with{BarrierEdge="another-road"},s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(remove,s.Revision).Code);
+        var w=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot())).DiagnosticSnapshot();
+        Assert.Null(HouseReforms.BarrierAt(w,roads[0].Id,w.ElapsedSeconds,w.CommitSequence+1));
+        Assert.NotNull(HouseReforms.BarrierAt(w,roads[0].Id,w.ElapsedSeconds,w.CommitSequence));
+    }
+
+    [Fact]
     public void CrossHouseDispatchAfterLocalEnactmentLeavesEvidenceOnlyWithTheInformed()
     {
         var local=HouseholdCourtTests.Retainer;

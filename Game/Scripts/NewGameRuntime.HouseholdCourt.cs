@@ -64,22 +64,36 @@ public partial class NewGameRuntime
      SeatButton(CourtAction.SettleSeat,"取引枠を認めて和解する");
     }
    }
+   var roads=HouseReforms.LocalRoads(w,site.Value);
+   var roadChoice=new OptionButton();
+   if(head && roads.Length>0){
+    foreach(var road in roads){
+     var neighbor=road.From==NewGameWorld.Node(site.Value.Value)?road.To:road.From;
+     roadChoice.AddItem(NewGameWorld.SiteName(RegionalCampaign.Site(neighbor).Value)+(HouseReforms.BarrierAt(w,road.Id,w.ElapsedSeconds,rev+1)==null?"方面":"方面（関所あり）"));
+    }
+    box.AddChild(roadChoice);
+    Button("establish-barrier","この道に関所を置く",()=>Run(Command("barrier/"+roads[roadChoice.Selected].Id,CourtAction.EstablishBarrier,actor) with{BarrierEdge=roads[roadChoice.Selected].Id}));
+   }
    if(head&&roster.Length>0){
     var persons=new OptionButton();foreach(var person in roster)persons.AddItem(PersonName(person));box.AddChild(persons);
     var kinds=Enum.GetValues<ReformKind>();var reform=new OptionButton();foreach(var k in kinds)reform.AddItem(HouseReforms.Name(k));box.AddChild(reform);
-    Button("consult-reform","この改革案について意向を問う",()=>Run(Command("reform",CourtAction.ConsultReform,roster[persons.Selected]) with{Reform=kinds[reform.Selected]}));
+    Button("consult-reform","この改革案について意向を問う",()=>Run(Command("reform",CourtAction.ConsultReform,roster[persons.Selected]) with{Reform=kinds[reform.Selected],BarrierEdge=kinds[reform.Selected]==ReformKind.RemoveBarrier && roads.Length>0?roads[roadChoice.Selected].Id:null}));
    }
    foreach(var e in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.ConsultReform&&e.Actor==actor)??[]){
     var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);
     if(HouseReforms.AnswerKnown(w,e,actor)){
      SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
-     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactLetterLaw&&d.Input.Reference==e.Input.Id))
+     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.AbolishBarrier&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"この道路の関所を撤廃済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactLetterLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この拠点で他国との私信を禁じる家法が発効済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.OpenLocalMarket&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この市場で楽市を実施済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この相談案は見送り済み");
      else if(head && site==e.Input.Site && house==e.Input.Owner){
+      if(e.Input.Reform==ReformKind.RemoveBarrier && e.Input.BarrierEdge is {} edge && HouseReforms.BarrierAt(w,edge,w.ElapsedSeconds,rev+1)!=null)
+       Button("remove-barrier-"+e.Input.Id,"相談した道路の関所を撤廃する",()=>Run(Command("remove-barrier/"+e.Input.Id,CourtAction.AbolishBarrier,e.Input.Person,reference:e.Input.Id) with{BarrierEdge=edge}));
       if(e.Input.Reform==ReformKind.ForeignLetters && !HouseReforms.LetterLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
        Button("law-"+e.Input.Id,"この拠点で他国との私信を禁じる",()=>Run(Command("law/"+e.Input.Id,CourtAction.EnactLetterLaw,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.OpenMarket && !HouseReforms.OpenMarketAt(w,e.Input.Site,w.ElapsedSeconds,rev+1))
