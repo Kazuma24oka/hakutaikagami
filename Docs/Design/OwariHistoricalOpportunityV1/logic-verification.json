@@ -1,0 +1,14 @@
+{
+  "scope": "owari-scouting",
+  "ui": "Docs/Design/OwariHistoricalOpportunityV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 11
+  },
+  "proofs": {
+    "Docs/Design/OwariHistoricalOpportunityV1/runtime-local/owari.trx": "ab13c8a9f1c148ce658e602ba6c63ffb3bc1583d09264868983c0e2f94758123",
+    "Docs/Design/OwariHistoricalOpportunityV1/runtime-local/ui.log": "8dd82822040c4edb959b1796e97fdccd36678df721f1a18fdde88528fccddc50",
+    "Docs/Design/OwariHistoricalOpportunityV1/runtime-local/ui/result.json": "cc72c930abca2761a104d0ff6043b5e656b4c1f9020da91780680e5629598f92",
+    "Docs/Design/OwariHistoricalOpportunityV1/verification.json": "a0b12fd45c161b885a51311902978d6fa797e86e7d0957c1e729a9b64ec3a341",
+    "Docs/Design/OwariHistoricalOpportunityV1/completion.json": "a51498a4a4452bec0e2fdf73df1eaed2ef7151d6abd0b80d4f0ff5ed792f2b0d"
+  }
+}

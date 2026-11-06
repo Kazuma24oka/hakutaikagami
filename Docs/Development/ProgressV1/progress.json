@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "4a4651d1e98d8f11ab050c9287a3bdf49d25ed78f301cb4ff3a49ba314ab82e6",
+    "Docs/Development/ProgressV1/estimate.json": "447e30f9a4af2e428341a63067ea78c50bbb53fa1a7841444d828adec31c8605",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "3fe6efa409757b273f20f1487fc04e833decc555b780b87d48a83a86e3ae46bd",
+    "Scripts/check_progress_report.py": "65d404d25c3775d1d89428779c000af7fdcf4e2711d39ce01b5cc73e7f4d1d81",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "63ceff9a40a74eb0e09b67d051553001aefafe63ee1ebe479c5ce2d619fdf05e",
+    "Scripts/check_approval_batch.py": "70fb77e7cd865e37f99cabe66e11f5b0bee398d8b1d18a7c554dc339b217a58d",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "e8692b454a92f65663df2117a15530f8be459043788c97f493867755281e9fc7",
+    "Docs/Development/CURRENT_STAGE.md": "b804e3cd281aa0fa4324da6ba4a0cc9b42530877921ecf2d471913503c90c70b",
     "Core/Contracts/HouseSuccession.cs": "7e2ee13dcd64453a71faf96b6ebb9c07cc4c8b0149ae2e64dfa8f7413cc2d54a",
     "Core/Contracts/FactionStances.cs": "445828eebda8cf2de3d7981a17bba7e4a12841a8b6f35ef5c330ebd3c3f9562a",
     "Core/Contracts/NewGameWorld.cs": "96801f041a2b54b35a2d9df68f266cd2e6bf6f01ba96874efdfc41006d00b351",
@@ -271,7 +271,7 @@
     "Tests/CharacterDevelopmentTests.cs": "a99e6cbdab3ccde651998bf8968de1b418cb82d7ab2ca44747e8ea4057a8b98f",
     "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "2af43c6c8505eb2b04c9a116658707c312f79f91030ca7ed268df3b35cc20725",
     "Game/Scripts/OfficerLibraryTrial.cs": "7f51d05a4b4034201cae396d07c3cb9d6d5964f0e983293bc3c99997d1317539",
-    "Game/Scripts/NewGameFrontEnd.cs": "a67d48854594d5e7350d7ea6b375549b510de0d6b6244468c8248ccd37beb02e",
+    "Game/Scripts/NewGameFrontEnd.cs": "d7307b8e241d3cf5fa51a8c8005b91b365d27918927856f237c3ccfcde52edde",
     "Docs/Design/CharacterDevelopmentV1/verification.json": "2465c82c2592674c00430078fd41588277d4d4c46ee331d342e52ae8165fc16c",
     "Docs/Design/CharacterDevelopmentV1/completion.json": "ffc5ef8d2ff1204e0400401ca15fc7f40eb32b73725e88000be3d2f5b679d541",
     "Docs/Design/CharacterDevelopmentV1/integration.json": "b5991bdd81c590452faaee7234e6b21e06aac40dab96300089203b62629effc1",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "f97a9f710f55a05bce5290188b0d17d1e083c85024590b2120c84a25adf1160b",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "69da9b37a34751a7e3d233b25581132aaf3ff005d2d851214d087f6c3b0f2f65",
+    "Core/Contracts/ContractJson.cs": "247e36338354dc84962b46e28c74e3675a84a2de79535473955080eb1d54ab8f",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -454,14 +454,14 @@
     "Docs/Design/NpcJudgmentV1/README.md": "2e2f11ea15f69c3f8869aa34c1236a71a0ba26e3a96c75f663ffc58a771afee7",
     "Docs/Design/NpcJudgmentV1/pause.json": "533d42ee1dfc42ab44253e75fdf98c27d639f0e15298d32c16469d5a4b7b3af0",
     "Docs/Decisions/2026-11-05_CRITICAL_TEST_POLICY.md": "103494fd68d653bb79534a2fc514dcf2de66e7d5bb88f45e5b13152dbb431001",
-    "Core/Contracts/NpcJudgment.cs": "47354426ddf466c43c2319a2b8d580df669d4993c15e7d23121d3e673bd2ca10",
-    "Core/Contracts/NpcLocalOffers.cs": "65e2252a9af054cac99a772a7fa4e6bdc33bef104f9735ae400898a1e925b665",
-    "Core/Contracts/NpcChoiceRanking.cs": "59c6a72738c1b2c52bcef9e7079e23c198df61d12e55cade3bd9767af1e29d8c",
+    "Core/Contracts/NpcJudgment.cs": "f924fccc7da6a78f634d5aa2b807069758575736d0059eff9acb27fa93fd5b21",
+    "Core/Contracts/NpcLocalOffers.cs": "ee893bd87cf697488c2d42c1ecd004cbe41ed9b063b8be6dd6abc44ad1e0e3d3",
+    "Core/Contracts/NpcChoiceRanking.cs": "36f819c0d763125862fb925eb40823f6e257e964be4668edd57f89fdd40494d0",
     "Core/Contracts/NpcAspirationProfiles.cs": "d59308c08bab9c8b16079a8c10b964390d58898d60dbd50dd0beda9519cc0f79",
     "Tests/NpcJudgmentTests.cs": "4295f555b75c41e0315e850185c8221bbc4e3fbab7262e739cdd83ea6d5be833",
     "Tests/NpcJudgmentAcceptanceTests.cs": "56ab79ecabfd06d20945ca8e7065740347b310716a90642c9b2755f1ec2b4892",
     "Tests/NpcLocalOfferTests.cs": "27e9d100c176610544ca0727888f2aa237f56eed3c9eee01757ffbaac68766f7",
-    "Game/Scripts/NewGameFrontEnd.Judgment.cs": "4b91067703dcad8748cec8d0924347cbd4742db0d5335994f6bdd216c32a95f1",
+    "Game/Scripts/NewGameFrontEnd.Judgment.cs": "9c46bba05e571591f808253e3d4b0e172f2e7ea2ced9321f1529095e6ac9591c",
     "Game/Scripts/NpcJudgmentCheck.cs": "633b50eacaaab75efa4b85565374c90600cadec2a93527933b3567624d2fe34f",
     "Docs/Design/NpcJudgmentV1/verification.json": "7c6c64e8fcaff4b71f6f09e26587231c33107f6d2bd82f6ac5798b1905f7ab76",
     "Docs/Design/NpcJudgmentV1/completion.json": "38cdeb981498e53eeed316b0756d8932533705a3a4788103827d572507bef69e",
@@ -473,9 +473,9 @@
     "Docs/Development/ProgressV1/approval-baseline-v53.json": "9ef006fa6c2117549fe41d0e58b818208aa5027b56f3c9bb1fb9b1b1532bde4b",
     "Docs/Design/HistoricalChronicleV1/scope.md": "c4772d2f18c7b93d2c1de4a72caccb62180cbc6bce1d08f975780795caa53b55",
     "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d",
-    "Core/Contracts/HistoricalEventRules.cs": "2c07cf6d5cf3ab06ad174e1104e768aadb4109df22b68e2142176b2fca54e5eb",
-    "Tests/HistoricalEventRulesTests.cs": "5681e1bb22ec9c5bb79f9d9d2fafc8dea2ef2e5ce38e7f52e93e14ea3f156e11",
-    "Game/Scripts/HistoricalChronicleCheck.cs": "1e74f85a133c4f42a0ea245595def63708a68e4251cf4801e03bfd61986591d0",
+    "Core/Contracts/HistoricalEventRules.cs": "9cf62e89b72c5f690665edb501952a118c6f4c869eb88af6ff9b7667c8069a63",
+    "Tests/HistoricalEventRulesTests.cs": "c29d0900251c3935617a395663526c086c59a2705d9563382277635c8d47a218",
+    "Game/Scripts/HistoricalChronicleCheck.cs": "d9c409ae63c684ce79db2043b44762c8e9e703f51f7ca644d2df7105bfdc810f",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
     "Docs/Design/HistoricalChronicleV1/completion.json": "5a38337b0f346bde4d92ef6f9563b86c4a5cb22be451b5d21fa9deed473209d9",
     "Docs/Design/HistoricalChronicleV1/integration.json": "276026b44f44f2d45c91aaca4c01588d12459f0936da83acff4e5712658223c4",
@@ -815,7 +815,7 @@
     {
       "id": "BD-02",
       "status": "foundation",
-      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
+      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。 清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。",
       "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。 統合案で追加：§20 W7 本人への機会（NPCの関わり方）・G-B9 ルール設定の個別つまみ・§20 W6 歴史モードでのNPCの史実志向の差。 2026-11-06採用：AIの手強さ（控えめ・標準・手強い）と判断支援（詳しい助言・要点だけ・自分で判断）を独立設定にし、組合せコースと個別調整へ接続する。歴史モード・本人への機会は区別し、具体的既定値と保存への接続は残件。設計採用のみ。 2026-11-06採用：史実人物も開始時の年齢と根拠に応じた状態から教育し、元服時に育成結果を固定の成人値で上書きしない。出生/死亡と歴史志向のモード差は維持する。",
       "evidence": [
         "Core/Contracts/StartConfiguration.cs",
@@ -832,7 +832,8 @@
         "Game/Scripts/NpcJudgmentCheck.cs",
         "Docs/Design/NpcJudgmentV1/verification.json",
         "Docs/Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md",
-        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md"
+        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
+        "Docs/Design/OwariHistoricalOpportunityV1/entry-verification.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -840,11 +841,12 @@
     {
       "id": "BD-03",
       "status": "design_only",
-      "existing": "基本方針と受入予定がある。",
+      "existing": "基本方針と受入予定がある。 清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。",
       "remaining": "史実事件の前提・人物行動との競合・分岐を実装し、全モードで強制上書きがないことを検査する。 統合案で追加：§22 史実の事件（前提と判断の重み・不発・年代記）。",
       "evidence": [
         "Docs/Design/basic-design-v1.json",
-        "Core/Contracts/StartConfiguration.cs"
+        "Core/Contracts/StartConfiguration.cs",
+        "Docs/Design/OwariHistoricalOpportunityV1/entry-verification.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3946,12 +3948,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 10,
+      "passed": 11,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/CastleOfficeOrderV1/runtime-local/orders.trx",
-      "sha256": "e4010d57105b34828cf5cf6b2e534c3faa477f7ace9ad46418cf28b76c8facc2",
-      "scope": "辞令・城役・引渡し・旧保存の関連10件。うち3件は競合を加えて再実行。"
+      "trx": "Docs/Design/OwariHistoricalOpportunityV1/runtime-local/owari.trx",
+      "sha256": "ab13c8a9f1c148ce658e602ba6c63ffb3bc1583d09264868983c0e2f94758123",
+      "scope": "史実事件の前提・三モード・清洲出発と旧保存の関連11件。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3970,7 +3972,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "城役の現地明渡し前後を同じ時刻でも処理順で復元。追随した城主の代官解任と本丸引渡しが競合した場合、代官職のみが終了し、実際に受領した本丸と一通の報告が残った。",
+    "current_stage_summary": "清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3993,8 +3995,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/HouseScaleV1/integration.json",
-    "current_logic_verification": "Docs/Design/CastleOfficeOrderV1/logic-verification.json",
-    "current_logic_verification_sha256": "701fac058c870aa60c6dfe7e2c18b446d356772450b79531287afe2aa401079d",
+    "current_logic_verification": "Docs/Design/OwariHistoricalOpportunityV1/logic-verification.json",
+    "current_logic_verification_sha256": "b51a86e8fa511f16a1e99b209a36137cc89bfb1455bd83db60129c03743bec92",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。",
