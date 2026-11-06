@@ -46,12 +46,29 @@ public sealed class AdultMarriageTests
         long adultAt=(long)(new DateOnly(birthYear+15,1,1).DayNumber-DateOnly.ParseExact(grown.EpochDate,"yyyy-MM-dd").DayNumber)*86400;
         grown.ElapsedSeconds=adultAt-1;
         var birthday=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(grown)));
+        var tooEarly=birthday.ManageCompanion(new(new("request:underage-child"),birth.Child,CompanionAction.Agree,20),Player,birthday.Revision);
+        Assert.Equal(ResultCode.NotAvailable,tooEarly.Code);
         At(birthday,adultAt);
         var mature=birthday.DiagnosticSnapshot();
         Assert.Equal(LifeState.Adult,mature.Characters.Single(c=>c.Id==birth.Child).Life);
         Assert.DoesNotContain(mature.ServiceBonds,b=>b.Subject==birth.Child);
         Assert.Contains(mature.Grants,g=>g.Agent==birth.Child && g.Actions.Contains(ActionKind.Move));
         Assert.Equal(ContractJson.Write(mature),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(mature))).DiagnosticSnapshot()));
+        var agreement=birthday.ManageCompanion(new(new("request:adult-child-agreement"),birth.Child,CompanionAction.Agree,20),Player,birthday.Revision);
+        Assert.True(agreement.Code==ResultCode.Accepted,agreement.VisibleReason);
+        Assert.Equal(20,NewGameWork.Balance(birthday.DiagnosticSnapshot(),birth.Child));
+        var scout=new SchemeInput(new("request:adult-child-errand"),SchemeAction.SendScout,birth.Child,Player,Destination:new("site:village"));
+        var dispatched=birthday.ManageScheme(scout,birthday.Revision);
+        Assert.True(dispatched.Code==ResultCode.Accepted,dispatched.VisibleReason);
+        var trip=birthday.DiagnosticSnapshot().Schemes!.Events.Single(e=>e.Input.Id==scout.Id).Movement!;
+        At(birthday,trip.EffectiveAt+trip.DeliverySeconds+1);
+        var traveling=birthday.DiagnosticSnapshot();
+        Assert.Contains(traveling.Branches!.Journeys,j=>j.Actor==birth.Child);
+        var loaded=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(traveling)));
+        long arrival=trip.EffectiveAt+trip.DeliverySeconds+trip.WorkSeconds;
+        At(loaded,arrival);At(birthday,arrival);
+        Assert.Equal(ContractJson.Write(birthday.DiagnosticSnapshot()),ContractJson.Write(loaded.DiagnosticSnapshot()));
+        Assert.Equal(scout.Destination,SocialWorld.Site(loaded.DiagnosticSnapshot(),birth.Child));
     }
     [Fact]public void UnknownAuthoringStatusIsNotAssumedUnmarried(){var s=Start(declared:false);Assert.DoesNotContain(Other,AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose).Code);}
     [Fact]public void HistoricalSpouseDataIsNotInvented(){var s=Start();Assert.DoesNotContain(new EntityId("person:nobunaga"),AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose,other:new("person:nobunaga")).Code);}
