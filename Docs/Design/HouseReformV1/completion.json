@@ -1,0 +1,49 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "家中の様子を家臣の所領・城・自治・家法・検地の事実から示す",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseCondition.cs",
+        "Core/Contracts/HouseReforms.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "分国法・城割り・城下集住・知行替え・楽市・関所撤廃について現地の協議と実施を分ける",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseCondition.cs",
+        "Core/Contracts/HouseReforms.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "改革にかかわる寺社の既存権益と抵抗・譲歩を具体的な権利に結び付ける",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseCondition.cs",
+        "Core/Contracts/HouseReforms.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "直臣化・移封・改易・国割りでは相手の応答と現地引継ぎにより所領と奉公を個別に更新する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseCondition.cs",
+        "Core/Contracts/HouseReforms.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "通常画面の相談・途中保存復旧・代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/HouseReformV1/entry-verification.md",
+        "Game/Scripts/HouseReformCheck.cs"
+      ]
+    }
+  ]
+}
