@@ -61,6 +61,33 @@ public sealed class HouseConditionTests
         NewGameWorldTests.At(s,360);
         Assert.Equal(ResultCode.Accepted,s.Open(person,document,s.Revision).Code);
         Assert.Equal(proposal.Site,SocialWorld.Site(s.DiagnosticSnapshot(),person));
+        var before=s.DiagnosticSnapshot();
+        var old=before.Offices.Single(o=>o.Subject==person && o.Kind=="castellan" && o.Target==proposal.Site);
+        var release=new CourtInput(new("request:give-up-office"),CourtAction.ReleaseCastleOffice,lord,owner,
+            proposal.Site,Reference:order.Id){FormerOffice=old.Id};
+        var handed=s.ManageCourt(release,s.Revision);
+        Assert.True(handed.Code==ResultCode.Accepted,handed.VisibleReason);
+        var enter=new CourtInput(new("request:enter-office"),CourtAction.EnterCastleOffice,lord,owner,
+            proposal.NewEstate!.Value,Reference:order.Id);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:move-to-estate","fork"),s.Revision).Code);
+        NewGameWorldTests.At(s,s.Seconds+2);
+        s.SetPaused(true);
+        var dir=Directory.CreateTempSubdirectory("hakutai-transfer-");
+        try{
+            var store=new GenerationSaveStore(dir.FullName,before.Definitions);
+            Assert.True(store.Save(s,"journey",before.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(before));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("journey"),host.Current,host.Current.Revision));
+            s=host.Current;
+            NewGameWorldTests.At(s,s.GetBranchView(person).ArrivalAt!.Value+2);
+            var arrived=s.ManageCourt(enter,s.Revision);
+            Assert.True(arrived.Code==ResultCode.Accepted,arrived.VisibleReason);
+            var after=s.DiagnosticSnapshot();
+            Assert.Equal(enter.Site,after.Offices.Single(o=>o.Kind=="castellan" && o.Subject==person && o.Until==long.MaxValue).Target);
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
+            Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter with{Id=new("request:repeat-entry")},s.Revision).Code);
+        }finally{dir.Delete(true);}
     }
 
     [Fact]

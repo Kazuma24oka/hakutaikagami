@@ -44,6 +44,26 @@ public partial class NewGameRuntime
     Button("reply-"+input.Id+choice,HouseReforms.ReplyText(choice),()=>Run(new(Nonce("reply/"+input.Id+choice),choice,
         proposal.Actor,input.Owner,input.Site,Reference:input.Id)));
   }
+  foreach(var order in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.IssueTransfer && e.Input.Person==actor)??[]){
+   var id=HouseReforms.Letter(order.Input,HouseReforms.TransferOrder);
+   if(!w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==actor.Value))continue;
+   if(!HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,id,actor.Value)){
+    Button("read-transfer-"+order.Input.Id,"届いた移封命令を開く",()=>{Session.Open(actor,new(id),rev);Refresh();ShowHouseholdCourt();});
+    continue;
+   }
+   var terms=w.Court!.Events.Single(e=>e.Input.Id==order.Input.Reference).Input;
+   var released=w.Court.Events.Any(e=>e.Input.Action==CourtAction.ReleaseCastleOffice && e.Input.Reference==order.Input.Id);
+   if(w.Court.Events.Any(e=>e.Input.Action==CourtAction.EnterCastleOffice && e.Input.Reference==order.Input.Id))continue;
+   SocialText(box,w.Messaging.Messages.Single(m=>m.Id==id).Body);
+   if(!released && site==terms.Site && w.Offices.FirstOrDefault(o=>o.Subject==actor && o.Target==site &&
+       o.From<=w.ElapsedSeconds && w.ElapsedSeconds<o.Until && (o.Kind is "house-castellan" or "castellan")) is {} office)
+    Button("release-"+order.Input.Id,"旧城で城主職を引き渡す",()=>Run(new(Nonce("release/"+order.Input.Id),CourtAction.ReleaseCastleOffice,
+        order.Actor,terms.Owner,site.Value,Reference:order.Input.Id){FormerOffice=office.Id}));
+   else if(released && site==terms.NewEstate)
+    Button("enter-"+order.Input.Id,"新城で着任する",()=>Run(new(Nonce("enter/"+order.Input.Id),CourtAction.EnterCastleOffice,
+        order.Actor,terms.Owner,site.Value,Reference:order.Input.Id)));
+   else if(released)SocialText(box,"赴任先："+NewGameWorld.SiteName(terms.NewEstate!.Value.Value));
+  }
   var owner=HouseSuccession.Factions(w,w.ElapsedSeconds,w.CommitSequence+1).FirstOrDefault(f=>f.Head==actor.Value&&w.LandRights.Any(l=>l.Subject.Value==f.Id&&l.Target==site&&l.Kind=="control"&&l.From<=w.ElapsedSeconds&&w.ElapsedSeconds<l.Until))?.Id??ServiceDisplay().House?.Value;
   if(owner==null){SocialText(box,"まだ家中に所属していません。届いた条件書を確認するか、現地で仕官を相談できます。");return;}var house=new EntityId(owner);bool head=HouseSuccession.Head(w,house)==actor;
   CourtInput Command(string key,CourtAction action,EntityId person,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0,CourtCaseKind kind=CourtCaseKind.RelieveVillage)=>new(Nonce(key),action,person,house,site.Value,role,amount,reference,when,kind);
