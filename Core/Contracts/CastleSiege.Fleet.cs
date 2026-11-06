@@ -18,7 +18,40 @@ public static class SiegeFleet
  Need(automatic&&i.Original!=null,"着船と荷渡しは時計・現地で判定します");var root=Orders(w).Single(o=>o.Input.Id==i.Original&&Start(o));Need(i.Id==Effect(root,i.Action)&&i.Ship==root.Input.Ship&&i.Source==root.Input.Source&&i.Target==root.Input.Target&&i.Cargo==0&&actor==root.Actor&&!Has(w,root.Input.Id,i.Action,at,rev),"航海原本と重複を確認してください");string outcome=i.Action switch{FleetAction.Reach when at==root.Arrive=>RegionalCampaign.BlockedAt(w,root.Edge,root.Depart)?"運休・出港地待機":"対象港へ到着",FleetAction.Unload when root.Input.Action==FleetAction.SendSupply&&at>=root.Arrive&&at<=root.Leave&&Reached(w,root,at,rev+1)&&!Blocked(w,i.Target,root.Owner,at,rev+1)=>"現地納入",FleetAction.SailHome when at==root.Leave=>"帰航開始",FleetAction.Dock when at==root.Home=>"帰港精算",_=>throw new InvalidDataException("未到着・水路封鎖・時点を確認してください")};return root with{Input=i,At=at,Revision=rev,Outcome=outcome,Provisions=0,Coins=0};}
  static bool Reached(ContractWorld w,FleetOrder o,long at,long rev)=>Orders(w).Any(q=>q.Input.Original==o.Input.Id&&q.Input.Action==FleetAction.Reach&&q.Outcome=="対象港へ到着"&&Before(q,at,rev));
  internal static void Add(ContractWorld w,FleetOrder o){w.Sieges??=new(1,CastleSiege.Policy,[]);w.Sieges=w.Sieges with{Fleets=[..Orders(w),o]};}
- internal static long? NextBoundary(ContractWorld w,long target)=>Orders(w).Where(Start).SelectMany(o=>new[]{o.Depart,o.Arrive,o.Leave,o.Home}).Where(t=>w.ElapsedSeconds<t&&t<=target).Select(t=>(long?)t).Min();
+ internal static bool PrepareNavalDefense(ContractWorld world,EntityId commander,EntityId port,EntityId orderId)
+ {
+     if (!CastleSiege.Enabled(world)) return false;
+     var now = world.ElapsedSeconds;
+     var revision = world.CommitSequence;
+     if (now % 86400 != 0) return false;
+     var owner = RegionalDomains.Owner(world, port);
+     var hostile = FactionStances.OwnAt(world, commander, now, revision - 1)
+         .Where(claim => claim.FromOwner == owner && claim.EffectiveFrom <= now && now < claim.Until)
+         .Select(claim => claim.ToOwner).ToHashSet();
+     if (hostile.Count == 0) return false;
+     var targets = Ports(world, port).Where(site => RegionalDomains.Owner(world, site) is {} defender && hostile.Contains(defender)).ToArray();
+     if (targets.Length == 0) return false;
+     var ship = PublicWorks.Ships(world).FirstOrDefault(s => s.Kind == WorksKind.Warship && s.Owner == owner && s.Port == port);
+     if (ship == null)
+     {
+         var kind = PublicWorks.Level(world, port, WorksKind.Port) > 0 ? WorksKind.Warship : WorksKind.Port;
+         return TransactionalWorld.TryApply(world, candidate => PublicWorks.Execute(candidate, new(orderId,port,kind), commander));
+     }
+     if (!ship.Maintained)
+         return TransactionalWorld.TryApply(world, candidate => PublicWorks.CareForShip(candidate,orderId,ship.Id,commander));
+     if (Busy(world, ship.Id, now, revision)) return false;
+     var input = new FleetInput(orderId,FleetAction.StationWarship,ship.Id,port,targets[0]);
+     return TransactionalWorld.TryApply(world, candidate => Add(candidate,Prepare(candidate,input,commander,now,candidate.CommitSequence,false)));
+ }
+ internal static long? NextBoundary(ContractWorld w,long target)
+ {
+     var times=Orders(w).Where(Start).SelectMany(o=>new[]{o.Depart,o.Arrive,o.Leave,o.Home});
+     if (CastleSiege.Enabled(w) && w.FactionStances?.Decisions.Any(d =>
+         d.Authority.Issuer != w.PlayerControl && d.Input.Action == FactionStanceAction.DeclareHostile &&
+         d.Input.Until > w.ElapsedSeconds) == true)
+         times=times.Append((w.ElapsedSeconds / 86400 + 1) * 86400);
+     return times.Where(t=>w.ElapsedSeconds<t&&t<=target).Select(t=>(long?)t).Min();
+ }
  internal static void Tick(ContractWorld w){long at=w.ElapsedSeconds,rev=w.CommitSequence;var roots=Orders(w).Where(Start).OrderBy(o=>o.Input.Id.Value,StringComparer.Ordinal).ToArray();void Auto(FleetOrder o,FleetAction a){if(Has(w,o.Input.Id,a,at,rev+1))return;var i=new FleetInput(Effect(o,a),a,o.Input.Ship,o.Input.Source,o.Input.Target,Original:o.Input.Id);Add(w,Prepare(w,i,o.Actor,at,rev,true));}
  foreach(var o in roots.Where(o=>o.Arrive==at))Auto(o,FleetAction.Reach);
  foreach(var o in roots.Where(o=>o.Input.Action==FleetAction.SendSupply&&o.Arrive<=at&&at<=o.Leave&&Reached(w,o,at,rev+1)&&!Blocked(w,o.Input.Target,o.Owner,at,rev+1)))Auto(o,FleetAction.Unload);

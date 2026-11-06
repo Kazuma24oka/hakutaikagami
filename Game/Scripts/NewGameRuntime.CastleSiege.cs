@@ -71,6 +71,9 @@ public partial class NewGameRuntime
             {
                 var home = world.NewGame!.Start.Castles.Single(c => c.Id == target.Value).Faction == ship.Owner.Value;
                 if (home != (ship.Kind == WorksKind.TradeShip)) continue;
+                if (!home && !FactionStances.Known(world, actor).Any(q => q.FromOwner == ship.Owner &&
+                    q.ToOwner.Value == world.NewGame.Start.Castles.Single(c => c.Id == target.Value).Faction &&
+                    q.EffectiveFrom <= world.ElapsedSeconds && world.ElapsedSeconds < q.Until)) continue;
                 var action = home ? FleetAction.SendSupply : FleetAction.StationWarship;
                 var input = new FleetInput(new("request:fleet-ui/" + rev), action, ship.Id, port, target, home ? 15 : 0);
                 var text = NewGameWorld.SiteName(target.Value) + (home ? "へ兵糧15kgを送る" : "へ軍船を派遣する");
