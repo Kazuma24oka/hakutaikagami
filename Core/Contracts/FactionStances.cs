@@ -45,6 +45,11 @@ public static class FactionStances
     }
     static long End(FactionStanceDecision original,IEnumerable<FactionStanceDecision> all)=>
         Math.Min(original.Input.Until,all.Where(d=>d.Input.Action==FactionStanceAction.WithdrawOwnDeclaration&&d.Input.Original==original.Input.Id).Select(d=>d.Input.EffectiveAt).DefaultIfEmpty(long.MaxValue).Min());
+    internal static bool OverlapsDeclaration(FactionStanceDecision[] prior, FactionStanceInput input) =>
+        prior.Any(d => d.Input.Action == FactionStanceAction.DeclareHostile &&
+            d.Input.Owner == input.Owner && d.Input.Target == input.Target &&
+            Math.Max(d.Input.EffectiveAt, input.EffectiveAt) < Math.Min(End(d, prior), input.Until));
+
     static void CheckInput(ContractWorld w,FactionStanceInput input,EntityId issuer,long at,long revision,FactionStanceDecision[] prior)
     {
         Need(NewGameWorld.Enabled(w)&&EntityId.IsValid(input.Id.Value)&&Enum.IsDefined(input.Action)&&
@@ -55,8 +60,7 @@ public static class FactionStances
         Need(ResolveAuthority(w,issuer,input.Owner,at,revision)!=null,"その家の政治判断を行う当主権限がありません");
         if(input.Action==FactionStanceAction.DeclareHostile){
             Need(input.Original==null&&input.Until>input.EffectiveAt,"敵対意思の期間が不正です");
-            Need(!prior.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile&&d.Input.Owner==input.Owner&&d.Input.Target==input.Target)
-                .Any(d=>Math.Max(d.Input.EffectiveAt,input.EffectiveAt)<Math.Min(End(d,prior),input.Until)),"同じ期間の敵対意思はすでに記録されています");
+            Need(!OverlapsDeclaration(prior,input),"同じ期間の敵対意思はすでに記録されています");
         }else{
             Need(input.Until==0&&input.Original is {} id&&EntityId.IsValid(id.Value),"撤回する自家の原判断が必要です");
             var original=prior.SingleOrDefault(d=>d.Input.Id==input.Original&&d.Input.Action==FactionStanceAction.DeclareHostile);

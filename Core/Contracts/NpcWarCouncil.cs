@@ -39,6 +39,7 @@ public static class NpcWarCouncil
                 var id=HouseholdCourt.Id("border-defense",owner.Value+"/"+sight.Army.Value);
                 if (FactionStances.OwnIdUsed(world,id)) continue;
                 var decision=new FactionStanceInput(id,FactionStanceAction.DeclareHostile,owner,sight.Owner,checked(at+1),checked(at+7*86400));
+                if (FactionStances.OverlapsDeclaration(world.FactionStances?.Decisions ?? [],decision)) continue;
                 yield return (decision,head);
                 break;
             }

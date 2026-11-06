@@ -150,9 +150,10 @@ public sealed class NpcArmyTests
         var s=AtActualContact();var w=s.DiagnosticSnapshot();var before=ContractJson.Write(w);var snapshot=WorldEngagement.Snapshot(w);var contact=WorldEngagement.Resolve(w);Assert.Equal(6,snapshot.Units.Length);Assert.NotEmpty(contact.Strikes);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.Mission);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.ImmediateDefense);Assert.NotEmpty(contact.Losses);Assert.All(snapshot.Units,u=>Assert.Contains(u.Unit,w.Units));Assert.DoesNotContain(snapshot.Units,u=>NewGameMilitary.ExerciseIds.Contains(u.Unit.Id));Assert.Equal(before,ContractJson.Write(w));
     }
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void RetainersLordDecidesAfterTheActualAttackAtHisHome(bool alreadyDeclared)
+    [InlineData(-1)]
+    [InlineData(0)]
+    [InlineData(60)]
+    public void RetainersLordDecidesAfterTheActualAttackAtHisHome(int existingDeclarationDelay)
     {
         var attacker=NewGameWorldTests.Officer("created:raider",StartTemplate.Daimyo,"site:ishiyama");
         var defender=NewGameWorldTests.Officer("created:defender",StartTemplate.Daimyo,"site:sakai");
@@ -181,11 +182,11 @@ public sealed class NpcArmyTests
         Military(NewMilitaryAction.Request);Read();Military(NewMilitaryAction.Accept);Read();Military(NewMilitaryAction.Pickup);
         var fund=s.ManageMilitaryRice(new(new("request:defense-rice"),NewGameMilitary.DepotFor(s.DiagnosticSnapshot()),2),s.PlayerControl,s.Revision);
         Assert.True(fund.Code==ResultCode.Accepted,fund.VisibleReason);
-        if(alreadyDeclared)
+        if(existingDeclarationDelay>=0)
         {
             var declared=s.DiagnosticSnapshot();
             declared.CommitSequence++;
-            FactionStances.Apply(declared,new(new("decision:existing-defense"),FactionStanceAction.DeclareHostile,home,enemy,declared.ElapsedSeconds,declared.ElapsedSeconds+1000000),new(defender.Id));
+            FactionStances.Apply(declared,new(new("decision:existing-defense"),FactionStanceAction.DeclareHostile,home,enemy,declared.ElapsedSeconds+existingDeclarationDelay,declared.ElapsedSeconds+1000000),new(defender.Id));
             s=new WorldSession(declared);
         }
         Military(NewMilitaryAction.Load,100000);Military(NewMilitaryAction.Deploy);
@@ -204,7 +205,7 @@ public sealed class NpcArmyTests
                 var battle=after.WorldClashes!.Steps.Last();
                 Assert.NotEmpty(battle.Result.Strikes);
                 var decision=after.FactionStances!.Decisions.SingleOrDefault(d=>d.Authority.Issuer.Value==defender.Id && d.Input.Target==enemy);
-                if(alreadyDeclared) Assert.Equal("decision:existing-defense",decision?.Input.Id.Value);
+                if(existingDeclarationDelay>=0) Assert.Equal("decision:existing-defense",decision?.Input.Id.Value);
                 else
                 {
                     Assert.NotNull(decision);
