@@ -38,7 +38,9 @@ public static class InformationSchemes
  internal static PersonalObject[] Documents(ContractWorld w,long revision)=>Events(w).Where(e=>e.Revision<=revision&&e.Input.Action is SchemeAction.WriteLetter or SchemeAction.ForgeLetter).Select(e=>new PersonalObject(e.Input.Id,"書状（封書・名義の確認は別）","scheme-letter",1,e.Actor,e.Actor,e.Site,null,false,["書状の実物。内容や名義は受領と照合を経て判断する"])).ToArray();
  public static void Execute(ContractWorld w,SchemeInput i,EntityId actor)
  {
-  Need(NewGameWork.Enabled(w)&&Adult(w,actor)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Topic),"扱えない情報です");var site=SocialWorld.Site(w,actor);Need(site!=null,"現地へ到着してください");
+  Need(NewGameWork.Enabled(w)&&Adult(w,actor)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Topic),"扱えない情報です");var site=SocialWorld.Site(w,actor);
+  if(site==null && i.Action is (SchemeAction.ObservePerson or SchemeAction.SeekContact))site=Assassination.RoadMeeting(w,actor,i.Subject,w.ElapsedSeconds);
+  Need(site!=null,"相手に接触できる場所へ移動してください");
   Need(i.Action is not(SchemeAction.AcceptOperation or SchemeAction.CaptureScout or SchemeAction.PlanReturn or SchemeAction.ScoutBlocked or SchemeAction.ReportScout),"密偵の結果は実際の行程から確定します");
   Need(Assassination.CaptivityAt(w,actor,w.ElapsedSeconds,w.CommitSequence)==null,"捕縛中は行動できません");
   if(i.Action==SchemeAction.ReleaseCaptive){Assassination.CheckRelease(w,i,actor,site.Value,w.ElapsedSeconds,w.CommitSequence);Add(w,i,actor,site.Value);return;}

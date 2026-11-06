@@ -4,6 +4,27 @@ public sealed record PersonSighting(EntityId Original,EntityId Person,EntityId S
 
 public static class Assassination
 {
+    // 同じ街道を通った履歴ではなく、指定時刻に移動中の一行程を調べる。
+    public static EntityId? RoadMeeting(ContractWorld world, EntityId actor, EntityId other, long at)
+    {
+        if (actor == other || world.Branches == null) return null;
+        JourneyLeg? ActiveLeg(EntityId person)
+        {
+            var trip = world.Branches.Journeys.LastOrDefault(j => j.Actor == person && j.Legs[0].StartAt <= at);
+            if (trip == null) return null;
+            var task = world.Tasks.Single(t => t.Id == trip.Task);
+            if (task.FinishedAt is {} end && end <= at) return null;
+            return trip.Legs.FirstOrDefault(l => l.StartAt <= at && at < l.EndAt && !NationalRoutes.Sea(l.Edge));
+        }
+        var leg = ActiveLeg(actor);
+        if (leg == null || ActiveLeg(other)?.Edge != leg.Edge) return null;
+        var a = RegionalCampaign.RoadActorPointAt(world, actor, at);
+        var b = RegionalCampaign.RoadActorPointAt(world, other, at);
+        decimal east = (decimal)a.EastMm - b.EastMm, north = (decimal)a.NorthMm - b.NorthMm;
+        const int reachMm = 20_000;
+        return east * east + north * north <= (decimal)reachMm * reachMm ? new EntityId("road:" + leg.Edge) : null;
+    }
+
     public static PersonSighting[] Sightings(ContractWorld world,EntityId observer)
     {
         var rows=InformationSchemes.Events(world);
@@ -151,7 +172,8 @@ public static class Assassination
         if (!CastleSiege.Enabled(world) || DeadAt(world,actor,at,revision-1) || DeadAt(world,input.Subject,at,revision-1) || input.Subject==actor || input.Person!=actor || input.Destination!=null ||
             input.Topic!=SchemeTopic.ForeignContact || !world.Characters.Any(c=>c.Id==input.Subject))
             throw new InvalidDataException("現地で確かめる相手を指定してください");
-        if (!TransportWork.At(world,actor,site,at,revision,true))
+        bool road = site.Value.StartsWith("road:",StringComparison.Ordinal);
+        if (road ? RoadMeeting(world,actor,input.Subject,at)!=site : !TransportWork.At(world,actor,site,at,revision,true))
             throw new InvalidDataException("自分が現地に到着してから行動してください");
         if (input.Action==SchemeAction.SeekContact)
         {
@@ -165,7 +187,7 @@ public static class Assassination
                 !world.Tasks.Any(t=>t.RequestId==mission.Movement!.RequestId && t.Execution==ExecutionPhase.Completed && t.FinishedAt==at))
                 throw new InvalidDataException("所在を目撃した派遣と到着時刻が違います");
         }
-        if (!TransportWork.At(world,input.Subject,site,at,revision,true))
+        if (!road && !TransportWork.At(world,input.Subject,site,at,revision,true))
             throw new InvalidDataException("現地で対象を見つけられませんでした");
     }
 }
