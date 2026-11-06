@@ -5,6 +5,8 @@ public sealed record CouncilCharter(EntityId Origin,CouncilRule Rule);
 
 public sealed record CouncilBallot(CouncilCharter Charter,EntityId Demand,EntityId DemandingHouse,SubmissionConditions Conditions,bool ChairSupports);
 
+public sealed record CouncilDepartureCopy(EntityId Original,CouncilCharter Charter,EntityId DepartingHouse);
+
 public static class KokujinCouncil
 {
     // 開封した承諾と成立確認だけから、その武将が加盟を確認できる家を返す。
@@ -14,6 +16,37 @@ public static class KokujinCouncil
             .Where(f=>f.Terms.Charter==charter && at<f.Terms.Until &&
                 !TreatyNegotiations.KnowsEnding(world,observer,f.Acceptance,at,revision))
             .SelectMany(f=>new[]{f.Terms.A,f.Terms.B}).Distinct().OrderBy(id=>id.Value,StringComparer.Ordinal).ToArray();
+    }
+
+    // 契状の解除予告に引用できるのは、離脱当主が成立を確認した自家の個別従属だけ。
+    internal static TreatyFormation? SeparateSubmission(ContractWorld w,TreatyFormation charter,EntityId head,long at,long revision)
+    {
+        if(charter.Terms.Charter==null)return null;
+        return TreatyNegotiations.Known(w,head,at,revision).FirstOrDefault(f=>
+            f.Terms.Submission!=null && f.Terms.B==charter.Terms.B && f.Terms.A!=charter.Terms.A &&
+            f.At>=charter.At && at<f.Terms.Until && !TreatyNegotiations.KnowsEnding(w,head,f.Acceptance,at,revision) &&
+            !(w.Treaties?.Papers.Any(p=>p.Input.Ballot?.Demand==f.Terms.Origin)??false));
+    }
+
+    public static TreatyOperationInput? Departure(ContractWorld w,TreatyFormation charter,EntityId head,long at,long revision)
+    {
+        if(at+charter.Terms.NoticeSeconds>=charter.Terms.Until ||
+            w.Treaties!.Operations.Any(o=>o.Input.Acceptance==charter.Acceptance && o.Kind==TreatyOperation.Terminate && o.Author==head))return null;
+        if(SeparateSubmission(w,charter,head,at,revision) is not {} submission)return null;
+        return new(HouseholdCourt.Id("council-departure",charter.Acceptance.Value+"/"+submission.Acceptance.Value),
+            TreatyOperation.Terminate,charter.Acceptance,charter.Terms.B,charter.Terms.A,
+            EffectiveAt:at+charter.Terms.NoticeSeconds,Evidence:submission.Acceptance.Value);
+    }
+
+    public static bool KnowsSeparateDeparture(ContractWorld w,EntityId observer,EntityId house,long at,long revision)
+    {
+        var state=w.Treaties;
+        if(state==null)return false;
+        if(state.Papers.Any(p=>p.Input.DepartureCopy?.DepartingHouse==house && p.Recipient==observer &&
+            state.Openings.Any(o=>o.Message==p.Message && o.Actor==observer && o.At<=at && o.Revision<=revision)))return true;
+        return state.Operations.Any(p=>p.Kind==TreatyOperation.Terminate && p.Terms.Charter!=null &&
+            p.Input.Owner==house && p.Intent.Evidence!=null && p.Recipient==observer && p.At<=at && p.Revision<=revision &&
+            state.OperationOpenings.Any(o=>o.Message==p.Message && o.Actor==observer && o.At<=at && o.Revision<=revision));
     }
 
     public sealed record Count(int Houses,int Yes,int No,int Required)

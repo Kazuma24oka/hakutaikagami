@@ -39,6 +39,49 @@ public sealed class TreatyDefenseTests
         Assert.DoesNotContain(s.DiagnosticSnapshot().Treaties!.Formations,f=>f.Acceptance==vote.Input.Id);
         Good(s.NegotiateTreaty(new(new("request:league-verdict"),Count().Verdict!.Value,Own,raider,demand.Input.Id),Player,s.Revision));
     }
+    [Fact]
+    public void MemberSubmissionIsLearnedFromDepartureLetterOnlyAndEndsAfterNotice()
+    {
+        var s=Start(campaign:true);
+        EntityId member=new("org:ally"),raider=new("org:ally-raider"),id=new("request:departure-charter");
+        var charter=new CouncilCharter(id,CouncilRule.Majority);
+        TreatyPaper Paper(EntityId source)=>s.DiagnosticSnapshot().Treaties!.Papers.Single(p=>p.Input.Source==source);
+        Good(s.NegotiateTreaty(new(id,TreatyAction.Propose,Own,member,Days:30,NoticeDays:1){Charter=charter},Player,s.Revision));
+        var invitation=s.DiagnosticSnapshot().Treaties!.Papers.Single();
+        At(s,Arrival(s,invitation.Message)+1);
+        var consent=Paper(id);At(s,Arrival(s,consent.Message));Open(s,consent.Message);
+        Good(s.NegotiateTreaty(new(new("request:charter-confirm"),TreatyAction.Confirm,Own,member,consent.Input.Id),Player,s.Revision));
+        At(s,Arrival(s,Paper(consent.Input.Id).Message)+1);
+        var second=new EntityId("request:second-signatory");
+        Good(s.NegotiateTreaty(new(second,TreatyAction.Propose,Own,Other,Days:20,NoticeDays:1){Charter=charter},Player,s.Revision));
+        var secondInvite=s.DiagnosticSnapshot().Treaties!.Papers.Single(p=>p.Input.Id==second);
+        At(s,Arrival(s,secondInvite.Message)+1);
+        var secondReply=Paper(second);At(s,Arrival(s,secondReply.Message));Open(s,secondReply.Message);
+        var w=s.DiagnosticSnapshot();w.CommitSequence++;
+        FactionStances.Apply(w,new(new("decision:member-demand"),FactionStanceAction.DeclareHostile,raider,member,w.ElapsedSeconds,w.ElapsedSeconds+60),new("created:ally-raider"));
+        s=new WorldSession(w);At(s,s.Seconds+2);
+        var demand=s.DiagnosticSnapshot().Treaties!.Papers.Single(p=>p.Input.Submission!=null);
+        At(s,Arrival(s,demand.Message)+1);
+        var answer=Paper(demand.Input.Id);Assert.Equal(TreatyAction.Accept,answer.Input.Action);
+        At(s,Arrival(s,answer.Message)+1);
+        var check=s.DiagnosticSnapshot();Assert.True(check.Treaties!.Papers.Any(p=>p.Input.Source==answer.Input.Id),string.Join(",",check.Messaging.Attempts.Where(a=>a.MessageId==answer.Message).Select(a=>a.Status.ToString()))+" 成立数 "+check.Treaties.Formations.Length+" 開封 "+check.Treaties.Openings.Any(o=>o.Message==answer.Message)+" 時刻 "+s.Seconds+" 期限 "+answer.Terms.ReplyBy);
+        var confirmed=Paper(answer.Input.Id);
+        At(s,Arrival(s,confirmed.Message)+1);
+        var departure=s.DiagnosticSnapshot().Treaties!.Operations.Single(p=>p.Input.Evidence==answer.Input.Id.Value);
+        bool Knows()=>KokujinCouncil.KnowsSeparateDeparture(s.DiagnosticSnapshot(),Player,member,s.Seconds,s.Revision);
+        bool Includes()=>KokujinCouncil.KnownMembers(s.DiagnosticSnapshot(),Player,charter,s.Seconds,s.Revision).Contains(member);
+        Assert.False(Knows());Assert.True(Includes());
+        At(s,Arrival(s,departure.Message));Assert.False(Knows());
+        s=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(s.DiagnosticSnapshot())));
+        Open(s,departure.Message);Assert.True(Knows());
+        var forward=Assert.Single(TreatyNegotiations.DepartureCopies(s.DiagnosticSnapshot(),departure,Player,s.Seconds,s.Revision));
+        Good(s.NegotiateTreaty(forward,Player,s.Revision));
+        var copy=s.DiagnosticSnapshot().Treaties!.Papers.Single(p=>p.Input.Id==forward.Id);
+        Assert.Equal(Other,copy.Input.Target);
+        bool OtherKnows()=>KokujinCouncil.KnowsSeparateDeparture(s.DiagnosticSnapshot(),copy.Recipient,member,s.Seconds,s.Revision);
+        Assert.False(OtherKnows());At(s,Arrival(s,copy.Message)+1);Assert.True(OtherKnows());
+        At(s,Math.Max(s.Seconds,departure.Intent.EffectiveAt));Assert.False(Includes());
+    }
     static readonly Lazy<ContractWorld> Prepared=new(()=>BuildReady());
     static ContractWorld BuildReady(int amount=100,bool far=false,bool wide=false,bool campaign=false){var target=campaign?new EntityId("org:ally"):wide?new EntityId("org:hojo"):Other;var s=Start(far,campaign);Good(s.NegotiateTreaty(new(new("request:defense-treaty"),TreatyAction.Propose,Own,target,Days:30,Clauses:TreatyClause.Defense,NoticeDays:1),Player,s.Revision));var p=s.DiagnosticSnapshot().Treaties!.Papers.Single();At(s,Arrival(s,p.Message)+1);var a=s.DiagnosticSnapshot().Treaties!.Papers.Last();At(s,Arrival(s,a.Message));Open(s,a.Message);Good(s.NegotiateTreaty(new(new("request:defense-confirm"),TreatyAction.Confirm,Own,target,a.Input.Id),Player,s.Revision));var c=s.DiagnosticSnapshot().Treaties!.Papers.Last();At(s,Arrival(s,c.Message)+1);Good(s.OperateTreaty(new(new("request:actual-defense"),TreatyOperation.RequestDefense,a.Input.Id,Own,target,ReplyBy:s.Seconds+7*86400,Amount:amount,Evidence:"100人の防衛援軍を希望する"),Player,s.Revision));var r=s.DiagnosticSnapshot().Treaties!.Operations.Last();At(s,Arrival(s,r.Message)+1);var receipt=s.DiagnosticSnapshot().Treaties!.Operations.Last();At(s,Arrival(s,receipt.Message));Open(s,receipt.Message);s.SetPaused(true);return s.DiagnosticSnapshot();}
     [Theory]
