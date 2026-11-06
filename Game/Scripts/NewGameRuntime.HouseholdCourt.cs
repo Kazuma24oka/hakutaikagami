@@ -15,9 +15,27 @@ public partial class NewGameRuntime
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
-  if(courtCategory==3)
-   foreach(var former in HouseRestoration.ObserveFormerSeat(w,actor))
-    SocialText(box,$"旧領の見聞：かつて仕えた家が治めていた{NewGameWorld.SiteName(former.Site.Value)}で、支配が変わったことを確認した。");
+  if(courtCategory==3){
+   var history=w.Court?.Events??[];
+   foreach(var former in HouseRestoration.ObserveFormerSeat(w,actor)){
+    SocialText(box,$"旧領の見聞：{NewGameWorld.SiteName(former.Site.Value)}で旧主の支配が変わったことを確認した。");
+    foreach(var peer in w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site)){
+     if(history.Any(e=>e.Input.Action==CourtAction.SeekRestorationSupport && e.Actor==actor && e.Input.Person==peer.Id && e.Input.Owner==former.House && e.Place==site))continue;
+     var key="restore/"+former.House.Value+"/"+peer.Id.Value;
+     Button(key,MeritRewards.DisplayName(w,actor,peer.Id)+"に旧家再興の支持を求める",()=>Run(new(Nonce(key),CourtAction.SeekRestorationSupport,peer.Id,former.House,former.Site)));
+    }
+   }
+   foreach(var ask in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && (e.Actor==actor || e.Input.Person==actor))){
+    var reply=history.SingleOrDefault(e=>e.Input.Reference==ask.Input.Id && e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
+    var peer=actor==ask.Actor?ask.Input.Person:ask.Actor;
+    SocialText(box,MeritRewards.DisplayName(w,actor,peer)+"との再興相談："+(reply==null?"返答待ち":reply.Input.Action==CourtAction.SupportRestoration?"個人として支持":"判断を留保"));
+    if(reply!=null || ask.Input.Person!=actor || site!=ask.Place || SocialWorld.Site(w,peer)!=site)continue;
+    foreach(var choice in new[]{CourtAction.SupportRestoration,CourtAction.ReserveRestoration}){
+     var key=choice+"/"+ask.Input.Id.Value;
+     Button(key,choice==CourtAction.SupportRestoration?"個人として支持する":"判断を留保する",()=>Run(new(Nonce(key),choice,peer,ask.Input.Owner,ask.Place,Reference:ask.Input.Id)));
+    }
+   }
+  }
   foreach(var parcel in SocialWorld.Gifts(w,actor).Where(g=>g.Recipient==actor&&g.Phase=="運搬・受領待ち")){
    var asset=w.SocialWorld!.Events.Single(e=>e.Input.Id==parcel.Id).Input.Asset;if(asset==null)continue;var doc=HouseholdCourt.DocumentRows(w).SingleOrDefault(d=>d.Id==asset);if(doc==null)continue;
    Button("read-document",doc.Name+"を開いて、実物を確認する",()=>{CancelAdvancePrefetch();var r=Session.ManageSocial(new(Nonce("read/"+doc.Id.Value),SocialWorldAction.ReceiveGift,parcel.Sender,Reference:parcel.Id),rev);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();});
