@@ -117,11 +117,12 @@ public sealed class HouseConditionTests
     }
 
     [Theory]
-    [InlineData(false,false,false)]
-    [InlineData(false,true,false)]
-    [InlineData(true,false,false)]
-    [InlineData(false,false,true)]
-    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied,bool exchange,bool residence)
+    [InlineData(false,false,false,false)]
+    [InlineData(false,true,false,false)]
+    [InlineData(true,false,false,false)]
+    [InlineData(false,false,true,false)]
+    [InlineData(false,true,false,true)]
+    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied,bool exchange,bool residence,bool surrender)
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
         var officer=NewGameWorldTests.Officer("created:transfer-officer",StartTemplate.Castellan,lord:head.Id);
@@ -150,6 +151,7 @@ public sealed class HouseConditionTests
             w=steward.DiagnosticSnapshot();
             proposal=proposal with{Reform=ReformKind.ChangeFief,Amount=25,LevyGrant=levy.Id};
         }
+        if(surrender)proposal=proposal with{Reform=ReformKind.Confiscate,NewEstate=null};
         w.CommitSequence++;HouseholdCourt.Execute(w,proposal,lord);
         var s=new WorldSession(w);
         NewGameWorldTests.At(s,offset+120);
@@ -168,6 +170,21 @@ public sealed class HouseConditionTests
         NewGameWorldTests.At(s,offset+360);
         Assert.Equal(ResultCode.Accepted,s.Open(person,document,s.Revision).Code);
         Assert.Equal(proposal.Site,SocialWorld.Site(s.DiagnosticSnapshot(),person));
+        if(surrender){
+            var handover=new CourtInput(new("request:surrender-original"),CourtAction.SurrenderLevyShare,lord,owner,proposal.Site,Amount:25,Reference:order.Id){LevyGrant=levy.Id};
+            var handedBack=s.ManageCourt(handover,s.Revision);
+            Assert.True(handedBack.Code==ResultCode.Accepted,handedBack.VisibleReason);
+            s=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+            Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(handover with{Id=new("request:duplicate-surrender")},s.Revision).Code);
+            var more=s.ManageCommunity(new(new("request:after-forfeiture"),proposal.Site,EconomyAction.CollectLevy,40),person,s.Revision);
+            Assert.True(more.Code==ResultCode.Accepted,more.VisibleReason);
+            var state=s.DiagnosticSnapshot();
+            Assert.Equal(20,HouseReforms.AccruedLevyRice(state,HouseReforms.LevyGrants(state).Single(),s.Seconds,s.Revision+1));
+            var pay=s.ManageCourt(new(new("request:collect-arrears"),CourtAction.ReceiveLevyShare,lord,owner,proposal.Site,Amount:20,Reference:levy.Id),s.Revision);
+            Assert.True(pay.Code==ResultCode.Accepted,pay.VisibleReason);
+            Assert.Contains(state.Offices,o=>o.Subject==person && o.Kind=="castellan" && o.Until==long.MaxValue);
+            return;
+        }
         var heirloom=SocialAssets.Catalog(s.DiagnosticSnapshot(),proposal.Site).Single(a=>a.Kind=="tea");
         var purchase=s.ManageSocialAsset(new(new("request:transfer-tea"),SocialAssetAction.Buy,person,heirloom.Id),s.Revision);
         Assert.True(purchase.Code==ResultCode.Accepted,purchase.VisibleReason);

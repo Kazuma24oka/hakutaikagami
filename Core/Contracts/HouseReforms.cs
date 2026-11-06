@@ -40,7 +40,7 @@ public static class HouseReforms
         }
     }
     public static long LevyEnd(ContractWorld w,EntityId id)=>HouseholdCourt.Events(w)
-        .FirstOrDefault(e=>e.Input.Action==CourtAction.ExchangeLevyShare && e.Input.LevyGrant==id)?.Revision??long.MaxValue;
+        .FirstOrDefault(e=>(e.Input.Action is CourtAction.ExchangeLevyShare or CourtAction.SurrenderLevyShare) && e.Input.LevyGrant==id)?.Revision??long.MaxValue;
 
     public static long AccruedLevyRice(ContractWorld w,CourtEvent grant,long at,long revision)
     {
@@ -138,6 +138,7 @@ public static class HouseReforms
     }
     internal static void SendTransfer(ContractWorld w,CourtEvent proposal,CourtInput order,EntityId actor)=>
         Dispatch(w,order,TransferOrder,actor,proposal.Input.Person,
+            proposal.Input.Reform==ReformKind.Confiscate?$"現地で徴収米の給付原本 {proposal.Input.LevyGrant} を返上せよ。":
             NewGameWorld.SiteName(proposal.Input.Site.Value)+"で旧職を引き継ぎ、"+
             NewGameWorld.SiteName(proposal.Input.NewEstate!.Value.Value)+"へ赴任せよ。原本："+proposal.Input.Id.Value);
 

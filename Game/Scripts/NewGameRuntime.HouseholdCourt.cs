@@ -78,6 +78,11 @@ public partial class NewGameRuntime
      Button("reside-"+order.Input.Id,"この城下に居所を移す",()=>Run(new(Nonce("reside/"+order.Input.Id),CourtAction.SettleCastleResidence,order.Actor,terms.Owner,site.Value,Reference:order.Input.Id)));
     continue;
    }
+   if(terms.Reform==ReformKind.Confiscate && terms.LevyGrant is {} surrender){
+    if(site==terms.Site && HouseReforms.LevyEnd(w,surrender)==long.MaxValue)
+     Button("surrender-"+order.Input.Id,"当主に徴収米の給付原本を返上する",()=>Run(new CourtInput(Nonce("surrender/"+order.Input.Id),CourtAction.SurrenderLevyShare,order.Actor,terms.Owner,site.Value,Amount:terms.Amount,Reference:order.Input.Id){LevyGrant=surrender}));
+    continue;
+   }
    if(terms.LevyGrant is {} oldGrant){
     if(site==terms.NewEstate && HouseReforms.LevyEnd(w,oldGrant)==long.MaxValue)
      Button("exchange-"+order.Input.Id,"新領で徴収米の給付原本を切り替える",()=>Run(new CourtInput(Nonce("exchange/"+order.Input.Id),
@@ -176,7 +181,7 @@ public partial class NewGameRuntime
     box.AddChild(estate);
     void ShowEstate()=>estate.Visible=kinds[reform.Selected] is ReformKind.Relocate or ReformKind.ChangeFief or ReformKind.CastleResidence;
     reform.ItemSelected+=_=>ShowEstate();ShowEstate();
-    CourtEvent? OfferedLevy()=>kinds[reform.Selected]==ReformKind.ChangeFief?HouseReforms.LevyGrants(w).SingleOrDefault(g=>
+    CourtEvent? OfferedLevy()=>kinds[reform.Selected] is ReformKind.ChangeFief or ReformKind.Confiscate?HouseReforms.LevyGrants(w).SingleOrDefault(g=>
         g.Input.Person==roster[persons.Selected] && g.Place==site && g.Input.Owner==house && HouseReforms.LevyEnd(w,g.Input.Id)==long.MaxValue):null;
     Button("consult-reform","この改革案について意向を問う",()=>Run(Command("reform",CourtAction.ConsultReform,roster[persons.Selected]) with{Reform=kinds[reform.Selected],LevyGrant=OfferedLevy()?.Input.Id,Amount=OfferedLevy()?.Input.Amount??0,NewEstate=estate.Visible && destinations.Length>0?destinations[estate.Selected]:null,BarrierEdge=kinds[reform.Selected]==ReformKind.RemoveBarrier && roads.Length>0?roads[roadChoice.Selected].Id:null}));
    }
@@ -201,8 +206,8 @@ public partial class NewGameRuntime
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この相談案は見送り済み");
      else if(head && site==e.Input.Site && house==e.Input.Owner){
-      if(e.Input.NewEstate!=null && w.Messaging.Messages.Single(m=>m.Id==id).Body==HouseReforms.Name(e.Input.Reform!.Value)+"への返答："+HouseReforms.ReplyText(CourtAction.AssentReform))
-       Button("transfer-"+e.Input.Id,"承諾された条件で移封を発令する",()=>Run(Command("issue-transfer/"+e.Input.Id,CourtAction.IssueTransfer,e.Input.Person,reference:e.Input.Id)));
+      if((e.Input.NewEstate!=null || e.Input.Reform==ReformKind.Confiscate && e.Input.LevyGrant!=null) && w.Messaging.Messages.Single(m=>m.Id==id).Body==HouseReforms.Name(e.Input.Reform!.Value)+"への返答："+HouseReforms.ReplyText(CourtAction.AssentReform))
+       Button("transfer-"+e.Input.Id,e.Input.Reform==ReformKind.Confiscate?"承諾された給付原本の返上を命じる":"承諾された条件で移転を発令する",()=>Run(Command("issue-transfer/"+e.Input.Id,CourtAction.IssueTransfer,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.RemoveBarrier && e.Input.BarrierEdge is {} edge && HouseReforms.BarrierAt(w,edge,w.ElapsedSeconds,rev+1)!=null)
        Button("remove-barrier-"+e.Input.Id,"相談した道路の関所を撤廃する",()=>Run(Command("remove-barrier/"+e.Input.Id,CourtAction.AbolishBarrier,e.Input.Person,reference:e.Input.Id) with{BarrierEdge=edge}));
       if(e.Input.Reform==ReformKind.ReduceCastles && CastleWorks.Enabled(w) && MaterialMarkets.Sites(w).Contains(e.Input.Site) && HouseReforms.CastleReduction(w,e.Input.Site,w.ElapsedSeconds,rev+1)==null)
