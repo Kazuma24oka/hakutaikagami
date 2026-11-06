@@ -26,6 +26,16 @@ public static class HouseReforms
             w.LandRights.Any(r=>r.Kind=="control" && r.Subject==e.Input.Owner && r.Target==site &&
                 r.From<=e.At && r.From<=at && at<r.Until && r.Revision<=revision));
 
+    public static CourtEvent? TempleMarketSeat(ContractWorld w,EntityId site,long at,long revision)=>
+        HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.Action==CourtAction.GrantTempleSeat &&
+            e.Input.Site==site && (e.At<at || e.At==at && e.Revision<revision));
+
+    public static long WoodPurchaseLimit(ContractWorld w,EntityId site,long at,long revision)
+    {
+        if(!OpenMarketAt(w,site,at,revision))return 2;
+        return TempleMarketSeat(w,site,at,revision)==null?4:3;
+    }
+
     static void Dispatch(ContractWorld w,CourtInput input,string kind,EntityId from,EntityId to,string body)
     {
         var address=FamilyBirth.People(w).Single(p=>p.Id==to.Value).Site;
