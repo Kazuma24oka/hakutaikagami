@@ -1,0 +1,13 @@
+{
+  "scope": "independence-letters",
+  "ui": "Docs/Design/IndependenceLettersV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 3
+  },
+  "proofs": {
+    "Docs/Design/IndependenceLettersV1/runtime-local/ui.log": "7a828f790f18d4e2988bc711f80e215d7929699fd0c3965292a789d2f0d0a4cb",
+    "Docs/Design/IndependenceLettersV1/runtime-local/letters.trx": "f0c3e2887d38a75cf90f706db0ded082189aa176faa74a8c93adcb1ad3838e70",
+    "Docs/Design/IndependenceLettersV1/verification.json": "0c12a4e11a8ee385a20f950db265b8265f6707de120cb383c9087211a291838d",
+    "Docs/Design/IndependenceLettersV1/completion.json": "f374990458146074e8d80f73b43c0e6708ad9d5b9f03590b47b4727760550f8f"
+  }
+}

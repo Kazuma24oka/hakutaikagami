@@ -2,6 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
+## 製品受入：他城への独立宣言
+
+[書状と返書の実測](../Design/IndependenceLettersV1/entry-verification.md)。次は他城の守備と実効支配を扱う。
+
 ## 製品受入：城主独立時の城内係争
 
 [守備・交渉・本丸受領の実測](../Design/IndependenceGarrisonV1/entry-verification.md)。次は独立宣言を他の城へ届け、現地の武将・守備隊が個別に返答する経路を扱う。

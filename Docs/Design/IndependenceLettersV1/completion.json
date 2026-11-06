@@ -1,0 +1,37 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "独立を宣言した本人が既知の他城の相手へ、公開する内容と宛先を選んで書状を届ける",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/IndependenceLetterCheck.cs"
+      ]
+    },
+    {
+      "contract": "書状の到着と開封を区別し、密約の相手・署名・未通知の他城の意思を漏らさない",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/IndependenceLetterCheck.cs"
+      ]
+    },
+    {
+      "contract": "受け取った武将が追随・残留・中立を選び、その選択が本人の帰属と実際の権限だけに作用する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/IndependenceLetterCheck.cs"
+      ]
+    },
+    {
+      "contract": "宣言配送中と返書中の実保存を復旧しても、当事者の認識、帰属、通常画面の結果が一致する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/IndependenceLetterCheck.cs"
+      ]
+    }
+  ]
+}
