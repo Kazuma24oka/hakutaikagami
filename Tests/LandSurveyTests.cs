@@ -7,8 +7,10 @@ public sealed class LandSurveyTests
  internal static WorldSession Start()=>HouseholdCourtTests.Start();
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static SurveyInput Input(WorldSession s,SurveyAction action,EntityId? reference=null,LandTaxRate rate=LandTaxRate.Ordinary)=>new(new("request:survey/"+s.Revision),action,Owner,Site,reference,rate);
- [Fact]
- public void NeighborUnderItsOwnHeavyDecreeJoinsOnlyAfterReceivingTheLetter()
+ [Theory]
+ [InlineData(false)]
+ [InlineData(true)]
+ public void NeighborUnderItsOwnHeavyDecreeJoinsOnlyAfterReceivingTheLetter(bool relieveBeforeTempleCall)
  {
      var sender=NewGameWorldTests.Officer("created:sender",StartTemplate.Daimyo,"site:sakai");
      var receiver=NewGameWorldTests.Officer("created:receiver",StartTemplate.Daimyo,"site:ishiyama");
@@ -33,6 +35,25 @@ public sealed class LandSurveyTests
          var arrived=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition);
          Assert.True(arrived.Letter!.Reply!.Joined);
          Assert.DoesNotContain("ともに減免",run.VillageView()!.Administration);
+     }
+     foreach(var run in new[]{s,resumed}){
+         var call=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition).Proclamation!;
+         Assert.NotNull(call);Assert.Null(call.Answer);
+         Assert.DoesNotContain("本願寺の檄",run.VillageView()!.Administration);
+         if(relieveBeforeTempleCall)Good(run.ManageCommunity(new(new("request:aid-before-call"),new(sender.Site),EconomyAction.RelieveVillage,200),run.PlayerControl,run.Revision));
+         NewGameWorldTests.At(run,call.Route[^1].EndAt);
+         var answer=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition).Proclamation!.Answer!;
+         Assert.NotNull(answer);Assert.Equal(!relieveBeforeTempleCall,answer.Joined);
+         var ledger=run.DiagnosticSnapshot().Communities!;
+         Assert.Equal(relieveBeforeTempleCall?0:10,ledger.Flights!.Single(f=>f.Petition==flight.Petition).Proclamation!.Mustered);
+         Assert.Contains(relieveBeforeTempleCall?"蜂起を見送り":"蜂起に加わる",run.VillageView()!.Administration);
+         if(!relieveBeforeTempleCall){
+             int workers=ledger.Accounts.Single(a=>a.Site==flight.From).Workforce;
+             NewGameWorldTests.At(run,run.Seconds+1);
+             Good(run.ManageCommunity(new(new("request:relieve-uprising"),flight.From,EconomyAction.RelieveVillage,200),run.PlayerControl,run.Revision));
+             Assert.Equal(workers+10,run.CommunityEconomyView()!.Accounts.Workforce);
+             Assert.Contains("蜂起を解き",run.VillageView()!.Administration);
+         }
      }
      Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));
  }

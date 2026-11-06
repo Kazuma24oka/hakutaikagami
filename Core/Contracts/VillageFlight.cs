@@ -1,7 +1,7 @@
 namespace HakutaiKagami.Core.Contracts;
 
 // 出発時の同じ働き手を道中から到着先へ移す。拠点間は既存の陸路の所要時間を使う。
-public sealed record VillageFlight(string Petition,EntityId From,EntityId To,JourneyLeg[] Route,int People,long Revision)
+public sealed partial record VillageFlight(string Petition,EntityId From,EntityId To,JourneyLeg[] Route,int People,long Revision)
 {
     const long Wait=60*86400L;
     public sealed record Homecoming(EntityId Decree,EntityId Messenger,JourneyLeg[] Route,long Revision);
@@ -60,13 +60,20 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
                 if(f.Return is {} r)reports.Add((r.Route[0].StartAt,$"避難していた{f.People}人が減免を聞き、帰路につきました。"));
             }
         }
+        foreach(var f in w.Communities?.Flights??[]){
+            if(f.Proclamation is not {} call)continue;
+            if(site==f.To)reports.Add((call.Route[0].StartAt,"石山本願寺から門徒の村へ檄を送りました。"));
+            if(site==f.From && call.Answer is {} answer)reports.Add((answer.At,answer.Joined?"本願寺の檄を受け取り、村は蜂起に加わると答えました。":"本願寺の檄を受け取りましたが、村は蜂起を見送りました。"));
+        }
+        foreach(var f in w.Communities?.Flights??[])
+            if(f.From==site && f.Proclamation?.Dispersed is {} d)reports.Add((d.At,"村は蜂起を解き、参加した働き手が生業に戻りました。"));
         return reports.Count==0?"":reports.OrderBy(r=>r.At).Last().Text;
     }
 
     static IEnumerable<CommunityNotice> Petitions(CommunityState ledger)=>ledger.Notices.Where(n=>n.Petition?.TaxDecree!=null)
         .GroupBy(n=>n.Petition!.TaxDecree).Select(g=>g.First());
     internal static IEnumerable<long> Boundaries(ContractWorld w)=>Petitions(w.Communities!).Select(n=>n.At+Wait)
-        .Concat((w.Communities!.Flights??[]).Select(f=>f.Return?.Route[^1].EndAt??f.Route[^1].EndAt));
+        .Concat((w.Communities!.Flights??[]).SelectMany(f=>new[]{f.Route[^1].EndAt,f.Return?.Route[^1].EndAt??0,f.Proclamation?.Route[^1].EndAt??0}));
 
     internal static bool Depart(ContractWorld w)
     {
@@ -101,6 +108,8 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
                 f=f with {Letter=letter with {Reply=Answer(w,f,at,w.CommitSequence)}};
                 flights[i]=f;changed=true;
             }
+            var called=AdvanceProclamation(w,f);
+            if(!ReferenceEquals(f,called)){f=called;flights[i]=f;changed=true;}
             if(f.Return!=null || at<f.Route[^1].EndAt || LandSurvey.EffectiveDecree(w,f.From,at) is not {} decree ||
                 decree.Input.Rate==LandTaxRate.Heavy || !TransportWork.At(w,decree.Actor,f.To,at,w.CommitSequence+1,true))continue;
             var hosts=ledger.Accounts.Single(a=>a.Site==f.To);
@@ -140,6 +149,7 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
                     answer.Revision>w.CommitSequence || answer!=Answer(w,f,answer.At,answer.Revision)))
                     throw new InvalidDataException("受取村の代表と現地事情に基づく返答が一致しません");
             }
+            ValidateProclamation(w,f);
             if(f.Return is {} r){
                 if(r.Route is not {Length:>0} || r.Revision<f.Revision || r.Revision>w.CommitSequence)
                     throw new InvalidDataException("帰村の経路・版が不正です");
