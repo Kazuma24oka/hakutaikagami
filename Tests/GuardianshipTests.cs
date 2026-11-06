@@ -25,6 +25,7 @@ public class GuardianshipTests
             if(session.AgreeGuardian(paper,new(r.Id),session.Revision).Code==ResultCode.Accepted)break;
         w=session.DiagnosticSnapshot();
         var mandate=Assert.Single(w.GuardianMandates!);
+        var lands=ContractJson.Write(w.LandRights);var units=ContractJson.Write(w.Units);
         Assert.False(MinorGuardians.MayKeepLedger(w,mandate));
         const long death=12830400;
         w.ElapsedSeconds=death-1;
@@ -32,6 +33,11 @@ public class GuardianshipTests
         w=session.DiagnosticSnapshot();
         Assert.True(MinorGuardians.MayKeepLedger(w,mandate));
         Assert.Equal(mandate.Guardian,GuardianLedger.Latest(w,mandate)!.Holder);
+        Assert.Equal(present?paper.Heir:paper.Head,HouseSuccession.Head(w,house));
+        Assert.Equal(present?1:0,w.MinorityAccessions?.Length??0);
+        Assert.Equal(paper.Head,HouseSuccession.Head(w,house,death-1,w.CommitSequence-1));
+        Assert.Null(FactionStances.ResolveAuthority(w,paper.Heir,house,death,w.CommitSequence));
+        Assert.Equal(lands,ContractJson.Write(w.LandRights));Assert.Equal(units,ContractJson.Write(w.Units));
         Assert.Null(FactionStances.ResolveAuthority(w,mandate.Guardian,house,death,w.CommitSequence));
         foreach(var attempt in w.Messaging.Attempts.Where(a=>a.DueAt>session.Seconds).OrderBy(a=>a.DueAt))NewGameWorldTests.At(session,attempt.DueAt);
         w=session.DiagnosticSnapshot();w.ElapsedSeconds=mandate.Until-1;
@@ -41,6 +47,7 @@ public class GuardianshipTests
         var adult=session.DiagnosticSnapshot();
         Assert.False(MinorGuardians.MayKeepLedger(adult,mandate));
         Assert.False(GuardianLedger.Latest(adult,mandate)!.Returned);
+        Assert.Equal(present,FactionStances.ResolveAuthority(adult,paper.Heir,house,mandate.Until,adult.CommitSequence)!=null);
         var loaded=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(adult)));
         NewGameWorldTests.At(session,mandate.Until+1);NewGameWorldTests.At(loaded,mandate.Until+1);
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(loaded.DiagnosticSnapshot()));

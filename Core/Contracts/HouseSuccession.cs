@@ -18,15 +18,41 @@ public static class HouseSuccession
     static HouseSuccessionEntry[] Entries(ContractWorld w,long at,long rev)=>w.Succession?.Entries.Where(e=>e.At<=at&&e.Revision<=rev).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Succession?.Entries.Any(e=>e.Input.Id==id)==true;
     public static HouseSuccessionJob[] Jobs(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue){var es=Entries(w,at,rev);return es.Where(e=>e.Input.Action==HouseSuccessionAction.Nominate).Select(e=>{var rows=es.Where(q=>q.Input.Original==e.Input.Id).ToArray();var confirmed=rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Confirm);var resolved=rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Resolve);return new HouseSuccessionJob(e.Terms!,confirmed?.Due!=null&&(resolved==null||resolved.Revision<confirmed.Revision)?confirmed:null,resolved,rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Resolve&&q.Outcome=="confirmed"),rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Cancel));}).ToArray();}
-    public static EntityId Head(ContractWorld w,EntityId owner,long? at=null,long? revision=null){long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;var j=Enabled(w)?Jobs(w,t,r).LastOrDefault(j=>j.Terms.Owner==owner&&j.Applied!=null):null;return j?.Terms.Heir??new(w.NewGame!.Start.Factions.Single(f=>f.Id==owner.Value).Head);}
-    public static SetupFaction[] Factions(ContractWorld w,long? at=null,long? revision=null)=>w.NewGame==null?[]:!Enabled(w)?w.NewGame.Start.Factions:w.NewGame.Start.Factions.Select(f=>f with{Head=Head(w,new(f.Id),at,revision).Value}).ToArray();
+    static IEnumerable<(EntityId Owner,EntityId Old,EntityId Heir,EntityId Home,long At,long Revision,EntityId Office)> Changes(ContractWorld w)
+    {
+        var living=Jobs(w).Where(j=>j.Applied!=null).Select(j=>(j.Terms.Owner,j.Terms.Incumbent,j.Terms.Heir,
+            j.Terms.Home,j.Applied!.At,j.Applied.Revision,new EntityId("office:house-succession/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(j.Applied.Input.Id.Value)))));
+        var minors=(w.MinorityAccessions??[]).Select(m=>(m.House,m.Previous,m.Child,m.Site,m.At,m.Revision,MinoritySuccession.Office(m)));
+        return living.Concat(minors).OrderBy(c=>c.Revision);
+    }
+    public static EntityId Head(ContractWorld w,EntityId owner,long? at=null,long? revision=null)
+    {
+        long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;
+        var changes=Changes(w).Where(c=>c.Owner==owner && c.At<=t && c.Revision<=r);
+        return changes.Select(c=>c.Heir).DefaultIfEmpty(new(w.NewGame!.Start.Factions.Single(f=>f.Id==owner.Value).Head)).Last();
+    }
+    public static SetupFaction[] Factions(ContractWorld w,long? at=null,long? revision=null)=>w.NewGame==null?[]:
+        w.MinorityAccessions==null && !Enabled(w)?w.NewGame.Start.Factions:
+        w.NewGame.Start.Factions.Select(f=>f with{Head=Head(w,new(f.Id),at,revision).Value}).ToArray();
     static bool Local(ContractWorld w,EntityId who,EntityId site,long at,long rev)=>CommunityStewardship.Local(w,who,site,at,rev);
     static bool Member(ContractWorld w,EntityId who,EntityId owner,long at,long rev)=>w.Memberships.Any(m=>m.Subject==who&&m.Target==owner&&m.From<=at&&(at<m.Until||at==m.Until&&rev<m.Revision));
     static bool Direct(ContractWorld w,EntityId heir,EntityId head,long at,long rev)=>HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==heir&&b.Target==head&&b.From<=at&&(at<b.Until||at==b.Until&&rev<b.Revision));
     static bool Busy(ContractWorld w,EntityId who,long at,long rev)=>NpcArmies.CommanderBusyAt(w,who,at,rev)||who==w.PlayerControl&&NewGameMilitary.LedgerStates(w).Any(s=>{var c=w.ForkMilitaryObservation();c.NewMilitary=s;return NewGameMilitary.CustodyAt(c,at,rev);});
     static string Outcome(ContractWorld w,HouseSuccessionTerms t,long at,long rev)=>at>t.Until?"expired":Head(w,t.Owner,at,rev)!=t.Incumbent||FactionStances.ResolveAuthority(w,t.Incumbent,t.Owner,at,Math.Min(rev,w.CommitSequence))==null?"authority-changed":!Local(w,t.Incumbent,t.Home,at,rev)||!Local(w,t.Heir,t.Home,at,rev)?"absent":!Member(w,t.Heir,t.Owner,at,rev)||!Direct(w,t.Heir,t.Incumbent,at,rev)?"relationship-changed":CastleAdministration.Blocked(w,t.Home,at,rev)?"occupation-hold":(Busy(w,t.Incumbent,at,rev)&&!(t.MilitaryPolicy==NewGameMilitary.ActiveSuccessionContract&&NewGameMilitary.CanRetainActiveForSuccession(w,t.Incumbent,t.Owner,t.Home,at,rev))||Busy(w,t.Heir,at,rev)&&!(t.MilitaryPolicy==NewGameMilitary.ActiveSuccessionContract&&NewGameMilitary.CanRetainActiveForSuccession(w,t.Heir,t.Owner,t.Home,at,rev)))?"military-hold":"confirmed";
-    public static TimedRelation[] Offices(ContractWorld w,TimedRelation[] initial){if(!Enabled(w))return initial;var list=initial.ToList();foreach(var j in Jobs(w).Where(j=>j.Applied!=null).OrderBy(j=>j.Applied!.Revision)){var e=j.Applied!;var t=j.Terms;int i=list.FindIndex(o=>o.Subject==t.Incumbent&&o.Target==t.Home&&o.Kind=="house-head"&&o.Until==long.MaxValue);Need(i>=0&&e.At>list[i].From,"旧当主職と有効な交代時刻がありません");list[i]=list[i] with{Until=e.At,Revision=e.Revision};list.Add(new(new("office:house-succession/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(e.Input.Id.Value))),t.Heir,t.Home,"house-head",NewGameWorld.Basis,e.At,long.MaxValue,e.Revision));}return list.ToArray();}
-    internal static void Sync(ContractWorld w){if(Enabled(w))w.Offices=Offices(w,NewGameWorld.InitialRelations(w.NewGame!).Offices);}
+    public static TimedRelation[] Offices(ContractWorld w,TimedRelation[] initial)
+    {
+        if(!Enabled(w) && w.MinorityAccessions==null)return initial;
+        var list=initial.ToList();
+        foreach(var e in Changes(w))
+        {
+            int i=list.FindIndex(o=>o.Subject==e.Old && o.Target==e.Home && o.Kind=="house-head" && o.Until==long.MaxValue);
+            Need(i>=0 && e.At>list[i].From,"旧当主職と有効な交代時刻がありません");
+            list[i]=list[i] with{Until=e.At,Revision=e.Revision};
+            list.Add(new(e.Office,e.Heir,e.Home,"house-head",NewGameWorld.Basis,e.At,long.MaxValue,e.Revision));
+        }
+        return list.ToArray();
+    }
+    internal static void Sync(ContractWorld w){if(Enabled(w) || w.MinorityAccessions!=null)w.Offices=Offices(w,NewGameWorld.InitialRelations(w.NewGame!).Offices);}
     public static HouseSuccessionEntry? Acknowledged(ContractWorld w,EntityId original,EntityId owner,long at,long rev)=>Enabled(w)?Entries(w,at,rev).LastOrDefault(e=>e.Input.Action==HouseSuccessionAction.Acknowledge&&e.Input.Original==original&&e.Input.Owner==owner&&e.Representative==Head(w,owner,at,rev)):null;
     internal static EntityId SettlementPrincipal(ContractWorld w,EntityId original,EntityId owner,EntityId principal,long at,long rev){if(!Enabled(w)||Head(w,owner,at,rev)==principal)return principal;var acknowledged=Acknowledged(w,original,owner,at,rev);Need(acknowledged!=null,"現当主と元の当事者による個別原本の確認を待っています");return acknowledged.Representative!.Value;}
     static HouseSuccessionObligation Obligation(ContractWorld w,EntityId id,long at,long rev){var salary=HouseSalary.SnapshotAt(w,at,rev).Terms.SingleOrDefault(t=>t.Id==id);if(salary!=null){long owed=salary.Monthly*salary.DueAt.LongCount(d=>d<=at&&(salary.EndedAt==null||d<=salary.EndedAt))-salary.Paid;Need(owed>0||salary.EndedAt==null&&at<salary.DueAt[^1],"精算済みの給付契約です");return new(id,salary.Owner,salary.Site,salary.Employer,salary.Employee,"salary",owed);}var freight=HouseLogistics.FreightJobs(w,at,rev).SingleOrDefault(j=>j.Terms.Id==id);Need(freight!=null&&freight.Phase is not(HouseFreightPhase.Completed or HouseFreightPhase.Returned),"未精算の給付または運搬原本を指定してください");var f=freight.Terms;return new(id,f.Owner,f.Home,f.Principal,f.Carrier,"freight",freight.Cargo);}

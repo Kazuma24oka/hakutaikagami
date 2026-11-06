@@ -16,7 +16,7 @@ public static class Guardianship
             .Concat(InformationSchemes.Events(w).Where(e=>e.Input.Action==SchemeAction.FatalEncounter)
             .Select(e=>(e.Input.Subject,e.At,e.Revision)));
         foreach(var (deceased,at,revision) in deaths)
-            foreach(var house in HouseSuccession.Factions(w,at,revision).Where(f=>f.Head==deceased.Value))
+            foreach(var house in HouseSuccession.Factions(w,at,revision-1).Where(f=>f.Head==deceased.Value))
                 yield return new(new(house.Id),deceased,new(house.Home),at,revision);
     }
 

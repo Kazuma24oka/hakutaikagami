@@ -19,6 +19,7 @@ public static class GuardianLedger
 
     internal static void Tick(ContractWorld w)
     {
+        MinoritySuccession.Tick(w);
         foreach(var m in w.GuardianMandates??[])
         {
             var held=Latest(w,m);
@@ -41,6 +42,7 @@ public static class GuardianLedger
 
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
+        MinoritySuccession.Validate(w,prior);
         var rows=w.GuardianLedger??[];
         var old=prior?.GuardianLedger??[];
         if(!rows.Take(old.Length).SequenceEqual(old))throw new InvalidDataException("後見帳簿の受渡し履歴が変わっています");
