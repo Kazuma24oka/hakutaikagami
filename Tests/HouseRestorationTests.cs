@@ -98,4 +98,27 @@ public sealed class HouseRestorationTests
         HouseholdCourt.Execute(w, accept, heir);
         Assert.Empty(NpcArmies.Musters(w));
     }
+    [Fact]
+    public void EscortMustersOnlyOnceUnderSponsorCommandAndReturnsItsOwnGarrison()
+    {
+        var setup = NewGameWorldTests.Setup([]);
+        var world = NewGameWorld.Create(setup.World, [], "person:shingen", worldArmyPolicy: NpcArmies.Policy);
+        EntityId sponsor = new("org:oda"), commander = new("person:nobunaga"), site = new("site:castle");
+        var accept = new CourtInput(new("request:escort-accepted"), CourtAction.AcceptRestorationEscort,
+            commander, sponsor, site, When: 3600);
+        world.CommitSequence++;
+        world.Court = new(1, HouseholdCourt.Policy, [new(accept, world.PlayerControl, site, 0, world.CommitSequence, false)]);
+        world.CommitSequence++;
+        RestorationEscort.Muster(world, accept.Id);
+        var muster = Assert.Single(NpcArmies.Musters(world));
+        Assert.Equal((commander, sponsor, site), (muster.Commander, muster.Owner, muster.Site));
+        Assert.Equal(100, world.Units.Where(u => u.Army == Assert.Single(NpcArmies.Armies(world)).Id).Sum(u => u.Soldiers));
+        Assert.Throws<InvalidDataException>(() => RestorationEscort.Muster(world, accept.Id));
+        world = ContractJson.Copy(world);
+        world.CommitSequence++;
+        world.ElapsedSeconds = accept.When;
+        Assert.Throws<InvalidDataException>(() => RestorationEscort.Muster(world, accept.Id));
+        NpcArmies.Return(world, muster.Id);
+        Assert.Equal(muster.Id, Assert.Single(world.NpcArmies!.Returns).Muster);
+    }
 }

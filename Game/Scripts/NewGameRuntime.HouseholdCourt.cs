@@ -34,6 +34,8 @@ public partial class NewGameRuntime
      if(escort!=null){
       var response=history.SingleOrDefault(e=>e.Input.Reference==escort.Input.Id && e.Input.Action is CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort);
       SocialText(box,"後援家の現地警護："+(escort.Input.When<=w.ElapsedSeconds?"期限終了":response==null?"条件提示中":response.Input.Action==CourtAction.AcceptRestorationEscort?"合意済み":"辞退"));
+      if(response?.Input.Action==CourtAction.AcceptRestorationEscort && RestorationEscort.WitnessedAtAssembly(w,actor,response) is >0 and var soldiers)
+       SocialText(box,$"集合地で確認した後援家の兵：{soldiers}人");
       if(response==null && actor==escort.Input.Person && site==ask.Place && SocialWorld.Site(w,peer)==site && escort.Input.When>w.ElapsedSeconds)
        foreach(var answer in new[]{CourtAction.AcceptRestorationEscort,CourtAction.DeclineRestorationEscort}){
         var key=answer+"/"+escort.Input.Id.Value;
