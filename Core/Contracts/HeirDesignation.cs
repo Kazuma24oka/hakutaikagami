@@ -2,6 +2,7 @@ using HakutaiKagami.Core.Messaging;
 
 namespace HakutaiKagami.Core.Contracts;
 
+public sealed record HeirNomination(EntityId Head,EntityId House,EntityId Heir,long At,long Revision);
 public sealed record HeirCandidate(EntityId Person,bool Adopted,int? BirthYear);
 public sealed record MarriageConnection(EntityId Original,EntityId FirstHouse,EntityId SecondHouse);
 
@@ -37,6 +38,25 @@ public static class HeirDesignation
             .OrderBy(c=>c.BirthYear??int.MaxValue).ThenBy(c=>c.Person.Value,StringComparer.Ordinal).ToArray();
     }
 
+    internal static void Validate(ContractWorld w,ContractWorld? prior)
+    {
+        var papers=w.HeirNominations??[];
+        var existing=prior?.HeirNominations??[];
+        if(!papers.Take(existing.Length).SequenceEqual(existing))throw new InvalidDataException("既存の後継指名状が変更されています");
+        long previousRevision=0,previousTime=0;
+        foreach(var paper in papers)
+        {
+            if(paper.Revision<=previousRevision || paper.Revision>w.CommitSequence ||
+                paper.At<previousTime || paper.At>w.ElapsedSeconds || w.NewGame==null ||
+                Assassination.DeadAt(w,paper.Head,paper.At,paper.Revision) ||
+                FactionStances.ResolveAuthority(w,paper.Head,paper.House,paper.At,paper.Revision)==null ||
+                !FamilyConsentRules.ParentLinks(w,paper.At,paper.Revision).Contains((paper.Head,paper.Heir)))
+                throw new InvalidDataException("後継指名の時点・当主の権限・親子関係が一致しません");
+            previousRevision=paper.Revision;
+            previousTime=paper.At;
+        }
+    }
+
     public static IEnumerable<MarriageConnection> WitnessedConnections(ContractWorld world)
     {
         var entries=world.Marriage?.Entries??[];
@@ -46,6 +66,27 @@ public static class HeirDesignation
             if(terms.Houses.Length!=2 || !(terms.First==world.PlayerControl || terms.Second==world.PlayerControl ||
                 terms.Houses.Any(h=>h.Representative==world.PlayerControl)))continue;
             yield return new(terms.Id,terms.Houses[0].Owner,terms.Houses[1].Owner);
+        }
+    }
+}
+
+public sealed partial class WorldSession
+{
+    public CommandResult DesignateHeir(EntityId house,EntityId heir,long shownRevision)
+    {
+        lock(gate)
+        {
+            var actor=state.PlayerControl;
+            var existing=state.HeirNominations?.LastOrDefault(p=>p.House==house && p.Head==actor);
+            if(existing?.Heir==heir && existing.Revision==shownRevision+1)
+                return new(ResultCode.AlreadyAccepted,heir,state.CommitSequence,"この指名は記録済みです");
+            if(shownRevision!=state.CommitSequence)
+                return new(ResultCode.StateChanged,heir,state.CommitSequence,"候補を再確認してください");
+            if(existing?.Heir==heir || !HeirDesignation.KnownChildren(state,house).Any(c=>c.Person==heir) ||
+                Assassination.DeadAt(state,actor,state.ElapsedSeconds,shownRevision))
+                return new(ResultCode.NotAvailable,heir,state.CommitSequence,"この候補を新たに指名できません");
+            Change(w=>w.HeirNominations=[..w.HeirNominations??[],new(actor,house,heir,w.ElapsedSeconds,w.CommitSequence)]);
+            return new(ResultCode.Accepted,heir,state.CommitSequence,"後継の指名状を記しました");
         }
     }
 }

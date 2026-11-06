@@ -37,6 +37,14 @@ public sealed class AdultAdoptionTests
             Assert.True(heir.Adopted);
             Assert.Equal(Other,heir.Person);
             Assert.Empty(HeirDesignation.KnownChildren(state,new("org:takeda")));
+            var running=new WorldSession(state);
+            var revision=running.Revision;
+            Assert.Equal(ResultCode.Accepted,running.DesignateHeir(house,Other,revision).Code);
+            Assert.Equal(ResultCode.AlreadyAccepted,running.DesignateHeir(house,Other,revision).Code);
+            var after=running.DiagnosticSnapshot();
+            Assert.Equal(Other,Assert.Single(after.HeirNominations!).Heir);
+            Assert.Equal(ContractJson.Write(state.Offices),ContractJson.Write(after.Offices));
+            Assert.Equal(ContractJson.Write(after),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after))).DiagnosticSnapshot()));
         }
     }
     [Fact]public void HouseApprovalCannotPrecedePersonalAnswer(){var s=Start(Yes.Value,lord:true);var root=Propose(s);var t=s.DiagnosticSnapshot().Adoption!.Entries.First().Terms!;Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.ApproveHouse,root,t.Houses[0].Owner).Code);}

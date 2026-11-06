@@ -28,7 +28,19 @@ public partial class NewGameRuntime
             var children=HeirDesignation.KnownChildren(w,new(house.Id));
             if(children.Length==0)continue;
             Text(house.Name+"の後継候補（生年順）");
-            foreach(var child in children)Text(SuccessionPerson(w,child.Person)+" ／ "+(child.Adopted?"養子":"実子"));
+            var owner=new EntityId(house.Id);
+            var current=w.HeirNominations?.LastOrDefault(p=>p.House==owner && p.Head==Session.PlayerControl);
+            foreach(var child in children)
+            {
+                var name=SuccessionPerson(w,child.Person);
+                Text(name+" ／ "+(child.Adopted?"養子":"実子")+(current?.Heir==child.Person?" ／ 指名済み":""));
+                if(current?.Heir==child.Person)continue;
+                Button(name+"を後継に指名",()=>{
+                    var result=Session.DesignateHeir(owner,child.Person,shown);
+                    if(result.Code!=ResultCode.Accepted){feedback.Text=result.VisibleReason;return;}
+                    popup.Hide();Refresh();ShowHouseSuccession();
+                });
+            }
         }
         if(v.Candidates.Length>0){var list=new OptionButton();foreach(var c in v.Candidates)list.AddItem(CastleOwnerName(w,c.Owner)+" ／ "+SuccessionPerson(w,c.Person));box.AddChild(list);Button("当事者に生前の当主交代を相談",()=>{var c=v.Candidates[list.Selected];Run(new(new("request:house-nominate-ui/"+shown),HouseSuccessionAction.Nominate,c.Owner,c.Person){MilitaryPolicy=NewGameMilitary.CanRetainActiveForSuccession(w,Session.PlayerControl,c.Owner,c.Home,Session.Seconds,shown)?NewGameMilitary.ActiveSuccessionContract:null});});}
         foreach(var c in v.Changes.Reverse().Take(3)){Text($"{CastleOwnerName(w,c.Owner)}：{SuccessionPerson(w,c.Incumbent)} → {SuccessionPerson(w,c.Heir)}\n{c.Status}\n合意 {c.ProposedAt}秒"+(c.EffectiveAt is {} at?$" ／ 引渡し {at}秒":""));Button("同じ条件を確認し、次の時刻の交代を予定",()=>Run(new(new("request:house-confirm-ui/"+shown),HouseSuccessionAction.Confirm,c.Owner,Original:c.Id)),!c.CanConfirm);Button("交代前に取りやめ",()=>Run(new(new("request:house-cancel-ui/"+shown),HouseSuccessionAction.Cancel,c.Owner,Original:c.Id)),!c.CanCancel);}
