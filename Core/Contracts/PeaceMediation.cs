@@ -12,7 +12,7 @@ public static class PeaceMediation
     static EntityId Office(EntityId broker)=>broker==CentralCourtCatalog.TempleBroker?TempleMilitary.Site:CentralCourtCatalog.Kyoto;
     public static IEnumerable<EntityId> Brokers(ContractWorld w){
         yield return CentralCourtCatalog.CourtBroker;yield return CentralCourtCatalog.ShogunBroker;
-        if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.TempleEdition)yield return CentralCourtCatalog.TempleBroker;
+        if(w.NewGame?.HistoricalCatalog is CentralCourtCatalog.TempleEdition or CentralCourtCatalog.RegentEdition)yield return CentralCourtCatalog.TempleBroker;
     }
     static bool Supports(ContractWorld w,EntityId broker,EntityId applicant,long at,long rev)=>SocialWorld.ConsentBonus(w,broker,applicant,at,rev)>=2;
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)

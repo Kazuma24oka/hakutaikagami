@@ -4,6 +4,33 @@ namespace HakutaiKagami.Tests;
 
 public sealed class SupremeOfficeTests
 {
+    [Theory][InlineData(false)][InlineData(true)]
+    public void KonoeAnswersInPersonWithoutChangingBirthFamilyOrDomain(bool gift)
+    {
+        var site=CentralCourtCatalog.Kyoto;var patron=CentralCourtCatalog.Konoe;
+        var child=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);var owner=new EntityId("org:regent-test");
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        Assert.DoesNotContain(NewGameWorld.Scenario(CentralCourtCatalog.TempleEdition).People,p=>p.Id==patron.Value);
+        var request=new WorldSetupRequest([child],[new(child.Id,owner.Value,[site.Value],false)]);
+        var scenario=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        var s=new WorldSession(NewGameWorld.Create(scenario,[child],child.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        Good(s.ManageSocial(new(new("request:meet-konoe"),SocialWorldAction.Visit,patron),s.Revision));
+        if(gift){Good(s.ManageSocial(new(new("request:konoe-gift"),SocialWorldAction.DispatchGift,patron,Amount:100),s.Revision));NewGameWorldTests.At(s,s.Seconds+3);}
+        Good(s.ManageCourt(new(new("request:konoe-kin"),CourtAction.RequestRegentKin,patron,owner,site),s.Revision));
+        var before=s.DiagnosticSnapshot();Assert.False(RegentKin.Qualified(before,s.PlayerControl,s.Seconds,s.Revision));
+        var restored=new WorldSession(ContractJson.Copy(before));
+        foreach(var run in new[]{s,restored}){
+            NewGameWorldTests.At(run,run.Seconds+2);var w=run.DiagnosticSnapshot();
+            Assert.Equal(gift,RegentKin.Qualified(w,run.PlayerControl,run.Seconds,run.Revision));
+            Assert.Single(w.Court!.Events,e=>e.Actor==patron&&e.Input.Action==(gift?CourtAction.AcceptRegentKin:CourtAction.DeclineRegentKin));
+            Assert.False(CourtPedigree.Qualified(w,run.PlayerControl,run.Seconds,run.Revision));
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));
+            Assert.Equal(ContractJson.Write(before.NewGame!.Start.People),ContractJson.Write(w.NewGame!.Start.People));
+        }
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
     [Fact]
     public void AdoptedChildQualifiesOnlyAfterCourtCertifiesFiledReport()
     {

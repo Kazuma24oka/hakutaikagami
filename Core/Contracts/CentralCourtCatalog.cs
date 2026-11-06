@@ -6,7 +6,14 @@ public static class CentralCourtCatalog
     public const string Id="historical-start-central-v4";
     public const string ShogunateEdition="historical-start-central-v5";
     public const string TempleEdition="historical-start-central-v6";
-    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition;
+    public const string RegentEdition="historical-start-central-v7";
+    public static readonly EntityId Konoe=new("person:konoe-sakihisa");
+    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition or RegentEdition;
+    internal static SetupScenario RegentScenario(){
+        var prior=TempleScenario();
+        var next=prior with{People=[..prior.People,new SetupPerson(Konoe.Value,"近衛前久",Kyoto.Value,null,null,false,false,1536)]};
+        NewGameSetup.Validate(next);return next;
+    }
     public static bool HasCourt(string? edition)=>edition==Id || HasShogunate(edition);
     public static readonly EntityId TempleBroker=new("person:temple-representative/site/sakai");
     internal static SetupScenario TempleScenario(){

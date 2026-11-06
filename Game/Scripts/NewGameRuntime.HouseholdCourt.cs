@@ -28,6 +28,14 @@ public partial class NewGameRuntime
               }
           }
       }
+      if(site==CentralCourtCatalog.Kyoto && w.NewGame?.HistoricalCatalog==CentralCourtCatalog.RegentEdition){
+          if(actor==CentralCourtCatalog.Konoe){
+              foreach(var answer in RegentKin.Answers(w))
+                  Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+(answer.Action==CourtAction.AcceptRegentKin?"を猶子に迎える":"の申し出を断る"),()=>Run(answer));
+          }else if(RegentKin.Qualified(w,actor,w.ElapsedSeconds,rev))SocialText(box,"近衛家の猶子として関白候補の資格があります。");
+          else if(CentralMediation.ApplicantHouse(w,actor) is {} kinHouse)
+              Button("request-regent-kin","近衛前久に猶子の縁を願う",()=>Run(new(Nonce("request-regent-kin"),CourtAction.RequestRegentKin,CentralCourtCatalog.Konoe,kinHouse,site.Value)));
+      }
       foreach(var (report,_) in CourtPedigree.Reports(w,true))
           Button(report.Id.Value,report.Action==CourtAction.RecognizePedigree?"提出された系図を認定する":"調査した系図の根拠を本人に伝える",()=>Run(report));
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && CentralMediation.ApplicantHouse(w,actor) is {} genealogyHouse){
