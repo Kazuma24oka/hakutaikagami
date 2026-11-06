@@ -128,9 +128,25 @@ public sealed class HouseholdMilitaryTests
         Assert.Equal(loss.Soldiers,casualties.Wounded+casualties.Dead+casualties.Deserted);
         Assert.DoesNotContain(contact.Losses,l=>l.Unit==wing);
         Assert.Contains(contact.Strikes,strike=>strike.Attacker==privateUnit.Unit.Id && strike.Basis==EngagementBasis.ImmediateDefense);
-        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
-        foreach(var run in new[]{s,restored})At(run,run.Seconds+2);
-        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+        var dir=Directory.CreateTempSubdirectory("hakutai-private-company-");
+        try
+        {
+            s.SetPaused(true);
+            var store=new GenerationSaveStore(dir.FullName,initial.Definitions);
+            Assert.True(store.Save(s,"deployed",initial.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(initial));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("deployed"),host.Current,host.Current.Revision));
+            foreach(var run in new[]{s,host.Current}){
+                At(run,run.Seconds+2);
+                Send(run,NewMilitaryAction.Enter);
+                Finish(run);
+                var home=run.DiagnosticSnapshot();
+                Assert.Equal(4,PrivateRecruitment.Soldiers(home,person,site,run.Seconds,run.Revision+1));
+                Assert.DoesNotContain(WorldEngagement.Snapshot(home).Units,u=>u.Unit.Id==privateUnit.Unit.Id);
+            }
+            Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+        }
+        finally{dir.Delete(true);}
     }
 
     static void Finish(WorldSession s){long carry=NewGameMilitary.View(s.DiagnosticSnapshot()).Carry;if(carry>0)Send(s,NewMilitaryAction.Unload,carry);Send(s,NewMilitaryAction.Report);Send(s,NewMilitaryAction.Return);At(s,s.Seconds+3);Open(s);}
