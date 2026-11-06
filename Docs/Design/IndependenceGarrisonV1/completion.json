@@ -1,0 +1,37 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "城主の独立宣言と同じ城にいる旧主側の守備を個別に追跡する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/JointIndependence.cs",
+        "Tests/DefectionPactTests.cs"
+      ]
+    },
+    {
+      "contract": "旧主側の部隊が守る城では、宣言だけで城門・本丸・軍勢が移らない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/IndependenceGate.cs",
+        "Tests/ActiveMilitarySuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "当事者が現地で確認した守備と引渡しの状況を通常画面に表示する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/IndependenceGateCheck.cs"
+      ]
+    },
+    {
+      "contract": "宣言後の係争中に保存し、復旧後も部隊の帰属・城の実効支配・既存債務が一致する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/IndependenceGateCheck.cs"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "passed": 4,
+  "tests": [
+    "HakutaiKagami.Tests.DefectionPactTests.IndependencePreservesTheFormerHousesActualMusterAndSupply",
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.ActiveMilitarySuccessionTests.HandingBackCommandLeavesSurvivingGuardsAtHome",
+    "HakutaiKagami.Tests.DefectionPactTests.LocalCastellanBringsOnlyTheCastleInHisCharge"
+  ],
+  "ui": "INDEPENDENCE_GATE_UI_PASS",
+  "result": "旧主側の兵が城にいる間は城門を渡しても本丸は旧主のまま。兵糧の荷下ろしと指揮返還をしても、生存兵は駐屯を続ける。行軍で三隊が離れ、城主本人だけが城へ戻った場合に、両当事者の立会いで本丸を引き渡せた。独立前に甲府で発生した未受領報酬が残った。Godot 4.5.2の画面なし起動で受領ボタン・現地表示・手動保存とロード後の世界バイト列、3D配置を照合。"
+}
