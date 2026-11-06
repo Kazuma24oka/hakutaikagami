@@ -69,6 +69,12 @@ public partial class NewGameRuntime
     foreach(var job in baggage.HouseShipments)SocialText(box,$"家の運搬　{MaterialMarkets.Name(job.Terms.Commodity)} {job.Cargo} ／ 預かり金 {job.Cash}文 ／ 納入先 {NewGameWorld.SiteName(job.Terms.Home.Value)}");
     if(baggage.HouseShipments.Length>0)Button("transfer-freight-"+order.Input.Id,"家の仕入れ・納入の原本を開く",ShowHouseFreight);
    }
+   if(terms.LevyGrant is {} oldGrant){
+    if(site==terms.NewEstate && HouseReforms.LevyEnd(w,oldGrant)==long.MaxValue)
+     Button("exchange-"+order.Input.Id,"新領で徴収米の給付原本を切り替える",()=>Run(new CourtInput(Nonce("exchange/"+order.Input.Id),
+         CourtAction.ExchangeLevyShare,order.Actor,terms.Owner,site.Value,Amount:terms.Amount,Reference:order.Input.Id){LevyGrant=oldGrant}));
+    continue;
+   }
    if(entered)continue;
    SocialText(box,w.Messaging.Messages.Single(m=>m.Id==id).Body);
    if(!released && site==terms.Site && w.Offices.FirstOrDefault(o=>o.Subject==actor && o.Target==site &&
@@ -125,8 +131,8 @@ public partial class NewGameRuntime
      SeatButton(CourtAction.SettleSeat,"取引枠を認めて和解する");
     }
    }
-   foreach(var grant in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.GrantLevyShare && e.Place==site &&
-       (e.Input.Person==actor || e.Actor==actor))??[])
+   foreach(var grant in HouseReforms.LevyGrants(w).Where(e=>e.Place==site &&
+       (e.Input.Person==actor || e.Actor==actor)))
    {
     long earned=HouseReforms.AccruedLevyRice(w,grant,w.ElapsedSeconds,rev+1);
     long received=HouseReforms.ReceivedLevyRice(w,grant.Input.Id,w.ElapsedSeconds,rev+1);
@@ -158,7 +164,9 @@ public partial class NewGameRuntime
     box.AddChild(estate);
     void ShowEstate()=>estate.Visible=kinds[reform.Selected] is ReformKind.Relocate or ReformKind.ChangeFief;
     reform.ItemSelected+=_=>ShowEstate();ShowEstate();
-    Button("consult-reform","この改革案について意向を問う",()=>Run(Command("reform",CourtAction.ConsultReform,roster[persons.Selected]) with{Reform=kinds[reform.Selected],NewEstate=estate.Visible && destinations.Length>0?destinations[estate.Selected]:null,BarrierEdge=kinds[reform.Selected]==ReformKind.RemoveBarrier && roads.Length>0?roads[roadChoice.Selected].Id:null}));
+    CourtEvent? OfferedLevy()=>kinds[reform.Selected]==ReformKind.ChangeFief?HouseReforms.LevyGrants(w).SingleOrDefault(g=>
+        g.Input.Person==roster[persons.Selected] && g.Place==site && g.Input.Owner==house && HouseReforms.LevyEnd(w,g.Input.Id)==long.MaxValue):null;
+    Button("consult-reform","この改革案について意向を問う",()=>Run(Command("reform",CourtAction.ConsultReform,roster[persons.Selected]) with{Reform=kinds[reform.Selected],LevyGrant=OfferedLevy()?.Input.Id,Amount=OfferedLevy()?.Input.Amount??0,NewEstate=estate.Visible && destinations.Length>0?destinations[estate.Selected]:null,BarrierEdge=kinds[reform.Selected]==ReformKind.RemoveBarrier && roads.Length>0?roads[roadChoice.Selected].Id:null}));
    }
    foreach(var e in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.ConsultReform&&e.Actor==actor)??[]){
     var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);

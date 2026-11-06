@@ -31,12 +31,23 @@ public static class HouseReforms
         return new(SocialWorld.Site(w,actor),NewGameWork.Balance(w,actor),SocialAssets.Inventory(w,actor),lots,shipments);
     }
 
+    public static IEnumerable<CourtEvent> LevyGrants(ContractWorld w)
+    {
+        foreach(var e in HouseholdCourt.Events(w)){
+            if(e.Input.Action==CourtAction.GrantLevyShare)yield return e;
+            if(e.Input.Action==CourtAction.ExchangeLevyShare)yield return e with{Actor=e.Input.Person,
+                Input=e.Input with{Person=e.Actor,Action=CourtAction.GrantLevyShare}};
+        }
+    }
+    public static long LevyEnd(ContractWorld w,EntityId id)=>HouseholdCourt.Events(w)
+        .FirstOrDefault(e=>e.Input.Action==CourtAction.ExchangeLevyShare && e.Input.LevyGrant==id)?.Revision??long.MaxValue;
+
     public static long AccruedLevyRice(ContractWorld w,CourtEvent grant,long at,long revision)
     {
         if(grant.Input.Action!=CourtAction.GrantLevyShare)return 0;
         var orders=w.Communities?.Orders??[];
         return orders.Where(o=>o.Input.Site==grant.Place && o.Input.Action==EconomyAction.CollectLevy &&
-            o.Revision>grant.Revision && (o.At<at || o.At==at && o.Revision<revision) &&
+            o.Revision>grant.Revision && o.Revision<LevyEnd(w,grant.Input.Id) && (o.At<at || o.At==at && o.Revision<revision) &&
             w.LandRights.Any(r=>r.Kind=="control" && r.Target==grant.Place && r.Subject==grant.Input.Owner &&
                 r.From<=o.At && o.At<r.Until)).Sum(o=>checked(o.Input.Amount*grant.Input.Amount)/100);
     }
@@ -108,7 +119,7 @@ public static class HouseReforms
             NewGameWorld.SiteName(proposal.Input.NewEstate!.Value.Value)+"へ赴任せよ。原本："+proposal.Input.Id.Value);
 
     internal static void Send(ContractWorld w,CourtInput input,EntityId actor)=>
-        Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。");
+        Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。"+(input.LevyGrant is {} right?$" 徴収米{input.Amount}%、原本 {right.Value}。旧領で発生済みの取り分は旧領で精算する。":""));
 
     public static string ReplyText(CourtAction action)=>action switch{
         CourtAction.AssentReform=>"従う",CourtAction.CounterReform=>"条件を再協議したい",

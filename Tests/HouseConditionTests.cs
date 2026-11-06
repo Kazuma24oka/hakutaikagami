@@ -66,9 +66,10 @@ public sealed class HouseConditionTests
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied)
+    [InlineData(false,false)]
+    [InlineData(false,true)]
+    [InlineData(true,false)]
+    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied,bool exchange)
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
         var officer=NewGameWorldTests.Officer("created:transfer-officer",StartTemplate.Castellan,lord:head.Id);
@@ -80,6 +81,11 @@ public sealed class HouseConditionTests
         EntityId lord=new(head.Id),person=new(officer.Id);
         var proposal=new CourtInput(new("request:actual-transfer"),CourtAction.ConsultReform,person,owner,new(head.Site)){
             Reform=ReformKind.Relocate,NewEstate=new("site:kofu")};
+        var levy=new CourtInput(new("request:old-levy"),CourtAction.GrantLevyShare,person,owner,proposal.Site,Amount:25);
+        if(exchange){
+            w.CommitSequence++;HouseholdCourt.Execute(w,levy,lord);
+            proposal=proposal with{Reform=ReformKind.ChangeFief,Amount=25,LevyGrant=levy.Id};
+        }
         w.CommitSequence++;HouseholdCourt.Execute(w,proposal,lord);
         var s=new WorldSession(w);
         NewGameWorldTests.At(s,120);
@@ -113,8 +119,11 @@ public sealed class HouseConditionTests
         var old=before.Offices.Single(o=>o.Subject==person && o.Kind=="castellan" && o.Target==proposal.Site);
         var release=new CourtInput(new("request:give-up-office"),CourtAction.ReleaseCastleOffice,lord,owner,
             proposal.Site,Reference:order.Id){FormerOffice=old.Id};
+        var replace=release with{Action=CourtAction.ExchangeLevyShare,Id=new("request:exchange-revenue"),FormerOffice=null,
+            LevyGrant=levy.Id,Amount=25,Site=proposal.NewEstate!.Value};
+        if(exchange)Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(replace,s.Revision).Code);
         var handed=s.ManageCourt(release,s.Revision);
-        Assert.True(handed.Code==ResultCode.Accepted,handed.VisibleReason);
+        Assert.True(handed.Code==(exchange?ResultCode.NotAvailable:ResultCode.Accepted),handed.VisibleReason);
         var enter=new CourtInput(new("request:enter-office"),CourtAction.EnterCastleOffice,lord,owner,
             proposal.NewEstate!.Value,Reference:order.Id);
         Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);
@@ -143,6 +152,18 @@ public sealed class HouseConditionTests
             var bought=Freight(HouseFreightAction.Buy);
             Assert.True(bought.Code==ResultCode.Accepted,bought.VisibleReason);
             Assert.Equal(ResultCode.NotAvailable,Freight(HouseFreightAction.Receive).Code);
+            if(exchange){
+                var completed=s.ManageCourt(replace,s.Revision);
+                Assert.True(completed.Code==ResultCode.Accepted,completed.VisibleReason);
+                var restored=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+                var rights=HouseReforms.LevyGrants(restored.DiagnosticSnapshot()).ToArray();
+                Assert.Equal(2,rights.Length);
+                Assert.Equal(25,rights.Single(g=>g.Input.Id==replace.Id).Input.Amount);
+                Assert.Equal(restored.Revision,HouseReforms.LevyEnd(restored.DiagnosticSnapshot(),levy.Id));
+                Assert.Equal(ResultCode.NotAvailable,restored.ManageCourt(replace with{Id=new("request:duplicate-exchange")},restored.Revision).Code);
+                Assert.Contains(restored.DiagnosticSnapshot().Offices,o=>o.Id==old.Id && o.Until==long.MaxValue);
+                return;
+            }
             var beforeEntry=s.DiagnosticSnapshot();
             var delivered=HouseReforms.Baggage(beforeEntry,beforeEntry.Court!.Events.Single(e=>e.Input.Id==order.Id))!;
             Assert.Equal(enter.Site,delivered.Site);
