@@ -32,6 +32,34 @@ public sealed class SupremeOfficeTests
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
     [Fact]
+    public void ShogunAwardsHouseStandingAndPersonalPrivilegeOnlyOnce()
+    {
+        var shogun=CentralCourtCatalog.Shogun;var kyoto=CentralCourtCatalog.Kyoto;
+        var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:kyoto.Value);
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var setup=new WorldSetupRequest([lord],[new(lord.Id,"org:honoree",[kyoto.Value],false)]);
+        var scenario=NewGameSetup.Confirm(raw,setup,NewGameSetup.Preview(raw,setup));
+        var s=new WorldSession(NewGameWorld.Create(scenario,[lord],shogun.Value,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
+        var before=s.DiagnosticSnapshot();
+        var offers=ShogunateHonors.Available(before,shogun).Where(i=>i.Person.Value==lord.Id).ToArray();
+        Assert.Equal(2,offers.Length);
+        foreach(var honor in offers){
+            var result=s.ManageCourt(honor,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+            Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(honor with{Id=HouseholdCourtTestsId(honor.Action)},s.Revision).Code);
+        }
+        var path=Path.GetTempFileName();
+        try{
+            File.WriteAllBytes(path,ContractJson.Write(s.DiagnosticSnapshot()));
+            var loaded=new WorldSession(ContractJson.Read<ContractWorld>(File.ReadAllBytes(path))).DiagnosticSnapshot();
+            Assert.Equal(2,ShogunateHonors.Witnessed(loaded,new(lord.Id)).Count());
+            Assert.DoesNotContain(ShogunateHonors.Available(loaded,shogun),i=>i.Person.Value==lord.Id);
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(loaded.LandRights));
+            Assert.Equal(ContractJson.Write(before.Grants),ContractJson.Write(loaded.Grants));
+        }finally{File.Delete(path);}
+        static EntityId HouseholdCourtTestsId(CourtAction action)=>new("request:repeat-"+action.ToString().ToLowerInvariant());
+    }
+    [Fact]
     public void ImperialInvitationHonorsOpeningAndDeferralInHegemonFixture()
     {
         var home=CentralCourtCatalog.Kyoto;var broker=CentralCourtCatalog.CourtBroker;
@@ -133,6 +161,19 @@ public sealed class SupremeOfficeTests
             var final=run.DiagnosticSnapshot();
             Assert.Equal(CentralCourtCatalog.CourtBroker,Assert.Single(final.Court!.Events,e=>e.Input.Action==CourtAction.RecognizePedigree).Actor);
             Assert.True(CourtPedigree.Qualified(final,run.PlayerControl,run.Seconds,run.Revision));
+            var petition=new CourtInput(new("request:successor"),CourtAction.PetitionShogun,CentralCourtCatalog.CourtBroker,owner,site);
+            Assert.Equal(ResultCode.NotAvailable,run.ManageCourt(petition,run.Revision).Code);
+            Good(run.ManageCourt(new(new("request:remove-incumbent"),CourtAction.ExpelShogun,parent,owner,TempleMilitary.Site),run.Revision));
+            NewGameWorldTests.At(run,run.Seconds+1);NewGameWorldTests.At(run,run.Seconds+2);
+            Assert.Null(SupremeOffice.ShogunAt(run.DiagnosticSnapshot(),run.Seconds,run.Revision));
+            Good(run.ManageCourt(petition,run.Revision));
+            NewGameWorldTests.At(run,run.Seconds+2);
+            var enthroned=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(run.DiagnosticSnapshot())));
+            var state=enthroned.DiagnosticSnapshot();
+            Assert.Equal(run.PlayerControl,SupremeOffice.ShogunAt(state,run.Seconds,run.Revision));
+            Assert.Contains(run.PlayerControl,PeaceMediation.Brokers(state));
+            Assert.DoesNotContain(parent,PeaceMediation.Brokers(state));
+            Assert.Equal(ContractJson.Write(final.LandRights),ContractJson.Write(state.LandRights));
         }
         Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
@@ -200,6 +241,7 @@ public sealed class SupremeOfficeTests
         var game=new WorldSession(NewGameWorld.Create(scenario,[],actor.Value,historicalCatalog:HistoricalStartCatalog.Current,
             workPolicy:WorkFollowup.Policy,inspectionPolicy:LocalInspectionFindings.Policy));
         var before=game.Revision;
+        Assert.Contains(actor,PeaceMediation.Brokers(game.DiagnosticSnapshot()));
         var input=new CourtInput(new("request:resign-shogun"),CourtAction.ResignShogun,actor,SupremeOffice.Bakufu,CentralCourtCatalog.Kyoto);
         var result=game.ManageCourt(input,game.Revision);
         Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
@@ -207,6 +249,8 @@ public sealed class SupremeOfficeTests
         var state=restored.DiagnosticSnapshot();
         Assert.Equal(actor,SupremeOffice.ShogunAt(state,game.Seconds,before));
         Assert.Null(SupremeOffice.ShogunAt(state,game.Seconds,restored.Revision));
+        Assert.DoesNotContain(actor,PeaceMediation.Brokers(state));
+        Assert.Contains(CentralCourtCatalog.ShogunBroker,PeaceMediation.Brokers(state));
         Assert.Equal(ResultCode.AlreadyAccepted,restored.ManageCourt(input,restored.Revision).Code);
         Assert.Equal(ResultCode.NotAvailable,restored.ManageCourt(input with{Id=new("request:again")},restored.Revision).Code);
     }

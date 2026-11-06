@@ -127,6 +127,9 @@ public partial class NewGameRuntime
                   CourtAction.AppointShugo=>"を認める",_=>"を退ける"};
               Button(answer.Id.Value,subject+text,()=>Run(answer));
           }
+          foreach(var honor in ShogunateHonors.Available(w,actor))
+              Button(honor.Id.Value,MeritRewards.DisplayName(w,actor,honor.Person)+"に"+ShogunateHonors.Name(honor.Action)+"を授ける",()=>Run(honor));
+          foreach(var honor in ShogunateHonors.Witnessed(w,actor))SocialText(box,"授与に立ち会った栄典　"+honor);
           foreach(var office in ShogunateAppointments.KnownOffices(w,actor))SocialText(box,"幕府の補任状　"+office);
           if(CentralMediation.ApplicantHouse(w,actor) is {} applicantOwner){
               foreach(var district in ShogunateAppointments.Districts(w,applicantOwner)){
