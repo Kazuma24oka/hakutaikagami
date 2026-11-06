@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static class HouseholdDetachment
 {
     internal static bool Handles(CourtAction action)=>action is CourtAction.OfferDetachment or CourtAction.AcceptDetachment
-        or CourtAction.DeclineDetachment or CourtAction.EndDetachment;
+        or CourtAction.DeclineDetachment or CourtAction.EndDetachment or CourtAction.BringOwnCompany;
 
     static IEnumerable<CourtEvent> Orders(ContractWorld w,long at,long rev)=>
         HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action) && e.At<=at && e.Revision<rev);
@@ -56,11 +56,25 @@ public static class HouseholdDetachment
         catch(InvalidDataException){return null;}
     }
 
+    public static bool OwnCompanyJoined(ContractWorld w,EntityId unit,long at,long rev)
+    {
+        var order=Orders(w,at,rev).LastOrDefault(e=>e.Input.Action==CourtAction.BringOwnCompany && e.Input.Carrier==unit);
+        return order!=null && Pickup(w,unit,at,rev)?.Input.Id==order.Input.Reference;
+    }
+
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {
         if(i.Carrier is not {} unit || i.Site!=place || Pickup(w,unit,at,rev) is not {} pickup)
             throw new InvalidDataException("引受中の分隊を指定してください");
         var orders=Orders(w,at,rev).ToArray();
+        if(i.Action==CourtAction.BringOwnCompany){
+            var issuing=NewGameMilitary.LedgerStates(w).Single(l=>l.Requests.Any(q=>q.Input.Id==pickup.Input.Id));
+            if(actor!=w.PlayerControl || i.Person!=actor || i.Owner!=issuing.Terms.Owner || i.Site!=issuing.Terms.Site ||
+               unit!=(issuing.Binding?.Units??NewGameMilitary.UnitIds)[0] || i.Reference!=pickup.Input.Id ||
+               PrivateRecruitment.Soldiers(w,actor,place,at,rev)==0 || OwnCompanyJoined(w,unit,at,rev))
+                throw new InvalidDataException("本拠で本人の私兵を現在の本隊に同行させてください");
+            return;
+        }
         if(i.Action==CourtAction.EndDetachment){
             var active=Appointment(w,unit,at,rev);
             if(active==null || i.Owner!=active.Input.Owner || i.Site!=active.Input.Site || i.Reference!=active.Input.Id || i.Person!=active.Actor ||

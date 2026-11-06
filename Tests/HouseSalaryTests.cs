@@ -157,6 +157,33 @@ public sealed class HouseSalaryTests
         Assert.Null(HouseRestoration.SettlementForClaim(w, claim.Id));
 
     }
+    [Fact]
+    public void OwnerCanBringPaidCompanyOnlyUnderCurrentPickup()
+    {
+        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],Worker.Value,42,
+            historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            economyPolicy:MilitaryEconomy.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,battlefieldPolicy:BattlefieldRules.Policy));
+        var pay=Agree(s);Advance(s,First(s));var prepared=Prepare(s,pay,5);
+        BattlefieldRulesTests.Good(Act(s,SalaryAction.Receive,pay,prep:prepared));
+        var salary=s.DiagnosticSnapshot().Salary!.Terms.Single();
+        BattlefieldRulesTests.Good(s.ManageCourt(new(new("request:paid-company"),CourtAction.HireMarketSoldiers,
+            Worker,salary.Owner,salary.Site,Amount:2,When:s.Seconds+86400),s.Revision));
+        HouseholdMilitaryTests.Permit(s);
+        var w=s.DiagnosticSnapshot();var wing=NewGameMilitary.UnitIdsFor(w)[0];var pickup=w.NewMilitary!.Requests.Last();
+        var input=new CourtInput(new("request:own-company"),CourtAction.BringOwnCompany,Worker,salary.Owner,salary.Site,Reference:pickup.Input.Id,Carrier:wing);
+        BattlefieldRulesTests.Good(s.ManageCourt(input,s.Revision));
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(input with{Id=new("request:bring-again")},s.Revision).Code);
+        BattlefieldRulesTests.Good(s.ManageMilitaryRice(new(new("request:own-rice"),NewGameMilitary.DepotFor(w),1),Worker,s.Revision));
+        BattlefieldRulesTests.Military(s,NewMilitaryAction.Load,1000);BattlefieldRulesTests.Military(s,NewMilitaryAction.Deploy);
+        w=s.DiagnosticSnapshot();
+        var company=Assert.Single(PrivateRecruitment.CompanyReports(w,Worker,s.Seconds,s.Revision+1));
+        var own=Assert.Single(WorldEngagement.Snapshot(w).Units,u=>u.Unit.Id==company.Unit);
+        Assert.Equal(2,own.Unit.Soldiers);Assert.Equal(Worker,own.Unit.Commander);
+        Assert.Equal(NewGameMilitary.Position(w,0,s.Seconds),own.Position);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        Assert.Equal(own,WorldEngagement.Snapshot(restored.DiagnosticSnapshot()).Units.Single(u=>u.Unit.Id==company.Unit));
+    }
+
     static long First(WorldSession s)=>s.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[0];
     static EntityId Prepare(WorldSession s,EntityId term,long amount=20){var r=Act(s,SalaryAction.Prepare,term,amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return s.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id;}
     [Theory][InlineData(false)][InlineData(true)]public void BothHeadAndEmployeeCanConfirmLocalTermsWithoutTransferringRoles(bool employee){var s=Start(employee);var before=s.DiagnosticSnapshot();var id=Agree(s);Assert.Equal(0,s.SalaryView()!.Contracts.Single().Owed);Assert.Equal(ContractJson.Write(before.ServiceBonds),ContractJson.Write(s.DiagnosticSnapshot().ServiceBonds));Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(s.DiagnosticSnapshot().Units));Assert.Equal(0,s.SalaryView()!.PrivateRice);Assert.Equal(1000,NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl));}

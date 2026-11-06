@@ -13,6 +13,13 @@ public partial class NewGameRuntime
  EntityId Id(string key)=>new("request:battlefield-ui/"+rev+"/"+key.Replace(':','/') );
  void Act(string key,string text,BattlefieldInput input)=>Button(key,text,()=>message.Text=Session.ManageBattlefield(input,rev).VisibleReason);
  var ids=NewGameMilitary.UnitIdsFor(w);for(int n=0;n<ids.Length;n++){var unit=ids[n];var appointment=HouseholdDetachment.Appointment(w,unit,w.ElapsedSeconds,rev+1);
+ if(n==0 && !NewGameMilitary.Deployed(w) && NewGameMilitary.CustodyAt(w,w.ElapsedSeconds,rev) &&
+     PrivateRecruitment.Soldiers(w,w.PlayerControl,military.Terms.Site,w.ElapsedSeconds,rev+1)>0 &&
+     !HouseholdDetachment.OwnCompanyJoined(w,unit,w.ElapsedSeconds,rev+1)){
+     var receipt=military.Requests.Last(q=>q.Input.Action==NewMilitaryAction.Pickup);
+     Button("bring-private","自分の兵を本隊に同行させる",()=>message.Text=Session.ManageCourt(new(Id("bring-private"),
+         CourtAction.BringOwnCompany,w.PlayerControl,military.Terms.Owner,military.Terms.Site,Reference:receipt.Input.Id,Carrier:unit),rev).VisibleReason);
+ }
  if(appointment!=null){
      var captain=FamilyBirth.People(w).Single(p=>p.Id==appointment.Actor.Value);
      SocialText(box,$"第{n+1}隊の現地指揮　{captain.Name}");

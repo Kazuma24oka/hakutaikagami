@@ -20,6 +20,8 @@ public static class WorldEngagement
                 var wing=new EngagementUnit(u,p,ContinuousWorld.Height(p),morale,phase,EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==(captain??u.Commander)).WillObey);
                 units.Add(wing);
                 if(captain is {} leader)units.AddRange(PrivateRecruitment.Accompany(w,leader,wing));
+                if(i==0 && HouseholdDetachment.OwnCompanyJoined(w,id,at,w.CommitSequence+1))
+                    units.AddRange(PrivateRecruitment.Accompany(w,w.PlayerControl,wing));
             }
             mandates.AddRange(NewGameMilitary.EngagementMandates(w,at));
             foreach(var id in mandates.Where(m=>m.ReceivedAt<=at&&m.EffectiveFrom<=at&&at<m.Until&&(m.CancelledAt==null||at<m.CancelledAt)).SelectMany(m=>m.Units).Distinct()){int n=units.FindIndex(u=>u.Unit.Id==id);if(n>=0)units[n]=units[n] with{Intent=EngagementIntent.Mission};}
