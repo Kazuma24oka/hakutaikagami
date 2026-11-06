@@ -25,6 +25,14 @@ public partial class NewGameRuntime
      Button(key,MeritRewards.DisplayName(w,actor,peer.Id)+"に旧家再興の支持を求める",()=>Run(new(Nonce(key),CourtAction.SeekRestorationSupport,peer.Id,former.House,former.Site)));
     }
    }
+   foreach(var known in history.Where(e=>e.Input.Action==CourtAction.RecordRecoveredSeat && e.Actor==actor))
+    SocialText(box,$"{WorldCalendar.Display(w.EpochDate,known.At)}　{NewGameWorld.SiteName(known.Place.Value)}の本丸と旧家の守備兵を確認");
+   foreach(var recoveringHouse in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && e.Actor==actor && e.Place==site).Select(e=>e.Input.Owner).Distinct()){
+    if(HouseRestoration.SecuredKeep(w,actor,recoveringHouse,site.Value) is not {} capture ||
+       history.Any(e=>e.Input.Action==CourtAction.RecordRecoveredSeat && e.Actor==actor && e.Input.Reference==capture))continue;
+    var key="recovered/"+capture.Value;
+    Button(key,"この本丸の回復を現地で記録する",()=>Run(new(Nonce(key),CourtAction.RecordRecoveredSeat,actor,recoveringHouse,site.Value,Reference:capture)));
+   }
    foreach(var ask in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && (e.Actor==actor || e.Input.Person==actor))){
     var reply=history.SingleOrDefault(e=>e.Input.Reference==ask.Input.Id && e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
     var peer=actor==ask.Actor?ask.Input.Person:ask.Actor;

@@ -39,6 +39,39 @@ public static class HouseRestoration
             throw new InvalidDataException("自分に届いた未回答の相談を選んでください");
     }
 
+    // 本丸を取った最新の原本と、今そこを守る実兵を両方照合する。
+    public static EntityId? SecuredKeep(ContractWorld world, EntityId observer, EntityId house, EntityId site)
+    {
+        if (SocialWorld.Site(world, observer) != site) return null;
+        return OccupationSource(world, house, site, world.ElapsedSeconds, world.CommitSequence + 1);
+    }
+
+    static EntityId? OccupationSource(ContractWorld world, EntityId house, EntityId site, long at, long revision)
+    {
+        var handovers = CastleHandover.Jobs(world, at, revision)
+            .Where(j => j.Terms.Site == site && j.Occupied != null)
+            .Select(j => (j.Occupied!.Revision, Owner: j.Terms.Occupier, Defender: j.Terms.Owner, j.Occupied.Input.Id));
+        var captures = CastleSiege.Orders(world).Where(o => CastleSiege.Before(o, at, revision) &&
+            o.Input.Site == site && o.Outcome == "本丸を占有")
+            .Select(o => (o.Revision, Owner: o.Attacker, o.Defender, o.Input.Id));
+        var latest = handovers.Concat(captures).OrderByDescending(o => o.Revision).FirstOrDefault();
+        if (latest.Owner != house || CastleHandover.Forces(world, house, site, at, revision) <= 0 ||
+            CastleHandover.Forces(world, latest.Defender, site, at, revision) > 0) return null;
+        return latest.Id;
+    }
+
+    internal static void CheckRecoveredSeat(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
+    {
+        var past = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
+        if (input.Site != place || input.Person != actor || input.Reference == null ||
+            !TransportWork.At(world, actor, place, at, revision, true) ||
+            !past.Any(e => e.Input.Action == CourtAction.SeekRestorationSupport && e.Actor == actor &&
+                e.Input.Owner == input.Owner && e.Place == place) ||
+            past.Any(e => e.Input.Action == input.Action && e.Actor == actor && e.Input.Reference == input.Reference) ||
+            OccupationSource(world, input.Owner, place, at, revision) != input.Reference)
+            throw new InvalidDataException("旧領の本丸引渡しと現地の守備を、再興を呼びかけた本人が確認してください");
+    }
+
     internal static bool IsEscort(CourtAction action) => action is CourtAction.OfferRestorationEscort
         or CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort or CourtAction.ReleaseRestorationEscort;
 

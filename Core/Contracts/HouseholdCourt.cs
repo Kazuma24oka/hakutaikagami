@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -413,6 +413,7 @@ public static class HouseholdCourt
   else if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.RecordRecoveredSeat)HouseRestoration.CheckRecoveredSeat(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(HouseRestoration.IsEscort(i.Action))HouseRestoration.CheckEscort(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(HouseRestoration.IsRice(i.Action))HouseRestoration.CheckRice(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(HouseRestoration.IsSupport(i.Action))HouseRestoration.CheckSupport(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -522,7 +523,8 @@ public static class HouseholdCourt
    if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
-   if(HouseRestoration.IsEscort(i.Action))HouseRestoration.CheckEscort(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.RecordRecoveredSeat)HouseRestoration.CheckRecoveredSeat(w,i,e.Actor,e.Place,e.At,e.Revision);
+     if(HouseRestoration.IsEscort(i.Action))HouseRestoration.CheckEscort(w,i,e.Actor,e.Place,e.At,e.Revision);
      if(HouseRestoration.IsRice(i.Action))HouseRestoration.CheckRice(w,i,e.Actor,e.Place,e.At,e.Revision);
      if(HouseRestoration.IsSupport(i.Action))HouseRestoration.CheckSupport(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.ChallengeFight or CourtAction.JoinFight or CourtAction.DeclineFight or CourtAction.CensureBoth)CheckFight(w,i,e.Actor,e.Place,e.At,e.Revision);
