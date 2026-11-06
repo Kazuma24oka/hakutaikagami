@@ -54,6 +54,9 @@ public partial class NewGameFrontEnd
         var peace = council.DiagnosticSnapshot();
         Check(!FactionStances.Truth(peace, council.Seconds).Any() && NpcArmies.Musters(peace).Length == 0,
             "判断を見送った間は未開戦・未出陣");
+        var stores = MilitaryEconomy.LocalCampaignStores(peace, new("org:imagawa"));
+        Check(fromMap ? stores == null : stores is { FreeRiceKg: >= 0, FreeWorkers: >= 0 },
+            "義元のみ現地の動員原資を確認");
         var decision = new FactionStanceInput(new("decision:imagawa-start-check"),
             FactionStanceAction.DeclareHostile, new("org:imagawa"), new("org:oda"), council.Seconds,
             council.Seconds + 30L * 86400);

@@ -25,6 +25,8 @@ public partial class NewGameRuntime
             cite.Visible=possible&&!withdraw&&PeaceMediation.KnowsRefusal(current,current.PlayerControl,targets[n].Id,owner,current.ElapsedSeconds,current.CommitSequence);
             if(!cite.Visible)cite.ButtonPressed=false;
             confirm.Disabled=!possible;detail.Text=withdraw?"自家の方針を撤回し、相手の既知の本拠へ書状を送ります。\n相手が既に出発していれば、通知が届かない場合があります。":"30日間の敵対意思を記録し、相手の既知の本拠へ書状を送ります。\n相手が知り、どのように応じるかは、到達した後の判断です。";
+            if(chosen && !withdraw && MilitaryEconomy.LocalCampaignStores(current,owner) is {} stores)
+                detail.Text+=$"\n本拠で動かせる米 {stores.FreeRiceKg} kg・支援人員 {stores.FreeWorkers} 人。";
             if(chosen&&!possible)detail.Text+="\n現在の記録では、この変更を行えません。";
         }
         target.ItemSelected+=_=>RefreshPolicy();mode.ItemSelected+=_=>RefreshPolicy();
