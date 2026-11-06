@@ -15,6 +15,9 @@ public partial class NewGameRuntime
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  if(courtCategory==3)
+   foreach(var former in HouseRestoration.ObserveFormerSeat(w,actor))
+    SocialText(box,$"旧領の見聞：かつて仕えた家が治めていた{NewGameWorld.SiteName(former.Site.Value)}で、支配が変わったことを確認した。");
   foreach(var parcel in SocialWorld.Gifts(w,actor).Where(g=>g.Recipient==actor&&g.Phase=="運搬・受領待ち")){
    var asset=w.SocialWorld!.Events.Single(e=>e.Input.Id==parcel.Id).Input.Asset;if(asset==null)continue;var doc=HouseholdCourt.DocumentRows(w).SingleOrDefault(d=>d.Id==asset);if(doc==null)continue;
    Button("read-document",doc.Name+"を開いて、実物を確認する",()=>{CancelAdvancePrefetch();var r=Session.ManageSocial(new(Nonce("read/"+doc.Id.Value),SocialWorldAction.ReceiveGift,parcel.Sender,Reference:parcel.Id),rev);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();});
