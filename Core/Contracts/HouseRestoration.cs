@@ -99,6 +99,31 @@ public static class HouseRestoration
     public static long UnpaidSalary(SalaryTerm original, long at) =>
         checked(HouseSalary.Due(original, at) - original.Paid);
 
+    internal static bool CanUseRestoredStore(ContractWorld world, EntityId original, EntityId oldHouse,
+        EntityId payer, EntityId employee, EntityId site, long at, long revision, long requiredRice = 0)
+    {
+        var successor = SuccessorOrganization(world, oldHouse, at, revision);
+        if (successor == null || RegionalDomains.Owner(world, site) != oldHouse ||
+            CastleAdministration.Owner(world, site, at, revision) != successor) return false;
+        var foundation = world.Declarations?.SingleOrDefault(d => d.House == successor);
+        return foundation != null && foundation.Site == site &&
+            RepresentsFoundation(world, foundation, payer, at, revision - 1) &&
+            HouseholdCourt.Events(world).Any(e => e.Input.Action == CourtAction.PresentRestorationArrears &&
+                e.Input.Reference == original && e.Input.Owner == oldHouse && e.Actor == employee &&
+                e.Input.Person == payer && e.At <= at && e.Revision < revision &&
+                RemainingClaim(world, e, revision) >= requiredRice);
+    }
+
+    private static long RemainingClaim(ContractWorld world, CourtEvent claim, long beforeRevision)
+    {
+        var entries = world.Salary!.Entries;
+        var paid = entries.Where(e => e.Revision < beforeRevision &&
+            (e.At > claim.At || e.At == claim.At && e.Revision > claim.Revision) &&
+            e.Input.Contract == claim.Input.Reference && e.Input.Action == SalaryAction.Receive)
+            .Sum(e => entries.Single(p => p.Input.Id == e.Input.Preparation).Input.Amount);
+        return claim.Input.Amount - paid;
+    }
+
     public static SalaryInput? SettlementForClaim(ContractWorld world, EntityId claimId)
     {
         var claim = HouseholdCourt.Events(world).SingleOrDefault(e => e.Input.Id == claimId &&
@@ -107,15 +132,17 @@ public static class HouseRestoration
         if (claim == null || term == null || term.Owner != claim.Input.Owner || term.Employee != claim.Actor ||
             (world.PlayerControl != claim.Actor && world.PlayerControl != claim.Input.Person)) return null;
         long at = world.ElapsedSeconds, revision = world.CommitSequence;
-        var payer = HouseSuccession.SettlementPrincipal(world, term.Id, term.Owner, term.Employer, at, revision);
-        if (payer != claim.Input.Person || FactionStances.ResolveAuthority(world, payer, term.Owner, at, revision) == null ||
-            !world.LandRights.Any(r => r.Subject == term.Owner && r.Target == term.Site && r.Kind == "control" &&
-                r.From <= at && at < r.Until) || SocialWorld.Site(world, payer) != term.Site ||
+        var payer = claim.Input.Person;
+        var authorized = !HouseSuccession.Enabled(world) || HouseSuccession.Head(world, term.Owner, at, revision) == term.Employer
+            ? term.Employer : HouseSuccession.Acknowledged(world, term.Id, term.Owner, at, revision + 1)?.Representative;
+        if (authorized != payer || SocialWorld.Site(world, payer) != term.Site ||
             SocialWorld.Site(world, term.Employee) != term.Site) return null;
-        var entries = world.Salary!.Entries;
-        long paidSinceClaim = entries.Where(e => (e.At > claim.At || e.At == claim.At && e.Revision > claim.Revision) && e.Input.Contract == term.Id &&
-            e.Input.Action == SalaryAction.Receive).Sum(e => entries.Single(p => p.Input.Id == e.Input.Preparation).Input.Amount);
-        long outstanding = Math.Min(UnpaidSalary(term, at), claim.Input.Amount - paidSinceClaim);
+        var originalStore = FactionStances.ResolveAuthority(world, payer, term.Owner, at, revision) != null &&
+            world.LandRights.Any(r => r.Subject == term.Owner && r.Target == term.Site && r.Kind == "control" &&
+                r.From <= at && at < r.Until);
+        if (!originalStore && !CanUseRestoredStore(world, term.Id, term.Owner, payer, term.Employee, term.Site, at, revision + 1))
+            return null;
+        long outstanding = Math.Min(UnpaidSalary(term, at), RemainingClaim(world, claim, revision + 1));
         if (outstanding <= 0) return null;
         var prepared = HouseSalary.Prepared(world.Salary!.Entries, term.Id, at, revision + 1);
         var other = term.Employer == world.PlayerControl ? term.Employee : term.Employer;
