@@ -47,6 +47,7 @@ public static class MinorGuardians
         var old=prior?.GuardianMandates??[];
         if(!rows.Take(old.Length).SequenceEqual(old) || rows.DistinctBy(m=>m.Nomination).Count()!=rows.Length)
             throw new InvalidDataException("後見原本の変更または重複です");
+        GuardianLedger.Validate(w,prior);
         long previous=0;
         foreach(var m in rows)
         {

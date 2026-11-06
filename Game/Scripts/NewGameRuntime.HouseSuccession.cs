@@ -23,6 +23,8 @@ public partial class NewGameRuntime
         void Button(string s,Action action,bool disabled=false){var b=new Button{Text=s,Disabled=disabled,CustomMinimumSize=new(0,36)};box.AddChild(b);b.Pressed+=action;}
         Text("家督・引継ぎ");Text("本拠で集合中の預かり軍は保管したまま交代を相談できます。軍務の発令者は別の指揮原本を確認するまで変わりません。");Text("生前の合意による当主職の交代です。所属・奉公・兵・私財は一括で移しません。家の未払いと預かり物は、原本ごとに現地で引き継ぎます。");var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(HouseSuccessionInput i){var r=Session.ManageHouseSuccession(i,Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();}
+        foreach(var entry in GuardianLedger.Witnessed(w,w.PlayerControl))
+            Text(PersonName(entry.Holder)+(entry.Returned?"が元服後に家の帳簿を受け取りました。":"が後見人として家の帳簿を預かりました。"));
         foreach(var dispute in Guardianship.Known(w,w.PlayerControl))
         {
             Text(CastleOwnerName(w,dispute.Opening.House)+"の当主が死去："+SuccessionPerson(w,dispute.Opening.Deceased));

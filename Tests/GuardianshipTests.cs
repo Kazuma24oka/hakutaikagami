@@ -4,11 +4,13 @@ namespace HakutaiKagami.Tests;
 
 public class GuardianshipTests
 {
-    [Fact]
-    public void LimitedGuardianAuthorityBeginsOnKnownDeathAndEndsAtComingOfAge()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void LimitedGuardianAuthorityBeginsOnKnownDeathAndEndsAtComingOfAge(bool present)
     {
         var head=NewGameWorldTests.Officer("created:elder",StartTemplate.Daimyo) with{BirthYear=1430};
-        var child=NewGameWorldTests.Officer("created:minor") with{BirthYear=1546,BirthParents=[head.Id]};
+        var child=NewGameWorldTests.Officer("created:minor",site:present?head.Site:"site:kyoto") with{BirthYear=1546,BirthParents=[head.Id]};
         var retainers=Enumerable.Range(1,8).Select(i=>NewGameWorldTests.Officer("created:guardian-"+i,
             StartTemplate.Retainer,head.Site,head.Id)).ToArray();
         EntityId house=new("org:elder");
@@ -29,13 +31,22 @@ public class GuardianshipTests
         session=new WorldSession(w);NewGameWorldTests.At(session,death);
         w=session.DiagnosticSnapshot();
         Assert.True(MinorGuardians.MayKeepLedger(w,mandate));
+        Assert.Equal(mandate.Guardian,GuardianLedger.Latest(w,mandate)!.Holder);
         Assert.Null(FactionStances.ResolveAuthority(w,mandate.Guardian,house,death,w.CommitSequence));
-        w.ElapsedSeconds=mandate.Until-1;
+        foreach(var attempt in w.Messaging.Attempts.Where(a=>a.DueAt>session.Seconds).OrderBy(a=>a.DueAt))NewGameWorldTests.At(session,attempt.DueAt);
+        w=session.DiagnosticSnapshot();w.ElapsedSeconds=mandate.Until-1;
         session=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
         Assert.True(MinorGuardians.MayKeepLedger(session.DiagnosticSnapshot(),mandate));
         NewGameWorldTests.At(session,mandate.Until);
         var adult=session.DiagnosticSnapshot();
         Assert.False(MinorGuardians.MayKeepLedger(adult,mandate));
+        Assert.False(GuardianLedger.Latest(adult,mandate)!.Returned);
+        var loaded=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(adult)));
+        NewGameWorldTests.At(session,mandate.Until+1);NewGameWorldTests.At(loaded,mandate.Until+1);
+        Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(loaded.DiagnosticSnapshot()));
+        var ledger=GuardianLedger.Latest(loaded.DiagnosticSnapshot(),mandate)!;
+        Assert.Equal(present,ledger.Returned);
+        Assert.Equal(present?paper.Heir:mandate.Guardian,ledger.Holder);
         Assert.Equal(LifeState.Adult,adult.Characters.Single(c=>c.Id.Value==child.Id).Life);
         Assert.Equal(mandate,Assert.Single(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(adult))).DiagnosticSnapshot().GuardianMandates!));
     }
