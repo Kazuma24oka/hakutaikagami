@@ -25,6 +25,11 @@ public partial class NewGameRuntime
      Button("attend/"+order.Id.Value,$"現地の{present}人で参集する",()=>Run(new(Nonce("attend/"+order.Id.Value),CourtAction.AttendMuster,actor,order.Owner,order.Site,Amount:present,Reference:order.Id)));
     }
    }
+   var lastAttendance=w.Court?.Events.LastOrDefault(e=>e.Actor==actor && e.Input.Action==CourtAction.AttendMuster);
+   if(lastAttendance!=null){
+    var order=w.Court!.Events.Single(e=>e.Input.Id==lastAttendance.Input.Reference);
+    SocialText(box,$"直近の参集　{NewGameWorld.SiteName(lastAttendance.Place.Value)}　軍役{order.Input.Amount}人のうち{lastAttendance.Input.Amount}人で参集（{(lastAttendance.At>order.Input.When?"遅参":"期日どおり")}）");
+   }
    SpinBox Count(string label,int max){
     var row=new HBoxContainer();box.AddChild(row);row.AddChild(new Label{Text=label});
     var value=new SpinBox{MinValue=1,MaxValue=max,Step=1,Value=1};row.AddChild(value);return value;
