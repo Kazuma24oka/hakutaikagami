@@ -3,6 +3,30 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public class FamilyKinTests
 {
+    [Fact] public void NaturalDeathIsRecordedOnceWithEstateIntactAcrossRecovery()
+    {
+        var elder=NewGameWorldTests.Officer("created:elder") with{BirthYear=1430};
+        var start=NewGameWorldTests.Setup([NewGameWorldTests.Officer(),elder]);
+        var w=NewGameWorld.Create(start.World,start.Registered,"created:test",0,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,comingOfAge:15);
+        const long at=12830400;
+        w.ElapsedSeconds=at-1;
+        var uninterrupted=new WorldSession(w);
+        var resumed=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        foreach(var session in new[]{uninterrupted,resumed})
+        {
+            NewGameWorldTests.At(session,at+1);
+            var after=session.DiagnosticSnapshot();
+            var death=Assert.Single(after.NaturalDeaths!);
+            Assert.Equal(at,death.At);
+            Assert.Equal(elder.Id,death.Person.Value);
+            Assert.Equal(LifeState.Dead,after.Characters.Single(c=>c.Id==death.Person).Life);
+            Assert.Equal(NewGameWork.InitialCoins,NewGameWork.Balance(after,death.Person));
+            Assert.Equal(ContractJson.Write(after),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after))).DiagnosticSnapshot()));
+        }
+        Assert.Equal(ContractJson.Write(uninterrupted.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));
+    }
+
     [Fact] public void NewYearMaturesOnceWithoutAppointingChildAndLegacyKeepsItsRule()
     {
         var child=NewGameWorldTests.Officer("created:junior") with{BirthYear=1546};

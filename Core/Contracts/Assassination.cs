@@ -122,6 +122,7 @@ public static class Assassination
             throw new InvalidDataException("暗殺の返報が現地の事実と一致しません");
     }
     public static bool DeadAt(ContractWorld w,EntityId person,long at,long rev) =>
+        (w.NaturalDeaths?.Any(d=>d.Person==person && (d.At<at || d.At==at && d.Revision<=rev))??false) ||
         InformationSchemes.Events(w).Any(e=>e.Input.Action==SchemeAction.FatalEncounter && e.Input.Subject==person &&
             (e.At<at || e.At==at && e.Revision<=rev));
 
