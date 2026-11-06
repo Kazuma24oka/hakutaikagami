@@ -102,7 +102,7 @@ public sealed class GenerationSaveStore
     {
         var snapshot=session.DiagnosticSnapshot();
         if(snapshot.WorldId!=expectedWorld)throw new ContractLoadException(ResultCode.StateChanged,"World changed before capture.");
-        ContractValidation.Validate(snapshot);VerifyDefinitions(snapshot.Definitions);
+        ContractValidation.Validate(snapshot);VerifyDefinitions(snapshot);
         var display=presentation??new SavePresentation(0,1);ValidatePresentation(display);
         fault?.Invoke(SaveStage.SnapshotCaptured);
         lock(Gate)
@@ -176,7 +176,7 @@ public sealed class GenerationSaveStore
             throw new InvalidDataException("Payload/presentation hash or length mismatch.");
         var world=ReadPayload(payload);
         if(world.Schema!=manifest.SchemaVersions["World"])throw new InvalidDataException("Payload/manifest version mismatch");
-        ContractValidation.Validate(world);VerifyDefinitions(world.Definitions);
+        ContractValidation.Validate(world);VerifyDefinitions(world);
         if(world.WorldId!=manifest.WorldId||world.CommitSequence!=manifest.CommitSequence||world.TimeDomain!=manifest.TimeDomain)throw new InvalidDataException("Mixed save generation.");
         var display=ContractJson.Read<SavePresentation>(displayBytes);ValidatePresentation(display);
         return new(world,this,slot,generation,manifest.PayloadHash,ContractJson.Hash(manifestBytes),manifest.PresentationHash,display);
@@ -200,8 +200,17 @@ public sealed class GenerationSaveStore
         if(now.PayloadHash!=candidate.PayloadHash||now.ManifestHash!=candidate.ManifestHash||now.PresentationHash!=candidate.PresentationHash)
             throw new ContractLoadException(ResultCode.StateChanged,"Prepared save changed; prepare again.");
     }
-    private void VerifyDefinitions(DefinitionPack definition)
+    private void VerifyDefinitions(ContractWorld world)
     {
+        var definition=world.Definitions;
+        if(world.Births is {Length:>0} births && world.NewGame is {} start)
+        {
+            // 直前の世界検証で出生原本と一致した追加人物だけを開始版の比較から除く。
+            var originalCount=start.Start.People.Length;
+            if(!definition.Characters.Skip(originalCount).Select(c=>c.Id).SequenceEqual(births.Select(b=>b.Child)))
+                throw new ContractLoadException(ResultCode.DependencyMismatch,"出生児の名簿が一致しません");
+            definition=definition with{Characters=definition.Characters.Take(originalCount).ToArray()};
+        }
         if(definition.Ruleset!=expectedRules||ContractJson.CanonicalHash(definition)!=expectedDefinitionHash)
             throw new ContractLoadException(ResultCode.DependencyMismatch,"Definition/rules mismatch.");
     }

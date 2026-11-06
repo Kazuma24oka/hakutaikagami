@@ -26,7 +26,7 @@ public static partial class NewGameWorld
             ContractJson.CanonicalHash(stable.Start.People.Select(p=>new DefinitionEntry(new(p.Id),p.Name)).ToArray()),
             ContractJson.CanonicalHash(stable.Start.Factions.Select(f=>new DefinitionEntry(new(f.Id),f.Name)).ToArray()),
             rel,ContractJson.CanonicalHash(rel.Offices),ContractJson.CanonicalHash(rel.Lands),ContractJson.CanonicalHash(Grants(stable)),
-            stable.Start.People.ToDictionary(p=>p.Id,p=>(new EntityId("appearance:"+ContractJson.Hash(ContractJson.Write(Look(stable,p.Id)))),CanPlay(stable.Start,p)?LifeState.Adult:LifeState.Minor)));
+            stable.Start.People.ToDictionary(p=>p.Id,p=>(new EntityId("appearance:"+ContractJson.Hash(ContractJson.Write(Look(stable,p.Id)))),CanPlay(stable.Start,p,stable.AdultAge)?LifeState.Adult:LifeState.Minor)));
         if(bytes.Length<=ProjectionBytes)lock(startProjectionGate){startProjections.AddFirst(value);while(startProjections.Count>ProjectionEntries||startProjections.Sum(p=>p.Input.Length)>ProjectionBytes)startProjections.RemoveLast();}
         return value;
     }

@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "生物学上の親子と養親を区別し、開始時と出生時の親子関係を復元できる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FamilyMortality.cs",
+        "Core/Contracts/FamilyBirth.cs",
+        "Tests/FamilyKinTests.cs",
+        "Game/Scripts/NewGameRuntime.FamilyNews.cs",
+        "Game/Scripts/FamilyNewsCheck.cs",
+        "Docs/Design/FamilyLifeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "死亡は一度だけ成立し、既存の財産・契約を保持する。自然死と暗殺の記録は両立する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FamilyMortality.cs",
+        "Core/Contracts/FamilyBirth.cs",
+        "Tests/FamilyKinTests.cs",
+        "Game/Scripts/NewGameRuntime.FamilyNews.cs",
+        "Game/Scripts/FamilyNewsCheck.cs",
+        "Docs/Design/FamilyLifeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "死亡・出生・成人を現地で認識し、遠方では物理的な知らせが到着してから認識する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FamilyMortality.cs",
+        "Core/Contracts/FamilyBirth.cs",
+        "Tests/FamilyKinTests.cs",
+        "Game/Scripts/NewGameRuntime.FamilyNews.cs",
+        "Game/Scripts/FamilyNewsCheck.cs",
+        "Docs/Design/FamilyLifeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "未成年の子が世界暦の成人年に一度だけ成人し、成人と出仕の合意を別に扱う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FamilyMortality.cs",
+        "Core/Contracts/FamilyBirth.cs",
+        "Tests/FamilyKinTests.cs",
+        "Game/Scripts/NewGameRuntime.FamilyNews.cs",
+        "Game/Scripts/FamilyNewsCheck.cs",
+        "Docs/Design/FamilyLifeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常のゲーム画面・途中保存復旧・旧保存の代表例で結果を検証する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/FamilyMortality.cs",
+        "Core/Contracts/FamilyBirth.cs",
+        "Tests/FamilyKinTests.cs",
+        "Game/Scripts/NewGameRuntime.FamilyNews.cs",
+        "Game/Scripts/FamilyNewsCheck.cs",
+        "Docs/Design/FamilyLifeV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "史実出生と自然死は各1人の代表例。出生の月日・拠点、自然死の日・確率は試作値。全国長期試遊、全件検査、ユーザーの外観評価は未実施。"
+}

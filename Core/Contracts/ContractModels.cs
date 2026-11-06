@@ -251,6 +251,8 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialWorldState? SocialWorld {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialAssetState? SocialAssets {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public MeritState? Merits {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public FamilyBirthRecord[]? Births {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public NaturalDeath[]? NaturalDeaths {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SchemeState? Schemes {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CourtState? Court {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public BrokerState? BrokerWork {get;set;}

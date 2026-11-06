@@ -5,7 +5,7 @@ public sealed class AdultMarriageTests
 {
     static readonly EntityId Player=new("created:test"),Other=new("created:other"),Third=new("created:third");
     static RegisteredOfficer Officer(string id,bool declared=true)=>NewGameWorldTests.Officer(id) with{InitialMaritalStatus=declared?InitialMaritalStatus.Unmarried:null};
-    static WorldSession Start(ulong seed=42,bool on=true,bool declared=true,bool lord=false,bool minor=false,bool absent=false){var a=Officer(Player.Value) with{Role=lord?StartTemplate.Daimyo:StartTemplate.Ronin,FactionName=lord?"鏡山家":null};var b=Officer(Other.Value,declared) with{BirthYear=minor?1550:1520,Site=absent?"site:kofu":"site:castle"};var setup=NewGameWorldTests.Setup([a,b,Officer(Third.Value)],lord?[new(a.Id,"org:created-test",[a.Site],false)]:[]);return new(NewGameWorld.Create(setup.World,setup.Registered,a.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:on?AdultMarriage.Policy:null));}
+    static WorldSession Start(ulong seed=42,bool on=true,bool declared=true,bool lord=false,bool minor=false,bool absent=false,int? comingOfAge=null,bool grandparents=false){var a=Officer(Player.Value) with{Role=lord?StartTemplate.Daimyo:StartTemplate.Ronin,FactionName=lord?"鏡山家":null};var b=Officer(Other.Value,declared) with{BirthYear=minor?1550:1520,Site=absent?"site:kofu":"site:castle"};var third=Officer(Third.Value);if(grandparents){a=a with{BirthParents=[third.Id]};third=third with{BirthYear=1490,Site="site:kyoto"};}var setup=NewGameWorldTests.Setup([a,b,third],lord?[new(a.Id,"org:created-test",[a.Site],false)]:[]);return new(NewGameWorld.Create(setup.World,setup.Registered,a.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:on?AdultMarriage.Policy:null,comingOfAge:comingOfAge));}
     static readonly Lazy<ulong> Yes=new(()=>Find(true)),No=new(()=>Find(false));
     static ulong Find(bool answer){for(ulong n=1;n<100;n++){var w=Start(n).DiagnosticSnapshot();if((CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Affection)>=80)==answer)return n;}throw new Exception("Missing branch seed");}
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
@@ -13,6 +13,87 @@ public sealed class AdultMarriageTests
     static EntityId Propose(WorldSession s){Assert.Equal(ResultCode.Accepted,Act(s,MarriageAction.Propose).Code);return s.DiagnosticSnapshot().Marriage!.Entries.Last().Input.Id;}
     static WorldSession Agreed(bool lord=false){var s=Start(Yes.Value,lord:lord);Propose(s);At(s,1);Assert.Single(s.DiagnosticSnapshot().Marriage!.Entries,e=>e.Input.Action==MarriageAction.PersonalYes);return s;}
     static void Implement(WorldSession s){var t=s.DiagnosticSnapshot().Marriage!.Entries.First().Terms!;foreach(var h in t.Houses)Assert.Equal(ResultCode.Accepted,Act(s,MarriageAction.ApproveHouse,t.Id,h.Owner).Code);Assert.Equal(ResultCode.Accepted,Act(s,MarriageAction.Implement,t.Id).Code);}
+    [Fact]public void ChildIsBornOnceFromImplementedMarriageAndKeepsBothParentsOnLoad()
+    {
+        var s=Start(Yes.Value,comingOfAge:15,grandparents:true);
+        var original=Propose(s);At(s,1);Implement(s);
+        var w=s.DiagnosticSnapshot();
+        var marriage=w.Marriage!.Entries.Single(e=>e.Input.Action==MarriageAction.Implement);
+        long due=0;
+        for(int year=0;year<100 && due==0;year++)
+        {
+            var hash=System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(
+                $"family-birth-v1/{Yes.Value}/{original.Value}/{year}"));
+            if(hash[0]<96)due=marriage.At+(year*365L+280+System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(hash.AsSpan(1))%60)*86400L;
+        }
+        Assert.True(due>0);w.ElapsedSeconds=due-1;
+        var left=new WorldSession(w);var right=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        foreach(var branch in new[]{left,right})
+        {
+            At(branch,due+1);
+            var end=branch.DiagnosticSnapshot();
+            var child=Assert.Single(end.Births!);
+            Assert.Equal(original,child.Marriage);Assert.Equal(Player,child.FirstParent);Assert.Equal(Other,child.SecondParent);
+            var notice=Assert.Single(end.Messaging.Messages,m=>m.Kind==FamilyNotice.BirthKind);
+            Assert.Equal(Third.Value,notice.RecipientId);
+            Assert.Equal(child.Child.Value,notice.CorrelationId);
+            Assert.Contains(new EntityId(notice.Id),end.SealedMessages);
+            Assert.True(end.Messaging.Attempts.Single(a=>a.MessageId==notice.Id).DueAt>due);
+            Assert.Equal(due,child.At);
+            Assert.Equal(LifeState.Minor,end.Characters.Single(c=>c.Id==child.Child).Life);
+            Assert.Equal(child.Site,end.Locations.Single(l=>l.Actor==child.Child).Site);
+            Assert.Equal(ContractJson.Write(end),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(end))).DiagnosticSnapshot()));
+        }
+        Assert.Equal(ContractJson.Write(left.DiagnosticSnapshot()),ContractJson.Write(right.DiagnosticSnapshot()));
+        var pending=left.DiagnosticSnapshot().Messaging.Attempts.Single();
+        At(left,pending.DueAt);At(right,pending.DueAt);
+        Assert.Equal(ContractJson.Write(left.DiagnosticSnapshot()),ContractJson.Write(right.DiagnosticSnapshot()));
+        var grown=left.DiagnosticSnapshot();
+        var birth=Assert.Single(grown.Births!);
+        var birthYear=WorldCalendar.At(grown.EpochDate,birth.At).Year;
+        long adultAt=(long)(new DateOnly(birthYear+15,1,1).DayNumber-DateOnly.ParseExact(grown.EpochDate,"yyyy-MM-dd").DayNumber)*86400;
+        grown.ElapsedSeconds=adultAt-1;
+        var birthday=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(grown)));
+        var tooEarly=birthday.ManageCompanion(new(new("request:underage-child"),birth.Child,CompanionAction.Agree,20),Player,birthday.Revision);
+        Assert.Equal(ResultCode.NotAvailable,tooEarly.Code);
+        At(birthday,adultAt);
+        var mature=birthday.DiagnosticSnapshot();
+        Assert.Equal(LifeState.Adult,mature.Characters.Single(c=>c.Id==birth.Child).Life);
+        Assert.DoesNotContain(mature.ServiceBonds,b=>b.Subject==birth.Child);
+        Assert.Contains(mature.Grants,g=>g.Agent==birth.Child && g.Actions.Contains(ActionKind.Move));
+        Assert.Equal(ContractJson.Write(mature),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(mature))).DiagnosticSnapshot()));
+        var agreement=birthday.ManageCompanion(new(new("request:adult-child-agreement"),birth.Child,CompanionAction.Agree,20),Player,birthday.Revision);
+        Assert.True(agreement.Code==ResultCode.Accepted,agreement.VisibleReason);
+        Assert.Equal(20,NewGameWork.Balance(birthday.DiagnosticSnapshot(),birth.Child));
+        var scout=new SchemeInput(new("request:adult-child-errand"),SchemeAction.SendScout,birth.Child,Player,Destination:new("site:village"));
+        var dispatched=birthday.ManageScheme(scout,birthday.Revision);
+        Assert.True(dispatched.Code==ResultCode.Accepted,dispatched.VisibleReason);
+        var trip=birthday.DiagnosticSnapshot().Schemes!.Events.Single(e=>e.Input.Id==scout.Id).Movement!;
+        At(birthday,trip.EffectiveAt+trip.DeliverySeconds+1);
+        birthday.SetPaused(true);
+        var traveling=birthday.DiagnosticSnapshot();
+        Assert.Contains(traveling.Branches!.Journeys,j=>j.Actor==birth.Child);
+        var directory=Directory.CreateTempSubdirectory("hakutai-born-officer-");
+        WorldSession loaded;
+        try
+        {
+            var store=new GenerationSaveStore(directory.FullName,NewGameWorld.Create(
+                w.NewGame!.Start,w.NewGame.Registered,Player.Value,Yes.Value,inspectionPolicy:LocalInspectionFindings.Policy,
+                workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+                socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:AdultMarriage.Policy,comingOfAge:15).Definitions);
+            store.Save(birthday,"manual",traveling.WorldId);
+            var prepared=store.Prepare("manual");
+            var host=new WorldSessionHost(new WorldSession(traveling));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(prepared,host.Current,host.Current.Revision));
+            loaded=host.Current;
+        }
+        finally{directory.Delete(true);}
+
+        long arrival=trip.EffectiveAt+trip.DeliverySeconds+trip.WorkSeconds;
+        At(loaded,arrival);At(birthday,arrival);
+        Assert.Equal(ContractJson.Write(birthday.DiagnosticSnapshot()),ContractJson.Write(loaded.DiagnosticSnapshot()));
+        Assert.Equal(scout.Destination,SocialWorld.Site(loaded.DiagnosticSnapshot(),birth.Child));
+    }
     [Fact]public void UnknownAuthoringStatusIsNotAssumedUnmarried(){var s=Start(declared:false);Assert.DoesNotContain(Other,AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose).Code);}
     [Fact]public void HistoricalSpouseDataIsNotInvented(){var s=Start();Assert.DoesNotContain(new EntityId("person:nobunaga"),AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose,other:new("person:nobunaga")).Code);}
     [Fact]public void OldPolicyDoesNotGainMarriage(){var s=Start(on:false);Assert.Null(s.DiagnosticSnapshot().Marriage);Assert.DoesNotContain("MarriagePolicy",System.Text.Encoding.UTF8.GetString(ContractJson.Write(s.DiagnosticSnapshot())));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose).Code);}

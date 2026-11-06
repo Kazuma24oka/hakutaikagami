@@ -24,10 +24,10 @@ public static class CharacterDevelopment
     public static string Name(DevelopmentAbility a)=>a switch{DevelopmentAbility.Leadership=>"統率",DevelopmentAbility.Valor=>"武勇",DevelopmentAbility.Intelligence=>"知略",DevelopmentAbility.Politics=>"政務",_=>"交渉"};
     public static string Name(DevelopmentSkill s)=>s switch{DevelopmentSkill.Agriculture=>"農政",DevelopmentSkill.Commerce=>"商取引",DevelopmentSkill.Construction=>"普請",DevelopmentSkill.Logistics=>"兵站",DevelopmentSkill.Tactics=>"戦術",DevelopmentSkill.IntelligenceGathering=>"情報",_=>"礼法"};
     static int Base(ContractWorld w,EntityId actor,DevelopmentAbility ability){
-        var p=w.NewGame!.Start.People.Single(x=>x.Id==actor.Value);var a=p.Attributes;
+        var p=FamilyBirth.People(w).Single(x=>x.Id==actor.Value);var a=p.Attributes;
         if(a!=null)return ability switch{DevelopmentAbility.Leadership=>a.Leadership,DevelopmentAbility.Valor=>a.Valor,DevelopmentAbility.Intelligence=>a.Intelligence,DevelopmentAbility.Politics=>a.Politics,_=>a.Negotiation??50};
         // Stable provisional balance values, explicitly not historical assessments.
-        string hash=ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/"+w.NewGame.Seed+"/"+actor.Value+"/"+ability));
+        string hash=ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/"+w.NewGame!.Seed+"/"+actor.Value+"/"+ability));
         return 35+(int)(Convert.ToUInt32(hash[..8],16)%41);
     }
     static long Xp(IEnumerable<DevelopmentAward> rows,EntityId actor,DevelopmentSkill skill)=>rows.Where(a=>a.Actor==actor&&a.Skill==skill).Sum(a=>a.Experience);
@@ -73,7 +73,7 @@ public static class CharacterDevelopment
         if(!Enabled(w)||!w.Characters.Any(c=>c.Id==observer)||!w.Characters.Any(c=>c.Id==person))return null;
         bool own=observer==person;var rows=w.Development!.Awards;
         if(own){
-            var abilities=Enum.GetValues<DevelopmentAbility>().Select(a=>new DevelopmentValue(Name(a),Value(w,rows,person,a),rows.Where(x=>x.Actor==person&&Ability(x.Skill)==a).Sum(x=>x.Experience),w.NewGame!.Start.People.Single(p=>p.Id==person.Value).Attributes==null?"試作の固定初期値＋実行記録（史実評価ではありません）":"登録能力＋実行記録",w.ElapsedSeconds,"本人の正確値")).ToArray();
+            var abilities=Enum.GetValues<DevelopmentAbility>().Select(a=>new DevelopmentValue(Name(a),Value(w,rows,person,a),rows.Where(x=>x.Actor==person&&Ability(x.Skill)==a).Sum(x=>x.Experience),FamilyBirth.People(w).Single(p=>p.Id==person.Value).Attributes==null?"試作の固定初期値＋実行記録（史実評価ではありません）":"登録能力＋実行記録",w.ElapsedSeconds,"本人の正確値")).ToArray();
             var skills=Enum.GetValues<DevelopmentSkill>().Select(s=>new DevelopmentValue(Name(s),Skill(rows,person,s),Xp(rows,person,s),"完了した修行・点検の実時間",w.ElapsedSeconds,"本人の正確値")).ToArray();
             return new(person,true,abilities,skills,"無料修行は30分。完了時のみ経験を確定し、1日最大8時間分。未完了分は加算しません。経験7200で技能1、対応経験360000で基礎能力1（上限100）。勲功・役職とは別です。健康・負傷・加齢の補正は未導入です。");
         }

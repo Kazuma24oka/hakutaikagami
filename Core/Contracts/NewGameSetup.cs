@@ -8,10 +8,17 @@ public sealed record OfficerAttributes(int Leadership, int Valor, int Intelligen
 public enum InitialMaritalStatus { Unmarried }
 public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Name, int BirthYear,
     OfficerAttributes Attributes, StartTemplate Role, string Site, string? Lord, string? FactionName, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] HakutaiKagami.Core.Appearance.OfficerAppearance? Look = null)
-{ [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public InitialMaritalStatus? InitialMaritalStatus {get;init;} }
+{ [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public InitialMaritalStatus? InitialMaritalStatus {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string[]? BirthParents {get;init;}
+}
 public sealed record OfficerGroup(string Id, string Name, RegisteredOfficer[] Officers);
 public sealed record OfficerLibrary(int Schema, RegisteredOfficer[] Ungrouped, OfficerGroup[] Groups);
-public sealed record SetupPerson(string Id, string Name, string Site, string? Faction, string? Lord, bool Created, bool PersonalRetainer, int? BirthYear = null, OfficerAttributes? Attributes = null, StartTemplate? InitialRole = null);
+public sealed record SetupPerson(string Id, string Name, string Site, string? Faction, string? Lord, bool Created, bool PersonalRetainer, int? BirthYear = null, OfficerAttributes? Attributes = null, StartTemplate? InitialRole = null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string[]? BirthParents {get;init;}
+}
 public sealed record SetupCastle(string Id, string? Faction);
 public sealed record SetupFaction(string Id, string Name, string Head, string Home);
 public sealed record SetupScenario(int Schema, string EpochDate, SetupPerson[] People, SetupCastle[] Castles, SetupFaction[] Factions);
@@ -33,6 +40,7 @@ public static class NewGameSetup
     {
         Need(p != null && Key(p.Id) && p.Id.StartsWith("created:",StringComparison.Ordinal),"登録武将のIDが不正です");
         Need(Text(p.Name) && Key(p.Site) && Enum.IsDefined(p.Role),"登録武将の名前・立場・場所が不正です");
+        Need(p.BirthParents==null || p.BirthParents.Length<=2 && p.BirthParents.All(id=>EntityId.IsValid(id) && id!=p.Id) && p.BirthParents.Distinct().Count()==p.BirthParents.Length,"登録した実親の指定が不正です");
         Need(p.InitialMaritalStatus==null||Enum.IsDefined(p.InitialMaritalStatus.Value),"開始時の婚姻情報が不正です");
         Need(p.BirthYear is >= 1 and <= 9999 && p.Attributes != null,"生年・能力が不正です");
         Need(new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0}.All(n=>n>=0),"能力は負数にできません");
@@ -73,6 +81,7 @@ public static class NewGameSetup
         Unique(s.People.Select(p=>p.Id));Unique(s.Castles.Select(c=>c.Id));Unique(s.Factions.Select(f=>f.Id));
         Need(s.People.All(p=>Text(p.Name) && Key(p.Site) && (p.Faction==null || s.Factions.Any(f=>f.Id==p.Faction)) && (p.Lord==null || s.People.Any(q=>q.Id==p.Lord))),"人物の所属・主従・場所が不正です");
         Need(s.People.Where(p=>p.Created).All(p=>p.BirthYear is >=1 and <=9999 && p.Attributes!=null && p.InitialRole!=null && Enum.IsDefined(p.InitialRole.Value) && new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0}.All(n=>n>=0)),"登録人物の生年・能力・開始立場がありません");
+        FamilyKin.Validate(s.People);
         Need(s.Castles.All(c=>c.Faction==null || s.Factions.Any(f=>f.Id==c.Faction)),"城の所有勢力がありません");
         Need(s.Factions.All(f=>Text(f.Name) && s.People.Any(p=>p.Id==f.Head && p.Faction==f.Id && p.Lord==null) && s.Castles.Any(c=>c.Id==f.Home && c.Faction==f.Id)),"大名または本拠が不正です");
         foreach(var p in s.People){var seen=new HashSet<string>();var q=p;while(q.Lord!=null){Need(seen.Add(q.Id),"主従が循環しています");var lord=s.People.Single(x=>x.Id==q.Lord);Need(q.Faction==lord.Faction,"主従の所属が矛盾します");q=lord;}}
@@ -134,7 +143,7 @@ public static class NewGameSetup
                 if(p.Lord!=null){var other=request.Officers.SingleOrDefault(q=>q.Id==p.Lord);var principal=other==null?people.GetValueOrDefault(p.Lord):Resolve(other);Need(principal!=null,"直属主君がこの世界に登場していません");faction=principal.Faction;lord=principal.Id;}
                 else{Need(faction!=null,"この場所の所属が未設定です。直属相手を指定するか浪人/大名を選んでください");lord=factions.Single(f=>f.Id==faction).Head;}
             }
-            var value=new SetupPerson(p.Id,p.Name,p.Site,faction,lord,true,p.Lord!=null,p.BirthYear,ContractJson.Copy(p.Attributes),p.Role);people.Add(p.Id,value);resolving.Remove(p.Id);return value;
+            var value=new SetupPerson(p.Id,p.Name,p.Site,faction,lord,true,p.Lord!=null,p.BirthYear,ContractJson.Copy(p.Attributes),p.Role){BirthParents=p.BirthParents?.Where(id=>original.People.Any(person=>person.Id==id)||request.Officers.Any(person=>person.Id==id)).ToArray()};people.Add(p.Id,value);resolving.Remove(p.Id);return value;
         }
         foreach(var p in request.Officers)Resolve(p);
         // Preserve foreign guests/prisoners: only allegiance members above are reassigned.

@@ -25,7 +25,7 @@ public static class CharacterRelations
         return new(Sum(r=>r.Affection),Sum(r=>r.Trust),Sum(r=>r.Respect),Sum(r=>r.Fear),Sum(r=>r.Hostility));
     }
     public static int DiagnosticLoyalty(ContractWorld w,EntityId actor,LoyaltyTarget kind,EntityId target,long at,long revision){
-        Need(Enabled(w)&&Enum.IsDefined(kind),"Unknown loyalty target");var p=w.NewGame!.Start.People.Single(p=>p.Id==actor.Value);int duty=DiagnosticTrait(w,actor,SocialTrait.Duty);
+        Need(Enabled(w)&&Enum.IsDefined(kind),"Unknown loyalty target");var p=FamilyBirth.People(w).Single(p=>p.Id==actor.Value);int duty=DiagnosticTrait(w,actor,SocialTrait.Duty);
         // Initial affiliations are separate targets. No relationship event changes legal membership.
         int basis=kind==LoyaltyTarget.Person?(p.Lord==target.Value?30+duty/2:0):p.Faction==target.Value?(kind==LoyaltyTarget.House?25+duty/2:15+duty/3):0;
         if(kind==LoyaltyTarget.Person)basis+=DiagnosticScores(w,actor,target,at,revision).Trust/2;
