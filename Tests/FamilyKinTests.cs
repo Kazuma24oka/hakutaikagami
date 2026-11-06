@@ -85,17 +85,23 @@ public class FamilyKinTests
 
     [Fact] public void DistantChildLearnsFromWitnessLetterOnlyAfterDeliveryAndOpening()
     {
-        var elder=NewGameWorldTests.Officer("created:elder",site:"site:kyoto") with{BirthYear=1430};
+        var elder=NewGameWorldTests.Officer("created:elder",StartTemplate.Daimyo) with{BirthYear=1430};
         var child=NewGameWorldTests.Officer(site:"site:akutagawa") with{BirthParents=[elder.Id]};
-        var witness=NewGameWorldTests.Officer("created:witness",site:elder.Site);
-        var start=NewGameWorldTests.Setup([elder,child,witness]);
-        var world=NewGameWorld.Create(start.World,start.Registered,child.Id,0,comingOfAge:15);
+        var witness=NewGameWorldTests.Officer("created:witness",StartTemplate.Retainer,site:elder.Site,lord:elder.Id);
+        var start=NewGameWorldTests.Setup([elder,child,witness],[new(elder.Id,"org:elder",[elder.Site],false)]);
+        var world=NewGameWorld.Create(start.World,start.Registered,child.Id,0,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,comingOfAge:15);
         const long at=12830400;
         world.ElapsedSeconds=at-1;
         var session=new WorldSession(world);
         NewGameWorldTests.At(session,at);
         world=session.DiagnosticSnapshot();
         var death=Assert.Single(world.NaturalDeaths!);
+        var house=new EntityId("org:elder");
+        Assert.NotNull(FactionStances.ResolveAuthority(world,new(elder.Id),house,at-1,death.Revision-1));
+        Assert.Null(FactionStances.ResolveAuthority(world,new(elder.Id),house,at,death.Revision));
+        Assert.Empty(Guardianship.Known(world,session.PlayerControl));
+        Assert.False(Assert.Single(Guardianship.Known(world,new(witness.Id))).OwnClaim);
         var message=Assert.Single(world.Messaging.Messages,m=>m.Kind==FamilyNotice.Kind);
         Assert.True(FamilyNotice.Knows(world,death,new(witness.Id)));
         Assert.False(FamilyNotice.Knows(world,death,session.PlayerControl));
@@ -106,9 +112,30 @@ public class FamilyKinTests
         {
             NewGameWorldTests.At(branch,attempt.DueAt);
             Assert.False(FamilyNotice.Knows(branch.DiagnosticSnapshot(),death,branch.PlayerControl));
+            Assert.Empty(Guardianship.Known(branch.DiagnosticSnapshot(),branch.PlayerControl));
             var opened=branch.Open(branch.PlayerControl,new(message.Id),branch.Revision);
+            Assert.True(Assert.Single(Guardianship.Known(branch.DiagnosticSnapshot(),branch.PlayerControl)).OwnClaim);
             Assert.True(opened.Code==ResultCode.Accepted,opened.VisibleReason);
             Assert.True(FamilyNotice.Knows(branch.DiagnosticSnapshot(),death,branch.PlayerControl));
+            Assert.Equal(ResultCode.NotAvailable,branch.ClaimSuccession(house,new(elder.Id),branch.Revision).Code);
+            var move=TravelWorld.Move(branch.DiagnosticSnapshot(),"request:family-return","castle");
+            Assert.Equal(ResultCode.Accepted,branch.Submit(move,branch.Revision).Code);
+            NewGameWorldTests.At(branch,branch.Seconds+2);
+            NewGameWorldTests.At(branch,branch.GetBranchView(branch.PlayerControl).ArrivalAt!.Value+2);
+            var claim=branch.ClaimSuccession(house,new(elder.Id),branch.Revision);
+            Assert.True(claim.Code==ResultCode.Accepted,claim.VisibleReason);
+            var after=branch.DiagnosticSnapshot();
+            var opening=Assert.Single(Guardianship.Known(after,branch.PlayerControl)).Opening;
+            Assert.Equal(branch.PlayerControl,Assert.Single(Guardianship.WitnessedClaims(after,opening,new(witness.Id))).Claimant);
+            var claimRecord=Assert.Single(after.HouseClaims!);
+            var answered=branch.ConsultHouseMember(claimRecord.Revision,new(witness.Id),branch.Revision);
+            Assert.True(answered.Code==ResultCode.Accepted,answered.VisibleReason);
+            after=branch.DiagnosticSnapshot();
+            Assert.Equal(new EntityId(witness.Id),Assert.Single(Guardianship.HeardOpinions(after,claimRecord,branch.PlayerControl)).Speaker);
+            Assert.Empty(Guardianship.HeardOpinions(after,claimRecord,new("person:shingen")));
+            Assert.Equal(ResultCode.AlreadyAccepted,branch.ConsultHouseMember(claimRecord.Revision,new(witness.Id),branch.Revision).Code);
+            Assert.Null(FactionStances.ResolveAuthority(after,branch.PlayerControl,house,branch.Seconds,branch.Revision));
+            Assert.Single(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after))).DiagnosticSnapshot().HouseClaims!);
         }
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }

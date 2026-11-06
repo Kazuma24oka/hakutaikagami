@@ -31,9 +31,11 @@ public static class FactionStances
     // while travelling. An ordinary retainer's placement grant is not political authority.
     public static FactionStanceAuthority? ResolveAuthority(ContractWorld w,EntityId issuer,EntityId owner,long at,long revision)
     {
-        if(HostageCustody.HeldAt(w,issuer,at,revision))return null;
-        if(!NewGameWorld.Enabled(w)||at<0||at>w.ElapsedSeconds||revision<0||revision>w.CommitSequence||
-            (w.Characters.SingleOrDefault(c=>c.Id==issuer)?.Life!=LifeState.Adult && !(w.Characters.Any(c=>c.Id==issuer&&c.Life==LifeState.Dead)&&!Assassination.DeadAt(w,issuer,at,revision)&&NewGameWorld.CanPlay(w.NewGame!.Start,w.NewGame.Start.People.Single(p=>p.Id==issuer.Value)))))return null;
+        if(!NewGameWorld.Enabled(w) || at<0 || at>w.ElapsedSeconds || revision<0 || revision>w.CommitSequence ||
+            HostageCustody.HeldAt(w,issuer,at,revision) || Assassination.DeadAt(w,issuer,at,revision))return null;
+        var person=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==issuer.Value);
+        if(person==null || FamilyKin.LifeAt(w.NewGame!,person,at)!=LifeState.Adult ||
+            (w.Births??[]).Any(b=>b.Child==issuer && (b.At>at || b.At==at && b.Revision>revision)))return null;
         var faction=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value&&f.Head==issuer.Value);if(faction==null)return null;
         var home=new EntityId(faction.Home);
         var member=w.Memberships.SingleOrDefault(r=>r.Subject==issuer&&r.Target==owner&&r.Kind=="membership"&&Active(r,at,revision));

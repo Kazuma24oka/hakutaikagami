@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "当主の死去で指名・家族関係・家臣の誓紙・現地の権限を根拠に後継を巡る状況が生まれる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/Guardianship.cs",
+        "Core/Contracts/MinoritySuccession.cs",
+        "Tests/GuardianshipTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/GuardianshipCheck.cs",
+        "Docs/Design/GuardianshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "異議と支持を人物別に記録し、到着・認識前に他人の意思を明かさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/Guardianship.cs",
+        "Core/Contracts/MinoritySuccession.cs",
+        "Tests/GuardianshipTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/GuardianshipCheck.cs",
+        "Docs/Design/GuardianshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "未成年の候補と後見を分け、後見の対象・期限・許可した行為を限定して記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/Guardianship.cs",
+        "Core/Contracts/MinoritySuccession.cs",
+        "Tests/GuardianshipTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/GuardianshipCheck.cs",
+        "Docs/Design/GuardianshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "他家からの養子の合意、後見の終了、現地の実引継ぎを区別し、軍・所領を一括で移さない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/Guardianship.cs",
+        "Core/Contracts/MinoritySuccession.cs",
+        "Tests/GuardianshipTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/GuardianshipCheck.cs",
+        "Docs/Design/GuardianshipV1/verification.json"
+      ]
+    },
+    {
+      "contract": "途中保存・代表旧保存と通常画面で争い・後見の推移を検証する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/Guardianship.cs",
+        "Core/Contracts/MinoritySuccession.cs",
+        "Tests/GuardianshipTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/GuardianshipCheck.cs",
+        "Docs/Design/GuardianshipV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "後見の実務は帳簿保管。成人候補の異議と競合は係争として保持し、自動の多数決や武力決着は行わない。養子は現地で両家が承諾した成人を扱う。全国長期試遊、全件検査、ユーザーの外観評価は未実施。"
+}

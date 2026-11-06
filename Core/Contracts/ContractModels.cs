@@ -251,6 +251,11 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialWorldState? SocialWorld {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialAssetState? SocialAssets {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public MeritState? Merits {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public MinorityAccession[]? MinorityAccessions {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public GuardianLedgerTransfer[]? GuardianLedger {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public GuardianMandate[]? GuardianMandates {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public ClaimOpinion[]? ClaimOpinions {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HouseClaim[]? HouseClaims {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HeirNomination[]? HeirNominations {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public FamilyBirthRecord[]? Births {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public NaturalDeath[]? NaturalDeaths {get;set;}

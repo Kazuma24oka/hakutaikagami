@@ -179,11 +179,11 @@ public sealed partial class WorldSession
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
-                    HeirPledges.Receive(s);TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
+                    GuardianLedger.Tick(s);HeirPledges.Receive(s);TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
                     if(!WorldTimeControl.Enabled(s)&&s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 }finally{deferTimePause=false;if(WorldTimeControl.Pending(state)!=null&&!state.Paused)Change(s=>s.Paused=true);}
                 processed+=cost;
                 if(stopAtNotice&&(state.TimeControl?.Notices.Length??0)>initialNotices)return new(state.ElapsedSeconds,processed,"Notice");
@@ -196,6 +196,8 @@ public sealed partial class WorldSession
         var times=s.Messaging.Attempts.SelectMany(a=>a.Status==AttemptStatus.InTransit?new[]{a.DueAt}:
             a.Status==AttemptStatus.Lost&&a.LateDueAt!=null?new[]{a.LateDueAt.Value}:Array.Empty<long>())
             .Concat(s.PendingEvents.Select(e=>e.At)).Where(t=>t>s.ElapsedSeconds&&t<=target).ToList();
+        foreach(var mandate in s.GuardianMandates??[])
+            if(mandate.Until+1>s.ElapsedSeconds && mandate.Until+1<=target)times.Add(mandate.Until+1);
         if(RegionalBattle.Active(s)&&FieldPresence.NeedsSecondSteps(s,s.ElapsedSeconds))times.Add(s.ElapsedSeconds+1);
         if(PersonalCompanions.NextReleaseBoundary(s,target) is {} releaseBoundary)times.Add(releaseBoundary);
         if(FieldConvoy.NextBoundary(s,target) is {} convoyBoundary)times.Add(convoyBoundary);

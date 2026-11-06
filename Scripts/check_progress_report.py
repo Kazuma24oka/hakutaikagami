@@ -27,7 +27,9 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="heir-designation":
+ if logic["scope"]=="guardianship":
+  from verify_guardianship import check as check_logic
+ elif logic["scope"]=="heir-designation":
   from verify_heir_designation import check as check_logic
  elif logic["scope"]=="family-life":
   from verify_family_life import check as check_logic

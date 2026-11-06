@@ -23,6 +23,41 @@ public partial class NewGameRuntime
         void Button(string s,Action action,bool disabled=false){var b=new Button{Text=s,Disabled=disabled,CustomMinimumSize=new(0,36)};box.AddChild(b);b.Pressed+=action;}
         Text("家督・引継ぎ");Text("本拠で集合中の預かり軍は保管したまま交代を相談できます。軍務の発令者は別の指揮原本を確認するまで変わりません。");Text("生前の合意による当主職の交代です。所属・奉公・兵・私財は一括で移しません。家の未払いと預かり物は、原本ごとに現地で引き継ぎます。");var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(HouseSuccessionInput i){var r=Session.ManageHouseSuccession(i,Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();}
+        foreach(var accession in w.MinorityAccessions??[])
+            if(accession.Child==w.PlayerControl || GuardianLedger.Witnessed(w,w.PlayerControl).Any(t=>t.Mandate==accession.Mandate && !t.Returned && t.At==accession.At))
+                Text(SuccessionPerson(w,accession.Child)+"が"+CastleOwnerName(w,accession.House)+"の家督を継ぎました。");
+        foreach(var entry in GuardianLedger.Witnessed(w,w.PlayerControl))
+            Text(PersonName(entry.Holder)+(entry.Returned?"が元服後に家の帳簿を受け取りました。":"が後見人として家の帳簿を預かりました。"));
+        foreach(var dispute in Guardianship.Known(w,w.PlayerControl))
+        {
+            Text(CastleOwnerName(w,dispute.Opening.House)+"の当主が死去："+SuccessionPerson(w,dispute.Opening.Deceased));
+            var claims=Guardianship.WitnessedClaims(w,dispute.Opening,w.PlayerControl).ToArray();
+            foreach(var claim in claims)
+            {
+                Text("現地での家督申立："+SuccessionPerson(w,claim.Claimant));
+                var opinions=Guardianship.HeardOpinions(w,claim,w.PlayerControl).ToArray();
+                foreach(var opinion in opinions)Text(PersonName(opinion.Speaker)+(opinion.Supports?"：申立を支持":"：申立に異議"));
+                if(claim.Claimant!=w.PlayerControl || SocialWorld.Site(w,w.PlayerControl)!=dispute.Opening.Home)continue;
+                foreach(var member in w.Memberships.Where(m=>m.Target==claim.House && m.From<=w.ElapsedSeconds && w.ElapsedSeconds<m.Until))
+                {
+                    var speaker=member.Subject;
+                    if(speaker==claim.Claimant || speaker==claim.Deceased || opinions.Any(o=>o.Speaker==speaker) ||
+                        SocialWorld.Site(w,speaker)!=dispute.Opening.Home)continue;
+                    Button(PersonName(speaker)+"に意向を尋ねる",()=>{
+                        var r=Session.ConsultHouseMember(claim.Revision,speaker,shown);
+                        if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                        popup.Hide();Refresh();ShowHouseSuccession();
+                    });
+                }
+            }
+            if(dispute.OwnClaim && !claims.Any(c=>c.Claimant==w.PlayerControl))
+                Button("本拠で家督を申し立てる",()=>{
+                    var r=Session.ClaimSuccession(dispute.Opening.House,dispute.Opening.Deceased,shown);
+                    if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                    popup.Hide();Refresh();ShowHouseSuccession();
+                });
+            if(dispute.KnownNomination is {} known)Text("あなたが確認した指名状の候補："+SuccessionPerson(w,known.Heir));
+        }
         foreach(var house in w.NewGame!.Start.Factions)
         {
             var children=HeirDesignation.KnownChildren(w,new(house.Id));
@@ -34,6 +69,14 @@ public partial class NewGameRuntime
             {
                 foreach(var contact in HeirPledges.Contacts(w,current))
                 {
+                    if(w.Characters.Single(c=>c.Id==current.Heir).Life==LifeState.Minor &&
+                        !(w.GuardianMandates??[]).Any(m=>m.Nomination==current.Revision) &&
+                        SocialWorld.Site(w,new(contact.Id))==SocialWorld.Site(w,current.Head))
+                        Button(contact.Name+"に元服までの帳簿保管を相談",()=>{
+                            var r=Session.AgreeGuardian(current,new(contact.Id),shown);
+                            if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                            popup.Hide();Refresh();ShowHouseSuccession();
+                        });
                     if(!HeirPledges.Requested(w,current,contact.Id))
                         Button(contact.Name+"に誓紙を求める",()=>{
                             var r=Session.RequestHeirPledge(current,new(contact.Id),shown);
