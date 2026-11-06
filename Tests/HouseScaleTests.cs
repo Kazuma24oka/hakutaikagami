@@ -4,6 +4,26 @@ namespace HakutaiKagami.Tests;
 
 public sealed class HouseScaleTests
 {
+    [Fact]
+    public void EightSitesWithoutTwoIdentifiedProvincesCannotDeclareGreatHouse()
+    {
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo) with{Attributes=new(25,25,25,25)};
+        EntityId owner=new("org:limited-territory");
+        var sites=NewGameWorld.Scenario().Castles.Select(c=>c.Id).Where(id=>id!=head.Site &&
+            id is not ("site:ichijodani" or "site:nanao" or "site:hitoyoshi" or "site:funai" or "site:kofu"))
+            .Take(7).Prepend(head.Site).ToArray();
+        var setup=NewGameWorldTests.Setup([head],[new(head.Id,owner.Value,sites,false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,head.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        var s=new WorldSession(w);
+        var footprint=HouseTerritoryScale.Measure(w,owner,0,s.Revision);
+        Assert.Equal(8,footprint.Sites);
+        Assert.True(footprint.Provinces<2);
+        var input=new CourtInput(new("request:great"),CourtAction.DeclareScale,s.PlayerControl,owner,new(head.Site),Scale:CourtScale.Great);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(input,s.Revision).Code);
+        Assert.Equal(CourtScale.Local,HouseholdCourt.Scale(s.DiagnosticSnapshot(),owner));
+    }
+
     [Theory]
     [InlineData(CourtRole.WorksMagistrate,WorksKind.Agriculture,WorksKind.Commerce)]
     [InlineData(CourtRole.TownMagistrate,WorksKind.Commerce,WorksKind.Agriculture)]
@@ -12,7 +32,7 @@ public sealed class HouseScaleTests
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo) with{Attributes=new(20,20,20,20)};
         var agent=NewGameWorldTests.Officer("created:specialist",StartTemplate.Retainer,lord:head.Id);
         EntityId site=new(head.Site),owner=new("org:specialist"),who=new(agent.Id);
-        var lands=NewGameWorld.Scenario().Castles.Where(c=>c.Id!=head.Site).Take(7).Select(c=>c.Id).Prepend(head.Site).ToArray();
+        var lands=NewGameWorld.Scenario().Castles.Where(c=>c.Id!=head.Site).OrderByDescending(c=>c.Id is "site:ichijodani" or "site:nanao").Take(7).Select(c=>c.Id).Prepend(head.Site).ToArray();
         var setup=NewGameWorldTests.Setup([head,agent],[new(head.Id,owner.Value,lands,false)]);
         var w=NewGameWorld.Create(setup.World,setup.Registered,head.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
             workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
@@ -41,7 +61,7 @@ public sealed class HouseScaleTests
         var senior=NewGameWorldTests.Officer("created:senior",StartTemplate.Daimyo) with{Attributes=new(30,30,30,30)};
         EntityId own=new("org:negotiator"),other=new("org:senior");
         var castles=NewGameWorld.Scenario().Castles.Where(c=>c.Id!=proposer.Site && c.Id!=senior.Site)
-            .Take(7).Select(c=>c.Id).Prepend(senior.Site).ToArray();
+            .OrderByDescending(c=>c.Id is "site:ichijodani" or "site:nanao").Take(7).Select(c=>c.Id).Prepend(senior.Site).ToArray();
         var setup=NewGameWorldTests.Setup([proposer,senior],[new(proposer.Id,own.Value,[proposer.Site],false),new(senior.Id,other.Value,castles,false)]);
         var w=NewGameWorld.Create(setup.World,setup.Registered,proposer.Id,42,worldArmyPolicy:NpcArmies.CompactCombatPolicy,
             trucePolicy:TruceNegotiations.Policy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy);
