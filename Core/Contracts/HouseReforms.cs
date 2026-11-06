@@ -154,6 +154,17 @@ public static class HouseReforms
 
     internal static void Receive(ContractWorld w)
     {
+        foreach(var shown in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.PresentServiceRelease && e.Input.Person!=w.PlayerControl && e.At<w.ElapsedSeconds)){
+            var master=shown.Input.Person;
+            if(HouseholdCourt.Events(w).Any(e=>e.Input.Reference==shown.Input.Id && e.Input.Action is CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease) ||
+                SocialWorld.Site(w,master)!=shown.Place || SocialWorld.Site(w,shown.Actor)!=shown.Place ||
+                Assassination.DeadAt(w,master,w.ElapsedSeconds,w.CommitSequence))continue;
+            var willing=w.Characters.Single(c=>c.Id==master).WillObey &&
+                (!CharacterRelations.Enabled(w) || FamilyConsentRules.IndividualAccepts(w,master,shown.Actor,w.ElapsedSeconds,w.CommitSequence));
+            var answer=new CourtInput(HouseholdCourt.Id("request",shown.Input.Id.Value+"/release-answer"),
+                willing?CourtAction.ConsentServiceRelease:CourtAction.RefuseServiceRelease,shown.Actor,shown.Input.Owner,shown.Place,Reference:shown.Input.Id){FormerOffice=shown.Input.FormerOffice};
+            TransactionalWorld.TryApply(w,c=>HouseholdCourt.Execute(c,answer,master));
+        }
         foreach(var e in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ConsultReform))
         {
             var i=e.Input;

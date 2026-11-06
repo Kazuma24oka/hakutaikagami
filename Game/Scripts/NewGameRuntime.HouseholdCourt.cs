@@ -44,6 +44,32 @@ public partial class NewGameRuntime
     Button("reply-"+input.Id+choice,HouseReforms.ReplyText(choice),()=>Run(new(Nonce("reply/"+input.Id+choice),choice,
         proposal.Actor,input.Owner,input.Site,Reference:input.Id)));
   }
+  foreach(var assent in w.Court?.Events.Where(e=>e.Actor==actor && e.Input.Action==CourtAction.AssentReform)??[]){
+   var original=w.Court!.Events.Single(e=>e.Input.Id==assent.Input.Reference);
+   if(original.Input.Reform!=ReformKind.DirectService ||
+      w.Court.Events.Any(e=>e.Input.Reference==original.Input.Id && e.Input.Action==CourtAction.PresentServiceRelease))continue;
+   var bond=w.ServiceBonds.SingleOrDefault(b=>b.Subject==actor && b.Target!=original.Actor && b.From<=w.ElapsedSeconds && w.ElapsedSeconds<b.Until);
+   if(bond!=null && SocialWorld.Site(w,bond.Target)==site)
+    Button("present-service-"+assent.Input.Id,"旧主に直臣化の相談状を示す",()=>Run(new CourtInput(Nonce("show-service"),CourtAction.PresentServiceRelease,bond.Target,original.Input.Owner,site.Value,Reference:original.Input.Id){FormerOffice=bond.Id}));
+  }
+  foreach(var shown in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.PresentServiceRelease && e.Input.Person==actor && e.Place==site)??[]){
+   if(SocialWorld.Site(w,shown.Actor)!=site || w.Court!.Events.Any(e=>e.Input.Reference==shown.Input.Id &&
+      e.Input.Action is CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease))continue;
+   foreach(var action in new[]{CourtAction.ConsentServiceRelease,CourtAction.RefuseServiceRelease})
+    Button("service-answer-"+shown.Input.Id+action,action==CourtAction.ConsentServiceRelease?"旧主として奉公替えを認める":"奉公替えを断る",()=>Run(new CourtInput(Nonce("service-answer"),action,shown.Actor,shown.Input.Owner,shown.Place,Reference:shown.Input.Id){FormerOffice=shown.Input.FormerOffice}));
+  }
+  foreach(var consent in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.ConsentServiceRelease && e.Input.Person==actor)??[]){
+   var shown=w.Court!.Events.Single(e=>e.Input.Id==consent.Input.Reference);
+   var proposal=w.Court.Events.Single(e=>e.Input.Id==shown.Input.Reference);
+   var history=w.HouseService?.Entries.Where(e=>e.Input.ReformConsent==consent.Input.Id).ToArray()??[];
+   if(history.Length>=2)continue;
+   bool release=history.Length==0;
+   Button("complete-direct-"+consent.Input.Id,release?"本拠で旧主との奉公を解く":"本拠で当主に直接奉公する",()=>{
+    var terms=new HouseholdServiceInput(Nonce("direct-service"),release?HouseholdServiceAction.Release:HouseholdServiceAction.Pledge,consent.Input.Owner,
+        release?consent.Actor:proposal.Actor,release?consent.Input.FormerOffice:null){ReformConsent=consent.Input.Id};
+    var result=Session.ManageHouseholdService(terms,actor,rev);message.Text=result.VisibleReason;Refresh();ShowHouseholdCourt();
+   });
+  }
   foreach(var order in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.IssueTransfer && e.Input.Person==actor)??[]){
    var id=HouseReforms.Letter(order.Input,HouseReforms.TransferOrder);
    if(!w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==actor.Value))continue;

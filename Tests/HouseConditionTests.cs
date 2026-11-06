@@ -4,6 +4,54 @@ namespace HakutaiKagami.Tests;
 
 public sealed class HouseConditionTests
 {
+    [Theory]
+    [InlineData(CourtAction.ConsentServiceRelease)]
+    [InlineData(CourtAction.RefuseServiceRelease)]
+    public void SubordinatePresentsOwnBondToItsActualLord(CourtAction decision){
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+        var master=NewGameWorldTests.Officer("created:middle-lord",StartTemplate.Retainer,lord:head.Id);
+        var subject=NewGameWorldTests.Officer("created:subordinate",StartTemplate.Retainer,lord:master.Id);
+        EntityId owner=new("org:service-reform"),site=new(head.Site),person=new(subject.Id),oldLord=new(master.Id),lord=new(head.Id);
+        var setup=NewGameWorldTests.Setup([head,master,subject],[new(head.Id,owner.Value,[site.Value],false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,subject.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        var proposal=new CourtInput(new("request:direct"),CourtAction.ConsultReform,person,owner,site){Reform=ReformKind.DirectService};
+        w.CommitSequence++;HouseholdCourt.Execute(w,proposal,lord);
+        var s=new WorldSession(w);NewGameWorldTests.At(s,120);
+        Assert.Equal(ResultCode.Accepted,s.Open(person,new(HouseReforms.Letter(proposal,HouseReforms.Proposal)),s.Revision).Code);
+        var bond=w.ServiceBonds.Single(b=>b.Subject==person && b.Target==oldLord);
+        var show=new CourtInput(new("request:show-original"),CourtAction.PresentServiceRelease,oldLord,owner,site,Reference:proposal.Id){FormerOffice=bond.Id};
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(show,s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(new(new("request:agree-direct"),CourtAction.AssentReform,lord,owner,site,Reference:proposal.Id),s.Revision).Code);
+        var shown=s.ManageCourt(show,s.Revision);Assert.True(shown.Code==ResultCode.Accepted,shown.VisibleReason);
+        var autonomous=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+        NewGameWorldTests.At(autonomous,autonomous.Seconds+2);
+        var actual=Assert.Single(autonomous.DiagnosticSnapshot().Court!.Events,e=>e.Input.Reference==show.Id);
+        Assert.Equal(oldLord,actual.Actor);
+        Assert.Equal(CourtAction.ConsentServiceRelease,actual.Input.Action);
+        var after=s.DiagnosticSnapshot();after.CommitSequence++;
+        var reply=new CourtInput(new("request:old-lord-reply"),decision,person,owner,site,Reference:show.Id){FormerOffice=bond.Id};
+        HouseholdCourt.Execute(after,reply,oldLord);
+        var saved=new WorldSession(ContractJson.Copy(after)).DiagnosticSnapshot();
+        Assert.Contains(saved.ServiceBonds,b=>b.Id==bond.Id && b.Until==long.MaxValue);
+        var running=new WorldSession(ContractJson.Copy(saved));
+        var release=new HouseholdServiceInput(new("request:leave-old-lord"),HouseholdServiceAction.Release,owner,oldLord,bond.Id){ReformConsent=reply.Id};
+        var pledge=new HouseholdServiceInput(new("request:serve-daimyo"),HouseholdServiceAction.Pledge,owner,lord){ReformConsent=reply.Id};
+        Assert.Equal(ResultCode.NotAvailable,running.ManageHouseholdService(pledge,person,running.Revision).Code);
+        var freed=running.ManageHouseholdService(release,person,running.Revision);
+        if(decision==CourtAction.ConsentServiceRelease){
+            Assert.True(freed.Code==ResultCode.Accepted,freed.VisibleReason);
+            running=new WorldSession(ContractJson.Copy(running.DiagnosticSnapshot()));
+            var joined=running.ManageHouseholdService(pledge,person,running.Revision);
+            Assert.True(joined.Code==ResultCode.Accepted,joined.VisibleReason);
+            var state=new WorldSession(ContractJson.Copy(running.DiagnosticSnapshot())).DiagnosticSnapshot();
+            Assert.Equal(lord,Assert.Single(state.ServiceBonds,b=>b.Subject==person && b.Until==long.MaxValue).Target);
+            Assert.Equal(ContractJson.Write(saved.Memberships),ContractJson.Write(state.Memberships));
+        }else Assert.Equal(ResultCode.NotAvailable,freed.Code);
+        saved.CommitSequence++;
+        Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(saved,reply with{Id=new("request:answer-again")},oldLord));
+    }
+
     [Fact]
     public void NewEstatePaysOnlyCollectionsAfterExchange()
     {
