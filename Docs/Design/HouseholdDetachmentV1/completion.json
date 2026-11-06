@@ -1,0 +1,39 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "成人して現地に随行している直属の一族・家臣への分隊指揮委任を、本人の承諾と預兵の既存権限に結びつける",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdDetachment.cs",
+        "Tests/HouseholdMilitaryTests.cs"
+      ]
+    },
+    {
+      "contract": "分隊への指示は配送後に効き、本人の統率・経験を部隊の崩れや再集結に反映する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameMilitary.UnitDirective.cs",
+        "Core/Contracts/NewGameMilitary.Rout.cs",
+        "Tests/HouseholdMilitaryTests.cs"
+      ]
+    },
+    {
+      "contract": "各人の自前の兵・米と主家の預兵を区別し、欠食・負傷・戦死・指揮返還が家と軍の記録に一致する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PrivateRecruitment.Upkeep.cs",
+        "Tests/HouseSalaryTests.cs",
+        "Tests/HouseholdMilitaryTests.cs"
+      ]
+    },
+    {
+      "contract": "通常の軍務画面・途中保存復旧・代表旧保存で兵の二重計上と権限漏れを確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/HouseholdDetachmentCheck.cs",
+        "Docs/Design/HouseholdDetachmentV1/verification.json"
+      ]
+    }
+  ]
+}

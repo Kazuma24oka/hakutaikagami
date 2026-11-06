@@ -1,7 +1,7 @@
 namespace HakutaiKagami.Core.Contracts;
 
 // 募兵時に本人の米を日数分だけ渡す。村を離れる期間だけ労働と収穫から差し引く。
-public static class PrivateRecruitment
+public static partial class PrivateRecruitment
 {
     public const int MarketCompanySize = 20;
     public const int DailyWage = 4;
@@ -13,7 +13,7 @@ public static class PrivateRecruitment
 
     internal static long FreeHires(ContractWorld w, EntityId site, long at, long rev) =>
         MarketCompanySize - Contracts(w).Where(e => e.Input.Action == CourtAction.HireMarketSoldiers &&
-            e.Place == site && e.Revision < rev && e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);
+            e.Place == site && e.Revision < rev && e.At <= at && at < PaidUntil(w,e,at,rev)).Sum(e => e.Input.Amount-Released(w,e,at,rev));
 
     internal static long Wages(CourtEvent e) => checked(DailyWage * e.Input.Amount * ((e.Input.When-e.At)/86400));
 
@@ -21,19 +21,95 @@ public static class PrivateRecruitment
         HouseholdCourt.Events(w).Where(e => e.Input.Action == CourtAction.RaiseVillageSoldiers);
 
     // 従軍中の本人の兵。徴募元は労働台帳に残し、参集地の人数は指揮者の実所在で数える。
+    internal static EntityId CompanyId(CourtEvent recruitment) =>
+        new("unit:private-company/" + ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(recruitment.Input.Id.Value)));
+
+    static IEnumerable<CourtEvent> ActiveCompanies(ContractWorld w, EntityId commander, long at, long rev) =>
+        Contracts(w).Where(e => e.Actor == commander && e.Revision < rev && e.At <= at && at < PaidUntil(w,e,at,rev));
+
+    static int Available(ContractWorld w, CourtEvent recruitment, long at, long rev)
+    {
+        var unit = CompanyId(recruitment);
+        var losses = (w.WorldClashes?.Steps ?? []).Where(s => s.At <= at && s.Revision < rev)
+            .SelectMany(s => s.Result.Losses).Where(l => l.Unit == unit).Sum(l => l.Soldiers);
+        return checked((int)recruitment.Input.Amount - Released(w,recruitment,at,rev) - losses + BattlefieldRules.Recovered(w, unit, at, rev));
+    }
+
     internal static int Strength(ContractWorld w, EntityId commander, long at, long rev) =>
-        checked((int)Contracts(w).Where(e => e.Actor == commander && e.Revision < rev &&
-            e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount));
+        ActiveCompanies(w, commander, at, rev).Sum(e => Available(w, e, at, rev));
+
+    internal static IEnumerable<EngagementUnit> Accompany(ContractWorld w, EntityId captain, EngagementUnit wing)
+    {
+        long at = w.ElapsedSeconds, rev = w.CommitSequence + 1;
+        foreach (var company in ActiveCompanies(w, captain, at, rev))
+        {
+            var id = CompanyId(company);
+            int morale = Math.Max(0, 100 - WorldClashes.MoraleLost(w, id, at));
+            var state = new UnitState(id, new("army:" + id.Value.Substring(5)), captain,
+                wing.Unit.Organization, Available(w, company, at, rev), 0);
+            yield return new(state, wing.Position, wing.Height, morale,
+                morale <= 25 ? "routed" : wing.Phase, EngagementIntent.SelfDefense, wing.WillFight);
+        }
+    }
 
     public static int Soldiers(ContractWorld w, EntityId commander, EntityId site, long at, long rev) =>
         PersonalCompanions.SiteAt(w,commander,at,rev) == site ? Strength(w,commander,at,rev) : 0;
 
+    public sealed record CompanyReport(EntityId Unit,int Fit,int Dead,int Wounded,int Deserted,bool VillageLevy);
+
+    public static IEnumerable<CompanyReport> CompanyReports(ContractWorld w, EntityId captain, long at, long rev)
+    {
+        foreach(var company in ActiveCompanies(w,captain,at,rev)){
+            var id=CompanyId(company);
+            var losses=BattlefieldRules.Casualties(w,id,at,rev);
+            yield return new(id,Available(w,company,at,rev),losses.Dead,losses.Wounded,losses.Deserted,
+                company.Input.Action==CourtAction.RaiseVillageSoldiers);
+        }
+    }
+
+    internal static int ServingLevies(ContractWorld w, EntityId site,long at,long rev) =>
+        Levies(w).Where(e=>e.Place==site && e.At<=at && at<PaidUntil(w,e,at,rev) && e.Revision<rev)
+            .Sum(e=>Available(w,e,at,rev));
+
+    internal static bool PrivateUnit(EntityId unit) => unit.Value.StartsWith("unit:private-company/",StringComparison.Ordinal);
+
+    internal static EntityId? VillageOf(ContractWorld w, EntityId unit) =>
+        PrivateUnit(unit) ? Levies(w).FirstOrDefault(e => CompanyId(e) == unit)?.Place : null;
+
+    static IEnumerable<(CourtEvent Levy, BattlefieldCasualties Loss, long At)> VillageLosses(
+        ContractWorld w, EntityId site, long at, long rev)
+    {
+        if (w.WorldClashes is not { Steps.Length: >0 } clashes) yield break;
+        var levies=Levies(w).Where(e=>e.Place==site && e.At<=at && e.Revision<rev).ToDictionary(CompanyId);
+        if (levies.Count==0) yield break;
+        foreach (var step in clashes.Steps.Where(s=>s.At<=at && s.Revision<rev))
+            foreach (var loss in step.Result.Casualties??[])
+                if (levies.TryGetValue(loss.Unit,out var levy)) yield return (levy,loss,step.At);
+    }
+
+    internal static int VillageDeaths(ContractWorld w, EntityId site, long at, long rev) =>
+        VillageLosses(w,site,at,rev).Sum(row=>row.Loss.Dead);
+
+    static IEnumerable<(long At,int Change)> LaborChanges(ContractWorld w, EntityId site,long until,long rev)
+    {
+        foreach(var levy in Levies(w).Where(e=>e.Place==site && e.At<=until && e.Revision<rev)){
+            int count=checked((int)levy.Input.Amount);
+            yield return (levy.At,count);
+            foreach(var payment in Payments(w,levy,until,rev)) yield return (payment.At,-checked((int)payment.Input.Amount));
+            yield return (PaidUntil(w,levy,until,rev),-count+Released(w,levy,until,rev));
+        }
+        foreach(var (levy,loss,_) in VillageLosses(w,site,until,rev)){
+            // 契約中は全員を動員済みとしている。満了時には実際に働ける人数だけを戻す。
+            yield return (PaidUntil(w,levy,until,rev),loss.Dead+loss.Wounded+loss.Deserted);
+            if(loss.ReturnAt is {} arrival) yield return (arrival,-loss.Deserted);
+        }
+    }
+
     internal static int Labor(ContractWorld w, EntityId site, long at, long rev) =>
-        (int)Levies(w).Where(e => e.Place == site && e.Revision < rev && e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);
+        LaborChanges(w,site,at,rev).Where(e=>e.At<=at).Sum(e=>e.Change);
 
     internal static long LaborSeconds(ContractWorld w, EntityId site, long from, long until, long rev) =>
-        Levies(w).Where(e => e.Place == site && e.Revision < rev).Sum(e =>
-            checked(e.Input.Amount * Math.Max(0, Math.Min(until, e.Input.When) - Math.Max(from, e.At))));
+        LaborChanges(w,site,until,rev).Where(e=>e.At<until).Sum(e=>checked(e.Change*(until-Math.Max(from,e.At))));
 
     public static bool CanLevy(ContractWorld w, EntityId actor, EntityId owner, EntityId place, long at, long rev)
     {
@@ -47,7 +123,7 @@ public static class PrivateRecruitment
 
     internal static long Food(ContractWorld w, EntityId person, long at, long rev) =>
         Contracts(w).Where(e => e.Actor == person && e.Revision <= rev && e.At <= at)
-            .Sum(e => checked(e.Input.Amount * ((e.Input.When - e.At) / 86400)));
+            .Sum(e => checked(e.Input.Amount * ((e.Input.When - e.At) / 86400))) + RenewalCost(w,person,at,rev,false);
 
     internal static void Check(ContractWorld w, CourtInput input, EntityId actor, EntityId place, long at, long rev)
     {

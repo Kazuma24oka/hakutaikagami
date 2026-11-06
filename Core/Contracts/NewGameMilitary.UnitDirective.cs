@@ -8,7 +8,11 @@ public sealed record UnitDirectiveNote(EntityId Request,UnitDirectiveInput Direc
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? HoldingPolicy {get;init;}
 }
-public sealed record UnitDirectiveAnswer(string Original,EntityId Unit,UnitDirectiveKind Kind,UnitDirectiveOutcome Outcome,long At,FieldPoint Position);
+public sealed record UnitDirectiveAnswer(string Original,EntityId Unit,UnitDirectiveKind Kind,UnitDirectiveOutcome Outcome,long At,FieldPoint Position)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EntityId? Captain {get;init;}
+}
 public sealed record UnitDirectiveEffect(EntityId Id,long At,long Revision,UnitDirectiveOutcome Outcome,EntityId? Order);
 public sealed record UnitDirectiveState(string Contract,TroopDispatch[] Dispatches,TroopReceipt[] Receipts,TroopReply[] Replies,UnitDirectiveEffect[] Effects)
 {
@@ -89,7 +93,7 @@ public static partial class NewGameMilitary
     }
     static string DirectiveAnswerBody(ContractWorld w,TroopDispatch d,UnitDirectiveOutcome outcome)
     {
-        var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));return Text(new UnitDirectiveAnswer(d.Message,d.Recipient,note.Directive.Kind,outcome,w.ElapsedSeconds,Position(w,ReceivingUnitIndex(w,d),w.ElapsedSeconds)));
+        var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));return Text(new UnitDirectiveAnswer(d.Message,d.Recipient,note.Directive.Kind,outcome,w.ElapsedSeconds,Position(w,ReceivingUnitIndex(w,d),w.ElapsedSeconds)){Captain=HouseholdDetachment.Appointment(w,d.Recipient,w.ElapsedSeconds,w.CommitSequence+1)?.Actor});
     }
     static string DirectiveReplyBody(ContractWorld w,TroopDispatch d)=>DirectiveAnswerBody(w,d,w.NewMilitary!.UnitDirective!.Effects.Single(e=>e.Id==d.Id).Outcome);
     static bool ApplyStandingRecall(ContractWorld w,TroopDispatch original)
@@ -138,9 +142,11 @@ public static partial class NewGameMilitary
     static string DirectiveMessageStatus(ContractWorld w,TroopDispatch d)
     {
         var x=w.NewMilitary!.UnitDirective!;var r=x.Receipts.SingleOrDefault(r=>r.Id==d.Id);string name=UnitRecipientName(w,d.Recipient);
-        var late=KnownDirectiveAck(w,d.Message,w.PlayerControl.Value);if(late!=null&&(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)||late.At>=r.At)){var answer=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==late.ReplyMessage).Body));return name+"の遅着返書（開始"+answer.At+"秒）："+DirectiveOutcomeText(answer.Outcome);}
+        string Signature(UnitDirectiveAnswer answer)=>answer.Captain is {} captain?
+            " ／ 分隊長 "+FamilyBirth.People(w).Single(p=>p.Id==captain.Value).Name:"";
+        var late=KnownDirectiveAck(w,d.Message,w.PlayerControl.Value);if(late!=null&&(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value)||late.At>=r.At)){var answer=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==late.ReplyMessage).Body));return name+"の遅着返書（開始"+answer.At+"秒）："+DirectiveOutcomeText(answer.Outcome)+Signature(answer);}
         if(r==null||!MessageFlow.Knows(w.Messaging,r.ReplyMessage,w.PlayerControl.Value))return name+"への指示：返書未受領";
         if(!r.Delivered)return name+"への指示：伝令が指定地点で正式受領できず";
-        var a=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));string text=a.Outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.Cancelled=>"取消済みの原本を実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};return name+"の返書（開始"+a.At+"秒）："+text;
+        var a=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==r.ReplyMessage).Body));string text=a.Outcome switch{UnitDirectiveOutcome.Applied=>"受令・指示を実行",UnitDirectiveOutcome.Superseded=>"新しい命令を維持",UnitDirectiveOutcome.AuthorityEnded=>"指揮権終了で実行せず",UnitDirectiveOutcome.RoutActive=>"敗走中のため実行せず",UnitDirectiveOutcome.Cancelled=>"取消済みの原本を実行せず",UnitDirectiveOutcome.AlreadyApplied=>"同じ原本を重複実行せず",_=>"経路を確保できず指示を実行せず"};return name+"の返書（開始"+a.At+"秒）："+text+Signature(a);
     }
 }

@@ -14,8 +14,14 @@ public static class WorldEngagement
             for(int i=0;i<3;i++){
                 var id=NewGameMilitary.UnitIdsFor(w)[i];var u=w.Units.Single(u=>u.Id==id);var p=NewGameMilitary.Position(w,i,at);
                 var order=own.Orders.LastOrDefault(o=>o.At<=at&&(o.AffectedUnits==null||o.AffectedUnits.Contains(i)));
-                string phase=order?.Action==NewMilitaryAction.Recall?"withdrawing":reports[i].Morale<=25?"routed":"standing";
-                units.Add(new(u,p,ContinuousWorld.Height(p),reports[i].Morale,phase,EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==u.Commander).WillObey));
+                var captain=HouseholdDetachment.Appointment(w,id,at,w.CommitSequence+1)?.Actor;
+                int morale=Math.Min(100,reports[i].Morale+(captain is {} officer?CharacterDevelopment.EffectiveAt(w,officer,DevelopmentAbility.Leadership,at)/10:0));
+                string phase=order?.Action==NewMilitaryAction.Recall?"withdrawing":morale<=25?"routed":"standing";
+                var wing=new EngagementUnit(u,p,ContinuousWorld.Height(p),morale,phase,EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==(captain??u.Commander)).WillObey);
+                units.Add(wing);
+                if(captain is {} leader)units.AddRange(PrivateRecruitment.Accompany(w,leader,wing));
+                if(i==0 && HouseholdDetachment.OwnCompanyJoined(w,id,at,w.CommitSequence+1))
+                    units.AddRange(PrivateRecruitment.Accompany(w,w.PlayerControl,wing));
             }
             mandates.AddRange(NewGameMilitary.EngagementMandates(w,at));
             foreach(var id in mandates.Where(m=>m.ReceivedAt<=at&&m.EffectiveFrom<=at&&at<m.Until&&(m.CancelledAt==null||at<m.CancelledAt)).SelectMany(m=>m.Units).Distinct()){int n=units.FindIndex(u=>u.Unit.Id==id);if(n>=0)units[n]=units[n] with{Intent=EngagementIntent.Mission};}
