@@ -11,8 +11,8 @@ public static class HouseholdDetachment
     static NewMilitaryRequest? Pickup(ContractWorld w,EntityId unit,long at,long rev)
     {
         foreach(var ledger in NewGameMilitary.LedgerStates(w)){
-            var context=NewGameMilitary.WorldEngagementBefore(w,ledger.Terms.Army,at,rev-1);
-            if(!NewGameMilitary.UnitIdsFor(context).Contains(unit) || !NewGameMilitary.CustodyAt(context,at,rev))continue;
+            var context=w.ForkMilitaryLedger();context.NewMilitary=ledger;
+            if(!NewGameMilitary.UnitIdsFor(context).Contains(unit) || !NewGameMilitary.CustodyAt(context,at,rev-1))continue;
             return ledger.Requests.LastOrDefault(q=>q.Input.Action==NewMilitaryAction.Pickup && q.At<=at && q.Revision<rev);
         }
         return null;
@@ -35,6 +35,14 @@ public static class HouseholdDetachment
         if(acceptance?.Input.Action!=CourtAction.AcceptDetachment)return null;
         var offer=orders.Single(e=>e.Input.Id==acceptance.Input.Reference);
         return DirectFollower(w,acceptance.Actor,at,rev) && Pickup(w,unit,at,rev)?.Input.Id==offer.Input.Reference?acceptance:null;
+    }
+
+    internal static bool OnDuty(ContractWorld w,EntityId person,long at,long rev)
+    {
+        var last=Orders(w,at,rev).LastOrDefault(e=>e.Input.Person==person &&
+            e.Input.Action is CourtAction.AcceptDetachment or CourtAction.EndDetachment);
+        return last?.Input.Action==CourtAction.AcceptDetachment && last.Input.Carrier is {} unit &&
+            Appointment(w,unit,at,rev)?.Input.Id==last.Input.Id;
     }
 
     public static int Leadership(ContractWorld w,EntityId unit,long at,long rev)=>
@@ -77,7 +85,7 @@ public static class HouseholdDetachment
                 throw new InvalidDataException("本人が未返答の委任に一度だけ答えられます");
         }
         if(i.Action!=CourtAction.DeclineDetachment && (Appointment(w,unit,at,rev)!=null ||
-            NewGameMilitary.UnitIdsFor(NewGameMilitary.WorldEngagementBefore(w,ledger.Terms.Army,at,rev-1)).Any(u=>Appointment(w,u,at,rev)?.Actor==i.Person)))
+            (ledger.Binding?.Units??NewGameMilitary.UnitIds).Any(u=>Appointment(w,u,at,rev)?.Actor==i.Person)))
             throw new InvalidDataException("一人一分隊の指揮です。先に既存の委任を返してください");
     }
 

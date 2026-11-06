@@ -137,6 +137,6 @@ public static partial class NewGameMilitary
             var prior=BeforeState(LedgerContext(w,requests[i-1].Ledger,true),next.At,next.Revision-1);Need(ClosedForSwitch(prior),"旧軍務の終了確認より前に新軍務を開始しています");
         }
         foreach(var s in ledgers){var c=LedgerContext(w,s,true);var old=trustedPrior==null?null:LedgerStates(trustedPrior).SingleOrDefault(x=>LedgerKey(x)==LedgerKey(s));ValidateLedger(c,old==null?null:LedgerContext(trustedPrior!,old,true),s==w.NewMilitary);}
-        var normalized=ContractJson.Copy(w);Sync(normalized);Need(Same(w.Units,normalized.Units)&&Same(w.ResourceLots,normalized.ResourceLots)&&Same(w.Locations,normalized.Locations),"全主家の軍・兵糧・位置が元帳と一致しません");
+        var normalized=ContractJson.Copy(w);Sync(normalized);Need(Same(w.Units,normalized.Units)&&Same(w.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray(),normalized.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray())&&Same(w.Locations,normalized.Locations),"全主家の軍・兵糧・位置が元帳と一致しません");
     }
 }

@@ -9,8 +9,7 @@ public sealed class HouseholdMilitaryTests
     static NewMilitaryInput Input(WorldSession s,NewMilitaryAction action,long amount=0,bool scoped=true)=>new(new("request:house-military/"+s.Revision+"/"+action),action,amount){ObservationPolicy=action==NewMilitaryAction.Request?NewGameMilitary.ObservationContract:null,AuthorityPolicy=action==NewMilitaryAction.Request?NewGameMilitary.AuthorityContract:null,FromLedger=action==NewMilitaryAction.Request?NewGameMilitary.SourceForCurrentHouse(s.DiagnosticSnapshot()):null,LedgerPolicy=action==NewMilitaryAction.Request&&scoped?NewGameMilitary.LedgerIdentityContract:null,CycleContract=action==NewMilitaryAction.Request?NewGameMilitary.CycleForCurrentHouse(s.DiagnosticSnapshot()):null};
     static void Send(WorldSession s,NewMilitaryAction a,long amount=0,bool scoped=true){var result=s.DecideNewMilitary(Input(s,a,amount,scoped),s.PlayerControl,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);}
     static void Permit(WorldSession s,bool scoped=true){Send(s,NewMilitaryAction.Request,scoped:scoped);At(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Accept);At(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Pickup);}
-    [Fact]
-    public void ConsentingDirectFollowerCommandsOneBorrowedUnitUntilReturn()
+    static (WorldSession Session,CourtInput Offer) AppointCaptain()
     {
         var setup=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
         var s=new WorldSession(NewGameWorld.Create(setup,[],"person:shingen",historicalCatalog:HistoricalStartCatalog.Current,
@@ -26,10 +25,63 @@ public sealed class HouseholdMilitaryTests
         var after=s.DiagnosticSnapshot();var accepted=HouseholdDetachment.Appointment(after,unit,s.Seconds,s.Revision+1);
         Assert.Equal(person,accepted?.Actor);Assert.Equal(w.Units.Sum(u=>u.Soldiers),after.Units.Sum(u=>u.Soldiers));
         Assert.Equal(terms.Owner,after.NewMilitary!.Terms.Owner);
+        return (s,offer);
+    }
+
+    [Fact]
+    public void DeployedCaptainSignsOnlyAfterTheDirectiveReachesHisWing()
+    {
+        var (s,offer)=AppointCaptain();
+        var wing=offer.Carrier!.Value;
+        Send(s,NewMilitaryAction.Load,100000);
+        Send(s,NewMilitaryAction.Deploy);
+        Form(s,90000);
+        Send(s,NewMilitaryAction.Handoff);
+        Send(s,NewMilitaryAction.Withdraw);
+        At(s,s.DiagnosticSnapshot().NewMilitary!.Withdrawal!.Journeys.Last().Route.Max(l=>l.EndAt)+1);
+        var target=NewGameMilitary.SelectKnownTarget(s.DiagnosticSnapshot(),wing)!;
+        var order=Input(s,NewMilitaryAction.SendUnitDirective) with{
+            Directive=new(NewGameMilitary.UnitDirectiveContract,target,UnitDirectiveKind.Hold,null),
+            DeliverBy=s.Seconds+600,PostPolicy=NewGameMilitary.UnitReplyRecoveryContract,
+            TransportPolicy=NewGameMilitary.UnitSenderEvidenceContract};
+        var issued=s.DecideNewMilitary(order,s.PlayerControl,s.Revision);
+        Assert.True(issued.Code==ResultCode.Accepted,issued.VisibleReason);
+        var dispatch=s.DiagnosticSnapshot().NewMilitary!.UnitDirective!.Dispatches.Last();
+        At(s,dispatch.DueAt-1);
+        var transit=s.DiagnosticSnapshot();
+        Assert.Empty(transit.NewMilitary!.UnitDirective!.Receipts);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(transit)));
+        foreach(var session in new[]{s,restored}){
+            At(session,dispatch.DueAt);
+            var world=session.DiagnosticSnapshot();
+            var receipt=Assert.Single(world.NewMilitary!.UnitDirective!.Receipts);
+            Assert.True(receipt.Applied);
+            var message=world.Messaging.Messages.Single(m=>m.Id==receipt.ReplyMessage);
+            var answer=ContractJson.Read<UnitDirectiveAnswer>(System.Text.Encoding.UTF8.GetBytes(message.Body));
+            Assert.Equal(offer.Person,answer.Captain);
+            Assert.Equal(wing,answer.Unit);
+            At(session,receipt.ReplyDueAt);
+            Open(session);
+        }
+        Assert.Equal(ContractJson.CanonicalHash(s.DiagnosticSnapshot()),ContractJson.CanonicalHash(restored.DiagnosticSnapshot()));
+    }
+
+    [Fact]
+    public void ConsentingDirectFollowerCommandsOneBorrowedUnitUntilReturn()
+    {
+        var (s,offer)=AppointCaptain();
+        var person=offer.Person;var unit=offer.Carrier!.Value;var w=s.DiagnosticSnapshot();
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
         var next=offer with{Id=new("request:double-command"),Carrier=NewGameMilitary.UnitIdsFor(w)[2]};
         Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(next,s.Revision).Code);
-        s=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+        s=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        var inspection=new CompanionInput(new("request:detachment-inspect"),person,CompanionAction.Inspect);
+        Assert.True(s.CompanionView().Single(c=>c.Person==person).Busy);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCompanion(inspection,s.PlayerControl,s.Revision).Code);
         Finish(s);Assert.Null(HouseholdDetachment.Appointment(s.DiagnosticSnapshot(),unit,s.Seconds,s.Revision+1));
+        Assert.False(s.CompanionView().Single(c=>c.Person==person).Busy);
+        Good(s.ManageCompanion(inspection,s.PlayerControl,s.Revision));
+
     }
     static void Finish(WorldSession s){long carry=NewGameMilitary.View(s.DiagnosticSnapshot()).Carry;if(carry>0)Send(s,NewMilitaryAction.Unload,carry);Send(s,NewMilitaryAction.Report);Send(s,NewMilitaryAction.Return);At(s,s.Seconds+3);Open(s);}
     static void ChangeHouse(WorldSession s,string node,string lord){if(NewGameService.View(s.DiagnosticSnapshot()).Principal!=null){var current=NewGameService.View(s.DiagnosticSnapshot()).Cases.Last(c=>c.Principal==NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-leave/"+s.Revision),CareerAction.RequestRelease,current.Case),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}Assert.Null(NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:house-travel/"+s.Revision,node),s.Revision).Code);At(s,s.Seconds+2);At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);var id=new EntityId("request:house-apply/"+s.Revision);Assert.Equal(ResultCode.Accepted,s.DecideService(new(id,CareerAction.Apply,Principal:new(lord)),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-accept/"+s.Revision),CareerAction.Accept,id),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}
