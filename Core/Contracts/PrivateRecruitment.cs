@@ -1,7 +1,7 @@
 namespace HakutaiKagami.Core.Contracts;
 
 // 募兵時に本人の米を日数分だけ渡す。村を離れる期間だけ労働と収穫から差し引く。
-public static class PrivateRecruitment
+public static partial class PrivateRecruitment
 {
     public const int MarketCompanySize = 20;
     public const int DailyWage = 4;
@@ -13,7 +13,7 @@ public static class PrivateRecruitment
 
     internal static long FreeHires(ContractWorld w, EntityId site, long at, long rev) =>
         MarketCompanySize - Contracts(w).Where(e => e.Input.Action == CourtAction.HireMarketSoldiers &&
-            e.Place == site && e.Revision < rev && e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);
+            e.Place == site && e.Revision < rev && e.At <= at && at < PaidUntil(w,e,at,rev)).Sum(e => e.Input.Amount-Released(w,e,at,rev));
 
     internal static long Wages(CourtEvent e) => checked(DailyWage * e.Input.Amount * ((e.Input.When-e.At)/86400));
 
@@ -25,14 +25,14 @@ public static class PrivateRecruitment
         new("unit:private-company/" + ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(recruitment.Input.Id.Value)));
 
     static IEnumerable<CourtEvent> ActiveCompanies(ContractWorld w, EntityId commander, long at, long rev) =>
-        Contracts(w).Where(e => e.Actor == commander && e.Revision < rev && e.At <= at && at < e.Input.When);
+        Contracts(w).Where(e => e.Actor == commander && e.Revision < rev && e.At <= at && at < PaidUntil(w,e,at,rev));
 
     static int Available(ContractWorld w, CourtEvent recruitment, long at, long rev)
     {
         var unit = CompanyId(recruitment);
         var losses = (w.WorldClashes?.Steps ?? []).Where(s => s.At <= at && s.Revision < rev)
             .SelectMany(s => s.Result.Losses).Where(l => l.Unit == unit).Sum(l => l.Soldiers);
-        return checked((int)recruitment.Input.Amount - losses + BattlefieldRules.Recovered(w, unit, at, rev));
+        return checked((int)recruitment.Input.Amount - Released(w,recruitment,at,rev) - losses + BattlefieldRules.Recovered(w, unit, at, rev));
     }
 
     internal static int Strength(ContractWorld w, EntityId commander, long at, long rev) =>
@@ -68,7 +68,7 @@ public static class PrivateRecruitment
     }
 
     internal static int ServingLevies(ContractWorld w, EntityId site,long at,long rev) =>
-        Levies(w).Where(e=>e.Place==site && e.At<=at && at<e.Input.When && e.Revision<rev)
+        Levies(w).Where(e=>e.Place==site && e.At<=at && at<PaidUntil(w,e,at,rev) && e.Revision<rev)
             .Sum(e=>Available(w,e,at,rev));
 
     internal static bool PrivateUnit(EntityId unit) => unit.Value.StartsWith("unit:private-company/",StringComparison.Ordinal);
@@ -95,11 +95,12 @@ public static class PrivateRecruitment
         foreach(var levy in Levies(w).Where(e=>e.Place==site && e.At<=until && e.Revision<rev)){
             int count=checked((int)levy.Input.Amount);
             yield return (levy.At,count);
-            yield return (levy.Input.When,-count);
+            foreach(var payment in Payments(w,levy,until,rev)) yield return (payment.At,-checked((int)payment.Input.Amount));
+            yield return (PaidUntil(w,levy,until,rev),-count+Released(w,levy,until,rev));
         }
         foreach(var (levy,loss,_) in VillageLosses(w,site,until,rev)){
             // 契約中は全員を動員済みとしている。満了時には実際に働ける人数だけを戻す。
-            yield return (levy.Input.When,loss.Dead+loss.Wounded+loss.Deserted);
+            yield return (PaidUntil(w,levy,until,rev),loss.Dead+loss.Wounded+loss.Deserted);
             if(loss.ReturnAt is {} arrival) yield return (arrival,-loss.Deserted);
         }
     }
@@ -122,7 +123,7 @@ public static class PrivateRecruitment
 
     internal static long Food(ContractWorld w, EntityId person, long at, long rev) =>
         Contracts(w).Where(e => e.Actor == person && e.Revision <= rev && e.At <= at)
-            .Sum(e => checked(e.Input.Amount * ((e.Input.When - e.At) / 86400)));
+            .Sum(e => checked(e.Input.Amount * ((e.Input.When - e.At) / 86400))) + RenewalCost(w,person,at,rev,false);
 
     internal static void Check(ContractWorld w, CourtInput input, EntityId actor, EntityId place, long at, long rev)
     {

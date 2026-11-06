@@ -53,6 +53,16 @@ public partial class NewGameRuntime
    }
    if(control==null || !MilitaryEconomy.Enabled(w)){SocialText(box,"この拠点では募兵できません。");return;}
    SocialText(box,$"現地の自前の兵 {PrivateRecruitment.Soldiers(w,actor,site.Value,w.ElapsedSeconds,rev+1)}人　手持ちの扶持米 {HouseSalary.PrivateRice(w,actor)}kg　所持銭 {NewGameWork.Balance(w,actor)}文");
+   var lastPayment=w.Court?.Events.LastOrDefault(e=>e.Input.Action==CourtAction.PrivateCompanyPayment && e.Actor==actor);
+   if(lastPayment!=null){
+       string end=lastPayment.Input.When==lastPayment.At?"継続終了":"次の30日分を支給";
+       SocialText(box,$"前回の私兵の糧食精算　{end}／離散 {lastPayment.Input.Amount}人");
+   }
+   foreach(var company in PrivateRecruitment.Renewable(w,actor,site.Value,w.ElapsedSeconds,rev+1)){
+       var key="standing-"+company.Revision;
+       Button(key,$"{company.Input.Amount}人の隊を継続雇用（30日ごとに払える人数が残る）",
+           ()=>Run(new(Nonce(key),CourtAction.KeepPrivateCompany,actor,company.Input.Owner,site.Value,Reference:company.Input.Id)));
+   }
    void Recruit(CourtAction action)=>Run(new(Nonce(action.ToString()),action,actor,control.Subject,site.Value,
     Amount:(long)men.Value,When:checked(w.ElapsedSeconds+86400L*(long)days.Value)));
    if(PrivateRecruitment.CanLevy(w,actor,control.Subject,site.Value,w.ElapsedSeconds,rev+1))
