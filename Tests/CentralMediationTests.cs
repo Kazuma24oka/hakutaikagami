@@ -96,6 +96,36 @@ public sealed class CentralMediationTests
         }
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
+    [Fact]
+    public void BrokerSendsSamePeaceTermsToTwoDistinctHousesAfterRestore()
+    {
+        var site=CentralCourtCatalog.Kyoto;
+        var broker=CentralCourtCatalog.CourtBroker;
+        var owner=new EntityId("org:peace-test");
+        var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var target=new EntityId(raw.Factions.First().Id);
+        var request=new WorldSetupRequest([lord],[new(lord.Id,owner.Value,[site.Value],false)]);
+        var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        var session=new WorldSession(NewGameWorld.Create(setup,[lord],lord.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,trucePolicy:TruceNegotiations.Policy));
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        Good(session.ManageSocial(new(new("request:meet-peace-broker"),SocialWorldAction.Visit,broker),session.Revision));
+        Good(session.ManageSocial(new(new("request:peace-gift"),SocialWorldAction.DispatchGift,broker,Amount:100),session.Revision));
+        NewGameWorldTests.At(session,session.Seconds+3);
+        var ask=new CourtInput(new("request:ask-peace"),CourtAction.AskPeaceMediation,broker,owner,site,Amount:30){OtherHouse=target};
+        Good(session.ManageCourt(ask,session.Revision));
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(session.DiagnosticSnapshot())));
+        foreach(var run in new[]{session,restored}){
+            NewGameWorldTests.At(run,run.Seconds+1);
+            var state=run.DiagnosticSnapshot();var letters=state.Messaging.Messages.Where(m=>m.Kind==PeaceMediation.Proposal).ToArray();
+            Assert.Equal(2,letters.Length);Assert.Equal(2,letters.Select(m=>m.RecipientId).Distinct().Count());
+            Assert.Single(letters.Select(m=>m.Body).Distinct());
+            Assert.Empty(state.Truces?.Formations??[]);
+            _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(state)));
+        }
+        Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
     [Theory][InlineData(false,false)][InlineData(true,false)][InlineData(true,true)][InlineData(false,true)]
     public void PetitionRequiresMeetingAndBrokerAnswersOnceAfterRestore(bool gift,bool currentEdition)
     {

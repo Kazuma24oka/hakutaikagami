@@ -39,6 +39,22 @@ public partial class NewGameRuntime
                   CourtAction.AppointShugo=>"を認める",_=>"を退ける"};
               Button(answer.Id.Value,subject+text,()=>Run(answer));
           }
+          if(TruceNegotiations.Enabled(w)){
+              foreach(var decision in PeaceMediation.Answers(w,true))
+                  Button(decision.Id.Value,decision.Action==CourtAction.SendPeaceProposal?"両家に仲裁案を送る":"仲裁の取次を断る",()=>Run(decision));
+              if(CentralMediation.ApplicantHouse(w,actor) is {} party && HouseSuccession.Head(w,party)==actor){
+                  var others=HouseSuccession.Factions(w).Where(f=>f.Id!=party.Value).ToArray();
+                  if(others.Length>0){
+                      var houses=new OptionButton();foreach(var other in others)houses.AddItem(other.Name);box.AddChild(houses);
+                      var duration=new SpinBox{MinValue=1,MaxValue=90,Value=30,Suffix="日間の不戦"};box.AddChild(duration);
+                      foreach(var contact in new[]{CentralCourtCatalog.CourtBroker,CentralCourtCatalog.ShogunBroker}){
+                          string key="peace/"+contact.Value;
+                          Button(key,MeritRewards.DisplayName(w,actor,contact)+"に和睦の取次を頼む",()=>Run(new CourtInput(Nonce(key),CourtAction.AskPeaceMediation,
+                              contact,party,site.Value,Amount:(long)duration.Value){OtherHouse=new(others[houses.Selected].Id)}));
+                      }
+                  }
+              }
+          }
           foreach(var office in ShogunateAppointments.KnownOffices(w,actor))SocialText(box,"幕府の補任状　"+office);
           if(CentralMediation.ApplicantHouse(w,actor) is {} applicantOwner){
               foreach(var district in ShogunateAppointments.Districts(w,applicantOwner)){
