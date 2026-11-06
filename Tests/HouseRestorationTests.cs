@@ -46,5 +46,27 @@ public sealed class HouseRestorationTests
         Assert.Equal(bonds, ContractJson.CanonicalHash(world.ServiceBonds));
         world.CommitSequence++;
         Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(world, answer with { Id = new("request:duplicate") }, peer));
+        var pledge = new CourtInput(new("request:rice"), CourtAction.PledgeRestorationRice, proposer, house, site,
+            Amount: 1, Reference: answer.Id);
+        if (choice == CourtAction.ReserveRestoration)
+        {
+            Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(world, pledge, peer));
+            return;
+        }
+        HouseholdCourt.Execute(world, pledge, peer);
+        Assert.Equal(0, HouseSalary.PrivateRice(world, proposer));
+        world = ContractJson.Copy(world);
+        world.CommitSequence++;
+        var delivery = pledge with { Id = new("request:deliver"), Action = CourtAction.HandOverRestorationRice, Reference = pledge.Id };
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(world, delivery, peer));
+        // この局所テストの開始残高は、既存の徴収米受領記録から用意する。
+        var receipt = new CourtInput(new("request:prior-rice"), CourtAction.ReceiveLevyShare, peer, house, site, Amount: 2);
+        world.Court = world.Court! with { Events = [..world.Court.Events, new(receipt, peer, site, world.ElapsedSeconds, world.CommitSequence, false)] };
+        world.CommitSequence++;
+        HouseholdCourt.Execute(world, delivery, peer);
+        Assert.Equal(1, HouseSalary.PrivateRice(world, proposer));
+        Assert.Equal(1, HouseSalary.PrivateRice(world, peer));
+        world.CommitSequence++;
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(world, delivery with { Id = new("request:repeat-rice") }, peer));
     }
 }

@@ -29,6 +29,16 @@ public partial class NewGameRuntime
     var reply=history.SingleOrDefault(e=>e.Input.Reference==ask.Input.Id && e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
     var peer=actor==ask.Actor?ask.Input.Person:ask.Actor;
     SocialText(box,MeritRewards.DisplayName(w,actor,peer)+"との再興相談："+(reply==null?"返答待ち":reply.Input.Action==CourtAction.SupportRestoration?"個人として支持":"判断を留保"));
+    if(reply?.Input.Action==CourtAction.SupportRestoration){
+     var pledge=history.SingleOrDefault(e=>e.Input.Reference==reply.Input.Id && e.Input.Action==CourtAction.PledgeRestorationRice);
+     var delivered=pledge!=null && history.Any(e=>e.Input.Reference==pledge.Input.Id && e.Input.Action==CourtAction.HandOverRestorationRice);
+     if(pledge!=null)SocialText(box,$"支援米 {pledge.Input.Amount}kg："+(delivered?"受渡し済み":"持参待ち"));
+     if(reply.Actor==actor && site==ask.Place && SocialWorld.Site(w,peer)==site && !delivered){
+      var key="restoration-rice/"+reply.Input.Id.Value;
+      if(pledge==null)Button(key,"私有米1kgの支援を約束する",()=>Run(new(Nonce(key),CourtAction.PledgeRestorationRice,peer,ask.Input.Owner,ask.Place,Amount:1,Reference:reply.Input.Id)));
+      else if(HouseSalary.PrivateRice(w,actor)>=pledge.Input.Amount)Button(key,"約束した私有米を手渡す",()=>Run(new(Nonce(key),CourtAction.HandOverRestorationRice,peer,ask.Input.Owner,ask.Place,Amount:pledge.Input.Amount,Reference:pledge.Input.Id)));
+     }
+    }
     if(reply!=null || ask.Input.Person!=actor || site!=ask.Place || SocialWorld.Site(w,peer)!=site)continue;
     foreach(var choice in new[]{CourtAction.SupportRestoration,CourtAction.ReserveRestoration}){
      var key=choice+"/"+ask.Input.Id.Value;

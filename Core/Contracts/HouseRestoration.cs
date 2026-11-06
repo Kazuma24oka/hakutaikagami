@@ -39,6 +39,34 @@ public static class HouseRestoration
             throw new InvalidDataException("自分に届いた未回答の相談を選んでください");
     }
 
+    internal static bool IsRice(CourtAction action) =>
+        action is CourtAction.PledgeRestorationRice or CourtAction.HandOverRestorationRice;
+
+    internal static long RiceTransferred(ContractWorld world, EntityId person, long at, long revision)
+    {
+        return HouseholdCourt.Events(world).Where(e => e.Input.Action == CourtAction.HandOverRestorationRice &&
+            e.At <= at && e.Revision <= revision).Sum(e =>
+                e.Actor == person ? -e.Input.Amount : e.Input.Person == person ? e.Input.Amount : 0L);
+    }
+
+    internal static void CheckRice(ContractWorld world, CourtInput input, EntityId actor, EntityId site, long at, long revision)
+    {
+        bool handover = input.Action == CourtAction.HandOverRestorationRice;
+        var sourceAction = handover ? CourtAction.PledgeRestorationRice : CourtAction.SupportRestoration;
+        var previous = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
+        var source = previous.SingleOrDefault(e => e.Input.Id == input.Reference && e.Input.Action == sourceAction);
+        if (source == null || source.Actor != actor || source.Input.Person != input.Person ||
+            source.Input.Owner != input.Owner || source.Place != site || site != input.Site ||
+            !TransportWork.At(world, actor, site, at, revision, true) ||
+            !TransportWork.At(world, input.Person, site, at, revision, true) ||
+            Assassination.DeadAt(world, input.Person, at, revision) || input.Amount <= 0 ||
+            previous.Any(e => e.Input.Action == input.Action && e.Input.Reference == input.Reference))
+            throw new InvalidDataException("本人と支援相手が集まった旧領で未履行の原本と数量を確認してください");
+        if (handover && (input.Amount != source.Input.Amount ||
+            HouseSalary.PrivateRice(world, actor, at, revision - 1) < input.Amount))
+            throw new InvalidDataException("約束した数量の私有米を持参してください");
+    }
+
     internal static void AnswerLocalRequests(ContractWorld world)
     {
         var history = HouseholdCourt.Events(world);
@@ -55,6 +83,21 @@ public static class HouseRestoration
                 supports ? CourtAction.SupportRestoration : CourtAction.ReserveRestoration,
                 ask.Actor, ask.Input.Owner, ask.Place, Reference: ask.Input.Id);
             TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, reply, person));
+        }
+        foreach (var source in history.Where(e => e.Actor != world.PlayerControl && e.At < world.ElapsedSeconds &&
+            e.Input.Action is CourtAction.SupportRestoration or CourtAction.PledgeRestorationRice))
+        {
+            var pledge = source.Input.Action == CourtAction.SupportRestoration;
+            var action = pledge ? CourtAction.PledgeRestorationRice : CourtAction.HandOverRestorationRice;
+            long amount = pledge ? 1 : source.Input.Amount;
+            if (history.Any(e => e.Input.Reference == source.Input.Id && e.Input.Action == action) ||
+                SocialWorld.Site(world, source.Actor) != source.Place ||
+                SocialWorld.Site(world, source.Input.Person) != source.Place ||
+                HouseSalary.PrivateRice(world, source.Actor) < (pledge ? 2 : amount))
+                continue;
+            var supply = new CourtInput(HouseholdCourt.Id("request", source.Input.Id.Value + "/rice"),
+                action, source.Input.Person, source.Input.Owner, source.Place, Amount: amount, Reference: source.Input.Id);
+            TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, supply, source.Actor));
         }
     }
 
