@@ -6,7 +6,7 @@ public sealed record HistoricalStartEdition(int Schema,string Id,int WorldYear,s
 public static class HistoricalStartCatalog
 {
     public const string Western="historical-start-west-v2";
-    public const string Current=HistoricalHouseholdCatalog.Id;
+    public const string Current=CentralCourtCatalog.TempleEdition;
     static readonly HistoricalStartEdition current=Read();
     public static HistoricalStartEdition Edition=>ContractJson.Copy(current);
     static HistoricalStartEdition Read()
@@ -23,6 +23,9 @@ public static class HistoricalStartCatalog
     }
     public static SetupScenario Scenario(string edition)
     {
+        if(edition==CentralCourtCatalog.TempleEdition)return CentralCourtCatalog.TempleScenario();
+        if(edition==CentralCourtCatalog.ShogunateEdition)return CentralCourtCatalog.ShogunateScenario();
+        if(edition==CentralCourtCatalog.Id)return CentralCourtCatalog.Scenario();
         if(edition==HistoricalHouseholdCatalog.Id)return HistoricalHouseholdCatalog.Scenario();
         if(edition!=Western)throw new InvalidDataException("Unknown historical start edition; original save retained");
         var legacy=NewGameWorld.Scenario();var added=current.People.Select(p=>new SetupPerson(p.Id.Value,p.Name,RegionalCampaign.Site(p.HomeCandidate).Value,p.Faction.Value,null,false,false)).ToArray();

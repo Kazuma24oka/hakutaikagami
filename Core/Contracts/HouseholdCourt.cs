@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment,AskCourtIntroduction,AcceptCourtIntroduction,DeclineCourtIntroduction,FileRankPetition,IssueCourtRank,RejectCourtRank,AskShugo,RecommendShugo,DeclineShugo,AppointShugo,RejectShugo,AskRankLeave,GrantRankLeave,RefuseRankLeave,AskPeaceMediation,SendPeaceProposal,DeclinePeaceMediation,AcceptPeaceProposal,RejectPeaceProposal,CertifyPeaceAgreement,ReportPeaceRefusal }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -12,7 +12,8 @@ public sealed record CourtInput(EntityId Id,CourtAction Action,EntityId Person,E
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? NewEstate{get;init;}
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? FormerOffice{get;init;}
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? LevyGrant{get;init;}
- [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? People{get;init;}}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? People{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? OtherHouse{get;init;}}
 public sealed record CourtEvent(CourtInput Input,EntityId Actor,EntityId Place,long At,long Revision,bool PersonalAlreadyBound);
 public sealed record CourtState(int Schema,string Policy,CourtEvent[] Events);
 public sealed record CourtDocument(EntityId Id,CourtEvent Source,EntityId Sender,EntityId Recipient,string Name);
@@ -31,7 +32,7 @@ public static class HouseholdCourt
  static bool Active(TimedRelation r,long at,long rev)=>r.From<=at&&(at<r.Until||at==r.Until&&rev<r.Revision);
  static bool Member(ContractWorld w,EntityId actor,EntityId owner,long at,long rev)=>w.Memberships.Any(m=>m.Subject==actor&&m.Target==owner&&Active(m,at,rev));
  static bool FreeToJoin(ContractWorld w,EntityId actor,EntityId principal)=>!HostageCustody.HeldAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1)&&!w.Memberships.Any(m=>m.Subject==actor&&Active(m,w.ElapsedSeconds,w.CommitSequence+1))&&!w.ServiceBonds.Any(b=>b.Subject==actor&&b.Target!=principal&&Active(b,w.ElapsedSeconds,w.CommitSequence+1))&&!w.Offices.Any(o=>o.Subject==actor&&Active(o,w.ElapsedSeconds,w.CommitSequence+1));
- public static long Net(ContractWorld w,EntityId wallet,long at,long revision){long n=0;foreach(var e in Events(w).Where(e=>Before(e,at,revision))){if(e.Input.Action==CourtAction.HireMarketSoldiers&&NewGameWork.Wallet(e.Actor)==wallet)n=checked(n-PrivateRecruitment.Wages(e));if(e.Input.Action==CourtAction.RecruitOffer&&NewGameWork.Wallet(e.Actor)==wallet)n=checked(n-e.Input.Amount);if(e.Input.Action is CourtAction.RecruitAccept or CourtAction.ReturnSigning){var offer=Source(w,e.Input.Reference,CourtAction.RecruitOffer);var to=e.Input.Action==CourtAction.RecruitAccept?e.Actor:offer.Actor;if(NewGameWork.Wallet(to)==wallet)n=checked(n+offer.Input.Amount);}}n-=PrivateRecruitment.RenewalWages(w,wallet,at,revision);return n;}
+ public static long Net(ContractWorld w,EntityId wallet,long at,long revision){long n=0;foreach(var e in Events(w).Where(e=>Before(e,at,revision))){if(e.Input.Action==CourtAction.HireMarketSoldiers&&NewGameWork.Wallet(e.Actor)==wallet)n=checked(n-PrivateRecruitment.Wages(e));if(e.Input.Action==CourtAction.RecruitOffer&&NewGameWork.Wallet(e.Actor)==wallet)n=checked(n-e.Input.Amount);if(e.Input.Action is CourtAction.RecruitAccept or CourtAction.ReturnSigning){var offer=Source(w,e.Input.Reference,CourtAction.RecruitOffer);var to=e.Input.Action==CourtAction.RecruitAccept?e.Actor:offer.Actor;if(NewGameWork.Wallet(to)==wallet)n=checked(n+offer.Input.Amount);}}n-=PrivateRecruitment.RenewalWages(w,wallet,at,revision)+CentralRank.Offerings(w,wallet,at,revision);return n;}
  public static long SigningEscrow(ContractWorld w)=>Events(w).Where(e=>e.Input.Action==CourtAction.RecruitOffer&&!Events(w).Any(a=>a.Input.Reference==e.Input.Id&&a.Input.Action is CourtAction.RecruitAccept or CourtAction.ReturnSigning)).Sum(e=>e.Input.Amount);
  public static CourtDocument[] DocumentRows(ContractWorld w){var docs=new List<CourtDocument>();foreach(var e in Events(w)){
   var i=e.Input;if(i.Action is CourtAction.RecruitOffer or CourtAction.Nominate or CourtAction.RevokeOffice or CourtAction.SubmitCase)docs.Add(new(i.Id,e,e.Actor,i.Person,i.Action==CourtAction.RecruitOffer?"登用の条件書（支度金を同封）":i.Action==CourtAction.Nominate?"常設職の任命状":i.Action==CourtAction.RevokeOffice?"役職の解任通知":"評定への上申書"));
@@ -416,6 +417,11 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.PrivateCompanyPayment)throw new InvalidDataException("糧食の精算は契約満了時に自動で行います");
   else if(i.Action==CourtAction.KeepPrivateCompany)PrivateRecruitment.CheckStanding(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(PeaceMediation.Handles(i.Action))PeaceMediation.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(RankLeave.Handles(i.Action))RankLeave.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(ShogunateAppointments.Handles(i.Action))ShogunateAppointments.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(CentralRank.Handles(i.Action))throw new InvalidDataException("朝廷の発給原本は手動で作成できません");
+  else if(CentralMediation.Handles(i.Action))CentralMediation.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(PrivateRecruitment.Contract(i.Action))PrivateRecruitment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -450,7 +456,7 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);Need(leader&&proposal.Input.Owner==i.Owner&&proposal.Input.Site==i.Site&&Received(w,proposal.Input.Id,actor)&&place==i.Site,"届いて確認した自分の管轄の上申だけを審査してください");Need(!Events(w).Any(e=>e.Input.Reference==proposal.Input.Id&&e.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase),"この案件は審査済みです");Need(Events(w).Any(e=>e.Actor==actor&&e.Input.Action==CourtAction.HoldCouncil&&e.Input.Owner==i.Owner&&e.Place==place&&w.ElapsedSeconds<=e.At+3600),"現地で評定を開いてから案件を裁いてください");}
   else if(i.Action==CourtAction.DeliverDocument){Need(i.Reference!=null,"引き渡す文書を選んでください");Deliver(w,Document(w,i.Reference.Value),actor,i.Carrier);Add(w,i,actor,place.Value);return;}
   else throw new InvalidDataException("未対応の家中の用件です");
-  Add(w,i,actor,place.Value,bound);if(i.Action is CourtAction.ReceiveLevyShare or CourtAction.RaiseVillageSoldiers)CommunityEconomy.Tick(w);if(i.Action==CourtAction.ConsultReform)HouseReforms.Send(w,i,actor);if(i.Action==CourtAction.DeclareScale)HouseScaleNotices.Dispatch(w,i,actor);Sync(w);NewGameWork.Sync(w);
+  Add(w,i,actor,place.Value,bound);ShogunateAppointments.Dispatch(w,i,actor);PeaceMediation.Send(w,i,actor);if(i.Action is CourtAction.ReceiveLevyShare or CourtAction.RaiseVillageSoldiers)CommunityEconomy.Tick(w);if(i.Action==CourtAction.ConsultReform)HouseReforms.Send(w,i,actor);if(i.Action==CourtAction.DeclareScale)HouseScaleNotices.Dispatch(w,i,actor);Sync(w);NewGameWork.Sync(w);
   if(i.Action is CourtAction.RecruitOffer or CourtAction.Nominate or CourtAction.RevokeOffice or CourtAction.SubmitCase or CourtAction.SendMusterNotice)Deliver(w,Document(w,i.Id),actor,i.Carrier);
   if(i.Action==CourtAction.ApproveCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);var q=proposal.Input;if(q.Case==CourtCaseKind.RelieveVillage)CommunityEconomy.ApplyFor(w,new(Id("effect",i.Id.Value),q.Site,EconomyAction.RelieveVillage,q.Amount),actor);else RegionalDomains.Apply(w,new(Id("effect",i.Id.Value),q.Case==CourtCaseKind.SetBudget?TreasuryAction.SetBudget:TreasuryAction.Buy,q.Site,q.Case==CourtCaseKind.BuyWood?"wood":q.Case==CourtCaseKind.BuyWeapons?"weapons":null,q.Case==CourtCaseKind.SetBudget?0:q.Amount,q.Case==CourtCaseKind.SetBudget?q.Amount:0),actor);}
   if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase)Deliver(w,Document(w,i.Id),actor,i.Carrier);
@@ -478,7 +484,13 @@ public static class HouseholdCourt
  {
   if(w.Court==null)return;
   PrivateRecruitment.SettleDue(w);
+  foreach(var (reply,lord) in RankLeave.Pending(w))Attempt(w,reply,lord);
+  PeaceMediation.ReadAndRespond(w);
+  foreach(var reply in PeaceMediation.Answers(w,false))Attempt(w,reply,Events(w).Single(e=>e.Input.Id==reply.Reference).Input.Person);
+  ShogunateAppointments.Process(w);
+  CentralRank.Process(w);
   MusterNotices.Assemble(w);
+  foreach(var reply in CentralMediation.Pending(w))Attempt(w,reply,CentralCourtCatalog.CourtBroker);
   foreach(var reply in HouseholdDetachment.Replies(w))Attempt(w,reply.Input,reply.Actor);
   foreach(var doc in DocumentRows(w).Where(d=>d.Recipient!=w.PlayerControl&&Received(w,d.Id,d.Recipient)).ToArray()){
    var source=doc.Source;var p=doc.Recipient;if(SocialWorld.Site(w,p) is not {} site)continue;CourtAction? action=source.Input.Action switch{CourtAction.RecruitOffer=>FreeToJoin(w,p,source.Actor)&&HeadAuthority(w,source.Actor,source.Input.Owner,source.Input.Site,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.RecruitAccept:CourtAction.RecruitDecline,CourtAction.Nominate=>Vacancy(w,source.Input.Owner,source.Input.Site,source.Input.Role,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.AcceptOffice:CourtAction.DeclineOffice,CourtAction.Convene=>site==source.Place?CourtAction.AcceptInvitation:CourtAction.DeclineInvitation,_=>null};if(action==null)continue;
@@ -513,7 +525,7 @@ public static class HouseholdCourt
    }
   }
  }
- internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action is CourtAction.Convene or CourtAction.SendMusterNotice).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Concat(PrivateRecruitment.DueDates(w)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
+ internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action is CourtAction.Convene or CourtAction.SendMusterNotice).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Concat(CentralRank.FilingDates(w)).Concat(CentralRank.Due(w)).Concat(PrivateRecruitment.DueDates(w)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
  internal static void Rewind(ContractWorld w,long at,long rev){CraftTrade.Rewind(w,at,rev);BrokerWork.Rewind(w,at,rev);if(w.Court!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray();w.Court=es.Length==0?null:w.Court with{Events=es};}}
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
@@ -536,6 +548,10 @@ public static class HouseholdCourt
    if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(PeaceMediation.Handles(i.Action)){PeaceMediation.Check(w,i,e.Actor,e.Place,e.At,e.Revision);PeaceMediation.Validate(w,e);}
+   if(RankLeave.Handles(i.Action))RankLeave.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(ShogunateAppointments.Handles(i.Action)){ShogunateAppointments.Check(w,i,e.Actor,e.Place,e.At,e.Revision);ShogunateAppointments.ValidateLetter(w,e);}
+   if(CentralMediation.Handles(i.Action))CentralMediation.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.KeepPrivateCompany)PrivateRecruitment.CheckStanding(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.PrivateCompanyPayment)PrivateRecruitment.ValidatePayment(w,e);
    if(PrivateRecruitment.Contract(i.Action))PrivateRecruitment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
@@ -589,6 +605,7 @@ public static class HouseholdCourt
    if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);Need(Received(w,proposal.Input.Id,e.Actor,e.At,e.Revision+1)&&es.Count(x=>x.Input.Reference==proposal.Input.Id&&x.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase)==1,"未受領または二重審査の案件です");if(i.Action==CourtAction.ApproveCase)Need(proposal.Input.Case==CourtCaseKind.RelieveVillage?w.Communities?.Orders.Any(o=>o.Input.Id==Id("effect",i.Id.Value)&&o.Actor==e.Actor&&o.Input.Amount==proposal.Input.Amount)==true:w.Domains?.Entries.Any(o=>o.Input.Id==Id("effect",i.Id.Value)&&o.Actor==e.Actor)==true,"承認した案件の実際の処分がありません");}
   }
   Need(!PrivateRecruitment.DueDates(w).Any(t=>t<=w.ElapsedSeconds),"私兵の糧食精算が欠落しています");
+  CentralRank.Validate(w);
   Need(SigningEscrow(w)>=0,"実在しない支度金を払い出しています");
  }
 }

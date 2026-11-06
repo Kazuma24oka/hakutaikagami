@@ -77,6 +77,7 @@ public static partial class TreatyNegotiations
         // 自家が発した敵対宣言を根拠に、相手の防衛上の大義を認める。
         if(FactionStances.OwnAt(w,paper.Recipient,at,revision).Any(c=>c.FromOwner==paper.Input.Target &&
             c.ToOwner==paper.Input.Owner && c.EffectiveFrom<=at && at<c.Until))score++;
+        if(PeaceMediation.KnowsRefusal(w,paper.Recipient,paper.Input.Owner,paper.Input.Target,at,revision))score--;
         if(conditions.RestrictDiplomacy)score-=2;
         if(conditions.Hostage!=null)score-=3;
         score-=conditions.MusterMen>100?4:conditions.MusterMen>0?1:0;

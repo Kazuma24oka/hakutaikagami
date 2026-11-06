@@ -15,7 +15,7 @@ public sealed record ScaleFootprint(int Sites,int Provinces)
 public static class HouseTerritoryScale
 {
     // 記名した出典は HouseScaleV1/provinces.md。未照合の拠点は国数に足さない。
-    static string? Province(EntityId site)=>site.Value switch
+    public static string? Province(EntityId site)=>site.Value switch
     {
         "site:ichijodani"=>"越前","site:nanao"=>"能登","site:hitoyoshi"=>"肥後",
         "site:funai"=>"豊後","site:kofu"=>"甲斐",_=>null

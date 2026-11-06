@@ -14,7 +14,78 @@ public partial class NewGameRuntime
   void Button(string key,string text,Action action){var b=new Button{Text=text};box.AddChild(b);courtReviewButtons[key]=b;b.Pressed+=action;}
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
-  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  if(courtCategory==5){
+      if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
+          if(CentralMediation.ApplicantHouse(w,actor) is {} petitionHouse && HouseSuccession.Head(w,petitionHouse) is {} lord &&
+              lord!=actor && SocialWorld.Site(w,lord)==site)
+              Button("ask-rank-leave","主君に叙位奏請の許可を願う",()=>Run(new(Nonce("ask-rank-leave"),CourtAction.AskRankLeave,lord,petitionHouse,site.Value)));
+          foreach(var petition in RankLeave.Requests(w,actor).Where(e=>SocialWorld.Site(w,e.Actor)==site)){
+              foreach(var answer in new[]{CourtAction.GrantRankLeave,CourtAction.RefuseRankLeave}){
+                  string key=answer+"/"+petition.Input.Id.Value;
+                  Button(key,MeritRewards.DisplayName(w,actor,petition.Actor)+(answer==CourtAction.GrantRankLeave?"の奏請を許す":"の奏請を断る"),
+                      ()=>Run(new(Nonce(key),answer,petition.Actor,petition.Input.Owner,site.Value,Reference:petition.Input.Id)));
+              }
+          }
+      }
+      foreach(var agreement in PeaceMediation.Agreements(w,actor))
+          Button(agreement.Id.Value,agreement.Action==CourtAction.ReportPeaceRefusal?"拒否の返書を確認し相手方に知らせる":"両家の承諾を確認し成立通知を送る",()=>Run(agreement));
+      foreach(var pact in PeaceMediation.Known(w,actor,w.ElapsedSeconds,rev))
+          SocialText(box,"成立通知を開封。不戦期限 "+WorldCalendar.Display(w.EpochDate,pact.Terms.Until));
+      foreach(var vote in PeaceMediation.Votes(w,actor)){
+          var text=vote.Amount+"日間の不戦仲裁案"+(vote.Action==CourtAction.AcceptPeaceProposal?"を承諾する":"を断る");
+          Button(vote.Id.Value,text,()=>Run(vote));
+      }
+      if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
+          if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && TruceNegotiations.Enabled(w) && (site==CentralCourtCatalog.Kyoto || site==TempleMilitary.Site)){
+              foreach(var decision in PeaceMediation.Answers(w,true))
+                  Button(decision.Id.Value,decision.Action==CourtAction.SendPeaceProposal?"両家に仲裁案を送る":"仲裁の取次を断る",()=>Run(decision));
+              if(CentralMediation.ApplicantHouse(w,actor) is {} party && HouseSuccession.Head(w,party)==actor){
+                  var others=HouseSuccession.Factions(w).Where(f=>f.Id!=party.Value).ToArray();
+                  if(others.Length>0){
+                      var houses=new OptionButton();foreach(var other in others)houses.AddItem(other.Name);box.AddChild(houses);
+                      var duration=new SpinBox{MinValue=1,MaxValue=90,Value=30,Suffix="日間の不戦"};box.AddChild(duration);
+                      foreach(var contact in PeaceMediation.Brokers(w).Where(p=>SocialWorld.Site(w,p)==site)){
+                          string key="peace/"+contact.Value;
+                          Button(key,MeritRewards.DisplayName(w,actor,contact)+"に和睦の取次を頼む",()=>Run(new CourtInput(Nonce(key),CourtAction.AskPeaceMediation,
+                              contact,party,site.Value,Amount:(long)duration.Value){OtherHouse=new(others[houses.Selected].Id)}));
+                      }
+                  }
+              }
+          }
+      if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
+          SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
+      }
+      if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
+          foreach(var answer in ShogunateAppointments.AvailableAnswers(w,actor)){
+              var subject=MeritRewards.DisplayName(w,actor,answer.Person)+"の"+HouseTerritoryScale.Province(answer.Site)+"守護補任";
+              var text=answer.Action switch{CourtAction.RecommendShugo=>"を将軍に取り次ぐ",CourtAction.DeclineShugo=>"の取次を断る",
+                  CourtAction.AppointShugo=>"を認める",_=>"を退ける"};
+              Button(answer.Id.Value,subject+text,()=>Run(answer));
+          }
+          foreach(var office in ShogunateAppointments.KnownOffices(w,actor))SocialText(box,"幕府の補任状　"+office);
+          if(CentralMediation.ApplicantHouse(w,actor) is {} applicantOwner){
+              foreach(var district in ShogunateAppointments.Districts(w,applicantOwner)){
+                  string key="shugo-"+district.Value;
+                  Button(key,HouseTerritoryScale.Province(district)+"守護の取次を細川藤孝に頼む",()=>Run(new(Nonce(key),
+                      CourtAction.AskShugo,CentralCourtCatalog.ShogunBroker,applicantOwner,district)));
+              }
+          }
+      }
+      foreach(var answer in CentralMediation.AvailableAnswers(w)){
+          var name=MeritRewards.DisplayName(w,actor,answer.Person);
+          Button(answer.Id.Value,name+(answer.Action==CourtAction.AcceptCourtIntroduction?"の奏請を取り次ぐ":"の奏請の取次を断る"),()=>Run(answer));
+      }
+      var original=w.Court?.Events.LastOrDefault(e=>e.Actor==actor && e.Input.Action==CourtAction.AskCourtIntroduction);
+      var reply=original==null?null:w.Court!.Events.SingleOrDefault(e=>e.Input.Reference==original.Input.Id &&
+          e.Input.Action is CourtAction.AcceptCourtIntroduction or CourtAction.DeclineCourtIntroduction);
+      if(original!=null)SocialText(box,reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"山科言継が奏請の取次を引き受けました。",CourtAction.DeclineCourtIntroduction=>"山科言継は今回の取次を辞退しました。",_=>"山科言継の返事を待っています。"});
+      if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction) &&
+          CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
+          Button("court-introduction",CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)?"献金60文を添えて山科言継に奏請を頼む":"山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
+              CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value)));
+      return;
+  }
   if(courtCategory==4){
    var control=w.LandRights.SingleOrDefault(r=>r.Kind=="control" && r.Target==site && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until);
    foreach(var reservation in MusterNotices.Reservations(w,actor,w.ElapsedSeconds,rev+1)){
