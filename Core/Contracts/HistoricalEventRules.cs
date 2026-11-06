@@ -16,6 +16,12 @@ public static class HistoricalEventRules
         if(!need.Needed || need.MissingEdges.Length+need.StaleEdges.Length==0)return null;
         return new("owari-road-observation","inspect","kiyosu-city",true,true);
     }
+    public static bool IsOwariOrder(ContractWorld w,EntityId request)
+    {
+        if(w.NewGame?.Judgment?.EventEdition!=OwariEdition)return false;
+        return w.NpcWork?.Decisions.Any(d=>d.Request==request && d.Actor.Value=="person:nobunaga" &&
+            d.Inputs.Routine?.Judgment?.ChoiceInput.Candidates.Any(c=>c.Id=="inspect" && c.MatchesHistoricalGoal)==true)==true;
+    }
     public static NpcChoiceInput Apply(NpcChoiceInput input,HistoricalEventPremise[] premises,bool playerDecision,bool continuedAfterHistory)
     {
         if(premises==null||premises.Any(p=>p==null||string.IsNullOrWhiteSpace(p.Id)||string.IsNullOrWhiteSpace(p.Candidate)||string.IsNullOrWhiteSpace(p.Source))||premises.Select(p=>p.Id).Distinct(StringComparer.Ordinal).Count()!=premises.Length)throw new InvalidDataException("事件の前提と出典が不正です");
