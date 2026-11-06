@@ -20,9 +20,13 @@ public static class PrivateRecruitment
     internal static IEnumerable<CourtEvent> Levies(ContractWorld w) =>
         HouseholdCourt.Events(w).Where(e => e.Input.Action == CourtAction.RaiseVillageSoldiers);
 
+    // 従軍中の本人の兵。徴募元は労働台帳に残し、参集地の人数は指揮者の実所在で数える。
+    internal static int Strength(ContractWorld w, EntityId commander, long at, long rev) =>
+        checked((int)Contracts(w).Where(e => e.Actor == commander && e.Revision < rev &&
+            e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount));
+
     public static int Soldiers(ContractWorld w, EntityId commander, EntityId site, long at, long rev) =>
-        (int)Contracts(w).Where(e => e.Actor == commander && e.Place == site && e.Revision < rev &&
-            e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);
+        PersonalCompanions.SiteAt(w,commander,at,rev) == site ? Strength(w,commander,at,rev) : 0;
 
     internal static int Labor(ContractWorld w, EntityId site, long at, long rev) =>
         (int)Levies(w).Where(e => e.Place == site && e.Revision < rev && e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);

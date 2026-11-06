@@ -41,15 +41,16 @@ public static class MusterNotices
         foreach (var order in orders)
         {
             var person = order.Input.Person;
-            if (SocialWorld.Site(w, person) != order.Input.Site ||
+            if (SocialWorld.Site(w, person) is not {} currentSite ||
                 !Reservations(w, person, w.ElapsedSeconds, w.CommitSequence+1).Any(r => r.Input.Id == order.Input.Id) ||
                 HostageCustody.HeldAt(w, person, w.ElapsedSeconds, w.CommitSequence) ||
                 Assassination.DeadAt(w, person, w.ElapsedSeconds, w.CommitSequence)) continue;
             if (w.ElapsedSeconds < order.Input.When)
             {
-                Prepare(w, order, person);
+                Prepare(w, order, person, currentSite);
                 continue;
             }
+            if (currentSite != order.Input.Site) continue;
             long count = Math.Min(order.Input.Amount, PrivateRecruitment.Soldiers(w, person, order.Input.Site, w.ElapsedSeconds, w.CommitSequence+1));
             var arrival = new CourtInput(HouseholdCourt.Id("arrival", order.Input.Id.Value), CourtAction.AttendMuster,
                 person, order.Input.Owner, order.Input.Site, Amount: count, Reference: order.Input.Id);
@@ -57,14 +58,13 @@ public static class MusterNotices
         }
     }
 
-    static void Prepare(ContractWorld w, CourtEvent order, EntityId person)
+    static void Prepare(ContractWorld w, CourtEvent order, EntityId person, EntityId site)
     {
-        var site = order.Input.Site;
         long at = w.ElapsedSeconds, rev = w.CommitSequence+1;
         long days = (order.Input.When-at)/86400+1;
         if (days > 30 || !MilitaryEconomy.Enabled(w) || !CommunityEconomy.SitesFor(w).Contains(site) ||
             DefectionPacts.HouseAt(w, person, at, rev-1) != order.Input.Owner) return;
-        long stillNeeded = order.Input.Amount-PrivateRecruitment.Soldiers(w,person,site,order.Input.When,rev);
+        long stillNeeded = order.Input.Amount-PrivateRecruitment.Strength(w,person,order.Input.When,rev);
         long affordable = Math.Min(stillNeeded, HouseSalary.PrivateRice(w,person)/days);
         if (affordable <= 0) return;
         CourtAction action;

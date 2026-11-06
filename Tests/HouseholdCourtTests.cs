@@ -7,34 +7,65 @@ public sealed class HouseholdCourtTests
  internal static WorldSession Start(string player="person:nobunaga") {var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(Ronin.Value),NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:"person:nobunaga")]);return new(NewGameWorld.Create(setup.World,setup.Registered,player,42,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy));}
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
- [Fact]
- public void ReceivedMusterMovesTheRetainerToAnotherCastleBeforeAttendance()
+ [Theory]
+ [InlineData(5,20,true)]
+ [InlineData(1,5,false)]
+ public void ReceivedMusterMovesTheRetainerToAnotherCastleBeforeAttendance(int days,int rice,bool contractsSurvive)
  {
      var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
      var member=NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:lord.Id);
      var setup=NewGameWorldTests.Setup([lord,member],[new(lord.Id,"org:muster",[lord.Site,"site:kofu"],false)]);
      var initial=NewGameWorld.Create(setup.World,setup.Registered,lord.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
-         workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy);
+         workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,economyPolicy:MilitaryEconomy.Policy);
      var session=new WorldSession(initial);
-     var order=new CourtInput(new("request:assemble-kofu"),CourtAction.SendMusterNotice,Retainer,new("org:muster"),new("site:kofu"),Amount:6,When:86400*5);
+     void Pay(SalaryAction action,EntityId? contract=null,long amount=0,EntityId? prep=null)
+     {
+         Good(session.ManageSalary(new(new("request:march-pay/"+session.Revision),action,Retainer,Site,contract,amount,prep),session.PlayerControl,session.Revision));
+     }
+     Pay(SalaryAction.Propose,amount:20);
+     var quote=session.DiagnosticSnapshot().Salary!.Quotes.Single().Id;
+     Pay(SalaryAction.Confirm,quote);
+     NewGameWorldTests.At(session,session.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[0]);
+     Pay(SalaryAction.Prepare,quote,rice);
+     Pay(SalaryAction.Receive,quote,prep:session.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id);
+     var order=new CourtInput(new("request:assemble-kofu"),CourtAction.SendMusterNotice,Retainer,new("org:muster"),new("site:kofu"),Amount:6,When:session.Seconds+days*86400);
      Good(session.ManageCourt(order,session.Revision));
-     NewGameWorldTests.At(session,5);
+     NewGameWorldTests.At(session,session.Seconds+5);
      var moving=session.DiagnosticSnapshot();
      var trip=Assert.Single(moving.Requests,r=>r.Intent.RoutePolicy==MusterNotices.AssemblyRoute);
      Assert.Equal(Retainer,trip.Intent.Actor);
      Assert.Equal(order.Site,trip.Intent.DestinationSite);
-     var restored=new WorldSession(ContractJson.Copy(moving));
+     Assert.Equal(0,PrivateRecruitment.Soldiers(moving,Retainer,Site,session.Seconds,session.Revision+1));
+     Assert.Equal(0,PrivateRecruitment.Soldiers(moving,Retainer,order.Site,session.Seconds,session.Revision+1));
+     var mustered=moving.Court!.Events.Where(e=>e.Input.Action==CourtAction.HireMarketSoldiers && e.Actor==Retainer).ToArray();
+     Assert.NotEmpty(mustered);
+     Assert.Equal((long)rice,mustered.Sum(e=>e.Input.Amount*((e.Input.When-e.At)/86400))+HouseSalary.PrivateRice(moving,Retainer));
+     session.SetPaused(true);
+     var directory=Directory.CreateTempSubdirectory("hakutai-accompany-");
+     try
+     {
+     var store=new GenerationSaveStore(directory.FullName,initial.Definitions);
+     Assert.True(store.Save(session,"on-road",initial.WorldId).Published);
+     var host=new WorldSessionHost(new WorldSession(initial));
+     Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("on-road"),host.Current,host.Current.Revision));
+     var restored=host.Current;
      long end=Math.Max(order.When,trip.Intent.EffectiveAt+trip.Intent.DeliverySeconds+trip.Intent.WorkSeconds)+2;
      foreach(var run in new[]{session,restored})
      {
          NewGameWorldTests.At(run,end);
          var after=run.DiagnosticSnapshot();
          var arrived=Assert.Single(after.Court!.Events,e=>e.Input.Action==CourtAction.AttendMuster);
+         Assert.Equal(contractsSurvive,arrived.Input.Amount>0);
+         var localHires=after.Court.Events.Where(e=>e.Input.Action==CourtAction.HireMarketSoldiers && e.Actor==Retainer && e.Place==order.Site && e.Input.When>arrived.At && e.Revision<arrived.Revision);
+         Assert.Equal(mustered.Where(e=>e.Input.When>arrived.At).Sum(e=>e.Input.Amount)+localHires.Sum(e=>e.Input.Amount),arrived.Input.Amount);
+         Assert.Equal(0,PrivateRecruitment.Soldiers(after,Retainer,Site,run.Seconds,run.Revision+1));
          Assert.Equal(order.Site,arrived.Place);
          Assert.Equal(order.Site,SocialWorld.Site(after,Retainer));
          Assert.Equal(Site,SocialWorld.Site(after,run.PlayerControl));
      }
      Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+     }
+     finally {directory.Delete(true);}
  }
 
  [Fact]
