@@ -10,12 +10,16 @@ public sealed record SubmissionConditions(bool GuaranteeLands,int MusterMen,long
 public sealed record TreatyInput(EntityId Id,TreatyAction Action,EntityId Owner,EntityId Target,EntityId? Source=null,int Days=0,TreatyClause Clauses=TreatyClause.None,int NoticeDays=0)
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CouncilCharter? Charter {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public SubmissionConditions? Submission {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public bool? AttachHouseScale{get;init;}
 }
 public sealed record TreatyTerms(EntityId Origin,int Version,EntityId? Parent,EntityId A,EntityId B,long From,long Until,long ReplyBy,TreatyClause Clauses,int NoticeSeconds)
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CouncilCharter? Charter {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public SubmissionConditions? Submission {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -90,6 +94,17 @@ public static partial class TreatyNegotiations
     static TreatyPaper Prepare(ContractWorld w,TreatyInput i,EntityId actor,long at,long rev)
     {
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=RepresentativeKnowledge.Known(w,actor,i.Target,at,Math.Min(rev,w.CommitSequence));Need(target!=null,"相手の当事者が不明です");TreatyTerms terms;
+        if(i.Charter is {} charter){
+            Need(i.Action==TreatyAction.Propose && i.Submission==null && i.Clauses==TreatyClause.None &&
+                Enum.IsDefined(charter.Rule) && i.Days is >=1 and <=MaximumNpcDays,"契状は独立した原本として30日以内の期間と議決規則を記してください");
+            if(charter.Origin!=i.Id){
+                var founding=PapersAt(w,at,rev-1).SingleOrDefault(p=>p.Input.Id==charter.Origin);
+                Need(founding!=null && founding.Input.Owner==i.Owner && founding.Terms.Charter==charter &&
+                    at<founding.Terms.Until && checked(at+i.Days*Day)<=founding.Terms.Until,"呼びかけた家・議決規則・契状の期間が最初の原本と一致しません");
+            }
+            Need(!PapersAt(w,at,rev-1).Any(p=>p.Input.Action==TreatyAction.Propose && p.Input.Charter==charter &&
+                p.Input.Target==i.Target && at<p.Terms.Until),"同じ家宛ての加盟書状がすでにあります");
+        }
         if(i.Submission is {} demand){
             Need(i.Action==TreatyAction.Propose,"従属条件は勧告の原本に記します");
             Need(demand.MusterMen>=0 && demand.TributeRice>=0 && (demand.MusterMen>0 || demand.TributeRice>0 || demand.RestrictDiplomacy || demand.Hostage!=null || demand.GuaranteeLands),"勧告に有効な条件が必要です");
@@ -100,7 +115,7 @@ public static partial class TreatyNegotiations
             if(demand.Hostage is {} hostage)
                 Need(w.NewGame!.Start.People.Any(person=>person.Id==hostage.Value && person.Faction==i.Target.Value),"人質の候補は公知の開始名簿にある相手方の人物を指定してください");
         }
-        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl || i==NpcSubmission(w,actor,i.Owner,i.Target,at,rev-1),"勧告を発する当主の既知の開戦根拠がありません");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
+        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl || i==NpcSubmission(w,actor,i.Owner,i.Target,at,rev-1),"勧告を発する当主の既知の開戦根拠がありません");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Charter!=null||i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Charter=i.Charter,Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
         else{
             var source=PapersAt(w,at,rev).SingleOrDefault(p=>p.Input.Id==i.Source);Need(source!=null&&source.Recipient==actor&&source.Input.Owner==i.Target&&source.Input.Target==i.Owner&&Opened(w,source,actor,at,rev),"本人に到達して開封した同一原本が必要です");
             Need(!PapersAt(w,at,rev).Any(p=>p.Input.Id!=i.Id&&p.Input.Source==source.Input.Id&&p.Author==actor),"この版には既に返答しています");

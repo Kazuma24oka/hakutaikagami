@@ -54,6 +54,25 @@ public sealed class TreatyNegotiationsTests
         }
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
+    [Fact]
+    public void CharterMembershipRequiresDeliveredConsentAndPersonalKnowledge()
+    {
+        var s=Start();
+        var id=new EntityId("request:league-charter");
+        var charter=new CouncilCharter(id,CouncilRule.TwoThirds);
+        Good(s.NegotiateTreaty(new(id,TreatyAction.Propose,Own,Other,Days:30,NoticeDays:1){Charter=charter},s.PlayerControl,s.Revision));
+        var offer=Assert.Single(s.DiagnosticSnapshot().Treaties!.Papers);
+        At(s,Arrival(s,offer.Message)+1);
+        var reply=Reply(s);
+        At(s,Arrival(s,reply.Message));
+        EntityId[] Members()=>KokujinCouncil.KnownMembers(s.DiagnosticSnapshot(),s.PlayerControl,charter,s.Seconds,s.Revision);
+        Assert.Empty(Members());Open(s,reply.Message);
+        Assert.Equal(2,Members().Length);Assert.Contains(Other,Members());Assert.Contains(Own,Members());
+        Assert.Equal(7,KokujinCouncil.RequiredVotes(charter.Rule,10));
+        var bytes=ContractJson.Write(s.DiagnosticSnapshot());
+        s=new WorldSession(ContractJson.Read<ContractWorld>(bytes));
+        Assert.Equal(2,Members().Length);
+    }
     [Fact]public void PhysicalFormationAndPersonalOpeningAreSeparate(){var s=Formed(false);Assert.Single(s.DiagnosticSnapshot().Treaties!.Formations);Assert.Empty(TreatyNegotiations.Known(s.DiagnosticSnapshot(),s.PlayerControl));Assert.False(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));Open(s,Reply(s).Message);Assert.True(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));Assert.DoesNotContain(s.DiagnosticSnapshot().Treaties!.Papers,p=>p.Input.Action==TreatyAction.Confirm&&p.Author==s.PlayerControl);new WorldSession(s.DiagnosticSnapshot());}
     [Theory][InlineData(TreatyClause.Passage)][InlineData(TreatyClause.Supply)][InlineData(TreatyClause.Defense)][InlineData(TreatyClause.NonAggression)]public void ClauseRightsRemainIndependent(TreatyClause clause){var s=Start();Offer(s,clause);var p=s.DiagnosticSnapshot().Treaties!.Papers.Single();At(s,Arrival(s,p.Message)+1);At(s,Arrival(s,Reply(s).Message));Open(s,Reply(s).Message);Assert.True(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),clause));foreach(var missing in new[]{TreatyClause.NonAggression,TreatyClause.Passage,TreatyClause.Supply,TreatyClause.Defense}.Where(c=>c!=clause))Assert.False(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),missing));Assert.Equal(clause==TreatyClause.NonAggression,TreatyNegotiations.WillNotInitiate(s.DiagnosticSnapshot(),Own,Other,s.Seconds,s.Revision));}
     [Fact]public void TerminationNeedsArrivalAndNoticeDateNotJustDispatch(){var s=Formed();var p=Operate(s,Operation(s,TreatyOperation.Terminate));Assert.Null(TreatyNegotiations.TruthEnd(s.DiagnosticSnapshot(),Form(s)));At(s,Arrival(s,p.Message));Assert.Null(TreatyNegotiations.TruthEnd(s.DiagnosticSnapshot(),Form(s)));At(s,p.Intent.EffectiveAt);Assert.Equal(p.Intent.EffectiveAt,TreatyNegotiations.TruthEnd(s.DiagnosticSnapshot(),Form(s)));Assert.True(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));var ack=s.DiagnosticSnapshot().Treaties!.Operations.Single(p=>p.Kind==TreatyOperation.TerminationReceipt);At(s,Math.Max(s.Seconds,Arrival(s,ack.Message)));Open(s,ack.Message);Assert.False(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));new WorldSession(s.DiagnosticSnapshot());}
