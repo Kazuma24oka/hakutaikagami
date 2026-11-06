@@ -19,8 +19,10 @@ public sealed class HouseConditionTests
         var start=DateOnly.Parse(s.DiagnosticSnapshot().EpochDate);
         NewGameWorldTests.At(s,(new DateOnly(start.Year,10,1).DayNumber-start.DayNumber)*86400L);
         Assert.Equal(0,Accrued(s));
-        var collect=new CommunityInput(new("request:actual-levy"),grant.Site,EconomyAction.CollectLevy,80);
+        var collect=new CommunityInput(new("request:actual-levy"),grant.Site,EconomyAction.CollectLevy,79);
         Assert.Equal(ResultCode.Accepted,s.ManageCommunity(collect,s.PlayerControl,s.Revision).Code);
+        Assert.Equal(19,Accrued(s));
+        Assert.Equal(ResultCode.Accepted,s.ManageCommunity(collect with{Id=new("request:levy-remainder"),Amount=1},s.PlayerControl,s.Revision).Code);
         var restored=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
         Assert.Equal(20,Accrued(restored));
         Assert.Equal(0,HouseSalary.PrivateRice(restored.DiagnosticSnapshot(),grant.Person));

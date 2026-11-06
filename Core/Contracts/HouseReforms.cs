@@ -46,10 +46,11 @@ public static class HouseReforms
     {
         if(grant.Input.Action!=CourtAction.GrantLevyShare)return 0;
         var orders=w.Communities?.Orders??[];
-        return orders.Where(o=>o.Input.Site==grant.Place && o.Input.Action==EconomyAction.CollectLevy &&
+        var collected=orders.Where(o=>o.Input.Site==grant.Place && o.Input.Action==EconomyAction.CollectLevy &&
             o.Revision>grant.Revision && o.Revision<LevyEnd(w,grant.Input.Id) && (o.At<at || o.At==at && o.Revision<revision) &&
             w.LandRights.Any(r=>r.Kind=="control" && r.Target==grant.Place && r.Subject==grant.Input.Owner &&
-                r.From<=o.At && o.At<r.Until)).Sum(o=>checked(o.Input.Amount*grant.Input.Amount)/100);
+                r.From<=o.At && o.At<r.Until)).Sum(o=>o.Input.Amount);
+        return checked(collected/100*grant.Input.Amount+collected%100*grant.Input.Amount/100);
     }
 
     public static long ReceivedLevyRice(ContractWorld w,EntityId grant,long at,long revision)=>
