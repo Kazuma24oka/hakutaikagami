@@ -31,6 +31,20 @@ public static class HouseReforms
         return new(SocialWorld.Site(w,actor),NewGameWork.Balance(w,actor),SocialAssets.Inventory(w,actor),lots,shipments);
     }
 
+    public static long AccruedLevyRice(ContractWorld w,CourtEvent grant,long at,long revision)
+    {
+        if(grant.Input.Action!=CourtAction.GrantLevyShare)return 0;
+        var orders=w.Communities?.Orders??[];
+        return orders.Where(o=>o.Input.Site==grant.Place && o.Input.Action==EconomyAction.CollectLevy &&
+            o.Revision>grant.Revision && (o.At<at || o.At==at && o.Revision<revision) &&
+            w.LandRights.Any(r=>r.Kind=="control" && r.Target==grant.Place && r.Subject==grant.Input.Owner &&
+                r.From<=o.At && o.At<r.Until)).Sum(o=>checked(o.Input.Amount*grant.Input.Amount)/100);
+    }
+
+    public static long ReceivedLevyRice(ContractWorld w,EntityId grant,long at,long revision)=>
+        HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ReceiveLevyShare && e.Input.Reference==grant &&
+            (e.At<at || e.At==at && e.Revision<revision)).Sum(e=>e.Input.Amount);
+
     public static bool AnswerKnown(ContractWorld w,CourtEvent proposal,EntityId viewer)=>
         MessageFlow.Knows(w.Messaging,Letter(proposal.Input,Answer),viewer.Value);
 

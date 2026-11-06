@@ -125,6 +125,17 @@ public partial class NewGameRuntime
      SeatButton(CourtAction.SettleSeat,"取引枠を認めて和解する");
     }
    }
+   foreach(var grant in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.GrantLevyShare && e.Place==site &&
+       (e.Input.Person==actor || e.Actor==actor))??[])
+   {
+    long earned=HouseReforms.AccruedLevyRice(w,grant,w.ElapsedSeconds,rev+1);
+    long received=HouseReforms.ReceivedLevyRice(w,grant.Input.Id,w.ElapsedSeconds,rev+1);
+    SocialText(box,$"徴収米の給付　{PersonName(grant.Input.Person)}　{grant.Input.Amount}%　受領 {received}kg ／ 未受領 {earned-received}kg");
+    if(actor==grant.Input.Person && earned>received){
+     var take=new SpinBox{MinValue=1,MaxValue=earned-received,Step=1,Value=earned-received,Suffix="kg"};box.AddChild(take);
+     Button("levy-receive-"+grant.Input.Id,"現地で米を受け取る",()=>Run(Command("receive/"+grant.Input.Id,CourtAction.ReceiveLevyShare,grant.Actor,(long)take.Value,grant.Input.Id)));
+    }
+   }
    var roads=HouseReforms.LocalRoads(w,site.Value);
    var roadChoice=new OptionButton();
    if(head && roads.Length>0){
@@ -137,6 +148,9 @@ public partial class NewGameRuntime
    }
    if(head&&roster.Length>0){
     var persons=new OptionButton();foreach(var person in roster)persons.AddItem(PersonName(person));box.AddChild(persons);
+    var share=new SpinBox{MinValue=1,MaxValue=100,Step=1,Value=10,Suffix="%"};
+    box.AddChild(share);
+    Button("grant-levy-share","この家臣に現地の徴収米の取り分を定める",()=>Run(Command("levy-share",CourtAction.GrantLevyShare,roster[persons.Selected],(long)share.Value)));
     var kinds=Enum.GetValues<ReformKind>();var reform=new OptionButton();foreach(var k in kinds)reform.AddItem(HouseReforms.Name(k));box.AddChild(reform);
     var destinations=w.LandRights.Where(r=>r.Subject==house && r.Kind=="control" && r.Target!=site.Value && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until).Select(r=>r.Target).Distinct().ToArray();
     var estate=new OptionButton();foreach(var dest in destinations)estate.AddItem("新領："+NewGameWorld.SiteName(dest.Value));

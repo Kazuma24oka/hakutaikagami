@@ -4,6 +4,40 @@ namespace HakutaiKagami.Tests;
 
 public sealed class HouseConditionTests
 {
+    [Fact]
+    public void LocalRevenueEntitlementBeginsWithActualCollections()
+    {
+        var s=HouseholdCourtTests.Start();
+        var grant=new CourtInput(new("request:share-of-levy"),CourtAction.GrantLevyShare,HouseholdCourtTests.Retainer,
+            HouseholdCourtTests.Owner,HouseholdCourtTests.Site,Amount:25);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(grant,s.Revision).Code);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(grant with{Id=new("request:second-share")},s.Revision).Code);
+        long Accrued(WorldSession session){
+            var w=session.DiagnosticSnapshot();
+            return HouseReforms.AccruedLevyRice(w,w.Court!.Events.Single(e=>e.Input.Id==grant.Id),w.ElapsedSeconds,w.CommitSequence+1);
+        }
+        var start=DateOnly.Parse(s.DiagnosticSnapshot().EpochDate);
+        NewGameWorldTests.At(s,(new DateOnly(start.Year,10,1).DayNumber-start.DayNumber)*86400L);
+        Assert.Equal(0,Accrued(s));
+        var collect=new CommunityInput(new("request:actual-levy"),grant.Site,EconomyAction.CollectLevy,80);
+        Assert.Equal(ResultCode.Accepted,s.ManageCommunity(collect,s.PlayerControl,s.Revision).Code);
+        var restored=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+        Assert.Equal(20,Accrued(restored));
+        Assert.Equal(0,HouseSalary.PrivateRice(restored.DiagnosticSnapshot(),grant.Person));
+        var before=restored.DiagnosticSnapshot();
+        long Stock(ContractWorld world)=>world.Communities!.Accounts.Single(a=>a.Site==grant.Site).HouseRice;
+        var receipt=new CourtInput(new("request:collect-part"),CourtAction.ReceiveLevyShare,s.PlayerControl,
+            grant.Owner,grant.Site,Amount:12,Reference:grant.Id);
+        var after=restored.DiagnosticSnapshot();after.CommitSequence++;
+        HouseholdCourt.Execute(after,receipt,grant.Person);
+        var resumed=new WorldSession(ContractJson.Copy(after)).DiagnosticSnapshot();
+        Assert.Equal(Stock(before)-12,Stock(resumed));
+        Assert.Equal(12,HouseSalary.PrivateRice(resumed,grant.Person));
+        Assert.Equal(12,HouseReforms.ReceivedLevyRice(resumed,grant.Id,resumed.ElapsedSeconds,resumed.CommitSequence+1));
+        resumed.CommitSequence++;
+        Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(resumed,receipt with{Id=new("request:overdraw"),Amount=9},grant.Person));
+    }
+
     [Theory]
     [InlineData(CourtAction.AssentReform)]
     [InlineData(CourtAction.CounterReform)]

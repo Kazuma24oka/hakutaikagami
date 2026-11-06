@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -187,6 +187,28 @@ public static class HouseholdCourt
        (e.Input.Action is CourtAction.IssueTransfer or CourtAction.DeferReform)),"この原本は決裁済みです");
   return proposal;
  }
+ static void CheckLevyReceipt(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long revision)
+ {
+  var grant=Source(w,i.Reference,CourtAction.GrantLevyShare);
+  Need(grant.Revision<revision && grant.Input.Person==actor && grant.Input.Site==place && i.Site==place &&
+      i.Person==grant.Actor && i.Owner==grant.Input.Owner && i.Amount>0 &&
+      TransportWork.At(w,actor,place,at,revision,true) && TransportWork.At(w,grant.Actor,place,at,revision,true) &&
+      HeadAuthority(w,grant.Actor,i.Owner,place,at,revision),"給付を決めた当主と受給者が原本の土地で受け渡してください");
+  var outstanding=HouseReforms.AccruedLevyRice(w,grant,at,revision)-HouseReforms.ReceivedLevyRice(w,grant.Input.Id,at,revision);
+  Need(i.Amount<=outstanding && i.Amount<=CommunityEconomy.AccountAt(w,place,at,revision).HouseRice-HouseSalary.Reserved(w,place,at,revision),
+      "発生済みの未受領額と蔵の自由米を超えて受領できません");
+ }
+ static void CheckLevyShare(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
+ {
+  Need(input.Amount is >=1 and <=100 && input.Site==place && actor!=input.Person &&
+      HeadAuthority(w,actor,input.Owner,place,at,revision) && Member(w,input.Person,input.Owner,at,revision) &&
+      TransportWork.At(w,input.Person,place,at,revision,true) && CommunityEconomy.SitesFor(w).Contains(place),
+      "当主と家臣が現地で、実際の徴収米のうち受け取る割合（1〜100%）を定めてください");
+  var grants=Events(w).Where(e=>Before(e,at,revision) && e.Input.Action==CourtAction.GrantLevyShare &&
+      e.Input.Owner==input.Owner && e.Input.Site==place).ToArray();
+  Need(!grants.Any(e=>e.Input.Person==input.Person) && grants.Sum(e=>e.Input.Amount)+input.Amount<=100,
+      "この土地では同じ人への重複給付、または徴収額を超える割当になります");
+ }
  static void CheckEstateTerms(ContractWorld w,CourtInput i,EntityId actor,long at,long revision)
  {
   Need(i.NewEstate is {} destination && destination!=i.Site &&
@@ -251,6 +273,8 @@ public static class HouseholdCourt
    Need(!w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(proposal.Input,HouseReforms.Answer)),"返書は発送済みです");
    HouseReforms.Reply(w,proposal,HouseReforms.ReplyText(i.Action));
   }
+  else if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.GrantLevyShare)CheckLevyShare(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.EstablishBarrier)CheckBarrier(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.GrantTempleSeat)CheckTempleSeat(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.AbolishBarrier)CheckReformDecision(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -270,7 +294,7 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);Need(leader&&proposal.Input.Owner==i.Owner&&proposal.Input.Site==i.Site&&Received(w,proposal.Input.Id,actor)&&place==i.Site,"届いて確認した自分の管轄の上申だけを審査してください");Need(!Events(w).Any(e=>e.Input.Reference==proposal.Input.Id&&e.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase),"この案件は審査済みです");Need(Events(w).Any(e=>e.Actor==actor&&e.Input.Action==CourtAction.HoldCouncil&&e.Input.Owner==i.Owner&&e.Place==place&&w.ElapsedSeconds<=e.At+3600),"現地で評定を開いてから案件を裁いてください");}
   else if(i.Action==CourtAction.DeliverDocument){Need(i.Reference!=null,"引き渡す文書を選んでください");Deliver(w,Document(w,i.Reference.Value),actor,i.Carrier);Add(w,i,actor,place.Value);return;}
   else throw new InvalidDataException("未対応の家中の用件です");
-  Add(w,i,actor,place.Value,bound);if(i.Action==CourtAction.ConsultReform)HouseReforms.Send(w,i,actor);if(i.Action==CourtAction.DeclareScale)HouseScaleNotices.Dispatch(w,i,actor);Sync(w);NewGameWork.Sync(w);
+  Add(w,i,actor,place.Value,bound);if(i.Action==CourtAction.ReceiveLevyShare)CommunityEconomy.Tick(w);if(i.Action==CourtAction.ConsultReform)HouseReforms.Send(w,i,actor);if(i.Action==CourtAction.DeclareScale)HouseScaleNotices.Dispatch(w,i,actor);Sync(w);NewGameWork.Sync(w);
   if(i.Action is CourtAction.RecruitOffer or CourtAction.Nominate or CourtAction.RevokeOffice or CourtAction.SubmitCase)Deliver(w,Document(w,i.Id),actor,i.Carrier);
   if(i.Action==CourtAction.ApproveCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);var q=proposal.Input;if(q.Case==CourtCaseKind.RelieveVillage)CommunityEconomy.ApplyFor(w,new(Id("effect",i.Id.Value),q.Site,EconomyAction.RelieveVillage,q.Amount),actor);else RegionalDomains.Apply(w,new(Id("effect",i.Id.Value),q.Case==CourtCaseKind.SetBudget?TreasuryAction.SetBudget:TreasuryAction.Buy,q.Site,q.Case==CourtCaseKind.BuyWood?"wood":q.Case==CourtCaseKind.BuyWeapons?"weapons":null,q.Case==CourtCaseKind.SetBudget?0:q.Amount,q.Case==CourtCaseKind.SetBudget?q.Amount:0),actor);}
   if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase)Deliver(w,Document(w,i.Id),actor,i.Carrier);
@@ -338,6 +362,8 @@ public static class HouseholdCourt
        i.Id==Id("foreign-letter-breach",m.Id)) && i.Site==e.Place &&
        HouseReforms.LetterLawAt(w,i.Owner,i.Site,e.At,e.Revision),"条文に対応する私信の発送原本がありません");
    }
+   if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.GrantLevyShare)CheckLevyShare(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.EstablishBarrier || i.Action==CourtAction.ConsultReform && i.Reform==ReformKind.RemoveBarrier)CheckBarrier(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.GrantTempleSeat)CheckTempleSeat(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.AbolishBarrier)CheckReformDecision(w,i,e.Actor,e.Place,e.At,e.Revision);
