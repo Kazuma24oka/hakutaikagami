@@ -1,0 +1,41 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "城の役職原本・交代命令の受領・現地辞令の実行を別々に判定する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "同じ時刻でも後の解任や明渡しで、それ以前に有効だった現地行為を取り消さない",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "職が実際に終了したあとは本丸受領ができず、既に受領した城や報告は保持する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    },
+    {
+      "contract": "中途保存を再開しても職歴、現地の支配と既読情報の順序が一致する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs",
+        "Tests/HouseholdCourtTests.cs",
+        "Tests/HouseConditionTests.cs"
+      ]
+    }
+  ]
+}

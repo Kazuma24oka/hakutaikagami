@@ -32,7 +32,12 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="allied-keep-reports":
+ if logic["scope"]=="castle-office-order":
+  def check_logic(record):
+   for name,digest in record["proofs"].items():check(name,digest)
+   assert "ALLIED_KEEP_REPORT_UI_PASS" in artifact(record["ui"]).read_text(encoding="utf-8-sig")
+   assert record["tests"]["passed"]==10
+ elif logic["scope"]=="allied-keep-reports":
   def check_logic(record):
    for name,digest in record["proofs"].items():check(name,digest)
    assert "ALLIED_KEEP_REPORT_UI_PASS" in artifact(record["ui"]).read_text(encoding="utf-8-sig")

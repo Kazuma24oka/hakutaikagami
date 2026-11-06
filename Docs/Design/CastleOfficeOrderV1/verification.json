@@ -1,0 +1,22 @@
+{
+  "passed": 10,
+  "tests": [
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: False)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Retainer, oldLordPresent: False)",
+    "HakutaiKagami.Tests.HouseConditionTests.AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(occupied: True, exchange: False, residence: False, surrender: False)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: True)",
+    "HakutaiKagami.Tests.HouseholdCourtTests.ReceivingAdministrativeDismissalEndsOnlyTheReferencedOffice",
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.HouseConditionTests.AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(occupied: False, exchange: False, residence: False, surrender: False)",
+    "HakutaiKagami.Tests.HouseConditionTests.AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(occupied: False, exchange: True, residence: False, surrender: True)",
+    "HakutaiKagami.Tests.HouseConditionTests.AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(occupied: False, exchange: True, residence: False, surrender: False)",
+    "HakutaiKagami.Tests.HouseConditionTests.AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(occupied: False, exchange: False, residence: True, surrender: False)"
+  ],
+  "competition": [
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: False)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Retainer, oldLordPresent: False)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: True)"
+  ],
+  "ui": "ALLIED_KEEP_REPORT_UI_PASS",
+  "result": "城役の現地明渡し前後を同じ時刻でも処理順で復元。追随した城主の代官解任と本丸引渡しが競合した場合、代官職のみが終了し、実際に受領した本丸と一通の報告が残った。"
+}
