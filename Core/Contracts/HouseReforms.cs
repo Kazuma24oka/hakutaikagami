@@ -66,6 +66,9 @@ public static class HouseReforms
 
     public static bool LetterLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         LawAt(w,CourtAction.EnactLetterLaw,owner,site,at,revision);
+    public static CourtEvent? CastleReduction(ContractWorld w,EntityId site,long at,long revision)=>
+        HouseholdCourt.Events(w).FirstOrDefault(e=>e.Input.Action==CourtAction.ReduceCastle && e.Place==site &&
+            (e.At<at || e.At==at && e.Revision<revision));
     public static bool SuccessionLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         LawAt(w,CourtAction.EnactSuccessionLaw,owner,site,at,revision);
     public static bool MarriageLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>

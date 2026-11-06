@@ -179,6 +179,8 @@ public partial class NewGameRuntime
       SocialText(box,"承諾済みの条件で移封の命令書を発送済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.AbolishBarrier&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この道路の関所を撤廃済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.ReduceCastle&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"城割り済み。外堀と城門の防備を縮小しました");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactSuccessionLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"後継の既定順位を制定済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactMarriageLaw&&d.Input.Reference==e.Input.Id))
@@ -194,6 +196,8 @@ public partial class NewGameRuntime
        Button("transfer-"+e.Input.Id,"承諾された条件で移封を発令する",()=>Run(Command("issue-transfer/"+e.Input.Id,CourtAction.IssueTransfer,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.RemoveBarrier && e.Input.BarrierEdge is {} edge && HouseReforms.BarrierAt(w,edge,w.ElapsedSeconds,rev+1)!=null)
        Button("remove-barrier-"+e.Input.Id,"相談した道路の関所を撤廃する",()=>Run(Command("remove-barrier/"+e.Input.Id,CourtAction.AbolishBarrier,e.Input.Person,reference:e.Input.Id) with{BarrierEdge=edge}));
+      if(e.Input.Reform==ReformKind.ReduceCastles && CastleWorks.Enabled(w) && MaterialMarkets.Sites(w).Contains(e.Input.Site) && HouseReforms.CastleReduction(w,e.Input.Site,w.ElapsedSeconds,rev+1)==null)
+       Button("reduce-castle-"+e.Input.Id,"城割りを実施し、外堀と城門を縮小する",()=>Run(Command("reduce-castle/"+e.Input.Id,CourtAction.ReduceCastle,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.SuccessionOrder && !HouseReforms.SuccessionLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
        Button("succession-law-"+e.Input.Id,"後継の既定順位を制定する",()=>Run(Command("succession-law/"+e.Input.Id,CourtAction.EnactSuccessionLaw,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.MarriagePermission && !HouseReforms.MarriageLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
