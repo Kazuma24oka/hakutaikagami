@@ -89,6 +89,10 @@ public sealed class AdultAdoptionTests
             Assert.Equal(ResultCode.Accepted,branch.Open(branch.PlayerControl,new(reply.Id),branch.Revision).Code);
         }
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+        var forged=s.DiagnosticSnapshot();
+        forged.Messaging.Messages=forged.Messaging.Messages.Select(m=>m.Kind==HeirPledges.ReplyKind
+            ?m with{CorrelationId=HeirPledges.Version(forged.HeirNominations!.Last())}:m).ToArray();
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forged));
     }
     [Fact]public void HouseApprovalCannotPrecedePersonalAnswer(){var s=Start(Yes.Value,lord:true);var root=Propose(s);var t=s.DiagnosticSnapshot().Adoption!.Entries.First().Terms!;Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.ApproveHouse,root,t.Houses[0].Owner).Code);}
     [Fact]public void RefusalIsStableAndCannotBeImplemented(){var s=Start(No.Value);var root=Propose(s);At(s,1);Assert.Contains(s.DiagnosticSnapshot().Adoption!.Entries,e=>e.Input.Action==AdoptionAction.PersonalNo);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Implement,root).Code);At(s,5);Assert.Single(s.DiagnosticSnapshot().Adoption!.Entries,e=>e.Input.Action==AdoptionAction.PersonalNo);}

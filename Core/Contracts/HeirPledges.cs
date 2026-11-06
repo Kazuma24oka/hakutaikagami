@@ -26,6 +26,24 @@ public static class HeirPledges
             signer.Id,name+"を後継とする指名への返答を求めます。",signer.Site,w.ElapsedSeconds));
     }
 
+    internal static void Validate(ContractWorld w)
+    {
+        foreach(var letter in w.Messaging.Messages.Where(m=>m.Kind is RequestKind or ReplyKind))
+        {
+            var paper=w.HeirNominations?.SingleOrDefault(p=>Version(p)==letter.CorrelationId);
+            if(paper==null || letter.CreatedAt<paper.At || !w.SealedMessages.Contains(new(letter.Id)))
+                throw new InvalidDataException("誓紙の指名原本・日付・封書が一致しません");
+            bool outbound=letter.Kind==RequestKind;
+            string signer=outbound?letter.RecipientId:letter.SenderId;
+            if(!Contacts(w,paper).Any(p=>p.Id==signer) ||
+                (outbound?letter.SenderId:letter.RecipientId)!=paper.Head.Value ||
+                letter.Id!=Id(letter.Kind,paper,signer))
+                throw new InvalidDataException("誓紙の宛先・作成者が指名原本と一致しません");
+            if(!outbound && MessageFlow.LearnedAt(w.Messaging,Id(RequestKind,paper,signer),signer)!=letter.CreatedAt)
+                throw new InvalidDataException("家臣が受け取った指名状に対応しない返答です");
+        }
+    }
+
     internal static void Receive(ContractWorld w)
     {
         if(w.HeirNominations==null)return;

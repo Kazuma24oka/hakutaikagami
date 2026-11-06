@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "出生・実施済み縁組に基づく候補と、その根拠が現在の家に対応する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HeirDesignation.cs",
+        "Core/Contracts/HeirPledges.cs",
+        "Tests/AdultAdoptionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/HeirPledgeCheck.cs",
+        "Docs/Design/HeirDesignationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "正当な当主が後継候補を指名・変更し、指名だけでは家督・軍・蔵は移らない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HeirDesignation.cs",
+        "Core/Contracts/HeirPledges.cs",
+        "Tests/AdultAdoptionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/HeirPledgeCheck.cs",
+        "Docs/Design/HeirDesignationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "誓紙に作成者・候補・指名の版を記録し、遠方の支持を未着の段階で明かさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HeirDesignation.cs",
+        "Core/Contracts/HeirPledges.cs",
+        "Tests/AdultAdoptionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/HeirPledgeCheck.cs",
+        "Docs/Design/HeirDesignationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "実施済み婚姻から両家の縁戚を確認でき、援軍や財産の供与は別の合意を要する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HeirDesignation.cs",
+        "Core/Contracts/HeirPledges.cs",
+        "Tests/AdultAdoptionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/HeirPledgeCheck.cs",
+        "Docs/Design/HeirDesignationV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面から指名・支持を確認し、途中保存復旧と代表旧保存を検査する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HeirDesignation.cs",
+        "Core/Contracts/HeirPledges.cs",
+        "Tests/AdultAdoptionTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseSuccession.cs",
+        "Game/Scripts/HeirPledgeCheck.cs",
+        "Docs/Design/HeirDesignationV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "候補は直接の実子・実施済みの養子。誓紙は当該の指名への個人の返答。後見・争いによる実効支配は次工程。全国長期試遊、全件検査、ユーザーの外観評価は未実施。"
+}

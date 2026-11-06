@@ -40,6 +40,7 @@ public static class HeirDesignation
 
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
+        HeirPledges.Validate(w);
         var papers=w.HeirNominations??[];
         var existing=prior?.HeirNominations??[];
         if(!papers.Take(existing.Length).SequenceEqual(existing))throw new InvalidDataException("既存の後継指名状が変更されています");
