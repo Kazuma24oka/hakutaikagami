@@ -27,7 +27,7 @@ public static class FamilyNotice
     static IEnumerable<MessageEnvelope> Letters(ContractWorld w,NaturalDeath death)
     {
         if(SiteAtDeath(w,death) is not {} site)yield break;
-        var people=w.NewGame!.Start.People;
+        var people=FamilyBirth.People(w).Where(p=>!(w.Births??[]).Any(b=>b.Child.Value==p.Id && (b.At>death.At || b.At==death.At && b.Revision>death.Revision))).ToArray();
         var deceased=people.Single(p=>p.Id==death.Person.Value);
         var sender=people.Where(p=>Witness(w,death,new(p.Id),site)).OrderBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
         if(sender==null)yield break;
@@ -87,7 +87,7 @@ public static class FamilyNotice
             if(Assassination.DeadAt(w,parent,w.ElapsedSeconds,w.CommitSequence) ||
                 site is {} local && TransportWork.At(w,parent,local,w.ElapsedSeconds,w.CommitSequence,true))continue;
             string id=InformationSchemes.Id("coming-of-age",child.Id+"/"+parentId).Value;
-            var address=w.NewGame!.Start.People.Single(p=>p.Id==parentId).Site;
+            var address=FamilyBirth.People(w).Single(p=>p.Id==parentId).Site;
             var letter=new MessageEnvelope(id,child.Id,MaturityKind,child.Id,parentId,
                 child.Name+"より、元服のご報告を申し上げます。",address,w.ElapsedSeconds);
             MessageFlow.Send(w.Messaging,letter,w.ElapsedSeconds,1);
@@ -97,5 +97,5 @@ public static class FamilyNotice
     }
 
     internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind is Kind or MaturityKind
-        ? NewGameWorld.Node(w.NewGame!.Start.People.Single(p=>p.Id==message.RecipientId).Site) : null;
+        ? NewGameWorld.Node(FamilyBirth.People(w).Single(p=>p.Id==message.RecipientId).Site) : null;
 }

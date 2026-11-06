@@ -84,7 +84,7 @@ public static partial class NewGameWorld
         return new(1,"1560-01-01",people,castles,factions);
     }
     public static bool CanPlay(SetupScenario setup,SetupPerson p,int adultAge=TrialAdultAge)=>!p.Created||DateOnly.ParseExact(setup.EpochDate,"yyyy-MM-dd").Year-p.BirthYear>=adultAge;
-    public static string InitialNode(ContractWorld world,EntityId actor)=>Node(world.NewGame!.Start.People.Single(p=>p.Id==actor.Value).Site);
+    public static string InitialNode(ContractWorld world,EntityId actor)=>Node(FamilyBirth.People(world).Single(p=>p.Id==actor.Value).Site);
     public static OfficerAppearance Look(NewGameState state,string person)
     {
         var p=state.Registered.SingleOrDefault(p=>p.Id==person);
@@ -106,6 +106,13 @@ public static partial class NewGameWorld
         foreach(var c in data.Start.Castles.Where(c=>c.Faction!=null))lands.Add(Relation("land",ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Id)),new(c.Faction!),new(c.Id)));
         return(members.ToArray(),bonds.ToArray(),offices.ToArray(),lands.ToArray());
     }
+    internal static Grant[] BirthGrants(ContractWorld world,FamilyBirthRecord birth)
+    {
+        var data=world.NewGame!;
+        var single=data with{Start=data.Start with{People=[FamilyBirth.Person(world,birth)]}};
+        return Grants(single).Select(g=>g with{From=birth.At,Revision=birth.Revision}).ToArray();
+    }
+
     static Grant[] Grants(NewGameState state)=>state.PersonalAuthorityLayout==CompactPersonalAuthority?CompactPersonalGrants(state):state.Start.People.SelectMany(p=>
         new[]{new Grant(new("grant:new-game/move/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id))),new(p.Id),new(p.Id),ContractFixture.Castle,[ActionKind.Move],Basis,0,long.MaxValue,0,[],false,0)}
         .Concat(NationalRoutes.Sites.Select(s=>new Grant(new("grant:new-game/inspect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id+"/"+s.Id.Value))),new(p.Id),new(p.Id),s.Id,[ActionKind.Inspect],Basis,0,long.MaxValue,0,[],false,0)))).ToArray();
@@ -160,9 +167,9 @@ public static partial class NewGameWorld
         if(!Enabled(w)){Need(w.NewGame==null,"他の開始に新規ゲーム定義を混在できません");return;}
         Need(w.NewGame!=null,"開始定義がありません");var d=w.NewGame;var projection=VerifiedStart(d);
         Need(w.PlayerControl==d.Selected&&w.Seed==d.Seed&&w.Definitions.Version==projection.Version&&w.EpochDate==d.Start.EpochDate,"開始人物・Seed・定義が一致しません");
-        Need(ContractJson.CanonicalHash(w.Definitions.Characters)==projection.CharactersHash&&ContractJson.CanonicalHash(w.Definitions.Organizations)==projection.OrganizationsHash,"世界の人物・勢力が開始定義と一致しません");
+        Need(ContractJson.CanonicalHash(w.Definitions.Characters.Take(d.Start.People.Length).ToArray())==projection.CharactersHash && w.Definitions.Characters.Skip(d.Start.People.Length).Select(e=>e.Id).SequenceEqual((w.Births??[]).Select(b=>b.Child))&&ContractJson.CanonicalHash(w.Definitions.Organizations)==projection.OrganizationsHash,"世界の人物・勢力が開始定義と一致しません");
         Need(w.Definitions.Armies.Length==0,"開始定義へ軍務の動的名簿を混在させることはできません");
-        var rel=projection.Relations;Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&ContractJson.CanonicalHash(w.Offices)==ContractJson.CanonicalHash(HouseholdCourt.Offices(w,HouseSuccession.Offices(w,rel.Offices)))&&ContractJson.CanonicalHash(w.LandRights)==projection.LandsHash&&ContractJson.CanonicalHash(w.Grants)==projection.GrantsHash&&(w.NewMilitary!=null||w.Units.All(u=>NpcArmies.Armies(w).Any(a=>a.Id==u.Army))&&w.ResourceLots.All(l=>NewGameWork.IsWallet(w,l)||TransportWork.IsLot(l)||NpcArmies.IsLot(w,l))),"開始時の主従・土地・権限を無断変更できません");
+        var rel=projection.Relations;Need(Same(w.Memberships,NewGameService.Relations(w,rel.Members,"membership"))&&Same(w.ServiceBonds,NewGameService.Relations(w,rel.Bonds,"service"))&&ContractJson.CanonicalHash(w.Offices)==ContractJson.CanonicalHash(HouseholdCourt.Offices(w,HouseSuccession.Offices(w,rel.Offices)))&&ContractJson.CanonicalHash(w.LandRights)==projection.LandsHash&&ContractJson.CanonicalHash(w.Grants.Where(g=>!(w.Births??[]).Any(b=>b.Child==g.Agent)).ToArray())==projection.GrantsHash && ContractJson.CanonicalHash(w.Grants.Where(g=>(w.Births??[]).Any(b=>b.Child==g.Agent)).ToArray())==ContractJson.CanonicalHash((w.Births??[]).SelectMany(b=>BirthGrants(w,b)).ToArray())&&(w.NewMilitary!=null||w.Units.All(u=>NpcArmies.Armies(w).Any(a=>a.Id==u.Army))&&w.ResourceLots.All(l=>NewGameWork.IsWallet(w,l)||TransportWork.IsLot(l)||NpcArmies.IsLot(w,l))),"開始時の主従・土地・権限を無断変更できません");
         foreach(var p in d.Start.People){var c=w.Characters.Single(x=>x.Id.Value==p.Id);Need(c.AppearanceId==projection.People[p.Id].Appearance&&c.Life==(Assassination.DeadAt(w,c.Id,w.ElapsedSeconds,w.CommitSequence)?LifeState.Dead:FamilyKin.LifeAt(d,p,w.ElapsedSeconds)),"人物の外見・成人資格が一致しません");if(!(c.Id==w.PlayerControl&&NewGameMilitary.Deployed(w))&&!w.Branches!.Journeys.Any(j=>j.Actor==c.Id)&&!FieldConvoy.Controls(w,c.Id,w.ElapsedSeconds)&&!HostageCustody.HasReturnHistory(w,c.Id))Need(w.Locations.Single(l=>l.Actor==c.Id).Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
         foreach(var r in w.Requests)ValidateOrderAt(w,r.Intent,r.CreatedAt);
     }

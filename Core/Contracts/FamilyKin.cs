@@ -14,7 +14,7 @@ public static class FamilyKin
         if(world.NewGame is not {AdultAge:ComingOfAge} data)return null;
         var epoch=DateOnly.ParseExact(data.Start.EpochDate,"yyyy-MM-dd");
         var minors=world.Characters.Where(c=>c.Life==LifeState.Minor).Select(c=>c.Id.Value).ToHashSet();
-        return data.Start.People.Where(p=>minors.Contains(p.Id) && p.BirthYear is >=1 and <=9984)
+        return FamilyBirth.People(world).Where(p=>minors.Contains(p.Id) && p.BirthYear is >=1 and <=9984)
             .Select(p=>(long)(new DateOnly(p.BirthYear!.Value+ComingOfAge,1,1).DayNumber-epoch.DayNumber)*86400)
             .Where(t=>world.ElapsedSeconds<t && t<=target).Select(t=>(long?)t).Min();
     }
@@ -23,7 +23,7 @@ public static class FamilyKin
         if(world.NewGame is not {AdultAge:ComingOfAge} data || world.ElapsedSeconds%86400!=0)return;
         var date=WorldCalendar.At(data.Start.EpochDate,world.ElapsedSeconds);
         if(date.Month!=1 || date.Day!=1)return;
-        var mature=data.Start.People.Where(p=>p.BirthYear==date.Year-ComingOfAge &&
+        var mature=FamilyBirth.People(world).Where(p=>p.BirthYear==date.Year-ComingOfAge &&
             world.Characters.Any(c=>c.Id.Value==p.Id && c.Life==LifeState.Minor)).ToArray();
         if(mature.Length==0)return;
         var ids=mature.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);

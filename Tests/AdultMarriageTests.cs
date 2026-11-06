@@ -35,9 +35,23 @@ public sealed class AdultMarriageTests
             var child=Assert.Single(end.Births!);
             Assert.Equal(original,child.Marriage);Assert.Equal(Player,child.FirstParent);Assert.Equal(Other,child.SecondParent);
             Assert.Equal(due,child.At);
+            Assert.Equal(LifeState.Minor,end.Characters.Single(c=>c.Id==child.Child).Life);
+            Assert.Equal(child.Site,end.Locations.Single(l=>l.Actor==child.Child).Site);
             Assert.Equal(ContractJson.Write(end),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(end))).DiagnosticSnapshot()));
         }
         Assert.Equal(ContractJson.Write(left.DiagnosticSnapshot()),ContractJson.Write(right.DiagnosticSnapshot()));
+        var grown=left.DiagnosticSnapshot();
+        var birth=Assert.Single(grown.Births!);
+        var birthYear=WorldCalendar.At(grown.EpochDate,birth.At).Year;
+        long adultAt=(long)(new DateOnly(birthYear+15,1,1).DayNumber-DateOnly.ParseExact(grown.EpochDate,"yyyy-MM-dd").DayNumber)*86400;
+        grown.ElapsedSeconds=adultAt-1;
+        var birthday=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(grown)));
+        At(birthday,adultAt);
+        var mature=birthday.DiagnosticSnapshot();
+        Assert.Equal(LifeState.Adult,mature.Characters.Single(c=>c.Id==birth.Child).Life);
+        Assert.DoesNotContain(mature.ServiceBonds,b=>b.Subject==birth.Child);
+        Assert.Contains(mature.Grants,g=>g.Agent==birth.Child && g.Actions.Contains(ActionKind.Move));
+        Assert.Equal(ContractJson.Write(mature),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(mature))).DiagnosticSnapshot()));
     }
     [Fact]public void UnknownAuthoringStatusIsNotAssumedUnmarried(){var s=Start(declared:false);Assert.DoesNotContain(Other,AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose).Code);}
     [Fact]public void HistoricalSpouseDataIsNotInvented(){var s=Start();Assert.DoesNotContain(new EntityId("person:nobunaga"),AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose,other:new("person:nobunaga")).Code);}

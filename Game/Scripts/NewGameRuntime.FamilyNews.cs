@@ -33,7 +33,7 @@ public partial class NewGameRuntime
             SocialText(panel,$"{date.Year}年{date.Month}月{date.Day}日、{NewGameWorld.SiteName(birth.Site.Value)}で子が生まれました。");
             visible=true;
         }
-        foreach(var person in w.NewGame!.Start.People)
+        foreach(var person in FamilyBirth.People(w))
         {
             if(FamilyNotice.WitnessedMaturity(w,person,actor))
             {SocialText(panel,person.Name+"の元服に立ち会いました。");visible=true;}
@@ -42,7 +42,7 @@ public partial class NewGameRuntime
         {
             if(!FamilyNotice.Knows(w,death,actor) ||
                 letters.Any(m=>m.Kind==FamilyNotice.Kind && m.CorrelationId==death.Person.Value && MessageFlow.Knows(w.Messaging,m.Id,actor.Value)))continue;
-            SocialText(panel,w.NewGame.Start.People.Single(p=>p.Id==death.Person.Value).Name+"殿のご逝去を見届けました。");visible=true;
+            SocialText(panel,FamilyBirth.People(w).Single(p=>p.Id==death.Person.Value).Name+"殿のご逝去を見届けました。");visible=true;
         }
         if(!visible)SocialText(panel,"新しい知らせはありません。");
     }

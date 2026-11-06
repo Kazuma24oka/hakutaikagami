@@ -45,9 +45,28 @@ public static class FamilyBirth
             if(site==null || SocialWorld.Site(w,terms.Second)!=site)continue;
             var child=ChildId(terms.Id,at);
             if(w.Births?.Any(b=>b.Child==child)==true)continue;
-            w.Births=[..w.Births??[],new(child,terms.First,terms.Second,terms.Id,site.Value,at,w.CommitSequence)];
+            var birth=new FamilyBirthRecord(child,terms.First,terms.Second,terms.Id,site.Value,at,w.CommitSequence);
+            w.Births=[..w.Births??[],birth];
+            w.Grants=[..w.Grants,..NewGameWorld.BirthGrants(w,birth)];
+            w.Characters=[..w.Characters,new(child,LifeState.Minor,Appearance(w,birth),w.CommitSequence)];
+            w.Locations=[..w.Locations,new(child,LocationKind.AtSite,site,null,0,0,null,null,null,null,w.CommitSequence)];
+            w.Definitions=w.Definitions with{Characters=[..w.Definitions.Characters,new(child,Person(w,birth).Name)]};
         }
     }
+
+    public static SetupPerson Person(ContractWorld world,FamilyBirthRecord birth)
+    {
+        var index=Array.FindIndex(world.Births!,b=>b.Child==birth.Child);
+        return new(birth.Child.Value,"若君"+(index+1),birth.Site.Value,null,null,true,false,
+            WorldCalendar.At(world.EpochDate,birth.At).Year,new OfficerAttributes(50,50,50,50),StartTemplate.Ronin)
+            {BirthParents=[birth.FirstParent.Value,birth.SecondParent.Value]};
+    }
+
+    public static IEnumerable<SetupPerson> People(ContractWorld world)=>world.NewGame!.Start.People
+        .Concat((world.Births??[]).Select(b=>Person(world,b)));
+
+    static EntityId Appearance(ContractWorld w,FamilyBirthRecord birth)=>
+        new("appearance:"+ContractJson.Hash(ContractJson.Write(NewGameWorld.Look(w.NewGame!,birth.FirstParent.Value))));
 
     internal static void Validate(ContractWorld world,ContractWorld? prior)
     {
@@ -57,6 +76,12 @@ public static class FamilyBirth
         if(births.Select(b=>b.Child).Distinct().Count()!=births.Length)throw new InvalidDataException("出生記録が重複しています");
         foreach(var b in births)
         {
+            var state=world.Characters.SingleOrDefault(c=>c.Id==b.Child);
+            if(state==null || state.AppearanceId!=Appearance(world,b) ||
+                state.Life!=(Assassination.DeadAt(world,b.Child,world.ElapsedSeconds,world.CommitSequence)?LifeState.Dead:
+                    FamilyKin.LifeAt(world.NewGame!,Person(world,b),world.ElapsedSeconds)) ||
+                !world.Definitions.Characters.Contains(new DefinitionEntry(b.Child,Person(world,b).Name)))
+                throw new InvalidDataException("出生児の人物名簿・外見・成長が原本と一致しません");
             if(b.At<=0 || b.At>world.ElapsedSeconds || b.Revision<=0 || b.Revision>world.CommitSequence ||
                 b.Child!=ChildId(b.Marriage,b.At) ||
                 !Candidates(world,b.At-1,b.At).Any(c=>c.Terms.Id==b.Marriage && c.Terms.First==b.FirstParent && c.Terms.Second==b.SecondParent) ||
