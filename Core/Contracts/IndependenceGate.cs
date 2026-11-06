@@ -49,7 +49,7 @@ public static class IndependenceGate
         if(d==null || i.Site!=d.Site || site!=d.Site || i.Owner!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,d.At,d.Revision))
             throw new InvalidDataException("旧主家の守備が残った独立原本を指定してください");
         bool alliedCastellan=HouseholdCourt.Events(w).Any(e=>e.Input.Id==d.Pact && e.Input.Action==CourtAction.JoinDeclaredHouse);
-        if(alliedCastellan && (!JointIndependence.CommandedCastle(w,d.Founder,d.Site,at,rev) ||
+        if(alliedCastellan && (CastleAdministration.Owner(w,d.Site,at,rev)!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,at,rev) ||
             DefectionPacts.HouseAt(w,d.Founder,at,rev-1)!=d.House))
             throw new InvalidDataException("引渡しの時点で城を預かる追随城主の立会いが必要です");
         var oldLord=HouseSuccession.Head(w,d.FormerHouse,at,rev-1);
@@ -70,6 +70,13 @@ public static class IndependenceGate
     }
     internal static IEnumerable<(CourtInput Input,EntityId Actor)> NpcAnswers(ContractWorld w)
     {
+        foreach(var joined in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.JoinDeclaredHouse && e.Actor!=w.PlayerControl).ToArray()){
+            var last=HouseholdCourt.Events(w).LastOrDefault(e=>Handles(e.Input.Action) && e.Input.Reference==joined.Input.Id);
+            if(w.ElapsedSeconds<=(last?.At??joined.At))continue;
+            var next=Available(w,joined.Actor).FirstOrDefault(i=>i.Reference==joined.Input.Id &&
+                i.Action is CourtAction.RequestIndependentGate or CourtAction.ReceiveIndependentGate or CourtAction.ReceiveIndependentKeep);
+            if(next!=null)yield return(next,joined.Actor);
+        }
         foreach(var request in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.RequestIndependentGate)){
             var lord=request.Input.Person;
             if(lord==w.PlayerControl || HouseholdCourt.Events(w).Any(e=>e.Input.Reference==request.Input.Reference && e.Revision>request.Revision && Handles(e.Input.Action)))continue;
