@@ -60,6 +60,42 @@ public static class FamilyNotice
         RegionalCampaign.Bind(w);
     }
 
-    internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind==Kind
+    public const string MaturityKind="family-coming-of-age";
+    public static bool WitnessedMaturity(ContractWorld w,SetupPerson person,EntityId observer)
+    {
+        if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data || person.BirthYear is not int born ||
+            born>9984 || NewGameWorld.CanPlay(data.Start,person,data.AdultAge))return false;
+        long at=(long)(new DateOnly(born+FamilyKin.ComingOfAge,1,1).DayNumber-
+            DateOnly.ParseExact(data.Start.EpochDate,"yyyy-MM-dd").DayNumber)*86400;
+        if(at<0 || at>w.ElapsedSeconds || Assassination.DeadAt(w,new(person.Id),at,0) ||
+           Assassination.DeadAt(w,observer,at,0))return false;
+        if(person.Id==observer.Value)return true;
+        var point=RegionalCampaign.ActorPointAt(w,new(person.Id),at);
+        var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
+        if(node==null)return false;
+        var site=RegionalCampaign.Site(node.Id);
+        return TransportWork.At(w,new(person.Id),site,at,0,true) && TransportWork.At(w,observer,site,at,0,true);
+    }
+
+    internal static void AnnounceMaturity(ContractWorld w,SetupPerson child)
+    {
+        var actor=new EntityId(child.Id);
+        var site=SocialWorld.Site(w,actor);
+        foreach(var parentId in child.BirthParents??[])
+        {
+            var parent=new EntityId(parentId);
+            if(Assassination.DeadAt(w,parent,w.ElapsedSeconds,w.CommitSequence) ||
+                site is {} local && TransportWork.At(w,parent,local,w.ElapsedSeconds,w.CommitSequence,true))continue;
+            string id=InformationSchemes.Id("coming-of-age",child.Id+"/"+parentId).Value;
+            var address=w.NewGame!.Start.People.Single(p=>p.Id==parentId).Site;
+            var letter=new MessageEnvelope(id,child.Id,MaturityKind,child.Id,parentId,
+                child.Name+"より、元服のご報告を申し上げます。",address,w.ElapsedSeconds);
+            MessageFlow.Send(w.Messaging,letter,w.ElapsedSeconds,1);
+            w.SealedMessages=[..w.SealedMessages,new(id)];
+        }
+        RegionalCampaign.Bind(w);
+    }
+
+    internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind is Kind or MaturityKind
         ? NewGameWorld.Node(w.NewGame!.Start.People.Single(p=>p.Id==message.RecipientId).Site) : null;
 }

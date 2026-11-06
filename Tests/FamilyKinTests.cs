@@ -3,6 +3,34 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public class FamilyKinTests
 {
+    [Fact] public void YoungOfficerWritesHomeOnComingOfAgeWithoutEnteringService()
+    {
+        var parent=NewGameWorldTests.Officer(site:"site:akutagawa");
+        var child=NewGameWorldTests.Officer("created:junior",site:"site:kyoto") with{BirthYear=1546,BirthParents=[parent.Id]};
+        var start=NewGameWorldTests.Setup([parent,child]);
+        var world=NewGameWorld.Create(start.World,start.Registered,parent.Id,comingOfAge:15);
+        const long newYear=366L*86400;
+        world.ElapsedSeconds=newYear-1;
+        var session=new WorldSession(world);
+        NewGameWorldTests.At(session,newYear);
+        world=session.DiagnosticSnapshot();
+        var letter=Assert.Single(world.Messaging.Messages,m=>m.Kind==FamilyNotice.MaturityKind);
+        var young=world.NewGame!.Start.People.Single(p=>p.Id==child.Id);
+        Assert.True(FamilyNotice.WitnessedMaturity(world,young,new(child.Id)));
+        Assert.False(FamilyNotice.WitnessedMaturity(world,young,new(parent.Id)));
+        Assert.Equal(child.Id,letter.SenderId);
+        Assert.Equal(parent.Id,letter.RecipientId);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(world)));
+        foreach(var branch in new[]{session,restored})
+        {
+            Assert.NotEqual(ResultCode.Accepted,branch.Open(branch.PlayerControl,new(letter.Id),branch.Revision).Code);
+            NewGameWorldTests.At(branch,world.Messaging.Attempts.Single(a=>a.MessageId==letter.Id).DueAt);
+            Assert.Equal(ResultCode.Accepted,branch.Open(branch.PlayerControl,new(letter.Id),branch.Revision).Code);
+            Assert.DoesNotContain(branch.DiagnosticSnapshot().ServiceBonds,b=>b.Subject.Value==child.Id);
+        }
+        Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
     [Fact] public void DistantChildLearnsFromWitnessLetterOnlyAfterDeliveryAndOpening()
     {
         var elder=NewGameWorldTests.Officer("created:elder",site:"site:kyoto") with{BirthYear=1430};

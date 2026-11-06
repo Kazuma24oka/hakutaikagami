@@ -23,9 +23,13 @@ public static class FamilyKin
         if(world.NewGame is not {AdultAge:ComingOfAge} data || world.ElapsedSeconds%86400!=0)return;
         var date=WorldCalendar.At(data.Start.EpochDate,world.ElapsedSeconds);
         if(date.Month!=1 || date.Day!=1)return;
-        world.Characters=world.Characters.Select(c=>c.Life==LifeState.Minor &&
-            LifeAt(data,data.Start.People.Single(p=>p.Id==c.Id.Value),world.ElapsedSeconds)==LifeState.Adult
+        var mature=data.Start.People.Where(p=>p.BirthYear==date.Year-ComingOfAge &&
+            world.Characters.Any(c=>c.Id.Value==p.Id && c.Life==LifeState.Minor)).ToArray();
+        if(mature.Length==0)return;
+        var ids=mature.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);
+        world.Characters=world.Characters.Select(c=>ids.Contains(c.Id.Value)
             ? c with{Life=LifeState.Adult,Revision=world.CommitSequence}:c).ToArray();
+        foreach(var person in mature)FamilyNotice.AnnounceMaturity(world,person);
     }
     internal static void Validate(SetupPerson[] people)
     {
