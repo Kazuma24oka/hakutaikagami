@@ -16,7 +16,7 @@ public static class PrivateStanddown
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>State(w).Orders.Any(o=>o.Input.Id==id);
     static StanddownOrder? Acceptance(ContractWorld w,EntityId quote,long at,long rev)=>State(w).Orders.SingleOrDefault(o=>o.Input.Action==StanddownAction.Accept&&o.Input.Quote==quote&&Before(o.At,o.Revision,at,rev));
     public static bool ShouldWait(ContractWorld w,EntityId person,long at,long revision)
-    {if(!Enabled(w))return false;return State(w).Quotes.Where(q=>q.Person==person).Any(q=>Acceptance(w,q.Id,at,revision+1) is {} o&&at<checked(o.At+q.Hours*3600L));}
+    {if(PactSignals.Withholds(w,person,at,revision))return true;if(!Enabled(w))return false;return State(w).Quotes.Where(q=>q.Person==person).Any(q=>Acceptance(w,q.Id,at,revision+1) is {} o&&at<checked(o.At+q.Hours*3600L));}
     static FactionStanceAuthority Authority(ContractWorld w,EntityId person,long at,long revision)
     {var f=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Head==person.Value);Need(person!=w.PlayerControl&&f!=null,"この条件は当主本人の次の軍引受だけを扱います");var a=FactionStances.ResolveAuthority(w,person,new(f.Id),at,revision);Need(a!=null,"本人に現地の当主権限がありません");return a;}
     static void Available(ContractWorld w,EntityId person,EntityId site,long at,long revision)
