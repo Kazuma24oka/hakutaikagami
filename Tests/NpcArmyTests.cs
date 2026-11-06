@@ -149,6 +149,20 @@ public sealed class NpcArmyTests
     {
         var s=AtActualContact();var w=s.DiagnosticSnapshot();var before=ContractJson.Write(w);var snapshot=WorldEngagement.Snapshot(w);var contact=WorldEngagement.Resolve(w);Assert.Equal(6,snapshot.Units.Length);Assert.NotEmpty(contact.Strikes);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.Mission);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.ImmediateDefense);Assert.NotEmpty(contact.Losses);Assert.All(snapshot.Units,u=>Assert.Contains(u.Unit,w.Units));Assert.DoesNotContain(snapshot.Units,u=>NewGameMilitary.ExerciseIds.Contains(u.Unit.Id));Assert.Equal(before,ContractJson.Write(w));
     }
+    [Fact]
+    public void InitiatingArmyIsKnownOnlyAtTheObservedClash()
+    {
+        var session=AtActualContact(sparse:true);
+        NewGameWorldTests.At(session,session.Seconds+1);
+        var world=session.DiagnosticSnapshot();
+        var step=world.WorldClashes!.Steps.Last();
+        Assert.Equal(world.ElapsedSeconds,step.At);
+        var visible=Assert.Single(NpcWarCouncil.WitnessedAttacks(world,session.PlayerControl));
+        Assert.Contains(step.Result.Strikes,s=>s.Basis==EngagementBasis.Mission && world.Units.Any(u=>u.Id==s.Attacker && u.Army==visible.Army));
+        var distant=world.NewGame!.Start.People.First(p=>p.Site=="site:kofu" && p.Id!=session.PlayerControl.Value);
+        Assert.Empty(NpcWarCouncil.WitnessedAttacks(world,new(distant.Id)));
+    }
+
     [Fact]public void DistantRealArmiesAndFriendlyTroopsDoNotProduceContactDamage()
     {
         var s=new WorldSession(Raised());Assert.Empty(WorldEngagement.Resolve(s.DiagnosticSnapshot()).Losses);
