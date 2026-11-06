@@ -63,6 +63,36 @@ public static class HouseRestoration
     public static long UnpaidSalary(SalaryTerm original, long at) =>
         checked(HouseSalary.Due(original, at) - original.Paid);
 
+    public static SalaryInput? SettlementForClaim(ContractWorld world, EntityId claimId)
+    {
+        var claim = HouseholdCourt.Events(world).SingleOrDefault(e => e.Input.Id == claimId &&
+            e.Input.Action == CourtAction.PresentRestorationArrears);
+        var term = world.Salary?.Terms.SingleOrDefault(t => t.Id == claim?.Input.Reference);
+        if (claim == null || term == null || term.Owner != claim.Input.Owner || term.Employee != claim.Actor ||
+            (world.PlayerControl != claim.Actor && world.PlayerControl != claim.Input.Person)) return null;
+        long at = world.ElapsedSeconds, revision = world.CommitSequence;
+        var payer = HouseSuccession.SettlementPrincipal(world, term.Id, term.Owner, term.Employer, at, revision);
+        if (payer != claim.Input.Person || FactionStances.ResolveAuthority(world, payer, term.Owner, at, revision) == null ||
+            !world.LandRights.Any(r => r.Subject == term.Owner && r.Target == term.Site && r.Kind == "control" &&
+                r.From <= at && at < r.Until) || SocialWorld.Site(world, payer) != term.Site ||
+            SocialWorld.Site(world, term.Employee) != term.Site) return null;
+        var entries = world.Salary!.Entries;
+        long paidSinceClaim = entries.Where(e => (e.At > claim.At || e.At == claim.At && e.Revision > claim.Revision) && e.Input.Contract == term.Id &&
+            e.Input.Action == SalaryAction.Receive).Sum(e => entries.Single(p => p.Input.Id == e.Input.Preparation).Input.Amount);
+        long outstanding = Math.Min(UnpaidSalary(term, at), claim.Input.Amount - paidSinceClaim);
+        if (outstanding <= 0) return null;
+        var prepared = HouseSalary.Prepared(world.Salary!.Entries, term.Id, at, revision + 1);
+        var other = term.Employer == world.PlayerControl ? term.Employee : term.Employer;
+        var id = HouseholdCourt.Id("request", $"settle/{claimId.Value}/{revision}");
+        if (prepared != null && prepared.Input.Amount > outstanding) return null;
+        if (prepared != null)
+            return new(id, SalaryAction.Receive, other, term.Site, term.Id, Preparation: prepared.Input.Id);
+        long available = CommunityEconomy.AccountAt(world, term.Site, at, revision + 1).HouseRice -
+            HouseSalary.Reserved(world, term.Site, at, revision + 1);
+        long amount = Math.Min(available, outstanding);
+        return amount > 0 ? new(id, SalaryAction.Prepare, other, term.Site, term.Id, amount) : null;
+    }
+
     internal static void CheckArrears(ContractWorld world, CourtInput input, EntityId creditor, EntityId place, long at, long revision)
     {
         var prior = HouseholdCourt.Events(world).Where(e => e.Revision < revision);

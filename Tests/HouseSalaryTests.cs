@@ -34,6 +34,31 @@ public sealed class HouseSalaryTests
         Assert.Equal(15, HouseRestoration.UnpaidSalary(Assert.Single(w.Salary!.Terms), w.ElapsedSeconds));
         w.CommitSequence++;
         Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, claim with { Id = new("request:repeat") }, Worker));
+        // 請求は別の原本。実支払は既存の給付セッションで行い、その受領記録を照合する。
+        // 単一世界と同じ時間順になるよう、請求提示の後に支払の時刻を置く。
+        Advance(session, session.Seconds + 1);
+        var prepareBalance = Assert.IsType<SalaryInput>(HouseRestoration.SettlementForClaim(w, claim.Id));
+        Assert.Equal(15, prepareBalance.Amount);
+        Assert.Equal(ResultCode.Accepted, session.ManageSalary(prepareBalance, Worker, session.Revision).Code);
+        void RefreshSalary()
+        {
+            var actual = session.DiagnosticSnapshot();
+            w.Salary = actual.Salary;
+            w.ElapsedSeconds = actual.ElapsedSeconds;
+            w.CommitSequence = Math.Max(w.CommitSequence + 1, actual.CommitSequence);
+        }
+        RefreshSalary();
+        var handover = Assert.IsType<SalaryInput>(HouseRestoration.SettlementForClaim(w, claim.Id));
+        Assert.Equal(SalaryAction.Receive, handover.Action);
+        Assert.Equal(ResultCode.Accepted, session.ManageSalary(handover, Worker, session.Revision).Code);
+        RefreshSalary();
+        Assert.Equal(20, HouseSalary.PrivateRice(w, Worker));
+        Assert.Null(HouseRestoration.SettlementForClaim(w, claim.Id));
+        Advance(session, term.DueAt[1]);
+        RefreshSalary();
+        Assert.True(HouseRestoration.UnpaidSalary(w.Salary!.Terms.Single(), w.ElapsedSeconds) > 0);
+        Assert.Null(HouseRestoration.SettlementForClaim(w, claim.Id));
+
     }
     static long First(WorldSession s)=>s.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[0];
     static EntityId Prepare(WorldSession s,EntityId term,long amount=20){var r=Act(s,SalaryAction.Prepare,term,amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return s.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id;}

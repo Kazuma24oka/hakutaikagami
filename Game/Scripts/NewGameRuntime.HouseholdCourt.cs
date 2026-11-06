@@ -35,7 +35,15 @@ public partial class NewGameRuntime
    }
    foreach(var ask in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && (e.Actor==actor || e.Input.Person==actor))){
     foreach(var claim in history.Where(e=>e.Input.Action==CourtAction.PresentRestorationArrears && e.Input.Person==ask.Actor && e.Actor==ask.Input.Person && e.Input.Owner==ask.Input.Owner))
+    {
      SocialText(box,$"{WorldCalendar.Display(w.EpochDate,claim.At)}に提示した未払い扶持：{claim.Input.Amount}kg（提示時点）");
+     if(HouseRestoration.SettlementForClaim(w,claim.Input.Id) is {} payment){
+      var title=payment.Action==SalaryAction.Prepare?$"蔵の米{payment.Amount}kgをこの扶持に引き当てる":"引き当てた扶持米を現地で受け渡す";
+      Button("settle/"+claim.Input.Id.Value,title,()=>{
+       var result=Session.ManageSalary(payment,actor,rev);message.Text=result.VisibleReason;Refresh();ShowHouseholdCourt();
+      });
+     }
+    }
     if(actor==ask.Input.Person && SocialWorld.Site(w,ask.Actor)==site){
      foreach(var term in (w.Salary?.Terms??[]).Where(t=>t.Employee==actor && t.Owner==ask.Input.Owner)){
       long owed=HouseRestoration.UnpaidSalary(term,w.ElapsedSeconds);
