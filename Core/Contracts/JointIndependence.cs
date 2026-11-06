@@ -78,6 +78,11 @@ public static class JointIndependence
             Transfer(d,d.Founder,d.Site,d.At,d.Revision);
             var receipt=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Action==CourtAction.ReceiveIndependentKeep && e.Input.Reference==d.Pact);
             if(receipt!=null)Transfer(d,d.Founder,d.Site,receipt.At,receipt.Revision,true);
+            foreach(var answer in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.JoinDeclaredHouse && e.Input.Owner==d.House)){
+                var handover=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Action==CourtAction.ReceiveIndependentKeep &&
+                    e.Input.Reference==answer.Input.Id);
+                if(handover!=null)Transfer(d,answer.Actor,answer.Place,handover.At,handover.Revision,true);
+            }
             foreach(var response in w.PactResponses??[])
             {
                 if(!response.Acted)continue;
