@@ -7,6 +7,156 @@ public sealed class HouseholdCourtTests
  internal static WorldSession Start(string player="person:nobunaga") {var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(Ronin.Value),NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:"person:nobunaga")]);return new(NewGameWorld.Create(setup.World,setup.Registered,player,42,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy));}
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
+ [Theory]
+ [InlineData(5,20,true)]
+ [InlineData(1,5,false)]
+ public void ReceivedMusterMovesTheRetainerToAnotherCastleBeforeAttendance(int days,int rice,bool contractsSurvive)
+ {
+     var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+     var member=NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:lord.Id);
+     var setup=NewGameWorldTests.Setup([lord,member],[new(lord.Id,"org:muster",[lord.Site,"site:kofu"],false)]);
+     var initial=NewGameWorld.Create(setup.World,setup.Registered,lord.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+         workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,economyPolicy:MilitaryEconomy.Policy);
+     var session=new WorldSession(initial);
+     void Pay(SalaryAction action,EntityId? contract=null,long amount=0,EntityId? prep=null)
+     {
+         Good(session.ManageSalary(new(new("request:march-pay/"+session.Revision),action,Retainer,Site,contract,amount,prep),session.PlayerControl,session.Revision));
+     }
+     Pay(SalaryAction.Propose,amount:20);
+     var quote=session.DiagnosticSnapshot().Salary!.Quotes.Single().Id;
+     Pay(SalaryAction.Confirm,quote);
+     NewGameWorldTests.At(session,session.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[0]);
+     Pay(SalaryAction.Prepare,quote,rice);
+     Pay(SalaryAction.Receive,quote,prep:session.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id);
+     var order=new CourtInput(new("request:assemble-kofu"),CourtAction.SendMusterNotice,Retainer,new("org:muster"),new("site:kofu"),Amount:6,When:session.Seconds+days*86400);
+     Good(session.ManageCourt(order,session.Revision));
+     NewGameWorldTests.At(session,session.Seconds+5);
+     var moving=session.DiagnosticSnapshot();
+     var trip=Assert.Single(moving.Requests,r=>r.Intent.RoutePolicy==MusterNotices.AssemblyRoute);
+     Assert.Equal(Retainer,trip.Intent.Actor);
+     Assert.Equal(order.Site,trip.Intent.DestinationSite);
+     Assert.Equal(0,PrivateRecruitment.Soldiers(moving,Retainer,Site,session.Seconds,session.Revision+1));
+     Assert.Equal(0,PrivateRecruitment.Soldiers(moving,Retainer,order.Site,session.Seconds,session.Revision+1));
+     var mustered=moving.Court!.Events.Where(e=>e.Input.Action==CourtAction.HireMarketSoldiers && e.Actor==Retainer).ToArray();
+     Assert.NotEmpty(mustered);
+     Assert.Equal((long)rice,mustered.Sum(e=>e.Input.Amount*((e.Input.When-e.At)/86400))+HouseSalary.PrivateRice(moving,Retainer));
+     session.SetPaused(true);
+     var directory=Directory.CreateTempSubdirectory("hakutai-accompany-");
+     try
+     {
+     var store=new GenerationSaveStore(directory.FullName,initial.Definitions);
+     Assert.True(store.Save(session,"on-road",initial.WorldId).Published);
+     var host=new WorldSessionHost(new WorldSession(initial));
+     Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("on-road"),host.Current,host.Current.Revision));
+     var restored=host.Current;
+     long end=Math.Max(order.When,trip.Intent.EffectiveAt+trip.Intent.DeliverySeconds+trip.Intent.WorkSeconds)+2;
+     foreach(var run in new[]{session,restored})
+     {
+         NewGameWorldTests.At(run,end);
+         var after=run.DiagnosticSnapshot();
+         var arrived=Assert.Single(after.Court!.Events,e=>e.Input.Action==CourtAction.AttendMuster);
+         Assert.Equal(contractsSurvive,arrived.Input.Amount>0);
+         var localHires=after.Court.Events.Where(e=>e.Input.Action==CourtAction.HireMarketSoldiers && e.Actor==Retainer && e.Place==order.Site && e.Input.When>arrived.At && e.Revision<arrived.Revision);
+         Assert.Equal(mustered.Where(e=>e.Input.When>arrived.At).Sum(e=>e.Input.Amount)+localHires.Sum(e=>e.Input.Amount),arrived.Input.Amount);
+         Assert.Equal(0,PrivateRecruitment.Soldiers(after,Retainer,Site,run.Seconds,run.Revision+1));
+         Assert.Equal(order.Site,arrived.Place);
+         Assert.Equal(order.Site,SocialWorld.Site(after,Retainer));
+         Assert.Equal(Site,SocialWorld.Site(after,run.PlayerControl));
+     }
+     Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+     }
+     finally {directory.Delete(true);}
+ }
+
+ [Fact]
+ public void DistantMusterPaperCreatesReservationOnlyAfterCourierArrives()
+ {
+     var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(Ronin.Value),
+         NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:"person:nobunaga")]);
+     var initial=NewGameWorld.Create(setup.World,setup.Registered,"person:nobunaga",42,
+         inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy);
+     var session=new WorldSession(initial);
+     Good(session.ManageCompanion(new(new("request:muster-carrier"),Ronin,CompanionAction.Agree,20),session.PlayerControl,session.Revision));
+     Good(session.ManageSocial(new(new("request:muster-at-home"),SocialWorldAction.Visit,Retainer),session.Revision));
+     Good(session.ManageCompanion(new(new("request:muster-depart"),Ronin,CompanionAction.TravelTogether,Destination:"fork"),session.PlayerControl,session.Revision));
+     NewGameWorldTests.At(session,2);
+     NewGameWorldTests.At(session,session.DiagnosticSnapshot().Branches!.Journeys.Max(j=>j.Legs[^1].EndAt)+2);
+     var order=Input(session,CourtAction.SendMusterNotice,Retainer,amount:3,when:session.Seconds+86400) with {Carrier=Ronin};
+     Good(session.ManageCourt(order,session.Revision));
+     var sent=session.DiagnosticSnapshot();
+     var dispatch=sent.SocialWorld!.Events.Single(e=>e.Input.Asset==order.Id);
+     var move=dispatch.GiftTerms!.Movement!;
+     Assert.Equal(Ronin,move.Actor);
+     Assert.Empty(MusterNotices.Reservations(sent,Retainer,session.Seconds,session.Revision+1));
+     session.SetPaused(true);
+     var dir=Directory.CreateTempSubdirectory("hakutai-muster-mail-");
+     try
+     {
+         var store=new GenerationSaveStore(dir.FullName,initial.Definitions);
+         Assert.True(store.Save(session,"road",initial.WorldId).Published);
+         var host=new WorldSessionHost(new WorldSession(initial));
+         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("road"),host.Current,host.Current.Revision));
+         foreach(var run in new[]{session,host.Current})
+         {
+             NewGameWorldTests.At(run,move.EffectiveAt+move.DeliverySeconds+move.WorkSeconds);
+             var arrived=run.DiagnosticSnapshot();
+             Assert.Equal(order.Id,Assert.Single(MusterNotices.Reservations(arrived,Retainer,run.Seconds,run.Revision+1)).Input.Id);
+             Assert.Equal(RegionalCampaign.Site("fork"),arrived.Locations.Single(l=>l.Actor==run.PlayerControl).Site);
+         }
+         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+     }
+     finally {dir.Delete(true);}
+ }
+
+ [Fact]
+ public void NpcAttendsAtOrderedTimeAcrossDiskSaveAndLongAdvance()
+ {
+     var session = Start();
+     var initial = session.DiagnosticSnapshot();
+     var order = Input(session,CourtAction.SendMusterNotice,Retainer,amount:5,when:120);
+     Good(session.ManageCourt(order,session.Revision));
+     Assert.Single(MusterNotices.Reservations(session.DiagnosticSnapshot(),Retainer,session.Seconds,session.Revision+1));
+     session.SetPaused(true);
+     var dir = Directory.CreateTempSubdirectory("hakutai-muster-");
+     try
+     {
+         var store = new GenerationSaveStore(dir.FullName,initial.Definitions);
+         Assert.True(store.Save(session,"before-muster",initial.WorldId).Published);
+         var host = new WorldSessionHost(new WorldSession(initial));
+         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("before-muster"),host.Current,host.Current.Revision));
+         foreach(var run in new[]{session,host.Current})
+         {
+             NewGameWorldTests.At(run,600);
+             var arrived = Assert.Single(run.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.AttendMuster);
+             Assert.Equal((120L,0L,Retainer),(arrived.At,arrived.Input.Amount,arrived.Actor));
+         }
+         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+     }
+     finally {dir.Delete(true);}
+ }
+
+ [Fact]
+ public void MusterReservationStartsAtHandoverAndRecordsActualAttendanceOnlyOnce()
+ {
+     var session = Start(Retainer.Value);
+     var order = Input(session, CourtAction.SendMusterNotice, Retainer, amount: 6, when: 120);
+     session = Npc(session, order, new("person:nobunaga"));
+     CourtEvent[] Reservations() => MusterNotices.Reservations(session.DiagnosticSnapshot(), Retainer, session.Seconds, session.Revision+1);
+     Assert.Empty(Reservations());
+     session = new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(session.DiagnosticSnapshot())));
+     Receive(session, order.Id);
+     Assert.Equal(order.Id, Assert.Single(Reservations()).Input.Id);
+     var attend = Input(session, CourtAction.AttendMuster, Retainer, reference:order.Id);
+     Assert.Equal(ResultCode.NotAvailable,session.ManageCourt(attend,session.Revision).Code);
+     NewGameWorldTests.At(session, 130);
+     Assert.Equal(ResultCode.NotAvailable,session.ManageCourt(attend with {Amount=6},session.Revision).Code);
+     Good(session.ManageCourt(attend,session.Revision));
+     Assert.Empty(Reservations());
+     Assert.Equal(ResultCode.AlreadyAccepted,session.ManageCourt(attend,session.Revision).Code);
+     var after = session.DiagnosticSnapshot();
+     Assert.Equal(ContractJson.Write(after),ContractJson.Write(new WorldSession(ContractJson.Copy(after)).DiagnosticSnapshot()));
+ }
+
  [Fact]public void RecruitmentMovesRealSigningMoneyAndOnlyAgreedMembershipAndBond(){var s=Start();var before=s.DiagnosticSnapshot();var i=Input(s,CourtAction.RecruitOffer,amount:20);Good(s.ManageCourt(i,s.Revision));var w=s.DiagnosticSnapshot();Assert.Equal(980,NewGameWork.Balance(w,s.PlayerControl));Assert.Equal(1020,NewGameWork.Balance(w,Ronin));Assert.Equal(0,HouseholdCourt.SigningEscrow(w));Assert.Contains(w.Memberships,m=>m.Subject==Ronin&&m.Target==Owner);Assert.Contains(w.ServiceBonds,b=>b.Subject==Ronin&&b.Target==s.PlayerControl);Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(w.Units));Assert.Equal(ResultCode.AlreadyAccepted,s.ManageCourt(i,s.Revision).Code);}
  [Fact]public void NonHeadCannotInventAnEmploymentOffer(){var s=Start(Ronin.Value);var raw=ContractJson.Write(s.DiagnosticSnapshot());Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(Input(s,CourtAction.RecruitOffer,Retainer,20),s.Revision).Code);Assert.Equal(raw,ContractJson.Write(s.DiagnosticSnapshot()));}
  [Fact]public void AStandingStewardStartsOnlyAfterTheActualDocumentAndConsent(){var s=Start();var before=s.DiagnosticSnapshot();var i=Input(s,CourtAction.Nominate,Retainer);Good(s.ManageCourt(i,s.Revision));var w=s.DiagnosticSnapshot();Assert.Contains(w.Offices,o=>o.Subject==Retainer&&o.Target==Site&&o.Kind=="house-steward"&&o.Until==long.MaxValue);Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));Assert.Equal(ContractJson.Write(before.Grants),ContractJson.Write(w.Grants));Assert.Equal(ContractJson.Write(w),ContractJson.Write(new WorldSession(ContractJson.Copy(w)).DiagnosticSnapshot()));}
