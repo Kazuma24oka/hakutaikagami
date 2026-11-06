@@ -27,6 +27,16 @@ public static class PrivateRecruitment
         Levies(w).Where(e => e.Place == site && e.Revision < rev).Sum(e =>
             checked(e.Input.Amount * Math.Max(0, Math.Min(until, e.Input.When) - Math.Max(from, e.At))));
 
+    public static bool CanLevy(ContractWorld w, EntityId actor, EntityId owner, EntityId place, long at, long rev)
+    {
+        if (DefectionPacts.HouseAt(w, actor, at, rev-1) != owner) return false;
+        return HouseSuccession.Head(w, owner, at, rev-1) == actor ||
+            w.Offices.Any(o => o.Kind == "castellan" && o.Subject == actor && o.Target == place &&
+                o.From <= at && at < o.Until && (o.From < at || o.Revision < rev)) ||
+            HouseReforms.LevyGrants(w).Any(g => g.Input.Person == actor && g.Input.Owner == owner &&
+                g.Place == place && g.Revision < rev && g.At <= at && HouseReforms.LevyEnd(w, g.Input.Id) >= rev);
+    }
+
     internal static long Food(ContractWorld w, EntityId person, long at, long rev) =>
         Contracts(w).Where(e => e.Actor == person && e.Revision <= rev && e.At <= at)
             .Sum(e => checked(e.Input.Amount * ((e.Input.When - e.At) / 86400)));
@@ -35,7 +45,7 @@ public static class PrivateRecruitment
     {
         if (!MilitaryEconomy.Enabled(w) || !CommunityEconomy.SitesFor(w).Contains(place) || input.Person != actor ||
             input.Site != place || !TransportWork.At(w, actor, place, at, rev, true) ||
-            input.Action == CourtAction.RaiseVillageSoldiers && DefectionPacts.HouseAt(w, actor, at, rev-1) != input.Owner ||
+            input.Action == CourtAction.RaiseVillageSoldiers && !CanLevy(w, actor, input.Owner, place, at, rev) ||
             !w.LandRights.Any(r => r.Kind == "control" && r.Subject == input.Owner && r.Target == place &&
                 r.From <= at && at < r.Until && (r.From < at || r.Revision < rev)))
             throw new InvalidDataException("所属する家が支配する現地で募兵してください");

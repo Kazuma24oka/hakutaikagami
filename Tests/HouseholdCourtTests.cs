@@ -7,6 +7,28 @@ public sealed class HouseholdCourtTests
  internal static WorldSession Start(string player="person:nobunaga") {var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(Ronin.Value),NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:"person:nobunaga")]);return new(NewGameWorld.Create(setup.World,setup.Registered,player,42,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy));}
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
+ [Fact]
+ public void MusterReservationStartsAtHandoverAndRecordsActualAttendanceOnlyOnce()
+ {
+     var session = Start(Retainer.Value);
+     var order = Input(session, CourtAction.SendMusterNotice, Retainer, amount: 6, when: 120);
+     session = Npc(session, order, new("person:nobunaga"));
+     CourtEvent[] Reservations() => MusterNotices.Reservations(session.DiagnosticSnapshot(), Retainer, session.Seconds, session.Revision+1);
+     Assert.Empty(Reservations());
+     session = new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(session.DiagnosticSnapshot())));
+     Receive(session, order.Id);
+     Assert.Equal(order.Id, Assert.Single(Reservations()).Input.Id);
+     var attend = Input(session, CourtAction.AttendMuster, Retainer, reference:order.Id);
+     Assert.Equal(ResultCode.NotAvailable,session.ManageCourt(attend,session.Revision).Code);
+     NewGameWorldTests.At(session, 130);
+     Assert.Equal(ResultCode.NotAvailable,session.ManageCourt(attend with {Amount=6},session.Revision).Code);
+     Good(session.ManageCourt(attend,session.Revision));
+     Assert.Empty(Reservations());
+     Assert.Equal(ResultCode.AlreadyAccepted,session.ManageCourt(attend,session.Revision).Code);
+     var after = session.DiagnosticSnapshot();
+     Assert.Equal(ContractJson.Write(after),ContractJson.Write(new WorldSession(ContractJson.Copy(after)).DiagnosticSnapshot()));
+ }
+
  [Fact]public void RecruitmentMovesRealSigningMoneyAndOnlyAgreedMembershipAndBond(){var s=Start();var before=s.DiagnosticSnapshot();var i=Input(s,CourtAction.RecruitOffer,amount:20);Good(s.ManageCourt(i,s.Revision));var w=s.DiagnosticSnapshot();Assert.Equal(980,NewGameWork.Balance(w,s.PlayerControl));Assert.Equal(1020,NewGameWork.Balance(w,Ronin));Assert.Equal(0,HouseholdCourt.SigningEscrow(w));Assert.Contains(w.Memberships,m=>m.Subject==Ronin&&m.Target==Owner);Assert.Contains(w.ServiceBonds,b=>b.Subject==Ronin&&b.Target==s.PlayerControl);Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(w.Units));Assert.Equal(ResultCode.AlreadyAccepted,s.ManageCourt(i,s.Revision).Code);}
  [Fact]public void NonHeadCannotInventAnEmploymentOffer(){var s=Start(Ronin.Value);var raw=ContractJson.Write(s.DiagnosticSnapshot());Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(Input(s,CourtAction.RecruitOffer,Retainer,20),s.Revision).Code);Assert.Equal(raw,ContractJson.Write(s.DiagnosticSnapshot()));}
  [Fact]public void AStandingStewardStartsOnlyAfterTheActualDocumentAndConsent(){var s=Start();var before=s.DiagnosticSnapshot();var i=Input(s,CourtAction.Nominate,Retainer);Good(s.ManageCourt(i,s.Revision));var w=s.DiagnosticSnapshot();Assert.Contains(w.Offices,o=>o.Subject==Retainer&&o.Target==Site&&o.Kind=="house-steward"&&o.Until==long.MaxValue);Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));Assert.Equal(ContractJson.Write(before.Grants),ContractJson.Write(w.Grants));Assert.Equal(ContractJson.Write(w),ContractJson.Write(new WorldSession(ContractJson.Copy(w)).DiagnosticSnapshot()));}

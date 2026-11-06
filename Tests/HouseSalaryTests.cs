@@ -27,6 +27,15 @@ public sealed class HouseSalaryTests
         var levy = new CourtInput(new("request:private-soldiers"), action, Worker, term.Owner, term.Site,
             Amount: 2, When: session.Seconds + 2 * 86400);
         int Workers(ContractWorld w) => w.Communities!.Accounts.Single(a => a.Site == term.Site).Workforce;
+        if (action == CourtAction.RaiseVillageSoldiers)
+        {
+            Assert.Equal(ResultCode.NotAvailable, session.ManageCourt(levy,session.Revision).Code);
+            var grant = new CourtInput(new("request:grant-recruit-estate"), CourtAction.GrantLevyShare,
+                Worker, term.Owner, term.Site, Amount: 10);
+            before.CommitSequence++;
+            HouseholdCourt.Execute(before, grant, term.Employer);
+            session = new WorldSession(before);
+        }
         var result = session.ManageCourt(levy, session.Revision);
         Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
         var during = session.DiagnosticSnapshot();
