@@ -162,6 +162,23 @@ public partial class NewGameRuntime
    if(report==null){SocialText(box,"この家の現地記録を確認できません。");return;}
    SocialText(box,NewGameWorld.SiteName(report.Site.Value)+" ／ "+WorldCalendar.Display(w.EpochDate,report.ObservedAt));
    SocialText(box,report.ControlsLocalSite?"主家がこの拠点を支配":"この拠点で主家の支配を確認できず");
+   if(!head){
+    var peers=roster.Where(p=>SocialWorld.Site(w,p)==site).ToArray();
+    if(peers.Length>0){
+     var peer=new OptionButton();foreach(var p in peers)peer.AddItem(PersonName(p));box.AddChild(peer);
+     Button("start-fight","私闘を申し込む",()=>Run(Command("fight",CourtAction.ChallengeFight,peers[peer.Selected])));
+    }
+   }
+   foreach(var act in w.Court?.Events.Where(e=>e.Place==site && e.Input.Owner==house)??[]){
+    if(act.Input.Action==CourtAction.ChallengeFight && act.Input.Person==actor && SocialWorld.Site(w,act.Actor)==site &&
+       !w.Court!.Events.Any(e=>e.Input.Reference==act.Input.Id && e.Input.Action is CourtAction.JoinFight or CourtAction.DeclineFight)){
+     foreach(var choice in new[]{CourtAction.JoinFight,CourtAction.DeclineFight})Button("fight-"+act.Input.Id+choice,
+         PersonName(act.Actor)+(choice==CourtAction.JoinFight?"と私闘する":"との私闘を断る"),()=>Run(Command("fight-reply",choice,act.Actor,reference:act.Input.Id)));
+    }
+    if(head && act.Input.Action==CourtAction.JoinFight && HouseReforms.EqualPenaltyAt(w,house,act.Place,act.At,act.Revision) &&
+       HouseReforms.WitnessedFight(w,actor,act) && !w.Court!.Events.Any(e=>e.Input.Action==CourtAction.CensureBoth && e.Input.Reference==act.Input.Id))
+     Button("censure-"+act.Input.Id,"私闘の双方を叱責する",()=>Run(Command("censure",CourtAction.CensureBoth,act.Actor,reference:act.Input.Id)));
+   }
    foreach(var breach in HouseReforms.KnownLetterBreaches(w,actor))
     SocialText(box,WorldCalendar.Display(w.EpochDate,breach.At)+" ／ 他国への私信を発送："+PersonName(breach.Actor)+" → "+PersonName(breach.Input.Person));
    foreach(var person in report.LocalLandholders)SocialText(box,"在地の所領："+PersonName(person));
@@ -238,6 +255,7 @@ public partial class NewGameRuntime
       SocialText(box,"城割り済み。外堀と城門の防備を縮小しました");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactSuccessionLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"後継の既定順位を制定済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactEqualPenalty && d.Input.Reference==e.Input.Id))SocialText(box,"喧嘩両成敗を制定済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactMarriageLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この拠点では婚姻に許可願が必要です");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactLetterLaw&&d.Input.Reference==e.Input.Id))
@@ -255,6 +273,8 @@ public partial class NewGameRuntime
        Button("reduce-castle-"+e.Input.Id,"城割りを実施し、外堀と城門を縮小する",()=>Run(Command("reduce-castle/"+e.Input.Id,CourtAction.ReduceCastle,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.SuccessionOrder && !HouseReforms.SuccessionLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
        Button("succession-law-"+e.Input.Id,"後継の既定順位を制定する",()=>Run(Command("succession-law/"+e.Input.Id,CourtAction.EnactSuccessionLaw,e.Input.Person,reference:e.Input.Id)));
+      if(e.Input.Reform==ReformKind.EqualPenalty && !HouseReforms.EqualPenaltyAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
+       Button("equal-"+e.Input.Id,"この拠点で喧嘩両成敗を制定する",()=>Run(Command("equal/"+e.Input.Id,CourtAction.EnactEqualPenalty,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.MarriagePermission && !HouseReforms.MarriageLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
        Button("marriage-law-"+e.Input.Id,"この拠点で婚姻を許可制にする",()=>Run(Command("marriage-law/"+e.Input.Id,CourtAction.EnactMarriageLaw,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.ForeignLetters && !HouseReforms.LetterLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))

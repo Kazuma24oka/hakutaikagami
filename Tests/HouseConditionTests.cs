@@ -4,6 +4,37 @@ namespace HakutaiKagami.Tests;
 
 public sealed class HouseConditionTests
 {
+    [Fact]
+    public void EqualPenaltyRequiresBothPartiesToFightAfterEnactment(){
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+        var a=NewGameWorldTests.Officer("created:first",StartTemplate.Retainer,lord:head.Id);
+        var b=NewGameWorldTests.Officer("created:second",StartTemplate.Retainer,lord:head.Id);
+        EntityId house=new("org:fight-test"),site=new(head.Site),first=new(a.Id),second=new(b.Id),lord=new(head.Id);
+        var setup=NewGameWorldTests.Setup([head,a,b],[new(head.Id,house.Value,[head.Site],false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,head.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        var s=new WorldSession(w);
+        var consult=new CourtInput(new("request:law"),CourtAction.ConsultReform,first,house,site){Reform=ReformKind.EqualPenalty};
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(consult,s.Revision).Code);
+        NewGameWorldTests.At(s,240);
+        Assert.Equal(ResultCode.Accepted,s.Open(lord,new(HouseReforms.Letter(consult,HouseReforms.Answer)),s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(new(new("request:enact"),CourtAction.EnactEqualPenalty,first,house,site,Reference:consult.Id),s.Revision).Code);
+        w=s.DiagnosticSnapshot();
+        var challenge=new CourtInput(new("request:fight"),CourtAction.ChallengeFight,second,house,site);
+        w.CommitSequence++;HouseholdCourt.Execute(w,challenge,first);
+        var peaceful=new WorldSession(ContractJson.Copy(w));
+        NewGameWorldTests.At(peaceful,peaceful.Seconds+2);
+        Assert.Contains(peaceful.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.DeclineFight);
+        Assert.Empty(HouseholdCourt.Facts(peaceful.DiagnosticSnapshot(),lord,first));
+        var joined=new CourtInput(new("request:joined"),CourtAction.JoinFight,first,house,site,Reference:challenge.Id);
+        w.CommitSequence++;HouseholdCourt.Execute(w,joined,second);
+        s=new WorldSession(ContractJson.Copy(w));
+        var ruling=new CourtInput(new("request:censure"),CourtAction.CensureBoth,second,house,site,Reference:joined.Id);
+        var result=s.ManageCourt(ruling,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var restored=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot())).DiagnosticSnapshot();
+        foreach(var p in new[]{first,second})Assert.Equal(-2,Assert.Single(HouseholdCourt.Facts(restored,lord,p)).Respect);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(ruling with{Id=new("request:again")},s.Revision).Code);
+    }
     [Theory]
     [InlineData(CourtAction.ConsentServiceRelease)]
     [InlineData(CourtAction.RefuseServiceRelease)]

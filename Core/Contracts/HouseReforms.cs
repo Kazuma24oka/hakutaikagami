@@ -75,6 +75,10 @@ public static class HouseReforms
             (e.At<at || e.At==at && e.Revision<revision));
     public static bool SuccessionLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         LawAt(w,CourtAction.EnactSuccessionLaw,owner,site,at,revision);
+    public static bool WitnessedFight(ContractWorld w,EntityId actor,CourtEvent fight)=>
+        fight.Input.Action==CourtAction.JoinFight && TransportWork.At(w,actor,fight.Place,fight.At,fight.Revision,true);
+    public static bool EqualPenaltyAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
+        LawAt(w,CourtAction.EnactEqualPenalty,owner,site,at,revision);
     public static bool MarriageLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         LawAt(w,CourtAction.EnactMarriageLaw,owner,site,at,revision);
     static bool LawAt(ContractWorld w,CourtAction law,EntityId owner,EntityId site,long at,long revision)=>
@@ -162,6 +166,17 @@ public static class HouseReforms
             if(!MessageFlow.Knows(w.Messaging,id,reader.Value) && w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==reader.Value) &&
                 !Assassination.DeadAt(w,reader,w.ElapsedSeconds,w.CommitSequence))
                 w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(id,reader.Value,w.ElapsedSeconds,id)];
+        }
+        foreach(var offer in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ChallengeFight && e.Input.Person!=w.PlayerControl && e.At<w.ElapsedSeconds)){
+            var other=offer.Input.Person;
+            if(HouseholdCourt.Events(w).Any(e=>e.Input.Reference==offer.Input.Id && e.Input.Action is CourtAction.JoinFight or CourtAction.DeclineFight) ||
+                SocialWorld.Site(w,other)!=offer.Place || SocialWorld.Site(w,offer.Actor)!=offer.Place ||
+                Assassination.DeadAt(w,other,w.ElapsedSeconds,w.CommitSequence))continue;
+            int resentment=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticScores(w,other,offer.Actor).Hostility:0;
+            bool fights=resentment>(EqualPenaltyAt(w,offer.Input.Owner,offer.Place,w.ElapsedSeconds,w.CommitSequence)?30:10);
+            var reply=new CourtInput(HouseholdCourt.Id("request",offer.Input.Id.Value+"/answer"),fights?CourtAction.JoinFight:CourtAction.DeclineFight,
+                offer.Actor,offer.Input.Owner,offer.Place,Reference:offer.Input.Id);
+            TransactionalWorld.TryApply(w,c=>HouseholdCourt.Execute(c,reply,other));
         }
         foreach(var shown in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.PresentServiceRelease && e.Input.Person!=w.PlayerControl && e.At<w.ElapsedSeconds)){
             var master=shown.Input.Person;

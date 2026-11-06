@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -236,6 +236,25 @@ public static class HouseholdCourt
        "開封した国割り命令に記された土地で、未受領の給付を引き取ってください");
   CheckLevyShare(w,i with{Person=terms.Person},order.Actor,place,at,rev);
  }
+ static void CheckFight(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  Need(i.Site==place && actor!=i.Person && TransportWork.At(w,actor,place,at,rev,true) &&
+      TransportWork.At(w,i.Person,place,at,rev,true) && Member(w,i.Person,i.Owner,at,rev),"当事者が現地にそろっていません");
+  if(i.Action==CourtAction.CensureBoth){
+   var fight=Source(w,i.Reference,CourtAction.JoinFight);
+   Need(Before(fight,at,rev) && fight.Input.Owner==i.Owner && fight.Place==place && fight.Actor==i.Person &&
+       actor!=fight.Input.Person && HeadAuthority(w,actor,i.Owner,place,at,rev) &&
+       HouseReforms.WitnessedFight(w,actor,fight) && TransportWork.At(w,fight.Input.Person,place,at,rev,true) &&
+       HouseReforms.EqualPenaltyAt(w,i.Owner,place,fight.At,fight.Revision) &&
+       !Events(w).Any(e=>Before(e,at,rev) && e.Input.Action==i.Action && e.Input.Reference==i.Reference),"制定後の私闘を目撃した当主が双方に申し渡してください");
+   return;
+  }
+  Need(Member(w,actor,i.Owner,at,rev),"同じ家の当事者を指定してください");
+  if(i.Action==CourtAction.ChallengeFight){Need(i.Reference==null,"新たな私闘の申込みに原本は指定できません");return;}
+  var challenge=Source(w,i.Reference,CourtAction.ChallengeFight);
+  Need(Before(challenge,at,rev) && challenge.Input.Person==actor && challenge.Actor==i.Person && challenge.Input.Owner==i.Owner &&
+      challenge.Place==place && !Events(w).Any(e=>Before(e,at,rev) && e.Input.Reference==i.Reference &&
+      e.Input.Action is CourtAction.JoinFight or CourtAction.DeclineFight),"現地で自分に向けられた未回答の私闘に返答してください");
+ }
  static void CheckSurrender(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
   var order=Source(w,i.Reference,CourtAction.IssueTransfer);
   var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
@@ -353,6 +372,8 @@ public static class HouseholdCourt
   if(input.Action==CourtAction.ReduceCastle)
    Need(proposal.Input.Reform==ReformKind.ReduceCastles && CastleWorks.Enabled(w) && MaterialMarkets.Sites(w).Contains(place) &&
        HouseReforms.CastleReduction(w,place,at,revision)==null,"未実施の城で、現地の城割り相談を指定してください");
+  if(input.Action==CourtAction.EnactEqualPenalty)
+   Need(proposal.Input.Reform==ReformKind.EqualPenalty && !HouseReforms.EqualPenaltyAt(w,input.Owner,input.Site,at,revision),"現地の喧嘩両成敗の相談原本を指定してください");
   if(input.Action==CourtAction.EnactSuccessionLaw)
    Need(proposal.Input.Reform==ReformKind.SuccessionOrder && !HouseReforms.SuccessionLawAt(w,input.Owner,input.Site,at,revision),
        "現地で未制定の後継順位を定める相談原本を指定してください");
@@ -364,7 +385,7 @@ public static class HouseholdCourt
        !HouseReforms.LetterLawAt(w,input.Owner,input.Site,at,revision),"この管轄の他国私信禁止の新規条文を選んでください");
   var readAt=MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(proposal.Input,HouseReforms.Answer),actor.Value);
   Need(readAt.HasValue && readAt.Value<=at,"相手の返書を読んでから判断してください");
-  Need(!Events(w).Any(e=>e.Revision<revision && (e.Input.Action is CourtAction.IssueTransfer or CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.ReduceCastle or CourtAction.AbolishBarrier) &&
+  Need(!Events(w).Any(e=>e.Revision<revision && (e.Input.Action is CourtAction.IssueTransfer or CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.EnactEqualPenalty or CourtAction.ReduceCastle or CourtAction.AbolishBarrier) &&
       e.Input.Reference==proposal.Input.Id),"この相談案は決裁済みです");
  }
  public static void Execute(ContractWorld w,CourtInput i,EntityId actor)
@@ -392,13 +413,14 @@ public static class HouseholdCourt
   else if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.ChallengeFight or CourtAction.JoinFight or CourtAction.DeclineFight or CourtAction.CensureBoth)CheckFight(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.SurrenderLevyShare)CheckSurrender(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.GrantLevyShare)CheckLevyShare(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.EstablishBarrier)CheckBarrier(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.GrantTempleSeat)CheckTempleSeat(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
-  else if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.EnactEqualPenalty or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ConsultReform){
    if(i.Reform==ReformKind.Confiscate && i.LevyGrant!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
    if(i.Reform is ReformKind.Relocate or ReformKind.ChangeFief || i.Reform is ReformKind.CastleResidence or ReformKind.AllocateProvince && i.NewEstate!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
@@ -430,6 +452,11 @@ public static class HouseholdCourt
  internal static ServiceView Decorate(ContractWorld w,long at,long rev,ServiceView original){var joined=Events(w).LastOrDefault(e=>e.Actor==w.PlayerControl&&e.Input.Action==CourtAction.RecruitAccept&&Before(e,at,rev+1)&&!Events(w).Any(end=>end.Input.Action==CourtAction.ResignService&&end.Input.Reference==e.Input.Reference&&Before(end,at,rev+1)));if(joined==null)return original;var offer=Source(w,joined.Input.Reference,CourtAction.RecruitOffer);var principal=HouseholdService.BondsAt(w,at,rev+1).LastOrDefault(b=>b.Subject==w.PlayerControl&&Active(b,at,rev+1))?.Target;return original with{Role="家臣（登用合意）",House=offer.Input.Owner,Principal=principal,CanApply=false};}
  public static CourtDocument[] PendingDocuments(ContractWorld w,EntityId actor)=>DocumentRows(w).Where(d=>d.Recipient==actor&&Received(w,d.Id,actor)).ToArray();
  public static RelationshipFact[] Facts(ContractWorld w,EntityId observer,EntityId subject){var rows=new List<RelationshipFact>();foreach(var e in Events(w)){
+  if(e.Input.Action==CourtAction.CensureBoth){
+   var fight=Source(w,e.Input.Reference,CourtAction.JoinFight);
+   if((subject==fight.Actor || subject==fight.Input.Person) && observer!=subject && (observer==e.Actor || observer==fight.Actor || observer==fight.Input.Person))
+    rows.Add(new(observer,subject,"court:"+e.Input.Id.Value+"/"+subject.Value,"私闘に加わり、現地で両成敗の叱責を受けた",e.At,e.At,0,-2,0,1));
+  }
   if(e.Input.Action==CourtAction.RecruitAccept){var offer=Source(w,e.Input.Reference,CourtAction.RecruitOffer);if(observer==e.Actor&&subject==offer.Actor)rows.Add(new(observer,subject,"court:"+e.Input.Id.Value,"条件書と実物の支度金を確認し、家への所属と直属を引き受けた",e.At,e.At,3,2,0,0));}
   if(e.Input.Action==CourtAction.HoldCouncil&&e.Input.People is {} people&&observer!=subject&&people.Contains(observer)&&people.Contains(subject))rows.Add(new(observer,subject,"court:"+e.Input.Id.Value,"同じ場所の評定に実際に参集した",e.At,e.At,1,1,0,0));
  }return rows.ToArray();}
@@ -492,13 +519,14 @@ public static class HouseholdCourt
    if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.ChallengeFight or CourtAction.JoinFight or CourtAction.DeclineFight or CourtAction.CensureBoth)CheckFight(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.SurrenderLevyShare)CheckSurrender(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.GrantLevyShare)CheckLevyShare(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.EstablishBarrier || i.Action==CourtAction.ConsultReform && i.Reform==ReformKind.RemoveBarrier)CheckBarrier(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.GrantTempleSeat)CheckTempleSeat(w,i,e.Actor,e.Place,e.At,e.Revision);
-   if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.EnactEqualPenalty or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.ReleaseCastleOffice or CourtAction.EnterCastleOffice or CourtAction.PresentTransfer or CourtAction.YieldCastleOffice)CheckCastleTransfer(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.IssueTransfer){
     CheckTransferOrder(w,i,e.Actor,e.Place,e.At,e.Revision);
