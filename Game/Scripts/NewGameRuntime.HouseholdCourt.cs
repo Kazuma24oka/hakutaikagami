@@ -14,7 +14,24 @@ public partial class NewGameRuntime
   void Button(string key,string text,Action action){var b=new Button{Text=text};box.AddChild(b);courtReviewButtons[key]=b;b.Pressed+=action;}
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
-  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  if(courtCategory==4){
+   var control=w.LandRights.SingleOrDefault(r=>r.Kind=="control" && r.Target==site && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until);
+   if(control==null || !MilitaryEconomy.Enabled(w)){SocialText(box,"この拠点では募兵できません。");return;}
+   SocialText(box,$"現地の自前の兵 {PrivateRecruitment.Soldiers(w,actor,site.Value,w.ElapsedSeconds,rev+1)}人　手持ちの扶持米 {HouseSalary.PrivateRice(w,actor)}kg　所持銭 {NewGameWork.Balance(w,actor)}文");
+   SpinBox Count(string label,int max){
+    var row=new HBoxContainer();box.AddChild(row);row.AddChild(new Label{Text=label});
+    var value=new SpinBox{MinValue=1,MaxValue=max,Step=1,Value=1};row.AddChild(value);return value;
+   }
+   var men=Count("人数",100);var days=Count("従軍日数",30);
+   void Recruit(CourtAction action)=>Run(new(Nonce(action.ToString()),action,actor,control.Subject,site.Value,
+    Amount:(long)men.Value,When:checked(w.ElapsedSeconds+86400L*(long)days.Value)));
+   if(w.Memberships.Any(m=>m.Subject==actor && m.Target==control.Subject && m.From<=w.ElapsedSeconds && w.ElapsedSeconds<m.Until))
+    Button("recruit-villagers","村兵を集める（1人1日につき米1kg）",()=>Recruit(CourtAction.RaiseVillageSoldiers));
+   if(MaterialMarkets.Enabled(w)&&MaterialMarkets.Sites(w).Contains(site.Value))
+    Button("hire-market-soldiers",$"市で雇う（1人1日につき米1kg・{PrivateRecruitment.DailyWage}文）",()=>Recruit(CourtAction.HireMarketSoldiers));
+   return;
+  }
   if(courtCategory==3){
    var history=w.Court?.Events??[];
    foreach(var former in HouseRestoration.ObserveFormerSeat(w,actor)){
