@@ -15,6 +15,11 @@ internal static class FamilyConsentRules
     internal static bool Related(ContractWorld w,EntityId a,EntityId b,long at,long rev,(EntityId Parent,EntityId Child)? extra=null){
         var rows=(w.Adoption?.Entries??[]).Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();
         var links=rows.Where(e=>e.Input.Action==AdoptionAction.Implement).Select(e=>rows.Single(p=>p.Input.Id==e.Input.Original).Terms!).Select(t=>(t.Parent,t.Child)).ToList();links.AddRange(w.NewGame!.Start.People.SelectMany(p=>(p.BirthParents??[]).Select(parent=>(new EntityId(parent),new EntityId(p.Id)))));
+        foreach(var birth in w.Births??[])
+        {
+            if(birth.At>at || birth.At==at && birth.Revision>=rev)continue;
+            links.Add((birth.FirstParent,birth.Child));links.Add((birth.SecondParent,birth.Child));
+        }
         if(extra is {} edge)links.Add(edge);
         HashSet<EntityId> Ancestors(EntityId who){var seen=new HashSet<EntityId>();var pending=new Stack<EntityId>();pending.Push(who);while(pending.TryPop(out var current))if(seen.Add(current))foreach(var link in links.Where(l=>l.Child==current))pending.Push(link.Parent);return seen;}
         return Ancestors(a).Overlaps(Ancestors(b));

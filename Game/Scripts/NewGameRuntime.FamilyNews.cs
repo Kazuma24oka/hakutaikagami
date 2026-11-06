@@ -26,6 +26,13 @@ public partial class NewGameRuntime
                     message.Text=result.VisibleReason;Refresh();ShowFamilyNews();};
             }
         }
+        foreach(var birth in w.Births??[])
+        {
+            if(birth.FirstParent!=actor && birth.SecondParent!=actor)continue;
+            var date=WorldCalendar.At(w.EpochDate,birth.At);
+            SocialText(panel,$"{date.Year}年{date.Month}月{date.Day}日、{NewGameWorld.SiteName(birth.Site.Value)}で子が生まれました。");
+            visible=true;
+        }
         foreach(var person in w.NewGame!.Start.People)
         {
             if(FamilyNotice.WitnessedMaturity(w,person,actor))
