@@ -28,4 +28,37 @@ public partial class NewGameFrontEnd
         confirmed=NewGameSetup.Confirm(raw,setup,NewGameSetup.Preview(raw,setup));campaigns=new NewCampaignStore(root);
         return (campaigns,CreateSelectedCampaign(owari?"created:judgment-ui":"person:nobunaga"));
     }
+    internal async System.Threading.Tasks.Task CheckImagawaStart(string root, bool fromMap)
+    {
+        campaigns = new NewCampaignStore(root);
+        var raw = NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var request = new WorldSetupRequest([], []);
+        confirmed = NewGameSetup.Confirm(raw, request, NewGameSetup.Preview(raw, request));
+        ChoosePerson();
+        if (fromMap) map!.Pick("site:sunpu");
+        else Press("all-people");
+        foreach (var name in new[] { "person:imagawa-yoshimoto", "person:imagawa-ujizane" })
+            Check(System.Array.Exists(visiblePeople, p => p.Id == name), "選択候補に父子が揃う");
+        var id = fromMap ? "person:imagawa-ujizane" : "person:imagawa-yoshimoto";
+        var index = System.Array.FindIndex(visiblePeople, p => p.Id == id);
+        Check(index >= 0, "今川家の人物を選択可能");
+        personRows.Select(index);
+        personRows.EmitSignal(ItemList.SignalName.ItemSelected, (long)index);
+        Check(personText.Text.Contains(fromMap ? "後継者" : "当主"), "開始時の立場の表示");
+        Press("begin");
+        await Frame();
+        await WaitSave();
+        game!.Advance(5);
+        game.ReviewFraction(0);
+        game.Press("save");
+        await WaitSave();
+        var world = game.Session.DiagnosticSnapshot();
+        Check(world.PlayerControl.Value == id && NewGameWorld.InitialNode(world, world.PlayerControl) == "sunpu", "駿府で本人を操作");
+        var pose = game.Pose();
+        game.Press("load");
+        await Frame();
+        game.ReviewFraction(0);
+        Check(ContractJson.CanonicalHash(world) == ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()) &&
+            pose == game.Pose(), "復旧後の世界と3D配置が一致");
+    }
 }

@@ -2,6 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
+## 製品受入：今川家の開始配置
+
+[義元・氏真で始める](../Design/ImagawaStartV1/entry-verification.md)。次は今川方の現地判断と出陣条件。
+
 ## 製品受入：1560年の尾張の偵察機会
 
 [信長の現地判断と浪人の偵察](../Design/OwariHistoricalOpportunityV1/entry-verification.md)。次は今川方の史料と当主・本拠の初期配置を照合する。
