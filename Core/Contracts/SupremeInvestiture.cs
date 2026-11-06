@@ -34,7 +34,7 @@ public static class SupremeInvestiture
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {
         bool invited=Petitions.Contains(i.Action) && i.Reference!=null;
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.RegentEdition || (!invited && (place!=Kyoto || i.Site!=Kyoto)) ||
+        if(!CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog) || (!invited && (place!=Kyoto || i.Site!=Kyoto)) ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京の朝廷取次で手続きしてください");
         var events=HouseholdCourt.Events(w).Where(e=>e.Revision<rev && e.At<=at).ToArray();

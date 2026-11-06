@@ -65,7 +65,7 @@ public partial class NewGameRuntime
               }
           }
       }
-      if(site==CentralCourtCatalog.Kyoto && w.NewGame?.HistoricalCatalog==CentralCourtCatalog.RegentEdition){
+      if(site==CentralCourtCatalog.Kyoto && CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog)){
           if(actor==CentralCourtCatalog.Konoe){
               foreach(var answer in RegentKin.Answers(w))
                   Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+(answer.Action==CourtAction.AcceptRegentKin?"を猶子に迎える":"の申し出を断る"),()=>Run(answer));

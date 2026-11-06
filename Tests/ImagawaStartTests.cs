@@ -28,6 +28,26 @@ public sealed class ImagawaStartTests
         }
         Assert.Equal(head,restored.Factions.Single(f=>f.Id==facts.Faction.Value).Head);
     }
+    [Theory]
+    [InlineData("person:imagawa-yoshimoto")]
+    [InlineData("person:imagawa-ujizane")]
+    public void InitialHeirAndAuthoritySurviveRestore(string player)
+    {
+        var scenario = NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var request = new WorldSetupRequest([], []);
+        var confirmed = NewGameSetup.Confirm(scenario, request, NewGameSetup.Preview(scenario, request));
+        var world = NewGameWorld.Create(confirmed, [], player, historicalCatalog: HistoricalStartCatalog.Current);
+        var bytes = ContractJson.Write(world);
+        var restored = ContractJson.Read<ContractWorld>(bytes);
+        ContractValidation.Validate(restored);
+        Assert.Equal(bytes, ContractJson.Write(restored));
+        var paper = Assert.Single(restored.HeirNominations!);
+        Assert.Equal("person:imagawa-ujizane", paper.Heir.Value);
+        Assert.Equal("person:imagawa-yoshimoto", paper.Head.Value);
+        Assert.NotNull(FactionStances.ResolveAuthority(restored, paper.Head, paper.House, 0, restored.CommitSequence));
+        Assert.Null(FactionStances.ResolveAuthority(restored, paper.Heir, paper.House, 0, restored.CommitSequence));
+    }
+
     [Fact]
     public void DocumentedFamilySharesAnExistingHomeCandidate()
     {

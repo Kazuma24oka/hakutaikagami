@@ -6,7 +6,8 @@ public sealed record HistoricalStartEdition(int Schema,string Id,int WorldYear,s
 public static class HistoricalStartCatalog
 {
     public const string Western="historical-start-west-v2";
-    public const string Current=CentralCourtCatalog.RegentEdition;
+    public const string ImagawaEdition="historical-start-imagawa-v8";
+    public const string Current=ImagawaEdition;
     static readonly HistoricalStartEdition current=Read();
     public static HistoricalStartEdition Edition=>ContractJson.Copy(current);
     static HistoricalStartEdition Read()
@@ -23,6 +24,7 @@ public static class HistoricalStartCatalog
     }
     public static SetupScenario Scenario(string edition)
     {
+        if(edition==ImagawaEdition)return ImagawaPersonnel.Read().StartingPlacement(CentralCourtCatalog.RegentScenario(),new("person:imagawa-yoshimoto"));
         if(edition==CentralCourtCatalog.RegentEdition)return CentralCourtCatalog.RegentScenario();
         if(edition==CentralCourtCatalog.TempleEdition)return CentralCourtCatalog.TempleScenario();
         if(edition==CentralCourtCatalog.ShogunateEdition)return CentralCourtCatalog.ShogunateScenario();

@@ -12,7 +12,7 @@ public sealed record ImagawaPersonnel(int Schema,int WorldYear,EntityId Faction,
         if(prior.Castles.Single(c=>c.Id==site).Faction!=null)
             throw new InvalidDataException("駿府に既存の支配家があります");
         var members=People.Select(p=>new SetupPerson(p.Id.Value,p.Name,site,Faction.Value,
-            p.Id==head?null:head.Value,false,false,p.BirthYear));
+            p.Id==head?null:head.Value,false,false,p.BirthYear){BirthParents=p.Father is {} father?[father.Value]:null});
         var result=prior with{
             People=[..prior.People,..members],
             Factions=[..prior.Factions,new(Faction.Value,FactionName,head.Value,site)],
@@ -21,6 +21,10 @@ public sealed record ImagawaPersonnel(int Schema,int WorldYear,EntityId Faction,
         NewGameSetup.Validate(result);
         return result;
     }
+
+    public static bool HasStartingHeir(SetupScenario scenario) =>
+        scenario.Factions.Any(f => f.Id == "org:imagawa" && f.Head == "person:imagawa-yoshimoto") &&
+        scenario.People.Any(p => p.Id == "person:imagawa-ujizane" && p.Faction == "org:imagawa");
 
     public static ImagawaPersonnel Read()
     {
