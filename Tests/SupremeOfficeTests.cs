@@ -5,6 +5,30 @@ namespace HakutaiKagami.Tests;
 public sealed class SupremeOfficeTests
 {
     [Fact]
+    public void CandidateAnswersTheSponsorAfterRestoreWithoutTakingIncumbentsOffice()
+    {
+        var site=CentralCourtCatalog.Kyoto;
+        var sponsor=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
+        var house=new EntityId("org:kyoto-sponsor");
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var request=new WorldSetupRequest([sponsor],[new(sponsor.Id,house.Value,[site.Value],false)]);
+        var scenario=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        var game=new WorldSession(NewGameWorld.Create(scenario,[sponsor],sponsor.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            workPolicy:WorkFollowup.Policy,inspectionPolicy:LocalInspectionFindings.Policy));
+        var candidate=CentralCourtCatalog.ShogunBroker;
+        var offer=new CourtInput(new("request:sponsor"),CourtAction.OfferShogunSupport,candidate,house,site);
+        var result=game.ManageCourt(offer,game.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(game.DiagnosticSnapshot())));
+        foreach(var run in new[]{game,restored}){
+            NewGameWorldTests.At(run,run.Seconds+2);
+            var w=run.DiagnosticSnapshot();
+            Assert.Single(w.Court!.Events,e=>e.Input.Action==CourtAction.AcceptShogunSupport && e.Actor==candidate && e.Input.Reference==offer.Id);
+            Assert.Equal(CentralCourtCatalog.Shogun,SupremeOffice.ShogunAt(w,run.Seconds,run.Revision));
+            Assert.Equal(ResultCode.NotAvailable,run.ManageCourt(offer with{Id=new("request:duplicate-offer")},run.Revision).Code);
+        }
+        Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+    [Fact]
     public void IncumbentCanResignOnceAndVacancySurvivesSave()
     {
         var actor=CentralCourtCatalog.Shogun;

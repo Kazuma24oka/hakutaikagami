@@ -57,6 +57,14 @@ public partial class NewGameRuntime
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
       }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
+          foreach(var (answer,_) in SupremeOffice.SupportAnswers(w,true))
+              Button(answer.Id.Value,answer.Action==CourtAction.AcceptShogunSupport?"擁立を引き受ける":"擁立の申し出を断る",()=>Run(answer));
+          if(CentralMediation.ApplicantHouse(w,actor) is {} sponsorHouse && SupremeOffice.ControlsKyoto(w,actor,sponsorHouse,w.ElapsedSeconds,rev)){
+              foreach(var candidate in w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site)){
+                  var key="shogun-support/"+candidate.Id.Value;
+                  Button(key,MeritRewards.DisplayName(w,actor,candidate.Id)+"に将軍候補としての支持を申し出る",()=>Run(new(Nonce(key),CourtAction.OfferShogunSupport,candidate.Id,sponsorHouse,site.Value)));
+              }
+          }
           if(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,rev)==actor)
               Button("shogun-resign","将軍職を辞任する",()=>Run(new(Nonce("shogun-resign"),CourtAction.ResignShogun,actor,SupremeOffice.Bakufu,site.Value)));
           foreach(var answer in ShogunateAppointments.AvailableAnswers(w,actor)){
