@@ -62,7 +62,7 @@ public static class ShogunateAppointments
                 throw new InvalidDataException("取次本人の判断が必要です");
             return;
         }
-        if(source.Input.Action!=CourtAction.RecommendShugo || source.Input.Person!=i.Person ||
+        if(source.Input.Action!=CourtAction.RecommendShugo || source.Input.Person!=i.Person || actor!=Addressee(w,source.At,source.Revision-1) ||
            MessageFlow.LearnedAt(w.Messaging,Letter(source.Input),actor.Value) is not {} opened || opened>at)
             throw new InvalidDataException("将軍が申請書を読んでから決裁してください");
         if(i.Action==CourtAction.AppointShugo && prior.Any(e=>e.Input.Action==CourtAction.AppointShugo &&

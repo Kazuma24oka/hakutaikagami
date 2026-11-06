@@ -62,7 +62,7 @@ public sealed class SupremeOfficeTests
     [Fact]
     public void ImperialInvitationHonorsOpeningAndDeferralInHegemonFixture()
     {
-        var home=CentralCourtCatalog.Kyoto;var broker=CentralCourtCatalog.CourtBroker;
+        var home=TempleMilitary.Site;var broker=CentralCourtCatalog.CourtBroker;
         var leader=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:home.Value);
         var owner=new EntityId("org:hegemon");var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
         var request=new WorldSetupRequest([leader],[new(leader.Id,owner.Value,[home.Value],false)]);
@@ -71,7 +71,7 @@ public sealed class SupremeOfficeTests
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
         // 領国拡大後の断面を用意する。登録時の領土予算は通常の開始処理で検査される。
         var land=w.LandRights.Single(r=>r.Subject==owner && r.Target==home);
-        var other=raw.Castles.Where(c=>c.Id!=home.Value).OrderByDescending(c=>HouseTerritoryScale.Province(new(c.Id))!=null).Take(14);
+        var other=raw.Castles.Where(c=>c.Id!=home.Value).OrderByDescending(c=>c.Id==CentralCourtCatalog.Kyoto.Value).ThenByDescending(c=>HouseTerritoryScale.Province(new(c.Id))!=null).Take(14);
         foreach(var castle in other){
             w.LandRights=[..w.LandRights.Where(r=>r.Target.Value!=castle.Id),land with{Id=new("land:test/"+castle.Id[5..]),Target=new(castle.Id)}];
         }
@@ -82,10 +82,19 @@ public sealed class SupremeOfficeTests
         var letter=Assert.Single(w.Messaging.Messages,m=>m.Kind=="imperial-invitation");
         var choice=new CourtInput(new("request:choose-office"),CourtAction.PetitionChancellor,broker,owner,home,Reference:offer.Id);
         Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(w,choice,w.PlayerControl));
-        w.ElapsedSeconds+=2;
-        HakutaiKagami.Core.Messaging.MessageFlow.Advance(w.Messaging,w.ElapsedSeconds);
-        if(!HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,letter.Id,leader.Id))
-            w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(letter.Id,leader.Id,w.ElapsedSeconds,letter.Id)];
+        void Deliver(ContractWorld state,string message,EntityId destination){
+            var attempt=state.Messaging.Attempts.Single(a=>a.MessageId==message);
+            var mission=state.Couriers!.Missions.Single(m=>m.Attempt==attempt.Id);
+            Assert.Equal(NewGameWorld.Node(destination.Value),mission.Destination);
+            Assert.True(mission.ReadyAt>attempt.SentAt);
+            state.ElapsedSeconds=mission.ReadyAt;RegionalCampaign.Arrivals(state);
+            HakutaiKagami.Core.Messaging.MessageFlow.Advance(state.Messaging,state.ElapsedSeconds);
+            Assert.Contains(state.Messaging.Receipts,r=>r.MessageId==message);
+        }
+        Deliver(w,letter.Id,home);
+
+        Assert.True(HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,letter.Id,leader.Id));
+
         w.CommitSequence++;
         HouseholdCourt.Execute(w,choice with{Id=new("request:defer"),Action=CourtAction.DeferInvitation},w.PlayerControl);
         var copy=ContractJson.Copy(w);
@@ -94,7 +103,13 @@ public sealed class SupremeOfficeTests
             HouseholdCourt.Execute(run,choice,run.PlayerControl);
             Assert.Empty(CourtInvitation.Available(run,run.PlayerControl));
             Assert.Empty(SupremeInvestiture.Responses(run));
-            Assert.Single(run.Messaging.Messages,m=>m.Kind=="imperial-reply" && m.RecipientId==broker.Value);
+            var reply=Assert.Single(run.Messaging.Messages,m=>m.Kind=="imperial-reply" && m.RecipientId==broker.Value);
+            Deliver(run,reply.Id,CentralCourtCatalog.Kyoto);
+            var grant=Assert.Single(SupremeInvestiture.Responses(run));run.CommitSequence++;
+            HouseholdCourt.Execute(run,grant,broker);
+            var notice=Assert.Single(run.Messaging.Messages,m=>m.Kind=="court-investiture");
+            Deliver(run,notice.Id,home);
+            Assert.Contains(SupremeInvestiture.Notices(run,run.PlayerControl),n=>n.Known=="太政大臣への任官を裁可する。");
         }
         Assert.Equal(ContractJson.Write(w),ContractJson.Write(copy));
     }
@@ -137,7 +152,7 @@ public sealed class SupremeOfficeTests
         var child=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
         var owner=new EntityId("org:pedigree");
         var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
-        var request=new WorldSetupRequest([child],[new(child.Id,owner.Value,[site.Value],false)]);
+        var request=new WorldSetupRequest([child],[new(child.Id,owner.Value,[site.Value,"site:kofu"],false)]);
         var scenario=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
         var parent=CentralCourtCatalog.Shogun;
         var game=new WorldSession(NewGameWorld.Create(scenario,[child],child.Id,42,historicalCatalog:HistoricalStartCatalog.Current,
@@ -155,9 +170,18 @@ public sealed class SupremeOfficeTests
         var report=Assert.Single(game.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.AttestPedigree);
         Good(game.ManageCourt(new(new("request:file"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBroker,owner,site,Reference:report.Input.Id),game.Revision));
         Assert.False(CourtPedigree.Qualified(game.DiagnosticSnapshot(),game.PlayerControl,game.Seconds,game.Revision));
-        var restored=new WorldSession(ContractJson.Copy(game.DiagnosticSnapshot()));
+        var goBetween=CentralCourtCatalog.ShogunBroker;var kai=new EntityId("site:kofu");
+        Good(game.ManageSocial(new(new("request:visit-go-between"),SocialWorldAction.Visit,goBetween),game.Revision));
+        Good(game.ManageSocial(new(new("request:gift-go-between"),SocialWorldAction.DispatchGift,goBetween,Amount:100),game.Revision));
+        NewGameWorldTests.At(game,game.Seconds+3);
+        Good(game.ManageCourt(new(new("request:old-shugo"),CourtAction.AskShugo,goBetween,owner,kai),game.Revision));
+        NewGameWorldTests.At(game,game.Seconds+1);
+        var waiting=game.DiagnosticSnapshot();
+        var oldPetition=Assert.Single(waiting.Court!.Events,e=>e.Input.Action==CourtAction.RecommendShugo);
+        Assert.Equal(parent.Value,Assert.Single(waiting.Messaging.Messages,m=>m.Kind==ShogunateAppointments.Petition).RecipientId);
+        Assert.DoesNotContain(waiting.Court.Events,e=>e.Input.Action==CourtAction.AppointShugo);
+        var restored=new WorldSession(ContractJson.Copy(waiting));
         foreach(var run in new[]{game,restored}){
-            NewGameWorldTests.At(run,run.Seconds+2);
             var final=run.DiagnosticSnapshot();
             Assert.Equal(CentralCourtCatalog.CourtBroker,Assert.Single(final.Court!.Events,e=>e.Input.Action==CourtAction.RecognizePedigree).Actor);
             Assert.True(CourtPedigree.Qualified(final,run.PlayerControl,run.Seconds,run.Revision));
@@ -173,6 +197,9 @@ public sealed class SupremeOfficeTests
             Assert.Equal(run.PlayerControl,SupremeOffice.ShogunAt(state,run.Seconds,run.Revision));
             Assert.Contains(run.PlayerControl,PeaceMediation.Brokers(state));
             Assert.DoesNotContain(parent,PeaceMediation.Brokers(state));
+            var usurp=new CourtInput(new("request:rule-on-old-petition"),CourtAction.AppointShugo,run.PlayerControl,owner,kai,Reference:oldPetition.Input.Id);
+            Assert.Equal(ResultCode.NotAvailable,enthroned.ManageCourt(usurp,enthroned.Revision).Code);
+            Assert.DoesNotContain(ShogunateAppointments.AvailableAnswers(state,run.PlayerControl),i=>i.Reference==oldPetition.Input.Id);
             Assert.Equal(ContractJson.Write(final.LandRights),ContractJson.Write(state.LandRights));
         }
         Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
