@@ -168,6 +168,40 @@ public sealed class HouseholdCourtTests
  [Fact]public void PlayerReadsAndAcceptsTheTermsBeforeServiceStatusChanges(){var s=Start(Ronin.Value);var offer=new CourtInput(new("request:player-recruit"),CourtAction.RecruitOffer,Ronin,Owner,Site,Amount:20);s=Npc(s,offer,new("person:nobunaga"));Assert.Null(NewGameService.View(s.DiagnosticSnapshot()).House);Assert.Equal(20,HouseholdCourt.SigningEscrow(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(Input(s,CourtAction.RecruitAccept,new("person:nobunaga"),reference:offer.Id),s.Revision).Code);Receive(s,offer.Id);Good(s.ManageCourt(Input(s,CourtAction.RecruitAccept,new("person:nobunaga"),reference:offer.Id),s.Revision));Assert.Equal(Owner,NewGameService.View(s.DiagnosticSnapshot()).House);Assert.Equal(new EntityId("person:nobunaga"),NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(1020,NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl));}
  [Fact]public void RefusalDoesNotRefundUntilTheActualMoneyIsReturned(){var s=Start(Ronin.Value);var offer=new CourtInput(new("request:refuse-recruit"),CourtAction.RecruitOffer,Ronin,Owner,Site,Amount:20);s=Npc(s,offer,new("person:nobunaga"));Receive(s,offer.Id);Good(s.ManageCourt(Input(s,CourtAction.RecruitDecline,new("person:nobunaga"),reference:offer.Id),s.Revision));Assert.Equal(20,HouseholdCourt.SigningEscrow(s.DiagnosticSnapshot()));Good(s.ManageCourt(Input(s,CourtAction.ReturnSigning,new("person:nobunaga"),reference:offer.Id),s.Revision));Assert.Equal(0,HouseholdCourt.SigningEscrow(s.DiagnosticSnapshot()));Assert.Equal(1000,NewGameWork.Balance(s.DiagnosticSnapshot(),new("person:nobunaga")));Assert.Equal(1000,NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl));Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(Input(s,CourtAction.ReturnSigning,new("person:nobunaga"),reference:offer.Id),s.Revision).Code);}
  static WorldSession PlayerSteward(){var s=Start(Retainer.Value);var offer=new CourtInput(new("request:player-steward"),CourtAction.Nominate,Retainer,Owner,Site);s=Npc(s,offer,new("person:nobunaga"));Receive(s,offer.Id);NewGameWorldTests.At(s,1);Good(s.ManageCourt(Input(s,CourtAction.AcceptOffice,new("person:nobunaga"),reference:offer.Id),s.Revision));return s;}
+ [Fact]
+ public void ReceivingAdministrativeDismissalEndsOnlyTheReferencedOffice()
+ {
+     var lord=new EntityId("person:nobunaga");
+     var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Castellan,lord:lord.Value)]);
+     var session=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,Retainer.Value,42,
+         inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy));
+     var offer=Input(session,CourtAction.Nominate,Retainer);
+     session=Npc(session,offer,lord);
+     Receive(session,offer.Id);
+     NewGameWorldTests.At(session,1);
+     Good(session.ManageCourt(Input(session,CourtAction.AcceptOffice,lord,reference:offer.Id),session.Revision));
+     NewGameWorldTests.At(session,2);
+     var revoke=Input(session,CourtAction.RevokeOffice,Retainer,reference:offer.Id);
+     Assert.Throws<InvalidDataException>(()=>Npc(session,revoke with{Site=new("site:kofu")},lord));
+     session=Npc(session,revoke,lord);
+     var pending=session.DiagnosticSnapshot();
+     Assert.Contains(pending.Offices,o=>o.Subject==Retainer && o.Kind=="house-steward" && o.Until==long.MaxValue);
+     var directory=Directory.CreateTempSubdirectory("castle-office-dismissal-");
+     try{
+         session.SetPaused(true);
+         var store=new GenerationSaveStore(directory.FullName,pending.Definitions);
+         Assert.True(store.Save(session,"pending",pending.WorldId).Published);
+         var host=new WorldSessionHost(new WorldSession(ContractJson.Copy(pending)));
+         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("pending"),host.Current,host.Current.Revision));
+         Receive(host.Current,revoke.Id);
+         Receive(session,revoke.Id);
+         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+     }finally{directory.Delete(true);}
+     var received=new WorldSession(ContractJson.Copy(session.DiagnosticSnapshot())).DiagnosticSnapshot();
+     Assert.Contains(received.Offices,o=>o.Subject==Retainer && o.Kind=="house-steward" && o.Until==received.ElapsedSeconds);
+     Assert.True(JointIndependence.CommandedCastle(received,Retainer,Site,received.ElapsedSeconds,received.CommitSequence+1));
+     Assert.Equal(ContractJson.Write(pending.LandRights),ContractJson.Write(received.LandRights));
+ }
  [Fact]public void StewardActuallyOperatesWithinMonthlyScopeAndLosesPowerAfterReceiptOfRevoke(){var s=PlayerSteward();long money=NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl);Good(s.ManageCommunity(new(new("request:steward-relief"),Site,EconomyAction.RelieveVillage,100),s.PlayerControl,s.Revision));Assert.Equal(100,s.CommunityEconomyView()!.Accounts.Relief);Assert.Equal(money,NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl));Assert.Equal(ResultCode.NotAvailable,s.ManageCommunity(new(new("request:steward-over-budget"),Site,EconomyAction.RelieveVillage,101),s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,2);var revoke=new CourtInput(new("request:revoke-steward"),CourtAction.RevokeOffice,Retainer,Owner,Site,Reference:new("request:player-steward"));s=Npc(s,revoke,new("person:nobunaga"));Assert.Contains(s.DiagnosticSnapshot().Offices,o=>o.Subject==Retainer&&o.Until==long.MaxValue);Receive(s,revoke.Id);Assert.Equal(ResultCode.NotAvailable,s.ManageCommunity(new(new("request:steward-after-revoke"),Site,EconomyAction.RelieveVillage,1),s.PlayerControl,s.Revision).Code);ContractValidation.Validate(s.DiagnosticSnapshot());}
  internal static (WorldSession Session,EntityId Proposal,EntityId Meeting) Council(){var s=Start();var proposal=new CourtInput(new("request:local-relief-proposal"),CourtAction.SubmitCase,s.PlayerControl,Owner,Site,Amount:100);s=Npc(s,proposal,Retainer);Assert.Empty(HouseholdCourt.KnownCases(s.DiagnosticSnapshot(),s.PlayerControl));Receive(s,proposal.Id);var meeting=Input(s,CourtAction.Convene,s.PlayerControl,when:3600) with{People=[Retainer]};Good(s.ManageCourt(meeting,s.Revision));var invitation=HouseholdCourt.DocumentRows(s.DiagnosticSnapshot()).Single(d=>d.Source.Input.Id==meeting.Id);Good(s.ManageCourt(Input(s,CourtAction.DeliverDocument,Retainer,reference:invitation.Id),s.Revision));NewGameWorldTests.At(s,3600);Good(s.ManageCourt(Input(s,CourtAction.HoldCouncil,s.PlayerControl,reference:meeting.Id),s.Revision));return(s,proposal.Id,meeting.Id);}
  [Fact]public void CouncilApprovalUsesRealRiceAndCannotBeExecutedTwice(){var t=Council();var s=t.Session;long rice=s.CommunityEconomyView()!.Accounts.HouseRice;var input=Input(s,CourtAction.ApproveCase,Retainer,reference:t.Proposal);Good(s.ManageCourt(input,s.Revision));Assert.Equal(rice-100,s.CommunityEconomyView()!.Accounts.HouseRice);Assert.Equal(100,s.CommunityEconomyView()!.Accounts.Relief);Assert.Equal(ResultCode.AlreadyAccepted,s.ManageCourt(input,s.Revision).Code);Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(Input(s,CourtAction.ApproveCase,Retainer,reference:t.Proposal),s.Revision).Code);}
