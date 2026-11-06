@@ -5,6 +5,53 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void ResidentLordAbolishesBarrierWhileAnotherPersonIsAlreadyTravelling()
+    {
+        var traveller=HouseholdCourtTests.Ronin;
+        var lord=new EntityId("person:nobunaga");
+        var site=HouseholdCourtTests.Site;
+        var s=HouseholdCourtTests.Start(traveller.Value);
+        void ActAsLord(CourtInput input){
+            var world=s.DiagnosticSnapshot();
+            world.CommitSequence++;
+            HouseholdCourt.Execute(world,input,lord);
+            s=new WorldSession(world);
+        }
+        var start=s.DiagnosticSnapshot();
+        var from=NewGameWorld.Node(site.Value);
+        var road=HouseReforms.LocalRoads(start,site).First(e=>BranchRoutes.Plan(from,e.From==from?e.To:e.From,[],w:start).SequenceEqual([e.Id]));
+        var to=road.From==from?road.To:road.From;
+        var gate=new CourtInput(new("request:concurrent-gate"),CourtAction.EstablishBarrier,lord,HouseholdCourtTests.Owner,site){BarrierEdge=road.Id};
+        ActAsLord(gate);
+        var consult=gate with{Action=CourtAction.ConsultReform,Person=HouseholdCourtTests.Retainer,Reform=ReformKind.RemoveBarrier,Id=new("request:concurrent-consult")};
+        ActAsLord(consult);
+        NewGameWorldTests.At(s,120);
+        Assert.Equal(ResultCode.Accepted,s.Open(lord,new(HouseReforms.Letter(consult,HouseReforms.Answer)),s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:leave-gate",to),s.Revision).Code);
+        NewGameWorldTests.At(s,125);
+        var original=s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==traveller).Legs.Single();
+        Assert.Equal(gate.Id,original.BarrierOrder);
+        ActAsLord(consult with{Action=CourtAction.AbolishBarrier,Reform=null,Reference=consult.Id,Id=new("request:concurrent-removal")});
+        Assert.Equal(original,s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==traveller).Legs.Single());
+        s.SetPaused(true);
+        var dir=Directory.CreateTempSubdirectory("hakutai-concurrent-barrier-");
+        try{
+            var store=new GenerationSaveStore(dir.FullName,start.Definitions);
+            Assert.True(store.Save(s,"abolished",start.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(start));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("abolished"),host.Current,host.Current.Revision));
+            s=host.Current;
+            NewGameWorldTests.At(s,original.EndAt+2);
+            Assert.Equal(BranchRoutes.GraphNodes(start).Single(n=>n.Id==to).Position,s.GetBranchView(traveller).Position);
+            Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:return-no-gate",from),s.Revision).Code);
+            NewGameWorldTests.At(s,s.Seconds+2);
+            var back=s.DiagnosticSnapshot().Branches!.Journeys.Last(j=>j.Actor==traveller).Legs.Single();
+            Assert.Null(back.BarrierOrder);
+            Assert.Equal(TravelWorld.InspectionSeconds,(original.EndAt-original.StartAt)-(back.EndAt-back.StartAt));
+        }finally{dir.Delete(true);}
+    }
+
+    [Fact]
     public void OnFootInspectionSurvivesSaveAndKeepsTheTravellerAtTheRoadEntrance()
     {
         var s=HouseholdCourtTests.Start();
