@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "放火・破壊・強奪・煽動を本人が現地で試行でき、自家も対象にできる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DestructiveSchemes.cs",
+        "Core/Contracts/InformationSchemes.cs",
+        "Tests/DestructiveSchemesTests.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/DestructiveSchemesCheck.cs",
+        "Docs/Design/DestructiveSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "配下の受諾・実移動・現地実行・物理返報を分け、遠方の結果は返報前に漏らさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DestructiveSchemes.cs",
+        "Core/Contracts/InformationSchemes.cs",
+        "Tests/DestructiveSchemesTests.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/DestructiveSchemesCheck.cs",
+        "Docs/Design/DestructiveSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "知っている警備だけで事前の手応えを示し、現地で能力と実警備に基づき再現可能な成否を決める",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DestructiveSchemes.cs",
+        "Core/Contracts/InformationSchemes.cs",
+        "Tests/DestructiveSchemesTests.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/DestructiveSchemesCheck.cs",
+        "Docs/Design/DestructiveSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "成功した効果を地域被害・城郭・米の移転・村の反応に接続し、証拠を受けた者だけが発覚を知る",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DestructiveSchemes.cs",
+        "Core/Contracts/InformationSchemes.cs",
+        "Tests/DestructiveSchemesTests.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/DestructiveSchemesCheck.cs",
+        "Docs/Design/DestructiveSchemesV1/verification.json"
+      ]
+    },
+    {
+      "contract": "実行・返報途中の保存復旧、重複実行防止、旧保存、通常画面を代表例で確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DestructiveSchemes.cs",
+        "Core/Contracts/InformationSchemes.cs",
+        "Tests/DestructiveSchemesTests.cs",
+        "Game/Scripts/NewGameRuntime.InformationSchemes.cs",
+        "Game/Scripts/DestructiveSchemesCheck.cs",
+        "Docs/Design/DestructiveSchemesV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "各計略の損傷・持出量・煽動期間は試作値。証拠経路は現地目撃・口伝・実行者の帰還返報を確認。捕縛自白・押収・組織的な処分、全国長期試遊と全件検査は未実施。"
+}

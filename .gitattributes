@@ -2300,3 +2300,6 @@ Docs/Development/ProgressV1/approval-baseline-v72.json -text
 Docs/Design/CastleSiegeV1/* -text
 Core/Contracts/CastleSiege*.cs -text
 Tests/CastleSiegeTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v73.json -text
+Docs/Design/DestructiveSchemesV1/* -text

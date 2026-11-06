@@ -14,9 +14,27 @@ public partial class NewGameRuntime
   void Run(SchemeInput i){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageScheme(i,rev);message.Text=r.VisibleReason;GD.Print("SCHEME_RESULT "+i.Action+" "+r.Code+" "+r.VisibleReason);Refresh();ShowInformationSchemes();}
   EntityId Nonce(string key)=>new("request:scheme-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   SocialText(box,"噂・書状の記載・本人の照合結果は別です。未確認情報で処分・離反・開戦を自動的に決めません。");
-  var known=w.Characters.Select(c=>c.Id).Where(p=>p!=actor&&(SocialWorld.Site(w,p)==site||SocialWorld.Facts(w,actor,p).Length>0)).ToArray();
+  if(CastleSiege.Enabled(w)&&MaterialMarkets.Sites(w).Contains(site.Value))
+  {
+      var operations=Enum.GetValues<SchemeTopic>().Where(DestructiveSchemes.Operation).ToArray();
+      var choice=new OptionButton();
+      foreach(var op in operations)choice.AddItem(DestructiveSchemes.Name(op));
+      box.AddChild(choice);
+      SocialText(box,"現地での手応え："+DestructiveSchemes.Prospect(w,actor,site.Value));
+      Button("local-operation","選んだ計略を現地で試みる",()=>Run(new(Nonce("operation"),SchemeAction.ExecuteOperation,actor,site.Value,operations[choice.Selected])));
+      var delegates=SocialWorld.CarrierChoices(w,actor).Where(p=>p!=actor).ToArray();
+      var targets=MaterialMarkets.Sites(w).Where(p=>p!=site).ToArray();
+      if(delegates.Length>0&&targets.Length>0)
+      {
+          var who=new OptionButton();foreach(var p in delegates)who.AddItem(MeritRewards.DisplayName(w,actor,p));box.AddChild(who);
+          var where=new OptionButton();foreach(var target in targets)where.AddItem(NewGameWorld.SiteName(target.Value));box.AddChild(where);
+          Button("delegate-operation","選んだ者に現地の実行を任せる",()=>Run(new(Nonce("delegate"),SchemeAction.SendScout,delegates[who.Selected],actor,operations[choice.Selected],Destination:targets[where.Selected])));
+      }
+      var last=w.Schemes?.Events.LastOrDefault(e=>e.Actor==actor&&e.Input.Action==SchemeAction.ExecuteOperation);
+      if(last!=null)SocialText(box,DestructiveSchemes.Outcome(w,last));
+  }  var known=w.Characters.Select(c=>c.Id).Where(p=>p!=actor&&(SocialWorld.Site(w,p)==site||SocialWorld.Facts(w,actor,p).Length>0)).ToArray();
   if(known.Length>0){var receiver=new OptionButton();var subject=new OptionButton();foreach(var person in known){string name=MeritRewards.DisplayName(w,actor,person);receiver.AddItem("話す・渡す相手："+name);subject.AddItem("話題とする人物："+name);}box.AddChild(receiver);box.AddChild(subject);EntityId Person()=>known[receiver.Selected];EntityId Subject()=>known[subject.Selected];
-   var topic=new OptionButton();foreach(var t in Enum.GetValues<SchemeTopic>())topic.AddItem(InformationSchemes.Statement(t));box.AddChild(topic);SchemeInput Input(string key,SchemeAction action,EntityId? person=null,EntityId? reference=null)=>new(Nonce(key),action,person??Person(),Subject(),(SchemeTopic)topic.Selected,reference);
+   var topic=new OptionButton();foreach(var t in Enum.GetValues<SchemeTopic>().Where(t=>!DestructiveSchemes.Operation(t)))topic.AddItem(InformationSchemes.Statement(t));box.AddChild(topic);SchemeInput Input(string key,SchemeAction action,EntityId? person=null,EntityId? reference=null)=>new(Nonce(key),action,person??Person(),Subject(),(SchemeTopic)topic.Selected,reference);
    Button("whisper","現地の相手に、選んだ噂を流す",()=>Run(Input("whisper",SchemeAction.Whisper)));
    Button("write","自分の名義でこの内容の書状を書く",()=>Run(Input("write",SchemeAction.WriteLetter,actor)));
    Button("forge","選んだ相手の名義を装った書状を作る",()=>Run(Input("forge",SchemeAction.ForgeLetter)));
@@ -28,7 +46,7 @@ public partial class NewGameRuntime
   }
   var temple=SocialWorld.Temple(w,site.Value);Button("temple-info","現地の寺社代表が知る寄進・保護の経緯を聞く",()=>Run(new(Nonce("temple"),SchemeAction.QueryTemple,temple.Representative,actor)));
   var agents=SocialWorld.CarrierChoices(w,actor).Where(p=>p!=actor).ToArray();if(agents.Length>0){var choice=new OptionButton();foreach(var a in agents)choice.AddItem("同意した密偵："+MeritRewards.DisplayName(w,actor,a));box.AddChild(choice);var destinations=NationalRoutes.Nodes.Where(n=>RegionalCampaign.Site(n.Id)!=site).ToArray();var destination=new OptionButton();foreach(var n in destinations)destination.AddItem("現地の陸路を調べる："+NewGameWorld.SiteName(RegionalCampaign.Site(n.Id).Value));box.AddChild(destination);Button("send-scout","密偵を実際に派遣する（海路は使わない）",()=>Run(new(Nonce("scout"),SchemeAction.SendScout,agents[choice.Selected],actor,Destination:RegionalCampaign.Site(destinations[destination.Selected].Id))));}
-  foreach(var mission in w.Schemes?.Events.Where(e=>e.Actor==actor&&e.Input.Action==SchemeAction.SendScout)??[]){string id=InformationSchemes.ReportId(mission.Input.Id);var received=Session.GetActorView(actor).Messages.SingleOrDefault(m=>m.Id.Value==id);SocialText(box,received==null?"密偵へ依頼済み。帰還・返報はまだ確認していません。":received.KnownBody==null?"密偵から返報が届きました。中身は未開封です。":"密偵の返報を開封しました。観測された時点の道路情報として地図へ反映しています。");if(received?.KnownBody==null&&received!=null)Button("open-scout","届いた密偵の返報を開く",()=>{CancelAdvancePrefetch();var r=Session.Open(actor,new(id),rev);message.Text=r.VisibleReason;Refresh();ShowInformationSchemes();});}
+  foreach(var mission in w.Schemes?.Events.Where(e=>e.Actor==actor&&e.Input.Action==SchemeAction.SendScout)??[]){string id=InformationSchemes.ReportId(mission.Input.Id);var received=Session.GetActorView(actor).Messages.SingleOrDefault(m=>m.Id.Value==id);SocialText(box,received==null?"密偵へ依頼済み。帰還・返報はまだ確認していません。":received.KnownBody==null?"密偵から返報が届きました。中身は未開封です。":DestructiveSchemes.Operation(mission.Input.Topic)?string.Join("、",w.Evidence.Where(e=>e.Observer==actor&&e.Message?.Value==id).Select(e=>e.Claim)):"密偵から道路の観測結果が届きました。");if(received?.KnownBody==null&&received!=null)Button("open-scout","届いた密偵の返報を開く",()=>{CancelAdvancePrefetch();var r=Session.Open(actor,new(id),rev);message.Text=r.VisibleReason;Refresh();ShowInformationSchemes();});}
   SocialText(box,"自分で調べる場合は、地図の現在地に隣接する道の確認を使います。密偵も同じ現地の道路観測を使い、蔵の在庫や他人の内心は調べません。");
  }
 }
