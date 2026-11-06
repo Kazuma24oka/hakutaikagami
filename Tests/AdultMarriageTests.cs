@@ -5,7 +5,26 @@ public sealed class AdultMarriageTests
 {
     static readonly EntityId Player=new("created:test"),Other=new("created:other"),Third=new("created:third");
     static RegisteredOfficer Officer(string id,bool declared=true)=>NewGameWorldTests.Officer(id) with{InitialMaritalStatus=declared?InitialMaritalStatus.Unmarried:null};
-    static WorldSession Start(ulong seed=42,bool on=true,bool declared=true,bool lord=false,bool minor=false,bool absent=false,int? comingOfAge=null,bool grandparents=false){var a=Officer(Player.Value) with{Role=lord?StartTemplate.Daimyo:StartTemplate.Ronin,FactionName=lord?"鏡山家":null};var b=Officer(Other.Value,declared) with{BirthYear=minor?1550:1520,Site=absent?"site:kofu":"site:castle"};var third=Officer(Third.Value);if(grandparents){a=a with{BirthParents=[third.Id]};third=third with{BirthYear=1490,Site="site:kyoto"};}var setup=NewGameWorldTests.Setup([a,b,third],lord?[new(a.Id,"org:created-test",[a.Site],false)]:[]);return new(NewGameWorld.Create(setup.World,setup.Registered,a.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:on?AdultMarriage.Policy:null,comingOfAge:comingOfAge));}
+    static WorldSession Start(ulong seed=42,bool on=true,bool declared=true,bool lord=false,bool minor=false,bool absent=false,int? comingOfAge=null,bool grandparents=false,bool court=false){var a=Officer(Player.Value) with{Role=lord?StartTemplate.Daimyo:StartTemplate.Ronin,FactionName=lord?"鏡山家":null};var b=Officer(Other.Value,declared) with{BirthYear=minor?1550:1520,Site=absent?"site:kofu":"site:castle"};var third=Officer(Third.Value);if(court)third=third with{Role=StartTemplate.Retainer,Lord=a.Id};if(grandparents){a=a with{BirthParents=[third.Id]};third=third with{BirthYear=1490,Site="site:kyoto"};}var setup=NewGameWorldTests.Setup([a,b,third],lord?[new(a.Id,"org:created-test",[a.Site],false)]:[]);return new(NewGameWorld.Create(setup.World,setup.Registered,a.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:on?AdultMarriage.Policy:null,comingOfAge:comingOfAge,economyPolicy:court?HouseSuccession.Policy:null));}
+    [Fact]
+    public void EnactedMarriageLawRequiresPetitionBeforeHouseApproval(){
+        var s=Start(Yes.Value,lord:true,court:true);
+        EntityId owner=new("org:created-test"),site=new("site:castle");
+        var proposal=new CourtInput(new("request:law-consult"),CourtAction.ConsultReform,Third,owner,site){Reform=ReformKind.MarriagePermission};
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        Good(s.ManageCourt(proposal,s.Revision));At(s,240);
+        Good(s.Open(Player,new(HouseReforms.Letter(proposal,HouseReforms.Answer)),s.Revision));
+        Good(s.ManageCourt(new(new("request:enact-marriage-law"),CourtAction.EnactMarriageLaw,Third,owner,site,Reference:proposal.Id),s.Revision));
+        var marriage=Propose(s);At(s,s.Seconds+1);
+        Assert.Contains(owner,AdultMarriage.PendingPermissionRequests(s.DiagnosticSnapshot(),marriage));
+        Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.ApproveHouse,marriage,owner).Code);
+        Good(Act(s,MarriageAction.RequestPermission,marriage,owner));
+        s=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+        Assert.Empty(AdultMarriage.PendingPermissionRequests(s.DiagnosticSnapshot(),marriage));
+        Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Implement,marriage).Code);
+        Good(Act(s,MarriageAction.ApproveHouse,marriage,owner));
+        Good(Act(s,MarriageAction.Implement,marriage));
+    }
     static readonly Lazy<ulong> Yes=new(()=>Find(true)),No=new(()=>Find(false));
     static ulong Find(bool answer){for(ulong n=1;n<100;n++){var w=Start(n).DiagnosticSnapshot();if((CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Affection)>=80)==answer)return n;}throw new Exception("Missing branch seed");}
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);

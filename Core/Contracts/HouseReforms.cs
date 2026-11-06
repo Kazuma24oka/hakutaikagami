@@ -65,7 +65,11 @@ public static class HouseReforms
             (e.Actor==viewer || e.Input.Reference is {} id && MessageFlow.Knows(w.Messaging,id.Value,viewer.Value)));
 
     public static bool LetterLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
-        HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.EnactLetterLaw &&
+        LawAt(w,CourtAction.EnactLetterLaw,owner,site,at,revision);
+    public static bool MarriageLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
+        LawAt(w,CourtAction.EnactMarriageLaw,owner,site,at,revision);
+    static bool LawAt(ContractWorld w,CourtAction law,EntityId owner,EntityId site,long at,long revision)=>
+        HouseholdCourt.Events(w).Any(e=>e.Input.Action==law &&
             e.Input.Owner==owner && e.Input.Site==site && (e.At<at || e.At==at && e.Revision<revision) &&
             w.LandRights.Any(r=>r.Subject==owner && r.Target==site && r.Kind=="control" &&
                 r.From<=e.At && at<r.Until));

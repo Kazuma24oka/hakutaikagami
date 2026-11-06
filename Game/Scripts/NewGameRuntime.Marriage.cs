@@ -20,6 +20,7 @@ public partial class NewGameRuntime
             Text($"婚姻による縁戚：{CastleOwnerName(world,connection.FirstHouse)}と{CastleOwnerName(world,connection.SecondHouse)}");
         foreach(var card in AdultMarriage.View(world)){
             Text("当人："+PersonName(card.First)+" ／ 相手："+PersonName(card.Second));Text(card.Status);
+            foreach(var house in AdultMarriage.PendingPermissionRequests(world,card.Id))Button("婚姻の許可を願い出る",()=>Act(MarriageAction.RequestPermission,root:card.Id,house:house));
             foreach(var house in card.OwnHouseApprovals)Button("自分が代表する家として承諾する",()=>Act(MarriageAction.ApproveHouse,root:card.Id,house:house));
             if(card.CanImplement)Button("現地で婚姻を実施する",()=>Act(MarriageAction.Implement,root:card.Id));
             if(card.CanWithdraw)Button("この相談を取り下げる",()=>Act(MarriageAction.Withdraw,root:card.Id));

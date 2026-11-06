@@ -179,6 +179,8 @@ public partial class NewGameRuntime
       SocialText(box,"承諾済みの条件で移封の命令書を発送済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.AbolishBarrier&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この道路の関所を撤廃済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactMarriageLaw&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"この拠点では婚姻に許可願が必要です");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactLetterLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この拠点で他国との私信を禁じる家法が発効済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.OpenLocalMarket&&d.Input.Reference==e.Input.Id))
@@ -190,6 +192,8 @@ public partial class NewGameRuntime
        Button("transfer-"+e.Input.Id,"承諾された条件で移封を発令する",()=>Run(Command("issue-transfer/"+e.Input.Id,CourtAction.IssueTransfer,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.RemoveBarrier && e.Input.BarrierEdge is {} edge && HouseReforms.BarrierAt(w,edge,w.ElapsedSeconds,rev+1)!=null)
        Button("remove-barrier-"+e.Input.Id,"相談した道路の関所を撤廃する",()=>Run(Command("remove-barrier/"+e.Input.Id,CourtAction.AbolishBarrier,e.Input.Person,reference:e.Input.Id) with{BarrierEdge=edge}));
+      if(e.Input.Reform==ReformKind.MarriagePermission && !HouseReforms.MarriageLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
+       Button("marriage-law-"+e.Input.Id,"この拠点で婚姻を許可制にする",()=>Run(Command("marriage-law/"+e.Input.Id,CourtAction.EnactMarriageLaw,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.ForeignLetters && !HouseReforms.LetterLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
        Button("law-"+e.Input.Id,"この拠点で他国との私信を禁じる",()=>Run(Command("law/"+e.Input.Id,CourtAction.EnactLetterLaw,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.OpenMarket && !HouseReforms.OpenMarketAt(w,e.Input.Site,w.ElapsedSeconds,rev+1))
