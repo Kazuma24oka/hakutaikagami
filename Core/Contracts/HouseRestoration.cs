@@ -40,12 +40,24 @@ public static class HouseRestoration
     }
 
     internal static bool IsEscort(CourtAction action) => action is CourtAction.OfferRestorationEscort
-        or CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort;
+        or CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort or CourtAction.ReleaseRestorationEscort;
 
     internal static void CheckEscort(ContractWorld world, CourtInput input, EntityId actor, EntityId site, long at, long revision)
     {
         var history = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
         var source = history.SingleOrDefault(e => e.Input.Id == input.Reference);
+        if (input.Action == CourtAction.ReleaseRestorationEscort)
+        {
+            if (source == null || source.Input.Action != CourtAction.AcceptRestorationEscort ||
+                source.Actor != actor || source.Input.Person != input.Person || source.Input.Owner != input.Owner ||
+                source.Input.When != input.When || at >= input.When || site != input.Site ||
+                !TransportWork.At(world, actor, site, at, revision, true) ||
+                !TransportWork.At(world, input.Person, site, at, revision, true) ||
+                Assassination.DeadAt(world, input.Person, at, revision) ||
+                EscortReleased(world, source.Input.Id, revision))
+                throw new InvalidDataException("警護期間中に依頼者本人が後援家の指揮者と会い、元の合意を示してください");
+            return;
+        }
         if (source == null || source.Place != site || site != input.Site || input.When <= at ||
             !TransportWork.At(world, actor, site, at, revision, true) ||
             !TransportWork.At(world, input.Person, site, at, revision, true) ||
@@ -66,6 +78,10 @@ public static class HouseRestoration
             history.Any(e => IsEscort(e.Input.Action) && e.Input.Reference == input.Reference))
             throw new InvalidDataException("宛先本人が未回答の同一条件を確認してください");
     }
+
+    internal static bool EscortReleased(ContractWorld world, EntityId agreement, long beforeRevision) =>
+        HouseholdCourt.Events(world).Any(e => e.Revision < beforeRevision &&
+            e.Input.Action == CourtAction.ReleaseRestorationEscort && e.Input.Reference == agreement);
 
     internal static bool IsRice(CourtAction action) =>
         action is CourtAction.PledgeRestorationRice or CourtAction.HandOverRestorationRice;

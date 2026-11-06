@@ -22,7 +22,7 @@ public static class RestorationEscort
         var request = world.Requests.SingleOrDefault(r => r.Id == intent.RequestId);
         var revision = request == null ? world.CommitSequence : request.CommitSequence - 1;
         var authority = FactionStances.ResolveAuthority(world, intent.Actor, agreement.Input.Owner, intent.EffectiveAt, revision);
-        return authority != null && agreement.Revision <= revision && intent.DestinationSite == authority.Home;
+        return authority != null && agreement.Revision <= revision && !HouseRestoration.EscortReleased(world, agreement.Input.Id, revision + 1) && intent.DestinationSite == authority.Home;
     }
 
     public static Intent PlanHomeJourney(ContractWorld world, CourtEvent agreement)
@@ -49,7 +49,8 @@ public static class RestorationEscort
     {
         var agreement = HouseholdCourt.Events(world).SingleOrDefault(e => e.Input.Id == agreementId &&
             e.Input.Action == CourtAction.AcceptRestorationEscort);
-        if (agreement == null || world.ElapsedSeconds >= agreement.Input.When)
+        if (agreement == null || world.ElapsedSeconds >= agreement.Input.When ||
+            HouseRestoration.EscortReleased(world, agreementId, world.CommitSequence + 1))
             throw new InvalidDataException("期限内の警護合意が必要です");
         NpcArmies.Muster(world, MusterId(agreementId), agreement.Input.Person, agreement.Input.Owner);
     }
@@ -82,10 +83,11 @@ public static class RestorationEscort
             var muster = NpcArmies.Musters(world).SingleOrDefault(m => m.Id == id);
             var location = world.Locations.SingleOrDefault(l => l.Actor == commander && l.Kind == LocationKind.AtSite)?.Site;
             if (location == null) continue;
+            bool released = HouseRestoration.EscortReleased(world, agreement.Input.Id, world.CommitSequence + 1);
             if (muster == null)
             {
                 var authority = FactionStances.ResolveAuthority(world, commander, agreement.Input.Owner, world.ElapsedSeconds, world.CommitSequence);
-                if (world.ElapsedSeconds >= agreement.Input.When || authority == null ||
+                if (released || world.ElapsedSeconds >= agreement.Input.When || authority == null ||
                     NpcArmies.CommanderBusyAt(world, commander, world.ElapsedSeconds, world.CommitSequence) ||
                     NpcArmies.HoldsGarrison(world, agreement.Input.Owner, authority.Home)) continue;
                 if (authority.Home == location)
@@ -104,7 +106,7 @@ public static class RestorationEscort
                 continue;
             }
             if (world.NpcArmies!.Returns.Any(r => r.Muster == id)) continue;
-            bool recall = world.ElapsedSeconds >= agreement.Input.When ||
+            bool recall = released || world.ElapsedSeconds >= agreement.Input.When ||
                 NpcArmies.Consumed(world, muster) >= NpcArmies.CarryCapacity(world, muster) ||
                 FactionStances.ResolveAuthority(world, commander, muster.Owner, world.ElapsedSeconds, world.CommitSequence) == null;
             var destination = recall ? muster.Site : agreement.Place;

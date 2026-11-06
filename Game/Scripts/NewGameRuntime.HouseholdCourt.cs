@@ -33,7 +33,12 @@ public partial class NewGameRuntime
      var escort=history.LastOrDefault(e=>e.Input.Action==CourtAction.OfferRestorationEscort && e.Input.Reference==reply.Input.Id);
      if(escort!=null){
       var response=history.SingleOrDefault(e=>e.Input.Reference==escort.Input.Id && e.Input.Action is CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort);
-      SocialText(box,"後援家の現地警護："+(escort.Input.When<=w.ElapsedSeconds?"期限終了":response==null?"条件提示中":response.Input.Action==CourtAction.AcceptRestorationEscort?"合意済み":"辞退"));
+      var released=response!=null && history.Any(e=>e.Input.Action==CourtAction.ReleaseRestorationEscort && e.Input.Reference==response.Input.Id);
+      if(!released && response?.Input.Action==CourtAction.AcceptRestorationEscort && actor==response.Actor && SocialWorld.Site(w,peer)==site && escort.Input.When>w.ElapsedSeconds){
+       var key="release-escort/"+response.Input.Id.Value;
+       Button(key,"指揮者に警護の終了を伝える",()=>Run(new(Nonce(key),CourtAction.ReleaseRestorationEscort,peer,escort.Input.Owner,site.Value,Reference:response.Input.Id,When:escort.Input.When)));
+      }
+      SocialText(box,"後援家の現地警護："+(released?"指揮者に終了を伝達済み":escort.Input.When<=w.ElapsedSeconds?"期限終了":response==null?"条件提示中":response.Input.Action==CourtAction.AcceptRestorationEscort?"合意済み":"辞退"));
       if(response?.Input.Action==CourtAction.AcceptRestorationEscort && RestorationEscort.WitnessedAtAssembly(w,actor,response) is >0 and var soldiers)
        SocialText(box,$"集合地で確認した後援家の兵：{soldiers}人");
       if(response==null && actor==escort.Input.Person && site==ask.Place && SocialWorld.Site(w,peer)==site && escort.Input.When>w.ElapsedSeconds)

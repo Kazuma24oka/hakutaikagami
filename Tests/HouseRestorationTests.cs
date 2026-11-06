@@ -97,6 +97,19 @@ public sealed class HouseRestorationTests
         Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(expired, accept, heir));
         HouseholdCourt.Execute(w, accept, heir);
         Assert.Empty(NpcArmies.Musters(w));
+        w.CommitSequence++;
+        var release = new CourtInput(new("request:release"), CourtAction.ReleaseRestorationEscort, lord, sponsor, site,
+            Reference: accept.Id, When: accept.When);
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, release, lord));
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, release with { Site = new("site:kofu") }, heir));
+        var balances = (HouseSalary.PrivateRice(w, heir), HouseSalary.PrivateRice(w, lord));
+        HouseholdCourt.Execute(w, release, heir);
+        var afterRelease = ContractJson.Copy(w);
+        afterRelease.CommitSequence++;
+        Assert.Throws<InvalidDataException>(() => RestorationEscort.Muster(afterRelease, accept.Id));
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(afterRelease, release with { Id = new("request:release-twice") }, heir));
+        Assert.Equal(balances, (HouseSalary.PrivateRice(afterRelease, heir), HouseSalary.PrivateRice(afterRelease, lord)));
+
     }
     [Fact]
     public void EscortMustersOnlyOnceUnderSponsorCommandAndReturnsItsOwnGarrison()
