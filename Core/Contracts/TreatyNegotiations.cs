@@ -2,7 +2,11 @@ using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 [Flags]public enum TreatyClause { None=0,NonAggression=1,Passage=2,Supply=4,Defense=8 }
 public enum TreatyAction { Propose, Accept, Decline, Counter, Confirm }
-public sealed record SubmissionConditions(bool GuaranteeLands,int MusterMen,long TributeRice,bool RestrictDiplomacy,EntityId? Hostage);
+public sealed record SubmissionConditions(bool GuaranteeLands,int MusterMen,long TributeRice,bool RestrictDiplomacy,EntityId? Hostage)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EntityId? Precedent {get;init;}
+}
 public sealed record TreatyInput(EntityId Id,TreatyAction Action,EntityId Owner,EntityId Target,EntityId? Source=null,int Days=0,TreatyClause Clauses=TreatyClause.None,int NoticeDays=0)
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -48,6 +52,18 @@ public static partial class TreatyNegotiations
         int score=(conditions.GuaranteeLands?3:0)+Math.Clamp(trust/20,-3,3);
         if(paper.Terms.DeclaredScale is {} declared)
             score+=Math.Clamp((int)declared-(int)HouseScaleNotices.Known(w,paper.Recipient,paper.Input.Target,at,revision),-2,2);
+        // 返答当時の宛先で当主自身が見られた部隊だけを数える。
+        if(w.Branches!=null && (w.NpcArmies!=null || w.NewMilitary!=null) &&
+            BranchRoutes.GraphNodes(w).Any(n=>RegionalCampaign.Site(n.Id)==paper.Address) &&
+            TransportWork.At(w,paper.Recipient,paper.Address,at,revision)){
+            int approaching=CastleHandover.Forces(w,paper.Input.Owner,paper.Address,at,revision);
+            int defenders=CastleHandover.Forces(w,paper.Input.Target,paper.Address,at,revision);
+            if(approaching>defenders)score+=Math.Min(4,1+(approaching-defenders)/50);
+        }
+        if(conditions.Precedent!=null)score++;
+        // 自家が発した敵対宣言を根拠に、相手の防衛上の大義を認める。
+        if(FactionStances.OwnAt(w,paper.Recipient,at,revision).Any(c=>c.FromOwner==paper.Input.Target &&
+            c.ToOwner==paper.Input.Owner && c.EffectiveFrom<=at && at<c.Until))score++;
         if(conditions.RestrictDiplomacy)score-=2;
         if(conditions.Hostage!=null)score-=3;
         score-=conditions.MusterMen>100?4:conditions.MusterMen>0?1:0;
@@ -68,10 +84,14 @@ public static partial class TreatyNegotiations
         if(i.Submission is {} demand){
             Need(i.Action==TreatyAction.Propose,"従属条件は勧告の原本に記します");
             Need(demand.MusterMen>=0 && demand.TributeRice>=0 && (demand.MusterMen>0 || demand.TributeRice>0 || demand.RestrictDiplomacy || demand.Hostage!=null || demand.GuaranteeLands),"勧告に有効な条件が必要です");
+            if(demand.Precedent is {} example)
+                Need(Known(w,actor,at,Math.Min(w.CommitSequence,rev-1)).Any(f=>f.Acceptance==example && f.Terms.A==i.Owner &&
+                    f.Terms.B!=i.Target && f.Terms.Submission!=null && at<f.Terms.Until &&
+                    !KnowsEnding(w,actor,f.Acceptance,at,rev-1)),"先例には当主が成立を確認した別家への勧告を指定してください");
             if(demand.Hostage is {} hostage)
-                Need(w.Characters.Any(c=>c.Id==hostage) && w.Memberships.Any(m=>m.Subject==hostage && m.Target==i.Target && m.From<=at && at<m.Until),"人質の候補は相手の家に所属する人物を指定してください");
+                Need(w.NewGame!.Start.People.Any(person=>person.Id==hostage.Value && person.Faction==i.Target.Value),"人質の候補は公知の開始名簿にある相手方の人物を指定してください");
         }
-        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl,"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need(i.Clauses!=TreatyClause.None&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
+        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl,"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
         else{
             var source=PapersAt(w,at,rev).SingleOrDefault(p=>p.Input.Id==i.Source);Need(source!=null&&source.Recipient==actor&&source.Input.Owner==i.Target&&source.Input.Target==i.Owner&&Opened(w,source,actor,at,rev),"本人に到達して開封した同一原本が必要です");
             Need(!PapersAt(w,at,rev).Any(p=>p.Input.Id!=i.Id&&p.Input.Source==source.Input.Id&&p.Author==actor),"この版には既に返答しています");
