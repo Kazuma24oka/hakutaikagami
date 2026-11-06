@@ -28,6 +28,8 @@ public partial class NewGameRuntime
               }
           }
       }
+      foreach(var (letter,_) in ExileLetters.Pending(w,true))
+          Button(letter.Id.Value,"京の当主に将軍職の正統を主張する御内書を送る",()=>Run(letter));
       foreach(var agreement in PeaceMediation.Agreements(w,actor))
           Button(agreement.Id.Value,agreement.Action==CourtAction.ReportPeaceRefusal?"拒否の返書を確認し相手方に知らせる":"両家の承諾を確認し成立通知を送る",()=>Run(agreement));
       foreach(var pact in PeaceMediation.Known(w,actor,w.ElapsedSeconds,rev))

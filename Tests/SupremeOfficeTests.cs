@@ -38,6 +38,18 @@ public sealed class SupremeOfficeTests
         foreach(var run in new[]{game,travellingSave}){
             NewGameWorldTests.At(run,trip.Legs[^1].EndAt+1);
             Assert.Equal(TempleMilitary.Site,SocialWorld.Site(run.DiagnosticSnapshot(),CentralCourtCatalog.Shogun));
+            NewGameWorldTests.At(run,run.Seconds+2);
+            var sent=run.DiagnosticSnapshot();
+            var letter=Assert.Single(sent.Messaging.Messages,m=>m.Kind==ExileLetters.Kind);
+            var mission=sent.Couriers!.Missions.Single(m=>sent.Messaging.Attempts.Any(a=>a.Id==m.Attempt && a.MessageId==letter.Id));
+            Assert.Equal("kyoto",mission.Destination);
+            Assert.Equal(ResultCode.NotAvailable,run.Open(run.PlayerControl,new(letter.Id),run.Revision).Code);
+            NewGameWorldTests.At(run,mission.ReadyAt+1);
+            Assert.Equal(ResultCode.Accepted,run.Open(run.PlayerControl,new(letter.Id),run.Revision).Code);
+            var receipt=run.DiagnosticSnapshot();
+            Assert.Null(SupremeOffice.ShogunAt(receipt,run.Seconds,run.Revision));
+            Assert.Contains(run.GetActorView(run.PlayerControl).Messages,m=>m.Id.Value==letter.Id && m.KnownBody==letter.Body);
+            _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(receipt)));
         }
         Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(travellingSave.DiagnosticSnapshot()));
     }
