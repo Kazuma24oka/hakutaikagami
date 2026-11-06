@@ -54,10 +54,15 @@ public partial class NewGameRuntime
     var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);
     if(HouseReforms.AnswerKnown(w,e,actor)){
      SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
-     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
+     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.OpenLocalMarket&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"この市場で楽市を実施済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この相談案は見送り済み");
-     else if(head && site==e.Input.Site && house==e.Input.Owner)
+     else if(head && site==e.Input.Site && house==e.Input.Owner){
+      if(e.Input.Reform==ReformKind.OpenMarket && !HouseReforms.OpenMarketAt(w,e.Input.Site,w.ElapsedSeconds,rev+1))
+       Button("market-"+e.Input.Id,"現地で楽市を実施する",()=>Run(Command("market/"+e.Input.Id,CourtAction.OpenLocalMarket,e.Input.Person,reference:e.Input.Id)));
       Button("defer-"+e.Input.Id,"この相談案を見送る",()=>Run(Command("defer/"+e.Input.Id,CourtAction.DeferReform,e.Input.Person,reference:e.Input.Id)));
+     }
     }
     else if(w.Messaging.Receipts.Any(r=>r.MessageId==id&&r.ReceiverId==actor.Value))
      Button("reform-answer-"+e.Input.Id,"改革への返書を開く",()=>{Session.Open(actor,new(id),rev);Refresh();ShowHouseholdCourt();});

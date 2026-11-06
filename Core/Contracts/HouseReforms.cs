@@ -20,6 +20,12 @@ public static class HouseReforms
     public static bool AnswerKnown(ContractWorld w,CourtEvent proposal,EntityId viewer)=>
         MessageFlow.Knows(w.Messaging,Letter(proposal.Input,Answer),viewer.Value);
 
+    public static bool OpenMarketAt(ContractWorld w,EntityId site,long at,long revision)=>
+        HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.OpenLocalMarket && e.Input.Site==site &&
+            (e.At<at || e.At==at && e.Revision<revision) &&
+            w.LandRights.Any(r=>r.Kind=="control" && r.Subject==e.Input.Owner && r.Target==site &&
+                r.From<=e.At && r.From<=at && at<r.Until && r.Revision<=revision));
+
     static void Dispatch(ContractWorld w,CourtInput input,string kind,EntityId from,EntityId to,string body)
     {
         var address=FamilyBirth.People(w).Single(p=>p.Id==to.Value).Site;
