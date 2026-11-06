@@ -117,10 +117,11 @@ public sealed class HouseConditionTests
     }
 
     [Theory]
-    [InlineData(false,false)]
-    [InlineData(false,true)]
-    [InlineData(true,false)]
-    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied,bool exchange)
+    [InlineData(false,false,false)]
+    [InlineData(false,true,false)]
+    [InlineData(true,false,false)]
+    [InlineData(false,false,true)]
+    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied,bool exchange,bool residence)
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
         var officer=NewGameWorldTests.Officer("created:transfer-officer",StartTemplate.Castellan,lord:head.Id);
@@ -131,7 +132,7 @@ public sealed class HouseConditionTests
             workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
         EntityId lord=new(head.Id),person=new(officer.Id);
         var proposal=new CourtInput(new("request:actual-transfer"),CourtAction.ConsultReform,person,owner,new(head.Site)){
-            Reform=ReformKind.Relocate,NewEstate=new("site:kofu")};
+            Reform=residence?ReformKind.CastleResidence:ReformKind.Relocate,NewEstate=new("site:kofu")};
         var levy=new CourtInput(new("request:old-levy"),CourtAction.GrantLevyShare,person,owner,proposal.Site,Amount:25);
         long offset=0;
         if(exchange){
@@ -186,7 +187,7 @@ public sealed class HouseConditionTests
             LevyGrant=levy.Id,Amount=25,Site=proposal.NewEstate!.Value};
         if(exchange)Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(replace,s.Revision).Code);
         var handed=s.ManageCourt(release,s.Revision);
-        Assert.True(handed.Code==(exchange?ResultCode.NotAvailable:ResultCode.Accepted),handed.VisibleReason);
+        Assert.True(handed.Code==(exchange||residence?ResultCode.NotAvailable:ResultCode.Accepted),handed.VisibleReason);
         var enter=new CourtInput(new("request:enter-office"),CourtAction.EnterCastleOffice,lord,owner,
             proposal.NewEstate!.Value,Reference:order.Id);
         Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);
@@ -201,6 +202,20 @@ public sealed class HouseConditionTests
             Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("journey"),host.Current,host.Current.Revision));
             s=host.Current;
             NewGameWorldTests.At(s,s.GetBranchView(person).ArrivalAt!.Value+2);
+            if(residence){
+                var arrival=s.DiagnosticSnapshot();
+                Assert.Equal(proposal.Site,HouseReforms.ResidenceAt(arrival,person,s.Seconds,s.Revision+1));
+                var settle=new CourtInput(new("request:settle-at-kofu"),CourtAction.SettleCastleResidence,lord,owner,enter.Site,Reference:order.Id);
+                var result=s.ManageCourt(settle,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+                Assert.True(store.Save(s,"residence",before.WorldId).Published);
+                Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("residence"),host.Current,host.Current.Revision));
+                var loaded=host.Current.DiagnosticSnapshot();
+                Assert.Equal(enter.Site,HouseReforms.ResidenceAt(loaded,person,loaded.ElapsedSeconds,loaded.CommitSequence+1));
+                Assert.Equal(ContractJson.Write(arrival.Offices),ContractJson.Write(loaded.Offices));
+                Assert.Equal(ContractJson.Write(arrival.LandRights),ContractJson.Write(loaded.LandRights));
+                Assert.Equal(ResultCode.NotAvailable,host.Current.ManageCourt(settle with{Id=new("request:repeat-residence")},host.Current.Revision).Code);
+                return;
+            }
             if(occupied){
                 Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);
                 var post=s.DiagnosticSnapshot().Offices.Single(o=>o.Subject.Value==incumbent.Id && o.Kind=="castellan");

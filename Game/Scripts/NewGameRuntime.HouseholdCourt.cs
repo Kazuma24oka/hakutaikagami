@@ -69,6 +69,12 @@ public partial class NewGameRuntime
     foreach(var job in baggage.HouseShipments)SocialText(box,$"家の運搬　{MaterialMarkets.Name(job.Terms.Commodity)} {job.Cargo} ／ 預かり金 {job.Cash}文 ／ 納入先 {NewGameWorld.SiteName(job.Terms.Home.Value)}");
     if(baggage.HouseShipments.Length>0)Button("transfer-freight-"+order.Input.Id,"家の仕入れ・納入の原本を開く",ShowHouseFreight);
    }
+   if(terms.Reform==ReformKind.CastleResidence){
+    SocialText(box,"現在の居所："+NewGameWorld.SiteName(HouseReforms.ResidenceAt(w,actor,w.ElapsedSeconds,rev+1).Value));
+    if(site==terms.NewEstate && HouseReforms.ResidenceAt(w,actor,w.ElapsedSeconds,rev+1)==terms.Site)
+     Button("reside-"+order.Input.Id,"この城下に居所を移す",()=>Run(new(Nonce("reside/"+order.Input.Id),CourtAction.SettleCastleResidence,order.Actor,terms.Owner,site.Value,Reference:order.Input.Id)));
+    continue;
+   }
    if(terms.LevyGrant is {} oldGrant){
     if(site==terms.NewEstate && HouseReforms.LevyEnd(w,oldGrant)==long.MaxValue)
      Button("exchange-"+order.Input.Id,"新領で徴収米の給付原本を切り替える",()=>Run(new CourtInput(Nonce("exchange/"+order.Input.Id),
@@ -165,7 +171,7 @@ public partial class NewGameRuntime
     var estate=new OptionButton();foreach(var dest in destinations)estate.AddItem("新領："+NewGameWorld.SiteName(dest.Value));
     if(destinations.Length==0)estate.AddItem("指定できる新領なし");
     box.AddChild(estate);
-    void ShowEstate()=>estate.Visible=kinds[reform.Selected] is ReformKind.Relocate or ReformKind.ChangeFief;
+    void ShowEstate()=>estate.Visible=kinds[reform.Selected] is ReformKind.Relocate or ReformKind.ChangeFief or ReformKind.CastleResidence;
     reform.ItemSelected+=_=>ShowEstate();ShowEstate();
     CourtEvent? OfferedLevy()=>kinds[reform.Selected]==ReformKind.ChangeFief?HouseReforms.LevyGrants(w).SingleOrDefault(g=>
         g.Input.Person==roster[persons.Selected] && g.Place==site && g.Input.Owner==house && HouseReforms.LevyEnd(w,g.Input.Id)==long.MaxValue):null;
