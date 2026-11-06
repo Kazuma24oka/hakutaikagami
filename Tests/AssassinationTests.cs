@@ -127,4 +127,35 @@ public sealed class AssassinationTests
         }
         Assert.Equal(ContractJson.Write(restored.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
     }
+    [Fact] public void PersonalMoveIssuedBeforeDeathCannotStartAfterDelivery()
+    {
+        EntityId victim=new("created:test"),attacker=new("created:contact"),site=new("site:kyoto");
+        var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(site:site.Value),NewGameWorldTests.Officer(attacker.Value,site:site.Value)]);
+        var s=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,victim.Value,5,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleSiege.Policy));
+        var move=TravelWorld.Move(s.DiagnosticSnapshot(),"request:last-move","akutagawa");
+        Assert.Equal(ResultCode.Accepted,s.Submit(move,s.Revision).Code);
+        var w=s.DiagnosticSnapshot();
+        var sight=new SchemeInput(new("request:sight"),SchemeAction.ObservePerson,attacker,victim);
+        var contact=sight with{Id=new("request:contact"),Action=SchemeAction.SeekContact,Reference=sight.Id};
+        foreach(var input in new[]{sight,contact,contact with{Id=new("request:attack"),Action=SchemeAction.AttemptAssassination,Reference=contact.Id}})
+        {
+            w.CommitSequence++;
+            InformationSchemes.Execute(w,input,attacker);
+        }
+        Assert.Equal(LifeState.Dead,w.Characters.Single(c=>c.Id==victim).Life);
+        var original=new WorldSession(w);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        foreach(var branch in new[]{original,restored})
+        {
+            NewGameWorldTests.At(branch,move.EffectiveAt+move.DeliverySeconds+2);
+            var end=branch.DiagnosticSnapshot();
+            Assert.Equal(NewGameWork.InitialCoins,NewGameWork.Balance(end,victim));
+            Assert.DoesNotContain(end.Branches!.Journeys,j=>j.Actor==victim);
+            var task=Assert.Single(end.Tasks,t=>t.RequestId==move.RequestId);
+            Assert.True(task.Execution is ExecutionPhase.Stopped or ExecutionPhase.Failed,task.Execution.ToString());
+            Assert.Equal(site,end.Locations.Single(l=>l.Actor==victim).Site);
+        }
+        Assert.Equal(ContractJson.Write(original.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
 }
