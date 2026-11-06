@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment,AskCourtIntroduction,AcceptCourtIntroduction,DeclineCourtIntroduction }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment,AskCourtIntroduction,AcceptCourtIntroduction,DeclineCourtIntroduction,FileRankPetition,IssueCourtRank,RejectCourtRank }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -416,6 +416,7 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.PrivateCompanyPayment)throw new InvalidDataException("糧食の精算は契約満了時に自動で行います");
   else if(i.Action==CourtAction.KeepPrivateCompany)PrivateRecruitment.CheckStanding(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(CentralRank.Handles(i.Action))throw new InvalidDataException("朝廷の発給原本は手動で作成できません");
   else if(CentralMediation.Handles(i.Action))CentralMediation.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -479,6 +480,7 @@ public static class HouseholdCourt
  {
   if(w.Court==null)return;
   PrivateRecruitment.SettleDue(w);
+  CentralRank.Process(w);
   MusterNotices.Assemble(w);
   foreach(var reply in CentralMediation.Pending(w))Attempt(w,reply,CentralCourtCatalog.CourtBroker);
   foreach(var reply in HouseholdDetachment.Replies(w))Attempt(w,reply.Input,reply.Actor);
@@ -515,7 +517,7 @@ public static class HouseholdCourt
    }
   }
  }
- internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action is CourtAction.Convene or CourtAction.SendMusterNotice).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Concat(PrivateRecruitment.DueDates(w)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
+ internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action is CourtAction.Convene or CourtAction.SendMusterNotice).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Concat(CentralRank.FilingDates(w)).Concat(CentralRank.Due(w)).Concat(PrivateRecruitment.DueDates(w)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
  internal static void Rewind(ContractWorld w,long at,long rev){CraftTrade.Rewind(w,at,rev);BrokerWork.Rewind(w,at,rev);if(w.Court!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray();w.Court=es.Length==0?null:w.Court with{Events=es};}}
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
@@ -592,6 +594,7 @@ public static class HouseholdCourt
    if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);Need(Received(w,proposal.Input.Id,e.Actor,e.At,e.Revision+1)&&es.Count(x=>x.Input.Reference==proposal.Input.Id&&x.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase)==1,"未受領または二重審査の案件です");if(i.Action==CourtAction.ApproveCase)Need(proposal.Input.Case==CourtCaseKind.RelieveVillage?w.Communities?.Orders.Any(o=>o.Input.Id==Id("effect",i.Id.Value)&&o.Actor==e.Actor&&o.Input.Amount==proposal.Input.Amount)==true:w.Domains?.Entries.Any(o=>o.Input.Id==Id("effect",i.Id.Value)&&o.Actor==e.Actor)==true,"承認した案件の実際の処分がありません");}
   }
   Need(!PrivateRecruitment.DueDates(w).Any(t=>t<=w.ElapsedSeconds),"私兵の糧食精算が欠落しています");
+  CentralRank.Validate(w);
   Need(SigningEscrow(w)>=0,"実在しない支度金を払い出しています");
  }
 }

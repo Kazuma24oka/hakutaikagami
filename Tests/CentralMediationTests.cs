@@ -49,6 +49,24 @@ public sealed class CentralMediationTests
             Assert.Equal(broker,reply.Actor);Assert.Equal(run.PlayerControl,reply.Input.Person);
             Assert.Equal(ResultCode.AlreadyAccepted,run.ManageCourt(ask,run.Revision).Code);
         }
+        if(gift){
+            foreach(var run in new[]{s,restored}){
+                NewGameWorldTests.At(run,run.Seconds+2);
+                var before=run.DiagnosticSnapshot();
+                var filed=Assert.Single(before.Court!.Events,e=>e.Input.Action==CourtAction.FileRankPetition);
+                NewGameWorldTests.At(run,filed.At+86400);
+                var issued=run.DiagnosticSnapshot();
+                Assert.Single(issued.Court!.Events,e=>e.Input.Action==CourtAction.IssueCourtRank);
+                Assert.Null(CentralRank.KnownRank(issued,run.PlayerControl));
+                var letter=Assert.Single(issued.Messaging.Messages,m=>m.Kind==CentralRank.ReplyKind);
+                NewGameWorldTests.At(run,run.Seconds+3);
+                Assert.Null(CentralRank.KnownRank(run.DiagnosticSnapshot(),run.PlayerControl));
+                var read=run.Open(run.PlayerControl,new(letter.Id),run.Revision);
+                Assert.True(read.Code==ResultCode.Accepted,read.VisibleReason);
+                Assert.Equal(CentralRank.RankName,CentralRank.KnownRank(run.DiagnosticSnapshot(),run.PlayerControl));
+                Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(run.DiagnosticSnapshot().LandRights));
+            }
+        }
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
 }

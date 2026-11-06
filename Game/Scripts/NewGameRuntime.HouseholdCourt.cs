@@ -16,6 +16,7 @@ public partial class NewGameRuntime
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
+      if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
       if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id || site!=CentralCourtCatalog.Kyoto){
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
       }
