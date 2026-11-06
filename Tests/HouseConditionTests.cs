@@ -5,6 +5,51 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void CrossHouseDispatchAfterLocalEnactmentLeavesEvidenceOnlyWithTheInformed()
+    {
+        var local=HouseholdCourtTests.Retainer;
+        var foreign=new EntityId("created:partner");
+        var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(local.Value,StartTemplate.Retainer,lord:"person:nobunaga"),
+            NewGameWorldTests.Officer(foreign.Value,StartTemplate.Retainer,"site:kofu","person:shingen")]);
+        for(ulong seed=0;seed<32;seed++){
+            var w=NewGameWorld.Create(setup.World,setup.Registered,"person:nobunaga",seed,
+                inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+                companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+                socialPolicy:CharacterRelations.Policy,economyPolicy:HouseSuccession.Policy);
+            var s=new WorldSession(w);
+            var consult=new CourtInput(new("request:local-consult"),CourtAction.ConsultReform,local,
+                HouseholdCourtTests.Owner,HouseholdCourtTests.Site){Reform=ReformKind.ForeignLetters};
+            Assert.Equal(ResultCode.Accepted,s.ManageCourt(consult,s.Revision).Code);
+            NewGameWorldTests.At(s,120);
+            Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,new(HouseReforms.Letter(consult,HouseReforms.Answer)),s.Revision).Code);
+            Assert.Equal(ResultCode.Accepted,s.ManageCourt(consult with{Id=new("request:local-law"),Action=CourtAction.EnactLetterLaw,
+                Reference=consult.Id,Reform=null},s.Revision).Code);
+            void Travel(string node){
+                Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:visit-"+node,node),s.Revision).Code);
+                NewGameWorldTests.At(s,s.Seconds+2);
+                NewGameWorldTests.At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);
+            }
+            Travel("kofu");
+            EntityId pact=new("request:cross-house");
+            Assert.Equal(ResultCode.Accepted,s.NegotiatePact(pact,foreign,PactPurpose.WithholdService,s.Revision).Code);
+            if(!s.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
+            Travel("castle");
+            Assert.Equal(ResultCode.Accepted,s.SignalPact(pact,s.Revision).Code);
+            var sent=s.DiagnosticSnapshot();
+            Assert.Single(HouseReforms.KnownLetterBreaches(sent,s.PlayerControl));
+            Assert.Empty(HouseReforms.KnownLetterBreaches(sent,foreign));
+            Assert.Empty(HouseReforms.KnownLetterBreaches(sent,local));
+            var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(sent)));
+            var arrival=sent.Messaging.Attempts.Last().DueAt;
+            NewGameWorldTests.At(restored,arrival+2);
+            Assert.Single(HouseReforms.KnownLetterBreaches(restored.DiagnosticSnapshot(),foreign));
+            Assert.Empty(HouseReforms.KnownLetterBreaches(restored.DiagnosticSnapshot(),local));
+            return;
+        }
+        Assert.Fail("密約を承諾する相手を確認できませんでした");
+    }
+
+    [Fact]
     public void ForeignLetterLawRequiresAnOpenedAnswerAndDoesNotApplyOutsideItsJurisdiction()
     {
         var s=HouseholdCourtTests.Start();

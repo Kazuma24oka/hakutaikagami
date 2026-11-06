@@ -20,6 +20,10 @@ public static class HouseReforms
     public static bool AnswerKnown(ContractWorld w,CourtEvent proposal,EntityId viewer)=>
         MessageFlow.Knows(w.Messaging,Letter(proposal.Input,Answer),viewer.Value);
 
+    public static IEnumerable<CourtEvent> KnownLetterBreaches(ContractWorld w,EntityId viewer)=>
+        HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.LetterBreach &&
+            (e.Actor==viewer || e.Input.Reference is {} id && MessageFlow.Knows(w.Messaging,id.Value,viewer.Value)));
+
     public static bool LetterLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.EnactLetterLaw &&
             e.Input.Owner==owner && e.Input.Site==site && (e.At<at || e.At==at && e.Revision<revision) &&

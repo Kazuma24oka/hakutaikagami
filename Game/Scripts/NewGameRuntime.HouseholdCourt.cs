@@ -40,8 +40,7 @@ public partial class NewGameRuntime
    if(report==null){SocialText(box,"この家の現地記録を確認できません。");return;}
    SocialText(box,NewGameWorld.SiteName(report.Site.Value)+" ／ "+WorldCalendar.Display(w.EpochDate,report.ObservedAt));
    SocialText(box,report.ControlsLocalSite?"主家がこの拠点を支配":"この拠点で主家の支配を確認できず");
-   foreach(var breach in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.LetterBreach &&
-       (e.Actor==actor || e.Input.Reference is {} letter && HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,letter.Value,actor.Value)))??[])
+   foreach(var breach in HouseReforms.KnownLetterBreaches(w,actor))
     SocialText(box,WorldCalendar.Display(w.EpochDate,breach.At)+" ／ 他国への私信を発送："+PersonName(breach.Actor)+" → "+PersonName(breach.Input.Person));
    foreach(var person in report.LocalLandholders)SocialText(box,"在地の所領："+PersonName(person));
    foreach(var person in report.LocalCastellans)SocialText(box,"現地の城主："+PersonName(person));
