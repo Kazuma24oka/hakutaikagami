@@ -19,6 +19,17 @@ public sealed class ActiveMilitarySuccessionTests
     static void Rice(WorldSession s,long kg)=>Good(s.ManageMilitaryRice(new(new("request:succession-rice/"+s.Revision),NewGameMilitary.DepotFor(s.DiagnosticSnapshot()),kg),s.PlayerControl,s.Revision));
     static void Finish(WorldSession s){Send(s,NewMilitaryAction.Report);At(s,s.Seconds+2);Send(s,NewMilitaryAction.Return);At(s,s.Seconds+2);Open(s);}
 
+    [Fact]public void HandingBackCommandLeavesSurvivingGuardsAtHome()
+    {
+        var s=Holding();
+        Send(s,NewMilitaryAction.Unload,NewGameMilitary.View(s.DiagnosticSnapshot()).Carry);
+        Finish(s);
+        var w=s.DiagnosticSnapshot();
+        Assert.False(NewGameMilitary.CustodyAt(w,s.Seconds,s.Revision));
+        Assert.True(CastleHandover.HasGarrison(w,Owner,Home,s.Seconds,s.Revision+1));
+        Assert.False(CastleHandover.HasGarrison(w,Owner,new("site:castle"),s.Seconds,s.Revision+1));
+    }
+
     static WorldSession Holding(bool retired=false){var s=Start(retired);Good(s.DecideNewMilitary(Request(s),s.PlayerControl,s.Revision));Permit(s);Rice(s,50);Send(s,NewMilitaryAction.Load,20*86400L);s.SetPaused(true);return s;}
     static ActiveMilitaryInput Agreement(WorldSession s)=>new(new("request:active-military/"+s.Revision),NewGameMilitary.Cases(s.DiagnosticSnapshot()).Last().Id);
     static void Agree(WorldSession s)=>Good(s.AgreeActiveMilitary(Agreement(s),s.PlayerControl,s.Revision));

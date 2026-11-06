@@ -19,7 +19,7 @@ public static class JointIndependence
         if(declaration==null || SocialWorld.Site(w,observer)!=declaration.Site ||
             Assassination.DeadAt(w,observer,w.ElapsedSeconds,w.CommitSequence))return null;
         var site=declaration.Site;
-        bool formerTroops=CastleHandover.Forces(w,declaration.FormerHouse,site,w.ElapsedSeconds,w.CommitSequence+1)>0;
+        bool formerTroops=CastleHandover.HasGarrison(w,declaration.FormerHouse,site,w.ElapsedSeconds,w.CommitSequence+1);
         bool controls=w.LandRights.Any(r=>r.Subject==declaration.House && r.Target==site &&
             r.Kind=="control" && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until);
         return new(site,declaration.FormerHouse,formerTroops,controls);
@@ -93,7 +93,7 @@ public static class JointIndependence
                 row.From<=at && at<row.Until);
             if(index<0 || CastleAdministration.Blocked(w,site,at,rev))return;
             if(!CommandedCastle(w,person,site,at,rev) && !delivered)return;
-            if(d.CheckGarrison==true && CastleHandover.Forces(w,d.FormerHouse,site,at,rev)>0)return;
+            if(d.CheckGarrison==true && CastleHandover.HasGarrison(w,d.FormerHouse,site,at,rev))return;
             var former=rows[index];
             rows[index]=former with{Until=at,Revision=rev};
             rows.Add(former with{Id=InformationSchemes.Id("castle-control",d.Pact.Value+"/"+site.Value),

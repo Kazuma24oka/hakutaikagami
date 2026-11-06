@@ -250,6 +250,25 @@ public class DefectionPactTests
                 var reply=play.ManageCourt(request,play.Revision);
                 Assert.True(reply.Code==ResultCode.Accepted,reply.VisibleReason);
                 Assert.Empty(IndependenceGate.Available(play.DiagnosticSnapshot(),new("person:shingen")));
+                var proposed=ContractJson.Copy(recovered);
+                proposed.CommitSequence++;
+                HouseholdCourt.Execute(proposed,request,Actor);
+                foreach(var decision in new[]{CourtAction.AllowIndependentGate,CourtAction.RefuseIndependentGate}){
+                    var branch=ContractJson.Copy(proposed);
+                    var negotiator=new EntityId("person:nobunaga");
+                    var chosen=IndependenceGate.Available(branch,negotiator).Single(i=>i.Action==decision);
+                    branch.CommitSequence++;
+                    HouseholdCourt.Execute(branch,chosen,negotiator);
+                    var negotiations=new WorldSession(branch);
+                    var options=IndependenceGate.Available(negotiations.DiagnosticSnapshot(),Actor).ToArray();
+                    if(decision==CourtAction.RefuseIndependentGate){Assert.Empty(options);continue;}
+                    var allowedGate=Assert.Single(options);
+                    Assert.Equal(CourtAction.ReceiveIndependentGate,allowedGate.Action);
+                    Assert.Equal(ResultCode.Accepted,negotiations.ManageCourt(allowedGate,negotiations.Revision).Code);
+                    Assert.Equal(ResultCode.AlreadyAccepted,negotiations.ManageCourt(allowedGate,negotiations.Revision).Code);
+                    Assert.Empty(IndependenceGate.Available(negotiations.DiagnosticSnapshot(),Actor));
+                    Assert.DoesNotContain(negotiations.DiagnosticSnapshot().LandRights,r=>r.Subject==declaration.House);
+                }
                 NewGameWorldTests.At(play,play.Seconds+2);
                 var record=play.DiagnosticSnapshot();
                 var answer=Assert.Single(record.Court!.Events,e=>e.Input.Reference==declaration.Pact &&

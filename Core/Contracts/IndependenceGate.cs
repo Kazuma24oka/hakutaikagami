@@ -10,7 +10,7 @@ public static class IndependenceGate
     {
         var d=w.Declarations?.SingleOrDefault(d=>d.CheckGarrison==true && d.Pact==i.Reference && d.Revision<rev);
         if(d==null || i.Site!=d.Site || site!=d.Site || i.Owner!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,d.At,d.Revision) ||
-            CastleHandover.Forces(w,d.FormerHouse,d.Site,d.At,d.Revision)<=0)
+            !CastleHandover.HasGarrison(w,d.FormerHouse,d.Site,d.At,d.Revision))
             throw new InvalidDataException("旧主家の守備が残った独立原本を指定してください");
         var oldLord=HouseSuccession.Head(w,d.FormerHouse,at,rev-1);
         bool reply=i.Action is CourtAction.AllowIndependentGate or CourtAction.RefuseIndependentGate;
@@ -23,7 +23,7 @@ public static class IndependenceGate
             CourtAction.AllowIndependentGate or CourtAction.RefuseIndependentGate=>last?.Input.Action==CourtAction.RequestIndependentGate && last.Input.Person==actor,
             CourtAction.ReceiveIndependentGate=>last?.Input.Action==CourtAction.AllowIndependentGate && last.Actor==oldLord,
             CourtAction.ReceiveIndependentKeep=>last?.Input.Action==CourtAction.ReceiveIndependentGate && last.Input.Person==oldLord &&
-                CastleHandover.Forces(w,d.FormerHouse,d.Site,at,rev)==0 && !CastleAdministration.Blocked(w,d.Site,at,rev),
+                !CastleHandover.HasGarrison(w,d.FormerHouse,d.Site,at,rev) && !CastleAdministration.Blocked(w,d.Site,at,rev),
             _=>false
         };
         if(!allowed)throw new InvalidDataException("城門の合意・受領、本丸の守備の順に確認してください");
