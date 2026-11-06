@@ -5,6 +5,39 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void OnFootInspectionSurvivesSaveAndKeepsTheTravellerAtTheRoadEntrance()
+    {
+        var s=HouseholdCourtTests.Start();
+        var start=s.DiagnosticSnapshot();
+        var site=HouseholdCourtTests.Site;
+        var from=NewGameWorld.Node(site.Value);
+        var edge=HouseReforms.LocalRoads(start,site).First(e=>BranchRoutes.Plan(from,e.From==from?e.To:e.From,[],w:start).SequenceEqual([e.Id]));
+        var to=edge.From==from?edge.To:edge.From;
+        var gate=new CourtInput(new("request:traveller-gate"),CourtAction.EstablishBarrier,s.PlayerControl,HouseholdCourtTests.Owner,site){BarrierEdge=edge.Id};
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(gate,s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:inspection",to),s.Revision).Code);
+        NewGameWorldTests.At(s,5);
+        var w=s.DiagnosticSnapshot();
+        var leg=w.Branches!.Journeys.Last().Legs.First();
+        Assert.Equal(gate.Id,leg.BarrierOrder);
+        Assert.Equal(TravelWorld.End(start,edge,leg.StartAt)+TravelWorld.InspectionSeconds,leg.EndAt);
+        Assert.Equal(0,TravelWorld.Progress(w,leg,s.Seconds));
+        Assert.Equal(BranchRoutes.GraphNodes(w).Single(n=>n.Id==from).Position,s.GetBranchView(s.PlayerControl).Position);
+        s.SetPaused(true);
+        var dir=Directory.CreateTempSubdirectory("hakutai-barrier-");
+        try{
+            var store=new GenerationSaveStore(dir.FullName,w.Definitions);
+            Assert.True(store.Save(s,"inspection",w.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(start));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("inspection"),host.Current,host.Current.Revision));
+            NewGameWorldTests.At(s,leg.StartAt+TravelWorld.InspectionSeconds+1);
+            NewGameWorldTests.At(host.Current,s.Seconds);
+            Assert.Equal(edge.FootSpeed,TravelWorld.Progress(host.Current.DiagnosticSnapshot(),leg,s.Seconds));
+            Assert.Equal(s.GetBranchView(s.PlayerControl).Position,host.Current.GetBranchView(s.PlayerControl).Position);
+        }finally{dir.Delete(true);}
+    }
+
+    [Fact]
     public void BarrierReformNamesOneRoadAndCannotRemoveAnother()
     {
         var s=HouseholdCourtTests.Start();

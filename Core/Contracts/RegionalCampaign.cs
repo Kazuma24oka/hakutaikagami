@@ -56,7 +56,7 @@ public static partial class RegionalCampaign
         // A report sent along a road starts at its actual partial progress, never at a teleported endpoint.
         var j=w.Branches!.Journeys.Last(j=>j.Actor==sender);var task=w.Tasks.Single(t=>t.Id==j.Task);var time=task.FinishedAt??w.ElapsedSeconds;
         var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
-        var progress=Math.Clamp(checked((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed),0,edge.LengthMm);
+        var progress=Math.Clamp(checked((time-TravelWorld.Departure(w,leg))*edge.FootSpeed),0,edge.LengthMm);
         var options=new List<CourierLeg[]>();
         foreach(var option in new[]{(leg.From,progress),(leg.To,edge.LengthMm-progress)})try{
             var end=checked(at+Seconds(option.Item2,edge.CourierSpeed));
@@ -228,7 +228,7 @@ public static partial class RegionalCampaign
     internal static RoutePoint JourneyPointAt(ContractWorld w,BranchJourney j,long at)
     {
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
-        var progress=Math.Clamp((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
+        var progress=Math.Clamp((time-TravelWorld.Departure(w,leg))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
         return new(a.EastMm+(b.EastMm-a.EastMm)*progress/edge.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*progress/edge.LengthMm);
     }
     static RoutePoint DispatchOrigin(ContractWorld w,CourierMission mission,MessageAttempt attempt,MessageEnvelope message)
