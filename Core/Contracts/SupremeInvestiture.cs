@@ -58,8 +58,11 @@ public static class SupremeInvestiture
             !HouseholdCourt.Events(w).Any(d=>Decision(d.Input.Action)&&d.Input.Reference==e.Input.Id))){
             if(p.Input.Reference!=null && !MessageFlow.Knows(w.Messaging,Letter(p.Input),Broker.Value))continue;
             var eligible=Eligible(w,p.Input.Action,p.Actor,p.Input.Owner,w.ElapsedSeconds,w.CommitSequence);
+            // 勅使への返答は朝廷発の打診。自発の奏請では取次本人の引受判断を経る。
+            bool willing=p.Input.Reference!=null || SocialWorld.ConsentBonus(w,Broker,p.Actor,w.ElapsedSeconds,w.CommitSequence)>=2;
             foreach(var action in new[]{CourtAction.GrantHighOffice,CourtAction.RefuseHighOffice}){
-                if(action==CourtAction.GrantHighOffice && !eligible || action==CourtAction.RefuseHighOffice && eligible && Broker!=w.PlayerControl)continue;
+                if(action==CourtAction.GrantHighOffice && !eligible)continue;
+                if(Broker!=w.PlayerControl && (action==CourtAction.GrantHighOffice)!=(eligible && willing))continue;
                 yield return new(HouseholdCourt.Id(action.ToString(),p.Input.Id.Value),action,p.Actor,p.Input.Owner,Kyoto,Reference:p.Input.Id);
             }
         }

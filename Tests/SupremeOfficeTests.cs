@@ -133,13 +133,19 @@ public sealed class SupremeOfficeTests
         NewGameWorldTests.At(s,s.Seconds+3);
         Good(s.ManageCourt(new(new("request:konoe-kin"),CourtAction.RequestRegentKin,patron,house,site),s.Revision));
         NewGameWorldTests.At(s,s.Seconds+2);
+        Good(s.ManageCourt(petition with{Id=new("request:first-petition")},s.Revision));
+        NewGameWorldTests.At(s,s.Seconds+2);
+        Assert.Single(s.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.RefuseHighOffice);
+        Good(s.ManageSocial(new(new("request:visit-regent-broker"),SocialWorldAction.Visit,broker),s.Revision));
+        Good(s.ManageSocial(new(new("request:gift-regent-broker"),SocialWorldAction.DispatchGift,broker,Amount:100),s.Revision));
+        NewGameWorldTests.At(s,s.Seconds+3);
         Good(s.ManageCourt(petition,s.Revision));
         var before=s.DiagnosticSnapshot();var restored=new WorldSession(ContractJson.Copy(before));
         foreach(var session in new[]{s,restored}){
             NewGameWorldTests.At(session,session.Seconds+3);
             var w=session.DiagnosticSnapshot();
             Assert.Single(w.Court!.Events,e=>e.Input.Reference==petition.Id && e.Input.Action==CourtAction.GrantHighOffice);
-            Assert.Single(w.Messaging.Messages,m=>m.Kind=="court-investiture" && m.RecipientId==child.Id);
+            Assert.Single(w.Messaging.Messages,m=>m.Kind=="court-investiture" && m.RecipientId==child.Id && m.Body.Contains("裁可する"));
             Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));
             Assert.NotEqual(ResultCode.Accepted,session.ManageCourt(petition with{Id=new("request:again")},session.Revision).Code);
         }
@@ -170,6 +176,9 @@ public sealed class SupremeOfficeTests
         var report=Assert.Single(game.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.AttestPedigree);
         Good(game.ManageCourt(new(new("request:file"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBroker,owner,site,Reference:report.Input.Id),game.Revision));
         Assert.False(CourtPedigree.Qualified(game.DiagnosticSnapshot(),game.PlayerControl,game.Seconds,game.Revision));
+        Good(game.ManageSocial(new(new("request:visit-court-broker"),SocialWorldAction.Visit,CentralCourtCatalog.CourtBroker),game.Revision));
+        Good(game.ManageSocial(new(new("request:gift-court-broker"),SocialWorldAction.DispatchGift,CentralCourtCatalog.CourtBroker,Amount:100),game.Revision));
+        NewGameWorldTests.At(game,game.Seconds+3);
         var goBetween=CentralCourtCatalog.ShogunBroker;var kai=new EntityId("site:kofu");
         Good(game.ManageSocial(new(new("request:visit-go-between"),SocialWorldAction.Visit,goBetween),game.Revision));
         Good(game.ManageSocial(new(new("request:gift-go-between"),SocialWorldAction.DispatchGift,goBetween,Amount:100),game.Revision));
