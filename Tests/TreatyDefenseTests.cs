@@ -5,13 +5,59 @@ public sealed class TreatyDefenseTests
 {
     static readonly EntityId Own=new("org:defense-recipient"),Other=new("org:oda"),Player=new("created:defense-head"),Supplier=new("person:nobunaga"),Home=new("site:village"),Source=new("site:castle");
     // A real, supported new-game registered daimyo near Kiyosu, not relocated historical heads or forged stock.
-    static WorldSession Start(bool far=false){var home=far?new EntityId("site:kofu"):Home;var scenario=NewGameWorld.Scenario(HistoricalStartCatalog.Current);var officer=NewGameWorldTests.Officer(Player.Value,StartTemplate.Daimyo,home.Value);var request=new WorldSetupRequest([officer],[new(officer.Id,Own.Value,[home.Value],false)]);var preview=NewGameSetup.Preview(scenario,request);Assert.True(preview.IsEligible(),string.Join(",",preview.Errors));var setup=NewGameSetup.Confirm(scenario,request,preview);return new(NewGameWorld.Create(setup,[officer],Player.Value,42,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,economyPolicy:HouseSuccession.Policy,trucePolicy:TruceNegotiations.Policy));}
+    static WorldSession Start(bool far=false,bool campaign=false){var home=campaign?new EntityId("site:sakai"):far?new EntityId("site:kofu"):Home;var scenario=NewGameWorld.Scenario(HistoricalStartCatalog.Current);var officer=NewGameWorldTests.Officer(Player.Value,StartTemplate.Daimyo,home.Value);var raider=NewGameWorldTests.Officer("created:ally-raider",StartTemplate.Daimyo,"site:ishiyama");var ally=NewGameWorldTests.Officer("created:ally-head",StartTemplate.Daimyo,"site:kyoto");RegisteredOfficer[] people=campaign?[officer,raider,ally]:[officer];var request=new WorldSetupRequest(people,campaign?[new(officer.Id,Own.Value,[home.Value],false),new(raider.Id,"org:ally-raider",[raider.Site],false),new(ally.Id,"org:ally",[ally.Site],false)]:[new(officer.Id,Own.Value,[home.Value],false)]);var preview=NewGameSetup.Preview(scenario,request);Assert.True(preview.IsEligible(),string.Join(",",preview.Errors));var setup=NewGameSetup.Confirm(scenario,request,preview);return new(NewGameWorld.Create(setup,people,Player.Value,42,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,economyPolicy:HouseSuccession.Policy,trucePolicy:TruceNegotiations.Policy,companionPolicy:campaign?PersonalCompanions.Policy:null,developmentPolicy:campaign?CharacterDevelopment.Policy:null,socialPolicy:campaign?CharacterRelations.Policy:null));}
     static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
     static void At(WorldSession s,long t){while(s.Seconds<t){var old=s.Seconds;s.SetPaused(false);s.AdvanceTo(t,100000);Assert.True(s.Seconds>old);}}
     static long Arrival(WorldSession s,string id)=>s.DiagnosticSnapshot().Couriers!.Missions.Single(c=>s.DiagnosticSnapshot().Messaging.Attempts.Any(a=>a.Id==c.Attempt&&a.MessageId==id)).ReadyAt;
     static void Open(WorldSession s,string id)=>Good(s.Open(Player,new(id),s.Revision));
     static readonly Lazy<ContractWorld> Prepared=new(()=>BuildReady());
-    static ContractWorld BuildReady(int amount=100,bool far=false,bool wide=false){var target=wide?new EntityId("org:hojo"):Other;var s=Start(far);Good(s.NegotiateTreaty(new(new("request:defense-treaty"),TreatyAction.Propose,Own,target,Days:30,Clauses:TreatyClause.Defense,NoticeDays:1),Player,s.Revision));var p=s.DiagnosticSnapshot().Treaties!.Papers.Single();At(s,Arrival(s,p.Message)+1);var a=s.DiagnosticSnapshot().Treaties!.Papers.Last();At(s,Arrival(s,a.Message));Open(s,a.Message);Good(s.NegotiateTreaty(new(new("request:defense-confirm"),TreatyAction.Confirm,Own,target,a.Input.Id),Player,s.Revision));var c=s.DiagnosticSnapshot().Treaties!.Papers.Last();At(s,Arrival(s,c.Message)+1);Good(s.OperateTreaty(new(new("request:actual-defense"),TreatyOperation.RequestDefense,a.Input.Id,Own,target,ReplyBy:s.Seconds+7*86400,Amount:amount,Evidence:"100人の防衛援軍を希望する"),Player,s.Revision));var r=s.DiagnosticSnapshot().Treaties!.Operations.Last();At(s,Arrival(s,r.Message)+1);var receipt=s.DiagnosticSnapshot().Treaties!.Operations.Last();At(s,Arrival(s,receipt.Message));Open(s,receipt.Message);s.SetPaused(true);return s.DiagnosticSnapshot();}
+    static ContractWorld BuildReady(int amount=100,bool far=false,bool wide=false,bool campaign=false){var target=campaign?new EntityId("org:ally"):wide?new EntityId("org:hojo"):Other;var s=Start(far,campaign);Good(s.NegotiateTreaty(new(new("request:defense-treaty"),TreatyAction.Propose,Own,target,Days:30,Clauses:TreatyClause.Defense,NoticeDays:1),Player,s.Revision));var p=s.DiagnosticSnapshot().Treaties!.Papers.Single();At(s,Arrival(s,p.Message)+1);var a=s.DiagnosticSnapshot().Treaties!.Papers.Last();At(s,Arrival(s,a.Message));Open(s,a.Message);Good(s.NegotiateTreaty(new(new("request:defense-confirm"),TreatyAction.Confirm,Own,target,a.Input.Id),Player,s.Revision));var c=s.DiagnosticSnapshot().Treaties!.Papers.Last();At(s,Arrival(s,c.Message)+1);Good(s.OperateTreaty(new(new("request:actual-defense"),TreatyOperation.RequestDefense,a.Input.Id,Own,target,ReplyBy:s.Seconds+7*86400,Amount:amount,Evidence:"100人の防衛援軍を希望する"),Player,s.Revision));var r=s.DiagnosticSnapshot().Treaties!.Operations.Last();At(s,Arrival(s,r.Message)+1);var receipt=s.DiagnosticSnapshot().Treaties!.Operations.Last();At(s,Arrival(s,receipt.Message));Open(s,receipt.Message);s.SetPaused(true);return s.DiagnosticSnapshot();}
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void VisitingTreatyCommanderObservesThirdHouseAttackOnHost(bool present)
+    {
+        var s=new WorldSession(BuildReady(campaign:true));
+        if(present) ArrivalOfArmy(s,Dispatched(s,Arrange(s,86400)));
+        var w=s.DiagnosticSnapshot();
+        EntityId enemy=new("org:ally-raider");
+        w.CommitSequence++;
+        FactionStances.Apply(w,new(new("decision:raid-host"),FactionStanceAction.DeclareHostile,enemy,Own,w.ElapsedSeconds,w.ElapsedSeconds+7*86400),new("created:ally-raider"));
+        s=new WorldSession(w);
+        At(s,s.Seconds+3);
+        var march=Assert.Single(s.DiagnosticSnapshot().Branches!.Journeys,j=>j.Actor.Value=="created:ally-raider");
+        At(s,march.Legs[^1].EndAt+1);
+        void Army(NewMilitaryAction action,long amount=0)
+        {
+            var world=s.DiagnosticSnapshot();
+            var input=new NewMilitaryInput(new("request:ally-host/"+action),action,amount);
+            if(action==NewMilitaryAction.Request)input=input with {AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract,FromLedger=NewGameMilitary.SourceForCurrentHouse(world),CycleContract=NewGameMilitary.CycleForCurrentHouse(world)};
+            Good(s.DecideNewMilitary(input,Player,s.Revision));
+        }
+        void ReadOrders(){At(s,s.Seconds+2);foreach(var m in s.GetActorView(Player).Messages.Where(m=>m.KnownBody==null))Open(s,m.Id.Value);}
+        Army(NewMilitaryAction.Request);ReadOrders();Army(NewMilitaryAction.Accept);ReadOrders();Army(NewMilitaryAction.Pickup);
+        Good(s.ManageMilitaryRice(new(new("request:ally-host-rice"),NewGameMilitary.DepotFor(s.DiagnosticSnapshot()),2),Player,s.Revision));
+        Army(NewMilitaryAction.Load,100000);Army(NewMilitaryAction.Deploy);
+        s.SetPaused(true);
+        var dir=Directory.CreateTempSubdirectory("hakutai-three-houses-");
+        try
+        {
+            var store=new GenerationSaveStore(dir.FullName,w.Definitions);
+            Assert.True(store.Save(s,"contact",w.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(w));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("contact"),host.Current,host.Current.Revision));
+            foreach(var run in new[]{s,host.Current})
+            {
+                At(run,run.Seconds+1);
+                var after=run.DiagnosticSnapshot();
+                Assert.Contains(after.WorldClashes!.Steps[^1].Result.Strikes,h=>after.Units.Any(u=>u.Id==h.Target&&u.Organization==Own));
+                Assert.Equal(present,after.FactionStances!.Decisions.Any(d=>d.Authority.Issuer.Value=="created:ally-head"&&d.Input.Target==enemy));
+            }
+            Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+        }
+        finally {dir.Delete(true);}
+    }
+
     static WorldSession Ready()=>new(ContractJson.Copy(Prepared.Value));
 
     static TreatyDefenseInput Input(WorldSession s,TreatyDefenseAction a,EntityId request,int duty=0)=>new(new("request:defense-test/"+s.Revision+"/"+a),a,request,duty);
