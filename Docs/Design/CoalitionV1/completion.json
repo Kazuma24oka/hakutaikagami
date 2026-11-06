@@ -1,0 +1,39 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "呼びかける当主が共通の対象・目的・参加候補を定め、各家の本拠へ個別に書状を届ける",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CoalitionPacts.cs",
+        "Game/Scripts/CoalitionCheck.cs"
+      ]
+    },
+    {
+      "contract": "開封した各家が独立に参加・保留・拒否を判断し、異なる相手や版への返答を流用できない",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CoalitionPactTests.cs",
+        "Core/Contracts/CoalitionPacts.Confirmation.cs"
+      ]
+    },
+    {
+      "contract": "同意した複数家の盟約・個別行動・離脱や切り崩しを記録し、未知の加盟や出陣を他家に漏らさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CoalitionPacts.Activity.cs",
+        "Core/Contracts/CoalitionPacts.Withdrawal.cs",
+        "Tests/CoalitionPactTests.cs"
+      ]
+    },
+    {
+      "contract": "通常の外交画面で参加判断と既知の盟約を確認し、配送中と成立後の保存復旧を照合する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/CoalitionCheck.cs",
+        "Game/Scripts/NewGameRuntime.Treaty.cs",
+        "Tests/CoalitionPactTests.cs"
+      ]
+    }
+  ]
+}

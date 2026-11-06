@@ -15,7 +15,7 @@ public partial class NewGameRuntime
             (d.GuaranteeLands?" ／ 本領安堵":"")+$" ／ 軍役 {d.MusterMen}人・献上米 {d.TributeRice}kg"+
             (d.RestrictDiplomacy?" ／ 外交制限あり":"")+(d.Hostage is {} person?$" ／ 人質候補 {world.NewGame!.Start.People.Single(p=>p.Id==person.Value).Name}":"")+(d.Precedent!=null?" ／ 先の従属合意を添付":"");
     }
-    void ShowTreatyNegotiation()
+    internal void ShowTreatyNegotiation()
     {
         var w=Snapshot();if(OwnPoliticalHouse(w) is not {} own||!TreatyNegotiations.Enabled(w))return;long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var scroll=new ScrollContainer{CustomMinimumSize=new(560,440),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(530,0)};scroll.AddChild(box);
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});
@@ -26,6 +26,66 @@ public partial class NewGameRuntime
         var options=new[]{(TreatyClause.NonAggression,"互いに新たな戦を仕掛けない"),(TreatyClause.Passage,"通行の約束"),(TreatyClause.Supply,"補給を協議する条項"),(TreatyClause.Defense,"防衛援軍を協議する条項")}.Select(t=>(t.Item1,Box:new CheckBox{Text=t.Item2,ButtonPressed=t.Item1==TreatyClause.NonAggression})).ToArray();foreach(var item in options)box.AddChild(item.Box);
         var days=new SpinBox{MinValue=1,MaxValue=90,Value=30,Step=1,Suffix="日間"};box.AddChild(days);var notice=new SpinBox{MinValue=1,MaxValue=7,Value=1,Step=1,Suffix="日前に解除予告"};box.AddChild(notice);
         Button("この版の条件を発送",()=>{if(targets.Length==0)return;var clauses=options.Where(x=>x.Box.ButtonPressed).Aggregate(TreatyClause.None,(a,x)=>a|x.Item1);Submit(Session.NegotiateTreaty(new(new("request:treaty-ui/"+shown),TreatyAction.Propose,own,targets[target.Selected].Id,Days:(int)days.Value,Clauses:clauses,NoticeDays:(int)notice.Value){AttachHouseScale=true},Session.PlayerControl,shown));popup.Hide();Refresh();});
+        var coalitionToggle=new CheckButton{Text="包囲網の書状"};box.AddChild(coalitionToggle);
+        var coalition=new VBoxContainer{Visible=false};box.AddChild(coalition);coalitionToggle.Toggled+=open=>coalition.Visible=open;
+        void CoalitionButton(string label,Action onPress){
+            var button=new Button{Text=label};coalition.AddChild(button);button.Pressed+=onPress;
+        }
+        string HouseName(EntityId house)=>w.Definitions.Organizations.Single(o=>o.Id==house).Name;
+        void ReturnToDiplomacy(){popup.Hide();Refresh();ShowTreatyNegotiation();}
+        void CoalitionCommand(CourtInput input){Submit(Session.ManageCourt(input,shown));ReturnToDiplomacy();}
+        foreach(var sent in (w.Court?.Events??[]).Where(e=>e.Input.Action==CourtAction.ProposeCoalition && e.Actor==Session.PlayerControl)){
+            var terms=sent.Input.Coalition!;
+            coalition.AddChild(new Label{Text=HouseName(terms.Target)+"への包囲網　発送先："+string.Join("、",terms.Invitees.Select(HouseName))+
+                " ／ "+CoalitionPacts.TermsLabel(terms),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        }
+        foreach(var paper in CoalitionPacts.DeliveredPapers(w,Session.PlayerControl)){
+            if(paper.Body!=null)coalition.AddChild(new Label{Text=paper.Body,AutowrapMode=TextServer.AutowrapMode.WordSmart});
+            else CoalitionButton("包囲網について届いた書状を開く",()=>{Submit(Session.Open(Session.PlayerControl,new(paper.Id),shown));ReturnToDiplomacy();});
+        }
+        foreach(var pact in CoalitionPacts.Known(w,Session.PlayerControl))
+            coalition.AddChild(new Label{Text=HouseName(pact.Target)+(pact.FounderDeathKnown?"を対象とした盟約（呼びかけ人死去により解散）　署名記録：":"を対象とする盟約　確認済みの署名：")+string.Join("、",pact.Houses.Select(HouseName)),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        foreach(var report in CoalitionPacts.ActivityReports(w,Session.PlayerControl))
+            CoalitionButton(report.Action==CourtAction.ReportSeparatePeace?"単独和睦の成立を報告する":"部隊が行軍を始めた時点を報告する",()=>CoalitionCommand(report));
+        foreach(var departure in CoalitionPacts.Withdrawals(w,Session.PlayerControl))
+            {
+                var signed=w.Court!.Events.Single(e=>e.Input.Id==departure.Reference);
+                var original=w.Court.Events.Single(e=>e.Input.Id==signed.Input.Reference);
+                CoalitionButton(HouseName(original.Input.Coalition!.Target)+"への包囲網から離脱する",()=>CoalitionCommand(departure));
+            }
+        foreach(var warning in CoalitionPacts.Warnings(w,Session.PlayerControl)){
+            var terms=w.Court!.Events.Single(e=>e.Input.Id==warning.Reference).Input.Coalition!;
+            CoalitionButton(HouseName(terms.Target)+"に招請状の内容を密告する",()=>CoalitionCommand(warning));
+        }
+        foreach(var confirmation in CoalitionPacts.Confirmations(w,Session.PlayerControl))
+            CoalitionButton("開封した加盟返書を取りまとめ、署名各家へ通知する",()=>CoalitionCommand(confirmation));
+        foreach(var item in CoalitionPacts.Invitations(w,Session.PlayerControl)){
+            if(item.Answer is not {} answer){
+                CoalitionButton("包囲網への招請状を開く",()=>{Submit(Session.Open(Session.PlayerControl,new(item.Letter),shown));ReturnToDiplomacy();});
+                continue;
+            }
+            var invitation=w.Court!.Events.Single(e=>e.Input.Id==answer.Reference);
+            if(answer.Action==CourtAction.JoinCoalition)
+                coalition.AddChild(new Label{Text=HouseName(invitation.Input.Owner)+"より　対象 "+HouseName(invitation.Input.Coalition!.Target)+" ／ "+CoalitionPacts.TermsLabel(invitation.Input.Coalition)});
+            CoalitionButton(answer.Action switch{CourtAction.JoinCoalition=>"加盟を伝える",CourtAction.RefuseCoalition=>"参加を断る",_=>"返答を保留する"},()=>CoalitionCommand(answer));
+        }
+        var ownFaction=HouseSuccession.Factions(w).SingleOrDefault(f=>f.Id==own.Value);
+        var known=RepresentativeKnowledge.Observations(w,Session.PlayerControl).Select(o=>o.Owner).Distinct().Where(h=>h!=own).ToArray();
+        if(ownFaction?.Head==Session.PlayerControl.Value && SocialWorld.Site(w,Session.PlayerControl)?.Value==ownFaction.Home && known.Length>=3){
+            coalition.AddChild(new Label{Text="包囲網の対象"});
+            var enemy=new OptionButton();coalition.AddChild(enemy);foreach(var h in known)enemy.AddItem(HouseName(h));
+            var purpose=new OptionButton();coalition.AddChild(purpose);
+            purpose.AddItem("同時期の出兵");purpose.AddItem("単独で和睦しない");purpose.AddItem("同時期の出兵と単独和睦の禁止");
+            var term=new SpinBox{MinValue=1,MaxValue=365,Value=30,Suffix="日後を期日とする"};coalition.AddChild(term);
+            coalition.AddChild(new Label{Text="招請先（二家以上）"});
+            var invitees=known.Select(h=>(House:h,Box:new CheckBox{Text=HouseName(h)})).ToArray();
+            foreach(var candidate in invitees)coalition.AddChild(candidate.Box);
+            void UpdateCandidates(){foreach(var c in invitees){c.Box.Visible=c.House!=known[enemy.Selected];if(!c.Box.Visible)c.Box.ButtonPressed=false;}}
+            enemy.ItemSelected+=_=>UpdateCandidates();UpdateCandidates();
+            CoalitionButton("選んだ各家に招請状を発送",()=>CoalitionCommand(new CourtInput(new("request:coalition-ui/"+shown),CourtAction.ProposeCoalition,
+                Session.PlayerControl,own,new(ownFaction.Home)){Coalition=new(known[enemy.Selected],invitees.Where(x=>x.Box.ButtonPressed).Select(x=>x.House).ToArray(),
+                (CoalitionPurpose)purpose.Selected,checked(w.ElapsedSeconds+(long)term.Value*TruceNegotiations.Day))}));
+        }
         var leagueToggle=new CheckButton{Text="国人衆の契状を送る"};box.AddChild(leagueToggle);
         var league=new VBoxContainer{Visible=false};box.AddChild(league);leagueToggle.Toggled+=open=>league.Visible=open;
         var charterSelect=new OptionButton();league.AddChild(charterSelect);charterSelect.AddItem("新しい契状を起草");

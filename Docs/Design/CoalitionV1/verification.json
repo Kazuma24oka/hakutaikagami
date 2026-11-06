@@ -1,0 +1,12 @@
+{
+  "passed": 2,
+  "tests": [
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.CoalitionPactTests.InvitesDifferentHomesWithoutRevealingAnswersAndRestoresDispatch"
+  ],
+  "ui": "COALITION_UI_PASS",
+  "limitations": [
+    "Godotは画面なし起動。外観と手操作は未確認。",
+    "自然死と証人がいる場合の配送を検証。暗殺の訃報の広達、1570年のシナリオ重み、全国長期試遊は未検証。"
+  ]
+}
