@@ -35,7 +35,7 @@ public static class HouseReforms
     {
         foreach(var e in HouseholdCourt.Events(w)){
             if(e.Input.Action==CourtAction.GrantLevyShare)yield return e;
-            if(e.Input.Action==CourtAction.ExchangeLevyShare)yield return e with{Actor=e.Input.Person,
+            if(e.Input.Action is CourtAction.ExchangeLevyShare or CourtAction.ReceiveProvinceShare)yield return e with{Actor=e.Input.Person,
                 Input=e.Input with{Person=e.Actor,Action=CourtAction.GrantLevyShare}};
         }
     }
@@ -138,12 +138,13 @@ public static class HouseReforms
     }
     internal static void SendTransfer(ContractWorld w,CourtEvent proposal,CourtInput order,EntityId actor)=>
         Dispatch(w,order,TransferOrder,actor,proposal.Input.Person,
+            proposal.Input.Reform==ReformKind.AllocateProvince?$"{NewGameWorld.SiteName(proposal.Input.Site.Value)}と{NewGameWorld.SiteName(proposal.Input.NewEstate!.Value.Value)}で、それぞれ徴収米の{proposal.Input.Amount}%を現地で引き取れ。":
             proposal.Input.Reform==ReformKind.Confiscate?$"現地で徴収米の給付原本 {proposal.Input.LevyGrant} を返上せよ。":
             NewGameWorld.SiteName(proposal.Input.Site.Value)+"で旧職を引き継ぎ、"+
             NewGameWorld.SiteName(proposal.Input.NewEstate!.Value.Value)+"へ赴任せよ。原本："+proposal.Input.Id.Value);
 
     internal static void Send(ContractWorld w,CourtInput input,EntityId actor)=>
-        Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。"+(input.LevyGrant is {} right?$" 徴収米{input.Amount}%、原本 {right.Value}。旧領で発生済みの取り分は旧領で精算する。":""));
+        Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。"+(input.Reform==ReformKind.AllocateProvince && input.NewEstate!=null?$" 両拠点の徴収米を各{input.Amount}%、現地で個別に引き取る。":"")+(input.LevyGrant is {} right?$" 徴収米{input.Amount}%、原本 {right.Value}。旧領で発生済みの取り分は旧領で精算する。":""));
 
     public static string ReplyText(CourtAction action)=>action switch{
         CourtAction.AssentReform=>"従う",CourtAction.CounterReform=>"条件を再協議したい",

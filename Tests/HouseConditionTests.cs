@@ -52,8 +52,10 @@ public sealed class HouseConditionTests
         Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(saved,reply with{Id=new("request:answer-again")},oldLord));
     }
 
-    [Fact]
-    public void NewEstatePaysOnlyCollectionsAfterExchange()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void NewEstatePaysOnlyCollectionsAfterExchange(bool province)
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
         var retainer=NewGameWorldTests.Officer("created:travelling-retainer",StartTemplate.Retainer,lord:head.Id);
@@ -80,19 +82,39 @@ public sealed class HouseConditionTests
             Good(s.ManageCompanion(new(new("request:pay/"+day),person,CompanionAction.Pay,20),lord,s.Revision));
         }
         var grant=new CourtInput(new("request:original-right"),CourtAction.GrantLevyShare,person,owner,home,Amount:25);
-        Act(grant,lord);
+        if(!province)Act(grant,lord);
         var proposal=grant with{Id=new("request:swap"),Action=CourtAction.ConsultReform,Reform=ReformKind.ChangeFief,NewEstate=destination,LevyGrant=grant.Id};
+        if(province)proposal=proposal with{Reform=ReformKind.AllocateProvince,LevyGrant=null};
         Act(proposal,lord);Read(proposal,HouseReforms.Proposal,person);
         Read(proposal,HouseReforms.Answer,lord);
         var order=new CourtInput(new("request:move-right"),CourtAction.IssueTransfer,person,owner,home,Reference:proposal.Id);
         Act(order,lord);Read(order,HouseReforms.TransferOrder,person);
+        if(province){
+            var first=new CourtInput(new("request:first-estate"),CourtAction.ReceiveProvinceShare,lord,owner,home,Amount:25,Reference:order.Id);
+            Act(first,person);
+            var partial=s.DiagnosticSnapshot();
+            Assert.Equal(home,Assert.Single(HouseReforms.LevyGrants(partial)).Place);
+            partial.CommitSequence++;
+            Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(partial,first with{Id=new("request:second-too-soon"),Site=destination},person));
+            Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(partial,first with{Id=new("request:duplicate-estate")},person));
+            var dir=Directory.CreateTempSubdirectory("hakutai-province-");
+            try{
+                var store=new GenerationSaveStore(dir.FullName,w.Definitions);
+                Assert.True(store.Save(s,"partial",w.WorldId).Published);
+                var host=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("partial"),host.Current,host.Current.Revision));
+                s=host.Current;
+            }finally{dir.Delete(true);}
+        }
         Good(s.ManageCompanion(new(new("request:travel-to-estate"),person,CompanionAction.TravelTogether,Destination:"kofu"),lord,s.Revision));
         NewGameWorldTests.At(s,s.Seconds+2);
         NewGameWorldTests.At(s,s.GetBranchView(lord).ArrivalAt!.Value+20);
         void Collect(string id,long amount)=>Good(s.ManageCommunity(new(new(id),destination,EconomyAction.CollectLevy,amount),lord,s.Revision));
         Collect("request:before-transfer",80);
         var exchange=new CourtInput(new("request:received-right"),CourtAction.ExchangeLevyShare,lord,owner,destination,Amount:25,Reference:order.Id){LevyGrant=grant.Id};
+        if(province)exchange=exchange with{Action=CourtAction.ReceiveProvinceShare,LevyGrant=null};
         Act(exchange,person);
+        if(province)Assert.Equal(2,HouseReforms.LevyGrants(s.DiagnosticSnapshot()).Count());
         Collect("request:after-transfer",40);
         var receipt=new CourtInput(new("request:new-receipt"),CourtAction.ReceiveLevyShare,lord,owner,destination,Amount:10,Reference:exchange.Id);
         Act(receipt,person);

@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -145,7 +145,7 @@ public static class HouseholdCourt
       e.Input.Action==CourtAction.ReleaseCastleOffice).ToArray();
   var successor=terms.Person;
   var meeting=input.Action is CourtAction.PresentTransfer or CourtAction.YieldCastleOffice;
-  Need(terms.Reform!=ReformKind.CastleResidence && terms.LevyGrant==null && order.Revision<rev && (input.Action==CourtAction.YieldCastleOffice?input.Person==successor:actor==successor) && (meeting || input.Person==order.Actor) && input.Owner==terms.Owner &&
+  Need(terms.Reform is not (ReformKind.CastleResidence or ReformKind.AllocateProvince) && terms.LevyGrant==null && order.Revision<rev && (input.Action==CourtAction.YieldCastleOffice?input.Person==successor:actor==successor) && (meeting || input.Person==order.Actor) && input.Owner==terms.Owner &&
       input.Site==place && Member(w,actor,input.Owner,at,rev) &&
       MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),successor.Value) is {} opened &&
       opened<=at && TransportWork.At(w,actor,place,at,rev,true),"本人が命令書を開き、担当する城で手続きしてください");
@@ -175,7 +175,7 @@ public static class HouseholdCourt
  {
   var proposal=Source(w,order.Reference,CourtAction.ConsultReform);
   var terms=proposal.Input;
-  Need((terms.Reform==ReformKind.Confiscate && terms.LevyGrant!=null || terms.NewEstate!=null && terms.Reform is ReformKind.ChangeFief or ReformKind.Relocate or ReformKind.CastleResidence) &&
+  Need((terms.Reform==ReformKind.Confiscate && terms.LevyGrant!=null || terms.NewEstate!=null && terms.Reform is ReformKind.ChangeFief or ReformKind.Relocate or ReformKind.CastleResidence or ReformKind.AllocateProvince) &&
       proposal.Actor==actor && place==terms.Site && order.Site==terms.Site && order.Person==terms.Person &&
       order.Owner==terms.Owner && proposal.Revision<revision,"本人が相談した同じ旧領・新領の原本を指定してください");
   CheckEstateTerms(w,terms,actor,at,revision);
@@ -222,6 +222,16 @@ public static class HouseholdCourt
       !Events(w).Any(e=>Before(e,at,rev) && e.Input.Reference==i.Reference && (present?e.Input.Action==i.Action:
           e.Input.Action is CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)),
       "承諾した本人と現在の直属主が現地で同じ奉公原本を確認し、旧主が本人に返答してください");
+ }
+ static void CheckProvinceReceipt(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  var order=Source(w,i.Reference,CourtAction.IssueTransfer);
+  var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
+  Need(terms.Reform==ReformKind.AllocateProvince && order.Revision<rev && actor==terms.Person && i.Person==order.Actor &&
+       i.Owner==terms.Owner && i.Site==place && (place==terms.Site || place==terms.NewEstate) && i.Amount==terms.Amount &&
+       MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),actor.Value) is {} opened && opened<=at &&
+       !Events(w).Any(e=>Before(e,at,rev) && e.Input.Action==CourtAction.ReceiveProvinceShare && e.Input.Reference==order.Input.Id && e.Place==place),
+       "開封した国割り命令に記された土地で、未受領の給付を引き取ってください");
+  CheckLevyShare(w,i with{Person=actor},order.Actor,place,at,rev);
  }
  static void CheckSurrender(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
   var order=Source(w,i.Reference,CourtAction.IssueTransfer);
@@ -287,6 +297,11 @@ public static class HouseholdCourt
   Need(i.NewEstate is {} destination && destination!=i.Site &&
       HeadAuthority(w,actor,i.Owner,i.Site,at,revision) && HeadAuthority(w,actor,i.Owner,destination,at,revision),
       "旧領とは異なる、自家が処分できる新領を指定してください");
+  if(i.Reform==ReformKind.AllocateProvince){
+   Need(i.LevyGrant==null && i.Amount is >=1 and <=100 && CommunityEconomy.SitesFor(w).Contains(i.Site) &&
+      CommunityEconomy.SitesFor(w).Contains(i.NewEstate!.Value),"徴収米を割り当てる二拠点と割合を指定してください");
+   return;
+  }
   if(i.Reform==ReformKind.CastleResidence){
    Need(i.LevyGrant==null && i.Amount==0 && HouseReforms.ResidenceAt(w,i.Person,at,revision)==i.Site,
        "現在の居所を旧地に指定してください");
@@ -373,6 +388,7 @@ public static class HouseholdCourt
   else if(i.Action==CourtAction.ReportResidence){CheckResidenceReport(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);HouseReforms.SendResidenceNotice(w,i,actor);}
   else if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.ReceiveProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.SurrenderLevyShare)CheckSurrender(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -382,7 +398,7 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ConsultReform){
    if(i.Reform==ReformKind.Confiscate && i.LevyGrant!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
-   if(i.Reform is ReformKind.Relocate or ReformKind.ChangeFief || i.Reform==ReformKind.CastleResidence && i.NewEstate!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
+   if(i.Reform is ReformKind.Relocate or ReformKind.ChangeFief || i.Reform is ReformKind.CastleResidence or ReformKind.AllocateProvince && i.NewEstate!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
    if(i.Reform==ReformKind.RemoveBarrier)CheckBarrier(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
    Need(leader&&place==i.Site&&i.Person!=actor&&Member(w,i.Person,i.Owner,w.ElapsedSeconds,w.CommitSequence+1)&&
        i.Reform is {} kind && Enum.IsDefined(kind),"現地の当主・所属する相談相手・改革案を指定してください");
@@ -472,6 +488,7 @@ public static class HouseholdCourt
    }
    if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.ReceiveProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.SurrenderLevyShare)CheckSurrender(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
@@ -493,7 +510,7 @@ public static class HouseholdCourt
    }
    if(i.Action==CourtAction.ConsultReform && i.Reform==ReformKind.Confiscate && i.LevyGrant!=null)CheckEstateTerms(w,i,e.Actor,e.At,e.Revision);
    if(i.NewEstate!=null){
-    Need(i.Action==CourtAction.ConsultReform && (i.Reform is ReformKind.Relocate or ReformKind.ChangeFief or ReformKind.CastleResidence),"所領の交換条件と相談原本が一致しません");
+    Need(i.Action==CourtAction.ConsultReform && (i.Reform is ReformKind.Relocate or ReformKind.ChangeFief or ReformKind.CastleResidence or ReformKind.AllocateProvince),"所領の交換条件と相談原本が一致しません");
     CheckEstateTerms(w,i,e.Actor,e.At,e.Revision);
    }
    if(i.Action==CourtAction.ConsultReform){
