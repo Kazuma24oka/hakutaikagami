@@ -29,11 +29,11 @@ public static class HouseSuccession
     {
         long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;
         var changes=Changes(w).Where(c=>c.Owner==owner && c.At<=t && c.Revision<=r);
-        return changes.Select(c=>c.Heir).DefaultIfEmpty(new(w.NewGame!.Start.Factions.Single(f=>f.Id==owner.Value).Head)).Last();
+        return changes.Select(c=>c.Heir).DefaultIfEmpty(new((w.Declarations??[]).FirstOrDefault(d=>d.House==owner && d.At<=t && d.Revision<=r)?.Founder.Value ?? w.NewGame!.Start.Factions.Single(f=>f.Id==owner.Value).Head)).Last();
     }
     public static SetupFaction[] Factions(ContractWorld w,long? at=null,long? revision=null)=>w.NewGame==null?[]:
-        w.MinorityAccessions==null && !Enabled(w)?w.NewGame.Start.Factions:
-        w.NewGame.Start.Factions.Select(f=>f with{Head=Head(w,new(f.Id),at,revision).Value}).ToArray();
+        w.Declarations==null && w.MinorityAccessions==null && !Enabled(w)?w.NewGame.Start.Factions:
+        w.NewGame.Start.Factions.Concat((w.Declarations??[]).Where(d=>d.At<=(at??w.ElapsedSeconds) && d.Revision<=(revision??w.CommitSequence)).Select(d=>JointIndependence.Faction(w,d))).Select(f=>f with{Head=Head(w,new(f.Id),at,revision).Value}).ToArray();
     static bool Local(ContractWorld w,EntityId who,EntityId site,long at,long rev)=>CommunityStewardship.Local(w,who,site,at,rev);
     static bool Member(ContractWorld w,EntityId who,EntityId owner,long at,long rev)=>w.Memberships.Any(m=>m.Subject==who&&m.Target==owner&&m.From<=at&&(at<m.Until||at==m.Until&&rev<m.Revision));
     static bool Direct(ContractWorld w,EntityId heir,EntityId head,long at,long rev)=>HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==heir&&b.Target==head&&b.From<=at&&(at<b.Until||at==b.Until&&rev<b.Revision));

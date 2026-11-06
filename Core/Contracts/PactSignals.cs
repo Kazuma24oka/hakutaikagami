@@ -31,6 +31,7 @@ public static class PactSignals
                 w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(id,p.Partner.Value,w.ElapsedSeconds,id)];
             var acted=DefectionPacts.HouseAt(w,p.Partner,w.ElapsedSeconds,w.CommitSequence)==p.House &&
                 !Assassination.DeadAt(w,p.Proposer,w.ElapsedSeconds,w.CommitSequence) &&
+                !HostageCustody.HeldAt(w,p.Partner,w.ElapsedSeconds,w.CommitSequence) &&
                 !NpcArmies.CommanderBusyAt(w,p.Partner,w.ElapsedSeconds,w.CommitSequence) &&
                 CharacterRelations.DiagnosticScores(w,p.Partner,p.Proposer).Hostility<=
                     CharacterRelations.DiagnosticTrait(w,p.Partner,SocialTrait.Ambition);
@@ -89,12 +90,21 @@ public sealed partial class WorldSession
         lock(gate)
         {
             var p=state.SecretPacts?.SingleOrDefault(p=>p.Id==pact && p.Proposer==state.PlayerControl && p.Accepted);
-            if(p==null || p.Purpose==PactPurpose.RiseTogether)return new(ResultCode.NotAvailable,pact,state.CommitSequence,"実行を求められる合意を指定してください");
+            if(p==null)return new(ResultCode.NotAvailable,pact,state.CommitSequence,"実行を求められる合意を指定してください");
             if(PactSignals.Sent(state,p))return new(ResultCode.AlreadyAccepted,pact,state.CommitSequence,"合図は送付済みです");
             if(shown!=state.CommitSequence)return new(ResultCode.StateChanged,pact,state.CommitSequence,"表示を更新してください");
-            if(SocialWorld.Site(state,p.Proposer)==null || Assassination.DeadAt(state,p.Proposer,state.ElapsedSeconds,shown))
+            if(SocialWorld.Site(state,p.Proposer)==null || HostageCustody.HeldAt(state,p.Proposer,state.ElapsedSeconds,shown) || Assassination.DeadAt(state,p.Proposer,state.ElapsedSeconds,shown))
                 return new(ResultCode.NotAvailable,pact,shown,"現地で書状を送ってください");
-            Change(w=>PactSignals.Send(w,p,true,DefectionPacts.Name(p.Purpose)+"との約定について、今の意向を伺います。"));
+            if(p.Purpose==PactPurpose.RiseTogether && JointIndependence.Declaration(state,p)==null &&
+                DefectionPacts.HouseAt(state,p.Proposer,state.ElapsedSeconds,shown)!=p.House)
+                return new(ResultCode.NotAvailable,pact,shown,"独立の対象となる旧所属が変わりました");
+            Change(w=>{
+                if(p.Purpose==PactPurpose.RiseTogether && JointIndependence.Declaration(w,p)==null)
+                    w.Declarations=[..w.Declarations??[],new(p.Id,p.Proposer,p.House,InformationSchemes.Id("independent-house",p.Id.Value),
+                        SocialWorld.Site(w,p.Proposer)!.Value,w.ElapsedSeconds,w.CommitSequence)];
+                PactSignals.Send(w,p,true,p.Purpose==PactPurpose.RiseTogether?"独立を宣言した。約定に応じるか返書を乞う。":
+                    DefectionPacts.Name(p.Purpose)+"との約定について、今の意向を伺います。");
+            });
             return new(ResultCode.Accepted,pact,state.CommitSequence,"密書を送りました");
         }
     }

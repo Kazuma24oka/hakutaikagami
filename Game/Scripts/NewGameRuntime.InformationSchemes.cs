@@ -29,8 +29,9 @@ public partial class NewGameRuntime
       foreach(var pact in DefectionPacts.Known(w,actor).Reverse().Take(5))
       {
           SocialText(box,PersonName(pact.Partner)+" ／ "+DefectionPacts.Name(pact.Purpose)+(pact.Accepted?"：合意":"：拒否"));
-          if(pact.Accepted && pact.Purpose!=PactPurpose.RiseTogether && !PactSignals.Sent(w,pact))
-              Button("call-"+pact.Id,"実行を求める密書を送る",()=>{var r=Session.SignalPact(pact.Id,rev);message.Text=r.VisibleReason;Refresh();ShowInformationSchemes();});
+          string JointIndependenceLabel()=>w.Declarations?.Any(d=>d.Founder==actor && d.FormerHouse==pact.House)==true?"独立への参加を呼びかける":"独立を宣言し、参加を呼びかける";
+          if(pact.Accepted && pact.Proposer==actor && !PactSignals.Sent(w,pact))
+              Button("call-"+pact.Id,pact.Purpose==PactPurpose.RiseTogether?(JointIndependenceLabel()):"実行を求める密書を送る",()=>{var r=Session.SignalPact(pact.Id,rev);message.Text=r.VisibleReason;Refresh();ShowInformationSchemes();});
           var id=PactSignals.Letter(pact,PactSignals.Reply);
           if(HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,id,actor.Value))SocialText(box,w.Messaging.Messages.Single(m=>m.Id==id).Body);
           else if(w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==actor.Value))

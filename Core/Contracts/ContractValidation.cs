@@ -48,6 +48,7 @@ public static class ContractValidation
             "Unsupported definition/ruleset; no silent production mapping.");
         var people = Keys(defs.Characters, c => c.Id, "character definitions");
         var orgs = Keys(defs.Organizations, o => o.Id, "organizations");
+        foreach(var declaration in s.Declarations??[]) Check(orgs.Add(declaration.House),"Duplicate independent house.");
         var sites = Keys(defs.Sites, o => o.Id, "sites");
         var bases = Keys(defs.AuthorityBases,b=>b.Id,"authority bases");
         var armyRows=defs.Armies.Concat(NewGameMilitary.Armies(s)).Concat(NpcArmies.Armies(s)).ToArray();var armies = Keys(armyRows,a=>a.Id,"armies");
@@ -65,7 +66,7 @@ public static class ContractValidation
         {
             Keys(relations, x => x.Id, "relations");
             foreach (var x in relations) Check(entities.Contains(x.Subject) && entities.Contains(x.Target) && x.Subject != x.Target &&
-                bases.Contains(x.Basis) && x.From >= 0 && x.Until > x.From && x.Revision >= 0 && !string.IsNullOrWhiteSpace(x.Kind), "Invalid relation.");
+                bases.Contains(x.Basis) && x.From >= 0 && (x.Until > x.From || x.Until==x.From && (s.Declarations??[]).Any(d=>d.Founder==x.Subject && x.Revision==d.Revision && x.Until==d.At && x.Kind is "service" or "membership")) && x.Revision >= 0 && !string.IsNullOrWhiteSpace(x.Kind), "Invalid relation.");
         }
         Check(s.Memberships.All(x=>people.Contains(x.Subject)&&orgs.Contains(x.Target)&&x.Kind=="membership"),"Membership is not a person/organization relation.");
         Check(s.ServiceBonds.All(x=>people.Contains(x.Subject)&&people.Contains(x.Target)&&x.Kind=="service"),"Service is not a person/person relation.");

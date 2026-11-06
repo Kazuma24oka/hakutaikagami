@@ -11,7 +11,7 @@ public static class DefectionPacts
         PactPurpose.RiseTogether=>"共に独立する",_=>throw new ArgumentOutOfRangeException(nameof(purpose))};
 
     internal static EntityId? HouseAt(ContractWorld w,EntityId person,long at,long rev)=>
-        w.Memberships.SingleOrDefault(m=>m.Subject==person && m.From<=at &&
+        w.Memberships.SingleOrDefault(m=>m.Subject==person && m.From<=at && (m.From<at || m.Until!=long.MaxValue || m.Revision<=rev) &&
             (at<m.Until || at==m.Until && rev<m.Revision))?.Target;
 
     static SecretPact? Negotiate(ContractWorld w,EntityId id,EntityId actor,EntityId partner,PactPurpose purpose,long at,long rev)
@@ -40,6 +40,7 @@ public static class DefectionPacts
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
         PactSignals.Validate(w,prior);
+        JointIndependence.Validate(w,prior);
         var rows=w.SecretPacts??[];
         var old=prior?.SecretPacts??[];
         if(!rows.Take(old.Length).SequenceEqual(old) || rows.DistinctBy(p=>p.Id).Count()!=rows.Length)

@@ -20,6 +20,7 @@ public class DefectionPactTests
     [Theory]
     [InlineData(PactPurpose.WithholdService)]
     [InlineData(PactPurpose.LeaveHouse)]
+    [InlineData(PactPurpose.RiseTogether)]
     public void SignalIsDeliveredOnceAfterReload(PactPurpose purpose)
     {
         EntityId id=new("request:dispatch-test");
@@ -31,7 +32,15 @@ public class DefectionPactTests
             var pact=Assert.Single(session.DiagnosticSnapshot().SecretPacts!);
             if(!pact.Accepted)continue;
             Assert.Equal(ResultCode.Accepted,session.SignalPact(id,session.Revision).Code);
-            Assert.Empty(session.DiagnosticSnapshot().PactResponses??[]);
+            var dispatched=session.DiagnosticSnapshot();
+            Assert.Empty(dispatched.PactResponses??[]);
+            if(purpose==PactPurpose.RiseTogether)
+            {
+                var declaration=Assert.Single(dispatched.Declarations!);
+                Assert.Contains(dispatched.Memberships,m=>m.Subject==Actor && m.Target==declaration.House && m.Until==long.MaxValue);
+                Assert.Contains(dispatched.Memberships,m=>m.Subject==Partner && m.Target==pact.House && m.Until==long.MaxValue);
+                Assert.Equal(ContractJson.Write(w.Units),ContractJson.Write(dispatched.Units));
+            }
             session.SetPaused(true);
             var directory=Directory.CreateTempSubdirectory("hakutai-signal-");
             try
@@ -50,6 +59,14 @@ public class DefectionPactTests
                 Assert.Equal(id,response.Pact);
                 Assert.True(response.Acted);
                 Assert.True(response.At>pact.At);
+                if(purpose==PactPurpose.RiseTogether)
+                {
+                    var house=Assert.Single(after.Declarations!).House;
+                    Assert.Equal(Actor,HouseSuccession.Head(after,house));
+                    Assert.Contains(after.Memberships,m=>m.Subject==Partner && m.Target==house && m.Until>120);
+                    Assert.Contains(after.Memberships,m=>m.Subject==Actor && m.Target==house && m.Until>120);
+                    Assert.Equal(ContractJson.Write(w.LandRights),ContractJson.Write(after.LandRights));
+                }
                 Assert.Equal(purpose==PactPurpose.WithholdService,PactSignals.Withholds(after,Partner,120,after.CommitSequence));
                 Assert.Single(after.Messaging.Messages,m=>m.Id==PactSignals.Letter(pact,PactSignals.Reply));
                 return;
