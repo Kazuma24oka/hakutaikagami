@@ -39,6 +39,7 @@ public static class DefectionPacts
 
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
+        PactSignals.Validate(w,prior);
         var rows=w.SecretPacts??[];
         var old=prior?.SecretPacts??[];
         if(!rows.Take(old.Length).SequenceEqual(old) || rows.DistinctBy(p=>p.Id).Count()!=rows.Length)

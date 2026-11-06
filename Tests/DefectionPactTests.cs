@@ -17,6 +17,48 @@ public class DefectionPactTests
             socialPolicy:CharacterRelations.Policy,comingOfAge:15);
     }
 
+    [Theory]
+    [InlineData(PactPurpose.WithholdService)]
+    [InlineData(PactPurpose.LeaveHouse)]
+    public void SignalIsDeliveredOnceAfterReload(PactPurpose purpose)
+    {
+        EntityId id=new("request:dispatch-test");
+        for(ulong seed=0;seed<32;seed++)
+        {
+            var w=Start(seed);
+            var session=new WorldSession(w);
+            Assert.Equal(ResultCode.Accepted,session.NegotiatePact(id,Partner,purpose,session.Revision).Code);
+            var pact=Assert.Single(session.DiagnosticSnapshot().SecretPacts!);
+            if(!pact.Accepted)continue;
+            Assert.Equal(ResultCode.Accepted,session.SignalPact(id,session.Revision).Code);
+            Assert.Empty(session.DiagnosticSnapshot().PactResponses??[]);
+            session.SetPaused(true);
+            var directory=Directory.CreateTempSubdirectory("hakutai-signal-");
+            try
+            {
+                var store=new GenerationSaveStore(directory.FullName,w.Definitions);
+                Assert.True(store.Save(session,"signal",w.WorldId).Published);
+                var host=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("signal"),host.Current,host.Current.Revision));
+                var restored=host.Current;
+                Assert.Equal(ResultCode.AlreadyAccepted,restored.SignalPact(id,restored.Revision).Code);
+                NewGameWorldTests.At(restored,120);
+                NewGameWorldTests.At(session,120);
+                var after=restored.DiagnosticSnapshot();
+                Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(after));
+                var response=Assert.Single(after.PactResponses!);
+                Assert.Equal(id,response.Pact);
+                Assert.True(response.Acted);
+                Assert.True(response.At>pact.At);
+                Assert.Equal(purpose==PactPurpose.WithholdService,PactSignals.Withholds(after,Partner,120,after.CommitSequence));
+                Assert.Single(after.Messaging.Messages,m=>m.Id==PactSignals.Letter(pact,PactSignals.Reply));
+                return;
+            }
+            finally{directory.Delete(true);}
+        }
+        Assert.Fail("承諾に至る開始条件がありません");
+    }
+
     [Fact]
     public void BothAnswersArePrivateAndAPromiseAloneDoesNotChangeMembership()
     {
