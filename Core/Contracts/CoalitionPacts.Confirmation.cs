@@ -84,7 +84,7 @@ public static partial class CoalitionPacts
         return records.Values.ToArray();
     }
     internal static void ReadMemberCopies(ContractWorld w){
-        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal) && m.RecipientId!=w.PlayerControl.Value)){
+        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal || m.Kind==ActivityReport) && m.RecipientId!=w.PlayerControl.Value)){
             var actor=new EntityId(m.RecipientId);
             if(!MessageFlow.Knows(w.Messaging,m.Id,m.RecipientId) && w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==m.RecipientId) &&
                 SocialWorld.Site(w,actor)?.Value==m.DeliverySite && !Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence))
@@ -92,7 +92,7 @@ public static partial class CoalitionPacts
         }
     }
     public static IEnumerable<(string Id,string? Body)> DeliveredPapers(ContractWorld w,EntityId actor){
-        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Reply || m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal) && m.RecipientId==actor.Value &&
+        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Reply || m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal || m.Kind==ActivityReport) && m.RecipientId==actor.Value &&
             w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==actor.Value)))
             yield return(m.Id,MessageFlow.Knows(w.Messaging,m.Id,actor.Value)?m.Body:null);
     }

@@ -8,7 +8,7 @@ public sealed record CoalitionTerms(EntityId Target,EntityId[] Invitees,Coalitio
 public static partial class CoalitionPacts
 {
     public const string Withdrawal="coalition-withdrawal",Warning="coalition-private-warning",Invitation="coalition-invitation",Reply="coalition-reply";
-    internal static bool Handles(CourtAction action)=>action is CourtAction.LeaveCoalition or CourtAction.WarnCoalitionTarget or CourtAction.ConfirmCoalition or CourtAction.ProposeCoalition or CourtAction.JoinCoalition or CourtAction.RefuseCoalition or CourtAction.DeferCoalition;
+    internal static bool Handles(CourtAction action)=>action is CourtAction.ReportCoalitionSortie or CourtAction.ReportSeparatePeace or CourtAction.LeaveCoalition or CourtAction.WarnCoalitionTarget or CourtAction.ConfirmCoalition or CourtAction.ProposeCoalition or CourtAction.JoinCoalition or CourtAction.RefuseCoalition or CourtAction.DeferCoalition;
     static bool Final(CourtAction action)=>action is CourtAction.JoinCoalition or CourtAction.RefuseCoalition;
     public static string TermsLabel(CoalitionTerms terms)=>terms.Purpose switch{
         CoalitionPurpose.CoordinateSorties=>"同時期の出兵",CoalitionPurpose.ForbidSeparatePeace=>"単独で和睦しない",_=>"同時期の出兵と単独和睦の禁止"};
@@ -23,6 +23,8 @@ public static partial class CoalitionPacts
                 yield return new MessageEnvelope(InvitationId(i,house),i.Id.Value,Invitation,e.Actor.Value,recipient.Person.Value,
                     w.Definitions.Organizations.Single(o=>o.Id==i.Coalition.Target).Name+"を対象に"+TermsLabel(i.Coalition)+"を提案する。期日 "+i.Coalition.AssemblyAt,recipient.Home.Value,e.At){DeliverySite=recipient.Home.Value};
             }
+        }else if(IsActivity(i.Action)){
+            foreach(var report in ReportLetters(w,e))yield return report;
         }else if(i.Action==CourtAction.LeaveCoalition){
             foreach(var letter in WithdrawalLetters(w,e))yield return letter;
         }else if(i.Action==CourtAction.WarnCoalitionTarget){
@@ -45,6 +47,7 @@ public static partial class CoalitionPacts
         if(!TruceNegotiations.Enabled(w) || house?.Head!=actor.Value || house.Home!=place.Value || place!=i.Site ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("本人が本拠で家を代表して包囲網の書状を扱ってください");
+        if(IsActivity(i.Action)){CheckActivity(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.LeaveCoalition){CheckWithdrawal(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.ConfirmCoalition){CheckConfirmation(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.ProposeCoalition){

@@ -40,6 +40,8 @@ public partial class NewGameRuntime
         }
         foreach(var pact in CoalitionPacts.Known(w,Session.PlayerControl))
             coalition.AddChild(new Label{Text=HouseName(pact.Target)+"を対象とする盟約　確認済みの署名："+string.Join("、",pact.Houses.Select(HouseName)),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        foreach(var report in CoalitionPacts.ActivityReports(w,Session.PlayerControl))
+            CoalitionButton(report.Action==CourtAction.ReportSeparatePeace?"単独和睦の成立を報告する":"部隊が行軍を始めた時点を報告する",()=>CoalitionCommand(report));
         foreach(var departure in CoalitionPacts.Withdrawals(w,Session.PlayerControl))
             {
                 var signed=w.Court!.Events.Single(e=>e.Input.Id==departure.Reference);

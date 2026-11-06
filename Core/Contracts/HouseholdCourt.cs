@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment,AskCourtIntroduction,AcceptCourtIntroduction,DeclineCourtIntroduction,FileRankPetition,IssueCourtRank,RejectCourtRank,AskShugo,RecommendShugo,DeclineShugo,AppointShugo,RejectShugo,AskRankLeave,GrantRankLeave,RefuseRankLeave,AskPeaceMediation,SendPeaceProposal,DeclinePeaceMediation,AcceptPeaceProposal,RejectPeaceProposal,CertifyPeaceAgreement,ReportPeaceRefusal,ResignShogun,OfferShogunSupport,AcceptShogunSupport,DeclineShogunSupport,ExpelShogun,SendExileClaim,AskPedigree,AttestPedigree,ReportMissingPedigree,RecognizePedigree,FilePedigree,RequestRegentKin,AcceptRegentKin,DeclineRegentKin,PetitionChancellor,PetitionRegent,PetitionShogun,GrantHighOffice,RefuseHighOffice,InviteHegemon,DeferInvitation,DeclineImperialInvitation,GrantCompanionHonor,PermitLacquerPalanquin,ProposeCoalition,JoinCoalition,DeferCoalition,RefuseCoalition,ConfirmCoalition,WarnCoalitionTarget,LeaveCoalition }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth,SeekRestorationSupport,SupportRestoration,ReserveRestoration,PledgeRestorationRice,HandOverRestorationRice,OfferRestorationEscort,AcceptRestorationEscort,DeclineRestorationEscort,ReleaseRestorationEscort,RecordRecoveredSeat,PresentRestorationArrears,RecognizeHouseContinuity,RaiseVillageSoldiers,HireMarketSoldiers,SendMusterNotice,AttendMuster,OfferDetachment,AcceptDetachment,DeclineDetachment,EndDetachment,BringOwnCompany,KeepPrivateCompany,PrivateCompanyPayment,AskCourtIntroduction,AcceptCourtIntroduction,DeclineCourtIntroduction,FileRankPetition,IssueCourtRank,RejectCourtRank,AskShugo,RecommendShugo,DeclineShugo,AppointShugo,RejectShugo,AskRankLeave,GrantRankLeave,RefuseRankLeave,AskPeaceMediation,SendPeaceProposal,DeclinePeaceMediation,AcceptPeaceProposal,RejectPeaceProposal,CertifyPeaceAgreement,ReportPeaceRefusal,ResignShogun,OfferShogunSupport,AcceptShogunSupport,DeclineShogunSupport,ExpelShogun,SendExileClaim,AskPedigree,AttestPedigree,ReportMissingPedigree,RecognizePedigree,FilePedigree,RequestRegentKin,AcceptRegentKin,DeclineRegentKin,PetitionChancellor,PetitionRegent,PetitionShogun,GrantHighOffice,RefuseHighOffice,InviteHegemon,DeferInvitation,DeclineImperialInvitation,GrantCompanionHonor,PermitLacquerPalanquin,ProposeCoalition,JoinCoalition,DeferCoalition,RefuseCoalition,ConfirmCoalition,WarnCoalitionTarget,LeaveCoalition,ReportCoalitionSortie,ReportSeparatePeace }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -15,7 +15,8 @@ public sealed record CourtInput(EntityId Id,CourtAction Action,EntityId Person,E
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? People{get;init;}
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? OtherHouse{get;init;}
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public CoalitionTerms? Coalition{get;init;}
- [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? CoalitionSignatures{get;init;}}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? CoalitionSignatures{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? ActivityEvidence{get;init;}}
 public sealed record CourtEvent(CourtInput Input,EntityId Actor,EntityId Place,long At,long Revision,bool PersonalAlreadyBound);
 public sealed record CourtState(int Schema,string Policy,CourtEvent[] Events);
 public sealed record CourtDocument(EntityId Id,CourtEvent Source,EntityId Sender,EntityId Recipient,string Name);
@@ -396,6 +397,7 @@ public static class HouseholdCourt
  {
   Need(NewGameWork.Enabled(w)&&w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Role)&&Enum.IsDefined(i.Case)&&Enum.IsDefined(i.Scale),"家中の用件が不正です");var place=SocialWorld.Site(w,actor);Need(place!=null,"現地へ到着してください");bool activeOwner=HouseSuccession.Factions(w).Any(f=>f.Id==i.Owner.Value);Need((activeOwner||i.Action==CourtAction.ResignShogun&&i.Owner==SupremeOffice.Bakufu||HouseRestoration.NamesFormerHouse(w,i))&&w.Definitions.Sites.Any(s=>s.Id==i.Site),"家と拠点を指定してください");
   Need(i.Action==CourtAction.ProposeCoalition || i.Coalition==null,"包囲網の条件は呼びかけの原本に記します");
+  Need(CoalitionPacts.IsActivity(i.Action) || i.ActivityEvidence==null,"行動報告にだけ出兵・和睦の原本を指定できます");
   Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧は盟約の成立原本に記します");
   if(i.CoalitionSignatures is {} signatures)i=i with{CoalitionSignatures=[..signatures]};
   if(i.Coalition is {Invitees:not null} coalitionTerms)i=i with{Coalition=coalitionTerms with{Invitees=[..coalitionTerms.Invitees]}};
@@ -508,6 +510,7 @@ public static class HouseholdCourt
   PeaceMediation.ReadAndRespond(w);
   foreach(var reply in PeaceMediation.Answers(w,false))Attempt(w,reply,Events(w).Single(e=>e.Input.Id==reply.Reference).Input.Person);
   CoalitionPacts.ReadMemberCopies(w);
+  foreach(var (activity,signer) in CoalitionPacts.NpcActivity(w))Attempt(w,activity,signer);
   foreach(var (confirmation,issuer) in CoalitionPacts.NpcConfirmations(w))Attempt(w,confirmation,issuer);
   foreach(var (answer,head) in CoalitionPacts.NpcReplies(w))Attempt(w,answer,head);
   SupremeInvestiture.ReadIncoming(w);
@@ -574,7 +577,8 @@ public static class HouseholdCourt
    if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(HouseholdDetachment.Handles(i.Action))HouseholdDetachment.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(MusterNotices.Handles(i.Action))MusterNotices.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
-   Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧が他の原本に混入しています");
+   Need(CoalitionPacts.IsActivity(i.Action) || i.ActivityEvidence==null,"行動報告にだけ出兵・和睦の原本を指定できます");
+  Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧が他の原本に混入しています");
    Need(i.Action==CourtAction.ProposeCoalition || i.Coalition==null,"包囲網の条件が他の原本に混入しています");
    if(CoalitionPacts.Handles(i.Action)){CoalitionPacts.Check(w,i,e.Actor,e.Place,e.At,e.Revision);CoalitionPacts.Validate(w,e);}
    if(ShogunateHonors.Handles(i.Action))ShogunateHonors.Check(w,i,e.Actor,e.Place,e.At,e.Revision);
@@ -621,8 +625,10 @@ public static class HouseholdCourt
    }
    if(i.Action==CourtAction.ConsultReform && i.Reform==ReformKind.Confiscate && i.LevyGrant!=null)CheckEstateTerms(w,i,e.Actor,e.At,e.Revision);
    if(i.NewEstate!=null){
-    Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧が他の原本に混入しています");
+    Need(CoalitionPacts.IsActivity(i.Action) || i.ActivityEvidence==null,"行動報告にだけ出兵・和睦の原本を指定できます");
+  Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧が他の原本に混入しています");
    Need(i.Action==CourtAction.ProposeCoalition || i.Coalition==null,"包囲網の条件は呼びかけの原本に記します");
+  Need(CoalitionPacts.IsActivity(i.Action) || i.ActivityEvidence==null,"行動報告にだけ出兵・和睦の原本を指定できます");
   Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧は盟約の成立原本に記します");
   if(i.CoalitionSignatures is {} signatures)i=i with{CoalitionSignatures=[..signatures]};
   if(i.Coalition is {Invitees:not null} coalitionTerms)i=i with{Coalition=coalitionTerms with{Invitees=[..coalitionTerms.Invitees]}};

@@ -90,6 +90,33 @@ public sealed class CoalitionPactTests
                 Assert.Equal(3,Assert.Single(CoalitionPacts.Known(end,new(member.Head))).Houses.Length);
             }
             Assert.Empty(CoalitionPacts.Known(end,new(houses[1].Head)));
+            var separate=new WorldSession(ContractJson.Copy(end));
+            var proposal=new TruceInput(new("request:separate-peace"),TruceAction.Propose,new(leader.Id),new(houses[1].Id),Days:30);
+            var offered=separate.NegotiateTruce(proposal,separate.PlayerControl,separate.Revision);
+            Assert.True(offered.Code==ResultCode.Accepted,offered.VisibleReason);
+            Assert.Empty(CoalitionPacts.ActivityReports(separate.DiagnosticSnapshot(),separate.PlayerControl));
+            NewGameWorldTests.At(separate,Delivery(separate.DiagnosticSnapshot(),TruceNegotiations.Kind)+1);
+            var bilateral=separate.DiagnosticSnapshot();
+            var acceptance=Assert.Single(bilateral.Truces!.Papers,p=>p.Input.Action==TruceAction.Accept && p.Input.Source==proposal.Id);
+            NewGameWorldTests.At(separate,Delivery(bilateral,TruceNegotiations.Kind)+1);
+            Assert.Empty(CoalitionPacts.ActivityReports(separate.DiagnosticSnapshot(),separate.PlayerControl));
+            Assert.Equal(ResultCode.Accepted,separate.Open(separate.PlayerControl,new(acceptance.Message),separate.Revision).Code);
+            var report=Assert.Single(CoalitionPacts.ActivityReports(separate.DiagnosticSnapshot(),separate.PlayerControl));
+            Assert.Equal(CourtAction.ReportSeparatePeace,report.Action);
+            Assert.Equal(acceptance.Input.Id,report.ActivityEvidence);
+            var reported=separate.ManageCourt(report,separate.Revision);Assert.True(reported.Code==ResultCode.Accepted,reported.VisibleReason);
+            File.WriteAllBytes(path,ContractJson.Write(separate.DiagnosticSnapshot()));
+            var savedReport=new WorldSession(ContractJson.Read<ContractWorld>(File.ReadAllBytes(path))).DiagnosticSnapshot();
+            Assert.Equal(2,savedReport.Messaging.Messages.Count(m=>m.Kind==CoalitionPacts.ActivityReport));
+            Assert.Empty(CoalitionPacts.ActivityReports(savedReport,separate.PlayerControl));
+            var commander=new EntityId(houses[2].Head);
+            Assert.Empty(CoalitionPacts.ActivityReports(end,commander));
+            foreach(var action in new[]{CourtAction.ReportCoalitionSortie,CourtAction.ReportSeparatePeace}){
+                var invented=new CourtInput(new("request:unproven-activity"),action,s.PlayerControl,members[0],new(houses[2].Home),Reference:call.Id){ActivityEvidence=signature.Id};
+                var copy=ContractJson.Copy(end);copy.CommitSequence++;
+                Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(copy,invented,commander));
+                Assert.DoesNotContain(copy.Messaging.Messages,m=>m.Kind==CoalitionPacts.ActivityReport);
+            }
             var departing=new EntityId(houses[2].Head);
             var withdrawal=Assert.Single(CoalitionPacts.Withdrawals(end,departing));
             end.CommitSequence++;HouseholdCourt.Execute(end,withdrawal,departing);
