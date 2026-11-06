@@ -14,6 +14,12 @@ public partial class NewGameRuntime
   void Run(SchemeInput i){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageScheme(i,rev);message.Text=r.VisibleReason;GD.Print("SCHEME_RESULT "+i.Action+" "+r.Code+" "+r.VisibleReason);Refresh();ShowInformationSchemes();}
   EntityId Nonce(string key)=>new("request:scheme-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   SocialText(box,"噂・書状の記載・本人の照合結果は別です。未確認情報で処分・離反・開戦を自動的に決めません。");
+  if(JointIndependence.ObserveOwnCastle(w,actor) is {} guard)
+  {
+      var house=w.Definitions.Organizations.SingleOrDefault(h=>h.Id==guard.FormerHouse)?.Name??"旧主家";
+      if(guard.FormerTroopsPresent)SocialText(box,house+"所属の兵がこの城にいます。");
+      SocialText(box,guard.ControlsCastle?"この城の支配は自家に移りました。":"この城の支配は自家に移っていません。");
+  }
   if(CharacterRelations.Enabled(w))
   {
       var partners=w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site).ToArray();

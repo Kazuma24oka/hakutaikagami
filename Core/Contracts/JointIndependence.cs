@@ -12,6 +12,19 @@ public static class JointIndependence
     internal static IndependenceDeclaration? Declaration(ContractWorld w,SecretPact p)=>
         w.Declarations?.SingleOrDefault(d=>d.Founder==p.Proposer && d.FormerHouse==p.House && p.Revision<d.Revision);
 
+    public sealed record LocalGuard(EntityId Castle,EntityId FormerHouse,bool FormerTroopsPresent,bool ControlsCastle);
+    public static LocalGuard? ObserveOwnCastle(ContractWorld w,EntityId observer)
+    {
+        var declaration=w.Declarations?.LastOrDefault(d=>d.Founder==observer && d.CheckGarrison==true);
+        if(declaration==null || SocialWorld.Site(w,observer)!=declaration.Site ||
+            Assassination.DeadAt(w,observer,w.ElapsedSeconds,w.CommitSequence))return null;
+        var site=declaration.Site;
+        bool formerTroops=CastleHandover.Forces(w,declaration.FormerHouse,site,w.ElapsedSeconds,w.CommitSequence+1)>0;
+        bool controls=w.LandRights.Any(r=>r.Subject==declaration.House && r.Target==site &&
+            r.Kind=="control" && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until);
+        return new(site,declaration.FormerHouse,formerTroops,controls);
+    }
+
     internal static SetupFaction Faction(ContractWorld w,IndependenceDeclaration d)=>
         new(d.House.Value,FamilyBirth.People(w).Single(p=>p.Id==d.Founder.Value).Name+"家",d.Founder.Value,d.Site.Value);
 

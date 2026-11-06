@@ -225,12 +225,27 @@ public class DefectionPactTests
             Assert.Equal(true,declaration.CheckGarrison);
             Assert.True(CastleHandover.Forces(after,declaration.FormerHouse,declaration.Site,declaration.At,declaration.Revision)>0);
             Assert.DoesNotContain(after.LandRights,r=>r.Subject==declaration.House && r.Target==declaration.Site);
+            var observation=JointIndependence.ObserveOwnCastle(after,Actor);
+            Assert.NotNull(observation);Assert.True(observation.FormerTroopsPresent);Assert.False(observation.ControlsCastle);
+            Assert.Null(JointIndependence.ObserveOwnCastle(after,new("person:shingen")));
             Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
             Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
             Assert.Equal(ContractJson.Write(before.ResourceLots),ContractJson.Write(after.ResourceLots));
             Assert.DoesNotContain(after.Units,u=>u.Organization==after.Declarations!.Single().House);
-            var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
-            Assert.Equal(ContractJson.Write(after.Units),ContractJson.Write(restored.DiagnosticSnapshot().Units));
+            var storeDirectory=Directory.CreateTempSubdirectory("hakutai-contested-castle-");
+            try
+            {
+                var store=new GenerationSaveStore(storeDirectory.FullName,w.Definitions);
+                s.SetPaused(true);
+                Assert.True(store.Save(s,"contested",after.WorldId).Published);
+                var host=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("contested"),host.Current,host.Current.Revision));
+                var recovered=host.Current.DiagnosticSnapshot();
+                Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(recovered));
+                Assert.Equal(observation,JointIndependence.ObserveOwnCastle(recovered,Actor));
+                Assert.Null(JointIndependence.ObserveOwnCastle(recovered,new("person:shingen")));
+            }
+            finally{storeDirectory.Delete(true);}
             return;
         }
         Assert.Fail("実兵を引き受けた武将が独立できる開始条件がありません");
