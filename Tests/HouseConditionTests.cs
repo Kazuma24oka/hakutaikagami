@@ -49,6 +49,16 @@ public sealed class HouseConditionTests
             Assert.Single(after.Messaging.Messages,m=>m.Id==HouseReforms.Letter(input,HouseReforms.Answer));
             Assert.False(HouseReforms.AnswerKnown(after,after.Court!.Events.Single(e=>e.Input.Id==input.Id),s.PlayerControl));
             Assert.Equal(ContractJson.Write(w.LandRights),ContractJson.Write(after.LandRights));
+            var defer=input with{Action=CourtAction.DeferReform,Reform=null,Id=new("request:defer"),Reference=input.Id};
+            Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(defer,s.Revision).Code);
+            Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,new(HouseReforms.Letter(input,HouseReforms.Answer)),s.Revision).Code);
+            var decision=s.ManageCourt(defer,s.Revision);
+            Assert.True(decision.Code==ResultCode.Accepted,decision.VisibleReason);
+            Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(defer with{Id=new("request:duplicate-defer")},s.Revision).Code);
+            s.SetPaused(true);
+            Assert.True(store.Save(s,"deferred",w.WorldId).Published);
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("deferred"),host.Current,host.Current.Revision));
+            Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
         }
         finally{dir.Delete(true);}
     }

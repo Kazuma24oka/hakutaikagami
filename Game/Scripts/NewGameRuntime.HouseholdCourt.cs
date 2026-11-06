@@ -52,7 +52,13 @@ public partial class NewGameRuntime
    }
    foreach(var e in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.ConsultReform&&e.Actor==actor)??[]){
     var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);
-    if(HouseReforms.AnswerKnown(w,e,actor))SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
+    if(HouseReforms.AnswerKnown(w,e,actor)){
+     SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
+     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"この相談案は見送り済み");
+     else if(head && site==e.Input.Site && house==e.Input.Owner)
+      Button("defer-"+e.Input.Id,"この相談案を見送る",()=>Run(Command("defer/"+e.Input.Id,CourtAction.DeferReform,e.Input.Person,reference:e.Input.Id)));
+    }
     else if(w.Messaging.Receipts.Any(r=>r.MessageId==id&&r.ReceiverId==actor.Value))
      Button("reform-answer-"+e.Input.Id,"改革への返書を開く",()=>{Session.Open(actor,new(id),rev);Refresh();ShowHouseholdCourt();});
     else SocialText(box,PersonName(e.Input.Person)+" ／ "+HouseReforms.Name(e.Input.Reform!.Value)+"：返書待ち");
