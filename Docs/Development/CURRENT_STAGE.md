@@ -2,6 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
+## 製品受入：城主独立時の城内係争
+
+[守備・交渉・本丸受領の実測](../Design/IndependenceGarrisonV1/entry-verification.md)。次は独立宣言を他の城へ届け、現地の武将・守備隊が個別に返答する経路を扱う。
+
 ## 工程9b 包囲網の代表経路を検証済み
 
 [包囲網の実測と残件](../Design/CoalitionV1/entry-verification.md)。次は第5版を通常入口から通し、残る全国製品版の条件と照合する。

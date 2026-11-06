@@ -199,10 +199,23 @@ public class DefectionPactTests
     {
         for(ulong seed=0;seed<32;seed++)
         {
-            var w=Start(seed);var s=new WorldSession(w);
+            var w=Start(seed,castellan:true);var s=new WorldSession(w);
             EntityId id=new("request:field-pact");
             Assert.Equal(ResultCode.Accepted,s.NegotiatePact(id,Partner,PactPurpose.RiseTogether,s.Revision).Code);
             if(!s.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
+            void Travel(string to){
+                var trip=TravelWorld.Move(s.DiagnosticSnapshot(),"request:gate-fee-trip/"+to,to);
+                Assert.Equal(ResultCode.Accepted,s.Submit(trip,s.Revision).Code);
+                NewGameWorldTests.At(s,s.Seconds+2);
+                NewGameWorldTests.At(s,s.GetBranchView(Actor).ArrivalAt!.Value+1);
+            }
+            // 他家の拠点で受けた民間点検の報酬を未払いのまま残す。
+            Travel("kofu");
+            NewGameWorkTests.Work(s,id:"request:independence-outstanding-fee");
+            NewGameWorldTests.At(s,s.Seconds+8);
+            var debt=Assert.Single(s.DiagnosticSnapshot().Debts,d=>d.Outstanding>0);
+            Assert.Equal(Actor,debt.Creditor);
+            Travel("castle");
             void Send(NewMilitaryAction a,long amount=0)
             {
                 var input=new NewMilitaryInput(new("request:field-pact/"+a),a,amount);
@@ -221,11 +234,103 @@ public class DefectionPactTests
             Assert.Contains(before.Units,u=>u.Commander==Actor && u.Soldiers>0);
             Assert.Equal(ResultCode.Accepted,s.SignalPact(id,s.Revision).Code);
             var after=s.DiagnosticSnapshot();
+            var declaration=Assert.Single(after.Declarations!);
+            Assert.Equal(true,declaration.CheckGarrison);
+            Assert.True(CastleHandover.Forces(after,declaration.FormerHouse,declaration.Site,declaration.At,declaration.Revision)>0);
+            Assert.DoesNotContain(after.LandRights,r=>r.Subject==declaration.House && r.Target==declaration.Site);
+            var observation=JointIndependence.ObserveOwnCastle(after,Actor);
+            Assert.NotNull(observation);Assert.True(observation.FormerTroopsPresent);Assert.False(observation.ControlsCastle);
+            Assert.Null(JointIndependence.ObserveOwnCastle(after,new("person:shingen")));
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
             Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
             Assert.Equal(ContractJson.Write(before.ResourceLots),ContractJson.Write(after.ResourceLots));
             Assert.DoesNotContain(after.Units,u=>u.Organization==after.Declarations!.Single().House);
-            var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
-            Assert.Equal(ContractJson.Write(after.Units),ContractJson.Write(restored.DiagnosticSnapshot().Units));
+            var storeDirectory=Directory.CreateTempSubdirectory("hakutai-contested-castle-");
+            try
+            {
+                var store=new GenerationSaveStore(storeDirectory.FullName,w.Definitions);
+                s.SetPaused(true);
+                Assert.True(store.Save(s,"contested",after.WorldId).Published);
+                var host=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("contested"),host.Current,host.Current.Revision));
+                var recovered=host.Current.DiagnosticSnapshot();
+                Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(recovered));
+                Assert.Contains(debt,recovered.Debts);
+                Assert.Equal(observation,JointIndependence.ObserveOwnCastle(recovered,Actor));
+                Assert.Null(JointIndependence.ObserveOwnCastle(recovered,new("person:shingen")));
+                var play=host.Current;
+                var request=Assert.Single(IndependenceGate.Available(recovered,Actor));
+                Assert.Equal(CourtAction.RequestIndependentGate,request.Action);
+                var reply=play.ManageCourt(request,play.Revision);
+                Assert.True(reply.Code==ResultCode.Accepted,reply.VisibleReason);
+                Assert.Empty(IndependenceGate.Available(play.DiagnosticSnapshot(),new("person:shingen")));
+                var proposed=ContractJson.Copy(recovered);
+                proposed.CommitSequence++;
+                HouseholdCourt.Execute(proposed,request,Actor);
+                foreach(var decision in new[]{CourtAction.AllowIndependentGate,CourtAction.RefuseIndependentGate}){
+                    var branch=ContractJson.Copy(proposed);
+                    var negotiator=new EntityId("person:nobunaga");
+                    var chosen=IndependenceGate.Available(branch,negotiator).Single(i=>i.Action==decision);
+                    branch.CommitSequence++;
+                    HouseholdCourt.Execute(branch,chosen,negotiator);
+                    var negotiations=new WorldSession(branch);
+                    var options=IndependenceGate.Available(negotiations.DiagnosticSnapshot(),Actor).ToArray();
+                    if(decision==CourtAction.RefuseIndependentGate){Assert.Empty(options);continue;}
+                    var allowedGate=Assert.Single(options);
+                    Assert.Equal(CourtAction.ReceiveIndependentGate,allowedGate.Action);
+                    Assert.Equal(ResultCode.Accepted,negotiations.ManageCourt(allowedGate,negotiations.Revision).Code);
+                    Assert.Equal(ResultCode.AlreadyAccepted,negotiations.ManageCourt(allowedGate,negotiations.Revision).Code);
+                    Assert.Empty(IndependenceGate.Available(negotiations.DiagnosticSnapshot(),Actor));
+                    Assert.DoesNotContain(negotiations.DiagnosticSnapshot().LandRights,r=>r.Subject==declaration.House);
+                    void MoveGuard(NewMilitaryAction action,FieldPoint? a=null,FieldPoint? b=null){
+                        var input=new NewMilitaryInput(new("request:gate-movement/"+action),action,A:a,B:b);
+                        var result=negotiations.DecideNewMilitary(input,Actor,negotiations.Revision);
+                        Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+                    }
+                    MoveGuard(NewMilitaryAction.Deploy);
+                    var anchor=NewGameMilitary.Anchor(negotiations.DiagnosticSnapshot());
+                    MoveGuard(NewMilitaryAction.Form,new(anchor.X+55000,anchor.Y-8000),new(anchor.X+55000,anchor.Y+8000));
+                    NewGameWorldTests.At(negotiations,negotiations.Seconds+100);
+                    Assert.Empty(IndependenceGate.Available(negotiations.DiagnosticSnapshot(),Actor));
+                    MoveGuard(NewMilitaryAction.Handoff);MoveGuard(NewMilitaryAction.Withdraw);
+                    var returning=negotiations.DiagnosticSnapshot();
+                    var arrival=returning.NewMilitary!.Withdrawal!.Journeys.Last().Route.Last().EndAt;
+                    Assert.Empty(IndependenceGate.Available(returning,Actor));
+                    NewGameWorldTests.At(negotiations,arrival+1);
+                    var keep=Assert.Single(IndependenceGate.Available(negotiations.DiagnosticSnapshot(),Actor));
+                    Assert.Equal(CourtAction.ReceiveIndependentKeep,keep.Action);
+                    var ready=negotiations.DiagnosticSnapshot();
+                    var fixture=Environment.GetEnvironmentVariable("HAKUTAI_INDEPENDENCE_UI_FIXTURE");
+                    if(!string.IsNullOrWhiteSpace(fixture))File.WriteAllBytes(fixture,ContractJson.Write(ready));
+                    var taken=negotiations.ManageCourt(keep,negotiations.Revision);
+                    Assert.True(taken.Code==ResultCode.Accepted,taken.VisibleReason);
+                    var transferred=negotiations.DiagnosticSnapshot();
+                    Assert.True(JointIndependence.ObserveOwnCastle(transferred,Actor)!.ControlsCastle);
+                    Assert.Contains(debt,transferred.Debts);
+                    Assert.All(transferred.Units,u=>Assert.Equal(declaration.FormerHouse,u.Organization));
+                }
+                NewGameWorldTests.At(play,play.Seconds+2);
+                var record=play.DiagnosticSnapshot();
+                var answer=Assert.Single(record.Court!.Events,e=>e.Input.Reference==declaration.Pact &&
+                    e.Input.Action is CourtAction.AllowIndependentGate or CourtAction.RefuseIndependentGate);
+                Assert.Equal(new EntityId("person:nobunaga"),answer.Actor);
+                if(answer.Input.Action==CourtAction.AllowIndependentGate)
+                {
+                    var gate=Assert.Single(IndependenceGate.Available(record,Actor));
+                    Assert.Equal(CourtAction.ReceiveIndependentGate,gate.Action);
+                    Assert.Equal(ResultCode.Accepted,play.ManageCourt(gate,play.Revision).Code);
+                }
+                var contested=play.DiagnosticSnapshot();
+                Assert.Empty(IndependenceGate.Available(contested,Actor));
+                Assert.Equal(ContractJson.Write(after.LandRights),ContractJson.Write(contested.LandRights));
+                Assert.Equal(observation,JointIndependence.ObserveOwnCastle(contested,Actor));
+                play.SetPaused(true);
+                Assert.True(store.Save(play,"after-gate",after.WorldId).Published);
+                var resumed=new WorldSessionHost(new WorldSession(w));
+                Assert.Equal(ResultCode.Accepted,resumed.CommitLoad(store.Prepare("after-gate"),resumed.Current,resumed.Current.Revision));
+                Assert.Equal(ContractJson.Write(play.DiagnosticSnapshot()),ContractJson.Write(resumed.Current.DiagnosticSnapshot()));
+            }
+            finally{storeDirectory.Delete(true);}
             return;
         }
         Assert.Fail("実兵を引き受けた武将が独立できる開始条件がありません");

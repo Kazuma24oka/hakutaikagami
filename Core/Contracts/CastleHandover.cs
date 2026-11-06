@@ -27,6 +27,25 @@ public static class CastleHandover
             var b=NewGameMilitary.LedgerIdentity(m.Owner,m.Site);if(NpcArmies.Position(w,b.Army,at)!=FieldWorld.ToWorld(anchor))continue;n+=b.Units.Select((id,i)=>Math.Max(0,(i==0?40:30)-WorldClashes.SoldiersLost(c,id,at))).Sum();}
         return n+CommandedAt(w,owner,site,at,rev);
     }
+    // 城に返納された生存兵も守備に残る。移動中の軍を本拠側に重ねて数えない。
+    public static bool HasGarrison(ContractWorld w,EntityId owner,EntityId site,long at,long rev)
+    {
+        if(Forces(w,owner,site,at,rev)>0)return true;
+        var past=PastLosses(w,at,rev);
+        foreach(var ledger in NewGameMilitary.LedgerStates(w).Where(s=>s.Terms.Owner==owner && s.Terms.Site==site)){
+            var custody=ledger.Events.LastOrDefault(e=>(e.Effect is MilitaryEffect.PickedUp or MilitaryEffect.Returned) &&
+                (e.At,e.Revision).CompareTo((at,rev))<0);
+            if(custody?.Effect!=MilitaryEffect.Returned)continue;
+            past.NewMilitary=ledger;
+            if(Enumerable.Range(0,3).Any(i=>NewGameMilitary.StrengthAt(past,i,at)>0))return true;
+        }
+        foreach(var muster in NpcArmies.Musters(w).Where(m=>m.Owner==owner && m.Site==site)){
+            if(!w.NpcArmies!.Returns.Any(r=>r.Muster==muster.Id && (r.At,r.Revision).CompareTo((at,rev))<0))continue;
+            var units=NewGameMilitary.LedgerIdentity(owner,site).Units;
+            if(units.Where((id,i)=>WorldClashes.SoldiersLost(past,id,at)<(i==0?40:30)).Any())return true;
+        }
+        return false;
+    }
     internal static int CommandedAt(ContractWorld w,EntityId owner,EntityId site,long at,long rev)
     {
         var c=PastLosses(w,at,rev);

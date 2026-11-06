@@ -9,11 +9,38 @@ public partial class NewGameRuntime
  internal void ReviewSchemePress(string key){if(!schemeReviewButtons.TryGetValue(key,out var b)||b.Disabled)throw new InvalidOperationException("この情報操作は選べません："+key);b.EmitSignal(Button.SignalName.Pressed);}
  void ShowInformationSchemes()
  {
-  if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("情報・書状の照合・密偵");schemeReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){if(CastleSiege.Enabled(w))Button("contact-menu","道中の人物・目撃記録",ShowPersonalContact);SocialText(box,"現地へ到着してから相談してください。");return;}
+  if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("情報・書状の照合・密偵");schemeReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null && IndependenceGate.MeetingSite(w,actor)==null){if(CastleSiege.Enabled(w))Button("contact-menu","道中の人物・目撃記録",ShowPersonalContact);SocialText(box,"現地へ到着してから相談してください。");return;}
   void Button(string key,string label,Action action){var b=new Button{Text=label};box.AddChild(b);schemeReviewButtons[key]=b;b.Pressed+=action;}
   void Run(SchemeInput i){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageScheme(i,rev);message.Text=r.VisibleReason;GD.Print("SCHEME_RESULT "+i.Action+" "+r.Code+" "+r.VisibleReason);Refresh();ShowInformationSchemes();}
   EntityId Nonce(string key)=>new("request:scheme-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   SocialText(box,"噂・書状の記載・本人の照合結果は別です。未確認情報で処分・離反・開戦を自動的に決めません。");
+  var witnessed=IndependenceGate.LastWitnessed(w,actor) switch{
+      CourtAction.RequestIndependentGate=>"城門の引渡しを申し入れ、旧主の返答を待っています。",
+      CourtAction.RefuseIndependentGate=>"旧主は城門の引渡しを断りました。",
+      CourtAction.AllowIndependentGate=>"旧主が城門の引渡しに同意しました。",
+      CourtAction.ReceiveIndependentGate=>"城門を受領しました。本丸は守備の退去後に立ち会って受領します。",
+      CourtAction.ReceiveIndependentKeep=>"本丸を受領しました。",
+      _=>null
+  };
+  if(witnessed!=null)SocialText(box,witnessed);
+  foreach(var option in IndependenceGate.Available(w,actor)){
+      string label=option.Action switch{
+          CourtAction.RequestIndependentGate=>"旧主に城門の引渡しを申し入れる",
+          CourtAction.AllowIndependentGate=>"城門の引渡しに同意する",
+          CourtAction.RefuseIndependentGate=>"城門の引渡しを断る",
+          CourtAction.ReceiveIndependentGate=>"立会いのもとで城門を受け取る",
+          CourtAction.ReceiveIndependentKeep=>"守備の退去を確認し、本丸を受け取る",
+          _=>throw new InvalidOperationException()
+      };
+      Button(option.Id.Value,label,()=>{var result=Session.ManageCourt(option,rev);message.Text=result.VisibleReason;Refresh();ShowInformationSchemes();});
+  }
+  if(JointIndependence.ObserveOwnCastle(w,actor) is {} guard)
+  {
+      var house=w.Definitions.Organizations.SingleOrDefault(h=>h.Id==guard.FormerHouse)?.Name??"旧主家";
+      if(guard.FormerTroopsPresent)SocialText(box,house+"所属の兵がこの城にいます。");
+      SocialText(box,guard.ControlsCastle?"この城の支配は自家に移りました。":"この城の支配は自家に移っていません。");
+  }
+  if(site==null)return; // 部隊から帰城した当事者には城の立会いだけを表示する。
   if(CharacterRelations.Enabled(w))
   {
       var partners=w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site).ToArray();

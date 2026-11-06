@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "316ce8342e51c80a0b8f3bdeaa78b7a2553267d930a6d6869ec4e82fb9e3aa29",
+    "Docs/Development/ProgressV1/estimate.json": "4cf25ad280bf456d0a1906b71ed3f75661e131dd2bf91d74116d8403234986ab",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "9cec6c08e7974b641ee73319a63c7b74561bcb3297450c0c47d8ba0dfe18c062",
+    "Scripts/check_progress_report.py": "f4078e3a74aacbecadf9196d78e27c98c885ad51de59217fc8e81614d7e37586",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "e21efcd8301815ca878b3a1d6875b3f5d029b508c2f56052bf657ff0384459eb",
+    "Scripts/check_approval_batch.py": "e90092f26444771b71711715f303d946e5c1d68f3f8fac3112e21fd413ad7bf9",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "defd17c32967ec190894118a5707ddd1d5d2bc0450f0051bb4805eafcc6c1083",
+    "Docs/Development/CURRENT_STAGE.md": "cce5ddfce98a56eb2fe207a54a632db10335567075eb95749cf3733cb19b37c0",
     "Core/Contracts/HouseSuccession.cs": "7e2ee13dcd64453a71faf96b6ebb9c07cc4c8b0149ae2e64dfa8f7413cc2d54a",
     "Core/Contracts/FactionStances.cs": "445828eebda8cf2de3d7981a17bba7e4a12841a8b6f35ef5c330ebd3c3f9562a",
     "Core/Contracts/NewGameWorld.cs": "40bc2923ae7f2579b8b901804a3e435718e7961814c2058e7223ac0cb7f66780",
@@ -210,7 +210,7 @@
     "Core/Contracts/NewGameMilitary.StoredSuccession.cs": "9e34227ef9cf5a1e81ca33f9a1c74c723c070491414f554ff086e5d182372ea5",
     "Core/Contracts/NewGameMilitary.HouseholdLedgers.cs": "787d44c50637195b78a1364620bb86af2081755f32ad2d0f39d1da72cd1437eb",
     "Core/Contracts/NewGameService.Validation.cs": "29460970727b126d40cc478e146152f49dc184b49f40e11b45621241a0cbcc15",
-    "Tests/ActiveMilitarySuccessionTests.cs": "6eb242391b28b25a301d1a7cf69f1b910a7b541c46ba6b7da1611d27a660fa6f",
+    "Tests/ActiveMilitarySuccessionTests.cs": "30023f92126a6cfc88dc2e6c1c3b673510e0bc5fc83af243e3fd31a07134d7fc",
     "Docs/Design/ActiveMilitarySuccessionV1/verification.json": "9f957356f64f9680548c555762f27a8deef2fa6cac49a891f3b229d959a5a31e",
     "Docs/Design/ActiveMilitarySuccessionV1/completion.json": "38ade69427fef4e5cf6c73416897f289955b8efb1efa7f44e28b40bf87d8ac70",
     "Docs/Design/ActiveMilitarySuccessionV1/README.md": "f606a16148f0294f6cc291a398da3432a996519d8aa138579904d7bf45b8b27c",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "f97a9f710f55a05bce5290188b0d17d1e083c85024590b2120c84a25adf1160b",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "593660f36e2f594749be449ab27ae2a711b162140c867ad30ac4c33620ba6f00",
+    "Core/Contracts/ContractJson.cs": "69da9b37a34751a7e3d233b25581132aaf3ff005d2d851214d087f6c3b0f2f65",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -528,7 +528,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v58.json": "d1796d7c211e94212f763d7d4a9091c5043abaf6cc5b5621b6d1b44af696ac62",
     "Core/Contracts/InformationSchemes.cs": "83042898de20b99351856eb2451947712f64d8df77134933998060b4442d0ca5",
     "Core/Contracts/WorldSession.SchemeCouriers.cs": "13a9bd6722d318ae92a069e85813985a78b6c7f1cab10170fc9a8e908f2276dd",
-    "Game/Scripts/NewGameRuntime.InformationSchemes.cs": "21d563082d8525cd6f057c529e8242703f1fc3c15c2be61e6917ae1fdfcfb20b",
+    "Game/Scripts/NewGameRuntime.InformationSchemes.cs": "30bf836ad25b62c33d38ec93371efc4fb4a523999e3dd3232441ec0fc92e820e",
     "Game/Scripts/InformationSchemesCheck.cs": "9e639d12654342a43f5cdd877e7be5d7f164259255100045bd2b90a27c2394eb",
     "Tests/InformationSchemeTests.cs": "b5d11fd55527b07879c08f34dc4b6fdaaa443041dc726b45aa6c66266786a9f4",
     "Docs/Design/InformationSchemesV1/verification.json": "30737da5f7bc66cf8fac91bb39758e441f2783a046e89d3e0d5304628f3e7a99",
@@ -538,7 +538,7 @@
     "Docs/Design/InformationSchemesV1/scope.md": "d83ccc5f060419fcebfa0eea907dabd4fc56c2f3c2d3a1e7ed97cceb3b3b5755",
     "Scripts/verify_information_schemes.py": "edded9dced2393c6b4ef6184e33cc18d75b6b8aa6d69358f78784c98e2236fbd",
     "Docs/Development/ProgressV1/approval-baseline-v59.json": "7c40e08ae624a35152466430ac2dbf6d25698427be888cc360654b83463bfd72",
-    "Core/Contracts/HouseholdCourt.cs": "e87d6485a846f074da9b05538fd6eb62d0716ecff5732e3f184dd4eb015215c4",
+    "Core/Contracts/HouseholdCourt.cs": "4f0aee213a315dd3d5a64d0f0bdcc5fa44f99b8a675b629aa9a993f328c25483",
     "Core/Contracts/TransactionalWorld.cs": "87441f985c418a21d91b6557589982d306412d00c1702e8095c1cbf95bcba289",
     "Game/Scripts/NewGameRuntime.HouseholdCourt.cs": "4bf4e1186178644712faef95241dd475824ca0efb36243d4cb5381f52226a4cc",
     "Game/Scripts/HouseholdCourtCheck.cs": "5549229a8c4ad58dd59af85fbaef66b68f32c11afd71d94006296f5e52a060d1",
@@ -645,7 +645,7 @@
     "Core/Contracts/TempleMilitary.cs": "19ce9136647544ee0be36a87c417efc7be70e785e16c630fe4c8bcdb7fa7fcba",
     "Tests/BattlefieldRulesTests.cs": "8c26e28c17a3764dc2862e49007ec633802896319442cf83c477e4982ec2a17a",
     "Tests/TempleMilitaryTests.cs": "e7062bb0efd29b4db2c885341c98a7c29676c4b6c9077d762dee5219829ac24b",
-    "Game/Scripts/NewGameRuntime.Battlefield.cs": "74e8db7540bed04b80d20149e78f6eda9288f5ef33264dee7fe6ac1bca1a5ad5",
+    "Game/Scripts/NewGameRuntime.Battlefield.cs": "bea3c1c224f3f7dffad9d864b9a433deaa69ed1b5d15690649a8b4ece842cb35",
     "Game/Scripts/BattlefieldRulesCheck.cs": "11d3f4c8b781833f11f7f8b3fba74ceb4971f8612c67f7dff23ac95cba7fa234",
     "Docs/Design/BattlefieldRulesV1/verification.json": "7ed9a7cb7893753f86953f15114e2169bd119b528f341aa0a30dc6ed52b55b15",
     "Docs/Design/BattlefieldRulesV1/scope.md": "ac993611af1f4153c6256db07f6a9afba7874eeddad6daa11e08f4a00c20b85e",
@@ -749,9 +749,9 @@
     "Docs/References/GETENROKU_BACKLOG.md": "37c96b14e6cfc27fc81b0e31346d923a12697d595d3842f3f0b6a0dfc2b5fd7f",
     "Core/Contracts/DefectionPacts.cs": "8b8986f8ba7249ee08090abed683cd81ec375e96131806ae8cf459e1a737e58c",
     "Core/Contracts/PactDocuments.cs": "0dcadc2a78ef36db4fa47155fd5e914a28132c474f7b9b4f1c571afc35d6655a",
-    "Core/Contracts/PactSignals.cs": "d2cfc1d0eada804192a0c6bf1769a968b4c29936518114f76ef354400e68dd20",
-    "Core/Contracts/JointIndependence.cs": "74800ed7710f03437f91bc933ceb2fafe3840b8bb3b186ddc369707df8f47394",
-    "Tests/DefectionPactTests.cs": "b3efad581c774e74c6b11f0c8b30ba7c38d4ab7d9c3a49d8ec5e091de18e5b0d",
+    "Core/Contracts/PactSignals.cs": "c23c7833baf0559384af3cb9ee9f769305973f2fcb18276404c192f7eb834d2f",
+    "Core/Contracts/JointIndependence.cs": "fe273e83b3facd2830e6c878344a7d66c44f59cc525bee986077a0aea520eac4",
+    "Tests/DefectionPactTests.cs": "505e518ebeebbfdda9d260679238e31e51c8d12e57fafcf8fc9d8bf49641d056",
     "Game/Scripts/DefectionPactCheck.cs": "47d7efad307e0482f839827e837d8a0fbdfa381292fe7724ceb0999de9111004",
     "Docs/Design/DefectionPactV1/verification.json": "68b5f0b76eca0cdff73fba7daf6e9280751fc3c4b04cc419df0e10a675ab31b0",
     "Docs/Design/DefectionPactV1/scope.md": "efbdf56ab9e9e6d7680e0284e4ce649782d5a44c31fa0f97e8527dd290b2f54f",
@@ -778,7 +778,11 @@
     "Docs/Development/ProgressV1/approval-baseline-v89.json": "cc5ff1edc5a12ac689213f72c482382ec1535dcce88c9a15f9ba97f7dba08701",
     "Docs/Design/CoalitionV1/logic-verification.json": "bac5823f47ffcfd84c9bd8771a9b70097870e78dbd299adfffe7c26637ede8bb",
     "Docs/Design/CoalitionV1/completion.json": "2c1b6867fd887f9148206e84fc5cc9139f1d27c0a10d63c682adef68eccfdd86",
-    "Docs/Design/CoalitionV1/verification.json": "4795417e11c25338659338ffb5d5aab65a086097a3f43c3c9ee33cb0b4d194ad"
+    "Docs/Design/CoalitionV1/verification.json": "4795417e11c25338659338ffb5d5aab65a086097a3f43c3c9ee33cb0b4d194ad",
+    "Docs/Development/ProgressV1/approval-baseline-v90.json": "d4d5b8406687cf32473885ce513dcdb0ed902f2082080c4c21b183d0f01a8a60",
+    "Docs/Design/IndependenceGarrisonV1/logic-verification.json": "6f9693d4965c37e4cc8d4526d001bd102fd5e9c9c593a5d583ee25039805da25",
+    "Docs/Design/IndependenceGarrisonV1/completion.json": "faecf607fe52502759aad46c2b1b5ab3692132dbbbd2b3a5589bd1c6eaee08cc",
+    "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11"
   },
   "items": [
     {
@@ -2845,15 +2849,16 @@
     {
       "id": "BD-46",
       "status": "foundation",
-      "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。",
-      "remaining": "ゲーム中の独立宣言・部隊別帰属・密約・宣言配送と債務残存を実装する。 統合案で追加：§10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。 既存仕様の具体化：国人の接近・支持・新条約・旧関係の解除通知と効力・実離脱・最初の履行を接続する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。家の従属先変更と個人仕官・家の吸収を分け、旧主の一律許可制や全員・全資源の自動移転を追加しない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：家の記録と原本が存続する開始条件で、再興の志・支持・後援・実集合・補給・部分回復または撤退を接続する（MORI_MOTONARI_HOUSE_RESTORATION.md）。旧所属だけで臣下や所領を復活させず、家IDや消滅債務の復活規則を新設しない。実装・シナリオ検査は未実施。 2026-11-05 A案採用：存続中の家を扱う従来例に、吸収・解散後の同じ家としての再興を追加する。旧臣・旧領・部隊の帰属や実支配を自動復帰させず、本人の選択と実際の行動を必要とする（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
+      "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。 旧主の守備が残る城で城主が独立し、門の申入れ・承諾または拒否・守備退去・本人帰城・本丸受領を区別。兵籍と実際の未受領報酬を保持。",
+      "remaining": "他城への宣言の伝達・部隊別の帰属判断・全体の受入。 §10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。 既存仕様の具体化：国人の接近・支持・新条約・旧関係の解除通知と効力・実離脱・最初の履行を接続する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。家の従属先変更と個人仕官・家の吸収を分け、旧主の一律許可制や全員・全資源の自動移転を追加しない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：家の記録と原本が存続する開始条件で、再興の志・支持・後援・実集合・補給・部分回復または撤退を接続する（MORI_MOTONARI_HOUSE_RESTORATION.md）。旧所属だけで臣下や所領を復活させず、家IDや消滅債務の復活規則を新設しない。実装・シナリオ検査は未実施。 2026-11-05 A案採用：存続中の家を扱う従来例に、吸収・解散後の同じ家としての再興を追加する。旧臣・旧領・部隊の帰属や実支配を自動復帰させず、本人の選択と実際の行動を必要とする（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
         "Core/Contracts/NewGameService.cs",
         "Tests/NewGameSetupTests.cs",
         "Docs/Proposals/MORI_MOTONARI_ALLEGIANCE_CHANGES.md",
         "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md",
-        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md",
+        "Docs/Design/IndependenceGarrisonV1/entry-verification.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3937,12 +3942,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 2,
+      "passed": 4,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/CoalitionV1/runtime-local/stage9b.trx",
-      "sha256": "9e6b99397368aa9eea87ec21dd1a9a54f5bc7dfd9072625bd98fe7bb57204636",
-      "scope": "工程9b 包囲網の一巡と旧保存互換。全件未実施。"
+      "trx": "Docs/Design/IndependenceGarrisonV1/runtime-local/garrison.trx",
+      "sha256": "98c1d65092d8b7b61ef980c8c58b173ccc1d72516ea444ebb130e4d3bac2e7a8",
+      "scope": "城主独立と実守備、実保存、旧保存の関連4件。全件未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3961,7 +3966,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "招請・各家の回答・署名・密告・実出陣と単独和睦の報告・離脱を実際の書状と接続。呼びかけ人の自然死は目撃・訃報開封に応じて認識する。",
+    "current_stage_summary": "旧主の守備が残る城で城主が独立し、門の申入れ・承諾または拒否・守備退去・本人帰城・本丸受領を区別。兵籍と実際の未受領報酬を保持。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3984,8 +3989,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/HouseScaleV1/integration.json",
-    "current_logic_verification": "Docs/Design/CoalitionV1/logic-verification.json",
-    "current_logic_verification_sha256": "bac5823f47ffcfd84c9bd8771a9b70097870e78dbd299adfffe7c26637ede8bb",
+    "current_logic_verification": "Docs/Design/IndependenceGarrisonV1/logic-verification.json",
+    "current_logic_verification_sha256": "6f9693d4965c37e4cc8d4526d001bd102fd5e9c9c593a5d583ee25039805da25",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。",
@@ -4063,7 +4068,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "第5版の通常入口を通し、製品版までの残件を固定評価と照合する。"
+    "他城への宣言の伝達と現地ごとの帰属判断。"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

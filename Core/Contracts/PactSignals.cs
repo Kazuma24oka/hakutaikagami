@@ -22,7 +22,7 @@ public static class PactSignals
     {
         if(p.Purpose==PactPurpose.RiseTogether && JointIndependence.Declaration(w,p)==null)
             w.Declarations=[..w.Declarations??[],new(p.Id,p.Proposer,p.House,InformationSchemes.Id("independent-house",p.Id.Value),
-                SocialWorld.Site(w,p.Proposer)!.Value,w.ElapsedSeconds,w.CommitSequence)];
+                SocialWorld.Site(w,p.Proposer)!.Value,w.ElapsedSeconds,w.CommitSequence){CheckGarrison=true}];
         PactSignals.Send(w,p,true,p.Purpose==PactPurpose.RiseTogether?"独立を宣言した。約定に応じるか返書を乞う。":
             DefectionPacts.Name(p.Purpose)+"との約定について、今の意向を伺います。");
     }

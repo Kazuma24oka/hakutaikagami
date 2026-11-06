@@ -1,0 +1,13 @@
+{
+  "scope": "independence-garrison",
+  "ui": "Docs/Design/IndependenceGarrisonV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 4
+  },
+  "proofs": {
+    "Docs/Design/IndependenceGarrisonV1/runtime-local/ui.log": "58d894c7bba84fe797d4c91d1fc7bf825ff57fe67f9ef91fb135eb416fb18a46",
+    "Docs/Design/IndependenceGarrisonV1/runtime-local/garrison.trx": "98c1d65092d8b7b61ef980c8c58b173ccc1d72516ea444ebb130e4d3bac2e7a8",
+    "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11",
+    "Docs/Design/IndependenceGarrisonV1/completion.json": "faecf607fe52502759aad46c2b1b5ab3692132dbbbd2b3a5589bd1c6eaee08cc"
+  }
+}
