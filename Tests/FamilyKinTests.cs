@@ -3,6 +3,36 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public class FamilyKinTests
 {
+    [Fact] public void DistantChildLearnsFromWitnessLetterOnlyAfterDeliveryAndOpening()
+    {
+        var elder=NewGameWorldTests.Officer("created:elder",site:"site:kyoto") with{BirthYear=1430};
+        var child=NewGameWorldTests.Officer(site:"site:akutagawa") with{BirthParents=[elder.Id]};
+        var witness=NewGameWorldTests.Officer("created:witness",site:elder.Site);
+        var start=NewGameWorldTests.Setup([elder,child,witness]);
+        var world=NewGameWorld.Create(start.World,start.Registered,child.Id,0,comingOfAge:15);
+        const long at=12830400;
+        world.ElapsedSeconds=at-1;
+        var session=new WorldSession(world);
+        NewGameWorldTests.At(session,at);
+        world=session.DiagnosticSnapshot();
+        var death=Assert.Single(world.NaturalDeaths!);
+        var message=Assert.Single(world.Messaging.Messages,m=>m.Kind==FamilyNotice.Kind);
+        Assert.True(FamilyNotice.Knows(world,death,new(witness.Id)));
+        Assert.False(FamilyNotice.Knows(world,death,session.PlayerControl));
+        var attempt=Assert.Single(world.Messaging.Attempts,a=>a.MessageId==message.Id);
+        Assert.True(attempt.DueAt>at);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(world)));
+        foreach(var branch in new[]{session,restored})
+        {
+            NewGameWorldTests.At(branch,attempt.DueAt);
+            Assert.False(FamilyNotice.Knows(branch.DiagnosticSnapshot(),death,branch.PlayerControl));
+            var opened=branch.Open(branch.PlayerControl,new(message.Id),branch.Revision);
+            Assert.True(opened.Code==ResultCode.Accepted,opened.VisibleReason);
+            Assert.True(FamilyNotice.Knows(branch.DiagnosticSnapshot(),death,branch.PlayerControl));
+        }
+        Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
     [Fact] public void NaturalDeathIsRecordedOnceWithEstateIntactAcrossRecovery()
     {
         var elder=NewGameWorldTests.Officer("created:elder") with{BirthYear=1430};

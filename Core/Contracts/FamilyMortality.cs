@@ -47,10 +47,12 @@ public static class FamilyMortality
         {
             EntityId id=new(person.Id);
             if(w.Characters.Single(c=>c.Id==id).Life==LifeState.Dead)continue;
-            w.NaturalDeaths=[..w.NaturalDeaths??[],new(id,w.ElapsedSeconds,w.CommitSequence)];
+            var death=new NaturalDeath(id,w.ElapsedSeconds,w.CommitSequence);
+            w.NaturalDeaths=[..w.NaturalDeaths??[],death];
             w.Characters=w.Characters.Select(c=>c.Id==id?c with{Life=LifeState.Dead,Revision=w.CommitSequence}:c).ToArray();
             foreach(var task in w.Tasks.Where(t=>t.Executor==id && t.Execution==ExecutionPhase.Running).ToArray())
                 WorldSession.Stop(w,task,"本人の死亡により行動終了");
+            FamilyNotice.Send(w,death);
         }
     }
 
@@ -59,6 +61,7 @@ public static class FamilyMortality
         var rows=w.NaturalDeaths??[];
         if(prior?.NaturalDeaths is {} old && !rows.Take(old.Length).SequenceEqual(old))
             throw new InvalidDataException("過去の自然死記録が変更されています");
+        FamilyNotice.Validate(w);
         if(rows.Length==0)return;
         if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data || rows.DistinctBy(d=>d.Person).Count()!=rows.Length)
             throw new InvalidDataException("自然死の記録が不正です");
