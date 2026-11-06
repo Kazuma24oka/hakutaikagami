@@ -5,6 +5,30 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void RelocationLetterNamesTheTwoEstatesWithoutMovingTheCastellan()
+    {
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+        var follower=NewGameWorldTests.Officer("created:estate-officer",StartTemplate.Castellan,lord:head.Id);
+        var owner=new EntityId("org:estate-test");
+        var setup=NewGameWorldTests.Setup([head,follower],[new(head.Id,owner.Value,[head.Site,"site:fork"],false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,head.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        var s=new WorldSession(w);
+        EntityId person=new(follower.Id),site=new(head.Site);
+        var offer=new CourtInput(new("request:estate-consult"),CourtAction.ConsultReform,person,owner,site){
+            Reform=ReformKind.Relocate,NewEstate=new("site:fork")};
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(offer with{NewEstate=new("site:kofu")},s.Revision).Code);
+        var before=s.DiagnosticSnapshot();
+        var result=s.ManageCourt(offer,s.Revision);
+        Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var sent=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot())).DiagnosticSnapshot();
+        var letter=sent.Messaging.Messages.Single(m=>m.Id==HouseReforms.Letter(offer,HouseReforms.Proposal));
+        Assert.Contains(NewGameWorld.SiteName(offer.NewEstate!.Value.Value),letter.Body);
+        Assert.Equal(ContractJson.Write(before.Locations),ContractJson.Write(sent.Locations));
+        Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(sent.LandRights));
+    }
+
+    [Fact]
     public void ResidentLordAbolishesBarrierWhileAnotherPersonIsAlreadyTravelling()
     {
         var traveller=HouseholdCourtTests.Ronin;

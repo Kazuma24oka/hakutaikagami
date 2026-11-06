@@ -75,7 +75,7 @@ public static class HouseReforms
         RegionalCampaign.Bind(w);
     }
     internal static void Send(ContractWorld w,CourtInput input,EntityId actor)=>
-        Dispatch(w,input,Proposal,actor,input.Person,NewGameWorld.SiteName(input.Site.Value)+"での「"+Name(input.Reform!.Value)+"」について意向を問う。");
+        Dispatch(w,input,Proposal,actor,input.Person,(input.NewEstate is {} dest?NewGameWorld.SiteName(input.Site.Value)+"から"+NewGameWorld.SiteName(dest.Value)+"への":NewGameWorld.SiteName(input.Site.Value)+"での")+"「"+Name(input.Reform!.Value)+"」について意向を問う。");
 
     internal static void Receive(ContractWorld w)
     {
