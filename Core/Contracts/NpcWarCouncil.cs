@@ -12,6 +12,25 @@ public static class NpcWarCouncil
             if(visible.Attacking && w.Units.Any(u=>u.Army==visible.Army && attackers.Contains(u.Id))) yield return visible;
     }
 
+    // 当主が知る防衛条約と、現に視認できる同盟部隊への攻撃を出陣の根拠にする。
+    // 別の場所で同じ家が損害を受けても、この観測には加えない。
+    static bool WitnessedAttackOnAlly(ContractWorld w, EntityId head, EntityId owner, EntityId army)
+    {
+        if (!TreatyNegotiations.Enabled(w)) return false;
+        var allies = TreatyNegotiations.Known(w,head)
+            .Where(f => (f.Terms.A == owner || f.Terms.B == owner) &&
+                TreatyNegotiations.ClauseUsable(w,head,f.Acceptance,TreatyClause.Defense,w.ElapsedSeconds,w.CommitSequence))
+            .Select(f => f.Terms.A == owner ? f.Terms.B : f.Terms.A).ToHashSet();
+        if (allies.Count == 0) return false;
+        var observer = FieldWorld.FromWorld(RegionalCampaign.ActorPoint(w,head));
+        long range = BattlefieldRules.SightRange(w,observer,w.ElapsedSeconds);
+        var visible = WorldEngagement.Snapshot(w).Units.Where(u => RegionalGround.Distance(observer,u.Position) <= range).ToArray();
+        var attackers = visible.Where(u => u.Unit.Army == army).Select(u => u.Unit.Id).ToHashSet();
+        var targets = visible.Where(u => allies.Contains(u.Unit.Organization)).Select(u => u.Unit.Id).ToHashSet();
+        return w.WorldClashes!.Steps[^1].Result.Strikes.Any(s => attackers.Contains(s.Attacker) &&
+            targets.Contains(s.Target) && s.Basis is EngagementBasis.Mission or EngagementBasis.UnauthorizedAttack);
+    }
+
     internal static IEnumerable<(FactionStanceInput Decision, EntityId Head)> Choices(ContractWorld world)
     {
         if (world.WorldClashes?.Steps.LastOrDefault() is not {} step || step.At != world.ElapsedSeconds ||
@@ -27,16 +46,18 @@ public static class NpcWarCouncil
                 FactionStances.ResolveAuthority(world,head,owner,at,rev) is not {} authority ||
                 authority.Home!=site || !MilitaryEconomy.CanMuster(world,site,at,rev+1)) continue;
             var position=BranchRoutes.GraphNodes(world).Single(n=>RegionalCampaign.Site(n.Id)==site).Position;
-            foreach (var sight in WitnessedAttacks(world,head).Where(s=>s.Owner!=owner && s.Position==position))
+            foreach (var sight in WitnessedAttacks(world,head).Where(s=>s.Owner!=owner))
             {
                 if (!world.NewGame!.Start.Factions.Any(f=>f.Id==sight.Owner.Value) ||
                     TruceNegotiations.WillNotInitiate(world,owner,sight.Owner,at,rev) ||
                     FactionStances.ClaimAt(world,owner,sight.Owner,at,rev)!=null) continue;
+                bool homeDefense=sight.Position==position;
+                if (!homeDefense && !WitnessedAttackOnAlly(world,head,owner,sight.Army)) continue;
                 long defenders=CastleHandover.Forces(world,owner,site,at,rev+1);
                 int ambition=CharacterRelations.DiagnosticTrait(world,head,SocialTrait.Ambition);
                 int caution=CharacterRelations.DiagnosticTrait(world,head,SocialTrait.Caution);
-                if (defenders<=0 || defenders*(150L+ambition)<sight.Soldiers*(100L+caution)) continue;
-                var id=HouseholdCourt.Id("border-defense",owner.Value+"/"+sight.Army.Value);
+                if (defenders<=0 || defenders*((homeDefense?150L:100L)+ambition)<sight.Soldiers*(100L+caution)) continue;
+                var id=HouseholdCourt.Id(homeDefense?"border-defense":"ally-campaign",owner.Value+"/"+sight.Army.Value);
                 if (FactionStances.OwnIdUsed(world,id)) continue;
                 var decision=new FactionStanceInput(id,FactionStanceAction.DeclareHostile,owner,sight.Owner,checked(at+1),checked(at+7*86400));
                 if (FactionStances.OverlapsDeclaration(world.FactionStances?.Decisions ?? [],decision)) continue;
