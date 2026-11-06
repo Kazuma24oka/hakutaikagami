@@ -22,6 +22,7 @@ public static class Guardianship
 
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
+        MinorGuardians.Validate(w,prior);
         var rows=w.HouseClaims??[];
         var existing=prior?.HouseClaims??[];
         if(!rows.Take(existing.Length).SequenceEqual(existing) ||

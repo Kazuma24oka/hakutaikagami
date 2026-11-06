@@ -64,6 +64,14 @@ public partial class NewGameRuntime
             {
                 foreach(var contact in HeirPledges.Contacts(w,current))
                 {
+                    if(w.Characters.Single(c=>c.Id==current.Heir).Life==LifeState.Minor &&
+                        !(w.GuardianMandates??[]).Any(m=>m.Nomination==current.Revision) &&
+                        SocialWorld.Site(w,new(contact.Id))==SocialWorld.Site(w,current.Head))
+                        Button(contact.Name+"に元服までの帳簿保管を相談",()=>{
+                            var r=Session.AgreeGuardian(current,new(contact.Id),shown);
+                            if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                            popup.Hide();Refresh();ShowHouseSuccession();
+                        });
                     if(!HeirPledges.Requested(w,current,contact.Id))
                         Button(contact.Name+"に誓紙を求める",()=>{
                             var r=Session.RequestHeirPledge(current,new(contact.Id),shown);
