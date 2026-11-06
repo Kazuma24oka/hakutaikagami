@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "bf04bace123c036134bc50a9309aa68996973e7d54534fe0325878d685e4eedf",
+    "Docs/Development/ProgressV1/estimate.json": "81cfff8b7d5610ca82bf5a93adce1a1eea22edaa59a45c5a4c7ea2840f865db4",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "f66363af2caadef24ecd4772f47f031bed60aaae408e507ea6993a6380fd3517",
+    "Scripts/check_progress_report.py": "84b2fed1226a249717ef66721d0da548bc36aebd104422b4f8cc5c87c2c9b3ad",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "00cc0f97f5158ad5ba3fe32e47c6a5fec36168ff60a23023d6219028fee4ea61",
+    "Scripts/check_approval_batch.py": "654a287a6ad77fdb28c4e46909082631e06cae951fa649bcd339013236834427",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "74d1c5b484e07202647a1cef2962b5110b43dbdead3e8f5dd5725cf79bc08128",
+    "Docs/Development/CURRENT_STAGE.md": "a513a3111ff2a18ca0bf231806cb05d2b49c3ff1e953201a08c85184c19fab9c",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
-    "Core/Contracts/FactionStances.cs": "bbe578b10d7fdcde0aac4a860b5fa21f6ca97137693e70a30aea1651f2158451",
-    "Core/Contracts/NewGameWorld.cs": "abd15b54c27fa5d397ac4914158d3ba1209277ef9b008757b3111683ae571bc1",
+    "Core/Contracts/FactionStances.cs": "bb141ec2b6fc9419b3841d78f89e1cda8703d10c7a0b9435a0dbd98289fc9787",
+    "Core/Contracts/NewGameWorld.cs": "1835346333c413e8c24ab1cf9fca5eeb4038e24afa7354a31afda951c5615a8b",
     "Core/Contracts/HouseSalary.cs": "37102ef021ce1554831c2445d3531b09ae7ce1d85d12e101ed16fe76286d0fe0",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",
@@ -183,7 +183,7 @@
     "Core/Contracts/TruceConfirmations.cs": "203ae363acbd6be57a299c53de4d2cd18ef85c018b3688ba0946d78ab3b71adf",
     "Core/Contracts/TruceConfirmations.ReportRetries.cs": "30066fe0cddaf5b43f7714d3ede0f549f32dd7b4f4ff17faafb752a372eeb48c",
     "Core/Contracts/CourierRecovery.cs": "77d34edfc0198c258ca9170076dea4abfb59304db5c46e691fa20c8938419e31",
-    "Core/Contracts/WorldSession.cs": "8a0990bf8953dd780af9f6a9e3c40c9dafb5e36135814d3c31ca01242332d790",
+    "Core/Contracts/WorldSession.cs": "e9054e2d02a37cc47961fe4984a47cd41afaeac34675b33ec4ffdedbae5910cb",
     "Tests/TruceConfirmationTests.cs": "d2207c87825dfdfaa7558d4568f2368ea6c2ff16df7a5d77880c73bc2b1c2431",
     "Game/Scripts/NewGameRuntime.TruceConfirmations.cs": "03e228ac0696a65b4b9196a8591949a49045c22dcd69ccd8e8d61f3f278fcfea",
     "Game/Scripts/NewGameRuntime.Mail.cs": "d8c7a817571f2cafd1ff2818be9e815c2668b81817fa7e06af2d67462e69b711",
@@ -280,7 +280,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v36.json": "99e123577e5af0312af16a05f6b91b4cd14a7fd5b4f195aee16952f54dbb3db7",
     "Scripts/verify_character_development.py": "b5cb742e17286bcedfae31384de20fb6d2d01782f9a960909bf765c156eb2a9e",
     "Core/Contracts/CharacterRelations.cs": "8ac26ca7508a9acf960a893ce5ee77c5c4f8685ca5f5ab1089825e7dc280da78",
-    "Core/Contracts/PersonalCompanions.cs": "e27c4a5d2f06cef64af4686d91850752ae0ce4f2821cdfc3edd48a4a6c29ff43",
+    "Core/Contracts/PersonalCompanions.cs": "9be3c7420cf51590408afb748f81baf23e4fbc8a955115495354322c976cdd7f",
     "Tests/CharacterRelationsTests.cs": "3a1be55f4ae0294d68af825206a60828510e6532ed0605fa41032b4a926e3321",
     "Docs/Design/CharacterRelationsV1/verification.json": "73daef5c270881566fc00548be7132ed6c3b7323263b4deaaed3daa029e931f1",
     "Docs/Design/CharacterRelationsV1/completion.json": "32c7aaa941928aee9f6c9ccb272b281b878cbdcaccd1f454b61b7139390397a0",
@@ -310,8 +310,8 @@
     "Docs/Design/AdultMarriageV1/legacy-sources.json": "d6d7e5376fce0dc00e2bedff22e185d1c96d00ce65eeaa762e90b2cdeb5fabb3",
     "Docs/Development/ProgressV1/approval-baseline-v39.json": "b02330d69ede4625f6831df7d5323c84f307aa331b0bf8125866eedb6f15b917",
     "Scripts/verify_adult_marriage.py": "61430a9386fb68a645b2465fc5824ef8a49f21d9dc6cee90cfc8131596f765bd",
-    "Core/Contracts/HostageCustody.cs": "fb8adf638fb098dbe938a5bc0ff116331ee34b7ced03cf94d00fed3fc429f781",
-    "Core/Contracts/ContractValidation.cs": "dc4c312c5ccb9dbaf47439ac90704a817ad77da05147adf7b5cce62c703a7bc7",
+    "Core/Contracts/HostageCustody.cs": "8fbd3d167cc53be1dc7d96b87ebe63d1558fa08a515aed283dab8249ced123fd",
+    "Core/Contracts/ContractValidation.cs": "832e2b0276a797cf9db81a8c9e92d00e695e13dddd9b8cff843c0a1b37490e9e",
     "Tests/HostageCustodyTests.cs": "789842f58e12850257e5d66917a0dc844b1937bdaf64ed9ae92deb435d06c375",
     "Game/Scripts/NewGameRuntime.Custody.cs": "748b30b7902bf9485da317da4ff12269473ee70305b4b3d6c040a04f2b38f886",
     "Docs/Design/HostageCustodyV1/verification.json": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
@@ -352,7 +352,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v43.json": "5e1d225e157458ab0852f593dab17c0a819529eb704ed168ba8e607d5f8b8398",
     "Scripts/verify_custody_return.py": "f44014b52506c46285c547a380fb4921791b94829a364d5dfd31a85f1f21ee0a",
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
-    "Core/Contracts/NewGameNpcRoutine.cs": "02b53ac423b34d1c09d370329157ab3692e8578f27db6154cbbc113eb1c3d0ea",
+    "Core/Contracts/NewGameNpcRoutine.cs": "f97a9f710f55a05bce5290188b0d17d1e083c85024590b2120c84a25adf1160b",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
     "Core/Contracts/ContractJson.cs": "6b7de07752559e63e4c35ed6c8cf92b2dd923cc819b73097fca81974c4890629",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
@@ -399,7 +399,7 @@
     "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
     "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
     "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
-    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "8e5cb0eab066d6cdacb8b21ca112e44cbd50001b91b763d587def151c4221959",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "2e7a711e874d327ac7b7e0580f4bdb24e67017038ec7b6c7ccf003608961d390",
     "Docs/Development/ProgressV1/approval-baseline-v49-scope.json": "e33a8dc9ea47c2553aca2d30f3255bc0a9b9cb3730bc7e1c06c85af13ded1f90",
     "Docs/Development/ProgressV1/approval-baseline-v50.json": "a2d6a868839b7752fa3701dd81307d602de60f60b3dd6ade2428f95c9736da44",
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
@@ -526,9 +526,9 @@
     "Docs/Design/MeritRewardsV1/scope.md": "b575ae80c2c4b6d6c5adc991f30b798505572adbc28019e40dba009985c5ed8c",
     "Scripts/verify_merit_rewards.py": "128c46ae7a361367057df4c5ad5c88d49fae0af2a72af9f5e7f4063f969bb146",
     "Docs/Development/ProgressV1/approval-baseline-v58.json": "d1796d7c211e94212f763d7d4a9091c5043abaf6cc5b5621b6d1b44af696ac62",
-    "Core/Contracts/InformationSchemes.cs": "d7ca46f84eda4e9eee2946a234b7a97d3f1a5bdd868a5284c8b74188b114c644",
-    "Core/Contracts/WorldSession.SchemeCouriers.cs": "0ee68946232a67b331e2c7d10ef263cf3e5ec706f83933dfcbe224d363ffeec3",
-    "Game/Scripts/NewGameRuntime.InformationSchemes.cs": "37bb7380ef1c09ad7384df97b0dbf511a3f8dac19e4ac783e6f17f6013079369",
+    "Core/Contracts/InformationSchemes.cs": "83042898de20b99351856eb2451947712f64d8df77134933998060b4442d0ca5",
+    "Core/Contracts/WorldSession.SchemeCouriers.cs": "13a9bd6722d318ae92a069e85813985a78b6c7f1cab10170fc9a8e908f2276dd",
+    "Game/Scripts/NewGameRuntime.InformationSchemes.cs": "5c9785737a95756a74265af5fe3a4ae888286d180f32ac81dffadffbd320dd1a",
     "Game/Scripts/InformationSchemesCheck.cs": "9e639d12654342a43f5cdd877e7be5d7f164259255100045bd2b90a27c2394eb",
     "Tests/InformationSchemeTests.cs": "b5d11fd55527b07879c08f34dc4b6fdaaa443041dc726b45aa6c66266786a9f4",
     "Docs/Design/InformationSchemesV1/verification.json": "30737da5f7bc66cf8fac91bb39758e441f2783a046e89d3e0d5304628f3e7a99",
@@ -698,7 +698,19 @@
     "Docs/Design/DestructiveSchemesV1/integration.json": "89e4f11beab7f45bd1fec0a3dd099bb18f48cd1eb4b2a4f53d5261ffd78a9cc9",
     "Scripts/verify_destructive_schemes.py": "7ec96f13f4c515fd8b143bc9e9dc2ff16d021fbde895ae893d59c5284aa9b641",
     "Docs/Development/ProgressV1/approval-baseline-v73.json": "c18a548300efb39df80739e7cc01116c5cbdfb1a0df9721292ab5899f1ebaffd",
-    "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md": "78905a41d3c8417e12549be2114e289ff2a6cb73f4308183abbdd05bdc259c3d"
+    "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md": "5b2f0fe6cc23209996fade0d8738f377d7b01f0a6618c8a6604f827f0afdab85",
+    "Core/Contracts/Assassination.cs": "ad28834db4c3065394d7c265049dbf3d55057fe916a0c928c370a526f83b2f16",
+    "Tests/AssassinationTests.cs": "6d3d79a0f8457d21b2cdf0fe9f664ae2f7e881194360fd6828bfa6356d1032ec",
+    "Tests/RoadContactTests.cs": "c8dd4eef7f712db727f5734d598502840f1472b2c53f47eeb02202cf51391ad8",
+    "Game/Scripts/NewGameRuntime.Assassination.cs": "a2d5f961e3e63f4f17f2c123fba77e98c793e1411e539ad88d8574f440ab8eab",
+    "Game/Scripts/AssassinationCheck.cs": "8ab3b9a53e43ad4db3632a09a2d4a57237b0f345ac6069e76dfa7d041354c97b",
+    "Docs/Design/AssassinationV1/verification.json": "d02f842e2926ea8ce9481a1e5d7077e50aa9a0886e558cc8619e4cbb5a82ca92",
+    "Docs/Design/AssassinationV1/scope.md": "49f12534a307a1b2f383adb36827c03e725e9e3359ae2fae420564b3663deabc",
+    "Docs/Design/AssassinationV1/README.md": "c38ae0ad9ecd073206750fd15deaf88e02d91a87b086be83cf706569b9c6ac76",
+    "Docs/Design/AssassinationV1/completion.json": "b00418a812a7782b50163f162e5bedf44b0895a2f45f3f7f43bf695c8baf89e1",
+    "Docs/Design/AssassinationV1/integration.json": "cdcfe849a2b8c959fe3933b8896b596da681f80cacea76a8ab78b877d3270b7a",
+    "Scripts/verify_assassination.py": "d4302209b7cb13427cea30a86afb3ae2cf9c0455a4056e006f9edd5b66f2d855",
+    "Docs/Development/ProgressV1/approval-baseline-v74.json": "0b83f8022f8e9720cdfdd0d601558a38ae9a7ff51a39181758fda74c88af102f"
   },
   "items": [
     {
@@ -829,7 +841,7 @@
     {
       "id": "BD-06",
       "status": "foundation",
-      "existing": "生死・成人資格のデータと軍務での本人退避がある。捕縛からの逃亡とは別。 身柄の預かりを本人の現地所在と共通の行動可否へ接続し、解放しても自動移動しない。 拘束と実護送・到着後の待機・受領後の通常同行を同じ人物の位置へ接続。",
+      "existing": "生死・成人資格のデータと軍務での本人退避がある。捕縛からの逃亡とは別。 身柄の預かりを本人の現地所在と共通の行動可否へ接続し、解放しても自動移動しない。 拘束と実護送・到着後の待機・受領後の通常同行を同じ人物の位置へ接続。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。",
       "remaining": "負傷/病気/死亡、軍事捕縛、長期生涯。 統合案で追加：§4 寿命・死亡（決定9）・§10 K6 暗殺・§21 C4 負傷兵。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
@@ -855,7 +867,9 @@
         "Docs/Design/HostageCustodyV1/verification.json",
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameMilitary.Withdrawal.cs",
-        "Tests/PersonalWithdrawalTests.cs"
+        "Tests/PersonalWithdrawalTests.cs",
+        "Docs/Design/AssassinationV1/README.md",
+        "Docs/Design/AssassinationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -863,13 +877,15 @@
     {
       "id": "BD-07",
       "status": "foundation",
-      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。",
+      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。",
       "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。 統合案で追加：§12 後継順位・誓紙・家督争い・後見・§4 出生・成人・訃報（決定9）。 2026-11-05 既存仕様の具体化：成人縁組・後継指名・正式継承・実支配と、プレイヤーの適格な操作継続を分離する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。隠居や後見だけで全記憶・全権限を移さず、成人不在時の既定を維持する。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
         "Core/Contracts/NewGameWorld.cs",
         "Tests/MissionReviewTests.cs",
-        "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md"
+        "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
+        "Docs/Design/AssassinationV1/README.md",
+        "Docs/Design/AssassinationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1574,7 +1590,7 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。",
+      "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。",
       "remaining": "一般偵察/流言/地理発見と情報の全国索引。 統合案で追加：§10 情報系の計略・§24 名声（噂の事実）・§22 E5 史実事件の知らせ（噂と書状、誤報）。 2026-11-05 既存仕様の具体化：輸送の見聞と情報提供者の報告を、観測時点・誤認・虚偽を含む個別の情報として扱い、敵の真の残量へ読み替えない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
@@ -1630,7 +1646,9 @@
         "Docs/Design/CooperationTalkV1/verification.json",
         "Docs/Proposals/MORI_MOTONARI_SUPPLY_INTERDICTION.md",
         "Docs/Design/DestructiveSchemesV1/README.md",
-        "Docs/Design/DestructiveSchemesV1/verification.json"
+        "Docs/Design/DestructiveSchemesV1/verification.json",
+        "Docs/Design/AssassinationV1/README.md",
+        "Docs/Design/AssassinationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3795,12 +3813,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 6,
+      "passed": 9,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/DestructiveSchemesV1/runtime-local/personal-choice/full.trx",
-      "sha256": "1fb3d0103da4638fbec71e755b90de777d8701add264d26ea22bb90fbbfa0714",
-      "scope": "破壊系4種・委任・発覚の6件。全件未実施。"
+      "trx": "Docs/Design/AssassinationV1/runtime-local/critical/full.trx",
+      "sha256": "1baef0b379a8e2d9568b71e6370c84cf507262a31a2f7708e948cba2dfcb8d71",
+      "scope": "目撃・街道・死亡・捕縛・密偵の9件。全件未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3812,14 +3830,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 6,
+      "passed": 9,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/DestructiveSchemesV1/runtime-local/personal-choice/full.trx",
-      "sha256": "1fb3d0103da4638fbec71e755b90de777d8701add264d26ea22bb90fbbfa0714",
-      "scope": "破壊系4種・委任・発覚の6件。全件未実施。"
+      "trx": "Docs/Design/AssassinationV1/runtime-local/critical/full.trx",
+      "sha256": "1baef0b379a8e2d9568b71e6370c84cf507262a31a2f7708e948cba2dfcb8d71",
+      "scope": "目撃・街道・死亡・捕縛・密偵の9件。全件未実施。"
     },
-    "current_stage_summary": "本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。 各計略の損傷・持出量・煽動期間は試作値。証拠経路は現地目撃・口伝・実行者の帰還返報を確認。捕縛自白・押収・組織的な処分、全国長期試遊と全件検査は未実施。",
+    "current_stage_summary": "人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 同一道路上の接触距離20mと接触戦の係数は試作値。城の警固人数を反映。全国長期試遊、全件検査、ユーザーの外観評価は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3841,9 +3859,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/DestructiveSchemesV1/integration.json",
-    "current_logic_verification": "Docs/Design/DestructiveSchemesV1/verification.json",
-    "current_logic_verification_sha256": "7becb1c8d80c464deb485145d81a191bcd9428c663a291003f273262e3b00e89",
+    "integration": "Docs/Design/AssassinationV1/integration.json",
+    "current_logic_verification": "Docs/Design/AssassinationV1/verification.json",
+    "current_logic_verification_sha256": "d02f842e2926ea8ce9481a1e5d7077e50aa9a0886e558cc8619e4cbb5a82ca92",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3909,7 +3927,6 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "暗殺",
     "血縁と死亡",
     "婚姻と後継",
     "家督争い・後見",

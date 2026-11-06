@@ -12,6 +12,15 @@ public static partial class NewGameNpcRoutine
         return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
     }
     public static bool IsActor(ContractWorld w,EntityId actor)=>Enabled(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult:!p.Created));
+    static ContractWorld LifeAtDecision(ContractWorld world,long at,long revision)
+    {
+        if(!world.Characters.Any(c=>c.Life==LifeState.Dead && !Assassination.DeadAt(world,c.Id,at,revision)))return world;
+        var history=world.ForkTransportLocation();
+        history.Characters=world.Characters.Select(c=>c.Life==LifeState.Dead && !Assassination.DeadAt(world,c.Id,at,revision)
+            ? c with{Life=NewGameWorld.CanPlay(world.NewGame!.Start,world.NewGame.Start.People.Single(p=>p.Id==c.Id.Value))?LifeState.Adult:LifeState.Minor} : c).ToArray();
+        if(history.Schemes!=null)history.Schemes=history.Schemes with{Events=history.Schemes.Events.Where(e=>e.At<at || e.At==at && e.Revision<=revision).ToArray()};
+        return history;
+    }
     public static int BoundaryCost(ContractWorld w)=>2*Actors(w).Length;
     public static NpcWorkInputs Inputs(ContractWorld w,EntityId actor,long at,long revision)
     {
@@ -40,7 +49,7 @@ public static partial class NewGameNpcRoutine
     public static void Validate(ContractWorld w)
     {
         if(!Enabled(w)||w.NpcWork==null||Actors(w).Length>(Continuing(w)?ContinuingMaximumActors:MaximumActors))throw new InvalidDataException("NPC routine policy/module mismatch");var ds=w.NpcWork.Decisions;if(ds.Select(d=>d.Id).Distinct().Count()!=ds.Length)throw new InvalidDataException("Duplicate NPC routine decision");
-        for(int n=0;n<ds.Length;n++){var d=ds[n];if(d.Id!=new EntityId("decision:npc-work/"+(n+1))||!IsActor(w,d.Actor)||d.At<0||d.At>w.ElapsedSeconds||d.InputRevision<0||d.InputRevision>w.CommitSequence||n>0&&d.At<ds[n-1].At||d.InputHash!=ContractJson.CanonicalHash(d.Inputs)||d.InputHash!=ContractJson.CanonicalHash(Inputs(w,d.Actor,d.At,d.InputRevision))||d.Reason!=Reason(d.Inputs))throw new InvalidDataException("NPC routine lacks its own historical inputs");
+        for(int n=0;n<ds.Length;n++){var d=ds[n];var historical=LifeAtDecision(w,d.At,d.InputRevision);if(d.Id!=new EntityId("decision:npc-work/"+(n+1))||!IsActor(historical,d.Actor)||d.At<0||d.At>w.ElapsedSeconds||d.InputRevision<0||d.InputRevision>w.CommitSequence||n>0&&d.At<ds[n-1].At||d.InputHash!=ContractJson.CanonicalHash(d.Inputs)||d.InputHash!=ContractJson.CanonicalHash(Inputs(historical,d.Actor,d.At,d.InputRevision))||d.Reason!=Reason(d.Inputs))throw new InvalidDataException("NPC routine lacks its own historical inputs");
             if(d.Request is {} id){if((d.Reason!="inspect-own-site"&&(!PurposeEnabled(w)||d.Reason!="practice-own-skill")&&(!NpcJudgment.Enabled(w)||d.Reason!="offer-local-inspection"))||id!=new EntityId("request:npc-routine/"+d.Actor.Value.Replace(':','/')+"/"+(d.Inputs.OwnTasks.Length+1)))throw new InvalidDataException("Invalid NPC routine request identity");if(d.Result is ResultCode.Accepted or ResultCode.AlreadyAccepted){var request=w.Requests.Single(r=>r.Id==id);if(PurposeEnabled(w)&&(request.Intent.Action!=(d.Reason=="practice-own-skill"?ActionKind.Train:ActionKind.Inspect)||d.Reason=="practice-own-skill"&&request.Intent.TrainingSkill!=d.Inputs.Routine!.Purpose!.Skill))throw new InvalidDataException("NPC purpose dispatch differs from chosen action");if(request.CreatedAt!=d.At||request.Intent.Actor!=d.Actor||request.Intent.Executor!=(d.Reason=="offer-local-inspection"?d.Inputs.Routine!.Judgment!.Recipient:d.Actor))throw new InvalidDataException("NPC routine dispatch differs from decision");}}
             else if(d.Reason is "inspect-own-site" or "practice-own-skill" or "offer-local-inspection"||d.Result!=ResultCode.NotAvailable)throw new InvalidDataException("NPC routine wait has dispatch result");
         }

@@ -28,6 +28,7 @@ public partial class NewGameRuntime
                 CancelAdvancePrefetch();
                 var input=new SchemeInput(new("request:contact-ui/"+revision+"/"+key),action,actor,target,Reference:source);
                 var result=Session.ManageScheme(input,revision);
+                if(result.Code!=ResultCode.Accepted)GD.Print("人物接触の受付結果 ",action," ",result.VisibleReason);
                 Refresh();
                 RenderPersonalContact(result.Code==ResultCode.Accepted?"":result.VisibleReason);
             };

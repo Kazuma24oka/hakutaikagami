@@ -18,6 +18,8 @@ public static class InformationSchemes
  public static bool OwnIdUsed(ContractWorld w,EntityId id)=>Events(w).Any(e=>e.Input.Id==id);
  static bool Local(ContractWorld w,EntityId a,EntityId b)=>SocialWorld.Site(w,a) is {} site&&SocialWorld.Site(w,b)==site;
  static bool Adult(ContractWorld w,EntityId p)=>w.Characters.Any(c=>c.Id==p&&c.Life==LifeState.Adult);
+ internal static bool CanActNow(ContractWorld world,EntityId person)=>Adult(world,person) &&
+     !HostageCustody.HeldAt(world,person,world.ElapsedSeconds,world.CommitSequence+1);
  public static string Statement(SchemeTopic topic)=>topic switch{SchemeTopic.ForeignContact=>"別家へ近づいているという噂",SchemeTopic.SupplyConcern=>"兵糧を心配しているという噂",_=>"指示が食い違っているという噂"};
  internal static void Add(ContractWorld w,SchemeInput input,EntityId actor,EntityId site,Intent? move=null,EntityId[]? sources=null){w.Schemes??=new(1,Policy,[]);w.Schemes=w.Schemes with{Events=[..w.Schemes.Events,new(input,actor,site,w.ElapsedSeconds,w.CommitSequence,move,sources??[])]};}
  public static SchemeClaim[] Claims(ContractWorld w,EntityId observer)
@@ -76,22 +78,22 @@ public static class InformationSchemes
   foreach(var task in w.Tasks.Where(t=>t.Execution is ExecutionPhase.Failed or ExecutionPhase.Stopped&&w.Requests.Single(r=>r.Id==t.RequestId).Intent.RoutePolicy==LandRoute)){
    if(w.Locations.Single(l=>l.Actor==task.Executor).Route!=WorldSession.Child("route",task.Id,"graph"))continue;var actual=BranchRoutes.Location(w,task);if(actual.Kind==LocationKind.AtSite)w.Locations=w.Locations.Select(l=>l.Actor==task.Executor?actual:l).ToArray();
   }
-  if(clockAdvanced&&w.ElapsedSeconds%86400==0){foreach(var actor in w.Characters.Where(c=>c.Id!=w.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(c=>c.Value,StringComparer.Ordinal)){
+  if(clockAdvanced&&w.ElapsedSeconds%86400==0){foreach(var actor in w.Characters.Where(c=>c.Id!=w.PlayerControl&&CanActNow(w,c.Id)).Select(c=>c.Id).OrderBy(c=>c.Value,StringComparer.Ordinal)){
    var source=Claims(w,actor).FirstOrDefault(c=>c.LearnedAt<w.ElapsedSeconds);if(source==null)continue;var listener=w.Characters.Where(c=>c.Life==LifeState.Adult&&c.Id!=actor&&c.Id!=source.Subject&&Local(w,actor,c.Id)&&!Claims(w,c.Id).Any(x=>x.Subject==source.Subject&&x.Statement==source.Statement)).Select(c=>c.Id).OrderBy(c=>c.Value,StringComparer.Ordinal).FirstOrDefault();if(listener.Value==null)continue;
    var id=Id("npc-hearsay",actor.Value+"/"+w.ElapsedSeconds/86400);if(!OwnIdUsed(w,id))Execute(w,new(id,SchemeAction.Forward,listener,source.Subject,Reference:source.Id),actor);
   }}
   foreach(var paper in SocialAssets.Objects(w).Where(o=>o.Kind=="scheme-letter"&&o.Holder!=w.PlayerControl&&o.Gift==null&&!o.Consumed)){
-   var source=Events(w).Single(e=>e.Input.Id==paper.Id);if(source.Input.Person!=paper.Holder||!Adult(w,paper.Holder)||SocialWorld.Site(w,paper.Holder)==null)continue;var id=Id("npc-authorship",paper.Id.Value+"/"+paper.Holder.Value);if(!OwnIdUsed(w,id))Execute(w,new(id,SchemeAction.VerifyLetter,paper.Holder,source.Input.Subject,Reference:paper.Id),paper.Holder);
+   var source=Events(w).Single(e=>e.Input.Id==paper.Id);if(source.Input.Person!=paper.Holder||!CanActNow(w,paper.Holder)||SocialWorld.Site(w,paper.Holder)==null)continue;var id=Id("npc-authorship",paper.Id.Value+"/"+paper.Holder.Value);if(!OwnIdUsed(w,id))Execute(w,new(id,SchemeAction.VerifyLetter,paper.Holder,source.Input.Subject,Reference:paper.Id),paper.Holder);
   }
   foreach(var mission in Events(w).Where(e=>e.Input.Action==SchemeAction.SendScout).ToArray()){
-   var task=w.Tasks.SingleOrDefault(t=>t.RequestId==mission.Movement!.RequestId);if(task?.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Failed or ExecutionPhase.Stopped)&&!Events(w).Any(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.ScoutBlocked))continue;var agent=mission.Input.Person;var site=SocialWorld.Site(w,agent);if(site==null)continue;
+   var task=w.Tasks.SingleOrDefault(t=>t.RequestId==mission.Movement!.RequestId);if(task?.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Failed or ExecutionPhase.Stopped)&&!Events(w).Any(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.ScoutBlocked))continue;var agent=mission.Input.Person;if(!CanActNow(w,agent))continue;var site=SocialWorld.Site(w,agent);if(site==null)continue;
    var captured=Events(w).SingleOrDefault(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.CaptureScout);
    if(captured==null&&(DestructiveSchemes.Operation(mission.Input.Topic)||mission.Input.Topic==SchemeTopic.Assassination)){
     bool arrived=task?.Execution==ExecutionPhase.Completed&&site==mission.Input.Destination;
     var source=mission.Input.Topic==SchemeTopic.Assassination?Assassination.ExecuteMission(w,mission,site.Value,arrived):DestructiveSchemes.Observe(w,mission,site.Value,arrived);
     Add(w,new(Id("capture",mission.Input.Id.Value),SchemeAction.CaptureScout,agent,agent,Reference:mission.Input.Id),agent,site.Value,sources:[source]);
    }else if(captured==null){if(task?.Execution==ExecutionPhase.Completed&&site==mission.Input.Destination){Assassination.ScoutPeople(w,mission,site.Value);foreach(var road in BranchRoutes.GraphEdges(w).Where(e=>!NationalRoutes.Sea(e.Id)&&(RegionalCampaign.Site(e.From)==site||RegionalCampaign.Site(e.To)==site)))RegionalCampaign.InspectRoad(w,agent,road.Id);}var sources=w.Evidence.Where(e=>e.Observer==agent&&e.Message==null&&e.RecordedAt>=mission.At&&w.Knowledge.Any(k=>k.Character==agent&&k.Evidence==e.Id)&&(e.Claim.StartsWith("route-open:",StringComparison.Ordinal)||e.Claim.StartsWith("route-block:",StringComparison.Ordinal)||Events(w).Any(o=>o.Input.Reference==mission.Input.Id&&o.Input.Action==SchemeAction.ObservePerson&&e.Id==Id("location-evidence",o.Input.Id.Value)))).Select(e=>e.Id).ToArray();Add(w,new(Id("capture",mission.Input.Id.Value),SchemeAction.CaptureScout,agent,agent,Reference:mission.Input.Id),agent,site.Value,sources:sources);}
-   if(site==mission.Site&&Local(w,agent,mission.Actor)&&!Events(w).Any(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.ReportScout)){
+   if(CanActNow(w,agent)&&site==mission.Site&&Local(w,agent,mission.Actor)&&!Events(w).Any(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.ReportScout)){
     captured=Events(w).Single(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.CaptureScout);string id=ReportId(mission.Input.Id);var facts=captured.Sources.Select(source=>{var e=w.Evidence.Single(e=>e.Id==source);return new InformationFact(e.Id,e.Claim,e.ObservedAt!.Value);}).ToArray();var payload=new InformationPayload(mission.Input.Id,agent,facts);MessageFlow.Send(w.Messaging,new(id,mission.Input.Id.Value,ReportKind,agent.Value,mission.Actor.Value,Encoding.UTF8.GetString(ContractJson.Write(payload)),mission.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);w.SealedMessages=[..w.SealedMessages,new(id)];RegionalCampaign.Bind(w);Add(w,new(Id("reported",mission.Input.Id.Value),SchemeAction.ReportScout,mission.Actor,agent,Reference:mission.Input.Id),agent,site.Value);
    }
   }
