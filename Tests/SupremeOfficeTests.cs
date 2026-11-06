@@ -5,6 +5,40 @@ namespace HakutaiKagami.Tests;
 public sealed class SupremeOfficeTests
 {
     [Fact]
+    public void AdoptedChildQualifiesOnlyAfterCourtCertifiesFiledReport()
+    {
+        var site=CentralCourtCatalog.Kyoto;
+        var child=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
+        var owner=new EntityId("org:pedigree");
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var request=new WorldSetupRequest([child],[new(child.Id,owner.Value,[site.Value],false)]);
+        var scenario=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        var parent=CentralCourtCatalog.Shogun;
+        var game=new WorldSession(NewGameWorld.Create(scenario,[child],child.Id,42,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,
+            developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy));
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        var adoption=new EntityId("request:genji-adoption");
+        Good(game.DecideAdoption(new(adoption,AdoptionAction.Propose,parent,false),game.PlayerControl,game.Revision));
+        NewGameWorldTests.At(game,game.Seconds+2);
+        Good(game.DecideAdoption(new(new("request:house-assent"),AdoptionAction.ApproveHouse,Original:adoption,House:owner),game.PlayerControl,game.Revision));
+        Good(game.DecideAdoption(new(new("request:implement"),AdoptionAction.Implement,Original:adoption),game.PlayerControl,game.Revision));
+        Assert.False(CourtPedigree.Qualified(game.DiagnosticSnapshot(),game.PlayerControl,game.Seconds,game.Revision));
+        Good(game.ManageCourt(new(new("request:research"),CourtAction.AskPedigree,CentralCourtCatalog.CourtBroker,owner,site),game.Revision));
+        NewGameWorldTests.At(game,game.Seconds+2);
+        var report=Assert.Single(game.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.AttestPedigree);
+        Good(game.ManageCourt(new(new("request:file"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBroker,owner,site,Reference:report.Input.Id),game.Revision));
+        Assert.False(CourtPedigree.Qualified(game.DiagnosticSnapshot(),game.PlayerControl,game.Seconds,game.Revision));
+        var restored=new WorldSession(ContractJson.Copy(game.DiagnosticSnapshot()));
+        foreach(var run in new[]{game,restored}){
+            NewGameWorldTests.At(run,run.Seconds+2);
+            var final=run.DiagnosticSnapshot();
+            Assert.Equal(CentralCourtCatalog.CourtBroker,Assert.Single(final.Court!.Events,e=>e.Input.Action==CourtAction.RecognizePedigree).Actor);
+            Assert.True(CourtPedigree.Qualified(final,run.PlayerControl,run.Seconds,run.Revision));
+        }
+        Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+    [Fact]
     public void CandidateAnswersTheSponsorAfterRestoreWithoutTakingIncumbentsOffice()
     {
         var site=CentralCourtCatalog.Kyoto;

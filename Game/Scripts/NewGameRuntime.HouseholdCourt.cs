@@ -29,7 +29,7 @@ public partial class NewGameRuntime
           }
       }
       foreach(var (report,_) in CourtPedigree.Reports(w,true))
-          Button(report.Id.Value,"調査した系図の根拠を本人に伝える",()=>Run(report));
+          Button(report.Id.Value,report.Action==CourtAction.RecognizePedigree?"提出された系図を認定する":"調査した系図の根拠を本人に伝える",()=>Run(report));
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && CentralMediation.ApplicantHouse(w,actor) is {} genealogyHouse){
           var registrar=site==CentralCourtCatalog.Kyoto?CentralCourtCatalog.CourtBroker:CentralCourtCatalog.TempleBroker;
           if((site==CentralCourtCatalog.Kyoto || site==TempleMilitary.Site) && registrar!=actor && SocialWorld.Site(w,registrar)==site)
@@ -37,7 +37,7 @@ public partial class NewGameRuntime
           foreach(var report in (w.Court?.Events??[]).Where(e=>e.Input.Person==actor && e.Input.Action is CourtAction.AttestPedigree or CourtAction.ReportMissingPedigree).TakeLast(1)){
               SocialText(box,report.Input.Action==CourtAction.AttestPedigree?"系図調査で源氏との縁を確認しました。":"今回の調査では源氏との縁を確認できませんでした。");
               if(site==CentralCourtCatalog.Kyoto && report.Input.Action==CourtAction.AttestPedigree)
-                  Button("file-pedigree","調査済みの系図を朝廷に提出する",()=>Run(new(Nonce("file-pedigree"),CourtAction.RecognizePedigree,CentralCourtCatalog.CourtBroker,report.Input.Owner,site.Value,Reference:report.Input.Id)));
+                  Button("file-pedigree","調査済みの系図を朝廷に提出する",()=>Run(new(Nonce("file-pedigree"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBroker,report.Input.Owner,site.Value,Reference:report.Input.Id)));
           }
       }
       foreach(var (letter,_) in ExileLetters.Pending(w,true))
