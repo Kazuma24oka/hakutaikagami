@@ -5,6 +5,55 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void NewEstatePaysOnlyCollectionsAfterExchange()
+    {
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+        var retainer=NewGameWorldTests.Officer("created:travelling-retainer",StartTemplate.Retainer,lord:head.Id);
+        EntityId owner=new("org:exchange"),person=new(retainer.Id),lord=new(head.Id),home=new(head.Site),destination=new("site:kofu");
+        var setup=NewGameWorldTests.Setup([head,retainer],[new(head.Id,owner.Value,[home.Value,destination.Value],false)]);
+        ContractWorld Start(ulong seed)=>NewGameWorld.Create(setup.World,setup.Registered,head.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,companionPolicy:PersonalCompanions.Policy,socialPolicy:CharacterRelations.Policy);
+        var w=Enumerable.Range(1,100).Select(i=>Start((ulong)i)).First(world=>CharacterRelations.AcceptsCompanion(world,person,20,0,1));
+        var s=new WorldSession(w);
+        NewGameWorldTests.At(s,RegionalEconomy.NextHarvest(w,0));
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        void Act(CourtInput input,EntityId actor){
+            if(actor==lord){Good(s.ManageCourt(input,s.Revision));return;}
+            var world=s.DiagnosticSnapshot();world.CommitSequence++;HouseholdCourt.Execute(world,input,actor);
+            s=new WorldSession(ContractJson.Copy(world));
+        }
+        void Read(CourtInput original,string kind,EntityId reader){
+            NewGameWorldTests.At(s,s.Seconds+120);
+            var opened=s.Open(reader,new(HouseReforms.Letter(original,kind)),s.Revision);Assert.True(opened.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted,opened.VisibleReason);
+        }
+        Good(s.ManageCompanion(new(new("request:travel-agreement"),person,CompanionAction.Agree,20),lord,s.Revision));
+        for(int day=1;day<=2;day++){
+            NewGameWorldTests.At(s,s.Seconds+86400);
+            Good(s.ManageCompanion(new(new("request:pay/"+day),person,CompanionAction.Pay,20),lord,s.Revision));
+        }
+        var grant=new CourtInput(new("request:original-right"),CourtAction.GrantLevyShare,person,owner,home,Amount:25);
+        Act(grant,lord);
+        var proposal=grant with{Id=new("request:swap"),Action=CourtAction.ConsultReform,Reform=ReformKind.ChangeFief,NewEstate=destination,LevyGrant=grant.Id};
+        Act(proposal,lord);Read(proposal,HouseReforms.Proposal,person);
+        Read(proposal,HouseReforms.Answer,lord);
+        var order=new CourtInput(new("request:move-right"),CourtAction.IssueTransfer,person,owner,home,Reference:proposal.Id);
+        Act(order,lord);Read(order,HouseReforms.TransferOrder,person);
+        Good(s.ManageCompanion(new(new("request:travel-to-estate"),person,CompanionAction.TravelTogether,Destination:"kofu"),lord,s.Revision));
+        NewGameWorldTests.At(s,s.Seconds+2);
+        NewGameWorldTests.At(s,s.GetBranchView(lord).ArrivalAt!.Value+20);
+        void Collect(string id,long amount)=>Good(s.ManageCommunity(new(new(id),destination,EconomyAction.CollectLevy,amount),lord,s.Revision));
+        Collect("request:before-transfer",80);
+        var exchange=new CourtInput(new("request:received-right"),CourtAction.ExchangeLevyShare,lord,owner,destination,Amount:25,Reference:order.Id){LevyGrant=grant.Id};
+        Act(exchange,person);
+        Collect("request:after-transfer",40);
+        var receipt=new CourtInput(new("request:new-receipt"),CourtAction.ReceiveLevyShare,lord,owner,destination,Amount:10,Reference:exchange.Id);
+        Act(receipt,person);
+        Assert.Equal(10,HouseSalary.PrivateRice(s.DiagnosticSnapshot(),person));
+        var after=s.DiagnosticSnapshot();after.CommitSequence++;
+        Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(after,receipt with{Id=new("request:not-earned"),Amount=1},person));
+    }
+
+    [Fact]
     public void LocalRevenueEntitlementBeginsWithActualCollections()
     {
         var s=HouseholdCourtTests.Start();
