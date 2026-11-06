@@ -1,0 +1,12 @@
+{
+  "passed": 5,
+  "tests": [
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.DefectionPactTests.IndependencePreservesTheFormerHousesActualMusterAndSupply",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: True)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Retainer, oldLordPresent: False)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: False)"
+  ],
+  "ui": "ALLIED_GATE_UI_PASS",
+  "result": "他城で追随した城主と旧主が城門を引き渡し、旧主家が守備する間は本丸を留保。城門受領時の実保存から本丸受領までの世界一致、発信者側の通常画面での返書開封と3D位置を確認。"
+}

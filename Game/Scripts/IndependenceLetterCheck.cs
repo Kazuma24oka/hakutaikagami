@@ -11,7 +11,8 @@ public partial class IndependenceLetterCheck : Node
     public override async void _Ready()
     {
         try{
-            var file=System.Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE")??throw new InvalidDataException("支持要請の入力がありません");
+            var allied=System.Environment.GetEnvironmentVariable("HAKUTAI_ALLIED_GATE_FIXTURE");
+            var file=allied??System.Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE")??throw new InvalidDataException("支持要請の入力がありません");
             var w=ContractJson.Read<ContractWorld>(File.ReadAllBytes(file));
             var initial=w.NewGame!;
             var store=new NewCampaignStore(Directory.CreateTempSubdirectory("hakutai-gate-ui-").FullName);
@@ -26,7 +27,7 @@ public partial class IndependenceLetterCheck : Node
             game.ReviewSchemePress(request.Id.Value);await Frame();
             var sent=game.Session.DiagnosticSnapshot();
             var letter=sent.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.Kind);
-            if(!sent.Couriers!.Missions.Any(m=>m.Destination=="fork" && sent.Messaging.Attempts.Any(a=>a.MessageId==letter.Id && a.Id==m.Attempt)))
+            if(!sent.Couriers!.Missions.Any(m=>m.Destination==(allied==null?"fork":"castle") && sent.Messaging.Attempts.Any(a=>a.MessageId==letter.Id && a.Id==m.Attempt)))
                 throw new InvalidDataException("支持要請の使者が既知の城へ出発していません");
             game.ReviewSocialClose();
             async Task SaveLoad()
@@ -51,6 +52,24 @@ public partial class IndependenceLetterCheck : Node
             long Arrival(ContractWorld state,string id)=>state.Couriers!.Missions.Single(m=>state.Messaging.Attempts.Any(a=>a.MessageId==id && a.Id==m.Attempt)).ReadyAt+1;
             await SaveLoad();
             Advance(Arrival(sent,letter.Id));
+            if(allied!=null){
+                var recipient=request.Person;
+                for(int i=0;i<5;i++){
+                    var snapshot=game.Session.DiagnosticSnapshot();
+                    if(snapshot.Court!.Events.Any(e=>e.Input.Action==CourtAction.ReceiveIndependentGate && e.Actor==recipient))break;
+                    Advance(game.Session.Seconds+1);
+                }
+                var gate=game.Session.DiagnosticSnapshot();
+                if(!gate.Court!.Events.Any(e=>e.Input.Action==CourtAction.ReceiveIndependentGate && e.Actor==recipient) ||
+                    JointIndependence.ObserveOwnCastle(gate,recipient) is not {ControlsCastle:false})
+                    throw new InvalidDataException("城門受領時の旧主家の支配が不一致");
+                await SaveLoad();
+                Advance(game.Session.Seconds+1);
+                var keep=game.Session.DiagnosticSnapshot();
+                if(JointIndependence.ObserveOwnCastle(keep,recipient) is not {ControlsCastle:true} ||
+                    JointIndependence.ObserveOwnCastle(keep,w.PlayerControl)?.Castle==request.Site)
+                    throw new InvalidDataException("現地の本丸受領と遠方の観測範囲が不一致");
+            }
             var returning=game.Session.DiagnosticSnapshot();
             var reply=returning.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.Reply);
             await SaveLoad();
@@ -62,7 +81,7 @@ public partial class IndependenceLetterCheck : Node
             if(Visible(reply.Body))throw new InvalidDataException("開封前に返書本文を表示");
             game.ReviewSchemePress(reply.Id);await Frame();
             if(!Visible(reply.Body))throw new InvalidDataException("開封後に返書本文が表示されません");
-            GD.Print("INDEPENDENCE_LETTER_UI_PASS");GetTree().Quit();
+            GD.Print(allied==null?"INDEPENDENCE_LETTER_UI_PASS":"ALLIED_GATE_UI_PASS");GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }
 }

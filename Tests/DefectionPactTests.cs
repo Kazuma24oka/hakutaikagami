@@ -416,6 +416,8 @@ public class DefectionPactTests
             Travel(founderNode);var before=session.DiagnosticSnapshot();
             if(role==StartTemplate.Retainer && Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE") is {Length:>0} file)
                 File.WriteAllBytes(file,ContractJson.Write(before));
+            if(oldLordPresent && Environment.GetEnvironmentVariable("HAKUTAI_ALLIED_GATE_FIXTURE") is {Length:>0} alliedFile)
+                File.WriteAllBytes(alliedFile,ContractJson.Write(before));
             var call=IndependenceLetters.Choices(before,Actor).Single(i=>i.Person==recipient && i.Action==CourtAction.SeekDeclaredSupport);
             var issued=session.ManageCourt(call,session.Revision);Assert.True(issued.Code==ResultCode.Accepted,issued.VisibleReason);
             var sent=session.DiagnosticSnapshot();var letter=sent.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.Kind);
