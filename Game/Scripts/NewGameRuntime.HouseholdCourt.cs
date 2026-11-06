@@ -71,6 +71,9 @@ public partial class NewGameRuntime
    }
    if(terms.Reform==ReformKind.CastleResidence){
     SocialText(box,"現在の居所："+NewGameWorld.SiteName(HouseReforms.ResidenceAt(w,actor,w.ElapsedSeconds,rev+1).Value));
+    var move=w.Court!.Events.FirstOrDefault(e=>e.Input.Action==CourtAction.SettleCastleResidence && e.Input.Reference==order.Input.Id);
+    if(move!=null && site==move.Place && !w.Court.Events.Any(e=>e.Input.Action==CourtAction.ReportResidence && e.Input.Reference==move.Input.Id))
+     Button("report-residence-"+order.Input.Id,"当主に新しい居所を知らせる",()=>Run(new(Nonce("report-residence/"+order.Input.Id),CourtAction.ReportResidence,order.Actor,terms.Owner,move.Place,Reference:move.Input.Id)));
     if(site==terms.NewEstate && HouseReforms.ResidenceAt(w,actor,w.ElapsedSeconds,rev+1)==terms.Site)
      Button("reside-"+order.Input.Id,"この城下に居所を移す",()=>Run(new(Nonce("reside/"+order.Input.Id),CourtAction.SettleCastleResidence,order.Actor,terms.Owner,site.Value,Reference:order.Input.Id)));
     continue;

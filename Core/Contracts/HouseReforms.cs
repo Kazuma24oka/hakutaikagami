@@ -118,9 +118,17 @@ public static class HouseReforms
         return TempleMarketSeat(w,site,at,revision)==null?4:3;
     }
 
+    public const string ResidenceNotice="castle-residence-notice";
+    public static string KnownAddress(ContractWorld w,EntityId observer,EntityId person){
+        var latest=HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.Action==CourtAction.ReportResidence && e.Actor==person &&
+            e.Input.Person==observer && MessageFlow.Knows(w.Messaging,Letter(e.Input,ResidenceNotice),observer.Value));
+        return latest?.Place.Value ?? FamilyBirth.People(w).Single(p=>p.Id==person.Value).Site;
+    }
+    internal static void SendResidenceNotice(ContractWorld w,CourtInput i,EntityId actor)=>
+        Dispatch(w,i,ResidenceNotice,actor,i.Person,"城下に居所を移しました。届出先："+NewGameWorld.SiteName(i.Site.Value));
     static void Dispatch(ContractWorld w,CourtInput input,string kind,EntityId from,EntityId to,string body)
     {
-        var address=FamilyBirth.People(w).Single(p=>p.Id==to.Value).Site;
+        var address=KnownAddress(w,from,to);
         var letter=new MessageEnvelope(Letter(input,kind),input.Id.Value,kind,from.Value,to.Value,body,address,w.ElapsedSeconds);
         MessageFlow.Send(w.Messaging,letter,w.ElapsedSeconds);
         w.SealedMessages=[..w.SealedMessages,new(letter.Id)];

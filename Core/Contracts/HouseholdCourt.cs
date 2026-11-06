@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
@@ -188,6 +188,13 @@ public static class HouseholdCourt
        (e.Input.Action is CourtAction.IssueTransfer or CourtAction.DeferReform)),"この原本は決裁済みです");
   return proposal;
  }
+ static void CheckResidenceReport(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  var move=Source(w,i.Reference,CourtAction.SettleCastleResidence);
+  Need(move.Revision<rev && move.Actor==actor && move.Place==place && i.Site==place && i.Owner==move.Input.Owner &&
+      i.Person==move.Input.Person && HouseReforms.ResidenceAt(w,actor,at,rev)==place && TransportWork.At(w,actor,place,at,rev,true) &&
+      !Events(w).Any(e=>Before(e,at,rev) && e.Input.Reference==move.Input.Id && e.Input.Action==CourtAction.ReportResidence),
+      "転居した本人が新しい居所で当主宛の転居届を作成してください");
+ }
  static void CheckResidence(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
   var order=Source(w,i.Reference,CourtAction.IssueTransfer);
   var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
@@ -329,6 +336,7 @@ public static class HouseholdCourt
    Need(!w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(proposal.Input,HouseReforms.Answer)),"返書は発送済みです");
    HouseReforms.Reply(w,proposal,HouseReforms.ReplyText(i.Action));
   }
+  else if(i.Action==CourtAction.ReportResidence){CheckResidenceReport(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);HouseReforms.SendResidenceNotice(w,i,actor);}
   else if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
   else if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
@@ -419,6 +427,11 @@ public static class HouseholdCourt
        m.SenderId==e.Actor.Value && m.RecipientId==i.Person.Value && m.CreatedAt==e.At &&
        i.Id==Id("foreign-letter-breach",m.Id)) && i.Site==e.Place &&
        HouseReforms.LetterLawAt(w,i.Owner,i.Site,e.At,e.Revision),"条文に対応する私信の発送原本がありません");
+   }
+   if(i.Action==CourtAction.ReportResidence){
+    CheckResidenceReport(w,i,e.Actor,e.Place,e.At,e.Revision);
+    Need(w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(i,HouseReforms.ResidenceNotice) && m.Kind==HouseReforms.ResidenceNotice &&
+        m.CorrelationId==i.Id.Value && m.CreatedAt==e.At && m.SenderId==e.Actor.Value && m.RecipientId==i.Person.Value),"転居届の発送原本がありません");
    }
    if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,e.Actor,e.Place,e.At,e.Revision);
    if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,e.Actor,e.Place,e.At,e.Revision);
