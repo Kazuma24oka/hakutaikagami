@@ -409,6 +409,8 @@ public class DefectionPactTests
                 if(day==0)NewGameWorldTests.At(session,session.Seconds+86400);
             }
             Travel("castle");var before=session.DiagnosticSnapshot();
+            if(Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE") is {Length:>0} file)
+                File.WriteAllBytes(file,ContractJson.Write(before));
             var call=IndependenceLetters.Choices(before,Actor).Single(i=>i.Person==recipient && i.Action==CourtAction.SeekDeclaredSupport);
             var issued=session.ManageCourt(call,session.Revision);Assert.True(issued.Code==ResultCode.Accepted,issued.VisibleReason);
             var sent=session.DiagnosticSnapshot();var letter=sent.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.Kind);
