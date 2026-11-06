@@ -2303,3 +2303,6 @@ Tests/CastleSiegeTests.cs -text
 
 Docs/Development/ProgressV1/approval-baseline-v73.json -text
 Docs/Design/DestructiveSchemesV1/* -text
+
+Docs/Development/ProgressV1/approval-baseline-v74.json -text
+Docs/Design/AssassinationV1/* -text
