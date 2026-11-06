@@ -41,8 +41,11 @@ public static class HouseSuccession
     static string Outcome(ContractWorld w,HouseSuccessionTerms t,long at,long rev)=>at>t.Until?"expired":Head(w,t.Owner,at,rev)!=t.Incumbent||FactionStances.ResolveAuthority(w,t.Incumbent,t.Owner,at,Math.Min(rev,w.CommitSequence))==null?"authority-changed":!Local(w,t.Incumbent,t.Home,at,rev)||!Local(w,t.Heir,t.Home,at,rev)?"absent":!Member(w,t.Heir,t.Owner,at,rev)||!Direct(w,t.Heir,t.Incumbent,at,rev)?"relationship-changed":CastleAdministration.Blocked(w,t.Home,at,rev)?"occupation-hold":(Busy(w,t.Incumbent,at,rev)&&!(t.MilitaryPolicy==NewGameMilitary.ActiveSuccessionContract&&NewGameMilitary.CanRetainActiveForSuccession(w,t.Incumbent,t.Owner,t.Home,at,rev))||Busy(w,t.Heir,at,rev)&&!(t.MilitaryPolicy==NewGameMilitary.ActiveSuccessionContract&&NewGameMilitary.CanRetainActiveForSuccession(w,t.Heir,t.Owner,t.Home,at,rev)))?"military-hold":"confirmed";
     public static TimedRelation[] Offices(ContractWorld w,TimedRelation[] initial)
     {
-        if(!Enabled(w) && w.MinorityAccessions==null)return initial;
+        if(!Enabled(w) && w.MinorityAccessions==null && w.Declarations==null)return initial;
         var list=initial.ToList();
+        foreach(var declaration in w.Declarations??[])
+            list.Add(new(InformationSchemes.Id("founder-office",declaration.Pact.Value),declaration.Founder,
+                declaration.Site,"house-head",NewGameWorld.Basis,declaration.At,long.MaxValue,declaration.Revision));
         foreach(var e in Changes(w))
         {
             int i=list.FindIndex(o=>o.Subject==e.Old && o.Target==e.Home && o.Kind=="house-head" && o.Until==long.MaxValue);
@@ -52,7 +55,7 @@ public static class HouseSuccession
         }
         return list.ToArray();
     }
-    internal static void Sync(ContractWorld w){if(Enabled(w) || w.MinorityAccessions!=null)w.Offices=Offices(w,NewGameWorld.InitialRelations(w.NewGame!).Offices);}
+    internal static void Sync(ContractWorld w){if(Enabled(w) || w.MinorityAccessions!=null || w.Declarations!=null)w.Offices=Offices(w,NewGameWorld.InitialRelations(w.NewGame!).Offices);}
     public static HouseSuccessionEntry? Acknowledged(ContractWorld w,EntityId original,EntityId owner,long at,long rev)=>Enabled(w)?Entries(w,at,rev).LastOrDefault(e=>e.Input.Action==HouseSuccessionAction.Acknowledge&&e.Input.Original==original&&e.Input.Owner==owner&&e.Representative==Head(w,owner,at,rev)):null;
     internal static EntityId SettlementPrincipal(ContractWorld w,EntityId original,EntityId owner,EntityId principal,long at,long rev){if(!Enabled(w)||Head(w,owner,at,rev)==principal)return principal;var acknowledged=Acknowledged(w,original,owner,at,rev);Need(acknowledged!=null,"現当主と元の当事者による個別原本の確認を待っています");return acknowledged.Representative!.Value;}
     static HouseSuccessionObligation Obligation(ContractWorld w,EntityId id,long at,long rev){var salary=HouseSalary.SnapshotAt(w,at,rev).Terms.SingleOrDefault(t=>t.Id==id);if(salary!=null){long owed=salary.Monthly*salary.DueAt.LongCount(d=>d<=at&&(salary.EndedAt==null||d<=salary.EndedAt))-salary.Paid;Need(owed>0||salary.EndedAt==null&&at<salary.DueAt[^1],"精算済みの給付契約です");return new(id,salary.Owner,salary.Site,salary.Employer,salary.Employee,"salary",owed);}var freight=HouseLogistics.FreightJobs(w,at,rev).SingleOrDefault(j=>j.Terms.Id==id);Need(freight!=null&&freight.Phase is not(HouseFreightPhase.Completed or HouseFreightPhase.Returned),"未精算の給付または運搬原本を指定してください");var f=freight.Terms;return new(id,f.Owner,f.Home,f.Principal,f.Carrier,"freight",freight.Cargo);}

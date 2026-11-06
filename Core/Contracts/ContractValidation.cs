@@ -66,7 +66,7 @@ public static class ContractValidation
         {
             Keys(relations, x => x.Id, "relations");
             foreach (var x in relations) Check(entities.Contains(x.Subject) && entities.Contains(x.Target) && x.Subject != x.Target &&
-                bases.Contains(x.Basis) && x.From >= 0 && (x.Until > x.From || x.Until==x.From && (s.Declarations??[]).Any(d=>d.Founder==x.Subject && x.Revision==d.Revision && x.Until==d.At && x.Kind is "service" or "membership")) && x.Revision >= 0 && !string.IsNullOrWhiteSpace(x.Kind), "Invalid relation.");
+                bases.Contains(x.Basis) && x.From >= 0 && (x.Until > x.From || x.From==x.Until && x.Kind=="control" && (s.Declarations??[]).Any(d=>d.FormerHouse==x.Subject && d.Site==x.Target && d.At==x.Until && d.Revision==x.Revision) || x.Until==x.From && (s.Declarations??[]).Any(d=>d.Founder==x.Subject && x.Revision==d.Revision && x.Until==d.At && x.Kind is "service" or "membership")) && x.Revision >= 0 && !string.IsNullOrWhiteSpace(x.Kind), "Invalid relation.");
         }
         Check(s.Memberships.All(x=>people.Contains(x.Subject)&&orgs.Contains(x.Target)&&x.Kind=="membership"),"Membership is not a person/organization relation.");
         Check(s.ServiceBonds.All(x=>people.Contains(x.Subject)&&people.Contains(x.Target)&&x.Kind=="service"),"Service is not a person/person relation.");

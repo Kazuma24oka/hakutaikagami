@@ -6,9 +6,9 @@ namespace HakutaiKagami.Tests;
 public class DefectionPactTests
 {
     static readonly EntityId Actor=new("created:test"),Partner=new("created:partner");
-    static ContractWorld Start(ulong seed,bool foreign=false)
+    static ContractWorld Start(ulong seed,bool foreign=false,bool castellan=false)
     {
-        var actor=NewGameWorldTests.Officer(role:StartTemplate.Retainer,lord:"person:nobunaga");
+        var actor=NewGameWorldTests.Officer(role:castellan?StartTemplate.Castellan:StartTemplate.Retainer,lord:"person:nobunaga");
         var partner=NewGameWorldTests.Officer(Partner.Value,StartTemplate.Retainer,foreign?"site:kofu":actor.Site,
             foreign?"person:shingen":"person:nobunaga");
         var setup=NewGameWorldTests.Setup([actor,partner]);
@@ -74,6 +74,33 @@ public class DefectionPactTests
             finally{directory.Delete(true);}
         }
         Assert.Fail("承諾に至る開始条件がありません");
+    }
+
+    [Fact]
+    public void LocalCastellanBringsOnlyTheCastleInHisCharge()
+    {
+        EntityId id=new("request:castle-rise");
+        for(ulong seed=0;seed<32;seed++)
+        {
+            var before=Start(seed,castellan:true);
+            var s=new WorldSession(before);
+            Assert.Equal(ResultCode.Accepted,s.NegotiatePact(id,Partner,PactPurpose.RiseTogether,s.Revision).Code);
+            if(!s.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
+            Assert.Equal(ResultCode.Accepted,s.SignalPact(id,s.Revision).Code);
+            var after=s.DiagnosticSnapshot();
+            var declaration=Assert.Single(after.Declarations!);
+            var control=Assert.Single(after.LandRights,r=>r.Subject==declaration.House);
+            Assert.Equal(declaration.Site,control.Target);
+            Assert.Equal("control",control.Kind);
+            Assert.NotNull(FactionStances.ResolveAuthority(after,Actor,declaration.House,after.ElapsedSeconds,after.CommitSequence));
+            Assert.Null(FactionStances.ResolveAuthority(after,Actor,declaration.House,declaration.At,declaration.Revision-1));
+            Assert.DoesNotContain(after.LandRights,r=>r.Subject==declaration.FormerHouse && r.Target==control.Target && r.Until>s.Seconds);
+            Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
+            var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+            Assert.Equal(ContractJson.Write(after.LandRights),ContractJson.Write(restored.DiagnosticSnapshot().LandRights));
+            return;
+        }
+        Assert.Fail("城主が合意できる開始条件がありません");
     }
 
     [Fact]

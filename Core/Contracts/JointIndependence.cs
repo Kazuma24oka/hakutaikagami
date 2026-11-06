@@ -43,6 +43,41 @@ public static class JointIndependence
         }
     }
 
+    internal static TimedRelation[] CastleControl(ContractWorld w,TimedRelation[] original)
+    {
+        if(w.Declarations==null)return original;
+        var rows=original.ToList();
+        foreach(var d in w.Declarations)
+        {
+            Transfer(d,d.Founder,d.Site,d.At,d.Revision);
+            foreach(var response in w.PactResponses??[])
+            {
+                if(!response.Acted)continue;
+                var p=w.SecretPacts!.Single(p=>p.Id==response.Pact);
+                if(p.Purpose==PactPurpose.RiseTogether && Declaration(w,p)==d &&
+                    PersonalCompanions.SiteAt(w,p.Partner,response.At,response.Revision-1) is {} site)
+                    Transfer(d,p.Partner,site,response.At,response.Revision);
+            }
+        }
+        return rows.ToArray();
+
+        void Transfer(IndependenceDeclaration d,EntityId person,EntityId site,long at,long rev)
+        {
+            var index=rows.FindIndex(row=>row.Subject==d.FormerHouse && row.Target==site && row.Kind=="control" &&
+                row.From<=at && at<row.Until);
+            if(index<0 || CastleAdministration.Blocked(w,site,at,rev))return;
+            var latest=w.Castellan?.Entries.LastOrDefault(e=>e.Input.Site==site && e.Revision<rev &&
+                e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);
+            bool commands=latest!=null ? CastleAdministration.Grant(w,site,at,rev)?.Agent==person :
+                w.Offices.Any(o=>o.Subject==person && o.Target==site && o.Kind=="castellan" && o.From<=at && at<o.Until);
+            if(!commands)return;
+            var former=rows[index];
+            rows[index]=former with{Until=at,Revision=rev};
+            rows.Add(former with{Id=InformationSchemes.Id("castle-control",d.Pact.Value+"/"+site.Value),
+                Subject=d.House,From=at,Revision=rev});
+        }
+    }
+
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
         var rows=w.Declarations??[];
