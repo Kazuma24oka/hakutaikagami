@@ -399,7 +399,7 @@
     "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
     "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
     "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
-    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "19ac9b4f35b7ad3fcb6a88361fa8a65994310d8f50edf0902545faeb881c740a",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "8e5cb0eab066d6cdacb8b21ca112e44cbd50001b91b763d587def151c4221959",
     "Docs/Development/ProgressV1/approval-baseline-v49-scope.json": "e33a8dc9ea47c2553aca2d30f3255bc0a9b9cb3730bc7e1c06c85af13ded1f90",
     "Docs/Development/ProgressV1/approval-baseline-v50.json": "a2d6a868839b7752fa3701dd81307d602de60f60b3dd6ade2428f95c9736da44",
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
@@ -697,7 +697,8 @@
     "Docs/Design/DestructiveSchemesV1/completion.json": "968d4c42505cab94c3da1e13822b67e43cc3b6062403d78fb2a81c33c29a31a1",
     "Docs/Design/DestructiveSchemesV1/integration.json": "89e4f11beab7f45bd1fec0a3dd099bb18f48cd1eb4b2a4f53d5261ffd78a9cc9",
     "Scripts/verify_destructive_schemes.py": "7ec96f13f4c515fd8b143bc9e9dc2ff16d021fbde895ae893d59c5284aa9b641",
-    "Docs/Development/ProgressV1/approval-baseline-v73.json": "c18a548300efb39df80739e7cc01116c5cbdfb1a0df9721292ab5899f1ebaffd"
+    "Docs/Development/ProgressV1/approval-baseline-v73.json": "c18a548300efb39df80739e7cc01116c5cbdfb1a0df9721292ab5899f1ebaffd",
+    "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md": "78905a41d3c8417e12549be2114e289ff2a6cb73f4308183abbdd05bdc259c3d"
   },
   "items": [
     {
@@ -1146,7 +1147,7 @@
       "id": "BD-14",
       "status": "normal",
       "existing": "関係の事実、不満と上申、本人の既知情報と性格による返答。",
-      "remaining": "全国の総合的な目的選択と継続的な忠誠判断。",
+      "remaining": "全国の総合的な目的選択と継続的な忠誠判断。 2026-11-06採用の残件具体化：既知の大きな節目での中長期目標の見直し、性格・志／目標／手段の分離、文脈付きの拒否条件とその再検討・開示理由を総合判断へ接続する。設計採用のみで、この総合接続は未実装。",
       "evidence": [
         "Core/Contracts/CharacterRelations.cs",
         "Core/Contracts/PersonalCompanions.cs",
@@ -1174,7 +1175,8 @@
         "Game/Scripts/NpcJudgmentCheck.cs",
         "Docs/Design/NpcJudgmentV1/verification.json",
         "Docs/Design/HouseholdCourtV1/README.md",
-        "Docs/Design/HouseholdCourtV1/verification.json"
+        "Docs/Design/HouseholdCourtV1/verification.json",
+        "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -3106,7 +3108,7 @@
       "id": "BD-58",
       "status": "normal",
       "existing": "既知の情報と本人の判断で贈答・茶会・伝聞・否認・上申・評定を使用。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 引受済みの常設職に年度経費・優先分野・収穫期回避の条件書を物理配送し、本人承諾後の現地普請と年度残枠に接続。年始と朔日の定例評定は実招集・実参集、NPC当主も同じ評定を使用。家の方針は認識した人物から反映し、月報は現地の時点付き観測と開封後の表示を分ける。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。",
-      "remaining": "NPCの自発登用・全役職の目標・全国長期性能。",
+      "remaining": "NPCの自発登用・全役職の目標・全国長期性能。 2026-11-06採用の残件具体化：安定した目標から段階的な計画を立て、結果・既知情報に応じて手段を組み直す。緊急対応・味方替えを目標変更待ちにせず、文脈付きの拒否と目標・計画・待ち状態の保存継続を既存判断へ総合接続する。設計採用のみで、この総合接続は未実装。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
@@ -3195,7 +3197,8 @@
         "Docs/Design/LandSurveyV1/README.md",
         "Docs/Design/LandSurveyV1/verification.json",
         "Docs/Design/LocalSecurityV1/README.md",
-        "Docs/Design/LocalSecurityV1/verification.json"
+        "Docs/Design/LocalSecurityV1/verification.json",
+        "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
