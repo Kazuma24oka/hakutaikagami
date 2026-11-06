@@ -1,12 +1,18 @@
+using HakutaiKagami.Core.Messaging;
 using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
-public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument }
+public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument,ConsultReform,DeferReform,OpenLocalMarket,GrantTempleSeat,ChallengeSeat,InsistSeat,SettleSeat,EnactLetterLaw,LetterBreach,EstablishBarrier,AbolishBarrier,AssentReform,CounterReform,RejectReform,IssueTransfer,ReleaseCastleOffice,EnterCastleOffice,PresentTransfer,YieldCastleOffice,GrantLevyShare,ReceiveLevyShare,ExchangeLevyShare,EnactMarriageLaw,EnactSuccessionLaw,ReduceCastle,SettleCastleResidence,ReportResidence,SurrenderLevyShare,PresentServiceRelease,ConsentServiceRelease,RefuseServiceRelease,ReceiveProvinceShare,DeliverProvinceShare,EnactEqualPenalty,ChallengeFight,JoinFight,DeclineFight,CensureBoth }
 public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
 public sealed record CourtInput(EntityId Id,CourtAction Action,EntityId Person,EntityId Owner,EntityId Site,CourtRole Role=CourtRole.Steward,long Amount=0,EntityId? Reference=null,long When=0,CourtCaseKind Case=CourtCaseKind.RelieveVillage,CourtScale Scale=CourtScale.Local,EntityId? Carrier=null)
-{[JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? People{get;init;}}
+{[JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public ReformKind? Reform{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public string? BarrierEdge{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? NewEstate{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? FormerOffice{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? LevyGrant{get;init;}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? People{get;init;}}
 public sealed record CourtEvent(CourtInput Input,EntityId Actor,EntityId Place,long At,long Revision,bool PersonalAlreadyBound);
 public sealed record CourtState(int Schema,string Policy,CourtEvent[] Events);
 public sealed record CourtDocument(EntityId Id,CourtEvent Source,EntityId Sender,EntityId Recipient,string Name);
@@ -60,7 +66,15 @@ public static class HouseholdCourt
  public static string Seat(ContractWorld w,EntityId principal,EntityId person,long at=long.MaxValue,long revision=long.MaxValue){bool family=w.Adoption?.Entries.Any(e=>e.Input.Action==AdoptionAction.Implement&&(e.At<at||e.At==at&&e.Revision<revision)&&w.Adoption.Entries.Any(q=>q.Terms is {} t&&q.Input.Id==e.Input.Original&&t.Parent==principal&&t.Child==person))==true||w.Marriage?.Entries.Any(e=>e.Input.Action==MarriageAction.Implement&&(e.At<at||e.At==at&&e.Revision<revision)&&w.Marriage.Entries.Any(q=>q.Terms is {} t&&q.Input.Id==e.Input.Original&&(t.First==principal&&t.Second==person||t.Second==principal&&t.First==person)))==true;if(family)return "一門（本人が知る縁組）";var original=w.NewGame!.Start.People.Single(p=>p.Id==person.Value);return !original.Created&&original.Lord==principal.Value?"譜代（開始資料の根拠）":Events(w).Any(e=>e.Input.Action==CourtAction.RecruitAccept&&e.Actor==person)?"新参（登用の合意）":"新参・席次の来歴は未採録";}
  public static bool CanConvene(ContractWorld w,EntityId actor,EntityId owner,EntityId site){if(HeadAuthority(w,actor,owner,site,w.ElapsedSeconds,w.CommitSequence+1))return true;var appointment=Appointment(w,actor,owner,site,w.ElapsedSeconds,w.CommitSequence+1);return appointment!=null&&Source(w,appointment.Input.Reference,CourtAction.Nominate).Input.Role==CourtRole.Elder;}
  static long EndOffice(ContractWorld w,CourtEvent accepted,long at,long rev){var offer=Source(w,accepted.Input.Reference,CourtAction.Nominate);var ends=Events(w).Where(e=>Before(e,at,rev)&&(e.Input.Action==CourtAction.ResignOffice&&e.Input.Reference==offer.Input.Id||e.Input.Action==CourtAction.RevokeOffice&&e.Input.Reference==offer.Input.Id&&Received(w,e.Input.Id,accepted.Actor,at,rev))).Select(e=>e.Input.Action==CourtAction.RevokeOffice?SocialWorld.Ledger(w).Where(r=>r.Input.Action==SocialWorldAction.ReceiveGift&&SocialWorld.Ledger(w).Any(g=>g.Input.Id==r.Input.Reference&&g.Input.Asset==e.Input.Id)).Min(r=>r.At):e.At);var succession=w.Succession?.Entries.Where(e=>e.Input.Action==HouseSuccessionAction.Resolve&&e.Outcome=="confirmed"&&e.Input.Owner==offer.Input.Owner&&e.At>=accepted.At&&(e.At<at||e.At==at&&e.Revision<rev)).Select(e=>e.At)??[];return ends.Concat(succession).DefaultIfEmpty(long.MaxValue).Min();}
- internal static TimedRelation[] Offices(ContractWorld w,TimedRelation[] original,long at=long.MaxValue,long rev=long.MaxValue)=>[..original,..Events(w).Where(e=>e.Input.Action==CourtAction.AcceptOffice&&Before(e,at,rev)).Select(e=>{var offer=Source(w,e.Input.Reference,CourtAction.Nominate);return new TimedRelation(Id("office",offer.Input.Id.Value),e.Actor,offer.Input.Site,"house-"+offer.Input.Role.ToString().ToLowerInvariant(),NewGameWorld.Basis,e.At,EndOffice(w,e,at,rev),e.Revision);})];
+ internal static TimedRelation[] Offices(ContractWorld w,TimedRelation[] original,long at=long.MaxValue,long rev=long.MaxValue){var rows=new List<TimedRelation>([..original,..Events(w).Where(e=>e.Input.Action==CourtAction.AcceptOffice&&Before(e,at,rev)).Select(e=>{var offer=Source(w,e.Input.Reference,CourtAction.Nominate);return new TimedRelation(Id("office",offer.Input.Id.Value),e.Actor,offer.Input.Site,"house-"+offer.Input.Role.ToString().ToLowerInvariant(),NewGameWorld.Basis,e.At,EndOffice(w,e,at,rev),e.Revision);})]);
+  foreach(var move in Events(w).Where(e=>Before(e,at,rev) && e.Input.Action is CourtAction.ReleaseCastleOffice or CourtAction.EnterCastleOffice or CourtAction.YieldCastleOffice)){
+   if(move.Input.Action is CourtAction.ReleaseCastleOffice or CourtAction.YieldCastleOffice){
+    int index=rows.FindIndex(r=>r.Id==move.Input.FormerOffice);
+    if(index>=0)rows[index]=rows[index] with{Until=move.At,Revision=move.Revision};
+   }else rows.Add(new(Id("transferred-office",move.Input.Id.Value),move.Actor,move.Place,"castellan",NewGameWorld.Basis,move.At,long.MaxValue,move.Revision));
+  }
+  return rows.ToArray();
+ }
  static CourtEvent? Appointment(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev)=>Events(w).Where(e=>e.Input.Action==CourtAction.AcceptOffice&&e.Actor==actor&&Before(e,at,rev)&&e.At<=at&&at<EndOffice(w,e,at,rev)).LastOrDefault(e=>{var offer=Source(w,e.Input.Reference,CourtAction.Nominate);return offer.Input.Owner==owner&&offer.Input.Site==site;});
  internal static CourtRole? Specialist(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
  {
@@ -77,9 +91,308 @@ public static class HouseholdCourt
  static void Add(ContractWorld w,CourtInput i,EntityId actor,EntityId place,bool alreadyBound=false){w.Court??=new(1,Policy,[]);w.Court=w.Court with{Events=[..w.Court.Events,new(i,actor,place,w.ElapsedSeconds,w.CommitSequence,alreadyBound)]};}
  static CourtDocument Document(ContractWorld w,EntityId id)=>DocumentRows(w).Single(d=>d.Id==id);
  static void Deliver(ContractWorld w,CourtDocument doc,EntityId actor,EntityId? carrier){Need(SocialAssets.Inventory(w,actor).Any(o=>o.Id==doc.Id),"自分が持つ実物を引き渡してください");SocialWorld.Execute(w,new(Id("delivery",doc.Id.Value),SocialWorldAction.DispatchGift,doc.Recipient,carrier){Asset=doc.Id},actor);}
+ static void CheckSeatDispute(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long revision)
+ {
+  var grant=HouseReforms.TempleMarketSeat(w,i.Site,at,revision);
+  Need(grant!=null && i.Reference==grant.Input.Id && i.Person==grant.Input.Person &&
+      place==i.Site && HeadAuthority(w,actor,i.Owner,i.Site,at,revision) &&
+      HouseReforms.OpenMarketAt(w,i.Site,at,revision),"現地の代表者、安堵状、楽市、現在の当主権限を確認してください");
+  var previous=HouseReforms.SeatDispute(w,i.Site,at,revision);
+  Need(i.Action switch{
+   CourtAction.ChallengeSeat=>previous==null,
+   CourtAction.InsistSeat=>previous?.Input.Action==CourtAction.ChallengeSeat && previous.At<at,
+   CourtAction.SettleSeat=>previous?.Input.Action is CourtAction.ChallengeSeat or CourtAction.InsistSeat,
+   _=>false},"この安堵状について現在選べる処置ではありません");
+ }
+ internal static void RecordForeignLetter(ContractWorld w,MessageEnvelope letter)
+ {
+  EntityId actor=new(letter.SenderId),other=new(letter.RecipientId);
+  var site=SocialWorld.Site(w,actor);
+  var owner=DefectionPacts.HouseAt(w,actor,w.ElapsedSeconds,w.CommitSequence);
+  var foreign=DefectionPacts.HouseAt(w,other,w.ElapsedSeconds,w.CommitSequence);
+  if(site==null || owner==null || foreign==null || foreign==owner ||
+      !HouseReforms.LetterLawAt(w,owner.Value,site.Value,w.ElapsedSeconds,w.CommitSequence))return;
+  Add(w,new(Id("foreign-letter-breach",letter.Id),CourtAction.LetterBreach,other,owner.Value,site.Value,
+      Reference:new(letter.Id)),actor,site.Value);
+ }
+ static void CheckBarrier(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long revision)
+ {
+  Need(i.BarrierEdge is {} edge && HouseReforms.LocalRoads(w,i.Site).Any(r=>r.Id==edge) && i.Site==place &&
+      HeadAuthority(w,actor,i.Owner,i.Site,at,revision),"現地で支配する陸路を指定してください");
+  var existing=HouseReforms.BarrierAt(w,i.BarrierEdge!,at,revision);
+  if(i.Action==CourtAction.EstablishBarrier)Need(existing==null && actor==i.Person,"同じ道に関所を重ねて設けることはできません");
+  else Need(existing!=null && existing.Input.Owner==i.Owner && existing.Input.Site==i.Site,
+      "この拠点が所管する関所を指定してください");
+ }
+ static bool IsReformReply(CourtAction action)=>action is CourtAction.AssentReform or CourtAction.CounterReform or CourtAction.RejectReform;
+ static CourtEvent CheckReformReply(ContractWorld w,CourtInput input,EntityId actor,long at,long revision)
+ {
+  var proposal=Source(w,input.Reference,CourtAction.ConsultReform);
+  var readAt=MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(proposal.Input,HouseReforms.Proposal),actor.Value);
+  Need(proposal.Revision<revision && proposal.Input.Person==actor && input.Person==proposal.Actor &&
+      input.Owner==proposal.Input.Owner && input.Site==proposal.Input.Site && readAt.HasValue && readAt.Value<=at,
+      "本人宛ての改革案を開き、同じ原本の差出人へ返答してください");
+  Need(!Events(w).Any(e=>e.Revision<revision && IsReformReply(e.Input.Action) && e.Input.Reference==input.Reference),
+      "この原本にはすでに返答しました");
+  return proposal;
+ }
+ static void CheckCastleTransfer(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long rev)
+ {
+  var order=Source(w,input.Reference,CourtAction.IssueTransfer);
+  var proposal=Source(w,order.Input.Reference,CourtAction.ConsultReform);
+  var terms=proposal.Input;
+  var releases=Events(w).Where(e=>e.Revision<rev && e.Input.Reference==order.Input.Id &&
+      e.Input.Action==CourtAction.ReleaseCastleOffice).ToArray();
+  var successor=terms.Person;
+  var meeting=input.Action is CourtAction.PresentTransfer or CourtAction.YieldCastleOffice;
+  Need(terms.Reform is not (ReformKind.CastleResidence or ReformKind.AllocateProvince) && terms.LevyGrant==null && order.Revision<rev && (input.Action==CourtAction.YieldCastleOffice?input.Person==successor:actor==successor) && (meeting || input.Person==order.Actor) && input.Owner==terms.Owner &&
+      input.Site==place && Member(w,actor,input.Owner,at,rev) &&
+      MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),successor.Value) is {} opened &&
+      opened<=at && TransportWork.At(w,actor,place,at,rev,true),"本人が命令書を開き、担当する城で手続きしてください");
+  var original=NewGameWorld.InitialRelations(w.NewGame!);
+  var offices=Offices(w,HouseSuccession.Offices(w,original.Offices),at,rev);
+  bool InOffice(TimedRelation r)=>r.From<=at && at<r.Until && r.Kind is "castellan" or "house-castellan";
+  Need(HeadAuthority(w,order.Actor,input.Owner,place,at,rev),"発令者の管轄が変更されています");
+  if(meeting){
+   var incumbent=input.Action==CourtAction.PresentTransfer?input.Person:actor;
+   Need(successor!=incumbent && place==terms.NewEstate && releases.Length==1 && releases[0].At<at &&
+       TransportWork.At(w,successor,place,at,rev,true) && TransportWork.At(w,incumbent,place,at,rev,true) &&
+       Member(w,incumbent,input.Owner,at,rev) && offices.Any(r=>r.Id==input.FormerOffice &&
+       r.Subject==incumbent && r.Target==place && r.From<at && InOffice(r)),"前任者と後任者が新城で同じ城主職を確認してください");
+   var shown=Events(w).Any(e=>e.Revision<rev && e.Input.Reference==order.Input.Id && e.Input.FormerOffice==input.FormerOffice &&
+       e.Input.Action==CourtAction.PresentTransfer && e.Input.Person==incumbent);
+   Need(shown==(input.Action==CourtAction.YieldCastleOffice),"命令書の提示後、前任者本人が職を引き渡してください");
+  }else if(input.Action==CourtAction.ReleaseCastleOffice){
+   Need(place==terms.Site && releases.Length==0 && offices.Any(r=>r.Subject==actor && r.Target==place &&
+       r.Id==input.FormerOffice && r.From<at && InOffice(r)),"旧城で現在の城主職の原本を指定してください");
+  }else Need(place==terms.NewEstate && releases.Length==1 && releases[0].At<at && input.FormerOffice==null &&
+       !offices.Any(r=>r.Target==place && InOffice(r)) &&
+       (CastleAdministration.Grant(w,place,at,rev) is not {} administration || administration.Agent==actor) &&
+       !Events(w).Any(e=>e.Revision<rev && e.Input.Reference==order.Input.Id && e.Input.Action==CourtAction.EnterCastleOffice),
+       "旧職の引渡し後、空席の新城へ実際に到着してください");
+ }
+ static CourtEvent CheckTransferOrder(ContractWorld w,CourtInput order,EntityId actor,EntityId place,long at,long revision)
+ {
+  var proposal=Source(w,order.Reference,CourtAction.ConsultReform);
+  var terms=proposal.Input;
+  Need((terms.Reform==ReformKind.Confiscate && terms.LevyGrant!=null || terms.NewEstate!=null && terms.Reform is ReformKind.ChangeFief or ReformKind.Relocate or ReformKind.CastleResidence or ReformKind.AllocateProvince) &&
+      proposal.Actor==actor && place==terms.Site && order.Site==terms.Site && order.Person==terms.Person &&
+      order.Owner==terms.Owner && proposal.Revision<revision,"本人が相談した同じ旧領・新領の原本を指定してください");
+  CheckEstateTerms(w,terms,actor,at,revision);
+  var answer=HouseReforms.Letter(terms,HouseReforms.Answer);
+  Need(MessageFlow.LearnedAt(w.Messaging,answer,actor.Value) is {} opened && opened<=at &&
+      w.Messaging.Messages.Any(m=>m.Id==answer && m.SenderId==terms.Person.Value &&
+      m.Body==HouseReforms.Name(terms.Reform!.Value)+"への返答："+HouseReforms.ReplyText(CourtAction.AssentReform)),
+      "この交換条件に対する本人の承諾を開封してください");
+  Need(!Events(w).Any(e=>e.Revision<revision && e.Input.Reference==terms.Id &&
+       (e.Input.Action is CourtAction.IssueTransfer or CourtAction.DeferReform)),"この原本は決裁済みです");
+  return proposal;
+ }
+ static void CheckResidenceReport(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  var move=Source(w,i.Reference,CourtAction.SettleCastleResidence);
+  Need(move.Revision<rev && move.Actor==actor && move.Place==place && i.Site==place && i.Owner==move.Input.Owner &&
+      i.Person==move.Input.Person && HouseReforms.ResidenceAt(w,actor,at,rev)==place && TransportWork.At(w,actor,place,at,rev,true) &&
+      !Events(w).Any(e=>Before(e,at,rev) && e.Input.Reference==move.Input.Id && e.Input.Action==CourtAction.ReportResidence),
+      "転居した本人が新しい居所で当主宛の転居届を作成してください");
+ }
+ static void CheckResidence(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  var order=Source(w,i.Reference,CourtAction.IssueTransfer);
+  var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
+  Need(terms.Reform==ReformKind.CastleResidence && order.Revision<rev && terms.NewEstate==place && i.Site==place &&
+      i.Owner==terms.Owner && i.Person==order.Actor && actor==terms.Person && Member(w,actor,i.Owner,at,rev) &&
+      HeadAuthority(w,order.Actor,i.Owner,place,at,rev) && TransportWork.At(w,actor,place,at,rev,true) &&
+      HouseReforms.ResidenceAt(w,actor,at,rev)==terms.Site &&
+      MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),actor.Value) is {} opened && opened<=at &&
+      !Events(w).Any(e=>Before(e,at,rev) && e.Input.Action==CourtAction.SettleCastleResidence && e.Input.Reference==order.Input.Id),
+      "本人が命令書を確認し、新しい城下に到着して居所を引き取ってください");
+ }
+ static void CheckServiceHandover(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  bool present=i.Action==CourtAction.PresentServiceRelease;
+  var shown=present?null:Source(w,i.Reference,CourtAction.PresentServiceRelease);
+  var proposal=Source(w,present?i.Reference:shown!.Input.Reference,CourtAction.ConsultReform);
+  var subject=proposal.Input.Person;
+  var oldLord=present?i.Person:actor;
+  Need(proposal.Input.Reform==ReformKind.DirectService && proposal.Revision<rev && i.Owner==proposal.Input.Owner &&
+      (present?actor==subject:shown!.Revision<rev && shown.Actor==subject && shown.Input.Person==actor && i.Person==subject && shown.Place==place) &&
+      oldLord!=proposal.Actor && place==i.Site && Head(w,i.Owner,at,rev)==proposal.Actor && Member(w,subject,i.Owner,at,rev) &&
+      Member(w,oldLord,i.Owner,at,rev) && TransportWork.At(w,subject,place,at,rev,true) && TransportWork.At(w,oldLord,place,at,rev,true) &&
+      w.ServiceBonds.Any(b=>b.Id==i.FormerOffice && b.Subject==subject && b.Target==oldLord && Active(b,at,rev)) &&
+      (present || shown!.Input.FormerOffice==i.FormerOffice) &&
+      Events(w).Any(e=>Before(e,at,rev) && e.Actor==subject && e.Input.Action==CourtAction.AssentReform && e.Input.Reference==proposal.Input.Id) &&
+      !Events(w).Any(e=>Before(e,at,rev) && e.Input.Reference==i.Reference && (present?e.Input.Action==i.Action:
+          e.Input.Action is CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)),
+      "承諾した本人と現在の直属主が現地で同じ奉公原本を確認し、旧主が本人に返答してください");
+ }
+ static void CheckProvinceReceipt(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  var order=Source(w,i.Reference,CourtAction.IssueTransfer);
+  var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
+  bool handing=i.Action==CourtAction.DeliverProvinceShare;
+  Need(terms.Reform==ReformKind.AllocateProvince && order.Revision<rev &&
+       (handing?actor==order.Actor && i.Person==terms.Person:actor==terms.Person && i.Person==order.Actor) &&
+       TransportWork.At(w,order.Actor,place,at,rev,true) &&
+       i.Owner==terms.Owner && i.Site==place && (place==terms.Site || place==terms.NewEstate) && i.Amount==terms.Amount &&
+       MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),terms.Person.Value) is {} opened && opened<=at &&
+       !Events(w).Any(e=>Before(e,at,rev) && (e.Input.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare) && e.Input.Reference==order.Input.Id && e.Place==place),
+       "開封した国割り命令に記された土地で、未受領の給付を引き取ってください");
+  CheckLevyShare(w,i with{Person=terms.Person},order.Actor,place,at,rev);
+ }
+ static void CheckFight(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  Need(i.Site==place && actor!=i.Person && TransportWork.At(w,actor,place,at,rev,true) &&
+      TransportWork.At(w,i.Person,place,at,rev,true) && Member(w,i.Person,i.Owner,at,rev),"当事者が現地にそろっていません");
+  if(i.Action==CourtAction.CensureBoth){
+   var fight=Source(w,i.Reference,CourtAction.JoinFight);
+   Need(Before(fight,at,rev) && fight.Input.Owner==i.Owner && fight.Place==place && fight.Actor==i.Person &&
+       actor!=fight.Input.Person && HeadAuthority(w,actor,i.Owner,place,at,rev) &&
+       HouseReforms.WitnessedFight(w,actor,fight) && TransportWork.At(w,fight.Input.Person,place,at,rev,true) &&
+       HouseReforms.EqualPenaltyAt(w,i.Owner,place,fight.At,fight.Revision) &&
+       !Events(w).Any(e=>Before(e,at,rev) && e.Input.Action==i.Action && e.Input.Reference==i.Reference),"制定後の私闘を目撃した当主が双方に申し渡してください");
+   return;
+  }
+  Need(Member(w,actor,i.Owner,at,rev),"同じ家の当事者を指定してください");
+  if(i.Action==CourtAction.ChallengeFight){Need(i.Reference==null,"新たな私闘の申込みに原本は指定できません");return;}
+  var challenge=Source(w,i.Reference,CourtAction.ChallengeFight);
+  Need(Before(challenge,at,rev) && challenge.Input.Person==actor && challenge.Actor==i.Person && challenge.Input.Owner==i.Owner &&
+      challenge.Place==place && !Events(w).Any(e=>Before(e,at,rev) && e.Input.Reference==i.Reference &&
+      e.Input.Action is CourtAction.JoinFight or CourtAction.DeclineFight),"現地で自分に向けられた未回答の私闘に返答してください");
+ }
+ static void CheckSurrender(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+  var order=Source(w,i.Reference,CourtAction.IssueTransfer);
+  var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
+  Need(terms.Reform==ReformKind.Confiscate && terms.LevyGrant==i.LevyGrant && i.Amount==terms.Amount &&
+       order.Revision<rev && actor==terms.Person && i.Person==order.Actor && i.Site==place && place==terms.Site &&
+       i.Owner==terms.Owner && TransportWork.At(w,actor,place,at,rev,true) && TransportWork.At(w,order.Actor,place,at,rev,true) &&
+       MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),actor.Value) is {} opened && opened<=at,
+       "返上命令を開封した本人と発令者が給付原本の土地で引き渡してください");
+  CheckEstateTerms(w,terms,order.Actor,at,rev);
+ }
+ static void CheckLevyExchange(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
+ {
+  var order=Source(w,i.Reference,CourtAction.IssueTransfer);
+  var terms=Source(w,order.Input.Reference,CourtAction.ConsultReform).Input;
+  Need(terms.LevyGrant!=null && i.LevyGrant==terms.LevyGrant && i.Amount==terms.Amount &&
+      actor==terms.Person && i.Person==order.Actor && i.Owner==terms.Owner && i.Site==place && place==terms.NewEstate &&
+      order.Revision<rev && Member(w,actor,i.Owner,at,rev) && TransportWork.At(w,actor,place,at,rev,true) &&
+      MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(order.Input,HouseReforms.TransferOrder),actor.Value) is {} read && read<=at,
+      "同じ原本の命令書を受領し、新領へ実際に赴いてください");
+  CheckEstateTerms(w,terms,order.Actor,at,rev);
+ }
+ public static long AvailableLevyRice(ContractWorld w,CourtEvent grant,EntityId recipient,long at,long revision)
+ {
+  var place=grant.Input.Site;
+  if(grant.Revision>=revision || grant.Input.Person!=recipient ||
+     !TransportWork.At(w,recipient,place,at,revision,true) || !TransportWork.At(w,grant.Actor,place,at,revision,true) ||
+     !HeadAuthority(w,grant.Actor,grant.Input.Owner,place,at,revision))return 0;
+  var due=HouseReforms.AccruedLevyRice(w,grant,at,revision)-HouseReforms.ReceivedLevyRice(w,grant.Input.Id,at,revision);
+  var free=CommunityEconomy.AccountAt(w,place,at,revision).HouseRice-HouseSalary.Reserved(w,place,at,revision);
+  return Math.Max(0,Math.Min(due,free));
+ }
+ static void CheckLevyReceipt(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long revision)
+ {
+  var grant=HouseReforms.LevyGrants(w).Single(g=>g.Input.Id==i.Reference);
+  Need(grant.Revision<revision && grant.Input.Person==actor && grant.Input.Site==place && i.Site==place &&
+      i.Person==grant.Actor && i.Owner==grant.Input.Owner && i.Amount>0 &&
+      TransportWork.At(w,actor,place,at,revision,true) && TransportWork.At(w,grant.Actor,place,at,revision,true) &&
+      HeadAuthority(w,grant.Actor,i.Owner,place,at,revision),"給付を決めた当主と受給者が原本の土地で受け渡してください");
+  Need(i.Amount<=AvailableLevyRice(w,grant,actor,at,revision),
+      "発生済みの未受領額と蔵の自由米を超えて受領できません");
+ }
+ static void CheckLevyShare(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
+ {
+  Need(input.Amount is >=1 and <=100 && input.Site==place && actor!=input.Person &&
+      HeadAuthority(w,actor,input.Owner,place,at,revision) && Member(w,input.Person,input.Owner,at,revision) &&
+      TransportWork.At(w,input.Person,place,at,revision,true) && CommunityEconomy.SitesFor(w).Contains(place),
+      "当主と家臣が現地で、実際の徴収米のうち受け取る割合（1〜100%）を定めてください");
+  var grants=HouseReforms.LevyGrants(w).Where(e=>Before(e,at,revision) && HouseReforms.LevyEnd(w,e.Input.Id)>=revision &&
+      e.Input.Owner==input.Owner && e.Input.Site==place).ToArray();
+  Need(!grants.Any(e=>e.Input.Person==input.Person) && grants.Sum(e=>e.Input.Amount)+input.Amount<=100,
+      "この土地では同じ人への重複給付、または徴収額を超える割当になります");
+ }
+ static void CheckEstateTerms(ContractWorld w,CourtInput i,EntityId actor,long at,long revision)
+ {
+  if(i.Reform==ReformKind.Confiscate){
+   Need(i.NewEstate==null && HeadAuthority(w,actor,i.Owner,i.Site,at,revision) &&
+       HouseReforms.LevyGrants(w).Any(g=>g.Input.Id==i.LevyGrant && g.Input.Person==i.Person && g.Place==i.Site &&
+         g.Input.Owner==i.Owner && g.Input.Amount==i.Amount && Before(g,at,revision) && HouseReforms.LevyEnd(w,g.Input.Id)>=revision),
+       "改易で返上する本人の有効な徴収米給付原本を指定してください");
+   return;
+  }
+  Need(i.NewEstate is {} destination && destination!=i.Site &&
+      HeadAuthority(w,actor,i.Owner,i.Site,at,revision) && HeadAuthority(w,actor,i.Owner,destination,at,revision),
+      "旧領とは異なる、自家が処分できる新領を指定してください");
+  if(i.Reform==ReformKind.AllocateProvince){
+   Need(i.LevyGrant==null && i.Amount is >=1 and <=100 && CommunityEconomy.SitesFor(w).Contains(i.Site) &&
+      CommunityEconomy.SitesFor(w).Contains(i.NewEstate!.Value),"徴収米を割り当てる二拠点と割合を指定してください");
+   return;
+  }
+  if(i.Reform==ReformKind.CastleResidence){
+   Need(i.LevyGrant==null && i.Amount==0 && HouseReforms.ResidenceAt(w,i.Person,at,revision)==i.Site,
+       "現在の居所を旧地に指定してください");
+   return;
+  }
+  if(i.LevyGrant is {} id){
+   Need(i.Reform==ReformKind.ChangeFief && HouseReforms.LevyGrants(w).Any(g=>g.Input.Id==id && Before(g,at,revision) &&
+       g.Input.Owner==i.Owner && g.Input.Site==i.Site && g.Input.Person==i.Person && g.Input.Amount==i.Amount &&
+       HouseReforms.LevyEnd(w,id)>=revision),"旧領で有効な本人の収益原本と同じ割合を指定してください");
+   var active=HouseReforms.LevyGrants(w).Where(g=>g.Input.Owner==i.Owner && g.Input.Site==i.NewEstate &&
+       Before(g,at,revision) && HouseReforms.LevyEnd(w,g.Input.Id)>=revision).ToArray();
+   Need(!active.Any(g=>g.Input.Person==i.Person) && active.Sum(g=>g.Input.Amount)+i.Amount<=100,
+       "新領の既存給付を保つだけの未割当分がありません");
+   return;
+  }
+  Need(w.LandRights.Any(r=>r.Subject==i.Person && r.Target==i.Site && r.Kind=="control" && Active(r,at,revision)) ||
+      w.Offices.Any(o=>o.Subject==i.Person && o.Target==i.Site && (o.Kind is "castellan" or "house-castellan") && Active(o,at,revision)),
+      "旧領の支配権または城主職を持つ本人を選んでください");
+ }
+ static void CheckTempleSeat(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long revision)
+ {
+  Need(place==i.Site && HeadAuthority(w,actor,i.Owner,i.Site,at,revision) &&
+      i.Person==SocialWorld.Temple(w,i.Site).Representative && MaterialMarkets.Enabled(w) &&
+      MaterialMarkets.Sites(w).Contains(i.Site),"市場を支配する当主と現地の寺社代表を確認してください");
+  Need(SocialWorld.Ledger(w).Any(e=>e.Actor==actor && e.Input.Person==i.Person && e.Site==i.Site &&
+      (e.Input.Action is SocialWorldAction.Donate or SocialWorldAction.Protect or SocialWorldAction.IssueBan) && e.Revision<revision && e.At<=at),"先に現地で寺社代表と寄進・保護・禁制のいずれかを取り交わしてください");
+  Need(HouseReforms.TempleMarketSeat(w,i.Site,at,revision)==null &&
+      !HouseReforms.OpenMarketAt(w,i.Site,at,revision),"この市場では新しく座を安堵できません");
+ }
+ static void CheckReformDecision(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
+ {
+  var proposal=Source(w,input.Reference,CourtAction.ConsultReform);
+  Need(proposal.Revision<revision && proposal.Actor==actor && proposal.Input.Owner==input.Owner &&
+      proposal.Input.Site==input.Site && proposal.Input.Person==input.Person && place==input.Site &&
+      HeadAuthority(w,actor,input.Owner,input.Site,at,revision),"相談原本と現地の当主権限を確認してください");
+  if(input.Action==CourtAction.OpenLocalMarket){
+   Need(proposal.Input.Reform==ReformKind.OpenMarket && MaterialMarkets.Sites(w).Contains(input.Site),
+       "実在する現地市場の楽市案を選んでください");
+   Need(!HouseReforms.OpenMarketAt(w,input.Site,at,revision),"この市場ではすでに楽市を実施しています");
+  }
+  if(input.Action==CourtAction.AbolishBarrier){
+   Need(proposal.Input.Reform==ReformKind.RemoveBarrier && input.BarrierEdge==proposal.Input.BarrierEdge &&
+       HouseReforms.BarrierAt(w,input.BarrierEdge!,at,revision)?.Revision<proposal.Revision,"相談原本に記した同じ関所を指定してください");
+   CheckBarrier(w,input,actor,place,at,revision);
+  }
+  if(input.Action==CourtAction.ReduceCastle)
+   Need(proposal.Input.Reform==ReformKind.ReduceCastles && CastleWorks.Enabled(w) && MaterialMarkets.Sites(w).Contains(place) &&
+       HouseReforms.CastleReduction(w,place,at,revision)==null,"未実施の城で、現地の城割り相談を指定してください");
+  if(input.Action==CourtAction.EnactEqualPenalty)
+   Need(proposal.Input.Reform==ReformKind.EqualPenalty && !HouseReforms.EqualPenaltyAt(w,input.Owner,input.Site,at,revision),"現地の喧嘩両成敗の相談原本を指定してください");
+  if(input.Action==CourtAction.EnactSuccessionLaw)
+   Need(proposal.Input.Reform==ReformKind.SuccessionOrder && !HouseReforms.SuccessionLawAt(w,input.Owner,input.Site,at,revision),
+       "現地で未制定の後継順位を定める相談原本を指定してください");
+  if(input.Action==CourtAction.EnactMarriageLaw)
+   Need(proposal.Input.Reform==ReformKind.MarriagePermission &&
+       !HouseReforms.MarriageLawAt(w,input.Owner,input.Site,at,revision),"この管轄の婚姻許可制の相談原本を指定してください");
+  if(input.Action==CourtAction.EnactLetterLaw)
+   Need(proposal.Input.Reform==ReformKind.ForeignLetters &&
+       !HouseReforms.LetterLawAt(w,input.Owner,input.Site,at,revision),"この管轄の他国私信禁止の新規条文を選んでください");
+  var readAt=MessageFlow.LearnedAt(w.Messaging,HouseReforms.Letter(proposal.Input,HouseReforms.Answer),actor.Value);
+  Need(readAt.HasValue && readAt.Value<=at,"相手の返書を読んでから判断してください");
+  Need(!Events(w).Any(e=>e.Revision<revision && (e.Input.Action is CourtAction.IssueTransfer or CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.EnactEqualPenalty or CourtAction.ReduceCastle or CourtAction.AbolishBarrier) &&
+      e.Input.Reference==proposal.Input.Id),"この相談案は決裁済みです");
+ }
  public static void Execute(ContractWorld w,CourtInput i,EntityId actor)
  {
   Need(NewGameWork.Enabled(w)&&w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Role)&&Enum.IsDefined(i.Case)&&Enum.IsDefined(i.Scale),"家中の用件が不正です");var place=SocialWorld.Site(w,actor);Need(place!=null,"現地へ到着してください");Need(HouseSuccession.Factions(w).Any(f=>f.Id==i.Owner.Value)&&w.Definitions.Sites.Any(s=>s.Id==i.Site),"家と拠点を指定してください");
+  Need(i.Action==CourtAction.ConsultReform || i.Reform==null,"改革の指定は家中改革の相談に限ります");
+  Need(i.Action!=CourtAction.LetterBreach,"違反の事実は実際の発送から記録します");
   bool leader=HeadAuthority(w,actor,i.Owner,i.Site,w.ElapsedSeconds,w.CommitSequence+1),bound=false;
   if(i.Action is CourtAction.RecruitOffer or CourtAction.Nominate or CourtAction.RevokeOffice or CourtAction.DeclareScale)Need(leader&&place==i.Site,"その拠点を支配する当主の現地判断が必要です");
   if(i.Action==CourtAction.RecruitOffer){Need(i.Person!=actor&&w.Characters.Any(c=>c.Id==i.Person&&c.Life==LifeState.Adult)&&i.Amount is >=20 and <=500&&i.Amount<=NewGameWork.Balance(w,actor),"成人への条件と実在の私財の支度金20〜500文を指定してください");Need(!Events(w).Any(e=>e.Input.Action==i.Action&&e.Input.Person==i.Person&&e.Input.Owner==i.Owner&&!Events(w).Any(r=>r.Input.Reference==e.Input.Id&&r.Input.Action is CourtAction.RecruitAccept or CourtAction.ReturnSigning)),"先の条件書と支度金を先に精算してください");}
@@ -88,6 +401,35 @@ public static class HouseholdCourt
   else if(i.Action==CourtAction.Nominate){Need(i.Person!=actor&&Member(w,i.Person,i.Owner,w.ElapsedSeconds,w.CommitSequence+1),"同じ家の人物へ条件を示してください");Need(Vacancy(w,i.Owner,i.Site,i.Role,w.ElapsedSeconds,w.CommitSequence+1),"現在の家の規模ではこの役割に空席がありません");if(i.Role==CourtRole.Elder)Need(Seat(w,actor,i.Person).StartsWith("一門")||Seat(w,actor,i.Person).StartsWith("譜代")||MeritRewards.Records(w,actor).Count(r=>r.Subject==i.Person)>=3,"新参の重臣登用には、自分が認めた複数の働きが必要です");}
   else if(i.Action is CourtAction.AcceptOffice or CourtAction.DeclineOffice){var offer=Source(w,i.Reference,CourtAction.Nominate);Need(offer.Input.Person==actor&&i.Owner==offer.Input.Owner&&i.Site==offer.Input.Site&&SocialAssets.Inventory(w,actor).Any(o=>o.Id==offer.Input.Id),"本人の任命状を実際に確認してください");Need(!Events(w).Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action is CourtAction.AcceptOffice or CourtAction.DeclineOffice),"この任命には返答済みです");if(i.Action==CourtAction.AcceptOffice)Need(Vacancy(w,i.Owner,i.Site,offer.Input.Role,w.ElapsedSeconds,w.CommitSequence+1)&&HeadAuthority(w,offer.Actor,i.Owner,i.Site,w.ElapsedSeconds,w.CommitSequence+1)&&Member(w,actor,i.Owner,w.ElapsedSeconds,w.CommitSequence+1)&&!Offices(w,[]).Any(o=>o.Subject==actor&&o.Target==i.Site&&Active(o,w.ElapsedSeconds,w.CommitSequence+1)),"現在の署名権・所属・兼務を確認してください");}
   else if(i.Action is CourtAction.RevokeOffice or CourtAction.ResignOffice){var offer=Source(w,i.Reference,CourtAction.Nominate);Need(Events(w).Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action==CourtAction.AcceptOffice&&e.At<w.ElapsedSeconds),"引受後、時刻を進めてから終了の手続きをしてください");Need(i.Action==CourtAction.RevokeOffice?actor==offer.Actor&&i.Person==offer.Input.Person:actor==offer.Input.Person&&Local(w,actor,Head(w,i.Owner,w.ElapsedSeconds,w.CommitSequence+1)),"任命者の解任通知か、本人の現地辞任が必要です");}
+  else if(i.Action is CourtAction.ChallengeSeat or CourtAction.InsistSeat or CourtAction.SettleSeat)CheckSeatDispute(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.ReleaseCastleOffice or CourtAction.EnterCastleOffice or CourtAction.PresentTransfer or CourtAction.YieldCastleOffice)CheckCastleTransfer(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.IssueTransfer){var terms=CheckTransferOrder(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);HouseReforms.SendTransfer(w,terms,i,actor);}
+  else if(IsReformReply(i.Action)){
+   var proposal=CheckReformReply(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
+   Need(!w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(proposal.Input,HouseReforms.Answer)),"返書は発送済みです");
+   HouseReforms.Reply(w,proposal,HouseReforms.ReplyText(i.Action));
+  }
+  else if(i.Action==CourtAction.ReportResidence){CheckResidenceReport(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);HouseReforms.SendResidenceNotice(w,i,actor);}
+  else if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.ChallengeFight or CourtAction.JoinFight or CourtAction.DeclineFight or CourtAction.CensureBoth)CheckFight(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.SurrenderLevyShare)CheckSurrender(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.GrantLevyShare)CheckLevyShare(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.EstablishBarrier)CheckBarrier(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.GrantTempleSeat)CheckTempleSeat(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.EnactEqualPenalty or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+  else if(i.Action==CourtAction.ConsultReform){
+   if(i.Reform==ReformKind.Confiscate && i.LevyGrant!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
+   if(i.Reform is ReformKind.Relocate or ReformKind.ChangeFief || i.Reform is ReformKind.CastleResidence or ReformKind.AllocateProvince && i.NewEstate!=null)CheckEstateTerms(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
+   if(i.Reform==ReformKind.RemoveBarrier)CheckBarrier(w,i,actor,place!.Value,w.ElapsedSeconds,w.CommitSequence);
+   Need(leader&&place==i.Site&&i.Person!=actor&&Member(w,i.Person,i.Owner,w.ElapsedSeconds,w.CommitSequence+1)&&
+       i.Reform is {} kind && Enum.IsDefined(kind),"現地の当主・所属する相談相手・改革案を指定してください");
+   Need(!Events(w).Any(e=>e.Input.Action==i.Action&&e.Input.Person==i.Person&&e.Input.Owner==i.Owner&&e.Input.Site==i.Site&&
+       e.Input.Reform==i.Reform&&e.Input.BarrierEdge==i.BarrierEdge&&e.Input.NewEstate==i.NewEstate&&!HouseReforms.AnswerKnown(w,e,actor)),"同じ相手からの返書を待っています");
+  }
   else if(i.Action==CourtAction.DeclareScale){var footprint=HouseTerritoryScale.Measure(w,i.Owner,w.ElapsedSeconds,w.CommitSequence+1);Need(i.Scale>Scale(w,i.Owner)&&footprint.Supports(i.Scale),"支配拠点の実態が宣言の条件に届いていません");}
   else if(i.Action==CourtAction.Convene){Need(CanConvene(w,actor,i.Owner,i.Site)&&place==i.Site&&i.When>=w.ElapsedSeconds+3600&&i.When<=w.ElapsedSeconds+30*86400L&&i.People is {Length:>0}&&i.People.Distinct().Count()==i.People.Length&&i.People.All(p=>p!=actor&&Member(w,p,i.Owner,w.ElapsedSeconds,w.CommitSequence+1)),"当主が現地で家中の相手と開催時刻を指定してください");}
   else if(i.Action is CourtAction.AcceptInvitation or CourtAction.DeclineInvitation){Need(i.Reference!=null,"届いた招待状を選んでください");var doc=Document(w,i.Reference.Value);Need(doc.Source.Input.Action==CourtAction.Convene&&doc.Recipient==actor&&SocialAssets.Inventory(w,actor).Any(o=>o.Id==doc.Id)&&w.ElapsedSeconds<doc.Source.Input.When,"本人宛ての招待状と開催時刻を確認してください");Need(!Events(w).Any(e=>e.Input.Reference==doc.Id&&e.Input.Action is CourtAction.AcceptInvitation or CourtAction.DeclineInvitation),"本人は返答済みです");}
@@ -96,7 +438,7 @@ public static class HouseholdCourt
   else if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);Need(leader&&proposal.Input.Owner==i.Owner&&proposal.Input.Site==i.Site&&Received(w,proposal.Input.Id,actor)&&place==i.Site,"届いて確認した自分の管轄の上申だけを審査してください");Need(!Events(w).Any(e=>e.Input.Reference==proposal.Input.Id&&e.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase),"この案件は審査済みです");Need(Events(w).Any(e=>e.Actor==actor&&e.Input.Action==CourtAction.HoldCouncil&&e.Input.Owner==i.Owner&&e.Place==place&&w.ElapsedSeconds<=e.At+3600),"現地で評定を開いてから案件を裁いてください");}
   else if(i.Action==CourtAction.DeliverDocument){Need(i.Reference!=null,"引き渡す文書を選んでください");Deliver(w,Document(w,i.Reference.Value),actor,i.Carrier);Add(w,i,actor,place.Value);return;}
   else throw new InvalidDataException("未対応の家中の用件です");
-  Add(w,i,actor,place.Value,bound);if(i.Action==CourtAction.DeclareScale)HouseScaleNotices.Dispatch(w,i,actor);Sync(w);NewGameWork.Sync(w);
+  Add(w,i,actor,place.Value,bound);if(i.Action==CourtAction.ReceiveLevyShare)CommunityEconomy.Tick(w);if(i.Action==CourtAction.ConsultReform)HouseReforms.Send(w,i,actor);if(i.Action==CourtAction.DeclareScale)HouseScaleNotices.Dispatch(w,i,actor);Sync(w);NewGameWork.Sync(w);
   if(i.Action is CourtAction.RecruitOffer or CourtAction.Nominate or CourtAction.RevokeOffice or CourtAction.SubmitCase)Deliver(w,Document(w,i.Id),actor,i.Carrier);
   if(i.Action==CourtAction.ApproveCase){var proposal=Source(w,i.Reference,CourtAction.SubmitCase);var q=proposal.Input;if(q.Case==CourtCaseKind.RelieveVillage)CommunityEconomy.ApplyFor(w,new(Id("effect",i.Id.Value),q.Site,EconomyAction.RelieveVillage,q.Amount),actor);else RegionalDomains.Apply(w,new(Id("effect",i.Id.Value),q.Case==CourtCaseKind.SetBudget?TreasuryAction.SetBudget:TreasuryAction.Buy,q.Site,q.Case==CourtCaseKind.BuyWood?"wood":q.Case==CourtCaseKind.BuyWeapons?"weapons":null,q.Case==CourtCaseKind.SetBudget?0:q.Amount,q.Case==CourtCaseKind.SetBudget?q.Amount:0),actor);}
   if(i.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase)Deliver(w,Document(w,i.Id),actor,i.Carrier);
@@ -110,6 +452,11 @@ public static class HouseholdCourt
  internal static ServiceView Decorate(ContractWorld w,long at,long rev,ServiceView original){var joined=Events(w).LastOrDefault(e=>e.Actor==w.PlayerControl&&e.Input.Action==CourtAction.RecruitAccept&&Before(e,at,rev+1)&&!Events(w).Any(end=>end.Input.Action==CourtAction.ResignService&&end.Input.Reference==e.Input.Reference&&Before(end,at,rev+1)));if(joined==null)return original;var offer=Source(w,joined.Input.Reference,CourtAction.RecruitOffer);var principal=HouseholdService.BondsAt(w,at,rev+1).LastOrDefault(b=>b.Subject==w.PlayerControl&&Active(b,at,rev+1))?.Target;return original with{Role="家臣（登用合意）",House=offer.Input.Owner,Principal=principal,CanApply=false};}
  public static CourtDocument[] PendingDocuments(ContractWorld w,EntityId actor)=>DocumentRows(w).Where(d=>d.Recipient==actor&&Received(w,d.Id,actor)).ToArray();
  public static RelationshipFact[] Facts(ContractWorld w,EntityId observer,EntityId subject){var rows=new List<RelationshipFact>();foreach(var e in Events(w)){
+  if(e.Input.Action==CourtAction.CensureBoth){
+   var fight=Source(w,e.Input.Reference,CourtAction.JoinFight);
+   if((subject==fight.Actor || subject==fight.Input.Person) && observer!=subject && (observer==e.Actor || observer==fight.Actor || observer==fight.Input.Person))
+    rows.Add(new(observer,subject,"court:"+e.Input.Id.Value+"/"+subject.Value,"私闘に加わり、現地で両成敗の叱責を受けた",e.At,e.At,0,-2,0,1));
+  }
   if(e.Input.Action==CourtAction.RecruitAccept){var offer=Source(w,e.Input.Reference,CourtAction.RecruitOffer);if(observer==e.Actor&&subject==offer.Actor)rows.Add(new(observer,subject,"court:"+e.Input.Id.Value,"条件書と実物の支度金を確認し、家への所属と直属を引き受けた",e.At,e.At,3,2,0,0));}
   if(e.Input.Action==CourtAction.HoldCouncil&&e.Input.People is {} people&&observer!=subject&&people.Contains(observer)&&people.Contains(subject))rows.Add(new(observer,subject,"court:"+e.Input.Id.Value,"同じ場所の評定に実際に参集した",e.At,e.At,1,1,0,0));
  }return rows.ToArray();}
@@ -123,6 +470,12 @@ public static class HouseholdCourt
    var answers=source.Input.Action==CourtAction.RecruitOffer?new[]{CourtAction.RecruitAccept,CourtAction.RecruitDecline}:source.Input.Action==CourtAction.Nominate?new[]{CourtAction.AcceptOffice,CourtAction.DeclineOffice}:new[]{CourtAction.AcceptInvitation,CourtAction.DeclineInvitation};EntityId reference=source.Input.Action==CourtAction.Convene?doc.Id:source.Input.Id;if(Events(w).Any(e=>e.Actor==p&&e.Input.Reference==reference&&answers.Contains(e.Input.Action)))continue;
    int duty=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticTrait(w,p,SocialTrait.Duty):50;int caution=CharacterRelations.Enabled(w)?CharacterRelations.DiagnosticTrait(w,p,SocialTrait.Caution):50;if(SocialWorld.Axes(w,p,source.Actor).Hostility>30||duty+50<caution)action=source.Input.Action==CourtAction.RecruitOffer?CourtAction.RecruitDecline:source.Input.Action==CourtAction.Nominate?CourtAction.DeclineOffice:CourtAction.DeclineInvitation;
    Attempt(w,new(Id("reply",doc.Id.Value),action.Value,source.Actor,source.Input.Owner,source.Input.Site,Reference:reference),p);
+  }
+  foreach(var shown in Events(w).Where(e=>e.Input.Action==CourtAction.PresentTransfer && e.Input.Person!=w.PlayerControl && e.Revision<w.CommitSequence)){
+   var incumbent=shown.Input.Person;
+   if(Events(w).Any(e=>e.Input.Action==CourtAction.YieldCastleOffice && e.Input.Reference==shown.Input.Reference && e.Input.FormerOffice==shown.Input.FormerOffice))continue;
+   if(CharacterRelations.Enabled(w) && CharacterRelations.DiagnosticScores(w,incumbent,shown.Actor).Hostility>25)continue;
+   Attempt(w,shown.Input with{Id=Id("yield-office",shown.Input.Id.Value),Action=CourtAction.YieldCastleOffice,Person=shown.Actor},incumbent);
   }
   foreach(var declined in Events(w).Where(e=>e.Input.Action==CourtAction.RecruitDecline&&e.Actor!=w.PlayerControl).ToArray()){var offer=Source(w,declined.Input.Reference,CourtAction.RecruitOffer);if(Local(w,declined.Actor,offer.Actor)&&!Events(w).Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action==CourtAction.ReturnSigning))Attempt(w,new(Id("return-signing",offer.Input.Id.Value),CourtAction.ReturnSigning,offer.Actor,offer.Input.Owner,offer.Input.Site,Reference:offer.Input.Id),declined.Actor);}
   foreach(var meeting in Events(w).Where(e=>e.Input.Action==CourtAction.Convene&&Head(w,e.Input.Owner,w.ElapsedSeconds,w.CommitSequence+1)!=w.PlayerControl&&e.Input.When<=w.ElapsedSeconds&&w.ElapsedSeconds<=e.Input.When+3600).ToArray()){
@@ -151,6 +504,55 @@ public static class HouseholdCourt
  {
   if(w.Court==null){Need(prior?.Court==null,"家中の記録が消えています");return;}Need(NewGameWork.Enabled(w)&&w.Court.Schema==1&&w.Court.Policy==Policy,"家中の版が不正です");var es=Events(w);Need(es.Select(e=>e.Input.Id).Distinct().Count()==es.Length&&es.All(e=>e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence&&e.Input.Amount>=0&&Enum.IsDefined(e.Input.Action)&&Enum.IsDefined(e.Input.Role)&&Enum.IsDefined(e.Input.Case)&&Enum.IsDefined(e.Input.Scale)&&w.Characters.Any(c=>c.Id==e.Actor)&&w.Definitions.Sites.Any(s=>s.Id==e.Place)),"家中の原本が不正です");if(prior?.Court!=null)Need(ContractJson.CanonicalHash(es.Take(prior.Court.Events.Length).ToArray())==ContractJson.CanonicalHash(prior.Court.Events),"過去の家中の記録が変更されています");
   foreach(var e in es){var i=e.Input;
+   if(i.Action is CourtAction.ChallengeSeat or CourtAction.InsistSeat or CourtAction.SettleSeat)CheckSeatDispute(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.LetterBreach){
+    Need(w.Messaging.Messages.Any(m=>m.Id==i.Reference?.Value && (m.Kind is PactSignals.Call or PactSignals.Reply) &&
+       m.SenderId==e.Actor.Value && m.RecipientId==i.Person.Value && m.CreatedAt==e.At &&
+       i.Id==Id("foreign-letter-breach",m.Id)) && i.Site==e.Place &&
+       HouseReforms.LetterLawAt(w,i.Owner,i.Site,e.At,e.Revision),"条文に対応する私信の発送原本がありません");
+   }
+   if(i.Action==CourtAction.ReportResidence){
+    CheckResidenceReport(w,i,e.Actor,e.Place,e.At,e.Revision);
+    Need(w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(i,HouseReforms.ResidenceNotice) && m.Kind==HouseReforms.ResidenceNotice &&
+        m.CorrelationId==i.Id.Value && m.CreatedAt==e.At && m.SenderId==e.Actor.Value && m.RecipientId==i.Person.Value),"転居届の発送原本がありません");
+   }
+   if(i.Action==CourtAction.SettleCastleResidence)CheckResidence(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.PresentServiceRelease or CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease)CheckServiceHandover(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare)CheckProvinceReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.ChallengeFight or CourtAction.JoinFight or CourtAction.DeclineFight or CourtAction.CensureBoth)CheckFight(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.SurrenderLevyShare)CheckSurrender(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.ExchangeLevyShare)CheckLevyExchange(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.ReceiveLevyShare)CheckLevyReceipt(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.GrantLevyShare)CheckLevyShare(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.EstablishBarrier || i.Action==CourtAction.ConsultReform && i.Reform==ReformKind.RemoveBarrier)CheckBarrier(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.GrantTempleSeat)CheckTempleSeat(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.DeferReform or CourtAction.OpenLocalMarket or CourtAction.EnactLetterLaw or CourtAction.EnactMarriageLaw or CourtAction.EnactSuccessionLaw or CourtAction.EnactEqualPenalty or CourtAction.ReduceCastle or CourtAction.AbolishBarrier)CheckReformDecision(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action is CourtAction.ReleaseCastleOffice or CourtAction.EnterCastleOffice or CourtAction.PresentTransfer or CourtAction.YieldCastleOffice)CheckCastleTransfer(w,i,e.Actor,e.Place,e.At,e.Revision);
+   if(i.Action==CourtAction.IssueTransfer){
+    CheckTransferOrder(w,i,e.Actor,e.Place,e.At,e.Revision);
+    Need(w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(i,HouseReforms.TransferOrder) && m.SenderId==e.Actor.Value && m.RecipientId==i.Person.Value && m.CreatedAt==e.At),"移封命令の発送原本がありません");
+   }
+   if(IsReformReply(i.Action)){
+    var proposal=CheckReformReply(w,i,e.Actor,e.At,e.Revision);
+    Need(w.Messaging.Messages.Any(m=>m.Id==HouseReforms.Letter(proposal.Input,HouseReforms.Answer) &&
+        m.CreatedAt==e.At && m.SenderId==e.Actor.Value && m.RecipientId==proposal.Actor.Value &&
+        m.Body==HouseReforms.Name(proposal.Input.Reform!.Value)+"への返答："+HouseReforms.ReplyText(i.Action)),
+        "本人の判断と発送された返書が一致しません");
+   }
+   if(i.Action==CourtAction.ConsultReform && i.Reform==ReformKind.Confiscate && i.LevyGrant!=null)CheckEstateTerms(w,i,e.Actor,e.At,e.Revision);
+   if(i.NewEstate!=null){
+    Need(i.Action==CourtAction.ConsultReform && (i.Reform is ReformKind.Relocate or ReformKind.ChangeFief or ReformKind.CastleResidence or ReformKind.AllocateProvince),"所領の交換条件と相談原本が一致しません");
+    CheckEstateTerms(w,i,e.Actor,e.At,e.Revision);
+   }
+   if(i.Action==CourtAction.ConsultReform){
+    Need(i.Reform is {} kind && Enum.IsDefined(kind) && i.Site==e.Place &&
+        HeadAuthority(w,e.Actor,i.Owner,i.Site,e.At,e.Revision) && i.Person!=e.Actor &&
+        Member(w,i.Person,i.Owner,e.At,e.Revision),"相談時点の権限・当事者・案が一致しません");
+    var id=HouseReforms.Letter(i,HouseReforms.Proposal);
+    Need(w.SealedMessages.Contains(new EntityId(id)) && w.Messaging.Messages.Any(m=>m.Id==id &&
+        m.CorrelationId==i.Id.Value && m.Kind==HouseReforms.Proposal && m.SenderId==e.Actor.Value &&
+        m.RecipientId==i.Person.Value),"相談の原本と宛先が一致しません");
+   }else Need(i.Reform==null,"別の用件に改革案が混在しています");
    if(i.Action==CourtAction.Nominate&&i.Role==CourtRole.Elder)Need(Seat(w,e.Actor,i.Person,e.At,e.Revision).StartsWith("一門")||Seat(w,e.Actor,i.Person,e.At,e.Revision).StartsWith("譜代")||MeritRewards.Records(w,e.Actor,e.At,e.Revision).Count(r=>r.Subject==i.Person)>=3,"任命時点の席次と働きの根拠がありません");
    if(i.Action is CourtAction.RecruitOffer or CourtAction.Nominate or CourtAction.RevokeOffice or CourtAction.DeclareScale)Need(e.Place==i.Site&&HeadAuthority(w,e.Actor,i.Owner,i.Site,e.At,e.Revision),"発令当時の当主の管轄がありません");
    if(i.Action==CourtAction.RecruitAccept){var offer=Source(w,i.Reference,CourtAction.RecruitOffer);Need(e.At<=offer.At+30*86400L&&HeadAuthority(w,offer.Actor,offer.Input.Owner,offer.Input.Site,e.At,e.Revision)&&!w.Memberships.Any(m=>m.Subject==e.Actor&&m.Id!=Id("membership",i.Id.Value)&&Active(m,e.At,e.Revision)&&(m.From<e.At||m.From==e.At&&m.Revision<e.Revision)),"登用時の期限・署名権・既存の所属が矛盾しています");}

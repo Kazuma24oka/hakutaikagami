@@ -19,11 +19,18 @@ public static class HeirPledges
         RegionalCampaign.Bind(w);
     }
 
+    const string OutsideOrder="家法の第一候補と異なる指名です。";
     internal static void Request(ContractWorld w,HeirNomination paper,SetupPerson signer)
     {
         var name=FamilyBirth.People(w).Single(p=>p.Id==paper.Heir.Value).Name;
+        var body=name+"を後継とする指名への返答を求めます。";
+        if(HeirDesignation.UsesSuccessionOrder(w,paper.House) &&
+            HeirDesignation.KnownChildren(w,paper.House).FirstOrDefault() is {} first && first.Person!=paper.Heir){
+            var preferred=FamilyBirth.People(w).Single(p=>p.Id==first.Person.Value);
+            body+="第一候補は"+preferred.Name+"殿です。"+OutsideOrder;
+        }
         Dispatch(w,new(Id(RequestKind,paper,signer.Id),Version(paper),RequestKind,paper.Head.Value,
-            signer.Id,name+"を後継とする指名への返答を求めます。",signer.Site,w.ElapsedSeconds));
+            signer.Id,body,signer.Site,w.ElapsedSeconds));
     }
 
     internal static void Validate(ContractWorld w)
@@ -57,11 +64,13 @@ public static class HeirPledges
             w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(request.Id,signer.Value,w.ElapsedSeconds,request.Id)];
             bool member=w.Memberships.Any(m=>m.Target==paper.House && m.Subject==signer &&
                 m.From<=w.ElapsedSeconds && w.ElapsedSeconds<m.Until);
+            bool outside=request.Body.EndsWith(OutsideOrder,StringComparison.Ordinal);
             bool agrees=member && w.Characters.Single(c=>c.Id==signer).Life==LifeState.Adult &&
-                FamilyConsentRules.IndividualAccepts(w,signer,paper.Heir,w.ElapsedSeconds,w.CommitSequence);
+                FamilyConsentRules.IndividualAccepts(w,signer,paper.Heir,w.ElapsedSeconds,w.CommitSequence,outside?100:80);
             var heir=FamilyBirth.People(w).Single(p=>p.Id==paper.Heir.Value);
             var address=FamilyBirth.People(w).Single(p=>p.Id==paper.Head.Value).Site;
             var body=agrees?heir.Name+"殿の後継指名を支持すると誓います。":heir.Name+"殿への誓紙は差し控えます。";
+            if(outside)body="家法の第一候補を外すとのお書状を拝見しました。"+body;
             Dispatch(w,new(Id(ReplyKind,paper,signer.Value),Version(paper),ReplyKind,signer.Value,
                 paper.Head.Value,body,address,w.ElapsedSeconds));
         }

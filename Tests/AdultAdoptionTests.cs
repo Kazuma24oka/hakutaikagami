@@ -4,9 +4,42 @@ namespace HakutaiKagami.Tests;
 public sealed class AdultAdoptionTests
 {
     static readonly EntityId Player=new("created:test"),Other=new("created:other");
-    static WorldSession Start(ulong seed=42,bool on=true,bool lord=false,bool minor=false,string site="site:castle",bool remoteHouse=false,bool distantSigner=false){
+    static WorldSession Start(ulong seed=42,bool on=true,bool lord=false,bool minor=false,string site="site:castle",bool remoteHouse=false,bool distantSigner=false,bool law=false){
         var a=NewGameWorldTests.Officer();var b=NewGameWorldTests.Officer(Other.Value,remoteHouse?StartTemplate.Retainer:StartTemplate.Ronin,site:site,lord:remoteHouse?"person:shingen":null) with{BirthYear=minor?1550:1520};
-        var setup=NewGameWorldTests.Setup(distantSigner?[a,b,NewGameWorldTests.Officer("created:signer",StartTemplate.Retainer,"site:kyoto","person:nobunaga"),NewGameWorldTests.Officer("created:younger") with{BirthYear=1550,BirthParents=["person:nobunaga"]}]:[a,b]);return new(NewGameWorld.Create(setup.World,setup.Registered,lord?"person:nobunaga":Player.Value,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:on?AdultAdoption.Policy:null));
+        var setup=NewGameWorldTests.Setup(distantSigner||law?[a,b,NewGameWorldTests.Officer("created:signer",StartTemplate.Retainer,law?"site:castle":"site:kyoto","person:nobunaga"),NewGameWorldTests.Officer("created:younger") with{BirthYear=1550,BirthParents=["person:nobunaga"]}]:[a,b]);return new(NewGameWorld.Create(setup.World,setup.Registered,lord?"person:nobunaga":Player.Value,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:on?AdultAdoption.Policy:null,economyPolicy:law?HouseSuccession.Policy:null));
+    }
+    [Fact]
+    public void HouseLawRanksKnownChildrenWithoutOverridingNomination(){
+        var s=Start(Yes.Value,lord:true,law:true);
+        var adoption=Propose(s);At(s,1);
+        var house=Assert.Single(s.DiagnosticSnapshot().Adoption!.Entries.First().Terms!.Houses).Owner;
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        Good(Act(s,AdoptionAction.ApproveHouse,adoption,house));Good(Act(s,AdoptionAction.Implement,adoption));
+        Assert.Equal(Other,HeirDesignation.KnownChildren(s.DiagnosticSnapshot(),house)[0].Person);
+        EntityId member=new("created:signer"),site=new("site:castle");
+        var proposal=new CourtInput(new("request:succession-consult"),CourtAction.ConsultReform,member,house,site){Reform=ReformKind.SuccessionOrder};
+        Good(s.ManageCourt(proposal,s.Revision));At(s,241);
+        Good(s.Open(s.PlayerControl,new(HouseReforms.Letter(proposal,HouseReforms.Answer)),s.Revision));
+        Good(s.ManageCourt(new(new("request:succession-law"),CourtAction.EnactSuccessionLaw,member,house,site,Reference:proposal.Id),s.Revision));
+        s=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+        var candidates=HeirDesignation.KnownChildren(s.DiagnosticSnapshot(),house);
+        Assert.Equal(new EntityId("created:younger"),candidates[0].Person);
+        Assert.Equal(Other,candidates[1].Person);
+        Good(s.DesignateHeir(house,Other,s.Revision));
+        var paper=Assert.Single(s.DiagnosticSnapshot().HeirNominations!);
+        Assert.Equal(Other,paper.Heir);
+        Good(s.RequestHeirPledge(paper,member,s.Revision));
+        var sent=s.DiagnosticSnapshot();
+        Assert.Contains("家法の第一候補と異なる",Assert.Single(sent.Messaging.Messages,m=>m.Kind==HeirPledges.RequestKind).Body);
+        Assert.DoesNotContain(sent.Messaging.Messages,m=>m.Kind==HeirPledges.ReplyKind);
+        s=new WorldSession(ContractJson.Copy(sent));
+        At(s,s.Seconds+240);
+        var reply=Assert.Single(s.DiagnosticSnapshot().Messaging.Messages,m=>m.Kind==HeirPledges.ReplyKind);
+        Assert.Contains("第一候補を外す",reply.Body);
+        var score=CharacterRelations.DiagnosticScores(sent,member,Other);
+        var support=sent.Characters.Single(c=>c.Id==member).WillObey &&
+            CharacterRelations.DiagnosticTrait(sent,member,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(sent,member,SocialTrait.Affection)+score.Trust-score.Hostility>=100;
+        Assert.Equal(support,reply.Body.Contains("支持すると誓います"));
     }
     static readonly Lazy<ulong> Yes=new(()=>Find(true)),No=new(()=>Find(false));
     static ulong Find(bool yes){for(ulong n=1;n<100;n++){var w=Start(n).DiagnosticSnapshot();var score=CharacterRelations.DiagnosticScores(w,Other,Player);if((CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Affection)+score.Trust-score.Hostility>=80)==yes)return n;}throw new Exception("No branch seed");}

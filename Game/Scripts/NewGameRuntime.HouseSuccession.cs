@@ -62,7 +62,7 @@ public partial class NewGameRuntime
         {
             var children=HeirDesignation.KnownChildren(w,new(house.Id));
             if(children.Length==0)continue;
-            Text(house.Name+"の後継候補（生年順）");
+            Text(house.Name+(HeirDesignation.UsesSuccessionOrder(w,new(house.Id))?"の後継候補（家法に従い実子・養子の順、同じ区分は年長順）":"の後継候補（生年順）"));
             var owner=new EntityId(house.Id);
             var current=w.HeirNominations?.LastOrDefault(p=>p.House==owner && p.Head==Session.PlayerControl);
             if(current!=null)

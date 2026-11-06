@@ -4,10 +4,31 @@ namespace HakutaiKagami.Tests;
 public sealed class CastleWorksTests
 {
  static readonly EntityId Site=new("site:kyoto"),Owner=new("created:fort-house"),Stone=new("craft:group/stone");
- static WorldSession Start(ulong seed=42){var officer=NewGameWorldTests.Officer("created:fort-lord",StartTemplate.Daimyo,Site.Value);var setup=NewGameWorldTests.Setup([officer],[new(officer.Id,Owner.Value,[Site.Value],false)]);return new(NewGameWorld.Create(setup.World,setup.Registered,officer.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleWorks.Policy,weatherPolicy:RegionalWeather.Policy));}
+ static WorldSession Start(ulong seed=42,bool council=false){var officer=NewGameWorldTests.Officer("created:fort-lord",StartTemplate.Daimyo,Site.Value);var setup=NewGameWorldTests.Setup(council?[officer,NewGameWorldTests.Officer("created:local-retainer",StartTemplate.Retainer,Site.Value,officer.Id)]:[officer],[new(officer.Id,Owner.Value,[Site.Value],false)]);return new(NewGameWorld.Create(setup.World,setup.Registered,officer.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleWorks.Policy,weatherPolicy:RegionalWeather.Policy));}
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static WorksInput Build(WorldSession s,WorksKind kind,CastleSection? section)=>new(new("request:fort/"+s.Revision),Site,kind){Section=section};
  static CastleDefense Defense(WorldSession s,CastleSection section)=>CastleWorks.Defense(s.DiagnosticSnapshot(),Site,section,s.Seconds,s.Revision+1);
+ [Fact]
+ public void ReductionRequiresAReadAnswerAndLaterConstructionUsesReducedDefenses(){
+    var s=Start(council:true);
+    EntityId member=new("created:local-retainer");
+    var proposal=new CourtInput(new("request:consult-castle"),CourtAction.ConsultReform,member,Owner,Site){Reform=ReformKind.ReduceCastles};
+    var reduce=new CourtInput(new("request:reduce-castle"),CourtAction.ReduceCastle,member,Owner,Site,Reference:proposal.Id);
+    Good(s.ManageCourt(proposal,s.Revision));
+    Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(reduce,s.Revision).Code);
+    NewGameWorldTests.At(s,240);
+    Good(s.Open(s.PlayerControl,new(HouseReforms.Letter(proposal,HouseReforms.Answer)),s.Revision));
+    var keep=Defense(s,CastleSection.Keep);
+    Good(s.ManageCourt(reduce,s.Revision));
+    s=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
+    Assert.Equal(15,Defense(s,CastleSection.Gate).Maximum);
+    Assert.Equal(10,Defense(s,CastleSection.OuterMoat).Maximum);
+    Assert.Equal(keep,Defense(s,CastleSection.Keep));
+    Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(reduce with{Id=new("request:repeat-reduction")},s.Revision).Code);
+    Good(s.StartPublicWork(Build(s,WorksKind.Gatehouse,CastleSection.Gate),s.Revision));
+    NewGameWorldTests.At(s,s.Seconds+7*86400);
+    Assert.Equal(27,Defense(s,CastleSection.Gate).Maximum);
+ }
  [Fact]public void FortUsesActualPeopleAndStocksAndOnlyFinishedSectionGetsStronger(){var s=Start();var gate=Defense(s,CastleSection.Gate);var keep=Defense(s,CastleSection.Keep);long cash=s.HouseTreasuryView()!.HouseCash;var i=Build(s,WorksKind.Gatehouse,CastleSection.Gate);Good(s.StartPublicWork(i,s.Revision));Assert.Equal(cash-50,s.HouseTreasuryView()!.HouseCash);Assert.Equal(gate,Defense(s,CastleSection.Gate));Assert.Equal(ResultCode.AlreadyAccepted,s.StartPublicWork(i,s.Revision).Code);Assert.Equal(ResultCode.NotAvailable,s.StartPublicWork(Build(s,WorksKind.Tower,CastleSection.Keep),s.Revision).Code);NewGameWorldTests.At(s,100);s.SetPaused(true);var w=s.DiagnosticSnapshot();var store=new GenerationSaveStore(Path.Combine(Path.GetTempPath(),"castle-work-"+Guid.NewGuid().ToString("N")),w.Definitions);store.Save(s,"manual",w.WorldId);var host=new WorldSessionHost(new WorldSession(w));Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("manual"),host.Current,host.Current.Revision));foreach(var x in new[]{s,host.Current})NewGameWorldTests.At(x,7*86400);Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));Assert.True(Defense(s,CastleSection.Gate).Strength>gate.Strength);Assert.Equal(keep,Defense(s,CastleSection.Keep));}
  [Fact]public void WallsConsumeRealCutStoneAndNeedPaidLocalMasons(){var s=Start();var wall=Build(s,WorksKind.StoneWall,CastleSection.SecondBailey);Assert.Equal(ResultCode.NotAvailable,s.StartPublicWork(wall,s.Revision).Code);void Craft(CraftAction a,EntityId? group=null,string? good=null,long qty=1,EntityId? dest=null)=>Good(s.ManageCraft(new(new("request:fort-craft/"+s.Revision),a,Owner,Site,group,dest,good??"iron",qty),s.Revision));Craft(CraftAction.MeetGroup,Stone);Craft(CraftAction.Hire,Stone,dest:Site);Assert.Equal(ResultCode.NotAvailable,s.StartPublicWork(wall,s.Revision).Code);Good(s.StartPublicWork(Build(s,WorksKind.Workshop,null),s.Revision));NewGameWorldTests.At(s,7*86400);Craft(CraftAction.Buy,good:"rough-stone",qty:10);Craft(CraftAction.Produce,Stone,"cut-stone");NewGameWorldTests.At(s,14*86400);Assert.Equal(5,CraftTrade.Stock(s.DiagnosticSnapshot(),Owner,Site,"cut-stone"));Good(s.StartPublicWork(wall,s.Revision));Assert.Equal(0,CraftTrade.Stock(s.DiagnosticSnapshot(),Owner,Site,"cut-stone"));Assert.Equal(ResultCode.AlreadyAccepted,s.StartPublicWork(wall,s.Revision).Code);}
  [Fact]public void InvalidSectionAndOldCampaignCannotStartFort(){var s=Start();Assert.Equal(ResultCode.NotAvailable,s.StartPublicWork(Build(s,WorksKind.Moat,CastleSection.Keep),s.Revision).Code);var old=PublicWorksTests.PortStart();Assert.Equal(ResultCode.NotAvailable,old.StartPublicWork(new(new("request:old-fort"),new("site:sakai"),WorksKind.Moat){Section=CastleSection.OuterMoat},old.Revision).Code);}

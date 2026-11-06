@@ -1,5 +1,11 @@
 {
-  "status": "READY_FOR_AUTOMATIC_INTEGRATION",
+  "status": "MERGED",
   "base_main": "91d4b66a96d3fb9ee78374574b0e9f10a8e5edbe",
-  "scope": "コード・資料のみ。実行画像と保存はローカル。"
+  "scope": "コード・資料のみ。実行画像と保存はローカル。",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/89",
+  "integrated_head": "6f4fdf56d5babd4ee0b6d8ae363d6a523d5150d2",
+  "integrated_main": "c39d011c9dbb9cb8276b555010d63b170e89d503",
+  "integrated_tree": "7afede394c78e22d76d09d26de7794c79eb2ab98",
+  "verification": "関連5件・実保存復旧・代表旧保存3件・通常入口の内部操作と自前描画・保存前後の表示一致が成功。統合前後のGitツリー一致を確認。",
+  "next": "100%またはユーザー判断まで続行。次は家中改革と所領の組み替え。"
 }

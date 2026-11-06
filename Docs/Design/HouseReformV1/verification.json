@@ -1,0 +1,11 @@
+{
+  "passed": 90,
+  "proofs": {
+    "Docs/Design/HouseReformV1/runtime-local/critical/critical.trx": "248dd0abc8f7ea584a5266d7f3b8d66d01922f85bd09d76574a8e0a994b5f042",
+    "Docs/Design/HouseReformV1/entry-verification.md": "7733504d78def62bcffe991df44bee83dee50ea54ea0eacce3610e700c87c449",
+    "Tests/HouseConditionTests.cs": "5d41f48414463913289daf9a83c160f504f4b3de7fb4d421048c2dcfbabd5014",
+    "Game/Scripts/HouseReformCheck.cs": "03ae0183ee710f51fbdcca51ee4e11865696e1bacc05d6221a64497cfc68c4c5"
+  },
+  "legacy": 3,
+  "visual_review": false
+}

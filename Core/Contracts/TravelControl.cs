@@ -1,7 +1,11 @@
 namespace HakutaiKagami.Core.Contracts;
 public sealed record PersonalTravelRequest(EntityId Id,EntityId Actor,EntityId Task,EntityId? Destination);
 public sealed record TravelDecision(PersonalTravelRequest Request,long RequestedAt,long EffectiveAt,long? AppliedAt,
-    string Node,JourneyLeg[] Before,JourneyLeg[] After,string[] KnownBlocked,string Result);
+    string Node,JourneyLeg[] Before,JourneyLeg[] After,string[] KnownBlocked,string Result)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public long? BarrierRevision{get;init;}
+}
 // Personal agency, no remote interception or instantaneous lord command. V1 travel saves remain immutable.
 public static class TravelControl
 {
@@ -20,8 +24,9 @@ public static class TravelControl
         var j=w.Branches!.Journeys.Single(j=>j.Task==t.Id);var index=Array.FindIndex(j.Legs,l=>w.ElapsedSeconds<l.EndAt);if(index<0)throw new InvalidDataException("Already arrived");var leg=j.Legs[index];var known=BranchRoutes.KnownBlocked(w,request.Actor);
         if(request.Destination==null){if(!PortWaiting(w,request.Actor))throw new InvalidDataException("Departure has begun or actor is not waiting at a port");return new(request,w.ElapsedSeconds,w.ElapsedSeconds,null,leg.From,j.Legs,j.Legs,known,"pending");}
         var destination=RegionalCampaign.Destination(w,request.Destination.Value);if(PortWaiting(w,request.Actor)||destination==Goal(w,j))throw new InvalidDataException("Cancel boarding first, or choose another destination");
-        var path=BranchRoutes.Plan(leg.To,destination,VoyageExpense.PlanningExclusions(w,t,known),w:w,departureAt:leg.EndAt);var after=j.Legs.Take(index+1).Concat(BranchRoutes.Schedule(leg.To,path,leg.EndAt,w)).ToArray();
-        return new(request,w.ElapsedSeconds,leg.EndAt,null,leg.To,j.Legs,after,known,"pending");
+        long? gateRevision=w.Court?.Events.Any(e=>e.Input.Action==CourtAction.EstablishBarrier)==true?w.CommitSequence+1:null;
+        var path=BranchRoutes.Plan(leg.To,destination,VoyageExpense.PlanningExclusions(w,t,known),w:w,departureAt:leg.EndAt);var after=j.Legs.Take(index+1).Concat(BranchRoutes.Schedule(leg.To,path,leg.EndAt,w,personal:gateRevision!=null,knownRevision:gateRevision)).ToArray();
+        return new(request,w.ElapsedSeconds,leg.EndAt,null,leg.To,j.Legs,after,known,"pending"){BarrierRevision=gateRevision};
     }
     public static void ApplyDue(ContractWorld w){foreach(var d in w.TravelDecisions!.Where(d=>d.AppliedAt==null&&d.EffectiveAt<=w.ElapsedSeconds).ToArray()){
         var t=w.Tasks.Single(t=>t.Id==d.Request.Task);string result;
@@ -36,10 +41,10 @@ public static class TravelControl
     public static void Validate(ContractWorld w){
         var ds=w.TravelDecisions??throw new InvalidDataException("Missing personal decision module");if(ds.Select(d=>d.Request.Id).Distinct().Count()!=ds.Length||ds.Any(d=>w.Requests.Any(r=>r.Id==d.Request.Id)))throw new InvalidDataException("Duplicate personal request");
         foreach(var d in ds){var t=w.Tasks.Single(t=>t.Id==d.Request.Task);if(d.Request.Actor!=w.PlayerControl||t.Executor!=d.Request.Actor||t.Issuer!=d.Request.Actor||t.Action!=ActionKind.Move||d.RequestedAt<t.StartedAt||d.RequestedAt>w.ElapsedSeconds||d.Before.Length==0||d.Before[0].StartAt!=t.StartedAt)throw new InvalidDataException("Invalid personal decision authority/time");
-            for(int i=0;i<d.Before.Length;i++){var l=d.Before[i];var e=BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge);if(l.EndAt!=TravelWorld.End(w,e,l.StartAt)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||i>0&&(l.StartAt!=d.Before[i-1].EndAt||l.From!=d.Before[i-1].To))throw new InvalidDataException("Invalid preserved decision route");}
+            for(int i=0;i<d.Before.Length;i++){var l=d.Before[i];var e=BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge);if(l.EndAt!=TravelWorld.ScheduledEnd(w,e,l)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||i>0&&(l.StartAt!=d.Before[i-1].EndAt||l.From!=d.Before[i-1].To))throw new InvalidDataException("Invalid preserved decision route");}
             var ix=Array.FindIndex(d.Before,l=>d.RequestedAt<l.EndAt);if(ix<0)throw new InvalidDataException("Decision after arrival");var leg=d.Before[ix];var at=d.Request.Destination==null?d.RequestedAt:leg.EndAt;var node=d.Request.Destination==null?leg.From:leg.To;
             var evidenceWorld=ContractJson.Copy(w);evidenceWorld.Knowledge=w.Knowledge.Where(k=>k.LearnedAt<=d.RequestedAt).ToArray();evidenceWorld.Evidence=w.Evidence.Where(e=>e.RecordedAt<=d.RequestedAt).ToArray();if(!Same(d.KnownBlocked,BranchRoutes.KnownBlocked(evidenceWorld,d.Request.Actor)))throw new InvalidDataException("Decision used unknown closure");
-            JourneyLeg[] after;if(d.Request.Destination==null){if(!NationalRoutes.Sea(leg.Edge)||d.RequestedAt>=TravelWorld.Departure(w,leg.Edge,leg.StartAt))throw new InvalidDataException("Cancelled after departure");after=d.Before;}else{var goal=RegionalCampaign.Destination(w,d.Request.Destination.Value);after=[..d.Before.Take(ix+1),..BranchRoutes.Schedule(node,BranchRoutes.Plan(node,goal,VoyageExpense.PlanningExclusions(w,t,d.KnownBlocked),w:w,departureAt:at),at,w)];}
+            JourneyLeg[] after;if(d.Request.Destination==null){if(!NationalRoutes.Sea(leg.Edge)||d.RequestedAt>=TravelWorld.Departure(w,leg.Edge,leg.StartAt))throw new InvalidDataException("Cancelled after departure");after=d.Before;}else{var goal=RegionalCampaign.Destination(w,d.Request.Destination.Value);after=[..d.Before.Take(ix+1),..BranchRoutes.Schedule(node,BranchRoutes.Plan(node,goal,VoyageExpense.PlanningExclusions(w,t,d.KnownBlocked),w:w,departureAt:at),at,w,personal:d.BarrierRevision.HasValue,knownAt:d.RequestedAt,knownRevision:d.BarrierRevision)];}
             if(d.EffectiveAt!=at||d.Node!=node||!Same(d.After,after)||d.AppliedAt==null&&(d.Result!="pending"||d.EffectiveAt<=w.ElapsedSeconds)||d.AppliedAt!=null&&(d.AppliedAt!=d.EffectiveAt||d.AppliedAt>w.ElapsedSeconds||d.Result is not("redirected" or "port-cancelled" or "too-late" or "unavailable")))throw new InvalidDataException("Invalid personal decision result/plan");
             var effects=w.EffectLedger.Where(e=>e.BusinessKey=="personal-travel/"+d.Request.Id.Value).ToArray();if(d.AppliedAt==null?effects.Length!=0:effects.Length!=1||effects[0].BodyHash!=ContractJson.CanonicalHash(d.Request)||effects[0].At!=d.AppliedAt||effects[0].Task!=t.Id||effects[0].Result!=d.Result)throw new InvalidDataException("Personal effect missing/duplicated");
             if(d.Result=="port-cancelled"&&(t.Execution!=ExecutionPhase.Stopped||t.FinishedAt!=d.AppliedAt||t.InternalReason!="port-cancelled"))throw new InvalidDataException("Cancelled trip still active");

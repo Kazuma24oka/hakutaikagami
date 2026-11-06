@@ -56,7 +56,7 @@ public static partial class RegionalCampaign
         // A report sent along a road starts at its actual partial progress, never at a teleported endpoint.
         var j=w.Branches!.Journeys.Last(j=>j.Actor==sender);var task=w.Tasks.Single(t=>t.Id==j.Task);var time=task.FinishedAt??w.ElapsedSeconds;
         var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
-        var progress=Math.Clamp(checked((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed),0,edge.LengthMm);
+        var progress=Math.Clamp(checked((time-TravelWorld.Departure(w,leg))*edge.FootSpeed),0,edge.LengthMm);
         var options=new List<CourierLeg[]>();
         foreach(var option in new[]{(leg.From,progress),(leg.To,edge.LengthMm-progress)})try{
             var end=checked(at+Seconds(option.Item2,edge.CourierSpeed));
@@ -162,6 +162,12 @@ public static partial class RegionalCampaign
     {
         if(!Enabled(w))throw new InvalidOperationException("Regional campaign required");var m=w.Messaging.Messages.Single(m=>m.Id==message);
         if(m.SenderId!=actor.Value||!BranchRoutes.GraphNodes(w).Any(n=>n.Id==destination)||appointment<w.ElapsedSeconds)throw new InvalidDataException("Unknown delivery address");
+        if(m.DeliverySite is {} site && destination==NewGameWorld.Node(site) &&
+            m.Kind is "new-military-notice" or "new-military-request" or "new-military-report"){
+            MessageFlow.Retry(w.Messaging,message,actor.Value,w.ElapsedSeconds,1);
+            Bind(w);
+            return;
+        }
         if(NewGameWork.SupportsRetry(w,m,actor,destination)){MessageFlow.Retry(w.Messaging,message,actor.Value,w.ElapsedSeconds,1);var copy=MessageFlow.Latest(w.Messaging,message);Put(w,New(w,copy,destination,w.ElapsedSeconds+1));return;}
         // A destination is selected from the original known mission; it is never inferred from recipient truth.
         var task=w.Tasks.Single(t=>WorldSession.Child("message",t.Id,"order").Value==message);
@@ -228,7 +234,7 @@ public static partial class RegionalCampaign
     internal static RoutePoint JourneyPointAt(ContractWorld w,BranchJourney j,long at)
     {
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);
-        var progress=Math.Clamp((time-TravelWorld.Departure(w,leg.Edge,leg.StartAt))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
+        var progress=Math.Clamp((time-TravelWorld.Departure(w,leg))*edge.FootSpeed,0,edge.LengthMm);var a=Node(w,leg.From);var b=Node(w,leg.To);
         return new(a.EastMm+(b.EastMm-a.EastMm)*progress/edge.LengthMm,a.NorthMm+(b.NorthMm-a.NorthMm)*progress/edge.LengthMm);
     }
     static RoutePoint DispatchOrigin(ContractWorld w,CourierMission mission,MessageAttempt attempt,MessageEnvelope message)

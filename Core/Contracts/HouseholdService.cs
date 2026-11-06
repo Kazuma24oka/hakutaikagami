@@ -1,6 +1,9 @@
 namespace HakutaiKagami.Core.Contracts;
 public enum HouseholdServiceAction { Release,Pledge,AcceptPledge }
-public sealed record HouseholdServiceInput(EntityId Id,HouseholdServiceAction Action,EntityId Owner,EntityId Other,EntityId? Source=null);
+public sealed record HouseholdServiceInput(EntityId Id,HouseholdServiceAction Action,EntityId Owner,EntityId Other,EntityId? Source=null){
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EntityId? ReformConsent{get;init;}
+}
 public sealed record HouseholdServiceEntry(HouseholdServiceInput Input,EntityId Subject,EntityId Site,long At,long Revision);
 public sealed record HouseholdServiceState(int Schema,string Policy,HouseholdServiceEntry[] Entries);
 public sealed record HouseholdServiceRelease(EntityId Source,EntityId Subject,EntityId Principal,EntityId Other,bool CanRelease);
@@ -32,7 +35,17 @@ public static class HouseholdService
     static bool ReportsReady(ContractWorld w,EntityId subject,EntityId principal,long at,long rev)=>w.Requests.Where(q=>q.Intent.Actor==principal&&q.Intent.Executor==subject&&Before(q.CreatedAt,q.CommitSequence,at,rev)).All(q=>w.Tasks.Any(t=>t.RequestId==q.Id&&t.FinishedAt<=at&&HakutaiKagami.Core.Messaging.MessageFlow.LearnedAt(w.Messaging,WorldSession.Child("message",t.Id,"report").Value,principal.Value) is {} known&&known<=at));
     static HouseholdServiceEntry Make(ContractWorld w,HouseholdServiceInput i,long at,long rev)
     {
-        Need(HouseSuccession.Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&ChangedHouse(w,i.Owner,at,rev-1)&&Owner(w,at,rev-1)==i.Owner&&i.Other!=w.PlayerControl,"当主交代後の同じ家で本人の奉公を個別確認してください");
+        if(i.ReformConsent is {} reference){
+            var consent=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Id==reference && e.Input.Action==CourtAction.ConsentServiceRelease && e.Revision<rev);
+            Need(consent!=null && consent.Input.Person==w.PlayerControl && consent.Input.Owner==i.Owner,"有効な旧主の承諾原本を確認してください");
+            var shown=HouseholdCourt.Events(w).Single(e=>e.Input.Id==consent.Input.Reference);
+            var proposal=HouseholdCourt.Events(w).Single(e=>e.Input.Id==shown.Input.Reference);
+            var prior=Entries(w,at,rev-1).Where(e=>e.Input.ReformConsent==reference).ToArray();
+            Need(i.Action==HouseholdServiceAction.Release && prior.Length==0 && i.Source==consent.Input.FormerOffice && i.Other==consent.Actor ||
+                 i.Action==HouseholdServiceAction.Pledge && prior.Length==1 && prior[0].Input.Action==HouseholdServiceAction.Release &&
+                 i.Other==proposal.Actor,"同じ承諾原本で旧奉公を解いてから、新しい主君と合意してください");
+        }
+        Need(HouseSuccession.Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&(i.ReformConsent!=null||ChangedHouse(w,i.Owner,at,rev-1))&&Owner(w,at,rev-1)==i.Owner&&i.Other!=w.PlayerControl,"当主交代後の同じ家で本人の奉公を個別確認してください");
         var f=HouseSuccession.Factions(w,at,rev-1).Single(f=>f.Id==i.Owner.Value);var site=new EntityId(f.Home);
         Need(Local(w,w.PlayerControl,site,at,rev)&&Local(w,i.Other,site,at,rev)&&!CastleAdministration.Blocked(w,site,at,rev)&&w.Characters.Single(c=>c.Id==i.Other).WillObey,"現地の同意・所在と返納済みの実務を確認してください");
         var bonds=Relations(w,Base(w),at,rev-1);var source=i.Action==HouseholdServiceAction.Release?bonds.SingleOrDefault(b=>b.Id==i.Source&&Active(b,at,rev-1)):Bond(w,at,rev-1);var subject=i.Action==HouseholdServiceAction.Release?source?.Subject??w.PlayerControl:i.Action==HouseholdServiceAction.AcceptPledge?i.Other:w.PlayerControl;Need(Clear(w,subject,at,rev-1),"当事者の返納と未完了実務を確認してください");
