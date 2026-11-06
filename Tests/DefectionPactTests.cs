@@ -199,7 +199,7 @@ public class DefectionPactTests
     {
         for(ulong seed=0;seed<32;seed++)
         {
-            var w=Start(seed);var s=new WorldSession(w);
+            var w=Start(seed,castellan:true);var s=new WorldSession(w);
             EntityId id=new("request:field-pact");
             Assert.Equal(ResultCode.Accepted,s.NegotiatePact(id,Partner,PactPurpose.RiseTogether,s.Revision).Code);
             if(!s.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
@@ -221,6 +221,11 @@ public class DefectionPactTests
             Assert.Contains(before.Units,u=>u.Commander==Actor && u.Soldiers>0);
             Assert.Equal(ResultCode.Accepted,s.SignalPact(id,s.Revision).Code);
             var after=s.DiagnosticSnapshot();
+            var declaration=Assert.Single(after.Declarations!);
+            Assert.Equal(true,declaration.CheckGarrison);
+            Assert.True(CastleHandover.Forces(after,declaration.FormerHouse,declaration.Site,declaration.At,declaration.Revision)>0);
+            Assert.DoesNotContain(after.LandRights,r=>r.Subject==declaration.House && r.Target==declaration.Site);
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
             Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
             Assert.Equal(ContractJson.Write(before.ResourceLots),ContractJson.Write(after.ResourceLots));
             Assert.DoesNotContain(after.Units,u=>u.Organization==after.Declarations!.Single().House);

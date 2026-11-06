@@ -1,7 +1,11 @@
 namespace HakutaiKagami.Core.Contracts;
 
 public sealed record IndependenceDeclaration(EntityId Pact,EntityId Founder,EntityId FormerHouse,EntityId House,
-    EntityId Site,long At,long Revision);
+    EntityId Site,long At,long Revision)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public bool? CheckGarrison {get;init;}
+}
 
 public static class JointIndependence
 {
@@ -71,6 +75,7 @@ public static class JointIndependence
             bool commands=latest!=null ? CastleAdministration.Grant(w,site,at,rev)?.Agent==person :
                 w.Offices.Any(o=>o.Subject==person && o.Target==site && o.Kind=="castellan" && o.From<=at && at<o.Until);
             if(!commands)return;
+            if(d.CheckGarrison==true && CastleHandover.Forces(w,d.FormerHouse,site,at,rev)>0)return;
             var former=rows[index];
             rows[index]=former with{Until=at,Revision=rev};
             rows.Add(former with{Id=InformationSchemes.Id("castle-control",d.Pact.Value+"/"+site.Value),
@@ -86,7 +91,7 @@ public static class JointIndependence
         foreach(var d in rows)
         {
             var p=w.SecretPacts?.SingleOrDefault(p=>p.Id==d.Pact);
-            if(p==null || !p.Accepted || p.Purpose!=PactPurpose.RiseTogether || p.Proposer!=d.Founder ||
+            if(d.CheckGarrison==false || p==null || !p.Accepted || p.Purpose!=PactPurpose.RiseTogether || p.Proposer!=d.Founder ||
                 p.House!=d.FormerHouse || p.Revision>=d.Revision || d.Revision>w.CommitSequence ||
                 d.At<p.At || d.At>w.ElapsedSeconds || d.House!=InformationSchemes.Id("independent-house",p.Id.Value) ||
                 DefectionPacts.HouseAt(w,d.Founder,d.At,d.Revision-1)!=d.FormerHouse ||
