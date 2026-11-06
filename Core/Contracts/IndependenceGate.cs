@@ -22,7 +22,7 @@ public static class IndependenceGate
     public static EntityId? MeetingSite(ContractWorld w,EntityId actor)
     {
         if(SocialWorld.Site(w,actor) is {} site)return site;
-        return w.Declarations?.LastOrDefault(d=>d.CheckGarrison==true && d.Founder==actor &&
+        return (w.Declarations??[]).Concat(LocalClaims(w,w.CommitSequence+1)).LastOrDefault(d=>d.CheckGarrison==true && d.Founder==actor &&
             ReturnedInPerson(w,actor,d.Site,w.ElapsedSeconds,w.CommitSequence+1))?.Site;
     }
     static bool At(ContractWorld w,EntityId actor,IndependenceDeclaration d,long at,long rev)=>
@@ -48,6 +48,10 @@ public static class IndependenceGate
         var d=LocalClaims(w,rev).SingleOrDefault(d=>d.Pact==i.Reference);
         if(d==null || i.Site!=d.Site || site!=d.Site || i.Owner!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,d.At,d.Revision))
             throw new InvalidDataException("旧主家の守備が残った独立原本を指定してください");
+        bool alliedCastellan=HouseholdCourt.Events(w).Any(e=>e.Input.Id==d.Pact && e.Input.Action==CourtAction.JoinDeclaredHouse);
+        if(alliedCastellan && (!JointIndependence.CommandedCastle(w,d.Founder,d.Site,at,rev) ||
+            DefectionPacts.HouseAt(w,d.Founder,at,rev-1)!=d.House))
+            throw new InvalidDataException("引渡しの時点で城を預かる追随城主の立会いが必要です");
         var oldLord=HouseSuccession.Head(w,d.FormerHouse,at,rev-1);
         bool reply=i.Action is CourtAction.AllowIndependentGate or CourtAction.RefuseIndependentGate;
         if(actor!=(reply?oldLord:d.Founder) || i.Person!=(reply?d.Founder:oldLord) || actor==i.Person ||

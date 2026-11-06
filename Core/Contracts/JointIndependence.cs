@@ -15,8 +15,11 @@ public static class JointIndependence
     public sealed record LocalGuard(EntityId Castle,EntityId FormerHouse,bool FormerTroopsPresent,bool ControlsCastle);
     public static LocalGuard? ObserveOwnCastle(ContractWorld w,EntityId observer)
     {
-        var declaration=w.Declarations?.LastOrDefault(d=>d.Founder==observer && d.CheckGarrison==true);
-        if(declaration==null || IndependenceGate.MeetingSite(w,observer)!=declaration.Site ||
+        var present=IndependenceGate.MeetingSite(w,observer);
+        if(present==null)return null;
+        var declaration=IndependenceGate.LocalClaims(w,w.CommitSequence+1).LastOrDefault(d=>d.Founder==observer && d.Site==present)
+            ?? w.Declarations?.LastOrDefault(d=>d.Founder==observer && d.Site==present && d.CheckGarrison==true);
+        if(declaration==null ||
             Assassination.DeadAt(w,observer,w.ElapsedSeconds,w.CommitSequence))return null;
         var site=declaration.Site;
         bool formerTroops=CastleHandover.HasGarrison(w,declaration.FormerHouse,site,w.ElapsedSeconds,w.CommitSequence+1);

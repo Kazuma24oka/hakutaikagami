@@ -385,10 +385,12 @@ public class DefectionPactTests
         Assert.Fail("独立に合意する開始条件がありません");
     }
 
-    [Fact]
-    public void RemoteRetainerAnswersOnlyAfterMeetingAndReading()
+    [Theory]
+    [InlineData(StartTemplate.Retainer)]
+    [InlineData(StartTemplate.Castellan)]
+    public void RemoteRetainerAnswersOnlyAfterMeetingAndReading(StartTemplate role)
     {
-        var contact=NewGameWorldTests.Officer("created:castle-contact",StartTemplate.Retainer,"site:fork","person:nobunaga");
+        var contact=NewGameWorldTests.Officer("created:castle-contact",role,"site:fork","person:nobunaga");
         var recipient=new EntityId(contact.Id);
         for(ulong seed=0;seed<32;seed++){
             var w=Start(seed,castellan:true,other:contact);var session=new WorldSession(w);
@@ -409,7 +411,7 @@ public class DefectionPactTests
                 if(day==0)NewGameWorldTests.At(session,session.Seconds+86400);
             }
             Travel("castle");var before=session.DiagnosticSnapshot();
-            if(Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE") is {Length:>0} file)
+            if(role==StartTemplate.Retainer && Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE") is {Length:>0} file)
                 File.WriteAllBytes(file,ContractJson.Write(before));
             var call=IndependenceLetters.Choices(before,Actor).Single(i=>i.Person==recipient && i.Action==CourtAction.SeekDeclaredSupport);
             var issued=session.ManageCourt(call,session.Revision);Assert.True(issued.Code==ResultCode.Accepted,issued.VisibleReason);
@@ -423,6 +425,12 @@ public class DefectionPactTests
             Assert.Contains(after.ServiceBonds,r=>r.Subject==recipient && r.Target==Actor && r.Until==long.MaxValue);
             Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
             Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
+            var observation=JointIndependence.ObserveOwnCastle(after,recipient);
+            if(role==StartTemplate.Castellan){
+                Assert.NotNull(observation);
+                Assert.Equal(new EntityId("site:fork"),observation.Castle);
+                Assert.False(observation.ControlsCastle);
+            }else Assert.Null(observation);
             var replay=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
             Assert.Equal(ContractJson.Write(after.Memberships),ContractJson.Write(replay.DiagnosticSnapshot().Memberships));
             return;
