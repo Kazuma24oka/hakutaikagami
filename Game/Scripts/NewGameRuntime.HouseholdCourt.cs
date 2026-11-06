@@ -60,6 +60,8 @@ public partial class NewGameRuntime
           foreach(var (answer,_) in SupremeOffice.SupportAnswers(w,true))
               Button(answer.Id.Value,answer.Action==CourtAction.AcceptShogunSupport?"擁立を引き受ける":"擁立の申し出を断る",()=>Run(answer));
           if(CentralMediation.ApplicantHouse(w,actor) is {} sponsorHouse && SupremeOffice.ControlsKyoto(w,actor,sponsorHouse,w.ElapsedSeconds,rev)){
+              if(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,rev) is {} incumbent && incumbent!=actor && SocialWorld.Site(w,incumbent)==site)
+                  Button("expel-shogun","現将軍を京から堺へ追放する",()=>Run(new(Nonce("expel-shogun"),CourtAction.ExpelShogun,incumbent,sponsorHouse,TempleMilitary.Site)));
               foreach(var candidate in w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site)){
                   var key="shogun-support/"+candidate.Id.Value;
                   Button(key,MeritRewards.DisplayName(w,actor,candidate.Id)+"に将軍候補としての支持を申し出る",()=>Run(new(Nonce(key),CourtAction.OfferShogunSupport,candidate.Id,sponsorHouse,site.Value)));

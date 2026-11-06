@@ -27,6 +27,19 @@ public sealed class SupremeOfficeTests
             Assert.Equal(ResultCode.NotAvailable,run.ManageCourt(offer with{Id=new("request:duplicate-offer")},run.Revision).Code);
         }
         Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+        var expel=new CourtInput(new("request:expel"),CourtAction.ExpelShogun,CentralCourtCatalog.Shogun,house,TempleMilitary.Site);
+        var ordered=game.ManageCourt(expel,game.Revision);Assert.True(ordered.Code==ResultCode.Accepted,ordered.VisibleReason);
+        Assert.Equal(CentralCourtCatalog.Shogun,SupremeOffice.ShogunAt(game.DiagnosticSnapshot(),game.Seconds,game.Revision));
+        NewGameWorldTests.At(game,game.Seconds+1);NewGameWorldTests.At(game,game.Seconds+2);
+        var moving=game.DiagnosticSnapshot();
+        var trip=Assert.Single(moving.Branches!.Journeys,j=>j.Actor==CentralCourtCatalog.Shogun);
+        Assert.Null(SupremeOffice.ShogunAt(moving,game.Seconds,game.Revision));
+        var travellingSave=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(moving)));
+        foreach(var run in new[]{game,travellingSave}){
+            NewGameWorldTests.At(run,trip.Legs[^1].EndAt+1);
+            Assert.Equal(TempleMilitary.Site,SocialWorld.Site(run.DiagnosticSnapshot(),CentralCourtCatalog.Shogun));
+        }
+        Assert.Equal(ContractJson.Write(game.DiagnosticSnapshot()),ContractJson.Write(travellingSave.DiagnosticSnapshot()));
     }
     [Fact]
     public void IncumbentCanResignOnceAndVacancySurvivesSave()

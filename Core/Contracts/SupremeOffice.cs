@@ -10,7 +10,7 @@ public static class SupremeOffice
         if(Assassination.DeadAt(w,incumbent,at,revision))return null;
         var resigned=HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.ResignShogun &&
             e.Actor==incumbent && e.At<=at && e.Revision<=revision);
-        return resigned?null:incumbent;
+        return resigned || ShogunExile.Departed(w,incumbent,at,revision)?null:incumbent;
     }
     internal static bool IsSupport(CourtAction a)=>a is CourtAction.OfferShogunSupport or CourtAction.AcceptShogunSupport or CourtAction.DeclineShogunSupport;
     public static bool ControlsKyoto(ContractWorld w,EntityId head,EntityId house,long at,long revision)=>
