@@ -102,6 +102,7 @@ public sealed partial class WorldSession
     internal static bool Permits(ContractWorld s, EntityId actor, Intent i, long at)
     {
         if(HostageCustody.HeldAt(s,i.Executor,at,s.CommitSequence+1)||HostageCustody.HeldAt(s,actor,at,s.CommitSequence+1))return false;
+        if(Assassination.DeadAt(s,i.Executor,at,s.CommitSequence))return false;
         if(!s.Characters.Any(c=>c.Id==actor && c.Life==LifeState.Adult)) return false;
         if(i.Action==ActionKind.Train)return CharacterDevelopment.Enabled(s)&&actor==i.Actor&&actor==i.Executor&&s.Definitions.Sites.Any(x=>x.Id==i.Scope);
         return s.Grants.Any(g=>g.Agent==actor && (g.Scope==i.Scope || NewGameWorld.CompactPersonalScope(s,g,actor,i)) && g.Actions.Contains(i.Action) && g.From<=at && at<g.Until &&

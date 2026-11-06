@@ -56,7 +56,7 @@ public static class ContractValidation
         Check(defs.Sites.All(c => !string.IsNullOrWhiteSpace(c.Name) && c.LatitudeE7 is >= -900000000 and <= 900000000 &&
             c.LongitudeE7 is >= -1800000000 and <= 1800000000), "Invalid geographic anchor.");
         Check(Keys(s.Characters, c => c.Id, "characters").SetEquals(people), "Definition/state mismatch.");
-        Check(people.Contains(s.PlayerControl) && s.Characters.Single(c => c.Id == s.PlayerControl).Life == LifeState.Adult,
+        Check(people.Contains(s.PlayerControl) && (s.Characters.Single(c => c.Id == s.PlayerControl).Life == LifeState.Adult || Assassination.DeadAt(s,s.PlayerControl,s.ElapsedSeconds,s.CommitSequence)),
             "Invalid playable character.");
         Check(s.Characters.All(c => Enum.IsDefined(c.Life) && EntityId.IsValid(c.AppearanceId.Value) && c.Revision >= 0), "Invalid character.");
         var entities = people.Concat(orgs).Concat(sites).ToHashSet();

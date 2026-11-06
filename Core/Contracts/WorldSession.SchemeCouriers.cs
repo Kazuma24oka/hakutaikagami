@@ -7,6 +7,7 @@ public sealed partial class WorldSession
  {
   if(drivingSchemes||state.Schemes==null)return;drivingSchemes=true;
   try{foreach(var mission in InformationSchemes.Events(state).Where(e=>e.Input.Action==SchemeAction.SendScout).ToArray()){
+   if(!InformationSchemes.CanActNow(state,mission.Input.Person))continue;
    var move=mission.Movement!;
    if(!state.Requests.Any(r=>r.Id==move.RequestId)&&!InformationSchemes.Events(state).Any(e=>e.Input.Reference==mission.Input.Id&&e.Input.Action==SchemeAction.ScoutBlocked)){
     var result=Submit(move,state.CommitSequence);if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted))Change(w=>InformationSchemes.Add(w,new(InformationSchemes.Id("blocked",mission.Input.Id.Value),SchemeAction.ScoutBlocked,mission.Input.Person,mission.Input.Person,Reference:mission.Input.Id),mission.Input.Person,mission.Site));
