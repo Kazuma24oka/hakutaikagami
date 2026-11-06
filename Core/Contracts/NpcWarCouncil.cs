@@ -12,11 +12,11 @@ public static class NpcWarCouncil
             if(visible.Attacking && w.Units.Any(u=>u.Army==visible.Army && attackers.Contains(u.Id))) yield return visible;
     }
 
-    internal static void Consider(ContractWorld world)
+    internal static IEnumerable<(FactionStanceInput Decision, EntityId Head)> Choices(ContractWorld world)
     {
         if (world.WorldClashes?.Steps.LastOrDefault() is not {} step || step.At != world.ElapsedSeconds ||
             step.Result.Strikes.Length == 0 || !CharacterRelations.Enabled(world) || !MilitaryEconomy.Enabled(world) ||
-            !NpcArmies.Enabled(world) || !NpcArmies.Musters(world).Any()) return;
+            !NpcArmies.Enabled(world) || !NpcArmies.Musters(world).Any()) yield break;
         long at=world.ElapsedSeconds;
         foreach (var house in HouseSuccession.Factions(world))
         {
@@ -38,10 +38,20 @@ public static class NpcWarCouncil
                 if (defenders<=0 || defenders*(150L+ambition)<sight.Soldiers*(100L+caution)) continue;
                 var id=HouseholdCourt.Id("border-defense",owner.Value+"/"+sight.Army.Value);
                 if (FactionStances.OwnIdUsed(world,id)) continue;
-                var decision=new FactionStanceInput(id,FactionStanceAction.DeclareHostile,owner,sight.Owner,at,checked(at+7*86400));
-                TransactionalWorld.TryApply(world,copy=>FactionStances.Apply(copy,decision,head));
+                var decision=new FactionStanceInput(id,FactionStanceAction.DeclareHostile,owner,sight.Owner,checked(at+1),checked(at+7*86400));
+                yield return (decision,head);
                 break;
             }
         }
+    }
+}
+
+public sealed partial class WorldSession
+{
+    // 観測元の戦闘と、その後の政治判断は別々の版で確定する。
+    void ConsiderObservedWar()
+    {
+        foreach (var choice in NpcWarCouncil.Choices(state).ToArray())
+            Change(w=>FactionStances.Apply(w,choice.Decision,choice.Head));
     }
 }

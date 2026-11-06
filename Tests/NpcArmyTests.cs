@@ -149,6 +149,74 @@ public sealed class NpcArmyTests
     {
         var s=AtActualContact();var w=s.DiagnosticSnapshot();var before=ContractJson.Write(w);var snapshot=WorldEngagement.Snapshot(w);var contact=WorldEngagement.Resolve(w);Assert.Equal(6,snapshot.Units.Length);Assert.NotEmpty(contact.Strikes);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.Mission);Assert.Contains(contact.Strikes,h=>h.Basis==EngagementBasis.ImmediateDefense);Assert.NotEmpty(contact.Losses);Assert.All(snapshot.Units,u=>Assert.Contains(u.Unit,w.Units));Assert.DoesNotContain(snapshot.Units,u=>NewGameMilitary.ExerciseIds.Contains(u.Unit.Id));Assert.Equal(before,ContractJson.Write(w));
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RetainersLordDecidesAfterTheActualAttackAtHisHome(bool alreadyDeclared)
+    {
+        var attacker=NewGameWorldTests.Officer("created:raider",StartTemplate.Daimyo,"site:ishiyama");
+        var defender=NewGameWorldTests.Officer("created:defender",StartTemplate.Daimyo,"site:sakai");
+        var officer=NewGameWorldTests.Officer("created:defense-officer",StartTemplate.Retainer,defender.Site,defender.Id);
+        EntityId enemy=new("org:raiders"),home=new("org:defenders");
+        var setup=NewGameWorldTests.Setup([attacker,defender,officer],[new(attacker.Id,enemy.Value,[attacker.Site],false),new(defender.Id,home.Value,[defender.Site],false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,officer.Id,42,worldArmyPolicy:NpcArmies.CompactCombatPolicy,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:MilitaryEconomy.Policy,
+            companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy);
+        w.CommitSequence++;
+        FactionStances.Apply(w,new(new("decision:march-sakai"),FactionStanceAction.DeclareHostile,enemy,home,0,1000000),new(attacker.Id));
+        var s=new WorldSession(w);
+        void Advance(long at)=>NewGameWorldTests.At(s,at);
+        void Military(NewMilitaryAction action,long amount=0)
+        {
+            var source=s.DiagnosticSnapshot();
+            var input=new NewMilitaryInput(new("request:home-defense/"+action),action,amount);
+            if(action==NewMilitaryAction.Request)input=input with {AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract,FromLedger=NewGameMilitary.SourceForCurrentHouse(source),CycleContract=NewGameMilitary.CycleForCurrentHouse(source)};
+            var result=s.DecideNewMilitary(input,s.PlayerControl,s.Revision);
+            Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        }
+        void Read(){Advance(s.Seconds+2);foreach(var mail in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null))s.Open(s.PlayerControl,mail.Id,s.Revision);}
+        Advance(3);
+        var march=Assert.Single(s.DiagnosticSnapshot().Branches!.Journeys,j=>j.Actor.Value==attacker.Id);
+        Advance(march.Legs[^1].EndAt+1);
+        Military(NewMilitaryAction.Request);Read();Military(NewMilitaryAction.Accept);Read();Military(NewMilitaryAction.Pickup);
+        var fund=s.ManageMilitaryRice(new(new("request:defense-rice"),NewGameMilitary.DepotFor(s.DiagnosticSnapshot()),2),s.PlayerControl,s.Revision);
+        Assert.True(fund.Code==ResultCode.Accepted,fund.VisibleReason);
+        if(alreadyDeclared)
+        {
+            var declared=s.DiagnosticSnapshot();
+            declared.CommitSequence++;
+            FactionStances.Apply(declared,new(new("decision:existing-defense"),FactionStanceAction.DeclareHostile,home,enemy,declared.ElapsedSeconds,declared.ElapsedSeconds+1000000),new(defender.Id));
+            s=new WorldSession(declared);
+        }
+        Military(NewMilitaryAction.Load,100000);Military(NewMilitaryAction.Deploy);
+        s.SetPaused(true);
+        var dir=Directory.CreateTempSubdirectory("hakutai-war-council-");
+        try
+        {
+            var store=new GenerationSaveStore(dir.FullName,w.Definitions);
+            Assert.True(store.Save(s,"before-attack",w.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(w));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("before-attack"),host.Current,host.Current.Revision));
+            foreach(var run in new[]{s,host.Current})
+            {
+                NewGameWorldTests.At(run,run.Seconds+1);
+                var after=run.DiagnosticSnapshot();
+                var battle=after.WorldClashes!.Steps.Last();
+                Assert.NotEmpty(battle.Result.Strikes);
+                var decision=after.FactionStances!.Decisions.SingleOrDefault(d=>d.Authority.Issuer.Value==defender.Id && d.Input.Target==enemy);
+                if(alreadyDeclared) Assert.Equal("decision:existing-defense",decision?.Input.Id.Value);
+                else
+                {
+                    Assert.NotNull(decision);
+                    Assert.True(decision.Revision>battle.Revision);
+                    Assert.Equal(battle.At+1,decision.Input.EffectiveAt);
+                }
+            }
+            Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+        }
+        finally {dir.Delete(true);}
+    }
+
     [Fact]
     public void InitiatingArmyIsKnownOnlyAtTheObservedClash()
     {

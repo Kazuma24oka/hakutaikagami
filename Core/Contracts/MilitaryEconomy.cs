@@ -27,7 +27,7 @@ public static class MilitaryEconomy
     internal static long LaborSeconds(ContractWorld w,EntityId site,long from,long until,long rev)=>!Enabled(w)?0:checked(PrivateRecruitment.LaborSeconds(w,site,from,until,rev)+Windows(w).Where(q=>q.Site==site&&VisibleWindow(q,rev)).Sum(q=>Math.Max(0,Math.Min(until,End(q,rev)??until)-Math.Max(from,q.From)))*SupportWorkers);
     internal static void CheckPickup(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return;var a=CommunityEconomy.AccountAt(w,site,at,rev);Need(a.Workforce-a.Reserved>=SupportWorkers,"地域の補給支援20人を確保できません");}
     internal static bool CanMuster(ContractWorld w,EntityId site,long at,long rev)
-    {if(!Enabled(w))return true;var a=CommunityEconomy.AccountAt(w,site,at,rev);return a.Workforce-a.Reserved>=SupportWorkers&&a.HouseRice-HouseSalary.Reserved(w,site,at,rev)>=NpcRiceKg;}
+    {if(!Enabled(w))return true;if(!CommunityEconomy.SitesFor(w).Contains(site))return false;var a=CommunityEconomy.AccountAt(w,site,at,rev);return a.Workforce-a.Reserved>=SupportWorkers&&a.HouseRice-HouseSalary.Reserved(w,site,at,rev)>=NpcRiceKg;}
     static MilitaryDepotRef Binding(ContractWorld w,EntityId depot,long? at=null,long? rev=null)=>NewGameMilitary.SupplyBinding(w,depot,at,rev)??NpcArmies.SupplyBinding(w,depot,at,rev)??throw new InvalidDataException("元の軍用倉がありません");
     internal static long DepotAt(ContractWorld w,EntityId depot,long at,long rev,bool correlatedReturn=false)
     {var b=Binding(w,depot);return checked(InitialStock(w)+Credit(w,depot,at,rev)+(b.Player!=null?NewGameMilitary.DepotNetAt(w,b.Player,at,rev):NpcArmies.DepotNetAt(w,b.Npc!,at,rev,correlatedReturn)));}
