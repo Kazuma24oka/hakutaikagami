@@ -153,7 +153,14 @@ public sealed class CentralMediationTests
                 var known=run.DiagnosticSnapshot();
                 Assert.True(PeaceMediation.KnowsRefusal(known,recipient,owner,target,run.Seconds,run.Revision));
                 Assert.False(PeaceMediation.KnowsRefusal(known,CentralCourtCatalog.Shogun,owner,target,run.Seconds,run.Revision));
-                _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(known)));
+                var restoredNotice=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(known))).DiagnosticSnapshot();
+                var report=Assert.Single(PeaceMediation.KnownRefusals(restoredNotice,recipient,owner,target,run.Seconds,run.Revision));
+                var declaration=new FactionStanceInput(new("decision:cite-refusal"),FactionStanceAction.DeclareHostile,target,owner,
+                    run.Seconds,run.Seconds+TruceNegotiations.Day){RefusalReport=report};
+                Assert.Throws<InvalidDataException>(()=>FactionStances.Apply(restoredNotice,declaration with{RefusalReport=new("request:unrelated")},recipient));
+                FactionStances.Apply(restoredNotice,declaration,recipient);
+                Assert.Equal(report,FactionStances.ClaimAt(restoredNotice,target,owner,run.Seconds,run.Revision)!.RefusalReport);
+                Assert.Equal(report,Assert.Single(FactionStances.KnownOwnDeclarations(restoredNotice,recipient),c=>c.Declaration==declaration.Id).RefusalReport);
             }
             if(agree){
                 var certificate=settled.Messaging.Messages.Single(m=>m.Kind==PeaceMediation.Certificate && m.RecipientId==run.PlayerControl.Value);

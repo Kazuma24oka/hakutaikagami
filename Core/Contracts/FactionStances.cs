@@ -2,13 +2,21 @@ namespace HakutaiKagami.Core.Contracts;
 
 public enum FactionStanceAction { DeclareHostile, WithdrawOwnDeclaration }
 public sealed record FactionStanceInput(EntityId Id,FactionStanceAction Action,EntityId Owner,EntityId Target,
-    long EffectiveAt,long Until,EntityId? Original=null);
+    long EffectiveAt,long Until,EntityId? Original=null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EntityId? RefusalReport {get;init;}
+}
 public sealed record FactionStanceAuthority(EntityId Issuer,EntityId Owner,EntityId Home,
     EntityId Membership,EntityId Office,EntityId Control,long At,long Revision);
 public sealed record FactionStanceDecision(FactionStanceInput Input,long At,long Revision,FactionStanceAuthority Authority);
 public sealed record FactionStanceState(int Schema,string Contract,FactionStanceDecision[] Decisions);
 public sealed record FactionStanceClaim(EntityId Declaration,EntityId FromOwner,EntityId ToOwner,
-    long EffectiveFrom,long Until,long ObservedAt);
+    long EffectiveFrom,long Until,long ObservedAt)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EntityId? RefusalReport {get;init;}
+}
 
 // An owner's declared hostile intent is world truth, not a bilateral treaty, received order,
 // global knowledge, or permission to spawn armies. Ending one's own declaration does not end
@@ -58,6 +66,9 @@ public static class FactionStances
             "敵対意思の操作・対象・効力時刻が不正です");
         Need(!OtherIdUsed(w,input.Id)&&!prior.Any(d=>d.Input.Id==input.Id),"別の操作で使ったIDです");
         Need(ResolveAuthority(w,issuer,input.Owner,at,revision)!=null,"その家の政治判断を行う当主権限がありません");
+        if(input.RefusalReport is {} report)
+            Need(input.Action==FactionStanceAction.DeclareHostile && PeaceMediation.KnownRefusals(w,issuer,input.Target,input.Owner,at,revision).Contains(report),
+                "対象の家が仲裁を拒否したことを本人が確認できる原本が必要です");
         if(input.Action==FactionStanceAction.DeclareHostile){
             Need(input.Original==null&&input.Until>input.EffectiveAt,"敵対意思の期間が不正です");
             Need(!OverlapsDeclaration(prior,input),"同じ期間の敵対意思はすでに記録されています");
@@ -88,7 +99,7 @@ public static class FactionStances
     {
         Need(at>=0&&at<=w.ElapsedSeconds&&revision>=0&&revision<=w.CommitSequence,"未確定の敵対情報は参照しません");var all=At(w,at,revision);var d=all.SingleOrDefault(d=>d.Input.Action==FactionStanceAction.DeclareHostile&&
             d.Input.Owner==owner&&d.Input.Target==target&&d.Input.EffectiveAt<=at&&at<End(d,all));
-        return d==null?null:new(d.Input.Id,owner,target,d.Input.EffectiveAt,End(d,all),at);
+        return d==null?null:new(d.Input.Id,owner,target,d.Input.EffectiveAt,End(d,all),at){RefusalReport=d.Input.RefusalReport};
     }
     // Membership alone never reveals the head's decision. Physical reports/permission quotations
     // are added separately; this first path knows only one's own political decisions.
@@ -99,7 +110,7 @@ public static class FactionStances
     public static FactionStanceClaim[] OwnAt(ContractWorld w,EntityId observer,long at,long revision)
     {
         Need(at>=0&&at<=w.ElapsedSeconds&&revision>=0&&revision<=w.CommitSequence,"未確定の政治情報は参照しません");var own=At(w,at,revision).Where(d=>d.Authority.Issuer==observer).ToArray();
-        return own.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile).Select(d=>new FactionStanceClaim(d.Input.Id,d.Input.Owner,d.Input.Target,d.Input.EffectiveAt,End(d,own),at)).ToArray();
+        return own.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile).Select(d=>new FactionStanceClaim(d.Input.Id,d.Input.Owner,d.Input.Target,d.Input.EffectiveAt,End(d,own),at){RefusalReport=d.Input.RefusalReport}).ToArray();
     }
     internal static long? NextBoundary(ContractWorld w,long target)=>At(w,w.ElapsedSeconds,w.CommitSequence)
         .SelectMany(d=>new[]{d.Input.EffectiveAt,d.Input.Until}).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();

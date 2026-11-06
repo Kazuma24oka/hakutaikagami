@@ -122,10 +122,12 @@ public static class PeaceMediation
         return new(HouseholdCourt.Id("peace-refusal-notice",report.Input.Id.Value).Value,report.Input.Id.Value,RefusalNotice,report.Actor.Value,other.Head,
             report.Input.Owner.Value+"は"+report.Input.Amount+"日間の不戦仲裁案を拒否した。",other.Home,report.At){DeliverySite=other.Home};
     }
-    public static bool KnowsRefusal(ContractWorld w,EntityId observer,EntityId refusing,EntityId opposing,long at,long rev)=>
-        HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.ReportPeaceRefusal && e.Input.Owner==refusing && e.Input.OtherHouse==opposing &&
+    public static IEnumerable<EntityId> KnownRefusals(ContractWorld w,EntityId observer,EntityId refusing,EntityId opposing,long at,long rev)=>
+        HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ReportPeaceRefusal && e.Input.Owner==refusing && e.Input.OtherHouse==opposing &&
             e.At<=at && e.Revision<=rev && (e.Actor==observer || e.Input.Person==observer ||
-            MessageFlow.LearnedAt(w.Messaging,RefusalLetter(w,e).Id,observer.Value) is {} learned && learned<=at)); 
+            MessageFlow.LearnedAt(w.Messaging,RefusalLetter(w,e).Id,observer.Value) is {} learned && learned<=at)).Select(e=>e.Input.Id);
+    public static bool KnowsRefusal(ContractWorld w,EntityId observer,EntityId refusing,EntityId opposing,long at,long rev)=>
+        KnownRefusals(w,observer,refusing,opposing,at,rev).Any(); 
     static CourtInput Agreement(CourtEvent source)=>source.Input with{Id=HouseholdCourt.Id("peace-agreement",source.Input.Id.Value),
         Action=CourtAction.CertifyPeaceAgreement,Reference=source.Input.Id};
     static void CheckAgreement(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long rev)
