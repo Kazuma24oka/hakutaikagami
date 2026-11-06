@@ -179,7 +179,7 @@ public sealed partial class WorldSession
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
-                    TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
+                    HeirPledges.Receive(s);TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
                     if(!WorldTimeControl.Enabled(s)&&s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);

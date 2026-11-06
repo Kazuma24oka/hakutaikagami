@@ -96,6 +96,34 @@ public sealed class AdultMarriageTests
     }
     [Fact]public void UnknownAuthoringStatusIsNotAssumedUnmarried(){var s=Start(declared:false);Assert.DoesNotContain(Other,AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose).Code);}
     [Fact]public void HistoricalSpouseDataIsNotInvented(){var s=Start();Assert.DoesNotContain(new EntityId("person:nobunaga"),AdultMarriage.Candidates(s.DiagnosticSnapshot()));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose,other:new("person:nobunaga")).Code);}
+    [Fact]
+    public void TwoHouseConnectionRequiresImplementedMarriage()
+    {
+        var first=Officer(Player.Value) with{Role=StartTemplate.Daimyo,FactionName="鏡山家"};
+        var second=Officer(Other.Value) with{Role=StartTemplate.Retainer,Lord="person:shingen",Site="site:kofu"};
+        var setup=NewGameWorldTests.Setup([first,second],[new(first.Id,"org:created-test",[first.Site],false)]);
+        var s=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,Player.Value,Yes.Value,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+            socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:AdultMarriage.Policy));
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:wedding-journey","kofu"),s.Revision).Code);
+        At(s,2);At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);
+        var original=Propose(s);At(s,s.Seconds+1);
+        var permission=Act(s,MarriageAction.ApproveHouse,original,new("org:created-test"));
+        Assert.True(permission.Code==ResultCode.Accepted,permission.VisibleReason);
+        var before=s.DiagnosticSnapshot();
+        Assert.Empty(HeirDesignation.WitnessedConnections(before));
+        var result=Act(s,MarriageAction.Implement,original);
+        Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var after=s.DiagnosticSnapshot();
+        var connection=Assert.Single(HeirDesignation.WitnessedConnections(after));
+        Assert.Equal(original,connection.Original);
+        Assert.NotEqual(connection.FirstHouse,connection.SecondHouse);
+        Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
+        Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
+        Assert.Equal(connection,Assert.Single(HeirDesignation.WitnessedConnections(new WorldSession(
+            ContractJson.Read<ContractWorld>(ContractJson.Write(after))).DiagnosticSnapshot())));
+    }
     [Fact]public void OldPolicyDoesNotGainMarriage(){var s=Start(on:false);Assert.Null(s.DiagnosticSnapshot().Marriage);Assert.DoesNotContain("MarriagePolicy",System.Text.Encoding.UTF8.GetString(ContractJson.Write(s.DiagnosticSnapshot())));Assert.Equal(ResultCode.NotAvailable,Act(s,MarriageAction.Propose).Code);}
     [Fact]public void OldRegisteredDataRoundTripsWithoutDeclaration(){var p=NewGameWorldTests.Officer();var bytes=ContractJson.Write(p);Assert.DoesNotContain("InitialMaritalStatus",System.Text.Encoding.UTF8.GetString(bytes));Assert.Equal(bytes,ContractJson.Write(ContractJson.Read<RegisteredOfficer>(bytes)));}
     [Fact]public void DeclarationSurvivesLibraryImportIndependentCopyAndDisk(){var p=Officer(Player.Value);var lib=OfficerLibraryStore.Import(new(1,[],[new("group:test","別設定",[])]),new(1,[p],[]));lib=NewGameSetup.CopyToGroup(lib,p.Id,"group:test","created:copy");var store=new OfficerLibraryStore(Path.Combine(Path.GetTempPath(),"marriage-library-"+Guid.NewGuid().ToString("N")));store.Save(lib,null);var loaded=store.Load();Assert.Equal(InitialMaritalStatus.Unmarried,loaded.Groups[0].Officers[0].InitialMaritalStatus);Assert.Equal(ContractJson.Write(lib),ContractJson.Write(loaded));loaded=loaded with{Ungrouped=[p with{InitialMaritalStatus=null}]};Assert.Equal(InitialMaritalStatus.Unmarried,loaded.Groups[0].Officers[0].InitialMaritalStatus);}

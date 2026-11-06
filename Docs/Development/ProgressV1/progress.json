@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "d95fae27f14e00209f1345b63732fb93fe30067684761926f32a6ec580fec4f2",
+    "Docs/Development/ProgressV1/estimate.json": "79257e68150c2bf8b2bb1c1f1e777569a9521bd82a5d3c42d9e30e291f9af9ae",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "a062a563449fa42c5f8ad6570d2e209df26bbfc32c1b43e44db925ece64e2928",
+    "Scripts/check_progress_report.py": "04f5d268006c79927ce655146ec95d81aae8a89c40bd161acb9b1231a2b0c3c4",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "42ae0898b2dcfc8ead4796e4b23d0a030f85ce99ea848fd4a20996c649e5b1bb",
+    "Scripts/check_approval_batch.py": "65cd038b53430e2fb61528a4688570d94b267f4b21722ab737630e687fd8f410",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,14 +121,14 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "f99bcbf7389adbc25c4fec39e2d63767a3c02675f62121dabdaa9c5ef9432f52",
+    "Docs/Development/CURRENT_STAGE.md": "a98d8e7eb6f8bdf6ccb9853e74614d3fc61987995e1d6714be1e26c4407e2540",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "bb141ec2b6fc9419b3841d78f89e1cda8703d10c7a0b9435a0dbd98289fc9787",
     "Core/Contracts/NewGameWorld.cs": "56e2e8dddb9d5a987a38da4e30b6d2e0673542284d35dbc194747e9bc1819e08",
     "Core/Contracts/HouseSalary.cs": "37102ef021ce1554831c2445d3531b09ae7ce1d85d12e101ed16fe76286d0fe0",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",
-    "Game/Scripts/NewGameRuntime.HouseSuccession.cs": "4a19edfb0253408ec8589b297cb9d1ba920cb05320cc8d06f344b9989fc592b5",
+    "Game/Scripts/NewGameRuntime.HouseSuccession.cs": "828b8f53400b63186de3f9b9e8fead747758e13c3d4deba038bb649ecee5566d",
     "Docs/Design/HouseSuccessionV1/verification.json": "585ba32759f9771fe35841c7806e377881ab353887d6152ca640f2679a9251ba",
     "Docs/Design/HouseSuccessionV1/completion.json": "178269fa03ad774219a6728d3e8a945a7306288c574f81be94c298ad15d60aad",
     "Docs/Design/HouseSuccessionV1/README.md": "4d660c201089473527288cdd7ac9f76f0e3e884c63b0de77cc01c65ee65e2bb6",
@@ -183,7 +183,7 @@
     "Core/Contracts/TruceConfirmations.cs": "203ae363acbd6be57a299c53de4d2cd18ef85c018b3688ba0946d78ab3b71adf",
     "Core/Contracts/TruceConfirmations.ReportRetries.cs": "30066fe0cddaf5b43f7714d3ede0f549f32dd7b4f4ff17faafb752a372eeb48c",
     "Core/Contracts/CourierRecovery.cs": "77d34edfc0198c258ca9170076dea4abfb59304db5c46e691fa20c8938419e31",
-    "Core/Contracts/WorldSession.cs": "53842e7a49a78dd7bf7e6c478ac25d92f4b5698381c6e1337424d617e97d1a5b",
+    "Core/Contracts/WorldSession.cs": "325b6ab6688fd74fb39ef61cf7d56322748581b47a82d8e43905d8e7eec7a23d",
     "Tests/TruceConfirmationTests.cs": "d2207c87825dfdfaa7558d4568f2368ea6c2ff16df7a5d77880c73bc2b1c2431",
     "Game/Scripts/NewGameRuntime.TruceConfirmations.cs": "03e228ac0696a65b4b9196a8591949a49045c22dcd69ccd8e8d61f3f278fcfea",
     "Game/Scripts/NewGameRuntime.Mail.cs": "d8c7a817571f2cafd1ff2818be9e815c2668b81817fa7e06af2d67462e69b711",
@@ -289,8 +289,8 @@
     "Docs/Design/CharacterRelationsV1/legacy-sources.json": "310d3c25146280bcd390c83a33318a19753ad71b35c64e76953233d249694c6c",
     "Docs/Development/ProgressV1/approval-baseline-v37.json": "999bd8479c2747de46da7505edcef6feeceeae1ab10ebbbe2749760d6ae0f203",
     "Scripts/verify_character_relations.py": "454635406cd8e482836c36a1215d84a6f4ef1bbef697d45f2aaf870cdb13761e",
-    "Core/Contracts/AdultAdoption.cs": "7ef5705c849daf9c38ec013d8b5f797e70af3b22e79bdf0665e06f313a343bf5",
-    "Tests/AdultAdoptionTests.cs": "d2dd2a7bd52f4012e5d1e6f5ad89fcdf032301ac1566345d6a0e7bd8a1c3939a",
+    "Core/Contracts/AdultAdoption.cs": "c5c6172ff666a274184108f14c231ed68cfd9f4bc1a812a4c57d909c87ead679",
+    "Tests/AdultAdoptionTests.cs": "d35a768868c4502001eae092652c2e0d9c3630ad32b50987f53d9906cc2b42f3",
     "Game/Scripts/NewGameRuntime.Adoption.cs": "192a65e2ebe10baa33d59512211c241dadd6a41cf024ba76b9583d12042be1c1",
     "Docs/Design/AdultAdoptionV1/verification.json": "81ae850bdf0a33538ae7eea93ed7dfa392a16362502b1faec66c421537188cac",
     "Docs/Design/AdultAdoptionV1/completion.json": "38a2232d1c2ce879514b342644d2596e5d06b9b80edffae8280ec97a7fbc29ff",
@@ -300,9 +300,9 @@
     "Docs/Development/ProgressV1/approval-baseline-v38.json": "d7c16b1047f735ccd826f54af0f55e3b87acd4c233ad9f8db582eeb6cb7f8bdc",
     "Scripts/verify_adult_adoption.py": "9ecd64b1d0b076560834d9554d51509b144cfe2cffa5d8f4aeba6b3abc45883a",
     "Core/Contracts/AdultMarriage.cs": "789e1d494c24c32670f1102364013ffc16a6183e9cd7062de52998131ae62315",
-    "Core/Contracts/FamilyConsentRules.cs": "bcb1b6fdc008453d9dda1bcb8f8a6f00bacc753b2ac0fed6e1736b1ab144e5c3",
-    "Tests/AdultMarriageTests.cs": "35c43f882ced4f2d793ea295bd38bff905df064b8c92eecba9888a0df5793d2f",
-    "Game/Scripts/NewGameRuntime.Marriage.cs": "3fdd879a37ae5347c37044af61e567e4938f7daf17f6cd88e83e77ba1e87493c",
+    "Core/Contracts/FamilyConsentRules.cs": "e7bd4c6a0c7694c7448b2b78095b6a748e62c3eec67501b7f0ea5a3375e6d8d0",
+    "Tests/AdultMarriageTests.cs": "a648db7f2826f42aca1d0bcdabdbeaaa21444954d34e02bd433d68f23419373c",
+    "Game/Scripts/NewGameRuntime.Marriage.cs": "f8546e440407a02e805efca2fdf719584b9d6b24ea41c67bd3a580f0a0e5a4a6",
     "Docs/Design/AdultMarriageV1/verification.json": "a3f28ce7f59ffd26ea1bae6b777ad5434bba0bab896200934005feb012f865c2",
     "Docs/Design/AdultMarriageV1/completion.json": "f3a03841f0ce2a6ec8591bdb291592e729be0f08b983a10432bbcbc2060298eb",
     "Docs/Design/AdultMarriageV1/integration.json": "fd541e750f1dadee0f949528b10c967cff64ef9e8de6b959bab8b7a0abd89d1e",
@@ -311,7 +311,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v39.json": "b02330d69ede4625f6831df7d5323c84f307aa331b0bf8125866eedb6f15b917",
     "Scripts/verify_adult_marriage.py": "61430a9386fb68a645b2465fc5824ef8a49f21d9dc6cee90cfc8131596f765bd",
     "Core/Contracts/HostageCustody.cs": "8fbd3d167cc53be1dc7d96b87ebe63d1558fa08a515aed283dab8249ced123fd",
-    "Core/Contracts/ContractValidation.cs": "bf6d4521df4df707c7ae4f769c95cfaba0f587878cd2bd641cff03f17f388b7e",
+    "Core/Contracts/ContractValidation.cs": "952245316c79ba0f81ec60c39368361b2e13d477ab65c4d6807bff22ffa571dc",
     "Tests/HostageCustodyTests.cs": "789842f58e12850257e5d66917a0dc844b1937bdaf64ed9ae92deb435d06c375",
     "Game/Scripts/NewGameRuntime.Custody.cs": "748b30b7902bf9485da317da4ff12269473ee70305b4b3d6c040a04f2b38f886",
     "Docs/Design/HostageCustodyV1/verification.json": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "f97a9f710f55a05bce5290188b0d17d1e083c85024590b2120c84a25adf1160b",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "6aa460a01af779188c38c77e92e80ef26e8ec99f2a4dcf647048922bf5c0d584",
+    "Core/Contracts/ContractJson.cs": "0053f43a3d959ed4c22b4aa66afc0ca0c9036d0e3b8ad306567ab160a66567b2",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -720,9 +720,19 @@
     "Docs/Design/FamilyLifeV1/scope.md": "1c6fbcea772fdb554ae4772ad261f2f20919bc19370ac0759471c499729c7221",
     "Docs/Design/FamilyLifeV1/README.md": "b367d19edba7b0c10ece93b9ded1aaa55a3257af4c4431ab9a5a298fac7d09fc",
     "Docs/Design/FamilyLifeV1/completion.json": "c515eb4e5f57ffe39b4713ca52a64bb731e747def99312e821f9ada5ab3ce246",
-    "Docs/Design/FamilyLifeV1/integration.json": "7d91f9fb4fa4ad306e6fe73bcf763beceb78618485d595fb2226897444c94271",
+    "Docs/Design/FamilyLifeV1/integration.json": "830113c8a96cbfb313aa554bce9f88caebbe680bd7db82d02112e59cf2947fd4",
     "Scripts/verify_family_life.py": "b65ebb12d0f6751eeb0d957c925d8fd4db61fb154aca1a8e00a2e162b6310722",
-    "Docs/Development/ProgressV1/approval-baseline-v75.json": "17c7a2e9b9fc01c78e4979d737e58c21f4bd053e6fb35e3166f57df4a2559570"
+    "Docs/Development/ProgressV1/approval-baseline-v75.json": "17c7a2e9b9fc01c78e4979d737e58c21f4bd053e6fb35e3166f57df4a2559570",
+    "Core/Contracts/HeirDesignation.cs": "a7ddded0bc2e1e7b7292554e4b06da4a44496b05802e6dfc099b7d332bdc6aa0",
+    "Core/Contracts/HeirPledges.cs": "bcd23c082448d89a7f0156e4f12e8f1d0a650ccec1ee676b3c79b422f4ae3da2",
+    "Game/Scripts/HeirPledgeCheck.cs": "18e638d25ba823f458acacdae4dfba902c04d3ef91fd228cf19b065c40a29af9",
+    "Docs/Design/HeirDesignationV1/verification.json": "87d7d877334b0213ded8cbda1a83d5fbdc369d3b52f8064f3074b42b45ddf577",
+    "Docs/Design/HeirDesignationV1/scope.md": "4107dbb3bb6c6ceec479aef557d822a17ee970d46eee7f00f283270c04bc7c9c",
+    "Docs/Design/HeirDesignationV1/README.md": "d249cadc4bffe3ee5c046476ef732d555de13deb773ab21f264ae377cb0aa730",
+    "Docs/Design/HeirDesignationV1/completion.json": "187a2c883241b5823429e5315c43efaf4dc61b5e21503c5ff2392037e376e96e",
+    "Docs/Design/HeirDesignationV1/integration.json": "5091c5a392580bf34fef8891e1d045765858c6e8f7f9a01d0fce07001a41b3ba",
+    "Scripts/verify_heir_designation.py": "89172eb6d7d30f1951351a137833c24fa15a9f6f1989540a8669073d3da63c9e",
+    "Docs/Development/ProgressV1/approval-baseline-v76.json": "ac8b53e16f7e3bb9f4fc95f55abfcbe9812d07d9951778f4fedaf992beeec510"
   },
   "items": [
     {
@@ -2620,7 +2630,7 @@
     {
       "id": "BD-43",
       "status": "design_only",
-      "existing": "婚姻/養子の基本方針がある。 成人養子の本人・家の承諾・実施を分離し、役割/既知代表者/期限を固定。移動/不在/辞退/期限/重複/循環を確認し、所属/役職/所領を変えない。 明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。",
+      "existing": "婚姻/養子の基本方針がある。 成人養子の本人・家の承諾・実施を分離し、役割/既知代表者/期限を固定。移動/不在/辞退/期限/重複/循環を確認し、所属/役職/所領を変えない。 明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。",
       "remaining": "史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。 統合案で追加：§15 D2 婚姻同盟・§12 S6 強い家からの養子。 2026-11-05 既存仕様の具体化：成人養子の合意・実施、既存の後継指名や家法との競合、家督と個別引継ぎを接続する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。旧案の一律除外を採らず、後継指名の無条件解除や未成年縁組操作も追加しない。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/AdultMarriage.cs",
@@ -2639,7 +2649,9 @@
         "Game/Scripts/NewGameRuntime.Adoption.cs",
         "Docs/Design/AdultAdoptionV1/verification.json",
         "Docs/Design/basic-design-v1.json",
-        "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md"
+        "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
+        "Docs/Design/HeirDesignationV1/README.md",
+        "Docs/Design/HeirDesignationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2684,7 +2696,7 @@
     {
       "id": "BD-45",
       "status": "foundation",
-      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。",
+      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。",
       "remaining": "死亡・争いを伴う家督と全契約の承継。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -2744,7 +2756,9 @@
         "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
         "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md",
         "Docs/Design/HouseholdCourtV1/README.md",
-        "Docs/Design/HouseholdCourtV1/verification.json"
+        "Docs/Design/HouseholdCourtV1/verification.json",
+        "Docs/Design/HeirDesignationV1/README.md",
+        "Docs/Design/HeirDesignationV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3829,12 +3843,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 11,
+      "passed": 5,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/FamilyLifeV1/runtime-local/critical/full.trx",
-      "sha256": "df4caa923a31a6e8e439539928e936427fb3f3e695429acdb51a4fde0b688257",
-      "scope": "血縁・出生・死亡・成人と保存復旧の11件。全件未実施。"
+      "trx": "Docs/Design/HeirDesignationV1/runtime-local/critical/full.trx",
+      "sha256": "06e408e06146196f2528c4b7d1357abfdbf71838f8c9fc4b12936c00161b8339",
+      "scope": "指名・書状・縁戚の5件。全件未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3846,14 +3860,14 @@
     },
     "audit_runtime_tests": "PR #2をユーザーの明示承認によりコードのみmainへ統合済み。main 3b3c9f7f8c02eab11f9e25e25d30135600262571、承認対象head aeaf838e2a9144a6351583a77edb1283d7769869と同じツリー。全Core2392件、実Godot8プロセス/30保存/60組、Git-only Core/Gameビルドの実行内容は不変。design/foundationと既存素材/保存を保持、マウス操作ツール未使用。",
     "current_stage_test": {
-      "passed": 11,
+      "passed": 5,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/FamilyLifeV1/runtime-local/critical/full.trx",
-      "sha256": "df4caa923a31a6e8e439539928e936427fb3f3e695429acdb51a4fde0b688257",
-      "scope": "血縁・出生・死亡・成人と保存復旧の11件。全件未実施。"
+      "trx": "Docs/Design/HeirDesignationV1/runtime-local/critical/full.trx",
+      "sha256": "06e408e06146196f2528c4b7d1357abfdbf71838f8c9fc4b12936c00161b8339",
+      "scope": "指名・書状・縁戚の5件。全件未実施。"
     },
-    "current_stage_summary": "子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 史実出生と自然死は各1人の代表例。出生の月日・拠点、自然死の日・確率は試作値。全国長期試遊、全件検査、ユーザーの外観評価は未実施。",
+    "current_stage_summary": "当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 候補は直接の実子・実施済みの養子。誓紙は当該の指名への個人の返答。後見・争いによる実効支配は次工程。全国長期試遊、全件検査、ユーザーの外観評価は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3875,9 +3889,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/FamilyLifeV1/integration.json",
-    "current_logic_verification": "Docs/Design/FamilyLifeV1/verification.json",
-    "current_logic_verification_sha256": "9b162956618b3419e791677f283af6610545798b73d00282dd8223025eeb3f59",
+    "integration": "Docs/Design/HeirDesignationV1/integration.json",
+    "current_logic_verification": "Docs/Design/HeirDesignationV1/verification.json",
+    "current_logic_verification_sha256": "87d7d877334b0213ded8cbda1a83d5fbdc369d3b52f8064f3074b42b45ddf577",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3943,11 +3957,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "婚姻と後継",
     "家督争い・後見",
     "離反・内応・共同独立",
-    "6b",
-    "7系"
+    "家の規模・家格と外交",
+    "募兵・陣触れ・開戦",
+    "嘆願・逃散・一揆"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"
