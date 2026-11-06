@@ -10,6 +10,39 @@ public sealed class HouseSalaryTests
     static EntityId Agree(WorldSession s,long amount=20){var r=Act(s,SalaryAction.Propose,amount:amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);var q=s.DiagnosticSnapshot().Salary!.Quotes.Last();Assert.True(q.Agreed,q.Reply);r=Act(s,SalaryAction.Confirm,q.Id);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return q.Id;}
     static void Advance(WorldSession s,long at){while(s.Seconds<at){long old=s.Seconds;s.SetPaused(false);s.AdvanceTo(at,100000);Assert.True(s.Seconds>old);}}
     [Fact]
+    public void VillageSoldiersUsePrivateRiceAndReturnToWorkAtTerm()
+    {
+        var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current), [], Worker.Value, 42,
+            historicalCatalog: HistoricalStartCatalog.Current, inspectionPolicy: LocalInspectionFindings.Policy,
+            workPolicy: WorkFollowup.Policy, economyPolicy: MilitaryEconomy.Policy));
+        var contract = Agree(session);
+        Advance(session, First(session));
+        Assert.Equal(ResultCode.Accepted, Act(session, SalaryAction.Prepare, contract, 5).Code);
+        var prepared = session.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id;
+        Assert.Equal(ResultCode.Accepted, Act(session, SalaryAction.Receive, contract, prep: prepared).Code);
+        var before = session.DiagnosticSnapshot();
+        var term = Assert.Single(before.Salary!.Terms);
+        var levy = new CourtInput(new("request:private-soldiers"), CourtAction.RaiseVillageSoldiers, Worker, term.Owner, term.Site,
+            Amount: 2, When: session.Seconds + 2 * 86400);
+        int Workers(ContractWorld w) => w.Communities!.Accounts.Single(a => a.Site == term.Site).Workforce;
+        var result = session.ManageCourt(levy, session.Revision);
+        Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+        var during = session.DiagnosticSnapshot();
+        Assert.Equal(1, HouseSalary.PrivateRice(during, Worker));
+        Assert.Equal(Workers(before) - 2, Workers(during));
+        Assert.Equal(2, PrivateRecruitment.Soldiers(during, Worker, term.Site, session.Seconds, session.Revision + 1));
+        var refused = session.ManageCourt(levy with {Id=new("request:unfunded-recruits")}, session.Revision);
+        Assert.NotEqual(ResultCode.Accepted, refused.Code);
+        Assert.Equal(ContractJson.Write(during), ContractJson.Write(session.DiagnosticSnapshot()));
+        var restored = new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(during)));
+        Advance(restored, levy.When);
+        var returned = restored.DiagnosticSnapshot();
+        Assert.Equal(0, PrivateRecruitment.Soldiers(returned, Worker, term.Site, levy.When, restored.Revision+1));
+        Assert.Equal(Workers(before), Workers(returned));
+        Assert.Equal(1, HouseSalary.PrivateRice(returned, Worker));
+    }
+
+    [Fact]
     public void RestorationClaimUsesUnpaidBalanceOfSignedSalaryAfterActualReceipt()
     {
         var session = Start(employee: true);
