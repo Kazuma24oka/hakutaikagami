@@ -34,6 +34,16 @@ public partial class NewGameRuntime
     Button(key,"この本丸の回復を現地で記録する",()=>Run(new(Nonce(key),CourtAction.RecordRecoveredSeat,actor,recoveringHouse,site.Value,Reference:capture)));
    }
    foreach(var ask in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && (e.Actor==actor || e.Input.Person==actor))){
+    foreach(var claim in history.Where(e=>e.Input.Action==CourtAction.PresentRestorationArrears && e.Input.Person==ask.Actor && e.Actor==ask.Input.Person && e.Input.Owner==ask.Input.Owner))
+     SocialText(box,$"{WorldCalendar.Display(w.EpochDate,claim.At)}に提示した未払い扶持：{claim.Input.Amount}kg（提示時点）");
+    if(actor==ask.Input.Person && SocialWorld.Site(w,ask.Actor)==site){
+     foreach(var term in (w.Salary?.Terms??[]).Where(t=>t.Employee==actor && t.Owner==ask.Input.Owner)){
+      long owed=HouseRestoration.UnpaidSalary(term,w.ElapsedSeconds);
+      if(owed<=0 || history.Any(e=>e.Input.Action==CourtAction.PresentRestorationArrears && e.Input.Reference==term.Id && e.Input.Person==ask.Actor && e.Input.Amount==owed))continue;
+      var key="restoration-arrears/"+term.Id.Value+"/"+ask.Actor.Value;
+      Button(key,$"未払い扶持{owed}kgの原本を示す",()=>Run(new(Nonce(key),CourtAction.PresentRestorationArrears,ask.Actor,term.Owner,site.Value,Amount:owed,Reference:term.Id)));
+     }
+    }
     var reply=history.SingleOrDefault(e=>e.Input.Reference==ask.Input.Id && e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
     var peer=actor==ask.Actor?ask.Input.Person:ask.Actor;
     SocialText(box,MeritRewards.DisplayName(w,actor,peer)+"との再興相談："+(reply==null?"返答待ち":reply.Input.Action==CourtAction.SupportRestoration?"個人として支持":"判断を留保"));

@@ -60,6 +60,27 @@ public static class HouseRestoration
         return latest.Id;
     }
 
+    public static long UnpaidSalary(SalaryTerm original, long at) =>
+        checked(HouseSalary.Due(original, at) - original.Paid);
+
+    internal static void CheckArrears(ContractWorld world, CourtInput input, EntityId creditor, EntityId place, long at, long revision)
+    {
+        var prior = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
+        if (input.Site != place || input.Reference == null || input.Person == creditor ||
+            !TransportWork.At(world, creditor, place, at, revision, true) ||
+            !TransportWork.At(world, input.Person, place, at, revision, true) ||
+            Assassination.DeadAt(world, input.Person, at, revision) ||
+            !prior.Any(e => e.Input.Action == CourtAction.SeekRestorationSupport && e.Input.Owner == input.Owner &&
+                e.Actor == input.Person && e.Input.Person == creditor))
+            throw new InvalidDataException("再興について直接相談を受けた相手に、現地で原本を示してください");
+        var term = HouseSalary.SnapshotAt(world, at, revision - 1).Terms.SingleOrDefault(t => t.Id == input.Reference);
+        if (term == null || term.Employee != creditor || term.Owner != input.Owner ||
+            input.Amount <= 0 || input.Amount != UnpaidSalary(term, at) ||
+            prior.Any(e => e.Input.Action == input.Action && e.Input.Reference == input.Reference &&
+                e.Actor == creditor && e.Input.Person == input.Person && e.Input.Amount == input.Amount))
+            throw new InvalidDataException("自分の給付原本について、既に受け取った米を引いた残額を確認してください");
+    }
+
     internal static void CheckRecoveredSeat(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
     {
         var past = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
@@ -176,6 +197,22 @@ public static class HouseRestoration
     internal static void AnswerLocalRequests(ContractWorld world)
     {
         var history = HouseholdCourt.Events(world);
+        foreach (var ask in history.Where(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
+            e.Input.Person != world.PlayerControl && e.At < world.ElapsedSeconds))
+        {
+            var creditor = ask.Input.Person;
+            var place = SocialWorld.Site(world, creditor);
+            if (place == null || SocialWorld.Site(world, ask.Actor) != place) continue;
+            foreach (var term in (world.Salary?.Terms ?? []).Where(t => t.Employee == creditor && t.Owner == ask.Input.Owner))
+            {
+                var amount = UnpaidSalary(term, world.ElapsedSeconds);
+                if (amount <= 0 || HouseholdCourt.Events(world).Any(e => e.Input.Action == CourtAction.PresentRestorationArrears &&
+                    e.Input.Reference == term.Id && e.Input.Person == ask.Actor && e.Input.Amount == amount)) continue;
+                var claim = new CourtInput(HouseholdCourt.Id("request", $"restoration-claim/{term.Id.Value}/{ask.Actor.Value}/{amount}"),
+                    CourtAction.PresentRestorationArrears, ask.Actor, term.Owner, place.Value, Amount: amount, Reference: term.Id);
+                TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, claim, creditor));
+            }
+        }
         foreach (var ask in history.Where(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
             e.Input.Person != world.PlayerControl && e.At < world.ElapsedSeconds))
         {
