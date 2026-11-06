@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "7b05b4f5d2e4ef31af33d2fbcf3e3e939ecf68d85e718a5d5837f40c9e0178ab",
+    "Docs/Development/ProgressV1/estimate.json": "980e61ff387fc4a736f56e30c16f0213198c064d68e5a3d55e847e795063b712",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "3d98c8aa6d46ecb2fd990e577f11d22b1d739bd46587e813f6ea681503fee0a2",
+    "Scripts/check_progress_report.py": "89e7686802483cba10007df096786d6b69de0b32956f0045b6162275366e1999",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "322281d62459d85be4afcd1ac666a6574b153f1414460ff1480a60196322cbc9",
+    "Scripts/check_approval_batch.py": "4bee3e3112363d4bf982d7f5db36e180db3fe26efc5a6abbd60c205aab99f74c",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "183a3fa9667bac3063cd0f2eeb2e30fb11fb04a2c12f690ebd773389ae47e134",
+    "Docs/Development/CURRENT_STAGE.md": "5ebe2d81c3b1172a7640f79b29a4b159b9a6b96e4c88293f58964fb937b92043",
     "Core/Contracts/HouseSuccession.cs": "7e2ee13dcd64453a71faf96b6ebb9c07cc4c8b0149ae2e64dfa8f7413cc2d54a",
     "Core/Contracts/FactionStances.cs": "445828eebda8cf2de3d7981a17bba7e4a12841a8b6f35ef5c330ebd3c3f9562a",
     "Core/Contracts/NewGameWorld.cs": "5da6cc20a7f591306ccb2573246c05e45a1c8f2ab5bed3aacd65b6383cd42b81",
@@ -538,7 +538,7 @@
     "Docs/Design/InformationSchemesV1/scope.md": "d83ccc5f060419fcebfa0eea907dabd4fc56c2f3c2d3a1e7ed97cceb3b3b5755",
     "Scripts/verify_information_schemes.py": "edded9dced2393c6b4ef6184e33cc18d75b6b8aa6d69358f78784c98e2236fbd",
     "Docs/Development/ProgressV1/approval-baseline-v59.json": "7c40e08ae624a35152466430ac2dbf6d25698427be888cc360654b83463bfd72",
-    "Core/Contracts/HouseholdCourt.cs": "316cda80e6e3f96a697c47a45cc8295b5f982cd49f855da53972ede5b05d9309",
+    "Core/Contracts/HouseholdCourt.cs": "027965429aac3dd899341e6f749b8299eb3c723c91e4b48007d0475cf7c30007",
     "Core/Contracts/TransactionalWorld.cs": "87441f985c418a21d91b6557589982d306412d00c1702e8095c1cbf95bcba289",
     "Game/Scripts/NewGameRuntime.HouseholdCourt.cs": "4bf4e1186178644712faef95241dd475824ca0efb36243d4cb5381f52226a4cc",
     "Game/Scripts/HouseholdCourtCheck.cs": "5549229a8c4ad58dd59af85fbaef66b68f32c11afd71d94006296f5e52a060d1",
@@ -750,8 +750,8 @@
     "Core/Contracts/DefectionPacts.cs": "8b8986f8ba7249ee08090abed683cd81ec375e96131806ae8cf459e1a737e58c",
     "Core/Contracts/PactDocuments.cs": "0dcadc2a78ef36db4fa47155fd5e914a28132c474f7b9b4f1c571afc35d6655a",
     "Core/Contracts/PactSignals.cs": "c23c7833baf0559384af3cb9ee9f769305973f2fcb18276404c192f7eb834d2f",
-    "Core/Contracts/JointIndependence.cs": "382c30aca8937cb8b22b74f802a9bc6ab8d0d64c8a16d00734a37347244ef613",
-    "Tests/DefectionPactTests.cs": "3ab4d2814a1f69792bec42317f2100a280186feca496ebda128ca634c585f3c1",
+    "Core/Contracts/JointIndependence.cs": "f2e0ef82387d4c3260ddc375ba45a8d7545eb862a2ad7b2ab9783ae20af1c9dd",
+    "Tests/DefectionPactTests.cs": "9f0a0c3848912206499357bb36c8137928d630bd0eed38577b08128b55043b0c",
     "Game/Scripts/DefectionPactCheck.cs": "47d7efad307e0482f839827e837d8a0fbdfa381292fe7724ceb0999de9111004",
     "Docs/Design/DefectionPactV1/verification.json": "68b5f0b76eca0cdff73fba7daf6e9280751fc3c4b04cc419df0e10a675ab31b0",
     "Docs/Design/DefectionPactV1/scope.md": "efbdf56ab9e9e6d7680e0284e4ce649782d5a44c31fa0f97e8527dd290b2f54f",
@@ -2849,7 +2849,7 @@
     {
       "id": "BD-46",
       "status": "foundation",
-      "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。 旧主の守備が残る城で城主が独立し、門の申入れ・承諾または拒否・守備退去・本人帰城・本丸受領を区別。兵籍と実際の未受領報酬を保持。 独立した城主から既知の他城へ周知と支持要請を送り分け、面会した旧主家臣の帰属、軍勢・所領の保持、返書を開封した時点の認識を確認。",
+      "existing": "開始時の新勢力作成・既存家の移動/吸収、通常の仕官辞去がある。 旧主の守備が残る城で城主が独立し、門の申入れ・承諾または拒否・守備退去・本人帰城・本丸受領を区別。兵籍と実際の未受領報酬を保持。 独立した城主から既知の他城へ周知と支持要請を送り分け、面会した旧主家臣の帰属、軍勢・所領の保持、返書を開封した時点の認識を確認。 他城で追随した城主と旧主が城門を引き渡し、旧主家が守備する間は本丸を留保。城門受領時の実保存から本丸受領までの世界一致、発信者側の通常画面での返書開封と3D位置を確認。",
       "remaining": "他城への宣言の伝達・部隊別の帰属判断・全体の受入。 §10 調略系の計略・§15 従属からの離脱・§26 Z4 滅んだ家の再興（旧臣・遺児の挙兵）。 既存仕様の具体化：国人の接近・支持・新条約・旧関係の解除通知と効力・実離脱・最初の履行を接続する（MORI_MOTONARI_ALLEGIANCE_CHANGES.md）。家の従属先変更と個人仕官・家の吸収を分け、旧主の一律許可制や全員・全資源の自動移転を追加しない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：家の記録と原本が存続する開始条件で、再興の志・支持・後援・実集合・補給・部分回復または撤退を接続する（MORI_MOTONARI_HOUSE_RESTORATION.md）。旧所属だけで臣下や所領を復活させず、家IDや消滅債務の復活規則を新設しない。実装・シナリオ検査は未実施。 2026-11-05 A案採用：存続中の家を扱う従来例に、吸収・解散後の同じ家としての再興を追加する。旧臣・旧領・部隊の帰属や実支配を自動復帰させず、本人の選択と実際の行動を必要とする（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameSetup.cs",
@@ -2859,7 +2859,8 @@
         "Docs/Proposals/MORI_MOTONARI_HOUSE_RESTORATION.md",
         "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md",
         "Docs/Design/IndependenceGarrisonV1/entry-verification.md",
-        "Docs/Design/IndependenceLettersV1/entry-verification.md"
+        "Docs/Design/IndependenceLettersV1/entry-verification.md",
+        "Docs/Design/AlliedCastleGateV1/entry-verification.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3943,12 +3944,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 3,
+      "passed": 5,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/IndependenceLettersV1/runtime-local/letters.trx",
-      "sha256": "f0c3e2887d38a75cf90f706db0ded082189aa176faa74a8c93adcb1ad3838e70",
-      "scope": "公開書状・帰属・旧保存の関連3件。全件未実施。"
+      "trx": "Docs/Design/AlliedCastleGateV1/runtime-local/gate.trx",
+      "sha256": "7d779a9468fb237ad3daa3616800dc41d6eb0c9a71a983520c43973442871edb",
+      "scope": "現地引渡し・守備と旧保存の関連5件。全件未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3967,7 +3968,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "独立した城主から既知の他城へ周知と支持要請を送り分け、面会した旧主家臣の帰属、軍勢・所領の保持、返書を開封した時点の認識を確認。",
+    "current_stage_summary": "他城で追随した城主と旧主が城門を引き渡し、旧主家が守備する間は本丸を留保。城門受領時の実保存から本丸受領までの世界一致、発信者側の通常画面での返書開封と3D位置を確認。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3990,8 +3991,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/HouseScaleV1/integration.json",
-    "current_logic_verification": "Docs/Design/IndependenceLettersV1/logic-verification.json",
-    "current_logic_verification_sha256": "be83b79edb29b317b32240d7c185aa7e968d2e8e58d7a9f912b7bd456d134454",
+    "current_logic_verification": "Docs/Design/AlliedCastleGateV1/logic-verification.json",
+    "current_logic_verification_sha256": "8bd56cf7cc370f6e371b44abaf9424154994cd4cb1a0cd8aef5294faca2030f8",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。",

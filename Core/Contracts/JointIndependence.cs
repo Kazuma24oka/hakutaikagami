@@ -15,8 +15,11 @@ public static class JointIndependence
     public sealed record LocalGuard(EntityId Castle,EntityId FormerHouse,bool FormerTroopsPresent,bool ControlsCastle);
     public static LocalGuard? ObserveOwnCastle(ContractWorld w,EntityId observer)
     {
-        var declaration=w.Declarations?.LastOrDefault(d=>d.Founder==observer && d.CheckGarrison==true);
-        if(declaration==null || IndependenceGate.MeetingSite(w,observer)!=declaration.Site ||
+        var present=IndependenceGate.MeetingSite(w,observer);
+        if(present==null)return null;
+        var declaration=IndependenceGate.LocalClaims(w,w.CommitSequence+1).LastOrDefault(d=>d.Founder==observer && d.Site==present)
+            ?? w.Declarations?.LastOrDefault(d=>d.Founder==observer && d.Site==present && d.CheckGarrison==true);
+        if(declaration==null ||
             Assassination.DeadAt(w,observer,w.ElapsedSeconds,w.CommitSequence))return null;
         var site=declaration.Site;
         bool formerTroops=CastleHandover.HasGarrison(w,declaration.FormerHouse,site,w.ElapsedSeconds,w.CommitSequence+1);
@@ -78,6 +81,11 @@ public static class JointIndependence
             Transfer(d,d.Founder,d.Site,d.At,d.Revision);
             var receipt=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Action==CourtAction.ReceiveIndependentKeep && e.Input.Reference==d.Pact);
             if(receipt!=null)Transfer(d,d.Founder,d.Site,receipt.At,receipt.Revision,true);
+            foreach(var answer in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.JoinDeclaredHouse && e.Input.Owner==d.House)){
+                var handover=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Action==CourtAction.ReceiveIndependentKeep &&
+                    e.Input.Reference==answer.Input.Id);
+                if(handover!=null)Transfer(d,answer.Actor,answer.Place,handover.At,handover.Revision,true);
+            }
             foreach(var response in w.PactResponses??[])
             {
                 if(!response.Acted)continue;

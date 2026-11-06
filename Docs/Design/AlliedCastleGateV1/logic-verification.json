@@ -1,0 +1,13 @@
+{
+  "scope": "allied-castle-gate",
+  "ui": "Docs/Design/AlliedCastleGateV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 5
+  },
+  "proofs": {
+    "Docs/Design/AlliedCastleGateV1/runtime-local/gate.trx": "7d779a9468fb237ad3daa3616800dc41d6eb0c9a71a983520c43973442871edb",
+    "Docs/Design/AlliedCastleGateV1/runtime-local/ui.log": "85476f760040907b56b06e7c6764ee6057dbb794f9c66c29db094c955fd8fe43",
+    "Docs/Design/AlliedCastleGateV1/verification.json": "197e4d54248ccbc29f2cad1730e67184f0bf8f5eeb6c20578c178088a9f2bec9",
+    "Docs/Design/AlliedCastleGateV1/completion.json": "6c9c0b6509097f14d38d546a2104a37f7c2468b870c70be967e9125884828ebf"
+  }
+}

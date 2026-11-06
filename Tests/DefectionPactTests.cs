@@ -6,9 +6,9 @@ namespace HakutaiKagami.Tests;
 public class DefectionPactTests
 {
     static readonly EntityId Actor=new("created:test"),Partner=new("created:partner");
-    static ContractWorld Start(ulong seed,bool foreign=false,bool castellan=false,RegisteredOfficer? other=null)
+    static ContractWorld Start(ulong seed,bool foreign=false,bool castellan=false,RegisteredOfficer? other=null,string actorSite="site:castle")
     {
-        var actor=NewGameWorldTests.Officer(role:castellan?StartTemplate.Castellan:StartTemplate.Retainer,lord:"person:nobunaga");
+        var actor=NewGameWorldTests.Officer(site:actorSite,role:castellan?StartTemplate.Castellan:StartTemplate.Retainer,lord:"person:nobunaga");
         var partner=NewGameWorldTests.Officer(Partner.Value,StartTemplate.Retainer,foreign?"site:kofu":actor.Site,
             foreign?"person:shingen":"person:nobunaga");
         var setup=NewGameWorldTests.Setup(other==null?[actor,partner]:[actor,partner,other]);
@@ -385,13 +385,18 @@ public class DefectionPactTests
         Assert.Fail("独立に合意する開始条件がありません");
     }
 
-    [Fact]
-    public void RemoteRetainerAnswersOnlyAfterMeetingAndReading()
+    [Theory]
+    [InlineData(StartTemplate.Retainer,false)]
+    [InlineData(StartTemplate.Castellan,false)]
+    [InlineData(StartTemplate.Castellan,true)]
+    public void RemoteRetainerAnswersOnlyAfterMeetingAndReading(StartTemplate role,bool oldLordPresent)
     {
-        var contact=NewGameWorldTests.Officer("created:castle-contact",StartTemplate.Retainer,"site:fork","person:nobunaga");
+        var recipientNode=oldLordPresent?"castle":"fork";
+        var founderNode=oldLordPresent?"fork":"castle";
+        var contact=NewGameWorldTests.Officer("created:castle-contact",role,"site:"+recipientNode,"person:nobunaga");
         var recipient=new EntityId(contact.Id);
         for(ulong seed=0;seed<32;seed++){
-            var w=Start(seed,castellan:true,other:contact);var session=new WorldSession(w);
+            var w=Start(seed,castellan:true,other:contact,actorSite:"site:"+founderNode);var session=new WorldSession(w);
             EntityId pact=new("request:original-private-pact");
             Assert.Equal(ResultCode.Accepted,session.NegotiatePact(pact,Partner,PactPurpose.RiseTogether,session.Revision).Code);
             if(!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
@@ -402,20 +407,22 @@ public class DefectionPactTests
                 Assert.Equal(ResultCode.Accepted,session.Submit(trip,session.Revision).Code);
                 NewGameWorldTests.At(session,session.Seconds+2);NewGameWorldTests.At(session,session.GetBranchView(Actor).ArrivalAt!.Value+1);
             }
-            Travel("fork");
+            Travel(recipientNode);
             for(int day=0;day<2;day++){
                 var visit=session.ManageSocial(new(new("request:visit-contact/"+day),SocialWorldAction.Visit,recipient),session.Revision);
                 Assert.True(visit.Code==ResultCode.Accepted,visit.VisibleReason);
                 if(day==0)NewGameWorldTests.At(session,session.Seconds+86400);
             }
-            Travel("castle");var before=session.DiagnosticSnapshot();
-            if(Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE") is {Length:>0} file)
+            Travel(founderNode);var before=session.DiagnosticSnapshot();
+            if(role==StartTemplate.Retainer && Environment.GetEnvironmentVariable("HAKUTAI_LETTER_FIXTURE") is {Length:>0} file)
                 File.WriteAllBytes(file,ContractJson.Write(before));
+            if(oldLordPresent && Environment.GetEnvironmentVariable("HAKUTAI_ALLIED_GATE_FIXTURE") is {Length:>0} alliedFile)
+                File.WriteAllBytes(alliedFile,ContractJson.Write(before));
             var call=IndependenceLetters.Choices(before,Actor).Single(i=>i.Person==recipient && i.Action==CourtAction.SeekDeclaredSupport);
             var issued=session.ManageCourt(call,session.Revision);Assert.True(issued.Code==ResultCode.Accepted,issued.VisibleReason);
             var sent=session.DiagnosticSnapshot();var letter=sent.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.Kind);
             var courier=sent.Couriers!.Missions.Single(m=>sent.Messaging.Attempts.Any(a=>a.MessageId==letter.Id && a.Id==m.Attempt));
-            Assert.Equal("fork",courier.Destination);
+            Assert.Equal(recipientNode,courier.Destination);
             NewGameWorldTests.At(session,courier.ReadyAt+1);
             var after=session.DiagnosticSnapshot();var joined=Assert.Single(after.Court!.Events,e=>e.Input.Action==CourtAction.JoinDeclaredHouse);
             Assert.Equal(recipient,joined.Actor);
@@ -423,6 +430,36 @@ public class DefectionPactTests
             Assert.Contains(after.ServiceBonds,r=>r.Subject==recipient && r.Target==Actor && r.Until==long.MaxValue);
             Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
             Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
+            var observation=JointIndependence.ObserveOwnCastle(after,recipient);
+            if(role==StartTemplate.Castellan){
+                Assert.NotNull(observation);
+                Assert.Equal(new EntityId("site:"+recipientNode),observation.Castle);
+                Assert.False(observation.ControlsCastle);
+            }else Assert.Null(observation);
+            if(oldLordPresent){
+                for(int step=0;step<5 && !session.DiagnosticSnapshot().Court!.Events.Any(e=>
+                    e.Input.Reference==joined.Input.Id && e.Input.Action==CourtAction.ReceiveIndependentGate);step++)
+                    NewGameWorldTests.At(session,session.Seconds+1);
+                var gateway=session.DiagnosticSnapshot();
+                Assert.Contains(gateway.Court!.Events,e=>e.Input.Reference==joined.Input.Id && e.Input.Action==CourtAction.ReceiveIndependentGate);
+                Assert.False(JointIndependence.ObserveOwnCastle(gateway,recipient)!.ControlsCastle);
+                session.SetPaused(true);
+                var directory=Directory.CreateTempSubdirectory("allied-gate-");
+                try{
+                    var saves=new GenerationSaveStore(directory.FullName,gateway.Definitions);
+                    Assert.True(saves.Save(session,"gate",gateway.WorldId).Published);
+                    var host=new WorldSessionHost(new WorldSession(w));
+                    Assert.Equal(ResultCode.Accepted,host.CommitLoad(saves.Prepare("gate"),host.Current,host.Current.Revision));
+                    NewGameWorldTests.At(host.Current,session.Seconds+1);
+                    NewGameWorldTests.At(session,session.Seconds+1);
+                    Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+                }finally{directory.Delete(true);}
+                var handed=session.DiagnosticSnapshot();
+                var history=handed.Court!.Events.Where(e=>e.Input.Reference==joined.Input.Id).Select(e=>e.Input.Action).ToArray();
+                Assert.Contains(CourtAction.RequestIndependentGate,history);
+                Assert.Contains(CourtAction.ReceiveIndependentKeep,history);
+                Assert.True(JointIndependence.ObserveOwnCastle(handed,recipient)!.ControlsCastle);
+            }
             var replay=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
             Assert.Equal(ContractJson.Write(after.Memberships),ContractJson.Write(replay.DiagnosticSnapshot().Memberships));
             return;

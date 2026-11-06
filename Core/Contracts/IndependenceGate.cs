@@ -22,17 +22,36 @@ public static class IndependenceGate
     public static EntityId? MeetingSite(ContractWorld w,EntityId actor)
     {
         if(SocialWorld.Site(w,actor) is {} site)return site;
-        return w.Declarations?.LastOrDefault(d=>d.CheckGarrison==true && d.Founder==actor &&
+        return (w.Declarations??[]).Concat(LocalClaims(w,w.CommitSequence+1)).LastOrDefault(d=>d.CheckGarrison==true && d.Founder==actor &&
             ReturnedInPerson(w,actor,d.Site,w.ElapsedSeconds,w.CommitSequence+1))?.Site;
     }
     static bool At(ContractWorld w,EntityId actor,IndependenceDeclaration d,long at,long rev)=>
         !Assassination.DeadAt(w,actor,at,rev) && (TransportWork.At(w,actor,d.Site,at,rev,true) || ReturnedInPerson(w,actor,d.Site,at,rev));
+    // 交渉の参照は、独立した本人なら密約原本、追随者なら本人の公開返答に結び付ける。
+    internal static IEnumerable<IndependenceDeclaration> LocalClaims(ContractWorld w,long rev)
+    {
+        foreach(var declaration in w.Declarations??[]){
+            if(declaration.CheckGarrison!=true || declaration.Revision>=rev)continue;
+            if(CastleHandover.HasGarrison(w,declaration.FormerHouse,declaration.Site,declaration.At,declaration.Revision))
+                yield return declaration;
+            foreach(var answer in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.JoinDeclaredHouse &&
+                e.Input.Owner==declaration.House && e.Place!=declaration.Site && e.Revision<rev)){
+                if(CommandedAtAnswer(w,answer))
+                    yield return declaration with{Pact=answer.Input.Id,Founder=answer.Actor,Site=answer.Place,At=answer.At,Revision=answer.Revision};
+            }
+        }
+    }
+    static bool CommandedAtAnswer(ContractWorld w,CourtEvent answer)=>
+        JointIndependence.CommandedCastle(w,answer.Actor,answer.Place,answer.At,answer.Revision);
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId site,long at,long rev)
     {
-        var d=w.Declarations?.SingleOrDefault(d=>d.CheckGarrison==true && d.Pact==i.Reference && d.Revision<rev);
-        if(d==null || i.Site!=d.Site || site!=d.Site || i.Owner!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,d.At,d.Revision) ||
-            !CastleHandover.HasGarrison(w,d.FormerHouse,d.Site,d.At,d.Revision))
+        var d=LocalClaims(w,rev).SingleOrDefault(d=>d.Pact==i.Reference);
+        if(d==null || i.Site!=d.Site || site!=d.Site || i.Owner!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,d.At,d.Revision))
             throw new InvalidDataException("旧主家の守備が残った独立原本を指定してください");
+        bool alliedCastellan=HouseholdCourt.Events(w).Any(e=>e.Input.Id==d.Pact && e.Input.Action==CourtAction.JoinDeclaredHouse);
+        if(alliedCastellan && (CastleAdministration.Owner(w,d.Site,at,rev)!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,at,rev) ||
+            DefectionPacts.HouseAt(w,d.Founder,at,rev-1)!=d.House))
+            throw new InvalidDataException("引渡しの時点で城を預かる追随城主の立会いが必要です");
         var oldLord=HouseSuccession.Head(w,d.FormerHouse,at,rev-1);
         bool reply=i.Action is CourtAction.AllowIndependentGate or CourtAction.RefuseIndependentGate;
         if(actor!=(reply?oldLord:d.Founder) || i.Person!=(reply?d.Founder:oldLord) || actor==i.Person ||
@@ -51,6 +70,13 @@ public static class IndependenceGate
     }
     internal static IEnumerable<(CourtInput Input,EntityId Actor)> NpcAnswers(ContractWorld w)
     {
+        foreach(var joined in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.JoinDeclaredHouse && e.Actor!=w.PlayerControl).ToArray()){
+            var last=HouseholdCourt.Events(w).LastOrDefault(e=>Handles(e.Input.Action) && e.Input.Reference==joined.Input.Id);
+            if(w.ElapsedSeconds<=(last?.At??joined.At))continue;
+            var next=Available(w,joined.Actor).FirstOrDefault(i=>i.Reference==joined.Input.Id &&
+                i.Action is CourtAction.RequestIndependentGate or CourtAction.ReceiveIndependentGate or CourtAction.ReceiveIndependentKeep);
+            if(next!=null)yield return(next,joined.Actor);
+        }
         foreach(var request in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.RequestIndependentGate)){
             var lord=request.Input.Person;
             if(lord==w.PlayerControl || HouseholdCourt.Events(w).Any(e=>e.Input.Reference==request.Input.Reference && e.Revision>request.Revision && Handles(e.Input.Action)))continue;
@@ -71,7 +97,7 @@ public static class IndependenceGate
     public static IEnumerable<CourtInput> Available(ContractWorld w,EntityId actor)
     {
         if(MeetingSite(w,actor) is not {} site)yield break;
-        foreach(var d in w.Declarations??[]){
+        foreach(var d in LocalClaims(w,w.CommitSequence+1)){
             if(d.CheckGarrison!=true || d.Site!=site)continue;
             var lord=HouseSuccession.Head(w,d.FormerHouse);
             if(actor!=d.Founder && actor!=lord)continue;
