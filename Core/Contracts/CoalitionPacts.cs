@@ -5,10 +5,10 @@ namespace HakutaiKagami.Core.Contracts;
 public enum CoalitionPurpose { CoordinateSorties, ForbidSeparatePeace, Both }
 public sealed record CoalitionTerms(EntityId Target,EntityId[] Invitees,CoalitionPurpose Purpose,long AssemblyAt);
 
-public static class CoalitionPacts
+public static partial class CoalitionPacts
 {
     public const string Invitation="coalition-invitation",Reply="coalition-reply";
-    internal static bool Handles(CourtAction action)=>action is CourtAction.ProposeCoalition or CourtAction.JoinCoalition or CourtAction.RefuseCoalition or CourtAction.DeferCoalition;
+    internal static bool Handles(CourtAction action)=>action is CourtAction.ConfirmCoalition or CourtAction.ProposeCoalition or CourtAction.JoinCoalition or CourtAction.RefuseCoalition or CourtAction.DeferCoalition;
     static bool Final(CourtAction action)=>action is CourtAction.JoinCoalition or CourtAction.RefuseCoalition;
     public static string TermsLabel(CoalitionTerms terms)=>terms.Purpose switch{
         CoalitionPurpose.CoordinateSorties=>"同時期の出兵",CoalitionPurpose.ForbidSeparatePeace=>"単独で和睦しない",_=>"同時期の出兵と単独和睦の禁止"};
@@ -23,6 +23,8 @@ public static class CoalitionPacts
                 yield return new MessageEnvelope(InvitationId(i,house),i.Id.Value,Invitation,e.Actor.Value,recipient.Person.Value,
                     w.Definitions.Organizations.Single(o=>o.Id==i.Coalition.Target).Name+"を対象に"+TermsLabel(i.Coalition)+"を提案する。期日 "+i.Coalition.AssemblyAt,recipient.Home.Value,e.At){DeliverySite=recipient.Home.Value};
             }
+        }else if(i.Action==CourtAction.ConfirmCoalition){
+            foreach(var notice in Certificates(w,e))yield return notice;
         }else if(Final(i.Action)){
             var offer=HouseholdCourt.Events(w).Single(x=>x.Input.Id==i.Reference);
             yield return new MessageEnvelope(HouseholdCourt.Id("coalition-answer",i.Id.Value).Value,offer.Input.Id.Value,Reply,e.Actor.Value,offer.Actor.Value,
@@ -34,6 +36,7 @@ public static class CoalitionPacts
         if(!TruceNegotiations.Enabled(w) || house?.Head!=actor.Value || house.Home!=place.Value || place!=i.Site ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("本人が本拠で家を代表して包囲網の書状を扱ってください");
+        if(i.Action==CourtAction.ConfirmCoalition){CheckConfirmation(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.ProposeCoalition){
             var t=i.Coalition;
             if(t==null || !Enum.IsDefined(t.Purpose) || i.Reference!=null || i.Person!=actor || t.Target==i.Owner ||
