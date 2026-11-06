@@ -121,4 +121,25 @@ public sealed class HouseRestorationTests
         NpcArmies.Return(world, muster.Id);
         Assert.Equal(muster.Id, Assert.Single(world.NpcArmies!.Returns).Muster);
     }
+    [Fact]
+    public void EscortHomeJourneyIsBoundToTheHeadHomeAndOriginalAgreement()
+    {
+        var setup = NewGameWorldTests.Setup([]);
+        var w = NewGameWorld.Create(setup.World, [], "person:shingen", worldArmyPolicy: NpcArmies.Policy);
+        EntityId commander = new("person:nobunaga"), site = new("site:fork");
+        var agreement = new CourtInput(new("request:escort-away"), CourtAction.AcceptRestorationEscort,
+            commander, new("org:oda"), site, When: 86400);
+        w.CommitSequence++;
+        var original = new CourtEvent(agreement, w.PlayerControl, site, 0, w.CommitSequence, false);
+        w.Court = new(1, HouseholdCourt.Policy, [original]);
+        w.Locations = w.Locations.Select(l => l.Actor == commander ? l with { Site = site } : l).ToArray();
+        var journey = RestorationEscort.PlanHomeJourney(w, original);
+        Assert.Equal(new EntityId("site:castle"), journey.DestinationSite);
+        Assert.Equal(commander, journey.Executor);
+        Assert.True(journey.WorkSeconds > 0);
+        Assert.False(RestorationEscort.IsHomeJourney(w, journey with { DestinationSite = site }));
+        Assert.False(RestorationEscort.IsHomeJourney(w, journey with { RequestId = new("request:another") }));
+        w.ElapsedSeconds = agreement.When;
+        Assert.Throws<InvalidDataException>(() => RestorationEscort.PlanHomeJourney(w, original));
+    }
 }
