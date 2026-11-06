@@ -39,13 +39,13 @@ public sealed class HouseConditionTests
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
         var officer=NewGameWorldTests.Officer("created:transfer-officer",StartTemplate.Castellan,lord:head.Id);
         var owner=new EntityId("org:transfer-test");
-        var incumbent=NewGameWorldTests.Officer("created:prior-castellan",StartTemplate.Castellan,"site:fork",head.Id);
-        var setup=NewGameWorldTests.Setup(occupied?[head,officer,incumbent]:[head,officer],[new(head.Id,owner.Value,[head.Site,"site:fork"],false)]);
+        var incumbent=NewGameWorldTests.Officer("created:prior-castellan",StartTemplate.Castellan,"site:kofu",head.Id);
+        var setup=NewGameWorldTests.Setup(occupied?[head,officer,incumbent]:[head,officer],[new(head.Id,owner.Value,[head.Site,"site:kofu"],false)]);
         var w=NewGameWorld.Create(setup.World,setup.Registered,officer.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
             workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
         EntityId lord=new(head.Id),person=new(officer.Id);
         var proposal=new CourtInput(new("request:actual-transfer"),CourtAction.ConsultReform,person,owner,new(head.Site)){
-            Reform=ReformKind.Relocate,NewEstate=new("site:fork")};
+            Reform=ReformKind.Relocate,NewEstate=new("site:kofu")};
         w.CommitSequence++;HouseholdCourt.Execute(w,proposal,lord);
         var s=new WorldSession(w);
         NewGameWorldTests.At(s,120);
@@ -67,6 +67,12 @@ public sealed class HouseConditionTests
         var heirloom=SocialAssets.Catalog(s.DiagnosticSnapshot(),proposal.Site).Single(a=>a.Kind=="tea");
         var purchase=s.ManageSocialAsset(new(new("request:transfer-tea"),SocialAssetAction.Buy,person,heirloom.Id),s.Revision);
         Assert.True(purchase.Code==ResultCode.Accepted,purchase.VisibleReason);
+        EntityId freight=new("request:transfer-freight");
+        CommandResult Freight(HouseFreightAction action)=>s.ManageHouseFreight(new(new("request:estate-freight/"+action+"/"+s.Revision),
+            action,freight),person,s.Revision);
+        var dispatch=s.ManageHouseFreight(new(freight,HouseFreightAction.Dispatch,Home:proposal.Site,Source:proposal.NewEstate,
+            Commodity:"wood",Quantity:5,Advance:100),person,s.Revision);
+        Assert.True(dispatch.Code==ResultCode.Accepted,dispatch.VisibleReason);
         var before=s.DiagnosticSnapshot();
         var baggage=HouseReforms.Baggage(before,before.Court!.Events.Single(e=>e.Input.Id==order.Id))!;
         Assert.Contains(baggage.PersonalItems,o=>o.Id==heirloom.Id && o.Owner==person);
@@ -78,7 +84,7 @@ public sealed class HouseConditionTests
         var enter=new CourtInput(new("request:enter-office"),CourtAction.EnterCastleOffice,lord,owner,
             proposal.NewEstate!.Value,Reference:order.Id);
         Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);
-        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:move-to-estate","fork"),s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:move-to-estate","kofu"),s.Revision).Code);
         NewGameWorldTests.At(s,s.Seconds+2);
         s.SetPaused(true);
         var dir=Directory.CreateTempSubdirectory("hakutai-transfer-");
@@ -100,10 +106,17 @@ public sealed class HouseConditionTests
                 s=new WorldSession(ContractJson.Copy(w));
                 Assert.True(s.DiagnosticSnapshot().Offices.Single(o=>o.Id==post.Id).Until<=s.Seconds);
             }
+            var bought=Freight(HouseFreightAction.Buy);
+            Assert.True(bought.Code==ResultCode.Accepted,bought.VisibleReason);
+            Assert.Equal(ResultCode.NotAvailable,Freight(HouseFreightAction.Receive).Code);
             var beforeEntry=s.DiagnosticSnapshot();
             var delivered=HouseReforms.Baggage(beforeEntry,beforeEntry.Court!.Events.Single(e=>e.Input.Id==order.Id))!;
             Assert.Equal(enter.Site,delivered.Site);
             Assert.Equal(baggage.Purse,delivered.Purse);
+            var shipment=Assert.Single(delivered.HouseShipments);
+            Assert.Equal(proposal.Site,shipment.Terms.Home);
+            Assert.Equal(owner,shipment.Terms.Owner);
+            Assert.Equal(5,shipment.Cargo);Assert.Equal(100-shipment.Spent,shipment.Cash);
             Assert.Contains(delivered.PersonalItems,o=>o.Id==heirloom.Id && o.Owner==person && o.Holder==person);
             var arrived=s.ManageCourt(enter,s.Revision);
             Assert.True(arrived.Code==ResultCode.Accepted,arrived.VisibleReason);
@@ -117,6 +130,18 @@ public sealed class HouseConditionTests
             Assert.Equal(enter.Site,after.Offices.Single(o=>o.Kind=="castellan" && o.Subject==person && o.Until==long.MaxValue).Target);
             Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights));
             Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter with{Id=new("request:repeat-entry")},s.Revision).Code);
+            Assert.Equal(ResultCode.NotAvailable,Freight(HouseFreightAction.Receive).Code);
+            s.SetPaused(true);
+            Assert.True(store.Save(s,"arrived-with-house-cargo",before.WorldId).Published);
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("arrived-with-house-cargo"),host.Current,host.Current.Revision));
+            s=host.Current;
+            Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:return-with-cargo","castle"),s.Revision).Code);
+            NewGameWorldTests.At(s,s.Seconds+2);
+            NewGameWorldTests.At(s,s.GetBranchView(person).ArrivalAt!.Value+2);
+            var paid=Freight(HouseFreightAction.Receive);
+            Assert.True(paid.Code==ResultCode.Accepted,paid.VisibleReason);
+            Assert.Equal(HouseFreightPhase.Completed,s.HouseFreightView()!.Jobs.Single().Phase);
+            Assert.Equal(baggage.Purse,NewGameWork.Balance(s.DiagnosticSnapshot(),person));
         }finally{dir.Delete(true);}
     }
 
