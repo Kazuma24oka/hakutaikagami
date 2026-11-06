@@ -18,6 +18,15 @@ public static class PactSignals
         HouseholdCourt.RecordForeignLetter(w,letter);
     }
 
+    internal static void Dispatch(ContractWorld w,SecretPact p)
+    {
+        if(p.Purpose==PactPurpose.RiseTogether && JointIndependence.Declaration(w,p)==null)
+            w.Declarations=[..w.Declarations??[],new(p.Id,p.Proposer,p.House,InformationSchemes.Id("independent-house",p.Id.Value),
+                SocialWorld.Site(w,p.Proposer)!.Value,w.ElapsedSeconds,w.CommitSequence)];
+        PactSignals.Send(w,p,true,p.Purpose==PactPurpose.RiseTogether?"独立を宣言した。約定に応じるか返書を乞う。":
+            DefectionPacts.Name(p.Purpose)+"との約定について、今の意向を伺います。");
+    }
+
     static string ReplyText(bool acted)=>acted?"合図を受け、約した行動を取りました。":"今回は応じられません。";
 
     internal static void Receive(ContractWorld w)
@@ -99,13 +108,7 @@ public sealed partial class WorldSession
             if(p.Purpose==PactPurpose.RiseTogether && JointIndependence.Declaration(state,p)==null &&
                 DefectionPacts.HouseAt(state,p.Proposer,state.ElapsedSeconds,shown)!=p.House)
                 return new(ResultCode.NotAvailable,pact,shown,"独立の対象となる旧所属が変わりました");
-            Change(w=>{
-                if(p.Purpose==PactPurpose.RiseTogether && JointIndependence.Declaration(w,p)==null)
-                    w.Declarations=[..w.Declarations??[],new(p.Id,p.Proposer,p.House,InformationSchemes.Id("independent-house",p.Id.Value),
-                        SocialWorld.Site(w,p.Proposer)!.Value,w.ElapsedSeconds,w.CommitSequence)];
-                PactSignals.Send(w,p,true,p.Purpose==PactPurpose.RiseTogether?"独立を宣言した。約定に応じるか返書を乞う。":
-                    DefectionPacts.Name(p.Purpose)+"との約定について、今の意向を伺います。");
-            });
+            Change(w=>PactSignals.Dispatch(w,p));
             return new(ResultCode.Accepted,pact,state.CommitSequence,"密書を送りました");
         }
     }

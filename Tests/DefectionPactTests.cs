@@ -17,6 +17,86 @@ public class DefectionPactTests
             socialPolicy:CharacterRelations.Policy,comingOfAge:15);
     }
 
+    [Fact]
+    public void DisplacedLordCanRestoreHisHouseWithTheLocalCastellanAfterLoading()
+    {
+        var replacement = NewGameWorldTests.Officer(role: StartTemplate.Daimyo);
+        var partner = NewGameWorldTests.Officer(Partner.Value, StartTemplate.Castellan, lord: replacement.Id);
+        var setup = NewGameWorldTests.Setup([replacement, partner], [new(replacement.Id, "org:replacement", [replacement.Site], true)]);
+        EntityId lord = new("person:nobunaga");
+        for (ulong seed = 0; seed < 32; seed++)
+        {
+            var start = NewGameWorld.Create(setup.World, setup.Registered, lord.Value, seed, inspectionPolicy: LocalInspectionFindings.Policy,
+                workPolicy: WorkFollowup.Policy, companionPolicy: PersonalCompanions.Policy, developmentPolicy: CharacterDevelopment.Policy,
+                socialPolicy: CharacterRelations.Policy, comingOfAge: 15);
+            var session = new WorldSession(start);
+            var seen = Assert.Single(HouseRestoration.ObserveFormerSeat(start, lord));
+            var inquiry = new CourtInput(new("request:former-seat-inquiry"), CourtAction.SeekRestorationSupport, Partner, seen.House, seen.Site);
+            var result = session.ManageCourt(inquiry, session.Revision);
+            Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+            EntityId pact = new("request:former-seat-pact");
+            result = session.NegotiatePact(pact, Partner, PactPurpose.RiseTogether, session.Revision);
+            Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+            if (!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted) continue;
+            Assert.Equal(ResultCode.Accepted, session.SignalPact(pact, session.Revision).Code);
+            session.SetPaused(true);
+            var directory = Directory.CreateTempSubdirectory("hakutai-former-seat-");
+            try
+            {
+                var store = new GenerationSaveStore(directory.FullName, start.Definitions);
+                Assert.True(store.Save(session, "rebellion", start.WorldId).Published);
+                var host = new WorldSessionHost(new WorldSession(start));
+                Assert.Equal(ResultCode.Accepted, host.CommitLoad(store.Prepare("rebellion"), host.Current, host.Current.Revision));
+                foreach (var run in new[] {session, host.Current})
+                {
+                    NewGameWorldTests.At(run, 120);
+                    var world = run.DiagnosticSnapshot();
+                    var application = Assert.Single(HouseRestoration.ContinuityApplications(world, lord));
+                    var filed = run.ManageCourt(application, run.Revision);
+                    Assert.True(filed.Code == ResultCode.Accepted, filed.VisibleReason);
+                    world = run.DiagnosticSnapshot();
+                    Assert.Equal(world.Declarations!.Single().House, HouseRestoration.SuccessorOrganization(world, seen.House, 120, world.CommitSequence + 1));
+                }
+                Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()), ContractJson.Write(host.Current.DiagnosticSnapshot()));
+                return;
+            }
+            finally { directory.Delete(true); }
+        }
+        Assert.Fail("旧大名と城主の共同挙兵に至る開始条件がありません");
+    }
+
+    [Fact]
+    public void FormerLordAsNpcCanSendHisOwnCallAfterWinningLocalSupport()
+    {
+        var daimyo = NewGameWorldTests.Officer(role: StartTemplate.Daimyo);
+        var partner = NewGameWorldTests.Officer(Partner.Value, StartTemplate.Castellan, lord: daimyo.Id);
+        var setup = NewGameWorldTests.Setup([daimyo, partner], [new(daimyo.Id, "org:replacement", [daimyo.Site], true)]);
+        EntityId lord = new("person:nobunaga");
+        for (ulong seed = 0; seed < 256; seed++)
+        {
+            var world = NewGameWorld.Create(setup.World, setup.Registered, daimyo.Id, seed, npcRoutinePolicy: NewGameNpcRoutine.Policy,
+                inspectionPolicy: LocalInspectionFindings.Policy, workPolicy: WorkFollowup.Policy, companionPolicy: PersonalCompanions.Policy,
+                developmentPolicy: CharacterDevelopment.Policy, socialPolicy: CharacterRelations.Policy, comingOfAge: 15);
+            var opinion = CharacterRelations.DiagnosticScores(world, lord, Partner);
+            var reverse = CharacterRelations.DiagnosticScores(world, Partner, lord);
+            var loyalty = CharacterRelations.DiagnosticScores(world, Partner, new(daimyo.Id));
+            bool Open(EntityId person) => CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Ambition) > CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Caution) && CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Affection) > CharacterRelations.DiagnosticTrait(world, person, SocialTrait.Duty);
+            if (!Open(lord) || !Open(Partner) ||
+                CharacterRelations.DiagnosticTrait(world, Partner, SocialTrait.Ambition) + reverse.Trust + loyalty.Hostility <
+                CharacterRelations.DiagnosticTrait(world, Partner, SocialTrait.Duty) + loyalty.Trust + reverse.Hostility) continue;
+            var session = new WorldSession(world);
+            NewGameWorldTests.At(session, 86400 * 5 + 120);
+            var after = session.DiagnosticSnapshot();
+            var pact = Assert.Single(after.SecretPacts ?? [], p => p.Proposer == lord && p.Partner == Partner);
+            Assert.True(PactSignals.Sent(after, pact));
+            Assert.Contains(after.Declarations!, d => d.Pact == pact.Id);
+            Assert.Contains(after.PactResponses!, r => r.Pact == pact.Id && r.Acted);
+            Assert.NotNull(HouseRestoration.SuccessorOrganization(after, new("org:oda"), after.ElapsedSeconds, after.CommitSequence+1));
+            return;
+        }
+        Assert.Fail("互いに支持し共同挙兵を選ぶ条件がありません");
+    }
+
     [Theory]
     [InlineData(PactPurpose.WithholdService)]
     [InlineData(PactPurpose.LeaveHouse)]
@@ -152,6 +232,55 @@ public class DefectionPactTests
     }
 
     [Fact]
+    public void ActualLossOfCastleCanLeadToLocalRestorationInquiryAcrossDiskLoad()
+    {
+        for (ulong seed = 0; seed < 32; seed++)
+        {
+            var start = Start(seed, castellan: true);
+            var session = new WorldSession(start);
+            NewGameWorldTests.At(session, 5);
+            EntityId pact = new("request:loss-before-restoration");
+            Assert.Equal(ResultCode.Accepted, session.NegotiatePact(pact, Partner, PactPurpose.RiseTogether, session.Revision).Code);
+            if (!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted) continue;
+            Assert.Equal(ResultCode.Accepted, session.SignalPact(pact, session.Revision).Code);
+            var changed = session.DiagnosticSnapshot();
+            var change = Assert.Single(changed.Declarations!);
+            var observation = Assert.Single(HouseRestoration.ObserveFormerSeat(changed, Actor));
+            Assert.Equal((change.FormerHouse, change.Site), (observation.House, observation.Site));
+            var ask = new CourtInput(new("request:seek-local-support"), CourtAction.SeekRestorationSupport,
+                Partner, change.FormerHouse, change.Site);
+            var result = session.ManageCourt(ask, session.Revision);
+            Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+            session.SetPaused(true);
+            var directory = Directory.CreateTempSubdirectory("hakutai-restore-inquiry-");
+            try
+            {
+                var store = new GenerationSaveStore(directory.FullName, start.Definitions);
+                Assert.True(store.Save(session, "inquiry", start.WorldId).Published);
+                var host = new WorldSessionHost(new WorldSession(start));
+                Assert.Equal(ResultCode.Accepted, host.CommitLoad(store.Prepare("inquiry"), host.Current, host.Current.Revision));
+                NewGameWorldTests.At(session, 8);
+                NewGameWorldTests.At(host.Current, 8);
+                var after = host.Current.DiagnosticSnapshot();
+                Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()), ContractJson.Write(after));
+                Assert.Single(after.Court!.Events, e => e.Input.Reference == ask.Id &&
+                    e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
+                Assert.Null(HouseRestoration.SuccessorOrganization(after, change.FormerHouse, 8, after.CommitSequence + 1));
+                Assert.Empty(HouseRestoration.ContinuityApplications(after, Actor));
+                var attempt = new CourtInput(new("request:claim-former-house"), CourtAction.RecognizeHouseContinuity,
+                    Actor, change.FormerHouse, change.Site, Reference: change.Pact);
+                var refused = host.Current.ManageCourt(attempt, host.Current.Revision);
+                Assert.Equal(ResultCode.NotAvailable, refused.Code);
+                Assert.Equal(ContractJson.Write(after), ContractJson.Write(host.Current.DiagnosticSnapshot()));
+
+            }
+            finally { directory.Delete(true); }
+            return;
+        }
+        Assert.Fail("独立に合意する開始条件がありません");
+    }
+
+    [Fact]
     public void LocalCastellanBringsOnlyTheCastleInHisCharge()
     {
         EntityId id=new("request:castle-rise");
@@ -164,6 +293,9 @@ public class DefectionPactTests
             Assert.Equal(ResultCode.Accepted,s.SignalPact(id,s.Revision).Code);
             var after=s.DiagnosticSnapshot();
             var declaration=Assert.Single(after.Declarations!);
+            Assert.True(HouseRestoration.RepresentsFoundation(after, declaration, declaration.Founder, after.ElapsedSeconds, after.CommitSequence));
+            Assert.False(HouseRestoration.RepresentsFoundation(after, declaration, Partner, after.ElapsedSeconds, after.CommitSequence));
+            Assert.Null(HouseRestoration.SuccessorOrganization(after, declaration.FormerHouse, after.ElapsedSeconds, after.CommitSequence + 1));
             var control=Assert.Single(after.LandRights,r=>r.Subject==declaration.House);
             Assert.Equal(declaration.Site,control.Target);
             Assert.Equal("control",control.Kind);

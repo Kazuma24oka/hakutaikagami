@@ -9,6 +9,57 @@ public sealed class HouseSalaryTests
     static CommandResult Act(WorldSession s,SalaryAction action,EntityId? contract=null,long amount=0,EntityId? prep=null,string? id=null)=>s.ManageSalary(new(new(id??"request:salary/"+s.Revision),action,Other(s),new("site:kofu"),contract,amount,prep),s.PlayerControl,s.Revision);
     static EntityId Agree(WorldSession s,long amount=20){var r=Act(s,SalaryAction.Propose,amount:amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);var q=s.DiagnosticSnapshot().Salary!.Quotes.Last();Assert.True(q.Agreed,q.Reply);r=Act(s,SalaryAction.Confirm,q.Id);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return q.Id;}
     static void Advance(WorldSession s,long at){while(s.Seconds<at){long old=s.Seconds;s.SetPaused(false);s.AdvanceTo(at,100000);Assert.True(s.Seconds>old);}}
+    [Fact]
+    public void RestorationClaimUsesUnpaidBalanceOfSignedSalaryAfterActualReceipt()
+    {
+        var session = Start(employee: true);
+        var original = Agree(session);
+        Advance(session, First(session));
+        var prepare = Act(session, SalaryAction.Prepare, original, 5);
+        Assert.Equal(ResultCode.Accepted, prepare.Code);
+        var preparation = session.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id;
+        Assert.Equal(ResultCode.Accepted, Act(session, SalaryAction.Receive, original, prep: preparation).Code);
+        var w = session.DiagnosticSnapshot();
+        var term = Assert.Single(w.Salary!.Terms);
+        var ask = new CourtInput(new("request:local-ask"), CourtAction.SeekRestorationSupport, Worker, term.Owner, term.Site);
+        w.CommitSequence++;
+        w.Court = new(1, HouseholdCourt.Policy, [new(ask, term.Employer, term.Site, w.ElapsedSeconds, w.CommitSequence, false)]);
+        var claim = new CourtInput(new("request:arrears"), CourtAction.PresentRestorationArrears,
+            term.Employer, term.Owner, term.Site, Amount: 15, Reference: original);
+        w.CommitSequence++;
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, claim with { Amount = 20 }, Worker));
+        HouseholdCourt.Execute(w, claim, Worker);
+        w = ContractJson.Copy(w);
+        Assert.Equal(5, HouseSalary.PrivateRice(w, Worker));
+        Assert.Equal(15, HouseRestoration.UnpaidSalary(Assert.Single(w.Salary!.Terms), w.ElapsedSeconds));
+        w.CommitSequence++;
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, claim with { Id = new("request:repeat") }, Worker));
+        // 請求は別の原本。実支払は既存の給付セッションで行い、その受領記録を照合する。
+        // 単一世界と同じ時間順になるよう、請求提示の後に支払の時刻を置く。
+        Advance(session, session.Seconds + 1);
+        var prepareBalance = Assert.IsType<SalaryInput>(HouseRestoration.SettlementForClaim(w, claim.Id));
+        Assert.Equal(15, prepareBalance.Amount);
+        Assert.Equal(ResultCode.Accepted, session.ManageSalary(prepareBalance, Worker, session.Revision).Code);
+        void RefreshSalary()
+        {
+            var actual = session.DiagnosticSnapshot();
+            w.Salary = actual.Salary;
+            w.ElapsedSeconds = actual.ElapsedSeconds;
+            w.CommitSequence = Math.Max(w.CommitSequence + 1, actual.CommitSequence);
+        }
+        RefreshSalary();
+        var handover = Assert.IsType<SalaryInput>(HouseRestoration.SettlementForClaim(w, claim.Id));
+        Assert.Equal(SalaryAction.Receive, handover.Action);
+        Assert.Equal(ResultCode.Accepted, session.ManageSalary(handover, Worker, session.Revision).Code);
+        RefreshSalary();
+        Assert.Equal(20, HouseSalary.PrivateRice(w, Worker));
+        Assert.Null(HouseRestoration.SettlementForClaim(w, claim.Id));
+        Advance(session, term.DueAt[1]);
+        RefreshSalary();
+        Assert.True(HouseRestoration.UnpaidSalary(w.Salary!.Terms.Single(), w.ElapsedSeconds) > 0);
+        Assert.Null(HouseRestoration.SettlementForClaim(w, claim.Id));
+
+    }
     static long First(WorldSession s)=>s.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[0];
     static EntityId Prepare(WorldSession s,EntityId term,long amount=20){var r=Act(s,SalaryAction.Prepare,term,amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return s.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id;}
     [Theory][InlineData(false)][InlineData(true)]public void BothHeadAndEmployeeCanConfirmLocalTermsWithoutTransferringRoles(bool employee){var s=Start(employee);var before=s.DiagnosticSnapshot();var id=Agree(s);Assert.Equal(0,s.SalaryView()!.Contracts.Single().Owed);Assert.Equal(ContractJson.Write(before.ServiceBonds),ContractJson.Write(s.DiagnosticSnapshot().ServiceBonds));Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(s.DiagnosticSnapshot().Units));Assert.Equal(0,s.SalaryView()!.PrivateRice);Assert.Equal(1000,NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl));}

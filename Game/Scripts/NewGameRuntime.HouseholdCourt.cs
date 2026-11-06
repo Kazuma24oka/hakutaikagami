@@ -15,6 +15,90 @@ public partial class NewGameRuntime
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  if(courtCategory==3){
+   var history=w.Court?.Events??[];
+   foreach(var former in HouseRestoration.ObserveFormerSeat(w,actor)){
+    SocialText(box,$"旧領の見聞：{NewGameWorld.SiteName(former.Site.Value)}で旧主の支配が変わったことを確認した。");
+    foreach(var peer in w.Characters.Where(c=>c.Id!=actor && c.Life==LifeState.Adult && SocialWorld.Site(w,c.Id)==site)){
+     if(history.Any(e=>e.Input.Action==CourtAction.SeekRestorationSupport && e.Actor==actor && e.Input.Person==peer.Id && e.Input.Owner==former.House && e.Place==site))continue;
+     var key="restore/"+former.House.Value+"/"+peer.Id.Value;
+     Button(key,MeritRewards.DisplayName(w,actor,peer.Id)+"に旧家再興の支持を求める",()=>Run(new(Nonce(key),CourtAction.SeekRestorationSupport,peer.Id,former.House,former.Site)));
+    }
+   }
+   foreach(var known in history.Where(e=>e.Input.Action==CourtAction.RecordRecoveredSeat && e.Actor==actor))
+    SocialText(box,$"{WorldCalendar.Display(w.EpochDate,known.At)}　{NewGameWorld.SiteName(known.Place.Value)}の本丸と旧家の守備兵を確認");
+   foreach(var recoveringHouse in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && e.Actor==actor && e.Place==site).Select(e=>e.Input.Owner).Distinct()){
+    var successor=HouseRestoration.SuccessorOrganization(w,recoveringHouse,w.ElapsedSeconds,rev+1);
+    if(successor!=null)SocialText(box,"旧家の家督と再興後の家の原本を照合済み");
+    else foreach(var application in HouseRestoration.ContinuityApplications(w,actor).Where(i=>i.Owner==recoveringHouse))
+     Button(application.Id.Value,"旧家の家督と現在の家の原本を照合する",()=>Run(application));
+    if(HouseRestoration.SecuredKeep(w,actor,recoveringHouse,site.Value) is not {} capture ||
+       history.Any(e=>e.Input.Action==CourtAction.RecordRecoveredSeat && e.Actor==actor && e.Input.Reference==capture))continue;
+    var key="recovered/"+capture.Value;
+    Button(key,"この本丸の回復を現地で記録する",()=>Run(new(Nonce(key),CourtAction.RecordRecoveredSeat,actor,recoveringHouse,site.Value,Reference:capture)));
+   }
+   foreach(var ask in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && (e.Actor==actor || e.Input.Person==actor))){
+    foreach(var claim in history.Where(e=>e.Input.Action==CourtAction.PresentRestorationArrears && e.Input.Person==ask.Actor && e.Actor==ask.Input.Person && e.Input.Owner==ask.Input.Owner))
+    {
+     SocialText(box,$"{WorldCalendar.Display(w.EpochDate,claim.At)}に提示した未払い扶持：{claim.Input.Amount}kg（提示時点）");
+     if(HouseRestoration.SettlementForClaim(w,claim.Input.Id) is {} payment){
+      var title=payment.Action==SalaryAction.Prepare?$"蔵の米{payment.Amount}kgをこの扶持に引き当てる":"引き当てた扶持米を現地で受け渡す";
+      Button("settle/"+claim.Input.Id.Value,title,()=>{
+       var result=Session.ManageSalary(payment,actor,rev);message.Text=result.VisibleReason;Refresh();ShowHouseholdCourt();
+      });
+     }
+    }
+    if(actor==ask.Input.Person && SocialWorld.Site(w,ask.Actor)==site){
+     foreach(var term in (w.Salary?.Terms??[]).Where(t=>t.Employee==actor && t.Owner==ask.Input.Owner)){
+      long owed=HouseRestoration.UnpaidSalary(term,w.ElapsedSeconds);
+      if(owed<=0 || history.Any(e=>e.Input.Action==CourtAction.PresentRestorationArrears && e.Input.Reference==term.Id && e.Input.Person==ask.Actor && e.Input.Amount==owed))continue;
+      var key="restoration-arrears/"+term.Id.Value+"/"+ask.Actor.Value;
+      Button(key,$"未払い扶持{owed}kgの原本を示す",()=>Run(new(Nonce(key),CourtAction.PresentRestorationArrears,ask.Actor,term.Owner,site.Value,Amount:owed,Reference:term.Id)));
+     }
+    }
+    var reply=history.SingleOrDefault(e=>e.Input.Reference==ask.Input.Id && e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
+    var peer=actor==ask.Actor?ask.Input.Person:ask.Actor;
+    SocialText(box,MeritRewards.DisplayName(w,actor,peer)+"との再興相談："+(reply==null?"返答待ち":reply.Input.Action==CourtAction.SupportRestoration?"個人として支持":"判断を留保"));
+    if(reply?.Input.Action==CourtAction.SupportRestoration){
+     var escort=history.LastOrDefault(e=>e.Input.Action==CourtAction.OfferRestorationEscort && e.Input.Reference==reply.Input.Id);
+     if(escort!=null){
+      var response=history.SingleOrDefault(e=>e.Input.Reference==escort.Input.Id && e.Input.Action is CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort);
+      var released=response!=null && history.Any(e=>e.Input.Action==CourtAction.ReleaseRestorationEscort && e.Input.Reference==response.Input.Id);
+      if(!released && response?.Input.Action==CourtAction.AcceptRestorationEscort && actor==response.Actor && SocialWorld.Site(w,peer)==site && escort.Input.When>w.ElapsedSeconds){
+       var key="release-escort/"+response.Input.Id.Value;
+       Button(key,"指揮者に警護の終了を伝える",()=>Run(new(Nonce(key),CourtAction.ReleaseRestorationEscort,peer,escort.Input.Owner,site.Value,Reference:response.Input.Id,When:escort.Input.When)));
+      }
+      SocialText(box,"後援家の現地警護："+(released?"指揮者に終了を伝達済み":escort.Input.When<=w.ElapsedSeconds?"期限終了":response==null?"条件提示中":response.Input.Action==CourtAction.AcceptRestorationEscort?"合意済み":"辞退"));
+      if(response?.Input.Action==CourtAction.AcceptRestorationEscort && RestorationEscort.WitnessedAtAssembly(w,actor,response) is >0 and var soldiers)
+       SocialText(box,$"集合地で確認した後援家の兵：{soldiers}人");
+      if(response==null && actor==escort.Input.Person && site==ask.Place && SocialWorld.Site(w,peer)==site && escort.Input.When>w.ElapsedSeconds)
+       foreach(var answer in new[]{CourtAction.AcceptRestorationEscort,CourtAction.DeclineRestorationEscort}){
+        var key=answer+"/"+escort.Input.Id.Value;
+        Button(key,answer==CourtAction.AcceptRestorationEscort?"旧領での警護を依頼する":"警護を辞退する",()=>Run(new(Nonce(key),answer,peer,escort.Input.Owner,ask.Place,Reference:escort.Input.Id,When:escort.Input.When)));
+       }
+     }
+     if(reply.Actor==actor && (escort==null || escort.Input.When<=w.ElapsedSeconds) && site==ask.Place && SocialWorld.Site(w,peer)==site){
+      foreach(var sponsor in HouseSuccession.Factions(w).Select(f=>new EntityId(f.Id)).Where(h=>h!=ask.Input.Owner && FactionStances.ResolveAuthority(w,actor,h,w.ElapsedSeconds,rev)!=null)){
+       var key="escort/"+reply.Input.Id.Value+"/"+sponsor.Value;
+       Button(key,"家として七日間の現地警護を申し出る",()=>Run(new(Nonce(key),CourtAction.OfferRestorationEscort,peer,sponsor,ask.Place,Reference:reply.Input.Id,When:w.ElapsedSeconds+7*86400L)));
+      }
+     }
+     var pledge=history.SingleOrDefault(e=>e.Input.Reference==reply.Input.Id && e.Input.Action==CourtAction.PledgeRestorationRice);
+     var delivered=pledge!=null && history.Any(e=>e.Input.Reference==pledge.Input.Id && e.Input.Action==CourtAction.HandOverRestorationRice);
+     if(pledge!=null)SocialText(box,$"支援米 {pledge.Input.Amount}kg："+(delivered?"受渡し済み":"持参待ち"));
+     if(reply.Actor==actor && site==ask.Place && SocialWorld.Site(w,peer)==site && !delivered){
+      var key="restoration-rice/"+reply.Input.Id.Value;
+      if(pledge==null)Button(key,"私有米1kgの支援を約束する",()=>Run(new(Nonce(key),CourtAction.PledgeRestorationRice,peer,ask.Input.Owner,ask.Place,Amount:1,Reference:reply.Input.Id)));
+      else if(HouseSalary.PrivateRice(w,actor)>=pledge.Input.Amount)Button(key,"約束した私有米を手渡す",()=>Run(new(Nonce(key),CourtAction.HandOverRestorationRice,peer,ask.Input.Owner,ask.Place,Amount:pledge.Input.Amount,Reference:pledge.Input.Id)));
+     }
+    }
+    if(reply!=null || ask.Input.Person!=actor || site!=ask.Place || SocialWorld.Site(w,peer)!=site)continue;
+    foreach(var choice in new[]{CourtAction.SupportRestoration,CourtAction.ReserveRestoration}){
+     var key=choice+"/"+ask.Input.Id.Value;
+     Button(key,choice==CourtAction.SupportRestoration?"個人として支持する":"判断を留保する",()=>Run(new(Nonce(key),choice,peer,ask.Input.Owner,ask.Place,Reference:ask.Input.Id)));
+    }
+   }
+  }
   foreach(var parcel in SocialWorld.Gifts(w,actor).Where(g=>g.Recipient==actor&&g.Phase=="運搬・受領待ち")){
    var asset=w.SocialWorld!.Events.Single(e=>e.Input.Id==parcel.Id).Input.Asset;if(asset==null)continue;var doc=HouseholdCourt.DocumentRows(w).SingleOrDefault(d=>d.Id==asset);if(doc==null)continue;
    Button("read-document",doc.Name+"を開いて、実物を確認する",()=>{CancelAdvancePrefetch();var r=Session.ManageSocial(new(Nonce("read/"+doc.Id.Value),SocialWorldAction.ReceiveGift,parcel.Sender,Reference:parcel.Id),rev);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();});

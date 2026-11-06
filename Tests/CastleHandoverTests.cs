@@ -12,6 +12,20 @@ public sealed class CastleHandoverTests
     static EntityId Gate(WorldSession s){var id=Offer(s);Good(Act(s,CastleAction.Confirm,id));Good(Act(s,CastleAction.Gate,id));return id;}
     [Fact]public void AgreementDoesNotMoveAnyPossessionOrProperty(){var s=Start();var before=s.DiagnosticSnapshot();var id=Offer(s);Good(Act(s,CastleAction.Confirm,id));var j=CastleHandover.Jobs(s.DiagnosticSnapshot()).Single();Assert.Null(j.Gate);Assert.Null(j.Occupied);Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(s.DiagnosticSnapshot().LandRights));Assert.Equal(ContractJson.Write(before.ResourceLots),ContractJson.Write(s.DiagnosticSnapshot().ResourceLots));}
     [Fact]public void GateThenScheduledKeepAreDistinctRealClockSteps(){var s=Start();var id=Gate(s);var now=s.Seconds;Good(Act(s,CastleAction.RequestKeep,id));Assert.Null(CastleHandover.Jobs(s.DiagnosticSnapshot()).Single().Occupied);Assert.Equal(now,s.Seconds);Advance(s,now+1);var j=CastleHandover.Jobs(s.DiagnosticSnapshot()).Single();Assert.NotNull(j.Gate);Assert.Equal(now+1,j.Occupied!.At);Assert.Contains("軍事占有",s.CastleView()!.Castles.Single().Status);}
+    [Fact]
+    public void RestorationCountsOnlyTheGarrisonHoldingTheDeliveredKeep()
+    {
+        var session = Start();
+        var offer = Gate(session);
+        Assert.Null(HouseRestoration.SecuredKeep(session.DiagnosticSnapshot(), session.PlayerControl, Occupier, Site));
+        Good(Act(session, CastleAction.RequestKeep, offer));
+        Advance(session, session.Seconds + 1);
+        var world = new WorldSession(ContractJson.Copy(session.DiagnosticSnapshot())).DiagnosticSnapshot();
+        var capture = CastleHandover.Jobs(world).Single().Occupied!;
+        Assert.Equal(capture.Input.Id, HouseRestoration.SecuredKeep(world, session.PlayerControl, Occupier, Site));
+        Assert.Null(HouseRestoration.SecuredKeep(world, session.PlayerControl, Owner, Site));
+        Assert.Null(HouseRestoration.SecuredKeep(world, session.PlayerControl, Occupier, new("site:castle")));
+    }
     [Fact]public void AbsentForeignArmyCannotBecomeAnInstantInvader(){var s=Start(false);var before=ContractJson.Write(s.DiagnosticSnapshot());Assert.Equal(ResultCode.NotAvailable,s.ManageCastle(new(new("request:absent-castle"),CastleAction.Offer,Site,RecipientOwner:Occupier),s.PlayerControl,s.Revision).Code);Assert.Equal(before,ContractJson.Write(s.DiagnosticSnapshot()));}
     [Fact]public void RefusedLocalTermsCannotBeConfirmed(){var s=Start(willing:false);var id=Offer(s);Assert.False(CastleHandover.Jobs(s.DiagnosticSnapshot()).Single().Terms.Agreed);Assert.Equal(ResultCode.NotAvailable,Act(s,CastleAction.Confirm,id).Code);Assert.DoesNotContain(s.DiagnosticSnapshot().Castles!.Entries,e=>e.Input.Action==CastleAction.Gate);}
     [Fact]public void KeepCannotBeRequestedBeforeGate(){var s=Start();var id=Offer(s);Good(Act(s,CastleAction.Confirm,id));Assert.Equal(ResultCode.NotAvailable,Act(s,CastleAction.RequestKeep,id).Code);}

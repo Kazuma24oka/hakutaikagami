@@ -1,0 +1,42 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "旧家の政治上の継続と新しい組織IDを分け、旧臣・遺児は本人の既知の好機から行動する",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/DefectionPactTests.cs"
+      ]
+    },
+    {
+      "contract": "個人の支持と後援を分け、約束した人員・物資の実集合と補給を扱う",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/HouseRestorationTests.cs"
+      ]
+    },
+    {
+      "contract": "挙兵後の部分回復・撤退と実支配を分ける",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CastleHandoverTests.cs",
+        "Tests/HouseRestorationTests.cs"
+      ]
+    },
+    {
+      "contract": "残る権利と未払いを旧原本に照合し、実精算の重複を防ぐ",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/HouseSalaryTests.cs"
+      ]
+    },
+    {
+      "contract": "通常入口と途中保存復旧、代表旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/HouseRestorationV1/entry-verification.md",
+        "Game/Scripts/HouseRestorationCheck.cs"
+      ]
+    }
+  ]
+}

@@ -235,7 +235,7 @@ public static class ContractValidation
             (i.SourceLot == null || lots.Contains(i.SourceLot.Value)) && (i.DestinationLot == null || lots.Contains(i.DestinationLot.Value)) &&
             (i.DestinationSite == null || sites.Contains(i.DestinationSite.Value)), "Invalid intent.");
         Check((i.Action==ActionKind.Train)==(i.TrainingSkill!=null) && (i.TrainingSkill==null||Enum.IsDefined(i.TrainingSkill.Value)),"Training skill/action mismatch");
-        Check(i.RoutePolicy is null or GuardJobs.LandRoute or InformationSchemes.LandRoute or SocialWorld.LandRoute or VoyageExpense.WalkOnly or NpcArmies.LandRoute or PersonalCompanions.LandRoute or NpcFreight.LandRoute or ArmyRoadMarch.LandRoute or RoadConvoy.LandRoute && (i.RoutePolicy==null||i.Action==ActionKind.Move),"Unknown route policy");
+        Check(i.RoutePolicy is null or RestorationEscort.HomeRoute or GuardJobs.LandRoute or InformationSchemes.LandRoute or SocialWorld.LandRoute or VoyageExpense.WalkOnly or NpcArmies.LandRoute or PersonalCompanions.LandRoute or NpcFreight.LandRoute or ArmyRoadMarch.LandRoute or RoadConvoy.LandRoute && (i.RoutePolicy==null||i.Action==ActionKind.Move),"Unknown route policy");
         Check(i.Action switch {
             ActionKind.Transfer => i.Amount > 0 && i.SourceLot != null && i.DestinationLot != null && i.SourceLot != i.DestinationLot && i.DestinationSite == null && i.TargetTask == null,
             ActionKind.Move => i.Amount == 0 && i.SourceLot == null && i.DestinationLot == null && i.DestinationSite != null && i.TargetTask == null,

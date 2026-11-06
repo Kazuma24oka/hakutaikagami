@@ -134,7 +134,7 @@ public sealed partial class WorldSession
                 PrivateInformation.RecordOpening(s,actor,m.Id);TruceNegotiations.RecordOpening(s,actor,m.Id);TreatyNegotiations.RecordOpening(s,actor,m.Id);TreatyNegotiations.RecordOperationOpening(s,actor,m.Id);TreatySupply.RecordOpening(s,actor,m.Id);TreatyDefense.RecordOpening(s,actor,m.Id);TruceConfirmations.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordRemoteOpening(s,actor,m.Id);FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
-            RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
+            RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
         }
     }
     public CommandResult Assent(EntityId taskId, EntityId actor, bool accept, long expectedRevision)
@@ -179,11 +179,11 @@ public sealed partial class WorldSession
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
-                    HouseReforms.Receive(s);HouseScaleNotices.Receive(s);PactSignals.Receive(s);GuardianLedger.Tick(s);HeirPledges.Receive(s);TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
+                    HouseRestoration.SeekLocalSupport(s,priorAt);HouseRestoration.AnswerLocalRequests(s);HouseReforms.Receive(s);HouseScaleNotices.Receive(s);PactSignals.Receive(s);GuardianLedger.Tick(s);HeirPledges.Receive(s);TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
                     if(!WorldTimeControl.Enabled(s)&&s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 }finally{deferTimePause=false;if(WorldTimeControl.Pending(state)!=null&&!state.Paused)Change(s=>s.Paused=true);}
                 processed+=cost;
                 if(stopAtNotice&&(state.TimeControl?.Notices.Length??0)>initialNotices)return new(state.ElapsedSeconds,processed,"Notice");
@@ -215,6 +215,7 @@ public sealed partial class WorldSession
         if(CraftTrade.NextBoundary(s,target) is {} craftsBoundary)times.Add(craftsBoundary);
         if(StandingAdministration.NextBoundary(s,target) is {} administrationBoundary)times.Add(administrationBoundary);
         if(PublicWorks.NextBoundary(s,target) is {} worksBoundary)times.Add(worksBoundary);
+        if(HouseRestoration.NextDecision(s,target) is {} restorationBoundary)times.Add(restorationBoundary);
         if(HouseholdCourt.NextBoundary(s,target) is {} courtBoundary)times.Add(courtBoundary);
         if(FamilyBirth.Next(s,target) is {} birth)times.Add(birth);
         if(FamilyMortality.Next(s,target) is {} naturalDeath)times.Add(naturalDeath);
