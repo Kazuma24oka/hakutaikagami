@@ -68,6 +68,24 @@ public sealed class HouseConditionTests
             Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("seat"),host.Current,host.Current.Revision));
             NewGameWorldTests.At(host.Current,32*86400);
             Assert.Equal(3,host.Current.DiagnosticSnapshot().Materials!.Months.First(m=>m.Site==enact.Site).WoodBought);
+            var contested=host.Current;
+            CourtInput Dispute(CourtAction act)=>grant with{Id=new("request:seat/"+act),Action=act,Reference=grant.Id};
+            var challenge=Dispute(CourtAction.ChallengeSeat);
+            Assert.Equal(ResultCode.Accepted,contested.ManageCourt(challenge,contested.Revision).Code);
+            var insist=Dispute(CourtAction.InsistSeat);
+            Assert.Equal(ResultCode.NotAvailable,contested.ManageCourt(insist,contested.Revision).Code);
+            NewGameWorldTests.At(contested,32*86400+60);
+            Assert.Equal(ResultCode.Accepted,contested.ManageCourt(insist,contested.Revision).Code);
+            contested.SetPaused(true);
+            Assert.True(store.Save(contested,"resistance",w.WorldId).Published);
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("resistance"),contested,contested.Revision));
+            var restoredDispute=host.Current;
+            Assert.Equal(2,HouseReforms.WoodPurchaseLimit(restoredDispute.DiagnosticSnapshot(),enact.Site,
+                restoredDispute.DiagnosticSnapshot().ElapsedSeconds,restoredDispute.Revision+1));
+            var settle=Dispute(CourtAction.SettleSeat);
+            Assert.Equal(ResultCode.Accepted,restoredDispute.ManageCourt(settle,restoredDispute.Revision).Code);
+            Assert.Equal(3,HouseReforms.WoodPurchaseLimit(restoredDispute.DiagnosticSnapshot(),enact.Site,
+                restoredDispute.DiagnosticSnapshot().ElapsedSeconds,restoredDispute.Revision+1));
             var enacted=market.ManageCourt(enact,market.Revision);
             Assert.True(enacted.Code==ResultCode.Accepted,enacted.VisibleReason);
             var local=market.DiagnosticSnapshot();

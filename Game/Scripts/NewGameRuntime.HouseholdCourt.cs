@@ -49,6 +49,19 @@ public partial class NewGameRuntime
    if(seat!=null)SocialText(box,"当市の木材商いに寺社の座があります。楽市でも一部の取引枠を留保します。");
    else if(head && report.ControlsLocalSite && !HouseReforms.OpenMarketAt(w,site.Value,w.ElapsedSeconds,rev+1))
     Button("grant-market-seat","面会した寺社代表へ木材商いの座を安堵する",()=>Run(Command("grant-seat",CourtAction.GrantTempleSeat,SocialWorld.Temple(w,site.Value).Representative)));
+   if(seat!=null && head && report.ControlsLocalSite && HouseReforms.OpenMarketAt(w,site.Value,w.ElapsedSeconds,rev+1)){
+    var dispute=HouseReforms.SeatDispute(w,site.Value,w.ElapsedSeconds,rev+1);
+    void SeatButton(CourtAction action,string label)=>Button("seat-"+action,label,
+        ()=>Run(Command("seat/"+action,action,seat.Input.Person,reference:seat.Input.Id)));
+    if(dispute==null)SeatButton(CourtAction.ChallengeSeat,"代表者を呼び、座の撤廃を申し入れる");
+    else if(dispute.Input.Action==CourtAction.SettleSeat)SocialText(box,"座の取引枠を留保して和解済み");
+    else{
+     SocialText(box,dispute.Input.Action==CourtAction.InsistSeat?"座の商人が新規買付への協力を停止中":"寺社代表が安堵状を示し、取引枠の維持を現地で嘆願しました。");
+     if(dispute.Input.Action==CourtAction.ChallengeSeat && dispute.At<w.ElapsedSeconds)
+      SeatButton(CourtAction.InsistSeat,"嘆願を退け、撤廃を求める");
+     SeatButton(CourtAction.SettleSeat,"取引枠を認めて和解する");
+    }
+   }
    if(head&&roster.Length>0){
     var persons=new OptionButton();foreach(var person in roster)persons.AddItem(PersonName(person));box.AddChild(persons);
     var kinds=Enum.GetValues<ReformKind>();var reform=new OptionButton();foreach(var k in kinds)reform.AddItem(HouseReforms.Name(k));box.AddChild(reform);

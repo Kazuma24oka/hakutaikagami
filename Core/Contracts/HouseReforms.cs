@@ -30,9 +30,15 @@ public static class HouseReforms
         HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.Action==CourtAction.GrantTempleSeat &&
             e.Input.Site==site && (e.At<at || e.At==at && e.Revision<revision));
 
+    public static CourtEvent? SeatDispute(ContractWorld w,EntityId site,long at,long revision)=>
+        HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.Site==site &&
+            (e.Input.Action is CourtAction.ChallengeSeat or CourtAction.InsistSeat or CourtAction.SettleSeat) &&
+            (e.At<at || e.At==at && e.Revision<revision));
+
     public static long WoodPurchaseLimit(ContractWorld w,EntityId site,long at,long revision)
     {
         if(!OpenMarketAt(w,site,at,revision))return 2;
+        if(SeatDispute(w,site,at,revision)?.Input.Action==CourtAction.InsistSeat)return 2;
         return TempleMarketSeat(w,site,at,revision)==null?4:3;
     }
 
