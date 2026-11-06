@@ -152,6 +152,54 @@ public class DefectionPactTests
     }
 
     [Fact]
+    public void ActualLossOfCastleCanLeadToLocalRestorationInquiryAcrossDiskLoad()
+    {
+        for (ulong seed = 0; seed < 32; seed++)
+        {
+            var start = Start(seed, castellan: true);
+            var session = new WorldSession(start);
+            NewGameWorldTests.At(session, 5);
+            EntityId pact = new("request:loss-before-restoration");
+            Assert.Equal(ResultCode.Accepted, session.NegotiatePact(pact, Partner, PactPurpose.RiseTogether, session.Revision).Code);
+            if (!session.DiagnosticSnapshot().SecretPacts!.Single().Accepted) continue;
+            Assert.Equal(ResultCode.Accepted, session.SignalPact(pact, session.Revision).Code);
+            var changed = session.DiagnosticSnapshot();
+            var change = Assert.Single(changed.Declarations!);
+            var observation = Assert.Single(HouseRestoration.ObserveFormerSeat(changed, Actor));
+            Assert.Equal((change.FormerHouse, change.Site), (observation.House, observation.Site));
+            var ask = new CourtInput(new("request:seek-local-support"), CourtAction.SeekRestorationSupport,
+                Partner, change.FormerHouse, change.Site);
+            var result = session.ManageCourt(ask, session.Revision);
+            Assert.True(result.Code == ResultCode.Accepted, result.VisibleReason);
+            session.SetPaused(true);
+            var directory = Directory.CreateTempSubdirectory("hakutai-restore-inquiry-");
+            try
+            {
+                var store = new GenerationSaveStore(directory.FullName, start.Definitions);
+                Assert.True(store.Save(session, "inquiry", start.WorldId).Published);
+                var host = new WorldSessionHost(new WorldSession(start));
+                Assert.Equal(ResultCode.Accepted, host.CommitLoad(store.Prepare("inquiry"), host.Current, host.Current.Revision));
+                NewGameWorldTests.At(session, 8);
+                NewGameWorldTests.At(host.Current, 8);
+                var after = host.Current.DiagnosticSnapshot();
+                Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()), ContractJson.Write(after));
+                Assert.Single(after.Court!.Events, e => e.Input.Reference == ask.Id &&
+                    e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
+                Assert.Null(HouseRestoration.SuccessorOrganization(after, change.FormerHouse, 8, after.CommitSequence + 1));
+                var attempt = new CourtInput(new("request:claim-former-house"), CourtAction.RecognizeHouseContinuity,
+                    Actor, change.FormerHouse, change.Site, Reference: change.Pact);
+                var refused = host.Current.ManageCourt(attempt, host.Current.Revision);
+                Assert.Equal(ResultCode.NotAvailable, refused.Code);
+                Assert.Equal(ContractJson.Write(after), ContractJson.Write(host.Current.DiagnosticSnapshot()));
+
+            }
+            finally { directory.Delete(true); }
+            return;
+        }
+        Assert.Fail("独立に合意する開始条件がありません");
+    }
+
+    [Fact]
     public void LocalCastellanBringsOnlyTheCastleInHisCharge()
     {
         EntityId id=new("request:castle-rise");
