@@ -39,6 +39,34 @@ public static class HouseRestoration
             throw new InvalidDataException("自分に届いた未回答の相談を選んでください");
     }
 
+    internal static bool IsEscort(CourtAction action) => action is CourtAction.OfferRestorationEscort
+        or CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort;
+
+    internal static void CheckEscort(ContractWorld world, CourtInput input, EntityId actor, EntityId site, long at, long revision)
+    {
+        var history = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
+        var source = history.SingleOrDefault(e => e.Input.Id == input.Reference);
+        if (source == null || source.Place != site || site != input.Site || input.When <= at ||
+            !TransportWork.At(world, actor, site, at, revision, true) ||
+            !TransportWork.At(world, input.Person, site, at, revision, true) ||
+            Assassination.DeadAt(world, input.Person, at, revision))
+            throw new InvalidDataException("期限内に両者が集合先で原本を確かめてください");
+        if (input.Action == CourtAction.OfferRestorationEscort)
+        {
+            if (source.Input.Action != CourtAction.SupportRestoration || source.Actor != actor ||
+                source.Input.Person != input.Person || source.Input.Owner == input.Owner ||
+                input.When - at > 7 * 86400L ||
+                FactionStances.ResolveAuthority(world, actor, input.Owner, at, revision - 1) == null ||
+                history.Any(e => e.Input.Action == input.Action && e.Input.Reference == input.Reference && e.Input.When > at))
+                throw new InvalidDataException("支持を表明した別家の代表が、一週間以内の現地警護を申し出てください");
+            return;
+        }
+        if (source.Input.Action != CourtAction.OfferRestorationEscort || source.Input.Person != actor ||
+            source.Actor != input.Person || source.Input.Owner != input.Owner || source.Input.When != input.When ||
+            history.Any(e => IsEscort(e.Input.Action) && e.Input.Reference == input.Reference))
+            throw new InvalidDataException("宛先本人が未回答の同一条件を確認してください");
+    }
+
     internal static bool IsRice(CourtAction action) =>
         action is CourtAction.PledgeRestorationRice or CourtAction.HandOverRestorationRice;
 
@@ -83,6 +111,42 @@ public static class HouseRestoration
                 supports ? CourtAction.SupportRestoration : CourtAction.ReserveRestoration,
                 ask.Actor, ask.Input.Owner, ask.Place, Reference: ask.Input.Id);
             TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, reply, person));
+        }
+        foreach (var source in history.Where(e => e.At < world.ElapsedSeconds &&
+            e.Input.Action is CourtAction.SupportRestoration or CourtAction.OfferRestorationEscort))
+        {
+            bool proposing = source.Input.Action == CourtAction.SupportRestoration;
+            var agent = proposing ? source.Actor : source.Input.Person;
+            var other = proposing ? source.Input.Person : source.Actor;
+            if (agent == world.PlayerControl || SocialWorld.Site(world, agent) != source.Place ||
+                SocialWorld.Site(world, other) != source.Place ||
+                history.Any(e => IsEscort(e.Input.Action) && e.Input.Reference == source.Input.Id))
+                continue;
+
+            EntityId sponsor;
+            CourtAction action;
+            long until;
+            if (proposing)
+            {
+                var owner = DefectionPacts.HouseAt(world, agent, world.ElapsedSeconds, world.CommitSequence);
+                if (owner == null || owner == source.Input.Owner ||
+                    FactionStances.ResolveAuthority(world, agent, owner.Value, world.ElapsedSeconds, world.CommitSequence) == null)
+                    continue;
+                sponsor = owner.Value;
+                action = CourtAction.OfferRestorationEscort;
+                until = world.ElapsedSeconds + 7 * 86400L;
+            }
+            else
+            {
+                until = source.Input.When;
+                if (world.ElapsedSeconds >= until) continue;
+                sponsor = source.Input.Owner;
+                var assessment = CharacterRelations.DiagnosticScores(world, agent, other);
+                action = assessment.Trust > assessment.Hostility ? CourtAction.AcceptRestorationEscort : CourtAction.DeclineRestorationEscort;
+            }
+            var terms = new CourtInput(HouseholdCourt.Id("request", source.Input.Id.Value + "/escort"),
+                action, other, sponsor, source.Place, Reference: source.Input.Id, When: until);
+            TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, terms, agent));
         }
         foreach (var source in history.Where(e => e.Actor != world.PlayerControl && e.At < world.ElapsedSeconds &&
             e.Input.Action is CourtAction.SupportRestoration or CourtAction.PledgeRestorationRice))

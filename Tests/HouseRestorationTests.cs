@@ -69,4 +69,33 @@ public sealed class HouseRestorationTests
         world.CommitSequence++;
         Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(world, delivery with { Id = new("request:repeat-rice") }, peer));
     }
+    [Fact]
+    public void EscortRequiresCurrentSponsorAuthorityAndIdenticalUnexpiredTerms()
+    {
+        var leader = NewGameWorldTests.Officer(role: StartTemplate.Daimyo);
+        var applicant = NewGameWorldTests.Officer("created:claimant");
+        EntityId sponsor = new("org:sponsor"), oldHouse = new("org:old"), site = new(leader.Site);
+        EntityId lord = new(leader.Id), heir = new(applicant.Id);
+        var setup = NewGameWorldTests.Setup([leader, applicant], [new(leader.Id, sponsor.Value, [leader.Site], false)]);
+        var w = NewGameWorld.Create(setup.World, setup.Registered, applicant.Id, 42,
+            inspectionPolicy: LocalInspectionFindings.Policy, workPolicy: WorkFollowup.Policy, economyPolicy: HouseSuccession.Policy);
+        var support = new CourtInput(new("request:personal"), CourtAction.SupportRestoration, heir, oldHouse, site);
+        w.CommitSequence++;
+        w.Court = new(1, HouseholdCourt.Policy, [new(support, lord, site, 0, w.CommitSequence, false)]);
+        w.CommitSequence++;
+        var offer = new CourtInput(new("request:escort"), CourtAction.OfferRestorationEscort, heir, sponsor, site,
+            Reference: support.Id, When: 86400);
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, offer, heir));
+        HouseholdCourt.Execute(w, offer, lord);
+        w = ContractJson.Copy(w);
+        w.CommitSequence++;
+        var accept = new CourtInput(new("request:agree"), CourtAction.AcceptRestorationEscort, lord, sponsor, site,
+            Reference: offer.Id, When: offer.When);
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(w, accept with { When = offer.When + 1 }, heir));
+        var expired = ContractJson.Copy(w);
+        expired.ElapsedSeconds = offer.When;
+        Assert.Throws<InvalidDataException>(() => HouseholdCourt.Execute(expired, accept, heir));
+        HouseholdCourt.Execute(w, accept, heir);
+        Assert.Empty(NpcArmies.Musters(w));
+    }
 }

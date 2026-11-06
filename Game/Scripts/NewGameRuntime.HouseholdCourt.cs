@@ -30,6 +30,22 @@ public partial class NewGameRuntime
     var peer=actor==ask.Actor?ask.Input.Person:ask.Actor;
     SocialText(box,MeritRewards.DisplayName(w,actor,peer)+"との再興相談："+(reply==null?"返答待ち":reply.Input.Action==CourtAction.SupportRestoration?"個人として支持":"判断を留保"));
     if(reply?.Input.Action==CourtAction.SupportRestoration){
+     var escort=history.LastOrDefault(e=>e.Input.Action==CourtAction.OfferRestorationEscort && e.Input.Reference==reply.Input.Id);
+     if(escort!=null){
+      var response=history.SingleOrDefault(e=>e.Input.Reference==escort.Input.Id && e.Input.Action is CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort);
+      SocialText(box,"後援家の現地警護："+(escort.Input.When<=w.ElapsedSeconds?"期限終了":response==null?"条件提示中":response.Input.Action==CourtAction.AcceptRestorationEscort?"合意済み":"辞退"));
+      if(response==null && actor==escort.Input.Person && site==ask.Place && SocialWorld.Site(w,peer)==site && escort.Input.When>w.ElapsedSeconds)
+       foreach(var answer in new[]{CourtAction.AcceptRestorationEscort,CourtAction.DeclineRestorationEscort}){
+        var key=answer+"/"+escort.Input.Id.Value;
+        Button(key,answer==CourtAction.AcceptRestorationEscort?"旧領での警護を依頼する":"警護を辞退する",()=>Run(new(Nonce(key),answer,peer,escort.Input.Owner,ask.Place,Reference:escort.Input.Id,When:escort.Input.When)));
+       }
+     }
+     if(reply.Actor==actor && (escort==null || escort.Input.When<=w.ElapsedSeconds) && site==ask.Place && SocialWorld.Site(w,peer)==site){
+      foreach(var sponsor in HouseSuccession.Factions(w).Select(f=>new EntityId(f.Id)).Where(h=>h!=ask.Input.Owner && FactionStances.ResolveAuthority(w,actor,h,w.ElapsedSeconds,rev)!=null)){
+       var key="escort/"+reply.Input.Id.Value+"/"+sponsor.Value;
+       Button(key,"家として七日間の現地警護を申し出る",()=>Run(new(Nonce(key),CourtAction.OfferRestorationEscort,peer,sponsor,ask.Place,Reference:reply.Input.Id,When:w.ElapsedSeconds+7*86400L)));
+      }
+     }
      var pledge=history.SingleOrDefault(e=>e.Input.Reference==reply.Input.Id && e.Input.Action==CourtAction.PledgeRestorationRice);
      var delivered=pledge!=null && history.Any(e=>e.Input.Reference==pledge.Input.Id && e.Input.Action==CourtAction.HandOverRestorationRice);
      if(pledge!=null)SocialText(box,$"支援米 {pledge.Input.Amount}kg："+(delivered?"受渡し済み":"持参待ち"));
