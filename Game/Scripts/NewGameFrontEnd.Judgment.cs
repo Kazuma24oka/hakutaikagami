@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
@@ -49,6 +50,20 @@ public partial class NewGameFrontEnd
         await Frame();
         await WaitSave();
         game!.Advance(5);
+        var council = game.Session;
+        var peace = council.DiagnosticSnapshot();
+        Check(!FactionStances.Truth(peace, council.Seconds).Any() && NpcArmies.Musters(peace).Length == 0,
+            "判断を見送った間は未開戦・未出陣");
+        var decision = new FactionStanceInput(new("decision:imagawa-start-check"),
+            FactionStanceAction.DeclareHostile, new("org:imagawa"), new("org:oda"), council.Seconds,
+            council.Seconds + 30L * 86400);
+        var reply = council.ProclaimFactionStance(new(decision, new(new("request:imagawa-start-notice"), decision.Id)),
+            council.PlayerControl, council.Revision);
+        Check(reply.Code == (fromMap ? ResultCode.NotAvailable : ResultCode.Accepted), "現当主だけが決裁：" + reply.VisibleReason);
+        var decided = council.DiagnosticSnapshot();
+        Check(fromMap ? ContractJson.CanonicalHash(peace) == ContractJson.CanonicalHash(decided) :
+            decided.FactionNotices!.Requests.Any(n=>n.Input.Original==decision.Id) &&
+            !FactionStances.Known(decided,new("person:nobunaga")).Any(), "判断結果と未達通知の認識");
         game.ReviewFraction(0);
         game.Press("save");
         await WaitSave();
