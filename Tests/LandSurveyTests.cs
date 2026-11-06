@@ -8,6 +8,35 @@ public sealed class LandSurveyTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static SurveyInput Input(WorldSession s,SurveyAction action,EntityId? reference=null,LandTaxRate rate=LandTaxRate.Ordinary)=>new(new("request:survey/"+s.Revision),action,Owner,Site,reference,rate);
  [Fact]
+ public void NeighborUnderItsOwnHeavyDecreeJoinsOnlyAfterReceivingTheLetter()
+ {
+     var sender=NewGameWorldTests.Officer("created:sender",StartTemplate.Daimyo,"site:sakai");
+     var receiver=NewGameWorldTests.Officer("created:receiver",StartTemplate.Daimyo,"site:ishiyama");
+     var setup=NewGameWorldTests.Setup([sender,receiver],[new(sender.Id,"org:sender",[sender.Site],false),new(receiver.Id,"org:receiver",[receiver.Site],false)]);
+     var w=NewGameWorld.Create(setup.World,setup.Registered,sender.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+         workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+     var s=new WorldSession(w);
+     Good(s.ManageLandSurvey(new(new("request:sender-heavy"),SurveyAction.PostRate,new("org:sender"),new(sender.Site),Rate:LandTaxRate.Heavy),s.Revision));
+     NewGameWorldTests.At(s,60*86400);
+     w=s.DiagnosticSnapshot();
+     w.CommitSequence++;
+     LandSurvey.Execute(w,new(new("request:receiver-heavy"),SurveyAction.PostRate,new("org:receiver"),new(receiver.Site),Rate:LandTaxRate.Heavy),new(receiver.Id));
+     s=new WorldSession(w);
+     NewGameWorldTests.At(s,67*86400);
+     var flight=Assert.Single(s.DiagnosticSnapshot().Communities!.Flights!,f=>f.From.Value==sender.Site);
+     Assert.Equal(receiver.Site,flight.To.Value);
+     NewGameWorldTests.At(s,flight.Route[^1].EndAt-1);
+     Assert.Null(s.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition).Letter!.Reply);
+     var resumed=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(s.DiagnosticSnapshot())));
+     foreach(var run in new[]{s,resumed}){
+         NewGameWorldTests.At(run,flight.Route[^1].EndAt);
+         var arrived=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition);
+         Assert.True(arrived.Letter!.Reply!.Joined);
+         Assert.DoesNotContain("ともに減免",run.VillageView()!.Administration);
+     }
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));
+ }
+ [Fact]
  public void FlightRemovesWorkersDuringJourneyAndRestoresOnlyAtDestination()
  {
      var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));
@@ -16,7 +45,7 @@ public sealed class LandSurveyTests
      NewGameWorldTests.At(s,67*86400);
      var traveling=s.DiagnosticSnapshot().Communities!;
      var f=Assert.Single(traveling.Flights!);
-     Assert.Equal(10,f.People);
+     Assert.Equal(10,f.People);Assert.NotNull(f.Letter);Assert.Null(f.Letter.Reply);
      Assert.Contains("10人が村を離れました",s.VillageView()!.Administration);
      Assert.Equal(before.Accounts.Sum(a=>a.Population)-10,traveling.Accounts.Sum(a=>a.Population));
      Assert.Equal(before.Accounts.Single(a=>a.Site==f.From).Workforce-10,traveling.Accounts.Single(a=>a.Site==f.From).Workforce);
@@ -33,6 +62,9 @@ public sealed class LandSurveyTests
      foreach(var run in new[]{s,fork}){
          NewGameWorldTests.At(run,f.Route[^1].EndAt);
          var arrived=run.DiagnosticSnapshot().Communities!;
+         var answer=Assert.Single(arrived.Flights!).Letter!.Reply;
+         Assert.NotNull(answer);Assert.False(answer.Joined);
+         Assert.Equal(f.Route[^1].EndAt,answer.At);
          Assert.Equal(before.Accounts.Sum(a=>a.Population),arrived.Accounts.Sum(a=>a.Population));
          Assert.Equal(before.Accounts.Single(a=>a.Site==f.To).Workforce+10,arrived.Accounts.Single(a=>a.Site==f.To).Workforce);
      }

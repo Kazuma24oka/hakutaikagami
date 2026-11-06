@@ -8,6 +8,25 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public Homecoming? Return {get;init;}
 
+    public sealed record AllianceReply(EntityId Representative,long At,long Revision,bool Joined);
+    public sealed record AllianceLetter(EntityId Id,EntityId Author,EntityId TaxDecree)
+    {
+        [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public AllianceReply? Reply {get;init;}
+    }
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public AllianceLetter? Letter {get;init;}
+
+    static AllianceLetter WriteLetter(CommunityNotice petition,long at)=>new(
+        HouseholdCourt.Id("village-alliance",petition.Message),VillageConsultation.Representative(petition.Site,at),petition.Petition!.TaxDecree!.Value);
+
+    static AllianceReply Answer(ContractWorld w,VillageFlight flight,long at,long revision)
+    {
+        bool pressured=LandSurvey.EffectiveDecree(w,flight.To,at)?.Input.Rate==LandTaxRate.Heavy;
+        long hunger=CommunityEconomy.AccountAt(w,flight.To,at,revision).Hunger;
+        return new(VillageConsultation.Representative(flight.To,at),at,revision,pressured||hunger>0);
+    }
+
     static IEnumerable<(long At,int People)> Changes(VillageFlight[]? flights,EntityId site,long rev)
     {
         foreach(var f in flights??[]){
@@ -33,10 +52,15 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
                 if(f.Return is {} r && r.Route[^1].EndAt<=now)reports.Add((r.Route[^1].EndAt,$"減免を聞いた{f.People}人が村に帰ってきました。"));
             }else if(f.To==site && f.Route[^1].EndAt<=now){
                 reports.Add((f.Route[^1].EndAt,$"{NewGameWorld.SiteName(f.From.Value)}から逃れてきた{f.People}人を受け入れました。"));
+                if(f.Letter?.Reply is {} reply){
+                    string other=NewGameWorld.SiteName(f.From.Value);
+                    string answer=reply.Joined?"こちらも窮しています。ともに減免を求めると答えました。":"人々は受け入れましたが、連合への参加は見送りました。";
+                    reports.Add((reply.At,$"{other}の代表から檄を受け取りました。{answer}"));
+                }
                 if(f.Return is {} r)reports.Add((r.Route[0].StartAt,$"避難していた{f.People}人が減免を聞き、帰路につきました。"));
             }
         }
-        return reports.Count==0?"":reports.MaxBy(r=>r.At).Text;
+        return reports.Count==0?"":reports.OrderBy(r=>r.At).Last().Text;
     }
 
     static IEnumerable<CommunityNotice> Petitions(CommunityState ledger)=>ledger.Notices.Where(n=>n.Petition?.TaxDecree!=null)
@@ -68,11 +92,15 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
                 if(route.Length==0||best!=null&&best[^1].EndAt<=route[^1].EndAt)continue;
                 destination=target.Site;best=route;
             }
-            if(best!=null)flights.Add(new(n.Message,n.Site,destination,best,people,w.CommitSequence));
+            if(best!=null)flights.Add(new(n.Message,n.Site,destination,best,people,w.CommitSequence){Letter=WriteLetter(n,at)});
         }
         bool changed=flights.Count!=(ledger.Flights?.Length??0);
         for(int i=0;i<flights.Count;i++){
             var f=flights[i];long at=w.ElapsedSeconds;
+            if(f.Letter is {Reply:null} letter && at==f.Route[^1].EndAt){
+                f=f with {Letter=letter with {Reply=Answer(w,f,at,w.CommitSequence)}};
+                flights[i]=f;changed=true;
+            }
             if(f.Return!=null || at<f.Route[^1].EndAt || LandSurvey.EffectiveDecree(w,f.From,at) is not {} decree ||
                 decree.Input.Rate==LandTaxRate.Heavy || !TransportWork.At(w,decree.Actor,f.To,at,w.CommitSequence+1,true))continue;
             var hosts=ledger.Accounts.Single(a=>a.Site==f.To);
@@ -104,6 +132,14 @@ public sealed record VillageFlight(string Petition,EntityId From,EntityId To,Jou
                 LandSurvey.EffectiveDecree(w,f.From,f.Route[0].StartAt)?.Input.Id!=n.Petition.TaxDecree ||
                 !VillageConsultation.WithholdsLaborAfterPetition(w,f.From,f.Route[0].StartAt,f.Revision+1))
                 throw new InvalidDataException("逃散時点の減免嘆願・労働可能人数が一致しません");
+            if(f.Letter is {} letter){
+                if((letter with {Reply=null})!=WriteLetter(n,f.Route[0].StartAt) ||
+                    (letter.Reply!=null)!=(w.ElapsedSeconds>=f.Route[^1].EndAt))
+                    throw new InvalidDataException("連合の檄と到着時点が一致しません");
+                if(letter.Reply is {} answer && (answer.At!=f.Route[^1].EndAt || answer.Revision<f.Revision ||
+                    answer.Revision>w.CommitSequence || answer!=Answer(w,f,answer.At,answer.Revision)))
+                    throw new InvalidDataException("受取村の代表と現地事情に基づく返答が一致しません");
+            }
             if(f.Return is {} r){
                 if(r.Route is not {Length:>0} || r.Revision<f.Revision || r.Revision>w.CommitSequence)
                     throw new InvalidDataException("帰村の経路・版が不正です");
