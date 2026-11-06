@@ -5,6 +5,20 @@ namespace HakutaiKagami.Tests;
 public sealed class CentralMediationTests
 {
     [Fact]
+    public void ShogunAndHisAttendantAreSeparatePeopleWithNoAutomaticKyotoTerritory()
+    {
+        var edition=HistoricalStartCatalog.Current;
+        var scenario=NewGameWorld.Scenario(edition);
+        var prior=NewGameWorld.Scenario(CentralCourtCatalog.Id);
+        Assert.Equal(prior.Castles,scenario.Castles);
+        Assert.DoesNotContain(prior.People,p=>p.Id==CentralCourtCatalog.Shogun.Value);
+        var w=NewGameWorld.Create(scenario,[],CentralCourtCatalog.ShogunBroker.Value,historicalCatalog:edition);
+        Assert.Contains(w.ServiceBonds,b=>b.Subject==CentralCourtCatalog.ShogunBroker && b.Target==CentralCourtCatalog.Shogun);
+        Assert.DoesNotContain(w.LandRights,r=>r.Subject==CentralCourtCatalog.Shogun);
+        Assert.Equal(ContractJson.Write(w),ContractJson.Write(new WorldSession(w).DiagnosticSnapshot()));
+    }
+
+    [Fact]
     public void KyotoCourtierCanEnterTheWorldWithoutOwningKyotoOrAnArmy()
     {
         var prior=NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id);
@@ -21,15 +35,49 @@ public sealed class CentralMediationTests
         Assert.Equal(id,restored.PlayerControl);
         Assert.Equal(ContractJson.Write(state),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
-    [Theory][InlineData(false)][InlineData(true)]
-    public void PetitionRequiresMeetingAndBrokerAnswersOnceAfterRestore(bool gift)
+    [Fact]
+    public void ShogunMustReadRecommendationAndApplicantMustOpenSeparateAppointment()
+    {
+        var broker=CentralCourtCatalog.ShogunBroker;var site=CentralCourtCatalog.Kyoto;var kofu=new EntityId("site:kofu");
+        var owner=new EntityId("org:shugo-test");var applicant=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var request=new WorldSetupRequest([applicant],[new(applicant.Id,owner.Value,[site.Value,kofu.Value],false)]);
+        var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        var s=new WorldSession(NewGameWorld.Create(setup,[applicant],applicant.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        Good(s.ManageSocial(new(new("request:meet-fujitaka"),SocialWorldAction.Visit,broker),s.Revision));
+        Good(s.ManageSocial(new(new("request:fujitaka-gift"),SocialWorldAction.DispatchGift,broker,Amount:100),s.Revision));
+        NewGameWorldTests.At(s,s.Seconds+3);
+        var input=new CourtInput(new("request:kai-shugo"),CourtAction.AskShugo,broker,owner,kofu);
+        Good(s.ManageCourt(input,s.Revision));NewGameWorldTests.At(s,s.Seconds+1);
+        var w=s.DiagnosticSnapshot();
+        Assert.Single(w.Messaging.Messages,m=>m.Kind==ShogunateAppointments.Petition && m.RecipientId==CentralCourtCatalog.Shogun.Value);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        foreach(var run in new[]{s,restored}){
+            NewGameWorldTests.At(run,run.Seconds+6);var end=run.DiagnosticSnapshot();
+            var record=Assert.Single(end.Court!.Events,e=>e.Input.Action==CourtAction.AppointShugo);
+            Assert.Equal(CentralCourtCatalog.Shogun,record.Actor);
+            Assert.Empty(ShogunateAppointments.KnownOffices(end,run.PlayerControl));
+            var letter=Assert.Single(end.Messaging.Messages,m=>m.Kind==ShogunateAppointments.Reply);
+            Good(run.Open(run.PlayerControl,new(letter.Id),run.Revision));
+            Assert.Equal("甲斐守護",Assert.Single(ShogunateAppointments.KnownOffices(run.DiagnosticSnapshot(),run.PlayerControl)));
+            Assert.Null(CentralRank.KnownRank(run.DiagnosticSnapshot(),run.PlayerControl));
+            Assert.Equal(ContractJson.Write(w.LandRights),ContractJson.Write(run.DiagnosticSnapshot().LandRights));
+        }
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
+    [Theory][InlineData(false,false)][InlineData(true,false)][InlineData(true,true)]
+    public void PetitionRequiresMeetingAndBrokerAnswersOnceAfterRestore(bool gift,bool currentEdition)
     {
         var broker=CentralCourtCatalog.CourtBroker;var site=CentralCourtCatalog.Kyoto;var owner=new EntityId("org:court-test");
         var applicant=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
-        var raw=NewGameWorld.Scenario(CentralCourtCatalog.Id);
+        var edition=currentEdition?HistoricalStartCatalog.Current:CentralCourtCatalog.Id;
+        var raw=NewGameWorld.Scenario(edition);
         var request=new WorldSetupRequest([applicant],[new(applicant.Id,owner.Value,[site.Value],false)]);
         var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        var s=new WorldSession(NewGameWorld.Create(setup,[applicant],applicant.Id,historicalCatalog:CentralCourtCatalog.Id,
+        var s=new WorldSession(NewGameWorld.Create(setup,[applicant],applicant.Id,historicalCatalog:edition,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
         var ask=new CourtInput(new("request:petition"),CourtAction.AskCourtIntroduction,broker,owner,site);
         Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(ask,s.Revision).Code);
@@ -54,7 +102,11 @@ public sealed class CentralMediationTests
                 NewGameWorldTests.At(run,run.Seconds+2);
                 var before=run.DiagnosticSnapshot();
                 var filed=Assert.Single(before.Court!.Events,e=>e.Input.Action==CourtAction.FileRankPetition);
-                NewGameWorldTests.At(run,filed.At+86400);
+                var date=WorldCalendar.At(before.EpochDate,filed.At);
+                var delay=currentEdition?(long)(date.AddMonths(2)-date).TotalSeconds:86400;
+                NewGameWorldTests.At(run,filed.At+delay-1);
+                Assert.DoesNotContain(run.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.IssueCourtRank);
+                NewGameWorldTests.At(run,filed.At+delay);
                 var issued=run.DiagnosticSnapshot();
                 Assert.Single(issued.Court!.Events,e=>e.Input.Action==CourtAction.IssueCourtRank);
                 Assert.Null(CentralRank.KnownRank(issued,run.PlayerControl));

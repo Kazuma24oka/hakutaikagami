@@ -17,8 +17,18 @@ public partial class NewGameRuntime
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
       if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
-      if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id || site!=CentralCourtCatalog.Kyoto){
+      if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
+      }
+      if(w.NewGame!.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition){
+          foreach(var office in ShogunateAppointments.KnownOffices(w,actor))SocialText(box,"幕府の補任状　"+office);
+          if(CentralMediation.ApplicantHouse(w,actor) is {} applicantOwner){
+              foreach(var district in ShogunateAppointments.Districts(w,applicantOwner)){
+                  string key="shugo-"+district.Value;
+                  Button(key,HouseTerritoryScale.Province(district)+"守護の取次を細川藤孝に頼む",()=>Run(new(Nonce(key),
+                      CourtAction.AskShugo,CentralCourtCatalog.ShogunBroker,applicantOwner,district)));
+              }
+          }
       }
       var original=w.Court?.Events.LastOrDefault(e=>e.Actor==actor && e.Input.Action==CourtAction.AskCourtIntroduction);
       var reply=original==null?null:w.Court!.Events.SingleOrDefault(e=>e.Input.Reference==original.Input.Id &&
@@ -26,7 +36,7 @@ public partial class NewGameRuntime
       if(original!=null)SocialText(box,reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"山科言継が奏請の取次を引き受けました。",CourtAction.DeclineCourtIntroduction=>"山科言継は今回の取次を辞退しました。",_=>"山科言継の返事を待っています。"});
       if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction) &&
           CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
-          Button("court-introduction","山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
+          Button("court-introduction",w.NewGame.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition?"献金60文を添えて山科言継に奏請を頼む":"山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
               CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value)));
       return;
   }

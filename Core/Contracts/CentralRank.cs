@@ -5,7 +5,9 @@ namespace HakutaiKagami.Core.Contracts;
 public static class CentralRank
 {
     public const string ReplyKind="central-rank-written-decision";
-    const long ReviewPeriod=86400;
+    public const long Offering=60;
+    static long ReviewDue(ContractWorld w,long at) => w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition
+        ? at+(long)(WorldCalendar.At(w.EpochDate,at).AddMonths(2)-WorldCalendar.At(w.EpochDate,at)).TotalSeconds : at+86400;
     public const string RankName="従五位下";
     internal static bool Handles(CourtAction action)=>action is CourtAction.FileRankPetition or CourtAction.IssueCourtRank or CourtAction.RejectCourtRank;
     static bool Decision(CourtEvent e)=>e.Input.Action is CourtAction.IssueCourtRank or CourtAction.RejectCourtRank;
@@ -28,13 +30,17 @@ public static class CentralRank
     internal static IEnumerable<long> Due(ContractWorld w)
     {
         var rows=HouseholdCourt.Events(w);
-        return rows.Where(e=>e.Input.Action==CourtAction.FileRankPetition && !Linked(rows,e)).Select(e=>e.At+ReviewPeriod);
+        return rows.Where(e=>e.Input.Action==CourtAction.FileRankPetition && !Linked(rows,e)).Select(e=>ReviewDue(w,e.At));
     }
     internal static IEnumerable<long> FilingDates(ContractWorld w) => HouseholdCourt.Events(w)
         .Where(e=>e.Input.Action==CourtAction.AcceptCourtIntroduction).Select(e=>e.At+1);
+    internal static long Offerings(ContractWorld w,EntityId wallet,long at,long rev) =>
+        w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition?0:
+        HouseholdCourt.Events(w).LongCount(e=>e.Input.Action==CourtAction.AskCourtIntroduction &&
+            NewGameWork.Wallet(e.Actor)==wallet && (e.At<at || e.At==at && e.Revision<rev))*Offering;
     internal static void Process(ContractWorld w)
     {
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id || w.Court==null)return;
+        if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || w.Court==null)return;
         var rows=w.Court.Events;
         foreach(var e in rows.Where(e=>e.Input.Action is CourtAction.AcceptCourtIntroduction or CourtAction.FileRankPetition)){
             if(Linked(rows,e))continue;
@@ -44,7 +50,7 @@ public static class CentralRank
                     !TransportWork.At(w,e.Actor,e.Place,w.ElapsedSeconds,w.CommitSequence,true))continue;
                 action=CourtAction.FileRankPetition;
             }else{
-                if(w.ElapsedSeconds<e.At+ReviewPeriod)continue;
+                if(w.ElapsedSeconds<ReviewDue(w,e.At))continue;
                 action=Resolve(w,e);
             }
             var row=Record(e,action,w.ElapsedSeconds,w.CommitSequence);
@@ -65,7 +71,7 @@ public static class CentralRank
     internal static void Validate(ContractWorld w)
     {
         var rows=HouseholdCourt.Events(w);var seen=new HashSet<EntityId>();var letters=new HashSet<string>();
-        if(rows.Any(e=>Handles(e.Input.Action)) && w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id)
+        if(rows.Any(e=>Handles(e.Input.Action)) && !CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog))
             throw new InvalidDataException("中央制度の開始版が違います");
         foreach(var e in rows.Where(e=>Handles(e.Input.Action))){
             var source=rows.SingleOrDefault(s=>s.Input.Id==e.Input.Reference && s.Revision<e.Revision);
@@ -77,7 +83,7 @@ public static class CentralRank
                     throw new InvalidDataException("取次が引受後に京で提出した原本が必要です");
                 continue;
             }
-            if(source.Input.Action!=CourtAction.FileRankPetition || e.At!=source.At+ReviewPeriod || e.Input.Action!=Resolve(w,source))
+            if(source.Input.Action!=CourtAction.FileRankPetition || e.At!=ReviewDue(w,source.At) || e.Input.Action!=Resolve(w,source))
                 throw new InvalidDataException("朝廷の審議日または申請資格が一致しません");
             var id=Reply(e);letters.Add(id);
             var m=w.Messaging.Messages.SingleOrDefault(m=>m.Id==id);

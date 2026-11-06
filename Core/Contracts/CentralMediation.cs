@@ -17,12 +17,14 @@ public static class CentralMediation
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {
         var broker=CentralCourtCatalog.CourtBroker;
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id || i.Site!=CentralCourtCatalog.Kyoto || place!=i.Site ||
+        if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || i.Site!=CentralCourtCatalog.Kyoto || place!=i.Site ||
            !TransportWork.At(w,actor,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||
            Assassination.DeadAt(w,i.Person,at,rev) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で取次本人と面会して相談してください");
         var rows=Earlier(w,at,rev).ToArray();
         if(i.Action==CourtAction.AskCourtIntroduction){
+            if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition && TransportWork.WalletBefore(w,actor,at,rev)<CentralRank.Offering)
+                throw new InvalidDataException("奏請に添える本人の献金60文が必要です");
             if(actor==broker || i.Person!=broker || i.Reference!=null || DefectionPacts.HouseAt(w,actor,at,rev-1)!=i.Owner ||
                !SocialWorld.Ledger(w).Any(e=>e.Input.Action==SocialWorldAction.Visit && e.Actor==actor &&
                     e.Input.Person==broker && e.At<=at && e.Revision<rev) ||
@@ -41,7 +43,7 @@ public static class CentralMediation
     internal static IEnumerable<CourtInput> Pending(ContractWorld w)
     {
         var broker=CentralCourtCatalog.CourtBroker;
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.Id || w.PlayerControl==broker)yield break;
+        if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || w.PlayerControl==broker)yield break;
         var rows=Earlier(w,w.ElapsedSeconds,w.CommitSequence+1).ToArray();
         foreach(var petition in rows.Where(e=>e.Input.Action==CourtAction.AskCourtIntroduction && e.At<w.ElapsedSeconds &&
             !rows.Any(r=>r.Input.Reference==e.Input.Id))){
