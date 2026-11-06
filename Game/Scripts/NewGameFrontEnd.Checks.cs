@@ -11,7 +11,7 @@ public partial class NewGameFrontEnd
     bool HistoricalCase=>FlowCase is "historical" or "corrupt";
     string FlowCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--new-game-case="))?.Split('=')[1]??"group";
     void Check(bool ok,string text){if(!ok){if(game!=null){Directory.CreateDirectory(TestOutput);File.WriteAllText(Path.Combine(TestOutput,"failure-pose.json"),game.Pose());ViewportCapture.Save(GetViewport(),Path.Combine(TestOutput,"failure.png"));}throw new Exception(text);}assertions.Add(text);}
-    async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
+    async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);if(DisplayServer.GetName()!="headless")await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
     async Task WaitSave(){var deadline=DateTime.UtcNow.AddSeconds(120);while(game!.IsSaving){if(DateTime.UtcNow>deadline)throw new TimeoutException("actual UI save completion");await Frame();}Check(game.LastSaveError==null,"actual UI save completed before continuing");}
     void Press(string id){Check(buttons.TryGetValue(id,out var b)&&!b.Disabled,"enabled actual frontend button: "+id);b!.EmitSignal(Button.SignalName.Pressed);}
     static IEnumerable<Node> Children(Node n){foreach(Node child in n.GetChildren()){yield return child;foreach(var x in Children(child))yield return x;}}
