@@ -119,17 +119,19 @@ public static class HouseReforms
     }
 
     public const string ResidenceNotice="castle-residence-notice";
-    public static string KnownAddress(ContractWorld w,EntityId observer,EntityId person){
+    public static string? ReportedAddress(ContractWorld w,EntityId observer,EntityId person){
         var latest=HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.Action==CourtAction.ReportResidence && e.Actor==person &&
             e.Input.Person==observer && MessageFlow.Knows(w.Messaging,Letter(e.Input,ResidenceNotice),observer.Value));
-        return latest?.Place.Value ?? FamilyBirth.People(w).Single(p=>p.Id==person.Value).Site;
+        return latest?.Place.Value;
     }
+    public static string KnownAddress(ContractWorld w,EntityId observer,EntityId person)=>
+        ReportedAddress(w,observer,person) ?? FamilyBirth.People(w).Single(p=>p.Id==person.Value).Site;
     internal static void SendResidenceNotice(ContractWorld w,CourtInput i,EntityId actor)=>
         Dispatch(w,i,ResidenceNotice,actor,i.Person,"城下に居所を移しました。届出先："+NewGameWorld.SiteName(i.Site.Value));
     static void Dispatch(ContractWorld w,CourtInput input,string kind,EntityId from,EntityId to,string body)
     {
         var address=KnownAddress(w,from,to);
-        var letter=new MessageEnvelope(Letter(input,kind),input.Id.Value,kind,from.Value,to.Value,body,address,w.ElapsedSeconds);
+        var letter=new MessageEnvelope(Letter(input,kind),input.Id.Value,kind,from.Value,to.Value,body,address,w.ElapsedSeconds){DeliverySite=address};
         MessageFlow.Send(w.Messaging,letter,w.ElapsedSeconds);
         w.SealedMessages=[..w.SealedMessages,new(letter.Id)];
         RegionalCampaign.Bind(w);

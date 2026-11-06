@@ -2,7 +2,11 @@ namespace HakutaiKagami.Core.Messaging;
 
 public enum AttemptStatus { InTransit, Lost, Rejected, Delivered }
 public sealed record MessageEnvelope(string Id, string CorrelationId, string Kind, string SenderId, string RecipientId,
-    string Body, string Scope, long CreatedAt, long? DeliverBy = null);
+    string Body, string Scope, long CreatedAt, long? DeliverBy = null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? DeliverySite {get;init;}
+}
 public sealed record MessageAttempt(string Id, string MessageId, int Number, long SentAt, long DueAt, string ReceiverId,
     AttemptStatus Status = AttemptStatus.InTransit, bool FailOnArrival = false, long? FinishedAt = null,
     long? FailureAt = null, long? LateDueAt = null, bool ArrivedLate = false);

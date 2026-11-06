@@ -221,7 +221,13 @@ public sealed class HouseConditionTests
                 Assert.Equal(enter.Site.Value,HouseReforms.KnownAddress(run.DiagnosticSnapshot(),lord,person));
                 var follow=proposal with{Id=new("request:follow-up-after-move"),Reform=ReformKind.ForeignLetters,NewEstate=null};
                 var updated=run.DiagnosticSnapshot();updated.CommitSequence++;HouseholdCourt.Execute(updated,follow,lord);
-                Assert.Equal(enter.Site.Value,updated.Messaging.Messages.Single(m=>m.Id==HouseReforms.Letter(follow,HouseReforms.Proposal)).Scope);
+                var dispatched=updated.Messaging.Messages.Single(m=>m.Id==HouseReforms.Letter(follow,HouseReforms.Proposal));
+                Assert.Equal(enter.Site.Value,dispatched.Scope);
+                var attempt=updated.Messaging.Attempts.Single(a=>a.MessageId==dispatched.Id);
+                Assert.Equal("kofu",updated.Couriers!.Missions.Single(m=>m.Attempt==attempt.Id).Destination);
+                var resumed=new WorldSession(ContractJson.Copy(updated));
+                NewGameWorldTests.At(resumed,attempt.DueAt+1);
+                Assert.Contains(resumed.DiagnosticSnapshot().Messaging.Receipts,r=>r.MessageId==dispatched.Id && r.ReceiverId==person.Value);
                 Assert.Equal(ContractJson.Write(arrival.Offices),ContractJson.Write(loaded.Offices));
                 Assert.Equal(ContractJson.Write(arrival.LandRights),ContractJson.Write(loaded.LandRights));
                 Assert.Equal(ResultCode.NotAvailable,host.Current.ManageCourt(settle with{Id=new("request:repeat-residence")},host.Current.Revision).Code);
