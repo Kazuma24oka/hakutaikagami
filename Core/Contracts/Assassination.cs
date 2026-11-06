@@ -13,8 +13,13 @@ public static class Assassination
             var trip = world.Branches.Journeys.LastOrDefault(j => j.Actor == person && j.Legs[0].StartAt <= at);
             if (trip == null) return null;
             var task = world.Tasks.Single(t => t.Id == trip.Task);
-            if (task.FinishedAt is {} end && end <= at) return null;
-            return trip.Legs.FirstOrDefault(l => l.StartAt <= at && at < l.EndAt && !NationalRoutes.Sea(l.Edge));
+            long positionAt=at;
+            if (task.FinishedAt is {} end && end<=at)
+            {
+                if (task.Execution!=ExecutionPhase.Stopped) return null;
+                positionAt=end;
+            }
+            return trip.Legs.FirstOrDefault(l => l.StartAt <= positionAt && positionAt < l.EndAt && !NationalRoutes.Sea(l.Edge));
         }
         var leg = ActiveLeg(actor);
         if (leg == null || ActiveLeg(other)?.Edge != leg.Edge) return null;
@@ -128,12 +133,16 @@ public static class Assassination
             ? capture : null;
     }
 
+    static bool Together(ContractWorld world, EntityId first, EntityId second, EntityId place, long at, long revision) =>
+        place.Value.StartsWith("road:",StringComparison.Ordinal) ? RoadMeeting(world,first,second,at)==place :
+        TransportWork.At(world,first,place,at,revision,true) && TransportWork.At(world,second,place,at,revision,true);
+
     internal static void CheckRelease(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long rev)
     {
         var capture=CaptivityAt(world,input.Subject,at,rev);
         if(capture==null || capture.Input.Id!=input.Reference || capture.Input.Subject!=actor || capture.Site!=site ||
             input.Person!=actor || input.Destination!=null || input.Topic!=SchemeTopic.ForeignContact ||
-            DeadAt(world,actor,at,rev-1) || !TransportWork.At(world,actor,site,at,rev,true))
+            DeadAt(world,actor,at,rev-1) || !Together(world,actor,input.Subject,site,at,rev))
             throw new InvalidDataException("捕縛原本と現地にいる身柄引受人が必要です");
     }
     internal static SchemeAction Clash(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long rev)
@@ -141,15 +150,14 @@ public static class Assassination
         var contact=InformationSchemes.Events(world).SingleOrDefault(e=>e.Input.Id==input.Reference &&
             e.Input.Action==SchemeAction.SeekContact && e.Actor==actor && e.Input.Subject==input.Subject && e.Site==site && e.Revision<rev);
         if(contact==null || input.Person!=actor || input.Destination!=null || input.Topic!=SchemeTopic.ForeignContact || DeadAt(world,actor,at,rev-1) ||
-            DeadAt(world,input.Subject,at,rev-1) || !TransportWork.At(world,input.Subject,site,at,rev,true) ||
-            !TransportWork.At(world,actor,site,at,rev,true))
+            DeadAt(world,input.Subject,at,rev-1) || !Together(world,actor,input.Subject,site,at,rev))
             throw new InvalidDataException("接触した対象を現地で再確認してください");
         if(InformationSchemes.Events(world).Any(e=>IsConclusion(e.Input.Action)&&e.Actor==actor&&e.Input.Subject==input.Subject&&e.At/86400==at/86400&&e.Revision<rev))
             throw new InvalidDataException("今日は同じ対象との接触戦を終えています");
         var start=world.NewGame!.Start;
         var attacker=start.People.Single(p=>p.Id==actor.Value);
         var target=start.People.Single(p=>p.Id==input.Subject.Value);
-        int guards=LocalSecurity.GuardsAt(world,site,at,rev);
+        int guards=site.Value.StartsWith("road:",StringComparison.Ordinal)?0:LocalSecurity.GuardsAt(world,site,at,rev);
         bool headquarters=HouseSuccession.Factions(world,at,rev-1).Any(f=>f.Head==target.Id && f.Home==site.Value);
         int odds=Math.Clamp(42+((attacker.Attributes?.Valor??50)-(target.Attributes?.Valor??50))/2-10*guards-(headquarters?40:0),2,85);
         var key=FormattableString.Invariant($"{world.NewGame.Seed}/{actor.Value}/{target.Id}/{site.Value}/{at/86400}/encounter");
@@ -165,6 +173,16 @@ public static class Assassination
         InformationSchemes.Add(world,input,actor,site);
         var result=input with {Id=InformationSchemes.Id("encounter",input.Id.Value),Action=outcome,Reference=input.Id};
         InformationSchemes.Add(world,result,actor,site);
+        if(site.Value.StartsWith("road:",StringComparison.Ordinal))
+        {
+            foreach(var journey in world.Branches!.Journeys.Where(j=>j.Actor==input.Subject || j.Actor==actor))
+            {
+                var task=world.Tasks.Single(t=>t.Id==journey.Task);
+                if(task.Execution==ExecutionPhase.Running && (outcome==SchemeAction.CaughtInEncounter ||
+                    outcome==SchemeAction.FatalEncounter && journey.Actor==input.Subject))
+                    WorldSession.Stop(world,task,"街道での接触戦により行程終了");
+            }
+        }
         if(outcome==SchemeAction.FatalEncounter)
             world.Characters=world.Characters.Select(c=>c.Id==input.Subject?c with{Life=LifeState.Dead,Revision=world.CommitSequence}:c).ToArray();
     }    internal static void CheckContact(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long revision)

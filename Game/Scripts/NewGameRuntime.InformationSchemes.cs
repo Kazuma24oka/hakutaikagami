@@ -9,7 +9,7 @@ public partial class NewGameRuntime
  internal void ReviewSchemePress(string key){if(!schemeReviewButtons.TryGetValue(key,out var b)||b.Disabled)throw new InvalidOperationException("この情報操作は選べません："+key);b.EmitSignal(Button.SignalName.Pressed);}
  void ShowInformationSchemes()
  {
-  if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("情報・書状の照合・密偵");schemeReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){SocialText(box,"現地へ到着してから相談してください。");return;}
+  if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("情報・書状の照合・密偵");schemeReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){if(CastleSiege.Enabled(w))Button("contact-menu","道中の人物・目撃記録",ShowPersonalContact);SocialText(box,"現地へ到着してから相談してください。");return;}
   void Button(string key,string label,Action action){var b=new Button{Text=label};box.AddChild(b);schemeReviewButtons[key]=b;b.Pressed+=action;}
   void Run(SchemeInput i){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageScheme(i,rev);message.Text=r.VisibleReason;GD.Print("SCHEME_RESULT "+i.Action+" "+r.Code+" "+r.VisibleReason);Refresh();ShowInformationSchemes();}
   EntityId Nonce(string key)=>new("request:scheme-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);

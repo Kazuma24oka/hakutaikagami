@@ -39,7 +39,7 @@ public static class InformationSchemes
  public static void Execute(ContractWorld w,SchemeInput i,EntityId actor)
  {
   Need(NewGameWork.Enabled(w)&&Adult(w,actor)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Topic),"扱えない情報です");var site=SocialWorld.Site(w,actor);
-  if(site==null && i.Action is (SchemeAction.ObservePerson or SchemeAction.SeekContact))site=Assassination.RoadMeeting(w,actor,i.Subject,w.ElapsedSeconds);
+  if(site==null && i.Action is (SchemeAction.ObservePerson or SchemeAction.SeekContact or SchemeAction.AttemptAssassination or SchemeAction.ReleaseCaptive))site=Assassination.RoadMeeting(w,actor,i.Subject,w.ElapsedSeconds);
   Need(site!=null,"相手に接触できる場所へ移動してください");
   Need(i.Action is not(SchemeAction.AcceptOperation or SchemeAction.CaptureScout or SchemeAction.PlanReturn or SchemeAction.ScoutBlocked or SchemeAction.ReportScout),"密偵の結果は実際の行程から確定します");
   Need(Assassination.CaptivityAt(w,actor,w.ElapsedSeconds,w.CommitSequence)==null,"捕縛中は行動できません");

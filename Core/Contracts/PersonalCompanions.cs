@@ -34,7 +34,7 @@ public static partial class PersonalCompanions
     }
     static bool Eligible(ContractWorld w,EntityId person,long at,long rev)
     {
-        if(person==w.PlayerControl||w.Characters.SingleOrDefault(c=>c.Id==person)?.Life!=LifeState.Adult||w.Offices.Any(r=>r.Subject==person&&r.From<=at&&at<r.Until)||NpcArmies.CommanderBusyAt(w,person,at,rev))return false;
+        if(person==w.PlayerControl||!w.NewGame!.Start.People.Any(p=>p.Id==person.Value && NewGameWorld.CanPlay(w.NewGame.Start,p))||Assassination.DeadAt(w,person,at,rev)||w.Offices.Any(r=>r.Subject==person&&r.From<=at&&at<r.Until)||NpcArmies.CommanderBusyAt(w,person,at,rev))return false;
         var original=w.NewGame!.Start.People.Single(p=>p.Id==person.Value);if(ReleaseEnabled(w)&&original.Lord!=null&&original.Lord!=w.PlayerControl.Value&&ReleasedFromOldLord(w,person,at,rev)&&!ReleaseKnown(w,person,at,rev))return false;
         var bonds=HouseholdService.BondsAt(w,at,rev).Where(r=>r.Subject==person&&r.From<=at&&at<r.Until).ToArray();if(bonds.Any(b=>b.Target!=w.PlayerControl))return false;
         return bonds.Any(b=>b.Target==w.PlayerControl)||!w.Memberships.Any(r=>r.Subject==person&&r.From<=at&&at<r.Until);
