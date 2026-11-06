@@ -19,7 +19,7 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "06ff7eea5ea9e5580b96feb15dc1d93c29ab80c5f0ba7aa52081bbda5bf68bb2",
+    "Docs/Development/ProgressV1/estimate.json": "49c3ee9ad08a78a312fd08ef07a5253e4c3b4f4ffae31172e0d019adf102887b",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "9dc41616458ce1fa76a62e839e170e3ab9279f9dd31041b4ab3696d48be98119",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
@@ -757,7 +757,7 @@
     "Docs/Design/DefectionPactV1/scope.md": "efbdf56ab9e9e6d7680e0284e4ce649782d5a44c31fa0f97e8527dd290b2f54f",
     "Docs/Design/DefectionPactV1/README.md": "18f6b127ad4bc625894e364ddec5551281ba1e9a0ca3b2f66eafb0b14af2c113",
     "Docs/Design/DefectionPactV1/completion.json": "0f8dde735a65a76de2613da7aed77e8e012e8727bdb0df2bfeb380f668d87ca4",
-    "Docs/Design/DefectionPactV1/integration.json": "c615d1333436f083c375fe99a69e453a653d8528b7965228807bc46f09539c51",
+    "Docs/Design/DefectionPactV1/integration.json": "5964c57306b35fd080746d62a5a4450fd6cd76dcc177f80ecb136f899aaf645d",
     "Scripts/verify_defection_pacts.py": "8af0228485acb3a7d6d95c8462d844c8d53adbe08731f84e59d0dbe4f1ab2956",
     "Docs/Development/ProgressV1/approval-baseline-v78.json": "31875c64c54ba1a48faf64f1e34b3a2826ac4825ae80341a9c8f1e07ea5bff00"
   },
