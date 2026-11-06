@@ -30,7 +30,7 @@ public static class RegionalDomains
     internal static TreasuryEntry[] Purchases(ContractWorld w,long at,long rev)=>Prefix(w,at,rev).Where(e=>e.Input.Action==TreasuryAction.Buy).ToArray();
     internal static long Purchased(ContractWorld w,EntityId site,string? kind,long at,long rev)=>Purchases(w,at,rev).Where(e=>e.Input.Site==site&&e.Input.Commodity==kind).Sum(e=>e.Input.Quantity);
     internal static long SpentAll(ContractWorld w,long at,long rev)=>Purchases(w,at,rev).Sum(e=>e.Payment!.Amount);
-    internal static long Cash(ContractWorld w,EntityId site,long at,long rev)=>(HasHouse(w,site)?500:0)+LandSurvey.CashNet(w,site,at,rev)+CraftTrade.CashNet(w,site,at,rev)+PublicWorks.CashNet(w,site,at,rev)+HouseLogistics.CashNet(w,site,at,rev)+Prefix(w,at,rev).Where(e=>e.Input.Site==site).Sum(e=>e.Input.Action==TreasuryAction.Fund?e.Input.Amount:e.Input.Action==TreasuryAction.Buy?-e.Payment!.Amount:0);
+    internal static long Cash(ContractWorld w,EntityId site,long at,long rev)=>(HasHouse(w,site)?500:0)+SiegeFleet.Cash(w,site,at,rev)+LandSurvey.CashNet(w,site,at,rev)+CraftTrade.CashNet(w,site,at,rev)+PublicWorks.CashNet(w,site,at,rev)+HouseLogistics.CashNet(w,site,at,rev)+Prefix(w,at,rev).Where(e=>e.Input.Site==site).Sum(e=>e.Input.Action==TreasuryAction.Fund?e.Input.Amount:e.Input.Action==TreasuryAction.Buy?-e.Payment!.Amount:0);
     internal static long Budget(ContractWorld w,EntityId site,long at,long rev)=>Prefix(w,at,rev).LastOrDefault(e=>e.Input.Site==site&&e.Input.Action==TreasuryAction.SetBudget)?.Input.Amount??200;
     internal static long Remaining(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {

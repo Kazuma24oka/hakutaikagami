@@ -13,7 +13,25 @@ public static class MaterialMarkets
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
     public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or RegionalDomains.Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
     static readonly EntityId[] hubs=CommunityEconomy.Sites.Concat(NationalRoutes.Catalog.Nodes.Where(n=>n.Kind=="historic-site-candidate"||n.Id is "kyoto" or "sakai").Select(n=>new EntityId("site:"+n.Id))).Distinct().ToArray();
-    public static EntityId[] Sites(ContractWorld w)=>Enabled(w)?[..hubs]:CommunityEconomy.Sites;
+    static readonly HashSet<string> coastalSites = NationalRoutes.Catalog.Edges
+        .Where(edge => edge.Mode == "sea")
+        .SelectMany(edge => new[] { RegionalCampaign.Site(edge.From).Value, RegionalCampaign.Site(edge.To).Value })
+        .ToHashSet(StringComparer.Ordinal);
+
+    public static EntityId[] Sites(ContractWorld w)
+    {
+        if (!Enabled(w)) return CommunityEconomy.Sites;
+        if (!CastleSiege.Enabled(w)) return [.. hubs];
+        // 当主が開始時に居城とする沿岸拠点には、人手・予算・普請を共通の地域台帳で持たせる。
+        // 通過・受領だけの港は、実際に荷渡しされた米だけを保管する。
+        var start = w.NewGame!.Start;
+        var homePorts = from faction in start.Factions
+                        join person in start.People on faction.Head equals person.Id
+                        where start.Castles.Any(c => c.Id == person.Site && c.Faction == faction.Id)
+                            && coastalSites.Contains(person.Site)
+                        select new EntityId(person.Site);
+        return hubs.Concat(homePorts).Distinct().ToArray();
+    }
     public static bool Supported(string? kind)=>kind is null or "wood" or "weapons";
     public static string Name(string? kind)=>kind=="wood"?"木材":kind=="weapons"?"武具一式":"米";
     public static string Unit(string? kind)=>kind=="weapons"?"組":"kg";

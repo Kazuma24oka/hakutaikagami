@@ -2295,3 +2295,8 @@ Docs/Development/ProgressV1/approval-baseline-v71.json -text
 Docs/Design/CastleWorksV1/* -text
 Core/Contracts/CastleWorks.cs -text
 Tests/CastleWorksTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v72.json -text
+Docs/Design/CastleSiegeV1/* -text
+Core/Contracts/CastleSiege*.cs -text
+Tests/CastleSiegeTests.cs -text

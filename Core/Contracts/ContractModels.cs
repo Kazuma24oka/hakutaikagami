@@ -259,6 +259,7 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CraftState? Crafts {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SurveyState? Surveys {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public BanditState? Bandits {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SiegeState? Sieges {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public BattlefieldState? Battlefield {get;set;}
     public required ChronicleEntry[] Chronicle { get; set; }
     public required RequestReceipt[] Requests { get; set; }
