@@ -16,6 +16,17 @@ public partial class NewGameRuntime
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
+      foreach(var (offer,letter,known) in CourtInvitation.Available(w,actor)){
+          if(!known){Button(letter,"朝廷から届いた打診を開く",()=>{Session.Open(actor,new(letter),rev);Refresh();ShowHouseholdCourt();});continue;}
+          if(site!=offer.Input.Site){SocialText(box,"朝廷への返答は本拠で行えます。");continue;}
+          foreach(var action in SupremeInvestiture.Petitions.Concat(new[]{CourtAction.DeferInvitation,CourtAction.DeclineImperialInvitation})){
+              var selection=new CourtInput(Nonce(action+"/"+offer.Input.Id),action,CentralCourtCatalog.CourtBroker,offer.Input.Owner,site.Value,Reference:offer.Input.Id);
+              if(action==CourtAction.DeferInvitation && w.Court!.Events.Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action==action))continue;
+              bool title=SupremeInvestiture.Petitions.Contains(action);
+              if(title && !SupremeInvestiture.CanPetition(w,selection,actor))continue;
+              Button(selection.Id.Value,title?SupremeInvestiture.Title(action)+"を希望する":action==CourtAction.DeferInvitation?"返答を保留する":"推任を辞退する",()=>Run(selection));
+          }
+      }
       foreach(var notice in SupremeInvestiture.Notices(w,actor)){
           if(notice.Known is {} decision)SocialText(box,decision);
           else Button(notice.Id,"朝廷から届いた裁可の書状を開く",()=>{Session.Open(actor,new(notice.Id),rev);Refresh();ShowHouseholdCourt();});

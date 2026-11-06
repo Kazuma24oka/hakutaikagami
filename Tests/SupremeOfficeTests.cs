@@ -32,6 +32,45 @@ public sealed class SupremeOfficeTests
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
     [Fact]
+    public void ImperialInvitationHonorsOpeningAndDeferralInHegemonFixture()
+    {
+        var home=CentralCourtCatalog.Kyoto;var broker=CentralCourtCatalog.CourtBroker;
+        var leader=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:home.Value);
+        var owner=new EntityId("org:hegemon");var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var request=new WorldSetupRequest([leader],[new(leader.Id,owner.Value,[home.Value],false)]);
+        var scenario=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        var w=NewGameWorld.Create(scenario,[leader],leader.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        // 領国拡大後の断面を用意する。登録時の領土予算は通常の開始処理で検査される。
+        var land=w.LandRights.Single(r=>r.Subject==owner && r.Target==home);
+        var other=raw.Castles.Where(c=>c.Id!=home.Value).OrderByDescending(c=>HouseTerritoryScale.Province(new(c.Id))!=null).Take(14);
+        foreach(var castle in other){
+            w.LandRights=[..w.LandRights.Where(r=>r.Target.Value!=castle.Id),land with{Id=new("land:test/"+castle.Id[5..]),Target=new(castle.Id)}];
+        }
+        w.CommitSequence++;
+        HouseholdCourt.Execute(w,new(new("request:hegemon"),CourtAction.DeclareScale,w.PlayerControl,owner,home,Scale:CourtScale.Hegemon),w.PlayerControl);
+        var offer=Assert.Single(CourtInvitation.Offers(w));w.CommitSequence++;
+        HouseholdCourt.Execute(w,offer,broker);
+        var letter=Assert.Single(w.Messaging.Messages,m=>m.Kind=="imperial-invitation");
+        var choice=new CourtInput(new("request:choose-office"),CourtAction.PetitionChancellor,broker,owner,home,Reference:offer.Id);
+        Assert.Throws<InvalidDataException>(()=>HouseholdCourt.Execute(w,choice,w.PlayerControl));
+        w.ElapsedSeconds+=2;
+        HakutaiKagami.Core.Messaging.MessageFlow.Advance(w.Messaging,w.ElapsedSeconds);
+        if(!HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,letter.Id,leader.Id))
+            w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(letter.Id,leader.Id,w.ElapsedSeconds,letter.Id)];
+        w.CommitSequence++;
+        HouseholdCourt.Execute(w,choice with{Id=new("request:defer"),Action=CourtAction.DeferInvitation},w.PlayerControl);
+        var copy=ContractJson.Copy(w);
+        foreach(var run in new[]{w,copy}){
+            run.CommitSequence++;
+            HouseholdCourt.Execute(run,choice,run.PlayerControl);
+            Assert.Empty(CourtInvitation.Available(run,run.PlayerControl));
+            Assert.Empty(SupremeInvestiture.Responses(run));
+            Assert.Single(run.Messaging.Messages,m=>m.Kind=="imperial-reply" && m.RecipientId==broker.Value);
+        }
+        Assert.Equal(ContractJson.Write(w),ContractJson.Write(copy));
+    }
+    [Fact]
     public void RegentChangesAtDecisionAndPetitionSurvivesRestore()
     {
         var site=CentralCourtCatalog.Kyoto;var broker=CentralCourtCatalog.CourtBroker;
