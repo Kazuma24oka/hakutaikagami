@@ -31,13 +31,16 @@ public sealed class HouseConditionTests
         Assert.EndsWith(HouseReforms.ReplyText(choice),restored.DiagnosticSnapshot().Messaging.Messages.Single(m=>m.Id==id.Value).Body);
     }
 
-    [Fact]
-    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AgreedTransferStillRequiresAnOrderThatActuallyReachesTheOfficer(bool occupied)
     {
         var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
         var officer=NewGameWorldTests.Officer("created:transfer-officer",StartTemplate.Castellan,lord:head.Id);
         var owner=new EntityId("org:transfer-test");
-        var setup=NewGameWorldTests.Setup([head,officer],[new(head.Id,owner.Value,[head.Site,"site:fork"],false)]);
+        var incumbent=NewGameWorldTests.Officer("created:prior-castellan",StartTemplate.Castellan,"site:fork",head.Id);
+        var setup=NewGameWorldTests.Setup(occupied?[head,officer,incumbent]:[head,officer],[new(head.Id,owner.Value,[head.Site,"site:fork"],false)]);
         var w=NewGameWorld.Create(setup.World,setup.Registered,officer.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
             workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
         EntityId lord=new(head.Id),person=new(officer.Id);
@@ -81,6 +84,17 @@ public sealed class HouseConditionTests
             Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("journey"),host.Current,host.Current.Revision));
             s=host.Current;
             NewGameWorldTests.At(s,s.GetBranchView(person).ArrivalAt!.Value+2);
+            if(occupied){
+                Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);
+                var post=s.DiagnosticSnapshot().Offices.Single(o=>o.Subject.Value==incumbent.Id && o.Kind=="castellan");
+                var present=enter with{Id=new("request:present-to-incumbent"),Action=CourtAction.PresentTransfer,Person=post.Subject,FormerOffice=post.Id};
+                var shown=s.ManageCourt(present,s.Revision);
+                Assert.True(shown.Code==ResultCode.Accepted,shown.VisibleReason);
+                w=s.DiagnosticSnapshot();w.CommitSequence++;
+                HouseholdCourt.Execute(w,present with{Id=new("request:yield-to-successor"),Action=CourtAction.YieldCastleOffice,Person=person},post.Subject);
+                s=new WorldSession(ContractJson.Copy(w));
+                Assert.True(s.DiagnosticSnapshot().Offices.Single(o=>o.Id==post.Id).Until<=s.Seconds);
+            }
             var arrived=s.ManageCourt(enter,s.Revision);
             Assert.True(arrived.Code==ResultCode.Accepted,arrived.VisibleReason);
             var after=s.DiagnosticSnapshot();
