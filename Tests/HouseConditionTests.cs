@@ -307,6 +307,14 @@ public sealed class HouseConditionTests
         if(exchange)Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(replace,s.Revision).Code);
         var handed=s.ManageCourt(release,s.Revision);
         Assert.True(handed.Code==(exchange||residence?ResultCode.NotAvailable:ResultCode.Accepted),handed.VisibleReason);
+        if(handed.Code==ResultCode.Accepted){
+            var released=s.DiagnosticSnapshot();
+            var eventRow=released.Court!.Events.Single(e=>e.Input.Id==release.Id);
+            Assert.True(JointIndependence.CommandedCastle(released,person,proposal.Site,eventRow.At,eventRow.Revision));
+            Assert.False(JointIndependence.CommandedCastle(released,person,proposal.Site,eventRow.At,eventRow.Revision+1));
+            var restored=new WorldSession(ContractJson.Copy(released)).DiagnosticSnapshot();
+            Assert.True(JointIndependence.CommandedCastle(restored,person,proposal.Site,eventRow.At,eventRow.Revision));
+        }
         var enter=new CourtInput(new("request:enter-office"),CourtAction.EnterCastleOffice,lord,owner,
             proposal.NewEstate!.Value,Reference:order.Id);
         Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(enter,s.Revision).Code);

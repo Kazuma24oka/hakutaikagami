@@ -1,0 +1,14 @@
+{
+  "scope": "castle-office-order",
+  "ui": "Docs/Design/CastleOfficeOrderV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 10
+  },
+  "proofs": {
+    "Docs/Design/CastleOfficeOrderV1/runtime-local/orders.trx": "e4010d57105b34828cf5cf6b2e534c3faa477f7ace9ad46418cf28b76c8facc2",
+    "Docs/Design/CastleOfficeOrderV1/runtime-local/competition.trx": "33b79643a1d5be1640fa24551b5c29acffd1dc9004f379e85414d4a28a3861ed",
+    "Docs/Design/CastleOfficeOrderV1/runtime-local/ui.log": "0c78cdd5a1f58cd7547d316fdffa3b42b147b45c15e9973234248a921ac7a597",
+    "Docs/Design/CastleOfficeOrderV1/verification.json": "a89fec6ba29326a6549d87995fb7d6fbd36b8082304d9babcb52ce44a6b97afa",
+    "Docs/Design/CastleOfficeOrderV1/completion.json": "1ab4b866a7782620e993acc20b1a3248e9dfc38acee078c11dd062512ac6b872"
+  }
+}

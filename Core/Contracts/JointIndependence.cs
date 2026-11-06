@@ -65,12 +65,19 @@ public static class JointIndependence
         }
     }
 
-    internal static bool CommandedCastle(ContractWorld w,EntityId person,EntityId site,long at,long rev)
+    public static bool CommandedCastle(ContractWorld w,EntityId person,EntityId site,long at,long rev)
     {
         var latest=w.Castellan?.Entries.LastOrDefault(e=>e.Input.Site==site && e.Revision<rev &&
             e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);
-        return latest!=null ? CastleAdministration.Grant(w,site,at,rev)?.Agent==person :
-            w.Offices.Any(o=>o.Subject==person && o.Target==site && o.Kind=="castellan" && o.From<=at && at<o.Until);
+        if(latest!=null)return CastleAdministration.Grant(w,site,at,rev)?.Agent==person;
+        var offices=w.Offices;
+        // 一秒の中で明渡しや入城をした場合も、先に成立した行為は当時の職で照合する。
+        if(HouseholdCourt.Events(w).Any(e=>e.Place==site && e.At==at && e.Revision>=rev &&
+            e.Input.Action is CourtAction.ReleaseCastleOffice or CourtAction.YieldCastleOffice or CourtAction.EnterCastleOffice)){
+            var initial=NewGameWorld.InitialRelations(w.NewGame!);
+            offices=HouseholdCourt.Offices(w,HouseSuccession.Offices(w,initial.Offices),at,rev);
+        }
+        return offices.Any(o=>o.Subject==person && o.Target==site && o.Kind=="castellan" && o.From<=at && at<o.Until);
     }
     internal static TimedRelation[] CastleControl(ContractWorld w,TimedRelation[] original)
     {

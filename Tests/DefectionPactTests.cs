@@ -407,7 +407,20 @@ public class DefectionPactTests
                 Assert.Equal(ResultCode.Accepted,session.Submit(trip,session.Revision).Code);
                 NewGameWorldTests.At(session,session.Seconds+2);NewGameWorldTests.At(session,session.GetBranchView(Actor).ArrivalAt!.Value+1);
             }
+            EntityId oldLord=new("person:nobunaga");
+            var appointment=new CourtInput(new("request:parallel-steward"),CourtAction.Nominate,recipient,
+                new(w.NewGame!.Start.Factions.Single(f=>f.Head==oldLord.Value).Id),new("site:"+recipientNode));
+            WorldSession IssueAsLord(WorldSession source,CourtInput input){
+                var state=source.DiagnosticSnapshot();state.CommitSequence++;
+                HouseholdCourt.Execute(state,input,oldLord);
+                return new WorldSession(state);
+            }
             Travel(recipientNode);
+            if(oldLordPresent){
+                session=IssueAsLord(session,appointment);
+                NewGameWorldTests.At(session,session.Seconds+2);
+                Assert.Contains(session.DiagnosticSnapshot().Offices,o=>o.Subject==recipient && o.Kind=="house-steward" && o.Until==long.MaxValue);
+            }
             for(int day=0;day<2;day++){
                 var visit=session.ManageSocial(new(new("request:visit-contact/"+day),SocialWorldAction.Visit,recipient),session.Revision);
                 Assert.True(visit.Code==ResultCode.Accepted,visit.VisibleReason);
@@ -443,6 +456,13 @@ public class DefectionPactTests
                 var gateway=session.DiagnosticSnapshot();
                 Assert.Contains(gateway.Court!.Events,e=>e.Input.Reference==joined.Input.Id && e.Input.Action==CourtAction.ReceiveIndependentGate);
                 Assert.False(JointIndependence.ObserveOwnCastle(gateway,recipient)!.ControlsCastle);
+                var dismissal=appointment with{Id=new("request:parallel-dismissal"),Action=CourtAction.RevokeOffice,Reference=appointment.Id};
+                var competing=IssueAsLord(session,dismissal);
+                NewGameWorldTests.At(competing,competing.Seconds+1);
+                var resolved=competing.DiagnosticSnapshot();
+                Assert.Contains(resolved.Offices,o=>o.Subject==recipient && o.Kind=="house-steward" && o.Until<=resolved.ElapsedSeconds);
+                Assert.True(JointIndependence.ObserveOwnCastle(resolved,recipient)!.ControlsCastle);
+                Assert.Single(resolved.Messaging.Messages,m=>m.Kind==IndependenceLetters.KeepReport);
                 // 現地に双方がいる同一の交渉記録に対し、任期の境界だけを変えた判定試験。
                 var beforeExpiry=ContractJson.Copy(gateway);
                 var assignment=Assert.Single(beforeExpiry.Offices,o=>o.Subject==recipient && o.Kind=="castellan" && o.Target==joined.Place);
