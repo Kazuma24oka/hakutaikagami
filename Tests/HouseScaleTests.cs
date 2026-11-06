@@ -4,6 +4,36 @@ namespace HakutaiKagami.Tests;
 
 public sealed class HouseScaleTests
 {
+    [Theory]
+    [InlineData(CourtRole.WorksMagistrate,WorksKind.Agriculture,WorksKind.Commerce)]
+    [InlineData(CourtRole.TownMagistrate,WorksKind.Commerce,WorksKind.Agriculture)]
+    public void SpecialistMaySpendOnlyWithinHisAppointmentAndAcceptedBudget(CourtRole role,WorksKind allowed,WorksKind forbidden)
+    {
+        var head=NewGameWorldTests.Officer(role:StartTemplate.Daimyo) with{Attributes=new(20,20,20,20)};
+        var agent=NewGameWorldTests.Officer("created:specialist",StartTemplate.Retainer,lord:head.Id);
+        EntityId site=new(head.Site),owner=new("org:specialist"),who=new(agent.Id);
+        var lands=NewGameWorld.Scenario().Castles.Where(c=>c.Id!=head.Site).Take(7).Select(c=>c.Id).Prepend(head.Site).ToArray();
+        var setup=NewGameWorldTests.Setup([head,agent],[new(head.Id,owner.Value,lands,false)]);
+        var w=NewGameWorld.Create(setup.World,setup.Registered,head.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy);
+        var s=new WorldSession(w);
+        var nomination=new CourtInput(new("request:nominate-specialist"),CourtAction.Nominate,who,owner,site,Role:role);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(nomination,s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(new(new("request:great"),CourtAction.DeclareScale,s.PlayerControl,owner,site,Scale:CourtScale.Great),s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(nomination,s.Revision).Code);
+        var work=new WorksInput(new("request:specialist-work"),site,allowed);
+        var before=s.DiagnosticSnapshot();before.CommitSequence++;
+        Assert.Throws<InvalidDataException>(()=>PublicWorks.Execute(before,work,who));
+        Assert.Equal(ResultCode.Accepted,s.ManageAdministration(new(new("request:specialist-budget"),AdministrationAction.IssueTerms,owner,site,who,AnnualCoins:100),s.Revision).Code);
+        NewGameWorldTests.At(s,3);
+        var after=s.DiagnosticSnapshot();
+        Assert.False(PublicWorks.MayOrder(after,who,site,forbidden,after.ElapsedSeconds,after.CommitSequence+1));
+        Assert.Throws<InvalidDataException>(()=>PublicWorks.Execute(after,work with{Kind=forbidden},who));
+        Assert.Equal(allowed,Assert.Single(after.PublicWorks!.Orders).Input.Kind);
+        Assert.Equal(who,Assert.Single(after.PublicWorks!.Orders).Actor);
+        Assert.Equal(ContractJson.Write(after),ContractJson.Write(new WorldSession(ContractJson.Copy(after)).DiagnosticSnapshot()));
+    }
+
     [Fact]
     public void ARegionalLordCanProposeEqualDefenseAndReceiveShorterTermsFromALargerHouse()
     {

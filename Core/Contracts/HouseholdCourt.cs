@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 namespace HakutaiKagami.Core.Contracts;
 public enum CourtAction { RecruitOffer,RecruitAccept,RecruitDecline,ReturnSigning,ResignService,Nominate,AcceptOffice,DeclineOffice,RevokeOffice,ResignOffice,DeclareScale,Convene,AcceptInvitation,DeclineInvitation,HoldCouncil,SubmitCase,ApproveCase,DenyCase,ReviseCase,DeliverDocument }
-public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander }
+public enum CourtRole { Elder,Steward,Castellan,Mediator,TeaMaster,Commander,WorksMagistrate,TownMagistrate }
 public enum CourtScale { Local,Daimyo,Great,Hegemon }
 public enum CourtCaseKind { RelieveVillage,BuyWood,BuyWeapons,SetBudget }
 public sealed record CourtInput(EntityId Id,CourtAction Action,EntityId Person,EntityId Owner,EntityId Site,CourtRole Role=CourtRole.Steward,long Amount=0,EntityId? Reference=null,long When=0,CourtCaseKind Case=CourtCaseKind.RelieveVillage,CourtScale Scale=CourtScale.Local,EntityId? Carrier=null)
@@ -44,6 +44,7 @@ public static class HouseholdCourt
      CourtRole.Elder or CourtRole.Steward => 1+(int)scale,
      CourtRole.Castellan => scale>=CourtScale.Daimyo?1:0,
      CourtRole.Mediator or CourtRole.Commander => (int)scale,
+     CourtRole.WorksMagistrate or CourtRole.TownMagistrate => scale>=CourtScale.Great?1:0,
      CourtRole.TeaMaster => scale>=CourtScale.Daimyo?1:0,
      _=>0
  };
@@ -55,12 +56,21 @@ public static class HouseholdCourt
          offer.Owner==owner && offer.Site==site && offer.Role==role);
      return occupied<SeatLimit(Scale(w,owner,at,rev),role);
  }
- public static string RoleName(CourtRole role,CourtScale scale)=>role switch{CourtRole.Elder=>scale>=CourtScale.Great?"宿老":"家老",CourtRole.Steward=>scale>=CourtScale.Daimyo?"奉行":"代官",CourtRole.Castellan=>"城主（常設）",CourtRole.Mediator=>"取次",CourtRole.TeaMaster=>"茶頭",_=>"部将（指揮は別契約）"};
+ public static string RoleName(CourtRole role,CourtScale scale)=>role switch{CourtRole.Elder=>scale>=CourtScale.Great?"宿老":"家老",CourtRole.Steward=>scale>=CourtScale.Daimyo?"奉行":"代官",CourtRole.Castellan=>"城主（常設）",CourtRole.WorksMagistrate=>"普請奉行",CourtRole.TownMagistrate=>"町奉行",CourtRole.Mediator=>"取次",CourtRole.TeaMaster=>"茶頭",_=>"部将（指揮は別契約）"};
  public static string Seat(ContractWorld w,EntityId principal,EntityId person,long at=long.MaxValue,long revision=long.MaxValue){bool family=w.Adoption?.Entries.Any(e=>e.Input.Action==AdoptionAction.Implement&&(e.At<at||e.At==at&&e.Revision<revision)&&w.Adoption.Entries.Any(q=>q.Terms is {} t&&q.Input.Id==e.Input.Original&&t.Parent==principal&&t.Child==person))==true||w.Marriage?.Entries.Any(e=>e.Input.Action==MarriageAction.Implement&&(e.At<at||e.At==at&&e.Revision<revision)&&w.Marriage.Entries.Any(q=>q.Terms is {} t&&q.Input.Id==e.Input.Original&&(t.First==principal&&t.Second==person||t.Second==principal&&t.First==person)))==true;if(family)return "一門（本人が知る縁組）";var original=w.NewGame!.Start.People.Single(p=>p.Id==person.Value);return !original.Created&&original.Lord==principal.Value?"譜代（開始資料の根拠）":Events(w).Any(e=>e.Input.Action==CourtAction.RecruitAccept&&e.Actor==person)?"新参（登用の合意）":"新参・席次の来歴は未採録";}
  public static bool CanConvene(ContractWorld w,EntityId actor,EntityId owner,EntityId site){if(HeadAuthority(w,actor,owner,site,w.ElapsedSeconds,w.CommitSequence+1))return true;var appointment=Appointment(w,actor,owner,site,w.ElapsedSeconds,w.CommitSequence+1);return appointment!=null&&Source(w,appointment.Input.Reference,CourtAction.Nominate).Input.Role==CourtRole.Elder;}
  static long EndOffice(ContractWorld w,CourtEvent accepted,long at,long rev){var offer=Source(w,accepted.Input.Reference,CourtAction.Nominate);var ends=Events(w).Where(e=>Before(e,at,rev)&&(e.Input.Action==CourtAction.ResignOffice&&e.Input.Reference==offer.Input.Id||e.Input.Action==CourtAction.RevokeOffice&&e.Input.Reference==offer.Input.Id&&Received(w,e.Input.Id,accepted.Actor,at,rev))).Select(e=>e.Input.Action==CourtAction.RevokeOffice?SocialWorld.Ledger(w).Where(r=>r.Input.Action==SocialWorldAction.ReceiveGift&&SocialWorld.Ledger(w).Any(g=>g.Input.Id==r.Input.Reference&&g.Input.Asset==e.Input.Id)).Min(r=>r.At):e.At);var succession=w.Succession?.Entries.Where(e=>e.Input.Action==HouseSuccessionAction.Resolve&&e.Outcome=="confirmed"&&e.Input.Owner==offer.Input.Owner&&e.At>=accepted.At&&(e.At<at||e.At==at&&e.Revision<rev)).Select(e=>e.At)??[];return ends.Concat(succession).DefaultIfEmpty(long.MaxValue).Min();}
  internal static TimedRelation[] Offices(ContractWorld w,TimedRelation[] original,long at=long.MaxValue,long rev=long.MaxValue)=>[..original,..Events(w).Where(e=>e.Input.Action==CourtAction.AcceptOffice&&Before(e,at,rev)).Select(e=>{var offer=Source(w,e.Input.Reference,CourtAction.Nominate);return new TimedRelation(Id("office",offer.Input.Id.Value),e.Actor,offer.Input.Site,"house-"+offer.Input.Role.ToString().ToLowerInvariant(),NewGameWorld.Basis,e.At,EndOffice(w,e,at,rev),e.Revision);})];
  static CourtEvent? Appointment(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev)=>Events(w).Where(e=>e.Input.Action==CourtAction.AcceptOffice&&e.Actor==actor&&Before(e,at,rev)&&e.At<=at&&at<EndOffice(w,e,at,rev)).LastOrDefault(e=>{var offer=Source(w,e.Input.Reference,CourtAction.Nominate);return offer.Input.Owner==owner&&offer.Input.Site==site;});
+ internal static CourtRole? Specialist(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
+ {
+     if(RegionalDomains.Owner(w,site) is not {} owner || Appointment(w,actor,owner,site,at,rev) is not {} appointment)
+         return null;
+     var offer=Source(w,appointment.Input.Reference,CourtAction.Nominate);
+     if(offer.Input.Role is not (CourtRole.WorksMagistrate or CourtRole.TownMagistrate))return null;
+     return Member(w,actor,owner,at,rev) && HeadAuthority(w,offer.Actor,owner,site,at,rev) &&
+         !HostageCustody.HeldAt(w,actor,at,rev) && !CastleAdministration.Blocked(w,site,at,rev)?offer.Input.Role:null;
+ }
  internal static FactionStanceAuthority? Authority(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev,bool treasury=false){if(HostageCustody.HeldAt(w,actor,at,rev))return null;if(CastleAdministration.Blocked(w,site,at,rev))return null;var accepted=Appointment(w,actor,owner,site,at,rev);if(accepted==null||!Member(w,actor,owner,at,rev))return null;var offer=Source(w,accepted.Input.Reference,CourtAction.Nominate);if(offer.Input.Role is not(CourtRole.Steward or CourtRole.Castellan))return null;var source=FactionStances.ResolveAuthority(w,offer.Actor,owner,at,Math.Min(rev,w.CommitSequence));if(source==null||!HeadAuthority(w,offer.Actor,owner,site,at,rev))return null;var member=w.Memberships.Last(m=>m.Subject==actor&&m.Target==owner&&Active(m,at,rev));return source with{Issuer=actor,Office=Id("office",offer.Input.Id.Value),Membership=member.Id};}
  internal static long Budget(ContractWorld w,EntityId actor,EntityId site,EconomyAction action,long at,long rev){var epoch=DateOnly.Parse(w.EpochDate);var month=epoch.AddDays((int)(at/86400));long used=w.Communities?.Orders.Where(e=>e.Actor==actor&&e.Input.Site==site&&e.Input.Action==action&&(e.At<at||e.At==at&&e.Revision<rev)&&epoch.AddDays((int)(e.At/86400)).Year==month.Year&&epoch.AddDays((int)(e.At/86400)).Month==month.Month).Sum(e=>e.Input.Amount)??0;return Math.Max(0,(action==EconomyAction.CollectLevy?1000:200)-used);}
  internal static void Sync(ContractWorld w){if(w.Court==null)return;var original=NewGameWorld.InitialRelations(w.NewGame!);w.Memberships=NewGameService.Relations(w,original.Members,"membership");w.ServiceBonds=NewGameService.Relations(w,original.Bonds,"service");w.Offices=Offices(w,HouseSuccession.Offices(w,original.Offices));}
