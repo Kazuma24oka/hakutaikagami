@@ -186,6 +186,7 @@ public class DefectionPactTests
                 Assert.Single(after.Court!.Events, e => e.Input.Reference == ask.Id &&
                     e.Input.Action is CourtAction.SupportRestoration or CourtAction.ReserveRestoration);
                 Assert.Null(HouseRestoration.SuccessorOrganization(after, change.FormerHouse, 8, after.CommitSequence + 1));
+                Assert.Empty(HouseRestoration.ContinuityApplications(after, Actor));
                 var attempt = new CourtInput(new("request:claim-former-house"), CourtAction.RecognizeHouseContinuity,
                     Actor, change.FormerHouse, change.Site, Reference: change.Pact);
                 var refused = host.Current.ManageCourt(attempt, host.Current.Revision);

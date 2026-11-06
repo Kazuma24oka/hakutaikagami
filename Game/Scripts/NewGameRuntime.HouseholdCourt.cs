@@ -29,14 +29,9 @@ public partial class NewGameRuntime
     SocialText(box,$"{WorldCalendar.Display(w.EpochDate,known.At)}　{NewGameWorld.SiteName(known.Place.Value)}の本丸と旧家の守備兵を確認");
    foreach(var recoveringHouse in history.Where(e=>e.Input.Action==CourtAction.SeekRestorationSupport && e.Actor==actor && e.Place==site).Select(e=>e.Input.Owner).Distinct()){
     var successor=HouseRestoration.SuccessorOrganization(w,recoveringHouse,w.ElapsedSeconds,rev+1);
-    if(successor==null && HouseSuccession.Head(w,recoveringHouse)==actor){
-     foreach(var foundation in (w.Declarations??[]).Where(d=>d.Site==site && d.House!=recoveringHouse &&
-         HouseRestoration.RepresentsFoundation(w,d,actor,w.ElapsedSeconds,rev))){
-      var claimKey="restore-line/"+foundation.Pact.Value+"/"+recoveringHouse.Value;
-      Button(claimKey,"旧家の家督と現在の家の原本を照合する",()=>Run(new(Nonce(claimKey),CourtAction.RecognizeHouseContinuity,actor,recoveringHouse,site.Value,Reference:foundation.Pact)));
-     }
-    }
-    else if(successor!=null)SocialText(box,"旧家の家督と再興後の家の原本を照合済み");
+    if(successor!=null)SocialText(box,"旧家の家督と再興後の家の原本を照合済み");
+    else foreach(var application in HouseRestoration.ContinuityApplications(w,actor).Where(i=>i.Owner==recoveringHouse))
+     Button(application.Id.Value,"旧家の家督と現在の家の原本を照合する",()=>Run(application));
     if(HouseRestoration.SecuredKeep(w,actor,recoveringHouse,site.Value) is not {} capture ||
        history.Any(e=>e.Input.Action==CourtAction.RecordRecoveredSeat && e.Actor==actor && e.Input.Reference==capture))continue;
     var key="recovered/"+capture.Value;

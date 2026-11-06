@@ -59,20 +59,42 @@ public static class HouseRestoration
             !CastleAdministration.Blocked(world, declaration.Site, at, revision);
     }
 
+    public static IEnumerable<CourtInput> ContinuityApplications(ContractWorld world, EntityId actor)
+    {
+        if (SocialWorld.Site(world, actor) is not {} site) yield break;
+        var houses = HouseholdCourt.Events(world).Where(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
+            e.Actor == actor && e.Place == site).Select(e => e.Input.Owner).Distinct();
+        foreach (var house in houses)
+        foreach (var declaration in (world.Declarations ?? []).Where(d => d.Site == site && d.House != house))
+        {
+            var id = HouseholdCourt.Id("request", $"restoration-recognition/{house.Value}/{declaration.Pact.Value}");
+            var input = new CourtInput(id, CourtAction.RecognizeHouseContinuity, actor, house, site, Reference: declaration.Pact);
+            if (CanRecognize(world, input, actor, site, world.ElapsedSeconds, world.CommitSequence + 1))
+                yield return input;
+        }
+    }
+
     internal static void CheckContinuity(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
+    {
+        if (!CanRecognize(world, input, actor, place, at, revision))
+            throw new InvalidDataException("旧家の当主・継承記録と現地の新しい家の代表権を同じ人物について照合してください");
+    }
+
+    static bool CanRecognize(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
     {
         var declaration = world.Declarations?.SingleOrDefault(d => d.Pact == input.Reference && d.At <= at && d.Revision < revision);
         if (declaration == null || declaration.House == input.Owner || declaration.Site != place || input.Site != place ||
             actor != input.Person || !TransportWork.At(world, actor, place, at, revision, true) ||
             HouseSuccession.Head(world, input.Owner, at, revision - 1) != actor ||
             !RepresentsFoundation(world, declaration, actor, at, revision - 1) ||
-            world.LandRights.Any(r => r.Subject == input.Owner && r.Kind == "control" && r.From <= at &&
+            world.LandRights.Any(r => r.Subject == input.Owner && r.Kind == "control" && r.From <= at && (r.From < at || r.Until != long.MaxValue || r.Revision < revision) &&
                 (at < r.Until || at == r.Until && revision < r.Revision)) ||
             !HouseholdCourt.Events(world).Any(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
                 e.Actor == actor && e.Input.Owner == input.Owner && e.Place == place && e.Revision < revision) ||
             HouseholdCourt.Events(world).Any(e => e.Input.Action == CourtAction.RecognizeHouseContinuity && e.Revision < revision &&
                 (e.Input.Owner == input.Owner || e.Input.Reference == input.Reference)))
-            throw new InvalidDataException("旧家の当主・継承記録と現地の新しい家の代表権を同じ人物について照合してください");
+            return false;
+        return true;
     }
 
     // 本丸を取った最新の原本と、今そこを守る実兵を両方照合する。
@@ -290,6 +312,13 @@ public static class HouseRestoration
     internal static void AnswerLocalRequests(ContractWorld world)
     {
         var history = HouseholdCourt.Events(world);
+        // 旧所属だけを根拠に、NPCの当主を一括して切り替えない。
+        foreach (var candidate in history.Where(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
+            e.Actor != world.PlayerControl && e.At < world.ElapsedSeconds).Select(e => e.Actor).Distinct())
+        {
+            foreach (var application in ContinuityApplications(world, candidate).ToArray())
+                TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, application, candidate));
+        }
         foreach (var ask in history.Where(e => e.Input.Action == CourtAction.SeekRestorationSupport &&
             e.Input.Person != world.PlayerControl && e.At < world.ElapsedSeconds))
         {
