@@ -28,6 +28,10 @@ public partial class NewGameRuntime
               }
           }
       }
+      foreach(var vote in PeaceMediation.Votes(w,actor)){
+          var text=vote.Amount+"日間の不戦仲裁案"+(vote.Action==CourtAction.AcceptPeaceProposal?"を承諾する":"を断る");
+          Button(vote.Id.Value,text,()=>Run(vote));
+      }
       if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
       if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;

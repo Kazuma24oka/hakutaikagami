@@ -96,8 +96,8 @@ public sealed class CentralMediationTests
         }
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
-    [Fact]
-    public void BrokerSendsSamePeaceTermsToTwoDistinctHousesAfterRestore()
+    [Theory][InlineData(true)][InlineData(false)]
+    public void BrokerSendsSamePeaceTermsToTwoDistinctHousesAfterRestore(bool agree)
     {
         var site=CentralCourtCatalog.Kyoto;
         var broker=CentralCourtCatalog.CourtBroker;
@@ -122,7 +122,17 @@ public sealed class CentralMediationTests
             Assert.Equal(2,letters.Length);Assert.Equal(2,letters.Select(m=>m.RecipientId).Distinct().Count());
             Assert.Single(letters.Select(m=>m.Body).Distinct());
             Assert.Empty(state.Truces?.Formations??[]);
-            _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(state)));
+            Assert.Empty(PeaceMediation.Votes(state,run.PlayerControl));
+            NewGameWorldTests.At(run,run.Seconds+4);
+            var original=letters.Single(m=>m.RecipientId==run.PlayerControl.Value);
+            Good(run.Open(run.PlayerControl,new(original.Id),run.Revision));
+            var answer=Assert.Single(PeaceMediation.Votes(run.DiagnosticSnapshot(),run.PlayerControl),i=>i.Action==(agree?CourtAction.AcceptPeaceProposal:CourtAction.RejectPeaceProposal));
+            Good(run.ManageCourt(answer,run.Revision));
+            Assert.Equal(ResultCode.AlreadyAccepted,run.ManageCourt(answer,run.Revision).Code);
+            var answered=run.DiagnosticSnapshot();
+            Assert.Single(answered.Messaging.Messages,m=>m.Kind==PeaceMediation.Response && m.SenderId==run.PlayerControl.Value);
+            Assert.Empty(answered.Truces!.Formations);
+            _=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(answered)));
         }
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
