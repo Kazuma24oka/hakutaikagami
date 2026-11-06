@@ -4,11 +4,11 @@ public sealed record BanditInput(EntityId Id,BanditAction Action,EntityId Site);
 public sealed record BanditDecision(BanditInput Input,EntityId Actor,long At,long Revision,long Paid);
 public sealed record SkirmishPerson(EntityId Id,int Side,int Health,int Morale,int Valor,int Leadership);
 public sealed record Skirmish(EntityId Id,EntityId Site,EntityId Actor,long At,long LastAt,string Phase,SkirmishPerson[] People,SkirmishPerson[] Initial);
-public sealed record BanditState(int Schema,string Policy,BanditDecision[] Decisions,Skirmish[] Encounters){public GuardOrder[] Jobs{get;init;}=[];}
+public sealed record BanditState(int Schema,string Policy,BanditDecision[] Decisions,Skirmish[] Encounters){public GuardOrder[] Jobs{get;init;}=[];[System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public SecurityOrder[]? Security{get;init;}}
 public static class BanditEncounter
 {
  public const string Policy="local-bandit-person-contact-physical-payment-injury-v1";
- public static bool Enabled(ContractWorld w)=>w.NewGame?.BanditPolicy==Policy;
+ public static bool Enabled(ContractWorld w)=>w.NewGame?.BanditPolicy is Policy or LocalSecurity.Policy;
  public static EntityId[] Camps=>[new("site:castle"),new("site:kofu"),new("site:odawara")];
  static void Need(bool ok,string why){if(!ok)throw new InvalidDataException(why);}
  public static Skirmish? Current(ContractWorld w)=>w.Bandits?.Encounters.LastOrDefault(e=>e.Actor==w.PlayerControl&&e.Phase is "選択待ち" or "交戦中");
@@ -17,7 +17,7 @@ public static class BanditEncounter
  public static long Net(ContractWorld w,EntityId wallet,long at,long rev)=>-(w.Bandits?.Decisions??[]).Where(e=>NewGameWork.Wallet(e.Actor)==wallet&&(e.At<at||e.At==at&&e.Revision<rev)).Sum(e=>e.Paid);
  public static long BanditMoney(ContractWorld w,EntityId site)=>(w.Bandits?.Decisions??[]).Where(e=>e.Input.Site==site).Sum(e=>e.Paid);
  public static bool Dangerous(ContractWorld w,EntityId site)=>Enabled(w)&&Camps.Contains(site)&&!(w.Bandits?.Encounters.Any(e=>e.Site==site&&e.Phase=="賊が敗走")??false);
- public static bool NeedsContact(ContractWorld w)=>SocialWorld.Site(w,w.PlayerControl) is {} site&&Dangerous(w,site)&&!(w.Bandits?.Encounters.Any(e=>e.Site==site&&e.Actor==w.PlayerControl)??false);
+ public static bool NeedsContact(ContractWorld w)=>SocialWorld.Site(w,w.PlayerControl) is {} site&&Dangerous(w,site)&&!LocalSecurity.Protected(w,site,w.ElapsedSeconds,w.CommitSequence+1)&&!(w.Bandits?.Encounters.Any(e=>e.Site==site&&e.Actor==w.PlayerControl)??false);
  public static int Injury(ContractWorld w,EntityId person)=>(w.Bandits?.Encounters??[]).SelectMany(e=>e.People.Where(p=>p.Id==person).Select(p=>20-p.Health)).DefaultIfEmpty().Max();
  static EntityId Member(EntityId site,int i)=>new("bandit:"+site.Value.Replace(':','/')+"/"+i);
  public static void Execute(ContractWorld w,BanditInput input,EntityId actor){Need(Enabled(w)&&actor==w.PlayerControl&&EntityId.IsValid(input.Id.Value)&&Enum.IsDefined(input.Action)&&SocialWorld.Site(w,actor)==input.Site,"本人が現地で判断してください");var current=Current(w);long paid=0;
