@@ -42,7 +42,17 @@ public static class VillageConsultation
             if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
         }return Math.Clamp(n,0,100);
     }
-    internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return true;if(DestructiveSchemes.Agitated(w,site,at,rev))return false;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at,rev)>=50;}
+    static bool WithholdsLaborAfterPetition(ContractWorld w,EntityId site,long at,long rev)
+    {
+        if(w.Communities is not {} ledger || LandSurvey.EffectiveDecree(w,site,at) is not {Input.Rate:LandTaxRate.Heavy} decree) return false;
+        var first=ledger.Notices.FirstOrDefault(n=>n.Site==site && n.Petition?.TaxDecree==decree.Input.Id && n.Revision<rev);
+        if(first==null || at-first.At<30*Day) return false;
+        long relief=ledger.Orders.Where(o=>o.Input.Site==site && o.Input.Action==EconomyAction.RelieveVillage &&
+            o.Revision>first.Revision && o.Revision<rev && o.At<=at && at-o.At<30*Day).Sum(o=>o.Input.Amount);
+        return relief<CommunityEconomy.Population;
+    }
+
+    internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return true;if(DestructiveSchemes.Agitated(w,site,at,rev)||WithholdsLaborAfterPetition(w,site,at,rev))return false;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at,rev)>=50;}
     internal static bool WorkAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long revision)
     {
         if(!Enabled(w)||NpcCommunityAdministration.WaterAuthorized(w,effect,site,at,revision)||CommunityStewardship.WaterAuthorized(w,effect,site,at,revision))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
@@ -112,7 +122,7 @@ public static class VillageConsultation
         if(site==null||!CommunityEconomy.SitesFor(w).Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
         var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds,w.CommitSequence+1);
         var cards=s.Promises.Where(p=>p.Site==site).Select(p=>new VillageCard(p.Id,p.Kind==VillageAction.ProposeWater?"水利工事":"救済",p.Amount,p.Delivered,p.DeliverBy,Status(w,p,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
-        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),LandSurvey.Pressure(w,site.Value,w.ElapsedSeconds)>0?"重い年貢の布告が続き、労働協力を慎重に判断しています。":trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value)+" "+LocalSecurity.Reaction(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
+        return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),WithholdsLaborAfterPetition(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1)?"年貢の減免を願い出てひと月が過ぎました。村は普請への人出を断っています。":LandSurvey.Pressure(w,site.Value,w.ElapsedSeconds)>0?"重い年貢の布告が続き、労働協力を慎重に判断しています。":trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value)+" "+LocalSecurity.Reaction(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
     }
 }
 public sealed partial class WorldSession

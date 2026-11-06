@@ -5,7 +5,10 @@ public sealed record CommunityInput(EntityId Id,EntityId Site,EconomyAction Acti
 public sealed record CommunityOrder(CommunityInput Input,EntityId Actor,long At,long Revision,FactionStanceAuthority Authority);
 public sealed record CommunityEvent(EntityId Site,string Kind,long At,long Amount,string Detail);
 public sealed record CommunityAccounts(EntityId Site,int Population,int Workforce,int Reserved,long VillageRice,long HouseRice,long Assessed,long Collected,long Relief,long WorksSpent,long Harvested,long Consumed,long Hunger,int Water,long? WorkDue,long WorkRemaining,string Climate,long? ClimateAt) { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public int? MilitaryWorkers {get;init;} }
-public sealed record VillageLevyPetition(EntityId Representative,int Workers);
+public sealed record VillageLevyPetition(EntityId Representative,int Workers) {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public EntityId? TaxDecree {get;init;}
+}
 public sealed record CommunityNotice(EntityId Site,EntityId Sender,EntityId Recipient,EntityId Address,long At,long Revision,long Need,int Period,string Message) {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public VillageLevyPetition? Petition {get;init;}
@@ -69,6 +72,7 @@ public static class CommunityEconomy
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Communities=Replay(w,[],[],w.ElapsedSeconds,w.CommitSequence);}
     internal static void Apply(ContractWorld w,CommunityInput input)=>ApplyFor(w,input,w.PlayerControl);
     internal static void ApplyFor(ContractWorld w,CommunityInput input,EntityId actor){Need(Enabled(w),"この保存では複数地域の帳簿は使用できません");var q=new CommunityOrder(input,actor,w.ElapsedSeconds,w.CommitSequence,Authority(w,actor,input.Site,w.ElapsedSeconds,w.CommitSequence));w.Communities=Replay(w,[..w.Communities!.Orders,q],w.Communities.Notices,w.ElapsedSeconds,w.CommitSequence);}
+    static string NoticePrefix(VillageLevyPetition? p)=>p==null?"message:community/":p.TaxDecree!=null?"message:village-tax-petition/":"message:village-levy-petition/";
     internal static void Tick(ContractWorld w)
     {
         if(!Enabled(w))return;w.Communities=Replay(w,w.Communities!.Orders,w.Communities.Notices,w.ElapsedSeconds,w.CommitSequence);int period=Period(w,w.ElapsedSeconds);
@@ -77,12 +81,14 @@ public static class CommunityEconomy
             int levied=PrivateRecruitment.Labor(w,a.Site,w.ElapsedSeconds,w.CommitSequence+1);
             if(levied>0 && levied*10L>=a.Workforce+levied)
                 Send(a,new(VillageConsultation.Representative(a.Site,w.ElapsedSeconds),levied));
+            if(LandSurvey.EffectiveDecree(w,a.Site,w.ElapsedSeconds) is {Input.Rate:LandTaxRate.Heavy} decree)
+                Send(a,new(VillageConsultation.Representative(a.Site,w.ElapsedSeconds),0){TaxDecree=decree.Input.Id});
         }
         void Send(CommunityAccounts a,VillageLevyPetition? petition){
-            if(w.Communities.Notices.Any(n=>n.Site==a.Site&&n.Period==period&&(n.Petition==null)==(petition==null))||Owner(w,a.Site) is not {} owner)return;
+            if(w.Communities.Notices.Any(n=>n.Site==a.Site&&n.Period==period&&NoticePrefix(n.Petition)==NoticePrefix(petition))||Owner(w,a.Site) is not {} owner)return;
             var faction=HouseSuccession.Factions(w).SingleOrDefault(f=>f.Id==owner.Value);if(faction==null)return;var recipient=new EntityId(faction.Head);
             var witness=w.Characters.Where(c=>c.Life==LifeState.Adult&&(c.Id!=w.PlayerControl||recipient==w.PlayerControl)&&w.Memberships.Any(r=>r.Subject==c.Id&&r.Target==owner&&r.From<=w.ElapsedSeconds&&w.ElapsedSeconds<r.Until)&&Local(w,c.Id,a.Site,w.ElapsedSeconds,w.CommitSequence+1)).OrderBy(c=>c.Id==recipient?1:0).ThenBy(c=>c.Id.Value,StringComparer.Ordinal).FirstOrDefault();if(witness==null||witness.Id==recipient&&recipient!=w.PlayerControl)return;
-            var id=(petition==null?"message:community/":"message:village-levy-petition/")+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(a.Site.Value+"/"+period));var address=new EntityId(faction.Home);var body=System.Text.Encoding.UTF8.GetString(ContractJson.Write(new CommunityReport(a.Site,a.Hunger,w.ElapsedSeconds){Petition=petition}));MessageFlow.Send(w.Messaging,new(id,a.Site.Value,Kind,witness.Id.Value,recipient.Value,body,address.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);w.SealedMessages=[..w.SealedMessages,new(id)];w.Communities=w.Communities with{Notices=[..w.Communities.Notices,new(a.Site,witness.Id,recipient,address,w.ElapsedSeconds,w.CommitSequence,a.Hunger,period,id){Petition=petition}]};
+            var id=NoticePrefix(petition)+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(a.Site.Value+"/"+period));var address=new EntityId(faction.Home);var body=System.Text.Encoding.UTF8.GetString(ContractJson.Write(new CommunityReport(a.Site,a.Hunger,w.ElapsedSeconds){Petition=petition}));MessageFlow.Send(w.Messaging,new(id,a.Site.Value,Kind,witness.Id.Value,recipient.Value,body,address.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);w.SealedMessages=[..w.SealedMessages,new(id)];w.Communities=w.Communities with{Notices=[..w.Communities.Notices,new(a.Site,witness.Id,recipient,address,w.ElapsedSeconds,w.CommitSequence,a.Hunger,period,id){Petition=petition}]};
         }
     }
     public static CommunityView? View(ContractWorld w,EntityId actor)
@@ -95,9 +101,10 @@ public static class CommunityEconomy
     internal static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.Communities==null,"旧世界へ複数地域経済を混在できません");return;}var s=w.Communities;Need(s is {Schema:1,Contract:Policy}&&s.Orders!=null&&s.Events!=null&&s.Accounts!=null&&s.Notices!=null,"地域経済の原本がありません");Need(ContractJson.CanonicalHash(s)==ContractJson.CanonicalHash(Replay(w,s.Orders,s.Notices,w.ElapsedSeconds,w.CommitSequence)),"地域の労働/食糧/収支が原本と一致しません");
-        Need(s.Notices.Select(n=>(n.Site,n.Period,n.Petition==null)).Distinct().Count()==s.Notices.Length,"同じ月の不足報告が重複しています");foreach(var n in s.Notices){Need(n.At>=0&&n.At<=w.ElapsedSeconds&&n.Revision>0&&n.Revision<=w.CommitSequence&&SitesFor(w).Contains(n.Site)&&n.Period==Period(w,n.At)&&Local(w,n.Sender,n.Site,n.At,n.Revision+1),"不足報告の現地観測根拠がありません");var a=Replay(w,s.Orders.Where(q=>q.At<n.At||q.At==n.At&&q.Revision<=n.Revision).ToArray(),[],n.At,n.Revision).Accounts.Single(a=>a.Site==n.Site);var owner=Owner(w,n.Site);var petition=n.Petition;
-            if(petition!=null)Need(petition.Representative==VillageConsultation.Representative(n.Site,n.At)&&petition.Workers==PrivateRecruitment.Labor(w,n.Site,n.At,n.Revision+1)&&petition.Workers>0&&petition.Workers*10L>=a.Workforce+petition.Workers,"嘆願に記した代表・動員人数と現地の記録が一致しません");
-            Need(a.Hunger==n.Need&&(petition!=null||n.Need>0)&&owner!=null&&w.Memberships.Any(r=>r.Subject==n.Sender&&r.Target==owner&&r.From<=n.At&&(n.At<r.Until||n.At==r.Until&&n.Revision<r.Revision)),"不足量/観測者の所属が一致しません");var f=HouseSuccession.Factions(w,n.At,n.Revision).Single(f=>f.Id==owner.Value.Value);Need(n.Recipient.Value==f.Head&&n.Address.Value==f.Home,"報告先の当主/固定宛先が違います");var id=(petition==null?"message:community/":"message:village-levy-petition/")+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(n.Site.Value+"/"+n.Period));var body=System.Text.Encoding.UTF8.GetString(ContractJson.Write(new CommunityReport(n.Site,n.Need,n.At){Petition=petition}));Need(n.Message==id&&w.Messaging.Messages.Contains(new(id,n.Site.Value,Kind,n.Sender.Value,n.Recipient.Value,body,n.Address.Value,n.At))&&w.SealedMessages.Contains(new(id)),"不足報告の原本が一致しません");}
+        Need(s.Notices.Select(n=>(n.Site,n.Period,NoticePrefix(n.Petition))).Distinct().Count()==s.Notices.Length,"同じ月の不足報告が重複しています");foreach(var n in s.Notices){Need(n.At>=0&&n.At<=w.ElapsedSeconds&&n.Revision>0&&n.Revision<=w.CommitSequence&&SitesFor(w).Contains(n.Site)&&n.Period==Period(w,n.At)&&Local(w,n.Sender,n.Site,n.At,n.Revision+1),"不足報告の現地観測根拠がありません");var a=Replay(w,s.Orders.Where(q=>q.At<n.At||q.At==n.At&&q.Revision<=n.Revision).ToArray(),[],n.At,n.Revision).Accounts.Single(a=>a.Site==n.Site);var owner=Owner(w,n.Site);var petition=n.Petition;
+            if(petition?.TaxDecree is {} tax)Need(petition.Workers==0&&petition.Representative==VillageConsultation.Representative(n.Site,n.At)&&LandSurvey.EffectiveDecree(w,n.Site,n.At) is {Input.Rate:LandTaxRate.Heavy} decree&&decree.Input.Id==tax,"年貢軽減の嘆願に対応する布告がありません");
+            else if(petition!=null)Need(petition.Representative==VillageConsultation.Representative(n.Site,n.At)&&petition.Workers==PrivateRecruitment.Labor(w,n.Site,n.At,n.Revision+1)&&petition.Workers>0&&petition.Workers*10L>=a.Workforce+petition.Workers,"嘆願に記した代表・動員人数と現地の記録が一致しません");
+            Need(a.Hunger==n.Need&&(petition!=null||n.Need>0)&&owner!=null&&w.Memberships.Any(r=>r.Subject==n.Sender&&r.Target==owner&&r.From<=n.At&&(n.At<r.Until||n.At==r.Until&&n.Revision<r.Revision)),"不足量/観測者の所属が一致しません");var f=HouseSuccession.Factions(w,n.At,n.Revision).Single(f=>f.Id==owner.Value.Value);Need(n.Recipient.Value==f.Head&&n.Address.Value==f.Home,"報告先の当主/固定宛先が違います");var id=NoticePrefix(petition)+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(n.Site.Value+"/"+n.Period));var body=System.Text.Encoding.UTF8.GetString(ContractJson.Write(new CommunityReport(n.Site,n.Need,n.At){Petition=petition}));Need(n.Message==id&&w.Messaging.Messages.Contains(new(id,n.Site.Value,Kind,n.Sender.Value,n.Recipient.Value,body,n.Address.Value,n.At))&&w.SealedMessages.Contains(new(id)),"不足報告の原本が一致しません");}
         Need(w.Messaging.Messages.Count(m=>m.Kind==Kind)==s.Notices.Length,"不足報告に観測原本がありません");
     }
 }

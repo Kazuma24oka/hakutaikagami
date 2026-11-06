@@ -7,6 +7,38 @@ public sealed class LandSurveyTests
  internal static WorldSession Start()=>HouseholdCourtTests.Start();
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static SurveyInput Input(WorldSession s,SurveyAction action,EntityId? reference=null,LandTaxRate rate=LandTaxRate.Ordinary)=>new(new("request:survey/"+s.Revision),action,Owner,Site,reference,rate);
+ [Fact]
+ public void UnansweredVillagePetitionStopsWorksUntilRiceIsActuallyDelivered()
+ {
+     var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));
+     NewGameWorldTests.At(s,37*86400);
+     Assert.Contains("人出を断って",s.VillageView()!.Reaction);
+     var work=new WorksInput(new("request:works-after-petition"),Site,WorksKind.Agriculture);
+     Assert.Equal(ResultCode.NotAvailable,s.StartPublicWork(work,s.Revision).Code);
+     var relief=new CommunityInput(new("request:relief-after-petition"),Site,EconomyAction.RelieveVillage,CommunityEconomy.Population);
+     Good(s.ManageCommunity(relief,s.PlayerControl,s.Revision));
+     var bytes=ContractJson.Write(s.DiagnosticSnapshot());
+     var resumed=new WorldSession(ContractJson.Read<ContractWorld>(bytes));
+     foreach(var run in new[]{s,resumed})Good(run.StartPublicWork(work,run.Revision));
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));
+ }
+ [Fact]
+ public void TaxPetitionKeepsItsOriginalDecreeAfterEffectiveRemission()
+ {
+     var s=Start();
+     var heavy=Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy);
+     Good(s.ManageLandSurvey(heavy,s.Revision));
+     CommunityNotice[] Papers()=>s.DiagnosticSnapshot().Communities!.Notices.Where(n=>n.Site==Site && n.Petition?.TaxDecree!=null).ToArray();
+     Assert.Empty(Papers());
+     NewGameWorldTests.At(s,7*86400);
+     var first=Assert.Single(Papers());Assert.Equal(heavy.Id,first.Petition!.TaxDecree);
+     Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Gentle),s.Revision));
+     NewGameWorldTests.At(s,40*86400);
+     Assert.Equal(LandTaxRate.Gentle,LandSurvey.EffectiveDecree(s.DiagnosticSnapshot(),Site,s.Seconds)!.Input.Rate);
+     Assert.Equal(first,Assert.Single(Papers()));
+     var bytes=ContractJson.Write(s.DiagnosticSnapshot());
+     Assert.Equal(bytes,ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot()));
+ }
  [Fact]public void MeasurementHasActualCostsLaborAndTimeButNoInstantKnowledge(){var s=Start();long cash=s.HouseTreasuryView()!.HouseCash,rice=s.CommunityEconomyView()!.Accounts.HouseRice;var i=Input(s,SurveyAction.Measurement);Good(s.ManageLandSurvey(i,s.Revision));Assert.Equal(cash-30,s.HouseTreasuryView()!.HouseCash);Assert.Equal(rice-100,s.CommunityEconomyView()!.Accounts.HouseRice);Assert.Equal(90,s.CommunityEconomyView()!.Accounts.Workforce);Assert.Empty(LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl));Assert.Equal(ResultCode.NotAvailable,s.ManageLandSurvey(Input(s,SurveyAction.ReadBook,i.Id),s.Revision).Code);Assert.Equal(ResultCode.NotAvailable,s.ManageLandSurvey(Input(s,SurveyAction.Statement),s.Revision).Code);Assert.Equal(ResultCode.AlreadyAccepted,s.ManageLandSurvey(i,s.Revision).Code);NewGameWorldTests.At(s,7*86400);Assert.Empty(LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl));Good(s.ManageLandSurvey(Input(s,SurveyAction.ReadBook,i.Id),s.Revision));var b=Assert.Single(LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl));Assert.True(b.Measured);Assert.Equal(20000,b.Basis);Assert.Equal(100,s.CommunityEconomyView()!.Accounts.Workforce);}
  [Fact]public void StatementRemainsAVillagerEstimateRatherThanAFraudJudgment(){var s=Start();var i=Input(s,SurveyAction.Statement);Good(s.ManageLandSurvey(i,s.Revision));NewGameWorldTests.At(s,2*86400);Good(s.ManageLandSurvey(Input(s,SurveyAction.ReadBook,i.Id),s.Revision));var b=LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl).Single();Assert.False(b.Measured);Assert.Contains("不正の証拠ではない",b.Description);Assert.InRange(b.Basis,18000,22000);}
  [Fact]public void TaxStartsAfterPostedEffectiveDateAndNeverRewritesPastAssessment(){var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));long rice=s.CommunityEconomyView()!.Accounts.HouseRice;Assert.Null(LandSurvey.EffectiveDecree(s.DiagnosticSnapshot(),Site,s.Seconds));NewGameWorldTests.At(s,7*86400);Assert.Equal(LandTaxRate.Heavy,LandSurvey.EffectiveDecree(s.DiagnosticSnapshot(),Site,s.Seconds)!.Input.Rate);Assert.Equal(rice,s.CommunityEconomyView()!.Accounts.HouseRice);long autumn=(new DateOnly(1560,10,1).DayNumber-new DateOnly(1560,1,1).DayNumber)*86400L;NewGameWorldTests.At(s,autumn);var a=s.CommunityEconomyView()!.Accounts;Assert.Equal(a.Harvested*40/100,a.Assessed);Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Gentle),s.Revision));NewGameWorldTests.At(s,autumn+7*86400);Assert.Equal(a.Assessed,s.CommunityEconomyView()!.Accounts.Assessed);Good(s.ManageCommunity(new(new("request:survey-actual-levy"),Site,EconomyAction.CollectLevy,1),s.PlayerControl,s.Revision));Assert.Equal(a.HouseRice+1,s.CommunityEconomyView()!.Accounts.HouseRice);}
