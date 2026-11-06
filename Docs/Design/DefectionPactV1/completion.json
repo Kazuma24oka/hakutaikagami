@@ -1,0 +1,71 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "他家の武将および自家の同僚に現地で条件を提示し、本人が受諾・拒否する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DefectionPacts.cs",
+        "Core/Contracts/PactDocuments.cs",
+        "Core/Contracts/PactSignals.cs",
+        "Core/Contracts/JointIndependence.cs",
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/DefectionPactCheck.cs",
+        "Docs/Design/DefectionPactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "離反・限定した内応・共同独立の密約を区別し、約束と実際の離脱・協力を別に記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DefectionPacts.cs",
+        "Core/Contracts/PactDocuments.cs",
+        "Core/Contracts/PactSignals.cs",
+        "Core/Contracts/JointIndependence.cs",
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/DefectionPactCheck.cs",
+        "Docs/Design/DefectionPactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "共同独立は呼びかけが届いた参加者が時点の事情で応じ、城・兵・配下の参加を個別に判定する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DefectionPacts.cs",
+        "Core/Contracts/PactDocuments.cs",
+        "Core/Contracts/PactSignals.cs",
+        "Core/Contracts/JointIndependence.cs",
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/DefectionPactCheck.cs",
+        "Docs/Design/DefectionPactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "発覚や返答を本人が知る経路を保持し、他人の密約や未着の返答を表示しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DefectionPacts.cs",
+        "Core/Contracts/PactDocuments.cs",
+        "Core/Contracts/PactSignals.cs",
+        "Core/Contracts/JointIndependence.cs",
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/DefectionPactCheck.cs",
+        "Docs/Design/DefectionPactV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常入口の操作、途中保存・復旧と旧保存の代表例で結果が一致する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/DefectionPacts.cs",
+        "Core/Contracts/PactDocuments.cs",
+        "Core/Contracts/PactSignals.cs",
+        "Core/Contracts/JointIndependence.cs",
+        "Tests/DefectionPactTests.cs",
+        "Game/Scripts/DefectionPactCheck.cs",
+        "Docs/Design/DefectionPactV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "現地の本人の合意・密書、捕縛者が押収した控え、個別の参加、現地城主の支配と旧主の兵・兵糧の保全を扱う。旧軍の丸ごとの転籍、長期試遊・全件検査・外観評価は未実施。"
+}
