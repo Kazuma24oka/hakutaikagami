@@ -95,6 +95,35 @@ public static class HouseRestoration
             throw new InvalidDataException("約束した数量の私有米を持参してください");
     }
 
+    internal static void SeekLocalSupport(ContractWorld world, long previousTime)
+    {
+        if (previousTime / 86400 == world.ElapsedSeconds / 86400 || !NewGameWork.Enabled(world) ||
+            !CharacterRelations.Enabled(world) || !NewGameNpcRoutine.Enabled(world) ||
+            !world.LandRights.Any(r => r.Kind == "control" && r.Until <= world.ElapsedSeconds)) return;
+        var history = HouseholdCourt.Events(world);
+        foreach (var person in world.Characters.Where(c => c.Life == LifeState.Adult && c.Id != world.PlayerControl)
+            .OrderBy(c => c.Id.Value, StringComparer.Ordinal))
+        {
+            var actor = person.Id;
+            if (Assassination.DeadAt(world, actor, world.ElapsedSeconds, world.CommitSequence) ||
+                HouseRestoration.ObserveFormerSeat(world, actor).FirstOrDefault() is not {} seen) continue;
+            var peer = world.Characters.Where(c => c.Id != actor && c.Life == LifeState.Adult &&
+                SocialWorld.Site(world, c.Id) == seen.Site &&
+                !Assassination.DeadAt(world, c.Id, world.ElapsedSeconds, world.CommitSequence) &&
+                !history.Any(e => e.Actor == actor && e.Input.Person == c.Id && e.Place == seen.Site &&
+                    e.Input.Owner == seen.House && e.Input.Action == CourtAction.SeekRestorationSupport))
+                .Select(c => (c.Id, Opinion: CharacterRelations.DiagnosticScores(world, actor, c.Id)))
+                .Where(c => c.Opinion.Trust > c.Opinion.Hostility)
+                .OrderByDescending(c => c.Opinion.Trust - c.Opinion.Hostility)
+                .ThenBy(c => c.Id.Value, StringComparer.Ordinal).FirstOrDefault();
+            if (peer.Id.Value == null) continue;
+            var key = string.Join("/", actor.Value, seen.House.Value, seen.Site.Value, peer.Id.Value);
+            var ask = new CourtInput(HouseholdCourt.Id("request", "restore-support/" + key),
+                CourtAction.SeekRestorationSupport, peer.Id, seen.House, seen.Site);
+            TransactionalWorld.TryApply(world, copy => HouseholdCourt.Execute(copy, ask, actor));
+        }
+    }
+
     internal static void AnswerLocalRequests(ContractWorld world)
     {
         var history = HouseholdCourt.Events(world);
@@ -168,7 +197,19 @@ public static class HouseRestoration
     static FormerSeatObservation[] ObserveAt(ContractWorld world, EntityId observer, EntityId site, long now, long revision)
     {
         var observations = new List<FormerSeatObservation>();
-        var service = world.Memberships.Where(row => row.Subject == observer && row.Kind == "membership");
+        var person = FamilyBirth.People(world).SingleOrDefault(p => p.Id == observer.Value);
+        if (person == null || FamilyKin.LifeAt(world.NewGame!, person, now) != LifeState.Adult) return [];
+        var parents = (person.BirthParents ?? []).Select(id => new EntityId(id)).ToHashSet();
+        var adoption = world.Adoption?.Entries ?? [];
+        foreach (var implementation in adoption.Where(e => e.Input.Action == AdoptionAction.Implement &&
+            e.At <= now && e.Revision < revision))
+        {
+            var terms = adoption.Single(e => e.Input.Id == implementation.Input.Original).Terms!;
+            if (terms.Child == observer) parents.Add(terms.Parent);
+        }
+        var service = world.Memberships.Where(r => r.Kind == "membership" &&
+            (r.Subject == observer || parents.Contains(r.Subject))).ToArray();
+        var birth = world.Births?.SingleOrDefault(b => b.Child == observer);
         foreach (var house in service.Select(row => row.Target).Distinct())
         {
             var rights = world.LandRights.Where(row =>
@@ -178,10 +219,13 @@ public static class HouseRestoration
 
             var witnessed = rights.Any(right => service.Any(member =>
             {
-                var since = Math.Max(member.From, right.From);
+                if (member.Target != house) return false;
+                var since = Math.Max(Math.Max(member.From, right.From), birth?.At ?? 0);
                 var until = Math.Min(member.Until, right.Until);
-                return member.Target == house && since < until && until <= now &&
-                    PersonalCompanions.SiteAt(world, observer, since, revision) == site;
+                if (since >= until || until > now ||
+                    PersonalCompanions.SiteAt(world, observer, since, revision) != site) return false;
+                return member.Subject == observer || HouseSuccession.Factions(world, since, revision)
+                    .Any(f => f.Id == house.Value && f.Head == member.Subject.Value);
             }));
             if (witnessed)
                 observations.Add(new(house, site, now));

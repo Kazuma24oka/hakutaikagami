@@ -142,4 +142,22 @@ public sealed class HouseRestorationTests
         w.ElapsedSeconds = agreement.When;
         Assert.Throws<InvalidDataException>(() => RestorationEscort.PlanHomeJourney(w, original));
     }
+    [Theory]
+    [InlineData(true, "site:castle", true)]
+    [InlineData(false, "site:castle", false)]
+    [InlineData(true, "site:kofu", false)]
+    public void ChildCanUsePersonallyWitnessedSeatOfParentWhoWasHead(bool childOfHead, string start, bool eligible)
+    {
+        var head = NewGameWorldTests.Officer(role: StartTemplate.Daimyo) with { BirthYear = 1490 };
+        var retainer = NewGameWorldTests.Officer("created:retainer", StartTemplate.Retainer, lord: head.Id) with { BirthYear = 1490 };
+        var child = NewGameWorldTests.Officer("created:child", site: start) with { BirthParents = [childOfHead ? head.Id : retainer.Id] };
+        EntityId house = new("org:lost"), site = new(head.Site), observer = new(child.Id);
+        var setup = NewGameWorldTests.Setup([head, retainer, child], [new(head.Id, house.Value, [head.Site], false)]);
+        var world = NewGameWorld.Create(setup.World, setup.Registered, child.Id, 42);
+        world.ElapsedSeconds = 100;
+        world.LandRights = world.LandRights.Select(r => r.Subject == house && r.Target == site ? r with { Until = 50 } : r).ToArray();
+        world.Locations = world.Locations.Select(l => l.Actor == observer ? l with { Site = site } : l).ToArray();
+        Assert.Equal(eligible, HouseRestoration.ObserveFormerSeat(world, observer).Any(r => r.House == house));
+        Assert.DoesNotContain(world.Memberships, m => m.Subject == observer && m.Target == house);
+    }
 }
