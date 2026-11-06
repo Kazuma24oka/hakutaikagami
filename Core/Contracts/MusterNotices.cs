@@ -2,6 +2,27 @@ namespace HakutaiKagami.Core.Contracts;
 
 public static class MusterNotices
 {
+    public const string AssemblyRoute = "received-muster-personal-land-v1";
+
+    static EntityId TravelId(EntityId order) => HouseholdCourt.Id("march",order.Value);
+
+    internal static bool IsJourney(ContractWorld w, Intent intent)
+    {
+        if (intent.RoutePolicy != AssemblyRoute || intent.Action != ActionKind.Move ||
+            intent.Actor == w.PlayerControl || intent.Executor != intent.Actor) return false;
+        long revision = w.Requests.SingleOrDefault(r => r.Id == intent.RequestId)?.CommitSequence ?? w.CommitSequence+1;
+        return Reservations(w,intent.Actor,intent.EffectiveAt,revision).Any(e => TravelId(e.Input.Id)==intent.RequestId &&
+            e.Input.Site==intent.DestinationSite && DefectionPacts.HouseAt(w,intent.Actor,intent.EffectiveAt,revision-1)==e.Input.Owner);
+    }
+
+    internal static void ValidateDeparture(ContractWorld w, Intent intent)
+    {
+        if (!IsJourney(w,intent) || intent.DestinationSite is not {} site ||
+            NpcArmies.CommanderBusyAt(w,intent.Actor,w.ElapsedSeconds,w.CommitSequence) ||
+            intent != TravelWorld.ActorMove(w,intent.RequestId.Value,intent.Actor,NewGameWorld.Node(site.Value),true,AssemblyRoute))
+            throw new InvalidDataException("本人が受領した陣触れの集合地と現在の経路・任務を確認してください");
+    }
+
     internal static bool Handles(CourtAction action) => action is CourtAction.SendMusterNotice or CourtAction.AttendMuster;
 
     public static CourtEvent[] Reservations(ContractWorld w, EntityId recipient, long at, long rev)
@@ -91,5 +112,30 @@ public static class MusterNotices
             DefectionPacts.HouseAt(w,actor,at,rev-1) != i.Owner ||
             i.Amount != Math.Min(order.Input.Amount, PrivateRecruitment.Soldiers(w,actor,place,at,rev)))
             throw new InvalidDataException("本人宛ての陣触れを受け取り、集合期日以降に現地の自前の兵を確認してください");
+    }
+}
+
+public sealed partial class WorldSession
+{
+    internal void StartMusterJourneys()
+    {
+        if (!HouseholdCourt.Events(state).Any(e=>e.Input.Action==CourtAction.SendMusterNotice)) return;
+        foreach (var order in HouseholdCourt.Events(state).Where(e=>e.Input.Action==CourtAction.SendMusterNotice))
+        {
+            var actor=order.Input.Person;
+            if (actor==state.PlayerControl || SocialWorld.Site(state,actor) is not {} place || place==order.Input.Site ||
+                !MusterNotices.Reservations(state,actor,state.ElapsedSeconds,state.CommitSequence+1).Contains(order) ||
+                HostageCustody.HeldAt(state,actor,state.ElapsedSeconds,state.CommitSequence) ||
+                Assassination.DeadAt(state,actor,state.ElapsedSeconds,state.CommitSequence)) continue;
+            var id=HouseholdCourt.Id("march",order.Input.Id.Value);
+            if (state.Requests.Any(r=>r.Id==id) || state.Tasks.Any(t=>t.Executor==actor &&
+                t.Execution is not (ExecutionPhase.Completed or ExecutionPhase.Failed or ExecutionPhase.Stopped))) continue;
+            try
+            {
+                var intent=TravelWorld.ActorMove(state,id.Value,actor,NewGameWorld.Node(order.Input.Site.Value),true,MusterNotices.AssemblyRoute);
+                Submit(intent,state.CommitSequence);
+            }
+            catch (InvalidDataException) { /* 現在の既知道では出発できない。次の判断で再確認する。 */ }
+        }
     }
 }

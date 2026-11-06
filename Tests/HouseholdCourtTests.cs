@@ -8,6 +8,76 @@ public sealed class HouseholdCourtTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
  [Fact]
+ public void ReceivedMusterMovesTheRetainerToAnotherCastleBeforeAttendance()
+ {
+     var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+     var member=NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:lord.Id);
+     var setup=NewGameWorldTests.Setup([lord,member],[new(lord.Id,"org:muster",[lord.Site,"site:kofu"],false)]);
+     var initial=NewGameWorld.Create(setup.World,setup.Registered,lord.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+         workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy);
+     var session=new WorldSession(initial);
+     var order=new CourtInput(new("request:assemble-kofu"),CourtAction.SendMusterNotice,Retainer,new("org:muster"),new("site:kofu"),Amount:6,When:86400*5);
+     Good(session.ManageCourt(order,session.Revision));
+     NewGameWorldTests.At(session,5);
+     var moving=session.DiagnosticSnapshot();
+     var trip=Assert.Single(moving.Requests,r=>r.Intent.RoutePolicy==MusterNotices.AssemblyRoute);
+     Assert.Equal(Retainer,trip.Intent.Actor);
+     Assert.Equal(order.Site,trip.Intent.DestinationSite);
+     var restored=new WorldSession(ContractJson.Copy(moving));
+     long end=Math.Max(order.When,trip.Intent.EffectiveAt+trip.Intent.DeliverySeconds+trip.Intent.WorkSeconds)+2;
+     foreach(var run in new[]{session,restored})
+     {
+         NewGameWorldTests.At(run,end);
+         var after=run.DiagnosticSnapshot();
+         var arrived=Assert.Single(after.Court!.Events,e=>e.Input.Action==CourtAction.AttendMuster);
+         Assert.Equal(order.Site,arrived.Place);
+         Assert.Equal(order.Site,SocialWorld.Site(after,Retainer));
+         Assert.Equal(Site,SocialWorld.Site(after,run.PlayerControl));
+     }
+     Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+ }
+
+ [Fact]
+ public void DistantMusterPaperCreatesReservationOnlyAfterCourierArrives()
+ {
+     var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(Ronin.Value),
+         NewGameWorldTests.Officer(Retainer.Value,StartTemplate.Retainer,lord:"person:nobunaga")]);
+     var initial=NewGameWorld.Create(setup.World,setup.Registered,"person:nobunaga",42,
+         inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy);
+     var session=new WorldSession(initial);
+     Good(session.ManageCompanion(new(new("request:muster-carrier"),Ronin,CompanionAction.Agree,20),session.PlayerControl,session.Revision));
+     Good(session.ManageSocial(new(new("request:muster-at-home"),SocialWorldAction.Visit,Retainer),session.Revision));
+     Good(session.ManageCompanion(new(new("request:muster-depart"),Ronin,CompanionAction.TravelTogether,Destination:"fork"),session.PlayerControl,session.Revision));
+     NewGameWorldTests.At(session,2);
+     NewGameWorldTests.At(session,session.DiagnosticSnapshot().Branches!.Journeys.Max(j=>j.Legs[^1].EndAt)+2);
+     var order=Input(session,CourtAction.SendMusterNotice,Retainer,amount:3,when:session.Seconds+86400) with {Carrier=Ronin};
+     Good(session.ManageCourt(order,session.Revision));
+     var sent=session.DiagnosticSnapshot();
+     var dispatch=sent.SocialWorld!.Events.Single(e=>e.Input.Asset==order.Id);
+     var move=dispatch.GiftTerms!.Movement!;
+     Assert.Equal(Ronin,move.Actor);
+     Assert.Empty(MusterNotices.Reservations(sent,Retainer,session.Seconds,session.Revision+1));
+     session.SetPaused(true);
+     var dir=Directory.CreateTempSubdirectory("hakutai-muster-mail-");
+     try
+     {
+         var store=new GenerationSaveStore(dir.FullName,initial.Definitions);
+         Assert.True(store.Save(session,"road",initial.WorldId).Published);
+         var host=new WorldSessionHost(new WorldSession(initial));
+         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("road"),host.Current,host.Current.Revision));
+         foreach(var run in new[]{session,host.Current})
+         {
+             NewGameWorldTests.At(run,move.EffectiveAt+move.DeliverySeconds+move.WorkSeconds);
+             var arrived=run.DiagnosticSnapshot();
+             Assert.Equal(order.Id,Assert.Single(MusterNotices.Reservations(arrived,Retainer,run.Seconds,run.Revision+1)).Input.Id);
+             Assert.Equal(RegionalCampaign.Site("fork"),arrived.Locations.Single(l=>l.Actor==run.PlayerControl).Site);
+         }
+         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+     }
+     finally {dir.Delete(true);}
+ }
+
+ [Fact]
  public void NpcAttendsAtOrderedTimeAcrossDiskSaveAndLongAdvance()
  {
      var session = Start();

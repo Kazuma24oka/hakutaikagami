@@ -25,26 +25,35 @@ public partial class NewGameRuntime
      Button("attend/"+order.Id.Value,$"現地の{present}人で参集する",()=>Run(new(Nonce("attend/"+order.Id.Value),CourtAction.AttendMuster,actor,order.Owner,order.Site,Amount:present,Reference:order.Id)));
     }
    }
-   if(control==null || !MilitaryEconomy.Enabled(w)){SocialText(box,"この拠点では募兵できません。");return;}
-   SocialText(box,$"現地の自前の兵 {PrivateRecruitment.Soldiers(w,actor,site.Value,w.ElapsedSeconds,rev+1)}人　手持ちの扶持米 {HouseSalary.PrivateRice(w,actor)}kg　所持銭 {NewGameWork.Balance(w,actor)}文");
    SpinBox Count(string label,int max){
     var row=new HBoxContainer();box.AddChild(row);row.AddChild(new Label{Text=label});
     var value=new SpinBox{MinValue=1,MaxValue=max,Step=1,Value=1};row.AddChild(value);return value;
    }
    var men=Count("人数",100);var days=Count("従軍日数",30);
+
+   var ownHouse=HouseSuccession.Factions(w).FirstOrDefault(f=>HouseSuccession.Head(w,new(f.Id))==actor);
+   if(ownHouse!=null){
+    var ownerId=new EntityId(ownHouse.Id);
+    var sites=w.LandRights.Where(r=>r.Subject==ownerId && r.Kind=="control" && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until).Select(r=>r.Target).Distinct().ToArray();
+    if(sites.Length>0){
+     var destinations=new OptionButton();foreach(var id in sites)destinations.AddItem(NewGameWorld.SiteName(id.Value));box.AddChild(destinations);
+     var carriers=SocialWorld.CarrierChoices(w,actor);var courier=new OptionButton();foreach(var id in carriers)courier.AddItem(id==actor?"本人が持参":MeritRewards.DisplayName(w,actor,id)+"を使者にする");box.AddChild(courier);
+     var knownVisits=(w.SocialWorld?.Events??[]).Where(e=>e.Input.Action==SocialWorldAction.Visit && (e.Actor==actor || e.Input.Person==actor)).Select(e=>e.Actor==actor?e.Input.Person:e.Actor).ToHashSet();
+     foreach(var member in w.Memberships.Where(m=>m.Target==ownerId && m.Subject!=actor && m.From<=w.ElapsedSeconds && w.ElapsedSeconds<m.Until)){
+      var person=member.Subject;
+      if(SocialWorld.Site(w,person)!=site && !knownVisits.Contains(person))continue;
+      Button("muster/"+person.Value,MeritRewards.DisplayName(w,actor,person)+"へ陣触れを出す",()=>Run(new(Nonce("muster/"+person.Value),CourtAction.SendMusterNotice,person,ownerId,sites[destinations.Selected],Amount:(long)men.Value,When:checked(w.ElapsedSeconds+86400L*(long)days.Value),Carrier:carriers[courier.Selected])));
+     }
+    }
+   }
+   if(control==null || !MilitaryEconomy.Enabled(w)){SocialText(box,"この拠点では募兵できません。");return;}
+   SocialText(box,$"現地の自前の兵 {PrivateRecruitment.Soldiers(w,actor,site.Value,w.ElapsedSeconds,rev+1)}人　手持ちの扶持米 {HouseSalary.PrivateRice(w,actor)}kg　所持銭 {NewGameWork.Balance(w,actor)}文");
    void Recruit(CourtAction action)=>Run(new(Nonce(action.ToString()),action,actor,control.Subject,site.Value,
     Amount:(long)men.Value,When:checked(w.ElapsedSeconds+86400L*(long)days.Value)));
    if(PrivateRecruitment.CanLevy(w,actor,control.Subject,site.Value,w.ElapsedSeconds,rev+1))
     Button("recruit-villagers","村兵を集める（1人1日につき米1kg）",()=>Recruit(CourtAction.RaiseVillageSoldiers));
    if(MaterialMarkets.Enabled(w)&&MaterialMarkets.Sites(w).Contains(site.Value))
     Button("hire-market-soldiers",$"市で雇う（1人1日につき米1kg・{PrivateRecruitment.DailyWage}文）",()=>Recruit(CourtAction.HireMarketSoldiers));
-   if(HouseSuccession.Head(w,control.Subject)==actor){
-    foreach(var member in w.Memberships.Where(m=>m.Target==control.Subject && m.Subject!=actor && m.From<=w.ElapsedSeconds && w.ElapsedSeconds<m.Until)){
-     var person=member.Subject;
-     if(SocialWorld.Site(w,person)!=site)continue;
-     Button("muster/"+person.Value,MeritRewards.DisplayName(w,actor,person)+"へ陣触れを渡す",()=>Run(new(Nonce("muster/"+person.Value),CourtAction.SendMusterNotice,person,control.Subject,site.Value,Amount:(long)men.Value,When:checked(w.ElapsedSeconds+86400L*(long)days.Value))));
-    }
-   }
    return;
   }
   if(courtCategory==3){
