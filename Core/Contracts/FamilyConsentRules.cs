@@ -18,7 +18,7 @@ internal static class FamilyConsentRules
         foreach(var birth in w.Births??[])
         {
             if(birth.At>at || birth.At==at && birth.Revision>=rev)continue;
-            links.Add((birth.FirstParent,birth.Child));links.Add((birth.SecondParent,birth.Child));
+            links.Add((birth.FirstParent,birth.Child));if(birth.SecondParent is {} other)links.Add((other,birth.Child));
         }
         if(extra is {} edge)links.Add(edge);
         HashSet<EntityId> Ancestors(EntityId who){var seen=new HashSet<EntityId>();var pending=new Stack<EntityId>();pending.Push(who);while(pending.TryPop(out var current))if(seen.Add(current))foreach(var link in links.Where(l=>l.Child==current))pending.Push(link.Parent);return seen;}

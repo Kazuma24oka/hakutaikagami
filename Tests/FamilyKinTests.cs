@@ -25,6 +25,36 @@ public class FamilyKinTests
         Assert.Equal(ContractJson.Write(state),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(state))).DiagnosticSnapshot()));
     }
 
+    [Theory]
+    [InlineData(HistoryMode.Historical,true)]
+    [InlineData(HistoryMode.SemiHistorical,true)]
+    [InlineData(HistoryMode.Fictional,false)]
+    public void HistoricalChildEntersOnceWithOnlyDocumentedParent(HistoryMode mode,bool expected)
+    {
+        var scenario=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        const ulong seed=0;
+        var w=NewGameWorld.Create(scenario,[],"person:nobunaga",seed,historicalCatalog:HistoricalStartCatalog.Current,
+            npcRoutinePolicy:NpcJudgment.Policy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            demandPolicy:LocalWorkDemand.Policy,developmentPolicy:CharacterDevelopment.Policy,companionPolicy:PersonalCompanions.Policy,
+            socialPolicy:CharacterRelations.Policy,judgment:new(NpcJudgment.Policy,mode,NpcAttention.Beginner),comingOfAge:15);
+        long at=(long)(new DateOnly(1561,7,1).DayNumber-new DateOnly(1560,1,1).DayNumber)*86400;
+        w.ElapsedSeconds=at-1;
+        var session=new WorldSession(w);
+        NewGameWorldTests.At(session,at+1);
+        var state=session.DiagnosticSnapshot();
+        if(expected)
+        {
+            var birth=Assert.Single(state.Births!);
+            Assert.Null(birth.Marriage);
+            Assert.Equal("冬姫",FamilyBirth.Person(state,birth).Name);
+            Assert.Equal(new[]{"person:nobunaga"},FamilyBirth.Person(state,birth).BirthParents);
+            Assert.Equal(LifeState.Minor,state.Characters.Single(c=>c.Id==birth.Child).Life);
+        }
+        else Assert.Empty(state.Births??[]);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(state)));
+        Assert.Equal(ContractJson.Write(state),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
     [Fact] public void YoungOfficerWritesHomeOnComingOfAgeWithoutEnteringService()
     {
         var parent=NewGameWorldTests.Officer(site:"site:akutagawa");

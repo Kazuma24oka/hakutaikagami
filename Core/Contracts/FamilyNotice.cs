@@ -42,6 +42,10 @@ public static class FamilyNotice
         }
     }
 
+    public static bool WitnessedBirth(ContractWorld w,FamilyBirthRecord birth,EntityId observer)=>
+        (birth.FirstParent==observer || birth.SecondParent==observer) &&
+        TransportWork.At(w,observer,birth.Site,birth.At,birth.Revision,true);
+
     internal static void Validate(ContractWorld w)
     {
         var actual=w.Messaging.Messages.Where(m=>m.Kind==Kind).OrderBy(m=>m.Id,StringComparer.Ordinal).ToArray();
