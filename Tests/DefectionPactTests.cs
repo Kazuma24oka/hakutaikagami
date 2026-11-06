@@ -77,6 +77,81 @@ public class DefectionPactTests
     }
 
     [Fact]
+    public void OtherRetainersRemainUntilTheirOwnDecision()
+    {
+        EntityId second=new("created:second"),bystander=new("created:bystander");
+        var setup=NewGameWorldTests.Setup(new[]{Actor,Partner,second,bystander}.Select(id=>
+            NewGameWorldTests.Officer(id.Value,StartTemplate.Retainer,lord:"person:nobunaga")).ToArray());
+        for(ulong seed=0;seed<160;seed++)
+        {
+            var w=NewGameWorld.Create(setup.World,setup.Registered,Actor.Value,seed,inspectionPolicy:LocalInspectionFindings.Policy,
+                workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+                socialPolicy:CharacterRelations.Policy,comingOfAge:15);
+            var s=new WorldSession(w);
+            foreach(var person in new[]{Partner,second})
+            {
+                var input=new EntityId("request:rise/"+person.Value.Split(':')[1]);
+                Assert.Equal(ResultCode.Accepted,s.NegotiatePact(input,person,PactPurpose.RiseTogether,s.Revision).Code);
+            }
+            var pacts=s.DiagnosticSnapshot().SecretPacts!;
+            if(pacts.Any(p=>!p.Accepted))continue;
+            Assert.Equal(ResultCode.Accepted,s.SignalPact(pacts[0].Id,s.Revision).Code);
+            NewGameWorldTests.At(s,30);
+            var after=s.DiagnosticSnapshot();var house=Assert.Single(after.Declarations!).House;
+            Assert.Contains(after.Memberships,r=>r.Subject==second && r.Target==pacts[0].House && r.Until>30);
+            Assert.Equal(ResultCode.Accepted,s.SignalPact(pacts[1].Id,s.Revision).Code);
+            NewGameWorldTests.At(s,60);after=s.DiagnosticSnapshot();
+            Assert.Single(after.Declarations!);
+            Assert.Equal(2,after.PactResponses!.Length);
+            foreach(var response in after.PactResponses)
+            {
+                var pact=pacts.Single(p=>p.Id==response.Pact);
+                Assert.Contains(after.Memberships,r=>r.Subject==pact.Partner && r.Target==(response.Acted?house:pact.House) && r.Until>60);
+            }
+            Assert.Contains(after.Memberships,r=>r.Subject==bystander && r.Target==pacts[0].House && r.Until>60);
+            return;
+        }
+        Assert.Fail("二人が密約を受ける開始条件がありません");
+    }
+
+    [Fact]
+    public void IndependencePreservesTheFormerHousesActualMusterAndSupply()
+    {
+        for(ulong seed=0;seed<32;seed++)
+        {
+            var w=Start(seed);var s=new WorldSession(w);
+            EntityId id=new("request:field-pact");
+            Assert.Equal(ResultCode.Accepted,s.NegotiatePact(id,Partner,PactPurpose.RiseTogether,s.Revision).Code);
+            if(!s.DiagnosticSnapshot().SecretPacts!.Single().Accepted)continue;
+            void Send(NewMilitaryAction a,long amount=0)
+            {
+                var input=new NewMilitaryInput(new("request:field-pact/"+a),a,amount);
+                var result=s.DecideNewMilitary(input,Actor,s.Revision);
+                Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+            }
+            void Receive()
+            {
+                NewGameWorldTests.At(s,s.Seconds+2);
+                foreach(var m in s.GetActorView(Actor).Messages.Where(m=>m.KnownBody==null).ToArray())
+                    Assert.Equal(ResultCode.Accepted,s.Open(Actor,m.Id,s.Revision).Code);
+            }
+            Send(NewMilitaryAction.Request);Receive();Send(NewMilitaryAction.Accept);Receive();
+            Send(NewMilitaryAction.Pickup);Send(NewMilitaryAction.Load,100000);
+            var before=s.DiagnosticSnapshot();
+            Assert.Contains(before.Units,u=>u.Commander==Actor && u.Soldiers>0);
+            Assert.Equal(ResultCode.Accepted,s.SignalPact(id,s.Revision).Code);
+            var after=s.DiagnosticSnapshot();
+            Assert.Equal(ContractJson.Write(before.Units),ContractJson.Write(after.Units));
+            Assert.Equal(ContractJson.Write(before.ResourceLots),ContractJson.Write(after.ResourceLots));
+            Assert.DoesNotContain(after.Units,u=>u.Organization==after.Declarations!.Single().House);
+            var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+            Assert.Equal(ContractJson.Write(after.Units),ContractJson.Write(restored.DiagnosticSnapshot().Units));
+            return;
+        }
+        Assert.Fail("実兵を引き受けた武将が独立できる開始条件がありません");
+    }
+
+    [Fact]
     public void LocalCastellanBringsOnlyTheCastleInHisCharge()
     {
         EntityId id=new("request:castle-rise");
