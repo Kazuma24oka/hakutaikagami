@@ -1,0 +1,61 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "現地の家臣本人が期限付き警固を引き受け、他任務と二重就業しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/LocalSecurity.cs",
+        "Tests/LocalSecurityTests.cs",
+        "Game/Scripts/NewGameRuntime.Security.cs",
+        "Game/Scripts/LocalSecurityCheck.cs",
+        "Docs/Design/LocalSecurityV1/verification.json"
+      ]
+    },
+    {
+      "contract": "賊の実在・警固の現地配置・討伐実績から安全を判定し、賊を消さずに警固で通行を守る",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/LocalSecurity.cs",
+        "Tests/LocalSecurityTests.cs",
+        "Game/Scripts/NewGameRuntime.Security.cs",
+        "Game/Scripts/LocalSecurityCheck.cs",
+        "Docs/Design/LocalSecurityV1/verification.json"
+      ]
+    },
+    {
+      "contract": "無警固の放置が商人の新規取引と村の反応へ影響し、履行済み契約・現物を消さない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/LocalSecurity.cs",
+        "Tests/LocalSecurityTests.cs",
+        "Game/Scripts/NewGameRuntime.Security.cs",
+        "Game/Scripts/LocalSecurityCheck.cs",
+        "Docs/Design/LocalSecurityV1/verification.json"
+      ]
+    },
+    {
+      "contract": "本人が現地で確認した時点付き情報と警固の相談を通常画面に出す",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/LocalSecurity.cs",
+        "Tests/LocalSecurityTests.cs",
+        "Game/Scripts/NewGameRuntime.Security.cs",
+        "Game/Scripts/LocalSecurityCheck.cs",
+        "Docs/Design/LocalSecurityV1/verification.json"
+      ]
+    },
+    {
+      "contract": "代表一巡・権限と重複・途中保存復旧・旧保存を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/LocalSecurity.cs",
+        "Tests/LocalSecurityTests.cs",
+        "Game/Scripts/NewGameRuntime.Security.cs",
+        "Game/Scripts/LocalSecurityCheck.cs",
+        "Docs/Design/LocalSecurityV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "三拠点の固定賊を対象とし、警固三人・三日・60文・放置三日は試作値。商人は現地の新規売買見積を見合わせる段階で、個体ごとの全国巡回は未実装。旧契約と在庫は維持。全件・全国長期性能・ユーザー試遊は未実施。"
+}

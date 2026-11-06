@@ -58,6 +58,7 @@ public sealed partial class WorldSession
             if (old != null) return new(old.BodyHash == hash ? ResultCode.AlreadyAccepted : ResultCode.IdPayloadConflict,
                 intent.RequestId,old.CommitSequence,old.BodyHash == hash ? "受付済み" : "同一IDの内容が異なります");
             if (expectedRevision != state.CommitSequence) return new(ResultCode.StateChanged,intent.RequestId,state.CommitSequence,"表示を更新してください");
+            if(LocalSecurity.Reserved(state,intent.Executor,state.ElapsedSeconds,state.CommitSequence+1))return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"警固の任期を終えてから別の用件を始めてください");
             if(intent.Executor==state.PlayerControl&&BanditEncounter.Blocks(state))return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"先に接触中の賊への対応を決めてください");
             if(HostageCustody.ActiveReturn(state)&&intent.Executor==state.PlayerControl&&!HostageCustody.IsReturnTask(state,intent))return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"返還先で受領を終えてから別の用件を始めてください");
             try

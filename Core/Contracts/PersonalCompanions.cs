@@ -40,7 +40,7 @@ public static partial class PersonalCompanions
         return bonds.Any(b=>b.Target==w.PlayerControl)||!w.Memberships.Any(r=>r.Subject==person&&r.From<=at&&at<r.Until);
     }
     static bool Busy(ContractWorld w,EntityId person,long at,long rev)=>InformationSchemes.Busy(w,person,at,rev)||SocialWorld.CarrierBusy(w,person,at,rev)||Orders(w).Where(q=>q.Input.Person==person&&q.Task!=null&&Before(q,at,rev)).Any(q=>!w.Requests.Any(r=>r.Id==q.Task!.RequestId)||w.Tasks.Any(t=>t.RequestId==q.Task!.RequestId&&(t.FinishedAt==null||t.FinishedAt>at)));
-    public static bool Occupied(ContractWorld w,EntityId person,long at,long rev)=>GuardJobs.Reserved(w,person,at,rev+1)||Enabled(w)&&(Busy(w,person,at,rev+1)||ReleasePending(w,person,at,rev+1));
+    public static bool Occupied(ContractWorld w,EntityId person,long at,long rev)=>LocalSecurity.Reserved(w,person,at,rev+1)||GuardJobs.Reserved(w,person,at,rev+1)||Enabled(w)&&(Busy(w,person,at,rev+1)||ReleasePending(w,person,at,rev+1));
     public static CompanionCard[] View(ContractWorld w)
     {
         if(!Enabled(w))return [];var now=Orders(w).Where(q=>Before(q,w.ElapsedSeconds,w.CommitSequence+1)).ToArray();var site=SiteAt(w,w.PlayerControl,w.ElapsedSeconds,w.CommitSequence+1);

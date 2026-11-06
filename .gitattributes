@@ -2285,3 +2285,8 @@ Docs/Development/ProgressV1/approval-baseline-v69.json -text
 Docs/Design/BattlefieldRulesV1/* -text
 Core/Contracts/BattlefieldRules*.cs -text
 Tests/BattlefieldRulesTests.cs -text
+
+Docs/Development/ProgressV1/approval-baseline-v70.json -text
+Docs/Design/LocalSecurityV1/* -text
+Core/Contracts/LocalSecurity.cs -text
+Tests/LocalSecurityTests.cs -text
