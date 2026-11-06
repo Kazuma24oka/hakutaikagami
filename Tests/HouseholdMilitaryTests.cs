@@ -149,6 +149,28 @@ public sealed class HouseholdMilitaryTests
         finally{dir.Delete(true);}
     }
 
+    [Fact]
+    public void VillageLaborReturnsOnlyOnceAndOnlyAfterArrivalOrEndOfService()
+    {
+        var s=HouseholdCourtTests.Start();
+        var w=s.DiagnosticSnapshot();
+        var site=HouseholdCourtTests.Site;
+        var input=new CourtInput(new("request:levy-casualty-boundary"),CourtAction.RaiseVillageSoldiers,
+            w.PlayerControl,HouseholdCourtTests.Owner,site,Amount:10,When:86400);
+        w.Court=new(1,HouseholdCourt.Policy,[new(input,w.PlayerControl,site,0,1,false)]);
+        var company=Assert.Single(PrivateRecruitment.CompanyReports(w,w.PlayerControl,10,2));
+        var casualties=new BattlefieldCasualties(company.Unit,2,1,3,0){Home=site,ReturnAt=40000};
+        var result=new EngagementResult(100,[],[new(100,company.Unit,6,20)]){Casualties=[casualties]};
+        w.WorldClashes=new(1,WorldClashes.Policy,[new(new("army:levy"),99,100,2,result)]);
+        Assert.Equal(10,MilitaryEconomy.LaborAt(w,site,39999,3));
+        Assert.Equal(7,MilitaryEconomy.LaborAt(w,site,40000,3));
+        Assert.Equal(3,MilitaryEconomy.LaborAt(w,site,86400,3));
+        Assert.Equal(0,BattlefieldRules.ReturnedDeserters(w,site,86400,3));
+        Assert.Equal(10,Assert.Single(PrivateRecruitment.CompanyReports(w,w.PlayerControl,100,2)).Fit);
+        var injured=Assert.Single(PrivateRecruitment.CompanyReports(w,w.PlayerControl,100,3));
+        Assert.Equal((4,2,1,3),(injured.Fit,injured.Dead,injured.Wounded,injured.Deserted));
+    }
+
     static void Finish(WorldSession s){long carry=NewGameMilitary.View(s.DiagnosticSnapshot()).Carry;if(carry>0)Send(s,NewMilitaryAction.Unload,carry);Send(s,NewMilitaryAction.Report);Send(s,NewMilitaryAction.Return);At(s,s.Seconds+3);Open(s);}
     static void ChangeHouse(WorldSession s,string node,string lord){if(NewGameService.View(s.DiagnosticSnapshot()).Principal!=null){var current=NewGameService.View(s.DiagnosticSnapshot()).Cases.Last(c=>c.Principal==NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-leave/"+s.Revision),CareerAction.RequestRelease,current.Case),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}Assert.Null(NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:house-travel/"+s.Revision,node),s.Revision).Code);At(s,s.Seconds+2);At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);var id=new EntityId("request:house-apply/"+s.Revision);Assert.Equal(ResultCode.Accepted,s.DecideService(new(id,CareerAction.Apply,Principal:new(lord)),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-accept/"+s.Revision),CareerAction.Accept,id),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}
     static WorldSession AtSecondHouse(bool legacy=false){var s=Start();Permit(s,!legacy);Send(s,NewMilitaryAction.Load,100000);Finish(s);ChangeHouse(s,"odawara","person:ujiyasu");return s;}

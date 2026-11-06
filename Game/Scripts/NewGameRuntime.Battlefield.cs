@@ -10,12 +10,16 @@ public partial class NewGameRuntime
  static string TroopName(TroopKind k)=>k switch{TroopKind.Spear=>"槍",TroopKind.Bow=>"弓",TroopKind.Gun=>"鉄砲",TroopKind.Cavalry=>"騎馬",_=>"輸送"};
  void ShowBattlefield(){if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("軍の編成・陣形・療養");battlefieldButtons.Clear();var w=Snapshot();if(!BattlefieldRules.Enabled(w)){SocialText(box,"この保存は従来の戦闘規則です。");return;}if(w.NewMilitary is not {} military){SocialText(box,"軍務で兵を引き受けると、現地の装備を受け取れます。");return;}if(NewGameMilitary.Deployed(w)&&NewGameMilitary.RecognitionEnabled(w)&&!NewGameMilitary.AllOwnCurrentlySeen(w)){SocialText(box,"各隊を現地で確認してから編成状態を表示します。離れた隊の状態は受領した報告で確認してください。");return;}if(!NewGameMilitary.Deployed(w)&&SocialWorld.Site(w,w.PlayerControl)!=military.Terms.Site){SocialText(box,"装備と負傷兵の確認は軍の本拠で行います。");return;}var site=RegionalCampaign.Site(ContinuousWorld.Nearest(NewGameMilitary.PersonPosition(w,w.ElapsedSeconds)));string weather=BattlefieldRules.Weather(w,site,w.ElapsedSeconds) switch{BattleWeather.Rain=>"雨：移動と鉄砲に影響",BattleWeather.Fog=>"霧：見通し20m",BattleWeather.Snow=>"雪：移動に影響",_=>"晴れ"};SocialText(box,weather+"。米・弾薬・装備は実物の在庫から使います。");
  void Button(string key,string text,Action act){var b=new Button{Text=text};battlefieldButtons[key]=b;box.AddChild(b);b.Pressed+=()=>{CancelAdvancePrefetch();act();Refresh();ShowBattlefield();};}
- EntityId Id(string key)=>new("request:battlefield-ui/"+rev+"/"+key);
+ EntityId Id(string key)=>new("request:battlefield-ui/"+rev+"/"+key.Replace(':','/') );
  void Act(string key,string text,BattlefieldInput input)=>Button(key,text,()=>message.Text=Session.ManageBattlefield(input,rev).VisibleReason);
  var ids=NewGameMilitary.UnitIdsFor(w);for(int n=0;n<ids.Length;n++){var unit=ids[n];var appointment=HouseholdDetachment.Appointment(w,unit,w.ElapsedSeconds,rev+1);
  if(appointment!=null){
      var captain=FamilyBirth.People(w).Single(p=>p.Id==appointment.Actor.Value);
      SocialText(box,$"第{n+1}隊の現地指揮　{captain.Name}");
+     foreach(var company in PrivateRecruitment.CompanyReports(w,appointment.Actor,w.ElapsedSeconds,rev+1)){
+         string source=company.VillageLevy?"村からの徴募兵":"市の雇い兵";
+         SocialText(box,$"{captain.Name}の{source}　健在{company.Fit}人／負傷{company.Wounded}・戦死{company.Dead}・逃亡{company.Deserted}");
+     }
      if(!NewGameMilitary.Deployed(w)){
          var end=new CourtInput(Id("release-"+n),CourtAction.EndDetachment,appointment.Actor,military.Terms.Owner,military.Terms.Site,Reference:appointment.Input.Id,Carrier:unit);
          Button("release-"+n,"分隊指揮を返してもらう",()=>message.Text=Session.ManageCourt(end,rev).VisibleReason);
