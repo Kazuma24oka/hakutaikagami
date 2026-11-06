@@ -22,4 +22,34 @@ public sealed class HouseConditionTests
         var restored=new WorldSession(ContractJson.Copy(s.DiagnosticSnapshot()));
         Assert.Equal(ContractJson.Write(Report()),ContractJson.Write(HouseCondition.Observe(restored.DiagnosticSnapshot(),restored.PlayerControl,owner)!));
     }
+
+    [Fact]
+    public void ConsultationSurvivesTransitAndDoesNotConveyProperty()
+    {
+        var s=HouseholdCourtTests.Start();
+        var w=s.DiagnosticSnapshot();
+        var input=new CourtInput(new("request:market-consultation"),CourtAction.ConsultReform,
+            HouseholdCourtTests.Retainer,HouseholdCourtTests.Owner,HouseholdCourtTests.Site){Reform=ReformKind.OpenMarket};
+        var result=s.ManageCourt(input,s.Revision);
+        Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        Assert.Equal(ResultCode.AlreadyAccepted,s.ManageCourt(input,s.Revision).Code);
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(input with{Id=new("request:another-consultation")},s.Revision).Code);
+        s.SetPaused(true);
+        var dir=Directory.CreateTempSubdirectory("hakutai-consultation-");
+        try
+        {
+            var store=new GenerationSaveStore(dir.FullName,w.Definitions);
+            Assert.True(store.Save(s,"sent",w.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(w));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("sent"),host.Current,host.Current.Revision));
+            NewGameWorldTests.At(host.Current,120);
+            NewGameWorldTests.At(s,120);
+            var after=host.Current.DiagnosticSnapshot();
+            Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(after));
+            Assert.Single(after.Messaging.Messages,m=>m.Id==HouseReforms.Letter(input,HouseReforms.Answer));
+            Assert.False(HouseReforms.AnswerKnown(after,after.Court!.Events.Single(e=>e.Input.Id==input.Id),s.PlayerControl));
+            Assert.Equal(ContractJson.Write(w.LandRights),ContractJson.Write(after.LandRights));
+        }
+        finally{dir.Delete(true);}
+    }
 }

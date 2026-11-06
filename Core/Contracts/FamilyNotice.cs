@@ -124,6 +124,6 @@ public static class FamilyNotice
         RegionalCampaign.Bind(w);
     }
 
-    internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind is Kind or MaturityKind or BirthKind or HeirPledges.RequestKind or HeirPledges.ReplyKind or PactSignals.Call or PactSignals.Reply or HouseScaleNotices.Kind
+    internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind is Kind or MaturityKind or BirthKind or HeirPledges.RequestKind or HeirPledges.ReplyKind or PactSignals.Call or PactSignals.Reply or HouseScaleNotices.Kind or HouseReforms.Proposal or HouseReforms.Answer
         ? NewGameWorld.Node(FamilyBirth.People(w).Single(p=>p.Id==message.RecipientId).Site) : null;
 }

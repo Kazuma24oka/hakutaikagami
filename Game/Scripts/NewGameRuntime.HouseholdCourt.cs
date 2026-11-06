@@ -45,6 +45,18 @@ public partial class NewGameRuntime
    if(report.KnownSurveys.Length==0)SocialText(box,"本人が確認した指出・検地の帳面はありません。");
    foreach(var entry in report.KnownSurveys)SocialText(box,NewGameWorld.SiteName(entry.Site.Value)+" ／ "+
        (entry.Book.Measured?"検地":"指出")+" ／ "+WorldCalendar.Display(w.EpochDate,entry.Book.At));
+   if(head&&roster.Length>0){
+    var persons=new OptionButton();foreach(var person in roster)persons.AddItem(PersonName(person));box.AddChild(persons);
+    var kinds=Enum.GetValues<ReformKind>();var reform=new OptionButton();foreach(var k in kinds)reform.AddItem(HouseReforms.Name(k));box.AddChild(reform);
+    Button("consult-reform","この改革案について意向を問う",()=>Run(Command("reform",CourtAction.ConsultReform,roster[persons.Selected]) with{Reform=kinds[reform.Selected]}));
+   }
+   foreach(var e in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.ConsultReform&&e.Actor==actor)??[]){
+    var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);
+    if(HouseReforms.AnswerKnown(w,e,actor))SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
+    else if(w.Messaging.Receipts.Any(r=>r.MessageId==id&&r.ReceiverId==actor.Value))
+     Button("reform-answer-"+e.Input.Id,"改革への返書を開く",()=>{Session.Open(actor,new(id),rev);Refresh();ShowHouseholdCourt();});
+    else SocialText(box,PersonName(e.Input.Person)+" ／ "+HouseReforms.Name(e.Input.Reform!.Value)+"：返書待ち");
+   }
    return;
   }
   if(courtCategory==0){
