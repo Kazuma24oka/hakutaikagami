@@ -83,6 +83,56 @@ public sealed class HouseholdMilitaryTests
         Good(s.ManageCompanion(inspection,s.PlayerControl,s.Revision));
 
     }
+    [Fact]
+    public void PaidPrivateCompanyMarchesBesideBorrowedWingWithSeparateFoodAndStrength()
+    {
+        var follower=NewGameWorldTests.Officer("created:company-leader",StartTemplate.Retainer,lord:"person:nobunaga");
+        var enemy=NewGameWorldTests.Officer("created:company-enemy",StartTemplate.Daimyo,site:"site:fork");
+        var setup=NewGameWorldTests.Setup([follower,enemy],[new(enemy.Id,"org:company-enemy",[enemy.Site],false)]);
+        var initial=NewGameWorld.Create(setup.World,setup.Registered,"person:nobunaga",
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            companionPolicy:PersonalCompanions.Policy,economyPolicy:MilitaryEconomy.Policy,
+            worldArmyPolicy:NpcArmies.CompactCombatPolicy,battlefieldPolicy:BattlefieldRules.Policy);
+        var s=new WorldSession(initial);var person=new EntityId(follower.Id);var site=new EntityId(follower.Site);
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        void Pay(SalaryAction action,EntityId? contract=null,long amount=0,EntityId? preparation=null)=>
+            Good(s.ManageSalary(new(new("request:company-salary/"+s.Revision),action,person,site,contract,amount,preparation),s.PlayerControl,s.Revision));
+        Pay(SalaryAction.Propose,amount:20);
+        var quote=s.DiagnosticSnapshot().Salary!.Quotes.Single().Id;
+        Pay(SalaryAction.Confirm,quote);At(s,s.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[0]);
+        Pay(SalaryAction.Prepare,quote,10);
+        Pay(SalaryAction.Receive,quote,preparation:s.DiagnosticSnapshot().Salary!.Entries.Last().Input.Id);
+        Good(s.ManageCourt(new(new("request:company-muster"),CourtAction.SendMusterNotice,person,new("org:oda"),site,Amount:4,When:s.Seconds+30),s.Revision));
+        At(s,s.Seconds+32);
+        var recruited=s.DiagnosticSnapshot();
+        Assert.Equal(4,PrivateRecruitment.Soldiers(recruited,person,site,s.Seconds,s.Revision+1));
+        Good(s.ManageCompanion(new(new("request:company-follow"),person,CompanionAction.Agree,20),s.PlayerControl,s.Revision));
+        Permit(s);
+        var w=s.DiagnosticSnapshot();var wing=NewGameMilitary.UnitIdsFor(w)[1];
+        var offer=HouseholdDetachment.Offer(w,person,wing,new("request:company-command"));
+        Assert.NotNull(offer);Good(s.ManageCourt(offer!,s.Revision));At(s,s.Seconds+2);
+        Good(s.ManageMilitaryRice(new(new("request:company-house-stock"),s.MilitaryEconomyView()!.Depot,2),s.PlayerControl,s.Revision));
+        Send(s,NewMilitaryAction.Load,1000);Send(s,NewMilitaryAction.Deploy);
+        w=s.DiagnosticSnapshot();
+        var privateUnit=Assert.Single(WorldEngagement.Snapshot(w).Units,u=>u.Unit.Commander==person);
+        Assert.Equal(4,privateUnit.Unit.Soldiers);
+        Assert.Equal(100,BattlefieldRules.RationStrength(w,s.Seconds));
+        Assert.Equal(NewGameMilitary.Position(w,1,s.Seconds),privateUnit.Position);
+        Assert.DoesNotContain(w.Units,u=>u.Id==privateUnit.Unit.Id);
+        var field=WorldEngagement.Snapshot(w);
+        var raider=privateUnit with{Unit=new(new("unit:company-raider"),new("army:company-enemy"),new(enemy.Id),new("org:company-enemy"),40,0),
+            Intent=EngagementIntent.DeliberateUnauthorizedAttack,Target=privateUnit.Unit.Id};
+        var contact=BattlefieldRules.Resolve(w,field with{Units=[..field.Units,raider]});
+        var loss=Assert.Single(contact.Losses,l=>l.Unit==privateUnit.Unit.Id);
+        var casualties=Assert.Single(contact.Casualties!,c=>c.Unit==privateUnit.Unit.Id);
+        Assert.Equal(loss.Soldiers,casualties.Wounded+casualties.Dead+casualties.Deserted);
+        Assert.DoesNotContain(contact.Losses,l=>l.Unit==wing);
+        Assert.Contains(contact.Strikes,strike=>strike.Attacker==privateUnit.Unit.Id && strike.Basis==EngagementBasis.ImmediateDefense);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        foreach(var run in new[]{s,restored})At(run,run.Seconds+2);
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
     static void Finish(WorldSession s){long carry=NewGameMilitary.View(s.DiagnosticSnapshot()).Carry;if(carry>0)Send(s,NewMilitaryAction.Unload,carry);Send(s,NewMilitaryAction.Report);Send(s,NewMilitaryAction.Return);At(s,s.Seconds+3);Open(s);}
     static void ChangeHouse(WorldSession s,string node,string lord){if(NewGameService.View(s.DiagnosticSnapshot()).Principal!=null){var current=NewGameService.View(s.DiagnosticSnapshot()).Cases.Last(c=>c.Principal==NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-leave/"+s.Revision),CareerAction.RequestRelease,current.Case),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}Assert.Null(NewGameService.View(s.DiagnosticSnapshot()).Principal);Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:house-travel/"+s.Revision,node),s.Revision).Code);At(s,s.Seconds+2);At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);var id=new EntityId("request:house-apply/"+s.Revision);Assert.Equal(ResultCode.Accepted,s.DecideService(new(id,CareerAction.Apply,Principal:new(lord)),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:house-accept/"+s.Revision),CareerAction.Accept,id),s.PlayerControl,s.Revision).Code);At(s,s.Seconds+2);Open(s);}
     static WorldSession AtSecondHouse(bool legacy=false){var s=Start();Permit(s,!legacy);Send(s,NewMilitaryAction.Load,100000);Finish(s);ChangeHouse(s,"odawara","person:ujiyasu");return s;}

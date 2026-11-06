@@ -21,9 +21,36 @@ public static class PrivateRecruitment
         HouseholdCourt.Events(w).Where(e => e.Input.Action == CourtAction.RaiseVillageSoldiers);
 
     // 従軍中の本人の兵。徴募元は労働台帳に残し、参集地の人数は指揮者の実所在で数える。
+    internal static EntityId CompanyId(CourtEvent recruitment) =>
+        new("unit:private-company/" + ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(recruitment.Input.Id.Value)));
+
+    static IEnumerable<CourtEvent> ActiveCompanies(ContractWorld w, EntityId commander, long at, long rev) =>
+        Contracts(w).Where(e => e.Actor == commander && e.Revision < rev && e.At <= at && at < e.Input.When);
+
+    static int Available(ContractWorld w, CourtEvent recruitment, long at, long rev)
+    {
+        var unit = CompanyId(recruitment);
+        var losses = (w.WorldClashes?.Steps ?? []).Where(s => s.At <= at && s.Revision < rev)
+            .SelectMany(s => s.Result.Losses).Where(l => l.Unit == unit).Sum(l => l.Soldiers);
+        return checked((int)recruitment.Input.Amount - losses + BattlefieldRules.Recovered(w, unit, at, rev));
+    }
+
     internal static int Strength(ContractWorld w, EntityId commander, long at, long rev) =>
-        checked((int)Contracts(w).Where(e => e.Actor == commander && e.Revision < rev &&
-            e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount));
+        ActiveCompanies(w, commander, at, rev).Sum(e => Available(w, e, at, rev));
+
+    internal static IEnumerable<EngagementUnit> Accompany(ContractWorld w, EntityId captain, EngagementUnit wing)
+    {
+        long at = w.ElapsedSeconds, rev = w.CommitSequence + 1;
+        foreach (var company in ActiveCompanies(w, captain, at, rev))
+        {
+            var id = CompanyId(company);
+            int morale = Math.Max(0, 100 - WorldClashes.MoraleLost(w, id, at));
+            var state = new UnitState(id, new("army:" + id.Value.Substring(5)), captain,
+                wing.Unit.Organization, Available(w, company, at, rev), 0);
+            yield return new(state, wing.Position, wing.Height, morale,
+                morale <= 25 ? "routed" : wing.Phase, EngagementIntent.SelfDefense, wing.WillFight);
+        }
+    }
 
     public static int Soldiers(ContractWorld w, EntityId commander, EntityId site, long at, long rev) =>
         PersonalCompanions.SiteAt(w,commander,at,rev) == site ? Strength(w,commander,at,rev) : 0;
