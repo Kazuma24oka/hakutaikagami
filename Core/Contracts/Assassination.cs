@@ -13,6 +13,22 @@ public static class Assassination
         InformationSchemes.Events(w).Any(e=>e.Input.Action==SchemeAction.FatalEncounter && e.Input.Subject==person &&
             (e.At<at || e.At==at && e.Revision<=rev));
 
+    public static SchemeEvent? CaptivityAt(ContractWorld world, EntityId person, long at, long revision)
+    {
+        var history=InformationSchemes.Events(world).Where(e=>e.At<at || e.At==at && e.Revision<revision);
+        var capture=history.LastOrDefault(e=>e.Input.Action==SchemeAction.CaughtInEncounter && e.Actor==person);
+        return capture!=null && !history.Any(e=>e.Input.Action==SchemeAction.ReleaseCaptive && e.Input.Reference==capture.Input.Id)
+            ? capture : null;
+    }
+
+    internal static void CheckRelease(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long rev)
+    {
+        var capture=CaptivityAt(world,input.Subject,at,rev);
+        if(capture==null || capture.Input.Id!=input.Reference || capture.Input.Subject!=actor || capture.Site!=site ||
+            input.Person!=actor || input.Destination!=null || input.Topic!=SchemeTopic.ForeignContact ||
+            DeadAt(world,actor,at,rev-1) || !TransportWork.At(world,actor,site,at,rev,true))
+            throw new InvalidDataException("捕縛原本と現地にいる身柄引受人が必要です");
+    }
     internal static SchemeAction Clash(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long rev)
     {
         var contact=InformationSchemes.Events(world).SingleOrDefault(e=>e.Input.Id==input.Reference &&

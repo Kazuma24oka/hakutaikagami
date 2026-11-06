@@ -1,7 +1,7 @@
 using System.Text;
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
-public enum SchemeAction { Whisper, Forward, WriteLetter, ForgeLetter, VerifyLetter, ShowDenial, QueryTemple, SendScout, CaptureScout, PlanReturn, ScoutBlocked, ReportScout, ExecuteOperation, AcceptOperation, ObservePerson, SeekContact, AttemptAssassination, FatalEncounter, EscapedEncounter, CaughtInEncounter }
+public enum SchemeAction { Whisper, Forward, WriteLetter, ForgeLetter, VerifyLetter, ShowDenial, QueryTemple, SendScout, CaptureScout, PlanReturn, ScoutBlocked, ReportScout, ExecuteOperation, AcceptOperation, ObservePerson, SeekContact, AttemptAssassination, FatalEncounter, EscapedEncounter, CaughtInEncounter, ReleaseCaptive }
 public enum SchemeTopic { ForeignContact, SupplyConcern, ConflictingOrders, Arson, Sabotage, SeizeRice, Agitation }
 public sealed record SchemeInput(EntityId Id,SchemeAction Action,EntityId Person,EntityId Subject,SchemeTopic Topic=SchemeTopic.ForeignContact,EntityId? Reference=null,EntityId? Destination=null);
 public sealed record SchemeEvent(SchemeInput Input,EntityId Actor,EntityId Site,long At,long Revision,Intent? Movement,EntityId[] Sources);
@@ -39,6 +39,8 @@ public static class InformationSchemes
  {
   Need(NewGameWork.Enabled(w)&&Adult(w,actor)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Topic),"扱えない情報です");var site=SocialWorld.Site(w,actor);Need(site!=null,"現地へ到着してください");
   Need(i.Action is not(SchemeAction.AcceptOperation or SchemeAction.CaptureScout or SchemeAction.PlanReturn or SchemeAction.ScoutBlocked or SchemeAction.ReportScout),"密偵の結果は実際の行程から確定します");
+  Need(Assassination.CaptivityAt(w,actor,w.ElapsedSeconds,w.CommitSequence)==null,"捕縛中は行動できません");
+  if(i.Action==SchemeAction.ReleaseCaptive){Assassination.CheckRelease(w,i,actor,site.Value,w.ElapsedSeconds,w.CommitSequence);Add(w,i,actor,site.Value);return;}
   Need(!Assassination.IsConclusion(i.Action),"接触戦の結果は現地で決まります");
   if(i.Action==SchemeAction.AttemptAssassination){Assassination.Execute(w,i,actor,site.Value);return;}
   if(i.Action is SchemeAction.ObservePerson or SchemeAction.SeekContact){
@@ -97,7 +99,7 @@ public static class InformationSchemes
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
   if(w.Schemes==null){Need(prior?.Schemes==null,"情報の記録が消えています");return;}Need(NewGameWork.Enabled(w)&&w.Schemes.Schema==1&&w.Schemes.Policy==Policy,"情報の版が不正です");var es=Events(w);Need(es.Select(e=>e.Input.Id).Distinct().Count()==es.Length&&es.All(e=>Enum.IsDefined(e.Input.Action)&&Enum.IsDefined(e.Input.Topic)&&e.At<=w.ElapsedSeconds&&e.At>=0&&e.Revision<=w.CommitSequence&&e.Revision>0&&w.Characters.Any(c=>c.Id==e.Actor)&&e.Sources!=null),"情報の原本が不正です");if(prior?.Schemes!=null)Need(ContractJson.CanonicalHash(es.Take(prior.Schemes.Events.Length).ToArray())==ContractJson.CanonicalHash(prior.Schemes.Events),"過去の情報が書き換わりました");
-  foreach(var e in es){if(e.Input.Action==SchemeAction.AttemptAssassination){
+  foreach(var e in es){if(e.Input.Action==SchemeAction.ReleaseCaptive)Assassination.CheckRelease(w,e.Input,e.Actor,e.Site,e.At,e.Revision);if(e.Input.Action==SchemeAction.AttemptAssassination){
     var result=es.Single(q=>q.Input.Reference==e.Input.Id&&Assassination.IsConclusion(q.Input.Action));
     var action=Assassination.Clash(w,e.Input,e.Actor,e.Site,e.At,e.Revision);
     Need(result.Input==(e.Input with{Id=Id("encounter",e.Input.Id.Value),Action=action,Reference=e.Input.Id})&&result.Actor==e.Actor&&result.Site==e.Site&&result.At==e.At&&result.Revision==e.Revision,"接触戦の結果原本が異なります");

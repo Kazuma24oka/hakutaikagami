@@ -32,7 +32,8 @@ public partial class NewGameRuntime
       }
       var last=w.Schemes?.Events.LastOrDefault(e=>e.Actor==actor&&e.Input.Action==SchemeAction.ExecuteOperation);
       if(last!=null)SocialText(box,DestructiveSchemes.Outcome(w,last));
-  }  var known=w.Characters.Select(c=>c.Id).Where(p=>p!=actor&&(SocialWorld.Site(w,p)==site||SocialWorld.Facts(w,actor,p).Length>0)).ToArray();
+  }  if(CastleSiege.Enabled(w))Button("contact-menu","人物の所在・接触",ShowPersonalContact);
+  var known=w.Characters.Select(c=>c.Id).Where(p=>p!=actor&&(SocialWorld.Site(w,p)==site||SocialWorld.Facts(w,actor,p).Length>0)).ToArray();
   if(known.Length>0){var receiver=new OptionButton();var subject=new OptionButton();foreach(var person in known){string name=MeritRewards.DisplayName(w,actor,person);receiver.AddItem("話す・渡す相手："+name);subject.AddItem("話題とする人物："+name);}box.AddChild(receiver);box.AddChild(subject);EntityId Person()=>known[receiver.Selected];EntityId Subject()=>known[subject.Selected];
    var topic=new OptionButton();foreach(var t in Enum.GetValues<SchemeTopic>().Where(t=>!DestructiveSchemes.Operation(t)))topic.AddItem(InformationSchemes.Statement(t));box.AddChild(topic);SchemeInput Input(string key,SchemeAction action,EntityId? person=null,EntityId? reference=null)=>new(Nonce(key),action,person??Person(),Subject(),(SchemeTopic)topic.Selected,reference);
    Button("whisper","現地の相手に、選んだ噂を流す",()=>Run(Input("whisper",SchemeAction.Whisper)));

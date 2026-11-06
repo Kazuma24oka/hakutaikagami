@@ -53,4 +53,27 @@ public sealed class AssassinationTests
         Assert.Equal(ResultCode.NotAvailable,restored.ManageScheme(attack with{Id=new("request:again")},restored.Revision).Code);
         Assert.Equal(ContractJson.Write(w),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
+    [Fact] public void CapturedAttackerCannotLeaveUntilReleasedByActualCustodian()
+    {
+        EntityId actor=new("created:test"),target=new("created:contact"),site=new("site:kyoto");
+        var setup=NewGameWorldTests.Setup([NewGameWorldTests.Officer(site:site.Value),NewGameWorldTests.Officer(target.Value,site:site.Value)]);
+        var s=new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,actor.Value,1,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,territoryPolicy:CastleSiege.Policy));
+        var sight=new SchemeInput(new("request:sight"),SchemeAction.ObservePerson,actor,target);
+        var contact=sight with{Id=new("request:contact"),Action=SchemeAction.SeekContact,Reference=sight.Id};
+        var attempt=contact with{Id=new("request:attack"),Action=SchemeAction.AttemptAssassination,Reference=contact.Id};
+        foreach(var input in new[]{sight,contact,attempt}) Assert.Equal(ResultCode.Accepted,s.ManageScheme(input,s.Revision).Code);
+        var w=s.DiagnosticSnapshot();
+        var capture=Assert.Single(w.Schemes!.Events,e=>e.Input.Action==SchemeAction.CaughtInEncounter);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        Assert.Equal(ResultCode.NotAvailable,restored.Submit(TravelWorld.Move(w,"request:escape","akutagawa"),restored.Revision).Code);
+        w.CommitSequence++;
+        var release=new SchemeInput(new("request:release"),SchemeAction.ReleaseCaptive,target,actor,Reference:capture.Input.Id);
+        Assert.Throws<InvalidDataException>(()=>InformationSchemes.Execute(w,release,actor));
+        InformationSchemes.Execute(w,release,target);
+        var free=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        Assert.Null(Assassination.CaptivityAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1));
+        var moved=free.Submit(TravelWorld.Move(w,"request:travel","akutagawa"),free.Revision);
+        Assert.True(moved.Code==ResultCode.Accepted,moved.VisibleReason);
+    }
 }
