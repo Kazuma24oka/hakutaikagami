@@ -44,6 +44,13 @@ public partial class FamilyNewsCheck:Node
             Check(Shows(panel,letter.Body),"開封後に元服の報告を読めません");
             game.ReviewSocialClose();game.SaveCheckpoint("family-opened");var pose=game.Pose();game.LoadCheckpoint("family-opened");
             Check(pose==game.Pose(),"復旧で3D表示が変わりました");panel=await OpenNews();Check(Shows(panel,letter.Body),"開封済み記録が失われました");
+            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/FamilyLifeV1/runtime-local/ui");
+            Directory.CreateDirectory(output);
+            File.WriteAllText(Path.Combine(output,"before-pose.json"),pose);
+            File.WriteAllText(Path.Combine(output,"restored-pose.json"),game.Pose());
+            await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+            Check(ViewportCapture.Save(panel.GetViewport(),Path.Combine(output,"opened.png"))==Error.Ok,"開封後の画面描画");
+            File.WriteAllText(Path.Combine(output,"result.json"),"{\"Status\":\"PASSED\"}");
             GD.Print("FAMILY_NEWS_UI_PASS");game.QueueFree();await Frame();GetTree().Quit();
         }
         catch(Exception error){GD.PrintErr(error);GetTree().Quit(1);}
