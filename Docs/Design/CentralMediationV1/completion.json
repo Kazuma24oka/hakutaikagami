@@ -1,0 +1,37 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "実在の取次役について人物と時期の根拠を記録し、現地の面会・贈答と本人の判断により取次を依頼する",
+      "status": "PASSED",
+      "evidence": [
+        "sources.md",
+        "Core/Contracts/CentralMediation.cs"
+      ]
+    },
+    {
+      "contract": "官位奏請と幕府職の申請を別の原本で扱い、返答が届いた受任者だけに実効範囲を付与する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CentralRank.cs",
+        "Core/Contracts/ShogunateAppointments.cs"
+      ]
+    },
+    {
+      "contract": "将軍・朝廷・寺社を通じた仲裁案を両家へ運び、同じ条件への各家の承諾を既存の条約へつなぎ、拒否の事実と認識時点を残す",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PeaceMediation.cs",
+        "Tests/CentralMediationTests.cs"
+      ]
+    },
+    {
+      "contract": "通常画面を通して未着情報・二重授与を防ぎ、途中保存と復旧後の成否・権限・表示を照合する",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/CentralMediationCheck.cs",
+        "verification.json"
+      ]
+    }
+  ]
+}
