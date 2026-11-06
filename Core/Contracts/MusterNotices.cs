@@ -13,6 +13,63 @@ public static class MusterNotices
                 r.Revision < rev && r.At <= at)).ToArray();
     }
 
+    internal static void Assemble(ContractWorld w)
+    {
+        var orders = HouseholdCourt.Events(w).Where(e => e.Input.Action == CourtAction.SendMusterNotice &&
+            e.Input.Person != w.PlayerControl).ToArray();
+        foreach (var order in orders)
+        {
+            var person = order.Input.Person;
+            if (SocialWorld.Site(w, person) != order.Input.Site ||
+                !Reservations(w, person, w.ElapsedSeconds, w.CommitSequence+1).Any(r => r.Input.Id == order.Input.Id) ||
+                HostageCustody.HeldAt(w, person, w.ElapsedSeconds, w.CommitSequence) ||
+                Assassination.DeadAt(w, person, w.ElapsedSeconds, w.CommitSequence)) continue;
+            if (w.ElapsedSeconds < order.Input.When)
+            {
+                Prepare(w, order, person);
+                continue;
+            }
+            long count = Math.Min(order.Input.Amount, PrivateRecruitment.Soldiers(w, person, order.Input.Site, w.ElapsedSeconds, w.CommitSequence+1));
+            var arrival = new CourtInput(HouseholdCourt.Id("arrival", order.Input.Id.Value), CourtAction.AttendMuster,
+                person, order.Input.Owner, order.Input.Site, Amount: count, Reference: order.Input.Id);
+            TransactionalWorld.TryApply(w, copy => HouseholdCourt.Execute(copy, arrival, person));
+        }
+    }
+
+    static void Prepare(ContractWorld w, CourtEvent order, EntityId person)
+    {
+        var site = order.Input.Site;
+        long at = w.ElapsedSeconds, rev = w.CommitSequence+1;
+        long days = (order.Input.When-at)/86400+1;
+        if (days > 30 || !MilitaryEconomy.Enabled(w) || !CommunityEconomy.SitesFor(w).Contains(site) ||
+            DefectionPacts.HouseAt(w, person, at, rev-1) != order.Input.Owner) return;
+        long stillNeeded = order.Input.Amount-PrivateRecruitment.Soldiers(w,person,site,order.Input.When,rev);
+        long affordable = Math.Min(stillNeeded, HouseSalary.PrivateRice(w,person)/days);
+        if (affordable <= 0) return;
+        CourtAction action;
+        if (PrivateRecruitment.CanLevy(w,person,order.Input.Owner,site,at,rev))
+        {
+            var village = CommunityEconomy.AccountAt(w,site,at,rev);
+            affordable=Math.Min(affordable,village.Workforce-village.Reserved);
+            action=CourtAction.RaiseVillageSoldiers;
+        }
+        else
+        {
+            if (!MaterialMarkets.Enabled(w) || !MaterialMarkets.Sites(w).Contains(site)) return;
+            affordable=Math.Min(affordable,PrivateRecruitment.FreeHires(w,site,at,rev));
+            affordable=Math.Min(affordable,TransportWork.WalletBefore(w,person,at,rev)/(PrivateRecruitment.DailyWage*days));
+            action=CourtAction.HireMarketSoldiers;
+        }
+        if (affordable <= 0) return;
+        var input=new CourtInput(HouseholdCourt.Id("muster-recruit",order.Input.Id.Value+"/"+rev),action,
+            person,order.Input.Owner,site,Amount:affordable,When:checked(at+days*86400));
+        TransactionalWorld.TryApply(w,copy=>HouseholdCourt.Execute(copy,input,person));
+    }
+
+    public static CourtEvent? Conflict(ContractWorld w, EntityId actor, long earliestFinish) =>
+        Reservations(w,actor,w.ElapsedSeconds,w.CommitSequence+1).Where(e=>e.Input.When<earliestFinish)
+            .OrderBy(e=>e.Input.When).FirstOrDefault();
+
     internal static void Check(ContractWorld w, CourtInput i, EntityId actor, EntityId place, long at, long rev)
     {
         if (i.Action == CourtAction.SendMusterNotice)

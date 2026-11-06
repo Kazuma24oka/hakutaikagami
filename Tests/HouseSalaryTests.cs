@@ -9,6 +9,30 @@ public sealed class HouseSalaryTests
     static CommandResult Act(WorldSession s,SalaryAction action,EntityId? contract=null,long amount=0,EntityId? prep=null,string? id=null)=>s.ManageSalary(new(new(id??"request:salary/"+s.Revision),action,Other(s),new("site:kofu"),contract,amount,prep),s.PlayerControl,s.Revision);
     static EntityId Agree(WorldSession s,long amount=20){var r=Act(s,SalaryAction.Propose,amount:amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);var q=s.DiagnosticSnapshot().Salary!.Quotes.Last();Assert.True(q.Agreed,q.Reply);r=Act(s,SalaryAction.Confirm,q.Id);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return q.Id;}
     static void Advance(WorldSession s,long at){while(s.Seconds<at){long old=s.Seconds;s.SetPaused(false);s.AdvanceTo(at,100000);Assert.True(s.Seconds>old);}}
+    [Fact]
+    public void PaidRetainerHiresOnlyAffordableSoldiersForReceivedMuster()
+    {
+        var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current), [], "person:shingen", 42,
+            historicalCatalog: HistoricalStartCatalog.Current, inspectionPolicy: LocalInspectionFindings.Policy,
+            workPolicy: WorkFollowup.Policy, economyPolicy: MilitaryEconomy.Policy));
+        var contract = Agree(session);
+        Advance(session, First(session));
+        var prep = Prepare(session,contract,5);
+        Assert.Equal(ResultCode.Accepted,Act(session,SalaryAction.Receive,contract,prep:prep).Code);
+        var before=session.DiagnosticSnapshot();
+        var term=Assert.Single(before.Salary!.Terms);
+        var order=new CourtInput(new("request:funded-muster"),CourtAction.SendMusterNotice,Worker,term.Owner,term.Site,
+            Amount:8,When:session.Seconds+86400);
+        var result=session.ManageCourt(order,session.Revision);
+        Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var prepared=session.DiagnosticSnapshot();
+        Assert.Equal(2,PrivateRecruitment.Soldiers(prepared,Worker,term.Site,order.When,session.Revision+1));
+        Assert.Equal(1,HouseSalary.PrivateRice(prepared,Worker));
+        Assert.Equal(NewGameWork.Balance(before,Worker)-16,NewGameWork.Balance(prepared,Worker));
+        Advance(session,order.When);
+        Assert.Equal(2,Assert.Single(session.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.AttendMuster).Input.Amount);
+    }
+
     [Theory]
     [InlineData(CourtAction.RaiseVillageSoldiers)]
     [InlineData(CourtAction.HireMarketSoldiers)]

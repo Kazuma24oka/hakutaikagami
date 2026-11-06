@@ -11,6 +11,10 @@ public static class PrivateRecruitment
     static IEnumerable<CourtEvent> Contracts(ContractWorld w) =>
         HouseholdCourt.Events(w).Where(e => Contract(e.Input.Action));
 
+    internal static long FreeHires(ContractWorld w, EntityId site, long at, long rev) =>
+        MarketCompanySize - Contracts(w).Where(e => e.Input.Action == CourtAction.HireMarketSoldiers &&
+            e.Place == site && e.Revision < rev && e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);
+
     internal static long Wages(CourtEvent e) => checked(DailyWage * e.Input.Amount * ((e.Input.When-e.At)/86400));
 
     internal static IEnumerable<CourtEvent> Levies(ContractWorld w) =>
@@ -54,11 +58,9 @@ public static class PrivateRecruitment
             throw new InvalidDataException("人数と1〜30日間の従軍期間を指定してください");
         if (input.Action == CourtAction.HireMarketSoldiers)
         {
-            long alreadyHired = Contracts(w).Where(e => e.Input.Action == CourtAction.HireMarketSoldiers &&
-                e.Place == place && e.Revision < rev && e.At <= at && at < e.Input.When).Sum(e => e.Input.Amount);
             long wages = checked(input.Amount * DailyWage * (duration / 86400));
             if (!MaterialMarkets.Enabled(w) || !MaterialMarkets.Sites(w).Contains(place) ||
-                MarketCompanySize-alreadyHired < input.Amount || TransportWork.WalletBefore(w, actor, at, rev) < wages)
+                FreeHires(w,place,at,rev) < input.Amount || TransportWork.WalletBefore(w, actor, at, rev) < wages)
                 throw new InvalidDataException("現地の市で空いている雇い兵と、契約期間分の私財を確認してください");
         }
         else

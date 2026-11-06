@@ -8,6 +8,33 @@ public sealed class HouseholdCourtTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
  [Fact]
+ public void NpcAttendsAtOrderedTimeAcrossDiskSaveAndLongAdvance()
+ {
+     var session = Start();
+     var initial = session.DiagnosticSnapshot();
+     var order = Input(session,CourtAction.SendMusterNotice,Retainer,amount:5,when:120);
+     Good(session.ManageCourt(order,session.Revision));
+     Assert.Single(MusterNotices.Reservations(session.DiagnosticSnapshot(),Retainer,session.Seconds,session.Revision+1));
+     session.SetPaused(true);
+     var dir = Directory.CreateTempSubdirectory("hakutai-muster-");
+     try
+     {
+         var store = new GenerationSaveStore(dir.FullName,initial.Definitions);
+         Assert.True(store.Save(session,"before-muster",initial.WorldId).Published);
+         var host = new WorldSessionHost(new WorldSession(initial));
+         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("before-muster"),host.Current,host.Current.Revision));
+         foreach(var run in new[]{session,host.Current})
+         {
+             NewGameWorldTests.At(run,600);
+             var arrived = Assert.Single(run.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.AttendMuster);
+             Assert.Equal((120L,0L,Retainer),(arrived.At,arrived.Input.Amount,arrived.Actor));
+         }
+         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+     }
+     finally {dir.Delete(true);}
+ }
+
+ [Fact]
  public void MusterReservationStartsAtHandoverAndRecordsActualAttendanceOnlyOnce()
  {
      var session = Start(Retainer.Value);

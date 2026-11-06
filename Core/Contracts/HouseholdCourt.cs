@@ -474,6 +474,7 @@ public static class HouseholdCourt
  internal static void Tick(ContractWorld w,bool clockAdvanced=false)
  {
   if(w.Court==null)return;
+  MusterNotices.Assemble(w);
   foreach(var doc in DocumentRows(w).Where(d=>d.Recipient!=w.PlayerControl&&Received(w,d.Id,d.Recipient)).ToArray()){
    var source=doc.Source;var p=doc.Recipient;if(SocialWorld.Site(w,p) is not {} site)continue;CourtAction? action=source.Input.Action switch{CourtAction.RecruitOffer=>FreeToJoin(w,p,source.Actor)&&HeadAuthority(w,source.Actor,source.Input.Owner,source.Input.Site,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.RecruitAccept:CourtAction.RecruitDecline,CourtAction.Nominate=>Vacancy(w,source.Input.Owner,source.Input.Site,source.Input.Role,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.AcceptOffice:CourtAction.DeclineOffice,CourtAction.Convene=>site==source.Place?CourtAction.AcceptInvitation:CourtAction.DeclineInvitation,_=>null};if(action==null)continue;
    var answers=source.Input.Action==CourtAction.RecruitOffer?new[]{CourtAction.RecruitAccept,CourtAction.RecruitDecline}:source.Input.Action==CourtAction.Nominate?new[]{CourtAction.AcceptOffice,CourtAction.DeclineOffice}:new[]{CourtAction.AcceptInvitation,CourtAction.DeclineInvitation};EntityId reference=source.Input.Action==CourtAction.Convene?doc.Id:source.Input.Id;if(Events(w).Any(e=>e.Actor==p&&e.Input.Reference==reference&&answers.Contains(e.Input.Action)))continue;
@@ -507,7 +508,7 @@ public static class HouseholdCourt
    }
   }
  }
- internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action==CourtAction.Convene).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
+ internal static long? NextBoundary(ContractWorld w,long target){if(w.Court==null)return null;var dates=Events(w).Where(e=>e.Input.Action is CourtAction.Convene or CourtAction.SendMusterNotice).Select(e=>e.Input.When).Append((w.ElapsedSeconds/86400+1)*86400);return dates.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
  internal static void Rewind(ContractWorld w,long at,long rev){CraftTrade.Rewind(w,at,rev);BrokerWork.Rewind(w,at,rev);if(w.Court!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray();w.Court=es.Length==0?null:w.Court with{Events=es};}}
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
