@@ -1,3 +1,8 @@
+## 2026-11-06の設計追補と全体点検
+
+- [AIの手強さと判断支援を独立させる](Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md)：採用済みの将来設計。統合案・設定項目・進捗の残件へ接続。
+- [設計全体の不足・具体化が必要な項目](Design/DESIGN_GAP_AUDIT_2026-11-06.md)：15分野60判断と現行の追補・工程資料を照合した監査。未決事項・試作値・実装待ちを区別し、提案を採用済みの仕様とは扱わない。
+
 - [敵対意思の世界状態と本人の知識（CLI/API検証）](Design/FactionStanceV1/README.md)
 
 - [交戦任務の配送・本人開封・取消（実戦一巡は進行中）](Design/EngagementTaskDeliveryV1/README.md)

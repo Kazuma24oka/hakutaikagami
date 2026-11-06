@@ -376,7 +376,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v45.json": "3319e5a9082421f8d7f0604bf5adff6a08b2c08fc6c4cd23ebf7b906ca966c1c",
     "Scripts/verify_npc_performance.py": "bab617bb32020642bf9ac4036af9665009b41275de5c2f79067c98d575077d64",
     "Docs/Development/PROCESS_V2.md": "4607619a541d84fb7193f02a1a5f28c9f8376bc8e7200beebee10949a9f3c04c",
-    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "2a4a2f8248e0b184027c032222da7e30e4ccfd77d7b2f2ef1f83f9bc6349a987",
+    "Docs/Decisions/2026-10-31_GETENROKU_BD_CHANGES.md": "368ff53d3ac33c61f9a5c4d0e9cde3993fb18c11cf8a6db150892f8ded7eb4fa",
     "Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md": "9bed8c72bcc567bb16b1559afa77dd744bdfcf12713aa401ac89b4650dbfbd55",
     "Docs/Archive/OPERATING_POLICY_HISTORY_TO_2026-10-31.md": "b4628b87ec463959146af3134798acb464bbc92aeaab57e228142778dfb71ceb",
     "Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md": "0f0e0dd4e16e18c6fe498e9f808e347ae04d956ccb1a86a9f16acbc622789697",
@@ -399,7 +399,7 @@
     "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
     "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
     "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
-    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "2e7a711e874d327ac7b7e0580f4bdb24e67017038ec7b6c7ccf003608961d390",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "aeefd517a9319b29b8873bad5b04ed358caf38078b4897b7dcafe82472998593",
     "Docs/Development/ProgressV1/approval-baseline-v49-scope.json": "e33a8dc9ea47c2553aca2d30f3255bc0a9b9cb3730bc7e1c06c85af13ded1f90",
     "Docs/Development/ProgressV1/approval-baseline-v50.json": "a2d6a868839b7752fa3701dd81307d602de60f60b3dd6ade2428f95c9736da44",
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
@@ -732,7 +732,10 @@
     "Docs/Design/HeirDesignationV1/completion.json": "187a2c883241b5823429e5315c43efaf4dc61b5e21503c5ff2392037e376e96e",
     "Docs/Design/HeirDesignationV1/integration.json": "5091c5a392580bf34fef8891e1d045765858c6e8f7f9a01d0fce07001a41b3ba",
     "Scripts/verify_heir_designation.py": "89172eb6d7d30f1951351a137833c24fa15a9f6f1989540a8669073d3da63c9e",
-    "Docs/Development/ProgressV1/approval-baseline-v76.json": "ac8b53e16f7e3bb9f4fc95f55abfcbe9812d07d9951778f4fedaf992beeec510"
+    "Docs/Development/ProgressV1/approval-baseline-v76.json": "ac8b53e16f7e3bb9f4fc95f55abfcbe9812d07d9951778f4fedaf992beeec510",
+    "Docs/Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md": "0bc636b660fc8b720b2d6fbd1f95cf593423f05a1e6f54bfd2e1a99880660d1d",
+    "Docs/Proposals/GETENROKU_INTEGRATION_V1.md": "651c5adecd53a279d974ff4202451a432f7f444c287e19f135f10d8be0a430f8",
+    "Docs/References/GETENROKU_BACKLOG.md": "b9f4dad80a62b89518be47c4cd166f1a00b34e57372b3bfe1002ec41e99fdfc9"
   },
   "items": [
     {
@@ -766,7 +769,7 @@
       "id": "BD-02",
       "status": "foundation",
       "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。",
-      "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。 統合案で追加：§9決定1・§20 W7 難易度（勲功の量・NPCの関わり方）・G-B9 ルール設定の個別つまみ・§20 W6 歴史モードでのNPCの史実志向の差。",
+      "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。 統合案で追加：§20 W7 本人への機会（NPCの関わり方）・G-B9 ルール設定の個別つまみ・§20 W6 歴史モードでのNPCの史実志向の差。 2026-11-06採用：AIの手強さ（控えめ・標準・手強い）と判断支援（詳しい助言・要点だけ・自分で判断）を独立設定にし、組合せコースと個別調整へ接続する。歴史モード・本人への機会は区別し、具体的既定値と保存への接続は残件。設計採用のみ。",
       "evidence": [
         "Core/Contracts/StartConfiguration.cs",
         "Core/Contracts/HistoricalStartCatalog.cs",
@@ -780,7 +783,8 @@
         "Tests/NpcLocalOfferTests.cs",
         "Game/Scripts/NewGameFrontEnd.Judgment.cs",
         "Game/Scripts/NpcJudgmentCheck.cs",
-        "Docs/Design/NpcJudgmentV1/verification.json"
+        "Docs/Design/NpcJudgmentV1/verification.json",
+        "Docs/Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3040,7 +3044,7 @@
       "id": "BD-57",
       "status": "normal",
       "existing": "会う・書く・任せる・動く・手帳と、贈答・恩賞・計略・家中・評定の入口。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。",
-      "remaining": "全画面の仕上げ・操作感・アクセシビリティと試し遊び。",
+      "remaining": "全画面の仕上げ・操作感・アクセシビリティと試し遊び。 2026-11-06採用：判断支援の詳しさを切り替え、既知の危機で対処案・準備・時間の見込み・代償を比較できる表示へ接続する。根拠・不確かさ、基本情報と重要警告・停止を保つ。作中人物の助言は実際の知識と伝達に限る。設計採用のみ。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
         "Core/Contracts/HouseholdService.cs",
@@ -3147,7 +3151,8 @@
         "Docs/Design/HouseholdCourtV1/README.md",
         "Docs/Design/HouseholdCourtV1/verification.json",
         "Docs/Design/BrokerWorkV1/README.md",
-        "Docs/Design/BrokerWorkV1/verification.json"
+        "Docs/Design/BrokerWorkV1/verification.json",
+        "Docs/Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3156,7 +3161,7 @@
       "id": "BD-58",
       "status": "normal",
       "existing": "既知の情報と本人の判断で贈答・茶会・伝聞・否認・上申・評定を使用。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 引受済みの常設職に年度経費・優先分野・収穫期回避の条件書を物理配送し、本人承諾後の現地普請と年度残枠に接続。年始と朔日の定例評定は実招集・実参集、NPC当主も同じ評定を使用。家の方針は認識した人物から反映し、月報は現地の時点付き観測と開封後の表示を分ける。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。",
-      "remaining": "NPCの自発登用・全役職の目標・全国長期性能。 2026-11-06採用の残件具体化：安定した目標から段階的な計画を立て、結果・既知情報に応じて手段を組み直す。緊急対応・味方替えを目標変更待ちにせず、文脈付きの拒否と目標・計画・待ち状態の保存継続を既存判断へ総合接続する。設計採用のみで、この総合接続は未実装。",
+      "remaining": "NPCの自発登用・全役職の目標・全国長期性能。 2026-11-06採用の残件具体化：安定した目標から段階的な計画を立て、結果・既知情報に応じて手段を組み直す。緊急対応・味方替えを目標変更待ちにせず、文脈付きの拒否と目標・計画・待ち状態の保存継続を既存判断へ総合接続する。設計採用のみで、この総合接続は未実装。 2026-11-06採用：AIの手強さを比較案と先読み範囲へ接続する。人物の性格・能力・志・目標・計画・拒否条件は共通に保ち、未知情報を使わず同じ設定と保存状態で判断を再現する。判断支援・歴史モード・本人への機会から独立。設計採用のみ。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
         "Core/Contracts/NewGameNpcRoutine.cs",
@@ -3246,7 +3251,8 @@
         "Docs/Design/LandSurveyV1/verification.json",
         "Docs/Design/LocalSecurityV1/README.md",
         "Docs/Design/LocalSecurityV1/verification.json",
-        "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md"
+        "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md",
+        "Docs/Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
