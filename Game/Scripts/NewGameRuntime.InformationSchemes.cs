@@ -44,6 +44,8 @@ public partial class NewGameRuntime
       if(letter.Body==null)Button(letter.Id,"独立について届いた封書を開く",()=>{Session.Open(actor,new(letter.Id),rev);Refresh();ShowInformationSchemes();});
       else SocialText(box,letter.Body);
   }
+  foreach(var report in IndependenceLetters.KeepReports(w,actor))
+      Button(report.Id.Value,"本丸の受領を当主へ書状で報告する",()=>{var result=Session.ManageCourt(report,rev);message.Text=result.VisibleReason;Refresh();ShowInformationSchemes();});
   foreach(var response in IndependenceLetters.Responses(w,actor))
       Button(response.Id.Value,IndependenceLetters.Label(response.Action),()=>{var result=Session.ManageCourt(response,rev);message.Text=result.VisibleReason;Refresh();ShowInformationSchemes();});
   foreach(var option in IndependenceLetters.Choices(w,actor)){
