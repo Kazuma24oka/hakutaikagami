@@ -94,6 +94,43 @@ public sealed class AdultAdoptionTests
             ?m with{CorrelationId=HeirPledges.Version(forged.HeirNominations!.Last())}:m).ToArray();
         Assert.Throws<InvalidDataException>(()=>new WorldSession(forged));
     }
+    [Fact]
+    public void AdultAdoptedFromAnotherHouseRemainsInThatHouseAfterDesignation()
+    {
+        var parent=NewGameWorldTests.Officer(role:StartTemplate.Daimyo);
+        var child=NewGameWorldTests.Officer(Other.Value,StartTemplate.Retainer,"site:kofu","person:shingen");
+        EntityId house=new("org:created-test");
+        var start=NewGameWorldTests.Setup([parent,child],[new(parent.Id,house.Value,[parent.Site],false)]);
+        var w=NewGameWorld.Create(start.World,start.Registered,parent.Id,Yes.Value,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+            companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+            socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,comingOfAge:15);
+        var s=new WorldSession(w);
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(w,"request:visit-adoptive-family","kofu"),s.Revision).Code);
+        At(s,2);At(s,s.GetBranchView(s.PlayerControl).ArrivalAt!.Value+2);
+        var proposal=Propose(s);At(s,s.Seconds+1);
+        Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Implement,proposal).Code);
+        Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.ApproveHouse,proposal,house).Code);
+        var before=s.DiagnosticSnapshot();
+        Assert.Equal(2,before.Adoption!.Entries.Count(e=>e.Input.Action==AdoptionAction.ApproveHouse));
+        Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.Implement,proposal).Code);
+        Assert.Equal(ResultCode.Accepted,s.DesignateHeir(house,Other,s.Revision).Code);
+        s.SetPaused(true);
+        var after=s.DiagnosticSnapshot();
+        foreach(var pair in new[]{(ContractJson.Write(before.Memberships),ContractJson.Write(after.Memberships)),
+            (ContractJson.Write(before.LandRights),ContractJson.Write(after.LandRights)),
+            (ContractJson.Write(before.Units),ContractJson.Write(after.Units))})Assert.Equal(pair.Item1,pair.Item2);
+        var directory=Directory.CreateTempSubdirectory("hakutai-cross-house-");
+        try
+        {
+            var store=new GenerationSaveStore(directory.FullName,w.Definitions);
+            Assert.True(store.Save(s,"adoption",after.WorldId).Published);
+            var host=new WorldSessionHost(new WorldSession(w));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("adoption"),host.Current,host.Current.Revision));
+            Assert.Equal(ContractJson.Write(after),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+        }
+        finally{directory.Delete(true);}
+    }
     [Fact]public void HouseApprovalCannotPrecedePersonalAnswer(){var s=Start(Yes.Value,lord:true);var root=Propose(s);var t=s.DiagnosticSnapshot().Adoption!.Entries.First().Terms!;Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.ApproveHouse,root,t.Houses[0].Owner).Code);}
     [Fact]public void RefusalIsStableAndCannotBeImplemented(){var s=Start(No.Value);var root=Propose(s);At(s,1);Assert.Contains(s.DiagnosticSnapshot().Adoption!.Entries,e=>e.Input.Action==AdoptionAction.PersonalNo);Assert.Equal(ResultCode.NotAvailable,Act(s,AdoptionAction.Implement,root).Code);At(s,5);Assert.Single(s.DiagnosticSnapshot().Adoption!.Entries,e=>e.Input.Action==AdoptionAction.PersonalNo);}
     [Fact]public void WithdrawalBeforeReplyPreventsNpcAnswer(){var s=Start(Yes.Value);var root=Propose(s);Assert.Equal(ResultCode.Accepted,Act(s,AdoptionAction.Withdraw,root).Code);At(s,2);Assert.Equal(2,s.DiagnosticSnapshot().Adoption!.Entries.Length);Assert.False(AdultAdoption.View(s.DiagnosticSnapshot()).Single().CanWithdraw);}
