@@ -62,9 +62,25 @@ public sealed class AdultMarriageTests
         Assert.True(dispatched.Code==ResultCode.Accepted,dispatched.VisibleReason);
         var trip=birthday.DiagnosticSnapshot().Schemes!.Events.Single(e=>e.Input.Id==scout.Id).Movement!;
         At(birthday,trip.EffectiveAt+trip.DeliverySeconds+1);
+        birthday.SetPaused(true);
         var traveling=birthday.DiagnosticSnapshot();
         Assert.Contains(traveling.Branches!.Journeys,j=>j.Actor==birth.Child);
-        var loaded=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(traveling)));
+        var directory=Directory.CreateTempSubdirectory("hakutai-born-officer-");
+        WorldSession loaded;
+        try
+        {
+            var store=new GenerationSaveStore(directory.FullName,NewGameWorld.Create(
+                w.NewGame!.Start,w.NewGame.Registered,Player.Value,Yes.Value,inspectionPolicy:LocalInspectionFindings.Policy,
+                workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+                socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:AdultMarriage.Policy,comingOfAge:15).Definitions);
+            store.Save(birthday,"manual",traveling.WorldId);
+            var prepared=store.Prepare("manual");
+            var host=new WorldSessionHost(new WorldSession(traveling));
+            Assert.Equal(ResultCode.Accepted,host.CommitLoad(prepared,host.Current,host.Current.Revision));
+            loaded=host.Current;
+        }
+        finally{directory.Delete(true);}
+
         long arrival=trip.EffectiveAt+trip.DeliverySeconds+trip.WorkSeconds;
         At(loaded,arrival);At(birthday,arrival);
         Assert.Equal(ContractJson.Write(birthday.DiagnosticSnapshot()),ContractJson.Write(loaded.DiagnosticSnapshot()));
