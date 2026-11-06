@@ -1,0 +1,13 @@
+{
+  "scope": "coalition",
+  "ui": "Docs/Design/CoalitionV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 2
+  },
+  "proofs": {
+    "Docs/Design/CoalitionV1/runtime-local/ui.log": "bbab7de6654d49417c002a218b96a919a3f24686a5d355e2635c5ac1b9f2e83a",
+    "Docs/Design/CoalitionV1/runtime-local/stage9b.trx": "9e6b99397368aa9eea87ec21dd1a9a54f5bc7dfd9072625bd98fe7bb57204636",
+    "Docs/Design/CoalitionV1/verification.json": "4795417e11c25338659338ffb5d5aab65a086097a3f43c3c9ee33cb0b4d194ad",
+    "Docs/Design/CoalitionV1/completion.json": "2c1b6867fd887f9148206e84fc5cc9139f1d27c0a10d63c682adef68eccfdd86"
+  }
+}
