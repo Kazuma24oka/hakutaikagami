@@ -16,6 +16,26 @@ public sealed class TreatyNegotiationsTests
     static EntityId Form(WorldSession s)=>s.DiagnosticSnapshot().Treaties!.Formations.Last().Acceptance;
     static TreatyOperationInput Operation(WorldSession s,TreatyOperation kind)=>new(new("request:treaty-op/"+s.Revision+"/"+kind),kind,Form(s),Own,Other,EffectiveAt:kind==TreatyOperation.Terminate?s.Seconds+86400:0,ReplyBy:kind is TreatyOperation.RequestDefense or TreatyOperation.RequestSupply?s.Seconds+3*86400:0,Amount:kind is TreatyOperation.RequestDefense or TreatyOperation.RequestSupply?20:0,Evidence:kind is TreatyOperation.RequestDefense or TreatyOperation.RequestSupply?"現地の不足を確認した":null);
     static TreatyOperationPaper Operate(WorldSession s,TreatyOperationInput i){Good(s.OperateTreaty(i,s.PlayerControl,s.Revision));return s.DiagnosticSnapshot().Treaties!.Operations.Last();}
+    [Theory]
+    [InlineData(10,TreatyAction.Accept)]
+    [InlineData(1000,TreatyAction.Decline)]
+    public void WrittenSubmissionTravelsBeforeDecisionAndSurvivesReload(int men,TreatyAction answer)
+    {
+        var s=Start();
+        var terms=new SubmissionConditions(true,men,0,false,null);
+        var offer=new TreatyInput(new("request:submission"),TreatyAction.Propose,Own,Other,Days:30,Clauses:TreatyClause.NonAggression,NoticeDays:1){Submission=terms};
+        Good(s.NegotiateTreaty(offer,s.PlayerControl,s.Revision));
+        var paper=Assert.Single(s.DiagnosticSnapshot().Treaties!.Papers);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(s.DiagnosticSnapshot())));
+        foreach(var session in new[]{s,restored}){
+            At(session,Arrival(session,paper.Message)+1);
+            var reply=session.DiagnosticSnapshot().Treaties!.Papers.Last();
+            Assert.Equal(answer,reply.Input.Action);
+            Assert.Equal(terms,reply.Terms.Submission);
+            Assert.Empty(TreatyNegotiations.Known(session.DiagnosticSnapshot(),session.PlayerControl));
+        }
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
     [Fact]public void PhysicalFormationAndPersonalOpeningAreSeparate(){var s=Formed(false);Assert.Single(s.DiagnosticSnapshot().Treaties!.Formations);Assert.Empty(TreatyNegotiations.Known(s.DiagnosticSnapshot(),s.PlayerControl));Assert.False(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));Open(s,Reply(s).Message);Assert.True(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));Assert.DoesNotContain(s.DiagnosticSnapshot().Treaties!.Papers,p=>p.Input.Action==TreatyAction.Confirm&&p.Author==s.PlayerControl);new WorldSession(s.DiagnosticSnapshot());}
     [Theory][InlineData(TreatyClause.Passage)][InlineData(TreatyClause.Supply)][InlineData(TreatyClause.Defense)][InlineData(TreatyClause.NonAggression)]public void ClauseRightsRemainIndependent(TreatyClause clause){var s=Start();Offer(s,clause);var p=s.DiagnosticSnapshot().Treaties!.Papers.Single();At(s,Arrival(s,p.Message)+1);At(s,Arrival(s,Reply(s).Message));Open(s,Reply(s).Message);Assert.True(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),clause));foreach(var missing in new[]{TreatyClause.NonAggression,TreatyClause.Passage,TreatyClause.Supply,TreatyClause.Defense}.Where(c=>c!=clause))Assert.False(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),missing));Assert.Equal(clause==TreatyClause.NonAggression,TreatyNegotiations.WillNotInitiate(s.DiagnosticSnapshot(),Own,Other,s.Seconds,s.Revision));}
     [Fact]public void TerminationNeedsArrivalAndNoticeDateNotJustDispatch(){var s=Formed();var p=Operate(s,Operation(s,TreatyOperation.Terminate));Assert.Null(TreatyNegotiations.TruthEnd(s.DiagnosticSnapshot(),Form(s)));At(s,Arrival(s,p.Message));Assert.Null(TreatyNegotiations.TruthEnd(s.DiagnosticSnapshot(),Form(s)));At(s,p.Intent.EffectiveAt);Assert.Equal(p.Intent.EffectiveAt,TreatyNegotiations.TruthEnd(s.DiagnosticSnapshot(),Form(s)));Assert.True(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));var ack=s.DiagnosticSnapshot().Treaties!.Operations.Single(p=>p.Kind==TreatyOperation.TerminationReceipt);At(s,Math.Max(s.Seconds,Arrival(s,ack.Message)));Open(s,ack.Message);Assert.False(TreatyNegotiations.ClauseUsable(s.DiagnosticSnapshot(),s.PlayerControl,Form(s),TreatyClause.NonAggression));new WorldSession(s.DiagnosticSnapshot());}
