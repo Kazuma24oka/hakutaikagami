@@ -10,6 +10,8 @@ public sealed record SubmissionConditions(bool GuaranteeLands,int MusterMen,long
 public sealed record TreatyInput(EntityId Id,TreatyAction Action,EntityId Owner,EntityId Target,EntityId? Source=null,int Days=0,TreatyClause Clauses=TreatyClause.None,int NoticeDays=0)
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CouncilBallot? Ballot {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CouncilCharter? Charter {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public SubmissionConditions? Submission {get;init;}
@@ -18,6 +20,8 @@ public sealed record TreatyInput(EntityId Id,TreatyAction Action,EntityId Owner,
 }
 public sealed record TreatyTerms(EntityId Origin,int Version,EntityId? Parent,EntityId A,EntityId B,long From,long Until,long ReplyBy,TreatyClause Clauses,int NoticeSeconds)
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CouncilBallot? Ballot {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CouncilCharter? Charter {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -74,6 +78,12 @@ public static partial class TreatyNegotiations
         score-=conditions.TributeRice>500?4:conditions.TributeRice>0?1:0;
         return score>0?TreatyAction.Accept:TreatyAction.Decline;
     }
+    static TreatyAction BallotReply(ContractWorld w,TreatyPaper request,long at,long rev)
+    {
+        var original=State(w).Papers.Single(p=>p.Input.Id==request.Terms.Ballot!.Demand);
+        return SubmissionReply(w,original with{Recipient=request.Recipient,Address=request.Address,
+            Input=original.Input with{Target=request.Input.Target}},at,rev);
+    }
     static TreatyInput? NpcSubmission(ContractWorld w,EntityId head,EntityId owner,EntityId target,long at,long rev)
     {
         var claim=FactionStances.OwnAt(w,head,at,rev).LastOrDefault(c=>c.FromOwner==owner && c.ToOwner==target &&
@@ -94,6 +104,18 @@ public static partial class TreatyNegotiations
     static TreatyPaper Prepare(ContractWorld w,TreatyInput i,EntityId actor,long at,long rev)
     {
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=RepresentativeKnowledge.Known(w,actor,i.Target,at,Math.Min(rev,w.CommitSequence));Need(target!=null,"相手の当事者が不明です");TreatyTerms terms;
+        if(i.Ballot is {} ballot){
+            var incoming=PapersAt(w,at,rev-1).SingleOrDefault(p=>p.Input.Id==ballot.Demand);
+            Need(incoming?.Terms.Submission!=null && incoming.Terms.Ballot==null && incoming.Recipient==actor &&
+                incoming.Terms.Submission==ballot.Conditions && incoming.Terms.A==ballot.DemandingHouse && incoming.Input.Target==i.Owner && Opened(w,incoming,actor,at,rev-1) && at<incoming.Terms.ReplyBy,
+                "本人が開封した有効な勧告だけを合議に付せます");
+            Need(i.Action==TreatyAction.Propose && i.Charter==null && i.Submission==null && i.Clauses==TreatyClause.None &&
+                i.Target!=incoming.Input.Owner && KokujinCouncil.KnownMembers(w,actor,ballot.Charter,at,rev-1).Contains(i.Target),
+                "契状で加盟を確認した別の家にだけ照会できます");
+            var consultations=PapersAt(w,at,rev-1).Where(p=>p.Input.Ballot?.Demand==ballot.Demand).ToArray();
+            Need(consultations.All(p=>p.Input.Ballot==ballot && p.Input.Target!=i.Target) &&
+                !PapersAt(w,at,rev-1).Any(p=>p.Input.Source==ballot.Demand),"同じ家への重複照会・返答後の合議はできません");
+        }
         if(i.Charter is {} charter){
             Need(i.Action==TreatyAction.Propose && i.Submission==null && i.Clauses==TreatyClause.None &&
                 Enum.IsDefined(charter.Rule) && i.Days is >=1 and <=MaximumNpcDays,"契状は独立した原本として30日以内の期間と議決規則を記してください");
@@ -115,15 +137,17 @@ public static partial class TreatyNegotiations
             if(demand.Hostage is {} hostage)
                 Need(w.NewGame!.Start.People.Any(person=>person.Id==hostage.Value && person.Faction==i.Target.Value),"人質の候補は公知の開始名簿にある相手方の人物を指定してください");
         }
-        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl || i==NpcSubmission(w,actor,i.Owner,i.Target,at,rev-1),"勧告を発する当主の既知の開戦根拠がありません");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Charter!=null||i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Charter=i.Charter,Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
+        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl || i==NpcSubmission(w,actor,i.Owner,i.Target,at,rev-1),"勧告を発する当主の既知の開戦根拠がありません");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Ballot!=null||i.Charter!=null||i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Ballot=i.Ballot,Charter=i.Charter,Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
         else{
             var source=PapersAt(w,at,rev).SingleOrDefault(p=>p.Input.Id==i.Source);Need(source!=null&&source.Recipient==actor&&source.Input.Owner==i.Target&&source.Input.Target==i.Owner&&Opened(w,source,actor,at,rev),"本人に到達して開封した同一原本が必要です");
             Need(!PapersAt(w,at,rev).Any(p=>p.Input.Id!=i.Id&&p.Input.Source==source.Input.Id&&p.Author==actor),"この版には既に返答しています");
+            if(source.Terms.Submission!=null && KokujinCouncil.Tally(w,actor,source.Input.Id,at,rev-1) is {} count)
+                Need(count.Verdict==i.Action,"到着して開封した票が契状の議決条件を満たすまで連合を代表して返答できません");
             if(i.Action==TreatyAction.Confirm){Need(source.Input.Action==TreatyAction.Accept&&Forms(w,at,rev).Any(f=>f.Acceptance==source.Input.Id),"成立を確認した承諾の原本が必要です");Need(i.Days==0,"確認書で条件は変えません");terms=source.Terms;}
             else{Need(source.Input.Action is TreatyAction.Propose or TreatyAction.Counter,"提案または対案へ返答してください");Need(at<=source.Terms.ReplyBy&&at<source.Terms.Until,"返答期限を過ぎています");
                 int limit=ReplyDuration(w,source,at,rev);
-                if(i.Action==TreatyAction.Counter){Need(source.Terms.Submission==null&&actor!=w.PlayerControl&&source.Input.Action==TreatyAction.Propose&&i.Days==limit&&source.Terms.Until-source.Terms.From>limit*Day,"相手の調整方針による対案ではありません");terms=new(source.Terms.Origin,2,source.Input.Id,source.Terms.A,source.Terms.B,at,checked(at+limit*Day),source.Terms.ReplyBy,source.Terms.Clauses,source.Terms.NoticeSeconds){Submission=source.Terms.Submission,DeclaredScale=source.Terms.DeclaredScale};}
-                else{Need(i.Clauses==TreatyClause.None&&i.NoticeDays==0,"返答で条項と解除期間は変えません");Need(i.Days==0&&i.Action is TreatyAction.Accept or TreatyAction.Decline,"返答で本文を勝手に変更できません");if(actor!=w.PlayerControl)Need(source.Terms.Submission!=null ? i.Action==SubmissionReply(w,source,at,rev) : i.Action==TreatyAction.Accept&&source.Terms.Until-source.Terms.From<=limit*Day,"NPCの条件上限と返答が一致しません");terms=source.Terms;}
+                if(i.Action==TreatyAction.Counter){Need(source.Terms.Ballot==null&&source.Terms.Submission==null&&actor!=w.PlayerControl&&source.Input.Action==TreatyAction.Propose&&i.Days==limit&&source.Terms.Until-source.Terms.From>limit*Day,"相手の調整方針による対案ではありません");terms=new(source.Terms.Origin,2,source.Input.Id,source.Terms.A,source.Terms.B,at,checked(at+limit*Day),source.Terms.ReplyBy,source.Terms.Clauses,source.Terms.NoticeSeconds){Submission=source.Terms.Submission,DeclaredScale=source.Terms.DeclaredScale};}
+                else{Need(i.Clauses==TreatyClause.None&&i.NoticeDays==0,"返答で条項と解除期間は変えません");Need(i.Days==0&&i.Action is TreatyAction.Accept or TreatyAction.Decline,"返答で本文を勝手に変更できません");if(actor!=w.PlayerControl)Need(source.Terms.Ballot!=null ? i.Action==BallotReply(w,source,at,rev) : source.Terms.Submission!=null ? i.Action==SubmissionReply(w,source,at,rev) : i.Action==TreatyAction.Accept&&source.Terms.Until-source.Terms.From<=limit*Day,"NPCの条件上限と返答が一致しません");terms=source.Terms;}
             }
         }
         if(i.Action==TreatyAction.Confirm){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(actor==w.PlayerControl||i.Id==AutoId("confirm",source),"成立確認のIDが原本と違います");}else if(actor!=w.PlayerControl && i.Action!=TreatyAction.Propose){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId(i.Action==TreatyAction.Counter?"counter":i.Action==TreatyAction.Decline?"decline":"accept",source),"NPCの返答原本IDが不正です");}
@@ -138,7 +162,7 @@ public static partial class TreatyNegotiations
     static TreatyFormation[] Forms(ContractWorld w,long at,long rev,bool discover=false)
     {
         var papers=PapersAt(w,at,rev);var result=new List<TreatyFormation>();foreach(var p in papers.Where(p=>p.Input.Action==TreatyAction.Accept)){
-            var source=papers.SingleOrDefault(s=>s.Input.Id==p.Input.Source);if(source==null||source.Terms!=p.Terms)continue;
+            var source=papers.SingleOrDefault(s=>s.Input.Id==p.Input.Source);if(source==null||source.Terms!=p.Terms||source.Terms.Ballot!=null)continue;
             var delivery=w.Messaging.Attempts.Where(a=>a.MessageId==p.Message&&a.ReceiverId==p.Recipient.Value&&a.Status==AttemptStatus.Delivered&&a.FinishedAt<=at).OrderBy(a=>a.FinishedAt).FirstOrDefault();if(delivery?.FinishedAt is not {} arrived||arrived>p.Terms.ReplyBy||arrived>=p.Terms.Until)continue;
             var stored=State(w).Formations.SingleOrDefault(f=>f.Acceptance==p.Input.Id);if(stored==null&&!discover)continue;long revision=stored?.Revision??w.CommitSequence;if(FactionStances.ResolveAuthority(w,p.Recipient,p.Input.Target,arrived,revision)==null)continue;if(arrived==at&&revision>rev)continue;result.Add(new(p.Input.Id,p.Terms,arrived,revision));
         }return result.OrderBy(f=>f.At).ThenBy(f=>f.Acceptance.Value,StringComparer.Ordinal).ToArray();
@@ -154,6 +178,10 @@ public static partial class TreatyNegotiations
     {
         foreach(var f in State(w).Formations){var acceptance=State(w).Papers.Single(p=>p.Input.Id==f.Acceptance);foreach(var actor in new[]{acceptance.Author,acceptance.Recipient}.Where(a=>a!=w.PlayerControl))if(FactionStances.ResolveAuthority(w,actor,actor==acceptance.Author?acceptance.Input.Owner:acceptance.Input.Target,w.ElapsedSeconds,w.CommitSequence)!=null&&Known(w,actor).Any(k=>k.Acceptance==f.Acceptance)&&w.ElapsedSeconds<Math.Min(f.Terms.Until,long.MaxValue)&&!State(w).Recognitions.Any(q=>q.Acceptance==f.Acceptance&&q.Actor==actor))return(actor,null,f);}
         if(allowReplies)foreach(var p in State(w).Papers.Where(p=>p.Recipient!=w.PlayerControl&&p.Input.Action is TreatyAction.Propose or TreatyAction.Counter).OrderBy(p=>p.At).ThenBy(p=>p.Input.Id.Value,StringComparer.Ordinal))if(FactionStances.ResolveAuthority(w,p.Recipient,p.Input.Target,w.ElapsedSeconds,w.CommitSequence)!=null&&Opened(w,p,p.Recipient,w.ElapsedSeconds,w.CommitSequence)&&w.ElapsedSeconds<=p.Terms.ReplyBy&&w.ElapsedSeconds<p.Terms.Until&&!State(w).Papers.Any(q=>q.Input.Source==p.Input.Id&&q.Author==p.Recipient)){
+            if(p.Terms.Ballot!=null){
+                var vote=BallotReply(w,p,w.ElapsedSeconds,w.CommitSequence);
+                return(p.Recipient,new(AutoId(vote==TreatyAction.Accept?"accept":"decline",p),vote,p.Input.Target,p.Input.Owner,p.Input.Id),null);
+            }
             if(p.Terms.Submission!=null){
                 var answer=SubmissionReply(w,p,w.ElapsedSeconds,w.CommitSequence);
                 return(p.Recipient,new(AutoId(answer==TreatyAction.Accept?"accept":"decline",p),answer,p.Input.Target,p.Input.Owner,p.Input.Id),null);
