@@ -35,14 +35,14 @@ public static class VillageConsultation
         if(p.CancelledAt!=null)return p.Delivered>0?"一部履行で終了":"未履行で終了";
         return at>p.DeliverBy?(p.Delivered>0?"一部履行・期限超過":"未履行・期限超過"):"約束の履行待ち";
     }
-    static int Trust(ContractWorld w,IEnumerable<VillagePromise> promises,EntityId site,long at)
+    static int Trust(ContractWorld w,IEnumerable<VillagePromise> promises,EntityId site,long at,long rev)
     {
-        int n=70-LandSurvey.Pressure(w,site,at)-(LocalSecurity.MarketAvoided(w,site,at,long.MaxValue)?25:0);foreach(var p in promises.Where(p=>p.Site==site)){
+        int n=70-LandSurvey.Pressure(w,site,at)-(LocalSecurity.MarketAvoided(w,site,at,rev)?25:0);foreach(var p in promises.Where(p=>p.Site==site)){
             bool done=p.Kind==VillageAction.ProposeWater?p.StartedAt!=null:p.Delivered==p.Amount;
             if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
         }return Math.Clamp(n,0,100);
     }
-    internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return true;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at)>=50;}
+    internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return true;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at,rev)>=50;}
     internal static bool WorkAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long revision)
     {
         if(!Enabled(w)||NpcCommunityAdministration.WaterAuthorized(w,effect,site,at,revision)||CommunityStewardship.WaterAuthorized(w,effect,site,at,revision))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
@@ -59,7 +59,7 @@ public static class VillageConsultation
                 Need(i.Proposal==null&&(i.Action==VillageAction.ProposeWater?i.Amount==CommunityEconomy.WorkCost:i.Amount>0&&i.Amount<=3000),"救済量または工事条件が不正です");
                 Need(!promises.Values.Any(p=>p.Site==i.Site&&p.CancelledAt==null&&p.StartedAt==null&&p.Delivered<p.Amount&&e.At<=p.DeliverBy),"先に現在の約束を履行するか終了してください");
                 var account=CommunityEconomy.AccountAt(w,i.Site,e.At,e.Revision);bool water=i.Action==VillageAction.ProposeWater;
-                bool agreed=!water||account.Hunger==0&&account.Reserved==0&&account.Water<130&&Trust(w,promises.Values,i.Site,e.At)>=40;
+                bool agreed=!water||account.Hunger==0&&account.Reserved==0&&account.Water<130&&Trust(w,promises.Values,i.Site,e.At,e.Revision)>=40;
                 string reply=!water?"その量の救済を村の食糧として受け取ります。七日以内の現物受渡しをお願いします。":account.Hunger>0?"先に食糧不足への救済をお願いします。工事は引き受けられません。":account.Reserved>0?"働き手は既に工事に出ています。":account.Water>=130?"今は追加の水利工事を必要としていません。":!agreed?"前の約束が守られていません。先に救済を実行してください。":"米200kg・働き手20人で七日間の工事に協力します。七日以内に着手してください。";
                 proposals.Add(i.Id,new(i.Id,i.Site,Representative(i.Site,e.At),Term(e.At),i.Action,i.Amount,e.At,agreed,reply));
             }else{
@@ -110,7 +110,7 @@ public static class VillageConsultation
     {
         if(!Enabled(w))return null;var site=w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;
         if(site==null||!CommunityEconomy.SitesFor(w).Contains(site.Value)||!Local(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1))return null;
-        var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds);
+        var s=w.Villages!;var org=Organization(site.Value);var rep=org.Members[Term(w.ElapsedSeconds)%2];int trust=Trust(w,s.Promises,site.Value,w.ElapsedSeconds,w.CommitSequence+1);
         var cards=s.Promises.Where(p=>p.Site==site).Select(p=>new VillageCard(p.Id,p.Kind==VillageAction.ProposeWater?"水利工事":"救済",p.Amount,p.Delivered,p.DeliverBy,Status(w,p,w.ElapsedSeconds,w.CommitSequence+1))).ToArray();
         return new(site.Value,org.Id,rep.Name,Term(w.ElapsedSeconds),w.ElapsedSeconds,Authority(w,site.Value,w.ElapsedSeconds,w.CommitSequence),LandSurvey.Pressure(w,site.Value,w.ElapsedSeconds)>0?"重い年貢の布告が続き、労働協力を慎重に判断しています。":trust<40?"前の約束の不履行について不信が残っています。":trust>70?"実際に約束を果たしたことを評価しています。":"まずは条件と実際の履行を確かめたいと話しています。",NpcCommunityAdministration.LocalOutcome(w,site.Value)+" "+LocalSecurity.Reaction(w,site.Value,w.ElapsedSeconds,w.CommitSequence+1),s.Proposals.Where(q=>q.Site==site).ToArray(),cards);
     }
