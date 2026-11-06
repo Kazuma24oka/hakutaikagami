@@ -68,6 +68,34 @@ public sealed class CentralMediationTests
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
 
+    [Fact]
+    public void RetainerMustMeetCurrentLordBeforePayingCourtier()
+    {
+        var site=CentralCourtCatalog.Kyoto;
+        var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
+        var retainer=NewGameWorldTests.Officer("created:retainer",StartTemplate.Retainer,site.Value,lord.Id);
+        var house=new EntityId("org:rank-leave");
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var setupRequest=new WorldSetupRequest([lord,retainer],[new(lord.Id,house.Value,[site.Value],false)]);
+        var setup=NewGameSetup.Confirm(raw,setupRequest,NewGameSetup.Preview(raw,setupRequest));
+        var session=new WorldSession(NewGameWorld.Create(setup,[lord,retainer],retainer.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
+        var broker=CentralCourtCatalog.CourtBroker;
+        Assert.Equal(ResultCode.Accepted,session.ManageSocial(new(new("request:court-visit"),SocialWorldAction.Visit,broker),session.Revision).Code);
+        var petition=new CourtInput(new("request:rank-after-leave"),CourtAction.AskCourtIntroduction,broker,house,site);
+        Assert.Equal(ResultCode.NotAvailable,session.ManageCourt(petition,session.Revision).Code);
+        var leave=new CourtInput(new("request:leave"),CourtAction.AskRankLeave,new(lord.Id),house,site);
+        var sent=session.ManageCourt(leave,session.Revision);
+        Assert.True(sent.Code==ResultCode.Accepted,sent.VisibleReason);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(session.DiagnosticSnapshot())));
+        foreach(var run in new[]{session,restored}){
+            NewGameWorldTests.At(run,run.Seconds+2);
+            Assert.Single(run.DiagnosticSnapshot().Court!.Events,e=>e.Input.Action==CourtAction.GrantRankLeave && e.Actor.Value==lord.Id);
+            var result=run.ManageCourt(petition,run.Revision);
+            Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        }
+        Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
     [Theory][InlineData(false,false)][InlineData(true,false)][InlineData(true,true)][InlineData(false,true)]
     public void PetitionRequiresMeetingAndBrokerAnswersOnceAfterRestore(bool gift,bool currentEdition)
     {

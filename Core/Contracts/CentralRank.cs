@@ -23,7 +23,9 @@ public static class CentralRank
     static CourtAction Resolve(ContractWorld w,CourtEvent petition)
     {
         // 代表経路の仮資格。申請時点の当主としての身分を審議し、軍権や所領は移転しない。
-        return HouseSuccession.Head(w,petition.Input.Owner,petition.At,petition.Revision-1)==petition.Input.Person?
+        return (w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition
+            ? RankLeave.Eligible(w,petition.Input.Person,petition.Input.Owner,petition.At,petition.Revision)
+            : HouseSuccession.Head(w,petition.Input.Owner,petition.At,petition.Revision-1)==petition.Input.Person)?
             CourtAction.IssueCourtRank:CourtAction.RejectCourtRank;
     }
     static bool Linked(CourtEvent[] rows,CourtEvent source)=>rows.Any(e=>Handles(e.Input.Action)&&e.Input.Reference==source.Input.Id);

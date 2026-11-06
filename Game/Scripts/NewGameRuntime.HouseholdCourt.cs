@@ -16,6 +16,18 @@ public partial class NewGameRuntime
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
+      if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition){
+          if(CentralMediation.ApplicantHouse(w,actor) is {} petitionHouse && HouseSuccession.Head(w,petitionHouse) is {} lord &&
+              lord!=actor && SocialWorld.Site(w,lord)==site)
+              Button("ask-rank-leave","主君に叙位奏請の許可を願う",()=>Run(new(Nonce("ask-rank-leave"),CourtAction.AskRankLeave,lord,petitionHouse,site.Value)));
+          foreach(var petition in RankLeave.Requests(w,actor).Where(e=>SocialWorld.Site(w,e.Actor)==site)){
+              foreach(var answer in new[]{CourtAction.GrantRankLeave,CourtAction.RefuseRankLeave}){
+                  string key=answer+"/"+petition.Input.Id.Value;
+                  Button(key,MeritRewards.DisplayName(w,actor,petition.Actor)+(answer==CourtAction.GrantRankLeave?"の奏請を許す":"の奏請を断る"),
+                      ()=>Run(new(Nonce(key),answer,petition.Actor,petition.Input.Owner,site.Value,Reference:petition.Input.Id)));
+              }
+          }
+      }
       if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
       if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
           SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
