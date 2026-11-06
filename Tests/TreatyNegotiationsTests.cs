@@ -22,6 +22,8 @@ public sealed class TreatyNegotiationsTests
     public void WrittenSubmissionTravelsBeforeDecisionAndSurvivesReload(int men,TreatyAction answer)
     {
         var s=Start();
+        if(men==10 && Environment.GetEnvironmentVariable("HAKUTAI_SUBMISSION_FIXTURE") is {} path)
+            File.WriteAllBytes(path,ContractJson.Write(s.DiagnosticSnapshot()));
         var terms=new SubmissionConditions(true,men,0,false,null);
         var offer=new TreatyInput(new("request:submission"),TreatyAction.Propose,Own,Other,Days:30,Clauses:TreatyClause.NonAggression,NoticeDays:1){Submission=terms};
         Good(s.NegotiateTreaty(offer,s.PlayerControl,s.Revision));
@@ -33,6 +35,22 @@ public sealed class TreatyNegotiationsTests
             Assert.Equal(answer,reply.Input.Action);
             Assert.Equal(terms,reply.Terms.Submission);
             Assert.Empty(TreatyNegotiations.Known(session.DiagnosticSnapshot(),session.PlayerControl));
+        }
+        foreach(var session in new[]{s,restored}){
+            var reply=session.DiagnosticSnapshot().Treaties!.Papers.Last();
+            At(session,Arrival(session,reply.Message));
+            Assert.Empty(TreatyNegotiations.Known(session.DiagnosticSnapshot(),session.PlayerControl));
+            Open(session,reply.Message);
+            var world=session.DiagnosticSnapshot();
+            Assert.Equal(answer==TreatyAction.Accept?1:0,world.Treaties!.Formations.Length);
+            Assert.Equal(answer==TreatyAction.Accept?1:0,TreatyNegotiations.Known(world,session.PlayerControl).Length);
+            if(answer==TreatyAction.Accept){
+                var formed=Assert.Single(world.Treaties.Formations);
+                Assert.Equal(Own,formed.Terms.A);
+                Assert.Equal(Other,formed.Terms.B);
+                Assert.Equal(terms,formed.Terms.Submission);
+            }
+            Assert.Empty(world.FactionStances?.Decisions??[]);
         }
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }

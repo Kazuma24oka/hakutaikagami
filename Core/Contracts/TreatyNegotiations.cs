@@ -70,6 +70,15 @@ public static partial class TreatyNegotiations
         score-=conditions.TributeRice>500?4:conditions.TributeRice>0?1:0;
         return score>0?TreatyAction.Accept:TreatyAction.Decline;
     }
+    static TreatyInput? NpcSubmission(ContractWorld w,EntityId head,EntityId owner,EntityId target,long at,long rev)
+    {
+        var claim=FactionStances.OwnAt(w,head,at,rev).LastOrDefault(c=>c.FromOwner==owner && c.ToOwner==target &&
+            c.EffectiveFrom<=at && at<c.Until);
+        if(claim==null || RepresentativeKnowledge.Known(w,head,target,at,rev)==null)return null;
+        var id=HouseholdCourt.Id("submission-demand",claim.Declaration.Value);
+        return new TreatyInput(id,TreatyAction.Propose,owner,target,Days:30,NoticeDays:1)
+            {Submission=new(true,100,0,false,null),AttachHouseScale=true};
+    }
     static TreatyState State(ContractWorld w)=>w.Treaties??new(1,Policy,[],[],[],[]);
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<=rev;
     static string Hash(string s)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(s));
@@ -91,7 +100,7 @@ public static partial class TreatyNegotiations
             if(demand.Hostage is {} hostage)
                 Need(w.NewGame!.Start.People.Any(person=>person.Id==hostage.Value && person.Faction==i.Target.Value),"人質の候補は公知の開始名簿にある相手方の人物を指定してください");
         }
-        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl,"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
+        if(i.Action==TreatyAction.Propose){Need(actor==w.PlayerControl || i==NpcSubmission(w,actor,i.Owner,i.Target,at,rev-1),"勧告を発する当主の既知の開戦根拠がありません");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");Need((i.Submission!=null||i.Clauses!=TreatyClause.None)&&((int)i.Clauses&~15)==0&&i.NoticeDays is >=1 and <=7,"独立条項と1〜7日の解除通知期間を指定してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day),i.Clauses,checked(i.NoticeDays*(int)Day)){Submission=i.Submission,DeclaredScale=i.AttachHouseScale==true?HouseScaleNotices.Known(w,actor,i.Owner,at,rev):null};}
         else{
             var source=PapersAt(w,at,rev).SingleOrDefault(p=>p.Input.Id==i.Source);Need(source!=null&&source.Recipient==actor&&source.Input.Owner==i.Target&&source.Input.Target==i.Owner&&Opened(w,source,actor,at,rev),"本人に到達して開封した同一原本が必要です");
             Need(!PapersAt(w,at,rev).Any(p=>p.Input.Id!=i.Id&&p.Input.Source==source.Input.Id&&p.Author==actor),"この版には既に返答しています");
@@ -102,7 +111,7 @@ public static partial class TreatyNegotiations
                 else{Need(i.Clauses==TreatyClause.None&&i.NoticeDays==0,"返答で条項と解除期間は変えません");Need(i.Days==0&&i.Action is TreatyAction.Accept or TreatyAction.Decline,"返答で本文を勝手に変更できません");if(actor!=w.PlayerControl)Need(source.Terms.Submission!=null ? i.Action==SubmissionReply(w,source,at,rev) : i.Action==TreatyAction.Accept&&source.Terms.Until-source.Terms.From<=limit*Day,"NPCの条件上限と返答が一致しません");terms=source.Terms;}
             }
         }
-        if(i.Action==TreatyAction.Confirm){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(actor==w.PlayerControl||i.Id==AutoId("confirm",source),"成立確認のIDが原本と違います");}else if(actor!=w.PlayerControl){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId(i.Action==TreatyAction.Counter?"counter":i.Action==TreatyAction.Decline?"decline":"accept",source),"NPCの返答原本IDが不正です");}
+        if(i.Action==TreatyAction.Confirm){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(actor==w.PlayerControl||i.Id==AutoId("confirm",source),"成立確認のIDが原本と違います");}else if(actor!=w.PlayerControl && i.Action!=TreatyAction.Propose){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId(i.Action==TreatyAction.Counter?"counter":i.Action==TreatyAction.Decline?"decline":"accept",source),"NPCの返答原本IDが不正です");}
         return new(i,terms,actor,target.Person,target.Home,at,rev,auth,MessageId(i.Id));
     }
     static MessageEnvelope Envelope(TreatyPaper p)=>new(p.Message,p.Input.Id.Value,Kind,p.Author.Value,p.Recipient.Value,System.Text.Encoding.UTF8.GetString(ContractJson.Write(new TreatyBody(p.Input.Action,p.Terms))),p.Address.Value,p.At);
@@ -135,7 +144,17 @@ public static partial class TreatyNegotiations
                 return(p.Recipient,new(AutoId(answer==TreatyAction.Accept?"accept":"decline",p),answer,p.Input.Target,p.Input.Owner,p.Input.Id),null);
             }
             int limit=ReplyDuration(w,p,w.ElapsedSeconds,w.CommitSequence);bool counter=p.Terms.Until-p.Terms.From>limit*Day;return(p.Recipient,new(AutoId(counter?"counter":"accept",p),counter?TreatyAction.Counter:TreatyAction.Accept,p.Input.Target,p.Input.Owner,p.Input.Id,counter?limit:0),null);
-        }return null;
+        }
+        if(allowReplies && Enabled(w) && w.FactionStances is {Decisions.Length:>0}){
+            foreach(var declaration in w.FactionStances.Decisions.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile &&
+                d.Authority.Issuer!=w.PlayerControl && d.Input.EffectiveAt<=w.ElapsedSeconds && w.ElapsedSeconds<d.Input.Until)){
+                var head=declaration.Authority.Issuer;
+                if(FactionStances.ResolveAuthority(w,head,declaration.Input.Owner,w.ElapsedSeconds,w.CommitSequence)==null)continue;
+                var offer=NpcSubmission(w,head,declaration.Input.Owner,declaration.Input.Target,w.ElapsedSeconds,w.CommitSequence);
+                if(offer!=null && !OwnIdUsed(w,offer.Id))return(head,offer,null);
+            }
+        }
+        return null;
     }
     internal static void TakeTurns(WorldSession session)
     {for(int n=0;n<32;n++){var w=session.DiagnosticSnapshot();var next=Next(w,!w.Paused);if(next==null){TakeOperationTurns(session);return;}session.ActOnTreaty(next.Value.Actor,next.Value.Reply,next.Value.Fulfill);}}
