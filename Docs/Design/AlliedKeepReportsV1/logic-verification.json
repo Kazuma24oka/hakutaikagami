@@ -1,0 +1,13 @@
+{
+  "scope": "allied-keep-reports",
+  "ui": "Docs/Design/AlliedKeepReportsV1/runtime-local/ui.log",
+  "tests": {
+    "passed": 5
+  },
+  "proofs": {
+    "Docs/Design/AlliedKeepReportsV1/runtime-local/report.trx": "0cc96fec7bd8246f2ac9bda7bd35ba7d0ac6078803ac32472693e95ada408a2b",
+    "Docs/Design/AlliedKeepReportsV1/runtime-local/ui.log": "0c78cdd5a1f58cd7547d316fdffa3b42b147b45c15e9973234248a921ac7a597",
+    "Docs/Design/AlliedKeepReportsV1/verification.json": "f33507ec7070e16d3449b95810a08ce73cf2eb827a391a9083ad72cf0b6c347c",
+    "Docs/Design/AlliedKeepReportsV1/completion.json": "ce26697c328752c8fc55dc5e1d9d8e205deeaae4dba2033eedb2ea54af63d06f"
+  }
+}

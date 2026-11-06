@@ -443,6 +443,13 @@ public class DefectionPactTests
                 var gateway=session.DiagnosticSnapshot();
                 Assert.Contains(gateway.Court!.Events,e=>e.Input.Reference==joined.Input.Id && e.Input.Action==CourtAction.ReceiveIndependentGate);
                 Assert.False(JointIndependence.ObserveOwnCastle(gateway,recipient)!.ControlsCastle);
+                // 現地に双方がいる同一の交渉記録に対し、任期の境界だけを変えた判定試験。
+                var beforeExpiry=ContractJson.Copy(gateway);
+                var assignment=Assert.Single(beforeExpiry.Offices,o=>o.Subject==recipient && o.Kind=="castellan" && o.Target==joined.Place);
+                beforeExpiry.Offices=beforeExpiry.Offices.Select(o=>o==assignment?o with{Until=beforeExpiry.ElapsedSeconds+1}:o).ToArray();
+                Assert.Contains(IndependenceGate.Available(beforeExpiry,recipient),i=>i.Action==CourtAction.ReceiveIndependentKeep);
+                beforeExpiry.ElapsedSeconds++;
+                Assert.DoesNotContain(IndependenceGate.Available(beforeExpiry,recipient),i=>i.Action==CourtAction.ReceiveIndependentKeep);
                 session.SetPaused(true);
                 var directory=Directory.CreateTempSubdirectory("allied-gate-");
                 try{
