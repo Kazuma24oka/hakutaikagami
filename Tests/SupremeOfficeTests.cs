@@ -32,6 +32,38 @@ public sealed class SupremeOfficeTests
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
     [Fact]
+    public void RegentChangesAtDecisionAndPetitionSurvivesRestore()
+    {
+        var site=CentralCourtCatalog.Kyoto;var broker=CentralCourtCatalog.CourtBroker;
+        var child=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
+        var house=new EntityId("org:regency");
+        var setup=new WorldSetupRequest([child],[new(child.Id,house.Value,[site.Value],false)]);
+        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var scenario=NewGameSetup.Confirm(raw,setup,NewGameSetup.Preview(raw,setup));
+        var s=new WorldSession(NewGameWorld.Create(scenario,[child],child.Id,historicalCatalog:HistoricalStartCatalog.Current,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
+        void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
+        var petition=new CourtInput(new("request:petition-regent"),CourtAction.PetitionRegent,broker,house,site);
+        Assert.NotEqual(ResultCode.Accepted,s.ManageCourt(petition,s.Revision).Code);
+        var patron=CentralCourtCatalog.Konoe;
+        Good(s.ManageSocial(new(new("request:meet-konoe"),SocialWorldAction.Visit,patron),s.Revision));
+        Good(s.ManageSocial(new(new("request:konoe-gift"),SocialWorldAction.DispatchGift,patron,Amount:100),s.Revision));
+        NewGameWorldTests.At(s,s.Seconds+3);
+        Good(s.ManageCourt(new(new("request:konoe-kin"),CourtAction.RequestRegentKin,patron,house,site),s.Revision));
+        NewGameWorldTests.At(s,s.Seconds+2);
+        Good(s.ManageCourt(petition,s.Revision));
+        var before=s.DiagnosticSnapshot();var restored=new WorldSession(ContractJson.Copy(before));
+        foreach(var session in new[]{s,restored}){
+            NewGameWorldTests.At(session,session.Seconds+3);
+            var w=session.DiagnosticSnapshot();
+            Assert.Single(w.Court!.Events,e=>e.Input.Reference==petition.Id && e.Input.Action==CourtAction.GrantHighOffice);
+            Assert.Single(w.Messaging.Messages,m=>m.Kind=="court-investiture" && m.RecipientId==child.Id);
+            Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));
+            Assert.NotEqual(ResultCode.Accepted,session.ManageCourt(petition with{Id=new("request:again")},session.Revision).Code);
+        }
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+    [Fact]
     public void AdoptedChildQualifiesOnlyAfterCourtCertifiesFiledReport()
     {
         var site=CentralCourtCatalog.Kyoto;

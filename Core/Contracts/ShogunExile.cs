@@ -13,8 +13,8 @@ public static class ShogunExile
             Orders(w).Any(e=>e.Input.Person==i.Person && e.At<=at && e.Revision<rev))
             throw new InvalidDataException("京を掌握した当主が、京にいる現将軍に一度だけ退去先を示せます");
     }
-    internal static bool Departed(ContractWorld w,EntityId incumbent,long at,long revision)=>
-        Orders(w).Where(e=>e.Input.Person==incumbent && e.Revision<=revision && e.At<=at).Any(e=>
+    internal static bool Departed(ContractWorld w,EntityId incumbent,long at,long revision,long afterRevision=0)=>
+        Orders(w).Where(e=>e.Input.Person==incumbent && e.Revision>afterRevision && e.Revision<=revision && e.At<=at).Any(e=>
             w.Requests.Any(r=>r.Id==Trip(e) && r.CommitSequence<=revision) &&
             w.Tasks.Any(t=>t.RequestId==Trip(e) && t.StartedAt is {} start && start<=at));
     internal static bool IsJourney(ContractWorld w,Intent i)=>i.RoutePolicy==Route && i.Action==ActionKind.Move && i.Actor==i.Executor &&

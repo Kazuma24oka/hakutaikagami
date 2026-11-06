@@ -16,6 +16,25 @@ public partial class NewGameRuntime
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
+      foreach(var notice in SupremeInvestiture.Notices(w,actor)){
+          if(notice.Known is {} decision)SocialText(box,decision);
+          else Button(notice.Id,"朝廷から届いた裁可の書状を開く",()=>{Session.Open(actor,new(notice.Id),rev);Refresh();ShowHouseholdCourt();});
+      }
+      if(site==CentralCourtCatalog.Kyoto){
+          if(actor==CentralCourtCatalog.CourtBroker){
+              foreach(var answer in SupremeInvestiture.Responses(w)){
+                  var appointmentPetition=w.Court!.Events.Single(e=>e.Input.Id==answer.Reference);
+                  Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+"の"+SupremeInvestiture.Title(appointmentPetition.Input.Action)+"奏請を"+
+                      (answer.Action==CourtAction.GrantHighOffice?"裁可する":"退ける"),()=>Run(answer));
+              }
+          }else if(CentralMediation.ApplicantHouse(w,actor) is {} officeHouse){
+              foreach(var title in SupremeInvestiture.Petitions){
+                  var petition=new CourtInput(Nonce(title.ToString()),title,CentralCourtCatalog.CourtBroker,officeHouse,site.Value);
+                  if(SupremeInvestiture.CanPetition(w,petition,actor))
+                      Button(title.ToString(),SupremeInvestiture.Title(title)+"への任官を奏請する",()=>Run(petition));
+              }
+          }
+      }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
           if(CentralMediation.ApplicantHouse(w,actor) is {} petitionHouse && HouseSuccession.Head(w,petitionHouse) is {} lord &&
               lord!=actor && SocialWorld.Site(w,lord)==site)

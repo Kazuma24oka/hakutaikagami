@@ -6,11 +6,12 @@ public static class SupremeOffice
     public static EntityId? ShogunAt(ContractWorld w,long at,long revision)
     {
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog))return null;
-        var incumbent=CentralCourtCatalog.Shogun;
+        var grant=SupremeInvestiture.LastGrant(w,CourtAction.PetitionShogun,at,revision);
+        var incumbent=grant?.Input.Person??CentralCourtCatalog.Shogun;
         if(Assassination.DeadAt(w,incumbent,at,revision))return null;
         var resigned=HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.ResignShogun &&
-            e.Actor==incumbent && e.At<=at && e.Revision<=revision);
-        return resigned || ShogunExile.Departed(w,incumbent,at,revision)?null:incumbent;
+            e.Actor==incumbent && e.Revision>(grant?.Revision??0) && e.At<=at && e.Revision<=revision);
+        return resigned || ShogunExile.Departed(w,incumbent,at,revision,grant?.Revision??0)?null:incumbent;
     }
     internal static bool IsSupport(CourtAction a)=>a is CourtAction.OfferShogunSupport or CourtAction.AcceptShogunSupport or CourtAction.DeclineShogunSupport;
     public static bool ControlsKyoto(ContractWorld w,EntityId head,EntityId house,long at,long revision)=>
