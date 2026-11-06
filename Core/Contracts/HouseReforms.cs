@@ -35,6 +35,7 @@ public static class HouseReforms
     {
         foreach(var e in HouseholdCourt.Events(w)){
             if(e.Input.Action==CourtAction.GrantLevyShare)yield return e;
+            if(e.Input.Action==CourtAction.DeliverProvinceShare)yield return e with{Input=e.Input with{Action=CourtAction.GrantLevyShare}};
             if(e.Input.Action is CourtAction.ExchangeLevyShare or CourtAction.ReceiveProvinceShare)yield return e with{Actor=e.Input.Person,
                 Input=e.Input with{Person=e.Actor,Action=CourtAction.GrantLevyShare}};
         }
@@ -155,6 +156,13 @@ public static class HouseReforms
 
     internal static void Receive(ContractWorld w)
     {
+        foreach(var order in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.IssueTransfer && e.Input.Person!=w.PlayerControl)){
+            var reader=order.Input.Person;
+            var id=Letter(order.Input,TransferOrder);
+            if(!MessageFlow.Knows(w.Messaging,id,reader.Value) && w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==reader.Value) &&
+                !Assassination.DeadAt(w,reader,w.ElapsedSeconds,w.CommitSequence))
+                w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(id,reader.Value,w.ElapsedSeconds,id)];
+        }
         foreach(var shown in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.PresentServiceRelease && e.Input.Person!=w.PlayerControl && e.At<w.ElapsedSeconds)){
             var master=shown.Input.Person;
             if(HouseholdCourt.Events(w).Any(e=>e.Input.Reference==shown.Input.Id && e.Input.Action is CourtAction.ConsentServiceRelease or CourtAction.RefuseServiceRelease) ||

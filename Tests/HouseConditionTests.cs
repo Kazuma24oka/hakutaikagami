@@ -88,10 +88,11 @@ public sealed class HouseConditionTests
         Act(proposal,lord);Read(proposal,HouseReforms.Proposal,person);
         Read(proposal,HouseReforms.Answer,lord);
         var order=new CourtInput(new("request:move-right"),CourtAction.IssueTransfer,person,owner,home,Reference:proposal.Id);
-        Act(order,lord);Read(order,HouseReforms.TransferOrder,person);
+        Act(order,lord);NewGameWorldTests.At(s,s.Seconds+120);
+        Assert.True(HakutaiKagami.Core.Messaging.MessageFlow.Knows(s.DiagnosticSnapshot().Messaging,HouseReforms.Letter(order,HouseReforms.TransferOrder),person.Value));
         if(province){
             var first=new CourtInput(new("request:first-estate"),CourtAction.ReceiveProvinceShare,lord,owner,home,Amount:25,Reference:order.Id);
-            Act(first,person);
+            Act(first with{Action=CourtAction.DeliverProvinceShare,Person=person},lord);
             var partial=s.DiagnosticSnapshot();
             Assert.Equal(home,Assert.Single(HouseReforms.LevyGrants(partial)).Place);
             partial.CommitSequence++;
@@ -112,8 +113,8 @@ public sealed class HouseConditionTests
         void Collect(string id,long amount)=>Good(s.ManageCommunity(new(new(id),destination,EconomyAction.CollectLevy,amount),lord,s.Revision));
         Collect("request:before-transfer",80);
         var exchange=new CourtInput(new("request:received-right"),CourtAction.ExchangeLevyShare,lord,owner,destination,Amount:25,Reference:order.Id){LevyGrant=grant.Id};
-        if(province)exchange=exchange with{Action=CourtAction.ReceiveProvinceShare,LevyGrant=null};
-        Act(exchange,person);
+        if(province)exchange=exchange with{Action=CourtAction.DeliverProvinceShare,Person=person,LevyGrant=null};
+        Act(exchange,province?lord:person);
         if(province)Assert.Equal(2,HouseReforms.LevyGrants(s.DiagnosticSnapshot()).Count());
         Collect("request:after-transfer",40);
         var receipt=new CourtInput(new("request:new-receipt"),CourtAction.ReceiveLevyShare,lord,owner,destination,Amount:10,Reference:exchange.Id);

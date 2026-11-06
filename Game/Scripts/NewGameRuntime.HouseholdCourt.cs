@@ -70,6 +70,13 @@ public partial class NewGameRuntime
     var result=Session.ManageHouseholdService(terms,actor,rev);message.Text=result.VisibleReason;Refresh();ShowHouseholdCourt();
    });
   }
+  foreach(var order in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.IssueTransfer && e.Actor==actor)??[]){
+   var terms=w.Court!.Events.Single(e=>e.Input.Id==order.Input.Reference).Input;
+   if(terms.Reform!=ReformKind.AllocateProvince || (site!=terms.Site && site!=terms.NewEstate) ||
+      SocialWorld.Site(w,terms.Person)!=site || w.Court.Events.Any(e=>e.Input.Reference==order.Input.Id && e.Place==site &&
+          e.Input.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare))continue;
+   Button("deliver-province-"+order.Input.Id,"現地で"+PersonName(terms.Person)+"に徴収米の給付を引き渡す",()=>Run(new(Nonce("deliver-province/"+order.Input.Id),CourtAction.DeliverProvinceShare,terms.Person,terms.Owner,site.Value,Amount:terms.Amount,Reference:order.Input.Id)));
+  }
   foreach(var order in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.IssueTransfer && e.Input.Person==actor)??[]){
    var id=HouseReforms.Letter(order.Input,HouseReforms.TransferOrder);
    if(!w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==actor.Value))continue;
@@ -97,7 +104,7 @@ public partial class NewGameRuntime
    }
    if(terms.Reform==ReformKind.AllocateProvince){
     foreach(var target in new[]{terms.Site,terms.NewEstate!.Value}){
-     var received=w.Court.Events.Any(e=>e.Input.Action==CourtAction.ReceiveProvinceShare && e.Input.Reference==order.Input.Id && e.Place==target);
+     var received=w.Court.Events.Any(e=>(e.Input.Action is CourtAction.ReceiveProvinceShare or CourtAction.DeliverProvinceShare) && e.Input.Reference==order.Input.Id && e.Place==target);
      SocialText(box,NewGameWorld.SiteName(target.Value)+(received?"　受領済み":"　未受領"));
      if(!received && site==target)Button("receive-province-"+order.Input.Id+target,"この土地の徴収米の給付を引き取る",()=>Run(new(Nonce("province/"+target),CourtAction.ReceiveProvinceShare,order.Actor,terms.Owner,target,Amount:terms.Amount,Reference:order.Input.Id)));
     }
