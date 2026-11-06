@@ -30,6 +30,19 @@ public partial class NewGameRuntime
             Text(house.Name+"の後継候補（生年順）");
             var owner=new EntityId(house.Id);
             var current=w.HeirNominations?.LastOrDefault(p=>p.House==owner && p.Head==Session.PlayerControl);
+            if(current!=null)
+            {
+                foreach(var contact in HeirPledges.Contacts(w,current))
+                {
+                    if(!HeirPledges.Requested(w,current,contact.Id))
+                        Button(contact.Name+"に誓紙を求める",()=>{
+                            var r=Session.RequestHeirPledge(current,new(contact.Id),shown);
+                            if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                            popup.Hide();Refresh();ShowHouseSuccession();
+                        });
+                    else Text(contact.Name+"へ指名状を送付済み");
+                }
+            }
             foreach(var child in children)
             {
                 var name=SuccessionPerson(w,child.Person);
@@ -41,6 +54,19 @@ public partial class NewGameRuntime
                     popup.Hide();Refresh();ShowHouseSuccession();
                 });
             }
+        }
+        foreach(var reply in w.Messaging.Messages.Where(m=>m.Kind==HeirPledges.ReplyKind && m.RecipientId==w.PlayerControl.Value))
+        {
+            if(!w.Messaging.Receipts.Any(r=>r.MessageId==reply.Id && r.ReceiverId==w.PlayerControl.Value))continue;
+            if(HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,reply.Id,w.PlayerControl.Value)){
+                var original=w.HeirNominations!.Single(p=>HeirPledges.Version(p)==reply.CorrelationId);
+                bool prior=w.HeirNominations!.Last(p=>p.House==original.House)!=original;
+                Text((prior?"旧指名への返答：":"指名への返答：")+PersonName(new(reply.SenderId))+" ／ "+reply.Body);
+            }else Button("届いた返書を開く",()=>{
+                var r=Session.Open(w.PlayerControl,new(reply.Id),shown);
+                if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
+                popup.Hide();Refresh();ShowHouseSuccession();
+            });
         }
         if(v.Candidates.Length>0){var list=new OptionButton();foreach(var c in v.Candidates)list.AddItem(CastleOwnerName(w,c.Owner)+" ／ "+SuccessionPerson(w,c.Person));box.AddChild(list);Button("当事者に生前の当主交代を相談",()=>{var c=v.Candidates[list.Selected];Run(new(new("request:house-nominate-ui/"+shown),HouseSuccessionAction.Nominate,c.Owner,c.Person){MilitaryPolicy=NewGameMilitary.CanRetainActiveForSuccession(w,Session.PlayerControl,c.Owner,c.Home,Session.Seconds,shown)?NewGameMilitary.ActiveSuccessionContract:null});});}
         foreach(var c in v.Changes.Reverse().Take(3)){Text($"{CastleOwnerName(w,c.Owner)}：{SuccessionPerson(w,c.Incumbent)} → {SuccessionPerson(w,c.Heir)}\n{c.Status}\n合意 {c.ProposedAt}秒"+(c.EffectiveAt is {} at?$" ／ 引渡し {at}秒":""));Button("同じ条件を確認し、次の時刻の交代を予定",()=>Run(new(new("request:house-confirm-ui/"+shown),HouseSuccessionAction.Confirm,c.Owner,Original:c.Id)),!c.CanConfirm);Button("交代前に取りやめ",()=>Run(new(new("request:house-cancel-ui/"+shown),HouseSuccessionAction.Cancel,c.Owner,Original:c.Id)),!c.CanCancel);}
