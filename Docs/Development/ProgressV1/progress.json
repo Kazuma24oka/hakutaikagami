@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "90bde5dc56ac01c4ddbbe2687fb9c5ef17a22fa33c164c9617eb22137e5ae40f",
+    "Docs/Development/ProgressV1/estimate.json": "316ce8342e51c80a0b8f3bdeaa78b7a2553267d930a6d6869ec4e82fb9e3aa29",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "8ca7c15609318c329da60a1c8709458b14545a848f693d562a5e4155d4b1b96d",
+    "Scripts/check_progress_report.py": "9cec6c08e7974b641ee73319a63c7b74561bcb3297450c0c47d8ba0dfe18c062",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "d9e348e2c1fe3c9a5427935efd3c6be7251a8e7741ac486a8baae8c2465a7431",
+    "Scripts/check_approval_batch.py": "e21efcd8301815ca878b3a1d6875b3f5d029b508c2f56052bf657ff0384459eb",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "ca4ec73c0eba611427445f133d71c61a7484c638dce365e2d82b904574241112",
+    "Docs/Development/CURRENT_STAGE.md": "defd17c32967ec190894118a5707ddd1d5d2bc0450f0051bb4805eafcc6c1083",
     "Core/Contracts/HouseSuccession.cs": "7e2ee13dcd64453a71faf96b6ebb9c07cc4c8b0149ae2e64dfa8f7413cc2d54a",
     "Core/Contracts/FactionStances.cs": "445828eebda8cf2de3d7981a17bba7e4a12841a8b6f35ef5c330ebd3c3f9562a",
-    "Core/Contracts/NewGameWorld.cs": "f63c2fb863464e39e65e41f4375f086530fccf71353a51d34988239472922869",
+    "Core/Contracts/NewGameWorld.cs": "40bc2923ae7f2579b8b901804a3e435718e7961814c2058e7223ac0cb7f66780",
     "Core/Contracts/HouseSalary.cs": "e3a1b374faca2b4782211e05aeea3b392550d4b5c6b61e12015f7d8a114f2cff",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",
@@ -234,7 +234,7 @@
     "Core/Contracts/TreatyNegotiations.Operations.cs": "b84826b88591523106c2eff7217a11c0904d4eb6a8f6dde1659c9a8349ae35b3",
     "Core/Contracts/WorldSession.Treaty.cs": "b7b0b8d3bebd064a1830b123b0e5c6d11664784e4c76456f95513e74628916cd",
     "Tests/TreatyNegotiationsTests.cs": "1de836a448a1fcf738e4277d3b92f932e4ee40e50474012f25a86a1c8a6c3d8b",
-    "Game/Scripts/NewGameRuntime.Treaty.cs": "2b66c21c2a3dcabf4377f58356f1509faa68db7d79bdeacbdc3c6f14650c834e",
+    "Game/Scripts/NewGameRuntime.Treaty.cs": "55cd6fdb1143b710ceb123068ae2840c29c126f0d16252f65c42fcbd31b22430",
     "Game/Scripts/NewGameRuntime.Truce.cs": "a72e6e191f157acd023df51df6e4418fa16a966556a14686c5be26fe402fad76",
     "Docs/Design/TreatyV1/verification.json": "3fcff28509162deed09efcfd81f41e47d0c31d9542e614232000b73d975c041b",
     "Docs/Design/TreatyV1/completion.json": "b4f7c213822c68bb499e0511680d978b67f0879e6711c8c1af343a4b70f90cfb",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "f97a9f710f55a05bce5290188b0d17d1e083c85024590b2120c84a25adf1160b",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "5c74511d7c12e6552098ca9b2ec7236ffc1faa22b645eb183c860fc49dd6244f",
+    "Core/Contracts/ContractJson.cs": "593660f36e2f594749be449ab27ae2a711b162140c867ad30ac4c33620ba6f00",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -538,7 +538,7 @@
     "Docs/Design/InformationSchemesV1/scope.md": "d83ccc5f060419fcebfa0eea907dabd4fc56c2f3c2d3a1e7ed97cceb3b3b5755",
     "Scripts/verify_information_schemes.py": "edded9dced2393c6b4ef6184e33cc18d75b6b8aa6d69358f78784c98e2236fbd",
     "Docs/Development/ProgressV1/approval-baseline-v59.json": "7c40e08ae624a35152466430ac2dbf6d25698427be888cc360654b83463bfd72",
-    "Core/Contracts/HouseholdCourt.cs": "5cf5c9856112851299c71caf81dc31abc06f3626f2d111d6a4432d204f84e86a",
+    "Core/Contracts/HouseholdCourt.cs": "e87d6485a846f074da9b05538fd6eb62d0716ecff5732e3f184dd4eb015215c4",
     "Core/Contracts/TransactionalWorld.cs": "87441f985c418a21d91b6557589982d306412d00c1702e8095c1cbf95bcba289",
     "Game/Scripts/NewGameRuntime.HouseholdCourt.cs": "4bf4e1186178644712faef95241dd475824ca0efb36243d4cb5381f52226a4cc",
     "Game/Scripts/HouseholdCourtCheck.cs": "5549229a8c4ad58dd59af85fbaef66b68f32c11afd71d94006296f5e52a060d1",
@@ -774,7 +774,11 @@
     "Docs/Development/ProgressV1/approval-baseline-v79.json": "e34a12675fb6d7d6321d0143b09eff9bad7d76bcac35deffbe7ac1589496e2d2",
     "Docs/Decisions/2026-11-06_CHARACTER_ABILITIES_SKILLS_GROWTH.md": "d7939d4e37e7767918bc90527d44b7de729a4eb08542fffc94fa4eda6d12ff41",
     "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md": "51bb61dec8bdad2bafdd69d2fc8f556af43e673567fe069ebdc5e273163a50cd",
-    "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md": "6df0f9474c179146f21c8c5769b3be44e7932dbeca222c1a241d0f17d699853a"
+    "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md": "6df0f9474c179146f21c8c5769b3be44e7932dbeca222c1a241d0f17d699853a",
+    "Docs/Development/ProgressV1/approval-baseline-v89.json": "cc5ff1edc5a12ac689213f72c482382ec1535dcce88c9a15f9ba97f7dba08701",
+    "Docs/Design/CoalitionV1/logic-verification.json": "bac5823f47ffcfd84c9bd8771a9b70097870e78dbd299adfffe7c26637ede8bb",
+    "Docs/Design/CoalitionV1/completion.json": "2c1b6867fd887f9148206e84fc5cc9139f1d27c0a10d63c682adef68eccfdd86",
+    "Docs/Design/CoalitionV1/verification.json": "4795417e11c25338659338ffb5d5aab65a086097a3f43c3c9ee33cb0b4d194ad"
   },
   "items": [
     {
@@ -3933,12 +3937,12 @@
       "Core/Data/river-roads-v1.json": "268872ef999f6b6edfb291b4b38513750aee9296c0ac75cc1f8cb150df28f92a"
     },
     "core_test": {
-      "passed": 8,
+      "passed": 2,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/SupremeOfficeV1/runtime-local/stage9a-final.trx",
-      "sha256": "0b2ab92e7e82de250784a50ff42c1eb12fafd9fdfac10b247a3a3b51aaa3c743",
-      "scope": "工程9aの最終変更後の関連8件。全件未実施。"
+      "trx": "Docs/Design/CoalitionV1/runtime-local/stage9b.trx",
+      "sha256": "9e6b99397368aa9eea87ec21dd1a9a54f5bc7dfd9072625bd98fe7bb57204636",
+      "scope": "工程9b 包囲網の一巡と旧保存互換。全件未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3957,7 +3961,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "当主が実効支配と旧国を確かめて家の規模を宣言する。家臣は通知到着後に昇格を知る。普請奉行・町奉行は引き受けた年度予算で担当工事を発令する。格差のある防衛交渉は書面に示した家格と相手への信頼から期間の対案を返す。 旧国照合は5拠点、昇格要件と対案期間は試作値。普請奉行・町奉行を実工事で検証。家格による自動従属は発生しない。全国長期試遊と全件検査は未実施。",
+    "current_stage_summary": "招請・各家の回答・署名・密告・実出陣と単独和睦の報告・離脱を実際の書状と接続。呼びかけ人の自然死は目撃・訃報開封に応じて認識する。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3980,8 +3984,8 @@
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
     "integration": "Docs/Design/HouseScaleV1/integration.json",
-    "current_logic_verification": "Docs/Design/SupremeOfficeV1/logic-verification.json",
-    "current_logic_verification_sha256": "958d936d689c36614a6f06bfc34517054e9462440721d7816e92092c6c5101bc",
+    "current_logic_verification": "Docs/Design/CoalitionV1/logic-verification.json",
+    "current_logic_verification_sha256": "bac5823f47ffcfd84c9bd8771a9b70097870e78dbd299adfffe7c26637ede8bb",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。",
@@ -4059,8 +4063,7 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "9b：対抗する勢力が各家へ包囲網を呼びかける",
-    "呼びかけの配送・各家の判断・多者の盟約・切り崩し"
+    "第5版の通常入口を通し、製品版までの残件を固定評価と照合する。"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

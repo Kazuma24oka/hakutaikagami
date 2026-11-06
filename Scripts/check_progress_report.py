@@ -32,7 +32,12 @@ if p['evidence'].get('current_logic_verification'):
  if logic.get("remote_probe"):
   binding=json.loads((R/logic["remote_probe"]["binding"]).read_bytes());assert binding["core_sha256"]==logic["binaries"]["Core/bin/Debug/net8.0/HakutaiKagami.Core.dll"]
   assert json.loads((R/logic["remote_probe"]["result"]).read_bytes())["Status"]=="PASSED"
- if logic["scope"]=="supreme-office":
+ if logic["scope"]=="coalition":
+  def check_logic(record):
+   for name,digest in record["proofs"].items():check(name,digest)
+   assert "COALITION_UI_PASS" in artifact(record["ui"]).read_text(encoding="utf-8-sig")
+   assert record["tests"]["passed"]==2
+ elif logic["scope"]=="supreme-office":
   def check_logic(record):
    for name,digest in record["proofs"].items():check(name,digest)
    assert "SUPREME_OFFICE_UI_PASS" in artifact(record["ui"]).read_text(encoding="utf-8-sig")
