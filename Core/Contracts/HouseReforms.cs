@@ -4,6 +4,9 @@ namespace HakutaiKagami.Core.Contracts;
 public enum ReformKind { ForeignLetters,MarriagePermission,SuccessionOrder,EqualPenalty,ReduceCastles,CastleResidence,
     ChangeFief,OpenMarket,RemoveBarrier,DirectService,Relocate,Confiscate,AllocateProvince }
 
+public sealed record TransferBaggage(EntityId? Site,long Purse,PersonalObject[] PersonalItems,
+    ResourceLot[] EntrustedLots,HouseFreightJob[] HouseShipments);
+
 public static class HouseReforms
 {
     public const string Proposal="house-reform-proposal",Answer="house-reform-answer",TransferOrder="estate-transfer-order";
@@ -17,6 +20,17 @@ public static class HouseReforms
         _=>throw new ArgumentOutOfRangeException(nameof(kind))
     };
     public static string Letter(CourtInput input,string kind)=>HouseholdCourt.Id(kind,input.Id.Value).Value;
+    public static TransferBaggage? Baggage(ContractWorld w,CourtEvent order)
+    {
+        var actor=w.PlayerControl;
+        if(order.Input.Action!=CourtAction.IssueTransfer || order.Input.Person!=actor ||
+            !MessageFlow.Knows(w.Messaging,Letter(order.Input,TransferOrder),actor.Value))return null;
+        var lots=w.ResourceLots.Where(l=>l.MobileHolder==actor && l.Holder==actor && l.Owner!=actor && l.Quantity>0).ToArray();
+        var shipments=HouseLogistics.View(w)?.Jobs.Where(j=>j.Terms.Carrier==actor &&
+            (j.Cargo>0 || j.Cash>0) && j.Phase is not (HouseFreightPhase.Completed or HouseFreightPhase.Returned)).ToArray()??[];
+        return new(SocialWorld.Site(w,actor),NewGameWork.Balance(w,actor),SocialAssets.Inventory(w,actor),lots,shipments);
+    }
+
     public static bool AnswerKnown(ContractWorld w,CourtEvent proposal,EntityId viewer)=>
         MessageFlow.Knows(w.Messaging,Letter(proposal.Input,Answer),viewer.Value);
 

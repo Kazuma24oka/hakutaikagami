@@ -64,7 +64,12 @@ public sealed class HouseConditionTests
         NewGameWorldTests.At(s,360);
         Assert.Equal(ResultCode.Accepted,s.Open(person,document,s.Revision).Code);
         Assert.Equal(proposal.Site,SocialWorld.Site(s.DiagnosticSnapshot(),person));
+        var heirloom=SocialAssets.Catalog(s.DiagnosticSnapshot(),proposal.Site).Single(a=>a.Kind=="tea");
+        var purchase=s.ManageSocialAsset(new(new("request:transfer-tea"),SocialAssetAction.Buy,person,heirloom.Id),s.Revision);
+        Assert.True(purchase.Code==ResultCode.Accepted,purchase.VisibleReason);
         var before=s.DiagnosticSnapshot();
+        var baggage=HouseReforms.Baggage(before,before.Court!.Events.Single(e=>e.Input.Id==order.Id))!;
+        Assert.Contains(baggage.PersonalItems,o=>o.Id==heirloom.Id && o.Owner==person);
         var old=before.Offices.Single(o=>o.Subject==person && o.Kind=="castellan" && o.Target==proposal.Site);
         var release=new CourtInput(new("request:give-up-office"),CourtAction.ReleaseCastleOffice,lord,owner,
             proposal.Site,Reference:order.Id){FormerOffice=old.Id};
@@ -96,6 +101,10 @@ public sealed class HouseConditionTests
                 Assert.True(s.DiagnosticSnapshot().Offices.Single(o=>o.Id==post.Id).Until<=s.Seconds);
             }
             var beforeEntry=s.DiagnosticSnapshot();
+            var delivered=HouseReforms.Baggage(beforeEntry,beforeEntry.Court!.Events.Single(e=>e.Input.Id==order.Id))!;
+            Assert.Equal(enter.Site,delivered.Site);
+            Assert.Equal(baggage.Purse,delivered.Purse);
+            Assert.Contains(delivered.PersonalItems,o=>o.Id==heirloom.Id && o.Owner==person && o.Holder==person);
             var arrived=s.ManageCourt(enter,s.Revision);
             Assert.True(arrived.Code==ResultCode.Accepted,arrived.VisibleReason);
             var after=s.DiagnosticSnapshot();

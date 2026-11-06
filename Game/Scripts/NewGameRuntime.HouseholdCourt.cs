@@ -61,6 +61,14 @@ public partial class NewGameRuntime
     else SocialText(box,custody==null?"蔵の受領には、現地で当主と行政・保管の担当を取り決める必要があります。":"行政・保管の担当原本があります。現地の蔵を確認できます。");
     Button("transfer-store-"+order.Input.Id,"行政・保管の引継ぎを開く",ShowCastleAdministration);
    }
+   if(!entered && HouseReforms.Baggage(w,order) is {} baggage){
+    SocialText(box,$"赴任の携行品　本人が使える銭 {baggage.Purse}文");
+    foreach(var item in baggage.PersonalItems)SocialText(box,$"私物　{item.Name} ×{item.Quantity}");
+    foreach(var lot in baggage.EntrustedLots)SocialText(box,$"預かり荷　{lot.Quantity}{lot.Unit} ／ 所有者 {lot.Owner.Value}");
+    if(baggage.EntrustedLots.Length>0)Button("transfer-cargo-"+order.Input.Id,"元の運搬依頼で受渡し先を確認",ShowTransportWork);
+    foreach(var job in baggage.HouseShipments)SocialText(box,$"家の運搬　{MaterialMarkets.Name(job.Terms.Commodity)} {job.Cargo} ／ 預かり金 {job.Cash}文 ／ 納入先 {NewGameWorld.SiteName(job.Terms.Home.Value)}");
+    if(baggage.HouseShipments.Length>0)Button("transfer-freight-"+order.Input.Id,"家の仕入れ・納入の原本を開く",ShowHouseFreight);
+   }
    if(entered)continue;
    SocialText(box,w.Messaging.Messages.Single(m=>m.Id==id).Body);
    if(!released && site==terms.Site && w.Offices.FirstOrDefault(o=>o.Subject==actor && o.Target==site &&
