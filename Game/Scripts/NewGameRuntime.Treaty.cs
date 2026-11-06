@@ -15,7 +15,7 @@ public partial class NewGameRuntime
             (d.GuaranteeLands?" ／ 本領安堵":"")+$" ／ 軍役 {d.MusterMen}人・献上米 {d.TributeRice}kg"+
             (d.RestrictDiplomacy?" ／ 外交制限あり":"")+(d.Hostage is {} person?$" ／ 人質候補 {world.NewGame!.Start.People.Single(p=>p.Id==person.Value).Name}":"")+(d.Precedent!=null?" ／ 先の従属合意を添付":"");
     }
-    void ShowTreatyNegotiation()
+    internal void ShowTreatyNegotiation()
     {
         var w=Snapshot();if(OwnPoliticalHouse(w) is not {} own||!TreatyNegotiations.Enabled(w))return;long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var scroll=new ScrollContainer{CustomMinimumSize=new(560,440),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(530,0)};scroll.AddChild(box);
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});
@@ -34,6 +34,11 @@ public partial class NewGameRuntime
         string HouseName(EntityId house)=>w.Definitions.Organizations.Single(o=>o.Id==house).Name;
         void ReturnToDiplomacy(){popup.Hide();Refresh();ShowTreatyNegotiation();}
         void CoalitionCommand(CourtInput input){Submit(Session.ManageCourt(input,shown));ReturnToDiplomacy();}
+        foreach(var sent in (w.Court?.Events??[]).Where(e=>e.Input.Action==CourtAction.ProposeCoalition && e.Actor==Session.PlayerControl)){
+            var terms=sent.Input.Coalition!;
+            coalition.AddChild(new Label{Text=HouseName(terms.Target)+"への包囲網　発送先："+string.Join("、",terms.Invitees.Select(HouseName))+
+                " ／ "+CoalitionPacts.TermsLabel(terms),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        }
         foreach(var paper in CoalitionPacts.DeliveredPapers(w,Session.PlayerControl)){
             if(paper.Body!=null)coalition.AddChild(new Label{Text=paper.Body,AutowrapMode=TextServer.AutowrapMode.WordSmart});
             else CoalitionButton("包囲網について届いた書状を開く",()=>{Submit(Session.Open(Session.PlayerControl,new(paper.Id),shown));ReturnToDiplomacy();});
