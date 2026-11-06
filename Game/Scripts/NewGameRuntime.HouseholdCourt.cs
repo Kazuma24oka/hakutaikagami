@@ -14,7 +14,7 @@ public partial class NewGameRuntime
   void Button(string key,string text,Action action){var b=new Button{Text=text};box.AddChild(b);courtReviewButtons[key]=b;b.Pressed+=action;}
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
-  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
+  var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   foreach(var parcel in SocialWorld.Gifts(w,actor).Where(g=>g.Recipient==actor&&g.Phase=="運搬・受領待ち")){
    var asset=w.SocialWorld!.Events.Single(e=>e.Input.Id==parcel.Id).Input.Asset;if(asset==null)continue;var doc=HouseholdCourt.DocumentRows(w).SingleOrDefault(d=>d.Id==asset);if(doc==null)continue;
    Button("read-document",doc.Name+"を開いて、実物を確認する",()=>{CancelAdvancePrefetch();var r=Session.ManageSocial(new(Nonce("read/"+doc.Id.Value),SocialWorldAction.ReceiveGift,parcel.Sender,Reference:parcel.Id),rev);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();});
@@ -35,6 +35,18 @@ public partial class NewGameRuntime
   if(owner==null){SocialText(box,"まだ家中に所属していません。届いた条件書を確認するか、現地で仕官を相談できます。");return;}var house=new EntityId(owner);bool head=HouseSuccession.Head(w,house)==actor;
   CourtInput Command(string key,CourtAction action,EntityId person,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0,CourtCaseKind kind=CourtCaseKind.RelieveVillage)=>new(Nonce(key),action,person,house,site.Value,role,amount,reference,when,kind);
   var roster=HouseholdCourt.Roster(w,actor,house).Where(p=>p!=actor).ToArray();
+  if(courtCategory==3){
+   var report=HouseCondition.Observe(w,actor,house);
+   if(report==null){SocialText(box,"この家の現地記録を確認できません。");return;}
+   SocialText(box,NewGameWorld.SiteName(report.Site.Value)+" ／ "+WorldCalendar.Display(w.EpochDate,report.ObservedAt));
+   SocialText(box,report.ControlsLocalSite?"主家がこの拠点を支配":"この拠点で主家の支配を確認できず");
+   foreach(var person in report.LocalLandholders)SocialText(box,"在地の所領："+PersonName(person));
+   foreach(var person in report.LocalCastellans)SocialText(box,"現地の城主："+PersonName(person));
+   if(report.KnownSurveys.Length==0)SocialText(box,"本人が確認した指出・検地の帳面はありません。");
+   foreach(var entry in report.KnownSurveys)SocialText(box,NewGameWorld.SiteName(entry.Site.Value)+" ／ "+
+       (entry.Book.Measured?"検地":"指出")+" ／ "+WorldCalendar.Display(w.EpochDate,entry.Book.At));
+   return;
+  }
   if(courtCategory==0){
    SocialText(box,head?"条件を提示し、本人が実物を受け取って引き受けて初めて登用が成立します。家と個人の約束、兵や知行は分けます。":"自分が引き受けた登用の合意を確認できます。");
    if(head){var candidates=w.Characters.Where(c=>c.Id!=actor&&c.Life==LifeState.Adult&&SocialWorld.Site(w,c.Id)==site&&!roster.Contains(c.Id)).Select(c=>c.Id).ToArray();if(candidates.Length>0){var people=new OptionButton();foreach(var p in candidates)people.AddItem(MeritRewards.DisplayName(w,actor,p));box.AddChild(people);var money=new SpinBox{MinValue=20,MaxValue=500,Value=20,Step=10};box.AddChild(money);Button("recruit","支度金を条件書と一緒に預け、登用を打診する",()=>Run(Command("recruit",CourtAction.RecruitOffer,candidates[people.Selected],(long)money.Value)));}}
