@@ -1,0 +1,10 @@
+{
+  "passed": 3,
+  "tests": [
+    "HakutaiKagami.Tests.DefectionPactTests.PublicDeclarationUsesKnownCastleAndCarriesNoSecretPact",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading",
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule"
+  ],
+  "ui": "INDEPENDENCE_LETTER_UI_PASS",
+  "result": "独立した城主から既知の他城へ周知と支持要請を送り分け、面会した旧主家臣の帰属、軍勢・所領の保持、返書を開封した時点の認識を確認。"
+}
