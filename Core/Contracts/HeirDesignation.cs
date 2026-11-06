@@ -8,6 +8,9 @@ public sealed record MarriageConnection(EntityId Original,EntityId FirstHouse,En
 
 public static class HeirDesignation
 {
+    public static bool UsesSuccessionOrder(ContractWorld w,EntityId house)=>
+        w.Offices.Any(o=>o.Subject==w.PlayerControl && o.Kind=="house-head" && o.From<=w.ElapsedSeconds &&
+            w.ElapsedSeconds<o.Until && HouseReforms.SuccessionLawAt(w,house,o.Target,w.ElapsedSeconds,w.CommitSequence+1));
     public static HeirCandidate[] KnownChildren(ContractWorld world,EntityId house)
     {
         var head=world.PlayerControl;
@@ -34,8 +37,9 @@ public static class HeirDesignation
             var person=FamilyBirth.People(world).Single(p=>p.Id==terms.Child.Value);
             result.Add(new(terms.Child,true,person.BirthYear));
         }
+        bool ranked=UsesSuccessionOrder(world,house);
         return result.Where(c=>!(world.NaturalDeaths??[]).Any(d=>d.Person==c.Person && FamilyNotice.Knows(world,d,head)))
-            .OrderBy(c=>c.BirthYear??int.MaxValue).ThenBy(c=>c.Person.Value,StringComparer.Ordinal).ToArray();
+            .OrderBy(c=>ranked && c.Adopted).ThenBy(c=>c.BirthYear??int.MaxValue).ThenBy(c=>c.Person.Value,StringComparer.Ordinal).ToArray();
     }
 
     internal static void Validate(ContractWorld w,ContractWorld? prior)

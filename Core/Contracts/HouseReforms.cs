@@ -66,6 +66,8 @@ public static class HouseReforms
 
     public static bool LetterLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         LawAt(w,CourtAction.EnactLetterLaw,owner,site,at,revision);
+    public static bool SuccessionLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
+        LawAt(w,CourtAction.EnactSuccessionLaw,owner,site,at,revision);
     public static bool MarriageLawAt(ContractWorld w,EntityId owner,EntityId site,long at,long revision)=>
         LawAt(w,CourtAction.EnactMarriageLaw,owner,site,at,revision);
     static bool LawAt(ContractWorld w,CourtAction law,EntityId owner,EntityId site,long at,long revision)=>
