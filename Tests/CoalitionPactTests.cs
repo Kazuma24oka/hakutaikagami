@@ -10,19 +10,21 @@ public sealed class CoalitionPactTests
         var original=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
         var raider=NewGameWorldTests.Officer("created:coalition-raider",StartTemplate.Daimyo,"site:ishiyama");
         var defender=NewGameWorldTests.Officer("created:coalition-target",StartTemplate.Daimyo,"site:sakai");
-        var registered=NewGameWorld.Normalize([raider,defender]);
+        var founder=NewGameWorldTests.Officer("created:coalition-founder-139",StartTemplate.Daimyo,"site:castle") with{BirthYear=1465};
+        var witness=NewGameWorldTests.Officer("created:coalition-witness",StartTemplate.Retainer,founder.Site,founder.Id);
+        var registered=NewGameWorld.Normalize([raider,defender,founder,witness]);
         var selection=new WorldSetupRequest(registered,[new(raider.Id,"org:coalition-raider",[raider.Site],false),
-            new(defender.Id,"org:coalition-target",[defender.Site],false)]);
+            new(defender.Id,"org:coalition-target",[defender.Site],false),new(founder.Id,"org:coalition-founder",[founder.Site],false)]);
         var preview=NewGameSetup.Preview(original,selection);
         Assert.True(preview.IsEligible(),string.Join(",",preview.Errors));
         var setup=NewGameSetup.Confirm(original,selection,preview);
         var founders=setup.Factions.Where(f=>setup.People.Any(p=>p.Id==f.Head && p.Site==f.Home) &&
-            f.Head!=raider.Id && f.Head!=defender.Id).Take(2).ToArray();
-        var houses=new[]{founders[0],setup.Factions.Single(f=>f.Head==defender.Id),setup.Factions.Single(f=>f.Head==raider.Id),founders[1]};
+            f.Head!=raider.Id && f.Head!=defender.Id && f.Head!=founder.Id).Take(1).ToArray();
+        var houses=new[]{setup.Factions.Single(f=>f.Head==founder.Id),setup.Factions.Single(f=>f.Head==defender.Id),setup.Factions.Single(f=>f.Head==raider.Id),founders[0]};
         var leader=houses[0];var members=houses.Skip(2).Select(f=>new EntityId(f.Id)).ToArray();
         var w=NewGameWorld.Create(setup,registered,leader.Head,42,historicalCatalog:HistoricalStartCatalog.Current,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
-            worldArmyPolicy:NpcArmies.CompactCombatPolicy,trucePolicy:TruceNegotiations.Policy);
+            worldArmyPolicy:NpcArmies.CompactCombatPolicy,trucePolicy:TruceNegotiations.Policy,comingOfAge:FamilyKin.ComingOfAge);
         var s=new WorldSession(w);
         var call=new CourtInput(new("request:coalition-one"),CourtAction.ProposeCoalition,s.PlayerControl,new(leader.Id),new(leader.Home)){
             Coalition=new(new(houses[1].Id),members,CoalitionPurpose.Both,2592000)};
@@ -99,6 +101,22 @@ public sealed class CoalitionPactTests
                 Assert.Equal(3,Assert.Single(CoalitionPacts.Known(end,new(member.Head))).Houses.Length);
             }
             Assert.Empty(CoalitionPacts.Known(end,new(houses[1].Head)));
+            var bereaved=new WorldSession(ContractJson.Copy(end));
+            NewGameWorldTests.At(bereaved,36L*86400+43200);
+            var funeral=bereaved.DiagnosticSnapshot();
+            var death=Assert.Single(funeral.NaturalDeaths!,d=>d.Person==bereaved.PlayerControl);
+            Assert.True(FamilyNotice.Knows(funeral,death,new(witness.Id)));
+            var signer=new EntityId(raider.Id);
+            Assert.False(Assert.Single(CoalitionPacts.Known(funeral,signer)).FounderDeathKnown);
+            var obituary=Assert.Single(funeral.Messaging.Messages,m=>m.Kind==FamilyNotice.Kind && m.RecipientId==raider.Id);
+            Assert.DoesNotContain(funeral.Messaging.Messages,m=>m.Kind==FamilyNotice.Kind && m.RecipientId==defender.Id);
+            File.WriteAllBytes(path,ContractJson.Write(funeral));
+            var courier=new WorldSession(ContractJson.Read<ContractWorld>(File.ReadAllBytes(path)));
+            NewGameWorldTests.At(courier,Delivery(funeral,FamilyNotice.Kind)+1);
+            var informed=courier.DiagnosticSnapshot();
+            Assert.Contains(CoalitionPacts.DeliveredPapers(informed,signer),paper=>paper.Id==obituary.Id && paper.Body==obituary.Body);
+            Assert.True(Assert.Single(CoalitionPacts.Known(informed,signer)).FounderDeathKnown);
+            Assert.Empty(CoalitionPacts.Withdrawals(informed,signer));
             var campaign=ContractJson.Copy(end);
             campaign.CommitSequence++;
             var attacker=new EntityId(houses[2].Head);

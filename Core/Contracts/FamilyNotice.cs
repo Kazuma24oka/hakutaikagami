@@ -21,8 +21,11 @@ public static class FamilyNotice
         TransportWork.At(w,person,place,death.At,death.Revision,true);
 
     public static bool Knows(ContractWorld w,NaturalDeath death,EntityId observer)=>
-        (w.NaturalDeaths?.Contains(death)??false) && (SiteAtDeath(w,death) is {} site && Witness(w,death,observer,site) ||
-        MessageFlow.Knows(w.Messaging,LetterId(death,observer.Value),observer.Value));
+        KnowsAt(w,death,observer,w.ElapsedSeconds,w.CommitSequence);
+    internal static bool KnowsAt(ContractWorld w,NaturalDeath death,EntityId observer,long at,long revision)=>
+        (w.NaturalDeaths?.Contains(death)??false) && (death.At,death.Revision).CompareTo((at,revision))<=0 &&
+        (SiteAtDeath(w,death) is {} site && Witness(w,death,observer,site) ||
+         MessageFlow.LearnedAt(w.Messaging,LetterId(death,observer.Value),observer.Value) is {} learned && learned<=at);
 
     static IEnumerable<MessageEnvelope> Letters(ContractWorld w,NaturalDeath death)
     {
@@ -31,7 +34,8 @@ public static class FamilyNotice
         var deceased=people.Single(p=>p.Id==death.Person.Value);
         var sender=people.Where(p=>Witness(w,death,new(p.Id),site)).OrderBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
         if(sender==null)yield break;
-        foreach(var person in people.Where(p=>(deceased.BirthParents??[]).Contains(p.Id) ||
+        var signers=CoalitionPacts.FounderCorrespondents(w,death).ToHashSet();
+        foreach(var person in people.Where(p=>signers.Contains(p.Id) || (deceased.BirthParents??[]).Contains(p.Id) ||
             (p.BirthParents??[]).Contains(deceased.Id) || p.Lord==deceased.Id || deceased.Lord==p.Id))
         {
             var recipient=new EntityId(person.Id);

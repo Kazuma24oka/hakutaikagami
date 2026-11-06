@@ -47,6 +47,11 @@ public static partial class CoalitionPacts
         if(!TruceNegotiations.Enabled(w) || house?.Head!=actor.Value || house.Home!=place.Value || place!=i.Site ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("本人が本拠で家を代表して包囲網の書状を扱ってください");
+        if(i.Reference is {} reference){
+            var source=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Id==reference && e.Revision<rev);
+            if(source!=null && KnowsFounderDeath(w,source.Actor,actor,at,rev-1))
+                throw new InvalidDataException("呼びかけ人の死去により、この包囲網は解散しました");
+        }
         if(IsActivity(i.Action)){CheckActivity(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.LeaveCoalition){CheckWithdrawal(w,i,actor,at,rev);return;}
         if(i.Action==CourtAction.ConfirmCoalition){CheckConfirmation(w,i,actor,at,rev);return;}

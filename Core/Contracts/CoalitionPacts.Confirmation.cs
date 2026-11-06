@@ -54,7 +54,17 @@ public static partial class CoalitionPacts
             foreach(var input in Confirmations(w,actor))yield return(input,actor);
         }
     }
-    public sealed record KnownPact(EntityId Original,EntityId Target,CoalitionPurpose Purpose,long AssemblyAt,EntityId[] Houses,long ObservedAt);
+    internal static IEnumerable<string> FounderCorrespondents(ContractWorld w,NaturalDeath death){
+        var rows=HouseholdCourt.Events(w).Where(e=>e.Revision<death.Revision && e.At<=death.At).ToArray();
+        foreach(var cert in rows.Where(e=>e.Actor==death.Person && e.Input.Action==CourtAction.ConfirmCoalition))
+            foreach(var id in cert.Input.CoalitionSignatures!)
+                yield return rows.Single(e=>e.Input.Id==id).Actor.Value;
+    }
+    static bool KnowsFounderDeath(ContractWorld w,EntityId founder,EntityId observer,long at,long revision)=>
+        (w.NaturalDeaths??[]).Any(d=>d.Person==founder && FamilyNotice.KnowsAt(w,d,observer,at,revision)) ||
+        InformationSchemes.Events(w).Any(e=>e.Input.Action==SchemeAction.FatalEncounter && e.Input.Subject==founder &&
+            e.Actor==observer && (e.At,e.Revision).CompareTo((at,revision))<=0);
+    public sealed record KnownPact(EntityId Original,EntityId Target,CoalitionPurpose Purpose,long AssemblyAt,EntityId[] Houses,long ObservedAt){public bool FounderDeathKnown {get;init;}}
     public static KnownPact[] Known(ContractWorld w,EntityId observer){
         var rows=HouseholdCourt.Events(w);
         var records=new Dictionary<EntityId,KnownPact>();
@@ -68,7 +78,7 @@ public static partial class CoalitionPacts
             var original=rows.Single(x=>x.Input.Id==e.Input.Reference);
             var terms=original.Input.Coalition!;
             var houses=e.Input.CoalitionSignatures!.Select(id=>rows.Single(x=>x.Input.Id==id).Input.Owner).Prepend(e.Input.Owner).ToArray();
-            records[original.Input.Id]=new(original.Input.Id,terms.Target,terms.Purpose,terms.AssemblyAt,houses,observed);
+            records[original.Input.Id]=new(original.Input.Id,terms.Target,terms.Purpose,terms.AssemblyAt,houses,observed){FounderDeathKnown=KnowsFounderDeath(w,original.Actor,observer,w.ElapsedSeconds,w.CommitSequence)};
         }
         foreach(var departure in rows.Where(e=>e.Input.Action==CourtAction.LeaveCoalition)){
             var signed=rows.Single(e=>e.Input.Id==departure.Input.Reference);
@@ -84,16 +94,19 @@ public static partial class CoalitionPacts
         }
         return records.Values.ToArray();
     }
+    static bool IsFounderNotice(ContractWorld w,MessageEnvelope letter)=>
+        letter.Kind==FamilyNotice.Kind && (w.NaturalDeaths??[]).Any(d=>d.Person.Value==letter.CorrelationId &&
+            d.At==letter.CreatedAt && FounderCorrespondents(w,d).Contains(letter.RecipientId));
     internal static void ReadMemberCopies(ContractWorld w){
-        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal || m.Kind==ActivityReport) && m.RecipientId!=w.PlayerControl.Value)){
+        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal || m.Kind==ActivityReport || IsFounderNotice(w,m)) && m.RecipientId!=w.PlayerControl.Value)){
             var actor=new EntityId(m.RecipientId);
             if(!MessageFlow.Knows(w.Messaging,m.Id,m.RecipientId) && w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==m.RecipientId) &&
-                SocialWorld.Site(w,actor)?.Value==m.DeliverySite && !Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence))
+                SocialWorld.Site(w,actor)?.Value==(m.DeliverySite??m.Scope) && !Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence))
                 w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(m.Id,m.RecipientId,w.ElapsedSeconds,m.Id)];
         }
     }
     public static IEnumerable<(string Id,string? Body)> DeliveredPapers(ContractWorld w,EntityId actor){
-        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Reply || m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal || m.Kind==ActivityReport) && m.RecipientId==actor.Value &&
+        foreach(var m in w.Messaging.Messages.Where(m=>(m.Kind==Reply || m.Kind==Certificate || m.Kind==Warning || m.Kind==Withdrawal || m.Kind==ActivityReport || IsFounderNotice(w,m)) && m.RecipientId==actor.Value &&
             w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==actor.Value)))
             yield return(m.Id,MessageFlow.Knows(w.Messaging,m.Id,actor.Value)?m.Body:null);
     }

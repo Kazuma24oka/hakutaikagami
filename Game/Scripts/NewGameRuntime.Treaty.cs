@@ -44,7 +44,7 @@ public partial class NewGameRuntime
             else CoalitionButton("包囲網について届いた書状を開く",()=>{Submit(Session.Open(Session.PlayerControl,new(paper.Id),shown));ReturnToDiplomacy();});
         }
         foreach(var pact in CoalitionPacts.Known(w,Session.PlayerControl))
-            coalition.AddChild(new Label{Text=HouseName(pact.Target)+"を対象とする盟約　確認済みの署名："+string.Join("、",pact.Houses.Select(HouseName)),AutowrapMode=TextServer.AutowrapMode.WordSmart});
+            coalition.AddChild(new Label{Text=HouseName(pact.Target)+(pact.FounderDeathKnown?"を対象とした盟約（呼びかけ人死去により解散）　署名記録：":"を対象とする盟約　確認済みの署名：")+string.Join("、",pact.Houses.Select(HouseName)),AutowrapMode=TextServer.AutowrapMode.WordSmart});
         foreach(var report in CoalitionPacts.ActivityReports(w,Session.PlayerControl))
             CoalitionButton(report.Action==CourtAction.ReportSeparatePeace?"単独和睦の成立を報告する":"部隊が行軍を始めた時点を報告する",()=>CoalitionCommand(report));
         foreach(var departure in CoalitionPacts.Withdrawals(w,Session.PlayerControl))
