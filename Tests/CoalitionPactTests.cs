@@ -7,11 +7,20 @@ public sealed class CoalitionPactTests
     [Fact]
     public void InvitesDifferentHomesWithoutRevealingAnswersAndRestoresDispatch()
     {
-        var setup=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
-        var houses=setup.Factions.Where(f=>setup.People.Any(p=>p.Id==f.Head && p.Site==f.Home)).Take(4).ToArray();
-        Assert.Equal(4,houses.Length);
+        var original=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var raider=NewGameWorldTests.Officer("created:coalition-raider",StartTemplate.Daimyo,"site:ishiyama");
+        var defender=NewGameWorldTests.Officer("created:coalition-target",StartTemplate.Daimyo,"site:sakai");
+        var registered=NewGameWorld.Normalize([raider,defender]);
+        var selection=new WorldSetupRequest(registered,[new(raider.Id,"org:coalition-raider",[raider.Site],false),
+            new(defender.Id,"org:coalition-target",[defender.Site],false)]);
+        var preview=NewGameSetup.Preview(original,selection);
+        Assert.True(preview.IsEligible(),string.Join(",",preview.Errors));
+        var setup=NewGameSetup.Confirm(original,selection,preview);
+        var founders=setup.Factions.Where(f=>setup.People.Any(p=>p.Id==f.Head && p.Site==f.Home) &&
+            f.Head!=raider.Id && f.Head!=defender.Id).Take(2).ToArray();
+        var houses=new[]{founders[0],setup.Factions.Single(f=>f.Head==defender.Id),setup.Factions.Single(f=>f.Head==raider.Id),founders[1]};
         var leader=houses[0];var members=houses.Skip(2).Select(f=>new EntityId(f.Id)).ToArray();
-        var w=NewGameWorld.Create(setup,[],leader.Head,42,historicalCatalog:HistoricalStartCatalog.Current,
+        var w=NewGameWorld.Create(setup,registered,leader.Head,42,historicalCatalog:HistoricalStartCatalog.Current,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
             worldArmyPolicy:NpcArmies.CompactCombatPolicy,trucePolicy:TruceNegotiations.Policy);
         var s=new WorldSession(w);
@@ -90,6 +99,31 @@ public sealed class CoalitionPactTests
                 Assert.Equal(3,Assert.Single(CoalitionPacts.Known(end,new(member.Head))).Houses.Length);
             }
             Assert.Empty(CoalitionPacts.Known(end,new(houses[1].Head)));
+            var campaign=ContractJson.Copy(end);
+            campaign.CommitSequence++;
+            var attacker=new EntityId(houses[2].Head);
+            FactionStances.Apply(campaign,new(new("decision:coalition-campaign"),FactionStanceAction.DeclareHostile,
+                members[0],new(houses[1].Id),campaign.ElapsedSeconds,campaign.ElapsedSeconds+1000000),attacker);
+            var military=new WorldSession(campaign);
+            NewGameWorldTests.At(military,military.Seconds+5);
+            var marching=military.DiagnosticSnapshot();
+            var muster=Assert.Single(marching.NpcArmies!.Musters,m=>m.Commander==attacker);
+            var outbound=Assert.Single(marching.NpcArmies.Marches,m=>m.Muster==muster.Id);
+            var order=outbound.Input;
+            Assert.Equal(new EntityId(houses[1].Home),order.DestinationSite);
+            var task=Assert.Single(marching.Tasks,t=>t.RequestId==order.RequestId);
+            Assert.NotNull(task.StartedAt);
+            File.WriteAllBytes(path,ContractJson.Write(marching));
+            var resumedMarch=new WorldSession(ContractJson.Read<ContractWorld>(File.ReadAllBytes(path)));
+            NewGameWorldTests.At(resumedMarch,military.Seconds+2L*order.WorkSeconds+120);
+            var returned=resumedMarch.DiagnosticSnapshot();
+            var dispatch=Assert.Single(returned.Court!.Events,e=>e.Input.Action==CourtAction.ReportCoalitionSortie);
+            Assert.Equal(order.RequestId,dispatch.Input.ActivityEvidence);
+            var letterHome=Assert.Single(returned.Messaging.Messages,m=>m.Kind==CoalitionPacts.ActivityReport);
+            Assert.Equal(leader.Head,letterHome.RecipientId);
+            Assert.Contains(task.StartedAt.Value.ToString(),letterHome.Body);
+            NewGameWorldTests.At(resumedMarch,Delivery(returned,CoalitionPacts.ActivityReport)+1);
+            Assert.Equal(ResultCode.Accepted,resumedMarch.Open(resumedMarch.PlayerControl,new(letterHome.Id),resumedMarch.Revision).Code);
             var separate=new WorldSession(ContractJson.Copy(end));
             var proposal=new TruceInput(new("request:separate-peace"),TruceAction.Propose,new(leader.Id),new(houses[1].Id),Days:30);
             var offered=separate.NegotiateTruce(proposal,separate.PlayerControl,separate.Revision);

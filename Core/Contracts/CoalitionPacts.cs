@@ -106,7 +106,7 @@ public static partial class CoalitionPacts
             var terms=offer.Input.Coalition!;
             foreach(var owner in terms.Invitees){
                 var recipient=Address(w,offer,owner)!;var actor=recipient.Person;
-                if(actor==w.PlayerControl || HouseSuccession.Head(w,owner)!=actor || SocialWorld.Site(w,actor)!=recipient.Home)continue;
+                if(actor==w.PlayerControl || Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence) || HouseSuccession.Head(w,owner)!=actor || SocialWorld.Site(w,actor)!=recipient.Home)continue;
                 var id=InvitationId(offer.Input,owner);
                 if(!w.Messaging.Receipts.Any(r=>r.MessageId==id && r.ReceiverId==actor.Value) ||
                     HouseholdCourt.Events(w).Any(e=>e.Input.Owner==owner && e.Input.Reference==offer.Input.Id && Final(e.Input.Action)))continue;

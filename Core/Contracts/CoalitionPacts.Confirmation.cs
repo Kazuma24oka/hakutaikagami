@@ -47,6 +47,7 @@ public static partial class CoalitionPacts
     }
     internal static IEnumerable<(CourtInput Input,EntityId Actor)> NpcConfirmations(ContractWorld w){
         foreach(var actor in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ProposeCoalition && e.Actor!=w.PlayerControl).Select(e=>e.Actor).Distinct()){
+            if(Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence))continue;
             foreach(var m in w.Messaging.Messages.Where(m=>m.Kind==Reply && m.RecipientId==actor.Value &&
                 m.DeliverySite==SocialWorld.Site(w,actor)?.Value && w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==actor.Value) && !MessageFlow.Knows(w.Messaging,m.Id,actor.Value)))
                 w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(m.Id,actor.Value,w.ElapsedSeconds,m.Id)];
