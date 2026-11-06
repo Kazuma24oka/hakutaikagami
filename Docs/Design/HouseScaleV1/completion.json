@@ -1,0 +1,76 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "実効支配する拠点・国と当主の宣言により家の段階を決める",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/HouseScaleNotices.cs",
+        "Core/Contracts/HouseTerritoryScale.cs",
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/HouseScaleTests.cs",
+        "Game/Scripts/HouseScaleCheck.cs",
+        "Docs/Design/HouseScaleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "家臣は知らせの到着後に新しい段階を知り、縮小後も設置済みの役職を保持する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/HouseScaleNotices.cs",
+        "Core/Contracts/HouseTerritoryScale.cs",
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/HouseScaleTests.cs",
+        "Game/Scripts/HouseScaleCheck.cs",
+        "Docs/Design/HouseScaleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "段階に応じて役職の席数・専門分担を扱う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/HouseScaleNotices.cs",
+        "Core/Contracts/HouseTerritoryScale.cs",
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/HouseScaleTests.cs",
+        "Game/Scripts/HouseScaleCheck.cs",
+        "Docs/Design/HouseScaleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "外交では認識済みの格を対案・拒否の一材料とし、格差がある相手とも対等な提案を可能にする",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/HouseScaleNotices.cs",
+        "Core/Contracts/HouseTerritoryScale.cs",
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/HouseScaleTests.cs",
+        "Game/Scripts/HouseScaleCheck.cs",
+        "Docs/Design/HouseScaleV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面・途中保存復旧・代表旧保存の互換を確認する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HouseholdCourt.cs",
+        "Core/Contracts/HouseScaleNotices.cs",
+        "Core/Contracts/HouseTerritoryScale.cs",
+        "Core/Contracts/TreatyNegotiations.cs",
+        "Core/Contracts/StandingAdministration.cs",
+        "Tests/HouseScaleTests.cs",
+        "Game/Scripts/HouseScaleCheck.cs",
+        "Docs/Design/HouseScaleV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "旧国照合は5拠点、昇格要件と対案期間は試作値。普請奉行・町奉行を実工事で検証。家格による自動従属は発生しない。全国長期試遊と全件検査は未実施。"
+}
