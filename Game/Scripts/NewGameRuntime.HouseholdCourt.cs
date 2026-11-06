@@ -137,8 +137,11 @@ public partial class NewGameRuntime
     long earned=HouseReforms.AccruedLevyRice(w,grant,w.ElapsedSeconds,rev+1);
     long received=HouseReforms.ReceivedLevyRice(w,grant.Input.Id,w.ElapsedSeconds,rev+1);
     SocialText(box,$"徴収米の給付　{PersonName(grant.Input.Person)}　{grant.Input.Amount}%　受領 {received}kg ／ 未受領 {earned-received}kg");
-    if(actor==grant.Input.Person && earned>received){
-     var take=new SpinBox{MinValue=1,MaxValue=earned-received,Step=1,Value=earned-received,Suffix="kg"};box.AddChild(take);
+    if(actor!=grant.Input.Person || earned<=received)continue;
+    long available=HouseholdCourt.AvailableLevyRice(w,grant,actor,w.ElapsedSeconds,rev+1);
+    if(available==0)SocialText(box,"受渡し待ち。当主と現地で会い、蔵に引き渡せる米があると受領できます。");
+    else{
+     var take=new SpinBox{MinValue=1,MaxValue=available,Step=1,Value=available,Suffix="kg"};box.AddChild(take);
      Button("levy-receive-"+grant.Input.Id,"現地で米を受け取る",()=>Run(Command("receive/"+grant.Input.Id,CourtAction.ReceiveLevyShare,grant.Actor,(long)take.Value,grant.Input.Id)));
     }
    }

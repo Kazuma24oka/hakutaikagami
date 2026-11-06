@@ -199,6 +199,16 @@ public static class HouseholdCourt
       "同じ原本の命令書を受領し、新領へ実際に赴いてください");
   CheckEstateTerms(w,terms,order.Actor,at,rev);
  }
+ public static long AvailableLevyRice(ContractWorld w,CourtEvent grant,EntityId recipient,long at,long revision)
+ {
+  var place=grant.Input.Site;
+  if(grant.Revision>=revision || grant.Input.Person!=recipient ||
+     !TransportWork.At(w,recipient,place,at,revision,true) || !TransportWork.At(w,grant.Actor,place,at,revision,true) ||
+     !HeadAuthority(w,grant.Actor,grant.Input.Owner,place,at,revision))return 0;
+  var due=HouseReforms.AccruedLevyRice(w,grant,at,revision)-HouseReforms.ReceivedLevyRice(w,grant.Input.Id,at,revision);
+  var free=CommunityEconomy.AccountAt(w,place,at,revision).HouseRice-HouseSalary.Reserved(w,place,at,revision);
+  return Math.Max(0,Math.Min(due,free));
+ }
  static void CheckLevyReceipt(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long revision)
  {
   var grant=HouseReforms.LevyGrants(w).Single(g=>g.Input.Id==i.Reference);
@@ -206,8 +216,7 @@ public static class HouseholdCourt
       i.Person==grant.Actor && i.Owner==grant.Input.Owner && i.Amount>0 &&
       TransportWork.At(w,actor,place,at,revision,true) && TransportWork.At(w,grant.Actor,place,at,revision,true) &&
       HeadAuthority(w,grant.Actor,i.Owner,place,at,revision),"給付を決めた当主と受給者が原本の土地で受け渡してください");
-  var outstanding=HouseReforms.AccruedLevyRice(w,grant,at,revision)-HouseReforms.ReceivedLevyRice(w,grant.Input.Id,at,revision);
-  Need(i.Amount<=outstanding && i.Amount<=CommunityEconomy.AccountAt(w,place,at,revision).HouseRice-HouseSalary.Reserved(w,place,at,revision),
+  Need(i.Amount<=AvailableLevyRice(w,grant,actor,at,revision),
       "発生済みの未受領額と蔵の自由米を超えて受領できません");
  }
  static void CheckLevyShare(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
