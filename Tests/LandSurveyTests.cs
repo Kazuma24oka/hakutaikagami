@@ -7,6 +7,159 @@ public sealed class LandSurveyTests
  internal static WorldSession Start()=>HouseholdCourtTests.Start();
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static SurveyInput Input(WorldSession s,SurveyAction action,EntityId? reference=null,LandTaxRate rate=LandTaxRate.Ordinary)=>new(new("request:survey/"+s.Revision),action,Owner,Site,reference,rate);
+ [Theory]
+ [InlineData(false,false)]
+ [InlineData(true,false)]
+ [InlineData(false,true)]
+ public void NeighborUnderItsOwnHeavyDecreeJoinsOnlyAfterReceivingTheLetter(bool relieveBeforeTempleCall,bool suppress)
+ {
+     var sender=NewGameWorldTests.Officer("created:sender",StartTemplate.Daimyo,"site:sakai");
+     var receiver=NewGameWorldTests.Officer("created:receiver",StartTemplate.Daimyo,"site:ishiyama");
+     var setup=NewGameWorldTests.Setup([sender,receiver],[new(sender.Id,"org:sender",[sender.Site],false),new(receiver.Id,"org:receiver",[receiver.Site],false)]);
+     var w=NewGameWorld.Create(setup.World,setup.Registered,sender.Id,42,inspectionPolicy:LocalInspectionFindings.Policy,
+         workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy);
+     var s=new WorldSession(w);
+     Good(s.ManageLandSurvey(new(new("request:sender-heavy"),SurveyAction.PostRate,new("org:sender"),new(sender.Site),Rate:LandTaxRate.Heavy),s.Revision));
+     NewGameWorldTests.At(s,60*86400);
+     w=s.DiagnosticSnapshot();
+     w.CommitSequence++;
+     LandSurvey.Execute(w,new(new("request:receiver-heavy"),SurveyAction.PostRate,new("org:receiver"),new(receiver.Site),Rate:LandTaxRate.Heavy),new(receiver.Id));
+     s=new WorldSession(w);
+     NewGameWorldTests.At(s,67*86400);
+     var flight=Assert.Single(s.DiagnosticSnapshot().Communities!.Flights!,f=>f.From.Value==sender.Site);
+     Assert.Equal(receiver.Site,flight.To.Value);
+     NewGameWorldTests.At(s,flight.Route[^1].EndAt-1);
+     Assert.Null(s.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition).Letter!.Reply);
+     var resumed=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(s.DiagnosticSnapshot())));
+     foreach(var run in new[]{s,resumed}){
+         NewGameWorldTests.At(run,flight.Route[^1].EndAt);
+         var arrived=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition);
+         Assert.True(arrived.Letter!.Reply!.Joined);
+         Assert.DoesNotContain("ともに減免",run.VillageView()!.Administration);
+     }
+     foreach(var run in new[]{s,resumed}){
+         var call=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition).Proclamation!;
+         Assert.NotNull(call);Assert.Null(call.Answer);
+         Assert.DoesNotContain("本願寺の檄",run.VillageView()!.Administration);
+         if(relieveBeforeTempleCall)Good(run.ManageCommunity(new(new("request:aid-before-call"),new(sender.Site),EconomyAction.RelieveVillage,200),run.PlayerControl,run.Revision));
+         NewGameWorldTests.At(run,call.Route[^1].EndAt);
+         var answer=run.DiagnosticSnapshot().Communities!.Flights!.Single(f=>f.Petition==flight.Petition).Proclamation!.Answer!;
+         Assert.NotNull(answer);Assert.Equal(!relieveBeforeTempleCall,answer.Joined);
+         var ledger=run.DiagnosticSnapshot().Communities!;
+         Assert.Equal(relieveBeforeTempleCall?0:10,ledger.Flights!.Single(f=>f.Petition==flight.Petition).Proclamation!.Mustered);
+         Assert.Contains(relieveBeforeTempleCall?"蜂起を見送り":"蜂起に加わる",run.VillageView()!.Administration);
+         if(!relieveBeforeTempleCall){
+             int workers=ledger.Accounts.Single(a=>a.Site==flight.From).Workforce;
+             NewGameWorldTests.At(run,run.Seconds+1);
+             var action=new VillageInput(new("request:quell"),VillageAction.SuppressUprising,flight.From,flight.Letter!.Id);
+             Assert.Equal(ResultCode.NotAvailable,run.ConsultVillage(action,run.PlayerControl,run.Revision).Code);
+             if(suppress){
+                 void Military(NewMilitaryAction step){
+                     var world=run.DiagnosticSnapshot();
+                     var input=new NewMilitaryInput(new("request:quell-duty/"+step),step);
+                     if(step==NewMilitaryAction.Request)input=input with {AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract,FromLedger=NewGameMilitary.SourceForCurrentHouse(world),CycleContract=NewGameMilitary.CycleForCurrentHouse(world)};
+                     Good(run.DecideNewMilitary(input,run.PlayerControl,run.Revision));
+                 }
+                 void Read(){NewGameWorldTests.At(run,run.Seconds+2);foreach(var m in run.GetActorView(run.PlayerControl).Messages.Where(m=>m.KnownBody==null))Good(run.Open(run.PlayerControl,m.Id,run.Revision));}
+                 Military(NewMilitaryAction.Request);Read();Military(NewMilitaryAction.Accept);Read();Military(NewMilitaryAction.Pickup);
+                 if(Environment.GetEnvironmentVariable("HAKUTAI_VILLAGE_RESISTANCE_FIXTURE") is {Length:>0} path)
+                     File.WriteAllBytes(path,ContractJson.Write(run.DiagnosticSnapshot()));
+                 int before=run.CommunityEconomyView()!.Accounts.Workforce;
+                 Good(run.ConsultVillage(action,run.PlayerControl,run.Revision));
+                 Assert.Equal(before+10,run.CommunityEconomyView()!.Accounts.Workforce);
+                 Assert.Contains("不信",run.VillageView()!.Administration);
+                 Assert.Equal(ResultCode.AlreadyAccepted,run.ConsultVillage(action,run.PlayerControl,run.Revision).Code);
+             }else{
+                 Good(run.ManageCommunity(new(new("request:relieve-uprising"),flight.From,EconomyAction.RelieveVillage,200),run.PlayerControl,run.Revision));
+                 Assert.Equal(workers+10,run.CommunityEconomyView()!.Accounts.Workforce);
+                 Assert.Contains("蜂起を解き",run.VillageView()!.Administration);
+             }
+         }
+     }
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));
+ }
+ [Fact]
+ public void FlightRemovesWorkersDuringJourneyAndRestoresOnlyAtDestination()
+ {
+     var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));
+     NewGameWorldTests.At(s,67*86400-1);
+     var before=s.DiagnosticSnapshot().Communities!;
+     NewGameWorldTests.At(s,67*86400);
+     var traveling=s.DiagnosticSnapshot().Communities!;
+     var f=Assert.Single(traveling.Flights!);
+     Assert.Equal(10,f.People);Assert.NotNull(f.Letter);Assert.Null(f.Letter.Reply);
+     Assert.Contains("10人が村を離れました",s.VillageView()!.Administration);
+     Assert.Equal(before.Accounts.Sum(a=>a.Population)-10,traveling.Accounts.Sum(a=>a.Population));
+     Assert.Equal(before.Accounts.Single(a=>a.Site==f.From).Workforce-10,traveling.Accounts.Single(a=>a.Site==f.From).Workforce);
+     WorldSession RestoreFromDisk(WorldSession source){
+         source.SetPaused(true);var w=source.DiagnosticSnapshot();
+         var directory=Directory.CreateTempSubdirectory("hakutai-flight-");
+         try{
+             var store=new GenerationSaveStore(directory.FullName,w.Definitions);
+             Assert.True(store.Save(source,"journey",w.WorldId).Published);
+             var host=new WorldSessionHost(Start());Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("journey"),host.Current,host.Current.Revision));return host.Current;
+         }finally{directory.Delete(true);}
+     }
+     var fork=RestoreFromDisk(s);
+     foreach(var run in new[]{s,fork}){
+         NewGameWorldTests.At(run,f.Route[^1].EndAt);
+         var arrived=run.DiagnosticSnapshot().Communities!;
+         var answer=Assert.Single(arrived.Flights!).Letter!.Reply;
+         Assert.NotNull(answer);Assert.False(answer.Joined);
+         Assert.Equal(f.Route[^1].EndAt,answer.At);
+         Assert.Equal(before.Accounts.Sum(a=>a.Population),arrived.Accounts.Sum(a=>a.Population));
+         Assert.Equal(before.Accounts.Single(a=>a.Site==f.To).Workforce+10,arrived.Accounts.Single(a=>a.Site==f.To).Workforce);
+     }
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(fork.DiagnosticSnapshot()));
+     Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Gentle),s.Revision));
+     NewGameWorldTests.At(s,s.Seconds+7*86400);
+     Assert.Null(Assert.Single(s.DiagnosticSnapshot().Communities!.Flights!).Return);
+     var visit=TravelWorld.Move(s.DiagnosticSnapshot(),"request:bring-remission",NewGameWorld.Node(f.To.Value));
+     Good(s.Submit(visit,s.Revision));NewGameWorldTests.At(s,s.Seconds+visit.DeliverySeconds+visit.WorkSeconds+2);
+     var returning=Assert.Single(s.DiagnosticSnapshot().Communities!.Flights!).Return!;
+     Assert.NotNull(returning);
+     Assert.Contains("帰路につきました",s.VillageView()!.Administration);
+     var saved=RestoreFromDisk(s);
+     foreach(var run in new[]{s,saved}){
+         NewGameWorldTests.At(run,returning.Route[^1].EndAt);
+         var home=run.DiagnosticSnapshot().Communities!.Accounts;
+         foreach(var site in new[]{f.From,f.To})Assert.Equal(before.Accounts.Single(a=>a.Site==site).Population,home.Single(a=>a.Site==site).Population);
+     }
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(saved.DiagnosticSnapshot()));
+
+ }
+ [Fact]
+ public void UnansweredVillagePetitionStopsWorksUntilRiceIsActuallyDelivered()
+ {
+     var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));
+     NewGameWorldTests.At(s,37*86400);
+     Assert.Contains("人出を断って",s.VillageView()!.Reaction);
+     var work=new WorksInput(new("request:works-after-petition"),Site,WorksKind.Agriculture);
+     Assert.Equal(ResultCode.NotAvailable,s.StartPublicWork(work,s.Revision).Code);
+     var relief=new CommunityInput(new("request:relief-after-petition"),Site,EconomyAction.RelieveVillage,CommunityEconomy.Population);
+     Good(s.ManageCommunity(relief,s.PlayerControl,s.Revision));
+     var bytes=ContractJson.Write(s.DiagnosticSnapshot());
+     var resumed=new WorldSession(ContractJson.Read<ContractWorld>(bytes));
+     foreach(var run in new[]{s,resumed})Good(run.StartPublicWork(work,run.Revision));
+     Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(resumed.DiagnosticSnapshot()));
+ }
+ [Fact]
+ public void TaxPetitionKeepsItsOriginalDecreeAfterEffectiveRemission()
+ {
+     var s=Start();
+     var heavy=Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy);
+     Good(s.ManageLandSurvey(heavy,s.Revision));
+     CommunityNotice[] Papers()=>s.DiagnosticSnapshot().Communities!.Notices.Where(n=>n.Site==Site && n.Petition?.TaxDecree!=null).ToArray();
+     Assert.Empty(Papers());
+     NewGameWorldTests.At(s,7*86400);
+     var first=Assert.Single(Papers());Assert.Equal(heavy.Id,first.Petition!.TaxDecree);
+     Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Gentle),s.Revision));
+     NewGameWorldTests.At(s,40*86400);
+     Assert.Equal(LandTaxRate.Gentle,LandSurvey.EffectiveDecree(s.DiagnosticSnapshot(),Site,s.Seconds)!.Input.Rate);
+     Assert.Equal(first,Assert.Single(Papers()));
+     var bytes=ContractJson.Write(s.DiagnosticSnapshot());
+     Assert.Equal(bytes,ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot()));
+ }
  [Fact]public void MeasurementHasActualCostsLaborAndTimeButNoInstantKnowledge(){var s=Start();long cash=s.HouseTreasuryView()!.HouseCash,rice=s.CommunityEconomyView()!.Accounts.HouseRice;var i=Input(s,SurveyAction.Measurement);Good(s.ManageLandSurvey(i,s.Revision));Assert.Equal(cash-30,s.HouseTreasuryView()!.HouseCash);Assert.Equal(rice-100,s.CommunityEconomyView()!.Accounts.HouseRice);Assert.Equal(90,s.CommunityEconomyView()!.Accounts.Workforce);Assert.Empty(LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl));Assert.Equal(ResultCode.NotAvailable,s.ManageLandSurvey(Input(s,SurveyAction.ReadBook,i.Id),s.Revision).Code);Assert.Equal(ResultCode.NotAvailable,s.ManageLandSurvey(Input(s,SurveyAction.Statement),s.Revision).Code);Assert.Equal(ResultCode.AlreadyAccepted,s.ManageLandSurvey(i,s.Revision).Code);NewGameWorldTests.At(s,7*86400);Assert.Empty(LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl));Good(s.ManageLandSurvey(Input(s,SurveyAction.ReadBook,i.Id),s.Revision));var b=Assert.Single(LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl));Assert.True(b.Measured);Assert.Equal(20000,b.Basis);Assert.Equal(100,s.CommunityEconomyView()!.Accounts.Workforce);}
  [Fact]public void StatementRemainsAVillagerEstimateRatherThanAFraudJudgment(){var s=Start();var i=Input(s,SurveyAction.Statement);Good(s.ManageLandSurvey(i,s.Revision));NewGameWorldTests.At(s,2*86400);Good(s.ManageLandSurvey(Input(s,SurveyAction.ReadBook,i.Id),s.Revision));var b=LandSurvey.KnownBooks(s.DiagnosticSnapshot(),s.PlayerControl).Single();Assert.False(b.Measured);Assert.Contains("不正の証拠ではない",b.Description);Assert.InRange(b.Basis,18000,22000);}
  [Fact]public void TaxStartsAfterPostedEffectiveDateAndNeverRewritesPastAssessment(){var s=Start();Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Heavy),s.Revision));long rice=s.CommunityEconomyView()!.Accounts.HouseRice;Assert.Null(LandSurvey.EffectiveDecree(s.DiagnosticSnapshot(),Site,s.Seconds));NewGameWorldTests.At(s,7*86400);Assert.Equal(LandTaxRate.Heavy,LandSurvey.EffectiveDecree(s.DiagnosticSnapshot(),Site,s.Seconds)!.Input.Rate);Assert.Equal(rice,s.CommunityEconomyView()!.Accounts.HouseRice);long autumn=(new DateOnly(1560,10,1).DayNumber-new DateOnly(1560,1,1).DayNumber)*86400L;NewGameWorldTests.At(s,autumn);var a=s.CommunityEconomyView()!.Accounts;Assert.Equal(a.Harvested*40/100,a.Assessed);Good(s.ManageLandSurvey(Input(s,SurveyAction.PostRate,rate:LandTaxRate.Gentle),s.Revision));NewGameWorldTests.At(s,autumn+7*86400);Assert.Equal(a.Assessed,s.CommunityEconomyView()!.Accounts.Assessed);Good(s.ManageCommunity(new(new("request:survey-actual-levy"),Site,EconomyAction.CollectLevy,1),s.PlayerControl,s.Revision));Assert.Equal(a.HouseRice+1,s.CommunityEconomyView()!.Accounts.HouseRice);}

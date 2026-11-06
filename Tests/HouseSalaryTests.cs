@@ -10,6 +10,34 @@ public sealed class HouseSalaryTests
     static EntityId Agree(WorldSession s,long amount=20){var r=Act(s,SalaryAction.Propose,amount:amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);var q=s.DiagnosticSnapshot().Salary!.Quotes.Last();Assert.True(q.Agreed,q.Reply);r=Act(s,SalaryAction.Confirm,q.Id);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return q.Id;}
     static void Advance(WorldSession s,long at){while(s.Seconds<at){long old=s.Seconds;s.SetPaused(false);s.AdvanceTo(at,100000);Assert.True(s.Seconds>old);}}
     [Fact]
+    public void VillagePetitionRecordsCalledWorkersAndReachesLordSealed()
+    {
+        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],"person:shingen",42,
+            historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,economyPolicy:MilitaryEconomy.Policy));
+        var salary=Agree(s);Advance(s,First(s));var portion=Prepare(s,salary,20);
+        Assert.Equal(ResultCode.Accepted,Act(s,SalaryAction.Receive,salary,prep:portion).Code);
+        var w=s.DiagnosticSnapshot();var term=w.Salary!.Terms.Single();
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(new(new("request:levy-share"),CourtAction.GrantLevyShare,Worker,term.Owner,term.Site,Amount:10),s.Revision).Code);
+        w=s.DiagnosticSnapshot();w.CommitSequence++;
+        HouseholdCourt.Execute(w,new(new("request:village-call"),CourtAction.RaiseVillageSoldiers,Worker,term.Owner,term.Site,
+            Amount:10,When:w.ElapsedSeconds+86400),Worker);
+        var notice=Assert.Single(w.Communities!.Notices,n=>n.Petition!=null);
+        Assert.Equal(10,notice.Petition!.Workers);Assert.Equal(s.PlayerControl,notice.Recipient);
+        RegionalCampaign.Bind(w);s=new WorldSession(w);
+        Advance(s,s.Seconds+3);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(s.DiagnosticSnapshot())));
+        foreach(var session in new[]{s,restored}){
+            var message=Assert.Single(session.GetActorView(session.PlayerControl).Messages,m=>m.Id.Value==notice.Message);
+            Assert.Null(message.KnownBody);
+            Assert.Equal(ResultCode.Accepted,session.Open(session.PlayerControl,message.Id,session.Revision).Code);
+            var body=session.GetActorView(session.PlayerControl).Messages.Single(m=>m.Id==message.Id).KnownBody;
+            Assert.Equal(notice.Petition,ContractJson.Read<CommunityReport>(System.Text.Encoding.UTF8.GetBytes(body!)).Petition);
+        }
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
+    [Fact]
     public void PaidRetainerHiresOnlyAffordableSoldiersForReceivedMuster()
     {
         var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current), [], "person:shingen", 42,

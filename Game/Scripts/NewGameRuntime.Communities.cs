@@ -22,6 +22,17 @@ public partial class NewGameRuntime
     void ShowCommunityReport(EntityId id)
     {
         var known=Branch(Session.PlayerControl).Knowledge.Messages.Single(m=>m.Id==id);if(known.KnownBody==null)return;var p=ContractJson.Read<CommunityReport>(System.Text.Encoding.UTF8.GetBytes(known.KnownBody));var observed=DateOnly.Parse(Snapshot().EpochDate).AddDays(checked((int)(p.ObservedAt/86400))).ToString("yyyy年M月d日");var sender=new EntityId(Snapshot().Messaging.Messages.Single(m=>m.Id==id.Value).SenderId);
+        if(p.Petition?.Relief is {} claim){
+            string grounds=claim.FieldDamage>0?$"田畑の被害は{claim.FieldDamage}％です。":"";
+            if(claim.Unpaid>0)grounds+=$"約束の救済米はあと{claim.Unpaid}kg届いていません。";
+            PresentWork("村からの救済嘆願",$"村の食糧が{p.Need}kg不足しています。"+grounds,NewGameWorld.SiteName(p.Site.Value)+"で"+observed+"に確認した内容です。",sender,sender,"村の代表からの書状","救済を求める");
+            Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();return;
+        }
+        if(p.Petition is {} petition){
+            string request=petition.TaxDecree!=null?"重い年貢の布告が効いております。どうか年貢を軽くしてください。":NewGameWorld.SiteName(p.Site.Value)+"では働き手のうち"+petition.Workers+"人が従軍しています。村に働き手を戻していただきたい。";
+            PresentWork("村からの嘆願",request,NewGameWorld.SiteName(p.Site.Value)+"で"+observed+"に村の代表が訴え、現地の取次が届けた書状です。",sender,sender,"村の代表からの書状",petition.TaxDecree!=null?"年貢の軽減を求める":"動員の軽減を求める");
+            Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();return;
+        }
         PresentWork("村の食糧不足の知らせ",NewGameWorld.SiteName(p.Site.Value)+"では、観測時に食糧が"+p.Need+"kg不足していました。",observed+"時点の報告です。現在の残量や他地域の帳簿を示すものではありません。",sender,sender,"現地から届いた書状","食糧不足の報告");Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
     }
 }

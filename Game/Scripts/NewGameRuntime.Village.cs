@@ -17,6 +17,10 @@ public partial class NewGameRuntime
         void Run(VillageAction action,EntityId? proposal=null,long amount=0){var r=Session.ConsultVillage(new(new("request:village-ui/"+shown),action,v.Site,proposal,amount),Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowVillage();}
         var amount=new SpinBox{MinValue=1,MaxValue=3000,Step=1,Value=200,Suffix=" kg"};box.AddChild(amount);
         void Button(string text,Action action,bool disabled=false){var b=new Button{Text=text,Disabled=disabled};box.AddChild(b);b.Pressed+=action;}
+        foreach(var f in Snapshot().Communities?.Flights??[]){
+            if(f.From!=v.Site || f.Proclamation is not {Mustered:>0,Dispersed:null} || !v.CanPromise)continue;
+            Button($"現地の兵で蜂起（{f.Proclamation.Mustered}人）を鎮圧する",()=>Run(VillageAction.SuppressUprising,f.Letter!.Id));
+        }
         Button("私：この量の米で救済を相談する",()=>Run(VillageAction.ProposeRelief,amount:(long)amount.Value),!v.CanPromise);
         Button("私：水利工事への協力を相談する（200kg・20人）",()=>Run(VillageAction.ProposeWater,amount:200),!v.CanPromise);
         var q=v.Proposals.LastOrDefault();if(q!=null){box.AddChild(new Label{Text=(q.Term%2==0?"村役人":"水利世話人")+"の返答（相談時点）：\n"+q.Reply,AutowrapMode=TextServer.AutowrapMode.WordSmart});Button("私：この返答の条件で約束する",()=>Run(VillageAction.Confirm,q.Id),!q.Agreed||Session.Seconds>q.At+86400||v.Term!=q.Term||v.Promises.Any(p=>p.Id==q.Id));}
