@@ -41,10 +41,13 @@ public partial class NewGameRuntime
                 var input = new SiegeInput(new("request:siege-ui/" + rev + "/" + action), action, site, begin?.Input.Id, section);
                 Choice("siege-" + action, label, () => Session.ManageSiege(input, rev));
             }
-            if (begin == null) Order(SiegeAction.Begin, "部隊を展開して城を囲む");
+            if (begin == null && CastleSiege.OccupierAt(world,site,world.ElapsedSeconds,rev+1)==duty.Terms.Owner)
+                SocialText(box,"本丸は自軍が占有中です。");
+            else if (begin == null) Order(SiegeAction.Begin, "部隊を展開して城を囲む");
             else if (rows.LastOrDefault() is {} last)
             {
-                SocialText(box, last.Outcome);
+                SocialText(box, last.Input.Action == SiegeAction.Assault && last.Input.Section is {} sectionUnderAttack
+                    ? $"{CastleWorks.Name(sectionUnderAttack)}を強襲中。あと{Math.Max(0,(last.Due ?? world.ElapsedSeconds)-world.ElapsedSeconds)}秒" : last.Outcome);
                 if (last.Input.Action != SiegeAction.Assault)
                 {
                     if (rows.Any(q => q.Outcome == "城兵の助命と退去に合意"))
@@ -80,6 +83,6 @@ public partial class NewGameRuntime
                 Choice("fleet-" + ship.Id.Value.Replace(':','-') + "-" + target.Value.Replace(':','-'), text, () => Session.ManageSiegeFleet(input, rev));
             }
         }
-        if (worksReviewButtons.Count == 0) SocialText(box, "攻城には現地の部隊、船の派遣には出港地で保守した船が必要です。");
+        if (worksReviewButtons.Count == 0 && army?.Assembly == null) SocialText(box, "攻城には現地の部隊、船の派遣には出港地で保守した船が必要です。");
     }
 }

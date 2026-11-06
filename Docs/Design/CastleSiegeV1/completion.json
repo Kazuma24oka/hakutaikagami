@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "現地の指揮下の実部隊で攻囲を開始し、外堀・門・二の丸・本丸を共通時計と区画防備に従って順に攻める",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleSiege.cs",
+        "Core/Contracts/CastleSiege.Fleet.cs",
+        "Tests/CastleSiegeTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleSiege.cs",
+        "Game/Scripts/CastleSiegeCheck.cs",
+        "Docs/Design/CastleSiegeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "攻め手・守り手の兵糧の実消費と、救援・補給の実到着を区別し、遠方の在庫を表示しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleSiege.cs",
+        "Core/Contracts/CastleSiege.Fleet.cs",
+        "Tests/CastleSiegeTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleSiege.cs",
+        "Game/Scripts/CastleSiegeCheck.cs",
+        "Docs/Design/CastleSiegeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "水路は実在の軍船の配置と維持で封鎖し、水路経由の実納入と封鎖中の待機・解除を区別する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleSiege.cs",
+        "Core/Contracts/CastleSiege.Fleet.cs",
+        "Tests/CastleSiegeTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleSiege.cs",
+        "Game/Scripts/CastleSiegeCheck.cs",
+        "Docs/Design/CastleSiegeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "開城の条件と現地の同意・実引渡しを分け、支配・私財・家臣・生命を一括移転しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleSiege.cs",
+        "Core/Contracts/CastleSiege.Fleet.cs",
+        "Tests/CastleSiegeTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleSiege.cs",
+        "Game/Scripts/CastleSiegeCheck.cs",
+        "Docs/Design/CastleSiegeV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面・兵糧と重複・救援競合・途中保存復旧・旧保存を代表例で検証する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleSiege.cs",
+        "Core/Contracts/CastleSiege.Fleet.cs",
+        "Tests/CastleSiegeTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleSiege.cs",
+        "Game/Scripts/CastleSiegeCheck.cs",
+        "Docs/Design/CastleSiegeV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "強襲時間・損耗量と軍船の滞在期間は試作値。水攻め・内応開門・長期包囲の日々の守備糧消費・退城後の個々人の行き先は未実装。全国長期性能・全件テストは未実施。"
+}
