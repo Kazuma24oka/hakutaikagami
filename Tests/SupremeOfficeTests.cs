@@ -15,6 +15,13 @@ public sealed class SupremeOfficeTests
         var scenario=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
         var game=new WorldSession(NewGameWorld.Create(scenario,[sponsor],sponsor.Id,historicalCatalog:HistoricalStartCatalog.Current,
             workPolicy:WorkFollowup.Policy,inspectionPolicy:LocalInspectionFindings.Policy));
+        var genealogy=new CourtInput(new("request:pedigree"),CourtAction.AskPedigree,CentralCourtCatalog.CourtBroker,house,site);
+        var started=game.ManageCourt(genealogy,game.Revision);Assert.True(started.Code==ResultCode.Accepted,started.VisibleReason);
+        NewGameWorldTests.At(game,game.Seconds+1);
+        var researched=game.DiagnosticSnapshot();
+        Assert.Single(researched.Court!.Events,e=>e.Input.Action==CourtAction.ReportMissingPedigree && e.Input.Reference==genealogy.Id);
+        Assert.False(CourtPedigree.Qualified(researched,game.PlayerControl,game.Seconds,game.Revision));
+        Assert.True(CourtPedigree.Qualified(researched,CentralCourtCatalog.Shogun,game.Seconds,game.Revision));
         var candidate=CentralCourtCatalog.ShogunBroker;
         var offer=new CourtInput(new("request:sponsor"),CourtAction.OfferShogunSupport,candidate,house,site);
         var result=game.ManageCourt(offer,game.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
