@@ -68,7 +68,7 @@ public sealed class CentralMediationTests
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
 
-    [Theory][InlineData(false,false)][InlineData(true,false)][InlineData(true,true)]
+    [Theory][InlineData(false,false)][InlineData(true,false)][InlineData(true,true)][InlineData(false,true)]
     public void PetitionRequiresMeetingAndBrokerAnswersOnceAfterRestore(bool gift,bool currentEdition)
     {
         var broker=CentralCourtCatalog.CourtBroker;var site=CentralCourtCatalog.Kyoto;var owner=new EntityId("org:court-test");
@@ -87,7 +87,9 @@ public sealed class CentralMediationTests
             var offered=s.ManageSocial(new(new("request:court-gift"),SocialWorldAction.DispatchGift,broker,Amount:100),s.Revision);
             Assert.True(offered.Code==ResultCode.Accepted,offered.VisibleReason);NewGameWorldTests.At(s,s.Seconds+3);
         }
+        var expectedBalance=NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl)-(currentEdition?CentralRank.Offering:0);
         var petition=s.ManageCourt(ask,s.Revision);Assert.True(petition.Code==ResultCode.Accepted,petition.VisibleReason);
+        Assert.Equal(expectedBalance,NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl));
         var saved=s.DiagnosticSnapshot();Assert.DoesNotContain(saved.Court!.Events,e=>e.Input.Reference==ask.Id);
         var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(saved)));
         foreach(var run in new[]{s,restored}){
@@ -96,6 +98,7 @@ public sealed class CentralMediationTests
             Assert.Equal(gift?CourtAction.AcceptCourtIntroduction:CourtAction.DeclineCourtIntroduction,reply.Input.Action);
             Assert.Equal(broker,reply.Actor);Assert.Equal(run.PlayerControl,reply.Input.Person);
             Assert.Equal(ResultCode.AlreadyAccepted,run.ManageCourt(ask,run.Revision).Code);
+            Assert.Equal(expectedBalance,NewGameWork.Balance(run.DiagnosticSnapshot(),run.PlayerControl));
         }
         if(gift){
             foreach(var run in new[]{s,restored}){
