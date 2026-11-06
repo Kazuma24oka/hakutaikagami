@@ -5,7 +5,15 @@ public static class CentralCourtCatalog
 {
     public const string Id="historical-start-central-v4";
     public const string ShogunateEdition="historical-start-central-v5";
-    public static bool HasCourt(string? edition)=>edition is Id or ShogunateEdition;
+    public const string TempleEdition="historical-start-central-v6";
+    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition;
+    public static bool HasCourt(string? edition)=>edition==Id || HasShogunate(edition);
+    public static readonly EntityId TempleBroker=new("person:temple-representative/site/sakai");
+    internal static SetupScenario TempleScenario(){
+        var prior=ShogunateScenario();
+        var monk=new SetupPerson(TempleBroker.Value,"堺の寺社代表（架空）",TempleMilitary.Site.Value,null,null,false,false);
+        var next=prior with{People=[..prior.People,monk]};NewGameSetup.Validate(next);return next;
+    }
     public static readonly EntityId Shogun=new("person:ashikaga-yoshiteru");
     public static readonly EntityId ShogunBroker=new("person:hosokawa-fujitaka");
     public static readonly EntityId CourtBroker=new("person:yamashina-tokitsugu");

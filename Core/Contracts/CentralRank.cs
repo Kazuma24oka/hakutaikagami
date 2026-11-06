@@ -6,7 +6,7 @@ public static class CentralRank
 {
     public const string ReplyKind="central-rank-written-decision";
     public const long Offering=60;
-    static long ReviewDue(ContractWorld w,long at) => w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition
+    static long ReviewDue(ContractWorld w,long at) => CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)
         ? at+(long)(WorldCalendar.At(w.EpochDate,at).AddMonths(2)-WorldCalendar.At(w.EpochDate,at)).TotalSeconds : at+86400;
     public const string RankName="従五位下";
     internal static bool Handles(CourtAction action)=>action is CourtAction.FileRankPetition or CourtAction.IssueCourtRank or CourtAction.RejectCourtRank;
@@ -23,7 +23,7 @@ public static class CentralRank
     static CourtAction Resolve(ContractWorld w,CourtEvent petition)
     {
         // 代表経路の仮資格。申請時点の当主としての身分を審議し、軍権や所領は移転しない。
-        return (w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition
+        return (CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)
             ? RankLeave.Eligible(w,petition.Input.Person,petition.Input.Owner,petition.At,petition.Revision)
             : HouseSuccession.Head(w,petition.Input.Owner,petition.At,petition.Revision-1)==petition.Input.Person)?
             CourtAction.IssueCourtRank:CourtAction.RejectCourtRank;
@@ -37,7 +37,7 @@ public static class CentralRank
     internal static IEnumerable<long> FilingDates(ContractWorld w) => HouseholdCourt.Events(w)
         .Where(e=>e.Input.Action==CourtAction.AcceptCourtIntroduction).Select(e=>e.At+1);
     internal static long Offerings(ContractWorld w,EntityId wallet,long at,long rev) =>
-        w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition?0:
+        !CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)?0:
         HouseholdCourt.Events(w).LongCount(e=>e.Input.Action==CourtAction.AskCourtIntroduction &&
             NewGameWork.Wallet(e.Actor)==wallet && (e.At<at || e.At==at && e.Revision<rev))*Offering;
     internal static void Process(ContractWorld w)

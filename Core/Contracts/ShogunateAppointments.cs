@@ -37,7 +37,7 @@ public static class ShogunateAppointments
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition || place!=Kyoto || HouseTerritoryScale.Province(i.Site)==null ||
+        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || place!=Kyoto || HouseTerritoryScale.Province(i.Site)==null ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で対象国と申請本人を確認してください");
         var prior=HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action) && e.At<=at && e.Revision<rev).ToArray();
@@ -68,7 +68,7 @@ public static class ShogunateAppointments
     }
     public static IEnumerable<CourtInput> AvailableAnswers(ContractWorld w,EntityId actor)
     {
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition || actor!=w.PlayerControl ||
+        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || actor!=w.PlayerControl ||
             (actor!=Shogun && actor!=Broker))yield break;
         bool ruling=actor==Shogun;
         var wanted=ruling?CourtAction.RecommendShugo:CourtAction.AskShugo;
@@ -85,7 +85,7 @@ public static class ShogunateAppointments
     }
     internal static void Process(ContractWorld w)
     {
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition)return;
+        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog))return;
         var rows=HouseholdCourt.Events(w);
         foreach(var e in rows.Where(e=>e.Input.Action is CourtAction.AskShugo or CourtAction.RecommendShugo &&
             e.At<w.ElapsedSeconds && !rows.Any(r=>r.Input.Reference==e.Input.Id && Handles(r.Input.Action)))){

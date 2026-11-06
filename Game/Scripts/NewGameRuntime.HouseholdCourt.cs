@@ -16,7 +16,7 @@ public partial class NewGameRuntime
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
   var section=new OptionButton();foreach(var label in new[]{"登用：条件と本人の引受","家中職：任命と執行の範囲","評定：届いた上申を審査","家中の様子","募兵","中央への取次"})section.AddItem(label);section.Select(courtCategory);box.AddChild(section);section.ItemSelected+=i=>{courtCategory=(int)i;ShowHouseholdCourt();};
   if(courtCategory==5){
-      if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition){
+      if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
           if(CentralMediation.ApplicantHouse(w,actor) is {} petitionHouse && HouseSuccession.Head(w,petitionHouse) is {} lord &&
               lord!=actor && SocialWorld.Site(w,lord)==site)
               Button("ask-rank-leave","主君に叙位奏請の許可を願う",()=>Run(new(Nonce("ask-rank-leave"),CourtAction.AskRankLeave,lord,petitionHouse,site.Value)));
@@ -37,17 +37,7 @@ public partial class NewGameRuntime
           Button(vote.Id.Value,text,()=>Run(vote));
       }
       if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
-      if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
-          SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
-      }
-      if(w.NewGame!.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition){
-          foreach(var answer in ShogunateAppointments.AvailableAnswers(w,actor)){
-              var subject=MeritRewards.DisplayName(w,actor,answer.Person)+"の"+HouseTerritoryScale.Province(answer.Site)+"守護補任";
-              var text=answer.Action switch{CourtAction.RecommendShugo=>"を将軍に取り次ぐ",CourtAction.DeclineShugo=>"の取次を断る",
-                  CourtAction.AppointShugo=>"を認める",_=>"を退ける"};
-              Button(answer.Id.Value,subject+text,()=>Run(answer));
-          }
-          if(TruceNegotiations.Enabled(w)){
+          if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && TruceNegotiations.Enabled(w) && (site==CentralCourtCatalog.Kyoto || site==TempleMilitary.Site)){
               foreach(var decision in PeaceMediation.Answers(w,true))
                   Button(decision.Id.Value,decision.Action==CourtAction.SendPeaceProposal?"両家に仲裁案を送る":"仲裁の取次を断る",()=>Run(decision));
               if(CentralMediation.ApplicantHouse(w,actor) is {} party && HouseSuccession.Head(w,party)==actor){
@@ -55,13 +45,23 @@ public partial class NewGameRuntime
                   if(others.Length>0){
                       var houses=new OptionButton();foreach(var other in others)houses.AddItem(other.Name);box.AddChild(houses);
                       var duration=new SpinBox{MinValue=1,MaxValue=90,Value=30,Suffix="日間の不戦"};box.AddChild(duration);
-                      foreach(var contact in new[]{CentralCourtCatalog.CourtBroker,CentralCourtCatalog.ShogunBroker}){
+                      foreach(var contact in PeaceMediation.Brokers(w).Where(p=>SocialWorld.Site(w,p)==site)){
                           string key="peace/"+contact.Value;
                           Button(key,MeritRewards.DisplayName(w,actor,contact)+"に和睦の取次を頼む",()=>Run(new CourtInput(Nonce(key),CourtAction.AskPeaceMediation,
                               contact,party,site.Value,Amount:(long)duration.Value){OtherHouse=new(others[houses.Selected].Id)}));
                       }
                   }
               }
+          }
+      if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
+          SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
+      }
+      if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
+          foreach(var answer in ShogunateAppointments.AvailableAnswers(w,actor)){
+              var subject=MeritRewards.DisplayName(w,actor,answer.Person)+"の"+HouseTerritoryScale.Province(answer.Site)+"守護補任";
+              var text=answer.Action switch{CourtAction.RecommendShugo=>"を将軍に取り次ぐ",CourtAction.DeclineShugo=>"の取次を断る",
+                  CourtAction.AppointShugo=>"を認める",_=>"を退ける"};
+              Button(answer.Id.Value,subject+text,()=>Run(answer));
           }
           foreach(var office in ShogunateAppointments.KnownOffices(w,actor))SocialText(box,"幕府の補任状　"+office);
           if(CentralMediation.ApplicantHouse(w,actor) is {} applicantOwner){
@@ -82,7 +82,7 @@ public partial class NewGameRuntime
       if(original!=null)SocialText(box,reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"山科言継が奏請の取次を引き受けました。",CourtAction.DeclineCourtIntroduction=>"山科言継は今回の取次を辞退しました。",_=>"山科言継の返事を待っています。"});
       if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction) &&
           CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
-          Button("court-introduction",w.NewGame.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition?"献金60文を添えて山科言継に奏請を頼む":"山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
+          Button("court-introduction",CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)?"献金60文を添えて山科言継に奏請を頼む":"山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
               CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value)));
       return;
   }

@@ -96,11 +96,11 @@ public sealed class CentralMediationTests
         }
         Assert.Equal(ContractJson.Write(session.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
-    [Theory][InlineData(true)][InlineData(false)]
-    public void BrokerSendsSamePeaceTermsToTwoDistinctHousesAfterRestore(bool agree)
+    [Theory][InlineData(true,false)][InlineData(false,false)][InlineData(true,true)][InlineData(false,true)]
+    public void BrokerSendsSamePeaceTermsToTwoDistinctHousesAfterRestore(bool agree,bool temple)
     {
-        var site=CentralCourtCatalog.Kyoto;
-        var broker=CentralCourtCatalog.CourtBroker;
+        var site=temple?TempleMilitary.Site:CentralCourtCatalog.Kyoto;
+        var broker=temple?CentralCourtCatalog.TempleBroker:CentralCourtCatalog.CourtBroker;
         var owner=new EntityId("org:peace-test");
         var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
         var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);

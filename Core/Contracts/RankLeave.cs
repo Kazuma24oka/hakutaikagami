@@ -15,7 +15,7 @@ public static class RankLeave
         bool asking=i.Action==CourtAction.AskRankLeave;
         var lord=asking?i.Person:actor;
         var applicant=asking?actor:i.Person;
-        if(w.NewGame?.HistoricalCatalog!=CentralCourtCatalog.ShogunateEdition || i.Site!=site || lord==applicant ||
+        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || i.Site!=site || lord==applicant ||
             HouseSuccession.Head(w,i.Owner,at,rev-1)!=lord || DefectionPacts.HouseAt(w,applicant,at,rev-1)!=i.Owner ||
             new[]{lord,applicant}.Any(p=>Assassination.DeadAt(w,p,at,rev) || !TransportWork.At(w,p,site,at,rev,true)))
             throw new InvalidDataException("家臣と現在の当主が同じ場所で相談してください");

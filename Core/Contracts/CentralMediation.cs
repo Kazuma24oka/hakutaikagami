@@ -23,9 +23,9 @@ public static class CentralMediation
             throw new InvalidDataException("京で取次本人と面会して相談してください");
         var rows=Earlier(w,at,rev).ToArray();
         if(i.Action==CourtAction.AskCourtIntroduction){
-            if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition && TransportWork.WalletBefore(w,actor,at,rev)<CentralRank.Offering)
+            if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && TransportWork.WalletBefore(w,actor,at,rev)<CentralRank.Offering)
                 throw new InvalidDataException("奏請に添える本人の献金60文が必要です");
-            if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.ShogunateEdition && !RankLeave.Eligible(w,actor,i.Owner,at,rev))
+            if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && !RankLeave.Eligible(w,actor,i.Owner,at,rev))
                 throw new InvalidDataException("家臣の奏請には現在の当主の許可が必要です");
             if(actor==broker || i.Person!=broker || i.Reference!=null || DefectionPacts.HouseAt(w,actor,at,rev-1)!=i.Owner ||
                !SocialWorld.Ledger(w).Any(e=>e.Input.Action==SocialWorldAction.Visit && e.Actor==actor &&
