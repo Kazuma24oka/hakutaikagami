@@ -5,7 +5,7 @@ public sealed class AdultMarriageTests
 {
     static readonly EntityId Player=new("created:test"),Other=new("created:other"),Third=new("created:third");
     static RegisteredOfficer Officer(string id,bool declared=true)=>NewGameWorldTests.Officer(id) with{InitialMaritalStatus=declared?InitialMaritalStatus.Unmarried:null};
-    static WorldSession Start(ulong seed=42,bool on=true,bool declared=true,bool lord=false,bool minor=false,bool absent=false,int? comingOfAge=null){var a=Officer(Player.Value) with{Role=lord?StartTemplate.Daimyo:StartTemplate.Ronin,FactionName=lord?"鏡山家":null};var b=Officer(Other.Value,declared) with{BirthYear=minor?1550:1520,Site=absent?"site:kofu":"site:castle"};var setup=NewGameWorldTests.Setup([a,b,Officer(Third.Value)],lord?[new(a.Id,"org:created-test",[a.Site],false)]:[]);return new(NewGameWorld.Create(setup.World,setup.Registered,a.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:on?AdultMarriage.Policy:null,comingOfAge:comingOfAge));}
+    static WorldSession Start(ulong seed=42,bool on=true,bool declared=true,bool lord=false,bool minor=false,bool absent=false,int? comingOfAge=null,bool grandparents=false){var a=Officer(Player.Value) with{Role=lord?StartTemplate.Daimyo:StartTemplate.Ronin,FactionName=lord?"鏡山家":null};var b=Officer(Other.Value,declared) with{BirthYear=minor?1550:1520,Site=absent?"site:kofu":"site:castle"};var third=Officer(Third.Value);if(grandparents){a=a with{BirthParents=[third.Id]};third=third with{BirthYear=1490,Site="site:kyoto"};}var setup=NewGameWorldTests.Setup([a,b,third],lord?[new(a.Id,"org:created-test",[a.Site],false)]:[]);return new(NewGameWorld.Create(setup.World,setup.Registered,a.Id,seed,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,socialPolicy:CharacterRelations.Policy,adoptionPolicy:AdultAdoption.Policy,marriagePolicy:on?AdultMarriage.Policy:null,comingOfAge:comingOfAge));}
     static readonly Lazy<ulong> Yes=new(()=>Find(true)),No=new(()=>Find(false));
     static ulong Find(bool answer){for(ulong n=1;n<100;n++){var w=Start(n).DiagnosticSnapshot();if((CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(w,Other,SocialTrait.Affection)>=80)==answer)return n;}throw new Exception("Missing branch seed");}
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
@@ -15,7 +15,7 @@ public sealed class AdultMarriageTests
     static void Implement(WorldSession s){var t=s.DiagnosticSnapshot().Marriage!.Entries.First().Terms!;foreach(var h in t.Houses)Assert.Equal(ResultCode.Accepted,Act(s,MarriageAction.ApproveHouse,t.Id,h.Owner).Code);Assert.Equal(ResultCode.Accepted,Act(s,MarriageAction.Implement,t.Id).Code);}
     [Fact]public void ChildIsBornOnceFromImplementedMarriageAndKeepsBothParentsOnLoad()
     {
-        var s=Start(Yes.Value,comingOfAge:15);
+        var s=Start(Yes.Value,comingOfAge:15,grandparents:true);
         var original=Propose(s);At(s,1);Implement(s);
         var w=s.DiagnosticSnapshot();
         var marriage=w.Marriage!.Entries.Single(e=>e.Input.Action==MarriageAction.Implement);
@@ -34,11 +34,19 @@ public sealed class AdultMarriageTests
             var end=branch.DiagnosticSnapshot();
             var child=Assert.Single(end.Births!);
             Assert.Equal(original,child.Marriage);Assert.Equal(Player,child.FirstParent);Assert.Equal(Other,child.SecondParent);
+            var notice=Assert.Single(end.Messaging.Messages,m=>m.Kind==FamilyNotice.BirthKind);
+            Assert.Equal(Third.Value,notice.RecipientId);
+            Assert.Equal(child.Child.Value,notice.CorrelationId);
+            Assert.Contains(new EntityId(notice.Id),end.SealedMessages);
+            Assert.True(end.Messaging.Attempts.Single(a=>a.MessageId==notice.Id).DueAt>due);
             Assert.Equal(due,child.At);
             Assert.Equal(LifeState.Minor,end.Characters.Single(c=>c.Id==child.Child).Life);
             Assert.Equal(child.Site,end.Locations.Single(l=>l.Actor==child.Child).Site);
             Assert.Equal(ContractJson.Write(end),ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(end))).DiagnosticSnapshot()));
         }
+        Assert.Equal(ContractJson.Write(left.DiagnosticSnapshot()),ContractJson.Write(right.DiagnosticSnapshot()));
+        var pending=left.DiagnosticSnapshot().Messaging.Attempts.Single();
+        At(left,pending.DueAt);At(right,pending.DueAt);
         Assert.Equal(ContractJson.Write(left.DiagnosticSnapshot()),ContractJson.Write(right.DiagnosticSnapshot()));
         var grown=left.DiagnosticSnapshot();
         var birth=Assert.Single(grown.Births!);

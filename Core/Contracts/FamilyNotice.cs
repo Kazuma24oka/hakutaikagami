@@ -46,6 +46,30 @@ public static class FamilyNotice
         (birth.FirstParent==observer || birth.SecondParent==observer) &&
         TransportWork.At(w,observer,birth.Site,birth.At,birth.Revision,true);
 
+    public const string BirthKind="family-birth-notice";
+
+    internal static void AnnounceBirth(ContractWorld w,FamilyBirthRecord birth)
+    {
+        var child=FamilyBirth.Person(w,birth);
+        var people=FamilyBirth.People(w).Where(p=>p.Id!=child.Id &&
+            !Assassination.DeadAt(w,new(p.Id),birth.At,birth.Revision)).ToArray();
+        var parents=people.Where(p=>child.BirthParents!.Contains(p.Id)).ToArray();
+        bool Present(SetupPerson p)=>TransportWork.At(w,new(p.Id),birth.Site,birth.At,birth.Revision,true);
+        var witness=people.Where(p=>Present(p) && w.Characters.Any(c=>c.Id.Value==p.Id && c.Life==LifeState.Adult))
+            .OrderByDescending(p=>parents.Contains(p)).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
+        if(witness==null)return;
+        foreach(var relative in people.Where(p=>!Present(p) &&
+            (parents.Contains(p) || parents.Any(parent=>(parent.BirthParents??[]).Contains(p.Id)))))
+        {
+            var id=InformationSchemes.Id("family-birth",child.Id+"/"+relative.Id);
+            var letter=new MessageEnvelope(id.Value,child.Id,BirthKind,witness.Id,relative.Id,
+                child.Name+"が生まれました。",relative.Site,birth.At);
+            MessageFlow.Send(w.Messaging,letter,birth.At,1);
+            w.SealedMessages=[..w.SealedMessages,id];
+        }
+        RegionalCampaign.Bind(w);
+    }
+
     internal static void Validate(ContractWorld w)
     {
         var actual=w.Messaging.Messages.Where(m=>m.Kind==Kind).OrderBy(m=>m.Id,StringComparer.Ordinal).ToArray();
@@ -100,6 +124,6 @@ public static class FamilyNotice
         RegionalCampaign.Bind(w);
     }
 
-    internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind is Kind or MaturityKind
+    internal static string? Address(ContractWorld w,MessageEnvelope message)=>message.Kind is Kind or MaturityKind or BirthKind
         ? NewGameWorld.Node(FamilyBirth.People(w).Single(p=>p.Id==message.RecipientId).Site) : null;
 }

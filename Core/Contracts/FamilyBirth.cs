@@ -71,6 +71,7 @@ public static class FamilyBirth
         w.Characters=[..w.Characters,new(child,LifeState.Minor,Appearance(w,birth),w.CommitSequence)];
         w.Locations=[..w.Locations,new(child,LocationKind.AtSite,birth.Site,null,0,0,null,null,null,null,w.CommitSequence)];
         w.Definitions=w.Definitions with{Characters=[..w.Definitions.Characters,new(child,Person(w,birth).Name)]};
+        FamilyNotice.AnnounceBirth(w,birth);
     }
 
     public static SetupPerson Person(ContractWorld world,FamilyBirthRecord birth)

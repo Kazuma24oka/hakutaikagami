@@ -12,7 +12,7 @@ public partial class NewGameRuntime
         var w=Snapshot();var actor=w.PlayerControl;
         bool visible=false;
         var letters=w.Messaging.Messages.Where(m=>m.RecipientId==actor.Value &&
-            m.Kind is FamilyNotice.Kind or FamilyNotice.MaturityKind).ToArray();
+            m.Kind is FamilyNotice.Kind or FamilyNotice.MaturityKind or FamilyNotice.BirthKind).ToArray();
         foreach(var letter in letters)
         {
             if(MessageFlow.Knows(w.Messaging,letter.Id,actor.Value))
