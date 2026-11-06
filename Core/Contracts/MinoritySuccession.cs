@@ -22,6 +22,7 @@ public static class MinoritySuccession
             var p=w.HeirNominations!.Single(p=>p.Revision==m.Nomination);
             if(HouseSuccession.Head(w,p.House)!=p.Head || SocialWorld.Site(w,p.Heir)!=m.Site ||
                 w.Memberships.Any(r=>r.Subject==p.Heir && r.Target!=p.House && r.From<=w.ElapsedSeconds && w.ElapsedSeconds<r.Until) ||
+                Guardianship.LocalPetitioners(w).Any(c=>c.Opening.House==p.House && c.Opening.Deceased==p.Head) ||
                 (w.HouseClaims??[]).Any(c=>c.House==p.House && c.Deceased==p.Head && c.Claimant!=p.Heir))continue;
             w.MinorityAccessions=[..w.MinorityAccessions??[],new(p.House,p.Head,p.Heir,m.Site,m.Revision,w.ElapsedSeconds,w.CommitSequence)];
         }

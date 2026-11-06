@@ -20,6 +20,28 @@ public static class Guardianship
                 yield return new(new(house.Id),deceased,new(house.Home),at,revision);
     }
 
+    internal static IEnumerable<(SuccessionOpening Opening,EntityId Claimant)> LocalPetitioners(ContractWorld w)
+    {
+        if(!CharacterRelations.Enabled(w))yield break;
+        foreach(var opening in Openings(w))
+        {
+            if(HouseSuccession.Head(w,opening.House)!=opening.Deceased)continue;
+            var children=FamilyConsentRules.ParentLinks(w,opening.At,opening.Revision)
+                .Where(edge=>edge.Parent==opening.Deceased).Select(edge=>edge.Child).Distinct().OrderBy(id=>id.Value,StringComparer.Ordinal);
+            foreach(var child in children)
+            {
+                if(child==w.PlayerControl || w.Characters.Single(c=>c.Id==child).Life!=LifeState.Adult ||
+                    SocialWorld.Site(w,child)!=opening.Home ||
+                    (w.HouseClaims??[]).Any(c=>c.House==opening.House && c.Deceased==opening.Deceased && c.Claimant==child))continue;
+                var known=Known(w,child).SingleOrDefault(k=>k.Opening==opening);
+                if(known==null)continue;
+                int ambition=CharacterRelations.DiagnosticTrait(w,child,SocialTrait.Ambition);
+                int caution=CharacterRelations.DiagnosticTrait(w,child,SocialTrait.Caution);
+                if(known.KnownNomination?.Heir==child || ambition>=caution)yield return(opening,child);
+            }
+        }
+    }
+
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
         MinorGuardians.Validate(w,prior);
@@ -98,6 +120,12 @@ public static class Guardianship
 
 public sealed partial class WorldSession
 {
+    private void GatherFamilyClaims()
+    {
+        foreach(var (opening,claimant) in Guardianship.LocalPetitioners(state).ToArray())
+            Change(w=>w.HouseClaims=[..w.HouseClaims??[],new(opening.House,opening.Deceased,claimant,w.ElapsedSeconds,w.CommitSequence)]);
+    }
+
     public CommandResult ConsultHouseMember(long claimRevision,EntityId speaker,long shown)
     {
         lock(gate)

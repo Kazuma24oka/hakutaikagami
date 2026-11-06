@@ -4,6 +4,32 @@ namespace HakutaiKagami.Tests;
 
 public class GuardianshipTests
 {
+    [Fact]
+    public void AdultSiblingsMakeTheirOwnClaimsWithoutGivingThePlayerRemoteKnowledge()
+    {
+        var elder=NewGameWorldTests.Officer("created:elder",StartTemplate.Daimyo) with{BirthYear=1430};
+        var children=Enumerable.Range(1,8).Select(i=>NewGameWorldTests.Officer("created:sibling-"+i) with{BirthParents=[elder.Id]}).ToArray();
+        var setup=NewGameWorldTests.Setup([elder,..children],[new(elder.Id,"org:elder",[elder.Site],false)]);
+        var world=NewGameWorld.Create(setup.World,setup.Registered,"person:shingen",0,inspectionPolicy:LocalInspectionFindings.Policy,
+            workPolicy:WorkFollowup.Policy,companionPolicy:PersonalCompanions.Policy,developmentPolicy:CharacterDevelopment.Policy,
+            socialPolicy:CharacterRelations.Policy,comingOfAge:15);
+        const long death=12830400;
+        world.ElapsedSeconds=death-1;
+        var s=new WorldSession(world);NewGameWorldTests.At(s,death);
+        var after=s.DiagnosticSnapshot();
+        var claims=after.HouseClaims??[];
+        Assert.True(claims.Length>=2);
+        Assert.Equal(claims.Length,claims.DistinctBy(c=>c.Claimant).Count());
+        Assert.Empty(Guardianship.Known(after,s.PlayerControl));
+        var opening=Assert.Single(Guardianship.Known(after,claims[0].Claimant)).Opening;
+        Assert.Empty(Guardianship.WitnessedClaims(after,opening,s.PlayerControl));
+        Assert.Equal(claims.Length,Guardianship.WitnessedClaims(after,opening,claims[0].Claimant).Count());
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+        NewGameWorldTests.At(s,death+1);NewGameWorldTests.At(restored,death+1);
+        Assert.Equal(claims.Length,restored.DiagnosticSnapshot().HouseClaims!.Length);
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
