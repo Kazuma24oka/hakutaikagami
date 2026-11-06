@@ -443,6 +443,13 @@ public class DefectionPactTests
                 var gateway=session.DiagnosticSnapshot();
                 Assert.Contains(gateway.Court!.Events,e=>e.Input.Reference==joined.Input.Id && e.Input.Action==CourtAction.ReceiveIndependentGate);
                 Assert.False(JointIndependence.ObserveOwnCastle(gateway,recipient)!.ControlsCastle);
+                // 現地に双方がいる同一の交渉記録に対し、任期の境界だけを変えた判定試験。
+                var beforeExpiry=ContractJson.Copy(gateway);
+                var assignment=Assert.Single(beforeExpiry.Offices,o=>o.Subject==recipient && o.Kind=="castellan" && o.Target==joined.Place);
+                beforeExpiry.Offices=beforeExpiry.Offices.Select(o=>o==assignment?o with{Until=beforeExpiry.ElapsedSeconds+1}:o).ToArray();
+                Assert.Contains(IndependenceGate.Available(beforeExpiry,recipient),i=>i.Action==CourtAction.ReceiveIndependentKeep);
+                beforeExpiry.ElapsedSeconds++;
+                Assert.DoesNotContain(IndependenceGate.Available(beforeExpiry,recipient),i=>i.Action==CourtAction.ReceiveIndependentKeep);
                 session.SetPaused(true);
                 var directory=Directory.CreateTempSubdirectory("allied-gate-");
                 try{
@@ -459,6 +466,18 @@ public class DefectionPactTests
                 Assert.Contains(CourtAction.RequestIndependentGate,history);
                 Assert.Contains(CourtAction.ReceiveIndependentKeep,history);
                 Assert.True(JointIndependence.ObserveOwnCastle(handed,recipient)!.ControlsCastle);
+                var report=Assert.Single(handed.Messaging.Messages,m=>m.Kind==IndependenceLetters.KeepReport);
+                Assert.Equal(recipient.Value,report.SenderId);
+                Assert.Equal(Actor.Value,report.RecipientId);
+                Assert.Contains("本丸を受領しました",report.Body);
+                Assert.Empty(IndependenceLetters.KeepReports(handed,recipient));
+                Assert.DoesNotContain(IndependenceLetters.Delivered(handed,Actor),l=>l.Id==report.Id);
+                var messenger=handed.Couriers!.Missions.Single(m=>handed.Messaging.Attempts.Any(a=>a.MessageId==report.Id && a.Id==m.Attempt));
+                Assert.Equal(founderNode,messenger.Destination);
+                NewGameWorldTests.At(session,messenger.ReadyAt+1);
+                Assert.Null(IndependenceLetters.Delivered(session.DiagnosticSnapshot(),Actor).Single(l=>l.Id==report.Id).Body);
+                Assert.Equal(ResultCode.Accepted,session.Open(Actor,new(report.Id),session.Revision).Code);
+                Assert.Equal(report.Body,IndependenceLetters.Delivered(session.DiagnosticSnapshot(),Actor).Single(l=>l.Id==report.Id).Body);
             }
             var replay=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
             Assert.Equal(ContractJson.Write(after.Memberships),ContractJson.Write(replay.DiagnosticSnapshot().Memberships));

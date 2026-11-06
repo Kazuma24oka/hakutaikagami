@@ -6,9 +6,10 @@ public static class IndependenceLetters
 {
     public const string Kind="public-independence-letter";
     public const string Reply="public-independence-answer";
+    public const string KeepReport="independent-keep-receipt";
     internal static bool Answer(CourtAction a)=>a is CourtAction.JoinDeclaredHouse or CourtAction.RemainWithHouse or CourtAction.StayNeutral;
-    internal static bool Handles(CourtAction a)=>Outgoing(a)||Answer(a);
-    static string MessageId(CourtInput i)=>HouseholdCourt.Id(Answer(i.Action)?"independence-answer":"independence-public",i.Id.Value).Value;
+    internal static bool Handles(CourtAction a)=>Outgoing(a)||Answer(a)||a==CourtAction.ReportIndependentKeep;
+    static string MessageId(CourtInput i)=>HouseholdCourt.Id(i.Action==CourtAction.ReportIndependentKeep?"keep-receipt":Answer(i.Action)?"independence-answer":"independence-public",i.Id.Value).Value;
     public static string Label(CourtAction a)=>a switch{
         CourtAction.JoinDeclaredHouse=>"個人として新しい家に仕える",
         CourtAction.RemainWithHouse=>"今の家に留まる",
@@ -37,8 +38,30 @@ public static class IndependenceLetters
         }
         return null;
     }
+    static CourtInput? ReportFor(ContractWorld w,CourtEvent receipt,long rev)
+    {
+        if(receipt.Input.Action!=CourtAction.ReceiveIndependentKeep || receipt.Revision>=rev)return null;
+        var events=HouseholdCourt.Events(w);
+        var joined=events.SingleOrDefault(e=>e.Input.Id==receipt.Input.Reference && e.Input.Action==CourtAction.JoinDeclaredHouse);
+        if(joined==null || events.Any(e=>e.Revision<rev && e.Input.Action==CourtAction.ReportIndependentKeep && e.Input.Reference==receipt.Input.Id))return null;
+        var call=events.Single(e=>e.Input.Id==joined.Input.Reference && e.Input.Action==CourtAction.SeekDeclaredSupport);
+        return new(HouseholdCourt.Id("send-keep-report",receipt.Input.Id.Value),CourtAction.ReportIndependentKeep,call.Actor,
+            joined.Input.Owner,call.Place,Reference:receipt.Input.Id);
+    }
+    public static IEnumerable<CourtInput> KeepReports(ContractWorld w,EntityId actor)
+    {
+        var site=SocialWorld.Site(w,actor);
+        foreach(var receipt in HouseholdCourt.Events(w).Where(e=>e.Actor==actor && e.Place==site && e.Input.Action==CourtAction.ReceiveIndependentKeep))
+            if(ReportFor(w,receipt,w.CommitSequence+1) is {} report)yield return report;
+    }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {
+        if(i.Action==CourtAction.ReportIndependentKeep){
+            var receipt=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Id==i.Reference && e.Actor==actor && e.Place==place);
+            if(receipt==null || ReportFor(w,receipt,rev)!=i || !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
+                throw new InvalidDataException("現地で本丸を受領した本人の未報告の原本が必要です");
+            return;
+        }
         if(Answer(i.Action)){CheckAnswer(w,i,actor,place,at,rev);return;}
         var d=w.Declarations?.SingleOrDefault(d=>d.House==i.Owner && d.Founder==actor && d.Revision<rev);
         if(d==null || i.Reference!=null || i.Person==actor || i.Site==place || !TransportWork.At(w,actor,place,at,rev,true) ||
@@ -92,12 +115,12 @@ public static class IndependenceLetters
         }
     }
     public static IEnumerable<(string Id,string? Body)> Delivered(ContractWorld w,EntityId actor)=>
-        w.Messaging.Messages.Where(m=>m.Kind is Kind or Reply && m.RecipientId==actor.Value &&
+        w.Messaging.Messages.Where(m=>m.Kind is Kind or Reply or KeepReport && m.RecipientId==actor.Value &&
             w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==actor.Value))
             .Select(m=>(m.Id,MessageFlow.Knows(w.Messaging,m.Id,actor.Value)?m.Body:null));
     internal static IEnumerable<(CourtInput Input,EntityId Actor)> NpcResponses(ContractWorld w)
     {
-        foreach(var m in w.Messaging.Messages.Where(m=>m.Kind is Kind or Reply && m.RecipientId!=w.PlayerControl.Value)){
+        foreach(var m in w.Messaging.Messages.Where(m=>m.Kind is Kind or Reply or KeepReport && m.RecipientId!=w.PlayerControl.Value)){
             var actor=new EntityId(m.RecipientId);
             if(SocialWorld.Site(w,actor)?.Value!=m.DeliverySite || Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence) ||
                 !w.Messaging.Receipts.Any(r=>r.MessageId==m.Id && r.ReceiverId==actor.Value))continue;
@@ -113,6 +136,13 @@ public static class IndependenceLetters
     }
     static MessageEnvelope Original(ContractWorld w,CourtEvent e)
     {
+        if(e.Input.Action==CourtAction.ReportIndependentKeep){
+            var receipt=HouseholdCourt.Events(w).Single(r=>r.Input.Id==e.Input.Reference);
+            var date=DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",System.Globalization.CultureInfo.InvariantCulture).AddDays((int)(receipt.At/86400));
+            var receiptText=$"{date:yyyy年M月d日}、{NewGameWorld.SiteName(receipt.Place.Value)}の本丸を受領しました。";
+            return new(MessageId(e.Input),receipt.Input.Id.Value,KeepReport,e.Actor.Value,e.Input.Person.Value,receiptText,
+                e.Input.Site.Value,e.At){DeliverySite=e.Input.Site.Value};
+        }
         if(Answer(e.Input.Action)){
             var call=HouseholdCourt.Events(w).Single(c=>c.Input.Id==e.Input.Reference);
             return new(MessageId(e.Input),call.Input.Id.Value,Reply,e.Actor.Value,call.Actor.Value,Label(e.Input.Action)+"と返答します。",

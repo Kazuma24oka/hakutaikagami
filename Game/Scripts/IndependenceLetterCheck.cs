@@ -81,6 +81,19 @@ public partial class IndependenceLetterCheck : Node
             if(Visible(reply.Body))throw new InvalidDataException("開封前に返書本文を表示");
             game.ReviewSchemePress(reply.Id);await Frame();
             if(!Visible(reply.Body))throw new InvalidDataException("開封後に返書本文が表示されません");
+            if(allied!=null){
+                var report=returning.Messaging.Messages.Single(m=>m.Kind==IndependenceLetters.KeepReport);
+                if(Visible(report.Body))throw new InvalidDataException("支持の返答を開いた時点で本丸受領の本文が漏れました");
+                game.ReviewSocialClose();Advance(Arrival(returning,report.Id));
+                game.Press("information-schemes");await Frame();
+                if(Visible(report.Body))throw new InvalidDataException("受領報告の開封前に本文が表示されました");
+                game.ReviewSchemePress(report.Id);await Frame();
+                if(!Visible(report.Body))throw new InvalidDataException("開封した本丸受領の報告を読めません");
+                game.ReviewSocialClose();await SaveLoad();
+                game.Press("information-schemes");await Frame();
+                if(!Visible(report.Body))throw new InvalidDataException("再開後に既読の受領報告が失われました");
+                GD.Print("ALLIED_KEEP_REPORT_UI_PASS");
+            }
             GD.Print(allied==null?"INDEPENDENCE_LETTER_UI_PASS":"ALLIED_GATE_UI_PASS");GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}
     }

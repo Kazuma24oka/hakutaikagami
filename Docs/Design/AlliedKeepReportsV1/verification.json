@@ -1,0 +1,12 @@
+{
+  "passed": 5,
+  "tests": [
+    "HakutaiKagami.Tests.DefectionPactTests.PublicDeclarationUsesKnownCastleAndCarriesNoSecretPact",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Retainer, oldLordPresent: False)",
+    "HakutaiKagami.Tests.NewGameWorldTests.LegacyLiteralWorldsStillRoundTripWithoutNewModule",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: True)",
+    "HakutaiKagami.Tests.DefectionPactTests.RemoteRetainerAnswersOnlyAfterMeetingAndReading(role: Castellan, oldLordPresent: False)"
+  ],
+  "ui": "ALLIED_KEEP_REPORT_UI_PASS",
+  "result": "本丸を受領した城主が日付・城名付きの書状を当主へ送り、配送中の保存と開封後の再開を確認。城門受領後に現職の任期が切れた場合は、本丸受領を選べない。"
+}
