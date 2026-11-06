@@ -1,0 +1,66 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "外堀・城門・二の丸・本丸ごとに堀・門・土塁・櫓・石垣を選び、完成後に当該区画だけ防御が上がる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleWorks.cs",
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/CastleWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleWorks.cs",
+        "Game/Scripts/CastleWorksCheck.cs",
+        "Docs/Design/CastleWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "既存普請の人手・米・木材・銭・工期・村の協力と競合を維持する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleWorks.cs",
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/CastleWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleWorks.cs",
+        "Game/Scripts/CastleWorksCheck.cs",
+        "Docs/Design/CastleWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "石垣には雇用済みの現地石工と加工済み切石が必要で、現物を一度だけ消費する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleWorks.cs",
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/CastleWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleWorks.cs",
+        "Game/Scripts/CastleWorksCheck.cs",
+        "Docs/Design/CastleWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "災害の損傷を区画に記録し、修繕で同じ区画の防備を回復できる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleWorks.cs",
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/CastleWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleWorks.cs",
+        "Game/Scripts/CastleWorksCheck.cs",
+        "Docs/Design/CastleWorksV1/verification.json"
+      ]
+    },
+    {
+      "contract": "通常画面・途中復旧・旧保存の代表例と重複・権限を検証する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CastleWorks.cs",
+        "Core/Contracts/PublicWorks.cs",
+        "Tests/CastleWorksTests.cs",
+        "Game/Scripts/NewGameRuntime.CastleWorks.cs",
+        "Game/Scripts/CastleWorksCheck.cs",
+        "Docs/Design/CastleWorksV1/verification.json"
+      ]
+    }
+  ],
+  "limits": "区画基礎値・工費・工期・震災の区画配分は試作値。城郭ごとの史料採録・専用3Dモデル・普請の中断、攻城による損傷と破壊計略はこの工程の外。NPCの専用長期試遊・全件・全国長期性能は未実施。"
+}

@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "e0b926248678c4f90d27802056b026f15577af26638230233fdc1f445f535f48",
-    "Docs/Development/ProgressV1/estimate.json": "d548d26a0187885a09ace241f35b334110fa3e2cb9465f31c5644f0968a0d81c",
+    "Docs/Development/ProgressV1/estimate.json": "1ca28f37bd5a826ae5593cf7444699101ee1ad62bcec6aa35bb4d28030816129",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
-    "Scripts/check_progress_report.py": "c1f75cd011bf88cc458f5eefac780bb0f73a7767bc4a0020e0a3ff622a01cda7",
+    "Scripts/check_progress_report.py": "be9a0ca960f177ec0162208c3b541960ef4f2d1a7efea1e69af7a5d654d1562b",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "8db53213951b8461311d596a27e865bc61fa4255c7e8052f0b88011abb463c63",
+    "Scripts/check_approval_batch.py": "41dae95824e2cae582b307957ed7186a2609c16493e57a85b7e6ae9d9a4d89de",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "f72b3c39e9e3ad74975c37b057ffc77ada0058a6b671315640cce2841b4d5a56",
-    "Docs/Development/CURRENT_STAGE.md": "f8ff5c5ef852012934d37684f099534671d8bac8f312a1b1837c6dc5879045eb",
+    "Docs/Development/CURRENT_STAGE.md": "c0c4ade899fcfeec4a875634b69874494d805c31930f3d4d921d5c59c8f2bfdc",
     "Core/Contracts/HouseSuccession.cs": "473af12d7d6dbe3fd3c3296ada9ee6f20866ac25487042533a67d964f3d55716",
     "Core/Contracts/FactionStances.cs": "bbe578b10d7fdcde0aac4a860b5fa21f6ca97137693e70a30aea1651f2158451",
-    "Core/Contracts/NewGameWorld.cs": "9e47ba5066cf4f3056f605383d2276ef4ad01e63274a424102db951ade43db24",
+    "Core/Contracts/NewGameWorld.cs": "55c8b3a7349f788965e75bda0be9ab395fbb98586d2c7981503cadeec54ef594",
     "Core/Contracts/HouseSalary.cs": "3fb2c219bc721ec43a44735e296b1488b2212339540132e510dfa4b6dafc653e",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",
@@ -271,7 +271,7 @@
     "Tests/CharacterDevelopmentTests.cs": "a99e6cbdab3ccde651998bf8968de1b418cb82d7ab2ca44747e8ea4057a8b98f",
     "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "2af43c6c8505eb2b04c9a116658707c312f79f91030ca7ed268df3b35cc20725",
     "Game/Scripts/OfficerLibraryTrial.cs": "7f51d05a4b4034201cae396d07c3cb9d6d5964f0e983293bc3c99997d1317539",
-    "Game/Scripts/NewGameFrontEnd.cs": "5b8e9387ee96829554194052dca2f6239b955b613938333a61cb99a22457a9d7",
+    "Game/Scripts/NewGameFrontEnd.cs": "ed31236fd23c1e36101af322364d7c4fef63bf1b38338a6df532007e0132f7f8",
     "Docs/Design/CharacterDevelopmentV1/verification.json": "2465c82c2592674c00430078fd41588277d4d4c46ee331d342e52ae8165fc16c",
     "Docs/Design/CharacterDevelopmentV1/completion.json": "ffc5ef8d2ff1204e0400401ca15fc7f40eb32b73725e88000be3d2f5b679d541",
     "Docs/Design/CharacterDevelopmentV1/integration.json": "b5991bdd81c590452faaee7234e6b21e06aac40dab96300089203b62629effc1",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "02b53ac423b34d1c09d370329157ab3692e8578f27db6154cbbc113eb1c3d0ea",
     "Core/Contracts/NpcWork.cs": "4abf052a440fc8dbbe1c0fe874001f85368ce6986370505029315eadd80cf180",
-    "Core/Contracts/ContractJson.cs": "8c75ac4dda7b110c6880429682188b03316a1229ee4440fbbf1ed0e9aec4c01b",
+    "Core/Contracts/ContractJson.cs": "e5c9f62666ceae8fe73a37bed5d44ce8349d72a8d6607afa44f4b404bc80d24c",
     "Core/Contracts/LocalWorkDemand.cs": "f9df5dac4b84afe28df92c524537c3efb0aa0c345cc9a188050881c347bb968c",
     "Tests/NpcContinuingTests.cs": "ce4d0fa6c1a9023e0e7e5c085e782bec5044881a1ad92946e2b1f95dd60b478e",
     "Tests/NewGameNpcRoutineTests.cs": "eda3dc3a3923e2d8e8fb22b5d0ec6cdd3ba53a7725025beb12a59baab068df1d",
@@ -562,9 +562,9 @@
     "Docs/Design/BrokerWorkV1/integration.json": "0543b287e051a2aa69a4df9aa9795c980663ba628412340a7b126db54af6f8cc",
     "Scripts/verify_broker_work.py": "1c1ebf927ec79312c65ba761a34c0db669ba7deaf513d275c2b5093c03f636e3",
     "Docs/Development/ProgressV1/approval-baseline-v61.json": "987c7f99af6859ff35ff77f7ff16e3dc9fdbd26f879c8b15bd474028e833147b",
-    "Core/Contracts/PublicWorks.cs": "57ea02274af08ca1829ba12e8f84d80c33b7c0e6ebc1e7e0f61c0e794cbd88a1",
+    "Core/Contracts/PublicWorks.cs": "c2ba1eece910cb45537db8f415d215313bc4810004382e882ccb23a4a37f85aa",
     "Tests/PublicWorksTests.cs": "c675e9dfce0480b4b321c5a3af502dd2f2dd4da7eecbe411eadf2f955789e86a",
-    "Game/Scripts/NewGameRuntime.PublicWorks.cs": "032472c31390b64221a8a72e6f54b1516492a6cfe8b72ebc85aff47c8ccb592a",
+    "Game/Scripts/NewGameRuntime.PublicWorks.cs": "07151923763994061637cb894f5b495309cfbf588bc5b274cc941941d3ca7a6e",
     "Game/Scripts/PublicWorksCheck.cs": "a2a16c129d73a7fb3c5c4c07ff08f3e5a5694975ba64eb7917dd75e8a2f1dfdd",
     "Docs/Design/PublicWorksV1/verification.json": "7e3c8cb227f2a970374440529edc3ec803afeec78b78a79e77abf3dd86866839",
     "Docs/Design/PublicWorksV1/scope.md": "c05138be597b64d7de6a77e489ef70bab09128260b0e9d4ad8ad2929d6453db3",
@@ -584,8 +584,8 @@
     "Docs/Design/StandingAdministrationV1/integration.json": "857724ec987091e5f163335a5201e6042267b3f994d2af2417b65e49a8e04811",
     "Scripts/verify_standing_administration.py": "f21fcb5078da4066ad17b0d9b2bacaf98d643107cb17ddf59755d8e4ac1daf1b",
     "Docs/Development/ProgressV1/approval-baseline-v63.json": "ae61e52124d66ee25947cf38f0f4654f7dae12b71d8381ba1b0b873052a0dbf0",
-    "Core/Contracts/CraftTrade.cs": "21ab4db985e38913477121d1116d46e429cdad160714474dffc06c4b1248a0a7",
-    "Core/Contracts/CraftTrade.Commands.cs": "a6024f6d591fbf990ede95642574d2f6f50121eb685872058ed062860fdfa110",
+    "Core/Contracts/CraftTrade.cs": "7232aa99008c919712245b8669acf02cdbb4a8a26fec83524869ac62fd44fbda",
+    "Core/Contracts/CraftTrade.Commands.cs": "b390bf8c07dada636d2c0402251d696ada67a1bc382090743843d4f9e40d2462",
     "Game/Scripts/NewGameFrontEnd.CraftReview.cs": "0f27fdceb0951bc8621c2ca750c3b6310d098847873928baa6459799229d8d20",
     "Tests/CraftTradeTests.cs": "007c429177ed63ab49423e4f7a10da4d6a4118ff07400ff46c343fc3337cdea4",
     "Game/Scripts/NewGameRuntime.CraftTrade.cs": "f4b507950c47000c43065af0cfe63540421b740239563bc231b0674acce9196e",
@@ -598,7 +598,7 @@
     "Scripts/verify_craft_trade.py": "b0838b3021a61bbc489e1ee0269ad7c563ef5cce96243170cb57cceaea6010a3",
     "Docs/Development/ProgressV1/approval-baseline-v64.json": "883ccdf9e6302b24e1d77f9c24576d3359a1eba002812c9b90cfff6c1cb2726b",
     "Core/Contracts/LandSurvey.cs": "e54f025add0cfde1312080b437aa7d6773196ba79aaa948c7ed6cd92e2f9bb50",
-    "Core/Contracts/LiveTerritory.cs": "3c3e9986f7c8deb9d5577692eab22e0174548e53e1ecfc663188ac0bd30637b6",
+    "Core/Contracts/LiveTerritory.cs": "088ad8d503b14eda0777e87df989fe824e81c0d6db5a3ee58b836e18f2e5f855",
     "Tests/LandSurveyTests.cs": "f89a7e258263158aad26d1850ab1f5af70ba56a000152e0b4f3c1dc31b16fe66",
     "Game/Scripts/NewGameRuntime.LandSurvey.cs": "1816d9ae1ccd6e3f427bc22a98336abd19e3465efb228e95f0dd48147441fee9",
     "Game/Scripts/LandSurveyCheck.cs": "802ac2d43a2338c5db33f95cb43218d3a4e2e9bac29b8ac051cfaba4ffd3f774",
@@ -662,9 +662,20 @@
     "Docs/Design/LocalSecurityV1/scope.md": "10377d8f43e02a52b247d5654174d2ec7c085f0ee98f5ba82b757056053c1079",
     "Docs/Design/LocalSecurityV1/README.md": "71b131d526bdb4c4525bb1e1452bb7debc78f59ae0df873f203a3eaafe70ad9a",
     "Docs/Design/LocalSecurityV1/completion.json": "baa8f8d9f243b47ca389529eb06a9cd491a4eea1b48a4e2ae159d3eed86592c5",
-    "Docs/Design/LocalSecurityV1/integration.json": "e1c559abd3b59c7be2fdb4deafeea74257db56c9a1e783065f6e808f0fce6998",
+    "Docs/Design/LocalSecurityV1/integration.json": "7689df5990ac4529536a907018850bc25538722814a5072266b9256af1ab6310",
     "Scripts/verify_local_security.py": "d32f975c1a1922251a1f591e62351f858083e0efe54c4e89bd471d96bfcf6135",
-    "Docs/Development/ProgressV1/approval-baseline-v70.json": "d932ae1419224c2277bc608a25ffdd1357d16475850d22d21906e812a940c20e"
+    "Docs/Development/ProgressV1/approval-baseline-v70.json": "d932ae1419224c2277bc608a25ffdd1357d16475850d22d21906e812a940c20e",
+    "Core/Contracts/CastleWorks.cs": "0b4819d607f911962b1a79f2cc56abdfbb73fffc11ca9c2bb193d0c29a5a74ca",
+    "Tests/CastleWorksTests.cs": "d5785b0a72ac8c79a38529a3825eb9c7d6e954550c78d7db4d5e84441e047d29",
+    "Game/Scripts/NewGameRuntime.CastleWorks.cs": "86aaae97da602253c72093755c6f59c3fd3f3e46c761c16753668f95097d0f14",
+    "Game/Scripts/CastleWorksCheck.cs": "6c392d55869b7d2fccf3ab8c3f7139fba292a2703e1f227a8321a39eaf577b1b",
+    "Docs/Design/CastleWorksV1/verification.json": "24bc9a232fc9316cca9f64a2409e7e6558312311ee0d0b9c1dff421447d7a4bc",
+    "Docs/Design/CastleWorksV1/scope.md": "5accacbf43eb0ce7334d0c6d3f37b9ed72c8c5143d3de1efa93a884403ddd246",
+    "Docs/Design/CastleWorksV1/README.md": "f89a5fd4dc2da71f2c5cc66e9a5a48e59bd164393f3a1ca19885856def55a148",
+    "Docs/Design/CastleWorksV1/completion.json": "af142fe92663fdcba27be71456b2aabc0d60b25e87b60e4f30fa08de60378a76",
+    "Docs/Design/CastleWorksV1/integration.json": "abf91afcf4b2f0a2652e58564e58bc8cb9005537443a78fc2e2e1207e3c1f453",
+    "Scripts/verify_castle_works.py": "a55ec42a776c1ad1cd620e110dc74a69ac72a378a194e575df8d70b6be5c9b14",
+    "Docs/Development/ProgressV1/approval-baseline-v71.json": "daa80917f2b49d7a8b4b9d4b5867e5dab7600b67d5539ec21b8568c154fc454f"
   },
   "items": [
     {
@@ -1998,7 +2009,7 @@
     {
       "id": "BD-33",
       "status": "normal",
-      "existing": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。",
+      "existing": "軍務支援の地域労働を現時点の工房能力と季節の拘束人秒へ反映。収穫直前の一時返還で過去の損失を回避できず、工事と労働を共有する。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。 外堀・城門・二の丸・本丸へ堀・土塁・門・櫓・石垣を実際の普請として建設。完成した区画だけ防備が変わり、地震・台風の損傷を修繕できる。石垣は現地の有給石工と工房で作った切石5個を使用。軍事方針を知るNPC当主の城門整備も同じ工事契約を利用する。",
       "remaining": "地域人口からの一般徴募/逃散/帰還、史実人口と産地、土地利用/生産連鎖/一般普請。 統合案で追加：§13 内政の4軸・開発の普請・§16 技術・新しい物資の生産（鉄砲・火薬・硝石・金銀・軍馬。CHARACTER_DATA_FIELDS_V1 §4）・§26 Z3 災害による田畑・町・城の区画の被害と普請での回復。 2026-11-05 既存仕様の具体化：水利・土地の案件判断を、調査と普請の任務、村の協力・資源・工期・給付の実履行へ接続する（MORI_MOTONARI_WATER_DISPUTES、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/MilitaryEconomy.cs",
@@ -2036,7 +2047,9 @@
         "Docs/Design/LandSurveyV1/README.md",
         "Docs/Design/LandSurveyV1/verification.json",
         "Docs/Design/RegionalWeatherV1/README.md",
-        "Docs/Design/RegionalWeatherV1/verification.json"
+        "Docs/Design/RegionalWeatherV1/verification.json",
+        "Docs/Design/CastleWorksV1/README.md",
+        "Docs/Design/CastleWorksV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2336,7 +2349,7 @@
     {
       "id": "BD-39",
       "status": "normal",
-      "existing": "通常の新規開始を明示v3へ接続。当主の通知発送→物理到達/開封→NPC独自判断/返書→実出陣/接触/損害→撤退/帰還/返納/返報/指揮返還を公開プレイヤーAPIで一巡。関連393件成功、Gameビルド成功、保存復旧5組/40個の実Node3D座標・兵数・攻撃用データ一致。GUI操作/見た目と現コード全2573件は未実施。全体概算20%据置。 条約の防衛援軍を実在の同じ駐屯兵100人へ接続。実米からの署名付き兵糧と共通陸路で守備先へ到着し、実守備・帰還・現地返納する。未知の封鎖を実進入で知り同じ軍が迂回する。架空の敵対宣言や軍を作らない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。",
+      "existing": "通常の新規開始を明示v3へ接続。当主の通知発送→物理到達/開封→NPC独自判断/返書→実出陣/接触/損害→撤退/帰還/返納/返報/指揮返還を公開プレイヤーAPIで一巡。関連393件成功、Gameビルド成功、保存復旧5組/40個の実Node3D座標・兵数・攻撃用データ一致。GUI操作/見た目と現コード全2573件は未実施。全体概算20%据置。 条約の防衛援軍を実在の同じ駐屯兵100人へ接続。実米からの署名付き兵糧と共通陸路で守備先へ到着し、実守備・帰還・現地返納する。未知の封鎖を実進入で知り同じ軍が迂回する。架空の敵対宣言や軍を作らない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 外堀・城門・二の丸・本丸へ堀・土塁・門・櫓・石垣を実際の普請として建設。完成した区画だけ防備が変わり、地震・台風の損傷を修繕できる。石垣は現地の有給石工と工房で作った切石5個を使用。軍事方針を知るNPC当主の城門整備も同じ工事契約を利用する。",
       "remaining": "同じ駐屯兵の繰り返し再動員、一般野戦/攻城/救援の拡張、全国NPCによる自主攻防と長期受入。 統合案で追加：§21 天候と地形・負傷兵・区画を順に攻める攻城・§9 決定6 賊との少人数の接触戦・§26 Z1 攻める側の補給と強襲を続けられる長さ。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
@@ -2372,7 +2385,9 @@
         "Docs/Design/FactionEntryV1/verification.json",
         "Game/Scripts/NewGameRuntime.FactionPolicy.cs",
         "Docs/Design/BattlefieldRulesV1/README.md",
-        "Docs/Design/BattlefieldRulesV1/verification.json"
+        "Docs/Design/BattlefieldRulesV1/verification.json",
+        "Docs/Design/CastleWorksV1/README.md",
+        "Docs/Design/CastleWorksV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3746,9 +3761,9 @@
       "passed": 6,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/LocalSecurityV1/runtime-local/compatible/full.trx",
-      "sha256": "499b8e2045f725320555402f81c18894ab162df39f8a39c4dba906ad5bc06770",
-      "scope": "治安4件・既存討伐と護衛2件。全件未実施。"
+      "trx": "Docs/Design/CastleWorksV1/runtime-local/critical/full.trx",
+      "sha256": "46f35f47fe3441350618d3b78c81e2ab7bb0137cff00d004dbc997b3be7f422a",
+      "scope": "城普請4件・既存工事と村の反応2件。全件未実施。"
     },
     "latest_game_verification": "Docs/Design/EngagementTaskDeliveryV1/verification.json",
     "latest_game_verification_sha256": "cfb144cb997a42f455e9495e8456c74570eeaa05e727f5165e7bc4ecd5da51cb",
@@ -3763,11 +3778,11 @@
       "passed": 6,
       "failed": 0,
       "skipped": 0,
-      "trx": "Docs/Design/LocalSecurityV1/runtime-local/compatible/full.trx",
-      "sha256": "499b8e2045f725320555402f81c18894ab162df39f8a39c4dba906ad5bc06770",
-      "scope": "治安4件・既存討伐と護衛2件。全件未実施。"
+      "trx": "Docs/Design/CastleWorksV1/runtime-local/critical/full.trx",
+      "sha256": "46f35f47fe3441350618d3b78c81e2ab7bb0137cff00d004dbc997b3be7f422a",
+      "scope": "城普請4件・既存工事と村の反応2件。全件未実施。"
     },
-    "current_stage_summary": "現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。 三拠点の固定賊を対象とし、警固三人・三日・60文・放置三日は試作値。商人は現地の新規売買見積を見合わせる段階で、個体ごとの全国巡回は未実装。旧契約と在庫は維持。全件・全国長期性能・ユーザー試遊は未実施。",
+    "current_stage_summary": "外堀・城門・二の丸・本丸へ堀・土塁・門・櫓・石垣を実際の普請として建設。完成した区画だけ防備が変わり、地震・台風の損傷を修繕できる。石垣は現地の有給石工と工房で作った切石5個を使用。軍事方針を知るNPC当主の城門整備も同じ工事契約を利用する。 区画基礎値・工費・工期・震災の区画配分は試作値。城郭ごとの史料採録・専用3Dモデル・普請の中断、攻城による損傷と破壊計略はこの工程の外。NPCの専用長期試遊・全件・全国長期性能は未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -3789,9 +3804,9 @@
     "full_core_verification": "Docs/Design/EngagementTaskDeliveryV1/full-core.json",
     "full_core_verification_sha256": "ad96405db09759a6e114993fcba58725da5c503fdd1ea37e6bc85120fbd04f80",
     "operation_policy": "2026-10-26以降は画面取得/読み取り/GUI自動操作を原則使用しない。今回のGodot実画面検証は指示受領前に完了。今後の許可とはしない。",
-    "integration": "Docs/Design/LocalSecurityV1/integration.json",
-    "current_logic_verification": "Docs/Design/LocalSecurityV1/verification.json",
-    "current_logic_verification_sha256": "3e970ab1575a97d5cfc08ba3d5014d7e8be6f0c184f3afac4ce792f99c1d2f0c",
+    "integration": "Docs/Design/CastleWorksV1/integration.json",
+    "current_logic_verification": "Docs/Design/CastleWorksV1/verification.json",
+    "current_logic_verification_sha256": "24bc9a232fc9316cca9f64a2409e7e6558312311ee0d0b9c1dff421447d7a4bc",
     "accepted_baseline_snapshot": "Docs/Design/EngagementTaskDeliveryV1/accepted-baseline.json",
     "accepted_baseline_snapshot_sha256": "8ab3e89b4ee67caed3b52402ba97aded9614aff0a90f11c06cd9bd693df3a005",
     "baseline39_note": "固定済み基準39には再評価加点の表示欄がないため、検査器はこの版だけ0と表示する。旧評価・目標・分母・固定基準ファイルを変更せず、固定leaf以外の加点禁止を検査する。"
@@ -3857,11 +3872,11 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "城の普請",
     "攻城と開城",
     "破壊系計略",
     "暗殺",
-    "血縁と死亡"
+    "血縁と死亡",
+    "婚姻と後継"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"
