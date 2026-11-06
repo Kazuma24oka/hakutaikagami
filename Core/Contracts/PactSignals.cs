@@ -15,6 +15,7 @@ public static class PactSignals
         var letter=new MessageEnvelope(Letter(p,kind),p.Id.Value,kind,sender.Value,recipient.Value,body,address,w.ElapsedSeconds);
         MessageFlow.Send(w.Messaging,letter,w.ElapsedSeconds);w.SealedMessages=[..w.SealedMessages,new(letter.Id)];
         RegionalCampaign.Bind(w);
+        HouseholdCourt.RecordForeignLetter(w,letter);
     }
 
     static string ReplyText(bool acted)=>acted?"合図を受け、約した行動を取りました。":"今回は応じられません。";

@@ -5,6 +5,26 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseConditionTests
 {
     [Fact]
+    public void ForeignLetterLawRequiresAnOpenedAnswerAndDoesNotApplyOutsideItsJurisdiction()
+    {
+        var s=HouseholdCourtTests.Start();
+        var input=new CourtInput(new("request:letter-law-consultation"),CourtAction.ConsultReform,
+            HouseholdCourtTests.Retainer,HouseholdCourtTests.Owner,HouseholdCourtTests.Site){Reform=ReformKind.ForeignLetters};
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(input,s.Revision).Code);
+        var law=input with{Action=CourtAction.EnactLetterLaw,Id=new("request:letter-law"),Reference=input.Id,Reform=null};
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(law,s.Revision).Code);
+        NewGameWorldTests.At(s,120);
+        Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,new(HouseReforms.Letter(input,HouseReforms.Answer)),s.Revision).Code);
+        Assert.Equal(ResultCode.Accepted,s.ManageCourt(law,s.Revision).Code);
+        var w=s.DiagnosticSnapshot();
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        Assert.True(HouseReforms.LetterLawAt(restored.DiagnosticSnapshot(),law.Owner,law.Site,w.ElapsedSeconds,s.Revision+1));
+        Assert.False(HouseReforms.LetterLawAt(w,law.Owner,new("site:kofu"),w.ElapsedSeconds,s.Revision+1));
+        Assert.False(HouseReforms.LetterLawAt(w,law.Owner,law.Site,w.ElapsedSeconds,s.Revision));
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCourt(law with{Action=CourtAction.LetterBreach,Id=new("request:forged-breach")},s.Revision).Code);
+    }
+
+    [Fact]
     public void LocalControlAndReadBooksAreDistinctFromTheExistenceOfASurvey()
     {
         var s=LandSurveyTests.Start();

@@ -40,6 +40,9 @@ public partial class NewGameRuntime
    if(report==null){SocialText(box,"この家の現地記録を確認できません。");return;}
    SocialText(box,NewGameWorld.SiteName(report.Site.Value)+" ／ "+WorldCalendar.Display(w.EpochDate,report.ObservedAt));
    SocialText(box,report.ControlsLocalSite?"主家がこの拠点を支配":"この拠点で主家の支配を確認できず");
+   foreach(var breach in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.LetterBreach &&
+       (e.Actor==actor || e.Input.Reference is {} letter && HakutaiKagami.Core.Messaging.MessageFlow.Knows(w.Messaging,letter.Value,actor.Value)))??[])
+    SocialText(box,WorldCalendar.Display(w.EpochDate,breach.At)+" ／ 他国への私信を発送："+PersonName(breach.Actor)+" → "+PersonName(breach.Input.Person));
    foreach(var person in report.LocalLandholders)SocialText(box,"在地の所領："+PersonName(person));
    foreach(var person in report.LocalCastellans)SocialText(box,"現地の城主："+PersonName(person));
    if(report.KnownSurveys.Length==0)SocialText(box,"本人が確認した指出・検地の帳面はありません。");
@@ -71,11 +74,15 @@ public partial class NewGameRuntime
     var id=HouseReforms.Letter(e.Input,HouseReforms.Answer);
     if(HouseReforms.AnswerKnown(w,e,actor)){
      SocialText(box,PersonName(e.Input.Person)+" ／ "+w.Messaging.Messages.Single(m=>m.Id==id).Body);
-     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.OpenLocalMarket&&d.Input.Reference==e.Input.Id))
+     if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactLetterLaw&&d.Input.Reference==e.Input.Id))
+      SocialText(box,"この拠点で他国との私信を禁じる家法が発効済み");
+     else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.OpenLocalMarket&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この市場で楽市を実施済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.DeferReform&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この相談案は見送り済み");
      else if(head && site==e.Input.Site && house==e.Input.Owner){
+      if(e.Input.Reform==ReformKind.ForeignLetters && !HouseReforms.LetterLawAt(w,house,e.Input.Site,w.ElapsedSeconds,rev+1))
+       Button("law-"+e.Input.Id,"この拠点で他国との私信を禁じる",()=>Run(Command("law/"+e.Input.Id,CourtAction.EnactLetterLaw,e.Input.Person,reference:e.Input.Id)));
       if(e.Input.Reform==ReformKind.OpenMarket && !HouseReforms.OpenMarketAt(w,e.Input.Site,w.ElapsedSeconds,rev+1))
        Button("market-"+e.Input.Id,seat==null?"現地で楽市を実施する":"寺社の取引枠を残して楽市を実施する",()=>Run(Command("market/"+e.Input.Id,CourtAction.OpenLocalMarket,e.Input.Person,reference:e.Input.Id)));
       Button("defer-"+e.Input.Id,"この相談案を見送る",()=>Run(Command("defer/"+e.Input.Id,CourtAction.DeferReform,e.Input.Person,reference:e.Input.Id)));
