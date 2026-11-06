@@ -25,6 +25,8 @@ public sealed class TreatyDefenseTests
         FactionStances.Apply(w,new(new("decision:raid-host"),FactionStanceAction.DeclareHostile,enemy,Own,w.ElapsedSeconds,w.ElapsedSeconds+7*86400),new("created:ally-raider"));
         s=new WorldSession(w);
         At(s,s.Seconds+3);
+        var demand=Assert.Single(s.DiagnosticSnapshot().Treaties!.Papers,p=>p.Author.Value=="created:ally-raider" && p.Terms.Submission!=null);
+        Assert.Equal(Own,demand.Input.Target);
         var march=Assert.Single(s.DiagnosticSnapshot().Branches!.Journeys,j=>j.Actor.Value=="created:ally-raider");
         At(s,march.Legs[^1].EndAt+1);
         void Army(NewMilitaryAction action,long amount=0)
