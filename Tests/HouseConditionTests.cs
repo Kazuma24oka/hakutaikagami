@@ -23,6 +23,13 @@ public sealed class HouseConditionTests
         Assert.Equal(TravelWorld.End(start,edge,leg.StartAt)+TravelWorld.InspectionSeconds,leg.EndAt);
         Assert.Equal(0,TravelWorld.Progress(w,leg,s.Seconds));
         Assert.Equal(BranchRoutes.GraphNodes(w).Single(n=>n.Id==from).Position,s.GetBranchView(s.PlayerControl).Position);
+        var redirect=TravelControl.Request(w,"request:return-through-gate",from);
+        var changed=s.ChangeTravel(redirect,s.Revision);
+        Assert.True(changed.Code==ResultCode.Accepted,changed.VisibleReason);
+        var decision=s.DiagnosticSnapshot().TravelDecisions!.Single();
+        Assert.Equal(leg,decision.After.First());
+        Assert.Equal(gate.Id,decision.After.Last().BarrierOrder);
+        Assert.Equal(leg.EndAt,decision.EffectiveAt);
         s.SetPaused(true);
         var dir=Directory.CreateTempSubdirectory("hakutai-barrier-");
         try{
@@ -34,6 +41,11 @@ public sealed class HouseConditionTests
             NewGameWorldTests.At(host.Current,s.Seconds);
             Assert.Equal(edge.FootSpeed,TravelWorld.Progress(host.Current.DiagnosticSnapshot(),leg,s.Seconds));
             Assert.Equal(s.GetBranchView(s.PlayerControl).Position,host.Current.GetBranchView(s.PlayerControl).Position);
+            NewGameWorldTests.At(host.Current,decision.EffectiveAt+2);
+            Assert.Equal("redirected",host.Current.DiagnosticSnapshot().TravelDecisions!.Single().Result);
+            Assert.Equal(BranchRoutes.GraphNodes(w).Single(n=>n.Id==to).Position,host.Current.GetBranchView(s.PlayerControl).Position);
+            NewGameWorldTests.At(host.Current,decision.After.Last().EndAt+1);
+            Assert.Equal(BranchRoutes.GraphNodes(w).Single(n=>n.Id==from).Position,host.Current.GetBranchView(s.PlayerControl).Position);
         }finally{dir.Delete(true);}
     }
 

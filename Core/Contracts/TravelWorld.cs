@@ -18,6 +18,8 @@ public static class TravelWorld
     public static string Origin(ContractWorld w,EntityId actor)=>RegionalCampaign.Destination(w,w.Locations.Single(l=>l.Actor==actor).Site??throw new InvalidDataException("Travel requires arrival"));
     public static long Departure(ContractWorld? w,string edge,long at,bool full=true)=>w!=null&&Enabled(w)&&NationalRoutes.Sea(edge)&&full?checked(((at+BoardingSeconds+DepartureInterval-1)/DepartureInterval)*DepartureInterval):at;
     public const int InspectionSeconds=60;
+    public static long ScheduledEnd(ContractWorld w,BranchEdge edge,JourneyLeg leg)=>
+        checked(End(w,edge,leg.StartAt)+(leg.BarrierOrder==null?0:InspectionSeconds));
     public static long Departure(ContractWorld w,JourneyLeg leg)=>checked(Departure(w,leg.Edge,leg.StartAt)+(leg.BarrierOrder==null?0:InspectionSeconds));
     public static long End(ContractWorld? w,BranchEdge e,long at,bool courier=false,long? length=null){var mm=length??e.LengthMm;var speed=courier?e.CourierSpeed:e.FootSpeed;return checked(Departure(w,e.Id,at,mm==e.LengthMm)+Math.Max(1,(mm+speed-1)/speed));}
     public static long Progress(ContractWorld w,JourneyLeg l,long at)=>Math.Clamp((at-Departure(w,l))*BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).FootSpeed,0,BranchRoutes.GraphEdges(w).Single(e=>e.Id==l.Edge).LengthMm);

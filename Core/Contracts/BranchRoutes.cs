@@ -53,10 +53,10 @@ public static class BranchRoutes
     }
     static int Duration(BranchEdge e,bool courier=false)=>checked((int)((e.LengthMm+(courier?e.CourierSpeed:e.FootSpeed)-1)/(courier?e.CourierSpeed:e.FootSpeed)));
     public static long Duration(IEnumerable<string> path,bool courier=false,ContractWorld? w=null)=>path.Sum(id=>(long)Duration(GraphEdges(w).Single(e=>e.Id==id),courier));
-    public static JourneyLeg[] Schedule(string from,string[] path,long at,ContractWorld? w=null,bool personal=false)
+    public static JourneyLeg[] Schedule(string from,string[] path,long at,ContractWorld? w=null,bool personal=false,long? knownAt=null,long? knownRevision=null)
     {
         var result=new List<JourneyLeg>();foreach(var id in path){var e=GraphEdges(w).Single(e=>e.Id==id);var to=e.From==from?e.To:e.From;
-            var gate=personal && w?.Court!=null?HouseReforms.BarrierAt(w,id,w.ElapsedSeconds,w.CommitSequence+1):null;
+            var gate=personal && w?.Court!=null?HouseReforms.BarrierAt(w,id,knownAt??w.ElapsedSeconds,knownRevision??w.CommitSequence+1):null;
             var end=checked(TravelWorld.End(w,e,at)+(gate==null?0:TravelWorld.InspectionSeconds));
             result.Add(new(id,from,to,at,end){BarrierOrder=gate?.Input.Id});from=to;at=end;}return result.ToArray();
     }
@@ -162,7 +162,7 @@ public static class BranchRoutes
         if(graph.BlockedEdges.Distinct().Count()!=graph.BlockedEdges.Length||graph.BlockedEdges.Any(e=>!edges.Contains(e))||graph.Journeys.Select(j=>j.Task).Distinct().Count()!=graph.Journeys.Length)throw new InvalidDataException("Invalid graph references");
         foreach(var j in graph.Journeys){var task=w.Tasks.Single(t=>t.Id==j.Task);if(j.Actor!=task.Executor||task.Action!=ActionKind.Move||j.Legs.Length==0||(!TravelWorld.Enabled(w)&&j.Legs[0].From!="castle")||(!RegionalCampaign.Enabled(w)&&j.Legs[^1].To!="village"&&(!MovementControl.Enabled(w)||j.Legs[^1].To!="castle")))throw new InvalidDataException("Invalid journey endpoints");
             for(int i=0;i<j.Legs.Length;i++){var l=j.Legs[i];var e=GraphEdges(w).Single(e=>e.Id==l.Edge);
-                if(l.StartAt<0||l.EndAt!=checked(TravelWorld.End(w,e,l.StartAt)+(l.BarrierOrder==null?0:TravelWorld.InspectionSeconds))||
+                if(l.StartAt<0||l.EndAt!=TravelWorld.ScheduledEnd(w,e,l)||
                     l.BarrierOrder is {} order && !HouseholdCourt.Events(w).Any(c=>c.Input.Id==order && c.Input.Action==CourtAction.EstablishBarrier && c.Input.BarrierEdge==l.Edge && c.At<=l.StartAt)||!(e.From==l.From&&e.To==l.To||e.From==l.To&&e.To==l.From)||
                     i==0&&l.StartAt!=task.StartedAt||i>0&&(l.StartAt!=j.Legs[i-1].EndAt||l.From!=j.Legs[i-1].To))throw new InvalidDataException("Invalid journey chronology");}
             var action=w.Actions.Single(a=>a.Task==task.Id);if(action.Until!=j.Legs[^1].EndAt||action.StartedAt!=task.StartedAt||action.Progress!=Math.Clamp((task.FinishedAt??w.ElapsedSeconds)-action.StartedAt,0,action.Until-action.StartedAt))throw new InvalidDataException("Journey/event completion mismatch");
