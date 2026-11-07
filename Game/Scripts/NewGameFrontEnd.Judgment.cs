@@ -67,6 +67,35 @@ public partial class NewGameFrontEnd
         Check(fromMap ? ContractJson.CanonicalHash(peace) == ContractJson.CanonicalHash(decided) :
             decided.FactionNotices!.Requests.Any(n=>n.Input.Original==decision.Id) &&
             !FactionStances.Known(decided,new("person:nobunaga")).Any(), "判断結果と未達通知の認識");
+        if (!fromMap)
+        {
+            void Accepted(CommandResult result) => Check(result.Code == ResultCode.Accepted, result.VisibleReason);
+            void Military(NewMilitaryAction action, long amount = 0) =>
+                Accepted(council.DecideNewMilitary(new(new("request:imagawa-duty/" + council.Revision), action, amount),
+                    council.PlayerControl, council.Revision));
+            void ReadMail()
+            {
+                foreach (var mail in council.GetActorView(council.PlayerControl).Messages.Where(m => m.KnownBody == null))
+                    Accepted(council.Open(council.PlayerControl, mail.Id, council.Revision));
+            }
+
+            Accepted(council.DecideNewMilitary(new(new("request:imagawa-duty"), NewMilitaryAction.Request) {
+                AuthorityPolicy = NewGameMilitary.AuthorityContract, LedgerPolicy = NewGameMilitary.LedgerIdentityContract
+            }, council.PlayerControl, council.Revision));
+            game.Advance(council.Seconds + 2);
+            ReadMail();
+            Military(NewMilitaryAction.Accept);
+            game.Advance(council.Seconds + 2);
+            ReadMail();
+            Military(NewMilitaryAction.Pickup);
+            Accepted(council.ManageMilitaryRice(new(new("request:imagawa-food"), council.MilitaryEconomyView()!.Depot,
+                MilitaryEconomy.NpcRiceKg), council.PlayerControl, council.Revision));
+            Military(NewMilitaryAction.Load, NewGameMilitary.Capacity);
+            Accepted(council.ManageArmyRoad(new(new("request:imagawa-road"), ArmyRoadAction.March, new("site:kakegawa")),
+                council.PlayerControl, council.Revision));
+            game.Advance(council.Seconds + 4);
+            Check(council.ArmyRoadView()!.Marching, "掛川への街道を行軍中");
+        }
         game.ReviewFraction(0);
         game.Press("save");
         await WaitSave();
