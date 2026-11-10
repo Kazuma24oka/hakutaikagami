@@ -9,7 +9,7 @@ public static class NpcJudgment
     {
         var s=data.Judgment;
         if(data.NpcRoutinePolicy!=Policy){if(s!=null)throw new InvalidDataException("旧NPC方針に判断設定を追加できません");return;}
-        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
+        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||(s.Challenge is {} challenge && !Enum.IsDefined(challenge))||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
             throw new InvalidDataException("NPC判断には版付き設定・修行・性格の方針が必要です");
     }
     public static NpcPersonality Personality(ContractWorld w,EntityId actor)=>new(
@@ -45,6 +45,22 @@ public static class NpcJudgment
         var input=new NpcChoiceInput(actor,w.Seed,ready,Personality(w,actor),aspiration?.Aspiration??NpcAspiration.Unspecified,mode,settings.Attention,candidates.ToArray());
         if(candidates.Any(c=>c.Id=="inspect" && c.Permitted) && HistoricalEventRules.OwariScouting(w,actor,at,revision) is {} opportunity)
             input=HistoricalEventRules.Apply(input,[opportunity],actor==w.PlayerControl,mode==HistoryMode.Fictional);
+        if (settings.Challenge is {} challenge)
+        {
+            int limit = challenge switch { NpcChallenge.Mild => 2, NpcChallenge.Standard => candidates.Count, NpcChallenge.Strong => candidates.Count, _ => throw new InvalidDataException("未知の手強さです") };
+            var considered = input.Candidates.Where(c => c.Known && c.Permitted)
+                .OrderByDescending(c => c.Utility)
+                .ThenByDescending(c => c.MatchesAspiration)
+                .ThenBy(c => c.Id, StringComparer.Ordinal)
+                .Take(limit).Select(candidate =>
+                {
+                    if (challenge != NpcChallenge.Strong || !candidate.Id.StartsWith("practice:", StringComparison.Ordinal)) return candidate;
+                    var skill = Enum.Parse<DevelopmentSkill>(candidate.Id[9..]);
+                    int benefit = CharacterDevelopment.ForecastPractice(w, actor, skill, at);
+                    return candidate with { Utility = candidate.Utility + benefit };
+                }).ToArray();
+            input = input with { Candidates = considered };
+        }
         var choice=NpcChoiceRanking.Choose(input);
         if(choice?.StartsWith("practice:",StringComparison.Ordinal)==true)purpose=purpose with{Skill=Enum.Parse<DevelopmentSkill>(choice[9..])};
         var recipients=choice=="inspect"?NpcLocalOffers.Recipients(w,actor,at,revision,ready):null;

@@ -50,6 +50,17 @@ public static class CharacterDevelopment
         }
         return rows.ToArray();
     }
+    internal static int ForecastPractice(ContractWorld w, EntityId actor, DevelopmentSkill skill, long at)
+    {
+        var prior = (w.Development?.Awards ?? []).Where(a => a.Actor == actor && a.At < at).ToArray();
+        long xp = Xp(prior, actor, skill);
+        int current = Skill(prior, actor, skill);
+        int efficiency = 50 + Value(w, prior, actor, Ability(skill)) / 2 + current / 2;
+        long end = checked(at + PracticeSeconds);
+        long used = prior.Where(a => a.At / 86400 == end / 86400).Sum(a => a.Seconds);
+        long credit = Math.Clamp(28800 - used, 0, PracticeSeconds) * efficiency / 100;
+        return (int)(Math.Min(100, (xp + credit) / 7200) - current) * 8;
+    }
     internal static int EffectiveAt(ContractWorld w,EntityId actor,DevelopmentAbility ability,long at)=>Math.Clamp(Value(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,ability),1,100);
     internal static void Sync(ContractWorld w){if(Enabled(w))w.Development=w.Development! with{Awards=Derive(w)};}
     internal static DevelopmentSkill PreferredPractice(ContractWorld w,EntityId actor)=>Enum.GetValues<DevelopmentSkill>().OrderByDescending(s=>Base(w,actor,Ability(s))).ThenBy(s=>ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/practice/"+w.Seed+"/"+actor.Value+"/"+s)),StringComparer.Ordinal).First();
