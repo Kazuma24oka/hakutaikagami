@@ -50,13 +50,13 @@ public static class CharacterDevelopment
         }
         return rows.ToArray();
     }
-    internal static int ForecastPractice(ContractWorld w, EntityId actor, DevelopmentSkill skill, long at)
+    internal static int ForecastPractice(ContractWorld w, EntityId actor, DevelopmentSkill skill, long at, bool includeDelivery = true)
     {
         var prior = (w.Development?.Awards ?? []).Where(a => a.Actor == actor && a.At < at).ToArray();
         long xp = Xp(prior, actor, skill);
         int current = Skill(prior, actor, skill);
         int efficiency = 50 + Value(w, prior, actor, Ability(skill)) / 2 + current / 2;
-        long end = checked(at + PracticeSeconds);
+        long end = checked(at + PracticeSeconds + (includeDelivery ? 1 : 0));
         long used = prior.Where(a => a.At / 86400 == end / 86400).Sum(a => a.Seconds);
         long credit = Math.Clamp(28800 - used, 0, PracticeSeconds) * efficiency / 100;
         return (int)(Math.Min(100, (xp + credit) / 7200) - current) * 8;

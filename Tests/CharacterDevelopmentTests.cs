@@ -14,6 +14,51 @@ public sealed class CharacterDevelopmentTests
     [Fact]public void OwnFiveAbilitiesAndSevenSkillsHaveExactValues(){var s=Start();var v=s.CharacterCard(s.PlayerControl)!;Assert.True(v.Own);Assert.Equal(5,v.Abilities.Length);Assert.Equal(7,v.Skills.Length);Assert.Equal(50,v.Abilities[4].Value);Assert.All(v.Skills,x=>Assert.Equal(0,x.Value));}
     [Theory][InlineData(DevelopmentSkill.Agriculture)][InlineData(DevelopmentSkill.Commerce)][InlineData(DevelopmentSkill.Construction)][InlineData(DevelopmentSkill.Logistics)][InlineData(DevelopmentSkill.Tactics)][InlineData(DevelopmentSkill.IntelligenceGathering)][InlineData(DevelopmentSkill.Etiquette)]
     public void CompletedPracticeCreditsOnlyChosenSkill(DevelopmentSkill skill){var s=Start();var before=s.DiagnosticSnapshot();var i=Train(s,skill);At(s,1802);var w=s.DiagnosticSnapshot();var award=Assert.Single(w.Development!.Awards);Assert.Equal(skill,award.Skill);Assert.Equal(1800,award.Seconds);Assert.Equal(i.Executor,award.Actor);Assert.Equal(ContractJson.Write(before.Offices),ContractJson.Write(w.Offices));Assert.Equal(ContractJson.Write(before.LandRights),ContractJson.Write(w.LandRights));Assert.Equal(ResultCode.AlreadyAccepted,s.Submit(i,s.Revision).Code);Assert.Single(s.DiagnosticSnapshot().Development!.Awards);}
+    [Theory]
+    [InlineData(DevelopmentSkill.Tactics)]
+    [InlineData(DevelopmentSkill.Construction)]
+    public void StrongPlannerForecastMatchesCompletedPracticeAfterReload(DevelopmentSkill skill)
+    {
+        var session = Start();
+        bool observedGain = false;
+        for (int attempt = 0; attempt < 10 && !observedGain; attempt++)
+        {
+            var world = session.DiagnosticSnapshot();
+            int before = session.CharacterCard(session.PlayerControl)!.Skills.Single(s => s.Name == CharacterDevelopment.Name(skill)).Value!.Value;
+            int predicted = CharacterDevelopment.ForecastPractice(world, session.PlayerControl, skill, session.Seconds);
+            var practice = Train(session, skill);
+            At(session, session.Seconds + 900);
+            session = new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(session.DiagnosticSnapshot())));
+            At(session, practice.EffectiveAt + CharacterDevelopment.PracticeSeconds + 2);
+            int after = session.CharacterCard(session.PlayerControl)!.Skills.Single(s => s.Name == CharacterDevelopment.Name(skill)).Value!.Value;
+            Assert.Equal((after - before) * 8, predicted);
+            observedGain = after > before;
+        }
+        Assert.True(observedGain);
+    }
+    [Fact]
+    public void PracticeForecastUsesTheDayOfCompletionAtMidnight()
+    {
+        var session = Start();
+        var skill = DevelopmentSkill.Construction;
+        for (int n = 0; n < 16; n++)
+        {
+            var predicted = CharacterDevelopment.ForecastPractice(session.DiagnosticSnapshot(), session.PlayerControl, skill, session.Seconds);
+            Train(session, n < 10 && predicted == 0 ? skill : DevelopmentSkill.Tactics);
+            At(session, session.Seconds + 1802);
+        }
+        At(session, 86400 - CharacterDevelopment.PracticeSeconds - 1);
+        var world = session.DiagnosticSnapshot();
+        Assert.Equal(28800, world.Development!.Awards.Sum(a => a.Seconds));
+        int predictedAtMidnight = CharacterDevelopment.ForecastPractice(world, session.PlayerControl, skill, session.Seconds);
+        int before = session.CharacterCard(session.PlayerControl)!.Skills.Single(s => s.Name == CharacterDevelopment.Name(skill)).Value!.Value;
+        Train(session, skill);
+        At(session, 86400);
+        int after = session.CharacterCard(session.PlayerControl)!.Skills.Single(s => s.Name == CharacterDevelopment.Name(skill)).Value!.Value;
+        Assert.Equal(before + 1, after);
+        Assert.Equal(8, predictedAtMidnight);
+        Assert.Equal(0, CharacterDevelopment.ForecastPractice(world, session.PlayerControl, skill, 84599, includeDelivery:false));
+    }
     [Fact]public void WaitingAndPartialPracticeHaveNoGrowth(){var s=Start();Train(s);At(s,900);Assert.Empty(s.DiagnosticSnapshot().Development!.Awards);var t=s.DiagnosticSnapshot().Tasks.Single();Assert.Equal(ResultCode.Accepted,s.StopPractice(t.Id,s.Revision).Code);At(s,2000);Assert.Empty(s.DiagnosticSnapshot().Development!.Awards);Assert.Equal(ResultCode.AlreadyAccepted,s.StopPractice(t.Id,s.Revision).Code);}
     [Fact]public void BusyCharacterCannotQueueAnotherPractice(){var s=Start();Train(s);var i=CharacterDevelopment.Practice(s.DiagnosticSnapshot(),"request:another",DevelopmentSkill.Tactics);Assert.Equal(ResultCode.InvalidInput,s.Submit(i,s.Revision).Code);}
     [Fact]public void PracticeRequiresItsExactDuration(){var s=Start();var i=CharacterDevelopment.Practice(s.DiagnosticSnapshot(),"request:short",DevelopmentSkill.Tactics) with{WorkSeconds=1};Assert.Equal(ResultCode.InvalidInput,s.Submit(i,s.Revision).Code);}

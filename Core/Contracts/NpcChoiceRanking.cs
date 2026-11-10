@@ -15,6 +15,9 @@ public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAt
     public DecisionSupport? Support {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public NpcChallenge? Challenge {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public int? PracticeForecastVersion {get;init;}
+
 }
 public sealed record NpcPersonality(int Ambition,int Duty,int Caution,int Courage,int Affection,int GainSeeking);
 public sealed record NpcChoiceCandidate(string Id,bool Known,bool Permitted,int Utility,

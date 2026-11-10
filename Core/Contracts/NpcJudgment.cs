@@ -9,7 +9,7 @@ public static class NpcJudgment
     {
         var s=data.Judgment;
         if(data.NpcRoutinePolicy!=Policy){if(s!=null)throw new InvalidDataException("旧NPC方針に判断設定を追加できません");return;}
-        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||(s.Challenge is {} challenge && !Enum.IsDefined(challenge))||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
+        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||s.PracticeForecastVersion is not (null or 2)||(s.PracticeForecastVersion != null && s.Challenge != NpcChallenge.Strong)||(s.Challenge is {} challenge && !Enum.IsDefined(challenge))||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
             throw new InvalidDataException("NPC判断には版付き設定・修行・性格の方針が必要です");
     }
     public static NpcPersonality Personality(ContractWorld w,EntityId actor)=>new(
@@ -56,7 +56,7 @@ public static class NpcJudgment
                 {
                     if (challenge != NpcChallenge.Strong || !candidate.Id.StartsWith("practice:", StringComparison.Ordinal)) return candidate;
                     var skill = Enum.Parse<DevelopmentSkill>(candidate.Id[9..]);
-                    int benefit = CharacterDevelopment.ForecastPractice(w, actor, skill, at);
+                    int benefit = CharacterDevelopment.ForecastPractice(w, actor, skill, at, settings.PracticeForecastVersion == 2);
                     return candidate with { Utility = candidate.Utility + benefit };
                 }).ToArray();
             input = input with { Candidates = considered };

@@ -17,7 +17,7 @@ public partial class NpcJudgmentCheck:Node
             var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
             var challenge = Enum.Parse<NpcChallenge>(System.Environment.GetEnvironmentVariable("HAKUTAI_CHECK_CHALLENGE") ?? "Standard");
             var start=entry.CreateJudgmentReview(Path.Combine(Path.GetTempPath(),"npc-judgment-ui-"+Guid.NewGuid().ToString("N")), challenge:challenge);
-            Check(start.Profile.Judgment==new NpcJudgmentSettings(NpcJudgment.Policy,HistoryMode.Fictional,NpcAttention.Beginner){Challenge=challenge},"開始画面の選択と保存定義");
+            Check(start.Profile.Judgment==new NpcJudgmentSettings(NpcJudgment.Policy,HistoryMode.Fictional,NpcAttention.Beginner){Challenge=challenge,PracticeForecastVersion=challenge==NpcChallenge.Strong?2:null},"開始画面の選択と保存定義");
             await Frame();if(DisplayServer.GetName()!="headless"){await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);Check(ViewportCapture.Save(GetViewport(),Path.Combine(output,"settings.png"))==Error.Ok,"設定画面の自前描画");}
             entry.QueueFree();await Frame();var game=new NewGameRuntime();game.Configure(start.Store,start.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Frame();
             await Until(()=>!game.IsSaving,"初期保存");game.Advance(10);
