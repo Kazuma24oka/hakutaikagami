@@ -45,6 +45,21 @@ public partial class NewGameRuntime
         var claim=ContractJson.Read<FactionStanceClaim>(System.Text.Encoding.UTF8.GetBytes(known.KnownBody));string from=w.Definitions.Organizations.Single(o=>o.Id==claim.FromOwner).Name,to=w.Definitions.Organizations.Single(o=>o.Id==claim.ToOwner).Name;long left=Math.Max(0,claim.Until-w.ElapsedSeconds);
         string speech=left==0?from+"の、"+to+"に対する敵対意思は、この通知に記載された期間を終えている。":from+"は"+to+"への敵対意思を表明する。記載された期限までは、あと約"+Math.Max(1,left/3600+(left%3600==0?0:1))+"時間。";
         if(claim.RefusalReport!=null)speech+=" 相手方による和睦仲裁案の拒否を理由に挙げている。";
-        PresentWork("対外方針の書状",speech,"開始から"+claim.ObservedAt+"秒時点の通知。現在の行動は別途確認する。",new(m.SenderId),new(m.SenderId),"開封した書状","確認した記録");Choice("work-faction-map","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
+        string context = $"開始から{claim.ObservedAt}秒時点の通知。";
+        bool canNegotiate = left > 0 && OwnPoliticalHouse(w) == claim.ToOwner && TruceNegotiations.Enabled(w);
+        if (canNegotiate)
+        {
+            context += (w.NewGame?.Judgment?.Support ?? DecisionSupport.Brief) switch
+            {
+                DecisionSupport.Detailed => "相手の兵力や出発はこの書状からは分かりません。不戦を提案する場合は期間を定めた書状を送り、双方が同じ条件を承諾する必要があります。返答を待つ間も時間は進みます。",
+                DecisionSupport.Independent => "",
+                _ => "不戦を提案できます。成立には相手の承諾と書状の到着が必要です。"
+            };
+        }
+        PresentWork("対外方針の書状",speech,context,new(m.SenderId),new(m.SenderId),"開封した書状","確認した記録");
+        if (canNegotiate)
+            Choice("work-faction-truce","不戦の条件を検討",()=>{ CloseBottomTalk(); ShowTruceNegotiation(claim.FromOwner); });
+        Choice("work-faction-map","地図へ戻る",CloseBottomTalk);
+        LayoutBottomTalk();
     }
 }
