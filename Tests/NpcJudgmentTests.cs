@@ -3,12 +3,12 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 public sealed class NpcJudgmentTests
 {
-    internal static ContractWorld Start()
+    internal static ContractWorld Start(bool? inspectionReferences = null)
     {
         var old=NpcContinuingTests.Start(companions:true);var d=old.NewGame!;
         return NewGameWorld.Create(d.Start,d.Registered,d.Selected.Value,old.Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcJudgment.Policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,
             developmentPolicy:CharacterDevelopment.Policy,companionPolicy:PersonalCompanions.Policy,socialPolicy:CharacterRelations.Policy,
-            judgment:new(NpcJudgment.Policy,HistoryMode.SemiHistorical,NpcAttention.Standard));
+            judgment:new(NpcJudgment.Policy,HistoryMode.SemiHistorical,NpcAttention.Standard){UseInspectionReferences=inspectionReferences});
     }
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     [Fact] public void NewSettingsAreRequiredAndCannotChangeOldWorlds()
