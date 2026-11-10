@@ -25,10 +25,31 @@ public sealed class NpcLocalOfferTests
     {
         var s=new WorldSession(NpcJudgmentTests.Start());At(s,30);var w=s.DiagnosticSnapshot();
         var tasks=w.Tasks.Where(t=>t.Issuer!=t.Executor&&t.Executor!=s.PlayerControl).ToArray();Assert.NotEmpty(tasks);
-        var done=Assert.Single(tasks,t=>t.Execution==ExecutionPhase.Completed);
-        Assert.Equal(AgreementPhase.Active,done.Agreement);Assert.True(NewGameWork.Paid(w,done.Id));
-        Assert.Contains(w.WorkCycle!.Openings,o=>w.Messaging.Messages.Any(m=>m.Id==o.Message&&m.RecipientId==done.Executor.Value));
+        var completed = tasks.Where(t => t.Execution == ExecutionPhase.Completed).ToArray();
+        Assert.NotEmpty(completed);
+        foreach (var done in completed)
+        {
+            Assert.Equal(AgreementPhase.Active, done.Agreement);
+            Assert.True(NewGameWork.Paid(w, done.Id));
+            Assert.Contains(w.WorkCycle!.Openings, o => w.Messaging.Messages.Any(m => m.Id == o.Message && m.RecipientId == done.Executor.Value));
+        }
         new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+    }
+    [Fact] public void OpenedInspectionReportInfluencesOnlyItsRecipientAndSurvivesReload()
+    {
+        var session = new WorldSession(NpcJudgmentTests.Start(inspectionReferences:true));
+        At(session, 30);
+        var saved = ContractJson.Write(session.DiagnosticSnapshot());
+        var world = new WorldSession(ContractJson.Read<ContractWorld>(saved)).DiagnosticSnapshot();
+        var done = world.Tasks.First(t => t.Issuer != t.Executor && t.Executor != world.PlayerControl && t.Execution == ExecutionPhase.Completed);
+        var report = Assert.Single(world.Outbox, o => o.Task == done.Id && o.Kind == "contract-report");
+        var opened = Assert.Single(world.Messaging.Knowledge, k => k.CharacterId == done.Issuer.Value && k.MessageId == report.Id.Value);
+        Assert.Equal(0, NpcLocalOffers.InspectionReference(world, done.Issuer, done.Executor, opened.LearnedAt));
+        Assert.Equal(0, NpcLocalOffers.InspectionReference(world, world.PlayerControl, done.Executor, 30));
+        Assert.Equal(0, NpcLocalOffers.InspectionReference(world, done.Issuer, done.Executor, report.At + 30L * 86400 + 1));
+        var options = NpcLocalOffers.Recipients(world, done.Issuer, 30, world.CommitSequence, 30);
+        Assert.Equal(8, Assert.Single(options.Candidates, c => c.Id == done.Executor.Value).Utility);
+        Assert.Equal(saved, ContractJson.Write(world));
     }
     [Fact] public void PlayerCanDeclineWithoutExecutionOrReward()
     {

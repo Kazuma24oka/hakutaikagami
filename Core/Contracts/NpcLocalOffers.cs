@@ -6,6 +6,16 @@ public static class NpcLocalOffers
 {
     public static bool IsOffer(ContractWorld w,Intent i)=>NpcJudgment.Enabled(w)&&i.Actor!=i.Executor&&i.Action==ActionKind.Inspect&&i.RequestId.Value.StartsWith("request:npc-routine/",StringComparison.Ordinal);
     internal static bool AvailableAt(ContractWorld w,EntityId actor,long at,long revision)=>!HostageCustody.HeldAt(w,actor,at,revision+1)&&!FieldConvoy.Busy(w,actor,at,revision+1)&&!NpcFreight.Busy(w,actor,at,revision+1)&&!PersonalCompanions.Occupied(w,actor,at,revision)&&!NpcArmies.CommanderBusyAt(w,actor,at,revision);
+    internal static int InspectionReference(ContractWorld w, EntityId issuer, EntityId worker, long at)
+    {
+        if (w.NewGame?.Judgment?.UseInspectionReferences != true) return 0;
+        // 開封時刻しか記録しないため、同じ秒の判断へ後から開封を遡及させない。
+        bool known = w.Outbox.Any(o => o.Sender == worker && o.Recipient == issuer &&
+            o.Kind == "contract-report" && o.Body == "任務完了" && o.At >= at - 30L * 86400 &&
+            MessageFlow.LearnedAt(w.Messaging, o.Id.Value, issuer.Value) is long read && read < at &&
+            w.Tasks.Any(t => t.Id == o.Task && t.Action == ActionKind.Inspect));
+        return known ? 8 : 0;
+    }
     internal static NpcChoiceInput Recipients(ContractWorld w,EntityId issuer,long at,long revision,long choiceAt)
     {
         var site=PersonalCompanions.PhysicalSiteAt(w,issuer,at,revision+1);
@@ -20,7 +30,7 @@ public static class NpcLocalOffers
             bool busy=w.Tasks.Any(t=>t.Executor==person.Id&&(t.FinishedAt==null||t.FinishedAt>=at)&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CreatedAt<=at&&r.CommitSequence<=revision));
             var permissions=w.ForkTransportLocation();permissions.CommitSequence=revision;
             bool permit=WorldSession.Permits(permissions,person.Id,new(new("request:npc-offer-preview"),issuer,person.Id,site.Value,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+120,false,null,at+120),at,1,4,1,true,TaskKind.VoluntaryRequest),at);
-            candidates.Add(new(person.Id.Value,true,!busy&&permit&&AvailableAt(w,person.Id,at,revision),0,new(0,0,0,0,0,0),false,false,person.Id==w.PlayerControl));
+            candidates.Add(new(person.Id.Value,true,!busy&&permit&&AvailableAt(w,person.Id,at,revision),InspectionReference(w,issuer,person.Id,at),new(0,0,0,0,0,0),false,false,person.Id==w.PlayerControl));
         }
         var settings=w.NewGame!.Judgment!;
         return new(issuer,w.Seed,choiceAt,NpcJudgment.Personality(w,issuer),NpcAspiration.Unspecified,HistoryMode.Fictional,settings.Attention,candidates.ToArray());
