@@ -67,6 +67,7 @@ public partial class NewGameFrontEnd
         Check(fromMap ? ContractJson.CanonicalHash(peace) == ContractJson.CanonicalHash(decided) :
             decided.FactionNotices!.Requests.Any(n=>n.Input.Original==decision.Id) &&
             !FactionStances.Known(decided,new("person:nobunaga")).Any(), "判断結果と未達通知の認識");
+        bool supply = System.Environment.GetEnvironmentVariable("HAKUTAI_IMAGAWA_CONVOY") == "1";
         if (!fromMap)
         {
             void Accepted(CommandResult result) => Check(result.Code == ResultCode.Accepted, result.VisibleReason);
@@ -91,6 +92,13 @@ public partial class NewGameFrontEnd
             Accepted(council.ManageMilitaryRice(new(new("request:imagawa-food"), council.MilitaryEconomyView()!.Depot,
                 MilitaryEconomy.NpcRiceKg), council.PlayerControl, council.Revision));
             Military(NewMilitaryAction.Load, NewGameMilitary.Capacity);
+            if (supply)
+            {
+                var order = new CampConvoyInput(new("request:imagawa-convoy"), CampConvoyAction.Dispatch,
+                    Carrier: new("person:imagawa-ujizane"), RiceKg: 60) { DestinationSite = RegionalCampaign.Site("okazaki") };
+                var result = council.ManageCampConvoy(order, council.PlayerControl, council.Revision);
+                if (result.Code != ResultCode.Accepted) throw new System.InvalidOperationException(result.VisibleReason);
+            }
             Accepted(council.ManageArmyRoad(new(new("request:imagawa-road"), ArmyRoadAction.March, new("site:kakegawa")),
                 council.PlayerControl, council.Revision));
             game.Advance(council.Seconds + 4);
@@ -109,7 +117,7 @@ public partial class NewGameFrontEnd
             pose == game.Pose(), "復旧後の世界と3D配置が一致");
         if (!fromMap)
         {
-            var end = world.Branches!.Journeys.Last().Legs[^1].EndAt;
+            var end = world.Branches!.Journeys.Last(j => j.Actor == game.Session.PlayerControl).Legs[^1].EndAt;
             game.Advance(end + 2);
             var session = game.Session;
             var market = session.ArmyRoadView()!;
@@ -128,7 +136,7 @@ public partial class NewGameFrontEnd
                 new("site:hamamatsu")), session.PlayerControl, session.Revision);
             Check(forward.Code == ResultCode.Accepted, forward.VisibleReason);
             game.Advance(session.Seconds + 4);
-            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last(j => j.Actor == game.Session.PlayerControl).Legs[^1].EndAt + 2);
             var hamamatsu = session.ArmyRoadView()!;
             Check(!hamamatsu.Marching && hamamatsu.Assembly?.Value == "site:hamamatsu" &&
                 hamamatsu.CarryKg < market.CarryKg, "浜松に到着し行軍分の米を消費");
@@ -136,7 +144,7 @@ public partial class NewGameFrontEnd
                 new("site:yoshida")), session.PlayerControl, session.Revision);
             Check(next.Code == ResultCode.Accepted, next.VisibleReason);
             game.Advance(session.Seconds + 4);
-            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last(j => j.Actor == game.Session.PlayerControl).Legs[^1].EndAt + 2);
             var yoshida = session.ArmyRoadView()!;
             Check(yoshida.Assembly?.Value == "site:yoshida" && !yoshida.Marching, "吉田に集合");
             GD.Print($"行軍後の携行米（kg） 掛川 {market.CarryKg}、浜松 {hamamatsu.CarryKg}、吉田 {yoshida.CarryKg}。吉田の購入可能量 {yoshida.MaxPurchaseKg}kg");
@@ -145,10 +153,17 @@ public partial class NewGameFrontEnd
                 RegionalCampaign.Site("okazaki")), session.PlayerControl, session.Revision);
             Check(okazakiMarch.Code == ResultCode.Accepted, okazakiMarch.VisibleReason);
             game.Advance(session.Seconds + 4);
-            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last(j => j.Actor == game.Session.PlayerControl).Legs[^1].EndAt + 2);
             var okazaki = session.ArmyRoadView()!;
             Check(okazaki.Assembly == RegionalCampaign.Site("okazaki") && !okazaki.Marching, "岡崎に集合");
             GD.Print($"岡崎の携行米 {okazaki.CarryKg}kg、現地購入可能 {okazaki.MaxPurchaseKg}kg");
+            if (supply)
+            {
+                game.Advance(session.Seconds + 3600);
+                var received = session.ArmyRoadView()!;
+                GD.Print($"補給隊と合流後の携行米 {received.CarryKg}kg");
+                if (received.CarryKg < 60) throw new System.InvalidOperationException("岡崎に補給が届いていません");
+            }
             game.Press("load");
             await Frame();
             session = game.Session;
@@ -158,7 +173,7 @@ public partial class NewGameFrontEnd
                 new("site:sunpu")), session.PlayerControl, session.Revision);
             Check(returning.Code == ResultCode.Accepted, returning.VisibleReason);
             game.Advance(session.Seconds + 4);
-            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last(j => j.Actor == game.Session.PlayerControl).Legs[^1].EndAt + 2);
             market = session.ArmyRoadView()!;
             Check(market.Assembly?.Value == "site:sunpu", "駿府への帰還");
             Check(market.MaxPurchaseKg > 0, "現地の積載余力と財布で兵糧を買える");
