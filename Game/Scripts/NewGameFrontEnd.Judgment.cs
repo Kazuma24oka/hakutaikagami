@@ -13,6 +13,12 @@ public partial class NewGameFrontEnd
         var attention=new OptionButton{Name="NpcAttention"};
         foreach(string label in new[]{"入門：声をかけられやすい","標準：少し声をかけられやすい","対等：ほかの人物と同じ扱い"})attention.AddItem(label);
         attention.Select((int)npcAttention);attention.ItemSelected+=index=>npcAttention=(NpcAttention)index;page.AddChild(attention);
+        var courses = new MenuButton { Name = "PlayCourses", Text = "手強さと助言をまとめて選ぶ" };
+        var menu = courses.GetPopup();
+        menu.AddItem("入門（控えめ・詳しい助言）", 0);
+        menu.AddItem("標準（標準・要点だけ）", 1);
+        menu.AddItem("挑戦（手強い・自分で判断）", 2);
+        page.AddChild(courses);
         page.AddChild(new Label { Text = "AIの手強さ（点検・修行で比べる案の数）" });
         var challenge = new OptionButton { Name = "NpcChallenge" };
         foreach (var label in new[] { "控えめ", "標準", "手強い" }) challenge.AddItem(label);
@@ -25,6 +31,19 @@ public partial class NewGameFrontEnd
         support.Select((int)supportLevel);
         support.ItemSelected += index => supportLevel = (DecisionSupport)index;
         page.AddChild(support);
+        menu.IdPressed += id =>
+        {
+            (challengeLevel, supportLevel) = id switch
+            {
+                0 => (NpcChallenge.Mild, DecisionSupport.Detailed),
+                1 => (NpcChallenge.Standard, DecisionSupport.Brief),
+                2 => (NpcChallenge.Strong, DecisionSupport.Independent),
+                _ => throw new System.ArgumentOutOfRangeException(nameof(id))
+            };
+            challenge.Select((int)challengeLevel);
+            support.Select((int)supportLevel);
+        };
+
         page.AddChild(new Label{Text="本人が知っている事情と実行できる範囲で判断します。\n依頼は断れます。報酬や権限が増える設定ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
     }
     internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false,NpcChallenge challenge=NpcChallenge.Standard)
@@ -32,6 +51,17 @@ public partial class NewGameFrontEnd
         if(TestKey!=null)throw new System.InvalidOperationException("通常の入口で検査してください");
         Conditions();
         var strength = page.GetNode<OptionButton>("NpcChallenge");
+        var menu = page.GetNode<MenuButton>("PlayCourses").GetPopup();
+        var support = page.GetNode<OptionButton>("DecisionSupport");
+        menu.EmitSignal(PopupMenu.SignalName.IdPressed, 2L);
+        Check(strength.Selected == (int)NpcChallenge.Strong && support.Selected == (int)DecisionSupport.Independent, "挑戦コースの表示");
+        support.Select((int)DecisionSupport.Detailed);
+        support.EmitSignal(OptionButton.SignalName.ItemSelected, (long)DecisionSupport.Detailed);
+        Check(challengeLevel == NpcChallenge.Strong && supportLevel == DecisionSupport.Detailed, "助言だけ個別変更できる");
+        menu.EmitSignal(PopupMenu.SignalName.IdPressed, 0L);
+        Check(challengeLevel == NpcChallenge.Mild && supportLevel == DecisionSupport.Detailed, "入門コースの設定");
+        menu.EmitSignal(PopupMenu.SignalName.IdPressed, 1L);
+        Check(challengeLevel == NpcChallenge.Standard && supportLevel == DecisionSupport.Brief, "標準コースの設定");
         strength.Select((int)challenge);
         strength.EmitSignal(OptionButton.SignalName.ItemSelected, (long)challenge);
         var histories=GetNode<OptionButton>(page.GetPath()+"/HistoryMode");
