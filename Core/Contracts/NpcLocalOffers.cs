@@ -13,7 +13,7 @@ public static class NpcLocalOffers
         if(site!=null)
         foreach(var person in w.Characters.Where(c=>c.Id!=issuer&&c.Life==LifeState.Adult).OrderBy(c=>c.Id.Value,StringComparer.Ordinal)){
             // 新版では作業終了と同じ秒の相手を翌秒まで候補に戻さない。
-            if(w.NewGame?.Judgment?.EventEdition==HistoricalEventRules.OwariEdition &&
+            if((w.NewGame?.Judgment?.EventEdition==HistoricalEventRules.OwariEdition || w.NewGame?.Judgment?.Challenge != null) &&
                 w.Tasks.Any(t=>t.Executor==person.Id && t.FinishedAt==at && w.Requests.Any(r=>r.Id==t.RequestId &&
                     r.CommitSequence<=revision && !NewGameNpcRoutine.DiscretionaryPractice(w,r.Intent))))continue;
             if(PersonalCompanions.PhysicalSiteAt(w,person.Id,at,revision+1)!=site)continue;

@@ -13,6 +13,12 @@ public partial class NewGameFrontEnd
         var attention=new OptionButton{Name="NpcAttention"};
         foreach(string label in new[]{"入門：声をかけられやすい","標準：少し声をかけられやすい","対等：ほかの人物と同じ扱い"})attention.AddItem(label);
         attention.Select((int)npcAttention);attention.ItemSelected+=index=>npcAttention=(NpcAttention)index;page.AddChild(attention);
+        page.AddChild(new Label { Text = "AIの手強さ（点検・修行で比べる案の数）" });
+        var challenge = new OptionButton { Name = "NpcChallenge" };
+        foreach (var label in new[] { "控えめ", "標準", "手強い" }) challenge.AddItem(label);
+        challenge.Select((int)challengeLevel);
+        challenge.ItemSelected += index => challengeLevel = (NpcChallenge)index;
+        page.AddChild(challenge);
         page.AddChild(new Label { Text = "判断支援" });
         var support = new OptionButton { Name = "DecisionSupport" };
         foreach (var label in new[] { "要点だけ", "詳しい助言", "自分で判断" }) support.AddItem(label);
@@ -21,10 +27,13 @@ public partial class NewGameFrontEnd
         page.AddChild(support);
         page.AddChild(new Label{Text="本人が知っている事情と実行できる範囲で判断します。\n依頼は断れます。報酬や権限が増える設定ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
     }
-    internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false)
+    internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false,NpcChallenge challenge=NpcChallenge.Standard)
     {
         if(TestKey!=null)throw new System.InvalidOperationException("通常の入口で検査してください");
         Conditions();
+        var strength = page.GetNode<OptionButton>("NpcChallenge");
+        strength.Select((int)challenge);
+        strength.EmitSignal(OptionButton.SignalName.ItemSelected, (long)challenge);
         var histories=GetNode<OptionButton>(page.GetPath()+"/HistoryMode");
         var mode=owari?HistoryMode.Historical:HistoryMode.Fictional;
         histories.Select((int)mode);histories.EmitSignal(OptionButton.SignalName.ItemSelected,(long)mode);

@@ -18,7 +18,7 @@ public partial class HistoricalChronicleCheck:Node
             var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
             var start=entry.CreateJudgmentReview(Path.Combine(Path.GetTempPath(),"npc-judgment-ui-"+Guid.NewGuid().ToString("N")),owari);
             if(owari)Check(start.Profile.Judgment?.EventEdition==HistoricalEventRules.OwariEdition,"史実条件の新規開始");
-            else Check(start.Profile.Judgment==new NpcJudgmentSettings(NpcJudgment.Policy,HistoryMode.Fictional,NpcAttention.Beginner),"開始画面の選択と保存定義");
+            else Check(start.Profile.Judgment==new NpcJudgmentSettings(NpcJudgment.Policy,HistoryMode.Fictional,NpcAttention.Beginner){Challenge=NpcChallenge.Standard},"開始画面の選択と保存定義");
             await Frame();if(DisplayServer.GetName()!="headless"){await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);Check(ViewportCapture.Save(GetViewport(),Path.Combine(output,"settings.png"))==Error.Ok,"設定画面の自前描画");}
             entry.QueueFree();await Frame();var game=new NewGameRuntime();game.Configure(start.Store,start.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Frame();
             await Until(()=>!game.IsSaving,"初期保存");game.Advance(10);
