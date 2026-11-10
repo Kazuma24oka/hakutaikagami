@@ -13,6 +13,12 @@ public partial class NewGameFrontEnd
         var attention=new OptionButton{Name="NpcAttention"};
         foreach(string label in new[]{"入門：声をかけられやすい","標準：少し声をかけられやすい","対等：ほかの人物と同じ扱い"})attention.AddItem(label);
         attention.Select((int)npcAttention);attention.ItemSelected+=index=>npcAttention=(NpcAttention)index;page.AddChild(attention);
+        page.AddChild(new Label { Text = "判断支援" });
+        var support = new OptionButton { Name = "DecisionSupport" };
+        foreach (var label in new[] { "要点だけ", "詳しい助言", "自分で判断" }) support.AddItem(label);
+        support.Select((int)supportLevel);
+        support.ItemSelected += index => supportLevel = (DecisionSupport)index;
+        page.AddChild(support);
         page.AddChild(new Label{Text="本人が知っている事情と実行できる範囲で判断します。\n依頼は断れます。報酬や権限が増える設定ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
     }
     internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false)
@@ -31,6 +37,11 @@ public partial class NewGameFrontEnd
     }
     internal async System.Threading.Tasks.Task CheckImagawaStart(string root, bool fromMap)
     {
+        Conditions();
+        var assistance = page.GetNode<OptionButton>("DecisionSupport");
+        var level = fromMap ? DecisionSupport.Independent : DecisionSupport.Detailed;
+        assistance.Select((int)level);
+        assistance.EmitSignal(OptionButton.SignalName.ItemSelected, (long)level);
         campaigns = new NewCampaignStore(root);
         var raw = NewGameWorld.Scenario(HistoricalStartCatalog.Current);
         var request = new WorldSetupRequest([], []);
@@ -115,6 +126,8 @@ public partial class NewGameFrontEnd
         game.ReviewFraction(0);
         Check(ContractJson.CanonicalHash(world) == ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()) &&
             pose == game.Pose(), "復旧後の世界と3D配置が一致");
+        Check(game.Session.DiagnosticSnapshot().NewGame!.Judgment?.Support == level,
+            "選択した判断支援が復旧後も一致");
         if (!fromMap)
         {
             var end = world.Branches!.Journeys.Last(j => j.Actor == game.Session.PlayerControl).Legs[^1].EndAt;
@@ -201,6 +214,8 @@ public partial class NewGameFrontEnd
             market = session.ArmyRoadView()!;
             Check(market.Assembly?.Value == "site:sunpu", "駿府への帰還");
             Check(market.MaxPurchaseKg > 0, "現地の積載余力と財布で兵糧を買える");
+            Check(game.ReviewVoyageHint.Contains("私財が") && game.ReviewVoyageHint.Contains("1kg増えます"),
+                "詳しい助言が現地の売買条件を表示");
             var buy = session.ManageArmyRoad(new(new("request:kakegawa-food"), ArmyRoadAction.BuyRice, RiceKg: 1),
                 session.PlayerControl, session.Revision);
             Check(buy.Code == ResultCode.Accepted, buy.VisibleReason);

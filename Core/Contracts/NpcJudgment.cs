@@ -9,7 +9,7 @@ public static class NpcJudgment
     {
         var s=data.Judgment;
         if(data.NpcRoutinePolicy!=Policy){if(s!=null)throw new InvalidDataException("旧NPC方針に判断設定を追加できません");return;}
-        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
+        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
             throw new InvalidDataException("NPC判断には版付き設定・修行・性格の方針が必要です");
     }
     public static NpcPersonality Personality(ContractWorld w,EntityId actor)=>new(

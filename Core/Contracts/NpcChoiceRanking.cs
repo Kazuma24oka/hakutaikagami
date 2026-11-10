@@ -2,6 +2,7 @@
 // 世界全体を受け取らず、本人に既知かつ実行可能な候補だけを比較する境界。
 namespace HakutaiKagami.Core.Contracts;
 
+public enum DecisionSupport { Brief, Detailed, Independent }
 public enum NpcAttention { Beginner, Standard, Equal }
 public enum NpcCadence { Daily, Weekly, Monthly }
 public enum NpcAspiration { Unspecified, PreserveHouse, UpholdOrder, ProsperDomain, EncourageTrade }
@@ -9,6 +10,8 @@ public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAt
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? EventEdition {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public DecisionSupport? Support {get;init;}
 }
 public sealed record NpcPersonality(int Ambition,int Duty,int Caution,int Courage,int Affection,int GainSeeking);
 public sealed record NpcChoiceCandidate(string Id,bool Known,bool Permitted,int Utility,
