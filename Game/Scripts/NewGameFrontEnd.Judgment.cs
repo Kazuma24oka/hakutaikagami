@@ -121,10 +121,39 @@ public partial class NewGameFrontEnd
             Check(denied.Code == ResultCode.NotAvailable &&
                 ContractJson.CanonicalHash(arrival) == ContractJson.CanonicalHash(session.DiagnosticSnapshot()),
                 "市場のない掛川では購入を拒否し在庫・所持金を保つ");
-            var alternative = new WorldSession(ContractJson.Copy(arrival));
-            var forward = alternative.ManageArmyRoad(new(new("request:kakegawa-forward"), ArmyRoadAction.March,
-                new("site:hamamatsu")), alternative.PlayerControl, alternative.Revision);
+            game.Press("save");
+            await WaitSave();
+            session = game.Session;
+            var forward = session.ManageArmyRoad(new(new("request:kakegawa-forward"), ArmyRoadAction.March,
+                new("site:hamamatsu")), session.PlayerControl, session.Revision);
             Check(forward.Code == ResultCode.Accepted, forward.VisibleReason);
+            game.Advance(session.Seconds + 4);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            var hamamatsu = session.ArmyRoadView()!;
+            Check(!hamamatsu.Marching && hamamatsu.Assembly?.Value == "site:hamamatsu" &&
+                hamamatsu.CarryKg < market.CarryKg, "浜松に到着し行軍分の米を消費");
+            var next = session.ManageArmyRoad(new(new("request:hamamatsu-yoshida"), ArmyRoadAction.March,
+                new("site:yoshida")), session.PlayerControl, session.Revision);
+            Check(next.Code == ResultCode.Accepted, next.VisibleReason);
+            game.Advance(session.Seconds + 4);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            var yoshida = session.ArmyRoadView()!;
+            Check(yoshida.Assembly?.Value == "site:yoshida" && !yoshida.Marching, "吉田に集合");
+            GD.Print($"行軍後の携行米（kg） 掛川 {market.CarryKg}、浜松 {hamamatsu.CarryKg}、吉田 {yoshida.CarryKg}。吉田の購入可能量 {yoshida.MaxPurchaseKg}kg");
+            Check(game.ReviewVoyageHint.Contains("購入できません"), "吉田で現地調達の可否を表示");
+            var okazakiMarch = session.ManageArmyRoad(new(new("request:yoshida-okazaki"), ArmyRoadAction.March,
+                RegionalCampaign.Site("okazaki")), session.PlayerControl, session.Revision);
+            Check(okazakiMarch.Code == ResultCode.Accepted, okazakiMarch.VisibleReason);
+            game.Advance(session.Seconds + 4);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            var okazaki = session.ArmyRoadView()!;
+            Check(okazaki.Assembly == RegionalCampaign.Site("okazaki") && !okazaki.Marching, "岡崎に集合");
+            GD.Print($"岡崎の携行米 {okazaki.CarryKg}kg、現地購入可能 {okazaki.MaxPurchaseKg}kg");
+            game.Press("load");
+            await Frame();
+            session = game.Session;
+            Check(ContractJson.CanonicalHash(arrival) == ContractJson.CanonicalHash(session.DiagnosticSnapshot()),
+                "掛川分岐に復旧");
             var returning = session.ManageArmyRoad(new(new("request:kakegawa-return"), ArmyRoadAction.March,
                 new("site:sunpu")), session.PlayerControl, session.Revision);
             Check(returning.Code == ResultCode.Accepted, returning.VisibleReason);

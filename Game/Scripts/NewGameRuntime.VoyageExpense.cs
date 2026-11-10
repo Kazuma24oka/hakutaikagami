@@ -21,7 +21,15 @@ public partial class NewGameRuntime
         var refused=w.VoyageExpenses?.Refusals.LastOrDefault();var latest=w.Tasks.LastOrDefault(t=>t.Executor==Session.PlayerControl&&t.Action==ActionKind.Move);
         if(refused!=null&&latest?.Id==refused.Task&&latest.Execution==ExecutionPhase.Stopped)text="船賃が足りず港で待機中。\n陸路の行先や別の仕事を選べます。";
         else if(w.VoyageExpenses?.Payments.LastOrDefault() is {} paid)text+=$"\n直近の船賃：{paid.Amount}文支払済み。";
-        if(Session.ArmyRoadView() is {} army){text=$"同じ部隊を陸路で率います。携行米 {army.CarryKg}kg / 私財 {army.PrivateMoney}文。\n到着先で再集合・展開、米の購入ができます。指揮返還は元の家で行います。";buttons["depart"].Text="部隊を率いて行先へ";}else buttons["depart"].Text="行先へ出発";
+        if (Session.ArmyRoadView() is {} army)
+        {
+            string supply = army.Marching ? "行軍中。兵糧は市場のある拠点で調達できます。" :
+                army.LocalRicePrice.HasValue ? $"現地で購入可能 {army.MaxPurchaseKg}kg（1kg {army.LocalRicePrice}文）。" :
+                "この集合地では兵糧を購入できません。";
+            text = $"携行米 {army.CarryKg}kg / 私財 {army.PrivateMoney}文。\n{supply} 指揮返還は元の家で行います。";
+            buttons["depart"].Text = "部隊を率いて行先へ";
+        }
+        else buttons["depart"].Text = "行先へ出発";
         voyageHint.Text=text;
     }
     internal string ReviewVoyageHint=>voyageHint?.Text??"";
