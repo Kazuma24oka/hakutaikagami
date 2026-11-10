@@ -6,7 +6,10 @@ public sealed record ArmyRoadPurchase(EntityId Army,EntityId Case,EntityId Carry
 public sealed record ArmyRoadEntry(ArmyRoadInput Input,long At,long Revision,ArmyRoadTerms? Terms,ArmyRoadPurchase? Purchase);
 public sealed record ArmyRoadUse(EntityId Army,EntityId Case,EntityId Carry,SupplyUse Use);
 public sealed record ArmyRoadState(int Schema,string Policy,ArmyRoadEntry[] Entries,ArmyRoadUse[] Uses);
-public sealed record ArmyRoadView(EntityId? Assembly,bool Marching,long CarryKg,long PrivateMoney,long? LocalRicePrice,long LocalFreeRice,string Scope);
+public sealed record ArmyRoadView(EntityId? Assembly,bool Marching,long CarryKg,long PrivateMoney,long? LocalRicePrice,long LocalFreeRice,string Scope)
+{
+    public long MaxPurchaseKg { get; init; }
+}
 public static class ArmyRoadMarch
 {
     public const string Policy="same-army-common-land-march-current-assembly-local-private-rice-v16",LandRoute="same-borrowed-army-land-trip-v1",FoodStop="army-ration-insufficient";
@@ -67,7 +70,11 @@ public static class ArmyRoadMarch
     internal static void ValidateFoodStop(ContractWorld w,TrafficStop stop)
     {Need(Enabled(w),"旧版に軍兵糧の停止を追加できません");var t=w.Tasks.Single(t=>t.Id==stop.Task);var e=w.ArmyRoad!.Entries.Single(e=>e.Terms?.Intent.RequestId==t.RequestId);var c=Context(w,e.Terms!.Army,stop.At,t.Revision+1);var j=w.Branches!.Journeys.Single(j=>j.Task==t.Id);var leg=j.Legs.Single(l=>l.Edge==stop.Edge&&l.From==stop.Node&&l.StartAt==stop.At);Need(t.Execution==ExecutionPhase.Stopped&&t.FinishedAt==stop.At&&t.InternalReason==FoodStop&&t.Executor==stop.Actor&&NewGameMilitary.CarryAt(c,stop.At,t.Revision+1)<checked(BattlefieldRules.RationStrength(c,Math.Max(0,stop.At-1))*(leg.EndAt-leg.StartAt)),"軍兵糧の停止に当時の区間・不足の根拠がありません");}
     public static ArmyRoadView? View(ContractWorld w)
-    {if(!Enabled(w)||w.NewMilitary==null||!ControlsParty(w))return null;var site=AssemblySite(w,w.ElapsedSeconds)??w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;long? price=null;long stock=0;if(!Active(w)&&!NewGameMilitary.Deployed(w)&&site is {} here&&MaterialMarkets.Sites(w).Contains(here)&&TransportWork.At(w,w.PlayerControl,here,w.ElapsedSeconds,w.CommitSequence+1,true)){var trade=RegionalTrade.SnapshotAt(w,w.ElapsedSeconds,w.CommitSequence+1);price=RegionalTrade.QuotePrice(trade.Markets.Single(m=>m.Site==here),true,null);stock=RegionalTrade.StockFree(trade,here,null);}return new(site,Active(w),NewGameMilitary.CarryAt(w,w.ElapsedSeconds,w.CommitSequence+1)/MilitaryEconomy.PersonSecondsPerKg,NewGameWork.Balance(w,w.PlayerControl),price,stock,"同じ部隊を共通の陸路で率います。到着先の集合地で展開・再集合できます。返報と指揮返還は元の家で行います。");}
+    {if(!Enabled(w)||w.NewMilitary==null||!ControlsParty(w))return null;var site=AssemblySite(w,w.ElapsedSeconds)??w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;long? price=null;long stock=0;if(!Active(w)&&!NewGameMilitary.Deployed(w)&&site is {} here&&MaterialMarkets.Sites(w).Contains(here)&&TransportWork.At(w,w.PlayerControl,here,w.ElapsedSeconds,w.CommitSequence+1,true)){var trade=RegionalTrade.SnapshotAt(w,w.ElapsedSeconds,w.CommitSequence+1);price=RegionalTrade.QuotePrice(trade.Markets.Single(m=>m.Site==here),true,null);stock=RegionalTrade.StockFree(trade,here,null);}long carried=NewGameMilitary.CarryAt(w,w.ElapsedSeconds,w.CommitSequence+1);
+        long wallet=NewGameWork.Balance(w,w.PlayerControl);
+        long space=(NewGameMilitary.Capacity-carried)/MilitaryEconomy.PersonSecondsPerKg;
+        long limit=price is >0 ? Math.Max(0,Math.Min(120,Math.Min(space,Math.Min(stock,wallet/price.Value)))) : 0;
+        return new(site,Active(w),carried/MilitaryEconomy.PersonSecondsPerKg,wallet,price,stock,"同じ部隊を共通の陸路で率います。到着先の集合地で展開・再集合できます。返報と指揮返還は元の家で行います。"){MaxPurchaseKg=limit};}
     internal static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.ArmyRoad==null,"旧版へ軍勢行軍を追加できません");return;}Need(w.ArmyRoad is{Schema:1,Policy:Policy,Entries:not null,Uses:not null},"行軍原本がありません");var es=w.ArmyRoad.Entries;long at=0,rev=0;var ids=new HashSet<EntityId>();foreach(var e in es){Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence&&ids.Add(e.Input.Id),"行軍のID/順序が不正です");var c=w.ForkTransportLocation();c.Requests=w.Requests.Where(r=>r.Id!=e.Terms?.Intent.RequestId||e.Terms?.Intent!=r.Intent).ToArray();Need(!FactionStances.OtherIdUsed(c,e.Input.Id,includeArmyRoad:false)&&!FactionStances.OwnIdUsed(w,e.Input.Id),"別原本と行軍IDが重複しています");var expected=Prepare(w,e.Input,e.At,e.Revision,e.Terms?.Army??e.Purchase?.Army,e.Terms?.KnownBlocked);Need(ContractJson.CanonicalHash(e)==ContractJson.CanonicalHash(expected),"行軍/現地調達が当時の許可・在庫・財布と違います");if(e.Terms is {} terms){var r=w.Requests.SingleOrDefault(r=>r.Id==terms.Intent.RequestId);Need(r==null&&e==es.Last()||r!=null&&r.Intent==terms.Intent&&r.CreatedAt==e.At&&r.CommitSequence==e.Revision+1,"共通移動の受付と行軍原本が違います");}at=e.At;rev=e.Revision;}

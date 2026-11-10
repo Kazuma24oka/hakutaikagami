@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameFrontEnd
@@ -49,6 +50,52 @@ public partial class NewGameFrontEnd
         await Frame();
         await WaitSave();
         game!.Advance(5);
+        var council = game.Session;
+        var peace = council.DiagnosticSnapshot();
+        Check(!FactionStances.Truth(peace, council.Seconds).Any() && NpcArmies.Musters(peace).Length == 0,
+            "判断を見送った間は未開戦・未出陣");
+        var stores = MilitaryEconomy.LocalCampaignStores(peace, new("org:imagawa"));
+        Check(fromMap ? stores == null : stores is { FreeRiceKg: >= 0, FreeWorkers: >= 0 },
+            "義元のみ現地の動員原資を確認");
+        var decision = new FactionStanceInput(new("decision:imagawa-start-check"),
+            FactionStanceAction.DeclareHostile, new("org:imagawa"), new("org:oda"), council.Seconds,
+            council.Seconds + 30L * 86400);
+        var reply = council.ProclaimFactionStance(new(decision, new(new("request:imagawa-start-notice"), decision.Id)),
+            council.PlayerControl, council.Revision);
+        Check(reply.Code == (fromMap ? ResultCode.NotAvailable : ResultCode.Accepted), "現当主だけが決裁：" + reply.VisibleReason);
+        var decided = council.DiagnosticSnapshot();
+        Check(fromMap ? ContractJson.CanonicalHash(peace) == ContractJson.CanonicalHash(decided) :
+            decided.FactionNotices!.Requests.Any(n=>n.Input.Original==decision.Id) &&
+            !FactionStances.Known(decided,new("person:nobunaga")).Any(), "判断結果と未達通知の認識");
+        if (!fromMap)
+        {
+            void Accepted(CommandResult result) => Check(result.Code == ResultCode.Accepted, result.VisibleReason);
+            void Military(NewMilitaryAction action, long amount = 0) =>
+                Accepted(council.DecideNewMilitary(new(new("request:imagawa-duty/" + council.Revision), action, amount),
+                    council.PlayerControl, council.Revision));
+            void ReadMail()
+            {
+                foreach (var mail in council.GetActorView(council.PlayerControl).Messages.Where(m => m.KnownBody == null))
+                    Accepted(council.Open(council.PlayerControl, mail.Id, council.Revision));
+            }
+
+            Accepted(council.DecideNewMilitary(new(new("request:imagawa-duty"), NewMilitaryAction.Request) {
+                AuthorityPolicy = NewGameMilitary.AuthorityContract, LedgerPolicy = NewGameMilitary.LedgerIdentityContract
+            }, council.PlayerControl, council.Revision));
+            game.Advance(council.Seconds + 2);
+            ReadMail();
+            Military(NewMilitaryAction.Accept);
+            game.Advance(council.Seconds + 2);
+            ReadMail();
+            Military(NewMilitaryAction.Pickup);
+            Accepted(council.ManageMilitaryRice(new(new("request:imagawa-food"), council.MilitaryEconomyView()!.Depot,
+                MilitaryEconomy.NpcRiceKg), council.PlayerControl, council.Revision));
+            Military(NewMilitaryAction.Load, NewGameMilitary.Capacity);
+            Accepted(council.ManageArmyRoad(new(new("request:imagawa-road"), ArmyRoadAction.March, new("site:kakegawa")),
+                council.PlayerControl, council.Revision));
+            game.Advance(council.Seconds + 4);
+            Check(council.ArmyRoadView()!.Marching, "掛川への街道を行軍中");
+        }
         game.ReviewFraction(0);
         game.Press("save");
         await WaitSave();
@@ -60,5 +107,50 @@ public partial class NewGameFrontEnd
         game.ReviewFraction(0);
         Check(ContractJson.CanonicalHash(world) == ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()) &&
             pose == game.Pose(), "復旧後の世界と3D配置が一致");
+        if (!fromMap)
+        {
+            var end = world.Branches!.Journeys.Last().Legs[^1].EndAt;
+            game.Advance(end + 2);
+            var session = game.Session;
+            var market = session.ArmyRoadView()!;
+            Check(!market.Marching && market.Assembly?.Value == "site:kakegawa", "同じ部隊が掛川に集合");
+            Check(market.LocalRicePrice == null && market.MaxPurchaseKg == 0, "市場のない掛川では購入不可");
+            var arrival = session.DiagnosticSnapshot();
+            var denied = session.ManageArmyRoad(new(new("request:kakegawa-no-market"), ArmyRoadAction.BuyRice, RiceKg: 1),
+                session.PlayerControl, session.Revision);
+            Check(denied.Code == ResultCode.NotAvailable &&
+                ContractJson.CanonicalHash(arrival) == ContractJson.CanonicalHash(session.DiagnosticSnapshot()),
+                "市場のない掛川では購入を拒否し在庫・所持金を保つ");
+            var alternative = new WorldSession(ContractJson.Copy(arrival));
+            var forward = alternative.ManageArmyRoad(new(new("request:kakegawa-forward"), ArmyRoadAction.March,
+                new("site:hamamatsu")), alternative.PlayerControl, alternative.Revision);
+            Check(forward.Code == ResultCode.Accepted, forward.VisibleReason);
+            var returning = session.ManageArmyRoad(new(new("request:kakegawa-return"), ArmyRoadAction.March,
+                new("site:sunpu")), session.PlayerControl, session.Revision);
+            Check(returning.Code == ResultCode.Accepted, returning.VisibleReason);
+            game.Advance(session.Seconds + 4);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            market = session.ArmyRoadView()!;
+            Check(market.Assembly?.Value == "site:sunpu", "駿府への帰還");
+            Check(market.MaxPurchaseKg > 0, "現地の積載余力と財布で兵糧を買える");
+            var buy = session.ManageArmyRoad(new(new("request:kakegawa-food"), ArmyRoadAction.BuyRice, RiceKg: 1),
+                session.PlayerControl, session.Revision);
+            Check(buy.Code == ResultCode.Accepted, buy.VisibleReason);
+            var after = session.ArmyRoadView()!;
+            Check(after.PrivateMoney == market.PrivateMoney - market.LocalRicePrice &&
+                after.CarryKg == market.CarryKg + 1 && after.LocalFreeRice == market.LocalFreeRice - 1,
+                "私財・市場在庫・携行米が同じ売買で変化");
+            game.ReviewFraction(0);
+            game.Press("save");
+            await WaitSave();
+            var purchased = ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot());
+            var returnedPose = game.Pose();
+            game.Press("load");
+            await Frame();
+            game.ReviewFraction(0);
+            Check(game.Session.ArmyRoadView() == after && returnedPose == game.Pose() &&
+                ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()) == purchased,
+                "帰還後の購入を実保存から復旧");
+        }
     }
 }

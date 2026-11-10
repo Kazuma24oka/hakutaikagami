@@ -26,6 +26,17 @@ public static class MilitaryEconomy
     public static int LaborAt(ContractWorld w,EntityId site,long at,long rev)=>!Enabled(w)?0:checked(PrivateRecruitment.Labor(w,site,at,rev)+Windows(w).Count(q=>q.Site==site&&VisibleWindow(q,rev)&&q.From<=at&&(End(q,rev)==null||at<End(q,rev)))*SupportWorkers);
     internal static long LaborSeconds(ContractWorld w,EntityId site,long from,long until,long rev)=>!Enabled(w)?0:checked(PrivateRecruitment.LaborSeconds(w,site,from,until,rev)+Windows(w).Where(q=>q.Site==site&&VisibleWindow(q,rev)).Sum(q=>Math.Max(0,Math.Min(until,End(q,rev)??until)-Math.Max(from,q.From)))*SupportWorkers);
     internal static void CheckPickup(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return;var a=CommunityEconomy.AccountAt(w,site,at,rev);Need(a.Workforce-a.Reserved>=SupportWorkers,"地域の補給支援20人を確保できません");}
+    public static (long FreeRiceKg, long FreeWorkers)? LocalCampaignStores(ContractWorld w, EntityId owner)
+    {
+        var at = w.ElapsedSeconds;
+        var rev = w.CommitSequence;
+        if (!Enabled(w) || FactionStances.ResolveAuthority(w, w.PlayerControl, owner, at, rev) is not {} authority ||
+            !TransportWork.At(w, w.PlayerControl, authority.Home, at, rev, true) ||
+            !CommunityEconomy.SitesFor(w).Contains(authority.Home)) return null;
+        var account = CommunityEconomy.AccountAt(w, authority.Home, at, rev + 1);
+        return (account.HouseRice - HouseSalary.Reserved(w, authority.Home, at, rev + 1),
+            account.Workforce - account.Reserved);
+    }
     internal static bool CanMuster(ContractWorld w,EntityId site,long at,long rev)
     {if(!Enabled(w))return true;if(!CommunityEconomy.SitesFor(w).Contains(site))return false;var a=CommunityEconomy.AccountAt(w,site,at,rev);return a.Workforce-a.Reserved>=SupportWorkers&&a.HouseRice-HouseSalary.Reserved(w,site,at,rev)>=NpcRiceKg;}
     static MilitaryDepotRef Binding(ContractWorld w,EntityId depot,long? at=null,long? rev=null)=>NewGameMilitary.SupplyBinding(w,depot,at,rev)??NpcArmies.SupplyBinding(w,depot,at,rev)??throw new InvalidDataException("元の軍用倉がありません");

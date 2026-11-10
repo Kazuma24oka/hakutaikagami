@@ -1,0 +1,36 @@
+{
+  "criteria": [
+    {
+      "contract": "義元が駿府で知っている情報から尾張方面への方針を検討し、プレイヤー操作中は本人の選択を待つ",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/ImagawaCampaignV1/entry-verification.md",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs"
+      ]
+    },
+    {
+      "contract": "有効な敵対根拠・本人の所在・家の自由米と支援労働・到達可能な陸路を確認してから軍を動かす",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/ImagawaCampaignV1/entry-verification.md",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs"
+      ]
+    },
+    {
+      "contract": "本人が知らない敵位置や将来の勝敗を表示せず、停戦・物資不足などの既存の制約を守る",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/ImagawaCampaignV1/entry-verification.md",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs"
+      ]
+    },
+    {
+      "contract": "軍の判断と移動を途中保存し、復旧後の任務・資源・配置を比較する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/ImagawaCampaignV1/entry-verification.md",
+        "Game/Scripts/NewGameFrontEnd.Judgment.cs"
+      ]
+    }
+  ]
+}
