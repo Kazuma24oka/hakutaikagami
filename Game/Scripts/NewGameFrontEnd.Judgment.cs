@@ -107,5 +107,34 @@ public partial class NewGameFrontEnd
         game.ReviewFraction(0);
         Check(ContractJson.CanonicalHash(world) == ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()) &&
             pose == game.Pose(), "復旧後の世界と3D配置が一致");
+        if (!fromMap)
+        {
+            var end = world.Branches!.Journeys.Last().Legs[^1].EndAt;
+            game.Advance(end + 2);
+            var session = game.Session;
+            var market = session.ArmyRoadView()!;
+            Check(!market.Marching && market.Assembly?.Value == "site:kakegawa", "同じ部隊が掛川に集合");
+            Check(market.LocalRicePrice == null && market.MaxPurchaseKg == 0, "市場のない掛川では購入不可");
+            var arrival = session.DiagnosticSnapshot();
+            var alternative = new WorldSession(ContractJson.Copy(arrival));
+            var forward = alternative.ManageArmyRoad(new(new("request:kakegawa-forward"), ArmyRoadAction.March,
+                new("site:hamamatsu")), alternative.PlayerControl, alternative.Revision);
+            Check(forward.Code == ResultCode.Accepted, forward.VisibleReason);
+            var returning = session.ManageArmyRoad(new(new("request:kakegawa-return"), ArmyRoadAction.March,
+                new("site:sunpu")), session.PlayerControl, session.Revision);
+            Check(returning.Code == ResultCode.Accepted, returning.VisibleReason);
+            game.Advance(session.Seconds + 4);
+            game.Advance(session.DiagnosticSnapshot().Branches!.Journeys.Last().Legs[^1].EndAt + 2);
+            market = session.ArmyRoadView()!;
+            Check(market.Assembly?.Value == "site:sunpu", "駿府への帰還");
+            Check(market.MaxPurchaseKg > 0, "現地の積載余力と財布で兵糧を買える");
+            var buy = session.ManageArmyRoad(new(new("request:kakegawa-food"), ArmyRoadAction.BuyRice, RiceKg: 1),
+                session.PlayerControl, session.Revision);
+            Check(buy.Code == ResultCode.Accepted, buy.VisibleReason);
+            var after = session.ArmyRoadView()!;
+            Check(after.PrivateMoney == market.PrivateMoney - market.LocalRicePrice &&
+                after.CarryKg == market.CarryKg + 1 && after.LocalFreeRice == market.LocalFreeRice - 1,
+                "私財・市場在庫・携行米が同じ売買で変化");
+        }
     }
 }
