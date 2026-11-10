@@ -4,7 +4,7 @@
 
 ## 製品受入：駿府からの出陣
 
-[敵対決裁・兵糧受領・街道上の復旧](../Design/ImagawaCampaignV1/entry-verification.md)。次は掛川到着後の補給と進退。
+[敵対決裁・兵糧受領・街道上の復旧](../Design/ImagawaCampaignV1/entry-verification.md)。掛川での進退、岡崎での家臣の補給、善照寺砦への行軍まで確認済み。
 
 ## 製品受入：今川家の開始配置
 

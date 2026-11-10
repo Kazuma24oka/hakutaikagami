@@ -164,6 +164,30 @@ public partial class NewGameFrontEnd
                 GD.Print($"補給隊と合流後の携行米 {received.CarryKg}kg");
                 if (received.CarryKg < 60) throw new System.InvalidOperationException("岡崎に補給が届いていません");
             }
+            var beforeDeparture = ContractJson.CanonicalHash(session.DiagnosticSnapshot());
+            var owari = RegionalCampaign.Site("village");
+            var decisionAtOkazaki = session.ManageArmyRoad(new(new("request:okazaki-owari"), ArmyRoadAction.March,
+                owari), session.PlayerControl, session.Revision);
+            if (supply)
+            {
+                Check(decisionAtOkazaki.Code == ResultCode.Accepted, decisionAtOkazaki.VisibleReason);
+                game.Advance(session.Seconds + 4);
+                var mid = session.DiagnosticSnapshot();
+                var recovered = new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(mid)));
+                Check(ContractJson.CanonicalHash(recovered.DiagnosticSnapshot()) == ContractJson.CanonicalHash(mid),
+                    "補給後の再出発を途中復旧");
+                var march = session.DiagnosticSnapshot().Branches!.Journeys.Last(j => j.Actor == session.PlayerControl);
+                game.Advance(march.Legs[^1].EndAt + 2);
+                var arrivalInOwari = session.ArmyRoadView()!;
+                Check(arrivalInOwari.Assembly == owari && !arrivalInOwari.Marching, "補給後に尾張へ到着");
+                GD.Print($"尾張到着時の携行米 {arrivalInOwari.CarryKg}kg");
+            }
+            else
+            {
+                Check(decisionAtOkazaki.Code == ResultCode.NotAvailable && decisionAtOkazaki.VisibleReason.Contains("kg必要") &&
+                    beforeDeparture == ContractJson.CanonicalHash(session.DiagnosticSnapshot()), "不足量の明示と出発拒否");
+                GD.Print(decisionAtOkazaki.VisibleReason);
+            }
             game.Press("load");
             await Frame();
             session = game.Session;

@@ -9,6 +9,11 @@ public static partial class NewGameMilitary
     {
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
         if(w.Castles is {} castles)w.Castles=castles with{Entries=castles.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray()};if(w.Life is {} life)w.Life=life with{Entries=life.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray()};BattlefieldRules.Rewind(w,at,rev);PrivateStanddown.Rewind(w,at,rev);PrivateInformation.Rewind(w,at,rev);TruceNegotiations.Rewind(w,at,rev);TreatyNegotiations.Rewind(w,at,rev);PersonalCompanions.Rewind(w,at,rev);if(PersonalCompanions.PersonalServiceEnabled(w)||w.HouseService!=null)NewGameService.Sync(w);VoyageExpense.Rewind(w,at,rev);TransportWork.Rewind(w,at,rev);NewGameWork.Rewind(w,at,rev);w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
+        if (w.Branches is {} branches)
+        {
+            var tasksAtTime = w.Tasks.Select(t => t.Id).ToHashSet();
+            w.Branches = branches with { Journeys = branches.Journeys.Where(j => tasksAtTime.Contains(j.Task)).ToArray() };
+        }
         w.MilitaryLedgerHistory=original.MilitaryLedgerHistory??LedgerStates(original);
         w.NewMilitary=LedgerStateBefore(w.NewMilitary!,at,rev);
         w.Locations=w.Locations.Select(l=>{
