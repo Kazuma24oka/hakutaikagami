@@ -9,7 +9,7 @@ public partial class OfficerLibraryTrial : Control
 {
     OfficerLibrary library=new(1,[],[]);OfficerLibraryStore store=null!;string? savedHash,editing,editingGroup;
     ItemList originals=null!,groups=null!,members=null!;LineEdit personName=null!,groupName=null!,factionName=null!;
-    SpinBox birth=null!;readonly SpinBox[] attributes=new SpinBox[5];OptionButton role=null!,site=null!,maritalStatus=null!;Label status=null!,editorTitle=null!;
+    SpinBox birth=null!;readonly SpinBox[] attributes=new SpinBox[5];OptionButton role=null!,site=null!,maritalStatus=null!,aspiration=null!;Label status=null!,editorTitle=null!;
     Button apply=null!,create=null!,copy=null!,addGroup=null!,rename=null!;FileDialog import=null!,export=null!;
     internal bool Enhanced;internal string? StorageOverride;internal Action? Closed;
     string[] SiteIds=>Enhanced?NationalRoutes.Sites.Select(s=>s.Id.Value).ToArray():new[]{"castle:kiyosu","castle:kofu","castle:odawara"};
@@ -35,9 +35,13 @@ public partial class OfficerLibraryTrial : Control
         personName=Field(grid,"名前");birth=Number(grid,"生年",1,9999,1520);role=new();grid.AddChild(new Label{Text="立場"});grid.AddChild(role);foreach(var title in new[]{"浪人","家臣","陪臣","城主","国人領主","大名"})role.AddItem(title);
         site=new();grid.AddChild(new Label{Text="登場希望の場所"});grid.AddChild(site);foreach(var title in Enhanced?NationalRoutes.Sites.Select(s=>s.Name).ToArray():new[]{"清洲","甲府","小田原"})site.AddItem(title);
         string[] names={"統率","武勇","知略","政務","交渉"};for(int n=0;n<5;n++)attributes[n]=Number(grid,names[n],0,int.MaxValue,50);
+        aspiration = new OptionButton { Name = "OfficerAspiration" };
+        grid.AddChild(new Label { Text = "志" });
+        grid.AddChild(aspiration);
+        foreach (var label in new[] { "未設定", "家を守る", "秩序を守る", "領国を豊かにする", "交易を盛んにする" }) aspiration.AddItem(label);
         maritalStatus=new();grid.AddChild(new Label{Text="開始時の婚姻情報"});grid.AddChild(maritalStatus);maritalStatus.AddItem("未設定（未婚と推測しない）");maritalStatus.AddItem("未婚と明示");factionName=Field(grid,"大名の勢力名");root.AddChild(new Label{Text="所属・領土・主従は新規ゲームの配置時に確認します。",AutowrapMode=TextServer.AutowrapMode.WordSmart,SizeFlagsHorizontal=SizeFlags.ExpandFill});
         if(Enhanced){root.GetChild<Control>(0).Visible=false;root.GetChild<Control>(1).Visible=false;originals.CustomMinimumSize=new(0,110);members.CustomMinimumSize=new(0,80);BuildEnhanced(grid,left);}
-        var actions=new HBoxContainer();root.AddChild(actions);create=Button(actions,"新規入力",()=>{editing=editingGroup=null;maritalStatus.Select(0);if(Enhanced)ResetEnhanced();personName.Text="";factionName.Text="";editorTitle.Text="新しい武将";});apply=Button(actions,"登録して保存",Apply);Button(actions,"インポート",()=>import.PopupCenteredRatio());Button(actions,"書き出し",()=>export.PopupCenteredRatio());
+        var actions=new HBoxContainer();root.AddChild(actions);create=Button(actions,"新規入力",()=>{editing=editingGroup=null;maritalStatus.Select(0);aspiration.Select(0);if(Enhanced)ResetEnhanced();personName.Text="";factionName.Text="";editorTitle.Text="新しい武将";});apply=Button(actions,"登録して保存",Apply);Button(actions,"インポート",()=>import.PopupCenteredRatio());Button(actions,"書き出し",()=>export.PopupCenteredRatio());
         if(Closed!=null)Button(actions,"スタート画面へ",()=>Closed());
         status=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};root.AddChild(status);
         root.AddChild(new Label{Text=Enhanced?"登録は新規ゲームで選んだときだけ登場します。グループの編集は他の複製へ影響しません。":"外見・直属相手の指定と全拠点選択、ゲーム開始への接続は後続です。数値の製品上限は未確定です。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("e6c785")});
@@ -55,14 +59,14 @@ public partial class OfficerLibraryTrial : Control
     OfficerGroup? CurrentGroup(){var selected=groups.GetSelectedItems();return selected.Length==1?library.Groups[selected[0]]:null;}
     void Refresh(){string? previous=CurrentGroup()?.Id;originals.Clear();foreach(var p in library.Ungrouped)originals.AddItem(p.Name);groups.Clear();foreach(var g in library.Groups)groups.AddItem(g.Name+"（"+g.Officers.Length+"人）");int at=Array.FindIndex(library.Groups,g=>g.Id==previous);if(at>=0)groups.Select(at);else if(library.Groups.Length>0)groups.Select(0);RefreshMembers();}
     void RefreshMembers(){members.Clear();var g=CurrentGroup();if(g!=null)foreach(var p in g.Officers)members.AddItem(p.Name);}
-    void Edit(RegisteredOfficer p,string? group){editing=p.Id;editingGroup=group;maritalStatus.Select(p.InitialMaritalStatus==InitialMaritalStatus.Unmarried?1:0);personName.Text=p.Name;birth.Value=p.BirthYear;role.Select((int)p.Role);site.Select(Array.IndexOf(SiteIds,Enhanced?KnownSiteForEdit(p.Site):p.Site));factionName.Text=p.FactionName??"";int[] values={p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??50};for(int n=0;n<5;n++)attributes[n].Value=values[n];if(Enhanced)RestoreEnhanced(p);editorTitle.Text=group==null?"元の登録武将を編集":"グループ内の複製を編集（元の登録は変わりません）";}
+    void Edit(RegisteredOfficer p,string? group){editing=p.Id;editingGroup=group;aspiration.Select((int)(p.Aspiration??NpcAspiration.Unspecified));maritalStatus.Select(p.InitialMaritalStatus==InitialMaritalStatus.Unmarried?1:0);personName.Text=p.Name;birth.Value=p.BirthYear;role.Select((int)p.Role);site.Select(Array.IndexOf(SiteIds,Enhanced?KnownSiteForEdit(p.Site):p.Site));factionName.Text=p.FactionName??"";int[] values={p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??50};for(int n=0;n<5;n++)attributes[n].Value=values[n];if(Enhanced)RestoreEnhanced(p);editorTitle.Text=group==null?"元の登録武将を編集":"グループ内の複製を編集（元の登録は変わりません）";}
     void Persist(OfficerLibrary next){string hash=store.Save(next,savedHash);library=next;savedHash=hash;Refresh();status.Text="保存しました。開始済みの世界と他の複製は変更しません。";}
     void Apply()
     {
         if(string.IsNullOrWhiteSpace(personName.Text))throw new InvalidDataException("名前を入力してください");
         if(site.Selected<0)throw new InvalidDataException("場所を選んでください");
         var next=ContractJson.Copy(library);var old=editing==null?null:editingGroup==null?next.Ungrouped.Single(p=>p.Id==editing):next.Groups.Single(g=>g.Id==editingGroup).Officers.Single(p=>p.Id==editing);
-        var p=new RegisteredOfficer(editing??"created:"+Guid.NewGuid().ToString("N"),old?.CopiedFrom,personName.Text.Trim(),(int)birth.Value,new((int)attributes[0].Value,(int)attributes[1].Value,(int)attributes[2].Value,(int)attributes[3].Value){Negotiation=old?.Attributes.Negotiation==null&&old!=null&&(int)attributes[4].Value==50?null:(int)attributes[4].Value},(StartTemplate)role.Selected,SiteIds[site.Selected],old?.Lord,string.IsNullOrWhiteSpace(factionName.Text)?null:factionName.Text.Trim(),old?.Look){InitialMaritalStatus=maritalStatus.Selected==1?InitialMaritalStatus.Unmarried:null};
+        var p=new RegisteredOfficer(editing??"created:"+Guid.NewGuid().ToString("N"),old?.CopiedFrom,personName.Text.Trim(),(int)birth.Value,new((int)attributes[0].Value,(int)attributes[1].Value,(int)attributes[2].Value,(int)attributes[3].Value){Negotiation=old?.Attributes.Negotiation==null&&old!=null&&(int)attributes[4].Value==50?null:(int)attributes[4].Value},(StartTemplate)role.Selected,SiteIds[site.Selected],old?.Lord,string.IsNullOrWhiteSpace(factionName.Text)?null:factionName.Text.Trim(),old?.Look){Aspiration=aspiration.Selected<=0?null:(NpcAspiration)aspiration.Selected,InitialMaritalStatus=maritalStatus.Selected==1?InitialMaritalStatus.Unmarried:null};
         if(editingGroup==null)next=next with{Ungrouped=old==null?next.Ungrouped.Append(p).ToArray():next.Ungrouped.Select(x=>x.Id==p.Id?p:x).ToArray()};else next=next with{Groups=next.Groups.Select(g=>g.Id==editingGroup?g with{Officers=g.Officers.Select(x=>x.Id==p.Id?p:x).ToArray()}:g).ToArray()};
         if(Enhanced){p=p with{Lord=EnhancedLord(),Look=ContractJson.Copy(currentLook)};if(editingGroup==null)next=next with{Ungrouped=next.Ungrouped.Select(x=>x.Id==p.Id?p:x).ToArray()};else next=next with{Groups=next.Groups.Select(g=>g.Id==editingGroup?g with{Officers=g.Officers.Select(x=>x.Id==p.Id?p:x).ToArray()}:g).ToArray()};}
         Persist(next);editing=p.Id;
@@ -70,7 +74,7 @@ public partial class OfficerLibraryTrial : Control
     void AddGroup(){if(string.IsNullOrWhiteSpace(groupName.Text))throw new InvalidDataException("グループ名を入力してください");Persist(library with{Groups=library.Groups.Append(new("group:"+Guid.NewGuid().ToString("N"),groupName.Text.Trim(),[])).ToArray()});}
     void Rename(){var g=CurrentGroup()??throw new InvalidDataException("グループを選んでください");if(string.IsNullOrWhiteSpace(groupName.Text))throw new InvalidDataException("グループ名を入力してください");Persist(library with{Groups=library.Groups.Select(x=>x.Id==g.Id?x with{Name=groupName.Text.Trim()}:x).ToArray()});}
     void Copy(){var indices=originals.GetSelectedItems();var g=CurrentGroup();if(indices.Length!=1||g==null)throw new InvalidDataException("元の武将と複製先グループを選んでください");Persist(NewGameSetup.CopyToGroup(library,library.Ungrouped[indices[0]].Id,g.Id,"created:"+Guid.NewGuid().ToString("N")));}
-    async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
+    async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);if(DisplayServer.GetName()!="headless")await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
     void Check(bool yes,string text){if(!yes)throw new Exception(text);GD.Print("PASS "+text);}
     void Press(Button b)=>b.EmitSignal(Godot.Button.SignalName.Pressed);
     async void RunChecks()
@@ -79,12 +83,13 @@ public partial class OfficerLibraryTrial : Control
             Directory.CreateDirectory(Output);await Frame();bool restore=OS.GetCmdlineUserArgs().Contains("--library-restore");
             if(restore){Check(library.Ungrouped.Length==1&&library.Groups.Length==1,"saved definitions reopened in another process");Check(library.Ungrouped[0].Name=="鏡山 宗久"&&library.Groups[0].Officers[0].Name=="九州の宗久","group edit did not change original across restart");groups.Select(0);RefreshMembers();members.Select(0);members.EmitSignal(ItemList.SignalName.ItemSelected,0);}
             else{
-                Press(create);personName.Text="鏡山 宗久";Press(apply);Check(library.Ungrouped.Length==1,"actual register/save button stores officer");
+                Press(create);aspiration.Select((int)NpcAspiration.PreserveHouse);personName.Text="鏡山 宗久";Press(apply);Check(library.Ungrouped.Length==1,"actual register/save button stores officer");
                 groupName.Text="九州の浪人衆";Press(addGroup);originals.Select(0);Press(copy);Check(library.Groups[0].Officers.Length==1,"actual copy button creates independent group member");
-                members.Select(0);members.EmitSignal(ItemList.SignalName.ItemSelected,0);personName.Text="九州の宗久";attributes[0].Value=80;Press(apply);Check(library.Ungrouped[0].Name=="鏡山 宗久"&&library.Ungrouped[0].Attributes.Leadership==50,"group edit keeps original name and attributes");
+                members.Select(0);members.EmitSignal(ItemList.SignalName.ItemSelected,0);Check(aspiration.Selected==(int)NpcAspiration.PreserveHouse,"複製に元の志が入る");aspiration.Select((int)NpcAspiration.EncourageTrade);personName.Text="九州の宗久";attributes[0].Value=80;Press(apply);Check(library.Ungrouped[0].Name=="鏡山 宗久"&&library.Ungrouped[0].Attributes.Leadership==50,"group edit keeps original name and attributes");
                 string before=ContractJson.CanonicalHash(library);personName.Text="";Press(apply);Check(before==ContractJson.CanonicalHash(library)&&ContractJson.CanonicalHash(store.Load())==before,"invalid input keeps memory and saved library");personName.Text="九州の宗久";
             }
-            await Frame();Check(originals.GetGlobalRect().Size.X>groups.GetGlobalRect().Size.X,"originals occupy larger left pane");GetViewport().GetTexture().GetImage().SavePng(Path.Combine(Output,restore?"restored.png":"edited.png"));
+            Check(library.Ungrouped[0].Aspiration==NpcAspiration.PreserveHouse && library.Groups[0].Officers[0].Aspiration==NpcAspiration.EncourageTrade && aspiration.Selected==(int)NpcAspiration.EncourageTrade,"元武将と複製の志と選択欄が一致");
+            await Frame();Check(originals.GetGlobalRect().Size.X>groups.GetGlobalRect().Size.X,"originals occupy larger left pane");if(DisplayServer.GetName()!="headless")GetViewport().GetTexture().GetImage().SavePng(Path.Combine(Output,restore?"restored.png":"edited.png"));
             File.WriteAllText(Path.Combine(Output,restore?"restored.sha256":"edited.sha256"),ContractJson.CanonicalHash(library));
             GD.Print("OFFICER_LIBRARY_PASSED");GetTree().Quit();
         }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}

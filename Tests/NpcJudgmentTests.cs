@@ -25,6 +25,36 @@ public sealed class NpcJudgmentTests
         Assert.Equal(NpcCadence.Monthly,distant.Cadence);Assert.Equal(31*86400,distant.ReadyAt);
         Assert.False(nearby.Due);Assert.False(distant.Due);new WorldSession(w);
     }
+    [Theory]
+    [InlineData(NpcAspiration.PreserveHouse, DevelopmentSkill.Logistics)]
+    [InlineData(NpcAspiration.UpholdOrder, DevelopmentSkill.Etiquette)]
+    [InlineData(NpcAspiration.ProsperDomain, DevelopmentSkill.Agriculture)]
+    [InlineData(NpcAspiration.EncourageTrade, DevelopmentSkill.Commerce)]
+    public void RegisteredAspirationGuidesPracticeWithoutHistoricalBonus(NpcAspiration aspiration, DevelopmentSkill skill)
+    {
+        var data = Start().NewGame!;
+        var records = data.Registered.Select(p => p.Id == "created:routine-0" ? p with { Aspiration = aspiration } : p).ToArray();
+        var setup = new WorldSetupRequest(records, []);
+        var scenario = NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var world = NewGameWorld.Create(NewGameSetup.Confirm(scenario, setup, NewGameSetup.Preview(scenario, setup)),
+            records, data.Selected.Value, data.Seed, NewGameWorld.CompactPersonalAuthority, HistoricalStartCatalog.Current,
+            NpcJudgment.Policy, LocalInspectionFindings.Policy, WorkFollowup.Policy, LocalWorkDemand.Policy,
+            developmentPolicy:CharacterDevelopment.Policy, companionPolicy:PersonalCompanions.Policy,
+            socialPolicy:CharacterRelations.Policy, judgment:data.Judgment);
+        var actor = new EntityId("created:routine-0");
+        var session = new WorldSession(world);
+        foreach (var edge in BranchRoutes.GraphEdges(world).Where(e => e.From == "castle" || e.To == "castle"))
+            Assert.Equal(ResultCode.Accepted, session.InspectRoad(actor, edge.Id, session.Revision).Code);
+        var bytes = ContractJson.Write(session.DiagnosticSnapshot());
+        var restored = new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot();
+        Assert.Equal(bytes, ContractJson.Write(restored));
+        var result = NewGameNpcRoutine.Inputs(restored, actor, 3601, restored.CommitSequence).Routine!.Judgment!;
+        Assert.Equal(aspiration, result.ChoiceInput.Aspiration);
+        var favorite = Assert.Single(result.ChoiceInput.Candidates, c => c.MatchesAspiration);
+        Assert.False(favorite.MatchesHistoricalGoal);
+        Assert.Equal("practice:" + skill, favorite.Id);
+        Assert.Equal(favorite.Id, result.Choice);
+    }
     [Fact] public void NoNewDailyTaskIsGeneratedByFineGrainedAdvance()
     {
         var s=new WorldSession(Start());At(s,20);int count=s.DiagnosticSnapshot().Requests.Length;
