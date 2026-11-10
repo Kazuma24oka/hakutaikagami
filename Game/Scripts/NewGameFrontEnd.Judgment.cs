@@ -116,6 +116,11 @@ public partial class NewGameFrontEnd
             Check(!market.Marching && market.Assembly?.Value == "site:kakegawa", "同じ部隊が掛川に集合");
             Check(market.LocalRicePrice == null && market.MaxPurchaseKg == 0, "市場のない掛川では購入不可");
             var arrival = session.DiagnosticSnapshot();
+            var denied = session.ManageArmyRoad(new(new("request:kakegawa-no-market"), ArmyRoadAction.BuyRice, RiceKg: 1),
+                session.PlayerControl, session.Revision);
+            Check(denied.Code == ResultCode.NotAvailable &&
+                ContractJson.CanonicalHash(arrival) == ContractJson.CanonicalHash(session.DiagnosticSnapshot()),
+                "市場のない掛川では購入を拒否し在庫・所持金を保つ");
             var alternative = new WorldSession(ContractJson.Copy(arrival));
             var forward = alternative.ManageArmyRoad(new(new("request:kakegawa-forward"), ArmyRoadAction.March,
                 new("site:hamamatsu")), alternative.PlayerControl, alternative.Revision);
@@ -135,6 +140,17 @@ public partial class NewGameFrontEnd
             Check(after.PrivateMoney == market.PrivateMoney - market.LocalRicePrice &&
                 after.CarryKg == market.CarryKg + 1 && after.LocalFreeRice == market.LocalFreeRice - 1,
                 "私財・市場在庫・携行米が同じ売買で変化");
+            game.ReviewFraction(0);
+            game.Press("save");
+            await WaitSave();
+            var purchased = ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot());
+            var returnedPose = game.Pose();
+            game.Press("load");
+            await Frame();
+            game.ReviewFraction(0);
+            Check(game.Session.ArmyRoadView() == after && returnedPose == game.Pose() &&
+                ContractJson.CanonicalHash(game.Session.DiagnosticSnapshot()) == purchased,
+                "帰還後の購入を実保存から復旧");
         }
     }
 }
