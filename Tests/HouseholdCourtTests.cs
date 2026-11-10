@@ -8,6 +8,35 @@ public sealed class HouseholdCourtTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
  [Theory]
+ [InlineData(NpcAspiration.ProsperDomain, CourtCaseKind.RelieveVillage)]
+ [InlineData(NpcAspiration.PreserveHouse, CourtCaseKind.BuyWeapons)]
+ public void RegisteredLordOrdersOnlyReceivedCases(NpcAspiration aspiration, CourtCaseKind first)
+ {
+     var lord = NewGameWorldTests.Officer(role:StartTemplate.Daimyo) with { Aspiration = aspiration };
+     var member = NewGameWorldTests.Officer(Retainer.Value, StartTemplate.Retainer, lord:lord.Id);
+     var house = new EntityId("org:agenda");
+     var setup = NewGameWorldTests.Setup([lord,member],[new(lord.Id,house.Value,[lord.Site],false)]);
+     var session = new WorldSession(NewGameWorld.Create(setup.World,setup.Registered,member.Id,42,
+         inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSuccession.Policy));
+     var world = session.DiagnosticSnapshot();
+     foreach (var kind in new[] { CourtCaseKind.BuyWeapons, CourtCaseKind.RelieveVillage })
+     {
+         var proposal = new CourtInput(new("request:agenda/"+kind),CourtAction.SubmitCase,new(lord.Id),house,
+             new(lord.Site),Amount:1,Case:kind);
+         world.CommitSequence++;
+         HouseholdCourt.Execute(world, proposal, session.PlayerControl);
+     }
+     Assert.Empty(HouseholdCourt.CouncilAgenda(world));
+     world.CommitSequence++;
+     SocialWorld.Tick(world);
+     var saved = ContractJson.Write(world);
+     var restored = new WorldSession(ContractJson.Read<ContractWorld>(saved)).DiagnosticSnapshot();
+     var agenda = HouseholdCourt.CouncilAgenda(restored);
+     Assert.Equal(2,agenda.Length);
+     Assert.Equal(first,agenda[0].Input.Case);
+     Assert.Equal(saved,ContractJson.Write(restored));
+ }
+ [Theory]
  [InlineData(5,20,true)]
  [InlineData(1,5,false)]
  public void ReceivedMusterMovesTheRetainerToAnotherCastleBeforeAttendance(int days,int rice,bool contractsSurvive)

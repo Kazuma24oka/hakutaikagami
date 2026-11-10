@@ -484,6 +484,32 @@ public static class HouseholdCourt
  static EntityId[] Attendees(ContractWorld w,CourtEvent meeting)=>DocumentRows(w).Where(d=>d.Source.Input.Id==meeting.Input.Id&&Events(w).Any(e=>e.Actor==d.Recipient&&e.Input.Reference==d.Id&&e.Input.Action==CourtAction.AcceptInvitation)&&SocialWorld.Site(w,d.Recipient)==meeting.Input.Site&&Member(w,d.Recipient,meeting.Input.Owner,w.ElapsedSeconds,w.CommitSequence+1)).Select(d=>d.Recipient).Concat(SocialWorld.Site(w,meeting.Actor)==meeting.Input.Site?[meeting.Actor]:[]).Distinct().ToArray();
  public static bool KnowsReply(ContractWorld w,CourtEvent reply,EntityId observer){if(reply.Actor==observer||Received(w,reply.Input.Id,observer))return true;if(TransportWork.At(w,observer,reply.Place,reply.At,reply.Revision,stableCompletion:true))return true;var original=reply.Input.Reference;if(original==null)return false;var gift=SocialWorld.Ledger(w).SingleOrDefault(g=>g.Input.Id==Id("delivery",original.Value.Value));if(gift==null||gift.Actor!=observer)return false;var carrier=gift.Input.Carrier??gift.Actor;return TransportWork.At(w,carrier,reply.Place,reply.At,reply.Revision,stableCompletion:true)&&SocialWorld.Ledger(w).Any(e=>e.Input.Action==SocialWorldAction.AcknowledgeGiftReport&&e.Actor==observer&&e.Input.Reference==gift.Input.Id&&e.At>=reply.At);}
  public static EntityId[] Roster(ContractWorld w,EntityId observer,EntityId owner)=>w.Memberships.Where(m=>m.Target==owner&&Active(m,w.ElapsedSeconds,w.CommitSequence+1)).Select(m=>m.Subject).Distinct().Where(person=>w.NewGame!.Start.People.Any(p=>p.Id==person.Value&&p.Faction==owner.Value)||Events(w).Any(e=>e.Input.Action==CourtAction.RecruitAccept&&e.Actor==person&&Source(w,e.Input.Reference,CourtAction.RecruitOffer).Input.Owner==owner&&KnowsReply(w,e,observer))).ToArray();
+ internal static CourtEvent[] CouncilAgenda(ContractWorld w)
+ {
+  // 当主間の処理順を保存し、同じ当主・同じ現地の既読案件の枠内でのみ順序を調整する。
+  var received = Events(w).Where(e => e.Input.Action == CourtAction.SubmitCase &&
+      e.Input.Person != w.PlayerControl && Received(w, e.Input.Id, e.Input.Person) &&
+      !Events(w).Any(d => d.Input.Reference == e.Input.Id && d.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase))
+      .OrderBy(e => e.Revision).ToArray();
+  foreach (var group in received.Select((proposal,index) => (proposal,index))
+      .GroupBy(x => (x.proposal.Input.Person,x.proposal.Input.Owner,x.proposal.Input.Site)))
+  {
+   var aspiration = w.NewGame?.Registered.SingleOrDefault(p => p.Id == group.Key.Person.Value)?.Aspiration;
+   CourtCaseKind? preferred = aspiration switch
+   {
+    NpcAspiration.PreserveHouse => CourtCaseKind.BuyWeapons,
+    NpcAspiration.UpholdOrder => CourtCaseKind.SetBudget,
+    NpcAspiration.ProsperDomain => CourtCaseKind.RelieveVillage,
+    NpcAspiration.EncourageTrade => CourtCaseKind.BuyWood,
+    _ => null
+   };
+   if (preferred == null) continue;
+   var sorted = group.OrderByDescending(x => x.proposal.Input.Case == preferred).ToArray();
+   int n = 0;
+   foreach (var slot in group) received[slot.index] = sorted[n++].proposal;
+  }
+  return received;
+ }
  public static CourtEvent[] KnownCases(ContractWorld w,EntityId actor)=>Events(w).Where(e=>e.Input.Action==CourtAction.SubmitCase&&(e.Actor==actor||Received(w,e.Input.Id,actor))).ToArray();
  public static CourtEvent? KnownDecision(ContractWorld w,EntityId actor,EntityId proposal)=>Events(w).LastOrDefault(e=>e.Input.Reference==proposal&&e.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase&&(e.Actor==actor||Received(w,e.Input.Id,actor)));
  internal static bool Bound(ContractWorld w,EntityId principal,long at,long rev)=>Events(w).Any(e=>e.Actor==w.PlayerControl&&e.Input.Action==CourtAction.RecruitAccept&&Before(e,at,rev+1)&&Source(w,e.Input.Reference,CourtAction.RecruitOffer).Actor==principal&&!Events(w).Any(end=>end.Input.Action==CourtAction.ResignService&&end.Input.Reference==e.Input.Reference&&Before(end,at,rev+1)));
@@ -543,8 +569,8 @@ public static class HouseholdCourt
   foreach(var meeting in Events(w).Where(e=>e.Input.Action==CourtAction.Convene&&Head(w,e.Input.Owner,w.ElapsedSeconds,w.CommitSequence+1)!=w.PlayerControl&&e.Input.When<=w.ElapsedSeconds&&w.ElapsedSeconds<=e.Input.When+3600).ToArray()){
    if(!Events(w).Any(e=>e.Input.Action==CourtAction.HoldCouncil&&e.Input.Reference==meeting.Input.Id)&&SocialWorld.Site(w,Head(w,meeting.Input.Owner,w.ElapsedSeconds,w.CommitSequence+1))==meeting.Input.Site){var chair=Head(w,meeting.Input.Owner,w.ElapsedSeconds,w.CommitSequence+1);Attempt(w,new(Id("hold",meeting.Input.Id.Value),CourtAction.HoldCouncil,chair,meeting.Input.Owner,meeting.Input.Site,Reference:meeting.Input.Id),chair);}
   }
-  foreach(var proposal in Events(w).Where(e=>e.Input.Action==CourtAction.SubmitCase).OrderBy(e=>e.Revision).ToArray()){
-   var principal=proposal.Input.Person;if(principal==w.PlayerControl||!Received(w,proposal.Input.Id,principal)||Events(w).Any(e=>e.Input.Reference==proposal.Input.Id&&e.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase))continue;
+  foreach(var proposal in CouncilAgenda(w)){
+   var principal=proposal.Input.Person;
    if(!Events(w).Any(e=>e.Actor==principal&&e.Input.Action==CourtAction.HoldCouncil&&e.Input.Owner==proposal.Input.Owner&&e.Place==proposal.Input.Site&&w.ElapsedSeconds<=e.At+3600))continue;
    if(Attempt(w,new(Id("decision",proposal.Input.Id.Value),CourtAction.ApproveCase,proposal.Actor,proposal.Input.Owner,proposal.Input.Site,Reference:proposal.Input.Id),principal))break;if(Attempt(w,new(Id("decision",proposal.Input.Id.Value),CourtAction.DenyCase,proposal.Actor,proposal.Input.Owner,proposal.Input.Site,Reference:proposal.Input.Id),principal))break;
   }
