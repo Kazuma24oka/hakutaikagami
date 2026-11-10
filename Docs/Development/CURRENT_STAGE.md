@@ -2,6 +2,10 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
+## 全国共通の判断支援
+
+[開始設定・現地調達と保存復旧](../Design/DecisionSupportV1/entry-verification.md)。次は本人が認識した危機と外交の選択肢。
+
 ## 製品受入：駿府からの出陣
 
 [敵対決裁・兵糧受領・街道上の復旧](../Design/ImagawaCampaignV1/entry-verification.md)。掛川での進退、岡崎での家臣の補給、善照寺砦への行軍まで確認済み。
