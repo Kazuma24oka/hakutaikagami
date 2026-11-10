@@ -235,7 +235,7 @@
     "Core/Contracts/WorldSession.Treaty.cs": "b7b0b8d3bebd064a1830b123b0e5c6d11664784e4c76456f95513e74628916cd",
     "Tests/TreatyNegotiationsTests.cs": "1de836a448a1fcf738e4277d3b92f932e4ee40e50474012f25a86a1c8a6c3d8b",
     "Game/Scripts/NewGameRuntime.Treaty.cs": "55cd6fdb1143b710ceb123068ae2840c29c126f0d16252f65c42fcbd31b22430",
-    "Game/Scripts/NewGameRuntime.Truce.cs": "a72e6e191f157acd023df51df6e4418fa16a966556a14686c5be26fe402fad76",
+    "Game/Scripts/NewGameRuntime.Truce.cs": "3a8236de5f2ee9c307fcf6c3d5690246d4b656d57a1819979b51cf82b757b065",
     "Docs/Design/TreatyV1/verification.json": "3fcff28509162deed09efcfd81f41e47d0c31d9542e614232000b73d975c041b",
     "Docs/Design/TreatyV1/completion.json": "b4f7c213822c68bb499e0511680d978b67f0879e6711c8c1af343a4b70f90cfb",
     "Docs/Design/TreatyV1/README.md": "e2c7eb85a133179e6bdf4b0c94c5093c35930b7550cb01b64e3a84b4010108f1",
@@ -442,7 +442,7 @@
     "Core/Contracts/TimeObservationSweep.cs": "a0827645e5ba4afa61d90c4ecc5dcdee4b0f263743a5821c8f32d4f528590cc5",
     "Tests/WorldTimeControlTests.cs": "b49cba2abf6c1a601fc45b9a4a2df81a8650e8f7d5ac2dac48c838f6dee90fd1",
     "Tests/WorldTimeTravelTests.cs": "d74bc40427190f641f0df372b40b1c1d7c83e4b850acf4443edc338791b76cc7",
-    "Game/Scripts/NewGameRuntime.WorldTime.cs": "f35937022c4b8f708a33172e2cfa4f8edc9461920c9f9c5ac8b2ac770138b679",
+    "Game/Scripts/NewGameRuntime.WorldTime.cs": "cce2bb3006e58694dbd82f3d0562beb473810d8feefe9a95374b47083cdbf5a7",
     "Game/Scripts/WorldTimeCheck.cs": "ba8de82cc462be001b9c3bfecd47484541749d3ff262a724f964028eefbfcad7",
     "Docs/Design/WorldTimeV1/verification.json": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
     "Docs/Design/WorldTimeV1/completion.json": "c9dbef24f4d04462d73c0a295d53abf8508f4a84923f601df3eb6b60601e49f8",
@@ -1875,7 +1875,7 @@
     {
       "id": "BD-28",
       "status": "normal",
-      "existing": "実差出人への不達返報、本人への時点付き失敗通知、本人認識後の同宛先・同署名再送を実配送。承諾返書自体も不達を本人開封してから再送する。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
+      "existing": "実差出人への不達返報、本人への時点付き失敗通知、本人認識後の同宛先・同署名再送を実配送。承諾返書自体も不達を本人開封してから再送する。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 開封済みの敵対通知を年代記から再読し、権限のある当主が不戦を提案できる。開封後・発送後の実保存復旧を確認。",
       "remaining": "一般の多段使者・全国規模の配送混雑と全画面受入。 統合案で追加：§19 T5 自動の停止と減速・§4 訃報の書状と自動停止。 2026-11-06採用：本人が認識した病状の重要変化を既存の通知・停止・判断支援へ接続し、未受領の遠方の病状で停止しない。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
@@ -1925,7 +1925,8 @@
         "Game/Scripts/NewGameRuntime.WorldTime.cs",
         "Game/Scripts/WorldTimeCheck.cs",
         "Docs/Design/WorldTimeV1/verification.json",
-        "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md"
+        "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md",
+        "Docs/Design/DecisionSupportV1/entry-verification.md"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
