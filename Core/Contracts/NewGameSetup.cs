@@ -10,6 +10,9 @@ public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Nam
     OfficerAttributes Attributes, StartTemplate Role, string Site, string? Lord, string? FactionName, [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] HakutaiKagami.Core.Appearance.OfficerAppearance? Look = null)
 { [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public InitialMaritalStatus? InitialMaritalStatus {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public NpcAspiration? Aspiration {get;init;}
+
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string[]? BirthParents {get;init;}
 }
 public sealed record OfficerGroup(string Id, string Name, RegisteredOfficer[] Officers);
@@ -41,6 +44,7 @@ public static class NewGameSetup
         Need(p != null && Key(p.Id) && p.Id.StartsWith("created:",StringComparison.Ordinal),"登録武将のIDが不正です");
         Need(Text(p.Name) && Key(p.Site) && Enum.IsDefined(p.Role),"登録武将の名前・立場・場所が不正です");
         Need(p.BirthParents==null || p.BirthParents.Length<=2 && p.BirthParents.All(id=>EntityId.IsValid(id) && id!=p.Id) && p.BirthParents.Distinct().Count()==p.BirthParents.Length,"登録した実親の指定が不正です");
+        Need(p.Aspiration == null || Enum.IsDefined(p.Aspiration.Value), "志が不正です");
         Need(p.InitialMaritalStatus==null||Enum.IsDefined(p.InitialMaritalStatus.Value),"開始時の婚姻情報が不正です");
         Need(p.BirthYear is >= 1 and <= 9999 && p.Attributes != null,"生年・能力が不正です");
         Need(new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0}.All(n=>n>=0),"能力は負数にできません");

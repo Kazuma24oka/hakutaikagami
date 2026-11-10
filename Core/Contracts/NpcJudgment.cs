@@ -39,7 +39,7 @@ public static class NpcJudgment
         var purpose=basis.Routine!.Purpose!;var candidates=new List<NpcChoiceCandidate>();
         bool due=at>=ready;
         if(due&&basis.CooldownElapsed&&basis.Routine.Need?.Needed==true)candidates.Add(new("inspect",true,basis.InspectionPermit,basis.Routine.Need.MissingEdges.Length>0?45:10,new(0,3,3,0,1,0),false,false,false));
-        if(due&&purpose.PracticeDue&&basis.Routine.Need?.MissingEdges.Length is not >0)foreach(var skill in Enum.GetValues<DevelopmentSkill>())candidates.Add(new("practice:"+skill,true,basis.InspectionPermit,15,SkillWeights(skill),aspiration?.Skill==skill,aspiration?.Skill==skill,false));
+        if(due&&purpose.PracticeDue&&basis.Routine.Need?.MissingEdges.Length is not >0)foreach(var skill in Enum.GetValues<DevelopmentSkill>())candidates.Add(new("practice:"+skill,true,basis.InspectionPermit,15,SkillWeights(skill),aspiration?.Skill==skill,aspiration?.Skill==skill && !w.NewGame!.Registered.Any(p => p.Id == actor.Value),false));
         var settings=w.NewGame!.Judgment!;var mode=w.TimeControl?.ContinuedAt is {} continued&&continued<at?HistoryMode.Fictional:settings.History;
         // 同じ裁量窓では時刻の刻みを同点処理へ混ぜない。
         var input=new NpcChoiceInput(actor,w.Seed,ready,Personality(w,actor),aspiration?.Aspiration??NpcAspiration.Unspecified,mode,settings.Attention,candidates.ToArray());

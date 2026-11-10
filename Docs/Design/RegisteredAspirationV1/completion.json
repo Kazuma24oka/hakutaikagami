@@ -1,0 +1,24 @@
+{
+  "criteria": [
+    {
+      "contract": "登録武将に志を指定でき、未指定も保持する",
+      "status": "PASSED",
+      "evidence": "OfficerLibraryTrial の登録ボタンと4種類のCore検査"
+    },
+    {
+      "contract": "元武将と複製で志を個別に保持し、登録資料の読込で復元する",
+      "status": "PASSED",
+      "evidence": "Godotの別プロセス起動で元武将・複製を再読込"
+    },
+    {
+      "contract": "世界開始後の修行候補に本人の志を反映し、史実の志向と区別する",
+      "status": "PASSED",
+      "evidence": "RegisteredAspirationGuidesPracticeWithoutHistoricalBonus の4ケース"
+    },
+    {
+      "contract": "通常の編集画面と保存復旧を検査し、旧形式の未指定を維持する",
+      "status": "PASSED",
+      "evidence": "Godot設定値一致と旧保存6件のバイト一致"
+    }
+  ]
+}
