@@ -1,0 +1,11 @@
+{
+  "status": "PASSED",
+  "scope": "map-terrain-v1",
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "史料の画面の地図：川と湖の数、中部の山の陰影、琵琶湖の周り、地形を消した表示。ドット絵の確認も成功",
+  "godot_images": ["../HakutaiDbV1/runtime-local/ui/map-terrain.png", "../HakutaiDbV1/runtime-local/ui/map-biwa.png", "../HakutaiDbV1/runtime-local/ui/map-provinces-only.png"],
+  "core": "変更なし（地図の表示だけ）",
+  "full_core": "未実施（P13）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

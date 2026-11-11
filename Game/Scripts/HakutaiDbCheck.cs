@@ -25,7 +25,7 @@ public partial class HakutaiDbCheck:Node
   map.Home();await Frame();Check(map.BorderCounts/100000>100&&map.BorderCounts%100000>1000,"国と郡の境界の線");using(var bd=System.Text.Json.JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/Geography/borders-v1.json")))Check(bd.RootElement.GetProperty("Dangling").GetInt32()==0,"国境・郡境に、海岸にもほかの線にも届かない端がない");await Capture(output,"map-provinces.png");
   map.CenterOn(G(35.15,136.85),0.5);await Frame();await Capture(output,"map-districts.png");
   map.CenterOn(G(33.0,130.5),0.4);await Frame();await Capture(output,"map-tamana.png");map.CenterOn(G(37.3,140.35),0.4);await Frame();await Capture(output,"map-iwase.png");map.CenterOn(G(35.25,136.1),0.25);await Frame();await Capture(output,"map-biwa.png");map.CenterOn(G(35.6,140.1),0.6);await Frame();await Capture(output,"map-kanto.png");
-  map.SetLayers(false,true,false);await Frame();await Capture(output,"map-provinces-only.png");map.SetLayers(true,true,true);
+  map.SetLayers(false,true,false,false);await Frame();await Capture(output,"map-provinces-only.png");map.SetLayers(true,true,true,true);Check(map.TerrainCounts/10000>4000&&map.TerrainCounts%10000>500,"川と湖");map.CenterOn(G(36.2,138.2),1.2);await Frame();await Capture(output,"map-terrain.png");
   map.Home();await Frame();
   entry.ReviewDbSelect("織田");await Frame();var oda=entry.ReviewDbText();
   Check(oda.Contains("当主：織田信長")&&oda.Contains("本拠：清洲城")&&oda.Contains("〇 柴田勝家　")&&oda.Contains("〇 織田信長　清洲城")&&oda.Contains("石高 ")&&oda.Contains("兵の上限")&&!oda.Contains("［"),"織田の当主・本拠・石高・兵の上限・武将一覧（〇△×だけ）");

@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "国土地理院「地球地図日本」から、全国の主な川と湖、約1kmの標高を取り寄せ、出典と加工の記載を残す",
+      "status": "PASSED",
+      "evidence": [
+        "Tools/HakutaiDb/build_terrain.py",
+        "Game/Data/Geography/CREDITS.md"
+      ]
+    },
+    {
+      "contract": "地図に川（線）・湖（面）・山（標高の陰影）を描き、「地形」の切り替えで表示・非表示できる",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameMap.cs",
+        "Game/Scripts/HakutaiDbCheck.cs",
+        "Game/Data/Geography/terrain-v1.json"
+      ]
+    },
+    {
+      "contract": "地形のデータは表示だけに使い、世界の計算・保存の形は変えない",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameMap.cs"
+      ]
+    }
+  ]
+}
