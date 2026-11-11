@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text.Json;
 
 // 甲冑アニメ工房から書き出したドット絵の武将。いつもカメラを向く板として、時刻に合わせたコマを描く。
-// 絵はローカルの res://Assets/DotOfficers/Local（規約確認まで Git に入れない）。無ければ使わない。
+// 絵は res://Assets/DotOfficers/Sheets（Tools/DotOfficerBaker で書き出す）。無ければ使わない。
 public partial class DotOfficerActor : Node3D
 {
-    public const string Root="res://Assets/DotOfficers/Local/";
+    public const string Root="res://Assets/DotOfficers/Sheets/";
     sealed record Sheet(string File,int W,int H,int Ox,int Oy,string[] Anims,Dictionary<string,int[]> Ms);
     static Dictionary<string,Sheet>? sheets;static readonly Dictionary<string,Texture2D> textures=new();
     public static bool Available=>Index()!=null;
