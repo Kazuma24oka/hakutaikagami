@@ -188,9 +188,72 @@ HOKKAIDO = {"渡島国", "後志国", "石狩国", "天塩国", "北見国", "�
 NO_LABEL = {"琉球", "沖縄", "小笠原"}
 
 
+class PolyIndex:
+    """たくさんの形（鍵つき）の内外の判定。形ごとに帯の索引を持ち、0.25度の格子で候補を絞る。"""
+    CELL = 25000
+
+    def __init__(self, items):  # items: [(鍵, [輪...])]
+        self.items, self.grid = [], defaultdict(list)
+        for key, rings in items:
+            rings = [r for r in rings if len(r) > 3]
+            if not rings:
+                continue
+            ys = [p[0] for r in rings for p in r]
+            xs = [p[1] for r in rings for p in r]
+            i = len(self.items)
+            self.items.append((key, Region(rings), (min(ys), max(ys), min(xs), max(xs))))
+            for gy in range(min(ys) // self.CELL, max(ys) // self.CELL + 1):
+                for gx in range(min(xs) // self.CELL, max(xs) // self.CELL + 1):
+                    self.grid[(gy, gx)].append(i)
+
+    def keys_at(self, y, x):
+        out = set()
+        for i in self.grid.get((int(y) // self.CELL, int(x) // self.CELL), ()):
+            key, reg, (a, b, c, d) = self.items[i]
+            if a <= y <= b and c <= x <= d and reg.contains(y, x):
+                out.add(key)
+        return out
+
+
+def border_runs(items, index, accept, step=60, off=150):
+    """形の輪の辺ごとに、すぐ両側（off）の鍵を調べ、accept(自分, 相手, 中点) が真の辺をつないだ線にする。
+    点がぴったり一致しなくても境目になる（国の地図と郡の地図の食い違い・同じファイル内の小さなずれ）。"""
+    out = []
+    for key, rings in items:
+        if key is None:
+            continue
+        for ring in rings:
+            if len(ring) < 4:
+                continue
+            pts = simplify([(float(y), float(x)) for y, x in ring] + [(float(ring[0][0]), float(ring[0][1]))], step)
+            run = []
+            for (y1, x1), (y2, x2) in zip(pts, pts[1:]):
+                dy, dx = y2 - y1, x2 - x1
+                n = (dy * dy + dx * dx) ** 0.5
+                ok = False
+                if n > 0:
+                    my, mx = (y1 + y2) / 2, (x1 + x2) / 2
+                    ny, nx = -dx / n * off, dy / n * off
+                    sides = index.keys_at(my + ny, mx + nx) | index.keys_at(my - ny, mx - nx)
+                    others = [k for k in sides if k != key and k is not None]
+                    ok = key in sides and any(accept(key, k, (my, mx)) for k in others)
+                if ok:
+                    if not run:
+                        run = [(y1, x1)]
+                    run.append((y2, x2))
+                else:
+                    if len(run) >= 2:
+                        out.append(run)
+                    run = []
+            if len(run) >= 2:
+                out.append(run)
+    return [[[round(a * 1e7), round(b * 1e7)] for a, b in (tokyo_to_wgs(y / Q, x / Q) for y, x in simplify(ln, TOL * Q))] for ln in out]
+
+
 def main():
     # 国は「国地図」を基準にする。郡は国に合わせる：郡の線は、その郡の国の中にある部分だけを描き、
     # 隣の国にはみ出した部分は、はみ出した先の国の郡に取り込む（線を描かない）。郡名も自分の国の中に置く（2026-11-12 ユーザーの指示）
+    # 境目は、辺のすぐ両側の国・郡が違う所（点の一致に頼らない。2026-11-12 途切れの修正）。国の形の穴は湖として描く。
     pshp, pdbf = read_zip("国地図Ver1_1_11")
     gshp, gdbf = read_zip("郡地図Ver1_1_11")
     prows, prings = dbf_rows(pdbf), shp_polygons(pshp)
@@ -209,42 +272,24 @@ def main():
             return ("蝦夷", "渡島") if k == "渡島国" else ("蝦夷", "")
         return (province(k), g)
     gkeys = [gkey(r) for r in grows]
-    plines = lines(prings, pkeys)
-    glines, cut = [], 0
-    for owners, chain in lines(grings, gkeys, raw=True):
-        ks = [k for k in owners if k is not None]
-        if len(ks) < 2 or len({k[0] for k in ks}) != 1 or all(k[1] == "" for k in ks):
-            continue  # 国の境目（国の線で描く）・北海道の名前のない郡どうし
-        reg = regions.get(ks[0][0])
-        if reg is None:
-            continue
-        pts = simplify([(float(y), float(x)) for y, x in chain], TOL * Q)
-        def edge(a, b):  # a は国の中、b は外。国の線の上の点を半分ずつ縮めて探す
-            for _ in range(16):
-                m = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-                if reg.contains(*m):
-                    a = m
-                else:
-                    b = m
-            return a
-        run, prev, prev_in = [], None, False
-        for y, x in pts:
-            here = reg.contains(y, x)
-            if here and prev is not None and not prev_in:
-                run = [edge((y, x), prev)]  # 国の外から入る所
-            if here:
-                run.append((y, x))
-            else:
-                cut += 1
-                if prev_in:
-                    run.append(edge(prev, (y, x)))  # 国の外へ出る所
-                if len(run) >= 2:
-                    glines.append(run)
-                run = []
-            prev, prev_in = (y, x), here
-        if len(run) >= 2:
-            glines.append(run)
-    glines = [[[round(a * 1e7), round(b * 1e7)] for a, b in (tokyo_to_wgs(y / Q, x / Q) for y, x in ln)] for ln in glines]
+    pitems = list(zip(pkeys, prings))
+    pindex = PolyIndex(pitems)
+    plines = border_runs(pitems, pindex, lambda a, b, m: a < b)
+    gitems = list(zip(gkeys, grings))
+    gindex = PolyIndex(gitems)
+    glines = border_runs(gitems, gindex, lambda a, b, m: a[0] == b[0] and (a[1] or b[1]) and a < b and a[0] in regions and regions[a[0]].contains(*m))
+    cut = 0
+
+    # 湖：国の形の穴（琵琶湖・猪苗代湖・宍道湖・印旛沼など）。小さすぎる穴は描かない
+    def signed(r):
+        return sum(x1 * y2 - x2 * y1 for (y1, x1), (y2, x2) in zip(r, r[1:] + r[:1])) / 2
+    lakes = []
+    for rings in prings:
+        for h in rings:
+            if len(h) > 3 and signed(h) > 2e6:
+                pts = simplify([(float(y), float(x)) for y, x in h], 50)
+                if len(pts) >= 4:
+                    lakes.append([[round(a * 1e7), round(b * 1e7)] for a, b in (tokyo_to_wgs(y / Q, x / Q) for y, x in pts[:-1] if True)])
 
     def label_of(rings_list, whole=False, inside=None):
         rings = [r for rr in rings_list for r in rr if len(r) > 3]
@@ -278,9 +323,9 @@ def main():
     doc = {"Schema": 1, "Id": "borders-v1",
            "Source": {"Name": "郡地図 Ver 1.1（郡地図研究会）", "License": "CC BY 4.0", "Credit": "「郡地図 Ver 1.1」を加工して作成",
                       "Edits": "明治の国（北海道は蝦夷にまとめ、渡島国は郡「渡島」）、明治の市・区を除く、隣と接する境目だけ、約200mで間引き、日本測地系から世界測地系へ近似で変換"},
-           "Provinces": provinces, "Districts": districts, "ProvinceLines": plines, "DistrictLines": glines}
+           "Provinces": provinces, "Districts": districts, "ProvinceLines": plines, "DistrictLines": glines, "Lakes": lakes}
     OUT.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8", newline="\n")
-    print(f"郡の線を国の外で切った点 {cut}")
+    print(f"湖 {len(lakes)}")
     print(f"{OUT.name}: 国 {len(provinces)}・郡 {len(districts)}・国の線 {len(plines)}（点 {sum(map(len, plines))}）・郡の線 {len(glines)}（点 {sum(map(len, glines))}）・{OUT.stat().st_size // 1024}KB")
 
 

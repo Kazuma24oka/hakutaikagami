@@ -24,7 +24,7 @@ public partial class HakutaiDbCheck:Node
   map.ZoomAt(new Godot.Vector2(10,10),1e-6);await Frame();Check(map.InView(G(26.21,127.68)),"一番引いた所で止まる");
   map.Home();await Frame();Check(map.BorderCounts/100000>100&&map.BorderCounts%100000>1000,"国と郡の境界の線");await Capture(output,"map-provinces.png");
   map.CenterOn(G(35.15,136.85),0.5);await Frame();await Capture(output,"map-districts.png");
-  map.CenterOn(G(33.0,130.5),0.4);await Frame();await Capture(output,"map-tamana.png");map.CenterOn(G(37.3,140.35),0.4);await Frame();await Capture(output,"map-iwase.png");
+  map.CenterOn(G(33.0,130.5),0.4);await Frame();await Capture(output,"map-tamana.png");map.CenterOn(G(37.3,140.35),0.4);await Frame();await Capture(output,"map-iwase.png");map.CenterOn(G(35.25,136.1),0.25);await Frame();await Capture(output,"map-biwa.png");map.CenterOn(G(35.6,140.1),0.6);await Frame();await Capture(output,"map-kanto.png");
   map.SetLayers(false,true,false);await Frame();await Capture(output,"map-provinces-only.png");map.SetLayers(true,true,true);
   map.Home();await Frame();
   entry.ReviewDbSelect("織田");await Frame();var oda=entry.ReviewDbText();
