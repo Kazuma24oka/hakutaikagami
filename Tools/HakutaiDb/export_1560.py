@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 import subprocess
 import sys
@@ -25,7 +26,7 @@ from pathlib import Path
 
 YEAR = 1560
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("C:/Workspace/Projects/Data/SengokuDB")
-OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[2] / "Core" / "Data" / "hakutai-db-1560-v1.json"
+OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[2] / "Core" / "Data" / "hakutai-db-1560-v2.json"
 
 CASTLE_BASIS = {0: "本人の城主の記録（時期つき）", 1: "本人の城主の記録（時期なし）", 2: "同じ苗字の城主の城（推定）", 3: "国の当主の城（推定）", 4: "国の家の城（推定）", 5: "家の本拠（推定）"}
 POSITION_BASIS = {"参考サイト": "参考サイトの位置", "シナリオ": "シナリオの位置（目安）", "記事": "記事の位置", "手の表": "手で確かめた位置", "国": "国の中の目安", "郡": "郡の中の目安"}
@@ -64,6 +65,35 @@ def main():
         })
     hid = {h["Id"]: h for h in houses}
 
+    # 郡（1560年の支配の見積もり）と石高の推定：慶長3年（1598年）の国の石高を、国の中の郡に面積の割合で分ける
+    # （地図は正積方位図法なので、投影した面積の比が実際の面積の比）。陸奥・出羽は合わせて分ける。蝦夷地は石高の表にないので0。
+    koku = json.loads((SRC / "progress" / "reference" / "kokudaka_1598.json").read_text(encoding="utf-8"))["provinces"]
+
+    def area(path):
+        tot = 0.0
+        for sub in re.findall(r"M([^MZ]*)Z?", path):
+            pts = [tuple(map(float, q.split(","))) for q in sub.split("L") if q]
+            tot += abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1] for i in range(len(pts)))) / 2
+        return tot
+    kuni = lambda g: g.split("::")[0].rstrip("国").replace("驒", "騨")
+    gun_area = {g: area(path) for g, path in mp["gun"].items()}
+    prov_area = Counter()
+    for g, a in gun_area.items():
+        prov_area["陸奥" if kuni(g) in ("陸奥", "出羽") else kuni(g)] += a
+    districts = []
+    for d in year["districts"]:
+        g = d[0]
+        pv = kuni(g)
+        pool = "陸奥" if pv in ("陸奥", "出羽") else pv
+        total = (koku["陸奥"]["keicho3"] + koku["出羽"]["keicho3"]) if pool == "陸奥" else (koku.get(pv, {}).get("keicho3") or 0)
+        kd = round(total * gun_area.get(g, 0) / prov_area[pool]) if prov_area[pool] else 0
+        owner, basis = (fl[d[1]]["gid"], "参考サイトの郡の支配者") if d[1] >= 0 else (fl[d[8]]["gid"], "推定：" + (d[9] or "")) if d[8] >= 0 else (None, None)
+        districts.append({"Id": g, "Province": g.split("::")[0], "Name": g.split("::")[1], "Owner": owner, "OwnerBasis": basis,
+                          "Kokudaka": kd, "KokudakaBasis": "慶長3年の国の石高を郡の面積で按分した推定" if kd else "石高の表にない（0）"})
+    gun_owner = {d["Id"]: d["Owner"] for d in districts}
+    for h in houses:
+        h["Kokudaka"] = sum(d["Kokudaka"] for d in districts if d["Owner"] == h["Id"])
+
     # 城
     castles = {}
     gone = set(year["absent"])
@@ -78,7 +108,7 @@ def main():
                             "District": (c.get("gun") or "").split("::")[1] if "::" in (c.get("gun") or "") else None,
                             "LatitudeE7": round(xy["lat"] * 1e7), "LongitudeE7": round(xy["lon"] * 1e7),
                             "PositionBasis": POSITION_BASIS.get(c.get("how"), c.get("how") or "不明"),
-                            "Owner": None, "Holder": None, "OwnerBasis": None, "_i": i}
+                            "Owner": None, "Holder": None, "OwnerBasis": None, "_i": i, "_gun": c.get("gun")}
     by_index = {c["_i"]: c for c in castles.values()}
     for o in year["owners"]:
         c = by_index.get(o[0])
@@ -87,6 +117,13 @@ def main():
         c["Owner"] = fl[o[1]]["gid"]
         c["Holder"] = o[2] or None
         c["OwnerBasis"] = o[3]
+    # 城主不明の城は、城のある郡を支配する勢力の城とする（2026-11-12 ユーザーの指示）
+    filled = 0
+    for c in castles.values():
+        if c["Owner"] is None and gun_owner.get(c["_gun"]):
+            c["Owner"], c["OwnerBasis"] = gun_owner[c["_gun"]], "郡の支配者の城（城主不明）"
+            filled += 1
+    print("城主不明で郡の支配者の城にした", filled)
     by_name = {}
     for c in castles.values():
         by_name.setdefault(c["Name"], []).append(c)
@@ -106,10 +143,54 @@ def main():
     # 人物
     ids = sorted(p for p, v in status.items() if v[0] not in ("所属不明", "浪人") and v[1] in hid)
     person_row = {r[0]: r for r in db.execute(
-        "select 人物ID, 表示名, 代表の読み, 苗字, 諱, 通称, 官途名, 性別, 実在の確度, 生年, 没年, 役割, 登録状態 from 人物一覧")}
+        "select 人物ID, 表示名, 代表の読み, 苗字, 諱, 通称, 官途名, 性別, 実在の確度, 生年, 没年, 役割, 登録状態, 記録数 from 人物一覧")}
     fathers = {}
     for s, ref in db.execute("select subject, value_ref from assertions where property='father' and state='value' and value_ref is not null"):
         fathers.setdefault(s, set()).add(ref)
+    surnames_all = {v for (v,) in db.execute("select distinct value_text from assertions where property='surname' and value_text is not null") if v and 2 <= len(v) <= 4}
+    names = {}
+    for subj, val, q, y in db.execute("select subject, value_text, qualifiers, valid_from_year from assertions where id like 'A-NH-%' and property='name'"):
+        qq = json.loads(q)
+        names.setdefault(subj, []).append((qq["sequence"], val, qq["step"], y))
+
+    others = {}
+    for pid_, disp_ in db.execute("select 人物ID, 表示名 from 人物一覧"):
+        others.setdefault(disp_, set()).add(pid_)
+    own_sn = {r[0]: r[3] for r in person_row.values()}
+
+    def plausible(p, n):
+        # 自動の読み取りの誤りを避ける：別人の表示名、苗字の付かない名前、1字の本姓（源・平・藤原・金など）で始まる名前は使わない
+        if not n or len(n) < 3 or len(n) > 7 or (others.get(n) and p not in others[n]):
+            return False
+        sn = own_sn.get(p) or ""
+        if sn and n.startswith(sn):
+            return True
+        return bool(re.match(r"^(?![源平橘金藤])\S{2,}", n)) and any(n.startswith(x) and len(x) >= 2 for x in surnames_all)
+
+    def start_name(p, display, born):
+        seq = sorted(x for x in names.get(p, ()) if x[2] == "幼名" or plausible(p, x[1]))
+        if not seq:
+            return display, "記録の名前"
+        adult = [x for x in seq if x[2] != "幼名"]
+        if born and born + 15 > YEAR:
+            child = [x for x in seq if x[2] == "幼名"]
+            if child:
+                return child[-1][1], "幼名（1560年に15歳未満）"
+        dated = [x for x in adult if x[3] is not None and x[3] <= YEAR]
+        if dated:
+            last = dated[-1]
+            later = [x for x in adult if x[0] > last[0] and x[3] is None]
+            nxt = next((x for x in adult if x[0] > last[0] and x[3] is not None), None)
+            if later and nxt and nxt[3] <= YEAR:
+                return nxt[1], "改名の年（記事）"
+            return last[1], "改名の年（記事）"
+        first_after = next((x for x in adult if x[3] is not None and x[3] > YEAR), None)
+        if first_after:
+            before = [x for x in adult if x[0] < first_after[0]]
+            if before:
+                return before[-1][1], "改名の順と年（記事）"
+        return display, "記録の名前"
+
     people = []
     missing = Counter()
     for p in ids:
@@ -131,6 +212,9 @@ def main():
         people.append({
             "Id": p, "Name": r[1], "Reading": r[2], "Surname": r[3], "Imina": r[4], "Tsusho": r[5], "Kanto": r[6],
             "Sex": r[7], "Birth": year_of(r[9]), "Death": year_of(r[10]), "Father": father[0] if len(father) == 1 else None,
+            "StartName": start_name(p, r[1], year_of(r[9]))[0], "StartNameBasis": start_name(p, r[1], year_of(r[9]))[1],
+            "NameHistory": [{"Name": n, "From": y, "Step": st} for _, n, st, y in sorted(names.get(p, ())) if st == "幼名" or plausible(p, n)],
+            "Records": r[13],
             "Existence": r[8], "Registration": r[12], "Role": r[11], "Province": province,
             "House": house, "HouseBasis": v[0],
             "Castle": castle_id(cname, house, province) if cname else None, "CastleName": cname,
@@ -166,15 +250,16 @@ def main():
     out_castles = []
     for c in sorted(castles.values(), key=lambda c: c["Id"]):
         if c["Id"] in used_castles:
-            del c["_i"]
+            del c["_i"], c["_gun"]
             out_castles.append(c)
     doc = {
-        "Schema": 1, "Id": "hakutai-db-1560-v1", "WorldYear": YEAR,
+        "Schema": 1, "Id": "hakutai-db-1560-v2", "WorldYear": YEAR,
         "Source": {"Repository": "SengokuDB", "Commit": commit, "Tags": tags, "SqliteBuiltAt": built.get("built_at"), "CatalogVersion": built.get("catalog_version")},
         "Policy": "戦国DBの版から一方向に書き出した1560年の開始用の下書き。所属・置き場所の城・直属の上司・城の持ち主は機械の見積もりで、史実の判定ではない（決め方を値ごとに残す）。城の位置は公知の地理、所属と城の持ち主はその年の情勢（人が報告で知るもの）として扱う。能力・性格・見た目は百代鏡側で別に持つ。",
         "Houses": sorted(houses, key=lambda h: h["Id"]),
         "People": people,
         "Castles": out_castles,
+        "Districts": districts,
     }
     lines = ["{"]
     keys = list(doc)

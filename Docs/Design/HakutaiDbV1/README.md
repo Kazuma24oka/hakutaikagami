@@ -21,3 +21,6 @@ python Tools/HakutaiDb/export_1560.py
 
 ## 確かめたこと
 [verification.json](verification.json)。
+
+## その後
+2026-11-12 [百代鏡DB V2](../HakutaiDbV2/README.md) で書き出しを hakutai-db-1560-v2.json に置き換えた（郡・石高・名乗り・開始配置の決まり）。

@@ -10,8 +10,8 @@ public sealed class HakutaiDbTests
     static byte[] Raw()
     {
         var dir=new DirectoryInfo(AppContext.BaseDirectory);
-        while(dir!=null&&!File.Exists(Path.Combine(dir.FullName,"Core","Data","hakutai-db-1560-v1.json")))dir=dir.Parent;
-        return File.ReadAllBytes(Path.Combine(dir!.FullName,"Core","Data","hakutai-db-1560-v1.json"));
+        while(dir!=null&&!File.Exists(Path.Combine(dir.FullName,"Core","Data","hakutai-db-1560-v2.json")))dir=dir.Parent;
+        return File.ReadAllBytes(Path.Combine(dir!.FullName,"Core","Data","hakutai-db-1560-v2.json"));
     }
     static HakutaiDbEdition Broken(Action<JsonObject> edit){var o=JsonNode.Parse(Raw())!.AsObject();edit(o);return HakutaiDb.Parse(Encoding.UTF8.GetBytes(o.ToJsonString()));}
 
@@ -27,7 +27,7 @@ public sealed class HakutaiDbTests
     [Fact]public void ExistingStartPeopleLinkToTheSamePeopleAndHouses()
     {
         var nobunaga=HakutaiDb.ForGame("person:nobunaga")!;
-        Assert.Equal("織田信長",nobunaga.Name);Assert.Equal("G-000131",nobunaga.House);Assert.Equal("清洲城",nobunaga.CastleName);Assert.Equal(1534,nobunaga.Birth);
+        Assert.Equal("織田信長",nobunaga.Name);Assert.Equal("織田信長",nobunaga.StartName);Assert.Equal("G-000131",nobunaga.House);Assert.Equal("清洲城",nobunaga.CastleName);Assert.Equal(1534,nobunaga.Birth);
         Assert.Equal(nobunaga.Id,HakutaiDb.House(HakutaiDb.GameLinks["org:oda"])!.Head);
         Assert.Equal("今川館",HakutaiDb.ForGame("person:imagawa-yoshimoto")!.CastleName);
         Assert.Equal("小田原城",HakutaiDb.Castle(HakutaiDb.House(HakutaiDb.GameLinks["org:hojo"])!.Home!)!.Name);
@@ -100,5 +100,44 @@ public sealed class HakutaiDbTests
         Assert.Equal(DotTier.Courtier,DotOfficerLooks.For(HakutaiDb.ForGame("person:yamashina-tokitsugu")!,false).Tier);
         Assert.True(tiers[DotTier.Lord]>200&&tiers[DotTier.Samurai]>3000,string.Join(",",tiers));
         Assert.Equal("黒漆",DotOfficerLooks.For(HakutaiDb.Named("柴田勝家").Single(),true).Armor);
+    }
+
+    [Fact]public void PeopleAppearUnderTheNameTheyUsedIn1560()
+    {
+        var ieyasu=HakutaiDb.Named("徳川家康").Single();
+        Assert.Equal("松平元康",ieyasu.StartName);Assert.Equal("松平元康",HakutaiDb.NameAt(ieyasu,1560));
+        Assert.Contains(HakutaiDb.LaterRenames(ieyasu),n=>n.Name=="徳川家康"&&n.From>1560);
+        Assert.Equal("長尾景虎",HakutaiDb.Named("上杉謙信").Single().StartName);
+        Assert.Equal("木下秀吉",HakutaiDb.Named("豊臣秀吉").Single().StartName);
+        Assert.Equal("織田信長",HakutaiDb.ForGame("person:nobunaga")!.StartName);
+        // 別人の名前で登場させない
+        var starts=HakutaiDb.Houses.SelectMany(h=>HakutaiDb.Members(h.Id)).Where(p=>p.StartName!=p.Name).ToArray();
+        Assert.All(starts,p=>Assert.DoesNotContain(HakutaiDb.Named(p.StartName),q=>q.Id!=p.Id));
+    }
+
+    [Fact]public void DistrictsCarryOwnerAndEstimatedKokudakaAndUnknownCastlesBelongToTheDistrictRuler()
+    {
+        Assert.True(HakutaiDb.Districts.Count>600);Assert.True(HakutaiDb.Districts.Count(d=>d.Owner!=null)>580);
+        var oda=HakutaiDb.House(HakutaiDb.GameLinks["org:oda"])!;Assert.InRange(oda.Kokudaka,400000,800000);
+        Assert.All(HakutaiDb.Districts.Where(d=>d.Kokudaka>0),d=>Assert.Contains("推定",d.KokudakaBasis));
+        Assert.Contains(HakutaiDb.PublicGeography(),c=>HakutaiDb.Castle(c.Id)!.OwnerBasis=="郡の支配者の城（城主不明）");
+    }
+
+    [Fact]public void RosterFollowsIncomeKeepsFamousPeopleAndFillsWithMobs()
+    {
+        var oda=HakutaiDbStart.Roster(HakutaiDb.GameLinks["org:oda"]);var house=HakutaiDb.House(oda.House)!;
+        Assert.Equal(HakutaiDbStart.Quota(house),oda.Officers.Length);Assert.True(oda.DbMembers>oda.Quota);Assert.Equal(0,oda.Mobs);
+        Assert.Equal("織田信長",oda.Officers[0].Name);
+        foreach(var name in new[]{"柴田勝家","丹羽長秀","佐久間信盛"})Assert.Contains(oda.Officers,o=>o.Name==name);
+        Assert.Equal(house.Kokudaka*250/10000,oda.SoldierCap);
+        var small=HakutaiDb.Houses.Where(h=>!h.Religious&&HakutaiDbStart.Quota(h)>HakutaiDb.Members(h.Id).Count).OrderBy(h=>h.Id,StringComparer.Ordinal).First();
+        var r=HakutaiDbStart.Roster(small.Id);Assert.True(r.Mobs>0);Assert.Equal(r.Quota,r.Officers.Length);
+        Assert.All(r.Officers.Where(o=>o.Person==null),o=>{Assert.Equal(Historicity.Fictional,o.Historicity);Assert.StartsWith("mob:",o.Id);});
+        var mobNames=r.Officers.Where(o=>o.Person==null).Select(o=>o.Name).ToArray();Assert.Equal(mobNames.Length,mobNames.Distinct().Count());Assert.DoesNotContain(r.Officers.Where(o=>o.Person!=null),o=>mobNames.Contains(o.Name));
+        Assert.Equal(r,HakutaiDbStart.Roster(small.Id) with{Officers=r.Officers});Assert.Equal(r.Officers,HakutaiDbStart.Roster(small.Id).Officers);
+        Assert.Equal("〇",HakutaiDbStart.Mark(HakutaiDbStart.Of(HakutaiDb.ForGame("person:nobunaga")!)));
+        Assert.Equal("×",HakutaiDbStart.Mark(Historicity.Fictional));
+        var all=HakutaiDb.Houses.Select(h=>HakutaiDbStart.Roster(h.Id)).ToArray();
+        Assert.All(all,x=>Assert.True(x.Officers.Length>=Math.Min(3,x.Quota)));
     }
 }
