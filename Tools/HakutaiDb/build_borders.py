@@ -247,7 +247,189 @@ def border_runs(items, index, accept, step=60, off=150):
                     run = []
             if len(run) >= 2:
                 out.append(run)
-    return [[[round(a * 1e7), round(b * 1e7)] for a, b in (tokyo_to_wgs(y / Q, x / Q) for y, x in simplify(ln, TOL * Q))] for ln in out]
+    return [[tokyo_to_wgs(y / Q, x / Q) for y, x in ln] for ln in out]  # 世界測地系の度（後で finish で整える）
+
+
+class Land:
+    """ゲームの地図の陸地（japan-terrain-mask-v1 と北方領土の島）。E7 の整数で、緯度の帯の索引つき ray 判定。"""
+    STRIP = 500000
+
+    def __init__(self):
+        root = Path(__file__).resolve().parents[2]
+        polys = json.loads((root / "Core" / "Data" / "japan-terrain-mask-v1.json").read_text(encoding="utf-8"))["Polygons"]
+        polys += json.loads((root / "Game" / "Data" / "Geography" / "northern-territories-v1.json").read_text(encoding="utf-8"))["Polygons"]
+        self.strips = defaultdict(list)
+        for p in polys:
+            for ring in [p["Outer"]] + p["Holes"]:
+                pts = [(q["LatitudeE7"], q["LongitudeE7"]) for q in ring]
+                for a, b in zip(pts, pts[1:] + pts[:1]):
+                    if a[0] == b[0]:
+                        continue
+                    for k in range(min(a[0], b[0]) // self.STRIP, max(a[0], b[0]) // self.STRIP + 1):
+                        self.strips[k].append((a, b))
+
+    def add_water(self, rings):  # 描いた湖（E7 の輪）を水にする（偶奇で陸から抜ける）
+        for ring in rings:
+            pts = [tuple(q) for q in ring]
+            for a, b in zip(pts, pts[1:] + pts[:1]):
+                if a[0] == b[0]:
+                    continue
+                for k in range(min(a[0], b[0]) // self.STRIP, max(a[0], b[0]) // self.STRIP + 1):
+                    self.strips[k].append((a, b))
+
+    def contains(self, lat, lon):
+        y, x = lat * 1e7, lon * 1e7
+        c = False
+        for (y1, x1), (y2, x2) in self.strips.get(int(y) // self.STRIP, ()):
+            if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+                c = not c
+        return c
+
+
+def meters(a, b):
+    k = 111320.0
+    return ((a[0] - b[0]) * k) ** 2 + ((a[1] - b[1]) * k * 0.81) ** 2
+
+
+DANGLING = []
+
+
+def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
+    """境界線を地図の陸地に合わせて整える（2026-11-12 ユーザーの指示：線がない・あいまいな所をなくす）。
+    1. 海の上の部分を消し、海岸で切る。2. 海岸の手前で止まる端は海岸まで伸ばす。
+    3. 途中で止まる端は、近くの線（targets も含む）の点につなぐ。4. 約200m で間引く。
+    戻り値：(E7 の線, 海岸にもほかの線にも届かない端の数)。"""
+    def coast(a, b):  # a は陸、b は海。海岸の点
+        for _ in range(18):
+            m = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+            if land.contains(*m):
+                a = m
+            else:
+                b = m
+        return a
+    # 1. 海で切る（点の間も 100m ごとに確かめる）
+    clipped = []
+    for ln in lines:
+        dense = [ln[0]]
+        for a, b in zip(ln, ln[1:]):
+            n = max(1, int(meters(a, b) ** 0.5 / 100))
+            dense += [(a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n) for i in range(1, n + 1)]
+        run, prev, prev_in = [], None, False
+        for p in dense:
+            here = land.contains(*p)
+            if here and prev is not None and not prev_in:
+                run = [coast(p, prev)]
+            if here:
+                run.append(p)
+            elif prev_in:
+                run.append(coast(prev, p))
+                if len(run) >= 2:
+                    clipped.append(run)
+                run = []
+            prev, prev_in = p, here
+        if len(run) >= 2:
+            clipped.append(run)
+
+    def at_coast(p):
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1), (0.7, 0.7), (-0.7, 0.7), (0.7, -0.7), (-0.7, -0.7)):
+            if not land.contains(p[0] + dy * 0.0015, p[1] + dx * 0.0019):
+                return True
+        return False
+    # 3 の準備：すべての線の点の格子（0.01度）
+    grid = defaultdict(list)
+    allines = clipped + [list(t) for t in targets]
+    for li, ln in enumerate(allines):
+        for pi, p in enumerate(ln):
+            grid[(int(p[0] * 100), int(p[1] * 100))].append((li, pi))
+
+    def nearest(p, li_self, end_index):
+        best, bd = None, snap_m ** 2
+        gy, gx = int(p[0] * 100), int(p[1] * 100)
+        for yy in (gy - 1, gy, gy + 1):
+            for xx in (gx - 1, gx, gx + 1):
+                for li, pi in grid.get((yy, xx), ()):
+                    if li == li_self and abs(pi - end_index) < 8:
+                        continue
+                    q = allines[li][pi]
+                    d = meters(p, q)
+                    if d < bd:
+                        best, bd = q, d
+        return best
+    dangling = 0
+    out, loose = [], []
+    for li, ln in enumerate(clipped):
+        ln = list(ln)
+        for end in (0, -1):
+            p = ln[end]
+            if at_coast(p):
+                continue
+            q = nearest(p, li, 0 if end == 0 else len(ln) - 1)
+            if q is not None:
+                if meters(p, q) > 1:
+                    if end == 0:
+                        ln.insert(0, q)
+                    else:
+                        ln.append(q)
+                continue
+            # 2. 海岸まで伸ばす（最後の向きのまま）
+            a, b = (ln[1], ln[0]) if end == 0 else (ln[-2], ln[-1])
+            d = meters(a, b) ** 0.5 or 1
+            dy, dx = (b[0] - a[0]) / d * 50, (b[1] - a[1]) / d * 50
+            cur, ext = b, None
+            for _ in range(int(extend_m / 50)):
+                nxt = (cur[0] + dy, cur[1] + dx)
+                if not land.contains(*nxt):
+                    ext = coast(cur, nxt)
+                    break
+                cur = nxt
+            if ext is not None:
+                if end == 0:
+                    ln.insert(0, ext)
+                else:
+                    ln.append(ext)
+            else:
+                # 向きを変えて一番近い海岸・水辺（1.5km まで）へつなぐ
+                best = None
+                for r in range(1, 31):
+                    for k in range(0, 360, 10):
+                        import math
+                        q = (b[0] + r * 50 / 111320 * math.sin(math.radians(k)), b[1] + r * 50 / 90000 * math.cos(math.radians(k)))
+                        if not land.contains(*q):
+                            best = coast(b, q)
+                            break
+                    if best:
+                        break
+                if best:
+                    if end == 0:
+                        ln.insert(0, best)
+                    else:
+                        ln.append(best)
+                else:
+                    loose.append((len(out), end))
+        out.append(ln)
+    # 4. 湖や川で途切れた線は、対岸の続きの線の端とまっすぐつなぐ（近い組から、15km まで）
+    pairs = sorted(((meters(out[a][ea], out[b][eb]), (a, ea), (b, eb)) for i, (a, ea) in enumerate(loose) for (b, eb) in loose[i + 1:]), key=lambda t: t[0])
+    used = set()
+    for d, (a, ea), (b, eb) in pairs:
+        if d > 15000 ** 2 or (a, ea) in used or (b, eb) in used:
+            continue
+        used |= {(a, ea), (b, eb)}
+        q = out[b][eb]
+        if ea == 0:
+            out[a].insert(0, q)
+        else:
+            out[a].append(q)
+    drop = set()
+    for a, ea in loose:
+        if (a, ea) not in used:
+            if sum(meters(p, q) ** 0.5 for p, q in zip(out[a], out[a][1:])) < 2000:
+                drop.add(a)  # 形のわずかなずれから出た短い切れ端は消す
+                continue
+            dangling += 1
+            DANGLING.append((round(out[a][ea][0], 4), round(out[a][ea][1], 4)))
+    out = [ln for i, ln in enumerate(out) if i not in drop]
+    tol = TOL  # 度
+    return [[[round(a * 1e7), round(b * 1e7)] for a, b in simplify(ln, tol)] for ln in out if len(ln) >= 2], dangling
 
 
 def main():
@@ -272,14 +454,29 @@ def main():
             return ("蝦夷", "渡島") if k == "渡島国" else ("蝦夷", "")
         return (province(k), g)
     gkeys = [gkey(r) for r in grows]
+    # 明治の市・区は、接する長さが一番長い同じ国の郡に含める（市の所で郡境が止まらないように）
+    nindex = PolyIndex([(k, rr) for k, rr in zip(gkeys, grings) if k is not None])
+    for i, r in enumerate(grows):
+        if gkeys[i] is not None:
+            continue
+        votes = defaultdict(float)
+        for ring in grings[i]:
+            pts = simplify([(float(y), float(x)) for y, x in ring], 60) if len(ring) > 3 else []
+            for (y1, x1), (y2, x2) in zip(pts, pts[1:]):
+                dy, dx = y2 - y1, x2 - x1
+                n = (dy * dy + dx * dx) ** 0.5
+                if n == 0:
+                    continue
+                my, mx = (y1 + y2) / 2, (x1 + x2) / 2
+                for sgn in (1, -1):
+                    for k in nindex.keys_at(my - sgn * dx / n * 150, mx + sgn * dy / n * 150):
+                        if k[0] == province(r["KUNI"]):
+                            votes[k] += n
+        if votes:
+            gkeys[i] = max(votes, key=votes.get)
     pitems = list(zip(pkeys, prings))
     pindex = PolyIndex(pitems)
-    plines = border_runs(pitems, pindex, lambda a, b, m: a < b)
-    gitems = list(zip(gkeys, grings))
-    gindex = PolyIndex(gitems)
-    glines = border_runs(gitems, gindex, lambda a, b, m: a[0] == b[0] and (a[1] or b[1]) and a < b and a[0] in regions and regions[a[0]].contains(*m))
-    cut = 0
-
+    land = Land()
     # 湖：国の形の穴（琵琶湖・猪苗代湖・宍道湖・印旛沼など）。小さすぎる穴は描かない
     def signed(r):
         return sum(x1 * y2 - x2 * y1 for (y1, x1), (y2, x2) in zip(r, r[1:] + r[:1])) / 2
@@ -290,6 +487,18 @@ def main():
                 pts = simplify([(float(y), float(x)) for y, x in h], 50)
                 if len(pts) >= 4:
                     lakes.append([[round(a * 1e7), round(b * 1e7)] for a, b in (tokyo_to_wgs(y / Q, x / Q) for y, x in pts[:-1] if True)])
+
+    land.add_water(lakes)
+    ryukyu = lambda ln: all(p[0] < 29.0 and p[1] < 131.0 for p in ln)  # 琉球の線は描かない
+    praw = [ln for ln in border_runs(pitems, pindex, lambda a, b, m: a < b) if not ryukyu(ln)]
+    plines, pdang = finish(praw, land)
+    gitems = list(zip(gkeys, grings))
+    gindex = PolyIndex(gitems)
+    graw = border_runs(gitems, gindex, lambda a, b, m: a[0] == b[0] and (a[1] or b[1]) and a < b and a[0] in regions and regions[a[0]].contains(*m))
+    graw = [ln for ln in graw if not ryukyu(ln)]
+    glines, gdang = finish(graw, land, targets=praw)
+    print(f"海岸にもほかの線にも届かない端：国 {pdang}・郡 {gdang}", DANGLING)
+    cut = 0
 
     def label_of(rings_list, whole=False, inside=None):
         rings = [r for rr in rings_list for r in rr if len(r) > 3]
@@ -323,7 +532,7 @@ def main():
     doc = {"Schema": 1, "Id": "borders-v1",
            "Source": {"Name": "郡地図 Ver 1.1（郡地図研究会）", "License": "CC BY 4.0", "Credit": "「郡地図 Ver 1.1」を加工して作成",
                       "Edits": "明治の国（北海道は蝦夷にまとめ、渡島国は郡「渡島」）、明治の市・区を除く、隣と接する境目だけ、約200mで間引き、日本測地系から世界測地系へ近似で変換"},
-           "Provinces": provinces, "Districts": districts, "ProvinceLines": plines, "DistrictLines": glines, "Lakes": lakes}
+           "Provinces": provinces, "Districts": districts, "ProvinceLines": plines, "DistrictLines": glines, "Lakes": lakes, "Dangling": pdang + gdang}
     OUT.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8", newline="\n")
     print(f"湖 {len(lakes)}")
     print(f"{OUT.name}: 国 {len(provinces)}・郡 {len(districts)}・国の線 {len(plines)}（点 {sum(map(len, plines))}）・郡の線 {len(glines)}（点 {sum(map(len, glines))}）・{OUT.stat().st_size // 1024}KB")
