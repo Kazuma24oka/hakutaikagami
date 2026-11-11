@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "郡地図 Ver 1.1（郡地図研究会、CC BY 4.0）から、国と郡の境界の線と名前を作る。国は明治の区分（陸奥・陸中・陸前・磐城・岩代、羽前・羽後など）、北海道は国「蝦夷」、渡島国の範囲は郡「渡島」。明治の市・区は郡にしない。出典と加工の記載を残す",
+      "status": "PASSED",
+      "evidence": [
+        "Tools/HakutaiDb/build_borders.py",
+        "Game/Data/Geography/borders-v1.json",
+        "Game/Data/Geography/CREDITS.md"
+      ]
+    },
+    {
+      "contract": "地図で経路・国・郡の表示を切り替えられ、線は種類ごとに色を変える",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameMap.cs",
+        "Game/Scripts/HakutaiDbCheck.cs"
+      ]
+    },
+    {
+      "contract": "国名・郡名は寄り具合に合わせて出し、境界は隣と接する所だけを描く（海岸線と重ねない）",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameMap.cs"
+      ]
+    }
+  ]
+}
