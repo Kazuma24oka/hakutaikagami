@@ -1,0 +1,13 @@
+{
+  "status": "PASSED",
+  "scope": "castle-network-world-v1",
+  "core_castle_network_tests": 3,
+  "core_related_passed": 516,
+  "core_related_filter": "NewGameWorld|Travel|NationalRoute|Regional|BranchRoute|Imagawa|HistoricalStart|CastleNetwork|CastleRoutes|HakutaiDb|Weather|CreatedCampaign|ContinuousWorld",
+  "save_recovery": "城の移動網の世界で、今川義元が駿府から今川館の城の拠点へ移動中に保存し、復旧して3日後まで進めて同じ世界（GenerationSaveStore）",
+  "legacy": "版を持たない世界は保存に NetworkPolicy を書かず、作り直しても同じ正規化ハッシュ。旧保存のファイル群のバイト一致の照合は未実施",
+  "godot_ui": "未実施（画面側はこの工程の範囲外）",
+  "full_core": "未実施（P13：関連検査を選んで実行）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

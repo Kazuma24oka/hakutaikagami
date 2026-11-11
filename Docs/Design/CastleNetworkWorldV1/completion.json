@@ -1,0 +1,37 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "新規ゲームの世界ごとに移動網の版（今の101拠点か、城を拠点にした移動網か）を持ち、拠点の一覧・道・経路探索がその版に従う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/WorldNetwork.cs",
+        "Core/Contracts/BranchRoutes.cs",
+        "Tests/CastleNetworkWorldTests.cs"
+      ]
+    },
+    {
+      "contract": "城の移動網の世界を作れ、本人が城の拠点へ道をたどって移動し、途中保存から復旧して同じ未来になる",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/CastleNetworkWorldTests.cs"
+      ]
+    },
+    {
+      "contract": "版を指定しない世界（今までの開始と旧保存）は、拠点・道・保存の中身が変わらない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameWorld.cs",
+        "Tests/CastleNetworkWorldTests.cs"
+      ]
+    },
+    {
+      "contract": "城の移動網の世界でも、拠点の名前・位置・天候の地域が引ける",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/RegionalWeather.cs",
+        "Tests/CastleNetworkWorldTests.cs"
+      ]
+    }
+  ]
+}
