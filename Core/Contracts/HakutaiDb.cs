@@ -16,7 +16,8 @@ public sealed record HakutaiDbName(string Name,int? From,string Step);
 public sealed record HakutaiDbPerson(string Id,string Name,string? Reading,string? Surname,string? Imina,string? Tsusho,string? Kanto,string? Sex,
     int? Birth,int? Death,string? Father,string StartName,string StartNameBasis,HakutaiDbName[] NameHistory,int Records,string? Existence,string Registration,string? Role,string? Province,
     string House,string HouseBasis,string? Castle,string? CastleName,string? CastleBasis,string? Superior,string? SuperiorBasis);
-public sealed record HakutaiDbCastle(string Id,string Name,string? Province,string? District,long LatitudeE7,long LongitudeE7,string PositionBasis,string? Owner,string? Holder,string? OwnerBasis);
+// Region は操作できない地域（"琉球"）。null は日本の操作できる範囲。
+public sealed record HakutaiDbCastle(string Id,string Name,string? Province,string? District,long LatitudeE7,long LongitudeE7,string PositionBasis,string? Region,string? Owner,string? Holder,string? OwnerBasis);
 // 郡：1560年の支配の見積もりと石高の推定（慶長3年の国の石高を郡の面積で按分）。
 // 諸勢力並立の郡は Owner を持たず、並び立つ家に石高を分ける（Shares。その郡に持つ城の数の割合）。
 public sealed record HakutaiDbShare(string House,long Kokudaka);
@@ -101,7 +102,7 @@ public static class HakutaiDb
             Need(h.Relations.All(r=>houses.Contains(r.House)&&r.House!=h.Id&&!string.IsNullOrWhiteSpace(r.Kind)),"家どうしの関係："+h.Id);
         }
         foreach(var c in e.Castles){
-            Need(!string.IsNullOrWhiteSpace(c.Name)&&!string.IsNullOrWhiteSpace(c.PositionBasis),"城の名前："+c.Id);
+            Need(!string.IsNullOrWhiteSpace(c.Name)&&!string.IsNullOrWhiteSpace(c.PositionBasis)&&c.Region is null or "琉球","城の名前・地域："+c.Id);
             Need(c.LatitudeE7 is >=240000000 and <=460000000&&c.LongitudeE7 is >=1220000000 and <=1460000000,"城の位置が日本の外："+c.Id);
             Need(c.Owner==null||houses.Contains(c.Owner)&&c.OwnerBasis!=null,"城の持ち主："+c.Id);
         }

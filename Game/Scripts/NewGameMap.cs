@@ -23,7 +23,9 @@ public partial class NewGameMap : Control
     bool dragging;Vector2 dragFrom;RoutePoint dragCenter=new(0,0);bool ready;bool followHome=true;
     // 基準の位置（九州〜東北）と、操作できない地域の名前の位置
     static readonly GeoCoordinate HomeSouthWest=new(309000000,1294000000),HomeNorthEast=new(416000000,1421000000);
-    static readonly (GeoCoordinate At,string Name)[] AreaLabels=[(new(263000000,1278500000),"琉球王国（操作できない地域）"),(new(446000000,1405000000),"蝦夷地（アイヌの地・操作できない地域）"),(new(270000000,1421800000),"小笠原の島々（1560年は無人）")];
+    static readonly (GeoCoordinate At,string Name)[] AreaLabels=[(new(263000000,1278500000),"琉球王国"),(new(436000000,1426000000),"蝦夷地")];
+    // 琉球の拠点（首里・那覇・奄美）と、そこへの道は描かない。
+    static bool Hidden(string node)=>CastleRoutes.Outside.Contains(node);
 
     static RoutePoint P(GeoCoordinate g){var p=JapanGeography.Project(g);return new(p.EastMm,p.NorthMm);}
     static Area AreaOf(GeoCoordinate[] ring)
@@ -82,7 +84,7 @@ public partial class NewGameMap : Control
     RoutePoint Unpixel(Vector2 v)=>new(center.EastMm+(long)((v.X-Size.X/2)/scale),center.NorthMm+(long)((Size.Y/2-v.Y)/scale));
     void LayoutPins()
     {
-        foreach(var s in NationalRoutes.Sites){var b=pins[s.Id.Value];var pos=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);b.Position=pos-new Vector2(10,10);b.Visible=ShowPins&&new Rect2(new(12,12),Size-new Vector2(24,24)).HasPoint(pos);b.Text=s.Id.Value==SelectedSite?"●":"◆";b.Modulate=Setup?.Castles.SingleOrDefault(c=>c.Id==s.Id.Value)?.Faction is {} faction?FactionColor(faction):new Color("d6c4a2");}
+        foreach(var s in NationalRoutes.Sites){var b=pins[s.Id.Value];var pos=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);b.Position=pos-new Vector2(10,10);b.Visible=ShowPins&&!Hidden(NewGameWorld.Node(s.Id.Value))&&new Rect2(new(12,12),Size-new Vector2(24,24)).HasPoint(pos);b.Text=s.Id.Value==SelectedSite?"●":"◆";b.Modulate=Setup?.Castles.SingleOrDefault(c=>c.Id==s.Id.Value)?.Faction is {} faction?FactionColor(faction):new Color("d6c4a2");}
     }
     static Color FactionColor(string id){uint hash=2166136261;foreach(char c in id)hash=unchecked((hash^c)*16777619);return Color.FromHsv((hash%360)/360f,.4f,.95f);}
     static Color LandColor(Area a)=>a switch{Area.Ryukyu=>new Color("9fa58f"),Area.Ezo=>new Color("a3a78f"),Area.Remote=>new Color("a8a48c"),_=>new Color("b5ae8b")};
@@ -95,13 +97,12 @@ public partial class NewGameMap : Control
             var color=s.Hole?sea:LandColor(s.Area);for(int i=0;i<s.Indices.Length;i+=3)DrawPrimitive(new[]{points[s.Indices[i]],points[s.Indices[i+1]],points[s.Indices[i+2]]},new[]{color,color,color},Array.Empty<Vector2>());
             DrawPolyline(points.Append(points[0]).ToArray(),s.Area==Area.Main?new Color("d7cead"):new Color("c7c2a6"),1,true);
         }
-        foreach(var e in NationalRoutes.Edges)if(nodeAt.TryGetValue(e.From,out var fa)&&nodeAt.TryGetValue(e.To,out var fb))DrawLine(Pixel(fa),Pixel(fb),new Color(NationalRoutes.Sea(e.Id)?"5e8797":"797e68"),1,true);
+        foreach(var e in NationalRoutes.Edges)if(!Hidden(e.From)&&!Hidden(e.To)&&nodeAt.TryGetValue(e.From,out var fa)&&nodeAt.TryGetValue(e.To,out var fb))DrawLine(Pixel(fa),Pixel(fb),new Color(NationalRoutes.Sea(e.Id)?"5e8797":"797e68"),1,true);
         foreach(var l in Links){var a=Pixel(P(l.From));var b=Pixel(P(l.To));if(view.HasPoint(a)||view.HasPoint(b))DrawLine(a,b,new Color(l.Sea?"5e879780":"6b6f5c90"),1,true);}
         bool names=KilometersPerPixel<0.35;var font=ThemeDB.FallbackFont;
         foreach(var m in Marks){var q=Pixel(P(m.At));if(!view.HasPoint(q))continue;float r=names?4f:2f;if(m.Strong)DrawCircle(q,r+1.5f,new Color("1b1b1b"));DrawCircle(q,m.Strong?r+0.5f:r,m.Color);if(names&&m.Name.Length>0)DrawString(font,q+new Vector2(6,-5),m.Name,HorizontalAlignment.Left,-1,13,new Color("fff2d6"));}
-        foreach(var (at,name) in AreaLabels){var q=Pixel(P(at));if(new Rect2(new(0,30),Size-new Vector2(0,30)).HasPoint(q))DrawString(font,q-new Vector2(60,0),name,HorizontalAlignment.Left,-1,14,new Color("e8e1c5"));}
-        if(scale>fullScale*3&&ShowPins)foreach(var s in NationalRoutes.Sites){var p=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);if(new Rect2(new(24,24),Size-new Vector2(48,48)).HasPoint(p))DrawString(font,p+new Vector2(12,-10),s.Name,HorizontalAlignment.Left,-1,15,new Color("fff2d6"));}
-        DrawString(font,new(16,25),(!ShowPins?"城の位置（色は主家をたどった一番上の家）":"全国の拠点")+" / ホイールで寄り引き・つかんで移動・Homeで基準の位置",HorizontalAlignment.Left,-1,16,new Color("f4e6c7"));
+        foreach(var (at,name) in AreaLabels){var q=Pixel(P(at));if(new Rect2(new(0,30),Size-new Vector2(0,30)).HasPoint(q))DrawString(font,q-new Vector2(30,0),name,HorizontalAlignment.Left,-1,14,new Color("e8e1c5"));}
+        if(scale>fullScale*3&&ShowPins)foreach(var s in NationalRoutes.Sites.Where(s=>!Hidden(NewGameWorld.Node(s.Id.Value)))){var p=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);if(new Rect2(new(24,24),Size-new Vector2(48,48)).HasPoint(p))DrawString(font,p+new Vector2(12,-10),s.Name,HorizontalAlignment.Left,-1,15,new Color("fff2d6"));}
     }
     public override void _GuiInput(InputEvent e)
     {

@@ -15,7 +15,7 @@ public partial class HakutaiDbCheck:Node
   string output=ProjectSettings.GlobalizePath("res://../Docs/Design/HakutaiDbV1/runtime-local/ui");Directory.CreateDirectory(output);
   var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
   entry.ReviewDbOpen();await Frame();await Frame();
-  Check(entry.ReviewDbText().Contains("人物 "+HakutaiDb.PeopleCount)&&entry.ReviewDbMarks()>500,"一覧と全国の城の点 "+entry.ReviewDbMarks()+" / "+entry.ReviewDbText());Check(entry.ReviewDbStrongMarks()==0,"選ぶ前は強調なし");
+  Check(entry.ReviewDbMarks()>500,"全国の城の点 "+entry.ReviewDbMarks());Check(entry.ReviewDbStrongMarks()==0,"選ぶ前は強調なし");
   await Capture(output,"overview.png");
   var map=entry.ReviewDbMap()!;GeoCoordinate G(double lat,double lon)=>new((int)(lat*1e7),(int)(lon*1e7));
   Check(map.InView(G(31.6,130.55))&&map.InView(G(38.27,140.87))&&!map.InView(G(26.21,127.68)),"基準の位置は九州〜東北（琉球は外）");
@@ -24,12 +24,12 @@ public partial class HakutaiDbCheck:Node
   map.ZoomAt(new Godot.Vector2(10,10),1e-6);await Frame();Check(map.InView(G(26.21,127.68)),"一番引いた所で止まる");
   map.Home();await Frame();
   entry.ReviewDbSelect("織田");await Frame();var oda=entry.ReviewDbText();
-  Check(oda.Contains("当主：織田信長")&&oda.Contains("本拠：清洲城")&&oda.Contains("〇 柴田勝家　")&&oda.Contains("〇 織田信長　清洲城")&&oda.Contains("石高（推定）")&&oda.Contains("兵の上限")&&!oda.Contains("［"),"織田の当主・本拠・石高・兵の上限・武将一覧（〇△×だけ）");
+  Check(oda.Contains("当主：織田信長")&&oda.Contains("本拠：清洲城")&&oda.Contains("〇 柴田勝家　")&&oda.Contains("〇 織田信長　清洲城")&&oda.Contains("石高 ")&&oda.Contains("兵の上限")&&!oda.Contains("［"),"織田の当主・本拠・石高・兵の上限・武将一覧（〇△×だけ）");
   Check(entry.ReviewDbStrongMarks()>0,"織田の城を地図で強調");int odaMarks=entry.ReviewDbStrongMarks();
   await Capture(output,"oda.png");
   entry.ReviewDbSelect("今川");await Frame();var imagawa=entry.ReviewDbText();Check(imagawa.Contains("当主：今川義元")&&imagawa.Contains("本拠：今川館"),"今川の当主・本拠");
   entry.ReviewDbSelect("松平（徳川）");await Frame();Check(entry.ReviewDbText().Contains("当主：松平元康"),"1560年の名乗り");await Capture(output,"matsudaira.png");
-  var mobHouse=HakutaiDb.Houses.Where(h=>!h.Religious&&HakutaiDbStart.Roster(h.Id).Mobs>0).OrderByDescending(h=>h.Kokudaka).First();entry.ReviewDbSelect(mobHouse.Name);await Frame();Check(entry.ReviewDbText().Contains("× ")&&entry.ReviewDbText().Contains("オリジナル"),"少ない家にモブ武将（×）");await Capture(output,"mobs.png");
+  var mobHouse=HakutaiDb.Houses.Where(h=>!h.Religious&&HakutaiDbStart.Roster(h.Id).Mobs>0).OrderByDescending(h=>h.Kokudaka).First();entry.ReviewDbSelect(mobHouse.Name);await Frame();Check(entry.ReviewDbText().Contains("× "),"少ない家にモブ武将（×）");await Capture(output,"mobs.png");
   entry.ReviewDbSelect("本願寺");await Frame();Check(entry.ReviewDbText().Contains("顕如"),"寺社の家");
   await Capture(output,"honganji.png");
   File.WriteAllText(Path.Combine(output,"result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Scope="スタート画面→史料の画面→織田・今川・本願寺の選択と地図の強調",People=HakutaiDb.PeopleCount,Marks=entry.ReviewDbMarks(),OdaCastles=odaMarks,SourceCommit=HakutaiDb.Source.Commit,ComputerUse="未使用"}));

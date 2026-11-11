@@ -18,7 +18,7 @@ public partial class NewGameFrontEnd
     void ShowHakutaiDb()
     {
         var src=HakutaiDb.Source;
-        Clear("史料：1560年の勢力と人物",$"戦国DB（版 {src.Commit[..8]}）から書き出した{HakutaiDb.WorldYear}年の見積もりです。名前は1560年の名乗り。郡の石高は慶長3年の国の石高を郡の面積で分けた推定、登場武将は1万石あたり2人・兵は1万石あたり250人（試作値）。所属・置き場所の城・直属の上司・城の持ち主は決め方つきの推定で、史実の判定ではありません。城の位置は公知の地理、持ち主や家の顔ぶれはその年の情勢で、ゲームの中では人物が報告で知ります。");
+        Clear("1560年の勢力と人物","");
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill,CustomMinimumSize=new(0,470)};page.AddChild(columns);
         var houses=HakutaiDb.Houses.OrderByDescending(HakutaiDbStart.Quota).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();
         dbHouses=new ItemList{CustomMinimumSize=new(210,0),SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(dbHouses);
@@ -41,22 +41,22 @@ public partial class NewGameFrontEnd
             var h=houses[(int)i];var roster=HakutaiDbStart.Roster(h.Id);var head=h.Head==null?null:HakutaiDb.Person(h.Head);
             var districts=HakutaiDb.Districts.Where(d=>d.Shares.Any(x=>x.House==h.Id)).ToArray();
             var lines=new System.Collections.Generic.List<string>{
-                $"{h.Name}{(h.Religious?"（寺社・所属先）":"")}{(h.Note!=null?"\n備考："+h.Note:"")}",
+                $"{h.Name}",
                 head==null?"当主：記録なし":$"当主：{head.StartName}",
                 "本拠："+Castle(h.Home),
                 "主家："+(h.Overlord==null?"なし":HakutaiDb.House(h.Overlord)!.Name+"（最上位 "+HakutaiDb.TopHouse(h.Id).Name+"）")};
             foreach(var g in h.Relations.GroupBy(r=>r.Kind))lines.Add($"{g.Key}：{string.Join("・",g.Select(r=>HakutaiDb.House(r.House)!.Name))}");
-            lines.Add($"\n支配する郡 {districts.Length}（{string.Join("・",districts.Take(12).Select(d=>d.Owner==null?d.Name+"の一部":d.Name))}{(districts.Length>12?" ほか":"")}）");
-            lines.Add($"石高（推定）{roster.Kokudaka/10000d:0.#}万石　金銭収入 {(roster.MoneyKan>0?roster.MoneyKan+"貫文":"未収録")}");
+            lines.Add($"\n郡 {districts.Length}（{string.Join("・",districts.Take(12).Select(d=>d.Name))}{(districts.Length>12?" ほか":"")}）");
+            lines.Add($"石高 {roster.Kokudaka/10000d:0.#}万石{(roster.MoneyKan>0?"　金銭収入 "+roster.MoneyKan+"貫文":"")}");
             lines.Add($"兵の上限 {roster.SoldierCap:#,0}人");
-            lines.Add(h.Religious?$"登場武将 {roster.Officers.Length}人（寺社・朝廷は人数の決まりの対象外）":$"登場武将 {roster.Officers.Length}人（DBの人物 {roster.DbMembers}人{(roster.LeftOut>0?$"のうち {roster.LeftOut}人は登場しない":"")}{(roster.Mobs>0?$"・オリジナル {roster.Mobs}人":"")}）");
-            lines.Add("\n武将一覧（実在性 〇△×）");
+            lines.Add($"武将 {roster.Officers.Length}人");
+            lines.Add("\n武将一覧");
             foreach(var o in roster.Officers)lines.Add($"{HakutaiDbStart.Mark(o.Historicity)} {o.Name}　{Castle(o.Castle)}");
             dbDetail.Text=string.Join("\n",lines);Marks(h.Id);
         };
         var at=CastleRoutes.Catalog.Nodes.ToDictionary(n=>n.Id,n=>new GeoCoordinate(n.LatitudeE7,n.LongitudeE7));foreach(var n in NationalRoutes.Catalog.Nodes)at[n.Id]=new(n.LatitudeE7,n.LongitudeE7);
         dbMap.Links=CastleRoutes.Catalog.Edges.Where(e=>at.ContainsKey(e.From)&&at.ContainsKey(e.To)).Select(e=>(at[e.From],at[e.To],e.Mode=="sea")).ToArray();
-        Marks(null);dbDetail.Text=$"家 {houses.Length}・人物 {HakutaiDb.PeopleCount}・城 {dbMap.Marks.Length}\n地図の細い線は城を拠点にした移動網（推定の連絡路・試作）。左の一覧から家を選ぶと、当主・本拠・関係・支配する郡・石高・兵の上限・武将一覧と、地図にその家の城を示します。地図の色は主家をたどった一番上の家ごと。";
+        Marks(null);dbDetail.Text="";
         Add(page,"back","スタートへ",ShowMenu);
     }
 }
