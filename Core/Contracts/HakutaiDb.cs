@@ -10,12 +10,15 @@ namespace HakutaiKagami.Core.Contracts;
 // ゲームの中では人物が報告で知るもの。ここは開発用の史料で、人物が信じている内容ではない。
 public sealed record HakutaiDbSource(string Repository,string Commit,string[] Tags,string? SqliteBuiltAt,string? CatalogVersion);
 public sealed record HakutaiDbRelation(string House,string Kind);
-public sealed record HakutaiDbHouse(string Id,string Name,string? Head,string? Home,bool Religious,string? Overlord,HakutaiDbRelation[] Relations,string HeadBasis);
+public sealed record HakutaiDbHouse(string Id,string Name,string? Head,string? Home,bool Religious,string? Overlord,HakutaiDbRelation[] Relations,string HeadBasis,long Kokudaka);
+public sealed record HakutaiDbName(string Name,int? From,string Step);
 public sealed record HakutaiDbPerson(string Id,string Name,string? Reading,string? Surname,string? Imina,string? Tsusho,string? Kanto,string? Sex,
-    int? Birth,int? Death,string? Father,string? Existence,string Registration,string? Role,string? Province,
+    int? Birth,int? Death,string? Father,string StartName,string StartNameBasis,HakutaiDbName[] NameHistory,int Records,string? Existence,string Registration,string? Role,string? Province,
     string House,string HouseBasis,string? Castle,string? CastleName,string? CastleBasis,string? Superior,string? SuperiorBasis);
 public sealed record HakutaiDbCastle(string Id,string Name,string? Province,string? District,long LatitudeE7,long LongitudeE7,string PositionBasis,string? Owner,string? Holder,string? OwnerBasis);
-public sealed record HakutaiDbEdition(int Schema,string Id,int WorldYear,HakutaiDbSource Source,string Policy,HakutaiDbHouse[] Houses,HakutaiDbPerson[] People,HakutaiDbCastle[] Castles);
+// 郡：1560年の支配の見積もりと石高の推定（慶長3年の国の石高を郡の面積で按分）。
+public sealed record HakutaiDbDistrict(string Id,string Province,string Name,string? Owner,string? OwnerBasis,long Kokudaka,string KokudakaBasis);
+public sealed record HakutaiDbEdition(int Schema,string Id,int WorldYear,HakutaiDbSource Source,string Policy,HakutaiDbHouse[] Houses,HakutaiDbPerson[] People,HakutaiDbCastle[] Castles,HakutaiDbDistrict[] Districts);
 
 public enum HakutaiDbKnowledge { PublicGeography, YearSituation }
 // 公知の地理：城の名前・国・位置だけ（持ち主を含まない）。
@@ -25,7 +28,7 @@ public sealed record HakutaiDbSituation(string Castle,int Year,string? Owner,str
 
 public static class HakutaiDb
 {
-    public const string Edition1560="hakutai-db-1560-v1";
+    public const string Edition1560="hakutai-db-1560-v2";
     public const string Policy="hakutai-db-from-sengokudb-v1";
     // 既存の開始人物・家と百代鏡DBの対応（同じ人・家であることだけ。値や配置は既存の開始版のまま）。
     public static readonly IReadOnlyDictionary<string,string> GameLinks=new Dictionary<string,string>(StringComparer.Ordinal){
@@ -43,10 +46,12 @@ public static class HakutaiDb
         public readonly Dictionary<string,HakutaiDbHouse> Houses;
         public readonly Dictionary<string,HakutaiDbCastle> Castles;
         public readonly Dictionary<string,HakutaiDbPerson[]> Members;
+        public readonly Dictionary<string,HakutaiDbDistrict> Districts;
         public Index(HakutaiDbEdition e)
         {
             Edition=e;People=e.People.ToDictionary(p=>p.Id,StringComparer.Ordinal);Houses=e.Houses.ToDictionary(h=>h.Id,StringComparer.Ordinal);
             Castles=e.Castles.ToDictionary(c=>c.Id,StringComparer.Ordinal);
+            Districts=e.Districts.ToDictionary(d=>d.Id,StringComparer.Ordinal);
             Members=e.People.GroupBy(p=>p.House,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.ToArray(),StringComparer.Ordinal);
         }
     }
@@ -56,7 +61,7 @@ public static class HakutaiDb
     public static HakutaiDbEdition Parse(byte[] json)=>JsonSerializer.Deserialize<HakutaiDbEdition>(json,Options)??throw new InvalidDataException("百代鏡DBが空です");
     static HakutaiDbEdition Read()
     {
-        using var stream=typeof(HakutaiDb).Assembly.GetManifestResourceStream("HakutaiDb1560V1")??throw new InvalidDataException("百代鏡DBがありません");
+        using var stream=typeof(HakutaiDb).Assembly.GetManifestResourceStream("HakutaiDb1560V2")??throw new InvalidDataException("百代鏡DBがありません");
         using var bytes=new MemoryStream();stream.CopyTo(bytes);return Parse(bytes.ToArray());
     }
 
@@ -65,7 +70,9 @@ public static class HakutaiDb
         void Need(bool ok,string why){if(!ok)throw new InvalidDataException("百代鏡DBの検査："+why);}
         Need(e.Schema==1&&e.Id==Edition1560&&e.WorldYear==1560&&!string.IsNullOrWhiteSpace(e.Policy),"版・年");
         Need(e.Source.Repository=="SengokuDB"&&Regex.IsMatch(e.Source.Commit,"^[0-9a-f]{40}$"),"元の戦国DBの版");
-        Need(e.People.Length>0&&e.Houses.Length>0&&e.Castles.Length>0,"空の表");
+        Need(e.People.Length>0&&e.Houses.Length>0&&e.Castles.Length>0&&e.Districts.Length>0,"空の表");
+        Need(e.Districts.Select(d=>d.Id).Distinct().Count()==e.Districts.Length&&e.Districts.All(d=>d.Kokudaka>=0&&(d.Owner==null||e.Houses.Any(h=>h.Id==d.Owner)&&d.OwnerBasis!=null)),"郡");
+        Need(e.Houses.All(h=>h.Kokudaka==e.Districts.Where(d=>d.Owner==h.Id).Sum(d=>d.Kokudaka)),"家の石高は支配する郡の合計");
         var people=e.People.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);var houses=e.Houses.Select(h=>h.Id).ToHashSet(StringComparer.Ordinal);var castles=e.Castles.Select(c=>c.Id).ToHashSet(StringComparer.Ordinal);
         Need(people.Count==e.People.Length&&houses.Count==e.Houses.Length&&castles.Count==e.Castles.Length,"IDの重複");
         Need(e.People.All(p=>Regex.IsMatch(p.Id,"^P-\\d{6}$"))&&e.Castles.All(c=>Regex.IsMatch(c.Id,"^L-\\d{6}$"))&&e.Houses.All(h=>Regex.IsMatch(h.Id,"^(G-\\d{6}|SITE:.+)$")),"IDの形");
@@ -77,6 +84,8 @@ public static class HakutaiDb
             Need(p.Father==null||people.Contains(p.Father)&&p.Father!=p.Id,"人物の父："+p.Id);
             Need((p.Birth==null||p.Birth<=e.WorldYear)&&(p.Death==null||p.Death>=e.WorldYear)&&(p.Birth==null||p.Death==null||p.Birth<=p.Death),"人物の生没年が開始年と合わない："+p.Id);
             Need(p.Existence is null or "A" or "B" or "C" or "D" or "E","実在の確度："+p.Id);
+            Need(!string.IsNullOrWhiteSpace(p.StartName)&&!string.IsNullOrWhiteSpace(p.StartNameBasis)&&p.Records>=0,"開始時の名前："+p.Id);
+            Need(p.NameHistory.All(n=>!string.IsNullOrWhiteSpace(n.Name)&&(n.From==null||n.From>=1454&&n.From<=1650)),"名乗りの変化："+p.Id);
         }
         var byId=e.People.ToDictionary(p=>p.Id,StringComparer.Ordinal);
         foreach(var h in e.Houses){
@@ -95,6 +104,8 @@ public static class HakutaiDb
         Need(GameLinks.Where(l=>l.Key.StartsWith("person:",StringComparison.Ordinal)).Select(l=>l.Value).Distinct().Count()==GameLinks.Count(l=>l.Key.StartsWith("person:",StringComparison.Ordinal)),"対応の重複");
     }
 
+    public static IReadOnlyList<HakutaiDbDistrict> Districts=>index.Value.Edition.Districts;
+    public static HakutaiDbDistrict? District(string id)=>index.Value.Districts.GetValueOrDefault(id);
     public static HakutaiDbSource Source=>index.Value.Edition.Source;
     public static int WorldYear=>index.Value.Edition.WorldYear;
     public static int PeopleCount=>index.Value.People.Count;
@@ -121,4 +132,14 @@ public static class HakutaiDb
     public static IReadOnlyList<HakutaiDbPlace> PublicGeography()=>index.Value.Edition.Castles.Select(c=>new HakutaiDbPlace(c.Id,c.Name,c.Province,c.LatitudeE7,c.LongitudeE7,c.PositionBasis)).ToArray();
     public static HakutaiDbSituation? Situation(string castle)=>Castle(castle) is {} c?new(c.Id,WorldYear,c.Owner,c.Holder,c.OwnerBasis):null;
     public static int? Age(HakutaiDbPerson p,int year)=>p.Birth is int b?year-b:null;
+    // その年の名乗り：名乗り始めた年が分かる名前のうち、その年までの最後のもの。開始年は書き出しで決めた名前。
+    public static string NameAt(HakutaiDbPerson p,int year)
+    {
+        if(year==WorldYear)return p.StartName;
+        var adult=p.NameHistory.Where(n=>n.Step!="幼名").ToArray();
+        var dated=adult.Where(n=>n.From is int f&&f<=year).ToArray();
+        return dated.Length>0&&dated[^1].From>=WorldYear?dated[^1].Name:p.StartName;
+    }
+    // 開始年より後に、年の分かる改名（ゲームの中の改名の出来事の候補）。自動では起こさない。
+    public static IReadOnlyList<HakutaiDbName> LaterRenames(HakutaiDbPerson p)=>p.NameHistory.Where(n=>n.Step!="幼名"&&n.From is int f&&f>WorldYear&&n.Name!=p.StartName).ToArray();
 }

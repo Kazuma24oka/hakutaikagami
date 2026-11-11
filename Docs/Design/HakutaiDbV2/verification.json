@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "scope": "hakutai-db-v2-start-rules",
+  "source_commit": "2ea4e7bd",
+  "core_db_tests": 10,
+  "core_related_passed": 86,
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "史料の画面：織田（石高・兵の上限・〇だけの武将一覧）・今川・松平（当主 松平元康）・大友（モブ79人）・本願寺",
+  "godot_images": ["../HakutaiDbV1/runtime-local/ui/oda.png", "../HakutaiDbV1/runtime-local/ui/matsudaira.png", "../HakutaiDbV1/runtime-local/ui/mobs.png"],
+  "sengokudb_tests": "72件成功",
+  "full_core": "未実施（P13：関連検査を選んで実行。世界の状態・保存の形は変えていない）",
+  "progress_credit": "なし（この工程は実装前に基準を固定していないため加点しない）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}
