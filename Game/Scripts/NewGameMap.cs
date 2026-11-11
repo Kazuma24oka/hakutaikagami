@@ -27,7 +27,9 @@ public partial class NewGameMap : Control
     // 国と郡の境界（borders-v1.json、「郡地図 Ver 1.1」を加工して作成）と、経路・国・郡の表示の切り替え。
     sealed record Line(RoutePoint[] Points,long MinE,long MaxE,long MinN,long MaxN);
     readonly List<Line> provinceLines=new(),districtLines=new();readonly List<(RoutePoint At,string Name)> provinceNames=new(),districtNames=new();
-    internal bool ShowRoutes=true,ShowProvinces=true,ShowDistricts=true;
+    internal bool ShowRoutes=true,ShowProvinces=true,ShowDistricts=true,ShowTerrain=true;
+    // 地形（terrain-v1.json・terrain-shade-v1.png、「地球地図日本」（国土地理院）を加工して作成）：山の陰影・川・湖
+    Texture2D? shade;RoutePoint shadeNorthWest=new(0,0),shadeSouthEast=new(0,0);readonly List<Line> rivers=new();readonly List<Shape> terrainWater=new();
     // 琉球の拠点（首里・那覇・奄美）と、そこへの道は描かない。
     static bool Hidden(string node)=>CastleRoutes.Outside.Contains(node);
 
@@ -64,9 +66,16 @@ public partial class NewGameMap : Control
             foreach(var x in root.GetProperty("Provinces").EnumerateArray())provinceNames.Add((At(x.GetProperty("Label")),x.GetProperty("Name").GetString()!));
             foreach(var x in root.GetProperty("Districts").EnumerateArray())districtNames.Add((At(x.GetProperty("Label")),x.GetProperty("Name").GetString()!));
         }
+        using(var doc=System.Text.Json.JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/Geography/terrain-v1.json"))){
+            var root=doc.RootElement;var sh=root.GetProperty("Shade");
+            var img=Image.LoadFromFile(ProjectSettings.GlobalizePath("res://Data/Geography/"+sh.GetProperty("File").GetString()));shade=ImageTexture.CreateFromImage(img);
+            shadeNorthWest=P(new(sh.GetProperty("North").GetInt32(),sh.GetProperty("West").GetInt32()));shadeSouthEast=P(new(sh.GetProperty("South").GetInt32(),sh.GetProperty("East").GetInt32()));
+            foreach(var l in root.GetProperty("Rivers").EnumerateArray()){var pts=l.EnumerateArray().Select(q=>P(new(q[0].GetInt32(),q[1].GetInt32()))).ToArray();rivers.Add(new(pts,pts.Min(q=>q.EastMm),pts.Max(q=>q.EastMm),pts.Min(q=>q.NorthMm),pts.Max(q=>q.NorthMm)));}
+            foreach(var l in root.GetProperty("Lakes").EnumerateArray()){var ring=l.EnumerateArray().Select(q=>new GeoCoordinate(q[0].GetInt32(),q[1].GetInt32())).ToArray();var first=ring[0];var idx=Geometry2D.TriangulatePolygon(ring.Select(q=>new Vector2((q.LongitudeE7-first.LongitudeE7)/1e7f,-(q.LatitudeE7-first.LatitudeE7)/1e7f)).ToArray());if(idx.Length==0)continue;var pts=ring.Select(P).ToArray();terrainWater.Add(new(pts,idx,true,Area.Main,pts.Min(q=>q.EastMm),pts.Max(q=>q.EastMm),pts.Min(q=>q.NorthMm),pts.Max(q=>q.NorthMm)));}
+        }
         var panel=new PanelContainer{Position=new(6,4)};panel.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color(0.1f,0.14f,0.17f,0.82f),ContentMarginLeft=6,ContentMarginRight=6,ContentMarginTop=2,ContentMarginBottom=2});AddChild(panel);var toggles=new HBoxContainer();panel.AddChild(toggles);
         void Toggle(string text,Func<bool> get,Action<bool> set){var c=new CheckBox{Text=text,ButtonPressed=get(),FocusMode=FocusModeEnum.None};c.Toggled+=on=>{set(on);QueueRedraw();};toggles.AddChild(c);}
-        Toggle("経路",()=>ShowRoutes,v=>ShowRoutes=v);Toggle("国",()=>ShowProvinces,v=>ShowProvinces=v);Toggle("郡",()=>ShowDistricts,v=>ShowDistricts=v);
+        Toggle("経路",()=>ShowRoutes,v=>ShowRoutes=v);Toggle("国",()=>ShowProvinces,v=>ShowProvinces=v);Toggle("郡",()=>ShowDistricts,v=>ShowDistricts=v);Toggle("地形",()=>ShowTerrain,v=>ShowTerrain=v);
         foreach(var n in NationalRoutes.Nodes)nodeAt[n.Id]=n.Position;
         foreach(var s in NationalRoutes.Sites){string id=s.Id.Value;var b=new Button{Text="◆",TooltipText=s.Name,CustomMinimumSize=new(20,20),Size=new(20,20)};AddChild(b);pins[id]=b;b.Pressed+=()=>Pick(id);}
         Resized+=()=>{Fit();LayoutPins();QueueRedraw();};ready=true;Fit();Home();
@@ -113,8 +122,13 @@ public partial class NewGameMap : Control
             var color=s.Hole?sea:LandColor(s.Area);for(int i=0;i<s.Indices.Length;i+=3)DrawPrimitive(new[]{points[s.Indices[i]],points[s.Indices[i+1]],points[s.Indices[i+2]]},new[]{color,color,color},Array.Empty<Vector2>());
             DrawPolyline(points.Append(points[0]).ToArray(),s.Area==Area.Main?new Color("d7cead"):new Color("c7c2a6"),1,true);
         }
+        if(ShowTerrain){
+            if(shade!=null){var a=Pixel(shadeNorthWest);var b=Pixel(shadeSouthEast);DrawTextureRect(shade,new Rect2(a,b-a),false);}
+            foreach(var w in terrainWater){var lo=Pixel(new(w.MinE,w.MaxN));var hi=Pixel(new(w.MaxE,w.MinN));if(!new Rect2(lo,hi-lo).Intersects(view))continue;var pts=w.Points.Select(Pixel).ToArray();var c=new Color("3b5f70");for(int i=0;i<w.Indices.Length;i+=3)DrawPrimitive(new[]{pts[w.Indices[i]],pts[w.Indices[i+1]],pts[w.Indices[i+2]]},new[]{c,c,c},Array.Empty<Vector2>());}
+        }
         void DrawLines(List<Line> list,Color color,float width){foreach(var l in list){var lo=Pixel(new(l.MinE,l.MaxN));var hi=Pixel(new(l.MaxE,l.MinN));if(!new Rect2(lo,hi-lo).Grow(2).Intersects(view))continue;DrawPolyline(l.Points.Select(Pixel).ToArray(),color,width,true);}}
         double kmpp=KilometersPerPixel;
+        if(ShowTerrain&&kmpp<1.6)DrawLines(rivers,new Color(0.29f,0.49f,0.59f,0.9f),kmpp<0.5?1.6f:1);
         if(ShowDistricts&&kmpp<2.5)DrawLines(districtLines,new Color("8d8a76"),1);
         if(ShowProvinces)DrawLines(provinceLines,new Color("a8543a"),1.6f);
         if(ShowRoutes)foreach(var e in NationalRoutes.Edges)if(!Hidden(e.From)&&!Hidden(e.To)&&nodeAt.TryGetValue(e.From,out var fa)&&nodeAt.TryGetValue(e.To,out var fb))DrawLine(Pixel(fa),Pixel(fb),new Color(NationalRoutes.Sea(e.Id)?"5e8797":"797e68"),1,true);
@@ -138,7 +152,8 @@ public partial class NewGameMap : Control
         else if(e is InputEventMouseMotion mm&&dragging){var d=mm.Position-dragFrom;center=new(dragCenter.EastMm-(long)(d.X/scale),dragCenter.NorthMm+(long)(d.Y/scale));Clamp();LayoutPins();QueueRedraw();AcceptEvent();}
         else if(e is InputEventKey k&&k.Pressed&&k.Keycode==Key.Home){Home();AcceptEvent();}
     }
-    internal void SetLayers(bool routes,bool provinces,bool districts){ShowRoutes=routes;ShowProvinces=provinces;ShowDistricts=districts;foreach(var c in GetChildren().OfType<HBoxContainer>().SelectMany(h=>h.GetChildren().OfType<CheckBox>()))c.SetPressedNoSignal(c.Text=="経路"?routes:c.Text=="国"?provinces:districts);QueueRedraw();}
+    internal void SetLayers(bool routes,bool provinces,bool districts,bool terrain=true){ShowRoutes=routes;ShowProvinces=provinces;ShowDistricts=districts;ShowTerrain=terrain;foreach(var c in FindChildren("*","CheckBox",true,false).OfType<CheckBox>())c.SetPressedNoSignal(c.Text=="経路"?routes:c.Text=="国"?provinces:c.Text=="郡"?districts:terrain);QueueRedraw();}
+    internal int TerrainCounts=>rivers.Count*10000+terrainWater.Count;
     internal int BorderCounts=>provinceLines.Count*100000+districtLines.Count;
     internal void SetSetup(SetupScenario? value){Setup=value;LayoutPins();QueueRedraw();}
     internal bool SiteVisible(string site)=>pins[site].Visible;
