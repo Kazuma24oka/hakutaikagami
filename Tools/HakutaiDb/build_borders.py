@@ -4,7 +4,7 @@
     既定：D:/01_資料/論文/戦国時代/戦国DB/MAPDATA/郡地図_Ver_1_1_11.zip
     → Game/Data/Geography/borders-v1.json
 
-材料：郡地図 Ver 1.1（郡地図研究会、クリエイティブ・コモンズ 表示 4.0 国際）の 国地図Ver1_1_11・郡地図Ver1_1_11（シェープファイル、日本測地系の緯度経度）。
+材料：郡地図 Ver 1.1（郡地図研究会、クリエイティブ・コモンズ 表示 4.0 国際）の 郡地図Ver1_1_11（シェープファイル、日本測地系の緯度経度）。国の境界も郡の境目から作る。
 「郡地図 Ver 1.1」を加工して作成：
   - 国は明治の区分のまま（陸奥・陸中・陸前・磐城・岩代、羽前・羽後など）。北海道（渡島国〜千島国）は国「蝦夷」にまとめる。
   - 郡は明治の郡。明治の市・区（仙台市・函館区など）は郡にしない（線も名前も出さない）。渡島国の郡はまとめて郡「渡島」、ほかの北海道の郡は出さない。
@@ -165,10 +165,10 @@ NO_LABEL = {"琉球", "沖縄", "小笠原"}
 
 
 def main():
-    pshp, pdbf = read_zip("国地図Ver1_1_11")
+    # 国の境界は郡の地図の郡の境目からまとめる（国の地図と郡の地図の境目が食い違う所があるため。郡は必ず1つの国に属し、国を郡がまたがない。2026-11-12）
     gshp, gdbf = read_zip("郡地図Ver1_1_11")
-    prows, prings = dbf_rows(pdbf), shp_polygons(pshp)
     grows, grings = dbf_rows(gdbf), shp_polygons(gshp)
+    prows, prings = grows, grings
     pkeys = [province(r["KUNI"]) for r in prows]
 
     def gkey(r):
@@ -190,9 +190,14 @@ def main():
             pset.add(tuple(p))
     glines = [ln for ln in glines_all if not all(tuple(p) in pset for p in ln)]
 
-    def label_of(rings_list):
-        best = max((r for rings in rings_list for r in rings), key=area)
-        y, x = centroid(best)
+    def label_of(rings_list, whole=False):
+        rings = [r for rr in rings_list for r in rr if len(r) > 3]
+        if whole:  # 国の名前：郡の形の重心を面積で重み付けした点
+            w = sum(area(r) for r in rings) or 1
+            y = sum(centroid(r)[0] * area(r) for r in rings) / w
+            x = sum(centroid(r)[1] * area(r) for r in rings) / w
+        else:
+            y, x = centroid(max(rings, key=area))
         y, x = tokyo_to_wgs(y / Q, x / Q)
         return [round(y * 1e7), round(x * 1e7)]
     pgroups, ggroups = defaultdict(list), defaultdict(list)
@@ -202,7 +207,7 @@ def main():
     for k, r in zip(gkeys, grings):
         if k and k[1] and r:
             ggroups[k].append(r)
-    provinces = [{"Name": k, "Label": label_of(v)} for k, v in sorted(pgroups.items()) if not any(n in k for n in NO_LABEL)]
+    provinces = [{"Name": k, "Label": label_of(v, k != "蝦夷")} for k, v in sorted(pgroups.items()) if not any(n in k for n in NO_LABEL)]
     districts = [{"Province": k[0], "Name": k[1], "Label": label_of(v)} for k, v in sorted(ggroups.items()) if k[0] not in ("琉球", "沖縄")]
     doc = {"Schema": 1, "Id": "borders-v1",
            "Source": {"Name": "郡地図 Ver 1.1（郡地図研究会）", "License": "CC BY 4.0", "Credit": "「郡地図 Ver 1.1」を加工して作成",
