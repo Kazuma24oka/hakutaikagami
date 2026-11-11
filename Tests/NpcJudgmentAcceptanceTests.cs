@@ -8,7 +8,7 @@ public sealed class NpcJudgmentAcceptanceTests
     static ContractWorld WithSettings(NpcAttention attention,HistoryMode history,ulong seed=20261030,bool shared=false)
     {
         var d=NpcJudgmentTests.Start().NewGame!;
-        if(shared){var records=d.Registered.Append(d.Registered[0] with{Id="created:third",Name="候補の浪人"}).ToArray();var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);var request=new WorldSetupRequest(records,[]);d=d with{Registered=records,Start=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request))};}
+        if(shared){var records=d.Registered.Append(d.Registered[0] with{Id="created:third",Name="候補の浪人"}).ToArray();var raw=NewGameWorld.Scenario(d.HistoricalCatalog);var request=new WorldSetupRequest(records,[]);d=d with{Registered=records,Start=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request))};}
         return NewGameWorld.Create(d.Start,d.Registered,d.Selected.Value,seed,d.PersonalAuthorityLayout,d.HistoricalCatalog,NpcJudgment.Policy,d.InspectionPolicy,d.WorkPolicy,d.DemandPolicy,
             developmentPolicy:CharacterDevelopment.Policy,companionPolicy:PersonalCompanions.Policy,socialPolicy:CharacterRelations.Policy,judgment:new(NpcJudgment.Policy,history,attention));
     }

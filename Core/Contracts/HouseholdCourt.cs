@@ -484,6 +484,16 @@ public static class HouseholdCourt
  static EntityId[] Attendees(ContractWorld w,CourtEvent meeting)=>DocumentRows(w).Where(d=>d.Source.Input.Id==meeting.Input.Id&&Events(w).Any(e=>e.Actor==d.Recipient&&e.Input.Reference==d.Id&&e.Input.Action==CourtAction.AcceptInvitation)&&SocialWorld.Site(w,d.Recipient)==meeting.Input.Site&&Member(w,d.Recipient,meeting.Input.Owner,w.ElapsedSeconds,w.CommitSequence+1)).Select(d=>d.Recipient).Concat(SocialWorld.Site(w,meeting.Actor)==meeting.Input.Site?[meeting.Actor]:[]).Distinct().ToArray();
  public static bool KnowsReply(ContractWorld w,CourtEvent reply,EntityId observer){if(reply.Actor==observer||Received(w,reply.Input.Id,observer))return true;if(TransportWork.At(w,observer,reply.Place,reply.At,reply.Revision,stableCompletion:true))return true;var original=reply.Input.Reference;if(original==null)return false;var gift=SocialWorld.Ledger(w).SingleOrDefault(g=>g.Input.Id==Id("delivery",original.Value.Value));if(gift==null||gift.Actor!=observer)return false;var carrier=gift.Input.Carrier??gift.Actor;return TransportWork.At(w,carrier,reply.Place,reply.At,reply.Revision,stableCompletion:true)&&SocialWorld.Ledger(w).Any(e=>e.Input.Action==SocialWorldAction.AcknowledgeGiftReport&&e.Actor==observer&&e.Input.Reference==gift.Input.Id&&e.At>=reply.At);}
  public static EntityId[] Roster(ContractWorld w,EntityId observer,EntityId owner)=>w.Memberships.Where(m=>m.Target==owner&&Active(m,w.ElapsedSeconds,w.CommitSequence+1)).Select(m=>m.Subject).Distinct().Where(person=>w.NewGame!.Start.People.Any(p=>p.Id==person.Value&&p.Faction==owner.Value)||Events(w).Any(e=>e.Input.Action==CourtAction.RecruitAccept&&e.Actor==person&&Source(w,e.Input.Reference,CourtAction.RecruitOffer).Input.Owner==owner&&KnowsReply(w,e,observer))).ToArray();
+ internal static (CourtCaseKind Kind,long Amount)? LocalPetition(CommunityAccounts? account,long reservedRice,MaterialHouse? materials)
+ {
+  if (account is { Hunger: > 0 })
+  {
+   long rice = Math.Min(200,Math.Min(account.Hunger,account.HouseRice-reservedRice));
+   if (rice > 0) return (CourtCaseKind.RelieveVillage,rice);
+  }
+  if (materials is { Wood: < 30 }) return (CourtCaseKind.BuyWood,Math.Min(5,30-materials.Wood));
+  return null;
+ }
  internal static CourtEvent[] CouncilAgenda(ContractWorld w)
  {
   // 当主間の処理順を保存し、同じ当主・同じ現地の既読案件の枠内でのみ順序を調整する。
@@ -575,9 +585,22 @@ public static class HouseholdCourt
    if(Attempt(w,new(Id("decision",proposal.Input.Id.Value),CourtAction.ApproveCase,proposal.Actor,proposal.Input.Owner,proposal.Input.Site,Reference:proposal.Input.Id),principal))break;if(Attempt(w,new(Id("decision",proposal.Input.Id.Value),CourtAction.DenyCase,proposal.Actor,proposal.Input.Owner,proposal.Input.Site,Reference:proposal.Input.Id),principal))break;
   }
   if(clockAdvanced&&w.ElapsedSeconds%86400==0&&RegionalDomains.Enabled(w))foreach(var accepted in Events(w).Where(e=>e.Input.Action==CourtAction.AcceptOffice&&e.Actor!=w.PlayerControl).ToArray()){
-   var offer=Source(w,accepted.Input.Reference,CourtAction.Nominate);var actor=accepted.Actor;if(SocialWorld.Site(w,actor)!=offer.Input.Site||Authority(w,actor,offer.Input.Owner,offer.Input.Site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;
-   if(Events(w).Any(e=>e.Actor==actor&&e.Input.Action==CourtAction.SubmitCase&&e.Input.Site==offer.Input.Site&&!Events(w).Any(r=>r.Input.Reference==e.Input.Id&&r.Input.Action is CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase)))continue;
-   var materials=w.Materials?.Houses.SingleOrDefault(m=>m.Site==offer.Input.Site);if(materials==null||materials.Wood>=30)continue;var id=Id("npc-case",actor.Value+"/"+w.ElapsedSeconds/(30*86400L));if(!OwnIdUsed(w,id))Attempt(w,new(id,CourtAction.SubmitCase,offer.Actor,offer.Input.Owner,offer.Input.Site,Amount:5,Case:CourtCaseKind.BuyWood),actor);
+   var offer = Source(w,accepted.Input.Reference,CourtAction.Nominate);
+   var actor = accepted.Actor;
+   var site = offer.Input.Site;
+   var owner = offer.Input.Owner;
+   long at = w.ElapsedSeconds, rev = w.CommitSequence + 1;
+   if (SocialWorld.Site(w,actor)!=site || Appointment(w,actor,owner,site,at,rev)?.Input.Id != accepted.Input.Id ||
+       !CommunityEconomy.Local(w,actor,site,at,rev) || Authority(w,actor,owner,site,at,rev)==null) continue;
+   var id = Id("npc-case",actor.Value+"/"+at/(30*86400L));
+   if (OwnIdUsed(w,id) || KnownCases(w,actor).Any(e => e.Actor==actor && e.Input.Owner==owner &&
+       e.Input.Site==site && KnownDecision(w,actor,e.Input.Id)==null)) continue;
+   var account = w.Communities?.Accounts.SingleOrDefault(a => a.Site==site);
+   var materials = w.Materials?.Houses.SingleOrDefault(m => m.Site==site);
+   var need = LocalPetition(account,account==null?0:HouseSalary.Reserved(w,site,at,rev),materials);
+   if (need is {} request)
+       Attempt(w,new(id,CourtAction.SubmitCase,offer.Actor,owner,site,Amount:request.Amount,Case:request.Kind),actor);
+
   }
   foreach(var owner in HouseSuccession.Factions(w,w.ElapsedSeconds,w.CommitSequence+1)){
    var head=new EntityId(owner.Head);var home=new EntityId(owner.Home);if(head==w.PlayerControl||SocialWorld.Site(w,head)!=home)continue;

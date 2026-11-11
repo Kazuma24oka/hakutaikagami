@@ -8,6 +8,20 @@ public sealed class HouseholdCourtTests
  static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
  static CourtInput Input(WorldSession s,CourtAction action,EntityId? person=null,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0)=>new(new("request:court-test/"+s.Revision),action,person??Ronin,Owner,Site,role,amount,reference,when);
  [Theory]
+ [InlineData(250,300,0,0,CourtCaseKind.RelieveVillage,200)]
+ [InlineData(60,80,65,0,CourtCaseKind.RelieveVillage,15)]
+ [InlineData(3,80,0,0,CourtCaseKind.RelieveVillage,3)]
+ [InlineData(60,80,80,29,CourtCaseKind.BuyWood,1)]
+ [InlineData(0,80,0,10,CourtCaseKind.BuyWood,5)]
+ public void LocalPetitionUsesObservedShortfallAndUnreservedStocks(int hunger,int rice,int reserved,int wood,CourtCaseKind kind,int amount)
+ {
+     var world = Start().DiagnosticSnapshot();
+     var local = world.Communities!.Accounts.Single(a => a.Site==Site) with { Hunger=hunger, HouseRice=rice };
+     var proposal = HouseholdCourt.LocalPetition(local,reserved,new(Site,wood,0,0));
+     Assert.Equal((kind,(long)amount),proposal);
+     Assert.Null(HouseholdCourt.LocalPetition(local with { Hunger=0 },reserved,new(Site,30,0,0)));
+ }
+ [Theory]
  [InlineData(NpcAspiration.ProsperDomain, CourtCaseKind.RelieveVillage)]
  [InlineData(NpcAspiration.PreserveHouse, CourtCaseKind.BuyWeapons)]
  public void RegisteredLordOrdersOnlyReceivedCases(NpcAspiration aspiration, CourtCaseKind first)
