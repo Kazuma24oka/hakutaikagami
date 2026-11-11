@@ -50,7 +50,7 @@ public partial class NewGameFrontEnd
             lines.Add($"兵の上限 {roster.SoldierCap:#,0}人");
             lines.Add(h.Religious?$"登場武将 {roster.Officers.Length}人（寺社・朝廷は人数の決まりの対象外）":$"登場武将 {roster.Officers.Length}人（DBの人物 {roster.DbMembers}人{(roster.LeftOut>0?$"のうち {roster.LeftOut}人は登場しない":"")}{(roster.Mobs>0?$"・オリジナル {roster.Mobs}人":"")}）");
             lines.Add("\n武将一覧（実在性 〇△×）");
-            foreach(var o in roster.Officers)lines.Add($"{HakutaiDbStart.Mark(o.Historicity)} {o.Name}");
+            foreach(var o in roster.Officers)lines.Add($"{HakutaiDbStart.Mark(o.Historicity)} {o.Name}　{Castle(o.Castle)}");
             dbDetail.Text=string.Join("\n",lines);Marks(h.Id);
         };
         Marks(null);dbDetail.Text=$"家 {houses.Length}・人物 {HakutaiDb.PeopleCount}・城 {dbMap.Marks.Length}\n左の一覧から家を選ぶと、当主・本拠・関係・支配する郡・石高・兵の上限・武将一覧と、地図にその家の城を示します。地図の色は主家をたどった一番上の家ごと。";

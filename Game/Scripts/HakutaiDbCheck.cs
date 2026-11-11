@@ -17,7 +17,7 @@ public partial class HakutaiDbCheck:Node
   Check(entry.ReviewDbText().Contains("人物 "+HakutaiDb.PeopleCount)&&entry.ReviewDbMarks()>500,"一覧と全国の城の点 "+entry.ReviewDbMarks()+" / "+entry.ReviewDbText());Check(entry.ReviewDbStrongMarks()==0,"選ぶ前は強調なし");
   await Capture(output,"overview.png");
   entry.ReviewDbSelect("織田");await Frame();var oda=entry.ReviewDbText();
-  Check(oda.Contains("当主：織田信長")&&oda.Contains("本拠：清洲城")&&oda.Contains("〇 柴田勝家")&&oda.Contains("石高（推定）")&&oda.Contains("兵の上限")&&!oda.Contains("［"),"織田の当主・本拠・石高・兵の上限・武将一覧（〇△×だけ）");
+  Check(oda.Contains("当主：織田信長")&&oda.Contains("本拠：清洲城")&&oda.Contains("〇 柴田勝家　")&&oda.Contains("〇 織田信長　清洲城")&&oda.Contains("石高（推定）")&&oda.Contains("兵の上限")&&!oda.Contains("［"),"織田の当主・本拠・石高・兵の上限・武将一覧（〇△×だけ）");
   Check(entry.ReviewDbStrongMarks()>0,"織田の城を地図で強調");int odaMarks=entry.ReviewDbStrongMarks();
   await Capture(output,"oda.png");
   entry.ReviewDbSelect("今川");await Frame();var imagawa=entry.ReviewDbText();Check(imagawa.Contains("当主：今川義元")&&imagawa.Contains("本拠：今川館"),"今川の当主・本拠");

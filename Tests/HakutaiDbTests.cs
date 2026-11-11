@@ -140,4 +140,23 @@ public sealed class HakutaiDbTests
         var all=HakutaiDb.Houses.Select(h=>HakutaiDbStart.Roster(h.Id)).ToArray();
         Assert.All(all,x=>Assert.True(x.Officers.Length>=Math.Min(3,x.Quota)));
     }
+
+    [Fact]public void EveryOfficerHasAHouseCastleAndMobsCarryLocalSurnames()
+    {
+        foreach(var h in HakutaiDb.Houses)
+        {
+            var r=HakutaiDbStart.Roster(h.Id);var own=HakutaiDb.CastlesOf(h.Id).Select(c=>c.Id).ToHashSet();
+            foreach(var o in r.Officers)
+            {
+                if(own.Count==0&&h.Home==null){Assert.Null(o.Castle);continue;}
+                Assert.NotNull(o.Castle);Assert.True(o.Castle==h.Home||own.Contains(o.Castle!),$"{h.Name} {o.Name} {o.Castle}");
+            }
+        }
+        Assert.Equal("L-500772",HakutaiDbStart.Roster(HakutaiDb.GameLinks["org:oda"]).Officers.Single(o=>o.Name=="織田信長").Castle);
+        // モブは武将の少ない城から割り当て、城の国の武将に多い苗字を使う
+        var big=HakutaiDb.Houses.Where(h=>!h.Religious).Select(h=>HakutaiDbStart.Roster(h.Id)).Where(r=>r.Mobs>10).OrderBy(r=>r.House,StringComparer.Ordinal).First();
+        var mobs=big.Officers.Where(o=>o.Person==null).ToArray();
+        Assert.True(mobs.Select(o=>o.Castle).Distinct().Count()>1);
+        foreach(var m in mobs){var pv=HakutaiDb.Castle(m.Castle!)!.Province!;var local=HakutaiDbStart.SurnamesOf(pv);if(local.Count>0)Assert.Contains(local,sn=>m.Name.StartsWith(sn,StringComparison.Ordinal));}
+    }
 }
