@@ -10,6 +10,7 @@ public partial class NewGameFrontEnd
     ItemList? dbHouses;Label? dbDetail;NewGameMap? dbMap;
     internal void ReviewDbSelect(string house){var list=HakutaiDb.Houses.OrderByDescending(HakutaiDbStart.Quota).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();int i=Enumerable.Range(0,list.Length).First(k=>list[k].Name==house);dbHouses!.Select(i);dbHouses.EmitSignal(ItemList.SignalName.ItemSelected,i);}
     internal void ReviewDbOpen()=>buttons["hakutai-db"].EmitSignal(BaseButton.SignalName.Pressed);
+    internal NewGameMap? ReviewDbMap()=>dbMap;
     internal string ReviewDbText()=>dbDetail?.Text??"";
     internal int ReviewDbStrongMarks()=>dbMap?.Marks.Count(m=>m.Strong)??0;
     internal int ReviewDbMarks()=>dbMap?.Marks.Length??0;
@@ -31,7 +32,7 @@ public partial class NewGameFrontEnd
             var users=HakutaiDb.Houses.SelectMany(h=>HakutaiDb.Members(h.Id).Select(p=>p.Castle).Append(h.Home).OfType<string>().Select(c=>(c,h.Id))).ToLookup(x=>x.c,x=>x.Id);
             dbMap.Marks=HakutaiDb.PublicGeography().Select(place=>{
                     var c=HakutaiDb.Castle(place.Id)!;string owner=c.Owner??users[c.Id].First();
-                    return (new GeoCoordinate((int)c.LatitudeE7,(int)c.LongitudeE7),DbColor(HakutaiDb.TopHouse(owner).Id),selected!=null&&(owner==selected||users[c.Id].Contains(selected)));}).ToArray();
+                    return (new GeoCoordinate((int)c.LatitudeE7,(int)c.LongitudeE7),DbColor(HakutaiDb.TopHouse(owner).Id),selected!=null&&(owner==selected||users[c.Id].Contains(selected)),c.Name);}).ToArray();
             dbMap.QueueRedraw();
         }
         string Name(string? id)=>id==null?"—":HakutaiDb.Person(id) is {} p?p.Name:id;
