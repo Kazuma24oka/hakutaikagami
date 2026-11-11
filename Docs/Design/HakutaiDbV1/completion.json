@@ -1,0 +1,47 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "戦国DBの特定の版（コミット）から一方向に書き出し、版を記録する。百代鏡側から戦国DBを書き換えない",
+      "status": "PASSED",
+      "evidence": [
+        "Tools/HakutaiDb/export_1560.py",
+        "Core/Data/hakutai-db-1560-v1.json"
+      ]
+    },
+    {
+      "contract": "1560年の全国の家・人物・城（家約300・人物約4,600・城約800）を、戦国DBのIDのまま持ち、参照の切れ・生没年と開始年の矛盾・日本の外の位置を読み込み時に拒否する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HakutaiDb.cs",
+        "Tests/HakutaiDbTests.cs"
+      ]
+    },
+    {
+      "contract": "所属・置き場所の城・直属の上司・当主・城の持ち主は推定であり、決め方を値ごとに残す（史実の判定として扱わない）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Data/hakutai-db-1560-v1.json",
+        "Tests/HakutaiDbTests.cs"
+      ]
+    },
+    {
+      "contract": "城の名前と位置は公知の地理、持ち主・家の顔ぶれ・関係はその年の情勢として区別する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HakutaiDb.cs",
+        "Tests/HakutaiDbTests.cs"
+      ]
+    },
+    {
+      "contract": "既存の開始人物・家を同じ人・家として対応づけ、開始前の史料の画面で家・当主・本拠・顔ぶれ・城の位置を見られる。DBの全員にドット絵の型が決まる",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameFrontEnd.HakutaiDb.cs",
+        "Game/Scripts/HakutaiDbCheck.cs",
+        "Core/Contracts/DotOfficerLooks.cs",
+        "Tests/HakutaiDbTests.cs"
+      ]
+    }
+  ]
+}

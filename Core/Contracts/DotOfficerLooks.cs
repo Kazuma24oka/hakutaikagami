@@ -55,6 +55,20 @@ public static class DotOfficerLooks
         return For(person.Value,name,p,head,house,age,war);
     }
 
+    // 百代鏡DBの人物（1560年）。朝廷は公家、寺社の家は僧、家の当主は大名、ほかは家臣。家の色は既存の家と同じ決まり。
+    public static DotLook For(HakutaiDbPerson p,bool war)
+    {
+        var house=HakutaiDb.House(p.House)!;
+        var tier=house.Name=="朝廷"?DotTier.Courtier:house.Religious?DotTier.Monk:house.Head==p.Id?DotTier.Lord:DotTier.Samurai;
+        string? gameHouse=HakutaiDb.GameLinks.FirstOrDefault(l=>l.Value==p.House&&l.Key.StartsWith("org:",StringComparison.Ordinal)).Key;
+        var famous=Famous.FirstOrDefault(f=>f.Match.Contains(p.Name)||HakutaiDb.GameLinks.Any(l=>l.Value==p.Id&&f.Match.Contains(l.Key)));
+        if(famous.Look!=null)return new("famous/"+famous.Look+(war?"/war":"/peace"),"famous/"+famous.Look,war,null,null);
+        string band=Band(HakutaiDb.Age(p,HakutaiDb.WorldYear));
+        string look=$"generic/{tier.ToString().ToLowerInvariant()}/{band}/{Hash("look/"+(HakutaiDb.GameLinks.FirstOrDefault(l=>l.Value==p.Id).Key??p.Id))%Bands[band]}";
+        string? armor=war?ArmorOf(gameHouse??p.House):null;
+        return new(war?$"{look}/war/{armor}":$"{look}/peace",look,war,tier,armor);
+    }
+
     public static string Soldier(string? house,string weapon)=>$"soldier/ashigaru/{weapon}/war/{ArmorOf(house)}";
     public const string WarriorMonk="soldier/sohei/war";
 }
