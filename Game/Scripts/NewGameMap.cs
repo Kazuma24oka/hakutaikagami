@@ -59,6 +59,8 @@ public partial class NewGameMap : Control
             var root=doc.RootElement;RoutePoint At(System.Text.Json.JsonElement q)=>P(new(q[0].GetInt32(),q[1].GetInt32()));
             void Lines(string key,List<Line> into){foreach(var l in root.GetProperty(key).EnumerateArray()){var pts=l.EnumerateArray().Select(At).ToArray();into.Add(new(pts,pts.Min(q=>q.EastMm),pts.Max(q=>q.EastMm),pts.Min(q=>q.NorthMm),pts.Max(q=>q.NorthMm)));}}
             Lines("ProvinceLines",provinceLines);Lines("DistrictLines",districtLines);
+            // 湖（国の形の穴）は水の色で塗る
+            foreach(var l in root.GetProperty("Lakes").EnumerateArray()){var ring=l.EnumerateArray().Select(q=>new GeoCoordinate(q[0].GetInt32(),q[1].GetInt32())).ToArray();var first=ring[0];var idx=Geometry2D.TriangulatePolygon(ring.Select(q=>new Vector2((q.LongitudeE7-first.LongitudeE7)/1e7f,-(q.LatitudeE7-first.LatitudeE7)/1e7f)).ToArray());if(idx.Length==0)continue;var pts=ring.Select(P).ToArray();shapes.Add(new(pts,idx,true,Area.Main,pts.Min(q=>q.EastMm),pts.Max(q=>q.EastMm),pts.Min(q=>q.NorthMm),pts.Max(q=>q.NorthMm)));}
             foreach(var x in root.GetProperty("Provinces").EnumerateArray())provinceNames.Add((At(x.GetProperty("Label")),x.GetProperty("Name").GetString()!));
             foreach(var x in root.GetProperty("Districts").EnumerateArray())districtNames.Add((At(x.GetProperty("Label")),x.GetProperty("Name").GetString()!));
         }
