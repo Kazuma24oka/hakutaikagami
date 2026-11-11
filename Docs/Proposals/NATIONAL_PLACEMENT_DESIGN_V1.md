@@ -33,6 +33,7 @@
 
 ## 進み具合
 - 2026-11-12：第4節1のうち、移動網のデータを作った（Tools/HakutaiDb/build_castle_routes.py → Core/Data/castle-routes-1560-v1.json、読み込みと検査は Core/Contracts/CastleRoutes.cs）。城の拠点1,911・道 約2,700（海路 約20）。近い拠点・城を陸地の上で2つまで結び、離れたまとまりは一番近い所へ、島は海路で結ぶ。まだ世界には使っていない（拠点を世界ごとの版で持つ作り直しが次）。
+- 2026-11-12：第4節1を終えた。新規ゲームの世界ごとに移動網の版（NewGameState.NetworkPolicy）を持ち、城の移動網の世界を作れる（Core/Contracts/WorldNetwork.cs、Docs/Design/CastleNetworkWorldV1）。城の世界でも調べる権利の記録は今の101拠点の分だけ作る（第4節2で作り直す）。
 
 ## 5. 守ること
 - 旧保存はバイト一致で保持し、新しい決まりは新しい版の世界だけに使う。
