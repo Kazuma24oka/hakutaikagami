@@ -7,7 +7,7 @@ public sealed class NpcPurposeTests
     internal static ContractWorld Start(bool companions=false,string? policy=NewGameNpcRoutine.PurposePolicy)
     {
         var old=NpcContinuingTests.Start(companions:companions);var d=old.NewGame!;
-        return NewGameWorld.Create(d.Start,d.Registered,d.Selected.Value,old.Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,developmentPolicy:CharacterDevelopment.Policy,companionPolicy:companions?PersonalCompanions.Policy:null);
+        return NewGameWorld.Create(d.Start,d.Registered,d.Selected.Value,old.Seed,NewGameWorld.CompactPersonalAuthority,d.HistoricalCatalog,policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,developmentPolicy:CharacterDevelopment.Policy,companionPolicy:companions?PersonalCompanions.Policy:null);
     }
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.Code+":"+r.VisibleReason);

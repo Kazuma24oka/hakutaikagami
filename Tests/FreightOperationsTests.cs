@@ -5,7 +5,7 @@ namespace HakutaiKagami.Tests;
 public sealed class FreightOperationsTests
 {
     static readonly EntityId Home=new("site:castle"),Source=new("site:kofu"),Carrier=new("created:freight-carrier"),Job=new("request:letters-freight");
-    internal static WorldSession Start(){var seed=NpcFreightTests.Start().DiagnosticSnapshot().NewGame!;return new(NewGameWorld.Create(seed.Start,seed.Registered,seed.Selected.Value,1,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:FreightOperations.Policy));}
+    internal static WorldSession Start(){var seed=NpcFreightTests.Start().DiagnosticSnapshot().NewGame!;return new(NewGameWorld.Create(seed.Start,seed.Registered,seed.Selected.Value,1,historicalCatalog:seed.HistoricalCatalog,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:FreightOperations.Policy));}
     static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
     static void Advance(WorldSession s,long to){while(s.Seconds<to){long old=s.Seconds;s.SetPaused(false);s.AdvanceTo(to,100000);Assert.True(s.Seconds>old);}}
     static void Assign(WorldSession s)=>Good(s.ManageHouseFreight(new(Job,HouseFreightAction.Dispatch,Home:Home,Source:Source,Commodity:"wood",Quantity:10,Advance:200){Carrier=Carrier},s.PlayerControl,s.Revision));

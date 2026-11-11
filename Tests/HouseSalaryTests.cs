@@ -4,7 +4,7 @@ namespace HakutaiKagami.Tests;
 public sealed class HouseSalaryTests
 {
     static readonly EntityId Worker=HistoricalHouseholdCatalog.Edition.People.Single().Id;
-    internal static WorldSession Start(bool employee=false)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],employee?Worker.Value:"person:shingen",42,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSalary.Policy));
+    internal static WorldSession Start(bool employee=false)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],employee?Worker.Value:"person:shingen",42,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSalary.Policy));
     static EntityId Other(WorldSession s)=>s.PlayerControl==Worker?new("person:shingen"):Worker;
     static CommandResult Act(WorldSession s,SalaryAction action,EntityId? contract=null,long amount=0,EntityId? prep=null,string? id=null)=>s.ManageSalary(new(new(id??"request:salary/"+s.Revision),action,Other(s),new("site:kofu"),contract,amount,prep),s.PlayerControl,s.Revision);
     static EntityId Agree(WorldSession s,long amount=20){var r=Act(s,SalaryAction.Propose,amount:amount);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);var q=s.DiagnosticSnapshot().Salary!.Quotes.Last();Assert.True(q.Agreed,q.Reply);r=Act(s,SalaryAction.Confirm,q.Id);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);return q.Id;}
@@ -12,8 +12,8 @@ public sealed class HouseSalaryTests
     [Fact]
     public void VillagePetitionRecordsCalledWorkersAndReachesLordSealed()
     {
-        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],"person:shingen",42,
-            historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,
+        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],"person:shingen",42,
+            historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,
             workPolicy:WorkFollowup.Policy,economyPolicy:MilitaryEconomy.Policy));
         var salary=Agree(s);Advance(s,First(s));var portion=Prepare(s,salary,20);
         Assert.Equal(ResultCode.Accepted,Act(s,SalaryAction.Receive,salary,prep:portion).Code);
@@ -40,8 +40,8 @@ public sealed class HouseSalaryTests
     [Fact]
     public void PaidRetainerHiresOnlyAffordableSoldiersForReceivedMuster()
     {
-        var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current), [], "person:shingen", 42,
-            historicalCatalog: HistoricalStartCatalog.Current, inspectionPolicy: LocalInspectionFindings.Policy,
+        var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id), [], "person:shingen", 42,
+            historicalCatalog: HistoricalHouseholdCatalog.Id, inspectionPolicy: LocalInspectionFindings.Policy,
             workPolicy: WorkFollowup.Policy, economyPolicy: MilitaryEconomy.Policy));
         var contract = Agree(session);
         Advance(session, First(session));
@@ -66,8 +66,8 @@ public sealed class HouseSalaryTests
     [InlineData(CourtAction.HireMarketSoldiers)]
     public void VillageAndMarketSoldiersUsePrivateResourcesUntilTerm(CourtAction action)
     {
-        var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current), [], Worker.Value, 42,
-            historicalCatalog: HistoricalStartCatalog.Current, inspectionPolicy: LocalInspectionFindings.Policy,
+        var session = new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id), [], Worker.Value, 42,
+            historicalCatalog: HistoricalHouseholdCatalog.Id, inspectionPolicy: LocalInspectionFindings.Policy,
             workPolicy: WorkFollowup.Policy, economyPolicy: MilitaryEconomy.Policy));
         var contract = Agree(session);
         Advance(session, First(session));
@@ -160,8 +160,8 @@ public sealed class HouseSalaryTests
     [Fact]
     public void OwnerCanBringPaidCompanyOnlyUnderCurrentPickup()
     {
-        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],Worker.Value,42,
-            historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
+        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],Worker.Value,42,
+            historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,
             economyPolicy:MilitaryEconomy.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,battlefieldPolicy:BattlefieldRules.Policy));
         var pay=Agree(s);Advance(s,First(s));var prepared=Prepare(s,pay,5);
         BattlefieldRulesTests.Good(Act(s,SalaryAction.Receive,pay,prep:prepared));
@@ -187,8 +187,8 @@ public sealed class HouseSalaryTests
     [Fact]
     public void StandingCompanyPaysOnlyForSurvivorsAndDisbandsAfterRiceRunsOut()
     {
-        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],Worker.Value,42,
-            historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,
+        var s=new WorldSession(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],Worker.Value,42,
+            historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,
             workPolicy:WorkFollowup.Policy,economyPolicy:MilitaryEconomy.Policy));
         var pay=Agree(s);var salary=s.DiagnosticSnapshot().Salary!.Terms.Single();
         foreach(var due in salary.DueAt.Take(2)){
@@ -238,7 +238,7 @@ public sealed class HouseSalaryTests
     [Fact]public void TamperedReceiptAndAmountsCannotBeLoaded(){var s=Start();var id=Agree(s);Advance(s,First(s));var p=Prepare(s,id);Act(s,SalaryAction.Receive,id,prep:p);var w=s.DiagnosticSnapshot();w.Salary=w.Salary! with{Terms=[w.Salary.Terms.Single() with{Paid=999}]};Assert.Throws<InvalidDataException>(()=>new WorldSession(w));w=s.DiagnosticSnapshot();w.Salary=w.Salary! with{Entries=w.Salary.Entries.Select(e=>e.Input.Id==p?e with{Input=e.Input with{Amount=100}}:e).ToArray()};Assert.Throws<InvalidDataException>(()=>new WorldSession(w));}
 
     [Fact]public void TwoQuotedOffersCannotBecomeOverlappingConfirmedPromises(){var s=Start();Act(s,SalaryAction.Propose,amount:20);var first=s.DiagnosticSnapshot().Salary!.Quotes.Last().Id;Act(s,SalaryAction.Propose,amount:30);var second=s.DiagnosticSnapshot().Salary!.Quotes.Last().Id;Assert.Equal(ResultCode.Accepted,Act(s,SalaryAction.Confirm,first).Code);var before=ContractJson.Write(s.DiagnosticSnapshot());Assert.Equal(ResultCode.NotAvailable,Act(s,SalaryAction.Confirm,second).Code);Assert.Equal(before,ContractJson.Write(s.DiagnosticSnapshot()));Assert.Single(s.SalaryView()!.Contracts);}
-    [Fact]public void NormalEntryProfileBuildsSalaryCommunityAndMerchantTogether(){var store=new NewCampaignStore(Path.Combine(Path.GetTempPath(),"salary-profile-"+Guid.NewGuid().ToString("N")));var p=store.New(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],"person:shingen",42,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NewGameNpcRoutine.Policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,null,VoyageExpense.Standard,NpcArmies.CompactCombatPolicy,HouseSalary.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy);Assert.Equal(HouseSalary.Policy,store.Read(p.Instance).EconomyPolicy);var s=new WorldSession(NewCampaignStore.Build(p));Assert.NotNull(s.SalaryView());Assert.NotNull(s.CommunityEconomyView());Assert.NotNull(s.RegionalTradeView());Assert.Contains(Worker,s.SalaryView()!.People);}
+    [Fact]public void NormalEntryProfileBuildsSalaryCommunityAndMerchantTogether(){var store=new NewCampaignStore(Path.Combine(Path.GetTempPath(),"salary-profile-"+Guid.NewGuid().ToString("N")));var p=store.New(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],"person:shingen",42,NewGameWorld.CompactPersonalAuthority,HistoricalHouseholdCatalog.Id,NewGameNpcRoutine.Policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,null,VoyageExpense.Standard,NpcArmies.CompactCombatPolicy,HouseSalary.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy);Assert.Equal(HouseSalary.Policy,store.Read(p.Instance).EconomyPolicy);var s=new WorldSession(NewCampaignStore.Build(p));Assert.NotNull(s.SalaryView());Assert.NotNull(s.CommunityEconomyView());Assert.NotNull(s.RegionalTradeView());Assert.Contains(Worker,s.SalaryView()!.People);}
 
     [Fact]public void ActualServiceReleaseKeepsOldHouseDebtAndAllowsLaterLocalSettlement(){var s=Start(true);var id=Agree(s);Advance(s,First(s));var service=NewGameService.View(s.DiagnosticSnapshot()).Cases.Single().Case;Assert.Equal(ResultCode.Accepted,s.DecideService(new(new("request:salary-service-release"),CareerAction.RequestRelease,service),s.PlayerControl,s.Revision).Code);Advance(s,s.Seconds+3);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);Assert.Null(NewGameService.View(s.DiagnosticSnapshot()).House);Assert.Equal(20,s.SalaryView()!.Contracts.Single().Owed);var p=Prepare(s,id);Assert.Equal(ResultCode.Accepted,Act(s,SalaryAction.Receive,id,prep:p).Code);Assert.Equal(20,s.SalaryView()!.PrivateRice);Assert.Equal(0,s.SalaryView()!.Contracts.Single().Owed);}
     [Fact]public void PlayerEmployeeCanChooseToRenewAfterLateHistoryWithoutForcedNpcEmotions(){var s=Start(true);var id=Agree(s);Advance(s,s.DiagnosticSnapshot().Salary!.Terms.Single().DueAt[^1]+2*86400);var p=Prepare(s,id,60);Act(s,SalaryAction.Receive,id,prep:p);Assert.Equal(ResultCode.Accepted,Act(s,SalaryAction.Propose,amount:20).Code);Assert.True(s.DiagnosticSnapshot().Salary!.Quotes.Last().Agreed);Assert.Contains("本人が判断",s.SalaryView()!.Contracts.Single().LocalResponse!);}

@@ -110,6 +110,7 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public SalaryState? Salary {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public PersonalLifeState? Life {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HealthState? Health {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CastleHandoverState? Castles {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CastellanState? Castellan {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CastellanReportState? CastellanReports {get;set;}

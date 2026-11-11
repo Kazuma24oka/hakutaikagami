@@ -22,7 +22,7 @@ public sealed class HistoricalEventRulesTests
      Assert.Null(restored.NewGame!.Judgment!.EventEdition);
      var start=legacy.NewGame!;
      var world=NewGameWorld.Create(start.Start,start.Registered,lord.Value,legacy.Seed,NewGameWorld.CompactPersonalAuthority,
-         HistoricalStartCatalog.Current,NpcJudgment.Policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,
+         start.HistoricalCatalog,NpcJudgment.Policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,
          developmentPolicy:CharacterDevelopment.Policy,companionPolicy:PersonalCompanions.Policy,socialPolicy:CharacterRelations.Policy,
          judgment:start.Judgment! with{EventEdition=HistoricalEventRules.OwariEdition});
      Assert.NotNull(HistoricalEventRules.OwariScouting(world,lord,0,world.CommitSequence+1));

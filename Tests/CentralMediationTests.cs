@@ -7,7 +7,7 @@ public sealed class CentralMediationTests
     [Fact]
     public void ShogunAndHisAttendantAreSeparatePeopleWithNoAutomaticKyotoTerritory()
     {
-        var edition=HistoricalStartCatalog.Current;
+        var edition=CentralCourtCatalog.RegentEdition;
         var scenario=NewGameWorld.Scenario(edition);
         var prior=NewGameWorld.Scenario(CentralCourtCatalog.Id);
         Assert.Equal(prior.Castles,scenario.Castles);
@@ -40,10 +40,10 @@ public sealed class CentralMediationTests
     {
         var broker=CentralCourtCatalog.ShogunBroker;var site=CentralCourtCatalog.Kyoto;var kofu=new EntityId("site:kofu");
         var owner=new EntityId("org:shugo-test");var applicant=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
-        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var raw=NewGameWorld.Scenario(CentralCourtCatalog.RegentEdition);
         var request=new WorldSetupRequest([applicant],[new(applicant.Id,owner.Value,[site.Value,kofu.Value],false)]);
         var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        var s=new WorldSession(NewGameWorld.Create(setup,[applicant],applicant.Id,historicalCatalog:HistoricalStartCatalog.Current,
+        var s=new WorldSession(NewGameWorld.Create(setup,[applicant],applicant.Id,historicalCatalog:CentralCourtCatalog.RegentEdition,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
         void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
         Good(s.ManageSocial(new(new("request:meet-fujitaka"),SocialWorldAction.Visit,broker),s.Revision));
@@ -75,10 +75,10 @@ public sealed class CentralMediationTests
         var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
         var retainer=NewGameWorldTests.Officer("created:retainer",StartTemplate.Retainer,site.Value,lord.Id);
         var house=new EntityId("org:rank-leave");
-        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var raw=NewGameWorld.Scenario(CentralCourtCatalog.RegentEdition);
         var setupRequest=new WorldSetupRequest([lord,retainer],[new(lord.Id,house.Value,[site.Value],false)]);
         var setup=NewGameSetup.Confirm(raw,setupRequest,NewGameSetup.Preview(raw,setupRequest));
-        var session=new WorldSession(NewGameWorld.Create(setup,[lord,retainer],retainer.Id,historicalCatalog:HistoricalStartCatalog.Current,
+        var session=new WorldSession(NewGameWorld.Create(setup,[lord,retainer],retainer.Id,historicalCatalog:CentralCourtCatalog.RegentEdition,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy));
         var broker=CentralCourtCatalog.CourtBroker;
         Assert.Equal(ResultCode.Accepted,session.ManageSocial(new(new("request:court-visit"),SocialWorldAction.Visit,broker),session.Revision).Code);
@@ -103,11 +103,11 @@ public sealed class CentralMediationTests
         var broker=temple?CentralCourtCatalog.TempleBroker:CentralCourtCatalog.CourtBroker;
         var owner=new EntityId("org:peace-test");
         var lord=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
-        var raw=NewGameWorld.Scenario(HistoricalStartCatalog.Current);
+        var raw=NewGameWorld.Scenario(CentralCourtCatalog.RegentEdition);
         var target=new EntityId(raw.Factions.First().Id);
         var request=new WorldSetupRequest([lord],[new(lord.Id,owner.Value,[site.Value],false)]);
         var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        var session=new WorldSession(NewGameWorld.Create(setup,[lord],lord.Id,historicalCatalog:HistoricalStartCatalog.Current,
+        var session=new WorldSession(NewGameWorld.Create(setup,[lord],lord.Id,historicalCatalog:CentralCourtCatalog.RegentEdition,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,trucePolicy:TruceNegotiations.Policy));
         void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
         Good(session.ManageSocial(new(new("request:meet-peace-broker"),SocialWorldAction.Visit,broker),session.Revision));
@@ -179,7 +179,7 @@ public sealed class CentralMediationTests
     {
         var broker=CentralCourtCatalog.CourtBroker;var site=CentralCourtCatalog.Kyoto;var owner=new EntityId("org:court-test");
         var applicant=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:site.Value);
-        var edition=currentEdition?HistoricalStartCatalog.Current:CentralCourtCatalog.Id;
+        var edition=currentEdition?CentralCourtCatalog.RegentEdition:CentralCourtCatalog.Id;
         var raw=NewGameWorld.Scenario(edition);
         var request=new WorldSetupRequest([applicant],[new(applicant.Id,owner.Value,[site.Value],false)]);
         var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));

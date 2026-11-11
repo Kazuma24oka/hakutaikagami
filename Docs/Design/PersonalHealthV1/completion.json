@@ -1,0 +1,46 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "負傷と病を部位・重さ・発症時刻で区別し、支障のある行動だけを止める（脚の深手は遠出・出陣、腕と胴の深手は戦闘、高熱は修行と評定の裁決）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalHealth.cs",
+        "Tests/PersonalHealthTests.cs"
+      ]
+    },
+    {
+      "contract": "本人か同じ拠点の同行者が一度だけ手当でき、残りの経過が縮む。即時の全快はなく、加齢は回復を遅くするだけ",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/PersonalHealthTests.cs",
+        "Game/Scripts/PersonalHealthCheck.cs"
+      ]
+    },
+    {
+      "contract": "本人には症状と幅付きの見立てを示し、他人の傷病は同じ拠点で見た範囲だけで回復の見込みを示さない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalHealth.cs",
+        "Tests/PersonalHealthTests.cs"
+      ]
+    },
+    {
+      "contract": "NPCも同じ制約で修行・遠出を選ばず、発症時に続けられない修行を中断し、役目・預り物・責任は動かさない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcJudgment.cs",
+        "Tests/PersonalHealthTests.cs"
+      ]
+    },
+    {
+      "contract": "賊・固定シードの病から生活の画面で状態を見て手当を頼み回復する一巡と、途中保存からの復旧で同じ未来",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/PersonalHealthCheck.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Tests/PersonalHealthTests.cs"
+      ]
+    }
+  ]
+}
