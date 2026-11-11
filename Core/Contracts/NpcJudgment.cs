@@ -9,7 +9,7 @@ public static class NpcJudgment
     {
         var s=data.Judgment;
         if(data.NpcRoutinePolicy!=Policy){if(s!=null)throw new InvalidDataException("旧NPC方針に判断設定を追加できません");return;}
-        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||s.PracticeForecastVersion is not (null or 2)||(s.PracticeForecastVersion != null && s.Challenge != NpcChallenge.Strong)||(s.Challenge is {} challenge && !Enum.IsDefined(challenge))||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
+        if(s==null||s.EventEdition is not (null or HistoricalEventRules.OwariEdition)||s.Policy!=Policy||!Enum.IsDefined(s.History)||!Enum.IsDefined(s.Attention)||s.PracticeForecastVersion is not (null or 2)||s.HealthEdition is not (null or PersonalHealth.Edition)||(s.PracticeForecastVersion != null && s.Challenge != NpcChallenge.Strong)||(s.Challenge is {} challenge && !Enum.IsDefined(challenge))||(s.Support is {} level && !Enum.IsDefined(level))||data.DevelopmentPolicy!=CharacterDevelopment.Policy||data.SocialPolicy!=CharacterRelations.Policy)
             throw new InvalidDataException("NPC判断には版付き設定・修行・性格の方針が必要です");
     }
     public static NpcPersonality Personality(ContractWorld w,EntityId actor)=>new(
@@ -38,8 +38,8 @@ public static class NpcJudgment
         var aspiration=NpcAspirationProfiles.For(w,actor);
         var purpose=basis.Routine!.Purpose!;var candidates=new List<NpcChoiceCandidate>();
         bool due=at>=ready;
-        if(due&&basis.CooldownElapsed&&basis.Routine.Need?.Needed==true)candidates.Add(new("inspect",true,basis.InspectionPermit,basis.Routine.Need.MissingEdges.Length>0?45:10,new(0,3,3,0,1,0),false,false,false));
-        if(due&&purpose.PracticeDue&&basis.Routine.Need?.MissingEdges.Length is not >0)foreach(var skill in Enum.GetValues<DevelopmentSkill>())candidates.Add(new("practice:"+skill,true,basis.InspectionPermit,15,SkillWeights(skill),aspiration?.Skill==skill,aspiration?.Skill==skill && !w.NewGame!.Registered.Any(p => p.Id == actor.Value),false));
+        if(due&&basis.CooldownElapsed&&basis.Routine.Need?.Needed==true)candidates.Add(new("inspect",true,basis.InspectionPermit&&PersonalHealth.Can(w,actor,HealthLimit.Travel,at),basis.Routine.Need.MissingEdges.Length>0?45:10,new(0,3,3,0,1,0),false,false,false));
+        if(due&&purpose.PracticeDue&&basis.Routine.Need?.MissingEdges.Length is not >0)foreach(var skill in Enum.GetValues<DevelopmentSkill>())candidates.Add(new("practice:"+skill,true,basis.InspectionPermit&&PersonalHealth.Can(w,actor,HealthLimit.Practice,at),15,SkillWeights(skill),aspiration?.Skill==skill,aspiration?.Skill==skill && !w.NewGame!.Registered.Any(p => p.Id == actor.Value),false));
         var settings=w.NewGame!.Judgment!;var mode=w.TimeControl?.ContinuedAt is {} continued&&continued<at?HistoryMode.Fictional:settings.History;
         // 同じ裁量窓では時刻の刻みを同点処理へ混ぜない。
         var input=new NpcChoiceInput(actor,w.Seed,ready,Personality(w,actor),aspiration?.Aspiration??NpcAspiration.Unspecified,mode,settings.Attention,candidates.ToArray());

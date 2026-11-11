@@ -396,6 +396,7 @@ public static class HouseholdCourt
  public static void Execute(ContractWorld w,CourtInput i,EntityId actor)
  {
   Need(NewGameWork.Enabled(w)&&w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Role)&&Enum.IsDefined(i.Case)&&Enum.IsDefined(i.Scale),"家中の用件が不正です");var place=IndependenceGate.Handles(i.Action)?IndependenceGate.MeetingSite(w,actor):SocialWorld.Site(w,actor);Need(place!=null,"現地へ到着してください");bool activeOwner=HouseSuccession.Factions(w).Any(f=>f.Id==i.Owner.Value);Need((activeOwner||i.Action==CourtAction.ResignShogun&&i.Owner==SupremeOffice.Bakufu||HouseRestoration.NamesFormerHouse(w,i))&&w.Definitions.Sites.Any(s=>s.Id==i.Site),"家と拠点を指定してください");
+  Need(i.Action is not (CourtAction.ApproveCase or CourtAction.DenyCase or CourtAction.ReviseCase or CourtAction.SubmitCase) || PersonalHealth.Can(w,actor,HealthLimit.Judgment,w.ElapsedSeconds),PersonalHealth.Reason(HealthLimit.Judgment));
   Need(i.Action==CourtAction.ProposeCoalition || i.Coalition==null,"包囲網の条件は呼びかけの原本に記します");
   Need(CoalitionPacts.IsActivity(i.Action) || i.ActivityEvidence==null,"行動報告にだけ出兵・和睦の原本を指定できます");
   Need(i.Action==CourtAction.ConfirmCoalition || i.CoalitionSignatures==null,"加盟返書の一覧は盟約の成立原本に記します");

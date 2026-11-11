@@ -19,6 +19,8 @@ public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAt
     public int? PracticeForecastVersion {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public bool? UseInspectionReferences {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public int? HealthEdition {get;init;}
 
 
 }

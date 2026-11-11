@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "scope": "personal-health-v1",
+  "core_health_tests": 10,
+  "core_related_passed": 107,
+  "core_related_classes": [
+    "PersonalHealthTests",
+    "NpcJudgmentTests",
+    "HouseholdCourtTests",
+    "BanditEncounterTests",
+    "PersonalLifeTests"
+  ],
+  "legacy_fixture_tests": 639,
+  "legacy_fixture_failed": 0,
+  "legacy_fixture_classes": 23,
+  "regression_fix_tests": 718,
+  "regression_fix_note": "今川版追加で壊れた旧テスト96件を当時の開始版に固定した後、修正対象と依存クラス718件が成功（最後の4件は個別に再実行して128件成功）",
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "通常開始・賊との戦いの負傷（胴・深手）・暮らしの画面の状態と見立て・自分で手当（回復1209620秒→725788秒）・保存復旧で同じ世界・回復",
+  "godot_images": [
+    "runtime-local/ui/injured.png",
+    "runtime-local/ui/treated.png",
+    "runtime-local/ui/recovered.png"
+  ],
+  "full_core": "未実施（P13：変更箇所と依存の関連検査を選んで実行。全件4,458件は引継ぎ時に1回実行し、失敗96件の原因はすべて開始版の更新だった）",
+  "computer_use": "未使用",
+  "user_play": "未実施",
+  "external_appearance": "未確認"
+}

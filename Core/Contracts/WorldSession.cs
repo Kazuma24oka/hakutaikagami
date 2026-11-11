@@ -54,6 +54,7 @@ public sealed partial class WorldSession
             if(state.Region?.Commands.Any(c=>c.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             if(state.Field?.Orders.Any(o=>o.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
             if(state.TravelDecisions?.Any(d=>d.Request.Id==intent.RequestId)==true)return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"同一IDの内容が異なります");
+            if(PersonalHealth.Blocked(state,intent) is {} unwell)return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,unwell);
             var old = state.Requests.SingleOrDefault(r => r.Id == intent.RequestId);
             if (old != null) return new(old.BodyHash == hash ? ResultCode.AlreadyAccepted : ResultCode.IdPayloadConflict,
                 intent.RequestId,old.CommitSequence,old.BodyHash == hash ? "受付済み" : "同一IDの内容が異なります");
@@ -168,7 +169,7 @@ public sealed partial class WorldSession
                 deferTimePause=WorldTimeControl.Enabled(state);
                 try{
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);FamilyBirth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
@@ -219,6 +220,7 @@ public sealed partial class WorldSession
         if(HouseholdCourt.NextBoundary(s,target) is {} courtBoundary)times.Add(courtBoundary);
         if(FamilyBirth.Next(s,target) is {} birth)times.Add(birth);
         if(FamilyMortality.Next(s,target) is {} naturalDeath)times.Add(naturalDeath);
+        if(PersonalHealth.Next(s,target) is {} illness)times.Add(illness);
         if(FamilyKin.NextAdulthood(s,target) is {} comingOfAge)times.Add(comingOfAge);
         if(InformationSchemes.NextBoundary(s,target) is {} schemeBoundary)times.Add(schemeBoundary);
         if(MeritRewards.NextBoundary(s,target) is {} meritBoundary)times.Add(meritBoundary);

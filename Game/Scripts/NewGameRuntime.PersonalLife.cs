@@ -4,19 +4,36 @@ using System.Linq;
 using HakutaiKagami.Core.Contracts;
 public partial class NewGameRuntime
 {
+    readonly System.Collections.Generic.Dictionary<string,Button> healthButtons=new();PopupPanel? lifePopup;
+    internal void ReviewPersonalLifeOpen()=>ShowPersonalLife();
+    internal void ReviewHealthPress(string key)=>healthButtons[key].EmitSignal(BaseButton.SignalName.Pressed);
+    internal void ReviewPersonalLifeClose()=>lifePopup?.Hide();
+    internal string ReviewPersonalLifeText()=>lifePopup==null?"":string.Join("\n",lifePopup.FindChildren("*","Label",true,false).Cast<Label>().Select(l=>l.Text));
     void ShowPersonalLife()
     {
         if(Session==null||Session.PersonalLifeView() is not {} v)return;
-        var popup=new PopupPanel();AddChild(popup);
+        var popup=new PopupPanel();AddChild(popup);lifePopup=popup;healthButtons.Clear();
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};popup.AddChild(scroll);scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);var box=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};box.AddThemeConstantOverride("separation",10);scroll.AddChild(box);
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        void Button(string text,Action run,bool disabled=false){var b=new Button{Text=text,Disabled=disabled,CustomMinimumSize=new Vector2(0,36)};box.AddChild(b);b.Pressed+=run;}
+        Button Button(string text,Action run,bool disabled=false){var b=new Button{Text=text,Disabled=disabled,CustomMinimumSize=new Vector2(0,36)};box.AddChild(b);b.Pressed+=run;return b;}
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Done(CommandResult r){if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();if(r.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)ShowPersonalLife();}
         long shown=Session.Revision;EntityId Id(string tag)=>new("request:personal-life-ui/"+tag+"/"+shown);
         void Life(LifeAction action,LifeGoal goal=LifeGoal.WorkPay,long target=0)=>Done(Session.ManageLife(new(Id(action.ToString()),action,v.Site!.Value,action==LifeAction.CancelRest?v.ActiveRest:null,goal,target),Session.PlayerControl,shown));
         Text($"{PersonName(Session.PlayerControl)} — {v.Role}\n私財 {v.PrivateMoney}文 ／ 給付からの私有米 {v.PrivateRice}kg\n給付の未受領 {v.StipendReceivable}kg ／ 自分が支払う未払い {v.StipendPayable}kg");
         Text(v.Burden);Text($"食事で実消費した米 {v.MealRiceConsumed}kg ／ 記録した休養 {v.RestSeconds/60}分");
+        if(Session.HealthView(Session.PlayerControl) is {} health){
+            if(health.Conditions.Length==0)Text("体調：大きな傷病はありません。");
+            foreach(var c in health.Conditions){
+                Text($"体調：{c.Kind}（{c.Part}・{c.Severity}）{(c.Treated?"手当済み":"手当なし")} ／ {c.Outlook}");
+                if(c.Treated||v.Site==null)continue;
+                healthButtons["self:"+c.Id.Value]=Button("自分で手当をする（手当は一度。治るまでの日数が縮みます）",()=>Done(Session.ManageHealth(new(Id("care-self/"+c.Id.Value.Replace(':','-')),Session.PlayerControl,c.Id,Session.PlayerControl),Session.PlayerControl,shown)));
+                foreach(var friend in Session.CompanionView().Where(f=>f.Active&&f.Nearby&&!f.Busy))
+                    Button($"{friend.Name}に手当を頼む",()=>Done(Session.ManageHealth(new(Id("care/"+friend.Person.Value.Replace(':','-')+"/"+c.Id.Value.Replace(':','-')),Session.PlayerControl,c.Id,friend.Person),Session.PlayerControl,shown)));
+            }
+            foreach(var limit in health.Limits)Text("できないこと："+limit);
+            if(health.Limits.Length>0)Text("面会・書状など体を動かさない用件は続けられます。役目・預り物・責任は療養中も本人に残ります。");
+        }
         if(v.ActiveRest!=null){Text($"休息中：残り {Math.Max(0,v.RestUntil!.Value-Session.Seconds)/60}分。世界時刻は通常の進行操作で進みます。");Button("ここで休息を中止する（宿代・経過時間は戻りません）",()=>Life(LifeAction.CancelRest));}
         else if(v.Site!=null){
             Text("食事・休息は自分で選べます。金欠でも徒歩移動と仕事探しを続けられます。");

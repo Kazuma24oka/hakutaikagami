@@ -2,6 +2,12 @@
 
 2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
+## 差し替え前の完成へ（2026-11-11 ユーザー指示・Claude が本線を引継ぎ）
+
+目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。戦国DBの取り込み（BD-20）と見た目の工程は後回しにし、それ以外を先に終わらせる（2026-11-11 ユーザー指示）。
+
+直近：[健康と療養 V1](../Design/PersonalHealthV1/README.md)（BD-06 23→30）。次は残りの少ない枠（BD-04 全国規模・BD-03 史実と自由行動・BD-07 死亡と後継・BD-53〜56 中央政治・BD-08 個人目標）から、DB と見た目に依らない部分を選ぶ。
+
 ## 全国共通の判断支援
 
 [開始設定・現地調達と保存復旧](../Design/DecisionSupportV1/entry-verification.md)。次は本人が認識した危機と外交の選択肢。
@@ -70,6 +76,8 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-12 | 健康と療養（負傷・病・手当・行動制限） | Docs/Design/PersonalHealthV1/ | （この PR） |
+| 2026-11-11 | Codex の引継ぎ（村救済の上申）と、開始版の更新で壊れた旧テスト96件の修正 | （コミット 3bc35de） | （この PR） |
 | 2026-11-06 | 家督争い・後見 | Docs/Design/GuardianshipV1/ | 7265807（PR85） |
 | 2026-11-06 | 後継指名・誓紙・縁戚 | Docs/Design/HeirDesignationV1/ | 693dd69（PR83） |
 | 2026-11-06 | 家族の生死と知らせ | Docs/Design/FamilyLifeV1/ | 6451f93（PR82） |
