@@ -59,7 +59,7 @@ public partial class NewGameFrontEnd : Control
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(columns);var menu=new VBoxContainer{CustomMinimumSize=new(300,0)};columns.AddChild(menu);
         Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
-        Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
+        Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
         var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=site=>{notice.Text=NewGameWorld.SiteName(site)+" / 新規ゲームで、ここから武将を探せます。";nation.Focus(site);};
         menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"\n\n作成・編集は新規ゲームと独立。\n開始した世界には後から上書きされません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         page.AddChild(new Label{Text="人物・勢力は部分収録。領土・役職は開始配置の試作設定です。通常起動と旧保存は元の入口に保持しています。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("c7b687")});

@@ -1,0 +1,16 @@
+{
+  "status": "PASSED",
+  "scope": "hakutai-db-v1",
+  "source_commit": "38a13d12f036d3fb707d4f0cffad9248bde21f5d",
+  "core_db_tests": 7,
+  "core_related_passed": 83,
+  "core_related_classes": ["HakutaiDbTests", "DotOfficerLooksTests", "HistoricalStart*", "NewGameWorld*", "ImagawaStart*", "NationalPersonnel*"],
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "スタート画面→史料の画面→織田（当主・本拠・顔ぶれ・地図で27城を強調）・今川・本願寺の選択",
+  "godot_images": ["runtime-local/ui/overview.png", "runtime-local/ui/oda.png", "runtime-local/ui/honganji.png"],
+  "dot_officer_ui_after_move": "PASSED（絵を Sheets へ移した後）",
+  "full_core": "未実施（P13：変更箇所と依存の関連検査を選んで実行。世界の状態・保存の形は変えていない）",
+  "save_recovery": "対象外（世界の状態に何も足していない）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

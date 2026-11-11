@@ -10,7 +10,7 @@
 ## 書き出しの手順
 ```
 python Tools/DotOfficerBaker/make_looks.py
-python Tools/DotOfficerBaker/bake.py "D:\02_プロジェクト別\共通素材\購入素材\ちびコマドット絵作成機(商用版)\甲冑アニメ工房\index.html" Tools/DotOfficerBaker/looks.json Game/Assets/DotOfficers/Local
+python Tools/DotOfficerBaker/bake.py "D:\02_プロジェクト別\共通素材\購入素材\ちびコマドット絵作成機(商用版)\甲冑アニメ工房\index.html" Tools/DotOfficerBaker/looks.json Game/Assets/DotOfficers/Sheets
 ```
 
 ## 確認
@@ -18,7 +18,7 @@ python Tools/DotOfficerBaker/bake.py "D:\02_プロジェクト別\共通素材\�
 - Godot（通常開始・内部入力・自前描画）：平時の本人は和服 → 賊との戦いで甲冑 → 賊も浪人の甲冑のドット絵 → 同じ時刻なら同じ絵。
 
 ## 残件
-- ちびコマの規約確認（それまで絵は Git に入れない）。
+- （済）ちびコマの規約：素体の書き出しは問題ない（2026-11-12 ユーザー確認）。絵は Sheets に置いて Git に入れた。
 - 騎乗・大筒・船・攻城（ツールにはある）の場面への接続、合戦の大部隊の表示。
 - 一般の型の数（今は身分ごとに9型）、作成武将が自分で型を選ぶ画面。
 - 表示の大きさは3Dの武将に合わせた。読みやすさの調整は試し遊びの後。
