@@ -1,0 +1,12 @@
+{
+  "status": "PASSED",
+  "scope": "hakutai-db-v3-castles-and-local-names",
+  "core_db_tests": 11,
+  "core_related_passed": 87,
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "史料の画面：織田（〇 織田信長　清洲城）・今川・松平・大友（モブ）・本願寺",
+  "scale_measurement": "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md 第2節（行動しない人物100・1,000・4,000人、試しの検査は記録後に削除）",
+  "full_core": "未実施（P13：関連検査を選んで実行。世界の状態・保存の形は変えていない）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

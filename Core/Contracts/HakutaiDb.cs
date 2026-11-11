@@ -112,6 +112,9 @@ public static class HakutaiDb
     public static HakutaiDbPerson? Person(string id)=>index.Value.People.GetValueOrDefault(id);
     public static HakutaiDbHouse? House(string id)=>index.Value.Houses.GetValueOrDefault(id);
     public static HakutaiDbCastle? Castle(string id)=>index.Value.Castles.GetValueOrDefault(id);
+    // その年の持ち主がその家の城（城主不明で郡の支配者の城としたものを含む）。ID の順。
+    public static IReadOnlyList<HakutaiDbCastle> CastlesOf(string house)=>index.Value.Edition.Castles.Where(c=>c.Owner==house).OrderBy(c=>c.Id,StringComparer.Ordinal).ToArray();
+    public static string Kuni(string? province)=>(province??"").TrimEnd('国').Replace('驒','騨');
     public static IReadOnlyList<HakutaiDbPerson> Members(string house)=>index.Value.Members.TryGetValue(house,out var m)?m:[];
     public static IReadOnlyList<HakutaiDbHouse> Houses=>index.Value.Edition.Houses;
     // 大きい家（顔ぶれの多い順）から。同数は ID 順で固定。

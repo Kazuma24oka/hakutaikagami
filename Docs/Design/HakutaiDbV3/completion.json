@@ -1,0 +1,36 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "登場する武将（DBの人物とオリジナルのモブ）全員に、その家の城から所属の城を決める。DBの人物はDBの城がその家の城ならそれ、なければ本拠",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HakutaiDbStart.cs",
+        "Tests/HakutaiDbTests.cs"
+      ]
+    },
+    {
+      "contract": "モブは家の城のうち武将の少ない城から順に割り当て、城のある国の武将に多い苗字で名前を付ける（同じ家で名前が重ならない）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/HakutaiDbStart.cs",
+        "Tests/HakutaiDbTests.cs"
+      ]
+    },
+    {
+      "contract": "史料の画面の武将一覧に名前・実在性〇△×・所属の城だけを出す",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameFrontEnd.HakutaiDb.cs",
+        "Game/Scripts/HakutaiDbCheck.cs"
+      ]
+    },
+    {
+      "contract": "全国の武将を世界に置くための作り直しの設計を、測った重さ（作成・進行・保存の大きさ）つきで記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md"
+      ]
+    }
+  ]
+}
