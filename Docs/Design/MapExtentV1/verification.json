@@ -1,0 +1,11 @@
+{
+  "status": "PASSED",
+  "scope": "map-extent-v1",
+  "core_related_passed": 24,
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "史料の画面の地図：基準の位置に九州と仙台が入り琉球が外れる／全域に琉球・択捉・与那国が入る／清洲付近で1ドット50mまで寄って城の名前／一番引くと全域で止まる。ドット絵の確認も成功",
+  "godot_images": ["../HakutaiDbV1/runtime-local/ui/map-full.png", "../HakutaiDbV1/runtime-local/ui/map-castles.png"],
+  "full_core": "未実施（P13。世界の状態・保存の形は変えていない）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

@@ -2,7 +2,7 @@
 "Schema":1,
 "Id":"hakutai-db-1560-v2",
 "WorldYear":1560,
-"Source":{"Repository":"SengokuDB","Commit":"5ce9d6f286a409011de9998345b121e22cb401bb","Tags":[],"SqliteBuiltAt":"2026-11-11T21:34:42.100294+00:00","CatalogVersion":"10"},
+"Source":{"Repository":"SengokuDB","Commit":"5ce9d6f286a409011de9998345b121e22cb401bb","Tags":["hakutai-1560-v4"],"SqliteBuiltAt":"2026-11-11T21:34:42.100294+00:00","CatalogVersion":"10"},
 "Policy":"戦国DBの版から一方向に書き出した1560年の開始用の下書き。所属・置き場所の城・直属の上司・城の持ち主は機械の見積もりで、史実の判定ではない（決め方を値ごとに残す）。城の位置は公知の地理、所属と城の持ち主はその年の情勢（人が報告で知るもの）として扱う。能力・性格・見た目は百代鏡側で別に持つ。",
 "Houses":[
 {"Id":"G-000037","Name":"伊達","Head":"P-005385","Home":"L-501498","Religious":false,"Overlord":null,"Relations":[{"House":"G-000040","Kind":"同盟"},{"House":"G-000041","Kind":"同盟"},{"House":"G-000042","Kind":"従属させている"},{"House":"G-000043","Kind":"敵対"},{"House":"G-000045","Kind":"同盟"},{"House":"G-000051","Kind":"従属させている"},{"House":"G-000052","Kind":"従属させている"}],"HeadBasis":"参考サイトで確かめた","Note":null,"Kokudaka":168749},
@@ -6459,7 +6459,6 @@
 {"Id":"L-502754","Name":"深見城","Province":"相模国","District":"高座郡","LatitudeE7":354935600,"LongitudeE7":1394688100,"PositionBasis":"参考サイトの位置","Owner":"G-000104","Holder":null,"OwnerBasis":"郡の支配者の城（城主不明）"},
 {"Id":"L-502755","Name":"此隅山城","Province":null,"District":null,"LatitudeE7":354877200,"LongitudeE7":1348728100,"PositionBasis":"記事の位置","Owner":"G-000175","Holder":"山名祐豊","OwnerBasis":"本拠"},
 {"Id":"L-502756","Name":"志苔館","Province":"蝦夷地","District":"渡島半島","LatitudeE7":417657200,"LongitudeE7":1408223900,"PositionBasis":"参考サイトの位置","Owner":"G-000068","Holder":null,"OwnerBasis":"郡の支配者の城（城主不明）"},
-{"Id":"L-502758","Name":"順天倭城","Province":null,"District":null,"LatitudeE7":349072200,"LongitudeE7":1275811100,"PositionBasis":"参考サイトの位置","Owner":"G-000126","Holder":"城主不明（1598年ごろの城主 宗義智 の主君から推定）","OwnerBasis":"推定"},
 {"Id":"L-502759","Name":"勝山館","Province":"蝦夷地","District":"渡島半島","LatitudeE7":418008300,"LongitudeE7":1400994400,"PositionBasis":"参考サイトの位置","Owner":"G-000068","Holder":"城主不明（見本シナリオの所属）","OwnerBasis":"シナリオ"},
 {"Id":"L-502761","Name":"宇須岸館","Province":"蝦夷地","District":"渡島半島","LatitudeE7":417668100,"LongitudeE7":1407264700,"PositionBasis":"参考サイトの位置","Owner":"G-000068","Holder":null,"OwnerBasis":"郡の支配者の城（城主不明）"},
 {"Id":"L-502762","Name":"東氏館","Province":"美濃国","District":"郡上郡","LatitudeE7":358568600,"LongitudeE7":1369112100,"PositionBasis":"郡の中の目安","Owner":"G-000117","Holder":null,"OwnerBasis":"郡の支配者の城（城主不明）"},

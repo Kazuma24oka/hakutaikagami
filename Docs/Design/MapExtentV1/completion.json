@@ -1,0 +1,37 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "百代鏡DBと城の移動網から、日本の外（朝鮮半島など）の城を除く",
+      "status": "PASSED",
+      "evidence": [
+        "Tools/HakutaiDb/export_1560.py",
+        "Core/Data/castle-routes-1560-v1.json"
+      ]
+    },
+    {
+      "contract": "地図に今の日本の範囲（琉球・小笠原・北方領土を含む）を描き、北方領土は地球地図日本（国土地理院、jpn-atlas 経由）の島の形を表示用に足す。世界の計算に使う海岸線は変えない",
+      "status": "PASSED",
+      "evidence": [
+        "Tools/HakutaiDb/build_northern_territories.py",
+        "Game/Data/Geography/northern-territories-v1.json",
+        "Game/Scripts/NewGameMap.cs"
+      ]
+    },
+    {
+      "contract": "琉球と蝦夷地（アイヌの地）を、操作できないが存在する地域として地図に示す",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameMap.cs"
+      ]
+    },
+    {
+      "contract": "地図の基準の位置は九州から東北まで。引くと琉球・北方領土まで入り、寄ると城の一つずつが名前で見分けられる。つかんで動かせ、寄り引きはマウスの位置を中心にする",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameMap.cs",
+        "Game/Scripts/HakutaiDbCheck.cs"
+      ]
+    }
+  ]
+}

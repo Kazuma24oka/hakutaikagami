@@ -117,6 +117,8 @@ def main():
         xy = coords.get(c["id"])
         if not xy:
             continue
+        if xy["lon"] < 129.0 and xy["lat"] > 33.9:  # 朝鮮半島（倭城など）は百代鏡では使わない（2026-11-12 ユーザーの指示。対馬は 129.2°E より東）
+            continue
         castles[c["id"]] = {"Id": c["id"], "Name": c["name"], "Province": (c.get("gun") or "").split("::")[0] or None,
                             "District": (c.get("gun") or "").split("::")[1] if "::" in (c.get("gun") or "") else None,
                             "LatitudeE7": round(xy["lat"] * 1e7), "LongitudeE7": round(xy["lon"] * 1e7),
