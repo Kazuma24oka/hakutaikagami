@@ -122,7 +122,7 @@ public partial class NewGameMap : Control
         void Label(Vector2 at,string text,int size,Color color){var sz=font.GetStringSize(text,HorizontalAlignment.Left,-1,size);var r=new Rect2(at-new Vector2(sz.X/2,sz.Y*0.75f),sz).Grow(2);if(!view.HasPoint(at)||placed.Any(p=>p.Intersects(r)))return;placed.Add(r);DrawString(font,at-new Vector2(sz.X/2,-sz.Y*0.25f),text,HorizontalAlignment.Left,-1,size,color);}
         foreach(var m in Marks){var q=Pixel(P(m.At));if(!view.HasPoint(q))continue;float r=names?4f:2f;if(m.Strong)DrawCircle(q,r+1.5f,new Color("1b1b1b"));DrawCircle(q,m.Strong?r+0.5f:r,m.Color);if(names&&m.Name.Length>0)castleNames.Add((q+new Vector2(6+m.Name.Length*6.5f,-8),m.Name));}
         if(ShowProvinces&&kmpp<4)foreach(var (at,name) in provinceNames)Label(Pixel(at),name,15,new Color("f3d6b0"));
-        if(ShowDistricts&&kmpp<0.8)foreach(var (at,name) in districtNames)Label(Pixel(at),name,12,new Color("e3dcc0"));
+        if(ShowDistricts&&kmpp<0.8)foreach(var (at,name) in districtNames)Label(Pixel(at),name,12,new Color("9fe0d2"));
         foreach(var (at,name) in castleNames)Label(at,name,13,new Color("fff2d6"));
         foreach(var (at,name) in AreaLabels){var q=Pixel(P(at));if(new Rect2(new(0,30),Size-new Vector2(0,30)).HasPoint(q))DrawString(font,q-new Vector2(30,0),name,HorizontalAlignment.Left,-1,14,new Color("e8e1c5"));}
         if(scale>fullScale*3&&ShowPins)foreach(var s in NationalRoutes.Sites.Where(s=>!Hidden(NewGameWorld.Node(s.Id.Value)))){var p=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);if(new Rect2(new(24,24),Size-new Vector2(48,48)).HasPoint(p))DrawString(font,p+new Vector2(12,-10),s.Name,HorizontalAlignment.Left,-1,15,new Color("fff2d6"));}
