@@ -1,0 +1,1999 @@
+{
+ "schema": 1,
+ "armors": [
+  "黒漆",
+  "紺糸",
+  "鉄錆",
+  "萌黄",
+  "紫",
+  "銀白",
+  "朱"
+ ],
+ "laces": {
+  "黒漆": "紺",
+  "紺糸": "白",
+  "鉄錆": "橙",
+  "萌黄": "白",
+  "紫": "金",
+  "銀白": "紺",
+  "朱": "黒"
+ },
+ "looks": [
+  {
+   "id": "famous/nobunaga",
+   "match": [
+    "person:nobunaga",
+    "織田信長"
+   ],
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_nobunaga"
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_dofuku",
+    "kimono": "緋",
+    "hakama": "黒",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/shingen",
+   "match": [
+    "person:shingen",
+    "武田信玄"
+   ],
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_shingen"
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hoe",
+    "kimono": "墨",
+    "hakama": "金茶",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/ieyasu",
+   "match": [
+    "徳川家康",
+    "松平元康"
+   ],
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_ieyasu"
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_haori",
+    "kimono": "墨",
+    "hakama": "茶",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/kenshin",
+   "match": [
+    "上杉謙信",
+    "長尾景虎"
+   ],
+   "war": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_kenshin"
+   },
+   "peace": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hoe",
+    "kimono": "白",
+    "hakama": "白",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/masamune",
+   "match": [
+    "伊達政宗"
+   ],
+   "war": {
+    "eye": "p_eye_gantai",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_masamune"
+   },
+   "peace": {
+    "eye": "p_eye_gantai",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_haori",
+    "kimono": "藍",
+    "hakama": "紺",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/yukimura",
+   "match": [
+    "真田幸村",
+    "真田信繁"
+   ],
+   "war": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_yukimura"
+   },
+   "peace": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kamishimo",
+    "kimono": "緋",
+    "hakama": "紺",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/tadakatsu",
+   "match": [
+    "本多忠勝"
+   ],
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_tora",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_tadakatsu"
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_tora",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kamishimo",
+    "kimono": "墨",
+    "hakama": "鼠",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/naomasa",
+   "match": [
+    "井伊直政"
+   ],
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_naomasa"
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kamishimo",
+    "kimono": "緋",
+    "hakama": "紺",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/hideyoshi",
+   "match": [
+    "豊臣秀吉",
+    "羽柴秀吉",
+    "木下藤吉郎"
+   ],
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_hideyoshi"
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_dofuku",
+    "kimono": "山吹",
+    "hakama": "金茶",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/motonari",
+   "match": [
+    "毛利元就"
+   ],
+   "war": {
+    "eye": "p_eye_ito",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_shiro",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_motonari"
+   },
+   "peace": {
+    "eye": "p_eye_ito",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_shiro",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hitatare",
+    "kimono": "萌黄",
+    "hakama": "茶",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "famous/yoshihiro",
+   "match": [
+    "島津義弘"
+   ],
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_yoshihiro"
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hitatare",
+    "kimono": "墨",
+    "hakama": "黒",
+    "headAdd": [],
+    "hand": null,
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/young/0",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_tosei",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_daimon",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "茶",
+    "hakama": "黒",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/young/1",
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_daimon",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "紫",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/young/2",
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_chasen",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_chasen",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_daimon",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "萌黄",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/prime/0",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_tosei",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hitatare",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "茶",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/prime/1",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_tosei",
+    "head": [
+     "kabuto2",
+     "nichirin",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_daimon",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "紫",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/prime/2",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_tosei",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_daimon",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "萌黄",
+    "hakama": "黒",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/prime/3",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_tosei",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hitatare",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "紫",
+    "hakama": "黒",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/old/0",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_std",
+    "head": [
+     "kabuto2",
+     "kuwagata",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hitatare",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "紫",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/lord/old/1",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_shiro",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto2",
+     "suigyu",
+     "menpo"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_shiro",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hitatare",
+    "headAdd": [
+     "samurai_eboshi"
+    ],
+    "hand": null,
+    "kimono": "藍",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/young/0",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "suji",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kamishimo",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "藍",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/young/1",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_std",
+    "head": [
+     "suji",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "鼠",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/young/2",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_tosei",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "yari",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "藍",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/prime/0",
+   "war": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_tosei",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_haori",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "茶",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/prime/1",
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_tosei",
+    "head": [
+     "suji",
+     "kuwagata"
+    ],
+    "hand": "yumi",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/prime/2",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_std",
+    "head": [
+     "suji",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_haori",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/prime/3",
+   "war": {
+    "eye": "p_eye_meimoku",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_tanpatsu",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_std",
+    "head": [
+     "suji",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_meimoku",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_tanpatsu",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_haori",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "鼠",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/old/0",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "茶",
+    "hakama": "黒",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/samurai/old/1",
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_std",
+    "head": [
+     "suji",
+     "kuwagata"
+    ],
+    "hand": "yumi",
+    "back": [
+     "sashimono"
+    ]
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_haori",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "茶",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/young/0",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "yari",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/young/1",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_takayui",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kosode",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "藍",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/young/2",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_chasen",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "yari",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_chasen",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_kosode",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "藍",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/prime/0",
+   "war": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "yari",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/prime/1",
+   "war": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_rin",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_sou",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kosode",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/prime/2",
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_tanpatsu",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_std",
+    "head": [
+     "zunari"
+    ],
+    "hand": "yari",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_tanpatsu",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/prime/3",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "yari",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kosode",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/old/0",
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_std",
+    "head": [
+     "zunari"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_kosode",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "藍",
+    "hakama": "鼠",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/ronin/old/1",
+   "war": {
+    "eye": "p_eye_meimoku",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_meimoku",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hakama",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "茶",
+    "hakama": "茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/young/0",
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_chasen",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_chasen",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "紫",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/young/1",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/young/2",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_wakamusha",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/prime/0",
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_chasen",
+    "hige": "p_hige_ago",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "山吹",
+    "hakama": "紫",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/prime/1",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_tanpatsu",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_tanpatsu",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "山吹",
+    "hakama": "紫",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/prime/2",
+   "war": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_sou",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_fushi",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_sou",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/prime/3",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "白",
+    "hakama": "紫",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/old/0",
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_kuchi",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/courtier/old/1",
+   "war": {
+    "eye": "p_eye_meimoku",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_std",
+    "head": [
+     "kabuto",
+     "kuwagata"
+    ],
+    "hand": "katana",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_meimoku",
+    "mouth": "p_mouth_he",
+    "hair": "p_hair_mage",
+    "hige": "p_hige_yagi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_kariginu",
+    "headAdd": [
+     "tate_eboshi"
+    ],
+    "hand": null,
+    "kimono": "浅葱",
+    "hakama": "紺",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/young/0",
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "金茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/young/1",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "金茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/young/2",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "金茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/prime/0",
+   "war": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_smile",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "白",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/prime/1",
+   "war": {
+    "eye": "p_eye_ito",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_ito",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": null,
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "金茶",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/prime/2",
+   "war": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_kirenaga",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "白",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/prime/3",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_teihatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "白",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/old/0",
+   "war": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_shiro",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_futeki",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_shiro",
+    "hairColor": "白銀",
+    "eyeColor": "焦茶",
+    "skin": "日焼け",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "白",
+    "back": []
+   }
+  },
+  {
+   "id": "generic/monk/old/1",
+   "war": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "set_sohei",
+    "head": null,
+    "hand": "naginata",
+    "back": []
+   },
+   "peace": {
+    "eye": "p_eye_tsuri",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_kuchi",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦",
+    "set": "w_hoe",
+    "headAdd": [],
+    "hand": null,
+    "kimono": "墨",
+    "hakama": "金茶",
+    "back": []
+   }
+  },
+  {
+   "id": "soldier/ashigaru/yari",
+   "war": {
+    "set": "set_ashigaru",
+    "hand": "yari",
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_tanpatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦"
+   }
+  },
+  {
+   "id": "soldier/ashigaru/teppo",
+   "war": {
+    "set": "set_ashigaru",
+    "hand": "teppo",
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_tanpatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦"
+   }
+  },
+  {
+   "id": "soldier/ashigaru/yumi",
+   "war": {
+    "set": "set_ashigaru",
+    "hand": "yumi",
+    "eye": "p_eye_maru",
+    "mouth": "p_mouth_ichi",
+    "hair": "p_hair_tanpatsu",
+    "hige": null,
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "小麦"
+   }
+  },
+  {
+   "id": "soldier/sohei",
+   "war": {
+    "set": "set_sohei",
+    "eye": "p_eye_surudo",
+    "mouth": "p_mouth_kui",
+    "hair": "p_hair_teihatsu",
+    "hige": "p_hige_busho",
+    "hairColor": "黒",
+    "eyeColor": "焦茶",
+    "skin": "日焼け"
+   }
+  }
+ ]
+}
