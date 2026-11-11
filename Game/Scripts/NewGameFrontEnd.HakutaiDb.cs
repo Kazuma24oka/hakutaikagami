@@ -38,14 +38,14 @@ public partial class NewGameFrontEnd
         string Castle(string? id)=>id==null?"—":HakutaiDb.Castle(id)?.Name??id;
         dbHouses.ItemSelected+=i=>{
             var h=houses[(int)i];var roster=HakutaiDbStart.Roster(h.Id);var head=h.Head==null?null:HakutaiDb.Person(h.Head);
-            var districts=HakutaiDb.Districts.Where(d=>d.Owner==h.Id).ToArray();
+            var districts=HakutaiDb.Districts.Where(d=>d.Shares.Any(x=>x.House==h.Id)).ToArray();
             var lines=new System.Collections.Generic.List<string>{
-                $"{h.Name}{(h.Religious?"（寺社・所属先）":"")}",
+                $"{h.Name}{(h.Religious?"（寺社・所属先）":"")}{(h.Note!=null?"\n備考："+h.Note:"")}",
                 head==null?"当主：記録なし":$"当主：{head.StartName}",
                 "本拠："+Castle(h.Home),
                 "主家："+(h.Overlord==null?"なし":HakutaiDb.House(h.Overlord)!.Name+"（最上位 "+HakutaiDb.TopHouse(h.Id).Name+"）")};
             foreach(var g in h.Relations.GroupBy(r=>r.Kind))lines.Add($"{g.Key}：{string.Join("・",g.Select(r=>HakutaiDb.House(r.House)!.Name))}");
-            lines.Add($"\n支配する郡 {districts.Length}（{string.Join("・",districts.Take(12).Select(d=>d.Name))}{(districts.Length>12?" ほか":"")}）");
+            lines.Add($"\n支配する郡 {districts.Length}（{string.Join("・",districts.Take(12).Select(d=>d.Owner==null?d.Name+"の一部":d.Name))}{(districts.Length>12?" ほか":"")}）");
             lines.Add($"石高（推定）{roster.Kokudaka/10000d:0.#}万石　金銭収入 {(roster.MoneyKan>0?roster.MoneyKan+"貫文":"未収録")}");
             lines.Add($"兵の上限 {roster.SoldierCap:#,0}人");
             lines.Add(h.Religious?$"登場武将 {roster.Officers.Length}人（寺社・朝廷は人数の決まりの対象外）":$"登場武将 {roster.Officers.Length}人（DBの人物 {roster.DbMembers}人{(roster.LeftOut>0?$"のうち {roster.LeftOut}人は登場しない":"")}{(roster.Mobs>0?$"・オリジナル {roster.Mobs}人":"")}）");
@@ -53,7 +53,9 @@ public partial class NewGameFrontEnd
             foreach(var o in roster.Officers)lines.Add($"{HakutaiDbStart.Mark(o.Historicity)} {o.Name}　{Castle(o.Castle)}");
             dbDetail.Text=string.Join("\n",lines);Marks(h.Id);
         };
-        Marks(null);dbDetail.Text=$"家 {houses.Length}・人物 {HakutaiDb.PeopleCount}・城 {dbMap.Marks.Length}\n左の一覧から家を選ぶと、当主・本拠・関係・支配する郡・石高・兵の上限・武将一覧と、地図にその家の城を示します。地図の色は主家をたどった一番上の家ごと。";
+        var at=CastleRoutes.Catalog.Nodes.ToDictionary(n=>n.Id,n=>new GeoCoordinate(n.LatitudeE7,n.LongitudeE7));foreach(var n in NationalRoutes.Catalog.Nodes)at[n.Id]=new(n.LatitudeE7,n.LongitudeE7);
+        dbMap.Links=CastleRoutes.Catalog.Edges.Where(e=>at.ContainsKey(e.From)&&at.ContainsKey(e.To)).Select(e=>(at[e.From],at[e.To],e.Mode=="sea")).ToArray();
+        Marks(null);dbDetail.Text=$"家 {houses.Length}・人物 {HakutaiDb.PeopleCount}・城 {dbMap.Marks.Length}\n地図の細い線は城を拠点にした移動網（推定の連絡路・試作）。左の一覧から家を選ぶと、当主・本拠・関係・支配する郡・石高・兵の上限・武将一覧と、地図にその家の城を示します。地図の色は主家をたどった一番上の家ごと。";
         Add(page,"back","スタートへ",ShowMenu);
     }
 }

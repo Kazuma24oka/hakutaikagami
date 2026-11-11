@@ -1,0 +1,13 @@
+{
+  "status": "PASSED",
+  "scope": "hakutai-db-v4-corrections-and-castle-routes",
+  "sengokudb_commit": "5ce9d6f2",
+  "sengokudb_tests": "72件成功",
+  "core_related_passed": 91,
+  "core_classes": ["HakutaiDbTests", "CastleRoutesTests", "DotOfficerLooksTests", "HistoricalStart*", "NewGameWorld*", "ImagawaStart*", "NationalPersonnel*"],
+  "godot_ui": "PASSED（史料の画面・移動網の線）",
+  "full_core": "未実施（P13：関連検査を選んで実行。世界の状態・保存の形は変えていない）",
+  "progress_credit": "なし（実装の前に基準を固定していないため）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

@@ -10,14 +10,17 @@ namespace HakutaiKagami.Core.Contracts;
 // ゲームの中では人物が報告で知るもの。ここは開発用の史料で、人物が信じている内容ではない。
 public sealed record HakutaiDbSource(string Repository,string Commit,string[] Tags,string? SqliteBuiltAt,string? CatalogVersion);
 public sealed record HakutaiDbRelation(string House,string Kind);
-public sealed record HakutaiDbHouse(string Id,string Name,string? Head,string? Home,bool Religious,string? Overlord,HakutaiDbRelation[] Relations,string HeadBasis,long Kokudaka);
+// Note は備考（参考サイトにだけある勢力など）。名前には付けない。
+public sealed record HakutaiDbHouse(string Id,string Name,string? Head,string? Home,bool Religious,string? Overlord,HakutaiDbRelation[] Relations,string HeadBasis,string? Note,long Kokudaka);
 public sealed record HakutaiDbName(string Name,int? From,string Step);
 public sealed record HakutaiDbPerson(string Id,string Name,string? Reading,string? Surname,string? Imina,string? Tsusho,string? Kanto,string? Sex,
     int? Birth,int? Death,string? Father,string StartName,string StartNameBasis,HakutaiDbName[] NameHistory,int Records,string? Existence,string Registration,string? Role,string? Province,
     string House,string HouseBasis,string? Castle,string? CastleName,string? CastleBasis,string? Superior,string? SuperiorBasis);
 public sealed record HakutaiDbCastle(string Id,string Name,string? Province,string? District,long LatitudeE7,long LongitudeE7,string PositionBasis,string? Owner,string? Holder,string? OwnerBasis);
 // 郡：1560年の支配の見積もりと石高の推定（慶長3年の国の石高を郡の面積で按分）。
-public sealed record HakutaiDbDistrict(string Id,string Province,string Name,string? Owner,string? OwnerBasis,long Kokudaka,string KokudakaBasis);
+// 諸勢力並立の郡は Owner を持たず、並び立つ家に石高を分ける（Shares。その郡に持つ城の数の割合）。
+public sealed record HakutaiDbShare(string House,long Kokudaka);
+public sealed record HakutaiDbDistrict(string Id,string Province,string Name,string? Owner,string? OwnerBasis,HakutaiDbShare[] Shares,long Kokudaka,string KokudakaBasis);
 public sealed record HakutaiDbEdition(int Schema,string Id,int WorldYear,HakutaiDbSource Source,string Policy,HakutaiDbHouse[] Houses,HakutaiDbPerson[] People,HakutaiDbCastle[] Castles,HakutaiDbDistrict[] Districts);
 
 public enum HakutaiDbKnowledge { PublicGeography, YearSituation }
@@ -72,7 +75,9 @@ public static class HakutaiDb
         Need(e.Source.Repository=="SengokuDB"&&Regex.IsMatch(e.Source.Commit,"^[0-9a-f]{40}$"),"元の戦国DBの版");
         Need(e.People.Length>0&&e.Houses.Length>0&&e.Castles.Length>0&&e.Districts.Length>0,"空の表");
         Need(e.Districts.Select(d=>d.Id).Distinct().Count()==e.Districts.Length&&e.Districts.All(d=>d.Kokudaka>=0&&(d.Owner==null||e.Houses.Any(h=>h.Id==d.Owner)&&d.OwnerBasis!=null)),"郡");
-        Need(e.Houses.All(h=>h.Kokudaka==e.Districts.Where(d=>d.Owner==h.Id).Sum(d=>d.Kokudaka)),"家の石高は支配する郡の合計");
+        Need(e.Districts.All(d=>d.Shares.All(x=>x.Kokudaka>=0&&e.Houses.Any(h=>h.Id==x.House))&&(d.Shares.Length==0||d.Shares.Sum(x=>x.Kokudaka)==d.Kokudaka)&&(d.Owner==null||d.Shares.Length==1&&d.Shares[0].House==d.Owner)),"郡の石高の分け方");
+        Need(e.Houses.All(h=>h.Kokudaka==e.Districts.SelectMany(d=>d.Shares).Where(x=>x.House==h.Id).Sum(x=>x.Kokudaka)),"家の石高は支配する郡（並立の郡の分を含む）の合計");
+        Need(e.Houses.All(h=>!h.Name.Contains("参考サイト")),"名前に出典の文字を付けない");
         var people=e.People.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);var houses=e.Houses.Select(h=>h.Id).ToHashSet(StringComparer.Ordinal);var castles=e.Castles.Select(c=>c.Id).ToHashSet(StringComparer.Ordinal);
         Need(people.Count==e.People.Length&&houses.Count==e.Houses.Length&&castles.Count==e.Castles.Length,"IDの重複");
         Need(e.People.All(p=>Regex.IsMatch(p.Id,"^P-\\d{6}$"))&&e.Castles.All(c=>Regex.IsMatch(c.Id,"^L-\\d{6}$"))&&e.Houses.All(h=>Regex.IsMatch(h.Id,"^(G-\\d{6}|SITE:.+)$")),"IDの形");

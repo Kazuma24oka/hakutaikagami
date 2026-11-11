@@ -117,7 +117,7 @@ public sealed class HakutaiDbTests
 
     [Fact]public void DistrictsCarryOwnerAndEstimatedKokudakaAndUnknownCastlesBelongToTheDistrictRuler()
     {
-        Assert.True(HakutaiDb.Districts.Count>600);Assert.True(HakutaiDb.Districts.Count(d=>d.Owner!=null)>580);
+        Assert.True(HakutaiDb.Districts.Count>600);Assert.True(HakutaiDb.Districts.Count(d=>d.Shares.Length>0)>580);
         var oda=HakutaiDb.House(HakutaiDb.GameLinks["org:oda"])!;Assert.InRange(oda.Kokudaka,400000,800000);
         Assert.All(HakutaiDb.Districts.Where(d=>d.Kokudaka>0),d=>Assert.Contains("推定",d.KokudakaBasis));
         Assert.Contains(HakutaiDb.PublicGeography(),c=>HakutaiDb.Castle(c.Id)!.OwnerBasis=="郡の支配者の城（城主不明）");
@@ -158,5 +158,24 @@ public sealed class HakutaiDbTests
         var mobs=big.Officers.Where(o=>o.Person==null).ToArray();
         Assert.True(mobs.Select(o=>o.Castle).Distinct().Count()>1);
         foreach(var m in mobs){var pv=HakutaiDb.Castle(m.Castle!)!.Province!;var local=HakutaiDbStart.SurnamesOf(pv);if(local.Count>0)Assert.Contains(local,sn=>m.Name.StartsWith(sn,StringComparison.Ordinal));}
+    }
+
+    [Fact]public void UserCorrectionsOfNovember12AreInTheExport()
+    {
+        // 名前に「参考サイト」を付けない（備考に書く）
+        Assert.DoesNotContain(HakutaiDb.Houses,h=>h.Name.Contains("参考サイト"));
+        Assert.Contains(HakutaiDb.Houses,h=>h.Note!=null&&h.Id.StartsWith("SITE:",StringComparison.Ordinal));
+        // 西美濃三人衆は稲葉・安藤・氏家に分け、それぞれ斎藤家に従う
+        Assert.DoesNotContain(HakutaiDb.Houses,h=>h.Name.Contains("三人衆"));
+        foreach(var (house,head) in new[]{("安藤（美濃）","安藤守就"),("稲葉（美濃）","稲葉一鉄"),("氏家（美濃）","氏家卜全")})
+        {
+            var h=HakutaiDb.Houses.Single(x=>x.Name==house);Assert.Equal(head,HakutaiDb.Person(h.Head!)!.Name);
+            Assert.Equal("斎藤",HakutaiDb.TopHouse(h.Id).Name);
+        }
+        // 津軽郡は並立：石川・浪岡・大浦に分ける
+        var tsugaru=HakutaiDb.District("陸奥国::津軽郡")!;Assert.Null(tsugaru.Owner);
+        var names=tsugaru.Shares.Select(x=>HakutaiDb.House(x.House)!.Name).ToArray();
+        Assert.Contains("浪岡北畠",names);Assert.Contains("津軽（大浦）",names);Assert.Contains(names,n=>n.StartsWith("石川",StringComparison.Ordinal));
+        Assert.Null(HakutaiDb.House(HakutaiDb.Houses.Single(h=>h.Name=="浪岡北畠").Id)!.Overlord);
     }
 }
