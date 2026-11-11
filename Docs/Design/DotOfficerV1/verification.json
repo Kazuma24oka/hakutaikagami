@@ -1,0 +1,20 @@
+{
+  "status": "PASSED",
+  "scope": "dot-officer-sprites-v1",
+  "looks": 60,
+  "sheets": 404,
+  "core_tests": 6,
+  "godot": {
+    "DotOfficerCheck": "PASSED",
+    "PersonalHealthCheck": "PASSED",
+    "BanditEncounterCheck": "PASSED"
+  },
+  "godot_images": [
+    "runtime-local/ui/peace.png",
+    "runtime-local/ui/war.png"
+  ],
+  "assets": "Game/Assets/DotOfficers/Local（Git外。ちびコマの規約確認まで）",
+  "progress_credit": "なし",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}
