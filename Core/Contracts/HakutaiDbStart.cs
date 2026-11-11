@@ -40,7 +40,7 @@ public static class HakutaiDbStart
     }
     static ISet<string> Provinces(HakutaiDbHouse h)
     {
-        var set=HakutaiDb.Districts.Where(d=>d.Owner==h.Id).Select(d=>d.Province.TrimEnd('国').Replace('驒','騨')).ToHashSet(StringComparer.Ordinal);
+        var set=HakutaiDb.Districts.Where(d=>d.Shares.Any(x=>x.House==h.Id)).Select(d=>d.Province.TrimEnd('国').Replace('驒','騨')).ToHashSet(StringComparer.Ordinal);
         if(h.Home is {} home&&HakutaiDb.Castle(home)?.Province is {} pv)set.Add(pv.TrimEnd('国').Replace('驒','騨'));
         return set;
     }

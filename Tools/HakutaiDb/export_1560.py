@@ -61,6 +61,7 @@ def main():
             "Overlord": fl[f["lord"]]["gid"] if f.get("lord") is not None else None,
             "Relations": sorted({(r[0], fl[r[1]]["gid"]) for r in f["relations"] if fl[r[1]]["gid"] != f["gid"]}, key=lambda t: (t[1], t[0])),
             "HeadBasis": (f.get("cite_head") or ["記録から機械で選んだ当主の候補"])[0],
+            "Note": "参考サイトの勢力（戦国DBに家として未登録）" if str(f["gid"]).startswith("SITE:") else None,
             "_head_name": f.get("head"), "_home_name": f.get("home"),
         })
     hid = {h["Id"]: h for h in houses}
@@ -81,6 +82,7 @@ def main():
     for g, a in gun_area.items():
         prov_area["陸奥" if kuni(g) in ("陸奥", "出羽") else kuni(g)] += a
     districts = []
+    hidden_early = set(year["hidden"])
     for d in year["districts"]:
         g = d[0]
         pv = kuni(g)
@@ -88,11 +90,22 @@ def main():
         total = (koku["陸奥"]["keicho3"] + koku["出羽"]["keicho3"]) if pool == "陸奥" else (koku.get(pv, {}).get("keicho3") or 0)
         kd = round(total * gun_area.get(g, 0) / prov_area[pool]) if prov_area[pool] else 0
         owner, basis = (fl[d[1]]["gid"], "参考サイトの郡の支配者") if d[1] >= 0 else (fl[d[8]]["gid"], "推定：" + (d[9] or "")) if d[8] >= 0 else (None, None)
-        districts.append({"Id": g, "Province": g.split("::")[0], "Name": g.split("::")[1], "Owner": owner, "OwnerBasis": basis,
+        parts = list(dict.fromkeys(fl[x[0]]["gid"] for x in (d[6] or []) if x[0] >= 0))
+        if d[3] == "諸勢力並立" and len(parts) >= 2:
+            # 並び立つ家に、その郡に持つ城の数（＋1）の割合で石高を分ける。郡そのものの支配者は決めない。
+            owners_here = Counter(fl[o[1]]["gid"] for o in year["owners"] if (mp["castles"][o[0]].get("gun") == g) and o[0] not in hidden_early)
+            w = [1 + owners_here[x] for x in parts]
+            shares = [kd * wi // sum(w) for wi in w]
+            shares[0] += kd - sum(shares)
+            owner, basis = None, "諸勢力並立（" + "・".join(hid[x]["Name"] for x in parts) + "）"
+            share_list = [{"House": x, "Kokudaka": v} for x, v in zip(parts, shares)]
+        else:
+            share_list = [{"House": owner, "Kokudaka": kd}] if owner else []
+        districts.append({"Id": g, "Province": g.split("::")[0], "Name": g.split("::")[1], "Owner": owner, "OwnerBasis": basis, "Shares": share_list,
                           "Kokudaka": kd, "KokudakaBasis": "慶長3年の国の石高を郡の面積で按分した推定" if kd else "石高の表にない（0）"})
     gun_owner = {d["Id"]: d["Owner"] for d in districts}
     for h in houses:
-        h["Kokudaka"] = sum(d["Kokudaka"] for d in districts if d["Owner"] == h["Id"])
+        h["Kokudaka"] = sum(x["Kokudaka"] for d in districts for x in d["Shares"] if x["House"] == h["Id"])
 
     # 城
     castles = {}
