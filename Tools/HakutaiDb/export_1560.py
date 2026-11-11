@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import sqlite3
 import subprocess
@@ -107,7 +108,23 @@ def main():
     for h in houses:
         h["Kokudaka"] = sum(x["Kokudaka"] for d in districts for x in d["Shares"] if x["House"] == h["Id"])
 
-    # 城
+    # 城：ゲームの海岸線（Core/Data/japan-terrain-mask-v1.json）の海の上にある城は、一番近い陸の点（15km まで）へ寄せる
+    #（小さな島が海岸線にない・位置が目安の城。2026-11-12 ユーザーの指示）
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from build_castle_routes import Land  # noqa: E402
+    land = Land(json.loads((Path(__file__).resolve().parents[2] / "Core" / "Data" / "japan-terrain-mask-v1.json").read_text(encoding="utf-8"))["Polygons"])
+
+    def snap(lat, lon):
+        if land.contains(round(lat * 1e7), round(lon * 1e7)):
+            return lat, lon, False
+        for r in range(1, 76):
+            step = 0.2 * r
+            for k in range(0, 360, 6):
+                a = lat + step / 111 * math.sin(math.radians(k))
+                b = lon + step / (111 * math.cos(math.radians(lat))) * math.cos(math.radians(k))
+                if land.contains(round(a * 1e7), round(b * 1e7)):
+                    return a, b, True
+        return None, None, False
     castles = {}
     gone = set(year["absent"])
     hidden = set(year["hidden"])
@@ -117,12 +134,16 @@ def main():
         xy = coords.get(c["id"])
         if not xy:
             continue
-        if xy["lon"] < 129.0 and xy["lat"] > 33.9:  # 朝鮮半島（倭城など）は百代鏡では使わない（2026-11-12 ユーザーの指示。対馬は 129.2°E より東）
-            continue
+        if (xy["lon"] < 129.0 and xy["lat"] > 33.9) or (xy["lon"] < 130.5 and xy["lat"] > 34.75):
+            continue  # 朝鮮半島（倭城など）は百代鏡では使わない（2026-11-12 ユーザーの指示。対馬は 34.7°N より南、129.2°E より東）
+        lat, lon, moved = snap(xy["lat"], xy["lon"])
+        if lat is None:
+            continue  # 近く（15km）に陸がない：位置の誤り
         castles[c["id"]] = {"Id": c["id"], "Name": c["name"], "Province": (c.get("gun") or "").split("::")[0] or None,
                             "District": (c.get("gun") or "").split("::")[1] if "::" in (c.get("gun") or "") else None,
-                            "LatitudeE7": round(xy["lat"] * 1e7), "LongitudeE7": round(xy["lon"] * 1e7),
-                            "PositionBasis": POSITION_BASIS.get(c.get("how"), c.get("how") or "不明"),
+                            "LatitudeE7": round(lat * 1e7), "LongitudeE7": round(lon * 1e7),
+                            "PositionBasis": POSITION_BASIS.get(c.get("how"), c.get("how") or "不明") + ("・地図の陸に寄せた" if moved else ""),
+                            "Region": "琉球" if lat < 28.9 and lon < 131.0 else None,
                             "Owner": None, "Holder": None, "OwnerBasis": None, "_i": i, "_gun": c.get("gun")}
     by_index = {c["_i"]: c for c in castles.values()}
     for o in year["owners"]:

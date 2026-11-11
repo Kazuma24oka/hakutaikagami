@@ -124,7 +124,7 @@
     "Docs/Development/CURRENT_STAGE.md": "aeac72cbcaad8f1c52e6c7487629133694cdb90bdbb75c5badc85d880465ce0d",
     "Core/Contracts/HouseSuccession.cs": "7e2ee13dcd64453a71faf96b6ebb9c07cc4c8b0149ae2e64dfa8f7413cc2d54a",
     "Core/Contracts/FactionStances.cs": "445828eebda8cf2de3d7981a17bba7e4a12841a8b6f35ef5c330ebd3c3f9562a",
-    "Core/Contracts/NewGameWorld.cs": "afd3447ddde8c1c792c1e92fa9e6482af4e16f259da68f60a9309a5769298f47",
+    "Core/Contracts/NewGameWorld.cs": "1d885818a3be414187030779d83c965b62b8e438be923b592b3ab00fa7b792d7",
     "Core/Contracts/HouseSalary.cs": "e3a1b374faca2b4782211e05aeea3b392550d4b5c6b61e12015f7d8a114f2cff",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "c61a953094ff805dbe80c532ee77a9b6eb12c4b4e2fe12d32796e5664303b0ba",

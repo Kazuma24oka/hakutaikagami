@@ -28,5 +28,5 @@ public static class WorldNetwork
     public static BranchNode? NodeOfSite(string site)=>NationalRoutes.Nodes.FirstOrDefault(n=>RegionalCampaign.Site(n.Id).Value==site)??(site.StartsWith("site:c-",StringComparison.Ordinal)?castleNodeIndex.Value.GetValueOrDefault(site["site:".Length..]):null);
 
     // 開始配置に城の拠点を足す（持ち主なし。DBの家の配置は全国開始の版で入れる）。
-    public static SetupScenario WithCastles(SetupScenario s)=>s with{Castles=[..s.Castles,..CastleRoutes.Catalog.Nodes.Select(n=>new SetupCastle("site:"+n.Id,null))]};
+    public static SetupScenario WithCastles(SetupScenario s)=>s with{Castles=[..s.Castles.Where(c=>!CastleRoutes.Outside.Contains(c.Id["site:".Length..])),..CastleRoutes.Catalog.Nodes.Select(n=>new SetupCastle("site:"+n.Id,null))]};
 }

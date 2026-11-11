@@ -10,12 +10,13 @@ public sealed class CastleRoutesTests
     [Fact]public void EveryDbCastleIsANodeConnectedToTheNationalNetwork()
     {
         var c=CastleRoutes.Catalog;CastleRoutes.Validate(c);
-        Assert.Equal(HakutaiDb.PublicGeography().Count,c.Nodes.Length);
-        Assert.Equal(c.Nodes.Length+NationalRoutes.Nodes.Length,CastleRoutes.Nodes.Length);
+        Assert.Equal(HakutaiDb.PublicGeography().Count(p=>HakutaiDb.Castle(p.Id)!.Region==null),c.Nodes.Length);
+        Assert.Equal(c.Nodes.Length+NationalRoutes.Nodes.Length-CastleRoutes.Outside.Count,CastleRoutes.Nodes.Length);
+        Assert.Equal(["amami","naha","shuri"],CastleRoutes.Outside.Order());Assert.DoesNotContain(CastleRoutes.Edges,e=>CastleRoutes.Outside.Contains(e.From)||CastleRoutes.Outside.Contains(e.To));
         Assert.Equal(CastleRoutes.Sites.Length,CastleRoutes.Sites.Select(s=>s.Id).Distinct().Count());
         // 登場する武将の所属の城は、すべて拠点になっている
         var nodes=c.Nodes.Select(n=>n.Castle).ToHashSet();
-        foreach(var h in HakutaiDb.Houses)foreach(var o in HakutaiDbStart.Roster(h.Id).Officers.Where(o=>o.Castle!=null))Assert.Contains(o.Castle!,nodes);
+        foreach(var h in HakutaiDb.Houses)foreach(var o in HakutaiDbStart.Roster(h.Id).Officers.Where(o=>o.Castle!=null&&HakutaiDb.Castle(o.Castle)!.Region==null))Assert.Contains(o.Castle!,nodes);
         Assert.Equal("清洲城",c.Nodes.Single(n=>n.Id==CastleRoutes.NodeOf("L-500772")).Name);
     }
 
@@ -30,6 +31,9 @@ public sealed class CastleRoutesTests
             for(int i=1;i<10;i++)Assert.True(land.Contains(new(a.LatitudeE7+(b.LatitudeE7-a.LatitudeE7)*i/10,a.LongitudeE7+(b.LongitudeE7-a.LongitudeE7)*i/10)),e.Id);
         }
         Assert.True(c.Edges.Count(e=>e.Mode=="sea")<c.Edges.Length/20);
+        // 城はすべて地図の陸の上。朝鮮半島の城はない
+        Assert.All(c.Nodes,n=>Assert.True(land.Contains(new(n.LatitudeE7,n.LongitudeE7)),n.Name));
+        Assert.DoesNotContain(HakutaiDb.PublicGeography(),p=>p.LatitudeE7>347500000&&p.LongitudeE7<1305000000||p.LatitudeE7>339000000&&p.LongitudeE7<1290000000);
     }
 
     [Fact]public void BrokenCatalogsAreRejected()

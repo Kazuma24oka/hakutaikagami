@@ -83,11 +83,15 @@ def main():
     nat = json.loads((DATA / "national-routes-v1.json").read_text(encoding="utf-8"))
     land = Land(json.loads((DATA / "japan-terrain-mask-v1.json").read_text(encoding="utf-8"))["Polygons"])
     pts = {}
+    outside = {n["Id"] for n in nat["Nodes"] if n["LatitudeE7"] < 289000000 and n["LongitudeE7"] < 1310000000}  # 琉球の拠点は城の移動網に入れない
     for n in nat["Nodes"]:
-        pts[n["Id"]] = (n["LatitudeE7"] / 1e7, n["LongitudeE7"] / 1e7)
+        if n["Id"] not in outside:
+            pts[n["Id"]] = (n["LatitudeE7"] / 1e7, n["LongitudeE7"] / 1e7)
     national = set(pts)
     castles = []
     for c in db["Castles"]:
+        if c.get("Region") == "琉球":
+            continue
         nid = "c-" + c["Id"].replace("-", "").lower()
         pts[nid] = (c["LatitudeE7"] / 1e7, c["LongitudeE7"] / 1e7)
         castles.append((nid, c))
@@ -123,6 +127,8 @@ def main():
     # 2. 全国の移動網につながるまで、まとまりを足す
     nat_adj = {}
     for e in nat["Edges"]:
+        if e["From"] in outside or e["To"] in outside:
+            continue
         nat_adj.setdefault(e["From"], set()).add(e["To"])
         nat_adj.setdefault(e["To"], set()).add(e["From"])
 
