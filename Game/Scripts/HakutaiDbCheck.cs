@@ -22,7 +22,7 @@ public partial class HakutaiDbCheck:Node
   map.Nation();await Frame();Check(map.InView(G(26.21,127.68))&&map.InView(G(45.0,147.8))&&map.InView(G(24.45,122.95)),"引くと琉球・北方領土・与那国まで入る");await Capture(output,"map-full.png");
   map.CenterOn(G(35.2,136.84),0.05);await Frame();Check(map.KilometersPerPixel<0.35,"寄ると城の名前が出る倍率まで寄れる");await Capture(output,"map-castles.png");
   map.ZoomAt(new Godot.Vector2(10,10),1e-6);await Frame();Check(map.InView(G(26.21,127.68)),"一番引いた所で止まる");
-  map.Home();await Frame();Check(map.BorderCounts/100000>100&&map.BorderCounts%100000>1000,"国と郡の境界の線");await Capture(output,"map-provinces.png");
+  map.Home();await Frame();Check(map.BorderCounts/100000>100&&map.BorderCounts%100000>1000,"国と郡の境界の線");using(var bd=System.Text.Json.JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/Geography/borders-v1.json")))Check(bd.RootElement.GetProperty("Dangling").GetInt32()==0,"国境・郡境に、海岸にもほかの線にも届かない端がない");await Capture(output,"map-provinces.png");
   map.CenterOn(G(35.15,136.85),0.5);await Frame();await Capture(output,"map-districts.png");
   map.CenterOn(G(33.0,130.5),0.4);await Frame();await Capture(output,"map-tamana.png");map.CenterOn(G(37.3,140.35),0.4);await Frame();await Capture(output,"map-iwase.png");map.CenterOn(G(35.25,136.1),0.25);await Frame();await Capture(output,"map-biwa.png");map.CenterOn(G(35.6,140.1),0.6);await Frame();await Capture(output,"map-kanto.png");
   map.SetLayers(false,true,false);await Frame();await Capture(output,"map-provinces-only.png");map.SetLayers(true,true,true);
