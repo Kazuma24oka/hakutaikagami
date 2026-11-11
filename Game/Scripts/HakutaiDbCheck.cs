@@ -22,6 +22,9 @@ public partial class HakutaiDbCheck:Node
   map.Nation();await Frame();Check(map.InView(G(26.21,127.68))&&map.InView(G(45.0,147.8))&&map.InView(G(24.45,122.95)),"引くと琉球・北方領土・与那国まで入る");await Capture(output,"map-full.png");
   map.CenterOn(G(35.2,136.84),0.05);await Frame();Check(map.KilometersPerPixel<0.35,"寄ると城の名前が出る倍率まで寄れる");await Capture(output,"map-castles.png");
   map.ZoomAt(new Godot.Vector2(10,10),1e-6);await Frame();Check(map.InView(G(26.21,127.68)),"一番引いた所で止まる");
+  map.Home();await Frame();Check(map.BorderCounts/100000>100&&map.BorderCounts%100000>1000,"国と郡の境界の線");await Capture(output,"map-provinces.png");
+  map.CenterOn(G(35.15,136.85),0.5);await Frame();await Capture(output,"map-districts.png");
+  map.SetLayers(false,true,false);await Frame();await Capture(output,"map-provinces-only.png");map.SetLayers(true,true,true);
   map.Home();await Frame();
   entry.ReviewDbSelect("織田");await Frame();var oda=entry.ReviewDbText();
   Check(oda.Contains("当主：織田信長")&&oda.Contains("本拠：清洲城")&&oda.Contains("〇 柴田勝家　")&&oda.Contains("〇 織田信長　清洲城")&&oda.Contains("石高 ")&&oda.Contains("兵の上限")&&!oda.Contains("［"),"織田の当主・本拠・石高・兵の上限・武将一覧（〇△×だけ）");
