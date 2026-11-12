@@ -4,11 +4,11 @@
 
 ## 差し替え前の完成へ（2026-11-11 ユーザー指示・Claude が本線を引継ぎ）
 
-目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。戦国DBの取り込み（BD-20）と見た目の工程は後回しにし、それ以外を先に終わらせる（2026-11-11 ユーザー指示）。
+目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。2026-11-12 の分担に従い、Codex は全国配置・地形・郡支配・従属関係の残り、負傷/捕縛/戦闘、家の滅亡と再興を続ける。Claude の担当範囲を変更しない。
 
 2026-11-12：ユーザーから戦国DBの完成の連絡と、百代鏡DBを作ってよいとの指示。ドット絵の素体の書き出しは規約上問題ないと確認（絵を Git に入れた）。
 
-直近（2026-11-12、Codex と並行）：Claude は[操作の引き継ぎ](../Design/ControlSuccessionV1/README.md)・[全国の家の戦略](../Design/NationalStrategyV1/README.md)（出陣・同盟・和睦・破約・家督・史実の出陣14件）・位階と官職の表と奏請・画面の説明の文言の削除。Codex は負傷・捕縛・合戦・滅亡と再興、全国の世界の残り（移動網の地形・勢力の色・能力と生年）。分担と進捗表の決まりは Codex への指示（2026-11-12）のとおり（基準の番号は Codex が v111〜v149、Claude が v150 以降）。
+直近（2026-11-12、Codex と並行）：Claude は[操作の引き継ぎ](../Design/ControlSuccessionV1/README.md)・[全国の家の戦略](../Design/NationalStrategyV1/README.md)（出陣・同盟・和睦・破約・家督・史実の出陣14件）・位階と官職の表と奏請・画面の説明の文言の削除。Codex は v111 の移動網地形、v112 の郡支配色を完了。v113 の家の従属関係に続き、年次改名・郡収入・人物能力と生年、負傷・捕縛・合戦・滅亡と再興を担当する。分担と進捗表の決まりは Codex への指示（2026-11-12）のとおり（基準の番号は Codex が v111〜v149、Claude が v150 以降）。
 
 ## 全国共通の判断支援
 
@@ -78,7 +78,9 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-12 | 操作の引き継ぎ・全国の家の戦略・位階と官職の表と奏請・出世の目標・画面の説明の文言の削除（v150） | Docs/Design/ControlSuccessionV1/・NationalStrategyV1/ | （統合後に記入） |
+| 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |
+| 2026-11-12 | 全国郡の初期支配・並立・根拠を新規世界へ接続（v112、BD-20 50→55） | Docs/Design/NationalDistrictControlV1/ | PR #143 |
+| 2026-11-12 | 操作の引き継ぎ・全国の家の戦略・位階と官職の表と奏請・出世の目標・画面の説明の文言の削除（v150） | Docs/Design/ControlSuccessionV1/・NationalStrategyV1/ | main ee373079 |
 | 2026-11-12 | 全国1560年の開始の版（BD-04 25→35・BD-20 35→45。休眠の世界の手番のまとめた検査 v109 を含む） | Docs/Design/NationalStartV1/・Docs/Design/NpcBatchValidationV1/ | PR142 → main cde0bf58 |
 | 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | PR141 → main 66503de0 |
 | 2026-11-12 | 進行の重さの見直し 第1段（BD-04 20→22） | Docs/Design/AdvanceCostV1/ | PR140 → main fb8aea41 |

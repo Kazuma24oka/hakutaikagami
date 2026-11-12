@@ -23,7 +23,7 @@ public partial class NewGameFrontEnd
         var houses=HakutaiDb.Houses.OrderByDescending(HakutaiDbStart.Quota).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();
         dbHouses=new ItemList{CustomMinimumSize=new(210,0),SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(dbHouses);
         foreach(var h in houses)dbHouses.AddItem($"{h.Name}（{HakutaiDbStart.Quota(h)}人）");
-        dbMap=new NewGameMap{ShowPins=false,SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(dbMap);
+        dbMap=new NewGameMap{ShowPins=false,ShowControl=true,ControlState=NationalDistrictControl.Initial(),SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(dbMap);
         var scroll=new ScrollContainer{CustomMinimumSize=new(380,0),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled,SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(scroll);
         dbDetail=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(360,0)};scroll.AddChild(dbDetail);
         void Marks(string? selected)
@@ -35,7 +35,6 @@ public partial class NewGameFrontEnd
                     return (new GeoCoordinate((int)c.LatitudeE7,(int)c.LongitudeE7),DbColor(HakutaiDb.TopHouse(owner).Id),selected!=null&&(owner==selected||users[c.Id].Contains(selected)),c.Name);}).ToArray();
             dbMap.QueueRedraw();
         }
-        string Name(string? id)=>id==null?"—":HakutaiDb.Person(id) is {} p?p.Name:id;
         string Castle(string? id)=>id==null?"—":HakutaiDb.Castle(id)?.Name??id;
         dbHouses.ItemSelected+=i=>{
             var h=houses[(int)i];var roster=HakutaiDbStart.Roster(h.Id);var head=h.Head==null?null:HakutaiDb.Person(h.Head);
