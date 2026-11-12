@@ -10,7 +10,7 @@ public sealed partial class WorldSession
     private ContractWorld state;
     private bool deferTimePause;
     // 休眠の版の世界で、起きている人物の手番をまとめて検査している間（WorldSession.NpcRoutine.cs）。
-    private bool deferValidation;
+    private bool deferValidation,inPlace,batchBroken;
     public WorldSession(ContractWorld initial) { ContractValidation.Validate(initial); state = ContractJson.Copy(initial); }
     public EntityId PlayerControl { get { lock(gate) return state.PlayerControl; } }
     public long Revision { get { lock(gate) return state.CommitSequence; } }
@@ -40,7 +40,13 @@ public sealed partial class WorldSession
     internal static EntityId Child(string kind, EntityId task, string suffix) => new(kind+":"+task.Value.Replace(':','/')+"/"+suffix);
     private void Change(Action<ContractWorld> change, Action? beforeCommit = null)
     {
-        var next = ContractJson.Copy(state); next.CommitSequence = checked(next.CommitSequence+1);
+        // まとめた手番の間（inPlace）は写さずに直接変える。途中で例外が出たら、まとめた手番ごとやり直す（batchBroken）。
+        if(inPlace){turnView=null;try{ChangeCore(state,change,beforeCommit);}catch{batchBroken=true;throw;}return;}
+        ChangeCore(ContractJson.Copy(state),change,beforeCommit);
+    }
+    private void ChangeCore(ContractWorld next,Action<ContractWorld> change,Action? beforeCommit)
+    {
+        next.CommitSequence = checked(next.CommitSequence+1);
         change(next);BanditEncounter.Tick(next);CastleSiege.Tick(next);LandSurvey.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);CraftTrade.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);PublicWorks.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Sync(next);HouseSuccession.Tick(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);TreatyNegotiations.Update(next);TreatySupply.Update(next);TreatyDefense.Update(next);TruceConfirmations.Update(next);NewGameMilitary.UpdateRemote(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);MaterialMarkets.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);CommunityStewardship.Tick(next);CastellanReports.Tick(next);FreightOperations.Tick(next);NewGameService.Sync(next);HouseSuccession.Sync(next);HouseholdCourt.Sync(next);NewGameMilitary.Sync(next);FieldConvoy.SyncLocations(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); CastleHandover.Tick(next);CharacterDevelopment.Sync(next);CharacterRelations.Sync(next);AdultAdoption.Update(next);AdultMarriage.Update(next);HostageCustody.Update(next); InformationSchemes.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MeritRewards.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialAssets.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next);HouseholdCourt.Tick(next);BrokerWork.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);StandingAdministration.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MaterialMarkets.Tick(next);CommunityEconomy.Tick(next);RegionalTrade.Tick(next);if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next);HouseholdCourt.Sync(next);NewGameWork.Sync(next);InformationSchemes.Tick(next);NewGameWork.Sync(next);NewGameMilitary.RecordMilitaryObservation(next);WorldTimeControl.Observe(state,next);if(!deferTimePause&&WorldTimeControl.Pending(next)!=null)next.Paused=true; if(!deferValidation)ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;DriveSocialCouriers();DriveSchemeCouriers();
     }
     public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}

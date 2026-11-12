@@ -10,7 +10,7 @@ public static partial class NewGameNpcRoutine
         if(!Enabled(w))return [];
         var adults=Continuing(w)?w.Characters.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id.Value).ToHashSet(StringComparer.Ordinal):null;
         // 休眠の版のある世界では、今の区切りで起きている人物だけ（NpcDormancy）。
-        return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).Where(p=>NpcDormancy.Awake(w,p,w.ElapsedSeconds)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
+        return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).Where(NpcDormancy.AwakeAt(w,w.ElapsedSeconds)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
     }
     public static bool IsActor(ContractWorld w,EntityId actor)=>Enabled(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult:!p.Created));
     static ContractWorld LifeAtDecision(ContractWorld world,long at,long revision)

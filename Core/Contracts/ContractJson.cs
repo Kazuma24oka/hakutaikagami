@@ -83,7 +83,14 @@ public static class ContractJson
         }
         else if (node.ValueKind == JsonValueKind.Array) foreach (var child in node.EnumerateArray()) CheckKeys(child);
     }
-    public static T Copy<T>(T value) => Read<T>(Write(value));
+    // 写し：自分で書き出した直後のバイト列なので、外から来たデータ向けの検査（UTF-8 の正しさ・同じ名前の重複）と二重の解析は省く。
+    // 必須の項目と型の検査は同じ Deserialize で行う。失敗は Read と同じ例外にする（2026-11-12、v110）。
+    public static T Copy<T>(T value)
+    {
+        try{return JsonSerializer.Deserialize<T>(Write(value), Options) ?? throw new JsonException("Null document.");}
+        catch (Exception e) when (e is JsonException or ArgumentException or NotSupportedException)
+        { throw new InvalidDataException("Invalid common-contract JSON.", e); }
+    }
     public static string Hash(ReadOnlySpan<byte> value) => Convert.ToHexString(SHA256.HashData(value)).ToLowerInvariant();
     public static string CanonicalHash<T>(T value)
     {
