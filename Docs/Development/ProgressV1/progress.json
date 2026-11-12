@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "9f793130a4161cc45389852144ec9f82022df0a6e84398e32a6da52c62c0f409",
-    "Docs/Development/CURRENT_STAGE.md": "30acdd9bd32473b00ec052839f036ec97b8aba57ade15debc6699cc1749e7ef3",
+    "Docs/Development/CURRENT_STAGE.md": "76b47664235ee6ecf9750421eaf5896eafadeafd97c66cc8b35d155b48d73e8f",
     "Core/Contracts/HouseSuccession.cs": "a387c7d25f693f4db1b5479ee94aca0b12413cd204f9c1f0520119be7f7f9c50",
     "Core/Contracts/FactionStances.cs": "7e1ace7854835ec6d4cf3c79434d9cbaf242f91eb3538b3dd3599fe104dce28a",
     "Core/Contracts/NewGameWorld.cs": "e90a29bc380142781effb256484cfdbeb890ce33b4854148bd963678b11aed27",
@@ -796,7 +796,7 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "cc4b59499814b7d26f11473e3b5e2c1f994ae4e6c6099d2046677afde0607319",
-    "Docs/Development/ProgressV1/index.html": "a8e7c680bc6ae3ca4585e61885296b1a2b81c8b34f1111a248dd525e511aae93",
+    "Docs/Development/ProgressV1/index.html": "6cb86d245d35988feae7b5efd41f2b05c8365e5e18cbe68656ab41595e819910",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "a62c2dc74c232af2da621359878f7e717972e6f6eadd22fda01ca73af7bd8957",
     "Core/Contracts/NationalNameHistory.cs": "3b6267a8748ba01ec47c39882200c4e507a8bf9d96a009559dfe33f8aeb24b29",
     "Tests/NationalNameHistoryTests.cs": "d2f234ed12c47d476ace58e5e694a44449765912d9ac75cc999d8f046c1a2574",
@@ -811,8 +811,8 @@
     "Docs/Design/NationalOfficerDataV1/scope.md": "0e615bc581fd45280b5fbc28676720563291851a2ba7799c3031b05d9b17a840",
     "Docs/Design/NationalOfficerDataV1/README.md": "054cb3e3f45814eb4e89ce6e2da0e8040522dae9c316640547174e5485ca31f2",
     "Docs/Design/NationalOfficerDataV1/completion.json": "00b0a6a190bd20dd64872467666355e920374023a1dc8bd3dd95e3aa1dda4818",
-    "Docs/Design/NationalOfficerDataV1/verification.json": "b75af102ba7d300afc75792a578bc059d4427628975a6f968c42ba51e3a4f19e",
-    "Docs/Design/NationalOfficerDataV1/integration.json": "7b23ac6659d75a548bd69980474faf4988d17c583e23ce53a7294a6cb6d0b4bd",
+    "Docs/Design/NationalOfficerDataV1/verification.json": "7164b5ecaf07da1059865c1163b9d4832f0536378556a5fb2e3675c91f70a68a",
+    "Docs/Design/NationalOfficerDataV1/integration.json": "fe17f332ac963f1e8c69978e3f1cf4cb07dc745e9d752b1c07e8b019036d7e36",
     "Scripts/verify_national_person_estimates.py": "d5922e4fda66f77285e544606edb9305b6c09084174735ccb8998ba78ea2bb50",
     "Tools/HakutaiDb/build_national_person_estimates.py": "880a665775b52e50544fd513a877be1c1376f9591f42e3bddd34a82035997bf2",
     "Core/Contracts/NationalPersonEstimates.cs": "b306128dce2a13c6abe9909015a76a0311785ba8a95e781829c31ad6737890a6",
@@ -4039,7 +4039,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "v115をPR148でmainへ統合。全件4,532件成功後、旧全国v2開始定義の互換漏れを発見し補修中。新規人物データはv3へ分離し、人物方針付きv2保存も保持する。追加加点なし。",
+    "current_stage_summary": "全国人物データv115をPR148で統合。新規開始をv3へ分離し、旧全国v1/v2および人物方針付きv2保存の互換を補修。関連6件・短い検査2,837件・独立全件4,534件成功。ゲームビルド警告/エラー0。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",

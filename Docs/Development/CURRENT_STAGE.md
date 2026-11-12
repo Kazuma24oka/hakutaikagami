@@ -78,7 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-13 | 全国人物の生年・5能力（v115、旧全国v2保存の版分離補修を実行中） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044 |
+| 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044 |
 | 2026-11-13 | 全国1560年の年次名乗り（v114） | Docs/Design/NationalNameHistoryV1/ | PR147 → main b40dd017 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |
 | 2026-11-12 | 全国郡の初期支配・並立・根拠を新規世界へ接続（v112、BD-20 50→55） | Docs/Design/NationalDistrictControlV1/ | PR #143 |
