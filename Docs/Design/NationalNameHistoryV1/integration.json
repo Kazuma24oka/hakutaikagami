@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "status": "READY_FOR_PR",
+  "scope": "v114 全国1560年の年次名乗り",
+  "strategy": "gh CLI PR、squash merge、作業ブランチへmainを取り込み",
+  "full_suite": "統合前に別worktreeで未実施。",
+  "short_suite": "PASSED: 2,831/2,831",
+  "related_tests": "PASSED: 5/5",
+  "game_build": "PASSED: Debug, 0 warnings, 0 errors"
+}
