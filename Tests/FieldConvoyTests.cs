@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class FieldConvoyTests
+[Trait("Tier","Heavy")]public sealed class FieldConvoyTests
 {
     static readonly EntityId Home=new("site:castle"),Carrier=new("created:freight-carrier"),Job=new("request:camp-food");
     internal static WorldSession Start(){var seed=NpcFreightTests.Start().DiagnosticSnapshot().NewGame!;var s=new WorldSession(NewGameWorld.Create(seed.Start,seed.Registered,seed.Selected.Value,1,NewGameWorld.CompactPersonalAuthority,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:FieldConvoy.Policy));Send(s,NewMilitaryAction.Request);Advance(s,s.Seconds+2);OpenAll(s);Send(s,NewMilitaryAction.Accept);Advance(s,s.Seconds+2);OpenAll(s);Send(s,NewMilitaryAction.Pickup);return s;}

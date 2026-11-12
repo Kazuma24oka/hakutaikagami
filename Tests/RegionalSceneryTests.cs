@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public class RegionalSceneryTests
+[Trait("Tier","Heavy")]public class RegionalSceneryTests
 {
  static WorldSession New()=>new(RegionalScenery.Create());
  static RegionalRequest Line(string id,FieldPoint a,FieldPoint b)=>new(new(id),ContractFixture.Officer,ContractFixture.Officer,RegionalAction.Move,a,b);

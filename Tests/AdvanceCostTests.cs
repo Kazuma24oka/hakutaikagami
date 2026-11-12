@@ -35,3 +35,19 @@ public sealed class AdvanceCostTests
         b.ElapsedSeconds=1;Assert.Throws<InvalidOperationException>(()=>s.TurnSnapshot());
     }
 }
+
+// ID の判定を正規表現から文字ごとの判定にした（2026-11-12、v110）。同じ判定になることを多くの文字列で確かめる。
+public sealed class EntityIdRuleTests
+{
+    [Fact]
+    public void CharacterRuleMatchesTheOriginalRegex()
+    {
+        var rx=new System.Text.RegularExpressions.Regex("^[a-z][a-z0-9-]*:[A-Za-z0-9._/-]+$",System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+        bool Old(string? v)=>v is {Length:>=3 and <=128}&&rx.IsMatch(v);
+        var fixedCases=new[]{"a:b","ab:","a:\n","abc:d\n","abc:d\n\n","A:b","a-b:c","a_b:c","-a:b","a::b","a:b:c","a:b c","a:\u00e9","site:c-l300191","person:hdb/P-000002","x:"+new string('a',126),"x:"+new string('a',127),"a:b\r\n","1a:b","a:.","\na:b"};
+        foreach(var c in fixedCases)Assert.True(Old(c)==EntityId.IsValid(c),c);
+        var rnd=new Random(20261112);const string alphabet="abcxyzABZ019:-_./ \n\u00e9";
+        for(int n=0;n<200000;n++){int len=rnd.Next(0,12);var chars=new char[len];for(int i=0;i<len;i++)chars[i]=alphabet[rnd.Next(alphabet.Length)];var v=new string(chars);Assert.True(Old(v)==EntityId.IsValid(v),v);}
+        Assert.False(EntityId.IsValid(null));
+    }
+}

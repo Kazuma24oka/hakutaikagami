@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class CustodySuccessionTests
+[Trait("Tier","Heavy")]public sealed class CustodySuccessionTests
 {
     static readonly EntityId Player=new("person:shingen"),Ward=new("created:ward"),Heir=HistoricalHouseholdCatalog.Edition.People.Single().Id,Owner=new("org:takeda"),Receiver=new("org:oda");
     static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.Code+":"+r.VisibleReason);

@@ -233,6 +233,20 @@ public static partial class RegionalCampaign
         if(FieldConvoy.PositionAt(w,actor,at,w.CommitSequence+1) is {} convoyPoint)return FieldWorld.ToWorld(convoyPoint);
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor,w):"castle");return JourneyPointAt(w,j,at);
     }
+    // 多くの人物の道の上の位置をまとめて求める（RoadActorPointAt と同じ結果）。拠点の位置・最後の旅・最初の拠点を一度だけ引く（2026-11-12、v110）。
+    internal static Func<EntityId,RoutePoint> RoadActorPointsAt(ContractWorld w,long at)
+    {
+        var nodes=new Dictionary<string,RoutePoint?>(StringComparer.Ordinal);foreach(var n in BranchRoutes.GraphNodes(w))nodes[n.Id]=nodes.ContainsKey(n.Id)?null:n.Position;
+        var last=new Dictionary<EntityId,BranchJourney>();foreach(var j in w.Branches!.Journeys)if(j.Legs[0].StartAt<=at)last[j.Actor]=j;
+        bool travel=TravelWorld.Enabled(w);var sites=travel&&NewGameWorld.Enabled(w)?FamilyBirth.People(w).GroupBy(p=>p.Id,StringComparer.Ordinal).Where(g=>g.Count()==1).ToDictionary(g=>g.Key,g=>g.Single().Site,StringComparer.Ordinal):null;
+        return actor=>{
+            if(HostageCustody.ReturnPoint(w,actor,at,w.CommitSequence+1) is {} custodyPoint)return custodyPoint;
+            if(FieldConvoy.PositionAt(w,actor,at,w.CommitSequence+1) is {} convoyPoint)return FieldWorld.ToWorld(convoyPoint);
+            if(last.TryGetValue(actor,out var j))return JourneyPointAt(w,j,at);
+            string node=!travel?"castle":sites!=null&&sites.TryGetValue(actor.Value,out var site)?NewGameWorld.Node(site):TravelWorld.InitialNode(actor,w);
+            return nodes.TryGetValue(node,out var p)&&p!=null?p:Node(w,node); // 見つからない・重なるときは今までの引き方（同じ例外）
+        };
+    }
     internal static RoutePoint JourneyPointAt(ContractWorld w,BranchJourney j,long at)
     {
         var task=w.Tasks.Single(t=>t.Id==j.Task);var time=Math.Min(at,task.FinishedAt??at);var leg=j.Legs.FirstOrDefault(l=>time<l.EndAt)??j.Legs[^1];var edge=BranchRoutes.GraphEdges(w).Single(e=>e.Id==leg.Edge);

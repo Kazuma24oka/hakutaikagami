@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class DelegationReturnRetryTests
+[Trait("Tier","Heavy")]public sealed class DelegationReturnRetryTests
 {
     static WorldSession New(long until=long.MaxValue)=>new(DelegationMission.Create(until:until));
     static void At(WorldSession s,long at){while(s.Seconds<at){s.SetPaused(false);var before=s.Seconds;s.AdvanceTo(at);Assert.True(s.Seconds>before);}}

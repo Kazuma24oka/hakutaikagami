@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
 
-public sealed class CoalitionPactTests
+[Trait("Tier","Heavy")]public sealed class CoalitionPactTests
 {
     [Fact]
     public void InvitesDifferentHomesWithoutRevealingAnswersAndRestoresDispatch()

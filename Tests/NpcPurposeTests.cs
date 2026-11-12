@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class NpcPurposeTests
+[Trait("Tier","Heavy")]public sealed class NpcPurposeTests
 {
     static readonly EntityId Friend=new("created:routine-0");
     internal static ContractWorld Start(bool companions=false,string? policy=NewGameNpcRoutine.PurposePolicy)

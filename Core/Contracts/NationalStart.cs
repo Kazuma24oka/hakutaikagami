@@ -1,0 +1,70 @@
+namespace HakutaiKagami.Core.Contracts;
+
+// 全国1560年の開始の版（2026-11-12、v110。設計 Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md 第4節4）。
+// 百代鏡DBの家・登場武将（HakutaiDbStart の名簿：DBの人物と地域の名のモブ）・城の持ち主を、城の移動網の城に置く。
+// 世界は城の移動網・調べる権利の軽い作り方・続けての日課・遠方の休眠で作る（Create）。琉球の家と城は置かない。
+public static class NationalStart
+{
+    public const string Edition="hakutai-1560-national-v1";
+    public static string PersonId(string officer)=>"person:hdb/"+Safe(officer.Replace(':','/'));
+    public static string FactionId(string house)=>"org:hdb/"+Safe(house);
+    // DBの ID に英数字以外（日本語の家の名など）があれば、その ID の SHA-256 の先頭12桁にする（同じ ID からは同じ値）。
+    static string Safe(string id)=>id.All(c=>char.IsAsciiLetterOrDigit(c)||c is '/' or '-' or '_')?id:"x"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id))[..12];
+    static readonly Lazy<HashSet<string>> placed=new(()=>CastleRoutes.Catalog.Nodes.Select(n=>n.Castle).ToHashSet(StringComparer.Ordinal));
+    static string? Site(string? castle)=>castle!=null&&placed.Value.Contains(castle)?"site:"+CastleRoutes.NodeOf(castle):null;
+
+    static readonly Lazy<SetupScenario> scenario=new(Build);
+    public static SetupScenario Scenario()=>ContractJson.Copy(scenario.Value);
+    static SetupScenario Build()
+    {
+        var people=new List<SetupPerson>();var seen=new HashSet<string>(StringComparer.Ordinal);var factions=new List<SetupFaction>();var homes=new Dictionary<string,string>(StringComparer.Ordinal);
+        foreach(var h in HakutaiDb.Houses.OrderBy(h=>h.Id,StringComparer.Ordinal))
+        {
+            var home=Site(h.Home)??HakutaiDb.CastlesOf(h.Id).Select(c=>Site(c.Id)).FirstOrDefault(s=>s!=null);
+            if(home==null)continue; // 城の移動網に城のない家（琉球など）は置かない
+            // 複数の家の名簿に出る人物は、先の家（ID の順）にだけ置く。
+            var roster=HakutaiDbStart.Roster(h.Id).Officers.Where(o=>!seen.Contains(PersonId(o.Id))).DistinctBy(o=>o.Id).ToArray();
+            if(roster.Length==0)continue;
+            var head=roster.FirstOrDefault(o=>o.Person!=null&&o.Person==h.Head)??roster[0];
+            string faction=FactionId(h.Id),headId=PersonId(head.Id);
+            factions.Add(new(faction,h.Name,headId,home));homes[faction]=home;
+            foreach(var o in roster){seen.Add(PersonId(o.Id));people.Add(new(PersonId(o.Id),o.Name,Site(o.Castle)??home,faction,o.Id==head.Id?null:headId,false,false));}
+        }
+        var owners=factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
+        var castles=new List<SetupCastle>();var nodes=CastleRoutes.Catalog.Nodes.ToDictionary(n=>"site:"+n.Id,StringComparer.Ordinal);var homeOf=homes.GroupBy(x=>x.Value).ToDictionary(g=>g.Key,g=>g.Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).First());
+        foreach(var s in WorldNetwork.Sites(new NewGameState(1,new(1,"1560-01-01",[],[],[]),[],new("person:none"),0,15){NetworkPolicy=WorldNetwork.CastlePolicy}))
+        {
+            string id=s.Id.Value;string? owner=null;
+            var node=nodes.GetValueOrDefault(id);
+            if(node!=null&&HakutaiDb.Castle(node.Castle)?.Owner is {} house&&owners.Contains(FactionId(house)))owner=FactionId(house);
+            var home=homeOf.GetValueOrDefault(id);
+            castles.Add(new(id,home??owner));
+        }
+        // 本拠を同じ城に持つ家が複数あれば、後の家は自分の別の城を本拠にする（なければ置かない）。
+        var result=new SetupScenario(1,"1560-01-01",people.ToArray(),castles.ToArray(),factions.ToArray());
+        var badFactions=result.Factions.Where(f=>result.Castles.Single(c=>c.Id==f.Home).Faction!=f.Id).Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
+        if(badFactions.Count>0)
+        {
+            var fixedFactions=new List<SetupFaction>();var dropped=new HashSet<string>(StringComparer.Ordinal);
+            foreach(var f in result.Factions)
+            {
+                if(!badFactions.Contains(f.Id)){fixedFactions.Add(f);continue;}
+                var own=result.Castles.FirstOrDefault(c=>c.Faction==f.Id);
+                if(own!=null)fixedFactions.Add(f with{Home=own.Id});else dropped.Add(f.Id);
+            }
+            result=result with{Factions=fixedFactions.ToArray(),People=result.People.Where(p=>p.Faction==null||!dropped.Contains(p.Faction)).ToArray()};
+        }
+        NewGameSetup.Validate(result);
+        return result;
+    }
+
+    // 全国1560年の世界を作る（城の移動網・調べる権利の軽い作り方・続けての日課・遠方の休眠）。
+    public static ContractWorld Create(string selected,ulong seed=20261112,string? timePolicy=null)
+    {
+        var raw=Scenario();var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:Edition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy);
+    }
+    // 新規ゲームの画面から始める（保存の開始定義も同じ版で作る）。
+    public static NewCampaignProfile New(NewCampaignStore store,SetupScenario setup,string selected,ulong seed,string? timePolicy,bool previewOnly)
+        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,Edition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy);
+}

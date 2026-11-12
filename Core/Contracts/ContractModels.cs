@@ -14,8 +14,18 @@ public readonly record struct EntityId
         if (!IsValid(value)) throw new ArgumentException("Invalid namespaced entity ID.", nameof(value));
         Value = value;
     }
-    public static bool IsValid(string? value) => value is { Length: >= 3 and <= 128 } &&
-        Regex.IsMatch(value, "^[a-z][a-z0-9-]*:[A-Za-z0-9._/-]+$", RegexOptions.CultureInvariant);
+    // 正規表現 ^[a-z][a-z0-9-]*:[A-Za-z0-9._/-]+$ と同じ判定を文字ごとに行う（ID を作るたびの正規表現が重かったため、2026-11-12）。
+    // .NET の $ は末尾の改行1つの前にも一致するので、末尾の '\n' 1つは今までどおり許す。
+    public static bool IsValid(string? value)
+    {
+        if (value is not { Length: >= 3 and <= 128 }) return false;
+        int end = value.Length; if (value[end-1] == '\n') end--;
+        if (end < 1 || value[0] is < 'a' or > 'z') return false;
+        int i = 1; while (i < end && (value[i] is >= 'a' and <= 'z' or >= '0' and <= '9' or '-')) i++;
+        if (i >= end || value[i] != ':') return false;
+        int start = ++i; while (i < end && (char.IsAsciiLetterOrDigit(value[i]) || value[i] is '.' or '_' or '/' or '-')) i++;
+        return i == end && end > start;
+    }
     public override string ToString() => Value ?? "";
 }
 public readonly record struct SimTime(long Seconds)

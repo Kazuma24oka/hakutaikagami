@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class FieldPresenceTests
+[Trait("Tier","Heavy")]public sealed class FieldPresenceTests
 {
     static WorldSession New()=>new(FieldPresence.Create());
     static void At(WorldSession s,long at){while(s.Seconds<at){s.SetPaused(false);long before=s.Seconds;s.AdvanceTo(at);Assert.True(s.Seconds>before);}}

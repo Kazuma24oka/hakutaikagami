@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class NpcFreightTests
+[Trait("Tier","Heavy")]public sealed class NpcFreightTests
 {
     static readonly EntityId Home=new("site:castle"),Source=new("site:kofu"),Head=new("person:nobunaga"),Carrier=new("created:freight-carrier");
     internal static WorldSession Start(bool willing=true)

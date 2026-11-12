@@ -4,7 +4,7 @@ using HakutaiKagami.Core.World;
 using Xunit;
 namespace HakutaiKagami.Tests;
 
-public class RegionalBattleTests
+[Trait("Tier","Heavy")]public class RegionalBattleTests
 {
     static WorldSession New(bool refuses = false, bool low = false, int count = 3) => new(RegionalBattle.Create(count, refuses, low));
     public static RegionalRequest Order(string id = "request:region", RegionalAction action = RegionalAction.Move, bool clerk = false) => new(new(id), ContractFixture.Officer, clerk ? ContractFixture.Clerk : ContractFixture.Officer, action, new(25000, -25000), new(65000, -25000));

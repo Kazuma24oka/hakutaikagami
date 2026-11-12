@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class RegionalDomainTests
+[Trait("Tier","Heavy")]public sealed class RegionalDomainTests
 {
     static readonly EntityId Site=new("site:castle");
     internal static WorldSession Start(string person="person:nobunaga",ulong seed=1)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],person,seed,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:RegionalDomains.Policy));

@@ -6,7 +6,7 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 
 // 遠方の人物の休眠（2026-11-12、v108）。
-public sealed class NpcDormancyTests
+[Trait("Tier","Heavy")]public sealed class NpcDormancyTests
 {
     static long Km(RoutePoint a,RoutePoint b){long dx=a.EastMm-b.EastMm,dy=a.NorthMm-b.NorthMm;return (long)Math.Sqrt((double)(dx*dx+dy*dy))/1_000_000;}
     static readonly BranchNode[] nodes=CastleRoutes.Nodes;

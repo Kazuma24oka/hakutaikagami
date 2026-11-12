@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class HouseFreightReceivingTests
+[Trait("Tier","Heavy")]public sealed class HouseFreightReceivingTests
 {
     static readonly EntityId Home=new("site:kofu"),Source=new("site:castle"),Head=new("person:shingen"),Agent=HistoricalHouseholdCatalog.Edition.People.Single().Id;
     static WorldSession Start()=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],Head.Value,1,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseFreightReceiving.Policy));

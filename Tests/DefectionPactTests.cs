@@ -3,7 +3,7 @@ using Xunit;
 
 namespace HakutaiKagami.Tests;
 
-public class DefectionPactTests
+[Trait("Tier","Heavy")]public class DefectionPactTests
 {
     static readonly EntityId Actor=new("created:test"),Partner=new("created:partner");
     static ContractWorld Start(ulong seed,bool foreign=false,bool castellan=false,RegisteredOfficer? other=null,string actorSite="site:castle")

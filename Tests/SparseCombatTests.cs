@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class SparseCombatTests
+[Trait("Tier","Heavy")]public sealed class SparseCombatTests
 {
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     static void Open(WorldSession s){foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);}

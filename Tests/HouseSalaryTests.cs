@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class HouseSalaryTests
+[Trait("Tier","Heavy")]public sealed class HouseSalaryTests
 {
     static readonly EntityId Worker=HistoricalHouseholdCatalog.Edition.People.Single().Id;
     internal static WorldSession Start(bool employee=false)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],employee?Worker.Value:"person:shingen",42,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:HouseSalary.Policy));

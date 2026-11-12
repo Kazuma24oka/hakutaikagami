@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class EngagementMissionTests
+[Trait("Tier","Heavy")]public sealed class EngagementMissionTests
 {
     static void At(WorldSession s,long at){while(s.Seconds<at){s.SetPaused(false);long before=s.Seconds;s.AdvanceTo(at);Assert.True(s.Seconds>before);}}
     static WorldSession New(long until=long.MaxValue){var s=new WorldSession(EngagementMission.Create(until:until));At(s,2);s.Open(s.PlayerControl,RegionalWork.Inbox(s).Single(c=>c.CanOpen).Message,s.Revision);At(s,9);Assert.Equal(ResultCode.Accepted,s.SetRegionalActive(true,s.Revision).Code);return s;}

@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class PersonalLifeTests
+[Trait("Tier","Heavy")]public sealed class PersonalLifeTests
 {
     static readonly EntityId Kofu=new("site:kofu"),Worker=HistoricalHouseholdCatalog.Edition.People.Single().Id;
     internal static WorldSession Start(bool employee=false,string? policy=null)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],employee?Worker.Value:"person:shingen",42,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,voyageRules:VoyageExpense.Standard,economyPolicy:policy??PersonalLife.Policy));

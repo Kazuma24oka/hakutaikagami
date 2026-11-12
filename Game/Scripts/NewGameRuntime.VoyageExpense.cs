@@ -8,7 +8,7 @@ public partial class NewGameRuntime
     void BuildVoyageTravel()
     {
         var col=buttons["depart"].GetParent();voyageHint=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};col.AddChild(voyageHint);
-        Add(col,"depart-walk","陸路だけで出発（船を使わない）",()=>{try{if(TryArmyDeparture())return;RequestDeparture(TravelWorld.Move(Snapshot(),"request:walk-ui/"+Session.Revision,NationalRoutes.Nodes[destination.Selected].Id,true));}catch(System.IO.InvalidDataException){message.Text="操作できません：この行先への陸路はありません。陸続きの行先を選んでください。";}});
+        Add(col,"depart-walk","陸路だけで出発（船を使わない）",()=>{try{if(TryArmyDeparture())return;RequestDeparture(TravelWorld.Move(Snapshot(),"request:walk-ui/"+Session.Revision,destinationNodes[destination.Selected].Id,true));}catch(System.IO.InvalidDataException){message.Text="操作できません：この行先への陸路はありません。陸続きの行先を選んでください。";}});
         Add(col,"voyage-cancel","出航を取りやめ、港に留まる",()=>{Submit(Session.ChangeTravel(TravelControl.Request(Snapshot(),"request:cancel-boarding-ui/"+Session.Revision,null),Session.Revision));});
         foreach(var id in new[]{"depart-walk","voyage-cancel"})buttons[id].CustomMinimumSize=new(0,42);
     }

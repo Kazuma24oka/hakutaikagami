@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class LandSurveyTests
+[Trait("Tier","Heavy")]public sealed class LandSurveyTests
 {
  static readonly EntityId Site=new("site:castle"),Owner=new("org:oda");
  internal static WorldSession Start()=>HouseholdCourtTests.Start();

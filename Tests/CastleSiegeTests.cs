@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class CastleSiegeTests
+[Trait("Tier","Heavy")]public sealed class CastleSiegeTests
 {
  internal static readonly EntityId Home=new("site:kyoto"),Site=new("site:akutagawa"),Owner=new("created:siege-house"),Defender=new("created:keep-house");
  internal static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
