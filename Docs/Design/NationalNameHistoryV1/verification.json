@@ -34,11 +34,14 @@
     "evidence": "新規台帳のない旧全国プロフィールを検査し、名乗り項目を追加せず同じJSONバイト列へ復元。"
   },
   "full_suite": {
-    "status": "PENDING",
-    "passed": 0,
+    "status": "PASSED",
+    "passed": 4528,
     "failed": 0,
     "skipped": 0,
-    "command": "dotnet test Tests -c Release"
+    "command": "dotnet test Tests -c Release",
+    "commit": "4ccdd32e6093ff592cc57b1194a99d15aa74e87b",
+    "worktree": "C:/Workspace/Projects/Games/hakutaikagami-core-v114-final-full-check",
+    "elapsed": "55m15s"
   },
   "computer_use": "未使用"
 }

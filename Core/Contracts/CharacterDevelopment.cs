@@ -1,7 +1,7 @@
 using System.Text;
 namespace HakutaiKagami.Core.Contracts;
 
-public enum DevelopmentAbility { Leadership, Valor, Intelligence, Politics, Negotiation }
+public enum DevelopmentAbility { Leadership, Valor, Intelligence, Politics, Negotiation, Charm }
 public enum DevelopmentSkill { Agriculture, Commerce, Construction, Logistics, Tactics, IntelligenceGathering, Etiquette }
 public sealed record DevelopmentAward(EntityId Task,EntityId Actor,DevelopmentSkill Skill,long At,long Seconds,int Efficiency,long Experience);
 public sealed record DevelopmentState(int Schema,string Policy,DevelopmentAward[] Awards);
@@ -12,6 +12,7 @@ public static class CharacterDevelopment
 {
     public const string Policy="five-base-seven-skills-completed-time-evidence-v1";
     public const int PracticeSeconds=1800;
+    static readonly DevelopmentAbility[] BaseAbilities=[DevelopmentAbility.Leadership,DevelopmentAbility.Valor,DevelopmentAbility.Intelligence,DevelopmentAbility.Politics,DevelopmentAbility.Charm];
     public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.DevelopmentPolicy==Policy;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Development=new(1,Policy,[]);}
@@ -21,11 +22,11 @@ public static class CharacterDevelopment
         DevelopmentSkill.Logistics=>DevelopmentAbility.Leadership,
         DevelopmentSkill.Tactics=>DevelopmentAbility.Valor,
         _=>DevelopmentAbility.Intelligence};
-    public static string Name(DevelopmentAbility a)=>a switch{DevelopmentAbility.Leadership=>"統率",DevelopmentAbility.Valor=>"武勇",DevelopmentAbility.Intelligence=>"知略",DevelopmentAbility.Politics=>"政務",_=>"交渉"};
+    public static string Name(DevelopmentAbility a)=>a switch{DevelopmentAbility.Leadership=>"統率",DevelopmentAbility.Valor=>"武勇",DevelopmentAbility.Intelligence=>"知略",DevelopmentAbility.Politics=>"政務",DevelopmentAbility.Negotiation=>"交渉",DevelopmentAbility.Charm=>"魅力",_=>throw new ArgumentOutOfRangeException(nameof(a))};
     public static string Name(DevelopmentSkill s)=>s switch{DevelopmentSkill.Agriculture=>"農政",DevelopmentSkill.Commerce=>"商取引",DevelopmentSkill.Construction=>"普請",DevelopmentSkill.Logistics=>"兵站",DevelopmentSkill.Tactics=>"戦術",DevelopmentSkill.IntelligenceGathering=>"情報",_=>"礼法"};
     static int Base(ContractWorld w,EntityId actor,DevelopmentAbility ability){
         var p=FamilyBirth.People(w).Single(x=>x.Id==actor.Value);var a=p.Attributes;
-        if(a!=null)return ability switch{DevelopmentAbility.Leadership=>a.Leadership,DevelopmentAbility.Valor=>a.Valor,DevelopmentAbility.Intelligence=>a.Intelligence,DevelopmentAbility.Politics=>a.Politics,_=>a.Negotiation??50};
+        if(a!=null)return ability switch{DevelopmentAbility.Leadership=>a.Leadership,DevelopmentAbility.Valor=>a.Valor,DevelopmentAbility.Intelligence=>a.Intelligence,DevelopmentAbility.Politics=>a.Politics,DevelopmentAbility.Negotiation=>a.Negotiation??50,DevelopmentAbility.Charm=>a.Charm??50,_=>throw new ArgumentOutOfRangeException(nameof(ability))};
         // Stable provisional balance values, explicitly not historical assessments.
         string hash=ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/"+w.NewGame!.Seed+"/"+actor.Value+"/"+ability));
         return 35+(int)(Convert.ToUInt32(hash[..8],16)%41);
@@ -84,14 +85,14 @@ public static class CharacterDevelopment
         if(!Enabled(w)||!w.Characters.Any(c=>c.Id==observer)||!w.Characters.Any(c=>c.Id==person))return null;
         bool own=observer==person;var rows=w.Development!.Awards;
         if(own){
-            var abilities=Enum.GetValues<DevelopmentAbility>().Select(a=>new DevelopmentValue(Name(a),Value(w,rows,person,a),rows.Where(x=>x.Actor==person&&Ability(x.Skill)==a).Sum(x=>x.Experience),FamilyBirth.People(w).Single(p=>p.Id==person.Value).Attributes==null?"試作の固定初期値＋実行記録（史実評価ではありません）":"登録能力＋実行記録",w.ElapsedSeconds,"本人の正確値")).ToArray();
+            var abilities=BaseAbilities.Select(a=>new DevelopmentValue(Name(a),Value(w,rows,person,a),rows.Where(x=>x.Actor==person&&Ability(x.Skill)==a).Sum(x=>x.Experience),FamilyBirth.People(w).Single(p=>p.Id==person.Value).Attributes==null?"試作の固定初期値＋実行記録（史実評価ではありません）":"登録能力＋実行記録",w.ElapsedSeconds,"本人の正確値")).ToArray();
             var skills=Enum.GetValues<DevelopmentSkill>().Select(s=>new DevelopmentValue(Name(s),Skill(rows,person,s),Xp(rows,person,s),"完了した修行・点検の実時間",w.ElapsedSeconds,"本人の正確値")).ToArray();
             return new(person,true,abilities,skills,"無料修行は30分。完了時のみ経験を確定し、1日最大8時間分。未完了分は加算しません。経験7200で技能1、対応経験360000で基礎能力1（上限100）。勲功・役職とは別です。健康・負傷・加齢の補正は未導入です。");
         }
         // Only received factual reports enter this view. Never read the subject's private profile or XP.
         var facts=w.Outbox.Where(o=>o.Sender==person&&o.Recipient==observer&&o.Kind=="contract-report"&&o.Body=="任務完了"&&w.Messaging.Knowledge.Any(k=>k.CharacterId==observer.Value&&k.MessageId==o.Id.Value)).OrderByDescending(o=>o.At).ToArray();
         var seen=facts.FirstOrDefault(o=>w.Tasks.Any(t=>t.Id==o.Task&&t.Action==ActionKind.Inspect));
-        var unknown=Enum.GetValues<DevelopmentAbility>().Select(a=>new DevelopmentValue(Name(a),null,0,"未確認",null,"不明")).ToArray();
+        var unknown=BaseAbilities.Select(a=>new DevelopmentValue(Name(a),null,0,"未確認",null,"不明")).ToArray();
         var estimates=Enum.GetValues<DevelopmentSkill>().Select(s=>s==DevelopmentSkill.IntelligenceGathering&&seen!=null?new DevelopmentValue(Name(s),null,0,"本人から届いた点検完了報告："+seen.Id,seen.At,w.ElapsedSeconds-seen.At>30*86400?"古い実績・熟練値は未確認":"点検完了の実績あり・熟練値は未確認"):new DevelopmentValue(Name(s),null,0,"未確認",null,"不明")).ToArray();
         return new(person,false,unknown,estimates,"所属・登用だけで能力や内心は公開されません。報告のない実行や、相手の真の数値は表示しません。");
     }
