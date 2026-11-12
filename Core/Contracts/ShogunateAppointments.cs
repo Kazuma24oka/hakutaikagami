@@ -5,9 +5,9 @@ namespace HakutaiKagami.Core.Contracts;
 public static class ShogunateAppointments
 {
     public const string Petition="shugo-petition",Reply="shugo-decision";
-    static EntityId Broker=>CentralCourtCatalog.ShogunBroker;
+    static EntityId Broker(ContractWorld w)=>CentralCourtCatalog.ShogunBrokerIn(w);
     static EntityId Addressee(ContractWorld w,long at,long revision)=>SupremeOffice.ShogunAt(w,at,revision) ?? throw new InvalidDataException("守護補任の申請先となる将軍が空位です");
-    static EntityId Kyoto=>CentralCourtCatalog.Kyoto;
+    static EntityId Kyoto(ContractWorld w)=>CentralCourtCatalog.KyotoIn(w);
     internal static bool Handles(CourtAction a)=>a is CourtAction.AskShugo or CourtAction.RecommendShugo or CourtAction.DeclineShugo or CourtAction.AppointShugo or CourtAction.RejectShugo;
     static string Letter(CourtInput i)=>HouseholdCourt.Id("shugo-letter",i.Id.Value).Value;
     static bool Ruling(CourtAction a)=>a is CourtAction.AppointShugo or CourtAction.RejectShugo;
@@ -23,7 +23,7 @@ public static class ShogunateAppointments
         bool submit=i.Action==CourtAction.RecommendShugo;
         if(!submit && !Ruling(i.Action))return;
         var recipient=submit?Addressee(w,w.ElapsedSeconds,w.CommitSequence):i.Person;
-        var m=new MessageEnvelope(Letter(i),i.Id.Value,submit?Petition:Reply,actor.Value,recipient.Value,Body(i),Kyoto.Value,w.ElapsedSeconds){DeliverySite=Kyoto.Value};
+        var m=new MessageEnvelope(Letter(i),i.Id.Value,submit?Petition:Reply,actor.Value,recipient.Value,Body(i),Kyoto(w).Value,w.ElapsedSeconds){DeliverySite=Kyoto(w).Value};
         MessageFlow.Send(w.Messaging,m,w.ElapsedSeconds);w.SealedMessages=[..w.SealedMessages,new(m.Id)];RegionalCampaign.Bind(w);
     }
     internal static void ValidateLetter(ContractWorld w,CourtEvent e)
@@ -33,11 +33,11 @@ public static class ShogunateAppointments
         var id=Letter(e.Input);var m=w.Messaging.Messages.SingleOrDefault(x=>x.Id==id);
         if(m==null || m.Kind!=(submit?Petition:Reply) || m.Body!=Body(e.Input) || m.SenderId!=e.Actor.Value ||
            m.RecipientId!=(submit?Addressee(w,e.At,e.Revision-1):e.Input.Person).Value || m.CreatedAt!=e.At || m.CorrelationId!=e.Input.Id.Value ||
-           m.DeliverySite!=Kyoto.Value || !w.SealedMessages.Any(x=>x.Value==id))throw new InvalidDataException("幕府の書状と原本が一致しません");
+           m.DeliverySite!=Kyoto(w).Value || !w.SealedMessages.Any(x=>x.Value==id))throw new InvalidDataException("幕府の書状と原本が一致しません");
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
-        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || place!=Kyoto || HouseTerritoryScale.Province(i.Site)==null ||
+        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || place!=Kyoto(w) || HouseTerritoryScale.Province(i.Site)==null ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で対象国と申請本人を確認してください");
         if((Ruling(i.Action) && SupremeOffice.ShogunAt(w,at,rev-1)!=actor) ||
@@ -45,9 +45,9 @@ public static class ShogunateAppointments
             throw new InvalidDataException("守護補任を決裁する在職中の将軍が必要です");
         var prior=HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action) && e.At<=at && e.Revision<rev).ToArray();
         if(i.Action==CourtAction.AskShugo){
-            if(i.Person!=Broker || i.Reference!=null || actor==Broker || actor==SupremeOffice.ShogunAt(w,at,rev-1) || HouseSuccession.Head(w,i.Owner,at,rev-1)!=actor ||
-               !HasLand(w,i.Owner,i.Site,at,rev-1) || !TransportWork.At(w,Broker,place,at,rev,true) ||
-               !SocialWorld.Ledger(w).Any(e=>e.Actor==actor && e.Input.Person==Broker && e.Input.Action==SocialWorldAction.Visit && e.Revision<rev) ||
+            if(i.Person!=Broker(w) || i.Reference!=null || actor==Broker(w) || actor==SupremeOffice.ShogunAt(w,at,rev-1) || HouseSuccession.Head(w,i.Owner,at,rev-1)!=actor ||
+               !HasLand(w,i.Owner,i.Site,at,rev-1) || !TransportWork.At(w,Broker(w),place,at,rev,true) ||
+               !SocialWorld.Ledger(w).Any(e=>e.Actor==actor && e.Input.Person==Broker(w) && e.Input.Action==SocialWorldAction.Visit && e.Revision<rev) ||
                prior.Any(e=>e.Actor==actor && e.Input.Action==i.Action && e.Input.Site==i.Site))
                 throw new InvalidDataException("京で藤孝と面会し、自家の支配拠点を指定してください");
             return;
@@ -56,7 +56,7 @@ public static class ShogunateAppointments
         if(source==null || source.At>=at || i.Owner!=source.Input.Owner || i.Site!=source.Input.Site ||
            prior.Any(e=>e.Input.Reference==source.Input.Id))throw new InvalidDataException("同一国の未処理の申請原本が必要です");
         if(!Ruling(i.Action)){
-            if(actor!=Broker || source.Input.Action!=CourtAction.AskShugo || i.Person!=source.Actor ||
+            if(actor!=Broker(w) || source.Input.Action!=CourtAction.AskShugo || i.Person!=source.Actor ||
                !TransportWork.At(w,i.Person,place,at,rev,true) || (actor!=w.PlayerControl &&
                (i.Action==CourtAction.RecommendShugo)!=(SocialWorld.ConsentBonus(w,actor,i.Person,at,rev)>=2)))
                 throw new InvalidDataException("取次本人の判断が必要です");
@@ -73,7 +73,7 @@ public static class ShogunateAppointments
     {
         var incumbent=SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence);
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || actor!=w.PlayerControl ||
-            (actor!=incumbent && actor!=Broker))yield break;
+            (actor!=incumbent && actor!=Broker(w)))yield break;
         bool ruling=actor==incumbent;
         var wanted=ruling?CourtAction.RecommendShugo:CourtAction.AskShugo;
         foreach(var source in HouseholdCourt.Events(w).Where(e=>e.Input.Action==wanted)){
@@ -81,7 +81,7 @@ public static class ShogunateAppointments
             var applicant=ruling?source.Input.Person:source.Actor;
             foreach(var action in ruling?new[]{CourtAction.AppointShugo,CourtAction.RejectShugo}:new[]{CourtAction.RecommendShugo,CourtAction.DeclineShugo}){
                 var answer=new CourtInput(HouseholdCourt.Id(action.ToString(),source.Input.Id.Value),action,applicant,source.Input.Owner,source.Input.Site,Reference:source.Input.Id);
-                try{Check(w,answer,actor,Kyoto,w.ElapsedSeconds,w.CommitSequence+1);}
+                try{Check(w,answer,actor,Kyoto(w),w.ElapsedSeconds,w.CommitSequence+1);}
                 catch(InvalidDataException){continue;}
                 yield return answer;
             }
@@ -94,7 +94,7 @@ public static class ShogunateAppointments
         foreach(var e in rows.Where(e=>e.Input.Action is CourtAction.AskShugo or CourtAction.RecommendShugo &&
             e.At<w.ElapsedSeconds && !rows.Any(r=>r.Input.Reference==e.Input.Id && Handles(r.Input.Action)))){
             bool ruling=e.Input.Action==CourtAction.RecommendShugo;
-            var respondent=ruling?SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence):Broker;
+            var respondent=ruling?SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence):Broker(w);
             if(respondent is not {} actor)continue;
             if(actor==w.PlayerControl || Assassination.DeadAt(w,actor,w.ElapsedSeconds,w.CommitSequence))continue;
             var applicant=ruling?e.Input.Person:e.Actor;

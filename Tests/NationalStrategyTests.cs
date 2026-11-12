@@ -49,6 +49,9 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.NotEmpty(taken);
         Assert.All(taken,c=>Assert.Equal(c.Attacker,NationalStrategy.Owner(a,c.Target,a.ElapsedSeconds,a.CommitSequence)));
         Assert.All(taken,c=>Assert.Equal(c.Defender,NationalStrategy.Owner(a,c.Target,Month(1560,5),long.MaxValue)));
+        // 包囲網：同じ強い家を相手にした同盟が三つ以上重なると記録され、加わる家は三つ以上。
+        foreach(var x in a.Strategy.Coalitions??[]){Assert.True(x.Members.Length>=3);Assert.DoesNotContain(x.Target,x.Members);}
+        o.WriteLine($"包囲網 {(a.Strategy.Coalitions??[]).Length}");
         // 京の主：山城の城の過半を押さえる家が記録される（1560年は開始時の持ち主）。
         var capital=Assert.Single(first.Strategy.Capitals!);o.WriteLine($"京の主 {capital.House.Value}");
         Assert.True(first.NewGame!.Start.Castles.Count(c=>NationalStrategy.InKyoto(c.Id)&&c.Faction==capital.House.Value)*2>first.NewGame.Start.Castles.Count(c=>NationalStrategy.InKyoto(c.Id)));
@@ -65,6 +68,29 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         ContractValidation.Validate(first);o.WriteLine($"検査 {sw.ElapsedMilliseconds}ms");
         var tampered=ContractJson.Copy(first);tampered.Strategy=tampered.Strategy! with{Campaigns=[tampered.Strategy.Campaigns[0] with{Defender=tampered.Strategy.Campaigns[0].Attacker}]};
         Assert.Throws<InvalidDataException>(()=>ContractValidation.Validate(tampered));
+    }
+    // 将軍家が城をすべて失うと翌月に空位、その翌月に京の主が将軍家の成人を擁立して山城の城を一つ渡す。
+    [Fact]
+    public void ShogunVacancyLeadsTheCapitalHolderToInstallAShogun()
+    {
+        var w=NationalStart.Create(Takeda());var shogun=NationalStart.FactionId(NationalStrategy.Shogun);
+        var castles=w.NewGame!.Start.Castles.Where(c=>c.Faction==shogun).Select(c=>new EntityId(c.Id)).ToArray();
+        Assert.NotEmpty(castles);
+        w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;NationalStrategy.Apply(w);
+        Assert.Equal(shogun,NationalStrategy.Capital(w)!.Value.Value); // 1560年の京の主は将軍家
+        var capital=new EntityId(NationalStart.FactionId("G-000199")); // 三好が将軍家の城をすべて落とした（記録を直接置く）
+        var s=w.Strategy!;var campaigns=castles.Select((c,n)=>new StrategyCampaign(new($"campaign:test/{n}"),capital,new(shogun),c,w.ElapsedSeconds,w.CommitSequence,NationalStrategy.Border)).ToArray();
+        w.ElapsedSeconds=Month(1560,6);w.CommitSequence++;
+        w.Strategy=s with{Campaigns=[..s.Campaigns,..campaigns],Outcomes=[..s.Outcomes,..campaigns.Select(c=>new StrategyOutcome(c.Id,w.ElapsedSeconds,w.CommitSequence,true))]};
+        w.CommitSequence++;NationalStrategy.Apply(w);
+        Assert.Equal("vacant",w.Strategy!.Shoguns!.Last().Kind);Assert.NotEqual(shogun,NationalStrategy.Capital(w)!.Value.Value);
+        Assert.Null(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence)); // 京の将軍職も空く
+        w.ElapsedSeconds=Month(1560,7);w.CommitSequence++;NationalStrategy.Apply(w);
+        var installed=w.Strategy!.Shoguns!.Last();
+        Assert.Equal("installed",installed.Kind);Assert.Equal(NationalStrategy.Capital(w),installed.Patron);
+        Assert.Equal(installed.Shogun,SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence));
+        Assert.True(NationalStrategy.InKyoto(installed.Site!.Value.Value));
+        Assert.Equal(shogun,NationalStrategy.Owner(w,installed.Site.Value,w.ElapsedSeconds,long.MaxValue)!.Value.Value);
     }
     // 次の月の初めの処理だけを直接当てる（全国の世界を1か月ふつうに進めると検査に30分かかるため）。
     static ContractWorld Jump(ContractWorld w)

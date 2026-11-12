@@ -38,11 +38,11 @@ public static class CentralRank
         var name=CentralTitles.Title(t)!.Name;
         return e.Input.Action==CourtAction.IssueCourtRank?$"朝廷の返書：{name}を認める。":$"朝廷の返書：今回の{name}の奏請は認められなかった。";
     }
-    static CourtEvent Record(CourtEvent source,CourtAction action,long at,long revision)
+    static CourtEvent Record(ContractWorld w,CourtEvent source,CourtAction action,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);
         var input=new CourtInput(HouseholdCourt.Id(action.ToString(),source.Input.Id.Value),action,
-            source.Input.Person,source.Input.Owner,CentralCourtCatalog.Kyoto,Reference:source.Input.Id);
-        return new(input,CentralCourtCatalog.CourtBroker,CentralCourtCatalog.Kyoto,at,revision,false);
+            source.Input.Person,source.Input.Owner,CentralCourtCatalog.KyotoIn(w),Reference:source.Input.Id);
+        return new(input,CentralCourtCatalog.CourtBrokerIn(w),CentralCourtCatalog.KyotoIn(w),at,revision,false);
     }
     static CourtAction Resolve(ContractWorld w,CourtEvent petition)
     {
@@ -82,7 +82,7 @@ public static class CentralRank
                 if(w.ElapsedSeconds<ReviewDue(w,e.At))continue;
                 action=Resolve(w,e);
             }
-            var row=Record(e,action,w.ElapsedSeconds,w.CommitSequence);
+            var row=Record(w,e,action,w.ElapsedSeconds,w.CommitSequence);
             w.Court=w.Court with{Events=[..w.Court.Events,row]};
             if(!Decision(row))continue;
             var address=row.Place.Value;
@@ -107,7 +107,7 @@ public static class CentralRank
             throw new InvalidDataException("中央制度の開始版が違います");
         foreach(var e in rows.Where(e=>Handles(e.Input.Action))){
             var source=rows.SingleOrDefault(s=>s.Input.Id==e.Input.Reference && s.Revision<e.Revision);
-            if(source==null || !seen.Add(source.Input.Id) || Record(source,e.Input.Action,e.At,e.Revision)!=e)
+            if(source==null || !seen.Add(source.Input.Id) || Record(w,source,e.Input.Action,e.At,e.Revision)!=e)
                 throw new InvalidDataException("奏請と発給原本の対応が不正です");
             if(!Decision(e)){
                 if(source.Input.Action!=CourtAction.AcceptCourtIntroduction || source.At>=e.At ||

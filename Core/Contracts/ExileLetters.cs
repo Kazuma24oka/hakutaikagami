@@ -23,14 +23,14 @@ public static class ExileLetters
             yield return (letter,order.Input.Person);
         }
     }
-    static MessageEnvelope Envelope(CourtInput i,EntityId actor,long at)=>new(HouseholdCourt.Id("exile-letter",i.Id.Value).Value,i.Id.Value,Kind,
-        actor.Value,i.Person.Value,"京を離れた今も将軍の正統は我にある。追放の撤回を求める。",i.Site.Value,at){DeliverySite=CentralCourtCatalog.Kyoto.Value};
+    static MessageEnvelope Envelope(ContractWorld w,CourtInput i,EntityId actor,long at)=>new(HouseholdCourt.Id("exile-letter",i.Id.Value).Value,i.Id.Value,Kind,
+        actor.Value,i.Person.Value,"京を離れた今も将軍の正統は我にある。追放の撤回を求める。",i.Site.Value,at){DeliverySite=CentralCourtCatalog.KyotoIn(w).Value};
     internal static void Send(ContractWorld w,CourtInput i,EntityId actor){
-        var letter=Envelope(i,actor,w.ElapsedSeconds);
+        var letter=Envelope(w,i,actor,w.ElapsedSeconds);
         MessageFlow.Send(w.Messaging,letter,w.ElapsedSeconds);w.SealedMessages=[..w.SealedMessages,new(letter.Id)];RegionalCampaign.Bind(w);
     }
     internal static void Validate(ContractWorld w,CourtEvent e){
-        var expected=Envelope(e.Input,e.Actor,e.At);
+        var expected=Envelope(w,e.Input,e.Actor,e.At);
         if(!w.Messaging.Messages.Contains(expected)||!w.SealedMessages.Any(x=>x.Value==expected.Id))
             throw new InvalidDataException("追放先の御内書と原本が一致しません");
     }

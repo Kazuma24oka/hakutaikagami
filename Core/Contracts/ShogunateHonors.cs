@@ -7,7 +7,7 @@ public static class ShogunateHonors
         _=>throw new ArgumentOutOfRangeException(nameof(action))};
     internal static bool Handles(CourtAction action)=>action is CourtAction.GrantCompanionHonor or CourtAction.PermitLacquerPalanquin;
     internal static void Check(ContractWorld w,CourtInput i,EntityId issuer,EntityId place,long at,long rev){using var _ccRev=ControlContext.At(rev);
-        if(place!=CentralCourtCatalog.Kyoto || i.Site!=place || i.Reference!=null || SupremeOffice.ShogunAt(w,at,rev-1)!=issuer ||
+        if(place!=CentralCourtCatalog.KyotoIn(w) || i.Site!=place || i.Reference!=null || SupremeOffice.ShogunAt(w,at,rev-1)!=issuer ||
             i.Person==issuer || HouseSuccession.Head(w,i.Owner,at,rev-1)!=i.Person ||
             !TransportWork.At(w,issuer,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||
             Assassination.DeadAt(w,i.Person,at,rev) || HouseholdCourt.Events(w).Any(e=>e.At<=at && e.Revision<rev && e.Input.Action==i.Action &&
@@ -17,7 +17,7 @@ public static class ShogunateHonors
     public static IEnumerable<CourtInput> Available(ContractWorld w,EntityId issuer){
         if(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence)!=issuer)yield break;
         foreach(var f in HouseSuccession.Factions(w))foreach(var action in new[]{CourtAction.GrantCompanionHonor,CourtAction.PermitLacquerPalanquin}){
-            var input=new CourtInput(HouseholdCourt.Id(action.ToString(),f.Id+"/"+f.Head),action,new(f.Head),new(f.Id),CentralCourtCatalog.Kyoto);
+            var input=new CourtInput(HouseholdCourt.Id(action.ToString(),f.Id+"/"+f.Head),action,new(f.Head),new(f.Id),CentralCourtCatalog.KyotoIn(w));
             try{Check(w,input,issuer,input.Site,w.ElapsedSeconds,w.CommitSequence+1);}catch(InvalidDataException){continue;}
             yield return input;
         }
