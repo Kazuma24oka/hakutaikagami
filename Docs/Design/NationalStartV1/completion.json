@@ -1,0 +1,38 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "全国1560年の開始の版：百代鏡DBの家・登場武将（DBの人物と地域の名のモブ）・城の持ち主を、城の移動網・遠方の休眠・続けての日課の世界として作れる（版のない世界と旧保存は変えない）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalStart.cs",
+        "Tests/NationalStartTests.cs"
+      ]
+    },
+    {
+      "contract": "新規ゲームの画面で全国1560年の開始を選び、DBの家の当主（織田信長など）を操作する人物に選んで始め、地図の上で移動できる",
+      "status": "PASSED",
+      "evidence": [
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Game/Scripts/NewGameRuntime.cs",
+        "Game/Scripts/NationalStartCheck.cs",
+        "Docs/Design/NationalStartV1/runtime-local/ui/result.json"
+      ]
+    },
+    {
+      "contract": "全国の人数（約4,200人）の世界で、作成・保存の大きさ・1日分の進行の時間を測り、1日分の進行を60秒以内にする",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NationalStartV1/README.md",
+        "Docs/Design/NationalStartV1/verification.json"
+      ]
+    },
+    {
+      "contract": "全国1560年の開始で、進める細かさによらず同じ結果になり、途中の保存から復旧して同じ未来になる",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/NationalStartTests.cs"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "休眠の版の世界で、1つの区切りに起きている人物の日課の手番は、1人ずつ変更しても世界全体の検査は手番の終わりに1回だけ行う",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/WorldSession.NpcRoutine.cs",
+        "Core/Contracts/WorldSession.cs"
+      ]
+    },
+    {
+      "contract": "まとめた検査に通らないときは、1人ずつ検査する今までのやり方で手番をやり直す（やり直しの場合も検査で確かめる）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/WorldSession.NpcRoutine.cs",
+        "Tests/NpcDormancyTests.cs"
+      ]
+    },
+    {
+      "contract": "同じ入力から同じ結果になる（進める細かさによらず、途中の保存から復旧して同じ未来）",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/NpcDormancyTests.cs"
+      ]
+    },
+    {
+      "contract": "休眠の版の城の移動網の世界で、人数ごとの進行の時間を測り直して記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NpcBatchValidationV1/README.md"
+      ]
+    }
+  ]
+}
