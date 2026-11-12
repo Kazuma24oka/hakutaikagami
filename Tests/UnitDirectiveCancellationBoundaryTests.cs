@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class UnitDirectiveCancellationBoundaryTests
+[Trait("Tier","Heavy")]public sealed class UnitDirectiveCancellationBoundaryTests
 {
  static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
  static NewMilitaryInput Input(WorldSession s,NewMilitaryAction action)=>new(new("request:unit-recipient/"+s.Revision+"/"+action),action);

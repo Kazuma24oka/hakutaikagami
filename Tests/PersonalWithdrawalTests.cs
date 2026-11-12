@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using Xunit;
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Tests;
-public sealed class PersonalWithdrawalTests
+[Trait("Tier","Heavy")]public sealed class PersonalWithdrawalTests
 {
     static void At(WorldSession s,long t)=>NewGameWorldTests.At(s,t);
     static void Open(WorldSession s){foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,m.Id,s.Revision).Code);}

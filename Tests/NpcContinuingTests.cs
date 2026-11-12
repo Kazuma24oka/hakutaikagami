@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class NpcContinuingTests
+[Trait("Tier","Heavy")]public sealed class NpcContinuingTests
 {
     static readonly string[] Places=["site:castle","site:kofu","site:odawara","site:fork","site:village"];
     internal static ContractWorld Start(int count=2,bool companions=false){var records=NewGameWorld.Normalize(Enumerable.Range(0,count).Select(n=>NewGameWorldTests.Officer("created:routine-"+n,site:Places[n%Places.Length])).ToArray());var raw=NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id);var request=new WorldSetupRequest(records,[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));return NewGameWorld.Create(setup,records,"person:nobunaga",20261030,NewGameWorld.CompactPersonalAuthority,HistoricalHouseholdCatalog.Id,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,developmentPolicy:CharacterDevelopment.Policy,companionPolicy:companions?PersonalCompanions.Policy:null);}

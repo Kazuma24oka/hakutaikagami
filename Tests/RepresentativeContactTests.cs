@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class RepresentativeContactTests
+[Trait("Tier","Heavy")]public sealed class RepresentativeContactTests
 {
     static readonly EntityId Home=new("site:kofu"),Owner=new("org:takeda"),Other=new("org:oda"),Old=new("person:shingen"),Opponent=new("person:nobunaga"),Heir=HistoricalHouseholdCatalog.Edition.People.Single().Id;
     static readonly Lazy<ContractWorld> Ready=new(Create);

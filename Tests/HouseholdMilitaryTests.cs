@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class HouseholdMilitaryTests
+[Trait("Tier","Heavy")]public sealed class HouseholdMilitaryTests
 {
     static WorldSession Start()=>new(MilitaryDebriefTests.New());
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);

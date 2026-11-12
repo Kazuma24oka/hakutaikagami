@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class MilitaryEconomyTests
+[Trait("Tier","Heavy")]public sealed class MilitaryEconomyTests
 {
     static readonly EntityId Site=new("site:castle");
     internal static WorldSession Start(string person="person:nobunaga",ulong seed=1,bool armies=false)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id),[],person,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:armies?NpcArmies.CompactCombatPolicy:null,economyPolicy:MilitaryEconomy.Policy));

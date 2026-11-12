@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class TreatySupplyTests
+[Trait("Tier","Heavy")]public sealed class TreatySupplyTests
 {
     static readonly EntityId Own=new("org:takeda"),Other=new("org:oda"),Player=new("person:shingen"),Supplier=new("person:nobunaga"),Home=new("site:kofu"),Source=new("site:castle");
     static WorldSession Start()=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],Player.Value,42,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,economyPolicy:HouseSuccession.Policy,trucePolicy:TruceNegotiations.Policy));

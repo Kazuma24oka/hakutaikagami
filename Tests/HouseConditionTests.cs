@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
 
-public sealed class HouseConditionTests
+[Trait("Tier","Heavy")]public sealed class HouseConditionTests
 {
     [Fact]
     public void EqualPenaltyRequiresBothPartiesToFightAfterEnactment(){

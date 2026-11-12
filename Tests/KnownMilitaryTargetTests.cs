@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class KnownMilitaryTargetTests
+[Trait("Tier","Heavy")]public sealed class KnownMilitaryTargetTests
 {
  static void At(WorldSession s,long time)=>NewGameWorldTests.At(s,time);
  static void Open(WorldSession s){foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,m.Id,s.Revision).Code);}

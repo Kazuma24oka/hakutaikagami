@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class NewGameMilitaryTests
+[Trait("Tier","Heavy")]public sealed class NewGameMilitaryTests
 {
     static WorldSession Start(string site="site:kofu",string lord="person:shingen")=>NewGameWorldTests.Session([NewGameWorldTests.Officer(site:site,role:StartTemplate.Retainer,lord:lord)]);
     static void At(WorldSession s,long t)=>NewGameWorldTests.At(s,t);

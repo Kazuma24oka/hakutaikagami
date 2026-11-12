@@ -8,7 +8,7 @@
 
 2026-11-12：ユーザーから戦国DBの完成の連絡と、百代鏡DBを作ってよいとの指示。ドット絵の素体の書き出しは規約上問題ないと確認（絵を Git に入れた）。
 
-直近：[百代鏡DB V1](../Design/HakutaiDbV1/README.md)（BD-20 8→22。戦国DBの版から1560年の家304・人物4,596・城829を書き出し、開始前の史料の画面で見られる）。2026-11-12 ユーザー決定の開始配置の決まりを [百代鏡DB V2](../Design/HakutaiDbV2/README.md) に入れた（[決定](../Decisions/2026-11-12_HAKUTAI_DB_START_RULES.md)）。V3 で全員の所属の城とモブの地域の苗字を決め、世界に置く作り直しを [設計](../Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md) した（測った重さつき）。V4 で移動網のデータ（城の拠点1,856・道2,628）を作った。[城の移動網を世界ごとの版で使う V1](../Design/CastleNetworkWorldV1/README.md) で、新規ゲームの世界が城の移動網を使えるようになった。次は設計の第4節2（調べる権利の記録の作り直し）。その後に全国の開始配置（BD-04 の全国規模の性能とあわせて）か、残りの少ない枠（BD-03 史実と自由行動・BD-07 死亡と後継・BD-53〜56 中央政治・BD-08 個人目標）から選ぶ。
+直近：[全国1560年の開始の版](../Design/NationalStartV1/README.md)（2026-11-12）。新規ゲームの画面で「全国」を選び、百代鏡DBの当主で始めて城へ移動できる（家252・武将4,014人、遠方の人物の休眠で1日分の進行が約58秒）。次は全国の移動網に川・道・山を反映（設計 [NATIONAL_PLACEMENT_DESIGN_V1.md](../Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md) 第4節5）。
 
 ## 全国共通の判断支援
 
@@ -78,7 +78,8 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | 統合後に記入 |
+| 2026-11-12 | 全国1560年の開始の版（BD-04 25→35・BD-20 35→45。休眠の世界の手番のまとめた検査 v109 を含む） | Docs/Design/NationalStartV1/・Docs/Design/NpcBatchValidationV1/ | 統合後に記入 |
+| 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | PR141 → main 66503de0 |
 | 2026-11-12 | 進行の重さの見直し 第1段（BD-04 20→22） | Docs/Design/AdvanceCostV1/ | PR140 → main fb8aea41 |
 | 2026-11-12 | 城の移動網の世界の権利の記録と重さの測定（BD-04 18→20） | Docs/Design/CastleNetworkAuthorityV1/ | PR139 → main 0e65edd9 |
 | 2026-11-12 | 地形（川・湖・山）の表示と切り替え（BD-20 32→35） | Docs/Design/MapTerrainV1/ | 202b744（PR136） |

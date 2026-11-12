@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed partial class UnitDirectiveCancelRetryTests
+[Trait("Tier","Heavy")]public sealed partial class UnitDirectiveCancelRetryTests
 {
  sealed class RetrySaveFolder:IDisposable
  {

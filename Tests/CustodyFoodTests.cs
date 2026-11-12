@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class CustodyFoodTests
+[Trait("Tier","Heavy")]public sealed class CustodyFoodTests
 {
     static EntityId Root(WorldSession s)=>s.DiagnosticSnapshot().Custody!.Entries.First().Input.Id;
     static void Good(CommandResult r)=>Assert.True(r.Code==ResultCode.Accepted,r.Code+":"+r.VisibleReason);

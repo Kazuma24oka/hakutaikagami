@@ -1,0 +1,14 @@
+{
+  "status": "PASSED",
+  "scope": "npc-batch-validation-v1",
+  "full_core_suite": "PASSED",
+  "full_core_commit": "677a0705",
+  "full_core_passed": 4504,
+  "full_core_duration": "1 h 13 m（別の作業用フォルダで裏で実行）",
+  "batch_tests": 1,
+  "measurement": "README の表",
+  "godot_ui": "対象外（画面の変更なし）",
+  "computer_use": "未使用",
+  "user_play": "未実施",
+  "integration": "全国1560年の開始の版（v110）と同じ PR で統合（遊べる版の単位、PROCESS_V2 第1節）"
+}

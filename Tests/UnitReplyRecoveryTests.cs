@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class UnitReplyRecoveryTests
+[Trait("Tier","Heavy")]public sealed class UnitReplyRecoveryTests
 {
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     static NewMilitaryInput Input(WorldSession s,NewMilitaryAction a)=>new(new("request:unit-reply/"+s.Revision+"/"+a),a);

@@ -24,6 +24,7 @@ public static class HistoricalStartCatalog
     }
     public static SetupScenario Scenario(string edition)
     {
+        if(edition==NationalStart.Edition)return NationalStart.Scenario();
         if(edition==ImagawaEdition)return ImagawaPersonnel.Read().StartingPlacement(CentralCourtCatalog.RegentScenario(),new("person:imagawa-yoshimoto"));
         if(edition==CentralCourtCatalog.RegentEdition)return CentralCourtCatalog.RegentScenario();
         if(edition==CentralCourtCatalog.TempleEdition)return CentralCourtCatalog.TempleScenario();

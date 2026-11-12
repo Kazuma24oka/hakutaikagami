@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class NewGameWorkTests
+[Trait("Tier","Heavy")]public sealed class NewGameWorkTests
 {
     static ContractWorld New(bool on=true,string selected="person:shingen")=>NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],selected,20261022,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,null,LocalInspectionFindings.Policy,on?NewGameWork.Policy:null);
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);

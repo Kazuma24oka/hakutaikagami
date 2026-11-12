@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class RoadConvoyTests
+[Trait("Tier","Heavy")]public sealed class RoadConvoyTests
 {
     static readonly EntityId Home=new("site:castle"),Carrier=new("created:road-carrier-0"),Job=new("request:road-supply-test");
     internal static WorldSession Start(int carriers=1,bool willing=true){var basis=NewGameWorld.Scenario(HistoricalHouseholdCatalog.Id);var officers=NewGameWorld.Normalize(Enumerable.Range(0,carriers).Select(n=>NewGameWorldTests.Officer("created:road-carrier-"+n,StartTemplate.Retainer,lord:"person:nobunaga")).ToArray());var req=new WorldSetupRequest(officers,[]);var preview=NewGameSetup.Preview(basis,req);Assert.True(preview.IsEligible(),string.Join(',',preview.Errors));var scenario=NewGameSetup.Confirm(basis,req,preview);var w=NewGameWorld.Create(scenario,officers,"person:nobunaga",1,NewGameWorld.CompactPersonalAuthority,historicalCatalog:HistoricalHouseholdCatalog.Id,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,voyageRules:VoyageExpense.Standard,economyPolicy:RoadConvoy.Policy);if(!willing)w.Characters=w.Characters.Select(c=>c.Id==Carrier?c with{WillObey=false}:c).ToArray();var s=new WorldSession(w);Send(s,NewMilitaryAction.Request);Advance(s,2);Open(s);Send(s,NewMilitaryAction.Accept);Advance(s,4);Open(s);Send(s,NewMilitaryAction.Pickup);return s;}

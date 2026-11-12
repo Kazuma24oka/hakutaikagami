@@ -1,0 +1,17 @@
+{
+  "status": "PASSED",
+  "scope": "national-start-1560-v1",
+  "full_core_suite": "PASSED",
+  "full_core_commit": "689ca327",
+  "full_core_passed": 4508,
+  "full_core_duration": "47 m 45 s（別の作業用フォルダで裏で実行。v109 の後は 1 h 13 m）",
+  "short_tier": "2,817件・4 m 52 s（Tier!=Heavy）",
+  "national_tests": 3,
+  "related_passed": 2839,
+  "godot_ui": "PASSED",
+  "godot_ui_scope": "スタート→新規ゲーム→全国→織田信長→始める→小田井城へ出発→10分進めて旅の途中（Game/Scenes/NationalStartCheck.tscn、内部の入力と自前の描画）",
+  "day_seconds": 58,
+  "measurement": "全国1560年・織田信長・起きている216人：最初の1分24.4秒・1時間まで1.3秒・1日まで32.5秒（合計約58秒）",
+  "computer_use": "未使用",
+  "user_play": "未実施（この版の報告で依頼）"
+}

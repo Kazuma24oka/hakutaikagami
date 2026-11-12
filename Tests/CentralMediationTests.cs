@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
 
-public sealed class CentralMediationTests
+[Trait("Tier","Heavy")]public sealed class CentralMediationTests
 {
     [Fact]
     public void ShogunAndHisAttendantAreSeparatePeopleWithNoAutomaticKyotoTerritory()

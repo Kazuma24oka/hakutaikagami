@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class UnitInquiryTests
+[Trait("Tier","Heavy")]public sealed class UnitInquiryTests
 {
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     static NewMilitaryInput Input(WorldSession s,NewMilitaryAction a)=>new(new("request:unit-inquiry/"+s.Revision+"/"+a),a);

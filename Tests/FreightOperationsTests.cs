@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class FreightOperationsTests
+[Trait("Tier","Heavy")]public sealed class FreightOperationsTests
 {
     static readonly EntityId Home=new("site:castle"),Source=new("site:kofu"),Carrier=new("created:freight-carrier"),Job=new("request:letters-freight");
     internal static WorldSession Start(){var seed=NpcFreightTests.Start().DiagnosticSnapshot().NewGame!;return new(NewGameWorld.Create(seed.Start,seed.Registered,seed.Selected.Value,1,historicalCatalog:seed.HistoricalCatalog,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:FreightOperations.Policy));}

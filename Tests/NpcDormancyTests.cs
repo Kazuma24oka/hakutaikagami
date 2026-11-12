@@ -6,7 +6,7 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 
 // 遠方の人物の休眠（2026-11-12、v108）。
-public sealed class NpcDormancyTests
+[Trait("Tier","Heavy")]public sealed class NpcDormancyTests
 {
     static long Km(RoutePoint a,RoutePoint b){long dx=a.EastMm-b.EastMm,dy=a.NorthMm-b.NorthMm;return (long)Math.Sqrt((double)(dx*dx+dy*dy))/1_000_000;}
     static readonly BranchNode[] nodes=CastleRoutes.Nodes;
@@ -21,7 +21,7 @@ public sealed class NpcDormancyTests
         return (near,far,goal);
     }
     static RegisteredOfficer Officer(string id,string node)=>new(id,null,"鏡山 宗久",1520,new(60,50,70,40),StartTemplate.Ronin,"site:"+node,null,null,AppearanceCatalog.Default(1));
-    static ContractWorld World(string? dormancy)
+    internal static ContractWorld World(string? dormancy)
     {
         var p=Places();var raw=WorldNetwork.WithCastles(NewGameWorld.Scenario());
         var records=NewGameWorld.Normalize([Officer("created:near",p.Near),Officer("created:far",p.Far)]);
@@ -73,4 +73,18 @@ public sealed class NpcDormancyTests
         Assert.Equal(D(big),D(small));
         Assert.Contains(big.DiagnosticSnapshot().NpcWork!.Decisions,x=>x.Actor==new EntityId("created:far"));
     }
+}
+
+// 休眠の世界の手番のまとめた検査（2026-11-12、v109）。
+public sealed class NpcBatchValidationTests
+{
+    static string Run(bool fail)
+    {
+        WorldSession.FailBatchForTest=fail;WorldSession.BatchRetries=0;
+        try{var s=new WorldSession(NpcDormancyTests.World(NpcDormancy.Policy));NewGameWorldTests.At(s,2*3600);
+            if(fail)Assert.True(WorldSession.BatchRetries>0);else Assert.Equal(0,WorldSession.BatchRetries);
+            var w=s.DiagnosticSnapshot();ContractValidation.Validate(w);Assert.NotEmpty(w.NpcWork!.Decisions);return Encoding.UTF8.GetString(ContractJson.Write(w));}
+        finally{WorldSession.FailBatchForTest=false;}
+    }
+    [Fact]public void BatchedTurnsAndOneByOneRetryReachTheSameWorld()=>Assert.Equal(Run(false),Run(true));
 }

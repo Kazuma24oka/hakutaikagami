@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class CustodyReturnTests
+[Trait("Tier","Heavy")]public sealed class CustodyReturnTests
 {
     static readonly EntityId Ward=new("created:ward");
     static EntityId Root(WorldSession s)=>s.DiagnosticSnapshot().Custody!.Entries.First().Input.Id;

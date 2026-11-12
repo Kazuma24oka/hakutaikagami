@@ -21,9 +21,15 @@ public static class NpcDormancy
     public static bool Awake(ContractWorld w,EntityId actor,long at)
     {
         if(!Enabled(w))return true;
-        long c=Checkpoint(at);var p=RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,c);var q=RegionalCampaign.RoadActorPointAt(w,actor,c);
-        long dx=p.EastMm-q.EastMm,dy=p.NorthMm-q.NorthMm;
-        return dx*dx+dy*dy<=RadiusMm*RadiusMm;
+        long c=Checkpoint(at);return Near(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,c),RegionalCampaign.RoadActorPointAt(w,actor,c));
+    }
+    static bool Near(RoutePoint p,RoutePoint q){long dx=p.EastMm-q.EastMm,dy=p.NorthMm-q.NorthMm;return dx*dx+dy*dy<=RadiusMm*RadiusMm;}
+    // 多くの人物をまとめて調べる（操作する人物の位置は1回だけ求める。結果は Awake と同じ）。
+    public static Func<EntityId,bool> AwakeAt(ContractWorld w,long at)
+    {
+        if(!Enabled(w))return _=>true;
+        long c=Checkpoint(at);var point=RegionalCampaign.RoadActorPointsAt(w,c);var p=point(w.PlayerControl);
+        return actor=>Near(p,point(actor));
     }
     // 次の区切りの時刻（起きる人が変わりうる時刻）。この時刻に必ず一度止まり、起きた人に手番を渡す。
     public static long? NextBoundary(ContractWorld w,long target)

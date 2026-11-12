@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class RoutRegroupTests
+[Trait("Tier","Heavy")]public sealed class RoutRegroupTests
 {
     static void At(WorldSession s,long t)=>NewGameWorldTests.At(s,t);
     static void Open(WorldSession s){foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())Assert.Equal(ResultCode.Accepted,s.Open(s.PlayerControl,m.Id,s.Revision).Code);}

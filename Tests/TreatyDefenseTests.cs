@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class TreatyDefenseTests
+[Trait("Tier","Heavy")]public sealed class TreatyDefenseTests
 {
     static readonly EntityId Own=new("org:defense-recipient"),Other=new("org:oda"),Player=new("created:defense-head"),Supplier=new("person:nobunaga"),Home=new("site:village"),Source=new("site:castle");
     // A real, supported new-game registered daimyo near Kiyosu, not relocated historical heads or forged stock.

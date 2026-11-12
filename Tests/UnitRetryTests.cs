@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class UnitRetryTests
+[Trait("Tier","Heavy")]public sealed class UnitRetryTests
 {
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     static NewMilitaryInput Input(WorldSession s,NewMilitaryAction a)=>new(new("request:unit-retry/"+s.Revision+"/"+a),a);

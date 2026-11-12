@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class UnitCommandHoldingTests
+[Trait("Tier","Heavy")]public sealed class UnitCommandHoldingTests
 {
     static void At(WorldSession s,long at)=>NewGameWorldTests.At(s,at);
     static NewMilitaryInput Input(WorldSession s,NewMilitaryAction a)=>new(new("request:unit-held/"+s.Revision+"/"+a),a);

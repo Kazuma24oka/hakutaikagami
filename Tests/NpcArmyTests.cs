@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class NpcArmyTests
+[Trait("Tier","Heavy")]public sealed class NpcArmyTests
 {
     static readonly EntityId Oda=new("org:oda"),Nobunaga=new("person:nobunaga"),MusterId=new("decision:npc-army/oda"),Site=new("site:castle");
     static ContractWorld Initial(bool policy=true)

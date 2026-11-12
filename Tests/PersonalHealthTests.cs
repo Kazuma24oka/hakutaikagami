@@ -2,7 +2,7 @@ using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
 
-public sealed class PersonalHealthTests
+[Trait("Tier","Heavy")]public sealed class PersonalHealthTests
 {
     static readonly EntityId Friend=new("created:routine-0");
     internal static ContractWorld Start(ulong? seed=null,int? health=PersonalHealth.Edition)

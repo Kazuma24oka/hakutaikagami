@@ -8,7 +8,7 @@ public partial class NewGameFrontEnd : Control
 {
     VBoxContainer page=null!;Label heading=null!,notice=null!;Control canvas=null!;ConfirmationDialog switching=null!;
     readonly Dictionary<string,Button> buttons=new();OfficerLibrary registry=new(1,[],[]);OfficerLibraryTrial? manager;NewGameRuntime? game;
-    NewCampaignStore campaigns=null!;RegisteredOfficer[] chosen=[];WorldSetupPreview? preview;SetupScenario? confirmed;
+    NewCampaignStore campaigns=null!;RegisteredOfficer[] chosen=[];WorldSetupPreview? preview;SetupScenario? confirmed;bool national;OptionButton? scenarioChoice;
     readonly Dictionary<string,DaimyoPlacement> claims=new();ItemList registeredRows=null!,territory=null!,personRows=null!;OptionButton selectionMode=null!,groupChoice=null!,daimyoChoice=null!,sortChoice=null!;CheckBox incorporate=null!;LineEdit search=null!;Label previewText=null!,siteText=null!,personText=null!;NewGameMap? map;
     string? filterSite,selected;string? registryReadError;SetupPerson[] visiblePeople=[];NewCampaignListing[] savedRows=[];ItemList savedList=null!;
     Action? pendingStart;bool refreshingClaims;OptionButton jumpChoice=null!,placementPerson=null!,placementSite=null!;
@@ -68,7 +68,11 @@ public partial class NewGameFrontEnd : Control
     {
         Clear("武将作成・管理","元の登録とシナリオ別の複製を、開始とは独立して管理します。");manager=new OfficerLibraryTrial{Enhanced=true,StorageOverride=LibraryRoot,Closed=()=>{ReadRegistry();ShowMenu();},SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(manager);
     }
-    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","開始する時代とシナリオを選びます。");page.AddChild(new Label{Text="開始年：1560年\nシナリオ：人物・拠点の開始配置試作\n固定Seed：20261022"});page.AddChild(new Label{Text="初回の製品方針は1560年開始です。追加年代は収録後に追加します。\n史料付きの人物名・所属と、検証用の領土・役職設定は区別しています。",AutowrapMode=TextServer.AutowrapMode.WordSmart});AddJudgmentConditions();Add(page,"next","登録武将の選択へ",ChooseRegistered);Add(page,"back","スタートへ",ShowMenu);}
+    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","開始する時代とシナリオを選びます。");page.AddChild(new Label{Text="開始年：1560年\nシナリオ：人物・拠点の開始配置試作\n固定Seed：20261022"});page.AddChild(new Label{Text="初回の製品方針は1560年開始です。追加年代は収録後に追加します。\n史料付きの人物名・所属と、検証用の領土・役職設定は区別しています。",AutowrapMode=TextServer.AutowrapMode.WordSmart});AddJudgmentConditions();
+        // 全国1560年（百代鏡DBの家と武将、城の移動網）。登録武将と配置の調整は使わず、操作する武将を選ぶ画面へ進む。
+        national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");page.AddChild(scenarioChoice);
+        Add(page,"next","登録武将の選択へ",()=>{if(scenarioChoice.Selected==1)BeginNational();else ChooseRegistered();});Add(page,"back","スタートへ",ShowMenu);}
+    void BeginNational(){national=true;chosen=[];claims.Clear();var raw=NationalStart.Scenario();var request=new WorldSetupRequest([],[]);preview=NewGameSetup.Preview(raw,request);confirmed=NewGameSetup.Confirm(raw,request,preview);ChoosePerson();}
     void ChooseRegistered()
     {
         ReadRegistry();confirmed=null;preview=null;Clear("② 登録武将を選ぶ","個別に複数人を選ぶか、一つのグループを選びます。登場させず実在武将だけでも始められます。");
@@ -115,7 +119,7 @@ public partial class NewGameFrontEnd : Control
         var filters=new HBoxContainer();page.AddChild(filters);Add(filters,"nation","全国へ",()=>map!.Nation());Add(filters,"all-people","全武将の一覧",()=>{filterSite=null;RefreshPeople();});search=new(){PlaceholderText="武将名で検索",SizeFlagsHorizontal=SizeFlags.ExpandFill};filters.AddChild(search);search.TextChanged+=_=>RefreshPeople();sortChoice=new();foreach(var s in new[]{"名前順","統率順","武勇順","知略順","政務順","交渉順"})sortChoice.AddItem(s);filters.AddChild(sortChoice);sortChoice.ItemSelected+=_=>RefreshPeople();jumpChoice=new(){CustomMinimumSize=new(150,0)};foreach(var s in NationalRoutes.Sites)jumpChoice.AddItem(s.Name);filters.AddChild(jumpChoice);jumpChoice.ItemSelected+=i=>{string site=NationalRoutes.Sites[(int)i].Id.Value;map!.Focus(site);map.Pick(site);};
         var split=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(split);map=new NewGameMap{Setup=confirmed,SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};split.AddChild(map);var side=new VBoxContainer{CustomMinimumSize=new(360,0)};split.AddChild(side);siteText=new(){Text="全武将"};side.AddChild(siteText);personRows=new(){SizeFlagsVertical=SizeFlags.ExpandFill};side.AddChild(personRows);personRows.ItemSelected+=i=>SelectPerson(visiblePeople[(int)i]);personText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};side.AddChild(personText);
         map.SitePicked=site=>{filterSite=site;siteText.Text=NewGameWorld.SiteName(site)+"にいる武将";map.Focus(site);RefreshPeople();};
-        Add(side,"locate","選んだ武将を地図で見る",()=>{if(selected!=null)map.Focus(confirmed.People.Single(p=>p.Id==selected).Site);});Add(page,"begin","この武将で始める",RequestBegin);Add(page,"back","配置をやり直す",Placements);RefreshPeople();
+        Add(side,"locate","選んだ武将を地図で見る",()=>{if(selected!=null)map.Focus(confirmed.People.Single(p=>p.Id==selected).Site);});Add(page,"begin","この武将で始める",RequestBegin);if(national)Add(page,"back","開始条件へ",Conditions);else Add(page,"back","配置をやり直す",Placements);RefreshPeople();
     }
     void RefreshPeople()
     {
@@ -131,7 +135,7 @@ public partial class NewGameFrontEnd : Control
             personText.Text+="\n織田家との対立あり。開始時は未開戦。敵対を表明するかは当主が決めます。";
     }
     NewCampaignProfile CreateSelectedCampaign(string person)=>PrepareSelectedCampaign(confirmed??throw new InvalidDataException("開始世界を確定してください"),person,previewOnly:false);
-    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge);
+    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge);
     void RequestBegin(){if(confirmed==null||selected==null)throw new InvalidDataException("世界と操作人物を選んでください");string person=selected;Action start=()=>{var p=CreateSelectedCampaign(person);OpenGame(p,false);};if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}
     void OpenGame(NewCampaignProfile profile,bool load)
     {

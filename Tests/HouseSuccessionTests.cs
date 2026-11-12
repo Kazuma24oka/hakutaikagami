@@ -1,7 +1,7 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
-public sealed class HouseSuccessionTests
+[Trait("Tier","Heavy")]public sealed class HouseSuccessionTests
 {
     static readonly EntityId Home=new("site:kofu"),Owner=new("org:takeda"),Old=new("person:shingen"),Heir=HistoricalHouseholdCatalog.Edition.People.Single().Id;
     static WorldSession Start(bool heir=false,string? policy=null)=>new(NewGameWorld.Create(NewGameWorld.Scenario(HistoricalStartCatalog.Current),[],heir?Heir.Value:Old.Value,42,historicalCatalog:HistoricalStartCatalog.Current,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,worldArmyPolicy:NpcArmies.CompactCombatPolicy,economyPolicy:policy??HouseSuccession.Policy));
