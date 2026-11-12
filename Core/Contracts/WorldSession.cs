@@ -175,6 +175,18 @@ public sealed partial class WorldSession
             return new(ResultCode.Accepted,taskId,state.CommitSequence,accept?"受諾しました":"辞退しました");
         }
     }
+    // 亡くなった（または隠居する）操作する人物から、候補の一人へ操作を移す（ControlSuccession）。
+    public CommandResult ContinueAs(EntityId heir,long revision)
+    {
+        lock(gate)
+        {
+            var id=new EntityId("request:control-handover");
+            if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"状態が変わりました");
+            if(!(ControlSuccession.Awaiting(state)?ControlSuccession.Candidates(state):ControlSuccession.RetireCandidates(state)).Contains(heir))return new(ResultCode.NotAvailable,id,state.CommitSequence,"その人物には引き継げません");
+            Change(s=>ControlSuccession.Apply(s,heir));
+            return new(ResultCode.Accepted,id,state.CommitSequence,"引き継ぎました");
+        }
+    }
     public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null,bool stopAtNotice=false)
     {
         lock(gate)
@@ -183,6 +195,7 @@ public sealed partial class WorldSession
             int processed=0;int initialNotices=state.TimeControl?.Notices.Length??0;
             while(state.ElapsedSeconds<target)
             {
+                if(ControlSuccession.Awaiting(state))return new(state.ElapsedSeconds,processed,"PlayerDead");
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
                 int cost=1+TreatyNegotiations.BoundaryCost(state)+TruceNegotiations.BoundaryCost(state)+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
@@ -208,6 +221,7 @@ public sealed partial class WorldSession
                 ConsiderObservedWar();GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 }finally{deferTimePause=false;if(WorldTimeControl.Pending(state)!=null&&!state.Paused)Change(s=>s.Paused=true);}
                 processed+=cost;
+                if(ControlSuccession.Awaiting(state)){if(!state.Paused)Change(s=>s.Paused=true);return new(state.ElapsedSeconds,processed,"PlayerDead");}
                 if(stopAtNotice&&(state.TimeControl?.Notices.Length??0)>initialNotices)return new(state.ElapsedSeconds,processed,"Notice");
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");

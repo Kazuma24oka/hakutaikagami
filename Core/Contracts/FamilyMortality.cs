@@ -13,7 +13,7 @@ public static class FamilyMortality
     static (int Born,int Died)? HistoricalLife(string id)=>id switch
     {
         "person:yoshishige"=>(1530,1587),
-        _=>null
+        _=>NationalStart.Life(id)
     };
 
     // 登録武将には史実の没年がない。固定シードと年齢から年ごとの発生と日を決める。
@@ -45,10 +45,10 @@ public static class FamilyMortality
     {
         if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data)return null;
         int first=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year,last=WorldCalendar.At(w.EpochDate,target).Year;
-        long? earliest=null;
+        long? earliest=null;var life=w.Characters.ToDictionary(c=>c.Id.Value,c=>c.Life,StringComparer.Ordinal);
         foreach(var person in FamilyBirth.People(w).Where(p=>(p.BirthYear??HistoricalLife(p.Id)?.Born)<=last-50))
         {
-            if(w.Characters.Single(c=>c.Id.Value==person.Id).Life==LifeState.Dead)continue;
+            if(life[person.Id]==LifeState.Dead)continue;
             for(int year=first;year<=last;year++)
                 if(DateInYear(data,person,year) is {} at && w.ElapsedSeconds<at && at<=target)
                 {earliest=Math.Min(earliest??at,at);break;}
@@ -60,7 +60,7 @@ public static class FamilyMortality
     {
         if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data || w.ElapsedSeconds%86400!=43200)return;
         int year=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year;
-        foreach(var person in FamilyBirth.People(w).Where(p=>DateInYear(data,p,year)==w.ElapsedSeconds))
+        foreach(var person in FamilyBirth.People(w).Where(p=>DateInYear(data,p,year)==w.ElapsedSeconds).ToArray())
         {
             EntityId id=new(person.Id);
             if(w.Characters.Single(c=>c.Id==id).Life==LifeState.Dead)continue;

@@ -21,7 +21,7 @@ public static partial class NewGameService
     static string RequestId(EntityId id)=>"message:service/request/"+Hash(id.Value);
     static string NoticeId(EntityId id,CareerEventKind kind,string related)=>"message:service/notice/"+Hash(id.Value+"/"+kind+"/"+related);
     static ServiceState State(ContractWorld w)=>w.Service??new(1,Contract,[],[],[],[]);
-    static SetupPerson Player(ContractWorld w)=>w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);
+    static SetupPerson Player(ContractWorld w)=>FamilyBirth.People(w).Single(p=>p.Id==w.PlayerControl.Value);
     static bool FreeOfOffice(ContractWorld w,long? at=null,long? revision=null){long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;if(!HouseSuccession.Enabled(w))return !w.Offices.Any(o=>o.Subject==w.PlayerControl)&&!w.LandRights.Any(l=>l.Subject==w.PlayerControl);var offices=w.Offices;if(w.Succession?.Entries.Any(e=>e.Input.Action==HouseSuccessionAction.Resolve&&e.Outcome=="confirmed")==true){var past=w.ForkMilitaryLedger();if(w.Succession is {} succession)past.Succession=succession with{Entries=succession.Entries.Where(e=>e.At<t||e.At==t&&e.Revision<=r).ToArray()};offices=HouseSuccession.Offices(past,NewGameWorld.InitialRelations(w.NewGame!).Offices);}return !offices.Any(o=>o.Subject==w.PlayerControl&&o.From<=t&&t<o.Until)&&!w.LandRights.Any(l=>l.Subject==w.PlayerControl&&l.From<=t&&t<l.Until);}
     static ServiceCase? Initial(ContractWorld w)
     {

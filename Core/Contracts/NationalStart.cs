@@ -13,6 +13,12 @@ public static class NationalStart
     static readonly Lazy<HashSet<string>> placed=new(()=>CastleRoutes.Catalog.Nodes.Select(n=>n.Castle).ToHashSet(StringComparer.Ordinal));
     static string? Site(string? castle)=>castle!=null&&placed.Value.Contains(castle)?"site:"+CastleRoutes.NodeOf(castle):null;
 
+    // 世界の人物 ID から百代鏡DBの人物（DBの人物に対応する登場武将だけ。モブはなし）。
+    static readonly Lazy<Dictionary<string,HakutaiDbPerson>> dbPeople=new(()=>HakutaiDb.Houses.SelectMany(h=>HakutaiDbStart.Roster(h.Id).Officers).Where(o=>o.Person!=null&&HakutaiDb.Person(o.Person) is not null)
+        .GroupBy(o=>PersonId(o.Id),StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>HakutaiDb.Person(g.First().Person!)!,StringComparer.Ordinal));
+    public static HakutaiDbPerson? DbPerson(string person)=>person.StartsWith("person:hdb/",StringComparison.Ordinal)?dbPeople.Value.GetValueOrDefault(person):null;
+    // DBに生年と没年の両方がある人物の生没年（自然死の判定に使う）。
+    public static (int Born,int Died)? Life(string person)=>DbPerson(person) is {Birth:int born,Death:int died}&&born<died?(born,died):null;
     static readonly Lazy<SetupScenario> scenario=new(Build);
     public static SetupScenario Scenario()=>ContractJson.Copy(scenario.Value);
     static SetupScenario Build()
@@ -30,6 +36,9 @@ public static class NationalStart
             factions.Add(new(faction,h.Name,headId,home));homes[faction]=home;
             foreach(var o in roster){seen.Add(PersonId(o.Id));people.Add(new(PersonId(o.Id),o.Name,Site(o.Castle)??home,faction,o.Id==head.Id?null:headId,false,false));}
         }
+        // DBの父がこの世界にいれば、実の親として記録する（血縁。操作の引き継ぎの候補に使う）。
+        var placedIds=people.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);var dbIds=people.Where(p=>DbPerson(p.Id)!=null).GroupBy(p=>DbPerson(p.Id)!.Id,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal);
+        people=people.Select(p=>DbPerson(p.Id)?.Father is {} father&&dbIds.TryGetValue(father,out var parent)&&parent!=p.Id?p with{BirthParents=[parent]}:p).ToList();
         var owners=factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var castles=new List<SetupCastle>();var nodes=CastleRoutes.Catalog.Nodes.ToDictionary(n=>"site:"+n.Id,StringComparer.Ordinal);var homeOf=homes.GroupBy(x=>x.Value).ToDictionary(g=>g.Key,g=>g.Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).First());
         foreach(var s in WorldNetwork.Sites(new NewGameState(1,new(1,"1560-01-01",[],[],[]),[],new("person:none"),0,15){NetworkPolicy=WorldNetwork.CastlePolicy}))
@@ -62,9 +71,9 @@ public static class NationalStart
     public static ContractWorld Create(string selected,ulong seed=20261112,string? timePolicy=null)
     {
         var raw=Scenario();var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:Edition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy);
+        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:Edition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge);
     }
     // 新規ゲームの画面から始める（保存の開始定義も同じ版で作る）。
     public static NewCampaignProfile New(NewCampaignStore store,SetupScenario setup,string selected,ulong seed,string? timePolicy,bool previewOnly)
-        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,Edition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy);
+        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,Edition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy);
 }
