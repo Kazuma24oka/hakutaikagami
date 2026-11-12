@@ -67,8 +67,8 @@ public static class RegionalDomains
     internal static void ApplyNpc(ContractWorld w,EntityId site){var d=Decide(w,site,w.ElapsedSeconds,w.CommitSequence);Need(d.Actor!=w.PlayerControl,"本人の買物は自動化しません");w.Domains=w.Domains! with{Decisions=[..w.Domains!.Decisions,d]};if(d.Quantity>0)Apply(w,new(d.Id,TreasuryAction.Buy,site,d.Commodity,d.Quantity),d.Actor);}
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.ElapsedSeconds==0||w.ElapsedSeconds%Day!=0)return;
-        foreach(var site in CommunityEconomy.SitesFor(w)){w=session.DiagnosticSnapshot();if(Date(w,w.ElapsedSeconds).Day!=1&&CommunityStewardship.GrantAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;var actor=Controller(w,site,w.ElapsedSeconds,w.CommitSequence+1);if(actor==null||actor==w.PlayerControl||w.Domains!.Decisions.Any(d=>d.Id==DecisionId(w,site,w.ElapsedSeconds,w.CommitSequence+1)))continue;session.RunHouseProcurement(site,w.CommitSequence);}
+        var w=session.TurnSnapshot();if(!Enabled(w)||w.ElapsedSeconds==0||w.ElapsedSeconds%Day!=0)return;
+        foreach(var site in CommunityEconomy.SitesFor(w)){w=session.TurnSnapshot();if(Date(w,w.ElapsedSeconds).Day!=1&&CommunityStewardship.GrantAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;var actor=Controller(w,site,w.ElapsedSeconds,w.CommitSequence+1);if(actor==null||actor==w.PlayerControl||w.Domains!.Decisions.Any(d=>d.Id==DecisionId(w,site,w.ElapsedSeconds,w.CommitSequence+1)))continue;session.RunHouseProcurement(site,w.CommitSequence);}
     }
     internal static bool Authorized(ContractWorld w,TreasuryEntry e)=>w.Domains?.Decisions.Any(d=>d.Id==e.Input.Id&&d.Actor==e.Actor&&d.At==e.At&&d.Revision==e.Revision&&d.Quantity==e.Input.Quantity&&d.Commodity==e.Input.Commodity&&e.Input.Action==TreasuryAction.Buy)==true;
     static bool AppendOnly<T>(T[] before,T[] after,Func<T,long> at,Func<T,long> rev,ContractWorld prior)=>after.Length>=before.Length&&after.Take(before.Length).SequenceEqual(before)&&after.Skip(before.Length).All(e=>at(e)>=prior.ElapsedSeconds&&rev(e)>prior.CommitSequence);

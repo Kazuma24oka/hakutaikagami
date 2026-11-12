@@ -39,7 +39,7 @@ public static class NpcWork
     }
     internal static void TakeTurns(WorldSession session)
     {
-        foreach(var role in RegionalWork.Roles){var w=session.DiagnosticSnapshot();if(w.Paused||FieldPresence.PlayerDeployed(w))return;
+        foreach(var role in RegionalWork.Roles){var w=session.TurnSnapshot();if(w.Paused||FieldPresence.PlayerDeployed(w))return;
             var input=Inputs(w,role.Person,w.ElapsedSeconds);string hash=ContractJson.CanonicalHash(input);if(w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==role.Person)?.InputHash==hash)continue;
             string reason=Reason(input);EntityId? request=null;var result=ResultCode.NotAvailable;
             if(reason=="offer-local-inspection"){

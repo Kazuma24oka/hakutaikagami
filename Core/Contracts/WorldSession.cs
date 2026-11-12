@@ -15,6 +15,19 @@ public sealed partial class WorldSession
     public long Seconds { get { lock(gate) return state.ElapsedSeconds; } }
     public bool Paused { get { lock(gate) return state.Paused; } }
     public ContractWorld DiagnosticSnapshot() { lock(gate) return ContractJson.Copy(state); }
+    // 進行の中の仕組みごとの手番の確認が読むだけの写し。今の状態（同じ物）の間は1つを共有し、世界全体を写し直さない。
+    // 写しは読むだけで、書き換えない。検査（GuardTurnSnapshots）では、共有するたびに書き換えがないことを確かめる。
+    internal static bool GuardTurnSnapshots;
+    private ContractWorld? turnSource,turnView;private string? turnHash;
+    internal ContractWorld TurnSnapshot()
+    {
+        lock(gate)
+        {
+            if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");return turnView;}
+            if(GuardTurnSnapshots&&turnView!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");
+            turnView=ContractJson.Copy(state);turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;return turnView;
+        }
+    }
     internal bool TryHandoff(long revision,Action swap)
     {lock(gate){if(state.CommitSequence!=revision)return false;swap();return true;}}
     internal static EntityId Allocate(ContractWorld s, string kind)

@@ -13,7 +13,9 @@ public static class NationalRoutes
     static NationalCatalog Read(){using var s=typeof(NationalRoutes).Assembly.GetManifestResourceStream("NationalRoutesV1")??throw new InvalidDataException("Missing national network");using var m=new MemoryStream();s.CopyTo(m);return ContractJson.Read<NationalCatalog>(m.ToArray());}
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{RegionalCampaign.Version,ContractJson.CanonicalHash(catalog),"user-approved-playable-inference-v1"});
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
-    public static BranchNode[] Nodes=>[..RegionalCampaign.Nodes,..catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.LatitudeE7,n.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));})];
+    // 位置の換算は決まっていて変わらないので一度だけ行い、呼ぶたびに配列の写しを返す（2026-11-12、v107）。
+    static readonly Lazy<BranchNode[]> nodes=new(()=>[..RegionalCampaign.Nodes,..catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.LatitudeE7,n.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));})]);
+    public static BranchNode[] Nodes=>[..nodes.Value];
     public static BranchEdge[] Edges=>[..RegionalCampaign.Edges,..catalog.Edges.Select(e=>new BranchEdge(e.Id,e.From,e.To,e.LengthMm,e.FootSpeed,e.CourierSpeed))];
     public static SiteDefinition[] Sites=>[..RegionalCampaign.Sites,..catalog.Nodes.Select(n=>new SiteDefinition(new("site:"+n.Id),n.Name,n.LatitudeE7,n.LongitudeE7,0))];
     public static bool Sea(string edge)=>catalog.Edges.Any(e=>e.Id==edge&&e.Mode=="sea");

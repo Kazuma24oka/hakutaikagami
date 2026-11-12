@@ -1,0 +1,14 @@
+{
+  "status": "PASSED",
+  "scope": "advance-cost-v1",
+  "full_core_suite": "PASSED",
+  "full_core_passed": 4498,
+  "full_core_duration": "1 h 18 m",
+  "full_core_note": "全件は共有の写しの見張り（Tests/TurnSnapshotGuard.cs）を入れた状態で実行。その後に足した開始の検査の回数の数え方と Tests/AdvanceCostTests.cs の2件は、関連の検査30件として別に実行して合格",
+  "advance_cost_tests": 2,
+  "related_passed": 30,
+  "measurement_4200": {"first_minute_s": 1.5, "to_hour_s": 0.9, "to_day_s": 0.8, "before_to_day_s": 5.7},
+  "godot_ui": "対象外（画面の変更なし）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

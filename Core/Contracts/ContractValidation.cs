@@ -172,8 +172,9 @@ public static class ContractValidation
             if (e.Message is { } mid) Check(s.Messaging.Messages.Any(m => m.Id == mid.Value) && MessageFlow.Knows(s.Messaging, mid.Value, e.Observer.Value), "Evidence lacks message reception.");
         }
         Check(s.Knowledge.Select(k => (k.Character, k.Evidence)).Distinct().Count() == s.Knowledge.Length, "Duplicate personal knowledge.");
-        Check(s.Knowledge.All(k => people.Contains(k.Character) && evidence.Contains(k.Evidence) && k.LearnedAt >= s.Evidence.Single(e => e.Id == k.Evidence).RecordedAt &&
-            k.LearnedAt <= s.ElapsedSeconds && s.Evidence.Single(e => e.Id == k.Evidence).Observer == k.Character), "Knowledge without admissible evidence.");
+        var evidenceById = s.Evidence.ToLookup(e => e.Id); // 知識ごとに証拠の一覧をなめない（同じ ID が複数なら今までどおり Single で失敗する）
+        Check(s.Knowledge.All(k => people.Contains(k.Character) && evidence.Contains(k.Evidence) && k.LearnedAt >= evidenceById[k.Evidence].Single().RecordedAt &&
+            k.LearnedAt <= s.ElapsedSeconds && evidenceById[k.Evidence].Single().Observer == k.Character), "Knowledge without admissible evidence.");
         var pending = Keys(s.PendingEvents, e => e.Id, "events");
         Check(s.PendingEvents.All(e => tasks.Contains(e.Task) && Enum.IsDefined(e.Kind) && e.At > s.ElapsedSeconds &&
             e.DependsOn.All(d => effects.Contains(d) || pending.Contains(d)) && !effects.Contains(e.Id)), "Invalid event time/dependency.");

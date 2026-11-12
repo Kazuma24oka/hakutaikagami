@@ -22,7 +22,9 @@ public static partial class RegionalCampaign
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{RegionalBranch.Version,ContractJson.CanonicalHash(Expansion),"physical-couriers-v1","known-address-retry-v1","scheduled-conditions-v1"});
     public static RegionalBranchCatalog Expansion=>ContractJson.Copy(expansion);
     static RegionalBranchCatalog ReadExpansion(){using var stream=typeof(RegionalCampaign).Assembly.GetManifestResourceStream("RegionalExpansionV1")??throw new InvalidDataException("Missing expansion");using var memory=new MemoryStream();stream.CopyTo(memory);return ContractJson.Read<RegionalBranchCatalog>(memory.ToArray());}
-    public static BranchNode[] Nodes=>[..RegionalBranch.Nodes,..expansion.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.Stop.LatitudeE7,n.Stop.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));})];
+    // 位置の換算は決まっていて変わらないので一度だけ行い、呼ぶたびに配列の写しを返す（2026-11-12、v107）。
+    static readonly Lazy<BranchNode[]> nodes=new(()=>[..RegionalBranch.Nodes,..expansion.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.Stop.LatitudeE7,n.Stop.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));})]);
+    public static BranchNode[] Nodes=>[..nodes.Value];
     public static BranchEdge[] Edges=>[..RegionalBranch.Edges,..expansion.Edges];
     public static SiteDefinition[] Sites=>[..RegionalBranch.Sites,..expansion.Nodes.Select(n=>new SiteDefinition(new("site:"+n.Id),n.Stop.Name,n.Stop.LatitudeE7,n.Stop.LongitudeE7,0))];
     public static EntityId Site(string node)=>node=="castle"?ContractFixture.Castle:node=="village"?ContractFixture.Village:new("site:"+node);

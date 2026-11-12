@@ -31,10 +31,10 @@ public static class NpcFreight
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.Paused||FreightOperations.Enabled(w)&&w.ElapsedSeconds%60!=0)return;
+        var w=session.TurnSnapshot();if(!Enabled(w)||w.Paused||FreightOperations.Enabled(w)&&w.ElapsedSeconds%60!=0)return;
         foreach(var job in Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Where(j=>!HouseLogistics.Closed(j)))
         {
-            w=session.DiagnosticSnapshot();var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Single(q=>q.Terms.Id==job.Terms.Id);var t=j.Terms;
+            w=session.TurnSnapshot();var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Single(q=>q.Terms.Id==job.Terms.Id);var t=j.Terms;
             if(TaskBusy(w,t.Carrier,w.ElapsedSeconds,w.CommitSequence+1))continue;
             if(Local(w,t.Carrier,t.Home,w.ElapsedSeconds,w.CommitSequence+1)&&j.Phase!=HouseFreightPhase.Outbound){session.RunFreightStep(new(Id(w,j,"receive"),HouseFreightAction.Receive,t.Id),t.Carrier);continue;}
             if(j.Phase==HouseFreightPhase.Outbound&&Local(w,t.Carrier,t.Source,w.ElapsedSeconds,w.CommitSequence+1))
