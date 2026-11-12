@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "status": "READY_FOR_SQUASH",
+  "pull_request": 145,
+  "scope": "v113 全国1560年の勢力従属関係",
+  "strategy": "gh CLI squash merge",
+  "full_suite": "PASSED: 4,522/4,522 at candidate 605b662b in a separate worktree."
+}

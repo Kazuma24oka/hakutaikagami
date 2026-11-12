@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "scope": "national-faction-relations",
+  "baseline": "approval-baseline-v113",
+  "related_tests": {
+    "status": "PASSED",
+    "passed": 2,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"FullyQualifiedName~NationalFactionRelationsTests\""
+  },
+  "short_suite": {
+    "status": "PASSED",
+    "passed": 2828,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
+  },
+  "game_build": {
+    "status": "PASSED",
+    "configuration": "Debug",
+    "warnings": 0,
+    "errors": 0,
+    "command": "dotnet build Game/HakutaiKagami.Game.csproj -c Debug"
+  },
+  "player_display": {
+    "status": "CODE_AND_CORE_TEST_PASSED",
+    "evidence": "操作人物の勢力に直接関わる関係だけを情報欄へ追加し、両側の表示方向と第三者を含めないことをCoreテストで確認。Godot実行画面の起動確認は未実施。"
+  },
+  "save_restore": {
+    "status": "PASSED",
+    "method": "GenerationSaveStoreで実ファイル保存、別セッションへ復旧。直後と60秒進行後のContractWorld JSONが一致。"
+  },
+  "legacy_profile": {
+    "status": "PASSED",
+    "evidence": "既存pre-catalog-start-v1.jsonの初期ハッシュ一致。新しい関係欄なし。"
+  },
+  "full_suite": {
+    "status": "PASSED",
+    "passed": 4522,
+    "failed": 0,
+    "skipped": 0,
+    "commit": "605b662b7779891fceca71ae8e4c6b555eca39dd",
+    "command": "dotnet test Tests -c Release --logger \"console;verbosity=minimal\"",
+    "elapsed": "1 h 10 m",
+    "worktree": "hakutaikagami-core-v113-full-check"
+  },
+  "computer_use": "未使用"
+}

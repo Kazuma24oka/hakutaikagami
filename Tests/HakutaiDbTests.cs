@@ -207,12 +207,12 @@ public sealed class HakutaiDbTests
     {
         var scenario=NationalStart.Scenario();var selected=scenario.Factions.Single(f=>f.Name.Contains("織田",StringComparison.Ordinal)).Head;
         var world=NationalStart.Create(selected);Assert.Equal(NationalDistrictControl.Policy,world.NewGame!.DistrictControlPolicy);
-        Assert.Equal(HakutaiDb.Districts.Count,world.DistrictControl!.Districts.Length);ContractValidation.Validate(world);
+        Assert.Equal(HakutaiDb.Districts.Count,world.DistrictControl!.Districts.Length);Assert.NotNull(world.FactionRelations);ContractValidation.Validate(world);
         var restored=ContractJson.Read<ContractWorld>(ContractJson.Write(world));Assert.Equal(ContractJson.CanonicalHash(world),ContractJson.CanonicalHash(restored));
         var oldBytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","pre-catalog-start-v1.json"));
         var oldProfile=ContractJson.Read<NewCampaignProfile>(oldBytes);Assert.Null(oldProfile.DistrictControlPolicy);
         Assert.Equal(oldProfile.InitialHash,ContractJson.CanonicalHash(NewCampaignStore.Build(oldProfile)));
-        Assert.Null(NewCampaignStore.Build(oldProfile).DistrictControl);
+        Assert.Null(NewCampaignStore.Build(oldProfile).DistrictControl);Assert.Null(NewCampaignStore.Build(oldProfile).FactionRelations);
         var store=new NewCampaignStore(Path.Combine(Path.GetTempPath(),"national-control-profile-"+Guid.NewGuid().ToString("N")));
         var profile=NationalStart.New(store,scenario,selected,20261112,null,false);Assert.Equal(NationalDistrictControl.Policy,profile.DistrictControlPolicy);
         var campaign=NewCampaignStore.Build(profile);Assert.Equal(ContractJson.CanonicalHash(world),ContractJson.CanonicalHash(campaign));
