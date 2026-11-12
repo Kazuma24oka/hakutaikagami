@@ -1,0 +1,38 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "城の移動網の拠点の位置がすべて異なり、NPCが日課で動く城の移動網の世界を100人以上で作って進められる",
+      "status": "PASSED",
+      "evidence": [
+        "Tools/HakutaiDb/build_castle_routes.py",
+        "Core/Contracts/CastleRoutes.cs",
+        "Docs/Design/NpcDormancyV1/README.md"
+      ]
+    },
+    {
+      "contract": "遠方の人物の休眠（版付きの決まり、旧保存と既存の版は変わらない）：操作する人物から一定の距離の中にいる成人だけが日課の手番を持ち、遠方の人物は判断も判断の検査もしない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcDormancy.cs",
+        "Core/Contracts/NewGameNpcRoutine.cs",
+        "Tests/NpcDormancyTests.cs"
+      ]
+    },
+    {
+      "contract": "操作する人物が移動すると、近づいた人物は起きて日課を続け、離れた人物は眠る。途中の保存から復旧して同じ未来になる",
+      "status": "PASSED",
+      "evidence": [
+        "Tests/NpcDormancyTests.cs"
+      ]
+    },
+    {
+      "contract": "移動の検査が旅の区間ごとに道の一覧をなめない。NPCが日課で動く城の移動網の世界で、人数ごとの進行の時間を測って記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BranchRoutes.cs",
+        "Docs/Design/NpcDormancyV1/README.md"
+      ]
+    }
+  ]
+}

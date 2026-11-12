@@ -1,0 +1,14 @@
+{
+  "status": "PASSED",
+  "scope": "npc-dormancy-v1",
+  "full_core_suite": "PASSED",
+  "full_core_commit": "d058a478",
+  "full_core_passed": 4503,
+  "full_core_duration": "1 h 8 m（別の作業用フォルダで裏で実行）",
+  "dormancy_tests": 3,
+  "related_passed": 129,
+  "measurement": "README の表（全件テストと同時に実行）",
+  "godot_ui": "対象外（画面の変更なし）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

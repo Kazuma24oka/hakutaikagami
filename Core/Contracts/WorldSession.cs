@@ -263,6 +263,7 @@ public sealed partial class WorldSession
         if(Career.Enabled(s)&&Career.NextBoundary(s,target) is {} careerBoundary)times.Add(careerBoundary);
         if(NpcWork.Enabled(s)&&NpcWork.NextBoundary(s,target) is {} npcBoundary)times.Add(npcBoundary);
         if(NewGameNpcRoutine.Enabled(s)&&NewGameNpcRoutine.NextBoundary(s,target) is {} routineBoundary)times.Add(routineBoundary);
+        if(NpcDormancy.NextBoundary(s,target) is {} wakeBoundary)times.Add(wakeBoundary);
         if(RegionalCampaign.Enabled(s)&&RegionalCampaign.NextBoundary(s,target) is {} courierBoundary)times.Add(courierBoundary);
         if(FieldWorld.Enabled(s)&&FieldWorld.NextBoundary(s,target) is {} fieldBoundary)times.Add(fieldBoundary);
         if(TravelControl.Enabled(s)&&TravelControl.NextBoundary(s,target) is {} personalBoundary)times.Add(personalBoundary);
