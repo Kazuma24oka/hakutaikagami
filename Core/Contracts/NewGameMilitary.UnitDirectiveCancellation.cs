@@ -37,7 +37,7 @@ public static partial class NewGameMilitary
         w.NewMilitary=w.NewMilitary with{UnitDirective=state with{Cancellation=x with{Dispatches=[..x.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,root.Recipient,UnitDirectiveCancellationRole,new("evidence:directive-cancel/"+Hash(Text(p))),from,to,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}}};
     }
     static UnitDirectiveCancellationState? DirectiveCancellationBefore(UnitDirectiveCancellationState? x,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(x==null)return null;var ds=x.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return ds.Length==0?null:x with{Holding=DirectiveCancelHoldingBefore(x.Holding,at,rev),Dispatches=ds,Receipts=x.Receipts.Where(r=>Before(r.At,r.Revision,at,rev)).ToArray(),Replies=x.Replies.Where(r=>Before(r.At,r.Revision,at,rev)).ToArray(),Effects=x.Effects.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Notices=x.Notices.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Arrivals=x.Arrivals.Where(a=>Before(a.At,a.Revision,at,rev)).ToArray(),Holdings=x.Holdings.Where(h=>Before(h.At,h.Revision,at,rev)).ToArray()};
     }
     static bool DirectiveOriginalCancelled(ContractWorld w,EntityId original)=>w.NewMilitary?.UnitDirective?.Cancellation?.Effects.Any(e=>e.Original==original&&e.Outcome is UnitCancelDisposition.Suppressed or UnitCancelDisposition.Stopped or UnitCancelDisposition.AlreadyStopped)==true;

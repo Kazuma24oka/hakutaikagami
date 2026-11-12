@@ -1,7 +1,7 @@
 namespace HakutaiKagami.Core.Contracts;
 public static partial class BattlefieldRules
 {
- public static BattlefieldCasualties Casualties(ContractWorld w,EntityId unit,long at=long.MaxValue,long rev=long.MaxValue){var rows=(w.WorldClashes?.Steps??[]).Where(s=>s.At<at||s.At==at&&s.Revision<rev).SelectMany(s=>s.Result.Casualties??[]).Where(c=>c.Unit==unit).ToArray();int recovered=Recovered(w,unit,at,rev);return new(unit,rows.Sum(c=>c.Dead),rows.Sum(c=>c.Wounded)-recovered,rows.Sum(c=>c.Deserted),recovered);}
+ public static BattlefieldCasualties Casualties(ContractWorld w,EntityId unit,long at=long.MaxValue,long rev=long.MaxValue){using var _ccRev=ControlContext.At(rev);var rows=(w.WorldClashes?.Steps??[]).Where(s=>s.At<at||s.At==at&&s.Revision<rev).SelectMany(s=>s.Result.Casualties??[]).Where(c=>c.Unit==unit).ToArray();int recovered=Recovered(w,unit,at,rev);return new(unit,rows.Sum(c=>c.Dead),rows.Sum(c=>c.Wounded)-recovered,rows.Sum(c=>c.Deserted),recovered);}
  public static int Recovered(ContractWorld w,EntityId unit,long at,long rev=long.MaxValue)=>Orders(w).Where(o=>o.Input.Unit==unit&&o.Input.Action==BattlefieldAction.Rest&&Before(o,at,rev)&&o.At+5*86400<=at).Sum(o=>o.Input.Amount);
  public static bool Resting(ContractWorld w,EntityId army,long at)=>Orders(w).Any(o=>o.Army==army&&o.Input.Action==BattlefieldAction.Rest&&o.At<=at&&at<o.At+5*86400);
  internal static long? NextBoundary(ContractWorld w,long target)=>Orders(w).Where(o=>o.Input.Action==BattlefieldAction.Rest&&o.At+5*86400>w.ElapsedSeconds&&o.At+5*86400<=target).Select(o=>(long?)(o.At+5*86400)).Order().FirstOrDefault();

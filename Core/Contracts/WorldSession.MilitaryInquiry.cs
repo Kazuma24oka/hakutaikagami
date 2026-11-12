@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed partial class WorldSession
 {
     public CommandResult RetryMilitaryRequest(string message,string failedAttempt,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){var id=new EntityId("request:military-retry");if(!CareerMilitary.Enabled(state)||actor!=state.PlayerControl||!state.Military!.Requests.Any(q=>q.Message==message))return new(ResultCode.NotAvailable,id,state.CommitSequence,"本人が発送した軍務書状ではありません");
             var old=state.Messaging.Attempts.SingleOrDefault(a=>a.Id==failedAttempt&&a.MessageId==message);if(old!=null&&state.Messaging.Attempts.Any(a=>a.MessageId==message&&a.Number==old.Number+1))return new(ResultCode.AlreadyAccepted,id,state.CommitSequence,"この失敗試行の再送は受付済みです");
             if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");

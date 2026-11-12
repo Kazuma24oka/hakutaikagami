@@ -16,7 +16,7 @@ public static class NpcCommunityAdministration
     static EntityId Id(ContractWorld w,EntityId site,long at,long revision=long.MaxValue)=>new("decision:npc-community/"+site.Value.Replace(':','/')+"/"+(!CommunityStewardship.Enabled(w)?Period(w,at).ToString():CommunityStewardship.GrantAt(w,site,at,revision)!=null?"d"+(at/Day):"m"+Period(w,at)));
     static EntityId Effect(EntityId id)=>new("request:npc-community/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static CommunityDecision Decide(ContractWorld w,EntityId site,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var actor=CommunityStewardship.Delegate(w,site,at,revision)??Principal(w,site,at,revision)??throw new InvalidDataException("No configured principal");bool adult=w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult);
         bool local=adult&&CommunityEconomy.Local(w,actor,site,at,revision);bool authority=!CastleAdministration.Blocked(w,site,at,revision)&&(FactionStances.ResolveAuthority(w,actor,new(w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction!),at,revision)!=null||CommunityStewardship.Authority(w,actor,new(w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction!),site,at,revision)!=null)&&w.LandRights.Any(r=>r.Subject.Value==w.NewGame.Start.Castles.Single(c=>c.Id==site.Value).Faction&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
         CommunityAccounts? account=local&&authority?CommunityEconomy.AccountAt(w,site,at,revision):null;long reserved=account==null?0:HouseSalary.Reserved(w,site,at,revision);
@@ -33,7 +33,7 @@ public static class NpcCommunityAdministration
     }
     internal static bool Authorized(ContractWorld w,CommunityOrder order)
     {
-        if(!Enabled(w)||order.Actor==w.PlayerControl)return false;
+        if(!Enabled(w)||order.Actor==ControlSuccession.PlayerAtRevision(w,order.Revision))return false;
         return w.CommunityAdministration?.Decisions.Any(d=>Effect(d.Id)==order.Input.Id&&d.Actor==order.Actor&&d.Site==order.Input.Site&&d.At==order.At&&d.Revision==order.Revision&&d.Action==order.Input.Action&&d.Amount==order.Input.Amount)==true;
     }
     internal static bool WaterAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long revision)=>Enabled(w)&&w.CommunityAdministration?.Decisions.Any(d=>Effect(d.Id)==effect&&d.Site==site&&d.At==at&&d.Revision==revision&&d.Action==EconomyAction.ImproveWater&&d.Representative==VillageConsultation.Representative(site,at))==true;
@@ -69,5 +69,5 @@ public static class NpcCommunityAdministration
 }
 public sealed partial class WorldSession
 {
-    internal void RunCommunityAdministration(EntityId site,long revision){lock(gate){if(revision!=state.CommitSequence)throw new InvalidOperationException("地域運営の状態が変わりました");Change(w=>NpcCommunityAdministration.Apply(w,site));}}
+    internal void RunCommunityAdministration(EntityId site,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(revision!=state.CommitSequence)throw new InvalidOperationException("地域運営の状態が変わりました");Change(w=>NpcCommunityAdministration.Apply(w,site));}}
 }

@@ -19,14 +19,16 @@ public static class ControlSuccession
     public static EntityId PlayerAtRevision(ContractWorld w,long revision)
     {
         var rows=w.ControlHandovers;if(rows==null||rows.Length==0)return w.PlayerControl;
-        var player=w.NewGame!.Selected;foreach(var h in rows)if(h.Revision<=revision)player=h.To;return player;
+        var player=rows[0].From;foreach(var h in rows)if(h.Revision<=revision)player=h.To;return player;
     }
     public static EntityId PlayerAtRevision(ContractWorld w,long? revision)=>PlayerAtRevision(w,revision??long.MaxValue);
     public static EntityId PlayerAtTime(ContractWorld w,long at)
     {
         var rows=w.ControlHandovers;if(rows==null||rows.Length==0)return w.PlayerControl;
-        var player=w.NewGame!.Selected;foreach(var h in rows)if(h.At<at)player=h.To;return player;
+        var player=rows[0].From;foreach(var h in rows)if(h.At<at)player=h.To;return player;
     }
+    // これまでに操作した人物（開始の人物から順に）。
+    public static EntityId[] Players(ContractWorld w){var rows=w.ControlHandovers;return rows==null||rows.Length==0?[w.CurrentPlayer()]:[rows[0].From,..rows.Select(h=>h.To)];}
     // 一度でも操作した人物（過去の記録の本人の判定に使う）。
     public static bool EverPlayed(ContractWorld w,EntityId person)=>person==w.PlayerControl||w.NewGame?.Selected==person||(w.ControlHandovers??[]).Any(h=>h.From==person||h.To==person);
 
@@ -100,6 +102,8 @@ public static class ControlContext
     public static Scope At(long rev){var old=(revision,time);revision=rev;time=null;return new(old.revision,old.time);}
     // 版を持たない記録は、その時刻で操作していた人物にする。
     public static Scope AtTime(long at){var old=(revision,time);revision=null;time=at;return new(old.revision,old.time);}
+    // 式の中だけで版を置く（ラムダの中の検査用）。
+    public static T With<T>(long rev,Func<T> f){using var _=At(rev);return f();}
     // 何も変えない（入れ子の外側の版をそのまま残す）。
     public static Scope Keep()=>new(revision,time);
     public readonly struct Scope(long? oldRevision,long? oldTime):IDisposable{public void Dispose(){revision=oldRevision;time=oldTime;}}

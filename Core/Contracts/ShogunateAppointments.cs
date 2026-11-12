@@ -36,7 +36,7 @@ public static class ShogunateAppointments
            m.DeliverySite!=Kyoto.Value || !w.SealedMessages.Any(x=>x.Value==id))throw new InvalidDataException("幕府の書状と原本が一致しません");
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || place!=Kyoto || HouseTerritoryScale.Province(i.Site)==null ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で対象国と申請本人を確認してください");
@@ -57,7 +57,7 @@ public static class ShogunateAppointments
            prior.Any(e=>e.Input.Reference==source.Input.Id))throw new InvalidDataException("同一国の未処理の申請原本が必要です");
         if(!Ruling(i.Action)){
             if(actor!=Broker || source.Input.Action!=CourtAction.AskShugo || i.Person!=source.Actor ||
-               !TransportWork.At(w,i.Person,place,at,rev,true) || (actor!=ControlSuccession.PlayerAtRevision(w,rev) &&
+               !TransportWork.At(w,i.Person,place,at,rev,true) || (actor!=w.PlayerControl &&
                (i.Action==CourtAction.RecommendShugo)!=(SocialWorld.ConsentBonus(w,actor,i.Person,at,rev)>=2)))
                 throw new InvalidDataException("取次本人の判断が必要です");
             return;

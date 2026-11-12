@@ -11,7 +11,7 @@ public static class KokujinCouncil
 {
     // 開封した承諾と成立確認だけから、その武将が加盟を確認できる家を返す。
     public static EntityId[] KnownMembers(ContractWorld world,EntityId observer,CouncilCharter charter,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         return TreatyNegotiations.Known(world,observer,at,revision)
             .Where(f=>f.Terms.Charter==charter && at<f.Terms.Until &&
                 !TreatyNegotiations.KnowsEnding(world,observer,f.Acceptance,at,revision))
@@ -20,7 +20,7 @@ public static class KokujinCouncil
 
     // 契状の解除予告に引用できるのは、離脱当主が成立を確認した自家の個別従属だけ。
     internal static TreatyFormation? SeparateSubmission(ContractWorld w,TreatyFormation charter,EntityId head,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(charter.Terms.Charter==null)return null;
         return TreatyNegotiations.Known(w,head,at,revision).FirstOrDefault(f=>
             f.Terms.Submission!=null && f.Terms.B==charter.Terms.B && f.Terms.A!=charter.Terms.A &&
@@ -29,7 +29,7 @@ public static class KokujinCouncil
     }
 
     public static TreatyOperationInput? Departure(ContractWorld w,TreatyFormation charter,EntityId head,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(at+charter.Terms.NoticeSeconds>=charter.Terms.Until ||
             w.Treaties!.Operations.Any(o=>o.Input.Acceptance==charter.Acceptance && o.Kind==TreatyOperation.Terminate && o.Author==head))return null;
         if(SeparateSubmission(w,charter,head,at,revision) is not {} submission)return null;
@@ -39,7 +39,7 @@ public static class KokujinCouncil
     }
 
     public static bool KnowsSeparateDeparture(ContractWorld w,EntityId observer,EntityId house,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var state=w.Treaties;
         if(state==null)return false;
         if(state.Papers.Any(p=>p.Input.DepartureCopy?.DepartingHouse==house && p.Recipient==observer &&
@@ -54,7 +54,7 @@ public static class KokujinCouncil
         public TreatyAction? Verdict=>Yes>=Required?TreatyAction.Accept:Houses-No<Required?TreatyAction.Decline:null;
     }
     public static Count? Tally(ContractWorld w,EntityId chair,EntityId demand,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var state=w.Treaties;
         if(state==null)return null;
         var papers=state.Papers.Where(p=>p.At<=at && p.Revision<=revision).ToArray();

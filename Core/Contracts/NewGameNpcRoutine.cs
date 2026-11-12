@@ -14,8 +14,8 @@ public static partial class NewGameNpcRoutine
     }
     public static bool IsActor(ContractWorld w,EntityId actor)=>Enabled(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult:!p.Created));
     static ContractWorld LifeAtDecision(ContractWorld world,long at,long revision)
-    {
-        var player=ControlSuccession.PlayerAtRevision(world,revision);
+    {using var _ccRev=ControlContext.At(revision);
+        var player=world.PlayerControl;
         if(player==world.PlayerControl&&!world.Characters.Any(c=>c.Life==LifeState.Dead && !Assassination.DeadAt(world,c.Id,at,revision)))return world;
         var history=world.ForkTransportLocation();history.PlayerControl=player;
         history.Characters=world.Characters.Select(c=>c.Life==LifeState.Dead && !Assassination.DeadAt(world,c.Id,at,revision)
@@ -25,7 +25,7 @@ public static partial class NewGameNpcRoutine
     }
     public static int BoundaryCost(ContractWorld w)=>2*Actors(w).Length;
     public static NpcWorkInputs Inputs(ContractWorld w,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(NpcJudgment.Enabled(w))return NpcJudgment.Apply(w,actor,at,revision,PurposeInputs(w,actor,at,revision));
         if(PurposeEnabled(w))return PurposeInputs(w,actor,at,revision);
         if(Continuing(w))return ContinuingInputs(w,actor,at,revision);

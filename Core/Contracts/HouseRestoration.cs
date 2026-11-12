@@ -30,7 +30,7 @@ public static class HouseRestoration
         or CourtAction.SupportRestoration or CourtAction.ReserveRestoration;
 
     internal static void CheckSupport(ContractWorld w, CourtInput input, EntityId actor, EntityId site, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if (input.Site != site || actor == input.Person ||
             !TransportWork.At(w, actor, site, at, revision, true) ||
             !TransportWork.At(w, input.Person, site, at, revision, true) ||
@@ -53,14 +53,14 @@ public static class HouseRestoration
     }
 
     public static EntityId? SuccessorOrganization(ContractWorld world, EntityId original, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var recognition = HouseholdCourt.Events(world).LastOrDefault(e => e.Input.Action == CourtAction.RecognizeHouseContinuity &&
             e.Input.Owner == original && e.At <= at && e.Revision < revision);
         return recognition == null ? null : world.Declarations?.Single(d => d.Pact == recognition.Input.Reference).House;
     }
 
     public static bool RepresentsFoundation(ContractWorld world, IndependenceDeclaration declaration, EntityId actor, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if (declaration.Revision > revision || declaration.At > at ||
             Assassination.DeadAt(world, actor, at, revision) || HostageCustody.HeldAt(world, actor, at, revision) ||
             HouseSuccession.Head(world, declaration.House, at, revision) != actor ||
@@ -88,13 +88,13 @@ public static class HouseRestoration
     }
 
     internal static void CheckContinuity(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if (!CanRecognize(world, input, actor, place, at, revision))
             throw new InvalidDataException("旧家の当主・継承記録と現地の新しい家の代表権を同じ人物について照合してください");
     }
 
     static bool CanRecognize(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var declaration = world.Declarations?.SingleOrDefault(d => d.Pact == input.Reference && d.At <= at && d.Revision < revision);
         if (declaration == null || declaration.House == input.Owner || declaration.Site != place || input.Site != place ||
             actor != input.Person || !TransportWork.At(world, actor, place, at, revision, true) ||
@@ -119,7 +119,7 @@ public static class HouseRestoration
     }
 
     static EntityId? OccupationSource(ContractWorld world, EntityId house, EntityId site, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var handovers = CastleHandover.Jobs(world, at, revision)
             .Where(j => j.Terms.Site == site && j.Occupied != null)
             .Select(j => (j.Occupied!.Revision, Owner: j.Terms.Occupier, Defender: j.Terms.Owner, j.Occupied.Input.Id));
@@ -137,7 +137,7 @@ public static class HouseRestoration
 
     internal static bool CanUseRestoredStore(ContractWorld world, EntityId original, EntityId oldHouse,
         EntityId payer, EntityId employee, EntityId site, long at, long revision, long requiredRice = 0)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var successor = SuccessorOrganization(world, oldHouse, at, revision);
         if (successor == null || RegionalDomains.Owner(world, site) != oldHouse ||
             CastleAdministration.Owner(world, site, at, revision) != successor) return false;
@@ -193,7 +193,7 @@ public static class HouseRestoration
     }
 
     internal static void CheckArrears(ContractWorld world, CourtInput input, EntityId creditor, EntityId place, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var prior = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
         if (input.Site != place || input.Reference == null || input.Person == creditor ||
             !TransportWork.At(world, creditor, place, at, revision, true) ||
@@ -211,7 +211,7 @@ public static class HouseRestoration
     }
 
     internal static void CheckRecoveredSeat(ContractWorld world, CourtInput input, EntityId actor, EntityId place, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var past = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
         if (input.Site != place || input.Person != actor || input.Reference == null ||
             !TransportWork.At(world, actor, place, at, revision, true) ||
@@ -226,7 +226,7 @@ public static class HouseRestoration
         or CourtAction.AcceptRestorationEscort or CourtAction.DeclineRestorationEscort or CourtAction.ReleaseRestorationEscort;
 
     internal static void CheckEscort(ContractWorld world, CourtInput input, EntityId actor, EntityId site, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var history = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
         var source = history.SingleOrDefault(e => e.Input.Id == input.Reference);
         if (input.Action == CourtAction.ReleaseRestorationEscort)
@@ -270,14 +270,14 @@ public static class HouseRestoration
         action is CourtAction.PledgeRestorationRice or CourtAction.HandOverRestorationRice;
 
     internal static long RiceTransferred(ContractWorld world, EntityId person, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         return HouseholdCourt.Events(world).Where(e => e.Input.Action == CourtAction.HandOverRestorationRice &&
             e.At <= at && e.Revision <= revision).Sum(e =>
                 e.Actor == person ? -e.Input.Amount : e.Input.Person == person ? e.Input.Amount : 0L);
     }
 
     internal static void CheckRice(ContractWorld world, CourtInput input, EntityId actor, EntityId site, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         bool handover = input.Action == CourtAction.HandOverRestorationRice;
         var sourceAction = handover ? CourtAction.PledgeRestorationRice : CourtAction.SupportRestoration;
         var previous = HouseholdCourt.Events(world).Where(e => e.Revision < revision);
@@ -462,7 +462,7 @@ public static class HouseRestoration
     }
 
     static FormerSeatObservation[] ObserveAt(ContractWorld world, EntityId observer, EntityId site, long now, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var observations = new List<FormerSeatObservation>();
         var person = FamilyBirth.People(world).SingleOrDefault(p => p.Id == observer.Value);
         if (person == null || FamilyKin.LifeAt(world.NewGame!, person, now) != LifeState.Adult) return [];

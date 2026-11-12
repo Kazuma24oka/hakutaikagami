@@ -105,7 +105,7 @@ public static partial class Career
         return w.Career!.Events.Where(e=>e.Kind==CareerEventKind.Offered&&!w.Career.Events.Any(r=>r.Case==e.Case&&r.Kind is CareerEventKind.Joined or CareerEventKind.Declined or CareerEventKind.Refused or CareerEventKind.Expired)).Select(e=>checked(e.At+w.Career.Terms.OfferSeconds)).Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     }
     static (CareerStatement Statement,long? Effective) StatusAt(ContractWorld w,EntityId id,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var ended=End(w,id);if(ended!=null&&Before(ended,at,revision))return(CareerStatement.Ended,ended.At);
         var joined=Event(w,id,CareerEventKind.Joined);if(joined!=null&&Before(joined,at,revision))return(CareerStatement.Agreed,joined.At);
         var closed=w.Career!.Events.LastOrDefault(e=>e.Case==id&&e.Kind is CareerEventKind.Declined or CareerEventKind.Refused or CareerEventKind.Expired&&Before(e,at,revision));

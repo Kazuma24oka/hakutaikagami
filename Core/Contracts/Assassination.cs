@@ -57,7 +57,7 @@ public static class Assassination
     }
 
     internal static bool KnownAtDispatch(ContractWorld w,SchemeInput input,EntityId principal,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var rows=InformationSchemes.Events(w);
         var sight=rows.SingleOrDefault(e=>e.Input.Id==input.Reference && e.Input.Action==SchemeAction.ObservePerson &&
             e.Input.Subject==input.Subject && e.Site==input.Destination && e.At<=at && e.Revision<revision);
@@ -127,7 +127,7 @@ public static class Assassination
             (e.At<at || e.At==at && e.Revision<=rev));
 
     public static SchemeEvent? CaptivityAt(ContractWorld world, EntityId person, long at, long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var history=InformationSchemes.Events(world).Where(e=>e.At<at || e.At==at && e.Revision<revision);
         var capture=history.LastOrDefault(e=>e.Input.Action==SchemeAction.CaughtInEncounter && e.Actor==person);
         return capture!=null && !history.Any(e=>e.Input.Action==SchemeAction.ReleaseCaptive && e.Input.Reference==capture.Input.Id)
@@ -139,7 +139,7 @@ public static class Assassination
         TransportWork.At(world,first,place,at,revision,true) && TransportWork.At(world,second,place,at,revision,true);
 
     internal static void CheckRelease(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var capture=CaptivityAt(world,input.Subject,at,rev);
         if(capture==null || capture.Input.Id!=input.Reference || capture.Input.Subject!=actor || capture.Site!=site ||
             input.Person!=actor || input.Destination!=null || input.Topic!=SchemeTopic.ForeignContact ||
@@ -147,7 +147,7 @@ public static class Assassination
             throw new InvalidDataException("捕縛原本と現地にいる身柄引受人が必要です");
     }
     internal static SchemeAction Clash(ContractWorld world,SchemeInput input,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var contact=InformationSchemes.Events(world).SingleOrDefault(e=>e.Input.Id==input.Reference &&
             e.Input.Action==SchemeAction.SeekContact && e.Actor==actor && e.Input.Subject==input.Subject && e.Site==site && e.Revision<rev);
         if(contact==null || input.Person!=actor || input.Destination!=null || input.Topic!=SchemeTopic.ForeignContact || DeadAt(world,actor,at,rev-1) ||

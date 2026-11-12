@@ -8,7 +8,7 @@ public static partial class NewGameNpcRoutine
     public static bool PurposeEnabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.NpcRoutinePolicy is PurposePolicy or NpcJudgment.Policy;
     internal static bool DiscretionaryPractice(ContractWorld w,Intent i)=>PurposeEnabled(w)&&i.Actor!=w.PlayerControl&&i.Actor==i.Executor&&i.Action==ActionKind.Train;
     static NpcWorkInputs PurposeInputs(ContractWorld w,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var basis=ContinuingInputs(w,actor,at,revision);
         var requests=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision).ToArray();
         var own=requests.Where(r=>r.Intent.Actor==actor&&(r.Intent.Executor==actor||NpcJudgment.Enabled(w)&&r.Intent.Action==ActionKind.Inspect)&&r.Intent.Action is ActionKind.Inspect or ActionKind.Train).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();

@@ -43,17 +43,17 @@ public static class CommunityEconomy
     static (string Name,int Factor) Season(ContractWorld w,EntityId site,int year){var h=System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(w.Seed+"/community-weather/"+site.Value+"/"+year));int n=h[0]%100;return n<20?("干ばつ",50):n>=90?("洪水",70):("平年",100);}
     static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
     internal static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position;if(RegionalCampaign.RoadActorPointAt(w,actor,at)!=point)return false;
         if(w.Branches!.Journeys.Any(j=>j.Actor==actor&&w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<rev))&&j.Legs.Any(l=>l.StartAt<=at&&at<l.EndAt)))return false;
-        var last=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<rev&&q.At<=at).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);return actor!=ControlSuccession.PlayerAtRevision(w,rev)||last?.Input.Action!=NewMilitaryAction.Deploy;
+        var last=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<rev&&q.At<=at).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);return actor!=w.PlayerControl||last?.Input.Action!=NewMilitaryAction.Deploy;
     }
     static FactionStanceAuthority Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var owner=Owner(w,site);Need(!CastleAdministration.Blocked(w,site,at,rev)&&owner!=null&&(FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev)) is {} a&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"その地域の試作年貢契約と現地支配を持つ当主ではありません");return (FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev))!;
     }
     static CommunityState Replay(ContractWorld w,CommunityOrder[] orders,CommunityNotice[] notices,long until,long revision,EntityId? onlySite=null)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var ids=new HashSet<EntityId>();long prior=0,priorAt=0;foreach(var q in orders){using var _cc=ControlContext.At(q.Revision);Need((q.Actor==w.PlayerControl||NpcCommunityAdministration.Authorized(w,q))&&q.At>=priorAt&&q.At<=until&&q.Revision>prior&&q.Revision<=revision&&EntityId.IsValid(q.Input.Id.Value)&&ids.Add(q.Input.Id)&&SitesFor(w).Contains(q.Input.Site)&&Enum.IsDefined(q.Input.Action)&&q.Input.Amount>0,"地域帳簿の入力・時点・順序が不正です");Need(!FactionStances.OtherIdUsed(w,q.Input.Id,includeCommunities:false)&&!FactionStances.OwnIdUsed(w,q.Input.Id),"その原本IDは別の操作で使用済みです");Need(q.Authority==Authority(w,q.Actor,q.Input.Site,q.At,q.Revision)&&Local(w,q.Actor,q.Input.Site,q.At,q.Revision),"現地権限・引受原本が一致しません");prior=q.Revision;priorAt=q.At;}
         var flights=w.Communities?.Flights;
         var events=new List<CommunityEvent>();var accounts=new List<CommunityAccounts>();
@@ -80,7 +80,7 @@ public static class CommunityEconomy
     internal static void Apply(ContractWorld w,CommunityInput input)=>ApplyFor(w,input,w.PlayerControl);
     internal static void ApplyFor(ContractWorld w,CommunityInput input,EntityId actor){Need(Enabled(w),"この保存では複数地域の帳簿は使用できません");var q=new CommunityOrder(input,actor,w.ElapsedSeconds,w.CommitSequence,Authority(w,actor,input.Site,w.ElapsedSeconds,w.CommitSequence));w.Communities=Replay(w,[..w.Communities!.Orders,q],w.Communities.Notices,w.ElapsedSeconds,w.CommitSequence);}
     static VillageReliefClaim? ReliefClaim(ContractWorld w,EntityId site,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!VillageConsultation.Enabled(w))return null;
         int damage=RegionalWeather.Observe(w,site,at,revision+1)?.Fields??0;
         var entries=(w.Villages?.Entries??[]).Where(e=>e.Input.Site==site && e.Revision<=revision && e.At<=at).ToArray();
@@ -137,5 +137,5 @@ public static class CommunityEconomy
 public sealed partial class WorldSession
 {
     public CommunityView? CommunityEconomyView(){lock(gate)return CommunityEconomy.View(state,state.PlayerControl);}
-    public CommandResult ManageCommunity(CommunityInput input,EntityId actor,long revision){lock(gate){if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!CommunityEconomy.Enabled(state)||!CommunityEconomy.SitesFor(state).Contains(input.Site))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"この地域の操作ではありません");var old=state.Communities!.Orders.SingleOrDefault(q=>q.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の操作で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"帳簿を確認し直してください");try{Change(w=>CommunityEconomy.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"村と家の現物帳簿へ記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
+    public CommandResult ManageCommunity(CommunityInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(actor!=state.PlayerControl||!CommunityEconomy.Enabled(state)||!CommunityEconomy.SitesFor(state).Contains(input.Site))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"この地域の操作ではありません");var old=state.Communities!.Orders.SingleOrDefault(q=>q.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の操作で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"帳簿を確認し直してください");try{Change(w=>CommunityEconomy.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"村と家の現物帳簿へ記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
 }

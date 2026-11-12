@@ -8,7 +8,7 @@
 
 2026-11-12：ユーザーから戦国DBの完成の連絡と、百代鏡DBを作ってよいとの指示。ドット絵の素体の書き出しは規約上問題ないと確認（絵を Git に入れた）。
 
-直近：[全国1560年の開始の版](../Design/NationalStartV1/README.md)（2026-11-12）。新規ゲームの画面で「全国」を選び、百代鏡DBの当主で始めて城へ移動できる（家252・武将4,014人、遠方の人物の休眠で1日分の進行が約58秒）。次は全国の移動網に川・道・山を反映（設計 [NATIONAL_PLACEMENT_DESIGN_V1.md](../Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md) 第4節5）。
+直近（2026-11-12、Codex と並行）：Claude は[操作の引き継ぎ](../Design/ControlSuccessionV1/README.md)・[全国の家の戦略](../Design/NationalStrategyV1/README.md)（出陣・同盟・和睦・破約・家督・史実の出陣14件）・位階と官職の表と奏請・画面の説明の文言の削除。Codex は負傷・捕縛・合戦・滅亡と再興、全国の世界の残り（移動網の地形・勢力の色・能力と生年）。分担と進捗表の決まりは Codex への指示（2026-11-12）のとおり（基準の番号は Codex が v111〜v149、Claude が v150 以降）。
 
 ## 全国共通の判断支援
 
@@ -78,6 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-12 | 操作の引き継ぎ・全国の家の戦略・位階と官職の表と奏請・出世の目標・画面の説明の文言の削除（v150） | Docs/Design/ControlSuccessionV1/・NationalStrategyV1/ | （統合後に記入） |
 | 2026-11-12 | 全国1560年の開始の版（BD-04 25→35・BD-20 35→45。休眠の世界の手番のまとめた検査 v109 を含む） | Docs/Design/NationalStartV1/・Docs/Design/NpcBatchValidationV1/ | PR142 → main cde0bf58 |
 | 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | PR141 → main 66503de0 |
 | 2026-11-12 | 進行の重さの見直し 第1段（BD-04 20→22） | Docs/Design/AdvanceCostV1/ | PR140 → main fb8aea41 |

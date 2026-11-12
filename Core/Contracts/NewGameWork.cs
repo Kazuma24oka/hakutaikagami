@@ -68,7 +68,7 @@ public static class NewGameWork
         return known&&w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope)&&RegionalCampaign.Nearby(w,actor).Any(p=>p.Actor==t.Issuer);
     }
     static bool Local(ContractWorld w,TaskState t,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var last=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).OrderBy(q=>q.Revision).Where(q=>q.At<at||q.At==at&&q.Revision<revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);if(last?.Input.Action==NewMilitaryAction.Deploy)return false;
         var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==t.Scope).Position;
         return RegionalCampaign.RoadActorPointAt(w,t.Executor,at)==point&&RegionalCampaign.RoadActorPointAt(w,t.Issuer,at)==point&&!w.Branches!.Journeys.Any(j=>(j.Actor==t.Executor||j.Actor==t.Issuer)&&w.Requests.Any(r=>r.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<revision))&&j.Legs.Any(l=>l.StartAt<=at&&at<l.EndAt));
@@ -80,7 +80,7 @@ public static class NewGameWork
         w.WorkCycle=w.WorkCycle! with{Payments=[..w.WorkCycle.Payments,proof]};w.EffectLedger=[..w.EffectLedger,new(effect,Key(t.Id),ContractJson.CanonicalHash(proof),t.Id,w.ElapsedSeconds,"work-payment")];w.Transfers=[..w.Transfers,new(TransferId(t.Id),effect,Wallet(t.Issuer),Wallet(t.Executor),Reward(w,t),w.ElapsedSeconds)];w.Debts=w.Debts.Select(d=>d.Id==DebtId(t)?d with{Outstanding=0}:d).ToArray();Sync(w);
     }
     internal static void Rewind(ContractWorld w,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(!Enabled(w))return;SocialWorld.Rewind(w,at,rev);SocialAssets.Rewind(w,at,rev);MeritRewards.Rewind(w,at,rev);InformationSchemes.Rewind(w,at,rev);HouseholdCourt.Rewind(w,at,rev);var future=w.WorkCycle!.Payments.Where(p=>p.At>at||p.At==at&&p.Revision>rev).Select(p=>p.Task).ToHashSet();w.WorkCycle=w.WorkCycle with{Payments=w.WorkCycle.Payments.Where(p=>!future.Contains(p.Task)).ToArray(),Openings=w.WorkCycle.Openings.Where(o=>o.At<at||o.At==at&&o.Revision<=rev).ToArray()};w.Transfers=w.Transfers.Where(t=>!future.Any(task=>TransferId(task)==t.Id)).ToArray();w.EffectLedger=w.EffectLedger.Where(e=>!future.Any(task=>EffectId(task)==e.Id)).ToArray();
     }
     public static void Validate(ContractWorld w)

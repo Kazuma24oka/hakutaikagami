@@ -8,7 +8,7 @@ public static class WorkDuty
     static WorkDutyAgreement[] Rows(ContractWorld w)=>w.WorkCycle?.Duties??[];
     static bool Prior(long time,long revision,long at,long rev)=>time<at||time==at&&revision<=rev;
     static bool BondActive(ContractWorld w,TimedRelation b,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(at<b.From)return false;
         // End of service may be committed later at the same world second.
         bool ended=b.Until<at||b.Until==at&&b.Revision<=rev;
@@ -24,10 +24,10 @@ public static class WorkDuty
     {
         if(!WorkProgression.Enabled(w))return null;long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;
         var p=NewGameService.View(w,t,r).Principal;if(p==null||WorkProgression.Recognized(w,p.Value,t,r+1)==0)return null;
-        var b=HouseholdService.BondsAt(w,t,r).SingleOrDefault(b=>b.Subject==ControlSuccession.PlayerAtRevision(w,revision)&&b.Target==p&&BondActive(w,b,t,r));
+        var b=HouseholdService.BondsAt(w,t,r).SingleOrDefault(b=>b.Subject==w.PlayerControl&&b.Target==p&&BondActive(w,b,t,r));
         if(b==null||Rows(w).Any(a=>a.Bond==b.Id&&Prior(a.At,a.Revision,t,r)))return null;
-        var own=RegionalCampaign.ActorPointAt(w,ControlSuccession.PlayerAtRevision(w,revision),t);var lord=RegionalCampaign.ActorPointAt(w,p.Value,t);
-        var location=w.Locations.Single(l=>l.Actor==ControlSuccession.PlayerAtRevision(w,revision));
+        var own=RegionalCampaign.ActorPointAt(w,w.PlayerControl,t);var lord=RegionalCampaign.ActorPointAt(w,p.Value,t);
+        var location=w.Locations.Single(l=>l.Actor==w.PlayerControl);
         return own==lord&&BranchRoutes.GraphNodes(w).Any(n=>n.Position==own)&&location.Kind==LocationKind.AtSite?p:null;
     }
     internal static void Accept(ContractWorld w,EntityId id,EntityId principal)
@@ -49,7 +49,7 @@ public static class WorkDuty
         void Need(bool ok){if(!ok)throw new InvalidDataException("担当合意の根拠が不正です");}
         Need(WorkProgression.Enabled(w)&&rows.Select(a=>a.Id).Distinct().Count()==rows.Length&&rows.Select(a=>a.Bond).Distinct().Count()==rows.Length);
         long last=0;
-        foreach(var a in rows){
+        foreach(var a in rows){using var _cc=ControlContext.At(a.Revision);
             Need(EntityId.IsValid(a.Id.Value)&&a.Revision>last&&a.Revision<=w.CommitSequence&&a.At>=0&&a.At<=w.ElapsedSeconds&&a.Fee==Fee);last=a.Revision;
             var b=HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence-1).Single(b=>b.Id==a.Bond);Need(b.Subject==ControlSuccession.PlayerAtRevision(w,a.Revision)&&b.Target==a.Principal&&BondActive(w,b,a.At,a.Revision-1));
             Need(NewGameService.View(w,a.At,a.Revision-1).Principal==a.Principal&&WorkProgression.Recognized(w,a.Principal,a.At,a.Revision)>0);
@@ -62,9 +62,9 @@ public static class WorkDuty
 public sealed partial class WorldSession
 {
     public CommandResult AcceptWorkDuty(EntityId id,EntityId principal,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){
-            if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!EntityId.IsValid(id.Value))return new(ResultCode.NotAvailable,id,state.CommitSequence,"本人の担当引受ではありません");
+            if(actor!=state.PlayerControl||!EntityId.IsValid(id.Value))return new(ResultCode.NotAvailable,id,state.CommitSequence,"本人の担当引受ではありません");
             var old=state.WorkCycle?.Duties?.SingleOrDefault(a=>a.Id==id);
             if(old!=null)return new(old.Principal==principal?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,id,state.CommitSequence,"担当は引受済みです");
             if(NewGameMilitary.OwnIdUsed(state,id)||state.Service?.Requests.Any(q=>q.Input.Id==id)==true||state.Requests.Any(q=>q.Id==id)||state.TravelDecisions?.Any(q=>q.Request.Id==id)==true)return new(ResultCode.IdPayloadConflict,id,state.CommitSequence,"別の操作で使ったIDです");

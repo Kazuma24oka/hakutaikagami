@@ -24,10 +24,10 @@ public static class PersonalLife
     static LifeEntry? Active(IEnumerable<LifeEntry> es,long at)=>es.LastOrDefault(e=>Rest(e)&&e.At<=at&&at<End(e,es));
     public static bool Resting(ContractWorld w,long at,long rev)=>Active(Entries(w,at,rev),at)!=null;
     public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long rev=long.MaxValue)=>-Entries(w,at,rev).Where(e=>wallet==NewGameWork.Wallet(ControlSuccession.PlayerAtRevision(w,e.Revision))).Sum(e=>e.Paid);
-    public static long RiceConsumed(ContractWorld w,EntityId actor,long at=long.MaxValue,long rev=long.MaxValue)=>actor==ControlSuccession.PlayerAtRevision(w,rev)?Entries(w,at,rev).LongCount(e=>e.Input.Action==LifeAction.EatPrivateRice):0;
+    public static long RiceConsumed(ContractWorld w,EntityId actor,long at=long.MaxValue,long rev=long.MaxValue)=>actor==w.PlayerControl?Entries(w,at,rev).LongCount(e=>e.Input.Action==LifeAction.EatPrivateRice):0;
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Life=new(1,Policy,[]);}
-    static bool Free(ContractWorld w,long at,long rev)=>!TreatySupply.Carrying(w,at,rev)&&!CastleHandover.Jobs(w,at,rev).Any(j=>j.Pending!=null)&&!HouseLogistics.Active(w,at,rev)&&!NewGameMilitary.LedgerStates(w).Any(s=>{var past=w.ForkMilitaryObservation();past.NewMilitary=s;return NewGameMilitary.CustodyAt(past,at,rev);})&&!w.Tasks.Any(t=>t.Executor==ControlSuccession.PlayerAtRevision(w,rev)&&w.Requests.Any(r=>r.Id==t.RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<rev))&&(t.FinishedAt==null||t.FinishedAt>at)&&t.Execution is not(ExecutionPhase.Stopped or ExecutionPhase.Completed));
-    static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,ControlSuccession.PlayerAtRevision(w,rev),site,at,rev,stableCompletion:true);
+    static bool Free(ContractWorld w,long at,long rev)=>!TreatySupply.Carrying(w,at,rev)&&!CastleHandover.Jobs(w,at,rev).Any(j=>j.Pending!=null)&&!HouseLogistics.Active(w,at,rev)&&!NewGameMilitary.LedgerStates(w).Any(s=>{var past=w.ForkMilitaryObservation();past.NewMilitary=s;return NewGameMilitary.CustodyAt(past,at,rev);})&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&w.Requests.Any(r=>r.Id==t.RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<rev))&&(t.FinishedAt==null||t.FinishedAt>at)&&t.Execution is not(ExecutionPhase.Stopped or ExecutionPhase.Completed));
+    static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,w.PlayerControl,site,at,rev,stableCompletion:true);
     internal static void Apply(ContractWorld w,LifeInput i)
     {
         w.Life=w.Life! with{Entries=[..w.Life.Entries,new(i,w.ElapsedSeconds,w.CommitSequence,i.Action==LifeAction.RestInn?InnCost:0)]};NewGameWork.Sync(w);
@@ -86,8 +86,8 @@ public static class PersonalLife
 public sealed partial class WorldSession
 {
     public PersonalLifeView? PersonalLifeView(){lock(gate)return PersonalLife.View(state);}
-    public CommandResult ManageLife(LifeInput input,EntityId actor,long revision){lock(gate){
-        if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!PersonalLife.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の生活操作ではありません");
+    public CommandResult ManageLife(LifeInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){
+        if(actor!=state.PlayerControl||!PersonalLife.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の生活操作ではありません");
         var old=state.Life!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"処理済みの生活操作です");
         if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別操作のIDです");
         if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");

@@ -17,12 +17,12 @@ public static class AdultAdoption
     static AdoptionEntry[] Entries(ContractWorld w)=>w.Adoption?.Entries??[];
     static AdoptionEntry[] Case(AdoptionEntry[] rows,EntityId root)=>rows.Where(e=>e.Input.Id==root||e.Input.Original==root).ToArray();
     static bool Closed(AdoptionEntry[] rows,AdoptionTerms t,long at)=>at>t.Until||Case(rows,t.Id).Any(e=>e.Input.Action is AdoptionAction.PersonalNo or AdoptionAction.Withdraw or AdoptionAction.Implement);
-    static bool FamilyAvailable(ContractWorld w,AdoptionEntry[] rows,EntityId parent,EntityId child,long at,long rev){
+    static bool FamilyAvailable(ContractWorld w,AdoptionEntry[] rows,EntityId parent,EntityId child,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(MarriageConflict(w,parent,child,at,rev))return false;var actual=rows.Where(e=>e.Input.Action==AdoptionAction.Implement).Select(e=>rows.Single(q=>q.Input.Id==e.Input.Original).Terms!).ToArray();if(actual.Any(t=>t.Child==child))return false;
         var links=ParentLinks(w,at,rev);
         return !links.Contains((parent,child)) && !Ancestors(links,parent).Contains(child);
     }
-    static bool Ready(ContractWorld w,AdoptionTerms t,AdoptionEntry[] rows,long at,long rev){
+    static bool Ready(ContractWorld w,AdoptionTerms t,AdoptionEntry[] rows,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(Closed(rows,t,at)||!Present(w,t.Parent,t.Site,at,rev)||!Present(w,t.Child,t.Site,at,rev)||!SameHouse(w,t.Parent,at,rev)||!SameHouse(w,t.Child,at,rev))return false;
         var own=Case(rows,t.Id);if(!own.Any(e=>e.Input.Action==AdoptionAction.PersonalYes))return false;
         return t.Houses.All(h=>own.Any(e=>e.Input.Action==AdoptionAction.ApproveHouse&&e.Input.House==h.Owner&&e.Actor==h.Representative)&&Present(w,h.Representative,t.Site,at,rev)&&FactionStances.ResolveAuthority(w,h.Representative,h.Owner,at,Math.Min(rev,w.CommitSequence))!=null);
@@ -70,8 +70,8 @@ public static class AdultAdoption
 }
 public sealed partial class WorldSession
 {
-    public CommandResult DecideAdoption(AdoptionInput input,EntityId actor,long revision){lock(gate){
-        if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!AdultAdoption.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の養子相談ではありません");
+    public CommandResult DecideAdoption(AdoptionInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){
+        if(actor!=state.PlayerControl||!AdultAdoption.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の養子相談ではありません");
         var old=state.Adoption!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input&&old.Actor==actor?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"記録済みです");
         if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");
         try{Change(w=>AdultAdoption.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"本人の判断を記録しました。家の承諾と実施は別です");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}

@@ -43,7 +43,7 @@ public static partial class NewGameMilitary
         w.NewMilitary=w.NewMilitary with{UnitDirective=state with{Dispatches=[..state.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,x.Known.Unit,UnitDirectiveRole,new("evidence:unit-directive/"+Hash(Text(x.Known))),from,to,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};
     }
     static UnitDirectiveState? DirectiveBefore(UnitDirectiveState? s,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(s==null)return null;var ds=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return ds.Length==0?null:s with{Cancellation=DirectiveCancellationBefore(s.Cancellation,at,rev),Holding=DirectiveHoldingBefore(s.Holding,at,rev),Dispatches=ds,Receipts=s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),Replies=s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),Effects=s.Effects.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray()};
     }
     static bool Affects(NewMilitaryOrder o,int unit)=>o.AffectedUnits==null||o.AffectedUnits.Contains(unit);

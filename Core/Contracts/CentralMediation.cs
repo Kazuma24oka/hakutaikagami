@@ -15,7 +15,7 @@ public static class CentralMediation
         SocialWorld.ConsentBonus(w,CentralCourtCatalog.CourtBroker,applicant,at,rev)>=2;
 
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var broker=CentralCourtCatalog.CourtBroker;
         if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || i.Site!=CentralCourtCatalog.Kyoto || place!=i.Site ||
            !TransportWork.At(w,actor,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||

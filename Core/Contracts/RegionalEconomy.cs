@@ -22,15 +22,15 @@ public static class RegionalEconomy
     public static long HarvestAt(ContractWorld w,int year)=>checked((DateOnly.ParseExact(year+"-10-01","yyyy-MM-dd").DayNumber-DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd").DayNumber)*86400L);
     public static long NextHarvest(ContractWorld w,long at){int y=DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd").AddDays(checked((int)(at/86400))).Year;long n=HarvestAt(w,y);return n>at?n:HarvestAt(w,y+1);}
     static bool LocalAt(ContractWorld w,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var node=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==Site);
         if(RegionalCampaign.RoadActorPointAt(w,actor,at)!=node.Position)return false;
         if(w.Branches!.Journeys.Any(j=>j.Actor==actor&&w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<revision))&&j.Legs.Any(l=>l.StartAt<=at&&at<l.EndAt)))return false;
         var last=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<revision&&(q.At<at||q.At==at)).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);
-        return actor!=ControlSuccession.PlayerAtRevision(w,revision)||last?.Input.Action!=NewMilitaryAction.Deploy;
+        return actor!=w.PlayerControl||last?.Input.Action!=NewMilitaryAction.Deploy;
     }
     static FactionStanceAuthority Authority(ContractWorld w,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         Need(Owner(w) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,revision) is {} auth&&auth.Home==Site,"清洲の試作年貢契約と現地支配を持つ当主だけが扱えます");
         return FactionStances.ResolveAuthority(w,actor,Owner(w)!.Value,at,revision)!;
     }

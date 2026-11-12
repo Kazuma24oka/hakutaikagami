@@ -15,7 +15,7 @@ public static class DefectionPacts
             (at<m.Until || at==m.Until && rev<m.Revision))?.Target;
 
     internal static SecretPact? Negotiate(ContractWorld w,EntityId id,EntityId actor,EntityId partner,PactPurpose purpose,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(!CharacterRelations.Enabled(w) || !Enum.IsDefined(purpose) || actor==partner ||
             Assassination.DeadAt(w,actor,at,rev) || Assassination.DeadAt(w,partner,at,rev))return null;
         var site=PersonalCompanions.SiteAt(w,actor,at,rev);

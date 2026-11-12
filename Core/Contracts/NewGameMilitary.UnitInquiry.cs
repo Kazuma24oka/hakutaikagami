@@ -42,7 +42,7 @@ public static partial class NewGameMilitary
         int index=ReceivingUnitIndex(w,d);Need(index>=0,"照会の受信隊がありません");var position=Position(w,index,w.ElapsedSeconds);
         return new(d.Message,w.ElapsedSeconds,d.Recipient.Value,StrengthAt(w,index,w.ElapsedSeconds),RoutPhase(w,index),Position(w,index,w.ElapsedSeconds+1)!=position,position==Home(w,index),position,rows);
     }
-    static UnitInquiryState? UnitInquiryBefore(UnitInquiryState? s,long at,long rev){if(s==null)return null;var dispatches=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return dispatches.Length==0?null:new(s.Contract,dispatches,s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray());}
+    static UnitInquiryState? UnitInquiryBefore(UnitInquiryState? s,long at,long rev){using var _ccRev=ControlContext.At(rev);if(s==null)return null;var dispatches=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return dispatches.Length==0?null:new(s.Contract,dispatches,s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray());}
     static void ValidateUnitInquiry(ContractWorld w)
     {
         var s=w.NewMilitary!;var x=s.UnitInquiry;Need((x!=null)==s.Requests.Any(q=>UnitInquiryAction(q.Input.Action)),"部隊照会と原判断が一致しません");if(x==null)return;

@@ -26,7 +26,7 @@ public static class MusterNotices
     internal static bool Handles(CourtAction action) => action is CourtAction.SendMusterNotice or CourtAction.AttendMuster;
 
     public static CourtEvent[] Reservations(ContractWorld w, EntityId recipient, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var events = HouseholdCourt.Events(w);
         return events.Where(e => e.Input.Action == CourtAction.SendMusterNotice && e.Input.Person == recipient &&
             e.Revision < rev && e.At <= at && HouseholdCourt.Received(w, e.Input.Id, recipient, at, rev) &&
@@ -92,7 +92,7 @@ public static class MusterNotices
             .OrderBy(e=>e.Input.When).FirstOrDefault();
 
     internal static void Check(ContractWorld w, CourtInput i, EntityId actor, EntityId place, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if (i.Action == CourtAction.SendMusterNotice)
         {
             if (actor == i.Person || i.Reference != null || i.Amount is < 1 or > 100 || i.When <= at ||

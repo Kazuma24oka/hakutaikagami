@@ -66,7 +66,7 @@ public static class JointIndependence
     }
 
     public static bool CommandedCastle(ContractWorld w,EntityId person,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var latest=w.Castellan?.Entries.LastOrDefault(e=>e.Input.Site==site && e.Revision<rev &&
             e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);
         if(latest!=null)return CastleAdministration.Grant(w,site,at,rev)?.Agent==person;

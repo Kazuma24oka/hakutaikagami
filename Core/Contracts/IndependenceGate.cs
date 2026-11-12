@@ -6,7 +6,7 @@ public static class IndependenceGate
         or CourtAction.RefuseIndependentGate or CourtAction.ReceiveIndependentGate or CourtAction.ReceiveIndependentKeep;
     // 指揮官が隊を離れて城に戻った場合、本人の到着と各隊の位置を別々に確認する。
     static bool ReturnedInPerson(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(actor!=w.PlayerControl)return false;
         var state=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests.Select(q=>(Ledger:s,Request:q)))
             .Where(x=>(x.Request.At,x.Request.Revision).CompareTo((at,rev))<0 &&
@@ -29,7 +29,7 @@ public static class IndependenceGate
         !Assassination.DeadAt(w,actor,at,rev) && (TransportWork.At(w,actor,d.Site,at,rev,true) || ReturnedInPerson(w,actor,d.Site,at,rev));
     // 交渉の参照は、独立した本人なら密約原本、追随者なら本人の公開返答に結び付ける。
     internal static IEnumerable<IndependenceDeclaration> LocalClaims(ContractWorld w,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var declaration in w.Declarations??[]){
             if(declaration.CheckGarrison!=true || declaration.Revision>=rev)continue;
             if(CastleHandover.HasGarrison(w,declaration.FormerHouse,declaration.Site,declaration.At,declaration.Revision))
@@ -44,7 +44,7 @@ public static class IndependenceGate
     static bool CommandedAtAnswer(ContractWorld w,CourtEvent answer)=>
         JointIndependence.CommandedCastle(w,answer.Actor,answer.Place,answer.At,answer.Revision);
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var d=LocalClaims(w,rev).SingleOrDefault(d=>d.Pact==i.Reference);
         if(d==null || i.Site!=d.Site || site!=d.Site || i.Owner!=d.FormerHouse || !JointIndependence.CommandedCastle(w,d.Founder,d.Site,d.At,d.Revision))
             throw new InvalidDataException("旧主家の守備が残った独立原本を指定してください");

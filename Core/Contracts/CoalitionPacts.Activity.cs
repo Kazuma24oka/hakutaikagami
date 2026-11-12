@@ -6,7 +6,7 @@ public static partial class CoalitionPacts
     public const string ActivityReport="coalition-activity-report";
     internal static bool IsActivity(CourtAction a)=>a is CourtAction.ReportCoalitionSortie or CourtAction.ReportSeparatePeace;
     // この家の当事者が確認できる実行原本と、個別に認識済みの成立原本に限定する。
-    static IEnumerable<(EntityId Id,long At,long Revision)> Acts(ContractWorld w,CourtAction action,EntityId actor,EntityId owner,EntityId target,long at,long rev){
+    static IEnumerable<(EntityId Id,long At,long Revision)> Acts(ContractWorld w,CourtAction action,EntityId actor,EntityId owner,EntityId target,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(action==CourtAction.ReportSeparatePeace){
             foreach(var f in TruceNegotiations.Known(w,actor,at,rev))
                 if(f.Terms.A==owner && f.Terms.B==target || f.Terms.A==target && f.Terms.B==owner)yield return(f.Acceptance,f.At,f.Revision);
@@ -28,7 +28,7 @@ public static partial class CoalitionPacts
             if(task?.StartedAt is {} start && start<=at && CastleAdministration.Owner(w,site,start,e.Revision)==target)yield return(e.Input.Id,start,e.Revision);
         }
     }
-    static void CheckActivity(ContractWorld w,CourtInput i,EntityId actor,long at,long rev){
+    static void CheckActivity(ContractWorld w,CourtInput i,EntityId actor,long at,long rev){using var _ccRev=ControlContext.At(rev);
         var rows=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev).ToArray();
         var offer=rows.SingleOrDefault(e=>e.Input.Id==i.Reference && e.Input.Action==CourtAction.ProposeCoalition);
         if(offer==null || i.Person!=offer.Actor || i.ActivityEvidence==null)throw new InvalidDataException("盟約と行動原本を指定してください");

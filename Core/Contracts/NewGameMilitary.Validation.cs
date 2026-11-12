@@ -6,7 +6,7 @@ public static partial class NewGameMilitary
     internal static ContractWorld WorldEngagementContext(ContractWorld w,EntityId army)=>LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army));
     internal static ContractWorld WorldEngagementBefore(ContractWorld w,EntityId army,long at,long rev)=>BeforeState(LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army)),at,rev);
     static ContractWorld BeforeState(ContractWorld original,long at,long rev,bool observationOnly=false)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
         if(w.Castles is {} castles)w.Castles=castles with{Entries=castles.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray()};if(w.Life is {} life)w.Life=life with{Entries=life.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray()};BattlefieldRules.Rewind(w,at,rev);PrivateStanddown.Rewind(w,at,rev);PrivateInformation.Rewind(w,at,rev);TruceNegotiations.Rewind(w,at,rev);TreatyNegotiations.Rewind(w,at,rev);PersonalCompanions.Rewind(w,at,rev);if(PersonalCompanions.PersonalServiceEnabled(w)||w.HouseService!=null)NewGameService.Sync(w);VoyageExpense.Rewind(w,at,rev);TransportWork.Rewind(w,at,rev);NewGameWork.Rewind(w,at,rev);w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
         if (w.Branches is {} branches)
@@ -17,13 +17,13 @@ public static partial class NewGameMilitary
         w.MilitaryLedgerHistory=original.MilitaryLedgerHistory??LedgerStates(original);
         w.NewMilitary=LedgerStateBefore(w.NewMilitary!,at,rev);
         w.Locations=w.Locations.Select(l=>{
-            var physical=l.Actor==ControlSuccession.PlayerAtRevision(w,rev)?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
+            var physical=l.Actor==w.PlayerControl?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
             if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
             var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(FieldWorld.FromWorld(point)),Contract,0);
         }).ToArray();RewindUnitTransport(w);var controlling=ControllingLedger(w,at);SyncLedger(w,w.NewMilitary==null||controlling==null||LedgerKey(controlling)==LedgerKey(w.NewMilitary));return w;
     }
     static NewMilitaryState? LedgerStateBefore(NewMilitaryState s,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var requests=s.Requests.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray();
         return requests.Length==0?null:s with{
             RemoteSuccession=RemoteBefore(s.RemoteSuccession,at,rev),ActiveSuccession=ActiveBefore(s.ActiveSuccession,at,rev),Authority=AuthorityBefore(s.Authority,at,rev),UnitDirective=DirectiveBefore(s.UnitDirective,at,rev),Observation=ObservationBefore(s,at,rev),Cancellation=CancellationBefore(s,at,rev),CommandHolding=CommandHoldingBefore(s,at,rev),HeldDelivery=HeldBefore(s,at,rev),ReplyRecovery=ReplyRecoveryBefore(s,at,rev),UnitInquiry=requests.Any(q=>UnitInquiryAction(q.Input.Action))?UnitInquiryBefore(s.UnitInquiry,at,rev):null,UnitRetry=requests.Any(q=>UnitRetryAction(q.Input.Action))?UnitRetryBefore(s.UnitRetry,at,rev):null,Rout=requests.Any(q=>q.Input.MotionContract==RoutContract)?RoutBefore(s.Rout,at,rev):null,Withdrawal=requests.Any(q=>WithdrawalAction(q.Input.Action))?WithdrawalBefore(s.Withdrawal,at,rev):null,Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),

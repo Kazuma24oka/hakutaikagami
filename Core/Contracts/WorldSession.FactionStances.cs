@@ -2,7 +2,7 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed partial class WorldSession
 {
     public CommandResult DecideFactionStance(FactionStanceInput input,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){
             if(!NewGameWorld.Enabled(state)||actor!=state.PlayerControl||!EntityId.IsValid(input.Id.Value))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の政治判断ではありません");
             var old=state.FactionStances?.Decisions.SingleOrDefault(d=>d.Input.Id==input.Id);

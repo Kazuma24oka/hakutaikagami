@@ -11,7 +11,7 @@ public static class PeaceMediation
     internal static bool Handles(CourtAction a)=>a is CourtAction.ReportPeaceRefusal or CourtAction.CertifyPeaceAgreement || IsVote(a) || a is CourtAction.AskPeaceMediation or CourtAction.SendPeaceProposal or CourtAction.DeclinePeaceMediation;
     static EntityId Office(EntityId broker)=>broker==CentralCourtCatalog.TempleBroker?TempleMilitary.Site:CentralCourtCatalog.Kyoto;
     public static IEnumerable<EntityId> Brokers(ContractWorld w)=>Brokers(w,w.ElapsedSeconds,w.CommitSequence);
-    static IEnumerable<EntityId> Brokers(ContractWorld w,long at,long revision){
+    static IEnumerable<EntityId> Brokers(ContractWorld w,long at,long revision){using var _ccRev=ControlContext.At(revision);
         yield return CentralCourtCatalog.CourtBroker;yield return CentralCourtCatalog.ShogunBroker;
         var incumbent=SupremeOffice.ShogunAt(w,at,revision);
         if(incumbent is {} shogun && shogun!=CentralCourtCatalog.CourtBroker && shogun!=CentralCourtCatalog.ShogunBroker &&
@@ -20,7 +20,7 @@ public static class PeaceMediation
     }
     static bool Supports(ContractWorld w,EntityId broker,EntityId applicant,long at,long rev)=>SocialWorld.ConsentBonus(w,broker,applicant,at,rev)>=2;
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(i.Action==CourtAction.ReportPeaceRefusal){CheckRefusal(w,i,actor,place,at,rev);return;}
         if(i.Action==CourtAction.CertifyPeaceAgreement){CheckAgreement(w,i,actor,place,at,rev);return;}
         if(IsVote(i.Action)){CheckVote(w,i,actor,place,at,rev);return;}
@@ -58,7 +58,7 @@ public static class PeaceMediation
         }
     }
     static IEnumerable<MessageEnvelope> Letters(ContractWorld w,CourtInput i,EntityId actor,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var house in new[]{i.Owner,i.OtherHouse!.Value}){
             var faction=HouseSuccession.Factions(w,at,rev-1).Single(f=>f.Id==house.Value);
             var id=HouseholdCourt.Id("peace-proposal",i.Id.Value+"/"+house.Value);
@@ -74,7 +74,7 @@ public static class PeaceMediation
             new(letter.DeliverySite!),Amount:source.Amount,Reference:source.Id){OtherHouse=first?source.OtherHouse:source.Owner};
     }
     static void CheckVote(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var rows=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev);
         var source=rows.SingleOrDefault(e=>e.Input.Action==CourtAction.SendPeaceProposal && e.Input.Id==i.Reference);
         if(source==null || HouseSuccession.Head(w,i.Owner,at,rev-1)!=actor || place!=i.Site ||
@@ -117,7 +117,7 @@ public static class PeaceMediation
     static CourtInput RefusalReport(CourtEvent vote)=>vote.Input with{Id=HouseholdCourt.Id("peace-refusal-report",vote.Input.Id.Value),
         Action=CourtAction.ReportPeaceRefusal,Reference=vote.Input.Id,Person=vote.Actor,Site=Office(vote.Input.Person)};
     static void CheckRefusal(ContractWorld w,CourtInput input,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var prior=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev);
         var vote=prior.SingleOrDefault(e=>e.Input.Id==input.Reference && e.Input.Action==CourtAction.RejectPeaceProposal);
         if(vote==null || !Brokers(w,at,rev-1).Contains(actor) || RefusalReport(vote)!=input || vote.Input.Person!=actor || site!=input.Site ||
@@ -140,7 +140,7 @@ public static class PeaceMediation
     static CourtInput Agreement(CourtEvent source)=>source.Input with{Id=HouseholdCourt.Id("peace-agreement",source.Input.Id.Value),
         Action=CourtAction.CertifyPeaceAgreement,Reference=source.Input.Id};
     static void CheckAgreement(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var prior=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev).ToArray();
         var source=prior.SingleOrDefault(e=>e.Input.Action==CourtAction.SendPeaceProposal && e.Input.Id==input.Reference);
         if(source==null || !Brokers(w,at,rev-1).Contains(actor) || source.Actor!=actor || Agreement(source)!=input || place!=Office(actor) ||
@@ -175,7 +175,7 @@ public static class PeaceMediation
                 Body="両家の承諾を確認。不戦成立。期間は成立時から"+e.Input.Amount+"日間。"};
     }
     public static IEnumerable<TruceFormation> Known(ContractWorld w,EntityId actor,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var e in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.CertifyPeaceAgreement && e.At<=at && e.Revision<=rev)){
             if(!Certificates(w,e).Any(m=>m.RecipientId==actor.Value && MessageFlow.LearnedAt(w.Messaging,m.Id,actor.Value) is {} opened && opened<=at))continue;
             yield return new(e.Input.Id,new(e.Input.Reference!.Value,1,null,e.Input.Owner,e.Input.OtherHouse!.Value,e.At,

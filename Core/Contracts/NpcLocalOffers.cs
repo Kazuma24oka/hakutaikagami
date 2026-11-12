@@ -17,7 +17,7 @@ public static class NpcLocalOffers
         return known ? 8 : 0;
     }
     internal static NpcChoiceInput Recipients(ContractWorld w,EntityId issuer,long at,long revision,long choiceAt)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var site=PersonalCompanions.PhysicalSiteAt(w,issuer,at,revision+1);
         var candidates=new List<NpcChoiceCandidate>{new(issuer.Value,true,true,-10,new(0,0,0,0,0,0),false,false,false)};
         if(site!=null)
@@ -30,7 +30,7 @@ public static class NpcLocalOffers
             bool busy=w.Tasks.Any(t=>t.Executor==person.Id&&(t.FinishedAt==null||t.FinishedAt>=at)&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CreatedAt<=at&&r.CommitSequence<=revision));
             var permissions=w.ForkTransportLocation();permissions.CommitSequence=revision;
             bool permit=WorldSession.Permits(permissions,person.Id,new(new("request:npc-offer-preview"),issuer,person.Id,site.Value,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+120,false,null,at+120),at,1,4,1,true,TaskKind.VoluntaryRequest),at);
-            candidates.Add(new(person.Id.Value,true,!busy&&permit&&AvailableAt(w,person.Id,at,revision),InspectionReference(w,issuer,person.Id,at),new(0,0,0,0,0,0),false,false,person.Id==ControlSuccession.PlayerAtRevision(w,revision)));
+            candidates.Add(new(person.Id.Value,true,!busy&&permit&&AvailableAt(w,person.Id,at,revision),InspectionReference(w,issuer,person.Id,at),new(0,0,0,0,0,0),false,false,person.Id==w.PlayerControl));
         }
         var settings=w.NewGame!.Judgment!;
         return new(issuer,w.Seed,choiceAt,NpcJudgment.Personality(w,issuer),NpcAspiration.Unspecified,HistoryMode.Fictional,settings.Attention,candidates.ToArray());
@@ -41,7 +41,7 @@ public static class NpcLocalOffers
         return new(new(id),issuer,recipient,site,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+120,false,null,at+120),at,1,4,1,true,TaskKind.VoluntaryRequest);
     }
     internal static void Validate(ContractWorld w,Intent intent,long at,long revision)
-    {using var _cc=ControlContext.At(revision);
+    {using var _ccRev=ControlContext.At(revision);using var _cc=ControlContext.At(revision);
         var input=NewGameNpcRoutine.Inputs(w,intent.Actor,at,revision);
         var recipient=input.Routine?.Judgment?.Recipient;
         // 過去の作成地点を使い、移動後の現在地で原本を書き換えない。

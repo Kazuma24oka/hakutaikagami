@@ -43,7 +43,7 @@ public static class CentralTitles
     }
     // 朝廷が記録している正式な位階の序列（返書の開封と関係なく、審議した時点の真実）。なければ正六位。
     internal static int FormalRank(ContractWorld w,EntityId person,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         int best=NoRank;
         var events=HouseholdCourt.Events(w);
         foreach(var e in events.Where(e=>e.Input.Action==CourtAction.IssueCourtRank&&e.Input.Person==person&&(e.At<at||e.At==at&&e.Revision<rev)))
@@ -54,14 +54,14 @@ public static class CentralTitles
         return best;
     }
     static bool FormallyHeldByOther(ContractWorld w,EntityId person,string title,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var events=HouseholdCourt.Events(w);
         return events.Any(e=>e.Input.Action==CourtAction.IssueCourtRank&&e.Input.Person!=person&&(e.At<at||e.At==at&&e.Revision<rev)&&CentralRank.RequestedTitle(events,e)==title);
     }
 
     // 朝廷の審議：位階は今の一つ上だけ。受領名・京官は相当の位階に届いていること。正式な任官は1つの職に1人。
     internal static bool Eligible(ContractWorld w,EntityId person,EntityId house,string title,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(Title(title) is not {} t||t.Grantor!="court"||t.Kind is not("rank" or "kokushi" or "kyokan"))return false;
         if(HouseSuccession.Head(w,house,at,rev)!=person)return false;
         int now=FormalRank(w,person,at,rev);
@@ -73,7 +73,7 @@ public static class CentralTitles
     public static TitleEntry[] Requestable(ContractWorld w,EntityId person,EntityId house)
     {
         long at=w.ElapsedSeconds,rev=w.CommitSequence+1;
-        var provinces=w.NewGame!.Start.Castles.Where(c=>c.Faction==house.Value).Select(c=>CastleRoutes.Catalog.Nodes.FirstOrDefault(n=>"site:"+n.Id==c.Id)?.Province).Where(p=>p!=null).ToHashSet(StringComparer.Ordinal);
+        var provinces=w.NewGame!.Start.Castles.Where(c=>c.Faction==house.Value).Select(c=>CastleRoutes.Catalog.Nodes.FirstOrDefault(n=>"site:"+n.Id==c.Id)?.Province?.TrimEnd('国')).Where(p=>p!=null).ToHashSet(StringComparer.Ordinal);
         return catalog.Value.Titles.Where(t=>(t.Kind=="rank"||t.Kind=="kokushi"&&t.Province!=null&&provinces.Contains(t.Province)||t.Kind=="kyokan"&&t.Warrior)&&Eligible(w,person,house,t.Id,at,rev))
             .OrderBy(t=>t.Kind=="rank"?0:t.Kind=="kokushi"?1:2).ThenBy(t=>t.Order).ToArray();
     }

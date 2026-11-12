@@ -39,7 +39,7 @@ public static class CentralRank
         return e.Input.Action==CourtAction.IssueCourtRank?$"朝廷の返書：{name}を認める。":$"朝廷の返書：今回の{name}の奏請は認められなかった。";
     }
     static CourtEvent Record(CourtEvent source,CourtAction action,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var input=new CourtInput(HouseholdCourt.Id(action.ToString(),source.Input.Id.Value),action,
             source.Input.Person,source.Input.Owner,CentralCourtCatalog.Kyoto,Reference:source.Input.Id);
         return new(input,CentralCourtCatalog.CourtBroker,CentralCourtCatalog.Kyoto,at,revision,false);

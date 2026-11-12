@@ -4,7 +4,7 @@ namespace HakutaiKagami.Core.Contracts;
 
 public static partial class CoalitionPacts
 {
-    static void CheckWithdrawal(ContractWorld w,CourtInput input,EntityId actor,long at,long rev){
+    static void CheckWithdrawal(ContractWorld w,CourtInput input,EntityId actor,long at,long rev){using var _ccRev=ControlContext.At(rev);
         var rows=HouseholdCourt.Events(w).Where(e=>e.Revision<rev && e.At<=at).ToArray();
         var cert=rows.SingleOrDefault(e=>e.Input.Id==input.Reference && e.Input.Action==CourtAction.ConfirmCoalition);
         if(cert==null || input.Person!=cert.Actor || input.Owner==cert.Input.Owner)throw new InvalidDataException("自家宛の成立通知を指定してください");

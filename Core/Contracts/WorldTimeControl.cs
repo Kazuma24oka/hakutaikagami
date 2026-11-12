@@ -96,12 +96,12 @@ public static class WorldTimeControl
 public sealed partial class WorldSession
 {
     public CommandResult ConfigureTime(TimeRule[] rules,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){var id=new EntityId("request:time-settings");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");if(!WorldTimeControl.Enabled(state))return new(ResultCode.NotAvailable,id,state.CommitSequence,"旧保存には新しい時間規則を適用しません");
             try{Change(w=>w.TimeControl=w.TimeControl! with{Rules=rules.ToArray()});return new(ResultCode.Accepted,id,state.CommitSequence,"時間の停止・減速設定を保存しました");}catch(InvalidDataException){return new(ResultCode.InvalidInput,id,state.CommitSequence,"時間設定を確認してください");}}
     }
     public CommandResult ContinueAfterHistory(long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){var id=new EntityId("request:continue-history");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");if(state.TimeControl is not{SummaryAt:not null,ContinuedAt:null})return new(ResultCode.NotAvailable,id,state.CommitSequence,"継続を選ぶ総括はありません");Change(w=>w.TimeControl=w.TimeControl! with{ContinuedAt=w.ElapsedSeconds,Pending=null});return new(ResultCode.Accepted,id,state.CommitSequence,"史実制御を外して継続します");}
     }
 }

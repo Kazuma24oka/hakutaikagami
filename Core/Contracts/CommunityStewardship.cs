@@ -28,14 +28,14 @@ public static partial class CommunityStewardship
     internal static EntityId? Delegate(ContractWorld w,EntityId site,long at,long rev)=>GrantAt(w,site,at,rev)?.Agent;
     static bool SameMonth(ContractWorld w,long a,long b){var epoch=DateOnly.Parse(w.EpochDate);var x=epoch.AddDays((int)(a/Day));var y=epoch.AddDays((int)(b/Day));return x.Year==y.Year&&x.Month==y.Month;}
     internal static long Budget(ContractWorld w,EntityId actor,EntityId site,EconomyAction action,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor){if(RegionalDomains.Owner(w,site) is {} owner&&HouseholdCourt.Authority(w,actor,owner,site,at,rev)!=null)return HouseholdCourt.Budget(w,actor,site,action,at,rev);return long.MaxValue;}
         long cap=action==EconomyAction.RelieveVillage?500:action==EconomyAction.CollectLevy?1000:200;
         long used=w.Communities!.Orders.Where(o=>(SharedDelegationBudget(w,site,at,rev)?DelegatedCharge(w,o.Actor,site,o.At,o.Revision):o.Actor==actor)&&o.Input.Site==site&&o.Input.Action==action&&Before(o.At,o.Revision,at,rev)&&SameMonth(w,o.At,at)).Sum(o=>o.Input.Amount);
         return Math.Max(0,cap-used);
     }
     internal static FactionStanceAuthority? Authority(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(HouseholdCourt.Authority(w,actor,owner,site,at,rev) is {} court)return court;if(!Enabled(w)||CastleAdministration.Blocked(w,site,at,rev))return null;var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor||g.Owner!=owner)return null;
         var source=FactionStances.ResolveAuthority(w,g.Principal,owner,at,Math.Min(rev,w.CommitSequence));if(source==null)return null;
         var member=w.Memberships.LastOrDefault(m=>m.Subject==actor&&m.Target==owner&&m.From<=at&&at<m.Until);if(member==null)return null;
@@ -123,5 +123,5 @@ public sealed partial class WorldSession
 {
     public StewardView? StewardshipView(){lock(gate)return CommunityStewardship.View(state);}
     public CommandResult ManageStewardship(StewardInput input,EntityId actor,long revision)
-    {lock(gate){if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!CommunityStewardship.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の委任操作ではありません");var old=state.Stewardship!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"委任を読み直してください");try{Change(w=>CommunityStewardship.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"合意・現地履行・封書を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
+    {using var _ccRev=ControlContext.At(revision);lock(gate){if(actor!=state.PlayerControl||!CommunityStewardship.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の委任操作ではありません");var old=state.Stewardship!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"委任を読み直してください");try{Change(w=>CommunityStewardship.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"合意・現地履行・封書を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
 }

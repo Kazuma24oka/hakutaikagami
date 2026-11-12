@@ -9,7 +9,7 @@ public static class HouseholdDetachment
         HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action) && e.At<=at && e.Revision<rev);
 
     static NewMilitaryRequest? Pickup(ContractWorld w,EntityId unit,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var ledger in NewGameMilitary.LedgerStates(w)){
             var context=w.ForkMilitaryLedger();context.NewMilitary=ledger;
             if(!NewGameMilitary.UnitIdsFor(context).Contains(unit) || !NewGameMilitary.CustodyAt(context,at,rev-1))continue;
@@ -19,7 +19,7 @@ public static class HouseholdDetachment
     }
 
     static bool DirectFollower(ContractWorld w,EntityId person,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var agreement=w.Companions?.Orders.LastOrDefault(q=>q.Input.Person==person && q.At<=at && q.Revision<rev &&
             q.Input.Action is CompanionAction.Agree or CompanionAction.EndAgreement);
         return agreement?.Input.Action==CompanionAction.Agree &&
@@ -29,7 +29,7 @@ public static class HouseholdDetachment
     }
 
     public static CourtEvent? Appointment(ContractWorld w,EntityId unit,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var orders=Orders(w,at,rev).ToArray();
         var acceptance=orders.LastOrDefault(e=>e.Input.Carrier==unit && e.Input.Action is CourtAction.AcceptDetachment or CourtAction.EndDetachment);
         if(acceptance?.Input.Action!=CourtAction.AcceptDetachment)return null;
@@ -38,7 +38,7 @@ public static class HouseholdDetachment
     }
 
     internal static bool OnDuty(ContractWorld w,EntityId person,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var last=Orders(w,at,rev).LastOrDefault(e=>e.Input.Person==person &&
             e.Input.Action is CourtAction.AcceptDetachment or CourtAction.EndDetachment);
         return last?.Input.Action==CourtAction.AcceptDetachment && last.Input.Carrier is {} unit &&
@@ -57,13 +57,13 @@ public static class HouseholdDetachment
     }
 
     public static bool OwnCompanyJoined(ContractWorld w,EntityId unit,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var order=Orders(w,at,rev).LastOrDefault(e=>e.Input.Action==CourtAction.BringOwnCompany && e.Input.Carrier==unit);
         return order!=null && Pickup(w,unit,at,rev)?.Input.Id==order.Input.Reference;
     }
 
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(i.Carrier is not {} unit || i.Site!=place || Pickup(w,unit,at,rev) is not {} pickup)
             throw new InvalidDataException("引受中の分隊を指定してください");
         var orders=Orders(w,at,rev).ToArray();
