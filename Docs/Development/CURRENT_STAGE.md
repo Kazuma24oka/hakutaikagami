@@ -10,7 +10,7 @@
 
 直近（2026-11-12、Codex と並行）：Claude は[操作の引き継ぎ](../Design/ControlSuccessionV1/README.md)・[全国の家の戦略](../Design/NationalStrategyV1/README.md)（出陣・同盟・和睦・破約・家督・史実の出陣14件）・位階と官職の表と奏請・画面の説明の文言の削除。Codex は v111 の移動網地形、v112 の郡支配色を完了。v113 の家の従属関係に続き、年次改名・郡収入・人物能力と生年、負傷・捕縛・合戦・滅亡と再興を担当する。分担と進捗表の決まりは Codex への指示（2026-11-12）のとおり（基準の番号は Codex が v111〜v149、Claude が v150 以降）。
 
-2026-11-12：Codex v113「全国勢力間の従属関係」。DBの直接従属だけを新規1560年世界の版付き台帳へ保存し、本人勢力に関わる範囲だけを表示。実保存復旧・続行一致を確認。詳細は [NationalFactionRelationsV1](../Design/NationalFactionRelationsV1/README.md)。
+2026-11-12：Codex v113「全国勢力間の従属関係」。DBの直接従属だけを新規1560年世界の版付き台帳へ保存し、本人勢力に関わる範囲だけを表示。実保存復旧・続行一致を確認。PR #145としてmainへsquash統合（fd7e770d）。詳細は [NationalFactionRelationsV1](../Design/NationalFactionRelationsV1/README.md)。
 
 ## 全国共通の判断支援
 
