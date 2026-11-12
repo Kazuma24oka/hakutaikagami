@@ -6,7 +6,7 @@ public static class ShogunateHonors
         CourtAction.GrantCompanionHonor=>"御相伴衆",CourtAction.PermitLacquerPalanquin=>"塗輿の免許",
         _=>throw new ArgumentOutOfRangeException(nameof(action))};
     internal static bool Handles(CourtAction action)=>action is CourtAction.GrantCompanionHonor or CourtAction.PermitLacquerPalanquin;
-    internal static void Check(ContractWorld w,CourtInput i,EntityId issuer,EntityId place,long at,long rev){
+    internal static void Check(ContractWorld w,CourtInput i,EntityId issuer,EntityId place,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(place!=CentralCourtCatalog.Kyoto || i.Site!=place || i.Reference!=null || SupremeOffice.ShogunAt(w,at,rev-1)!=issuer ||
             i.Person==issuer || HouseSuccession.Head(w,i.Owner,at,rev-1)!=i.Person ||
             !TransportWork.At(w,issuer,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||

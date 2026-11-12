@@ -18,10 +18,10 @@ public static class CastleHandover
     static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>TransportWork.At(w,actor,site,at,rev,stableCompletion:true);
     static EntityId Owner(ContractWorld w,EntityId site)=>new(w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction??throw new InvalidDataException("領有記録が未設定です"));
     static EntityId Head(ContractWorld w,EntityId owner,long? at=null,long? rev=null)=>HouseSuccession.Head(w,owner,at,rev);
-    static ContractWorld PastLosses(ContractWorld w,long at,long rev){var c=w.ForkMilitaryObservation();if(w.WorldClashes is {} s)c.WorldClashes=s with{Steps=s.Steps.Where(s=>s.At<at||s.At==at&&s.Revision<rev).ToArray()};return c;}
+    static ContractWorld PastLosses(ContractWorld w,long at,long rev){using var _ccRev=ControlContext.At(rev);var c=w.ForkMilitaryObservation();if(w.WorldClashes is {} s)c.WorldClashes=s with{Steps=s.Steps.Where(s=>s.At<at||s.At==at&&s.Revision<rev).ToArray()};return c;}
     // Only explicitly registered armies are counted. Missing fortress data is not a historical zero.
     public static int Forces(ContractWorld w,EntityId owner,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var c=PastLosses(w,at,rev);var anchor=FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position);int n=0;
         foreach(var m in NpcArmies.Musters(w).Where(m=>m.Owner==owner&&(m.At<at||m.At==at&&m.Revision<rev)&&!w.NpcArmies!.Returns.Any(r=>r.Muster==m.Id&&(r.At<at||r.At==at&&r.Revision<rev)))){
             var b=NewGameMilitary.LedgerIdentity(m.Owner,m.Site);if(NpcArmies.Position(w,b.Army,at)!=FieldWorld.ToWorld(anchor))continue;n+=b.Units.Select((id,i)=>Math.Max(0,(i==0?40:30)-WorldClashes.SoldiersLost(c,id,at))).Sum();}
@@ -29,7 +29,7 @@ public static class CastleHandover
     }
     // 城に返納された生存兵も守備に残る。移動中の軍を本拠側に重ねて数えない。
     public static bool HasGarrison(ContractWorld w,EntityId owner,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(Forces(w,owner,site,at,rev)>0)return true;
         var past=PastLosses(w,at,rev);
         foreach(var ledger in NewGameMilitary.LedgerStates(w).Where(s=>s.Terms.Owner==owner && s.Terms.Site==site)){
@@ -47,7 +47,7 @@ public static class CastleHandover
         return false;
     }
     internal static int CommandedAt(ContractWorld w,EntityId owner,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var c=PastLosses(w,at,rev);
         var anchor=FieldWorld.FromWorld(BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position);
         int n=0;
@@ -55,14 +55,14 @@ public static class CastleHandover
         return n;
     }
     public static CastleJob[] Jobs(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var es=Entries(w,at,rev);return es.Where(e=>e.Input.Action==CastleAction.Offer).Select(e=>{
             var rows=es.Where(x=>x.Input.Original==e.Input.Id).ToArray();var resolution=rows.LastOrDefault(x=>x.Input.Action==CastleAction.ResolveKeep);var request=rows.LastOrDefault(x=>x.Input.Action==CastleAction.RequestKeep);return new CastleJob(e.Terms!,rows.LastOrDefault(x=>x.Input.Action==CastleAction.Confirm),rows.LastOrDefault(x=>x.Input.Action==CastleAction.Gate),request!=null&&(resolution==null||request.Revision>resolution.Revision)?request:null,resolution,rows.LastOrDefault(x=>x.Input.Action==CastleAction.ResolveKeep&&x.Outcome=="occupied"),rows.LastOrDefault(x=>x.Input.Action==CastleAction.Cancel),rows.LastOrDefault(x=>x.Witness));}).ToArray();
     }
     static string Outcome(ContractWorld w,CastleJob j,long at,long rev)=>at>j.Terms.Until?"expired":!Local(w,j.Terms.Incumbent,j.Terms.Site,at,rev)||!Local(w,j.Terms.Recipient,j.Terms.Site,at,rev)||Forces(w,j.Terms.Occupier,j.Terms.Site,at,rev)==0?"absent":Forces(w,j.Terms.Owner,j.Terms.Site,at,rev)>0?"relief-hold":"occupied";
     static EntityId ResolutionId(CastleEntry e)=>new("decision:castle-keep/"+e.Input.Id.Value.Replace(':','/'));
     static CastleEntry Prepare(ContractWorld w,CastleInput i,long at,long rev,bool automatic=false)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action),"引渡しの入力が不正です");var es=Entries(w,at,rev);var jobs=Jobs(w,at,rev);bool local=Local(w,w.PlayerControl,i.Site,at,rev);
         Need(i.Action==CastleAction.ResolveKeep||local&&!PersonalLife.Resting(w,at,rev),"当事者本人が現地にいません");
         if(i.Action==CastleAction.Offer){Need(!automatic&&i.Original==null&&i.RecipientOwner is {} recipient&&recipient!=Owner(w,i.Site),"相手と対象城を選んでください");var owner=Owner(w,i.Site);Need(FactionStances.ResolveAuthority(w,w.PlayerControl,owner,at,rev)!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==i.Site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"本人に現地引渡しの締結権がありません");Need(!jobs.Any(j=>j.Terms.Site==i.Site&&j.Cancelled==null&&(j.Gate!=null||at<=j.Terms.Until)),"同じ城の引渡しが残っています");var head=Head(w,i.RecipientOwner!.Value,at,rev);Need(head!=w.PlayerControl&&Local(w,head,i.Site,at,rev),"相手の指揮官が現地にいません");Need(FactionStances.ResolveAuthority(w,head,i.RecipientOwner.Value,at,rev)!=null,"Recipient lacks actual head authority");var muster=NpcArmies.Musters(w).SingleOrDefault(m=>m.Commander==head&&m.Owner==i.RecipientOwner&&m.At<=at);Need(muster!=null&&Forces(w,i.RecipientOwner.Value,i.Site,at,rev)>0,"相手の実在部隊が現地にいません");bool willing=w.Characters.Single(c=>c.Id==head).WillObey;var t=new CastleTerms(i.Id,i.Site,owner,i.RecipientOwner.Value,w.PlayerControl,head,muster.Id,checked(at+86400),willing);return new(i,at,rev,t,null,null,true);}
@@ -92,5 +92,5 @@ public static class CastleHandover
 public sealed partial class WorldSession
 {
     public CastleView? CastleView(){lock(gate)return CastleHandover.View(state);}
-    public CommandResult ManageCastle(CastleInput i,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!CastleHandover.Enabled(state)||i.Action==CastleAction.ResolveKeep)return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の城引渡し操作ではありません");var old=state.Castles!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別操作のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>CastleHandover.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"引渡しの原本を記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
+    public CommandResult ManageCastle(CastleInput i,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(actor!=state.PlayerControl||!CastleHandover.Enabled(state)||i.Action==CastleAction.ResolveKeep)return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の城引渡し操作ではありません");var old=state.Castles!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別操作のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>CastleHandover.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"引渡しの原本を記録しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
 }

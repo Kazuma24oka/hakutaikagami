@@ -10,7 +10,7 @@ public partial class NewGameRuntime
         void Text(string s)=>box.AddChild(new Label{Text=s,AutowrapMode=TextServer.AutowrapMode.WordSmart});
         void Button(string s,Action a){var b=new Button{Text=s};box.AddChild(b);b.Pressed+=a;}
         void Run(TreatyDefenseInput i){Submit(Session.ManageTreatyDefense(i,Session.PlayerControl,shown));popup.Hide();Refresh();}
-        Text("防衛援軍・確認した報告");Text("返書で確認した日時の情報です。軍の現在地は現地で見えた範囲で確認します。");
+        Text("防衛援軍・確認した報告");{}
         foreach(var c in TreatyDefense.View(w)){
             Text(c.Status+(c.ObservedAt is {} at?" ／ "+TreatyDate(at):""));
             if(c.KnownTerms is {} t)Text(NewGameWorld.SiteName(t.Source.Value)+"から "+t.Soldiers+"人 ／ 守備先 "+NewGameWorld.SiteName(t.Destination.Value)+" ／ 守備 "+t.DutySeconds/60+"分 ／ 出陣時の兵糧 "+t.CarryDays+"日分 ／ 元期限 "+TreatyDate(t.Until));

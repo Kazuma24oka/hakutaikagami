@@ -19,7 +19,7 @@ public static class CourtInvitation
     }
     static bool Closed(ContractWorld w,CourtEvent offer,long at,long rev)=>HouseholdCourt.Events(w).Any(e=>e.At<=at && e.Revision<rev && e.Input.Reference==offer.Input.Id &&
         (e.Input.Action==CourtAction.DeclineImperialInvitation || SupremeInvestiture.Petitions.Contains(e.Input.Action)));
-    internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+    internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(i.Action==CourtAction.InviteHegemon){
             var faction=HouseSuccession.Factions(w,at,rev-1).SingleOrDefault(f=>f.Id==i.Owner.Value);
             if(!CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog) || actor!=Broker || place!=Kyoto || i.Reference!=null || faction?.Home!=i.Site.Value || faction.Head!=i.Person.Value ||

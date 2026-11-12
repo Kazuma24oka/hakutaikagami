@@ -7,7 +7,7 @@ public static partial class CoalitionPacts
     static string AnswerLetter(CourtEvent answer)=>HouseholdCourt.Id("coalition-answer",answer.Input.Id.Value).Value;
     static CourtEvent[] Confirmed(ContractWorld w,EntityId offer,long rev)=>HouseholdCourt.Events(w)
         .Where(e=>e.Input.Action==CourtAction.ConfirmCoalition && e.Input.Reference==offer && e.Revision<rev).ToArray();
-    static void CheckConfirmation(ContractWorld w,CourtInput i,EntityId actor,long at,long rev){
+    static void CheckConfirmation(ContractWorld w,CourtInput i,EntityId actor,long at,long rev){using var _ccRev=ControlContext.At(rev);
         var offer=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Action==CourtAction.ProposeCoalition && e.Input.Id==i.Reference && e.At<=at && e.Revision<rev);
         if(offer==null || offer.Actor!=actor || i.Person!=actor || i.Owner!=offer.Input.Owner || i.Site!=offer.Place ||
             offer.Input.Coalition!.AssemblyAt<=at || i.CoalitionSignatures is not {Length:>=2} signatures ||

@@ -25,6 +25,6 @@ public partial class NewGameRuntime
                 case TradePhase.Delivered:box.AddChild(new Label{Text="納入済み・売却代金の受取待ち"});if(v.Site==d.SaleSite)Button($"代金 {d.SalePrice*d.Amount}文を受け取り精算",()=>Run(TradeAction.Settle,d.Id));break;}
             if(d.Phase is TradePhase.Offered or TradePhase.Accepted or TradePhase.Carrying or TradePhase.SaleQuoted)Button("取引・行先を取りやめる（受取済みの現物は残る）",()=>Run(TradeAction.Cancel,d.Id));
         }
-        box.AddChild(new Label{Text="携行は全商品共通100kg・運搬中の取引は一件。\n現地以外の現在在庫・相場は表示しません。\n市場の所在地/初期在庫/相場/生産係数は調整用の試作です。",AutowrapMode=TextServer.AutowrapMode.WordSmart});Button("現地の条件を読み直す",()=>{popup.Hide();ShowMaterialTrade();});Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(580,530));
+        {}Button("現地の条件を読み直す",()=>{popup.Hide();ShowMaterialTrade();});Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(580,530));
     }
 }

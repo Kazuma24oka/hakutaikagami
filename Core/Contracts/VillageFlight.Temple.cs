@@ -19,7 +19,7 @@ public sealed partial record VillageFlight
     static bool HasFollowers(EntityId village)=>village.Value is "site:sakai" or "site:kyoto";
 
     static AllianceReply HearTemple(ContractWorld w,VillageFlight f,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         bool unresolved=VillageConsultation.WithholdsLaborAfterPetition(w,f.From,at,rev+1);
         bool hungry=CommunityEconomy.AccountAt(w,f.From,at,rev).Hunger>0;
         return new(VillageConsultation.Representative(f.From,at),at,rev,HasFollowers(f.From)&&(unresolved||hungry));

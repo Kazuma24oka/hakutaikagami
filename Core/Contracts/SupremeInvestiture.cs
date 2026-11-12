@@ -13,13 +13,13 @@ public static class SupremeInvestiture
     static bool Decision(CourtAction a)=>a is CourtAction.GrantHighOffice or CourtAction.RefuseHighOffice;
     internal static bool Handles(CourtAction a)=>Petitions.Contains(a)||Decision(a);
     internal static CourtEvent? LastGrant(ContractWorld w,CourtAction title,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var events=HouseholdCourt.Events(w);
         return events.LastOrDefault(g=>g.Input.Action==CourtAction.GrantHighOffice && g.At<=at && g.Revision<=rev &&
             events.Any(p=>p.Input.Id==g.Input.Reference && p.Input.Action==title));
     }
     static bool Eligible(ContractWorld w,CourtAction title,EntityId applicant,EntityId house,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(Assassination.DeadAt(w,applicant,at,rev))return false;
         if(HouseSuccession.Head(w,house,at,rev)!=applicant &&
             !(title==CourtAction.PetitionShogun && SupremeOffice.Sponsors(w,applicant,at,rev).Contains(house)))return false;
@@ -32,7 +32,7 @@ public static class SupremeInvestiture
         return holder==null || Assassination.DeadAt(w,holder.Value,at,rev);
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         bool invited=Petitions.Contains(i.Action) && i.Reference!=null;
         if(!CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog) || (!invited && (place!=Kyoto || i.Site!=Kyoto)) ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))

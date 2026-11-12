@@ -19,7 +19,7 @@ public static class IndependenceLetters
     internal static bool Outgoing(CourtAction a)=>a is CourtAction.AnnounceIndependence or CourtAction.SeekDeclaredSupport;
     // 本人が開いた現地点検の依頼状、または本人が知る代表者の宛所だけを使う。
     static EntityId? Address(ContractWorld w,EntityId sender,EntityId recipient,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var residence=HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.Action==CourtAction.ReportResidence && e.Actor==recipient &&
             e.Input.Person==sender && e.Revision<rev && MessageFlow.LearnedAt(w.Messaging,
                 HouseReforms.Letter(e.Input,HouseReforms.ResidenceNotice),sender.Value) is {} opened && opened<=at);
@@ -39,7 +39,7 @@ public static class IndependenceLetters
         return null;
     }
     static CourtInput? ReportFor(ContractWorld w,CourtEvent receipt,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(receipt.Input.Action!=CourtAction.ReceiveIndependentKeep || receipt.Revision>=rev)return null;
         var events=HouseholdCourt.Events(w);
         var joined=events.SingleOrDefault(e=>e.Input.Id==receipt.Input.Reference && e.Input.Action==CourtAction.JoinDeclaredHouse);
@@ -55,7 +55,7 @@ public static class IndependenceLetters
             if(ReportFor(w,receipt,w.CommitSequence+1) is {} report)yield return report;
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(i.Action==CourtAction.ReportIndependentKeep){
             var receipt=HouseholdCourt.Events(w).SingleOrDefault(e=>e.Input.Id==i.Reference && e.Actor==actor && e.Place==place);
             if(receipt==null || ReportFor(w,receipt,rev)!=i || !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
@@ -87,7 +87,7 @@ public static class IndependenceLetters
         }
     }
     static void CheckAnswer(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var rows=HouseholdCourt.Events(w).Where(e=>e.Revision<rev).ToArray();
         var call=rows.SingleOrDefault(e=>e.Input.Id==i.Reference && e.Input.Action==CourtAction.SeekDeclaredSupport);
         if(call==null || call.Input.Person!=actor || i.Owner!=call.Input.Owner || i.Person!=call.Actor || i.Site!=place ||

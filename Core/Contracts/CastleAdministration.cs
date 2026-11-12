@@ -16,7 +16,7 @@ public static partial class CastleAdministration
     static CastellanEntry[] Prefix(ContractWorld w,long at,long rev)=>w.Castellan?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Castellan?.Entries.Any(e=>e.Input.Id==id)==true;
     internal static EntityId Owner(ContractWorld w,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var declaration in w.Declarations??[])
             if(w.LandRights.Any(r=>r.Subject==declaration.House && r.Target==site && r.Kind=="control" &&
                 (r.From<at || r.From==at && r.Revision<rev) && (at<r.Until || at==r.Until && rev<=r.Revision)))
@@ -27,12 +27,12 @@ public static partial class CastleAdministration
     static bool Bound(ContractWorld w,EntityId actor,EntityId principal,EntityId owner,long at,long rev)=>w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult)&&HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==actor&&b.Target==principal&&b.From<=at&&(at<b.Until||at==b.Until&&rev<b.Revision))&&w.Memberships.Any(m=>m.Subject==actor&&m.Target==owner&&m.From<=at&&(at<m.Until||at==m.Until&&rev<m.Revision));
     // A dated foreign gate transfer blocks new disposals. Never undo earlier orders.
     public static bool Blocked(ContractWorld w,EntityId site,long at,long rev)=>Enabled(w)&&CastleHandover.Jobs(w,at,rev).Any(j=>j.Terms.Site==site&&j.Gate!=null&&j.Terms.Occupier!=Owner(w,site,at,rev)&&CastleHandover.Forces(w,j.Terms.Occupier,site,at,rev)>0);
-    static CastellanEntry? Current(ContractWorld w,EntityId site,long at,long rev){var es=Prefix(w,at,rev);var e=es.LastOrDefault(e=>e.Input.Site==site&&e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);return e!=null&&IsAppointment(e.Input.Action)&&at<e.Until&&Bound(w,e.Agent,e.Principal,e.Owner,at,rev)?e:null;}
-    internal static StewardGrant? Grant(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w)||Blocked(w,site,at,rev))return null;var e=Current(w,site,at,rev);return e==null||!Effective(w,e,at,rev)?null:new(e.Input.Id,e.Principal,e.Agent,e.Owner,site,site,e.At,e.Until,e.Revision);}
+    static CastellanEntry? Current(ContractWorld w,EntityId site,long at,long rev){using var _ccRev=ControlContext.At(rev);var es=Prefix(w,at,rev);var e=es.LastOrDefault(e=>e.Input.Site==site&&e.Input.Action is CastellanAction.Appoint or CastellanAction.Reauthorize or CastellanAction.Release);return e!=null&&IsAppointment(e.Input.Action)&&at<e.Until&&Bound(w,e.Agent,e.Principal,e.Owner,at,rev)?e:null;}
+    internal static StewardGrant? Grant(ContractWorld w,EntityId site,long at,long rev){using var _ccRev=ControlContext.At(rev);if(!Enabled(w)||Blocked(w,site,at,rev))return null;var e=Current(w,site,at,rev);return e==null||!Effective(w,e,at,rev)?null:new(e.Input.Id,e.Principal,e.Agent,e.Owner,site,site,e.At,e.Until,e.Revision);}
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Castellan=new(1,Policy,[]);}
-    internal static CastellanReceipt Store(ContractWorld w,EntityId site,long at,long rev){var m=MaterialMarkets.HouseAt(w,site,at,rev);return new(Owner(w,site,at,rev),at,CommunityEconomy.AccountAt(w,site,at,rev).HouseRice,m.Wood,m.Weapons,RegionalDomains.Cash(w,site,at,rev));}
+    internal static CastellanReceipt Store(ContractWorld w,EntityId site,long at,long rev){using var _ccRev=ControlContext.At(rev);var m=MaterialMarkets.HouseAt(w,site,at,rev);return new(Owner(w,site,at,rev),at,CommunityEconomy.AccountAt(w,site,at,rev).HouseRice,m.Wood,m.Weapons,RegionalDomains.Cash(w,site,at,rev));}
     static CastellanEntry Prepare(ContractWorld w,CastellanInput i,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"城主操作の対象が不正です");
         var owner=Owner(w,i.Site,at,rev);var principal=HouseSuccession.Head(w,owner,at,rev);
         Need(Local(w,w.PlayerControl,i.Site,at,rev)&&!PersonalLife.Resting(w,at,rev)&&!Blocked(w,i.Site,at,rev),"現地で実務できる支配状況ではありません");
@@ -59,5 +59,5 @@ public static partial class CastleAdministration
 public sealed partial class WorldSession
 {
     public CastellanView? CastellanView(){lock(gate)return CastleAdministration.View(state);}
-    public CommandResult ManageCastellan(CastellanInput i,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!CastleAdministration.Enabled(state))return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の城主操作ではありません");var old=state.Castellan!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>CastleAdministration.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"城主・保管の原本を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
+    public CommandResult ManageCastellan(CastellanInput i,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(actor!=state.PlayerControl||!CastleAdministration.Enabled(state))return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の城主操作ではありません");var old=state.Castellan!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>CastleAdministration.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"城主・保管の原本を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
 }

@@ -15,8 +15,7 @@ public partial class NewGameRuntime
     void BuildUsableLayout(VBoxContainer root,HFlowContainer toolbar)
     {
         var children=root.GetChildren().OfType<Control>().ToArray();
-        var warning=children.OfType<Label>().Single(l=>l.Text.StartsWith("地形・城郭は既存"));
-        var militaryRows=children.Where(c=>c!=toolbar&&c!=serviceBar&&c!=info&&c!=message&&c!=surface&&c!=overview&&c!=tasks&&c!=warning).ToArray();
+        var militaryRows=children.Where(c=>c!=toolbar&&c!=serviceBar&&c!=info&&c!=message&&c!=surface&&c!=overview&&c!=tasks).ToArray();
         var content=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};root.AddChild(content);root.MoveChild(content,root.GetChildCount()-2);
         var world=new VBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};content.AddChild(world);surface.Reparent(world);overview.Reparent(world);
         operationTabs=new(){CustomMinimumSize=new(400,0),SizeFlagsVertical=SizeFlags.ExpandFill};content.AddChild(operationTabs);

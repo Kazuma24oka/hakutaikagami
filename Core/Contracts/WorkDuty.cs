@@ -8,7 +8,7 @@ public static class WorkDuty
     static WorkDutyAgreement[] Rows(ContractWorld w)=>w.WorkCycle?.Duties??[];
     static bool Prior(long time,long revision,long at,long rev)=>time<at||time==at&&revision<=rev;
     static bool BondActive(ContractWorld w,TimedRelation b,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(at<b.From)return false;
         // End of service may be committed later at the same world second.
         bool ended=b.Until<at||b.Until==at&&b.Revision<=rev;
@@ -49,9 +49,9 @@ public static class WorkDuty
         void Need(bool ok){if(!ok)throw new InvalidDataException("担当合意の根拠が不正です");}
         Need(WorkProgression.Enabled(w)&&rows.Select(a=>a.Id).Distinct().Count()==rows.Length&&rows.Select(a=>a.Bond).Distinct().Count()==rows.Length);
         long last=0;
-        foreach(var a in rows){
+        foreach(var a in rows){using var _cc=ControlContext.At(a.Revision);
             Need(EntityId.IsValid(a.Id.Value)&&a.Revision>last&&a.Revision<=w.CommitSequence&&a.At>=0&&a.At<=w.ElapsedSeconds&&a.Fee==Fee);last=a.Revision;
-            var b=HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence-1).Single(b=>b.Id==a.Bond);Need(b.Subject==w.PlayerControl&&b.Target==a.Principal&&BondActive(w,b,a.At,a.Revision-1));
+            var b=HouseholdService.BondsAt(w,w.ElapsedSeconds,w.CommitSequence-1).Single(b=>b.Id==a.Bond);Need(b.Subject==ControlSuccession.PlayerAtRevision(w,a.Revision)&&b.Target==a.Principal&&BondActive(w,b,a.At,a.Revision-1));
             Need(NewGameService.View(w,a.At,a.Revision-1).Principal==a.Principal&&WorkProgression.Recognized(w,a.Principal,a.At,a.Revision)>0);
             var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==a.Site).Position;
             Need(RegionalCampaign.ActorPointAt(w,w.PlayerControl,a.At)==point&&RegionalCampaign.ActorPointAt(w,a.Principal,a.At)==point);
@@ -62,7 +62,7 @@ public static class WorkDuty
 public sealed partial class WorldSession
 {
     public CommandResult AcceptWorkDuty(EntityId id,EntityId principal,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){
             if(actor!=state.PlayerControl||!EntityId.IsValid(id.Value))return new(ResultCode.NotAvailable,id,state.CommitSequence,"本人の担当引受ではありません");
             var old=state.WorkCycle?.Duties?.SingleOrDefault(a=>a.Id==id);

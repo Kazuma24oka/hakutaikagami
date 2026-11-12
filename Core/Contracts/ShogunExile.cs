@@ -6,7 +6,7 @@ public static class ShogunExile
     internal static EntityId Trip(CourtEvent order)=>HouseholdCourt.Id("leave-kyoto",order.Input.Id.Value);
     internal static IEnumerable<CourtEvent> Orders(ContractWorld w)=>HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ExpelShogun);
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(place!=CentralCourtCatalog.Kyoto || i.Site==place || i.Reference!=null || actor==i.Person ||
             SupremeOffice.ShogunAt(w,at,rev-1)!=i.Person || !SupremeOffice.ControlsKyoto(w,actor,i.Owner,at,rev-1) ||
             !TransportWork.At(w,actor,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||

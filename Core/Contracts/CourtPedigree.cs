@@ -5,7 +5,7 @@ public static class CourtPedigree
     internal static bool Handles(CourtAction a)=>a is CourtAction.AskPedigree or CourtAction.AttestPedigree or CourtAction.ReportMissingPedigree or CourtAction.RecognizePedigree or CourtAction.FilePedigree;
     static bool FoundingLine(string id)=>id is "person:ashikaga-yoshiteru" or "person:shingen";
     static bool Documented(ContractWorld w,EntityId applicant,long at,long rev,bool adoption)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var people=FamilyBirth.People(w).ToDictionary(p=>p.Id);
         var entries=w.Adoption?.Entries.Where(e=>e.At<=at && e.Revision<=rev).ToArray()??[];
         var visited=new HashSet<string>();var pending=new Stack<string>();pending.Push(applicant.Value);
@@ -21,7 +21,7 @@ public static class CourtPedigree
     public static bool Qualified(ContractWorld w,EntityId person,long at,long rev)=>Documented(w,person,at,rev,false) ||
         HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.RecognizePedigree && e.Input.Person==person && e.At<=at && e.Revision<=rev);
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var rows=HouseholdCourt.Events(w).Where(e=>Handles(e.Input.Action)&&e.Revision<rev && e.At<=at).ToArray();
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || i.Site!=site || actor==i.Person ||
             !TransportWork.At(w,actor,site,at,rev,true) || !TransportWork.At(w,i.Person,site,at,rev,true) ||

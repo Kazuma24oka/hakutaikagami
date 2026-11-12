@@ -11,7 +11,7 @@ public static class NpcFreight
     internal static bool Busy(ContractWorld w,EntityId actor,long at,long rev)=>Enabled(w)&&Jobs(w,at,rev).Any(j=>j.Terms.Carrier==actor&&!HouseLogistics.Closed(j));
     static bool TaskBusy(ContractWorld w,EntityId actor,long at,long rev)=>w.Requests.Any(r=>r.Intent.Executor==actor&&r.CreatedAt<=at&&r.CommitSequence<rev&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));
     internal static void CheckCarrier(ContractWorld w,HouseFreightInput i,EntityId actor,EntityId head,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(actor==w.PlayerControl){Need(i.Carrier==null,"本人の運搬は運搬者指定を省略してください");return;}
         Need(Enabled(w)&&i.Carrier==actor&&head==w.PlayerControl&&w.Characters.Any(c=>c.Id==actor&&c.Life==LifeState.Adult&&c.WillObey)&&HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==actor&&b.Target==head&&b.From<=at&&at<b.Until),"現地の協力意思を持つ成人直属家臣と当主が合意してください");
         Need(!FieldConvoy.Busy(w,actor,at,rev)&&!TaskBusy(w,actor,at,rev)&&!PersonalCompanions.Occupied(w,actor,at,rev)&&!NpcArmies.CommanderBusyAt(w,actor,at,rev),"家臣は別の用件を先に終えてください");
@@ -54,8 +54,8 @@ public static class NpcFreight
     {
         if(!Enabled(w)){Need(w.HouseFreight?.Entries.All(e=>e.Input.Carrier==null)==true||w.HouseFreight==null,"旧版へ家臣運搬を追加できません");return;}
         foreach(var e in w.HouseFreight!.Entries.Where(e=>e.Actor!=w.PlayerControl))
-        {
-            var t=e.Terms??HouseLogistics.FreightTerms(w,e.Input.Job!.Value);Need(t.Principal==w.PlayerControl&&w.HouseFreight.Entries.Any(d=>d.Terms?.Id==t.Id&&d.Input.Carrier==t.Carrier),"本人が現地で合意した運搬原本がありません");
+        {using var _cc=ControlContext.At(e.Revision);
+            var t=e.Terms??HouseLogistics.FreightTerms(w,e.Input.Job!.Value);Need(t.Principal==ControlSuccession.PlayerAtRevision(w,e.Revision)&&w.HouseFreight.Entries.Any(d=>d.Terms?.Id==t.Id&&d.Input.Carrier==t.Carrier),"本人が現地で合意した運搬原本がありません");
         }
         foreach(var r in w.Requests.Where(r=>r.Intent.RoutePolicy==LandRoute))
         {
@@ -66,7 +66,7 @@ public static class NpcFreight
     public static bool CanRecallAtMeeting(ContractWorld w,EntityId job){var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).SingleOrDefault(j=>j.Terms.Id==job&&!HouseLogistics.Closed(j));return j!=null&&w.Locations.Single(l=>l.Actor==w.PlayerControl).Site is {} site&&Local(w,w.PlayerControl,site,w.ElapsedSeconds,w.CommitSequence+1)&&Local(w,j.Terms.Carrier,site,w.ElapsedSeconds,w.CommitSequence+1);}
     public static DelegatedFreightCard[] View(ContractWorld w)
     {
-        if(!Enabled(w))return [];return Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Where(j=>j.Terms.Principal==w.PlayerControl).Select(j=>{bool receipt=j.Receipt is {} got&&(Local(w,w.PlayerControl,j.Terms.Home,got.At,got.Revision+1)||Local(w,w.PlayerControl,j.Terms.Home,w.ElapsedSeconds,w.CommitSequence+1)||w.Branches!.Journeys.Any(q=>q.Actor==w.PlayerControl&&q.Legs[^1].To==RegionalCampaign.Destination(w,j.Terms.Home)&&w.Tasks.Any(t=>t.Id==q.Task&&t.Execution==ExecutionPhase.Completed&&t.FinishedAt>=got.At&&t.FinishedAt<=w.ElapsedSeconds)));return new DelegatedFreightCard(j.Terms.Id,j.Terms.Carrier,j.Terms.Home,j.Terms.Source,j.Terms.Commodity,j.Terms.Quantity,j.Terms.Advance,receipt?"帰還・現地精算済み":FreightOperations.KnownStatus(w,j.Terms.Id,"帰還報告待ち（現在の荷・購入状況は未確認）"),receipt?j.Receipt:null){Report=FreightOperations.KnownObservation(w,j.Terms.Id)};}).ToArray();
+        if(!Enabled(w))return [];return Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Where(j=>j.Terms.Principal==w.PlayerControl).Select(j=>{bool receipt=j.Receipt is {} got&&(Local(w,ControlSuccession.PlayerAtRevision(w,got.Revision),j.Terms.Home,got.At,got.Revision+1)||Local(w,w.PlayerControl,j.Terms.Home,w.ElapsedSeconds,w.CommitSequence+1)||w.Branches!.Journeys.Any(q=>q.Actor==w.PlayerControl&&q.Legs[^1].To==RegionalCampaign.Destination(w,j.Terms.Home)&&w.Tasks.Any(t=>t.Id==q.Task&&t.Execution==ExecutionPhase.Completed&&t.FinishedAt>=got.At&&t.FinishedAt<=w.ElapsedSeconds)));return new DelegatedFreightCard(j.Terms.Id,j.Terms.Carrier,j.Terms.Home,j.Terms.Source,j.Terms.Commodity,j.Terms.Quantity,j.Terms.Advance,receipt?"帰還・現地精算済み":FreightOperations.KnownStatus(w,j.Terms.Id,"帰還報告待ち（現在の荷・購入状況は未確認）"),receipt?j.Receipt:null){Report=FreightOperations.KnownObservation(w,j.Terms.Id)};}).ToArray();
     }
 }
 public static partial class HouseLogistics

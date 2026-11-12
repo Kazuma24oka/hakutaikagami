@@ -47,7 +47,7 @@ public static partial class TreatyNegotiations
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
     public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.TrucePolicy==TruceNegotiations.Policy;
     internal static int ReplyDuration(ContractWorld w,TreatyPaper paper,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(paper.Terms.DeclaredScale is not {} declared || !paper.Terms.Clauses.HasFlag(TreatyClause.Defense))
             return MaximumNpcDays;
         var own=HouseScaleNotices.Known(w,paper.Recipient,paper.Input.Target,at,rev);
@@ -57,7 +57,7 @@ public static partial class TreatyNegotiations
         return trust>=50?MaximumNpcDays:Math.Max(7,MaximumNpcDays-7*gap);
     }
     static TreatyAction SubmissionReply(ContractWorld w,TreatyPaper paper,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var conditions=paper.Terms.Submission!;
         int trust=CharacterRelations.Enabled(w)
             ? CharacterRelations.DiagnosticScores(w,paper.Recipient,paper.Author,at,revision).Trust : 0;
@@ -85,13 +85,13 @@ public static partial class TreatyNegotiations
         return score>0?TreatyAction.Accept:TreatyAction.Decline;
     }
     static TreatyAction BallotReply(ContractWorld w,TreatyPaper request,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var original=State(w).Papers.Single(p=>p.Input.Id==request.Terms.Ballot!.Demand);
         return SubmissionReply(w,original with{Recipient=request.Recipient,Address=request.Address,
             Input=original.Input with{Target=request.Input.Target}},at,rev);
     }
     static TreatyInput? NpcSubmission(ContractWorld w,EntityId head,EntityId owner,EntityId target,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var claim=FactionStances.OwnAt(w,head,at,rev).LastOrDefault(c=>c.FromOwner==owner && c.ToOwner==target &&
             c.EffectiveFrom<=at && at<c.Until);
         if(claim==null || RepresentativeKnowledge.Known(w,head,target,at,rev)==null)return null;
@@ -108,7 +108,7 @@ public static partial class TreatyNegotiations
     static bool Opened(ContractWorld w,TreatyPaper p,EntityId actor,long at,long rev)=>State(w).Openings.Any(o=>o.Message==p.Message&&o.Actor==actor&&Before(o.At,o.Revision,at,rev));
     static TreatyPaper[] PapersAt(ContractWorld w,long at,long rev)=>State(w).Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray();
     static TreatyPaper Prepare(ContractWorld w,TreatyInput i,EntityId actor,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=RepresentativeKnowledge.Known(w,actor,i.Target,at,Math.Min(rev,w.CommitSequence));Need(target!=null,"相手の当事者が不明です");TreatyTerms terms;
         if(i.DepartureCopy is {} copy){
             var notice=State(w).Operations.SingleOrDefault(p=>p.Input.Id==copy.Original && p.Kind==TreatyOperation.Terminate);
@@ -175,7 +175,7 @@ public static partial class TreatyNegotiations
     internal static void RecordOpening(ContractWorld w,EntityId actor,string message)
     {var s=State(w);if(!Enabled(w)||s.Openings.Any(o=>o.Message==message)||!s.Papers.Any(p=>p.Message==message&&p.Recipient==actor))return;Need(w.Messaging.Attempts.Any(a=>a.MessageId==message&&a.ReceiverId==actor.Value&&a.Status==AttemptStatus.Delivered)&&MessageFlow.Knows(w.Messaging,message,actor.Value),"到達・本人開封が必要です");w.Treaties=s with{Openings=[..s.Openings,new(message,actor,w.ElapsedSeconds,w.CommitSequence)]};}
     static TreatyFormation[] Forms(ContractWorld w,long at,long rev,bool discover=false)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var papers=PapersAt(w,at,rev);var result=new List<TreatyFormation>();foreach(var p in papers.Where(p=>p.Input.Action==TreatyAction.Accept)){
             var source=papers.SingleOrDefault(s=>s.Input.Id==p.Input.Source);if(source==null||source.Terms!=p.Terms||source.Terms.Ballot!=null)continue;
             var delivery=w.Messaging.Attempts.Where(a=>a.MessageId==p.Message&&a.ReceiverId==p.Recipient.Value&&a.Status==AttemptStatus.Delivered&&a.FinishedAt<=at).OrderBy(a=>a.FinishedAt).FirstOrDefault();if(delivery?.FinishedAt is not {} arrived||arrived>p.Terms.ReplyBy||arrived>=p.Terms.Until)continue;
@@ -241,7 +241,7 @@ public static partial class TreatyNegotiations
         return null;
     }
     public static IEnumerable<TreatyInput> DepartureCopies(ContractWorld w,TreatyOperationPaper notice,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(notice.Terms.Charter is not {} charter || notice.Kind!=TreatyOperation.Terminate || notice.Intent.Evidence==null ||
             notice.Recipient!=actor || !OperationOpened(w,notice,actor,at,revision)) yield break;
         var copy=new CouncilDepartureCopy(notice.Root,charter,notice.Input.Owner);
@@ -260,13 +260,13 @@ public static partial class TreatyNegotiations
         w.Treaties=State(w) with{Recognitions=[..State(w).Recognitions,new(f.Acceptance,actor,w.ElapsedSeconds,w.CommitSequence)]};
     }
     public static bool WillNotInitiate(ContractWorld w,EntityId owner,EntityId target,long at,long revision)
-    {if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>ClauseUsable(w,new(head),f.Acceptance,TreatyClause.NonAggression,at,revision)&&Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
+    {using var _ccRev=ControlContext.At(revision);if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>ClauseUsable(w,new(head),f.Acceptance,TreatyClause.NonAggression,at,revision)&&Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
     internal static long? NextBoundary(ContractWorld w,long target)
     {if(!Enabled(w))return null;var times=State(w).Papers.SelectMany(p=>new[]{p.Terms.ReplyBy+1,p.Terms.Until}).Concat(OperationChanges(w)).Concat(TreatySupply.Changes(w)).Concat(TreatyDefense.Changes(w)).ToList();if(Next(w,true)!=null||NextOperation(w)!=null)times.Add(w.ElapsedSeconds+1);return times.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
     internal static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)=>State(w).Papers.Select(p=>(p.At,p.Revision)).Concat(State(w).Openings.Where(o=>o.Actor==w.PlayerControl).Select(o=>(o.At,o.Revision))).Concat(State(w).Recognitions.Select(f=>(f.At,f.Revision))).Concat(OperationInputs(w)).Concat(TreatySupply.Inputs(w)).Concat(TreatyDefense.Inputs(w));
     internal static IEnumerable<long> Changes(ContractWorld w)=>State(w).Papers.SelectMany(p=>new[]{p.At,p.Terms.From,p.Terms.Until,p.Terms.ReplyBy}).Concat(State(w).Openings.Select(o=>o.At)).Concat(State(w).Formations.Select(f=>f.At)).Concat(OperationChanges(w)).Concat(TreatySupply.Changes(w)).Concat(TreatyDefense.Changes(w));
     internal static int BoundaryCost(ContractWorld w)=>!Enabled(w)?0:2*State(w).Papers.Select(p=>p.Recipient).Distinct().Count()+Operations(w).Select(p=>p.Recipient).Distinct().Count()*2;
-    internal static void Rewind(ContractWorld w,long at,long rev){TreatySupply.Rewind(w,at,rev);TreatyDefense.Rewind(w,at,rev);RewindOperations(w,at,rev);if(w.Treaties is {} s)w.Treaties=s with{Papers=s.Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Formations=s.Formations.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray(),Recognitions=s.Recognitions.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray()};}
+    internal static void Rewind(ContractWorld w,long at,long rev){using var _ccRev=ControlContext.At(rev);TreatySupply.Rewind(w,at,rev);TreatyDefense.Rewind(w,at,rev);RewindOperations(w,at,rev);if(w.Treaties is {} s)w.Treaties=s with{Papers=s.Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Formations=s.Formations.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray(),Recognitions=s.Recognitions.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray()};}
     public static TreatyCard[] View(ContractWorld w)
     {
         if(!Enabled(w))return [];var actor=w.PlayerControl;var papers=State(w).Papers.Where(p=>p.Author==actor||Opened(w,p,actor,w.ElapsedSeconds,w.CommitSequence)).ToArray();return papers.Where(p=>p.Input.Action is TreatyAction.Propose or TreatyAction.Counter).GroupBy(p=>p.Terms.Origin).Select(g=>g.OrderByDescending(p=>p.Terms.Version).First()).Select(p=>{

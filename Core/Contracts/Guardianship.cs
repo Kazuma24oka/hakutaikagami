@@ -80,7 +80,7 @@ public static class Guardianship
     }
 
     internal static bool CanAnswer(ContractWorld w,HouseClaim claim,EntityId speaker,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(speaker==claim.Claimant || speaker==claim.Deceased || !CharacterRelations.Enabled(w) || w.NewGame==null)return false;
         var member=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==speaker.Value);
         var home=new EntityId(w.NewGame.Start.Factions.Single(h=>h.Id==claim.House.Value).Home);
@@ -144,7 +144,7 @@ public sealed partial class WorldSession
     }
 
     public CommandResult ClaimSuccession(EntityId house,EntityId deceased,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate)
         {
             var actor=state.PlayerControl;

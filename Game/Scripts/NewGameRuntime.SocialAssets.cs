@@ -12,8 +12,8 @@ public partial class NewGameRuntime
  void ShowPersonalObjects()
  {
   objectReviewButtons.Clear();var(box,rev)=SocialWindow("私有物・紹介状・茶会");var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);
-  if(site==null){SocialText(box,"移動を終えてから、現地の品物や文書を扱ってください。");return;}
-  SocialText(box,"私有物と預り物は別です。贈ると実物を手放し、受領されるまで相手の所有になりません。");
+  if(site==null){{}return;}
+  {}
   var known=w.Characters.Select(c=>c.Id).Where(c=>c!=actor&&(SocialWorld.Facts(w,actor,c).Length>0||SocialWorld.Site(w,c)==site)).ToArray();var people=new OptionButton();foreach(var p in known)people.AddItem(w.Definitions.Characters.Single(c=>c.Id==p).Name);box.AddChild(people);
   EntityId Person()=>known[people.Selected];EntityId Nonce(string kind)=>new("request:asset-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(kind))[..24]);
   if(known.Length>0){
@@ -27,7 +27,7 @@ public partial class NewGameRuntime
    if(obj.Kind=="invitation"){var p=w.SocialAssets!.Events.Single(e=>e.Input.Id==obj.Id);if(p.Input.Person==actor){ObjectButton(box,"tea-accept","この招待を承諾する（現地への移動は別）",()=>AssetCommand(new(Nonce("accept/"+obj.Id.Value),SocialAssetAction.AcceptTea,p.Actor,obj.Id),rev));ObjectButton(box,"tea-decline","招待を断る",()=>AssetCommand(new(Nonce("decline/"+obj.Id.Value),SocialAssetAction.DeclineTea,p.Actor,obj.Id),rev));}}
   }
   if(w.Trade!=null)foreach(var deal in w.Trade.Deals.Where(d=>d.Phase==TradePhase.Carrying)){SocialText(box,"私有の買付荷："+MaterialMarkets.Name(deal.Commodity)+" ×"+deal.Amount);if(known.Length>0)ObjectButton(box,"give-goods","この私有荷を丸ごと贈る",()=>{var r=Session.ManageSocial(new(Nonce("goods/"+deal.Id.Value),SocialWorldAction.DispatchGift,Person()){Asset=deal.Id},rev);message.Text=r.VisibleReason;Refresh();ShowPersonalObjects();});}
-  SocialText(box,"現地の名物商（架空の試作一点物）");foreach(var item in SocialAssets.Catalog(w,site.Value).Where(a=>!SocialAssets.Objects(w).Any(o=>o.Id==a.Id)))ObjectButton(box,"buy-"+item.Kind,item.Name+"を購入："+item.Price+"文",()=>AssetCommand(new(Nonce("buy/"+item.Id.Value),SocialAssetAction.Buy,actor,item.Id),rev));
-  foreach(var plan in w.SocialAssets?.Events.Where(e=>e.Actor==actor&&e.Input.Action==SocialAssetAction.PlanTea)??[]){SocialText(box,"茶会の予定："+WorldCalendar.Display(w.EpochDate,plan.Input.When)+"\n招待状の作成・受領・出席は別です。現地に承諾した客が集まったとき開催できます。");if(w.SocialAssets!.Events.Any(e=>e.Input.Action==SocialAssetAction.HoldTea&&e.Input.Reference==plan.Input.Id)){SocialText(box,"茶会は終了しました。同席した人との経緯と文名を手帳に記録しました。");continue;}ObjectButton(box,"tea-hold","この予定の茶会を現地で開催（茶代を支払う）",()=>AssetCommand(new(Nonce("hold/"+plan.Input.Id.Value),SocialAssetAction.HoldTea,actor,plan.Input.Id),rev));}
+  SocialText(box,"現地の名物商");foreach(var item in SocialAssets.Catalog(w,site.Value).Where(a=>!SocialAssets.Objects(w).Any(o=>o.Id==a.Id)))ObjectButton(box,"buy-"+item.Kind,item.Name+"を購入："+item.Price+"文",()=>AssetCommand(new(Nonce("buy/"+item.Id.Value),SocialAssetAction.Buy,actor,item.Id),rev));
+  foreach(var plan in w.SocialAssets?.Events.Where(e=>e.Actor==actor&&e.Input.Action==SocialAssetAction.PlanTea)??[]){SocialText(box,"茶会の予定："+WorldCalendar.Display(w.EpochDate,plan.Input.When)+"\n招待状の作成・受領・出席は別です。現地に承諾した客が集まったとき開催できます。");if(w.SocialAssets!.Events.Any(e=>e.Input.Action==SocialAssetAction.HoldTea&&e.Input.Reference==plan.Input.Id)){{}continue;}ObjectButton(box,"tea-hold","この予定の茶会を現地で開催（茶代を支払う）",()=>AssetCommand(new(Nonce("hold/"+plan.Input.Id.Value),SocialAssetAction.HoldTea,actor,plan.Input.Id),rev));}
  }
 }

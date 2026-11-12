@@ -42,7 +42,7 @@ public static partial class CoalitionPacts
                 i.Action==CourtAction.JoinCoalition?"この原本の盟約に加わる。":"この原本への加盟を断る。",offer.Place.Value,e.At){DeliverySite=offer.Place.Value};
         }
     }
-    internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){
+    internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev){using var _ccRev=ControlContext.At(rev);
         var house=HouseSuccession.Factions(w,at,rev-1).SingleOrDefault(f=>f.Id==i.Owner.Value);
         if(!TruceNegotiations.Enabled(w) || house?.Head!=actor.Value || house.Home!=place.Value || place!=i.Site ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))

@@ -10,7 +10,7 @@ public partial class NewGameRuntime
         var w=Snapshot();if(w.NewMilitary==null)return;var root=NewGameMilitary.Cases(w).Last().Id;
         void Run(RemoteMilitaryInput i){var result=Session.SendRemoteMilitary(i,Session.PlayerControl,shown);if(result.Code!=ResultCode.Accepted){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();}
         if(Session.CanAgreeActiveMilitary()){
-            box.AddChild(new Label{Text="遠隔で受け取る指揮書状を現当主と手配。指定拠点で待ち合わせます。開封後も、承諾するまで旧指揮のままです。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+            {}
             var sites=BranchRoutes.GraphNodes(w).ToArray();var list=new OptionButton();foreach(var site in sites)list.AddItem(NewGameWorld.SiteName(RegionalCampaign.Site(site.Id).Value));box.AddChild(list);
             var hours=new SpinBox{MinValue=1,MaxValue=168,Value=24,Step=1,Suffix="時間後"};box.AddChild(hours);var button=new Button{Text="この拠点・待合時刻へ署名書状を発送"};box.AddChild(button);button.Pressed+=()=>Run(new(new("request:remote-military-ui/"+shown),RemoteMilitaryAction.Issue,root,RegionalCampaign.Site(sites[list.Selected].Id),Session.Seconds+(long)hours.Value*3600));
         }

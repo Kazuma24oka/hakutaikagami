@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed partial class WorldSession
 {
     public CommandResult RetryDelegation(string message,string failedAttempt,EntityId actor,FieldPoint address,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate)
         {
             var id=new EntityId("request:delegation-retry");

@@ -1,0 +1,43 @@
+{
+  "version": 150,
+  "criteria": [
+    {
+      "contract": "操作する人物が死ぬと世界が止まり、本人が知っていた成人の実子・養子へ引き継いで続けられる。候補がいなければ年代記を閉じる。存命の隠居でも譲れる。過去の記録は引き継ぎ前の人物で検査し、旧保存は変えない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ControlSuccession.cs",
+        "Tests/ControlSuccessionTests.cs",
+        "Game/Scripts/NewGameRuntime.Succession.cs",
+        "Docs/Design/ControlSuccessionV1/README.md"
+      ]
+    },
+    {
+      "contract": "全国開始の世界で、各家が月の初めに出陣・同盟・破約を判断し、翌月に決着して城の支配が移る。史実の出陣14件は前提がそろうと選ばれやすく、不発と見送りを残す。将軍が和睦を仲裁する。当主が亡くなった家は家督が移る。結果は書状で届く",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalStrategy.cs",
+        "Tests/NationalStrategyTests.cs",
+        "Docs/Design/NationalStrategyV1/README.md"
+      ]
+    },
+    {
+      "contract": "位階・官職・幕府職の表（位階15・受領名118・京官92・百官名50・幕府職98）を持ち、京の取次へ望む位階・官職を添えて奏請できる。朝廷は位階の段と相当位階と一職一人で審議する。DBの1560年の名乗りを正式な叙任と分けて持つ。出世の目標を選べる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CentralTitles.cs",
+        "Core/Data/ranks-offices-v1.json",
+        "Tools/Ranks/build_ranks.py",
+        "Tests/CentralTitlesTests.cs",
+        "Game/Scripts/NewGameRuntime.HouseholdCourt.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs"
+      ]
+    },
+    {
+      "contract": "遊ぶ画面の説明口調の固定文言を消す。全件テストに合格し、途中保存からの復旧で同じ未来になる",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NationalStrategyV1/verification.json"
+      ]
+    }
+  ]
+}

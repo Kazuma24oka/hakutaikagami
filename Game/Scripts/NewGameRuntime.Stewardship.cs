@@ -7,14 +7,14 @@ public partial class NewGameRuntime
     void ShowStewardship()
     {
         var v=Session.StewardshipView();if(v==null)return;long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var scroll=new ScrollContainer{CustomMinimumSize=new(510,350),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(500,0)};scroll.AddChild(box);
-        box.AddChild(new Label{Text="限定した代理行政と、届いた報告"});box.AddChild(new Label{Text="家の所有・一般役職・兵は移しません。\n処分枠は月に救済500kg・既定年貢1000kg・水利200kg。",AutowrapMode=TextServer.AutowrapMode.WordSmart});var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
+        box.AddChild(new Label{Text="限定した代理行政と、届いた報告"});{}var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(StewardInput input){var r=Session.ManageStewardship(input,Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowStewardship();}
         string Name(EntityId id)=>Snapshot().Definitions.Characters.Single(c=>c.Id==id).Name;
         StewardInput Input(StewardAction action,EntityId site,EntityId? grant=null)=>new(new("request:steward-ui/"+shown),action,site,Grant:grant);
         void Button(string label,Action run,bool disabled=false){var b=new Button{Text=label,Disabled=disabled};box.AddChild(b);b.Pressed+=run;}
-        if(MaterialMarkets.Enabled(Snapshot()))box.AddChild(new Label{Text="委任した水利工事にも家の木材10kgが必要です。"});
-        if(RegionalDomains.Enabled(Snapshot()))box.AddChild(new Label{Text="この委任は家の資金による現地調達も月200文まで含みます。家全体の予算残額も上限。予算変更・私財拠出は当主のみ。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        if(HouseFreightReceiving.Enabled(Snapshot()))box.AddChild(new Label{Text="この委任には、元の家への仕入荷と未使用前渡金の現地受領も含みます。取消の到達後・期限後は受領できません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(MaterialMarkets.Enabled(Snapshot())){}
+        if(RegionalDomains.Enabled(Snapshot())){}
+        if(HouseFreightReceiving.Enabled(Snapshot())){}
         var amount=new SpinBox{MinValue=1,MaxValue=1000,Step=1,Value=100,Suffix=" kg"};box.AddChild(amount);
         if(v.Site is {} site&&v.People.Length>0){var people=new OptionButton();foreach(var p in v.People)people.AddItem(Name(p));box.AddChild(people);var days=new SpinBox{MinValue=1,MaxValue=30,Step=1,Value=30,Suffix=" 日"};box.AddChild(days);var address=new OptionButton();var sites=Snapshot().Definitions.Sites.ToArray();foreach(var s in sites)address.AddItem(NewGameWorld.SiteName(s.Id.Value));address.Selected=Array.FindIndex(sites,s=>s.Id==site);box.AddChild(new Label{Text="報告・取消返報を届ける拠点（現在地へ自動追尾しません）"});box.AddChild(address);Button("この範囲・期限・返報先で現地の委任に合意する",()=>Run(Input(StewardAction.Assign,site) with{Other=v.People[people.Selected],Days=(int)days.Value,ReturnAddress=sites[address.Selected].Id}));}
         foreach(var c in Session.StewardReauthorizationView()){

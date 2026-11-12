@@ -8,13 +8,13 @@ public static class FactionNoticeReactions
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<=rev;
     static bool Active(FactionStanceClaim c,long at)=>c.EffectiveFrom<=at&&at<c.Until;
     static FactionNoticeRequest[] Latest(ContractWorld w,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var s=w.FactionNotices;if(s==null)return [];
         return s.Requests.Where(q=>q.Recipient!=w.PlayerControl&&s.Openings.Any(o=>o.Message==q.Message&&o.Actor==q.Recipient&&Before(o.At,o.Revision,at,rev)))
             .GroupBy(q=>(q.Recipient,q.Claim.Declaration)).Select(g=>g.OrderByDescending(q=>q.Claim.ObservedAt).ThenBy(q=>q.Claim.Until).ThenBy(q=>q.Input.Id.Value,StringComparer.Ordinal).First()).ToArray();
     }
     static FactionStanceInput? Decision(ContractWorld w,FactionNoticeRequest source,long at,long rev,IEnumerable<FactionNoticeReaction> prior)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var faction=HouseSuccession.Factions(w,at,rev).SingleOrDefault(f=>f.Head==source.Recipient.Value&&f.Id==source.Claim.ToOwner.Value);if(faction==null||source.Recipient==w.PlayerControl)return null;
         var owner=new EntityId(faction.Id);if(TruceNegotiations.WillNotInitiate(w,owner,source.Claim.FromOwner,at,rev))return null;if(FactionStances.ResolveAuthority(w,source.Recipient,owner,at,rev)==null)return null;
         var state=w.FactionNotices!;var response=prior.SingleOrDefault(r=>r.Actor==source.Recipient&&r.Decision.Action==FactionStanceAction.DeclareHostile&&state.Requests.Single(q=>q.Input.Id==r.Source).Claim.Declaration==source.Claim.Declaration);
@@ -28,7 +28,7 @@ public static class FactionNoticeReactions
     }
     static FactionNoticeInput Reply(FactionStanceInput decision)=>new(new("request:faction-response/"+Key(decision.Id.Value)),decision.Action==FactionStanceAction.DeclareHostile?decision.Id:decision.Original!.Value);
     internal static (FactionNoticeRequest Source,FactionStanceInput Input)? Next(ContractWorld w,EntityId actor,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var prior=w.FactionNotices?.Reactions.Where(r=>Before(r.At,r.Revision,at,rev)).ToArray()??[];
         foreach(var source in Latest(w,at,rev).Where(q=>q.Recipient==actor).OrderBy(q=>q.Input.Id.Value,StringComparer.Ordinal))if(Decision(w,source,at,rev,prior) is {} input)return(source,input);
         return null;

@@ -31,7 +31,7 @@ public sealed partial class WorldSession
         }
     }
     internal bool TryHandoff(long revision,Action swap)
-    {lock(gate){if(state.CommitSequence!=revision)return false;swap();return true;}}
+    {using var _ccRev=ControlContext.At(revision);lock(gate){if(state.CommitSequence!=revision)return false;swap();return true;}}
     internal static EntityId Allocate(ContractWorld s, string kind)
     {
         var n = checked(s.IdCounters.GetValueOrDefault(kind)+1); s.IdCounters[kind] = n;
@@ -49,9 +49,9 @@ public sealed partial class WorldSession
         next.CommitSequence = checked(next.CommitSequence+1);
         change(next);BanditEncounter.Tick(next);CastleSiege.Tick(next);LandSurvey.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);CraftTrade.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);PublicWorks.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Sync(next);HouseSuccession.Tick(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);TreatyNegotiations.Update(next);TreatySupply.Update(next);TreatyDefense.Update(next);TruceConfirmations.Update(next);NewGameMilitary.UpdateRemote(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);MaterialMarkets.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);CommunityStewardship.Tick(next);CastellanReports.Tick(next);FreightOperations.Tick(next);NewGameService.Sync(next);HouseSuccession.Sync(next);HouseholdCourt.Sync(next);NewGameMilitary.Sync(next);FieldConvoy.SyncLocations(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); CastleHandover.Tick(next);CharacterDevelopment.Sync(next);CharacterRelations.Sync(next);AdultAdoption.Update(next);AdultMarriage.Update(next);HostageCustody.Update(next); InformationSchemes.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MeritRewards.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialAssets.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next);HouseholdCourt.Tick(next);BrokerWork.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);StandingAdministration.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MaterialMarkets.Tick(next);CommunityEconomy.Tick(next);RegionalTrade.Tick(next);if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next);HouseholdCourt.Sync(next);NewGameWork.Sync(next);InformationSchemes.Tick(next);NewGameWork.Sync(next);NewGameMilitary.RecordMilitaryObservation(next);WorldTimeControl.Observe(state,next);if(!deferTimePause&&WorldTimeControl.Pending(next)!=null)next.Paused=true; if(!deferValidation)ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;DriveSocialCouriers();DriveSchemeCouriers();
     }
-    public CommandResult SetFormation(FieldRequest request,long revision){if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
-    public CommandResult IssueRegional(RegionalRequest request,long revision){lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
-    public CommandResult SetRegionalActive(bool active,long revision){lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
+    public CommandResult SetFormation(FieldRequest request,long revision){using var _ccRev=ControlContext.At(revision);if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
+    public CommandResult IssueRegional(RegionalRequest request,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
+    public CommandResult SetRegionalActive(bool active,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
         if(MilitaryEconomy.OwnIdUsed(state,request.Id)||HouseLogistics.OwnIdUsed(state,request.Id)||RegionalDomains.OwnIdUsed(state,request.Id)||CommunityStewardship.OwnIdUsed(state,request.Id)||NpcCommunityAdministration.OwnIdUsed(state,request.Id)||VillageConsultation.OwnIdUsed(state,request.Id)||HouseSalary.OwnIdUsed(state,request.Id)||RegionalTrade.OwnIdUsed(state,request.Id)||CommunityEconomy.OwnIdUsed(state,request.Id)||RegionalEconomy.OwnIdUsed(state,request.Id)||FactionNotices.OwnIdUsed(state,request.Id)||NpcArmies.Musters(state).Any(m=>m.Id==request.Id)||FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
@@ -175,6 +175,20 @@ public sealed partial class WorldSession
             return new(ResultCode.Accepted,taskId,state.CommitSequence,accept?"受諾しました":"辞退しました");
         }
     }
+    // 亡くなった（または隠居する）操作する人物から、候補の一人へ操作を移す（ControlSuccession）。
+    public CommandResult ContinueAs(EntityId heir,long revision)
+    {using var _ccRev=ControlContext.At(revision);
+        lock(gate)
+        {
+            var id=new EntityId("request:control-handover");
+            if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"状態が変わりました");
+            if(!(ControlSuccession.Awaiting(state)?ControlSuccession.Candidates(state):ControlSuccession.RetireCandidates(state)).Contains(heir))return new(ResultCode.NotAvailable,id,state.CommitSequence,"その人物には引き継げません");
+            // 引き継いだ後の世界が検査に通らなければ、世界を変えずに断る（落とさない）。
+            try{Change(s=>ControlSuccession.Apply(s,heir));}
+            catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"いまは引き継げません");}
+            return new(ResultCode.Accepted,id,state.CommitSequence,"引き継ぎました");
+        }
+    }
     public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null,bool stopAtNotice=false)
     {
         lock(gate)
@@ -183,6 +197,7 @@ public sealed partial class WorldSession
             int processed=0;int initialNotices=state.TimeControl?.Notices.Length??0;
             while(state.ElapsedSeconds<target)
             {
+                if(ControlSuccession.Awaiting(state))return new(state.ElapsedSeconds,processed,"PlayerDead");
                 if(state.Paused)return new(state.ElapsedSeconds,processed,"Paused");
                 long boundary=NextBoundary(state,target);
                 int cost=1+TreatyNegotiations.BoundaryCost(state)+TruceNegotiations.BoundaryCost(state)+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
@@ -190,7 +205,7 @@ public sealed partial class WorldSession
                 deferTimePause=WorldTimeControl.Enabled(state);
                 try{
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
@@ -208,6 +223,7 @@ public sealed partial class WorldSession
                 ConsiderObservedWar();GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
                 }finally{deferTimePause=false;if(WorldTimeControl.Pending(state)!=null&&!state.Paused)Change(s=>s.Paused=true);}
                 processed+=cost;
+                if(ControlSuccession.Awaiting(state)){if(!state.Paused)Change(s=>s.Paused=true);return new(state.ElapsedSeconds,processed,"PlayerDead");}
                 if(stopAtNotice&&(state.TimeControl?.Notices.Length??0)>initialNotices)return new(state.ElapsedSeconds,processed,"Notice");
             }
             return new(state.ElapsedSeconds,processed,state.Paused?"Paused":"ReachedTarget");
@@ -241,6 +257,7 @@ public sealed partial class WorldSession
         if(HouseholdCourt.NextBoundary(s,target) is {} courtBoundary)times.Add(courtBoundary);
         if(FamilyBirth.Next(s,target) is {} birth)times.Add(birth);
         if(FamilyMortality.Next(s,target) is {} naturalDeath)times.Add(naturalDeath);
+        if(NationalStrategy.NextBoundary(s,target) is {} month)times.Add(month);
         if(PersonalHealth.Next(s,target) is {} illness)times.Add(illness);
         if(FamilyKin.NextAdulthood(s,target) is {} comingOfAge)times.Add(comingOfAge);
         if(InformationSchemes.NextBoundary(s,target) is {} schemeBoundary)times.Add(schemeBoundary);
@@ -530,10 +547,10 @@ public sealed partial class WorldSession
     }
     public NearbyActor[] GetNearbyActors(EntityId observer){lock(gate)return RegionalCampaign.Nearby(state,observer);}
     public CommandResult InspectRoad(EntityId actor,string edge,long revision)
-    {lock(gate){var id=new EntityId("request:inspect-road");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalCampaign.InspectRoad(s,actor,edge));return new(ResultCode.Accepted,id,state.CommitSequence,"現地で通行状況を確認しました");}catch(Exception e)when(e is InvalidOperationException or InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"道の入口で確認してください");}}}
+    {using var _ccRev=ControlContext.At(revision);lock(gate){var id=new EntityId("request:inspect-road");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalCampaign.InspectRoad(s,actor,edge));return new(ResultCode.Accepted,id,state.CommitSequence,"現地で通行状況を確認しました");}catch(Exception e)when(e is InvalidOperationException or InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"道の入口で確認してください");}}}
     public CourierView[] GetCourierView(EntityId observer){lock(gate)return RegionalCampaign.Views(state,observer);}
     public CommandResult RetryCourier(EntityId actor,string message,string destination,long appointment,long revision)
-    {lock(gate){if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,new(message),state.CommitSequence,"表示を更新してください");
+    {using var _ccRev=ControlContext.At(revision);lock(gate){if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,new(message),state.CommitSequence,"表示を更新してください");
         try{Change(s=>RegionalCampaign.Retry(s,actor,message,destination,appointment));return new(ResultCode.Accepted,new(message),state.CommitSequence,"再発送しました");}
         catch(Exception e) when(e is InvalidDataException or InvalidOperationException or ArgumentException){return new(ResultCode.NotAvailable,new(message),state.CommitSequence,"既知の失敗と届け先を確認してください");}}}
     // Explicit test/diagnostic transport control; never exposed by an ordinary ActorView.

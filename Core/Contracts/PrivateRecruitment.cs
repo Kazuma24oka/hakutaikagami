@@ -28,7 +28,7 @@ public static partial class PrivateRecruitment
         Contracts(w).Where(e => e.Actor == commander && e.Revision < rev && e.At <= at && at < PaidUntil(w,e,at,rev));
 
     static int Available(ContractWorld w, CourtEvent recruitment, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var unit = CompanyId(recruitment);
         var losses = (w.WorldClashes?.Steps ?? []).Where(s => s.At <= at && s.Revision < rev)
             .SelectMany(s => s.Result.Losses).Where(l => l.Unit == unit).Sum(l => l.Soldiers);
@@ -58,7 +58,7 @@ public static partial class PrivateRecruitment
     public sealed record CompanyReport(EntityId Unit,int Fit,int Dead,int Wounded,int Deserted,bool VillageLevy);
 
     public static IEnumerable<CompanyReport> CompanyReports(ContractWorld w, EntityId captain, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var company in ActiveCompanies(w,captain,at,rev)){
             var id=CompanyId(company);
             var losses=BattlefieldRules.Casualties(w,id,at,rev);
@@ -78,7 +78,7 @@ public static partial class PrivateRecruitment
 
     static IEnumerable<(CourtEvent Levy, BattlefieldCasualties Loss, long At)> VillageLosses(
         ContractWorld w, EntityId site, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if (w.WorldClashes is not { Steps.Length: >0 } clashes) yield break;
         var levies=Levies(w).Where(e=>e.Place==site && e.At<=at && e.Revision<rev).ToDictionary(CompanyId);
         if (levies.Count==0) yield break;
@@ -91,7 +91,7 @@ public static partial class PrivateRecruitment
         VillageLosses(w,site,at,rev).Sum(row=>row.Loss.Dead);
 
     static IEnumerable<(long At,int Change)> LaborChanges(ContractWorld w, EntityId site,long until,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var levy in Levies(w).Where(e=>e.Place==site && e.At<=until && e.Revision<rev)){
             int count=checked((int)levy.Input.Amount);
             yield return (levy.At,count);
@@ -112,7 +112,7 @@ public static partial class PrivateRecruitment
         LaborChanges(w,site,until,rev).Where(e=>e.At<until).Sum(e=>checked(e.Change*(until-Math.Max(from,e.At))));
 
     public static bool CanLevy(ContractWorld w, EntityId actor, EntityId owner, EntityId place, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if (DefectionPacts.HouseAt(w, actor, at, rev-1) != owner) return false;
         return HouseSuccession.Head(w, owner, at, rev-1) == actor ||
             w.Offices.Any(o => o.Kind == "castellan" && o.Subject == actor && o.Target == place &&
@@ -126,7 +126,7 @@ public static partial class PrivateRecruitment
             .Sum(e => checked(e.Input.Amount * ((e.Input.When - e.At) / 86400))) + RenewalCost(w,person,at,rev,false);
 
     internal static void Check(ContractWorld w, CourtInput input, EntityId actor, EntityId place, long at, long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if (!MilitaryEconomy.Enabled(w) || !CommunityEconomy.SitesFor(w).Contains(place) || input.Person != actor ||
             input.Site != place || !TransportWork.At(w, actor, place, at, rev, true) ||
             input.Action == CourtAction.RaiseVillageSoldiers && !CanLevy(w, actor, input.Owner, place, at, rev) ||

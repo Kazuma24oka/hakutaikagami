@@ -7,7 +7,7 @@ public partial class NewGameRuntime
 {
  readonly Dictionary<string,Button> brokerReviewButtons=new();
  internal void ReviewBrokerPress(string key){var b=brokerReviewButtons[key];if(b.Disabled)throw new InvalidOperationException(key);b.EmitSignal(Button.SignalName.Pressed);}
- void ShowBrokerWork(){if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("口入れ：書状と買付");brokerReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){SocialText(box,"現地へ到着してから相談してください。");return;}
+ void ShowBrokerWork(){if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("口入れ：書状と買付");brokerReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){{}return;}
  foreach(var detail in AbilityEffects.KnownInspection(Session,actor))SocialText(box,detail);
  EntityId Nonce(string key)=>new("request:broker-ui/"+rev+"/"+key);
  void Button(string key,string text,BrokerInput i){var b=new Button{Text=text};box.AddChild(b);brokerReviewButtons[key]=b;b.Pressed+=()=>{if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var result=Session.ManageBroker(i,rev);message.Text=result.VisibleReason;Refresh();ShowBrokerWork();};}
@@ -19,6 +19,6 @@ public partial class NewGameRuntime
  else Act("settle","依頼主へ受領証と残金を渡して精算する",BrokerAction.Settle);
  if(j.DeliveredAt==null&&j.Cargo==0)Act("return","引受を取りやめ、封書・預り金を現地で返す",BrokerAction.Return);
  }
- if(jobs.Length==0){SocialText(box,"面識がなくても、小口の仕事を相談できます。掲示は現地の依頼主が用意したものです。");foreach(bool personal in new[]{false,true})foreach(var kind in new[]{BrokerKind.Letter,BrokerKind.Purchase}){var id=Nonce((personal?"personal-":"small-")+kind);foreach(var offer in BrokerWork.Offers(w,actor,id,kind,personal)){string key=(personal?"personal-":"small-")+kind+"-"+offer.Issuer.Value.Replace(':','-');var warning=offer.Abilities is {} plan && MusterNotices.Conflict(w,actor,plan.ReadyAt)!=null?"（準備中に集合期日を過ぎる）":"";Button(key,$"{(personal?"個別相談":"小口")}：{MeritRewards.DisplayName(w,actor,offer.Issuer)}／{(kind==BrokerKind.Letter?"封書の使い":"木材"+offer.Quantity+"kgの買付")}／報酬{offer.Fee}文{warning}",new(id,BrokerAction.Accept,Issuer:offer.Issuer,Kind:kind,Personal:personal));}}}
+ if(jobs.Length==0){{}foreach(bool personal in new[]{false,true})foreach(var kind in new[]{BrokerKind.Letter,BrokerKind.Purchase}){var id=Nonce((personal?"personal-":"small-")+kind);foreach(var offer in BrokerWork.Offers(w,actor,id,kind,personal)){string key=(personal?"personal-":"small-")+kind+"-"+offer.Issuer.Value.Replace(':','-');var warning=offer.Abilities is {} plan && MusterNotices.Conflict(w,actor,plan.ReadyAt)!=null?"（準備中に集合期日を過ぎる）":"";Button(key,$"{(personal?"個別相談":"小口")}：{MeritRewards.DisplayName(w,actor,offer.Issuer)}／{(kind==BrokerKind.Letter?"封書の使い":"木材"+offer.Quantity+"kgの買付")}／報酬{offer.Fee}文{warning}",new(id,BrokerAction.Accept,Issuer:offer.Issuer,Kind:kind,Personal:personal));}}}
  }
 }

@@ -7,7 +7,7 @@ public static class RegentKin
         .Any(e=>e.Input.Action==CourtAction.AcceptRegentKin && e.Actor==CentralCourtCatalog.Konoe && e.Input.Person==person && e.At<=at && e.Revision<=rev);
     static bool WillAccept(ContractWorld w,EntityId person,long at,long rev)=>SocialWorld.ConsentBonus(w,CentralCourtCatalog.Konoe,person,at,rev)>=2;
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         bool asking=i.Action==CourtAction.RequestRegentKin;
         var applicant=asking?actor:i.Person;var patron=asking?i.Person:actor;
         if(!CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog) || patron!=CentralCourtCatalog.Konoe || applicant==patron ||

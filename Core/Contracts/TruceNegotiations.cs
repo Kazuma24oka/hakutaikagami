@@ -25,7 +25,7 @@ public static class TruceNegotiations
     static bool Opened(ContractWorld w,TrucePaper p,EntityId actor,long at,long rev)=>State(w).Openings.Any(o=>o.Message==p.Message&&o.Actor==actor&&Before(o.At,o.Revision,at,rev));
     static TrucePaper[] PapersAt(ContractWorld w,long at,long rev)=>State(w).Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray();
     static TrucePaper Prepare(ContractWorld w,TruceInput i,EntityId actor,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=HouseSuccession.Factions(w,at,rev).SingleOrDefault(f=>f.Id==i.Target.Value);Need(target!=null,"相手の当事者が不明です");TruceTerms terms;
         if(i.Action==TruceAction.Propose){Need(actor==w.PlayerControl,"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day));}
         else{
@@ -47,7 +47,7 @@ public static class TruceNegotiations
     internal static void RecordOpening(ContractWorld w,EntityId actor,string message)
     {var s=State(w);if(!Enabled(w)||s.Openings.Any(o=>o.Message==message)||!s.Papers.Any(p=>p.Message==message&&p.Recipient==actor))return;Need(w.Messaging.Attempts.Any(a=>a.MessageId==message&&a.ReceiverId==actor.Value&&a.Status==AttemptStatus.Delivered)&&MessageFlow.Knows(w.Messaging,message,actor.Value),"到達・本人開封が必要です");w.Truces=s with{Openings=[..s.Openings,new(message,actor,w.ElapsedSeconds,w.CommitSequence)]};}
     static TruceFormation[] Forms(ContractWorld w,long at,long rev,bool discover=false)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var papers=PapersAt(w,at,rev);var result=new List<TruceFormation>();foreach(var p in papers.Where(p=>p.Input.Action==TruceAction.Accept)){
             var source=papers.SingleOrDefault(s=>s.Input.Id==p.Input.Source);if(source==null||source.Terms!=p.Terms)continue;
             var delivery=w.Messaging.Attempts.Where(a=>a.MessageId==p.Message&&a.ReceiverId==p.Recipient.Value&&a.Status==AttemptStatus.Delivered&&a.FinishedAt<=at).OrderBy(a=>a.FinishedAt).FirstOrDefault();if(delivery?.FinishedAt is not {} arrived||arrived>p.Terms.ReplyBy||arrived>=p.Terms.Until)continue;
@@ -80,13 +80,13 @@ public static class TruceNegotiations
         w.Truces=State(w) with{Fulfillments=[..State(w).Fulfillments,new(f.Acceptance,actor,w.ElapsedSeconds,w.CommitSequence,decision)]};
     }
     public static bool WillNotInitiate(ContractWorld w,EntityId owner,EntityId target,long at,long revision)
-    {if(TreatyNegotiations.WillNotInitiate(w,owner,target,at,revision))return true;if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
+    {using var _ccRev=ControlContext.At(revision);if(TreatyNegotiations.WillNotInitiate(w,owner,target,at,revision))return true;if(!Enabled(w))return false;var head=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value)?.Head;if(head==null)return false;return Known(w,new(head),at,revision).Any(f=>Math.Max(f.At,f.Terms.From)<=at&&at<f.Terms.Until&&(f.Terms.A==owner&&f.Terms.B==target||f.Terms.B==owner&&f.Terms.A==target));}
     internal static long? NextBoundary(ContractWorld w,long target)
     {if(!Enabled(w))return null;var times=State(w).Papers.SelectMany(p=>new[]{p.Terms.ReplyBy+1,p.Terms.Until}).ToList();if(Next(w,true)!=null||TruceConfirmations.Pending(w))times.Add(w.ElapsedSeconds+1);return times.Where(t=>t>w.ElapsedSeconds&&t<=target).Order().Select(t=>(long?)t).FirstOrDefault();}
     internal static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)=>State(w).Papers.Select(p=>(p.At,p.Revision)).Concat(State(w).Openings.Where(o=>o.Actor==w.PlayerControl).Select(o=>(o.At,o.Revision))).Concat(State(w).Fulfillments.Select(f=>(f.At,f.Revision))).Concat(TruceSuccession.Inputs(w)).Concat(TruceConfirmations.Inputs(w));
     internal static IEnumerable<long> Changes(ContractWorld w)=>State(w).Papers.SelectMany(p=>new[]{p.At,p.Terms.From,p.Terms.Until,p.Terms.ReplyBy}).Concat(State(w).Openings.Select(o=>o.At)).Concat(State(w).Formations.Select(f=>f.At)).Concat(TruceSuccession.Inputs(w).Select(e=>e.At)).Concat(TruceConfirmations.Inputs(w).Select(e=>e.At));
     internal static int BoundaryCost(ContractWorld w)=>!Enabled(w)?0:2*State(w).Papers.Select(p=>p.Recipient).Distinct().Count()+TruceConfirmations.BoundaryCost(w);
-    internal static void Rewind(ContractWorld w,long at,long rev){TruceSuccession.Rewind(w,at,rev);TruceConfirmations.Rewind(w,at,rev);if(w.Truces is {} s)w.Truces=s with{Papers=s.Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Formations=s.Formations.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray(),Fulfillments=s.Fulfillments.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray()};}
+    internal static void Rewind(ContractWorld w,long at,long rev){using var _ccRev=ControlContext.At(rev);TruceSuccession.Rewind(w,at,rev);TruceConfirmations.Rewind(w,at,rev);if(w.Truces is {} s)w.Truces=s with{Papers=s.Papers.Where(p=>Before(p.At,p.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),Formations=s.Formations.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray(),Fulfillments=s.Fulfillments.Where(f=>Before(f.At,f.Revision,at,rev)).ToArray()};}
     public static TruceCard[] View(ContractWorld w)
     {
         if(!Enabled(w))return [];var actor=w.PlayerControl;var papers=State(w).Papers.Where(p=>p.Author==actor||Opened(w,p,actor,w.ElapsedSeconds,w.CommitSequence)).ToArray();return papers.Where(p=>p.Input.Action is TruceAction.Propose or TruceAction.Counter).GroupBy(p=>p.Terms.Origin).Select(g=>g.OrderByDescending(p=>p.Terms.Version).First()).Select(p=>{

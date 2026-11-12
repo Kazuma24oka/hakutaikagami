@@ -36,7 +36,7 @@ public static class ShogunateAppointments
            m.DeliverySite!=Kyoto.Value || !w.SealedMessages.Any(x=>x.Value==id))throw new InvalidDataException("幕府の書状と原本が一致しません");
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || place!=Kyoto || HouseTerritoryScale.Province(i.Site)==null ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で対象国と申請本人を確認してください");

@@ -41,14 +41,14 @@ public static class TransportWork
     }
     public static TransportJob[] Jobs(ContractWorld w)=>w.TransportWork?.Jobs??[];
     public static long Net(ContractWorld w,EntityId lot,long at=long.MaxValue,long revision=long.MaxValue)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         long n=0;foreach(var j in Jobs(w))foreach(var e in j.Handover.Entries){var t=j.Handover.Terms;long rev=j.Receipts.Single(p=>p.Operation==e.Input.Id).Revision;if(!Before(e.Input.At,rev,at,revision))continue;
             void Move(EntityId from,EntityId to,long amount){if(lot==from)n=checked(n-amount);if(lot==to)n=checked(n+amount);}
             switch(e.Input.Action){case HandoverAction.Collect:Move(t.SourceLot,Cargo(t.Id),t.Amount);break;case HandoverAction.Deliver:Move(Cargo(t.Id),Delivered(t.Id),t.Amount);break;case HandoverAction.Return:Move(Cargo(t.Id),t.SourceLot,t.Amount);break;case HandoverAction.Pay:Move(NewGameWork.Wallet(t.Issuer),NewGameWork.Wallet(t.Carrier),t.Fee);break;}}
         return n;
     }
     internal static long WalletBefore(ContractWorld w,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var id=NewGameWork.Wallet(actor);long n=NewGameWork.InitialCoins+RegionalDomains.Net(w,id,at,revision)+RegionalTrade.Net(w,id,at,revision)-(actor==w.PlayerControl?RegionalTrade.Reserved(w,at,revision):0)+PrivateStanddown.Net(w,id,at,revision)+PrivateInformation.Net(w,id,at,revision)+PersonalCompanions.Net(w,id,at,revision)+Net(w,id,at,revision)+VoyageExpense.Net(w,id,at,revision)+ArmyRoadMarch.Net(w,id,at,revision)+PersonalLife.Net(w,id,at,revision)+SocialWorld.Net(w,id,at,revision);
         foreach(var p in w.WorkCycle!.Payments.Where(p=>Before(p.At,p.Revision,at,revision))){var t=w.Tasks.Single(t=>t.Id==p.Task);if(t.Issuer==actor)n-=p.Amount;if(t.Executor==actor)n+=p.Amount;}
         return n;
@@ -65,7 +65,7 @@ public static class TransportWork
         Sync(w);
     }
     static void CheckInput(ContractWorld w,TransportJob j,HandoverInput i,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var t=j.Handover.Terms;Need(i.At<=w.ElapsedSeconds&&At(w,i.Actor,i.Site,i.At,revision)&&At(w,i.Counterparty,i.Site,i.At,revision),"Actual local parties are required");
         Need(i.At==w.ElapsedSeconds||revision<=w.CommitSequence,"Future receipt");
         var expected=i.Action is HandoverAction.Collect or HandoverAction.Deliver or HandoverAction.Pay or HandoverAction.Return?new EntityId("transfer:transport/"+i.Id.Value.Replace(':','/')):(EntityId?)null;
@@ -79,7 +79,7 @@ public static class TransportWork
         w.Debts=[..w.Debts.Where(d=>!IsDebt(d)),..Jobs(w).Where(j=>j.Handover.Entries.Any(e=>e.Input.Action==HandoverAction.Report)).Select(j=>new DebtState(Debt(j.Handover.Terms.Id),j.Handover.Terms.Issuer,j.Handover.Terms.Carrier,"mon",TransportHandover.Validate(j.Handover).FeeOwed,Basis))];
     }
     internal static void Rewind(ContractWorld w,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(w.TransportWork==null)return;
         var jobs=Jobs(w).Where(j=>j.Handover.Terms.OfferedAt<at||j.Handover.Terms.OfferedAt==at&&j.CreatedRevision<=revision).Select(j=>{
             var receipts=j.Receipts.Where(p=>p.Revision<=revision&&j.Handover.Entries.Any(e=>e.Input.Id==p.Operation&&e.Input.At<=at)).ToArray();var ids=receipts.Select(p=>p.Operation).ToHashSet();return j with{Receipts=receipts,Handover=j.Handover with{Entries=j.Handover.Entries.Where(e=>ids.Contains(e.Input.Id)).ToArray()}};}).ToArray();
@@ -91,7 +91,7 @@ public static class TransportWork
         var s=w.TransportWork;Need(NewGameWork.Enabled(w)&&s.Schema==1&&s.Policy==Policy&&s.Jobs.Length>0,"Unexpected transport policy");Need(s.Jobs.Select(j=>j.Handover.Terms.Id).Distinct().Count()==s.Jobs.Length,"Duplicate transport job");
         if(!WorkFollowup.Enabled(w))Need(s.Jobs.Select(j=>(j.Handover.Terms.Issuer,j.Handover.Terms.Amount)).Distinct().Count()==s.Jobs.Length,"Duplicate local dispatch demand");
         var operations=new HashSet<EntityId>();var revisions=new HashSet<long>();
-        foreach(var j in s.Jobs){var t=j.Handover.Terms;TransportHandover.Validate(j.Handover);if(WorkFollowup.Enabled(w))Need(WorkFollowup.Available(w,t.OfferedAt,j.CreatedRevision),"Previous consignment is not settled at issue");Need(t.Carrier==w.PlayerControl&&t.SourceLot==NewGameWork.Wallet(t.Issuer)&&t.Amount==WorkProgression.Amount(w,t.Issuer,t.OfferedAt,j.CreatedRevision)&&t.Fee==WorkProgression.Fee(w,t.Issuer,t.OfferedAt,j.CreatedRevision)&&t.Unit=="mon"&&t.Resource=="money"&&t.AcceptBy==t.OfferedAt+86400&&t.DeliverBy==t.OfferedAt+30*86400&&j.CreatedRevision>0&&j.CreatedRevision<=w.CommitSequence&&t.OfferedAt<=w.ElapsedSeconds,"Unregistered transport terms");Need(At(w,t.Issuer,t.Source,t.OfferedAt,j.CreatedRevision)&&At(w,t.Carrier,t.Source,t.OfferedAt,j.CreatedRevision),"Offer was not local");
+        foreach(var j in s.Jobs){using var _cc=ControlContext.At(j.CreatedRevision);var t=j.Handover.Terms;TransportHandover.Validate(j.Handover);if(WorkFollowup.Enabled(w))Need(WorkFollowup.Available(w,t.OfferedAt,j.CreatedRevision),"Previous consignment is not settled at issue");Need(t.Carrier==w.PlayerControl&&t.SourceLot==NewGameWork.Wallet(t.Issuer)&&t.Amount==WorkProgression.Amount(w,t.Issuer,t.OfferedAt,j.CreatedRevision)&&t.Fee==WorkProgression.Fee(w,t.Issuer,t.OfferedAt,j.CreatedRevision)&&t.Unit=="mon"&&t.Resource=="money"&&t.AcceptBy==t.OfferedAt+86400&&t.DeliverBy==t.OfferedAt+30*86400&&j.CreatedRevision>0&&j.CreatedRevision<=w.CommitSequence&&t.OfferedAt<=w.ElapsedSeconds,"Unregistered transport terms");Need(At(w,t.Issuer,t.Source,t.OfferedAt,j.CreatedRevision)&&At(w,t.Carrier,t.Source,t.OfferedAt,j.CreatedRevision),"Offer was not local");
             Need(w.NewGame!.Start.People.Any(p=>p.Id==t.Recipient.Value&&p.Site==t.Destination.Value&&p.Faction!=null&&p.Faction==w.NewGame.Start.People.Single(p=>p.Id==t.Issuer.Value).Faction),"Recipient lacks original appointment address");
             Need(revisions.Add(j.CreatedRevision)&&j.Receipts.Length==j.Handover.Entries.Length,"Invalid receipt timeline");long previous=j.CreatedRevision;
             foreach(var e in j.Handover.Entries){var p=j.Receipts.Single(p=>p.Operation==e.Input.Id);Need(operations.Add(e.Input.Id)&&revisions.Add(p.Revision)&&p.Revision>previous&&p.Revision<=w.CommitSequence,"Duplicate or reversed operation sequence");previous=p.Revision;CheckInput(w,j,e.Input,p.Revision);}

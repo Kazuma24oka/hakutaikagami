@@ -216,7 +216,7 @@ public static class PersonalHealth
 public sealed partial class WorldSession
 {
     public HealthView? HealthView(EntityId person){lock(gate)return PersonalHealth.View(state,state.PlayerControl,person);}
-    public CommandResult ManageHealth(HealthCareInput input,EntityId actor,long revision){lock(gate){
+    public CommandResult ManageHealth(HealthCareInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){
         if(actor!=state.PlayerControl||!PersonalHealth.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の手当の操作ではありません");
         var old=state.Health!.Care.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"処理済みの手当です");
         if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別操作のIDです");

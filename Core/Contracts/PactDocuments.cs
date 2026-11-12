@@ -8,7 +8,7 @@ public static class PactDocuments
     const string Kind="secret-pact";
 
     static IEnumerable<(PersonalObject Paper,EntityId Pact,PactSeizure[] Seizures)> Trace(ContractWorld w,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(w.SecretPacts==null)yield break;
         var captures=InformationSchemes.Events(w).Where(e=>e.Input.Action==SchemeAction.CaughtInEncounter &&
             e.Revision<=revision).OrderBy(e=>e.Revision).ToArray();

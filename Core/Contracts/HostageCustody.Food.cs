@@ -6,7 +6,7 @@ public static partial class HostageCustody
     public const long MealInterval=86400;
     public static long MealQuantity(long houseRice,long reserved){if(houseRice<0||reserved<0)throw new ArgumentOutOfRangeException();return houseRice>reserved?1:0;}
     static bool MealDue(CustodyEntry[] rows,EntityId root,long at){var person=rows.Single(e=>e.Input.Id==root).Terms!.Person;return !rows.Any(e=>e.Meal?.RiceKg==1&&at-e.At<MealInterval&&rows.Single(p=>p.Input.Id==e.Input.Original).Terms!.Person==person);}
-    static CustodyMeal PrepareMeal(ContractWorld w,CustodyTerms t,CustodyEntry[] prior,long at,long rev){
+    static CustodyMeal PrepareMeal(ContractWorld w,CustodyTerms t,CustodyEntry[] prior,long at,long rev){using var _ccRev=ControlContext.At(rev);
         Need(CommunityEconomy.Enabled(w)&&Held(prior,t.Id)&&LocalOriginal(w,t,at,rev)&&LocalAuthorities(w,Effective(t,prior),at,rev),"本人と確認済みの両家代表者が預かり先に在席する必要があります");
         Need(MealDue(prior,t.Id,at),"前回の食事提供から一日を空けてください");var current=Effective(t,prior);
         Need(RegionalDomains.Owner(w,t.Site)==t.CustodianHouse&&RegionalDomains.Authority(w,current.Custodian,t.Site,at,rev),"受入側の家の現地米を処分できません");

@@ -99,7 +99,7 @@ public static partial class NewGameMilitary
         return DeployedAt(c,at)?PersonPosition(c,at):null;
     }
     public static bool AllowsMobileLot(ContractWorld w,ResourceLot lot)=>LedgerStates(w).Any(s=>{
-        var c=LedgerContext(w,s);return lot.Id==CarryFor(c)&&(lot.MobileHolder==w.PlayerControl||UnitCarries(c)&&lot.MobileHolder==UnitIdsFor(c)[0]);
+        var c=LedgerContext(w,s);return lot.Id==CarryFor(c)&&(lot.MobileHolder is {} holder&&ControlSuccession.EverPlayed(w,holder)||UnitCarries(c)&&lot.MobileHolder==UnitIdsFor(c)[0]);
     });
     public static bool Outstanding(ContractWorld w,long at,long rev)=>LedgerStates(w).Any(s=>LedgerOutstanding(LedgerContext(w,s),at,rev));
     public static long Net(ContractWorld w,EntityId lot)

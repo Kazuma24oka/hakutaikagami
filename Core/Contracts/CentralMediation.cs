@@ -15,7 +15,7 @@ public static class CentralMediation
         SocialWorld.ConsentBonus(w,CentralCourtCatalog.CourtBroker,applicant,at,rev)>=2;
 
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var broker=CentralCourtCatalog.CourtBroker;
         if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || i.Site!=CentralCourtCatalog.Kyoto || place!=i.Site ||
            !TransportWork.At(w,actor,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||
@@ -23,6 +23,8 @@ public static class CentralMediation
             throw new InvalidDataException("京で取次本人と面会して相談してください");
         var rows=Earlier(w,at,rev).ToArray();
         if(i.Action==CourtAction.AskCourtIntroduction){
+            if(i.Title is {} title && CentralTitles.Title(title) is not {Grantor:"court",Kind:"rank" or "kokushi" or "kyokan"})
+                throw new InvalidDataException("朝廷へ奏請できる位階・官職ではありません");
             if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && TransportWork.WalletBefore(w,actor,at,rev)<CentralRank.Offering)
                 throw new InvalidDataException("奏請に添える本人の献金60文が必要です");
             if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && !RankLeave.Eligible(w,actor,i.Owner,at,rev))
@@ -30,7 +32,8 @@ public static class CentralMediation
             if(actor==broker || i.Person!=broker || i.Reference!=null || DefectionPacts.HouseAt(w,actor,at,rev-1)!=i.Owner ||
                !SocialWorld.Ledger(w).Any(e=>e.Input.Action==SocialWorldAction.Visit && e.Actor==actor &&
                     e.Input.Person==broker && e.At<=at && e.Revision<rev) ||
-               rows.Any(e=>e.Actor==actor && e.Input.Action==i.Action && !rows.Any(r=>r.Input.Reference==e.Input.Id && r.Input.Action==CourtAction.DeclineCourtIntroduction)))
+               rows.Any(e=>e.Actor==actor && e.Input.Action==i.Action && !rows.Any(r=>r.Input.Reference==e.Input.Id && r.Input.Action==CourtAction.DeclineCourtIntroduction) &&
+                   !(i.Title!=null && e.Input.Title!=null && CentralRank.Decided(HouseholdCourt.Events(w).Where(x=>x.At<at||x.At==at&&x.Revision<rev).ToArray(),e))))
                 throw new InvalidDataException("本人との面識と所属を確認し、同じ奏請の返答を待ってください");
             return;
         }

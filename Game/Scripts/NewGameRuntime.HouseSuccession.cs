@@ -21,7 +21,7 @@ public partial class NewGameRuntime
         if(Session.HouseSuccessionView() is not {} v)return;var w=Snapshot();long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var scroll=new ScrollContainer{CustomMinimumSize=new(560,420),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(540,0)};box.AddThemeConstantOverride("separation",10);scroll.AddChild(box);
         void Text(string s)=>box.AddChild(new Label{Text=s,AutowrapMode=TextServer.AutowrapMode.WordSmart});
         void Button(string s,Action action,bool disabled=false){var b=new Button{Text=s,Disabled=disabled,CustomMinimumSize=new(0,36)};box.AddChild(b);b.Pressed+=action;}
-        Text("家督・引継ぎ");Text("本拠で集合中の預かり軍は保管したまま交代を相談できます。軍務の発令者は別の指揮原本を確認するまで変わりません。");Text("生前の合意による当主職の交代です。所属・奉公・兵・私財は一括で移しません。家の未払いと預かり物は、原本ごとに現地で引き継ぎます。");var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
+        Text("家督・引継ぎ");{}{}var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(HouseSuccessionInput i){var r=Session.ManageHouseSuccession(i,Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();}
         foreach(var accession in w.MinorityAccessions??[])
             if(accession.Child==w.PlayerControl || GuardianLedger.Witnessed(w,w.PlayerControl).Any(t=>t.Mandate==accession.Mandate && !t.Returned && t.At==accession.At))
@@ -121,6 +121,6 @@ public partial class NewGameRuntime
         if(Session.CanAgreeActiveMilitary())Button("現当主と、預かっている同じ軍の指揮原本を確認",()=>{var root=NewGameMilitary.Cases(w).Last().Id;var result=Session.AgreeActiveMilitary(new(new("request:active-military-ui/"+shown),root),Session.PlayerControl,shown);if(result.Code!=ResultCode.Accepted){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();ShowHouseSuccession();});
         AppendRemoteMilitary(box,popup,feedback,shown);
         AppendTruceConfirmations(box,popup,feedback,shown);
-        Text("交代後の支払いは「家の支給・待遇」、荷と余金の受渡しは「家の仕入れ・運搬」で行います。予定後も世界は通常の進行操作で進みます。");Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(610,540));
+        {}Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(610,540));
     }
 }
