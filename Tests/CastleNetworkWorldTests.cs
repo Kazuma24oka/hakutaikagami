@@ -10,7 +10,7 @@ public sealed class CastleNetworkWorldTests
     {
         var raw=NewGameWorld.Scenario(Edition);if(network!=null)raw=WorldNetwork.WithCastles(raw);
         var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        return NewGameWorld.Create(setup,[],"person:imagawa-yoshimoto",20261112,historicalCatalog:Edition,networkPolicy:network);
+        return NewGameWorld.Create(setup,[],"person:imagawa-yoshimoto",20261112,network!=null?NewGameWorld.CompactPersonalAuthority:null,historicalCatalog:Edition,networkPolicy:network);
     }
     static string ImagawaHomeNode()=>CastleRoutes.NodeOf(HakutaiDb.House(HakutaiDb.GameLinks["org:imagawa"])!.Home!);
 
@@ -54,5 +54,20 @@ public sealed class CastleNetworkWorldTests
         Assert.Equal(ContractJson.CanonicalHash(s.DiagnosticSnapshot()),ContractJson.CanonicalHash(host.Current.DiagnosticSnapshot()));
         var at=s.DiagnosticSnapshot().Locations.Single(l=>l.Actor==s.PlayerControl);
         Assert.Equal(LocationKind.AtSite,at.Kind);Assert.Equal(new EntityId("site:"+goal),at.Site);
+    }
+
+    [Fact]public void CastleWorldsNeedCompactAuthorityAndCanInspectACastle()
+    {
+        var raw=WorldNetwork.WithCastles(NewGameWorld.Scenario(Edition));var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
+        Assert.Throws<InvalidDataException>(()=>NewGameWorld.Create(setup,[],"person:imagawa-yoshimoto",20261112,historicalCatalog:Edition,networkPolicy:WorldNetwork.CastlePolicy));
+        var w=World(WorldNetwork.CastlePolicy);Assert.True(w.Grants.Length<=2*w.NewGame!.Start.People.Length);
+        var s=new WorldSession(w);string goal=ImagawaHomeNode();
+        Assert.Equal(ResultCode.Accepted,s.Submit(TravelWorld.Move(s.DiagnosticSnapshot(),"request:castle-walk",goal),s.Revision).Code);
+        NewGameWorldTests.At(s,3600*24*3);
+        Assert.Equal(new EntityId("site:"+goal),s.DiagnosticSnapshot().Locations.Single(l=>l.Actor==s.PlayerControl).Site);
+        Assert.Equal(ResultCode.Accepted,s.Submit(NewGameWorld.Inspect(s.DiagnosticSnapshot(),"request:castle-inspect"),s.Revision).Code);
+        NewGameWorldTests.At(s,s.Seconds+600);
+        var w2=s.DiagnosticSnapshot();var req=w2.Requests.Single(r=>r.Id==new EntityId("request:castle-inspect"));Assert.Equal(ActionKind.Inspect,req.Intent.Action);Assert.Equal(new EntityId("site:"+goal),req.Intent.Scope);
+        Assert.Equal(ExecutionPhase.Completed,w2.Tasks.Single(t=>t.RequestId==req.Id).Execution);
     }
 }

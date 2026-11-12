@@ -1,0 +1,11 @@
+{
+  "status": "PASSED",
+  "scope": "castle-network-authority-v1",
+  "core_castle_network_tests": 4,
+  "core_related_passed": 43,
+  "measurement": "README の表（100・1,000・4,200人、測定の検査は記録後に削除）",
+  "full_core": "未実施（P13）",
+  "godot_ui": "対象外（画面の変更なし）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

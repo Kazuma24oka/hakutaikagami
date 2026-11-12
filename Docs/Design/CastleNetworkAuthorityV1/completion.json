@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "城の移動網の世界は、人物ごとの調べる権利を拠点ごとに作らない軽い作り方（人物1人に2件）でしか作れない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameWorld.cs",
+        "Tests/CastleNetworkWorldTests.cs"
+      ]
+    },
+    {
+      "contract": "城の移動網の世界で、本人が城の拠点に着いてそこを調べられる（権利の判定が拠点の一覧を毎回なめない）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameWorld.CompactAuthority.cs",
+        "Core/Contracts/WorldNetwork.cs",
+        "Tests/CastleNetworkWorldTests.cs"
+      ]
+    },
+    {
+      "contract": "城の移動網の世界に約4,200人を置いたときの作成・進行・保存の大きさを測って記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/CastleNetworkAuthorityV1/README.md"
+      ]
+    }
+  ]
+}
