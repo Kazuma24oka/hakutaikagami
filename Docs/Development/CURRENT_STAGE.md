@@ -78,7 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-12 | 操作の引き継ぎ・全国の家の戦略・位階と官職の表と奏請・出世の目標・画面の説明の文言の削除（v150） | Docs/Design/ControlSuccessionV1/・NationalStrategyV1/ | （統合後に記入） |
+| 2026-11-12 | 操作の引き継ぎ・全国の家の戦略・位階と官職の表と奏請・出世の目標・画面の説明の文言の削除（v150） | Docs/Design/ControlSuccessionV1/・NationalStrategyV1/ | PR144 → main ee373079 |
 | 2026-11-12 | 全国1560年の開始の版（BD-04 25→35・BD-20 35→45。休眠の世界の手番のまとめた検査 v109 を含む） | Docs/Design/NationalStartV1/・Docs/Design/NpcBatchValidationV1/ | PR142 → main cde0bf58 |
 | 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | PR141 → main 66503de0 |
 | 2026-11-12 | 進行の重さの見直し 第1段（BD-04 20→22） | Docs/Design/AdvanceCostV1/ | PR140 → main fb8aea41 |
