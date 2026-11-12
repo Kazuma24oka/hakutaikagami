@@ -26,6 +26,10 @@ public sealed record StrategyPact(EntityId Id,EntityId A,EntityId B,string Kind,
 }
 // 京の主：山城の城の過半を押さえた家（上洛）。押さえる家が変わった月に記録する。
 public sealed record StrategyCapital(EntityId House,long At,long Revision);
+// 包囲網：同じ強い家を相手にした同盟が三つ以上重なったときの、その家への包囲網（加わる家）。
+public sealed record StrategyCoalition(EntityId Id,EntityId Target,EntityId[] Members,long At,long Revision);
+// 将軍：vacant（将軍家が城をすべて失った）・installed（京の主が将軍家の成人を擁立し、山城の城を一つ渡した）。
+public sealed record StrategyShogun(string Kind,EntityId? Patron,EntityId? Shogun,EntityId? Site,long At,long Revision);
 public sealed record StrategySuccession(EntityId House,EntityId Previous,EntityId Heir,long At,long Revision);
 public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] Campaigns,StrategyOutcome[] Outcomes)
 {
@@ -34,6 +38,8 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyHistoryRecord[]? History {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyPact[]? Pacts {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyCapital[]? Capitals {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyShogun[]? Shoguns {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyCoalition[]? Coalitions {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
 
@@ -45,7 +51,7 @@ public static class NationalStrategy
     public static bool Enabled(ContractWorld w)=>w.NewGame?.StrategyPolicy==Policy;
     public static void ValidatePolicy(NewGameState data){if(data.StrategyPolicy is not(null or Policy))throw new InvalidDataException("全国の戦略の版が不正です");if(data.StrategyPolicy!=null&&!WorldNetwork.Castle(data))throw new InvalidDataException("全国の戦略は城の移動網の世界だけで使えます");}
 
-    // 史実の出陣（公知の通説。年と月は事件の起きた頃）。DBの家と、そのとき出陣を決めた当主。
+    // 史実の出陣（公知の通説。年と月は事件の起きた頃）。DBの家と、そのとき出陣を決めた当主（当主が代わっている見込みの後年の事件は条件にしない）。
     public static readonly HistoricalCampaign[] History=[
         new("okehazama-1560","尾張への出陣（桶狭間の戦い）","G-000123","G-000131","P-005312",1560,5,"通説：永禄3年5月、今川義元が尾張へ出陣"),
         new("odawara-1561","小田原城攻め","G-000134","G-000104","P-005249",1561,3,"通説：永禄4年3月、長尾景虎が小田原城を囲む"),
@@ -61,6 +67,26 @@ public static class NationalStrategy
         new("mimikawa-1578","日向への出陣（耳川の戦い）","G-000210","G-000236","P-005322",1578,10,"通説：天正6年10月から11月"),
         new("okitanawate-1584","島原への出陣（沖田畷の戦い）","G-000236","G-000223",null,1584,3,"通説：天正12年3月"),
         new("takaya-1560","河内への出陣（高屋城）","G-000199","G-000160","P-004257",1560,10,"通説：永禄3年10月、三好長慶が河内を平定"),
+        new("eiroku-1565","永禄の変","G-000199","G-000154",null,1565,5,"通説：永禄8年5月、三好方が将軍足利義輝を討つ"),
+        new("moribe-1561","美濃への出陣（森部の戦い）","G-000131","G-000117","P-005235",1561,5,"通説：永禄4年5月"),
+        new("shogunjizo-1561","京への出陣（将軍山城）","G-000150","G-000199",null,1561,7,"通説：永禄4年7月、六角が三好を攻める"),
+        new("moji-1561","門司城の戦い","G-000188","G-000210","P-005270",1561,10,"通説：永禄4年10月"),
+        new("kyokoji-1562","教興寺の戦い","G-000199","G-000160",null,1562,5,"通説：永禄5年5月"),
+        new("kokufudai-1564","第二次国府台の戦い","G-000104","G-000080",null,1564,1,"通説：永禄7年1月"),
+        new("kakegawa-1568","遠江への出陣（掛川城）","G-000126","G-000123",null,1568,12,"通説：永禄11年12月、徳川家康が遠江へ攻め込む"),
+        new("ogochi-1569","伊勢への出陣（大河内城）","G-000131","G-000167","P-005235",1569,8,"通説：永禄12年8月"),
+        new("imayama-1570","今山の戦い","G-000210","G-000223",null,1570,8,"通説：元亀元年8月"),
+        new("ishiyama-1570","石山合戦","G-000131","G-000242","P-005235",1570,9,"通説：元亀元年9月から"),
+        new("kizakibaru-1572","木崎原の戦い","G-000235","G-000236",null,1572,5,"通説：元亀3年5月"),
+        new("mikatagahara-1572","遠江への出陣（三方ヶ原の戦い）","G-000106","G-000126","P-005247",1572,10,"通説：元亀3年10月から12月"),
+        new("iwamura-1572","岩村城攻め","G-000106","G-000131","P-005247",1572,11,"通説：元亀3年11月"),
+        new("nagashima-1574","長島への出陣","G-000131","G-000242","P-005235",1574,7,"通説：天正2年7月"),
+        new("shimantogawa-1575","四万十川の戦い","G-000206","G-000207",null,1575,9,"通説：天正3年9月"),
+        new("nanao-1577","七尾城攻め","G-000134","G-000143","P-005249",1577,9,"通説：天正5年9月"),
+        new("tedorigawa-1577","手取川の戦い","G-000134","G-000131","P-005249",1577,9,"通説：天正5年9月"),
+        new("tottori-1581","鳥取城攻め","G-000131","G-000188","P-005235",1581,6,"通説：天正9年6月から"),
+        new("takamatsu-1582","備中高松城攻め","G-000131","G-000188","P-005235",1582,4,"通説：天正10年4月から"),
+        new("suriagehara-1589","摺上原の戦い","G-000037","G-000040",null,1589,6,"通説：天正17年6月"),
     ];
 
     static readonly Lazy<Dictionary<string,string[]>> adjacency=new(BuildAdjacency);
@@ -89,16 +115,22 @@ public static class NationalStrategy
         var start=w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction;
         EntityId? owner=start==null?null:new(start);
         if(w.Strategy is not {} s)return owner;
-        foreach(var o in s.Outcomes)
+        foreach(var (Site,House,At,Revision) in Changes(s))
         {
-            if(!o.Captured||o.At>at||o.At==at&&o.Revision>rev)continue;
-            var c=s.Campaigns.Single(c=>c.Id==o.Campaign);if(c.Target==site)owner=c.Attacker;
+            if(At>at||At==at&&Revision>rev)continue;
+            if(Site==site.Value)owner=new(House);
         }
         return owner;
     }
+    // 城の持ち主が変わる出来事（落城と、擁立で渡した城）を版の順に。
+    static IEnumerable<(string Site,string House,long At,long Revision)> Changes(StrategyState s)=>
+        s.Outcomes.Where(o=>o.Captured).Select(o=>{var c=s.Campaigns.Single(c=>c.Id==o.Campaign);return (c.Target.Value,c.Attacker.Value,o.At,o.Revision);})
+        .Concat((s.Shoguns??[]).Where(x=>x.Kind=="installed"&&x.Site!=null).Select(x=>(x.Site!.Value.Value,NationalStart.FactionId(Shogun),x.At,x.Revision)))
+        .OrderBy(x=>x.Item4).ThenBy(x=>x.Item3);
     static Dictionary<string,string?> Owners(ContractWorld w,StrategyState? s)
     {
         var map=w.NewGame!.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction,StringComparer.Ordinal);
+        if(s!=null){foreach(var (site,house,_,_) in Changes(s))map[site]=house;return map;}
         if(s!=null)foreach(var o in s.Outcomes.Where(o=>o.Captured)){var c=s.Campaigns.Single(c=>c.Id==o.Campaign);map[c.Target.Value]=c.Attacker.Value;}
         return map;
     }
@@ -214,6 +246,7 @@ public static class NationalStrategy
         s=s with{Outcomes=outcomes.ToArray()};
         {var holder=CapitalHolder(Owners(w,s));var last=s.Capitals is {Length:>0} cs?cs[^1].House.Value:null;
          if(holder!=null&&holder!=last){s=s with{Capitals=[..s.Capitals??[],new(new(holder),w.ElapsedSeconds,w.CommitSequence)]};if(last!=null)CapitalLetter(w,holder);}}
+        s=ShogunTurn(w,s);
         var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(owners,initial);var near=NearPlayerSites(w);
         var player=w.PlayerControl;var playerHouse=w.NewGame!.Start.Factions.Where(f=>HouseSuccession.Head(w,new(f.Id))==player).Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var playerMember=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==player.Value)?.Faction;if(playerMember!=null)playerHouse.Add(playerMember);
@@ -268,7 +301,9 @@ public static class NationalStrategy
             var id=new EntityId($"campaign:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(f.Id))[..12]}");
             campaigns.Add(new(id,new(f.Id),new(pick.Owner!),new(pick.Site!),w.ElapsedSeconds,w.CommitSequence,basis));
         }
-        w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray()};
+        var coalitions=Coalitions(w,s,pacts,out var formed);
+        w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions};
+        foreach(var c in formed)CoalitionLetters(w,c);
         foreach(var (pact,sender) in pactLetters)PactLetters(w,pact,sender);
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
@@ -297,7 +332,10 @@ public static class NationalStrategy
         string body=captured?$"{castle}は{attacker}の手に落ちました。":$"{attacker}の軍勢は{castle}を落とせずに退きました。";
         // 史実の出陣は、年代記に残るときの名で知らせる。
         if(History.SingleOrDefault(e=>"history:"+e.Id==c.Basis) is {} named)body=named.Name+"　"+body;
-        foreach(var house in new[]{c.Attacker,c.Defender})
+        // 当事者の二家と、落ちた（または攻められた）城の隣に城を持つ家の当主へ届く（噂より確かな近隣の知らせ）。
+        var owners=Owners(w,w.Strategy);
+        var neighbours=Neighbors(c.Target.Value).Select(n=>owners.GetValueOrDefault(n)).Where(o=>o!=null).Select(o=>new EntityId(o!));
+        foreach(var house in new[]{c.Attacker,c.Defender}.Concat(neighbours).Distinct().ToArray())
         {
             var head=HouseSuccession.Head(w,house);if(head==sender||w.Characters.Single(x=>x.Id==head).Life!=LifeState.Adult)continue;
             var site=FamilyBirth.People(w).Single(p=>p.Id==head.Value).Site;
@@ -308,6 +346,47 @@ public static class NationalStrategy
         RegionalCampaign.Bind(w);
     }
 
+    // 将軍家が城をすべて失えば空位。空位の間、京の主（将軍家でない）が将軍家の生きている成人を擁立し、自分の山城の城を一つ渡す。
+    static StrategyState ShogunTurn(ContractWorld w,StrategyState s)
+    {
+        var shogun=NationalStart.FactionId(Shogun);if(!w.NewGame!.Start.Factions.Any(f=>f.Id==shogun))return s;
+        var owners=Owners(w,s);var rows=(s.Shoguns??[]).ToList();var last=rows.LastOrDefault();
+        bool holds=owners.ContainsValue(shogun);
+        if(!holds&&last?.Kind!="vacant")rows.Add(new("vacant",null,null,null,w.ElapsedSeconds,w.CommitSequence));
+        else if(!holds&&last?.Kind=="vacant"&&Capital(w) is {} patron&&patron.Value!=shogun)
+        {
+            var candidate=FamilyBirth.People(w).Where(p=>p.Faction==shogun&&w.Characters.SingleOrDefault(c=>c.Id.Value==p.Id)?.Life==LifeState.Adult).OrderBy(p=>p.Lord==null?0:1).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
+            var site=owners.Where(x=>x.Value==patron.Value&&InKyoto(x.Key)).Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).FirstOrDefault();
+            if(candidate!=null&&site!=null)rows.Add(new("installed",patron,new(candidate.Id),new(site),w.ElapsedSeconds,w.CommitSequence));
+        }
+        return rows.Count==(s.Shoguns?.Length??0)?s:s with{Shoguns=rows.ToArray()};
+    }
+    // 同じ強い家（同盟の根拠 threat:X）を相手にした、今も続く同盟の家が三つ以上で、まだその家への包囲網がなければ作る。
+    static StrategyCoalition[]? Coalitions(ContractWorld w,StrategyState s,List<StrategyPact> pacts,out List<StrategyCoalition> formed)
+    {
+        var rows=(s.Coalitions??[]).ToList();formed=[];long now=w.ElapsedSeconds;var date=WorldCalendar.At(w.EpochDate,now);
+        foreach(var g in pacts.Where(p=>p.Kind=="alliance"&&p.Broken==null&&p.From<=now&&now<p.Until&&p.Basis.StartsWith("threat:",StringComparison.Ordinal)).GroupBy(p=>p.Basis[7..],StringComparer.Ordinal).OrderBy(g=>g.Key,StringComparer.Ordinal))
+        {
+            var members=g.SelectMany(p=>new[]{p.A,p.B}).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
+            if(members.Length<3||rows.Any(c=>c.Target.Value==g.Key&&now-c.At<2*365*86400L))continue;
+            var c=new StrategyCoalition(new($"coalition:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(g.Key))[..12]}"),new(g.Key),members,now,w.CommitSequence);
+            rows.Add(c);formed.Add(c);
+        }
+        return rows.Count==0?null:rows.ToArray();
+    }
+    static void CoalitionLetters(ContractWorld w,StrategyCoalition c)
+    {
+        string target=w.Definitions.Organizations.Single(o=>o.Id==c.Target).Name;var first=HouseSuccession.Head(w,c.Members[0]);
+        foreach(var house in c.Members)
+        {
+            var head=HouseSuccession.Head(w,house);var sender=house==c.Members[0]?HouseSuccession.Head(w,c.Members[1]):first;
+            if(head==sender||w.Characters.Single(x=>x.Id==head).Life!=LifeState.Adult||w.Characters.Single(x=>x.Id==sender).Life!=LifeState.Adult)continue;
+            string id=$"message:strategy-coalition/{ContractJson.Hash(Encoding.UTF8.GetBytes(c.Id.Value+"/"+house.Value))[..16]}";
+            MessageFlow.Send(w.Messaging,new MessageEnvelope(id,c.Id.Value,LetterKind,sender.Value,head.Value,$"{target}に備え、{c.Members.Length}家で手を結びたく存じます。",FamilyBirth.People(w).Single(x=>x.Id==head.Value).Site,w.ElapsedSeconds),w.ElapsedSeconds,1);
+            w.SealedMessages=[..w.SealedMessages,new(id)];
+        }
+        RegionalCampaign.Bind(w);
+    }
     // 京の主が変わったら、将軍から新しい京の主の当主へ書状が届く（将軍家が京の主なら送らない）。
     static void CapitalLetter(ContractWorld w,string holder)
     {
