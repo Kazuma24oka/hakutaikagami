@@ -19,8 +19,8 @@
     "command": "dotnet test Tests -c Release --filter FullyQualifiedName~NationalPersonEstimateTests"
   },
   "short_suite": {
-    "status": "PASSED",
-    "passed": 2835,
+    "status": "RUNNING",
+    "passed": 0,
     "failed": 0,
     "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
   },
@@ -40,6 +40,14 @@
     "evidence": "全国v1開始は新しい人物方針・生年・能力を持たない。旧属性JSONと過去プロフィールの開始ハッシュはバイト一致。"
   },
   "full_suite": {
+    "status": "PENDING",
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "command": "dotnet test Tests -c Release"
+  },
+  "computer_use": "未使用",
+  "prior_full_suite": {
     "status": "PASSED",
     "passed": 4532,
     "failed": 0,
@@ -49,5 +57,11 @@
     "elapsed": "48m22s",
     "worktree": "C:/Workspace/Projects/Games/hakutaikagami-core-v115-full-check"
   },
-  "computer_use": "未使用"
+  "prior_short_suite": {
+    "status": "PASSED",
+    "passed": 2835,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
+  },
+  "compatibility_fix": "旧全国v2保存の開始定義の再構築を保護。旧v1/v2の読み込み・再出力を含む関連5件成功、人物方針付きv2の追加確認を含む短い検査を実行中。"
 }
