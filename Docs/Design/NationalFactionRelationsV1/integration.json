@@ -1,8 +1,10 @@
 {
   "schema": 1,
-  "status": "READY_FOR_SQUASH",
+  "status": "MERGED",
   "pull_request": 145,
   "scope": "v113 全国1560年の勢力従属関係",
   "strategy": "gh CLI squash merge",
-  "full_suite": "PASSED: 4,522/4,522 at candidate 605b662b in a separate worktree."
+  "full_suite": "PASSED: 4,522/4,522 at candidate 605b662b in a separate worktree.",
+  "merge_commit": "fd7e770d0091f0394c886aa111558dc5ea2ad6a0",
+  "integrated_at": "2026-11-12T15:28:23Z"
 }

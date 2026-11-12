@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "status": "WAITING_FINAL_FULL_SUITE",
+  "scope": "v114 全国1560年の年次名乗り",
+  "strategy": "gh CLI PR、squash merge、作業ブランチへmainを取り込み",
+  "full_suite": "旧commit 0d4ba533で別worktree実行を開始したが、main v151取り込みに伴い中断。統合候補commit確定後に再実施。",
+  "short_suite": "PASSED: 2,831/2,831",
+  "related_tests": "PASSED: 5/5",
+  "game_build": "PASSED: Debug, 0 warnings, 0 errors"
+}

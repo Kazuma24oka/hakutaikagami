@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "scope": "national-name-history",
+  "baseline": "approval-baseline-v114",
+  "related_tests": {
+    "status": "PASSED",
+    "passed": 5,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"FullyQualifiedName~NationalNameHistoryTests|FullyQualifiedName~NationalFactionRelationsTests\""
+  },
+  "short_suite": {
+    "status": "PASSED",
+    "passed": 2831,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
+  },
+  "game_build": {
+    "status": "PASSED",
+    "configuration": "Debug",
+    "warnings": 0,
+    "errors": 0,
+    "command": "dotnet build Game/HakutaiKagami.Game.csproj -c Debug --no-restore"
+  },
+  "player_display": {
+    "status": "CODE_AND_CORE_TEST_PASSED",
+    "evidence": "既存の人物表示名解決に接続し、到来後のみ名称を返すことと未配置人物を返さないことをCoreテストで確認。Godot実行画面とOS画面操作は未実施。"
+  },
+  "save_restore": {
+    "status": "PASSED",
+    "method": "GenerationSaveStoreで境界直前を実ファイル保存し、別WorldSessionへ復旧後に年境界を進行。両世界のJSONと表示名が一致。"
+  },
+  "legacy_world": {
+    "status": "PASSED",
+    "evidence": "新規台帳のない旧全国プロフィールを検査し、名乗り項目を追加せず同じJSONバイト列へ復元。"
+  },
+  "full_suite": {
+    "status": "PENDING",
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "command": "dotnet test Tests -c Release"
+  },
+  "computer_use": "未使用"
+}
