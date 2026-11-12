@@ -46,8 +46,8 @@ public static class NpcCommunityAdministration
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.ElapsedSeconds==0||w.ElapsedSeconds%Day!=0)return;
-        foreach(var site in CommunityEconomy.SitesFor(w)){w=session.DiagnosticSnapshot();if(Date(w,w.ElapsedSeconds).Day!=1&&CommunityStewardship.GrantAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;var controller=CommunityStewardship.Delegate(w,site,w.ElapsedSeconds,w.CommitSequence+1)??Principal(w,site);if(controller==null||controller==w.PlayerControl||w.CommunityAdministration!.Decisions.Any(d=>d.Site==site&&d.Id==Id(w,site,w.ElapsedSeconds)))continue;session.RunCommunityAdministration(site,w.CommitSequence);}
+        var w=session.TurnSnapshot();if(!Enabled(w)||w.ElapsedSeconds==0||w.ElapsedSeconds%Day!=0)return;
+        foreach(var site in CommunityEconomy.SitesFor(w)){w=session.TurnSnapshot();if(Date(w,w.ElapsedSeconds).Day!=1&&CommunityStewardship.GrantAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;var controller=CommunityStewardship.Delegate(w,site,w.ElapsedSeconds,w.CommitSequence+1)??Principal(w,site);if(controller==null||controller==w.PlayerControl||w.CommunityAdministration!.Decisions.Any(d=>d.Site==site&&d.Id==Id(w,site,w.ElapsedSeconds)))continue;session.RunCommunityAdministration(site,w.CommitSequence);}
     }
     internal static long? NextBoundary(ContractWorld w,long target)
     {

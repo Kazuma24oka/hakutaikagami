@@ -1,0 +1,38 @@
+{
+  "status": "PASSED",
+  "criteria": [
+    {
+      "contract": "開始の配置の検査の記憶が、約4,200人の大きな開始でも効く（毎回の進行で開始の配置を検査し直さない）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameWorld.StartProjection.cs",
+        "Tests/AdvanceCostTests.cs"
+      ]
+    },
+    {
+      "contract": "人物ごとの外見・所在の検査で、人物の一覧を人物ごとに毎回なめない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NewGameWorld.cs",
+        "Core/Contracts/ContractValidation.cs"
+      ]
+    },
+    {
+      "contract": "進行1回の中の仕組みごとの手番の確認で、変化のない間は世界全体の写しを仕組みごとに作り直さない（共有の写しを書き換えたら検査で分かる）",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/WorldSession.cs",
+        "Tests/TurnSnapshotGuard.cs",
+        "Tests/AdvanceCostTests.cs"
+      ]
+    },
+    {
+      "contract": "同じ入力から同じ結果になる（Core の全件テスト合格）。約4,200人の城の移動網の世界で、進行1回の時間を測り直して記録する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/AdvanceCostV1/verification.json",
+        "Docs/Design/AdvanceCostV1/README.md"
+      ]
+    }
+  ]
+}

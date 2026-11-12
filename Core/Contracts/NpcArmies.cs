@@ -142,12 +142,12 @@ public static partial class NpcArmies
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.Paused)return;
+        var w=session.TurnSnapshot();if(!Enabled(w)||w.Paused)return;
         foreach(var f in DecidingHeads(w).OrderBy(f=>f.Id,StringComparer.Ordinal)){
-            w=session.DiagnosticSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective)session.MusterNpcArmy(MusterId(objective.Claim),new(f.Head),new(f.Id),objective);
+            w=session.TurnSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective)session.MusterNpcArmy(MusterId(objective.Claim),new(f.Head),new(f.Id),objective);
         }
-        foreach(var id in Musters(session.DiagnosticSnapshot()).Select(m=>m.Id)){
-            w=session.DiagnosticSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!NeedsTurn(w,m))continue;
+        foreach(var id in Musters(session.TurnSnapshot()).Select(m=>m.Id)){
+            w=session.TurnSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!NeedsTurn(w,m))continue;
             var last=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==id);
             if(last?.Input.RequestId.Value==MarchId(m,true)){if(w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site))session.ReturnNpcArmy(id);continue;}
             bool home=last!=null;if(home&&w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site)){session.ReturnNpcArmy(id);continue;}var input=Move(w,id,MarchId(m,home),NewGameWorld.Node((home?m.Site:m.Objective!.TargetSite).Value));session.Submit(input,session.Revision);

@@ -67,15 +67,15 @@ public static class RoadConvoy
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||w.Paused||w.ElapsedSeconds%60!=0)return;
+        var w=session.TurnSnapshot();if(!Enabled(w)||w.Paused||w.ElapsedSeconds%60!=0)return;
         foreach(var old in Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Where(j=>j.Returned==null)){
-            w=session.DiagnosticSnapshot();var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Single(j=>j.Terms.Id==old.Terms.Id);var t=j.Terms;if(!Free(w,t.Carrier,w.ElapsedSeconds,w.CommitSequence+1))continue;
+            w=session.TurnSnapshot();var j=Jobs(w,w.ElapsedSeconds,w.CommitSequence+1).Single(j=>j.Terms.Id==old.Terms.Id);var t=j.Terms;if(!Free(w,t.Carrier,w.ElapsedSeconds,w.CommitSequence+1))continue;
             if(j.ReturnStarted!=null&&At(w,t.Carrier,t.Home,w.ElapsedSeconds,w.CommitSequence+1)){session.RunCampConvoy(new(Effect(w,j,"return"),CampConvoyAction.Return,t.Id));continue;}
             if(j.ReturnStarted==null&&(j.CargoKg==0||w.ElapsedSeconds>=t.Until||FreightOperations.Stopped(w,t.Id,w.ElapsedSeconds,w.CommitSequence+1))){session.RunCampConvoy(new(Effect(w,j,"start-return"),CampConvoyAction.StartReturn,t.Id));continue;}
             if(CanDeliver(w,j,w.ElapsedSeconds,w.CommitSequence+1)){session.RunCampConvoy(new(Effect(w,j,"deliver/"+w.ElapsedSeconds),CampConvoyAction.Deliver,t.Id));continue;}
             var stopped=w.Tasks.LastOrDefault(q=>q.Executor==t.Carrier&&q.Execution==ExecutionPhase.Stopped&&q.FinishedAt>=t.At&&w.Requests.Any(r=>r.Id==q.RequestId&&r.CreatedAt>=t.At&&r.Intent.RoutePolicy==LandRoute));if(stopped!=null&&!w.CampConvoys!.Entries.Any(e=>e.Input.Job==t.Id&&e.Input.RelatedTask==stopped.Id)){session.RunCampConvoy(new(Effect(w,j,"stop/"+stopped.Id.Value),CampConvoyAction.ReportStop,t.Id){RelatedTask=stopped.Id});continue;}
             if(At(w,t.Carrier,Goal(j),w.ElapsedSeconds,w.CommitSequence+1))continue;
-            foreach(var edge in LocalOpenings(w,j)){var result=session.InspectRoad(t.Carrier,edge,session.Revision);Need(result.Code==ResultCode.Accepted,"現地の道路再確認に失敗しました");}w=session.DiagnosticSnapshot();
+            foreach(var edge in LocalOpenings(w,j)){var result=session.InspectRoad(t.Carrier,edge,session.Revision);Need(result.Code==ResultCode.Accepted,"現地の道路再確認に失敗しました");}w=session.TurnSnapshot();
             try{session.Submit(TravelWorld.ActorMove(w,Effect(w,j,"move/"+w.ElapsedSeconds).Value,t.Carrier,RegionalCampaign.Destination(w,Goal(j)),true,LandRoute),w.CommitSequence);}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException){/* Keep cargo at the real node until a legal road or return is available. */}
         }
     }

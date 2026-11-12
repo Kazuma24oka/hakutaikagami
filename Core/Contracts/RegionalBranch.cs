@@ -11,7 +11,9 @@ public static class RegionalBranch
     public static string Version{get;}=ContractJson.CanonicalHash(new RegionalBranchBinding(catalog,JapanGeography.Projection));
     static RegionalBranchCatalog Read(){using var s=typeof(RegionalBranch).Assembly.GetManifestResourceStream("OwariBranchesV1")??throw new InvalidDataException("Missing branch catalog");using var m=new MemoryStream();s.CopyTo(m);return ContractJson.Read<RegionalBranchCatalog>(m.ToArray());}
     public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||w.Definitions.Ruleset==RegionalControl.Ruleset||RegionalCampaign.Enabled(w);
-    public static BranchNode[] Nodes=>catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.Stop.LatitudeE7,n.Stop.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));}).ToArray();
+    // 位置の換算は決まっていて変わらないので一度だけ行い、呼ぶたびに配列の写しを返す（2026-11-12、v107）。
+    static readonly Lazy<BranchNode[]> nodes=new(()=>catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.Stop.LatitudeE7,n.Stop.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));}).ToArray());
+    public static BranchNode[] Nodes=>[..nodes.Value];
     public static BranchEdge[] Edges=>catalog.Edges.Select(e=>e with{}).ToArray();
     public static SiteDefinition[] Sites=>catalog.Nodes.Select(n=>new SiteDefinition(n.Id=="castle"?ContractFixture.Castle:n.Id=="village"?ContractFixture.Village:new("site:"+n.Id),n.Stop.Name,n.Stop.LatitudeE7,n.Stop.LongitudeE7,0)).ToArray();
     public static ContractWorld Create(bool blocked=true)

@@ -49,9 +49,9 @@ public static class FactionNoticeReactions
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.DiagnosticSnapshot();if(w.Paused||w.FactionNotices==null)return;
+        var w=session.TurnSnapshot();if(w.Paused||w.FactionNotices==null)return;
         foreach(var actor in Latest(w,w.ElapsedSeconds,w.CommitSequence).Select(q=>q.Recipient).Distinct().OrderBy(a=>a.Value,StringComparer.Ordinal)){
-            w=session.DiagnosticSnapshot();if(Next(w,actor,w.ElapsedSeconds,w.CommitSequence) is {} choice)session.ReactToFactionNotice(choice.Source,choice.Input);
+            w=session.TurnSnapshot();if(Next(w,actor,w.ElapsedSeconds,w.CommitSequence) is {} choice)session.ReactToFactionNotice(choice.Source,choice.Input);
         }
     }
     public static void Validate(ContractWorld w)

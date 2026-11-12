@@ -71,10 +71,10 @@ public static class RestorationEscort
     internal static void TakeTurns(WorldSession session)
     {
         if (!session.HasRestorationEscort()) return;
-        var snapshot = session.DiagnosticSnapshot();
+        var snapshot = session.TurnSnapshot();
         foreach (var agreement in HouseholdCourt.Events(snapshot).Where(e => e.Input.Action == CourtAction.AcceptRestorationEscort))
         {
-            var world = session.DiagnosticSnapshot();
+            var world = session.TurnSnapshot();
             var commander = agreement.Input.Person;
             if (commander == world.PlayerControl ||
                 world.Tasks.Any(t => t.Executor == commander && t.Execution is not
