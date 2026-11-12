@@ -93,7 +93,7 @@ def main():
     land = Land(json.loads((DATA / "japan-terrain-mask-v1.json").read_text(encoding="utf-8"))["Polygons"])
     # 湖は道を通さない（国の形の穴の湖と、地球地図日本の湖・広い川面。2026-11-12 ユーザーの指摘：琵琶湖・宍道湖を横切る道）
     geo = ROOT / "Game" / "Data" / "Geography"
-    land.add_lakes(json.loads((geo / "borders-v1.json").read_text(encoding="utf-8"))["Lakes"])
+    land.add_lakes(json.loads((geo / "borders-v2.json").read_text(encoding="utf-8"))["Lakes"])
     land.add_lakes(json.loads((geo / "terrain-v1.json").read_text(encoding="utf-8"))["Lakes"])
     pts = {}
     outside = {n["Id"] for n in nat["Nodes"] if n["LatitudeE7"] < 289000000 and n["LongitudeE7"] < 1310000000}  # 琉球の拠点は城の移動網に入れない

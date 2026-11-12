@@ -24,7 +24,7 @@ public partial class NewGameMap : Control
     // 基準の位置（九州〜東北）と、操作できない地域の名前の位置
     static readonly GeoCoordinate HomeSouthWest=new(309000000,1294000000),HomeNorthEast=new(416000000,1421000000);
     static readonly (GeoCoordinate At,string Name)[] AreaLabels=[(new(263000000,1278500000),"琉球王国")];
-    // 国と郡の境界（borders-v1.json、「郡地図 Ver 1.1」を加工して作成）と、経路・国・郡の表示の切り替え。
+    // 国と郡の境界（borders-v2.json、「郡地図 Ver 1.1」を加工して作成。陸地を国・郡に必ず1つずつ割り当てた範囲の境目）と、経路・国・郡の表示の切り替え。
     sealed record Line(RoutePoint[] Points,long MinE,long MaxE,long MinN,long MaxN);
     readonly List<Line> provinceLines=new(),districtLines=new();readonly List<(RoutePoint At,string Name)> provinceNames=new(),districtNames=new();
     internal bool ShowRoutes=true,ShowProvinces=true,ShowDistricts=true,ShowTerrain=true;
@@ -57,7 +57,7 @@ public partial class NewGameMap : Control
             static GeoCoordinate[] Ring(System.Text.Json.JsonElement r)=>r.EnumerateArray().Select(q=>new GeoCoordinate(q.GetProperty("LatitudeE7").GetInt32(),q.GetProperty("LongitudeE7").GetInt32())).ToArray();
             foreach(var p in doc.RootElement.GetProperty("Polygons").EnumerateArray())AddPolygon(new(Ring(p.GetProperty("Outer")),p.GetProperty("Holes").EnumerateArray().Select(Ring).ToArray()),Area.Ezo);
         }
-        using(var doc=System.Text.Json.JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/Geography/borders-v1.json"))){
+        using(var doc=System.Text.Json.JsonDocument.Parse(Godot.FileAccess.GetFileAsString("res://Data/Geography/borders-v2.json"))){
             var root=doc.RootElement;RoutePoint At(System.Text.Json.JsonElement q)=>P(new(q[0].GetInt32(),q[1].GetInt32()));
             void Lines(string key,List<Line> into){foreach(var l in root.GetProperty(key).EnumerateArray()){var pts=l.EnumerateArray().Select(At).ToArray();into.Add(new(pts,pts.Min(q=>q.EastMm),pts.Max(q=>q.EastMm),pts.Min(q=>q.NorthMm),pts.Max(q=>q.NorthMm)));}}
             Lines("ProvinceLines",provinceLines);Lines("DistrictLines",districtLines);
@@ -88,7 +88,7 @@ public partial class NewGameMap : Control
         long minX=all.Min(p=>p.EastMm),maxX=all.Max(p=>p.EastMm),minY=all.Min(p=>p.NorthMm),maxY=all.Max(p=>p.NorthMm);
         fullCenter=new((minX+maxX)/2,(minY+maxY)/2);boxMinE=minX;boxMaxE=maxX;boxMinN=minY;boxMaxN=maxY;fullScale=Math.Min(Size.X/((maxX-minX)*1.06),Size.Y/((maxY-minY)*1.06));
         var a=P(HomeSouthWest);var b=P(HomeNorthEast);homeCenter=new((a.EastMm+b.EastMm)/2,(a.NorthMm+b.NorthMm)/2);
-        homeScale=Math.Min(Size.X/(double)Math.Abs(b.EastMm-a.EastMm),Size.Y/(double)Math.Abs(b.NorthMm-a.NorthMm));maxScale=1/40000.0;
+        homeScale=Math.Min(Size.X/(double)Math.Abs(b.EastMm-a.EastMm),Size.Y/(double)Math.Abs(b.NorthMm-a.NorthMm));maxScale=1/5000.0;
         if(followHome){center=homeCenter;scale=homeScale;}scale=Math.Clamp(scale,fullScale,maxScale);
     }
     internal void Pick(string site){SelectedSite=site;SitePicked?.Invoke(site);LayoutPins();QueueRedraw();}
