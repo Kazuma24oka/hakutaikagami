@@ -4,6 +4,7 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record OfficerAttributes(int Leadership, int Valor, int Intelligence, int Politics)
 {
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public int? Negotiation {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public int? Charm {get;init;}
 }
 public enum InitialMaritalStatus { Unmarried }
 public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Name, int BirthYear,
@@ -47,7 +48,7 @@ public static class NewGameSetup
         Need(p.Aspiration == null || Enum.IsDefined(p.Aspiration.Value), "志が不正です");
         Need(p.InitialMaritalStatus==null||Enum.IsDefined(p.InitialMaritalStatus.Value),"開始時の婚姻情報が不正です");
         Need(p.BirthYear is >= 1 and <= 9999 && p.Attributes != null,"生年・能力が不正です");
-        Need(new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0}.All(n=>n>=0),"能力は負数にできません");
+        Need(new[]{p.Attributes.Leadership,p.Attributes.Valor,p.Attributes.Intelligence,p.Attributes.Politics,p.Attributes.Negotiation??0,p.Attributes.Charm??0}.All(n=>n>=0),"能力は負数にできません");Need(p.Attributes.Charm is null or (>=1 and <=100),"魅力は1〜100にしてください");
         Need(p.CopiedFrom == null || (Key(p.CopiedFrom) && p.CopiedFrom != p.Id),"複製元が不正です");
         Need(p.Lord == null || (Key(p.Lord) && p.Lord != p.Id),"直属主君が不正です");
         Need(p.Role != StartTemplate.Daimyo || (Text(p.FactionName) && p.Lord == null),"大名の勢力名・主従が不正です");

@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "scope": "national-person-data",
+  "baseline": "approval-baseline-v115",
+  "data_table": {
+    "status": "PASSED",
+    "people": 4583,
+    "explicit_births": 1689,
+    "estimated_births": 2894,
+    "source": "Core/Data/hakutai-db-1560-v2.json",
+    "source_commit": "38a13d12",
+    "generator": "Tools/HakutaiDb/build_national_person_estimates.py",
+    "policy": "national-person-data-v1"
+  },
+  "related_tests": {
+    "status": "PASSED",
+    "passed": 4,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter FullyQualifiedName~NationalPersonEstimateTests"
+  },
+  "short_suite": {
+    "status": "PASSED",
+    "passed": 2835,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
+  },
+  "game_build": {
+    "status": "PASSED",
+    "configuration": "Debug",
+    "warnings": 0,
+    "errors": 0,
+    "command": "dotnet build Game/HakutaiKagami.Game.csproj -c Debug --no-restore"
+  },
+  "save_restore": {
+    "status": "PASSED",
+    "evidence": "全国v2の実ファイル保存を別WorldSessionへ復旧し、初期世界JSONとDB人物の生年・魅力を照合。通常新規プロフィールでもデータ版・初期人物を再構築できることを確認。"
+  },
+  "legacy": {
+    "status": "PASSED",
+    "evidence": "全国v1開始は新しい人物方針・生年・能力を持たない。旧属性JSONと過去プロフィールの開始ハッシュはバイト一致。"
+  },
+  "full_suite": {
+    "status": "PENDING",
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "command": "dotnet test Tests -c Release"
+  },
+  "computer_use": "未使用"
+}
