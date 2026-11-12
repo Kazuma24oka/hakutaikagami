@@ -84,9 +84,11 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         w.Strategy=s with{Campaigns=[..s.Campaigns,..campaigns],Outcomes=[..s.Outcomes,..campaigns.Select(c=>new StrategyOutcome(c.Id,w.ElapsedSeconds,w.CommitSequence,true))]};
         w.CommitSequence++;NationalStrategy.Apply(w);
         Assert.Equal("vacant",w.Strategy!.Shoguns!.Last().Kind);Assert.NotEqual(shogun,NationalStrategy.Capital(w)!.Value.Value);
+        Assert.Null(SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence)); // 京の将軍職も空く
         w.ElapsedSeconds=Month(1560,7);w.CommitSequence++;NationalStrategy.Apply(w);
         var installed=w.Strategy!.Shoguns!.Last();
         Assert.Equal("installed",installed.Kind);Assert.Equal(NationalStrategy.Capital(w),installed.Patron);
+        Assert.Equal(installed.Shogun,SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence));
         Assert.True(NationalStrategy.InKyoto(installed.Site!.Value.Value));
         Assert.Equal(shogun,NationalStrategy.Owner(w,installed.Site.Value,w.ElapsedSeconds,long.MaxValue)!.Value.Value);
     }

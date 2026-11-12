@@ -559,12 +559,12 @@ public static class HouseholdCourt
   foreach(var (confirmation,issuer) in CoalitionPacts.NpcConfirmations(w))Attempt(w,confirmation,issuer);
   foreach(var (answer,head) in CoalitionPacts.NpcReplies(w))Attempt(w,answer,head);
   SupremeInvestiture.ReadIncoming(w);
-  if(w.PlayerControl!=CentralCourtCatalog.CourtBroker)foreach(var answer in SupremeInvestiture.Responses(w))Attempt(w,answer,CentralCourtCatalog.CourtBroker);
-  foreach(var invitation in CourtInvitation.Offers(w))Attempt(w,invitation,CentralCourtCatalog.CourtBroker);
+  if(w.PlayerControl!=CentralCourtCatalog.CourtBrokerIn(w))foreach(var answer in SupremeInvestiture.Responses(w))Attempt(w,answer,CentralCourtCatalog.CourtBrokerIn(w));
+  foreach(var invitation in CourtInvitation.Offers(w))Attempt(w,invitation,CentralCourtCatalog.CourtBrokerIn(w));
   ShogunateAppointments.Process(w);
   CentralRank.Process(w);
   MusterNotices.Assemble(w);
-  foreach(var reply in CentralMediation.Pending(w))Attempt(w,reply,CentralCourtCatalog.CourtBroker);
+  foreach(var reply in CentralMediation.Pending(w))Attempt(w,reply,CentralCourtCatalog.CourtBrokerIn(w));
   foreach(var reply in HouseholdDetachment.Replies(w))Attempt(w,reply.Input,reply.Actor);
   foreach(var doc in DocumentRows(w).Where(d=>d.Recipient!=w.PlayerControl&&Received(w,d.Id,d.Recipient)).ToArray()){
    var source=doc.Source;var p=doc.Recipient;if(SocialWorld.Site(w,p) is not {} site)continue;CourtAction? action=source.Input.Action switch{CourtAction.RecruitOffer=>FreeToJoin(w,p,source.Actor)&&HeadAuthority(w,source.Actor,source.Input.Owner,source.Input.Site,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.RecruitAccept:CourtAction.RecruitDecline,CourtAction.Nominate=>Vacancy(w,source.Input.Owner,source.Input.Site,source.Input.Role,w.ElapsedSeconds,w.CommitSequence+1)?CourtAction.AcceptOffice:CourtAction.DeclineOffice,CourtAction.Convene=>site==source.Place?CourtAction.AcceptInvitation:CourtAction.DeclineInvitation,_=>null};if(action==null)continue;

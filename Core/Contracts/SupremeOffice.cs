@@ -7,7 +7,13 @@ public static class SupremeOffice
     {using var _ccRev=ControlContext.At(revision);
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog))return null;
         var grant=SupremeInvestiture.LastGrant(w,CourtAction.PetitionShogun,at,revision);
-        var incumbent=grant?.Input.Person??CentralCourtCatalog.Shogun;
+        var incumbent=grant?.Input.Person??CentralCourtCatalog.ShogunIn(w);
+        // 全国：遠方の家の戦略で将軍家が城をすべて失えば空位、京の主が擁立すればその人（奏請による補任が後ならそちらが優先）。
+        if(CentralCourtCatalog.National(w) && w.Strategy?.Shoguns?.LastOrDefault(x=>x.At<at||x.At==at&&x.Revision<=revision) is {} turn && turn.Revision>(grant?.Revision??0))
+        {
+            if(turn.Kind!="installed" || turn.Shogun is not {} installed)return null;
+            incumbent=installed;
+        }
         if(Assassination.DeadAt(w,incumbent,at,revision))return null;
         var resigned=HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.ResignShogun &&
             e.Actor==incumbent && e.Revision>(grant?.Revision??0) && e.At<=at && e.Revision<=revision);
@@ -16,14 +22,14 @@ public static class SupremeOffice
     internal static bool IsSupport(CourtAction a)=>a is CourtAction.OfferShogunSupport or CourtAction.AcceptShogunSupport or CourtAction.DeclineShogunSupport;
     public static bool ControlsKyoto(ContractWorld w,EntityId head,EntityId house,long at,long revision)=>
         FactionStances.ResolveAuthority(w,head,house,at,Math.Min(revision,w.CommitSequence))!=null &&
-        w.LandRights.Any(r=>r.Kind=="control" && r.Subject==house && r.Target==CentralCourtCatalog.Kyoto && r.From<=at &&
-            (r.From<at || r.Revision<=revision) && at<r.Until) && !CastleAdministration.Blocked(w,CentralCourtCatalog.Kyoto,at,revision);
+        w.LandRights.Any(r=>r.Kind=="control" && r.Subject==house && r.Target==CentralCourtCatalog.KyotoIn(w) && r.From<=at &&
+            (r.From<at || r.Revision<=revision) && at<r.Until) && !CastleAdministration.Blocked(w,CentralCourtCatalog.KyotoIn(w),at,revision);
     internal static void CheckSupport(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         bool offer=i.Action==CourtAction.OfferShogunSupport;
         var sponsor=offer?actor:i.Person;
         var candidate=offer?i.Person:actor;
-        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || sponsor==candidate || place!=CentralCourtCatalog.Kyoto ||
+        if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || sponsor==candidate || place!=CentralCourtCatalog.KyotoIn(w) ||
             place!=i.Site || !ControlsKyoto(w,sponsor,i.Owner,at,rev-1) ||
             new[]{sponsor,candidate}.Any(p=>!TransportWork.At(w,p,place,at,rev,true) || Assassination.DeadAt(w,p,at,rev) || HostageCustody.HeldAt(w,p,at,rev-1)) ||
             !w.Characters.Any(c=>c.Id==candidate && c.Life==LifeState.Adult))
@@ -55,7 +61,7 @@ public static class SupremeOffice
     }
     internal static void CheckResignation(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);
-        if(input.Owner!=Bakufu || input.Site!=CentralCourtCatalog.Kyoto || place!=input.Site || input.Person!=actor ||
+        if(input.Owner!=Bakufu || input.Site!=CentralCourtCatalog.KyotoIn(w) || place!=input.Site || input.Person!=actor ||
             input.Reference!=null || ShogunAt(w,at,revision-1)!=actor || !TransportWork.At(w,actor,place,at,revision,true))
             throw new InvalidDataException("在職中の将軍本人が京で辞任してください");
     }

@@ -9,13 +9,21 @@ public static class CentralCourtCatalog
     public const string RegentEdition="historical-start-central-v7";
     public static readonly EntityId Konoe=new("person:konoe-sakihisa");
     public static bool HasRegent(string? edition)=>edition is RegentEdition or HistoricalStartCatalog.ImagawaEdition;
-    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition || HasRegent(edition);
+    public static bool HasShogunate(string? edition)=>edition is ShogunateEdition or TempleEdition or NationalStart.CourtEdition || HasRegent(edition);
     internal static SetupScenario RegentScenario(){
         var prior=TempleScenario();
         var next=prior with{People=[..prior.People,new SetupPerson(Konoe.Value,"近衛前久",Kyoto.Value,null,null,false,false,1536)]};
         NewGameSetup.Validate(next);return next;
     }
     public static bool HasCourt(string? edition)=>edition==Id || HasShogunate(edition);
+    // 全国1560年の開始（v2）では、京の取次・将軍・将軍家の取次・京を、百代鏡DBの人物と二条御所の拠点で引く。
+    public static bool National(ContractWorld w)=>w.NewGame?.HistoricalCatalog==NationalStart.CourtEdition;
+    public static EntityId CourtBrokerIn(ContractWorld w)=>National(w)?new(NationalStart.PersonId("P-010391")):CourtBroker; // 山科言継
+    public static EntityId ShogunIn(ContractWorld w)=>National(w)?new(NationalStart.PersonId("P-005253")):Shogun;          // 足利義輝
+    public static EntityId KyotoIn(ContractWorld w)=>National(w)?new(NationalStart.KyotoSite):Kyoto;
+    // 将軍家の取次：将軍家のうち京（二条御所）にいる当主以外の筆頭（名簿の順）。
+    static readonly Lazy<EntityId> nationalShogunBroker=new(()=>new(NationalStart.Scenario().People.First(p=>p.Faction==NationalStart.FactionId("G-000154")&&p.Lord!=null&&p.Site==NationalStart.KyotoSite).Id));
+    public static EntityId ShogunBrokerIn(ContractWorld w)=>National(w)?nationalShogunBroker.Value:ShogunBroker;
     public static readonly EntityId TempleBroker=new("person:temple-representative/site/sakai");
     internal static SetupScenario TempleScenario(){
         var prior=ShogunateScenario();

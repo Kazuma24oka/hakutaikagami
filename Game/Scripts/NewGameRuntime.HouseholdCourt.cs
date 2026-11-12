@@ -20,16 +20,16 @@ public partial class NewGameRuntime
           if(!known){Button(letter,"朝廷から届いた打診を開く",()=>{Session.Open(actor,new(letter),rev);Refresh();ShowHouseholdCourt();});continue;}
           if(site!=offer.Input.Site){{}continue;}
           foreach(var action in SupremeInvestiture.Petitions.Concat(new[]{CourtAction.DeferInvitation,CourtAction.DeclineImperialInvitation})){
-              var selection=new CourtInput(Nonce(action+"/"+offer.Input.Id),action,CentralCourtCatalog.CourtBroker,offer.Input.Owner,site.Value,Reference:offer.Input.Id);
+              var selection=new CourtInput(Nonce(action+"/"+offer.Input.Id),action,CentralCourtCatalog.CourtBrokerIn(w),offer.Input.Owner,site.Value,Reference:offer.Input.Id);
               if(action==CourtAction.DeferInvitation && w.Court!.Events.Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action==action))continue;
               bool title=SupremeInvestiture.Petitions.Contains(action);
               if(title && !SupremeInvestiture.CanPetition(w,selection,actor))continue;
               Button(selection.Id.Value,title?SupremeInvestiture.Title(action)+"を希望する":action==CourtAction.DeferInvitation?"返答を保留する":"推任を辞退する",()=>Run(selection));
           }
       }
-      if(site==CentralCourtCatalog.Kyoto){
+      if(site==CentralCourtCatalog.KyotoIn(w)){
           foreach(var sponsor in SupremeOffice.Sponsors(w,actor,w.ElapsedSeconds,rev).Distinct().Where(h=>HouseSuccession.Head(w,h)!=actor)){
-              var petition=new CourtInput(Nonce("supported-shogun/"+sponsor.Value),CourtAction.PetitionShogun,CentralCourtCatalog.CourtBroker,sponsor,site.Value);
+              var petition=new CourtInput(Nonce("supported-shogun/"+sponsor.Value),CourtAction.PetitionShogun,CentralCourtCatalog.CourtBrokerIn(w),sponsor,site.Value);
               if(SupremeInvestiture.CanPetition(w,petition,actor))
                   Button(petition.Id.Value,"擁立の申し出を受けて将軍就任を奏請する",()=>Run(petition));
           }
@@ -38,8 +38,8 @@ public partial class NewGameRuntime
           if(notice.Known is {} decision)SocialText(box,decision);
           else Button(notice.Id,"朝廷から届いた裁可の書状を開く",()=>{Session.Open(actor,new(notice.Id),rev);Refresh();ShowHouseholdCourt();});
       }
-      if(site==CentralCourtCatalog.Kyoto){
-          if(actor==CentralCourtCatalog.CourtBroker){
+      if(site==CentralCourtCatalog.KyotoIn(w)){
+          if(actor==CentralCourtCatalog.CourtBrokerIn(w)){
               foreach(var answer in SupremeInvestiture.Responses(w)){
                   var appointmentPetition=w.Court!.Events.Single(e=>e.Input.Id==answer.Reference);
                   Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+"の"+SupremeInvestiture.Title(appointmentPetition.Input.Action)+"奏請を"+
@@ -47,7 +47,7 @@ public partial class NewGameRuntime
               }
           }else if(CentralMediation.ApplicantHouse(w,actor) is {} officeHouse){
               foreach(var title in SupremeInvestiture.Petitions){
-                  var petition=new CourtInput(Nonce(title.ToString()),title,CentralCourtCatalog.CourtBroker,officeHouse,site.Value);
+                  var petition=new CourtInput(Nonce(title.ToString()),title,CentralCourtCatalog.CourtBrokerIn(w),officeHouse,site.Value);
                   if(SupremeInvestiture.CanPetition(w,petition,actor))
                       Button(title.ToString(),SupremeInvestiture.Title(title)+"への任官を奏請する",()=>Run(petition));
               }
@@ -65,7 +65,7 @@ public partial class NewGameRuntime
               }
           }
       }
-      if(site==CentralCourtCatalog.Kyoto && CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog)){
+      if(site==CentralCourtCatalog.KyotoIn(w) && CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog)){
           if(actor==CentralCourtCatalog.Konoe){
               foreach(var answer in RegentKin.Answers(w))
                   Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+(answer.Action==CourtAction.AcceptRegentKin?"を猶子に迎える":"の申し出を断る"),()=>Run(answer));
@@ -76,13 +76,13 @@ public partial class NewGameRuntime
       foreach(var (report,_) in CourtPedigree.Reports(w,true))
           Button(report.Id.Value,report.Action==CourtAction.RecognizePedigree?"提出された系図を認定する":"調査した系図の根拠を本人に伝える",()=>Run(report));
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && CentralMediation.ApplicantHouse(w,actor) is {} genealogyHouse){
-          var registrar=site==CentralCourtCatalog.Kyoto?CentralCourtCatalog.CourtBroker:CentralCourtCatalog.TempleBroker;
-          if((site==CentralCourtCatalog.Kyoto || site==TempleMilitary.Site) && registrar!=actor && SocialWorld.Site(w,registrar)==site)
+          var registrar=site==CentralCourtCatalog.KyotoIn(w)?CentralCourtCatalog.CourtBrokerIn(w):CentralCourtCatalog.TempleBroker;
+          if((site==CentralCourtCatalog.KyotoIn(w) || site==TempleMilitary.Site) && registrar!=actor && SocialWorld.Site(w,registrar)==site)
               Button("ask-pedigree","源氏の系図を調べてもらう",()=>Run(new(Nonce("ask-pedigree"),CourtAction.AskPedigree,registrar,genealogyHouse,site.Value)));
           foreach(var report in (w.Court?.Events??[]).Where(e=>e.Input.Person==actor && e.Input.Action is CourtAction.AttestPedigree or CourtAction.ReportMissingPedigree).TakeLast(1)){
               SocialText(box,report.Input.Action==CourtAction.AttestPedigree?"系図調査で源氏との縁を確認しました。":"今回の調査では源氏との縁を確認できませんでした。");
-              if(site==CentralCourtCatalog.Kyoto && report.Input.Action==CourtAction.AttestPedigree)
-                  Button("file-pedigree","調査済みの系図を朝廷に提出する",()=>Run(new(Nonce("file-pedigree"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBroker,report.Input.Owner,site.Value,Reference:report.Input.Id)));
+              if(site==CentralCourtCatalog.KyotoIn(w) && report.Input.Action==CourtAction.AttestPedigree)
+                  Button("file-pedigree","調査済みの系図を朝廷に提出する",()=>Run(new(Nonce("file-pedigree"),CourtAction.FilePedigree,CentralCourtCatalog.CourtBrokerIn(w),report.Input.Owner,site.Value,Reference:report.Input.Id)));
           }
       }
       foreach(var (letter,_) in ExileLetters.Pending(w,true))
@@ -96,7 +96,7 @@ public partial class NewGameRuntime
           Button(vote.Id.Value,text,()=>Run(vote));
       }
       if(CentralRank.KnownRank(w,actor) is {} rank)SocialText(box,"開封した叙位の返書　"+rank);
-          if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && TruceNegotiations.Enabled(w) && (site==CentralCourtCatalog.Kyoto || site==TempleMilitary.Site)){
+          if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) && TruceNegotiations.Enabled(w) && (site==CentralCourtCatalog.KyotoIn(w) || site==TempleMilitary.Site)){
               foreach(var decision in PeaceMediation.Answers(w,true))
                   Button(decision.Id.Value,decision.Action==CourtAction.SendPeaceProposal?"両家に仲裁案を送る":"仲裁の取次を断る",()=>Run(decision));
               if(CentralMediation.ApplicantHouse(w,actor) is {} party && HouseSuccession.Head(w,party)==actor){
@@ -112,7 +112,7 @@ public partial class NewGameRuntime
                   }
               }
           }
-      if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
+      if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.KyotoIn(w)){
           {}return;
       }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
@@ -142,7 +142,7 @@ public partial class NewGameRuntime
               foreach(var district in ShogunateAppointments.Districts(w,applicantOwner)){
                   string key="shugo-"+district.Value;
                   Button(key,HouseTerritoryScale.Province(district)+"守護の取次を細川藤孝に頼む",()=>Run(new(Nonce(key),
-                      CourtAction.AskShugo,CentralCourtCatalog.ShogunBroker,applicantOwner,district)));
+                      CourtAction.AskShugo,CentralCourtCatalog.ShogunBrokerIn(w),applicantOwner,district)));
               }
           }
       }
@@ -159,7 +159,7 @@ public partial class NewGameRuntime
           CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
           foreach(var title in CentralTitles.Requestable(w,actor,applicantHouse).Take(12))
               Button("court-introduction/"+title.Id,title.Name,()=>Run(new(Nonce("court-introduction"),
-                  CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value){Title=title.Id}));
+                  CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBrokerIn(w),applicantHouse,site.Value){Title=title.Id}));
       return;
   }
   if(courtCategory==4){

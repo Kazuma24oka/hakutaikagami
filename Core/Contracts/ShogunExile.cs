@@ -7,7 +7,7 @@ public static class ShogunExile
     internal static IEnumerable<CourtEvent> Orders(ContractWorld w)=>HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.ExpelShogun);
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
-        if(place!=CentralCourtCatalog.Kyoto || i.Site==place || i.Reference!=null || actor==i.Person ||
+        if(place!=CentralCourtCatalog.KyotoIn(w) || i.Site==place || i.Reference!=null || actor==i.Person ||
             SupremeOffice.ShogunAt(w,at,rev-1)!=i.Person || !SupremeOffice.ControlsKyoto(w,actor,i.Owner,at,rev-1) ||
             !TransportWork.At(w,actor,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||
             Orders(w).Any(e=>e.Input.Person==i.Person && e.At<=at && e.Revision<rev))
@@ -25,7 +25,7 @@ public static class ShogunExile
             var departure=w.Tasks.SingleOrDefault(t=>t.RequestId==trip)?.StartedAt;
             if(departure is {} departed && departed<=w.ElapsedSeconds)
                 yield return new(order.Input.Id.Value,observer,order.Actor,RenownKind.Infamy,departed,departed,
-                    CentralCourtCatalog.Kyoto,"将軍を京から追放した",true);
+                    CentralCourtCatalog.KyotoIn(w),"将軍を京から追放した",true);
         }
     }
     internal static bool IsJourney(ContractWorld w,Intent i)=>i.RoutePolicy==Route && i.Action==ActionKind.Move && i.Actor==i.Executor &&
@@ -33,7 +33,7 @@ public static class ShogunExile
     internal static Intent Move(ContractWorld w,CourtEvent e)=>TravelWorld.ActorMove(w,Trip(e).Value,e.Input.Person,NewGameWorld.Node(e.Input.Site.Value),true,Route);
     internal static void ValidateDeparture(ContractWorld w,Intent i)
     {
-        if(!IsJourney(w,i) || !TransportWork.At(w,i.Actor,CentralCourtCatalog.Kyoto,w.ElapsedSeconds,w.CommitSequence,true) ||
+        if(!IsJourney(w,i) || !TransportWork.At(w,i.Actor,CentralCourtCatalog.KyotoIn(w),w.ElapsedSeconds,w.CommitSequence,true) ||
             Assassination.DeadAt(w,i.Actor,w.ElapsedSeconds,w.CommitSequence) || i!=Move(w,Orders(w).Single(e=>Trip(e)==i.RequestId)))
             throw new InvalidDataException("有効な追放命令と京からの実経路を確認してください");
     }
@@ -43,7 +43,7 @@ public sealed partial class WorldSession
     internal void StartExileJourneys()
     {
         foreach(var e in ShogunExile.Orders(state).ToArray()){
-            if(state.Requests.Any(r=>r.Id==ShogunExile.Trip(e)) || SocialWorld.Site(state,e.Input.Person)!=CentralCourtCatalog.Kyoto)continue;
+            if(state.Requests.Any(r=>r.Id==ShogunExile.Trip(e)) || SocialWorld.Site(state,e.Input.Person)!=CentralCourtCatalog.KyotoIn(state))continue;
             try{Submit(ShogunExile.Move(state,e),state.CommitSequence);}
             catch(InvalidDataException){/* 通行可能な経路と本人の空きを待つ。 */}
         }
