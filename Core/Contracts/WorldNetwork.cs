@@ -17,6 +17,8 @@ public static class WorldNetwork
     static readonly Lazy<Dictionary<EntityId,SiteDefinition>> castleSiteIndex=new(()=>castleSites.Value.ToDictionary(s=>s.Id));
     static readonly Lazy<Dictionary<string,BranchNode>> castleNodeIndex=new(()=>castleNodes.Value.ToDictionary(n=>n.Id,StringComparer.Ordinal));
 
+    // 城の移動網の世界の拠点か（世界の定義の拠点は城の移動網と同じであることを検査済み）。毎回一覧をなめない。
+    public static bool HasCastleWorldSite(EntityId site)=>castleSiteIndex.Value.ContainsKey(site);
     public static SiteDefinition[] Sites(ContractWorld w)=>Castle(w)?castleSites.Value:NationalRoutes.Sites;
     public static SiteDefinition[] Sites(NewGameState data)=>Castle(data)?castleSites.Value:NationalRoutes.Sites;
     public static BranchNode[] Nodes(ContractWorld w)=>Castle(w)?castleNodes.Value:NationalRoutes.Nodes;

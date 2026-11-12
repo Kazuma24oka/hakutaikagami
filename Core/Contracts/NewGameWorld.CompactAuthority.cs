@@ -15,5 +15,5 @@ public static partial class NewGameWorld
         Enabled(w)&&w.NewGame?.PersonalAuthorityLayout==CompactPersonalAuthority&&intent.Action==ActionKind.Inspect&&
         grant.Id==CompactInspectId(actor)&&grant.Principal==actor&&grant.Agent==actor&&grant.Basis==Basis&&
         grant.Scope==ContractFixture.Castle&&grant.Actions is [ActionKind.Inspect]&&
-        w.Definitions.Sites.Any(s=>s.Id==intent.Scope);
+        (WorldNetwork.Castle(w)?WorldNetwork.HasCastleWorldSite(intent.Scope):w.Definitions.Sites.Any(s=>s.Id==intent.Scope));
 }
