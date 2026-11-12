@@ -12,7 +12,7 @@ public sealed class CastleRoutesTests
         var c=CastleRoutes.Catalog;CastleRoutes.Validate(c);
         Assert.Equal(HakutaiDb.PublicGeography().Count(p=>HakutaiDb.Castle(p.Id)!.Region==null),c.Nodes.Length);
         Assert.Equal(c.Nodes.Length+NationalRoutes.Nodes.Length-CastleRoutes.Outside.Count,CastleRoutes.Nodes.Length);
-        Assert.Equal(["amami","naha","shuri"],CastleRoutes.Outside.Order());Assert.DoesNotContain(CastleRoutes.Edges,e=>CastleRoutes.Outside.Contains(e.From)||CastleRoutes.Outside.Contains(e.To));
+        Assert.Equal(["amami","naha","shuri"],CastleRoutes.Outside.Order());Assert.DoesNotContain(CastleRoutes.Edges,e=>NationalRoutes.Catalog.Edges.Any(c=>c.Id==e.Id&&c.Mode=="land"&&NationalRoutes.Catalog.Nodes.Any(n=>n.Id==c.From)&&NationalRoutes.Catalog.Nodes.Any(n=>n.Id==c.To)));Assert.DoesNotContain(CastleRoutes.Edges,e=>CastleRoutes.Outside.Contains(e.From)||CastleRoutes.Outside.Contains(e.To));
         Assert.Equal(CastleRoutes.Sites.Length,CastleRoutes.Sites.Select(s=>s.Id).Distinct().Count());
         // 登場する武将の所属の城は、すべて拠点になっている
         var nodes=c.Nodes.Select(n=>n.Castle).ToHashSet();
