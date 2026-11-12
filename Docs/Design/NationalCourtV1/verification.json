@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "scope": "claude-v151",
+  "full_core_suite": "PASSED",
+  "full_core_commit": "4455a5d6",
+  "full_core_passed": 4525,
+  "full_core_duration": "57 m（別の作業用フォルダで裏で実行）",
+  "short_tier": "2,835件（Tier!=Heavy と全国の検査）",
+  "court_tests": 2,
+  "historical_campaigns": 34,
+  "national_court_scope": "全国では取次が朝廷へ取り次ぐまで。朝廷の審議（二か月）と返書は地方開始の版の検査で確認",
+  "godot_ui": "未実施（この作業場所では試作3Dモデルの部品が読めない）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}
