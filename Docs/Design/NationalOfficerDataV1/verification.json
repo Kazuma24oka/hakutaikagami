@@ -40,11 +40,14 @@
     "evidence": "全国v1開始は新しい人物方針・生年・能力を持たない。旧属性JSONと過去プロフィールの開始ハッシュはバイト一致。"
   },
   "full_suite": {
-    "status": "PENDING",
-    "passed": 0,
+    "status": "PASSED",
+    "passed": 4532,
     "failed": 0,
     "skipped": 0,
-    "command": "dotnet test Tests -c Release"
+    "command": "dotnet test Tests -c Release",
+    "commit": "71d49ba40e9e16b05c6bbddc6b180872d64849ed",
+    "elapsed": "48m22s",
+    "worktree": "C:/Workspace/Projects/Games/hakutaikagami-core-v115-full-check"
   },
   "computer_use": "未使用"
 }
