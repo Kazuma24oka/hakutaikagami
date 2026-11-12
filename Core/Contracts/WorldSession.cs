@@ -183,7 +183,9 @@ public sealed partial class WorldSession
             var id=new EntityId("request:control-handover");
             if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"状態が変わりました");
             if(!(ControlSuccession.Awaiting(state)?ControlSuccession.Candidates(state):ControlSuccession.RetireCandidates(state)).Contains(heir))return new(ResultCode.NotAvailable,id,state.CommitSequence,"その人物には引き継げません");
-            Change(s=>ControlSuccession.Apply(s,heir));
+            // 引き継いだ後の世界が検査に通らなければ、世界を変えずに断る（落とさない）。
+            try{Change(s=>ControlSuccession.Apply(s,heir));}
+            catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"いまは引き継げません");}
             return new(ResultCode.Accepted,id,state.CommitSequence,"引き継ぎました");
         }
     }

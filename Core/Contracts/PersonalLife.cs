@@ -1,7 +1,7 @@
 namespace HakutaiKagami.Core.Contracts;
 
 public enum LifeAction { EatPrivateRice, RestOutside, RestInn, CancelRest, SetGoal }
-public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle }
+public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle, KeepHouse }
 public sealed record LifeInput(EntityId Id,LifeAction Action,EntityId Site,EntityId? Original=null,LifeGoal Goal=LifeGoal.WorkPay,long Target=0);
 public sealed record LifeEntry(LifeInput Input,long At,long Revision,long Paid);
 public sealed record PersonalLifeState(int Schema,string Policy,LifeEntry[] Entries);
@@ -59,6 +59,19 @@ public static class PersonalLife
     static LifeGoalCard Goal(ContractWorld w,LifeEntry e,LifeEntry[] es)
     {
         long endRev=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.Revision).DefaultIfEmpty(long.MaxValue).Min();
+        if(e.Input.Goal==LifeGoal.KeepHouse)
+        {
+            // 家の存続：目標を決めてから一年ごとの日に、自分の家（決めたときの所属）が城を一つでも持っていれば一年と数える。
+            var me=ControlSuccession.PlayerAtRevision(w,e.Revision);var house=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==me.Value)?.Faction;
+            long endAt=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min();
+            int years=0;long? kept=null;
+            for(long t=e.At+365*86400L;t<=Math.Min(w.ElapsedSeconds,endAt)&&house!=null;t+=365*86400L)
+            {
+                if(!w.NewGame!.Start.Castles.Any(c=>NationalStrategy.Owner(w,new(c.Id),t,long.MaxValue)?.Value==house))break;
+                years++;if(years>=e.Input.Target)kept??=t;
+            }
+            return new(e.Input.Id,e.Input.Goal,e.Input.Target,years,kept!=null,kept);
+        }
         if(e.Input.Goal==LifeGoal.GainTitle)
         {
             // 出世：目標を決めた後に、返書を開封して知った叙任の数。

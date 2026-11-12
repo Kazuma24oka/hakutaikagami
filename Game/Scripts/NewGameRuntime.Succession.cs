@@ -15,12 +15,14 @@ public partial class NewGameRuntime
         Text(PersonName(w.PlayerControl)+"　死去");Text(WorldCalendar.Display(w.EpochDate,w.ElapsedSeconds));
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};
         var candidates=ControlSuccession.Candidates(w);
-        if(candidates.Length==0){Text("年代記の終わり");Button("スタート画面へ",()=>{popup.Hide();Suspend();MenuRequested?.Invoke();});}
+        void End()=>Button("年代記を閉じる",()=>{popup.Hide();Suspend();MenuRequested?.Invoke();});
+        if(candidates.Length==0){Text("年代記の終わり");End();}
         foreach(var heir in candidates)Button(PersonName(heir)+"で続ける",()=>{
             var r=Session.ContinueAs(heir,Session.Revision);
             if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
             successionPopup=null;popup.Hide();Refresh();
         });
+        if(candidates.Length>0)End();
         box.AddChild(feedback);popup.PopupHide+=()=>{popup.QueueFree();if(successionPopup==popup)successionPopup=null;};popup.PopupCentered(new Vector2I(460,320));
     }
     void ShowRetire()

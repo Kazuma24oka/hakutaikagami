@@ -43,9 +43,10 @@ public partial class NewGameRuntime
             {}
             foreach(var pair in new[]{(LifeGoal.WorkPay,"仕事報酬を20文受け取る"),(LifeGoal.ReceiveStipend,"扶持米を20kg受け取る"),(LifeGoal.PayStipend,"家臣へ扶持米20kgを渡す")})Button(pair.Item2,()=>Life(LifeAction.SetGoal,pair.Item1,20));
             Button("位階・官職を一つ得る",()=>Life(LifeAction.SetGoal,LifeGoal.GainTitle,1));
+            Button("家を一年保つ",()=>Life(LifeAction.SetGoal,LifeGoal.KeepHouse,1));
         }
         else Text("道中です。食事・休息や目標の変更は拠点に着いてから選べます。");
-        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
+        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.KeepHouse?"家の存続（年）":g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
         {}Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(620,580));
     }
 }
