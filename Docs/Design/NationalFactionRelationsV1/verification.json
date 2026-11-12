@@ -34,8 +34,14 @@
     "evidence": "既存pre-catalog-start-v1.jsonの初期ハッシュ一致。新しい関係欄なし。"
   },
   "full_suite": {
-    "status": "PENDING",
-    "note": "v113候補の別worktreeで全件検査を1回実施し、結果をここに記録してからmainへ統合する。"
+    "status": "PASSED",
+    "passed": 4522,
+    "failed": 0,
+    "skipped": 0,
+    "commit": "605b662b7779891fceca71ae8e4c6b555eca39dd",
+    "command": "dotnet test Tests -c Release --logger \"console;verbosity=minimal\"",
+    "elapsed": "1 h 10 m",
+    "worktree": "hakutaikagami-core-v113-full-check"
   },
   "computer_use": "未使用"
 }

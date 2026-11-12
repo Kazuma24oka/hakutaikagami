@@ -793,8 +793,8 @@
     "Docs/Design/NationalFactionRelationsV1/README.md": "898b0344c112a012af375edf46accff64482ad1fe2a7632ac1a0c770057b7219",
     "Docs/Design/NationalFactionRelationsV1/scope.md": "838a2ccb945295d94b9b98cc2afe5198685c2d25db55c278e80dc841b45735cc",
     "Docs/Design/NationalFactionRelationsV1/completion.json": "64a00ff8a2cf5ae3b82c7bcaa262b54742546b8cc4b4d5aa435c4cb5deb21940",
-    "Docs/Design/NationalFactionRelationsV1/integration.json": "8dd8e96ad229e8dfa3d0b022809a95a41fc1bf23b01f313648b2cb59de59b389",
-    "Docs/Design/NationalFactionRelationsV1/verification.json": "0c533611293dec8cf6db206a511ef458a92f9539cac0fd6bf589105bd548840b",
+    "Docs/Design/NationalFactionRelationsV1/integration.json": "9fdaaf1758087707dc848cf19b19878d9485d902468db9a591768cd9a856dc5b",
+    "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "af3f23ae6485e57f009609e9acd72ff88d4de7c5ee19b3fffc29eaec315e9430",
     "Docs/Development/ProgressV1/index.html": "b68fca8647691dc7cf6d83a770f16ba3ed01ce0a3536a159d72b0b13fca24956",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "a62c2dc74c232af2da621359878f7e717972e6f6eadd22fda01ca73af7bd8957"
@@ -4050,7 +4050,8 @@
     "v113": {
       "design": "Docs/Design/NationalFactionRelationsV1/",
       "verification": "勢力関係台帳の実ファイル保存・復旧・続行一致。focused tests 2/2、短い検査2828/2828、Game Debug build成功。",
-      "limitation": "Godot画面の実起動確認は未実施。"
+      "limitation": "Godot画面の実起動確認は未実施。",
+      "full_suite": "4,522/4,522 passed, 0 failed, 0 skipped; separate worktree at 605b662b."
     }
   },
   "release": {
