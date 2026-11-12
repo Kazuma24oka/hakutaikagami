@@ -8,7 +8,7 @@
 
 2026-11-12：ユーザーから戦国DBの完成の連絡と、百代鏡DBを作ってよいとの指示。ドット絵の素体の書き出しは規約上問題ないと確認（絵を Git に入れた）。
 
-直近：[全国1560年の開始の版](../Design/NationalStartV1/README.md)（2026-11-12）。新規ゲームの画面で「全国」を選び、百代鏡DBの当主で始めて城へ移動できる（家252・武将4,014人、遠方の人物の休眠で1日分の進行が約58秒）。次は全国の移動網に川・道・山を反映（設計 [NATIONAL_PLACEMENT_DESIGN_V1.md](../Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md) 第4節5）。
+直近：[全国移動網の地形反映](../Design/NationalTerrainRoutesV1/README.md)（2026-11-12）。新規1560年全国開始の移動網へ標高・河川線・湖沼輪郭を加え、途中保存後も同じ経路・到着時刻・位置で移動する。次は郡ごとの勢力色を地図と全国開始の世界へ接続する（設計 [NATIONAL_PLACEMENT_DESIGN_V1.md](../Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md)）。
 
 ## 全国共通の判断支援
 
@@ -78,6 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-12 | 全国1560年の移動網に地形負荷を追加（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR作成・統合待ち |
 | 2026-11-12 | 全国1560年の開始の版（BD-04 25→35・BD-20 35→45。休眠の世界の手番のまとめた検査 v109 を含む） | Docs/Design/NationalStartV1/・Docs/Design/NpcBatchValidationV1/ | PR142 → main cde0bf58 |
 | 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | PR141 → main 66503de0 |
 | 2026-11-12 | 進行の重さの見直し 第1段（BD-04 20→22） | Docs/Design/AdvanceCostV1/ | PR140 → main fb8aea41 |
