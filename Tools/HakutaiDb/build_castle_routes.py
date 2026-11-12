@@ -9,7 +9,7 @@
   - 今の全国の移動網につながらない城のまとまりは、陸地の上を通る一番近い結び方で足していく（80km まで）。
   - それでもつながらない島の城は、一番近い今の拠点か城へ海路で結ぶ。
   - 長さは今の移動網と同じ：陸路は大円距離×1.25、海路は×1.10。速さも同じ（陸路 徒歩1000・使者2000、海路 6000・8000）。
-今の全国の拠点と道はそのまま使い（ここには書かない）、足すのは城の拠点と城に関わる道だけ。
+今の全国の拠点はそのまま使う。全国の拠点どうしをまっすぐ結んだ陸の推定の連絡路は使わず（湖や海を横切るため）、全国の拠点も近い城と結ぶ。尾張の細かい道と海路は残す。湖は道を通さない。
 """
 from __future__ import annotations
 
@@ -63,7 +63,16 @@ class Land:
                 inside = not inside
         return inside
 
+    def add_lakes(self, rings):  # 湖・広い川面（E7 の [緯度, 経度] の輪）を水にする
+        self.lakes = getattr(self, "lakes", [])
+        for r in rings:
+            pts = [tuple(q) for q in r]
+            self.lakes.append((pts, min(x[0] for x in pts), max(x[0] for x in pts), min(x[1] for x in pts), max(x[1] for x in pts)))
+
     def contains(self, lat, lon):
+        for pts, a, b, c, d in getattr(self, "lakes", ()):
+            if a <= lat <= b and c <= lon <= d and self.ring((pts, a, b), lat, lon):
+                return False
         for rings in self.polys:
             if self.ring(rings[0], lat, lon) and not any(self.ring(h, lat, lon) for h in rings[1:]):
                 return True
@@ -82,6 +91,10 @@ def main():
     db = json.loads((DATA / "hakutai-db-1560-v2.json").read_text(encoding="utf-8"))
     nat = json.loads((DATA / "national-routes-v1.json").read_text(encoding="utf-8"))
     land = Land(json.loads((DATA / "japan-terrain-mask-v1.json").read_text(encoding="utf-8"))["Polygons"])
+    # 湖は道を通さない（国の形の穴の湖と、地球地図日本の湖・広い川面。2026-11-12 ユーザーの指摘：琵琶湖・宍道湖を横切る道）
+    geo = ROOT / "Game" / "Data" / "Geography"
+    land.add_lakes(json.loads((geo / "borders-v1.json").read_text(encoding="utf-8"))["Lakes"])
+    land.add_lakes(json.loads((geo / "terrain-v1.json").read_text(encoding="utf-8"))["Lakes"])
     pts = {}
     outside = {n["Id"] for n in nat["Nodes"] if n["LatitudeE7"] < 289000000 and n["LongitudeE7"] < 1310000000}  # 琉球の拠点は城の移動網に入れない
     for n in nat["Nodes"]:
@@ -126,9 +139,12 @@ def main():
                 got += 1
     # 2. 全国の移動網につながるまで、まとまりを足す
     nat_adj = {}
+    catalog_nodes = {n["Id"] for n in nat["Nodes"]}
     for e in nat["Edges"]:
         if e["From"] in outside or e["To"] in outside:
             continue
+        if e["Mode"] == "land" and e["From"] in catalog_nodes and e["To"] in catalog_nodes:
+            continue  # 全国の拠点どうしをまっすぐ結んだ推定の連絡路は使わない（城の道でつなぐ）
         nat_adj.setdefault(e["From"], set()).add(e["To"])
         nat_adj.setdefault(e["To"], set()).add(e["From"])
 
@@ -164,6 +180,8 @@ def main():
             for comp in sorted(rest, key=lambda c: min(c)):
                 best = None
                 for a in comp:
+                    if a not in pts:
+                        continue  # 尾張の細かい道の拠点（位置は別の表）
                     for b in ids:
                         if b in comp:
                             continue

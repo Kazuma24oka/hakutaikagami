@@ -122,8 +122,8 @@ public partial class NewGameMap : Control
             var color=s.Hole?sea:LandColor(s.Area);for(int i=0;i<s.Indices.Length;i+=3)DrawPrimitive(new[]{points[s.Indices[i]],points[s.Indices[i+1]],points[s.Indices[i+2]]},new[]{color,color,color},Array.Empty<Vector2>());
             DrawPolyline(points.Append(points[0]).ToArray(),s.Area==Area.Main?new Color("d7cead"):new Color("c7c2a6"),1,true);
         }
-        if(ShowTerrain){
-            if(shade!=null){var a=Pixel(shadeNorthWest);var b=Pixel(shadeSouthEast);DrawTextureRect(shade,new Rect2(a,b-a),false);}
+        if(ShowTerrain&&shade!=null){var a=Pixel(shadeNorthWest);var b=Pixel(shadeSouthEast);DrawTextureRect(shade,new Rect2(a,b-a),false);}
+        {
             foreach(var w in terrainWater){var lo=Pixel(new(w.MinE,w.MaxN));var hi=Pixel(new(w.MaxE,w.MinN));if(!new Rect2(lo,hi-lo).Intersects(view))continue;var pts=w.Points.Select(Pixel).ToArray();var c=new Color("3b5f70");for(int i=0;i<w.Indices.Length;i+=3)DrawPrimitive(new[]{pts[w.Indices[i]],pts[w.Indices[i+1]],pts[w.Indices[i+2]]},new[]{c,c,c},Array.Empty<Vector2>());}
         }
         void DrawLines(List<Line> list,Color color,float width){foreach(var l in list){var lo=Pixel(new(l.MinE,l.MaxN));var hi=Pixel(new(l.MaxE,l.MinN));if(!new Rect2(lo,hi-lo).Grow(2).Intersects(view))continue;DrawPolyline(l.Points.Select(Pixel).ToArray(),color,width,true);}}
@@ -131,7 +131,7 @@ public partial class NewGameMap : Control
         if(ShowTerrain&&kmpp<1.6)DrawLines(rivers,new Color(0.29f,0.49f,0.59f,0.9f),kmpp<0.5?1.6f:1);
         if(ShowDistricts&&kmpp<2.5)DrawLines(districtLines,new Color("8d8a76"),1);
         if(ShowProvinces)DrawLines(provinceLines,new Color("a8543a"),1.6f);
-        if(ShowRoutes)foreach(var e in NationalRoutes.Edges)if(!Hidden(e.From)&&!Hidden(e.To)&&nodeAt.TryGetValue(e.From,out var fa)&&nodeAt.TryGetValue(e.To,out var fb))DrawLine(Pixel(fa),Pixel(fb),new Color(NationalRoutes.Sea(e.Id)?"5e8797":"797e68"),1,true);
+        if(ShowRoutes)foreach(var e in ShowPins?NationalRoutes.Edges:CastleRoutes.KeptNationalEdges)if(!Hidden(e.From)&&!Hidden(e.To)&&nodeAt.TryGetValue(e.From,out var fa)&&nodeAt.TryGetValue(e.To,out var fb))DrawLine(Pixel(fa),Pixel(fb),new Color(NationalRoutes.Sea(e.Id)?"5e8797":"797e68"),1,true);
         if(ShowRoutes)foreach(var l in Links){var a=Pixel(P(l.From));var b=Pixel(P(l.To));if(view.HasPoint(a)||view.HasPoint(b))DrawLine(a,b,new Color(l.Sea?"5e879780":"6b6f5c90"),1,true);}
         bool names=KilometersPerPixel<0.35;var font=ThemeDB.FallbackFont;var placed=new List<Rect2>{new(new(0,0),new(250,34))};var castleNames=new List<(Vector2,string)>();
         // 名前どうしが重なるときは後の名前を出さない（国→郡→城の順）

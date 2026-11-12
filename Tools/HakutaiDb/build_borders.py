@@ -294,7 +294,7 @@ def meters(a, b):
 DANGLING = []
 
 
-def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
+def finish(lines, land, targets=(), snap_m=900.0, extend_m=12000.0):
     """境界線を地図の陸地に合わせて整える（2026-11-12 ユーザーの指示：線がない・あいまいな所をなくす）。
     1. 海の上の部分を消し、海岸で切る。2. 海岸の手前で止まる端は海岸まで伸ばす。
     3. 途中で止まる端は、近くの線（targets も含む）の点につなぐ。4. 約200m で間引く。
@@ -330,10 +330,12 @@ def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
         if len(run) >= 2:
             clipped.append(run)
 
-    def at_coast(p):
-        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1), (0.7, 0.7), (-0.7, 0.7), (0.7, -0.7), (-0.7, -0.7)):
-            if not land.contains(p[0] + dy * 0.0015, p[1] + dx * 0.0019):
-                return True
+    def at_coast(p):  # 最後の検査と同じ判定（海・水まで約250m 以内）
+        import math
+        for r in (60, 120, 180, 250):
+            for k in range(0, 360, 20):
+                if not land.contains(p[0] + r / 111320 * math.sin(math.radians(k)), p[1] + r / 90000 * math.cos(math.radians(k))):
+                    return True
         return False
     # 3 の準備：すべての線の点の格子（0.01度）
     grid = defaultdict(list)
@@ -342,14 +344,15 @@ def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
         for pi, p in enumerate(ln):
             grid[(int(p[0] * 100), int(p[1] * 100))].append((li, pi))
 
-    def nearest(p, li_self, end_index):
-        best, bd = None, snap_m ** 2
+    def nearest(p, li_self, end_index, radius=None):
+        best, bd = None, (radius or snap_m) ** 2
         gy, gx = int(p[0] * 100), int(p[1] * 100)
-        for yy in (gy - 1, gy, gy + 1):
-            for xx in (gx - 1, gx, gx + 1):
+        k = 1 if radius is None else int(radius / 900) + 1
+        for yy in range(gy - k, gy + k + 1):
+            for xx in range(gx - k, gx + k + 1):
                 for li, pi in grid.get((yy, xx), ()):
-                    if li == li_self and abs(pi - end_index) < 8:
-                        continue
+                    if li == li_self:
+                        continue  # 自分自身にはつながない
                     q = allines[li][pi]
                     d = meters(p, q)
                     if d < bd:
@@ -390,7 +393,7 @@ def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
             else:
                 # 向きを変えて一番近い海岸・水辺（1.5km まで）へつなぐ
                 best = None
-                for r in range(1, 31):
+                for r in range(1, 61):
                     for k in range(0, 360, 10):
                         import math
                         q = (b[0] + r * 50 / 111320 * math.sin(math.radians(k)), b[1] + r * 50 / 90000 * math.cos(math.radians(k)))
@@ -405,13 +408,20 @@ def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
                     else:
                         ln.append(best)
                 else:
-                    loose.append((len(out), end))
+                    q = nearest(b, li, 0, radius=4000)  # 最後の手段：4km 以内の一番近いほかの線
+                    if q is not None:
+                        if end == 0:
+                            ln.insert(0, q)
+                        else:
+                            ln.append(q)
+                    else:
+                        loose.append((len(out), end))
         out.append(ln)
     # 4. 湖や川で途切れた線は、対岸の続きの線の端とまっすぐつなぐ（近い組から、15km まで）
     pairs = sorted(((meters(out[a][ea], out[b][eb]), (a, ea), (b, eb)) for i, (a, ea) in enumerate(loose) for (b, eb) in loose[i + 1:]), key=lambda t: t[0])
     used = set()
     for d, (a, ea), (b, eb) in pairs:
-        if d > 15000 ** 2 or (a, ea) in used or (b, eb) in used:
+        if d > 15000 ** 2 or a == b or (a, ea) in used or (b, eb) in used:
             continue
         used |= {(a, ea), (b, eb)}
         q = out[b][eb]
@@ -428,6 +438,37 @@ def finish(lines, land, targets=(), snap_m=900.0, extend_m=4000.0):
             dangling += 1
             DANGLING.append((round(out[a][ea][0], 4), round(out[a][ea][1], 4)))
     out = [ln for i, ln in enumerate(out) if i not in drop]
+    # 最後の検査：端は海（水）まで約250m 以内か、別の線の点にぴったり重なる
+    def near_sea(p):
+        import math
+        for r in (60, 120, 180, 250):
+            for k in range(0, 360, 20):
+                if not land.contains(p[0] + r / 111320 * math.sin(math.radians(k)), p[1] + r / 90000 * math.cos(math.radians(k))):
+                    return True
+        return False
+    verts = defaultdict(set)
+    for li, ln in enumerate(out + [list(t) for t in targets]):
+        for p in ln:
+            verts[(round(p[0], 6), round(p[1], 6))].add(li)
+    strict = 0
+    counted = {(round(a, 4), round(b, 4)) for a, b in [d for d in DANGLING if len(d) == 2]}
+    pool = out + [list(t) for t in targets]
+    for li, ln in enumerate(out):
+        for end in (0, -1):
+            p = ln[end]
+            if near_sea(p) or len(verts[(round(p[0], 6), round(p[1], 6))] - {li}) > 0 or (round(p[0], 4), round(p[1], 4)) in counted:
+                continue
+            # 消した切れ端につないでいた端などは、残っている線の一番近い点（4km まで）につなぎ直す
+            best = min(((meters(p, q), q) for lj, l2 in enumerate(pool) if lj != li for q in l2), key=lambda t: t[0], default=(1e18, None))
+            if best[0] <= 4000 ** 2:
+                if end == 0:
+                    ln.insert(0, best[1])
+                else:
+                    ln.append(best[1])
+                continue
+            strict += 1
+            DANGLING.append(("strict", round(p[0], 4), round(p[1], 4)))
+    dangling += strict
     tol = TOL  # 度
     return [[[round(a * 1e7), round(b * 1e7)] for a, b in simplify(ln, tol)] for ln in out if len(ln) >= 2], dangling
 
@@ -489,6 +530,9 @@ def main():
                     lakes.append([[round(a * 1e7), round(b * 1e7)] for a, b in (tokyo_to_wgs(y / Q, x / Q) for y, x in pts[:-1] if True)])
 
     land.add_water(lakes)
+    # 地球地図日本の湖・広い川面（terrain-v1.json。地図にいつも描く）も水として扱う
+    tpath = Path(__file__).resolve().parents[2] / "Game" / "Data" / "Geography" / "terrain-v1.json"
+    land.add_water(json.loads(tpath.read_text(encoding="utf-8"))["Lakes"])
     ryukyu = lambda ln: all(p[0] < 29.0 and p[1] < 131.0 for p in ln)  # 琉球の線は描かない
     praw = [ln for ln in border_runs(pitems, pindex, lambda a, b, m: a < b) if not ryukyu(ln)]
     plines, pdang = finish(praw, land)
