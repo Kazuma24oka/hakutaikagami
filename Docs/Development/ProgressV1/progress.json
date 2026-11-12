@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "de08c22008b9598d90a53f83766fe71d94cd326cac07a8ba903f9140618e34fa",
-    "Docs/Development/ProgressV1/estimate.json": "34cfe73504a09694da7964922252ea70e9820b0e98c9e15cb973ee3351635ffb",
+    "Docs/Development/ProgressV1/estimate.json": "76c1d0da17feca7691564f60de4a35ca77bb5f6e55f2cd1d1cc06d75f28ed108",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "cdf7c7c587535dfa4695461701000be937732d9ee52586c47eb28be7ea8804cf",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "cf78f42f89e23142fb94b9382832fd7a702c2b84647fc0612e8a119665a88e94",
+    "Scripts/check_approval_batch.py": "1bae18dc8dd2b8c5bdee38bc8470a26116ecd4f388de4698177e268a6e27865f",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "9f793130a4161cc45389852144ec9f82022df0a6e84398e32a6da52c62c0f409",
-    "Docs/Development/CURRENT_STAGE.md": "d4232a8d0abad76f5d03e9f39aba4a65e7f74dee4c0e65f7373000169b1a0c64",
+    "Docs/Development/CURRENT_STAGE.md": "4756f0e298b6e2e57be7e059b6cc869135c0335669611e17c678c434da6459ff",
     "Core/Contracts/HouseSuccession.cs": "a387c7d25f693f4db1b5479ee94aca0b12413cd204f9c1f0520119be7f7f9c50",
     "Core/Contracts/FactionStances.cs": "7e1ace7854835ec6d4cf3c79434d9cbaf242f91eb3538b3dd3599fe104dce28a",
-    "Core/Contracts/NewGameWorld.cs": "684335f312696cd8c7d0dd2f595e0f12a10b4302b4555cefd893e0878aa35747",
+    "Core/Contracts/NewGameWorld.cs": "7d10e308d058f340444ca2c9321de887db164d2997410a0e4f9e195310c5a4fd",
     "Core/Contracts/HouseSalary.cs": "546a379719d75a005be6ec06415ab1e0fa622044c2757954777f6730df79bd83",
     "Core/Contracts/HouseLogistics.cs": "1bfe928cfaf7aac1b76eec1b8c2528e8f66bcf810ed17fdc2f153e1921f41334",
     "Tests/HouseSuccessionTests.cs": "65edb5907e79afb95f93bd7059a857558affece68c595b7bd2cc94c5930c1df3",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "01f36bd60271c4df3c1dfe44bd2aedab7cbb320284421efe33042aa790e9b132",
     "Core/Contracts/NewGameNpcRoutine.cs": "a042e922eb3f025487db85c4d23b79ad3650a33fcdc457e362aa5e9b6d583e75",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "14af23ccb88f8d80c9376f0696d702ce48dde42d581cdfb6a859d1539a850335",
+    "Core/Contracts/ContractJson.cs": "16b13cc7faf836aec4d0761ee3912f9a56a5588099f0000bc79c475faaa03fb7",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -399,7 +399,7 @@
     "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
     "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
     "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
-    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "298bb56c625d470caaff9e52d88b6fb65379f3e77b7748f92ca3f1c4a4fb77b0",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "d6a05442bca05dedfa15e67a40cb66afd92d93a3766dde5971481629ae555aa3",
     "Docs/Development/ProgressV1/approval-baseline-v49-scope.json": "e33a8dc9ea47c2553aca2d30f3255bc0a9b9cb3730bc7e1c06c85af13ded1f90",
     "Docs/Development/ProgressV1/approval-baseline-v50.json": "a2d6a868839b7752fa3701dd81307d602de60f60b3dd6ade2428f95c9736da44",
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
@@ -483,7 +483,7 @@
     "Scripts/verify_historical_chronicle.py": "301c16651b872992e34e17bb99b2e09c2b795efc89ac37f588c6165e01dc93af",
     "Game/Scripts/NewGameRuntime.VerbNotebook.cs": "d92daac68fab979b72f135912c2b43db3de225961fcbd0b40a9b29a768a5b4d0",
     "Game/Scripts/VerbNotebookCheck.cs": "02423fb27c35c3f847d4ffaf06084ff14381411772a60a27956bf26fb2df34e1",
-    "Game/Scripts/NewGameRuntime.cs": "83dbb969949705ff7d1080ed7c16b36dc13131c054d5903258ee005d7a6a2f47",
+    "Game/Scripts/NewGameRuntime.cs": "805a411817f6603f2ef7d655bbb45a5c2c72b99e70b6f4ba9ec7c98a3650c090",
     "Docs/Design/VerbNotebookV1/verification.json": "2d34e856be74d87c4a4bab22092c248a2c3f19800e7c0630a845bee80ce73363",
     "Docs/Design/VerbNotebookV1/completion.json": "b90d279ab418eda2ef85eabd458141f924b0208db072bc070cde157590cea5aa",
     "Docs/Design/VerbNotebookV1/integration.json": "bb3f939cc27cebcb34e0304c8cd96c9fd56597837c3c826d1642530153db285b",
@@ -782,7 +782,22 @@
     "Docs/Development/ProgressV1/approval-baseline-v90.json": "d4d5b8406687cf32473885ce513dcdb0ed902f2082080c4c21b183d0f01a8a60",
     "Docs/Design/IndependenceGarrisonV1/logic-verification.json": "6f9693d4965c37e4cc8d4526d001bd102fd5e9c9c593a5d583ee25039805da25",
     "Docs/Design/IndependenceGarrisonV1/completion.json": "faecf607fe52502759aad46c2b1b5ab3692132dbbbd2b3a5589bd1c6eaee08cc",
-    "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11"
+    "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11",
+    "Core/Contracts/ContractModels.cs": "854a3f009dd75c5f12098ab69dbbe31171ab79d2b08ba67cf9bc7e44082b3eb9",
+    "Core/Contracts/NationalFactionRelations.cs": "93945211699e19c9e14f8d5c7265dc80fc001f2cff37f7785b7b728db7e2caae",
+    "Game/Scripts/NationalFactionRelationsCheck.cs": "bf7ac97b02d32df6fbcbc1cda37e05a3c31b2c07820aa2c4a876cdd8e47a7f09",
+    "Game/Scenes/NationalFactionRelationsCheck.tscn": "b3a238f7ada7ec7a88e68f47471b8a4132f7ce353559c2fa8cd82d03d2ca0485",
+    "Tests/NationalFactionRelationsTests.cs": "e68f63be3376498ac81835a58d823e19260ce2f7fe2d8250cc208257ca53bda2",
+    "Tests/HakutaiDbTests.cs": "35d52066c56a0cbe915645875272c5d3809cf1c5cd79afac2380893d187aa262",
+    "Scripts/verify_national_faction_relations.py": "a6b6d704f3f4129d2537ebaaeeb54117466645792199dfe759136d08aeab63a0",
+    "Docs/Design/NationalFactionRelationsV1/README.md": "898b0344c112a012af375edf46accff64482ad1fe2a7632ac1a0c770057b7219",
+    "Docs/Design/NationalFactionRelationsV1/scope.md": "838a2ccb945295d94b9b98cc2afe5198685c2d25db55c278e80dc841b45735cc",
+    "Docs/Design/NationalFactionRelationsV1/completion.json": "64a00ff8a2cf5ae3b82c7bcaa262b54742546b8cc4b4d5aa435c4cb5deb21940",
+    "Docs/Design/NationalFactionRelationsV1/integration.json": "8dd8e96ad229e8dfa3d0b022809a95a41fc1bf23b01f313648b2cb59de59b389",
+    "Docs/Design/NationalFactionRelationsV1/verification.json": "0c533611293dec8cf6db206a511ef458a92f9539cac0fd6bf589105bd548840b",
+    "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "af3f23ae6485e57f009609e9acd72ff88d4de7c5ee19b3fffc29eaec315e9430",
+    "Docs/Development/ProgressV1/index.html": "b68fca8647691dc7cf6d83a770f16ba3ed01ce0a3536a159d72b0b13fca24956",
+    "Docs/Development/ProgressV1/approval-baseline-v113.json": "a62c2dc74c232af2da621359878f7e717972e6f6eadd22fda01ca73af7bd8957"
   },
   "items": [
     {
@@ -4031,6 +4046,11 @@
         "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
         "scope": "家格・専門分担・外交の関連5件。全件未実施。"
       }
+    },
+    "v113": {
+      "design": "Docs/Design/NationalFactionRelationsV1/",
+      "verification": "勢力関係台帳の実ファイル保存・復旧・続行一致。focused tests 2/2、短い検査2828/2828、Game Debug build成功。",
+      "limitation": "Godot画面の実起動確認は未実施。"
     }
   },
   "release": {
@@ -4094,7 +4114,10 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "他城への宣言の伝達と現地ごとの帰属判断。"
+    "郡ごとの支配変化を軍事・外交の成立と一つの世界時計へ接続する。",
+    "1560年からの名乗りの変化を時系列で記録する。",
+    "郡収入を世界の金銭収支へ接続する。",
+    "史実人物の能力と生年の根拠区分を追加する。"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"
