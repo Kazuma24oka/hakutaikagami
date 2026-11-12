@@ -3,16 +3,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using HakutaiKagami.Core.Contracts;
 
-// 全国1560年の開始の画面の検査（2026-11-12、v110）：スタート→新規ゲーム→全国→織田信長→始める→近くの城へ出発。
+// 全国1560年の開始の画面の検査（2026-11-12、v111）：新規ゲーム→全国地形網→織田信長→始める→近くの城へ出発。
 public partial class NewGameFrontEnd
 {
     // 検査の保存はユーザーの保存先ではなく、検査の出力先に作る。
     internal void ReviewUseRoot(string root)=>campaigns=new(System.IO.Path.Combine(root,"campaigns"));
     internal NewGameRuntime? ReviewGame=>game;
-    internal async Task<string> ReviewNationalStart(Func<Task> frame)
+    internal async Task<NewGameMap> ReviewNationalStartMap(Func<Task> frame)
     {
         ShowMenu();await frame();Press("new");await frame();scenarioChoice!.Select(1);Press("next");await frame();
         Check(national&&confirmed!=null&&confirmed.People.Length>3000,"全国の武将の一覧");
+        Check(map is {NationalMovement:true}&&map.ReviewRouteLineCount==TerrainCastleRoutes.Edges.Length&&map.ReviewRaisedCostRouteCount>0,"地形コスト付き全国経路が地図に表示対象として接続される");
+        return map!;
+    }
+    internal async Task<string> ReviewNationalStart(Func<Task> frame)
+    {
+        await ReviewNationalStartMap(frame);
         var head=confirmed!.Factions.Select(f=>f.Head).Single(h=>confirmed.People.Single(p=>p.Id==h).Name.Contains("信長"));
         PickRow(head);Press("begin");for(int i=0;i<10;i++)await frame();
         Check(game!=null&&WorldNetwork.Castle(game.Session.DiagnosticSnapshot())&&game.Session.PlayerControl.Value==head,"全国の世界で信長として始まる");

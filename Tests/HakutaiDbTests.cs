@@ -123,6 +123,30 @@ public sealed class HakutaiDbTests
         Assert.Contains(HakutaiDb.PublicGeography(),c=>HakutaiDb.Castle(c.Id)!.OwnerBasis=="郡の支配者の城（城主不明）");
     }
 
+    [Fact]public void DistrictControlMatchesGeographyWithoutInventingUnknownRulers()
+    {
+        var dir=new DirectoryInfo(AppContext.BaseDirectory);
+        while(dir!=null&&!File.Exists(Path.Combine(dir.FullName,"Game","Data","Geography","borders-v2.json")))dir=dir.Parent;
+        using var map=JsonDocument.Parse(File.ReadAllBytes(Path.Combine(dir!.FullName,"Game","Data","Geography","borders-v2.json")));
+        var rows=map.RootElement.GetProperty("Districts").EnumerateArray().ToArray();
+        var matches=rows.Select(x=>NationalDistrictControl.Resolve(x.GetProperty("Id").GetInt32().ToString(),x.GetProperty("Province").GetString()!,x.GetProperty("Name").GetString()!)).ToArray();
+        Assert.Equal(721,matches.Length);Assert.Equal(633,matches.Count(x=>x!=null));Assert.Equal(88,matches.Count(x=>x==null));
+        Assert.Equal(118,matches.Count(x=>x?.NameInferred==true));
+        Assert.All(matches.Where(x=>x!=null),x=>Assert.NotEmpty(x!.Owners));
+    }
+
+    [Fact]public void DisputedDistrictsKeepAllRecordedOwnersAndVassalsShareTheTopFaction()
+    {
+        var disputed=NationalDistrictControl.Resolve("tsugaru","陸奥","津軽郡")!;
+        Assert.Equal("並立",disputed.Status);Assert.Equal(3,disputed.Owners.Length);
+        Assert.Equal(3,disputed.Owners.Select(x=>x.House).Distinct(StringComparer.Ordinal).Count());
+        var vassal=HakutaiDb.Houses.First(h=>h.Overlord!=null);
+        var controlled=HakutaiDb.Districts.First(d=>d.Owner==vassal.Id);
+        var resolved=NationalDistrictControl.Resolve("known",controlled.Province,controlled.Name)!;
+        Assert.Contains(resolved.Owners,o=>o.House==vassal.Id&&o.Faction==HakutaiDb.TopHouse(vassal.Id).Id);
+        Assert.Null(NationalDistrictControl.Resolve("missing","伊賀","記録なし郡"));
+    }
+
     [Fact]public void RosterFollowsIncomeKeepsFamousPeopleAndFillsWithMobs()
     {
         var oda=HakutaiDbStart.Roster(HakutaiDb.GameLinks["org:oda"]);var house=HakutaiDb.House(oda.House)!;
@@ -178,4 +202,18 @@ public sealed class HakutaiDbTests
         Assert.Contains("浪岡北畠",names);Assert.Contains("津軽（大浦）",names);Assert.Contains(names,n=>n.StartsWith("石川",StringComparison.Ordinal));
         Assert.Null(HakutaiDb.House(HakutaiDb.Houses.Single(h=>h.Name=="浪岡北畠").Id)!.Overlord);
     }
-}
+
+    [Fact]public void NationalDistrictControlPersistsForNewWorldAndLeavesOldCampaignProfileUnchanged()
+    {
+        var scenario=NationalStart.Scenario();var selected=scenario.Factions.Single(f=>f.Name.Contains("織田",StringComparison.Ordinal)).Head;
+        var world=NationalStart.Create(selected);Assert.Equal(NationalDistrictControl.Policy,world.NewGame!.DistrictControlPolicy);
+        Assert.Equal(HakutaiDb.Districts.Count,world.DistrictControl!.Districts.Length);Assert.NotNull(world.FactionRelations);ContractValidation.Validate(world);
+        var restored=ContractJson.Read<ContractWorld>(ContractJson.Write(world));Assert.Equal(ContractJson.CanonicalHash(world),ContractJson.CanonicalHash(restored));
+        var oldBytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","pre-catalog-start-v1.json"));
+        var oldProfile=ContractJson.Read<NewCampaignProfile>(oldBytes);Assert.Null(oldProfile.DistrictControlPolicy);
+        Assert.Equal(oldProfile.InitialHash,ContractJson.CanonicalHash(NewCampaignStore.Build(oldProfile)));
+        Assert.Null(NewCampaignStore.Build(oldProfile).DistrictControl);Assert.Null(NewCampaignStore.Build(oldProfile).FactionRelations);
+        var store=new NewCampaignStore(Path.Combine(Path.GetTempPath(),"national-control-profile-"+Guid.NewGuid().ToString("N")));
+        var profile=NationalStart.New(store,scenario,selected,20261112,null,false);Assert.Equal(NationalDistrictControl.Policy,profile.DistrictControlPolicy);
+        var campaign=NewCampaignStore.Build(profile);Assert.Equal(ContractJson.CanonicalHash(world),ContractJson.CanonicalHash(campaign));
+    }}

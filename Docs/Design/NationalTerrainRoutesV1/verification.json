@@ -1,0 +1,18 @@
+{
+  "short_suite": "PASSED",
+  "short_suite_tests": 2817,
+  "short_suite_failures": 0,
+  "short_suite_duration": "6分50秒",
+  "related_tests": "PASSED",
+  "national_start": "PASSED",
+  "save_restore": "PASSED",
+  "generation_reproducibility": "PASSED",
+  "generation_sha256": "BEB3B56B0554460BBEDA82FC7B7B56F0C727260CD11A68C5EF707833C15B0AA8",
+  "godot_ui": "PASSED",
+  "godot_version": "4.5.2-stable-mono",
+  "full_core_suite": "PENDING",
+  "limitations": [
+    "全国開始の1日進行性能は前段工程の測定値を参照。この工程では日々の処理を変更していない。",
+    "地形コストは推定値であり、戦国期の道・橋・渡しの正確な史実を示さない。"
+  ]
+}

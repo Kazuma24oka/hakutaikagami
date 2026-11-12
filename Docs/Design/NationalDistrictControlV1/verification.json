@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "scope": "national-district-control",
+  "baseline": "approval-baseline-v112",
+  "related_tests": {
+    "status": "PASSED",
+    "passed": 15,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --no-restore --filter FullyQualifiedName~HakutaiDbTests"
+  },
+  "short_suite": {
+    "status": "PASSED",
+    "passed": 2820,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\"",
+    "duration": "8分37秒"
+  },
+  "game_build": {
+    "status": "PASSED",
+    "configuration": "Debug",
+    "warnings": 0,
+    "errors": 0,
+    "godot": "4.5.2-stable-mono"
+  },
+  "setup_map": {
+    "status": "PASSED",
+    "result": "HAKUTAI_DB_UI_PASS",
+    "checks": [
+      "郡支配色の生成",
+      "ゲーム内部のマウス入力で勢力表示を消す",
+      "ゲーム内部のマウス入力で勢力表示を戻す",
+      "表示の前後で郡支配ハッシュが同一"
+    ],
+    "renders": "Docs/Design/HakutaiDbV1/runtime-local/ui/control.png"
+  },
+  "world_map": {
+    "status": "PASSED",
+    "marker": "NATIONAL_DISTRICT_CONTROL_3D_PASS 8",
+    "districts": 637,
+    "mapped_pixels": 355565,
+    "world_hash": "b5db5a3c10bd9c7d01ec9750a161b77f2eb1e78647d2c19f69994453fc53ff57",
+    "checks": [
+      "1560年の新規全国開始だけ郡支配の版を持つ",
+      "全郡の支配・並立・根拠が開始データと一致",
+      "同じ郡支配データから3D全国表示を生成",
+      "全国へ引くと郡ごとの勢力色が見える",
+      "全国表示は支配・兵糧・世界時刻を変えない",
+      "保存後の世界時計が進む",
+      "実保存復旧後に1560年の全郡支配状態が一致",
+      "復旧後も全国地図の郡支配色が表示される"
+    ],
+    "renders": [
+      "Docs/Design/NationalDistrictControlV1/runtime-local/move-world-control.png",
+      "Docs/Design/NationalDistrictControlV1/runtime-local/move-world-control-restored.png"
+    ]
+  },
+  "legacy_profile": {
+    "status": "PASSED",
+    "fixture": "Tests/Fixtures/pre-catalog-start-v1.json",
+    "result": "旧開始プロファイルのハッシュ維持・郡台帳フィールドなし"
+  },
+  "full_suite_before_main": "PENDING",
+  "limits": [
+    "全テストはmain統合前に別worktreeで1回流す。開始前の短い検査8分37秒に含まれない。",
+    "最終素材の色・見た目は未確認。ここでは支配の判読と操作・状態一致のみ確認。",
+    "郡台帳は1560年の初期状態で、ゲーム中の支配変更を追わない。",
+    "映像・ログ・保存はruntime-localにあり、コミット対象外。"
+  ]
+}

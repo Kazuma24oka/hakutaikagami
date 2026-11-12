@@ -44,4 +44,25 @@ public sealed class CastleRoutesTests
         Assert.Throws<InvalidDataException>(()=>CastleRoutes.Validate(c with{Edges=[..c.Edges,c.Edges[0] with{Id="x",Mode="air"}]}));
         Assert.Throws<InvalidDataException>(()=>CastleRoutes.Validate(c with{DatabaseSource="0000000000000000000000000000000000000000"}));
     }
+
+    [Fact]public void TerrainNetworkAddsOnlyVersionedMovementCostsAndKeepsV1Immutable()
+    {
+        var old=CastleRoutes.Catalog;var terrain=TerrainCastleRoutes.Catalog;
+        TerrainCastleRoutes.Validate(terrain);
+        Assert.Equal(old.Nodes,terrain.Nodes);
+        Assert.Equal(CastleRoutes.Edges.Select(e=>e.Id).Order(),terrain.Edges.Select(e=>e.Id).Order());
+        var v1=CastleRoutes.Edges.ToDictionary(e=>e.Id);
+        Assert.All(terrain.Edges,e=>Assert.Equal(v1[e.Id].LengthMm,long.Parse(e.BaseLengthMm)));
+        Assert.Contains(terrain.Edges,e=>e.Mode=="land"&&e.TerrainFactorPpm>1_000_000);
+        Assert.Contains(terrain.Edges,e=>e.EstimatedRiverCrossings>0);
+        Assert.Contains(terrain.Edges,e=>e.EstimatedInlandWaterCrossings>0);
+        Assert.All(terrain.Edges.Where(e=>e.Mode=="sea"),e=>{Assert.Equal(0,e.EstimatedRiverCrossings);Assert.Equal(0,e.EstimatedInlandWaterCrossings);});
+        Assert.Equal("castle-routes-1560-v1",old.Id);
+        Assert.Contains(terrain.Edges,e=>long.Parse(e.LengthMm)!=long.Parse(e.BaseLengthMm));
+        Assert.Equal(CastleRoutes.Nodes.Length,TerrainCastleRoutes.Nodes.Length);
+        Assert.True(terrain.TerrainSource.ElevationZipSha256.All(Uri.IsHexDigit));
+        Assert.True(terrain.TerrainSource.VectorZipSha256.All(Uri.IsHexDigit));
+        Assert.Throws<InvalidDataException>(()=>TerrainCastleRoutes.Validate(terrain with{Edges=terrain.Edges.Skip(1).ToArray()}));
+        Assert.Throws<InvalidDataException>(()=>TerrainCastleRoutes.Validate(terrain with{Edges=[..terrain.Edges,terrain.Edges[0] with{TerrainFactorPpm=3_000_000}]}));
+    }
 }

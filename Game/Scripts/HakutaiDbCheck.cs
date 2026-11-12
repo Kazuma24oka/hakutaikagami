@@ -9,6 +9,7 @@ using HakutaiKagami.Core.World;
 public partial class HakutaiDbCheck:Node
 {
  async Task Frame()=>await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
+ async Task Click(CheckBox check){var position=check.GetGlobalRect().GetCenter();GetViewport().PushInput(new InputEventMouseButton{Position=position,GlobalPosition=position,ButtonIndex=MouseButton.Left,Pressed=true},true);await Frame();GetViewport().PushInput(new InputEventMouseButton{Position=position,GlobalPosition=position,ButtonIndex=MouseButton.Left,Pressed=false},true);await Frame();}
  static void Check(bool condition,string text){if(!condition)throw new InvalidDataException(text);}
  async Task Capture(string output,string name){for(int i=0;i<4;i++)await Frame();if(DisplayServer.GetName()=="headless")return;await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);Check(ViewportCapture.Save(GetViewport(),Path.Combine(output,name))==Error.Ok,"自前描画 "+name);}
  public override async void _Ready(){try{
@@ -16,8 +17,8 @@ public partial class HakutaiDbCheck:Node
   var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
   entry.ReviewDbOpen();await Frame();await Frame();
   Check(entry.ReviewDbMarks()>500,"全国の城の点 "+entry.ReviewDbMarks());Check(entry.ReviewDbStrongMarks()==0,"選ぶ前は強調なし");
-  await Capture(output,"overview.png");
-  var map=entry.ReviewDbMap()!;GeoCoordinate G(double lat,double lon)=>new((int)(lat*1e7),(int)(lon*1e7));
+  var map=entry.ReviewDbMap()!;Check(map.ReviewControlTextureReady&&map.ReviewControlPixelCount>100000,"郡支配色が実際に生成される");var controlHash=ContractJson.CanonicalHash(map.ControlState!);var controlToggle=map.FindChildren("*","CheckBox",true,false).OfType<CheckBox>().Single(c=>c.Text=="勢力");await Click(controlToggle);Check(!map.ShowControl&&ContractJson.CanonicalHash(map.ControlState!)==controlHash,"勢力表示を消しても郡支配データは変わらない");await Click(controlToggle);Check(map.ShowControl&&ContractJson.CanonicalHash(map.ControlState!)==controlHash,"勢力表示を戻しても郡支配データは変わらない");await Capture(output,"control.png");await Capture(output,"overview.png");
+  GeoCoordinate G(double lat,double lon)=>new((int)(lat*1e7),(int)(lon*1e7));
   Check(map.InView(G(31.6,130.55))&&map.InView(G(38.27,140.87))&&!map.InView(G(26.21,127.68)),"基準の位置は九州〜東北（琉球は外）");
   map.Nation();await Frame();Check(map.InView(G(26.21,127.68))&&map.InView(G(45.0,147.8))&&map.InView(G(24.45,122.95)),"引くと琉球・北方領土・与那国まで入る");await Capture(output,"map-full.png");
   map.CenterOn(G(35.2,136.84),0.05);await Frame();Check(map.KilometersPerPixel<0.35,"寄ると城の名前が出る倍率まで寄れる");await Capture(output,"map-castles.png");
@@ -36,7 +37,7 @@ public partial class HakutaiDbCheck:Node
   var mobHouse=HakutaiDb.Houses.Where(h=>!h.Religious&&HakutaiDbStart.Roster(h.Id).Mobs>0).OrderByDescending(h=>h.Kokudaka).First();entry.ReviewDbSelect(mobHouse.Name);await Frame();Check(entry.ReviewDbText().Contains("× "),"少ない家にモブ武将（×）");await Capture(output,"mobs.png");
   entry.ReviewDbSelect("本願寺");await Frame();Check(entry.ReviewDbText().Contains("顕如"),"寺社の家");
   await Capture(output,"honganji.png");
-  File.WriteAllText(Path.Combine(output,"result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Scope="スタート画面→史料の画面→織田・今川・本願寺の選択と地図の強調",People=HakutaiDb.PeopleCount,Marks=entry.ReviewDbMarks(),OdaCastles=odaMarks,SourceCommit=HakutaiDb.Source.Commit,ComputerUse="未使用"}));
+  File.WriteAllText(Path.Combine(output,"result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Scope="スタート画面→史料の画面→1560年郡支配色・織田・今川・本願寺の選択と地図の強調",People=HakutaiDb.PeopleCount,Marks=entry.ReviewDbMarks(),ControlPixels=map.ReviewControlPixelCount,OdaCastles=odaMarks,SourceCommit=HakutaiDb.Source.Commit,ComputerUse="未使用"}));
   GD.Print("HAKUTAI_DB_UI_PASS");GetTree().Quit();
  }catch(Exception e){GD.PrintErr(e);GetTree().Quit(1);}}
 }
