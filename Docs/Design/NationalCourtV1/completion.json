@@ -1,0 +1,39 @@
+{
+  "version": 151,
+  "criteria": [
+    {
+      "contract": "全国開始の家の戦略で、史実の出陣を34件（永禄の変・三方ヶ原・手取川・摺上原など）に増やし、前提がそろうと選ばれやすく、不発と見送りを残す。結果は強制しない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalStrategy.cs",
+        "Tests/NationalStrategyTests.cs"
+      ]
+    },
+    {
+      "contract": "将軍家が城をすべて失うと将軍の空位を記録し、京の主が将軍家の成人を擁立して山城の城を渡す。全国では京の将軍職の判定もこれに従う。同じ強い家への同盟が三つ以上重なると包囲網になり、加わる家へ書状が届く。落城の知らせが隣の家にも届く",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalStrategy.cs",
+        "Core/Contracts/SupremeOffice.cs",
+        "Tests/NationalStrategyTests.cs"
+      ]
+    },
+    {
+      "contract": "全国開始を v2 に上げ（新規開始だけ）、百代鏡DBの朝廷の人々を京（二条御所）に置く。京の取次（山科言継）・将軍（足利義輝）・将軍家の取次を全国の人物で引き、全国でも京で奏請できる。v1 の保存は変えない",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalStart.cs",
+        "Core/Contracts/CentralCourtCatalog.cs",
+        "Tests/NationalCourtTests.cs",
+        "Docs/Design/NationalCourtV1/README.md"
+      ]
+    },
+    {
+      "contract": "短い段と全国の検査に合格し、全件テストに合格する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NationalCourtV1/verification.json"
+      ]
+    }
+  ]
+}

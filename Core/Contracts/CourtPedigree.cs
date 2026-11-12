@@ -29,20 +29,20 @@ public static class CourtPedigree
             throw new InvalidDataException("系図の調査・提出には本人と担当者の現地面会が必要です");
         if(i.Action==CourtAction.RecognizePedigree){
             var filing=rows.SingleOrDefault(e=>e.Input.Id==i.Reference && e.Input.Action==CourtAction.FilePedigree);
-            if(filing==null || filing.At>=at || filing.Actor!=i.Person || filing.Input.Owner!=i.Owner || actor!=CentralCourtCatalog.CourtBroker ||
-                site!=CentralCourtCatalog.Kyoto || rows.Any(e=>e.Input.Action==i.Action && e.Input.Person==i.Person))
+            if(filing==null || filing.At>=at || filing.Actor!=i.Person || filing.Input.Owner!=i.Owner || actor!=CentralCourtCatalog.CourtBrokerIn(w) ||
+                site!=CentralCourtCatalog.KyotoIn(w) || rows.Any(e=>e.Input.Action==i.Action && e.Input.Person==i.Person))
                 throw new InvalidDataException("京の担当者が提出済みの本人の系図原本を認定します");
             return;
         }
         if(i.Action==CourtAction.FilePedigree){
-            if(site!=CentralCourtCatalog.Kyoto || i.Person!=CentralCourtCatalog.CourtBroker ||
+            if(site!=CentralCourtCatalog.KyotoIn(w) || i.Person!=CentralCourtCatalog.CourtBrokerIn(w) ||
                 !rows.Any(e=>e.Input.Id==i.Reference && e.Input.Action==CourtAction.AttestPedigree && e.Input.Person==actor && e.Input.Owner==i.Owner) ||
                 rows.Any(e=>e.Input.Action==i.Action && e.Actor==actor))throw new InvalidDataException("京に本人の調査済み系図を提出してください");
             return;
         }
         bool asking=i.Action==CourtAction.AskPedigree;
         var applicant=asking?actor:i.Person;var scribe=asking?i.Person:actor;
-        if(!(scribe==CentralCourtCatalog.CourtBroker && site==CentralCourtCatalog.Kyoto ||
+        if(!(scribe==CentralCourtCatalog.CourtBrokerIn(w) && site==CentralCourtCatalog.KyotoIn(w) ||
             scribe==CentralCourtCatalog.TempleBroker && site==TempleMilitary.Site) ||
             DefectionPacts.HouseAt(w,applicant,at,rev-1)!=i.Owner)throw new InvalidDataException("所属と現地の調査担当者を確認してください");
         var requests=rows.Where(e=>e.Input.Action==CourtAction.AskPedigree && e.Actor==applicant && e.Input.Person==scribe && e.Input.Owner==i.Owner &&
@@ -53,8 +53,8 @@ public static class CourtPedigree
     }
     public static IEnumerable<(CourtInput,EntityId)> Reports(ContractWorld w,bool player){
         foreach(var f in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.FilePedigree && e.At<w.ElapsedSeconds &&
-            (CentralCourtCatalog.CourtBroker==w.PlayerControl)==player && !HouseholdCourt.Events(w).Any(r=>r.Input.Reference==e.Input.Id && r.Input.Action==CourtAction.RecognizePedigree))){
-            yield return (new(HouseholdCourt.Id("pedigree-recognition",f.Input.Id.Value),CourtAction.RecognizePedigree,f.Actor,f.Input.Owner,f.Place,Reference:f.Input.Id),CentralCourtCatalog.CourtBroker);
+            (CentralCourtCatalog.CourtBrokerIn(w)==w.PlayerControl)==player && !HouseholdCourt.Events(w).Any(r=>r.Input.Reference==e.Input.Id && r.Input.Action==CourtAction.RecognizePedigree))){
+            yield return (new(HouseholdCourt.Id("pedigree-recognition",f.Input.Id.Value),CourtAction.RecognizePedigree,f.Actor,f.Input.Owner,f.Place,Reference:f.Input.Id),CentralCourtCatalog.CourtBrokerIn(w));
         }
         foreach(var e in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.AskPedigree && e.At<w.ElapsedSeconds &&
             (e.Input.Person==w.PlayerControl)==player && !HouseholdCourt.Events(w).Any(r=>Handles(r.Input.Action)&&r.Input.Reference==e.Input.Id))){

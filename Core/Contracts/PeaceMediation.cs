@@ -9,12 +9,12 @@ public static class PeaceMediation
     public const string Response="mediated-peace-response";
     static bool IsVote(CourtAction a)=>a is CourtAction.AcceptPeaceProposal or CourtAction.RejectPeaceProposal;
     internal static bool Handles(CourtAction a)=>a is CourtAction.ReportPeaceRefusal or CourtAction.CertifyPeaceAgreement || IsVote(a) || a is CourtAction.AskPeaceMediation or CourtAction.SendPeaceProposal or CourtAction.DeclinePeaceMediation;
-    static EntityId Office(EntityId broker)=>broker==CentralCourtCatalog.TempleBroker?TempleMilitary.Site:CentralCourtCatalog.Kyoto;
+    static EntityId Office(ContractWorld w,EntityId broker)=>broker==CentralCourtCatalog.TempleBroker?TempleMilitary.Site:CentralCourtCatalog.KyotoIn(w);
     public static IEnumerable<EntityId> Brokers(ContractWorld w)=>Brokers(w,w.ElapsedSeconds,w.CommitSequence);
     static IEnumerable<EntityId> Brokers(ContractWorld w,long at,long revision){using var _ccRev=ControlContext.At(revision);
-        yield return CentralCourtCatalog.CourtBroker;yield return CentralCourtCatalog.ShogunBroker;
+        yield return CentralCourtCatalog.CourtBrokerIn(w);yield return CentralCourtCatalog.ShogunBrokerIn(w);
         var incumbent=SupremeOffice.ShogunAt(w,at,revision);
-        if(incumbent is {} shogun && shogun!=CentralCourtCatalog.CourtBroker && shogun!=CentralCourtCatalog.ShogunBroker &&
+        if(incumbent is {} shogun && shogun!=CentralCourtCatalog.CourtBrokerIn(w) && shogun!=CentralCourtCatalog.ShogunBrokerIn(w) &&
             shogun!=CentralCourtCatalog.TempleBroker)yield return shogun;
         if(w.NewGame?.HistoricalCatalog==CentralCourtCatalog.TempleEdition || CentralCourtCatalog.HasRegent(w.NewGame?.HistoricalCatalog))yield return CentralCourtCatalog.TempleBroker;
     }
@@ -25,7 +25,7 @@ public static class PeaceMediation
         if(i.Action==CourtAction.CertifyPeaceAgreement){CheckAgreement(w,i,actor,place,at,rev);return;}
         if(IsVote(i.Action)){CheckVote(w,i,actor,place,at,rev);return;}
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog) || !TruceNegotiations.Enabled(w) ||
-            place!=Office(i.Action==CourtAction.AskPeaceMediation?i.Person:actor) || place!=i.Site || i.OtherHouse is not {} other || i.Owner==other || i.Amount is <1 or >90 ||
+            place!=Office(w,i.Action==CourtAction.AskPeaceMediation?i.Person:actor) || place!=i.Site || i.OtherHouse is not {} other || i.Owner==other || i.Amount is <1 or >90 ||
             !HouseSuccession.Factions(w,at,rev-1).Any(f=>f.Id==other.Value) ||
             !TransportWork.At(w,actor,place,at,rev,true) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("取次の拠点で異なる二家と1〜90日の不戦期間を指定してください");
@@ -114,16 +114,16 @@ public static class PeaceMediation
                 TransactionalWorld.TryApply(w,c=>HouseholdCourt.Execute(c,vote,actor));
         }
     }
-    static CourtInput RefusalReport(CourtEvent vote)=>vote.Input with{Id=HouseholdCourt.Id("peace-refusal-report",vote.Input.Id.Value),
-        Action=CourtAction.ReportPeaceRefusal,Reference=vote.Input.Id,Person=vote.Actor,Site=Office(vote.Input.Person)};
+    static CourtInput RefusalReport(ContractWorld w,CourtEvent vote)=>vote.Input with{Id=HouseholdCourt.Id("peace-refusal-report",vote.Input.Id.Value),
+        Action=CourtAction.ReportPeaceRefusal,Reference=vote.Input.Id,Person=vote.Actor,Site=Office(w,vote.Input.Person)};
     static void CheckRefusal(ContractWorld w,CourtInput input,EntityId actor,EntityId site,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         var prior=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev);
         var vote=prior.SingleOrDefault(e=>e.Input.Id==input.Reference && e.Input.Action==CourtAction.RejectPeaceProposal);
-        if(vote==null || !Brokers(w,at,rev-1).Contains(actor) || RefusalReport(vote)!=input || vote.Input.Person!=actor || site!=input.Site ||
+        if(vote==null || !Brokers(w,at,rev-1).Contains(actor) || RefusalReport(w,vote)!=input || vote.Input.Person!=actor || site!=input.Site ||
             !TransportWork.At(w,actor,site,at,rev,true) || Assassination.DeadAt(w,actor,at,rev) ||
             prior.Any(e=>e.Input.Action==input.Action && e.Input.Reference==input.Reference) ||
-            MessageFlow.LearnedAt(w.Messaging,Reply(vote.Input,vote.Actor,vote.At).Id,actor.Value) is not {} opened || opened>at)
+            MessageFlow.LearnedAt(w.Messaging,Reply(w,vote.Input,vote.Actor,vote.At).Id,actor.Value) is not {} opened || opened>at)
             throw new InvalidDataException("取次が開封した拒否原本から相手方に一度だけ報告します");
     }
     static MessageEnvelope RefusalLetter(ContractWorld w,CourtEvent report){
@@ -143,27 +143,27 @@ public static class PeaceMediation
     {using var _ccRev=ControlContext.At(rev);
         var prior=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<rev).ToArray();
         var source=prior.SingleOrDefault(e=>e.Input.Action==CourtAction.SendPeaceProposal && e.Input.Id==input.Reference);
-        if(source==null || !Brokers(w,at,rev-1).Contains(actor) || source.Actor!=actor || Agreement(source)!=input || place!=Office(actor) ||
+        if(source==null || !Brokers(w,at,rev-1).Contains(actor) || source.Actor!=actor || Agreement(source)!=input || place!=Office(w,actor) ||
             Assassination.DeadAt(w,actor,at,rev) || !TransportWork.At(w,actor,place,at,rev,true) ||
             prior.Any(e=>e.Input.Action==CourtAction.CertifyPeaceAgreement && e.Input.Reference==input.Reference))
             throw new InvalidDataException("現地の取次本人が同一の仲裁案を一度だけ確定してください");
         foreach(var house in new[]{input.Owner,input.OtherHouse!.Value}){
             var yes=prior.SingleOrDefault(e=>e.Input.Action==CourtAction.AcceptPeaceProposal && e.Input.Owner==house && e.Input.Reference==input.Reference);
-            if(yes==null || MessageFlow.LearnedAt(w.Messaging,Reply(yes.Input,yes.Actor,yes.At).Id,actor.Value) is not {} opened || opened>at)
+            if(yes==null || MessageFlow.LearnedAt(w.Messaging,Reply(w,yes.Input,yes.Actor,yes.At).Id,actor.Value) is not {} opened || opened>at)
                 throw new InvalidDataException("両家から同じ仲裁案への承諾が届き、開封される必要があります");
         }
     }
     public static IEnumerable<CourtInput> Agreements(ContractWorld w,EntityId broker)
     {
         foreach(var vote in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.RejectPeaceProposal && e.Input.Person==broker)){
-            var report=RefusalReport(vote);
+            var report=RefusalReport(w,vote);
             try{CheckRefusal(w,report,broker,report.Site,w.ElapsedSeconds,w.CommitSequence+1);}
             catch(InvalidDataException){continue;}
             yield return report;
         }
         foreach(var source in HouseholdCourt.Events(w).Where(e=>e.Actor==broker && e.Input.Action==CourtAction.SendPeaceProposal)){
             var input=Agreement(source);
-            try{CheckAgreement(w,input,broker,Office(broker),w.ElapsedSeconds,w.CommitSequence+1);}
+            try{CheckAgreement(w,input,broker,Office(w,broker),w.ElapsedSeconds,w.CommitSequence+1);}
             catch(InvalidDataException){continue;}
             yield return input;
         }
@@ -182,9 +182,9 @@ public static class PeaceMediation
                 checked(e.At+e.Input.Amount*TruceNegotiations.Day),e.At),e.At,e.Revision);
         }
     }
-    static MessageEnvelope Reply(CourtInput i,EntityId actor,long at)=>new(HouseholdCourt.Id("peace-answer",i.Id.Value).Value,i.Reference!.Value.Value,
+    static MessageEnvelope Reply(ContractWorld w,CourtInput i,EntityId actor,long at)=>new(HouseholdCourt.Id("peace-answer",i.Id.Value).Value,i.Reference!.Value.Value,
         Response,actor.Value,i.Person.Value,i.Action==CourtAction.AcceptPeaceProposal?"同じ条件の仲裁案を承諾する。":"仲裁案を拒む。",
-        Office(i.Person).Value,at){DeliverySite=Office(i.Person).Value};
+        Office(w,i.Person).Value,at){DeliverySite=Office(w,i.Person).Value};
     internal static void Send(ContractWorld w,CourtInput i,EntityId actor){
         if(i.Action==CourtAction.ReportPeaceRefusal){
             var notice=RefusalLetter(w,HouseholdCourt.Events(w).Single(e=>e.Input.Id==i.Id));
@@ -196,7 +196,7 @@ public static class PeaceMediation
             RegionalCampaign.Bind(w);return;
         }
         if(IsVote(i.Action)){
-            var reply=Reply(i,actor,w.ElapsedSeconds);MessageFlow.Send(w.Messaging,reply,w.ElapsedSeconds);
+            var reply=Reply(w,i,actor,w.ElapsedSeconds);MessageFlow.Send(w.Messaging,reply,w.ElapsedSeconds);
             w.SealedMessages=[..w.SealedMessages,new(reply.Id)];RegionalCampaign.Bind(w);return;
         }
         if(i.Action!=CourtAction.SendPeaceProposal)return;
@@ -217,7 +217,7 @@ public static class PeaceMediation
             return;
         }
         if(IsVote(e.Input.Action)){
-            var reply=Reply(e.Input,e.Actor,e.At);
+            var reply=Reply(w,e.Input,e.Actor,e.At);
             if(!w.Messaging.Messages.Contains(reply) || !w.SealedMessages.Any(id=>id.Value==reply.Id))throw new InvalidDataException("仲裁への返書が原本と異なります");
             return;
         }

@@ -37,7 +37,7 @@ public static class NationalFactionRelations
     {
         void Need(bool ok,string reason){if(!ok)throw new InvalidDataException("全国の勢力関係："+reason);}
         if(!Enabled(w)){Need(w.FactionRelations==null,"対象外の開始に勢力関係を混在できません");return;}
-        Need(w.NewGame!.HistoricalCatalog==NationalStart.Edition&&w.NewGame.NetworkPolicy==WorldNetwork.CastlePolicy,"1560年全国開始だけで使用できます");
+        Need(NationalStart.IsNational(w.NewGame!.HistoricalCatalog)&&w.NewGame.NetworkPolicy==WorldNetwork.CastlePolicy,"1560年全国開始だけで使用できます");
         Need(w.FactionRelations is {Schema:1,Policy:Policy}&&ContractJson.CanonicalHash(w.FactionRelations)==ContractJson.CanonicalHash(Initial(w.NewGame.Start)),"百代鏡DBの1560年従属関係と開始台帳が一致しません");
     }
 }

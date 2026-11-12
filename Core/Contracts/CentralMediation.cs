@@ -12,12 +12,12 @@ public static class CentralMediation
         DefectionPacts.HouseAt(w,actor,w.ElapsedSeconds,w.CommitSequence);
 
     static bool WillRecommend(ContractWorld w,EntityId applicant,long at,long rev)=>
-        SocialWorld.ConsentBonus(w,CentralCourtCatalog.CourtBroker,applicant,at,rev)>=2;
+        SocialWorld.ConsentBonus(w,CentralCourtCatalog.CourtBrokerIn(w),applicant,at,rev)>=2;
 
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
-        var broker=CentralCourtCatalog.CourtBroker;
-        if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || i.Site!=CentralCourtCatalog.Kyoto || place!=i.Site ||
+        var broker=CentralCourtCatalog.CourtBrokerIn(w);
+        if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || i.Site!=CentralCourtCatalog.KyotoIn(w) || place!=i.Site ||
            !TransportWork.At(w,actor,place,at,rev,true) || !TransportWork.At(w,i.Person,place,at,rev,true) ||
            Assassination.DeadAt(w,i.Person,at,rev) || Assassination.DeadAt(w,actor,at,rev))
             throw new InvalidDataException("京で取次本人と面会して相談してください");
@@ -47,7 +47,7 @@ public static class CentralMediation
 
     public static IEnumerable<CourtInput> AvailableAnswers(ContractWorld w)
     {
-        if(w.PlayerControl!=CentralCourtCatalog.CourtBroker || !CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog))yield break;
+        if(w.PlayerControl!=CentralCourtCatalog.CourtBrokerIn(w) || !CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog))yield break;
         var rows=Earlier(w,w.ElapsedSeconds,w.CommitSequence+1).ToArray();
         foreach(var petition in rows.Where(e=>e.Input.Action==CourtAction.AskCourtIntroduction && e.At<w.ElapsedSeconds &&
             !rows.Any(r=>r.Input.Reference==e.Input.Id))){
@@ -60,7 +60,7 @@ public static class CentralMediation
     }
     internal static IEnumerable<CourtInput> Pending(ContractWorld w)
     {
-        var broker=CentralCourtCatalog.CourtBroker;
+        var broker=CentralCourtCatalog.CourtBrokerIn(w);
         if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || w.PlayerControl==broker)yield break;
         var rows=Earlier(w,w.ElapsedSeconds,w.CommitSequence+1).ToArray();
         foreach(var petition in rows.Where(e=>e.Input.Action==CourtAction.AskCourtIntroduction && e.At<w.ElapsedSeconds &&

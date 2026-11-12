@@ -15,7 +15,7 @@ public static class NationalNameHistory
     sealed record Candidate(EntityId Id,EntityId Person,string Name,int Year,string Step,string Basis,long At);
 
     public static bool Enabled(ContractWorld w)=>w.NewGame?.NameHistoryPolicy==Policy;
-    public static NationalNameHistoryState Initial()=>new(1,Policy,NationalStart.Edition,[],[]);
+    public static NationalNameHistoryState Initial(string edition=NationalStart.Edition)=>new(1,Policy,edition,[],[]);
 
     static Candidate[] Candidates(ContractWorld w)
     {
@@ -122,8 +122,8 @@ public static class NationalNameHistory
     {
         void Need(bool ok,string reason){if(!ok)throw new InvalidDataException("全国の名乗り時系列："+reason);}
         if(!Enabled(w)){Need(w.NationalNames==null,"対象外または旧版の世界に名乗り時系列を混在できません");return;}
-        Need(w.NewGame!.HistoricalCatalog==NationalStart.Edition&&w.NewGame.DistrictControlPolicy==NationalDistrictControl.Policy&&w.NewGame.Start.EpochDate=="1560-01-01","新規の1560年全国開始だけで使用できます");
-        Need(w.NationalNames is{Schema:1,Policy:Policy,Edition:NationalStart.Edition,Changes:not null,Recognitions:not null},"台帳の版が違います");
+        Need(NationalStart.IsNational(w.NewGame!.HistoricalCatalog)&&w.NewGame.DistrictControlPolicy==NationalDistrictControl.Policy&&w.NewGame.Start.EpochDate=="1560-01-01","新規の1560年全国開始だけで使用できます");
+        Need(w.NationalNames is{Schema:1,Policy:Policy,Changes:not null,Recognitions:not null}&&w.NationalNames.Edition==w.NewGame.HistoricalCatalog,"台帳の版が違います");
         var state=w.NationalNames!;var changes=state.Changes!;var recognitions=state.Recognitions!;var candidates=Candidates(w).ToDictionary(c=>c.Id);
         Need(changes.Select(c=>c.Id).Distinct().Count()==changes.Length,"改名が重複しています");
         Need(changes.Zip(changes.Skip(1)).All(p=>p.First.At<=p.Second.At),"改名の時刻が逆転しています");

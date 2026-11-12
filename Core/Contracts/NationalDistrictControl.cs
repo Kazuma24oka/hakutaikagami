@@ -50,7 +50,7 @@ public static class NationalDistrictControl
     {
         void Need(bool ok,string reason){if(!ok)throw new InvalidDataException("全国の郡支配："+reason);}
         if(!Enabled(w)){Need(w.DistrictControl==null,"対象外の開始に郡支配を混在できません");return;}
-        Need(w.NewGame!.HistoricalCatalog==NationalStart.Edition&&w.NewGame.NetworkPolicy==WorldNetwork.CastlePolicy,"全国1560年開始だけで使用できます");
+        Need(NationalStart.IsNational(w.NewGame!.HistoricalCatalog)&&w.NewGame.NetworkPolicy==WorldNetwork.CastlePolicy,"全国1560年開始だけで使用できます");
         Need(w.DistrictControl is {Schema:1,Policy:Policy}&&ContractJson.CanonicalHash(w.DistrictControl)==ContractJson.CanonicalHash(Initial()),"開始時の支配・並立・根拠が1560年の百代鏡DBと一致しません");
     }
 }

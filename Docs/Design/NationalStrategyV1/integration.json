@@ -1,0 +1,8 @@
+{
+  "pr": 144,
+  "main": "ee373079",
+  "tested_commit": "78b71a30",
+  "full_core_passed": 4515,
+  "branch": "prototype/claude-mainline",
+  "content_match": "Core・Game・Tests は main と一致（git diff なし）"
+}
