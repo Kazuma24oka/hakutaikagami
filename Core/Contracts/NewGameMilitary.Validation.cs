@@ -17,7 +17,7 @@ public static partial class NewGameMilitary
         w.MilitaryLedgerHistory=original.MilitaryLedgerHistory??LedgerStates(original);
         w.NewMilitary=LedgerStateBefore(w.NewMilitary!,at,rev);
         w.Locations=w.Locations.Select(l=>{
-            var physical=l.Actor==w.PlayerControl?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
+            var physical=l.Actor==ControlSuccession.PlayerAtRevision(w,rev)?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
             if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
             var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(FieldWorld.FromWorld(point)),Contract,0);
         }).ToArray();RewindUnitTransport(w);var controlling=ControllingLedger(w,at);SyncLedger(w,w.NewMilitary==null||controlling==null||LedgerKey(controlling)==LedgerKey(w.NewMilitary));return w;
@@ -40,7 +40,7 @@ public static partial class NewGameMilitary
         Need(s.Requests.Select(q=>q.Input.Id).Distinct().Count()==s.Requests.Length&&s.Requests.Select((q,i)=>i==0||q.Revision>s.Requests[i-1].Revision&&q.At>=s.Requests[i-1].At).All(x=>x),"軍務入力が重複・逆順です");
         ValidateAuthority(w,false);ValidateDirectiveCancellation(w,false);ValidateCancellationShape(w);ValidateUnitInitialStatuses(w);ValidateUnitDirectiveShape(w);ValidateDirectiveHolding(w,false);ValidateDirectiveCancelHolding(w,false);ValidateReplyRecoveryShape(w);ValidateCommandHolding(w);ValidateHeldShape(w);
         ValidateLedgerBinding(w);ValidateActiveSuccession(w);ValidateRemote(w);
-        var first=s.Requests[0];var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id,first.Input.AuthorityPolicy,first.Input.LedgerPolicy),"貸与元・名簿・所在地の根拠が違います");
+        var first=s.Requests[0];using var _cc=ControlContext.At(first.Revision);var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id,first.Input.AuthorityPolicy,first.Input.LedgerPolicy),"貸与元・名簿・所在地の根拠が違います");
         Need(w.Messaging.Messages.Count(m=>m.Kind is "new-military-request" or "new-military-report")==s.Requests.Count(q=>q.Message!=null)&&w.Messaging.Messages.Count(m=>m.Kind=="new-military-notice")==s.Events.Length,"軍務と原本台帳が一致しません");
         // Only WorldSession may supply its already validated prior state. Loads always replay fully.
         // Unchanged immutable military inputs/effects/routes and original letters cannot be reinterpreted by later travel.

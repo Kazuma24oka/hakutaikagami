@@ -42,7 +42,7 @@ public partial class NewGameRuntime
                 Choice("siege-" + action, label, () => Session.ManageSiege(input, rev));
             }
             if (begin == null && CastleSiege.OccupierAt(world,site,world.ElapsedSeconds,rev+1)==duty.Terms.Owner)
-                SocialText(box,"本丸は自軍が占有中です。");
+                {}
             else if (begin == null) Order(SiegeAction.Begin, "部隊を展開して城を囲む");
             else if (rows.LastOrDefault() is {} last)
             {

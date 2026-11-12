@@ -22,3 +22,34 @@ public static class ControlProbe
     }
     public static IEnumerable<string> Hits()=>hits.Select(x=>places[x.Key]+"|"+x.Value);
 }
+
+// 調査用：検査に通った新規ゲームの世界ごとに、別の成人へ隠居で操作を移した写しも検査し、通らなかった理由と場所を集める。
+public static class HandoverProbe
+{
+    public static bool Enabled;
+    [ThreadStatic] static bool running;
+    internal static bool Running=>running;
+    static readonly ConcurrentDictionary<string,int> failures=new();
+    internal static void After(ContractWorld s)
+    {
+        if(!Enabled||running||s.NewGame==null||s.ControlHandovers!=null)return;
+        var heir=s.Characters.Where(c=>c.Id!=s.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(x=>x.Value,StringComparer.Ordinal).FirstOrDefault();
+        if(heir.Value==null)return;
+        running=true;
+        try
+        {
+            var v=ContractJson.Copy(s);v.CommitSequence++;
+            v.ControlHandovers=[new(v.PlayerControl,heir,v.ElapsedSeconds,v.CommitSequence,ControlSuccession.Retire)];v.PlayerControl=heir;
+            ContractValidation.Validate(v);
+        }
+        catch(Exception e)
+        {
+            var inner=e;while(inner.InnerException!=null)inner=inner.InnerException;
+            var frames=new StackTrace(inner,true).GetFrames().Where(f=>f.GetFileName()!=null&&f.GetMethod()?.Name is not("Need" or "Check")).Take(5)
+                .Select(f=>$"{System.IO.Path.GetFileName(f.GetFileName())}:{f.GetFileLineNumber()}:{f.GetMethod()?.Name}");
+            failures.AddOrUpdate($"{string.Join(" < ",frames)}|{inner.Message}",1,(_,n)=>n+1);
+        }
+        finally{running=false;}
+    }
+    public static IEnumerable<string> Failures()=>failures.Select(x=>x.Key+"|"+x.Value);
+}

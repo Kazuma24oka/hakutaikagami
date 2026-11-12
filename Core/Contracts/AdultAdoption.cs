@@ -27,7 +27,7 @@ public static class AdultAdoption
         var own=Case(rows,t.Id);if(!own.Any(e=>e.Input.Action==AdoptionAction.PersonalYes))return false;
         return t.Houses.All(h=>own.Any(e=>e.Input.Action==AdoptionAction.ApproveHouse&&e.Input.House==h.Owner&&e.Actor==h.Representative)&&Present(w,h.Representative,t.Site,at,rev)&&FactionStances.ResolveAuthority(w,h.Representative,h.Owner,at,Math.Min(rev,w.CommitSequence))!=null);
     }
-    static void Check(ContractWorld w,AdoptionEntry e,AdoptionEntry[] prior){
+    static void Check(ContractWorld w,AdoptionEntry e,AdoptionEntry[] prior){using var _cc=ControlContext.At(e.Revision);
         var i=e.Input;Need(Enabled(w)&&Enum.IsDefined(i.Action)&&EntityId.IsValid(i.Id.Value)&&e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence,"Invalid adoption record");
         Need(!prior.Any(p=>p.Input.Id==i.Id)&&!FactionStances.OtherIdUsed(w,i.Id,includeAdoption:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
         if(i.Action==AdoptionAction.Propose){
@@ -39,7 +39,7 @@ public static class AdultAdoption
         Need(i.Other==null&&i.AsParent&&i.Original!=null&&e.Terms==null,"合意原本を指定してください");var proposal=prior.SingleOrDefault(p=>p.Input.Id==i.Original&&p.Terms!=null);Need(proposal!=null,"原本がありません");var terms=proposal.Terms!;var current=Case(prior,terms.Id);Need(!Closed(prior,terms,e.At),"相談は終了しています");
         if(i.Action is AdoptionAction.PersonalYes or AdoptionAction.PersonalNo){var actor=proposal.Actor==terms.Parent?terms.Child:terms.Parent;Need(e.Actor==actor&&actor!=w.PlayerControl&&i.House==null&&e.At>=proposal.At+1&&!current.Any(p=>p.Input.Action is AdoptionAction.PersonalYes or AdoptionAction.PersonalNo),"本人返答が重複または未着です");Need(Present(w,actor,terms.Site,e.At,e.Revision)&&Present(w,proposal.Actor,terms.Site,e.At,e.Revision),"本人への現地相談が必要です");bool yes=SameHouse(w,actor,e.At,e.Revision)&&IndividualAccepts(w,actor,proposal.Actor,e.At,e.Revision);Need((i.Action==AdoptionAction.PersonalYes)==yes,"本人の意思が一致しません");}
         else if(i.Action==AdoptionAction.ApproveHouse){var h=terms.Houses.SingleOrDefault(h=>h.Owner==i.House&&h.Representative==e.Actor);Need(h!=null&&current.Any(p=>p.Input.Action==AdoptionAction.PersonalYes)&&!current.Any(p=>p.Input.Action==AdoptionAction.ApproveHouse&&p.Input.House==h.Owner),"家の承諾者・順序が不正です");Need(Present(w,e.Actor,terms.Site,e.At,e.Revision)&&Present(w,proposal.Actor,terms.Site,e.At,e.Revision)&&FactionStances.ResolveAuthority(w,e.Actor,h.Owner,e.At,e.Revision)!=null,"家の現地承諾または権限がありません");Need(e.Actor==w.PlayerControl||w.Characters.Single(c=>c.Id==e.Actor).WillObey,"家の承諾はありません");}
-        else if(i.Action==AdoptionAction.Implement){Need(e.Actor==w.PlayerControl&&i.House==null&&Ready(w,terms,prior,e.At,e.Revision)&&FamilyAvailable(w,prior,terms.Parent,terms.Child,e.At,e.Revision),"当人・家の承諾、所在、権限を再確認してください");}
+        else if(i.Action==AdoptionAction.Implement){Need(e.Actor==ControlSuccession.PlayerAtRevision(w,e.Revision)&&i.House==null&&Ready(w,terms,prior,e.At,e.Revision)&&FamilyAvailable(w,prior,terms.Parent,terms.Child,e.At,e.Revision),"当人・家の承諾、所在、権限を再確認してください");}
         else if(i.Action==AdoptionAction.Withdraw)Need(e.Actor==proposal.Actor&&i.House==null,"打診した本人だけが取り下げられます");
         else throw new InvalidDataException("Unknown adoption action");
     }
@@ -71,7 +71,7 @@ public static class AdultAdoption
 public sealed partial class WorldSession
 {
     public CommandResult DecideAdoption(AdoptionInput input,EntityId actor,long revision){lock(gate){
-        if(actor!=state.PlayerControl||!AdultAdoption.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の養子相談ではありません");
+        if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!AdultAdoption.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の養子相談ではありません");
         var old=state.Adoption!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input&&old.Actor==actor?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"記録済みです");
         if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");
         try{Change(w=>AdultAdoption.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"本人の判断を記録しました。家の承諾と実施は別です");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}

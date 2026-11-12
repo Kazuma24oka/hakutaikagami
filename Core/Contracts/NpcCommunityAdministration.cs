@@ -57,9 +57,9 @@ public static class NpcCommunityAdministration
     {
         if(!Enabled(w)){Need(w.CommunityAdministration==null,"旧世界へNPC地域運営を追加できません");return;}
         Need(w.CommunityAdministration is {Schema:1,Policy:Policy,Decisions:not null},"地域運営の原本がありません");var ids=new HashSet<EntityId>();var periods=new HashSet<EntityId>();long prior=0,priorAt=0;
-        foreach(var d in w.CommunityAdministration.Decisions){Need(d.At>0&&d.At%Day==0&&d.At<=w.ElapsedSeconds&&(Date(w,d.At).Day==1||CommunityStewardship.GrantAt(w,d.Site,d.At,d.Revision)!=null)&&d.Revision>prior&&d.Revision<=w.CommitSequence&&d.At>=priorAt&&CommunityEconomy.SitesFor(w).Contains(d.Site)&&d.Actor!=w.PlayerControl&&ids.Add(d.Id)&&periods.Add(Id(w,d.Site,d.At,d.Revision)),"月次判断が重複または不正です");prior=d.Revision;priorAt=d.At;Need(d==Decide(w,d.Site,d.At,d.Revision),"NPC判断が本人の現地入力と一致しません");Need(!FactionStances.OtherIdUsed(w,d.Id,includeAdministration:false)&&!FactionStances.OwnIdUsed(w,d.Id),"NPC判断IDが別操作と重複しています");
+        foreach(var d in w.CommunityAdministration.Decisions){using var _cc=ControlContext.At(d.Revision);Need(d.At>0&&d.At%Day==0&&d.At<=w.ElapsedSeconds&&(Date(w,d.At).Day==1||CommunityStewardship.GrantAt(w,d.Site,d.At,d.Revision)!=null)&&d.Revision>prior&&d.Revision<=w.CommitSequence&&d.At>=priorAt&&CommunityEconomy.SitesFor(w).Contains(d.Site)&&d.Actor!=ControlSuccession.PlayerAtRevision(w,d.Revision)&&ids.Add(d.Id)&&periods.Add(Id(w,d.Site,d.At,d.Revision)),"月次判断が重複または不正です");prior=d.Revision;priorAt=d.At;Need(d==Decide(w,d.Site,d.At,d.Revision),"NPC判断が本人の現地入力と一致しません");Need(!FactionStances.OtherIdUsed(w,d.Id,includeAdministration:false)&&!FactionStances.OwnIdUsed(w,d.Id),"NPC判断IDが別操作と重複しています");
             var order=w.Communities!.Orders.SingleOrDefault(o=>o.Input.Id==Effect(d.Id));Need(d.Action==null?order==null:order!=null&&Authorized(w,order),"判断と現物台帳が一致しません");}
-        Need(w.Communities!.Orders.Where(o=>o.Actor!=w.PlayerControl).All(o=>Authorized(w,o)),"NPCの現物操作に判断原本がありません");
+        Need(w.Communities!.Orders.Where(o=>o.Actor!=ControlSuccession.PlayerAtRevision(w,o.Revision)).All(o=>Authorized(w,o)),"NPCの現物操作に判断原本がありません");
     }
     internal static string LocalOutcome(ContractWorld w,EntityId site)
     {

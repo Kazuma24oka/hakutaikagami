@@ -44,7 +44,7 @@ public partial class NewGameFrontEnd
             support.Select((int)supportLevel);
         };
 
-        page.AddChild(new Label{Text="本人が知っている事情と実行できる範囲で判断します。\n依頼は断れます。報酬や権限が増える設定ではありません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        {}
     }
     internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false,NpcChallenge challenge=NpcChallenge.Standard)
     {

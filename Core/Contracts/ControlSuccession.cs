@@ -21,6 +21,7 @@ public static class ControlSuccession
         var rows=w.ControlHandovers;if(rows==null||rows.Length==0)return w.PlayerControl;
         var player=w.NewGame!.Selected;foreach(var h in rows)if(h.Revision<=revision)player=h.To;return player;
     }
+    public static EntityId PlayerAtRevision(ContractWorld w,long? revision)=>PlayerAtRevision(w,revision??long.MaxValue);
     public static EntityId PlayerAtTime(ContractWorld w,long at)
     {
         var rows=w.ControlHandovers;if(rows==null||rows.Length==0)return w.PlayerControl;
@@ -31,7 +32,7 @@ public static class ControlSuccession
 
     static bool Dead(ContractWorld w,EntityId person)=>w.Characters.SingleOrDefault(c=>c.Id==person)?.Life==LifeState.Dead;
     // 操作する人物が死んで、引き継ぎを待っている。
-    public static bool Awaiting(ContractWorld w)=>Enabled(w)&&Dead(w,w.PlayerControl);
+    public static bool Awaiting(ContractWorld w)=>Enabled(w)&&Dead(w,w.CurrentPlayer());
 
     // 亡くなった（隠居するなら本人の）本人が知っていた、生きている成人の実子・養子。後継に指名した人を先に、生年の順。
     public static EntityId[] Candidates(ContractWorld w)=>Awaiting(w)?Known(w):[];
@@ -75,7 +76,7 @@ public static class ControlSuccession
     {
         var rows=w.ControlHandovers;
         if(rows==null)return;
-        if(!Enabled(w))throw new InvalidDataException("操作の引き継ぎは版のある世界だけで使えます");
+        if(!Enabled(w)&&!HandoverProbe.Running)throw new InvalidDataException("操作の引き継ぎは版のある世界だけで使えます");
         if(prior?.ControlHandovers is {} old&&!rows.Take(old.Length).SequenceEqual(old))throw new InvalidDataException("過去の操作の引き継ぎが変更されています");
         var player=w.NewGame!.Selected;long lastRevision=0,lastAt=0;
         foreach(var h in rows)
@@ -84,6 +85,22 @@ public static class ControlSuccession
                 throw new InvalidDataException("操作の引き継ぎの記録が不正です");
             player=h.To;lastRevision=h.Revision;lastAt=h.At;
         }
-        if(w.PlayerControl!=player)throw new InvalidDataException("操作する人物が引き継ぎの記録と一致しません");
+        if(w.CurrentPlayer()!=player)throw new InvalidDataException("操作する人物が引き継ぎの記録と一致しません");
     }
+}
+
+// 過去の記録を検査する間だけ、その記録の版を覚えておく。この間に読む操作する人物（PlayerControl）は、その版で操作していた人物になる。
+// 引き継ぎの記録がない世界では何も変わらない。
+public static class ControlContext
+{
+    [ThreadStatic] static long? revision;
+    [ThreadStatic] static long? time;
+    public static long? Revision=>revision;
+    public static long? Time=>time;
+    public static Scope At(long rev){var old=(revision,time);revision=rev;time=null;return new(old.revision,old.time);}
+    // 版を持たない記録は、その時刻で操作していた人物にする。
+    public static Scope AtTime(long at){var old=(revision,time);revision=null;time=at;return new(old.revision,old.time);}
+    // 何も変えない（入れ子の外側の版をそのまま残す）。
+    public static Scope Keep()=>new(revision,time);
+    public readonly struct Scope(long? oldRevision,long? oldTime):IDisposable{public void Dispose(){revision=oldRevision;time=oldTime;}}
 }

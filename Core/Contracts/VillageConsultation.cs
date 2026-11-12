@@ -21,12 +21,12 @@ public static class VillageConsultation
     static VillageOrganization Organization(EntityId site)=>new(new("organization:village/"+site.Value.Replace(':','/') ),site,[new(new("person:village/"+site.Value.Replace(':','/')+"/a"),"村役人"),new(new("person:village/"+site.Value.Replace(':','/')+"/b"),"水利世話人")]);
     internal static EntityId Representative(EntityId site,long at)=>Organization(site).Members[Term(at)%2].Id;
     internal static EntityId Effect(EntityId id)=>new("request:village-effect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
-    static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,w.PlayerControl,site,at,rev,stableCompletion:true);
+    static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,ControlSuccession.PlayerAtRevision(w,rev),site,at,rev,stableCompletion:true);
     static bool Authority(ContractWorld w,EntityId site,long at,long rev)
     {
         var castle=w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value);
         if(castle.Faction is not {} f)return false;var owner=new EntityId(f);
-        return FactionStances.ResolveAuthority(w,w.PlayerControl,owner,at,rev)!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
+        return FactionStances.ResolveAuthority(w,ControlSuccession.PlayerAtRevision(w,rev),owner,at,rev)!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     }
     static string Status(ContractWorld w,VillagePromise p,long at,long rev)
     {
@@ -61,7 +61,7 @@ public static class VillageConsultation
     static VillageState Replay(ContractWorld w,VillageEntry[] entries,long until,long revision)
     {
         var proposals=new Dictionary<EntityId,VillageProposal>();var promises=new Dictionary<EntityId,VillagePromise>();var ids=new HashSet<EntityId>();long prev=0,priorAt=0;
-        foreach(var e in entries){var i=e.Input;
+        foreach(var e in entries){using var _cc=ControlContext.At(e.Revision);var i=e.Input;
             Need(EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&e.Revision>prev&&e.Revision<=revision&&e.At>=priorAt&&e.At<=until&&CommunityEconomy.SitesFor(w).Contains(i.Site)&&Enum.IsDefined(i.Action),"村の原本・順序・地域が不正です");prev=e.Revision;priorAt=e.At;
             Need(!FactionStances.OtherIdUsed(w,i.Id,includeVillages:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
             Need(Local(w,i.Site,e.At,e.Revision)&&Authority(w,i.Site,e.At,e.Revision),"現地で家の処分権を持つ本人が相談してください");
@@ -141,7 +141,7 @@ public sealed partial class WorldSession
     public VillageLocalView? VillageView(){lock(gate)return VillageConsultation.View(state);}
     public CommandResult ConsultVillage(VillageInput input,EntityId actor,long revision)
     {
-        lock(gate){if(actor!=state.PlayerControl||!VillageConsultation.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"この保存の村落相談ではありません");
+        lock(gate){if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!VillageConsultation.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"この保存の村落相談ではありません");
             var old=state.Villages!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);
             if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");
             if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");

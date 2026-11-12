@@ -12,8 +12,32 @@ public static class CentralRank
     internal static bool Handles(CourtAction action)=>action is CourtAction.FileRankPetition or CourtAction.IssueCourtRank or CourtAction.RejectCourtRank;
     static bool Decision(CourtEvent e)=>e.Input.Action is CourtAction.IssueCourtRank or CourtAction.RejectCourtRank;
     static string Reply(CourtEvent e)=>HouseholdCourt.Id("rank-reply",e.Input.Id.Value).Value;
-    static string Body(CourtEvent e)=>e.Input.Action==CourtAction.IssueCourtRank?
-        "朝廷の返書：従五位下の叙位を認める。":"朝廷の返書：今回の叙位の奏請は認められなかった。";
+    public static string ReplyId(CourtEvent e)=>Reply(e);
+    // 本人が返書を開封して叙任を知った時刻。出世の目標に使う。
+    public static IEnumerable<long> LearnedBy(ContractWorld w,EntityId person)=>
+        HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.IssueCourtRank&&e.Input.Person==person).Select(e=>MessageFlow.LearnedAt(w.Messaging,Reply(e),person.Value)).Where(t=>t!=null).Select(t=>t!.Value);
+    // 取次への申し入れ（ask）に、朝廷の決裁がすでに出ているか。
+    public static bool Decided(CourtEvent[] rows,CourtEvent ask)=>rows.Any(d=>Decision(d)&&RequestedRoot(rows,d)==ask.Input.Id);
+    static EntityId? RequestedRoot(CourtEvent[] rows,CourtEvent e)
+    {
+        var cur=e;
+        for(int n=0;n<4&&cur!=null;n++){if(cur.Input.Action==CourtAction.AskCourtIntroduction)return cur.Input.Id;cur=rows.SingleOrDefault(r=>r.Input.Id==cur.Input.Reference);}
+        return null;
+    }
+    // 奏請の元（取次への申し入れ）で望んだ位階・官職。決裁・提出の行から参照をたどる。
+    public static string? RequestedTitle(CourtEvent[] rows,CourtEvent e)
+    {
+        var cur=e;
+        for(int n=0;n<4&&cur!=null;n++){if(cur.Input.Action==CourtAction.AskCourtIntroduction)return cur.Input.Title;cur=rows.SingleOrDefault(r=>r.Input.Id==cur.Input.Reference);}
+        return null;
+    }
+    static string Body(ContractWorld w,CourtEvent e)
+    {
+        if(RequestedTitle(HouseholdCourt.Events(w),e) is not {} t)
+            return e.Input.Action==CourtAction.IssueCourtRank?"朝廷の返書：従五位下の叙位を認める。":"朝廷の返書：今回の叙位の奏請は認められなかった。";
+        var name=CentralTitles.Title(t)!.Name;
+        return e.Input.Action==CourtAction.IssueCourtRank?$"朝廷の返書：{name}を認める。":$"朝廷の返書：今回の{name}の奏請は認められなかった。";
+    }
     static CourtEvent Record(CourtEvent source,CourtAction action,long at,long revision)
     {
         var input=new CourtInput(HouseholdCourt.Id(action.ToString(),source.Input.Id.Value),action,
@@ -22,6 +46,9 @@ public static class CentralRank
     }
     static CourtAction Resolve(ContractWorld w,CourtEvent petition)
     {
+        // 望む位階・官職があれば表の決まりで審議する（CentralTitles）。
+        if(RequestedTitle(HouseholdCourt.Events(w),petition) is {} title)
+            return CentralTitles.Eligible(w,petition.Input.Person,petition.Input.Owner,title,petition.At,petition.Revision)?CourtAction.IssueCourtRank:CourtAction.RejectCourtRank;
         // 代表経路の仮資格。申請時点の当主としての身分を審議し、軍権や所領は移転しない。
         return (CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)
             ? RankLeave.Eligible(w,petition.Input.Person,petition.Input.Owner,petition.At,petition.Revision)
@@ -60,15 +87,18 @@ public static class CentralRank
             if(!Decision(row))continue;
             var address=row.Place.Value;
             var letter=new MessageEnvelope(Reply(row),row.Input.Id.Value,ReplyKind,row.Actor.Value,row.Input.Person.Value,
-                Body(row),address,row.At){DeliverySite=address};
+                Body(w,row),address,row.At){DeliverySite=address};
             MessageFlow.Send(w.Messaging,letter,row.At);
             w.SealedMessages=[..w.SealedMessages,new(letter.Id)];
             RegionalCampaign.Bind(w);
         }
     }
-    public static string? KnownRank(ContractWorld w,EntityId person)=>
-        HouseholdCourt.Events(w).Any(e=>e.Input.Action==CourtAction.IssueCourtRank && e.Input.Person==person &&
-            MessageFlow.Knows(w.Messaging,Reply(e),person.Value))?RankName:null;
+    public static string? KnownRank(ContractWorld w,EntityId person)
+    {
+        var rows=HouseholdCourt.Events(w);
+        var known=rows.Where(e=>e.Input.Action==CourtAction.IssueCourtRank && e.Input.Person==person && MessageFlow.Knows(w.Messaging,Reply(e),person.Value)).ToArray();
+        return known.Length==0?null:string.Join("・",known.Select(e=>RequestedTitle(rows,e) is {} t?CentralTitles.Title(t)!.Name:RankName));
+    }
 
     internal static void Validate(ContractWorld w)
     {
@@ -89,7 +119,7 @@ public static class CentralRank
                 throw new InvalidDataException("朝廷の審議日または申請資格が一致しません");
             var id=Reply(e);letters.Add(id);
             var m=w.Messaging.Messages.SingleOrDefault(m=>m.Id==id);
-            if(m==null || m.Body!=Body(e) || m.Kind!=ReplyKind || m.CorrelationId!=e.Input.Id.Value || m.CreatedAt!=e.At ||
+            if(m==null || m.Body!=Body(w,e) || m.Kind!=ReplyKind || m.CorrelationId!=e.Input.Id.Value || m.CreatedAt!=e.At ||
                m.SenderId!=e.Actor.Value || m.RecipientId!=e.Input.Person.Value || m.DeliverySite!=e.Place.Value ||
                !w.SealedMessages.Any(s=>s.Value==id))throw new InvalidDataException("朝廷の返書が原本と一致しません");
         }

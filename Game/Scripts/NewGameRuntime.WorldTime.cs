@@ -22,7 +22,7 @@ public partial class NewGameRuntime
         RequestClockPause(true);
         timeSettings?.QueueFree();timeSettings=new(){Title="自動進行の停止・減速",Exclusive=true};AddChild(timeSettings);
         var box=new VBoxContainer();timeSettings.AddChild(box);
-        box.AddChild(new Label{Text="本人が知った出来事だけが対象です。\n「次の知らせまで」は設定にかかわらず止まります。停止で中断できます。"});
+        {}
         foreach(var rule in Snapshot().TimeControl!.Rules.Where(r=>r.Kind!=TimeNoticeKind.HistoricalEnd)){
             var row=new HBoxContainer();box.AddChild(row);row.AddChild(new Label{Text=TimeKindName(rule.Kind),CustomMinimumSize=new(210,0)});
             var choice=new OptionButton();foreach(var name in new[]{"通知のみ","60倍へ減速","停止"})choice.AddItem(name);choice.Select((int)rule.Response);row.AddChild(choice);
@@ -62,7 +62,7 @@ public partial class NewGameRuntime
         var openedNotices = Branch(Session.PlayerControl).Knowledge.Messages
             .Where(m => m.KnownBody != null).Select(m => m.Id.Value).ToHashSet();
         openedNotices.IntersectWith(Snapshot().Messaging.Messages.Where(m => m.Kind == FactionNotices.Kind).Select(m => m.Id));
-        void Draw(){foreach(var child in entries.GetChildren())child.QueueFree();var selected=house.Selected==0?rows:rows.Where(r=>r.House==houses[house.Selected-1]).ToArray();if(selected.Length==0)entries.AddChild(new Label{Text="まだ振り返る記録はありません。"});foreach(var row in selected){entries.AddChild(new Label{Text=$"{WorldCalendar.Display(Snapshot().EpochDate,row.LearnedAt)} 認識\n{row.Kind}：{Readable(row)}\n発生時点：{(row.OccurredAt is {} at?WorldCalendar.Display(Snapshot().EpochDate,at):"記録からは不明")}\n出典：{(row.Source.StartsWith("書状:")||row.Source.StartsWith("message:")?"本人が認識した書状":"本人の記録・目撃")}",AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(620,0)});
+        void Draw(){foreach(var child in entries.GetChildren())child.QueueFree();var selected=house.Selected==0?rows:rows.Where(r=>r.House==houses[house.Selected-1]).ToArray();if(selected.Length==0){}foreach(var row in selected){entries.AddChild(new Label{Text=$"{WorldCalendar.Display(Snapshot().EpochDate,row.LearnedAt)} 認識\n{row.Kind}：{Readable(row)}\n発生時点：{(row.OccurredAt is {} at?WorldCalendar.Display(Snapshot().EpochDate,at):"記録からは不明")}\n出典：{(row.Source.StartsWith("書状:")||row.Source.StartsWith("message:")?"本人が認識した書状":"本人の記録・目撃")}",AutowrapMode=TextServer.AutowrapMode.WordSmart,CustomMinimumSize=new(620,0)});
             if (openedNotices.Contains(row.Id) && row.Source == "書状:" + row.Id)
             {
                 var read = new Button { Text = "対外方針の書状を読み返す" };

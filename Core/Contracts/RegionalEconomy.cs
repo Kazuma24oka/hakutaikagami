@@ -27,7 +27,7 @@ public static class RegionalEconomy
         if(RegionalCampaign.RoadActorPointAt(w,actor,at)!=node.Position)return false;
         if(w.Branches!.Journeys.Any(j=>j.Actor==actor&&w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<revision))&&j.Legs.Any(l=>l.StartAt<=at&&at<l.EndAt)))return false;
         var last=NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<revision&&(q.At<at||q.At==at)).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter);
-        return actor!=w.PlayerControl||last?.Input.Action!=NewMilitaryAction.Deploy;
+        return actor!=ControlSuccession.PlayerAtRevision(w,revision)||last?.Input.Action!=NewMilitaryAction.Deploy;
     }
     static FactionStanceAuthority Authority(ContractWorld w,EntityId actor,long at,long revision)
     {
@@ -48,7 +48,7 @@ public static class RegionalEconomy
         var events=new List<EconomyEvent>();long next=HarvestAt(w,DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd").Year);long cursor=0,priorRev=0;var ids=new HashSet<EntityId>();
         void Advance(long until){while(Math.Min(next,due??long.MaxValue)<=until){long at=Math.Min(next,due??long.MaxValue);if(due==at){water+=10;events.Add(new("water-complete",at,0,water));due=null;}
             if(next==at){long amount=1000L*water/100;if(due!=null)amount=amount*9/10;village=checked(village+amount);harvested=checked(harvested+amount);assessed=checked(assessed+amount*3/10);events.Add(new("harvest",at,amount,water));next=NextHarvest(w,at);}}}
-        foreach(var q in orders){Need(q!=null&&q.Input!=null&&EntityId.IsValid(q.Input.Id.Value)&&ids.Add(q.Input.Id)&&q.Actor==w.PlayerControl&&q.At>=cursor&&q.At<=w.ElapsedSeconds&&q.Revision>priorRev&&q.Revision<=w.CommitSequence,"地域経済の操作原本が不正です");Need(!FactionStances.OtherIdUsed(w,q.Input.Id,includeEconomy:false)&&!FactionStances.OwnIdUsed(w,q.Input.Id)&&w.Military?.Requests.Any(r=>r.Input.Id==q.Input.Id)!=true&&w.Career?.Requests.Any(r=>r.Input.Id==q.Input.Id)!=true,"別の操作で使われた経済原本IDです");cursor=q.At;priorRev=q.Revision;Advance(q.At);
+        foreach(var q in orders){Need(q!=null&&q.Input!=null&&EntityId.IsValid(q.Input.Id.Value)&&ids.Add(q.Input.Id)&&q.Actor==ControlSuccession.PlayerAtRevision(w,q.Revision)&&q.At>=cursor&&q.At<=w.ElapsedSeconds&&q.Revision>priorRev&&q.Revision<=w.CommitSequence,"地域経済の操作原本が不正です");Need(!FactionStances.OtherIdUsed(w,q.Input.Id,includeEconomy:false)&&!FactionStances.OwnIdUsed(w,q.Input.Id)&&w.Military?.Requests.Any(r=>r.Input.Id==q.Input.Id)!=true&&w.Career?.Requests.Any(r=>r.Input.Id==q.Input.Id)!=true,"別の操作で使われた経済原本IDです");cursor=q.At;priorRev=q.Revision;Advance(q.At);
             Need(q.Authority==Authority(w,q.Actor,q.At,q.Revision)&&LocalAt(w,q.Actor,q.At,q.Revision),"地域経済の権限・現地受渡しが一致しません");var i=q.Input;Need(Enum.IsDefined(i.Action)&&i.Amount>0,"操作と数量が不正です");
             switch(i.Action){
                 case EconomyAction.CollectLevy:Need(i.Amount<=assessed-collected&&i.Amount<=village-ProtectedReserve,"未徴収年貢と村の保護備蓄を超えて徴収できません");village-=i.Amount;house=checked(house+i.Amount);collected=checked(collected+i.Amount);break;

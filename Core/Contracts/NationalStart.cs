@@ -19,6 +19,9 @@ public static class NationalStart
     public static HakutaiDbPerson? DbPerson(string person)=>person.StartsWith("person:hdb/",StringComparison.Ordinal)?dbPeople.Value.GetValueOrDefault(person):null;
     // DBに生年と没年の両方がある人物の生没年（自然死の判定に使う）。
     public static (int Born,int Died)? Life(string person)=>DbPerson(person) is {Birth:int born,Death:int died}&&born<died?(born,died):null;
+    static readonly Lazy<Dictionary<string,string>> dbHouses=new(()=>HakutaiDb.Houses.GroupBy(h=>FactionId(h.Id),StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal));
+    // 世界の家の ID から百代鏡DBの家の ID。
+    public static string? DbHouse(string faction)=>dbHouses.Value.GetValueOrDefault(faction);
     static readonly Lazy<SetupScenario> scenario=new(Build);
     public static SetupScenario Scenario()=>ContractJson.Copy(scenario.Value);
     static SetupScenario Build()
@@ -71,9 +74,9 @@ public static class NationalStart
     public static ContractWorld Create(string selected,ulong seed=20261112,string? timePolicy=null)
     {
         var raw=Scenario();var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:Edition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge);
+        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:Edition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge,strategyPolicy:NationalStrategy.Policy);
     }
     // 新規ゲームの画面から始める（保存の開始定義も同じ版で作る）。
     public static NewCampaignProfile New(NewCampaignStore store,SetupScenario setup,string selected,ulong seed,string? timePolicy,bool previewOnly)
-        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,Edition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy);
+        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,Edition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,strategyPolicy:NationalStrategy.Policy);
 }

@@ -35,7 +35,7 @@ public static class CharacterRelations
         var rows=new List<SocialReaction>();
         foreach(var q in w.Companions?.Orders.Where(q=>q.Input.Action is CompanionAction.Agree or CompanionAction.Pay or CompanionAction.PrivateInspect&&q.Input.Amount>0)??[]){
             if(q.Input.Amount<=0)continue;
-            rows.Add(new("companion-payment:"+q.Input.Id.Value,q.Input.Person,w.PlayerControl,q.At,q.At,q.Revision,3,5,1,0,0,"local-payment"));
+            rows.Add(new("companion-payment:"+q.Input.Id.Value,q.Input.Person,ControlSuccession.PlayerAtRevision(w,q.Revision),q.At,q.At,q.Revision,3,5,1,0,0,"local-payment"));
         }
         foreach(var p in w.WorkCycle?.Payments??[]){var t=w.Tasks.Single(t=>t.Id==p.Task);rows.Add(new("work-payment:"+p.Id.Value,t.Executor,t.Issuer,p.At,p.At,p.Revision,3,5,1,0,0,"local-payment"));}
         foreach(var k in w.Messaging.Knowledge){
@@ -53,11 +53,11 @@ public static class CharacterRelations
         if(!Enabled(w))return;var rows=w.Social!.Reactions.ToList();foreach(var r in Sources(w))if(rows.All(x=>x.Source!=r.Source))rows.Add(r with{Revision=r.Revision==0?w.CommitSequence:r.Revision});w.Social=w.Social with{Reactions=rows.ToArray()};
     }
     public static bool AcceptsCompanion(ContractWorld w,EntityId person,long amount,long at,long revision){
-        if(!Enabled(w))return true;if(person==w.PlayerControl)return false;
-        var relation=DiagnosticScores(w,person,w.PlayerControl,at,revision);
+        if(!Enabled(w))return true;if(person==ControlSuccession.PlayerAtRevision(w,revision))return false;
+        var relation=DiagnosticScores(w,person,ControlSuccession.PlayerAtRevision(w,revision),at,revision);
         int score=45+(DiagnosticTrait(w,person,SocialTrait.Duty)-50)/5+(DiagnosticTrait(w,person,SocialTrait.Affection)-50)/5+(DiagnosticTrait(w,person,SocialTrait.GainSeeking)-50)/5
             -DiagnosticTrait(w,person,SocialTrait.Caution)/10+(DiagnosticTrait(w,person,SocialTrait.Courage)-50)/10+(DiagnosticTrait(w,person,SocialTrait.Ambition)-50)/10
-            +SocialWorld.ConsentBonus(w,person,w.PlayerControl,at,revision)+relation.Trust/2-relation.Hostility/2+DiagnosticLoyalty(w,person,LoyaltyTarget.Person,w.PlayerControl,at,revision)/10+(int)Math.Min(10,amount/2);
+            +SocialWorld.ConsentBonus(w,person,ControlSuccession.PlayerAtRevision(w,revision),at,revision)+relation.Trust/2-relation.Hostility/2+DiagnosticLoyalty(w,person,LoyaltyTarget.Person,ControlSuccession.PlayerAtRevision(w,revision),at,revision)/10+(int)Math.Min(10,amount/2);
         return score>=50;
     }
     public static SocialCard? View(ContractWorld w,EntityId person){

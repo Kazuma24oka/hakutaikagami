@@ -35,17 +35,17 @@ public static partial class CastleAdministration
     {
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"城主操作の対象が不正です");
         var owner=Owner(w,i.Site,at,rev);var principal=HouseSuccession.Head(w,owner,at,rev);
-        Need(Local(w,w.PlayerControl,i.Site,at,rev)&&!PersonalLife.Resting(w,at,rev)&&!Blocked(w,i.Site,at,rev),"現地で実務できる支配状況ではありません");
+        Need(Local(w,ControlSuccession.PlayerAtRevision(w,rev),i.Site,at,rev)&&!PersonalLife.Resting(w,at,rev)&&!Blocked(w,i.Site,at,rev),"現地で実務できる支配状況ではありません");
         if(i.Action==CastellanAction.Reauthorize)return Reauthorize(w,i,at,rev,owner,principal);
         if(i.Action==CastellanAction.Appoint){Need(i.Person is {}&&i.Person!=principal&&i.Appointment==null&&i.Days>=1&&i.Days<=30,"同意する担当者と1〜30日の期間を指定してください");var agent=i.Person!.Value;
-            Need((w.PlayerControl==principal||w.PlayerControl==agent)&&Local(w,principal,i.Site,at,rev)&&Local(w,agent,i.Site,at,rev)&&Bound(w,agent,principal,owner,at,rev)&&FactionStances.ResolveAuthority(w,principal,owner,at,Math.Min(rev,w.CommitSequence))!=null,"現地当主と成人直属家臣の権限が必要です");
-            var other=w.PlayerControl==principal?agent:principal;Need(w.Characters.Single(c=>c.Id==other).WillObey,"相手が任命条件に同意しません");
+            Need((ControlSuccession.PlayerAtRevision(w,rev)==principal||ControlSuccession.PlayerAtRevision(w,rev)==agent)&&Local(w,principal,i.Site,at,rev)&&Local(w,agent,i.Site,at,rev)&&Bound(w,agent,principal,owner,at,rev)&&FactionStances.ResolveAuthority(w,principal,owner,at,Math.Min(rev,w.CommitSequence))!=null,"現地当主と成人直属家臣の権限が必要です");
+            var other=ControlSuccession.PlayerAtRevision(w,rev)==principal?agent:principal;Need(w.Characters.Single(c=>c.Id==other).WillObey,"相手が任命条件に同意しません");
             Need(!w.Stewardship!.Grants.Any(g=>g.Site==i.Site&&CommunityStewardship.Active(w,g,at,rev)),"先の代理行政委任を終了してください");
             return new(i,principal,agent,owner,at,rev,checked(at+i.Days*86400L),null);
         }
         var old=Current(w,i.Site,at,rev);Need(old!=null&&old.Input.Id==i.Appointment&&i.Person==null&&i.Days==30,"有効な任命原本を指定してください");
-        if(i.Action==CastellanAction.Release)Need(w.PlayerControl==principal&&Local(w,old.Agent,i.Site,at,rev),"当主と担当者の現地引継ぎが必要です");
-        else Need(w.PlayerControl==old.Agent&&CommunityStewardship.Authority(w,old.Agent,owner,i.Site,at,rev)!=null,"任命された担当者が現地で保管確認してください");
+        if(i.Action==CastellanAction.Release)Need(ControlSuccession.PlayerAtRevision(w,rev)==principal&&Local(w,old.Agent,i.Site,at,rev),"当主と担当者の現地引継ぎが必要です");
+        else Need(ControlSuccession.PlayerAtRevision(w,rev)==old.Agent&&CommunityStewardship.Authority(w,old.Agent,owner,i.Site,at,rev)!=null,"任命された担当者が現地で保管確認してください");
         return new(i,old.Principal,old.Agent,old.Owner,at,rev,old.Until,i.Action==CastellanAction.ReceiveStore?Store(w,i.Site,at,rev):null);
     }
     internal static void Apply(ContractWorld w,CastellanInput i){var e=Prepare(w,i,w.ElapsedSeconds,w.CommitSequence);w.Castellan=w.Castellan! with{Entries=[..w.Castellan.Entries,e]};}
@@ -59,5 +59,5 @@ public static partial class CastleAdministration
 public sealed partial class WorldSession
 {
     public CastellanView? CastellanView(){lock(gate)return CastleAdministration.View(state);}
-    public CommandResult ManageCastellan(CastellanInput i,EntityId actor,long revision){lock(gate){if(actor!=state.PlayerControl||!CastleAdministration.Enabled(state))return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の城主操作ではありません");var old=state.Castellan!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>CastleAdministration.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"城主・保管の原本を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
+    public CommandResult ManageCastellan(CastellanInput i,EntityId actor,long revision){lock(gate){if(actor!=ControlSuccession.PlayerAtRevision(state,revision)||!CastleAdministration.Enabled(state))return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,"本人の城主操作ではありません");var old=state.Castellan!.Entries.SingleOrDefault(e=>e.Input.Id==i.Id);if(old!=null)return new(old.Input==i?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"受付済みです");if(FactionStances.OtherIdUsed(state,i.Id)||FactionStances.OwnIdUsed(state,i.Id))return new(ResultCode.IdPayloadConflict,i.Id,state.CommitSequence,"別のIDです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,i.Id,state.CommitSequence,"表示を更新してください");try{Change(w=>CastleAdministration.Apply(w,i));return new(ResultCode.Accepted,i.Id,state.CommitSequence,"城主・保管の原本を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,i.Id,state.CommitSequence,e.Message);}}}
 }

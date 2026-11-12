@@ -21,7 +21,7 @@ public static class NpcJudgment
         // 近接は計算頻度だけに使う。人物の判断候補へ主人公の位置を渡さない。
         var history=w.ForkTransportLocation();history.Branches=w.Branches! with{Journeys=w.Branches!.Journeys.Where(j=>w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<=revision))).ToArray()};
         var site=RegionalCampaign.RoadActorPointAt(history,actor,at);
-        var player=RegionalCampaign.RoadActorPointAt(history,w.PlayerControl,at);
+        var player=RegionalCampaign.RoadActorPointAt(history,ControlSuccession.PlayerAtRevision(w,revision),at);
         if(site==player||HouseSuccession.Factions(w,at,revision).Any(f=>f.Head==actor.Value)||w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&p.InitialRole==StartTemplate.LocalLord))return NpcCadence.Daily;
         return w.Memberships.Any(m=>m.Subject==actor&&m.From<=at&&(at<m.Until||at==m.Until&&revision<m.Revision))?NpcCadence.Weekly:NpcCadence.Monthly;
     }
@@ -44,7 +44,7 @@ public static class NpcJudgment
         // 同じ裁量窓では時刻の刻みを同点処理へ混ぜない。
         var input=new NpcChoiceInput(actor,w.Seed,ready,Personality(w,actor),aspiration?.Aspiration??NpcAspiration.Unspecified,mode,settings.Attention,candidates.ToArray());
         if(candidates.Any(c=>c.Id=="inspect" && c.Permitted) && HistoricalEventRules.OwariScouting(w,actor,at,revision) is {} opportunity)
-            input=HistoricalEventRules.Apply(input,[opportunity],actor==w.PlayerControl,mode==HistoryMode.Fictional);
+            input=HistoricalEventRules.Apply(input,[opportunity],actor==ControlSuccession.PlayerAtRevision(w,revision),mode==HistoryMode.Fictional);
         if (settings.Challenge is {} challenge)
         {
             int limit = challenge switch { NpcChallenge.Mild => 2, NpcChallenge.Standard => candidates.Count, NpcChallenge.Strong => candidates.Count, _ => throw new InvalidDataException("未知の手強さです") };

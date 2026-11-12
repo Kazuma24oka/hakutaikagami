@@ -203,7 +203,7 @@ public sealed partial class WorldSession
                 deferTimePause=WorldTimeControl.Enabled(state);
                 try{
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
@@ -255,6 +255,7 @@ public sealed partial class WorldSession
         if(HouseholdCourt.NextBoundary(s,target) is {} courtBoundary)times.Add(courtBoundary);
         if(FamilyBirth.Next(s,target) is {} birth)times.Add(birth);
         if(FamilyMortality.Next(s,target) is {} naturalDeath)times.Add(naturalDeath);
+        if(NationalStrategy.NextBoundary(s,target) is {} month)times.Add(month);
         if(PersonalHealth.Next(s,target) is {} illness)times.Add(illness);
         if(FamilyKin.NextAdulthood(s,target) is {} comingOfAge)times.Add(comingOfAge);
         if(InformationSchemes.NextBoundary(s,target) is {} schemeBoundary)times.Add(schemeBoundary);

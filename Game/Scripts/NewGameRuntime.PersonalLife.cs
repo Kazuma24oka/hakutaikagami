@@ -23,7 +23,7 @@ public partial class NewGameRuntime
         Text($"{PersonName(Session.PlayerControl)} — {v.Role}\n私財 {v.PrivateMoney}文 ／ 給付からの私有米 {v.PrivateRice}kg\n給付の未受領 {v.StipendReceivable}kg ／ 自分が支払う未払い {v.StipendPayable}kg");
         Text(v.Burden);Text($"食事で実消費した米 {v.MealRiceConsumed}kg ／ 記録した休養 {v.RestSeconds/60}分");
         if(Session.HealthView(Session.PlayerControl) is {} health){
-            if(health.Conditions.Length==0)Text("体調：大きな傷病はありません。");
+            if(health.Conditions.Length==0){}
             foreach(var c in health.Conditions){
                 Text($"体調：{c.Kind}（{c.Part}・{c.Severity}）{(c.Treated?"手当済み":"手当なし")} ／ {c.Outlook}");
                 if(c.Treated||v.Site==null)continue;
@@ -32,19 +32,20 @@ public partial class NewGameRuntime
                     Button($"{friend.Name}に手当を頼む",()=>Done(Session.ManageHealth(new(Id("care/"+friend.Person.Value.Replace(':','-')+"/"+c.Id.Value.Replace(':','-')),Session.PlayerControl,c.Id,friend.Person),Session.PlayerControl,shown)));
             }
             foreach(var limit in health.Limits)Text("できないこと："+limit);
-            if(health.Limits.Length>0)Text("面会・書状など体を動かさない用件は続けられます。役目・預り物・責任は療養中も本人に残ります。");
+            if(health.Limits.Length>0){}
         }
         if(v.ActiveRest!=null){Text($"休息中：残り {Math.Max(0,v.RestUntil!.Value-Session.Seconds)/60}分。世界時刻は通常の進行操作で進みます。");Button("ここで休息を中止する（宿代・経過時間は戻りません）",()=>Life(LifeAction.CancelRest));}
         else if(v.Site!=null){
-            Text("食事・休息は自分で選べます。金欠でも徒歩移動と仕事探しを続けられます。");
+            {}
             Button("私有米1kgを食事に使う",()=>Life(LifeAction.EatPrivateRice),v.PrivateRice<1);
             if(Session.RegionalTradeView() is {} market){var cargo=market.Deals.LastOrDefault(d=>d.Commodity==null&&d.Amount is >=1 and <=3&&d.Phase is TradePhase.Offered or TradePhase.Accepted or TradePhase.Carrying);if(cargo==null){Button($"現地の食事用米1kgを見積る（現在 {market.BuyPrice}文）",()=>Done(Session.TradeRice(new(Id("meal-quote"),TradeAction.Quote,v.Site.Value,Destination:v.Site,Amount:1),Session.PlayerControl,shown)),market.RiceAvailable<1);}else{var action=cargo.Phase==TradePhase.Offered?TradeAction.Accept:cargo.Phase==TradePhase.Accepted?TradeAction.Collect:TradeAction.Consume;var label=action==TradeAction.Accept?$"見積の{cargo.Amount}kg・{cargo.PurchasePrice*cargo.Amount}文を了承":action==TradeAction.Collect?"現物を受け取り、私財で支払う":$"携行中の米{cargo.Amount}kgを食事に使う";Button(label,()=>Done(Session.TradeRice(new(Id("meal-"+action),action,v.Site.Value,cargo.Id),Session.PlayerControl,shown)));}}
             Button("野外で無料の休息を始める（4時間）",()=>Life(LifeAction.RestOutside),!v.CanRest);Button("宿で休息を始める（10文・2時間）",()=>Life(LifeAction.RestInn),!v.CanRest||v.PrivateMoney<PersonalLife.InnCost);
-            Text("当面の目標（設定後の実受領を数えます。達成後も続けられます）");
+            {}
             foreach(var pair in new[]{(LifeGoal.WorkPay,"仕事報酬を20文受け取る"),(LifeGoal.ReceiveStipend,"扶持米を20kg受け取る"),(LifeGoal.PayStipend,"家臣へ扶持米20kgを渡す")})Button(pair.Item2,()=>Life(LifeAction.SetGoal,pair.Item1,20));
+            Button("位階・官職を一つ得る",()=>Life(LifeAction.SetGoal,LifeGoal.GainTitle,1));
         }
         else Text("道中です。食事・休息や目標の変更は拠点に着いてから選べます。");
-        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
-        Text("休養の記録は治療・能力上昇を意味しません。給付相談・兵糧・家の資金はそれぞれの操作で扱います。");Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(620,580));
+        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
+        {}Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(620,580));
     }
 }

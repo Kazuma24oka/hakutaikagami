@@ -16,7 +16,9 @@ public sealed record CourtInput(EntityId Id,CourtAction Action,EntityId Person,E
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? OtherHouse{get;init;}
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public CoalitionTerms? Coalition{get;init;}
  [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId[]? CoalitionSignatures{get;init;}
- [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? ActivityEvidence{get;init;}}
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public EntityId? ActivityEvidence{get;init;}
+ // 京への奏請で望む位階・官職（CentralTitles の ID）。null は従来の従五位下。
+ [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]public string? Title{get;init;}}
 public sealed record CourtEvent(CourtInput Input,EntityId Actor,EntityId Place,long At,long Revision,bool PersonalAlreadyBound);
 public sealed record CourtState(int Schema,string Policy,CourtEvent[] Events);
 public sealed record CourtDocument(EntityId Id,CourtEvent Source,EntityId Sender,EntityId Recipient,string Name);

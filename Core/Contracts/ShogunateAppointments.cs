@@ -57,7 +57,7 @@ public static class ShogunateAppointments
            prior.Any(e=>e.Input.Reference==source.Input.Id))throw new InvalidDataException("同一国の未処理の申請原本が必要です");
         if(!Ruling(i.Action)){
             if(actor!=Broker || source.Input.Action!=CourtAction.AskShugo || i.Person!=source.Actor ||
-               !TransportWork.At(w,i.Person,place,at,rev,true) || (actor!=w.PlayerControl &&
+               !TransportWork.At(w,i.Person,place,at,rev,true) || (actor!=ControlSuccession.PlayerAtRevision(w,rev) &&
                (i.Action==CourtAction.RecommendShugo)!=(SocialWorld.ConsentBonus(w,actor,i.Person,at,rev)>=2)))
                 throw new InvalidDataException("取次本人の判断が必要です");
             return;

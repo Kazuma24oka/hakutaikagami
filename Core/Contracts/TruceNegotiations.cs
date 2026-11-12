@@ -27,17 +27,17 @@ public static class TruceNegotiations
     static TrucePaper Prepare(ContractWorld w,TruceInput i,EntityId actor,long at,long rev)
     {
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action)&&i.Owner!=i.Target,"交渉の当事者・入力が不正です");var auth=FactionStances.ResolveAuthority(w,actor,i.Owner,at,rev);Need(auth!=null,"当事者の締結権者ではありません");var target=HouseSuccession.Factions(w,at,rev).SingleOrDefault(f=>f.Id==i.Target.Value);Need(target!=null,"相手の当事者が不明です");TruceTerms terms;
-        if(i.Action==TruceAction.Propose){Need(actor==w.PlayerControl,"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day));}
+        if(i.Action==TruceAction.Propose){Need(actor==ControlSuccession.PlayerAtRevision(w,rev),"NPCからの新規交渉開始はこの版の対象外です");Need(i.Source==null&&i.Days is >=1 and <=90,"不戦期間は1〜90日で提示してください");terms=new(i.Id,1,null,i.Owner,i.Target,at,checked(at+i.Days*Day),checked(at+Math.Min(7,i.Days)*Day));}
         else{
             var source=PapersAt(w,at,rev).SingleOrDefault(p=>p.Input.Id==i.Source);Need(source!=null&&source.Recipient==actor&&source.Input.Owner==i.Target&&source.Input.Target==i.Owner&&Opened(w,source,actor,at,rev),"本人に到達して開封した同一原本が必要です");
             Need(!PapersAt(w,at,rev).Any(p=>p.Input.Id!=i.Id&&p.Input.Source==source.Input.Id&&p.Author==actor),"この版には既に返答しています");
             if(i.Action==TruceAction.Confirm){Need(source.Input.Action==TruceAction.Accept&&Forms(w,at,rev).Any(f=>f.Acceptance==source.Input.Id),"成立を確認した承諾の原本が必要です");Need(i.Days==0,"確認書で条件は変えません");terms=source.Terms;}
             else{Need(source.Input.Action is TruceAction.Propose or TruceAction.Counter,"提案または対案へ返答してください");Need(at<=source.Terms.ReplyBy&&at<source.Terms.Until,"返答期限を過ぎています");
-                if(i.Action==TruceAction.Counter){Need(actor!=w.PlayerControl&&source.Input.Action==TruceAction.Propose&&i.Days==MaximumNpcDays&&source.Terms.Until-source.Terms.From>MaximumNpcDays*Day,"相手の調整方針による対案ではありません");terms=new(source.Terms.Origin,2,source.Input.Id,source.Terms.A,source.Terms.B,at,checked(at+MaximumNpcDays*Day),source.Terms.ReplyBy);}
-                else{Need(i.Days==0&&i.Action is TruceAction.Accept or TruceAction.Decline,"返答で本文を勝手に変更できません");if(actor!=w.PlayerControl)Need(i.Action==TruceAction.Accept&&source.Terms.Until-source.Terms.From<=MaximumNpcDays*Day,"NPCの条件上限と返答が一致しません");terms=source.Terms;}
+                if(i.Action==TruceAction.Counter){Need(actor!=ControlSuccession.PlayerAtRevision(w,rev)&&source.Input.Action==TruceAction.Propose&&i.Days==MaximumNpcDays&&source.Terms.Until-source.Terms.From>MaximumNpcDays*Day,"相手の調整方針による対案ではありません");terms=new(source.Terms.Origin,2,source.Input.Id,source.Terms.A,source.Terms.B,at,checked(at+MaximumNpcDays*Day),source.Terms.ReplyBy);}
+                else{Need(i.Days==0&&i.Action is TruceAction.Accept or TruceAction.Decline,"返答で本文を勝手に変更できません");if(actor!=ControlSuccession.PlayerAtRevision(w,rev))Need(i.Action==TruceAction.Accept&&source.Terms.Until-source.Terms.From<=MaximumNpcDays*Day,"NPCの条件上限と返答が一致しません");terms=source.Terms;}
             }
         }
-        if(i.Action==TruceAction.Confirm){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId("confirm",source),"成立確認のIDが原本と違います");}else if(actor!=w.PlayerControl){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId(i.Action==TruceAction.Counter?"counter":"accept",source),"NPCの返答原本IDが不正です");}
+        if(i.Action==TruceAction.Confirm){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId("confirm",source),"成立確認のIDが原本と違います");}else if(actor!=ControlSuccession.PlayerAtRevision(w,rev)){var source=State(w).Papers.Single(p=>p.Input.Id==i.Source);Need(i.Id==AutoId(i.Action==TruceAction.Counter?"counter":"accept",source),"NPCの返答原本IDが不正です");}
         return new(i,terms,actor,new(target.Head),new(target.Home),at,rev,auth,MessageId(i.Id));
     }
     static MessageEnvelope Envelope(TrucePaper p)=>new(p.Message,p.Input.Id.Value,Kind,p.Author.Value,p.Recipient.Value,System.Text.Encoding.UTF8.GetString(ContractJson.Write(new TruceBody(p.Input.Action,p.Terms))),p.Address.Value,p.At);

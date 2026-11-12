@@ -13,14 +13,16 @@ public static class FamilyMortality
     static (int Born,int Died)? HistoricalLife(string id)=>id switch
     {
         "person:yoshishige"=>(1530,1587),
-        _=>NationalStart.Life(id)
+        _=>null
     };
 
     // 登録武将には史実の没年がない。固定シードと年齢から年ごとの発生と日を決める。
     internal static long? DateInYear(NewGameState data,SetupPerson person,int year)
     {
         var historical=person.Created?null:HistoricalLife(person.Id);
-        if((person.BirthYear??historical?.Born) is not int born || year-born<50)return null;
+        // 百代鏡DBの生没年は死因（病没か戦死か）を区別しないので、没年に強制せず、その前後で死にやすくする重みにだけ使う。
+        var db=historical==null&&!person.Created?NationalStart.Life(person.Id):null;
+        if((person.BirthYear??historical?.Born??db?.Born) is not int born || year-born<50)return null;
         int age=year-born;
         int risk=Math.Clamp((age-49)*(age-49)/6+10,0,1000);
         var key=FormattableString.Invariant($"natural-death-v1/{data.Seed}/{person.Id}/{year}");
@@ -33,6 +35,8 @@ public static class FamilyMortality
         {
             if(historical is {} known && data.Judgment?.History==HistoryMode.SemiHistorical)
                 risk=Math.Min(1000,risk+Math.Max(0,200-40*Math.Abs(known.Died-year)));
+            if(db is {} recorded && data.Judgment?.History!=HistoryMode.Fictional)
+                risk=Math.Min(1000,risk+Math.Max(0,200-40*Math.Abs(recorded.Died-year)));
             if(BinaryPrimitives.ReadUInt32LittleEndian(digest)%1000>=risk)return null;
         }
         int days=DateTime.IsLeapYear(year)?366:365;
@@ -46,7 +50,7 @@ public static class FamilyMortality
         if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data)return null;
         int first=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year,last=WorldCalendar.At(w.EpochDate,target).Year;
         long? earliest=null;var life=w.Characters.ToDictionary(c=>c.Id.Value,c=>c.Life,StringComparer.Ordinal);
-        foreach(var person in FamilyBirth.People(w).Where(p=>(p.BirthYear??HistoricalLife(p.Id)?.Born)<=last-50))
+        foreach(var person in FamilyBirth.People(w).Where(p=>(p.BirthYear??HistoricalLife(p.Id)?.Born??NationalStart.Life(p.Id)?.Born)<=last-50))
         {
             if(life[person.Id]==LifeState.Dead)continue;
             for(int year=first;year<=last;year++)

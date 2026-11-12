@@ -18,7 +18,7 @@ public static class RegentKin
         var pending=rows.Where(e=>e.Input.Action==CourtAction.RequestRegentKin && e.Actor==applicant && e.Input.Owner==i.Owner &&
             !rows.Any(r=>r.Input.Reference==e.Input.Id));
         if(asking ? i.Reference!=null || pending.Any() || !SocialWorld.Ledger(w).Any(e=>e.Actor==applicant && e.Input.Action==SocialWorldAction.Visit && e.Input.Person==patron && e.Revision<rev)
-                  : !pending.Any(e=>e.Input.Id==i.Reference && e.At<at) || actor!=w.PlayerControl && (i.Action==CourtAction.AcceptRegentKin)!=WillAccept(w,applicant,at,rev))
+                  : !pending.Any(e=>e.Input.Id==i.Reference && e.At<at) || actor!=ControlSuccession.PlayerAtRevision(w,rev) && (i.Action==CourtAction.AcceptRegentKin)!=WillAccept(w,applicant,at,rev))
             throw new InvalidDataException("面識と未回答の依頼を確認し、近衛家当主が諾否を決めます");
     }
     public static IEnumerable<CourtInput> Answers(ContractWorld w){

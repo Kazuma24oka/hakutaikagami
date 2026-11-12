@@ -11,8 +11,8 @@ public static partial class CastleAdministration
         var old=Prefix(w,at,rev).LastOrDefault(e=>e.Input.Site==i.Site&& (IsAppointment(e.Input.Action)||e.Input.Action==CastellanAction.Release));
         Need(old!=null&&IsAppointment(old.Input.Action)&&old.Input.Id==i.Appointment&&old.Principal!=head&&at<old.Until&&HouseSuccession.Jobs(w,at,rev-1).Any(j=>j.Applied!=null&&j.Terms.Owner==owner&&j.Terms.Incumbent==old.Principal),"期限内の旧当主の最新任命を一度だけ再確認してください");
         var agent=i.Person!.Value;
-        Need(agent!=head&&(w.PlayerControl==head||w.PlayerControl==agent||w.PlayerControl==old.Principal||w.PlayerControl==old.Agent)&&Local(w,head,i.Site,at,rev)&&Local(w,agent,i.Site,at,rev)&&Bound(w,agent,head,owner,at,rev)&&FactionStances.ResolveAuthority(w,head,owner,at,Math.Min(rev-1,w.CommitSequence))!=null,"現当主と新しい成人直属家臣の現地立会いが必要です");
-        Need((head==w.PlayerControl||w.Characters.Single(c=>c.Id==head).WillObey)&&(agent==w.PlayerControl||w.Characters.Single(c=>c.Id==agent).WillObey),"当主と担当者自身の同意が必要です");
+        Need(agent!=head&&(ControlSuccession.PlayerAtRevision(w,rev)==head||ControlSuccession.PlayerAtRevision(w,rev)==agent||ControlSuccession.PlayerAtRevision(w,rev)==old.Principal||ControlSuccession.PlayerAtRevision(w,rev)==old.Agent)&&Local(w,head,i.Site,at,rev)&&Local(w,agent,i.Site,at,rev)&&Bound(w,agent,head,owner,at,rev)&&FactionStances.ResolveAuthority(w,head,owner,at,Math.Min(rev-1,w.CommitSequence))!=null,"現当主と新しい成人直属家臣の現地立会いが必要です");
+        Need((head==ControlSuccession.PlayerAtRevision(w,rev)||w.Characters.Single(c=>c.Id==head).WillObey)&&(agent==ControlSuccession.PlayerAtRevision(w,rev)||w.Characters.Single(c=>c.Id==agent).WillObey),"当主と担当者自身の同意が必要です");
         Need(!w.Stewardship!.Grants.Any(g=>g.Site==i.Site&&CommunityStewardship.Active(w,g,at,rev)),"有効な代理行政委任と重複できません");
         return new(i,head,agent,owner,at,rev,Math.Min(old.Until,checked(at+i.Days*86400L)),null);
     }

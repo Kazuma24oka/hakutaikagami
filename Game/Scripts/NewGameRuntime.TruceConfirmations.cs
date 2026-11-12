@@ -14,7 +14,7 @@ public partial class NewGameRuntime
         foreach(var owner in w.NewGame!.Start.Factions){var o=RepresentativeKnowledge.Known(w,Session.PlayerControl,new(owner.Id));if(o!=null)Text("記憶している代表："+SuccessionPerson(w,o.Person)+" ／ 観測 "+o.ObservedAt+"秒・認識 "+o.LearnedAt+"秒 ／ "+o.Route);}
         foreach(var c in v.Sent.TakeLast(4)){Text("署名者："+SuccessionPerson(w,c.Sender)+" ／ 宛先："+SuccessionPerson(w,c.Recipient)+" ／ "+c.Status);foreach(var p in c.Retryable)Button("既知の不達原本を同じ宛先へ再送",new(new("request:truce-confirm-retry-ui/"+shown),TruceConfirmationAction.Resend,c.Owner,c.Acceptance,p));}
         foreach(var id in v.Acknowledgeable){var p=w.TruceConfirmations!.Papers.Single(p=>p.Id==id);Button("開封した確認書の受領返報を発送",new(new("request:truce-confirm-receipt-ui/"+shown),TruceConfirmationAction.Acknowledge,p.Terms.A==p.Owner?p.Terms.B:p.Terms.A,p.Acceptance,p.Id));}
-        if(v.Sent.Length>0)Text("相手の現在地や現在の受領状況は表示しません。届いた返報は受信箱で開封してください。");
+        if(v.Sent.Length>0){}
     }
     void ShowTruceConfirmationLetter(EntityId id)
     {

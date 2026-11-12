@@ -5,7 +5,7 @@ internal static class FamilyConsentRules
     internal static string? AuthoredHouse(ContractWorld w,EntityId person)=>FamilyBirth.People(w).Single(p=>p.Id==person.Value).Faction;
     internal static bool SameHouse(ContractWorld w,EntityId person,long at,long rev)=>w.Memberships.Where(m=>m.Subject==person&&m.From<=at&&(at<m.Until||at==m.Until&&rev<m.Revision)).Select(m=>m.Target.Value).SingleOrDefault()==AuthoredHouse(w,person);
     internal static AdoptionHouse[] KnownHouses(ContractWorld w,EntityId parent,EntityId child,long at,long rev)=>new[]{parent,child}.Select(p=>AuthoredHouse(w,p)).Where(o=>o!=null).Distinct().Select(o=>{
-        var known=RepresentativeKnowledge.Known(w,w.PlayerControl,new(o!),at,Math.Min(rev,w.CommitSequence))??throw new InvalidDataException("家の代表者を確認できません");return new AdoptionHouse(new(o!),known.Person,known.ObservedAt,known.Source);
+        var known=RepresentativeKnowledge.Known(w,ControlSuccession.PlayerAtRevision(w,rev),new(o!),at,Math.Min(rev,w.CommitSequence))??throw new InvalidDataException("家の代表者を確認できません");return new AdoptionHouse(new(o!),known.Person,known.ObservedAt,known.Source);
     }).OrderBy(h=>h.Owner.Value,StringComparer.Ordinal).ToArray();
     internal static bool IndividualAccepts(ContractWorld w,EntityId actor,EntityId other,long at,long rev,int requiredScore=80){
         if(!w.Characters.Single(c=>c.Id==actor).WillObey)return false;var score=CharacterRelations.DiagnosticScores(w,actor,other,at,rev);

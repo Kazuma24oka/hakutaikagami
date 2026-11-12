@@ -27,6 +27,6 @@ public partial class NewGameRuntime
             if(d.Phase is TradePhase.Offered or TradePhase.Accepted or TradePhase.Carrying or TradePhase.SaleQuoted)AddChoice("取引・行先を取りやめる（受取済みの米は消えない）",TradeAction.Cancel,d.Id);
         }
         var reload=new Button{Text="現地の条件を読み直す"};box.AddChild(reload);reload.Pressed+=()=>{popup.Hide();ShowRegionalTrade();};
-        box.AddChild(new Label{Text="米は本人と一緒に既存の道を移動します。遠隔売却はできません。\n取引価格・在庫は試作値。家の米・軍用備蓄と自動共有しません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});var close=new Button{Text="地図へ戻る"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(580,490));
+        {}var close=new Button{Text="地図へ戻る"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(580,490));
     }
 }
