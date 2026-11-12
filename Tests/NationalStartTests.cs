@@ -24,6 +24,10 @@ public sealed class NationalStartTests(ITestOutputHelper o)
     {
         var t=Stopwatch.StartNew();var w=NationalStart.Create(Nobunaga());o.WriteLine($"作成 {t.ElapsedMilliseconds}ms 保存 {ContractJson.Write(w).Length/1024}KB 人 {w.Characters.Length}");
         Assert.True(WorldNetwork.Castle(w));Assert.Equal(TerrainCastleRoutes.Ruleset,w.NewGame!.NetworkPolicy);Assert.True(NpcDormancy.Enabled(w));
+        Assert.Equal(NationalDistrictControl.Policy,w.NewGame.DistrictControlPolicy);Assert.Equal(HakutaiDb.Districts.Count,w.DistrictControl!.Districts.Length);
+        Assert.Equal(ContractJson.Write(w.DistrictControl),ContractJson.Write(ContractJson.Read<ContractWorld>(ContractJson.Write(w)).DistrictControl));
+        var disputed=w.DistrictControl.Districts.Single(d=>d.Id=="陸奥国::津軽郡");Assert.Null(disputed.Owner);Assert.Equal(3,disputed.Shares.Length);
+        var forged=ContractJson.Copy(w);forged.DistrictControl=forged.DistrictControl! with{Districts=forged.DistrictControl.Districts.Select(d=>d.Id==disputed.Id?d with{Shares=[]}:d).ToArray()};Assert.Throws<InvalidDataException>(()=>ContractValidation.Validate(forged));
         var s=new WorldSession(w);t.Restart();NewGameWorldTests.At(s,60);o.WriteLine($"最初の1分 {t.ElapsedMilliseconds}ms");
     }
     // 信長が近くの城へ移動して着き、途中の保存から復旧しても同じ未来になる。進める細かさを変えても判断と旅は同じ。
@@ -48,6 +52,7 @@ public sealed class NationalStartTests(ITestOutputHelper o)
         var store=new GenerationSaveStore(saveRoot,w0.Definitions);store.Save(b,"checkpoint",w0.WorldId,new(.375,1));
         var host=new WorldSessionHost(new WorldSession(ContractJson.Copy(w0)));
         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("checkpoint"),host.Current,host.Current.Revision));var restored=host.Current;
+        Assert.Equal(ContractJson.Write(b.DiagnosticSnapshot().DistrictControl),ContractJson.Write(restored.DiagnosticSnapshot().DistrictControl));
         Assert.Equal(ContractJson.Write(b.GetBranchView(me)),ContractJson.Write(restored.GetBranchView(me)));
         NewGameWorldTests.At(b,end);NewGameWorldTests.At(restored,end);
         Assert.Equal(BranchRoutes.Duration(activePath,w:w0),BranchRoutes.GraphEdges(w0).Where(e=>activePath.Contains(e.Id)).Sum(e=>(long)((e.LengthMm+e.FootSpeed-1)/e.FootSpeed)));

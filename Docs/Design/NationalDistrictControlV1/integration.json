@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "status": "PENDING",
+  "pull_request": "https://github.com/Kazuma24oka/hakutaikagami/pull/143",
+  "scope": "v111全国地形経路 + v112郡支配色",
+  "strategy": "gh CLI squash merge",
+  "full_suite": "main統合前に別worktreeで1回。未実施。"
+}

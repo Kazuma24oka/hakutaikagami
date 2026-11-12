@@ -10,7 +10,7 @@ public partial class ContinuousWorldTrial
     void RefreshForceMarkers(ContractWorld w)
     {
         foreach(var marker in forceMarkers.Values)marker.Visible=false;
-        if(!w.Region!.Active||span<=240||span>30000)return;
+        if(w.Region is not {Active:true}||span<=240||span>30000)return;
         foreach(var v in RegionalBattle.View(w,S.PlayerControl).Where(v=>v.Soldiers>0)){
             var unit=w.Region.Units.Single(u=>u.Id==v.Unit);
             if(!forceMarkers.TryGetValue(v.Unit,out var marker)){

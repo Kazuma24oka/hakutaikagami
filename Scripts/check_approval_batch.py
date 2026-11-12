@@ -61,6 +61,11 @@ def check():
         folder="RegionalTradeV1"
         assert "RegionalTrade.Policy" in (R/"Game/Scripts/NewGameFrontEnd.cs").read_text(encoding="utf-8")
         assert 'Session.RegionalTradeView()!=null' in (R/"Game/Scripts/NewGameRuntime.WorkExperience.cs").read_text(encoding="utf-8")
+    elif version==112:
+        from verify_national_district_control import check as verify
+        folder="NationalDistrictControlV1"
+        assert "NationalDistrictControl.Policy" in (R/"Core/Contracts/NewGameWorld.cs").read_text(encoding="utf-8")
+        assert "NationalDistrictControlOverlay.Build" in (R/"Game/Scripts/ContinuousWorldTrial.NationalDistrictControl.cs").read_text(encoding="utf-8")
     elif version==111:
         folder="NationalTerrainRoutesV1"
         terrain=(R/"Core/Contracts/TerrainCastleRoutes.cs").read_text(encoding="utf-8")
