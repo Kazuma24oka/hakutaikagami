@@ -1,0 +1,10 @@
+{
+  "version": 151,
+  "pr": "https://github.com/Kazuma24oka/hakutaikagami/pull/146",
+  "method": "squash",
+  "main": "73de5c13",
+  "branch_tip": "4a0c4c79",
+  "content_identical": true,
+  "full_core_commit": "4455a5d6",
+  "full_core_passed": 4525
+}

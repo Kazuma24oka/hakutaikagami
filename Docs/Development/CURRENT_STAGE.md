@@ -78,6 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-13 | 全国の京の朝廷（全国開始 v2）・史実の出陣34件・将軍の空位と擁立・包囲網（v151、74.13%→74.56%） | Docs/Design/NationalCourtV1/・NationalStrategyV1/ | PR146 → main 73de5c13 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |
 | 2026-11-12 | 全国郡の初期支配・並立・根拠を新規世界へ接続（v112、BD-20 50→55） | Docs/Design/NationalDistrictControlV1/ | PR #143 |
 | 2026-11-12 | 操作の引き継ぎ・全国の家の戦略・位階と官職の表と奏請・出世の目標・画面の説明の文言の削除（v150） | Docs/Design/ControlSuccessionV1/・NationalStrategyV1/ | PR144 → main ee373079 |
