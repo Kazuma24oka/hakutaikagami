@@ -15,7 +15,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
     [Fact]
     public void HousesDecideCampaignsMonthlyAndCapturesChangeControlWithTheSameFuture()
     {
-        var sw=System.Diagnostics.Stopwatch.StartNew();var w=NationalStart.Create(Takeda());o.WriteLine($"作成 {sw.ElapsedMilliseconds}ms");sw.Restart();
+        var sw=System.Diagnostics.Stopwatch.StartNew();var w=NationalStartTests.BeforeRevenue(Takeda());o.WriteLine($"作成 {sw.ElapsedMilliseconds}ms");sw.Restart();
         w.ElapsedSeconds=Month(1560,5)-1;
         var session=new WorldSession(w);session.SetPaused(false);
         session.AdvanceTo(Month(1560,5)+1);
@@ -73,7 +73,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
     [Fact]
     public void ShogunVacancyLeadsTheCapitalHolderToInstallAShogun()
     {
-        var w=NationalStart.Create(Takeda());var shogun=NationalStart.FactionId(NationalStrategy.Shogun);
+        var w=NationalStartTests.BeforeRevenue(Takeda());var shogun=NationalStart.FactionId(NationalStrategy.Shogun);
         var castles=w.NewGame!.Start.Castles.Where(c=>c.Faction==shogun).Select(c=>new EntityId(c.Id)).ToArray();
         Assert.NotEmpty(castles);
         w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;NationalStrategy.Apply(w);
