@@ -7,17 +7,30 @@ public static class NationalDistrictRevenue
     public const int AnnualKokuPerMon=10;
     public static bool Enabled(ContractWorld w)=>w.NewGame?.HistoricalCatalog==NationalStart.RevenueEdition;
     public static long InitialCash(ContractWorld w,EntityId site)=>Enabled(w)?0:RegionalDomains.HasHouse(w,site)?500:0;
-    public static EntityId[] Sites(ContractWorld w)=>w.NewGame!.Start.Factions
-        .Select(f=>w.NewGame.Start.Castles.Where(c=>c.Faction==f.Id).OrderBy(c=>c.Id,StringComparer.Ordinal)
-            .OrderByDescending(c=>c.Id==w.NewGame.Start.People.Single(p=>p.Id==f.Head).Site).FirstOrDefault())
-        .Where(c=>c!=null).Select(c=>new EntityId(c!.Id)).Distinct().OrderBy(s=>s.Value,StringComparer.Ordinal).ToArray();
+    sealed record Collection(EntityId Site,string Faction,long Koku);
+    sealed record Index(Collection[] Collections,Dictionary<EntityId,Collection> BySite);
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,Index> indexes=new();
+    static Index For(ContractWorld w)=>indexes.GetValue(w.NewGame!,data=>
+    {
+        var people=data.Start.People.ToDictionary(p=>p.Id,StringComparer.Ordinal);
+        var castles=data.Start.Castles.Where(c=>c.Faction!=null).GroupBy(c=>c.Faction!).ToDictionary(g=>g.Key,g=>g.OrderBy(c=>c.Id,StringComparer.Ordinal).ToArray(),StringComparer.Ordinal);
+        var koku=w.DistrictControl!.Districts.SelectMany(d=>d.Shares).GroupBy(s=>s.House).ToDictionary(g=>g.Key,g=>g.Sum(s=>s.Kokudaka),StringComparer.Ordinal);
+        var rows=new List<Collection>();
+        foreach(var f in data.Start.Factions)
+        {
+            if(!castles.TryGetValue(f.Id,out var owned))continue;
+            var site=owned.FirstOrDefault(c=>c.Id==people[f.Head].Site)??owned[0];
+            rows.Add(new(new(site.Id),f.Id,NationalStart.DbHouse(f.Id) is {} db?koku.GetValueOrDefault(db):0));
+        }
+        var sorted=rows.OrderBy(r=>r.Site.Value,StringComparer.Ordinal).ToArray();
+        return new(sorted,sorted.ToDictionary(r=>r.Site));
+    });
+    public static EntityId[] Sites(ContractWorld w)=>For(w).Collections.Select(r=>r.Site).ToArray();
     public static long Income(ContractWorld w,EntityId site,long at,long revision)
     {
         if(!Enabled(w)||at<0)return 0;
-        var castle=w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value);
-        if(castle?.Faction is not {} faction||!Sites(w).Contains(site))return 0;
-        var dbHouse=NationalStart.DbHouse(faction);if(dbHouse==null)return 0;
-        long koku=w.DistrictControl!.Districts.SelectMany(d=>d.Shares).Where(s=>s.House==dbHouse).Sum(s=>s.Kokudaka);
+        if(!For(w).BySite.TryGetValue(site,out var collection))return 0;
+        string faction=collection.Faction;long koku=collection.Koku;
         var epoch=DateOnly.Parse(w.EpochDate);var end=epoch.AddDays(checked((int)(at/86400)));
         var due=new DateOnly(epoch.Year,epoch.Month,1).AddMonths(1);long result=0;int period=1;
         for(;due<=end;due=due.AddMonths(1),period++)

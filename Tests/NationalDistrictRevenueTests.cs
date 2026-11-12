@@ -8,15 +8,19 @@ public sealed class NationalDistrictRevenueTests
     {
         var scenario=NationalStart.Scenario();
         var head=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長"));
+        File.WriteAllText(Path.Combine(Path.GetTempPath(),"hakutai-v116-stages.txt"),"start create\n");
         var world=NewGameWorld.Create(scenario,[],head,116,NewGameWorld.CompactPersonalAuthority,
             historicalCatalog:NationalStart.RevenueEdition,networkPolicy:WorldNetwork.CastlePolicy,
             districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy,
             nationalPersonDataPolicy:NationalPersonEstimates.Policy,economyPolicy:RegionalDomains.Policy,
             workPolicy:WorkFollowup.Policy,inspectionPolicy:LocalInspectionFindings.Policy,demandPolicy:LocalWorkDemand.Policy);
+        File.AppendAllText(Path.Combine(Path.GetTempPath(),"hakutai-v116-stages.txt"),"created\n");
         var s=new WorldSession(world);var site=s.DiagnosticSnapshot().Locations.Single(l=>l.Actor==s.PlayerControl).Site!.Value;
         Assert.Equal(0,s.HouseTreasuryView()!.HouseCash);
         var privateBefore=NewGameWork.Balance(s.DiagnosticSnapshot(),s.PlayerControl);
+        File.AppendAllText(Path.Combine(Path.GetTempPath(),"hakutai-v116-stages.txt"),"start advance\n");
         s.SetPaused(false);s.AdvanceTo(31*86400,100000);
+        File.AppendAllText(Path.Combine(Path.GetTempPath(),"hakutai-v116-stages.txt"),"advanced\n");
         Assert.Equal(31*86400,s.Seconds);
         var prior=s.DiagnosticSnapshot();var view=s.HouseTreasuryView()!;
         Assert.True(view.HouseCash>0);
