@@ -23,7 +23,7 @@
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "f8263bef2b9dbea01b44e5884e0cfd836382f417e623d3b76b7f5b0241a0153a",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "6066a000636140f3dc3b7188831dd111e7efe9414f9591d0552940cbce024792",
+    "Scripts/check_approval_batch.py": "3cdce6195a11b166078cdc46b1c05527add2986a48cdbd07545c48abfe5c661e",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -782,7 +782,8 @@
     "Docs/Development/ProgressV1/approval-baseline-v90.json": "d4d5b8406687cf32473885ce513dcdb0ed902f2082080c4c21b183d0f01a8a60",
     "Docs/Design/IndependenceGarrisonV1/logic-verification.json": "6f9693d4965c37e4cc8d4526d001bd102fd5e9c9c593a5d583ee25039805da25",
     "Docs/Design/IndependenceGarrisonV1/completion.json": "faecf607fe52502759aad46c2b1b5ab3692132dbbbd2b3a5589bd1c6eaee08cc",
-    "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11"
+    "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11",
+    "Docs/Development/ProgressV1/approval-baseline-v112.json": "f6816352b64141534023ae77241276882d17cebb01d74ffe8f733d390f399ff0"
   },
   "items": [
     {
