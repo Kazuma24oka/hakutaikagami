@@ -78,7 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | 統合後に記入 |
+| 2026-11-12 | 遠方の人物の休眠（BD-04 22→25） | Docs/Design/NpcDormancyV1/ | PR141 → main 66503de0 |
 | 2026-11-12 | 進行の重さの見直し 第1段（BD-04 20→22） | Docs/Design/AdvanceCostV1/ | PR140 → main fb8aea41 |
 | 2026-11-12 | 城の移動網の世界の権利の記録と重さの測定（BD-04 18→20） | Docs/Design/CastleNetworkAuthorityV1/ | PR139 → main 0e65edd9 |
 | 2026-11-12 | 地形（川・湖・山）の表示と切り替え（BD-20 32→35） | Docs/Design/MapTerrainV1/ | 202b744（PR136） |
