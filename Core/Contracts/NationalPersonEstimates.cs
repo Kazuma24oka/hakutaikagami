@@ -32,7 +32,7 @@ public static class NationalPersonEstimates
     {
         void Need(bool ok,string why){if(!ok)throw new InvalidDataException("全国人物データ："+why);}
         if(!Enabled(w))return;
-        Need(w.NewGame!.HistoricalCatalog==NationalStart.CourtEdition&&w.NewGame.DistrictControlPolicy==NationalDistrictControl.Policy&&w.NewGame.DevelopmentPolicy==CharacterDevelopment.Policy,"全国開始・能力表示の版が違います");
+        Need(w.NewGame!.HistoricalCatalog is NationalStart.CourtEdition or NationalStart.PersonEdition&&w.NewGame.DistrictControlPolicy==NationalDistrictControl.Policy&&w.NewGame.DevelopmentPolicy==CharacterDevelopment.Policy,"全国開始・能力表示の版が違います");
         if(!compareInitialData)return;
         foreach(var person in w.NewGame.Start.People)
         {

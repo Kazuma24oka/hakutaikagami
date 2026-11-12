@@ -14,13 +14,14 @@
   },
   "related_tests": {
     "status": "PASSED",
-    "passed": 4,
+    "passed": 6,
     "failed": 0,
-    "command": "dotnet test Tests -c Release --filter FullyQualifiedName~NationalPersonEstimateTests"
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\"",
+    "scope": "NationalPersonEstimateTestsの6件を短い検査に含めて実行"
   },
   "short_suite": {
     "status": "PASSED",
-    "passed": 2835,
+    "passed": 2837,
     "failed": 0,
     "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
   },
@@ -41,6 +42,17 @@
   },
   "full_suite": {
     "status": "PASSED",
+    "passed": 4534,
+    "failed": 0,
+    "skipped": 0,
+    "command": "dotnet test Tests -c Release",
+    "commit": "59262c396c471ef23a3946fc5df54131dad2045a",
+    "elapsed": "50m12s",
+    "worktree": "C:/Workspace/Projects/Games/hakutaikagami-core-v115-compat-full-check"
+  },
+  "computer_use": "未使用",
+  "prior_full_suite": {
+    "status": "PASSED",
     "passed": 4532,
     "failed": 0,
     "skipped": 0,
@@ -49,5 +61,11 @@
     "elapsed": "48m22s",
     "worktree": "C:/Workspace/Projects/Games/hakutaikagami-core-v115-full-check"
   },
-  "computer_use": "未使用"
+  "prior_short_suite": {
+    "status": "PASSED",
+    "passed": 2835,
+    "failed": 0,
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\""
+  },
+  "compatibility_fix": "旧全国v1/v2、人物方針付きv2、新規v3を版で分離。旧保存読み込み・開始定義再構築・再出力の一致を関連6件と全件検査で確認。"
 }

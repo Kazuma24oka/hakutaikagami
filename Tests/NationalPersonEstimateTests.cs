@@ -70,19 +70,41 @@ public sealed class NationalPersonEstimateTests
         Assert.Equal(world.NewGame!.Start.People.Select(p=>(p.Id,p.BirthYear,p.Attributes?.Charm)),fromProfile.NewGame!.Start.People.Select(p=>(p.Id,p.BirthYear,p.Attributes?.Charm)));
     }
 
-    [Fact]
-    public void PriorNationalEditionDoesNotReceivePersonDataPolicyOrEstimates()
+    [Theory]
+    [InlineData(NationalStart.Edition)]
+    [InlineData(NationalStart.CourtEdition)]
+    public void PriorNationalEditionDoesNotReceivePersonDataPolicyOrEstimates(string edition)
     {
-        var scenario=NationalStart.Scenario(NationalStart.Edition);
+        var scenario=NationalStart.Scenario(edition);
         var selected=scenario.Factions.Select(f=>f.Head).First();
         var world=NewGameWorld.Create(scenario,[],selected,20261113,NewGameWorld.CompactPersonalAuthority,
-            historicalCatalog:NationalStart.Edition,networkPolicy:WorldNetwork.CastlePolicy);
+            historicalCatalog:edition,networkPolicy:WorldNetwork.CastlePolicy);
+        var bytes=ContractJson.Write(world);
+        var restored=ContractJson.Read<ContractWorld>(bytes);
+        ContractValidation.Validate(restored);
+        Assert.Equal(bytes,ContractJson.Write(restored));
         Assert.Null(world.NewGame!.NationalPersonDataPolicy);
         Assert.All(world.NewGame.Start.People.Where(p=>NationalStart.DbPerson(p.Id)!=null),p=>
         {
             Assert.Null(p.BirthYear);
             Assert.Null(p.Attributes);
         });
+    }
+
+    [Fact]
+    public void PersonEnabledCourtEditionRetainsItsSavedStartDefinition()
+    {
+        var scenario=NationalStart.Scenario();
+        var selected=scenario.Factions.First().Head;
+        var world=NewGameWorld.Create(scenario,[],selected,20261113,NewGameWorld.CompactPersonalAuthority,
+            historicalCatalog:NationalStart.CourtEdition,networkPolicy:WorldNetwork.CastlePolicy,
+            districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy,
+            nationalPersonDataPolicy:NationalPersonEstimates.Policy);
+        var bytes=ContractJson.Write(world);
+        var restored=ContractJson.Read<ContractWorld>(bytes);
+        ContractValidation.Validate(restored);
+        Assert.Equal(bytes,ContractJson.Write(restored));
+        Assert.Equal(NationalStart.CourtEdition,restored.NewGame!.HistoricalCatalog);
     }
 
     [Fact]
