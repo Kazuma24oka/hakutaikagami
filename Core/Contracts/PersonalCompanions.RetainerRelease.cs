@@ -29,12 +29,12 @@ public static partial class PersonalCompanions
 
     static bool ReleasePending(ContractWorld w,EntityId person,long at,long rev)=>ReleaseEnabled(w)&&ReleaseRequests(w).Where(q=>q.Input.Person==person&&ReleaseBefore(q,at,rev)).Any(q=>!Orders(w).Any(o=>o.Input.Destination==q.Input.Id.Value&&o.Input.Action is CompanionAction.LordReleaseReceived or CompanionAction.LordRefusalReceived&&ReleaseBefore(o,at,rev)));
     static bool ReleaseReportsReady(ContractWorld w,EntityId person,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var lord=OldLord(w,person);return w.Requests.Where(r=>r.Intent.Actor==lord&&r.Intent.Executor==person&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<rev)).All(r=>w.Tasks.Any(t=>t.RequestId==r.Id&&t.FinishedAt<=at&&MessageFlow.LearnedAt(w.Messaging,WorldSession.Child("message",t.Id,"report").Value,lord.Value) is {} known&&known<=at));
     }
     static bool HasReleaseWork(ContractWorld w,EntityId person,long at,long rev)=>Orders(w).Any(q=>q.Input.Person==person&&q.Input.Action==CompanionAction.PrivateInspect&&Before(q,at,rev)&&q.Task!=null&&w.Tasks.Any(t=>t.RequestId==q.Task.RequestId&&t.Execution==ExecutionPhase.Completed&&t.FinishedAt<=at)&&w.Companions!.Reports.Any(r=>r.Order==q.Input.Id&&(r.At<at||r.At==at&&r.Revision<rev)&&MessageFlow.LearnedAt(w.Messaging,r.Message,w.PlayerControl.Value) is {} learned&&learned<=at));
     static bool CanAskRelease(ContractWorld w,EntityId person,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(!ReleaseEnabled(w)||ReleasePending(w,person,at,rev)||ReleasedFromOldLord(w,person,at,rev)||!HasReleaseWork(w,person,at,rev)||!CommissionContact(w,person,at,rev))return false;
         var p=w.NewGame!.Start.People.Single(p=>p.Id==person.Value);return p.Lord!=null&&p.Lord!=w.PlayerControl.Value&&p.Faction!=null&&w.NewGame.Start.Factions.Any(f=>f.Head==p.Lord)&&w.Characters.Single(c=>c.Id==person) is {Life:LifeState.Adult,WillObey:true}&&!w.Offices.Any(o=>o.Subject==person&&o.From<=at&&at<o.Until)&&!NpcArmies.CommanderBusyAt(w,person,at,rev)&&SiteAt(w,person,at,rev)!=null;
     }

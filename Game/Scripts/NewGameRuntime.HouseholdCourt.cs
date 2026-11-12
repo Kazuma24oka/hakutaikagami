@@ -10,7 +10,7 @@ public partial class NewGameRuntime
  internal void ReviewCourtPress(string key){if(!courtReviewButtons.TryGetValue(key,out var b)||b.Disabled)throw new InvalidOperationException("今はこの家中の用件を選べません："+key);b.EmitSignal(Button.SignalName.Pressed);}
  void ShowHouseholdCourt()
  {
-  if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("家中：登用・常設職・評定");courtReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){SocialText(box,"現地へ到着してから相談してください。");return;}
+  if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("家中：登用・常設職・評定");courtReviewButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;var site=SocialWorld.Site(w,actor);if(site==null){{}return;}
   void Button(string key,string text,Action action){var b=new Button{Text=text};box.AddChild(b);courtReviewButtons[key]=b;b.Pressed+=action;}
   void Run(CourtInput input){if(IsSaving||IsClockControlling)return;CancelAdvancePrefetch();var r=Session.ManageCourt(input,rev);GD.Print("COURT_RESULT "+input.Action+" "+r.Code+" "+r.VisibleReason);message.Text=r.VisibleReason;Refresh();ShowHouseholdCourt();}
   EntityId Nonce(string key)=>new("request:court-ui/"+rev+"/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))[..24]);
@@ -18,7 +18,7 @@ public partial class NewGameRuntime
   if(courtCategory==5){
       foreach(var (offer,letter,known) in CourtInvitation.Available(w,actor)){
           if(!known){Button(letter,"朝廷から届いた打診を開く",()=>{Session.Open(actor,new(letter),rev);Refresh();ShowHouseholdCourt();});continue;}
-          if(site!=offer.Input.Site){SocialText(box,"朝廷への返答は本拠で行えます。");continue;}
+          if(site!=offer.Input.Site){{}continue;}
           foreach(var action in SupremeInvestiture.Petitions.Concat(new[]{CourtAction.DeferInvitation,CourtAction.DeclineImperialInvitation})){
               var selection=new CourtInput(Nonce(action+"/"+offer.Input.Id),action,CentralCourtCatalog.CourtBroker,offer.Input.Owner,site.Value,Reference:offer.Input.Id);
               if(action==CourtAction.DeferInvitation && w.Court!.Events.Any(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action==action))continue;
@@ -69,7 +69,7 @@ public partial class NewGameRuntime
           if(actor==CentralCourtCatalog.Konoe){
               foreach(var answer in RegentKin.Answers(w))
                   Button(answer.Id.Value,MeritRewards.DisplayName(w,actor,answer.Person)+(answer.Action==CourtAction.AcceptRegentKin?"を猶子に迎える":"の申し出を断る"),()=>Run(answer));
-          }else if(RegentKin.Qualified(w,actor,w.ElapsedSeconds,rev))SocialText(box,"近衛家の猶子として関白候補の資格があります。");
+          }else if(RegentKin.Qualified(w,actor,w.ElapsedSeconds,rev)){}
           else if(CentralMediation.ApplicantHouse(w,actor) is {} kinHouse)
               Button("request-regent-kin","近衛前久に猶子の縁を願う",()=>Run(new(Nonce("request-regent-kin"),CourtAction.RequestRegentKin,CentralCourtCatalog.Konoe,kinHouse,site.Value)));
       }
@@ -113,7 +113,7 @@ public partial class NewGameRuntime
               }
           }
       if(!CentralCourtCatalog.HasCourt(w.NewGame?.HistoricalCatalog) || site!=CentralCourtCatalog.Kyoto){
-          SocialText(box,"京で取次役に面会すると、朝廷への奏請を相談できます。");return;
+          {}return;
       }
       if(CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)){
           foreach(var (answer,_) in SupremeOffice.SupportAnswers(w,true))
@@ -154,10 +154,12 @@ public partial class NewGameRuntime
       var reply=original==null?null:w.Court!.Events.SingleOrDefault(e=>e.Input.Reference==original.Input.Id &&
           e.Input.Action is CourtAction.AcceptCourtIntroduction or CourtAction.DeclineCourtIntroduction);
       if(original!=null)SocialText(box,reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"山科言継が奏請の取次を引き受けました。",CourtAction.DeclineCourtIntroduction=>"山科言継は今回の取次を辞退しました。",_=>"山科言継の返事を待っています。"});
-      if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction) &&
+      bool decided=original!=null&&CentralRank.Decided(w.Court!.Events,original);
+      if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction || decided) &&
           CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
-          Button("court-introduction",CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog)?"献金60文を添えて山科言継に奏請を頼む":"山科言継に奏請の取次を頼む",()=>Run(new(Nonce("court-introduction"),
-              CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value)));
+          foreach(var title in CentralTitles.Requestable(w,actor,applicantHouse).Take(12))
+              Button("court-introduction/"+title.Id,title.Name,()=>Run(new(Nonce("court-introduction"),
+                  CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBroker,applicantHouse,site.Value){Title=title.Id}));
       return;
   }
   if(courtCategory==4){
@@ -196,7 +198,7 @@ public partial class NewGameRuntime
      }
     }
    }
-   if(control==null || !MilitaryEconomy.Enabled(w)){SocialText(box,"この拠点では募兵できません。");return;}
+   if(control==null || !MilitaryEconomy.Enabled(w)){{}return;}
    SocialText(box,$"現地の自前の兵 {PrivateRecruitment.Soldiers(w,actor,site.Value,w.ElapsedSeconds,rev+1)}人　手持ちの扶持米 {HouseSalary.PrivateRice(w,actor)}kg　所持銭 {NewGameWork.Balance(w,actor)}文");
    var lastPayment=w.Court?.Events.LastOrDefault(e=>e.Input.Action==CourtAction.PrivateCompanyPayment && e.Actor==actor);
    if(lastPayment!=null){
@@ -424,7 +426,7 @@ public partial class NewGameRuntime
    else if(released && site==terms.NewEstate && w.Offices.FirstOrDefault(o=>o.Subject!=actor && o.Target==site &&
        o.From<=w.ElapsedSeconds && w.ElapsedSeconds<o.Until && (o.Kind is "house-castellan" or "castellan")) is {} incumbent){
     if(w.Court.Events.Any(x=>x.Input.Action==CourtAction.PresentTransfer && x.Input.Reference==order.Input.Id && x.Input.FormerOffice==incumbent.Id))
-     SocialText(box,"前任者に命令書を提示済み。城主職の引渡しを待っています。");
+     {}
     else Button("present-"+order.Input.Id,"前任者に命令書を示して引渡しを求める",()=>Run(new CourtInput(Nonce("present/"+order.Input.Id),
         CourtAction.PresentTransfer,incumbent.Subject,terms.Owner,site.Value,Reference:order.Input.Id){FormerOffice=incumbent.Id}));
    }
@@ -439,12 +441,12 @@ public partial class NewGameRuntime
         Id=Nonce("yield/"+shown.Input.Id),Action=CourtAction.YieldCastleOffice,Person=shown.Actor}));
   }
   var owner=HouseSuccession.Factions(w,w.ElapsedSeconds,w.CommitSequence+1).FirstOrDefault(f=>f.Head==actor.Value&&w.LandRights.Any(l=>l.Subject.Value==f.Id&&l.Target==site&&l.Kind=="control"&&l.From<=w.ElapsedSeconds&&w.ElapsedSeconds<l.Until))?.Id??ServiceDisplay().House?.Value;
-  if(owner==null){SocialText(box,"まだ家中に所属していません。届いた条件書を確認するか、現地で仕官を相談できます。");return;}var house=new EntityId(owner);bool head=HouseSuccession.Head(w,house)==actor;
+  if(owner==null){{}return;}var house=new EntityId(owner);bool head=HouseSuccession.Head(w,house)==actor;
   CourtInput Command(string key,CourtAction action,EntityId person,long amount=0,EntityId? reference=null,CourtRole role=CourtRole.Steward,long when=0,CourtCaseKind kind=CourtCaseKind.RelieveVillage)=>new(Nonce(key),action,person,house,site.Value,role,amount,reference,when,kind);
   var roster=HouseholdCourt.Roster(w,actor,house).Where(p=>p!=actor).ToArray();
   if(courtCategory==3){
    var report=HouseCondition.Observe(w,actor,house);
-   if(report==null){SocialText(box,"この家の現地記録を確認できません。");return;}
+   if(report==null){{}return;}
    SocialText(box,NewGameWorld.SiteName(report.Site.Value)+" ／ "+WorldCalendar.Display(w.EpochDate,report.ObservedAt));
    SocialText(box,report.ControlsLocalSite?"主家がこの拠点を支配":"この拠点で主家の支配を確認できず");
    if(!head){
@@ -468,11 +470,11 @@ public partial class NewGameRuntime
     SocialText(box,WorldCalendar.Display(w.EpochDate,breach.At)+" ／ 他国への私信を発送："+PersonName(breach.Actor)+" → "+PersonName(breach.Input.Person));
    foreach(var person in report.LocalLandholders)SocialText(box,"在地の所領："+PersonName(person));
    foreach(var person in report.LocalCastellans)SocialText(box,"現地の城主："+PersonName(person));
-   if(report.KnownSurveys.Length==0)SocialText(box,"本人が確認した指出・検地の帳面はありません。");
+   if(report.KnownSurveys.Length==0){}
    foreach(var entry in report.KnownSurveys)SocialText(box,NewGameWorld.SiteName(entry.Site.Value)+" ／ "+
        (entry.Book.Measured?"検地":"指出")+" ／ "+WorldCalendar.Display(w.EpochDate,entry.Book.At));
    var seat=HouseReforms.TempleMarketSeat(w,site.Value,w.ElapsedSeconds,rev+1);
-   if(seat!=null)SocialText(box,"当市の木材商いに寺社の座があります。楽市でも一部の取引枠を留保します。");
+   if(seat!=null){}
    else if(head && report.ControlsLocalSite && !HouseReforms.OpenMarketAt(w,site.Value,w.ElapsedSeconds,rev+1))
     Button("grant-market-seat","面会した寺社代表へ木材商いの座を安堵する",()=>Run(Command("grant-seat",CourtAction.GrantTempleSeat,SocialWorld.Temple(w,site.Value).Representative)));
    if(seat!=null && head && report.ControlsLocalSite && HouseReforms.OpenMarketAt(w,site.Value,w.ElapsedSeconds,rev+1)){
@@ -496,7 +498,7 @@ public partial class NewGameRuntime
     SocialText(box,$"徴収米の給付　{PersonName(grant.Input.Person)}　{grant.Input.Amount}%　受領 {received}kg ／ 未受領 {earned-received}kg");
     if(actor!=grant.Input.Person || earned<=received)continue;
     long available=HouseholdCourt.AvailableLevyRice(w,grant,actor,w.ElapsedSeconds,rev+1);
-    if(available==0)SocialText(box,"受渡し待ち。当主と現地で会い、蔵に引き渡せる米があると受領できます。");
+    if(available==0){}
     else{
      var take=new SpinBox{MinValue=1,MaxValue=available,Step=1,Value=available,Suffix="kg"};box.AddChild(take);
      Button("levy-receive-"+grant.Input.Id,"現地で米を受け取る",()=>Run(Command("receive/"+grant.Input.Id,CourtAction.ReceiveLevyShare,grant.Actor,(long)take.Value,grant.Input.Id)));
@@ -537,7 +539,7 @@ public partial class NewGameRuntime
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.AbolishBarrier&&d.Input.Reference==e.Input.Id))
       SocialText(box,"この道路の関所を撤廃済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.ReduceCastle&&d.Input.Reference==e.Input.Id))
-      SocialText(box,"城割り済み。外堀と城門の防備を縮小しました");
+      {}
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactSuccessionLaw&&d.Input.Reference==e.Input.Id))
       SocialText(box,"後継の既定順位を制定済み");
      else if(w.Court!.Events.Any(d=>d.Input.Action==CourtAction.EnactEqualPenalty && d.Input.Reference==e.Input.Id))SocialText(box,"喧嘩両成敗を制定済み");
@@ -582,13 +584,13 @@ public partial class NewGameRuntime
    foreach(var joined in w.Court?.Events.Where(e=>e.Actor==actor&&e.Input.Action==CourtAction.RecruitAccept)??[])Button("resign-service","登用原本を持参して所属の終了を確認（元の個人奉公は別）",()=>Run(Command("resign-service",CourtAction.ResignService,actor,reference:joined.Input.Reference)));
    foreach(var decline in w.Court?.Events.Where(e=>e.Actor==actor&&e.Input.Action==CourtAction.RecruitDecline&&!w.Court.Events.Any(r=>r.Input.Reference==e.Input.Reference&&r.Input.Action==CourtAction.ReturnSigning))??[])Button("return-signing","辞退した条件書と支度金を現地で返す",()=>Run(Command("return-signing",CourtAction.ReturnSigning,actor,reference:decline.Input.Reference)));
   }else if(courtCategory==1){
-   SocialText(box,"役職は無期限の引受原本です。行政は管轄の現地でだけ行い、代官・城主の処分枠は月ごとに制限されます。兵と指揮は別に預かります。");
+   {}
    if(head&&roster.Length>0){var people=new OptionButton();foreach(var p in roster)people.AddItem(MeritRewards.DisplayName(w,actor,p)+" / "+HouseholdCourt.Seat(w,actor,p));box.AddChild(people);var roles=Enum.GetValues<CourtRole>().Where(r=>HouseholdCourt.SeatLimit(HouseScaleNotices.Known(w,actor,house),r)>0).ToArray();var role=new OptionButton();foreach(var r in roles)role.AddItem(HouseholdCourt.RoleName(r,HouseScaleNotices.Known(w,actor,house)));box.AddChild(role);Button("nominate","この相手に常設職の任命状を渡す",()=>Run(Command("nominate",CourtAction.Nominate,roster[people.Selected],role:roles[role.Selected])));}
    foreach(var offer in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.Nominate&&(e.Actor==actor||e.Input.Person==actor))??[]){var answer=w.Court!.Events.FirstOrDefault(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action is CourtAction.AcceptOffice or CourtAction.DeclineOffice);bool known=answer!=null&&HouseholdCourt.KnowsReply(w,answer,actor);SocialText(box,HouseholdCourt.RoleName(offer.Input.Role,HouseScaleNotices.Known(w,actor,house))+" / "+MeritRewards.DisplayName(w,actor,offer.Input.Person)+"\n"+(known?answer!.Input.Action==CourtAction.AcceptOffice?"引受原本あり。現在の執行は現地で確認します。":"辞退の返答を確認しました。":"返答はまだ未確認です。"));if(known&&answer!.Input.Action==CourtAction.AcceptOffice){if(offer.Actor==actor)Button("revoke","解任の通知を渡す（受領後に効力）",()=>Run(Command("revoke",CourtAction.RevokeOffice,offer.Input.Person,reference:offer.Input.Id)));if(offer.Input.Person==actor)Button("resign-office","当主に現地で常設職の辞任を申し出る",()=>Run(Command("resign-office",CourtAction.ResignOffice,offer.Actor,reference:offer.Input.Id)));}}
    if(head){var territory=HouseTerritoryScale.Measure(w,house,w.ElapsedSeconds,rev+1);SocialText(box,$"宣言済み：{HouseScaleNotices.Name(HouseScaleNotices.Known(w,actor,house))} ／ 実効支配 {territory.Sites}拠点 ／ 所在確認済み {territory.Provinces}国");var scale=new OptionButton();foreach(var label in new[]{"国人衆の規模","大名の規模（支配3拠点以上）","大大名の規模（8拠点・2国以上）","覇者の規模（15拠点・4国以上）"})scale.AddItem(label);box.AddChild(scale);Button("scale","支配の実態を確かめ、この規模を宣言する",()=>Run(Command("scale",CourtAction.DeclareScale,actor) with{Scale=(CourtScale)scale.Selected}));}
    Button("treasury","現地の家の調達と予算へ",()=>{ReviewSocialClose();ShowHouseTreasury();});
   }else{
-   SocialText(box,"本人に届いた上申だけを評定で裁きます。承認した救済・買付は実在の米や銭を使います。返答は相手が実物を確認してから伝わります。");
+   {}
    if(head||HouseholdCourt.CanConvene(w,actor,house,site.Value)){var invited=roster;if(invited.Length>0)Button("convene","1時間後に現地の評定を招く（招待状を作成）",()=>Run(Command("convene",CourtAction.Convene,actor,when:w.ElapsedSeconds+3600) with{People=invited}));}
    foreach(var doc in HouseholdCourt.DocumentRows(w).Where(d=>d.Sender==actor&&d.Source.Input.Action==CourtAction.Convene&&SocialAssets.Inventory(w,actor).Any(o=>o.Id==d.Id)))Button("deliver-invitation","この評定招待状を本人へ渡す",()=>Run(Command("deliver-invitation/"+doc.Id.Value,CourtAction.DeliverDocument,doc.Recipient,reference:doc.Id)));
    foreach(var meeting in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.Convene&&e.Input.Owner==house&&(e.Actor==actor||HouseholdCourt.PendingDocuments(w,actor).Any(d=>d.Source.Input.Id==e.Input.Id)))??[])if(!w.Court!.Events.Any(e=>e.Input.Action==CourtAction.HoldCouncil&&e.Input.Reference==meeting.Input.Id))Button("hold-council","この予定の評定を現地で開く",()=>Run(Command("hold-council",CourtAction.HoldCouncil,actor,reference:meeting.Input.Id)));

@@ -25,7 +25,7 @@ public partial class NewGameRuntime
         Text(card.Note);
         if(CharacterRelations.View(Snapshot(),person) is {} relation){
             Text("この相手との、知っている出来事");
-            if(relation.Known.Length==0)Text("確認できるやり取りの記録はまだありません。");
+            if(relation.Known.Length==0){}
             foreach(var known in relation.Known.Reverse().Take(8))Text(known.Description+" ／ 出来事 "+TreatyDate(known.ObservedAt)+"・認識 "+TreatyDate(known.LearnedAt));
             Text(relation.Note);
         }
@@ -33,11 +33,11 @@ public partial class NewGameRuntime
             var world=Snapshot();var active=world.Tasks.LastOrDefault(t=>t.Executor==person&&t.Action==ActionKind.Train&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));long shown=Session.Revision;
             var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
             void Done(CommandResult r){if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCharacterDevelopment();}
-            if(active!=null){Text("修行の受付・実行中です。時間は地図と同じ時計で進みます。");Button("修行を中断する（未完了分は加算しません）",()=>Done(Session.StopPractice(active.Id,shown)));}
+            if(active!=null){{}Button("修行を中断する（未完了分は加算しません）",()=>Done(Session.StopPractice(active.Id,shown)));}
             else{
                 bool busy=world.Tasks.Any(t=>t.Executor==person&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));
                 bool atSite=world.Locations.Any(l=>l.Actor==person&&l.Kind==LocationKind.AtSite);
-                Text("無料の自主修行 — 30分。世界を止めずに取り組みます。");
+                {}
                 foreach(var skill in Enum.GetValues<DevelopmentSkill>())Button(CharacterDevelopment.Name(skill)+"を修行する（参照："+CharacterDevelopment.Name(CharacterDevelopment.Ability(skill))+"・同技能）",()=>{
                     try{Done(Session.Submit(CharacterDevelopment.Practice(Snapshot(),"request:development-ui/"+shown+"/"+skill,skill),shown));}
                     catch(System.IO.InvalidDataException e){feedback.Text=e.Message;}

@@ -15,7 +15,7 @@ public partial class NewGameRuntime
         engagementPopup=new PopupPanel();AddChild(engagementPopup);
         var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("1d2b34"),BorderColor=new Color("b7a16a"),BorderWidthLeft=1,BorderWidthRight=1,BorderWidthTop=1,BorderWidthBottom=1,ContentMarginLeft=18,ContentMarginRight=18,ContentMarginTop=14,ContentMarginBottom=14});engagementPopup.AddChild(panel);var box=new VBoxContainer{CustomMinimumSize=new(480,180)};panel.AddChild(box);
         box.AddChild(new Label{Text="交戦任務の相談",HorizontalAlignment=HorizontalAlignment.Center});
-        box.AddChild(new Label{Text="対象勢力を選び、主君へ条件を問い合わせます。\n許可の有効期間は相談から10分。\n実際の攻撃には敵対関係と現地での接触も必要です。"});
+        {}
         engagementPicker=new OptionButton();box.AddChild(engagementPicker);engagementPicker.AddItem("対象勢力を選択してください");
         var targets=w.Definitions.Organizations.Where(o=>o.Id!=w.NewMilitary!.Terms.Owner).OrderBy(o=>o.Name,StringComparer.Ordinal).ToArray();engagementTargets=targets.Select(o=>o.Id).ToArray();
         foreach(var t in targets)engagementPicker.AddItem(t.Name);

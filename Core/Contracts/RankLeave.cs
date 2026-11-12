@@ -4,14 +4,14 @@ public static class RankLeave
 {
     internal static bool Handles(CourtAction action) => action is CourtAction.AskRankLeave or CourtAction.GrantRankLeave or CourtAction.RefuseRankLeave;
     internal static bool Eligible(ContractWorld w,EntityId applicant,EntityId house,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var lord=HouseSuccession.Head(w,house,at,revision-1);
         return lord==applicant || (DefectionPacts.HouseAt(w,applicant,at,revision-1)==house &&
             HouseholdCourt.Events(w).Any(e=>e.At<=at && e.Revision<revision && e.Actor==lord &&
                 e.Input.Action==CourtAction.GrantRankLeave && e.Input.Person==applicant && e.Input.Owner==house));
     }
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         bool asking=i.Action==CourtAction.AskRankLeave;
         var lord=asking?i.Person:actor;
         var applicant=asking?actor:i.Person;

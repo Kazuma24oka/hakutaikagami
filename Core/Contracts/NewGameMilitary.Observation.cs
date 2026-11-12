@@ -16,7 +16,7 @@ public static partial class NewGameMilitary
         w.NewMilitary=s with{Observation=observed with{Frames=[..observed.Frames,frame]}};
     }
     static MilitaryObservationState? ObservationBefore(NewMilitaryState s,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!s.Requests.Any(q=>q.Input.ObservationPolicy==ObservationContract&&Before(q.At,q.Revision,at,revision)))return null;
         return s.Observation is {} o?o with{Frames=o.Frames.Where(f=>Before(f.At,f.Revision,at,revision)).ToArray()}:null;
     }

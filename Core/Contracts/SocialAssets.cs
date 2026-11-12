@@ -121,7 +121,7 @@ public static class SocialAssets
  }
  internal static long? NextBoundary(ContractWorld w,long target)=>Events(w).Where(e=>e.Input.Action==SocialAssetAction.PlanTea&&e.Input.When>w.ElapsedSeconds&&e.Input.When<=target).Select(e=>(long?)e.Input.When).Order().FirstOrDefault();
  internal static void PrepareHold(ContractWorld w,ref SocialAssetInput i){if(i.Action==SocialAssetAction.HoldTea){var p=Source(w,i.Reference!.Value,SocialAssetAction.PlanTea);i=i with{People=[p.Actor,..Attendees(w,p)]};}}
- internal static void Rewind(ContractWorld w,long at,long revision){if(w.SocialAssets!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=revision).ToArray();w.SocialAssets=es.Length==0?null:w.SocialAssets with{Events=es};}}
+ internal static void Rewind(ContractWorld w,long at,long revision){using var _ccRev=ControlContext.At(revision);if(w.SocialAssets!=null){var es=Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<=revision).ToArray();w.SocialAssets=es.Length==0?null:w.SocialAssets with{Events=es};}}
  public static void Validate(ContractWorld w,ContractWorld? prior)
  {
   if(w.SocialAssets==null){Need(prior?.SocialAssets==null,"私有物の記録が消えています");return;}Need(NewGameWork.Enabled(w)&&w.SocialAssets.Schema==1&&w.SocialAssets.Policy==Policy,"私有物の版が不正です");var es=Events(w);Need(es.Select(e=>e.Input.Id).Distinct().Count()==es.Length&&es.All(e=>e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence&&e.Cost>=0&&Enum.IsDefined(e.Input.Action)&&w.Characters.Any(c=>c.Id==e.Actor)),"私有物の原本が不正です");
@@ -138,7 +138,7 @@ public static class SocialAssets
 public sealed partial class WorldSession
 {
  public CommandResult ManageSocialAsset(SocialAssetInput input,long revision)
- {
+ {using var _ccRev=ControlContext.At(revision);
   lock(gate){var old=state.SocialAssets?.Events.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input with{People=null}==input with{People=null}?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"同じ用件は受付済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");if(input.People!=null)return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"参集者は実際の所在から確定します");if(NewGameWork.OwnIdUsed(state,input.Id)||state.Requests.Any(r=>r.Id==input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");try{Change(w=>{var actual=input;SocialAssets.PrepareHold(w,ref actual);SocialAssets.Execute(w,actual,w.PlayerControl);});return new(ResultCode.Accepted,input.Id,state.CommitSequence,"現地の品物・文書・茶会を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}
  }
 }

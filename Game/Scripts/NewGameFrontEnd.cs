@@ -55,27 +55,27 @@ public partial class NewGameFrontEnd : Control
     static string DisplaySite(string site){try{return NewGameWorld.SiteName(site);}catch(InvalidDataException){return "未収録の登場場所（管理画面で選び直してください）";}}
     void ShowMenu()
     {
-        Clear("百代鏡","一人の武将として、時代の中を生きる。 / 新しいゲームの入口");ReadRegistry();if(registryReadError!=null)notice.Text=registryReadError;
+        Clear("百代鏡","");ReadRegistry();if(registryReadError!=null)notice.Text=registryReadError;
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(columns);var menu=new VBoxContainer{CustomMinimumSize=new(300,0)};columns.AddChild(menu);
         Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
         Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
         var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=site=>{notice.Text=NewGameWorld.SiteName(site)+" / 新規ゲームで、ここから武将を探せます。";nation.Focus(site);};
         menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"\n\n作成・編集は新規ゲームと独立。\n開始した世界には後から上書きされません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        page.AddChild(new Label{Text="人物・勢力は部分収録。領土・役職は開始配置の試作設定です。通常起動と旧保存は元の入口に保持しています。",AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("c7b687")});
+        {}
     }
     void ShowManagement()
     {
-        Clear("武将作成・管理","元の登録とシナリオ別の複製を、開始とは独立して管理します。");manager=new OfficerLibraryTrial{Enhanced=true,StorageOverride=LibraryRoot,Closed=()=>{ReadRegistry();ShowMenu();},SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(manager);
+        Clear("武将作成・管理","");manager=new OfficerLibraryTrial{Enhanced=true,StorageOverride=LibraryRoot,Closed=()=>{ReadRegistry();ShowMenu();},SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(manager);
     }
-    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","開始する時代とシナリオを選びます。");page.AddChild(new Label{Text="開始年：1560年\nシナリオ：人物・拠点の開始配置試作\n固定Seed：20261022"});page.AddChild(new Label{Text="初回の製品方針は1560年開始です。追加年代は収録後に追加します。\n史料付きの人物名・所属と、検証用の領土・役職設定は区別しています。",AutowrapMode=TextServer.AutowrapMode.WordSmart});AddJudgmentConditions();
+    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","");page.AddChild(new Label{Text="開始年：1560年\nシナリオ：人物・拠点の開始配置試作\n固定Seed：20261022"});{}AddJudgmentConditions();
         // 全国1560年（百代鏡DBの家と武将、城の移動網）。登録武将と配置の調整は使わず、操作する武将を選ぶ画面へ進む。
         national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");page.AddChild(scenarioChoice);
         Add(page,"next","登録武将の選択へ",()=>{if(scenarioChoice.Selected==1)BeginNational();else ChooseRegistered();});Add(page,"back","スタートへ",ShowMenu);}
     void BeginNational(){national=true;chosen=[];claims.Clear();var raw=NationalStart.Scenario();var request=new WorldSetupRequest([],[]);preview=NewGameSetup.Preview(raw,request);confirmed=NewGameSetup.Confirm(raw,request,preview);ChoosePerson();}
     void ChooseRegistered()
     {
-        ReadRegistry();confirmed=null;preview=null;Clear("② 登録武将を選ぶ","個別に複数人を選ぶか、一つのグループを選びます。登場させず実在武将だけでも始められます。");
+        ReadRegistry();confirmed=null;preview=null;Clear("② 登録武将を選ぶ","");
         selectionMode=new();foreach(var text in new[]{"登場させない","グループなしから個別に選ぶ（複数可）","グループを選ぶ"})selectionMode.AddItem(text);page.AddChild(selectionMode);if(registryReadError!=null){notice.Text=registryReadError;selectionMode.SetItemDisabled(1,true);selectionMode.SetItemDisabled(2,true);}
         registeredRows=new(){SelectMode=ItemList.SelectModeEnum.Multi,SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(registeredRows);foreach(var p in registry.Ungrouped)registeredRows.AddItem(p.Name+" / "+DisplaySite(p.Site)+" / "+NewGameWorld.RoleName(p.Role));
         groupChoice=new();foreach(var g in registry.Groups)groupChoice.AddItem(g.Name+"（"+g.Officers.Length+"人）");page.AddChild(groupChoice);groupChoice.Disabled=registry.Groups.Length==0;
@@ -85,12 +85,12 @@ public partial class NewGameFrontEnd : Control
     void UpdateSelectionMode(){registeredRows.Visible=selectionMode.Selected==1;groupChoice.Visible=selectionMode.Selected==2;}
     void Placements()
     {
-        confirmed=null;Clear("③ 配置・勢力を確認","登場場所と新しい領土、旧大名の処遇を確認します。競合がある場合は、ここで修正します。");
+        confirmed=null;Clear("③ 配置・勢力を確認","");
         if(chosen.Length>0){var edits=new HBoxContainer();page.AddChild(edits);placementPerson=new();foreach(var p in chosen)placementPerson.AddItem(p.Name);edits.AddChild(placementPerson);placementSite=new();foreach(var s in NationalRoutes.Sites)placementSite.AddItem(s.Name);edits.AddChild(placementSite);void ShowSite(){placementSite.Select(Array.FindIndex(NationalRoutes.Sites,s=>s.Id.Value==chosen[placementPerson.Selected].Site));}placementPerson.ItemSelected+=_=>ShowSite();ShowSite();Add(edits,"change-site","この開始だけ登場場所を変更",()=>{int index=placementPerson.Selected;var old=chosen[index];string site=NationalRoutes.Sites[placementSite.Selected].Id.Value;chosen[index]=old with{Site=site};if(claims.TryGetValue(old.Id,out var d))claims[old.Id]=d with{Castles=d.Castles.Where(c=>c!=old.Site).Append(site).Distinct().ToArray()};Placements();});}
         var split=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(split);map=new NewGameMap{Setup=NewGameWorld.Scenario(HistoricalStartCatalog.Current),SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};split.AddChild(map);
         var side=new VBoxContainer{CustomMinimumSize=new(380,0),SizeFlagsVertical=SizeFlags.ExpandFill};split.AddChild(side);daimyoChoice=new();foreach(var p in chosen.Where(p=>p.Role==StartTemplate.Daimyo))daimyoChoice.AddItem(p.Name+" / "+p.FactionName);side.AddChild(daimyoChoice);
         territory=new(){SelectMode=ItemList.SelectModeEnum.Multi,SizeFlagsVertical=SizeFlags.ExpandFill};side.AddChild(territory);foreach(var c in NewGameWorld.Scenario(HistoricalStartCatalog.Current).Castles){var owner=NewGameWorld.Scenario(HistoricalStartCatalog.Current).Factions.SingleOrDefault(f=>f.Id==c.Faction);territory.AddItem(NewGameWorld.SiteName(c.Id)+" / "+(owner?.Name??"勢力未設定"));}
-        incorporate=new(){Text="旧大名も家臣として取り込む"};side.AddChild(incorporate);side.AddChild(new Label{Text="旧勢力に領土が残れば移転。\n全領土を失った旧大名と随行家臣は、\n初期値では主従を保ったまま浪人になります。"});
+        incorporate=new(){Text="旧大名も家臣として取り込む"};side.AddChild(incorporate);{}
         previewText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};side.AddChild(previewText);
         territory.MultiSelected+=(i,on)=>{if(!refreshingClaims)CaptureClaims();};incorporate.Toggled+=_=>{if(!refreshingClaims)CaptureClaims();};daimyoChoice.ItemSelected+=_=>LoadClaims();
         map.SitePicked=site=>{if(daimyoChoice.ItemCount==0){notice.Text=NewGameWorld.SiteName(site)+" / 登録大名はいません。";return;}var entries=NewGameWorld.Scenario(HistoricalStartCatalog.Current).Castles;int i=Array.FindIndex(entries,c=>c.Id==site);if(territory.IsSelected(i))territory.Deselect(i);else territory.Select(i,false);CaptureClaims();};
@@ -110,12 +110,12 @@ public partial class NewGameFrontEnd : Control
     void ReviewWorld()
     {
         UpdatePreview();if(buttons["next"].Disabled||preview==null)throw new InvalidDataException("配置を修正してください");var reviewed=preview;
-        Clear("④ 世界を確定","この内容で世界を作った後、操作する武将を選びます。");var summary=reviewed.World!;page.AddChild(new Label{Text="登録武将 "+chosen.Length+"人 / 新勢力 "+claims.Count+"勢力 / 配置の競合 なし"});var nation=new NewGameMap{Setup=summary,SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(nation);
+        Clear("④ 世界を確定","");var summary=reviewed.World!;page.AddChild(new Label{Text="登録武将 "+chosen.Length+"人 / 新勢力 "+claims.Count+"勢力 / 配置の競合 なし"});var nation=new NewGameMap{Setup=summary,SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(nation);
         Add(page,"confirm","この世界で確定",()=>{confirmed=NewGameSetup.Confirm(NewGameWorld.Scenario(HistoricalStartCatalog.Current),Request(),reviewed);ChoosePerson();});Add(page,"back","配置を調整する",Placements);
     }
     void ChoosePerson()
     {
-        if(confirmed==null)throw new InvalidDataException("世界を確定してください");Clear("⑤ 操作する武将を選ぶ","全国マップの地域・拠点から探すか、一覧で検索・並べ替えできます。登録武将も同じ住人として選べます。史実人物は一部収録で、開始位置・主従には試作用の設定を含みます。");filterSite=null;
+        if(confirmed==null)throw new InvalidDataException("世界を確定してください");Clear("⑤ 操作する武将を選ぶ","");filterSite=null;
         var filters=new HBoxContainer();page.AddChild(filters);Add(filters,"nation","全国へ",()=>map!.Nation());Add(filters,"all-people","全武将の一覧",()=>{filterSite=null;RefreshPeople();});search=new(){PlaceholderText="武将名で検索",SizeFlagsHorizontal=SizeFlags.ExpandFill};filters.AddChild(search);search.TextChanged+=_=>RefreshPeople();sortChoice=new();foreach(var s in new[]{"名前順","統率順","武勇順","知略順","政務順","交渉順"})sortChoice.AddItem(s);filters.AddChild(sortChoice);sortChoice.ItemSelected+=_=>RefreshPeople();jumpChoice=new(){CustomMinimumSize=new(150,0)};foreach(var s in NationalRoutes.Sites)jumpChoice.AddItem(s.Name);filters.AddChild(jumpChoice);jumpChoice.ItemSelected+=i=>{string site=NationalRoutes.Sites[(int)i].Id.Value;map!.Focus(site);map.Pick(site);};
         var split=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(split);map=new NewGameMap{Setup=confirmed,SizeFlagsVertical=SizeFlags.ExpandFill,SizeFlagsHorizontal=SizeFlags.ExpandFill};split.AddChild(map);var side=new VBoxContainer{CustomMinimumSize=new(360,0)};split.AddChild(side);siteText=new(){Text="全武将"};side.AddChild(siteText);personRows=new(){SizeFlagsVertical=SizeFlags.ExpandFill};side.AddChild(personRows);personRows.ItemSelected+=i=>SelectPerson(visiblePeople[(int)i]);personText=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart};side.AddChild(personText);
         map.SitePicked=site=>{filterSite=site;siteText.Text=NewGameWorld.SiteName(site)+"にいる武将";map.Focus(site);RefreshPeople();};
@@ -135,7 +135,7 @@ public partial class NewGameFrontEnd : Control
             personText.Text+="\n織田家との対立あり。開始時は未開戦。敵対を表明するかは当主が決めます。";
     }
     NewCampaignProfile CreateSelectedCampaign(string person)=>PrepareSelectedCampaign(confirmed??throw new InvalidDataException("開始世界を確定してください"),person,previewOnly:false);
-    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge);
+    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge,controlPolicy:ControlSuccession.Policy);
     void RequestBegin(){if(confirmed==null||selected==null)throw new InvalidDataException("世界と操作人物を選んでください");string person=selected;Action start=()=>{var p=CreateSelectedCampaign(person);OpenGame(p,false);};if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}
     void OpenGame(NewCampaignProfile profile,bool load)
     {
@@ -143,9 +143,9 @@ public partial class NewGameFrontEnd : Control
     }
     void ShowLoads()
     {
-        Clear("ロード","保存した人物の人生を選んで再開します。以前の試作の保存は、元の入口から開けます。");savedRows=campaigns.List(out int unreadable);savedList=new(){SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(savedList);foreach(var row in savedRows){var p=row.Profile.Setup.People.Single(p=>p.Id==row.Profile.Selected);savedList.AddItem(p.Name+" / 開始地："+NewGameWorld.SiteName(p.Site)+" / 経過"+row.Seconds+"秒");}if(savedRows.Length>0)savedList.Select(0);notice.Text=unreadable>0?"読めない保存は保持しています（"+unreadable+"件）。":savedRows.Length==0?"保存した人生はまだありません。":"";
+        Clear("ロード","");savedRows=campaigns.List(out int unreadable);savedList=new(){SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(savedList);foreach(var row in savedRows){var p=row.Profile.Setup.People.Single(p=>p.Id==row.Profile.Selected);savedList.AddItem(p.Name+" / 開始地："+NewGameWorld.SiteName(p.Site)+" / 経過"+row.Seconds+"秒");}if(savedRows.Length>0)savedList.Select(0);notice.Text=unreadable>0?"読めない保存は保持しています（"+unreadable+"件）。":savedRows.Length==0?"保存した人生はまだありません。":"";
         Add(page,"load","選んだ保存を開く",()=>{var index=savedList.GetSelectedItems();if(index.Length!=1)throw new InvalidDataException("保存を選んでください");var p=savedRows[index[0]].Profile;Action start=()=>OpenGame(campaigns.Read(p.Instance),true);if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}).Disabled=savedRows.Length==0;Add(page,"back","スタートへ",ShowMenu);
     }
-    void Settings(){Clear("設定","画面内の文字の大きさを調整できます。世界の状態や時間は変わりません。");Add(page,"standard","標準の文字",()=>Theme.DefaultFontSize=16);Add(page,"large","大きめの文字",()=>Theme.DefaultFontSize=18);Add(page,"back","スタートへ",ShowMenu);}
-    void Legacy(){Clear("以前の試作と保存","この中の各タブは、別の試作世界と保存先です。新しい開始の人物とは混ざりません。");Add(page,"back","スタートへ",ShowMenu);var hub=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn").Instantiate<Control>();hub.SizeFlagsVertical=SizeFlags.ExpandFill;page.AddChild(hub);}
+    void Settings(){Clear("設定","");Add(page,"standard","標準の文字",()=>Theme.DefaultFontSize=16);Add(page,"large","大きめの文字",()=>Theme.DefaultFontSize=18);Add(page,"back","スタートへ",ShowMenu);}
+    void Legacy(){Clear("以前の試作と保存","");Add(page,"back","スタートへ",ShowMenu);var hub=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn").Instantiate<Control>();hub.SizeFlagsVertical=SizeFlags.ExpandFill;page.AddChild(hub);}
 }

@@ -6,7 +6,7 @@ public static class HistoricalEventRules
 {
     public const string OwariEdition="owari-road-observation-1560-v1";
     public static HistoricalEventPremise? OwariScouting(ContractWorld world,EntityId actor,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(world.NewGame?.Judgment?.EventEdition!=OwariEdition || actor.Value!="person:nobunaga" ||
             world.EpochDate!="1560-01-01" || at<0 || at>=366L*86400)return null;
         var castle=RegionalEconomy.Site;

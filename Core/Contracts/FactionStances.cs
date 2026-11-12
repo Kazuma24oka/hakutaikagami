@@ -38,7 +38,7 @@ public static class FactionStances
     // Political authority is independent of local physical troop handover. A head may decide
     // while travelling. An ordinary retainer's placement grant is not political authority.
     public static FactionStanceAuthority? ResolveAuthority(ContractWorld w,EntityId issuer,EntityId owner,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!NewGameWorld.Enabled(w) || at<0 || at>w.ElapsedSeconds || revision<0 || revision>w.CommitSequence ||
             HostageCustody.HeldAt(w,issuer,at,revision) || Assassination.DeadAt(w,issuer,at,revision))return null;
         var person=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==issuer.Value);
@@ -59,7 +59,7 @@ public static class FactionStances
             Math.Max(d.Input.EffectiveAt, input.EffectiveAt) < Math.Min(End(d, prior), input.Until));
 
     static void CheckInput(ContractWorld w,FactionStanceInput input,EntityId issuer,long at,long revision,FactionStanceDecision[] prior)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         Need(NewGameWorld.Enabled(w)&&EntityId.IsValid(input.Id.Value)&&Enum.IsDefined(input.Action)&&
             EntityId.IsValid(input.Owner.Value)&&EntityId.IsValid(input.Target.Value)&&input.Owner!=input.Target&&
             w.NewGame!.Start.Factions.Any(f=>f.Id==input.Target.Value)&&input.EffectiveAt>=at,
@@ -96,7 +96,7 @@ public static class FactionStances
             .Select(d=>new HostilityInterval(d.Input.Owner,d.Input.Target,d.Input.EffectiveAt,End(d,all))).ToArray();
     }
     public static FactionStanceClaim? ClaimAt(ContractWorld w,EntityId owner,EntityId target,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         Need(at>=0&&at<=w.ElapsedSeconds&&revision>=0&&revision<=w.CommitSequence,"未確定の敵対情報は参照しません");var all=At(w,at,revision);var d=all.SingleOrDefault(d=>d.Input.Action==FactionStanceAction.DeclareHostile&&
             d.Input.Owner==owner&&d.Input.Target==target&&d.Input.EffectiveAt<=at&&at<End(d,all));
         return d==null?null:new(d.Input.Id,owner,target,d.Input.EffectiveAt,End(d,all),at){RefusalReport=d.Input.RefusalReport};
@@ -108,7 +108,7 @@ public static class FactionStances
         return OwnAt(w,observer,w.ElapsedSeconds,w.CommitSequence);
     }
     public static FactionStanceClaim[] OwnAt(ContractWorld w,EntityId observer,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         Need(at>=0&&at<=w.ElapsedSeconds&&revision>=0&&revision<=w.CommitSequence,"未確定の政治情報は参照しません");var own=At(w,at,revision).Where(d=>d.Authority.Issuer==observer).ToArray();
         return own.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile).Select(d=>new FactionStanceClaim(d.Input.Id,d.Input.Owner,d.Input.Target,d.Input.EffectiveAt,End(d,own),at){RefusalReport=d.Input.RefusalReport}).ToArray();
     }

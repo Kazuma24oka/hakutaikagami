@@ -16,7 +16,7 @@ public static class AdultMarriage
     static MarriageEntry[] Entries(ContractWorld w)=>w.Marriage?.Entries??[];
     static MarriageEntry[] Case(MarriageEntry[] rows,EntityId root)=>rows.Where(e=>e.Input.Id==root||e.Input.Original==root).ToArray();
     static bool Closed(MarriageEntry[] rows,MarriageTerms t,long at)=>at>t.Until||Case(rows,t.Id).Any(e=>e.Input.Action is MarriageAction.PersonalNo or MarriageAction.Withdraw or MarriageAction.Implement);
-    static bool FamilyAvailable(ContractWorld w,MarriageEntry[] rows,EntityId first,EntityId second,long at,long rev){
+    static bool FamilyAvailable(ContractWorld w,MarriageEntry[] rows,EntityId first,EntityId second,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(first==second||Related(w,first,second,at,rev))return false;
         var year=WorldCalendar.At(w.EpochDate,at).Year;
         if(new[]{first,second}.Any(id=>w.NewGame!.Registered.SingleOrDefault(p=>p.Id==id.Value) is {} p &&
@@ -33,12 +33,12 @@ public static class AdultMarriage
         return t.Houses.Where(h=>!Case(rows,root).Any(e=>e.Input.Action==MarriageAction.ApproveHouse && e.Input.House==h.Owner) &&
             PermissionMissing(w,t,rows,h.Owner,w.ElapsedSeconds,w.CommitSequence+1)).Select(h=>h.Owner).ToArray();
     }
-    static bool Ready(ContractWorld w,MarriageTerms t,MarriageEntry[] rows,long at,long rev){
+    static bool Ready(ContractWorld w,MarriageTerms t,MarriageEntry[] rows,long at,long rev){using var _ccRev=ControlContext.At(rev);
         if(Closed(rows,t,at)||!Present(w,t.First,t.Site,at,rev)||!Present(w,t.Second,t.Site,at,rev)||!SameHouse(w,t.First,at,rev)||!SameHouse(w,t.Second,at,rev))return false;
         var own=Case(rows,t.Id);if(!own.Any(e=>e.Input.Action==MarriageAction.PersonalYes))return false;
         return t.Houses.All(h=>own.Any(e=>e.Input.Action==MarriageAction.ApproveHouse&&e.Input.House==h.Owner&&e.Actor==h.Representative)&&Present(w,h.Representative,t.Site,at,rev)&&FactionStances.ResolveAuthority(w,h.Representative,h.Owner,at,Math.Min(rev,w.CommitSequence))!=null);
     }
-    static void Check(ContractWorld w,MarriageEntry e,MarriageEntry[] prior){
+    static void Check(ContractWorld w,MarriageEntry e,MarriageEntry[] prior){using var _cc=ControlContext.At(e.Revision);
         var i=e.Input;Need(Enabled(w)&&Enum.IsDefined(i.Action)&&EntityId.IsValid(i.Id.Value)&&e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence,"Invalid marriage record");
         Need(!prior.Any(p=>p.Input.Id==i.Id)&&!FactionStances.OtherIdUsed(w,i.Id,includeMarriage:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
         if(i.Action==MarriageAction.Propose){
@@ -55,7 +55,7 @@ public static class AdultMarriage
                 PermissionMissing(w,terms,current,owner,e.At,e.Revision) && Present(w,e.Actor,terms.Site,e.At,e.Revision),"本人合意後に婚姻を相談した土地で未許可の家に許可を願い出てください");
         }
         else if(i.Action==MarriageAction.ApproveHouse){var h=terms.Houses.SingleOrDefault(h=>h.Owner==i.House&&h.Representative==e.Actor);Need(h!=null&&!PermissionMissing(w,terms,current,h.Owner,e.At,e.Revision)&&current.Any(p=>p.Input.Action==MarriageAction.PersonalYes)&&!current.Any(p=>p.Input.Action==MarriageAction.ApproveHouse&&p.Input.House==h.Owner),"家の承諾者・順序が不正です");Need(Present(w,e.Actor,terms.Site,e.At,e.Revision)&&Present(w,proposal.Actor,terms.Site,e.At,e.Revision)&&FactionStances.ResolveAuthority(w,e.Actor,h.Owner,e.At,e.Revision)!=null,"家の現地承諾または権限がありません");Need(e.Actor==w.PlayerControl||w.Characters.Single(c=>c.Id==e.Actor).WillObey,"家の承諾はありません");}
-        else if(i.Action==MarriageAction.Implement){Need(e.Actor==w.PlayerControl&&i.House==null&&Ready(w,terms,prior,e.At,e.Revision)&&FamilyAvailable(w,prior.Where(x=>x.Input.Id!=terms.Id&&x.Input.Original!=terms.Id).ToArray(),terms.First,terms.Second,e.At,e.Revision),"当人・家の承諾、所在、権限を再確認してください");}
+        else if(i.Action==MarriageAction.Implement){Need(e.Actor==ControlSuccession.PlayerAtRevision(w,e.Revision)&&i.House==null&&Ready(w,terms,prior,e.At,e.Revision)&&FamilyAvailable(w,prior.Where(x=>x.Input.Id!=terms.Id&&x.Input.Original!=terms.Id).ToArray(),terms.First,terms.Second,e.At,e.Revision),"当人・家の承諾、所在、権限を再確認してください");}
         else if(i.Action==MarriageAction.Withdraw)Need(e.Actor==proposal.Actor&&i.House==null,"打診した本人だけが取り下げられます");
         else throw new InvalidDataException("Unknown marriage action");
     }
@@ -86,7 +86,7 @@ public static class AdultMarriage
 }
 public sealed partial class WorldSession
 {
-    public CommandResult DecideMarriage(MarriageInput input,EntityId actor,long revision){lock(gate){
+    public CommandResult DecideMarriage(MarriageInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){
         if(actor!=state.PlayerControl||!AdultMarriage.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の婚姻相談ではありません");
         var old=state.Marriage!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input&&old.Actor==actor?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"記録済みです");
         if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");

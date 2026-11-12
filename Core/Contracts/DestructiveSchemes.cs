@@ -23,7 +23,7 @@ public static class DestructiveSchemes
     }
 
     internal static bool Accepts(ContractWorld world,SchemeInput mission,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var agent=world.NewGame!.Start.People.Single(p=>p.Id==mission.Person.Value);
         var target=mission.Destination!.Value;
         bool ownHouse=agent.Faction!=null && world.NewGame.Start.Castles.Any(c=>c.Id==target.Value && c.Faction==agent.Faction);
@@ -120,7 +120,7 @@ public static class DestructiveSchemes
             throw new InvalidDataException("計略の返報が現地の結果と一致しません");
     }
     internal static void Check(ContractWorld world, SchemeInput input,EntityId actor,EntityId site,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if (!CastleSiege.Enabled(world) || !Operation(input.Topic) || input.Person!=actor || input.Subject!=site ||
             !MaterialMarkets.Sites(world).Contains(site) || !TransportWork.At(world,actor,site,at,revision,true))
             throw new InvalidDataException("実行者が対象の拠点に到着する必要があります");

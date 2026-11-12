@@ -52,7 +52,7 @@ public static partial class NewGameMilitary
         else if(s.UnitDirective?.Dispatches.Any(d=>d.Id==row.Id)==true)w.NewMilitary=s with{UnitDirective=s.UnitDirective with{Replies=[..s.UnitDirective.Replies,row]}};
         else w.NewMilitary=s with{Withdrawal=s.Withdrawal! with{Replies=[..s.Withdrawal.Replies,row]}};
     }
-    static UnitRetryState? UnitRetryBefore(UnitRetryState? s,long at,long rev){if(s==null)return null;var dispatches=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return dispatches.Length==0?null:new(s.Contract,dispatches,s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray());}
+    static UnitRetryState? UnitRetryBefore(UnitRetryState? s,long at,long rev){using var _ccRev=ControlContext.At(rev);if(s==null)return null;var dispatches=s.Dispatches.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray();return dispatches.Length==0?null:new(s.Contract,dispatches,s.Receipts.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray(),s.Replies.Where(d=>Before(d.At,d.Revision,at,rev)).ToArray());}
     static void ValidateUnitRetry(ContractWorld w)
     {
         var s=w.NewMilitary!;var x=s.UnitRetry;

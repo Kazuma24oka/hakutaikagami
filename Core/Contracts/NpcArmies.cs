@@ -22,7 +22,7 @@ public static partial class NpcArmies
     public static ArmyEntry[] Armies(ContractWorld w)=>Musters(w).Select(m=>new ArmyEntry(Binding(m).Army,m.Owner,m.Commander)).ToArray();
     static void CheckMuster(ContractWorld w,NpcArmyMuster m,IEnumerable<NpcArmyMuster> prior)
     {
-        Need(Enabled(w)&&m.Commander!=w.PlayerControl&&m.At>=0&&m.At<=w.ElapsedSeconds&&m.Revision>0&&m.Revision<=w.CommitSequence&&EntityId.IsValid(m.Id.Value),"NPC軍の版・本人・時点が不正です");
+        Need(Enabled(w)&&m.Commander!=ControlSuccession.PlayerAtRevision(w,m.Revision)&&m.At>=0&&m.At<=w.ElapsedSeconds&&m.Revision>0&&m.Revision<=w.CommitSequence&&EntityId.IsValid(m.Id.Value),"NPC軍の版・本人・時点が不正です");
         Need(MilitaryEconomy.CanMuster(w,m.Site,m.At,m.Revision),"現地の支援人手または家の自由米が不足しています");
         Need(!PrivateStanddown.ShouldWait(w,m.Commander,m.At,m.Revision),"本人の新規軍引受は見合わせ期間中です");Need(!prior.Any(p=>p.Id==m.Id||p.Commander==m.Commander||p.Owner==m.Owner&&p.Site==m.Site),"同じ駐屯兵または指揮官を二重に割り当てられません");
         var authority=FactionStances.ResolveAuthority(w,m.Commander,m.Owner,m.At,m.Revision);

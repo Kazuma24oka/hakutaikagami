@@ -7,8 +7,8 @@ public partial class NewGameRuntime
     void ShowCompanions()
     {
         var cards=Session.CompanionView();var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var box=new VBoxContainer{CustomMinimumSize=new(500,300)};panel.AddChild(box);box.AddChild(new Label{Text="同行者・配下との協力"});
-        box.AddChild(new Label{Text="個人の協力契約です。所属・土地・兵の引渡しではありません。\n継続協力は一日20文、初日分を私財から前払い。未払いは終了後も残ります。\n他家の家臣は、精算済みの面識があれば単発点検を相談できます。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
-        if(cards.Length==0){box.AddChild(new Label{Text="現在、現地で協力を相談できる相手はいません。\n浪人や直属家臣との面会時に相談できます。"});}
+        {}
+        if(cards.Length==0){{}}
         else{
             var choice=new OptionButton();foreach(var c in cards)choice.AddItem(c.Name+" — "+c.Status);box.AddChild(choice);var status=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(status);
             var destination=new OptionButton();destination.AddItem("同行してほしい行先を選択");var sites=BranchRoutes.GraphNodes(Snapshot()).OrderBy(n=>n.Id,StringComparer.Ordinal).ToArray();foreach(var n in sites)destination.AddItem(NewGameWorld.SiteName(RegionalCampaign.Site(n.Id).Value));box.AddChild(destination);

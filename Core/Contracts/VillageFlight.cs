@@ -21,14 +21,14 @@ public sealed partial record VillageFlight(string Petition,EntityId From,EntityI
         HouseholdCourt.Id("village-alliance",petition.Message),VillageConsultation.Representative(petition.Site,at),petition.Petition!.TaxDecree!.Value);
 
     static AllianceReply Answer(ContractWorld w,VillageFlight flight,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         bool pressured=LandSurvey.EffectiveDecree(w,flight.To,at)?.Input.Rate==LandTaxRate.Heavy;
         long hunger=CommunityEconomy.AccountAt(w,flight.To,at,revision).Hunger;
         return new(VillageConsultation.Representative(flight.To,at),at,revision,pressured||hunger>0);
     }
 
     static IEnumerable<(long At,int People)> Changes(VillageFlight[]? flights,EntityId site,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         foreach(var f in flights??[]){
             if(f.Revision>rev || site!=f.From && site!=f.To)continue;
             bool home=site==f.From;

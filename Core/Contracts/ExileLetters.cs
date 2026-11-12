@@ -7,7 +7,7 @@ public static class ExileLetters
     static CourtInput Claim(CourtEvent order)=>new(HouseholdCourt.Id("exile-claim",order.Input.Id.Value),CourtAction.SendExileClaim,
         order.Actor,order.Input.Owner,order.Input.Site,Reference:order.Input.Id);
     internal static void Check(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var order=ShogunExile.Orders(w).SingleOrDefault(e=>e.Input.Id==i.Reference && e.Revision<rev);
         if(order==null || order.Input.Person!=actor || Claim(order)!=i || place!=i.Site ||
             Assassination.DeadAt(w,actor,at,rev) || !TransportWork.At(w,actor,place,at,rev,true) ||

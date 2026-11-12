@@ -6,7 +6,7 @@ public static partial class CastleAdministration
     static bool Effective(ContractWorld w,CastellanEntry e,long at,long rev)=>FactionStances.ResolveAuthority(w,e.Principal,e.Owner,at,Math.Min(rev,w.CommitSequence))!=null;
     internal static bool SharedBudget(ContractWorld w,EntityId site,long at,long rev)=>w.Castellan?.Entries.Any(e=>e.Input.Site==site&&e.Input.Action==CastellanAction.Reauthorize&&Before(e,at,rev))==true;
     static CastellanEntry Reauthorize(ContractWorld w,CastellanInput i,long at,long rev,EntityId owner,EntityId head)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(HouseSuccession.Enabled(w)&&i.Appointment!=null&&i.Person!=null&&i.Days is >=1 and <=30,"元の任命・担当者・期限を指定してください");
         var old=Prefix(w,at,rev).LastOrDefault(e=>e.Input.Site==i.Site&& (IsAppointment(e.Input.Action)||e.Input.Action==CastellanAction.Release));
         Need(old!=null&&IsAppointment(old.Input.Action)&&old.Input.Id==i.Appointment&&old.Principal!=head&&at<old.Until&&HouseSuccession.Jobs(w,at,rev-1).Any(j=>j.Applied!=null&&j.Terms.Owner==owner&&j.Terms.Incumbent==old.Principal),"期限内の旧当主の最新任命を一度だけ再確認してください");

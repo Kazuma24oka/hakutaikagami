@@ -20,14 +20,14 @@ public static partial class PrivateRecruitment
         Contracts(w).SingleOrDefault(e=>e.Input.Id==id)??throw new InvalidDataException("募兵原本がありません");
 
     public static IEnumerable<CourtEvent> Renewable(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(Standing(w,at,rev).Where(e=>e.Actor==actor).Any(e=>PaidUntil(w,Company(w,e.Input.Reference),at,rev)>at))
             return [];
         return ActiveCompanies(w,actor,at,rev).Where(e=>e.Place==site && Available(w,e,at,rev)>0);
     }
 
     internal static void CheckStanding(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(i.Person!=actor || i.Site!=place || !TransportWork.At(w,actor,place,at,rev,true) ||
            !Renewable(w,actor,place,at,rev).Any(e=>e.Input.Id==i.Reference && e.Input.Owner==i.Owner))
             throw new InvalidDataException("現地で本人の有期募兵原本を一つ指定してください");
@@ -62,7 +62,7 @@ public static partial class PrivateRecruitment
     }
 
     static CourtEvent Payment(ContractWorld w,CourtEvent company,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         int soldiers=Available(w,company,at,rev);
         long kept=Math.Min(soldiers,Math.Max(0,HouseSalary.PrivateRice(w,company.Actor,at,rev-1))/RationDays);
         if(company.Input.Action==CourtAction.HireMarketSoldiers)

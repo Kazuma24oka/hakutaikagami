@@ -12,7 +12,7 @@ public partial class NewGameRuntime
     {
         foreach(var d in soldierDots.Values)d.Visible=false;
         if(!UsesDotOfficers)return;
-        string? house=w.NewGame!.Start.People.SingleOrDefault(p=>p.Id==w.PlayerControl.Value)?.Faction;
+        string? house=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==w.PlayerControl.Value)?.Faction;
         for(int i=0;i<militaryModels.Count;i++)Mirror(militaryModels[i],DotOfficerLooks.Soldier(house,UnitWeapons[i%UnitWeapons.Length]));
         for(int i=0;i<banditModels.Count;i++)Mirror(banditModels[i],$"generic/ronin/{(i%2==0?"prime":"young")}/{i%3}/war/鉄錆");
         if(templeModel!=null)Mirror(templeModel,DotOfficerLooks.WarriorMonk);

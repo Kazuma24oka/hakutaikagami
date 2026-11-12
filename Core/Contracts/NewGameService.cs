@@ -21,7 +21,7 @@ public static partial class NewGameService
     static string RequestId(EntityId id)=>"message:service/request/"+Hash(id.Value);
     static string NoticeId(EntityId id,CareerEventKind kind,string related)=>"message:service/notice/"+Hash(id.Value+"/"+kind+"/"+related);
     static ServiceState State(ContractWorld w)=>w.Service??new(1,Contract,[],[],[],[]);
-    static SetupPerson Player(ContractWorld w)=>w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);
+    static SetupPerson Player(ContractWorld w)=>FamilyBirth.People(w).Single(p=>p.Id==w.PlayerControl.Value);
     static bool FreeOfOffice(ContractWorld w,long? at=null,long? revision=null){long t=at??w.ElapsedSeconds,r=revision??w.CommitSequence;if(!HouseSuccession.Enabled(w))return !w.Offices.Any(o=>o.Subject==w.PlayerControl)&&!w.LandRights.Any(l=>l.Subject==w.PlayerControl);var offices=w.Offices;if(w.Succession?.Entries.Any(e=>e.Input.Action==HouseSuccessionAction.Resolve&&e.Outcome=="confirmed")==true){var past=w.ForkMilitaryLedger();if(w.Succession is {} succession)past.Succession=succession with{Entries=succession.Entries.Where(e=>e.At<t||e.At==t&&e.Revision<=r).ToArray()};offices=HouseSuccession.Offices(past,NewGameWorld.InitialRelations(w.NewGame!).Offices);}return !offices.Any(o=>o.Subject==w.PlayerControl&&o.From<=t&&t<o.Until)&&!w.LandRights.Any(l=>l.Subject==w.PlayerControl&&l.From<=t&&t<l.Until);}
     static ServiceCase? Initial(ContractWorld w)
     {
@@ -86,12 +86,12 @@ public static partial class NewGameService
     }
     static bool Received(ContractWorld w,string message,ServiceCase c,long at)=>MessageFlow.LearnedAt(w.Messaging,message,c.Principal.Value) is {} t&&t<=at;
     static bool ReportsKnown(ContractWorld w,ServiceCase c,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var join=Joined(w,c);if(join==null||NewGameMilitary.Outstanding(w,at,rev))return false;
         return w.Requests.Where(q=>q.Intent.Actor==c.Principal&&q.Intent.Executor==w.PlayerControl&&q.CommitSequence>=join.Revision&&q.CommitSequence<=rev&&q.CreatedAt<=at).All(q=>{var task=w.Tasks.Single(t=>t.RequestId==q.Id);var msg=WorldSession.Child("message",task.Id,"report").Value;return MessageFlow.LearnedAt(w.Messaging,msg,c.Principal.Value) is {} known&&known<=at;});
     }
     static (CareerStatement State,long? Effective) Status(ContractWorld w,ServiceCase c,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(End(w,c.Id) is {} end&&Before(end,at,rev))return(CareerStatement.Ended,end.At);
         if(Active(w,c,at,rev))return(CareerStatement.Agreed,Joined(w,c)!.At);
         var last=State(w).Events.LastOrDefault(e=>e.Case==c.Id&&Before(e,at,rev)&&e.Kind is CareerEventKind.Declined or CareerEventKind.Expired or CareerEventKind.Refused);
@@ -118,7 +118,7 @@ public static partial class NewGameService
     internal static TimedRelation[] Relations(ContractWorld w,TimedRelation[] original,string kind,bool household=true)
     {
         var rows=PersonalCompanions.CloseOldService(w,original).ToList();var initial=Initial(w);if(initial!=null&&End(w,initial.Id) is {} e)for(int n=0;n<rows.Count;n++)if(rows[n].Subject==w.PlayerControl)rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};
-        foreach(var c in State(w).Cases.Where(c=>!c.Initial))if(Event(w,c.Id,CareerEventKind.Joined) is {} join){var end=End(w,c.Id);rows.Add(new(new(kind+":service/"+Hash(c.Id.Value)),w.PlayerControl,kind=="membership"?c.House:c.Principal,kind,NewGameWorld.Basis,join.At,end?.At??long.MaxValue,end?.Revision??join.Revision));}
+        foreach(var c in State(w).Cases.Where(c=>!c.Initial))if(Event(w,c.Id,CareerEventKind.Joined) is {} join){var end=End(w,c.Id);rows.Add(new(new(kind+":service/"+Hash(c.Id.Value)),ControlSuccession.PlayerAtRevision(w,join.Revision),kind=="membership"?c.House:c.Principal,kind,NewGameWorld.Basis,join.At,end?.At??long.MaxValue,end?.Revision??join.Revision));}
         if(kind=="membership")MinoritySuccession.AddMemberships(w,rows);
         if(kind=="service")rows.AddRange(PersonalCompanions.PersonalServiceRelations(w));rows=HouseholdCourt.Relations(w,rows.ToArray(),kind).ToList();var projected=kind=="service"&&household?HouseholdService.Relations(w,rows.ToArray(),w.ElapsedSeconds,w.CommitSequence):rows.ToArray();return JointIndependence.Relations(w,PactSignals.CloseService(w,projected),kind);
     }

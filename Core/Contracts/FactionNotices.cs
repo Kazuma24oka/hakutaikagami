@@ -13,7 +13,7 @@ public static class FactionNotices
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.FactionNotices?.Requests.Any(q=>q.Input.Id==id)==true;
     static string MessageId(EntityId id)=>"message:faction-stance/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value));
     static FactionNoticeRequest Prepare(ContractWorld w,FactionNoticeInput input,EntityId sender,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(WorldClashes.Enabled(w)&&EntityId.IsValid(input.Id.Value)&&EntityId.IsValid(input.Original.Value),"方針通知の版・原本が不正です");
         var original=w.FactionStances?.Decisions.SingleOrDefault(d=>d.Input.Id==input.Original&&d.Input.Action==FactionStanceAction.DeclareHostile&&d.Authority.Issuer==sender&&(d.At<at||d.At==at&&d.Revision<=rev));
         Need(original!=null,"本人が記録した自家の原判断を指定してください");

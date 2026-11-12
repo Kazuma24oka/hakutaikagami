@@ -22,7 +22,7 @@ public static class HouseTerritoryScale
     };
 
     public static ScaleFootprint Measure(ContractWorld w,EntityId owner,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var sites=w.LandRights.Where(r=>r.Subject==owner && r.Kind=="control" && r.From<=at && at<r.Until)
             .Select(r=>r.Target).Distinct().Where(s=>!CastleAdministration.Blocked(w,s,at,rev)).ToArray();
         return new(sites.Length,sites.Select(Province).OfType<string>().Distinct().Count());

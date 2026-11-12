@@ -80,7 +80,7 @@ public static class HeirPledges
 public sealed partial class WorldSession
 {
     public CommandResult RequestHeirPledge(HeirNomination paper,EntityId signer,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate)
         {
             if(state.PlayerControl!=paper.Head || state.HeirNominations?.LastOrDefault(p=>p.House==paper.House)!=paper ||

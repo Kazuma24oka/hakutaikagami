@@ -17,7 +17,7 @@ public static class NpcLocalOffers
         return known ? 8 : 0;
     }
     internal static NpcChoiceInput Recipients(ContractWorld w,EntityId issuer,long at,long revision,long choiceAt)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var site=PersonalCompanions.PhysicalSiteAt(w,issuer,at,revision+1);
         var candidates=new List<NpcChoiceCandidate>{new(issuer.Value,true,true,-10,new(0,0,0,0,0,0),false,false,false)};
         if(site!=null)
@@ -41,7 +41,7 @@ public static class NpcLocalOffers
         return new(new(id),issuer,recipient,site,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+120,false,null,at+120),at,1,4,1,true,TaskKind.VoluntaryRequest);
     }
     internal static void Validate(ContractWorld w,Intent intent,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);using var _cc=ControlContext.At(revision);
         var input=NewGameNpcRoutine.Inputs(w,intent.Actor,at,revision);
         var recipient=input.Routine?.Judgment?.Recipient;
         // 過去の作成地点を使い、移動後の現在地で原本を書き換えない。

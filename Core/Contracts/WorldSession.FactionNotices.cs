@@ -4,7 +4,7 @@ public sealed partial class WorldSession
 {
     internal void ReactToFactionNotice(FactionNoticeRequest source,FactionStanceInput decision){lock(gate){Change(w=>FactionNoticeReactions.Apply(w,source,decision));}}
     public CommandResult ProclaimFactionStance(FactionProclamationInput input,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){
             var d=input.Decision;var n=input.Notice;
             if(actor!=state.PlayerControl||!WorldClashes.Enabled(state)||!EntityId.IsValid(d.Id.Value)||!EntityId.IsValid(n.Id.Value)||d.Id==n.Id||n.Original!=(d.Action==FactionStanceAction.DeclareHostile?d.Id:d.Original))return new(ResultCode.NotAvailable,d.Id,state.CommitSequence,"本人の方針と通知の原本が一致しません");
@@ -18,7 +18,7 @@ public sealed partial class WorldSession
         }
     }
     public CommandResult NotifyFactionStance(FactionNoticeInput input,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){
             if(actor!=state.PlayerControl||!EntityId.IsValid(input.Id.Value))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の方針通知ではありません");
             var old=state.FactionNotices?.Requests.SingleOrDefault(q=>q.Input.Id==input.Id);if(old!=null&&old.Sender!=actor)return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の通知ではありません");if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"受付済みの通知です");

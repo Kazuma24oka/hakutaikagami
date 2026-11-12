@@ -21,7 +21,7 @@ public partial class NewGameRuntime
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});
         void Button(string text,Action action,bool disabled=false){var b=new Button{Text=text,Disabled=disabled};box.AddChild(b);b.Pressed+=action;}
         void Run(TreatyOperationInput i){Submit(Session.OperateTreaty(i,Session.PlayerControl,shown));popup.Hide();Refresh();}
-        Text("正式条約・独立条項");Text("同じ版の承諾が届いて成立します。相手は本人が知る代表者・本拠へ発送し、未通知の交代先は追尾しません。補給は受領返書の開封後に実物受取を手配し、本人が現地で受取り・納入します。援軍は受領返書の開封後に実出陣を手配し、出発・到着・帰還を返書で確認します。今回の援軍は常備100人の部隊です。通行軍対応は後続です。");
+        Text("正式条約・独立条項");{}
         var targets=w.Definitions.Organizations.Where(o=>o.Id!=own && RepresentativeKnowledge.Known(w,Session.PlayerControl,o.Id)!=null).OrderBy(o=>o.Name,StringComparer.Ordinal).ToArray();var target=new OptionButton();foreach(var t in targets)target.AddItem(t.Name);box.AddChild(target);
         var options=new[]{(TreatyClause.NonAggression,"互いに新たな戦を仕掛けない"),(TreatyClause.Passage,"通行の約束"),(TreatyClause.Supply,"補給を協議する条項"),(TreatyClause.Defense,"防衛援軍を協議する条項")}.Select(t=>(t.Item1,Box:new CheckBox{Text=t.Item2,ButtonPressed=t.Item1==TreatyClause.NonAggression})).ToArray();foreach(var item in options)box.AddChild(item.Box);
         var days=new SpinBox{MinValue=1,MaxValue=90,Value=30,Step=1,Suffix="日間"};box.AddChild(days);var notice=new SpinBox{MinValue=1,MaxValue=7,Value=1,Step=1,Suffix="日前に解除予告"};box.AddChild(notice);

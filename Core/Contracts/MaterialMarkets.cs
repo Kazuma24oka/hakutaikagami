@@ -47,7 +47,7 @@ public static class MaterialMarkets
     internal static MaterialHouse HouseAt(ContractWorld w,EntityId site,long at,long rev)=>new(site,WoodAvailable(w,site,at,rev),(RegionalDomains.HasHouse(w,site)?HouseWeapons:0)+Supplied(w,site,"weapons",at,rev)+RegionalDomains.Purchased(w,site,"weapons",at,rev)+HouseLogistics.Supplied(w,site,"weapons",at,rev),w.Communities!.Orders.LongCount(o=>o.Input.Site==site&&o.Input.Action==EconomyAction.ImproveWater&&(o.At<at||o.At==at&&o.Revision<rev))*WaterWood);
     static MaterialHouse[] Houses(ContractWorld w)=>CommunityEconomy.SitesFor(w).Select(site=>HouseAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)).ToArray();
     static WorkshopMonth Compute(ContractWorld w,EntityId site,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var previous=w.Materials!.Months.Where(m=>m.Site==site&&Before(m.At,m.Revision,at,revision)).ToArray();var account=CommunityEconomy.AccountAt(w,site,at,revision);var trade=RegionalTrade.SnapshotAt(w,at,revision);var m=trade.Markets.Single(m=>m.Site==site);
         long woodFree=RegionalTrade.StockFree(trade,site,"wood"),armsFree=RegionalTrade.StockFree(trade,site,"weapons"),cashFree=RegionalTrade.CashFree(trade,site);
         long funds=WorkerCash+previous.Sum(m=>m.Wages-m.Income),wood=RawWood-previous.Sum(m=>m.WoodMade),arms=RawWeapons-previous.Sum(m=>m.WeaponsMade),civil=previous.Sum(m=>m.WeaponsBought);
@@ -77,7 +77,7 @@ public static class MaterialMarkets
         foreach(var site in CommunityEconomy.SitesFor(w)){var ms=s.Months.Where(m=>m.Site==site);Need(ms.Sum(m=>m.WoodMade)<=RawWood&&ms.Sum(m=>m.WeaponsMade)<=RawWeapons&&WorkerCash+ms.Sum(m=>m.Wages-m.Income)>=0&&ms.Sum(m=>m.WeaponsBought)<=10,"加工前在庫・住民資金・武具保有が不正です");}
     }
     internal static void CheckBalances(ContractWorld w,IEnumerable<TradeMarket> markets,IEnumerable<TradeDeal> deals,long until,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!Enabled(w))return;var ms=markets.ToArray();var ds=deals.ToArray();var production=Production(w,until,revision+1);
         foreach(var kind in new[]{"wood","weapons"}){long carried=ds.Where(d=>d.Commodity==kind&&d.Phase is TradePhase.Carrying or TradePhase.SaleQuoted or TradePhase.ReturnRequired).Sum(d=>d.Amount),supplied=ds.Where(d=>d.Commodity==kind&&d.Phase==TradePhase.Supplied).Sum(d=>d.Amount);long made=production.Sum(p=>kind=="wood"?p.WoodMade:p.WeaponsMade),consumed=production.Sum(p=>kind=="wood"?p.WoodBought:p.WeaponsBought);Need(ms.Sum(m=>Stock(m,kind))+carried+supplied+ds.Where(d=>d.Commodity==kind&&d.Phase==TradePhase.Gifted).Sum(d=>d.Amount)+consumed+HouseLogistics.MarketPurchases(w,until,revision+1).Where(e=>e.Input.Commodity==kind).Sum(e=>e.Input.Quantity)+BrokerWork.Purchases(w,until,revision+1).Where(e=>e.Input.Commodity==kind).Sum(e=>e.Input.Quantity)+RegionalDomains.Purchases(w,until,revision+1).Where(e=>e.Input.Commodity==kind).Sum(e=>e.Input.Quantity)==Initial(kind)*ms.Length+made,"商品別の現物収支が一致しません");}
     }

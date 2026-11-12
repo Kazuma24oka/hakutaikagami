@@ -1,7 +1,7 @@
 namespace HakutaiKagami.Core.Contracts;
 
 public enum LifeAction { EatPrivateRice, RestOutside, RestInn, CancelRest, SetGoal }
-public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend }
+public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle, KeepHouse }
 public sealed record LifeInput(EntityId Id,LifeAction Action,EntityId Site,EntityId? Original=null,LifeGoal Goal=LifeGoal.WorkPay,long Target=0);
 public sealed record LifeEntry(LifeInput Input,long At,long Revision,long Paid);
 public sealed record PersonalLifeState(int Schema,string Policy,LifeEntry[] Entries);
@@ -23,7 +23,7 @@ public static class PersonalLife
     static long End(LifeEntry e,IEnumerable<LifeEntry> es)=>Math.Min(End(e),es.Where(x=>x.Input.Action==LifeAction.CancelRest&&x.Input.Original==e.Input.Id).Select(x=>x.At).DefaultIfEmpty(long.MaxValue).Min());
     static LifeEntry? Active(IEnumerable<LifeEntry> es,long at)=>es.LastOrDefault(e=>Rest(e)&&e.At<=at&&at<End(e,es));
     public static bool Resting(ContractWorld w,long at,long rev)=>Active(Entries(w,at,rev),at)!=null;
-    public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long rev=long.MaxValue)=>wallet==NewGameWork.Wallet(w.PlayerControl)?-Entries(w,at,rev).Sum(e=>e.Paid):0;
+    public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long rev=long.MaxValue)=>-Entries(w,at,rev).Where(e=>wallet==NewGameWork.Wallet(ControlSuccession.PlayerAtRevision(w,e.Revision))).Sum(e=>e.Paid);
     public static long RiceConsumed(ContractWorld w,EntityId actor,long at=long.MaxValue,long rev=long.MaxValue)=>actor==w.PlayerControl?Entries(w,at,rev).LongCount(e=>e.Input.Action==LifeAction.EatPrivateRice):0;
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Life=new(1,Policy,[]);}
     static bool Free(ContractWorld w,long at,long rev)=>!TreatySupply.Carrying(w,at,rev)&&!CastleHandover.Jobs(w,at,rev).Any(j=>j.Pending!=null)&&!HouseLogistics.Active(w,at,rev)&&!NewGameMilitary.LedgerStates(w).Any(s=>{var past=w.ForkMilitaryObservation();past.NewMilitary=s;return NewGameMilitary.CustodyAt(past,at,rev);})&&!w.Tasks.Any(t=>t.Executor==w.PlayerControl&&w.Requests.Any(r=>r.Id==t.RequestId&&(r.CreatedAt<at||r.CreatedAt==at&&r.CommitSequence<rev))&&(t.FinishedAt==null||t.FinishedAt>at)&&t.Execution is not(ExecutionPhase.Stopped or ExecutionPhase.Completed));
@@ -42,15 +42,15 @@ public static class PersonalLife
             Need(i.Action==LifeAction.SetGoal||i.Goal==LifeGoal.WorkPay&&i.Target==0,"食事/休息に目標値を混在できません");
             if(i.Action==LifeAction.CancelRest)Need(i.Original is {} original&&Active(seen,e.At)?.Input.Id==original,"休息の原本と残り時間を確認してください");
             else {Need(i.Original==null,"不要な原本参照です");Need(Active(seen,e.At)==null,"休息を終えるか中止してください");
-                if(i.Action==LifeAction.EatPrivateRice)Need(HouseSalary.PrivateRice(w,w.PlayerControl,e.At,e.Revision)>=1,"食事に使える私有米がありません");
+                if(i.Action==LifeAction.EatPrivateRice)Need(HouseSalary.PrivateRice(w,ControlSuccession.PlayerAtRevision(w,e.Revision),e.At,e.Revision)>=1,"食事に使える私有米がありません");
                 else if(i.Action==LifeAction.SetGoal)Need(i.Target is >=1 and <=5000,"目標は1〜5000です");
-                else {Need(Free(w,e.At,e.Revision),"任務や預かった部隊を先に引き継いでください");if(i.Action==LifeAction.RestInn)Need(TransportWork.WalletBefore(w,w.PlayerControl,e.At,e.Revision)>=InnCost,"私財の自由残高が宿代に足りません。無料休息は選べます");}
+                else {Need(Free(w,e.At,e.Revision),"任務や預かった部隊を先に引き継いでください");if(i.Action==LifeAction.RestInn)Need(TransportWork.WalletBefore(w,ControlSuccession.PlayerAtRevision(w,e.Revision),e.At,e.Revision)>=InnCost,"私財の自由残高が宿代に足りません。無料休息は選べます");}
             }
             seen.Add(e);at=e.At;rev=e.Revision;
         }
         // Rest is an exclusive personal activity; receiving/reading letters remains possible.
         foreach(var r in es.Where(Rest)){
-            long end=End(r,es);Need(!w.Requests.Any(q=>q.Intent.Executor==w.PlayerControl&&q.CommitSequence>r.Revision&&q.CreatedAt<end&&q.CreatedAt>=r.At),"休息中に実務や移動を開始できません");
+            long end=End(r,es);Need(!w.Requests.Any(q=>q.Intent.Executor==ControlSuccession.PlayerAtRevision(w,r.Revision)&&q.CommitSequence>r.Revision&&q.CreatedAt<end&&q.CreatedAt>=r.At),"休息中に実務や移動を開始できません");
             Need(!NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Any(q=>q.Revision>r.Revision&&q.At<end&&q.At>=r.At&&q.Input.Action is NewMilitaryAction.Pickup or NewMilitaryAction.Deploy),"休息中に部隊を引き受け/展開できません");
         }
         Need(HouseSalary.PrivateRice(w,w.PlayerControl)>=0,"私有米の二重消費です");
@@ -59,6 +59,26 @@ public static class PersonalLife
     static LifeGoalCard Goal(ContractWorld w,LifeEntry e,LifeEntry[] es)
     {
         long endRev=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.Revision).DefaultIfEmpty(long.MaxValue).Min();
+        if(e.Input.Goal==LifeGoal.KeepHouse)
+        {
+            // 家の存続：目標を決めてから一年ごとの日に、自分の家（決めたときの所属）が城を一つでも持っていれば一年と数える。
+            var me=ControlSuccession.PlayerAtRevision(w,e.Revision);var house=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==me.Value)?.Faction;
+            long endAt=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min();
+            int years=0;long? kept=null;
+            for(long t=e.At+365*86400L;t<=Math.Min(w.ElapsedSeconds,endAt)&&house!=null;t+=365*86400L)
+            {
+                if(!w.NewGame!.Start.Castles.Any(c=>NationalStrategy.Owner(w,new(c.Id),t,long.MaxValue)?.Value==house))break;
+                years++;if(years>=e.Input.Target)kept??=t;
+            }
+            return new(e.Input.Id,e.Input.Goal,e.Input.Target,years,kept!=null,kept);
+        }
+        if(e.Input.Goal==LifeGoal.GainTitle)
+        {
+            // 出世：目標を決めた後に、返書を開封して知った叙任の数。
+            long endAt=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min();
+            var learned=CentralRank.LearnedBy(w,ControlSuccession.PlayerAtRevision(w,e.Revision)).Where(t=>t>e.At&&t<endAt).OrderBy(t=>t).ToArray();
+            return new(e.Input.Id,e.Input.Goal,e.Input.Target,learned.Length,learned.Length>=e.Input.Target,learned.Length>=e.Input.Target?learned[e.Input.Target-1]:null);
+        }
         IEnumerable<(long At,long Rev,long Amount)> rows=e.Input.Goal==LifeGoal.WorkPay?(w.WorkCycle?.Payments??[]).Where(p=>w.Tasks.Single(t=>t.Id==p.Task).Executor==w.PlayerControl).Select(p=>(p.At,p.Revision,p.Amount)):(w.Salary?.Entries??[]).Where(p=>p.Input.Action==SalaryAction.Receive).Where(p=>{var t=w.Salary!.Terms.Single(t=>t.Id==p.Input.Contract);return e.Input.Goal==LifeGoal.ReceiveStipend?t.Employee==w.PlayerControl:t.Employer==w.PlayerControl;}).Select(p=>(p.At,p.Revision,w.Salary!.Entries.Single(x=>x.Input.Id==p.Input.Preparation).Input.Amount));
         long total=0;long? met=null;foreach(var p in rows.Where(p=>p.Rev>e.Revision&&p.Rev<endRev).OrderBy(p=>p.Rev)){total=checked(total+p.Amount);if(total>=e.Input.Target)met??=p.At;}
         return new(e.Input.Id,e.Input.Goal,e.Input.Target,total,met!=null,met);
@@ -72,14 +92,14 @@ public static class PersonalLife
         if(HouseLogistics.Active(w,w.ElapsedSeconds,w.CommitSequence+1))burden+=" 家から預かった運搬物・前渡金は帰還精算が必要です。";
         long meals=RiceConsumed(w,w.PlayerControl)+(w.Trade?.Deals.Where(d=>d.Phase==TradePhase.Consumed).Sum(d=>d.Amount)??0);
         long rest=es.Where(Rest).Sum(e=>Math.Max(0,Math.Min(w.ElapsedSeconds,End(e,es))-e.At));
-        var start=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value);string role=service.Role;if(service.House?.Value==start.Faction&&service.Principal?.Value==start.Lord&&service.House!=null&&start.InitialRole is StartTemplate.Subretainer or StartTemplate.Castellan or StartTemplate.LocalLord)role=NewGameWorld.RoleName(start.InitialRole.Value);if(CastleAdministration.Enabled(w)&&start.InitialRole==StartTemplate.Castellan&&w.Castellan!.Entries.Any(e=>e.Input.Site.Value==start.Site&&CastleAdministration.IsAppointment(e.Input.Action)))role=service.Role;role=CastleAdministration.Role(w,w.PlayerControl)??role;role=HouseSuccession.Role(w)??role;
+        var start=FamilyBirth.People(w).Single(p=>p.Id==w.PlayerControl.Value);string role=service.Role;if(service.House?.Value==start.Faction&&service.Principal?.Value==start.Lord&&service.House!=null&&start.InitialRole is StartTemplate.Subretainer or StartTemplate.Castellan or StartTemplate.LocalLord)role=NewGameWorld.RoleName(start.InitialRole.Value);if(CastleAdministration.Enabled(w)&&start.InitialRole==StartTemplate.Castellan&&w.Castellan!.Entries.Any(e=>e.Input.Site.Value==start.Site&&CastleAdministration.IsAppointment(e.Input.Action)))role=service.Role;role=CastleAdministration.Role(w,w.PlayerControl)??role;role=HouseSuccession.Role(w)??role;
         return new(role,service.House,service.Principal,stable?site:null,NewGameWork.Balance(w,w.PlayerControl),HouseSalary.PrivateRice(w,w.PlayerControl),meals,rest,active==null?null:End(active,es),active?.Input.Id,stable&&active==null&&Free(w,w.ElapsedSeconds,w.CommitSequence+1),terms.Where(t=>t.Employee==w.PlayerControl).Sum(due),terms.Where(t=>HouseSuccession.Enabled(w)?HouseSuccession.Head(w,t.Owner)==w.PlayerControl:t.Employer==w.PlayerControl).Sum(due),held,burden,es.Where(e=>e.Input.Action==LifeAction.SetGoal).Select(e=>Goal(w,e,es)).ToArray());
     }
 }
 public sealed partial class WorldSession
 {
     public PersonalLifeView? PersonalLifeView(){lock(gate)return PersonalLife.View(state);}
-    public CommandResult ManageLife(LifeInput input,EntityId actor,long revision){lock(gate){
+    public CommandResult ManageLife(LifeInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){
         if(actor!=state.PlayerControl||!PersonalLife.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の生活操作ではありません");
         var old=state.Life!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"処理済みの生活操作です");
         if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別操作のIDです");

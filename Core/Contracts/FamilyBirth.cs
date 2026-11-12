@@ -36,7 +36,7 @@ public static class FamilyBirth
 
     static readonly EntityId WinterPrincess=new("person:fuyuhime");
     static FamilyBirthRecord? Historical(ContractWorld w,long from,long until,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data ||
             data.Judgment?.History is not (HistoryMode.Historical or HistoryMode.SemiHistorical))return null;
         var father=data.Start.People.SingleOrDefault(p=>p.Id=="person:nobunaga");

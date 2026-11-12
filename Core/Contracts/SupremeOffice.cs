@@ -4,7 +4,7 @@ public static class SupremeOffice
 {
     public static readonly EntityId Bakufu=new("org:central-bakufu");
     public static EntityId? ShogunAt(ContractWorld w,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!CentralCourtCatalog.HasShogunate(w.NewGame?.HistoricalCatalog))return null;
         var grant=SupremeInvestiture.LastGrant(w,CourtAction.PetitionShogun,at,revision);
         var incumbent=grant?.Input.Person??CentralCourtCatalog.Shogun;
@@ -19,7 +19,7 @@ public static class SupremeOffice
         w.LandRights.Any(r=>r.Kind=="control" && r.Subject==house && r.Target==CentralCourtCatalog.Kyoto && r.From<=at &&
             (r.From<at || r.Revision<=revision) && at<r.Until) && !CastleAdministration.Blocked(w,CentralCourtCatalog.Kyoto,at,revision);
     internal static void CheckSupport(ContractWorld w,CourtInput i,EntityId actor,EntityId place,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         bool offer=i.Action==CourtAction.OfferShogunSupport;
         var sponsor=offer?actor:i.Person;
         var candidate=offer?i.Person:actor;
@@ -45,7 +45,7 @@ public static class SupremeOffice
         }
     }
     public static IEnumerable<EntityId> Sponsors(ContractWorld w,EntityId candidate,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var events=HouseholdCourt.Events(w).Where(e=>e.At<=at && e.Revision<=revision).ToArray();
         foreach(var answer in events.Where(e=>e.Input.Action==CourtAction.AcceptShogunSupport && e.Actor==candidate)){
             var sponsor=answer.Input.Person;
@@ -54,7 +54,7 @@ public static class SupremeOffice
         }
     }
     internal static void CheckResignation(ContractWorld w,CourtInput input,EntityId actor,EntityId place,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(input.Owner!=Bakufu || input.Site!=CentralCourtCatalog.Kyoto || place!=input.Site || input.Person!=actor ||
             input.Reference!=null || ShogunAt(w,at,revision-1)!=actor || !TransportWork.At(w,actor,place,at,revision,true))
             throw new InvalidDataException("在職中の将軍本人が京で辞任してください");

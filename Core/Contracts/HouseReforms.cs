@@ -44,7 +44,7 @@ public static class HouseReforms
         .FirstOrDefault(e=>(e.Input.Action is CourtAction.ExchangeLevyShare or CourtAction.SurrenderLevyShare) && e.Input.LevyGrant==id)?.Revision??long.MaxValue;
 
     public static long AccruedLevyRice(ContractWorld w,CourtEvent grant,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(grant.Input.Action!=CourtAction.GrantLevyShare)return 0;
         var orders=w.Communities?.Orders??[];
         var collected=orders.Where(o=>o.Input.Site==grant.Place && o.Input.Action==EconomyAction.CollectLevy &&
@@ -109,7 +109,7 @@ public static class HouseReforms
     }
 
     public static CourtEvent? BarrierAt(ContractWorld w,string edge,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var last=HouseholdCourt.Events(w).LastOrDefault(e=>e.Input.BarrierEdge==edge &&
             (e.Input.Action is CourtAction.EstablishBarrier or CourtAction.AbolishBarrier) &&
             (e.At<at || e.At==at && e.Revision<revision));
@@ -117,7 +117,7 @@ public static class HouseReforms
     }
 
     public static long WoodPurchaseLimit(ContractWorld w,EntityId site,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!OpenMarketAt(w,site,at,revision))return 2;
         if(SeatDispute(w,site,at,revision)?.Input.Action==CourtAction.InsistSeat)return 2;
         return TempleMarketSeat(w,site,at,revision)==null?4:3;

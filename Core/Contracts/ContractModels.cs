@@ -258,7 +258,10 @@ public sealed class ContractWorld
     public required RandomDraw[] RandomDraws { get; set; }
     public required Dictionary<string, long> IdCounters { get; set; }
     public required ConflictDecision[] ConflictDecisions { get; set; }
-    public required EntityId PlayerControl { get; set; }
+    EntityId playerControl;
+    // 記録の検査の版（ControlContext）によらない、今の操作する人物。
+    public EntityId CurrentPlayer()=>playerControl;
+    public required EntityId PlayerControl { [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)] get { if(ControlProbe.Active&&NewGame!=null)ControlProbe.Hit();if(ControlHandovers is {Length:>0}){if(ControlContext.Revision is long r)return ControlSuccession.PlayerAtRevision(this,r);if(ControlContext.Time is long t)return ControlSuccession.PlayerAtTime(this,t);}return playerControl; } set=>playerControl=value; }
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialWorldState? SocialWorld {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SocialAssetState? SocialAssets {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public MeritState? Merits {get;set;}
@@ -273,6 +276,8 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HeirNomination[]? HeirNominations {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public FamilyBirthRecord[]? Births {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public NaturalDeath[]? NaturalDeaths {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public ControlHandover[]? ControlHandovers {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public StrategyState? Strategy {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SchemeState? Schemes {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CourtState? Court {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public BrokerState? BrokerWork {get;set;}

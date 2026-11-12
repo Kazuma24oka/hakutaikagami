@@ -28,14 +28,14 @@ public static partial class CommunityStewardship
     internal static EntityId? Delegate(ContractWorld w,EntityId site,long at,long rev)=>GrantAt(w,site,at,rev)?.Agent;
     static bool SameMonth(ContractWorld w,long a,long b){var epoch=DateOnly.Parse(w.EpochDate);var x=epoch.AddDays((int)(a/Day));var y=epoch.AddDays((int)(b/Day));return x.Year==y.Year&&x.Month==y.Month;}
     internal static long Budget(ContractWorld w,EntityId actor,EntityId site,EconomyAction action,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor){if(RegionalDomains.Owner(w,site) is {} owner&&HouseholdCourt.Authority(w,actor,owner,site,at,rev)!=null)return HouseholdCourt.Budget(w,actor,site,action,at,rev);return long.MaxValue;}
         long cap=action==EconomyAction.RelieveVillage?500:action==EconomyAction.CollectLevy?1000:200;
         long used=w.Communities!.Orders.Where(o=>(SharedDelegationBudget(w,site,at,rev)?DelegatedCharge(w,o.Actor,site,o.At,o.Revision):o.Actor==actor)&&o.Input.Site==site&&o.Input.Action==action&&Before(o.At,o.Revision,at,rev)&&SameMonth(w,o.At,at)).Sum(o=>o.Input.Amount);
         return Math.Max(0,cap-used);
     }
     internal static FactionStanceAuthority? Authority(ContractWorld w,EntityId actor,EntityId owner,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(HouseholdCourt.Authority(w,actor,owner,site,at,rev) is {} court)return court;if(!Enabled(w)||CastleAdministration.Blocked(w,site,at,rev))return null;var g=GrantAt(w,site,at,rev);if(g==null||g.Agent!=actor||g.Owner!=owner)return null;
         var source=FactionStances.ResolveAuthority(w,g.Principal,owner,at,Math.Min(rev,w.CommitSequence));if(source==null)return null;
         var member=w.Memberships.LastOrDefault(m=>m.Subject==actor&&m.Target==owner&&m.From<=at&&at<m.Until);if(member==null)return null;
@@ -43,7 +43,7 @@ public static partial class CommunityStewardship
     }
     internal static bool WaterAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long rev)=>Enabled(w)&&w.Stewardship!.Entries.Any(e=>e.At==at&&e.Revision==rev&&e.Input.Action==StewardAction.Operate&&e.Input.Operation==EconomyAction.ImproveWater&&e.Input.Site==site&&Effect(e.Input.Id)==effect);
     static StewardGrant MakeGrant(ContractWorld w,StewardEntry e)
-    {
+    {using var _cc=ControlContext.At(e.Revision);
         var i=e.Input;if(i.Action==StewardAction.Reauthorize)return MakeReauthorization(w,e);Need(i.PriorGrant==null,"再承認元は新しい再承認操作だけに指定します");Need(i.Other!=null&&i.Other!=w.PlayerControl&&i.Days>=1&&i.Days<=30&&i.ReturnAddress!=null&&w.Definitions.Sites.Any(s=>s.Id==i.ReturnAddress)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"委任先・期限・返報先を指定してください");
         var f=HouseSuccession.Factions(w,e.At,e.Revision).Single(f=>f.Id==w.NewGame!.Start.Castles.Single(c=>c.Id==i.Site.Value).Faction);var head=new EntityId(f.Head);var agent=head==w.PlayerControl?i.Other!.Value:w.PlayerControl;
         Need(CastleAdministration.Grant(w,i.Site,e.At,e.Revision)==null,"有効な城主任命があるため別の代理行政委任は作れません");Need(head==w.PlayerControl||head==i.Other,"当主と直属家臣が現地で合意してください");
@@ -66,9 +66,9 @@ public static partial class CommunityStewardship
         Need(i.PriorGrant==null||i.Action==StewardAction.Reauthorize,"旧原本の指定が不正です");var e=new StewardEntry(i,w.ElapsedSeconds,w.CommitSequence);w.Stewardship=w.Stewardship! with{Entries=[..w.Stewardship!.Entries,e]};
         if(Assignment(i.Action)){var g=MakeGrant(w,e);Need(!Overlap(w,g,e),"先の委任を終了してから合意してください");w.Stewardship=w.Stewardship with{Grants=[..w.Stewardship.Grants,g]};}
         else{var g=w.Stewardship.Grants.Single(q=>q.Id==i.Grant);Need(i.Site==g.Site,"委任先の地域が違います");
-            if(i.Action==StewardAction.Operate){Need(g.Agent==w.PlayerControl&&Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision)&&i.Operation is {}&&i.Amount>0&&i.Amount<=Budget(w,g.Agent,g.Site,i.Operation.Value,e.At,e.Revision),"代理官の処分枠・期限・数量を超えています");CommunityEconomy.ApplyFor(w,new(Effect(i.Id),i.Site,i.Operation!.Value,i.Amount),g.Agent);}
+            if(i.Action==StewardAction.Operate){Need(g.Agent==ControlSuccession.PlayerAtRevision(w,e.Revision)&&Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision)&&i.Operation is {}&&i.Amount>0&&i.Amount<=Budget(w,g.Agent,g.Site,i.Operation.Value,e.At,e.Revision),"代理官の処分枠・期限・数量を超えています");CommunityEconomy.ApplyFor(w,new(Effect(i.Id),i.Site,i.Operation!.Value,i.Amount),g.Agent);}
             else if(i.Action==StewardAction.Revoke){Need(g.Principal==w.PlayerControl&&e.At<g.Until&&!w.Stewardship.Entries.Any(x=>x.Revision<e.Revision&&x.Input.Action==StewardAction.Revoke&&x.Input.Grant==g.Id),"取消原本を既に発送済みか、委任期限後です");Send(w,Paper(w,e));}
-            else{Need(g.Agent==w.PlayerControl&&Local(w,g.Agent,g.Site,e.At,e.Revision),"現地の代理官本人が報告してください");if(i.Action==StewardAction.Report)Need(Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision),"有効な委任がありません");else Need(w.Stewardship.Papers.Count(p=>p.Grant==g.Id&&p.Observation==w.Stewardship.Papers.Single(q=>q.Id==i.Report).Observation)<3&&i.Action==StewardAction.ResendReport&&w.Stewardship.Papers.Any(p=>p.Id==i.Report&&p.Grant==g.Id&&p.Kind==ReportKind&&p.Sender==g.Agent),"同じ報告原本を指定してください");Send(w,Paper(w,e));}
+            else{Need(g.Agent==ControlSuccession.PlayerAtRevision(w,e.Revision)&&Local(w,g.Agent,g.Site,e.At,e.Revision),"現地の代理官本人が報告してください");if(i.Action==StewardAction.Report)Need(Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision),"有効な委任がありません");else Need(w.Stewardship.Papers.Count(p=>p.Grant==g.Id&&p.Observation==w.Stewardship.Papers.Single(q=>q.Id==i.Report).Observation)<3&&i.Action==StewardAction.ResendReport&&w.Stewardship.Papers.Any(p=>p.Id==i.Report&&p.Grant==g.Id&&p.Kind==ReportKind&&p.Sender==g.Agent),"同じ報告原本を指定してください");Send(w,Paper(w,e));}
         }
     }
     internal static void Tick(ContractWorld w)
@@ -99,10 +99,10 @@ public static partial class CommunityStewardship
     internal static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.Stewardship==null,"旧世界へ代理行政を追加できません");return;}Need(w.Stewardship is {Schema:1,Policy:Policy,Entries:not null,Grants:not null,Papers:not null,Receipts:not null},"代理行政の原本がありません");var s=w.Stewardship;long prior=0,at=0;var ids=new HashSet<EntityId>();
-        foreach(var e in s.Entries){var i=e.Input;Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>prior&&e.Revision<=w.CommitSequence&&EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&Enum.IsDefined(i.Action)&&!FactionStances.OtherIdUsed(w,i.Id,includeStewardship:false)&&!FactionStances.OwnIdUsed(w,i.Id),"代理行政の入力原本が不正です");at=e.At;prior=e.Revision;
+        foreach(var e in s.Entries){using var _cc=ControlContext.At(e.Revision);var i=e.Input;Need(e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>prior&&e.Revision<=w.CommitSequence&&EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&Enum.IsDefined(i.Action)&&!FactionStances.OtherIdUsed(w,i.Id,includeStewardship:false)&&!FactionStances.OwnIdUsed(w,i.Id),"代理行政の入力原本が不正です");at=e.At;prior=e.Revision;
             Need(i.PriorGrant==null||i.Action==StewardAction.Reauthorize,"旧原本の指定が不正です");if(Assignment(i.Action)){var g=MakeGrant(w,e);Need(s.Grants.Count(q=>q.Id==i.Id&&q==g)==1&&!Overlap(w,g,e),"委任原本または期間の重複が不正です");}
             else{Need(s.Grants.SingleOrDefault(g=>g.Id==i.Grant) is {} grant&&grant.Revision<e.Revision&&grant.Site==i.Site,"委任原本がありません");var g=s.Grants.Single(g=>g.Id==i.Grant);
-                if(i.Action==StewardAction.Operate){Need(g.Agent==w.PlayerControl&&Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision)&&i.Operation is {} op&&Enum.IsDefined(op)&&i.Amount>0&&i.Amount<=Budget(w,g.Agent,g.Site,i.Operation.Value,e.At,e.Revision),"委任枠を超えた処分です");Need(w.Communities!.Orders.Any(o=>o.Input.Id==Effect(i.Id)&&o.Input.Site==i.Site&&o.Actor==g.Agent&&o.At==e.At&&o.Revision==e.Revision&&o.Input.Action==i.Operation&&o.Input.Amount==i.Amount),"現物の履行がありません");}
+                if(i.Action==StewardAction.Operate){Need(g.Agent==ControlSuccession.PlayerAtRevision(w,e.Revision)&&Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision)&&i.Operation is {} op&&Enum.IsDefined(op)&&i.Amount>0&&i.Amount<=Budget(w,g.Agent,g.Site,i.Operation.Value,e.At,e.Revision),"委任枠を超えた処分です");Need(w.Communities!.Orders.Any(o=>o.Input.Id==Effect(i.Id)&&o.Input.Site==i.Site&&o.Actor==g.Agent&&o.At==e.At&&o.Revision==e.Revision&&o.Input.Action==i.Operation&&o.Input.Amount==i.Amount),"現物の履行がありません");}
                 else{Need(s.Papers.Contains(Paper(w,e)),"発送原本と封書が一致しません");if(i.Action==StewardAction.Revoke)Need(g.Principal==w.PlayerControl&&e.At<g.Until&&s.Entries.Count(x=>x.Input.Action==StewardAction.Revoke&&x.Input.Grant==g.Id)==1,"当主の取消原本が不正です");else Need(g.Agent==w.PlayerControl&&Local(w,g.Agent,g.Site,e.At,e.Revision)&&(i.Action!=StewardAction.Report||Active(w,g,e.At,e.Revision)&&LiveSource(w,g,e.At,e.Revision))&&(i.Action!=StewardAction.ResendReport||s.Papers.Any(old=>old.Id==i.Report&&old.Kind==ReportKind&&old.Grant==g.Id&&old.Sender==g.Agent&&Before(old.At,old.Revision,e.At,e.Revision))),"代理官の現地観測がありません");}
             }
         }
@@ -123,5 +123,5 @@ public sealed partial class WorldSession
 {
     public StewardView? StewardshipView(){lock(gate)return CommunityStewardship.View(state);}
     public CommandResult ManageStewardship(StewardInput input,EntityId actor,long revision)
-    {lock(gate){if(actor!=state.PlayerControl||!CommunityStewardship.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の委任操作ではありません");var old=state.Stewardship!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"委任を読み直してください");try{Change(w=>CommunityStewardship.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"合意・現地履行・封書を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
+    {using var _ccRev=ControlContext.At(revision);lock(gate){if(actor!=state.PlayerControl||!CommunityStewardship.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の委任操作ではありません");var old=state.Stewardship!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別の原本で使用済みです");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"委任を読み直してください");try{Change(w=>CommunityStewardship.Apply(w,input));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"合意・現地履行・封書を記録しました");}catch(Exception e)when(e is InvalidDataException or InvalidOperationException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}}}
 }

@@ -16,7 +16,7 @@ public static class MinorGuardians
     }
 
     internal static GuardianMandate? Agree(ContractWorld w,HeirNomination paper,EntityId guardian,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!CharacterRelations.Enabled(w) || guardian==paper.Heir || guardian==paper.Head ||
             FactionStances.ResolveAuthority(w,paper.Head,paper.House,at,revision)==null ||
             End(w,paper.Heir) is not {} until || until<=at ||

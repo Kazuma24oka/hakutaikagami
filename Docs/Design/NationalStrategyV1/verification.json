@@ -1,0 +1,18 @@
+{
+  "status": "PASSED",
+  "scope": "claude-v150",
+  "full_core_suite": "PASSED",
+  "full_core_commit": "78b71a30",
+  "full_core_passed": 4515,
+  "full_core_duration": "60 m（別の作業用フォルダで裏で実行。Codex の検査と同時）",
+  "short_tier": "2,821件（Tier!=Heavy）",
+  "handover_probe_short_tier": "PASSED",
+  "handover_probe_note": "短い段の世界ごとに別の成人へ隠居した写しも検査。8回目で14種類の不一致が残る（引き継ぎ中の移動・同行・運搬などのまれな組み合わせ）。引き継ぎが検査に通らないときは世界を変えずに断り、年代記を閉じられる",
+  "strategy_tests": 1,
+  "succession_tests": 3,
+  "title_tests": 3,
+  "strategy_month_seconds": 2.3,
+  "godot_ui": "未実施（この作業場所では試作3Dモデルの部品が読めず、既存の画面の検査も同じ所で止まる）",
+  "computer_use": "未使用",
+  "user_play": "未実施"
+}

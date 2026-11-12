@@ -40,7 +40,7 @@ public static class HouseScaleNotices
     }
 
     public static CourtScale Known(ContractWorld w,EntityId observer,EntityId owner,long at=long.MaxValue,long rev=long.MaxValue)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var scale=CourtScale.Local;
         foreach(var e in HouseholdCourt.Events(w).Where(e=>e.Input.Action==CourtAction.DeclareScale && e.Input.Owner==owner &&
             e.At<=at && e.Revision<=rev))

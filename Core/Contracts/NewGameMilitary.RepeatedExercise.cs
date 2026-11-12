@@ -7,7 +7,7 @@ public static partial class NewGameMilitary
  static bool RepeatedExercise(ContractWorld w)=>w.NewMilitary?.Requests.Any(q=>q.Input.ExercisePolicy==RepeatedExerciseContract)==true;
  static NewMilitaryRequest[] ExerciseStarts(ContractWorld w)=>w.NewMilitary?.Requests.Where(q=>q.Input.Action==NewMilitaryAction.CombatStart).ToArray()??[];
  static NewMilitaryRequest? ExerciseAt(ContractWorld w,long at,long rev)=>ExerciseStarts(w).LastOrDefault(q=>Before(q.At,q.Revision,at,rev));
- static EntityId ExerciseRecordKey(ContractWorld w,long at,long rev){var q=ExerciseAt(w,at,rev);Need(q!=null,"演習記録の起点がありません");return q.Input.Id;}
+ static EntityId ExerciseRecordKey(ContractWorld w,long at,long rev){using var _ccRev=ControlContext.At(rev);var q=ExerciseAt(w,at,rev);Need(q!=null,"演習記録の起点がありません");return q.Input.Id;}
  static NewRoutState RoutScope(ContractWorld w,NewRoutState s){if(!RepeatedExercise(w))return s;var start=CombatStart(w);if(start==null)return s with{Retreats=[],Arrivals=[],Regroups=[]};bool Match(long at,long rev)=>ExerciseRecordKey(w,at,rev)==start.Input.Id;return s with{Retreats=s.Retreats.Where(r=>Match(r.At,r.Revision)).ToArray(),Arrivals=s.Arrivals.Where(r=>Match(r.At,r.Revision)).ToArray(),Regroups=s.Regroups.Where(r=>Match(r.At,r.Revision)).ToArray()};}
  public static int ExerciseNumber(ContractWorld w)=>ExerciseStarts(w).Length;
  public static bool ExerciseVisible(ContractWorld w)=>CombatStart(w) is {} q&&CaseStart(w,q.At,q.Revision)?.Input.Id==CaseStart(w)?.Input.Id;

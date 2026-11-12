@@ -19,12 +19,12 @@ public static class CharacterRelations
         string h=ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/"+w.NewGame!.Seed+"/"+actor.Value+"/"+trait));return 10+(int)(Convert.ToUInt32(h[..8],16)%81);
     }
     static bool Before(SocialReaction r,long at,long revision)=>r.LearnedAt<at||r.LearnedAt==at&&r.Revision<revision;
-    public static SocialScores DiagnosticScores(ContractWorld w,EntityId observer,EntityId subject,long at=long.MaxValue,long revision=long.MaxValue){
+    public static SocialScores DiagnosticScores(ContractWorld w,EntityId observer,EntityId subject,long at=long.MaxValue,long revision=long.MaxValue){using var _ccRev=ControlContext.At(revision);
         var rows=(w.Social?.Reactions??[]).Where(r=>r.Observer==observer&&r.Subject==subject&&Before(r,at,revision));
         int Sum(Func<SocialReaction,int> f)=>Math.Clamp(rows.Sum(f),-100,100);
         return new(Sum(r=>r.Affection),Sum(r=>r.Trust),Sum(r=>r.Respect),Sum(r=>r.Fear),Sum(r=>r.Hostility));
     }
-    public static int DiagnosticLoyalty(ContractWorld w,EntityId actor,LoyaltyTarget kind,EntityId target,long at,long revision){
+    public static int DiagnosticLoyalty(ContractWorld w,EntityId actor,LoyaltyTarget kind,EntityId target,long at,long revision){using var _ccRev=ControlContext.At(revision);
         Need(Enabled(w)&&Enum.IsDefined(kind),"Unknown loyalty target");var p=FamilyBirth.People(w).Single(p=>p.Id==actor.Value);int duty=DiagnosticTrait(w,actor,SocialTrait.Duty);
         // Initial affiliations are separate targets. No relationship event changes legal membership.
         int basis=kind==LoyaltyTarget.Person?(p.Lord==target.Value?30+duty/2:0):p.Faction==target.Value?(kind==LoyaltyTarget.House?25+duty/2:15+duty/3):0;
@@ -35,7 +35,7 @@ public static class CharacterRelations
         var rows=new List<SocialReaction>();
         foreach(var q in w.Companions?.Orders.Where(q=>q.Input.Action is CompanionAction.Agree or CompanionAction.Pay or CompanionAction.PrivateInspect&&q.Input.Amount>0)??[]){
             if(q.Input.Amount<=0)continue;
-            rows.Add(new("companion-payment:"+q.Input.Id.Value,q.Input.Person,w.PlayerControl,q.At,q.At,q.Revision,3,5,1,0,0,"local-payment"));
+            rows.Add(new("companion-payment:"+q.Input.Id.Value,q.Input.Person,ControlSuccession.PlayerAtRevision(w,q.Revision),q.At,q.At,q.Revision,3,5,1,0,0,"local-payment"));
         }
         foreach(var p in w.WorkCycle?.Payments??[]){var t=w.Tasks.Single(t=>t.Id==p.Task);rows.Add(new("work-payment:"+p.Id.Value,t.Executor,t.Issuer,p.At,p.At,p.Revision,3,5,1,0,0,"local-payment"));}
         foreach(var k in w.Messaging.Knowledge){
@@ -52,7 +52,7 @@ public static class CharacterRelations
     internal static void Sync(ContractWorld w){
         if(!Enabled(w))return;var rows=w.Social!.Reactions.ToList();foreach(var r in Sources(w))if(rows.All(x=>x.Source!=r.Source))rows.Add(r with{Revision=r.Revision==0?w.CommitSequence:r.Revision});w.Social=w.Social with{Reactions=rows.ToArray()};
     }
-    public static bool AcceptsCompanion(ContractWorld w,EntityId person,long amount,long at,long revision){
+    public static bool AcceptsCompanion(ContractWorld w,EntityId person,long amount,long at,long revision){using var _ccRev=ControlContext.At(revision);
         if(!Enabled(w))return true;if(person==w.PlayerControl)return false;
         var relation=DiagnosticScores(w,person,w.PlayerControl,at,revision);
         int score=45+(DiagnosticTrait(w,person,SocialTrait.Duty)-50)/5+(DiagnosticTrait(w,person,SocialTrait.Affection)-50)/5+(DiagnosticTrait(w,person,SocialTrait.GainSeeking)-50)/5

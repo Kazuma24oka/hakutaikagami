@@ -10,7 +10,7 @@ public static class WorkFollowup
     static bool Terminal(TransportJob j)=>TransportHandover.Validate(j.Handover).Phase is HandoverPhase.Paid or HandoverPhase.Returned or HandoverPhase.Cancelled;
     public static bool Available(ContractWorld w,long at,long revision)=>Previous(w,at,revision).All(Terminal);
     public static FollowupTerms Terms(ContractWorld w,EntityId issuer,long at=long.MaxValue,long revision=long.MaxValue)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var prior=Previous(w,at,revision).Where(j=>j.Handover.Terms.Issuer==issuer).OrderBy(j=>j.CreatedRevision).LastOrDefault();
         long amount;string reason;
         if(prior==null){amount=WorkProgression.Recognized(w,issuer,at,revision)>0?200:100;reason=amount==200?"点検の成果を認めて、預ける銭を増やしたい。":"まずは小口の運搬を頼みたい。";}

@@ -13,7 +13,7 @@ public static class RoadConvoy
     static EntityId Goal(CampConvoyJob j)=>j.ReturnStarted==null?j.Terms.RoadDestination!.Value:j.Terms.Home;
     static EntityId Effect(ContractWorld w,CampConvoyJob j,string action){var root="request:road-supply/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(j.Terms.Id.Value))+"/"+action.Replace(':','/');var id=new EntityId(root);int n=0;while(FactionStances.OtherIdUsed(w,id)||FactionStances.OwnIdUsed(w,id))id=new(root+"/n"+(++n));return id;}
     internal static CampConvoyEntry Dispatch(ContractWorld w,CampConvoyInput i,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&i.Action==CampConvoyAction.Dispatch&&i.Job==null&&i.RelatedTask==null&&i.Carrier!=null&&i.Camp==null&&i.DestinationSite!=null&&i.RiceKg is >0 and <=100&&w.NewMilitary!=null,"街道補給の担当家臣・行先・100kg以内の米を指定してください");
         var c=NewGameMilitary.WorldEngagementBefore(w,w.NewMilitary!.Terms.Army,at,rev-1);var s=c.NewMilitary;
         Need(s!=null&&s.Terms.Principal==w.PlayerControl&&NewGameMilitary.RoadMayLead(c)&&!NewGameMilitary.Deployed(c),"当主が現地で同じ部隊を引き受けてから補給を合意します");
@@ -27,7 +27,7 @@ public static class RoadConvoy
         return new(i,at,rev,new(i.Id,w.PlayerControl,carrier,s.Terms.Owner,home,s.Terms.Army,NewGameMilitary.CarryFor(c),NewGameMilitary.ConvoyCase(c),camp,i.RiceKg,at,checked(at+30*Day),rev,[]){RoadDestination=destination},null);
     }
     static long Receivable(ContractWorld w,CampConvoyJob j,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(!Enabled(w)||!IsRoad(j)||j.Returned!=null||j.ReturnStarted!=null||j.CargoKg<=0||at>=j.Terms.Until||FreightOperations.Stopped(w,j.Terms.Id,at,rev)||!Free(w,j.Terms.Carrier,at,rev)||!At(w,j.Terms.Carrier,j.Terms.RoadDestination!.Value,at,rev))return 0;
         if(!NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Army==j.Terms.Army))return 0;
         var c=NewGameMilitary.WorldEngagementBefore(w,j.Terms.Army,at,rev-1);
@@ -37,7 +37,7 @@ public static class RoadConvoy
     internal static bool CanDeliver(ContractWorld w,CampConvoyJob j,long at,long rev)=>Receivable(w,j,at,rev)>0;
     static bool Meeting(ContractWorld w,CampConvoyJob j,long at,long rev)=>Free(w,j.Terms.Carrier,at,rev)&&BranchRoutes.GraphNodes(w).Any(n=>At(w,w.PlayerControl,RegionalCampaign.Site(n.Id),at,rev)&&At(w,j.Terms.Carrier,RegionalCampaign.Site(n.Id),at,rev));
     internal static CampConvoyEntry Step(ContractWorld w,CampConvoyInput i,CampConvoyJob j,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&i.Job==j.Terms.Id&&i.Carrier==null&&i.Camp==null&&i.RiceKg==0&&i.DestinationSite==null,"合意した街道補給原本を指定してください");
         Need(i.Action==CampConvoyAction.ReportStop?i.RelatedTask!=null:i.RelatedTask==null,"停止報告だけに停止した移動原本を指定します");
         Need(i.Action==CampConvoyAction.CancelAtMeeting||at%60==0,"家臣の判断は共通時計の毎分境界で行います");

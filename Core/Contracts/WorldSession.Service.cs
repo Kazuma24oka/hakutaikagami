@@ -2,7 +2,7 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed partial class WorldSession
 {
     public CommandResult DecideService(ServiceInput input,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){
             if(!NewGameWorld.Enabled(state)||actor!=state.PlayerControl||!EntityId.IsValid(input.Id.Value))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の仕官手続きではありません");
             var old=state.Service?.Requests.SingleOrDefault(q=>q.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"申し出は受付済みです");

@@ -23,27 +23,27 @@ public static class VillageConsultation
     internal static EntityId Effect(EntityId id)=>new("request:village-effect/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,w.PlayerControl,site,at,rev,stableCompletion:true);
     static bool Authority(ContractWorld w,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var castle=w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value);
         if(castle.Faction is not {} f)return false;var owner=new EntityId(f);
         return FactionStances.ResolveAuthority(w,w.PlayerControl,owner,at,rev)!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     }
     static string Status(ContractWorld w,VillagePromise p,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(p.Kind==VillageAction.ProposeRelief&&p.Delivered==p.Amount)return "救済受領済み";
         if(p.StartedAt is {} start){return w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>start&&e.At<=at)?"工事完了":"工事中（食糧不足時は休止）";}
         if(p.CancelledAt!=null)return p.Delivered>0?"一部履行で終了":"未履行で終了";
         return at>p.DeliverBy?(p.Delivered>0?"一部履行・期限超過":"未履行・期限超過"):"約束の履行待ち";
     }
     static int Trust(ContractWorld w,IEnumerable<VillagePromise> promises,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         int n=70-((w.Villages?.Entries??[]).Any(e=>e.Input.Action==VillageAction.SuppressUprising && e.Input.Site==site && e.Revision<rev && e.At<=at)?30:0)-LandSurvey.Pressure(w,site,at)-(LocalSecurity.MarketAvoided(w,site,at,rev)?25:0);foreach(var p in promises.Where(p=>p.Site==site)){
             bool done=p.Kind==VillageAction.ProposeWater?p.StartedAt!=null:p.Delivered==p.Amount;
             if(done){if(p.Kind!=VillageAction.ProposeWater||w.Communities!.Events.Any(e=>e.Site==p.Site&&e.Kind=="water-complete"&&e.At>p.StartedAt&&e.At<=at))n+=5;}else if(p.CancelledAt!=null||at>p.DeliverBy)n-=20;
         }return Math.Clamp(n,0,100);
     }
     internal static bool WithholdsLaborAfterPetition(ContractWorld w,EntityId site,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         if(w.Communities is not {} ledger || LandSurvey.EffectiveDecree(w,site,at) is not {Input.Rate:LandTaxRate.Heavy} decree) return false;
         var first=ledger.Notices.FirstOrDefault(n=>n.Site==site && n.Petition?.TaxDecree==decree.Input.Id && n.Revision<rev);
         if(first==null || at-first.At<30*Day) return false;
@@ -52,16 +52,16 @@ public static class VillageConsultation
         return relief<CommunityEconomy.Population;
     }
 
-    internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){if(!Enabled(w))return true;if(DestructiveSchemes.Agitated(w,site,at,rev)||WithholdsLaborAfterPetition(w,site,at,rev))return false;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at,rev)>=50;}
+    internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){using var _ccRev=ControlContext.At(rev);if(!Enabled(w))return true;if(DestructiveSchemes.Agitated(w,site,at,rev)||WithholdsLaborAfterPetition(w,site,at,rev))return false;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at,rev)>=50;}
     internal static bool WorkAuthorized(ContractWorld w,EntityId effect,EntityId site,long at,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         if(!Enabled(w)||NpcCommunityAdministration.WaterAuthorized(w,effect,site,at,revision)||CommunityStewardship.WaterAuthorized(w,effect,site,at,revision))return true;var e=w.Villages?.Entries.SingleOrDefault(e=>e.Revision==revision&&e.At==at&&e.Input.Site==site&&e.Input.Action==VillageAction.Deliver&&Effect(e.Input.Id)==effect);
         return e!=null&&w.Villages!.Proposals.Any(q=>q.Id==e.Input.Proposal&&q.Kind==VillageAction.ProposeWater)&&w.Villages.Entries.Any(c=>c.Input.Action==VillageAction.Confirm&&c.Input.Proposal==e.Input.Proposal&&c.Revision<revision);
     }
     static VillageState Replay(ContractWorld w,VillageEntry[] entries,long until,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         var proposals=new Dictionary<EntityId,VillageProposal>();var promises=new Dictionary<EntityId,VillagePromise>();var ids=new HashSet<EntityId>();long prev=0,priorAt=0;
-        foreach(var e in entries){var i=e.Input;
+        foreach(var e in entries){using var _cc=ControlContext.At(e.Revision);var i=e.Input;
             Need(EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&e.Revision>prev&&e.Revision<=revision&&e.At>=priorAt&&e.At<=until&&CommunityEconomy.SitesFor(w).Contains(i.Site)&&Enum.IsDefined(i.Action),"村の原本・順序・地域が不正です");prev=e.Revision;priorAt=e.At;
             Need(!FactionStances.OtherIdUsed(w,i.Id,includeVillages:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使ったIDです");
             Need(Local(w,i.Site,e.At,e.Revision)&&Authority(w,i.Site,e.At,e.Revision),"現地で家の処分権を持つ本人が相談してください");
@@ -140,7 +140,7 @@ public sealed partial class WorldSession
 {
     public VillageLocalView? VillageView(){lock(gate)return VillageConsultation.View(state);}
     public CommandResult ConsultVillage(VillageInput input,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         lock(gate){if(actor!=state.PlayerControl||!VillageConsultation.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"この保存の村落相談ではありません");
             var old=state.Villages!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);
             if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"操作済みです");

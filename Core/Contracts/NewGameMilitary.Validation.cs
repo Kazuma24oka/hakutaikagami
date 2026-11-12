@@ -6,7 +6,7 @@ public static partial class NewGameMilitary
     internal static ContractWorld WorldEngagementContext(ContractWorld w,EntityId army)=>LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army));
     internal static ContractWorld WorldEngagementBefore(ContractWorld w,EntityId army,long at,long rev)=>BeforeState(LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army)),at,rev);
     static ContractWorld BeforeState(ContractWorld original,long at,long rev,bool observationOnly=false)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
         if(w.Castles is {} castles)w.Castles=castles with{Entries=castles.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray()};if(w.Life is {} life)w.Life=life with{Entries=life.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<=rev).ToArray()};BattlefieldRules.Rewind(w,at,rev);PrivateStanddown.Rewind(w,at,rev);PrivateInformation.Rewind(w,at,rev);TruceNegotiations.Rewind(w,at,rev);TreatyNegotiations.Rewind(w,at,rev);PersonalCompanions.Rewind(w,at,rev);if(PersonalCompanions.PersonalServiceEnabled(w)||w.HouseService!=null)NewGameService.Sync(w);VoyageExpense.Rewind(w,at,rev);TransportWork.Rewind(w,at,rev);NewGameWork.Rewind(w,at,rev);w.Messaging.Knowledge=w.Messaging.Knowledge.Where(k=>k.LearnedAt<=at).ToArray();w.Requests=w.Requests.Where(q=>Before(q.CreatedAt,q.CommitSequence,at,rev)).ToArray();var ids=w.Requests.Select(q=>q.Id).ToHashSet();w.Tasks=w.Tasks.Where(t=>ids.Contains(t.RequestId)).Select(t=>t.FinishedAt>at?t with{Execution=t.StartedAt<=at?ExecutionPhase.Running:ExecutionPhase.Waiting}:t).ToArray();
         if (w.Branches is {} branches)
@@ -23,7 +23,7 @@ public static partial class NewGameMilitary
         }).ToArray();RewindUnitTransport(w);var controlling=ControllingLedger(w,at);SyncLedger(w,w.NewMilitary==null||controlling==null||LedgerKey(controlling)==LedgerKey(w.NewMilitary));return w;
     }
     static NewMilitaryState? LedgerStateBefore(NewMilitaryState s,long at,long rev)
-    {
+    {using var _ccRev=ControlContext.At(rev);
         var requests=s.Requests.Where(q=>Before(q.At,q.Revision,at,rev)).ToArray();
         return requests.Length==0?null:s with{
             RemoteSuccession=RemoteBefore(s.RemoteSuccession,at,rev),ActiveSuccession=ActiveBefore(s.ActiveSuccession,at,rev),Authority=AuthorityBefore(s.Authority,at,rev),UnitDirective=DirectiveBefore(s.UnitDirective,at,rev),Observation=ObservationBefore(s,at,rev),Cancellation=CancellationBefore(s,at,rev),CommandHolding=CommandHoldingBefore(s,at,rev),HeldDelivery=HeldBefore(s,at,rev),ReplyRecovery=ReplyRecoveryBefore(s,at,rev),UnitInquiry=requests.Any(q=>UnitInquiryAction(q.Input.Action))?UnitInquiryBefore(s.UnitInquiry,at,rev):null,UnitRetry=requests.Any(q=>UnitRetryAction(q.Input.Action))?UnitRetryBefore(s.UnitRetry,at,rev):null,Rout=requests.Any(q=>q.Input.MotionContract==RoutContract)?RoutBefore(s.Rout,at,rev):null,Withdrawal=requests.Any(q=>WithdrawalAction(q.Input.Action))?WithdrawalBefore(s.Withdrawal,at,rev):null,Requests=requests,Events=s.Events.Where(e=>Before(e.At,e.Revision,at,rev)).ToArray(),Openings=s.Openings.Where(o=>Before(o.At,o.Revision,at,rev)).ToArray(),
@@ -40,7 +40,7 @@ public static partial class NewGameMilitary
         Need(s.Requests.Select(q=>q.Input.Id).Distinct().Count()==s.Requests.Length&&s.Requests.Select((q,i)=>i==0||q.Revision>s.Requests[i-1].Revision&&q.At>=s.Requests[i-1].At).All(x=>x),"軍務入力が重複・逆順です");
         ValidateAuthority(w,false);ValidateDirectiveCancellation(w,false);ValidateCancellationShape(w);ValidateUnitInitialStatuses(w);ValidateUnitDirectiveShape(w);ValidateDirectiveHolding(w,false);ValidateDirectiveCancelHolding(w,false);ValidateReplyRecoveryShape(w);ValidateCommandHolding(w);ValidateHeldShape(w);
         ValidateLedgerBinding(w);ValidateActiveSuccession(w);ValidateRemote(w);
-        var first=s.Requests[0];var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id,first.Input.AuthorityPolicy,first.Input.LedgerPolicy),"貸与元・名簿・所在地の根拠が違います");
+        var first=s.Requests[0];using var _cc=ControlContext.At(first.Revision);var initial=BeforeState(w,first.At,first.Revision-1);Need(first.Input.Action==NewMilitaryAction.Request&&s.Terms==Terms(initial,first.Input.Id,first.Input.AuthorityPolicy,first.Input.LedgerPolicy),"貸与元・名簿・所在地の根拠が違います");
         Need(w.Messaging.Messages.Count(m=>m.Kind is "new-military-request" or "new-military-report")==s.Requests.Count(q=>q.Message!=null)&&w.Messaging.Messages.Count(m=>m.Kind=="new-military-notice")==s.Events.Length,"軍務と原本台帳が一致しません");
         // Only WorldSession may supply its already validated prior state. Loads always replay fully.
         // Unchanged immutable military inputs/effects/routes and original letters cannot be reinterpreted by later travel.

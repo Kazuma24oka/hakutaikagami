@@ -4,7 +4,7 @@ public sealed record PrivateInspectionReply(long Revision,bool CanConfirm,long F
 public static partial class PersonalCompanions
 {
     internal static PrivateInspectionReply ConsultInspection(ContractWorld w,EntityId person,EntityId actor,long revision)
-    {
+    {using var _ccRev=ControlContext.At(revision);
         PrivateInspectionReply No(string text)=>new(w.CommitSequence,false,DailyPay,text);
         if(actor!=w.PlayerControl||revision!=w.CommitSequence)return No("状況が変わりました。もう一度相談してください。");
         if(!SingleInspectionEnabled(w)||person==actor||!w.Characters.Any(c=>c.Id==person))return No("この相手には、この用件を相談できません。");
@@ -25,5 +25,5 @@ public static partial class PersonalCompanions
 }
 public sealed partial class WorldSession
 {
-    public PrivateInspectionReply ConsultPrivateInspection(EntityId person,EntityId actor,long revision){lock(gate)return PersonalCompanions.ConsultInspection(state,person,actor,revision);}
+    public PrivateInspectionReply ConsultPrivateInspection(EntityId person,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate)return PersonalCompanions.ConsultInspection(state,person,actor,revision);}
 }
