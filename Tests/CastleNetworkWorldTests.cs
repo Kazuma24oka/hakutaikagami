@@ -30,12 +30,24 @@ public sealed class CastleNetworkWorldTests
         Assert.True(WorldNetwork.Castle(w));
         Assert.Equal(CastleRoutes.Sites.Length,w.Definitions.Sites.Length);
         Assert.Equal(CastleRoutes.Nodes.Length,BranchRoutes.GraphNodes(w).Length);
-        Assert.Equal(CastleRoutes.Edges.Length,BranchRoutes.GraphEdges(w).Length);
+        Assert.Equal(TerrainCastleRoutes.Edges.Length,BranchRoutes.GraphEdges(w).Length);
         Assert.Equal(w.Definitions.Sites.Length,w.NewGame!.Start.Castles.Length);
         string site="site:"+ImagawaHomeNode();
         Assert.Equal("今川館",NewGameWorld.SiteName(site));
         Assert.False(RegionalWeather.North(new EntityId(site)));
         Assert.Throws<InvalidDataException>(()=>World("castle-routes-unknown"));
+    }
+
+    [Fact]public void PreviouslySavedCastlePolicyStillUsesItsOriginalUnadjustedRoutes()
+    {
+        var w=World(CastleRoutes.Ruleset);
+        Assert.Equal(CastleRoutes.Ruleset,w.NewGame!.NetworkPolicy);
+        Assert.Equal(CastleRoutes.Edges.Length,BranchRoutes.GraphEdges(w).Length);
+        Assert.Equal(CastleRoutes.Edges,BranchRoutes.GraphEdges(w));
+        var v2=World(TerrainCastleRoutes.Ruleset);
+        Assert.Equal(TerrainCastleRoutes.Edges,BranchRoutes.GraphEdges(v2));
+        var v1=CastleRoutes.Edges.ToDictionary(e=>e.Id);
+        Assert.Contains(TerrainCastleRoutes.Edges,e=>e.LengthMm!=v1[e.Id].LengthMm);
     }
 
     [Fact]public void PlayerWalksToACastleAndRecoveredSaveGivesTheSameFuture()
