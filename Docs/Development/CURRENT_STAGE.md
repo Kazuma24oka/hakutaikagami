@@ -78,7 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-12 | 城の移動網の世界の権利の記録と重さの測定（BD-04 18→20） | Docs/Design/CastleNetworkAuthorityV1/ | 統合後に記入 |
+| 2026-11-12 | 城の移動網の世界の権利の記録と重さの測定（BD-04 18→20） | Docs/Design/CastleNetworkAuthorityV1/ | PR139 → main 0e65edd9 |
 | 2026-11-12 | 地形（川・湖・山）の表示と切り替え（BD-20 32→35） | Docs/Design/MapTerrainV1/ | 202b744（PR136） |
 | 2026-11-12 | 国と郡の境界の表示（経路・国・郡の切り替え。BD-20 30→32） | Docs/Design/MapBordersV1/ | 0902b51（PR131） |
 | 2026-11-12 | 地図の範囲と寄り引き（北方領土・琉球・蝦夷地、朝鮮半島の城を除く。BD-20 28→30） | Docs/Design/MapExtentV1/ | 2a6a487（PR129） |
