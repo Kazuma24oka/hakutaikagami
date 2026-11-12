@@ -18,6 +18,15 @@ public static class LocalWorkDemand
         foreach(var edge in edges){var last=records.Where(e=>e.Claim=="route-open:"+edge.Id||e.Claim=="route-block:"+edge.Id).OrderByDescending(e=>e.ObservedAt).ThenByDescending(e=>e.RecordedAt).ThenBy(e=>e.Id.Value,StringComparer.Ordinal).FirstOrDefault();if(last==null)missing.Add(edge.Id);else if(at-last.ObservedAt!.Value>=RecordAge)stale.Add(edge.Id);}
         return new(pending.Length==0&&(missing.Count>0||stale.Count>0),pending.Length>0?"await-report":missing.Count>0?"missing-record":stale.Count>0?"old-record":"records-current",missing.ToArray(),stale.ToArray(),pending);
     }
+    // 本人の記録が古くなる次の時刻（at より後で一番早いもの）。休眠の版の世界で、判断の入力が変わる時刻を区切りにするために使う（v108）。
+    public static long? NextStale(ContractWorld w,EntityId issuer,EntityId site,long at)
+    {
+        if(!Enabled(w))return null;
+        string node=NewGameWorld.Node(site.Value);var edges=BranchRoutes.GraphEdges(w).Where(e=>(e.From==node||e.To==node)&&!NationalRoutes.Sea(e.Id)).Select(e=>e.Id).ToHashSet(StringComparer.Ordinal);
+        long? next=null;
+        foreach(var e in w.Evidence.Where(e=>e.Observer==issuer&&e.ObservedAt!=null)){string claim=e.Claim;string? edge=claim.StartsWith("route-open:",StringComparison.Ordinal)?claim[11..]:claim.StartsWith("route-block:",StringComparison.Ordinal)?claim[12..]:null;if(edge==null||!edges.Contains(edge))continue;long t=checked(e.ObservedAt!.Value+RecordAge);if(t>at&&(next==null||t<next))next=t;}
+        return next;
+    }
     public static NearbyActor[] Candidates(ContractWorld w,bool requireNeed=true)
     {
         var site=w.Locations.Single(l=>l.Actor==w.PlayerControl);if(site.Kind!=LocationKind.AtSite)return [];

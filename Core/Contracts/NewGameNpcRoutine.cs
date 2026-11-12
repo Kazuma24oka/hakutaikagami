@@ -9,7 +9,8 @@ public static partial class NewGameNpcRoutine
     {
         if(!Enabled(w))return [];
         var adults=Continuing(w)?w.Characters.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id.Value).ToHashSet(StringComparer.Ordinal):null;
-        return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
+        // 休眠の版のある世界では、今の区切りで起きている人物だけ（NpcDormancy）。
+        return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).Where(p=>NpcDormancy.Awake(w,p,w.ElapsedSeconds)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
     }
     public static bool IsActor(ContractWorld w,EntityId actor)=>Enabled(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult:!p.Created));
     static ContractWorld LifeAtDecision(ContractWorld world,long at,long revision)
@@ -42,14 +43,24 @@ public static partial class NewGameNpcRoutine
     public static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w))return null;var times=new List<long>();
-        foreach(var actor in Actors(w)){var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(checked(w.ElapsedSeconds+1));else if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)times.Add(next);}
+        foreach(var actor in Actors(w)){var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(checked(w.ElapsedSeconds+1));else if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)times.Add(next);
+            if(NpcDormancy.Enabled(w))times.AddRange(InputChanges(w,actor,last?.InputHash));}
         return times.Where(t=>t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
+    }
+    // 休眠の版の世界：次の区切りまで世界は変わらないので、判断の入力が変わるのは時刻だけによる。
+    // 1秒後（直前に知った記録が使えるようになる時刻）と記録が古くなる時刻のうち、入力が変わる時刻を区切りにする。
+    // これで、進める細かさによらず同じ時刻に判断する（v108）。
+    static IEnumerable<long> InputChanges(ContractWorld w,EntityId actor,string? lastHash)
+    {
+        long now=w.ElapsedSeconds;var candidates=new List<long>{checked(now+1)};
+        if(PersonalCompanions.PhysicalSiteAt(w,actor,now,w.CommitSequence+1) is {} site&&LocalWorkDemand.NextStale(w,actor,site,now) is {} stale)candidates.Add(stale);
+        foreach(var t in candidates.Distinct())if(ContractJson.CanonicalHash(Inputs(w,actor,t,w.CommitSequence))!=lastHash)yield return t;
     }
     internal static void TakeTurns(WorldSession session)=>session.TakeNewGameNpcTurns();
     public static void Validate(ContractWorld w)
     {
         if(!Enabled(w)||w.NpcWork==null||Actors(w).Length>(Continuing(w)?ContinuingMaximumActors:MaximumActors))throw new InvalidDataException("NPC routine policy/module mismatch");var ds=w.NpcWork.Decisions;if(ds.Select(d=>d.Id).Distinct().Count()!=ds.Length)throw new InvalidDataException("Duplicate NPC routine decision");
-        for(int n=0;n<ds.Length;n++){var d=ds[n];var historical=LifeAtDecision(w,d.At,d.InputRevision);if(d.Id!=new EntityId("decision:npc-work/"+(n+1))||!IsActor(historical,d.Actor)||d.At<0||d.At>w.ElapsedSeconds||d.InputRevision<0||d.InputRevision>w.CommitSequence||n>0&&d.At<ds[n-1].At||d.InputHash!=ContractJson.CanonicalHash(d.Inputs)||d.InputHash!=ContractJson.CanonicalHash(Inputs(historical,d.Actor,d.At,d.InputRevision))||d.Reason!=Reason(d.Inputs))throw new InvalidDataException("NPC routine lacks its own historical inputs");
+        for(int n=0;n<ds.Length;n++){var d=ds[n];var historical=LifeAtDecision(w,d.At,d.InputRevision);if(d.Id!=new EntityId("decision:npc-work/"+(n+1))||!IsActor(historical,d.Actor)||!NpcDormancy.Awake(w,d.Actor,d.At)||d.At<0||d.At>w.ElapsedSeconds||d.InputRevision<0||d.InputRevision>w.CommitSequence||n>0&&d.At<ds[n-1].At||d.InputHash!=ContractJson.CanonicalHash(d.Inputs)||d.InputHash!=ContractJson.CanonicalHash(Inputs(historical,d.Actor,d.At,d.InputRevision))||d.Reason!=Reason(d.Inputs))throw new InvalidDataException("NPC routine lacks its own historical inputs");
             if(d.Request is {} id){if((d.Reason!="inspect-own-site"&&(!PurposeEnabled(w)||d.Reason!="practice-own-skill")&&(!NpcJudgment.Enabled(w)||d.Reason!="offer-local-inspection"))||id!=new EntityId("request:npc-routine/"+d.Actor.Value.Replace(':','/')+"/"+(d.Inputs.OwnTasks.Length+1)))throw new InvalidDataException("Invalid NPC routine request identity");if(d.Result is ResultCode.Accepted or ResultCode.AlreadyAccepted){var request=w.Requests.Single(r=>r.Id==id);if(PurposeEnabled(w)&&(request.Intent.Action!=(d.Reason=="practice-own-skill"?ActionKind.Train:ActionKind.Inspect)||d.Reason=="practice-own-skill"&&request.Intent.TrainingSkill!=d.Inputs.Routine!.Purpose!.Skill))throw new InvalidDataException("NPC purpose dispatch differs from chosen action");if(request.CreatedAt!=d.At||request.Intent.Actor!=d.Actor||request.Intent.Executor!=(d.Reason=="offer-local-inspection"?d.Inputs.Routine!.Judgment!.Recipient:d.Actor))throw new InvalidDataException("NPC routine dispatch differs from decision");}}
             else if(d.Reason is "inspect-own-site" or "practice-own-skill" or "offer-local-inspection"||d.Result!=ResultCode.NotAvailable)throw new InvalidDataException("NPC routine wait has dispatch result");
         }

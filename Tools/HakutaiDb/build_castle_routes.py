@@ -8,6 +8,7 @@
   - 城ごとに、近い拠点（今の全国の拠点・ほかの城）のうち、まっすぐ結んだ線が陸地の上を通るもの（1km ごとに確かめる）を、近い順に2つまで（40km 以内）結ぶ。
   - 今の全国の移動網につながらない城のまとまりは、陸地の上を通る一番近い結び方で足していく（80km まで）。
   - それでもつながらない島の城は、一番近い今の拠点か城へ海路で結ぶ。
+  - 同じ位置の城（史料で座標が同じもの）は、後の城を北へ約33mずつずらす（位置から拠点を1つに決めるため）。
   - 長さは今の移動網と同じ：陸路は大円距離×1.25、海路は×1.10。速さも同じ（陸路 徒歩1000・使者2000、海路 6000・8000）。
 今の全国の拠点はそのまま使う。全国の拠点どうしをまっすぐ結んだ陸の推定の連絡路は使わず（湖や海を横切るため）、全国の拠点も近い城と結ぶ。尾張の細かい道と海路は残す。湖は道を通さない。
 """
@@ -24,6 +25,7 @@ OUT = DATA / "castle-routes-1560-v1.json"
 STEP_KM = 1.0
 NEAR_KM = 40.0
 BRIDGE_KM = 80.0
+SHIFT_E7 = 300
 
 
 def km(a, b):
@@ -102,11 +104,18 @@ def main():
             pts[n["Id"]] = (n["LatitudeE7"] / 1e7, n["LongitudeE7"] / 1e7)
     national = set(pts)
     castles = []
+    used = {(n["LatitudeE7"], n["LongitudeE7"]) for n in nat["Nodes"]}
     for c in db["Castles"]:
         if c.get("Region") == "琉球":
             continue
         nid = "c-" + c["Id"].replace("-", "").lower()
-        pts[nid] = (c["LatitudeE7"] / 1e7, c["LongitudeE7"] / 1e7)
+        lat = c["LatitudeE7"]
+        # 同じ位置の拠点があれば、北へ約33m（緯度 E7 で 300）ずつずらす（位置から拠点を1つに決めるため。2026-11-12）
+        while (lat, c["LongitudeE7"]) in used:
+            lat += SHIFT_E7
+        used.add((lat, c["LongitudeE7"]))
+        c = dict(c, LatitudeE7=lat)
+        pts[nid] = (lat / 1e7, c["LongitudeE7"] / 1e7)
         castles.append((nid, c))
     edges = {}
 

@@ -5,6 +5,9 @@ using Xunit;
 namespace HakutaiKagami.Tests;
 
 // 進行の重さの見直し 第1段（2026-11-12、v107）。
+// 開始の検査の記憶は全体で4つまで。ほかの検査と同時に動くと記憶が入れ替わるので、この組は単独で動かす。
+[CollectionDefinition("開始の検査の記憶",DisableParallelization=true)]public sealed class StartProjectionCollection{}
+[Collection("開始の検査の記憶")]
 public sealed class AdvanceCostTests
 {
     static WorldSession Large(int n)

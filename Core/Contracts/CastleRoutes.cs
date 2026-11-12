@@ -32,7 +32,9 @@ public static class CastleRoutes
         var ids=c.Nodes.Select(n=>n.Id).ToHashSet(StringComparer.Ordinal);
         Need(ids.Count==c.Nodes.Length&&!ids.Overlaps(national)&&c.Nodes.All(n=>n.Id.StartsWith("c-",StringComparison.Ordinal)&&n.Id.All(ch=>char.IsAsciiLetterLower(ch)||char.IsAsciiDigit(ch)||ch=='-')),"拠点の ID");
         Need(c.Nodes.Select(n=>n.Castle).Order(StringComparer.Ordinal).SequenceEqual(HakutaiDb.PublicGeography().Where(p=>HakutaiDb.Castle(p.Id)!.Region==null).Select(p=>p.Id).Order(StringComparer.Ordinal)),"百代鏡DBの城（琉球を除く）ごとに1つの拠点");
-        Need(c.Nodes.All(n=>HakutaiDb.Castle(n.Castle) is {} x&&x.LatitudeE7==n.LatitudeE7&&x.LongitudeE7==n.LongitudeE7),"拠点の位置は城の位置");
+        // 同じ位置の城は、北へ約33m（緯度 E7 で 300）ずつずらしてある。拠点の位置はすべて異なる（位置から拠点を1つに決める）。
+        Need(c.Nodes.All(n=>HakutaiDb.Castle(n.Castle) is {} x&&x.LongitudeE7==n.LongitudeE7&&n.LatitudeE7>=x.LatitudeE7&&(n.LatitudeE7-x.LatitudeE7)%300==0&&n.LatitudeE7-x.LatitudeE7<=3000),"拠点の位置は城の位置");
+        Need(c.Nodes.Select(n=>(n.LatitudeE7,n.LongitudeE7)).Concat(NationalRoutes.Catalog.Nodes.Select(n=>(n.LatitudeE7,n.LongitudeE7))).Distinct().Count()==c.Nodes.Length+NationalRoutes.Catalog.Nodes.Length,"拠点の位置が重なっています");
         Need(c.Edges.Select(e=>e.Id).Distinct().Count()==c.Edges.Length&&c.Edges.All(e=>e.From!=e.To&&(ids.Contains(e.From)||national.Contains(e.From))&&(ids.Contains(e.To)||national.Contains(e.To))),"道の両端");
         Need(c.Edges.All(e=>long.TryParse(e.LengthMm,out var l)&&l>0&&(e.Mode=="land"&&e.FootSpeed==1000&&e.CourierSpeed==2000||e.Mode=="sea"&&e.FootSpeed==6000&&e.CourierSpeed==8000)&&!string.IsNullOrWhiteSpace(e.Basis)),"道の長さ・速さ・種類");
         // すべての城の拠点が、今の全国の移動網につながる

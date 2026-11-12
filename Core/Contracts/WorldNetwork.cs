@@ -27,7 +27,9 @@ public static class WorldNetwork
     // 拠点の名前・位置を ID で引く（どの版の世界の拠点でも。今の全国の拠点は今までどおり NationalRoutes から）。
     public static SiteDefinition Site(EntityId id)=>NationalRoutes.Sites.FirstOrDefault(s=>s.Id==id)??(castleSiteIndex.Value.TryGetValue(id,out var s)?s:throw new InvalidOperationException("収録されていない拠点です"));
     public static BranchNode? Node(string id)=>NationalRoutes.Nodes.FirstOrDefault(n=>n.Id==id)??castleNodeIndex.Value.GetValueOrDefault(id);
-    public static BranchNode? NodeOfSite(string site)=>NationalRoutes.Nodes.FirstOrDefault(n=>RegionalCampaign.Site(n.Id).Value==site)??(site.StartsWith("site:c-",StringComparison.Ordinal)?castleNodeIndex.Value.GetValueOrDefault(site["site:".Length..]):null);
+    // 今の全国の拠点を拠点 ID で引く索引（一覧の先にあるものを優先する FirstOrDefault と同じ結果）。
+    static readonly Lazy<Dictionary<string,BranchNode>> nationalBySite=new(()=>{var d=new Dictionary<string,BranchNode>(StringComparer.Ordinal);foreach(var n in NationalRoutes.Nodes)d.TryAdd(RegionalCampaign.Site(n.Id).Value,n);return d;});
+    public static BranchNode? NodeOfSite(string site)=>nationalBySite.Value.GetValueOrDefault(site)??(site.StartsWith("site:c-",StringComparison.Ordinal)?castleNodeIndex.Value.GetValueOrDefault(site["site:".Length..]):null);
 
     // 開始配置に城の拠点を足す（持ち主なし。DBの家の配置は全国開始の版で入れる）。
     public static SetupScenario WithCastles(SetupScenario s)=>s with{Castles=[..s.Castles.Where(c=>!CastleRoutes.Outside.Contains(c.Id["site:".Length..])),..CastleRoutes.Catalog.Nodes.Select(n=>new SetupCastle("site:"+n.Id,null))]};
