@@ -4,11 +4,11 @@
 
 ## 差し替え前の完成へ（2026-11-11 ユーザー指示・Claude が本線を引継ぎ）
 
-目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。戦国DBの取り込み（BD-20）と見た目の工程は後回しにし、それ以外を先に終わらせる（2026-11-11 ユーザー指示）。
+目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。2026-11-12 のユーザー指示に従い、指定された全国DB・世界配置、負傷/捕縛、合戦と家の滅亡/再興を工程順に並行担当し、差し替え前の完成まで区切らない。
 
 2026-11-12：ユーザーから戦国DBの完成の連絡と、百代鏡DBを作ってよいとの指示。ドット絵の素体の書き出しは規約上問題ないと確認（絵を Git に入れた）。
 
-直近：[全国郡支配の初期色](../Design/NationalDistrictControlV1/README.md)（2026-11-12）。新規1560年全国世界の637郡を版付き台帳に保存し、開始前と3D地図で同じ初期支配・並立・根拠を表示。ゲーム内部入力、実保存復旧後の一致を確認。次は家の従属関係を勢力間関係として世界へ接続する（設計 [NATIONAL_PLACEMENT_DESIGN_V1.md](../Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md)）。
+直近：[家の従属関係を勢力間関係として世界へ接続](../Design/NationalFactionRelationsV1/README.md)（v113、2026-11-12）。次はDBの年次改名・郡収入・人物能力と生年を順に全国世界へ接続する。
 
 ## 全国共通の判断支援
 
@@ -78,6 +78,7 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-12 | 家の従属関係を新規全国世界の勢力関係として保存（v113、BD-20 55→60） | Docs/Design/NationalFactionRelationsV1/ | 作業中 |
 | 2026-11-12 | 全国郡支配の初期色（v112、BD-20 50→55） | Docs/Design/NationalDistrictControlV1/ | PR #143へv111と統合候補として反映予定 |
 | 2026-11-12 | 全国1560年の移動網に地形負荷を追加（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR作成・統合待ち |
 | 2026-11-12 | 全国1560年の開始の版（BD-04 25→35・BD-20 35→45。休眠の世界の手番のまとめた検査 v109 を含む） | Docs/Design/NationalStartV1/・Docs/Design/NpcBatchValidationV1/ | PR142 → main cde0bf58 |

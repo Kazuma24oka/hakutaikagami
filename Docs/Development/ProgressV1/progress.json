@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "de08c22008b9598d90a53f83766fe71d94cd326cac07a8ba903f9140618e34fa",
-    "Docs/Development/ProgressV1/estimate.json": "fefabf4f578d74375c67b66fe24cd98c1d63905ae52a05449f3ff1966524372f",
+    "Docs/Development/ProgressV1/estimate.json": "0526c3af3206779a257a38679d68eb5afea19dae32d726845dc704a8f676e9e5",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "f8263bef2b9dbea01b44e5884e0cfd836382f417e623d3b76b7f5b0241a0153a",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "97baf07d9af4c5f926176a6edc2b47696db84d4aa1138b71564181c658cd644b",
+    "Scripts/check_approval_batch.py": "bded98feb40d3212c6e7eb9c226129394dea08157cd49881495019ddd1290889",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "9f793130a4161cc45389852144ec9f82022df0a6e84398e32a6da52c62c0f409",
-    "Docs/Development/CURRENT_STAGE.md": "e0d7f72b57e0e7971ef96fbf1c02d6b5c1af44dc3fd1eb2506f2e19d0c8002b6",
+    "Docs/Development/CURRENT_STAGE.md": "daee630684fe965e54bf6b272fd1debe87799e3526b9ec18971f8e37590483c8",
     "Core/Contracts/HouseSuccession.cs": "7e2ee13dcd64453a71faf96b6ebb9c07cc4c8b0149ae2e64dfa8f7413cc2d54a",
     "Core/Contracts/FactionStances.cs": "a9515bbb244fc13ac70ad37fa45f79ee24e3215b0bfe53e9d3cb55f607491733",
-    "Core/Contracts/NewGameWorld.cs": "98a46a05d8af1dc1df746c77efb791df5ac94702f0920543636ef7a2d73ba407",
+    "Core/Contracts/NewGameWorld.cs": "0ef7fd0207d309baf81b32f1d7bb93ef3f0bffc0db3538610d77ef3a47ef4fcc",
     "Core/Contracts/HouseSalary.cs": "7f1d624a04af528484a7fee19db6e7e96ee9d7531addb64c1110468e24cef341",
     "Core/Contracts/HouseLogistics.cs": "06e4849828687eae2f992dfc1bef60b1ff5a8eed42807bdb9d340b3acd3559d9",
     "Tests/HouseSuccessionTests.cs": "65edb5907e79afb95f93bd7059a857558affece68c595b7bd2cc94c5930c1df3",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "5b1ebd355bd7fb04bfe07124d074d8136cc670cb234c012d21e14124452e4033",
     "Core/Contracts/NewGameNpcRoutine.cs": "5ada454daaafec1d263b1794853545df8bc34130b2393c1a445427fed7389228",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "b72281fdf54076623a0ff214418b9da480635981cf6d9ae5fbce123899b35097",
+    "Core/Contracts/ContractJson.cs": "5686b0ff20b59d031ecc16b0c2b5cee4e175f881779772c1bb76d066339cad7b",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -399,7 +399,7 @@
     "Docs/Design/ProgressScopeV3/README.md": "eb4f704df7ffa5fc699ee7935aef8434c92bfccff058630157c914d8c7cc1d14",
     "Docs/Design/ProgressScopeV3/completion.json": "ffd60ea3733d6912b5a6245b44675c849105f043d7bd11ee4b1bb7d17018c266",
     "Docs/Design/ProgressScopeV3/verification.json": "ce5b4926cbcb50eec9f2091986436878cfcf1e59669ca1556ebd9d427a629bcb",
-    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "298bb56c625d470caaff9e52d88b6fb65379f3e77b7748f92ca3f1c4a4fb77b0",
+    "Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md": "c5475c64102bf7d769b2b1c6700a3c2c9a5b46b4febdb42411c3137a50db429d",
     "Docs/Development/ProgressV1/approval-baseline-v49-scope.json": "e33a8dc9ea47c2553aca2d30f3255bc0a9b9cb3730bc7e1c06c85af13ded1f90",
     "Docs/Development/ProgressV1/approval-baseline-v50.json": "a2d6a868839b7752fa3701dd81307d602de60f60b3dd6ade2428f95c9736da44",
     "Docs/Design/ProgressScopeV4/scope.md": "05dd36d0200630701e566fa25c93121401930d29e146611ea872105d290933b3",
@@ -483,7 +483,7 @@
     "Scripts/verify_historical_chronicle.py": "301c16651b872992e34e17bb99b2e09c2b795efc89ac37f588c6165e01dc93af",
     "Game/Scripts/NewGameRuntime.VerbNotebook.cs": "11035462ba0e42a4e80db291864564a74c476822e175145cd7ac8f723dbd7b8a",
     "Game/Scripts/VerbNotebookCheck.cs": "02423fb27c35c3f847d4ffaf06084ff14381411772a60a27956bf26fb2df34e1",
-    "Game/Scripts/NewGameRuntime.cs": "c260f0acc735c598d1b0784b9f4bcc13d7d7586d033ce7d11e1401df9eba6451",
+    "Game/Scripts/NewGameRuntime.cs": "f558b7bfc38cfa59c3c355ca0023611913c8265f9b710c9abf4ae36276cf9c41",
     "Docs/Design/VerbNotebookV1/verification.json": "2d34e856be74d87c4a4bab22092c248a2c3f19800e7c0630a845bee80ce73363",
     "Docs/Design/VerbNotebookV1/completion.json": "b90d279ab418eda2ef85eabd458141f924b0208db072bc070cde157590cea5aa",
     "Docs/Design/VerbNotebookV1/integration.json": "bb3f939cc27cebcb34e0304c8cd96c9fd56597837c3c826d1642530153db285b",
@@ -793,16 +793,16 @@
     "Docs/Design/NationalDistrictControlV1/verification.json": "2e3deeb9037f0e0c5284e580924b3f6e0412bf23a8b4778f6975563e0fa2f79d",
     "Game/Scripts/ContinuousWorldTrial.NationalDistrictControl.cs": "b16b18f02f55c4abdab03b70ab500b21e257d9a7067aba6b8719a87ffec8e099",
     "Docs/Design/NationalDistrictControlV1/scope.md": "97d3497cdd01c9f01258d13ebc17d9a0a4b707f9d25d20002976f03f3ba24671",
-    "Core/Contracts/ContractModels.cs": "1e9c26d3b713b0208f73d446e283706a189d2314ae4ca0feb4d9a16188f643bf",
-    "Core/Contracts/NationalStart.cs": "01f416f9f6c942695bc30cca3f3066d80af4358b30715a52fc63308fbd56bcb6",
-    "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "d9deab2b98952e238daf93b7fefe80c1c58445ba4bad70c023d27346cda6b1fd",
+    "Core/Contracts/ContractModels.cs": "0bd5e8357dd04b0965f824f35bfd0744871f030988a29df6823d807655e46174",
+    "Core/Contracts/NationalStart.cs": "90b7b97260b647b2c178cc12e2507e097ecb33e14a997f099badca90f5e4b22c",
+    "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "52474323de38df5ed6f79ddd0d576b1ff09abf84304ffb2ea5b64480268d11de",
     "Game/Scripts/ContinuousWorldTrial.ForceLod.cs": "63e56dbe37bb5f8c6b98849f2054a0a0b9ee826fdfee264deaf028486ab9e8b0",
     "Game/Scripts/ContinuousWorldTrial.cs": "e1f7f97fefd90b44ebc9502a488d959ffbb5f83488f9a56f5d01b06cf73437d2",
     "Game/Scripts/HakutaiDbCheck.cs": "95d76c9eec71638a9f183d90ac7b9a11feea00d5d1720b25c3ecd985482c60a5",
     "Game/Scripts/NewGameFrontEnd.HakutaiDb.cs": "96d96f4b0fe3486e774bd8e84db38fd2cf78c94659ae40d5d58b41c95d6a51f2",
     "Game/Scripts/NewGameMap.cs": "b4b3758c2beea101a43f3f854b25250ae36979ba083c3aa7e864743ef805313f",
-    "Tests/HakutaiDbTests.cs": "bf81cad1616d06ec3c8097a4c71f6ae240c6a6db00a16b842b0ce7eea4fec362",
-    "Tests/NationalStartTests.cs": "bd32678c77918ce576f9a4057a9156c07e602269bf4d167bb7e57ff1efaae4b0"
+    "Tests/HakutaiDbTests.cs": "35d52066c56a0cbe915645875272c5d3809cf1c5cd79afac2380893d187aa262",
+    "Tests/NationalStartTests.cs": "d94b55d18f8b7cf4d89cae1effaa2c2b0cabf78f5ebc80f35af9b5c0aab09a62"
   },
   "items": [
     {
@@ -1516,8 +1516,8 @@
     {
       "id": "BD-20",
       "status": "normal",
-      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。2026-11-12 百代鏡DB V1：戦国DBの版（38a13d12）から1560年の家304・人物4,596・城829を書き出し、推定の決め方・公知の地理と年の情勢の区別・既存の開始人物との対応・開始前の史料の画面を持つ。全員を世界に置く開始配置は未接続。 v111：川・湖沼・標高を全国移動網の新版へ反映。既存版の距離と基本経路は維持。 v112：新規1560全国世界の637郡の支配・並立・根拠を版付きで保存し、全国開始前と3Dの全国表示で同じ初期支配を仮色表示。ゲーム内部入力・実保存復旧後の状態一致。",
-      "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。 統合案で追加：§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1）・史実人物の新しい項目の採録（生年・没年・血縁・家系・兵科適性・志・席次・官位・初期の名物など）と拠点の新しい値の初期データ（CHARACTER_DATA_FIELDS_V1）。 2026-11-06採用：魅力・人物別32技能の開始熟練・出自を、経歴と出典/推定/未採録の区別付きで採録する。旧交渉値から魅力を自動算出しない。 2026-11-06採用：史実の子は開始時の年齢と経歴に応じた状態・傾向を採録し、出典・推定・未採録・試作を区別する。史料にない教育者や幼少期を史実として補わない。 ゲーム中の支配変動に追随する郡台帳、勢力どうしの従属関係、年次の名乗り、郡の金銭収入、人物の能力・生年。",
+      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。2026-11-12 百代鏡DB V1：戦国DBの版（38a13d12）から1560年の家304・人物4,596・城829を書き出し、推定の決め方・公知の地理と年の情勢の区別・既存の開始人物との対応・開始前の史料の画面を持つ。全員を世界に置く開始配置は未接続。 v111：川・湖沼・標高を全国移動網の新版へ反映。既存版の距離と基本経路は維持。 v112：新規1560全国世界の637郡の支配・並立・根拠を版付きで保存し、全国開始前と3Dの全国表示で同じ初期支配を仮色表示。ゲーム内部入力・実保存復旧後の状態一致。 v113：新規全国世界へ主家・従属家の有向関係と根拠を保存。操作人物に直接関わる関係だけを表示。",
+      "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。 統合案で追加：§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1）・史実人物の新しい項目の採録（生年・没年・血縁・家系・兵科適性・志・席次・官位・初期の名物など）と拠点の新しい値の初期データ（CHARACTER_DATA_FIELDS_V1）。 2026-11-06採用：魅力・人物別32技能の開始熟練・出自を、経歴と出典/推定/未採録の区別付きで採録する。旧交渉値から魅力を自動算出しない。 2026-11-06採用：史実の子は開始時の年齢と経歴に応じた状態・傾向を採録し、出典・推定・未採録・試作を区別する。史料にない教育者や幼少期を史実として補わない。 ゲーム中の支配変動に追随する郡台帳、年次の名乗り、郡の金銭収入、人物の能力・生年。",
       "evidence": [
         "Core/Contracts/NationalRoutes.cs",
         "Core/Contracts/HistoricalRoads.cs",
@@ -1537,7 +1537,12 @@
         "Game/Scripts/NewGameMap.cs",
         "Docs/Design/NationalDistrictControlV1/README.md",
         "Docs/Design/NationalDistrictControlV1/completion.json",
-        "Docs/Design/NationalDistrictControlV1/verification.json"
+        "Docs/Design/NationalDistrictControlV1/verification.json",
+        "Core/Contracts/NationalFactionRelations.cs",
+        "Tests/NationalFactionRelationsTests.cs",
+        "Docs/Design/NationalFactionRelationsV1/README.md",
+        "Docs/Design/NationalFactionRelationsV1/completion.json",
+        "Docs/Design/NationalFactionRelationsV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -4015,7 +4020,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "v112：1560年全国開始の637郡を版付き支配台帳に保存し、開始前・3D地図の色表示と実保存復旧を接続。次は家の従属関係を勢力間関係として世界へ反映。",
+    "current_stage_summary": "全国1560年の地形対応移動網・郡支配色に続き、主家と従属家の直接関係を版付き台帳へ接続。本人の情報境界と実ファイル保存復旧を確認。画面のGodot起動確認と全件テストは未実施。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -4068,52 +4073,21 @@
   "near_term": {
     "title": "地域での仕事・旅・軍務の一巡",
     "done": "点検/需要/返報/報酬、移動/他拠点、軍務許可/兵糧準備/帰還の試作。 固定受渡し契約L1の独立検証を完了。 小口送金の運搬L2を通常入口・世代復旧・実3Dへ接続。 L3の船賃・無料陸路・同一人物の一巡を接続。",
-    "remaining": [],
-    "boundary": "これは地域の開発段階。全国・政治社会を含む製品範囲を縮小しない。",
+    "remaining": [
+      {
+        "title": "全国の年次変化と地域収入・人物基礎値",
+        "finish": "名乗り時系列、郡収入、人物能力・生年を全国世界へ順に接続する。"
+      },
+      {
+        "title": "負傷・捕縛と家の存続",
+        "finish": "負傷/病、捕縛・処遇、家の滅亡と再興を一通り接続する。"
+      }
+    ],
+    "boundary": "差し替え前の完成まで、承認済みの全国・人物・戦闘の残件をまとめて進める。ユーザー判断が本当に必要な変更は境界で確認する。",
     "completed": [
       {
-        "title": "L1 受渡し契約",
-        "finish": "所有/保管・受取人・期限/取消・報告/運賃を固定し履歴を検査。"
-      },
-      {
-        "title": "L2 現物運搬",
-        "finish": "小口送金を通常会話・実移動・現地受渡しへ接続し途中復旧を検証。"
-      },
-      {
-        "title": "L3 旅費と一巡",
-        "finish": "船賃・無料陸路・金欠からの仕事・仕官/軍務/帰還を同じ保存世界で検証。"
-      },
-      {
-        "title": "成果から次の仕事",
-        "finish": "履行評価の開封から条件の良い運搬と実報酬へ接続。"
-      },
-      {
-        "title": "成果から役目・手当",
-        "finish": "現地の打診と本人引受、新しい点検の手当、辞去と未払い保持を接続。"
-      },
-      {
-        "title": "任務の結果で次の用件が変わる",
-        "finish": "完了で運搬規模が増え、現物返却後は小口から再開。理由を会話で説明。"
-      },
-      {
-        "title": "仕事の縁から次の働き方",
-        "finish": "確認した相手と仕官・担当・軍務を相談。同じ人物/世界の手続きを接続。"
-      },
-      {
-        "title": "軍務帰還から次の実配置",
-        "finish": "受領済み返報の返答と新案件の許可を経て、残った兵で結果別の配置へ動く。"
-      },
-      {
-        "title": "身の振り方を変える会話",
-        "finish": "辞去と実引継ぎを経て、同じ人物が別の家へ仕官する。旧軍や資産は持ち去らない。"
-      },
-      {
-        "title": "新旧の縁と新しい役目",
-        "finish": "主家変更後も旧主君の記録を残し、新主君の評価/担当は独立して獲得する。"
-      },
-      {
-        "title": "主家別の軍務と再仕官後の引受",
-        "finish": "旧軍83人を保持して新主家100人を引受。旧主家復帰・遅着・保存復旧と実3Dを接続。"
+        "title": "家の従属関係を勢力関係として世界へ接続（v113）",
+        "finish": "新規1560世界で直接関係・情報境界・保存復旧を確認"
       }
     ],
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
