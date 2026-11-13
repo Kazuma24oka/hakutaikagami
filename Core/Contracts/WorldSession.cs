@@ -189,6 +189,19 @@ public sealed partial class WorldSession
             return new(ResultCode.Accepted,id,state.CommitSequence,"引き継ぎました");
         }
     }
+    // 包囲網への誘いに答える（加わる・断る）。
+    public CommandResult AnswerCoalition(EntityId letter,bool join,long revision)
+    {using var _ccRev=ControlContext.At(revision);
+        lock(gate)
+        {
+            var id=new EntityId("request:coalition-answer");
+            if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"状態が変わりました");
+            if(!NationalStrategy.OpenInvites(state).Any(x=>x.Invite.Letter==letter))return new(ResultCode.NotAvailable,id,state.CommitSequence,"答えられる誘いではありません");
+            try{Change(s=>NationalStrategy.Answer(s,letter,join));}
+            catch(InvalidDataException e){return new(ResultCode.NotAvailable,id,state.CommitSequence,e.Message);}
+            return new(ResultCode.Accepted,id,state.CommitSequence,join?"加わりました":"断りました");
+        }
+    }
     public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null,bool stopAtNotice=false)
     {
         lock(gate)

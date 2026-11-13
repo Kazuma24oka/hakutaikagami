@@ -19,10 +19,9 @@ public partial class NewGameRuntime
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Done(CommandResult r){if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();if(r.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)ShowPersonalLife();}
         long shown=Session.Revision;EntityId Id(string tag)=>new("request:personal-life-ui/"+tag+"/"+shown);
-        void Life(LifeAction action,LifeGoal goal=LifeGoal.WorkPay,long target=0)=>Done(Session.ManageLife(new(Id(action.ToString()),action,v.Site!.Value,action==LifeAction.CancelRest?v.ActiveRest:null,goal,target),Session.PlayerControl,shown));
+        void Life(LifeAction action,LifeGoal goal=LifeGoal.WorkPay,long target=0,EntityId? subject=null)=>Done(Session.ManageLife(new(Id(action.ToString()+(subject==null?"":"/"+subject.Value.Value)),action,v.Site!.Value,action==LifeAction.CancelRest?v.ActiveRest:null,goal,target){Subject=subject},Session.PlayerControl,shown));
         Text($"{PersonName(Session.PlayerControl)} — {v.Role}\n私財 {v.PrivateMoney}文 ／ 給付からの私有米 {v.PrivateRice}kg\n給付の未受領 {v.StipendReceivable}kg ／ 自分が支払う未払い {v.StipendPayable}kg");
         Text(v.Burden);Text($"食事で実消費した米 {v.MealRiceConsumed}kg ／ 記録した休養 {v.RestSeconds/60}分");
-        if(Session.ClinicalView() is {} clinical){Text($"疲労 {clinical.Fatigue}　医術 {clinical.MedicineExperience}　後遺症 {clinical.Aftereffect}");if(clinical.TreatmentUntil is {} due)Text($"診療 {Math.Max(0,due-Session.Seconds)/60}分");}
         if(Session.HealthView(Session.PlayerControl) is {} health){
             if(health.Conditions.Length==0){}
             foreach(var c in health.Conditions){
@@ -35,7 +34,7 @@ public partial class NewGameRuntime
             foreach(var limit in health.Limits)Text("できないこと："+limit);
             if(health.Limits.Length>0){}
         }
-        if(v.ActiveRest!=null){Text($"休息中：残り {Math.Max(0,v.RestUntil!.Value-Session.Seconds)/60}分。世界時刻は通常の進行操作で進みます。");Button("ここで休息を中止する（宿代・経過時間は戻りません）",()=>Life(LifeAction.CancelRest));}
+        if(v.ActiveRest!=null){Text($"休息中 残り{Math.Max(0,v.RestUntil!.Value-Session.Seconds)/60}分");Button("休息を中止する",()=>Life(LifeAction.CancelRest));}
         else if(v.Site!=null){
             {}
             Button("私有米1kgを食事に使う",()=>Life(LifeAction.EatPrivateRice),v.PrivateRice<1);
@@ -45,9 +44,12 @@ public partial class NewGameRuntime
             foreach(var pair in new[]{(LifeGoal.WorkPay,"仕事報酬を20文受け取る"),(LifeGoal.ReceiveStipend,"扶持米を20kg受け取る"),(LifeGoal.PayStipend,"家臣へ扶持米20kgを渡す")})Button(pair.Item2,()=>Life(LifeAction.SetGoal,pair.Item1,20));
             Button("位階・官職を一つ得る",()=>Life(LifeAction.SetGoal,LifeGoal.GainTitle,1));
             Button("家を一年保つ",()=>Life(LifeAction.SetGoal,LifeGoal.KeepHouse,1));
+            Button("所領を一年保つ",()=>Life(LifeAction.SetGoal,LifeGoal.KeepHoldings,1));
+            Button("主家を一年支える",()=>Life(LifeAction.SetGoal,LifeGoal.SupportLord,1));
+            {var w=Snapshot();foreach(var foe in PersonalLife.RevengeChoices(w,Session.PlayerControl,w.ElapsedSeconds,w.CommitSequence).Take(5)){var who=foe;Button($"{PersonName(who)}を討つ",()=>Life(LifeAction.SetGoal,LifeGoal.Revenge,1,who));}}
         }
-        else Text("道中です。食事・休息や目標の変更は拠点に着いてから選べます。");
-        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.KeepHouse?"家の存続（年）":g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
+        else Text("道中");
+        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.KeepHouse?"家の存続（年）":g.Goal==LifeGoal.KeepHoldings?"所領維持（年）":g.Goal==LifeGoal.SupportLord?"主家支援（年）":g.Goal==LifeGoal.Revenge?"報復":g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
         {}Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(620,580));
     }
 }
