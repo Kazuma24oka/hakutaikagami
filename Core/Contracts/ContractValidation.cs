@@ -75,13 +75,15 @@ public static class ContractValidation
         Check(s.ServiceBonds.All(x=>people.Contains(x.Subject)&&people.Contains(x.Target)&&x.Kind=="service"),"Service is not a person/person relation.");
         Check(s.Offices.All(x=>people.Contains(x.Subject)&&sites.Contains(x.Target)),"Office is not a person/site assignment.");
         Check(s.LandRights.All(x=>entities.Contains(x.Subject)&&sites.Contains(x.Target)&&new[]{"control","ownership","occupation","revenue"}.Contains(x.Kind)),"Invalid land right category.");
-        foreach (var edge in s.ServiceBonds.Where(x => x.From <= s.ElapsedSeconds && s.ElapsedSeconds < x.Until))
+        var activeService=s.ServiceBonds.Where(x => x.From <= s.ElapsedSeconds && s.ElapsedSeconds < x.Until).ToArray();
+        var serviceTargets=activeService.ToLookup(x=>x.Subject,x=>x.Target);
+        foreach (var edge in activeService)
         {
             var seen = new HashSet<EntityId> { edge.Subject }; var queue = new Queue<EntityId>(); queue.Enqueue(edge.Target);
             while (queue.TryDequeue(out var id))
             {
                 Check(id != edge.Subject, "Service cycle."); if (!seen.Add(id)) continue;
-                foreach (var next in s.ServiceBonds.Where(x => x.Subject == id && x.From <= s.ElapsedSeconds && s.ElapsedSeconds < x.Until)) queue.Enqueue(next.Target);
+                foreach (var next in serviceTargets[id]) queue.Enqueue(next);
             }
         }
         Keys(s.Grants, x => x.Id, "grants");

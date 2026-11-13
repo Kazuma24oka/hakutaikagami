@@ -179,6 +179,7 @@ public static partial class NpcArmies
             Need(q.At>=m.At&&q.At<=w.ElapsedSeconds&&q.Revision>m.Revision&&q.Revision<=w.CommitSequence&&q.Consumed==Consumed(w,m)&&RegionalCampaign.RoadActorPointAt(w,m.Commander,q.At)==site&&!w.Requests.Any(r=>r.Intent.Executor==m.Commander&&r.CommitSequence<q.Revision&&r.CreatedAt<=q.At&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>q.At))),"現地帰還と兵糧返納の根拠が一致しません");
             Need(!s.Marches.Any(march=>march.Muster==m.Id&&march.Revision>=q.Revision),"帰還済みの軍を再生成できません");
         }
+        if(s.Musters.Length==0)return; // Syncもこの場合は何も変えないため、世界全体の複写と自己比較を省く。
         var copy=ContractJson.Copy(w);Sync(copy);Need(ContractJson.CanonicalHash(copy.Units)==ContractJson.CanonicalHash(w.Units)&&ContractJson.CanonicalHash(copy.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray())==ContractJson.CanonicalHash(w.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray()),"NPC軍の兵数・兵糧が引受と消費原本に一致しません");
     }
 }
