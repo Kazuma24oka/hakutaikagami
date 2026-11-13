@@ -23,6 +23,8 @@
 - 重さ（2026-11-14、PC が空いた状態、織田信長で1日分、実際のゲームと同じく検査用の写しの書き換え確認 GuardTurnSnapshots を切って測定。Tests/NationalSystemsCostProbe.cs の HAKUTAI_NS_SET=now）：今の全国の開始（v4 の郡の収入、上の仕組みすべて、Codex が接続した戦・兵站の24項目、健康・和睦・捕縛）で38.7秒。遊べる目安の60秒に収まる。内訳は保存の検証が約14秒（31回）、確定の処理が約3秒（246回）、残りは NPC の手番。計測の仕掛けは Core/Contracts/Prof.cs（HAKUTAI_PROF=1。測りたい処理を Prof.T で囲む）。
 - 重さの直し：家督と奉公の同期の開始時の関係の使い回し（NewGameWorld.InitialRelations）、能力の同期の辞書引き（CharacterDevelopment.Derive）、病の判定と生年の使い回し（PersonalHealth）。郡の収入の帳簿・在庫・所在の使い回しは Codex の直し（Docs/Design/NationalWarfareV1）。
 
+- 全国での和睦交渉の一巡（NationalSystemsTests、2026-11-14）：織田信長が今川家の当主へ不戦20日の書状を送り、相手が開封して承諾の返書を出し、本人が開封して成立を知るまで、ゲーム内で4日。保存から戻して同じ。検査は検査用の写しの書き換え確認を入れたままで27分かかる（実際のゲームの重さとは別）。
+
 ## 残り
 - 健康：NPC が自分から診療を受ける判断は未接続（NPC の傷病は手当なしで経過する）。
-- 和睦・同盟交渉：全国の開始で有効にしたが、全国での交渉の一巡は検査していない（未実施）。
+- 同盟交渉（TreatyNegotiations）の全国での一巡は未実施。
