@@ -24,7 +24,7 @@ if(args.Contains("--day",StringComparer.Ordinal))
     sim.Restart();Until(sessionDay,86400);double latter=sim.Elapsed.TotalSeconds;
     sim.Restart();Until(host.Current,86400);double restoredSeconds=sim.Elapsed.TotalSeconds;
     var after=sessionDay.DiagnosticSnapshot();bool equal=ContractJson.CanonicalHash(after)==ContractJson.CanonicalHash(host.Current.DiagnosticSnapshot());
-    var result=new{Status=equal?"同じ未来":"復旧不一致",People=after.Characters.Length,Sites=after.Definitions.Sites.Length,Systems=after.NewGame!.NationalSystems,FirstHalfSeconds=first,SecondHalfSeconds=latter,FullDaySeconds=first+latter,RestoredHalfSeconds=restoredSeconds,Under60Seconds=first+latter<=60,SameFuture=equal,Scope="現在の全国開始で1日と途中保存復旧。軍500の負荷・実機FPSは別途未実施。"};
+    var result=new{Status=equal?"同じ未来":"復旧不一致",People=after.Characters.Length,Sites=after.Definitions.Sites.Length,RecordedNpcActors=after.NpcWork?.Decisions.Select(d=>d.Actor).Distinct().Count()??0,NpcDecisions=after.NpcWork?.Decisions.Length??0,NpcArmies=after.NpcArmies?.Musters.Length??0,Systems=after.NewGame!.NationalSystems,FirstHalfSeconds=first,SecondHalfSeconds=latter,FullDaySeconds=first+latter,RestoredHalfSeconds=restoredSeconds,Under60Seconds=first+latter<=60,SameFuture=equal,Scope="現在の全国開始で1日と途中保存復旧。軍500の負荷・実機FPSは別途未実施。"};
     File.WriteAllText(Path.Combine(output,"day-result.json"),JsonSerializer.Serialize(result,new JsonSerializerOptions{WriteIndented=true}));Console.WriteLine(JsonSerializer.Serialize(result));
     if(!equal)throw new InvalidDataException("途中保存の未来が一致しません");
     return;

@@ -36,19 +36,24 @@ public static class LocalInspectionFindings
         AbilityEffects.ValidateInspection(w);
         bool on=Enabled(w);var authored=w.Evidence.Where(e=>e.Id.Value.Contains("/inspected-road/",StringComparison.Ordinal)&&e.Message==null).ToArray();
         if(!on){if(authored.Length!=0||w.Outbox.Any(o=>o.Kind=="route-observation"&&o.Id.Value.Contains("/inspected-road/",StringComparison.Ordinal)))throw new InvalidDataException("Inspection results without policy");return;}
+        var evidenceById=w.Evidence.ToLookup(e=>e.Id);var known=w.Knowledge.ToHashSet();
+        var requests=w.Requests.ToLookup(r=>r.Id);var outbox=w.Outbox.ToLookup(o=>o.Id);var tasks=w.Tasks.ToLookup(t=>t.Id);
+        var nodes=BranchRoutes.GraphNodes(w).ToLookup(n=>n.Id,StringComparer.Ordinal);
+        var roads=BranchRoutes.GraphEdges(w).Where(e=>!NationalRoutes.Sea(e.Id)).SelectMany(e=>new[]{e.From,e.To}.Distinct(StringComparer.Ordinal).Select(n=>(Node:n,Edge:e))).ToLookup(x=>x.Node,x=>x.Edge,StringComparer.Ordinal);
+        IEnumerable<BranchEdge> LocalRoads(TaskState t)=>roads[NewGameWorld.Node(t.Scope.Value)].OrderBy(e=>e.Id,StringComparer.Ordinal);
         var expected=new HashSet<EntityId>();
         foreach(var t in w.Tasks.Where(t=>t.Action==ActionKind.Inspect&&t.Execution==ExecutionPhase.Completed)){
-            long at=t.FinishedAt??throw new InvalidDataException("Inspection completion time missing");string node=NewGameWorld.Node(t.Scope.Value);var point=BranchRoutes.GraphNodes(w).Single(n=>n.Id==node).Position;
+            long at=t.FinishedAt??throw new InvalidDataException("Inspection completion time missing");string node=NewGameWorld.Node(t.Scope.Value);var point=nodes[node].Single().Position;
             if(RegionalCampaign.ActorPointAt(w,t.Executor,at)!=point)throw new InvalidDataException("Inspection result detached from local execution");
-            foreach(var edge in Roads(w,t)){
-                var id=EvidenceId(t,edge.Id);expected.Add(id);var e=w.Evidence.SingleOrDefault(e=>e.Id==id);string claim=(RegionalCampaign.BlockedAt(w,edge.Id,at)?"route-block:":"route-open:")+edge.Id;
-                if(e==null||e.Observer!=t.Executor||e.Subject!=t.Id||e.Claim!=claim||e.ObservedAt!=at||e.RecordedAt!=at||e.Message!=null||e.Supersedes!=null||!w.Knowledge.Contains(new(t.Executor,id,at)))throw new InvalidDataException("Inspection result changed or incomplete");
+            foreach(var edge in LocalRoads(t)){
+                var id=EvidenceId(t,edge.Id);expected.Add(id);var e=evidenceById[id].SingleOrDefault();string claim=(RegionalCampaign.BlockedAt(w,edge.Id,at)?"route-block:":"route-open:")+edge.Id;
+                if(e==null||e.Observer!=t.Executor||e.Subject!=t.Id||e.Claim!=claim||e.ObservedAt!=at||e.RecordedAt!=at||e.Message!=null||e.Supersedes!=null||!known.Contains(new(t.Executor,id,at)))throw new InvalidDataException("Inspection result changed or incomplete");
                 if(t.Issuer==t.Executor)continue;
-                var mid=NoteId(t,edge.Id);var input=w.Requests.Single(r=>r.Id==t.RequestId).Intent;var o=w.Outbox.SingleOrDefault(o=>o.Id==mid);
+                var mid=NoteId(t,edge.Id);var input=requests[t.RequestId].Single().Intent;var o=outbox[mid].SingleOrDefault();
                 if(o==null||o.Task!=t.Id||o.Sender!=t.Executor||o.Recipient!=t.Issuer||o.Kind!="route-observation"||o.Body!=claim||o.At!=at||o.Delay!=input.ReportSeconds||!w.SealedMessages.Contains(mid))throw new InvalidDataException("Inspection report lacks immutable source paper");
             }
         }
         if(!expected.SetEquals(authored.Select(e=>e.Id)))throw new InvalidDataException("Unexpected inspection result");
-        foreach(var o in w.Outbox.Where(o=>o.Id.Value.Contains("/inspected-road/",StringComparison.Ordinal))){var t=w.Tasks.Single(t=>t.Id==o.Task);if(t.Execution!=ExecutionPhase.Completed||t.Issuer==t.Executor||!Roads(w,t).Any(e=>NoteId(t,e.Id)==o.Id))throw new InvalidDataException("Orphan inspection report");}
+        foreach(var o in w.Outbox.Where(o=>o.Id.Value.Contains("/inspected-road/",StringComparison.Ordinal))){var t=tasks[o.Task].Single();if(t.Execution!=ExecutionPhase.Completed||t.Issuer==t.Executor||!LocalRoads(t).Any(e=>NoteId(t,e.Id)==o.Id))throw new InvalidDataException("Orphan inspection report");}
     }
 }

@@ -277,9 +277,11 @@ public static partial class RegionalCampaign
     {
         if(w.Couriers==null)throw new InvalidDataException("Missing physical courier module");
         var cs=w.Couriers;var edges=BranchRoutes.GraphEdges(w);
-        if(cs.InitialBlocked.Distinct().Count()!=cs.InitialBlocked.Length||cs.InitialBlocked.Any(id=>!edges.Any(e=>e.Id==id))||!w.Branches!.BlockedEdges.ToHashSet().SetEquals(edges.Where(e=>BlockedAt(w,e.Id,w.ElapsedSeconds)).Select(e=>e.Id)))throw new InvalidDataException("Road truth differs from recorded conditions");
-        if(cs.Conditions.Any(c=>c.At<1||!edges.Any(e=>e.Id==c.Edge))||cs.Conditions.Select(c=>(c.At,c.Edge)).Distinct().Count()!=cs.Conditions.Length)throw new InvalidDataException("Invalid condition schedule");
-        foreach(var sight in cs.Sightings){var edge=edges.Single(e=>e.Id==sight.Edge);if(sight.At>w.ElapsedSeconds||sight.Position!=ActorPointAt(w,sight.Actor,sight.At)||sight.Blocked!=BlockedAt(w,edge.Id,sight.At)||sight.Position!=Node(w,edge.From)&&sight.Position!=Node(w,edge.To))throw new InvalidDataException("Invalid road sighting");}
+        var edgeById=edges.ToLookup(e=>e.Id,StringComparer.Ordinal);var nodes=BranchRoutes.GraphNodes(w).ToLookup(n=>n.Id,StringComparer.Ordinal);
+        RoutePoint AtNode(string id)=>nodes[id].Single().Position;
+        if(cs.InitialBlocked.Distinct().Count()!=cs.InitialBlocked.Length||cs.InitialBlocked.Any(id=>!edgeById[id].Any())||!w.Branches!.BlockedEdges.ToHashSet().SetEquals(edges.Where(e=>BlockedAt(w,e.Id,w.ElapsedSeconds)).Select(e=>e.Id)))throw new InvalidDataException("Road truth differs from recorded conditions");
+        if(cs.Conditions.Any(c=>c.At<1||!edgeById[c.Edge].Any())||cs.Conditions.Select(c=>(c.At,c.Edge)).Distinct().Count()!=cs.Conditions.Length)throw new InvalidDataException("Invalid condition schedule");
+        foreach(var sight in cs.Sightings){var edge=edgeById[sight.Edge].Single();if(sight.At>w.ElapsedSeconds||sight.Position!=ActorPointAt(w,sight.Actor,sight.At)||sight.Blocked!=BlockedAt(w,edge.Id,sight.At)||sight.Position!=AtNode(edge.From)&&sight.Position!=AtNode(edge.To))throw new InvalidDataException("Invalid road sighting");}
         if(cs.Missions.Select(c=>c.Attempt).Distinct().Count()!=cs.Missions.Length||cs.Missions.Length!=w.Messaging.Attempts.Count(a=>!RegionalBattle.Handles(w,a.MessageId)&&!NewGameMilitary.HandlesUnitMessage(w,a.MessageId)&&!NewGameMilitary.HandlesInternalAuthorityMessage(w,a.MessageId)))throw new InvalidDataException("Missing/duplicate courier");
         foreach(var c in cs.Missions){var a=w.Messaging.Attempts.Single(a=>a.Id==c.Attempt);var message=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);
             var origin=message.Kind=="delivery-failure"?Position(w,cs.Missions.Single(x=>x.Attempt==message.Body),a.SentAt):c.DispatchPose!=null?DispatchOrigin(w,c,a,message):ActorPointAt(w,new(message.SenderId),a.SentAt);
@@ -293,17 +295,17 @@ public static partial class RegionalCampaign
                 else if(c.Destination!=(NewGameWorld.Address(w,message)??RegionalWork.Address(w,message)??(TravelWorld.Enabled(w)&&message.SenderId==message.RecipientId?TravelWorld.SelfAddress(w,message.SenderId,a.SentAt):"castle"))||c.Appointment!=(NewGameMilitary.RemoteAppointment(w,message)??FreightOperations.Appointment(w,message)??(a.SentAt+1)))throw new InvalidDataException("Ordinary order left its original address");
             }
             if(a.LateDueAt!=null&&!CourierRecovery.Registered(w,a.Id))throw new InvalidDataException("Recovered late copies require a registered physical recovery route; timer-only late arrival is not supported");
-            if(!BranchRoutes.GraphNodes(w).Any(n=>n.Id==c.Destination)||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edges.Any(e=>e.Id==id)))throw new InvalidDataException("Invalid courier binding");
+            if(!nodes[c.Destination].Any()||c.ReadyAt!=a.DueAt||c.Appointment<0||c.KnownBlocked.Any(id=>!edgeById[id].Any()))throw new InvalidDataException("Invalid courier binding");
             long roadStart=a.SentAt;var roadOrigin=c.Origin;
             if(c.FirstMile!=null){var from=FieldWorld.FromWorld(c.Origin);var goal=c.FirstMile.LastOrDefault()?.To??from;RegionalGround.ValidatePath(c.FirstMile,from,goal,true,RegionalScenery.Enabled(w),ContinuousWorld.Enabled(w)||NewGameWorld.Enabled(w));if(c.FirstMile.Length>0&&c.FirstMile[0].StartAt!=a.SentAt)throw new InvalidDataException("First mile starts before dispatch");roadStart=c.FirstMile.LastOrDefault()?.EndAt??a.SentAt;roadOrigin=FieldWorld.ToWorld(goal);if(!BranchRoutes.GraphNodes(w).Any(n=>n.Position==roadOrigin))throw new InvalidDataException("First mile does not connect to a road node");}
-            for(int i=0;i<c.Legs.Length;i++){var l=c.Legs[i];var edge=edges.Single(e=>e.Id==l.Edge);
+            for(int i=0;i<c.Legs.Length;i++){var l=c.Legs[i];var edge=edgeById[l.Edge].Single();
                 if(l.LengthMm<0||l.LengthMm>edge.LengthMm||l.EndAt!=TravelWorld.End(w,edge,l.StartAt,true,l.LengthMm)||l.StartAt<0||i==0&&(l.StartAt!=roadStart||l.From!=roadOrigin)||i>0&&(l.StartAt!=c.Legs[i-1].EndAt||l.From!=c.Legs[i-1].To))throw new InvalidDataException("Invalid courier chronology");
-                var ea=Node(w,edge.From);var eb=Node(w,edge.To);if(l.To!=ea&&l.To!=eb||i>0&&(l.From!=ea&&l.From!=eb||l.LengthMm!=edge.LengthMm))throw new InvalidDataException("Courier left its road");
+                var ea=AtNode(edge.From);var eb=AtNode(edge.To);if(l.To!=ea&&l.To!=eb||i>0&&(l.From!=ea&&l.From!=eb||l.LengthMm!=edge.LengthMm))throw new InvalidDataException("Courier left its road");
                 if(i==0){decimal dx=eb.EastMm-ea.EastMm,dy=eb.NorthMm-ea.NorthMm,x=l.From.EastMm-ea.EastMm,y=l.From.NorthMm-ea.NorthMm;
                     var f=(x*dx+y*dy)/(dx*dx+dy*dy);var length=(l.To==ea?f:1-f)*edge.LengthMm;
                     if(f<0||f>1||Math.Abs(x*dy-y*dx)>Math.Abs(dx)+Math.Abs(dy)||Math.Abs(length-l.LengthMm)>3)throw new InvalidDataException("Invalid courier partial-road distance");}
             }
-            if(!c.Obstructed&&(c.ReadyAt<End(c.Legs,roadStart)||c.ReadyAt<c.Appointment||c.Legs.Length>0&&c.Legs[^1].To!=Node(w,c.Destination)))throw new InvalidDataException("Delivery before physical arrival");
+            if(!c.Obstructed&&(c.ReadyAt<End(c.Legs,roadStart)||c.ReadyAt<c.Appointment||c.Legs.Length>0&&c.Legs[^1].To!=AtNode(c.Destination)))throw new InvalidDataException("Delivery before physical arrival");
             if(a.Status==AttemptStatus.Delivered&&a.FinishedAt<c.ReadyAt)throw new InvalidDataException("Early courier delivery");
         }
     }
