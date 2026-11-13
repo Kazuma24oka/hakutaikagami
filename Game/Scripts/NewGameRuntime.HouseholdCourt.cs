@@ -380,7 +380,7 @@ public partial class NewGameRuntime
     var custody=administration.Appointments.LastOrDefault(c=>c.Site==site && c.Person==actor && c.CanReceive);
     if(custody?.Receipt is {} receipt)
      SocialText(box,$"自分が最後に確認した蔵の数量（{WorldCalendar.Display(w.EpochDate,receipt.ObservedAt)}）：米{receipt.Rice}kg、木材{receipt.Wood}、武具{receipt.Arms}、家金{receipt.Cash}文");
-    else SocialText(box,custody==null?"蔵の受領には、現地で当主と行政・保管の担当を取り決める必要があります。":"行政・保管の担当原本があります。現地の蔵を確認できます。");
+    else SocialText(box,custody==null?"蔵の受領には、現地で当主と行政・保管の担当を取り決める必要があります。":"行政・保管の担当あり");
     Button("transfer-store-"+order.Input.Id,"行政・保管の引継ぎを開く",ShowCastleAdministration);
    }
    if(HouseReforms.Baggage(w,order) is {} baggage && (!entered || baggage.HouseShipments.Length>0 || baggage.EntrustedLots.Length>0)){
@@ -580,7 +580,7 @@ public partial class NewGameRuntime
    return;
   }
   if(courtCategory==0){
-   SocialText(box,head?"条件を提示し、本人が実物を受け取って引き受けて初めて登用が成立します。家と個人の約束、兵や知行は分けます。":"自分が引き受けた登用の合意を確認できます。");
+   SocialText(box,head?"登用":"引き受けた登用");
    if(head){var candidates=w.Characters.Where(c=>c.Id!=actor&&c.Life==LifeState.Adult&&SocialWorld.Site(w,c.Id)==site&&!roster.Contains(c.Id)).Select(c=>c.Id).ToArray();if(candidates.Length>0){var people=new OptionButton();foreach(var p in candidates)people.AddItem(MeritRewards.DisplayName(w,actor,p));box.AddChild(people);var money=new SpinBox{MinValue=20,MaxValue=500,Value=20,Step=10};box.AddChild(money);Button("recruit","支度金を条件書と一緒に預け、登用を打診する",()=>Run(Command("recruit",CourtAction.RecruitOffer,candidates[people.Selected],(long)money.Value)));}}
    foreach(var offer in w.Court?.Events.Where(e=>e.Input.Action==CourtAction.RecruitOffer&&e.Actor==actor)??[]){var answer=w.Court!.Events.FirstOrDefault(e=>e.Input.Reference==offer.Input.Id&&e.Input.Action is CourtAction.RecruitAccept or CourtAction.RecruitDecline);SocialText(box,MeritRewards.DisplayName(w,actor,offer.Input.Person)+"："+(answer!=null&&HouseholdCourt.KnowsReply(w,answer,actor)?answer.Input.Action==CourtAction.RecruitAccept?"本人の引受を確認":"本人の辞退を確認":"条件を渡した。返答はまだ未確認"));}
    foreach(var joined in w.Court?.Events.Where(e=>e.Actor==actor&&e.Input.Action==CourtAction.RecruitAccept)??[])Button("resign-service","登用原本を持参して所属の終了を確認（元の個人奉公は別）",()=>Run(Command("resign-service",CourtAction.ResignService,actor,reference:joined.Input.Reference)));

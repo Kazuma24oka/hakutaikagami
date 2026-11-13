@@ -33,6 +33,6 @@ public partial class NewGameRuntime
             PresentWork("村からの嘆願",request,NewGameWorld.SiteName(p.Site.Value)+"で"+observed+"に村の代表が訴え、現地の取次が届けた書状です。",sender,sender,"村の代表からの書状",petition.TaxDecree!=null?"年貢の軽減を求める":"動員の軽減を求める");
             Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();return;
         }
-        PresentWork("村の食糧不足の知らせ",NewGameWorld.SiteName(p.Site.Value)+"では、観測時に食糧が"+p.Need+"kg不足していました。",observed+"時点の報告です。現在の残量や他地域の帳簿を示すものではありません。",sender,sender,"現地から届いた書状","食糧不足の報告");Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
+        PresentWork("村の食糧不足の知らせ",NewGameWorld.SiteName(p.Site.Value)+"では、観測時に食糧が"+p.Need+"kg不足していました。",observed+"時点",sender,sender,"現地から届いた書状","食糧不足の報告");Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
     }
 }

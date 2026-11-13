@@ -28,7 +28,7 @@ public partial class NewGameRuntime
         manualAdvanceTarget=to;manualNextNotice=nextNotice;manualNoticeReached=false;manualAdvancePhase=0;LastManualAdvanceError=null;ManualAdvanceRenderTicks=0;
         manualAdvanceDisabled.Clear();var allowed=buttons.Where(p=>ClockAllowed(p.Key)).Select(p=>(BaseButton)p.Value).ToHashSet();
         foreach(var button in SaveDescendants(this).OfType<BaseButton>())if(!allowed.Contains(button)){manualAdvanceDisabled.Add((button,button.Disabled));button.Disabled=true;}
-        message.Text=nextNotice?"次の知らせを待っています… 停止で中断できます。":"指定時刻まで進行を確認中… 停止すると、確定済みの現在位置で止まります。";
+        message.Text=nextNotice?"次の知らせを待っています…":"指定時刻まで進行を確認中… 停止すると、確定済みの現在位置で止まります。";
     }
     void RetainManualAdvanceInputLock(){if(IsManualAdvancing)foreach(var pair in manualAdvanceDisabled)if(IsInstanceValid(pair.Button))pair.Button.Disabled=true;}
     void ReleaseManualAdvanceUi()

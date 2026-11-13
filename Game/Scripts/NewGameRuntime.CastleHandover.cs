@@ -29,7 +29,7 @@ public partial class NewGameRuntime
         else {}
         foreach(var c in v.Castles.Reverse().Take(4)){
             Text($"所有記録：{CastleOwnerName(w,c.Owner)} ／ 引渡し相手：{CastleOwnerName(w,c.Occupier)}\n{c.Status}\n{(c.Local?"現地確認":"立会記録")}：世界経過 {c.WitnessAt}秒");
-            if(c.Local)Text($"この試作で明示登録された現地兵：旧主側 {c.IncumbentSoldiers} ／ 相手側 {c.RecipientSoldiers}。未登録の史実守備兵をゼロと断定するものではありません。");
+            if(c.Local)Text($"現地兵：旧主側 {c.IncumbentSoldiers} ／ 相手側 {c.RecipientSoldiers}");
             void Step(CastleAction a)=>Run(new(new("request:castle-ui/"+a+"/"+shown),a,c.Site,c.Id));
             Button("同じ返答・条件を本人確認",()=>Step(CastleAction.Confirm),!c.CanConfirm);Button("城門を引き渡す",()=>Step(CastleAction.Gate),!c.CanGate);Button("次の1秒境界に本丸引渡しを予定",()=>Step(CastleAction.RequestKeep),!c.CanRequestKeep);Button("現況を確認して立会記録へ残す",()=>Step(CastleAction.Observe),!c.Local);Button("引渡し前に取りやめ",()=>Step(CastleAction.Cancel),!c.CanCancel);
         }
