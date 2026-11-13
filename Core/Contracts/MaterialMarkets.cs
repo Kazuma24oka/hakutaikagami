@@ -21,6 +21,7 @@ public static class MaterialMarkets
     public static EntityId[] Sites(ContractWorld w)
     {
         if (!Enabled(w)) return CommunityEconomy.Sites;
+        if(NationalDistrictRevenue.Enabled(w))return hubs.Concat(NationalDistrictRevenue.Sites(w)).Distinct().ToArray();
         if (!CastleSiege.Enabled(w)) return [.. hubs];
         // 当主が開始時に居城とする沿岸拠点には、人手・予算・普請を共通の地域台帳で持たせる。
         // 通過・受領だけの港は、実際に荷渡しされた米だけを保管する。

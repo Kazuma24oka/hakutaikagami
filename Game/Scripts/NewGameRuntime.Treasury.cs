@@ -10,6 +10,7 @@ public partial class NewGameRuntime
         var scroll=new ScrollContainer{CustomMinimumSize=new(490,330),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(480,0)};scroll.AddChild(box);
         box.AddChild(new Label{Text="家の資金・現地調達 — "+NewGameWorld.SiteName(v.Site.Value)});
         box.AddChild(new Label{Text=$"家の資金 {v.HouseCash}文 / 本人の私財 {v.PrivateCash}文\n今月予算 {v.MonthlyBudget}文 / 操作できる残枠 {v.Remaining}文\n家の木材 {v.Materials.Wood}kg / 武具 {v.Materials.Weapons}組",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        if(NationalDistrictRevenue.Enabled(Snapshot()))box.AddChild(new Label{Text=$"郡収入 {NationalDistrictRevenue.Income(Snapshot(),v.Site,Snapshot().ElapsedSeconds,shown+1)}文"});
         {}var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(TreasuryAction action,string? kind=null,long quantity=0,long amount=0){var result=Session.ManageHouseTreasury(new(new("request:house-ui/"+shown),action,v.Site,kind,quantity,amount),Session.PlayerControl,shown);if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();ShowHouseTreasury();}
         void Button(string label,Action run,bool disabled=false){var b=new Button{Text=label,Disabled=disabled};box.AddChild(b);b.Pressed+=run;}

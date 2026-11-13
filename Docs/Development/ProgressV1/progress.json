@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "de08c22008b9598d90a53f83766fe71d94cd326cac07a8ba903f9140618e34fa",
-    "Docs/Development/ProgressV1/estimate.json": "cea505ef7a129249bc7b91d0740afba1434a09ed1af530d4a6d14201a399a054",
+    "Docs/Development/ProgressV1/estimate.json": "fb96ccf2405ab937bf6062279d458babf4bd3d7bf383e8d39943c71dbf127297",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "cdf7c7c587535dfa4695461701000be937732d9ee52586c47eb28be7ea8804cf",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "77b8afec86a0ac0f3b3313065a2da0471ce0bd768d8fddd14e06b03946e69598",
+    "Scripts/check_approval_batch.py": "6c21c434404317893620f2a6987b5454213edef35204ae6b29fb34727eb0d90c",
     "Scripts/probe_community_reports.py": "7326cc79d9839212c031e5f6f76c2bbb57c96f7abb177439dd081bfc185dfca9",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "cacf19ec8b05fef222f40afb9c190fa864089aa856b734799c08841638eac30c",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "9f793130a4161cc45389852144ec9f82022df0a6e84398e32a6da52c62c0f409",
-    "Docs/Development/CURRENT_STAGE.md": "8ed8821518bed4c535091e3f951e4ca35bba35b80636912a91938ed36ea629bc",
+    "Docs/Development/CURRENT_STAGE.md": "bfbf23962b021de8c4975b4c54340a84e87cbe410d8e322853f95de57016ea6d",
     "Core/Contracts/HouseSuccession.cs": "a387c7d25f693f4db1b5479ee94aca0b12413cd204f9c1f0520119be7f7f9c50",
     "Core/Contracts/FactionStances.cs": "7e1ace7854835ec6d4cf3c79434d9cbaf242f91eb3538b3dd3599fe104dce28a",
-    "Core/Contracts/NewGameWorld.cs": "e90a29bc380142781effb256484cfdbeb890ce33b4854148bd963678b11aed27",
+    "Core/Contracts/NewGameWorld.cs": "06a6cd8ba88e3beb0d89987f9755aca43ad992f6a8742c5d08cd9c21c3108eea",
     "Core/Contracts/HouseSalary.cs": "546a379719d75a005be6ec06415ab1e0fa622044c2757954777f6730df79bd83",
     "Core/Contracts/HouseLogistics.cs": "1bfe928cfaf7aac1b76eec1b8c2528e8f66bcf810ed17fdc2f153e1921f41334",
     "Tests/HouseSuccessionTests.cs": "65edb5907e79afb95f93bd7059a857558affece68c595b7bd2cc94c5930c1df3",
@@ -155,7 +155,7 @@
     "Core/Contracts/CommunityStewardship.Succession.cs": "eb65f68359665e3c159e3293c9dab3c364dc59d9dc3566ec260bb88a967a6d33",
     "Core/Contracts/HouseholdService.cs": "4a65933d7b1e48c92e79d26e344950cd066f94d6be21b095f13ff9d35b4baa0c",
     "Core/Contracts/NewGameService.cs": "091cbb93189197b237ab68918b1c8ff624827193e4b4af8c30a88259d29e69a6",
-    "Core/Contracts/RegionalDomains.cs": "dba316b7bfaa0c35114be53f996c666295281d32d8a024666c3553599d32cd52",
+    "Core/Contracts/RegionalDomains.cs": "333347b8b12a597a3ed887418132cee7953d0bf2cea70e8ccbf84b34c253369f",
     "Tests/StewardSuccessionTests.cs": "76dd97d2a83aa9143066105564240e0ba2e4af406af74a4b9b4433a2a903e4d9",
     "Game/Scripts/NewGameRuntime.HouseholdService.cs": "a2cb6c6a929a566db70c8bb611028f9c9e67a328f3aad530f4eeb9c68d01fae4",
     "Game/Scripts/NewGameRuntime.Stewardship.cs": "505b6f1e79b176a97bc72b9b5b844d90743ba0cb18b06bd06abf8a92043fa725",
@@ -183,7 +183,7 @@
     "Core/Contracts/TruceConfirmations.cs": "3134ab02ccf8ad79a778af1ac05a2d946304f57089eef90099aa296dde1544b4",
     "Core/Contracts/TruceConfirmations.ReportRetries.cs": "354423e7bc15c56ac9b6d861adab6f0df0f3098fde70e1fd2638d0d7bf7bbe85",
     "Core/Contracts/CourierRecovery.cs": "77d34edfc0198c258ca9170076dea4abfb59304db5c46e691fa20c8938419e31",
-    "Core/Contracts/WorldSession.cs": "6347ff3f99af4c7ef4383efeffd778b89390501a1d3f81141aa45d08919842d1",
+    "Core/Contracts/WorldSession.cs": "7cc24fe053787a4d933b5ca633fc172f074e7da63d7ca7d9f0a1b720b1ff0ccc",
     "Tests/TruceConfirmationTests.cs": "a55d38d096b4419952ffd60fef2b0b90dda03451bdc5fd9cf1717f5e5ff7248c",
     "Game/Scripts/NewGameRuntime.TruceConfirmations.cs": "bf531975c8530e43d62bed26264e3858ce391ce4506a375fb51c36ec626410c9",
     "Game/Scripts/NewGameRuntime.Mail.cs": "d8c7a817571f2cafd1ff2818be9e815c2668b81817fa7e06af2d67462e69b711",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "01f36bd60271c4df3c1dfe44bd2aedab7cbb320284421efe33042aa790e9b132",
     "Core/Contracts/NewGameNpcRoutine.cs": "a042e922eb3f025487db85c4d23b79ad3650a33fcdc457e362aa5e9b6d583e75",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "d9c8fcb17925daa15de837a3e776ad7f68aadb916a0478fe1811b52db69858fe",
+    "Core/Contracts/ContractJson.cs": "b04159ebeb3fc6ff5e2bc24b44fec5454faa56410da05118d87dba417b4b353f",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -796,10 +796,10 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "cc4b59499814b7d26f11473e3b5e2c1f994ae4e6c6099d2046677afde0607319",
-    "Docs/Development/ProgressV1/index.html": "6cb86d245d35988feae7b5efd41f2b05c8365e5e18cbe68656ab41595e819910",
+    "Docs/Development/ProgressV1/index.html": "5a6aae519f1fa918bbb36a2de23a47b2ac161d0c7c498b74e99a1261b9a2deb0",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "a62c2dc74c232af2da621359878f7e717972e6f6eadd22fda01ca73af7bd8957",
     "Core/Contracts/NationalNameHistory.cs": "3b6267a8748ba01ec47c39882200c4e507a8bf9d96a009559dfe33f8aeb24b29",
-    "Tests/NationalNameHistoryTests.cs": "d2f234ed12c47d476ace58e5e694a44449765912d9ac75cc999d8f046c1a2574",
+    "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
     "Scripts/verify_national_name_history.py": "8eaafdb7127f3fb9e285a1ae9626a4939b2b4345e7dc9aa3b78f67e8b458bae5",
     "Docs/Design/NationalNameHistoryV1/README.md": "c2093b405a27d2330c4b52d20b46265444663c11c53dda2dba1ea864e17f4eff",
     "Docs/Design/NationalNameHistoryV1/scope.md": "27fcf99ce985f05e56997bde694518fbdc578f9b94876e60830cdb313baafdf0",
@@ -812,16 +812,34 @@
     "Docs/Design/NationalOfficerDataV1/README.md": "054cb3e3f45814eb4e89ce6e2da0e8040522dae9c316640547174e5485ca31f2",
     "Docs/Design/NationalOfficerDataV1/completion.json": "00b0a6a190bd20dd64872467666355e920374023a1dc8bd3dd95e3aa1dda4818",
     "Docs/Design/NationalOfficerDataV1/verification.json": "7164b5ecaf07da1059865c1163b9d4832f0536378556a5fb2e3675c91f70a68a",
-    "Docs/Design/NationalOfficerDataV1/integration.json": "fe17f332ac963f1e8c69978e3f1cf4cb07dc745e9d752b1c07e8b019036d7e36",
+    "Docs/Design/NationalOfficerDataV1/integration.json": "bd39cef3da798fd69b49d6882615527496007c65cf03c7b645e7327d2df0769d",
     "Scripts/verify_national_person_estimates.py": "d5922e4fda66f77285e544606edb9305b6c09084174735ccb8998ba78ea2bb50",
     "Tools/HakutaiDb/build_national_person_estimates.py": "880a665775b52e50544fd513a877be1c1376f9591f42e3bddd34a82035997bf2",
-    "Core/Contracts/NationalPersonEstimates.cs": "b306128dce2a13c6abe9909015a76a0311785ba8a95e781829c31ad6737890a6",
-    "Core/Contracts/NationalStart.cs": "74eb95d5f44e38c4e8bff4e2ce1aa9c8f41341b706a269050edca80fc6c5bacd",
+    "Core/Contracts/NationalPersonEstimates.cs": "600eeb903ff84bcf06202c38b35fbeddc6ffd26e7f4e16c1093056561b62ee6b",
+    "Core/Contracts/NationalStart.cs": "b4414f48f0386a13ac60baae06fa80ea92fd90cafaa1f08298a9eecf97b0e344",
     "Core/HakutaiKagami.Core.csproj": "770e26f6412f9c530d69a5b9cf120d276c35544a8032c632c32c89c5101a9a3e",
     "Core/Data/national-person-estimates-v1.json": "1e72c15a7836990ba21adba3ada24bcc34285749822ba8580f0b6a6ba00502fe",
     "Tests/NationalPersonEstimateTests.cs": "02e3bc520b8f0b310544339505aa8974a6c8201570a35eccaf309c16eed4ff89",
     "Core/Data/hakutai-db-1560-v2.json": "e5345ad4618b1839f3b7031409e72de0c9002d2744c70177ddc80dbef5357f20",
-    "Core/Contracts/CentralCourtCatalog.cs": "5eec43ee933d3b4ad3c8003860ab218bd6859d2313f5abbfdc3499f571d4a19c"
+    "Core/Contracts/CentralCourtCatalog.cs": "7680a1fc32d6401c5b828997d27d1413b67bf194a2f02e5b984687f05dad8c15",
+    ".gitignore": "b5228ad6bd9cc1917441b70c1d83e7066d68a666a676353c9f98d3a0458e5899",
+    "Tests/NationalStrategyTests.cs": "c3fcc3c5a47def36edd499400a95be55e8b729527c69bce4a5dce4e1bff33757",
+    "Core/Contracts/NationalDistrictRevenue.cs": "98f0419e5e1fed566bfa4c5fc146fc72274f768c7e79b001932707949f4aea70",
+    "Docs/Design/NationalDistrictRevenueV1/completion.json": "108d411594c9984ef9bcee87886b4bca40068ac505e8db9f27d4590a852aace9",
+    "Docs/Design/NationalDistrictRevenueV1/README.md": "3f46dfcc9f2e6b2e1ba6804fb6c3b72e5c2d0d0af06e904b0a5322855611a956",
+    "Docs/Design/NationalDistrictRevenueV1/verification.json": "647b564abd7c5ac635e67661f1b1b3f0535c2c62b97bc7b34fea6309259b36ad",
+    "Docs/Design/NationalDistrictRevenueV1/scope.md": "ddf18aa4e23e56a02ba45f0385a355583a19669886f00c5c1bf2188eb4f18f95",
+    "Docs/Development/TEST_DURATIONS.md": "2ca5b37f1161b432728942a594981ed6e1c834f886daa6d18c08a7e1ee0e9aac",
+    "Game/Scripts/NationalDistrictRevenueCheck.cs": "1a306d54a5d270edec6b054150a0c10f8fe0ae9caa56fdb15f5f65976c86af48",
+    "Core/Contracts/MaterialMarkets.cs": "09143378c0ecd62ceea8927dde8e9540b818c665f098cd4850c568d07e285eb3",
+    "Tests/NationalStartTests.cs": "bf9e71ce58fc2299c24bf6dfef42f0869c342f9efe96807f3a3716b9a0268775",
+    "Game/Scripts/NewGameRuntime.Treasury.cs": "1a77397e955cba3ab9b007212203184f7bc0b0410cdd05682a130f9da949b12e",
+    "Game/Scenes/NationalDistrictRevenueCheck.tscn": "2558c2f5b9f61634719de2a0184bcc80d2aba857f5f205a23f8d955d85d7e2b8",
+    "Docs/Design/NationalDistrictRevenueV1/integration.json": "7e0722b8f9678631317dfe20d9583ed6154d1214f5253695c36394a138e703de",
+    "Scripts/verify_national_revenue.py": "fa943831ef1d1b8ced8b2e38185a6d133f82abe9766b56e9e0658e61d45bfe26",
+    "Tests/NationalDistrictRevenueTests.cs": "ef7201967244c62b4d8a7f74ff2239530ab58ac4af56c74d5c9f511308b6900f",
+    "Docs/Development/ProgressV1/approval-baseline-v116.json": "485e8ced867a71d1241bf2603b29ad67b5cdac65fa3c81e891a03c34e6625325",
+    "Game/Scripts/Officer3DCustomActor.cs": "72c27a6af12126136158eb28872f3e208f31ea6f03e6d4f79ae967bc982ae31f"
   },
   "items": [
     {
@@ -1538,7 +1556,7 @@
     {
       "id": "BD-20",
       "status": "normal",
-      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。2026-11-12 百代鏡DB V1：戦国DBの版（38a13d12）から1560年の家304・人物4,596・城829を書き出し、推定の決め方・公知の地理と年の情勢の区別・既存の開始人物との対応・開始前の史料の画面を持つ。全員を世界に置く開始配置は未接続。 v111：地形移動網を新版化。v112：全国637郡の初期支配・並立・根拠を世界へ接続。 v113：新規1560年全国の家の直接従属を版付き台帳へ接続。v114：百代鏡DBの年付き名乗りを世界時計の年境界へ接続し、現地で認識されるまで遠方へ変更を表示しない。 v115：全国開始v2へ4,583人の生年と基礎能力を版付きで接続。",
+      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。2026-11-12 百代鏡DB V1：戦国DBの版（38a13d12）から1560年の家304・人物4,596・城829を書き出し、推定の決め方・公知の地理と年の情勢の区別・既存の開始人物との対応・開始前の史料の画面を持つ。全員を世界に置く開始配置は未接続。 v111：地形移動網を新版化。v112：全国637郡の初期支配・並立・根拠を世界へ接続。 v113：新規1560年全国の家の直接従属を版付き台帳へ接続。v114：百代鏡DBの年付き名乗りを世界時計の年境界へ接続し、現地で認識されるまで遠方へ変更を表示しない。 v115：全国開始v2へ4,583人の生年と基礎能力を版付きで接続。 v116：新規全国v4の郡収入を現地公金・有限市場での実支出へ接続。",
       "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。統合案で追加：§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1）・史実人物の新しい項目の採録（生年・没年・血縁・家系・兵科適性・志・席次・官位・初期の名物など）と拠点の新しい値の初期データ（CHARACTER_DATA_FIELDS_V1）。2026-11-06採用：魅力・人物別32技能の開始熟練・出自を、経歴と出典/推定/未採録の区別付きで採録する。旧交渉値から魅力を自動算出しない。2026-11-06採用：史実の子は開始時の年齢と経歴に応じた状態・傾向を採録し、出典・推定・未採録・試作を区別する。史料にない教育者や幼少期を史実として補わない。 能力・生年以外の人物項目、全国の人口・郡収入、残りの歴史・配置データ。",
       "evidence": [
         "Core/Contracts/NationalRoutes.cs",
@@ -1561,7 +1579,8 @@
         "Docs/Design/NationalNameHistoryV1/scope.md",
         "Docs/Design/NationalNameHistoryV1/completion.json",
         "Docs/Design/NationalNameHistoryV1/verification.json",
-        "Docs/Design/NationalOfficerDataV1/verification.json"
+        "Docs/Design/NationalOfficerDataV1/verification.json",
+        "Docs/Design/NationalDistrictRevenueV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2273,7 +2292,7 @@
     {
       "id": "BD-34",
       "status": "normal",
-      "existing": "私財の銭・支度金の預りと実返還を区別。扶持債務は別に保持。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。",
+      "existing": "私財の銭・支度金の預りと実返還を区別。扶持債務は別に保持。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 v116：新規全国v4の郡収入を現地公金・有限市場での実支出へ接続。",
       "remaining": "長期の家計調整・知行と給付の拡張。",
       "evidence": [
         "Core/Contracts/CommunityStewardship.Succession.cs",
@@ -2330,7 +2349,8 @@
         "Docs/Design/HouseholdCourtV1/README.md",
         "Docs/Design/HouseholdCourtV1/verification.json",
         "Docs/Design/LandSurveyV1/README.md",
-        "Docs/Design/LandSurveyV1/verification.json"
+        "Docs/Design/LandSurveyV1/verification.json",
+        "Docs/Design/NationalDistrictRevenueV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -4039,7 +4059,7 @@
       "sha256": "326c739216937fed3e464cc7de0ee656f4ea3049942464cd76f532bc959c711a",
       "scope": "家格・専門分担・外交の関連5件。全件未実施。"
     },
-    "current_stage_summary": "全国人物データv115をPR148で統合。新規開始をv3へ分離し、旧全国v1/v2および人物方針付きv2保存の互換を補修。関連6件・短い検査2,837件・独立全件4,534件成功。ゲームビルド警告/エラー0。",
+    "current_stage_summary": "v116 全国郡収入・現地公金・有限市場調達・保存復旧を接続。全件4535件、ゲームビルド、内部入力と自前描画が成功。旧名乗り/戦略検査の開始版をv3へ固定し、新規v4と分離。",
     "screens": [
       {
         "title": "交戦任務の許可を開封した実画面",
@@ -4147,9 +4167,8 @@
     "review_prompt": "地域試作の完了記録は下の履歴。現在の開発位置・工程の区切り・次の分野は先頭の概算と実装順を見る。"
   },
   "next_priorities": [
-    "全国郡の支配変化と領内行政・郡収入を軍事/外交/世界時計へつなぐ。",
-    "負傷・病・捕縛・捕虜処遇を合戦中の行動と保存復旧につなぐ。",
-    "家の滅亡・離反・独立・旧臣/遺児による再興を全国の一巡へつなぐ。"
+    "全国の勢力色を実効支配へ追従させ、全国人数・拠点・軍の受入を進める。",
+    "負傷・捕縛・合戦と家の滅亡/再興を進める。"
   ],
   "update_rule": "機能変更ごとに該当BD行の現在/残件/根拠を更新。60枠は無断で増減しない。接続状態と製品受入を混同しない。ゲームコードが変わればこの監査のコード一致チェックは更新を要求する。",
   "estimate_source": "Docs/Development/ProgressV1/estimate.json"

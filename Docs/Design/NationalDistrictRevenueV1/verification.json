@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "scope": "national-district-revenue",
+  "baseline": "approval-baseline-v116",
+  "related_tests": {
+    "status": "PASSED",
+    "passed": 1,
+    "failed": 0,
+    "scope": "全国で収入→有限在庫購入→二重拒否→世代保存復旧→同じ未来。全件検査に含む。"
+  },
+  "short_suite": {
+    "status": "FAILED_FIXTURE_FIXED_IN_FULL",
+    "passed": 2836,
+    "failed": 1,
+    "scope": "日時を直接変更する旧名乗り検査を全国v3へ固定。修正後は全件4535件で成功。追加の全件反復はしない。"
+  },
+  "full_suite": {
+    "status": "PASSED",
+    "passed": 4535,
+    "failed": 0,
+    "skipped": 0,
+    "command": "dotnet test Tests -c Release",
+    "commit": "33027c05e9f2b82989e521181abf82c9a8d88a55",
+    "elapsed": "55m10s",
+    "worktree": "C:/Workspace/Projects/Games/hakutaikagami-core-v116-full-check"
+  },
+  "game_build": {
+    "status": "PASSED",
+    "warnings": 0,
+    "errors": 0,
+    "command": "dotnet build Game/HakutaiKagami.Game.csproj -c Debug --no-restore"
+  },
+  "ui": {
+    "status": "PASSED",
+    "method": "Godot内部入力・自前描画。OS操作/画面取得なし。",
+    "house_cash": 4760,
+    "private_cash": 1000,
+    "gross_income": 4764,
+    "screenshot_sha256": "06935fb8a4f1fed9e1c1d0c4b3cdf6fe33c89ad29f2f69944994088e61676eea",
+    "path": "Docs/Design/NationalDistrictRevenueV1/runtime-local/ui/treasury.png",
+    "source": "Game/Scripts/NationalDistrictRevenueCheck.cs",
+    "note": "非同梱の試作モデルがない環境の仮表示を修正し、最終実行は例外なし。正式素材の外観受入ではない。"
+  },
+  "legacy": {
+    "status": "PASSED",
+    "scope": "全件に旧全国v1/v2・人物方針付きv2と世代保存の互換検査を含む。旧版に郡収入を追加しない。"
+  },
+  "limits": [
+    "城のない家には収集拠点がないため本工程では公金受領なし。",
+    "支配持分は初期DB。収集本拠を失った月は止め、勝者へ旧家の財布を自動移管しない。",
+    "全国3000人・1000拠点・500軍のFPS受入は次工程。過去runtime専用証跡2件は現環境で未確認。"
+  ],
+  "computer_use": "未使用"
+}

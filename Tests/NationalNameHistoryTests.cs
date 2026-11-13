@@ -6,6 +6,7 @@ namespace HakutaiKagami.Tests;
 [Trait("Tier","Standard")]
 public sealed class NationalNameHistoryTests
 {
+    static ContractWorld Start(string selected)=>NationalStartTests.BeforeRevenue(selected);
     [Fact]
     public void NationalNameChangesAtYearBoundaryAndResumesIdenticallyAfterFileRestore()
     {
@@ -13,7 +14,7 @@ public sealed class NationalNameHistoryTests
         var subject=scenario.People.Single(p=>NationalStart.DbPerson(p.Id)?.Id=="P-005796");
         var actor=new EntityId(subject.Id);
         var selected=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長"));
-        var world=NationalStart.Create(selected);
+        var world=Start(selected);
         Assert.Equal("口羽通良",world.Definitions.Characters.Single(c=>c.Id==actor).Name);
         Assert.Equal(NationalNameHistory.Policy,world.NewGame!.NameHistoryPolicy);
         Assert.Empty(world.NationalNames!.Changes);
@@ -68,7 +69,7 @@ public sealed class NationalNameHistoryTests
     {
         var scenario=NationalStart.Scenario();
         var selected=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長"));
-        var world=NationalStart.Create(selected);
+        var world=Start(selected);
         world.NewGame=world.NewGame! with{NameHistoryPolicy=null};
         world.NationalNames=null;
         world.Definitions=world.Definitions with{Version=NewGameWorld.Version(world.NewGame)};

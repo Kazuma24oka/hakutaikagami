@@ -9,6 +9,13 @@ namespace HakutaiKagami.Tests;
 [Trait("Tier","Heavy")]
 public sealed class NationalStartTests(ITestOutputHelper o)
 {
+    // 時刻を直接作る既存の検査は、月次経済を導入する前の全国v3へ固定する。
+    internal static ContractWorld BeforeRevenue(string selected)=>NewGameWorld.Create(NationalStart.Scenario(NationalStart.PersonEdition),[],selected,20261112,NewGameWorld.CompactPersonalAuthority,
+        historicalCatalog:NationalStart.PersonEdition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,
+        inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,
+        networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,
+        comingOfAge:FamilyKin.ComingOfAge,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,
+        developmentPolicy:CharacterDevelopment.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy);
     internal static string Nobunaga()=>NationalStart.Scenario().Factions.Select(f=>f.Head).Single(h=>NationalStart.Scenario().People.Single(p=>p.Id==h).Name.Contains("信長"));
     [Fact]
     public void ScenarioPlacesDbHousesOfficersAndCastles()

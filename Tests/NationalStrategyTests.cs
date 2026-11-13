@@ -15,7 +15,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
     [Fact]
     public void HousesDecideCampaignsMonthlyAndCapturesChangeControlWithTheSameFuture()
     {
-        var sw=System.Diagnostics.Stopwatch.StartNew();var w=NationalStart.Create(Takeda());o.WriteLine($"作成 {sw.ElapsedMilliseconds}ms");sw.Restart();
+        var sw=System.Diagnostics.Stopwatch.StartNew();var w=NationalStartTests.BeforeRevenue(Takeda());o.WriteLine($"作成 {sw.ElapsedMilliseconds}ms");sw.Restart();
         w.ElapsedSeconds=Month(1560,5)-1;
         var session=new WorldSession(w);session.SetPaused(false);
         session.AdvanceTo(Month(1560,5)+1);
@@ -73,7 +73,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
     [Fact]
     public void ShogunVacancyLeadsTheCapitalHolderToInstallAShogun()
     {
-        var w=NationalStart.Create(Takeda());var shogun=NationalStart.FactionId(NationalStrategy.Shogun);
+        var w=NationalStartTests.BeforeRevenue(Takeda());var shogun=NationalStart.FactionId(NationalStrategy.Shogun);
         var castles=w.NewGame!.Start.Castles.Where(c=>c.Faction==shogun).Select(c=>new EntityId(c.Id)).ToArray();
         Assert.NotEmpty(castles);
         w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;NationalStrategy.Apply(w);
@@ -96,7 +96,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
     [Fact]
     public void ThePlayerHouseIsInvitedToACoalitionAndAnswersOnceAfterReading()
     {
-        var w=NationalStart.Create(Takeda());var takeda=NationalStart.FactionId("G-000106");var imagawa=NationalStart.FactionId("G-000123");
+        var w=NationalStartTests.BeforeRevenue(Takeda());var takeda=NationalStart.FactionId("G-000106");var imagawa=NationalStart.FactionId("G-000123");
         w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;NationalStrategy.Apply(w);
         var others=w.NewGame!.Start.Factions.Select(f=>f.Id).Where(f=>f!=takeda&&f!=imagawa&&f!=NationalStart.FactionId(NationalStrategy.Shogun)).OrderBy(f=>f,StringComparer.Ordinal).Take(3).ToArray();
         long now=w.ElapsedSeconds;var s=w.Strategy!;

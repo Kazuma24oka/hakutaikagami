@@ -10,6 +10,10 @@
 
 直近（2026-11-13、Codex と並行）：Claude は[操作の引き継ぎ](../Design/ControlSuccessionV1/README.md)・[全国の家の戦略](../Design/NationalStrategyV1/README.md)（出陣・同盟・和睦・破約・家督・史実の出陣34件・将軍の空位と擁立・包囲網）・位階と官職の奏請・[全国の京の朝廷と将軍家](../Design/NationalCourtV1/README.md)（全国開始 v2）。Codex は v111 の移動網地形・v112 の郡支配色・v113 の家の従属関係を完了し、年次改名・郡収入・人物能力と生年、負傷・捕縛・合戦・滅亡と再興を担当する。基準の番号は Codex が v111〜v149、Claude が v150 以降。
 
+## 現在の担当工程
+
+Codex v116：全国の郡収入・現地公金への受領と支出を接続する。固定基準は approval-baseline-v116.json、範囲は Docs/Design/NationalDistrictRevenueV1/scope.md。v115の保存互換補修はPR149で統合済み。次は全国規模受入、負傷・捕縛・合戦と家の滅亡/再興。
+
 ## 全国共通の判断支援
 
 [開始設定・現地調達と保存復旧](../Design/DecisionSupportV1/entry-verification.md)。次は本人が認識した危機と外交の選択肢。
@@ -79,7 +83,7 @@
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
 | 2026-11-13 | 全国の京の朝廷（全国開始 v2）・史実の出陣34件・将軍の空位と擁立・包囲網（v151、74.13%→74.56%） | Docs/Design/NationalCourtV1/・NationalStrategyV1/ | PR146 → main 73de5c13 |
-| 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044 |
+| 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044、保存互換補修PR149 → main 17be7235 |
 | 2026-11-13 | 全国1560年の年次名乗り（v114） | Docs/Design/NationalNameHistoryV1/ | PR147 → main b40dd017 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |
 | 2026-11-12 | 全国郡の初期支配・並立・根拠を新規世界へ接続（v112、BD-20 50→55） | Docs/Design/NationalDistrictControlV1/ | PR #143 |
