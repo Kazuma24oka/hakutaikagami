@@ -18,7 +18,7 @@ public static class PersonalLife
     public const string Policy="personal-life-private-food-local-rest-receipt-goals-v18";
     public const long InnCost=10,InnSeconds=7200,OutsideSeconds=14400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy||NationalSystems.On(w,"PersonalLife");
     static bool Before(LifeEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static LifeEntry[] Entries(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue)=>w.Life?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Life?.Entries.Any(e=>e.Input.Id==id)==true;

@@ -9,6 +9,7 @@ public static class NationalSystems
     public static readonly string[] Current=
     [
         // Claude の担当
+        "PersonalLife",
         // Codex の担当
     ];
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
