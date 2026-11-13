@@ -22,4 +22,19 @@ public sealed class NationalWarfareActivationTests
         Assert.Null(w.NpcArmies);Assert.Null(w.WorldClashes);Assert.Null(w.Custody);
         var bytes=ContractJson.Write(w);Assert.Equal(bytes,ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot()));
     }
+    [Fact]public void RecordingNationalNpcDecisionsDoesNotChangeMoneyFoodOrTheFuture()
+    {
+        var person=NationalStart.Scenario().People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
+        var initial=NationalStart.Create(person);byte[] Run(bool slow)
+        {
+            WorldSession.SlowNpcDecisionRecord=slow;
+            try
+            {
+                var s=new WorldSession(initial);s.SetPaused(false);s.AdvanceTo(1,100000);
+                Assert.Equal(1,s.Seconds);return ContractJson.Write(s.DiagnosticSnapshot());
+            }
+            finally{WorldSession.SlowNpcDecisionRecord=false;}
+        }
+        Assert.Equal(Run(true),Run(false));
+    }
 }
