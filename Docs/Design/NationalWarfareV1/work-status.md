@@ -3,7 +3,7 @@
 BD-06・44・46・W4と全国への接続を一工程で進める。作業ブランチへ保存し、小機能ごとの全件検査・基準・進捗加点・PR・main統合は行わない。
 
 ## 現在の接続
-NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、RiverRoads、HistoricalRoads、NationalRoutes、OfficerBattleHealth。全国交戦は疎な履歴を初期化し、負傷は独立した保存済み一覧の項目で遡及適用を避ける。新規開始はClaudeの生活・家督なども含む21項目。健康・生活の担当外変更は行わない。
+NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、RiverRoads、HistoricalRoads、NationalRoutes、OfficerBattleHealth、FieldPresence、FieldSupply。全国交戦は疎な履歴を初期化し、負傷は独立した保存済み一覧の項目で遡及適用を避ける。新規開始はClaudeの生活・家督なども含む23項目。健康・生活の担当外変更は行わない。
 
 ## 実測
 4043人・1958拠点、Release。18項目の初期接続は1日275.294秒、所有者索引後184.469秒。Claudeの変更を取り込んだ21項目は266.770秒、初期財布再利用後222.844秒、判断記録の重複同期を省いた版は125.180秒（82.790＋42.390）、復旧後53.488秒。いずれも途中保存から同じ未来に一致。構成の違う版は単純比較しない。**60秒以内は未達**。
@@ -16,13 +16,20 @@ NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、Hostag
 
 さらに現地点検と伝令の照合を索引化し、点検の既存21件（未知情報・現地実行・返報・復旧を含む）、動的封鎖と遠方情報の既存2件が成功。人数と実際に判断したNPCの人数を混同しないよう、測定の出力へ判断人数・件数・軍数を加える。この版は1日95.082秒（63.643＋31.439）、復旧後38.211秒で同じ未来。判断したNPCは215人・1290件、軍は0。4043人全員が同時に行動した検査ではない。
 
-全国の私的な変更世代では開始設定を共有し、変化する本体だけを複写する変更を追加。開始設定を書き換える処理がないことを確認し、構築・読込み・外部へ渡す写しは深い複写を維持する。従来の全体複写・判断記録と変更後で、活動のある1秒後の全国世界がバイト一致し、外部の写しの改変は内部へ影響しない代表1件が成功（53秒）。この版の全日・途中復旧の実測は未実施。
+開始設定の私的共有は一致と外部の写しの隔離を確認したが、全日の実測105.073秒（67.783＋37.290）で改善を確認できず、採用せずに取り除いた。復旧後38.704秒で同じ未来だった。深い複写を維持する。
+
+## 出陣状態と携行兵糧
+FieldPresence・FieldSupplyの全国版は別の演習用状態を持たず、既存のNewGameMilitary・NpcArmiesの原本から状態を求める。全国用の操作は既存の軍務命令へ渡し、消費はNewGameMilitaryだけで行う。地方用の架空人物・兵・兵糧を全国へ追加しない。FieldSupplyを有効にしても架空演習を連鎖して起動しない。
+
+全国の実在家臣と家の米で、軍務申出・本人承諾・引受・米の受領・積載・出陣・消費・途中保存復旧・帰還・残量返還の一巡が成功。3部隊を保持し、再積載の同じIDを二重実行せず、復旧直後と進行後の世界全体がバイト一致した。NPCの日課と独立に受渡しを検査した全国の構成であり、全NPC同時行動や1日60秒の受入とは別。3分32秒かかったためHeavyへ分類し、短い検査へ毎回含めない。地方の他軍を止めず、自軍の兵糧を余分に消費しない代表1件も成功（3秒）。全国初期化と一覧のない旧保存の2件も成功。保存の検査は既存の停止・保存・再開の手順に合わせ、入力の番号が一致する状態で行った。
+
+23項目での1日・途中復旧の性能実測は未実施。
 
 ## 描画と500軍の限界
 既存拠点に検査用500家を置いた旧軍事規則の場面は4543人・1958拠点・500軍・1500部隊。Releaseの作成40.713秒、軍引受1.225秒、初期検査1.884秒。Godot 4.5.2 .NET / OpenGL compatibility / RTX 4060 Ti / 実描画1028×720で、停止中の近景790.7 FPS、全国133.7 FPS。自前描画を確認しComputer Use未使用。全員同時歩行・交戦中・全国全機能の版のFPSとは扱わない。
 
 ## 重大な残件と検査の扱い
-- RegionalBattle、FieldSupply、FieldPresence、FieldWorld、RegionalSceneryは地方の固定人物・拠点・軍を全国へそのまま持ち込まず、実在軍と同じ原本に接続する。
+- RegionalBattle、FieldWorld、RegionalSceneryは地方の固定人物・拠点・軍を全国へそのまま持ち込まず、実在軍と同じ原本に接続する。
 - 全国1日60秒以内、500軍の移動と途中復旧、NPCの自発行動、捕縛・処遇・交換・身代金、W4、内応・離反・独立と滅亡・再興が残る。
 - Claude担当の生活目標はSubjectのJSON必須指定と省略の不整合で失敗した。claude-handoff.mdに最小再現と原因を記録し、担当外の実装は変更していない。
 - 初期化・旧保存・物資の改ざんと受渡しの独立した3件は成功。全国収入31日を含めた別の関連検査は、生活の失敗を検出後、長期進行の部分を中断した。未完了の検査を成功扱いにしない。

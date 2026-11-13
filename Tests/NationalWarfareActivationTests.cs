@@ -9,7 +9,7 @@ public sealed class NationalWarfareActivationTests
         var w=NationalStart.Create(person);
         Assert.True(NpcArmies.Enabled(w));Assert.True(WorldClashes.Enabled(w));Assert.True(WorldClashes.Sparse(w));
         Assert.True(OfficerBattleHealth.Enabled(w));Assert.True(BattlefieldRules.Enabled(w));Assert.True(CastleSiege.Enabled(w));Assert.True(CastleWorks.Enabled(w));Assert.True(HostageCustody.Enabled(w));Assert.True(VoyageExpense.Enabled(w));
-        Assert.NotNull(w.NpcArmies);Assert.NotNull(w.WorldClashes);Assert.NotNull(w.Custody);
+        Assert.NotNull(w.NpcArmies);Assert.NotNull(w.WorldClashes);Assert.NotNull(w.Custody);Assert.True(FieldPresence.Enabled(w));Assert.True(FieldSupply.Enabled(w));Assert.Null(w.Presence);Assert.Null(w.Supply);Assert.False(EngagementMission.Enabled(w));
         Assert.NotNull(w.MilitaryEconomy);Assert.NotNull(w.HouseFreight);Assert.NotNull(w.FreightOperations);Assert.NotNull(w.ArmyRoad);Assert.NotNull(w.CampConvoys);
         var bytes=ContractJson.Write(w);var restored=ContractJson.Read<ContractWorld>(bytes);
         new WorldSession(restored);Assert.Equal(bytes,ContractJson.Write(restored));
@@ -27,13 +27,13 @@ public sealed class NationalWarfareActivationTests
         var person=NationalStart.Scenario().People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
         var initial=NationalStart.Create(person);byte[] Run(bool slow)
         {
-            WorldSession.SlowNpcDecisionRecord=slow;WorldSession.SlowWorldChangeCopy=slow;
+            WorldSession.SlowNpcDecisionRecord=slow;
             try
             {
                 var s=new WorldSession(initial);var outside=s.DiagnosticSnapshot();outside.NewGame!.Start.People[0]=outside.NewGame.Start.People[0] with{Name="外部で変更"};s.SetPaused(false);s.AdvanceTo(1,100000);
                 Assert.Equal(1,s.Seconds);var after=s.DiagnosticSnapshot();Assert.NotEmpty(after.NpcWork!.Decisions);Assert.DoesNotContain(after.NewGame!.Start.People,p=>p.Name=="外部で変更");return ContractJson.Write(after);
             }
-            finally{WorldSession.SlowNpcDecisionRecord=false;WorldSession.SlowWorldChangeCopy=false;}
+            finally{WorldSession.SlowNpcDecisionRecord=false;}
         }
         Assert.Equal(Run(true),Run(false));
     }

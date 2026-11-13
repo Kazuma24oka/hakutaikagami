@@ -28,8 +28,8 @@ public static class ContractValidation
         Check((s.Schema == 1 || s.Schema == 2 && BranchRoutes.Enabled(s)) && s.TimeDomain == "GameSecondsV1" && EntityId.IsValid(s.WorldId.Value), "Unknown world format/time domain.");
         Check(Career.Enabled(s)==(s.Career!=null),"Career requires its explicit profile");
         Check(DelegationMission.Enabled(s)==(s.Delegation!=null),"Delegation requires its explicit profile");
-        Check(FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
-        Check(FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
+        Check(FieldPresence.National(s)?s.Presence==null:FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
+        Check(FieldSupply.National(s)?s.Supply==null:FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
         Check(s.ResourceLots.All(l=>l.MobileHolder==null||TransportWork.IsLot(l)||NewGameWork.IsWallet(s,l)||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||NewGameMilitary.AllowsMobileLot(s,l)||NpcArmies.AllowsMobileLot(s,l))),"Unexpected mobile resource holder");
         Check(EngagementMission.Enabled(s)==(s.Engagement!=null),"Engagement requires its explicit profile");
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
