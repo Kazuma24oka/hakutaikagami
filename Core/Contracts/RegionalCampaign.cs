@@ -230,6 +230,7 @@ public static partial class RegionalCampaign
     public static RoutePoint RoadActorPointAt(ContractWorld w,EntityId actor,long at)
     {
         if(HostageCustody.ReturnPoint(w,actor,at,w.CommitSequence+1) is {} custodyPoint)return custodyPoint;
+        if(BattleCaptivity.SiteAt(w,actor,at,0) is {} held)return Node(w,NewGameWorld.Node(held.Value));
         if(FieldConvoy.PositionAt(w,actor,at,w.CommitSequence+1) is {} convoyPoint)return FieldWorld.ToWorld(convoyPoint);
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at);if(j==null)return Node(w,TravelWorld.Enabled(w)?TravelWorld.InitialNode(actor,w):"castle");return JourneyPointAt(w,j,at);
     }
@@ -241,6 +242,7 @@ public static partial class RegionalCampaign
         bool travel=TravelWorld.Enabled(w);var sites=travel&&NewGameWorld.Enabled(w)?FamilyBirth.People(w).GroupBy(p=>p.Id,StringComparer.Ordinal).Where(g=>g.Count()==1).ToDictionary(g=>g.Key,g=>g.Single().Site,StringComparer.Ordinal):null;
         return actor=>{
             if(HostageCustody.ReturnPoint(w,actor,at,w.CommitSequence+1) is {} custodyPoint)return custodyPoint;
+            if(BattleCaptivity.SiteAt(w,actor,at,0) is {} held)return Node(w,NewGameWorld.Node(held.Value));
             if(FieldConvoy.PositionAt(w,actor,at,w.CommitSequence+1) is {} convoyPoint)return FieldWorld.ToWorld(convoyPoint);
             if(last.TryGetValue(actor,out var j))return JourneyPointAt(w,j,at);
             string node=!travel?"castle":sites!=null&&sites.TryGetValue(actor.Value,out var site)?NewGameWorld.Node(site):TravelWorld.InitialNode(actor,w);

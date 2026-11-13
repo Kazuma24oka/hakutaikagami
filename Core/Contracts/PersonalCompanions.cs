@@ -25,9 +25,9 @@ public static partial class PersonalCompanions
     internal static EntityId? SiteAt(ContractWorld w,EntityId actor,long at,long rev)=>HostageCustody.HeldAt(w,actor,at,rev)?null:PhysicalSiteAt(w,actor,at,rev);
     internal static EntityId? PhysicalSiteAt(ContractWorld w,EntityId actor,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
+        if(BattleCaptivity.SiteAt(w,actor,at,rev) is {} captive)return captive;
         if(w.Requests.Any(r=>r.Intent.Executor==actor&&!NewGameNpcRoutine.DiscretionaryPractice(w,r.Intent)&&r.CommitSequence<rev&&r.CreatedAt<=at&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at))))return null;
         if(actor==w.PlayerControl&&NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<rev&&q.At<=at).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return null;
-        if(BattleCaptivity.SiteAt(w,actor,at,rev) is {} captive)return captive;
         if(HostageCustody.ReturnJourney(w,actor,at,rev)!=null)return HostageCustody.ReturnSite(w,actor,at,rev);
         var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&w.Tasks.Any(t=>t.Id==j.Task&&t.FinishedAt<=at&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<rev)));
         if(j!=null&&w.Requests.Any(r=>r.Id==w.Tasks.Single(t=>t.Id==j.Task).RequestId&&HostageCustody.IsReturnTask(w,r.Intent))&&TrafficWorld.StoppedNode(w,j.Task) is {} stopped)return RegionalCampaign.Site(stopped);

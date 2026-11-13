@@ -5,7 +5,7 @@ namespace HakutaiKagami.Core.Contracts;
 
 // 合戦での捕縛（BD-44、2026-11-13）。本人の軍が打ち崩した敵の軍の大将を、固定シードの判定で捕らえる。
 // 捕縛は交戦の手番（WorldClashStep.Captures）に記録し、手番の前の世界から同じ結果を再現できることを確かめる。
-// 捕らえた人物は捕らえた家の拠点（出陣した城）に留め置かれ、拘束中は行動できない（HostageCustody.HeldAt）。
+// 捕らえた人物は捕らえた家の拠点（出陣した城）に留め置かれ、拘束中は新しい行動を始められない（HostageCustody.HeldAt）。捕縛の秒の後の位置は城になる。
 // 解放は、捕らえた家の当主権限を持つ者が、その拠点で明示に行う。自動の処刑・登用・解放はしない。
 public sealed record BattleCapture(EntityId Person,EntityId FromOwner,EntityId CaptorOwner,EntityId Holder,EntityId Site,long At);
 public enum CaptiveAction { Release }
@@ -47,13 +47,6 @@ public static class BattleCaptivity
     {
         if(ContractJson.CanonicalHash(step.Captures)!=ContractJson.CanonicalHash(Resolve(context,result)))throw new InvalidDataException("交戦時の捕縛を再現できません");
     }
-    // 捕縛した手番で、捕らえた人物の進行中の行動を終える。
-    internal static void Apply(ContractWorld w,BattleCapture[]? captures)
-    {
-        foreach(var c in captures??[])
-            foreach(var task in w.Tasks.Where(t=>t.Executor==c.Person&&t.Execution==ExecutionPhase.Running).ToArray())
-                WorldSession.Stop(w,task,"捕らえられて行動終了");
-    }
 
     // 交戦の記録は手番ごとに作り直されるので、記録ごとに捕縛の一覧を覚えておく（所在の判定で頻繁に引く）。
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<WorldClashState,(BattleCapture,long)[]> cache=new();
@@ -69,13 +62,14 @@ public static class BattleCaptivity
         return ReleaseOf(w,person,last.Revision,at,rev)==null?last.Capture:null;
     }
     public static bool HeldAt(ContractWorld w,EntityId person,long at,long rev)=>CaptivityAt(w,person,at,rev)!=null;
-    // 拘束中は捕らえた家の拠点。解放の後、本人がまだ旅をしていなければ解放された拠点。
+    // 拘束中は捕らえた家の拠点。解放の後、本人が新しい行動を始めるまでは解放された拠点（捕らえる前の行軍は続きとして扱わない）。
+    // 道の上の位置（RegionalCampaign）は rev=0 で引き、捕縛の秒より後から城にそろえる（同じ秒に出た伝令の出発地を変えない）。
     internal static EntityId? SiteAt(ContractWorld w,EntityId person,long at,long rev)
     {
         if(!Enabled(w)||Last(w,person,at,rev) is not {} last)return null;
         var release=ReleaseOf(w,person,last.Revision,at,rev);
         if(release==null)return last.Capture.Site;
-        bool travelled=w.Branches!.Journeys.Any(j=>j.Actor==person&&w.Tasks.Any(t=>t.Id==j.Task&&t.StartedAt>=release.At&&t.FinishedAt<=at));
+        bool travelled=w.Tasks.Any(t=>t.Executor==person&&t.StartedAt>=release.At&&t.StartedAt<=at);
         return travelled?null:release.Site;
     }
     static bool CanRelease(ContractWorld w,BattleCapture c,EntityId actor,long at,long rev)=>
