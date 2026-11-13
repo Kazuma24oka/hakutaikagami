@@ -12,7 +12,7 @@ public static class NationalSystems
         "PersonalLife",
         "HouseSuccession",
         // Codex の担当
-        "OfficerBattleHealth",
+        "OfficerBattleHealth", "ExpeditionFodder",
         "FieldPresence", "FieldSupply", "FieldWorld", "RegionalBattle", "RegionalScenery",
         "RiverRoads", "HistoricalRoads", "NationalRoutes",
         "MilitaryEconomy", "HouseLogistics", "HouseFreightReceiving", "FreightOperations", "NpcFreight", "FieldConvoy", "ArmyRoadMarch", "RoadConvoy",

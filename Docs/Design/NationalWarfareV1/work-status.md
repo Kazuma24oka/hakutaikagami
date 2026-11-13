@@ -3,7 +3,7 @@
 BD-06・44・46・W4と全国への接続を一工程で進める。途中は担当ブランチへのコミット・pushのみ。全件検査・基準・進捗加点・PR・main統合は工程の終わりにまとめる。
 
 ## 接続した仕組み
-新規開始の保存済み一覧は26項目。Codex担当はOfficerBattleHealth、FieldPresence、FieldSupply、FieldWorld、RegionalBattle、RegionalScenery、RiverRoads、HistoricalRoads、NationalRoutes、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense。ClaudeのPersonalLife・HouseSuccessionを保持。古い一覧なし／FieldWorldなしの保存の規則は変えない。
+新規開始の保存済み一覧は27項目。Codex担当はOfficerBattleHealth、ExpeditionFodder、FieldPresence、FieldSupply、FieldWorld、RegionalBattle、RegionalScenery、RiverRoads、HistoricalRoads、NationalRoutes、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense。ClaudeのPersonalLife・HouseSuccessionを保持。古い一覧なし／FieldWorldなしの保存の規則は変えない。
 
 FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmiesの原本から求める。地方の架空人物・軍・兵糧・別時計は追加しない。全国のPresence・Supply・Field・Regionはnullのまま。布陣・携行米の操作は既存の軍務受付を通り、既存の消費と重複受付防止を使う。現地で本人が直接出す配置命令は即時有効で、遠隔命令の配送を省略する変更ではない。FieldSupplyで旧架空演習を連鎖起動しない。
 
@@ -22,11 +22,16 @@ RegionalBattle・RegionalSceneryを新規開始の一覧へ加え、全国では
 
 全国の一巡検査は7分25秒かかった。検査専用の全JSON再ハッシュを外して製品と同じ設定にし、この検査を非並列の専用グループへ隔離、終了時に診断設定を戻す。実保存前後と復旧後の世界全体のバイト一致は残した。この形でも一巡が成功（5分39秒）。他のClaudeの検査と同じPCで並行しており、単純な性能改善率とは扱わない。
 
+## 遠征中の馬の飼料
+新規全国開始のExpeditionFodder一覧項目、または新規作成の戦場規則physical-gear-expedition-fodder-v2だけで適用する。旧26項目までの世界や旧戦場規則は変えない。既存の騎馬装備・積載と、出陣区間・在外行軍区間から実消費を計算する。重なった在外区間と野外展開は一度だけ数え、別の在庫・時計・定期イベントは作らない。試作係数は1頭4時間で飼料1単位であり、史料の採録値ではない。
+
+関連3件が成功。静止した野外の区間を構成し、1時間2単位・2時間5単位の消費、復旧後の同じ残量、旧規則のバイト一致を確認。欠食で負にならず、補給を過去へ遡って食べず、同じ補給IDの再受付で増殖しない。既存の実道路行軍で出発・到着した後、重なる野外待機区間を構成して二重消費がないことを確認し、実ディスク保存から復旧、以後の世界全体がバイト一致した。待機区間は検査用の既存軍務・配送の積分処理で構成したもので、全国の全軍を長時間動かした受入ではない。Game Debugビルドと従来の装備返却・全国初期化の2件も成功。
+
 ## 地形の範囲
 national-castle-field-ground-v1は既存の試作地形を実在の各城の周囲へ配置した仮地形。史実の城郭の測量や全国の実地形の完成を意味しない。全城の集合3位置が通行可能であることを確認。移動、伝令の最初の区間、模型の接地、実メッシュ、選択用三角形に同じ高さを使う。地形の版を新規開始の定義ハッシュへ含める。正式素材へ差し替える余地を残す。
 
 ## 性能の未達
-全国4043人・1958拠点、実際に判断したNPC215人・1290件、軍0で、直近の1日実測95.082秒（前半63.643＋後半31.439）、復旧後38.211秒。同じ未来は一致したが60秒以内は未達。26項目の最新構成での1日計測は未実施。
+全国4043人・1958拠点、実際に判断したNPC215人・1290件、軍0で、直近の1日実測95.082秒（前半63.643＋後半31.439）、復旧後38.211秒。同じ未来は一致したが60秒以内は未達。26項目の構成では1日93.048秒（前半59.098＋後半33.951）、復旧後33.571秒で同じ未来が一致。判断215人・1290件・軍0。開始前にClaudeのtesthostが同じPCで動いており、単独条件の比較や60秒合格とはしない。27項目の飼料追加後の全日計測は未実施。
 
 再利用は原本が空で値が不変な開始時の所有者・財布・物資・地域帳簿に限定し、外へ返す配列は複製する。NPCの判断順や実行を変えず、記録だけで全帳簿を再同期しない。地域・米・財布の改ざん、実受渡し、復旧の代表検査を実施済み。開始設定の私的共有は105.073秒で改善を確認できず取り除き、深い複写を維持。以前の1日実測は275.294→184.469、Claude21項目266.770→222.844→125.180→130.331→96.438→95.082秒。構成の違いと計測の振れがあり単純な改善率にはしない。
 
