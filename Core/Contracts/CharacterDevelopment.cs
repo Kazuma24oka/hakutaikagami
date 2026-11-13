@@ -36,9 +36,15 @@ public static class CharacterDevelopment
     static int Value(ContractWorld w,IEnumerable<DevelopmentAward> rows,EntityId actor,DevelopmentAbility ability)=>Math.Min(100,Base(w,actor,ability)+(int)(rows.Where(a=>a.Actor==actor&&Ability(a.Skill)==ability).Sum(a=>a.Experience)/360000));
     static DevelopmentAward[] Derive(ContractWorld w){
         var rows=new List<DevelopmentAward>();
-        foreach(var task in w.Tasks.Where(t=>t.Execution==ExecutionPhase.Completed&&t.InternalReason=="completed"&&t.Action is ActionKind.Train or ActionKind.Inspect).OrderBy(t=>t.FinishedAt).ThenBy(t=>t.Revision).ThenBy(t=>t.Id.Value,StringComparer.Ordinal)){
-            var i=w.Requests.Single(r=>r.Id==task.RequestId).Intent;
-            var action=w.Actions.Single(a=>a.Task==task.Id);
+        var done=w.Tasks.Where(t=>t.Execution==ExecutionPhase.Completed&&t.InternalReason=="completed"&&t.Action is ActionKind.Train or ActionKind.Inspect).OrderBy(t=>t.FinishedAt).ThenBy(t=>t.Revision).ThenBy(t=>t.Id.Value,StringComparer.Ordinal).ToArray();
+        if(done.Length==0)return [];
+        // 依頼と行動は一度だけ引けるようにする（全国の人数で、終わった仕事ごとに一覧を頭から探さない）。
+        var wanted=done.Select(t=>t.RequestId).ToHashSet();var tasks=done.Select(t=>t.Id).ToHashSet();
+        var requests=w.Requests.Where(r=>wanted.Contains(r.Id)).GroupBy(r=>r.Id).ToDictionary(g=>g.Key,g=>g.Single());
+        var actions=w.Actions.Where(a=>tasks.Contains(a.Task)).GroupBy(a=>a.Task).ToDictionary(g=>g.Key,g=>g.Single());
+        foreach(var task in done){
+            var i=requests[task.RequestId].Intent;
+            var action=actions[task.Id];
             var skill=i.TrainingSkill??DevelopmentSkill.IntelligenceGathering;
             long end=task.FinishedAt!.Value,seconds=end-action.StartedAt;
             Need(seconds==i.WorkSeconds&&seconds>0,"Development requires actual completed common action time");
