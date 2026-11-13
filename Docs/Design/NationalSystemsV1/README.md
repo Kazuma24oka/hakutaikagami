@@ -20,8 +20,8 @@
 ## 確かめたこと
 - 全国の開始で上の仕組みが有効になり、目標を決めて進め、途中の保存から戻して同じになる（NationalSystemsTests）。
 - 歴史モードを持ち、地方の版には付けられない。
-- 重さ（2026-11-13、PC が空いた状態、織田信長で1日分、実際のゲームと同じく検査用の写しの書き換え確認 GuardTurnSnapshots を切って測定。Tests/NationalSystemsCostProbe.cs）：v1 57秒、v3（人物データ）66秒、v4（郡の収入）116秒、v4 に上の仕組みを足して136秒（+17%）。v1 は遊べる目安の60秒に収まる。v4 での倍増は郡の収入の版（Codex の担当）。検査の中では GuardTurnSnapshots が写しを渡すたびに約0.1秒かかるため、検査での時間はこれより長く出る。
-- 重さの直し（2026-11-13）：家督と奉公の同期が確定のたびに開始時の主従・役職の関係（4,000人分）を作り直していたので、同じ開始の定義には一度だけ作って使い回す（NewGameWorld.InitialRelations）。能力の同期は、終わった仕事ごとに依頼と行動の一覧を頭から探していたので辞書で引く（CharacterDevelopment.Derive）。v4 に上の仕組みを足した1日分が136秒から121秒（v4 だけは118秒）。残りは郡の収入の村の経済（CommunityEconomy.Tick の帳簿の作り直し）と市場（MaterialMarkets.Tick）で、Codex の担当。内訳は Core/Contracts/Prof.cs（HAKUTAI_PROF=1）で測れる。
+- 重さ（2026-11-14、PC が空いた状態、織田信長で1日分、実際のゲームと同じく検査用の写しの書き換え確認 GuardTurnSnapshots を切って測定。Tests/NationalSystemsCostProbe.cs の HAKUTAI_NS_SET=now）：今の全国の開始（v4 の郡の収入、上の仕組みすべて、Codex が接続した戦・兵站の24項目、健康・和睦・捕縛）で38.7秒。遊べる目安の60秒に収まる。内訳は保存の検証が約14秒（31回）、確定の処理が約3秒（246回）、残りは NPC の手番。計測の仕掛けは Core/Contracts/Prof.cs（HAKUTAI_PROF=1。測りたい処理を Prof.T で囲む）。
+- 重さの直し：家督と奉公の同期の開始時の関係の使い回し（NewGameWorld.InitialRelations）、能力の同期の辞書引き（CharacterDevelopment.Derive）、病の判定と生年の使い回し（PersonalHealth）。郡の収入の帳簿・在庫・所在の使い回しは Codex の直し（Docs/Design/NationalWarfareV1）。
 
 ## 残り
 - 健康：NPC が自分から診療を受ける判断は未接続（NPC の傷病は手当なしで経過する）。
