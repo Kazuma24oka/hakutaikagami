@@ -1,0 +1,40 @@
+{
+  "version": 152,
+  "criteria": [
+    {
+      "contract": "本人の目標に所領維持（決めたときの城をすべて保つ年数）・主家支援（主家が城の数を保つ年数）・報復（相手の死を本人が知る）を加え、達成後も続けられる。報復の相手は本人が知る人から選ぶ",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Tests/PersonalGoalsTests.cs"
+      ]
+    },
+    {
+      "contract": "成人の後継候補がなく、本人が知っていた未成年の子がいれば、その子の後見になれる成人（もう一方の実の親・兄弟姉妹）で続けられ、子の元服後に子へ譲れる。後見の記録の改ざんを拒む",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/ControlSuccession.cs",
+        "Game/Scripts/NewGameRuntime.Succession.cs",
+        "Tests/ControlSuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "包囲網ができると、包囲する相手と境を接する操作する人物の家（当主）へ誘いの書状が届き、開いた後に一度だけ加わる・断るを選べる。加われば包囲網の各家と同盟を結び、返書が届く",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalStrategy.cs",
+        "Core/Contracts/WorldSession.cs",
+        "Game/Scripts/NewGameRuntime.Succession.cs",
+        "Tests/NationalStrategyTests.cs"
+      ]
+    },
+    {
+      "contract": "短い段と全国の検査に合格し、全件テストに合格する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/PersonalGoalsV1/verification.json"
+      ]
+    }
+  ]
+}
