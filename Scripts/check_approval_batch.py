@@ -100,6 +100,10 @@ def check():
     elif version==113:
         from verify_national_faction_relations import check as verify
         folder="NationalFactionRelationsV1"
+    elif version==116:
+        from verify_national_revenue import check as verify
+        folder="NationalDistrictRevenueV1"
+        assert subprocess.run(['git','cat-file','-e',pin+':Core/Contracts/NationalDistrictRevenue.cs'],cwd=R,capture_output=True).returncode!=0,'全国郡収入の実装前に基準を固定する必要があります'
     elif version==115:
         from verify_national_person_estimates import check as verify
         folder="NationalOfficerDataV1"

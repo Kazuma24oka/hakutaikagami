@@ -8,6 +8,7 @@ public sealed class Officer3DCustomLook : HakutaiKagami.Core.Appearance.OfficerA
 
 public partial class Officer3DCustomActor : Node3D
 {
+    bool placeholder;
     public float WalkStride {get;private set;}
     public string Lod { get; private set; } = "near";
     static readonly Dictionary<string,Dictionary<string,(Mesh Mesh,Skin Skin)>> lodMeshes = new();
@@ -16,6 +17,7 @@ public partial class Officer3DCustomActor : Node3D
     static Texture2D White() { if(white is null) {using var i=Image.CreateEmpty(1,1,false,Image.Format.Rgba8);i.Fill(Colors.White);white=ImageTexture.CreateFromImage(i);} return white; }
     public void SetLod(string level)
     {
+        if(placeholder)return;
         if(!new[]{"near","mid","far"}.Contains(level)) throw new ArgumentException("Unknown LOD");
         if(level==Lod)return;
         if(!lodMeshes.ContainsKey(level))
@@ -75,8 +77,19 @@ public partial class Officer3DCustomActor : Node3D
         protectionTexture=ImageTexture.CreateFromImage(image);return protectionTexture;
     }
     public static IEnumerable<Node> Descendants(Node n) { foreach (Node child in n.GetChildren()) { yield return child; foreach(var sub in Descendants(child)) yield return sub; } }
+    void CreatePlaceholder()
+    {
+        placeholder=true;Lod="placeholder";WalkStride=1;
+        AddChild(new MeshInstance3D{Mesh=new CapsuleMesh{Radius=.45f,Height=2},Position=Vector3.Up,MaterialOverride=new StandardMaterial3D{AlbedoColor=new Color("60758a")}});
+        Skeleton=new Skeleton3D();AddChild(Skeleton);Player=new AnimationPlayer();AddChild(Player);
+        var library=new AnimationLibrary();
+        foreach(var id in new[]{"idle","walk","attack"}){library.AddAnimation(id,new Animation{Length=1,LoopMode=Animation.LoopModeEnum.Linear});Clips.Add(id,id);}
+        Player.AddAnimationLibrary("",library);Play("idle");
+    }
     public override void _Ready()
     {
+        if(!ResourceLoader.Exists("res://Assets/Officer3D/TrialV3/near.glb")){CreatePlaceholder();return;}
+
         AddChild(GD.Load<PackedScene>("res://Assets/Officer3D/TrialV3/near.glb").Instantiate<Node3D>());
         var nodes = Descendants(this).ToArray();
         var sourceFace=nodes.OfType<MeshInstance3D>().SelectMany(m=>Enumerable.Range(0,m.Mesh.GetSurfaceCount()).Select(i=>m.GetActiveMaterial(i))).OfType<BaseMaterial3D>().First(m=>m.ResourceName=="skin_face");
@@ -127,6 +140,7 @@ public partial class Officer3DCustomActor : Node3D
     public void Apply(Officer3DCustomLook value)
     {
         value.Validate(Slots); Appearance = value;
+        if(placeholder)return;
         foreach(var slot in Slots) {Meshes["slot_"+slot].Visible=value.Enabled[slot]&&value.Equipment[slot]=="silver";if(RedSlots.Contains(slot))Meshes["alt_"+slot].Visible=value.Enabled[slot]&&value.Equipment[slot]=="red_lamellar";}
         Meshes["face"].Visible=value.Face=="v013_face"; Meshes["face_veteran"].Visible=value.Face=="mature_v1";
         Meshes["hair_tied"].Visible=Meshes["hair_knot"].Visible=value.Hair=="tied_v1"&&!value.Enabled["helmet"];Meshes["beard_short"].Visible=value.Beard=="short_v1"&&!value.Enabled["mask"];
