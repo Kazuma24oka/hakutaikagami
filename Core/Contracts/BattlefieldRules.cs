@@ -11,7 +11,7 @@ public sealed record BattlefieldCasualties(EntityId Unit,int Dead,int Wounded,in
 public static partial class BattlefieldRules
 {
  public const string Policy="physical-gear-daily-weather-formation-wounded-rations-v1";
- public static bool Enabled(ContractWorld w)=>w.NewGame?.BattlefieldPolicy==Policy;
+ public static bool Enabled(ContractWorld w)=>(w.NewGame?.BattlefieldPolicy==Policy)||NationalSystems.On(w,"BattlefieldRules");
  public static BattleWeather Weather(ContractWorld w,EntityId site,long at){
   var bytes=SHA256.HashData(Encoding.UTF8.GetBytes(w.Seed+"/weather/"+site.Value+"/"+at/86400));
   var date=DateOnly.Parse(w.EpochDate).AddDays(checked((int)(at/86400)));

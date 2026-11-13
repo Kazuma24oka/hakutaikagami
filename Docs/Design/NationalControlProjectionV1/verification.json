@@ -28,14 +28,21 @@
     }
   },
   "short_suite": {
-    "status": "RUNNING",
+    "status": "PASSED",
     "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\"",
-    "note": "国名対応前の候補。最終の国名対応は上記Debug代表検査と自前描画で確認。"
+    "note": "国名対応前の候補。最終の国名対応は上記Debug代表検査と自前描画で確認。",
+    "passed": 2839,
+    "failed": 0,
+    "elapsed": "10m30s"
   },
   "full_suite": {
-    "status": "PENDING",
+    "status": "PASSED",
     "command": "dotnet test Tests -c Release",
-    "note": "Claudeのfullsuite.lock解除待ち。開始前に排他取得し、成功/失敗を問わず自分のロックを除去する。"
+    "passed": 4538,
+    "failed": 0,
+    "elapsed": "1h10m",
+    "source_commit": "e05c4f6677f12e3d4639b6d6e969c87518515627",
+    "note": "旧国名の追加対応で正しく一致した郡数が633→707、未一致88→14、名称推定118→146に変わったため期待値を更新。修正前の1件失敗を含む回は中断し、修正版で全件成功。自分のfullsuite.lockはfinallyで解除済み。新しい運用により、この小区切りでPRやmain統合はしない。全国工程の残りとまとめる。"
   },
   "limits": [
     "郡の範囲は城の数による推定であり歴史的な実測境界ではない。",

@@ -9,7 +9,7 @@ public sealed record WorldClashState(int Schema,string Contract,WorldClashStep[]
 public static partial class WorldClashes
 {
     public const string Policy="actual-owned-armies-player-field-clock-steps-simultaneous-effects-v1";
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.WorldArmyPolicy is NpcArmies.CombatPolicy or NpcArmies.CompactCombatPolicy;
+    public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&w.NewGame?.WorldArmyPolicy is NpcArmies.CombatPolicy or NpcArmies.CompactCombatPolicy)||NationalSystems.On(w,"WorldClashes");
     static void Need(bool b,string why){if(!b)throw new InvalidDataException(why);}
     public static RegionalLoss[] Losses(ContractWorld w,long at)=>w.WorldClashes?.Steps.Where(s=>s.At<=at).SelectMany(s=>s.Result.Losses).ToArray()??[];
     public static bool AttacksNow(ContractWorld w,EntityId unit)=>Enabled(w)&&w.WorldClashes?.Steps.LastOrDefault() is {} step&&step.At==w.ElapsedSeconds&&step.Result.Strikes.Any(h=>h.Attacker==unit);

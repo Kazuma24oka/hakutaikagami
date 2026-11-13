@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static partial class WorldClashes
 {
     public const string SparsePolicy="actual-owned-armies-after-due-events-sparse-contact-replay-v2";
-    public static bool Sparse(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.WorldArmyPolicy==NpcArmies.CompactCombatPolicy;
+    public static bool Sparse(ContractWorld w)=>NewGameWorld.Enabled(w)&&(w.NewGame?.WorldArmyPolicy==NpcArmies.CompactCombatPolicy||NationalSystems.On(w,"WorldClashes"));
     sealed record Window(EntityId Army,long From,long Until,long Barrier);
     static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)
     {

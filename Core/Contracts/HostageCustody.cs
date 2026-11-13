@@ -11,7 +11,7 @@ public static partial class HostageCustody
 {
     public const string Policy="local-adult-consenting-hostage-distinct-custody-release-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.CustodyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&w.NewGame?.CustodyPolicy==Policy)||NationalSystems.On(w,"HostageCustody");
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Custody=new(1,Policy,[]);}
     static CustodyEntry[] Entries(ContractWorld w)=>w.Custody?.Entries??[];
     static CustodyEntry[] Before(ContractWorld w,long at,long rev)=>Entries(w).Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();

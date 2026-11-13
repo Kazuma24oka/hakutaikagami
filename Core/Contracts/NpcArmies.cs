@@ -15,7 +15,7 @@ public static partial class NpcArmies
     public static bool Supported(string? policy)=>policy is Policy or CombatPolicy or CompactCombatPolicy;
     public const string Policy="head-led-owned-garrison-common-land-travel-v1",LandRoute="npc-army-land-only-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool b,string why){if(!b)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy);
+    public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy))||NationalSystems.On(w,"NpcArmies");
     public static NpcArmyMuster[] Musters(ContractWorld w)=>w.NpcArmies?.Musters??[];
     static MilitaryLedgerIdentity Binding(NpcArmyMuster m)=>NewGameMilitary.LedgerIdentity(m.Owner,m.Site);
     public static bool HoldsGarrison(ContractWorld w,EntityId owner,EntityId site)=>Musters(w).Any(m=>m.Owner==owner&&m.Site==site);
