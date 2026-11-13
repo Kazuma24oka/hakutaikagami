@@ -12,7 +12,7 @@
 
 ## 現在の担当工程
 
-Codex v116：全国の郡収入・現地公金への受領と支出を接続する。固定基準は approval-baseline-v116.json、範囲は Docs/Design/NationalDistrictRevenueV1/scope.md。v115の保存互換補修はPR149で統合済み。次は全国規模受入、負傷・捕縛・合戦と家の滅亡/再興。
+Codex v117：本人が読んだ戦略結果に応じた実効支配色の追従。固定基準はapproval-baseline-v117.json、範囲はDocs/Design/NationalControlProjectionV1/scope.md。v116郡収入はPR150で統合済み。次は全国規模受入、負傷・捕縛・合戦と家の滅亡/再興。
 
 ## 全国共通の判断支援
 
@@ -82,6 +82,7 @@ Codex v116：全国の郡収入・現地公金への受領と支出を接続す�
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-13 | 全国郡収入・現地公金・有限市場調達（v116） | Docs/Design/NationalDistrictRevenueV1/ | PR150 → main 7be08036 |
 | 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044、保存互換補修PR149 → main 17be7235 |
 | 2026-11-13 | 全国1560年の年次名乗り（v114） | Docs/Design/NationalNameHistoryV1/ | PR147 → main b40dd017 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |

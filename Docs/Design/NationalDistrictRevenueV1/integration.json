@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "status": "READY_TO_MERGE",
+  "status": "MERGED",
   "baseline_commit": "e6e99adf3fd3a71595b88afe61f5b98221272ee9",
   "tested_commit": "33027c05e9f2b82989e521181abf82c9a8d88a55",
   "main": "17be723547dcd0d9d26a743fedfc775abdcb7b33",
-  "pr": null,
-  "merge_commit": null,
-  "branch_sync_commit": null,
+  "pr": 150,
+  "merge_commit": "7be080365675970a2987ef27780c8d99a72ef453",
+  "branch_sync_commit": "f522cb27a3578dc7af2fd039ba1dc5fe626df623",
   "ownership_note": "CentralCourtCatalogの全国v4判定追加は2026-11-13分担更新前の作成済み差分。今後の同ファイルの変更はClaude担当とし、追加変更は行わない。"
 }
