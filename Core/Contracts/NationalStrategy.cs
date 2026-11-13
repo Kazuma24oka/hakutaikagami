@@ -16,6 +16,8 @@ public sealed record StrategyOutcome(EntityId Campaign,long At,long Revision,boo
 {
     // 守る側の同盟の家で、援軍に出た家（同盟の義務）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId[]? Allies {get;init;}
+    // 遠方の合戦の計算（StrategyBattles、W4）。強さの比のくじで決めた旧保存では持たない。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyBattle? Battle {get;init;}
 }
 // 史実の出陣のその月の結果：fired（出陣した）・premise（前提が崩れて不発）・declined（前提はそろったが当主が選ばなかった）。
 public sealed record StrategyHistoryRecord(string Event,long At,long Revision,string Result);
@@ -250,8 +252,9 @@ public static class NationalStrategy
                 .Where(x=>x!=c.Attacker&&!Bound((s.Pacts??[]).ToArray(),x.Value,c.Attacker.Value,c.At)).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
             foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
             bool held=owners0.GetValueOrDefault(c.Target.Value)==c.Defender.Value;
-            bool captured=held&&Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d);
-            outcomes.Add(new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies});
+            var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
+            bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
+            outcomes.Add(new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle});
             Letters(w,c,captured);
         }
         s=s with{Outcomes=outcomes.ToArray()};
@@ -481,6 +484,6 @@ public static class NationalStrategy
         if(prior?.Strategy?.Successions is {} oldSuccessions&&!(s.Successions??[]).Take(oldSuccessions.Length).SequenceEqual(oldSuccessions))throw new InvalidDataException("過去の家督の記録が変更されています");
         foreach(var p in s.Pacts??[])if(p.A==p.B||!factions.Contains(p.A.Value)||!factions.Contains(p.B.Value)||p.Kind is not("alliance" or "truce")||p.From>w.ElapsedSeconds||p.Until<=p.From||!IsMonthStart(w,p.From)||p.Revision>w.CommitSequence)throw new InvalidDataException("家どうしの約束の記録が不正です");
         if(prior?.Strategy?.Pacts is {} oldPacts&&!(s.Pacts??[]).Take(oldPacts.Length).Select(p=>p with{Broken=null}).SequenceEqual(oldPacts.Select(p=>p with{Broken=null})))throw new InvalidDataException("過去の約束の記録が変更されています");
-        foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At))throw new InvalidDataException("出陣の結果が不正です");}
+        foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At))throw new InvalidDataException("出陣の結果が不正です");StrategyBattles.Validate(w,o);}
     }
 }

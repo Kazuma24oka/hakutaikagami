@@ -46,6 +46,8 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.Equal(campaigns.Length,outcomes.Length);
         var taken=outcomes.Where(x=>x.Captured).Select(x=>a.Strategy.Campaigns.Single(c=>c.Id==x.Campaign)).ToArray();
         o.WriteLine($"落城 {taken.Length}/{outcomes.Length}");
+        // 遠方の合戦の計算を持たない世界（旧保存と同じ）は、強さの比のくじで決める。
+        Assert.False(StrategyBattles.Enabled(a));Assert.All(outcomes,x=>Assert.Null(x.Battle));
         Assert.NotEmpty(taken);
         Assert.All(taken,c=>Assert.Equal(c.Attacker,NationalStrategy.Owner(a,c.Target,a.ElapsedSeconds,a.CommitSequence)));
         Assert.All(taken,c=>Assert.Equal(c.Defender,NationalStrategy.Owner(a,c.Target,Month(1560,5),long.MaxValue)));
@@ -122,6 +124,24 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.Equal(ContractJson.Write(w.Strategy),ContractJson.Write(ContractJson.Read<StrategyState>(ContractJson.Write(w.Strategy)))); // 保存して戻しても同じ
     }
     // 次の月の初めの処理だけを直接当てる（全国の世界を1か月ふつうに進めると検査に30分かかるため）。
+    // 遠方の合戦（W4）：決着を実際の合戦と同じ接触の規則で計算して記録し、落城は守る側が崩れたときだけ。保存から戻して同じ。
+    [Fact]
+    public void DistantBattlesUseTheContactRulesAndRestoreIdentically()
+    {
+        var w=NationalStartTests.BeforeRevenue(Takeda(),["StrategyBattle"]);w.ElapsedSeconds=Month(1560,5)-1;
+        var session=new WorldSession(w);session.SetPaused(false);session.AdvanceTo(Month(1560,5)+1);
+        var first=session.DiagnosticSnapshot();Assert.True(StrategyBattles.Enabled(first));Assert.NotEmpty(first.Strategy!.Campaigns);
+        var a=Jump(ContractJson.Copy(first));var b=Jump(ContractJson.Read<ContractWorld>(ContractJson.Write(first)));
+        Assert.Equal(ContractJson.Write(a.Strategy),ContractJson.Write(b.Strategy));
+        var outcomes=a.Strategy!.Outcomes;Assert.Equal(first.Strategy.Campaigns.Length,outcomes.Length);
+        Assert.All(outcomes,x=>{Assert.NotNull(x.Battle);if(x.Captured)Assert.True(StrategyBattles.Falls(x.Battle!));});
+        foreach(var x in outcomes)o.WriteLine($"合戦 {x.Battle!.AttackerSoldiers}対{x.Battle.DefenderSoldiers} 士気{x.Battle.AttackerMorale}/{x.Battle.DefenderMorale} 損害{x.Battle.AttackerLost}/{x.Battle.DefenderLost} {x.Battle.Seconds}秒 落城={x.Captured}");
+        // 月を直接進めた世界なので、戦略の記録の検証だけを行う（保存から戻して同じことは上の比較で確かめた）。
+        NationalStrategy.Validate(ContractJson.Read<ContractWorld>(ContractJson.Write(a)),null);
+        var forged=ContractJson.Read<ContractWorld>(ContractJson.Write(a));
+        forged.Strategy=forged.Strategy! with{Outcomes=forged.Strategy.Outcomes.Select(x=>x with{Battle=x.Battle! with{DefenderLost=x.Battle.DefenderLost+1}}).ToArray()};
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Validate(forged,null));
+    }
     static ContractWorld Jump(ContractWorld w)
     {
         w.ElapsedSeconds=Month(1560,6);w.CommitSequence++;NationalStrategy.Apply(w);return w;

@@ -50,5 +50,5 @@ national-castle-field-ground-v1は既存の試作地形を実在の各城の周�
 ## 残り
 2026-11-13 から Claude が引き継いだ（Docs/Design/NationalSystemsV1 の工程の表）。
 - RegionalBattle・RegionalScenery の全国接続は取り込み済み（検査10件合格）。
-- 捕縛・処遇（解放・登用の誘い・処断・身代金）と、家臣が NPC の軍を率いること（RetainerCommand）は Docs/Design/BattleCaptivityV1。捕虜交換、W4（遠方の合戦の簡略計算）、内応・離反・独立、滅亡・再興、500軍の移動・復旧は残り。
+- 捕縛・処遇（解放・登用の誘い・処断・身代金）と、家臣が NPC の軍を率いること（RetainerCommand）は Docs/Design/BattleCaptivityV1。W4（遠方の合戦の簡略計算）は接触の規則での決着まで（Docs/Design/NationalStrategyV1、StrategyBattles）。捕虜交換、近くの合戦の実際の軍勢への引継ぎ、内応・離反・独立、滅亡・再興、500軍の移動・復旧は残り。
 - 工程全体の完成・全件検査は未実施。
