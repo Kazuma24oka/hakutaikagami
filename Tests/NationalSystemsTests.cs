@@ -15,6 +15,7 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
         var w=NationalStart.Create(NationalStartTests.Nobunaga());o.WriteLine($"作成 {sw.ElapsedMilliseconds}ms");
         Assert.True(PersonalLife.Enabled(w));Assert.True(CharacterRelations.Enabled(w));Assert.True(AdultMarriage.Enabled(w));Assert.True(AdultAdoption.Enabled(w));
         Assert.True(PrivateInformation.Enabled(w));Assert.True(RegionalWeather.Enabled(w));Assert.True(LocalSecurity.Enabled(w));Assert.True(HouseSuccession.Enabled(w));Assert.True(AbilityEffects.Enabled(w));
+        Assert.True(ClinicalHealth.Enabled(w));Assert.True(HealthMortality.Enabled(w));Assert.True(TruceNegotiations.Enabled(w));Assert.True(TreatyNegotiations.Enabled(w));Assert.NotNull(w.Truces);
         var s=new WorldSession(w);
         var site=SocialWorld.Site(s.DiagnosticSnapshot(),s.PlayerControl)!.Value;
         var goal=s.ManageLife(new(new("request:national-goal"),LifeAction.SetGoal,site,Goal:LifeGoal.KeepHouse,Target:1),s.PlayerControl,s.Revision);

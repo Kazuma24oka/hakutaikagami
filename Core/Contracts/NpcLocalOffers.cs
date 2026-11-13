@@ -47,7 +47,7 @@ public static class NpcLocalOffers
         // 過去の作成地点を使い、移動後の現在地で原本を書き換えない。
         var site=PersonalCompanions.PhysicalSiteAt(w,intent.Actor,at,revision+1);
         var expected=new Intent(intent.RequestId,intent.Actor,intent.Executor,site??default,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+120,false,null,at+120),at,1,4,1,true,TaskKind.VoluntaryRequest);
-        if(!NewGameNpcRoutine.IsActor(w,intent.Actor)||NewGameNpcRoutine.Reason(input)!="offer-local-inspection"||recipient!=intent.Executor||site==null||intent!=expected)
+        if(!NewGameNpcRoutine.WasActor(w,intent.Actor,at)||NewGameNpcRoutine.Reason(input)!="offer-local-inspection"||recipient!=intent.Executor||site==null||intent!=expected)
             throw new InvalidDataException("現地の既知需要と本人の相手選択に合わない依頼です");
     }
 }

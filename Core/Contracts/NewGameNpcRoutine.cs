@@ -13,6 +13,8 @@ public static partial class NewGameNpcRoutine
         return w.NewGame!.Start.People.Where(p=>p.Id!=w.PlayerControl.Value&&(adults!=null?adults.Contains(p.Id):!p.Created)).Select(p=>new EntityId(p.Id)).Where(NpcDormancy.AwakeAt(w,w.ElapsedSeconds)).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
     }
     public static bool IsActor(ContractWorld w,EntityId actor)=>Enabled(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&(Continuing(w)?w.Characters.Single(c=>c.Id==actor).Life==LifeState.Adult:!p.Created));
+    // 保存の検証用：その時点で担い手だったか。後で亡くなっても生前の行動は正しいまま。
+    internal static bool WasActor(ContractWorld w,EntityId actor,long at)=>IsActor(w,actor)||Enabled(w)&&Continuing(w)&&actor!=w.PlayerControl&&w.NewGame!.Start.People.Any(p=>p.Id==actor.Value)&&w.Characters.Single(c=>c.Id==actor).Life==LifeState.Dead&&!Assassination.DeadAt(w,actor,at,long.MaxValue);
     static ContractWorld LifeAtDecision(ContractWorld world,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);
         var player=world.PlayerControl;

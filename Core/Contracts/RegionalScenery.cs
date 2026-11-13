@@ -8,7 +8,7 @@ public sealed record SceneryTriangle(SceneryVertex A,SceneryVertex B,SceneryVert
 public static class RegionalScenery
 {
     public const string Ruleset="regional-scenery-v1";
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>NationalSystems.On(w,"RegionalScenery")||w.Definitions.Ruleset==Ruleset;
     static readonly SceneryObstacle[] obstacles=BuildObstacles();
     public static SceneryObstacle[] Obstacles=>obstacles.ToArray();
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{FieldWorld.Version,

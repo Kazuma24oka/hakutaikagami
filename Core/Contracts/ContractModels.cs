@@ -280,6 +280,7 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public HeirNomination[]? HeirNominations {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public FamilyBirthRecord[]? Births {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public NaturalDeath[]? NaturalDeaths {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public CaptiveState? Captives {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public ControlHandover[]? ControlHandovers {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public StrategyState? Strategy {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public SchemeState? Schemes {get;set;}

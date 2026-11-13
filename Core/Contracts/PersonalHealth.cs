@@ -32,11 +32,14 @@ public static class PersonalHealth
     static byte[] Digest(string key)=>SHA256.HashData(Encoding.UTF8.GetBytes(key));
     static EntityId ConditionId(string source)=>new("condition:"+ContractJson.Hash(Encoding.UTF8.GetBytes(source))[..24]);
 
+    // 開始時の人物の生年は開始の定義ごとに一度だけ引けるようにする（全国では数千人）。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,Dictionary<string,int?>> births=new();
     static int Age(ContractWorld w,EntityId person,long at)
     {
-        var p=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==person.Value);
-        if(p?.BirthYear is not int born)return 30;
-        return WorldCalendar.At(w.EpochDate,at).Year-born;
+        var start=births.GetValue(w.NewGame!,d=>d.Start.People.GroupBy(p=>p.Id,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().BirthYear,StringComparer.Ordinal));
+        int? born=start.TryGetValue(person.Value,out var y)?y:FamilyBirth.People(w).FirstOrDefault(p=>p.Id==person.Value)?.BirthYear;
+        if(born is not int year)return 30;
+        return WorldCalendar.At(w.EpochDate,at).Year-year;
     }
     // 加齢は回復の経過だけを遅くする。能力・技能の記録は変えない。
     static long Scaled(ContractWorld w,EntityId person,long at,long seconds)
@@ -77,17 +80,25 @@ public static class PersonalHealth
         int risk=Math.Clamp(15+Math.Max(0,age-40)*2,0,200);
         return BinaryPrimitives.ReadUInt32LittleEndian(digest)%1000<risk;
     }
-    static HealthCondition? Illness(ContractWorld w,EntityId person,long window)
+    // 固定シードと生年だけで決まる部分は開始の定義ごとに覚えておく。死亡の判定は毎回行う。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,System.Collections.Concurrent.ConcurrentDictionary<(string,long),HealthCondition?>> illnesses=new();
+    internal static HealthCondition? Illness(ContractWorld w,EntityId person,long window)
     {
-        if(window<0||!Candidate(w,person,window,out var d))return null;
+        if(window<0)return null;
+        var c=illnesses.GetOrCreateValue(w.NewGame!).GetOrAdd((person.Value,window),_=>RawIllness(w,person,window));
+        return c!=null&&Assassination.DeadAt(w,person,c.OnsetAt,long.MaxValue)?null:c;
+    }
+    static HealthCondition? RawIllness(ContractWorld w,EntityId person,long window)
+    {
+        if(!Candidate(w,person,window,out var d))return null;
         for(long k=window-3;k<window;k++)if(k>=0&&Candidate(w,person,k,out _))return null;
         long at=window*Window+BinaryPrimitives.ReadUInt32LittleEndian(d.AsSpan(4))%(uint)(Window/3600)*3600;
         if(Age(w,person,at)<15)return null;
-        if(Assassination.DeadAt(w,person,at,long.MaxValue))return null;
         int roll=d[8]%100;int severity=roll<65?1:roll<92?2:3;
         return new(ConditionId($"illness/{person.Value}/{window}"),person,HealthKind.Illness,HealthPart.Fever,severity,at,Scaled(w,person,at,Base(HealthKind.Illness,severity)));
     }
-    static IEnumerable<EntityId> Living(ContractWorld w)=>FamilyBirth.People(w).Select(p=>new EntityId(p.Id));
+    internal static IEnumerable<HealthCondition> EventConditions(ContractWorld w)=>Injuries(w).Concat(OfficerBattleHealth.Conditions(w));
+    internal static IEnumerable<EntityId> Living(ContractWorld w)=>FamilyBirth.People(w).Select(p=>new EntityId(p.Id));
 
     public static HealthCondition[] Conditions(ContractWorld w,EntityId person,long until)
     {
@@ -96,7 +107,7 @@ public static class PersonalHealth
         for(long k=0;k<=until/Window;k++)if(Illness(w,person,k) is {} c&&c.OnsetAt<=until)rows.Add(c);
         return rows.OrderBy(c=>c.OnsetAt).ThenBy(c=>c.Id.Value,StringComparer.Ordinal).ToArray();
     }
-    static HealthCareEntry? Treatment(ContractWorld w,HealthCondition c)=>w.Health?.Care.FirstOrDefault(e=>e.Input.Condition==c.Id);
+    internal static HealthCareEntry? Treatment(ContractWorld w,HealthCondition c)=>w.Health?.Care.FirstOrDefault(e=>e.Input.Condition==c.Id);
     // 手当は残りの経過を短くするが、即時の全快はない。
     public static long RecoverAt(ContractWorld w,HealthCondition c)
     {
