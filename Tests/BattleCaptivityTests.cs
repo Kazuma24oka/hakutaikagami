@@ -156,4 +156,34 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
         foreach(var x in new[]{s,back})NewGameWorldTests.At(x,after.ElapsedSeconds+3600);
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
     }
+    // 本人の捕縛（BD-06）：退く途中で本隊が NPC の軍に打ち崩されると本人が捕らえられ、軍務の判断はできず、捕らえた家の当主が城にいれば銭を差し出して解放を願える。
+    [Fact]
+    public void ThePlayerRoutedWhileWithdrawingIsCapturedAndPleadsForRelease()
+    {
+        var s=NpcArmyTests.AtActualContact(permitted:true,sparse:true,capture:true,retainer:true,seed:20261026);
+        NewGameWorldTests.At(s,s.Seconds+1);
+        Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:withdraw"),NewMilitaryAction.Recall),s.PlayerControl,s.Revision).Code);
+        BattleCapture? c=null;
+        for(int n=0;n<900&&c==null;n++){NewGameWorldTests.At(s,s.Seconds+1);c=s.DiagnosticSnapshot().WorldClashes!.Steps.SelectMany(x=>x.Captures??[]).SingleOrDefault(x=>x.Person==s.PlayerControl);}
+        o.WriteLine($"player={s.PlayerControl.Value}");
+        Assert.NotNull(c);o.WriteLine($"captured at {c.At} by {c.CaptorOwner.Value} site {c.Site.Value}");
+        var w=s.DiagnosticSnapshot();
+        Assert.Equal(c,s.MyCaptivity());Assert.Equal(c.Site,PersonalCompanions.PhysicalSiteAt(w,s.PlayerControl,w.ElapsedSeconds,w.CommitSequence+1));
+        Assert.Equal(ResultCode.NotAvailable,s.DecideNewMilitary(new(new("request:held-enter"),NewMilitaryAction.Enter),s.PlayerControl,s.Revision).Code);
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        Assert.Equal(ContractJson.Write(w),ContractJson.Write(restored.DiagnosticSnapshot()));
+        var export=Environment.GetEnvironmentVariable("HAKUTAI_CAPTIVE_QA_DIR");if(!string.IsNullOrEmpty(export)){Directory.CreateDirectory(export);File.WriteAllBytes(Path.Combine(export,"held.json"),ContractJson.Write(w));}
+        // 差し出す銭が少なければ受け付けない。500文で願えば、当主（城に残った信長）が応じて解放され、銭が当主へ移る。
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCaptive(new(new("request:plead-low"),CaptiveAction.Plead,s.PlayerControl,100),s.Revision).Code);
+        long mine=NewGameWork.Balance(w,s.PlayerControl),head=NewGameWork.Balance(w,c.Holder);
+        var plead=s.ManageCaptive(new(new("request:plead"),CaptiveAction.Plead,s.PlayerControl,500),s.Revision);Assert.True(plead.Code==ResultCode.Accepted,plead.VisibleReason);o.WriteLine(plead.VisibleReason);
+        var freed=s.DiagnosticSnapshot();
+        Assert.Null(s.MyCaptivity());Assert.Equal(mine-500,NewGameWork.Balance(freed,s.PlayerControl));Assert.Equal(head+500,NewGameWork.Balance(freed,c.Holder));
+        var forged=ContractJson.Read<ContractWorld>(ContractJson.Write(freed));
+        forged.Captives=forged.Captives! with{Entries=forged.Captives.Entries.Select(e=>e with{Input=e.Input with{Amount=e.Input.Amount+100}}).ToArray()};
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forged));
+        var back=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(freed)));
+        foreach(var x in new[]{s,back})NewGameWorldTests.At(x,freed.ElapsedSeconds+3600);
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
+    }
 }

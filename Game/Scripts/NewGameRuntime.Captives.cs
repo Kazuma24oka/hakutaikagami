@@ -20,8 +20,15 @@ public partial class NewGameRuntime
             var button=new Button{Text=label,Disabled=disabled};row.AddChild(button);
             button.Pressed+=()=>{var r=run();popup.Hide();Refresh();ShowCaptives();message.Text=r.VisibleReason;};
         }
+        if(Session.MyCaptivity() is {} mine)
+        {
+            Text("捕らわれ　"+House(mine.CaptorOwner)+"　"+Site(mine.Site));
+            var plea=new HBoxContainer();box.AddChild(plea);
+            var offer=new SpinBox{MinValue=BattleCaptivity.PleaMin,MaxValue=BattleCaptivity.RansomMax,Step=100,Value=BattleCaptivity.PleaMin,Suffix="文"};plea.AddChild(offer);
+            Act(plea,"解放を願う",!NewGameWork.Enabled(w),()=>Session.ManageCaptive(new(new("request:captive-ui/plead/"+revision),CaptiveAction.Plead,Session.PlayerControl,(long)offer.Value),revision));
+        }
         var cards=Session.Captives();var ransoms=Session.Ransoms();
-        if(cards.Length==0)Text("捕虜なし");
+        if(cards.Length==0&&Session.MyCaptivity()==null)Text("捕虜なし");
         foreach(var c in cards)
         {
             Text(PersonName(c.Person)+"　"+House(c.FromOwner)+"　"+Site(c.Site)+"　"+(c.Held?"留置":"—"));

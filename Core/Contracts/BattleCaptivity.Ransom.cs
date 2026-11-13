@@ -84,7 +84,7 @@ public static partial class BattleCaptivity
     // 銭の動き：支払いの返書を出した時点で相手の私財から減り、本人が開封した時点で本人の私財に入る。
     internal static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long rev=long.MaxValue)
     {
-        if(w.Captives is null)return 0;long n=0;
+        if(w.Captives is null)return 0;long n=PleaNet(w,wallet,at,rev);
         foreach(var p in Papers(w).Where(p=>p.Action==RansomAction.Pay))
         {
             if(NewGameWork.Wallet(p.Author)==wallet&&Before(p.At,p.Revision,at,rev))n=checked(n-p.Amount);

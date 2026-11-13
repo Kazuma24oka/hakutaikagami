@@ -42,7 +42,17 @@ public partial class CaptivesCheck:Control
             var entry=runtime.Session.DiagnosticSnapshot().Captives!.Entries.Last();if(entry.Input.Action!=CaptiveAction.Recruit)throw new InvalidDataException("登用が記録されません");
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             if(GetViewport().GetTexture().GetImage().SavePng(Path.Combine(root,"after.png"))!=Error.Ok)throw new IOException("描画の保存に失敗しました");
-            File.WriteAllText(Path.Combine(root,"ui-result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Recruited=entry.Accepted,Scope="捕虜の一覧→身代金の書状→登用の誘い（ゲーム内の入力）",ComputerUse="未使用"}));
+            // 本人が捕らえられた世界：画面に捕らわれの表示と願いの欄があり、500文で願うと解放される。
+            var held=ContractJson.Read<ContractWorld>(File.ReadAllBytes(Path.Combine(root,"held.json")));
+            var second=new NewGameRuntime();second.ReviewConfigureCaptives(held);runtime.QueueFree();AddChild(second);
+            for(int i=0;i<8;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
+            second.ReviewCaptivesOpen();for(int i=0;i<3;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
+            if(!second.ReviewCaptivesText().Contains("捕らわれ"))throw new InvalidDataException("捕らわれの表示がありません");
+            await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+            if(GetViewport().GetTexture().GetImage().SavePng(Path.Combine(root,"held.png"))!=Error.Ok)throw new IOException("描画の保存に失敗しました");
+            second.ReviewCaptivesPress("解放を願う");for(int i=0;i<3;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
+            if(second.Session.MyCaptivity()!=null||second.ReviewCaptivesText().Contains("捕らわれ"))throw new InvalidDataException("願いで解放されません");
+            File.WriteAllText(Path.Combine(root,"ui-result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Recruited=entry.Accepted,Scope="捕虜の一覧→身代金の書状→登用の誘い、本人の捕らわれ→解放の願い（ゲーム内の入力）",ComputerUse="未使用"}));
             GetTree().Quit(0);
         }
         catch(Exception e)
