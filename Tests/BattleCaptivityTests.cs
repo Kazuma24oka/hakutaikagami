@@ -3,7 +3,7 @@ using Xunit;
 using Xunit.Abstractions;
 namespace HakutaiKagami.Tests;
 
-// 合戦での捕縛（BD-44、2026-11-13）：崩れた敵の軍の大将を捕らえ、拘束中は動けず、当主が明示に解放する。
+// 合戦での捕縛と処遇（BD-44・C7）：崩れた敵の軍の大将を捕らえ、拘束中は動けず、当主が明示に解放・登用の誘い・処断を選ぶ。
 [Trait("Tier","Heavy")]
 public sealed class BattleCaptivityTests(ITestOutputHelper o)
 {
@@ -21,7 +21,7 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
     }
 
     [Fact]
-    public void ARoutedCommanderIsCapturedHeldAndReleasedOnlyByTheCaptorAndRestoresTheSameFuture()
+    public void ARoutedCommanderIsCapturedHeldAndTreatedOnlyByTheCaptorAndRestoresTheSameFuture()
     {
         var s=NpcArmyTests.AtActualContact(permitted:true,sparse:true,capture:true);
         Assert.True(BattleCaptivity.Enabled(s.DiagnosticSnapshot()));
@@ -45,16 +45,66 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
         var release=new CaptiveInput(new("request:captive-release"),CaptiveAction.Release,c.Person);
         Assert.Equal(ResultCode.NotAvailable,s.ManageCaptive(release,s.Revision).Code);
         Assert.True(HostageCustody.HeldAt(s.DiagnosticSnapshot(),c.Person,s.Seconds,s.Revision+1));
-        // 本人が軍を戻して城に入れば、留め置いている城で解放できる。解放された人はその城にいる。
+        // 本人が軍を戻して城に入れば、留め置いている城で処遇を選べる。
         void Send(NewMilitaryAction action){var r=s.DecideNewMilitary(new(new("request:captive-return/"+action),action),s.PlayerControl,s.Revision);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);}
         Send(NewMilitaryAction.Recall);var end=s.DiagnosticSnapshot().NewMilitary!.Orders.Last().Routes.SelectMany(r=>r).Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max();NewGameWorldTests.At(s,end);Send(NewMilitaryAction.Enter);
+        Assert.True(Assert.Single(s.Captives()).CanAct);
+        var home=ContractJson.Write(s.DiagnosticSnapshot());
+        WorldSession Branch()=>new(ContractJson.Read<ContractWorld>(home));
+        void SameFuture(WorldSession a)
+        {
+            var now=a.DiagnosticSnapshot();var back=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(now)));
+            foreach(var x in new[]{a,back})NewGameWorldTests.At(x,now.ElapsedSeconds+3600);
+            Assert.Equal(ContractJson.Write(a.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
+        }
+        // 解放：拘束が終わり、その城にいる。
         var result=s.ManageCaptive(release,s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
         Assert.Equal(ResultCode.AlreadyAccepted,s.ManageCaptive(release,s.Revision).Code);
         var freed=s.DiagnosticSnapshot();
         Assert.False(HostageCustody.HeldAt(freed,c.Person,freed.ElapsedSeconds,freed.CommitSequence+1));
         Assert.Equal(c.Site,PersonalCompanions.PhysicalSiteAt(freed,c.Person,freed.ElapsedSeconds,freed.CommitSequence+1));
-        var back=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(freed)));
-        foreach(var x in new[]{s,back})NewGameWorldTests.At(x,freed.ElapsedSeconds+3600);
-        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCaptive(new(new("request:captive-execute-after-release"),CaptiveAction.Execute,c.Person),s.Revision).Code);
+        SameFuture(s);
+        // 処断：当主の明示の判断で死亡し、死亡記録は処断の操作を指す。死者には何もできない。
+        var x=Branch();
+        result=x.ManageCaptive(new(new("request:captive-execute"),CaptiveAction.Execute,c.Person),x.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var dead=x.DiagnosticSnapshot();
+        Assert.True(Assassination.DeadAt(dead,c.Person,dead.ElapsedSeconds,dead.CommitSequence));
+        Assert.Equal(new EntityId("request:captive-execute"),Assert.Single(dead.NaturalDeaths!,d=>d.Person==c.Person).Execution);
+        Assert.False(Assert.Single(x.Captives()).Held);
+        Assert.Equal(ResultCode.NotAvailable,x.ManageCaptive(new(new("request:captive-release-dead"),CaptiveAction.Release,c.Person),x.Revision).Code);
+        var forgedDeath=ContractJson.Read<ContractWorld>(ContractJson.Write(dead));
+        forgedDeath.NaturalDeaths=forgedDeath.NaturalDeaths!.Select(d=>d.Person==c.Person?d with{Execution=null}:d).ToArray();
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forgedDeath));
+        SameFuture(x);
+        // 登用の誘い：本人が判断する。応じれば所属と主従だけが捕らえた家へ移り、断れば同じ捕縛の間は誘い直せない。
+        var y=Branch();var before=y.DiagnosticSnapshot();
+        result=y.ManageCaptive(new(new("request:captive-recruit"),CaptiveAction.Recruit,c.Person),y.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var joined=y.DiagnosticSnapshot();bool accepted=joined.Captives!.Entries.Last().Accepted;o.WriteLine($"recruit {c.Person.Value} from={c.FromOwner.Value} accepted={accepted} reply={result.VisibleReason}");
+        bool Member(ContractWorld w,EntityId house)=>w.Memberships.Any(m=>m.Subject==c.Person&&m.Target==house&&m.From<=w.ElapsedSeconds&&w.ElapsedSeconds<m.Until);
+        Assert.True(Member(before,c.FromOwner));
+        if(accepted)
+        {
+            Assert.True(Member(joined,c.CaptorOwner));Assert.False(Member(joined,c.FromOwner));
+            Assert.False(HostageCustody.HeldAt(joined,c.Person,joined.ElapsedSeconds,joined.CommitSequence+1));
+            Assert.Equal(before.LandRights,joined.LandRights);Assert.Equal(before.Offices,joined.Offices);
+        }
+        else
+        {
+            Assert.True(Member(joined,c.FromOwner));Assert.True(Assert.Single(y.Captives()).Declined);
+            Assert.Equal(ResultCode.NotAvailable,y.ManageCaptive(new(new("request:captive-recruit-again"),CaptiveAction.Recruit,c.Person),y.Revision).Code);
+        }
+        var forgedAnswer=ContractJson.Read<ContractWorld>(ContractJson.Write(joined));
+        forgedAnswer.Captives=forgedAnswer.Captives! with{Entries=forgedAnswer.Captives.Entries.Select(e=>e with{Accepted=!e.Accepted}).ToArray()};
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forgedAnswer));
+        SameFuture(y);
+        // 応じた場合の付け替え：元の所属と主従をその時点で閉じ、捕らえた家と誘った当主へ移す。所領・役職は変えない。
+        var z=ContractJson.Read<ContractWorld>(home);
+        z.Captives=z.Captives! with{Entries=[new(new(new("request:captive-recruit-joined"),CaptiveAction.Recruit,c.Person),z.PlayerControl,c.Site,z.ElapsedSeconds,z.CommitSequence+1,true)]};
+        var members=BattleCaptivity.Relations(z,z.Memberships,"membership");var bonds=BattleCaptivity.Relations(z,z.ServiceBonds,"service");
+        bool Active(TimedRelation r)=>r.From<=z.ElapsedSeconds&&z.ElapsedSeconds<r.Until;
+        Assert.Equal(c.CaptorOwner,Assert.Single(members,r=>r.Subject==c.Person&&Active(r)).Target);
+        Assert.Equal(z.PlayerControl,Assert.Single(bonds,r=>r.Subject==c.Person&&Active(r)).Target);
+        Assert.All(members.Where(r=>r.Subject!=c.Person),r=>Assert.Contains(r,z.Memberships));
     }
 }

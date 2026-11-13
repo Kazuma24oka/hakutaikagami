@@ -3,21 +3,25 @@ using System.Text;
 
 namespace HakutaiKagami.Core.Contracts;
 
-// 合戦での捕縛（BD-44、2026-11-13）。本人の軍が打ち崩した敵の軍の大将を、固定シードの判定で捕らえる。
+// 合戦での捕縛と処遇（BD-44・C7、2026-11-13〜14）。本人の軍が打ち崩した敵の軍の大将を、固定シードの判定で捕らえる。
 // 捕縛は交戦の手番（WorldClashStep.Captures）に記録し、手番の前の世界から同じ結果を再現できることを確かめる。
 // 捕らえた人物は捕らえた家の拠点（出陣した城）に留め置かれ、拘束中は新しい行動を始められない（HostageCustody.HeldAt）。捕縛の秒の後の位置は城になる。
-// 解放は、捕らえた家の当主権限を持つ者が、その拠点で明示に行う。自動の処刑・登用・解放はしない。
+// 処遇は、捕らえた家の当主権限を持つ者が、その拠点で明示に選ぶ：解放、登用の誘い、処断。何もしなければ留め置く。自動の処刑・登用・解放はしない。
+// 登用に応じるかは捕虜本人の判断（元の家の当主は応じない。それ以外は捕縛ごとに固定の判定）。断られたら同じ捕縛の間は誘い直せない。
+// 登用に応じたときに移るのは本人の所属と主従だけ。所領・兵・私財・役職は移さない。
+// 処断は自然死と同じ死亡記録（NaturalDeath.Execution）に乗り、訃報・後見・家督の流れを使う。
 public sealed record BattleCapture(EntityId Person,EntityId FromOwner,EntityId CaptorOwner,EntityId Holder,EntityId Site,long At);
-public enum CaptiveAction { Release }
+public enum CaptiveAction { Release,Recruit,Execute }
 public sealed record CaptiveInput(EntityId Id,CaptiveAction Action,EntityId Person);
-public sealed record CaptiveEntry(CaptiveInput Input,EntityId Actor,EntityId Site,long At,long Revision);
+// Accepted：登用の誘いに本人が応じたか（他の操作では false）。
+public sealed record CaptiveEntry(CaptiveInput Input,EntityId Actor,EntityId Site,long At,long Revision,bool Accepted);
 public sealed record CaptiveState(int Schema,string Policy,CaptiveEntry[] Entries);
-public sealed record CaptiveCard(EntityId Person,EntityId FromOwner,EntityId Site,long CapturedAt,bool Held,bool CanRelease);
+public sealed record CaptiveCard(EntityId Person,EntityId FromOwner,EntityId Site,long CapturedAt,bool Held,bool CanAct,bool Declined);
 
 public static class BattleCaptivity
 {
-    public const string Policy="battle-capture-routed-commander-explicit-release-v1";
-    const int Chance=35,Broken=30;
+    public const string Policy="battle-capture-routed-commander-explicit-treatment-v2";
+    const int Chance=35,Broken=30,Willing=40;
     public static bool Enabled(ContractWorld w)=>w.NewGame?.CapturePolicy==Policy||NationalSystems.On(w,"BattleCaptivity");
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Captives=new(1,Policy,[]);}
@@ -37,12 +41,13 @@ public static class BattleCaptivity
             int Morale(EntityId u,bool after)=>100-WorldClashes.MoraleLost(w,u,result.At)-(after?result.Losses.Where(l=>l.Unit==u).Sum(l=>l.Morale):0);
             if(units.All(u=>Morale(u,false)<=Broken)||!units.All(u=>Morale(u,true)<=Broken))continue;
             if(Assassination.DeadAt(w,m.Commander,result.At,w.CommitSequence)||HostageCustody.HeldAt(w,m.Commander,result.At,w.CommitSequence+1))continue;
-            var d=SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"battle-capture-v1/{w.Seed}/{m.Commander.Value}/{result.At/86400}")));
-            if(d[0]%100>=Chance)continue;
+            if(Roll("battle-capture-v1",w.Seed,m.Commander,result.At/86400)>=Chance)continue;
             rows.Add(new(m.Commander,m.Owner,own.Terms.Owner,w.PlayerControl,own.Terms.Site,result.At));
         }
         return rows.Count==0?null:rows.ToArray();
     }
+    static int Roll(string kind,ulong seed,EntityId person,long salt)=>
+        SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"{kind}/{seed}/{person.Value}/{salt}")))[0]%100;
     internal static void Validate(ContractWorld context,WorldClashStep step,EngagementResult result)
     {
         if(ContractJson.CanonicalHash(step.Captures)!=ContractJson.CanonicalHash(Resolve(context,result)))throw new InvalidDataException("交戦時の捕縛を再現できません");
@@ -52,42 +57,76 @@ public static class BattleCaptivity
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<WorldClashState,(BattleCapture,long)[]> cache=new();
     static (BattleCapture Capture,long Revision)[] Captures(ContractWorld w)=>w.WorldClashes is not {} s?[]:
         cache.GetValue(s,x=>x.Steps.SelectMany(step=>(step.Captures??[]).Select(c=>(c,step.Revision))).ToArray());
+    static bool Before(long a,long ar,long at,long rev)=>a<at||a==at&&ar<rev;
     static (BattleCapture Capture,long Revision)? Last(ContractWorld w,EntityId person,long at,long rev)=>
-        Captures(w).Where(x=>x.Capture.Person==person&&(x.Capture.At<at||x.Capture.At==at&&x.Revision<rev)).Select(x=>((BattleCapture,long)?)x).LastOrDefault();
-    static CaptiveEntry? ReleaseOf(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>
-        Entries(w).FirstOrDefault(e=>e.Input.Person==person&&e.Input.Action==CaptiveAction.Release&&e.Revision>capturedRevision&&(e.At<at||e.At==at&&e.Revision<rev));
+        Captures(w).Where(x=>x.Capture.Person==person&&Before(x.Capture.At,x.Revision,at,rev)).Select(x=>((BattleCapture,long)?)x).LastOrDefault();
+    // 拘束を終える操作：解放、応じた登用、処断。
+    static bool Ends(CaptiveEntry e)=>e.Input.Action!=CaptiveAction.Recruit||e.Accepted;
+    static CaptiveEntry[] Since(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>
+        Entries(w).Where(e=>e.Input.Person==person&&e.Revision>capturedRevision&&Before(e.At,e.Revision,at,rev)).ToArray();
+    static CaptiveEntry? EndOf(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>Since(w,person,capturedRevision,at,rev).FirstOrDefault(Ends);
     public static BattleCapture? CaptivityAt(ContractWorld w,EntityId person,long at,long rev)
     {
         if(!Enabled(w)||Last(w,person,at,rev) is not {} last)return null;
-        return ReleaseOf(w,person,last.Revision,at,rev)==null?last.Capture:null;
+        return EndOf(w,person,last.Revision,at,rev)==null?last.Capture:null;
     }
     public static bool HeldAt(ContractWorld w,EntityId person,long at,long rev)=>CaptivityAt(w,person,at,rev)!=null;
-    // 拘束中は捕らえた家の拠点。解放の後、本人が新しい行動を始めるまでは解放された拠点（捕らえる前の行軍は続きとして扱わない）。
+    // 拘束中は捕らえた家の拠点。拘束が終わった後、本人が新しい行動を始めるまではその拠点（捕らえる前の行軍は続きとして扱わない）。
     // 道の上の位置（RegionalCampaign）は rev=0 で引き、捕縛の秒より後から城にそろえる（同じ秒に出た伝令の出発地を変えない）。
     internal static EntityId? SiteAt(ContractWorld w,EntityId person,long at,long rev)
     {
         if(!Enabled(w)||Last(w,person,at,rev) is not {} last)return null;
-        var release=ReleaseOf(w,person,last.Revision,at,rev);
-        if(release==null)return last.Capture.Site;
-        bool travelled=w.Tasks.Any(t=>t.Executor==person&&t.StartedAt>=release.At&&t.StartedAt<=at);
-        return travelled?null:release.Site;
+        var end=EndOf(w,person,last.Revision,at,rev);
+        if(end==null)return last.Capture.Site;
+        bool travelled=w.Tasks.Any(t=>t.Executor==person&&t.StartedAt>=end.At&&t.StartedAt<=at);
+        return travelled?null:end.Site;
     }
-    static bool CanRelease(ContractWorld w,BattleCapture c,EntityId actor,long at,long rev)=>
+    static bool CanAct(ContractWorld w,BattleCapture c,EntityId actor,long at,long rev)=>
         FactionStances.ResolveAuthority(w,actor,c.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null&&TransportWork.At(w,actor,c.Site,at,rev,true)&&!Assassination.DeadAt(w,actor,at,rev);
-    static void Check(ContractWorld w,CaptiveInput i,EntityId actor,long at,long rev)
+    static bool Declined(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>
+        Since(w,person,capturedRevision,at,rev).Any(e=>e.Input.Action==CaptiveAction.Recruit&&!e.Accepted);
+    // 本人の判断：元の家の当主は応じない。それ以外は捕縛ごとに固定の判定で、応じる者は4割ほど。
+    static bool Accepts(ContractWorld w,BattleCapture c,long at,long rev)=>
+        HouseSuccession.Head(w,c.FromOwner,at,rev)!=c.Person&&Roll("captive-recruit-v1",w.Seed,c.Person,c.At)<Willing;
+    static BattleCapture Check(ContractWorld w,CaptiveInput i,EntityId actor,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&EntityId.IsValid(i.Id.Value)&&Enum.IsDefined(i.Action),"捕縛の入力が不正です");
-        var c=CaptivityAt(w,i.Person,at,rev);
-        Need(c!=null,"その人物は捕らえていません");
-        Need(CanRelease(w,c,actor,at,rev),"捕らえた家の当主権限を持つ者が、留め置いている拠点で解放してください");
+        var last=Last(w,i.Person,at,rev);
+        Need(last!=null&&EndOf(w,i.Person,last.Value.Revision,at,rev)==null&&!Assassination.DeadAt(w,i.Person,at,rev-1),"その人物は捕らえていません");
+        var c=last.Value.Capture;
+        Need(CanAct(w,c,actor,at,rev),"捕らえた家の当主権限を持つ者が、留め置いている拠点で行ってください");
+        if(i.Action==CaptiveAction.Recruit)Need(!Declined(w,i.Person,last.Value.Revision,at,rev),"すでに登用を断られています");
+        return c;
     }
     internal static void Apply(ContractWorld w,CaptiveInput i,EntityId actor)
     {
         Need(!OwnIdUsed(w,i.Id),"別の操作に使ったIDです");
-        Check(w,i,actor,w.ElapsedSeconds,w.CommitSequence);
-        var site=CaptivityAt(w,i.Person,w.ElapsedSeconds,w.CommitSequence)!.Site;
-        w.Captives=w.Captives! with{Entries=[..Entries(w),new(i,actor,site,w.ElapsedSeconds,w.CommitSequence)]};
+        long at=w.ElapsedSeconds,rev=w.CommitSequence;
+        var c=Check(w,i,actor,at,rev);
+        bool accepted=i.Action==CaptiveAction.Recruit&&Accepts(w,c,at,rev);
+        w.Captives=w.Captives! with{Entries=[..Entries(w),new(i,actor,c.Site,at,rev,accepted)]};
+        if(i.Action==CaptiveAction.Execute)FamilyMortality.Die(w,i.Person,null,i.Id);
+        if(accepted)NewGameService.Sync(w);
     }
+    // 処断による死亡記録が、同じ秒・同じ版の処断の操作と一致するか。
+    internal static bool Executed(ContractWorld w,NaturalDeath d,EntityId order)=>
+        Entries(w).Any(e=>e.Input.Id==order&&e.Input.Action==CaptiveAction.Execute&&e.Input.Person==d.Person&&e.At==d.At&&e.Revision==d.Revision);
+    // 登用に応じた人の所属と主従：元の所属と主従をその時点で閉じ、捕らえた家と誘った当主へ付け替える。
+    internal static TimedRelation[] Relations(ContractWorld w,TimedRelation[] original,string kind)
+    {
+        var joins=Entries(w).Where(e=>e.Accepted).ToArray();
+        if(joins.Length==0)return original;
+        var rows=original.ToList();
+        foreach(var e in joins)
+        {
+            var c=CaptivityAt(w,e.Input.Person,e.At,e.Revision)!;
+            for(int n=0;n<rows.Count;n++)
+                if(rows[n].Subject==e.Input.Person&&rows[n].From<=e.At&&e.At<rows[n].Until)rows[n]=rows[n] with{Until=e.At,Revision=e.Revision};
+            rows.Add(new(InformationSchemes.Id("captive-"+kind,e.Input.Id.Value),e.Input.Person,kind=="membership"?c.CaptorOwner:e.Actor,kind,NewGameWorld.Basis,e.At,long.MaxValue,e.Revision));
+        }
+        return rows.ToArray();
+    }
+    internal static bool HasJoins(ContractWorld w)=>Entries(w).Any(e=>e.Accepted);
     internal static void Validate(ContractWorld w)
     {
         if(!Enabled(w)){Need(w.Captives==null&&!Captures(w).Any(),"この保存では捕縛を使えません");return;}
@@ -98,8 +137,11 @@ public static class BattleCaptivity
         foreach(var e in rows)
         {
             Need(e.At>=0&&e.At<=w.ElapsedSeconds&&e.Revision>0&&e.Revision<=w.CommitSequence,"捕縛の操作の時点が不正です");
-            Check(w,e.Input,e.Actor,e.At,e.Revision);
-            Need(CaptivityAt(w,e.Input.Person,e.At,e.Revision)!.Site==e.Site,"解放の場所が一致しません");
+            var c=Check(w,e.Input,e.Actor,e.At,e.Revision);
+            Need(c.Site==e.Site,"処遇の場所が一致しません");
+            Need(e.Accepted==(e.Input.Action==CaptiveAction.Recruit&&Accepts(w,c,e.At,e.Revision)),"登用の返答が一致しません");
+            if(e.Input.Action==CaptiveAction.Execute)
+                Need((w.NaturalDeaths??[]).Any(d=>d.Execution==e.Input.Id&&d.Person==e.Input.Person),"処断の死亡記録がありません");
         }
     }
     // 本人が知る捕虜：本人の家が捕らえた人物だけ（捕縛は本人の軍の現地で起きる）。
@@ -107,10 +149,11 @@ public static class BattleCaptivity
     {
         if(!Enabled(w))return [];
         long at=w.ElapsedSeconds,rev=w.CommitSequence+1;
-        return Captures(w).Where(x=>x.Capture.Holder==observer).GroupBy(x=>x.Capture.Person).Select(g=>g.Last().Capture).Select(c=>
+        return Captures(w).Where(x=>x.Capture.Holder==observer).GroupBy(x=>x.Capture.Person).Select(g=>g.Last()).Select(x=>
         {
-            bool held=HeldAt(w,c.Person,at,rev);
-            return new CaptiveCard(c.Person,c.FromOwner,c.Site,c.At,held,held&&CanRelease(w,c,observer,at,rev));
+            var c=x.Capture;
+            bool held=HeldAt(w,c.Person,at,rev)&&!Assassination.DeadAt(w,c.Person,at,rev);
+            return new CaptiveCard(c.Person,c.FromOwner,c.Site,c.At,held,held&&CanAct(w,c,observer,at,rev),Declined(w,c.Person,x.Revision,at,rev));
         }).ToArray();
     }
 }
@@ -123,6 +166,8 @@ public sealed partial class WorldSession
         var old=state.Captives!.Entries.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"処理済みの操作です");
         if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別操作のIDです");
         if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");
-        try{Change(w=>BattleCaptivity.Apply(w,input,w.PlayerControl));return new(ResultCode.Accepted,input.Id,state.CommitSequence,"解放しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}
+        try{Change(w=>BattleCaptivity.Apply(w,input,w.PlayerControl));}catch(Exception e)when(e is InvalidDataException or ArgumentException or InvalidOperationException or OverflowException){return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,e.Message);}
+        string done=input.Action switch{CaptiveAction.Release=>"解放しました",CaptiveAction.Execute=>"処断しました",_=>state.Captives!.Entries.Last().Accepted?"登用に応じました":"登用を断られました"};
+        return new(ResultCode.Accepted,input.Id,state.CommitSequence,done);
     }}
 }

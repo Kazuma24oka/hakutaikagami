@@ -480,7 +480,7 @@ public sealed partial class WorldSession
         Replace(s,t with{Execution=ExecutionPhase.Completed,Progress=1,FinishedAt=s.ElapsedSeconds,InternalReason=reason,Revision=s.CommitSequence});
         QueueReport(s,t,reason);
     }
-    internal static void Stop(ContractWorld s,TaskState t,string reason,AgreementPhase? agreement=null)
+    internal static void Stop(ContractWorld s,TaskState t,string reason,AgreementPhase? agreement=null,bool report=true)
     {
         if(Terminal(t))return;
         s.PendingEvents=s.PendingEvents.Where(e=>e.Task!=t.Id).ToArray();
@@ -488,7 +488,7 @@ public sealed partial class WorldSession
         s.Actions=s.Actions.Select(a=>a.Task==t.Id&&a.Phase==ExecutionPhase.Running?a with{Phase=ExecutionPhase.Stopped}:a).ToArray();
         // A stopped march stays at its physical route progress; never teleport back to the assigned castle.
         Replace(s,t with{Execution=ExecutionPhase.Stopped,Agreement=agreement??t.Agreement,FinishedAt=s.ElapsedSeconds,InternalReason=CreatedCampaign.Enabled(s)&&t.Issuer!=t.Executor&&!MissionReview.KnownOrder(s,t,t.Executor)?"unrecognized/"+reason:reason,Revision=s.CommitSequence});
-        QueueReport(s,t,reason);
+        if(report)QueueReport(s,t,reason);
     }
     private static void QueueReport(ContractWorld s,TaskState task,string reason)
     {
