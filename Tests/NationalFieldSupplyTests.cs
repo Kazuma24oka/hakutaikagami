@@ -1,6 +1,9 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
+[CollectionDefinition("NationalFieldSupplyIsolation",DisableParallelization=true)]
+public sealed class NationalFieldSupplyIsolation{}
+[Collection("NationalFieldSupplyIsolation")]
 [Trait("Tier","Heavy")]
 public sealed class NationalFieldSupplyTests
 {
@@ -9,9 +12,16 @@ public sealed class NationalFieldSupplyTests
     static void Open(WorldSession s){foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())Good(s.Open(s.PlayerControl,m.Id,s.Revision));}
     static void Send(WorldSession s,NewMilitaryAction action)
     {
-        var w=s.DiagnosticSnapshot();Good(s.DecideNewMilitary(new(new("request:national-military/"+s.Revision),action){AuthorityPolicy=action==NewMilitaryAction.Request?NewGameMilitary.AuthorityContract:null,LedgerPolicy=action==NewMilitaryAction.Request?NewGameMilitary.LedgerIdentityContract:null},s.PlayerControl,s.Revision));
+        var w=s.DiagnosticSnapshot();Good(s.DecideNewMilitary(new(new("request:national-military/"+s.Revision),action){AuthorityPolicy=action==NewMilitaryAction.Request?NewGameMilitary.AuthorityContract:null,LedgerPolicy=action==NewMilitaryAction.Request?NewGameMilitary.LedgerIdentityContract:null,ObservationPolicy=action==NewMilitaryAction.Request?NewGameMilitary.ObservationContract:null},s.PlayerControl,s.Revision));
     }
     [Fact]public void NativePresenceAndSupplyUseOneActualArmyAndOneRationLedgerAcrossRecovery()
+    {
+        // 他の検査と並走しない。毎回全国の全JSONをハッシュする検査専用診断は外し、
+        // 製品と同じ設定で実保存の前後と復旧後の世界全体を直接照合する。
+        bool diagnostic=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
+        try{VerifyMilitaryRecovery();}finally{WorldSession.GuardTurnSnapshots=diagnostic;}
+    }
+    static void VerifyMilitaryRecovery()
     {
         var start=NationalStart.Scenario();var people=start.People.ToDictionary(p=>p.Id);var heads=start.Factions.ToDictionary(f=>f.Head);
         var retainer=start.People.First(p=>p.Lord!=null&&heads.ContainsKey(p.Lord)&&p.Site==people[p.Lord].Site&&p.Faction==heads[p.Lord].Id&&start.Castles.Any(c=>c.Id==p.Site&&c.Faction==p.Faction));
@@ -31,8 +41,11 @@ public sealed class NationalFieldSupplyTests
         var form=new FieldRequest(new("request:national-formation"),s.PlayerControl,a,b);
         if(Environment.GetEnvironmentVariable("HAKUTAI_NATIONAL_FIELD_QA_DIR") is {} beforeDir){Directory.CreateDirectory(beforeDir);File.WriteAllBytes(Path.Combine(beforeDir,"before-form.json"),ContractJson.Write(actual));}
         Good(s.SetFormation(form,s.Revision));Assert.Equal(form.Id,Assert.Single(s.DiagnosticSnapshot().NewMilitary!.Orders).Id);
+        var regional=new RegionalRequest(form.Id,s.PlayerControl,s.PlayerControl,RegionalAction.Move,a,b);Assert.Equal(ResultCode.AlreadyAccepted,s.IssueRegional(regional,s.Revision).Code);
+        Assert.Equal(ResultCode.NotAvailable,s.IssueRegional(regional with{Id=new("request:other-army"),Recipient=new(retainer.Lord!)},s.Revision).Code);
         Advance(s,s.Seconds+3);actual=s.DiagnosticSnapshot();
-        Assert.NotEmpty(actual.NewMilitary!.Orders);Assert.Null(actual.Field);
+        Assert.NotEmpty(actual.NewMilitary!.Orders);Assert.Null(actual.Field);Assert.Null(actual.Region);Assert.True(RegionalBattle.Active(actual));
+        Assert.Equal(NewGameMilitary.KnownMilitary(actual).Select(v=>v.Unit),RegionalBattle.View(actual,s.PlayerControl).Select(v=>v.Unit));Assert.Empty(RegionalBattle.View(actual,new(retainer.Lord!)));
         for(int i=0;i<3;i++){var sample=FieldWorld.Sample(actual,i,s.Seconds);Assert.Equal(NewGameMilitary.UnitIdsFor(actual)[i],sample.Unit);Assert.Equal(NewGameMilitary.Position(actual,i,s.Seconds),sample.Position);}
         Assert.True(FieldPresence.PlayerDeployed(actual));Assert.Equal(load-300,FieldSupply.Carried(actual).Quantity);
         Assert.Equal(NewGameMilitary.CarryAt(actual,s.Seconds,s.Revision+1),FieldSupply.Carried(actual).Quantity);
@@ -46,7 +59,7 @@ public sealed class NationalFieldSupplyTests
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
         foreach(var x in new[]{s,host.Current})
         {
-            Advance(x,actual.ElapsedSeconds+2);Send(x,NewMilitaryAction.Recall);Advance(x,x.Seconds+20);Good(x.SetRegionalActive(false,x.Revision));
+            Advance(x,actual.ElapsedSeconds+2);Send(x,NewMilitaryAction.Recall);var returning=x.DiagnosticSnapshot();long arrival=returning.NewMilitary!.Orders.Last().Routes.SelectMany(r=>r).Select(l=>l.EndAt).DefaultIfEmpty(x.Seconds).Max();Advance(x,arrival);Good(x.SetRegionalActive(false,x.Revision));
             var snapshot=x.DiagnosticSnapshot();Assert.False(FieldPresence.PlayerDeployed(snapshot));
             Good(x.HandleSupply(new("request:national-unpack"),x.PlayerControl,false,FieldSupply.Carried(snapshot).Quantity,x.Revision));
             Assert.Equal(0,FieldSupply.Carried(x.DiagnosticSnapshot()).Quantity);

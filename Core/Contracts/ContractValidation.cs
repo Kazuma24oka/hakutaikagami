@@ -34,7 +34,7 @@ public static class ContractValidation
         Check(EngagementMission.Enabled(s)==(s.Engagement!=null),"Engagement requires its explicit profile");
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
         Check(ContinuousWorld.Enabled(s)==(s.Atlas!=null),"Terrain atlas requires its ruleset");if(ContinuousWorld.Enabled(s))ContinuousWorld.Validate(s);
-        Check(RegionalBattle.Enabled(s)==(s.Region!=null),"Regional module requires its ruleset.");if(RegionalBattle.Enabled(s))RegionalBattle.Validate(s);
+        Check(RegionalBattle.National(s)?s.Region==null:RegionalBattle.Enabled(s)==(s.Region!=null),"Regional module requires its ruleset.");if(RegionalBattle.Enabled(s))RegionalBattle.Validate(s);
         Check(FieldWorld.National(s)?s.Field==null:FieldWorld.Enabled(s)==(s.Field!=null),"Field module requires its ruleset.");if(FieldWorld.Enabled(s))FieldWorld.Validate(s);
         Check(TrafficWorld.Enabled(s)==(s.TrafficStops!=null),"Traffic stops require their own ruleset/module.");
         Check(TravelControl.Enabled(s)==(s.TravelDecisions!=null),"Personal decisions require their own ruleset/module.");

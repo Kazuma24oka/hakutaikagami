@@ -3,9 +3,9 @@
 BD-06・44・46・W4と全国への接続を一工程で進める。途中は担当ブランチへのコミット・pushのみ。全件検査・基準・進捗加点・PR・main統合は工程の終わりにまとめる。
 
 ## 接続した仕組み
-新規開始の保存済み一覧は24項目。Codex担当はOfficerBattleHealth、FieldPresence、FieldSupply、FieldWorld、RiverRoads、HistoricalRoads、NationalRoutes、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense。ClaudeのPersonalLife・HouseSuccessionを保持。古い一覧なし／FieldWorldなしの保存の規則は変えない。
+新規開始の保存済み一覧は26項目。Codex担当はOfficerBattleHealth、FieldPresence、FieldSupply、FieldWorld、RegionalBattle、RegionalScenery、RiverRoads、HistoricalRoads、NationalRoutes、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense。ClaudeのPersonalLife・HouseSuccessionを保持。古い一覧なし／FieldWorldなしの保存の規則は変えない。
 
-FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmiesの原本から求める。地方の架空人物・軍・兵糧・別時計は追加しない。全国のPresence・Supply・Fieldはnullのまま。布陣・携行米の操作は既存の軍務受付を通り、既存の消費と重複受付防止を使う。現地で本人が直接出す配置命令は即時有効で、遠隔命令の配送を省略する変更ではない。FieldSupplyで旧架空演習を連鎖起動しない。
+FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmiesの原本から求める。地方の架空人物・軍・兵糧・別時計は追加しない。全国のPresence・Supply・Field・Regionはnullのまま。布陣・携行米の操作は既存の軍務受付を通り、既存の消費と重複受付防止を使う。現地で本人が直接出す配置命令は即時有効で、遠隔命令の配送を省略する変更ではない。FieldSupplyで旧架空演習を連鎖起動しない。
 
 ## 今回の検証
 - 全国の実在家臣・家・米で軍務申出→本人承諾→引受→60kgの現地受領→10kgの積載→出陣→3部隊の布陣・消費→実保存→復旧→帰還→残量返納の一巡が成功。積載の同じIDを二重実行せず、復旧直後と同じ入力で進行した世界全体がバイト一致。関連1件、8分15秒。NPCの日課なしで軍そのものを検査しており、全NPC同時行動の検査ではない。
@@ -15,17 +15,24 @@ FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmies�
 - 全国の船旅の表示がVoyageRulesを直接読んで落ちたため、支払いと同じVoyageExpense.Fareを読むよう修正。修正後のゲーム描画が成功。
 - 全国で道路移動へ戻ると地方専用Fieldを参照する経路を修正。新地形の参照は保存されたFieldWorldの一覧項目で分岐する。
 
+## 全国の戦場・背景の接続
+RegionalBattle・RegionalSceneryを新規開始の一覧へ加え、全国では既存の軍務・交戦・地形を使う。地域用のTick・Sync・伝令処理は全国で二重に実行しない。本人への移動・待機・帰還は既存の軍務受付に渡し、他隊への命令や交戦開始は既存の遠隔命令・交戦許可を使わせる。地域表示は本人の保存済み観測を投影し、未知の士気をゼロに捏造しない。他軍は既存のNpcArmies.Sightsで表示する。
+
+全国26項目の関連3件が成功。一巡は本人の観測・他人への不正な命令の拒否・同じ配置IDの二重受付も確認し、帰還に実際に必要な時刻まで進めた。全件検査は追加していない。地方の物理配送2件と旧／新地形の分離1件も成功（3秒）。26項目の保存のゲーム自前描画・高さ照合が成功した。
+
+全国の一巡検査は7分25秒かかった。検査専用の全JSON再ハッシュを外して製品と同じ設定にし、この検査を非並列の専用グループへ隔離、終了時に診断設定を戻す。実保存前後と復旧後の世界全体のバイト一致は残した。この形でも一巡が成功（5分39秒）。他のClaudeの検査と同じPCで並行しており、単純な性能改善率とは扱わない。
+
 ## 地形の範囲
 national-castle-field-ground-v1は既存の試作地形を実在の各城の周囲へ配置した仮地形。史実の城郭の測量や全国の実地形の完成を意味しない。全城の集合3位置が通行可能であることを確認。移動、伝令の最初の区間、模型の接地、実メッシュ、選択用三角形に同じ高さを使う。地形の版を新規開始の定義ハッシュへ含める。正式素材へ差し替える余地を残す。
 
 ## 性能の未達
-全国4043人・1958拠点、実際に判断したNPC215人・1290件、軍0で、直近の1日実測95.082秒（前半63.643＋後半31.439）、復旧後38.211秒。同じ未来は一致したが60秒以内は未達。24項目の最新構成での1日計測は未実施。
+全国4043人・1958拠点、実際に判断したNPC215人・1290件、軍0で、直近の1日実測95.082秒（前半63.643＋後半31.439）、復旧後38.211秒。同じ未来は一致したが60秒以内は未達。26項目の最新構成での1日計測は未実施。
 
 再利用は原本が空で値が不変な開始時の所有者・財布・物資・地域帳簿に限定し、外へ返す配列は複製する。NPCの判断順や実行を変えず、記録だけで全帳簿を再同期しない。地域・米・財布の改ざん、実受渡し、復旧の代表検査を実施済み。開始設定の私的共有は105.073秒で改善を確認できず取り除き、深い複写を維持。以前の1日実測は275.294→184.469、Claude21項目266.770→222.844→125.180→130.331→96.438→95.082秒。構成の違いと計測の振れがあり単純な改善率にはしない。
 
 500軍の旧規則場面は4543人・1958拠点・1500部隊。Release作成40.713秒、引受1.225秒、初期検査1.884秒。停止中の実描画は近景790.7FPS、全国133.7FPS。全員同時歩行・交戦中・最新の全国規則の受入とは別。
 
 ## 残り
-- RegionalBattle・RegionalSceneryの全国接続、全国1日60秒以内、500軍の移動・復旧、捕縛・処遇・交換・身代金、W4、内応・離反・独立、滅亡・再興。
+- 全国1日60秒以内、500軍の移動・復旧、捕縛・処遇・交換・身代金、W4、内応・離反・独立、滅亡・再興。
 - Claude担当の生活目標はSubjectのJSON必須指定と省略の不整合で失敗。claude-handoff.mdに最小再現を記録し、担当外の実装は変えていない。健康の引継ぎはHealthExpansionV1/handoff-to-claude.md。
 - 全国収入31日を含めた別の関連検査は中断。未完了を成功扱いしない。工程全体の完成・性能合格・全件成功は未達。小区切りの全件検査は行っていない。
