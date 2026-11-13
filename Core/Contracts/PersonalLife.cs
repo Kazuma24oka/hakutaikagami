@@ -1,8 +1,12 @@
 namespace HakutaiKagami.Core.Contracts;
 
 public enum LifeAction { EatPrivateRice, RestOutside, RestInn, CancelRest, SetGoal }
-public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle, KeepHouse }
-public sealed record LifeInput(EntityId Id,LifeAction Action,EntityId Site,EntityId? Original=null,LifeGoal Goal=LifeGoal.WorkPay,long Target=0);
+public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle, KeepHouse, KeepHoldings, SupportLord, Revenge }
+public sealed record LifeInput(EntityId Id,LifeAction Action,EntityId Site,EntityId? Original=null,LifeGoal Goal=LifeGoal.WorkPay,long Target=0)
+{
+    // 報復の相手（報復の目標だけ）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Subject {get;init;}
+}
 public sealed record LifeEntry(LifeInput Input,long At,long Revision,long Paid);
 public sealed record PersonalLifeState(int Schema,string Policy,LifeEntry[] Entries);
 public sealed record LifeGoalCard(EntityId Id,LifeGoal Goal,long Target,long Progress,bool Achieved,long? AchievedAt);
@@ -39,11 +43,13 @@ public static class PersonalLife
         var es=w.Life.Entries;var seen=new List<LifeEntry>();long at=0,rev=0;var ids=new HashSet<EntityId>();
         foreach(var e in es){var i=e.Input;Need(EntityId.IsValid(i.Id.Value)&&ids.Add(i.Id)&&Enum.IsDefined(i.Action)&&Enum.IsDefined(i.Goal)&&e.At>=at&&e.At<=w.ElapsedSeconds&&e.Revision>rev&&e.Revision<=w.CommitSequence,"生活原本の順序が不正です");Need(!FactionStances.OtherIdUsed(w,i.Id,includeLife:false)&&!FactionStances.OwnIdUsed(w,i.Id),"別の操作で使った原本です");Need(Local(w,i.Site,e.At,e.Revision),"本人が拠点にいません");
             Need(e.Paid==(i.Action==LifeAction.RestInn?InnCost:0),"宿代の実支払が違います");
-            Need(i.Action==LifeAction.SetGoal||i.Goal==LifeGoal.WorkPay&&i.Target==0,"食事/休息に目標値を混在できません");
+            Need(i.Action==LifeAction.SetGoal||i.Goal==LifeGoal.WorkPay&&i.Target==0&&i.Subject==null,"食事/休息に目標値を混在できません");
             if(i.Action==LifeAction.CancelRest)Need(i.Original is {} original&&Active(seen,e.At)?.Input.Id==original,"休息の原本と残り時間を確認してください");
             else {Need(i.Original==null,"不要な原本参照です");Need(Active(seen,e.At)==null,"休息を終えるか中止してください");
                 if(i.Action==LifeAction.EatPrivateRice)Need(HouseSalary.PrivateRice(w,ControlSuccession.PlayerAtRevision(w,e.Revision),e.At,e.Revision)>=1,"食事に使える私有米がありません");
-                else if(i.Action==LifeAction.SetGoal)Need(i.Target is >=1 and <=5000,"目標は1〜5000です");
+                else if(i.Action==LifeAction.SetGoal){Need(i.Target is >=1 and <=5000,"目標は1〜5000です");
+                    var me=ControlSuccession.PlayerAtRevision(w,e.Revision);
+                    Need(i.Goal==LifeGoal.Revenge?i.Subject is {} foe&&foe!=me&&i.Target==1&&w.Characters.Any(c=>c.Id==foe)&&!Assassination.DeadAt(w,foe,e.At,e.Revision):i.Subject==null,"報復の相手を一人選んでください");}
                 else {Need(Free(w,e.At,e.Revision),"任務や預かった部隊を先に引き継いでください");if(i.Action==LifeAction.RestInn)Need(TransportWork.WalletBefore(w,ControlSuccession.PlayerAtRevision(w,e.Revision),e.At,e.Revision)>=InnCost,"私財の自由残高が宿代に足りません。無料休息は選べます");}
             }
             seen.Add(e);at=e.At;rev=e.Revision;
@@ -72,6 +78,31 @@ public static class PersonalLife
             }
             return new(e.Input.Id,e.Input.Goal,e.Input.Target,years,kept!=null,kept);
         }
+        if(e.Input.Goal is LifeGoal.KeepHoldings or LifeGoal.SupportLord)
+        {
+            // 所領維持：決めたときに自分の家が持っていた城を、一年ごとの日にすべて持っていれば一年。
+            // 主家支援：主家（自分の家の上の家、なければ自分の家）が、決めたときの城の数以上を持っていれば一年。
+            var me=ControlSuccession.PlayerAtRevision(w,e.Revision);var house=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==me.Value)?.Faction;
+            if(e.Input.Goal==LifeGoal.SupportLord&&house!=null&&w.FactionRelations?.Relations.FirstOrDefault(r=>r.SubjectFaction==house)?.OverlordFaction is {} lord)house=lord;
+            long endAt=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min();
+            string[] Held(long t)=>house==null?[]:w.NewGame!.Start.Castles.Where(c=>NationalStrategy.Owner(w,new(c.Id),t,long.MaxValue)?.Value==house).Select(c=>c.Id).ToArray();
+            var start=Held(e.At);int years=0;long? kept=null;
+            for(long t=e.At+365*86400L;t<=Math.Min(w.ElapsedSeconds,endAt)&&start.Length>0;t+=365*86400L)
+            {
+                var now=Held(t);
+                if(e.Input.Goal==LifeGoal.KeepHoldings?start.Except(now).Any():now.Length<start.Length)break;
+                years++;if(years>=e.Input.Target)kept??=t;
+            }
+            return new(e.Input.Id,e.Input.Goal,e.Input.Target,years,kept!=null,kept);
+        }
+        if(e.Input.Goal==LifeGoal.Revenge)
+        {
+            // 報復：相手の死を本人が知ったとき（自分で討った、または死を見届けた・伝え聞いた証拠を持つ）。
+            var me=ControlSuccession.PlayerAtRevision(w,e.Revision);var foe=e.Input.Subject!.Value;
+            long endAt=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min();
+            long? known=RevengeKnown(w,me,foe,e.At,Math.Min(w.ElapsedSeconds,endAt));
+            return new(e.Input.Id,e.Input.Goal,1,known!=null?1:0,known!=null,known);
+        }
         if(e.Input.Goal==LifeGoal.GainTitle)
         {
             // 出世：目標を決めた後に、返書を開封して知った叙任の数。
@@ -83,6 +114,26 @@ public static class PersonalLife
         long total=0;long? met=null;foreach(var p in rows.Where(p=>p.Rev>e.Revision&&p.Rev<endRev).OrderBy(p=>p.Rev)){total=checked(total+p.Amount);if(total>=e.Input.Target)met??=p.At;}
         return new(e.Input.Id,e.Input.Goal,e.Input.Target,total,met!=null,met);
     }
+    // 報復の相手に選べる人：本人が姿や消息を記録した人、会いに行った人、いま同じ拠点にいる人（生きている人、自分を除く）。
+    public static EntityId[] RevengeChoices(ContractWorld w,EntityId me,long at,long rev)
+    {
+        var known=w.Evidence.Where(x=>x.Observer==me&&x.RecordedAt<=at).Select(x=>x.Subject)
+            .Concat(SocialWorld.Ledger(w).Where(e=>e.Actor==me&&e.Input.Action==SocialWorldAction.Visit&&e.At<=at).Select(e=>e.Input.Person));
+        if(at==w.ElapsedSeconds&&SocialWorld.Site(w,me) is {} here)
+            known=known.Concat(w.Locations.Where(l=>l.Kind==LocationKind.AtSite&&l.Site==here).Select(l=>l.Actor));
+        var alive=w.Characters.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id).ToHashSet();
+        return known.Where(x=>x!=me&&alive.Contains(x)&&!Assassination.DeadAt(w,x,at,rev)).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
+    }
+    // 相手の死を本人が知った時刻：自分で討った・現地で見届けた襲撃、または本人に届いた訃報・目撃した自然死。
+    static long? RevengeKnown(ContractWorld w,EntityId me,EntityId foe,long from,long until)
+    {
+        var slain=InformationSchemes.Events(w).Where(x=>x.Input.Action==SchemeAction.FatalEncounter&&x.Input.Subject==foe&&x.At>=from&&x.At<=until)
+            .Where(x=>x.Actor==me||x.Input.Person==me||Assassination.Witness(w,x,me)!=null).Select(x=>(long?)x.At);
+        var natural=(w.NaturalDeaths??[]).Where(d=>d.Person==foe&&d.At>=from&&FamilyNotice.KnowsAt(w,d,me,until,w.CommitSequence))
+            .Select(d=>(long?)Math.Max(d.At,HakutaiKagami.Core.Messaging.MessageFlow.LearnedAt(w.Messaging,FamilyNotice.LetterId(d,me.Value),me.Value)??d.At));
+        return slain.Concat(natural).Min();
+    }
+    internal static LifeGoalCard[] Goals(ContractWorld w){var es=Entries(w);return es.Where(e=>e.Input.Action==LifeAction.SetGoal).Select(e=>Goal(w,e,es)).ToArray();}
     internal static PersonalLifeView? View(ContractWorld w)
     {
         if(!Enabled(w))return null;var es=Entries(w);var active=Active(es,w.ElapsedSeconds);var service=NewGameService.View(w);var site=w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;
