@@ -61,13 +61,13 @@ public static partial class NewGameMilitary
             var from=i.Action==NewMilitaryAction.Withdraw?Position(w,0,w.ElapsedSeconds):RegionalGround.At(x.Journeys.Last().Route,x.Journeys.Last().Origin,w.ElapsedSeconds);
             var to=i.Action is NewMilitaryAction.Withdraw or NewMilitaryAction.PersonalHome?Home(w,0):i.Action==NewMilitaryAction.PersonalMove?i.A!:x.Sightings.Last().Position;
             Need(InExerciseRange(w,to),"本人の野外移動はこの演習の120m範囲で指定します");
-            var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,atlas:true);
+            var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,atlas:true,national:WorldGround.National(w));
             w.NewMilitary=w.NewMilitary with{Withdrawal=x with{Journeys=[..x.Journeys,new(i.Id,w.ElapsedSeconds,w.CommitSequence,from,route)]}};
         }
         if(i.Action is NewMilitaryAction.Withdraw or NewMilitaryAction.Observe or NewMilitaryAction.Attach)Sight(w,i);
         if(i.Action==NewMilitaryAction.RemoteRecall){
             var x=w.NewMilitary.Withdrawal!;var known=x.Sightings.Last();var from=PersonPosition(w,w.ElapsedSeconds);
-            var route=RegionalGround.Plan(from,known.Position,w.ElapsedSeconds,courier:true,atlas:true);
+            var route=RegionalGround.Plan(from,known.Position,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var message=UnitMessage(i.Id,"order");
             MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-order",w.PlayerControl.Value,UnitIdsFor(w)[0].Value,Text(new UnitPostOrder(i.Id,"recall",ReceivingRole,known.Id){ReplyPolicy=i.PostPolicy,HoldingPolicy=i.OriginalPolicy,TransportPolicy=i.TransportPolicy}),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds,i.DeliverBy),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             w.NewMilitary=w.NewMilitary with{Withdrawal=x with{Dispatches=[..x.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,UnitIdsFor(w)[0],ReceivingRole,known.Id,from,known.Position,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};
@@ -84,7 +84,7 @@ public static partial class NewGameMilitary
             bool applied=original!=null&&SameMilitaryCase(w,original)&&delivered&&!CancelledRecall(w,d.Message)&&!UnitReceipts(w).Any(r=>r.Applied&&UnitDispatches(w).Single(t=>t.Id==r.Id).Message==d.Message)&&!w.NewMilitary.Orders.Any(o=>SupersedesRecall(w,o,original));
             if(applied)applied=ApplyStandingRecall(w,original!);
             if(delivered&&d.Role==UnitDirectiveRole)applied=ApplyDirectedArrival(w,d);
-            var route=RegionalGround.Plan(d.Destination,d.Origin,w.ElapsedSeconds,courier:true,atlas:true);var x=w.NewMilitary!.Withdrawal!;
+            var route=RegionalGround.Plan(d.Destination,d.Origin,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));var x=w.NewMilitary!.Withdrawal!;
             long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);var reply=UnitMessage(d.Id,delivered?"reply":"failure");
             if(delivered)MessageFlow.Send(w.Messaging,new(reply,d.Id.Value,d.Role==UnitDirectiveCancellationRole?"unit-post-directive-cancel-reply":d.Role==UnitDirectiveRole?"unit-post-directive-reply":d.Role==ReceivingRole?"unit-post-reply":d.Role==CancellationRole?"unit-post-cancel-reply":"unit-post-inquiry-reply",d.Recipient.Value,w.PlayerControl.Value,UnitReplyBody(w,d,applied),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             else MessageFlow.ReportFailure(w.Messaging,reply,d.Attempt,UnitCourier(d.Id).Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
@@ -108,7 +108,7 @@ public static partial class NewGameMilitary
     public static LocationState CargoLocation(ContractWorld w)
     {
         var p=Position(w,0,w.ElapsedSeconds);var point=FieldWorld.ToWorld(p);var g=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));
-        return new(UnitIdsFor(w)[0],LocationKind.AtPosition,null,null,0,0,g.LatitudeE7,g.LongitudeE7,ContinuousWorld.Height(p),WithdrawalContract,0);
+        return new(UnitIdsFor(w)[0],LocationKind.AtPosition,null,null,0,0,g.LatitudeE7,g.LongitudeE7,WorldGround.Height(w,p),WithdrawalContract,0);
     }
     static PersonalWithdrawalState? WithdrawalBefore(PersonalWithdrawalState? x,long at,long rev)=>x==null?null:new(x.Contract,x.Journeys.Where(j=>Before(j.At,j.Revision,at,rev)).ToArray(),x.Sightings.Where(j=>Before(j.At,j.Revision,at,rev)).ToArray(),x.Dispatches.Where(j=>Before(j.At,j.Revision,at,rev)).ToArray(),x.Receipts.Where(j=>Before(j.At,j.Revision,at,rev)).ToArray(),x.Replies.Where(j=>Before(j.At,j.Revision,at,rev)).ToArray());
     static void ValidateWithdrawal(ContractWorld w,bool replay)

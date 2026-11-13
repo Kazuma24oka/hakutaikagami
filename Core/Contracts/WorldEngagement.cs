@@ -17,7 +17,7 @@ public static class WorldEngagement
                 var captain=HouseholdDetachment.Appointment(w,id,at,w.CommitSequence+1)?.Actor;
                 int morale=Math.Min(100,reports[i].Morale+(captain is {} officer?CharacterDevelopment.EffectiveAt(w,officer,DevelopmentAbility.Leadership,at)/10:0));
                 string phase=order?.Action==NewMilitaryAction.Recall?"withdrawing":morale<=25?"routed":"standing";
-                var wing=new EngagementUnit(u,p,ContinuousWorld.Height(p),morale,phase,EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==(captain??u.Commander)).WillObey);
+                var wing=new EngagementUnit(u,p,WorldGround.Height(w,p),morale,phase,EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==(captain??u.Commander)).WillObey);
                 units.Add(wing);
                 if(captain is {} leader)units.AddRange(PrivateRecruitment.Accompany(w,leader,wing));
                 if(i==0 && HouseholdDetachment.OwnCompanyJoined(w,id,at,w.CommitSequence+1))
@@ -31,7 +31,7 @@ public static class WorldEngagement
             var returned=w.NpcArmies!.Returns.SingleOrDefault(q=>q.Muster==m.Id);
             bool withdrawing=w.NpcArmies.Marches.Where(q=>q.Muster==m.Id&&q.Input.DestinationSite==m.Site).Any(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt<=at);
             bool active=m.Objective!=null&&returned==null;
-            foreach(var id in b.Units){var u=w.Units.Single(u=>u.Id==id);int morale=100-WorldClashes.MoraleLost(w,id,at);units.Add(new(u,p,ContinuousWorld.Height(p),morale,withdrawing?"withdrawing":morale<=25?"routed":"standing",active?EngagementIntent.Mission:EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==m.Commander).WillObey));}
+            foreach(var id in b.Units){var u=w.Units.Single(u=>u.Id==id);int morale=100-WorldClashes.MoraleLost(w,id,at);units.Add(new(u,p,WorldGround.Height(w,p),morale,withdrawing?"withdrawing":morale<=25?"routed":"standing",active?EngagementIntent.Mission:EngagementIntent.SelfDefense,w.Characters.Single(c=>c.Id==m.Commander).WillObey));}
             if(active){var o=m.Objective!;mandates.Add(new(m.Id,m.Commander,m.Commander,m.Owner,b.Army,o.TargetOwner,b.Units,m.At,m.At,m.At,o.Claim.Until,null));}
         }
         return TempleMilitary.Adapt(w,new(at,units.ToArray(),mandates.Where(m=>!TruceNegotiations.WillNotInitiate(w,m.Owner,m.TargetOwner,at,w.CommitSequence)).ToArray(),FactionStances.Truth(w,at)));

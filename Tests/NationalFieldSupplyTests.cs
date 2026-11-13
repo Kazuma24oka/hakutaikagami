@@ -26,19 +26,27 @@ public sealed class NationalFieldSupplyTests
         long load=10*MilitaryEconomy.PersonSecondsPerKg;var id=new EntityId("request:national-pack");
         Good(s.HandleSupply(id,s.PlayerControl,true,load,s.Revision));
         Assert.Equal(ResultCode.AlreadyAccepted,s.HandleSupply(id,s.PlayerControl,true,load,s.Revision).Code);
-        Good(s.SetRegionalActive(true,s.Revision));Advance(s,s.Seconds+3);actual=s.DiagnosticSnapshot();
+        Good(s.SetRegionalActive(true,s.Revision));actual=s.DiagnosticSnapshot();
+        var origin=NewGameMilitary.Home(actual,0);var a=new FieldPoint(origin.X+10000,origin.Y);var b=new FieldPoint(origin.X+10000,origin.Y-16000);
+        var form=new FieldRequest(new("request:national-formation"),s.PlayerControl,a,b);
+        if(Environment.GetEnvironmentVariable("HAKUTAI_NATIONAL_FIELD_QA_DIR") is {} beforeDir){Directory.CreateDirectory(beforeDir);File.WriteAllBytes(Path.Combine(beforeDir,"before-form.json"),ContractJson.Write(actual));}
+        Good(s.SetFormation(form,s.Revision));Assert.Equal(form.Id,Assert.Single(s.DiagnosticSnapshot().NewMilitary!.Orders).Id);
+        Advance(s,s.Seconds+3);actual=s.DiagnosticSnapshot();
+        Assert.NotEmpty(actual.NewMilitary!.Orders);Assert.Null(actual.Field);
+        for(int i=0;i<3;i++){var sample=FieldWorld.Sample(actual,i,s.Seconds);Assert.Equal(NewGameMilitary.UnitIdsFor(actual)[i],sample.Unit);Assert.Equal(NewGameMilitary.Position(actual,i,s.Seconds),sample.Position);}
         Assert.True(FieldPresence.PlayerDeployed(actual));Assert.Equal(load-300,FieldSupply.Carried(actual).Quantity);
         Assert.Equal(NewGameMilitary.CarryAt(actual,s.Seconds,s.Revision+1),FieldSupply.Carried(actual).Quantity);
         Assert.Null(actual.Presence);Assert.Null(actual.Supply);Assert.Equal(3,actual.Units.Length);
         Assert.DoesNotContain(actual.ResourceLots,l=>l.Id==FieldSupply.Depot||l.Id==FieldSupply.Carry);
         s.SetPaused(true);actual=s.DiagnosticSnapshot();
+        if(Environment.GetEnvironmentVariable("HAKUTAI_NATIONAL_FIELD_QA_DIR") is {} qa){Directory.CreateDirectory(qa);File.WriteAllBytes(Path.Combine(qa,"world.json"),ContractJson.Write(actual));}
         var store=new GenerationSaveStore(Path.Combine(Path.GetTempPath(),"national-field-"+Guid.NewGuid().ToString("N")),actual.Definitions);
         Assert.True(store.Save(s,"deployed",actual.WorldId).Published);var host=new WorldSessionHost(new WorldSession(TravelWorld.Create()));
         Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("deployed"),host.Current,host.Current.Revision));
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
         foreach(var x in new[]{s,host.Current})
         {
-            Advance(x,actual.ElapsedSeconds+2);Good(x.SetRegionalActive(false,x.Revision));
+            Advance(x,actual.ElapsedSeconds+2);Send(x,NewMilitaryAction.Recall);Advance(x,x.Seconds+20);Good(x.SetRegionalActive(false,x.Revision));
             var snapshot=x.DiagnosticSnapshot();Assert.False(FieldPresence.PlayerDeployed(snapshot));
             Good(x.HandleSupply(new("request:national-unpack"),x.PlayerControl,false,FieldSupply.Carried(snapshot).Quantity,x.Revision));
             Assert.Equal(0,FieldSupply.Carried(x.DiagnosticSnapshot()).Quantity);

@@ -45,7 +45,7 @@ public static partial class NewGameMilitary
         if(h==null||!DirectiveCarrierIdle(w,h.Holder)||RegionalGround.Distance(person,h.Position)>1000)return null;
         var d=UnitDispatches(w).Single(d=>d.Attempt==h.Attempt);var attempt=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);var message=w.Messaging.Messages.Single(m=>m.Id==h.Message);
         if(!HoldsDirectiveOriginal(w,d)||attempt.Status!=AttemptStatus.Lost||attempt.LateDueAt!=null)return null;
-        try{var route=RegionalGround.Plan(h.Position,p.Known.Position,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);return message.DeliverBy==null||due<=message.DeliverBy?h:null;}catch(InvalidDataException){return null;}
+        try{var route=RegionalGround.Plan(h.Position,p.Known.Position,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);return message.DeliverBy==null||due<=message.DeliverBy?h:null;}catch(InvalidDataException){return null;}
     }
     public static UnitDirectiveHandoffInput? SelectDirectivePaper(ContractWorld w,EntityId original)
     {
@@ -65,7 +65,7 @@ public static partial class NewGameMilitary
     static void ApplyDirectiveHandoff(ContractWorld w,NewMilitaryInput i)
     {
         var p=i.DirectiveHandoff!;var h=PickDirectivePaper(w,p)!;var to=p.Known.Position;var cargo=HeldPapers(w,w.ElapsedSeconds).Where(x=>x.Holder==h.Holder).Select(x=>x.Attempt).OrderBy(x=>x,StringComparer.Ordinal).ToArray();
-        var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var attempt=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);
+        var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var attempt=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);
         MessageFlow.ScheduleLate(w.Messaging,h.Message,attempt.Number,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));var x=w.NewMilitary!.HeldDelivery??new(UnitHeldContract,[],[]);
         w.NewMilitary=w.NewMilitary with{HeldDelivery=x with{Transfers=[..x.Transfers,new(i.Id,w.ElapsedSeconds,w.CommitSequence,i.Action,h.Message,h.Attempt,h.Holder,cargo,h.Position,to,route,due)]}};
     }
@@ -74,7 +74,7 @@ public static partial class NewGameMilitary
         if(w.Messaging.Messages.Single(m=>m.Id==t.Message).Kind!="unit-post-directive")return;
         var d=UnitDispatches(w).Single(d=>d.Attempt==t.Attempt);Need(HoldsDirectiveOriginal(w,d)&&w.NewMilitary!.UnitDirective!.Holding!=null,"保持していない分隊原本を遅着させました");
         var note=ContractJson.Read<UnitDirectiveNote>(System.Text.Encoding.UTF8.GetBytes(w.Messaging.Messages.Single(m=>m.Id==d.Message).Body));UnitDirectiveOutcome? outcome=null;EntityId? order=null;string? reply=null,attempt=null;FieldLeg[] route=[];long due=0;
-        if(received){var result=DecideDirectedArrival(w,d);outcome=result.Outcome;order=result.Order;route=RegionalGround.Plan(t.Destination,t.Origin,w.ElapsedSeconds,courier:true,atlas:true);due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);reply=UnitMessage(t.Id,"directive-late-reply");
+        if(received){var result=DecideDirectedArrival(w,d);outcome=result.Outcome;order=result.Order;route=RegionalGround.Plan(t.Destination,t.Origin,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);reply=UnitMessage(t.Id,"directive-late-reply");
             MessageFlow.Send(w.Messaging,new(reply,note.Request.Value,"unit-post-directive-late-reply",d.Recipient.Value,w.PlayerControl.Value,DirectiveAnswerBody(w,d,outcome.Value),w.Messaging.Messages.Single(m=>m.Id==d.Message).Scope,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));attempt=MessageFlow.Latest(w.Messaging,reply).Id;
         }
         var x=w.NewMilitary!.UnitDirective!.Holding!;w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Holding=x with{Outcomes=[..x.Outcomes,new(t.Id,note.Request,w.ElapsedSeconds,w.CommitSequence,received,outcome,order,reply,attempt,t.Destination,t.Origin,route,due,t.Carrier)]}}};

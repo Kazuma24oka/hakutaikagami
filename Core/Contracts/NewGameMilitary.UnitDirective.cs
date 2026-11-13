@@ -37,7 +37,7 @@ public static partial class NewGameMilitary
     static void ApplyUnitDirective(ContractWorld w,NewMilitaryInput i)
     {
         if(!DirectiveAction(i.Action))return;var x=i.Directive!;var from=PersonPosition(w,w.ElapsedSeconds);var to=x.Known.Position;
-        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"directive");
+        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"directive");
         MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-directive",w.PlayerControl.Value,x.Known.Unit.Value,Text(new UnitDirectiveNote(i.Id,x,i.PostPolicy,i.TransportPolicy){HoldingPolicy=i.OriginalPolicy}),w.NewMilitary!.Terms.Site.Value,w.ElapsedSeconds,i.DeliverBy),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         var state=w.NewMilitary.UnitDirective??new(UnitDirectiveContract,[],[],[],[]);
         w.NewMilitary=w.NewMilitary with{UnitDirective=state with{Dispatches=[..state.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,x.Known.Unit,UnitDirectiveRole,new("evidence:unit-directive/"+Hash(Text(x.Known))),from,to,route,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};
@@ -54,7 +54,7 @@ public static partial class NewGameMilitary
         var routes=Enumerable.Range(0,3).Select(n=>EffectiveOrder(w,n,w.ElapsedSeconds)?.Routes[n].ToArray()??[]).ToArray();
         try{
             var obstacles=origins.Where((p,k)=>k!=index&&RegionalGround.Distance(p,origins[index])>=2250).Distinct().ToArray();
-            FieldLeg[] path=kind==UnitDirectiveKind.Hold?[]:BattlefieldRules.AdjustRoute(w,UnitIdsFor(w)[index],RegionalGround.Plan(origins[index],goal,w.ElapsedSeconds,obstacles,atlas:true));bool found=false;
+            FieldLeg[] path=kind==UnitDirectiveKind.Hold?[]:BattlefieldRules.AdjustRoute(w,UnitIdsFor(w)[index],RegionalGround.Plan(origins[index],goal,w.ElapsedSeconds,obstacles,atlas:true,national:WorldGround.National(w)));bool found=false;
             for(int wait=0;wait<=600;wait++){
                 var candidate=path.Select(l=>l with{StartAt=l.StartAt+wait,EndAt=l.EndAt+wait}).ToArray();long until=candidate.LastOrDefault()?.EndAt??w.ElapsedSeconds;
                 if(Enumerable.Range(0,3).Where(k=>k!=index).Any(k=>RegionalGround.Conflict(candidate,origins[index],routes[k],origins[k],w.ElapsedSeconds,Math.Max(until,routes[k].LastOrDefault()?.EndAt??0)+1)))continue;
@@ -104,7 +104,7 @@ public static partial class NewGameMilitary
         var planned=new HashSet<int>();
         try{foreach(int i in eligible){
             var obstacles=origins.Where((p,k)=>k!=i&&RegionalGround.Distance(p,origins[i])>=2250).Concat(planned.Select(k=>Home(w,k))).Distinct().ToArray();
-            var path=RegionalGround.Plan(origins[i],Home(w,i),w.ElapsedSeconds,obstacles,atlas:true);bool found=false;
+            var path=RegionalGround.Plan(origins[i],Home(w,i),w.ElapsedSeconds,obstacles,atlas:true,national:WorldGround.National(w));bool found=false;
             for(int wait=0;wait<=600;wait++){
                 var candidate=path.Select(l=>l with{StartAt=l.StartAt+wait,EndAt=l.EndAt+wait}).ToArray();long until=candidate.LastOrDefault()?.EndAt??w.ElapsedSeconds;
                 if(Enumerable.Range(0,3).Where(k=>k!=i&&(!eligible.Contains(k)||planned.Contains(k))).Any(k=>RegionalGround.Conflict(candidate,origins[i],routes[k],origins[k],w.ElapsedSeconds,Math.Max(until,routes[k].LastOrDefault()?.EndAt??0)+1)))continue;

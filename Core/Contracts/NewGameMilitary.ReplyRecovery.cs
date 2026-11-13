@@ -34,7 +34,7 @@ public static partial class NewGameMilitary
                 if(w.NewMilitary.ReplyRecovery.Flights.Any(f=>f.Kind==UnitReplyLeg.FailureReport&&f.Basis==a.Id))continue;
                 var previous=w.NewMilitary.ReplyRecovery.Flights.SingleOrDefault(f=>f.Kind==UnitReplyLeg.Retry&&f.Attempt==a.Id);
                 var from=previous?.Destination??r.ReplyDestination;var to=previous?.Origin??d.Destination;
-                var path=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);var id=new EntityId("courier-leg:unit-post/"+Hash(a.Id+"/failure"));string message=UnitMessage(id,"reply-failure");
+                var path=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);var id=new EntityId("courier-leg:unit-post/"+Hash(a.Id+"/failure"));string message=UnitMessage(id,"reply-failure");
                 MessageFlow.ReportFailure(w.Messaging,message,a.Id,ReplyCarrier(d,a.Number).Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
                 AddReplyFlight(w,new(id,d.Id,UnitReplyLeg.FailureReport,message,MessageFlow.Latest(w.Messaging,message).Id,a.Id,w.ElapsedSeconds,w.CommitSequence,from,to,path,due,ReplyCarrier(d,a.Number)));
             }
@@ -42,7 +42,7 @@ public static partial class NewGameMilitary
             if(!KnownFailedAttempt(latest,UsesSenderEvidence(w,d))||latest.Number>=MessageFlow.MaxAttempts||!MessageFlow.FailureKnown(w.Messaging,latest.Id,d.Recipient.Value)||!SenderHasNoReceipt(w,d,r.ReplyMessage,d.Recipient.Value))continue;
             var report=w.NewMilitary.ReplyRecovery.Flights.LastOrDefault(f=>f.Kind==UnitReplyLeg.FailureReport&&f.Basis==latest.Id&&(w.NewMilitary.ReplyRecovery.Arrivals.Any(a=>a.Attempt==f.Attempt&&a.Delivered)||LateReportPoint(w,f.Message)!=null));
             if(report==null)continue;var sendingPoint=LateReportPoint(w,report.Message)??report.Destination;if(!UnitPostPresent(w,sendingPoint,d.Recipient))continue;
-            var route=RegionalGround.Plan(sendingPoint,r.ReplyDestination,w.ElapsedSeconds,courier:true,atlas:true);long until=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
+            var route=RegionalGround.Plan(sendingPoint,r.ReplyDestination,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long until=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
             MessageFlow.Retry(w.Messaging,r.ReplyMessage,d.Recipient.Value,w.ElapsedSeconds,checked((int)(until-w.ElapsedSeconds)),UsesSenderEvidence(w,d));var attempt=MessageFlow.Latest(w.Messaging,r.ReplyMessage);var flightId=new EntityId("courier-leg:unit-post/"+Hash(attempt.Id+"/retry"));
             AddReplyFlight(w,new(flightId,d.Id,UnitReplyLeg.Retry,r.ReplyMessage,attempt.Id,report.Message,w.ElapsedSeconds,w.CommitSequence,sendingPoint,r.ReplyDestination,route,until,ReplyCarrier(d,attempt.Number)));
         }

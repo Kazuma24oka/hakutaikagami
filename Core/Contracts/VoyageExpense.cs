@@ -9,7 +9,7 @@ public static class VoyageExpense
     public static VoyageExpenseRules Standard=>new(1,Policy,10);
     static void Need(bool b,string why){if(!b)throw new InvalidDataException(why);}
     public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&w.NewGame?.VoyageRules!=null)||NationalSystems.On(w,"VoyageExpense");
-    static long Fare(ContractWorld w)=>w.NewGame?.VoyageRules?.FarePerPassage??(NationalSystems.On(w,"VoyageExpense")?Standard.FarePerPassage:throw new InvalidDataException("船賃の版がありません"));
+    public static long Fare(ContractWorld w)=>w.NewGame?.VoyageRules?.FarePerPassage??(NationalSystems.On(w,"VoyageExpense")?Standard.FarePerPassage:throw new InvalidDataException("船賃の版がありません"));
     public static void ValidateRules(VoyageExpenseRules? r){if(r!=null)Need(r.Schema==1&&r.Policy==Policy&&r.FarePerPassage is >=1 and <=1000,"Unknown voyage fare rules");}
     public static string[] PlanningExclusions(ContractWorld w,EntityId actor,bool walkOnly)=>BranchRoutes.KnownBlocked(w,actor).Concat(walkOnly?BranchRoutes.GraphEdges(w).Where(e=>NationalRoutes.Sea(e.Id)).Select(e=>e.Id):[]).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
     public static string[] PlanningExclusions(ContractWorld w,TaskState task,IEnumerable<string>? known=null)

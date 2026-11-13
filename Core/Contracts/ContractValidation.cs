@@ -35,7 +35,7 @@ public static class ContractValidation
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
         Check(ContinuousWorld.Enabled(s)==(s.Atlas!=null),"Terrain atlas requires its ruleset");if(ContinuousWorld.Enabled(s))ContinuousWorld.Validate(s);
         Check(RegionalBattle.Enabled(s)==(s.Region!=null),"Regional module requires its ruleset.");if(RegionalBattle.Enabled(s))RegionalBattle.Validate(s);
-        Check(FieldWorld.Enabled(s)==(s.Field!=null),"Field module requires its ruleset.");if(FieldWorld.Enabled(s))FieldWorld.Validate(s);
+        Check(FieldWorld.National(s)?s.Field==null:FieldWorld.Enabled(s)==(s.Field!=null),"Field module requires its ruleset.");if(FieldWorld.Enabled(s))FieldWorld.Validate(s);
         Check(TrafficWorld.Enabled(s)==(s.TrafficStops!=null),"Traffic stops require their own ruleset/module.");
         Check(TravelControl.Enabled(s)==(s.TravelDecisions!=null),"Personal decisions require their own ruleset/module.");
         Check(s.ElapsedSeconds >= 0 && s.CommitSequence >= 0 && DateOnly.TryParseExact(s.EpochDate, "yyyy-MM-dd", CultureInfo.InvariantCulture,

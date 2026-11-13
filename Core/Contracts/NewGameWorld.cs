@@ -106,7 +106,8 @@ public static partial class NewGameWorld
         var look=p?.Look??AppearanceCatalog.Default(state.Start.People.Single(q=>q.Id==person).Created?1:0);
         return ContractJson.Copy(look);
     }
-    public static string Version(NewGameState state)=>state.NationalPersonDataPolicy is null
+    public static string Version(NewGameState state)=>state.NationalSystems?.Contains("FieldWorld")==true?ContractJson.CanonicalHash(new[]{LegacyVersion(state),NationalFieldTerrain.Version}):LegacyVersion(state);
+    static string LegacyVersion(NewGameState state)=>state.NationalPersonDataPolicy is null
         ? ContractJson.CanonicalHash(new[]{Ruleset,NationalRoutes.Version,ContractJson.CanonicalHash(state)})
         : ContractJson.CanonicalHash(new[]{Ruleset,NationalRoutes.Version,ContractJson.CanonicalHash(state),state.NationalPersonDataPolicy});
     static TimedRelation Relation(string kind,string id,EntityId subject,EntityId target)=>new(new(kind+":"+id),subject,target,kind=="membership"?"membership":kind=="service"?"service":kind=="land"?"control":kind,Basis,0,long.MaxValue,0);

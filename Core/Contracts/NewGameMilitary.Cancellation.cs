@@ -28,7 +28,7 @@ public static partial class NewGameMilitary
     {
         if(!CancellationAction(i.Action))return;var original=w.NewMilitary!.Withdrawal!.Dispatches.Single(d=>d.Id==i.TargetOriginal);
         var sight=w.NewMilitary.Withdrawal.Sightings.Last();var from=PersonPosition(w,w.ElapsedSeconds);var to=i.Action==NewMilitaryAction.CancelRecallHome?Home(w,0):sight.Position;
-        var path=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"cancel");
+        var path=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"cancel");
         var body=new UnitPostCancellation(i.Id,original.Id,original.Message,i.RequestedEffectiveAt??w.ElapsedSeconds,UnitCancellationContract,CancellationRole){ReplyPolicy=i.PostPolicy,TransportPolicy=i.TransportPolicy};
         MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-cancel",w.PlayerControl.Value,UnitIdsFor(w)[0].Value,Text(body),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds,i.DeliverBy),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         var x=w.NewMilitary.Cancellation??new(UnitCancellationContract,[],[],[],[],[],[],[],[]);w.NewMilitary=w.NewMilitary with{Cancellation=x with{Dispatches=[..x.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,UnitIdsFor(w)[0],CancellationRole,i.Action==NewMilitaryAction.CancelRecallHome?w.NewMilitary.Terms.Site:sight.Id,from,to,path,due,message,MessageFlow.Latest(w.Messaging,message).Id)]}};

@@ -17,7 +17,7 @@ public partial class NewGameRuntime
         if(voyageHint==null)return;var w=Snapshot();bool enabled=VoyageExpense.Enabled(w);voyageHint.Visible=buttons["depart-walk"].Visible=enabled;
         bool busy=IsSaving||IsClockControlling||IsDeparting;buttons["depart-walk"].Disabled=busy||TravelWorld.Active(w)||w.Locations.Single(l=>l.Actor==Session.PlayerControl).Kind!=LocationKind.AtSite;
         buttons["voyage-cancel"].Visible=enabled&&TravelControl.PortWaiting(w,Session.PlayerControl);buttons["voyage-cancel"].Disabled=busy;
-        if(!enabled)return;var support=w.NewGame?.Judgment?.Support ?? DecisionSupport.Brief;long fee=w.NewGame!.VoyageRules!.FarePerPassage;string text=$"徒歩は無料。船賃は出航時に1区間{fee}文。\n私財から支払い、預り金は使いません。";
+        if(!enabled)return;var support=w.NewGame?.Judgment?.Support ?? DecisionSupport.Brief;long fee=VoyageExpense.Fare(w);string text=$"徒歩は無料。船賃は出航時に1区間{fee}文。\n私財から支払い、預り金は使いません。";
         var refused=w.VoyageExpenses?.Refusals.LastOrDefault();var latest=w.Tasks.LastOrDefault(t=>t.Executor==Session.PlayerControl&&t.Action==ActionKind.Move);
         if(refused!=null&&latest?.Id==refused.Task&&latest.Execution==ExecutionPhase.Stopped)text="船賃が足りず港で待機中。" + (support switch {
             DecisionSupport.Independent => "",
