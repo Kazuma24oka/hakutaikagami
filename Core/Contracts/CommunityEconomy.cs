@@ -52,7 +52,30 @@ public static class CommunityEconomy
     {using var _ccRev=ControlContext.At(rev);
         var owner=Owner(w,site);Need(!CastleAdministration.Blocked(w,site,at,rev)&&owner!=null&&(FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev)) is {} a&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until),"その地域の試作年貢契約と現地支配を持つ当主ではありません");return (FactionStances.ResolveAuthority(w,actor,owner.Value,at,Math.Min(rev,w.CommitSequence))??CommunityStewardship.Authority(w,actor,owner.Value,site,at,rev))!;
     }
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,CommunityState> openingAccounts=new();
+    // 暦の最初の更新より前で、米・労働に関係する原本が一つもない場合だけ開始時の帳簿を共有する。
+    static bool OpeningAccounts(ContractWorld w,long until)
+    {
+        if(!NationalSystems.On(w,"NpcArmies"))return false;
+        var epoch=Epoch(w);
+        if(until<0||until>=Time(w,new DateOnly(epoch.Year,epoch.Month,1).AddMonths(1))||until>=Time(w,new(epoch.Year,9,1))||until>=Time(w,new(epoch.Year,10,1)))return false;
+        return (w.Communities?.Flights?.Length??0)==0&&(w.Trade?.Entries.Length??0)==0&&(w.Court?.Events.Length??0)==0&&(w.Salary?.Entries.Length??0)==0
+            &&(w.Domains?.Entries.Length??0)==0&&(w.Schemes?.Events.Length??0)==0&&(w.Sieges?.Orders.Length??0)==0&&(w.Sieges?.Fleets.Length??0)==0
+            &&(w.Battlefield?.Orders.Length??0)==0&&(w.Battlefield?.Temples?.Length??0)==0&&(w.Surveys?.Entries.Length??0)==0&&(w.Crafts?.Entries.Length??0)==0
+            &&(w.PublicWorks?.Orders.Length??0)==0&&(w.HouseFreight?.Entries.Length??0)==0&&(w.CampConvoys?.Entries.Length??0)==0&&(w.MilitaryEconomy?.Entries.Length??0)==0
+            &&(w.Treaties?.Supply?.Entries.Length??0)==0&&(w.Custody?.Entries.Length??0)==0&&(w.WorldClashes?.Steps.Length??0)==0&&NpcArmies.Musters(w).Length==0
+            &&(w.MilitaryLedgerHistory??NewGameMilitary.LedgerStates(w)).All(l=>l.Requests.Length==0&&l.Events.Length==0&&l.Orders.Length==0&&l.Sorties.Length==0);
+    }
     static CommunityState Replay(ContractWorld w,CommunityOrder[] orders,CommunityNotice[] notices,long until,long revision,EntityId? onlySite=null)
+    {
+        if(onlySite==null&&orders.Length==0&&OpeningAccounts(w,until))
+        {
+            var initial=openingAccounts.GetValue(w.NewGame!,_=>ReplayCore(w,[],[],0,revision));
+            return initial with{Orders=orders,Notices=notices,Events=[..initial.Events],Accounts=[..initial.Accounts],Flights=w.Communities?.Flights};
+        }
+        return ReplayCore(w,orders,notices,until,revision,onlySite);
+    }
+    static CommunityState ReplayCore(ContractWorld w,CommunityOrder[] orders,CommunityNotice[] notices,long until,long revision,EntityId? onlySite=null)
     {using var _ccRev=ControlContext.At(revision);
         var ids=new HashSet<EntityId>();long prior=0,priorAt=0;foreach(var q in orders){using var _cc=ControlContext.At(q.Revision);Need((q.Actor==w.PlayerControl||NpcCommunityAdministration.Authorized(w,q))&&q.At>=priorAt&&q.At<=until&&q.Revision>prior&&q.Revision<=revision&&EntityId.IsValid(q.Input.Id.Value)&&ids.Add(q.Input.Id)&&SitesFor(w).Contains(q.Input.Site)&&Enum.IsDefined(q.Input.Action)&&q.Input.Amount>0,"地域帳簿の入力・時点・順序が不正です");Need(!FactionStances.OtherIdUsed(w,q.Input.Id,includeCommunities:false)&&!FactionStances.OwnIdUsed(w,q.Input.Id),"その原本IDは別の操作で使用済みです");Need(q.Authority==Authority(w,q.Actor,q.Input.Site,q.At,q.Revision)&&Local(w,q.Actor,q.Input.Site,q.At,q.Revision),"現地権限・引受原本が一致しません");prior=q.Revision;priorAt=q.At;}
         var flights=w.Communities?.Flights;

@@ -37,4 +37,21 @@ public sealed class NationalWarfareActivationTests
         }
         Assert.Equal(Run(true),Run(false));
     }
+    [Fact]public void OpeningCommunitiesRejectExtraRiceAndRefreshAfterAnActualNationalMuster()
+    {
+        var scenario=NationalStart.Scenario();var me=scenario.People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
+        var w=NationalStart.Create(me);CommunityEconomy.Tick(w);
+        foreach(var account in w.Communities!.Accounts.Take(2))
+            Assert.Equal(account,CommunityEconomy.AccountAt(w,account.Site,0,w.CommitSequence+1));
+        var forged=ContractJson.Copy(w);forged.Communities!.Accounts[0]=forged.Communities.Accounts[0] with{HouseRice=999999};
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forged));
+        var head=scenario.Factions.First(f=>f.Head!=me&&scenario.People.Single(p=>p.Id==f.Head) is {} p&&w.Communities.Accounts.Any(a=>a.Site.Value==p.Site)&&RegionalDomains.Owner(w,new(p.Site))?.Value==f.Id);
+        var site=new EntityId(scenario.People.Single(p=>p.Id==head.Head).Site);
+        var before=w.Communities.Accounts.Single(a=>a.Site==site);w.CommitSequence++;
+        NpcArmies.Muster(w,new("decision:national-opening-muster"),new(head.Head),new(head.Id));
+        var after=w.Communities!.Accounts.Single(a=>a.Site==site);
+        Assert.Equal(20,after.MilitaryWorkers);Assert.True(after.HouseRice<before.HouseRice);
+        Assert.Equal(before.Workforce-20,after.Workforce);
+        var bytes=ContractJson.Write(w);Assert.Equal(bytes,ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot()));
+    }
 }
