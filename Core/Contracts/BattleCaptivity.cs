@@ -15,16 +15,16 @@ public enum CaptiveAction { Release,Recruit,Execute }
 public sealed record CaptiveInput(EntityId Id,CaptiveAction Action,EntityId Person);
 // Accepted：登用の誘いに本人が応じたか（他の操作では false）。
 public sealed record CaptiveEntry(CaptiveInput Input,EntityId Actor,EntityId Site,long At,long Revision,bool Accepted);
-public sealed record CaptiveState(int Schema,string Policy,CaptiveEntry[] Entries);
+public sealed record CaptiveState(int Schema,string Policy,CaptiveEntry[] Entries,RansomPaper[] Papers,RansomOpening[] Openings);
 public sealed record CaptiveCard(EntityId Person,EntityId FromOwner,EntityId Site,long CapturedAt,bool Held,bool CanAct,bool Declined);
 
-public static class BattleCaptivity
+public static partial class BattleCaptivity
 {
     public const string Policy="battle-capture-routed-commander-explicit-treatment-v2";
     const int Chance=35,Broken=30,Willing=40;
     public static bool Enabled(ContractWorld w)=>w.NewGame?.CapturePolicy==Policy||NationalSystems.On(w,"BattleCaptivity");
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    internal static void Initialize(ContractWorld w){if(Enabled(w))w.Captives=new(1,Policy,[]);}
+    internal static void Initialize(ContractWorld w){if(Enabled(w))w.Captives=new(1,Policy,[],[],[]);}
     static CaptiveEntry[] Entries(ContractWorld w)=>w.Captives?.Entries??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>Entries(w).Any(e=>e.Input.Id==id);
 
@@ -46,6 +46,16 @@ public static class BattleCaptivity
         }
         return rows.Count==0?null:rows.ToArray();
     }
+    // 捕らえた人の行動（軍の行軍など）は捕縛の秒で終わる。本人あての報告は出さない（道の途中から出す相手も手段もない）。
+    const string CaptureStop="捕縛により行動終了";
+    internal static void StopCaptured(ContractWorld w,BattleCapture[]? captures)
+    {
+        foreach(var c in captures??[])
+            foreach(var t in w.Tasks.Where(t=>t.Executor==c.Person&&t.Execution==ExecutionPhase.Running).ToArray())
+                WorldSession.Stop(w,t,CaptureStop,report:t.Issuer!=c.Person);
+    }
+    internal static bool SilentCaptureStop(ContractWorld w,TaskState t)=>Enabled(w)&&t.InternalReason==CaptureStop&&t.Issuer==t.Executor&&
+        t.Report==ReportingPhase.NotCreated&&t.FinishedAt is {} at&&Captures(w).Any(x=>x.Capture.Person==t.Executor&&x.Capture.At==at)&&w.Outbox.All(o=>o.Task!=t.Id);
     static int Roll(string kind,ulong seed,EntityId person,long salt)=>
         SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"{kind}/{seed}/{person.Value}/{salt}")))[0]%100;
     internal static void Validate(ContractWorld context,WorldClashStep step,EngagementResult result)
@@ -143,6 +153,7 @@ public static class BattleCaptivity
             if(e.Input.Action==CaptiveAction.Execute)
                 Need((w.NaturalDeaths??[]).Any(d=>d.Execution==e.Input.Id&&d.Person==e.Input.Person),"処断の死亡記録がありません");
         }
+        ValidateRansom(w);
     }
     // 本人が知る捕虜：本人の家が捕らえた人物だけ（捕縛は本人の軍の現地で起きる）。
     public static CaptiveCard[] View(ContractWorld w,EntityId observer)

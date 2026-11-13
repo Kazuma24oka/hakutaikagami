@@ -103,9 +103,9 @@ namespace HakutaiKagami.Tests;
         var bytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","engagement-613d135-accepted.json"));var w=ContractJson.Read<ContractWorld>(bytes);new WorldSession(w);Assert.Equal(bytes,ContractJson.Write(w));Assert.Null(w.NpcArmies);Assert.Null(w.NewGame!.WorldArmyPolicy);
     }
 
-    static WorldSession PoliticalRaid(bool hostile=true,bool combat=false,bool sparse=false,bool battlefield=false,bool capture=false)
+    static WorldSession PoliticalRaid(bool hostile=true,bool combat=false,bool sparse=false,bool battlefield=false,bool capture=false,bool retainer=false)
     {
-        var p=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");var setup=NewGameWorldTests.Setup([p],[new(p.Id,"org:created-raid",[p.Site],false)]);var w=NewGameWorld.Create(setup.World,setup.Registered,p.Id,worldArmyPolicy:sparse?NpcArmies.CompactCombatPolicy:combat?NpcArmies.CombatPolicy:NpcArmies.Policy,battlefieldPolicy:battlefield?BattlefieldRules.Policy:null,capturePolicy:capture?BattleCaptivity.Policy:null);w.CommitSequence++;
+        var p=NewGameWorldTests.Officer(role:StartTemplate.Daimyo,site:"site:fork");var setup=NewGameWorldTests.Setup(retainer?[p,NewGameWorldTests.Officer("created:oda-aide",StartTemplate.Retainer,"site:castle","person:nobunaga")]:[p],[new(p.Id,"org:created-raid",[p.Site],false)]);var w=NewGameWorld.Create(setup.World,setup.Registered,p.Id,worldArmyPolicy:sparse?NpcArmies.CompactCombatPolicy:combat?NpcArmies.CombatPolicy:NpcArmies.Policy,battlefieldPolicy:battlefield?BattlefieldRules.Policy:null,capturePolicy:capture?BattleCaptivity.Policy:null,workPolicy:retainer?NewGameWork.Policy:null,inspectionPolicy:retainer?LocalInspectionFindings.Policy:null);w.CommitSequence++;
         if(hostile)FactionStances.Apply(w,new(new("decision:oda-raiding-intent"),FactionStanceAction.DeclareHostile,Oda,new("org:created-raid"),0,1000000),Nobunaga);return new(w);
     }
     static void FinishRaid(WorldSession s)
@@ -135,9 +135,9 @@ namespace HakutaiKagami.Tests;
     {
         var w=PoliticalRaid().DiagnosticSnapshot();var edge=BranchRoutes.Plan("castle","fork",[],w:w)[0];w.Branches=w.Branches! with{BlockedEdges=[edge]};w.Couriers=w.Couriers! with{InitialBlocked=[edge]};var s=new WorldSession(w);FinishRaid(s);w=s.DiagnosticSnapshot();var m=Assert.Single(w.NpcArmies!.Musters);Assert.Equal(2,w.NpcArmies.Marches.Length);Assert.Single(w.NpcArmies.Returns);Assert.Equal(RegionalCampaign.Site("castle"),w.Locations.Single(l=>l.Actor==Nobunaga).Site);Assert.All(w.Branches!.Journeys.Where(j=>j.Actor==Nobunaga).SelectMany(j=>j.Legs),l=>Assert.NotEqual(edge,l.Edge));Assert.Contains(edge,BranchRoutes.KnownBlocked(w,Nobunaga));Assert.Empty(BranchRoutes.KnownBlocked(w,s.PlayerControl));Assert.Equal(NewGameMilitary.InitialStock-NpcArmies.Consumed(w,m),w.ResourceLots.Sum(l=>l.Quantity));
     }
-    internal static WorldSession AtActualContact(bool permitted=false,bool sparse=false,bool openPermission=true,long arrivalOffset=1,bool battlefield=false,Action<WorldSession>? beforeDeploy=null,bool capture=false)
+    internal static WorldSession AtActualContact(bool permitted=false,bool sparse=false,bool openPermission=true,long arrivalOffset=1,bool battlefield=false,Action<WorldSession>? beforeDeploy=null,bool capture=false,bool retainer=false)
     {
-        var s=PoliticalRaid(combat:true,sparse:sparse,battlefield:battlefield,capture:capture);NewGameWorldTests.At(s,3);var outLeg=s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==Nobunaga);NewGameWorldTests.At(s,outLeg.Legs[^1].EndAt+arrivalOffset);
+        var s=PoliticalRaid(combat:true,sparse:sparse,battlefield:battlefield,capture:capture,retainer:retainer);NewGameWorldTests.At(s,3);var leader=s.DiagnosticSnapshot().NpcArmies!.Musters.Single().Commander;var outLeg=s.DiagnosticSnapshot().Branches!.Journeys.Single(j=>j.Actor==leader);NewGameWorldTests.At(s,outLeg.Legs[^1].EndAt+arrivalOffset);
         var q=new NewMilitaryInput(new("request:contact-army"),NewMilitaryAction.Request){AuthorityPolicy=NewGameMilitary.AuthorityContract,LedgerPolicy=NewGameMilitary.LedgerIdentityContract};Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(q,s.PlayerControl,s.Revision).Code);
         NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
         Assert.Equal(ResultCode.Accepted,s.DecideNewMilitary(new(new("request:contact-accept"),NewMilitaryAction.Accept),s.PlayerControl,s.Revision).Code);NewGameWorldTests.At(s,s.Seconds+2);foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);

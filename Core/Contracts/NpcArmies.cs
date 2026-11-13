@@ -2,7 +2,12 @@ namespace HakutaiKagami.Core.Contracts;
 
 public sealed record NpcArmySight(EntityId Army,EntityId Commander,EntityId Owner,RoutePoint Position,RoutePoint Next,int Soldiers,bool Attacking);
 public sealed record NpcArmyObjective(EntityId TargetOwner,EntityId TargetSite,FactionStanceClaim Claim,int HoldSeconds);
-public sealed record NpcArmyMuster(EntityId Id,EntityId Commander,EntityId Owner,EntityId Site,long At,long Revision,FactionStanceAuthority Authority,NpcArmyObjective? Objective=null);
+public sealed record NpcArmyMuster(EntityId Id,EntityId Commander,EntityId Owner,EntityId Site,long At,long Revision,FactionStanceAuthority Authority,NpcArmyObjective? Objective=null)
+{
+    // 家臣が大将のとき、出陣を決めた当主（権限と既知の敵対意思は当主のもの）。当主自身が率いるときは持たない。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Lord {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore] public EntityId Issuer=>Lord??Commander;
+}
 public sealed record NpcArmyMarch(EntityId Muster,Intent Input,long At,long Revision);
 public sealed record NpcArmyReturn(EntityId Muster,long At,long Revision,long Consumed);
 public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Musters,NpcArmyMarch[] Marches,NpcArmyReturn[] Returns);
@@ -26,22 +31,23 @@ public static partial class NpcArmies
         Need(Enabled(w)&&m.Commander!=ControlSuccession.PlayerAtRevision(w,m.Revision)&&m.At>=0&&m.At<=w.ElapsedSeconds&&m.Revision>0&&m.Revision<=w.CommitSequence&&EntityId.IsValid(m.Id.Value),"NPC軍の版・本人・時点が不正です");
         Need(MilitaryEconomy.CanMuster(w,m.Site,m.At,m.Revision),"現地の支援人手または家の自由米が不足しています");
         Need(!PrivateStanddown.ShouldWait(w,m.Commander,m.At,m.Revision),"本人の新規軍引受は見合わせ期間中です");Need(!prior.Any(p=>p.Id==m.Id||p.Commander==m.Commander||p.Owner==m.Owner&&p.Site==m.Site),"同じ駐屯兵または指揮官を二重に割り当てられません");
-        var authority=FactionStances.ResolveAuthority(w,m.Commander,m.Owner,m.At,m.Revision);
+        var authority=FactionStances.ResolveAuthority(w,m.Issuer,m.Owner,m.At,m.Revision);
+        if(m.Lord is {} lord)Need(RetainerCommand(w)&&lord!=m.Commander&&CanLead(w,m.Commander,lord,m.Owner,m.Site,m.At,m.Revision)&&TransportWork.At(w,lord,m.Site,m.At,m.Revision,true),"当主が城で直属の家臣に大将を命じてください");
         Need(authority!=null&&authority==m.Authority&&authority.Home==m.Site,"当主・所属・拠点支配の根拠がありません");
         var site=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
         Need(RegionalCampaign.RoadActorPointAt(w,m.Commander,m.At)==site&&!w.Requests.Any(r=>r.Intent.Executor==m.Commander&&r.CreatedAt<=m.At&&r.CommitSequence<m.Revision&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>m.At))),"現地で他の用件を終えてから駐屯兵を引き受けます");
         Need(!NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==m.Owner&&s.Terms.Site==m.Site),"貸与履歴がある駐屯兵の再割当ては未対応です");
         if(m.Objective is {} o){
             var f=w.NewGame!.Start.Factions.Single(f=>f.Id==o.TargetOwner.Value);
-            Need(o.HoldSeconds==30&&o.TargetSite==new EntityId(f.Home)&&o.Claim==FactionStances.ClaimAt(w,m.Owner,o.TargetOwner,m.At,m.Revision)&&FactionStances.KnownOwnDeclarations(w,m.Commander).Any(k=>k.Declaration==o.Claim.Declaration),"出撃対象は当主自身の既知の敵対意思と拠点に限ります");
+            Need(o.HoldSeconds==30&&o.TargetSite==new EntityId(f.Home)&&o.Claim==FactionStances.ClaimAt(w,m.Owner,o.TargetOwner,m.At,m.Revision)&&FactionStances.KnownOwnDeclarations(w,m.Issuer).Any(k=>k.Declaration==o.Claim.Declaration),"出撃対象は当主自身の既知の敵対意思と拠点に限ります");
         }
         Need(!FactionStances.OtherIdUsed(w,m.Id,false)&&!FactionStances.OwnIdUsed(w,m.Id),"別の操作で使ったIDです");
     }
     // Domain mutation for the authoritative NPC controller, never a player command to another head.
-    public static void Muster(ContractWorld w,EntityId id,EntityId commander,EntityId owner,NpcArmyObjective? objective=null)
+    public static void Muster(ContractWorld w,EntityId id,EntityId commander,EntityId owner,NpcArmyObjective? objective=null,EntityId? lord=null)
     {
-        var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);
-        Need(a!=null,"当主権限がありません");var m=new NpcArmyMuster(id,commander,owner,a.Home,w.ElapsedSeconds,w.CommitSequence,a,objective);
+        var a=FactionStances.ResolveAuthority(w,lord??commander,owner,w.ElapsedSeconds,w.CommitSequence);
+        Need(a!=null,"当主権限がありません");var m=new NpcArmyMuster(id,commander,owner,a.Home,w.ElapsedSeconds,w.CommitSequence,a,objective){Lord=lord};
         Need(w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home),"現地で引き受けてください");CheckMuster(w,m,Musters(w));w.NpcArmies=new(1,Policy,[..Musters(w),m],w.NpcArmies?.Marches??[],w.NpcArmies?.Returns??[]);MilitaryEconomy.FundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
     }
     internal static long CarryCapacity(ContractWorld w,NpcArmyMuster m)=>TreatyDefense.CarryCapacity(w,m);
@@ -107,23 +113,43 @@ public static partial class NpcArmies
     static string MarchId(NpcArmyMuster m,bool home)=>"request:npc-army/"+Key(m.Id)+(home?"/home":"/out");
     static SetupFaction[] DecidingHeads(ContractWorld w){var ids=(w.FactionStances?.Decisions??[]).Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile&&d.Authority.Issuer!=w.PlayerControl).Select(d=>d.Authority.Issuer.Value).ToHashSet(StringComparer.Ordinal);return ids.Count==0?[]:HouseSuccession.Factions(w).Where(f=>ids.Contains(f.Head)).ToArray();}
     internal static int BoundaryCost(ContractWorld w)=>!Enabled(w)?0:2*(DecidingHeads(w).Length+Musters(w).Count(m=>m.Objective!=null&&!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)));
+    // 家臣が軍を率いる規則（全国の開始の RetainerCommand と、捕縛の検査用の地方の版）。旧保存は当主自身が率いる。
+    public static bool RetainerCommand(ContractWorld w)=>NationalSystems.On(w,"RetainerCommand")||w.NewGame?.CapturePolicy==BattleCaptivity.Policy;
+    static bool Active(TimedRelation r,long at,long rev)=>r.From<=at&&(at<r.Until||at==r.Until&&rev<r.Revision);
+    // 大将になれる家臣：同じ家の成人で、当主に直接仕え、城にいて、ほかの用件・軍・拘束・療養がない者。
+    static bool CanLead(ContractWorld w,EntityId person,EntityId head,EntityId owner,EntityId site,long at,long rev)=>
+        person!=w.PlayerControl&&person!=head&&w.Characters.Any(c=>c.Id==person&&c.Life==LifeState.Adult)&&
+        w.Memberships.Any(r=>r.Subject==person&&r.Target==owner&&Active(r,at,rev))&&w.ServiceBonds.Any(r=>r.Subject==person&&r.Target==head&&Active(r,at,rev))&&
+        !HouseSuccession.Factions(w,at,rev).Any(f=>f.Head==person.Value)&&TransportWork.At(w,person,site,at,rev,true)&&
+        !HostageCustody.HeldAt(w,person,at,rev)&&!Assassination.DeadAt(w,person,at,rev)&&(!ClinicalHealth.Enabled(w)||PersonalHealth.Can(w,person,HealthLimit.Judgment,at))&&
+        !PrivateStanddown.ShouldWait(w,person,at,rev)&&!Musters(w).Any(m=>m.Commander==person&&(m.At<at||m.At==at&&m.Revision<rev)&&!ReturnedAt(w,m,at,rev))&&
+        !w.Requests.Any(r=>r.Intent.Executor==person&&r.CreatedAt<=at&&r.CommitSequence<rev&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));
+    // 当主が城にいる直属の家臣から大将を選ぶ（人物IDの順で最初の者）。いなければ当主自身が率いる。
+    internal static EntityId Leader(ContractWorld w,EntityId head,EntityId owner,EntityId site)
+    {
+        if(!RetainerCommand(w))return head;long at=w.ElapsedSeconds,rev=w.CommitSequence+1;
+        return w.Locations.Where(l=>l.Kind==LocationKind.AtSite&&l.Site==site).Select(l=>l.Actor).OrderBy(p=>p.Value,StringComparer.Ordinal)
+            .FirstOrDefault(p=>CanLead(w,p,head,owner,site,at,rev),head);
+    }
     internal static NpcArmyObjective? Candidate(ContractWorld w,EntityId commander,EntityId owner)
     {
-        if(PrivateStanddown.ShouldWait(w,commander,w.ElapsedSeconds,w.CommitSequence)||!Enabled(w)||commander==w.PlayerControl||Musters(w).Any(m=>m.Commander==commander)||NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==owner)||w.Tasks.Any(t=>t.Executor==commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)))return null;
+        if(PrivateStanddown.ShouldWait(w,commander,w.ElapsedSeconds,w.CommitSequence)||!Enabled(w)||commander==w.PlayerControl||Musters(w).Any(m=>m.Commander==commander||m.Lord==commander)||NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==owner)||w.Tasks.Any(t=>t.Executor==commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)))return null;
         var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);if(a==null||!MilitaryEconomy.CanMuster(w,a.Home,w.ElapsedSeconds,w.CommitSequence+1)||!w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home))return null;
         foreach(var known in FactionStances.KnownOwnDeclarations(w,commander).OrderBy(k=>k.Declaration.Value,StringComparer.Ordinal)){
             var claim=FactionStances.ClaimAt(w,owner,known.ToOwner,w.ElapsedSeconds,w.CommitSequence);if(claim==null||claim.Declaration!=known.Declaration)continue;
             if(TruceNegotiations.WillNotInitiate(w,owner,claim.ToOwner,w.ElapsedSeconds,w.CommitSequence))continue;var target=new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==claim.ToOwner.Value).Home);
-            try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",commander,NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100&&(!WorldClashes.Enabled(w)||w.ElapsedSeconds+i.WorkSeconds+32<claim.Until))return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
+            try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",Leader(w,commander,owner,a.Home),NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100&&(!WorldClashes.Enabled(w)||w.ElapsedSeconds+i.WorkSeconds+32<claim.Until))return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
         }return null;
     }
     internal static bool NeedsTurn(ContractWorld w,NpcArmyMuster m)
     {
         if(CastleHandover.HoldsNpc(w,m.Id)||m.Objective==null||ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence))return false;
+        // 大将が捕らえられた軍は、新しい行軍を始めない（大将を失った軍の扱いは残件）。
+        if(BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence+1))return false;
         var qs=w.NpcArmies!.Marches.Where(q=>q.Muster==m.Id).ToArray();if(qs.Length==0)return true;
         var t=w.Tasks.Single(t=>t.RequestId==qs[^1].Input.RequestId);if(t.FinishedAt==null)return false;
         if(qs[^1].Input.RequestId.Value==MarchId(m,true))return w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site);
-        bool endedReactiveMission=w.FactionNotices?.Reactions.Any(r=>r.Decision.Id==m.Objective.Claim.Declaration&&r.Decision.Action==FactionStanceAction.DeclareHostile)==true&&!FactionStances.KnownOwnDeclarations(w,m.Commander).Any(c=>c.Declaration==m.Objective.Claim.Declaration&&c.EffectiveFrom<=w.ElapsedSeconds&&w.ElapsedSeconds<c.Until);
+        bool endedReactiveMission=w.FactionNotices?.Reactions.Any(r=>r.Decision.Id==m.Objective.Claim.Declaration&&r.Decision.Action==FactionStanceAction.DeclareHostile)==true&&!FactionStances.KnownOwnDeclarations(w,m.Issuer).Any(c=>c.Declaration==m.Objective.Claim.Declaration&&c.EffectiveFrom<=w.ElapsedSeconds&&w.ElapsedSeconds<c.Until);
         endedReactiveMission|=TruceNegotiations.WillNotInitiate(w,m.Owner,m.Objective.TargetOwner,w.ElapsedSeconds,w.CommitSequence);
         if(!endedReactiveMission&&t.Execution==ExecutionPhase.Completed&&w.ElapsedSeconds<t.FinishedAt+m.Objective.HoldSeconds)return false;
         if(w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site))return true;
@@ -146,7 +172,7 @@ public static partial class NpcArmies
     {
         var w=session.TurnSnapshot();if(!Enabled(w)||w.Paused)return;
         foreach(var f in DecidingHeads(w).OrderBy(f=>f.Id,StringComparer.Ordinal)){
-            w=session.TurnSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective)session.MusterNpcArmy(MusterId(objective.Claim),new(f.Head),new(f.Id),objective);
+            w=session.TurnSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective){var head=new EntityId(f.Head);var leader=Leader(w,head,new(f.Id),new(f.Home));session.MusterNpcArmy(MusterId(objective.Claim),leader,new(f.Id),objective,leader==head?null:head);}
         }
         foreach(var id in Musters(session.TurnSnapshot()).Select(m=>m.Id)){
             w=session.TurnSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!NeedsTurn(w,m))continue;

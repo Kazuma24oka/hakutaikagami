@@ -24,6 +24,7 @@ public static partial class WorldClashes
         Need(!state.Steps.Any(s=>s.At==w.ElapsedSeconds),"接触境界を二重に適用できません");
         var result=WorldEngagement.Resolve(w);if(Sparse(w)&&result.Strikes.Length==0)return;
         w.WorldClashes=state with{Steps=[..state.Steps,new(w.NewMilitary.Terms.Army,from,w.ElapsedSeconds,w.CommitSequence,result){OfficerWounds=OfficerBattleHealth.Resolve(w,result),Captures=BattleCaptivity.Resolve(w,result)}]};
+        BattleCaptivity.StopCaptured(w,w.WorldClashes.Steps[^1].Captures);
     }
     static ContractWorld Before(ContractWorld w,WorldClashStep step,int count)
     {

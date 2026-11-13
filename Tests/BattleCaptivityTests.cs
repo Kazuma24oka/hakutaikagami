@@ -107,4 +107,52 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
         Assert.Equal(z.PlayerControl,Assert.Single(bonds,r=>r.Subject==c.Person&&Active(r)).Target);
         Assert.All(members.Where(r=>r.Subject!=c.Person),r=>Assert.Contains(r,z.Memberships));
     }
+    // 家臣が大将の軍（当主は城に残り、権限と敵対意思は当主のもの）。捕らえた家臣は登用の誘いに本人の判断で答え、当主は家の権限を保つ。
+    [Fact]
+    public void ARetainerLedArmyLeavesTheHeadAtHomeAndItsCapturedLeaderAnswersRecruitmentHimself()
+    {
+        var s=NpcArmyTests.AtActualContact(permitted:true,sparse:true,capture:true,retainer:true);
+        var m=Assert.Single(s.DiagnosticSnapshot().NpcArmies!.Musters);
+        o.WriteLine($"commander={m.Commander.Value} lord={m.Lord?.Value}");
+        Assert.Equal(new EntityId("person:nobunaga"),m.Lord);Assert.NotEqual(m.Lord,m.Commander);
+        var (_,step)=FightUntilRout(s);Assert.NotNull(step);
+        var c=Assert.Single(step.Captures!);Assert.Equal(m.Commander,c.Person);
+        var w=s.DiagnosticSnapshot();
+        Assert.NotNull(FactionStances.ResolveAuthority(w,m.Lord!.Value,m.Owner,w.ElapsedSeconds,w.CommitSequence));
+        var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        Assert.Equal(ContractJson.Write(w),ContractJson.Write(restored.DiagnosticSnapshot()));
+        void Send(NewMilitaryAction action){var r=s.DecideNewMilitary(new(new("request:retainer-return/"+action),action),s.PlayerControl,s.Revision);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);}
+        Send(NewMilitaryAction.Recall);var end=s.DiagnosticSnapshot().NewMilitary!.Orders.Last().Routes.SelectMany(r=>r).Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max();NewGameWorldTests.At(s,end+1);Send(NewMilitaryAction.Enter);
+        // 身代金：相手の当主（城に残った信長）へ書状で求め、相手は開封した時点で払うか決める。銭は返書と一緒に届き、開封で本人の私財に入る。捕虜は自動で解放しない。
+        var beforeRansom=ContractJson.Write(s.DiagnosticSnapshot());
+        void Await(WorldSession q){for(int n=0;n<300&&Assert.Single(q.Ransoms()).Stage=="返事待ち";n++){NewGameWorldTests.At(q,q.Seconds+600);foreach(var msg in q.GetActorView(q.PlayerControl).Messages.Where(x=>x.KnownBody==null).ToArray())q.Open(q.PlayerControl,msg.Id,q.Revision);}}
+        // 上限を超える額は断られ、銭は動かない。
+        var refused=new WorldSession(ContractJson.Read<ContractWorld>(beforeRansom));long refusedMine=NewGameWork.Balance(refused.DiagnosticSnapshot(),refused.PlayerControl);
+        Assert.Equal(ResultCode.Accepted,refused.DemandRansom(new("request:ransom-high"),c.Person,2000,refused.Revision).Code);Await(refused);
+        Assert.Equal("断り",Assert.Single(refused.Ransoms()).Stage);Assert.Equal(refusedMine,NewGameWork.Balance(refused.DiagnosticSnapshot(),refused.PlayerControl));
+        var r=new WorldSession(ContractJson.Read<ContractWorld>(beforeRansom));
+        var lord=m.Lord!.Value;long mine0=NewGameWork.Balance(r.DiagnosticSnapshot(),r.PlayerControl),theirs0=NewGameWork.Balance(r.DiagnosticSnapshot(),lord);
+        var ask=r.DemandRansom(new("request:ransom"),c.Person,500,r.Revision);Assert.True(ask.Code==ResultCode.Accepted,ask.VisibleReason);
+        Assert.Equal(ResultCode.NotAvailable,r.DemandRansom(new("request:ransom-again"),c.Person,400,r.Revision).Code);
+        Assert.Equal("返事待ち",Assert.Single(r.Ransoms()).Stage);
+        Await(r);
+        var paid=r.DiagnosticSnapshot();o.WriteLine($"ransom stage={Assert.Single(r.Ransoms()).Stage} at={paid.ElapsedSeconds} mine={mine0}->{NewGameWork.Balance(paid,r.PlayerControl)} theirs={theirs0}->{NewGameWork.Balance(paid,lord)}");
+        Assert.Equal("受け取り",Assert.Single(r.Ransoms()).Stage);
+        Assert.Equal(theirs0-500,NewGameWork.Balance(paid,lord));Assert.Equal(mine0+500,NewGameWork.Balance(paid,r.PlayerControl));
+        Assert.True(HostageCustody.HeldAt(paid,c.Person,paid.ElapsedSeconds,paid.CommitSequence+1));
+        var forgedPay=ContractJson.Read<ContractWorld>(ContractJson.Write(paid));
+        forgedPay.Captives=forgedPay.Captives! with{Papers=forgedPay.Captives.Papers.Select(p=>p.Action==RansomAction.Pay?p with{Amount=900}:p).ToArray()};
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forgedPay));
+        var rb=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(paid)));
+        foreach(var x in new[]{r,rb})NewGameWorldTests.At(x,paid.ElapsedSeconds+3600);
+        Assert.Equal(ContractJson.Write(r.DiagnosticSnapshot()),ContractJson.Write(rb.DiagnosticSnapshot()));
+        var result=s.ManageCaptive(new(new("request:retainer-recruit"),CaptiveAction.Recruit,c.Person),s.Revision);Assert.True(result.Code==ResultCode.Accepted,result.VisibleReason);
+        var after=s.DiagnosticSnapshot();bool accepted=after.Captives!.Entries.Last().Accepted;o.WriteLine($"accepted={accepted}");
+        bool Member(ContractWorld x,EntityId house)=>x.Memberships.Any(r=>r.Subject==c.Person&&r.Target==house&&r.From<=x.ElapsedSeconds&&x.ElapsedSeconds<r.Until);
+        Assert.Equal(accepted,Member(after,c.CaptorOwner));Assert.Equal(!accepted,Member(after,c.FromOwner));
+        Assert.Equal(accepted,!HostageCustody.HeldAt(after,c.Person,after.ElapsedSeconds,after.CommitSequence+1));
+        var back=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+        foreach(var x in new[]{s,back})NewGameWorldTests.At(x,after.ElapsedSeconds+3600);
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
+    }
 }

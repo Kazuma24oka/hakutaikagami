@@ -3,7 +3,7 @@
 工程の表（2026-11-12 に Claude が出した7行）の6行目「残りの枠を全国の開始で一通り動かす」。地方の版で作った仕組みの多くが、全国の開始では有効になっていなかった（94のうち63。Tests/NationalCoverageProbe.cs で数えた）。
 
 - 仕掛け：`NationalSystems.Current` に名前を足し、その仕組みの `Enabled` に `NationalSystems.On(w,"名前")` を加える。新規開始のときに一覧を `NewGameState.NationalSystems` に写して保存し、保存済みの世界は変えない。専用の設定（SocialPolicy など）を持つ仕組みは、`NationalStart.Create`・`New` でその設定を渡す。
-- 有効にしたもの：生活と目標、同行者、人間関係、婚姻、養子、密書、天候、治安（賊）、家督、歴史モード（`NewGameState.History`。全国の家の戦略の史実の出陣の重みに効く）、健康と診療・傷病死、和睦と同盟の交渉、合戦での捕縛、戦・兵站・輸送・航海・道（Codex が接続した24項目。記録は Docs/Design/NationalWarfareV1）。
+- 有効にしたもの：生活と目標、同行者、人間関係、婚姻、養子、密書、天候、治安（賊）、家督、歴史モード（`NewGameState.History`。全国の家の戦略の史実の出陣の重みに効く）、健康と診療・傷病死、和睦と同盟の交渉、合戦での捕縛と処遇、家臣が NPC の軍を率いること（RetainerCommand）、戦・兵站・輸送・航海・道（Codex が接続した24項目。記録は Docs/Design/NationalWarfareV1）。
 - 開始条件の画面の説明口調の文言を名前だけにした。
 
 ## 工程の表の今の状態
