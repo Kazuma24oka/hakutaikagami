@@ -26,4 +26,15 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
         foreach(var x in new[]{s,restored})NewGameWorldTests.At(x,mid.ElapsedSeconds+3600);
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
+    // 全国の開始の歴史モード：新規ゲームの画面で選んだモードを持ち、地方の版には付けられない。
+    [Fact]
+    public void TheNationalStartKeepsTheChosenHistoryMode()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga(),history:HistoryMode.Fictional);
+        Assert.Equal(HistoryMode.Fictional,w.NewGame!.History);
+        Assert.Equal(ContractJson.Write(w),ContractJson.Write(ContractJson.Read<ContractWorld>(ContractJson.Write(w))));
+        Assert.Null(NationalStart.Create(NationalStartTests.Nobunaga()).NewGame!.History);
+        var start=NewGameWorldTests.Setup([NewGameWorldTests.Officer()]);
+        Assert.Throws<InvalidDataException>(()=>NewGameWorld.Create(start.World,start.Registered,"created:test",0,history:HistoryMode.Historical));
+    }
 }
