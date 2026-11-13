@@ -4,10 +4,11 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record OfficerWound(EntityId Unit,EntityId Person,HealthPart Part,int Severity,long At);
 public static class OfficerBattleHealth
 {
+    public static bool Enabled(ContractWorld w)=>ClinicalHealth.Enabled(w)||NationalSystems.On(w,"OfficerBattleHealth");
     // 同じ人物・同じ日には同じ危険判定を使い、刻みや再送で抽選を増やさない。
     internal static OfficerWound[]? Resolve(ContractWorld w,EngagementResult result)
     {
-        if(!ClinicalHealth.Enabled(w))return null;
+        if(!Enabled(w))return null;
         var seen=(w.WorldClashes?.Steps??[]).SelectMany(s=>s.OfficerWounds??[]).Where(x=>x.At/86400==result.At/86400).Select(x=>x.Person).ToHashSet();
         var wounds=new List<OfficerWound>();
         foreach(var loss in result.Losses.Where(l=>l.Soldiers>0).OrderBy(l=>l.Unit.Value,StringComparer.Ordinal))
@@ -27,7 +28,7 @@ public static class OfficerBattleHealth
     }
     internal static IEnumerable<HealthCondition> Conditions(ContractWorld w)
     {
-        if(!ClinicalHealth.Enabled(w))yield break;
+        if(!Enabled(w))yield break;
         foreach(var x in (w.WorldClashes?.Steps??[]).SelectMany(s=>s.OfficerWounds??[]))
         {
             string source=FormattableString.Invariant($"battle-health-v2/{x.Person.Value}/{x.At}");

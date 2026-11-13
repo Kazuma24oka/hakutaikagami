@@ -16,6 +16,7 @@ if(args.Contains("--day",StringComparer.Ordinal))
         while(session.Seconds<target){long before=session.Seconds;session.AdvanceTo(Math.Min(target,session.Seconds+3600),100000);Console.WriteLine($"進行 {session.Seconds}秒");if(session.Seconds==before)throw new InvalidDataException("世界時計が進みません");session.SetPaused(false);}
         session.SetPaused(true);
     }
+    if(args.Contains("--hour",StringComparer.Ordinal)){Until(sessionDay,3600);Console.WriteLine($"1時間の進行 {sim.Elapsed.TotalSeconds}秒");return;}
     Until(sessionDay,43200);double first=sim.Elapsed.TotalSeconds;
     var middle=sessionDay.DiagnosticSnapshot();var saves=new GenerationSaveStore(Path.Combine(output,"saves"),middle.Definitions);
     if(!saves.Save(sessionDay,"midday",middle.WorldId).Published)throw new InvalidDataException("途中保存を発行できません");

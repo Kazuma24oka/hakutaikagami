@@ -8,7 +8,7 @@ public sealed class NationalWarfareActivationTests
         var raw=NationalStart.Scenario();var person=raw.People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
         var w=NationalStart.Create(person);
         Assert.True(NpcArmies.Enabled(w));Assert.True(WorldClashes.Enabled(w));Assert.True(WorldClashes.Sparse(w));
-        Assert.True(BattlefieldRules.Enabled(w));Assert.True(CastleSiege.Enabled(w));Assert.True(CastleWorks.Enabled(w));Assert.True(HostageCustody.Enabled(w));Assert.True(VoyageExpense.Enabled(w));
+        Assert.True(OfficerBattleHealth.Enabled(w));Assert.True(BattlefieldRules.Enabled(w));Assert.True(CastleSiege.Enabled(w));Assert.True(CastleWorks.Enabled(w));Assert.True(HostageCustody.Enabled(w));Assert.True(VoyageExpense.Enabled(w));
         Assert.NotNull(w.NpcArmies);Assert.NotNull(w.WorldClashes);Assert.NotNull(w.Custody);
         Assert.NotNull(w.MilitaryEconomy);Assert.NotNull(w.HouseFreight);Assert.NotNull(w.FreightOperations);Assert.NotNull(w.ArmyRoad);Assert.NotNull(w.CampConvoys);
         var bytes=ContractJson.Write(w);var restored=ContractJson.Read<ContractWorld>(bytes);
@@ -18,7 +18,7 @@ public sealed class NationalWarfareActivationTests
     {
         var raw=NationalStart.Scenario(NationalStart.PersonEdition);var me=raw.People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
         var w=NewGameWorld.Create(raw,[],me,20261113,NewGameWorld.CompactPersonalAuthority,NationalStart.PersonEdition,networkPolicy:WorldNetwork.CastlePolicy,developmentPolicy:CharacterDevelopment.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy,districtControlPolicy:NationalDistrictControl.Policy);
-        Assert.Null(w.NewGame!.NationalSystems);Assert.False(NpcArmies.Enabled(w));Assert.False(VoyageExpense.Enabled(w));
+        Assert.Null(w.NewGame!.NationalSystems);Assert.False(OfficerBattleHealth.Enabled(w));Assert.False(NpcArmies.Enabled(w));Assert.False(VoyageExpense.Enabled(w));
         Assert.Null(w.NpcArmies);Assert.Null(w.WorldClashes);Assert.Null(w.Custody);
         var bytes=ContractJson.Write(w);Assert.Equal(bytes,ContractJson.Write(new WorldSession(ContractJson.Read<ContractWorld>(bytes)).DiagnosticSnapshot()));
     }

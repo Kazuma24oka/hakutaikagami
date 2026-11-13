@@ -17,7 +17,8 @@ public static partial class NpcArmies
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool b,string why){if(!b)throw new InvalidDataException(why);}
     public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy))||NationalSystems.On(w,"NpcArmies");
     public static NpcArmyMuster[] Musters(ContractWorld w)=>w.NpcArmies?.Musters??[];
-    static MilitaryLedgerIdentity Binding(NpcArmyMuster m)=>NewGameMilitary.LedgerIdentity(m.Owner,m.Site);
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NpcArmyMuster,MilitaryLedgerIdentity> bindings=new();
+    static MilitaryLedgerIdentity Binding(NpcArmyMuster m)=>bindings.GetValue(m,q=>NewGameMilitary.LedgerIdentity(q.Owner,q.Site));
     public static bool HoldsGarrison(ContractWorld w,EntityId owner,EntityId site)=>Musters(w).Any(m=>m.Owner==owner&&m.Site==site);
     public static ArmyEntry[] Armies(ContractWorld w)=>Musters(w).Select(m=>new ArmyEntry(Binding(m).Army,m.Owner,m.Commander)).ToArray();
     static void CheckMuster(ContractWorld w,NpcArmyMuster m,IEnumerable<NpcArmyMuster> prior)
@@ -91,7 +92,8 @@ public static partial class NpcArmies
     {
         var ms=Musters(w);if(ms.Length==0)return;var ids=ms.SelectMany(m=>Binding(m).Units).ToHashSet();
         w.Units=[..w.Units.Where(u=>!ids.Contains(u.Id)),..ms.SelectMany(m=>Binding(m).Units.Select((id,n)=>new UnitState(id,Binding(m).Army,m.Commander,m.Owner,(n==0?40:30)-WorldClashes.SoldiersLost(w,id,w.ElapsedSeconds),0)))];
-        w.ResourceLots=[..w.ResourceLots.Where(l=>!IsLot(w,l)),..ms.SelectMany(m=>Lots(w,m))];
+        var lots=ms.SelectMany(m=>new[]{Binding(m).Depot,Binding(m).Carry}).ToHashSet();
+        w.ResourceLots=[..w.ResourceLots.Where(l=>!lots.Contains(l.Id)),..ms.SelectMany(m=>Lots(w,m))];
     }
     public static void Return(ContractWorld w,EntityId muster)
     {
