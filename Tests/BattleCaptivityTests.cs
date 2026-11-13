@@ -125,6 +125,7 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
         Send(NewMilitaryAction.Recall);var end=s.DiagnosticSnapshot().NewMilitary!.Orders.Last().Routes.SelectMany(r=>r).Select(l=>l.EndAt).DefaultIfEmpty(s.Seconds).Max();NewGameWorldTests.At(s,end+1);Send(NewMilitaryAction.Enter);
         // 身代金：相手の当主（城に残った信長）へ書状で求め、相手は開封した時点で払うか決める。銭は返書と一緒に届き、開封で本人の私財に入る。捕虜は自動で解放しない。
         var beforeRansom=ContractJson.Write(s.DiagnosticSnapshot());
+        var export=Environment.GetEnvironmentVariable("HAKUTAI_CAPTIVE_QA_DIR");if(!string.IsNullOrEmpty(export)){Directory.CreateDirectory(export);File.WriteAllBytes(Path.Combine(export,"ready.json"),beforeRansom);}
         void Await(WorldSession q){for(int n=0;n<300&&Assert.Single(q.Ransoms()).Stage=="返事待ち";n++){NewGameWorldTests.At(q,q.Seconds+600);foreach(var msg in q.GetActorView(q.PlayerControl).Messages.Where(x=>x.KnownBody==null).ToArray())q.Open(q.PlayerControl,msg.Id,q.Revision);}}
         // 上限を超える額は断られ、銭は動かない。
         var refused=new WorldSession(ContractJson.Read<ContractWorld>(beforeRansom));long refusedMine=NewGameWork.Balance(refused.DiagnosticSnapshot(),refused.PlayerControl);
