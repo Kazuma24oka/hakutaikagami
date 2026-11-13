@@ -27,13 +27,13 @@ public sealed class NationalWarfareActivationTests
         var person=NationalStart.Scenario().People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
         var initial=NationalStart.Create(person);byte[] Run(bool slow)
         {
-            WorldSession.SlowNpcDecisionRecord=slow;
+            WorldSession.SlowNpcDecisionRecord=slow;WorldSession.SlowWorldChangeCopy=slow;
             try
             {
-                var s=new WorldSession(initial);s.SetPaused(false);s.AdvanceTo(1,100000);
-                Assert.Equal(1,s.Seconds);return ContractJson.Write(s.DiagnosticSnapshot());
+                var s=new WorldSession(initial);var outside=s.DiagnosticSnapshot();outside.NewGame!.Start.People[0]=outside.NewGame.Start.People[0] with{Name="外部で変更"};s.SetPaused(false);s.AdvanceTo(1,100000);
+                Assert.Equal(1,s.Seconds);var after=s.DiagnosticSnapshot();Assert.NotEmpty(after.NpcWork!.Decisions);Assert.DoesNotContain(after.NewGame!.Start.People,p=>p.Name=="外部で変更");return ContractJson.Write(after);
             }
-            finally{WorldSession.SlowNpcDecisionRecord=false;}
+            finally{WorldSession.SlowNpcDecisionRecord=false;WorldSession.SlowWorldChangeCopy=false;}
         }
         Assert.Equal(Run(true),Run(false));
     }

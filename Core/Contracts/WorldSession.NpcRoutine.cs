@@ -17,7 +17,7 @@ public sealed partial class WorldSession
                 // 前後を比べる処理（軍勢が見えたときの時間の止め方）が働く世界では、今までどおり手番ごとに写す。
                 var before=state;bool ok=true;deferValidation=true;batchBroken=false;
                 inPlace=!(WorldTimeControl.Enabled(state)&&NpcArmies.Enabled(state)&&state.NpcArmies!.Musters.Length>0);
-                if(inPlace){state=ContractJson.Copy(before);turnView=null;}
+                if(inPlace){state=CopyForChange(before);turnView=null;}
                 try{RunNewGameNpcTurns();}
                 catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException or InvalidOperationException){ok=false;}
                 finally{deferValidation=false;inPlace=false;}

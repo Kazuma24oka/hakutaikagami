@@ -42,7 +42,7 @@ public sealed partial class WorldSession
     {
         // まとめた手番の間（inPlace）は写さずに直接変える。途中で例外が出たら、まとめた手番ごとやり直す（batchBroken）。
         if(inPlace){turnView=null;try{ChangeCore(state,change,beforeCommit);}catch{batchBroken=true;throw;}return;}
-        ChangeCore(ContractJson.Copy(state),change,beforeCommit);
+        ChangeCore(CopyForChange(state),change,beforeCommit);
     }
     private void ChangeCore(ContractWorld next,Action<ContractWorld> change,Action? beforeCommit)
     {
