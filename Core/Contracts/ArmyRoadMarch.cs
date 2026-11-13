@@ -67,6 +67,7 @@ public static class ArmyRoadMarch
     {
         var rows=new List<(EntityId,EntityId,EntityId,long,long)>();if(!Enabled(w))return rows.ToArray();foreach(var group in Entries(w,w.ElapsedSeconds,w.CommitSequence+1).Where(e=>e.Terms!=null).GroupBy(e=>(e.Terms!.Army,e.Terms.Case,e.Terms.Carry))){long? start=null;foreach(var e in group){var t=Task(w,e);if(t?.StartedAt is not {} began||began>w.ElapsedSeconds)continue;start??=began;if(t.FinishedAt is {} end&&end<=w.ElapsedSeconds&&AssemblySiteFor(w,e,end)==e.Terms!.Home){rows.Add((group.Key.Army,group.Key.Case,group.Key.Carry,start.Value,end));start=null;}}if(start!=null)rows.Add((group.Key.Army,group.Key.Case,group.Key.Carry,start.Value,w.ElapsedSeconds));}return rows.ToArray();
     }
+    internal static (long From,long Until)[] AwayWindows(ContractWorld w,EntityId army)=>Windows(w).Where(q=>q.Army==army).Select(q=>(q.From,q.Until)).ToArray();
     static EntityId? AssemblySiteFor(ContractWorld w,ArmyRoadEntry e,long at)=>BranchRoutes.GraphNodes(w).FirstOrDefault(n=>FieldWorld.FromWorld(n.Position)==AnchorFor(w,e,at)) is {} node?RegionalCampaign.Site(node.Id):null;
     internal static void Tick(ContractWorld w,long from)
     {

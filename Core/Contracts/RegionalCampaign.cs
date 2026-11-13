@@ -220,12 +220,17 @@ public static partial class RegionalCampaign
         w.Evidence=[..w.Evidence,new(id,actor,actor,claim,w.ElapsedSeconds,w.ElapsedSeconds,null,null)];w.Knowledge=[..w.Knowledge,new(actor,id,w.ElapsedSeconds)];
         if(!NewGameWorld.Enabled(w)&&actor!=ContractFixture.Lord)MessageFlow.Send(w.Messaging,new("message:"+id.Value[9..],actor.Value,"route-observation",actor.Value,ContractFixture.Lord.Value,claim,ContractFixture.Castle.Value,w.ElapsedSeconds),w.ElapsedSeconds,1);
     }
-    public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)
+    public static RoutePoint ActorPointAt(ContractWorld w,EntityId actor,long at)=>LocalActorPointAt(w,actor,at)??RoadActorPointAt(w,actor,at);
+    internal static Func<EntityId,RoutePoint> ActorPointsAt(ContractWorld w,long at)
+    {
+        var road=RoadActorPointsAt(w,at);return actor=>LocalActorPointAt(w,actor,at)??road(actor);
+    }
+    static RoutePoint? LocalActorPointAt(ContractWorld w,EntityId actor,long at)
     {
         if(actor==w.PlayerControl&&NewGameMilitary.ActualMilitaryPosition(w,at) is {} militaryPosition)return FieldWorld.ToWorld(militaryPosition);
         if(!RegionalBattle.National(w)&&RegionalBattle.Active(w)&&FieldPresence.Deployed(w,actor)&&at==w.ElapsedSeconds&&w.Region!.Units.Any(u=>u.Commander==actor))return FieldWorld.ToWorld(RegionalBattle.Position(w,actor));
         if(!FieldWorld.National(w)&&FieldWorld.Enabled(w)&&actor==w.PlayerControl&&w.Field!.Orders.Any(o=>o.At<=at)&&!(w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&j.Legs[0].StartAt<=at)?.Legs[0].StartAt>w.Field.Orders.Last(o=>o.At<=at).At))return FieldWorld.ToWorld(FieldWorld.Sample(w,0,at).Position);
-        return RoadActorPointAt(w,actor,at);
+        return null;
     }
     public static RoutePoint RoadActorPointAt(ContractWorld w,EntityId actor,long at)
     {
@@ -281,12 +286,14 @@ public static partial class RegionalCampaign
         var cs=w.Couriers;var edges=BranchRoutes.GraphEdges(w);
         var edgeById=edges.ToLookup(e=>e.Id,StringComparer.Ordinal);var nodes=BranchRoutes.GraphNodes(w).ToLookup(n=>n.Id,StringComparer.Ordinal);
         RoutePoint AtNode(string id)=>nodes[id].Single().Position;
+        var actorPoints=new Dictionary<long,Func<EntityId,RoutePoint>>();
+        RoutePoint ActorAt(EntityId actor,long at){if(!actorPoints.TryGetValue(at,out var get))actorPoints[at]=get=ActorPointsAt(w,at);return get(actor);}
         if(cs.InitialBlocked.Distinct().Count()!=cs.InitialBlocked.Length||cs.InitialBlocked.Any(id=>!edgeById[id].Any())||!w.Branches!.BlockedEdges.ToHashSet().SetEquals(edges.Where(e=>BlockedAt(w,e.Id,w.ElapsedSeconds)).Select(e=>e.Id)))throw new InvalidDataException("Road truth differs from recorded conditions");
         if(cs.Conditions.Any(c=>c.At<1||!edgeById[c.Edge].Any())||cs.Conditions.Select(c=>(c.At,c.Edge)).Distinct().Count()!=cs.Conditions.Length)throw new InvalidDataException("Invalid condition schedule");
-        foreach(var sight in cs.Sightings){var edge=edgeById[sight.Edge].Single();if(sight.At>w.ElapsedSeconds||sight.Position!=ActorPointAt(w,sight.Actor,sight.At)||sight.Blocked!=BlockedAt(w,edge.Id,sight.At)||sight.Position!=AtNode(edge.From)&&sight.Position!=AtNode(edge.To))throw new InvalidDataException("Invalid road sighting");}
+        foreach(var sight in cs.Sightings){var edge=edgeById[sight.Edge].Single();if(sight.At>w.ElapsedSeconds||sight.Position!=ActorAt(sight.Actor,sight.At)||sight.Blocked!=BlockedAt(w,edge.Id,sight.At)||sight.Position!=AtNode(edge.From)&&sight.Position!=AtNode(edge.To))throw new InvalidDataException("Invalid road sighting");}
         if(cs.Missions.Select(c=>c.Attempt).Distinct().Count()!=cs.Missions.Length||cs.Missions.Length!=w.Messaging.Attempts.Count(a=>!RegionalBattle.Handles(w,a.MessageId)&&!NewGameMilitary.HandlesUnitMessage(w,a.MessageId)&&!NewGameMilitary.HandlesInternalAuthorityMessage(w,a.MessageId)))throw new InvalidDataException("Missing/duplicate courier");
         foreach(var c in cs.Missions){var a=w.Messaging.Attempts.Single(a=>a.Id==c.Attempt);var message=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);
-            var origin=message.Kind=="delivery-failure"?Position(w,cs.Missions.Single(x=>x.Attempt==message.Body),a.SentAt):c.DispatchPose!=null?DispatchOrigin(w,c,a,message):ActorPointAt(w,new(message.SenderId),a.SentAt);
+            var origin=message.Kind=="delivery-failure"?Position(w,cs.Missions.Single(x=>x.Attempt==message.Body),a.SentAt):c.DispatchPose!=null?DispatchOrigin(w,c,a,message):ActorAt(new(message.SenderId),a.SentAt);
             if(CreatedCampaign.Enabled(w)&&message.Kind!="delivery-failure"&&c.DispatchPose==null)throw new InvalidDataException("New campaign courier lacks dispatch location");
             if(message.Kind=="delivery-failure"&&c.DispatchPose!=null)throw new InvalidDataException("Failure report origin is its failed courier, not an actor location");
             if(c.Origin!=origin)throw new InvalidDataException("Courier origin lacks physical dispatch");

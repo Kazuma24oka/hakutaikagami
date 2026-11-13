@@ -1,6 +1,9 @@
 using HakutaiKagami.Core.Contracts;
 using Xunit;
 namespace HakutaiKagami.Tests;
+[CollectionDefinition("NationalFieldSupplyIsolation",DisableParallelization=true)]
+public sealed class NationalFieldSupplyIsolation{}
+[Collection("NationalFieldSupplyIsolation")]
 [Trait("Tier","Heavy")]
 public sealed class NationalFieldSupplyTests
 {
@@ -13,6 +16,13 @@ public sealed class NationalFieldSupplyTests
     }
     [Fact]public void NativePresenceAndSupplyUseOneActualArmyAndOneRationLedgerAcrossRecovery()
     {
+        // 他の検査と並走しない。毎回全国の全JSONをハッシュする検査専用診断は外し、
+        // 製品と同じ設定で実保存の前後と復旧後の世界全体を直接照合する。
+        bool diagnostic=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
+        try{VerifyMilitaryRecovery();}finally{WorldSession.GuardTurnSnapshots=diagnostic;}
+    }
+    static void VerifyMilitaryRecovery()
+    {
         var start=NationalStart.Scenario();var people=start.People.ToDictionary(p=>p.Id);var heads=start.Factions.ToDictionary(f=>f.Head);
         var retainer=start.People.First(p=>p.Lord!=null&&heads.ContainsKey(p.Lord)&&p.Site==people[p.Lord].Site&&p.Faction==heads[p.Lord].Id&&start.Castles.Any(c=>c.Id==p.Site&&c.Faction==p.Faction));
         // 全国の実在人物・城・家を使い、日課の有無とは独立に、軍の受渡しそのものを検査する。
@@ -21,7 +31,9 @@ public sealed class NationalFieldSupplyTests
             networkPolicy:WorldNetwork.CastlePolicy,districtControlPolicy:NationalDistrictControl.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy,nationalSystems:NationalSystems.Current);
         var s=new WorldSession(w);Assert.False(FieldPresence.PlayerDeployed(w));Assert.Null(w.Presence);Assert.Null(w.Supply);
         Send(s,NewMilitaryAction.Request);Advance(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Accept);Advance(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Pickup);
-        var actual=s.DiagnosticSnapshot();var depot=NewGameMilitary.DepotFor(actual);
+        var actual=s.DiagnosticSnapshot();
+        byte[] Historical(bool slow){NewGameMilitary.SlowHistoricalLocations=slow;try{return ContractJson.Write(NewGameMilitary.WorldEngagementBefore(actual,actual.NewMilitary!.Terms.Army,s.Seconds,s.Revision));}finally{NewGameMilitary.SlowHistoricalLocations=false;}}
+        Assert.Equal(Historical(true),Historical(false));var depot=NewGameMilitary.DepotFor(actual);
         Good(s.ManageMilitaryRice(new(new("request:national-rice"),depot,60),s.PlayerControl,s.Revision));
         long load=10*MilitaryEconomy.PersonSecondsPerKg;var id=new EntityId("request:national-pack");
         Good(s.HandleSupply(id,s.PlayerControl,true,load,s.Revision));

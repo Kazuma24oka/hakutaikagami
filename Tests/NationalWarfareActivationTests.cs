@@ -12,6 +12,7 @@ public sealed class NationalWarfareActivationTests
         Assert.NotNull(w.NpcArmies);Assert.NotNull(w.WorldClashes);Assert.NotNull(w.Custody);Assert.True(FieldPresence.Enabled(w));Assert.True(FieldSupply.Enabled(w));Assert.True(FieldWorld.Enabled(w));Assert.True(RegionalBattle.Enabled(w));Assert.True(RegionalScenery.Enabled(w));Assert.False(RegionalBattle.Active(w));Assert.Null(w.Region);Assert.Null(w.Field);Assert.Null(w.Presence);Assert.Null(w.Supply);Assert.False(EngagementMission.Enabled(w));
         Assert.NotNull(w.MilitaryEconomy);Assert.NotNull(w.HouseFreight);Assert.NotNull(w.FreightOperations);Assert.NotNull(w.ArmyRoad);Assert.NotNull(w.CampConvoys);
         Assert.Equal(RegionalCampaign.RoadActorPointAt(w,w.PlayerControl,0),RegionalCampaign.ActorPointAt(w,w.PlayerControl,0));
+        var points=RegionalCampaign.ActorPointsAt(w,0);foreach(var c in w.Characters)Assert.Equal(RegionalCampaign.ActorPointAt(w,c.Id,0),points(c.Id));
         var bytes=ContractJson.Write(w);var restored=ContractJson.Read<ContractWorld>(bytes);
         new WorldSession(restored);Assert.Equal(bytes,ContractJson.Write(restored));
     }

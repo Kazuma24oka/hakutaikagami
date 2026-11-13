@@ -12,7 +12,7 @@ public static class NationalSystems
         "PersonalLife",
         "HouseSuccession",
         // 戦・兵站・輸送・道
-        "OfficerBattleHealth",
+        "OfficerBattleHealth", "ExpeditionFodder",
         "FieldPresence", "FieldSupply", "FieldWorld", "RegionalBattle", "RegionalScenery",
         "RiverRoads", "HistoricalRoads", "NationalRoutes",
         "MilitaryEconomy", "HouseLogistics", "HouseFreightReceiving", "FreightOperations", "NpcFreight", "FieldConvoy", "ArmyRoadMarch", "RoadConvoy",

@@ -3,9 +3,9 @@
 BD-06・44・46・W4と全国への接続を一工程で進める。途中は担当ブランチへのコミット・pushのみ。全件検査・基準・進捗加点・PR・main統合は工程の終わりにまとめる。
 
 ## 接続した仕組み
-新規開始の保存済み一覧は24項目。Codex担当はOfficerBattleHealth、FieldPresence、FieldSupply、FieldWorld、RiverRoads、HistoricalRoads、NationalRoutes、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense。ClaudeのPersonalLife・HouseSuccessionを保持。古い一覧なし／FieldWorldなしの保存の規則は変えない。
+新規開始の保存済み一覧は27項目。Codex担当はOfficerBattleHealth、ExpeditionFodder、FieldPresence、FieldSupply、FieldWorld、RegionalBattle、RegionalScenery、RiverRoads、HistoricalRoads、NationalRoutes、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense。ClaudeのPersonalLife・HouseSuccessionを保持。古い一覧なし／FieldWorldなしの保存の規則は変えない。
 
-FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmiesの原本から求める。地方の架空人物・軍・兵糧・別時計は追加しない。全国のPresence・Supply・Fieldはnullのまま。布陣・携行米の操作は既存の軍務受付を通り、既存の消費と重複受付防止を使う。現地で本人が直接出す配置命令は即時有効で、遠隔命令の配送を省略する変更ではない。FieldSupplyで旧架空演習を連鎖起動しない。
+FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmiesの原本から求める。地方の架空人物・軍・兵糧・別時計は追加しない。全国のPresence・Supply・Field・Regionはnullのまま。布陣・携行米の操作は既存の軍務受付を通り、既存の消費と重複受付防止を使う。現地で本人が直接出す配置命令は即時有効で、遠隔命令の配送を省略する変更ではない。FieldSupplyで旧架空演習を連鎖起動しない。
 
 ## 今回の検証
 - 全国の実在家臣・家・米で軍務申出→本人承諾→引受→60kgの現地受領→10kgの積載→出陣→3部隊の布陣・消費→実保存→復旧→帰還→残量返納の一巡が成功。積載の同じIDを二重実行せず、復旧直後と同じ入力で進行した世界全体がバイト一致。関連1件、8分15秒。NPCの日課なしで軍そのものを検査しており、全NPC同時行動の検査ではない。
@@ -15,11 +15,33 @@ FieldPresence・FieldSupply・FieldWorldは既存のNewGameMilitary・NpcArmies�
 - 全国の船旅の表示がVoyageRulesを直接読んで落ちたため、支払いと同じVoyageExpense.Fareを読むよう修正。修正後のゲーム描画が成功。
 - 全国で道路移動へ戻ると地方専用Fieldを参照する経路を修正。新地形の参照は保存されたFieldWorldの一覧項目で分岐する。
 
+## 全国の戦場・背景の接続
+RegionalBattle・RegionalSceneryを新規開始の一覧へ加え、全国では既存の軍務・交戦・地形を使う。地域用のTick・Sync・伝令処理は全国で二重に実行しない。本人への移動・待機・帰還は既存の軍務受付に渡し、他隊への命令や交戦開始は既存の遠隔命令・交戦許可を使わせる。地域表示は本人の保存済み観測を投影し、未知の士気をゼロに捏造しない。他軍は既存のNpcArmies.Sightsで表示する。
+
+全国26項目の関連3件が成功。一巡は本人の観測・他人への不正な命令の拒否・同じ配置IDの二重受付も確認し、帰還に実際に必要な時刻まで進めた。全件検査は追加していない。地方の物理配送2件と旧／新地形の分離1件も成功（3秒）。26項目の保存のゲーム自前描画・高さ照合が成功した。
+
+全国の一巡検査は7分25秒かかった。検査専用の全JSON再ハッシュを外して製品と同じ設定にし、この検査を非並列の専用グループへ隔離、終了時に診断設定を戻す。実保存前後と復旧後の世界全体のバイト一致は残した。この形でも一巡が成功（5分39秒）。他のClaudeの検査と同じPCで並行しており、単純な性能改善率とは扱わない。
+
+## 遠征中の馬の飼料
+新規全国開始のExpeditionFodder一覧項目、または新規作成の戦場規則physical-gear-expedition-fodder-v2だけで適用する。旧26項目までの世界や旧戦場規則は変えない。既存の騎馬装備・積載と、出陣区間・在外行軍区間から実消費を計算する。重なった在外区間と野外展開は一度だけ数え、別の在庫・時計・定期イベントは作らない。試作係数は1頭4時間で飼料1単位であり、史料の採録値ではない。
+
+関連3件が成功。静止した野外の区間を構成し、1時間2単位・2時間5単位の消費、復旧後の同じ残量、旧規則のバイト一致を確認。欠食で負にならず、補給を過去へ遡って食べず、同じ補給IDの再受付で増殖しない。既存の実道路行軍で出発・到着した後、重なる野外待機区間を構成して二重消費がないことを確認し、実ディスク保存から復旧、以後の世界全体がバイト一致した。待機区間は検査用の既存軍務・配送の積分処理で構成したもので、全国の全軍を長時間動かした受入ではない。Game Debugビルドと従来の装備返却・全国初期化の2件も成功。
+
+## 軍務履歴の全国位置照合
+軍務のBeforeStateで全国の人物それぞれに道路の初期位置と全拠点を探していた。既存のRoadActorPointsAtと拠点位置の索引を1回作り、元と同じ順序の最初の拠点を採る。世界の複写や履歴の判定は省かない。全国の実軍引受時点で旧処理との世界全体のバイト一致、布陣・米消費・実保存復旧・帰還返納の一巡が成功（2分23秒）。並行負荷があるため、前の5分39秒との差だけで改善率は示さない。
+
+全国の最初の1時間をDebugで一時計測すると31.868秒。内部検査の累計はNewGameWorld 4.360秒、LocalInspectionFindings 3.437秒、RegionalCampaign 2.880秒、NewGameNpcRoutine 1.805秒。並行負荷下の原因調査であり、性能受入ではない。一時計測の変更は元へ戻した。証跡はruntime-local/day-profile-27。
+
+## 点検と伝令の時点別位置計算
+ActorPointAtの野外／道路の判定順を共通化し、同じ世界・同じ時刻の道路位置だけ一度に引く。点検と伝令の検査で使い、世界をまたいだ記憶は持たない。全国全人物の元の位置との一致、地方の自隊・他隊の野外移動、過去と将来の時刻、未知の封鎖の非公開と伝令改ざん検出を含む関連27件が成功（12秒＋1秒）。
+
+27項目のReleaseで1日88.754秒（55.835＋32.919）、復旧後32.457秒で世界全体が一致。判断215人・1290件、軍0。開始時にClaudeの検査が動いており、単独条件の改善率とはしない。60秒以内は未達。証跡はruntime-local/day-batched-points-27。
+
 ## 地形の範囲
 national-castle-field-ground-v1は既存の試作地形を実在の各城の周囲へ配置した仮地形。史実の城郭の測量や全国の実地形の完成を意味しない。全城の集合3位置が通行可能であることを確認。移動、伝令の最初の区間、模型の接地、実メッシュ、選択用三角形に同じ高さを使う。地形の版を新規開始の定義ハッシュへ含める。正式素材へ差し替える余地を残す。
 
 ## 性能
-2026-11-14、今の全国の開始（24項目に健康・和睦・捕縛を足した構成）で織田信長の1日分が38.7秒（Docs/Design/NationalSystemsV1/README.md）。60秒以内を満たした。以前の記録（95.082秒など）は構成と計測の条件が違う。
+2026-11-14、全国の開始（24項目に健康・和睦・捕縛を足した構成）で織田信長の1日分が38.7秒（Docs/Design/NationalSystemsV1/README.md）。60秒以内を満たした。その後に足した遠征の飼料（ExpeditionFodder）を含めた1日の計測は未実施。以前の記録（95.082秒など）は構成と計測の条件が違う。
 
 再利用は原本が空で値が不変な開始時の所有者・財布・物資・地域帳簿に限定し、外へ返す配列は複製する。NPCの判断順や実行を変えず、記録だけで全帳簿を再同期しない。
 

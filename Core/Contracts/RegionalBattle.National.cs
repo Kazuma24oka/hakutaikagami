@@ -18,7 +18,7 @@ public static partial class RegionalBattle
     {
         // 本人が持つ既存の時点付き観測だけを投影。他軍は既存のNpcArmies.Sightsで表示する。
         if(observer!=w.PlayerControl)return [];
-        return NewGameMilitary.KnownMilitary(w).Select(v=>new RegionalView(v.Unit,v.Position,v.Heading,
-            WorldGround.Height(w,v.Position),v.Soldiers,v.Morale??0,v.Phase,v.ObservedAt,v.Live)).ToArray();
+        return NewGameMilitary.KnownMilitary(w).Where(v=>v.Morale.HasValue).Select(v=>new RegionalView(v.Unit,v.Position,v.Heading,
+            WorldGround.Height(w,v.Position),v.Soldiers,v.Morale!.Value,v.Phase,v.ObservedAt,v.Live)).ToArray();
     }
 }

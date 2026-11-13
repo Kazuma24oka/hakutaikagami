@@ -41,10 +41,12 @@ public static class LocalInspectionFindings
         var nodes=BranchRoutes.GraphNodes(w).ToLookup(n=>n.Id,StringComparer.Ordinal);
         var roads=BranchRoutes.GraphEdges(w).Where(e=>!NationalRoutes.Sea(e.Id)).SelectMany(e=>new[]{e.From,e.To}.Distinct(StringComparer.Ordinal).Select(n=>(Node:n,Edge:e))).ToLookup(x=>x.Node,x=>x.Edge,StringComparer.Ordinal);
         IEnumerable<BranchEdge> LocalRoads(TaskState t)=>roads[NewGameWorld.Node(t.Scope.Value)].OrderBy(e=>e.Id,StringComparer.Ordinal);
+        var actorPoints=new Dictionary<long,Func<EntityId,RoutePoint>>();
+        RoutePoint ActorAt(EntityId actor,long at){if(!actorPoints.TryGetValue(at,out var get))actorPoints[at]=get=RegionalCampaign.ActorPointsAt(w,at);return get(actor);}
         var expected=new HashSet<EntityId>();
         foreach(var t in w.Tasks.Where(t=>t.Action==ActionKind.Inspect&&t.Execution==ExecutionPhase.Completed)){
             long at=t.FinishedAt??throw new InvalidDataException("Inspection completion time missing");string node=NewGameWorld.Node(t.Scope.Value);var point=nodes[node].Single().Position;
-            if(RegionalCampaign.ActorPointAt(w,t.Executor,at)!=point)throw new InvalidDataException("Inspection result detached from local execution");
+            if(ActorAt(t.Executor,at)!=point)throw new InvalidDataException("Inspection result detached from local execution");
             foreach(var edge in LocalRoads(t)){
                 var id=EvidenceId(t,edge.Id);expected.Add(id);var e=evidenceById[id].SingleOrDefault();string claim=(RegionalCampaign.BlockedAt(w,edge.Id,at)?"route-block:":"route-open:")+edge.Id;
                 if(e==null||e.Observer!=t.Executor||e.Subject!=t.Id||e.Claim!=claim||e.ObservedAt!=at||e.RecordedAt!=at||e.Message!=null||e.Supersedes!=null||!known.Contains(new(t.Executor,id,at)))throw new InvalidDataException("Inspection result changed or incomplete");
