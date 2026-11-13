@@ -14,7 +14,7 @@ public static class HouseSuccession
 {
     public const string Policy="local-living-head-succession-individual-house-obligation-acknowledgment-v21";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy==Policy||NationalSystems.On(w,"HouseSuccession");
     static HouseSuccessionEntry[] Entries(ContractWorld w,long at,long rev)=>w.Succession?.Entries.Where(e=>e.At<=at&&e.Revision<=rev).ToArray()??[];
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Succession?.Entries.Any(e=>e.Input.Id==id)==true;
     public static HouseSuccessionJob[] Jobs(ContractWorld w,long at=long.MaxValue,long rev=long.MaxValue){using var _ccRev=ControlContext.At(rev);var es=Entries(w,at,rev);return es.Where(e=>e.Input.Action==HouseSuccessionAction.Nominate).Select(e=>{var rows=es.Where(q=>q.Input.Original==e.Input.Id).ToArray();var confirmed=rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Confirm);var resolved=rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Resolve);return new HouseSuccessionJob(e.Terms!,confirmed?.Due!=null&&(resolved==null||resolved.Revision<confirmed.Revision)?confirmed:null,resolved,rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Resolve&&q.Outcome=="confirmed"),rows.LastOrDefault(q=>q.Input.Action==HouseSuccessionAction.Cancel));}).ToArray();}

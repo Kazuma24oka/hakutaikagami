@@ -9,6 +9,8 @@ public static class NationalSystems
     public static readonly string[] Current=
     [
         // Claude の担当
+        "PersonalLife",
+        "HouseSuccession",
         // Codex の担当
         "OfficerBattleHealth",
         "RiverRoads", "HistoricalRoads", "NationalRoutes",

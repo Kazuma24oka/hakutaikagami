@@ -16,7 +16,7 @@ public partial class NewGameRuntime
         if(MaterialMarkets.LocalHouse(Snapshot()) is {} materials)box.AddChild(new Label{Text=$"家の木材 {materials.Wood}kg・武具 {materials.Weapons}組（水利には木材10kgも使用）"});
         var amount=new SpinBox{MinValue=1,MaxValue=1000000,Step=1,Value=100,Prefix="米 ",Suffix=" kg"};box.AddChild(amount);
         void Add(string label,EconomyAction action,Func<long> quantity){var b=new Button{Text=label};box.AddChild(b);b.Pressed+=()=>{var n=quantity();var result=Session.ManageCommunity(new(new("request:community-ui/"+shown),v.Site,action,n),Session.PlayerControl,shown);if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();ShowCommunityEconomy();};}
-        Add("村から家へ年貢を納める",EconomyAction.CollectLevy,()=>(long)amount.Value);Add("家から村へ救済米を渡す",EconomyAction.RelieveVillage,()=>(long)amount.Value);if(VillageConsultation.Enabled(Snapshot())){var talk=new Button{Text="村に水利工事の協力を相談する"};box.AddChild(talk);talk.Pressed+=()=>{popup.Hide();if(Session.StewardshipView()?.Grants.Any(g=>g.CanOperate)==true)ShowStewardship();else ShowVillage();};}else Add("水利工事を始める（米200kg）",EconomyAction.ImproveWater,()=>200);
+        Add("村から家へ年貢を納める",EconomyAction.CollectLevy,()=>(long)amount.Value);Add("家から村へ救済米を渡す",EconomyAction.RelieveVillage,()=>(long)amount.Value);if(VillageConsultation.Enabled(Snapshot())){var talk=new Button{Text="村に水利工事の協力を相談する"};box.AddChild(talk);talk.Pressed+=()=>{popup.Hide();if(Session.StewardshipView()?.Grants.Any(g=>g.CanOperate)==true)ShowStewardship();else ShowVillage();};}else Add("水利工事を始める",EconomyAction.ImproveWater,()=>200);
         box.AddChild(new Label{Text=v.Explanation+"\n村の一月分の食糧は徴収できません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});var close=new Button{Text="地図へ戻る"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(570,470));
     }
     void ShowCommunityReport(EntityId id)
@@ -33,6 +33,6 @@ public partial class NewGameRuntime
             PresentWork("村からの嘆願",request,NewGameWorld.SiteName(p.Site.Value)+"で"+observed+"に村の代表が訴え、現地の取次が届けた書状です。",sender,sender,"村の代表からの書状",petition.TaxDecree!=null?"年貢の軽減を求める":"動員の軽減を求める");
             Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();return;
         }
-        PresentWork("村の食糧不足の知らせ",NewGameWorld.SiteName(p.Site.Value)+"では、観測時に食糧が"+p.Need+"kg不足していました。",observed+"時点の報告です。現在の残量や他地域の帳簿を示すものではありません。",sender,sender,"現地から届いた書状","食糧不足の報告");Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
+        PresentWork("村の食糧不足の知らせ",NewGameWorld.SiteName(p.Site.Value)+"では、観測時に食糧が"+p.Need+"kg不足していました。",observed+"時点",sender,sender,"現地から届いた書状","食糧不足の報告");Choice("community-close","地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
     }
 }

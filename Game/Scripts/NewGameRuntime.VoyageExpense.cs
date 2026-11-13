@@ -27,7 +27,7 @@ public partial class NewGameRuntime
         else if(w.VoyageExpenses?.Payments.LastOrDefault() is {} paid)text+=$"\n直近の船賃：{paid.Amount}文支払済み。";
         if (Session.ArmyRoadView() is {} army)
         {
-            string supply = army.Marching ? "行軍中。兵糧は市場のある拠点で調達できます。" :
+            string supply = army.Marching ? "行軍中" :
                 army.LocalRicePrice.HasValue ? $"現地で購入可能 {army.MaxPurchaseKg}kg（1kg {army.LocalRicePrice}文）。" :
                 "この集合地では兵糧を購入できません。";
             text = $"携行米 {army.CarryKg}kg / 私財 {army.PrivateMoney}文。\n{supply} ";

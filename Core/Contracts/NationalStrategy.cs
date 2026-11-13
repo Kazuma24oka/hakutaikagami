@@ -225,7 +225,7 @@ public static class NationalStrategy
     static readonly Lazy<Dictionary<string,HashSet<string>>> vassalsOf=new(()=>HakutaiDb.Houses.Where(h=>h.Overlord!=null).GroupBy(h=>NationalStart.FactionId(h.Overlord!),StringComparer.Ordinal)
         .ToDictionary(g=>g.Key,g=>g.Select(h=>NationalStart.FactionId(h.Id)).ToHashSet(StringComparer.Ordinal),StringComparer.Ordinal));
     static HashSet<string> Vassals(string faction)=>vassalsOf.Value.GetValueOrDefault(faction)??[];
-    static HistoryMode Mode(ContractWorld w)=>w.NewGame!.Judgment?.History??HistoryMode.SemiHistorical;
+    static HistoryMode Mode(ContractWorld w)=>w.NewGame!.Judgment?.History??w.NewGame.History??HistoryMode.SemiHistorical;
     // 操作する人物から30km以内の城（月の初めに一度だけ数える）。
     static HashSet<string> NearPlayerSites(ContractWorld w)
     {

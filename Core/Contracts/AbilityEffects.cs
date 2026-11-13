@@ -6,7 +6,7 @@ public static class AbilityEffects
  public static bool Enabled(ContractWorld w)=>w.NewGame?.AbilityPolicy==Policy;
  public static WorkAbilitySnapshot? Terms(ContractWorld w,EntityId actor,long at)=>!Enabled(w)?null:new(CharacterDevelopment.EffectiveAt(w,actor,DevelopmentAbility.Politics,at),CharacterDevelopment.EffectiveAt(w,actor,DevelopmentAbility.Negotiation,at),checked(at+1800-12*CharacterDevelopment.EffectiveAt(w,actor,DevelopmentAbility.Politics,at)));
  public static long Fee(BrokerKind kind,bool personal,WorkAbilitySnapshot? a)=>(personal?100:kind==BrokerKind.Letter?30:50)+(a?.Negotiation>=70?10:0);
- public static string Description(WorkAbilitySnapshot? a)=>a==null?"従来の引受条件":$"政務{a.Politics}で買付の段取りを整え、交渉{a.Negotiation}で報酬条件を相談。能力は失敗抽選には使いません。";
+ public static string Description(WorkAbilitySnapshot? a)=>a==null?"":$"政務{a.Politics}　交渉{a.Negotiation}";
  static EntityId DetailId(TaskState t)=>WorldSession.Child("evidence",t.Id,"ability-inspection-detail");
  static EntityId ReportId(TaskState t)=>WorldSession.Child("message",t.Id,"ability-inspection-detail");
  static string Detail(ContractWorld w,TaskState t,long at){string node=NewGameWorld.Node(t.Scope.Value);var roads=BranchRoutes.GraphEdges(w).Where(e=>(e.From==node||e.To==node)&&!NationalRoutes.Sea(e.Id)).ToArray();var damage=RegionalWeather.Observe(w,t.Scope,at,t.Revision+1);return "現地追加点検：接続陸路"+roads.Length+"本・合計"+roads.Sum(e=>e.LengthMm)/1000+"m。"+(damage==null?"被害の詳細は未採録。":$"田畑被害{damage.Fields}・町被害{damage.Town}・城被害{damage.Castle}（観測時点の試作値）。")+"封鎖の原因は未確認。";}

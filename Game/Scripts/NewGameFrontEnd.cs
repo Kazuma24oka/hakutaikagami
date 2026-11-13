@@ -51,8 +51,8 @@ public partial class NewGameFrontEnd : Control
     }
     Button Add(Node parent,string id,string text,Action action){var b=new Button{Text=text,CustomMinimumSize=new(0,34)};parent.AddChild(b);buttons[id]=b;b.Pressed+=()=>Guard(action);return b;}
     HBoxContainer Bar()=>new HBoxContainer();
-    void ReadRegistry(){registryReadError=null;try{registry=new OfficerLibraryStore(LibraryRoot).Load();}catch(FileNotFoundException){registry=new(1,[],[]);}catch(DirectoryNotFoundException){registry=new(1,[],[]);}catch(Exception e)when(e is IOException or InvalidDataException or ArgumentException or System.Text.Json.JsonException){registry=new(1,[],[]);registryReadError="登録データを読めません。元ファイルは保持しています。保存した人生のロードや、実在武将だけの開始は利用できます。";}}
-    static string DisplaySite(string site){try{return NewGameWorld.SiteName(site);}catch(InvalidDataException){return "未収録の登場場所（管理画面で選び直してください）";}}
+    void ReadRegistry(){registryReadError=null;try{registry=new OfficerLibraryStore(LibraryRoot).Load();}catch(FileNotFoundException){registry=new(1,[],[]);}catch(DirectoryNotFoundException){registry=new(1,[],[]);}catch(Exception e)when(e is IOException or InvalidDataException or ArgumentException or System.Text.Json.JsonException){registry=new(1,[],[]);registryReadError="登録データを読めません";}}
+    static string DisplaySite(string site){try{return NewGameWorld.SiteName(site);}catch(InvalidDataException){return "未収録の登場場所";}}
     void ShowMenu()
     {
         Clear("百代鏡","");ReadRegistry();if(registryReadError!=null)notice.Text=registryReadError;
@@ -61,14 +61,14 @@ public partial class NewGameFrontEnd : Control
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
         Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
         var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{NationalMovement=true,SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=site=>{notice.Text=NewGameWorld.SiteName(site)+" / 新規ゲームで、ここから武将を探せます。";nation.Focus(site);};
-        menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"\n\n作成・編集は新規ゲームと独立。\n開始した世界には後から上書きされません。",AutowrapMode=TextServer.AutowrapMode.WordSmart});
+        menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         {}
     }
     void ShowManagement()
     {
         Clear("武将作成・管理","");manager=new OfficerLibraryTrial{Enhanced=true,StorageOverride=LibraryRoot,Closed=()=>{ReadRegistry();ShowMenu();},SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(manager);
     }
-    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","");page.AddChild(new Label{Text="開始年：1560年\nシナリオ：人物・拠点の開始配置試作\n固定Seed：20261022"});{}AddJudgmentConditions();
+    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","");page.AddChild(new Label{Text="1560年"});{}AddJudgmentConditions();
         // 全国1560年（百代鏡DBの家と武将、城の移動網）。登録武将と配置の調整は使わず、操作する武将を選ぶ画面へ進む。
         national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");page.AddChild(scenarioChoice);
         Add(page,"next","登録武将の選択へ",()=>{if(scenarioChoice.Selected==1)BeginNational();else ChooseRegistered();});Add(page,"back","スタートへ",ShowMenu);}
@@ -135,7 +135,7 @@ public partial class NewGameFrontEnd : Control
             personText.Text+="\n織田家との対立あり。開始時は未開戦。敵対を表明するかは当主が決めます。";
     }
     NewCampaignProfile CreateSelectedCampaign(string person)=>PrepareSelectedCampaign(confirmed??throw new InvalidDataException("開始世界を確定してください"),person,previewOnly:false);
-    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge,controlPolicy:ControlSuccession.Policy);
+    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly,TestKey==null?historyMode:null):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge,controlPolicy:ControlSuccession.Policy);
     void RequestBegin(){if(confirmed==null||selected==null)throw new InvalidDataException("世界と操作人物を選んでください");string person=selected;Action start=()=>{var p=CreateSelectedCampaign(person);OpenGame(p,false);};if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}
     void OpenGame(NewCampaignProfile profile,bool load)
     {

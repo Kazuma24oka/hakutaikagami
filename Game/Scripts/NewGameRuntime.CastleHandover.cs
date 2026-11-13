@@ -26,10 +26,10 @@ public partial class NewGameRuntime
         Text("城の引渡し — 城門・本丸と財産を分けます");{}var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(CastleInput i){var r=Session.ManageCastle(i,Session.PlayerControl,shown);if(r.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCastleHandover();}
         if(v.Site is {} site&&v.LocalRecipients.Length>0){var recipients=new OptionButton();foreach(var id in v.LocalRecipients)recipients.AddItem(CastleOwnerName(w,id));box.AddChild(recipients);Button("安全な退出・財産保全の同じ条件を現地で提示",()=>Run(new(new("request:castle-offer-ui/"+shown),CastleAction.Offer,site,RecipientOwner:v.LocalRecipients[recipients.Selected])));}
-        else Text("本人の締結権と、相手軍・指揮官の現地到着を確認してから提示できます。全国AIの開城判断・攻城戦全体は後続です。");
+        else {}
         foreach(var c in v.Castles.Reverse().Take(4)){
             Text($"所有記録：{CastleOwnerName(w,c.Owner)} ／ 引渡し相手：{CastleOwnerName(w,c.Occupier)}\n{c.Status}\n{(c.Local?"現地確認":"立会記録")}：世界経過 {c.WitnessAt}秒");
-            if(c.Local)Text($"この試作で明示登録された現地兵：旧主側 {c.IncumbentSoldiers} ／ 相手側 {c.RecipientSoldiers}。未登録の史実守備兵をゼロと断定するものではありません。");
+            if(c.Local)Text($"現地兵：旧主側 {c.IncumbentSoldiers} ／ 相手側 {c.RecipientSoldiers}");
             void Step(CastleAction a)=>Run(new(new("request:castle-ui/"+a+"/"+shown),a,c.Site,c.Id));
             Button("同じ返答・条件を本人確認",()=>Step(CastleAction.Confirm),!c.CanConfirm);Button("城門を引き渡す",()=>Step(CastleAction.Gate),!c.CanGate);Button("次の1秒境界に本丸引渡しを予定",()=>Step(CastleAction.RequestKeep),!c.CanRequestKeep);Button("現況を確認して立会記録へ残す",()=>Step(CastleAction.Observe),!c.Local);Button("引渡し前に取りやめ",()=>Step(CastleAction.Cancel),!c.CanCancel);
         }

@@ -27,7 +27,7 @@ public partial class NewGameRuntime
             foreach(var c in health.Conditions){
                 Text($"体調：{c.Kind}（{c.Part}・{c.Severity}）{(c.Treated?"手当済み":"手当なし")} ／ {c.Outlook}");
                 if(c.Treated||v.Site==null)continue;
-                healthButtons["self:"+c.Id.Value]=Button("自分で手当をする（手当は一度。治るまでの日数が縮みます）",()=>Done(Session.ManageHealth(new(Id("care-self/"+c.Id.Value.Replace(':','-')),Session.PlayerControl,c.Id,Session.PlayerControl),Session.PlayerControl,shown)));
+                healthButtons["self:"+c.Id.Value]=Button("自分で手当をする",()=>Done(Session.ManageHealth(new(Id("care-self/"+c.Id.Value.Replace(':','-')),Session.PlayerControl,c.Id,Session.PlayerControl),Session.PlayerControl,shown)));
                 foreach(var friend in Session.CompanionView().Where(f=>f.Active&&f.Nearby&&!f.Busy))
                     Button($"{friend.Name}に手当を頼む",()=>Done(Session.ManageHealth(new(Id("care/"+friend.Person.Value.Replace(':','-')+"/"+c.Id.Value.Replace(':','-')),Session.PlayerControl,c.Id,friend.Person),Session.PlayerControl,shown)));
             }
@@ -39,7 +39,7 @@ public partial class NewGameRuntime
             {}
             Button("私有米1kgを食事に使う",()=>Life(LifeAction.EatPrivateRice),v.PrivateRice<1);
             if(Session.RegionalTradeView() is {} market){var cargo=market.Deals.LastOrDefault(d=>d.Commodity==null&&d.Amount is >=1 and <=3&&d.Phase is TradePhase.Offered or TradePhase.Accepted or TradePhase.Carrying);if(cargo==null){Button($"現地の食事用米1kgを見積る（現在 {market.BuyPrice}文）",()=>Done(Session.TradeRice(new(Id("meal-quote"),TradeAction.Quote,v.Site.Value,Destination:v.Site,Amount:1),Session.PlayerControl,shown)),market.RiceAvailable<1);}else{var action=cargo.Phase==TradePhase.Offered?TradeAction.Accept:cargo.Phase==TradePhase.Accepted?TradeAction.Collect:TradeAction.Consume;var label=action==TradeAction.Accept?$"見積の{cargo.Amount}kg・{cargo.PurchasePrice*cargo.Amount}文を了承":action==TradeAction.Collect?"現物を受け取り、私財で支払う":$"携行中の米{cargo.Amount}kgを食事に使う";Button(label,()=>Done(Session.TradeRice(new(Id("meal-"+action),action,v.Site.Value,cargo.Id),Session.PlayerControl,shown)));}}
-            Button("野外で無料の休息を始める（4時間）",()=>Life(LifeAction.RestOutside),!v.CanRest);Button("宿で休息を始める（10文・2時間）",()=>Life(LifeAction.RestInn),!v.CanRest||v.PrivateMoney<PersonalLife.InnCost);
+            Button("野外で無料の休息を始める",()=>Life(LifeAction.RestOutside),!v.CanRest);Button("宿で休息を始める",()=>Life(LifeAction.RestInn),!v.CanRest||v.PrivateMoney<PersonalLife.InnCost);
             {}
             foreach(var pair in new[]{(LifeGoal.WorkPay,"仕事報酬を20文受け取る"),(LifeGoal.ReceiveStipend,"扶持米を20kg受け取る"),(LifeGoal.PayStipend,"家臣へ扶持米20kgを渡す")})Button(pair.Item2,()=>Life(LifeAction.SetGoal,pair.Item1,20));
             Button("位階・官職を一つ得る",()=>Life(LifeAction.SetGoal,LifeGoal.GainTitle,1));

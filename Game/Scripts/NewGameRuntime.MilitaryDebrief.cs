@@ -27,7 +27,7 @@ public partial class NewGameRuntime
     void ShowMilitaryFollowupLine()
     {
         var w=Snapshot();var d=NewGameMilitary.FollowupBasis(w);var line=NewGameMilitary.FollowupLine(w);if(d==null||line.Length!=2)return;shownWork=null;
-        PresentWork("次の軍務の配置",d.Losses>0?"今回は近場で隊列を確かめよう。兵の損耗をなかったことにはせず、残った兵で並ぶ。":"前回の帰還を踏まえ、今回は少し先の線に並ぼう。",d.Next+"\n示された配置線へ移動します。別の線を自分で指定することもできます。",d.Principal,Session.PlayerControl,"配置の判断","部隊を動かしますか");
+        PresentWork("次の軍務の配置",d.Losses>0?"今回は近場で隊列を確かめよう。兵の損耗をなかったことにはせず、残った兵で並ぶ。":"前回の帰還を踏まえ、今回は少し先の線に並ぼう。",d.Next+"",d.Principal,Session.PlayerControl,"配置の判断","部隊を動かしますか");
         var source=Session;long revision=Session.Revision;
         Choice("work-followup-move","示された線へ向かおう",()=>{if(!ReferenceEquals(Session,source)||Session.Revision!=revision)throw new InvalidOperationException("状況が変わりました。配置を確認し直してください。");CloseBottomTalk();ExerciseMilitaryLine(line[0],line[1]);});
         Choice("work-followup-back","いったん地図へ戻る",CloseBottomTalk);
