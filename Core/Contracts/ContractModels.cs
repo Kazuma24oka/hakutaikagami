@@ -214,6 +214,7 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public NationalDistrictControlState? DistrictControl {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public NationalFactionRelationsState? FactionRelations {get;set;}
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public NationalNameHistoryState? NationalNames {get;set;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public WorkCycleState? WorkCycle {get;set;}
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]

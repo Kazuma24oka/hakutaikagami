@@ -8,7 +8,8 @@ public static class NationalStart
     public const string Edition="hakutai-1560-national-v1";
     // v2（2026-11-12）：京の朝廷（百代鏡DBの家 G-000241、城なし）の人々を二条御所の拠点に置き、京の取次・将軍家との往来を全国で使う。新規開始だけ。
     public const string CourtEdition="hakutai-1560-national-v2";
-    public static bool IsNational(string? edition)=>edition is Edition or CourtEdition;
+    public const string PersonEdition="hakutai-1560-national-v3";
+    public static bool IsNational(string? edition)=>edition is Edition or CourtEdition or PersonEdition;
     public const string CourtHouse="G-000241";
     public static readonly string KyotoSite="site:"+CastleRoutes.NodeOf("L-500755");
     public static string PersonId(string officer)=>"person:hdb/"+Safe(officer.Replace(':','/'));
@@ -27,9 +28,10 @@ public static class NationalStart
     static readonly Lazy<Dictionary<string,string>> dbHouses=new(()=>HakutaiDb.Houses.GroupBy(h=>FactionId(h.Id),StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal));
     // 世界の家の ID から百代鏡DBの家の ID。
     public static string? DbHouse(string faction)=>dbHouses.Value.GetValueOrDefault(faction);
-    static readonly Lazy<SetupScenario> scenario=new(()=>Build(false)),courtScenario=new(()=>Build(true));
-    public static SetupScenario Scenario(string edition=CourtEdition)=>ContractJson.Copy(edition==Edition?scenario.Value:courtScenario.Value);
-    static SetupScenario Build(bool court)
+    static readonly Lazy<SetupScenario> scenario=new(()=>Build(false,false)),courtScenario=new(()=>Build(true,false)),personScenario=new(()=>Build(true,true));
+    public static SetupScenario Scenario(string edition=PersonEdition)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:personScenario.Value);
+    internal static SetupScenario ScenarioFor(NewGameState data)=>Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!);
+    static SetupScenario Build(bool court,bool personData)
     {
         var people=new List<SetupPerson>();var seen=new HashSet<string>(StringComparer.Ordinal);var factions=new List<SetupFaction>();var homes=new Dictionary<string,string>(StringComparer.Ordinal);
         foreach(var h in HakutaiDb.Houses.OrderBy(h=>h.Id,StringComparer.Ordinal))
@@ -47,8 +49,14 @@ public static class NationalStart
         // 朝廷の人々は家に属さず（家中・兵を持たない）、京（二条御所）にいる。
         if(court)foreach(var o in HakutaiDbStart.Roster(CourtHouse).Officers.Where(o=>!seen.Contains(PersonId(o.Id))).DistinctBy(o=>o.Id)){seen.Add(PersonId(o.Id));people.Add(new(PersonId(o.Id),o.Name,KyotoSite,null,null,false,false));}
         // DBの父がこの世界にいれば、実の親として記録する（血縁。操作の引き継ぎの候補に使う）。
-        var placedIds=people.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);var dbIds=people.Where(p=>DbPerson(p.Id)!=null).GroupBy(p=>DbPerson(p.Id)!.Id,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal);
-        people=people.Select(p=>DbPerson(p.Id)?.Father is {} father&&dbIds.TryGetValue(father,out var parent)&&parent!=p.Id?p with{BirthParents=[parent]}:p).ToList();
+        var dbIds=people.Where(p=>DbPerson(p.Id)!=null).GroupBy(p=>DbPerson(p.Id)!.Id,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal);
+        people=people.Select(p=>{
+            var db=DbPerson(p.Id);var person=db?.Father is {} father&&dbIds.TryGetValue(father,out var parent)&&parent!=p.Id?p with{BirthParents=[parent]}:p;
+            if(!personData||db==null)return person;
+            var estimate=NationalPersonEstimates.ForDbPerson(db.Id);var a=estimate.Abilities;
+            if(!estimate.BirthParentAccepted)person=person with{BirthParents=null};
+            return person with{BirthYear=estimate.BirthYear,Attributes=new OfficerAttributes(a.Leadership,a.Valor,a.Intelligence,a.Politics){Charm=a.Charm}};
+        }).ToList();
         var owners=factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var castles=new List<SetupCastle>();var nodes=CastleRoutes.Catalog.Nodes.ToDictionary(n=>"site:"+n.Id,StringComparer.Ordinal);var homeOf=homes.GroupBy(x=>x.Value).ToDictionary(g=>g.Key,g=>g.Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).First());
         foreach(var s in WorldNetwork.Sites(new NewGameState(1,new(1,"1560-01-01",[],[],[]),[],new("person:none"),0,15){NetworkPolicy=WorldNetwork.CastlePolicy}))
@@ -81,9 +89,9 @@ public static class NationalStart
     public static ContractWorld Create(string selected,ulong seed=20261112,string? timePolicy=null)
     {
         var raw=Scenario();var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:CourtEdition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy);
+        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:PersonEdition,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy);
     }
     // 新規ゲームの画面から始める（保存の開始定義も同じ版で作る）。
     public static NewCampaignProfile New(NewCampaignStore store,SetupScenario setup,string selected,ulong seed,string? timePolicy,bool previewOnly)
-        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,CourtEdition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy);
+        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,PersonEdition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy);
 }

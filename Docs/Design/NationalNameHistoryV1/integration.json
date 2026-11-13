@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "status": "MERGED",
+  "scope": "v114 全国1560年の年次名乗り",
+  "strategy": "gh CLI PR、squash merge、作業ブランチへmainを取り込み",
+  "full_suite": "PASSED: 4,528/4,528 at 4ccdd32e6093ff592cc57b1194a99d15aa74e87b",
+  "short_suite": "PASSED: 2,831/2,831",
+  "related_tests": "PASSED: 5/5",
+  "game_build": "PASSED: Debug, 0 warnings, 0 errors",
+  "pr": 147,
+  "merge_commit": "b40dd0177c9f88ff1ba4f312fed7d0855b33418a",
+  "branch_sync_commit": "ead282e2a97a1720aaf1e3aa7ff0fb15624a3534"
+}
