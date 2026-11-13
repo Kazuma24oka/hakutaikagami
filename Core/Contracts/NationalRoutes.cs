@@ -12,7 +12,7 @@ public static class NationalRoutes
     public static NationalCatalog Catalog=>ContractJson.Copy(catalog);
     static NationalCatalog Read(){using var s=typeof(NationalRoutes).Assembly.GetManifestResourceStream("NationalRoutesV1")??throw new InvalidDataException("Missing national network");using var m=new MemoryStream();s.CopyTo(m);return ContractJson.Read<NationalCatalog>(m.ToArray());}
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{RegionalCampaign.Version,ContractJson.CanonicalHash(catalog),"user-approved-playable-inference-v1"});
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||NationalSystems.On(w,"NationalRoutes");
     // 位置の換算は決まっていて変わらないので一度だけ行い、呼ぶたびに配列の写しを返す（2026-11-12、v107）。
     static readonly Lazy<BranchNode[]> nodes=new(()=>[..RegionalCampaign.Nodes,..catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.LatitudeE7,n.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));})]);
     public static BranchNode[] Nodes=>[..nodes.Value];

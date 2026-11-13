@@ -8,7 +8,7 @@ public static class RiverRoads
     public static RegionalBranchCatalog Catalog=>ContractJson.Copy(catalog);
     public static string Version{get;}=ContractJson.CanonicalHash(new[]{RegionalCampaign.Version,ContractJson.CanonicalHash(catalog),"river-corridor-fixture-v1"});
     static RegionalBranchCatalog Read(){using var s=typeof(RiverRoads).Assembly.GetManifestResourceStream("RiverRoadsV1")??throw new InvalidDataException("Missing river catalog");using var m=new MemoryStream();s.CopyTo(m);return ContractJson.Read<RegionalBranchCatalog>(m.ToArray());}
-    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset;
+    public static bool Enabled(ContractWorld w)=>w.Definitions.Ruleset==Ruleset||NationalSystems.On(w,"RiverRoads");
     public static BranchNode[] Nodes=>[..RegionalCampaign.Nodes,..catalog.Nodes.Select(n=>{var p=JapanGeography.Project(new(n.Stop.LatitudeE7,n.Stop.LongitudeE7));return new BranchNode(n.Id,new(p.EastMm,p.NorthMm));})];
     public static BranchEdge[] Edges=>[..RegionalCampaign.Edges.Where(e=>e.Id!="mikawa-concept"),..catalog.Edges];
     public static SiteDefinition[] Sites=>[..RegionalCampaign.Sites,..catalog.Nodes.Select(n=>new SiteDefinition(new("site:"+n.Id),n.Stop.Name,n.Stop.LatitudeE7,n.Stop.LongitudeE7,0))];

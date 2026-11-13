@@ -10,6 +10,7 @@ public static class NationalSystems
     [
         // Claude の担当
         // Codex の担当
+        "RiverRoads", "HistoricalRoads", "NationalRoutes",
         "MilitaryEconomy", "HouseLogistics", "HouseFreightReceiving", "FreightOperations", "NpcFreight", "FieldConvoy", "ArmyRoadMarch", "RoadConvoy",
         "NpcArmies", "WorldClashes", "BattlefieldRules", "CastleSiege", "CastleWorks", "HostageCustody", "VoyageExpense",
     ];

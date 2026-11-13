@@ -6,6 +6,29 @@ using HakutaiKagami.Core.Contracts;
 // 検査用の家は製品シナリオへ保存しない。試作値の軍用米を持つ旧軍事規則の負荷を測る。
 var output=Path.GetFullPath(args.FirstOrDefault()??"Docs/Design/NationalControlProjectionV1/runtime-local/scale");
 Directory.CreateDirectory(output);
+if(args.Contains("--day",StringComparer.Ordinal))
+{
+    var rawNational=NationalStart.Scenario();var selected=rawNational.People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
+    var initial=NationalStart.Create(selected);var sessionDay=new WorldSession(initial);var sim=Stopwatch.StartNew();
+    void Until(WorldSession session,long target)
+    {
+        session.SetPaused(false);
+        while(session.Seconds<target){long before=session.Seconds;session.AdvanceTo(Math.Min(target,session.Seconds+3600),100000);Console.WriteLine($"進行 {session.Seconds}秒");if(session.Seconds==before)throw new InvalidDataException("世界時計が進みません");session.SetPaused(false);}
+        session.SetPaused(true);
+    }
+    Until(sessionDay,43200);double first=sim.Elapsed.TotalSeconds;
+    var middle=sessionDay.DiagnosticSnapshot();var saves=new GenerationSaveStore(Path.Combine(output,"saves"),middle.Definitions);
+    if(!saves.Save(sessionDay,"midday",middle.WorldId).Published)throw new InvalidDataException("途中保存を発行できません");
+    var host=new WorldSessionHost(new WorldSession(initial));if(host.CommitLoad(saves.Prepare("midday"),host.Current,host.Current.Revision)!=ResultCode.Accepted)throw new InvalidDataException("途中保存を復旧できません");
+    sim.Restart();Until(sessionDay,86400);double latter=sim.Elapsed.TotalSeconds;
+    sim.Restart();Until(host.Current,86400);double restoredSeconds=sim.Elapsed.TotalSeconds;
+    var after=sessionDay.DiagnosticSnapshot();bool equal=ContractJson.CanonicalHash(after)==ContractJson.CanonicalHash(host.Current.DiagnosticSnapshot());
+    var result=new{Status=equal?"同じ未来":"復旧不一致",People=after.Characters.Length,Sites=after.Definitions.Sites.Length,Systems=after.NewGame!.NationalSystems,FirstHalfSeconds=first,SecondHalfSeconds=latter,FullDaySeconds=first+latter,RestoredHalfSeconds=restoredSeconds,Under60Seconds=first+latter<=60,SameFuture=equal,Scope="現在の全国開始で1日と途中保存復旧。軍500の負荷・実機FPSは別途未実施。"};
+    File.WriteAllText(Path.Combine(output,"day-result.json"),JsonSerializer.Serialize(result,new JsonSerializerOptions{WriteIndented=true}));Console.WriteLine(JsonSerializer.Serialize(result));
+    if(!equal)throw new InvalidDataException("途中保存の未来が一致しません");
+    return;
+}
+
 var watch=Stopwatch.StartNew();var raw=NationalStart.Scenario(NationalStart.PersonEdition);
 var homes=raw.Factions.Select(f=>f.Home).ToHashSet(StringComparer.Ordinal);
 var sites=raw.Castles.Where(c=>!homes.Contains(c.Id)&&raw.People.Count(p=>p.Site==c.Id)<8).Take(500).ToArray();
