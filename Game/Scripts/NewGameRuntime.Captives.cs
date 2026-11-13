@@ -26,6 +26,11 @@ public partial class NewGameRuntime
             var plea=new HBoxContainer();box.AddChild(plea);
             var offer=new SpinBox{MinValue=BattleCaptivity.PleaMin,MaxValue=BattleCaptivity.RansomMax,Step=100,Value=BattleCaptivity.PleaMin,Suffix="文"};plea.AddChild(offer);
             Act(plea,"解放を願う",!NewGameWork.Enabled(w),()=>Session.ManageCaptive(new(new("request:captive-ui/plead/"+revision),CaptiveAction.Plead,Session.PlayerControl,(long)offer.Value),revision));
+            foreach(var other in Session.Captives().Where(x=>x.Held&&x.FromOwner==mine.CaptorOwner))
+            {
+                var swap=new HBoxContainer();box.AddChild(swap);
+                Act(swap,PersonName(other.Person)+"と引き換え",false,()=>Session.ManageCaptive(new(new("request:captive-ui/exchange/"+revision),CaptiveAction.Plead,Session.PlayerControl,0,other.Person),revision));
+            }
         }
         var cards=Session.Captives();var ransoms=Session.Ransoms();
         if(cards.Length==0&&Session.MyCaptivity()==null)Text("捕虜なし");

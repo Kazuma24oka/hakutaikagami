@@ -13,7 +13,8 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record BattleCapture(EntityId Person,EntityId FromOwner,EntityId CaptorOwner,EntityId Holder,EntityId Site,long At);
 public enum CaptiveAction { Release,Recruit,Execute,Plead }
 // Amount：捕らえられた本人が解放を願って差し出す銭（Plead のときだけ）。
-public sealed record CaptiveInput(EntityId Id,CaptiveAction Action,EntityId Person,long Amount=0);
+// Exchange：解放を願うとき、引き換えに放つ捕虜（本人の家が捕らえた、相手の家の者）。
+public sealed record CaptiveInput(EntityId Id,CaptiveAction Action,EntityId Person,long Amount=0,EntityId? Exchange=null);
 // Accepted：登用の誘いに本人が応じたか（他の操作では false）。
 public sealed record CaptiveEntry(CaptiveInput Input,EntityId Actor,EntityId Site,long At,long Revision,bool Accepted);
 public sealed record CaptiveState(int Schema,string Policy,CaptiveEntry[] Entries,RansomPaper[] Papers,RansomOpening[] Openings);
@@ -86,7 +87,7 @@ public static partial class BattleCaptivity
     // 拘束を終える操作：解放、応じた登用、処断。
     static bool Ends(CaptiveEntry e)=>e.Input.Action is not(CaptiveAction.Recruit or CaptiveAction.Plead)||e.Accepted;
     static CaptiveEntry[] Since(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>
-        Entries(w).Where(e=>e.Input.Person==person&&e.Revision>capturedRevision&&Before(e.At,e.Revision,at,rev)).ToArray();
+        Entries(w).Where(e=>(e.Input.Person==person||e.Input.Exchange==person&&e.Accepted)&&e.Revision>capturedRevision&&Before(e.At,e.Revision,at,rev)).ToArray();
     static CaptiveEntry? EndOf(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>Since(w,person,capturedRevision,at,rev).FirstOrDefault(Ends);
     public static BattleCapture? CaptivityAt(ContractWorld w,EntityId person,long at,long rev)
     {
@@ -102,7 +103,7 @@ public static partial class BattleCaptivity
         var end=EndOf(w,person,last.Revision,at,rev);
         if(end==null)return last.Capture.Site;
         bool travelled=w.Tasks.Any(t=>t.Executor==person&&t.StartedAt>=end.At&&t.StartedAt<=at);
-        return travelled?null:end.Site;
+        return travelled?null:end.Input.Person==person?end.Site:last.Capture.Site;
     }
     static bool CanAct(ContractWorld w,BattleCapture c,EntityId actor,long at,long rev)=>
         FactionStances.ResolveAuthority(w,actor,c.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null&&TransportWork.At(w,actor,c.Site,at,rev,true)&&!Assassination.DeadAt(w,actor,at,rev);
@@ -120,13 +121,13 @@ public static partial class BattleCaptivity
         if(i.Action==CaptiveAction.Plead)
         {
             // 捕らえられた本人が、捕らえた家の当主へ銭を差し出して解放を願う。当主がその城にいて権限を持つときだけ答える。
-            Need(actor==i.Person&&i.Amount is >=PleaMin and <=RansomMax,"差し出す銭は500〜3000文です");
+            Need(actor==i.Person&&(i.Exchange==null?i.Amount is >=PleaMin and <=RansomMax:i.Amount==0&&Exchangeable(w,c,i.Exchange.Value,actor,at,rev)),i.Exchange==null?"差し出す銭は500〜3000文です":"引き換えにできる捕虜ではありません");
             var head=HouseSuccession.Head(w,c.CaptorOwner,at,rev);
             Need(FactionStances.ResolveAuthority(w,head,c.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null&&TransportWork.At(w,head,c.Site,at,rev,true),"捕らえた家の当主が城にいません");
             Need(!Since(w,i.Person,last.Value.Revision,at,rev).Any(e=>e.Input.Action==CaptiveAction.Plead&&e.At>at-86400),"一日に一度だけ願えます");
             return c;
         }
-        Need(i.Action!=CaptiveAction.Recruit||i.Amount==0,"捕縛の入力が不正です");Need(i.Amount==0,"捕縛の入力が不正です");
+        Need(i.Amount==0&&i.Exchange==null,"捕縛の入力が不正です");
         Need(CanAct(w,c,actor,at,rev),"捕らえた家の当主権限を持つ者が、留め置いている拠点で行ってください");
         if(i.Action==CaptiveAction.Recruit)Need(!Declined(w,i.Person,last.Value.Revision,at,rev),"すでに登用を断られています");
         return c;
@@ -142,11 +143,14 @@ public static partial class BattleCaptivity
         if(accepted&&i.Action==CaptiveAction.Recruit)NewGameService.Sync(w);
     }
     public const long PleaMin=500;
+    // 引き換えにできる捕虜：本人が当主の家が捕らえていて、本人を捕らえた家の者。当主は自分の家の者が戻るなら応じる。
+    static bool Exchangeable(ContractWorld w,BattleCapture mine,EntityId other,EntityId actor,long at,long rev)=>
+        CaptivityAt(w,other,at,rev) is {} x&&x.FromOwner==mine.CaptorOwner&&x.CaptorOwner==mine.FromOwner&&HouseSuccession.Head(w,x.CaptorOwner,at,rev)==actor&&!Assassination.DeadAt(w,other,at,rev);
     // 本人の判断：登用の誘いは捕虜本人が、解放の願いは捕らえた家の当主が答える。当主は差し出された銭が500文以上で、本人の私財で払えれば応じる。
     static bool Answer(ContractWorld w,CaptiveInput i,BattleCapture c,long at,long rev)=>i.Action switch
     {
         CaptiveAction.Recruit=>Accepts(w,c,at,rev),
-        CaptiveAction.Plead=>NewGameWork.Enabled(w)&&TransportWork.WalletBefore(w,i.Person,at,rev)>=i.Amount,
+        CaptiveAction.Plead=>i.Exchange!=null||NewGameWork.Enabled(w)&&TransportWork.WalletBefore(w,i.Person,at,rev)>=i.Amount,
         _=>false,
     };
     // 解放の願いで応じたときの銭：本人の私財から捕らえた家の当主へ。

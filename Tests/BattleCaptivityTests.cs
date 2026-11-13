@@ -186,4 +186,28 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
         foreach(var x in new[]{s,back})NewGameWorldTests.At(x,freed.ElapsedSeconds+3600);
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
     }
+    // 捕虜の引き換え：本人と相手の家臣が互いに捕らわれたとき、本人は相手の家臣を放つことと引き換えに解放を願い、当主は自分の家の者が戻るなら応じる。二人はそれぞれ留め置かれていた城で放たれる。
+    [Fact]
+    public void ThePlayerAndAnEnemyRetainerCapturedInOneBattleAreExchanged()
+    {
+        var s=NpcArmyTests.AtActualContact(permitted:true,sparse:true,capture:true,retainer:true,seed:20261030);
+        BattleCapture? Find(EntityId p)=>s.DiagnosticSnapshot().WorldClashes!.Steps.SelectMany(x=>x.Captures??[]).SingleOrDefault(x=>x.Person==p);
+        var aide=s.DiagnosticSnapshot().NpcArmies!.Musters.Single().Commander;
+        for(int n=0;n<900&&(Find(s.PlayerControl)==null||Find(aide)==null);n++)NewGameWorldTests.At(s,s.Seconds+1);
+        var me=Find(s.PlayerControl);var them=Find(aide);o.WriteLine($"me={me?.At} them={them?.At}");
+        Assert.NotNull(me);Assert.NotNull(them);
+        Assert.True(s.MyCaptivity()!=null&&HostageCustody.HeldAt(s.DiagnosticSnapshot(),aide,s.Seconds,s.Revision+1));
+        Assert.Equal(ResultCode.NotAvailable,s.ManageCaptive(new(new("request:exchange-self"),CaptiveAction.Plead,s.PlayerControl,0,s.PlayerControl),s.Revision).Code);
+        var r=s.ManageCaptive(new(new("request:exchange"),CaptiveAction.Plead,s.PlayerControl,0,aide),s.Revision);Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);o.WriteLine(r.VisibleReason);
+        var w=s.DiagnosticSnapshot();
+        Assert.Null(s.MyCaptivity());Assert.False(HostageCustody.HeldAt(w,aide,w.ElapsedSeconds,w.CommitSequence+1));
+        Assert.Equal(me.Site,PersonalCompanions.PhysicalSiteAt(w,s.PlayerControl,w.ElapsedSeconds,w.CommitSequence+1));
+        Assert.Equal(them.Site,PersonalCompanions.PhysicalSiteAt(w,aide,w.ElapsedSeconds,w.CommitSequence+1));
+        var forged=ContractJson.Read<ContractWorld>(ContractJson.Write(w));
+        forged.Captives=forged.Captives! with{Entries=forged.Captives.Entries.Select(e=>e with{Input=e.Input with{Exchange=null}}).ToArray()};
+        Assert.Throws<InvalidDataException>(()=>new WorldSession(forged));
+        var back=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
+        foreach(var x in new[]{s,back})NewGameWorldTests.At(x,w.ElapsedSeconds+3600);
+        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(back.DiagnosticSnapshot()));
+    }
 }
