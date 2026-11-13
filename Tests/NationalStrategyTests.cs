@@ -92,6 +92,35 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.True(NationalStrategy.InKyoto(installed.Site!.Value.Value));
         Assert.Equal(shogun,NationalStrategy.Owner(w,installed.Site.Value,w.ElapsedSeconds,long.MaxValue)!.Value.Value);
     }
+    // 包囲網ができると、包囲する相手と境を接する操作する人物の家（当主）へ誘いが届き、開いた後に一度だけ答えられる。
+    [Fact]
+    public void ThePlayerHouseIsInvitedToACoalitionAndAnswersOnceAfterReading()
+    {
+        var w=NationalStart.Create(Takeda());var takeda=NationalStart.FactionId("G-000106");var imagawa=NationalStart.FactionId("G-000123");
+        w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;NationalStrategy.Apply(w);
+        var others=w.NewGame!.Start.Factions.Select(f=>f.Id).Where(f=>f!=takeda&&f!=imagawa&&f!=NationalStart.FactionId(NationalStrategy.Shogun)).OrderBy(f=>f,StringComparer.Ordinal).Take(3).ToArray();
+        long now=w.ElapsedSeconds;var s=w.Strategy!;
+        var pacts=new[]{(others[0],others[1]),(others[1],others[2]),(others[0],others[2])}.Select((x,n)=>new StrategyPact(new($"pact:test/{n}"),new(x.Item1),new(x.Item2),"alliance",now,now+2*365*86400L,w.CommitSequence,"threat:"+imagawa)).ToArray();
+        w.Strategy=s with{Pacts=[..s.Pacts??[],..pacts]};
+        w.ElapsedSeconds=Month(1560,6);w.CommitSequence++;NationalStrategy.Apply(w);
+        var coalition=Assert.Single(w.Strategy!.Coalitions!,c=>c.Target.Value==imagawa);
+        var invite=Assert.Single(coalition.Invites!);
+        Assert.Equal(takeda,invite.House.Value);Assert.Null(invite.Joined);
+        var letter=w.Messaging.Messages.Single(m=>m.Id==invite.Letter.Value);
+        Assert.Equal(NationalStrategy.InviteKind,letter.Kind);Assert.Equal(w.PlayerControl.Value,letter.RecipientId);
+        Assert.Empty(NationalStrategy.OpenInvites(w)); // 開く前は答えられない
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Answer(ContractJson.Copy(w),invite.Letter,true));
+        w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(letter.Id,w.PlayerControl.Value,now,letter.Id)]; // 開いたことにする
+        Assert.Single(NationalStrategy.OpenInvites(w));
+        int before=w.Strategy!.Pacts!.Length;w.CommitSequence++;NationalStrategy.Answer(w,invite.Letter,true);
+        var joined=w.Strategy!.Coalitions!.Single(c=>c.Id==coalition.Id);
+        Assert.Contains(new EntityId(takeda),joined.Members);Assert.True(joined.Invites!.Single().Joined);
+        Assert.Equal(before+coalition.Members.Length,w.Strategy.Pacts!.Length);Assert.All(w.Strategy.Pacts.Skip(before),p=>{Assert.Equal(takeda,p.B.Value);Assert.Equal("alliance",p.Kind);});
+        var reply=w.Messaging.Messages.Single(m=>m.Kind==NationalStrategy.InviteReplyKind);Assert.Equal(invite.Sender.Value,reply.RecipientId);
+        Assert.Empty(NationalStrategy.OpenInvites(w)); // 答えは一度だけ
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Answer(w,invite.Letter,false));
+        Assert.Equal(ContractJson.Write(w.Strategy),ContractJson.Write(ContractJson.Read<StrategyState>(ContractJson.Write(w.Strategy)))); // 保存して戻しても同じ
+    }
     // 次の月の初めの処理だけを直接当てる（全国の世界を1か月ふつうに進めると検査に30分かかるため）。
     static ContractWorld Jump(ContractWorld w)
     {

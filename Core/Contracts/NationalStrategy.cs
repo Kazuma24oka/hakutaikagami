@@ -27,7 +27,18 @@ public sealed record StrategyPact(EntityId Id,EntityId A,EntityId B,string Kind,
 // 京の主：山城の城の過半を押さえた家（上洛）。押さえる家が変わった月に記録する。
 public sealed record StrategyCapital(EntityId House,long At,long Revision);
 // 包囲網：同じ強い家を相手にした同盟が三つ以上重なったときの、その家への包囲網（加わる家）。
-public sealed record StrategyCoalition(EntityId Id,EntityId Target,EntityId[] Members,long At,long Revision);
+public sealed record StrategyCoalition(EntityId Id,EntityId Target,EntityId[] Members,long At,long Revision)
+{
+    // 操作する人物が当主の家で、包囲する相手と境を接する家への誘い（書状の ID）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyInvite[]? Invites {get;init;}
+}
+// 包囲網への誘い。答え（Joined）は当主が書状を開いた後に一度だけ。返書が誘った家の当主へ届く。
+public sealed record StrategyInvite(EntityId House,EntityId Head,EntityId Letter,EntityId Sender)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public bool? Joined {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public long? AnsweredAt {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public long? AnsweredRevision {get;init;}
+}
 // 将軍：vacant（将軍家が城をすべて失った）・installed（京の主が将軍家の成人を擁立し、山城の城を一つ渡した）。
 public sealed record StrategyShogun(string Kind,EntityId? Patron,EntityId? Shogun,EntityId? Site,long At,long Revision);
 public sealed record StrategySuccession(EntityId House,EntityId Previous,EntityId Heir,long At,long Revision);
@@ -303,7 +314,7 @@ public static class NationalStrategy
         }
         var coalitions=Coalitions(w,s,pacts,out var formed);
         w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions};
-        foreach(var c in formed)CoalitionLetters(w,c);
+        foreach(var c in formed){CoalitionLetters(w,c);InviteThePlayer(w,c);}
         foreach(var (pact,sender) in pactLetters)PactLetters(w,pact,sender);
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
@@ -385,6 +396,48 @@ public static class NationalStrategy
             MessageFlow.Send(w.Messaging,new MessageEnvelope(id,c.Id.Value,LetterKind,sender.Value,head.Value,$"{target}に備え、{c.Members.Length}家で手を結びたく存じます。",FamilyBirth.People(w).Single(x=>x.Id==head.Value).Site,w.ElapsedSeconds),w.ElapsedSeconds,1);
             w.SealedMessages=[..w.SealedMessages,new(id)];
         }
+        RegionalCampaign.Bind(w);
+    }
+    public const string InviteKind="strategy-invite",InviteReplyKind="strategy-invite-reply";
+    // 操作する人物が当主の家が、包囲する相手の城と境を接し、相手と約束がなければ、包囲網の最初の家の当主から誘いの書状が届く。
+    static void InviteThePlayer(ContractWorld w,StrategyCoalition c)
+    {
+        var s=w.Strategy!;var owners=Owners(w,s);var player=w.PlayerControl;
+        var target=c.Target.Value;var targetSites=owners.Where(x=>x.Value==target).Select(x=>x.Key).ToHashSet(StringComparer.Ordinal);
+        var invites=new List<StrategyInvite>();
+        foreach(var f in w.NewGame!.Start.Factions.Where(f=>HouseSuccession.Head(w,new(f.Id))==player&&f.Id!=target&&!c.Members.Any(m=>m.Value==f.Id)).OrderBy(f=>f.Id,StringComparer.Ordinal))
+        {
+            bool borders=owners.Where(x=>x.Value==f.Id).Any(x=>Neighbors(x.Key).Any(targetSites.Contains));
+            if(!borders||Bound(s.Pacts??[],f.Id,target,w.ElapsedSeconds))continue;
+            var sender=HouseSuccession.Head(w,c.Members[0]);if(w.Characters.Single(x=>x.Id==sender).Life!=LifeState.Adult||w.Characters.Single(x=>x.Id==player).Life!=LifeState.Adult)continue;
+            string name=w.Definitions.Organizations.Single(o=>o.Id==c.Target).Name;
+            string id=$"message:strategy-invite/{ContractJson.Hash(Encoding.UTF8.GetBytes(c.Id.Value+"/"+f.Id))[..16]}";
+            MessageFlow.Send(w.Messaging,new MessageEnvelope(id,c.Id.Value,InviteKind,sender.Value,player.Value,$"{name}に備え、{c.Members.Length}家で手を結んだ。貴家も加わられたい。",FamilyBirth.People(w).Single(x=>x.Id==player.Value).Site,w.ElapsedSeconds),w.ElapsedSeconds,1);
+            w.SealedMessages=[..w.SealedMessages,new(id)];
+            invites.Add(new(new(f.Id),player,new(id),sender));
+        }
+        if(invites.Count==0)return;
+        w.Strategy=s with{Coalitions=s.Coalitions!.Select(x=>x.Id==c.Id?x with{Invites=[..x.Invites??[],..invites]}:x).ToArray()};
+        RegionalCampaign.Bind(w);
+    }
+    // 操作する人物が開いた、まだ答えていない誘い。
+    public static (StrategyCoalition Coalition,StrategyInvite Invite)[] OpenInvites(ContractWorld w)=>
+        (w.Strategy?.Coalitions??[]).SelectMany(c=>(c.Invites??[]).Select(i=>(c,i)))
+        .Where(x=>x.i.Joined==null&&x.i.Head==w.PlayerControl&&HouseSuccession.Head(w,x.i.House)==w.PlayerControl&&MessageFlow.Knows(w.Messaging,x.i.Letter.Value,w.PlayerControl.Value)).ToArray();
+    // 誘いに答える：加わるなら包囲網の家に加わり、各家と同盟（二年）を結ぶ。返書が誘った家の当主へ届く。
+    internal static void Answer(ContractWorld w,EntityId letter,bool join)
+    {
+        var (c,i)=OpenInvites(w).SingleOrDefault(x=>x.Invite.Letter==letter);
+        if(c==null)throw new InvalidDataException("答えられる誘いではありません");
+        var s=w.Strategy!;long now=w.ElapsedSeconds;var date=WorldCalendar.At(w.EpochDate,now);
+        var answered=i with{Joined=join,AnsweredAt=now,AnsweredRevision=w.CommitSequence};
+        var coalition=c with{Invites=c.Invites!.Select(x=>x.Letter==letter?answered:x).ToArray(),Members=join?[..c.Members,i.House]:c.Members};
+        var pacts=(s.Pacts??[]).ToList();
+        if(join)foreach(var m in c.Members)pacts.Add(new(new($"pact:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(m.Value+"/"+i.House.Value+"/coalition"))[..12]}"),m,i.House,"alliance",now,now+2*365*86400L,w.CommitSequence,"threat:"+c.Target.Value));
+        w.Strategy=s with{Coalitions=s.Coalitions!.Select(x=>x.Id==c.Id?coalition:x).ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray()};
+        string reply=$"message:strategy-invite-reply/{ContractJson.Hash(Encoding.UTF8.GetBytes(letter.Value))[..16]}";
+        MessageFlow.Send(w.Messaging,new MessageEnvelope(reply,c.Id.Value,InviteReplyKind,w.PlayerControl.Value,i.Sender.Value,join?"お誘いに応じ、手を結ぶ。":"このたびのお誘いは辞退する。",FamilyBirth.People(w).Single(x=>x.Id==i.Sender.Value).Site,now),now,1);
+        w.SealedMessages=[..w.SealedMessages,new(reply)];
         RegionalCampaign.Bind(w);
     }
     // 京の主が変わったら、将軍から新しい京の主の当主へ書状が届く（将軍家が京の主なら送らない）。
