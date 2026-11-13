@@ -41,7 +41,7 @@ public static class CommunityEconomy
     static DateOnly Date(ContractWorld w,long at)=>Epoch(w).AddDays(checked((int)(at/86400)));
     static int Period(ContractWorld w,long at){var d=Date(w,at);return d.Year*12+d.Month;}
     static (string Name,int Factor) Season(ContractWorld w,EntityId site,int year){var h=System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(w.Seed+"/community-weather/"+site.Value+"/"+year));int n=h[0]%100;return n<20?("干ばつ",50):n>=90?("洪水",70):("平年",100);}
-    static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
+    static EntityId? Owner(ContractWorld w,EntityId site)=>RegionalDomains.Owner(w,site);
     internal static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         var point=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==site).Position;if(RegionalCampaign.RoadActorPointAt(w,actor,at)!=point)return false;
