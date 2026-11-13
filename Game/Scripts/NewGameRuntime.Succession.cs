@@ -17,7 +17,8 @@ public partial class NewGameRuntime
         var candidates=ControlSuccession.Candidates(w);
         void End()=>Button("年代記を閉じる",()=>{popup.Hide();Suspend();MenuRequested?.Invoke();});
         if(candidates.Length==0){Text("年代記の終わり");End();}
-        foreach(var heir in candidates)Button(PersonName(heir)+"で続ける",()=>{
+        var wards=ControlSuccession.Guardians(w);
+        foreach(var heir in candidates)Button(PersonName(heir)+(Array.Find(wards,g=>g.Proxy==heir) is var gw&&gw.Proxy==heir?"（"+PersonName(gw.Ward)+"の後見）":"")+"で続ける",()=>{
             var r=Session.ContinueAs(heir,Session.Revision);
             if(r.Code!=ResultCode.Accepted){feedback.Text=r.VisibleReason;return;}
             successionPopup=null;popup.Hide();Refresh();
