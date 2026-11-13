@@ -11,7 +11,10 @@ public enum HealthLimit { Travel, Weapon, Practice, Judgment }
 public sealed record HealthCondition(EntityId Id,EntityId Person,HealthKind Kind,HealthPart Part,int Severity,long OnsetAt,long BaseSeconds);
 public sealed record HealthCareInput(EntityId Id,EntityId Patient,EntityId Condition,EntityId Carer);
 public sealed record HealthCareEntry(HealthCareInput Input,EntityId Site,long At,long Revision);
-public sealed record HealthState(int Schema,string Policy,HealthCareEntry[] Care);
+public sealed record HealthState(int Schema,string Policy,HealthCareEntry[] Care)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public ClinicalLedger? Clinic {get;init;}
+}
 public sealed record HealthCard(EntityId Id,string Kind,string Part,string Severity,long OnsetAt,bool Treated,string Outlook);
 public sealed record HealthView(EntityId Person,bool Own,bool Observed,HealthCard[] Conditions,string[] Limits);
 
@@ -22,8 +25,8 @@ public static class PersonalHealth
     public const int Edition=1;
     const long Day=86400,Window=30*Day;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.Judgment?.HealthEdition==Edition&&NpcJudgment.Enabled(w);
-    internal static void Initialize(ContractWorld w){if(Enabled(w))w.Health=new(1,Policy,[]);}
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.HealthPolicy==ClinicalHealth.Policy||w.NewGame?.Judgment?.HealthEdition==Edition&&NpcJudgment.Enabled(w);
+    internal static void Initialize(ContractWorld w){if(Enabled(w)){w.Health=new(1,Policy,[]);ClinicalHealth.Initialize(w);}}
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Health?.Care.Any(c=>c.Input.Id==id)==true;
 
     static byte[] Digest(string key)=>SHA256.HashData(Encoding.UTF8.GetBytes(key));
@@ -89,7 +92,7 @@ public static class PersonalHealth
     public static HealthCondition[] Conditions(ContractWorld w,EntityId person,long until)
     {
         if(!Enabled(w))return [];
-        var rows=Injuries(w).Where(c=>c.Person==person&&c.OnsetAt<=until).ToList();
+        var rows=Injuries(w).Concat(OfficerBattleHealth.Conditions(w)).Where(c=>c.Person==person&&c.OnsetAt<=until).ToList();
         for(long k=0;k<=until/Window;k++)if(Illness(w,person,k) is {} c&&c.OnsetAt<=until)rows.Add(c);
         return rows.OrderBy(c=>c.OnsetAt).ThenBy(c=>c.Id.Value,StringComparer.Ordinal).ToArray();
     }
@@ -117,10 +120,10 @@ public static class PersonalHealth
         if(c.Severity>=3){yield return HealthLimit.Travel;yield return HealthLimit.Weapon;}
     }
     public static HealthLimit[] Limits(ContractWorld w,EntityId person,long at)=>
-        Active(w,person,at).SelectMany(LimitsOf).Distinct().Order().ToArray();
+        Active(w,person,at).SelectMany(c=>LimitsOf(c).Concat(ClinicalHealth.Enabled(w)&&c.Severity>=3?[HealthLimit.Judgment]:Array.Empty<HealthLimit>())).Concat(ClinicalHealth.Fatigue(w,person,at)>=80?[HealthLimit.Practice]:Array.Empty<HealthLimit>()).Concat(ClinicalHealth.Fatigue(w,person,at)>=95?[HealthLimit.Weapon]:Array.Empty<HealthLimit>()).Concat(ClinicalHealth.Busy(w,person,at)?[HealthLimit.Travel,HealthLimit.Weapon,HealthLimit.Practice,HealthLimit.Judgment]:Array.Empty<HealthLimit>()).Distinct().Order().ToArray();
     public static bool Can(ContractWorld w,EntityId person,HealthLimit limit,long at)=>!Enabled(w)||!Limits(w,person,at).Contains(limit);
     static HealthLimit? LimitFor(ActionKind a)=>a switch{ActionKind.Move or ActionKind.Inspect=>HealthLimit.Travel,ActionKind.Train=>HealthLimit.Practice,_=>null};
-    public static string? Blocked(ContractWorld w,Intent i)=>i.Executor==w.PlayerControl&&LimitFor(i.Action) is {} l&&!Can(w,i.Executor,l,w.ElapsedSeconds)?Reason(l):null;
+    public static string? Blocked(ContractWorld w,Intent i)=>(i.Executor==w.PlayerControl||ClinicalHealth.Enabled(w))&&LimitFor(i.Action) is {} l&&!Can(w,i.Executor,l,w.ElapsedSeconds)?Reason(l):null;
     public static string Reason(HealthLimit l)=>l switch
     {
         HealthLimit.Travel=>"傷病のため遠出・出陣はできません",
@@ -133,7 +136,7 @@ public static class PersonalHealth
     // 発症時点で、続けられない修行を中断する。役職・預り物・責任は動かさない。
     internal static long? Next(ContractWorld w,long target)
     {
-        if(!Enabled(w))return null;long? best=null;
+        if(!Enabled(w))return null;long? best=ClinicalHealth.Next(w,target);
         for(long k=w.ElapsedSeconds/Window;k<=target/Window;k++)
             foreach(var p in Living(w))
                 if(Illness(w,p,k) is {} c&&c.OnsetAt>w.ElapsedSeconds&&c.OnsetAt<=target)best=Math.Min(best??c.OnsetAt,c.OnsetAt);
@@ -141,7 +144,7 @@ public static class PersonalHealth
     }
     internal static void Apply(ContractWorld w)
     {
-        if(!Enabled(w))return;long k=w.ElapsedSeconds/Window;
+        if(!Enabled(w))return;ClinicalHealth.Complete(w);long k=w.ElapsedSeconds/Window;
         foreach(var p in Living(w))
         {
             if(Illness(w,p,k) is not {} c||c.OnsetAt!=w.ElapsedSeconds)continue;
@@ -174,11 +177,12 @@ public static class PersonalHealth
             var c=Active(w,i.Patient,e.At).SingleOrDefault(c=>c.Id==i.Condition);
             Need(c!=null,"手当する傷病が今はありません");
             Need(treated.Add(i.Condition),"同じ傷病への手当は一度です");
-            Need(SocialWorld.Site(w,i.Patient) is {} ps&&ps==e.Site,"患者が手当する人と同じ拠点にいません");
+            Need(ClinicalHealth.IsCompletion(w,e)?PersonalCompanions.SiteAt(w,i.Patient,e.At,e.Revision+1)==e.Site:SocialWorld.Site(w,i.Patient) is {} ps&&ps==e.Site,"患者が手当する人と同じ拠点にいません");
             Need(Can(w,i.Carer,HealthLimit.Travel,e.At)||i.Carer!=i.Patient,"重い傷病で自分では手当できません");
             at=e.At;rev=e.Revision;
         }
         // 本人の新しい行動だけを、行動を始めた時点の状態で照合する。
+        ClinicalHealth.Validate(w,prior);
         var player=w.PlayerControl;
         foreach(var r in w.Requests.Where(r=>r.Intent.Executor==player&&(prior==null||r.CommitSequence>prior.CommitSequence)))
         {
@@ -190,6 +194,7 @@ public static class PersonalHealth
             Need(Can(w,player,q.Input.Action==NewMilitaryAction.CombatStart?HealthLimit.Weapon:HealthLimit.Travel,q.At),Reason(q.Input.Action==NewMilitaryAction.CombatStart?HealthLimit.Weapon:HealthLimit.Travel));
     }
 
+    internal static HealthCard[] ObservedCards(ContractWorld w,EntityId person,long at)=>Active(w,person,at).Select(c=>new HealthCard(c.Id,c.Kind==HealthKind.Injury?"負傷":"病",Part(c.Part),Severity(c),c.OnsetAt,w.Health?.Care.Any(e=>e.Input.Condition==c.Id&&e.At<=at)==true,"")).ToArray();
     static string Severity(HealthCondition c)=>(c.Kind,c.Severity) switch
     {
         (HealthKind.Injury,1)=>"軽傷",(HealthKind.Injury,2)=>"深手",(HealthKind.Injury,_)=>"重傷",
@@ -201,7 +206,7 @@ public static class PersonalHealth
     {
         if(!Enabled(w))return null;long now=w.ElapsedSeconds;bool own=observer==person;
         bool observed=own||SocialWorld.Site(w,observer) is {} a&&SocialWorld.Site(w,person)==a;
-        if(!observed)return new(person,false,false,[],[]);
+        if(!observed)return ClinicalHealth.ReportView(w,observer,person)??new(person,false,false,[],[]);
         var cards=Active(w,person,now).Select(c=>
         {
             string outlook="";
@@ -218,6 +223,7 @@ public sealed partial class WorldSession
     public HealthView? HealthView(EntityId person){lock(gate)return PersonalHealth.View(state,state.PlayerControl,person);}
     public CommandResult ManageHealth(HealthCareInput input,EntityId actor,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){
         if(actor!=state.PlayerControl||!PersonalHealth.Enabled(state))return new(ResultCode.NotAvailable,input.Id,state.CommitSequence,"本人の手当の操作ではありません");
+        if(ClinicalHealth.Enabled(state))return ManageClinicalHealth(input,actor,revision);
         var old=state.Health!.Care.SingleOrDefault(e=>e.Input.Id==input.Id);if(old!=null)return new(old.Input==input?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"処理済みの手当です");
         if(FactionStances.OtherIdUsed(state,input.Id)||FactionStances.OwnIdUsed(state,input.Id))return new(ResultCode.IdPayloadConflict,input.Id,state.CommitSequence,"別操作のIDです");
         if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,input.Id,state.CommitSequence,"表示を更新してください");

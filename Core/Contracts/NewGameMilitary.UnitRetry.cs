@@ -27,7 +27,7 @@ public static partial class NewGameMilitary
         // Home is a declared known destination, never a lookup of the unit's actual position.
         var to=RetryHomeAction(i.Action)?Home(w,0):sight.Position;
         var evidence=RetryHomeAction(i.Action)?w.NewMilitary.Terms.Site:sight.Id;
-        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);
+        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(checked(w.ElapsedSeconds+1),route.LastOrDefault()?.EndAt??0);
         MessageFlow.Retry(w.Messaging,original.Message,w.PlayerControl.Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)),RetryUsesEvidence(w,original,i.TransportPolicy));
         var s=w.NewMilitary.UnitRetry??new UnitRetryState(UnitRetryContract,[],[],[]);
         w.NewMilitary=w.NewMilitary with{UnitRetry=s with{Dispatches=[..s.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,original.Recipient,original.Role,evidence,from,to,route,due,original.Message,MessageFlow.Latest(w.Messaging,original.Message).Id)]}};

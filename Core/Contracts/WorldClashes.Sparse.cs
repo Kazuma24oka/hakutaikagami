@@ -3,7 +3,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static partial class WorldClashes
 {
     public const string SparsePolicy="actual-owned-armies-after-due-events-sparse-contact-replay-v2";
-    public static bool Sparse(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.WorldArmyPolicy==NpcArmies.CompactCombatPolicy;
+    public static bool Sparse(ContractWorld w)=>NewGameWorld.Enabled(w)&&(w.NewGame?.WorldArmyPolicy==NpcArmies.CompactCombatPolicy||NationalSystems.On(w,"WorldClashes"));
     sealed record Window(EntityId Army,long From,long Until,long Barrier);
     static IEnumerable<(long At,long Revision)> ExternalInputs(ContractWorld w)
     {
@@ -90,6 +90,7 @@ public static partial class WorldClashes
             Need(w.ElapsedSeconds==trustedPrior.ElapsedSeconds+1,"接触は共通軍務の毎秒境界を使います");
             var candidate=new WorldClashStep(trustedPrior.NewMilitary!.Terms.Army,trustedPrior.ElapsedSeconds,w.ElapsedSeconds,w.CommitSequence,new(w.ElapsedSeconds,[],[]));
             var context=Before(w,candidate,old.Steps.Length);var result=WorldEngagement.Resolve(context);bool hit=result.Strikes.Length>0;Need(s.Steps.Length==old.Steps.Length+(hit?1:0),"現在秒の実損害が欠落・重複しています");
+            if(hit)OfficerBattleHealth.Validate(context,s.Steps[^1],result);
             if(hit)Need(s.Steps[^1].Army==candidate.Army&&s.Steps[^1].At==candidate.At&&s.Steps[^1].Revision==w.CommitSequence&&ContractJson.CanonicalHash(s.Steps[^1].Result)==ContractJson.CanonicalHash(result),"現在秒の損害を再現できません");return;
         }
         int index=0;
@@ -98,7 +99,7 @@ public static partial class WorldClashes
                 bool recorded=index<s.Steps.Length&&s.Steps[index].At==at;long revision=recorded?s.Steps[index].Revision:ReplayRevision(w,at);
                 var candidate=new WorldClashStep(window.Army,at-1,at,revision,new(at,[],[]));var context=Before(w,candidate,index);var snapshot=WorldEngagement.Snapshot(context);var result=WorldEngagement.Resolve(context);
                 Need(recorded==(result.Strikes.Length>0),"移動・受領原本から必要な実損害が欠落・追加されています");
-                if(recorded){Need(s.Steps[index].Army==window.Army&&ContractJson.CanonicalHash(s.Steps[index].Result)==ContractJson.CanonicalHash(result),"元の時点の実接触を再現できません");index++;}
+                if(recorded){OfficerBattleHealth.Validate(context,s.Steps[index],result);Need(s.Steps[index].Army==window.Army&&ContractJson.CanonicalHash(s.Steps[index].Result)==ContractJson.CanonicalHash(result),"元の時点の実接触を再現できません");index++;}
                 if(at==window.Until||!recorded&&NoPrimaryAttack(snapshot))break;at++;
             }
         }

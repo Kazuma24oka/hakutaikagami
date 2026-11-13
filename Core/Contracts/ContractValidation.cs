@@ -28,14 +28,14 @@ public static class ContractValidation
         Check((s.Schema == 1 || s.Schema == 2 && BranchRoutes.Enabled(s)) && s.TimeDomain == "GameSecondsV1" && EntityId.IsValid(s.WorldId.Value), "Unknown world format/time domain.");
         Check(Career.Enabled(s)==(s.Career!=null),"Career requires its explicit profile");
         Check(DelegationMission.Enabled(s)==(s.Delegation!=null),"Delegation requires its explicit profile");
-        Check(FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
-        Check(FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
+        Check(FieldPresence.National(s)?s.Presence==null:FieldPresence.Enabled(s)==(s.Presence!=null),"Presence requires its explicit profile");
+        Check(FieldSupply.National(s)?s.Supply==null:FieldSupply.Enabled(s)==(s.Supply!=null),"Supply requires its explicit profile");
         Check(s.ResourceLots.All(l=>l.MobileHolder==null||TransportWork.IsLot(l)||NewGameWork.IsWallet(s,l)||(FieldSupply.Enabled(s)&&l.MobileHolder==s.PlayerControl&&l.Id==FieldSupply.Carry||NewGameMilitary.AllowsMobileLot(s,l)||NpcArmies.AllowsMobileLot(s,l))),"Unexpected mobile resource holder");
         Check(EngagementMission.Enabled(s)==(s.Engagement!=null),"Engagement requires its explicit profile");
         Check(CreatedCampaign.Enabled(s)==(s.CommandMandates!=null),"Command mandates require their own profile");
         Check(ContinuousWorld.Enabled(s)==(s.Atlas!=null),"Terrain atlas requires its ruleset");if(ContinuousWorld.Enabled(s))ContinuousWorld.Validate(s);
         Check(RegionalBattle.Enabled(s)==(s.Region!=null),"Regional module requires its ruleset.");if(RegionalBattle.Enabled(s))RegionalBattle.Validate(s);
-        Check(FieldWorld.Enabled(s)==(s.Field!=null),"Field module requires its ruleset.");if(FieldWorld.Enabled(s))FieldWorld.Validate(s);
+        Check(FieldWorld.National(s)?s.Field==null:FieldWorld.Enabled(s)==(s.Field!=null),"Field module requires its ruleset.");if(FieldWorld.Enabled(s))FieldWorld.Validate(s);
         Check(TrafficWorld.Enabled(s)==(s.TrafficStops!=null),"Traffic stops require their own ruleset/module.");
         Check(TravelControl.Enabled(s)==(s.TravelDecisions!=null),"Personal decisions require their own ruleset/module.");
         Check(s.ElapsedSeconds >= 0 && s.CommitSequence >= 0 && DateOnly.TryParseExact(s.EpochDate, "yyyy-MM-dd", CultureInfo.InvariantCulture,
@@ -75,13 +75,15 @@ public static class ContractValidation
         Check(s.ServiceBonds.All(x=>people.Contains(x.Subject)&&people.Contains(x.Target)&&x.Kind=="service"),"Service is not a person/person relation.");
         Check(s.Offices.All(x=>people.Contains(x.Subject)&&sites.Contains(x.Target)),"Office is not a person/site assignment.");
         Check(s.LandRights.All(x=>entities.Contains(x.Subject)&&sites.Contains(x.Target)&&new[]{"control","ownership","occupation","revenue"}.Contains(x.Kind)),"Invalid land right category.");
-        foreach (var edge in s.ServiceBonds.Where(x => x.From <= s.ElapsedSeconds && s.ElapsedSeconds < x.Until))
+        var activeService=s.ServiceBonds.Where(x => x.From <= s.ElapsedSeconds && s.ElapsedSeconds < x.Until).ToArray();
+        var serviceTargets=activeService.ToLookup(x=>x.Subject,x=>x.Target);
+        foreach (var edge in activeService)
         {
             var seen = new HashSet<EntityId> { edge.Subject }; var queue = new Queue<EntityId>(); queue.Enqueue(edge.Target);
             while (queue.TryDequeue(out var id))
             {
                 Check(id != edge.Subject, "Service cycle."); if (!seen.Add(id)) continue;
-                foreach (var next in s.ServiceBonds.Where(x => x.Subject == id && x.From <= s.ElapsedSeconds && s.ElapsedSeconds < x.Until)) queue.Enqueue(next.Target);
+                foreach (var next in serviceTargets[id]) queue.Enqueue(next);
             }
         }
         Keys(s.Grants, x => x.Id, "grants");

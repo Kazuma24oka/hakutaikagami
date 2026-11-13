@@ -32,7 +32,7 @@ public static partial class NewGameMilitary
     {
         if(!HeldAction(i.Action))return;if(DirectiveCancelHandoffAction(i.Action)){ApplyDirectiveCancelHandoff(w,i);return;}if(DirectiveHandoffAction(i.Action)){ApplyDirectiveHandoff(w,i);return;}var h=PickHeld(w,i.Action)!;var to=i.Action==NewMilitaryAction.TakeHeldReply?PhysicalPerson(w,w.ElapsedSeconds):Home(w,0);
         var cargo=HeldPapers(w,w.ElapsedSeconds).Where(p=>p.Holder==h.Holder).Select(p=>p.Attempt).OrderBy(x=>x,StringComparer.Ordinal).ToArray();
-        var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var attempt=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);
+        var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var attempt=w.Messaging.Attempts.Single(a=>a.Id==h.Attempt);
         MessageFlow.ScheduleLate(w.Messaging,h.Message,attempt.Number,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         var x=w.NewMilitary!.HeldDelivery??new(UnitHeldContract,[],[]);w.NewMilitary=w.NewMilitary with{HeldDelivery=x with{Transfers=[..x.Transfers,new(i.Id,w.ElapsedSeconds,w.CommitSequence,i.Action,h.Message,h.Attempt,h.Holder,cargo,h.Position,to,route,due)]}};
     }

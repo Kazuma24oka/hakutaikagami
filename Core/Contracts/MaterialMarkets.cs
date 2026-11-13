@@ -18,10 +18,11 @@ public static class MaterialMarkets
         .SelectMany(edge => new[] { RegionalCampaign.Site(edge.From).Value, RegionalCampaign.Site(edge.To).Value })
         .ToHashSet(StringComparer.Ordinal);
 
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,EntityId[]> nationalSites=new();
     public static EntityId[] Sites(ContractWorld w)
     {
         if (!Enabled(w)) return CommunityEconomy.Sites;
-        if(NationalDistrictRevenue.Enabled(w))return hubs.Concat(NationalDistrictRevenue.Sites(w)).Distinct().ToArray();
+        if(NationalDistrictRevenue.Enabled(w))return [..nationalSites.GetValue(w.NewGame!,_=>hubs.Concat(NationalDistrictRevenue.Sites(w)).Distinct().ToArray())];
         if (!CastleSiege.Enabled(w)) return [.. hubs];
         // 当主が開始時に居城とする沿岸拠点には、人手・予算・普請を共通の地域台帳で持たせる。
         // 通過・受領だけの港は、実際に荷渡しされた米だけを保管する。
@@ -46,7 +47,14 @@ public static class MaterialMarkets
     static long Supplied(ContractWorld w,EntityId site,string kind,long at,long rev)=>w.Trade?.Entries.Where(e=>e.Input.Action==TradeAction.SupplyHouse&&e.Input.Site==site&&Before(e.At,e.Revision,at,rev)).Where(e=>w.Trade.Entries.Single(q=>q.Input.Id==e.Input.Contract).Input.Commodity==kind).Sum(e=>w.Trade.Entries.Single(q=>q.Input.Id==e.Input.Contract).Input.Amount)??0;
     internal static long WoodAvailable(ContractWorld w,EntityId site,long at,long rev)=>!Enabled(w)?long.MaxValue:(RegionalDomains.HasHouse(w,site)?HouseWood:0)+Supplied(w,site,"wood",at,rev)+RegionalDomains.Purchased(w,site,"wood",at,rev)+HouseLogistics.Supplied(w,site,"wood",at,rev)-CraftTrade.WoodUsed(w,site,at,rev)-PublicWorks.WoodUsed(w,site,at,rev)-w.Communities!.Orders.Where(o=>o.Input.Site==site&&o.Input.Action==EconomyAction.ImproveWater&&Before(o.At,o.Revision,at,rev)).LongCount()*WaterWood;
     internal static MaterialHouse HouseAt(ContractWorld w,EntityId site,long at,long rev)=>new(site,WoodAvailable(w,site,at,rev),(RegionalDomains.HasHouse(w,site)?HouseWeapons:0)+Supplied(w,site,"weapons",at,rev)+RegionalDomains.Purchased(w,site,"weapons",at,rev)+HouseLogistics.Supplied(w,site,"weapons",at,rev),w.Communities!.Orders.LongCount(o=>o.Input.Site==site&&o.Input.Action==EconomyAction.ImproveWater&&(o.At<at||o.At==at&&o.Revision<rev))*WaterWood);
-    static MaterialHouse[] Houses(ContractWorld w)=>CommunityEconomy.SitesFor(w).Select(site=>HouseAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)).ToArray();
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,MaterialHouse[]> initialHouses=new();
+    static MaterialHouse[] Houses(ContractWorld w)
+    {
+        // どの資材原本もまだない間の在庫は開始条件だけで決まる。保存へ渡す配列は必ず複製する。
+        if((w.Trade?.Entries.Length??0)==0&&(w.Domains?.Entries.Length??0)==0&&(w.HouseFreight?.Entries.Length??0)==0&&(w.Crafts?.Entries.Length??0)==0&&(w.PublicWorks?.Orders.Length??0)==0&&(w.Communities?.Orders.Length??0)==0)
+            return [..initialHouses.GetValue(w.NewGame!,_=>CommunityEconomy.SitesFor(w).Select(site=>new MaterialHouse(site,RegionalDomains.HasHouse(w,site)?HouseWood:0,RegionalDomains.HasHouse(w,site)?HouseWeapons:0,0)).ToArray())];
+        return CommunityEconomy.SitesFor(w).Select(site=>HouseAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)).ToArray();
+    }
     static WorkshopMonth Compute(ContractWorld w,EntityId site,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);
         var previous=w.Materials!.Months.Where(m=>m.Site==site&&Before(m.At,m.Revision,at,revision)).ToArray();var account=CommunityEconomy.AccountAt(w,site,at,revision);var trade=RegionalTrade.SnapshotAt(w,at,revision);var m=trade.Markets.Single(m=>m.Site==site);

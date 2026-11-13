@@ -82,7 +82,6 @@ Codex v116：全国の郡収入・現地公金への受領と支出を接続す�
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-13 | 全国の京の朝廷（全国開始 v2）・史実の出陣34件・将軍の空位と擁立・包囲網（v151、74.13%→74.56%） | Docs/Design/NationalCourtV1/・NationalStrategyV1/ | PR146 → main 73de5c13 |
 | 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044、保存互換補修PR149 → main 17be7235 |
 | 2026-11-13 | 全国1560年の年次名乗り（v114） | Docs/Design/NationalNameHistoryV1/ | PR147 → main b40dd017 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |

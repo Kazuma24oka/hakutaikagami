@@ -15,9 +15,10 @@ public static partial class NpcArmies
     public static bool Supported(string? policy)=>policy is Policy or CombatPolicy or CompactCombatPolicy;
     public const string Policy="head-led-owned-garrison-common-land-travel-v1",LandRoute="npc-army-land-only-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool b,string why){if(!b)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy);
+    public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&Supported(w.NewGame?.WorldArmyPolicy))||NationalSystems.On(w,"NpcArmies");
     public static NpcArmyMuster[] Musters(ContractWorld w)=>w.NpcArmies?.Musters??[];
-    static MilitaryLedgerIdentity Binding(NpcArmyMuster m)=>NewGameMilitary.LedgerIdentity(m.Owner,m.Site);
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NpcArmyMuster,MilitaryLedgerIdentity> bindings=new();
+    static MilitaryLedgerIdentity Binding(NpcArmyMuster m)=>bindings.GetValue(m,q=>NewGameMilitary.LedgerIdentity(q.Owner,q.Site));
     public static bool HoldsGarrison(ContractWorld w,EntityId owner,EntityId site)=>Musters(w).Any(m=>m.Owner==owner&&m.Site==site);
     public static ArmyEntry[] Armies(ContractWorld w)=>Musters(w).Select(m=>new ArmyEntry(Binding(m).Army,m.Owner,m.Commander)).ToArray();
     static void CheckMuster(ContractWorld w,NpcArmyMuster m,IEnumerable<NpcArmyMuster> prior)
@@ -91,7 +92,8 @@ public static partial class NpcArmies
     {
         var ms=Musters(w);if(ms.Length==0)return;var ids=ms.SelectMany(m=>Binding(m).Units).ToHashSet();
         w.Units=[..w.Units.Where(u=>!ids.Contains(u.Id)),..ms.SelectMany(m=>Binding(m).Units.Select((id,n)=>new UnitState(id,Binding(m).Army,m.Commander,m.Owner,(n==0?40:30)-WorldClashes.SoldiersLost(w,id,w.ElapsedSeconds),0)))];
-        w.ResourceLots=[..w.ResourceLots.Where(l=>!IsLot(w,l)),..ms.SelectMany(m=>Lots(w,m))];
+        var lots=ms.SelectMany(m=>new[]{Binding(m).Depot,Binding(m).Carry}).ToHashSet();
+        w.ResourceLots=[..w.ResourceLots.Where(l=>!lots.Contains(l.Id)),..ms.SelectMany(m=>Lots(w,m))];
     }
     public static void Return(ContractWorld w,EntityId muster)
     {
@@ -177,6 +179,7 @@ public static partial class NpcArmies
             Need(q.At>=m.At&&q.At<=w.ElapsedSeconds&&q.Revision>m.Revision&&q.Revision<=w.CommitSequence&&q.Consumed==Consumed(w,m)&&RegionalCampaign.RoadActorPointAt(w,m.Commander,q.At)==site&&!w.Requests.Any(r=>r.Intent.Executor==m.Commander&&r.CommitSequence<q.Revision&&r.CreatedAt<=q.At&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>q.At))),"現地帰還と兵糧返納の根拠が一致しません");
             Need(!s.Marches.Any(march=>march.Muster==m.Id&&march.Revision>=q.Revision),"帰還済みの軍を再生成できません");
         }
+        if(s.Musters.Length==0)return; // Syncもこの場合は何も変えないため、世界全体の複写と自己比較を省く。
         var copy=ContractJson.Copy(w);Sync(copy);Need(ContractJson.CanonicalHash(copy.Units)==ContractJson.CanonicalHash(w.Units)&&ContractJson.CanonicalHash(copy.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray())==ContractJson.CanonicalHash(w.ResourceLots.OrderBy(l=>l.Id.Value,StringComparer.Ordinal).ToArray()),"NPC軍の兵数・兵糧が引受と消費原本に一致しません");
     }
 }

@@ -12,6 +12,11 @@ public static class NationalSystems
         "PersonalLife",
         "HouseSuccession",
         // Codex の担当
+        "OfficerBattleHealth",
+        "FieldPresence", "FieldSupply", "FieldWorld",
+        "RiverRoads", "HistoricalRoads", "NationalRoutes",
+        "MilitaryEconomy", "HouseLogistics", "HouseFreightReceiving", "FreightOperations", "NpcFreight", "FieldConvoy", "ArmyRoadMarch", "RoadConvoy",
+        "NpcArmies", "WorldClashes", "BattlefieldRules", "CastleSiege", "CastleWorks", "HostageCustody", "VoyageExpense",
     ];
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);

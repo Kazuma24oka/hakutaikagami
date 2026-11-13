@@ -17,7 +17,9 @@ public static class RegionalDomains
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
     public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
-    internal static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
+    // 開始時の台帳は不変。同じ家の各同期で全国の城を走査しない（現在の支配はNationalStrategy.Ownerを別に読む）。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,Dictionary<string,EntityId?>> ownerIndexes=new();
+    internal static EntityId? Owner(ContractWorld w,EntityId site)=>ownerIndexes.GetValue(w.NewGame!,d=>d.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction is {} f?(EntityId?)new EntityId(f):null,StringComparer.Ordinal)).GetValueOrDefault(site.Value);
     internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>Owner(w,site) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;

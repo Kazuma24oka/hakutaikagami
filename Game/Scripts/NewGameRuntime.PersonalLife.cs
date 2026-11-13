@@ -11,7 +11,7 @@ public partial class NewGameRuntime
     internal string ReviewPersonalLifeText()=>lifePopup==null?"":string.Join("\n",lifePopup.FindChildren("*","Label",true,false).Cast<Label>().Select(l=>l.Text));
     void ShowPersonalLife()
     {
-        if(Session==null||Session.PersonalLifeView() is not {} v)return;
+        if(Session==null)return;var v=Session.PersonalLifeView();if(v==null){ShowClinical();return;}
         var popup=new PopupPanel();AddChild(popup);lifePopup=popup;healthButtons.Clear();
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};popup.AddChild(scroll);scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);var box=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};box.AddThemeConstantOverride("separation",10);scroll.AddChild(box);
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});

@@ -86,6 +86,15 @@ public partial class NewGameMap : Control
         foreach(var s in NationalRoutes.Sites){string id=s.Id.Value;var b=new Button{Text="◆",TooltipText=s.Name,CustomMinimumSize=new(20,20),Size=new(20,20)};AddChild(b);pins[id]=b;b.Pressed+=()=>Pick(id);}
         Resized+=()=>{Fit();LayoutPins();QueueRedraw();};ready=true;Fit();Home();if(ShowControl)BuildControlTexture();
     }
+    string? controlStateHash;
+    internal Dictionary<string,string?>? KnownOwners;
+    internal void SetControlState(NationalDistrictControlState state,Dictionary<string,string?>? knownOwners=null)
+    {
+        KnownOwners=knownOwners;LayoutPins();
+        string hash=ContractJson.CanonicalHash(state);if(hash==controlStateHash)return;
+        ControlState=state;controlStateHash=hash;control=null;
+        if(ready&&ShowControl)BuildControlTexture();QueueRedraw();
+    }
     void BuildControlTexture()
     {
         if(control!=null)return;
@@ -120,7 +129,7 @@ public partial class NewGameMap : Control
     RoutePoint Unpixel(Vector2 v)=>new(center.EastMm+(long)((v.X-Size.X/2)/scale),center.NorthMm+(long)((Size.Y/2-v.Y)/scale));
     void LayoutPins()
     {
-        foreach(var s in NationalRoutes.Sites){var b=pins[s.Id.Value];var pos=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);b.Position=pos-new Vector2(10,10);b.Visible=ShowPins&&!IsHiddenNode(NewGameWorld.Node(s.Id.Value))&&new Rect2(new(12,12),Size-new Vector2(24,24)).HasPoint(pos);b.Text=s.Id.Value==SelectedSite?"●":"◆";b.Modulate=Setup?.Castles.SingleOrDefault(c=>c.Id==s.Id.Value)?.Faction is {} faction?FactionColor(faction):new Color("d6c4a2");}
+        foreach(var s in NationalRoutes.Sites){var b=pins[s.Id.Value];var pos=Pixel(nodeAt[NewGameWorld.Node(s.Id.Value)]);b.Position=pos-new Vector2(10,10);b.Visible=ShowPins&&!IsHiddenNode(NewGameWorld.Node(s.Id.Value))&&new Rect2(new(12,12),Size-new Vector2(24,24)).HasPoint(pos);b.Text=s.Id.Value==SelectedSite?"●":"◆";var owner=KnownOwners!=null&&KnownOwners.TryGetValue(s.Id.Value,out var seenOwner)?seenOwner:Setup?.Castles.SingleOrDefault(c=>c.Id==s.Id.Value)?.Faction;b.Modulate=owner is {} faction?FactionColor(faction):new Color("d6c4a2");}
     }
     static Color FactionColor(string id){uint hash=2166136261;foreach(char c in id)hash=unchecked((hash^c)*16777619);return Color.FromHsv((hash%360)/360f,.4f,.95f);}
     static Color LandColor(Area a)=>a switch{Area.Ryukyu=>new Color("9fa58f"),Area.Ezo=>new Color("a3a78f"),Area.Remote=>new Color("a8a48c"),_=>new Color("b5ae8b")};

@@ -130,8 +130,8 @@ public sealed class HakutaiDbTests
         using var map=JsonDocument.Parse(File.ReadAllBytes(Path.Combine(dir!.FullName,"Game","Data","Geography","borders-v2.json")));
         var rows=map.RootElement.GetProperty("Districts").EnumerateArray().ToArray();
         var matches=rows.Select(x=>NationalDistrictControl.Resolve(x.GetProperty("Id").GetInt32().ToString(),x.GetProperty("Province").GetString()!,x.GetProperty("Name").GetString()!)).ToArray();
-        Assert.Equal(721,matches.Length);Assert.Equal(633,matches.Count(x=>x!=null));Assert.Equal(88,matches.Count(x=>x==null));
-        Assert.Equal(118,matches.Count(x=>x?.NameInferred==true));
+        Assert.Equal(721,matches.Length);Assert.Equal(707,matches.Count(x=>x!=null));Assert.Equal(14,matches.Count(x=>x==null));
+        Assert.Equal(146,matches.Count(x=>x?.NameInferred==true));
         Assert.All(matches.Where(x=>x!=null),x=>Assert.NotEmpty(x!.Owners));
     }
 

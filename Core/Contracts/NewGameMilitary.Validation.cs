@@ -19,7 +19,7 @@ public static partial class NewGameMilitary
         w.Locations=w.Locations.Select(l=>{
             var physical=l.Actor==w.PlayerControl?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
             if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
-            var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,ContinuousWorld.Height(FieldWorld.FromWorld(point)),Contract,0);
+            var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,WorldGround.Height(w,FieldWorld.FromWorld(point)),Contract,0);
         }).ToArray();RewindUnitTransport(w);var controlling=ControllingLedger(w,at);SyncLedger(w,w.NewMilitary==null||controlling==null||LedgerKey(controlling)==LedgerKey(w.NewMilitary));return w;
     }
     static NewMilitaryState? LedgerStateBefore(NewMilitaryState s,long at,long rev)

@@ -13,7 +13,7 @@ public static partial class NewGameMilitary
     static long CombatUntil(ContractWorld w,NewMilitaryRequest start)=>Math.Min(Math.Min(Math.Min(start.At+CombatDuration,Event(w,MilitaryEffect.CombatPermission,start.At,start.Revision)!.At+CombatPermitDuration),w.NewMilitary!.Requests.FirstOrDefault(q=>q.Revision>start.Revision&&q.Input.Action is NewMilitaryAction.CombatEnd or NewMilitaryAction.Recall or NewMilitaryAction.Enter)?.At??long.MaxValue),w.NewMilitary.Orders.FirstOrDefault(o=>o.Revision>start.Revision&&o.Action==NewMilitaryAction.Recall)?.At??long.MaxValue);
     public static bool CombatActive(ContractWorld w)=>CombatStart(w) is {} start&&w.ElapsedSeconds<CombatUntil(w,start);
     public static bool CanStartCombat(ContractWorld w)=>!CombatStarted(w)&&CombatReady(w);
-    static bool CombatReady(ContractWorld w)=>(!RecognitionEnabled(w)||AllOwnCurrentlySeen(w))&&w.NewMilitary is {} s&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w)&&!Detached(w)&&!Moving(w)&&!Returning(w,w.ElapsedSeconds,w.CommitSequence)&&Event(w,MilitaryEffect.CombatPermission) is {} permit&&(Known(w,permit,w.ElapsedSeconds,w.CommitSequence)||CaseEvents(w).Where(e=>e.Effect==MilitaryEffect.StatusSent&&Known(w,e,w.ElapsedSeconds,w.CommitSequence)).Any(e=>Read(w,e).Effect==MilitaryEffect.CombatPermission&&Read(w,e).EffectiveAt==permit.At))&&w.ElapsedSeconds<permit.At+CombatPermitDuration&&View(w).Carry>0&&Enumerable.Range(0,3).All(i=>{var p=Position(w,i,w.ElapsedSeconds);return RegionalGround.Walkable(new(p.X+3000,p.Y),atlas:true);});
+    static bool CombatReady(ContractWorld w)=>(!RecognitionEnabled(w)||AllOwnCurrentlySeen(w))&&w.NewMilitary is {} s&&CustodyAt(w,w.ElapsedSeconds,w.CommitSequence)&&Deployed(w)&&!Detached(w)&&!Moving(w)&&!Returning(w,w.ElapsedSeconds,w.CommitSequence)&&Event(w,MilitaryEffect.CombatPermission) is {} permit&&(Known(w,permit,w.ElapsedSeconds,w.CommitSequence)||CaseEvents(w).Where(e=>e.Effect==MilitaryEffect.StatusSent&&Known(w,e,w.ElapsedSeconds,w.CommitSequence)).Any(e=>Read(w,e).Effect==MilitaryEffect.CombatPermission&&Read(w,e).EffectiveAt==permit.At))&&w.ElapsedSeconds<permit.At+CombatPermitDuration&&View(w).Carry>0&&Enumerable.Range(0,3).All(i=>{var p=Position(w,i,w.ElapsedSeconds);return RegionalGround.Walkable(new(p.X+3000,p.Y),atlas:true,national:WorldGround.National(w));});
     public static FieldPoint ExercisePosition(ContractWorld w,int i){var p=Position(w,i,CombatStart(w)!.At);return new(p.X+3000,p.Y);}
     public static RegionalLoss[] CombatLosses(ContractWorld w,long at)
     {
@@ -23,8 +23,8 @@ public static partial class NewGameMilitary
         for(long t=start.At+1;t<=until;t++){
             var inputs=new List<ContactParticipant>();for(int i=0;i<3;i++){
                 var p=Position(w,i,t);var enemy=ExercisePosition(w,i);
-                inputs.Add(new(UnitIdsFor(w)[i],0,p,ContinuousWorld.Height(p),own[i],ownMorale[i],ownMorale[i]<=25?"routed":"standing"));
-                inputs.Add(new(ExerciseIds[i],1,enemy,ContinuousWorld.Height(enemy),other[i],otherMorale[i],otherMorale[i]<=25?"routed":"standing"));
+                inputs.Add(new(UnitIdsFor(w)[i],0,p,WorldGround.Height(w,p),own[i],ownMorale[i],ownMorale[i]<=25?"routed":"standing"));
+                inputs.Add(new(ExerciseIds[i],1,enemy,WorldGround.Height(w,enemy),other[i],otherMorale[i],otherMorale[i]<=25?"routed":"standing"));
             }
             var hits=ContactCombat.Resolve(t,true,inputs);effects.AddRange(hits);
             foreach(var h in hits){int i=Array.IndexOf(UnitIdsFor(w),h.Unit);if(i>=0){own[i]-=h.Soldiers;ownMorale[i]-=h.Morale;}else{i=Array.IndexOf(ExerciseIds,h.Unit);other[i]-=h.Soldiers;otherMorale[i]-=h.Morale;}}

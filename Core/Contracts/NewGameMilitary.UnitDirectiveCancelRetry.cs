@@ -14,7 +14,7 @@ public static partial class NewGameMilitary
         var known=SelectKnownTarget(w,root.Recipient);if(known==null)return false;var a=MessageFlow.Latest(w.Messaging,root.Message);var m=w.Messaging.Messages.Single(m=>m.Id==root.Message);
         if(!KnownFailedAttempt(a,true)||a.Number>=MessageFlow.MaxAttempts||!MessageFlow.FailureKnown(w.Messaging,a.Id,w.PlayerControl.Value)||ReceiptConfirmedToSender(w,root.Message,w.PlayerControl.Value))return false;
         if(m.DeliverBy==null)return true;if(m.DeliverBy<w.ElapsedSeconds+1)return false;
-        try{var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),known.Position,w.ElapsedSeconds,courier:true,atlas:true);return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;}catch(InvalidDataException){return false;}
+        try{var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),known.Position,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;}catch(InvalidDataException){return false;}
     }
     static void ValidateDirectiveCancelRetryInput(ContractWorld w,NewMilitaryInput i)
     {
@@ -26,7 +26,7 @@ public static partial class NewGameMilitary
     static void ApplyDirectiveCancelRetry(ContractWorld w,NewMilitaryInput i)
     {
         if(!DirectiveCancelRetryAction(i.Action))return;var p=i.DirectiveCancelRetry!;var root=DirectiveCancellationOriginal(w,p.Cancellation)!;var from=PersonPosition(w,w.ElapsedSeconds);var to=p.Known.Position;
-        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
+        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
         MessageFlow.Retry(w.Messaging,root.Message,w.PlayerControl.Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)),true);
         var state=w.NewMilitary!.UnitDirective!;var x=state.Cancellation!;w.NewMilitary=w.NewMilitary with{UnitDirective=state with{Cancellation=x with{Dispatches=[..x.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,root.Recipient,root.Role,new("evidence:directive-cancel-retry/"+Hash(Text(p))),from,to,route,due,root.Message,MessageFlow.Latest(w.Messaging,root.Message).Id)]}}};
     }
