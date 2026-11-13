@@ -31,7 +31,9 @@ public sealed class NationalFieldSupplyTests
             networkPolicy:WorldNetwork.CastlePolicy,districtControlPolicy:NationalDistrictControl.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy,nationalSystems:NationalSystems.Current);
         var s=new WorldSession(w);Assert.False(FieldPresence.PlayerDeployed(w));Assert.Null(w.Presence);Assert.Null(w.Supply);
         Send(s,NewMilitaryAction.Request);Advance(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Accept);Advance(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Pickup);
-        var actual=s.DiagnosticSnapshot();var depot=NewGameMilitary.DepotFor(actual);
+        var actual=s.DiagnosticSnapshot();
+        byte[] Historical(bool slow){NewGameMilitary.SlowHistoricalLocations=slow;try{return ContractJson.Write(NewGameMilitary.WorldEngagementBefore(actual,actual.NewMilitary!.Terms.Army,s.Seconds,s.Revision));}finally{NewGameMilitary.SlowHistoricalLocations=false;}}
+        Assert.Equal(Historical(true),Historical(false));var depot=NewGameMilitary.DepotFor(actual);
         Good(s.ManageMilitaryRice(new(new("request:national-rice"),depot,60),s.PlayerControl,s.Revision));
         long load=10*MilitaryEconomy.PersonSecondsPerKg;var id=new EntityId("request:national-pack");
         Good(s.HandleSupply(id,s.PlayerControl,true,load,s.Revision));

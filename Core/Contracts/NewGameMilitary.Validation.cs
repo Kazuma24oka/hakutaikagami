@@ -5,6 +5,7 @@ public static partial class NewGameMilitary
     static bool Same<T>(T a,T b)=>Text(a)==Text(b);
     internal static ContractWorld WorldEngagementContext(ContractWorld w,EntityId army)=>LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army));
     internal static ContractWorld WorldEngagementBefore(ContractWorld w,EntityId army,long at,long rev)=>BeforeState(LedgerContext(w,LedgerStates(w).Single(s=>s.Terms.Army==army)),at,rev);
+    [ThreadStatic]internal static bool SlowHistoricalLocations;
     static ContractWorld BeforeState(ContractWorld original,long at,long rev,bool observationOnly=false)
     {using var _ccRev=ControlContext.At(rev);
         var w=observationOnly?original.ForkMilitaryObservation():ContractJson.Copy(original);w.ElapsedSeconds=at;w.CommitSequence=rev;
@@ -16,8 +17,10 @@ public static partial class NewGameMilitary
         }
         w.MilitaryLedgerHistory=original.MilitaryLedgerHistory??LedgerStates(original);
         w.NewMilitary=LedgerStateBefore(w.NewMilitary!,at,rev);
+        var historicalRoadPoints=SlowHistoricalLocations?null:RegionalCampaign.RoadActorPointsAt(w,at);
+        var historicalSites=SlowHistoricalLocations?null:BranchRoutes.GraphNodes(w).ToLookup(n=>n.Position);
         w.Locations=w.Locations.Select(l=>{
-            var physical=l.Actor==w.PlayerControl?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):RegionalCampaign.RoadActorPointAt(w,l.Actor,at);var node=BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point);
+            var physical=l.Actor==w.PlayerControl?ActualMilitaryPosition(w,at):null;var point=physical is {} p?FieldWorld.ToWorld(p):historicalRoadPoints==null?RegionalCampaign.RoadActorPointAt(w,l.Actor,at):historicalRoadPoints(l.Actor);var node=historicalSites==null?BranchRoutes.GraphNodes(w).FirstOrDefault(n=>n.Position==point):historicalSites[point].FirstOrDefault();
             if(node!=null)return new LocationState(l.Actor,LocationKind.AtSite,RegionalCampaign.Site(node.Id),null,0,0,null,null,null,null,0);
             var geo=HakutaiKagami.Core.World.JapanGeography.Inverse(new(point.EastMm,point.NorthMm));return new LocationState(l.Actor,LocationKind.AtPosition,null,null,0,0,geo.LatitudeE7,geo.LongitudeE7,WorldGround.Height(w,FieldWorld.FromWorld(point)),Contract,0);
         }).ToArray();RewindUnitTransport(w);var controlling=ControllingLedger(w,at);SyncLedger(w,w.NewMilitary==null||controlling==null||LedgerKey(controlling)==LedgerKey(w.NewMilitary));return w;
