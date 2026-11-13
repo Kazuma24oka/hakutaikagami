@@ -10,12 +10,18 @@ public static class NationalDistrictControl
 {
     public const string Edition="hakutai-national-district-control-v1";
     public const string Policy="national-district-control-v1";
+    internal static string ProvinceKey(string province)=>HakutaiDb.Kuni(province) switch
+    {
+        "羽前" or "羽後"=>"出羽",
+        "陸前" or "陸中" or "岩代" or "磐城"=>"陸奥",
+        var name=>name
+    };
     static readonly string[] DirectionalPrefixes=["北","南","東","西","上","下","中"];
 
     public static NationalDistrictAssignment? Resolve(string id,string province,string name)
     {
         if(string.IsNullOrWhiteSpace(id)||string.IsNullOrWhiteSpace(province)||string.IsNullOrWhiteSpace(name))return null;
-        var sameProvince=HakutaiDb.Districts.Where(d=>HakutaiDb.Kuni(d.Province)==HakutaiDb.Kuni(province)).ToArray();
+        var sameProvince=HakutaiDb.Districts.Where(d=>ProvinceKey(d.Province)==ProvinceKey(province)).ToArray();
         var exact=sameProvince.Where(d=>d.Name==name).ToArray();
         var inferred=false;
         HakutaiDbDistrict? district=exact.Length==1?exact[0]:null;

@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "scope": "national-control-projection",
+  "baseline": "approval-baseline-v117",
+  "related_tests": {
+    "status": "PASSED",
+    "passed": 3,
+    "failed": 0,
+    "command": "dotnet test Tests -c Debug --filter FullyQualifiedName~NationalControlProjectionTests",
+    "elapsed": "19s",
+    "scope": "開封前後・同刻未認識結果の秘匿・世代保存復旧・旧国名と郡名の対応・全国以外への非適用"
+  },
+  "game_build": {
+    "status": "PASSED",
+    "warnings": 0,
+    "errors": 0
+  },
+  "ui": {
+    "Status": "PASSED",
+    "Before": "00F086854E17E3F2D81D62B1FD699C5A0957CC8952404EFBFD3A7CC34CFD1AE5",
+    "After": "BEA389C15C7DC98C183B1F4F19B125B69FC1B91FF3A94FD5DC34CDAE7FDB28D0",
+    "MappedPixels": 445249,
+    "Scope": "開封前後の同じ全国地図・色テクスチャ・自前描画",
+    "ComputerUse": "未使用",
+    "images": {
+      "sealed-map.png": "41e889e3717d207af833c258f7988d598d4ed75d9e88373631f9077fa3c367aa",
+      "opened-map.png": "25c009321ee16ca652a27fd1cd22c8c538660890fa1caea33db528b7ddf27a61"
+    }
+  },
+  "short_suite": {
+    "status": "RUNNING",
+    "command": "dotnet test Tests -c Release --filter \"Tier!=Heavy\"",
+    "note": "国名対応前の候補。最終の国名対応は上記Debug代表検査と自前描画で確認。"
+  },
+  "full_suite": {
+    "status": "PENDING",
+    "command": "dotnet test Tests -c Release",
+    "note": "Claudeのfullsuite.lock解除待ち。開始前に排他取得し、成功/失敗を問わず自分のロックを除去する。"
+  },
+  "limits": [
+    "郡の範囲は城の数による推定であり歴史的な実測境界ではない。",
+    "初期の史料にない新勢力を郡色へ割り当てる処理は対象外。城の印は認識した勢力IDで更新する。",
+    "直接見たが書状の発信/開封記録のない過去の変化は本工程の色の根拠には追加しない。"
+  ],
+  "computer_use": "未使用"
+}
