@@ -77,3 +77,7 @@ Scripts/test_tiers.py が全件の記録（TRX）から書く。全 4504 件・�
 | NpcFreightTests | 28 | 6.1 | 49 |
 | PersonalLifeTests | 47 | 5.7 | 43 |
 | FieldPresenceTests | 20 | 5.6 | 127 |
+
+## 全国郡収入の追加測定（2026-11-13）
+
+NationalDistrictRevenueTests：1件12分11秒。全国初期化・月境界・実購入・世代保存復旧を含むためHeavyへ分類。初回は既存ロード時停止の比較条件不足で失敗し、保存前停止を明示して修正。成功実績には数えない。

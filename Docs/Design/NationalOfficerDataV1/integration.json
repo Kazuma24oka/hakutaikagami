@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "COMPATIBILITY_FIX_READY_TO_MERGE",
+  "status": "MERGED",
   "scope": "v115 全国人物生年・基礎能力",
   "strategy": "gh CLIでPRを作り、全件検査確認後にsquash統合。統合後は作業ブランチへmainを取り込む。",
   "main": "b40dd0177c9f88ff1ba4f312fed7d0855b33418a",
@@ -11,5 +11,8 @@
   "branch_sync_commit": "0b49a6ffac3430c86b3fca07aa120f9617448411",
   "tested_commit": "71d49ba40e9e16b05c6bbddc6b180872d64849ed",
   "compatibility_fix": "旧全国v2の初期定義を保持するため人物データ付き新規開始をv3へ分離。既に人物方針付きv2で作った保存は方針IDで開始定義を選択。追加加点なし。",
-  "compatibility_tested_commit": "59262c396c471ef23a3946fc5df54131dad2045a"
+  "compatibility_tested_commit": "59262c396c471ef23a3946fc5df54131dad2045a",
+  "compatibility_pr": 149,
+  "compatibility_merge_commit": "17be723547dcd0d9d26a743fedfc775abdcb7b33",
+  "compatibility_branch_sync_commit": "070058305f04b63c600fb92c87e88a6d85ed8448"
 }
