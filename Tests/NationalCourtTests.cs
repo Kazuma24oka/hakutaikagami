@@ -39,10 +39,15 @@ public sealed class NationalCourtTests
         var gift=s.ManageSocial(new(new("request:gift-yamashina"),SocialWorldAction.DispatchGift,broker,Amount:100),s.Revision);
         Assert.True(gift.Code==ResultCode.Accepted,gift.VisibleReason);
         NewGameWorldTests.At(s,s.Seconds+3);
+        // 公家はそれぞれ取次になれる。天皇と将軍家の人は取次ではない。
+        Assert.True(CentralCourtCatalog.IsCourtBroker(w0,new(NationalStart.PersonId("P-011328"))));Assert.True(CentralCourtCatalog.IsCourtBroker(w0,broker));
+        Assert.False(CentralCourtCatalog.IsCourtBroker(w0,new(NationalStart.PersonId("P-010184"))));Assert.False(CentralCourtCatalog.IsCourtBroker(w0,new(Yoshiteru)));
+        Assert.Equal(broker,CentralCourtCatalog.BrokerFor(s.DiagnosticSnapshot(),new(Yoshiteru))); // 最後に会った公家へ奏請する
+        long start;CourtEvent[] events;
         var r=s.ManageCourt(new CourtInput(new("request:national-rank"),CourtAction.AskCourtIntroduction,broker,owner,site){Title="rank:14"},s.Revision);
         Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
         // 取次は日課の仕事の最中なら、終えてから返答する。
-        long start=s.Seconds;CourtEvent[] events;
+        start=s.Seconds;
         do{NewGameWorldTests.At(s,s.Seconds+6*3600);events=s.DiagnosticSnapshot().Court!.Events;}
         while(s.Seconds<start+3*86400&&!events.Any(e=>e.Input.Action==CourtAction.FileRankPetition));
         var filed=Assert.Single(events,e=>e.Input.Action==CourtAction.FileRankPetition);

@@ -153,13 +153,15 @@ public partial class NewGameRuntime
       var original=w.Court?.Events.LastOrDefault(e=>e.Actor==actor && e.Input.Action==CourtAction.AskCourtIntroduction);
       var reply=original==null?null:w.Court!.Events.SingleOrDefault(e=>e.Input.Reference==original.Input.Id &&
           e.Input.Action is CourtAction.AcceptCourtIntroduction or CourtAction.DeclineCourtIntroduction);
-      if(original!=null)SocialText(box,reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"山科言継が奏請の取次を引き受けました。",CourtAction.DeclineCourtIntroduction=>"山科言継は今回の取次を辞退しました。",_=>"山科言継の返事を待っています。"});
+      if(original!=null){var who=PersonName(original.Input.Person);SocialText(box,who+"　"+(reply?.Input.Action switch{CourtAction.AcceptCourtIntroduction=>"取次",CourtAction.DeclineCourtIntroduction=>"辞退",_=>"返答待ち"}));}
+      // 奏請は、最後に会った公家（取次になれる人）へ。
+      var courtier=CentralCourtCatalog.BrokerFor(w,actor);
       bool decided=original!=null&&CentralRank.Decided(w.Court!.Events,original);
       if((original==null || reply?.Input.Action==CourtAction.DeclineCourtIntroduction || decided) &&
           CentralMediation.ApplicantHouse(w,actor) is {} applicantHouse)
           foreach(var title in CentralTitles.Requestable(w,actor,applicantHouse).Take(12))
               Button("court-introduction/"+title.Id,title.Name,()=>Run(new(Nonce("court-introduction"),
-                  CourtAction.AskCourtIntroduction,CentralCourtCatalog.CourtBrokerIn(w),applicantHouse,site.Value){Title=title.Id}));
+                  CourtAction.AskCourtIntroduction,courtier,applicantHouse,site.Value){Title=title.Id}));
       return;
   }
   if(courtCategory==4){

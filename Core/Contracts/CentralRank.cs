@@ -42,7 +42,8 @@ public static class CentralRank
     {using var _ccRev=ControlContext.At(revision);
         var input=new CourtInput(HouseholdCourt.Id(action.ToString(),source.Input.Id.Value),action,
             source.Input.Person,source.Input.Owner,CentralCourtCatalog.KyotoIn(w),Reference:source.Input.Id);
-        return new(input,CentralCourtCatalog.CourtBrokerIn(w),CentralCourtCatalog.KyotoIn(w),at,revision,false);
+        // 取り次いだ公家（引き受けた人・提出した人）が、提出・決裁の原本の差出人になる。
+        return new(input,source.Actor,CentralCourtCatalog.KyotoIn(w),at,revision,false);
     }
     static CourtAction Resolve(ContractWorld w,CourtEvent petition)
     {
