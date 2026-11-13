@@ -87,6 +87,23 @@ public static class CharacterDevelopment
         Need(i.WorkSeconds==PracticeSeconds&&i.EffectiveAt==at&&i.DeliverySeconds==1&&i.ReportSeconds==1&&!i.Important&&i.Kind==TaskKind.BindingOrder&&i.Deadline==new DeadlinePolicy(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),"Training duration or deadline changed");
         if(pending){Need(i==(i.Actor==w.PlayerControl?Practice(w,i.RequestId.Value,i.TrainingSkill!.Value):PracticeForNpc(w,i.Actor,i.RequestId.Value,i.TrainingSkill!.Value)),"Training location changed");Need(!w.Tasks.Any(t=>t.Executor==i.Actor&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)),"先に現在の用件を終えるか中断してください");}
     }
+    // 他人の基礎能力の推定（BD-16、全国の開始の一覧の AbilityReputation を持つ世界だけ）。真の値は渡さず、段階と推定幅・出典・時点だけを出す。
+    // 面識（本人が相手との出来事を知っている）があれば幅が狭く、その最後の認識の時点。なければ、家の当主と同じ家の者は評判（幅が広く、開始時の時点）。どちらもなければ不明。
+    // 推定の中心は真の値から、観る人・相手・能力・出典ごとの固定のずれ（評判は±10、面識は±4）を足したもの。
+    static DevelopmentValue? Estimate(ContractWorld w,DevelopmentAward[] rows,EntityId observer,EntityId person,DevelopmentAbility a)
+    {
+        if(!NationalSystems.On(w,"AbilityReputation"))return null;
+        long at=w.ElapsedSeconds,rev=w.CommitSequence+1;
+        var met=w.Social?.Reactions.Where(r=>r.Observer==observer&&r.Subject==person&&r.LearnedAt<=at).Select(r=>(long?)r.LearnedAt).Max();
+        bool Active(TimedRelation r)=>r.From<=at&&(at<r.Until||at==r.Until&&rev<r.Revision);
+        bool famous=HouseSuccession.Factions(w).Any(f=>f.Head==person.Value)||w.Memberships.Any(m=>m.Subject==person&&Active(m)&&w.Memberships.Any(o=>o.Subject==observer&&o.Target==m.Target&&Active(o)));
+        if(met==null&&!famous)return null;
+        string source=met!=null?"面識":"評判";int spread=met!=null?4:10,width=met!=null?6:15;
+        var d=System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes($"ability-estimate-v1/{w.Seed}/{observer.Value}/{person.Value}/{a}/{source}"));
+        int center=Math.Clamp(Value(w,rows,person,a)+d[0]%(2*spread+1)-spread,1,100),lo=Math.Max(1,center-width),hi=Math.Min(100,center+width);
+        string tier=center<30?"低い":center<50?"並":center<70?"高い":"非常に高い";
+        return new DevelopmentValue(Name(a),null,0,source,met??0,$"{tier}（{lo}〜{hi}）");
+    }
     public static DevelopmentCard? View(ContractWorld w,EntityId observer,EntityId person){
         if(!Enabled(w)||!w.Characters.Any(c=>c.Id==observer)||!w.Characters.Any(c=>c.Id==person))return null;
         bool own=observer==person;var rows=w.Development!.Awards;
@@ -98,7 +115,7 @@ public static class CharacterDevelopment
         // Only received factual reports enter this view. Never read the subject's private profile or XP.
         var facts=w.Outbox.Where(o=>o.Sender==person&&o.Recipient==observer&&o.Kind=="contract-report"&&o.Body=="任務完了"&&w.Messaging.Knowledge.Any(k=>k.CharacterId==observer.Value&&k.MessageId==o.Id.Value)).OrderByDescending(o=>o.At).ToArray();
         var seen=facts.FirstOrDefault(o=>w.Tasks.Any(t=>t.Id==o.Task&&t.Action==ActionKind.Inspect));
-        var unknown=BaseAbilities.Select(a=>new DevelopmentValue(Name(a),null,0,"未確認",null,"不明")).ToArray();
+        var unknown=BaseAbilities.Select(a=>Estimate(w,rows,observer,person,a)??new DevelopmentValue(Name(a),null,0,"未確認",null,"不明")).ToArray();
         var estimates=Enum.GetValues<DevelopmentSkill>().Select(s=>s==DevelopmentSkill.IntelligenceGathering&&seen!=null?new DevelopmentValue(Name(s),null,0,"本人から届いた点検完了報告："+seen.Id,seen.At,w.ElapsedSeconds-seen.At>30*86400?"古い実績・熟練値は未確認":"点検完了の実績あり・熟練値は未確認"):new DevelopmentValue(Name(s),null,0,"未確認",null,"不明")).ToArray();
         return new(person,false,unknown,estimates,"所属・登用だけで能力や内心は公開されません。報告のない実行や、相手の真の数値は表示しません。");
     }

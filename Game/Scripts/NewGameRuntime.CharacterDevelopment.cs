@@ -19,7 +19,7 @@ public partial class NewGameRuntime
         for(int n=0;n<people.Length;n++){chooser.AddItem(people[n].Name);if(people[n].Id==person.Value)chooser.Select(n);}
         chooser.ItemSelected+=n=>{popup.Hide();ShowCharacterDevelopmentFor(new(people[(int)n].Id));};
         Text("基礎能力");
-        foreach(var value in card.Abilities)Text(value.Name+"　"+(value.Value?.ToString()??"不明"));
+        foreach(var value in card.Abilities)Text(value.Name+"　"+(value.Value?.ToString()??(value.ObservedAt is {} seen?value.Confidence+" ／ "+TreatyDate(seen)+"・"+value.Source:"不明")));
         Text("技能");
         foreach(var value in card.Skills)Text(value.Name+"："+(value.Value?.ToString()??value.Confidence)+(card.Own?$" ／ 経験 {value.Experience}":value.ObservedAt is {} at?$" ／ {TreatyDate(at)}・{value.Source}":""));
         if(CharacterRelations.View(Snapshot(),person) is {} relation){

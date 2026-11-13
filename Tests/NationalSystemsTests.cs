@@ -49,6 +49,40 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
         foreach(var x in new[]{s,restored})NewGameWorldTests.At(x,done.ElapsedSeconds+3600);
         Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
     }
+    // NPC が自分から手当を受ける：発症の1日後に城や町にいれば手当を受け、回復が早まる。一覧に NpcSelfCare のない世界では受けない。
+    [Fact]
+    public void NpcsTakeCareOfTheirIllnessWhereTheyStayADayAfterOnset()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());w.ElapsedSeconds=90*86400;
+        var people=FamilyBirth.People(w).Select(p=>new EntityId(p.Id)).Where(p=>p!=w.PlayerControl).Take(400).ToArray();
+        var c=people.SelectMany(p=>PersonalHealth.Conditions(w,p,w.ElapsedSeconds-PersonalHealth.NpcCareDelay)).First();
+        var care=PersonalHealth.Treatment(w,c);Assert.NotNull(care);
+        Assert.Equal(c.OnsetAt+PersonalHealth.NpcCareDelay,care.At);Assert.Equal(PersonalCompanions.PhysicalSiteAt(w,c.Person,care.At,0),care.Site);
+        Assert.True(PersonalHealth.RecoverAt(w,c)<c.OnsetAt+c.BaseSeconds||care.At>=c.OnsetAt+c.BaseSeconds);
+        var old=ContractJson.Read<ContractWorld>(ContractJson.Write(w));old.NewGame=old.NewGame! with{NationalSystems=old.NewGame.NationalSystems!.Where(x=>x!="NpcSelfCare").ToArray()};
+        Assert.Null(PersonalHealth.Treatment(old,c));
+        Assert.Null(PersonalHealth.Treatment(w,c with{Person=w.PlayerControl,Id=new("condition:test/player")}));
+    }
+    // 他人の能力の推定（BD-16）：家の当主と同じ家の者は評判で段階と幅を知り、真の値は渡さない。それ以外の家の者は不明。一覧にない世界では不明。
+    [Fact]
+    public void OthersAbilitiesShowReputationRangesWithoutTrueValues()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());var me=w.PlayerControl;
+        var head=new EntityId(HouseSuccession.Factions(w).First(f=>f.Head!=me.Value).Head);
+        var card=CharacterDevelopment.View(w,me,head)!;var truth=CharacterDevelopment.View(w,head,head)!;
+        Assert.False(card.Own);
+        foreach(var (seen,real) in card.Abilities.Zip(truth.Abilities))
+        {
+            Assert.Null(seen.Value);Assert.Equal("評判",seen.Source);o.WriteLine($"{seen.Name} {seen.Confidence}");
+            var range=System.Text.RegularExpressions.Regex.Match(seen.Confidence,@"（(\d+)〜(\d+)）");Assert.True(range.Success);
+            Assert.InRange(real.Value!.Value,int.Parse(range.Groups[1].Value),int.Parse(range.Groups[2].Value));
+        }
+        var houseOf=w.Memberships.Where(m=>m.Subject==me).Select(m=>m.Target).ToHashSet();
+        var stranger=w.Memberships.First(m=>!houseOf.Contains(m.Target)&&!HouseSuccession.Factions(w).Any(f=>f.Head==m.Subject.Value)&&m.Subject!=me).Subject;
+        Assert.All(CharacterDevelopment.View(w,me,stranger)!.Abilities,v=>{Assert.Null(v.Value);Assert.Equal("不明",v.Confidence);});
+        var old=ContractJson.Read<ContractWorld>(ContractJson.Write(w));old.NewGame=old.NewGame! with{NationalSystems=old.NewGame.NationalSystems!.Where(x=>x!="AbilityReputation").ToArray()};
+        Assert.All(CharacterDevelopment.View(old,me,head)!.Abilities,v=>Assert.Equal("不明",v.Confidence));
+    }
     // 全国の開始の歴史モード：新規ゲームの画面で選んだモードを持ち、地方の版には付けられない。
     [Fact]
     public void TheNationalStartKeepsTheChosenHistoryMode()

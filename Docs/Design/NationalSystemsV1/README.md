@@ -3,7 +3,7 @@
 工程の表（2026-11-12 に Claude が出した7行）の6行目「残りの枠を全国の開始で一通り動かす」。地方の版で作った仕組みの多くが、全国の開始では有効になっていなかった（94のうち63。Tests/NationalCoverageProbe.cs で数えた）。
 
 - 仕掛け：`NationalSystems.Current` に名前を足し、その仕組みの `Enabled` に `NationalSystems.On(w,"名前")` を加える。新規開始のときに一覧を `NewGameState.NationalSystems` に写して保存し、保存済みの世界は変えない。専用の設定（SocialPolicy など）を持つ仕組みは、`NationalStart.Create`・`New` でその設定を渡す。
-- 有効にしたもの：生活と目標、同行者、人間関係、婚姻、養子、密書、天候、治安（賊）、家督、歴史モード（`NewGameState.History`。全国の家の戦略の史実の出陣の重みに効く）、健康と診療・傷病死、和睦と同盟の交渉、合戦での捕縛と処遇、家臣が NPC の軍を率いること（RetainerCommand）、戦・兵站・輸送・航海・道（Codex が接続した24項目。記録は Docs/Design/NationalWarfareV1）。
+- 有効にしたもの：生活と目標、同行者、人間関係、婚姻、養子、密書、天候、治安（賊）、家督、歴史モード（`NewGameState.History`。全国の家の戦略の史実の出陣の重みに効く）、健康と診療・傷病死、和睦と同盟の交渉、合戦での捕縛と処遇、家臣が NPC の軍を率いること（RetainerCommand）、NPC の自分からの手当（NpcSelfCare）、他人の能力の推定（AbilityReputation：家の当主と同じ家の者は評判で、面識のある相手は狭い幅で、段階・推定幅・出典・時点を出し、真の値は渡さない。BD-16）、遠方の合戦（StrategyBattle）、家の滅亡と再興（StrategyRestoration）、従属の離反（StrategyDefection）、戦・兵站・輸送・航海・道（Codex が接続した24項目。記録は Docs/Design/NationalWarfareV1）。
 - 開始条件の画面の説明口調の文言を名前だけにした。
 
 ## 工程の表の今の状態
@@ -26,5 +26,5 @@
 - 全国での和睦交渉の一巡（NationalSystemsTests、2026-11-14）：織田信長が今川家の当主へ不戦20日の書状を送り、相手が開封して承諾の返書を出し、本人が開封して成立を知るまで、ゲーム内で4日。保存から戻して同じ。検査は検査用の写しの書き換え確認を入れたままで27分かかる（実際のゲームの重さとは別）。
 
 ## 残り
-- 健康：NPC が自分から診療を受ける判断は未接続（NPC の傷病は手当なしで経過する）。
+- 健康：NPC の手当は「発症の1日後に城や町にいれば受ける」だけ（NpcSelfCare、PersonalHealth.NpcCare）。医者を探して移る・家人に頼む判断は未実装。
 - 同盟交渉（TreatyNegotiations）の全国での一巡は未実施。

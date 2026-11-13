@@ -107,7 +107,18 @@ public static class PersonalHealth
         for(long k=0;k<=until/Window;k++)if(Illness(w,person,k) is {} c&&c.OnsetAt<=until)rows.Add(c);
         return rows.OrderBy(c=>c.OnsetAt).ThenBy(c=>c.Id.Value,StringComparer.Ordinal).ToArray();
     }
-    internal static HealthCareEntry? Treatment(ContractWorld w,HealthCondition c)=>w.Health?.Care.FirstOrDefault(e=>e.Input.Condition==c.Id);
+    internal static HealthCareEntry? Treatment(ContractWorld w,HealthCondition c)=>w.Health?.Care.FirstOrDefault(e=>e.Input.Condition==c.Id)??NpcCare(w,c);
+    // NPC が自分から手当を受ける（全国の開始の一覧の NpcSelfCare を持つ世界だけ）。発症の1日後に城や町に留まっていれば、そこで手当を受けたものとする。
+    // 記録は持たず、その時点の所在から決まる（保存から戻しても同じ）。操作する人物は自分で診療を選ぶ。
+    public const long NpcCareDelay=86400;
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,System.Collections.Concurrent.ConcurrentDictionary<string,HealthCareEntry?>> npcCare=new();
+    static HealthCareEntry? NpcCare(ContractWorld w,HealthCondition c)
+    {
+        if(c.Person==w.PlayerControl||w.NewGame is not {} data||!NationalSystems.On(w,"NpcSelfCare"))return null;
+        long at=checked(c.OnsetAt+NpcCareDelay);if(at>w.ElapsedSeconds)return null;
+        return npcCare.GetValue(data,_=>new(StringComparer.Ordinal)).GetOrAdd(c.Id.Value,_=>
+            PersonalCompanions.PhysicalSiteAt(w,c.Person,at,0) is {} site?new HealthCareEntry(new(new("care:npc/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Id.Value))),c.Person,c.Id,c.Person),site,at,0):null);
+    }
     // 手当は残りの経過を短くするが、即時の全快はない。
     public static long RecoverAt(ContractWorld w,HealthCondition c)
     {
