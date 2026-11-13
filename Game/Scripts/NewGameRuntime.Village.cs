@@ -22,7 +22,7 @@ public partial class NewGameRuntime
             Button($"現地の兵で蜂起（{f.Proclamation.Mustered}人）を鎮圧する",()=>Run(VillageAction.SuppressUprising,f.Letter!.Id));
         }
         Button("私：この量の米で救済を相談する",()=>Run(VillageAction.ProposeRelief,amount:(long)amount.Value),!v.CanPromise);
-        Button("私：水利工事への協力を相談する（200kg・20人）",()=>Run(VillageAction.ProposeWater,amount:200),!v.CanPromise);
+        Button("私：水利工事への協力を相談する",()=>Run(VillageAction.ProposeWater,amount:200),!v.CanPromise);
         var q=v.Proposals.LastOrDefault();if(q!=null){box.AddChild(new Label{Text=(q.Term%2==0?"村役人":"水利世話人")+"の返答（相談時点）：\n"+q.Reply,AutowrapMode=TextServer.AutowrapMode.WordSmart});Button("私：この返答の条件で約束する",()=>Run(VillageAction.Confirm,q.Id),!q.Agreed||Session.Seconds>q.At+86400||v.Term!=q.Term||v.Promises.Any(p=>p.Id==q.Id));}
         foreach(var c in v.Promises){box.AddChild(new Label{Text=$"{c.Kind}：{c.Status}\n受渡し/着手 {c.Delivered}/{c.Amount}kg",AutowrapMode=TextServer.AutowrapMode.WordSmart});bool pending=c.Delivered<c.Amount&&Session.Seconds<=c.DeliverBy&&c.Status=="約束の履行待ち";Button(c.Kind=="水利工事"?"合意した工事に着手する":"上の量を現地で渡す",()=>Run(VillageAction.Deliver,c.Id,c.Kind=="水利工事"?200:(long)amount.Value),!v.CanPromise||!pending);Button("未履行分の終了を伝える",()=>Run(VillageAction.Cancel,c.Id),!v.CanPromise||c.Delivered>=c.Amount||c.Status.Contains("終了"));}
         if(!v.CanPromise){}

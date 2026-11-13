@@ -209,7 +209,7 @@ public partial class NewGameRuntime
    }
    foreach(var company in PrivateRecruitment.Renewable(w,actor,site.Value,w.ElapsedSeconds,rev+1)){
        var key="standing-"+company.Revision;
-       Button(key,$"{company.Input.Amount}人の隊を継続雇用（30日ごとに払える人数が残る）",
+       Button(key,$"{company.Input.Amount}人の隊を継続雇用",
            ()=>Run(new(Nonce(key),CourtAction.KeepPrivateCompany,actor,company.Input.Owner,site.Value,Reference:company.Input.Id)));
    }
    void Recruit(CourtAction action)=>Run(new(Nonce(action.ToString()),action,actor,control.Subject,site.Value,
