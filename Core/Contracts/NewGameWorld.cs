@@ -110,7 +110,15 @@ public static partial class NewGameWorld
         ? ContractJson.CanonicalHash(new[]{Ruleset,NationalRoutes.Version,ContractJson.CanonicalHash(state)})
         : ContractJson.CanonicalHash(new[]{Ruleset,NationalRoutes.Version,ContractJson.CanonicalHash(state),state.NationalPersonDataPolicy});
     static TimedRelation Relation(string kind,string id,EntityId subject,EntityId target)=>new(new(kind+":"+id),subject,target,kind=="membership"?"membership":kind=="service"?"service":kind=="land"?"control":kind,Basis,0,long.MaxValue,0);
+    // 開始時の関係は開始の定義（NewGameState）だけで決まる。同じ定義の物には一度だけ作り、配列の写しを返す（全国の人数で確定のたびに作り直さない）。
+    sealed class RelationsBox(TimedRelation[] m,TimedRelation[] b,TimedRelation[] o,TimedRelation[] l){public readonly TimedRelation[] M=m,B=b,O=o,L=l;}
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,RelationsBox> relationsCache=new();
     internal static (TimedRelation[] Members,TimedRelation[] Bonds,TimedRelation[] Offices,TimedRelation[] Lands) InitialRelations(NewGameState data)
+    {
+        var box=relationsCache.GetValue(data,d=>{var r=BuildInitialRelations(d);return new(r.Members,r.Bonds,r.Offices,r.Lands);});
+        return ([..box.M],[..box.B],[..box.O],[..box.L]);
+    }
+    static (TimedRelation[] Members,TimedRelation[] Bonds,TimedRelation[] Offices,TimedRelation[] Lands) BuildInitialRelations(NewGameState data)
     {
         var members=new List<TimedRelation>();var bonds=new List<TimedRelation>();var offices=new List<TimedRelation>();var lands=new List<TimedRelation>();
         foreach(var p in data.Start.People){var id=new EntityId(p.Id);string suffix=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(p.Id));
