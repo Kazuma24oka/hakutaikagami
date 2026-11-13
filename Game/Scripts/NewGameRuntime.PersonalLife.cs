@@ -11,7 +11,7 @@ public partial class NewGameRuntime
     internal string ReviewPersonalLifeText()=>lifePopup==null?"":string.Join("\n",lifePopup.FindChildren("*","Label",true,false).Cast<Label>().Select(l=>l.Text));
     void ShowPersonalLife()
     {
-        if(Session==null||Session.PersonalLifeView() is not {} v)return;
+        if(Session==null)return;var v=Session.PersonalLifeView();if(v==null){ShowClinical();return;}
         var popup=new PopupPanel();AddChild(popup);lifePopup=popup;healthButtons.Clear();
         var scroll=new ScrollContainer{HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};popup.AddChild(scroll);scroll.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);var box=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};box.AddThemeConstantOverride("separation",10);scroll.AddChild(box);
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});
@@ -22,6 +22,7 @@ public partial class NewGameRuntime
         void Life(LifeAction action,LifeGoal goal=LifeGoal.WorkPay,long target=0)=>Done(Session.ManageLife(new(Id(action.ToString()),action,v.Site!.Value,action==LifeAction.CancelRest?v.ActiveRest:null,goal,target),Session.PlayerControl,shown));
         Text($"{PersonName(Session.PlayerControl)} — {v.Role}\n私財 {v.PrivateMoney}文 ／ 給付からの私有米 {v.PrivateRice}kg\n給付の未受領 {v.StipendReceivable}kg ／ 自分が支払う未払い {v.StipendPayable}kg");
         Text(v.Burden);Text($"食事で実消費した米 {v.MealRiceConsumed}kg ／ 記録した休養 {v.RestSeconds/60}分");
+        if(Session.ClinicalView() is {} clinical){Text($"疲労 {clinical.Fatigue}　医術 {clinical.MedicineExperience}　後遺症 {clinical.Aftereffect}");if(clinical.TreatmentUntil is {} due)Text($"診療 {Math.Max(0,due-Session.Seconds)/60}分");}
         if(Session.HealthView(Session.PlayerControl) is {} health){
             if(health.Conditions.Length==0){}
             foreach(var c in health.Conditions){
