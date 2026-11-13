@@ -13,6 +13,7 @@ public partial class NewGameRuntime
         host=new(new WorldSession(w));saves=new(Path.Combine(Path.GetTempPath(),"captives-ui-save-"+Guid.NewGuid().ToString("N")),w.Definitions);loading=false;
     }
     internal void ReviewCaptivesOpen()=>ShowCaptives();
+    internal string ReviewStatusText()=>string.Join(" ",Walk(this).OfType<Label>().Select(l=>l.Text));
     static IEnumerable<Node> Walk(Node n){yield return n;foreach(var c in n.GetChildren())foreach(var x in Walk(c))yield return x;}
     internal string ReviewCaptivesText()=>captivesPopup==null?"":string.Join("\n",Walk(captivesPopup).OfType<Label>().Select(l=>l.Text));
     internal void ReviewCaptivesPress(string label)
@@ -48,6 +49,7 @@ public partial class CaptivesCheck:Control
             for(int i=0;i<8;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
             second.ReviewCaptivesOpen();for(int i=0;i<3;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
             if(!second.ReviewCaptivesText().Contains("捕らわれ"))throw new InvalidDataException("捕らわれの表示がありません");
+            if(!second.ReviewStatusText().Contains("捕らわれ・"))throw new InvalidDataException("上の欄に捕らわれの所在がありません");
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             if(GetViewport().GetTexture().GetImage().SavePng(Path.Combine(root,"held.png"))!=Error.Ok)throw new IOException("描画の保存に失敗しました");
             second.ReviewCaptivesPress("解放を願う");for(int i=0;i<3;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
