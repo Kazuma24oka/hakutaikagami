@@ -1,23 +1,18 @@
 # 全国での戦の有効化（担当2の作業記録）
 
-2026-11-13。工程を小分けにせず、BD-06・44・46・W4と全国への接続をまとめる。工程の全件検査・基準・進捗更新・PRは末尾の一度のみ。
+工程はBD-06・44・46・W4と全国への接続をまとめる。小機能ごとに全件検査・基準・進捗加点・PR・main統合は行わない。ClaudeのNationalSystemsを取り込み、現在は作業ブランチだけへ保存している。
 
-Claudeの05240f09のNationalSystemsを取り込み、保存する一覧と新規開始の接続を保持した。旧版のHealthPolicyは過去に作った保存を読める形で残すが、新しい全国開始ではClaudeの一覧を採用し、診療設定を強制追加しない。
+## 接続した入口
+NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy、RiverRoads、HistoricalRoads、NationalRoutes、OfficerBattleHealth。全国交戦は疎な履歴を初期化し、負傷は独立した保存済み一覧の項目で遡及適用を避ける。
 
-作業中の接続：NpcArmies、WorldClashes、BattlefieldRules、CastleSiege、CastleWorks、HostageCustody、VoyageExpense、MilitaryEconomy、HouseLogistics、HouseFreightReceiving、FreightOperations、NpcFreight、FieldConvoy、ArmyRoadMarch、RoadConvoy。全国の交戦は疎な履歴を初期化する。船賃は一覧の版のときだけ標準値を使い、旧保存の明示値は維持する。
+## 実測と限界
+- 初期化・旧保存・同じ軍の二重生成防止・兵糧保存則：関連4件成功（Release、11秒）。一巡の軍務や輸送まで遊べた判定ではない。
+- 4043人・1958拠点・18機能のRelease版：1日275.294秒、途中保存から同じ未来に一致。同期の反復走査を調査し、診断用変更は取り除いた。
+- 開始台帳の所有者索引後：1日184.469秒（144.150＋40.319）、復旧後の後半38.098秒。同じ未来に一致。60秒の条件は未達。
+- 既存拠点に検査用500家を置いた旧軍事規則の場面：4543人・1958拠点・500軍・1500部隊。Release版で作成40.713秒、軍引受1.225秒、初期検査1.884秒。以前のDebug版の軍引受4514秒・検査37秒とはビルド構成も違うため厳密な比較倍率にはしない。軍の識別子を繰り返し計算せず、ロットを集合で照合するようにした。
+- 同じ500軍の保存をゲームへ読み込んだ停止中の描画：Godot 4.5.2 .NET / OpenGL compatibility / RTX 4060 Ti / 実描画1028×720。3秒以上測定して近景790.7 FPS（95%フレーム1.414ms）、全国133.7 FPS（8.072ms）。自前描画も確認。Computer Use未使用。全員の同時歩行・交戦中・全国全機能の版のFPSではない。
 
-未接続：RegionalBattle、FieldSupply、FieldPresence、FieldWorld、RegionalScenery。RiverRoads・HistoricalRoads・NationalRoutesも一覧へ接続中。旧地方の固定人物・固定拠点・固定軍の前提を全国へそのまま持ち込まない。
+## 残り
+RegionalBattle、FieldSupply、FieldPresence、FieldWorld、RegionalSceneryは地方用の固定人物・拠点・軍の前提を全国へそのまま持ち込まず、実在軍と同じ原本に接続する。全国1日60秒以内、500軍を含む移動と保存復旧、NPCの自発的判断、捕縛・処遇・交換・身代金、W4、内応・離反・独立と滅亡・再興も残る。完成・性能合格・全件成功とは扱わない。
 
-初期化・旧保存の代表検査2件成功。これは装備の受渡しや兵站の一巡まで遊べたという判定ではない。
-
-有効化後の全国1日60秒以内、途中保存からの同じ未来、実機FPSは未実施。全国の4543人・1958拠点・500軍の旧軍事規則による負荷場面を準備したが、軍引受は4514秒、初期検査37秒であり、完成や性能合格とは扱わない。FPSもまだ計測していない。
-
-生活・健康などClaude担当を追加変更しない。既存の診療部分の引継ぎはHealthExpansionV1/handoff-to-claude.md。死亡・後継の処理を二重実装しない。
-
-全国1日の計測はDebug版で60秒を超え、中断した。完了時間・復旧一致は未判定。判定用のRelease版で時間を区切って測る。全件検査の追加はしない。
-
-実測：現在の全国開始（4043人・1958拠点・18機能）で1日275.294秒、途中保存から同じ未来は一致。60秒条件は未達。遅さは全件検査ではなく通常同期が中心（同期2192回で地域帳簿39.7秒・市場29.8秒・財布17.7秒など）。診断用の一時計測は取り除き、開始時の城所有者の索引化と軍台帳識別子の再利用を実装している。全国の1日・保存復旧で再測定中。
-
-武将の負傷原本は新規全国開始のOfficerBattleHealth一覧でのみ発生・保存できるよう接続中。医術・回復・生活の実装はClaude担当を維持し、健康のEnabledを勝手に変更しない。
-
-所有者索引後：1日184.469秒（144.150＋40.319）、復旧後38.098秒、同じ未来に一致。改善したが60秒条件は未達。武将負傷は独立したOfficerBattleHealth項目で版を分け、既に保存した18項目の世界へ遡及適用しない。
+生活・健康などClaude担当を追加変更しない。診療の引継ぎはHealthExpansionV1/handoff-to-claude.md。新しい全国開始はClaudeの共通一覧を採用し、HealthPolicy付きの既存保存は読めるまま保持する。医術・死亡・後継処理を二重実装しない。
