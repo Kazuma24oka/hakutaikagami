@@ -7,8 +7,12 @@ namespace HakutaiKagami.Core.Contracts;
 // 相手の当主は書状が届いて開封した時点で、本人の私財と書状の額だけで払うか断るかを決め、返書を出す（捕虜の本当の状態は知らない）。
 // 払う場合は返書と一緒に銭が運ばれる：出した時点で相手の私財から減り、本人が返書を開封した時点で本人の私財に入る。
 // 受け取っても捕虜は自動で解放しない。解放は当主の明示の操作（ManageCaptive）。
-public enum RansomAction { Demand,Pay,Refuse }
-public sealed record RansomPaper(EntityId Id,RansomAction Action,EntityId Person,long Amount,EntityId? Source,EntityId Author,EntityId Recipient,EntityId Address,long At,long Revision,string Message);
+public enum RansomAction { Demand,Pay,Refuse,Exchange,AcceptExchange }
+public sealed record RansomPaper(EntityId Id,RansomAction Action,EntityId Person,long Amount,EntityId? Source,EntityId Author,EntityId Recipient,EntityId Address,long At,long Revision,string Message)
+{
+    // 捕虜交換の申し入れ（Exchange）で、相手が捕らえている自分の家の者。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Other {get;init;}
+}
 public sealed record RansomOpening(string Message,EntityId Actor,long At,long Revision);
 public sealed record RansomCard(EntityId Id,EntityId Person,long Amount,string Stage);
 
@@ -47,7 +51,9 @@ public static partial class BattleCaptivity
     static MessageEnvelope Envelope(ContractWorld w,RansomPaper p)
     {
         string name=FamilyBirth.People(w).SingleOrDefault(x=>x.Id==p.Person.Value)?.Name??p.Person.Value;
-        string body=p.Action switch{RansomAction.Demand=>$"{name}殿の身代金として{p.Amount}文を求めます。",RansomAction.Pay=>$"{name}殿の身代金{p.Amount}文を送ります。",_=>$"{name}殿の身代金には応じません。"};
+        string other=p.Other is {} o?FamilyBirth.People(w).SingleOrDefault(x=>x.Id==o.Value)?.Name??o.Value:"";
+        string body=p.Action switch{RansomAction.Demand=>$"{name}殿の身代金として{p.Amount}文を求めます。",RansomAction.Pay=>$"{name}殿の身代金{p.Amount}文を送ります。",
+            RansomAction.Exchange=>$"{name}殿と{other}殿を引き換えに放ちたく存じます。",RansomAction.AcceptExchange=>$"{name}殿と{other}殿の引き換えに応じます。",_=>$"{name}殿の身代金には応じません。"};
         return new(p.Message,p.Id.Value,RansomKind,p.Author.Value,p.Recipient.Value,body,p.Address.Value,p.At);
     }
     static void Post(ContractWorld w,RansomPaper p)
@@ -82,6 +88,20 @@ public static partial class BattleCaptivity
             if(c.Holder==w.PlayerControl||HouseSuccession.Head(w,c.CaptorOwner,at,rev)==w.PlayerControl)continue;
             var last=Last(w,c.Person,at,rev+1);if(last==null||last.Value.Revision!=capRev||EndOf(w,c.Person,capRev,at,rev+1)!=null)continue;
             var head=HouseSuccession.Head(w,c.CaptorOwner,at,rev);
+            // 捕虜の交換：互いに相手の家の者を捕らえていれば、家の ID の小さい側の当主が書状で引き換えを申し入れる（身代金より先）。
+            var proposed=Papers(w).FirstOrDefault(p=>p.Action==RansomAction.Exchange&&p.Person==c.Person&&p.Author==head);
+            if(proposed!=null||Mutual(w,c,at,rev) is not null)
+            {
+                if(proposed==null&&Mutual(w,c,at,rev) is {} theirs&&string.CompareOrdinal(c.CaptorOwner.Value,c.FromOwner.Value)<0&&at>=c.At+NpcWaitSeconds)
+                    Post(w,PrepareExchange(w,NpcExchangeId(c.Person,theirs.Person),c,theirs,head,at,rev));
+                // 相手の受諾を開封したら、その城にいるときに放つ。
+                var accept=Papers(w).SingleOrDefault(p=>p.Action==RansomAction.AcceptExchange&&p.Recipient==head&&p.Person==c.Person);
+                if(accept!=null&&!Openings(w).Any(o=>o.Message==accept.Message)&&Delivered(w,accept))
+                {if(!MessageFlow.Knows(w.Messaging,accept.Message,head.Value))w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(accept.Message,head.Value,at,accept.Message)];RecordOpening(w,head,accept.Message);}
+                bool agreed=Papers(w).Any(p=>p.Action==RansomAction.AcceptExchange&&p.Person==c.Person&&(p.Author==head||Opened(w,p,at,rev+1)));
+                if(agreed&&!OwnIdUsed(w,NpcReleaseId(c.Person,c.At))&&CanAct(w,c,head,at,rev))Apply(w,new(NpcReleaseId(c.Person,c.At),CaptiveAction.Release,c.Person),head);
+                continue;
+            }
             // 身代金を求める（捕虜の家の当主が別人で、権限を持つとき）。
             var demandId=NpcDemandId(c.Person,c.At);var demand=Papers(w).SingleOrDefault(p=>p.Id==demandId);
             if(demand==null)
@@ -100,10 +120,37 @@ public static partial class BattleCaptivity
                 Apply(w,new(NpcReleaseId(c.Person,c.At),CaptiveAction.Release,c.Person),head);
         }
     }
+    static EntityId NpcExchangeId(EntityId mine,EntityId theirs)=>new("request:npc-captive-exchange/"+Hash(mine.Value+"/"+theirs.Value));
+    // c（自分の家が捕らえた相手の家の者）に対して、相手の家が捕らえている自分の家の者（まだ拘束中）。
+    static BattleCapture? Mutual(ContractWorld w,BattleCapture c,long at,long rev)=>Captures(w).Select(x=>x.Capture).Where(x=>x.CaptorOwner==c.FromOwner&&x.FromOwner==c.CaptorOwner&&x.Holder!=w.PlayerControl&&HeldAt(w,x.Person,at,rev+1)).OrderBy(x=>x.At).ThenBy(x=>x.Person.Value,StringComparer.Ordinal).Select(x=>(BattleCapture?)x).FirstOrDefault();
+    static RansomPaper PrepareExchange(ContractWorld w,EntityId id,BattleCapture mine,BattleCapture theirs,EntityId actor,long at,long rev)
+    {using var _ccRev=ControlContext.At(rev);
+        Need(NpcCaptors(w)&&id==NpcExchangeId(mine.Person,theirs.Person)&&HeldAt(w,mine.Person,at,rev+1)&&HeldAt(w,theirs.Person,at,rev+1)&&FactionStances.ResolveAuthority(w,actor,mine.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null,"引き換えの申し入れが不正です");
+        var head=HouseSuccession.Head(w,mine.FromOwner,at,rev);
+        return new(id,RansomAction.Exchange,mine.Person,0,null,actor,head,Home(w,mine.FromOwner,at,rev),at,rev,PaperMessage(id)){Other=theirs.Person};
+    }
+    // 引き換えの申し入れを受けた当主：自分の家の者が戻るので応じ、受諾の返書を出す。相手の家の者は、その城にいるときに放つ。
+    static void AnswerExchanges(ContractWorld w)
+    {
+        if(!NpcCaptors(w))return;long at=w.ElapsedSeconds,rev=w.CommitSequence;
+        foreach(var p in Papers(w).Where(p=>p.Action==RansomAction.Exchange&&p.Recipient!=w.PlayerControl).ToArray())
+        {
+            if(!Openings(w).Any(o=>o.Message==p.Message)&&Delivered(w,p))
+            {
+                if(!MessageFlow.Knows(w.Messaging,p.Message,p.Recipient.Value))w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(p.Message,p.Recipient.Value,at,p.Message)];
+                RecordOpening(w,p.Recipient,p.Message);
+                if(HeldAt(w,p.Person,at,rev+1)&&p.Other is {} q&&HeldAt(w,q,at,rev+1))
+                {var id=new EntityId("request:npc-captive-exchange-reply/"+Hash(p.Id.Value));Post(w,new RansomPaper(id,RansomAction.AcceptExchange,p.Person,0,p.Id,p.Recipient,p.Author,p.Address,at,rev,PaperMessage(id)){Other=q});}
+            }
+            // 受諾したら、自分が捕らえている相手の家の者を放つ。
+            if(Papers(w).Any(r=>r.Action==RansomAction.AcceptExchange&&r.Source==p.Id)&&p.Other is {} other&&Last(w,other,at,rev+1) is {} held&&EndOf(w,other,held.Revision,at,rev+1)==null)
+            {var c=held.Capture;var id=NpcReleaseId(other,c.At);if(!OwnIdUsed(w,id)&&CanAct(w,c,p.Recipient,at,rev))Apply(w,new(id,CaptiveAction.Release,other),p.Recipient);}
+        }
+    }
     // 相手の当主は届いた書状をすぐ開封し、その場で返書を出す。
     internal static void Update(ContractWorld w)
     {
-        NpcCaptorTurns(w);
+        NpcCaptorTurns(w);AnswerExchanges(w);
         if(!Enabled(w)||Papers(w).Length==0)return;
         foreach(var p in Papers(w).Where(p=>p.Action==RansomAction.Demand&&p.Recipient!=w.PlayerControl).ToArray())
         {
@@ -134,6 +181,8 @@ public static partial class BattleCaptivity
         {
             Need(p.At>=0&&p.At<=w.ElapsedSeconds&&p.Revision>0&&p.Revision<=w.CommitSequence&&p.Message==PaperMessage(p.Id),"身代金の書状の時点が不正です");
             if(p.Action==RansomAction.Demand)Need(p==PrepareDemand(w,p.Id,p.Person,p.Amount,p.Author,p.At,p.Revision),"身代金の要求が一致しません");
+            else if(p.Action==RansomAction.Exchange)Need(NpcCaptors(w)&&p.Other is {} q&&Last(w,p.Person,p.At,p.Revision+1) is {} mine&&Last(w,q,p.At,p.Revision+1) is {} theirs&&p==PrepareExchange(w,p.Id,mine.Capture,theirs.Capture,p.Author,p.At,p.Revision),"引き換えの申し入れが一致しません");
+            else if(p.Action==RansomAction.AcceptExchange)Need(papers.SingleOrDefault(d=>d.Id==p.Source&&d.Action==RansomAction.Exchange) is {} ex&&openings.Any(o=>o.Message==ex.Message&&o.Actor==ex.Recipient&&o.At==p.At&&o.Revision==p.Revision)&&p.Author==ex.Recipient&&p.Recipient==ex.Author&&p.Person==ex.Person&&p.Other==ex.Other,"引き換えの受諾が一致しません");
             else
             {
                 var demand=papers.SingleOrDefault(d=>d.Id==p.Source&&d.Action==RansomAction.Demand);
