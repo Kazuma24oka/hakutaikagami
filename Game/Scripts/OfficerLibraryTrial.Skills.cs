@@ -30,6 +30,16 @@ public partial class OfficerLibraryTrial
         for(int n=0;n<freeSkills.Length;n++)freeSkills[n].SetValueNoSignal(p.Background==FreeBackground?p.StartSkills?.SingleOrDefault(x=>x.Skill==CharacterDevelopment.Skills32List[n])?.Level??0:0);
         if(p.Background==FreeBackground)background.Select(CharacterDevelopment.Backgrounds.Length+1);ShowFreeSkills();
     }
+    // 家系と信仰（未設定は推測しない）。
+    OptionButton lineage=null!,faith=null!;
+    void BuildLineageFaith(GridContainer grid)
+    {
+        lineage=new OptionButton{Name="OfficerLineage"};grid.AddChild(new Label{Text="家系"});grid.AddChild(lineage);lineage.AddItem("未設定");foreach(var x in RegisteredOfficer.Lineages)lineage.AddItem(x);
+        faith=new OptionButton{Name="OfficerFaith"};grid.AddChild(new Label{Text="信仰"});grid.AddChild(faith);faith.AddItem("未設定");foreach(var x in RegisteredOfficer.Faiths)faith.AddItem(x);
+    }
+    void RestoreLineageFaith(RegisteredOfficer? p){lineage.Select(p?.Lineage==null?0:1+Array.IndexOf(RegisteredOfficer.Lineages,p.Lineage));faith.Select(p?.Faith==null?0:1+Array.IndexOf(RegisteredOfficer.Faiths,p.Faith));}
+    string? ChosenLineage=>lineage.Selected<=0?null:RegisteredOfficer.Lineages[lineage.Selected-1];
+    string? ChosenFaith=>faith.Selected<=0?null:RegisteredOfficer.Faiths[faith.Selected-1];
     (string? Background,OfficerSkill[]? Skills) ChosenSkills()
     {
         if(FreeChosen){var s=FreeSkills();CharacterDevelopment.CheckCreated(s);return (FreeBackground,s.Length==0?null:s);}

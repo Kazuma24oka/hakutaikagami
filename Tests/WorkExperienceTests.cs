@@ -64,3 +64,16 @@ public sealed class NpcDoctorTests
         Assert.NotEqual(pair.Doctor,PersonalHealth.HouseCarer(w,pair.Patient,pair.Site,at)); // 一覧を持たない世界は家の中だけ
     }
 }
+// 作成武将の家系と信仰（2026-11-15）：一覧から選んだものだけを受け付け、保存から戻しても同じ。
+public sealed class LineageFaithTests
+{
+    [Fact]
+    public void OnlyListedLineageAndFaithAreAccepted()
+    {
+        var p=NewGameWorldTests.Officer() with{Lineage="平氏",Faith="禅宗"};
+        Assert.Equal("平氏",Assert.Single(NewGameWorld.Normalize([p])).Lineage);
+        Assert.Equal("禅宗",ContractJson.Read<RegisteredOfficer>(ContractJson.Write(p)).Faith);
+        Assert.Throws<InvalidDataException>(()=>NewGameWorld.Normalize([p with{Faith="架空の宗"}]));
+        Assert.Null(ContractJson.Read<RegisteredOfficer>(ContractJson.Write(NewGameWorldTests.Officer())).Lineage); // 未設定は推測しない
+    }
+}

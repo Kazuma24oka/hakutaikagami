@@ -80,7 +80,7 @@ public static partial class NewGameWorld
     public static string SiteName(string site)=>WorldNetwork.Site(RegionalCampaign.Site(Node(site))).Name;
     public static RegisteredOfficer[] Normalize(RegisteredOfficer[] records)
     {
-        NewGameSetup.Validate(new OfficerLibrary(1,records,[]));foreach(var r in records)CharacterDevelopment.CheckCreated(r.StartSkills);
+        NewGameSetup.Validate(new OfficerLibrary(1,records,[]));foreach(var r in records){CharacterDevelopment.CheckCreated(r.StartSkills);if(r.Lineage!=null&&!RegisteredOfficer.Lineages.Contains(r.Lineage)||r.Faith!=null&&!RegisteredOfficer.Faiths.Contains(r.Faith))throw new InvalidDataException("家系・信仰は一覧から選んでください");}
         // A group's copies may still name the ungrouped source as their lord. Resolve only an unambiguous in-group copy.
         return records.Select(p=>{
             string? lord=p.Lord;if(lord!=null&&!records.Any(q=>q.Id==lord)){

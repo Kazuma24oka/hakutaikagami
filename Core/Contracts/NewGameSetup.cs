@@ -20,6 +20,13 @@ public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Nam
     public OfficerSkill[]? StartSkills {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? Background {get;init;}
+    // 家系と信仰（Proposals/CHARACTER_DATA_FIELDS_V1 の基本の項目、2026-11-15）。作成時に一覧から選ぶ。未設定は推測しない。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Lineage {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Faith {get;init;}
+    public static readonly string[] Lineages=["源氏","平氏","藤原氏","橘氏","その他"];
+    public static readonly string[] Faiths=["浄土真宗","浄土宗","禅宗","日蓮宗","天台宗","真言宗","時宗","神道","キリシタン"];
 }
 public sealed record OfficerSkill(DevelopmentSkill Skill,int Level);
 public sealed record OfficerGroup(string Id, string Name, RegisteredOfficer[] Officers);
