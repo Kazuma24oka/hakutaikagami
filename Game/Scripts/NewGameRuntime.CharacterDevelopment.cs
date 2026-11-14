@@ -36,7 +36,7 @@ public partial class NewGameRuntime
                 bool busy=world.Tasks.Any(t=>t.Executor==person&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));
                 bool atSite=world.Locations.Any(l=>l.Actor==person&&l.Kind==LocationKind.AtSite);
                 {}
-                foreach(var skill in Enum.GetValues<DevelopmentSkill>())Button(CharacterDevelopment.Name(skill)+"を修行する",()=>{
+                foreach(var skill in CharacterDevelopment.Skills(Snapshot()))Button(CharacterDevelopment.Name(skill)+"を修行する",()=>{
                     try{Done(Session.Submit(CharacterDevelopment.Practice(Snapshot(),"request:development-ui/"+shown+"/"+skill,skill),shown));}
                     catch(System.IO.InvalidDataException e){feedback.Text=e.Message;}
                 },busy||!atSite||PersonalLife.Resting(world,world.ElapsedSeconds,world.CommitSequence+1));
