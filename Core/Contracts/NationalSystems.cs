@@ -15,6 +15,8 @@ public static class NationalSystems
         "LiveTerritory",
         // 城代と城の受け渡し（城主の任命・蔵の預かり・門の引渡し）
         "CastleAdministration",
+        // 当主に銭を払って次の出陣を見合わせてもらう約束
+        "PrivateStanddown",
         // 戦・兵站・輸送・道
         "OfficerBattleHealth", "ExpeditionFodder",
         "FieldPresence", "FieldSupply", "FieldWorld", "RegionalBattle", "RegionalScenery",

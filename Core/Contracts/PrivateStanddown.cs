@@ -10,7 +10,7 @@ public static class PrivateStanddown
 {
     public const string Policy="private-head-next-muster-delay-fee100-known-paid-contact-v1";public const long Fee=100,OfferSeconds=30;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.StanddownPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&(w.NewGame?.StanddownPolicy==Policy||NationalSystems.On(w,"PrivateStanddown"));
     static StanddownState State(ContractWorld w)=>w.Standdown??new(1,Policy,[],[]);
     static bool Before(long t,long r,long at,long rev)=>t<at||t==at&&r<rev;
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>State(w).Orders.Any(o=>o.Input.Id==id);
