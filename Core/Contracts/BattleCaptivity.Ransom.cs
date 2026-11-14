@@ -27,8 +27,8 @@ public static partial class BattleCaptivity
     static RansomPaper PrepareDemand(ContractWorld w,EntityId id,EntityId person,long amount,EntityId actor,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         Need(Enabled(w)&&NewGameWork.Enabled(w),"この世界では銭のやり取りができません");
-        Need(EntityId.IsValid(id.Value)&&actor==w.PlayerControl&&amount is >=RansomMin and <=RansomMax,"身代金は100〜3000文で求めてください");
         var last=Last(w,person,at,rev);
+        Need(EntityId.IsValid(id.Value)&&(actor==w.PlayerControl||NpcCaptors(w)&&last!=null&&id==NpcDemandId(person,last.Value.Capture.At)&&amount==NpcRansom)&&amount is >=RansomMin and <=RansomMax,"身代金は100〜3000文で求めてください");
         Need(last!=null&&EndOf(w,person,last.Value.Revision,at,rev)==null&&!Assassination.DeadAt(w,person,at,rev-1),"その人物は捕らえていません");
         var c=last.Value.Capture;
         Need(FactionStances.ResolveAuthority(w,actor,c.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null,"捕らえた家の当主権限が必要です");
@@ -68,9 +68,42 @@ public static partial class BattleCaptivity
         w.Captives=w.Captives! with{Openings=[..Openings(w),new(message,actor,w.ElapsedSeconds,w.CommitSequence)]};
     }
     static bool Delivered(ContractWorld w,RansomPaper p)=>w.Messaging.Attempts.Any(a=>a.MessageId==p.Message&&a.ReceiverId==p.Recipient.Value&&a.Status==AttemptStatus.Delivered);
+    // NPC の当主が捕らえた者の処遇（全国の開始の一覧の NpcCaptors）。捕らえた家の当主は、捕縛の1日後に捕虜の家の当主へ身代金500文を書状で求める。
+    // 返書が届けばすぐ開封し、払われていれば、その城にいるときに放つ。断られたら30日後に、その城にいるときに放つ。登用・処断は NPC はしない。
+    public const long NpcRansom=500,NpcWaitSeconds=86400,NpcMercySeconds=30*86400;
+    internal static bool NpcCaptors(ContractWorld w)=>NationalSystems.On(w,"NpcCaptors");
+    static EntityId NpcDemandId(EntityId person,long capturedAt)=>new("request:npc-captive-ransom/"+Hash(person.Value+"/"+capturedAt));
+    static EntityId NpcReleaseId(EntityId person,long capturedAt)=>new("request:npc-captive-release/"+Hash(person.Value+"/"+capturedAt));
+    static void NpcCaptorTurns(ContractWorld w)
+    {
+        if(!NpcCaptors(w))return;long at=w.ElapsedSeconds,rev=w.CommitSequence;
+        foreach(var (c,capRev) in Captures(w).ToArray())
+        {
+            if(c.Holder==w.PlayerControl||HouseSuccession.Head(w,c.CaptorOwner,at,rev)==w.PlayerControl)continue;
+            var last=Last(w,c.Person,at,rev+1);if(last==null||last.Value.Revision!=capRev||EndOf(w,c.Person,capRev,at,rev+1)!=null)continue;
+            var head=HouseSuccession.Head(w,c.CaptorOwner,at,rev);
+            // 身代金を求める（捕虜の家の当主が別人で、権限を持つとき）。
+            var demandId=NpcDemandId(c.Person,c.At);var demand=Papers(w).SingleOrDefault(p=>p.Id==demandId);
+            if(demand==null)
+            {
+                if(at<c.At+NpcWaitSeconds)continue;
+                try{Post(w,PrepareDemand(w,demandId,c.Person,NpcRansom,head,at,rev));}catch(InvalidDataException){}
+                continue;
+            }
+            // 返書を開封する。
+            var reply=Papers(w).SingleOrDefault(p=>p.Source==demand.Id);
+            if(reply!=null&&!Openings(w).Any(o=>o.Message==reply.Message)&&Delivered(w,reply)&&reply.Recipient==head)
+            {if(!MessageFlow.Knows(w.Messaging,reply.Message,head.Value))w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(reply.Message,head.Value,at,reply.Message)];RecordOpening(w,head,reply.Message);}
+            bool paid=reply!=null&&reply.Action==RansomAction.Pay&&Opened(w,reply,at,rev+1);
+            bool refusedLong=reply!=null&&reply.Action==RansomAction.Refuse&&Opened(w,reply,at,rev+1)&&at>=reply.At+NpcMercySeconds;
+            if((paid||refusedLong)&&!OwnIdUsed(w,NpcReleaseId(c.Person,c.At))&&CanAct(w,c,head,at,rev))
+                Apply(w,new(NpcReleaseId(c.Person,c.At),CaptiveAction.Release,c.Person),head);
+        }
+    }
     // 相手の当主は届いた書状をすぐ開封し、その場で返書を出す。
     internal static void Update(ContractWorld w)
     {
+        NpcCaptorTurns(w);
         if(!Enabled(w)||Papers(w).Length==0)return;
         foreach(var p in Papers(w).Where(p=>p.Action==RansomAction.Demand&&p.Recipient!=w.PlayerControl).ToArray())
         {
