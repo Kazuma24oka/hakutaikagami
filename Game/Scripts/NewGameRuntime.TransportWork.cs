@@ -15,7 +15,7 @@ public partial class NewGameRuntime
     {
         var j=CurrentTransport();var offer=TransportWork.OfferAt(Snapshot(),new("job:transport-preview"));
         bool visible=j!=null||offer!=null;transportSummary.Visible=buttons["work-transport"].Visible=visible;buttons["work-transport"].Disabled=IsSaving||IsClockControlling||IsDeparting;
-        if(j!=null){var t=j.Handover.Terms;transportSummary.Text="運搬："+TransportPhase(TransportHandover.Validate(j.Handover).Phase)+" / 預り銭 "+Snapshot().ResourceLots.Single(l=>l.Id==TransportWork.Cargo(t.Id)).Quantity+"文（私財と別）";}else transportSummary.Text="現地の小口送金を相談できます。";
+        if(j!=null){var t=j.Handover.Terms;transportSummary.Text="運搬："+TransportPhase(TransportHandover.Validate(j.Handover).Phase)+" / 預り銭 "+Snapshot().ResourceLots.Single(l=>l.Id==TransportWork.Cargo(t.Id)).Quantity+"文（私財と別）";}else transportSummary.Text="小口送金";
     }
     static string TransportPhase(HandoverPhase p)=>p switch{HandoverPhase.Offered=>"条件確認",HandoverPhase.Accepted=>"荷物の引受待ち",HandoverPhase.Carrying=>"届け先へ運搬中",HandoverPhase.Delivered=>"荷主へ報告",HandoverPhase.Reported=>"運賃未受領",HandoverPhase.Paid=>"完了",HandoverPhase.ReturnRequired=>"荷物の返却待ち",HandoverPhase.Returned=>"返却済み",_=>"取消済み"};
     void ShowTransportWork()

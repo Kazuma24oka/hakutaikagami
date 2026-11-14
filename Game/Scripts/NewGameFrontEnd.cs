@@ -126,7 +126,7 @@ public partial class NewGameFrontEnd : Control
         var rows=confirmed!.People.Where(p=>(filterSite==null||p.Site==filterSite)&&(string.IsNullOrWhiteSpace(search.Text)||p.Name.Contains(search.Text,StringComparison.CurrentCultureIgnoreCase)));
         int Value(SetupPerson p)=>p.Attributes==null?int.MinValue:sortChoice.Selected switch{1=>p.Attributes.Leadership,2=>p.Attributes.Valor,3=>p.Attributes.Intelligence,4=>p.Attributes.Politics,_=>p.Attributes.Negotiation??50};
         visiblePeople=(sortChoice.Selected==0?rows.OrderBy(p=>p.Name,StringComparer.CurrentCulture):rows.OrderByDescending(Value).ThenBy(p=>p.Name,StringComparer.CurrentCulture)).ToArray();personRows.Clear();foreach(var p in visiblePeople)personRows.AddItem(p.Name+" / "+(p.Created?"登録":"実在")+(p.Attributes==null?" / 能力未採録":" / 統率"+p.Attributes.Leadership)+(NewGameWorld.CanPlay(confirmed,p,FamilyKin.ComingOfAge)?"":" / 未成年"));
-        int at=Array.FindIndex(visiblePeople,p=>p.Id==selected);if(at>=0){personRows.Select(at);SelectPerson(visiblePeople[at]);}else{selected=null;buttons["begin"].Disabled=true;personText.Text=visiblePeople.Length==0?"この条件に該当する武将はいません。":"武将を選んでください。";}
+        int at=Array.FindIndex(visiblePeople,p=>p.Id==selected);if(at>=0){personRows.Select(at);SelectPerson(visiblePeople[at]);}else{selected=null;buttons["begin"].Disabled=true;personText.Text=visiblePeople.Length==0?"この条件に該当する武将はいません。":"未選択";}
     }
     void SelectPerson(SetupPerson p){selected=p.Id;buttons["begin"].Disabled=!NewGameWorld.CanPlay(confirmed!,p,FamilyKin.ComingOfAge);var role=confirmed!.Factions.Any(f=>f.Head==p.Id)?"（当主）":
         p.Id=="person:imagawa-ujizane" && ImagawaPersonnel.HasStartingHeir(confirmed)?"（今川家の後継者）":"";

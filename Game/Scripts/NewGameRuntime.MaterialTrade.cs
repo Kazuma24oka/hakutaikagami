@@ -6,7 +6,7 @@ public partial class NewGameRuntime
 {
     void ShowMaterialTrade()
     {
-        var v=Session.RegionalTradeView();if(v==null){message.Text="現地の市場で取引してください。";return;}long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var scroll=new ScrollContainer{CustomMinimumSize=new(510,360),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(500,0)};scroll.AddChild(box);
+        var v=Session.RegionalTradeView();if(v==null){message.Text="市場がありません";return;}long shown=Session.Revision;var popup=new PopupPanel();AddChild(popup);var panel=new PanelContainer();panel.AddThemeStyleboxOverride("panel",WorkBox("1d2b34","b7a16a",14));popup.AddChild(panel);var scroll=new ScrollContainer{CustomMinimumSize=new(510,360),HorizontalScrollMode=ScrollContainer.ScrollMode.Disabled};panel.AddChild(scroll);var box=new VBoxContainer{CustomMinimumSize=new(500,0)};scroll.AddChild(box);
         box.AddChild(new Label{Text=NewGameWorld.SiteName(v.Site.Value)+" — 物資の取引"});var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};box.AddChild(feedback);
         void Run(TradeAction action,EntityId? contract=null,EntityId? to=null,long n=0,string? kind=null){var result=Session.TradeRice(new(new("request:goods-ui/"+shown),action,v.Site,contract,to,n){Commodity=kind},Session.PlayerControl,shown);if(result.Code is not(ResultCode.Accepted or ResultCode.AlreadyAccepted)){feedback.Text=result.VisibleReason;return;}popup.Hide();Refresh();ShowMaterialTrade();}
         void Button(string title,Action run){var b=new Button{Text=title};box.AddChild(b);b.Pressed+=run;}
