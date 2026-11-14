@@ -41,9 +41,10 @@
 - 作成武将の新しい項目（生年・家系・兵科適性・志・信仰。Proposals/CHARACTER_DATA_FIELDS_V1）。
 
 ### 全国の戦の残り（BD-04・BD-44・BD-06・BD-46、Docs/Design/NationalWarfareV1・BattleCaptivityV1・NationalStrategyV1）
-- 本人の家の家臣が率いる部隊（今は本人の軍の3部隊とも本人が指揮）。これができてから家臣の捕縛、書状による捕虜交換と双方の護送・受け渡し。
+- 本人の軍の部隊を家臣に任せるのは入れた（2026-11-15、一覧の PlayerUnitLeaders：出陣のときに同じ城にいる自分の家の家臣を2人まで選び、2番目・3番目の部隊を率いさせる。率いる間は野にいてほかの用をせず、入城すると同じ城へ戻る。部隊が崩れると本人と同じ判定で捕らえられる。Tests/PlayerUnitLeaderTests.cs、画面は軍務の「家臣と出陣」）。捕虜の護送・受け渡しは残り。
+- 本人と NPC の家の捕虜の書状は入れた（2026-11-15、一覧の PlayerCaptiveLetters：本人が身代金の求めに払う・断るの返書を出し、NPC からの引き換えに応じ、書状で知った家臣を自分が捕らえた者と引き換えに申し入れる。Tests/NpcCaptorTests.cs の PlayerCaptiveLetterTests）。
 - NPC どうしの交戦の区切りの間のすれ違い。捕らえた者の護送。相手の家が捕縛を知る経路（今は身代金・引き換えの書状で知る）。
-- 落城した城の郡の帳簿は新しい持ち主の当主が扱う（2026-11-14、一覧の ConquestDomains。Tests/StrategyLossesTests.cs の ConquestDomainsTests）。開始時の持ち主で読むほかの仕組み（寺社・村の相談・交易など）の切り替えは残り。本人の家の滅亡は記録と書状まで（取り戻すのは本人の攻城）。
+- 落城した城の郡の帳簿は新しい持ち主の当主が扱う（2026-11-14、一覧の ConquestDomains。Tests/StrategyLossesTests.cs の ConquestDomainsTests）。村の相談・商い・代理行政・NPC の村の取り決め・謀略・受領名も今の持ち主の家で扱う（2026-11-15）。本人の家の滅亡は記録と書状まで（取り戻すのは本人の攻城）。
 - 独立した家そのものの戦略（出陣・同盟）。国人の加勢。
 - 500軍の同時行軍と実機の受入（多数の軍が動くと重い。60家で行軍中の10分に約11秒）。
 

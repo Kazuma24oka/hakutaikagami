@@ -62,7 +62,7 @@ public static partial class NpcArmies
     }
     internal static long CarryCapacity(ContractWorld w,NpcArmyMuster m)=>TreatyDefense.CarryCapacity(w,m);
     internal static bool ReturnedAt(ContractWorld w,NpcArmyMuster m,long at,long rev)=>w.NpcArmies?.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<=rev))==true;
-    public static bool CommanderBusyAt(ContractWorld w,EntityId actor,long at,long revision)=>Musters(w).Any(m=>m.Commander==actor&&(m.At<at||m.At==at&&m.Revision<=revision)&&!ReturnedAt(w,m,at,revision));
+    public static bool CommanderBusyAt(ContractWorld w,EntityId actor,long at,long revision)=>Musters(w).Any(m=>m.Commander==actor&&(m.At<at||m.At==at&&m.Revision<=revision)&&!ReturnedAt(w,m,at,revision))||NewGameMilitary.LeadsUnitAt(w,actor,at,revision+1);
     public static bool IsMarch(ContractWorld w,Intent i)=>i.RoutePolicy==LandRoute&&w.NpcArmies?.Marches.Any(m=>m.Input==i)==true;
     public static Intent Move(ContractWorld w,EntityId muster,string id,string destination)
     {

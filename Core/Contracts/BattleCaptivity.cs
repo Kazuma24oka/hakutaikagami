@@ -48,6 +48,16 @@ public static partial class BattleCaptivity
             if(Roll("battle-capture-v1",w.Seed,m.Commander,result.At/86400)>=Chance)continue;
             rows.Add(new(m.Commander,m.Owner,own.Terms.Owner,w.PlayerControl,own.Terms.Site,result.At));
         }
+        // 本人の部隊を率いる家臣（PlayerUnitLeaders）：その部隊が NPC の軍の打撃で崩れたとき、同じ判定で捕らえる。
+        if(NewGameMilitary.UnitLeaderRule(w))
+            foreach(var u in w.Units.Where(u=>mine.Contains(u.Id)&&u.Commander!=w.PlayerControl&&NewGameMilitary.LeadsUnitAt(w,u.Commander,result.At,w.CommitSequence+1)).OrderBy(u=>u.Id.Value,StringComparer.Ordinal).ToArray())
+            {
+                int Lead(bool after)=>100-WorldClashes.MoraleLost(w,u.Id,result.At)-(after?result.Losses.Where(l=>l.Unit==u.Id).Sum(l=>l.Morale):0);
+                var hit=NpcArmies.Musters(w).Where(m=>m.At<=result.At&&!w.NpcArmies!.Returns.Any(r=>r.Muster==m.Id)).OrderBy(m=>m.Id.Value,StringComparer.Ordinal)
+                    .FirstOrDefault(m=>{var units=NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Units;return result.Strikes.Any(s=>s.Target==u.Id&&units.Contains(s.Attacker));});
+                if(hit!=null&&Lead(false)>Broken&&Lead(true)<=Broken&&Roll("battle-capture-v1",w.Seed,u.Commander,result.At/86400)<Chance)
+                    rows.Add(new(u.Commander,own.Terms.Owner,hit.Owner,hit.Issuer,hit.Site,result.At));
+            }
         // 本人が率いる本隊（本人が指揮する部隊、なければ最初の部隊）が NPC の軍の打撃で崩れたとき、本人を同じ判定で捕らえる（当てた軍の家が、その軍の城に留め置く）。
         if(PlayerCapture(w)&&mine.Count>0&&!HostageCustody.HeldAt(w,w.PlayerControl,result.At,w.CommitSequence+1)&&!Assassination.DeadAt(w,w.PlayerControl,result.At,w.CommitSequence))
         {
