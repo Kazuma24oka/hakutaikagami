@@ -69,7 +69,7 @@ public static class TruceNegotiations
         }return null;
     }
     internal static void TakeTurns(WorldSession session)
-    {for(int n=0;n<32;n++){var w=session.TurnSnapshot();var next=Next(w,!w.Paused);if(next==null)return;session.ActOnTruce(next.Value.Actor,next.Value.Reply,next.Value.Fulfill);}}
+    {for(int n=0;n<32;n++){if(session.Peek(w=>Next(w,!w.Paused)==null))return;var w=session.TurnSnapshot();var next=Next(w,!w.Paused);if(next==null)return;session.ActOnTruce(next.Value.Actor,next.Value.Reply,next.Value.Fulfill);}}
     internal static void ApplyAutomatic(ContractWorld w,EntityId actor,TruceInput? reply,TruceFormation? f)
     {
         var prior=w.ForkTransportLocation();prior.CommitSequence=w.CommitSequence-1;var expected=Next(prior,!w.Paused);Need(expected!=null&&expected.Value.Actor==actor&&expected.Value.Reply==reply&&expected.Value.Fulfill==f,"受領・開封した条件からの処理ではありません");

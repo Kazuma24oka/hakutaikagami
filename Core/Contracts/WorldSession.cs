@@ -21,6 +21,8 @@ public sealed partial class WorldSession
     // 写しは読むだけで、書き換えない。検査（GuardTurnSnapshots）では、共有するたびに書き換えがないことを確かめる。
     internal static bool GuardTurnSnapshots;
     private ContractWorld? turnSource,turnView;private string? turnHash;
+    // 今の世界を写さずに読む（f は世界を変えない確かめだけ）。手番の初めの「することがあるか」の確かめに使い、することがあるときだけ TurnSnapshot で写す。
+    internal T Peek<T>(Func<ContractWorld,T> f){lock(gate)return f(state);}
     internal ContractWorld TurnSnapshot()
     {
         lock(gate)

@@ -64,15 +64,18 @@ public sealed partial class WorldSession
     {
         // プレイヤーの開封・承諾は本人の操作に残す。
         if(actor==state.PlayerControl)return;
-        foreach(var message in state.Messaging.Messages.Where(m=>m.RecipientId==actor.Value&&state.Requests.Any(r=>r.Id.Value==m.CorrelationId&&NpcLocalOffers.IsOffer(state,r.Intent))&&m.Kind is "contract-order" or "assessment-notice").OrderBy(m=>m.CreatedAt).ThenBy(m=>m.Id,StringComparer.Ordinal).ToArray()){
+        // 自分が頼まれた検分（依頼の担い手が自分）がなければ、届く書状も仕事もない。全員の書状を毎回見直さない。
+        if(!state.Requests.Any(r=>r.Intent.Executor==actor&&NpcLocalOffers.IsOffer(state,r.Intent)))return;
+        var offers=state.Requests.Where(r=>NpcLocalOffers.IsOffer(state,r.Intent)).Select(r=>r.Id.Value).ToHashSet(StringComparer.Ordinal); // 検分の依頼の ID（1回だけ集める）
+        foreach(var message in state.Messaging.Messages.Where(m=>m.RecipientId==actor.Value&&offers.Contains(m.CorrelationId)&&m.Kind is "contract-order" or "assessment-notice").OrderBy(m=>m.CreatedAt).ThenBy(m=>m.Id,StringComparer.Ordinal).ToArray()){
             if(!MessageFlow.Knows(state.Messaging,message.Id,actor.Value)&&state.Messaging.Attempts.Any(a=>a.MessageId==message.Id&&a.ReceiverId==actor.Value&&a.Status==AttemptStatus.Delivered))Open(actor,new(message.Id),Revision);
         }
-        foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&t.Agreement==AgreementPhase.AwaitingAssent&&state.Requests.Any(r=>r.Id==t.RequestId&&NpcLocalOffers.IsOffer(state,r.Intent))).ToArray()){
+        foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&t.Agreement==AgreementPhase.AwaitingAssent&&offers.Contains(t.RequestId.Value)).ToArray()){
             bool free=!state.Tasks.Any(t=>t.Id!=task.Id&&t.Executor==actor&&!Terminal(t));
             bool accept=free&&NpcLocalOffers.AvailableAt(state,actor,state.ElapsedSeconds,state.CommitSequence)&&RegionalCampaign.RoadActorPointAt(state,actor,state.ElapsedSeconds)==BranchRoutes.GraphNodes(state).Single(n=>RegionalCampaign.Site(n.Id)==task.Scope).Position&&CharacterRelations.DiagnosticTrait(state,actor,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(state,actor,SocialTrait.GainSeeking)>=70;
             Assent(task.Id,actor,accept,Revision);
         }
-        foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&state.Requests.Any(r=>r.Id==t.RequestId&&NpcLocalOffers.IsOffer(state,r.Intent))).ToArray())
+        foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&offers.Contains(t.RequestId.Value)).ToArray())
             if(NewGameWork.CanRequest(this,task.Id,actor,state))CollectWorkPayment(new("payment:npc-offer/"+task.Id.Value.Replace(':','/')),task.Id,actor,Revision);
     }
 }
