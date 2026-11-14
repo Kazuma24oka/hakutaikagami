@@ -25,6 +25,7 @@ public static partial class PersonalCompanions
     internal static EntityId? SiteAt(ContractWorld w,EntityId actor,long at,long rev)=>HostageCustody.HeldAt(w,actor,at,rev)?null:PhysicalSiteAt(w,actor,at,rev);
     internal static EntityId? PhysicalSiteAt(ContractWorld w,EntityId actor,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
+        if(BattleCaptivity.Escorting(w,actor,at,rev))return null; // 城へ護送される途中
         if(BattleCaptivity.SiteAt(w,actor,at,rev) is {} captive)return captive;
         if(w.Requests.Any(r=>r.Intent.Executor==actor&&!NewGameNpcRoutine.DiscretionaryPractice(w,r.Intent)&&r.CommitSequence<rev&&r.CreatedAt<=at&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at))))return null;
         if(actor==w.PlayerControl&&NewGameMilitary.LedgerStates(w).SelectMany(s=>s.Requests).Where(q=>q.Revision<rev&&q.At<=at).OrderBy(q=>q.Revision).LastOrDefault(q=>q.Input.Action is NewMilitaryAction.Deploy or NewMilitaryAction.Enter)?.Input.Action==NewMilitaryAction.Deploy)return null;

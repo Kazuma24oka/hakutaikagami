@@ -113,6 +113,17 @@ public static partial class BattleCaptivity
     public static bool HeldAt(ContractWorld w,EntityId person,long at,long rev)=>CaptivityAt(w,person,at,rev)!=null;
     // 拘束中は捕らえた家の拠点。拘束が終わった後、本人が新しい行動を始めるまではその拠点（捕らえる前の行軍は続きとして扱わない）。
     // 道の上の位置（RegionalCampaign）は rev=0 で引き、捕縛の秒より後から城にそろえる（同じ秒に出た伝令の出発地を変えない）。
+    // 捕虜の護送（全国の開始の一覧の CaptiveEscort）：捕らえた場所から留め置く城まで、人の歩み（秒速1m）で運ばれる。着くまでは野にいて、処遇もできない。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BattleCapture,System.Runtime.CompilerServices.StrongBox<long>> arrivals=new();
+    internal static long EscortArrival(ContractWorld w,BattleCapture c)=>arrivals.GetValue(c,x=>
+    {
+        var from=RegionalCampaign.RoadActorPointAt(w,x.Person,Math.Max(0,x.At-1));
+        var to=BranchRoutes.GraphNodes(w).First(n=>n.Id==NewGameWorld.Node(x.Site.Value)).Position;
+        double de=from.EastMm-to.EastMm,dn=from.NorthMm-to.NorthMm;
+        return new(checked(x.At+(long)(Math.Sqrt(de*de+dn*dn)/1000)));
+    }).Value!;
+    internal static bool Escorting(ContractWorld w,EntityId person,long at,long rev)=>
+        person!=w.PlayerControl&&NationalSystems.On(w,"CaptiveEscort")&&Enabled(w)&&Last(w,person,at,rev) is {} last&&EndOf(w,person,last.Revision,at,rev)==null&&at<EscortArrival(w,last.Capture);
     internal static EntityId? SiteAt(ContractWorld w,EntityId person,long at,long rev)
     {
         if(!Enabled(w)||Last(w,person,at,rev) is not {} last)return null;
@@ -122,7 +133,7 @@ public static partial class BattleCaptivity
         return travelled?null:end.Input.Person==person?end.Site:last.Capture.Site;
     }
     static bool CanAct(ContractWorld w,BattleCapture c,EntityId actor,long at,long rev)=>
-        FactionStances.ResolveAuthority(w,actor,c.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null&&TransportWork.At(w,actor,c.Site,at,rev,true)&&!Assassination.DeadAt(w,actor,at,rev);
+        FactionStances.ResolveAuthority(w,actor,c.CaptorOwner,at,Math.Min(rev,w.CommitSequence))!=null&&TransportWork.At(w,actor,c.Site,at,rev,true)&&!Assassination.DeadAt(w,actor,at,rev)&&!Escorting(w,c.Person,at,rev);
     static bool Declined(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>
         Since(w,person,capturedRevision,at,rev).Any(e=>e.Input.Action==CaptiveAction.Recruit&&!e.Accepted);
     // 本人の判断：元の家の当主は応じない。それ以外は捕縛ごとに固定の判定で、応じる者は4割ほど。

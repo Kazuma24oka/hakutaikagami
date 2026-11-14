@@ -8,10 +8,12 @@ namespace HakutaiKagami.Tests;
 // 書状は実際に運ばれる（ここでは配送の時刻まで時計を進めて届ける）。
 public sealed class NpcCaptorTests
 {
+    // 書状の検査では捕虜を城で捕らえた形にするので、護送（CaptiveEscort）は外す。護送は CaptiveEscortTests で確かめる。
+    internal static ContractWorld WithoutEscort(ContractWorld w){w.NewGame=w.NewGame! with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="CaptiveEscort").ToArray()};return w;}
     [Fact]
     public void AnNpcCaptorDemandsRansomByLetterAndReleasesTheCaptiveWhenPaid()
     {
-        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        var w=NpcCaptorTests.WithoutEscort(NationalStart.Create(NationalStartTests.Nobunaga()));
         Assert.True(NationalSystems.On(w,"NpcCaptors"));
         var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
         bool Adult(EntityId p)=>w.Characters.Single(c=>c.Id==p).Life==LifeState.Adult;
@@ -49,7 +51,7 @@ public sealed class NpcCaptiveExchangeTests
     [Fact]
     public void TwoHousesHoldingEachOthersMenExchangeThemByLetter()
     {
-        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        var w=NpcCaptorTests.WithoutEscort(NationalStart.Create(NationalStartTests.Nobunaga()));
         var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
         bool Adult(EntityId p)=>w.Characters.Single(c=>c.Id==p).Life==LifeState.Adult;
         EntityId? Member(SetupFaction f)=>w.Memberships.Where(m=>m.Target.Value==f.Id&&m.Subject.Value!=f.Head).Select(m=>m.Subject).FirstOrDefault(p=>p.Value!=null&&Adult(p)&&p!=w.PlayerControl);
@@ -77,7 +79,7 @@ public sealed class PlayerCaptiveLetterTests
 {
     static (ContractWorld W,SetupFaction Npc,EntityId Retainer,EntityId Theirs) Setup(bool playerHolds)
     {
-        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        var w=NpcCaptorTests.WithoutEscort(NationalStart.Create(NationalStartTests.Nobunaga()));
         Assert.True(BattleCaptivity.PlayerLetters(w));
         var mine=w.NewGame!.Start.Factions.Single(f=>f.Id==w.NewGame.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction);
         Assert.Equal(w.PlayerControl,HouseSuccession.Head(w,new(mine.Id)));
@@ -135,5 +137,29 @@ public sealed class PlayerCaptiveLetterTests
         Assert.False(BattleCaptivity.HeldAt(w,retainer,w.ElapsedSeconds,w.CommitSequence+1)); // 相手は応じて家臣を放つ
         Assert.Contains(w.Messaging.Messages,m=>m.Kind==BattleCaptivity.RansomKind&&m.RecipientId==w.PlayerControl.Value&&m.Body.Contains("応じます"));
         BattleCaptivity.Validate(w);
+    }
+}
+// 捕虜の護送（CaptiveEscort、2026-11-15）：捕らえた場所から城まで人の歩みで運ばれ、着くまでは野にいて処遇できない。
+public sealed class CaptiveEscortTests
+{
+    [Fact]
+    public void ACaptiveIsInTheFieldUntilEscortedToTheCastle()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"CaptiveEscort"));
+        var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
+        bool Adult(EntityId p)=>w.Characters.Single(c=>c.Id==p).Life==LifeState.Adult;
+        var houses=w.NewGame.Start.Factions.Where(f=>f.Id!=player&&Adult(new(f.Head))).OrderBy(f=>f.Id,StringComparer.Ordinal).ToArray();
+        var d=houses[0];
+        var (a,prisoner)=houses.Skip(1).Select(f=>(f,P:w.Memberships.Where(m=>m.Target.Value==f.Id&&m.Subject.Value!=f.Head).Select(m=>m.Subject).FirstOrDefault(p=>p.Value!=null&&Adult(p)))).First(x=>x.P.Value!=null&&PersonalCompanions.PhysicalSiteAt(w,x.P,0,1)!=new EntityId(d.Home));
+        var campaign=new StrategyCampaign(new("campaign:national/test/escort"),new(a.Id),new(d.Id),new(d.Home),0,0,"border"){Real=true};
+        var capture=new BattleCapture(prisoner,new(a.Id),new(d.Id),new(d.Head),new(d.Home),0);
+        w.Strategy=new(1,NationalStrategy.Policy,[campaign],[new(campaign.Id,0,0,false){Capture=capture}]);
+        long arrive=BattleCaptivity.EscortArrival(w,capture);Assert.True(arrive>0);
+        w.ElapsedSeconds=arrive-1;
+        Assert.True(BattleCaptivity.HeldAt(w,prisoner,w.ElapsedSeconds,1));
+        Assert.Null(PersonalCompanions.PhysicalSiteAt(w,prisoner,w.ElapsedSeconds,1)); // 護送の途中
+        w.ElapsedSeconds=arrive;
+        Assert.Equal(new EntityId(d.Home),PersonalCompanions.PhysicalSiteAt(w,prisoner,w.ElapsedSeconds,1)); // 城に着いた
     }
 }
