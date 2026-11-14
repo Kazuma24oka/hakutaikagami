@@ -39,7 +39,7 @@ public static partial class NpcArmies
         Need(!NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==m.Owner&&s.Terms.Site==m.Site),"貸与履歴がある駐屯兵の再割当ては未対応です");
         if(m.Objective is {} o){
             var f=w.NewGame!.Start.Factions.Single(f=>f.Id==o.TargetOwner.Value);
-            Need(o.HoldSeconds==30&&o.TargetSite==new EntityId(f.Home)&&o.Claim==FactionStances.ClaimAt(w,m.Owner,o.TargetOwner,m.At,m.Revision)&&FactionStances.KnownOwnDeclarations(w,m.Issuer).Any(k=>k.Declaration==o.Claim.Declaration),"出撃対象は当主自身の既知の敵対意思と拠点に限ります");
+            Need(o.HoldSeconds==30&&(o.TargetSite==new EntityId(f.Home)||NationalStrategy.RealTarget(w,o.Claim.Declaration)==o.TargetSite)&&o.Claim==FactionStances.ClaimAt(w,m.Owner,o.TargetOwner,m.At,m.Revision)&&FactionStances.KnownOwnDeclarations(w,m.Issuer).Any(k=>k.Declaration==o.Claim.Declaration),"出撃対象は当主自身の既知の敵対意思と拠点に限ります");
         }
         Need(!FactionStances.OtherIdUsed(w,m.Id,false)&&!FactionStances.OwnIdUsed(w,m.Id),"別の操作で使ったIDです");
     }
@@ -51,7 +51,7 @@ public static partial class NpcArmies
         Need(w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home),"現地で引き受けてください");CheckMuster(w,m,Musters(w));w.NpcArmies=new(1,Policy,[..Musters(w),m],w.NpcArmies?.Marches??[],w.NpcArmies?.Returns??[]);MilitaryEconomy.FundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
     }
     internal static long CarryCapacity(ContractWorld w,NpcArmyMuster m)=>TreatyDefense.CarryCapacity(w,m);
-    static bool ReturnedAt(ContractWorld w,NpcArmyMuster m,long at,long rev)=>w.NpcArmies?.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<=rev))==true;
+    internal static bool ReturnedAt(ContractWorld w,NpcArmyMuster m,long at,long rev)=>w.NpcArmies?.Returns.Any(q=>q.Muster==m.Id&&(q.At<at||q.At==at&&q.Revision<=rev))==true;
     public static bool CommanderBusyAt(ContractWorld w,EntityId actor,long at,long revision)=>Musters(w).Any(m=>m.Commander==actor&&(m.At<at||m.At==at&&m.Revision<=revision)&&!ReturnedAt(w,m,at,revision));
     public static bool IsMarch(ContractWorld w,Intent i)=>i.RoutePolicy==LandRoute&&w.NpcArmies?.Marches.Any(m=>m.Input==i)==true;
     public static Intent Move(ContractWorld w,EntityId muster,string id,string destination)
@@ -141,9 +141,25 @@ public static partial class NpcArmies
         var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);if(a==null||!MilitaryEconomy.CanMuster(w,a.Home,w.ElapsedSeconds,w.CommitSequence+1)||!w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home))return null;
         foreach(var known in FactionStances.KnownOwnDeclarations(w,commander).OrderBy(k=>k.Declaration.Value,StringComparer.Ordinal)){
             var claim=FactionStances.ClaimAt(w,owner,known.ToOwner,w.ElapsedSeconds,w.CommitSequence);if(claim==null||claim.Declaration!=known.Declaration)continue;
-            if(TruceNegotiations.WillNotInitiate(w,owner,claim.ToOwner,w.ElapsedSeconds,w.CommitSequence))continue;var target=new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==claim.ToOwner.Value).Home);
+            if(TruceNegotiations.WillNotInitiate(w,owner,claim.ToOwner,w.ElapsedSeconds,w.CommitSequence))continue;var target=NationalStrategy.RealOpen(w,claim.Declaration)?NationalStrategy.RealTarget(w,claim.Declaration)!.Value:new EntityId(w.NewGame!.Start.Factions.Single(f=>f.Id==claim.ToOwner.Value).Home); // 実際の軍勢の出陣は出陣の城へ
             try{var i=TravelWorld.ActorMove(w,"request:npc-army-preview",Leader(w,commander,owner,a.Home),NewGameWorld.Node(target.Value),true,LandRoute);if(2L*i.WorkSeconds+60<NewGameMilitary.Capacity/100&&(!WorldClashes.Enabled(w)||w.ElapsedSeconds+i.WorkSeconds+32<claim.Until))return new(claim.ToOwner,target,claim,30);}catch(InvalidDataException){}
         }return null;
+    }
+    // 出陣先に着いて留まり終える時刻（出陣先への行軍が終わっていなければ空）。
+    internal static long? HoldEnd(ContractWorld w,NpcArmyMuster m)
+    {
+        if(m.Objective==null)return null;var q=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==m.Id&&q.Input.RequestId.Value==MarchId(m,false));if(q==null)return null;
+        var t=w.Tasks.Single(t=>t.RequestId==q.Input.RequestId);return t.FinishedAt is {} end&&t.Execution==ExecutionPhase.Completed?end+m.Objective.HoldSeconds:null;
+    }
+    // 軍が戦えない：大将が捕らえられた、兵がいない、出陣先への行軍が失敗した、出陣先で留まり終える前に帰った。
+    internal static bool Broken(ContractWorld w,NpcArmyMuster m)
+    {
+        if(BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence+1))return true;
+        var b=Binding(m);if(w.Units.Any(u=>u.Army==b.Army)&&w.Units.Where(u=>u.Army==b.Army).Sum(u=>u.Soldiers)<=0)return true;
+        var q=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==m.Id&&q.Input.RequestId.Value==MarchId(m,false));
+        if(q!=null&&w.Tasks.Single(t=>t.RequestId==q.Input.RequestId) is {FinishedAt:not null} t&&t.Execution!=ExecutionPhase.Completed)return true;
+        if(!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence))return false;
+        var back=w.NpcArmies.Returns.Single(r=>r.Muster==m.Id).At;return HoldEnd(w,m) is not {} hold||back<hold;
     }
     internal static bool NeedsTurn(ContractWorld w,NpcArmyMuster m)
     {

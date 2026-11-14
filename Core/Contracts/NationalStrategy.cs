@@ -11,7 +11,11 @@ namespace HakutaiKagami.Core.Contracts;
 // 史実の事件は、前提（当事者の家と当主・境の城）がそろったときに当主がその判断を選びやすくなる重みで、結果は強制しない。
 // 遠方の出陣は翌月の初めに簡単な計算で決着し、勝てばその城の支配が移る。結果は境の城から当事者の当主へ書状で届く。
 // 操作する人物の家への出陣と、操作する人物から30km以内の城への出陣は、実際の軍勢の工程まで行わない。
-public sealed record StrategyCampaign(EntityId Id,EntityId Attacker,EntityId Defender,EntityId Target,long At,long Revision,string Basis);
+public sealed record StrategyCampaign(EntityId Id,EntityId Attacker,EntityId Defender,EntityId Target,long At,long Revision,string Basis)
+{
+    // 実際の軍勢で行う出陣（操作する人物の近くの城・本人の家への出陣。一覧の StrategyRealArmies）。攻める家の当主が敵対を表明し、NPC の軍が目的の城へ出陣し、着いて留まり終えたときに決着する。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public bool? Real {get;init;}
+}
 public sealed record StrategyOutcome(EntityId Campaign,long At,long Revision,bool Captured)
 {
     // 守る側の同盟の家で、援軍に出た家（同盟の義務）。
@@ -239,7 +243,7 @@ public static class NationalStrategy
     internal static string? DbOverlord(string faction)=>NationalStart.DbHouse(faction) is {} d&&HakutaiDb.House(d)?.Overlord is {} o?FactionId(o):null;
     static HistoryMode Mode(ContractWorld w)=>w.NewGame!.Judgment?.History??w.NewGame.History??HistoryMode.SemiHistorical;
     // 操作する人物から30km以内の城（月の初めに一度だけ数える）。
-    static HashSet<string> NearPlayerSites(ContractWorld w)
+    internal static HashSet<string> NearPlayerSites(ContractWorld w)
     {
         var p=RegionalCampaign.ActorPointAt(w,w.PlayerControl,w.ElapsedSeconds);double r=(double)NpcDormancy.RadiusMm*NpcDormancy.RadiusMm;
         return BranchRoutes.GraphNodes(w).Where(n=>{long de=n.Position.EastMm-p.EastMm,dn=n.Position.NorthMm-p.NorthMm;return (double)de*de+(double)dn*dn<=r;}).Select(n=>"site:"+n.Id).ToHashSet(StringComparer.Ordinal);
@@ -255,24 +259,15 @@ public static class NationalStrategy
         // 前の月の出陣を決着させる。
         foreach(var c in s.Campaigns.Where(c=>!s.Outcomes.Any(o=>o.Campaign==c.Id)&&c.At<w.ElapsedSeconds))
         {
-            var owners0=Owners(w,s with{Outcomes=outcomes.ToArray()});var initial0=InitialCounts(w);
-            long a=c.Basis==Restoration?StrategyRestoration.Strength(c.Attacker.Value):Strength(w,c.Attacker.Value,owners0,initial0),d=Strength(w,c.Defender.Value,owners0,initial0);
-            // 同盟の義務：守る側と出陣の時点で同盟していた家（攻める側と約束のない家）は、兵力の半分で援軍に出る。
-            var allies=(s.Pacts??[]).Where(p=>p.Kind=="alliance"&&p.Broken==null&&p.From<=c.At&&c.At<p.Until&&(p.A==c.Defender||p.B==c.Defender)).Select(p=>p.A==c.Defender?p.B:p.A)
-                .Where(x=>x!=c.Attacker&&!Bound((s.Pacts??[]).ToArray(),x.Value,c.Attacker.Value,c.At)).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
-            foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
-            bool held=owners0.GetValueOrDefault(c.Target.Value)==c.Defender.Value;
-            var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
-            bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
-            outcomes.Add(new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle});
-            Letters(w,c,captured);
+            if(c.Real==true&&RealArmy(w,c) is {} army&&!NpcArmies.ReturnedAt(w,army,w.ElapsedSeconds,w.CommitSequence))continue; // 実際の軍勢は着いてから決着する（ResolveArmies）
+            outcomes.Add(Settle(w,s,outcomes,c));
         }
         s=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});
         {var holder=CapitalHolder(Owners(w,s));var last=s.Capitals is {Length:>0} cs?cs[^1].House.Value:null;
          if(holder!=null&&holder!=last){s=s with{Capitals=[..s.Capitals??[],new(new(holder),w.ElapsedSeconds,w.CommitSequence)]};if(last!=null)CapitalLetter(w,holder);}}
         s=ShogunTurn(w,s);
         if(StrategyDefections.Enabled(w))s=StrategyDefections.Decide(w,s,Powers(Owners(w,s),InitialCounts(w)),date);
-        var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(owners,initial);var near=NearPlayerSites(w);
+        var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
         var player=w.PlayerControl;var playerHouse=w.NewGame!.Start.Factions.Where(f=>HouseSuccession.Head(w,new(f.Id))==player).Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var playerMember=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==player.Value)?.Faction;if(playerMember!=null)playerHouse.Add(playerMember);
         var mode=Mode(w);var history=(s.History??[]).ToList();
@@ -293,7 +288,7 @@ public static class NationalStrategy
             var vassals=Vassals(s,f.Id);var front=owners.Where(x=>x.Value==f.Id||x.Value!=null&&vassals.Contains(x.Value)).Select(x=>x.Key).ToArray();
             long mine=power.GetValueOrDefault(f.Id,50);
             var targets=front.SelectMany(Neighbors).Distinct(StringComparer.Ordinal)
-                .Select(t=>(Site:t,Owner:owners.GetValueOrDefault(t))).Where(t=>t.Owner!=null&&t.Owner!=f.Id&&!vassals.Contains(t.Owner!)&&!playerHouse.Contains(t.Owner!)&&!Allied(s,f.Id,t.Owner!)&&!Resting(s,f.Id,t.Owner!,w.ElapsedSeconds)&&!Bound(pacts.ToArray(),f.Id,t.Owner!,w.ElapsedSeconds)&&!near.Contains(t.Site)).ToArray();
+                .Select(t=>(Site:t,Owner:owners.GetValueOrDefault(t))).Where(t=>t.Owner!=null&&t.Owner!=f.Id&&!vassals.Contains(t.Owner!)&&(realArmies||!playerHouse.Contains(t.Owner!))&&!Allied(s,f.Id,t.Owner!)&&!Resting(s,f.Id,t.Owner!,w.ElapsedSeconds)&&!Bound(pacts.ToArray(),f.Id,t.Owner!,w.ElapsedSeconds)&&(realArmies||!near.Contains(t.Site))).ToArray();
             // 破約：約束の相手が3倍以上弱ければ、当主は月に3%で約束を破って攻める。
             var bound=front.SelectMany(Neighbors).Distinct(StringComparer.Ordinal).Select(t=>(Site:t,Owner:owners.GetValueOrDefault(t)))
                 .Where(t=>t.Owner!=null&&t.Owner!=f.Id&&!playerHouse.Contains(t.Owner!)&&Bound(pacts.ToArray(),f.Id,t.Owner!,w.ElapsedSeconds)&&!near.Contains(t.Site))
@@ -324,13 +319,51 @@ public static class NationalStrategy
                 basis=Border;pick=best.t;
             }
             var id=new EntityId($"campaign:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(f.Id))[..12]}");
-            campaigns.Add(new(id,new(f.Id),new(pick.Owner!),new(pick.Site!),w.ElapsedSeconds,w.CommitSequence,basis));
+            // 操作する人物の近くの城・本人の家への出陣は、実際の軍勢で行う：当主が相手の家へ敵対を表明し、NPC の軍がその城へ出陣する（表明できなければ出陣しない）。
+            bool real=realArmies&&(near.Contains(pick.Site!)||playerHouse.Contains(pick.Owner!));
+            if(real&&!TransactionalWorld.TryApply(w,c=>FactionStances.Apply(c,new(DeclarationId(id),FactionStanceAction.DeclareHostile,new(f.Id),new(pick.Owner!),c.ElapsedSeconds,checked(c.ElapsedSeconds+RealDays*86400L)),head)))continue; // 表明ごとに版を進める
+            campaigns.Add(new(id,new(f.Id),new(pick.Owner!),new(pick.Site!),w.ElapsedSeconds,w.CommitSequence,basis){Real=real?true:null});
         }
         if(StrategyRestoration.Enabled(w))campaigns.AddRange(StrategyRestoration.Uprisings(w,s,owners,playerHouse,near,campaigns,date));
         var coalitions=Coalitions(w,s,pacts,out var formed);
         w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions};
         foreach(var c in formed){CoalitionLetters(w,c);InviteThePlayer(w,c);}
         foreach(var (pact,sender) in pactLetters)PactLetters(w,pact,sender);
+    }
+    // 実際の軍勢の出陣：敵対の表明の ID は出陣の ID から決まり、NPC の軍はその表明を根拠に出る（軍の目的の Claim.Declaration）。表明は30日。
+    public const int RealDays=30;
+    internal static EntityId DeclarationId(EntityId campaign)=>new("decision:strategy-army/"+ContractJson.Hash(Encoding.UTF8.GetBytes(campaign.Value))[..24]);
+    static NpcArmyMuster? RealArmy(ContractWorld w,StrategyCampaign c){var d=DeclarationId(c.Id);return NpcArmies.Musters(w).FirstOrDefault(m=>m.Objective?.Claim.Declaration==d);}
+    // NPC の軍が目指す城：その表明が実際の軍勢の出陣のものなら、出陣の城（決着の前後を問わない。検査でも使う）。
+    internal static EntityId? RealTarget(ContractWorld w,EntityId declaration)=>w.Strategy?.Campaigns.FirstOrDefault(c=>c.Real==true&&DeclarationId(c.Id)==declaration)?.Target;
+    internal static bool RealOpen(ContractWorld w,EntityId declaration)=>w.Strategy is {} s&&s.Campaigns.Any(c=>c.Real==true&&DeclarationId(c.Id)==declaration&&!s.Outcomes.Any(o=>o.Campaign==c.Id));
+    // 実際の軍勢の決着（区切りごと）：軍が目的の城に着いて留まり終えたら、月の初めと同じ計算で決着する。大将が捕らえられた・兵がいない・着く前に帰った軍は退いたものとする。
+    internal static void ResolveArmies(ContractWorld w)
+    {
+        if(w.Strategy is not {} s||!NationalSystems.On(w,"StrategyRealArmies"))return;
+        var outcomes=s.Outcomes.ToList();bool changed=false;
+        foreach(var c in s.Campaigns.Where(c=>c.Real==true).ToArray())
+        {
+            if(outcomes.Any(o=>o.Campaign==c.Id)||RealArmy(w,c) is not {} m)continue;
+            if(NpcArmies.Broken(w,m)){Letters(w,c,false);outcomes.Add(new(c.Id,w.ElapsedSeconds,w.CommitSequence,false));changed=true;continue;}
+            if(NpcArmies.HoldEnd(w,m) is {} end&&w.ElapsedSeconds>=end){outcomes.Add(Settle(w,s,outcomes,c));changed=true;}
+        }
+        if(changed)w.Strategy=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});
+    }
+    // 出陣の決着（強さと同盟の援軍、遠方の合戦の計算）。月の初めの決着と、実際の軍勢が着いたときの決着で同じものを使う。
+    static StrategyOutcome Settle(ContractWorld w,StrategyState s,List<StrategyOutcome> outcomes,StrategyCampaign c)
+    {
+            var owners0=Owners(w,s with{Outcomes=outcomes.ToArray()});var initial0=InitialCounts(w);
+            long a=c.Basis==Restoration?StrategyRestoration.Strength(c.Attacker.Value):Strength(w,c.Attacker.Value,owners0,initial0),d=Strength(w,c.Defender.Value,owners0,initial0);
+            // 同盟の義務：守る側と出陣の時点で同盟していた家（攻める側と約束のない家）は、兵力の半分で援軍に出る。
+            var allies=(s.Pacts??[]).Where(p=>p.Kind=="alliance"&&p.Broken==null&&p.From<=c.At&&c.At<p.Until&&(p.A==c.Defender||p.B==c.Defender)).Select(p=>p.A==c.Defender?p.B:p.A)
+                .Where(x=>x!=c.Attacker&&!Bound((s.Pacts??[]).ToArray(),x.Value,c.Attacker.Value,c.At)).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
+            foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
+            bool held=owners0.GetValueOrDefault(c.Target.Value)==c.Defender.Value;
+            var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
+            bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
+            Letters(w,c,captured);
+            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle};
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
     static StrategySuccession[]? Succeed(ContractWorld w,StrategyState s)
@@ -496,7 +529,7 @@ public static class NationalStrategy
         if(prior?.Strategy?.Successions is {} oldSuccessions&&!(s.Successions??[]).Take(oldSuccessions.Length).SequenceEqual(oldSuccessions))throw new InvalidDataException("過去の家督の記録が変更されています");
         foreach(var p in s.Pacts??[])if(p.A==p.B||!factions.Contains(p.A.Value)||!factions.Contains(p.B.Value)||p.Kind is not("alliance" or "truce")||p.From>w.ElapsedSeconds||p.Until<=p.From||!IsMonthStart(w,p.From)||p.Revision>w.CommitSequence)throw new InvalidDataException("家どうしの約束の記録が不正です");
         if(prior?.Strategy?.Pacts is {} oldPacts&&!(s.Pacts??[]).Take(oldPacts.Length).Select(p=>p with{Broken=null}).SequenceEqual(oldPacts.Select(p=>p with{Broken=null})))throw new InvalidDataException("過去の約束の記録が変更されています");
-        foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At))throw new InvalidDataException("出陣の結果が不正です");StrategyBattles.Validate(w,o);}
+        foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At)&&c.Real!=true)throw new InvalidDataException("出陣の結果が不正です");StrategyBattles.Validate(w,o);}
         StrategyRestoration.Validate(w,s,prior?.Strategy);StrategyDefections.Validate(w,s,prior?.Strategy);
     }
 }

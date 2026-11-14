@@ -231,7 +231,7 @@ public sealed partial class WorldSession
                 deferTimePause=WorldTimeControl.Enabled(state);
                 try{RunBatchedTurns(()=>{
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);NationalNameHistory.ApplyDue(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);NationalStrategy.ResolveArmies(s);NationalNameHistory.ApplyDue(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
