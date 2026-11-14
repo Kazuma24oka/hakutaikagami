@@ -26,7 +26,7 @@ public static class WorldEngagement
             mandates.AddRange(NewGameMilitary.EngagementMandates(w,at));
             foreach(var id in mandates.Where(m=>m.ReceivedAt<=at&&m.EffectiveFrom<=at&&at<m.Until&&(m.CancelledAt==null||at<m.CancelledAt)).SelectMany(m=>m.Units).Distinct()){int n=units.FindIndex(u=>u.Unit.Id==id);if(n>=0)units[n]=units[n] with{Intent=EngagementIntent.Mission};}
         }
-        foreach(var m in NpcArmies.Musters(w).Where(m=>m.At<=at)){
+        foreach(var m in NpcArmies.Musters(w).Where(m=>m.At<=at&&!NpcArmies.Routed(w,m,at))){ // 散った軍は戦わない
             var b=NewGameMilitary.LedgerIdentity(m.Owner,m.Site);var p=FieldWorld.FromWorld(NpcArmies.Position(w,b.Army,at));
             var returned=w.NpcArmies!.Returns.SingleOrDefault(q=>q.Muster==m.Id);
             bool withdrawing=w.NpcArmies.Marches.Where(q=>q.Muster==m.Id&&q.Input.DestinationSite==m.Site).Any(q=>w.Tasks.Single(t=>t.RequestId==q.Input.RequestId).StartedAt<=at);

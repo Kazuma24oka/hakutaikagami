@@ -34,6 +34,13 @@ public sealed class BattleCaptivityTests(ITestOutputHelper o)
         Assert.Equal(s.PlayerControl,c.Holder);
         Assert.True(HostageCustody.HeldAt(w,c.Person,w.ElapsedSeconds,w.CommitSequence+1));
         var card=Assert.Single(s.Captives());Assert.True(card.Held);Assert.Equal(c.Site,card.Site);
+        // 大将を捕らえられた軍は散る（城へ帰らずその場で解け、部隊は消える）。
+        NewGameWorldTests.At(s,s.Seconds+1);var routed=s.DiagnosticSnapshot();
+        var army=routed.NpcArmies!.Musters.Single(m=>m.Commander==c.Person);var back=Assert.Single(routed.NpcArmies.Returns,q=>q.Muster==army.Id);
+        var armyId=NewGameMilitary.LedgerIdentity(army.Owner,army.Site).Army;
+        Assert.True(back.Routed);Assert.DoesNotContain(WorldEngagement.Snapshot(routed).Units,u=>u.Unit.Army==armyId); // 散った軍は戦わない
+        Assert.Equal(BranchRoutes.GraphNodes(routed).Single(n=>RegionalCampaign.Site(n.Id)==army.Site).Position,NpcArmies.Position(routed,armyId,routed.ElapsedSeconds)); // 兵は城へ戻る
+        w=routed;
         // 保存から戻して同じ。
         var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
         Assert.Equal(ContractJson.Write(w),ContractJson.Write(restored.DiagnosticSnapshot()));

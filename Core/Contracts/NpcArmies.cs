@@ -9,7 +9,11 @@ public sealed record NpcArmyMuster(EntityId Id,EntityId Commander,EntityId Owner
     [System.Text.Json.Serialization.JsonIgnore] public EntityId Issuer=>Lord??Commander;
 }
 public sealed record NpcArmyMarch(EntityId Muster,Intent Input,long At,long Revision);
-public sealed record NpcArmyReturn(EntityId Muster,long At,long Revision,long Consumed);
+public sealed record NpcArmyReturn(EntityId Muster,long At,long Revision,long Consumed)
+{
+    // 大将が捕らえられて軍が散った（城へ帰らずその場で解ける。携えた兵糧は使った分まで。城に残した兵糧は家へ戻す）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public bool? Routed {get;init;}
+}
 public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Musters,NpcArmyMarch[] Marches,NpcArmyReturn[] Returns);
 
 // Actual garrison custody. No default wars, generated enemies, castle capture, or shared knowledge.
@@ -74,7 +78,10 @@ public static partial class NpcArmies
     public static RoutePoint Position(ContractWorld w,EntityId army,long at)
     {
         Need(at>=0&&at<=w.ElapsedSeconds,"未来の軍位置は参照しません");
-        var m=Musters(w).Single(m=>Binding(m).Army==army&&m.At<=at);return RegionalCampaign.RoadActorPointAt(w,m.Commander,at);
+        var m=Musters(w).Single(m=>Binding(m).Army==army&&m.At<=at);
+        // 散った軍の兵は自分の城へ戻ったものとする（大将は捕らえた家の城にいる）。
+        if(Routed(w,m,at))return BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
+        return RegionalCampaign.RoadActorPointAt(w,m.Commander,at);
     }
     // Consume actual person-seconds from first departure until explicit physical return.
     // No new sortie or automatic replenishment is created by loading this history.
@@ -107,6 +114,14 @@ public static partial class NpcArmies
         var position=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
         Need(w.ElapsedSeconds>=m.At&&w.CommitSequence>m.Revision&&w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site)&&RegionalCampaign.RoadActorPointAt(w,m.Commander,w.ElapsedSeconds)==position&&!w.Tasks.Any(t=>t.Executor==m.Commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Failed or ExecutionPhase.Stopped)),"本人と軍が現地へ帰還し、移動任務を終えてから返納します");
         var used=Consumed(w,m);w.NpcArmies=w.NpcArmies! with{Returns=[..w.NpcArmies.Returns,new(muster,w.ElapsedSeconds,w.CommitSequence,used)]};MilitaryEconomy.RefundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
+    }
+    // 大将が捕らえられた軍は散る（全国の開始の一覧の ArmyRout を持つ世界と、捕縛の検査用の地方の版だけ。旧保存の全国の世界では大将を失った軍はその場に残る）。
+    internal static bool Routed(ContractWorld w,NpcArmyMuster m,long at)=>w.NpcArmies?.Returns.Any(q=>q.Muster==m.Id&&q.Routed==true&&q.At<=at)==true;
+    public static bool RoutRule(ContractWorld w)=>NationalSystems.On(w,"ArmyRout")||w.NewGame?.CapturePolicy==BattleCaptivity.Policy;
+    public static void Rout(ContractWorld w,EntityId muster)
+    {
+        var m=Musters(w).Single(m=>m.Id==muster);Need(RoutRule(w)&&!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)&&BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence),"大将が捕らえられた軍だけが散ります");
+        var used=Consumed(w,m);w.NpcArmies=w.NpcArmies! with{Returns=[..w.NpcArmies.Returns,new(muster,w.ElapsedSeconds,w.CommitSequence,used){Routed=true}]};MilitaryEconomy.RefundNpc(w,m);if(MilitaryEconomy.Enabled(w)){CommunityEconomy.Tick(w);MaterialMarkets.Tick(w);}Sync(w);
     }
     static string Key(EntityId id)=>ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value));
     static EntityId MusterId(FactionStanceClaim claim)=>new("decision:npc-army/"+Key(claim.Declaration));
@@ -195,6 +210,7 @@ public static partial class NpcArmies
         foreach(var f in DecidingHeads(w).OrderBy(f=>f.Id,StringComparer.Ordinal)){
             w=session.TurnSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective){var head=new EntityId(f.Head);var leader=Leader(w,head,new(f.Id),new(f.Home));session.MusterNpcArmy(MusterId(objective.Claim),leader,new(f.Id),objective,leader==head?null:head);}
         }
+        if(RoutRule(session.TurnSnapshot()))foreach(var id in Musters(session.TurnSnapshot()).Select(m=>m.Id)){w=session.TurnSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)&&BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence))session.RoutNpcArmy(id);}
         foreach(var id in Musters(session.TurnSnapshot()).Select(m=>m.Id)){
             w=session.TurnSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!NeedsTurn(w,m))continue;
             var last=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==id);
@@ -224,7 +240,7 @@ public static partial class NpcArmies
         }
         Need(s.Returns.Select(q=>q.Muster).Distinct().Count()==s.Returns.Length,"帰還の二重計上です");
         foreach(var q in s.Returns.Skip(rs)){var m=s.Musters.Single(m=>m.Id==q.Muster);var site=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
-            Need(q.At>=m.At&&q.At<=w.ElapsedSeconds&&q.Revision>m.Revision&&q.Revision<=w.CommitSequence&&q.Consumed==Consumed(w,m)&&RegionalCampaign.RoadActorPointAt(w,m.Commander,q.At)==site&&!w.Requests.Any(r=>r.Intent.Executor==m.Commander&&r.CommitSequence<q.Revision&&r.CreatedAt<=q.At&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>q.At))),"現地帰還と兵糧返納の根拠が一致しません");
+            Need(q.At>=m.At&&q.At<=w.ElapsedSeconds&&q.Revision>m.Revision&&q.Revision<=w.CommitSequence&&q.Consumed==Consumed(w,m)&&(q.Routed==true?RoutRule(w)&&BattleCaptivity.HeldAt(w,m.Commander,q.At,q.Revision):RegionalCampaign.RoadActorPointAt(w,m.Commander,q.At)==site)&&q.Routed!=false&&(q.Routed==true||!w.Requests.Any(r=>r.Intent.Executor==m.Commander&&r.CommitSequence<q.Revision&&r.CreatedAt<=q.At&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>q.At)))),"現地帰還と兵糧返納の根拠が一致しません");
             Need(!s.Marches.Any(march=>march.Muster==m.Id&&march.Revision>=q.Revision),"帰還済みの軍を再生成できません");
         }
         if(s.Musters.Length==0)return; // Syncもこの場合は何も変えないため、世界全体の複写と自己比較を省く。
