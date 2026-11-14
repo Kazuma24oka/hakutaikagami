@@ -1,80 +1,27 @@
-# 現在の工程（2026-10-31 整理）
+# 現在の工程（2026-11-14 書き直し）
 
-2026-10-31 までの工程記録は削除せず [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md) へそのまま移した。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
+2026-10-31 までの工程記録は [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md)、2026-11-13 までの製品受入と工程の実測の入口は [Docs/Archive/CURRENT_STAGE_ACCEPTANCE_TO_2026-11-13.md](../Archive/CURRENT_STAGE_ACCEPTANCE_TO_2026-11-13.md) にある。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
-## 差し替え前の完成へ（2026-11-11 ユーザー指示・Claude が本線を引継ぎ）
+## 差し替え前の完成へ（2026-11-11 ユーザー指示）
 
-目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。2026-11-12 の分担に従い、Codex は全国配置・地形・郡支配・従属関係の残り、負傷/捕縛/戦闘、家の滅亡と再興を続ける。Claude の担当範囲を変更しない。
+目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。2026-11-13 から Codex は止め、Claude が一人で進める（Codex の作業は引き継ぎ済み）。
 
-2026-11-12：ユーザーから戦国DBの完成の連絡と、百代鏡DBを作ってよいとの指示。ドット絵の素体の書き出しは規約上問題ないと確認（絵を Git に入れた）。
+- 作業の場所：C:\Workspace\Projects\Games\hakutaikagami の1か所、ブランチ prototype/claude-mainline（2026-11-14 に作業フォルダを1つにまとめた）。
+- main への統合は差し替え前の完成に届いたときに1回だけ。全件テストはその前に1回だけ。進捗表（ProgressV1）の率もそのときに書き直す。今の表は 2026-11-13 の時点（約75%）。
+- ユーザーへの報告と試し遊びの依頼は、差し替え前の完成に届いたときだけ（PROCESS_V2 第1・5節）。
 
-直近（2026-11-13、Codex と並行）：Claude は[操作の引き継ぎ](../Design/ControlSuccessionV1/README.md)・[全国の家の戦略](../Design/NationalStrategyV1/README.md)（出陣・同盟・和睦・破約・家督・史実の出陣34件・将軍の空位と擁立・包囲網）・位階と官職の奏請・[全国の京の朝廷と将軍家](../Design/NationalCourtV1/README.md)（全国開始 v2）。Codex は v111 の移動網地形・v112 の郡支配色・v113 の家の従属関係を完了し、年次改名・郡収入・人物能力と生年、負傷・捕縛・合戦・滅亡と再興を担当する。基準の番号は Codex が v111〜v149、Claude が v150 以降。
+### 工程の表（2026-11-12 に Claude が出した7行）
+今の状態と残りは [Docs/Design/NationalSystemsV1/README.md](../Design/NationalSystemsV1/README.md) の「工程の表の今の状態」が正本。「切り上げ」は、残りを書き出して次の行へ進んだという意味で、その枠の100%ではない。
 
-## 現在の担当工程
-
-Codex v116：全国の郡収入・現地公金への受領と支出を接続する。固定基準は approval-baseline-v116.json、範囲は Docs/Design/NationalDistrictRevenueV1/scope.md。v115の保存互換補修はPR149で統合済み。次は全国規模受入、負傷・捕縛・合戦と家の滅亡/再興。
-
-## 全国共通の判断支援
-
-[開始設定・現地調達と保存復旧](../Design/DecisionSupportV1/entry-verification.md)。次は本人が認識した危機と外交の選択肢。
-
-## 製品受入：駿府からの出陣
-
-[敵対決裁・兵糧受領・街道上の復旧](../Design/ImagawaCampaignV1/entry-verification.md)。掛川での進退、岡崎での家臣の補給、善照寺砦への行軍まで確認済み。
-
-## 製品受入：今川家の開始配置
-
-[義元・氏真で始める](../Design/ImagawaStartV1/entry-verification.md)。次は今川方の現地判断と出陣条件。
-
-## 製品受入：1560年の尾張の偵察機会
-
-[信長の現地判断と浪人の偵察](../Design/OwariHistoricalOpportunityV1/entry-verification.md)。次は今川方の史料と当主・本拠の初期配置を照合する。
-
-## 製品受入：城役の終了と引渡しの順序
-
-[辞令と本丸引渡しの競合](../Design/CastleOfficeOrderV1/entry-verification.md)。次は全体進捗表の未達項目から、通常のプレイで到達できる範囲を広げる。
-
-## 製品受入：本丸受領の遠隔報告
-
-[受領報告・開封と中途復旧](../Design/AlliedKeepReportsV1/entry-verification.md)。次は現地の職の失効と通知の到着順を扱う。
-
-## 製品受入：追随城主の現地引渡し
-
-[城門受領後の復旧と本丸引渡し](../Design/AlliedCastleGateV1/entry-verification.md)。次に交渉中の権限喪失と引渡し結果の遠隔報告を扱う。
-
-## 製品受入：他城への独立宣言
-
-[書状と返書の実測](../Design/IndependenceLettersV1/entry-verification.md)。次は他城の守備と実効支配を扱う。
-
-## 製品受入：城主独立時の城内係争
-
-[守備・交渉・本丸受領の実測](../Design/IndependenceGarrisonV1/entry-verification.md)。次は独立宣言を他の城へ届け、現地の武将・守備隊が個別に返答する経路を扱う。
-
-## 工程9b 包囲網の代表経路を検証済み
-
-[包囲網の実測と残件](../Design/CoalitionV1/entry-verification.md)。次は第5版を通常入口から通し、残る全国製品版の条件と照合する。
-
-[工程9aの実測](../Design/SupremeOfficeV1/entry-verification.md)。
-
-[工程9の実測](../Design/CentralMediationV1/entry-verification.md)。
-
-[工程8の実測](../Design/HouseholdDetachmentV1/entry-verification.md)。
-
-[工程7cの実測](../Design/KokujinCouncilV1/entry-verification.md)。
-
-[工程7bの実測](../Design/SubmissionDemandV1/entry-verification.md)。
-
-[工程7aの実測](../Design/VillageResistanceV1/entry-verification.md)。
-
-募兵・陣触れ・開戦の代表経路を確認した。[工程7の実測](../Design/RecruitmentMusterV1/entry-verification.md)。
-
-## 次の工程（統合案第14節）
-1. 9b：包囲網の呼びかけ・各家の判断・盟約・切り崩し
-2. 第14節の後続段へ進む。
-
-ユーザーへの報告と試し遊びの依頼は、差し替え前の完成に届いたときだけ（PROCESS_V2 第1・5節）。
-
-本線がすでに作った部分（条約・人質・能力・関係・婚姻・養子・NPCの継続行動など）は、各段と突き合わせて重複を除く。人質・従属は GETENROKU_HANDOFF_D3_D4.md を入力にする。
+| 行 | 内容 | 状態（2026-11-14） |
+|---|---|---|
+| 1 | 武将の死亡と後継者で続ける（BD-07・01） | 切り上げ |
+| 2 | 史実の事件・歴史モード（BD-03・02・08） | 切り上げ |
+| 3 | 京の政治（BD-53〜56） | 切り上げ |
+| 4 | 負傷・捕縛、合戦と家の滅亡・再興（BD-06・44・46） | 切り上げ |
+| 5 | 全国の世界の残り（BD-04・20・05） | 作業中（多数の軍の重さ。Docs/Design/NationalWarfareV1/work-status.md） |
+| 6 | 残りの枠を全国の開始で一通り動かす | 作業中 |
+| 7 | 最後の確認と main への統合 | 未着手 |
 
 ## 進捗表の範囲（2026-10-31 ユーザー決定）
 統合案の新機能群は、60枠の数と重みを変えずに、関係する各枠の「残り」と完成範囲に足す。完成範囲が広がるので、関係する枠の％は一度下がる。2026-10-31 に2回に分けて付け直し済み：1回目で29枠、2回目で19枠、3回目（データの側）で3枠、4回目（横断的な作業）で9枠、5回目（戦国史SE・戦国時代DXから取り込んだ仕組み、統合案 第26節）で15枠を下げ、全体は57.7%→51.4%→49.0%→48.4%→47.4%→46.4%（Docs/Design/ProgressScopeV1〜V5）。人物・家・拠点に持たせる項目の一覧は Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md。
@@ -82,6 +29,10 @@ Codex v116：全国の郡収入・現地公金への受領と支出を接続す�
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
+| 2026-11-14 | 捕縛と処遇・身代金・本人の捕縛と解放・引き換え・家臣が率いる軍・画面 | Docs/Design/BattleCaptivityV1/ | 未統合（prototype/claude-mainline） |
+| 2026-11-14 | 遠方の合戦（W4）・家の滅亡と再興・従属の離反 | Docs/Design/NationalStrategyV1/ | 未統合（prototype/claude-mainline） |
+| 2026-11-14 | 全国の和睦の一巡・NPC の手当・他人の能力の推定・多数の軍の不具合と軽量化 | Docs/Design/NationalSystemsV1/・NationalWarfareV1/ | 未統合（prototype/claude-mainline） |
+| 2026-11-13 | Codex の引継ぎ・傷病死・全国の健康と和睦 | Docs/Design/NationalSystemsV1/・HealthExpansionV1/ | 未統合（prototype/claude-mainline） |
 | 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044、保存互換補修PR149 → main 17be7235 |
 | 2026-11-13 | 全国1560年の年次名乗り（v114） | Docs/Design/NationalNameHistoryV1/ | PR147 → main b40dd017 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |

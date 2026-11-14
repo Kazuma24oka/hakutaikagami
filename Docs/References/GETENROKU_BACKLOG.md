@@ -3,7 +3,7 @@
 2026-10-29 作成 / 参考資料（百代鏡の確定仕様ではない）
 
 百代鏡の現行実装が一段落した後に取り込む改善候補の一覧。
-根拠と詳細は [GETENROKU_ANALYSIS.md](GETENROKU_ANALYSIS.md) にある（§はその節番号）。
+根拠と詳細は戦国下天禄の解析レポート（D:\02_プロジェクト別\百代鏡\参考資料\戦国下天禄\GETENROKU_ANALYSIS.md。2026-11-14 に Git の外へ移した）にある（§はその節番号）。
 現行機能との具体的な合わせ方と例は [GETENROKU_INTEGRATION_V1.md](../Proposals/GETENROKU_INTEGRATION_V1.md)（検討中）。
 参考録画: `C:\Users\hizen\Videos\画面録画\画面録画 2026-10-29 213627.mp4`
 
