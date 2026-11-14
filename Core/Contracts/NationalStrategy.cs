@@ -22,6 +22,8 @@ public sealed record StrategyOutcome(EntityId Campaign,long At,long Revision,boo
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId[]? Allies {get;init;}
     // 遠方の合戦の計算（StrategyBattles、W4）。強さの比のくじで決めた旧保存では持たない。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyBattle? Battle {get;init;}
+    // 実際の軍勢の出陣で、退いた攻め手の軍の大将を守る側が捕らえたとき（一覧の StrategyCapture）。拘束は捕縛の記録と同じに扱う（BattleCaptivity）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public BattleCapture? Capture {get;init;}
 }
 // 史実の出陣のその月の結果：fired（出陣した）・premise（前提が崩れて不発）・declined（前提はそろったが当主が選ばなかった）。
 public sealed record StrategyHistoryRecord(string Event,long At,long Revision,string Result);
@@ -370,6 +372,16 @@ public static class NationalStrategy
         }
         if(changed)w.Strategy=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});
     }
+    // 実際の軍勢の出陣が退いたとき、攻め手の軍が崩れていれば（遠方の合戦の計算のないときは常に）、守る家が軍の大将を捕らえる（35%、人物と日の固定のくじ）。
+    internal static BattleCapture? CaptureLeader(ContractWorld w,StrategyCampaign c,StrategyBattle? battle,int? roll=null)
+    {
+        if(c.Real!=true||!NationalSystems.On(w,"StrategyCapture")||RealArmy(w,c) is not {} m||battle is {AttackerBroke:false})return null;
+        var leader=m.Commander;long at=w.ElapsedSeconds;
+        if(Assassination.DeadAt(w,leader,at,w.CommitSequence)||BattleCaptivity.HeldAt(w,leader,at,w.CommitSequence+1)||leader==w.PlayerControl)return null;
+        if((roll??Draw(w,"capture/"+c.Id.Value+"/"+leader.Value))>=350)return null; // roll は検査用
+        var holder=HouseSuccession.Head(w,c.Defender);var capture=new BattleCapture(leader,c.Attacker,c.Defender,holder,c.Target,at);
+        BattleCaptivity.StopCaptured(w,[capture]);return capture;
+    }
     // 出陣の決着（強さと同盟の援軍、遠方の合戦の計算）。月の初めの決着と、実際の軍勢が着いたときの決着で同じものを使う。
     static StrategyOutcome Settle(ContractWorld w,StrategyState s,List<StrategyOutcome> outcomes,StrategyCampaign c)
     {
@@ -383,7 +395,7 @@ public static class NationalStrategy
             var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
             bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
             Letters(w,c,captured);
-            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle};
+            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle)};
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
     static StrategySuccession[]? Succeed(ContractWorld w,StrategyState s)
@@ -559,7 +571,7 @@ public static class NationalStrategy
         if(prior?.Strategy?.Successions is {} oldSuccessions&&!(s.Successions??[]).Take(oldSuccessions.Length).SequenceEqual(oldSuccessions))throw new InvalidDataException("過去の家督の記録が変更されています");
         foreach(var p in s.Pacts??[])if(p.A==p.B||!factions.Contains(p.A.Value)||!factions.Contains(p.B.Value)||p.Kind is not("alliance" or "truce")||p.From>w.ElapsedSeconds||p.Until<=p.From||!IsMonthStart(w,p.From)||p.Revision>w.CommitSequence)throw new InvalidDataException("家どうしの約束の記録が不正です");
         if(prior?.Strategy?.Pacts is {} oldPacts&&!(s.Pacts??[]).Take(oldPacts.Length).Select(p=>p with{Broken=null}).SequenceEqual(oldPacts.Select(p=>p with{Broken=null})))throw new InvalidDataException("過去の約束の記録が変更されています");
-        foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At)&&c.Real!=true)throw new InvalidDataException("出陣の結果が不正です");StrategyBattles.Validate(w,o);}
+        foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At)&&c.Real!=true)throw new InvalidDataException("出陣の結果が不正です");if(o.Capture is {} cap&&(c.Real!=true||o.Captured||cap.At!=o.At||cap.FromOwner!=c.Attacker||cap.CaptorOwner!=c.Defender||cap.Site!=c.Target||RealArmy(w,c)?.Commander!=cap.Person))throw new InvalidDataException("出陣の捕縛の記録が不正です");StrategyBattles.Validate(w,o);}
         StrategyRestoration.Validate(w,s,prior?.Strategy);StrategyDefections.Validate(w,s,prior?.Strategy);
     }
 }

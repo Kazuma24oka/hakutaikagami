@@ -33,6 +33,16 @@ public sealed class StrategyRealArmyTests(ITestOutputHelper o)
         Assert.Equal(attacker,army.Owner);
         Assert.DoesNotContain(mustered.Strategy!.Outcomes,x=>x.Campaign==campaign);
         L($"出陣まで {sw.ElapsedMilliseconds}ms");
+        // 退いて崩れた軍の大将は、守る家に捕らえられることがある（くじを当たりに固定して確かめる）。捕縛の記録は検査に通り、その城に留め置かれる。
+        {var trial=ContractJson.Copy(mustered);trial.CommitSequence++;var c=trial.Strategy!.Campaigns.Single(x=>x.Id==campaign);
+         var held=NationalStrategy.CaptureLeader(trial,c,new StrategyBattle(100,100,100,100,50,10,60,true,false),roll:0)!;
+         Assert.Equal(army.Commander,held.Person);Assert.Equal(c.Defender,held.CaptorOwner);Assert.Equal(target,held.Site);
+         trial.Strategy=trial.Strategy with{Outcomes=[..trial.Strategy.Outcomes,new(campaign,trial.ElapsedSeconds,trial.CommitSequence,false){Capture=held}]};
+         ContractValidation.Validate(trial);
+         Assert.True(BattleCaptivity.HeldAt(trial,held.Person,trial.ElapsedSeconds,trial.CommitSequence+1));
+         Assert.Equal(target,PersonalCompanions.PhysicalSiteAt(trial,held.Person,trial.ElapsedSeconds,trial.CommitSequence+1));
+         // 崩れていない軍の大将は捕らえない。
+         Assert.Null(NationalStrategy.CaptureLeader(trial,c,new StrategyBattle(100,100,100,100,10,50,60,false,true),roll:0));}
         // 着いて留まり終えるまで進める（最大12時間）。
         ContractWorld now=mustered;
         for(int h=0;h<12&&!now.Strategy!.Outcomes.Any(x=>x.Campaign==campaign);h++){NewGameWorldTests.At(s,s.Seconds+3600);now=s.DiagnosticSnapshot();L($"{h+2}時間 {sw.ElapsedMilliseconds}ms");}
@@ -41,6 +51,13 @@ public sealed class StrategyRealArmyTests(ITestOutputHelper o)
         Assert.Equal(NpcArmies.HoldEnd(now,m),outcome.At); // 留まり終えた秒に決着する（月の初めではない）
         Assert.Equal(outcome.Captured,NationalStrategy.Owner(now,target,now.ElapsedSeconds,now.CommitSequence)==attacker); // 落ちれば城は攻めた家のもの
         L($"決着 {(outcome.Captured?"落城":"退く")} {sw.ElapsedMilliseconds}ms");
+        // 退いた軍の大将を守る側が捕らえたときは、その城に留め置かれ、軍は散る。
+        if(outcome.Capture is {} cap){
+            L($"捕縛 {cap.Person.Value}");
+            Assert.Equal(m.Commander,cap.Person);Assert.True(BattleCaptivity.HeldAt(now,cap.Person,now.ElapsedSeconds,now.CommitSequence+1));
+            NewGameWorldTests.At(s,s.Seconds+60);now=s.DiagnosticSnapshot();
+            Assert.Contains(now.NpcArmies!.Returns,q=>q.Muster==m.Id&&q.Routed==true);
+        }
         // 保存から戻して同じ未来。
         var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(now)));
         foreach(var x in new[]{s,restored})NewGameWorldTests.At(x,now.ElapsedSeconds+600);

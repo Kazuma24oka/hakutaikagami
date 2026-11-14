@@ -79,8 +79,14 @@ public static partial class BattleCaptivity
 
     // 交戦の記録は手番ごとに作り直されるので、記録ごとに捕縛の一覧を覚えておく（所在の判定で頻繁に引く）。
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<WorldClashState,(BattleCapture,long)[]> cache=new();
-    static (BattleCapture Capture,long Revision)[] Captures(ContractWorld w)=>w.WorldClashes is not {} s?[]:
-        cache.GetValue(s,x=>x.Steps.SelectMany(step=>(step.Captures??[]).Select(c=>(c,step.Revision))).ToArray());
+    static (BattleCapture Capture,long Revision)[] Captures(ContractWorld w)
+    {
+        var clash=w.WorldClashes is not {} s?[]:cache.GetValue(s,x=>x.Steps.SelectMany(step=>(step.Captures??[]).Select(c=>(c,step.Revision))).ToArray());
+        // 実際の軍勢の出陣の決着での捕縛（NationalStrategy.CaptureLeader）。
+        var strategy=w.Strategy?.Outcomes.Where(o=>o.Capture!=null).Select(o=>(o.Capture!,o.Revision)).ToArray()??[];
+        return strategy.Length==0?clash:clash.Concat(strategy).OrderBy(x=>x.Item2).ThenBy(x=>x.Item1.At).ToArray();
+    }
+    internal static BattleCapture[] AllCaptures(ContractWorld w)=>Captures(w).Select(x=>x.Capture).ToArray();
     static bool Before(long a,long ar,long at,long rev)=>a<at||a==at&&ar<rev;
     static (BattleCapture Capture,long Revision)? Last(ContractWorld w,EntityId person,long at,long rev)=>
         Captures(w).Where(x=>x.Capture.Person==person&&Before(x.Capture.At,x.Revision,at,rev)).Select(x=>((BattleCapture,long)?)x).LastOrDefault();

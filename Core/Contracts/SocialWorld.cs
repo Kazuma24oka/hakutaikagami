@@ -52,7 +52,7 @@ public static class SocialWorld
             while(reader.Read())if(reader.TokenType==System.Text.Json.JsonTokenType.String)set.Add(reader.GetString()!);
         }
         // 捕虜の解放の願いで銭を受け取る当主は、合戦の捕縛の記録（WorldClashes）にだけ名前が出る。
-        foreach(var step in w.WorldClashes?.Steps??[])foreach(var c in step.Captures??[]){set.Add(c.Holder.Value);set.Add(c.Person.Value);}
+        foreach(var c in BattleCaptivity.AllCaptures(w)){set.Add(c.Holder.Value);set.Add(c.Person.Value);}
         return set;
     }
 
