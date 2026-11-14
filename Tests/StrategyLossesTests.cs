@@ -134,9 +134,35 @@ public sealed class IndependentHouseTests
         var c=new StrategyCampaign(new("campaign:national/test/indep"),new(attacker),house,new(castle.Id),60,1,"border");
         w.Strategy=new(1,NationalStrategy.Policy,[c],[new(c.Id,60,2,true)]);w.ElapsedSeconds=120;
         Assert.Equal(attacker,NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
+        // 独立した家も出陣・同盟を判断する家に入り、月の初めの判断が通る。
+        Assert.Contains(house.Value,NationalStrategy.StrategyHouses(w));
+        w.Strategy=new(1,NationalStrategy.Policy,[],[]);w.ElapsedSeconds=NationalStrategy.NextBoundary(w,long.MaxValue)!.Value;w.CommitSequence++;
+        NationalStrategy.Apply(w);
         // 一覧を持たない世界は今までどおり誰の城にも数えない。
         w.Strategy=new(1,NationalStrategy.Policy,[],[]);
         w.NewGame=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="IndependentHouses").ToArray()};
         Assert.Null(NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
+    }
+}
+// 国人の加勢（LocalLords、2026-11-15）：攻められた城の隣に城を持つ、守る家に従う家は守りに加わり、損害も分ける。
+public sealed class LocalLordsTests
+{
+    [Fact]
+    public void AVassalNextToTheAttackedCastleJoinsTheDefence()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"LocalLords"));
+        w.Strategy??=new(1,NationalStrategy.Policy,[],[]);
+        var owners=NationalStrategy.Owners(w,w.Strategy);var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
+        var pick=w.NewGame.Start.Castles.Where(c=>c.Faction!=null&&c.Faction!=player).SelectMany(c=>NationalStrategy.Neighbors(c.Id).Select(n=>(Target:c,Vassal:owners.GetValueOrDefault(n))))
+            .First(x=>x.Vassal!=null&&NationalStrategy.DbOverlord(x.Vassal)==x.Target.Faction&&x.Vassal!=player);
+        var defender=pick.Target.Faction!;var attacker=w.NewGame.Start.Factions.First(f=>f.Id!=defender&&f.Id!=pick.Vassal&&f.Id!=player&&NationalStrategy.DbOverlord(f.Id)==null).Id;
+        var c=new StrategyCampaign(new("campaign:national/test/local"),new(attacker),new(defender),new(pick.Target.Id),0,1,"border");
+        var s=new StrategyState(1,NationalStrategy.Policy,[c],[]);w.Strategy=s;w.ElapsedSeconds=86400;w.CommitSequence=2;
+        var outcome=NationalStrategy.Settle(w,s,[],c);
+        Assert.Contains(new EntityId(pick.Vassal!),outcome.Allies??[]);
+        // 一覧を持たない世界では加わらない。
+        w.NewGame=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="LocalLords").ToArray()};
+        Assert.DoesNotContain(new EntityId(pick.Vassal!),NationalStrategy.Settle(w,s,[],c).Allies??[]);
     }
 }

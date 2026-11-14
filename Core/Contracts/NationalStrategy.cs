@@ -26,6 +26,8 @@ public sealed record StrategyOutcome(EntityId Campaign,long At,long Revision,boo
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public BattleCapture? Capture {get;init;}
     // 再興の挙兵を後援した家（一覧の RestorationSupport）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId[]? Supporters {get;init;}
+    // 国人の加勢で攻めに加わった、攻める家に従う家（LocalLords）。守りに加わった家は Allies に入る。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId[]? Joined {get;init;}
 }
 // 史実の出陣のその月の結果：fired（出陣した）・premise（前提が崩れて不発）・declined（前提はそろったが当主が選ばなかった）。
 public sealed record StrategyHistoryRecord(string Event,long At,long Revision,string Result);
@@ -163,7 +165,7 @@ public static class NationalStrategy
     }
 
     // 独立を宣言した家が押さえている城（一覧の StrategyIndependence を持つ世界だけ）：家の戦略では、元の家の城に数えず、出陣の目的にもしない。
-    // 独立した家は自分から出陣・同盟はしない。一覧の IndependentHouses を持つ世界では、その城は独立した家のものとして数え、周りの家の出陣の目的になる
+    // 一覧の IndependentHouses を持つ世界では、その城は独立した家のものとして数え、周りの家の出陣の目的になり、独立した家も出陣・同盟を判断する
     // （守る兵は元の家の城一つ分。宣言の後に出陣で落ちた城は落とした家のもの）。
     static void Independent(ContractWorld w,Dictionary<string,string?> map,Dictionary<string,long>? last=null)
     {
@@ -175,6 +177,8 @@ public static class NationalStrategy
             map[d.Site.Value]=houses?d.House.Value:null;
         }
     }
+    // 出陣・同盟を判断する家：開始時の家と、一覧の IndependentHouses を持つ世界では独立した家（ID の順）。
+    internal static string[] StrategyHouses(ContractWorld w)=>w.NewGame!.Start.Factions.Select(f=>f.Id).Concat(NationalSystems.On(w,"IndependentHouses")?(w.Declarations??[]).Select(d=>d.House.Value):[]).Distinct(StringComparer.Ordinal).OrderBy(f=>f,StringComparer.Ordinal).ToArray();
     static IndependenceDeclaration? IndependentHouse(ContractWorld w,string house)=>NationalSystems.On(w,"IndependentHouses")?(w.Declarations??[]).FirstOrDefault(d=>d.House.Value==house):null;
     // 独立した家の兵力：元の家の城一つあたりの兵に、今持つ城の数を掛ける。
     static long IndependentStrength(ContractWorld w,IndependenceDeclaration d,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>
@@ -225,7 +229,7 @@ public static class NationalStrategy
         foreach(var o in s.Outcomes){if(o.Battle is not {} b||now-o.At>=LossRecoverySeconds)continue;var c=s.Campaigns.Single(c=>c.Id==o.Campaign);
             long Left(long lost)=>lost*(LossRecoverySeconds-(now-o.At))/LossRecoverySeconds;
             void Add(string f,long n){if(n>0)result[f]=checked(result.GetValueOrDefault(f)+n);}
-            if(c.Basis!=Restoration)Add(c.Attacker.Value,Left(b.AttackerLost));
+            var joined=o.Joined??[];if(c.Basis!=Restoration){long aw=2+joined.Length;Add(c.Attacker.Value,joined.Length==0?Left(b.AttackerLost):Left(b.AttackerLost)*2/aw);foreach(var j in joined)Add(j.Value,Left(b.AttackerLost)/aw);}
             var allies=o.Allies??[];long weight=2+allies.Length;Add(c.Defender.Value,Left(b.DefenderLost)*2/weight);foreach(var a in allies)Add(a.Value,Left(b.DefenderLost)/weight);}
         return result;
     }
@@ -255,7 +259,7 @@ public static class NationalStrategy
     static List<StrategyPact> Diplomacy(ContractWorld w,StrategyState s,Dictionary<string,string?> owners,Dictionary<string,long> power,HashSet<string> playerHouse,List<(StrategyPact Pact,string Sender)> letters)
     {
         var pacts=(s.Pacts??[]).ToList();long now=w.ElapsedSeconds;var date=WorldCalendar.At(w.EpochDate,now);
-        var houses=w.NewGame!.Start.Factions.Select(f=>f.Id).Where(f=>!playerHouse.Contains(f)&&owners.ContainsValue(f)).OrderBy(f=>f,StringComparer.Ordinal).ToArray();
+        var houses=StrategyHouses(w).Where(f=>!playerHouse.Contains(f)&&owners.ContainsValue(f)).ToArray();
         var byOwner=owners.Where(x=>x.Value!=null).GroupBy(x=>x.Value!,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Select(x=>x.Key).ToArray(),StringComparer.Ordinal);
         var borders=houses.ToDictionary(f=>f,f=>(byOwner.GetValueOrDefault(f)??[]).SelectMany(Neighbors).Select(n=>owners.GetValueOrDefault(n)).Where(o=>o!=null&&o!=f).Select(o=>o!).ToHashSet(StringComparer.Ordinal),StringComparer.Ordinal);
         var strength=houses.ToDictionary(f=>f,f=>power.GetValueOrDefault(f,50),StringComparer.Ordinal);
@@ -268,7 +272,7 @@ public static class NationalStrategy
             pacts.Add(pact);letters.Add((pact,""));
         }
         var shogun=NationalStart.FactionId(Shogun);
-        if(w.NewGame.Start.Factions.Any(f=>f.Id==shogun)&&HouseSuccession.Head(w,new(shogun)) is var sh&&w.Characters.SingleOrDefault(c=>c.Id==sh)?.Life==LifeState.Adult)
+        if(w.NewGame!.Start.Factions.Any(f=>f.Id==shogun)&&HouseSuccession.Head(w,new(shogun)) is var sh&&w.Characters.SingleOrDefault(c=>c.Id==sh)?.Life==LifeState.Adult)
             foreach(var g in s.Outcomes.Where(o=>o.Captured&&o.At>now-90*86400).Select(o=>s.Campaigns.Single(c=>c.Id==o.Campaign)).GroupBy(c=>(c.Attacker.Value,c.Defender.Value)).Where(g=>g.Count()>=2).OrderBy(g=>g.Key.Item1,StringComparer.Ordinal).ThenBy(g=>g.Key.Item2,StringComparer.Ordinal))
             {
                 var (a,d)=g.Key;if(playerHouse.Contains(a)||playerHouse.Contains(d)||Bound(pacts.ToArray(),a,d,now)||a==shogun||d==shogun)continue;
@@ -323,7 +327,7 @@ public static class NationalStrategy
                 history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,mode==HistoryMode.Fictional?"declined":"premise"));
         }
         var pactLetters=new List<(StrategyPact Pact,string Sender)>();var pacts=Diplomacy(w,s,owners,power,playerHouse,pactLetters);
-        foreach(var f in w.NewGame.Start.Factions.OrderBy(f=>f.Id,StringComparer.Ordinal))
+        foreach(var f in StrategyHouses(w).Select(id=>(Id:id,_:0)))
         {
             if(playerHouse.Contains(f.Id))continue;
             var head=HouseSuccession.Head(w,new(f.Id));if(w.Characters.SingleOrDefault(c=>c.Id==head)?.Life!=LifeState.Adult)continue;
@@ -410,9 +414,19 @@ public static class NationalStrategy
             var owners0=Owners(w,s with{Outcomes=outcomes.ToArray()});var initial0=InitialCounts(w);
             long a=c.Basis==Restoration?StrategyRestoration.Strength(c.Attacker.Value):Strength(w,c.Attacker.Value,owners0,initial0),d=Strength(w,c.Defender.Value,owners0,initial0);
             // 同盟の義務：守る側と出陣の時点で同盟していた家（攻める側と約束のない家）は、兵力の半分で援軍に出る。
+            EntityId[] local=[];
             var allies=(s.Pacts??[]).Where(p=>p.Kind=="alliance"&&p.Broken==null&&p.From<=c.At&&c.At<p.Until&&(p.A==c.Defender||p.B==c.Defender)).Select(p=>p.A==c.Defender?p.B:p.A)
                 .Where(x=>x!=c.Attacker&&!Bound((s.Pacts??[]).ToArray(),x.Value,c.Attacker.Value,c.At)).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
+            // 国人の加勢（一覧の LocalLords）：攻められた城の隣に城を持つ、守る家に従う家（離反していない）は兵力の半分で守りに加わり、攻める家に従う家は攻めに加わる。
+            if(NationalSystems.On(w,"LocalLords"))
+            {
+                var near=Neighbors(c.Target.Value).Select(n=>owners0.GetValueOrDefault(n)).Where(o=>o!=null).Select(o=>o!).ToHashSet(StringComparer.Ordinal);
+                var guard=Vassals(s,c.Defender.Value).Where(v=>near.Contains(v)&&v!=c.Attacker.Value&&!allies.Any(a=>a.Value==v)).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
+                var join=Vassals(s,c.Attacker.Value).Where(v=>near.Contains(v)&&v!=c.Defender.Value).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
+                allies=[..allies,..guard];local=join;
+            }
             foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
+            foreach(var x in local)a=checked(a+Strength(w,x.Value,owners0,initial0)/2);
             // 再興の挙兵への後援（一覧の RestorationSupport）：落とした家に一年以内に城を奪われた家（今も城を持つ家）は、兵力の半分で後援する。
             var supporters=c.Basis==Restoration&&NationalSystems.On(w,"RestorationSupport")?s.Outcomes.Concat(outcomes).Where(o=>o.Captured&&o.At>w.ElapsedSeconds-365*86400L).Select(o=>s.Campaigns.Single(x=>x.Id==o.Campaign)).Where(x=>x.Attacker==c.Defender&&x.Defender!=c.Attacker&&x.Basis!=Restoration&&owners0.ContainsValue(x.Defender.Value)).Select(x=>x.Defender).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray():[];
             foreach(var x in supporters)a=checked(a+Strength(w,x.Value,owners0,initial0)/2);
@@ -420,7 +434,7 @@ public static class NationalStrategy
             var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
             bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
             Letters(w,c,captured);
-            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle),Supporters=supporters.Length==0?null:supporters};
+            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle),Supporters=supporters.Length==0?null:supporters,Joined=local.Length==0?null:local};
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
     static StrategySuccession[]? Succeed(ContractWorld w,StrategyState s)
