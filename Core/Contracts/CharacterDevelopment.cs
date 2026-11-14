@@ -113,10 +113,23 @@ public static class CharacterDevelopment
             int efficiency=Skills32(w)?(task.Action==ActionKind.Train?50:100):50+Value(w,prior,task.Executor,Ability(skill))/2+Skill(prior,task.Executor,skill)/2;
             long used=rows.Where(a=>a.Actor==task.Executor&&a.At/86400==end/86400).Sum(a=>a.Seconds);
             long credited=Math.Min(seconds,Math.Max(0,28800-used));
+            // 師事：教える人が始めと終わりに同じ拠点にいて、その技能が学ぶ人より高ければ、100%＋教える人の教育×0.5%。教える人は教えた時間を教育の実務として得る。
+            if(Skills32(w)&&i.Teacher is {} teacher&&Taught(w,prior,teacher,task.Executor,skill,task.Scope,action.StartedAt,end))
+            {
+                int teaching=SkillIn(w,prior,teacher,DevelopmentSkill.Teaching);efficiency=100+teaching/2;
+                long tUsed=rows.Where(a=>a.Actor==teacher&&a.At/86400==end/86400).Sum(a=>a.Seconds);long tCredited=Math.Min(seconds,Math.Max(0,28800-tUsed));
+                rows.Add(new(task.Id,task.Executor,skill,end,credited,efficiency,credited*efficiency/100));
+                if(tCredited>0)rows.Add(new(task.Id,teacher,DevelopmentSkill.Teaching,end,tCredited,100,tCredited));
+                continue;
+            }
             rows.Add(new(task.Id,task.Executor,skill,end,credited,efficiency,credited*efficiency/100));
         }
         return rows.ToArray();
     }
+    // 師事が成り立つか：教える人が学ぶ人と別人の成人で、始めと終わりに同じ拠点にいて、始めの時点でその技能が学ぶ人より高い。
+    static bool Taught(ContractWorld w,DevelopmentAward[] prior,EntityId teacher,EntityId learner,DevelopmentSkill skill,EntityId site,long start,long end)=>
+        teacher!=learner&&w.Characters.Any(c=>c.Id==teacher&&c.Life==LifeState.Adult)&&PersonalCompanions.PhysicalSiteAt(w,teacher,start,w.CommitSequence+1)==site&&PersonalCompanions.PhysicalSiteAt(w,teacher,end,w.CommitSequence+1)==site&&
+        SkillIn(w,prior,teacher,skill)>SkillIn(w,prior,learner,skill);
     internal static int ForecastPractice(ContractWorld w, EntityId actor, DevelopmentSkill skill, long at, bool includeDelivery = true)
     {
         var prior = (w.Development?.Awards ?? []).Where(a => a.Actor == actor && a.At < at).ToArray();
@@ -138,6 +151,17 @@ public static class CharacterDevelopment
         var site=PersonalCompanions.PhysicalSiteAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1);Need(site!=null,"NPC must be at a site");long at=w.ElapsedSeconds;
         return new(new(id),actor,actor,site!.Value,ActionKind.Train,null,null,0,null,new(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),at,1,PracticeSeconds,1,false,TaskKind.BindingOrder){TrainingSkill=skill};
     }
+    // 師事して修行する（32技能の版）。教える人がその拠点にいて、その技能が本人より高いこと。
+    public static Intent Learn(ContractWorld w,string id,DevelopmentSkill skill,EntityId teacher){
+        Need(Skills32(w),"師事は32技能の版だけです");var i=Practice(w,id,skill);long at=w.ElapsedSeconds;var prior=(w.Development?.Awards??[]).Where(a=>a.At<at).ToArray();
+        Need(teacher!=w.PlayerControl&&w.Characters.Any(c=>c.Id==teacher&&c.Life==LifeState.Adult)&&PersonalCompanions.PhysicalSiteAt(w,teacher,at,w.CommitSequence+1)==i.Scope&&SkillIn(w,prior,teacher,skill)>SkillIn(w,prior,w.PlayerControl,skill),"同じ拠点にいて、その技能が高い人に師事してください");
+        return i with{Teacher=teacher};
+    }
+    // 本人の拠点にいて、その技能が本人より高い人（師事の相手の候補）。
+    public static EntityId[] Teachers(ContractWorld w,DevelopmentSkill skill){
+        if(!Skills32(w))return [];var site=w.Locations.Single(l=>l.Actor==w.PlayerControl).Site;if(site==null)return [];long at=w.ElapsedSeconds;var prior=(w.Development?.Awards??[]).Where(a=>a.At<at).ToArray();int mine=SkillIn(w,prior,w.PlayerControl,skill);
+        return w.Locations.Where(l=>l.Kind==LocationKind.AtSite&&l.Site==site&&l.Actor!=w.PlayerControl).Select(l=>l.Actor).Where(p=>w.Characters.Any(c=>c.Id==p&&c.Life==LifeState.Adult)&&SkillIn(w,prior,p,skill)>mine).OrderByDescending(p=>SkillIn(w,prior,p,skill)).ThenBy(p=>p.Value,StringComparer.Ordinal).Take(5).ToArray();
+    }
     public static Intent Practice(ContractWorld w,string id,DevelopmentSkill skill){
         Need(Enabled(w)&&Skills(w).Contains(skill),"修行方式が有効ではありません");
         var site=w.Locations.Single(l=>l.Actor==w.PlayerControl);Need(site.Kind==LocationKind.AtSite&&site.Site!=null,"拠点に到着してから修行してください");
@@ -147,7 +171,7 @@ public static class CharacterDevelopment
     internal static void ValidatePractice(ContractWorld w,Intent i,long at,bool pending){using var _cc=pending?ControlContext.Keep():ControlContext.At(w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence);
         Need(Enabled(w)&&(i.Actor==w.PlayerControl||NewGameNpcRoutine.PurposeEnabled(w)&&(pending?NewGameNpcRoutine.IsActor(w,i.Actor):NewGameNpcRoutine.WasActor(w,i.Actor,at)))&&i.Executor==i.Actor&&i.Action==ActionKind.Train&&i.TrainingSkill!=null&&Skills(w).Contains(i.TrainingSkill.Value),"Invalid personal training");
         Need(i.WorkSeconds==PracticeSeconds&&i.EffectiveAt==at&&i.DeliverySeconds==1&&i.ReportSeconds==1&&!i.Important&&i.Kind==TaskKind.BindingOrder&&i.Deadline==new DeadlinePolicy(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),"Training duration or deadline changed");
-        if(pending){Need(i==(i.Actor==w.PlayerControl?Practice(w,i.RequestId.Value,i.TrainingSkill!.Value):PracticeForNpc(w,i.Actor,i.RequestId.Value,i.TrainingSkill!.Value)),"Training location changed");Need(!w.Tasks.Any(t=>t.Executor==i.Actor&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)),"先に現在の用件を終えるか中断してください");}
+        if(pending){Need(i==(i.Actor==w.PlayerControl?(i.Teacher is {} t?Learn(w,i.RequestId.Value,i.TrainingSkill!.Value,t):Practice(w,i.RequestId.Value,i.TrainingSkill!.Value)):PracticeForNpc(w,i.Actor,i.RequestId.Value,i.TrainingSkill!.Value)),"Training location changed");Need(!w.Tasks.Any(t=>t.Executor==i.Actor&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)),"先に現在の用件を終えるか中断してください");}
     }
     // 他人の基礎能力の推定（BD-16、全国の開始の一覧の AbilityReputation を持つ世界だけ）。真の値は渡さず、段階と推定幅・出典・時点だけを出す。
     // 面識（本人が相手との出来事を知っている）があれば幅が狭く、その最後の認識の時点。なければ、家の当主と同じ家の者は評判（幅が広く、開始時の時点）。どちらもなければ不明。

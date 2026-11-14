@@ -79,6 +79,8 @@ public sealed record Intent(EntityId RequestId, EntityId Actor, EntityId Executo
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? RoutePolicy {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public DevelopmentSkill? TrainingSkill {get;init;}
+    // 師事（32技能の版）：教える人。始めと終わりに同じ拠点にいて、その技能が学ぶ人より高いときだけ師事の経験になる。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Teacher {get;init;}
 }
 public sealed record RequestReceipt(EntityId Id, string BodyHash, Intent Intent, long CreatedAt, long CommitSequence);
 public sealed record TaskState(EntityId Id, EntityId RequestId, EntityId Issuer, EntityId Executor, EntityId Scope,

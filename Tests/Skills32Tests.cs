@@ -82,3 +82,29 @@ public sealed class CreatedOfficerSkillsTests
         Assert.Equal(35,card.Skills.Single(s=>s.Name=="医術").Value);Assert.Equal(0,card.Skills.Single(s=>s.Name=="剣術").Value);
     }
 }
+// 師事（32技能の版、2026-11-14）：その技能が高い人に同じ拠点で教わると、100%＋教える人の教育×0.5%の経験。教える人は教育の実務を得る。
+public sealed class LearnFromTeacherTests
+{
+    [Fact]
+    public void LearningFromAMoreSkilledPersonAtTheSameSiteGivesFullCreditAndTeachingExperience()
+    {
+        bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
+        try{
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());var me=w.PlayerControl;
+        var card=CharacterDevelopment.View(w,me,me)!;
+        // 本人より高い人のいる技能で、教わる相手を選ぶ。
+        var (skill,teacher)=CharacterDevelopment.Skills(w).Select(s=>(S:s,T:CharacterDevelopment.Teachers(w,s))).First(x=>x.T.Length>0);
+        var t=teacher[0];
+        var s=new WorldSession(w);
+        string name=CharacterDevelopment.Name(skill);
+        long mine=card.Skills.Single(x=>x.Name==name).Experience;
+        Assert.Equal(ResultCode.Accepted,s.Submit(CharacterDevelopment.Learn(s.DiagnosticSnapshot(),"request:learn",skill,t),s.Revision).Code);
+        NewGameWorldTests.At(s,s.Seconds+CharacterDevelopment.PracticeSeconds+120);
+        var after=s.DiagnosticSnapshot();
+        var award=Assert.Single(after.Development!.Awards,a=>a.Actor==me);
+        Assert.True(award.Efficiency>=100); // 独習の50%ではなく、100%＋教育の上乗せ
+        Assert.Contains(after.Development.Awards,a=>a.Actor==t&&a.Skill==DevelopmentSkill.Teaching&&a.Experience==CharacterDevelopment.PracticeSeconds);
+        Assert.Equal(mine+award.Experience,CharacterDevelopment.View(after,me,me)!.Skills.Single(x=>x.Name==name).Experience);
+        }finally{WorldSession.GuardTurnSnapshots=guard;}
+    }
+}

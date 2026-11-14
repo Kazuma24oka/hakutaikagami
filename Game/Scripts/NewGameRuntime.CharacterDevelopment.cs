@@ -40,6 +40,12 @@ public partial class NewGameRuntime
                     try{Done(Session.Submit(CharacterDevelopment.Practice(Snapshot(),"request:development-ui/"+shown+"/"+skill,skill),shown));}
                     catch(System.IO.InvalidDataException e){feedback.Text=e.Message;}
                 },busy||!atSite||PersonalLife.Resting(world,world.ElapsedSeconds,world.CommitSequence+1));
+                // 師事：その技能が本人より高い人が同じ拠点にいれば、その人に教わる。
+                foreach(var skill in CharacterDevelopment.Skills(Snapshot()))foreach(var teacher in CharacterDevelopment.Teachers(Snapshot(),skill).Take(1)){var t=teacher;var k=skill;
+                    Button(CharacterDevelopment.Name(k)+"："+(FamilyBirth.People(Snapshot()).SingleOrDefault(x=>x.Id==t.Value)?.Name??t.Value)+"に師事",()=>{
+                        try{Done(Session.Submit(CharacterDevelopment.Learn(Snapshot(),"request:development-ui/"+shown+"/learn/"+k,k,t),shown));}
+                        catch(System.IO.InvalidDataException e){feedback.Text=e.Message;}
+                    },busy||!atSite||PersonalLife.Resting(world,world.ElapsedSeconds,world.CommitSequence+1));}
             }
         }
         Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(610,590));
