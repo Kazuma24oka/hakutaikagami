@@ -19,13 +19,13 @@ public partial class CommonContractTrial : Control
     private readonly List<string> checks=new();
     private bool IsTest=>OS.GetCmdlineUserArgs().Contains("--common-contract-check");
     private bool CaptureEnabled=>OS.GetCmdlineUserArgs().Contains("--common-contract-capture");
-    private string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/CommonContractV1/runtime-local/godot");
+    private string Output=>RecordPath.Globalize("res://../Docs/Design/CommonContractV1/runtime-local/godot");
     public override void _Ready()
     {
         host=new(new(ContractFixture.Create()));
         Theme=new Theme{DefaultFontSize=19,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var slotRoot=IsTest?"user://common-contract-v1-test-"+Guid.NewGuid().ToString("N"):"user://common-contract-v1-manual";
-        store=new(ProjectSettings.GlobalizePath(slotRoot),ContractFixture.Create().Definitions);
+        store=new(RecordPath.Globalize(slotRoot),ContractFixture.Create().Definitions);
         var margin=new MarginContainer();AddChild(margin);margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         foreach(var edge in new[]{"left","right","top","bottom"})margin.AddThemeConstantOverride("margin_"+edge,24);
         var column=new VBoxContainer();column.AddThemeConstantOverride("separation",14);margin.AddChild(column);

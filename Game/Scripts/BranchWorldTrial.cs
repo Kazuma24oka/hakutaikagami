@@ -16,7 +16,7 @@ public partial class BranchWorldTrial : Control
     readonly Dictionary<string,MeshInstance3D> roads=new();
     readonly Dictionary<string,Button> buttons=new();readonly List<string> checks=new();
     bool automatic,testing;double fraction;int speed=1;string clip="idle";double clipTime;
-    string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/BranchWorldV1/runtime-local");
+    string Output=>RecordPath.Globalize("res://../Docs/Design/BranchWorldV1/runtime-local");
     string SaveRoot
     {
         get {var arg=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--branch-save-key="));
@@ -27,7 +27,7 @@ public partial class BranchWorldTrial : Control
     public override void _Ready()
     {
         testing=Mode!="";
-        host=new(new(BranchRoutes.Create(Mode!="--branch-open-check")));store=new(testing?SaveRoot:ProjectSettings.GlobalizePath("user://branch-world-v1-manual"),BranchRoutes.Create(Mode!="--branch-open-check").Definitions);
+        host=new(new(BranchRoutes.Create(Mode!="--branch-open-check")));store=new(testing?SaveRoot:RecordPath.Globalize("user://branch-world-v1-manual"),BranchRoutes.Create(Mode!="--branch-open-check").Definitions);
         Theme=new Theme{DefaultFontSize=19,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var margin=new MarginContainer();AddChild(margin);margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         foreach(var edge in new[]{"left","right","top","bottom"})margin.AddThemeConstantOverride("margin_"+edge,18);

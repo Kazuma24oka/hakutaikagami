@@ -19,7 +19,7 @@ public partial class ClinicalHealthCheck:Control
     {
         try
         {
-            var root=ProjectSettings.GlobalizePath("res://../Docs/Design/HealthExpansionV1/runtime-local");
+            var root=RecordPath.Globalize("res://../Docs/Design/HealthExpansionV1/runtime-local");
             var w=ContractJson.Read<ContractWorld>(File.ReadAllBytes(Path.Combine(root,"ready.json")));
             var runtime=new NewGameRuntime();runtime.ReviewConfigureClinical(w);AddChild(runtime);
             for(int i=0;i<8;i++)await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);

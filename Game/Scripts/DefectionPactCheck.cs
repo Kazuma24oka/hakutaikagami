@@ -56,7 +56,7 @@ public partial class DefectionPactCheck:Node
             Check(Readable(),"開封した返答");await Map();
             var pose=game.Pose();game.SaveCheckpoint("answered");game.LoadCheckpoint("answered");var restored=game.Pose();
             Check(pose==restored,"復旧で配置が変わりました");await Menu();Check(Readable(),"返答が復元されません");
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/DefectionPactV1/runtime-local/ui");Directory.CreateDirectory(output);
+            var output=RecordPath.Globalize("res://../Docs/Design/DefectionPactV1/runtime-local/ui");Directory.CreateDirectory(output);
             File.WriteAllText(Path.Combine(output,"before-pose.json"),pose);File.WriteAllText(Path.Combine(output,"restored-pose.json"),restored);
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             Check(ViewportCapture.Save(Panel().GetViewport(),Path.Combine(output,"opened.png"))==Error.Ok,"開封画面の描画");

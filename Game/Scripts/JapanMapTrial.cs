@@ -16,7 +16,7 @@ public partial class JapanMapTrial : Control
     readonly List<(Node3D Node,GeoLandmark Site)> markers=new();
     readonly Dictionary<string,Button> buttons=new();readonly List<string> checks=new();
     GeoMillimeters origin=new(0,0);int selected;float span=2800000,yaw=0,tilt=60;bool testing;
-    readonly string output=ProjectSettings.GlobalizePath("res://../Docs/Design/JapanMapV1/runtime-local");
+    readonly string output=RecordPath.Globalize("res://../Docs/Design/JapanMapV1/runtime-local");
     public override void _Ready()
     {
         testing=OS.GetCmdlineUserArgs().Contains("--japan-check");

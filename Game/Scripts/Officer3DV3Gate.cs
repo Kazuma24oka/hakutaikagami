@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Linq;
 public static class Officer3DV3Gate
 {
-    public static string Root=>ProjectSettings.GlobalizePath("res://..");
+    public static string Root=>RecordPath.Globalize("res://..");
     static string Hash(string p)=>Convert.ToHexString(SHA256.HashData(System.IO.File.ReadAllBytes(p))).ToLowerInvariant();
     public static void Require(bool reviewed)
     {

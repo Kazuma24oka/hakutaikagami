@@ -20,9 +20,9 @@ public partial class RegionalSceneryTrial : Control
     bool AppearanceTesting=>Mode.StartsWith("--appearance-");
     string SkinArg=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--skin="))?[7..]??"skin:baseline";
     string EvidenceKey=>AppearanceTesting?Case+"-"+SkinArg.Replace(':','-'):Case;
-    string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/"+(AppearanceTesting?"SceneryAppearanceV1":"RegionalSceneryV1")+"/runtime-local");
+    string Output=>RecordPath.Globalize("res://../Docs/Design/"+(AppearanceTesting?"SceneryAppearanceV1":"RegionalSceneryV1")+"/runtime-local");
     ContractWorld Initial() => RegionalScenery.Create(Case == "scale" ? 12 : 3, Case == "refuse", Case == "rout");
-    string SaveRoot => testing ? Output + "/saves/" + Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a => a.StartsWith("--save-key="))[11..], "N").ToString("N") : ProjectSettings.GlobalizePath("user://regional-scenery-v1");
+    string SaveRoot => testing ? Output + "/saves/" + Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a => a.StartsWith("--save-key="))[11..], "N").ToString("N") : RecordPath.Globalize("user://regional-scenery-v1");
     public override void _Ready()
     {
         try

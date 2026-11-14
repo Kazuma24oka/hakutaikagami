@@ -14,7 +14,7 @@ public partial class HistoricalChronicleCheck:Node
     {
         try{
             bool owari=System.Environment.GetEnvironmentVariable("HAKUTAI_OWARI_CHECK")=="1";
-            string output=ProjectSettings.GlobalizePath(owari?"res://../Docs/Design/OwariHistoricalOpportunityV1/runtime-local/ui":"res://../Docs/Design/HistoricalChronicleV1/runtime-local/ui");Directory.CreateDirectory(output);
+            string output=RecordPath.Globalize(owari?"res://../Docs/Design/OwariHistoricalOpportunityV1/runtime-local/ui":"res://../Docs/Design/HistoricalChronicleV1/runtime-local/ui");Directory.CreateDirectory(output);
             var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
             var start=entry.CreateJudgmentReview(Path.Combine(Path.GetTempPath(),"npc-judgment-ui-"+Guid.NewGuid().ToString("N")),owari);
             if(owari)Check(start.Profile.Judgment?.EventEdition==HistoricalEventRules.OwariEdition,"史実条件の新規開始");

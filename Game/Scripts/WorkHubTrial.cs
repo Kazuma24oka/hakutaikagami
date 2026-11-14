@@ -12,7 +12,7 @@ public partial class WorkHubTrial:Control
     ContinuousWorldTrial npc=null!;Main? legacy;
     readonly List<string> checks=new();
     string Mode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--work-hub-"))??"";
-    string Output=>ProjectSettings.GlobalizePath((OS.GetCmdlineUserArgs().Contains("--startup-entry")?"res://../Docs/Design/WorkHubStartupV1/runtime-local":"res://../Docs/Design/WorkHubV1/runtime-local"));
+    string Output=>RecordPath.Globalize((OS.GetCmdlineUserArgs().Contains("--startup-entry")?"res://../Docs/Design/WorkHubStartupV1/runtime-local":"res://../Docs/Design/WorkHubV1/runtime-local"));
     public override void _Ready()
     {
         try{

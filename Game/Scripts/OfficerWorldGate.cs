@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Security.Cryptography;
 public static class OfficerWorldGate
 {
-    static string Root=>ProjectSettings.GlobalizePath("res://..");
+    static string Root=>RecordPath.Globalize("res://..");
     static string Hash(string p)=>Convert.ToHexString(SHA256.HashData(System.IO.File.ReadAllBytes(p))).ToLowerInvariant();
     public static void Require(bool reviewed)
     {

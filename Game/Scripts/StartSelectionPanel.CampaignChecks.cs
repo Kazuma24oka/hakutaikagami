@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 public partial class StartSelectionPanel
 {
     string CampaignCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--campaign-case="))?[16..]??"deployment";
-    string CampaignOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/CreatedCampaignV1/runtime-local/"+CampaignCase);
+    string CampaignOutput=>RecordPath.Globalize("res://../Docs/Design/CreatedCampaignV1/runtime-local/"+CampaignCase);
     long CampaignEnd=>stage!.HubSession.DiagnosticSnapshot().Region!.Units.Where(u=>u.Commander==stage.HubSession.PlayerControl).SelectMany(u=>u.Route).Select(l=>l.EndAt).DefaultIfEmpty(stage.HubSession.Seconds).Max();
     async Task CampaignCapture(string name){await Frame();ViewportCapture.Save(GetViewport(),CampaignOutput+"/diagnostic.png");Need(stage!.HubFits(),"campaign controls and minimum 3D area fit actual window");ViewportCapture.Save(GetViewport(),CampaignOutput+"/"+name+".png");File.WriteAllBytes(CampaignOutput+"/"+name+"-world.json",ContractJson.Write(stage.HubSession.DiagnosticSnapshot()));File.WriteAllText(CampaignOutput+"/"+name+"-world.sha256",ContractJson.CanonicalHash(stage.HubSession.DiagnosticSnapshot()));File.WriteAllText(CampaignOutput+"/"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(stage.HubRect()));}
     void CampaignStep(int n){var child=stage!;

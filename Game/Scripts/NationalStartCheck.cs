@@ -11,7 +11,7 @@ public partial class NationalStartCheck:Node
  static void Check(bool condition,string text){if(!condition)throw new InvalidDataException(text);}
  async Task Capture(string output,string name){for(int i=0;i<4;i++)await Frame();if(DisplayServer.GetName()=="headless")return;await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);Check(GetViewport().GetTexture().GetImage().SavePng(Path.Combine(output,name))==Error.Ok,"画像の書き出し");}
  public override async void _Ready(){try{
-  string output=ProjectSettings.GlobalizePath("res://../Docs/Design/NationalStartV1/runtime-local/ui");Directory.CreateDirectory(output);
+  string output=RecordPath.Globalize("res://../Docs/Design/NationalStartV1/runtime-local/ui");Directory.CreateDirectory(output);
   var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();entry.ReviewUseRoot(Path.Combine(output,"data-"+Guid.NewGuid().ToString("N")));
   await entry.ReviewNationalStartMap(Frame);await Capture(output,"national-routes.png");
   string goal=await entry.ReviewNationalStart(Frame);await Capture(output,"departed.png");

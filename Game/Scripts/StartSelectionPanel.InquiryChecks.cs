@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 public partial class StartSelectionPanel
 {
-    string InquiryOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/DelegationInquiryV1/runtime-local");
+    string InquiryOutput=>RecordPath.Globalize("res://../Docs/Design/DelegationInquiryV1/runtime-local");
     string InquiryMessage=>stage!.HubSession.DiagnosticSnapshot().Messaging.Messages.Single(m=>m.Kind==DelegationInquiry.QueryKind).Id;
     string InquiryReply=>stage!.HubSession.DiagnosticSnapshot().Messaging.Messages.Single(m=>m.Kind==DelegationInquiry.ReplyKind).Id;
     void InquiryStep(int n)

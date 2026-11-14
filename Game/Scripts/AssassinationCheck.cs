@@ -51,7 +51,7 @@ public partial class AssassinationCheck:Node
     GD.Print("ROAD_CONTACT_UI_PASS"); game.QueueFree(); await Frame();
  }
  public override async void _Ready(){try{
- string output=ProjectSettings.GlobalizePath("res://../Docs/Design/AssassinationV1/runtime-local/ui");Directory.CreateDirectory(output);await CheckRoad(output);
+ string output=RecordPath.Globalize("res://../Docs/Design/AssassinationV1/runtime-local/ui");Directory.CreateDirectory(output);await CheckRoad(output);
  var entry=new NewGameFrontEnd();AddChild(entry);await Frame();var start=entry.CreateSecurityReview(Path.Combine(Path.GetTempPath(),"scheme-operation-ui-"+Guid.NewGuid().ToString("N")));entry.QueueFree();await Frame();
  var game=new NewGameRuntime();game.Configure(start.Store,start.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Until(()=>!game.IsSaving,"開始保存");
  game.Press("information-schemes");await Frame();game.ReviewSchemePress("contact-menu");await Frame();

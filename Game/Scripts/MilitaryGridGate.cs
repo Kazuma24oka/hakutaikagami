@@ -8,7 +8,7 @@ public static class MilitaryGridGate
     static string Hash(string p)=>Convert.ToHexString(SHA256.HashData(System.IO.File.ReadAllBytes(p))).ToLowerInvariant();
     public static void Require(bool reviewed)
     {
-        string root=ProjectSettings.GlobalizePath("res://.."),dir=Path.Combine(root,"Art/Officer3D/MilitaryGridV1"),plan=Path.Combine(dir,"runtime-plan.json");
+        string root=RecordPath.Globalize("res://.."),dir=Path.Combine(root,"Art/Officer3D/MilitaryGridV1"),plan=Path.Combine(dir,"runtime-plan.json");
         using var data=JsonDocument.Parse(System.IO.File.ReadAllText(plan));foreach(var d in data.RootElement.GetProperty("dependencies").EnumerateArray())
             if(Hash(Path.Combine(root,d.GetProperty("path").GetString()!))!=d.GetProperty("sha256").GetString())throw new InvalidOperationException("軍令・認識・地図の入力が変更されています："+d.GetProperty("path").GetString());
         if(!reviewed)return;

@@ -13,7 +13,7 @@ public partial class NpcJudgmentCheck:Node
     public override async void _Ready()
     {
         try{
-            string output=ProjectSettings.GlobalizePath("res://../Docs/Design/NpcJudgmentV1/runtime-local/ui");Directory.CreateDirectory(output);
+            string output=RecordPath.Globalize("res://../Docs/Design/NpcJudgmentV1/runtime-local/ui");Directory.CreateDirectory(output);
             var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
             var challenge = Enum.Parse<NpcChallenge>(System.Environment.GetEnvironmentVariable("HAKUTAI_CHECK_CHALLENGE") ?? "Standard");
             var start=entry.CreateJudgmentReview(Path.Combine(Path.GetTempPath(),"npc-judgment-ui-"+Guid.NewGuid().ToString("N")), challenge:challenge);

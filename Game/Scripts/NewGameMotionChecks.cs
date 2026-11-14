@@ -14,10 +14,10 @@ public partial class NewGameMotionChecks : Control
         try
         {
             string label=OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--motion-label="))?.Split('=')[1]??"baseline";
-            string root=ProjectSettings.GlobalizePath("res://../Docs/Design/MotionResponseV1/runtime-local/");Directory.CreateDirectory(root);
+            string root=RecordPath.Globalize("res://../Docs/Design/MotionResponseV1/runtime-local/");Directory.CreateDirectory(root);
             bool film=OS.GetCmdlineUserArgs().Contains("--motion-film");bool capped=OS.GetCmdlineUserArgs().Contains("--motion-capped");Engine.MaxFps=capped?60:0;DisplayServer.WindowSetVsyncMode(DisplayServer.VSyncMode.Disabled);
             Theme=new Theme{DefaultFontSize=16,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
-            var profile=ContractJson.Read<NewCampaignProfile>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath("res://../Docs/Design/MotionResponseV1/baseline-start.json")));
+            var profile=ContractJson.Read<NewCampaignProfile>(System.IO.File.ReadAllBytes(RecordPath.Globalize("res://../Docs/Design/MotionResponseV1/baseline-start.json")));
             var store=new NewCampaignStore(Path.Combine(root,Guid.NewGuid().ToString("N")));var run=store.New(profile.Setup,profile.Registered,profile.Selected,profile.Seed);
             var game=new NewGameRuntime();game.Configure(store,run,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
             await Frame();await Frame();game.SetDestination("fork");game.Press("depart");game.Press("auto");

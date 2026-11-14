@@ -26,7 +26,7 @@ public partial class CaptivesCheck:Control
 {
     public override async void _Ready()
     {
-        var root=ProjectSettings.GlobalizePath("res://../Docs/Design/BattleCaptivityV1/runtime-local");
+        var root=RecordPath.Globalize("res://../Docs/Design/BattleCaptivityV1/runtime-local");
         try
         {
             var w=ContractJson.Read<ContractWorld>(File.ReadAllBytes(Path.Combine(root,"ready.json")));

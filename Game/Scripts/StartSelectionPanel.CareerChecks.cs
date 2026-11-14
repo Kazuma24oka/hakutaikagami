@@ -9,7 +9,7 @@ public partial class StartSelectionPanel
 {
     string CareerCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--career-case="))?[14..]??"release";
     int CareerSteps=>CareerCase=="refuse"?3:CareerCase=="decline"?5:7;
-    string CareerOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/CareerV1/runtime-local/"+CareerCase);
+    string CareerOutput=>RecordPath.Globalize("res://../Docs/Design/CareerV1/runtime-local/"+CareerCase);
     void CareerAdvance(long at){while(stage!.HubSession.Seconds<at){long before=stage.HubSession.Seconds;stage.HubAdvance(at);Need(stage.HubSession.Seconds>before,"career common clock advances");}}
     void CareerPress(string id){Need(stage!.HubCanPress(id),"actual enabled/visible career action "+id);stage.HubPress(id);}
     string CareerNotice(CareerEventKind kind)=>stage!.HubSession.DiagnosticSnapshot().Career!.Events.Last(e=>e.Kind==kind).Message;

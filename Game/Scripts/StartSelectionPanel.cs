@@ -15,7 +15,7 @@ public partial class StartSelectionPanel : Control
     (SavedStartProfile Profile,string Directory,bool Load)? pending;
     string SelectionMode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--start-selection-"))??"";
     bool IsTest=>SelectionMode!=""||OS.GetCmdlineUserArgs().Any(a=>a.StartsWith("--work-hub-"));
-    string Root=>IsTest?ProjectSettings.GlobalizePath("res://../Docs/Design/StartSelectionV1/runtime-local/configs/"+Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..],"N").ToString("N")):ProjectSettings.GlobalizePath("user://personal-start-v1/configured");
+    string Root=>IsTest?RecordPath.Globalize("res://../Docs/Design/StartSelectionV1/runtime-local/configs/"+Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..],"N").ToString("N")):RecordPath.Globalize("user://personal-start-v1/configured");
     string CurrentDirectory="";
     static bool HashDirectory(string value,int length)=>value.Length==length&&value.All(c=>c is >= '0' and <= '9' or >= 'a' and <= 'f');
     public override void _Ready()

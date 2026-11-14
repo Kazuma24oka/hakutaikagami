@@ -17,7 +17,7 @@ public partial class RegionalCampaignTrial : Control
     readonly Dictionary<string,Button> buttons=new();readonly List<string> checks=new();
     GeoMillimeters origin=new(0,0);float span=50000,yaw;double fraction;int speed=1;bool testing,automatic;
     EntityId observer=ContractFixture.Officer;EntityId? applied;string clip="idle";double clipTime;
-    readonly string output=ProjectSettings.GlobalizePath("res://../Docs/Design/RegionalCampaignV1/runtime-local");
+    readonly string output=RecordPath.Globalize("res://../Docs/Design/RegionalCampaignV1/runtime-local");
     string Mode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>new[]{"--campaign-check","--campaign-restore","--campaign-flow","--campaign-flow-restore"}.Contains(a))??"";
     string Scenario=>"campaign";
     long Final=>40000;
@@ -25,7 +25,7 @@ public partial class RegionalCampaignTrial : Control
     readonly Dictionary<string,Officer3DCustomActor> courierActors=new();
     readonly Dictionary<EntityId,Officer3DCustomActor> nearbyActors=new();
     string retryAddress="village",destination="village",inspectEdge="pass";
-    string SaveRoot{get{if(!testing)return ProjectSettings.GlobalizePath("user://regional-campaign-v1-manual");var text=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..];if(!Guid.TryParseExact(text,"N",out var key))throw new Exception("Invalid test key");return output+"/saves/"+key.ToString("N");}}
+    string SaveRoot{get{if(!testing)return RecordPath.Globalize("user://regional-campaign-v1-manual");var text=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..];if(!Guid.TryParseExact(text,"N",out var key))throw new Exception("Invalid test key");return output+"/saves/"+key.ToString("N");}}
     public override void _Ready()
     {
         testing=Mode!="";var initial=RegionalCampaign.Create([new(100,"pass",true),new(12000,"pass",false)],false);host=new(new(initial));store=new(SaveRoot,RegionalCampaign.Create().Definitions);

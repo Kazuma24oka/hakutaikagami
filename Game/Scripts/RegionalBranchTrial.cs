@@ -17,12 +17,12 @@ public partial class RegionalBranchTrial : Control
     readonly Dictionary<string,Button> buttons=new();readonly List<string> checks=new();
     GeoMillimeters origin=new(0,0);float span=50000,yaw;double fraction;int speed=1;bool testing,automatic;
     EntityId observer=ContractFixture.Officer;EntityId? applied;string clip="idle";double clipTime;
-    readonly string output=ProjectSettings.GlobalizePath("res://../Docs/Design/RegionalBranchV1/runtime-local");
+    readonly string output=RecordPath.Globalize("res://../Docs/Design/RegionalBranchV1/runtime-local");
     string Mode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a is "--branchgeo-check" or "--branchgeo-restore" or "--branchgeo-open" or "--branchgeo-trapped")??"";
     long Fork=>1+BranchRoutes.Duration(["road"],w:RegionalBranch.Create());
     long Arrival=>1+BranchRoutes.Duration(["road","kasadera-access","kasadera-tange","tange-fort"],w:RegionalBranch.Create());
     long Final=>Arrival+BranchRoutes.Duration(["tange-fort","kasadera-tange","kasadera-access","road"],true,RegionalBranch.Create());
-    string SaveRoot{get{if(!testing)return ProjectSettings.GlobalizePath("user://regional-branches-v1-manual");var text=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..];if(!Guid.TryParseExact(text,"N",out var key))throw new Exception("Invalid test key");return output+"/saves/"+key.ToString("N");}}
+    string SaveRoot{get{if(!testing)return RecordPath.Globalize("user://regional-branches-v1-manual");var text=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..];if(!Guid.TryParseExact(text,"N",out var key))throw new Exception("Invalid test key");return output+"/saves/"+key.ToString("N");}}
     public override void _Ready()
     {
         testing=Mode!="";var initial=RegionalBranch.Create(!OS.GetCmdlineUserArgs().Contains("--open-pass"));if(Mode=="--branchgeo-trapped")initial.Branches=initial.Branches! with{BlockedEdges=["pass","kasadera-access"]};host=new(new(initial));store=new(SaveRoot,RegionalBranch.Create(!OS.GetCmdlineUserArgs().Contains("--open-pass")).Definitions);

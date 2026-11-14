@@ -30,7 +30,7 @@ public partial class NationalDistrictRevenueCheck:Control
             if(labels.Any(t=>t.StartsWith("操作できません",StringComparison.Ordinal)))throw new InvalidDataException("操作時例外が表示されています");
             var view=runtime.Session.HouseTreasuryView()??throw new InvalidDataException("現地公金が表示されません");
             if(!labels.Any(t=>t.StartsWith("郡収入 ",StringComparison.Ordinal))||!labels.Any(t=>t.Contains($"家の資金 {view.HouseCash}文",StringComparison.Ordinal)))throw new InvalidDataException("郡収入と公金残高の表示不一致");
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/NationalDistrictRevenueV1/runtime-local/ui");Directory.CreateDirectory(output);
+            var output=RecordPath.Globalize("res://../Docs/Design/NationalDistrictRevenueV1/runtime-local/ui");Directory.CreateDirectory(output);
             if(DisplayServer.GetName()=="headless")throw new InvalidDataException("描画のある検査が必要です");
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             var picture=Path.Combine(output,"treasury.png");

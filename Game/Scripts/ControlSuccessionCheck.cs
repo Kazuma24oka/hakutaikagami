@@ -32,7 +32,7 @@ public partial class ControlSuccessionCheck:Node
             var popup=game.GetChildren().OfType<PopupPanel>().SingleOrDefault(p=>p.Visible);Check(popup!=null,"死去の画面が出ません");
             var labels=popup!.FindChildren("*","Label",true,false).OfType<Label>().Select(l=>l.Text).ToArray();
             Check(labels.Any(t=>t.EndsWith("死去")),"死去の表示がありません");
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/ControlSuccessionV1/runtime-local/ui");Directory.CreateDirectory(output);
+            var output=RecordPath.Globalize("res://../Docs/Design/ControlSuccessionV1/runtime-local/ui");Directory.CreateDirectory(output);
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             Check(ViewportCapture.Save(popup.GetViewport(),Path.Combine(output,"death.png"))==Error.Ok,"死去の画面の描画");
             var name=dead.Definitions.Characters.Single(c=>c.Id.Value==child.Id).Name;

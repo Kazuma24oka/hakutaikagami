@@ -16,9 +16,9 @@ public partial class RegionalIntegrationTrial : Control
     FieldPoint center = new(20000, 0); FieldPoint? dragStart; float span = 145, yaw; double fraction; bool auto, testing; int speed = 1;
     string Mode => OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--integration-")) ?? "";
     string Case => OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--case="))?[7..] ?? "move";
-    string Output => ProjectSettings.GlobalizePath("res://../Docs/Design/RegionalIntegrationV1/runtime-local");
+    string Output => RecordPath.Globalize("res://../Docs/Design/RegionalIntegrationV1/runtime-local");
     ContractWorld Initial() => RegionalBattle.Create(Case == "scale" ? 12 : 3, Case == "refuse", Case == "rout");
-    string SaveRoot => testing ? Output + "/saves/" + Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a => a.StartsWith("--save-key="))[11..], "N").ToString("N") : ProjectSettings.GlobalizePath("user://regional-integration-v1");
+    string SaveRoot => testing ? Output + "/saves/" + Guid.ParseExact(OS.GetCmdlineUserArgs().Single(a => a.StartsWith("--save-key="))[11..], "N").ToString("N") : RecordPath.Globalize("user://regional-integration-v1");
     public override void _Ready()
     {
         try

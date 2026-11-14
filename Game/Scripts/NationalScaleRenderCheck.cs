@@ -27,7 +27,7 @@ public partial class NationalScaleRenderCheck:Control
             if(w.Characters.Length<3000||w.Definitions.Sites.Length<1000||armies<500)throw new InvalidDataException("規模条件を満たしません");
             var runtime=new NewGameRuntime();runtime.ReviewConfigureScale(w);AddChild(runtime);
             var load=Stopwatch.StartNew();while(runtime.IsSaving){if(load.Elapsed.TotalSeconds>180)throw new TimeoutException("開始保存");await Frame();}
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/NationalWarfareV1/runtime-local/fps");Directory.CreateDirectory(output);
+            var output=RecordPath.Globalize("res://../Docs/Design/NationalWarfareV1/runtime-local/fps");Directory.CreateDirectory(output);
             var rows=new List<object>();
             foreach(var mode in new[]{"near","nation"})
             {

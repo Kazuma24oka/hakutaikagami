@@ -8,7 +8,7 @@ using HakutaiKagami.Core.Messaging;
 public partial class StartSelectionPanel
 {
     const int MilitarySteps=17;
-    string MilitaryOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/CareerMilitaryV1/runtime-local");
+    string MilitaryOutput=>RecordPath.Globalize("res://../Docs/Design/CareerMilitaryV1/runtime-local");
     void MilitaryStep(int n)
     {
         var child=stage!;var s=child.HubSession;

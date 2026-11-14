@@ -13,7 +13,7 @@ public partial class HakutaiDbCheck:Node
  static void Check(bool condition,string text){if(!condition)throw new InvalidDataException(text);}
  async Task Capture(string output,string name){for(int i=0;i<4;i++)await Frame();if(DisplayServer.GetName()=="headless")return;await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);Check(ViewportCapture.Save(GetViewport(),Path.Combine(output,name))==Error.Ok,"自前描画 "+name);}
  public override async void _Ready(){try{
-  string output=ProjectSettings.GlobalizePath("res://../Docs/Design/HakutaiDbV1/runtime-local/ui");Directory.CreateDirectory(output);
+  string output=RecordPath.Globalize("res://../Docs/Design/HakutaiDbV1/runtime-local/ui");Directory.CreateDirectory(output);
   var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
   entry.ReviewDbOpen();await Frame();await Frame();
   Check(entry.ReviewDbMarks()>500,"全国の城の点 "+entry.ReviewDbMarks());Check(entry.ReviewDbStrongMarks()==0,"選ぶ前は強調なし");

@@ -17,7 +17,7 @@ public partial class TrafficWorldTrial : Control
     readonly Dictionary<string,Button> buttons=new();readonly List<string> checks=new();
     GeoMillimeters origin=new(0,0);float span=2800000,yaw;double fraction;int speed=1;bool testing,automatic;
     EntityId observer=ContractFixture.Officer;EntityId? applied;string clip="idle";double clipTime;
-    readonly string output=ProjectSettings.GlobalizePath("res://../Docs/Design/TrafficWorldV1/runtime-local");
+    readonly string output=RecordPath.Globalize("res://../Docs/Design/TrafficWorldV1/runtime-local");
     string Mode=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>new[]{"--traffic-check","--traffic-restore","--traffic-video"}.Contains(a))??"";
     string Scenario=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--case="))?[7..]??"port";
     OptionButton destinations=null!;TrafficExample fixture=null!;
@@ -26,7 +26,7 @@ public partial class TrafficWorldTrial : Control
     readonly Dictionary<string,Officer3DCustomActor> courierActors=new();
     readonly Dictionary<EntityId,Officer3DCustomActor> nearbyActors=new();
     string destination="sumoto";
-    string SaveRoot{get{if(!testing)return ProjectSettings.GlobalizePath("user://traffic-world-v1-manual");var text=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..];if(!Guid.TryParseExact(text,"N",out var key))throw new Exception("Invalid test key");return output+"/saves/"+key.ToString("N");}}
+    string SaveRoot{get{if(!testing)return RecordPath.Globalize("user://traffic-world-v1-manual");var text=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--save-key="))[11..];if(!Guid.TryParseExact(text,"N",out var key))throw new Exception("Invalid test key");return output+"/saves/"+key.ToString("N");}}
     public override void _Ready()
     {
         testing=Mode!="";fixture=TrafficExamples.Build(Scenario);var initial=TrafficWorld.Create(fixture.Conditions);host=new(new(initial));store=new(SaveRoot,TrafficWorld.Create().Definitions);

@@ -28,7 +28,7 @@ public partial class NationalFieldRenderCheck:Control
     async Task Frame()=>await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
     public override async void _Ready()
     {
-        string output=System.Environment.GetEnvironmentVariable("HAKUTAI_NATIONAL_FIELD_QA_DIR")??ProjectSettings.GlobalizePath("res://../Docs/Design/NationalWarfareV1/runtime-local/native-field");
+        string output=System.Environment.GetEnvironmentVariable("HAKUTAI_NATIONAL_FIELD_QA_DIR")??RecordPath.Globalize("res://../Docs/Design/NationalWarfareV1/runtime-local/native-field");
         try
         {
             var world=ContractJson.Read<ContractWorld>(File.ReadAllBytes(Path.Combine(output,"world.json")));

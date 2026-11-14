@@ -8,7 +8,7 @@ using HakutaiKagami.Core.Contracts;
 public partial class StartSelectionPanel
 {
     readonly List<string> checks=new();
-    string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/StartSelectionV1/runtime-local");
+    string Output=>RecordPath.Globalize("res://../Docs/Design/StartSelectionV1/runtime-local");
     void Need(bool yes,string text){if(!yes)throw new Exception(text);checks.Add(text);}
     async Task Frame(){await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
     async Task Capture(string name)

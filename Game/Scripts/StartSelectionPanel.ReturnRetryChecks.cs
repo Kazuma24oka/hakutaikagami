@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 public partial class StartSelectionPanel
 {
-    string ReturnRetryOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/DelegationReturnRetryV1/runtime-local");
+    string ReturnRetryOutput=>RecordPath.Globalize("res://../Docs/Design/DelegationReturnRetryV1/runtime-local");
     string LatestQuestion=>stage!.HubSession.DiagnosticSnapshot().Messaging.Messages.Last(m=>m.Kind==DelegationInquiry.QueryKind).Id;
     string LatestAnswer=>stage!.HubSession.DiagnosticSnapshot().Messaging.Messages.Last(m=>m.Kind==DelegationInquiry.ReplyKind).Id;
     string OriginalReturn=>stage!.HubSession.DiagnosticSnapshot().Delegation!.Arrivals.Single().Message;

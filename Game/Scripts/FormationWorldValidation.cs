@@ -8,7 +8,7 @@ using HakutaiKagami.Core.Simulation;
 public static class FormationWorldValidation
 {
     static FormationWorldStage ui=null!;static readonly List<string> checks=new(),captures=new();
-    static string Output=>ProjectSettings.GlobalizePath("res://../Art/Officer3D/FormationWorldV1/runtime-local");
+    static string Output=>RecordPath.Globalize("res://../Art/Officer3D/FormationWorldV1/runtime-local");
     static void Check(bool ok,string reason){if(!ok)throw new InvalidOperationException(reason);checks.Add(reason);GD.Print("FORMATION_CHECK "+reason);}
     static void Click(string id)=>ui.Actions[id].EmitSignal(Button.SignalName.Pressed);
     static void Step(){Click("advance");ui.Synchronize();}
@@ -37,7 +37,7 @@ public static class FormationWorldValidation
             Step();Step();Check(State.Applied.Length==3,"tick5 all three have personally received orders");await Capture("arrival-5");
             ui.Session.Automatic=true;ui.Session.AdvanceDisplayClock(.1875);Click("pause");ui.Synchronize();Click("save");var save=ui.Session.Simulation.SaveJson();string pose=Render();for(int i=0;i<5;i++)ui.Session.AdvanceDisplayClock(.25);Check(pose==Render()&&save==ui.Session.Simulation.SaveJson(),"pause freezes delivery motion and animation phase");
             Click("load");ui.Synchronize();Check(ui.Session.Simulation.SaveJson()==save&&Render()==pose,"ordinary save/load preserves in-flight plans partial motion and filtered render");await Capture("paused-restored");
-            FileAccess.Open("user://formation-world-expected.json",FileAccess.ModeFlags.Write)!.Dispose();System.IO.File.WriteAllText(ProjectSettings.GlobalizePath("user://formation-world-expected.json"),save);System.IO.File.WriteAllText(ProjectSettings.GlobalizePath("user://formation-world-render.json"),pose);
+            FileAccess.Open("user://formation-world-expected.json",FileAccess.ModeFlags.Write)!.Dispose();System.IO.File.WriteAllText(RecordPath.Globalize("user://formation-world-expected.json"),save);System.IO.File.WriteAllText(RecordPath.Globalize("user://formation-world-render.json"),pose);
             var mirror=TaxSimulation.LoadJson(save);mirror.SetPaused(false);Click("pause");ui.Session.Automatic=false;
             for(int i=0;i<5;i++){Step();mirror.AdvanceOneTick();Check(ui.Session.Simulation.SaveJson()==mirror.SaveJson(),"save continuation deterministic "+i);}await Capture("bridge-queue");
             for(int i=0;i<45&&State.FormationArrivals.Length<3;i++){Step();Check(State.Units.Select(u=>u.Cell).Distinct().Count()==3,"traffic no overlap tick"+State.Tick);if(i is 3 or 8 or 13)await Capture("deployment-"+i);}
@@ -47,7 +47,7 @@ public static class FormationWorldValidation
             ui.SetZoom(14);for(int i=0;i<12;i++){ui._Process(.05);await Capture("zoom-"+i.ToString("00"));}
             Check(ui.Session.Simulation.SaveJson()==final&&ui.View.GetChild(0)==node&&ui.Camera.Size<16,"continuous camera transition leaves all world state untouched");
             // Preserve the moving checkpoint for an independent restart, not just this process's final state.
-            System.IO.File.WriteAllText(ProjectSettings.GlobalizePath("user://formation-world-test.json"),save);
+            System.IO.File.WriteAllText(RecordPath.Globalize("user://formation-world-test.json"),save);
             System.IO.File.WriteAllText(Output+"/results.json",JsonSerializer.Serialize(new{checks,captures},new JsonSerializerOptions{WriteIndented=true}));GD.Print("FORMATION_TEST_COMPLETE");ui.GetTree().Quit();
         }
         catch(Exception e){GD.PushError(e.ToString());ui.GetTree().Quit(1);}

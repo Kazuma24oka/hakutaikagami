@@ -13,7 +13,7 @@ public partial class VerbNotebookCheck:Node
     public override async void _Ready()
     {
         try{
-            string output=ProjectSettings.GlobalizePath("res://../Docs/Design/VerbNotebookV1/runtime-local/ui");Directory.CreateDirectory(output);
+            string output=RecordPath.Globalize("res://../Docs/Design/VerbNotebookV1/runtime-local/ui");Directory.CreateDirectory(output);
             var entry=new NewGameFrontEnd();AddChild(entry);await Frame();await Frame();
             var start=entry.CreateJudgmentReview(Path.Combine(Path.GetTempPath(),"npc-judgment-ui-"+Guid.NewGuid().ToString("N")));
             Check(start.Profile.Judgment==new NpcJudgmentSettings(NpcJudgment.Policy,HistoryMode.Fictional,NpcAttention.Beginner){UseInspectionReferences=true,Challenge=NpcChallenge.Standard,HealthEdition=PersonalHealth.Edition},"開始画面の選択と保存定義");

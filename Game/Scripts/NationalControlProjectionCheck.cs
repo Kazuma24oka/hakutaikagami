@@ -17,7 +17,7 @@ public partial class NationalControlProjectionCheck:Control
     {
         try
         {
-            string dir=ProjectSettings.GlobalizePath("res://../Docs/Design/NationalControlProjectionV1/runtime-local");
+            string dir=RecordPath.Globalize("res://../Docs/Design/NationalControlProjectionV1/runtime-local");
             var before=ContractJson.Read<ContractWorld>(File.ReadAllBytes(Path.Combine(dir,"sealed.json")));
             var after=ContractJson.Read<ContractWorld>(File.ReadAllBytes(Path.Combine(dir,"opened.json")));
             var observer=new EntityId(File.ReadAllText(Path.Combine(dir,"observer.txt")).Trim());

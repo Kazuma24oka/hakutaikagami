@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 public partial class StartSelectionPanel
 {
     string LifeCase=>OS.GetCmdlineUserArgs().Contains("--life-long-name")?"long-name":"normal";
-    string LifeOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/LifeEntryV1/runtime-local/"+LifeCase);
+    string LifeOutput=>RecordPath.Globalize("res://../Docs/Design/LifeEntryV1/runtime-local/"+LifeCase);
     async Task LifeCapture(string name,bool game=true){await Frame();if(game){GetViewport().GetTexture().GetImage().SavePng(LifeOutput+"/diagnostic.png");Need(stage!.HubFits(),"life controls and minimum3D fit actual viewport");File.WriteAllText(LifeOutput+"/"+name+"-rect.json",System.Text.Json.JsonSerializer.Serialize(stage.HubRect()));File.WriteAllText(LifeOutput+"/"+name+"-world.sha256",ContractJson.CanonicalHash(stage.HubSession.DiagnosticSnapshot()));}GetViewport().GetTexture().GetImage().SavePng(LifeOutput+"/"+name+".png");}
     void LifeContinue(int checkpoint){for(int n=checkpoint+1;n<MilitarySteps;n++){MilitaryStep(n);stage!.HubSession.SetPaused(true);stage.HubRefresh();}CareerAdvance(stage!.HubSession.Seconds+1);}
     async Task RunLifeEntryChecks()

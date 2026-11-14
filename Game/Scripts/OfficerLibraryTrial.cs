@@ -14,8 +14,8 @@ public partial class OfficerLibraryTrial : Control
     internal bool Enhanced;internal string? StorageOverride;internal Action? Closed;
     string[] SiteIds=>Enhanced?NationalRoutes.Sites.Select(s=>s.Id.Value).ToArray():new[]{"castle:kiyosu","castle:kofu","castle:odawara"};
     string? TestKey=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--library-test-key="))?.Split('=')[1];
-    string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/NewGameSetupV1/runtime-local/library");
-    string Root=>StorageOverride??(TestKey is {} key?Path.Combine(Output,Guid.ParseExact(key,"N").ToString("N")):ProjectSettings.GlobalizePath("user://officer-library-v1"));
+    string Output=>RecordPath.Globalize("res://../Docs/Design/NewGameSetupV1/runtime-local/library");
+    string Root=>StorageOverride??(TestKey is {} key?Path.Combine(Output,Guid.ParseExact(key,"N").ToString("N")):RecordPath.Globalize("user://officer-library-v1"));
     SystemFont? ownedFont;
     public override void _ExitTree(){ownedFont?.Dispose();ownedFont=null;}
     public override void _Ready()

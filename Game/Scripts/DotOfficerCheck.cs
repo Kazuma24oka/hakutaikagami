@@ -13,7 +13,7 @@ public partial class DotOfficerCheck:Node
  static void Check(bool condition,string text){if(!condition)throw new InvalidDataException(text);}
  async Task Capture(string output,string name){if(DisplayServer.GetName()=="headless")return;await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);Check(ViewportCapture.Save(GetViewport(),Path.Combine(output,name))==Error.Ok,"自前描画 "+name);}
  public override async void _Ready(){try{
-  string output=ProjectSettings.GlobalizePath("res://../Docs/Design/DotOfficerV1/runtime-local/ui");Directory.CreateDirectory(output);
+  string output=RecordPath.Globalize("res://../Docs/Design/DotOfficerV1/runtime-local/ui");Directory.CreateDirectory(output);
   Check(DotOfficerActor.Available,"ドット絵の束がある");
   var entry=new NewGameFrontEnd();AddChild(entry);await Frame();var start=entry.CreateBanditReview(Path.Combine(Path.GetTempPath(),"dot-ui-"+Guid.NewGuid().ToString("N")));entry.QueueFree();await Frame();
   var game=new NewGameRuntime();game.Configure(start.Store,start.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Until(()=>!game.IsSaving,"開始保存");
