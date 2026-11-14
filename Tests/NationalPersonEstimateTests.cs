@@ -37,7 +37,7 @@ public sealed class NationalPersonEstimateTests
         var selected=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長",StringComparison.Ordinal));
         var world=NationalStart.Create(selected,20261113);
         Assert.Equal(NationalPersonEstimates.Policy,world.NewGame!.NationalPersonDataPolicy);
-        Assert.Equal(CharacterDevelopment.Policy,world.NewGame.DevelopmentPolicy);
+        Assert.Equal(CharacterDevelopment.Policy32,world.NewGame.DevelopmentPolicy); // 全国の新規開始は32技能の版（2026-11-14）
         var historical=world.NewGame.Start.People.Where(p=>NationalStart.DbPerson(p.Id)!=null).ToArray();
         Assert.Equal(scenario.People.Count(p=>NationalStart.DbPerson(p.Id)!=null),historical.Length);
         Assert.True(historical.Length>0);
@@ -94,7 +94,7 @@ public sealed class NationalPersonEstimateTests
     [Fact]
     public void PersonEnabledCourtEditionRetainsItsSavedStartDefinition()
     {
-        var scenario=NationalStart.Scenario();
+        var scenario=NationalStart.Scenario(NationalStart.PersonEdition); // 前の版の開始定義（母の血縁なし）
         var selected=scenario.Factions.First().Head;
         var world=NewGameWorld.Create(scenario,[],selected,20261113,NewGameWorld.CompactPersonalAuthority,
             historicalCatalog:NationalStart.CourtEdition,networkPolicy:WorldNetwork.CastlePolicy,

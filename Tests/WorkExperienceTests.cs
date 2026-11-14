@@ -77,3 +77,18 @@ public sealed class LineageFaithTests
         Assert.Null(ContractJson.Read<RegisteredOfficer>(ContractJson.Write(NewGameWorldTests.Officer())).Lineage); // 未設定は推測しない
     }
 }
+// 母の血縁（DbMothers、2026-11-15）：百代鏡DBの母がその世界にいて13歳以上年上なら、新規の全国開始で実の親に加える。一覧を持たない保存は前の開始定義のまま。
+public sealed class DbMotherTests
+{
+    [Fact]
+    public void NewNationalStartsRecordMothersAndOldSavesKeepTheirStart()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"DbMothers"));
+        var withMother=w.NewGame!.Start.People.Where(p=>NationalStart.DbPerson(p.Id)?.Mother is {} m&&p.BirthParents!=null&&p.BirthParents.Any(x=>NationalStart.DbPerson(x)?.Id==m)).ToArray();
+        Assert.NotEmpty(withMother);
+        var old=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="DbMothers").ToArray()};
+        var before=NationalStart.ScenarioFor(old);
+        Assert.DoesNotContain(before.People,p=>withMother.Any(x=>x.Id==p.Id&&p.BirthParents?.Length==x.BirthParents!.Length));
+    }
+}

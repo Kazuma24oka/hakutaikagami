@@ -183,6 +183,11 @@ def main():
     fathers = {}
     for s, ref in db.execute("select subject, value_ref from assertions where property='father' and state='value' and value_ref is not null"):
         fathers.setdefault(s, set()).add(ref)
+    # 母・養親・配偶者（2026-11-15）：人物を指す記録だけ。時期を持たない血縁の事実として書き出す。
+    kin = {"mother": {}, "adoptive_parent": {}, "spouse": {}}
+    for prop, table in kin.items():
+        for s, ref in db.execute("select subject, value_ref from assertions where property=? and state='value' and value_ref like 'P-%'", (prop,)):
+            table.setdefault(s, set()).add(ref)
     surnames_all = {v for (v,) in db.execute("select distinct value_text from assertions where property='surname' and value_text is not null") if v and 2 <= len(v) <= 4}
     names = {}
     for subj, val, q, y in db.execute("select subject, value_text, qualifiers, valid_from_year from assertions where id like 'A-NH-%' and property='name'"):
@@ -248,6 +253,8 @@ def main():
         people.append({
             "Id": p, "Name": r[1], "Reading": r[2], "Surname": r[3], "Imina": r[4], "Tsusho": r[5], "Kanto": r[6],
             "Sex": r[7], "Birth": year_of(r[9]), "Death": year_of(r[10]), "Father": father[0] if len(father) == 1 else None,
+            "Mother": (lambda m: m[0] if len(m) == 1 else None)(sorted(kin["mother"].get(p, ()))),
+            "Adoptive": sorted(kin["adoptive_parent"].get(p, ())) or None, "Spouses": sorted(kin["spouse"].get(p, ())) or None,
             "StartName": start_name(p, r[1], year_of(r[9]))[0], "StartNameBasis": start_name(p, r[1], year_of(r[9]))[1],
             "NameHistory": [{"Name": n, "From": y, "Step": st} for _, n, st, y in sorted(names.get(p, ())) if st == "幼名" or plausible(p, n)],
             "Records": r[13],
@@ -263,6 +270,11 @@ def main():
             x["Superior"], x["SuperiorBasis"] = None, None
         if x["Father"] not in pid:
             x["Father"] = None  # 1560年の名簿の外の父は v1 では指さない（戦国DBには残る）
+        if x["Mother"] not in pid:
+            x["Mother"] = None
+        for k in ("Adoptive", "Spouses"):
+            if x[k] is not None:
+                x[k] = [q for q in x[k] if q in pid and q != x["Id"]] or None
         if x["Castle"] is None and x["CastleName"]:
             missing["城の名前を一つに決められない"] += 1
     for p, v in status.items():

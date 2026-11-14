@@ -15,7 +15,13 @@ public sealed record HakutaiDbHouse(string Id,string Name,string? Head,string? H
 public sealed record HakutaiDbName(string Name,int? From,string Step);
 public sealed record HakutaiDbPerson(string Id,string Name,string? Reading,string? Surname,string? Imina,string? Tsusho,string? Kanto,string? Sex,
     int? Birth,int? Death,string? Father,string StartName,string StartNameBasis,HakutaiDbName[] NameHistory,int Records,string? Existence,string Registration,string? Role,string? Province,
-    string House,string HouseBasis,string? Castle,string? CastleName,string? CastleBasis,string? Superior,string? SuperiorBasis);
+    string House,string HouseBasis,string? Castle,string? CastleName,string? CastleBasis,string? Superior,string? SuperiorBasis)
+{
+    // 母・養親・配偶者（2026-11-15）：1560年の名簿の中の人物だけを指す。時期を持たない血縁の事実。
+    public string? Mother {get;init;}
+    public string[]? Adoptive {get;init;}
+    public string[]? Spouses {get;init;}
+}
 // Region は操作できない地域（"琉球"）。null は日本の操作できる範囲。
 public sealed record HakutaiDbCastle(string Id,string Name,string? Province,string? District,long LatitudeE7,long LongitudeE7,string PositionBasis,string? Region,string? Owner,string? Holder,string? OwnerBasis);
 // 郡：1560年の支配の見積もりと石高の推定（慶長3年の国の石高を郡の面積で按分）。
@@ -88,6 +94,7 @@ public static class HakutaiDb
             Need(p.Castle==null||castles.Contains(p.Castle)&&p.CastleBasis!=null,"人物の城："+p.Id);
             Need(p.Superior==null||people.Contains(p.Superior)&&p.Superior!=p.Id&&p.SuperiorBasis!=null,"人物の上司："+p.Id);
             Need(p.Father==null||people.Contains(p.Father)&&p.Father!=p.Id,"人物の父："+p.Id);
+            Need((p.Mother==null||people.Contains(p.Mother)&&p.Mother!=p.Id&&p.Mother!=p.Father)&&(p.Adoptive??[]).All(x=>people.Contains(x)&&x!=p.Id)&&(p.Spouses??[]).All(x=>people.Contains(x)&&x!=p.Id),"人物の血縁："+p.Id);
             Need((p.Birth==null||p.Birth<=e.WorldYear)&&(p.Death==null||p.Death>=e.WorldYear)&&(p.Birth==null||p.Death==null||p.Birth<=p.Death),"人物の生没年が開始年と合わない："+p.Id);
             Need(p.Existence is null or "A" or "B" or "C" or "D" or "E","実在の確度："+p.Id);
             Need(!string.IsNullOrWhiteSpace(p.StartName)&&!string.IsNullOrWhiteSpace(p.StartNameBasis)&&p.Records>=0,"開始時の名前："+p.Id);

@@ -29,10 +29,11 @@ public static class NationalStart
     static readonly Lazy<Dictionary<string,string>> dbHouses=new(()=>HakutaiDb.Houses.GroupBy(h=>FactionId(h.Id),StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal));
     // 世界の家の ID から百代鏡DBの家の ID。
     public static string? DbHouse(string faction)=>dbHouses.Value.GetValueOrDefault(faction);
-    static readonly Lazy<SetupScenario> scenario=new(()=>Build(false,false)),courtScenario=new(()=>Build(true,false)),personScenario=new(()=>Build(true,true));
-    public static SetupScenario Scenario(string edition=RevenueEdition)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:personScenario.Value);
-    internal static SetupScenario ScenarioFor(NewGameState data)=>Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!);
-    static SetupScenario Build(bool court,bool personData)
+    static readonly Lazy<SetupScenario> scenario=new(()=>Build(false,false)),courtScenario=new(()=>Build(true,false)),personScenario=new(()=>Build(true,true)),kinScenario=new(()=>Build(true,true,true));
+    // 新規の開始は母の血縁も入れた版（一覧の DbMothers）。保存の開始定義は、その世界の一覧に合わせて作り直す。
+    public static SetupScenario Scenario(string edition=RevenueEdition)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:edition==RevenueEdition&&NationalSystems.Current.Contains("DbMothers")?kinScenario.Value:personScenario.Value);
+    internal static SetupScenario ScenarioFor(NewGameState data)=>data.HistoricalCatalog==RevenueEdition&&data.NationalSystems?.Contains("DbMothers")!=true?ContractJson.Copy(personScenario.Value):Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!);
+    static SetupScenario Build(bool court,bool personData,bool mothers=false)
     {
         var people=new List<SetupPerson>();var seen=new HashSet<string>(StringComparer.Ordinal);var factions=new List<SetupFaction>();var homes=new Dictionary<string,string>(StringComparer.Ordinal);
         foreach(var h in HakutaiDb.Houses.OrderBy(h=>h.Id,StringComparer.Ordinal))
@@ -56,6 +57,9 @@ public static class NationalStart
             if(!personData||db==null)return person;
             var estimate=NationalPersonEstimates.ForDbPerson(db.Id);var a=estimate.Abilities;
             if(!estimate.BirthParentAccepted)person=person with{BirthParents=null};
+            // 母（DbMothers）：DBの母がこの世界にいて、推定の生年で13歳以上年上なら、実の親に加える。
+            if(mothers&&db.Mother is {} mother&&dbIds.TryGetValue(mother,out var m)&&m!=p.Id&&NationalPersonEstimates.ForDbPerson(mother).BirthYear<=estimate.BirthYear-13)
+                person=person with{BirthParents=[..(person.BirthParents??[]),m]};
             return person with{BirthYear=estimate.BirthYear,Attributes=new OfficerAttributes(a.Leadership,a.Valor,a.Intelligence,a.Politics){Charm=a.Charm}};
         }).ToList();
         var owners=factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
