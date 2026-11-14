@@ -35,6 +35,13 @@ public static class HouseSuccession
     public static SetupFaction[] Factions(ContractWorld w,long? at=null,long? revision=null)=>w.NewGame==null?[]:
         w.Declarations==null && w.MinorityAccessions==null && !Enabled(w)?w.NewGame.Start.Factions:
         w.NewGame.Start.Factions.Concat((w.Declarations??[]).Where(d=>d.At<=(at??w.ElapsedSeconds) && d.Revision<=(revision??w.CommitSequence)).Select(d=>JointIndependence.Faction(w,d))).Select(f=>f with{Head=Head(w,new(f.Id),at,revision).Value}).ToArray();
+    // 一つの家の ID の行だけを Factions と同じ決め方で求める（全部の家の当主を求めない）。
+    internal static SetupFaction[] FactionsOf(ContractWorld w,EntityId owner,long? at=null,long? revision=null)
+    {
+        if(w.NewGame==null)return [];
+        if(w.Declarations==null && w.MinorityAccessions==null && !Enabled(w))return w.NewGame.Start.Factions.Where(f=>f.Id==owner.Value).ToArray();
+        return w.NewGame.Start.Factions.Concat((w.Declarations??[]).Where(d=>d.At<=(at??w.ElapsedSeconds) && d.Revision<=(revision??w.CommitSequence)).Select(d=>JointIndependence.Faction(w,d))).Where(f=>f.Id==owner.Value).Select(f=>f with{Head=Head(w,new(f.Id),at,revision).Value}).ToArray();
+    }
     static bool Local(ContractWorld w,EntityId who,EntityId site,long at,long rev)=>CommunityStewardship.Local(w,who,site,at,rev);
     static bool Member(ContractWorld w,EntityId who,EntityId owner,long at,long rev)=>w.Memberships.Any(m=>m.Subject==who&&m.Target==owner&&m.From<=at&&(at<m.Until||at==m.Until&&rev<m.Revision));
     static bool Direct(ContractWorld w,EntityId heir,EntityId head,long at,long rev)=>HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==heir&&b.Target==head&&b.From<=at&&(at<b.Until||at==b.Until&&rev<b.Revision));

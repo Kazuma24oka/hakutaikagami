@@ -44,7 +44,7 @@ public static class FactionStances
         var person=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==issuer.Value);
         if(person==null || FamilyKin.LifeAt(w.NewGame!,person,at)!=LifeState.Adult ||
             (w.Births??[]).Any(b=>b.Child==issuer && (b.At>at || b.At==at && b.Revision>revision)))return null;
-        var faction=HouseSuccession.Factions(w,at,revision).SingleOrDefault(f=>f.Id==owner.Value&&f.Head==issuer.Value);if(faction==null)return null;
+        var faction=HouseSuccession.FactionsOf(w,owner,at,revision).SingleOrDefault(f=>f.Head==issuer.Value);if(faction==null)return null; // その家の行だけを求める（答えは全部の家から探すのと同じ）
         var home=new EntityId(faction.Home);
         var member=w.Memberships.SingleOrDefault(r=>r.Subject==issuer&&r.Target==owner&&r.Kind=="membership"&&Active(r,at,revision));
         var office=w.Offices.SingleOrDefault(r=>r.Subject==issuer&&r.Target==home&&r.Kind=="house-head"&&Active(r,at,revision));
