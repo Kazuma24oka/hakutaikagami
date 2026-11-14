@@ -125,3 +125,23 @@ public sealed class SkilledWorkTimeTests
         Assert.Equal(7*86400L,CharacterDevelopment.WorkSeconds(old,old.PlayerControl,DevelopmentSkill.Construction,7*86400,1));
     }
 }
+// NPC の師事（NpcTeachers、2026-11-14）：NPC が修行するとき、同じ拠点にその技能が高い人がいれば教わり、独習の50%より多く得る。
+public sealed class NpcTeacherTests
+{
+    [Fact]
+    public void NpcsLearnFromTheMostSkilledPersonAtTheirSite()
+    {
+        bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
+        try{
+        var s=new WorldSession(NationalStart.Create(NationalStartTests.Nobunaga()));
+        Assert.True(NationalSystems.On(s.DiagnosticSnapshot(),"NpcTeachers"));
+        NewGameWorldTests.At(s,CharacterDevelopment.PracticeSeconds+600);
+        var w=s.DiagnosticSnapshot();
+        var taught=w.Requests.Where(r=>r.Intent.Action==ActionKind.Train&&r.Intent.Teacher!=null&&r.Intent.Actor!=w.PlayerControl).ToArray();
+        Assert.NotEmpty(taught);
+        // 教わった修行は、教える人が始めと終わりに同じ拠点にいれば100%以上、教える人は教育の実務を得る。
+        Assert.Contains(w.Development!.Awards,a=>a.Skill==DevelopmentSkill.Teaching);
+        Assert.Contains(w.Development.Awards,a=>a.Efficiency>=100&&a.Skill!=DevelopmentSkill.Teaching&&a.Actor!=w.PlayerControl);
+        }finally{WorldSession.GuardTurnSnapshots=guard;}
+    }
+}

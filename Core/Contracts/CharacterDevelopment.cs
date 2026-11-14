@@ -156,13 +156,20 @@ public static class CharacterDevelopment
     internal static Intent PracticeForNpc(ContractWorld w,EntityId actor,string id,DevelopmentSkill skill){
         Need(Enabled(w)&&NewGameNpcRoutine.PurposeEnabled(w)&&NewGameNpcRoutine.IsActor(w,actor)&&Skills(w).Contains(skill),"NPC practice policy is required");
         var site=PersonalCompanions.PhysicalSiteAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1);Need(site!=null,"NPC must be at a site");long at=w.ElapsedSeconds;
-        return new(new(id),actor,actor,site!.Value,ActionKind.Train,null,null,0,null,new(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),at,1,PracticeSeconds,1,false,TaskKind.BindingOrder){TrainingSkill=skill};
+        return new(new(id),actor,actor,site!.Value,ActionKind.Train,null,null,0,null,new(DeadlineCriterion.Completion,at+PracticeSeconds+60,false,null,at+PracticeSeconds+60),at,1,PracticeSeconds,1,false,TaskKind.BindingOrder){TrainingSkill=skill,Teacher=NpcTeacher(w,actor,site!.Value,skill,at)};
     }
     // 師事して修行する（32技能の版）。教える人がその拠点にいて、その技能が本人より高いこと。
     public static Intent Learn(ContractWorld w,string id,DevelopmentSkill skill,EntityId teacher){
         Need(Skills32(w),"師事は32技能の版だけです");var i=Practice(w,id,skill);long at=w.ElapsedSeconds;var prior=(w.Development?.Awards??[]).Where(a=>a.At<at).ToArray();
         Need(teacher!=w.PlayerControl&&w.Characters.Any(c=>c.Id==teacher&&c.Life==LifeState.Adult)&&PersonalCompanions.PhysicalSiteAt(w,teacher,at,w.CommitSequence+1)==i.Scope&&SkillIn(w,prior,teacher,skill)>SkillIn(w,prior,w.PlayerControl,skill),"同じ拠点にいて、その技能が高い人に師事してください");
         return i with{Teacher=teacher};
+    }
+    // NPC の師事（全国の開始の一覧の NpcTeachers と32技能の版）：修行のとき、同じ拠点にその技能が自分より高い成人がいれば、最も高い人に教わる。
+    static EntityId? NpcTeacher(ContractWorld w,EntityId actor,EntityId site,DevelopmentSkill skill,long at)
+    {
+        if(!Skills32(w)||!NationalSystems.On(w,"NpcTeachers"))return null;var prior=(w.Development?.Awards??[]).Where(a=>a.At<at).ToArray();int mine=SkillIn(w,prior,actor,skill);
+        return w.Locations.Where(l=>l.Kind==LocationKind.AtSite&&l.Site==site&&l.Actor!=actor).Select(l=>l.Actor).Where(p=>w.Characters.Any(c=>c.Id==p&&c.Life==LifeState.Adult)).Select(p=>(P:p,L:SkillIn(w,prior,p,skill))).Where(x=>x.L>mine)
+            .OrderByDescending(x=>x.L).ThenBy(x=>x.P.Value,StringComparer.Ordinal).Select(x=>(EntityId?)x.P).FirstOrDefault();
     }
     // 本人の拠点にいて、その技能が本人より高い人（師事の相手の候補）。
     public static EntityId[] Teachers(ContractWorld w,DevelopmentSkill skill){
