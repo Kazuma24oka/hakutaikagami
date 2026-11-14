@@ -42,10 +42,19 @@ public partial class NewGameRuntime
         // Text positions only: never move a unit, its marker or its world anchor.
         // Sorting and integer pixels keep restore images deterministic.
         var placed=new List<Rect2>();
-        foreach(var pair in worldTextLabels.Where(p=>p.Value.Visible).OrderBy(p=>p.Value.Position.Y).ThenBy(p=>p.Key,StringComparer.Ordinal))
+        string own="10/person/"+Session.PlayerControl.Value; // 操作する人物の名前は先に置く（隠れない）
+        foreach(var pair in worldTextLabels.Where(p=>p.Value.Visible).OrderBy(p=>p.Key==own?0:1).ThenBy(p=>p.Value.Position.Y).ThenBy(p=>p.Key,StringComparer.Ordinal))
         {
             var label=pair.Value;var size=label.GetCombinedMinimumSize();var p=label.Position;p.X=Mathf.Clamp(p.X,4,Math.Max(4,view.Size.X-size.X-4));p.Y=Mathf.Clamp(p.Y,4,Math.Max(4,view.Size.Y-size.Y-4));
-            for(int attempt=0;attempt<placed.Count+1;attempt++){var rect=new Rect2(p,size+new Vector2(4,4));var hit=placed.Where(r=>r.Intersects(rect)).ToArray();if(hit.Length==0)break;p.Y=Math.Max(4,hit.Min(r=>r.Position.Y)-size.Y-5);}
+            // 上へずらして空きを探す。上端に着いても重なるときは、元の高さから左右の列（右・左・右2…）で同じように探す。
+            var start=p;bool free=false;
+            for(int column=0;column<=8&&!free;column++)
+            {
+                float dx=column==0?0:((column+1)/2)*(size.X+8)*(column%2==1?1:-1);
+                p=new(Mathf.Clamp(start.X+dx,4,Math.Max(4,view.Size.X-size.X-4)),start.Y);
+                for(int attempt=0;attempt<placed.Count+1;attempt++){var rect=new Rect2(p,size+new Vector2(4,4));var hit=placed.Where(r=>r.Intersects(rect)).ToArray();if(hit.Length==0){free=true;break;}float up=hit.Min(r=>r.Position.Y)-size.Y-5;if(up<4)break;p.Y=up;}
+            }
+            if(!free){label.Visible=false;continue;} // 空きが無ければ重ねて置かない（多くの人が一か所にいるとき）
             label.Position=new(Mathf.Round(p.X),Mathf.Round(p.Y));placed.Add(new(label.Position,size+new Vector2(4,4)));
         }
     }
