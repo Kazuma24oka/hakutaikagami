@@ -126,12 +126,12 @@ public static class FactionStances
         return result.GroupBy(c=>c.Declaration).Select(g=>g.OrderByDescending(c=>c.ObservedAt).ThenBy(c=>c.Until).First())
             .OrderBy(c=>c.FromOwner.Value,StringComparer.Ordinal).ThenBy(c=>c.ToOwner.Value,StringComparer.Ordinal).ThenBy(c=>c.Declaration.Value,StringComparer.Ordinal).ToArray();
     }
-    public static void Validate(ContractWorld w)
+    public static void Validate(ContractWorld w,ContractWorld? trusted=null)
     {
-        var s=w.FactionStances;if(s==null)return;
+        var s=w.FactionStances;if(s==null)return;int skip=ContractValidation.TrustedPrefix(trusted?.FactionStances?.Decisions,s.Decisions);
         Need(NewGameWorld.Enabled(w)&&s.Schema==1&&s.Contract==Contract&&s.Decisions!=null&&s.Decisions.Length>0,"敵対意思の保存形式が不正です");
-        var prior=new List<FactionStanceDecision>();
-        foreach(var d in s.Decisions){
+        var prior=new List<FactionStanceDecision>(s.Decisions.Take(skip));
+        foreach(var d in s.Decisions.Skip(skip)){
             Need(d!=null&&d.Input!=null&&d.Authority!=null&&d.At>=0&&d.At<=w.ElapsedSeconds&&d.Revision>0&&d.Revision<=w.CommitSequence&&
                 (prior.Count==0||d.At>=prior[^1].At&&d.Revision>prior[^1].Revision),"政治判断の順序・時点が不正です");
             CheckInput(w,d.Input,d.Authority.Issuer,d.At,d.Revision,prior.ToArray());

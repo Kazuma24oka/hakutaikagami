@@ -195,18 +195,19 @@ public static partial class NpcArmies
             if(soldiers>0)result.Add(new(b.Army,m.Commander,m.Owner,v.Position,v.NextPosition,soldiers,b.Units.Any(id=>WorldClashes.AttacksNow(w,id))));
         }return result.OrderBy(v=>v.Army.Value,StringComparer.Ordinal).ToArray();
     }
-    public static void Validate(ContractWorld w)
+    public static void Validate(ContractWorld w,ContractWorld? trusted=null)
     {
         Need(Enabled(w)==(w.NpcArmies!=null),"NPC軍の明示版と世界状態が一致しません");if(w.NpcArmies is not {} s)return;
+        var t=trusted?.NpcArmies;int ms=ContractValidation.TrustedPrefix(t?.Musters,s.Musters),qs=ms==s.Musters.Length?ContractValidation.TrustedPrefix(t?.Marches,s.Marches):0,rs=ms==s.Musters.Length?ContractValidation.TrustedPrefix(t?.Returns,s.Returns):0;
         Need(s.Schema==1&&s.Contract==Policy,"未知のNPC軍状態です");
-        for(int n=0;n<s.Musters.Length;n++)CheckMuster(w,s.Musters[n],s.Musters.Take(n));
+        for(int n=ms;n<s.Musters.Length;n++)CheckMuster(w,s.Musters[n],s.Musters.Take(n));
         Need(s.Marches.Select(q=>q.Input.RequestId).Distinct().Count()==s.Marches.Length,"NPC軍の移動原本が重複しています");
-        foreach(var q in s.Marches){var m=s.Musters.Single(m=>m.Id==q.Muster);var r=w.Requests.Single(r=>r.Id==q.Input.RequestId);
+        foreach(var q in s.Marches.Skip(qs)){var m=s.Musters.Single(m=>m.Id==q.Muster);var r=w.Requests.Single(r=>r.Id==q.Input.RequestId);
             Need(r.Intent==q.Input&&r.CreatedAt==q.At&&r.CommitSequence==q.Revision&&q.At>=m.At&&q.Revision>m.Revision&&q.Input.Actor==m.Commander&&q.Input.Executor==m.Commander&&q.Input.Action==ActionKind.Move&&q.Input.RoutePolicy==LandRoute,"NPC軍の引受・移動原本と共通任務が一致しません");
             Need(w.Branches!.Journeys.Where(j=>j.Actor==m.Commander&&j.Task==w.Tasks.Single(t=>t.RequestId==r.Id).Id).All(j=>j.Legs.All(l=>!NationalRoutes.Sea(l.Edge))),"NPC陸軍は海路を通りません");
         }
         Need(s.Returns.Select(q=>q.Muster).Distinct().Count()==s.Returns.Length,"帰還の二重計上です");
-        foreach(var q in s.Returns){var m=s.Musters.Single(m=>m.Id==q.Muster);var site=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
+        foreach(var q in s.Returns.Skip(rs)){var m=s.Musters.Single(m=>m.Id==q.Muster);var site=BranchRoutes.GraphNodes(w).Single(n=>RegionalCampaign.Site(n.Id)==m.Site).Position;
             Need(q.At>=m.At&&q.At<=w.ElapsedSeconds&&q.Revision>m.Revision&&q.Revision<=w.CommitSequence&&q.Consumed==Consumed(w,m)&&RegionalCampaign.RoadActorPointAt(w,m.Commander,q.At)==site&&!w.Requests.Any(r=>r.Intent.Executor==m.Commander&&r.CommitSequence<q.Revision&&r.CreatedAt<=q.At&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>q.At))),"現地帰還と兵糧返納の根拠が一致しません");
             Need(!s.Marches.Any(march=>march.Muster==m.Id&&march.Revision>=q.Revision),"帰還済みの軍を再生成できません");
         }
