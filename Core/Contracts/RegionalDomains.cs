@@ -20,7 +20,10 @@ public static class RegionalDomains
     // 開始時の台帳は不変。同じ家の各同期で全国の城を走査しない（現在の支配はNationalStrategy.Ownerを別に読む）。
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,Dictionary<string,EntityId?>> ownerIndexes=new();
     internal static EntityId? Owner(ContractWorld w,EntityId site)=>ownerIndexes.GetValue(w.NewGame!,d=>d.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction is {} f?(EntityId?)new EntityId(f):null,StringComparer.Ordinal)).GetValueOrDefault(site.Value);
-    internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>Owner(w,site) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
+    // 落城した城の帳簿（全国の開始の一覧の ConquestDomains）：その時点の持ち主の家の当主が扱う（収入は今までどおり新しい持ち主へ）。
+    static bool Conquest(ContractWorld w)=>NationalDistrictRevenue.Enabled(w)&&NationalSystems.On(w,"ConquestDomains");
+    static EntityId? Holder(ContractWorld w,EntityId site,long at,long rev)=>Conquest(w)&&w.Strategy!=null?NationalStrategy.Owner(w,site,at,rev):Owner(w,site);
+    internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>(Conquest(w)?Holder(w,site,at??w.ElapsedSeconds,rev??w.CommitSequence):Owner(w,site)) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays((int)(at/Day));
@@ -39,7 +42,7 @@ public static class RegionalDomains
         var es=Purchases(w,at,rev).Where(e=>e.Input.Site==site&&Month(w,e.At,at)).ToArray();long n=Math.Max(0,Budget(w,site,at,rev)-es.Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,false)-LandSurvey.BudgetUsed(w,site,at,rev));
         if(Head(w,site,at,rev)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>CommunityStewardship.SharedDelegationBudget(w,site,at,rev)?CommunityStewardship.DelegatedCharge(w,e.Actor,site,e.At,e.Revision):e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)-LandSurvey.BudgetUsed(w,site,at,rev,actor)));return n;
     }
-    static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>(!NationalDistrictRevenue.Enabled(w)||NationalStrategy.Owner(w,site,at,rev)==Owner(w,site))&&Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
+    static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>Conquest(w)&&Holder(w,site,at,rev) is {} held&&held!=Owner(w,site)?FactionStances.ResolveAuthority(w,actor,held,at,Math.Min(rev,w.CommitSequence))!=null:(!NationalDistrictRevenue.Enabled(w)||NationalStrategy.Owner(w,site,at,rev)==Owner(w,site))&&Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     internal static bool Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>!CastleAdministration.Blocked(w,site,at,rev)&&(HeadAuthority(w,actor,site,at,rev)||Owner(w,site) is {} owner&&CommunityStewardship.Authority(w,actor,owner,site,at,rev)!=null);
     static EntityId Child(string kind,EntityId id)=>new(kind+":house/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static TreasuryEntry Make(ContractWorld w,TreasuryInput i,EntityId actor,long at,long rev)

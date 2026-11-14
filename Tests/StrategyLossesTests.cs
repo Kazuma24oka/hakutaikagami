@@ -86,3 +86,23 @@ public sealed class RestorationSupportTests
         Assert.Null(NationalStrategy.Settle(w,s,s.Outcomes.ToList(),uprising).Supporters);
     }
 }
+// 落城した城の帳簿（ConquestDomains、2026-11-14）：その時点の持ち主の家の当主が扱い、前の持ち主の当主は扱えない。
+public sealed class ConquestDomainsTests
+{
+    [Fact]
+    public void TheConquerorsHeadManagesTheFallenCastlesDomain()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"ConquestDomains"));
+        var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
+        var site=MaterialMarkets.Sites(w).First(x=>RegionalDomains.Owner(w,x) is {} o&&o.Value!=player&&w.NewGame.Start.Factions.Single(f=>f.Id==o.Value).Home!=x.Value);
+        var loser=RegionalDomains.Owner(w,site)!.Value;
+        var winner=w.NewGame.Start.Factions.First(f=>f.Id!=loser.Value&&f.Id!=player).Id;
+        var c=new StrategyCampaign(new("campaign:national/test/conquest"),new(winner),loser,site,0,1,"border");
+        w.Strategy=new(1,NationalStrategy.Policy,[c],[new(c.Id,0,2,true)]);w.CommitSequence=3;w.ElapsedSeconds=60;
+        var newHead=HouseSuccession.Head(w,new(winner));var oldHead=HouseSuccession.Head(w,loser);
+        Assert.Equal(newHead,RegionalDomains.Head(w,site));
+        Assert.True(RegionalDomains.Authority(w,newHead,site,60,4));
+        Assert.False(RegionalDomains.Authority(w,oldHead,site,60,4));
+    }
+}
