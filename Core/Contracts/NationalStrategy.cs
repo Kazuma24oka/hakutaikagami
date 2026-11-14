@@ -180,12 +180,31 @@ public static class NationalStrategy
     static int Draw(ContractWorld w,string key)=>(int)(BinaryPrimitives.ReadUInt32LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes($"national-strategy-v1/{w.Seed}/{key}")))%1000);
     static readonly System.Collections.Concurrent.ConcurrentDictionary<string,long> caps=new(StringComparer.Ordinal);
     internal static long Cap(string faction)=>caps.GetOrAdd(faction,f=>NationalStart.DbHouse(f) is {} db?HakutaiDbStart.Roster(db).SoldierCap:0);
+    static Dictionary<string,long> Powers(ContractWorld w,Dictionary<string,string?> owners,Dictionary<string,int> initial)
+    {
+        var lost=Losses(w);if(lost.Count==0)return Powers(owners,initial);
+        return Powers(owners,initial).ToDictionary(x=>x.Key,x=>Math.Max(50L,x.Value-lost.GetValueOrDefault(x.Key)),StringComparer.Ordinal);
+    }
     static Dictionary<string,long> Powers(Dictionary<string,string?> owners,Dictionary<string,int> initial)
     {
         var now=owners.Values.Where(v=>v!=null).GroupBy(v=>v!,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Count(),StringComparer.Ordinal);
         return initial.Keys.ToDictionary(f=>f,f=>{int start=initial[f];return Math.Max(50L,start==0?0:Cap(f)*now.GetValueOrDefault(f)/start);},StringComparer.Ordinal);
     }
-    static long Strength(ContractWorld w,string faction,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>Math.Max(50L,initial.GetValueOrDefault(faction) is int start&&start>0?Cap(faction)*owners.Values.Count(v=>v==faction)/start:0);
+    static long Strength(ContractWorld w,string faction,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>Math.Max(50L,(initial.GetValueOrDefault(faction) is int start&&start>0?Cap(faction)*owners.Values.Count(v=>v==faction)/start:0)-Losses(w).GetValueOrDefault(faction));
+    // 合戦の損害を家の兵力に残す（全国の開始の一覧の StrategyLosses を持つ世界だけ）。遠方の合戦で失った兵は、その日から180日かけて同じ割合で戻る。
+    // 守る側の損害は、守る家と援軍の家で 2:1 の割合で分ける（援軍は兵力の半分で出るため）。
+    public const long LossRecoverySeconds=180L*86400;
+    internal static Dictionary<string,long> Losses(ContractWorld w)
+    {
+        var result=new Dictionary<string,long>(StringComparer.Ordinal);if(w.Strategy is not {} s||!NationalSystems.On(w,"StrategyLosses"))return result;
+        long now=w.ElapsedSeconds;
+        foreach(var o in s.Outcomes){if(o.Battle is not {} b||now-o.At>=LossRecoverySeconds)continue;var c=s.Campaigns.Single(c=>c.Id==o.Campaign);
+            long Left(long lost)=>lost*(LossRecoverySeconds-(now-o.At))/LossRecoverySeconds;
+            void Add(string f,long n){if(n>0)result[f]=checked(result.GetValueOrDefault(f)+n);}
+            if(c.Basis!=Restoration)Add(c.Attacker.Value,Left(b.AttackerLost));
+            var allies=o.Allies??[];long weight=2+allies.Length;Add(c.Defender.Value,Left(b.DefenderLost)*2/weight);foreach(var a in allies)Add(a.Value,Left(b.DefenderLost)/weight);}
+        return result;
+    }
     static bool Allied(StrategyState s,string a,string b)
     {
         var x=NationalStart.DbHouse(a) is {} da?HakutaiDb.House(da):null;var y=NationalStart.DbHouse(b) is {} db?HakutaiDb.House(db):null;
@@ -266,8 +285,8 @@ public static class NationalStrategy
         {var holder=CapitalHolder(Owners(w,s));var last=s.Capitals is {Length:>0} cs?cs[^1].House.Value:null;
          if(holder!=null&&holder!=last){s=s with{Capitals=[..s.Capitals??[],new(new(holder),w.ElapsedSeconds,w.CommitSequence)]};if(last!=null)CapitalLetter(w,holder);}}
         s=ShogunTurn(w,s);
-        if(StrategyDefections.Enabled(w))s=StrategyDefections.Decide(w,s,Powers(Owners(w,s),InitialCounts(w)),date);
-        var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
+        if(StrategyDefections.Enabled(w))s=StrategyDefections.Decide(w,s,Powers(w,Owners(w,s),InitialCounts(w)),date);
+        var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(w,owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
         var player=w.PlayerControl;var playerHouse=w.NewGame!.Start.Factions.Where(f=>HouseSuccession.Head(w,new(f.Id))==player).Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var playerMember=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==player.Value)?.Faction;if(playerMember!=null)playerHouse.Add(playerMember);
         var mode=Mode(w);var history=(s.History??[]).ToList();
