@@ -192,7 +192,7 @@ public static partial class TreatyNegotiations
     static (EntityId Actor,TreatyInput? Reply,TreatyFormation? Fulfill)? Next(ContractWorld w,bool allowReplies)
     {
         foreach(var f in State(w).Formations){var acceptance=State(w).Papers.Single(p=>p.Input.Id==f.Acceptance);foreach(var actor in new[]{acceptance.Author,acceptance.Recipient}.Where(a=>a!=w.PlayerControl))if(FactionStances.ResolveAuthority(w,actor,actor==acceptance.Author?acceptance.Input.Owner:acceptance.Input.Target,w.ElapsedSeconds,w.CommitSequence)!=null&&Known(w,actor).Any(k=>k.Acceptance==f.Acceptance)&&w.ElapsedSeconds<Math.Min(f.Terms.Until,long.MaxValue)&&!State(w).Recognitions.Any(q=>q.Acceptance==f.Acceptance&&q.Actor==actor))return(actor,null,f);}
-        if(allowReplies)foreach(var p in State(w).Papers.Where(p=>p.Terms.DepartureCopy==null&&p.Recipient!=w.PlayerControl&&p.Input.Action is TreatyAction.Propose or TreatyAction.Counter).OrderBy(p=>p.At).ThenBy(p=>p.Input.Id.Value,StringComparer.Ordinal))if(FactionStances.ResolveAuthority(w,p.Recipient,p.Input.Target,w.ElapsedSeconds,w.CommitSequence)!=null&&Opened(w,p,p.Recipient,w.ElapsedSeconds,w.CommitSequence)&&w.ElapsedSeconds<=p.Terms.ReplyBy&&w.ElapsedSeconds<p.Terms.Until&&!State(w).Papers.Any(q=>q.Input.Source==p.Input.Id&&q.Author==p.Recipient)){
+        if(allowReplies)foreach(var p in State(w).Papers.Where(p=>p.Terms.DepartureCopy==null&&p.Recipient!=w.PlayerControl&&p.Input.Action is TreatyAction.Propose or TreatyAction.Counter).OrderBy(p=>p.At).ThenBy(p=>p.Input.Id.Value,StringComparer.Ordinal))if(Opened(w,p,p.Recipient,w.ElapsedSeconds,w.CommitSequence)&&w.ElapsedSeconds<=p.Terms.ReplyBy&&w.ElapsedSeconds<p.Terms.Until&&!State(w).Papers.Any(q=>q.Input.Source==p.Input.Id&&q.Author==p.Recipient)&&FactionStances.ResolveAuthority(w,p.Recipient,p.Input.Target,w.ElapsedSeconds,w.CommitSequence)!=null){ // 重い権限の計算は最後（答えは同じ）
             if(p.Terms.Ballot!=null){
                 var vote=BallotReply(w,p,w.ElapsedSeconds,w.CommitSequence);
                 return(p.Recipient,new(AutoId(vote==TreatyAction.Accept?"accept":"decline",p),vote,p.Input.Target,p.Input.Owner,p.Input.Id),null);
@@ -233,9 +233,11 @@ public static partial class TreatyNegotiations
             foreach(var declaration in w.FactionStances.Decisions.Where(d=>d.Input.Action==FactionStanceAction.DeclareHostile &&
                 d.Authority.Issuer!=w.PlayerControl && d.Input.EffectiveAt<=w.ElapsedSeconds && w.ElapsedSeconds<d.Input.Until)){
                 var head=declaration.Authority.Issuer;
-                if(FactionStances.ResolveAuthority(w,head,declaration.Input.Owner,w.ElapsedSeconds,w.CommitSequence)==null)continue;
+                // 申し出がもう出ていれば権限を調べない（調べる順を変えても答えは同じ。権限の計算が重い）。
                 var offer=NpcSubmission(w,head,declaration.Input.Owner,declaration.Input.Target,w.ElapsedSeconds,w.CommitSequence);
-                if(offer!=null && !OwnIdUsed(w,offer.Id))return(head,offer,null);
+                if(offer==null || OwnIdUsed(w,offer.Id))continue;
+                if(FactionStances.ResolveAuthority(w,head,declaration.Input.Owner,w.ElapsedSeconds,w.CommitSequence)==null)continue;
+                return(head,offer,null);
             }
         }
         return null;
