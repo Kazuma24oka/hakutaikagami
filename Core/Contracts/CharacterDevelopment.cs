@@ -96,10 +96,27 @@ public static class CharacterDevelopment
     static int Value(ContractWorld w,IEnumerable<DevelopmentAward> rows,EntityId actor,DevelopmentAbility ability)=>Skills32(w)
         ?Math.Min(100,Base(w,actor,ability)+(int)(rows.Where(a=>a.Actor==actor&&Main(a.Skill)==ability).Sum(a=>a.Experience)/AbilityXp))
         :Math.Min(100,Base(w,actor,ability)+(int)(rows.Where(a=>a.Actor==actor&&Ability(a.Skill)==ability).Sum(a=>a.Experience)/360000));
+    // 実際の仕事の経験（全国の開始の一覧の WorkExperience）：普請・検地を命じた人は、仕事が終わった時点で、工期1日あたり1時間の実務の経験を得る（1日8時間の内）。
+    // 技能は仕事の種類で決まる（開墾・用水は農政、町は商業、工房は工房管理、鉱山は鉱山、船は水軍、ほかの工事は普請、検地と指出は農政）。
+    static bool WorkRule(ContractWorld w)=>Skills32(w)&&NationalSystems.On(w,"WorkExperience");
+    internal static DevelopmentSkill WorksSkill(WorksKind k)=>k switch{WorksKind.Agriculture or WorksKind.RepairFields=>DevelopmentSkill.Agriculture,WorksKind.Commerce or WorksKind.RepairTown=>DevelopmentSkill.Commerce,
+        WorksKind.Workshop=>DevelopmentSkill.Workshop,WorksKind.Mine=>DevelopmentSkill.Mining,WorksKind.TradeShip or WorksKind.Warship=>DevelopmentSkill.Navy,_=>DevelopmentSkill.Construction};
+    static void WorkAwards(ContractWorld w,List<DevelopmentAward> rows)
+    {
+        if(!WorkRule(w))return;long now=w.ElapsedSeconds;
+        var events=(w.PublicWorks?.Orders??[]).Where(o=>o.Due<=now).Select(o=>(Id:o.Input.Id,o.Actor,Skill:WorksSkill(o.Input.Kind),End:o.Due,Seconds:(o.Due-o.At)/24))
+            .Concat((w.Surveys?.Entries??[]).Where(e=>e.Input.Action is SurveyAction.Statement or SurveyAction.Measurement&&e.Due<=now).Select(e=>(Id:e.Input.Id,e.Actor,Skill:DevelopmentSkill.Agriculture,End:e.Due,Seconds:(e.Due-e.At)/24)))
+            .OrderBy(x=>x.End).ThenBy(x=>x.Id.Value,StringComparer.Ordinal).ToArray();
+        foreach(var x in events)
+        {
+            long used=rows.Where(a=>a.Actor==x.Actor&&a.At/86400==x.End/86400).Sum(a=>a.Seconds);long credited=Math.Min(x.Seconds,Math.Max(0,28800-used));
+            if(credited>0)rows.Add(new(x.Id,x.Actor,x.Skill,x.End,credited,100,credited));
+        }
+    }
     static DevelopmentAward[] Derive(ContractWorld w){
         var rows=new List<DevelopmentAward>();
         var done=w.Tasks.Where(t=>t.Execution==ExecutionPhase.Completed&&t.InternalReason=="completed"&&t.Action is ActionKind.Train or ActionKind.Inspect).OrderBy(t=>t.FinishedAt).ThenBy(t=>t.Revision).ThenBy(t=>t.Id.Value,StringComparer.Ordinal).ToArray();
-        if(done.Length==0)return [];
+        if(done.Length==0&&!WorkRule(w))return [];
         // 依頼と行動は一度だけ引けるようにする（全国の人数で、終わった仕事ごとに一覧を頭から探さない）。
         var wanted=done.Select(t=>t.RequestId).ToHashSet();var tasks=done.Select(t=>t.Id).ToHashSet();
         var requests=w.Requests.Where(r=>wanted.Contains(r.Id)).GroupBy(r=>r.Id).ToDictionary(g=>g.Key,g=>g.Single());
@@ -127,6 +144,7 @@ public static class CharacterDevelopment
             }
             rows.Add(new(task.Id,task.Executor,skill,end,credited,efficiency,credited*efficiency/100));
         }
+        WorkAwards(w,rows);
         return rows.ToArray();
     }
     // 師事が成り立つか：教える人が学ぶ人と別人の成人で、始めと終わりに同じ拠点にいて、始めの時点でその技能が学ぶ人より高い。
