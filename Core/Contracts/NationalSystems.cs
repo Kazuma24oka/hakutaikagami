@@ -26,7 +26,9 @@ public static class NationalSystems
     ];
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);
-    public static bool On(ContractWorld w,string name)=>w.NewGame?.NationalSystems is {} list&&Array.IndexOf(list,name)>=0;
+    // 一覧ごとに一度だけ引ける形にする（判定は多くの場所で何度も呼ばれる）。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<string[],HashSet<string>> sets=new();
+    public static bool On(ContractWorld w,string name)=>w.NewGame?.NationalSystems is {} list&&sets.GetValue(list,l=>new HashSet<string>(l,StringComparer.Ordinal)).Contains(name);
     internal static void Validate(NewGameState data)
     {
         if(data.NationalSystems is not {} list)return;

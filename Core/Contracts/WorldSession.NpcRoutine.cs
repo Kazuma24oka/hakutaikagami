@@ -48,13 +48,26 @@ public sealed partial class WorldSession
     [ThreadStatic]internal static bool FailBatchForTest;
     void RunNewGameNpcTurns()
     {
-        foreach(var actor in NewGameNpcRoutine.Actors(state)){if(NpcJudgment.Enabled(state))ReceiveNpcLocalOffers(actor);var w=state;if(w.Paused)return;long revision=w.CommitSequence; // 判断の時点の番号（写さずに変える間は w が後で変わるので先に取る）
-            var i=NewGameNpcRoutine.Inputs(w,actor,w.ElapsedSeconds,revision);var hash=ContractJson.CanonicalHash(i);if(w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor)?.InputHash==hash)continue;var reason=NewGameNpcRoutine.Reason(i);EntityId? request=null;ResultCode result=ResultCode.NotAvailable;
+        var actors=NewGameNpcRoutine.Actors(state).ToArray();
+        // 判断の入力を先に並べて求めておく（世界を読むだけ）。誰かが動いて世界が変わったら（変更の番号が進んだら）、その後の人は1人ずつ求め直す。
+        var spec=new (NpcWorkInputs I,string Hash)?[actors.Length];long specRev=-1,specAt=-1;ContractWorld? specWorld=null;int specEnd=0;bool parallel=actors.Length>=32&&!NewGameNpcRoutine.Sequential;
+        void Speculate(int from)
+        {
+            int end=actors.Length;var view=state;long rev=view.CommitSequence,at=view.ElapsedSeconds;long? ctxRev=ControlContext.Revision,ctxTime=ControlContext.Time;
+            System.Threading.Tasks.Parallel.For(from,end,new System.Threading.Tasks.ParallelOptions{MaxDegreeOfParallelism=Math.Max(1,Math.Min(8,Environment.ProcessorCount))},n=>{
+                using var _=ControlContext.Restore(ctxRev,ctxTime);var x=NewGameNpcRoutine.Inputs(view,actors[n],at,rev);spec[n]=(x,ContractJson.CanonicalHash(x));});
+            specWorld=view;specRev=rev;specAt=at;specEnd=end;
+        }
+        for(int k=0;k<actors.Length;k++){var actor=actors[k];if(NpcJudgment.Enabled(state))ReceiveNpcLocalOffers(actor);var w=state;if(w.Paused)return;long revision=w.CommitSequence; // 判断の時点の番号（写さずに変える間は w が後で変わるので先に取る）
+            bool valid=ReferenceEquals(w,specWorld)&&revision==specRev&&w.ElapsedSeconds==specAt&&k<specEnd;
+            if(!valid&&parallel&&k==0){Speculate(0);valid=true;} // 最初の人まで（誰かが動くと、その後は1人ずつ求める）
+            var (i,hash)=valid&&spec[k] is {} pre?pre:Fresh(w,actor,revision);if(w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor)?.InputHash==hash)continue;var reason=NewGameNpcRoutine.Reason(i);EntityId? request=null;ResultCode result=ResultCode.NotAvailable;
             if(reason=="inspect-own-site"){request=new("request:npc-routine/"+actor.Value.Replace(':','/')+"/"+(i.OwnTasks.Length+1));result=Submit(NewGameWorld.InspectFor(w,actor,request.Value.Value,w.ElapsedSeconds),Revision).Code;}
             else if(reason=="offer-local-inspection"){request=new("request:npc-routine/"+actor.Value.Replace(':','/')+"/"+(i.OwnTasks.Length+1));result=Submit(NpcLocalOffers.Offer(w,actor,i.Routine!.Judgment!.Recipient!.Value,request.Value.Value,w.ElapsedSeconds),Revision).Code;}
             else if(reason=="practice-own-skill"){request=new("request:npc-routine/"+actor.Value.Replace(':','/')+"/"+(i.OwnTasks.Length+1));result=Submit(CharacterDevelopment.PracticeForNpc(w,actor,request.Value.Value,i.Routine!.Purpose!.Skill),Revision).Code;}
             else if(reason=="yield-practice-to-known-duty")YieldNpcPractice(actor,i.Routine!.Purpose!.ActivePractice!.Value);
             RecordNpcWork(actor,revision,i,hash,reason,request,result);
         }
+        static (NpcWorkInputs,string) Fresh(ContractWorld w,EntityId actor,long revision){var x=NewGameNpcRoutine.Inputs(w,actor,w.ElapsedSeconds,revision);return (x,ContractJson.CanonicalHash(x));}
     }
 }

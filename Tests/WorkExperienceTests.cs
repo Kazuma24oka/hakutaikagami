@@ -92,3 +92,16 @@ public sealed class DbMotherTests
         Assert.DoesNotContain(before.People,p=>withMother.Any(x=>x.Id==p.Id&&p.BirthParents?.Length==x.BirthParents!.Length));
     }
 }
+// NPC の日課の区切りと判断の入力を並べて求めても、1人ずつ求めたときと同じ世界になる（2026-11-15）。
+public sealed class ParallelRoutineTests
+{
+    [Fact]
+    public void ParallelRoutineGivesTheSameWorldAsSequential()
+    {
+        bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
+        try{
+            string Run(bool sequential){NewGameNpcRoutine.Sequential=sequential;try{var s=new WorldSession(NationalStart.Create(NationalStartTests.Nobunaga()));NewGameWorldTests.At(s,3600);return ContractJson.CanonicalHash(s.DiagnosticSnapshot());}finally{NewGameNpcRoutine.Sequential=false;}}
+            Assert.Equal(Run(true),Run(false));
+        }finally{WorldSession.GuardTurnSnapshots=guard;}
+    }
+}

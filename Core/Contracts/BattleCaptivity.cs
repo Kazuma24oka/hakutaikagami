@@ -123,7 +123,16 @@ public static partial class BattleCaptivity
         return new(checked(x.At+(long)(Math.Sqrt(de*de+dn*dn)/1000)));
     }).Value!;
     internal static bool Escorting(ContractWorld w,EntityId person,long at,long rev)=>
-        person!=w.PlayerControl&&NationalSystems.On(w,"CaptiveEscort")&&Enabled(w)&&Last(w,person,at,rev) is {} last&&EndOf(w,person,last.Revision,at,rev)==null&&at<EscortArrival(w,last.Capture);
+        person!=w.PlayerControl&&Captured(w,person)&&NationalSystems.On(w,"CaptiveEscort")&&Enabled(w)&&Last(w,person,at,rev) is {} last&&EndOf(w,person,last.Revision,at,rev)==null&&at<EscortArrival(w,last.Capture);
+    // 一度でも捕らえられた人。捕縛の記録（交戦・出陣の決着・NPC どうしの交戦）の配列が同じあいだは、作った集まりを使い回す（人の居場所の判定で毎回すべての捕縛を見ないため）。
+    [ThreadStatic] static (WorldClashState? Clash,StrategyOutcome[]? Outcomes,NpcSkirmish[]? Skirmishes,HashSet<EntityId>? Set) captured;
+    static bool Captured(ContractWorld w,EntityId person)
+    {
+        var (c,o,k)=(w.WorldClashes,w.Strategy?.Outcomes,w.NpcArmies?.Skirmishes);if(c==null&&o is not {Length:>0}&&k is not {Length:>0})return false;
+        var last=captured;
+        if(last.Set==null||!ReferenceEquals(last.Clash,c)||!ReferenceEquals(last.Outcomes,o)||!ReferenceEquals(last.Skirmishes,k)){last=(c,o,k,Captures(w).Select(x=>x.Capture.Person).ToHashSet());captured=last;}
+        return last.Set!.Contains(person);
+    }
     internal static EntityId? SiteAt(ContractWorld w,EntityId person,long at,long rev)
     {
         if(!Enabled(w)||Last(w,person,at,rev) is not {} last)return null;

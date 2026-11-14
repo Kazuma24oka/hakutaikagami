@@ -129,5 +129,7 @@ public static class ControlContext
     public static T With<T>(long rev,Func<T> f){using var _=At(rev);return f();}
     // 何も変えない（入れ子の外側の版をそのまま残す）。
     public static Scope Keep()=>new(revision,time);
+    // 別の手（並列の計算）で、呼んだ側の版と時刻をそのまま置く。
+    public static Scope Restore(long? rev,long? at){var old=(revision,time);revision=rev;time=at;return new(old.revision,old.time);}
     public readonly struct Scope(long? oldRevision,long? oldTime):IDisposable{public void Dispose(){revision=oldRevision;time=oldTime;}}
 }

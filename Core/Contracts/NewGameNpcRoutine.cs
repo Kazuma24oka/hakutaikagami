@@ -43,12 +43,34 @@ public static partial class NewGameNpcRoutine
         return new(local,permit,own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),known,result,ready,at>=ready);
     }
     public static string Reason(NpcWorkInputs i)=>i.Routine?.Purpose!=null?PurposeReason(i):i.Routine!=null?ContinuingReason(i):!i.LocalWitness?"not-at-own-site":!i.InspectionPermit?"no-personal-permit":!i.LastReportKnown?"await-own-report":i.OwnTasks.Length>0?"own-result-known":"inspect-own-site";
+    // 検査で並列を止める（同じ答えになることを比べるため）。
+    [ThreadStatic] internal static bool Sequential;
     public static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w))return null;var times=new List<long>();
         long soonest=checked(w.ElapsedSeconds+1); // これより早い区切りは無いので、見つかったら残りの人物を計算しない
-        foreach(var actor in Actors(w)){if(times.Contains(soonest))break;var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(soonest);else if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)times.Add(next);
-            if(NpcDormancy.Enabled(w))times.AddRange(InputChanges(w,actor,last?.InputHash));}
+        var actors=Actors(w).ToArray();
+        // 人ごとの最後の判断（判断の記録を人ごとに頭から探さない）。
+        var lastOf=new Dictionary<EntityId,NpcWorkDecision>();foreach(var d in w.NpcWork!.Decisions)lastOf[d.Actor]=d;
+        List<long> For(EntityId actor)
+        {
+            var found=new List<long>();var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=lastOf.GetValueOrDefault(actor);
+            if(last==null||last.InputHash!=ContractJson.CanonicalHash(i)){found.Add(soonest);return found;}
+            if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)found.Add(next);
+            if(NpcDormancy.Enabled(w))found.AddRange(InputChanges(w,actor,last.InputHash));
+            return found;
+        }
+        // 多くの人を並べて求める（人ごとに世界を読むだけの計算で、答えは最も早い時刻なので、順によらず同じ）。
+        if(actors.Length>=32&&!Sequential)
+        {
+            var rows=new List<long>?[actors.Length];long? rev=ControlContext.Revision,time=ControlContext.Time;
+            Parallel.For(0,actors.Length,new ParallelOptions{MaxDegreeOfParallelism=Math.Max(1,Math.Min(8,Environment.ProcessorCount))},(n,loop)=>{
+                if(loop.ShouldExitCurrentIteration)return;
+                using var _=ControlContext.Restore(rev,time);var r=For(actors[n]);rows[n]=r;if(r.Contains(soonest))loop.Stop();});
+            if(rows.Any(r=>r!=null&&r.Contains(soonest)))return soonest<=target?soonest:null;
+            foreach(var r in rows)if(r!=null)times.AddRange(r);
+        }
+        else foreach(var actor in actors){var r=For(actor);times.AddRange(r);if(r.Contains(soonest))break;}
         return times.Where(t=>t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     }
     // 休眠の版の世界：次の区切りまで世界は変わらないので、判断の入力が変わるのは時刻だけによる。
