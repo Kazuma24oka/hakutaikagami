@@ -63,3 +63,22 @@ public sealed class NpcHouseCareTests
         Assert.Equal(at+(untreated-at)*(300-50)/500,PersonalHealth.RecoverAt(w2,c));
     }
 }
+// 作成武将の経歴（32技能の版、2026-11-14）：経歴の推奨配分は予算（標準実務3000時間相当）と1技能50の内。選んだ配分が開始時の熟練になる。
+public sealed class CreatedOfficerSkillsTests
+{
+    [Fact]
+    public void BackgroundsFitTheBudgetAndBecomeTheStartingSkills()
+    {
+        foreach(var (name,skills) in CharacterDevelopment.Backgrounds){CharacterDevelopment.CheckCreated(skills);Assert.True(CharacterDevelopment.Spent(skills)<=CharacterDevelopment.CreatedBudget,name);}
+        Assert.Throws<InvalidDataException>(()=>CharacterDevelopment.CheckCreated([new(DevelopmentSkill.Medicine,51)]));
+        Assert.Throws<InvalidDataException>(()=>CharacterDevelopment.CheckCreated([new(DevelopmentSkill.Medicine,50),new(DevelopmentSkill.Tea,50)])); // 9,180,000×2 は予算を超える
+        // 作成武将が経歴を持てば、その配分が開始時の熟練になる。
+        var bg=CharacterDevelopment.Backgrounds.Single(b=>b.Name=="医術");
+        var officer=NewGameWorldTests.Officer() with{Background=bg.Name,StartSkills=bg.Skills};
+        var setup=NewGameWorldTests.Setup([officer]);
+        var w=NewGameWorld.Create(setup.World,[officer],officer.Id,developmentPolicy:CharacterDevelopment.Policy32);
+        var card=CharacterDevelopment.View(w,w.PlayerControl,w.PlayerControl)!;
+        Assert.Equal(32,card.Skills.Length);
+        Assert.Equal(35,card.Skills.Single(s=>s.Name=="医術").Value);Assert.Equal(0,card.Skills.Single(s=>s.Name=="剣術").Value);
+    }
+}

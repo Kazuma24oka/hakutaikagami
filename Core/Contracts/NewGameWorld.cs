@@ -80,7 +80,7 @@ public static partial class NewGameWorld
     public static string SiteName(string site)=>WorldNetwork.Site(RegionalCampaign.Site(Node(site))).Name;
     public static RegisteredOfficer[] Normalize(RegisteredOfficer[] records)
     {
-        NewGameSetup.Validate(new OfficerLibrary(1,records,[]));
+        NewGameSetup.Validate(new OfficerLibrary(1,records,[]));foreach(var r in records)CharacterDevelopment.CheckCreated(r.StartSkills);
         // A group's copies may still name the ungrouped source as their lord. Resolve only an unambiguous in-group copy.
         return records.Select(p=>{
             string? lord=p.Lord;if(lord!=null&&!records.Any(q=>q.Id==lord)){

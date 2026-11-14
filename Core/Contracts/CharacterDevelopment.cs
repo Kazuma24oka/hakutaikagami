@@ -51,7 +51,26 @@ public static class CharacterDevelopment
     public const long AbilityXp=7_200_000;
     // 開始時の熟練（32技能の版）。史料の採録がまだないので、試作の初期値：その人の得意な技能を4つ（武器1つと、主能力の高い順に3つ）だけ持ち、ほかは0（未採録）。
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,System.Collections.Concurrent.ConcurrentDictionary<string,Dictionary<DevelopmentSkill,int>>> starts=new();
-    internal static int StartLevel(ContractWorld w,EntityId person,DevelopmentSkill skill)=>!Skills32(w)?0:Starts(w,person).GetValueOrDefault(skill);
+    internal static int StartLevel(ContractWorld w,EntityId person,DevelopmentSkill skill)=>!Skills32(w)?0:
+        w.NewGame!.Registered.SingleOrDefault(r=>r.Id==person.Value)?.StartSkills is {} chosen?chosen.SingleOrDefault(x=>x.Skill==skill)?.Level??0:Starts(w,person).GetValueOrDefault(skill);
+    // 作成武将の技能経験の予算（決定の第5節）：標準実務3000時間相当、1技能の開始上限50。
+    public const long CreatedBudget=3000L*3600;public const int CreatedCap=50;
+    public static long Spent(IEnumerable<OfficerSkill> skills)=>skills.Sum(x=>LevelXp(x.Level));
+    public static void CheckCreated(OfficerSkill[]? skills)
+    {
+        if(skills==null)return;
+        Need(skills.All(x=>Enum.IsDefined(x.Skill)&&x.Level is >=1 and <=CreatedCap)&&skills.Select(x=>x.Skill).Distinct().Count()==skills.Length&&Spent(skills)<=CreatedBudget,"開始時の技能は1技能50まで、合計は予算の内にしてください");
+    }
+    // 経歴の推奨配分（予算と上限の内）。
+    public static readonly (string Name,OfficerSkill[] Skills)[] Backgrounds=[
+        ("武辺",[new(DevelopmentSkill.Swordsmanship,30),new(DevelopmentSkill.Spear,25),new(DevelopmentSkill.Cavalry,20),new(DevelopmentSkill.Tactics,20),new(DevelopmentSkill.Drill,15)]),
+        ("兵法",[new(DevelopmentSkill.Tactics,30),new(DevelopmentSkill.Siege,25),new(DevelopmentSkill.Logistics,20),new(DevelopmentSkill.Drill,20),new(DevelopmentSkill.Bow,15)]),
+        ("内政",[new(DevelopmentSkill.Agriculture,30),new(DevelopmentSkill.Construction,25),new(DevelopmentSkill.Finance,20),new(DevelopmentSkill.Irrigation,20),new(DevelopmentSkill.Writing,15)]),
+        ("商い",[new(DevelopmentSkill.Commerce,30),new(DevelopmentSkill.Negotiation,25),new(DevelopmentSkill.Appraisal,20),new(DevelopmentSkill.Finance,20),new(DevelopmentSkill.Navy,15)]),
+        ("文雅",[new(DevelopmentSkill.Etiquette,30),new(DevelopmentSkill.Tea,25),new(DevelopmentSkill.Renga,20),new(DevelopmentSkill.Writing,20),new(DevelopmentSkill.Teaching,15)]),
+        ("医術",[new(DevelopmentSkill.Medicine,35),new(DevelopmentSkill.Teaching,20),new(DevelopmentSkill.Writing,20),new(DevelopmentSkill.Etiquette,15)]),
+        ("忍び",[new(DevelopmentSkill.Stealth,30),new(DevelopmentSkill.IntelligenceGathering,25),new(DevelopmentSkill.Subversion,20),new(DevelopmentSkill.Guard,20),new(DevelopmentSkill.Swordsmanship,15)]),
+    ];
     static Dictionary<DevelopmentSkill,int> Starts(ContractWorld w,EntityId person)=>starts.GetValue(w.NewGame!,_=>new(StringComparer.Ordinal)).GetOrAdd(person.Value,_=>{
         int H(string k)=>(int)(Convert.ToUInt32(ContractJson.Hash(Encoding.UTF8.GetBytes(Policy32+"/start/"+w.NewGame!.Seed+"/"+person.Value+"/"+k))[..8],16)%1000);
         var weapons=new[]{DevelopmentSkill.Swordsmanship,DevelopmentSkill.Spear,DevelopmentSkill.Bow,DevelopmentSkill.Cavalry};

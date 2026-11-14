@@ -15,7 +15,13 @@ public sealed record RegisteredOfficer(string Id, string? CopiedFrom, string Nam
 
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string[]? BirthParents {get;init;}
+    // 作成武将の開始時の熟練（32技能の版。経歴の推奨配分から選ぶ。技能経験の予算は標準実務3000時間相当・1技能50まで。CharacterDevelopment.CheckCreated）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public OfficerSkill[]? StartSkills {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Background {get;init;}
 }
+public sealed record OfficerSkill(DevelopmentSkill Skill,int Level);
 public sealed record OfficerGroup(string Id, string Name, RegisteredOfficer[] Officers);
 public sealed record OfficerLibrary(int Schema, RegisteredOfficer[] Ungrouped, OfficerGroup[] Groups);
 public sealed record SetupPerson(string Id, string Name, string Site, string? Faction, string? Lord, bool Created, bool PersonalRetainer, int? BirthYear = null, OfficerAttributes? Attributes = null, StartTemplate? InitialRole = null)
