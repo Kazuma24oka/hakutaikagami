@@ -26,3 +26,21 @@ public sealed class WorkExperienceTests
         Assert.DoesNotContain(w.Development!.Awards,a=>a.Task==order.Input.Id);
     }
 }
+// 兵科の技能（TroopSkills、2026-11-15）：兵の種類に合う大将の技能が、統率を上限として損害を最大2割増やす。
+public sealed class TroopSkillTests
+{
+    [Fact]
+    public void TheCommandersMatchingWeaponSkillCappedByLeadershipRaisesDamage()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"TroopSkills"));
+        var who=w.Characters.Select(c=>c.Id).First(p=>CharacterDevelopment.LevelAt(w,p,DevelopmentSkill.Spear,0)>0);
+        int spear=CharacterDevelopment.LevelAt(w,who,DevelopmentSkill.Spear,0),lead=CharacterDevelopment.EffectiveAt(w,who,DevelopmentAbility.Leadership,0);
+        var unit=new UnitState(new("unit:test"),new("army:test"),who,new("org:test"),100,0);
+        Assert.Equal(Math.Min(spear,lead)/5,BattlefieldRules.TroopSkillBonus(w,unit,TroopKind.Spear));
+        Assert.Equal(Math.Min(CharacterDevelopment.LevelAt(w,who,DevelopmentSkill.Gun,0),lead)/5,BattlefieldRules.TroopSkillBonus(w,unit,TroopKind.Gun));
+        Assert.InRange(BattlefieldRules.TroopSkillBonus(w,unit,TroopKind.Spear),0,20);
+        w.NewGame=w.NewGame! with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="TroopSkills").ToArray()};
+        Assert.Equal(0,BattlefieldRules.TroopSkillBonus(w,unit,TroopKind.Spear));
+    }
+}
