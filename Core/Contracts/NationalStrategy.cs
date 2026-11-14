@@ -155,11 +155,19 @@ public static class NationalStrategy
     internal static Dictionary<string,string?> Owners(ContractWorld w,StrategyState? s)
     {
         var map=w.NewGame!.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction,StringComparer.Ordinal);
-        if(s!=null){foreach(var (site,house,_,_) in Changes(s))map[site]=house;return map;}
+        if(s!=null){foreach(var (site,house,_,_) in Changes(s))map[site]=house;Independent(w,map);return map;}
         if(s!=null)foreach(var o in s.Outcomes.Where(o=>o.Captured)){var c=s.Campaigns.Single(c=>c.Id==o.Campaign);map[c.Target.Value]=c.Attacker.Value;}
         return map;
     }
 
+    // 独立を宣言した家が押さえている城（一覧の StrategyIndependence を持つ世界だけ）：家の戦略では、元の家の城に数えず、出陣の目的にもしない。
+    // 独立した家は戦略の家に入らない（その家の出陣・同盟は今は行わない）。
+    static void Independent(ContractWorld w,Dictionary<string,string?> map)
+    {
+        if(!NationalSystems.On(w,"StrategyIndependence"))return;long at=w.ElapsedSeconds;
+        foreach(var d in w.Declarations??[])
+            if(map.ContainsKey(d.Site.Value)&&w.LandRights.Any(r=>r.Subject==d.House&&r.Target==d.Site&&r.Kind=="control"&&r.From<=at&&at<r.Until))map[d.Site.Value]=null;
+    }
     static long MonthStart(ContractWorld w,int year,int month)
     {
         var epoch=DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);

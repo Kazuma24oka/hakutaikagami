@@ -46,3 +46,20 @@ public sealed class DefectionLetterTests
         Assert.Contains(w.Messaging.Attempts,a=>a.MessageId==m.Id); // 書状は運ばれる
     }
 }
+// 独立した家の城（StrategyIndependence、2026-11-14）：家の戦略では元の家の城に数えず、出陣の目的にもしない。
+public sealed class StrategyIndependenceTests
+{
+    [Fact]
+    public void ACastleHeldByADeclaredIndependentHouseIsNoLongerTheFormerHouses()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"StrategyIndependence"));
+        w.Strategy??=new(1,NationalStrategy.Policy,[],[]);
+        var castle=w.NewGame!.Start.Castles.First(c=>c.Faction!=null&&w.NewGame.Start.Factions.Single(f=>f.Id==c.Faction).Home!=c.Id);
+        var house=new EntityId("org:test/independent");
+        Assert.Equal(castle.Faction,NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
+        w.Declarations=[new(new("pact:test"),new("person:test"),new(castle.Faction!),house,new(castle.Id),0,0)];
+        w.LandRights=[..w.LandRights,new(new("right:test/independent"),house,new(castle.Id),"control",new("pact:test"),0,long.MaxValue,0)];
+        Assert.Null(NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
+    }
+}
