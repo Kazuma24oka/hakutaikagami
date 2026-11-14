@@ -79,7 +79,10 @@ public static class CharacterDevelopment
         var result=new Dictionary<DevelopmentSkill,int>();
         foreach(var s in best.Prepend(weapon))result[s]=Math.Clamp((Base(w,person,Main(s))-20)/2+H("level/"+s)%11,5,40);
         return result;});
-    static int Base(ContractWorld w,EntityId actor,DevelopmentAbility ability){
+    // 開始時の基礎能力は人物の定義（能力の記録かシード）だけで決まるので、人と能力ごとに一度だけ求めて覚える。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,System.Collections.Concurrent.ConcurrentDictionary<(string,DevelopmentAbility),int>> bases=new();
+    static int Base(ContractWorld w,EntityId actor,DevelopmentAbility ability)=>bases.GetValue(w.NewGame!,_=>new()).GetOrAdd((actor.Value,ability),_=>BaseCore(w,actor,ability));
+    static int BaseCore(ContractWorld w,EntityId actor,DevelopmentAbility ability){
         var p=FamilyBirth.People(w).Single(x=>x.Id==actor.Value);var a=p.Attributes;
         if(a!=null)return ability switch{DevelopmentAbility.Leadership=>a.Leadership,DevelopmentAbility.Valor=>a.Valor,DevelopmentAbility.Intelligence=>a.Intelligence,DevelopmentAbility.Politics=>a.Politics,DevelopmentAbility.Negotiation=>a.Negotiation??50,DevelopmentAbility.Charm=>a.Charm??50,_=>throw new ArgumentOutOfRangeException(nameof(ability))};
         // Stable provisional balance values, explicitly not historical assessments.
@@ -145,7 +148,9 @@ public static class CharacterDevelopment
     internal static int LevelAt(ContractWorld w,EntityId actor,DevelopmentSkill skill,long at)=>!Enabled(w)||!Skills(w).Contains(skill)?0:SkillIn(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,skill);
     internal static int EffectiveAt(ContractWorld w,EntityId actor,DevelopmentAbility ability,long at)=>Math.Clamp(Value(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,ability),1,100);
     internal static void Sync(ContractWorld w){if(Enabled(w))w.Development=w.Development! with{Awards=Derive(w)};}
-    internal static DevelopmentSkill PreferredPractice(ContractWorld w,EntityId actor)=>Skills(w).OrderByDescending(s=>Base(w,actor,AbilityFor(w,s))).ThenBy(s=>ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/practice/"+w.Seed+"/"+actor.Value+"/"+s)),StringComparer.Ordinal).First();
+    // 好んで修行する技能は開始の定義（能力・シード）だけで決まるので、人ごとに一度だけ求めて覚える。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,System.Collections.Concurrent.ConcurrentDictionary<string,DevelopmentSkill>> preferred=new();
+    internal static DevelopmentSkill PreferredPractice(ContractWorld w,EntityId actor)=>preferred.GetValue(w.NewGame!,_=>new(StringComparer.Ordinal)).GetOrAdd(actor.Value,_=>Skills(w).OrderByDescending(s=>Base(w,actor,AbilityFor(w,s))).ThenBy(s=>ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/practice/"+w.Seed+"/"+actor.Value+"/"+s)),StringComparer.Ordinal).First());
     internal static Intent PracticeForNpc(ContractWorld w,EntityId actor,string id,DevelopmentSkill skill){
         Need(Enabled(w)&&NewGameNpcRoutine.PurposeEnabled(w)&&NewGameNpcRoutine.IsActor(w,actor)&&Skills(w).Contains(skill),"NPC practice policy is required");
         var site=PersonalCompanions.PhysicalSiteAt(w,actor,w.ElapsedSeconds,w.CommitSequence+1);Need(site!=null,"NPC must be at a site");long at=w.ElapsedSeconds;

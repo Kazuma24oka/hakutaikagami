@@ -66,9 +66,9 @@ public static class NewGameWork
     internal static bool CanRequest(WorldSession session,EntityId task,EntityId actor,ContractWorld? current=null)
     {
         // 世界を写さずに読み（手番の中でも使う）、軽い条件を先に確かめる。本人が評価の通知を知っているか（受信箱を作るので重い）は最後。
-        var w=current??session.TurnSnapshot();if(!Enabled(w)||Paid(w,task))return false;var t=w.Tasks.SingleOrDefault(t=>t.Id==task);if(t==null||t.Executor!=actor||Reward(w,t)==0)return false;
+        var w=current??session.TurnSnapshot();if(!Enabled(w)||Paid(w,task))return false;var t=current!=null?WorldIndex.Task(w,task):w.Tasks.SingleOrDefault(t=>t.Id==task);if(t==null||t.Executor!=actor||Reward(w,t)==0)return false;
+        if(!WorldIndex.MessagesFor(w,t.RequestId.Value).Any(m=>m.Kind==AssessmentNotice.Kind&&m.RecipientId==actor.Value&&MessageFlow.Knows(w.Messaging,m.Id,actor.Value)))return false; // この仕事の評価の通知を本人がまだ知らない
         if(!w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope)||!RegionalCampaign.Nearby(w,actor).Any(p=>p.Actor==t.Issuer))return false;
-        if(!w.Messaging.Messages.Any(m=>m.Kind==AssessmentNotice.Kind&&m.RecipientId==actor.Value&&m.CorrelationId==t.RequestId.Value&&MessageFlow.Knows(w.Messaging,m.Id,actor.Value)))return false; // この仕事の評価の通知を本人がまだ知らない
         return current!=null?AssessmentNotice.LatestKnownFor(w,actor,task) is {} known&&WorkProgression.Completed(known.Review.Achievement):AssessmentNotice.LatestKnown(session,actor).Any(p=>p.Task==task&&WorkProgression.Completed(p.Review.Achievement));
     }
     static bool Local(ContractWorld w,TaskState t,long at,long revision)

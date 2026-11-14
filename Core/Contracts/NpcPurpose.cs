@@ -10,22 +10,25 @@ public static partial class NewGameNpcRoutine
     static NpcWorkInputs PurposeInputs(ContractWorld w,EntityId actor,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);
         var basis=ContinuingInputs(w,actor,at,revision);
-        var requests=w.Requests.Where(r=>r.CreatedAt<=at&&r.CommitSequence<=revision).ToArray();
-        var own=requests.Where(r=>r.Intent.Actor==actor&&(r.Intent.Executor==actor||NpcJudgment.Enabled(w)&&r.Intent.Action==ActionKind.Inspect)&&r.Intent.Action is ActionKind.Inspect or ActionKind.Train).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
+        // 索引で引く（一覧を頭から探したときと同じ答え。WorldIndex）。
+        bool Seen(RequestReceipt r)=>r.CreatedAt<=at&&r.CommitSequence<=revision;
+        bool Requested(TaskState t)=>WorldIndex.Request(w,t.RequestId) is {} r&&Seen(r);
+        var own=WorldIndex.RequestsBy(w,actor).Where(r=>Seen(r)&&(r.Intent.Executor==actor||NpcJudgment.Enabled(w)&&r.Intent.Action==ActionKind.Inspect)&&r.Intent.Action is ActionKind.Inspect or ActionKind.Train).OrderBy(r=>r.CreatedAt).ThenBy(r=>r.Id.Value,StringComparer.Ordinal).ToArray();
         var practices=own.Where(r=>r.Intent.Action==ActionKind.Train).ToArray();
         bool Active(TaskState t)=>t.FinishedAt==null||t.FinishedAt>=at;
-        bool Heard(TaskState t)=>w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.MessageId==WorldSession.Child("message",t.Id,"order").Value&&k.LearnedAt<at);
-        var practiceTasks=practices.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id)).ToArray();
+        bool Heard(TaskState t)=>WorldIndex.KnewBefore(w,WorldSession.Child("message",t.Id,"order").Value,actor.Value,at);
+        var practiceTasks=practices.Select(r=>WorldIndex.TaskFor(w,r.Id)).ToArray();
         var active=practiceTasks.Where(Active).OrderBy(t=>t.Id.Value,StringComparer.Ordinal).FirstOrDefault();
         // Hearing an outside request also gives it attention, but never assents
         // to a voluntary request. Its existing agreement remains authoritative.
-        var duties=w.Tasks.Where(t=>t.Executor==actor&&t.Issuer!=actor&&requests.Any(r=>r.Id==t.RequestId)&&Active(t)&&Heard(t)).Select(t=>t.Id).OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
-        bool other=w.Tasks.Any(t=>t.Executor==actor&&Active(t)&&requests.Any(r=>r.Id==t.RequestId)&&!practiceTasks.Any(p=>p.Id==t.Id)&&(t.Issuer==actor||Heard(t)));
+        var mine=WorldIndex.TasksOf(w,actor).ToArray();
+        var duties=mine.Where(t=>t.Issuer!=actor&&Requested(t)&&Active(t)&&Heard(t)).Select(t=>t.Id).OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
+        bool other=mine.Any(t=>Active(t)&&Requested(t)&&!practiceTasks.Any(p=>p.Id==t.Id)&&(t.Issuer==actor||Heard(t)));
         bool known=true;string? result=null;
-        if(own.Length>0){var t=w.Tasks.Single(t=>t.RequestId==own[^1].Id);string mid=WorldSession.Child("message",t.Id,"report").Value;known=w.Messaging.Knowledge.Any(k=>k.CharacterId==actor.Value&&k.MessageId==mid&&k.LearnedAt<at);if(known)result=w.Messaging.Messages.Single(m=>m.Id==mid).Body;}
+        if(own.Length>0){var t=WorldIndex.TaskFor(w,own[^1].Id);string mid=WorldSession.Child("message",t.Id,"report").Value;known=WorldIndex.KnewBefore(w,mid,actor.Value,at);if(known)result=WorldIndex.Message(w,mid).Body;}
         long ready=practices.Length==0?0:checked(practices[^1].CreatedAt+ContinuingInterval);
         var p=new NpcPurposeInputs(practiceTasks.Select(t=>t.Id).ToArray(),active?.Id,duties,other,ready,at>=ready,CharacterDevelopment.PreferredPractice(w,actor));
-        return basis with{OwnTasks=own.Select(r=>w.Tasks.Single(t=>t.RequestId==r.Id).Id).ToArray(),LastReportKnown=known,KnownResult=result,Routine=new(PurposePolicy,basis.Routine!.Need){Purpose=p}};
+        return basis with{OwnTasks=own.Select(r=>WorldIndex.TaskFor(w,r.Id).Id).ToArray(),LastReportKnown=known,KnownResult=result,Routine=new(PurposePolicy,basis.Routine!.Need){Purpose=p}};
     }
     static string PurposeReason(NpcWorkInputs i)
     {
