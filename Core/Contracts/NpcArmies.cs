@@ -196,8 +196,8 @@ public static partial class NpcArmies
     [ThreadStatic] static long? contactForTest;internal static long ContactMm{get=>contactForTest??1_000_000;set=>contactForTest=value;}
     internal static BattleCapture[] SkirmishCaptures(ContractWorld w)=>Skirmishes(w).Where(k=>k.Capture!=null).Select(k=>k.Capture!).ToArray();
     internal static (BattleCapture Capture,long Revision)[] SkirmishCaptureRows(ContractWorld w)=>Skirmishes(w).Where(k=>k.Capture!=null).Select(k=>(k.Capture!,k.Revision)).ToArray();
-    static int Soldiers(ContractWorld w,NpcArmyMuster m)=>(int)w.Units.Where(u=>u.Army==Binding(m).Army).Sum(u=>u.Soldiers);
-    static bool Hostile(ContractWorld w,EntityId a,EntityId b,long at,long rev)=>FactionStances.ClaimAt(w,a,b,at,rev)!=null||FactionStances.ClaimAt(w,b,a,at,rev)!=null;
+    internal static int Soldiers(ContractWorld w,NpcArmyMuster m)=>(int)w.Units.Where(u=>u.Army==Binding(m).Army).Sum(u=>u.Soldiers);
+    internal static bool Hostile(ContractWorld w,EntityId a,EntityId b,long at,long rev)=>FactionStances.ClaimAt(w,a,b,at,rev)!=null||FactionStances.ClaimAt(w,b,a,at,rev)!=null;
     // 出会った敵対する軍の組（ID の順）。本人の軍が出ているときは今の交戦（WorldClashes）に任せる。
     internal static (NpcArmyMuster A,NpcArmyMuster B)? Encounter(ContractWorld w)
     {
@@ -207,10 +207,21 @@ public static partial class NpcArmies
         {
             var (a,b)=(live[i],live[j]);if(a.Owner==b.Owner||!Hostile(w,a.Owner,b.Owner,at,rev))continue;
             if(Skirmishes(w).Any(k=>(k.A==a.Id&&k.B==b.Id)&&k.At>at-86400))continue;
-            var pa=Position(w,Binding(a).Army,at);var pb=Position(w,Binding(b).Army,at);long dx=pa.EastMm-pb.EastMm,dy=pa.NorthMm-pb.NorthMm;
-            if(dx*dx+dy*dy<=ContactMm*ContactMm)return (a,b);
+            if(Met(w,a,b,at))return (a,b);
         }
         return null;
+    }
+    // 二つの軍が出会う距離に近づいたか。区切りの間にすれ違った軍も（全国の開始の一覧の SkirmishPassing）、直前の1時間を5分ごとに見る。
+    internal static bool Met(ContractWorld w,NpcArmyMuster a,NpcArmyMuster b,long at)
+    {
+        int steps=NationalSystems.On(w,"SkirmishPassing")?12:0;long start=Math.Max(a.At,b.At);
+        for(int k=0;k<=steps;k++)
+        {
+            long t=at-k*300L;if(k>0&&t<start)break;
+            var pa=Position(w,Binding(a).Army,t);var pb=Position(w,Binding(b).Army,t);long dx=pa.EastMm-pb.EastMm,dy=pa.NorthMm-pb.NorthMm;
+            if(dx*dx+dy*dy<=ContactMm*ContactMm)return true;
+        }
+        return false;
     }
     internal static void Skirmish(ContractWorld w,EntityId a,EntityId b)
     {
