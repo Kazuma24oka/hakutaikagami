@@ -9,7 +9,7 @@ public static class NationalSystems
     public static readonly string[] Current=
     [
         // 生活・家
-        "PersonalLife", "NpcSelfCare", "AbilityReputation",
+        "PersonalLife", "NpcSelfCare", "NpcHouseCare", "AbilityReputation",
         "HouseSuccession",
         // 領地（普請・職人と交易・検地と布告・常設の奉行）
         "LiveTerritory",

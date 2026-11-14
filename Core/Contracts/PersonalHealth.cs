@@ -117,13 +117,25 @@ public static class PersonalHealth
         if(c.Person==w.PlayerControl||w.NewGame is not {} data||!NationalSystems.On(w,"NpcSelfCare"))return null;
         long at=checked(c.OnsetAt+NpcCareDelay);if(at>w.ElapsedSeconds)return null;
         return npcCare.GetValue(data,_=>new(StringComparer.Ordinal)).GetOrAdd(c.Id.Value,_=>
-            PersonalCompanions.PhysicalSiteAt(w,c.Person,at,0) is {} site?new HealthCareEntry(new(new("care:npc/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Id.Value))),c.Person,c.Id,c.Person),site,at,0):null);
+            PersonalCompanions.PhysicalSiteAt(w,c.Person,at,0) is {} site?new HealthCareEntry(new(new("care:npc/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Id.Value))),c.Person,c.Id,HouseCarer(w,c.Person,site,at)),site,at,0):null);
+    }
+    // 家人に頼む（全国の開始の一覧の NpcHouseCare と32技能の版を持つ世界だけ）：手当のとき、同じ拠点にいる同じ家の成人のうち医術の最も高い人（本人を含む）が手当をする。
+    // 手当の後の残りの経過は、医術0で 3/5、医術50で 1/2、医術100で 2/5。医者を探して移る判断は後で。
+    static bool HouseCare(ContractWorld w)=>NationalSystems.On(w,"NpcHouseCare")&&CharacterDevelopment.Skills32(w);
+    internal static EntityId HouseCarer(ContractWorld w,EntityId patient,EntityId site,long at)
+    {
+        if(!HouseCare(w))return patient;
+        bool Active(TimedRelation r)=>r.From<=at&&at<r.Until;
+        var houses=w.Memberships.Where(m=>m.Subject==patient&&Active(m)).Select(m=>m.Target).ToHashSet();
+        var kin=w.Memberships.Where(m=>houses.Contains(m.Target)&&Active(m)&&m.Subject!=patient).Select(m=>m.Subject).Distinct().Where(p=>w.Characters.Any(c=>c.Id==p&&c.Life==LifeState.Adult)&&PersonalCompanions.PhysicalSiteAt(w,p,at,0)==site);
+        return kin.Prepend(patient).OrderByDescending(p=>CharacterDevelopment.LevelAt(w,p,DevelopmentSkill.Medicine,at)).ThenBy(p=>p==patient?0:1).ThenBy(p=>p.Value,StringComparer.Ordinal).First();
     }
     // 手当は残りの経過を短くするが、即時の全快はない。
     public static long RecoverAt(ContractWorld w,HealthCondition c)
     {
         long untreated=checked(c.OnsetAt+c.BaseSeconds);
         if(Treatment(w,c) is not {} care||care.At>=untreated)return untreated;
+        if(HouseCare(w)&&care.Input.Id.Value.StartsWith("care:npc/",StringComparison.Ordinal)){int medicine=CharacterDevelopment.LevelAt(w,care.Input.Carer,DevelopmentSkill.Medicine,care.At);return care.At+(untreated-care.At)*(300-medicine)/500;}
         return care.At+(untreated-care.At)*3/5;
     }
     public static HealthCondition[] Active(ContractWorld w,EntityId person,long at)=>

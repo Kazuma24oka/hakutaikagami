@@ -38,3 +38,28 @@ public sealed class Skills32Tests
         }finally{WorldSession.GuardTurnSnapshots=guard;}
     }
 }
+// 家人に頼む手当（NpcHouseCare、2026-11-14）：NPC の手当は同じ拠点の同じ家で医術の最も高い人がし、医術が高いほど早く治る。
+public sealed class NpcHouseCareTests
+{
+    [Fact]
+    public void TheBestHealerOfTheHouseAtTheSameSiteTreatsAndShortensRecovery()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"NpcHouseCare"));
+        // 同じ家・同じ城にいる成人の二人（操作する人物でない）。
+        var pair=w.Memberships.GroupBy(m=>m.Target).SelectMany(g=>g.Select(m=>m.Subject).Distinct().Where(p=>p!=w.PlayerControl&&w.Characters.Single(c=>c.Id==p).Life==LifeState.Adult)
+            .GroupBy(p=>PersonalCompanions.PhysicalSiteAt(w,p,0,0)).Where(x=>x.Key!=null&&x.Count()>=2).Select(x=>(Site:x.Key!.Value,A:x.ElementAt(0),B:x.ElementAt(1)))).First();
+        var c=new HealthCondition(new("health:test/fever"),pair.A,HealthKind.Illness,HealthPart.Body,2,3600,10*86400);
+        long at=c.OnsetAt+PersonalHealth.NpcCareDelay;w.ElapsedSeconds=at+60;
+        // 医術の誰もいなければ、本人が手当をし、残りの経過は 3/5（今までと同じ）。
+        Assert.Equal(pair.A,PersonalHealth.HouseCarer(w,pair.A,pair.Site,at));
+        long untreated=c.OnsetAt+c.BaseSeconds;
+        Assert.Equal(at+(untreated-at)*3/5,PersonalHealth.RecoverAt(w,c));
+        // 家人が医術50なら、その人が手当をし、残りの経過は 1/2。
+        w.Development=w.Development! with{Awards=[new(new("task:test/medicine"),pair.B,DevelopmentSkill.Medicine,60,0,100,CharacterDevelopment.LevelXp(50))]};
+        Assert.Equal(pair.B,PersonalHealth.HouseCarer(w,pair.A,pair.Site,at));
+        var w2=ContractJson.Copy(w); // 手当の答えは開始の定義ごとに覚えるので、新しい定義で求め直す
+        w2.NewGame=w2.NewGame! with{Seed=w2.NewGame.Seed};
+        Assert.Equal(at+(untreated-at)*(300-50)/500,PersonalHealth.RecoverAt(w2,c));
+    }
+}

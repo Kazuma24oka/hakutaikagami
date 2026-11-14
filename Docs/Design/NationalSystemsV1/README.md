@@ -35,7 +35,7 @@
 
 ### 32技能と作成武将（BD-05・BD-13・BD-20・BD-06 の前提）
 - 2026-11-06 採用の32技能（開始熟練・経歴・出自・3000時間相当の経験予算・開始上限50）を新規世界の作成へ接続する。今は7技能。
-- 医術（32技能の一つ）が入ってから：NPC が医者を探して移る・家人に頼む判断（今は発症の1日後に城や町にいれば手当を受けるだけ。PersonalHealth.NpcCare）。
+- 家人に頼む手当は入れた（2026-11-14、一覧の NpcHouseCare：同じ拠点の同じ家で医術の最も高い人が手当をし、残りの経過は医術0で3/5・50で1/2・100で2/5。Tests/Skills32Tests.cs の NpcHouseCareTests）。医者を探して移る判断は残り。
 - 作成武将の新しい項目（生年・家系・兵科適性・志・信仰。Proposals/CHARACTER_DATA_FIELDS_V1）。
 
 ### 全国の戦の残り（BD-04・BD-44・BD-06・BD-46、Docs/Design/NationalWarfareV1・BattleCaptivityV1・NationalStrategyV1）

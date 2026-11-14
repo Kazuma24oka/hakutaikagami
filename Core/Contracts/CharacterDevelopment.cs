@@ -109,6 +109,8 @@ public static class CharacterDevelopment
         long credit = Math.Clamp(28800 - used, 0, PracticeSeconds) * efficiency / 100;
         return (int)((Skills32(w)?LevelOf(xp+credit):Math.Min(100, (xp + credit) / 7200)) - current) * 8;
     }
+    // その時点の技能レベル（その時点より前に確定した経験まで）。
+    internal static int LevelAt(ContractWorld w,EntityId actor,DevelopmentSkill skill,long at)=>!Enabled(w)||!Skills(w).Contains(skill)?0:SkillIn(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,skill);
     internal static int EffectiveAt(ContractWorld w,EntityId actor,DevelopmentAbility ability,long at)=>Math.Clamp(Value(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,ability),1,100);
     internal static void Sync(ContractWorld w){if(Enabled(w))w.Development=w.Development! with{Awards=Derive(w)};}
     internal static DevelopmentSkill PreferredPractice(ContractWorld w,EntityId actor)=>Skills(w).OrderByDescending(s=>Base(w,actor,AbilityFor(w,s))).ThenBy(s=>ContractJson.Hash(Encoding.UTF8.GetBytes(Policy+"/practice/"+w.Seed+"/"+actor.Value+"/"+s)),StringComparer.Ordinal).First();
