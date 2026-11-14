@@ -23,6 +23,9 @@ public static class RegionalDomains
     // 落城した城の帳簿（全国の開始の一覧の ConquestDomains）：その時点の持ち主の家の当主が扱う（収入は今までどおり新しい持ち主へ）。
     static bool Conquest(ContractWorld w)=>NationalDistrictRevenue.Enabled(w)&&NationalSystems.On(w,"ConquestDomains");
     static EntityId? Holder(ContractWorld w,EntityId site,long at,long rev)=>Conquest(w)&&w.Strategy!=null?NationalStrategy.Owner(w,site,at,rev):Owner(w,site);
+    // 開始時と違う家が持つ城（ConquestDomains のときだけ。そうでなければ空）。村・商い・代理行政もこの家を持ち主として扱う。
+    internal static EntityId? Conquered(ContractWorld w,EntityId site,long at,long rev)=>Conquest(w)&&w.Strategy!=null&&Holder(w,site,at,rev) is {} held&&held!=Owner(w,site)?held:null;
+    internal static EntityId? CurrentOwner(ContractWorld w,EntityId site,long at,long rev)=>Conquered(w,site,at,rev)??Owner(w,site);
     internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>(Conquest(w)?Holder(w,site,at??w.ElapsedSeconds,rev??w.CommitSequence):Owner(w,site)) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;

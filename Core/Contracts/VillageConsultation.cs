@@ -24,6 +24,7 @@ public static class VillageConsultation
     static bool Local(ContractWorld w,EntityId site,long at,long rev)=>TransportWork.At(w,w.PlayerControl,site,at,rev,stableCompletion:true);
     static bool Authority(ContractWorld w,EntityId site,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
+        if(RegionalDomains.Conquered(w,site,at,rev) is {} held)return FactionStances.ResolveAuthority(w,w.PlayerControl,held,at,rev)!=null;
         var castle=w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value);
         if(castle.Faction is not {} f)return false;var owner=new EntityId(f);
         return FactionStances.ResolveAuthority(w,w.PlayerControl,owner,at,rev)!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);

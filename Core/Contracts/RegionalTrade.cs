@@ -32,6 +32,7 @@ public static class RegionalTrade
     internal static (long At,long Revision,long Amount)[] Supplies(ContractWorld w,EntityId site,long until,long revision)=>w.Trade?.Entries.Where(e=>e.Input.Action==TradeAction.SupplyHouse&&w.Trade.Entries.Single(q=>q.Input.Id==e.Input.Contract).Input.Commodity==null&&e.Input.Site==site&&e.At<=until&&e.Revision<=revision).Select(e=>(e.At,e.Revision,w.Trade.Entries.Single(q=>q.Input.Id==e.Input.Contract).Input.Amount)).ToArray()??[];
     static bool HouseAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
+        if(RegionalDomains.Conquered(w,site,at,rev) is {} held)return FactionStances.ResolveAuthority(w,actor,held,at,rev)!=null;
         var castle=w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value);if(castle.Faction is not {} owner)return false;
         return FactionStances.ResolveAuthority(w,actor,new(owner),at,rev)!=null&&w.LandRights.Any(r=>r.Subject==new EntityId(owner)&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     }

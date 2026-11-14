@@ -104,5 +104,10 @@ public sealed class ConquestDomainsTests
         Assert.Equal(newHead,RegionalDomains.Head(w,site));
         Assert.True(RegionalDomains.Authority(w,newHead,site,60,4));
         Assert.False(RegionalDomains.Authority(w,oldHead,site,60,4));
+        // 村・商い・代理行政も今の持ち主の家を読む。
+        Assert.Equal(new EntityId(winner),RegionalDomains.CurrentOwner(w,site,60,4));
+        Assert.Null(RegionalDomains.Conquered(w,site,0,0)); // 落ちる前
+        w.NewGame=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="ConquestDomains").ToArray()};
+        Assert.Equal(loser,RegionalDomains.CurrentOwner(w,site,60,4)); // 一覧を持たない世界は開始時の持ち主
     }
 }

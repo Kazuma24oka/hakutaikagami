@@ -26,7 +26,7 @@ public static class DestructiveSchemes
     {using var _ccRev=ControlContext.At(revision);
         var agent=world.NewGame!.Start.People.Single(p=>p.Id==mission.Person.Value);
         var target=mission.Destination!.Value;
-        bool ownHouse=agent.Faction!=null && world.NewGame.Start.Castles.Any(c=>c.Id==target.Value && c.Faction==agent.Faction);
+        bool ownHouse=agent.Faction!=null && world.NewGame.Start.Castles.Any(c=>c.Id==target.Value) && RegionalDomains.CurrentOwner(world,target,at,revision)?.Value==agent.Faction;
         var decision=new SchemeEvent(mission,mission.Person,target,at,revision,null,[]);
         int willingness=50+(agent.Attributes?.Intelligence??50)/3-(ownHouse?25:0);
         return world.Characters.Single(c=>c.Id==mission.Person).WillObey && Roll(world,decision,"consent")<willingness;

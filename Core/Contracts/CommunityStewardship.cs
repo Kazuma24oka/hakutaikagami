@@ -45,7 +45,7 @@ public static partial class CommunityStewardship
     static StewardGrant MakeGrant(ContractWorld w,StewardEntry e)
     {using var _cc=ControlContext.At(e.Revision);
         var i=e.Input;if(i.Action==StewardAction.Reauthorize)return MakeReauthorization(w,e);Need(i.PriorGrant==null,"再承認元は新しい再承認操作だけに指定します");Need(i.Other!=null&&i.Other!=w.PlayerControl&&i.Days>=1&&i.Days<=30&&i.ReturnAddress!=null&&w.Definitions.Sites.Any(s=>s.Id==i.ReturnAddress)&&CommunityEconomy.SitesFor(w).Contains(i.Site),"委任先・期限・返報先を指定してください");
-        var f=HouseSuccession.Factions(w,e.At,e.Revision).Single(f=>f.Id==w.NewGame!.Start.Castles.Single(c=>c.Id==i.Site.Value).Faction);var head=new EntityId(f.Head);var agent=head==w.PlayerControl?i.Other!.Value:w.PlayerControl;
+        var held=RegionalDomains.CurrentOwner(w,i.Site,e.At,e.Revision)?.Value;var f=HouseSuccession.Factions(w,e.At,e.Revision).Single(f=>f.Id==held);var head=new EntityId(f.Head);var agent=head==w.PlayerControl?i.Other!.Value:w.PlayerControl;
         Need(CastleAdministration.Grant(w,i.Site,e.At,e.Revision)==null,"有効な城主任命があるため別の代理行政委任は作れません");Need(head==w.PlayerControl||head==i.Other,"当主と直属家臣が現地で合意してください");
         var g=new StewardGrant(i.Id,head,agent,new(f.Id),i.Site,i.ReturnAddress!.Value,e.At,checked(e.At+i.Days*Day),e.Revision);
         Need(Local(w,head,i.Site,e.At,e.Revision)&&Local(w,agent,i.Site,e.At,e.Revision)&&Bound(w,g,e.At,e.Revision)&&FactionStances.ResolveAuthority(w,head,g.Owner,e.At,e.Revision)!=null,"当事者の現地所在・直属関係・家の権限を確認できません");return g;
