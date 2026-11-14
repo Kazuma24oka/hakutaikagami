@@ -46,7 +46,8 @@ public static partial class NewGameNpcRoutine
     public static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w))return null;var times=new List<long>();
-        foreach(var actor in Actors(w)){var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(checked(w.ElapsedSeconds+1));else if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)times.Add(next);
+        long soonest=checked(w.ElapsedSeconds+1); // これより早い区切りは無いので、見つかったら残りの人物を計算しない
+        foreach(var actor in Actors(w)){if(times.Contains(soonest))break;var i=Inputs(w,actor,w.ElapsedSeconds,w.CommitSequence);var last=w.NpcWork!.Decisions.LastOrDefault(d=>d.Actor==actor);if(last==null||last.InputHash!=ContractJson.CanonicalHash(i))times.Add(soonest);else if((PurposeEnabled(w)?PurposeBoundary(w,actor,i):ContinuingBoundary(w,i)) is {} next)times.Add(next);
             if(NpcDormancy.Enabled(w))times.AddRange(InputChanges(w,actor,last?.InputHash));}
         return times.Where(t=>t<=target).Order().Select(t=>(long?)t).FirstOrDefault();
     }

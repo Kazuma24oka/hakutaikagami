@@ -31,7 +31,7 @@ public sealed class NationalSystemsCostProbe(ITestOutputHelper o)
         {
             var s=new WorldSession(extra switch{"now"=>NationalStart.Create(NationalStartTests.Nobunaga()),"v3"=>NationalStartTests.BeforeRevenue(NationalStartTests.Nobunaga()),"v1bare"=>Old(NationalStart.Edition,false,false),"v1"=>Old(NationalStart.Edition,true,true),"v2"=>Old(NationalStart.CourtEdition,true,true),_=>Make(extra)});var sw=System.Diagnostics.Stopwatch.StartNew();
             NewGameWorldTests.At(s,s.Seconds+long.Parse(Environment.GetEnvironmentVariable("HAKUTAI_NS_SECONDS")??"21600"));
-            lines.Add($"{extra??"base"} {sw.ElapsedMilliseconds}ms");o.WriteLine(lines[^1]);
+            lines.Add($"{extra??"base"} {sw.ElapsedMilliseconds}ms {ContractJson.CanonicalHash(s.DiagnosticSnapshot())}");o.WriteLine(lines[^1]);
             File.WriteAllLines(Environment.GetEnvironmentVariable("HAKUTAI_NS_OUT")!,lines.Append(Prof.Report()));
         }
         WorldSession.GuardTurnSnapshots=guard;

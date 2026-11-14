@@ -14,6 +14,15 @@ public sealed partial class WorldSession
         {
             // 休眠の版の世界（v109）：起きている人物の手番は1人ずつ変更し、世界全体の検査は手番の終わりに1回だけ行う。
             // まとめた検査に通らないとき（途中で例外が出たときも）は、手番の前の状態に戻し、1人ずつ検査する今までのやり方でやり直す。
+            // 外側のまとめた変更の中（時間を進める1回の呼び出しの中など）では、外側の終わりの検査にまとめる。ここで検査して後回しの印を外すと、残りの変更が1件ずつ検査されてしまう。
+            if(deferValidation)
+            {
+                // 外側が変更ごとに写していても、ここが写さずに変えてよい手番なら、1回だけ写してから直接変える（外側の手番の前の状態は変えない）。
+                bool nest=allowInPlace&&!inPlace&&!(WorldTimeControl.Enabled(state)&&NpcArmies.Enabled(state)&&state.NpcArmies!.Musters.Length>0);
+                if(nest){state=ContractJson.Copy(state);turnView=null;inPlace=true;}
+                try{run();}finally{if(nest)inPlace=false;}
+                return;
+            }
             if(NpcDormancy.Enabled(state))
             {
                 // 手番の前の状態は1回だけ写して取っておき、手番の間は世界を写さずに直接変える（v110）。
