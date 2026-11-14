@@ -5,7 +5,10 @@ public sealed partial class WorldSession
     // Keep state private and hold the session gate for the ordered turn. Change()
     // copies before mutation, so a pre-submit generation remains valid for the
     // recorded input revision without serializing a diagnostic copy per actor.
-    internal void TakeNewGameNpcTurns()
+    internal void TakeNewGameNpcTurns()=>RunBatchedTurns(RunNewGameNpcTurns);
+    // NPC の手番をまとめて変更し、世界全体の検査は手番の終わりに1回だけ行う（休眠の版の世界）。通らなければ手番の前に戻して1件ずつやり直す。
+    // allowInPlace=false：時間を進める変更を含むときは、前後を比べる処理のために変更ごとに写す（検査だけをまとめる）。
+    void RunBatchedTurns(Action run,bool allowInPlace=true)
     {
         lock(gate)
         {
@@ -16,9 +19,9 @@ public sealed partial class WorldSession
                 // 手番の前の状態は1回だけ写して取っておき、手番の間は世界を写さずに直接変える（v110）。
                 // 前後を比べる処理（軍勢が見えたときの時間の止め方）が働く世界では、今までどおり手番ごとに写す。
                 var before=state;bool ok=true;deferValidation=true;batchBroken=false;
-                inPlace=!(WorldTimeControl.Enabled(state)&&NpcArmies.Enabled(state)&&state.NpcArmies!.Musters.Length>0);
+                inPlace=allowInPlace&&!(WorldTimeControl.Enabled(state)&&NpcArmies.Enabled(state)&&state.NpcArmies!.Musters.Length>0);
                 if(inPlace){state=ContractJson.Copy(before);turnView=null;}
-                try{RunNewGameNpcTurns();}
+                try{run();}
                 catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException or InvalidOperationException){ok=false;}
                 finally{deferValidation=false;inPlace=false;}
                 if(batchBroken)ok=false;
@@ -27,7 +30,7 @@ public sealed partial class WorldSession
                 if(ok)return;
                 state=before;turnView=null;BatchRetries++;
             }
-            RunNewGameNpcTurns();
+            run();
         }
     }
     // まとめた検査に通らず1人ずつやり直した回数（この糸の中だけ。検査用）。

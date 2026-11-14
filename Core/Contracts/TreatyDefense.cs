@@ -32,7 +32,7 @@ public static class TreatyDefense
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>State(w).Entries.Any(e=>e.Input.Id==id);
     internal static long CarryCapacity(ContractWorld w,NpcArmyMuster m)=>State(w).Entries.SingleOrDefault(e=>e.Terms?.Muster==m.Id&&e.Input.Action==TreatyDefenseAction.Dispatch)?.Terms is {} t?checked(100L*t.CarryDays*Day):NewGameMilitary.Capacity;
     internal static bool IsMuster(ContractWorld w,NpcArmyMuster m)=>State(w).Entries.Any(e=>e.Input.Action==TreatyDefenseAction.Dispatch&&e.Terms?.Muster==m.Id);
-    internal static EntityId Custodian(ContractWorld w,NpcArmyMuster m,long at,long rev)=>IsMuster(w,m)?HouseSuccession.Head(w,m.Owner,at,rev):m.Commander;
+    internal static EntityId Custodian(ContractWorld w,NpcArmyMuster m,long at,long rev)=>IsMuster(w,m)?HouseSuccession.Head(w,m.Owner,at,rev):m.Issuer;
     static bool ActiveTask(ContractWorld w,EntityId actor,long at,long rev)=>w.Requests.Any(r=>r.Intent.Executor==actor&&Before(r.CreatedAt,r.CommitSequence,at,rev)&&w.Tasks.Any(t=>t.RequestId==r.Id&&(t.FinishedAt==null||t.FinishedAt>at)));
     static TreatyDefenseTerms? Candidate(ContractWorld w,TreatyDefenseEntry a,EntityId actor,long at,long rev,out string? reason)
     {using var _ccRev=ControlContext.At(rev);

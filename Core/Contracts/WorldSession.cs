@@ -25,6 +25,8 @@ public sealed partial class WorldSession
     {
         lock(gate)
         {
+            // 確定した状態は後で書き換えない（変更は写しに対して行う）ので、直接変える間（inPlace）でなければ、写さずにそのまま渡す。検査では写して書き換えがないことを確かめる。
+            if(!inPlace&&!GuardTurnSnapshots)return state;
             if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");return turnView;}
             if(GuardTurnSnapshots&&turnView!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");
             turnView=ContractJson.Copy(state);turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;return turnView;
@@ -202,7 +204,16 @@ public sealed partial class WorldSession
             return new(ResultCode.Accepted,id,state.CommitSequence,join?"加わりました":"断りました");
         }
     }
+    // 時間を進める1回の呼び出しの中の変更は、休眠の版の世界ではまとめて最後に1回だけ検査する（通らなければ呼び出しの前に戻して1件ずつやり直す）。
     public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null,bool stopAtNotice=false)
+    {
+        lock(gate)
+        {
+            if(deferValidation||!NpcDormancy.Enabled(state))return AdvanceCore(target,eventBudget,beforeCommit,stopAtNotice);
+            AdvanceResult? result=null;RunBatchedTurns(()=>result=AdvanceCore(target,eventBudget,beforeCommit,stopAtNotice),allowInPlace:false);return result!;
+        }
+    }
+    AdvanceResult AdvanceCore(long target,int eventBudget,Action? beforeCommit,bool stopAtNotice)
     {
         lock(gate)
         {
@@ -216,7 +227,7 @@ public sealed partial class WorldSession
                 int cost=1+TreatyNegotiations.BoundaryCost(state)+TruceNegotiations.BoundaryCost(state)+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+NationalNameHistory.BoundaryCost(state,boundary)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 deferTimePause=WorldTimeControl.Enabled(state);
-                try{
+                try{RunBatchedTurns(()=>{
                 Change(s=>{
                     long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);NationalNameHistory.ApplyDue(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
@@ -233,7 +244,8 @@ public sealed partial class WorldSession
                     if(!WorldTimeControl.Enabled(s)&&s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                ConsiderObservedWar();GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                ConsiderObservedWar();GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);RunBatchedTurns(()=>NpcArmies.TakeTurns(this));if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                },allowInPlace:false);
                 }finally{deferTimePause=false;if(WorldTimeControl.Pending(state)!=null&&!state.Paused)Change(s=>s.Paused=true);}
                 processed+=cost;
                 if(ControlSuccession.Awaiting(state)){if(!state.Paused)Change(s=>s.Paused=true);return new(state.ElapsedSeconds,processed,"PlayerDead");}

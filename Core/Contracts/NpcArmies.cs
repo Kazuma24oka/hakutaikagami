@@ -131,8 +131,12 @@ public static partial class NpcArmies
         return w.Locations.Where(l=>l.Kind==LocationKind.AtSite&&l.Site==site).Select(l=>l.Actor).OrderBy(p=>p.Value,StringComparer.Ordinal)
             .FirstOrDefault(p=>CanLead(w,p,head,owner,site,at,rev),head);
     }
+    // 全国の開始（一覧の ArmyCadence）では、当主が出陣を考えるのは毎時の初めだけ（統合案 W1：判断の頻度）。道の見積もりを毎秒しない。
+    public const long Cadence=3600;
+    static bool Hourly(ContractWorld w)=>NationalSystems.On(w,"ArmyCadence");
     internal static NpcArmyObjective? Candidate(ContractWorld w,EntityId commander,EntityId owner)
     {
+        if(Hourly(w)&&w.ElapsedSeconds%Cadence!=0)return null;
         if(PrivateStanddown.ShouldWait(w,commander,w.ElapsedSeconds,w.CommitSequence)||!Enabled(w)||commander==w.PlayerControl||Musters(w).Any(m=>m.Commander==commander||m.Lord==commander)||NewGameMilitary.LedgerStates(w).Any(s=>s.Terms.Owner==owner)||w.Tasks.Any(t=>t.Executor==commander&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)))return null;
         var a=FactionStances.ResolveAuthority(w,commander,owner,w.ElapsedSeconds,w.CommitSequence);if(a==null||!MilitaryEconomy.CanMuster(w,a.Home,w.ElapsedSeconds,w.CommitSequence+1)||!w.Locations.Any(l=>l.Actor==commander&&l.Kind==LocationKind.AtSite&&l.Site==a.Home))return null;
         foreach(var known in FactionStances.KnownOwnDeclarations(w,commander).OrderBy(k=>k.Declaration.Value,StringComparer.Ordinal)){
@@ -158,7 +162,8 @@ public static partial class NpcArmies
     internal static long? NextBoundary(ContractWorld w,long target)
     {
         if(!Enabled(w))return null;var times=new List<long>();
-        foreach(var f in DecidingHeads(w))if(Candidate(w,new(f.Head),new(f.Id))!=null)times.Add(w.ElapsedSeconds+1);
+        if(Hourly(w)){if(DecidingHeads(w).Length>0)times.Add((w.ElapsedSeconds/Cadence+1)*Cadence);}
+        else foreach(var f in DecidingHeads(w))if(Candidate(w,new(f.Head),new(f.Id))!=null)times.Add(w.ElapsedSeconds+1);
         foreach(var m in Musters(w)){
             if(CastleHandover.HoldsNpc(w,m.Id))continue;
             if(NeedsTurn(w,m))times.Add(w.ElapsedSeconds+1);

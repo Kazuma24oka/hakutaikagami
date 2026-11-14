@@ -58,7 +58,7 @@ public static class MilitaryEconomy
     }
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.MilitaryEconomy=new(1,Policy,[]);}
     internal static void Apply(ContractWorld w,MilitaryRiceInput i,EntityId actor){var e=Make(w,i,actor,w.ElapsedSeconds,w.CommitSequence);w.MilitaryEconomy=w.MilitaryEconomy! with{Entries=[..w.MilitaryEconomy!.Entries,e]};}
-    internal static void FundNpc(ContractWorld w,NpcArmyMuster m){if(Enabled(w))Apply(w,new(AutoId(w,m.Id,false),NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot,NpcArmies.CarryCapacity(w,m)/PersonSecondsPerKg,false,m.Id),m.Commander);}
+    internal static void FundNpc(ContractWorld w,NpcArmyMuster m){if(Enabled(w))Apply(w,new(AutoId(w,m.Id,false),NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot,NpcArmies.CarryCapacity(w,m)/PersonSecondsPerKg,false,m.Id),m.Issuer);}
     internal static void RefundNpc(ContractWorld w,NpcArmyMuster m){if(!Enabled(w))return;var depot=NewGameMilitary.LedgerIdentity(m.Owner,m.Site).Depot;long kg=DepotAt(w,depot,w.ElapsedSeconds,w.CommitSequence,true)/PersonSecondsPerKg;if(kg>0)Apply(w,new(AutoId(w,m.Id,true),depot,kg,true,m.Id),TreatyDefense.Custodian(w,m,w.ElapsedSeconds,w.CommitSequence));}
     internal static void Validate(ContractWorld w)
     {
