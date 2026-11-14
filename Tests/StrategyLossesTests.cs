@@ -46,7 +46,7 @@ public sealed class DefectionLetterTests
         Assert.Contains(w.Messaging.Attempts,a=>a.MessageId==m.Id); // 書状は運ばれる
     }
 }
-// 独立した家の城（StrategyIndependence、2026-11-14）：家の戦略では元の家の城に数えず、出陣の目的にもしない。
+// 独立した家の城（StrategyIndependence、2026-11-14）：家の戦略では元の家の城に数えない。
 public sealed class StrategyIndependenceTests
 {
     [Fact]
@@ -60,7 +60,7 @@ public sealed class StrategyIndependenceTests
         Assert.Equal(castle.Faction,NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
         w.Declarations=[new(new("pact:test"),new("person:test"),new(castle.Faction!),house,new(castle.Id),0,0)];
         w.LandRights=[..w.LandRights,new(new("right:test/independent"),house,new(castle.Id),"control",new("pact:test"),0,long.MaxValue,0)];
-        Assert.Null(NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
+        Assert.Equal(house.Value,NationalStrategy.Owners(w,w.Strategy)[castle.Id]); // 独立した家のもの（IndependentHouses）
     }
 }
 // 再興の挙兵への後援（RestorationSupport、2026-11-14）：落とした家に一年以内に城を奪われた家は、兵力の半分で後援する。
@@ -109,5 +109,34 @@ public sealed class ConquestDomainsTests
         Assert.Null(RegionalDomains.Conquered(w,site,0,0)); // 落ちる前
         w.NewGame=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="ConquestDomains").ToArray()};
         Assert.Equal(loser,RegionalDomains.CurrentOwner(w,site,60,4)); // 一覧を持たない世界は開始時の持ち主
+    }
+}
+// 独立した家の城（IndependentHouses、2026-11-15）：独立した家のものとして数え、守る兵は元の家の城一つ分。宣言の後に落ちた城は落とした家のもの。
+public sealed class IndependentHouseTests
+{
+    [Fact]
+    public void AnIndependentHouseHoldsItsCastleAndCanLoseIt()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"IndependentHouses"));
+        w.Strategy??=new(1,NationalStrategy.Policy,[],[]);
+        var castle=w.NewGame!.Start.Castles.First(c=>c.Faction!=null&&w.NewGame.Start.Factions.Single(f=>f.Id==c.Faction).Home!=c.Id&&NationalStrategy.Cap(c.Faction!)>0);
+        var former=castle.Faction!;var house=new EntityId("org:test/independent");
+        var founder=w.NewGame.Start.People.First(p=>p.Faction==former&&p.Id!=w.NewGame.Start.Factions.Single(f=>f.Id==former).Head).Id;
+        w.Declarations=[new(new("pact:test"),new(founder),new(former),house,new(castle.Id),0,0)];
+        w.LandRights=[..w.LandRights,new(new("right:test/independent"),house,new(castle.Id),"control",new("pact:test"),0,long.MaxValue,0)];
+        var owners=NationalStrategy.Owners(w,w.Strategy);
+        Assert.Equal(house.Value,owners[castle.Id]);
+        int start=w.NewGame.Start.Castles.Count(c=>c.Faction==former);
+        Assert.Equal(Math.Max(50L,NationalStrategy.Cap(former)/start),NationalStrategy.Powers(w,owners)[house.Value]);
+        // 宣言の後に出陣で落ちた城は、落とした家のもの。
+        var attacker=w.NewGame.Start.Factions.First(f=>f.Id!=former).Id;
+        var c=new StrategyCampaign(new("campaign:national/test/indep"),new(attacker),house,new(castle.Id),60,1,"border");
+        w.Strategy=new(1,NationalStrategy.Policy,[c],[new(c.Id,60,2,true)]);w.ElapsedSeconds=120;
+        Assert.Equal(attacker,NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
+        // 一覧を持たない世界は今までどおり誰の城にも数えない。
+        w.Strategy=new(1,NationalStrategy.Policy,[],[]);
+        w.NewGame=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="IndependentHouses").ToArray()};
+        Assert.Null(NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
     }
 }

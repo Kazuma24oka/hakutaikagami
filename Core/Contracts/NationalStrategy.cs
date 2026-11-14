@@ -157,19 +157,29 @@ public static class NationalStrategy
     internal static Dictionary<string,string?> Owners(ContractWorld w,StrategyState? s)
     {
         var map=w.NewGame!.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction,StringComparer.Ordinal);
-        if(s!=null){foreach(var (site,house,_,_) in Changes(s))map[site]=house;Independent(w,map);return map;}
+        if(s!=null){var last=new Dictionary<string,long>(StringComparer.Ordinal);foreach(var (site,house,at,_) in Changes(s)){map[site]=house;last[site]=at;}Independent(w,map,last);return map;}
         if(s!=null)foreach(var o in s.Outcomes.Where(o=>o.Captured)){var c=s.Campaigns.Single(c=>c.Id==o.Campaign);map[c.Target.Value]=c.Attacker.Value;}
         return map;
     }
 
     // 独立を宣言した家が押さえている城（一覧の StrategyIndependence を持つ世界だけ）：家の戦略では、元の家の城に数えず、出陣の目的にもしない。
-    // 独立した家は戦略の家に入らない（その家の出陣・同盟は今は行わない）。
-    static void Independent(ContractWorld w,Dictionary<string,string?> map)
+    // 独立した家は自分から出陣・同盟はしない。一覧の IndependentHouses を持つ世界では、その城は独立した家のものとして数え、周りの家の出陣の目的になる
+    // （守る兵は元の家の城一つ分。宣言の後に出陣で落ちた城は落とした家のもの）。
+    static void Independent(ContractWorld w,Dictionary<string,string?> map,Dictionary<string,long>? last=null)
     {
-        if(!NationalSystems.On(w,"StrategyIndependence"))return;long at=w.ElapsedSeconds;
+        if(!NationalSystems.On(w,"StrategyIndependence"))return;long at=w.ElapsedSeconds;bool houses=NationalSystems.On(w,"IndependentHouses");
         foreach(var d in w.Declarations??[])
-            if(map.ContainsKey(d.Site.Value)&&w.LandRights.Any(r=>r.Subject==d.House&&r.Target==d.Site&&r.Kind=="control"&&r.From<=at&&at<r.Until))map[d.Site.Value]=null;
+        {
+            if(!map.ContainsKey(d.Site.Value)||!w.LandRights.Any(r=>r.Subject==d.House&&r.Target==d.Site&&r.Kind=="control"&&r.From<=at&&at<r.Until))continue;
+            if(houses&&last!=null&&last.TryGetValue(d.Site.Value,out var fell)&&fell>d.At)continue;
+            map[d.Site.Value]=houses?d.House.Value:null;
+        }
     }
+    static IndependenceDeclaration? IndependentHouse(ContractWorld w,string house)=>NationalSystems.On(w,"IndependentHouses")?(w.Declarations??[]).FirstOrDefault(d=>d.House.Value==house):null;
+    // 独立した家の兵力：元の家の城一つあたりの兵に、今持つ城の数を掛ける。
+    static long IndependentStrength(ContractWorld w,IndependenceDeclaration d,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>
+        Math.Max(50L,(initial.GetValueOrDefault(d.FormerHouse.Value) is int start&&start>0?Cap(d.FormerHouse.Value)*owners.Values.Count(v=>v==d.House.Value)/start:0)-Losses(w).GetValueOrDefault(d.House.Value));
+    static string HouseName(ContractWorld w,EntityId house)=>w.Definitions.Organizations.SingleOrDefault(o=>o.Id==house)?.Name??(HouseSuccession.Head(w,house) is var h&&FamilyBirth.People(w).SingleOrDefault(p=>p.Id==h.Value)?.Name is {} n?n.Split(' ')[0]+"家":house.Value);
     static long MonthStart(ContractWorld w,int year,int month)
     {
         var epoch=DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);
@@ -192,17 +202,19 @@ public static class NationalStrategy
     static int Draw(ContractWorld w,string key)=>(int)(BinaryPrimitives.ReadUInt32LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes($"national-strategy-v1/{w.Seed}/{key}")))%1000);
     static readonly System.Collections.Concurrent.ConcurrentDictionary<string,long> caps=new(StringComparer.Ordinal);
     internal static long Cap(string faction)=>caps.GetOrAdd(faction,f=>NationalStart.DbHouse(f) is {} db?HakutaiDbStart.Roster(db).SoldierCap:0);
+    internal static Dictionary<string,long> Powers(ContractWorld w,Dictionary<string,string?> owners)=>Powers(w,owners,InitialCounts(w));
     static Dictionary<string,long> Powers(ContractWorld w,Dictionary<string,string?> owners,Dictionary<string,int> initial)
     {
-        var lost=Losses(w);if(lost.Count==0)return Powers(owners,initial);
-        return Powers(owners,initial).ToDictionary(x=>x.Key,x=>Math.Max(50L,x.Value-lost.GetValueOrDefault(x.Key)),StringComparer.Ordinal);
+        var lost=Losses(w);var p=lost.Count==0?Powers(owners,initial):Powers(owners,initial).ToDictionary(x=>x.Key,x=>Math.Max(50L,x.Value-lost.GetValueOrDefault(x.Key)),StringComparer.Ordinal);
+        if(NationalSystems.On(w,"IndependentHouses"))foreach(var d in w.Declarations??[])if(owners.ContainsValue(d.House.Value))p[d.House.Value]=IndependentStrength(w,d,owners,initial);
+        return p;
     }
     static Dictionary<string,long> Powers(Dictionary<string,string?> owners,Dictionary<string,int> initial)
     {
         var now=owners.Values.Where(v=>v!=null).GroupBy(v=>v!,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Count(),StringComparer.Ordinal);
         return initial.Keys.ToDictionary(f=>f,f=>{int start=initial[f];return Math.Max(50L,start==0?0:Cap(f)*now.GetValueOrDefault(f)/start);},StringComparer.Ordinal);
     }
-    static long Strength(ContractWorld w,string faction,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>Math.Max(50L,(initial.GetValueOrDefault(faction) is int start&&start>0?Cap(faction)*owners.Values.Count(v=>v==faction)/start:0)-Losses(w).GetValueOrDefault(faction));
+    static long Strength(ContractWorld w,string faction,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>IndependentHouse(w,faction) is {} ind?IndependentStrength(w,ind,owners,initial):Math.Max(50L,(initial.GetValueOrDefault(faction) is int start&&start>0?Cap(faction)*owners.Values.Count(v=>v==faction)/start:0)-Losses(w).GetValueOrDefault(faction));
     // 合戦の損害を家の兵力に残す（全国の開始の一覧の StrategyLosses を持つ世界だけ）。遠方の合戦で失った兵は、その日から180日かけて同じ割合で戻る。
     // 守る側の損害は、守る家と援軍の家で 2:1 の割合で分ける（援軍は兵力の半分で出るため）。
     public const long LossRecoverySeconds=180L*86400;
@@ -432,7 +444,7 @@ public static class NationalStrategy
         var sender=w.Locations.Where(l=>l.Kind==LocationKind.AtSite&&l.Site==c.Target&&w.Characters.Single(x=>x.Id==l.Actor).Life==LifeState.Adult).Select(l=>l.Actor).OrderBy(x=>x.Value,StringComparer.Ordinal).FirstOrDefault();
         if(sender.Value==null)return;
         string castle=w.Definitions.Sites.SingleOrDefault(s=>s.Id==c.Target)?.Name??c.Target.Value;
-        string attacker=w.Definitions.Organizations.Single(o=>o.Id==c.Attacker).Name,defender=w.Definitions.Organizations.Single(o=>o.Id==c.Defender).Name;
+        string attacker=HouseName(w,c.Attacker),defender=HouseName(w,c.Defender);
         string body=captured?$"{castle}は{attacker}の手に落ちました。":$"{attacker}の軍勢は{castle}を落とせずに退きました。";
         // 史実の出陣は、年代記に残るときの名で知らせる。
         if(History.SingleOrDefault(e=>"history:"+e.Id==c.Basis) is {} named)body=named.Name+"　"+body;
@@ -480,7 +492,7 @@ public static class NationalStrategy
     }
     static void CoalitionLetters(ContractWorld w,StrategyCoalition c)
     {
-        string target=w.Definitions.Organizations.Single(o=>o.Id==c.Target).Name;var first=HouseSuccession.Head(w,c.Members[0]);
+        string target=HouseName(w,c.Target);var first=HouseSuccession.Head(w,c.Members[0]);
         foreach(var house in c.Members)
         {
             var head=HouseSuccession.Head(w,house);var sender=house==c.Members[0]?HouseSuccession.Head(w,c.Members[1]):first;
@@ -503,7 +515,7 @@ public static class NationalStrategy
             bool borders=owners.Where(x=>x.Value==f.Id).Any(x=>Neighbors(x.Key).Any(targetSites.Contains));
             if(!borders||Bound(s.Pacts??[],f.Id,target,w.ElapsedSeconds))continue;
             var sender=HouseSuccession.Head(w,c.Members[0]);if(w.Characters.Single(x=>x.Id==sender).Life!=LifeState.Adult||w.Characters.Single(x=>x.Id==player).Life!=LifeState.Adult)continue;
-            string name=w.Definitions.Organizations.Single(o=>o.Id==c.Target).Name;
+            string name=HouseName(w,c.Target);
             string id=$"message:strategy-invite/{ContractJson.Hash(Encoding.UTF8.GetBytes(c.Id.Value+"/"+f.Id))[..16]}";
             MessageFlow.Send(w.Messaging,new MessageEnvelope(id,c.Id.Value,InviteKind,sender.Value,player.Value,$"{name}に備え、{c.Members.Length}家で手を結んだ。貴家も加わられたい。",FamilyBirth.People(w).Single(x=>x.Id==player.Value).Site,w.ElapsedSeconds),w.ElapsedSeconds,1);
             w.SealedMessages=[..w.SealedMessages,new(id)];
@@ -539,7 +551,7 @@ public static class NationalStrategy
     {
         var sender=HouseSuccession.Head(w,d.House);var head=HouseSuccession.Head(w,d.From);
         if(sender==head||w.Characters.Single(x=>x.Id==sender).Life!=LifeState.Adult||w.Characters.Single(x=>x.Id==head).Life!=LifeState.Adult)return;
-        string house=w.Definitions.Organizations.Single(o=>o.Id==d.House).Name;
+        string house=HouseName(w,d.House);
         string id=$"message:strategy-defection/{ContractJson.Hash(Encoding.UTF8.GetBytes(d.House.Value+"/"+d.From.Value+"/"+w.ElapsedSeconds))[..16]}";
         MessageFlow.Send(w.Messaging,new MessageEnvelope(id,"defection:"+d.House.Value,LetterKind,sender.Value,head.Value,$"{house}は、今後は御家の指図を受けず、自らの判断で家を保ちます。",FamilyBirth.People(w).Single(x=>x.Id==head.Value).Site,w.ElapsedSeconds),w.ElapsedSeconds,1);
         w.SealedMessages=[..w.SealedMessages,new(id)];RegionalCampaign.Bind(w);
@@ -557,7 +569,7 @@ public static class NationalStrategy
     // 約束の知らせ：同盟は互いの当主へ（相手の当主から）、和睦は将軍から双方の当主へ。
     static void PactLetters(ContractWorld w,StrategyPact p,string shogun)
     {
-        string a=w.Definitions.Organizations.Single(o=>o.Id==p.A).Name,b=w.Definitions.Organizations.Single(o=>o.Id==p.B).Name;
+        string a=HouseName(w,p.A),b=HouseName(w,p.B);
         foreach(var (house,other) in new[]{(p.A,p.B),(p.B,p.A)})
         {
             var head=HouseSuccession.Head(w,house);var sender=shogun!=""?new EntityId(shogun):HouseSuccession.Head(w,other);
