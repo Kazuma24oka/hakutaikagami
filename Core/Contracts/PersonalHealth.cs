@@ -120,7 +120,8 @@ public static class PersonalHealth
             PersonalCompanions.PhysicalSiteAt(w,c.Person,at,0) is {} site?new HealthCareEntry(new(new("care:npc/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(c.Id.Value))),c.Person,c.Id,HouseCarer(w,c.Person,site,at)),site,at,0):null);
     }
     // 家人に頼む（全国の開始の一覧の NpcHouseCare と32技能の版を持つ世界だけ）：手当のとき、同じ拠点にいる同じ家の成人のうち医術の最も高い人（本人を含む）が手当をする。
-    // 手当の後の残りの経過は、医術0で 3/5、医術50で 1/2、医術100で 2/5。医者を探して移る判断は後で。
+    // 手当の後の残りの経過は、医術0で 3/5、医術50で 1/2、医術100で 2/5。病人は移らず、その拠点で頼める人に頼む。
+    public const int DoctorSkill=30;
     static bool HouseCare(ContractWorld w)=>NationalSystems.On(w,"NpcHouseCare")&&CharacterDevelopment.Skills32(w);
     internal static EntityId HouseCarer(ContractWorld w,EntityId patient,EntityId site,long at)
     {
@@ -128,6 +129,12 @@ public static class PersonalHealth
         bool Active(TimedRelation r)=>r.From<=at&&at<r.Until;
         var houses=w.Memberships.Where(m=>m.Subject==patient&&Active(m)).Select(m=>m.Target).ToHashSet();
         var kin=w.Memberships.Where(m=>houses.Contains(m.Target)&&Active(m)&&m.Subject!=patient).Select(m=>m.Subject).Distinct().Where(p=>w.Characters.Any(c=>c.Id==p&&c.Life==LifeState.Adult)&&PersonalCompanions.PhysicalSiteAt(w,p,at,0)==site);
+        // 医者を頼む（一覧の NpcDoctor）：同じ拠点にいる、家の外の医術30以上の成人も手当を頼める相手に入る。
+        if(NationalSystems.On(w,"NpcDoctor"))
+        {
+            var near=w.Characters.Where(c=>c.Life==LifeState.Adult&&c.Id!=patient).Select(c=>c.Id).Where(p=>CharacterDevelopment.LevelAt(w,p,DevelopmentSkill.Medicine,at)>=DoctorSkill&&PersonalCompanions.PhysicalSiteAt(w,p,at,0)==site);
+            kin=kin.Concat(near).Distinct();
+        }
         return kin.Prepend(patient).OrderByDescending(p=>CharacterDevelopment.LevelAt(w,p,DevelopmentSkill.Medicine,at)).ThenBy(p=>p==patient?0:1).ThenBy(p=>p.Value,StringComparer.Ordinal).First();
     }
     // 手当は残りの経過を短くするが、即時の全快はない。

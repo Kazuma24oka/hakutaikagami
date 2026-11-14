@@ -44,3 +44,23 @@ public sealed class TroopSkillTests
         Assert.Equal(0,BattlefieldRules.TroopSkillBonus(w,unit,TroopKind.Spear));
     }
 }
+// 医者を頼む（NpcDoctor、2026-11-15）：同じ拠点にいる家の外の医術30以上の成人にも手当を頼める。病人は移らない。
+public sealed class NpcDoctorTests
+{
+    [Fact]
+    public void ADoctorOfAnotherHouseAtTheSameSiteCanTreat()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"NpcDoctor"));
+        bool Adult(EntityId p)=>w.Characters.Single(c=>c.Id==p).Life==LifeState.Adult;
+        HashSet<EntityId> Houses(EntityId p)=>w.Memberships.Where(m=>m.Subject==p&&m.From<=0&&0<m.Until).Select(m=>m.Target).ToHashSet();
+        // 同じ城にいて家の違う成人の二人。
+        var pair=w.Characters.Select(c=>c.Id).Where(p=>p!=w.PlayerControl&&Adult(p)).GroupBy(p=>PersonalCompanions.PhysicalSiteAt(w,p,0,0)).Where(g=>g.Key!=null)
+            .SelectMany(g=>g.SelectMany(a=>g.Where(b=>b!=a&&!Houses(a).Overlaps(Houses(b))&&Houses(a).Count>0).Select(b=>(Site:g.Key!.Value,Patient:a,Doctor:b)))).First();
+        long at=86400;w.ElapsedSeconds=at+60;
+        w.Development=w.Development! with{Awards=[new(new("task:test/doctor"),pair.Doctor,DevelopmentSkill.Medicine,60,0,100,CharacterDevelopment.LevelXp(90))]};
+        Assert.Equal(pair.Doctor,PersonalHealth.HouseCarer(w,pair.Patient,pair.Site,at));
+        w.NewGame=w.NewGame! with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="NpcDoctor").ToArray()};
+        Assert.NotEqual(pair.Doctor,PersonalHealth.HouseCarer(w,pair.Patient,pair.Site,at)); // 一覧を持たない世界は家の中だけ
+    }
+}
