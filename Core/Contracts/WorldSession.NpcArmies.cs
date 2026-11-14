@@ -3,6 +3,8 @@ public sealed partial class WorldSession
 {
     internal void MusterNpcArmy(EntityId id,EntityId commander,EntityId owner,NpcArmyObjective objective,EntityId? lord=null)
     {lock(gate){Change(w=>NpcArmies.Muster(w,id,commander,owner,objective,lord));}}
+    internal void NpcSkirmish(EntityId a,EntityId b)
+    {lock(gate){Change(w=>NpcArmies.Skirmish(w,a,b));}}
     internal void RoutNpcArmy(EntityId muster)
     {lock(gate){Change(w=>NpcArmies.Rout(w,muster));}}
     internal void ReturnNpcArmy(EntityId muster)

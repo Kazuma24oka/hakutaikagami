@@ -14,7 +14,13 @@ public sealed record NpcArmyReturn(EntityId Muster,long At,long Revision,long Co
     // 大将が捕らえられて軍が散った（城へ帰らずその場で解ける。携えた兵糧は使った分まで。城に残した兵糧は家へ戻す）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public bool? Routed {get;init;}
 }
-public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Musters,NpcArmyMarch[] Marches,NpcArmyReturn[] Returns);
+public sealed record NpcArmyState(int Schema,string Contract,NpcArmyMuster[] Musters,NpcArmyMarch[] Marches,NpcArmyReturn[] Returns)
+{
+    // NPC どうしの近くの交戦（全国の開始の一覧の NpcSkirmish）。本人の軍が出ていないときに、敵対する NPC の軍が1km以内で出会うと戦う。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public NpcSkirmish[]? Skirmishes {get;init;}
+}
+// A が ID の小さい軍。戦いは遠方の合戦と同じ接触の規則（StrategyBattles）で計算し、損害を軍の部隊に分ける。崩れた側の大将は相手の家が捕らえることがある。
+public sealed record NpcSkirmish(EntityId Id,EntityId A,EntityId B,long At,long Revision,StrategyBattle Battle,BattleCapture? Capture);
 
 // Actual garrison custody. No default wars, generated enemies, castle capture, or shared knowledge.
 public static partial class NpcArmies
@@ -104,7 +110,7 @@ public static partial class NpcArmies
     internal static void Sync(ContractWorld w)
     {
         var ms=Musters(w);if(ms.Length==0)return;var ids=ms.SelectMany(m=>Binding(m).Units).ToHashSet();
-        w.Units=[..w.Units.Where(u=>!ids.Contains(u.Id)),..ms.SelectMany(m=>Binding(m).Units.Select((id,n)=>new UnitState(id,Binding(m).Army,m.Commander,m.Owner,(n==0?40:30)-WorldClashes.SoldiersLost(w,id,w.ElapsedSeconds),0)))];
+        w.Units=[..w.Units.Where(u=>!ids.Contains(u.Id)),..ms.SelectMany(m=>Binding(m).Units.Select((id,n)=>new UnitState(id,Binding(m).Army,m.Commander,m.Owner,Math.Max(0,(n==0?40:30)-WorldClashes.SoldiersLost(w,id,w.ElapsedSeconds)-SkirmishLost(w,m,n,w.ElapsedSeconds)),0)))];
         var lots=ms.SelectMany(m=>new[]{Binding(m).Depot,Binding(m).Carry}).ToHashSet();
         w.ResourceLots=[..w.ResourceLots.Where(l=>!lots.Contains(l.Id)),..ms.SelectMany(m=>Lots(w,m))];
     }
@@ -169,12 +175,56 @@ public static partial class NpcArmies
     // 軍が戦えない：大将が捕らえられた、兵がいない、出陣先への行軍が失敗した、出陣先で留まり終える前に帰った。
     internal static bool Broken(ContractWorld w,NpcArmyMuster m)
     {
-        if(BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence+1))return true;
+        if(BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence+1)||BrokeInSkirmish(w,m))return true;
         var b=Binding(m);if(w.Units.Any(u=>u.Army==b.Army)&&w.Units.Where(u=>u.Army==b.Army).Sum(u=>u.Soldiers)<=0)return true;
         var q=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==m.Id&&q.Input.RequestId.Value==MarchId(m,false));
         if(q!=null&&w.Tasks.Single(t=>t.RequestId==q.Input.RequestId) is {FinishedAt:not null} t&&t.Execution!=ExecutionPhase.Completed)return true;
         if(!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence))return false;
         var back=w.NpcArmies.Returns.Single(r=>r.Muster==m.Id).At;return HoldEnd(w,m) is not {} hold||back<hold;
+    }
+    static NpcSkirmish[] Skirmishes(ContractWorld w)=>w.NpcArmies?.Skirmishes??[];
+    // 交戦で部隊が失った兵（軍の兵を部隊の兵の割合で分ける）。
+    static long SkirmishLost(ContractWorld w,NpcArmyMuster m,int unit,long at)
+    {
+        long lost=0;foreach(var k in Skirmishes(w))if(k.At<=at&&(k.A==m.Id||k.B==m.Id)){long total=k.A==m.Id?k.Battle.AttackerSoldiers:k.Battle.DefenderSoldiers;long side=k.A==m.Id?k.Battle.AttackerLost:k.Battle.DefenderLost;if(total>0)lost+=side*(unit==0?40:30)/100;}
+        return lost;
+    }
+    // 交戦で崩れた軍は目的をやめて城へ帰る。
+    internal static bool BrokeInSkirmish(ContractWorld w,NpcArmyMuster m)=>Skirmishes(w).Any(k=>k.At<=w.ElapsedSeconds&&(k.A==m.Id&&k.Battle.AttackerBroke||k.B==m.Id&&k.Battle.DefenderBroke));
+    internal static bool SkirmishRule(ContractWorld w)=>NationalSystems.On(w,"NpcSkirmish");
+    // 出会ったとみなす距離（1km）。検査だけで変える。
+    [ThreadStatic] static long? contactForTest;internal static long ContactMm{get=>contactForTest??1_000_000;set=>contactForTest=value;}
+    internal static BattleCapture[] SkirmishCaptures(ContractWorld w)=>Skirmishes(w).Where(k=>k.Capture!=null).Select(k=>k.Capture!).ToArray();
+    internal static (BattleCapture Capture,long Revision)[] SkirmishCaptureRows(ContractWorld w)=>Skirmishes(w).Where(k=>k.Capture!=null).Select(k=>(k.Capture!,k.Revision)).ToArray();
+    static int Soldiers(ContractWorld w,NpcArmyMuster m)=>(int)w.Units.Where(u=>u.Army==Binding(m).Army).Sum(u=>u.Soldiers);
+    static bool Hostile(ContractWorld w,EntityId a,EntityId b,long at,long rev)=>FactionStances.ClaimAt(w,a,b,at,rev)!=null||FactionStances.ClaimAt(w,b,a,at,rev)!=null;
+    // 出会った敵対する軍の組（ID の順）。本人の軍が出ているときは今の交戦（WorldClashes）に任せる。
+    internal static (NpcArmyMuster A,NpcArmyMuster B)? Encounter(ContractWorld w)
+    {
+        if(!SkirmishRule(w)||NewGameMilitary.DeployedAt(w,w.ElapsedSeconds))return null;long at=w.ElapsedSeconds,rev=w.CommitSequence;
+        var live=Musters(w).Where(m=>m.Objective!=null&&!ReturnedAt(w,m,at,rev)&&!BrokeInSkirmish(w,m)&&!BattleCaptivity.HeldAt(w,m.Commander,at,rev+1)&&Soldiers(w,m)>0).OrderBy(m=>m.Id.Value,StringComparer.Ordinal).ToArray();
+        for(int i=0;i<live.Length;i++)for(int j=i+1;j<live.Length;j++)
+        {
+            var (a,b)=(live[i],live[j]);if(a.Owner==b.Owner||!Hostile(w,a.Owner,b.Owner,at,rev))continue;
+            if(Skirmishes(w).Any(k=>(k.A==a.Id&&k.B==b.Id)&&k.At>at-86400))continue;
+            var pa=Position(w,Binding(a).Army,at);var pb=Position(w,Binding(b).Army,at);long dx=pa.EastMm-pb.EastMm,dy=pa.NorthMm-pb.NorthMm;
+            if(dx*dx+dy*dy<=ContactMm*ContactMm)return (a,b);
+        }
+        return null;
+    }
+    internal static void Skirmish(ContractWorld w,EntityId a,EntityId b)
+    {
+        var e=Encounter(w);Need(e is {} pair&&pair.A.Id==a&&pair.B.Id==b,"出会った敵対する軍ではありません");var (ma,mb)=e!.Value;
+        var id=new EntityId("skirmish:npc/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(a.Value+"/"+b.Value+"/"+w.ElapsedSeconds))[..24]);
+        var battle=StrategyBattles.Fight(w,id,Soldiers(w,ma),Soldiers(w,mb));
+        BattleCapture? capture=null;
+        var (loser,winner)=battle.AttackerBroke&&!battle.DefenderBroke?(ma,mb):battle.DefenderBroke&&!battle.AttackerBroke?(mb,ma):(null,null);
+        if(loser!=null&&winner!=null&&!Assassination.DeadAt(w,loser.Commander,w.ElapsedSeconds,w.CommitSequence)&&loser.Commander!=w.PlayerControl&&
+           (int)(Convert.ToUInt32(ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes("npc-skirmish-capture/"+w.Seed+"/"+id.Value))[..8],16)%100)<35)
+            capture=new BattleCapture(loser.Commander,loser.Owner,winner.Owner,HouseSuccession.Head(w,winner.Owner),winner.Site,w.ElapsedSeconds);
+        w.NpcArmies=w.NpcArmies! with{Skirmishes=[..Skirmishes(w),new(id,a,b,w.ElapsedSeconds,w.CommitSequence,battle,capture)]};
+        if(capture!=null)BattleCaptivity.StopCaptured(w,[capture]);
+        Sync(w);
     }
     internal static bool NeedsTurn(ContractWorld w,NpcArmyMuster m)
     {
@@ -186,6 +236,7 @@ public static partial class NpcArmies
         if(qs[^1].Input.RequestId.Value==MarchId(m,true))return w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site);
         bool endedReactiveMission=w.FactionNotices?.Reactions.Any(r=>r.Decision.Id==m.Objective.Claim.Declaration&&r.Decision.Action==FactionStanceAction.DeclareHostile)==true&&!FactionStances.KnownOwnDeclarations(w,m.Issuer).Any(c=>c.Declaration==m.Objective.Claim.Declaration&&c.EffectiveFrom<=w.ElapsedSeconds&&w.ElapsedSeconds<c.Until);
         endedReactiveMission|=TruceNegotiations.WillNotInitiate(w,m.Owner,m.Objective.TargetOwner,w.ElapsedSeconds,w.CommitSequence);
+        endedReactiveMission|=BrokeInSkirmish(w,m); // 交戦で崩れた軍は帰る
         if(!endedReactiveMission&&t.Execution==ExecutionPhase.Completed&&w.ElapsedSeconds<t.FinishedAt+m.Objective.HoldSeconds)return false;
         if(w.Locations.Any(l=>l.Actor==m.Commander&&l.Kind==LocationKind.AtSite&&l.Site==m.Site))return true;
         try{Move(w,m.Id,MarchId(m,true),NewGameWorld.Node(m.Site.Value));return true;}catch(InvalidDataException){return false;}
@@ -211,6 +262,7 @@ public static partial class NpcArmies
             w=session.TurnSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective){var head=new EntityId(f.Head);var leader=Leader(w,head,new(f.Id),new(f.Home));session.MusterNpcArmy(MusterId(objective.Claim),leader,new(f.Id),objective,leader==head?null:head);}
         }
         if(RoutRule(session.TurnSnapshot()))foreach(var id in Musters(session.TurnSnapshot()).Select(m=>m.Id)){w=session.TurnSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!ReturnedAt(w,m,w.ElapsedSeconds,w.CommitSequence)&&BattleCaptivity.HeldAt(w,m.Commander,w.ElapsedSeconds,w.CommitSequence))session.RoutNpcArmy(id);}
+        for(int n=0;n<32&&Encounter(session.TurnSnapshot()) is {} pair;n++)session.NpcSkirmish(pair.A.Id,pair.B.Id);
         foreach(var id in Musters(session.TurnSnapshot()).Select(m=>m.Id)){
             w=session.TurnSnapshot();var m=Musters(w).Single(m=>m.Id==id);if(!NeedsTurn(w,m))continue;
             var last=w.NpcArmies!.Marches.LastOrDefault(q=>q.Muster==id);
@@ -232,6 +284,9 @@ public static partial class NpcArmies
         Need(Enabled(w)==(w.NpcArmies!=null),"NPC軍の明示版と世界状態が一致しません");if(w.NpcArmies is not {} s)return;
         var t=trusted?.NpcArmies;int ms=ContractValidation.TrustedPrefix(t?.Musters,s.Musters),qs=ms==s.Musters.Length?ContractValidation.TrustedPrefix(t?.Marches,s.Marches):0,rs=ms==s.Musters.Length?ContractValidation.TrustedPrefix(t?.Returns,s.Returns):0;
         Need(s.Schema==1&&s.Contract==Policy,"未知のNPC軍状態です");
+        foreach(var k in s.Skirmishes??[])
+            Need(SkirmishRule(w)&&k.At<=w.ElapsedSeconds&&k.Revision<=w.CommitSequence&&s.Musters.Any(m=>m.Id==k.A)&&s.Musters.Any(m=>m.Id==k.B)&&string.CompareOrdinal(k.A.Value,k.B.Value)<0&&
+                k.Battle==StrategyBattles.Fight(w,k.Id,k.Battle.AttackerSoldiers,k.Battle.DefenderSoldiers)&&(k.Capture==null||k.Capture.At==k.At),"NPC の軍どうしの交戦の記録が不正です");
         for(int n=ms;n<s.Musters.Length;n++)CheckMuster(w,s.Musters[n],s.Musters.Take(n));
         Need(s.Marches.Select(q=>q.Input.RequestId).Distinct().Count()==s.Marches.Length,"NPC軍の移動原本が重複しています");
         foreach(var q in s.Marches.Skip(qs)){var m=s.Musters.Single(m=>m.Id==q.Muster);var r=w.Requests.Single(r=>r.Id==q.Input.RequestId);

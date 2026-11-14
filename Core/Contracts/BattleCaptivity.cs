@@ -83,7 +83,7 @@ public static partial class BattleCaptivity
     {
         var clash=w.WorldClashes is not {} s?[]:cache.GetValue(s,x=>x.Steps.SelectMany(step=>(step.Captures??[]).Select(c=>(c,step.Revision))).ToArray());
         // 実際の軍勢の出陣の決着での捕縛（NationalStrategy.CaptureLeader）。
-        var strategy=w.Strategy?.Outcomes.Where(o=>o.Capture!=null).Select(o=>(o.Capture!,o.Revision)).ToArray()??[];
+        var strategy=(w.Strategy?.Outcomes.Where(o=>o.Capture!=null).Select(o=>(o.Capture!,o.Revision)).ToArray()??[]).Concat(NpcArmies.SkirmishCaptureRows(w)).ToArray();
         return strategy.Length==0?clash:clash.Concat(strategy).OrderBy(x=>x.Item2).ThenBy(x=>x.Item1.At).ToArray();
     }
     internal static BattleCapture[] AllCaptures(ContractWorld w)=>Captures(w).Select(x=>x.Capture).ToArray();
