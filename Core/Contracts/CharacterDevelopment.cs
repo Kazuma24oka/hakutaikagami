@@ -55,6 +55,8 @@ public static class CharacterDevelopment
         w.NewGame!.Registered.SingleOrDefault(r=>r.Id==person.Value)?.StartSkills is {} chosen?chosen.SingleOrDefault(x=>x.Skill==skill)?.Level??0:Starts(w,person).GetValueOrDefault(skill);
     // 作成武将の技能経験の予算（決定の第5節）：標準実務3000時間相当、1技能の開始上限50。
     public const long CreatedBudget=3000L*3600;public const int CreatedCap=50;
+    // 32技能の版の技能の並び（画面の自由な配分で使う）。
+    public static readonly DevelopmentSkill[] Skills32List=Enum.GetValues<DevelopmentSkill>();
     public static long Spent(IEnumerable<OfficerSkill> skills)=>skills.Sum(x=>LevelXp(x.Level));
     public static void CheckCreated(OfficerSkill[]? skills)
     {
