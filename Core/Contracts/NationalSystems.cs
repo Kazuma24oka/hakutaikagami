@@ -13,6 +13,8 @@ public static class NationalSystems
         "HouseSuccession",
         // 領地（普請・職人と交易・検地と布告・常設の奉行）
         "LiveTerritory",
+        // 城代と城の受け渡し（城主の任命・蔵の預かり・門の引渡し）
+        "CastleAdministration",
         // 戦・兵站・輸送・道
         "OfficerBattleHealth", "ExpeditionFodder",
         "FieldPresence", "FieldSupply", "FieldWorld", "RegionalBattle", "RegionalScenery",

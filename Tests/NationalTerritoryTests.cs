@@ -12,7 +12,7 @@ public sealed class NationalTerritoryTests(ITestOutputHelper o)
     {
         var sw=System.Diagnostics.Stopwatch.StartNew();
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
-        Assert.True(LiveTerritory.Enabled(w));Assert.NotNull(w.PublicWorks);Assert.NotNull(w.Crafts);Assert.NotNull(w.Surveys);Assert.NotNull(w.Administration);
+        Assert.True(LiveTerritory.Enabled(w));Assert.True(CastleAdministration.Enabled(w));Assert.True(CastleHandover.Enabled(w));Assert.NotNull(w.Castellan);Assert.NotNull(CastleHandover.View(w));Assert.NotNull(w.PublicWorks);Assert.NotNull(w.Crafts);Assert.NotNull(w.Surveys);Assert.NotNull(w.Administration);
         var s=new WorldSession(w);
         // 月の初めの毎時の区切り（1時）に、近くの当主が定例の評定を開く。開始時の家の銭は0なので、検地（銭30）はまだ始められない。
         NewGameWorldTests.At(s,NpcDormancy.Interval+60);o.WriteLine($"1時間 {sw.ElapsedMilliseconds}ms");
