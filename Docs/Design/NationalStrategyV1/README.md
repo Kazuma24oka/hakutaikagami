@@ -16,6 +16,7 @@
 - 家の滅亡と再興（2026-11-14、`StrategyRestoration`、全国の開始の一覧の StrategyRestoration を持つ世界だけ）：決着で最後の城を失った家を、その城と落とした家とともに記録する（StrategyState.Falls。人物・所属・私財は動かさない）。滅んだ家の当主（家督を継いだ者を含む）が生きていて拘束されておらず、旧城を持つ家の支配が揺らいだ（1年以内に当主が代わった・3か月以内に戦に負けた）とき、当主は月に30%で旧臣を集めて旧城へ挙兵する（兵は旧の兵の上限の3分の1）。決着は通常の出陣と同じで、勝てば旧城を取り戻す。
 - 従属の離反（2026-11-14、`StrategyDefections`、一覧の StrategyDefection を持つ世界だけ）：主家（DBの Overlord）の支配が揺らいだとき、主家の半分以上の強さの従う家の当主は月に10%で離れる（StrategyState.Defections）。離れた後は主家の境の城に数えられず、互いに攻め合える。離れるのは家どうしの従属だけで、城・家臣・兵・約束は動かさない。操作する人物の家は離れず、離れられもしない。
 - 家督：当主が亡くなった家は、成人した実子の年長者、いなければ家中の筆頭格の成人が継ぐ（`HouseSuccession.Head` に反映）。
+- 再興の挙兵への後援（2026-11-14、一覧の RestorationSupport）：落とした家に一年以内に城を奪われた家（今も城を持つ家）は、兵力の半分で再興の挙兵を後援する（StrategyOutcome.Supporters）。検査は Tests/StrategyLossesTests.cs の RestorationSupportTests。
 - 独立した家の城（2026-11-14、一覧の StrategyIndependence）：個人の内応で独立を宣言した家が支配の権利を持つ城は、家の戦略で元の家の城に数えず、出陣の目的にもしない（NationalStrategy.Independent）。内応の約束・独立の宣言そのものは人間関係の仕組み（全国で有効）で動く。検査は Tests/StrategyLossesTests.cs の StrategyIndependenceTests。
 - 離反を主家へ知らせる（2026-11-14、一覧の DefectionLetters）：離れた家の当主から主家の当主へ、封をした書状が実際に運ばれて届く（NationalStrategy.DefectionLetter）。検査は Tests/StrategyLossesTests.cs の DefectionLetterTests。
 - 合戦の損害を家の兵力に（2026-11-14、一覧の StrategyLosses を持つ世界だけ）：遠方の合戦（StrategyBattle）で失った兵を家の強さから引き、180日かけて同じ割合で戻す。守る側の損害は守る家と援軍の家で 2:1 に分ける（NationalStrategy.Losses。出陣の判断・決着・離反の強さに効く）。検査は Tests/StrategyLossesTests。
@@ -24,7 +25,7 @@
 
 ## 残り
 - 本人の画面の従属関係（NationalFactionRelations）への離反の反映（本人は離反の書状の宛先でないので、噂の伝わり方と一緒に）。独立した家そのものの戦略（その家の出陣・同盟）。
-- 再興の挙兵への他家の後援・国人の加勢（今は旧臣だけなので大きな家にはまず勝てない）。滅んだ家の旧臣が再興を志として持つこと（W5）。本人の家の滅亡と再興（本人の家は戦略の対象外）。
+- 国人の加勢。滅んだ家の旧臣が再興を志として持つこと（W5）。本人の家の滅亡と再興（本人の家は戦略の対象外）。
 - 近くの合戦を実際の軍勢（NPC軍）で行うこと。本人が近づいたときに遠方の合戦の状態を実際の軍勢へ引き継ぐこと。地形・兵糧を遠方の合戦に入れること。
 - 噂による伝わり方、地図の勢力の色（Codex の担当）。
 - 城の支配を読む他の仕組み（開始時の持ち主を直接読む14ファイル）の切り替え。

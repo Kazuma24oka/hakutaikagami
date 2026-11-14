@@ -24,6 +24,8 @@ public sealed record StrategyOutcome(EntityId Campaign,long At,long Revision,boo
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyBattle? Battle {get;init;}
     // 実際の軍勢の出陣で、退いた攻め手の軍の大将を守る側が捕らえたとき（一覧の StrategyCapture）。拘束は捕縛の記録と同じに扱う（BattleCaptivity）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public BattleCapture? Capture {get;init;}
+    // 再興の挙兵を後援した家（一覧の RestorationSupport）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId[]? Supporters {get;init;}
 }
 // 史実の出陣のその月の結果：fired（出陣した）・premise（前提が崩れて不発）・declined（前提はそろったが当主が選ばなかった）。
 public sealed record StrategyHistoryRecord(string Event,long At,long Revision,string Result);
@@ -391,7 +393,7 @@ public static class NationalStrategy
         BattleCaptivity.StopCaptured(w,[capture]);return capture;
     }
     // 出陣の決着（強さと同盟の援軍、遠方の合戦の計算）。月の初めの決着と、実際の軍勢が着いたときの決着で同じものを使う。
-    static StrategyOutcome Settle(ContractWorld w,StrategyState s,List<StrategyOutcome> outcomes,StrategyCampaign c)
+    internal static StrategyOutcome Settle(ContractWorld w,StrategyState s,List<StrategyOutcome> outcomes,StrategyCampaign c)
     {
             var owners0=Owners(w,s with{Outcomes=outcomes.ToArray()});var initial0=InitialCounts(w);
             long a=c.Basis==Restoration?StrategyRestoration.Strength(c.Attacker.Value):Strength(w,c.Attacker.Value,owners0,initial0),d=Strength(w,c.Defender.Value,owners0,initial0);
@@ -399,11 +401,14 @@ public static class NationalStrategy
             var allies=(s.Pacts??[]).Where(p=>p.Kind=="alliance"&&p.Broken==null&&p.From<=c.At&&c.At<p.Until&&(p.A==c.Defender||p.B==c.Defender)).Select(p=>p.A==c.Defender?p.B:p.A)
                 .Where(x=>x!=c.Attacker&&!Bound((s.Pacts??[]).ToArray(),x.Value,c.Attacker.Value,c.At)).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray();
             foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
+            // 再興の挙兵への後援（一覧の RestorationSupport）：落とした家に一年以内に城を奪われた家（今も城を持つ家）は、兵力の半分で後援する。
+            var supporters=c.Basis==Restoration&&NationalSystems.On(w,"RestorationSupport")?s.Outcomes.Concat(outcomes).Where(o=>o.Captured&&o.At>w.ElapsedSeconds-365*86400L).Select(o=>s.Campaigns.Single(x=>x.Id==o.Campaign)).Where(x=>x.Attacker==c.Defender&&x.Defender!=c.Attacker&&x.Basis!=Restoration&&owners0.ContainsValue(x.Defender.Value)).Select(x=>x.Defender).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray():[];
+            foreach(var x in supporters)a=checked(a+Strength(w,x.Value,owners0,initial0)/2);
             bool held=owners0.GetValueOrDefault(c.Target.Value)==c.Defender.Value;
             var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
             bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
             Letters(w,c,captured);
-            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle)};
+            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle),Supporters=supporters.Length==0?null:supporters};
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
     static StrategySuccession[]? Succeed(ContractWorld w,StrategyState s)

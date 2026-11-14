@@ -63,3 +63,26 @@ public sealed class StrategyIndependenceTests
         Assert.Null(NationalStrategy.Owners(w,w.Strategy)[castle.Id]);
     }
 }
+// 再興の挙兵への後援（RestorationSupport、2026-11-14）：落とした家に一年以内に城を奪われた家は、兵力の半分で後援する。
+public sealed class RestorationSupportTests
+{
+    [Fact]
+    public void HousesThatLostCastlesToTheConquerorSupportTheUprising()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"RestorationSupport"));
+        var f=w.NewGame!.Start.Factions.OrderBy(x=>x.Id,StringComparer.Ordinal).Take(3).ToArray();
+        var (fallen,conqueror,victim)=(f[0],f[1],f[2]);
+        var victimCastle=w.NewGame.Start.Castles.First(c=>c.Faction==victim.Id&&c.Id!=victim.Home);
+        w.ElapsedSeconds=60*86400;
+        var earlier=new StrategyCampaign(new("campaign:national/test/earlier"),new(conqueror.Id),new(victim.Id),new(victimCastle.Id),0,1,"border");
+        var uprising=new StrategyCampaign(new("campaign:national/test/uprising"),new(fallen.Id),new(conqueror.Id),new(conqueror.Home),30*86400,2,NationalStrategy.Restoration);
+        var s=new StrategyState(1,NationalStrategy.Policy,[earlier,uprising],[new(earlier.Id,30*86400,2,true)]);
+        w.Strategy=s;
+        var outcome=NationalStrategy.Settle(w,s,s.Outcomes.ToList(),uprising);
+        Assert.Equal([new EntityId(victim.Id)],outcome.Supporters);
+        // 一覧を持たない世界では後援しない。
+        w.NewGame=w.NewGame with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!="RestorationSupport").ToArray()};
+        Assert.Null(NationalStrategy.Settle(w,s,s.Outcomes.ToList(),uprising).Supporters);
+    }
+}
