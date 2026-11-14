@@ -63,11 +63,13 @@ public static class NewGameWork
     internal static void RecordOpening(ContractWorld w,EntityId actor,string id){if(!Enabled(w)||(actor!=w.PlayerControl&&!NpcJudgment.Enabled(w))||!w.Messaging.Messages.Any(m=>m.Id==id&&m.Kind==AssessmentNotice.Kind&&m.RecipientId==actor.Value)||w.WorkCycle!.Openings.Any(o=>o.Message==id))return;w.WorkCycle=w.WorkCycle with{Openings=[..w.WorkCycle.Openings,new(id,w.ElapsedSeconds,w.CommitSequence)]};}
     public static bool Paid(ContractWorld w,EntityId task)=>w.WorkCycle?.Payments.Any(p=>p.Task==task)==true;
     public static bool CanRequest(WorldSession session,EntityId task)=>CanRequest(session,task,session.PlayerControl);
-    internal static bool CanRequest(WorldSession session,EntityId task,EntityId actor)
+    internal static bool CanRequest(WorldSession session,EntityId task,EntityId actor,ContractWorld? current=null)
     {
-        var w=session.DiagnosticSnapshot();if(!Enabled(w)||Paid(w,task))return false;var t=w.Tasks.SingleOrDefault(t=>t.Id==task);if(t==null||t.Executor!=actor||Reward(w,t)==0)return false;
-        bool known=AssessmentNotice.LatestKnown(session,actor).Any(p=>p.Task==task&&WorkProgression.Completed(p.Review.Achievement));
-        return known&&w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope)&&RegionalCampaign.Nearby(w,actor).Any(p=>p.Actor==t.Issuer);
+        // 世界を写さずに読み（手番の中でも使う）、軽い条件を先に確かめる。本人が評価の通知を知っているか（受信箱を作るので重い）は最後。
+        var w=current??session.TurnSnapshot();if(!Enabled(w)||Paid(w,task))return false;var t=w.Tasks.SingleOrDefault(t=>t.Id==task);if(t==null||t.Executor!=actor||Reward(w,t)==0)return false;
+        if(!w.Locations.Any(l=>l.Actor==actor&&l.Kind==LocationKind.AtSite&&l.Site==t.Scope)||!RegionalCampaign.Nearby(w,actor).Any(p=>p.Actor==t.Issuer))return false;
+        if(!w.Messaging.Messages.Any(m=>m.Kind==AssessmentNotice.Kind&&m.RecipientId==actor.Value&&m.CorrelationId==t.RequestId.Value))return false; // この仕事の評価の通知がまだ出ていない
+        return AssessmentNotice.LatestKnown(session,actor).Any(p=>p.Task==task&&WorkProgression.Completed(p.Review.Achievement));
     }
     static bool Local(ContractWorld w,TaskState t,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);

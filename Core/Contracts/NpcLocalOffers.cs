@@ -16,19 +16,25 @@ public static class NpcLocalOffers
             w.Tasks.Any(t => t.Id == o.Task && t.Action == ActionKind.Inspect));
         return known ? 8 : 0;
     }
+    static ContractWorld PermissionView(ContractWorld w,long revision){var c=w.ForkTransportLocation();c.CommitSequence=revision;return c;}
     internal static NpcChoiceInput Recipients(ContractWorld w,EntityId issuer,long at,long revision,long choiceAt)
     {using var _ccRev=ControlContext.At(revision);
         var site=PersonalCompanions.PhysicalSiteAt(w,issuer,at,revision+1);
         var candidates=new List<NpcChoiceCandidate>{new(issuer.Value,true,true,-10,new(0,0,0,0,0,0),false,false,false)};
+        // 一度も動いていない人（自分が担う依頼・旅・捕縛・人質の記録がない人）の居場所は最初の拠点のまま。全員の居場所を1人ずつ求めると重いので、動いたことのある人だけ求める（結果は同じ）。
+        var movers=(w.Captives?.Entries.Length??0)>0||(w.Custody?.Entries.Length??0)>0?null:w.Requests.Select(r=>r.Intent.Executor).Concat(w.Branches!.Journeys.Select(j=>j.Actor)).Append(w.PlayerControl).ToHashSet();
+        var homes=movers==null?null:FamilyBirth.People(w).GroupBy(p=>p.Id,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Single().Site,StringComparer.Ordinal);
+        ContractWorld? permissions=null; // 権限を見るための写し（相手によらず同じなので1回だけ作る）
+        EntityId? SiteOf(EntityId person)=>movers!=null&&!movers.Contains(person)?new(homes![person.Value]):PersonalCompanions.PhysicalSiteAt(w,person,at,revision+1);
         if(site!=null)
         foreach(var person in w.Characters.Where(c=>c.Id!=issuer&&c.Life==LifeState.Adult).OrderBy(c=>c.Id.Value,StringComparer.Ordinal)){
+            if(SiteOf(person.Id)!=site)continue;
             // 新版では作業終了と同じ秒の相手を翌秒まで候補に戻さない。
             if((w.NewGame?.Judgment?.EventEdition==HistoricalEventRules.OwariEdition || w.NewGame?.Judgment?.Challenge != null) &&
                 w.Tasks.Any(t=>t.Executor==person.Id && t.FinishedAt==at && w.Requests.Any(r=>r.Id==t.RequestId &&
                     r.CommitSequence<=revision && !NewGameNpcRoutine.DiscretionaryPractice(w,r.Intent))))continue;
-            if(PersonalCompanions.PhysicalSiteAt(w,person.Id,at,revision+1)!=site)continue;
             bool busy=w.Tasks.Any(t=>t.Executor==person.Id&&(t.FinishedAt==null||t.FinishedAt>=at)&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CreatedAt<=at&&r.CommitSequence<=revision));
-            var permissions=w.ForkTransportLocation();permissions.CommitSequence=revision;
+            permissions??=PermissionView(w,revision);
             bool permit=WorldSession.Permits(permissions,person.Id,new(new("request:npc-offer-preview"),issuer,person.Id,site.Value,ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+120,false,null,at+120),at,1,4,1,true,TaskKind.VoluntaryRequest),at);
             candidates.Add(new(person.Id.Value,true,!busy&&permit&&AvailableAt(w,person.Id,at,revision),InspectionReference(w,issuer,person.Id,at),new(0,0,0,0,0,0),false,false,person.Id==w.PlayerControl));
         }
@@ -67,6 +73,6 @@ public sealed partial class WorldSession
             Assent(task.Id,actor,accept,Revision);
         }
         foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&state.Requests.Any(r=>r.Id==t.RequestId&&NpcLocalOffers.IsOffer(state,r.Intent))).ToArray())
-            if(NewGameWork.CanRequest(this,task.Id,actor))CollectWorkPayment(new("payment:npc-offer/"+task.Id.Value.Replace(':','/')),task.Id,actor,Revision);
+            if(NewGameWork.CanRequest(this,task.Id,actor,state))CollectWorkPayment(new("payment:npc-offer/"+task.Id.Value.Replace(':','/')),task.Id,actor,Revision);
     }
 }
