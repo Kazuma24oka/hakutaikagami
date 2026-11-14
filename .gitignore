@@ -283,3 +283,6 @@ Docs/Design/NationalDistrictRevenueV1/runtime-local/
 
 # User VRoid model (license: no redistribution). Local copy only.
 /Game/Assets/CharaCreate/
+
+# 検証記録（runtime-local）は D:\02_プロジェクト別\百代鏡\検証記録 に置き、ここはそこへのつなぎ（Scripts/link_runtime_local.py）。Git に入れない。
+runtime-local/
