@@ -33,7 +33,7 @@ public partial class NewGameRuntime
             }
         }
         var cards=Session.Captives();var ransoms=Session.Ransoms();
-        if(cards.Length==0&&Session.MyCaptivity()==null)Text("捕虜なし");
+        if(cards.Length==0&&Session.MyCaptivity()==null&&Session.CaptiveLetters().Length==0)Text("捕虜なし");
         foreach(var c in cards)
         {
             Text(PersonName(c.Person)+"　"+House(c.FromOwner)+"　"+Site(c.Site)+"　"+(c.Held?"留置":"—"));
@@ -47,6 +47,23 @@ public partial class NewGameRuntime
             var ask=new HBoxContainer();box.AddChild(ask);
             var amount=new SpinBox{MinValue=BattleCaptivity.RansomMin,MaxValue=BattleCaptivity.RansomMax,Step=100,Value=500,Suffix="文"};ask.AddChild(amount);
             Act(ask,"身代金",!NewGameWork.Enabled(w),()=>Session.DemandRansom(new("request:captive-ui/ransom/"+revision),c.Person,(long)amount.Value,revision));
+        }
+        foreach(var l in Session.CaptiveLetters())
+        {
+            Text(PersonName(l.Author)+"より　"+PersonName(l.Person)+(l.Action==RansomAction.Demand?"　身代金 "+l.Amount+"文":"　"+PersonName(l.Other!.Value)+"と引き換え")+(l.Answered?"　返書済み":""));
+            if(l.Answered)continue;
+            var row=new HBoxContainer();box.AddChild(row);
+            if(l.Action==RansomAction.Demand)
+            {
+                Act(row,"払う",!NewGameWork.Enabled(w),()=>Session.AnswerRansom(l.Id,true,revision));
+                Act(row,"断る",false,()=>Session.AnswerRansom(l.Id,false,revision));
+            }
+            else Act(row,"応じる",false,()=>Session.AcceptCaptiveExchange(l.Id,revision));
+        }
+        foreach(var (held,known) in Session.ExchangeOptions())
+        {
+            var row=new HBoxContainer();box.AddChild(row);
+            Act(row,PersonName(held)+"と"+PersonName(known)+"を引き換え",false,()=>Session.ProposeCaptiveExchange(new("request:captive-ui/propose/"+revision),held,known,revision));
         }
         var close=new Button{Text="閉じる"};box.AddChild(close);close.Pressed+=()=>popup.Hide();popup.Size=new Vector2I(480,1);popup.PopupCentered(new Vector2I(480,1));
     }

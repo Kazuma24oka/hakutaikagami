@@ -71,3 +71,69 @@ public sealed class NpcCaptiveExchangeTests
         Assert.False(BattleCaptivity.HeldAt(w,p,w.ElapsedSeconds,w.CommitSequence+1)); // 受諾が届いて申し入れた側も放つ
     }
 }
+// 本人と NPC の家の捕虜の書状（PlayerCaptiveLetters、2026-11-15）：NPC は本人の家とも引き換えを申し入れ、本人は開封して応じる。
+// 身代金の求めには本人が返書を出し、書状で知った家臣を自分が捕らえた者と引き換えに申し入れられる。
+public sealed class PlayerCaptiveLetterTests
+{
+    static (ContractWorld W,SetupFaction Npc,EntityId Retainer,EntityId Theirs) Setup(bool playerHolds)
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(BattleCaptivity.PlayerLetters(w));
+        var mine=w.NewGame!.Start.Factions.Single(f=>f.Id==w.NewGame.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction);
+        Assert.Equal(w.PlayerControl,HouseSuccession.Head(w,new(mine.Id)));
+        bool Adult(EntityId p)=>w.Characters.Single(c=>c.Id==p).Life==LifeState.Adult;
+        EntityId? Member(SetupFaction f)=>w.Memberships.Where(m=>m.Target.Value==f.Id&&m.Subject.Value!=f.Head).Select(m=>m.Subject).FirstOrDefault(p=>p.Value!=null&&Adult(p)&&p!=w.PlayerControl);
+        var npc=w.NewGame.Start.Factions.Where(f=>f.Id!=mine.Id&&Adult(new(f.Head))&&PersonalCompanions.PhysicalSiteAt(w,new(f.Head),0,0)==new EntityId(f.Home)&&Member(f)!=null).OrderBy(f=>f.Id,StringComparer.Ordinal).First();
+        var retainer=Member(mine)!.Value;var theirs=Member(npc)!.Value;
+        var c1=new StrategyCampaign(new("campaign:national/test/p1"),new(mine.Id),new(npc.Id),new(npc.Home),0,0,"border"){Real=true};
+        var c2=new StrategyCampaign(new("campaign:national/test/p2"),new(npc.Id),new(mine.Id),new(mine.Home),0,0,"border"){Real=true};
+        var outcomes=new List<StrategyOutcome>{new(c1.Id,0,0,false){Capture=new(retainer,new(mine.Id),new(npc.Id),new(npc.Head),new(npc.Home),0)}};
+        if(playerHolds)outcomes.Add(new(c2.Id,0,0,false){Capture=new(theirs,new(npc.Id),new(mine.Id),w.PlayerControl,new(mine.Home),0)});
+        w.Strategy=new(1,NationalStrategy.Policy,[c1,c2],[..outcomes]);
+        return (w,npc,retainer,theirs);
+    }
+    static void Step(ContractWorld w,long at){w.ElapsedSeconds=at;w.CommitSequence++;MessageFlow.Advance(w.Messaging,at);BattleCaptivity.Update(w);}
+    static long Due(ContractWorld w,string text){var m=w.Messaging.Messages.Last(m=>m.Kind==BattleCaptivity.RansomKind&&m.Body.Contains(text));return w.Messaging.Attempts.Where(x=>x.MessageId==m.Id).Max(x=>x.DueAt);}
+    static void Open(ContractWorld w,string text){var m=w.Messaging.Messages.Last(m=>m.Kind==BattleCaptivity.RansomKind&&m.Body.Contains(text));w.CommitSequence++;if(!MessageFlow.Knows(w.Messaging,m.Id,w.PlayerControl.Value))w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(m.Id,w.PlayerControl.Value,w.ElapsedSeconds,m.Id)];BattleCaptivity.RecordOpening(w,w.PlayerControl,m.Id);}
+
+    [Fact]
+    public void TheNpcProposesAnExchangeToThePlayerWhoAcceptsByLetter()
+    {
+        var (w,npc,retainer,theirs)=Setup(true);
+        Step(w,BattleCaptivity.NpcWaitSeconds+3600);
+        var offer=Assert.Single(w.Messaging.Messages,m=>m.Kind==BattleCaptivity.RansomKind);
+        Assert.Equal(npc.Head,offer.SenderId);Assert.Equal(w.PlayerControl.Value,offer.RecipientId);Assert.Contains("引き換え",offer.Body);
+        Step(w,Due(w,"放ちたく"));Assert.Empty(BattleCaptivity.Letters(w,w.PlayerControl)); // 開封するまで知らない
+        Open(w,"放ちたく");
+        var card=Assert.Single(BattleCaptivity.Letters(w,w.PlayerControl));Assert.Equal(RansomAction.Exchange,card.Action);Assert.Equal(theirs,card.Other);
+        w.CommitSequence++;BattleCaptivity.AcceptExchange(w,card.Id);
+        Assert.True(Assert.Single(BattleCaptivity.Letters(w,w.PlayerControl)).Answered);
+        Step(w,Due(w,"応じます"));
+        Assert.False(BattleCaptivity.HeldAt(w,retainer,w.ElapsedSeconds,w.CommitSequence+1)); // 受諾が届いて NPC が放つ
+        BattleCaptivity.Validate(w);
+    }
+
+    [Fact]
+    public void ThePlayerRefusesARansomAndLaterProposesAnExchange()
+    {
+        var (w,npc,retainer,theirs)=Setup(false);
+        Step(w,BattleCaptivity.NpcWaitSeconds+3600);
+        Assert.Contains("求めます",Assert.Single(w.Messaging.Messages,m=>m.Kind==BattleCaptivity.RansomKind).Body);
+        Step(w,Due(w,"求めます"));Open(w,"求めます");
+        var demand=Assert.Single(BattleCaptivity.Letters(w,w.PlayerControl));Assert.Equal(RansomAction.Demand,demand.Action);
+        w.CommitSequence++;BattleCaptivity.AnswerDemand(w,demand.Id,false);
+        Assert.Contains(w.Messaging.Messages,m=>m.Kind==BattleCaptivity.RansomKind&&m.SenderId==w.PlayerControl.Value&&m.Body.Contains("応じません"));
+        // 本人の家がその家の者を捕らえると、書状で知った家臣と引き換えを申し入れられる。
+        var c2=new StrategyCampaign(new("campaign:national/test/p3"),new(npc.Id),new(w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction!),new(npc.Home),w.ElapsedSeconds,0,"border"){Real=true};
+        var mine=w.NewGame.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction!;
+        w.CommitSequence++;
+        w.Strategy=w.Strategy! with{Campaigns=[..w.Strategy.Campaigns,c2],Outcomes=[..w.Strategy.Outcomes,new(c2.Id,w.ElapsedSeconds,w.CommitSequence,false){Capture=new(theirs,new(npc.Id),new(mine),w.PlayerControl,new(w.NewGame.Start.Factions.Single(f=>f.Id==mine).Home),w.ElapsedSeconds)}]};
+        var option=Assert.Single(BattleCaptivity.ExchangeOptions(w,w.PlayerControl));Assert.Equal((theirs,retainer),option);
+        w.CommitSequence++;BattleCaptivity.ProposeExchange(w,new("request:test/propose"),theirs,retainer);
+        Assert.Empty(BattleCaptivity.ExchangeOptions(w,w.PlayerControl));
+        Step(w,Due(w,"放ちたく"));
+        Assert.False(BattleCaptivity.HeldAt(w,retainer,w.ElapsedSeconds,w.CommitSequence+1)); // 相手は応じて家臣を放つ
+        Assert.Contains(w.Messaging.Messages,m=>m.Kind==BattleCaptivity.RansomKind&&m.RecipientId==w.PlayerControl.Value&&m.Body.Contains("応じます"));
+        BattleCaptivity.Validate(w);
+    }
+}
