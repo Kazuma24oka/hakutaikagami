@@ -16,13 +16,19 @@ public static class NpcJudgment
         CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Ambition),CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Duty),
         CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Caution),CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Courage),
         CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.Affection),CharacterRelations.DiagnosticTrait(w,actor,SocialTrait.GainSeeking));
+    // 当主の一覧は、同じ世界・時点・版で多くの人物について続けて問うので直前の答えを覚える（手番と区切りの計算の中だけで使い、変更の途中では使わない）。
+    [ThreadStatic] static (ContractWorld? W,long At,long Rev,long Commit,long? Ctx,HashSet<string>? Set) lastHeads;
+    static HashSet<string> Heads(ContractWorld w,long at,long revision){var k=lastHeads;if(k.Set!=null&&ReferenceEquals(k.W,w)&&k.At==at&&k.Rev==revision&&k.Commit==w.CommitSequence&&k.Ctx==ControlContext.Revision)return k.Set;var set=HouseSuccession.Factions(w,at,revision).Select(f=>f.Head).ToHashSet(StringComparer.Ordinal);lastHeads=(w,at,revision,w.CommitSequence,ControlContext.Revision,set);return set;}
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,HashSet<string>> localLords=new();
+    static HashSet<string> LocalLords(NewGameState data)=>localLords.GetValue(data,d=>d.Start.People.Where(p=>p.InitialRole==StartTemplate.LocalLord).Select(p=>p.Id).ToHashSet(StringComparer.Ordinal));
     public static NpcCadence CadenceAt(ContractWorld w,EntityId actor,long at,long revision)
     {using var _ccRev=ControlContext.At(revision);
         // 近接は計算頻度だけに使う。人物の判断候補へ主人公の位置を渡さない。
-        var history=w.ForkTransportLocation();history.Branches=w.Branches! with{Journeys=w.Branches!.Journeys.Where(j=>w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<=revision))).ToArray()};
+        // 版より後に出した依頼の旅を除いた世界で位置を求める。今の版（以後の依頼がない）なら除くものはないので、写さずにそのまま使う。
+        var history=revision>=w.CommitSequence?w:w.ForkTransportLocation();if(!ReferenceEquals(history,w))history.Branches=w.Branches! with{Journeys=w.Branches!.Journeys.Where(j=>w.Tasks.Any(t=>t.Id==j.Task&&w.Requests.Any(r=>r.Id==t.RequestId&&r.CommitSequence<=revision))).ToArray()};
         var site=RegionalCampaign.RoadActorPointAt(history,actor,at);
         var player=RegionalCampaign.RoadActorPointAt(history,w.PlayerControl,at);
-        if(site==player||HouseSuccession.Factions(w,at,revision).Any(f=>f.Head==actor.Value)||w.NewGame!.Start.People.Any(p=>p.Id==actor.Value&&p.InitialRole==StartTemplate.LocalLord))return NpcCadence.Daily;
+        if(site==player||Heads(w,at,revision).Contains(actor.Value)||LocalLords(w.NewGame!).Contains(actor.Value))return NpcCadence.Daily;
         return w.Memberships.Any(m=>m.Subject==actor&&m.From<=at&&(at<m.Until||at==m.Until&&revision<m.Revision))?NpcCadence.Weekly:NpcCadence.Monthly;
     }
     static NpcPersonality SkillWeights(DevelopmentSkill s)=>s switch{

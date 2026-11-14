@@ -224,6 +224,20 @@ public sealed class ContractWorld
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public NewMilitaryState[]? OtherMilitaryLedgers {get;set;}
     internal ContractWorld ForkMilitaryLedger()=>(ContractWorld)MemberwiseClone();
+    // 変更と試しの適用のための写し（2026-11-14）。記録（record）とその中の配列は書き換えない約束なので共有し、世界そのもの・世界の配列・書状の状態・ID の番号だけを新しくする。
+    // 中身は JSON で写したものと同じ（保存されない一時の欄は JSON と同じく空にする）。JsonCopyForChange を true にすると今までどおり JSON で写す（比べる検査用）。
+    internal static bool JsonCopyForChange=Environment.GetEnvironmentVariable("HAKUTAI_JSON_COPY")=="1";
+    static readonly System.Reflection.PropertyInfo[] arrayProperties=typeof(ContractWorld).GetProperties(System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public).Where(p=>p.PropertyType.IsArray&&p.CanRead&&p.CanWrite&&p.GetIndexParameters().Length==0).ToArray();
+    internal ContractWorld CopyForChange()
+    {
+        if(JsonCopyForChange)return ContractJson.Copy(this);
+        var copy=(ContractWorld)MemberwiseClone();
+        foreach(var p in arrayProperties)if(p.GetValue(this) is Array a)p.SetValue(copy,a.Clone());
+        copy.Messaging=new(){Messages=[..Messaging.Messages],Attempts=[..Messaging.Attempts],Receipts=[..Messaging.Receipts],Knowledge=[..Messaging.Knowledge],Proxies=[..Messaging.Proxies]};
+        copy.IdCounters=new(IdCounters,IdCounters.Comparer);
+        copy.MilitaryLedgerHistory=null;
+        return copy;
+    }
     // Transient read-only context for historical/other-ledger physical reconstruction.
     [JsonIgnore]
     internal NewMilitaryState[]? MilitaryLedgerHistory {get;set;}

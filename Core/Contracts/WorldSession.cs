@@ -31,7 +31,7 @@ public sealed partial class WorldSession
             if(!inPlace&&!GuardTurnSnapshots)return state;
             if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");return turnView;}
             if(GuardTurnSnapshots&&turnView!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");
-            turnView=ContractJson.Copy(state);turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;return turnView;
+            turnView=state.CopyForChange();turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;return turnView;
         }
     }
     internal bool TryHandoff(long revision,Action swap)
@@ -46,7 +46,7 @@ public sealed partial class WorldSession
     {
         // まとめた手番の間（inPlace）は写さずに直接変える。途中で例外が出たら、まとめた手番ごとやり直す（batchBroken）。
         if(inPlace){turnView=null;try{ChangeCore(state,change,beforeCommit);}catch{batchBroken=true;throw;}return;}
-        ChangeCore(ContractJson.Copy(state),change,beforeCommit);
+        ChangeCore(state.CopyForChange(),change,beforeCommit);
     }
     private void ChangeCore(ContractWorld next,Action<ContractWorld> change,Action? beforeCommit)
     {

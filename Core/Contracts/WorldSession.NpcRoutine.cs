@@ -19,7 +19,7 @@ public sealed partial class WorldSession
             {
                 // 外側が変更ごとに写していても、ここが写さずに変えてよい手番なら、1回だけ写してから直接変える（外側の手番の前の状態は変えない）。
                 bool nest=allowInPlace&&!inPlace&&!(WorldTimeControl.Enabled(state)&&NpcArmies.Enabled(state)&&state.NpcArmies!.Musters.Length>0);
-                if(nest){state=ContractJson.Copy(state);turnView=null;inPlace=true;}
+                if(nest){state=state.CopyForChange();turnView=null;inPlace=true;}
                 try{run();}finally{if(nest)inPlace=false;}
                 return;
             }
@@ -29,7 +29,7 @@ public sealed partial class WorldSession
                 // 前後を比べる処理（軍勢が見えたときの時間の止め方）が働く世界では、今までどおり手番ごとに写す。
                 var before=state;bool ok=true;deferValidation=true;batchBroken=false;
                 inPlace=allowInPlace&&!(WorldTimeControl.Enabled(state)&&NpcArmies.Enabled(state)&&state.NpcArmies!.Musters.Length>0);
-                if(inPlace){state=ContractJson.Copy(before);turnView=null;}
+                if(inPlace){state=before.CopyForChange();turnView=null;}
                 try{run();}
                 catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException or InvalidOperationException){ok=false;}
                 finally{deferValidation=false;inPlace=false;}
