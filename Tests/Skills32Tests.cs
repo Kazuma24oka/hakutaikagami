@@ -108,3 +108,20 @@ public sealed class LearnFromTeacherTests
         }finally{WorldSession.GuardTurnSnapshots=guard;}
     }
 }
+// 熟練による作業時間（32技能の版、2026-11-14）：基準時間×(1−0.25×技能/100)。普請は普請、検地は農政の技能。
+public sealed class SkilledWorkTimeTests
+{
+    [Fact]
+    public void SkillShortensWorkUpToAQuarter()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());var me=w.PlayerControl;
+        int start=CharacterDevelopment.LevelAt(w,me,DevelopmentSkill.Construction,1);
+        Assert.Equal(7*86400L*(400-start)/400,CharacterDevelopment.WorkSeconds(w,me,DevelopmentSkill.Construction,7*86400,1));
+        w.Development=w.Development! with{Awards=[new(new("task:test/build"),me,DevelopmentSkill.Construction,0,0,100,CharacterDevelopment.LevelXp(100))]};
+        Assert.Equal(100,CharacterDevelopment.LevelAt(w,me,DevelopmentSkill.Construction,1));
+        Assert.Equal(7*86400L*3/4,CharacterDevelopment.WorkSeconds(w,me,DevelopmentSkill.Construction,7*86400,1)); // 技能100で75%
+        // 旧版の世界は変えない。
+        var officer=NewGameWorldTests.Officer();var old=NewGameWorld.Create(NewGameWorldTests.Setup([officer]).World,[officer],officer.Id,developmentPolicy:CharacterDevelopment.Policy);
+        Assert.Equal(7*86400L,CharacterDevelopment.WorkSeconds(old,old.PlayerControl,DevelopmentSkill.Construction,7*86400,1));
+    }
+}

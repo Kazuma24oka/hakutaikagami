@@ -144,6 +144,8 @@ public static class CharacterDevelopment
         long credit = Math.Clamp(28800 - used, 0, PracticeSeconds) * efficiency / 100;
         return (int)((Skills32(w)?LevelOf(xp+credit):Math.Min(100, (xp + credit) / 7200)) - current) * 8;
     }
+    // 熟練による作業時間（32技能の版）：基準時間×(1−0.25×技能/100)。技能は作業を始めた時点の値（後で上がっても遡らない）。旧版はそのまま。
+    public static long WorkSeconds(ContractWorld w,EntityId actor,DevelopmentSkill skill,long baseSeconds,long at)=>!Skills32(w)?baseSeconds:checked(baseSeconds*(400-LevelAt(w,actor,skill,at))/400);
     // その時点の技能レベル（その時点より前に確定した経験まで）。
     internal static int LevelAt(ContractWorld w,EntityId actor,DevelopmentSkill skill,long at)=>!Enabled(w)||!Skills(w).Contains(skill)?0:SkillIn(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,skill);
     internal static int EffectiveAt(ContractWorld w,EntityId actor,DevelopmentAbility ability,long at)=>Math.Clamp(Value(w,(w.Development?.Awards??[]).Where(a=>a.At<at),actor,ability),1,100);
