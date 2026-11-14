@@ -27,3 +27,22 @@ public sealed class StrategyLossesTests
         Assert.Empty(NationalStrategy.Losses(w));
     }
 }
+// 離反を主家へ知らせる書状（DefectionLetters、2026-11-14）：離れた家の当主から主家の当主へ、封をした書状が実際に運ばれる。
+public sealed class DefectionLetterTests
+{
+    [Fact]
+    public void TheDefectingHeadSendsASealedLetterToTheFormerOverlord()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.True(NationalSystems.On(w,"DefectionLetters"));
+        var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
+        var pair=w.NewGame.Start.Factions.Select(f=>(House:f.Id,Overlord:NationalStrategy.DbOverlord(f.Id))).First(x=>x.Overlord!=null&&x.House!=player&&x.Overlord!=player&&w.NewGame.Start.Factions.Any(f=>f.Id==x.Overlord));
+        w.CommitSequence++;
+        NationalStrategy.DefectionLetter(w,new(new(pair.House),new(pair.Overlord!),w.ElapsedSeconds,w.CommitSequence));
+        var m=Assert.Single(w.Messaging.Messages,m=>m.CorrelationId=="defection:"+pair.House);
+        Assert.Equal(HouseSuccession.Head(w,new(pair.House)).Value,m.SenderId);
+        Assert.Equal(HouseSuccession.Head(w,new(pair.Overlord!)).Value,m.RecipientId);
+        Assert.Contains(w.SealedMessages,id=>id.Value==m.Id);
+        Assert.Contains(w.Messaging.Attempts,a=>a.MessageId==m.Id); // 書状は運ばれる
+    }
+}

@@ -285,7 +285,8 @@ public static class NationalStrategy
         {var holder=CapitalHolder(Owners(w,s));var last=s.Capitals is {Length:>0} cs?cs[^1].House.Value:null;
          if(holder!=null&&holder!=last){s=s with{Capitals=[..s.Capitals??[],new(new(holder),w.ElapsedSeconds,w.CommitSequence)]};if(last!=null)CapitalLetter(w,holder);}}
         s=ShogunTurn(w,s);
-        if(StrategyDefections.Enabled(w))s=StrategyDefections.Decide(w,s,Powers(w,Owners(w,s),InitialCounts(w)),date);
+        if(StrategyDefections.Enabled(w)){var before=(s.Defections??[]).Length;s=StrategyDefections.Decide(w,s,Powers(w,Owners(w,s),InitialCounts(w)),date);
+            if(NationalSystems.On(w,"DefectionLetters"))foreach(var d in (s.Defections??[]).Skip(before))DefectionLetter(w,d);}
         var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(w,owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
         var player=w.PlayerControl;var playerHouse=w.NewGame!.Start.Factions.Where(f=>HouseSuccession.Head(w,new(f.Id))==player).Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var playerMember=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==player.Value)?.Faction;if(playerMember!=null)playerHouse.Add(playerMember);
@@ -508,6 +509,16 @@ public static class NationalStrategy
         RegionalCampaign.Bind(w);
     }
     // 京の主が変わったら、将軍から新しい京の主の当主へ書状が届く（将軍家が京の主なら送らない）。
+    // 離反を主家へ知らせる（一覧の DefectionLetters を持つ世界だけ）：離れた家の当主から主家の当主へ、書状が実際に運ばれて届く。
+    internal static void DefectionLetter(ContractWorld w,StrategyDefection d)
+    {
+        var sender=HouseSuccession.Head(w,d.House);var head=HouseSuccession.Head(w,d.From);
+        if(sender==head||w.Characters.Single(x=>x.Id==sender).Life!=LifeState.Adult||w.Characters.Single(x=>x.Id==head).Life!=LifeState.Adult)return;
+        string house=w.Definitions.Organizations.Single(o=>o.Id==d.House).Name;
+        string id=$"message:strategy-defection/{ContractJson.Hash(Encoding.UTF8.GetBytes(d.House.Value+"/"+d.From.Value+"/"+w.ElapsedSeconds))[..16]}";
+        MessageFlow.Send(w.Messaging,new MessageEnvelope(id,"defection:"+d.House.Value,LetterKind,sender.Value,head.Value,$"{house}は、今後は御家の指図を受けず、自らの判断で家を保ちます。",FamilyBirth.People(w).Single(x=>x.Id==head.Value).Site,w.ElapsedSeconds),w.ElapsedSeconds,1);
+        w.SealedMessages=[..w.SealedMessages,new(id)];RegionalCampaign.Bind(w);
+    }
     static void CapitalLetter(ContractWorld w,string holder)
     {
         var shogun=NationalStart.FactionId(Shogun);if(holder==shogun||!w.NewGame!.Start.Factions.Any(f=>f.Id==shogun))return;
