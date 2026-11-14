@@ -5,6 +5,9 @@
 - 仕掛け：`NationalSystems.Current` に名前を足し、その仕組みの `Enabled` に `NationalSystems.On(w,"名前")` を加える。新規開始のときに一覧を `NewGameState.NationalSystems` に写して保存し、保存済みの世界は変えない。専用の設定（SocialPolicy など）を持つ仕組みは、`NationalStart.Create`・`New` でその設定を渡す。
 - 有効にしたもの：生活と目標、同行者、人間関係、婚姻、養子、密書、天候、治安（賊）、家督、歴史モード（`NewGameState.History`。全国の家の戦略の史実の出陣の重みに効く）、健康と診療・傷病死、和睦と同盟の交渉、合戦での捕縛と処遇、家臣が NPC の軍を率いること（RetainerCommand）、NPC の自分からの手当（NpcSelfCare）、他人の能力の推定（AbilityReputation：家の当主と同じ家の者は評判で、面識のある相手は狭い幅で、段階・推定幅・出典・時点を出し、真の値は渡さない。BD-16）、遠方の合戦（StrategyBattle）、家の滅亡と再興（StrategyRestoration）、従属の離反（StrategyDefection）、戦・兵站・輸送・航海・道（Codex が接続した24項目。記録は Docs/Design/NationalWarfareV1）。
 - 開始条件の画面の説明口調の文言を名前だけにした。
+- 領地（LiveTerritory、2026-11-14）：普請・職人と交易・検地と布告・常設の奉行を全国の開始で有効にした。地方の版では当主が毎回の変更のたびに自分から動くが、全国では約200家が一度に動いて止まらなくなったので、毎時の区切り（起きる人が決まる時刻）に、操作する人物の近くで起きている当主・奉行だけが動く（LiveTerritory.Acting）。開始時の家の銭は0なので、検地（銭30）は収入が入ってから。
+- 私財の計算の軽量化：寺社・贈答・警固・賊・職人・口入れ・名物・家中・捕虜の銭の出入り（SocialWorld.Net）を、記録に名前が出てくる人だけ計算する（出てこない人は0）。銭が一度でも動くと、全員の私財を変更のたびに数え直して重かった。直す前と後で世界は同じ。
+- 全国の開始で有効でない仕組み（2026-11-14 に数え直し、102のうち25）：18は世界の規則そのもので切り替わる別の開始の仕方の試作（Career・CreatedCampaign・MissionEntry など）で、全国には使わない。時間の止め方（WorldTimeControl）は新規ゲームの画面が全国でも有効にしている。地域の経済（RegionalEconomy）は清洲の試作の村の約束で、全国は郡の帳簿（RegionalDomains）を使う。残りは城代と城の受け渡し（CastleAdministration・CastleHandover）、NPC の判断の土台（NpcJudgment）、私兵の解散（PrivateStanddown）。
 
 ## 工程の表の今の状態
 | 工程 | 担当 | 状態 |

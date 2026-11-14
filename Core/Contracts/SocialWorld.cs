@@ -42,6 +42,18 @@ public static class SocialWorld
     public static long InTransitCoins(ContractWorld w)=>GiftRows(w).Where(g=>g.Phase is "運搬・受領待ち" or "返却待ち").Sum(g=>g.Amount);
     public static string TempleDecision(ContractWorld w,EntityId representative,EntityId donor,SocialWorldAction action){int Known(RenownKind k)=>RenownStrength(w,representative,donor,k);var h=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(Policy+"/temple/"+w.Seed+"/"+representative.Value));int Trait(int n)=>20+(int)(Convert.ToUInt32(h.Substring(n,4),16)%61);var personality=new NpcPersonality(Trait(0),Trait(4),Trait(8),Trait(12),Trait(16),Trait(20));var zero=new NpcPersonality(0,0,0,0,0,0);int utility=(action==SocialWorldAction.Donate?55:45)+Math.Min(10,Known(RenownKind.Benevolence)/5)-Math.Min(50,Known(RenownKind.Infamy)*2);var input=new NpcChoiceInput(representative,w.Seed,w.ElapsedSeconds,personality,NpcAspiration.PreserveHouse,HistoryMode.Fictional,NpcAttention.Equal,[new("accept",true,true,utility,new(0,2,-2,0,1,1),true,false,false),new("decline",true,true,20,new(0,0,3,0,0,0),false,false,false)]);return NpcChoiceRanking.Choose(input)!;}
     internal static SocialWorldEvent[] Ledger(ContractWorld w)=>Events(w);
+    // Net が 0 でありうるのは、下の記録に名前が出てこない人だけ（Net が読む記録はこれで全部）。全員の私財をまとめて求めるとき、名前の出てこない人の計算を省く。
+    internal static HashSet<string> MoneyPeople(ContractWorld w)
+    {
+        var set=new HashSet<string>(StringComparer.Ordinal);
+        foreach(var bytes in new[]{w.SocialWorld==null?null:ContractJson.Write(w.SocialWorld),w.Bandits==null?null:ContractJson.Write(w.Bandits),w.Crafts==null?null:ContractJson.Write(w.Crafts),w.BrokerWork==null?null:ContractJson.Write(w.BrokerWork),w.SocialAssets==null?null:ContractJson.Write(w.SocialAssets),w.Court==null?null:ContractJson.Write(w.Court),w.Captives==null?null:ContractJson.Write(w.Captives)})
+        {
+            if(bytes==null)continue;var reader=new System.Text.Json.Utf8JsonReader(bytes);
+            while(reader.Read())if(reader.TokenType==System.Text.Json.JsonTokenType.String)set.Add(reader.GetString()!);
+        }
+        return set;
+    }
+
     internal static EntityId CourierRequest(EntityId gift,bool returning=false)=>new((returning?"request:social-return/":"request:social-courier/")+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(gift.Value))[..24]);
     static int Rank(ContractWorld w,EntityId actor)=>FamilyBirth.People(w).Single(p=>p.Id==actor.Value).InitialRole switch{StartTemplate.Daimyo=>5,StartTemplate.LocalLord=>4,StartTemplate.Castellan=>3,StartTemplate.Retainer=>2,StartTemplate.Subretainer=>1,_=>0};
     static SocialGiftTerms GiftTerms(ContractWorld w,SocialWorldInput input,EntityId actor,EntityId origin){var carrier=input.Carrier??actor;var destination=Local(w,actor,input.Person)?origin:Events(w).Where(e=>e.Input.Action==SocialWorldAction.Visit&&(e.Actor==actor&&e.Input.Person==input.Person||e.Actor==input.Person&&e.Input.Person==actor)).OrderBy(e=>e.Revision).LastOrDefault()?.Site;Need(destination!=null||carrier==actor,"使者に渡せる最後の面会先がありません。先に訪問して届け先を確認してください");destination??=origin;Intent? movement=null;if(carrier!=actor&&destination!=origin)movement=TravelWorld.ActorMove(CourierPlanning(w,carrier),CourierRequest(input.Id).Value,carrier,NewGameWorld.Node(destination.Value.Value),true,LandRoute);return new(destination.Value,movement,Rank(w,actor),Rank(w,carrier));}

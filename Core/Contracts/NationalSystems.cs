@@ -11,6 +11,8 @@ public static class NationalSystems
         // 生活・家
         "PersonalLife", "NpcSelfCare", "AbilityReputation",
         "HouseSuccession",
+        // 領地（普請・職人と交易・検地と布告・常設の奉行）
+        "LiveTerritory",
         // 戦・兵站・輸送・道
         "OfficerBattleHealth", "ExpeditionFodder",
         "FieldPresence", "FieldSupply", "FieldWorld", "RegionalBattle", "RegionalScenery",

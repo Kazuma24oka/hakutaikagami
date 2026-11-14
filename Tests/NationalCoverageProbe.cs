@@ -19,6 +19,8 @@ public sealed class NationalCoverageProbe(ITestOutputHelper o)
             bool on;try{on=(bool)m.Invoke(null,[w])!;}catch{continue;}
             rows.Add((on?"ON  ":"off ")+t.Name);
         }
+        // 世界の記録の欄が空（null）かどうか（欄の有無で動く仕組みの分）
+        foreach(var pr in typeof(ContractWorld).GetProperties().Where(p=>p.GetIndexParameters().Length==0&&!p.PropertyType.IsValueType))rows.Add((pr.GetValue(w)==null?"空  ":"あり ")+"world."+pr.Name);
         foreach(var r in rows.OrderBy(r=>r))o.WriteLine(r);
         File.WriteAllLines(Environment.GetEnvironmentVariable("HAKUTAI_COVERAGE_OUT")!,rows.OrderBy(r=>r));
     }
