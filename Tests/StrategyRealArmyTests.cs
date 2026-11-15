@@ -40,7 +40,8 @@ public sealed class StrategyRealArmyTests(ITestOutputHelper o)
          trial.Strategy=trial.Strategy with{Outcomes=[..trial.Strategy.Outcomes,new(campaign,trial.ElapsedSeconds,trial.CommitSequence,false){Capture=held}]};
          ContractValidation.Validate(trial);
          Assert.True(BattleCaptivity.HeldAt(trial,held.Person,trial.ElapsedSeconds,trial.CommitSequence+1));
-         Assert.Equal(target,PersonalCompanions.PhysicalSiteAt(trial,held.Person,trial.ElapsedSeconds,trial.CommitSequence+1));
+         // 捕らえた場所から城まで護送する（CaptiveEscort）。着いた後はその城にいる。
+         {long arrive=Math.Max(trial.ElapsedSeconds,BattleCaptivity.EscortArrival(trial,held));Assert.Equal(target,PersonalCompanions.PhysicalSiteAt(trial,held.Person,arrive,trial.CommitSequence+1));}
          // 崩れていない軍の大将は捕らえない。
          Assert.Null(NationalStrategy.CaptureLeader(trial,c,new StrategyBattle(100,100,100,100,10,50,60,false,true),roll:0));}
         // 着いて留まり終えるまで進める（最大12時間）。
