@@ -19,8 +19,11 @@ public sealed partial class WorldSession
     public ContractWorld DiagnosticSnapshot() { lock(gate) return ContractJson.Copy(state); }
     // 進行の中の仕組みごとの手番の確認が読むだけの写し。今の状態（同じ物）の間は1つを共有し、世界全体を写し直さない。
     // 写しは読むだけで、書き換えない。検査（GuardTurnSnapshots）では、共有するたびに書き換えがないことを確かめる。
+    // 検査によっては一時的に切るので、切っている間に作った写し（照合の値が無い）は確かめない。
     internal static bool GuardTurnSnapshots;
-    private ContractWorld? turnSource,turnView;private string? turnHash;
+    private ContractWorld? turnSource,turnView;private string? turnHash;private byte[]? turnBytes;
+    // 写しが書き換えられたとき、書き換えられた項目の名前を知らせる（検査のときだけ）。
+    private string TurnChanged(){var was=ContractJson.Read<ContractWorld>(turnBytes!);var names=typeof(ContractWorld).GetProperties().Where(p=>p.CanRead&&p.GetIndexParameters().Length==0&&ContractJson.CanonicalHash(p.GetValue(was))!=ContractJson.CanonicalHash(p.GetValue(turnView))).Select(p=>p.Name);return "手番の確認の写しが書き換えられました："+string.Join("、",names);}
     // 今の世界を写さずに読む（f は世界を変えない確かめだけ）。手番の初めの「することがあるか」の確かめに使い、することがあるときだけ TurnSnapshot で写す。
     internal T Peek<T>(Func<ContractWorld,T> f){lock(gate)return f(state);}
     internal ContractWorld TurnSnapshot()
@@ -29,9 +32,9 @@ public sealed partial class WorldSession
         {
             // 確定した状態は後で書き換えない（変更は写しに対して行う）ので、直接変える間（inPlace）でなければ、写さずにそのまま渡す。検査では写して書き換えがないことを確かめる。
             if(!inPlace&&!GuardTurnSnapshots)return state;
-            if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");return turnView;}
-            if(GuardTurnSnapshots&&turnView!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");
-            turnView=state.CopyForChange();turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;return turnView;
+            if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&turnHash!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException(TurnChanged());return turnView;}
+            if(GuardTurnSnapshots&&turnView!=null&&turnHash!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException(TurnChanged());
+            turnView=state.CopyForChange();turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;turnBytes=GuardTurnSnapshots?ContractJson.Write(turnView):null;return turnView;
         }
     }
     internal bool TryHandoff(long revision,Action swap)
