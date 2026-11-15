@@ -31,8 +31,10 @@ public static class NationalStart
     public static string? DbHouse(string faction)=>dbHouses.Value.GetValueOrDefault(faction);
     static readonly Lazy<SetupScenario> scenario=new(()=>Build(false,false)),courtScenario=new(()=>Build(true,false)),personScenario=new(()=>Build(true,true)),kinScenario=new(()=>Build(true,true,true));
     // 新規の開始は母の血縁も入れた版（一覧の DbMothers）。保存の開始定義は、その世界の一覧に合わせて作り直す。
-    public static SetupScenario Scenario(string edition=RevenueEdition)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:edition==RevenueEdition&&NationalSystems.Current.Contains("DbMothers")?kinScenario.Value:personScenario.Value);
-    internal static SetupScenario ScenarioFor(NewGameState data)=>data.HistoricalCatalog==RevenueEdition&&data.NationalSystems?.Contains("DbMothers")!=true?ContractJson.Copy(personScenario.Value):Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!);
+    public static SetupScenario Scenario(string edition=RevenueEdition)=>Scenario(edition,NationalSystems.Current);
+    // 一覧（新規開始で世界に保存するもの）に DbMothers があれば、母を実の親に入れた開始。一覧を保存しない世界は空の一覧で作る。
+    public static SetupScenario Scenario(string edition,IReadOnlyCollection<string> systems)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:edition==RevenueEdition&&systems.Contains("DbMothers")?kinScenario.Value:personScenario.Value);
+    internal static SetupScenario ScenarioFor(NewGameState data)=>Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!,data.NationalSystems??[]);
     static SetupScenario Build(bool court,bool personData,bool mothers=false)
     {
         var people=new List<SetupPerson>();var seen=new HashSet<string>(StringComparer.Ordinal);var factions=new List<SetupFaction>();var homes=new Dictionary<string,string>(StringComparer.Ordinal);
