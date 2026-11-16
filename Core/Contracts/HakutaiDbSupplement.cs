@@ -16,6 +16,9 @@ public sealed record HakutaiDbExtra(string Id)
     public string[]? ReligiousNames {get;init;}
     public string? Status {get;init;}
     public int? HeadshipFrom {get;init;}
+    // 技能・専門と宗派・信仰の候補（生涯の記録。記事の本文を含む。1560年の時点とは限らない）。
+    public string[]? Specialties {get;init;}
+    public string[]? Religions {get;init;}
 }
 public sealed record HakutaiDbBasedOn(string Edition,string Commit);
 public sealed record HakutaiDbSupplementEdition(int Schema,string Id,HakutaiDbBasedOn BasedOn,HakutaiDbSource Source,string Policy,HakutaiDbExtra[] People);

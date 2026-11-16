@@ -214,6 +214,10 @@ def main():
         out = sorted({(o["Kind"], o["Office"], o["From"]) for o in keep})
         return [{"Kind": k, "Office": n, "From": f, "Basis": "就いた年の記録（記事の本文の候補を含む）"} for k, n, f in out] or None
 
+    # 技能・専門と宗派・信仰（2026-11-16、記事の本文の候補を含む）。生涯の記録で、1560年の時点とは限らない。
+    specialty, religion = {}, {}
+    for s_, prop, v in db.execute("select subject, property, value_text from assertions where property in ('specialty','religion') and state='value' and value_text is not null and appraisal <> 'rejected'"):
+        (specialty if prop == "specialty" else religion).setdefault(s_, set()).add(v)
     surnames_all = {v for (v,) in db.execute("select distinct value_text from assertions where property='surname' and value_text is not null") if v and 2 <= len(v) <= 4}
     names = {}
     for subj, val, q, y in db.execute("select subject, value_text, qualifiers, valid_from_year from assertions where id like 'A-NH-%' and property='name'"):
@@ -287,6 +291,8 @@ def main():
             "ReligiousNames": sorted(religious.get(p, ())) or None,
             "Status": (lambda v: v[0] if len(v) == 1 else None)(sorted(status_.get(p, ()))),
             "HeadshipFrom": headship.get(p),
+            "Specialties": sorted(specialty.get(p, ())) or None,
+            "Religions": sorted(religion.get(p, ())) or None,
             "StartName": start_name(p, r[1], year_of(r[9]))[0], "StartNameBasis": start_name(p, r[1], year_of(r[9]))[1],
             "NameHistory": [{"Name": n, "From": y, "Step": st} for _, n, st, y in sorted(names.get(p, ())) if st == "幼名" or plausible(p, n)],
             "Records": r[13],
@@ -345,7 +351,7 @@ def main():
     # v2 の名簿の人物に、v3 で足した項目（兄弟姉妹・官位・1560年の在職・法名・身分・家督相続の年）だけを持たせる。
     base = json.loads(BASE.read_text(encoding="utf-8"))
     base_ids = {x["Id"] for x in base["People"]}
-    extra_keys = ("Siblings", "Offices", "Held1560", "ReligiousNames", "Status", "HeadshipFrom")
+    extra_keys = ("Siblings", "Offices", "Held1560", "ReligiousNames", "Status", "HeadshipFrom", "Specialties", "Religions")
     rows = []
     for x in people:
         if x["Id"] in base_ids and any(x.get(k) for k in extra_keys):
@@ -359,7 +365,7 @@ def main():
                 rows.append(row)
     sup = {"Schema": 1, "Id": "hakutai-db-1560-supplement-v1", "BasedOn": {"Edition": base["Id"], "Commit": base["Source"]["Commit"]},
            "Source": doc["Source"],
-           "Policy": "v2 の名簿の人物に足す項目。官職・位階は就いた年の記録のあるものだけを1560年の在職（Held1560）とし、年の無いものは生涯の記録（Offices、時期不明）。記事の本文から抜いた年は三次資料の候補。兄弟姉妹は名簿の中の人物だけを指す。",
+           "Policy": "v2 の名簿の人物に足す項目。官職・位階は就いた年の記録のあるものだけを1560年の在職（Held1560）とし、年の無いものは生涯の記録（Offices、時期不明）。記事の本文から抜いた年は三次資料の候補。兄弟姉妹は名簿の中の人物だけを指す。技能・専門（Specialties）と宗派・信仰（Religions）は生涯の記録の候補（記事の本文を含む）で、1560年の時点とは限らない。",
            "People": rows}
     def dump(v):
         return json.dumps(v, ensure_ascii=False, separators=(",", ":"))

@@ -70,6 +70,20 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
         Assert.DoesNotContain(CentralTitles.Held(old,chokei),t=>t.Basis==CentralTitles.DbHeldBasis);
         Assert.Equal(CentralTitles.NoRank,CentralTitles.FormalRank(old,chokei,old.ElapsedSeconds,old.CommitSequence+1));
     }
+    // 史実人物の開始時の技能（S01）：百代鏡DBの技能・専門の候補（経歴の手がかり）がある技能を得意に入れ、表示の根拠を分ける。
+    // 一覧に DbSkillHints のない世界（入れる前の保存）では今までどおり（手がかりを使わない）。
+    [Fact]
+    public void HistoricalPeopleStartWithSkillsFromTheirRecordedCareer()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.Contains(NationalSystems.DbSkillHints,w.NewGame!.NationalSystems!);
+        var takakage=w.Characters.Select(c=>c.Id).Single(id=>NationalStart.DbPerson(id.Value)?.Name=="小早川隆景");
+        Assert.Contains(DevelopmentSkill.Navy,CharacterDevelopment.Hints(w,takakage));
+        Assert.True(CharacterDevelopment.StartLevel(w,takakage,DevelopmentSkill.Navy)>=5);
+        Assert.Contains(CharacterDevelopment.View(w,takakage,takakage)!.Skills,v=>v.Name==CharacterDevelopment.Name(DevelopmentSkill.Navy)&&v.Source.StartsWith("経歴の記録からの推定",StringComparison.Ordinal));
+        var old=ContractJson.Read<ContractWorld>(ContractJson.Write(w));old.NewGame=old.NewGame! with{NationalSystems=old.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.DbSkillHints).ToArray()};
+        Assert.Empty(CharacterDevelopment.Hints(old,takakage));
+    }
     // 他人の能力の推定（BD-16）：家の当主と同じ家の者は評判で段階と幅を知り、真の値は渡さない。それ以外の家の者は不明。一覧にない世界では不明。
     [Fact]
     public void OthersAbilitiesShowReputationRangesWithoutTrueValues()

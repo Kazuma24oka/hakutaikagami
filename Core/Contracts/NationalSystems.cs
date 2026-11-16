@@ -27,9 +27,12 @@ public static class NationalSystems
         QuietNpcSocial,
         // 1560年の官位（百代鏡DBの追加の版、就いた年の記録のあるものだけ）を名乗りと朝廷の序列の始まりに入れる。
         DbOffices1560,
+        // 史実人物の開始時の技能に、百代鏡DBの技能・専門の候補（経歴の手がかり）を入れる。
+        DbSkillHints,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
+    public const string DbSkillHints="DbSkillHints";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);
     // 一覧ごとに一度だけ引ける形にする（判定は多くの場所で何度も呼ばれる）。

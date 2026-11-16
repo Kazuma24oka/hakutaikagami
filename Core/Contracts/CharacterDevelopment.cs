@@ -78,9 +78,24 @@ public static class CharacterDevelopment
         var weapons=new[]{DevelopmentSkill.Swordsmanship,DevelopmentSkill.Spear,DevelopmentSkill.Bow,DevelopmentSkill.Cavalry};
         var weapon=weapons[H("weapon")%weapons.Length];
         var best=Enum.GetValues<DevelopmentSkill>().Where(s=>!weapons.Contains(s)&&s!=DevelopmentSkill.Gun).OrderByDescending(s=>Base(w,person,Main(s))+H(s.ToString())%25).ThenBy(s=>s).Take(3);
+        // 経歴の手がかり（一覧の DbSkillHints の世界だけ）：百代鏡DBの技能・専門の候補がある技能は、得意な技能に入れて少し高くする。
+        // 武器の手がかりがあれば、その武器を得意の武器にする。手がかりは生涯の記録の候補なので、1560年に若い人は低くする。
+        var hints=Hints(w,person);
+        foreach(var hw in hints)if(weapons.Contains(hw)){weapon=hw;break;}
         var result=new Dictionary<DevelopmentSkill,int>();
         foreach(var s in best.Prepend(weapon))result[s]=Math.Clamp((Base(w,person,Main(s))-20)/2+H("level/"+s)%11,5,40);
+        int age=FamilyBirth.People(w).SingleOrDefault(x=>x.Id==person.Value)?.BirthYear is int by?WorldCalendar.At(w.EpochDate,0).Year-by:30;
+        foreach(var s in hints)result[s]=Math.Max(result.GetValueOrDefault(s),Math.Clamp((Base(w,person,Main(s))-20)/2+10+H("hint/"+s)%11,10,50)*(age<20?1:2)/2);
         return result;});
+    // 百代鏡DBの技能・専門の候補から、32技能への対応（2026-11-16、S01）。対応の無い専門は使わない。
+    internal static readonly IReadOnlyDictionary<string,DevelopmentSkill> SpecialtySkills=new Dictionary<string,DevelopmentSkill>(StringComparer.Ordinal){
+        ["外交"]=DevelopmentSkill.Negotiation,["行政"]=DevelopmentSkill.Adjudication,["算術"]=DevelopmentSkill.Finance,["水軍"]=DevelopmentSkill.Navy,
+        ["茶の湯"]=DevelopmentSkill.Tea,["剣術"]=DevelopmentSkill.Swordsmanship,["和歌"]=DevelopmentSkill.Writing,["書"]=DevelopmentSkill.Writing,["連歌"]=DevelopmentSkill.Renga,
+        ["築城"]=DevelopmentSkill.Construction,["弓術"]=DevelopmentSkill.Bow,["槍術"]=DevelopmentSkill.Spear,["鉄炮"]=DevelopmentSkill.Gun,["馬術"]=DevelopmentSkill.Cavalry,
+        ["医術"]=DevelopmentSkill.Medicine,["忍び"]=DevelopmentSkill.Stealth,["鉱山"]=DevelopmentSkill.Mining,["兵站"]=DevelopmentSkill.Logistics};
+    internal static DevelopmentSkill[] Hints(ContractWorld w,EntityId person)=>
+        NationalSystems.On(w,NationalSystems.DbSkillHints)&&NationalStart.DbPerson(person.Value) is {} db&&HakutaiDbSupplement.Person(db.Id)?.Specialties is {} sp
+            ?sp.Where(SpecialtySkills.ContainsKey).Select(x=>SpecialtySkills[x]).Distinct().Order().ToArray():[];
     // 開始時の基礎能力は人物の定義（能力の記録かシード）だけで決まるので、人と能力ごとに一度だけ求めて覚える。
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,System.Collections.Concurrent.ConcurrentDictionary<(string,DevelopmentAbility),int>> bases=new();
     static int Base(ContractWorld w,EntityId actor,DevelopmentAbility ability)=>bases.GetValue(w.NewGame!,_=>new()).GetOrAdd((actor.Value,ability),_=>BaseCore(w,actor,ability));
@@ -229,7 +244,7 @@ public static class CharacterDevelopment
         bool own=observer==person;var rows=w.Development!.Awards;
         if(own){
             var abilities=BaseAbilities.Select(a=>new DevelopmentValue(Name(a),Value(w,rows,person,a),rows.Where(x=>x.Actor==person&&AbilityFor(w,x.Skill)==a).Sum(x=>x.Experience),FamilyBirth.People(w).Single(p=>p.Id==person.Value).Attributes==null?"試作の固定初期値＋実行記録（史実評価ではありません）":"登録能力＋実行記録",w.ElapsedSeconds,"本人の正確値")).ToArray();
-            var skills=Skills(w).Select(s=>new DevelopmentValue(Name(s),SkillIn(w,rows,person,s),Xp(rows,person,s)+(Skills32(w)?LevelXp(StartLevel(w,person,s)):0),Skills32(w)&&StartLevel(w,person,s)>0?"試作の初期値（未採録）＋完了した修行・点検の実時間":"完了した修行・点検の実時間",w.ElapsedSeconds,"本人の正確値")).ToArray();
+            var skills=Skills(w).Select(s=>new DevelopmentValue(Name(s),SkillIn(w,rows,person,s),Xp(rows,person,s)+(Skills32(w)?LevelXp(StartLevel(w,person,s)):0),Skills32(w)&&StartLevel(w,person,s)>0&&Hints(w,person).Contains(s)?"経歴の記録からの推定の初期値＋完了した修行・点検の実時間":Skills32(w)&&StartLevel(w,person,s)>0?"試作の初期値（未採録）＋完了した修行・点検の実時間":"完了した修行・点検の実時間",w.ElapsedSeconds,"本人の正確値")).ToArray();
             return new(person,true,abilities,skills,"無料修行は30分。完了時のみ経験を確定し、1日最大8時間分。未完了分は加算しません。経験7200で技能1、対応経験360000で基礎能力1（上限100）。勲功・役職とは別です。健康・負傷・加齢の補正は未導入です。");
         }
         // Only received factual reports enter this view. Never read the subject's private profile or XP.

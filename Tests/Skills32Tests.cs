@@ -20,11 +20,13 @@ public sealed class Skills32Tests
         var me=w.PlayerControl;
         var card=Assert.IsType<DevelopmentCard>(CharacterDevelopment.View(w,me,me));
         Assert.Equal(32,card.Skills.Length);
-        // 開始時の熟練は4つだけ（武器1つを含む）。ほかは0。史料のない値は試作の初期値と示す。
+        // 開始時の熟練は、得意の4つ（武器1つを含む）と、百代鏡DBの経歴の手がかりの技能（2026-11-16、DbSkillHints）。ほかは0。
+        // 手がかりの技能は「経歴の記録からの推定」、それ以外は試作の初期値（未採録）と示す。
+        var hints=CharacterDevelopment.Hints(w,me).Select(CharacterDevelopment.Name).ToHashSet();
         var started=card.Skills.Where(s=>s.Value>0).ToArray();
-        Assert.Equal(4,started.Length);
+        Assert.InRange(started.Length,4,4+hints.Count);Assert.All(hints,h=>Assert.Contains(started,s=>s.Name==h));
         Assert.Contains(started,s=>s.Name is "剣術" or "槍" or "弓" or "騎馬");
-        Assert.All(started,s=>{Assert.InRange(s.Value!.Value,5,40);Assert.Contains("未採録",s.Source);Assert.Equal(CharacterDevelopment.LevelXp(s.Value.Value),s.Experience);});
+        Assert.All(started,s=>{Assert.InRange(s.Value!.Value,5,50);Assert.Contains(hints.Contains(s.Name)?"経歴の記録からの推定":"未採録",s.Source);Assert.Equal(CharacterDevelopment.LevelXp(s.Value.Value),s.Experience);});
         // 医術を30分独習すると、実働1800秒の半分の900経験。
         var s=new WorldSession(w);
         var medicine=card.Skills.Single(x=>x.Name=="医術");
