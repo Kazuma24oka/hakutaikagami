@@ -12,6 +12,8 @@ public static class CentralTitles
 {
     public const string DbBasis="db-1560";
     public const string CourtBasis="court";
+    // 1560年の在職（百代鏡DBの追加の版、就いた年の記録のあるもの。一覧の DbOffices1560 の世界だけ）。
+    public const string DbHeldBasis="db-1560-held";
     public const int NoRank=15; // 正六位（六位以下と無位をまとめた段）
     static readonly Lazy<TitleCatalog> catalog=new(()=>
     {
@@ -36,6 +38,7 @@ public static class CentralTitles
     {
         var rows=new List<HeldTitle>();
         if(NationalStart.DbPerson(person.Value)?.Kanto is {Length:>0} kanto)rows.Add(new(kanto,ByName(kanto)?.Id,DbBasis));
+        foreach(var h in Held1560(w,person))if(rows.All(r=>r.Name!=h.Office))rows.Add(new(h.Office,ByName(h.Office)?.Id,DbHeldBasis));
         var events=HouseholdCourt.Events(w);
         foreach(var e in events.Where(e=>e.Input.Action==CourtAction.IssueCourtRank&&e.Input.Person==person&&MessageFlow.Knows(w.Messaging,CentralRank.ReplyId(e),person.Value)))
         {var id=CentralRank.RequestedTitle(events,e)??"rank:14";rows.Add(new(Title(id)!.Name,id,CourtBasis));}
@@ -45,6 +48,9 @@ public static class CentralTitles
     internal static int FormalRank(ContractWorld w,EntityId person,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         int best=NoRank;
+        // 1560年に就いていた位階・官職の相当位階（一覧の DbOffices1560 の世界だけ）が、朝廷の記録の始まり。
+        foreach(var h in Held1560(w,person))
+            if(ByName(h.Office) is {} t)best=Math.Min(best,t.Kind=="rank"?t.Order:t.Rank is {} r?RankOrder(r):NoRank);
         var events=HouseholdCourt.Events(w);
         foreach(var e in events.Where(e=>e.Input.Action==CourtAction.IssueCourtRank&&e.Input.Person==person&&(e.At<at||e.At==at&&e.Revision<rev)))
         {
@@ -53,6 +59,9 @@ public static class CentralTitles
         }
         return best;
     }
+    // 本人の1560年の在職（開始の時点の事実。DBの人物で、一覧に DbOffices1560 のある世界だけ）。
+    public static HakutaiDbHeldOffice[] Held1560(ContractWorld w,EntityId person)=>
+        NationalSystems.On(w,NationalSystems.DbOffices1560)&&NationalStart.DbPerson(person.Value) is {} db&&HakutaiDbSupplement.Person(db.Id)?.Held1560 is {} held?held:[];
     static bool FormallyHeldByOther(ContractWorld w,EntityId person,string title,long at,long rev)
     {using var _ccRev=ControlContext.At(rev);
         var events=HouseholdCourt.Events(w);

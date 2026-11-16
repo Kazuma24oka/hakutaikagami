@@ -50,6 +50,26 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
         var old=ContractJson.Read<ContractWorld>(ContractJson.Write(w));old.NewGame=old.NewGame! with{NationalSystems=old.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.QuietNpcSocial).ToArray()};
         Assert.True(SocialWorld.NpcRoutine(old));
     }
+    // 1560年の官位（S01、百代鏡DBの追加の版）：就いた年の記録が1560年以前の官位を、名乗りと朝廷の序列の始まりに入れる。
+    // 年の無い官位は在職にしない。一覧に DbOffices1560 のない世界（入れる前の保存）では今までどおり無い。
+    [Fact]
+    public void NationalStartHoldsDatedOfficesOf1560()
+    {
+        HakutaiDbSupplement.Validate(HakutaiDbSupplement.Current);
+        Assert.All(HakutaiDbSupplement.Current.People.Where(p=>p.Held1560!=null).SelectMany(p=>p.Held1560!),h=>Assert.True(h.From<=1560));
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.Contains(NationalSystems.DbOffices1560,w.NewGame!.NationalSystems!);
+        var chokei=w.Characters.Select(c=>c.Id).Single(id=>NationalStart.DbPerson(id.Value)?.Name=="三好長慶");
+        var held=CentralTitles.Held(w,chokei);
+        Assert.Contains(held,t=>t.Name=="修理大夫"&&t.Basis==CentralTitles.DbHeldBasis);
+        Assert.Equal(CentralTitles.ByName("従四位下")!.Order,CentralTitles.FormalRank(w,chokei,w.ElapsedSeconds,w.CommitSequence+1));
+        // 年の記録の無い官位だけの人は、在職にしない（織田信長の官位は1575年以後の記録だけ）。
+        var nobunaga=new EntityId(NationalStartTests.Nobunaga());
+        Assert.Empty(CentralTitles.Held1560(w,nobunaga));Assert.Equal(CentralTitles.NoRank,CentralTitles.FormalRank(w,nobunaga,w.ElapsedSeconds,w.CommitSequence+1));
+        var old=ContractJson.Read<ContractWorld>(ContractJson.Write(w));old.NewGame=old.NewGame! with{NationalSystems=old.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.DbOffices1560).ToArray()};
+        Assert.DoesNotContain(CentralTitles.Held(old,chokei),t=>t.Basis==CentralTitles.DbHeldBasis);
+        Assert.Equal(CentralTitles.NoRank,CentralTitles.FormalRank(old,chokei,old.ElapsedSeconds,old.CommitSequence+1));
+    }
     // 他人の能力の推定（BD-16）：家の当主と同じ家の者は評判で段階と幅を知り、真の値は渡さない。それ以外の家の者は不明。一覧にない世界では不明。
     [Fact]
     public void OthersAbilitiesShowReputationRangesWithoutTrueValues()

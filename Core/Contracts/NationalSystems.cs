@@ -25,8 +25,11 @@ public static class NationalSystems
         "NpcArmies", "ArmyCadence", "RetainerCommand", "StrategyBattle", "StrategyRestoration", "StrategyDefection", "StrategyRealArmies", "StrategyLosses", "ArmyRout", "DefectionLetters", "StrategyCapture", "NpcCaptors", "StrategyIndependence", "RestorationSupport", "ConquestDomains", "NpcTeachers", "NpcSkirmish", "PlayerCaptiveLetters", "PlayerUnitLeaders", "SkirmishPassing", "IndependentHouses", "LocalLords", "CaptiveEscort", "WorkExperience", "TroopSkills", "NpcDoctor", "DbMothers", "WorldClashes", "BattleCaptivity", "PlayerCapture", "BattlefieldRules", "CastleSiege", "CastleWorks", "HostageCustody", "VoyageExpense",
         // 止めるもの：家中の書状の受け渡しで付き合いの記録ができると、地方の版のNPCの日課の付き合い（訪問・噂・贈り物・寄進・茶会）が全員で動き、記録が1日に数千件増える。これを入れた世界では動かさない（入れる前の保存は今までどおり）。
         QuietNpcSocial,
+        // 1560年の官位（百代鏡DBの追加の版、就いた年の記録のあるものだけ）を名乗りと朝廷の序列の始まりに入れる。
+        DbOffices1560,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
+    public const string DbOffices1560="DbOffices1560";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);
     // 一覧ごとに一度だけ引ける形にする（判定は多くの場所で何度も呼ばれる）。

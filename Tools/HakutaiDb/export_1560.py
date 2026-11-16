@@ -27,7 +27,9 @@ from pathlib import Path
 
 YEAR = 1560
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("C:/Workspace/Projects/Data/SengokuDB")
-OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[2] / "Core" / "Data" / "hakutai-db-1560-v2.json"
+OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else None  # 全体の書き出し先（省略すると全体は書かず、追加の版だけ書く）
+SUPPLEMENT = Path(__file__).resolve().parents[2] / "Core" / "Data" / "hakutai-db-1560-supplement-v1.json"
+BASE = Path(__file__).resolve().parents[2] / "Core" / "Data" / "hakutai-db-1560-v2.json"
 
 CASTLE_BASIS = {0: "本人の城主の記録（時期つき）", 1: "本人の城主の記録（時期なし）", 2: "同じ苗字の城主の城（推定）", 3: "国の当主の城（推定）", 4: "国の家の城（推定）", 5: "家の本拠（推定）"}
 POSITION_BASIS = {"参考サイト": "参考サイトの位置", "シナリオ": "シナリオの位置（目安）", "記事": "記事の位置", "手の表": "手で確かめた位置", "国": "国の中の目安", "郡": "郡の中の目安"}
@@ -184,10 +186,34 @@ def main():
     for s, ref in db.execute("select subject, value_ref from assertions where property='father' and state='value' and value_ref is not null"):
         fathers.setdefault(s, set()).add(ref)
     # 母・養親・配偶者（2026-11-15）：人物を指す記録だけ。時期を持たない血縁の事実として書き出す。
-    kin = {"mother": {}, "adoptive_parent": {}, "spouse": {}}
+    kin = {"mother": {}, "adoptive_parent": {}, "spouse": {}, "sibling": {}}
     for prop, table in kin.items():
         for s, ref in db.execute("select subject, value_ref from assertions where property=? and state='value' and value_ref like 'P-%'", (prop,)):
             table.setdefault(s, set()).add(ref)
+    # v3（2026-11-16）：官職・位階・法名・身分・家督相続の年。官位は時期の記録がほとんど無いので、時期の無いものは
+    # 「生涯の記録（時期不明）」として持たせ、1560年の在職には使わない（From/To が1560年を含むものだけが在職の根拠）。
+    office_label = {i: l for i, l in db.execute("select id, label from entities where kind='office'")}
+    offices, religious, status_, headship = {}, {}, {}, {}
+    for s_, prop, ref, fy, ty in db.execute("select subject, property, value_ref, valid_from_year, valid_to_year from assertions where property in ('court_office','court_rank','shogunate_post') and state='value' and value_ref is not null"):
+        if ref in office_label:
+            offices.setdefault(s_, []).append({"Office": office_label[ref], "Kind": {"court_office": "官職", "court_rank": "位階", "shogunate_post": "幕府職"}[prop], "From": fy, "To": ty})
+    for s_, v in db.execute("select subject, value_text from assertions where property='religious_name' and state='value' and value_text is not null"):
+        religious.setdefault(s_, set()).add(v)
+    for s_, v in db.execute("select subject, value_text from assertions where property='social_status' and state='value' and value_text is not null"):
+        status_.setdefault(s_, set()).add(v)
+    for s_, y in db.execute("select subject, min(value_year_ad) from assertions where property='headship_start' and state='value' and value_year_ad is not null group by subject"):
+        headship[s_] = y
+    def held_1560(rows):
+        """1560年に持っていたとみなす官位：就いた年が1560年以前で、終わりの年が1560年より前でないもの。位階は一番遅く就いたもの1つ、官職も一番遅く就いた年のもの。
+        同じ官を年の有る記録と無い記録で重ねて持つので、年の有る記録だけを使う（年の無い記録は在職の根拠にしない）。"""
+        dated = [o for o in rows if o["From"] is not None and o["From"] <= YEAR and (o["To"] is None or o["To"] >= YEAR)]
+        ranks = sorted((o for o in dated if o["Kind"] == "位階"), key=lambda o: o["From"])
+        posts = [o for o in dated if o["Kind"] != "位階"]
+        last = max((o["From"] for o in posts), default=None)
+        keep = [o for o in posts if o["From"] == last] + ranks[-1:]  # 官職も一番遅く就いたもの（同じ年は全部）
+        out = sorted({(o["Kind"], o["Office"], o["From"]) for o in keep})
+        return [{"Kind": k, "Office": n, "From": f, "Basis": "就いた年の記録（記事の本文の候補を含む）"} for k, n, f in out] or None
+
     surnames_all = {v for (v,) in db.execute("select distinct value_text from assertions where property='surname' and value_text is not null") if v and 2 <= len(v) <= 4}
     names = {}
     for subj, val, q, y in db.execute("select subject, value_text, qualifiers, valid_from_year from assertions where id like 'A-NH-%' and property='name'"):
@@ -255,6 +281,12 @@ def main():
             "Sex": r[7], "Birth": year_of(r[9]), "Death": year_of(r[10]), "Father": father[0] if len(father) == 1 else None,
             "Mother": (lambda m: m[0] if len(m) == 1 else None)(sorted(kin["mother"].get(p, ()))),
             "Adoptive": sorted(kin["adoptive_parent"].get(p, ())) or None, "Spouses": sorted(kin["spouse"].get(p, ())) or None,
+            "Siblings": sorted(kin["sibling"].get(p, ())) or None,
+            "Offices": sorted(offices.get(p, ()), key=lambda o: (o["Kind"], o["Office"], o["From"] or 0)) or None,
+            "Held1560": held_1560(offices.get(p, ())),
+            "ReligiousNames": sorted(religious.get(p, ())) or None,
+            "Status": (lambda v: v[0] if len(v) == 1 else None)(sorted(status_.get(p, ()))),
+            "HeadshipFrom": headship.get(p),
             "StartName": start_name(p, r[1], year_of(r[9]))[0], "StartNameBasis": start_name(p, r[1], year_of(r[9]))[1],
             "NameHistory": [{"Name": n, "From": y, "Step": st} for _, n, st, y in sorted(names.get(p, ())) if st == "幼名" or plausible(p, n)],
             "Records": r[13],
@@ -272,7 +304,7 @@ def main():
             x["Father"] = None  # 1560年の名簿の外の父は v1 では指さない（戦国DBには残る）
         if x["Mother"] not in pid:
             x["Mother"] = None
-        for k in ("Adoptive", "Spouses"):
+        for k in ("Adoptive", "Spouses", "Siblings"):
             if x[k] is not None:
                 x[k] = [q for q in x[k] if q in pid and q != x["Id"]] or None
         if x["Castle"] is None and x["CastleName"]:
@@ -301,14 +333,42 @@ def main():
             del c["_i"], c["_gun"]
             out_castles.append(c)
     doc = {
-        "Schema": 1, "Id": "hakutai-db-1560-v2", "WorldYear": YEAR,
+        "Schema": 1, "Id": "hakutai-db-1560-v3", "WorldYear": YEAR,
         "Source": {"Repository": "SengokuDB", "Commit": commit, "Tags": tags, "SqliteBuiltAt": built.get("built_at"), "CatalogVersion": built.get("catalog_version")},
-        "Policy": "戦国DBの版から一方向に書き出した1560年の開始用の下書き。所属・置き場所の城・直属の上司・城の持ち主は機械の見積もりで、史実の判定ではない（決め方を値ごとに残す）。城の位置は公知の地理、所属と城の持ち主はその年の情勢（人が報告で知るもの）として扱う。能力・性格・見た目は百代鏡側で別に持つ。",
+        "Policy": "戦国DBの版から一方向に書き出した1560年の開始用の下書き。所属・置き場所の城・直属の上司・城の持ち主は機械の見積もりで、史実の判定ではない（決め方を値ごとに残す）。城の位置は公知の地理、所属と城の持ち主はその年の情勢（人が報告で知るもの）として扱う。能力・性格・見た目は百代鏡側で別に持つ。官職・位階は時期の記録のあるもの（From/To）だけが1560年の在職の根拠で、時期の無いものは生涯の記録（時期不明）。",
         "Houses": sorted(houses, key=lambda h: h["Id"]),
         "People": people,
         "Castles": out_castles,
         "Districts": districts,
     }
+    # 追加の版（2026-11-16）：v2 の人物・家・城・郡はそのまま（今の保存が版の印で照合しているので変えない）。
+    # v2 の名簿の人物に、v3 で足した項目（兄弟姉妹・官位・1560年の在職・法名・身分・家督相続の年）だけを持たせる。
+    base = json.loads(BASE.read_text(encoding="utf-8"))
+    base_ids = {x["Id"] for x in base["People"]}
+    extra_keys = ("Siblings", "Offices", "Held1560", "ReligiousNames", "Status", "HeadshipFrom")
+    rows = []
+    for x in people:
+        if x["Id"] in base_ids and any(x.get(k) for k in extra_keys):
+            row = {"Id": x["Id"]}
+            for k in extra_keys:
+                if x.get(k):
+                    row[k] = [q for q in x[k] if q in base_ids] if k == "Siblings" else x[k]
+            if row.get("Siblings") == []:
+                del row["Siblings"]
+            if len(row) > 1:
+                rows.append(row)
+    sup = {"Schema": 1, "Id": "hakutai-db-1560-supplement-v1", "BasedOn": {"Edition": base["Id"], "Commit": base["Source"]["Commit"]},
+           "Source": doc["Source"],
+           "Policy": "v2 の名簿の人物に足す項目。官職・位階は就いた年の記録のあるものだけを1560年の在職（Held1560）とし、年の無いものは生涯の記録（Offices、時期不明）。記事の本文から抜いた年は三次資料の候補。兄弟姉妹は名簿の中の人物だけを指す。",
+           "People": rows}
+    def dump(v):
+        return json.dumps(v, ensure_ascii=False, separators=(",", ":"))
+    body = [f'"{k}":' + dump(v) for k, v in sup.items() if k != "People"]
+    body.append('"People":[' + "\n".join([""] + [dump(r) + ("," if n < len(rows) - 1 else "") for n, r in enumerate(rows)]) + "\n]")
+    SUPPLEMENT.write_text("{\n" + (",\n").join(body) + "\n}\n", encoding="utf-8", newline="\n")
+    print(f"{SUPPLEMENT}: 人物 {len(rows)}（1560年の在職 {sum(1 for r in rows if r.get('Held1560'))}）")
+    if OUT is None:
+        return
     lines = ["{"]
     keys = list(doc)
     for k in keys:
