@@ -372,10 +372,28 @@ def main():
            "Source": doc["Source"],
            "Policy": "v2 の名簿の人物に足す項目。官職・位階は就いた年の記録のあるものだけを1560年の在職（Held1560）とし、年の無いものは生涯の記録（Offices、時期不明）。記事の本文から抜いた年は三次資料の候補。兄弟姉妹は名簿の中の人物だけを指す。技能・専門（Specialties）と宗派・信仰（Religions）は生涯の記録の候補（記事の本文を含む）で、1560年の時点とは限らない。家中職（HousePosts）は記事の本文の候補で、From は同じ文の年（無ければ時期不明）、House は記事に書かれた家の名。",
            "People": rows}
+    # 寺社（2026-11-16）：戦国DBの地名（寺社）の台帳。名前・国・宗派・位置（記事の座標）。権益・門徒・寺領は未採録。
+    temples = []
+    for lid, label in db.execute("select e.id, e.label from entities e join assertions a on a.subject=e.id where a.property='place_kind' and a.value_text='寺社' order by e.id"):
+        prov = db.execute("select p.label from assertions a join entities p on p.id=a.value_ref where a.subject=? and a.property='parent_place'", (lid,)).fetchone()
+        rel = db.execute("select value_text from assertions where subject=? and property='religion' and state='value'", (lid,)).fetchone()
+        co = db.execute("select value_text from assertions where subject=? and property='coordinates' and state='value'", (lid,)).fetchone()
+        t = {"Id": lid, "Name": label, "Province": prov[0] if prov else None, "Religion": rel[0] if rel else None}
+        if co:
+            la, lo = (float(x) for x in co[0].split(","))
+            t.update(LatitudeE7=round(la * 1e7), LongitudeE7=round(lo * 1e7))
+        temples.append(t)
+    # 郡の人口の推定（2026-11-16）：郡の石高（v2 の推定）× 0.65。慶長3年の全国の石高（約1,850万石）と、1600年ごろの全国人口の推計（約1,200万人）の比。
+    population = [{"Id": d["Id"], "Population": round(d["Kokudaka"] * 0.65), "Basis": "郡の石高の推定×0.65（慶長3年の全国石高と1600年ごろの全国人口の推計の比）"} for d in base["Districts"]]
+    sup["Temples"] = temples
+    sup["DistrictPopulation"] = population
+
     def dump(v):
         return json.dumps(v, ensure_ascii=False, separators=(",", ":"))
-    body = [f'"{k}":' + dump(v) for k, v in sup.items() if k != "People"]
+    body = [f'"{k}":' + dump(v) for k, v in sup.items() if k not in ("People", "Temples", "DistrictPopulation")]
     body.append('"People":[' + "\n".join([""] + [dump(r) + ("," if n < len(rows) - 1 else "") for n, r in enumerate(rows)]) + "\n]")
+    for k in ("Temples", "DistrictPopulation"):
+        body.append(f'"{k}":[' + "\n".join([""] + [dump(r) + ("," if n < len(sup[k]) - 1 else "") for n, r in enumerate(sup[k])]) + "\n]")
     SUPPLEMENT.write_text("{\n" + (",\n").join(body) + "\n}\n", encoding="utf-8", newline="\n")
     print(f"{SUPPLEMENT}: 人物 {len(rows)}（1560年の在職 {sum(1 for r in rows if r.get('Held1560'))}）")
     if OUT is None:

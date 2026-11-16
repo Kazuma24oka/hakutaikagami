@@ -70,6 +70,20 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
         Assert.DoesNotContain(CentralTitles.Held(old,chokei),t=>t.Basis==CentralTitles.DbHeldBasis);
         Assert.Equal(CentralTitles.NoRank,CentralTitles.FormalRank(old,chokei,old.ElapsedSeconds,old.CommitSequence+1));
     }
+    // 百代鏡DBの追加の版の寺社と郡の人口（S01）：寺社は戦国DBの台帳から（宗派は記事、国は推定）、郡の人口は石高の推定×0.65（推定と分かる決め方つき）。
+    [Fact]
+    public void SupplementCarriesTemplesAndEstimatedDistrictPopulation()
+    {
+        var e=HakutaiDbSupplement.Current;HakutaiDbSupplement.Validate(e);
+        Assert.True(e.Temples.Length>=50);
+        Assert.Contains(e.Temples,t=>t.Name=="延暦寺"&&t.Religion=="天台宗"&&t.Province=="近江");
+        Assert.Contains(e.Temples,t=>t.Name=="石山本願寺"&&t.Religion=="浄土真宗"&&t.Province=="摂津");
+        foreach(var d in e.DistrictPopulation)
+        {
+            Assert.Equal((long)Math.Round(HakutaiDb.District(d.Id)!.Kokudaka*0.65,MidpointRounding.ToEven),d.Population);
+            Assert.Contains("推定",d.Basis);
+        }
+    }
     // 史実人物の開始時の技能（S01）：百代鏡DBの技能・専門の候補（経歴の手がかり）がある技能を得意に入れ、表示の根拠を分ける。
     // 一覧に DbSkillHints のない世界（入れる前の保存）では今までどおり（手がかりを使わない）。
     [Fact]

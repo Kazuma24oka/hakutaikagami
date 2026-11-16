@@ -24,7 +24,15 @@ public sealed record HakutaiDbExtra(string Id)
     public HakutaiDbHousePost[]? HousePosts {get;init;}
 }
 public sealed record HakutaiDbBasedOn(string Edition,string Commit);
-public sealed record HakutaiDbSupplementEdition(int Schema,string Id,HakutaiDbBasedOn BasedOn,HakutaiDbSource Source,string Policy,HakutaiDbExtra[] People);
+// 寺社（戦国DBの地名の台帳。記事の宗派・座標、所在の国は推定）。権益・門徒・寺領は未採録。
+public sealed record HakutaiDbTemple(string Id,string Name,string? Province,string? Religion)
+{
+    public long? LatitudeE7 {get;init;}
+    public long? LongitudeE7 {get;init;}
+}
+// 郡の人口の推定（郡の石高の推定×0.65、決め方を Basis に持つ）。史料の人口ではない。
+public sealed record HakutaiDbDistrictPopulation(string Id,long Population,string Basis);
+public sealed record HakutaiDbSupplementEdition(int Schema,string Id,HakutaiDbBasedOn BasedOn,HakutaiDbSource Source,string Policy,HakutaiDbExtra[] People,HakutaiDbTemple[] Temples,HakutaiDbDistrictPopulation[] DistrictPopulation);
 
 public static class HakutaiDbSupplement
 {
@@ -46,6 +54,8 @@ public static class HakutaiDbSupplement
         Need(e.Schema==1&&e.Id==Edition,"版が違います");
         Need(e.BasedOn.Edition==HakutaiDb.Edition1560&&e.BasedOn.Commit==HakutaiDb.Source.Commit,"元の版（v2）と合いません");
         Need(e.People.Select(p=>p.Id).Distinct(StringComparer.Ordinal).Count()==e.People.Length,"人物が重複しています");
+        Need(e.Temples.Select(t=>t.Id).Distinct(StringComparer.Ordinal).Count()==e.Temples.Length&&e.Temples.All(t=>t.Name.Length>0&&(t.LatitudeE7==null)==(t.LongitudeE7==null)),"寺社の台帳が不正です");
+        Need(e.DistrictPopulation.Select(d=>d.Id).Order(StringComparer.Ordinal).SequenceEqual(HakutaiDb.Districts.Select(d=>d.Id).Order(StringComparer.Ordinal))&&e.DistrictPopulation.All(d=>d.Population>=0&&d.Basis.Length>0),"郡の人口の推定が郡の台帳と合いません");
         foreach(var p in e.People)
         {
             Need(HakutaiDb.Person(p.Id) is not null,"名簿にない人物です："+p.Id);
