@@ -26,9 +26,10 @@ public sealed class NationalFieldSupplyTests
         var start=NationalStart.Scenario();var people=start.People.ToDictionary(p=>p.Id);var heads=start.Factions.ToDictionary(f=>f.Head);
         var retainer=start.People.First(p=>p.Lord!=null&&heads.ContainsKey(p.Lord)&&p.Site==people[p.Lord].Site&&p.Faction==heads[p.Lord].Id&&start.Castles.Any(c=>c.Id==p.Site&&c.Faction==p.Faction));
         // 全国の実在人物・城・家を使い、日課の有無とは独立に、軍の受渡しそのものを検査する。
+        // 遠方の休眠を入れない世界なので、領地の仕事（LiveTerritory）は外す。入れると全国の当主・奉行が変更のたびに動き、1回の変更に数分かかる。
         var w=NewGameWorld.Create(start,[],retainer.Id,20261113,NewGameWorld.CompactPersonalAuthority,NationalStart.RevenueEdition,
             inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,economyPolicy:RegionalDomains.Policy,developmentPolicy:CharacterDevelopment.Policy,
-            networkPolicy:WorldNetwork.CastlePolicy,districtControlPolicy:NationalDistrictControl.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy,nationalSystems:NationalSystems.Current);
+            networkPolicy:WorldNetwork.CastlePolicy,districtControlPolicy:NationalDistrictControl.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy,nationalSystems:NationalSystems.Current.Where(x=>x!="LiveTerritory").ToArray());
         var s=new WorldSession(w);Assert.False(FieldPresence.PlayerDeployed(w));Assert.Null(w.Presence);Assert.Null(w.Supply);
         Send(s,NewMilitaryAction.Request);Advance(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Accept);Advance(s,s.Seconds+2);Open(s);Send(s,NewMilitaryAction.Pickup);
         var actual=s.DiagnosticSnapshot();
