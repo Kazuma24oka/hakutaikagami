@@ -29,10 +29,13 @@ public static class NationalSystems
         DbOffices1560,
         // 史実人物の開始時の技能に、百代鏡DBの技能・専門の候補（経歴の手がかり）を入れる。
         DbSkillHints,
+        // 史実人物の家系（百代鏡DBの本姓）と信仰（宗派・信仰の候補）を、作成武将の家系・信仰と同じ一覧で引けるようにする。
+        DbLineageFaith,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
     public const string DbSkillHints="DbSkillHints";
+    public const string DbLineageFaith="DbLineageFaith";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);
     // 一覧ごとに一度だけ引ける形にする（判定は多くの場所で何度も呼ばれる）。

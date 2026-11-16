@@ -84,6 +84,22 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
             Assert.Contains("推定",d.Basis);
         }
     }
+    // 史実人物の家系と信仰（S01）：百代鏡DBの本姓（記事の氏族の欄）を作成武将と同じ家系の一覧に、宗派の候補を信仰の一覧に当てる。
+    // 根拠の文を持ち、分からなければ null。一覧に DbLineageFaith のない世界では引かない。
+    [Fact]
+    public void HistoricalPeopleHaveLineageAndFaithFromRecords()
+    {
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        Assert.Contains(NationalSystems.DbLineageFaith,w.NewGame!.NationalSystems!);
+        EntityId Who(string name)=>w.Characters.Select(c=>c.Id).Single(id=>NationalStart.DbPerson(id.Value)?.Name==name);
+        var shingen=PersonIdentity.Lineage(w,Who("武田信玄"));Assert.Equal("源氏",shingen!.Value);Assert.Contains("清和源氏",shingen.Basis);
+        Assert.Equal("その他",PersonIdentity.Lineage(w,Who("毛利元就"))!.Value);
+        Assert.Equal("浄土真宗",PersonIdentity.Faith(w,Who("顕如"))!.Value);
+        Assert.Null(PersonIdentity.Faith(w,Who("大村純忠"))); // キリスト教は洗礼の年が分からないので1560年の信仰にしない
+        Assert.Null(PersonIdentity.Faith(w,Who("大友宗麟")));  // 候補が2つ（改宗）
+        var old=ContractJson.Read<ContractWorld>(ContractJson.Write(w));old.NewGame=old.NewGame! with{NationalSystems=old.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.DbLineageFaith).ToArray()};
+        Assert.Null(PersonIdentity.Lineage(old,Who("武田信玄")));
+    }
     // 史実人物の開始時の技能（S01）：百代鏡DBの技能・専門の候補（経歴の手がかり）がある技能を得意に入れ、表示の根拠を分ける。
     // 一覧に DbSkillHints のない世界（入れる前の保存）では今までどおり（手がかりを使わない）。
     [Fact]
@@ -91,7 +107,7 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
     {
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
         Assert.Contains(NationalSystems.DbSkillHints,w.NewGame!.NationalSystems!);
-        var takakage=w.Characters.Select(c=>c.Id).Single(id=>NationalStart.DbPerson(id.Value)?.Name=="小早川隆景");
+        var takakage=w.Characters.Select(c=>c.Id).Single(id=>NationalStart.DbPerson(id.Value)?.Name=="村上武吉");
         Assert.Contains(DevelopmentSkill.Navy,CharacterDevelopment.Hints(w,takakage));
         Assert.True(CharacterDevelopment.StartLevel(w,takakage,DevelopmentSkill.Navy)>=5);
         Assert.Contains(CharacterDevelopment.View(w,takakage,takakage)!.Skills,v=>v.Name==CharacterDevelopment.Name(DevelopmentSkill.Navy)&&v.Source.StartsWith("経歴の記録からの推定",StringComparison.Ordinal));
