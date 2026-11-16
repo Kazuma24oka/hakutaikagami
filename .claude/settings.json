@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python Scripts/plan_to_100.py --brief",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
