@@ -11,7 +11,7 @@ public static class MilitaryGridValidation
 {
     static MilitaryGridStage ui=null!;
     static readonly List<string> checks=new(),captures=new();
-    static string Output=>ProjectSettings.GlobalizePath("res://../Art/Officer3D/MilitaryGridV1/runtime-local");
+    static string Output=>RecordPath.Globalize("res://../Art/Officer3D/MilitaryGridV1/runtime-local");
     static void Check(bool ok,string message){if(!ok)throw new InvalidOperationException(message);checks.Add(message);GD.Print("MILITARY_CHECK "+message);}
     static void Click(string id)=>ui.Actions[id].EmitSignal(Button.SignalName.Pressed);
     static void Observer(int index){ui.ObserverChoice.Select(index);ui.ObserverChoice.EmitSignal(OptionButton.SignalName.ItemSelected,(long)index);}
@@ -36,7 +36,7 @@ public static class MilitaryGridValidation
             Click("start");Check(ui.LastView!.Units.All(u=>u.Own)&&!ui.Actors["unit-blue"].Visible&&!ui.Ghosts["unit-blue"].Visible,"unknown enemy has no model label or ghost");await Capture("initial-red-unseen");
             Observer(2);Check(ui.LastView!.Units.Length==0&&ui.Actors.Values.All(a=>!a.Visible),"third officer initially knows no battlefield units");await Capture("initial-third-unseen");Observer(0);
             var roster=new Officer3DCustomRoster{Officers=new(){new("import-test","赤具足の取込",Officer3DCustomActor.Preset("red_guard"))}};
-            ui.CreatorImportPath=ProjectSettings.GlobalizePath("user://military-grid-import-test.json");System.IO.File.WriteAllText(ui.CreatorImportPath,JsonSerializer.Serialize(roster));Click("import");Click("apply-import");Observer(1);Click("look-veteran");Observer(0);
+            ui.CreatorImportPath=RecordPath.Globalize("user://military-grid-import-test.json");System.IO.File.WriteAllText(ui.CreatorImportPath,JsonSerializer.Serialize(roster));Click("import");Click("apply-import");Observer(1);Click("look-veteran");Observer(0);
             Check(ui.Session.Simulation.AppearanceFor("character-001").Equipment["torso"]=="red_lamellar","creator appearance assignment retained in current normal scene");
             Click("attack");string id=State.Orders.Single().Id;string mid=MilitaryFlow.OrderMessage(id);Click("fail");Step();
             Check(Unit().Cell==new MapCell(1,2)&&!ui.LastView!.Orders.Single().RetryAvailable,"lost military order does not move unit or instantly inform issuer");await Capture("lost-unrecognized");
@@ -52,7 +52,7 @@ public static class MilitaryGridValidation
             Click("speed4");ui.Session.Automatic=true;ui.Session.AdvanceDisplayClock(.1875);Click("pause");ui.Synchronize();string render=Render(),paused=ui.Session.Simulation.SaveJson();
             for(int i=0;i<8;i++)ui.Session.AdvanceDisplayClock(.25);ui.Synchronize();Check(Render()==render&&ui.Session.Simulation.SaveJson()==paused,"pause freezes common clock routing deliveries intelligence and animation");
             Click("save");string checkpoint=ui.Session.Simulation.SaveJson();Click("look-commander");Click("load");ui.Synchronize();Check(ui.Session.Simulation.SaveJson()==checkpoint&&Render()==render,"normal save restores appearance route progress report-in-flight and fractional pose");await Capture("paused-moving-restored");
-            string savePath=ProjectSettings.GlobalizePath("user://military-grid-test.json");System.IO.File.WriteAllText(savePath,checkpoint.Replace("river-crossing-v1","invalid-map"));Click("load");Check(ui.Session.Simulation.SaveJson()==checkpoint,"unknown map in normal save rejects entire load");System.IO.File.WriteAllText(savePath,checkpoint);
+            string savePath=RecordPath.Globalize("user://military-grid-test.json");System.IO.File.WriteAllText(savePath,checkpoint.Replace("river-crossing-v1","invalid-map"));Click("load");Check(ui.Session.Simulation.SaveJson()==checkpoint,"unknown map in normal save rejects entire load");System.IO.File.WriteAllText(savePath,checkpoint);
             var mirror=TaxSimulation.LoadJson(checkpoint);mirror.SetPaused(false);Click("pause");ui.Session.Automatic=false;
             for(int i=0;i<3;i++){Step();mirror.AdvanceOneTick();Check(ui.Session.Simulation.SaveJson()==mirror.SaveJson(),"post-load common-clock continuation matches "+i);await Capture("contact-and-fight-"+i);}
             Observer(2);var report=ui.LastView!.Units.Single(u=>u.UnitId=="unit-blue");Check(!report.Current&&report.ObservedAt==observed&&report.Soldiers==60&&Unit("unit-blue").Soldiers==36,"delayed report contains observed old values rather than live enemy state");

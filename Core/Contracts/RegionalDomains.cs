@@ -17,8 +17,16 @@ public static class RegionalDomains
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
     public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseLogistics.Policy or HouseFreightReceiving.Policy or MilitaryEconomy.Policy or NpcFreight.Policy or FreightOperations.Policy or FieldConvoy.Policy or ArmyRoadMarch.Policy or RoadConvoy.Policy or PersonalLife.Policy or CastleHandover.Policy or CastleAdministration.Policy or HouseSuccession.Policy;
-    internal static EntityId? Owner(ContractWorld w,EntityId site)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} f?new(f):null;
-    internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>Owner(w,site) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
+    // 開始時の台帳は不変。同じ家の各同期で全国の城を走査しない（現在の支配はNationalStrategy.Ownerを別に読む）。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NewGameState,Dictionary<string,EntityId?>> ownerIndexes=new();
+    internal static EntityId? Owner(ContractWorld w,EntityId site)=>ownerIndexes.GetValue(w.NewGame!,d=>d.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction is {} f?(EntityId?)new EntityId(f):null,StringComparer.Ordinal)).GetValueOrDefault(site.Value);
+    // 落城した城の帳簿（全国の開始の一覧の ConquestDomains）：その時点の持ち主の家の当主が扱う（収入は今までどおり新しい持ち主へ）。
+    static bool Conquest(ContractWorld w)=>NationalDistrictRevenue.Enabled(w)&&NationalSystems.On(w,"ConquestDomains");
+    static EntityId? Holder(ContractWorld w,EntityId site,long at,long rev)=>Conquest(w)&&w.Strategy!=null?NationalStrategy.Owner(w,site,at,rev):Owner(w,site);
+    // 開始時と違う家が持つ城（ConquestDomains のときだけ。そうでなければ空）。村・商い・代理行政もこの家を持ち主として扱う。
+    internal static EntityId? Conquered(ContractWorld w,EntityId site,long at,long rev)=>Conquest(w)&&w.Strategy!=null&&Holder(w,site,at,rev) is {} held&&held!=Owner(w,site)?held:null;
+    internal static EntityId? CurrentOwner(ContractWorld w,EntityId site,long at,long rev)=>Conquered(w,site,at,rev)??Owner(w,site);
+    internal static EntityId? Head(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>(Conquest(w)?Holder(w,site,at??w.ElapsedSeconds,rev??w.CommitSequence):Owner(w,site)) is {} owner?HouseSuccession.Head(w,owner,at,rev):null;
     internal static bool HasHouse(ContractWorld w,EntityId site)=>!Enabled(w)||Owner(w,site)!=null;
     static bool Before(long at,long rev,long t,long r)=>at<t||at==t&&rev<r;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays((int)(at/Day));
@@ -37,7 +45,7 @@ public static class RegionalDomains
         var es=Purchases(w,at,rev).Where(e=>e.Input.Site==site&&Month(w,e.At,at)).ToArray();long n=Math.Max(0,Budget(w,site,at,rev)-es.Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,false)-LandSurvey.BudgetUsed(w,site,at,rev));
         if(Head(w,site,at,rev)!=actor)n=Math.Min(n,Math.Max(0,200-es.Where(e=>CommunityStewardship.SharedDelegationBudget(w,site,at,rev)?CommunityStewardship.DelegatedCharge(w,e.Actor,site,e.At,e.Revision):e.Actor==actor).Sum(e=>e.Payment!.Amount)-HouseLogistics.BudgetUsed(w,actor,site,at,rev,true)-LandSurvey.BudgetUsed(w,site,at,rev,actor)));return n;
     }
-    static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>(!NationalDistrictRevenue.Enabled(w)||NationalStrategy.Owner(w,site,at,rev)==Owner(w,site))&&Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
+    static bool HeadAuthority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>Conquest(w)&&Holder(w,site,at,rev) is {} held&&held!=Owner(w,site)?FactionStances.ResolveAuthority(w,actor,held,at,Math.Min(rev,w.CommitSequence))!=null:(!NationalDistrictRevenue.Enabled(w)||NationalStrategy.Owner(w,site,at,rev)==Owner(w,site))&&Owner(w,site) is {} owner&&FactionStances.ResolveAuthority(w,actor,owner,at,Math.Min(rev,w.CommitSequence))!=null&&w.LandRights.Any(r=>r.Subject==owner&&r.Target==site&&r.Kind=="control"&&r.From<=at&&at<r.Until);
     internal static bool Authority(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>!CastleAdministration.Blocked(w,site,at,rev)&&(HeadAuthority(w,actor,site,at,rev)||Owner(w,site) is {} owner&&CommunityStewardship.Authority(w,actor,owner,site,at,rev)!=null);
     static EntityId Child(string kind,EntityId id)=>new(kind+":house/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static TreasuryEntry Make(ContractWorld w,TreasuryInput i,EntityId actor,long at,long rev)
@@ -67,7 +75,8 @@ public static class RegionalDomains
     internal static void ApplyNpc(ContractWorld w,EntityId site){var d=Decide(w,site,w.ElapsedSeconds,w.CommitSequence);Need(d.Actor!=w.PlayerControl,"本人の買物は自動化しません");w.Domains=w.Domains! with{Decisions=[..w.Domains!.Decisions,d]};if(d.Quantity>0)Apply(w,new(d.Id,TreasuryAction.Buy,site,d.Commodity,d.Quantity),d.Actor);}
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.TurnSnapshot();if(!Enabled(w)||w.ElapsedSeconds==0||w.ElapsedSeconds%Day!=0)return;
+        if(session.Seconds==0||session.Seconds%Day!=0)return; // 日の初めでなければ世界を見ずに戻る（手番の中で世界を写さない）
+        var w=session.TurnSnapshot();if(!Enabled(w))return;
         foreach(var site in CommunityEconomy.SitesFor(w)){w=session.TurnSnapshot();if(Date(w,w.ElapsedSeconds).Day!=1&&CommunityStewardship.GrantAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;var actor=Controller(w,site,w.ElapsedSeconds,w.CommitSequence+1);if(actor==null||actor==w.PlayerControl||w.Domains!.Decisions.Any(d=>d.Id==DecisionId(w,site,w.ElapsedSeconds,w.CommitSequence+1)))continue;session.RunHouseProcurement(site,w.CommitSequence);}
     }
     internal static bool Authorized(ContractWorld w,TreasuryEntry e)=>w.Domains?.Decisions.Any(d=>d.Id==e.Input.Id&&d.Actor==e.Actor&&d.At==e.At&&d.Revision==e.Revision&&d.Quantity==e.Input.Quantity&&d.Commodity==e.Input.Commodity&&e.Input.Action==TreasuryAction.Buy)==true;

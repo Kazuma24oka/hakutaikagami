@@ -13,7 +13,7 @@ public partial class Officer3DReview : Node3D
     readonly Dictionary<string,CheckButton> toggles = new();
     bool move;
     float direction=1;
-    readonly string output = ProjectSettings.GlobalizePath("res://../Art/Officer3D/TrialV1/runtime-local");
+    readonly string output = RecordPath.Globalize("res://../Art/Officer3D/TrialV1/runtime-local");
     public override void _Ready()
     {
         try { Setup(); if(OS.GetCmdlineUserArgs().Contains("--officer3d-test")) CallDeferred(nameof(StartTests));else if(OS.GetCmdlineUserArgs().Contains("--officer3d-restore-test")) CallDeferred(nameof(RestartRestore)); }

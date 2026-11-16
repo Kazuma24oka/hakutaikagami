@@ -18,7 +18,7 @@ public partial class NationalFactionRelationsCheck:Control
             var runtime=new NewGameRuntime();runtime.Configure(store,profile,false);AddChild(runtime);
             await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);
             if(!runtime.InfoText.Contains("主家・",StringComparison.Ordinal))throw new InvalidDataException("主家の関係がプレイヤー情報へ表示されません");
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/NationalFactionRelationsV1/runtime-local/ui-check.json");Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+            var output=RecordPath.Globalize("res://../Docs/Design/NationalFactionRelationsV1/runtime-local/ui-check.json");Directory.CreateDirectory(Path.GetDirectoryName(output)!);
             File.WriteAllText(output,System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Actor=person,Relation=runtime.InfoText.Split(" / ").LastOrDefault(x=>x.StartsWith("主家・",StringComparison.Ordinal)),Scope="当事者の家の関係を通常のプレイ画面へ表示",ComputerUse="未使用"},new System.Text.Json.JsonSerializerOptions{WriteIndented=true}));
             GD.Print("NATIONAL_FACTION_RELATIONS_UI_PASS");GetTree().Quit();
         }

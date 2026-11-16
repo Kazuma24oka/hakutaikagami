@@ -10,7 +10,7 @@ public sealed record CastellanView(EntityId? Site,EntityId[] Candidates,Castella
 public static partial class CastleAdministration
 {
     public const string Policy="local-consented-castellan-and-separate-store-custody-v20";
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseSuccession.Policy;
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.EconomyPolicy is Policy or HouseSuccession.Policy||NationalSystems.On(w,"CastleAdministration");
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string text){if(!ok)throw new InvalidDataException(text);}
     static bool Before(CastellanEntry e,long at,long rev)=>e.At<at||e.At==at&&e.Revision<rev;
     static CastellanEntry[] Prefix(ContractWorld w,long at,long rev)=>w.Castellan?.Entries.Where(e=>Before(e,at,rev)).ToArray()??[];
@@ -21,6 +21,8 @@ public static partial class CastleAdministration
             if(w.LandRights.Any(r=>r.Subject==declaration.House && r.Target==site && r.Kind=="control" &&
                 (r.From<at || r.From==at && r.Revision<rev) && (at<r.Until || at==r.Until && rev<=r.Revision)))
                 return declaration.House;
+        // 全国の開始：落城などで持ち主が変わった城は、その時点の持ち主の家のもの（NationalStrategy）。
+        if(w.Strategy!=null&&NationalStrategy.Owner(w,site,at,rev) is {} held)return held;
         return new(w.NewGame!.Start.Castles.Single(c=>c.Id==site.Value).Faction??throw new InvalidDataException("所有家がありません"));
     }
     static bool Local(ContractWorld w,EntityId actor,EntityId site,long at,long rev)=>CommunityStewardship.Local(w,actor,site,at,rev);

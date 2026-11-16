@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 public partial class StartSelectionPanel
 {
     string DelegationCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--delegation-case="))?[18..]??"success";
-    string DelegationOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/DelegationMissionV1/runtime-local/"+DelegationCase);
+    string DelegationOutput=>RecordPath.Globalize("res://../Docs/Design/DelegationMissionV1/runtime-local/"+DelegationCase);
     void DelegationAdvance(long at){while(stage!.HubSession.Seconds<at){long before=stage.HubSession.Seconds;stage.HubAdvance(at);Need(stage.HubSession.Seconds>before,"delegation UI clock advances");}}
     RegionalCommand DelegationCommand=>stage!.HubSession.DiagnosticSnapshot().Region!.Commands.Single(c=>c.Request.Recipient==ContractFixture.Clerk);
     long DelegationDue(string message){var w=stage!.HubSession.DiagnosticSnapshot();return w.Region!.Deliveries.Single(d=>w.Messaging.Attempts.Single(a=>a.Id==d.Attempt).MessageId==message).DueAt;}

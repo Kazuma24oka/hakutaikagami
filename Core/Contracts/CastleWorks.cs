@@ -6,7 +6,7 @@ public sealed record CastleDefense(CastleSection Section,int Maximum,int Damage,
 public static class CastleWorks
 {
  public const string Policy="territory-physical-castle-district-works-stonemasons-v2";
- public static bool Enabled(ContractWorld w)=>w.NewGame?.TerritoryPolicy is Policy or CastleSiege.Policy;
+ public static bool Enabled(ContractWorld w)=>(w.NewGame?.TerritoryPolicy is Policy or CastleSiege.Policy)||NationalSystems.On(w,"CastleWorks");
  public static bool IsFort(WorksKind k)=>k is WorksKind.Moat or WorksKind.Rampart or WorksKind.StoneWall or WorksKind.Gatehouse or WorksKind.Tower or WorksKind.RepairSection;
  public static string Name(CastleSection s)=>s switch{CastleSection.OuterMoat=>"外堀",CastleSection.Gate=>"城門",CastleSection.SecondBailey=>"二の丸",_=>"本丸"};
  public static string Name(WorksKind k)=>k switch{WorksKind.Moat=>"堀",WorksKind.Rampart=>"土塁",WorksKind.StoneWall=>"石垣",WorksKind.Gatehouse=>"門",WorksKind.Tower=>"櫓",WorksKind.RepairSection=>"区画修繕",_=>throw new ArgumentException("城の工事ではありません")};

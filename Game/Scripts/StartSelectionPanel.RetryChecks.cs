@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 using HakutaiKagami.Core.Messaging;
 public partial class StartSelectionPanel
 {
-    string RetryOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/DelegationTransportV1/runtime-local");
+    string RetryOutput=>RecordPath.Globalize("res://../Docs/Design/DelegationTransportV1/runtime-local");
     void RetryStep(int n)
     {
         var child=stage!;

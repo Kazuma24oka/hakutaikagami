@@ -5,7 +5,13 @@ using System.Text;
 
 namespace HakutaiKagami.Core.Contracts;
 
-public sealed record NaturalDeath(EntityId Person,long At,long Revision);
+public sealed record NaturalDeath(EntityId Person,long At,long Revision)
+{
+    // 傷病死の原因の傷病（HealthMortality）。寿命による自然死では持たない。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Condition {get;init;}
+    // 捕虜の処断（BattleCaptivity の操作ID）。当主の明示の判断による死で、訃報・後見・家督は同じ流れに乗る。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId? Execution {get;init;}
+}
 
 public static class FamilyMortality
 {
@@ -47,7 +53,8 @@ public static class FamilyMortality
 
     internal static long? Next(ContractWorld w,long target)
     {
-        if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data)return null;
+        long? illness=HealthMortality.Next(w,target);
+        if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data)return illness;
         int first=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year,last=WorldCalendar.At(w.EpochDate,target).Year;
         long? earliest=null;var life=w.Characters.ToDictionary(c=>c.Id.Value,c=>c.Life,StringComparer.Ordinal);
         foreach(var person in FamilyBirth.People(w).Where(p=>(p.BirthYear??HistoricalLife(p.Id)?.Born??NationalStart.Life(p.Id)?.Born)<=last-50))
@@ -57,26 +64,37 @@ public static class FamilyMortality
                 if(DateInYear(data,person,year) is {} at && w.ElapsedSeconds<at && at<=target)
                 {earliest=Math.Min(earliest??at,at);break;}
         }
+        if(illness is {} sick)earliest=Math.Min(earliest??sick,sick);
         return earliest;
     }
 
     internal static void Apply(ContractWorld w)
     {
-        if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data || w.ElapsedSeconds%86400!=43200)return;
-        int year=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year;
-        foreach(var person in FamilyBirth.People(w).Where(p=>DateInYear(data,p,year)==w.ElapsedSeconds).ToArray())
-        {
-            EntityId id=new(person.Id);
-            if(w.Characters.Single(c=>c.Id==id).Life==LifeState.Dead)continue;
-            var death=new NaturalDeath(id,w.ElapsedSeconds,w.CommitSequence);
-            w.NaturalDeaths=[..w.NaturalDeaths??[],death];
-            w.Characters=w.Characters.Select(c=>c.Id==id?c with{Life=LifeState.Dead,Revision=w.CommitSequence}:c).ToArray();
-            foreach(var task in w.Tasks.Where(t=>t.Executor==id && t.Execution==ExecutionPhase.Running).ToArray())
-                WorldSession.Stop(w,task,"本人の死亡により行動終了");
-            FamilyNotice.Send(w,death);
+        if(w.NewGame==null || w.ElapsedSeconds%86400!=43200)return;
+        var due=HealthMortality.Due(w).ToArray();
+        if(w.NewGame is {AdultAge:FamilyKin.ComingOfAge} data){
+            int year=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year;
+            foreach(var person in FamilyBirth.People(w).Where(p=>DateInYear(data,p,year)==w.ElapsedSeconds).ToArray())
+                Die(w,new(person.Id),null);
         }
+        foreach(var (person,condition) in due)Die(w,person,condition);
+    }
+    internal static void Die(ContractWorld w,EntityId id,EntityId? condition,EntityId? execution=null)
+    {
+        if(w.Characters.Single(c=>c.Id==id).Life==LifeState.Dead||(w.NaturalDeaths??[]).Any(d=>d.Person==id))return;
+        var death=new NaturalDeath(id,w.ElapsedSeconds,w.CommitSequence){Condition=condition,Execution=execution};
+        w.NaturalDeaths=[..w.NaturalDeaths??[],death];
+        w.Characters=w.Characters.Select(c=>c.Id==id?c with{Life=LifeState.Dead,Revision=w.CommitSequence}:c).ToArray();
+        foreach(var task in w.Tasks.Where(t=>t.Executor==id && t.Execution==ExecutionPhase.Running).ToArray())
+            WorldSession.Stop(w,task,DeathStop,report:!(QuietSelfReport(w)&&task.Issuer==id));
+        FamilyNotice.Send(w,death);
     }
 
+    // 亡くなった本人が自分に出す行動の報告は出さない（道の途中で亡くなると出発点がない）。捕縛・処遇の規則（BattleCaptivity）の世界から。旧保存は今のまま。
+    static bool QuietSelfReport(ContractWorld w)=>BattleCaptivity.Enabled(w);
+    const string DeathStop="本人の死亡により行動終了";
+    internal static bool SilentDeathStop(ContractWorld w,TaskState t)=>QuietSelfReport(w)&&t.InternalReason==DeathStop&&t.Issuer==t.Executor&&
+        t.Report==ReportingPhase.NotCreated&&t.FinishedAt is {} at&&(w.NaturalDeaths??[]).Any(d=>d.Person==t.Executor&&d.At==at)&&w.Outbox.All(o=>o.Task!=t.Id);
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
         var rows=w.NaturalDeaths??[];
@@ -84,13 +102,14 @@ public static class FamilyMortality
             throw new InvalidDataException("過去の自然死記録が変更されています");
         FamilyNotice.Validate(w);
         if(rows.Length==0)return;
-        if(w.NewGame is not {AdultAge:FamilyKin.ComingOfAge} data || rows.DistinctBy(d=>d.Person).Count()!=rows.Length)
+        var data=w.NewGame;
+        if(data==null || rows.Any(d=>d.Condition==null&&d.Execution==null)&&data.AdultAge!=FamilyKin.ComingOfAge || rows.DistinctBy(d=>d.Person).Count()!=rows.Length)
             throw new InvalidDataException("自然死の記録が不正です");
         foreach(var d in rows)
         {
             var p=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==d.Person.Value);
             if(p==null || d.At<0 || d.At>w.ElapsedSeconds || d.Revision<=0 || d.Revision>w.CommitSequence ||
-                DateInYear(data,p,WorldCalendar.At(w.EpochDate,d.At).Year)!=d.At ||
+                (d.Execution is {} order?!BattleCaptivity.Executed(w,d,order):d.Condition==null?DateInYear(data,p,WorldCalendar.At(w.EpochDate,d.At).Year)!=d.At:!HealthMortality.Matches(w,d)) ||
                 InformationSchemes.Events(w).Any(e=>e.Input.Action==SchemeAction.FatalEncounter && e.Input.Subject==d.Person))
                 throw new InvalidDataException("自然死の時刻または死因が一致しません");
         }

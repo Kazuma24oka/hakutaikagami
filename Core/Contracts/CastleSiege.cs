@@ -6,7 +6,7 @@ public sealed record SiegeState(int Schema,string Policy,SiegeOrder[] Orders){pu
 public static partial class CastleSiege
 {
  public const string Policy="territory-district-siege-food-water-open-gate-v3";
- public static bool Enabled(ContractWorld w)=>w.NewGame?.TerritoryPolicy==Policy;
+ public static bool Enabled(ContractWorld w)=>(w.NewGame?.TerritoryPolicy==Policy)||NationalSystems.On(w,"CastleSiege");
  internal static SiegeOrder[] Orders(ContractWorld w)=>w.Sieges?.Orders??[];
  internal static bool Before(SiegeOrder o,long at,long rev)=>o.At<at||o.At==at&&o.Revision<rev;
  internal static void Need(bool ok,string why){if(!ok)throw new InvalidDataException(why);}

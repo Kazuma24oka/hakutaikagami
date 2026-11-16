@@ -5,7 +5,7 @@
 ## 前提
 
 - 候補の一覧: [GETENROKU_BACKLOG.md](../References/GETENROKU_BACKLOG.md)
-- 根拠: [GETENROKU_ANALYSIS.md](../References/GETENROKU_ANALYSIS.md)
+- 根拠: 戦国下天禄の解析レポート（D:\02_プロジェクト別\百代鏡\参考資料\戦国下天禄\GETENROKU_ANALYSIS.md。2026-11-14 に Git の外へ移した）
 - 参考録画: `C:\Users\hizen\Videos\画面録画\画面録画 2026-10-29 213627.mp4`（55分12秒、ユーザーの戦国下天禄プレイ）
 
 この文書は、バックログの◎と○の項目のうち中核になる6件について、**百代鏡に既にある部品とどうつなぐか**を例付きで示す。

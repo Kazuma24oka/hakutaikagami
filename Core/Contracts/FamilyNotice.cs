@@ -5,7 +5,7 @@ namespace HakutaiKagami.Core.Contracts;
 public static class FamilyNotice
 {
     public const string Kind="family-death-notice";
-    static string LetterId(NaturalDeath death,string recipient)=>InformationSchemes.Id("obituary",death.Person.Value+"/"+death.At+"/"+recipient).Value;
+    internal static string LetterId(NaturalDeath death,string recipient)=>InformationSchemes.Id("obituary",death.Person.Value+"/"+death.At+"/"+recipient).Value;
 
     static EntityId? SiteAtDeath(ContractWorld world,NaturalDeath death)
     {

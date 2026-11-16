@@ -73,7 +73,7 @@ public static class CentralTitles
     public static TitleEntry[] Requestable(ContractWorld w,EntityId person,EntityId house)
     {
         long at=w.ElapsedSeconds,rev=w.CommitSequence+1;
-        var provinces=w.NewGame!.Start.Castles.Where(c=>c.Faction==house.Value).Select(c=>CastleRoutes.Catalog.Nodes.FirstOrDefault(n=>"site:"+n.Id==c.Id)?.Province?.TrimEnd('国')).Where(p=>p!=null).ToHashSet(StringComparer.Ordinal);
+        var provinces=w.NewGame!.Start.Castles.Where(c=>RegionalDomains.CurrentOwner(w,new(c.Id),at,rev)==house).Select(c=>CastleRoutes.Catalog.Nodes.FirstOrDefault(n=>"site:"+n.Id==c.Id)?.Province?.TrimEnd('国')).Where(p=>p!=null).ToHashSet(StringComparer.Ordinal);
         return catalog.Value.Titles.Where(t=>(t.Kind=="rank"||t.Kind=="kokushi"&&t.Province!=null&&provinces.Contains(t.Province)||t.Kind=="kyokan"&&t.Warrior)&&Eligible(w,person,house,t.Id,at,rev))
             .OrderBy(t=>t.Kind=="rank"?0:t.Kind=="kokushi"?1:2).ThenBy(t=>t.Order).ToArray();
     }

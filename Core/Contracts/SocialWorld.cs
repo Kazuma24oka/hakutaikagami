@@ -37,11 +37,27 @@ public static class SocialWorld
     public static long Net(ContractWorld w,EntityId wallet,long at=long.MaxValue,long revision=long.MaxValue){using var _ccRev=ControlContext.At(revision);long net=0;foreach(var e in Events(w).Where(e=>e.At<at||e.At==at&&e.Revision<revision)){using var _cc=ControlContext.At(e.Revision);
         if(e.Input.Action is SocialWorldAction.DispatchGift or SocialWorldAction.Donate){if(NewGameWork.Wallet(e.Actor)==wallet)net=checked(net-e.Input.Amount);}
         if(e.Input.Action is SocialWorldAction.ReceiveGift or SocialWorldAction.ReturnGift){var g=GiftRows(w).Single(g=>g.Id==e.Input.Reference);if(NewGameWork.Wallet(e.Input.Action==SocialWorldAction.ReceiveGift?g.Recipient:g.Sender)==wallet)net=checked(net+g.Amount);}
-    }return checked(net+LocalSecurity.Net(w,wallet,at,revision)+GuardJobs.Net(w,wallet,at,revision)+BanditEncounter.Net(w,wallet,at,revision)+CraftTrade.PrivateNet(w,wallet,at,revision)+BrokerWork.Net(w,wallet,at,revision)+SocialAssets.Net(w,wallet,at,revision)+HouseholdCourt.Net(w,wallet,at,revision));}
+    }return checked(net+LocalSecurity.Net(w,wallet,at,revision)+GuardJobs.Net(w,wallet,at,revision)+BanditEncounter.Net(w,wallet,at,revision)+CraftTrade.PrivateNet(w,wallet,at,revision)+BrokerWork.Net(w,wallet,at,revision)+SocialAssets.Net(w,wallet,at,revision)+HouseholdCourt.Net(w,wallet,at,revision)+BattleCaptivity.Net(w,wallet,at,revision));}
     public static long TempleFunds(ContractWorld w,EntityId site)=>Events(w).Where(e=>e.Site==site&&e.Input.Action==SocialWorldAction.Donate).Sum(e=>e.Input.Amount);
     public static long InTransitCoins(ContractWorld w)=>GiftRows(w).Where(g=>g.Phase is "運搬・受領待ち" or "返却待ち").Sum(g=>g.Amount);
     public static string TempleDecision(ContractWorld w,EntityId representative,EntityId donor,SocialWorldAction action){int Known(RenownKind k)=>RenownStrength(w,representative,donor,k);var h=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(Policy+"/temple/"+w.Seed+"/"+representative.Value));int Trait(int n)=>20+(int)(Convert.ToUInt32(h.Substring(n,4),16)%61);var personality=new NpcPersonality(Trait(0),Trait(4),Trait(8),Trait(12),Trait(16),Trait(20));var zero=new NpcPersonality(0,0,0,0,0,0);int utility=(action==SocialWorldAction.Donate?55:45)+Math.Min(10,Known(RenownKind.Benevolence)/5)-Math.Min(50,Known(RenownKind.Infamy)*2);var input=new NpcChoiceInput(representative,w.Seed,w.ElapsedSeconds,personality,NpcAspiration.PreserveHouse,HistoryMode.Fictional,NpcAttention.Equal,[new("accept",true,true,utility,new(0,2,-2,0,1,1),true,false,false),new("decline",true,true,20,new(0,0,3,0,0,0),false,false,false)]);return NpcChoiceRanking.Choose(input)!;}
     internal static SocialWorldEvent[] Ledger(ContractWorld w)=>Events(w);
+    // Net が読む記録（贈答・警固・護衛・賊・職人の雇い入れ・口入れ・私有物・家中・捕虜の書状と解放の願い）がどれも空なら、誰の私財も動いていない。
+    internal static bool NoMoneyRecords(ContractWorld w)=>Events(w).Length==0&&LocalSecurity.Orders(w).Length==0&&GuardJobs.Orders(w).Length==0&&(w.Bandits?.Decisions?.Length??0)==0&&CraftTrade.Entries(w).Length==0&&BrokerWork.Entries(w).Length==0&&SocialAssets.Events(w).Length==0&&HouseholdCourt.Events(w).Length==0&&(w.Captives?.Papers.Length??0)==0&&!(w.Captives?.Entries.Any(e=>e.Accepted&&e.Input.Action==CaptiveAction.Plead)??false);
+    // Net が 0 でありうるのは、下の記録に名前が出てこない人だけ（Net が読む記録はこれで全部）。全員の私財をまとめて求めるとき、名前の出てこない人の計算を省く。
+    internal static HashSet<string> MoneyPeople(ContractWorld w)
+    {
+        var set=new HashSet<string>(StringComparer.Ordinal);
+        foreach(var bytes in new[]{w.SocialWorld==null?null:ContractJson.Write(w.SocialWorld),w.Bandits==null?null:ContractJson.Write(w.Bandits),w.Crafts==null?null:ContractJson.Write(w.Crafts),w.BrokerWork==null?null:ContractJson.Write(w.BrokerWork),w.SocialAssets==null?null:ContractJson.Write(w.SocialAssets),w.Court==null?null:ContractJson.Write(w.Court),w.Captives==null?null:ContractJson.Write(w.Captives)})
+        {
+            if(bytes==null)continue;var reader=new System.Text.Json.Utf8JsonReader(bytes);
+            while(reader.Read())if(reader.TokenType==System.Text.Json.JsonTokenType.String)set.Add(reader.GetString()!);
+        }
+        // 捕虜の解放の願いで銭を受け取る当主は、合戦の捕縛の記録（WorldClashes）にだけ名前が出る。
+        foreach(var c in BattleCaptivity.AllCaptures(w)){set.Add(c.Holder.Value);set.Add(c.Person.Value);}
+        return set;
+    }
+
     internal static EntityId CourierRequest(EntityId gift,bool returning=false)=>new((returning?"request:social-return/":"request:social-courier/")+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(gift.Value))[..24]);
     static int Rank(ContractWorld w,EntityId actor)=>FamilyBirth.People(w).Single(p=>p.Id==actor.Value).InitialRole switch{StartTemplate.Daimyo=>5,StartTemplate.LocalLord=>4,StartTemplate.Castellan=>3,StartTemplate.Retainer=>2,StartTemplate.Subretainer=>1,_=>0};
     static SocialGiftTerms GiftTerms(ContractWorld w,SocialWorldInput input,EntityId actor,EntityId origin){var carrier=input.Carrier??actor;var destination=Local(w,actor,input.Person)?origin:Events(w).Where(e=>e.Input.Action==SocialWorldAction.Visit&&(e.Actor==actor&&e.Input.Person==input.Person||e.Actor==input.Person&&e.Input.Person==actor)).OrderBy(e=>e.Revision).LastOrDefault()?.Site;Need(destination!=null||carrier==actor,"使者に渡せる最後の面会先がありません。先に訪問して届け先を確認してください");destination??=origin;Intent? movement=null;if(carrier!=actor&&destination!=origin)movement=TravelWorld.ActorMove(CourierPlanning(w,carrier),CourierRequest(input.Id).Value,carrier,NewGameWorld.Node(destination.Value.Value),true,LandRoute);return new(destination.Value,movement,Rank(w,actor),Rank(w,carrier));}
@@ -78,6 +94,8 @@ public static class SocialWorld
         if(i.Action is SocialWorldAction.Donate or SocialWorldAction.Protect or SocialWorldAction.IssueBan)Need(TempleDecision(w,i.Person,actor,i.Action)=="accept","寺社代表は、自分が知る経緯と利害から今回の条件を留保しています");
         Add(w,i,actor,site!.Value);NewGameWork.Sync(w);
     }
+    // NPCの日課の付き合い（訪問・噂・贈り物・寄進・茶会の招き）。地方の版の仕組みで、全国の開始では動かさない（全員が毎日記録を足すと、記録が1日に数千件増える）。
+    internal static bool NpcRoutine(ContractWorld w)=>!NationalSystems.On(w,NationalSystems.QuietNpcSocial);
     public static void Tick(ContractWorld w,bool clockAdvanced=false)
     {
         if(w.SocialWorld==null)return;
@@ -93,7 +111,7 @@ public static class SocialWorld
         foreach(var g in GiftRows(w).Where(g=>g.Phase=="返却待ち"&&g.Carrier!=w.PlayerControl&&Local(w,g.Carrier,g.Sender)).ToArray())Add(w,new(new("social:gift-return/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(g.Id.Value))[..32]),SocialWorldAction.ReturnGift,g.Sender,Reference:g.Id),g.Carrier,Site(w,g.Carrier)!.Value);
         foreach(var g in GiftRows(w).Where(g=>g.Phase is "受領済み" or "返却待ち" or "返却済み").ToArray())if(Local(w,g.Sender,g.Carrier)&&!Events(w).Any(e=>e.Input.Action==SocialWorldAction.AcknowledgeGiftReport&&e.Input.Reference==g.Id))Add(w,new(new("social:gift-report/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(g.Id.Value))[..32]),SocialWorldAction.AcknowledgeGiftReport,g.Recipient,Reference:g.Id),g.Sender,Site(w,g.Sender)!.Value);
         if(clockAdvanced&&w.ElapsedSeconds%86400==0){
-            foreach(var actor in w.Characters.Where(c=>c.Id!=w.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(x=>x.Value,StringComparer.Ordinal)){
+            foreach(var actor in w.Characters.Where(c=>NpcRoutine(w)&&c.Id!=w.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(x=>x.Value,StringComparer.Ordinal)){
                 var site=Site(w,actor);if(site==null)continue;
                 var peers=w.Characters.Where(c=>c.Id!=actor&&c.Life==LifeState.Adult&&Site(w,c.Id)==site).Select(c=>c.Id).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
                 string key=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(actor.Value))[..24]+"/"+(w.ElapsedSeconds/86400);

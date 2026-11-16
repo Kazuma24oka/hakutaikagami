@@ -20,6 +20,11 @@ public static class CentralCourtCatalog
     public static bool National(ContractWorld w)=>w.NewGame?.HistoricalCatalog is NationalStart.CourtEdition or NationalStart.PersonEdition or NationalStart.RevenueEdition;
     public static EntityId CourtBrokerIn(ContractWorld w)=>National(w)?new(NationalStart.PersonId("P-010391")):CourtBroker; // 山科言継
     public static EntityId ShogunIn(ContractWorld w)=>National(w)?new(NationalStart.PersonId("P-005253")):Shogun;          // 足利義輝
+    // 京の取次になれる人：全国では朝廷の公家（天皇を除く百代鏡DBの朝廷の人々）、地方開始の版では山科言継だけ。
+    static readonly Lazy<HashSet<string>> courtiers=new(()=>NationalStart.Scenario().People.Where(p=>NationalStart.DbPerson(p.Id) is {House:NationalStart.CourtHouse} d&&d.Id!=HakutaiDb.House(NationalStart.CourtHouse)!.Head).Select(p=>p.Id).ToHashSet(StringComparer.Ordinal));
+    public static bool IsCourtBroker(ContractWorld w,EntityId person)=>National(w)?courtiers.Value.Contains(person.Value):person==CourtBroker;
+    // 奏請の取次：本人が最後に会った公家（いなければ京の取次）。
+    public static EntityId BrokerFor(ContractWorld w,EntityId actor)=>SocialWorld.Ledger(w).Where(e=>e.Actor==actor&&e.Input.Action==SocialWorldAction.Visit&&IsCourtBroker(w,e.Input.Person)).Select(e=>(EntityId?)e.Input.Person).LastOrDefault()??CourtBrokerIn(w);
     public static EntityId KyotoIn(ContractWorld w)=>National(w)?new(NationalStart.KyotoSite):Kyoto;
     // 将軍家の取次：将軍家のうち京（二条御所）にいる当主以外の筆頭（名簿の順）。
     static readonly Lazy<EntityId> nationalShogunBroker=new(()=>new(NationalStart.Scenario().People.First(p=>p.Faction==NationalStart.FactionId("G-000154")&&p.Lord!=null&&p.Site==NationalStart.KyotoSite).Id));

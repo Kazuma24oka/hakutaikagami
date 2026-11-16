@@ -17,7 +17,7 @@ public static partial class CoalitionPacts
         }
         foreach(var march in w.NpcArmies?.Marches??[]){
             var muster=w.NpcArmies!.Musters.Single(m=>m.Id==march.Muster);
-            if(muster.Owner!=owner || muster.Commander!=actor || muster.Objective?.TargetOwner!=target || march.Input.DestinationSite!=muster.Objective.TargetSite)continue;
+            if(muster.Owner!=owner || muster.Issuer!=actor || muster.Objective?.TargetOwner!=target || march.Input.DestinationSite!=muster.Objective.TargetSite)continue;
             var task=w.Tasks.SingleOrDefault(t=>t.RequestId==march.Input.RequestId);
             if(task?.StartedAt is {} start && start<=at && march.Revision<=rev)yield return(march.Input.RequestId,start,march.Revision);
         }

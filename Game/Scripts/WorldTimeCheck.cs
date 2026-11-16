@@ -16,7 +16,7 @@ public partial class WorldTimeCheck:Node
     public override async void _Ready()
     {
         try{
-            output=ProjectSettings.GlobalizePath("res://../Docs/Design/WorldTimeV1/runtime-local/ui");Directory.CreateDirectory(output);
+            output=RecordPath.Globalize("res://../Docs/Design/WorldTimeV1/runtime-local/ui");Directory.CreateDirectory(output);
             var entry=new NewGameFrontEnd();var campaign=entry.CreateWorldTimeReview(Path.Combine(Path.GetTempPath(),"world-time-ui-"+Guid.NewGuid().ToString("N")));entry.Free();
             game=new();game.Configure(campaign.Store,campaign.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Frame();
             Check(game.Session.DiagnosticSnapshot().NewGame!.NpcRoutinePolicy==NpcJudgment.Policy,"通常開始のNPC方針");Check(game.Session.DiagnosticSnapshot().TimeControl!=null,"通常開始の時間方針");

@@ -12,7 +12,7 @@ public static class NpcCommunityAdministration
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.CommunityAdministration?.Decisions.Any(d=>d.Id==id)==true;
     static DateOnly Date(ContractWorld w,long at)=>DateOnly.Parse(w.EpochDate).AddDays(checked((int)(at/Day)));
     static int Period(ContractWorld w,long at){var d=Date(w,at);return d.Year*12+d.Month;}
-    static EntityId? Principal(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction is {} owner?HouseSuccession.Head(w,new(owner),at,rev):null;
+    static EntityId? Principal(ContractWorld w,EntityId site,long? at=null,long? rev=null)=>(RegionalDomains.Conquered(w,site,at??w.ElapsedSeconds,rev??w.CommitSequence)?.Value??w.NewGame!.Start.Castles.SingleOrDefault(c=>c.Id==site.Value)?.Faction) is {} owner?HouseSuccession.Head(w,new(owner),at,rev):null;
     static EntityId Id(ContractWorld w,EntityId site,long at,long revision=long.MaxValue)=>new("decision:npc-community/"+site.Value.Replace(':','/')+"/"+(!CommunityStewardship.Enabled(w)?Period(w,at).ToString():CommunityStewardship.GrantAt(w,site,at,revision)!=null?"d"+(at/Day):"m"+Period(w,at)));
     static EntityId Effect(EntityId id)=>new("request:npc-community/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(id.Value)));
     static CommunityDecision Decide(ContractWorld w,EntityId site,long at,long revision)
@@ -46,7 +46,8 @@ public static class NpcCommunityAdministration
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.TurnSnapshot();if(!Enabled(w)||w.ElapsedSeconds==0||w.ElapsedSeconds%Day!=0)return;
+        if(session.Seconds==0||session.Seconds%Day!=0)return; // 日の初めでなければ世界を写さずに戻る
+        var w=session.TurnSnapshot();if(!Enabled(w))return;
         foreach(var site in CommunityEconomy.SitesFor(w)){w=session.TurnSnapshot();if(Date(w,w.ElapsedSeconds).Day!=1&&CommunityStewardship.GrantAt(w,site,w.ElapsedSeconds,w.CommitSequence+1)==null)continue;var controller=CommunityStewardship.Delegate(w,site,w.ElapsedSeconds,w.CommitSequence+1)??Principal(w,site);if(controller==null||controller==w.PlayerControl||w.CommunityAdministration!.Decisions.Any(d=>d.Site==site&&d.Id==Id(w,site,w.ElapsedSeconds)))continue;session.RunCommunityAdministration(site,w.CommitSequence);}
     }
     internal static long? NextBoundary(ContractWorld w,long target)

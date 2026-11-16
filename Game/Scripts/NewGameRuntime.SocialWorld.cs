@@ -20,7 +20,7 @@ public partial class NewGameRuntime
    void Person(){var id=known[choice.Selected];ShowSocialPerson(id);}var b=new Button{Text="この相手との用件"};box.AddChild(b);b.Pressed+=Person;
    // 最初の現地相手を内部操作検査からも同じボタンで選ぶ。
    socialOpenPerson=()=>b.EmitSignal(Button.SignalName.Pressed);
-  }else SocialText(box,"まだ現地の相手や面識のある人物がいません。人のいる拠点へ移動してください。");
+  }else {}
   foreach(var g in SocialWorld.Gifts(w,player)){var parcel=w.SocialWorld!.Events.Single(e=>e.Input.Id==g.Id).Input.Asset;string contents=parcel is {} id?SocialAssets.Objects(w).Single(o=>o.Id==id).Name:$"銭{g.Amount}文";SocialText(box,$"贈り物：{contents} — {g.Phase}");if(g.Recipient==player&&g.Phase=="運搬・受領待ち"){SocialButton(box,"実物を受け取る",SocialWorldAction.ReceiveGift,g.Sender,rev,reference:g.Id);SocialButton(box,"受取を断る",SocialWorldAction.RefuseGift,g.Sender,rev,reference:g.Id);}if(g.Carrier==player&&g.Phase=="返却待ち")SocialButton(box,"贈り主へ実物を返す",SocialWorldAction.ReturnGift,g.Sender,rev,reference:g.Id);}
  }
  Action? socialOpenPerson;internal void ReviewSocialOpenPerson()=>socialOpenPerson?.Invoke();
@@ -33,7 +33,7 @@ public partial class NewGameRuntime
  }
  void ShowSocialTemple(){var(box,rev)=SocialWindow("寺社代表との現地相談");var w=Snapshot();var site=SocialWorld.Site(w,Session.PlayerControl);if(site==null){{}return;}var temple=SocialWorld.Temple(w,site.Value);SocialText(box,temple.Name+"\n"+temple.Kind+"\n寄進・保護・禁制は別々の案件です。寄進で所属や兵・永続的な忠誠は得られません。");
   var amount=new SpinBox{MinValue=1,MaxValue=1000,Value=20,Step=1};box.AddChild(amount);SocialButton(box,"手持ちの銭を現地で寄進",SocialWorldAction.Donate,temple.Representative,rev,()=>checked((long)amount.Value));
-  SocialButton(box,"この拠点の保護を取り交わす",SocialWorldAction.Protect,temple.Representative,rev);SocialButton(box,"自分の権限内で禁制を発する",SocialWorldAction.IssueBan,temple.Representative,rev);SocialButton(box,"保護の約束を破棄する（悪評の根拠になる）",SocialWorldAction.BreakProtection,temple.Representative,rev);
+  SocialButton(box,"この拠点の保護を取り交わす",SocialWorldAction.Protect,temple.Representative,rev);SocialButton(box,"自分の権限内で禁制を発する",SocialWorldAction.IssueBan,temple.Representative,rev);SocialButton(box,"保護の約束を破棄する",SocialWorldAction.BreakProtection,temple.Representative,rev);
   {}foreach(var f in SocialWorld.Facts(w,Session.PlayerControl,temple.Representative))SocialText(box,f.Description+" — "+WorldCalendar.Display(w.EpochDate,f.LearnedAt));
  }
  void ShowSocialRenown(){var(box,rev)=SocialWindow("自分が聞き知った評判");var w=Snapshot();var facts=SocialWorld.Renown(w,Session.PlayerControl);{}if(facts.Length==0){}foreach(var f in facts){string kind=f.Kind switch{RenownKind.Valor=>"武名（修行・腕前の根拠は戦功と別）",RenownKind.Benevolence=>"仁徳",RenownKind.Infamy=>"悪名",_=>"文名"};SocialText(box,$"{kind}：{w.Definitions.Characters.FirstOrDefault(c=>c.Id==f.Subject)?.Name??"既知の相手"}\n{WorldCalendar.Display(w.EpochDate,f.OccurredAt)}の出来事を{WorldCalendar.Display(w.EpochDate,f.LearnedAt)}に認識\n聞いた地域：{w.Definitions.Sites.Single(s=>s.Id==f.Region).Name}\n出典：本人が得た現地記録・相手から聞いた伝聞\n{SocialWorld.RenownImpression(w,Session.PlayerControl,f.Subject,f.Kind,f.Region)}");}}

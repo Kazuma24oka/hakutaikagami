@@ -6,7 +6,7 @@ public static partial class NewGameMilitary
     static void AddCancellationNotice(ContractWorld w,TroopDispatch root,EntityId reference,string phase,FieldPoint origin,FieldPoint destination,EntityId? carrier=null)
     {
         var x=w.NewMilitary!.Cancellation!;if(x.Notices.Any(f=>f.Reference==reference&&f.Phase==phase))return;
-        var id=new EntityId("notice:unit-cancel/"+Hash(reference.Value+"/"+phase));var path=RegionalGround.Plan(origin,destination,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);string message=UnitMessage(id,"cancel-result");
+        var id=new EntityId("notice:unit-cancel/"+Hash(reference.Value+"/"+phase));var path=RegionalGround.Plan(origin,destination,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,path.LastOrDefault()?.EndAt??0);string message=UnitMessage(id,"cancel-result");
         MessageFlow.Send(w.Messaging,new(message,root.Id.Value,"unit-post-cancel-result",UnitIdsFor(w)[0].Value,w.PlayerControl.Value,Text(CancellationAnswer(w,root)),w.NewMilitary.Terms.Site.Value,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         w.NewMilitary=w.NewMilitary with{Cancellation=x with{Notices=[..x.Notices,new(id,root.Id,reference,phase,message,MessageFlow.Latest(w.Messaging,message).Id,w.ElapsedSeconds,w.CommitSequence,origin,destination,path,due,carrier??UnitCourier(id))]}};
     }

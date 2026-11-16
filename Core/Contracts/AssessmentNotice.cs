@@ -38,6 +38,9 @@ public static class AssessmentNotice
             .OrderBy(m=>w.Messaging.Attempts.Where(a=>a.MessageId==m.Id.Value&&a.ReceiverId==actor.Value&&a.Status==AttemptStatus.Delivered).Max(a=>a.FinishedAt))
             .Select(m=>new Card(m.Id,m.Sealed,m.KnownBody==null?null:Read(m.KnownBody))).ToArray();
     }
+    // LatestKnown の一つの仕事の分だけを、世界から直接求める（本人の見える書状＝本人へ届いた書状、知っていれば本文が読める。同じ仕事で版の最も新しいもの）。手番の中で使う。
+    internal static Payload? LatestKnownFor(ContractWorld w,EntityId actor,EntityId task)=>LatestKnownMessageFor(w,actor,task)?.Payload;
+    internal static (EntityId Message,Payload Payload)? LatestKnownMessageFor(ContractWorld w,EntityId actor,EntityId task)=>w.Messaging.Messages.Where(m=>m.Kind==Kind&&MessageFlow.Knows(w.Messaging,m.Id,actor.Value)&&w.Messaging.Attempts.Any(a=>a.MessageId==m.Id&&a.ReceiverId==actor.Value&&a.Status==AttemptStatus.Delivered)).Select(m=>(Message:new EntityId(m.Id),Payload:Read(m.Body))).Where(x=>x.Payload.Task==task).OrderByDescending(x=>x.Payload.Version).Select(x=>((EntityId,Payload)?)x).FirstOrDefault();
     public static Payload[] LatestKnown(WorldSession session,EntityId actor)=>Inbox(session,actor).Where(c=>c.Known!=null).Select(c=>c.Known!).GroupBy(c=>c.Task).Select(g=>g.OrderByDescending(c=>c.Version).First()).OrderBy(c=>c.Task.Value,StringComparer.Ordinal).ToArray();
     public static Response[] KnownResponses(WorldSession session,EntityId assessor)
     {

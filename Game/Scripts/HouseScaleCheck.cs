@@ -43,7 +43,7 @@ public partial class HouseScaleCheck:Node
             Check(HouseScaleNotices.Known(game.Session.DiagnosticSnapshot(),new("created:security-two"),owner)==CourtScale.Daimyo,"家臣の通知受領");
             var pose=game.Pose();game.SaveCheckpoint("scale-received");game.LoadCheckpoint("scale-received");var restored=game.Pose();
             Check(pose==restored,"復旧後の3D配置");await Menu();Check(Shows("宣言済み：大名"),"復旧後の昇格表示");
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/HouseScaleV1/runtime-local/ui");Directory.CreateDirectory(output);
+            var output=RecordPath.Globalize("res://../Docs/Design/HouseScaleV1/runtime-local/ui");Directory.CreateDirectory(output);
             File.WriteAllText(Path.Combine(output,"before-pose.json"),pose);File.WriteAllText(Path.Combine(output,"restored-pose.json"),restored);
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             Check(ViewportCapture.Save(Panel().GetViewport(),Path.Combine(output,"opened.png"))==Error.Ok,"開封画面の描画");

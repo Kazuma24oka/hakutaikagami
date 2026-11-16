@@ -7,7 +7,7 @@ public sealed class NationalDistrictRevenueTests
     [Fact]
     public void NationalPublicMoneyCanBuyFiniteLocalGoodsAndRestoreWithoutDuplication()
     {
-        var scenario=NationalStart.Scenario();
+        var scenario=NationalStart.Scenario(NationalStart.RevenueEdition,[]);
         var head=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長"));
         var world=NewGameWorld.Create(scenario,[],head,116,NewGameWorld.CompactPersonalAuthority,
             historicalCatalog:NationalStart.RevenueEdition,networkPolicy:WorldNetwork.CastlePolicy,

@@ -20,7 +20,7 @@ public static partial class NewGameMilitary
   foreach(var start in ExerciseStarts(w).Where(q=>q.At<=at)){
    Regroup(start.At);episode=start.Input.Id;enemyIds=OpponentIds(start);enemyInitial=[..ownMen];enemyMen=[..enemyInitial];enemyMorale=[100,100,100];long until=Math.Min(at,CombatUntil(w,start));
    for(long t=start.At+1;t<=until;t++){
-    Regroup(t-1);var inputs=new List<ContactParticipant>();for(int i=0;i<3;i++){var p=Position(w,i,t);var origin=Position(w,i,start.At);var enemy=new FieldPoint(origin.X+3000,origin.Y);inputs.Add(new(UnitIdsFor(w)[i],0,p,ContinuousWorld.Height(p),ownMen[i],ownMorale[i],ownMorale[i]<=25?"routed":"standing"));inputs.Add(new(enemyIds[i],1,enemy,ContinuousWorld.Height(enemy),enemyMen[i],enemyMorale[i],enemyMorale[i]<=25?"routed":"standing"));}
+    Regroup(t-1);var inputs=new List<ContactParticipant>();for(int i=0;i<3;i++){var p=Position(w,i,t);var origin=Position(w,i,start.At);var enemy=new FieldPoint(origin.X+3000,origin.Y);inputs.Add(new(UnitIdsFor(w)[i],0,p,WorldGround.Height(w,p),ownMen[i],ownMorale[i],ownMorale[i]<=25?"routed":"standing"));inputs.Add(new(enemyIds[i],1,enemy,WorldGround.Height(w,enemy),enemyMen[i],enemyMorale[i],enemyMorale[i]<=25?"routed":"standing"));}
     var hits=ContactCombat.Resolve(t,true,inputs);effects.AddRange(hits);foreach(var h in hits){int i=Array.IndexOf(UnitIdsFor(w),h.Unit);if(i>=0){ownMen[i]-=h.Soldiers;ownMorale[i]-=h.Morale;}else{i=Array.IndexOf(enemyIds,h.Unit);Need(i>=0,"演習相手のIDが不明です");enemyMen[i]-=h.Soldiers;enemyMorale[i]-=h.Morale;}}Regroup(t);
    }
   }

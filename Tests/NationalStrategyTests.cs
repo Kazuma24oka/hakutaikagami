@@ -46,6 +46,8 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.Equal(campaigns.Length,outcomes.Length);
         var taken=outcomes.Where(x=>x.Captured).Select(x=>a.Strategy.Campaigns.Single(c=>c.Id==x.Campaign)).ToArray();
         o.WriteLine($"落城 {taken.Length}/{outcomes.Length}");
+        // 遠方の合戦の計算を持たない世界（旧保存と同じ）は、強さの比のくじで決める。
+        Assert.False(StrategyBattles.Enabled(a));Assert.All(outcomes,x=>Assert.Null(x.Battle));
         Assert.NotEmpty(taken);
         Assert.All(taken,c=>Assert.Equal(c.Attacker,NationalStrategy.Owner(a,c.Target,a.ElapsedSeconds,a.CommitSequence)));
         Assert.All(taken,c=>Assert.Equal(c.Defender,NationalStrategy.Owner(a,c.Target,Month(1560,5),long.MaxValue)));
@@ -92,7 +94,127 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.True(NationalStrategy.InKyoto(installed.Site!.Value.Value));
         Assert.Equal(shogun,NationalStrategy.Owner(w,installed.Site.Value,w.ElapsedSeconds,long.MaxValue)!.Value.Value);
     }
+    // 包囲網ができると、包囲する相手と境を接する操作する人物の家（当主）へ誘いが届き、開いた後に一度だけ答えられる。
+    [Fact]
+    public void ThePlayerHouseIsInvitedToACoalitionAndAnswersOnceAfterReading()
+    {
+        var w=NationalStartTests.BeforeRevenue(Takeda());var takeda=NationalStart.FactionId("G-000106");var imagawa=NationalStart.FactionId("G-000123");
+        w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;NationalStrategy.Apply(w);
+        var others=w.NewGame!.Start.Factions.Select(f=>f.Id).Where(f=>f!=takeda&&f!=imagawa&&f!=NationalStart.FactionId(NationalStrategy.Shogun)).OrderBy(f=>f,StringComparer.Ordinal).Take(3).ToArray();
+        long now=w.ElapsedSeconds;var s=w.Strategy!;
+        var pacts=new[]{(others[0],others[1]),(others[1],others[2]),(others[0],others[2])}.Select((x,n)=>new StrategyPact(new($"pact:test/{n}"),new(x.Item1),new(x.Item2),"alliance",now,now+2*365*86400L,w.CommitSequence,"threat:"+imagawa)).ToArray();
+        w.Strategy=s with{Pacts=[..s.Pacts??[],..pacts]};
+        w.ElapsedSeconds=Month(1560,6);w.CommitSequence++;NationalStrategy.Apply(w);
+        var coalition=Assert.Single(w.Strategy!.Coalitions!,c=>c.Target.Value==imagawa);
+        var invite=Assert.Single(coalition.Invites!);
+        Assert.Equal(takeda,invite.House.Value);Assert.Null(invite.Joined);
+        var letter=w.Messaging.Messages.Single(m=>m.Id==invite.Letter.Value);
+        Assert.Equal(NationalStrategy.InviteKind,letter.Kind);Assert.Equal(w.PlayerControl.Value,letter.RecipientId);
+        Assert.Empty(NationalStrategy.OpenInvites(w)); // 開く前は答えられない
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Answer(ContractJson.Copy(w),invite.Letter,true));
+        w.Messaging.Knowledge=[..w.Messaging.Knowledge,new(letter.Id,w.PlayerControl.Value,now,letter.Id)]; // 開いたことにする
+        Assert.Single(NationalStrategy.OpenInvites(w));
+        int before=w.Strategy!.Pacts!.Length;w.CommitSequence++;NationalStrategy.Answer(w,invite.Letter,true);
+        var joined=w.Strategy!.Coalitions!.Single(c=>c.Id==coalition.Id);
+        Assert.Contains(new EntityId(takeda),joined.Members);Assert.True(joined.Invites!.Single().Joined);
+        Assert.Equal(before+coalition.Members.Length,w.Strategy.Pacts!.Length);Assert.All(w.Strategy.Pacts.Skip(before),p=>{Assert.Equal(takeda,p.B.Value);Assert.Equal("alliance",p.Kind);});
+        var reply=w.Messaging.Messages.Single(m=>m.Kind==NationalStrategy.InviteReplyKind);Assert.Equal(invite.Sender.Value,reply.RecipientId);
+        Assert.Empty(NationalStrategy.OpenInvites(w)); // 答えは一度だけ
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Answer(w,invite.Letter,false));
+        Assert.Equal(ContractJson.Write(w.Strategy),ContractJson.Write(ContractJson.Read<StrategyState>(ContractJson.Write(w.Strategy)))); // 保存して戻しても同じ
+    }
     // 次の月の初めの処理だけを直接当てる（全国の世界を1か月ふつうに進めると検査に30分かかるため）。
+    // 遠方の合戦（W4）：決着を実際の合戦と同じ接触の規則で計算して記録し、落城は守る側が崩れたときだけ。保存から戻して同じ。
+    [Fact]
+    public void DistantBattlesUseTheContactRulesAndRestoreIdentically()
+    {
+        var w=NationalStartTests.BeforeRevenue(Takeda(),["StrategyBattle"]);w.ElapsedSeconds=Month(1560,5)-1;
+        var session=new WorldSession(w);session.SetPaused(false);session.AdvanceTo(Month(1560,5)+1);
+        var first=session.DiagnosticSnapshot();Assert.True(StrategyBattles.Enabled(first));Assert.NotEmpty(first.Strategy!.Campaigns);
+        var a=Jump(ContractJson.Copy(first));var b=Jump(ContractJson.Read<ContractWorld>(ContractJson.Write(first)));
+        Assert.Equal(ContractJson.Write(a.Strategy),ContractJson.Write(b.Strategy));
+        var outcomes=a.Strategy!.Outcomes;Assert.Equal(first.Strategy.Campaigns.Length,outcomes.Length);
+        Assert.All(outcomes,x=>{Assert.NotNull(x.Battle);if(x.Captured)Assert.True(StrategyBattles.Falls(x.Battle!));});
+        foreach(var x in outcomes)o.WriteLine($"合戦 {x.Battle!.AttackerSoldiers}対{x.Battle.DefenderSoldiers} 士気{x.Battle.AttackerMorale}/{x.Battle.DefenderMorale} 損害{x.Battle.AttackerLost}/{x.Battle.DefenderLost} {x.Battle.Seconds}秒 落城={x.Captured}");
+        // 月を直接進めた世界なので、戦略の記録の検証だけを行う（保存から戻して同じことは上の比較で確かめた）。
+        NationalStrategy.Validate(ContractJson.Read<ContractWorld>(ContractJson.Write(a)),null);
+        var forged=ContractJson.Read<ContractWorld>(ContractJson.Write(a));
+        forged.Strategy=forged.Strategy! with{Outcomes=forged.Strategy.Outcomes.Select(x=>x with{Battle=x.Battle! with{DefenderLost=x.Battle.DefenderLost+1}}).ToArray()};
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Validate(forged,null));
+    }
+    // 家の滅亡と再興：最後の城を落とされた家を記録し、旧城の家の支配が揺らぐと滅んだ家の当主が旧臣で挙兵する。
+    [Fact]
+    public void AFallenHouseIsRecordedAndItsLivingHeadRisesWhenTheHolderIsShaken()
+    {
+        var w=NationalStartTests.BeforeRevenue(Takeda(),["StrategyBattle","StrategyRestoration"]);
+        var takeda=NationalStart.FactionId("G-000106");var shogun=NationalStart.FactionId(NationalStrategy.Shogun);
+        var castles=w.NewGame!.Start.Castles;var counts=castles.Where(c=>c.Faction!=null).GroupBy(c=>c.Faction!).ToDictionary(g=>g.Key,g=>g.Count());
+        bool Adult(string f)=>w.Characters.SingleOrDefault(c=>c.Id==HouseSuccession.Head(w,new(f)))?.Life==LifeState.Adult;
+        var pick=castles.Where(c=>c.Faction is {} f&&counts[f]==1&&f!=takeda&&f!=shogun&&Adult(f)).OrderBy(c=>c.Id,StringComparer.Ordinal)
+            .SelectMany(c=>NationalStrategy.Neighbors(c.Id).Select(n=>(Castle:c,Holder:castles.SingleOrDefault(x=>x.Id==n)?.Faction)))
+            .First(x=>x.Holder is {} h&&h!=x.Castle.Faction&&h!=takeda&&h!=shogun&&NationalStrategy.Cap(x.Castle.Faction!)>0&&NationalStrategy.Cap(h)>=4*NationalStrategy.Cap(x.Castle.Faction!)&&Adult(h));
+        string fallen=pick.Castle.Faction!,holder=pick.Holder!;var site=new EntityId(pick.Castle.Id);var takedaCastle=new EntityId(castles.First(c=>c.Faction==takeda).Id);
+        o.WriteLine($"滅ぶ家 {fallen}（兵{NationalStrategy.Cap(fallen)}）城 {site.Value} 攻める家 {holder}（兵{NationalStrategy.Cap(holder)}）");
+        // 5月の初めに出陣を置き、6月の初めの決着で落城・滅亡。
+        w.ElapsedSeconds=Month(1560,5);w.CommitSequence++;
+        var s=w.Strategy??new StrategyState(1,NationalStrategy.Policy,[],[]);
+        var attack=new StrategyCampaign(new("campaign:test/fall"),new(holder),new(fallen),site,w.ElapsedSeconds,w.CommitSequence,NationalStrategy.Border);
+        w.Strategy=s with{Campaigns=[..s.Campaigns,attack]};
+        Advance(w,1560,6);
+        var fall=Assert.Single(w.Strategy!.Falls!,f=>f.House.Value==fallen);
+        Assert.Equal(site,fall.Site);Assert.Equal(holder,fall.By.Value);
+        Assert.Equal(holder,NationalStrategy.Owner(w,site,w.ElapsedSeconds,w.CommitSequence)!.Value.Value);
+        // 支配が揺らがなければ挙兵しない。揺らいだ後は月に30%で挙兵する（2年まで見る）。
+        Assert.DoesNotContain(w.Strategy.Campaigns,c=>c.Basis==NationalStrategy.Restoration);
+        {var st=w.Strategy;var lost=new StrategyCampaign(new("campaign:test/holder-defeat"),new(holder),new(takeda),takedaCastle,Month(1560,5),w.CommitSequence,NationalStrategy.Border);
+         w.Strategy=st with{Campaigns=[..st.Campaigns,lost],Outcomes=[..st.Outcomes,new(lost.Id,Month(1560,6),w.CommitSequence,false)]};}
+        StrategyCampaign? rise=null;
+        long previous=Month(1560,6);
+        for(int m=7;m<=30&&rise==null;m++){Advance(w,1560+(m-1)/12,(m-1)%12+1);rise=w.Strategy!.Campaigns.SingleOrDefault(c=>c.Basis==NationalStrategy.Restoration);
+            if(rise==null){var st=w.Strategy!;var again=new StrategyCampaign(new("campaign:test/holder-defeat/"+m),new(holder),new(takeda),takedaCastle,previous,w.CommitSequence,NationalStrategy.Border);w.Strategy=st with{Campaigns=[..st.Campaigns,again],Outcomes=[..st.Outcomes,new(again.Id,w.ElapsedSeconds,w.CommitSequence,false)]};}previous=w.ElapsedSeconds;}
+        Assert.NotNull(rise);o.WriteLine($"挙兵 {rise.At}");
+        Assert.Equal(fallen,rise.Attacker.Value);Assert.Equal(holder,rise.Defender.Value);Assert.Equal(site,rise.Target);
+        var date=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds);Advance(w,date.Month==12?date.Year+1:date.Year,date.Month%12+1);
+        var outcome=Assert.Single(w.Strategy!.Outcomes,x=>x.Campaign==rise.Id);
+        Assert.Equal(StrategyRestoration.Strength(fallen),outcome.Battle!.AttackerSoldiers);
+        o.WriteLine($"再興の合戦 {outcome.Battle.AttackerSoldiers}対{outcome.Battle.DefenderSoldiers} 落城={outcome.Captured}");
+        // 記録の検証（月を直接進めた世界なので戦略の記録だけ）。滅んでいない家の再興の挙兵は読まない。
+        NationalStrategy.Validate(ContractJson.Read<ContractWorld>(ContractJson.Write(w)),null);
+        var forged=ContractJson.Read<ContractWorld>(ContractJson.Write(w));
+        forged.Strategy=forged.Strategy! with{Falls=[]};
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Validate(forged,null));
+    }
+    // 従属の離反：主家の支配が揺らぐと、主家の半分以上の強さの従う家は月に10%で離れる。揺らがなければ離れない。
+    [Fact]
+    public void AStrongVassalLeavesAShakenOverlordAndOnlyThen()
+    {
+        var w=NationalStartTests.BeforeRevenue(Takeda(),["StrategyDefection"]);
+        var takeda=NationalStart.FactionId("G-000106");var factions=w.NewGame!.Start.Factions.Select(f=>f.Id).ToHashSet();
+        var castles=w.NewGame.Start.Castles;var takedaCastle=new EntityId(castles.First(c=>c.Faction==takeda).Id);
+        bool Adult(string f)=>w.Characters.SingleOrDefault(c=>c.Id==HouseSuccession.Head(w,new(f)))?.Life==LifeState.Adult;
+        var pair=factions.OrderBy(f=>f,StringComparer.Ordinal).Select(h=>(House:h,Overlord:NationalStrategy.DbOverlord(h)))
+            .First(x=>x.Overlord is {} o&&factions.Contains(o)&&x.House!=takeda&&o!=takeda&&Adult(x.House)&&castles.Any(c=>c.Faction==x.House)&&castles.Any(c=>c.Faction==o)&&
+                NationalStrategy.Cap(o)>0&&NationalStrategy.Cap(x.House)*2>=NationalStrategy.Cap(o));
+        string house=pair.House,overlord=pair.Overlord!;o.WriteLine($"従う家 {house}（兵{NationalStrategy.Cap(house)}） 主家 {overlord}（兵{NationalStrategy.Cap(overlord)}）");
+        // 揺らがない間は離れない。
+        for(int m=5;m<=8;m++)Advance(w,1560,m);
+        Assert.Empty(w.Strategy?.Defections??[]);
+        // 主家が毎月負けを重ねる（3か月以内の負け）と、月に10%で離れる。
+        long previous=Month(1560,7);StrategyDefection? left=null;
+        for(int m=9;m<=60&&left==null;m++)
+        {
+            var st=w.Strategy!;var loss=new StrategyCampaign(new("campaign:test/overlord-defeat/"+m),new(overlord),new(takeda),takedaCastle,previous,w.CommitSequence,NationalStrategy.Border);
+            w.Strategy=st with{Campaigns=[..st.Campaigns,loss],Outcomes=[..st.Outcomes,new(loss.Id,w.ElapsedSeconds,w.CommitSequence,false)]};
+            previous=w.ElapsedSeconds;Advance(w,1560+(m-1)/12,(m-1)%12+1);
+            left=(w.Strategy!.Defections??[]).SingleOrDefault(d=>d.House.Value==house);
+        }
+        Assert.NotNull(left);Assert.Equal(overlord,left.From.Value);o.WriteLine($"離反 {left.At}");
+        NationalStrategy.Validate(ContractJson.Read<ContractWorld>(ContractJson.Write(w)),null);
+        var forged=ContractJson.Read<ContractWorld>(ContractJson.Write(w));
+        forged.Strategy=forged.Strategy! with{Defections=[..forged.Strategy.Defections!,new(new(overlord),new(house),left.At,left.Revision)]};
+        Assert.Throws<InvalidDataException>(()=>NationalStrategy.Validate(forged,null));
+    }
+    static void Advance(ContractWorld w,int year,int month){w.ElapsedSeconds=Month(year,month);w.CommitSequence++;NationalStrategy.Apply(w);}
     static ContractWorld Jump(ContractWorld w)
     {
         w.ElapsedSeconds=Month(1560,6);w.CommitSequence++;NationalStrategy.Apply(w);return w;

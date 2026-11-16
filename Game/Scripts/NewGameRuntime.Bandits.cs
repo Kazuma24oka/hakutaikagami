@@ -9,7 +9,7 @@ public partial class NewGameRuntime
  internal void ReviewBanditPress(string key)=>banditButtons[key].EmitSignal(Button.SignalName.Pressed);
  void ShowBandits(){if(IsSaving||IsClockControlling)return;var(box,rev)=SocialWindow("道の安全・賊との接触");banditButtons.Clear();var w=Snapshot();var actor=Session.PlayerControl;if(SocialWorld.Site(w,actor) is not {} site){{}return;}
  void Button(string key,string label,BanditAction action){var b=new Button{Text=label};box.AddChild(b);banditButtons[key]=b;b.Pressed+=()=>{CancelAdvancePrefetch();var result=Session.ManageBandits(new(new("request:bandit-ui/"+rev+"/"+key),action,site),rev);message.Text=result.VisibleReason;Refresh();ShowBandits();};}
- ShowSecurity(box,rev,w,site);ShowGuardJobs(box,rev,w,site);var current=BanditEncounter.Current(w);if(current==null){SocialText(box,"本人の残る負傷："+BanditEncounter.Injury(w,actor)+"。周辺の賊の状態は現地で確認します。");if(BanditEncounter.Dangerous(w,site))Button("encounter","道の入口で賊に対処する",BanditAction.Encounter);else SocialText(box,"この周辺に対応中の賊はいません。");return;}
+ ShowSecurity(box,rev,w,site);ShowGuardJobs(box,rev,w,site);var current=BanditEncounter.Current(w);if(current==null){SocialText(box,"本人の残る負傷："+BanditEncounter.Injury(w,actor)+"。周辺の賊の状態は現地で確認します。");if(BanditEncounter.Dangerous(w,site))Button("encounter","道の入口で賊に対処する",BanditAction.Encounter);else {}return;}
  SocialText(box,current.Phase+"／本人側"+current.People.Count(p=>p.Side==0)+"人・賊"+current.People.Count(p=>p.Side==1&&p.Health>0)+"人。戦うと同じ世界時間で進みます。");if(current.Phase=="選択待ち"){Button("fight","戦う",BanditAction.Fight);Button("pay","私財20文を渡して通る",BanditAction.Pay);}Button("withdraw","安全な拠点側へ退く",BanditAction.Withdraw);if(current.Phase=="交戦中"){}
  }
  void ShowGuardJobs(VBoxContainer box,long rev,ContractWorld w,EntityId site){

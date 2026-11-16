@@ -40,7 +40,7 @@ public partial class HeirPledgeCheck:Node
             bool Readable()=>Panel().FindChildren("*","Label",true,false).OfType<Label>().Any(l=>l.Text.Contains(reply.Body));
             Check(Readable(),"開封しても返答が表示されません");await Map();
             var pose=game.Pose();game.SaveCheckpoint("opened");game.LoadCheckpoint("opened");var restored=game.Pose();Check(pose==restored,"復旧で配置が変わりました");await House();Check(Readable(),"既読の返答を復元できません");
-            var output=ProjectSettings.GlobalizePath("res://../Docs/Design/HeirDesignationV1/runtime-local/ui");Directory.CreateDirectory(output);
+            var output=RecordPath.Globalize("res://../Docs/Design/HeirDesignationV1/runtime-local/ui");Directory.CreateDirectory(output);
             File.WriteAllText(Path.Combine(output,"before-pose.json"),pose);File.WriteAllText(Path.Combine(output,"restored-pose.json"),restored);
             await ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             Check(ViewportCapture.Save(Panel().GetViewport(),Path.Combine(output,"opened.png"))==Error.Ok,"開封画面の描画");

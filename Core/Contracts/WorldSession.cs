@@ -19,15 +19,25 @@ public sealed partial class WorldSession
     public ContractWorld DiagnosticSnapshot() { lock(gate) return ContractJson.Copy(state); }
     // 進行の中の仕組みごとの手番の確認が読むだけの写し。今の状態（同じ物）の間は1つを共有し、世界全体を写し直さない。
     // 写しは読むだけで、書き換えない。検査（GuardTurnSnapshots）では、共有するたびに書き換えがないことを確かめる。
-    internal static bool GuardTurnSnapshots;
-    private ContractWorld? turnSource,turnView;private string? turnHash;
+    // 検査によっては一時的に切るので、切っている間に作った写し（照合の値が無い）は確かめない。
+    // 切るのはその検査の流れの中だけ（並べて流す別の検査の確かめまで切らない）。既定は GuardTurnSnapshotsByDefault。
+    internal static bool GuardTurnSnapshotsByDefault;
+    static readonly AsyncLocal<bool?> guardTurnSnapshots=new();
+    internal static bool GuardTurnSnapshots{get=>guardTurnSnapshots.Value??GuardTurnSnapshotsByDefault;set=>guardTurnSnapshots.Value=value;}
+    private ContractWorld? turnSource,turnView;private string? turnHash;private byte[]? turnBytes;
+    // 写しが書き換えられたとき、書き換えられた項目の名前を知らせる（検査のときだけ）。
+    private string TurnChanged(){var was=ContractJson.Read<ContractWorld>(turnBytes!);var names=typeof(ContractWorld).GetProperties().Where(p=>p.CanRead&&p.GetIndexParameters().Length==0&&ContractJson.CanonicalHash(p.GetValue(was))!=ContractJson.CanonicalHash(p.GetValue(turnView))).Select(p=>p.Name);return "手番の確認の写しが書き換えられました："+string.Join("、",names);}
+    // 今の世界を写さずに読む（f は世界を変えない確かめだけ）。手番の初めの「することがあるか」の確かめに使い、することがあるときだけ TurnSnapshot で写す。
+    internal T Peek<T>(Func<ContractWorld,T> f){lock(gate)return f(state);}
     internal ContractWorld TurnSnapshot()
     {
         lock(gate)
         {
-            if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");return turnView;}
-            if(GuardTurnSnapshots&&turnView!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException("手番の確認の写しが書き換えられました");
-            turnView=ContractJson.Copy(state);turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;return turnView;
+            // 確定した状態は後で書き換えない（変更は写しに対して行う）ので、直接変える間（inPlace）でなければ、写さずにそのまま渡す。検査では写して書き換えがないことを確かめる。
+            if(!inPlace&&!GuardTurnSnapshots)return state;
+            if(turnView!=null&&ReferenceEquals(turnSource,state)){if(GuardTurnSnapshots&&turnHash!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException(TurnChanged());return turnView;}
+            if(GuardTurnSnapshots&&turnView!=null&&turnHash!=null&&ContractJson.CanonicalHash(turnView)!=turnHash)throw new InvalidOperationException(TurnChanged());
+            turnView=state.CopyForChange();turnSource=state;turnHash=GuardTurnSnapshots?ContractJson.CanonicalHash(turnView):null;turnBytes=GuardTurnSnapshots?ContractJson.Write(turnView):null;return turnView;
         }
     }
     internal bool TryHandoff(long revision,Action swap)
@@ -42,16 +52,16 @@ public sealed partial class WorldSession
     {
         // まとめた手番の間（inPlace）は写さずに直接変える。途中で例外が出たら、まとめた手番ごとやり直す（batchBroken）。
         if(inPlace){turnView=null;try{ChangeCore(state,change,beforeCommit);}catch{batchBroken=true;throw;}return;}
-        ChangeCore(ContractJson.Copy(state),change,beforeCommit);
+        ChangeCore(state.CopyForChange(),change,beforeCommit);
     }
     private void ChangeCore(ContractWorld next,Action<ContractWorld> change,Action? beforeCommit)
     {
         next.CommitSequence = checked(next.CommitSequence+1);
-        change(next);BanditEncounter.Tick(next);CastleSiege.Tick(next);LandSurvey.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);CraftTrade.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);PublicWorks.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Sync(next);HouseSuccession.Tick(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);TreatyNegotiations.Update(next);TreatySupply.Update(next);TreatyDefense.Update(next);TruceConfirmations.Update(next);NewGameMilitary.UpdateRemote(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);MaterialMarkets.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);CommunityStewardship.Tick(next);CastellanReports.Tick(next);FreightOperations.Tick(next);NewGameService.Sync(next);HouseSuccession.Sync(next);HouseholdCourt.Sync(next);NewGameMilitary.Sync(next);FieldConvoy.SyncLocations(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); CastleHandover.Tick(next);CharacterDevelopment.Sync(next);CharacterRelations.Sync(next);AdultAdoption.Update(next);AdultMarriage.Update(next);HostageCustody.Update(next); InformationSchemes.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MeritRewards.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialAssets.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next);HouseholdCourt.Tick(next);BrokerWork.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);StandingAdministration.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MaterialMarkets.Tick(next);CommunityEconomy.Tick(next);RegionalTrade.Tick(next);if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next);HouseholdCourt.Sync(next);NewGameWork.Sync(next);InformationSchemes.Tick(next);NewGameWork.Sync(next);NewGameMilitary.RecordMilitaryObservation(next);WorldTimeControl.Observe(state,next);if(!deferTimePause&&WorldTimeControl.Pending(next)!=null)next.Paused=true; NationalNameHistory.ObserveLocal(next);if(!deferValidation)ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;DriveSocialCouriers();DriveSchemeCouriers();
+        change(next);BanditEncounter.Tick(next);CastleSiege.Tick(next);LandSurvey.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);CraftTrade.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);PublicWorks.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Sync(next);HouseSuccession.Tick(next);PersonalCompanions.UpdateRelease(next);TruceNegotiations.Update(next);BattleCaptivity.Update(next);TreatyNegotiations.Update(next);TreatySupply.Update(next);TreatyDefense.Update(next);TruceConfirmations.Update(next);NewGameMilitary.UpdateRemote(next);PersonalCompanions.Update(next);RegionalEconomy.Tick(next);HouseSalary.Tick(next);MaterialMarkets.Tick(next);RegionalTrade.Tick(next);CommunityEconomy.Tick(next);VillageConsultation.Tick(next);CommunityStewardship.Tick(next);CastellanReports.Tick(next);FreightOperations.Tick(next);NewGameService.Sync(next);HouseSuccession.Sync(next);HouseholdCourt.Sync(next);NewGameMilitary.Sync(next);FieldConvoy.SyncLocations(next);RegionalBattle.Sync(next); if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next); CastleHandover.Tick(next);CharacterDevelopment.Sync(next);CharacterRelations.Sync(next);AdultAdoption.Update(next);AdultMarriage.Update(next);HostageCustody.Update(next); InformationSchemes.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MeritRewards.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialAssets.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);HouseholdCourt.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);SocialWorld.Tick(next);HouseholdCourt.Tick(next);BrokerWork.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);StandingAdministration.Tick(next,next.ElapsedSeconds>state.ElapsedSeconds);MaterialMarkets.Tick(next);CommunityEconomy.Tick(next);RegionalTrade.Tick(next);if(RegionalCampaign.Enabled(next))RegionalCampaign.Bind(next);HouseholdCourt.Sync(next);NewGameWork.Sync(next);InformationSchemes.Tick(next);NewGameWork.Sync(next);NewGameMilitary.RecordMilitaryObservation(next);WorldTimeControl.Observe(state,next);if(!deferTimePause&&WorldTimeControl.Pending(next)!=null)next.Paused=true; NationalNameHistory.ObserveLocal(next);if(!deferValidation)ContractValidation.Validate(next,state); beforeCommit?.Invoke(); state = next;DriveSocialCouriers();DriveSchemeCouriers();
     }
-    public CommandResult SetFormation(FieldRequest request,long revision){using var _ccRev=ControlContext.At(revision);if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
-    public CommandResult IssueRegional(RegionalRequest request,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
-    public CommandResult SetRegionalActive(bool active,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
+    public CommandResult SetFormation(FieldRequest request,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(FieldWorld.National(state))return DecideNewMilitary(new(request.Id,NewMilitaryAction.Form,0,request.A,request.B),request.Actor,revision);}if(RegionalBattle.Enabled(state))return IssueRegional(new(request.Id,request.Actor,request.Actor,RegionalAction.Move,request.A,request.B),revision);lock(gate){var old=state.Field?.Orders.SingleOrDefault(o=>o.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{var order=FieldWorld.Prepare(state,request);Change(s=>{s.Field=new([..s.Field!.Orders,order]);FieldWorld.Advance(s);});return new(ResultCode.Accepted,request.Id,state.CommitSequence,"自隊の布陣を変更しました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"通行可能な陸地へ布陣線を指定してください");}}}
+    public CommandResult IssueRegional(RegionalRequest request,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(RegionalBattle.National(state)){try{return DecideNewMilitary(RegionalBattle.NationalInput(state,request),request.Actor,revision);}catch(InvalidDataException e){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,e.Message);}}var old=state.Region?.Commands.SingleOrDefault(c=>c.Request.Id==request.Id);if(old!=null)return new(old.Request==request?ResultCode.AlreadyAccepted:ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"受付済み");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,request.Id,state.CommitSequence,"表示を更新してください");try{Change(s=>RegionalBattle.Issue(s,request));return new(ResultCode.Accepted,request.Id,state.CommitSequence,"判断を受け付けました");}catch(Exception e)when(e is InvalidDataException or ArgumentException or OverflowException){return new(ResultCode.NotAvailable,request.Id,state.CommitSequence,"現在はその判断を実行できません");}}}
+    public CommandResult SetRegionalActive(bool active,long revision){using var _ccRev=ControlContext.At(revision);lock(gate){if(FieldPresence.National(state))return DecideNewMilitary(new(new("request:national-field-site/"+revision),active?NewMilitaryAction.Deploy:NewMilitaryAction.Enter),state.PlayerControl,revision);var id=new EntityId("request:regional-site");if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"表示を更新してください");try{Change(s=>{OfficerLoop.Transition(s,active);if(FieldPresence.Enabled(s))FieldPresence.SetPlayer(s,active);else RegionalBattle.SetActive(s,active);FieldSupply.Transition(s,active);if(OfficerLoop.Enabled(s))OfficerLoop.SetSiteLocations(s);if(CreatedCampaign.Enabled(s)&&!active){ProcessReady(s);FlushOutbox(s);}});return new(ResultCode.Accepted,id,state.CommitSequence,active?"野外へ出ました":"拠点に入りました");}catch(InvalidDataException){return new(ResultCode.NotAvailable,id,state.CommitSequence,"帰還・停止後に操作してください");}}}
     public CommandResult ChangeTravel(PersonalTravelRequest request,long expectedRevision,Action? beforeCommit=null)
     {lock(gate){
         if(MilitaryEconomy.OwnIdUsed(state,request.Id)||HouseLogistics.OwnIdUsed(state,request.Id)||RegionalDomains.OwnIdUsed(state,request.Id)||CommunityStewardship.OwnIdUsed(state,request.Id)||NpcCommunityAdministration.OwnIdUsed(state,request.Id)||VillageConsultation.OwnIdUsed(state,request.Id)||HouseSalary.OwnIdUsed(state,request.Id)||RegionalTrade.OwnIdUsed(state,request.Id)||CommunityEconomy.OwnIdUsed(state,request.Id)||RegionalEconomy.OwnIdUsed(state,request.Id)||FactionNotices.OwnIdUsed(state,request.Id)||NpcArmies.Musters(state).Any(m=>m.Id==request.Id)||FactionStances.OwnIdUsed(state,request.Id)||CareerMilitary.OwnIdUsed(state,request.Id)||state.Career?.Requests.Any(r=>r.Input.Id==request.Id)==true)return new(ResultCode.IdPayloadConflict,request.Id,state.CommitSequence,"同一IDの内容が異なります");
@@ -93,7 +103,7 @@ public sealed partial class WorldSession
                 if(NewGameWork.OwnIdUsed(state,intent.RequestId)&&!ArmyRoadMarch.RegisteredPending(state,intent))return new(ResultCode.IdPayloadConflict,intent.RequestId,state.CommitSequence,"別の操作で使用したIDです");ContractValidation.ValidateIntentShape(intent,state.Characters.Select(c=>c.Id).ToHashSet(),state.Definitions.Sites.Select(s=>s.Id).ToHashSet(),state.ResourceLots.Select(l=>l.Id).ToHashSet());
                 if(RouteContract.Enabled(state))RouteContract.ValidateOrder(state,intent);
                 if(intent.Action==ActionKind.Move&&intent.Executor==state.PlayerControl&&BanditEncounter.NeedsContact(state)){var site=SocialWorld.Site(state,state.PlayerControl)!.Value;Change(w=>BanditEncounter.Execute(w,new(new("request:bandit-contact/"+w.CommitSequence),BanditAction.Encounter,site),w.PlayerControl));return new(ResultCode.NotAvailable,intent.RequestId,state.CommitSequence,"道の入口で賊と接触しました。対応を選んでください");}
-                if(FieldWorld.Enabled(state)&&state.Field!.Orders.Length>0&&Enumerable.Range(0,3).Any(i=>FieldWorld.Sample(state,i,state.ElapsedSeconds).Moving))throw new InvalidDataException("Local force still moving");
+                if(!FieldWorld.National(state)&&FieldWorld.Enabled(state)&&state.Field!.Orders.Length>0&&Enumerable.Range(0,3).Any(i=>FieldWorld.Sample(state,i,state.ElapsedSeconds).Moving))throw new InvalidDataException("Local force still moving");
                 if(BranchRoutes.Enabled(state))BranchRoutes.ValidateOrder(state,intent);
                 checked { _ = state.ElapsedSeconds + intent.DeliverySeconds + intent.WorkSeconds + intent.ReportSeconds;
                     _ = intent.EffectiveAt + intent.WorkSeconds + intent.ReportSeconds;
@@ -153,7 +163,7 @@ public sealed partial class WorldSession
             Change(s=>{
                 if(principal)s.Messaging.Knowledge=[..s.Messaging.Knowledge,new(m.Id,actor.Value,s.ElapsedSeconds,m.Id)];
                 else MessageFlow.OpenAsProxy(s.Messaging,m.Id,actor.Value,s.ElapsedSeconds);
-                PrivateInformation.RecordOpening(s,actor,m.Id);TruceNegotiations.RecordOpening(s,actor,m.Id);TreatyNegotiations.RecordOpening(s,actor,m.Id);TreatyNegotiations.RecordOperationOpening(s,actor,m.Id);TreatySupply.RecordOpening(s,actor,m.Id);TreatyDefense.RecordOpening(s,actor,m.Id);TruceConfirmations.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordRemoteOpening(s,actor,m.Id);FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
+                PrivateInformation.RecordOpening(s,actor,m.Id);TruceNegotiations.RecordOpening(s,actor,m.Id);BattleCaptivity.RecordOpening(s,actor,m.Id);TreatyNegotiations.RecordOpening(s,actor,m.Id);TreatyNegotiations.RecordOperationOpening(s,actor,m.Id);TreatySupply.RecordOpening(s,actor,m.Id);TreatyDefense.RecordOpening(s,actor,m.Id);TruceConfirmations.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordRemoteOpening(s,actor,m.Id);FactionNotices.RecordOpening(s,actor,m.Id);NewGameWork.RecordOpening(s,actor,m.Id);NewGameMilitary.RecordOpening(s,actor,m.Id);NewGameService.RecordOpening(s,actor,m.Id);Career.RecordOpening(s,actor,m.Id);CareerMilitary.RecordOpening(s,actor,m.Id);
                 SynchronizeEvidence(s); Recognize(s); Expire(s); ProcessReady(s); FlushOutbox(s);
             });
             RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);return new(ResultCode.Accepted,message,state.CommitSequence,"開封しました");
@@ -189,7 +199,29 @@ public sealed partial class WorldSession
             return new(ResultCode.Accepted,id,state.CommitSequence,"引き継ぎました");
         }
     }
+    // 包囲網への誘いに答える（加わる・断る）。
+    public CommandResult AnswerCoalition(EntityId letter,bool join,long revision)
+    {using var _ccRev=ControlContext.At(revision);
+        lock(gate)
+        {
+            var id=new EntityId("request:coalition-answer");
+            if(revision!=state.CommitSequence)return new(ResultCode.StateChanged,id,state.CommitSequence,"状態が変わりました");
+            if(!NationalStrategy.OpenInvites(state).Any(x=>x.Invite.Letter==letter))return new(ResultCode.NotAvailable,id,state.CommitSequence,"答えられる誘いではありません");
+            try{Change(s=>NationalStrategy.Answer(s,letter,join));}
+            catch(InvalidDataException e){return new(ResultCode.NotAvailable,id,state.CommitSequence,e.Message);}
+            return new(ResultCode.Accepted,id,state.CommitSequence,join?"加わりました":"断りました");
+        }
+    }
+    // 時間を進める1回の呼び出しの中の変更は、休眠の版の世界ではまとめて最後に1回だけ検査する（通らなければ呼び出しの前に戻して1件ずつやり直す）。
     public AdvanceResult AdvanceTo(long target, int eventBudget=10000, Action? beforeCommit=null,bool stopAtNotice=false)
+    {
+        lock(gate)
+        {
+            if(deferValidation||!NpcDormancy.Enabled(state))return AdvanceCore(target,eventBudget,beforeCommit,stopAtNotice);
+            AdvanceResult? result=null;RunBatchedTurns(()=>result=AdvanceCore(target,eventBudget,beforeCommit,stopAtNotice),allowInPlace:false);return result!;
+        }
+    }
+    AdvanceResult AdvanceCore(long target,int eventBudget,Action? beforeCommit,bool stopAtNotice)
     {
         lock(gate)
         {
@@ -203,9 +235,9 @@ public sealed partial class WorldSession
                 int cost=1+TreatyNegotiations.BoundaryCost(state)+TruceNegotiations.BoundaryCost(state)+FactionNoticeReactions.BoundaryCost(state)+NpcArmies.BoundaryCost(state)+NationalNameHistory.BoundaryCost(state,boundary)+(NpcWork.Enabled(state)?6:0)+NewGameNpcRoutine.BoundaryCost(state)+NewGameWork.BoundaryCost(state)+(TravelControl.Enabled(state)?state.TravelDecisions!.Count(d=>d.AppliedAt==null&&d.EffectiveAt==boundary):0)+state.PendingEvents.Count(e=>e.At==boundary)+state.Messaging.Attempts.Count(a=>a.Status==AttemptStatus.InTransit&&a.DueAt==boundary||a.Status==AttemptStatus.Lost&&a.LateDueAt==boundary);
                 if(cost>eventBudget-processed)return new(state.ElapsedSeconds,processed,"EventBudget");
                 deferTimePause=WorldTimeControl.Enabled(state);
-                try{
+                try{RunBatchedTurns(()=>{
                 Change(s=>{
-                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);NationalNameHistory.ApplyDue(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
+                    long priorAt=s.ElapsedSeconds;s.ElapsedSeconds=boundary;FamilyKin.Mature(s);FamilyMortality.Apply(s);NationalStrategy.Apply(s);NationalStrategy.ResolveArmies(s);NationalNameHistory.ApplyDue(s);FamilyBirth.Apply(s);PersonalHealth.Apply(s);ArmyRoadMarch.Tick(s,priorAt);
                     if(RegionalCampaign.Enabled(s))RegionalCampaign.ApplyConditions(s);
                     if(TravelControl.Enabled(s))TravelControl.ApplyDue(s);
                     UpdateProgress(s);if(FieldWorld.Enabled(s))FieldWorld.Advance(s);FieldSupply.Tick(s,priorAt);NewGameMilitary.Tick(s,priorAt);if(!WorldClashes.Sparse(s))WorldClashes.Tick(s,priorAt);NewGameMilitary.Sync(s);RegionalBattle.Tick(s);
@@ -216,11 +248,12 @@ public sealed partial class WorldSession
                     // Opt-in sealed-letter policy at this adapter boundary; legacy behavior is unchanged.
                     s.Messaging.Knowledge=s.Messaging.Knowledge.Where(k=>known.Contains((k.MessageId,k.CharacterId))||
                         !s.SealedMessages.Any(id=>id.Value==k.MessageId)||k.EvidenceMessageId!=k.MessageId).ToArray();
-                    HouseRestoration.SeekLocalSupport(s,priorAt);HouseRestoration.AnswerLocalRequests(s);HouseReforms.Receive(s);HouseScaleNotices.Receive(s);PactSignals.Receive(s);GuardianLedger.Tick(s);HeirPledges.Receive(s);TruceNegotiations.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
+                    HouseRestoration.SeekLocalSupport(s,priorAt);HouseRestoration.AnswerLocalRequests(s);HouseReforms.Receive(s);HouseScaleNotices.Receive(s);PactSignals.Receive(s);GuardianLedger.Tick(s);HeirPledges.Receive(s);TruceNegotiations.Update(s);BattleCaptivity.Update(s);TreatyNegotiations.Update(s);TreatySupply.Update(s);TreatyDefense.Update(s);TruceConfirmations.Update(s);NewGameMilitary.UpdateRemote(s);FactionNotices.ReceiveNpc(s);
                     if(!WorldTimeControl.Enabled(s)&&s.Messaging.Attempts.Any(a=>a.Status==AttemptStatus.Delivered&&a.FinishedAt==boundary&&a.ReceiverId==s.PlayerControl.Value&&s.SealedMessages.Any(id=>id.Value==a.MessageId)))s.Paused=true;
                     NewGameWork.Update(s);SynchronizeEvidence(s);Recognize(s);Expire(s);ProcessReady(s);FlushOutbox(s);SynchronizeEvidence(s);CareerMilitary.Update(s);Career.Update(s);NewGameMilitary.Update(s);NewGameService.Update(s);if(WorldClashes.Sparse(s)){NewGameService.Sync(s);NewGameMilitary.Sync(s);WorldClashes.Tick(s,priorAt);}
                 },beforeCommit);
-                ConsiderObservedWar();GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);NpcArmies.TakeTurns(this);if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                ConsiderObservedWar();GatherFamilyClaims();FieldConvoy.TakeTurns(this);RoadConvoy.TakeTurns(this);NpcFreight.TakeTurns(this);RegionalDomains.TakeTurns(this);NpcCommunityAdministration.TakeTurns(this);TruceNegotiations.TakeTurns(this);TreatyNegotiations.TakeTurns(this);TreatySupply.TakeTurns(this);TreatyDefense.TakeTurns(this);RestorationEscort.TakeTurns(this);StartExileJourneys();StartMusterJourneys();TruceConfirmations.TakeTurns(this);NewGameMilitary.TakeRemoteTurns(this);FactionNoticeReactions.TakeTurns(this);RunBatchedTurns(()=>NpcArmies.TakeTurns(this));if(NpcWork.Enabled(state))NpcWork.TakeTurns(this);else if(NewGameNpcRoutine.Enabled(state))NewGameNpcRoutine.TakeTurns(this);
+                },allowInPlace:false);
                 }finally{deferTimePause=false;if(WorldTimeControl.Pending(state)!=null&&!state.Paused)Change(s=>s.Paused=true);}
                 processed+=cost;
                 if(ControlSuccession.Awaiting(state)){if(!state.Paused)Change(s=>s.Paused=true);return new(state.ElapsedSeconds,processed,"PlayerDead");}
@@ -467,7 +500,7 @@ public sealed partial class WorldSession
         Replace(s,t with{Execution=ExecutionPhase.Completed,Progress=1,FinishedAt=s.ElapsedSeconds,InternalReason=reason,Revision=s.CommitSequence});
         QueueReport(s,t,reason);
     }
-    internal static void Stop(ContractWorld s,TaskState t,string reason,AgreementPhase? agreement=null)
+    internal static void Stop(ContractWorld s,TaskState t,string reason,AgreementPhase? agreement=null,bool report=true)
     {
         if(Terminal(t))return;
         s.PendingEvents=s.PendingEvents.Where(e=>e.Task!=t.Id).ToArray();
@@ -475,7 +508,7 @@ public sealed partial class WorldSession
         s.Actions=s.Actions.Select(a=>a.Task==t.Id&&a.Phase==ExecutionPhase.Running?a with{Phase=ExecutionPhase.Stopped}:a).ToArray();
         // A stopped march stays at its physical route progress; never teleport back to the assigned castle.
         Replace(s,t with{Execution=ExecutionPhase.Stopped,Agreement=agreement??t.Agreement,FinishedAt=s.ElapsedSeconds,InternalReason=CreatedCampaign.Enabled(s)&&t.Issuer!=t.Executor&&!MissionReview.KnownOrder(s,t,t.Executor)?"unrecognized/"+reason:reason,Revision=s.CommitSequence});
-        QueueReport(s,t,reason);
+        if(report)QueueReport(s,t,reason);
     }
     private static void QueueReport(ContractWorld s,TaskState task,string reason)
     {

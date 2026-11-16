@@ -29,10 +29,13 @@ public static class NationalStart
     static readonly Lazy<Dictionary<string,string>> dbHouses=new(()=>HakutaiDb.Houses.GroupBy(h=>FactionId(h.Id),StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.First().Id,StringComparer.Ordinal));
     // 世界の家の ID から百代鏡DBの家の ID。
     public static string? DbHouse(string faction)=>dbHouses.Value.GetValueOrDefault(faction);
-    static readonly Lazy<SetupScenario> scenario=new(()=>Build(false,false)),courtScenario=new(()=>Build(true,false)),personScenario=new(()=>Build(true,true));
-    public static SetupScenario Scenario(string edition=RevenueEdition)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:personScenario.Value);
-    internal static SetupScenario ScenarioFor(NewGameState data)=>Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!);
-    static SetupScenario Build(bool court,bool personData)
+    static readonly Lazy<SetupScenario> scenario=new(()=>Build(false,false)),courtScenario=new(()=>Build(true,false)),personScenario=new(()=>Build(true,true)),kinScenario=new(()=>Build(true,true,true));
+    // 新規の開始は母の血縁も入れた版（一覧の DbMothers）。保存の開始定義は、その世界の一覧に合わせて作り直す。
+    public static SetupScenario Scenario(string edition=RevenueEdition)=>Scenario(edition,NationalSystems.Current);
+    // 一覧（新規開始で世界に保存するもの）に DbMothers があれば、母を実の親に入れた開始。一覧を保存しない世界は空の一覧で作る。
+    public static SetupScenario Scenario(string edition,IReadOnlyCollection<string> systems)=>ContractJson.Copy(edition==Edition?scenario.Value:edition==CourtEdition?courtScenario.Value:edition==RevenueEdition&&systems.Contains("DbMothers")?kinScenario.Value:personScenario.Value);
+    internal static SetupScenario ScenarioFor(NewGameState data)=>Scenario(data.HistoricalCatalog==CourtEdition&&data.NationalPersonDataPolicy==NationalPersonEstimates.Policy?PersonEdition:data.HistoricalCatalog!,data.NationalSystems??[]);
+    static SetupScenario Build(bool court,bool personData,bool mothers=false)
     {
         var people=new List<SetupPerson>();var seen=new HashSet<string>(StringComparer.Ordinal);var factions=new List<SetupFaction>();var homes=new Dictionary<string,string>(StringComparer.Ordinal);
         foreach(var h in HakutaiDb.Houses.OrderBy(h=>h.Id,StringComparer.Ordinal))
@@ -56,6 +59,9 @@ public static class NationalStart
             if(!personData||db==null)return person;
             var estimate=NationalPersonEstimates.ForDbPerson(db.Id);var a=estimate.Abilities;
             if(!estimate.BirthParentAccepted)person=person with{BirthParents=null};
+            // 母（DbMothers）：DBの母がこの世界にいて、推定の生年で13歳以上年上なら、実の親に加える。
+            if(mothers&&db.Mother is {} mother&&dbIds.TryGetValue(mother,out var m)&&m!=p.Id&&NationalPersonEstimates.ForDbPerson(mother).BirthYear<=estimate.BirthYear-13)
+                person=person with{BirthParents=[..(person.BirthParents??[]),m]};
             return person with{BirthYear=estimate.BirthYear,Attributes=new OfficerAttributes(a.Leadership,a.Valor,a.Intelligence,a.Politics){Charm=a.Charm}};
         }).ToList();
         var owners=factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
@@ -87,12 +93,14 @@ public static class NationalStart
     }
 
     // 全国1560年の世界を作る（城の移動網・調べる権利の軽い作り方・続けての日課・遠方の休眠）。
-    public static ContractWorld Create(string selected,ulong seed=20261112,string? timePolicy=null)
+    public static ContractWorld Create(string selected,ulong seed=20261112,string? timePolicy=null,HistoryMode? history=null)
     {
         var raw=Scenario();var request=new WorldSetupRequest([],[]);var setup=NewGameSetup.Confirm(raw,request,NewGameSetup.Preview(raw,request));
-        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:RevenueEdition,economyPolicy:RegionalDomains.Policy,npcRoutinePolicy:NewGameNpcRoutine.ContinuingPolicy,inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy);
+        return NewGameWorld.Create(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,historicalCatalog:RevenueEdition,economyPolicy:RegionalDomains.Policy,npcRoutinePolicy:NpcJudgment.Policy,judgment:Judgment(history),inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,demandPolicy:LocalWorkDemand.Policy,timePolicy:timePolicy,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,comingOfAge:FamilyKin.ComingOfAge,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy32,nationalPersonDataPolicy:NationalPersonEstimates.Policy,nationalSystems:NationalSystems.Current,companionPolicy:PersonalCompanions.RetainerReleasePolicy,socialPolicy:CharacterRelations.Policy,marriagePolicy:AdultMarriage.Policy,adoptionPolicy:AdultAdoption.Policy,informationPolicy:PrivateInformation.Policy,weatherPolicy:RegionalWeather.Policy,banditPolicy:LocalSecurity.Policy,abilityPolicy:AbilityEffects.Policy,healthPolicy:ClinicalHealth.Policy,trucePolicy:TruceNegotiations.Policy,history:history);
     }
     // 新規ゲームの画面から始める（保存の開始定義も同じ版で作る）。
-    public static NewCampaignProfile New(NewCampaignStore store,SetupScenario setup,string selected,ulong seed,string? timePolicy,bool previewOnly)
-        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,RevenueEdition,NewGameNpcRoutine.ContinuingPolicy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,economyPolicy:RegionalDomains.Policy,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy,nationalPersonDataPolicy:NationalPersonEstimates.Policy);
+    // NPC の日課は判断の土台の版（v4：性格と知っていることによる選択、空き時間の修行。地方の新規開始と同じ設定）。2026-11-14 から新規の全国開始だけ。
+    static NpcJudgmentSettings Judgment(HistoryMode? history)=>new(NpcJudgment.Policy,history??HistoryMode.Fictional,NpcAttention.Beginner){UseInspectionReferences=true,Challenge=NpcChallenge.Standard,HealthEdition=PersonalHealth.Edition};
+    public static NewCampaignProfile New(NewCampaignStore store,SetupScenario setup,string selected,ulong seed,string? timePolicy,bool previewOnly,HistoryMode? history=null)
+        =>store.New(setup,[],selected,seed,NewGameWorld.CompactPersonalAuthority,RevenueEdition,NpcJudgment.Policy,LocalInspectionFindings.Policy,WorkFollowup.Policy,LocalWorkDemand.Policy,timePolicy:timePolicy,previewOnly:previewOnly,economyPolicy:RegionalDomains.Policy,comingOfAge:FamilyKin.ComingOfAge,networkPolicy:WorldNetwork.CastlePolicy,dormancyPolicy:NpcDormancy.Policy,controlPolicy:ControlSuccession.Policy,strategyPolicy:NationalStrategy.Policy,districtControlPolicy:NationalDistrictControl.Policy,developmentPolicy:CharacterDevelopment.Policy32,nationalPersonDataPolicy:NationalPersonEstimates.Policy,nationalSystems:NationalSystems.Current,companionPolicy:PersonalCompanions.RetainerReleasePolicy,socialPolicy:CharacterRelations.Policy,marriagePolicy:AdultMarriage.Policy,adoptionPolicy:AdultAdoption.Policy,informationPolicy:PrivateInformation.Policy,weatherPolicy:RegionalWeather.Policy,banditPolicy:LocalSecurity.Policy,abilityPolicy:AbilityEffects.Policy,healthPolicy:ClinicalHealth.Policy,trucePolicy:TruceNegotiations.Policy,history:history,judgment:Judgment(history));
 }

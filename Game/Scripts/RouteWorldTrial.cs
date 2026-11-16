@@ -15,7 +15,7 @@ public partial class RouteWorldTrial : Control
     EntityId observer=ContractFixture.Officer;EntityId? appliedObserver;
     readonly Dictionary<string,Button> buttons=new();readonly List<string> checks=new();
     bool automatic,testing;double fraction;int speed=1;string clip="idle";double clipTime;
-    string Output=>ProjectSettings.GlobalizePath("res://../Docs/Design/RouteWorldV1/runtime-local");
+    string Output=>RecordPath.Globalize("res://../Docs/Design/RouteWorldV1/runtime-local");
     string SaveRoot
     {
         get {var arg=OS.GetCmdlineUserArgs().Single(a=>a.StartsWith("--route-save-key="));
@@ -26,7 +26,7 @@ public partial class RouteWorldTrial : Control
     public override void _Ready()
     {
         testing=Mode is "--route-check" or "--route-restore";
-        host=new(new(RouteContract.Create()));store=new(testing?SaveRoot:ProjectSettings.GlobalizePath("user://route-world-v1-manual"),RouteContract.Create().Definitions);
+        host=new(new(RouteContract.Create()));store=new(testing?SaveRoot:RecordPath.Globalize("user://route-world-v1-manual"),RouteContract.Create().Definitions);
         Theme=new Theme{DefaultFontSize=19,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var margin=new MarginContainer();AddChild(margin);margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         foreach(var edge in new[]{"left","right","top","bottom"})margin.AddThemeConstantOverride("margin_"+edge,18);

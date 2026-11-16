@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Contracts;
 public partial class StartSelectionPanel
 {
     string RetainerCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--retainer-case="))?[16..]??"binding";
-    string RetainerOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/RetainerStartV1/runtime-local/"+RetainerCase);
+    string RetainerOutput=>RecordPath.Globalize("res://../Docs/Design/RetainerStartV1/runtime-local/"+RetainerCase);
     long Arrival=>stage!.HubSession.DiagnosticSnapshot().Branches!.Journeys.Single().Legs[^1].EndAt;
     async Task RetainerCapture(string name)
     {

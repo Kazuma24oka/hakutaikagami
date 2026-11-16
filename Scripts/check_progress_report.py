@@ -257,6 +257,9 @@ def historical(f,h):
   original=Path(os.environ["HAKUTAI_LEGACY_ROOT"])/f
   if original.is_file() and hashlib.sha256(original.read_bytes()).hexdigest()==h:return
  if artifact(f).is_file() and hashlib.sha256(artifact(f).read_bytes()).hexdigest()==h:return
+ # Git に入れない試作素材がこのフォルダに無い場合は、合格にせず「未確認」に数える（中身が違う場合は失敗）。
+ if not artifact(f).is_file() and (snapshot is None or f not in snapshot['files']) and Path(f).parts[:3]==('Game','Assets','Trials'):
+  unavailable_historical_runtime.add(f);return
  assert snapshot is not None and snapshot['files'].get(f,{}).get('sha256')==h,('historical input not preserved',f)
  check(snapshot['files'][f]['snapshot'],h)
 for f,h in p['evidence']['runtime_source_hashes'].items():historical(f,h)

@@ -25,8 +25,8 @@ public partial class Officer3DCreator : Control
     public Camera3D Camera {get;private set;}=null!;
     public Officer3DCustomActor Actor=>Models[0];
     public List<Officer3DCustomActor> Models {get;}=new();
-    public string Output=>ProjectSettings.GlobalizePath("res://../Art/Officer3D/TrialV3/runtime-local");
-    public string StoragePath {get;set;}=ProjectSettings.GlobalizePath("user://officer3d-v3-roster.json");
+    public string Output=>RecordPath.Globalize("res://../Art/Officer3D/TrialV3/runtime-local");
+    public string StoragePath {get;set;}=RecordPath.Globalize("user://officer3d-v3-roster.json");
     public Label Status {get;private set;}=null!;
     public Button SaveButton {get;private set;}=null!;
     public Button LoadButton {get;private set;}=null!;
@@ -45,7 +45,7 @@ public partial class Officer3DCreator : Control
     {
         bool test=OS.GetCmdlineUserArgs().Any(a=>a=="--v3-test"||a=="--v3-restore");
         try{Officer3DV3Gate.Require(!test);}catch(Exception e){GD.PushError(e.Message);GetTree().Quit(2);return;}
-        if(test)StoragePath=ProjectSettings.GlobalizePath("user://officer3d-v3-test-roster.json");
+        if(test)StoragePath=RecordPath.Globalize("user://officer3d-v3-test-roster.json");
         DisplayServer.WindowSetSize(new Vector2I(1280,900));Theme=new Theme{DefaultFontSize=18,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo"}}};
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var root=new VBoxContainer();AddChild(root);root.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);

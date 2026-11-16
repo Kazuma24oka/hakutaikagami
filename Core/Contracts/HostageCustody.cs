@@ -11,14 +11,14 @@ public static partial class HostageCustody
 {
     public const string Policy="local-adult-consenting-hostage-distinct-custody-release-v1";
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string reason){if(!ok)throw new InvalidDataException(reason);}
-    public static bool Enabled(ContractWorld w)=>NewGameWorld.Enabled(w)&&w.NewGame?.CustodyPolicy==Policy;
+    public static bool Enabled(ContractWorld w)=>(NewGameWorld.Enabled(w)&&w.NewGame?.CustodyPolicy==Policy)||NationalSystems.On(w,"HostageCustody");
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Custody=new(1,Policy,[]);}
     static CustodyEntry[] Entries(ContractWorld w)=>w.Custody?.Entries??[];
     static CustodyEntry[] Before(ContractWorld w,long at,long rev)=>Entries(w).Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();
     static CustodyEntry[] Case(CustodyEntry[] rows,EntityId id)=>rows.Where(e=>e.Input.Id==id||e.Input.Original==id).ToArray();
     static bool Held(CustodyEntry[] rows,EntityId id)=>Case(rows,id).Any(e=>e.Input.Action==CustodyAction.Admit)&&!Case(rows,id).Any(e=>e.Input.Action is CustodyAction.Release or CustodyAction.ReceiveReturn);
     static bool Closed(CustodyEntry[] rows,CustodyTerms t,long at)=>Case(rows,t.Id).Any(e=>e.Input.Action is CustodyAction.PersonalRefuse or CustodyAction.ReceiverRefuse or CustodyAction.Withdraw or CustodyAction.Release or CustodyAction.ReceiveReturn)||at>t.Until&&!Held(rows,t.Id);
-    public static bool HeldAt(ContractWorld w,EntityId person,long at,long rev)=>Assassination.CaptivityAt(w,person,at,rev)!=null || Before(w,at,rev).Where(e=>e.Terms?.Person==person).Any(p=>Held(Before(w,at,rev),p.Input.Id));
+    public static bool HeldAt(ContractWorld w,EntityId person,long at,long rev)=>Assassination.CaptivityAt(w,person,at,rev)!=null || BattleCaptivity.HeldAt(w,person,at,rev) || Before(w,at,rev).Where(e=>e.Terms?.Person==person).Any(p=>Held(Before(w,at,rev),p.Input.Id));
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>Entries(w).Any(e=>e.Input.Id==id);
     static bool Active(TimedRelation r,long at,long rev)=>r.From<=at&&(at<r.Until||at==r.Until&&rev<r.Revision);
     static bool PersonalRetainer(ContractWorld w,EntityId person,EntityId guardian,long at,long rev)=>w.NewGame!.Registered.Any(p=>p.Id==person.Value)&&HouseholdService.BondsAt(w,at,rev).Any(b=>b.Subject==person&&b.Target==guardian&&Active(b,at,rev));

@@ -5,21 +5,21 @@ public partial class NewGameFrontEnd
 {
     void AddJudgmentConditions()
     {
-        page.AddChild(new Label{Text="歴史への寄せ方"});
+        page.AddChild(new Label{Text="歴史"});
         var history=new OptionButton{Name="HistoryMode"};
-        foreach(string label in new[]{"史実尊重：史実に沿う好みを強める","準史実：史実の好みと現在の事情を併用","仮想：史実への加点を使わない"})history.AddItem(label);
+        foreach(string label in new[]{"史実尊重","準史実","仮想"})history.AddItem(label);
         history.Select((int)historyMode);history.ItemSelected+=index=>historyMode=(HistoryMode)index;page.AddChild(history);
-        page.AddChild(new Label{Text="あなたへの仕事や誘い"});
+        page.AddChild(new Label{Text="声のかかりやすさ"});
         var attention=new OptionButton{Name="NpcAttention"};
-        foreach(string label in new[]{"入門：声をかけられやすい","標準：少し声をかけられやすい","対等：ほかの人物と同じ扱い"})attention.AddItem(label);
+        foreach(string label in new[]{"入門","標準","対等"})attention.AddItem(label);
         attention.Select((int)npcAttention);attention.ItemSelected+=index=>npcAttention=(NpcAttention)index;page.AddChild(attention);
-        var courses = new MenuButton { Name = "PlayCourses", Text = "手強さと助言をまとめて選ぶ" };
+        var courses = new MenuButton { Name = "PlayCourses", Text = "難易度" };
         var menu = courses.GetPopup();
-        menu.AddItem("入門（控えめ・詳しい助言）", 0);
-        menu.AddItem("標準（標準・要点だけ）", 1);
-        menu.AddItem("挑戦（手強い・自分で判断）", 2);
+        menu.AddItem("入門", 0);
+        menu.AddItem("標準", 1);
+        menu.AddItem("挑戦", 2);
         page.AddChild(courses);
-        page.AddChild(new Label { Text = "AIの手強さ（点検・修行で比べる案の数）" });
+        page.AddChild(new Label { Text = "手強さ" });
         var challenge = new OptionButton { Name = "NpcChallenge" };
         foreach (var label in new[] { "控えめ", "標準", "手強い" }) challenge.AddItem(label);
         challenge.Select((int)challengeLevel);

@@ -15,7 +15,7 @@ public static partial class NewGameMilitary
         if(!KnownFailedAttempt(a,true)||a.Number>=MessageFlow.MaxAttempts||!MessageFlow.FailureKnown(w.Messaging,a.Id,w.PlayerControl.Value)||ReceiptConfirmedToSender(w,root.Message,w.PlayerControl.Value))return false;
         // Availability uses only the person's own location and a known fixed destination.
         if(m.DeliverBy==null)return true;if(m.DeliverBy<w.ElapsedSeconds+1)return false;
-        try{var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),known.Position,w.ElapsedSeconds,courier:true,atlas:true);return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;}catch(InvalidDataException){return false;}
+        try{var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),known.Position,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;}catch(InvalidDataException){return false;}
     }
     static void ValidateDirectiveRetryInput(ContractWorld w,NewMilitaryInput i)
     {
@@ -27,7 +27,7 @@ public static partial class NewGameMilitary
     static void ApplyDirectiveRetry(ContractWorld w,NewMilitaryInput i)
     {
         if(!DirectiveRetryAction(i.Action))return;var x=i.DirectiveRetry!;var root=DirectiveOriginal(w,x.Original)!;var from=PersonPosition(w,w.ElapsedSeconds);var to=x.Known.Position;
-        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
+        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);
         MessageFlow.Retry(w.Messaging,root.Message,w.PlayerControl.Value,w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)),true);
         var state=w.NewMilitary!.UnitDirective!;w.NewMilitary=w.NewMilitary with{UnitDirective=state with{Dispatches=[..state.Dispatches,new(i.Id,w.ElapsedSeconds,w.CommitSequence,root.Recipient,root.Role,new("evidence:unit-directive-retry/"+Hash(Text(x))),from,to,route,due,root.Message,MessageFlow.Latest(w.Messaging,root.Message).Id)]}};
     }

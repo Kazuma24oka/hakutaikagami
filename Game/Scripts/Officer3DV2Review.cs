@@ -10,7 +10,7 @@ using System.Text.Json;
 public partial class Officer3DV2Review : Node
 {
     Officer3DStage stage=null!;TaxPanel session=null!;
-    readonly string output=ProjectSettings.GlobalizePath("res://../Art/Officer3D/TrialV2/runtime-local");
+    readonly string output=RecordPath.Globalize("res://../Art/Officer3D/TrialV2/runtime-local");
     readonly Dictionary<string,object> results=new();
     public override void _Ready()
     {
@@ -18,7 +18,7 @@ public partial class Officer3DV2Review : Node
         DisplayServer.WindowSetSize(new Vector2I(1440,1000));
         var theme=new Theme{DefaultFontSize=18,DefaultFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo"}}};
         var root=new Control{Theme=theme};AddChild(root);root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-        session=new TaxPanel{Visible=false};root.AddChild(session);session.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"), OS.GetCmdlineUserArgs().Any(a=>a=="--v2-test"||a=="--v2-restore") ? ProjectSettings.GlobalizePath("user://officer3d-v2-test-world.json") : null);
+        session=new TaxPanel{Visible=false};root.AddChild(session);session.Initialize(FileAccess.GetFileAsString("res://Data/prototype.json"), OS.GetCmdlineUserArgs().Any(a=>a=="--v2-test"||a=="--v2-restore") ? RecordPath.Globalize("user://officer3d-v2-test-world.json") : null);
         stage=new Officer3DStage();root.AddChild(stage);stage.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);stage.Initialize(session);
         if(OS.GetCmdlineUserArgs().Contains("--v2-test"))CallDeferred(nameof(Test));
         else if(OS.GetCmdlineUserArgs().Contains("--v2-restore"))CallDeferred(nameof(RestoreTest));

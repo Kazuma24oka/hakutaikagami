@@ -39,7 +39,7 @@ public static partial class NewGameMilitary
             foreach(int i in trigger){
                 try{
                     var obstacles=origins.Where((p,k)=>k!=i&&RegionalGround.Distance(p,origins[i])>=2250).Concat(planned.Select(k=>Home(w,k))).Distinct().ToArray();
-                    var path=BattlefieldRules.AdjustRoute(w,UnitIdsFor(w)[i],RegionalGround.Plan(origins[i],Home(w,i),w.ElapsedSeconds,obstacles,atlas:true));bool found=false;
+                    var path=BattlefieldRules.AdjustRoute(w,UnitIdsFor(w)[i],RegionalGround.Plan(origins[i],Home(w,i),w.ElapsedSeconds,obstacles,atlas:true,national:WorldGround.National(w)));bool found=false;
                     for(int wait=0;wait<=600;wait++){
                         var candidate=path.Select(l=>l with{StartAt=l.StartAt+wait,EndAt=l.EndAt+wait}).ToArray();
                         long end=candidate.LastOrDefault()?.EndAt??w.ElapsedSeconds;

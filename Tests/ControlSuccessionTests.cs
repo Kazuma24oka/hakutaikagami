@@ -56,6 +56,35 @@ public sealed class ControlSuccessionTests
         Assert.Null(legacy.DiagnosticSnapshot().ControlHandovers);
     }
 
+    // 成人の子がなく未成年の子だけなら、その子のもう一方の実の親が後見として続ける。子が元服するまで子へは譲れない。
+    [Fact] public void AMinorHeirContinuesThroughAKnownAdultGuardian()
+    {
+        var elder=NewGameWorldTests.Officer("created:elder") with{BirthYear=1430};
+        var mother=NewGameWorldTests.Officer("created:mother") with{BirthYear=1530};
+        var child=NewGameWorldTests.Officer() with{BirthYear=1555,BirthParents=[elder.Id,mother.Id]};
+        var start=NewGameWorldTests.Setup([child,mother,elder]);
+        var w=NewGameWorld.Create(start.World,start.Registered,"created:elder",0,
+            inspectionPolicy:LocalInspectionFindings.Policy,workPolicy:WorkFollowup.Policy,comingOfAge:15,controlPolicy:ControlSuccession.Policy);
+        w.ElapsedSeconds=DeathAt-1;
+        var session=new WorldSession(w);session.SetPaused(false);
+        Assert.Equal("PlayerDead",session.AdvanceTo(DeathAt+3600).StopReason);
+        var dead=session.DiagnosticSnapshot();
+        Assert.Equal(LifeState.Minor,dead.Characters.Single(c=>c.Id==new EntityId("created:test")).Life);
+        Assert.Equal(new[]{(new EntityId("created:mother"),new EntityId("created:test"))},ControlSuccession.Guardians(dead));
+        Assert.Equal(new[]{new EntityId("created:mother")},ControlSuccession.Candidates(dead));
+        Assert.False(ControlSuccession.Ended(dead));
+        Assert.Equal(ResultCode.Accepted,session.ContinueAs(new("created:mother"),dead.CommitSequence).Code);
+        var after=session.DiagnosticSnapshot();var row=after.ControlHandovers!.Single();
+        Assert.Equal(ControlSuccession.Guardian,row.Reason);Assert.Equal(new EntityId("created:test"),row.Ward);
+        Assert.DoesNotContain(new EntityId("created:test"),ControlSuccession.RetireCandidates(after)); // 元服前は譲れない
+        var grown=ContractJson.Copy(after);grown.Characters=grown.Characters.Select(c=>c.Id==new EntityId("created:test")?c with{Life=LifeState.Adult}:c).ToArray();
+        Assert.Equal(new EntityId("created:test"),ControlSuccession.RetireCandidates(grown).First()); // 元服したら最初の候補
+        var resumed=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(after)));
+        Assert.Equal(ContractJson.Write(after),ContractJson.Write(resumed.DiagnosticSnapshot()));
+        var tampered=ContractJson.Copy(after);tampered.ControlHandovers=[row with{Ward=null}];
+        Assert.Throws<InvalidDataException>(()=>ContractValidation.Validate(tampered));
+    }
+
     // 全国開始：DBの父（今川義元）を、子（今川氏真）の実の親として持つ。義元の生没年は自然死に使う。
     [Fact] public void NationalStartKeepsDbFathersAndLifeYears()
     {

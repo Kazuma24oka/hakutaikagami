@@ -100,7 +100,7 @@ public static class SocialAssets
  public static void Tick(ContractWorld w,bool clockAdvanced=false)
  {
   if(w.SocialAssets==null)return;
-  if(clockAdvanced&&w.ElapsedSeconds%86400==0){
+  if(clockAdvanced&&w.ElapsedSeconds%86400==0&&SocialWorld.NpcRoutine(w)){
    foreach(var actor in w.Characters.Where(c=>c.Id!=w.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(c=>c.Value,StringComparer.Ordinal)){
     var site=SocialWorld.Site(w,actor);if(site==null||NewGameWork.Balance(w,actor)<100)continue;
     long month=w.ElapsedSeconds/(30*86400L);var id=Id("npc-tea",actor.Value+"/"+month);if(OwnIdUsed(w,id))continue;

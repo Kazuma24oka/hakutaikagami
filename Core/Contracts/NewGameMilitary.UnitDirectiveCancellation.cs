@@ -30,7 +30,7 @@ public static partial class NewGameMilitary
     static void ApplyDirectiveCancellation(ContractWorld w,NewMilitaryInput i)
     {
         if(!DirectiveCancellationAction(i.Action))return;var p=i.DirectiveCancellation!;var root=DirectiveOriginal(w,p.Original)!;var from=PersonPosition(w,w.ElapsedSeconds);var to=p.Known.Position;
-        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"directive-cancel");
+        var route=RegionalGround.Plan(from,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);string message=UnitMessage(i.Id,"directive-cancel");
         MessageFlow.Send(w.Messaging,new(message,i.Id.Value,"unit-post-directive-cancel",w.PlayerControl.Value,root.Recipient.Value,Text(new UnitDirectiveCancellationNote(i.Id,p.Original,root.Message,p.EffectiveAt,UnitDirectiveCancellationContract,i.PostPolicy,i.TransportPolicy){HoldingPolicy=i.OriginalPolicy}),w.NewMilitary!.Terms.Site.Value,w.ElapsedSeconds,i.DeliverBy),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
         var state=w.NewMilitary.UnitDirective!;var x=state.Cancellation??new(UnitDirectiveCancellationContract,[],[],[],[],[],[],[]);
         if(i.OriginalPolicy==UnitDirectiveCancelHoldingContract&&x.Holding==null)x=x with{Holding=new(UnitDirectiveCancelHoldingContract,w.ElapsedSeconds,w.CommitSequence,[],[],[])};
@@ -91,7 +91,7 @@ public static partial class NewGameMilitary
             var result=StopDirectiveOriginal(w,d,note);int index=ReceivingUnitIndex(w,d);var x=w.NewMilitary.UnitDirective.Cancellation!;
             w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Effects=[..x.Effects,new(d.Id,note.Original,w.ElapsedSeconds,w.CommitSequence,result.Outcome,result.Order,Position(w,index,w.ElapsedSeconds))]}}};
             if(effective<=received)continue;
-            var origin=Position(w,index,w.ElapsedSeconds);var destination=DirectiveCancellationReturnOrigin(w,d);var route=RegionalGround.Plan(origin,destination,w.ElapsedSeconds,courier:true,atlas:true);long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var id=new EntityId("notice:directive-cancel/"+Hash(d.Id.Value));string message=UnitMessage(id,"directive-cancel-effect");
+            var origin=Position(w,index,w.ElapsedSeconds);var destination=DirectiveCancellationReturnOrigin(w,d);var route=RegionalGround.Plan(origin,destination,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));long due=Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0);var id=new EntityId("notice:directive-cancel/"+Hash(d.Id.Value));string message=UnitMessage(id,"directive-cancel-effect");
             MessageFlow.Send(w.Messaging,new(message,d.Id.Value,"unit-post-directive-cancel-effect",d.Recipient.Value,w.PlayerControl.Value,Text(DirectiveCancelAnswer(w,d)),w.Messaging.Messages.Single(m=>m.Id==d.Message).Scope,w.ElapsedSeconds),w.ElapsedSeconds,checked((int)(due-w.ElapsedSeconds)));
             x=w.NewMilitary.UnitDirective.Cancellation!;w.NewMilitary=w.NewMilitary with{UnitDirective=w.NewMilitary.UnitDirective with{Cancellation=x with{Notices=[..x.Notices,new(id,d.Id,message,MessageFlow.Latest(w.Messaging,message).Id,w.ElapsedSeconds,w.CommitSequence,origin,destination,route,due,UnitCourier(id))]}}};
         }

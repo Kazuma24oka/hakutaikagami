@@ -12,7 +12,7 @@ public static class OfficerWorldValidation
     static OfficerWorldStage ui=null!;
     static readonly List<string> captures=new();
     static readonly List<string> checks=new();
-    static string Output=>ProjectSettings.GlobalizePath("res://../Art/Officer3D/WorldIntegrationV1/runtime-local");
+    static string Output=>RecordPath.Globalize("res://../Art/Officer3D/WorldIntegrationV1/runtime-local");
     static void Check(bool ok,string text){if(!ok)throw new InvalidOperationException(text);checks.Add(text);GD.Print("OFFICER_WORLD_CHECK "+text);}
     static async Task Frames(){await ui.ToSignal(ui.GetTree(),SceneTree.SignalName.ProcessFrame);await ui.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);}
     static async Task Capture(string name){await Frames();var image=ui.GetViewport().GetTexture().GetImage();Check(image.SavePng(Output+"/"+name+".png")==Error.Ok,"capture "+name);captures.Add(name+".png");}
@@ -35,7 +35,7 @@ public static class OfficerWorldValidation
             Check(ui.Session.Simulation.OfficerState!.Looks.Count==3,"three real officer IDs bound to appearances");
             Select(0);Click("look-red_guard");Select(1);Click("look-veteran");
             var roster=new Officer3DCustomRoster{Officers=new(){new("created-reference","作成外見の取込試験",Officer3DCustomActor.Preset("red_guard"))}};
-            string importPath=ProjectSettings.GlobalizePath("user://officer-world-import-test.json");System.IO.File.WriteAllText(importPath,JsonSerializer.Serialize(roster));
+            string importPath=RecordPath.Globalize("user://officer-world-import-test.json");System.IO.File.WriteAllText(importPath,JsonSerializer.Serialize(roster));
             Select(2);ui.ImportCreatorFile(importPath);Click("apply-import");Check(ui.Session.Simulation.OfficerState!.Looks["character-003"].Equipment["torso"]=="red_lamellar","creator roster assigns appearance to selected existing officer only");
             Check(ui.Session.Simulation.RestoreWorld().Characters.Count==3,"import does not create political identities or authority");
             Select(0);ui.Synchronize();await Capture("officer-bindings");
@@ -71,7 +71,7 @@ public static class OfficerWorldValidation
             Check(ui.Session.Simulation.SaveJson()==saved&&RenderState()==screen,"normal save restores colors parts battle pose and fractional clock");
             await Capture("paused-combat-restored");
             // A bad normal save must not replace any of the current session.
-            string path=ProjectSettings.GlobalizePath("user://officer-world-test.json");System.IO.File.WriteAllText(path,saved.Replace("mature_v1","unknown-face"));Click("load");
+            string path=RecordPath.Globalize("user://officer-world-test.json");System.IO.File.WriteAllText(path,saved.Replace("mature_v1","unknown-face"));Click("load");
             Check(ui.Session.Simulation.SaveJson()==saved,"invalid appearance in normal save rejected atomically");System.IO.File.WriteAllText(path,saved);
             Click("pause");ui.Session.Automatic=false;
             for(int i=0;i<12;i++){Click("advance");ui.Synchronize();var b=ui.Session.Simulation.OfficerState!.Battle!;foreach(var u in b.Units)phases.Add(u.Phase);await Capture("retreat-"+i.ToString("D2")+"-"+b.Units[1].Phase);}

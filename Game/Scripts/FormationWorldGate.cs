@@ -7,7 +7,7 @@ public static class FormationWorldGate
 {
     public static void Require(bool reviewed)
     {
-        var root=ProjectSettings.GlobalizePath("res://..");var dir=Path.Combine(root,"Art/Officer3D/FormationWorldV1");var plan=Path.Combine(dir,"runtime-plan.json");
+        var root=RecordPath.Globalize("res://..");var dir=Path.Combine(root,"Art/Officer3D/FormationWorldV1");var plan=Path.Combine(dir,"runtime-plan.json");
         string Hash(string p)=>Convert.ToHexString(SHA256.HashData(System.IO.File.ReadAllBytes(p))).ToLowerInvariant();
         using var p=JsonDocument.Parse(System.IO.File.ReadAllText(plan));foreach(var d in p.RootElement.GetProperty("dependencies").EnumerateArray())if(Hash(Path.Combine(root,d.GetProperty("path").GetString()!))!=d.GetProperty("sha256").GetString())throw new InvalidOperationException("布陣・連続地図の実動作を再検査してください。");
         if(!reviewed)return;

@@ -11,7 +11,7 @@ public partial class CastleSiegeCheck:Node
  async Task Until(Func<bool> done,string label){var t=Stopwatch.StartNew();while(!done()){if(t.Elapsed.TotalSeconds>300)throw new TimeoutException(label);await Frame();}}
  static void Check(bool condition,string text){if(!condition)throw new InvalidDataException(text);}
  public override async void _Ready(){try{
- string output=ProjectSettings.GlobalizePath("res://../Docs/Design/CastleSiegeV1/runtime-local/ui");Directory.CreateDirectory(output);
+ string output=RecordPath.Globalize("res://../Docs/Design/CastleSiegeV1/runtime-local/ui");Directory.CreateDirectory(output);
  var entry=new NewGameFrontEnd();AddChild(entry);await Frame();var start=entry.CreateSiegeReview(Path.Combine(Path.GetTempPath(),"bandit-ui-"+Guid.NewGuid().ToString("N")));entry.QueueFree();await Frame();
  var game=new NewGameRuntime();game.Configure(start.Store,start.Profile,false);AddChild(game);game.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);await Frame();await Until(()=>!game.IsSaving,"開始保存");
  var session=game.Session;

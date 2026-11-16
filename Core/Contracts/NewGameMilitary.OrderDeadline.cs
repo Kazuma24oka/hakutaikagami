@@ -8,14 +8,14 @@ public static partial class NewGameMilitary
         var m=w.Messaging.Messages.Single(m=>m.Id==d.Message);if(m.DeliverBy==null)return true;
         if(m.DeliverBy<w.ElapsedSeconds+1)return false;
         var destination=RetryHomeAction(action)?Home(w,0):w.NewMilitary!.Withdrawal!.Sightings.Last().Position;
-        var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),destination,w.ElapsedSeconds,courier:true,atlas:true);
+        var route=RegionalGround.Plan(PersonPosition(w,w.ElapsedSeconds),destination,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));
         return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;
     }
     static bool HeldWithinDeadline(ContractWorld w,MessageEnvelope m,UnitReplyHolding h,NewMilitaryAction action)
     {
         if(m.DeliverBy==null)return true;if(m.DeliverBy<w.ElapsedSeconds+1)return false;
         var to=action==NewMilitaryAction.TakeHeldReply?PhysicalPerson(w,w.ElapsedSeconds):Home(w,0);
-        var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true);
+        var route=RegionalGround.Plan(h.Position,to,w.ElapsedSeconds,courier:true,atlas:true,national:WorldGround.National(w));
         return Math.Max(w.ElapsedSeconds+1,route.LastOrDefault()?.EndAt??0)<=m.DeliverBy;
     }
     static void ValidateUnitInitialStatuses(ContractWorld w)

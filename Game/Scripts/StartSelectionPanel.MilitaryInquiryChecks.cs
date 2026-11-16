@@ -9,7 +9,7 @@ public partial class StartSelectionPanel
 {
     const int MilitaryInquirySteps=6;
     string MilitaryInquiryCase=>OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("--military-inquiry-case="))?.Split('=',2)[1]??"permission";
-    string MilitaryInquiryOutput=>ProjectSettings.GlobalizePath("res://../Docs/Design/MilitaryInquiryV1/runtime-local/"+MilitaryInquiryCase);
+    string MilitaryInquiryOutput=>RecordPath.Globalize("res://../Docs/Design/MilitaryInquiryV1/runtime-local/"+MilitaryInquiryCase);
     string MilitaryFaultOriginal=>MilitaryInquiryCase=="retry"?stage!.HubSession.DiagnosticSnapshot().Military!.Requests.Single(q=>q.Input.Action==MilitaryAction.Request).Message!:stage!.HubSession.DiagnosticSnapshot().Military!.Events.Single(e=>e.Effect==(MilitaryInquiryCase=="offer"?MilitaryEffect.Offered:MilitaryInquiryCase=="permission"?MilitaryEffect.Permission:MilitaryEffect.Returned)).Message;
     string MilitaryStatusLetter=>stage!.HubSession.DiagnosticSnapshot().Military!.Events.Last(e=>e.Effect==MilitaryEffect.StatusSent).Message;
     void MilitaryFaultSetup()

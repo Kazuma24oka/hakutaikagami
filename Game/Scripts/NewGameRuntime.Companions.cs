@@ -31,7 +31,7 @@ public partial class NewGameRuntime
     void ShowPrivateInspectionTalk(EntityId person)
     {
         var reply=Session.ConsultPrivateInspection(person,Session.PlayerControl,Session.Revision);
-        PresentWork("私的な点検の相談",reply.Speech,"本人からの返答です。相談だけでは支払いや依頼は発生しません。",person,person,"点検一件の相談","本人の返答");
+        PresentWork("私的な点検の相談",reply.Speech,"本人からの返答",person,person,"点検一件の相談","本人の返答");
         if(reply.CanConfirm)Choice("private-inspect-confirm","私財20文で、この一件を頼む",()=>{var r=Session.ManageCompanion(new(new("request:private-inspect-talk/"+reply.Revision),person,CompanionAction.PrivateInspect,reply.Fee),Session.PlayerControl,reply.Revision);Submit(r);if(r.Code is ResultCode.Accepted or ResultCode.AlreadyAccepted)CloseBottomTalk();else ShowPrivateInspectionTalk(person);});
         Choice("private-inspect-leave",reply.CanConfirm?"今回は見送る":"分かった。地図へ戻る",CloseBottomTalk);LayoutBottomTalk();
     }
