@@ -20,7 +20,10 @@ public sealed partial class WorldSession
     // 進行の中の仕組みごとの手番の確認が読むだけの写し。今の状態（同じ物）の間は1つを共有し、世界全体を写し直さない。
     // 写しは読むだけで、書き換えない。検査（GuardTurnSnapshots）では、共有するたびに書き換えがないことを確かめる。
     // 検査によっては一時的に切るので、切っている間に作った写し（照合の値が無い）は確かめない。
-    internal static bool GuardTurnSnapshots;
+    // 切るのはその検査の流れの中だけ（並べて流す別の検査の確かめまで切らない）。既定は GuardTurnSnapshotsByDefault。
+    internal static bool GuardTurnSnapshotsByDefault;
+    static readonly AsyncLocal<bool?> guardTurnSnapshots=new();
+    internal static bool GuardTurnSnapshots{get=>guardTurnSnapshots.Value??GuardTurnSnapshotsByDefault;set=>guardTurnSnapshots.Value=value;}
     private ContractWorld? turnSource,turnView;private string? turnHash;private byte[]? turnBytes;
     // 写しが書き換えられたとき、書き換えられた項目の名前を知らせる（検査のときだけ）。
     private string TurnChanged(){var was=ContractJson.Read<ContractWorld>(turnBytes!);var names=typeof(ContractWorld).GetProperties().Where(p=>p.CanRead&&p.GetIndexParameters().Length==0&&ContractJson.CanonicalHash(p.GetValue(was))!=ContractJson.CanonicalHash(p.GetValue(turnView))).Select(p=>p.Name);return "手番の確認の写しが書き換えられました："+string.Join("、",names);}
