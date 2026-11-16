@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "04342a4fea6756fa4dc06f1abe64a6f493beef1834b61c9c78c079f58c65cd07",
+    "Docs/Development/ProgressV1/estimate.json": "8745003951091ec8d581303b8f124125f580183bd73264842492b92cc3a4be33",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "96283f63c278d170f48a6788527f90e74f8dc6d73e18466a3709ce6f933b8d3e",
+    "Scripts/check_approval_batch.py": "ecd4aeacc3d93dab0e6a5f032602b92bc3349a1ef794cfcb8d76ee0cccf5c4de",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "6fb8804317221267a6f9f85ea336fded143a22162d9d36695587d92bd22e4d0f",
+    "Docs/Development/CURRENT_STAGE.md": "f06b3c3ce0b01bbadf296d85af7b854d0338e77b846473d8460c49299959b3e8",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
     "Core/Contracts/NewGameWorld.cs": "43ce09a0b818e97640da210c65f02db0004f716f1514210daa7882821b52acad",
@@ -299,7 +299,7 @@
     "Docs/Design/AdultAdoptionV1/legacy-sources.json": "6e91c6daf781d5e50b0b7d4dee15f8229daebb6d71724097cc2200ae2c4c116a",
     "Docs/Development/ProgressV1/approval-baseline-v38.json": "d7c16b1047f735ccd826f54af0f55e3b87acd4c233ad9f8db582eeb6cb7f8bdc",
     "Scripts/verify_adult_adoption.py": "9ecd64b1d0b076560834d9554d51509b144cfe2cffa5d8f4aeba6b3abc45883a",
-    "Core/Contracts/AdultMarriage.cs": "f5ba9494c98fcfd48e2eff5ddd9fd41ebfaf67f5214e3abef2a48ad1619da800",
+    "Core/Contracts/AdultMarriage.cs": "b9a80daaddcd5b46ab52f684d3c70eaa32c4b2df14ea3f8c8eaf7689823fec4f",
     "Core/Contracts/FamilyConsentRules.cs": "a5cf267e26034a1e0c7265ac621977001123514057b6f51b4b1b63319b75e8ee",
     "Tests/AdultMarriageTests.cs": "77d5fac5ec583beeeda9d198e637959e86f2369363c6d988bb38a54a7a072734",
     "Game/Scripts/NewGameRuntime.Marriage.cs": "e723a4314aad5c0bb71fe2600ab0c2ab1387faba8c7847c7772dde5af610a5df",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "efdcddff016b46c9c7e078eb21edd4cbd18fba52bacfc5ca94fd84254f132f2f",
     "Core/Contracts/NewGameNpcRoutine.cs": "49db6539ff2e3cd8bceeec7317f78dfdfd7ab5dd142a6cf7e1873d64ca1341a6",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "b8f59452f3d1e36c89acfb8dbb1d120566602554bc8b3d05e506810e9f2eee85",
+    "Core/Contracts/ContractJson.cs": "51030f529fcce3e9cc3c7c84e820cf550bc3384135fcf962d4f27c9022421d3a",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -796,7 +796,7 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "2a31c65dda598594e5e52214f6f82e4fcd76f072ea949add8cb6a0aaff400026",
+    "Docs/Development/ProgressV1/index.html": "487feeac66f630f3ce47a47bccc2e6518de6ec5a2212ab8e8a2ff832bb41d25c",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
     "Core/Contracts/NationalNameHistory.cs": "3b6267a8748ba01ec47c39882200c4e507a8bf9d96a009559dfe33f8aeb24b29",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
@@ -991,7 +991,7 @@
     {
       "id": "BD-06",
       "status": "foundation",
-      "existing": "生死・成人資格のデータと軍務での本人退避がある。捕縛からの逃亡とは別。 身柄の預かりを本人の現地所在と共通の行動可否へ接続し、解放しても自動移動しない。 拘束と実護送・到着後の待機・受領後の通常同行を同じ人物の位置へ接続。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 武将本人とNPCの負傷・病を部位と重さで持ち、支障のある行動だけを止め、手当で回復の経過が縮む（健康と療養V1）。 傷病死、合戦での捕縛、捕虜の護送（着くまで処遇しない）、本人の捕縛と銭・引き換えによる解放の願い、家の外の医者の手当を全国の開始で接続。逃亡は残件。",
+      "existing": "生死・成人資格のデータと軍務での本人退避がある。捕縛からの逃亡とは別。 身柄の預かりを本人の現地所在と共通の行動可否へ接続し、解放しても自動移動しない。 拘束と実護送・到着後の待機・受領後の通常同行を同じ人物の位置へ接続。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 武将本人とNPCの負傷・病を部位と重さで持ち、支障のある行動だけを止め、手当で回復の経過が縮む（健康と療養V1）。 傷病死、合戦での捕縛、捕虜の護送（着くまで処遇しない）、本人の捕縛と銭・引き換えによる解放の願い、家の外の医者の手当を全国の開始で接続。逃亡は残件。 2026-11-17（S02）：危篤（重さ3の峠の前）と意思表示不能、本人の手当に医術、重傷の後遺症が治った後180日まで残る。",
       "remaining": "負傷/病気/死亡、軍事捕縛、長期生涯。 統合案で追加：§4 寿命・死亡（決定9）・§10 K6 暗殺・§21 C4 負傷兵。 2026-11-06採用：疲労・負傷・病気・加齢を分け、部位/症状/重さによる行動制限と医術・介抱・休養等を本人の健康へ接続する。任務中も必要な療養を認め、権限・預り物・責任は保持する。負傷・病・加齢・手当・行動制限は接続済み（健康と療養V1）。医術の技能・後遺症・疲労・危篤時の全政務制限・伝聞・戦場の武将本人の負傷は未実装。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
@@ -1028,7 +1028,8 @@
         "Game/Scripts/PersonalHealthCheck.cs",
         "Docs/Design/PersonalHealthV1/README.md",
         "Core/Contracts/BattleCaptivity.cs",
-        "Tests/NpcCaptorTests.cs"
+        "Tests/NpcCaptorTests.cs",
+        "Docs/Design/MortalSuccessionV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1036,7 +1037,7 @@
     {
       "id": "BD-07",
       "status": "foundation",
-      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。",
+      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：危篤と意思表示不能、NPCの家の家督争いの決着（家法の後継順位・家臣の意向・指名・年長）と兄弟姉妹の家督、操作の引き継ぎの兄弟姉妹、年代記の終わりの総括を新規の全国開始に入れた。全契約の承継は S06、NPCの隠居は S09。",
       "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。 統合案で追加：§12 後継順位・誓紙・家督争い・後見・§4 出生・成人・訃報（決定9）。 2026-11-05 既存仕様の具体化：成人縁組・後継指名・正式継承・実支配と、プレイヤーの適格な操作継続を分離する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。隠居や後見だけで全記憶・全権限を移さず、成人不在時の既定を維持する。実装・シナリオ検査は未実施。 2026-11-06採用：危篤・意思表示不能・死亡・家督承認・操作継承を分離し、既存の歴史モードの自然死方針を健康モデルと接続する。 2026-11-06採用：元服で師事・経験・技能を保持し、本人が表明した希望を既知の範囲で振り返る。元服と適格な操作継承・後見終了・奉公を分離する。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
@@ -1050,7 +1051,8 @@
         "Docs/Design/GuardianshipV1/README.md",
         "Docs/Design/GuardianshipV1/verification.json",
         "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md",
-        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md"
+        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
+        "Docs/Design/MortalSuccessionV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1058,7 +1060,7 @@
     {
       "id": "BD-08",
       "status": "design_only",
-      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
+      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 2026-11-17（S02）：操作を継ぐ人がいなければ年代記の終わりに没日・家・当主・城の数を出す。兄弟姉妹で続けられる。",
       "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。 統合案で追加：§19 年代記と開始年のシナリオ・§26 Z11 家ごとの年表。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
@@ -1077,7 +1079,8 @@
         "Tests/WorldTimeTravelTests.cs",
         "Game/Scripts/NewGameRuntime.WorldTime.cs",
         "Game/Scripts/WorldTimeCheck.cs",
-        "Docs/Design/WorldTimeV1/verification.json"
+        "Docs/Design/WorldTimeV1/verification.json",
+        "Docs/Design/MortalSuccessionV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2890,7 +2893,7 @@
     {
       "id": "BD-45",
       "status": "foundation",
-      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。",
+      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：死亡後の家督の申立が2人以上なら決着し、敗れた人は家中に残る。指名・成人の実子・同じ家の兄弟姉妹の順。",
       "remaining": "死亡・争いを伴う家督と全契約の承継。 2026-11-06採用：教育者と後見人の対象・権限・期限を分け、元服で育成結果を保持しつつ、後見終了・家督・帳簿等の実物返還を各手続きへ接続する。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -2955,7 +2958,8 @@
         "Docs/Design/HeirDesignationV1/verification.json",
         "Docs/Design/GuardianshipV1/README.md",
         "Docs/Design/GuardianshipV1/verification.json",
-        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md"
+        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
+        "Docs/Design/MortalSuccessionV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2

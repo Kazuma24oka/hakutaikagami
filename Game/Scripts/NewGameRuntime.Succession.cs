@@ -17,7 +17,16 @@ public partial class NewGameRuntime
         var feedback=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};
         var candidates=ControlSuccession.Candidates(w);
         void End()=>Button("年代記を閉じる",()=>{popup.Hide();Suspend();MenuRequested?.Invoke();});
-        if(candidates.Length==0){Text("年代記の終わり");End();}
+        if(candidates.Length==0)
+        {
+            Text("年代記の終わり");
+            if(MortalSuccession.End(w) is {} e)
+            {
+                Text("没　"+WorldCalendar.Display(w.EpochDate,e.DiedAt));
+                if(e.House!=null)Text((w.Definitions.Organizations.FirstOrDefault(o=>o.Id.Value==e.House)?.Name??e.House)+"　当主　"+(e.HouseHead is {} h?PersonName(h):"なし")+"　城　"+e.Castles);
+            }
+            End();
+        }
         var wards=ControlSuccession.Guardians(w);
         foreach(var heir in candidates)Button(PersonName(heir)+(Array.Find(wards,g=>g.Proxy==heir) is var gw&&gw.Proxy==heir?"（"+PersonName(gw.Ward)+"の後見）":"")+"で続ける",()=>{
             var r=Session.ContinueAs(heir,Session.Revision);

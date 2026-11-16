@@ -68,6 +68,8 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyShogun[]? Shoguns {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyCoalition[]? Coalitions {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyFall[]? Falls {get;init;}
+    // 家督争いの決着（一覧の MortalSuccession の世界だけ）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDispute[]? Disputes {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDefection[]? Defections {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
@@ -184,7 +186,7 @@ public static class NationalStrategy
     static long IndependentStrength(ContractWorld w,IndependenceDeclaration d,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>
         Math.Max(50L,(initial.GetValueOrDefault(d.FormerHouse.Value) is int start&&start>0?Cap(d.FormerHouse.Value)*owners.Values.Count(v=>v==d.House.Value)/start:0)-Losses(w).GetValueOrDefault(d.House.Value));
     static string HouseName(ContractWorld w,EntityId house)=>w.Definitions.Organizations.SingleOrDefault(o=>o.Id==house)?.Name??(HouseSuccession.Head(w,house) is var h&&FamilyBirth.People(w).SingleOrDefault(p=>p.Id==h.Value)?.Name is {} n?n.Split(' ')[0]+"家":house.Value);
-    static long MonthStart(ContractWorld w,int year,int month)
+    internal static long MonthStart(ContractWorld w,int year,int month)
     {
         var epoch=DateOnly.ParseExact(w.EpochDate,"yyyy-MM-dd",CultureInfo.InvariantCulture);
         return ((long)new DateOnly(year,month,1).DayNumber-epoch.DayNumber)*86400;
@@ -301,7 +303,7 @@ public static class NationalStrategy
         if(!Enabled(w)||!IsMonthStart(w,w.ElapsedSeconds))return;
         var s=w.Strategy??new StrategyState(1,Policy,[],[]);
         var date=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds);
-        s=s with{Successions=Succeed(w,s)};w.Strategy=s;
+        var successions=Succeed(w,ref s);s=s with{Successions=successions};w.Strategy=s;
         var outcomes=s.Outcomes.ToList();
         // 前の月の出陣を決着させる。
         foreach(var c in s.Campaigns.Where(c=>!s.Outcomes.Any(o=>o.Campaign==c.Id)&&c.At<w.ElapsedSeconds))
@@ -331,6 +333,8 @@ public static class NationalStrategy
         {
             if(playerHouse.Contains(f.Id))continue;
             var head=HouseSuccession.Head(w,new(f.Id));if(w.Characters.SingleOrDefault(c=>c.Id==head)?.Life!=LifeState.Adult)continue;
+            // 当主が意思表示できない間（危篤・重い病）は、家の出陣を決めない。
+            if(MortalSuccession.On(w)&&MortalSuccession.Incapacitated(w,head,w.ElapsedSeconds))continue;
             var own=owners.Where(x=>x.Value==f.Id).Select(x=>x.Key).ToArray();if(own.Length==0)continue;
             // 境の城は、自分の城と、自分に従う家（DBの従属先が自分の家）の城の隣。
             var vassals=Vassals(s,f.Id);var front=owners.Where(x=>x.Value==f.Id||x.Value!=null&&vassals.Contains(x.Value)).Select(x=>x.Key).ToArray();
@@ -437,8 +441,26 @@ public static class NationalStrategy
             return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle),Supporters=supporters.Length==0?null:supporters,Joined=local.Length==0?null:local};
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
-    static StrategySuccession[]? Succeed(ContractWorld w,StrategyState s)
+    // 一覧の MortalSuccession：申立が2人以上なら決着し、指名の後継・成人の実子の年長・同じ家の兄弟姉妹・家中の筆頭格の順。
+    static StrategySuccession[]? SucceedMortal(ContractWorld w,ref StrategyState s)
     {
+        var rows=(s.Successions??[]).ToList();var disputes=(s.Disputes??[]).ToList();var life=w.Characters.ToDictionary(c=>c.Id.Value,c=>c.Life,StringComparer.Ordinal);
+        foreach(var f in w.NewGame!.Start.Factions.OrderBy(f=>f.Id,StringComparer.Ordinal))
+        {
+            var head=HouseSuccession.Head(w,new(f.Id));if(life.GetValueOrDefault(head.Value)!=LifeState.Dead||head==w.PlayerControl)continue;
+            EntityId heir;
+            if(MortalSuccession.Successor(w,new(f.Id),head,f.Id) is {} pick){heir=pick.Heir;if(pick.Dispute is {} d)disputes.Add(d);}
+            else if(FamilyBirth.People(w).Where(p=>p.Faction==f.Id&&life.GetValueOrDefault(p.Id)==LifeState.Adult).OrderBy(p=>p.Lord==null?0:1).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault() is {} r)heir=new(r.Id);
+            else continue;
+            rows.Add(new(new(f.Id),head,heir,w.ElapsedSeconds,w.CommitSequence));
+        }
+        if(disputes.Count>0)s=s with{Disputes=disputes.ToArray()};
+        return rows.Count==0?null:rows.ToArray();
+    }
+    internal static int CastleCount(ContractWorld w,string faction)=>Owners(w,w.Strategy!).Count(x=>x.Value==faction);
+    static StrategySuccession[]? Succeed(ContractWorld w,ref StrategyState s)
+    {
+        if(MortalSuccession.On(w))return SucceedMortal(w,ref s);
         var rows=(s.Successions??[]).ToList();var people=FamilyBirth.People(w).ToArray();var life=w.Characters.ToDictionary(c=>c.Id.Value,c=>c.Life,StringComparer.Ordinal);
         foreach(var f in w.NewGame!.Start.Factions.OrderBy(f=>f.Id,StringComparer.Ordinal))
         {
@@ -607,10 +629,19 @@ public static class NationalStrategy
                 !(c.Basis==Border||c.Basis=="betrayal"||c.Basis==Jouraku||c.Basis==Restoration&&StrategyRestoration.Enabled(w)||c.Basis.StartsWith("history:",StringComparison.Ordinal)&&History.Any(e=>"history:"+e.Id==c.Basis))||Owner(w,c.Target,c.At,c.Revision)!=c.Defender)
                 throw new InvalidDataException("出陣の記録が不正です");
         foreach(var x in s.Successions??[])if(!factions.Contains(x.House.Value)||x.At>w.ElapsedSeconds||x.Revision>w.CommitSequence||!IsMonthStart(w,x.At)||w.Characters.SingleOrDefault(c=>c.Id==x.Previous)?.Life!=LifeState.Dead||!w.Characters.Any(c=>c.Id==x.Heir))throw new InvalidDataException("家督の記録が不正です");
+        if(prior?.Strategy?.Disputes is {} oldDisputes&&!(s.Disputes??[]).Take(oldDisputes.Length).SequenceEqual(oldDisputes,StrategyDisputeComparer.Instance))throw new InvalidDataException("過去の家督争いの記録が変更されています");
+        if((s.Disputes??[]).Any(d=>!(s.Successions??[]).Any(x=>x.House==d.House&&x.Previous==d.Previous&&x.Heir==d.Winner&&x.Revision==d.Revision)))throw new InvalidDataException("家督争いの記録が家督と合いません");
         if(prior?.Strategy?.Successions is {} oldSuccessions&&!(s.Successions??[]).Take(oldSuccessions.Length).SequenceEqual(oldSuccessions))throw new InvalidDataException("過去の家督の記録が変更されています");
         foreach(var p in s.Pacts??[])if(p.A==p.B||!factions.Contains(p.A.Value)||!factions.Contains(p.B.Value)||p.Kind is not("alliance" or "truce")||p.From>w.ElapsedSeconds||p.Until<=p.From||!IsMonthStart(w,p.From)||p.Revision>w.CommitSequence)throw new InvalidDataException("家どうしの約束の記録が不正です");
         if(prior?.Strategy?.Pacts is {} oldPacts&&!(s.Pacts??[]).Take(oldPacts.Length).Select(p=>p with{Broken=null}).SequenceEqual(oldPacts.Select(p=>p with{Broken=null})))throw new InvalidDataException("過去の約束の記録が変更されています");
         foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At)&&c.Real!=true)throw new InvalidDataException("出陣の結果が不正です");if(o.Capture is {} cap&&(c.Real!=true||o.Captured||cap.At!=o.At||cap.FromOwner!=c.Attacker||cap.CaptorOwner!=c.Defender||cap.Site!=c.Target||RealArmy(w,c)?.Commander!=cap.Person))throw new InvalidDataException("出陣の捕縛の記録が不正です");StrategyBattles.Validate(w,o);}
         StrategyRestoration.Validate(w,s,prior?.Strategy);StrategyDefections.Validate(w,s,prior?.Strategy);
     }
+}
+
+sealed class StrategyDisputeComparer:IEqualityComparer<StrategyDispute>
+{
+    public static readonly StrategyDisputeComparer Instance=new();
+    public bool Equals(StrategyDispute? a,StrategyDispute? b)=>a is not null&&b is not null&&a with{Claimants=[]}==b with{Claimants=[]}&&a.Claimants.SequenceEqual(b.Claimants);
+    public int GetHashCode(StrategyDispute d)=>HashCode.Combine(d.House,d.Previous,d.Winner,d.Revision);
 }

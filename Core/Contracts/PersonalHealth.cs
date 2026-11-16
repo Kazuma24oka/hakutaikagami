@@ -143,6 +143,8 @@ public static class PersonalHealth
         long untreated=checked(c.OnsetAt+c.BaseSeconds);
         if(Treatment(w,c) is not {} care||care.At>=untreated)return untreated;
         if(HouseCare(w)&&care.Input.Id.Value.StartsWith("care:npc/",StringComparison.Ordinal)){int medicine=CharacterDevelopment.LevelAt(w,care.Input.Carer,DevelopmentSkill.Medicine,care.At);return care.At+(untreated-care.At)*(300-medicine)/500;}
+        // 一覧の MortalSuccession：本人の手当にも、手当をした人の医術が効く。
+        if(MortalSuccession.On(w)&&CharacterDevelopment.Skills32(w)){int medicine=CharacterDevelopment.LevelAt(w,care.Input.Carer,DevelopmentSkill.Medicine,care.At);return care.At+(untreated-care.At)*(300-medicine)/500;}
         return care.At+(untreated-care.At)*3/5;
     }
     public static HealthCondition[] Active(ContractWorld w,EntityId person,long at)=>

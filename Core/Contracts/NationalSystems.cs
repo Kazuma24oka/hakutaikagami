@@ -31,11 +31,14 @@ public static class NationalSystems
         DbSkillHints,
         // 史実人物の家系（百代鏡DBの本姓）と信仰（宗派・信仰の候補）を、作成武将の家系・信仰と同じ一覧で引けるようにする。
         DbLineageFaith,
+        // 危篤・意思表示不能、家督争いの決着と兄弟姉妹の家督、遺産の相続、本人の手当の医術と後遺症、操作の引き継ぎの兄弟姉妹（S02）。
+        MortalSuccession,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
     public const string DbSkillHints="DbSkillHints";
     public const string DbLineageFaith="DbLineageFaith";
+    public const string MortalSuccession="MortalSuccession";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);
     // 一覧ごとに一度だけ引ける形にする（判定は多くの場所で何度も呼ばれる）。

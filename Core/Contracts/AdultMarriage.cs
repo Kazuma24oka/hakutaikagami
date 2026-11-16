@@ -14,6 +14,8 @@ public static class AdultMarriage
     internal static void Initialize(ContractWorld w){if(Enabled(w))w.Marriage=new(1,Policy,[]);}
     public static bool OwnIdUsed(ContractWorld w,EntityId id)=>w.Marriage?.Entries.Any(e=>e.Input.Id==id)==true;
     static MarriageEntry[] Entries(ContractWorld w)=>w.Marriage?.Entries??[];
+    // 実施した婚姻の相手（その時点より前の実施）。
+    internal static EntityId[] Spouses(ContractWorld w,EntityId p,long at,long rev)=>Entries(w).Where(e=>e.Input.Action==MarriageAction.Implement&&(e.At<at||e.At==at&&e.Revision<rev)).Select(e=>Entries(w).FirstOrDefault(x=>x.Input.Id==e.Input.Original)?.Terms).Where(t=>t!=null&&(t.First==p||t.Second==p)).Select(t=>t!.First==p?t.Second:t.First).Distinct().ToArray();
     static MarriageEntry[] Case(MarriageEntry[] rows,EntityId root)=>rows.Where(e=>e.Input.Id==root||e.Input.Original==root).ToArray();
     static bool Closed(MarriageEntry[] rows,MarriageTerms t,long at)=>at>t.Until||Case(rows,t.Id).Any(e=>e.Input.Action is MarriageAction.PersonalNo or MarriageAction.Withdraw or MarriageAction.Implement);
     static bool FamilyAvailable(ContractWorld w,MarriageEntry[] rows,EntityId first,EntityId second,long at,long rev){using var _ccRev=ControlContext.At(rev);

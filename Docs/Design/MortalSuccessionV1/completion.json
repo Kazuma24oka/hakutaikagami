@@ -1,0 +1,79 @@
+{
+  "version": 155,
+  "step": "S02",
+  "criteria": [
+    {
+      "contract": "危篤と意思表示不能を、重さ3の傷病の峠までの状態として本人とNPCに導き、意思表示不能の間は判断を要する政務（決裁・指名・書状の差配・家の戦略の決定）をしない。危篤は知った人だけが知る（届いた知らせ）",
+      "status": "PASSED",
+      "done": "MortalSuccession.Critical（重さ3の傷病の峠の前）と Incapacitated（判断の制限）。意思表示できない当主の家は出陣を決めない。後継の指名・書状の決裁（FactionStances.ResolveAuthority）・評定の決裁・軍の指揮は既存の判断の制限で止まる。他人の病状は同じ拠点で見た人と届いた知らせ（ClinicalHealth.ReportView）だけが知る。",
+      "evidence": [
+        "Core/Contracts/MortalSuccession.cs",
+        "Core/Contracts/NationalStrategy.cs",
+        "Core/Contracts/FactionStances.cs",
+        "Tests/MortalSuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "当主の死後に家督の申立が2人以上あれば、家臣の意向と家法の後継順位で決着し、敗れた人は家中に残る（自動の離反・処刑・追放をしない）。NPCの家の家督は指名の後継を先にし、成人の実子がいなければ百代鏡DBの兄弟姉妹（成人・存命・同じ家）を候補にする",
+      "status": "PASSED",
+      "done": "申立が2人以上なら、家法の後継順位（指名と家法）、家臣の意向の数、指名、年長の順で決着し、StrategyState.Disputes に残す。敗れた人の所属・役職は変えない。家督は申立1人ならその人、次に指名の後継・成人の実子の年長・同じ家の成人の兄弟姉妹（同じ実の親と百代鏡DBの兄弟姉妹）・家中の筆頭格。",
+      "evidence": [
+        "Core/Contracts/MortalSuccession.cs",
+        "Core/Contracts/NationalStrategy.cs",
+        "Tests/MortalSuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "死亡した人物の私財（銭・米）を遺産として、指名の後継・成人の実子の年長・配偶者の順で相続人へ移して記録する。家の財・兵・所領・役職・主従は移さない",
+      "status": "PASSED",
+      "done": "死亡の時点の私財（正の額）を、指名の後継・成人の実子の年長・配偶者（実施した婚姻）の順で相続人の私財へ移す（TransportWork.WalletBefore の EstateNet）。記録は Estates で死亡の原本から導く。家の財・兵・所領・役職・主従は移さない。",
+      "evidence": [
+        "Core/Contracts/MortalSuccession.cs",
+        "Core/Contracts/TransportWork.cs",
+        "Core/Contracts/AdultMarriage.cs",
+        "Tests/MortalSuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "本人の手当に、手当をした人の医術が効く。重傷は治った後も後遺症（疲労の増し）が長く残る",
+      "status": "PASSED",
+      "done": "本人の手当の回復に手当をした人の医術が効く（医術0で3/5、50で1/2、100で2/5）。重傷が治った後、7日は疲労+15、その後180日は+10。",
+      "evidence": [
+        "Core/Contracts/PersonalHealth.cs",
+        "Core/Contracts/ClinicalHealth.cs",
+        "Tests/MortalSuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "操作の引き継ぎの候補に、本人が知る成人の兄弟姉妹を子の後に加える。候補がいなければ年代記の終わりとし、死亡の日と家の状態の総括を出す",
+      "status": "PASSED",
+      "done": "成人の子も後見の候補もいなければ、本人の成人の兄弟姉妹（百代鏡DBの記録を含む）を候補にする。候補がいなければ年代記の終わりに没日・家・当主・城の数を出す。",
+      "evidence": [
+        "Core/Contracts/ControlSuccession.cs",
+        "Core/Contracts/MortalSuccession.cs",
+        "Game/Scripts/NewGameRuntime.Succession.cs",
+        "Tests/MortalSuccessionTests.cs"
+      ]
+    },
+    {
+      "contract": "新しい仕組みは新規の全国開始の一覧に入れたものだけが使い、今の保存の世界は変えない。関係する検査に合格する",
+      "status": "PASSED",
+      "done": "一覧の MortalSuccession のある世界だけ。一覧の無い世界では、相続・家督争い・兄弟の候補・後遺症の延長・総括がないことを検査した。関係する検査42件に合格。",
+      "evidence": [
+        "Core/Contracts/NationalSystems.cs",
+        "Tests/MortalSuccessionTests.cs",
+        "Docs/Design/MortalSuccessionV1/verification.json"
+      ]
+    }
+  ],
+  "moved_to_later": [
+    {
+      "what": "全契約の承継",
+      "returns_in": "S06"
+    },
+    {
+      "what": "NPCの当主の隠居、元服での希望の振り返り",
+      "returns_in": "S09"
+    }
+  ]
+}

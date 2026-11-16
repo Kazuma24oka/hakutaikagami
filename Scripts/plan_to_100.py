@@ -38,10 +38,17 @@ def check(leaves, plan):
         return ["工程表 Docs/Development/PLAN_TO_100.json がまだ無い"]
     steps = plan.get("steps", [])
     ids = [s["id"] for s in steps]
-    covered = {f for s in steps for f in s.get("frames", [])}
+    # 残りのある枠は、まだ終わっていない工程の枠に入っていること（終わった工程だけに入っている枠は、誰も100%へ上げない）。
+    covered = {f for s in steps if s.get("status") != "完了" for f in s.get("frames", [])}
     for f, pct in leaves.items():
         if pct < 100 and f not in covered:
-            errors.append(f"{f}（{pct}%）が工程表のどの工程にも無い")
+            errors.append(f"{f}（{pct}%）が、まだ終わっていない工程のどれにも無い")
+    # 後回しは、戻る工程の枠に、後回しした工程の枠のどれかが入っていること。
+    for s in steps:
+        for d in s.get("deferred", []):
+            back = next((x for x in steps if x["id"] == d.get("returns_in")), None)
+            if back is not None and d.get("frames") and not set(d["frames"]) <= set(back.get("frames", [])):
+                errors.append(f"工程 {s['id']} の後回し「{d.get('what','')}」の枠が、戻る工程 {back['id']} の枠に無い")
     for s in steps:
         if "切り上げ" in s.get("status", ""):
             errors.append(f"工程 {s['id']} が「切り上げ」")

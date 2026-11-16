@@ -43,7 +43,9 @@ public static class ControlSuccession
 
     // 亡くなった（隠居するなら本人の）本人が知っていた、生きている成人の実子・養子。後継に指名した人を先に、生年の順。
     // 成人の候補がなく、知っていた未成年の子がいれば、その子の後見になれる成人（子のもう一方の実の親、亡くなった本人の兄弟姉妹）で続けられる。
-    public static EntityId[] Candidates(ContractWorld w)=>Awaiting(w)?(Known(w) is {Length:>0} adults?adults:Guardians(w).Select(g=>g.Proxy).Distinct().ToArray()):[];
+    // 一覧の MortalSuccession：成人の子も後見の候補もなければ、本人の成人の兄弟姉妹（百代鏡DBの記録を含む）で続けられる。
+    public static EntityId[] Candidates(ContractWorld w)=>Awaiting(w)?(Known(w) is {Length:>0} adults?adults:Guardians(w).Select(g=>g.Proxy).Distinct().ToArray() is {Length:>0} proxies?proxies:SiblingHeirs(w)):[];
+    static EntityId[] SiblingHeirs(ContractWorld w)=>MortalSuccession.On(w)?MortalSuccession.Siblings(w,w.PlayerControl).Where(s=>w.Characters.SingleOrDefault(c=>c.Id==s)?.Life==LifeState.Adult).ToArray():[];
     public static (EntityId Proxy,EntityId Ward)[] Guardians(ContractWorld w)
     {
         if(!Awaiting(w)||Known(w).Length>0)return [];
@@ -92,7 +94,7 @@ public static class ControlSuccession
     {
         bool death=Awaiting(w);
         if(!(death?Candidates(w):RetireCandidates(w)).Contains(heir))throw new InvalidDataException("その人物には引き継げません");
-        var ward=death&&Known(w).Length==0?Guardians(w).First(g=>g.Proxy==heir).Ward:(EntityId?)null;
+        var ward=death&&Known(w).Length==0&&Guardians(w).FirstOrDefault(g=>g.Proxy==heir) is {Proxy.Value:not null} g?g.Ward:(EntityId?)null;
         w.ControlHandovers=[..w.ControlHandovers??[],new(w.PlayerControl,heir,w.ElapsedSeconds,w.CommitSequence,ward!=null?Guardian:death?Death:Retire){Ward=ward}];
         w.PlayerControl=heir;
     }

@@ -68,7 +68,9 @@ public static partial class ClinicalHealth
         long idle=at-start-walking;
         return (int)Math.Clamp((walking*2-idle)/1800+Aftereffect(w,person,at),0,100);
     }
-    public static int Aftereffect(ContractWorld w,EntityId person,long at)=>!Enabled(w)?0:PersonalHealth.Conditions(w,person,at).Any(c=>c.Kind==HealthKind.Injury&&c.Severity>=3&&PersonalHealth.RecoverAt(w,c)<=at&&at<PersonalHealth.RecoverAt(w,c)+7*86400)?15:0;
+    // 重傷の後遺症：治った後7日は疲労に+15。一覧の MortalSuccession の世界では、その後も180日は+10が残る。
+    public static int Aftereffect(ContractWorld w,EntityId person,long at)=>!Enabled(w)?0:PersonalHealth.Conditions(w,person,at).Where(c=>c.Kind==HealthKind.Injury&&c.Severity>=3&&PersonalHealth.RecoverAt(w,c)<=at).Select(c=>AftereffectOf(MortalSuccession.On(w),PersonalHealth.RecoverAt(w,c),at)).DefaultIfEmpty(0).Max();
+    internal static int AftereffectOf(bool lasting,long recoveredAt,long at)=>at<recoveredAt?0:at<recoveredAt+7*86400?15:lasting&&at<recoveredAt+180*86400?10:0;
     public static ClinicalView? View(ContractWorld w,EntityId observer,EntityId person)=>!Enabled(w)||observer!=person?null:new(Fatigue(w,person,w.ElapsedSeconds),Plans(w).Count(p=>p.Input.Carer==person&&Completed(w,p))*2,Plans(w).Where(p=>(p.Input.Carer==person||p.Input.Patient==person)&&!Completed(w,p)).Select(p=>(long?)p.DueAt).SingleOrDefault(),Aftereffect(w,person,w.ElapsedSeconds));
     internal static void Validate(ContractWorld w,ContractWorld? prior)
     {
