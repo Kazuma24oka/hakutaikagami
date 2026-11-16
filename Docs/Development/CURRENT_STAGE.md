@@ -7,7 +7,7 @@
 目標と範囲は [PRE_ART_COMPLETION.md](PRE_ART_COMPLETION.md)。正式な絵・3D の差し込み直前まで全枠を進める。2026-11-13 から Codex は止め、Claude が一人で進める（Codex の作業は引き継ぎ済み）。
 
 - 作業の場所：C:\Workspace\Projects\Games\hakutaikagami の1か所、ブランチ prototype/claude-mainline（2026-11-14 に作業フォルダを1つにまとめた）。
-- main への統合は差し替え前の完成に届いたときに1回だけ。全件テストはその前に1回だけ。進捗表（ProgressV1）の率もそのときに書き直す。今の表は 2026-11-16 の時点（約77%）。
+- main への統合は差し替え前の完成に届いたときに1回だけ。全件テストはその前に1回だけ。進捗表（ProgressV1）の率もそのときに書き直す。2026-11-16 は工程の表の7行目として、ユーザーの判断で1回統合した（PR #151、約77%）。次の統合は差し替え前の完成のとき。
 - ユーザーへの報告と試し遊びの依頼は、差し替え前の完成に届いたときだけ（PROCESS_V2 第1・5節）。
 
 ### 工程の表（2026-11-12 に Claude が出した7行）
@@ -21,7 +21,7 @@
 | 4 | 負傷・捕縛、合戦と家の滅亡・再興（BD-06・44・46） | 切り上げ |
 | 5 | 全国の世界の残り（BD-04・20・05） | 完了（2026-11-15）。戦国DBに史料の無い項目は戦国DBの調べもの |
 | 6 | 残りの枠を全国の開始で一通り動かす | 完了（2026-11-15） |
-| 7 | 最後の確認と main への統合 | 全件テスト合格（2026-11-16、4,609件）。7行を終えても差し替え前の完成には届かない（1〜4行目は切り上げ） |
+| 7 | 最後の確認と main への統合 | 完了（2026-11-16）。全件テスト4,609件合格、PR #151 で main へ統合。7行を終えても差し替え前の完成には届かない（1〜4行目は切り上げ） |
 
 ## 進捗表の範囲（2026-10-31 ユーザー決定）
 統合案の新機能群は、60枠の数と重みを変えずに、関係する各枠の「残り」と完成範囲に足す。完成範囲が広がるので、関係する枠の％は一度下がる。2026-10-31 に2回に分けて付け直し済み：1回目で29枠、2回目で19枠、3回目（データの側）で3枠、4回目（横断的な作業）で9枠、5回目（戦国史SE・戦国時代DXから取り込んだ仕組み、統合案 第26節）で15枠を下げ、全体は57.7%→51.4%→49.0%→48.4%→47.4%→46.4%（Docs/Design/ProgressScopeV1〜V5）。人物・家・拠点に持たせる項目の一覧は Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md。
@@ -29,11 +29,11 @@
 ## 完了した工程（直近）
 | 日付 | 工程 | 記録 | main |
 |---|---|---|---|
-| 2026-11-15 | 落城した城の扱い・本人とNPCの捕虜の書状・家臣が率いる部隊・すれ違いの交戦・捕虜の護送・独立した家の戦略・国人の加勢・32技能の残り（仕事の経験・兵科・医者・自由な配分・家系と信仰）・DBの母・地図の名前の重なり・軽量化 | Docs/Design/NationalSystemsV1/・Skills32V1/ | 未統合（prototype/claude-mainline） |
-| 2026-11-14 | 捕縛と処遇・身代金・本人の捕縛と解放・引き換え・家臣が率いる軍・画面 | Docs/Design/BattleCaptivityV1/ | 未統合（prototype/claude-mainline） |
-| 2026-11-14 | 遠方の合戦（W4）・家の滅亡と再興・従属の離反 | Docs/Design/NationalStrategyV1/ | 未統合（prototype/claude-mainline） |
-| 2026-11-14 | 全国の和睦の一巡・NPC の手当・他人の能力の推定・多数の軍の不具合と軽量化 | Docs/Design/NationalSystemsV1/・NationalWarfareV1/ | 未統合（prototype/claude-mainline） |
-| 2026-11-13 | Codex の引継ぎ・傷病死・全国の健康と和睦 | Docs/Design/NationalSystemsV1/・HealthExpansionV1/ | 未統合（prototype/claude-mainline） |
+| 2026-11-15 | 落城した城の扱い・本人とNPCの捕虜の書状・家臣が率いる部隊・すれ違いの交戦・捕虜の護送・独立した家の戦略・国人の加勢・32技能の残り（仕事の経験・兵科・医者・自由な配分・家系と信仰）・DBの母・地図の名前の重なり・軽量化 | Docs/Design/NationalSystemsV1/・Skills32V1/ | PR #151 → main 45209117 |
+| 2026-11-14 | 捕縛と処遇・身代金・本人の捕縛と解放・引き換え・家臣が率いる軍・画面 | Docs/Design/BattleCaptivityV1/ | PR #151 → main 45209117 |
+| 2026-11-14 | 遠方の合戦（W4）・家の滅亡と再興・従属の離反 | Docs/Design/NationalStrategyV1/ | PR #151 → main 45209117 |
+| 2026-11-14 | 全国の和睦の一巡・NPC の手当・他人の能力の推定・多数の軍の不具合と軽量化 | Docs/Design/NationalSystemsV1/・NationalWarfareV1/ | PR #151 → main 45209117 |
+| 2026-11-13 | Codex の引継ぎ・傷病死・全国の健康と和睦 | Docs/Design/NationalSystemsV1/・HealthExpansionV1/ | PR #151 → main 45209117 |
 | 2026-11-13 | 全国人物の生年・5能力（v115、新規v3と旧全国v1/v2保存の版分離を検証済み） | Docs/Design/NationalOfficerDataV1/ | PR148 → main 0d36e044、保存互換補修PR149 → main 17be7235 |
 | 2026-11-13 | 全国1560年の年次名乗り（v114） | Docs/Design/NationalNameHistoryV1/ | PR147 → main b40dd017 |
 | 2026-11-12 | 全国1560移動網へ川・湖沼・標高を反映（v111、BD-04 35→40・BD-20 45→50） | Docs/Design/NationalTerrainRoutesV1/ | PR #143 |
