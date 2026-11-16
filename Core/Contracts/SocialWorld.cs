@@ -94,6 +94,8 @@ public static class SocialWorld
         if(i.Action is SocialWorldAction.Donate or SocialWorldAction.Protect or SocialWorldAction.IssueBan)Need(TempleDecision(w,i.Person,actor,i.Action)=="accept","寺社代表は、自分が知る経緯と利害から今回の条件を留保しています");
         Add(w,i,actor,site!.Value);NewGameWork.Sync(w);
     }
+    // NPCの日課の付き合い（訪問・噂・贈り物・寄進・茶会の招き）。地方の版の仕組みで、全国の開始では動かさない（全員が毎日記録を足すと、記録が1日に数千件増える）。
+    internal static bool NpcRoutine(ContractWorld w)=>!NationalSystems.On(w,NationalSystems.QuietNpcSocial);
     public static void Tick(ContractWorld w,bool clockAdvanced=false)
     {
         if(w.SocialWorld==null)return;
@@ -109,7 +111,7 @@ public static class SocialWorld
         foreach(var g in GiftRows(w).Where(g=>g.Phase=="返却待ち"&&g.Carrier!=w.PlayerControl&&Local(w,g.Carrier,g.Sender)).ToArray())Add(w,new(new("social:gift-return/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(g.Id.Value))[..32]),SocialWorldAction.ReturnGift,g.Sender,Reference:g.Id),g.Carrier,Site(w,g.Carrier)!.Value);
         foreach(var g in GiftRows(w).Where(g=>g.Phase is "受領済み" or "返却待ち" or "返却済み").ToArray())if(Local(w,g.Sender,g.Carrier)&&!Events(w).Any(e=>e.Input.Action==SocialWorldAction.AcknowledgeGiftReport&&e.Input.Reference==g.Id))Add(w,new(new("social:gift-report/"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(g.Id.Value))[..32]),SocialWorldAction.AcknowledgeGiftReport,g.Recipient,Reference:g.Id),g.Sender,Site(w,g.Sender)!.Value);
         if(clockAdvanced&&w.ElapsedSeconds%86400==0){
-            foreach(var actor in w.Characters.Where(c=>c.Id!=w.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(x=>x.Value,StringComparer.Ordinal)){
+            foreach(var actor in w.Characters.Where(c=>NpcRoutine(w)&&c.Id!=w.PlayerControl&&c.Life==LifeState.Adult).Select(c=>c.Id).OrderBy(x=>x.Value,StringComparer.Ordinal)){
                 var site=Site(w,actor);if(site==null)continue;
                 var peers=w.Characters.Where(c=>c.Id!=actor&&c.Life==LifeState.Adult&&Site(w,c.Id)==site).Select(c=>c.Id).OrderBy(p=>p.Value,StringComparer.Ordinal).ToArray();
                 string key=ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(actor.Value))[..24]+"/"+(w.ElapsedSeconds/86400);
