@@ -1,0 +1,60 @@
+{
+  "version": 153,
+  "criteria": [
+    {
+      "contract": "全国の開始で有効にする仕組みの一覧（NationalSystems）を新規開始のときに保存し、保存済みの世界の規則を変えない。一覧の仕組み（生活・婚姻・家督・健康・和睦と同盟・捕縛・戦・領地・32技能など）が全国の開始で動く",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NationalSystems.cs",
+        "Core/Contracts/NationalStart.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Tests/NationalSystemsTests.cs"
+      ]
+    },
+    {
+      "contract": "負傷・傷病死・合戦での捕縛と、捕虜の処遇（登用・処断・身代金・引き換え・護送）が本人とNPCの家の間で書状を通じて行われ、本人の捕縛と解放の願いができる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/BattleCaptivity.cs",
+        "Core/Contracts/BattleCaptivity.Ransom.cs",
+        "Core/Contracts/PersonalHealth.cs",
+        "Game/Scripts/NewGameRuntime.Captives.cs",
+        "Tests/NpcCaptorTests.cs",
+        "Tests/NpcCaptorTests.cs"
+      ]
+    },
+    {
+      "contract": "NPCの軍が実際に出陣して出会い（区切りの間のすれ違いを含む）戦い、遠方の合戦は同じ接触の規則で計算する。家の滅亡と再興、従属の離反、独立した家の出陣と同盟、国人の加勢、家臣に任せた部隊が動く",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/NpcArmies.cs",
+        "Core/Contracts/NationalStrategy.cs",
+        "Core/Contracts/NewGameMilitary.UnitLeaders.cs",
+        "Game/Scripts/NewGameRuntime.UnitLeaders.cs",
+        "Tests/SkirmishPassingTests.cs",
+        "Tests/StrategyLossesTests.cs",
+        "Tests/PlayerUnitLeaderTests.cs"
+      ]
+    },
+    {
+      "contract": "32技能の版（経験の曲線・独習・師事・実務の経験・熟練による作業時間・兵科の技能・医者）と、作成武将の経歴・自由な配分・家系と信仰が新規の世界で動き、百代鏡DBの母を実の親として入れる",
+      "status": "PASSED",
+      "evidence": [
+        "Core/Contracts/CharacterDevelopment.cs",
+        "Core/Contracts/BattlefieldRules.Combat.cs",
+        "Game/Scripts/OfficerLibraryTrial.Skills.cs",
+        "Tests/Skills32Tests.cs",
+        "Tests/WorkExperienceTests.cs",
+        "Tests/WorkExperienceTests.cs",
+        "Tools/HakutaiDb/export_1560.py"
+      ]
+    },
+    {
+      "contract": "全件テストに合格する",
+      "status": "PASSED",
+      "evidence": [
+        "Docs/Design/NationalSystemsV1/verification.json"
+      ]
+    }
+  ]
+}
