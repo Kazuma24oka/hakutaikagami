@@ -4,7 +4,7 @@
 
 ## 1. 最初に読むもの
 1. [Docs/Development/PROCESS_V2.md](Docs/Development/PROCESS_V2.md)：開発の進め方（工程の単位・順番・画面の確認・全テスト・報告）。2026-10-31 ユーザー決定。
-2. [Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md)：今の工程と次の工程。
+2. [Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md) と工程表 [Docs/Development/PLAN_TO_100.json](Docs/Development/PLAN_TO_100.json)：100%までの工程と次の工程（`python Scripts/plan_to_100.py` で今の率と次の工程が出る）。
 3. [Docs/Development/OPERATING_POLICY.md](Docs/Development/OPERATING_POLICY.md)：役割・完成条件・検証・報告の基本。
 4. 進捗表 [Docs/Development/ProgressV1/index.html](Docs/Development/ProgressV1/index.html)（正本は progress.json と estimate.json）。
 
@@ -63,7 +63,7 @@
 - **ユーザーへの返信は日本語だけ**（会話の圧縮の後も、短い答え・要約・ボタンも。英語を混ぜない）。
 - 工程の途中で5分以上かかる検査は流さない。流すのは最後の1回だけ（2026-11-14）。
 - 通常は4項目：今回完成したこと / 現在の状態（完成条件とテスト） / 次に行うこと1件 / ユーザーの判断（原則不要）。
-- ユーザーへの報告と試し遊びの依頼は、差し替え前の完成に届いたときだけ。1機能ごとの確認は依頼しない（PROCESS_V2 第5節。ユーザーは1機能ごとの確認が苦手）。
+- ユーザーへの報告と試し遊びの依頼は、判断が要るときと工程表（Docs/Development/PLAN_TO_100.json）の S12・100%に届いたときだけ。1機能ごとの確認は依頼しない（PROCESS_V2 第5節。ユーザーは1機能ごとの確認が苦手）。
 - 工程ごとの細かい記録は、CURRENT_STAGE.md の「完了した工程」と各 Docs/Design フォルダに残す。このファイルには追記しない。
 
 ## 9. 今の工程

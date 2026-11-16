@@ -45,6 +45,11 @@ def check(leaves, plan):
     for s in steps:
         if "切り上げ" in s.get("status", ""):
             errors.append(f"工程 {s['id']} が「切り上げ」")
+        for dep in s.get("depends_on", []):
+            if dep not in ids or ids.index(dep) >= ids.index(s["id"]):
+                errors.append(f"工程 {s['id']} の前提 {dep} が前の工程に無い")
+        if s.get("status") == "完了" and any(x.get("status") != "完了" for x in steps if x["id"] in s.get("depends_on", [])):
+            errors.append(f"工程 {s['id']} が前提の終わる前に完了になっている")
         for d in s.get("deferred", []):
             back = d.get("returns_in")
             if back not in ids or ids.index(back) <= ids.index(s["id"]):
@@ -71,6 +76,8 @@ def main():
         nxt = next((s for s in plan["steps"] if s.get("status") != "完了"), None)
         done = sum(1 for s in plan["steps"] if s.get("status") == "完了")
         print(f"- 工程表：{done}/{len(plan['steps'])} 工程完了。次の工程：" + (f"{nxt['id']} {nxt.get('title','')}（枠 {'・'.join(nxt.get('frames', []))}）" if nxt else "なし"))
+        if nxt and nxt.get("user_decision"):
+            print("- 次の工程を始める前にユーザーの判断が要る：" + nxt["user_decision"])
     if errors:
         print("- 工程表の決まりの違反：" + "／".join(errors[:5]))
 
