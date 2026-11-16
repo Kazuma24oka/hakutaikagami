@@ -7,6 +7,7 @@ namespace HakutaiKagami.Core.Contracts;
 // v2 そのものは変えない（今の保存が版の印で照合している）。新規の全国開始で一覧（NationalSystems）に入れたものだけが使う。
 // 官職・位階：Offices は生涯の記録（時期の無いものを含む）、Held1560 は就いた年の記録が1560年以前のもの（記事の本文の候補を含む）。
 public sealed record HakutaiDbOffice(string Kind,string Office,int? From,int? To);
+public sealed record HakutaiDbHousePost(string Post,string? House,int? From);
 public sealed record HakutaiDbHeldOffice(string Kind,string Office,int From,string Basis);
 public sealed record HakutaiDbExtra(string Id)
 {
@@ -19,6 +20,8 @@ public sealed record HakutaiDbExtra(string Id)
     // 技能・専門と宗派・信仰の候補（生涯の記録。記事の本文を含む。1560年の時点とは限らない）。
     public string[]? Specialties {get;init;}
     public string[]? Religions {get;init;}
+    // 家中職の候補（家老・奉行・城代など。記事の本文。From は同じ文の年、無ければ時期不明。House は記事に書かれた家の名）。
+    public HakutaiDbHousePost[]? HousePosts {get;init;}
 }
 public sealed record HakutaiDbBasedOn(string Edition,string Commit);
 public sealed record HakutaiDbSupplementEdition(int Schema,string Id,HakutaiDbBasedOn BasedOn,HakutaiDbSource Source,string Policy,HakutaiDbExtra[] People);
