@@ -83,6 +83,9 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
             Assert.Equal((long)Math.Round(HakutaiDb.District(d.Id)!.Kokudaka*0.65,MidpointRounding.ToEven),d.Population);
             Assert.Contains("推定",d.Basis);
         }
+        Assert.True(e.CastleTypes.Length>=500);
+        Assert.Contains(e.CastleTypes,c=>HakutaiDb.Castle(c.Id)!.Name=="小田原城"&&c.Type=="平山城");
+        Assert.Contains(e.People,p=>p.Stipends is {Length:>0} s&&s.All(x=>x.Koku>0&&x.AsWritten.Length>0));
     }
     // 史実人物の家系と信仰（S01）：百代鏡DBの本姓（記事の氏族の欄）を作成武将と同じ家系の一覧に、宗派の候補を信仰の一覧に当てる。
     // 根拠の文を持ち、分からなければ null。一覧に DbLineageFaith のない世界では引かない。

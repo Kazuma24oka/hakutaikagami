@@ -226,6 +226,11 @@ def main():
     specialty, religion = {}, {}
     for s_, prop, v in db.execute("select subject, property, value_text from assertions where property in ('specialty','religion') and state='value' and value_text is not null and appraisal <> 'rejected'"):
         (specialty if prop == "specialty" else religion).setdefault(s_, set()).add(v)
+    # 知行高（2026-11-17）：石高の記録。年はその記録の時期（1560年の値とは限らない）。
+    stipend = {}
+    for s_, amt, unit, aw, fy in db.execute("select subject, value_amount, value_unit, as_written, valid_from_year from assertions where property='stipend' and state='value' and value_amount is not null and appraisal <> 'rejected'"):
+        if unit == "石":
+            stipend.setdefault(s_, set()).add((int(amt), fy, aw or ""))
     surnames_all = {v for (v,) in db.execute("select distinct value_text from assertions where property='surname' and value_text is not null") if v and 2 <= len(v) <= 4}
     names = {}
     for subj, val, q, y in db.execute("select subject, value_text, qualifiers, valid_from_year from assertions where id like 'A-NH-%' and property='name'"):
@@ -302,6 +307,7 @@ def main():
             "Specialties": sorted(specialty.get(p, ())) or None,
             "Religions": sorted(religion.get(p, ())) or None,
             "HousePosts": sorted(house_posts.get(p, ()), key=lambda x: (x["Post"], x["From"] or 0)) or None,
+            "Stipends": [{"Koku": k, "Year": y, "AsWritten": a} for k, y, a in sorted(stipend.get(p, ()), key=lambda t: (t[1] or 0, t[0]))] or None,
             "Honsei": (lambda h: {"Name": next(iter(h)), "AsWritten": h[next(iter(h))]} if len(h) == 1 else None)(honsei.get(p, {})),
             "StartName": start_name(p, r[1], year_of(r[9]))[0], "StartNameBasis": start_name(p, r[1], year_of(r[9]))[1],
             "NameHistory": [{"Name": n, "From": y, "Step": st} for _, n, st, y in sorted(names.get(p, ())) if st == "幼名" or plausible(p, n)],
@@ -361,7 +367,7 @@ def main():
     # v2 の名簿の人物に、v3 で足した項目（兄弟姉妹・官位・1560年の在職・法名・身分・家督相続の年）だけを持たせる。
     base = json.loads(BASE.read_text(encoding="utf-8"))
     base_ids = {x["Id"] for x in base["People"]}
-    extra_keys = ("Siblings", "Offices", "Held1560", "ReligiousNames", "Status", "HeadshipFrom", "Specialties", "Religions", "HousePosts", "Honsei")
+    extra_keys = ("Siblings", "Offices", "Held1560", "ReligiousNames", "Status", "HeadshipFrom", "Specialties", "Religions", "HousePosts", "Honsei", "Stipends")
     rows = []
     for x in people:
         if x["Id"] in base_ids and any(x.get(k) for k in extra_keys):
@@ -375,7 +381,7 @@ def main():
                 rows.append(row)
     sup = {"Schema": 1, "Id": "hakutai-db-1560-supplement-v1", "BasedOn": {"Edition": base["Id"], "Commit": base["Source"]["Commit"]},
            "Source": doc["Source"],
-           "Policy": "v2 の名簿の人物に足す項目。官職・位階は就いた年の記録のあるものだけを1560年の在職（Held1560）とし、年の無いものは生涯の記録（Offices、時期不明）。記事の本文から抜いた年は三次資料の候補。兄弟姉妹は名簿の中の人物だけを指す。技能・専門（Specialties）と宗派・信仰（Religions）は生涯の記録の候補（記事の本文を含む）で、1560年の時点とは限らない。家中職（HousePosts）は記事の本文の候補で、From は同じ文の年（無ければ時期不明）、House は記事に書かれた家の名。氏（本姓、Honsei）は記事の氏族の欄か本文の候補で、主張の性格（公称・自称・付会）は未確認。本姓が2つ以上ある人は入れない。",
+           "Policy": "v2 の名簿の人物に足す項目。官職・位階は就いた年の記録のあるものだけを1560年の在職（Held1560）とし、年の無いものは生涯の記録（Offices、時期不明）。記事の本文から抜いた年は三次資料の候補。兄弟姉妹は名簿の中の人物だけを指す。技能・専門（Specialties）と宗派・信仰（Religions）は生涯の記録の候補（記事の本文を含む）で、1560年の時点とは限らない。家中職（HousePosts）は記事の本文の候補で、From は同じ文の年（無ければ時期不明）、House は記事に書かれた家の名。氏（本姓、Honsei）は記事の氏族の欄か本文の候補で、主張の性格（公称・自称・付会）は未確認。本姓が2つ以上ある人は入れない。知行高（Stipends）は石高の記録で、Year はその記録の時期（1560年の値とは限らない）。城の種類（CastleTypes）は v2 の城の山城・平山城・平城（城の台帳の記録）。",
            "People": rows}
     # 寺社（2026-11-16）：戦国DBの地名（寺社）の台帳。名前・国・宗派・位置（記事の座標）。権益・門徒・寺領は未採録。
     temples = []
@@ -390,14 +396,18 @@ def main():
         temples.append(t)
     # 郡の人口の推定（2026-11-16）：郡の石高（v2 の推定）× 0.65。慶長3年の全国の石高（約1,850万石）と、1600年ごろの全国人口の推計（約1,200万人）の比。
     population = [{"Id": d["Id"], "Population": round(d["Kokudaka"] * 0.65), "Basis": "郡の石高の推定×0.65（慶長3年の全国石高と1600年ごろの全国人口の推計の比）"} for d in base["Districts"]]
+    kinds = {}
+    for lid, t in db.execute("select subject, value_text from assertions where property='castle_type' and state='value' and appraisal <> 'rejected'"):
+        kinds.setdefault(lid, set()).add(t)
+    sup["CastleTypes"] = [{"Id": c["Id"], "Type": next(iter(kinds[c["Id"]]))} for c in base["Castles"] if len(kinds.get(c["Id"], ())) == 1]
     sup["Temples"] = temples
     sup["DistrictPopulation"] = population
 
     def dump(v):
         return json.dumps(v, ensure_ascii=False, separators=(",", ":"))
-    body = [f'"{k}":' + dump(v) for k, v in sup.items() if k not in ("People", "Temples", "DistrictPopulation")]
+    body = [f'"{k}":' + dump(v) for k, v in sup.items() if k not in ("People", "CastleTypes", "Temples", "DistrictPopulation")]
     body.append('"People":[' + "\n".join([""] + [dump(r) + ("," if n < len(rows) - 1 else "") for n, r in enumerate(rows)]) + "\n]")
-    for k in ("Temples", "DistrictPopulation"):
+    for k in ("CastleTypes", "Temples", "DistrictPopulation"):
         body.append(f'"{k}":[' + "\n".join([""] + [dump(r) + ("," if n < len(sup[k]) - 1 else "") for n, r in enumerate(sup[k])]) + "\n]")
     SUPPLEMENT.write_text("{\n" + (",\n").join(body) + "\n}\n", encoding="utf-8", newline="\n")
     print(f"{SUPPLEMENT}: 人物 {len(rows)}（1560年の在職 {sum(1 for r in rows if r.get('Held1560'))}）")

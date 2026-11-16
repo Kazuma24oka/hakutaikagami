@@ -9,6 +9,8 @@ namespace HakutaiKagami.Core.Contracts;
 public sealed record HakutaiDbOffice(string Kind,string Office,int? From,int? To);
 public sealed record HakutaiDbHonsei(string Name,string AsWritten);
 public sealed record HakutaiDbHousePost(string Post,string? House,int? From);
+public sealed record HakutaiDbStipend(int Koku,int? Year,string AsWritten);
+public sealed record HakutaiDbCastleType(string Id,string Type);
 public sealed record HakutaiDbHeldOffice(string Kind,string Office,int From,string Basis);
 public sealed record HakutaiDbExtra(string Id)
 {
@@ -25,6 +27,8 @@ public sealed record HakutaiDbExtra(string Id)
     public HakutaiDbHousePost[]? HousePosts {get;init;}
     // 氏（本姓）の候補（源・平・藤原・大江 など。記載どおりの流れつき。主張の性格は未確認）。
     public HakutaiDbHonsei? Honsei {get;init;}
+    // 知行高の記録（石。Year はその記録の時期で、1560年の値とは限らない）。
+    public HakutaiDbStipend[]? Stipends {get;init;}
 }
 public sealed record HakutaiDbBasedOn(string Edition,string Commit);
 // 寺社（戦国DBの地名の台帳。記事の宗派・座標、所在の国は推定）。権益・門徒・寺領は未採録。
@@ -35,7 +39,7 @@ public sealed record HakutaiDbTemple(string Id,string Name,string? Province,stri
 }
 // 郡の人口の推定（郡の石高の推定×0.65、決め方を Basis に持つ）。史料の人口ではない。
 public sealed record HakutaiDbDistrictPopulation(string Id,long Population,string Basis);
-public sealed record HakutaiDbSupplementEdition(int Schema,string Id,HakutaiDbBasedOn BasedOn,HakutaiDbSource Source,string Policy,HakutaiDbExtra[] People,HakutaiDbTemple[] Temples,HakutaiDbDistrictPopulation[] DistrictPopulation);
+public sealed record HakutaiDbSupplementEdition(int Schema,string Id,HakutaiDbBasedOn BasedOn,HakutaiDbSource Source,string Policy,HakutaiDbExtra[] People,HakutaiDbCastleType[] CastleTypes,HakutaiDbTemple[] Temples,HakutaiDbDistrictPopulation[] DistrictPopulation);
 
 public static class HakutaiDbSupplement
 {
@@ -59,6 +63,7 @@ public static class HakutaiDbSupplement
         Need(e.People.Select(p=>p.Id).Distinct(StringComparer.Ordinal).Count()==e.People.Length,"人物が重複しています");
         Need(e.Temples.Select(t=>t.Id).Distinct(StringComparer.Ordinal).Count()==e.Temples.Length&&e.Temples.All(t=>t.Name.Length>0&&(t.LatitudeE7==null)==(t.LongitudeE7==null)),"寺社の台帳が不正です");
         Need(e.DistrictPopulation.Select(d=>d.Id).Order(StringComparer.Ordinal).SequenceEqual(HakutaiDb.Districts.Select(d=>d.Id).Order(StringComparer.Ordinal))&&e.DistrictPopulation.All(d=>d.Population>=0&&d.Basis.Length>0),"郡の人口の推定が郡の台帳と合いません");
+        Need(e.CastleTypes.All(c=>c.Type is "山城" or "平山城" or "平城"&&HakutaiDb.Castle(c.Id) is not null)&&e.CastleTypes.Select(c=>c.Id).Distinct(StringComparer.Ordinal).Count()==e.CastleTypes.Length,"城の種類が不正です");
         foreach(var p in e.People)
         {
             Need(HakutaiDb.Person(p.Id) is not null,"名簿にない人物です："+p.Id);
@@ -66,6 +71,7 @@ public static class HakutaiDbSupplement
             Need(p.Offices?.All(o=>o.Kind is "官職" or "位階" or "幕府職"&&o.Office.Length>0)??true,"官位の種類が不正です："+p.Id);
             // 1560年の在職は、就いた年が1560年以前の記録だけ（年の無い記録を在職にしない）。位階は1つまで。
             Need(p.Held1560?.All(h=>h.From<=1560&&p.Offices!=null&&p.Offices.Any(o=>o.Kind==h.Kind&&o.Office==h.Office&&o.From==h.From))??true,"1560年の在職に年の記録がありません："+p.Id);
+            Need(p.Stipends?.All(x=>x.Koku>0)??true,"知行高が不正です："+p.Id);
             Need((p.Held1560?.Count(h=>h.Kind=="位階")??0)<=1,"1560年の位階が2つあります："+p.Id);
         }
     }
