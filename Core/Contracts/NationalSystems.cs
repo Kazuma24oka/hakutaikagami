@@ -49,6 +49,8 @@ public static class NationalSystems
         Domestic2,
         // 全国の水運・交易・補給と名物：名物の目録と移り変わり・探物、水軍と海を渡る出陣、交易船、陣への補給と消耗、隊商と道中の引継ぎ（S08）。
         Logistics2,
+        // NPCの判断と人物の一生：志の推定と兵科適性、家の目標と計画、断る条件、自発登用と役の目標、実務の技能と教わる分と衰え、隠居、元服の希望、各年代の改名の台帳（S09A）。
+        Persons2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -63,6 +65,7 @@ public static class NationalSystems
     public const string Territory2="Territory2";
     public const string Domestic2="Domestic2";
     public const string Logistics2="Logistics2";
+    public const string Persons2="Persons2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

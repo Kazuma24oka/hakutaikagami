@@ -179,7 +179,7 @@ public static class Domestic2
     }
     static string HomeOf(ContractWorld w,string house)=>w.NewGame!.Start.Factions.FirstOrDefault(f=>f.Id==house)?.Home??"";
     static EntityId[] Members(ContractWorld w,string house)=>FamilyBirth.People(w).Where(p=>p.Faction==house&&w.Characters.SingleOrDefault(c=>c.Id.Value==p.Id)?.Life==LifeState.Adult).Select(p=>new EntityId(p.Id)).ToArray();
-    static int Skill(ContractWorld w,EntityId p,DevelopmentSkill s)=>CharacterDevelopment.StartLevel(w,p,s);
+    static int Skill(ContractWorld w,EntityId p,DevelopmentSkill s)=>Persons2.On(w)?Persons2.Skill(w,p,s,w.ElapsedSeconds):CharacterDevelopment.StartLevel(w,p,s);
     static bool Alive(ContractWorld w,EntityId p)=>w.Characters.SingleOrDefault(c=>c.Id==p)?.Life==LifeState.Adult;
     static bool PlayerHouse(ContractWorld w,string house)=>HouseSuccession.Head(w,new(house))==w.PlayerControl;
 
@@ -215,7 +215,9 @@ public static class Domestic2
             if(kind=="decree"&&house is {} hh){if(!decrees.TryGetValue(hh.Value,out var l))decrees[hh.Value]=l=[];l.Add(e);}
         }
         var alive=w.Characters.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id).ToHashSet();
-        var byFaction=FamilyBirth.People(w).Where(p=>p.Faction!=null&&alive.Contains(new EntityId(p.Id))).GroupBy(p=>p.Faction!,StringComparer.Ordinal)
+        // 家中：開始の所属に、登用した人（一覧の Persons2）を一人ずつ足す。
+        var recruits=Persons2.On(w)?Persons2.Recruits(w):new Dictionary<string,string>(StringComparer.Ordinal);
+        var byFaction=FamilyBirth.People(w).Select(p=>recruits.TryGetValue(p.Id,out var r)?p with{Faction=r}:p).Where(p=>p.Faction!=null&&alive.Contains(new EntityId(p.Id))).GroupBy(p=>p.Faction!,StringComparer.Ordinal)
             .ToDictionary(g=>g.Key,g=>g.Select(p=>(Id:new EntityId(p.Id),Site:p.Site)).ToArray(),StringComparer.Ordinal);
         var power=NationalStrategy.Powers(w,owners);
         var held=owners.Where(x=>x.Value!=null&&sites.Value.ContainsKey(x.Key)).GroupBy(x=>x.Value!,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).ToArray(),StringComparer.Ordinal);

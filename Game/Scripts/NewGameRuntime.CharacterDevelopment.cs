@@ -17,6 +17,12 @@ public partial class NewGameRuntime
         {var w0=Snapshot();if(CentralStanding.KnownTitles(w0,Session.PlayerControl,person) is {Length:>0} titles)Text(string.Join("　",titles));
          if(CentralStanding.SeatAtSite(w0,person) is {} seat)Text($"席次　{seat.Seat}／{seat.Of}");
          if(person==Session.PlayerControl&&SocialWorld.Site(w0,person) is {} here&&Territory2.Profile(w0,here) is {} sp)Text($"{w0.Definitions.Sites.Single(x=>x.Id==here).Name}　人口{sp.Population}　田畑{sp.Agriculture}　町{sp.Commerce}　工房{sp.Workshop}　牧{sp.Pasture}　民心{sp.Morale}　治安{sp.Security}"+(sp.Monto>0?$"　門徒{sp.Monto}":"")+(sp.Sections>0?$"　区画{sp.Sections}":""));}
+        // 志と兵科適性（一覧の Persons2）。作成武将の本人は志を選べる。
+        {var w2=Snapshot();
+         if(Persons2.Aspiration(w2,person) is {} asp)Text($"志　{asp.Value}");
+         if(Persons2.On(w2)){Text(Persons2.Aptitude(w2,person));
+          if(person==Session.PlayerControl&&w2.NewGame!.Registered.Any(r=>r.Id==person.Value)){var row=new HBoxContainer();box.AddChild(row);long rv=Session.Revision;
+           foreach(var a in Persons2.Aspirations){var b=new Button{Text=a};b.Pressed+=()=>{if(Session.ChooseAspiration(a,rv).Code==ResultCode.Accepted){popup.Hide();Refresh();ShowCharacterDevelopment();}};row.AddChild(b);}}}}
         // 家の記録と、当主なら家の方針・年貢・口入れ（一覧の Domestic2）。
         {var w1=Snapshot();var faction=w1.NewGame!.Start.People.SingleOrDefault(p=>p.Id==person.Value)?.Faction;
          if(faction!=null)foreach(var line in Domestic2.FamilyRecord(w1,Session.PlayerControl,new(faction)))Text(line);

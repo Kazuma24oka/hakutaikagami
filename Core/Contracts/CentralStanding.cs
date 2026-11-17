@@ -70,6 +70,7 @@ public static class CentralStanding
         if(Territory2.On(w)&&NationalStart.DbPerson(person.Value) is {} db&&HakutaiDbSupplement.Person(db.Id)?.HousePosts is {} posts)
             rows.AddRange(posts.Where(p=>p.From is int y&&y<=NationalSystems.StartYear(w)).Select(p=>(p.House!=null&&p.House!="記事に記載なし"?p.House:"")+p.Post));
         if(Domestic2.Hokoshu1(w,person))rows.Add(Domestic2.Hokoshu);
+        if(Persons2.Retired(w,person))rows.Add("隠居");
         if(On(w))
         {
             long at=w.ElapsedSeconds;

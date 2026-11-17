@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "059b6b1c1f711158aca9493f2acd8065451ebe95cac78436e14eca95fad300f6",
+    "Docs/Development/ProgressV1/estimate.json": "3d720947a06dd8ffe197fbc75da137cfc2f96ac04cdf0058b3f95a29dd78d9c4",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "6e86e7339d880287a34d9f49b55a58e2a309f4c6e4fe48688523a9f935f7a061",
-    "Scripts/check_approval_batch.py": "a2484bb8afdfb006ba80884711ce939adcfc26648682c7d2dbcadf5d87aa3767",
+    "Scripts/check_approval_batch.py": "5a467845a27758793cca87629647ddfb3e138c13923a36165c9be30ed860a997",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "5edceaa5867fc4e617d5964ed3e3a94f6b661a0c225efff28c52c92e2c66338d",
+    "Docs/Development/CURRENT_STAGE.md": "76f80fabecac8660de906b49183a8529b5ffad7fc83cc0be4cd10c6e9e84bcb0",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
     "Core/Contracts/NewGameWorld.cs": "238f98d35db591f59dae127318693751d4617039d43ee26512e6c8a39a68c391",
@@ -269,7 +269,7 @@
     "Core/Contracts/NewGameSetup.cs": "96f1352db381012056e3c6a14a497f66ca3508e325f8e6da026e63ad259f5f8e",
     "Core/Contracts/NewCampaignStore.cs": "0124e03da0cfdb4b89c6d33054331511a328396bc89c5c0f4a01afa7740b34b7",
     "Tests/CharacterDevelopmentTests.cs": "dcd5c5c9430de90344c1b9224cf0bf6cb46fd8893d32ca3985eeb22763f51330",
-    "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "e8da084ef15ce58b2d0abad9392d960c11d4c33f1f885fa509dbb81fabb23d0b",
+    "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "60b840f0e87b314aee0c2e6fa97eb6ac1384378587694fbf67ff94567ff374be",
     "Game/Scripts/OfficerLibraryTrial.cs": "9241dbfdfa265ecdf278ca4b5eabfc4093e255f0a6bf0bf7f66602127615f9ae",
     "Game/Scripts/NewGameFrontEnd.cs": "aca08e2a63452476ee36969d080eeabd583d2087abe81b2111b027665c32d991",
     "Docs/Design/CharacterDevelopmentV1/verification.json": "2465c82c2592674c00430078fd41588277d4d4c46ee331d342e52ae8165fc16c",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "efdcddff016b46c9c7e078eb21edd4cbd18fba52bacfc5ca94fd84254f132f2f",
     "Core/Contracts/NewGameNpcRoutine.cs": "49db6539ff2e3cd8bceeec7317f78dfdfd7ab5dd142a6cf7e1873d64ca1341a6",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "f93e4c36d18454e31383dec4f9f65c6c7b151305424fb72157f6fb53861cb403",
+    "Core/Contracts/ContractJson.cs": "667e39c3337aa829c140289a9729d17a5d59a44f4ed5deff4982d07a7d51d823",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -473,7 +473,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v53.json": "286550eb6dd1017c0a18354372539da4bd89a1912ade87ebe21e58a084660a44",
     "Docs/Design/HistoricalChronicleV1/scope.md": "fca898a57a5b4c92490ef34ca3cfff3b9d37e3ba8774b74a0304d6feee218369",
     "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d",
-    "Core/Contracts/HistoricalEventRules.cs": "e82f48d0ba79b0faad9658762b8ebc173ff7b7c44405b9b49cc1273761fa9c43",
+    "Core/Contracts/HistoricalEventRules.cs": "6c01509d81149cd80bbab584125362315c1831b62cc901af7d2644dde1227e59",
     "Tests/HistoricalEventRulesTests.cs": "ac77c5cca3b6254518ffae25f990f4b4d12e4df60ae3fc2b3a6167018264408c",
     "Game/Scripts/HistoricalChronicleCheck.cs": "75f7384777b129127a662b0e0b7c9a8c9bf40486af6745e4de4a64a8520dbc5d",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
@@ -796,9 +796,9 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "2c4a8ce3180806a9b42754133a50ef413f74064fa4c2fbf1854bb8b4c4a2aac6",
+    "Docs/Development/ProgressV1/index.html": "5fe3aa88d5dae47e5264b44a7ac7a77c0204a00723411c9a0d840f93b79eb309",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
-    "Core/Contracts/NationalNameHistory.cs": "9f6e382ccb983f5cb21b4ca21bef752ebe309f1fbf77e577fd3515b9e94c1e8f",
+    "Core/Contracts/NationalNameHistory.cs": "9983b8d0e252a277381c26bd78fcc8647d7c4176289dc382a94a1d7d22c41ad8",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
     "Scripts/verify_national_name_history.py": "8eaafdb7127f3fb9e285a1ae9626a4939b2b4345e7dc9aa3b78f67e8b458bae5",
     "Docs/Design/NationalNameHistoryV1/README.md": "c2093b405a27d2330c4b52d20b46265444663c11c53dda2dba1ea864e17f4eff",
@@ -964,7 +964,7 @@
     {
       "id": "BD-05",
       "status": "normal",
-      "existing": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 能力5つの既存台帳から政務の買付準備時間・交渉の実在報酬条件・知略の現地追加点検へ接続。引受時の条件を保存し、報酬を依頼主の実在銭から精算。追加観測は本人と物理返報の開封者だけが知る。 作成武将の経歴の推奨配分と、32技能の自由な配分（予算の内、1技能50まで）、家系と信仰の選択を登録画面へ接続。兵科適性・志は残件。 2026-11-17（S01）：史実人物の家系（本姓）と信仰（宗派）を作成武将と同じ一覧で引けるようにした（記録が無ければ空）。",
+      "existing": "既存6身分の成人に同じ私財/生活規則を適用。陪臣/城主/国人領主を家臣表示へ潰さず、開始資格と認識済み所属を表示しても権限/領有/兵は増やさない。 能力5つの既存台帳から政務の買付準備時間・交渉の実在報酬条件・知略の現地追加点検へ接続。引受時の条件を保存し、報酬を依頼主の実在銭から精算。追加観測は本人と物理返報の開封者だけが知る。 作成武将の経歴の推奨配分と、32技能の自由な配分（予算の内、1技能50まで）、家系と信仰の選択を登録画面へ接続。兵科適性・志は残件。 2026-11-17（S01）：史実人物の家系（本姓）と信仰（宗派）を作成武将と同じ一覧で引けるようにした（記録が無ければ空）。 2026-11-17（S09A）：作成武将の兵科適性と志の選択、史実人物の志の推定、NPCの隠居。全身分の全国長期プレイは S12。",
       "remaining": "全身分の全国長期プレイ、史実配置・作成制約と動的役職/家督の一般化。 統合案で追加：作成武将での新しい項目の設定（生年・家系・兵科適性・志・信仰など。Proposals/CHARACTER_DATA_FIELDS_V1）。 2026-11-06採用：魅力を含む5能力、32技能の開始熟練・経歴・名家等の出自、3000時間相当の技能経験予算と開始上限50を新規世界の作成へ接続する。旧方式は維持。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
@@ -985,7 +985,8 @@
         "Docs/Decisions/2026-11-06_CHARACTER_ABILITIES_SKILLS_GROWTH.md",
         "Game/Scripts/OfficerLibraryTrial.Skills.cs",
         "Core/Contracts/HakutaiDbSupplement.cs",
-        "Docs/Design/HistoricalDataV1/verification.json"
+        "Docs/Design/HistoricalDataV1/verification.json",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1040,7 +1041,7 @@
     {
       "id": "BD-07",
       "status": "foundation",
-      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：危篤と意思表示不能、NPCの家の家督争いの決着（家法の後継順位・家臣の意向・指名・年長）と兄弟姉妹の家督、操作の引き継ぎの兄弟姉妹、年代記の終わりの総括を新規の全国開始に入れた。全契約の承継は S06、NPCの隠居は S09。 2026-11-17（S06）：当主を継いだときの約束の引き継ぎの知らせ。",
+      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：危篤と意思表示不能、NPCの家の家督争いの決着（家法の後継順位・家臣の意向・指名・年長）と兄弟姉妹の家督、操作の引き継ぎの兄弟姉妹、年代記の終わりの総括を新規の全国開始に入れた。全契約の承継は S06、NPCの隠居は S09。 2026-11-17（S06）：当主を継いだときの約束の引き継ぎの知らせ。 2026-11-17（S09A）：NPCの当主の存命中の隠居（家督の記録に隠居の印、名乗りに残る）と元服での希望の振り返り。画面は S11。",
       "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。 統合案で追加：§12 後継順位・誓紙・家督争い・後見・§4 出生・成人・訃報（決定9）。 2026-11-05 既存仕様の具体化：成人縁組・後継指名・正式継承・実支配と、プレイヤーの適格な操作継続を分離する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。隠居や後見だけで全記憶・全権限を移さず、成人不在時の既定を維持する。実装・シナリオ検査は未実施。 2026-11-06採用：危篤・意思表示不能・死亡・家督承認・操作継承を分離し、既存の歴史モードの自然死方針を健康モデルと接続する。 2026-11-06採用：元服で師事・経験・技能を保持し、本人が表明した希望を既知の範囲で振り返る。元服と適格な操作継承・後見終了・奉公を分離する。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
@@ -1056,7 +1057,8 @@
         "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md",
         "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
         "Docs/Design/MortalSuccessionV1/verification.json",
-        "Docs/Design/Diplomacy2V1/verification.json"
+        "Docs/Design/Diplomacy2V1/verification.json",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1299,7 +1301,7 @@
     {
       "id": "BD-13",
       "status": "foundation",
-      "existing": "登録武将の4能力入力と予算検査がある。 5基礎能力と7技能を分離。新規ゲーム方式・無料修行・点検の実時間を一度加算し、重複/中断/日上限/保存復旧を検査。実行時点の能力・熟練を参照して成長効率を計算。役職/所領/報酬とは別。 NPC本人の実完了点検も既存の経験へ接続し、未完了/重複を加算しない。 成人NPCが本人の既知の用件と点検の必要を優先し、空き時間に30分の修行を選ぶ。引受済みの協力・同行では修行を中断し、実完了した場合だけ技能経験を得る。全件4,017件、7段階の実保存復旧と同じ未来、旧保存254件のバイト一致、Gameビルド、通常入口の配置確認・実データ作成・20秒のNPC判断、Godot配置7組が成功。 能力5つの既存台帳から政務の買付準備時間・交渉の実在報酬条件・知略の現地追加点検へ接続。引受時の条件を保存し、報酬を依頼主の実在銭から精算。追加観測は本人と物理返報の開封者だけが知る。 固定個体の賊との同時計算、戦う・退く・通行銭、随行者と負傷の保持。依頼主の実在80文を預かり、護衛の双方の実移動・到着、討伐の敗走実績を現地で報告して精算。 v115：全国開始v2で5基礎能力の初期データを接続。役割語からの低確度試作で、史実評価として扱わない。 32技能の版（経験の曲線・独習は半分・師事・実際の仕事の経験・熟練による作業時間・兵科の技能が統率を上限に損害を増やす）を新規の世界へ接続。史実人物の開始熟練の採録は残件。 2026-11-17（S01）：史実人物の32技能の開始熟練に、経歴の記録（記事の冒頭の段落）からの手がかりを入れた（表示「経歴の記録からの推定」）。",
+      "existing": "登録武将の4能力入力と予算検査がある。 5基礎能力と7技能を分離。新規ゲーム方式・無料修行・点検の実時間を一度加算し、重複/中断/日上限/保存復旧を検査。実行時点の能力・熟練を参照して成長効率を計算。役職/所領/報酬とは別。 NPC本人の実完了点検も既存の経験へ接続し、未完了/重複を加算しない。 成人NPCが本人の既知の用件と点検の必要を優先し、空き時間に30分の修行を選ぶ。引受済みの協力・同行では修行を中断し、実完了した場合だけ技能経験を得る。全件4,017件、7段階の実保存復旧と同じ未来、旧保存254件のバイト一致、Gameビルド、通常入口の配置確認・実データ作成・20秒のNPC判断、Godot配置7組が成功。 能力5つの既存台帳から政務の買付準備時間・交渉の実在報酬条件・知略の現地追加点検へ接続。引受時の条件を保存し、報酬を依頼主の実在銭から精算。追加観測は本人と物理返報の開封者だけが知る。 固定個体の賊との同時計算、戦う・退く・通行銭、随行者と負傷の保持。依頼主の実在80文を預かり、護衛の双方の実移動・到着、討伐の敗走実績を現地で報告して精算。 v115：全国開始v2で5基礎能力の初期データを接続。役割語からの低確度試作で、史実評価として扱わない。 32技能の版（経験の曲線・独習は半分・師事・実際の仕事の経験・熟練による作業時間・兵科の技能が統率を上限に損害を増やす）を新規の世界へ接続。史実人物の開始熟練の採録は残件。 2026-11-17（S01）：史実人物の32技能の開始熟練に、経歴の記録（記事の冒頭の段落）からの手がかりを入れた（表示「経歴の記録からの推定」）。 2026-11-17（S09A）：実務の技能（役の年数・家中の師・55歳からの衰え）を家の役・普請・監督・合戦に使う。家の役以外の仕事への効果の全体は S09E。",
       "remaining": "負傷/加齢/教育者/全職種の実務適用。 統合案で追加：§9 決定7・8 能力1〜100・兵科適性。 2026-11-06採用：統率・武勇・知略・政務・魅力の5能力、交渉を含む6分野32技能。経験逓増・実務/独習/師事・日8時間・教育・基礎能力の別成長を実装し、旧7技能と版で共存させる。設計採用のみ。 2026-11-06採用：一時的な不調や加齢による行動補正と習得済み能力/技能経験を分け、医術・実働・療養を接続する。療養期間へ技能の一律時間短縮を適用しない。 2026-11-06採用：子の教育方針と分野別の師、年齢発達と実学習を接続する。既存の経験曲線を共用し、年齢発達との二重計上を避ける。日8時間は子の標準日課にしない。発達曲線・日課と総合実装は残件。 全国人物の個別史料値・32技能の初期熟練、能力の実務効果全体、負傷/加齢/教育者。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
@@ -1338,7 +1340,8 @@
         "Tests/Skills32Tests.cs",
         "Tests/WorkExperienceTests.cs",
         "Core/Contracts/HakutaiDbSupplement.cs",
-        "Docs/Design/HistoricalDataV1/verification.json"
+        "Docs/Design/HistoricalDataV1/verification.json",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1346,7 +1349,7 @@
     {
       "id": "BD-14",
       "status": "normal",
-      "existing": "関係の事実、不満と上申、本人の既知情報と性格による返答。",
+      "existing": "関係の事実、不満と上申、本人の既知情報と性格による返答。 2026-11-17（S09A）：NPCの当主の家の目標と計画の節目での見直し、文脈つきの断る条件と期限での再検討、志の推定と作成武将の志。子の性格・志の段階的な形成は S09E。",
       "remaining": "全国の総合的な目的選択と継続的な忠誠判断。 2026-11-06採用の残件具体化：既知の大きな節目での中長期目標の見直し、性格・志／目標／手段の分離、文脈付きの拒否条件とその再検討・開示理由を総合判断へ接続する。設計採用のみで、この総合接続は未実装。 2026-11-06採用：子の性格・興味・志は養育と実経験から徐々に形成し、成長後の安定へ接続する。親の期待・家の方針・本人の希望・対象別忠誠を分け、直接指定にしない。",
       "evidence": [
         "Core/Contracts/CharacterRelations.cs",
@@ -1377,7 +1380,8 @@
         "Docs/Design/HouseholdCourtV1/README.md",
         "Docs/Design/HouseholdCourtV1/verification.json",
         "Docs/Decisions/2026-11-06_NPC_GOALS_PLANS_BOUNDARIES.md",
-        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md"
+        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1498,7 +1502,7 @@
     {
       "id": "BD-18",
       "status": "normal",
-      "existing": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 2026-11-17（S01）：拠点の新しい値のうち城の種類（山城・平山城・平城）を追加の版に採録。開発の4軸・民心・治安・門徒・城の区画は S07。 2026-11-17（S03）：1467年・1600年の開始の版（戦国DBから書き出し）と人物の推定表。地図は1560年の城の網を共通に使う。改名の台帳は S09。 2026-11-17（S07）：拠点の新しい値（開発の4軸・民心・治安・門徒・城の区画）の初期データを推定で作った。",
+      "existing": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 2026-11-17（S01）：拠点の新しい値のうち城の種類（山城・平山城・平城）を追加の版に採録。開発の4軸・民心・治安・門徒・城の区画は S07。 2026-11-17（S03）：1467年・1600年の開始の版（戦国DBから書き出し）と人物の推定表。地図は1560年の城の網を共通に使う。改名の台帳は S09。 2026-11-17（S07）：拠点の新しい値（開発の4軸・民心・治安・門徒・城の区画）の初期データを推定で作った。 2026-11-17（S09A）：1467年・1600年の開始でも年の分かる改名の台帳を入れる。",
       "remaining": "複数年代の正式史実データ/シナリオ差分と製品データ移行。 統合案で追加：拠点の新しい値の持ち方（開発の4軸と上限・民心・治安・門徒・城の区画の堅さ・寺社の組織・職人集団・名物の所在。CHARACTER_DATA_FIELDS_V1 §3）。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
@@ -1534,7 +1538,8 @@
         "Core/Contracts/HakutaiDbSupplement.cs",
         "Docs/Design/HistoricalDataV1/verification.json",
         "Docs/Design/HistoricalEventsV1/verification.json",
-        "Docs/Design/Territory2V1/verification.json"
+        "Docs/Design/Territory2V1/verification.json",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1583,7 +1588,7 @@
     {
       "id": "BD-20",
       "status": "normal",
-      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。2026-11-12 百代鏡DB V1：戦国DBの版（38a13d12）から1560年の家304・人物4,596・城829を書き出し、推定の決め方・公知の地理と年の情勢の区別・既存の開始人物との対応・開始前の史料の画面を持つ。全員を世界に置く開始配置は未接続。 v111：地形移動網を新版化。v112：全国637郡の初期支配・並立・根拠を世界へ接続。 v113：新規1560年全国の家の直接従属を版付き台帳へ接続。v114：百代鏡DBの年付き名乗りを世界時計の年境界へ接続し、現地で認識されるまで遠方へ変更を表示しない。 v115：全国開始v2へ4,583人の生年と基礎能力を版付きで接続。 v116：新規全国v4の郡収入を現地公金・有限市場での実支出へ接続。 百代鏡DBに母・養親・配偶者を書き出し、新規の全国開始で母を実の親として入れる。1560年の官位の在職者・人口・家系・志・席次・名物・開始時の婚姻は残件。 2026-11-17（S01）：1560年の官位の在職者（年の記録のあるもの53人）、本姓1,262件・宗派・技能の候補、寺社54か所、郡の人口の推定（石高×0.65）、城の種類956城を戦国DBから追加の版へ採録し、官位・技能・家系と信仰を新規の全国開始に入れた。人口・寺社・拠点の値を世界に入れるのは S07、名物は S08、志は S09。 2026-11-17（S07）：百代鏡DBの郡の人口の推定から城の拠点の村の人口、寺社の置き場所、家中職を世界に入れた。 2026-11-17（S08）：名物の目録12点（1560年・1467年・1600年の持ち主、通説・要確認の印）。",
+      "existing": "全国概略の拠点/経路、史料付き地域区間と一部史実人物がある。2026-11-12 百代鏡DB V1：戦国DBの版（38a13d12）から1560年の家304・人物4,596・城829を書き出し、推定の決め方・公知の地理と年の情勢の区別・既存の開始人物との対応・開始前の史料の画面を持つ。全員を世界に置く開始配置は未接続。 v111：地形移動網を新版化。v112：全国637郡の初期支配・並立・根拠を世界へ接続。 v113：新規1560年全国の家の直接従属を版付き台帳へ接続。v114：百代鏡DBの年付き名乗りを世界時計の年境界へ接続し、現地で認識されるまで遠方へ変更を表示しない。 v115：全国開始v2へ4,583人の生年と基礎能力を版付きで接続。 v116：新規全国v4の郡収入を現地公金・有限市場での実支出へ接続。 百代鏡DBに母・養親・配偶者を書き出し、新規の全国開始で母を実の親として入れる。1560年の官位の在職者・人口・家系・志・席次・名物・開始時の婚姻は残件。 2026-11-17（S01）：1560年の官位の在職者（年の記録のあるもの53人）、本姓1,262件・宗派・技能の候補、寺社54か所、郡の人口の推定（石高×0.65）、城の種類956城を戦国DBから追加の版へ採録し、官位・技能・家系と信仰を新規の全国開始に入れた。人口・寺社・拠点の値を世界に入れるのは S07、名物は S08、志は S09。 2026-11-17（S07）：百代鏡DBの郡の人口の推定から城の拠点の村の人口、寺社の置き場所、家中職を世界に入れた。 2026-11-17（S08）：名物の目録12点（1560年・1467年・1600年の持ち主、通説・要確認の印）。 2026-11-17（S09A）：史実人物の志の推定（印つき）。史実の人物項目の残りは S12。",
       "remaining": "1560年全国の支配・役職・人口等を採録し、静的地理と変動情報の確度/出典を整える。統合案で追加：§22 E6 史実事件30〜50件の採録・位階官職表の1560年在職者（RANKS_AND_OFFICES_V1）・史実人物の新しい項目の採録（生年・没年・血縁・家系・兵科適性・志・席次・官位・初期の名物など）と拠点の新しい値の初期データ（CHARACTER_DATA_FIELDS_V1）。2026-11-06採用：魅力・人物別32技能の開始熟練・出自を、経歴と出典/推定/未採録の区別付きで採録する。旧交渉値から魅力を自動算出しない。2026-11-06採用：史実の子は開始時の年齢と経歴に応じた状態・傾向を採録し、出典・推定・未採録・試作を区別する。史料にない教育者や幼少期を史実として補わない。 能力・生年以外の人物項目、全国の人口・郡収入、残りの歴史・配置データ。",
       "evidence": [
         "Core/Contracts/NationalRoutes.cs",
@@ -1612,7 +1617,8 @@
         "Core/Contracts/HakutaiDbSupplement.cs",
         "Docs/Design/HistoricalDataV1/verification.json",
         "Docs/Design/Territory2V1/verification.json",
-        "Docs/Design/Logistics2V1/verification.json"
+        "Docs/Design/Logistics2V1/verification.json",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2923,7 +2929,7 @@
     {
       "id": "BD-45",
       "status": "foundation",
-      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：死亡後の家督の申立が2人以上なら決着し、敗れた人は家中に残る。指名・成人の実子・同じ家の兄弟姉妹の順。",
+      "existing": "常設職は当主交代時に旧権限を失効し、新しい署名と本人承諾で個別再確認。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：死亡後の家督の申立が2人以上なら決着し、敗れた人は家中に残る。指名・成人の実子・同じ家の兄弟姉妹の順。 2026-11-17（S09A）：隠居による家督（成人の後継の決め方は家督争いと同じ）。教育者と後見人の権限・期限と実物の返還は S09E。",
       "remaining": "死亡・争いを伴う家督と全契約の承継。 2026-11-06採用：教育者と後見人の対象・権限・期限を分け、元服で育成結果を保持しつつ、後見終了・家督・帳簿等の実物返還を各手続きへ接続する。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -2989,7 +2995,8 @@
         "Docs/Design/GuardianshipV1/README.md",
         "Docs/Design/GuardianshipV1/verification.json",
         "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
-        "Docs/Design/MortalSuccessionV1/verification.json"
+        "Docs/Design/MortalSuccessionV1/verification.json",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3419,7 +3426,7 @@
     {
       "id": "BD-58",
       "status": "normal",
-      "existing": "既知の情報と本人の判断で贈答・茶会・伝聞・否認・上申・評定を使用。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 引受済みの常設職に年度経費・優先分野・収穫期回避の条件書を物理配送し、本人承諾後の現地普請と年度残枠に接続。年始と朔日の定例評定は実招集・実参集、NPC当主も同じ評定を使用。家の方針は認識した人物から反映し、月報は現地の時点付き観測と開封後の表示を分ける。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。",
+      "existing": "既知の情報と本人の判断で贈答・茶会・伝聞・否認・上申・評定を使用。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 引受済みの常設職に年度経費・優先分野・収穫期回避の条件書を物理配送し、本人承諾後の現地普請と年度残枠に接続。年始と朔日の定例評定は実招集・実参集、NPC当主も同じ評定を使用。家の方針は認識した人物から反映し、月報は現地の時点付き観測と開封後の表示を分ける。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。 2026-11-17（S09A）：NPCの自発登用と役ごとの目標の振り返り、目標から計画した出陣の的。AIの手強さと先読みは S09E。",
       "remaining": "NPCの自発登用・全役職の目標・全国長期性能。 2026-11-06採用の残件具体化：安定した目標から段階的な計画を立て、結果・既知情報に応じて手段を組み直す。緊急対応・味方替えを目標変更待ちにせず、文脈付きの拒否と目標・計画・待ち状態の保存継続を既存判断へ総合接続する。設計採用のみで、この総合接続は未実装。 2026-11-06採用：AIの手強さを比較案と先読み範囲へ接続する。人物の性格・能力・志・目標・計画・拒否条件は共通に保ち、未知情報を使わず同じ設定と保存状態で判断を再現する。判断支援・歴史モード・本人への機会から独立。設計採用のみ。 2026-11-06採用：NPCも同じ32技能・経験・日上限を使い、既知の教育者と資源から目標/役職に合う実務や学習を選ぶ。 2026-11-06採用：NPCも同じ健康・実働・資源・認識条件で仕事継続、休養、治療、報告、代理依頼、復帰を判断する。 2026-11-06採用：NPCの親・師・子も既知の人物・資源・時間と本人の興味/志を使って教育を判断する。初期傾向と実行済み学習を保存し、再開で再抽選・二重計上しない。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
@@ -3514,7 +3521,8 @@
         "Docs/Decisions/2026-11-06_AI_CHALLENGE_AND_DECISION_SUPPORT.md",
         "Docs/Decisions/2026-11-06_CHARACTER_ABILITIES_SKILLS_GROWTH.md",
         "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md",
-        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md"
+        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
+        "Docs/Design/Persons2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
