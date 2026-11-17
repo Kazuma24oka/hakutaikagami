@@ -15,7 +15,8 @@ public partial class NewGameRuntime
         void Button(string text,Action action,bool disabled=false){var b=new Button{Text=text,Disabled=disabled,CustomMinimumSize=new Vector2(0,34)};box.AddChild(b);b.Pressed+=action;}
         Text(PersonName(person));
         {var w0=Snapshot();if(CentralStanding.KnownTitles(w0,Session.PlayerControl,person) is {Length:>0} titles)Text(string.Join("　",titles));
-         if(CentralStanding.SeatAtSite(w0,person) is {} seat)Text($"席次　{seat.Seat}／{seat.Of}");}
+         if(CentralStanding.SeatAtSite(w0,person) is {} seat)Text($"席次　{seat.Seat}／{seat.Of}");
+         if(person==Session.PlayerControl&&SocialWorld.Site(w0,person) is {} here&&Territory2.Profile(w0,here) is {} sp)Text($"{w0.Definitions.Sites.Single(x=>x.Id==here).Name}　人口{sp.Population}　田畑{sp.Agriculture}　町{sp.Commerce}　工房{sp.Workshop}　牧{sp.Pasture}　民心{sp.Morale}　治安{sp.Security}"+(sp.Monto>0?$"　門徒{sp.Monto}":"")+(sp.Sections>0?$"　区画{sp.Sections}":""));}
         var chooser=new OptionButton();box.AddChild(chooser);var people=Snapshot().NewGame!.Start.People;
         // Names already belong to the scenario roster; the selected card never exposes private values.
         for(int n=0;n<people.Length;n++){chooser.AddItem(people[n].Name);if(people[n].Id==person.Value)chooser.Select(n);}

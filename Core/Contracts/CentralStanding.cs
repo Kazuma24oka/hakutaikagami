@@ -66,6 +66,9 @@ public static class CentralStanding
         var rows=new List<string>();
         if(viewer==person)rows.AddRange(CentralTitles.Held(w,person).Select(h=>h.Name));
         else rows.AddRange(CentralTitles.Held1560(w,person).Select(h=>h.Office));
+        // 家中職（一覧の Territory2）：百代鏡DBの家中職の候補のうち、開始年までに就いたもの。
+        if(Territory2.On(w)&&NationalStart.DbPerson(person.Value) is {} db&&HakutaiDbSupplement.Person(db.Id)?.HousePosts is {} posts)
+            rows.AddRange(posts.Where(p=>p.From is int y&&y<=NationalSystems.StartYear(w)).Select(p=>(p.House!=null&&p.House!="記事に記載なし"?p.House:"")+p.Post));
         if(On(w))
         {
             long at=w.ElapsedSeconds;

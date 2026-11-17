@@ -16,7 +16,7 @@ public static class BanditEncounter
  public static bool OwnIdUsed(ContractWorld w,EntityId id)=>GuardJobs.Orders(w).Any(q=>q.Input.Id==id)||w.Bandits?.Decisions.Any(e=>e.Input.Id==id)==true;
  public static long Net(ContractWorld w,EntityId wallet,long at,long rev)=>-(w.Bandits?.Decisions??[]).Where(e=>NewGameWork.Wallet(e.Actor)==wallet&&(e.At<at||e.At==at&&e.Revision<rev)).Sum(e=>e.Paid);
  public static long BanditMoney(ContractWorld w,EntityId site)=>(w.Bandits?.Decisions??[]).Where(e=>e.Input.Site==site).Sum(e=>e.Paid);
- public static bool Dangerous(ContractWorld w,EntityId site)=>Enabled(w)&&Camps.Contains(site)&&!(w.Bandits?.Encounters.Any(e=>e.Site==site&&e.Phase=="賊が敗走")??false);
+ public static bool Dangerous(ContractWorld w,EntityId site)=>Enabled(w)&&Territory2.IsCamp(w,site)&&!(w.Bandits?.Encounters.Any(e=>e.Site==site&&e.Phase=="賊が敗走")??false);
  public static bool NeedsContact(ContractWorld w)=>SocialWorld.Site(w,w.PlayerControl) is {} site&&Dangerous(w,site)&&!LocalSecurity.Protected(w,site,w.ElapsedSeconds,w.CommitSequence+1)&&!(w.Bandits?.Encounters.Any(e=>e.Site==site&&e.Actor==w.PlayerControl)??false);
  public static int Injury(ContractWorld w,EntityId person)=>(w.Bandits?.Encounters??[]).SelectMany(e=>e.People.Where(p=>p.Id==person).Select(p=>20-p.Health)).DefaultIfEmpty().Max();
  static EntityId Member(EntityId site,int i)=>new("bandit:"+site.Value.Replace(':','/')+"/"+i);

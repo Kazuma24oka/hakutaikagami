@@ -50,7 +50,7 @@ public static class VillageConsultation
         if(first==null || at-first.At<30*Day) return false;
         long relief=ledger.Orders.Where(o=>o.Input.Site==site && o.Input.Action==EconomyAction.RelieveVillage &&
             o.Revision>first.Revision && o.Revision<rev && o.At<=at && at-o.At<30*Day).Sum(o=>o.Input.Amount);
-        return relief<CommunityEconomy.Population;
+        return relief<Territory2.Population(w,site);
     }
 
     internal static bool Cooperative(ContractWorld w,EntityId site,long at,long rev){using var _ccRev=ControlContext.At(rev);if(!Enabled(w))return true;if(DestructiveSchemes.Agitated(w,site,at,rev)||WithholdsLaborAfterPetition(w,site,at,rev))return false;var es=w.Villages!.Entries.Where(e=>e.At<at||e.At==at&&e.Revision<rev).ToArray();var ps=w.Villages.Promises.Where(p=>p.ConfirmedAt<=at&&es.Any(e=>e.Input.Action==VillageAction.Confirm&&e.Input.Proposal==p.Id)).Select(p=>{var delivery=es.Where(e=>e.Input.Action==VillageAction.Deliver&&e.Input.Proposal==p.Id).ToArray();return p with{Delivered=p.Kind==VillageAction.ProposeRelief?delivery.Sum(e=>e.Input.Amount):0,StartedAt=p.Kind==VillageAction.ProposeWater?delivery.Select(e=>(long?)e.At).FirstOrDefault():null,CancelledAt=es.Where(e=>e.Input.Action==VillageAction.Cancel&&e.Input.Proposal==p.Id).Select(e=>(long?)e.At).FirstOrDefault()};});return Trust(w,ps,site,at,rev)>=50;}

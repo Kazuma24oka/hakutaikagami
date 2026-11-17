@@ -23,7 +23,7 @@ public static class NpcCommunityAdministration
         string hash=ContractJson.CanonicalHash(new CommunityDecisionInputs(actor,site,at,local,authority,account,reserved));EconomyAction? action=null;long amount=0;string reason="当主が現地で確認できる状態になるまで待機";EntityId? representative=null;
         if(account!=null){long free=account.HouseRice-reserved;
             if(account.Hunger>0){amount=Math.Min(account.Hunger,free);if(amount>0){action=EconomyAction.RelieveVillage;reason="現地で確認した食糧不足を家の自由米で救済";}else reason="食糧不足を確認、処分できる米がないため待機";}
-            else if(account.Assessed>account.Collected&&account.VillageRice>CommunityEconomy.Population*5){amount=Math.Min(1000,Math.Min(account.Assessed-account.Collected,account.VillageRice-CommunityEconomy.Population*5));action=EconomyAction.CollectLevy;reason="既定年貢のうち村の一月分を残せる現物だけ徴収";}
+            else if(account.Assessed>account.Collected&&account.VillageRice>Territory2.Population(w,account.Site)*5){amount=Math.Min(1000,Math.Min(account.Assessed-account.Collected,account.VillageRice-CommunityEconomy.Population*5));action=EconomyAction.CollectLevy;reason="既定年貢のうち村の一月分を残せる現物だけ徴収";}
             else if(account.Water<130&&account.Reserved==0&&account.Workforce>=CommunityEconomy.Crew&&free>=CommunityEconomy.WorkCost+500){action=EconomyAction.ImproveWater;amount=CommunityEconomy.WorkCost;representative=VillageConsultation.Representative(site,at);reason="代表の食糧・空き労働条件に合意し家に500kgを残して水利工事";}
             else reason="不足なし、追加工事または徴収の条件なしのため待機";
         }
