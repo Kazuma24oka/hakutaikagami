@@ -684,7 +684,8 @@
       "contents": "（S06から）条項別の期間と条件変更・NPCの交渉の発議・多者の和睦・制裁の現地履行・従属の条項、未成年の婚約の予約・遠隔婚姻・強い家からの養子、独立の伝達と部隊別の帰属、国人の自治と派閥、登用条件と遠隔の辞去と転籍、捕虜交換の受け渡し、NPCの偵察と流言。",
       "status": "作業中",
       "deferred": [],
-      "done_when": "この工程の枠の残り（progress.json の remaining）のうち、この工程の中身が無くなり、承認の基準で率が上がったと確かめた時。残りのある枠を完了と言わない。"
+      "done_when": "この工程の枠の残り（progress.json の remaining）のうち、この工程の中身が無くなり、承認の基準で率が上がったと確かめた時。残りのある枠を完了と言わない。",
+      "baseline": "Docs/Development/ProgressV1/approval-baseline-v165.json"
     },
     {
       "id": "S09D",
