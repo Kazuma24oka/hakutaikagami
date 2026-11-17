@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+import os
 import math
 import re
 import sqlite3
@@ -25,7 +26,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-YEAR = 1560
+YEAR = int(os.environ.get("HAKUTAI_YEAR", "1560"))  # 2026-11-17：1467年・1600年の開始も同じ決め方で書き出す（S03、ユーザー承認）
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("C:/Workspace/Projects/Data/SengokuDB")
 OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else None  # 全体の書き出し先（省略すると全体は書かず、追加の版だけ書く）
 SUPPLEMENT = Path(__file__).resolve().parents[2] / "Core" / "Data" / "hakutai-db-1560-supplement-v1.json"
@@ -363,6 +364,12 @@ def main():
         "Castles": out_castles,
         "Districts": districts,
     }
+    if YEAR != 1560:
+        # 1560年以外の開始（2026-11-17、S03）：全体の版だけを書く。1560年の追加の版は v2 の名簿のものなので作らない。
+        doc["Id"] = f"hakutai-db-{YEAR}-v1"
+        doc["Policy"] = doc["Policy"].replace("1560年", f"{YEAR}年")
+        write_full(doc, OUT or Path(__file__).resolve().parents[2] / "Core" / "Data" / f"hakutai-db-{YEAR}-v1.json", houses, people, out_castles, commit, missing)
+        return
     # 追加の版（2026-11-16）：v2 の人物・家・城・郡はそのまま（今の保存が版の印で照合しているので変えない）。
     # v2 の名簿の人物に、v3 で足した項目（兄弟姉妹・官位・1560年の在職・法名・身分・家督相続の年）だけを持たせる。
     base = json.loads(BASE.read_text(encoding="utf-8"))
@@ -413,6 +420,10 @@ def main():
     print(f"{SUPPLEMENT}: 人物 {len(rows)}（1560年の在職 {sum(1 for r in rows if r.get('Held1560'))}）")
     if OUT is None:
         return
+    write_full(doc, OUT, houses, people, out_castles, commit, missing)
+
+
+def write_full(doc, OUT, houses, people, out_castles, commit, missing):
     lines = ["{"]
     keys = list(doc)
     for k in keys:
