@@ -69,6 +69,7 @@ public static class CentralStanding
         // 家中職（一覧の Territory2）：百代鏡DBの家中職の候補のうち、開始年までに就いたもの。
         if(Territory2.On(w)&&NationalStart.DbPerson(person.Value) is {} db&&HakutaiDbSupplement.Person(db.Id)?.HousePosts is {} posts)
             rows.AddRange(posts.Where(p=>p.From is int y&&y<=NationalSystems.StartYear(w)).Select(p=>(p.House!=null&&p.House!="記事に記載なし"?p.House:"")+p.Post));
+        if(Domestic2.Hokoshu1(w,person))rows.Add(Domestic2.Hokoshu);
         if(On(w))
         {
             long at=w.ElapsedSeconds;
@@ -104,7 +105,7 @@ public static class CentralStanding
         foreach(var x in s?.Honors??[])
         {
             long learned=x.Person==viewer?x.At:x.At+HistoricalNews.DelayFrom(w,viewer,kyoto,x.At);if(learned>at)continue;
-            rows.Add(new("honor:"+x.Kind+"/"+x.Person.Value,$"{PersonName(x.Person)}（{HouseName(x.House)}）　{(x.Kind==NameGift?$"偏諱「{x.Character}」":x.Kind)}",x.At,learned,x.Person,x.House));
+            rows.Add(new("honor:"+x.Kind+"/"+x.Person.Value,$"{PersonName(x.Person)}（{HouseName(x.House)}）　{(x.Kind==NameGift?$"偏諱「{x.Character}」":x.Kind=="与姓"?$"与姓「{x.Character}」":x.Kind)}",x.At,learned,x.Person,x.House));
         }
         var events=HouseholdCourt.Events(w);
         foreach(var e in events.Where(e=>e.Input.Action==CourtAction.IssueCourtRank&&e.Input.Person!=viewer))

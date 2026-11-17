@@ -45,6 +45,8 @@ public static class NationalSystems
         Diplomacy2,
         // 拠点ごとの人口・実名の寺社と門徒・家中職・拠点の値の初期データ・全国の賊の巣（S07）。
         Territory2,
+        // 全国の家の内政：方針と専門職・家計・生産と職人・災害・徴募と逃散・一揆と檄・寺社の権益・破壊の計略・幕府職と奏請（S07B）。
+        Domestic2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -57,6 +59,7 @@ public static class NationalSystems
     public const string Warfare2="Warfare2";
     public const string Diplomacy2="Diplomacy2";
     public const string Territory2="Territory2";
+    public const string Domestic2="Domestic2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

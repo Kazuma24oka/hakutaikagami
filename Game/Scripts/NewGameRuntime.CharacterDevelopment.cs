@@ -17,6 +17,20 @@ public partial class NewGameRuntime
         {var w0=Snapshot();if(CentralStanding.KnownTitles(w0,Session.PlayerControl,person) is {Length:>0} titles)Text(string.Join("　",titles));
          if(CentralStanding.SeatAtSite(w0,person) is {} seat)Text($"席次　{seat.Seat}／{seat.Of}");
          if(person==Session.PlayerControl&&SocialWorld.Site(w0,person) is {} here&&Territory2.Profile(w0,here) is {} sp)Text($"{w0.Definitions.Sites.Single(x=>x.Id==here).Name}　人口{sp.Population}　田畑{sp.Agriculture}　町{sp.Commerce}　工房{sp.Workshop}　牧{sp.Pasture}　民心{sp.Morale}　治安{sp.Security}"+(sp.Monto>0?$"　門徒{sp.Monto}":"")+(sp.Sections>0?$"　区画{sp.Sections}":""));}
+        // 家の記録と、当主なら家の方針・年貢・口入れ（一覧の Domestic2）。
+        {var w1=Snapshot();var faction=w1.NewGame!.Start.People.SingleOrDefault(p=>p.Id==person.Value)?.Faction;
+         if(faction!=null)foreach(var line in Domestic2.FamilyRecord(w1,Session.PlayerControl,new(faction)))Text(line);
+         if(person==Session.PlayerControl&&Domestic2.On(w1)&&faction!=null&&HouseSuccession.Head(w1,new(faction))==person)
+         {
+             long shown=Session.Revision;var note=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};
+             void Order(string kind,string? target,int value){var r=Session.DecideDomestic(kind,target,value,shown);if(r.Code!=ResultCode.Accepted){note.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCharacterDevelopment();}
+             var policies=new HBoxContainer();box.AddChild(policies);
+             foreach(var p in new[]{Domestic2.Farming,Domestic2.Trade,Domestic2.Arms,Domestic2.Building,Domestic2.Thrift}){var b=new Button{Text=p};b.Pressed+=()=>Order("policy",p,0);policies.AddChild(b);}
+             var rates=new HBoxContainer();box.AddChild(rates);
+             foreach(var (label,v) in new[]{("四公六民",40),("五公五民",50),("六公四民",60)}){var b=new Button{Text=label};b.Pressed+=()=>Order("decree",null,v);rates.AddChild(b);}
+             box.AddChild(note);
+         }
+         if(person==Session.PlayerControl)foreach(var job in Domestic2.Board(w1,person))Text($"{job.Kind}　{job.IssuerName}　{job.Fee}文");}
         var chooser=new OptionButton();box.AddChild(chooser);var people=Snapshot().NewGame!.Start.People;
         // Names already belong to the scenario roster; the selected card never exposes private values.
         for(int n=0;n<people.Length;n++){chooser.AddItem(people[n].Name);if(people[n].Id==person.Value)chooser.Select(n);}

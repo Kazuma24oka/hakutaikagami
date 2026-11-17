@@ -1,0 +1,20 @@
+{
+  "status": "PASSED",
+  "scope": "S07B 関係する検査（全件テストは S14 で1回）",
+  "date": "2026-11-17",
+  "related_tests": "PASSED",
+  "passed": 179,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 10,
+  "commands": [
+    "Domestic2Tests（10件）",
+    "CentralStandingTests（8件）",
+    "Diplomacy2・HistoricalEvents・LifeGoals2・MortalSuccession・NationalStrategy・NationalSystems・StartYear・StrategyLosses・Territory2・Warfare2・CommonContract・CommonSave・NationalWarfareActivation・NationalControlProjection・BrokerWork・GuardJobs の検査（161件）",
+    "ゲーム本体（Godot の C#）の組み立て"
+  ],
+  "not_run": "NationalDistrictRevenueTests（前回32分）、NobunagaTravels…（前回8分）、ATruceLetter…（前回9分）、NobunagaCanStartTheNationalWorld、LifeAndSocialSystemsRunInTheNationalStart は S14 の全件で流す",
+  "performance": "全国の信長の世界で、月の初めの家の戦略の計算に内政が加わって1か月あたり約16ミリ秒（7か月の計算は内政なし約15.7秒・あり約15.6秒）。3年半進めた全国の戦略の記録は約1.4MB（記録は毎年1月に1年より前を間引く）。",
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "未実施（人物の画面の家の記録・方針と年貢の操作・口入れの表示は S12 の一巡で見る）"
+}
