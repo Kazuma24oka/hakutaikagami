@@ -130,16 +130,18 @@ public static class Duties2
         bool Live(string h)=>owners.ContainsValue(h);
 
         // 併用の表：役の人が捕らわれ・療養なら代わりに移す。戻れば元に戻し、代わりに補償。
+        // この区切りの中では世界は変わらないので、人ごとの捕らわれ・療養は一度だけ調べる（S10）。
+        var hinderedNow=new Dictionary<EntityId,string?>();string? HinderedNow(EntityId p){if(!hinderedNow.TryGetValue(p,out var why))hinderedNow[p]=why=Hindered(w,p,now);return why;}
         foreach(var (key,h) in houses.OrderBy(x=>x.Key,StringComparer.Ordinal).ToArray())
         {
             if(Player(w,key))continue;var posts=h.Posts.ToList();long coin=h.Coin;
             var used=posts.Select(p=>p.Person).ToHashSet();
             for(int i=0;i<posts.Count;i++)
             {
-                var p=posts[i];var open=events.LastOrDefault(e=>e.Kind=="suspend"&&e.Person==p.Person&&e.House==h.House&&e.Detail==p.Post+"/"+p.Place&&!events.Any(x=>x.Kind=="resume"&&x.Detail==e.Id));
-                if(Hindered(w,p.Person,now) is {} why&&!Concurrency[(why,"家の役")])
+                var p=posts[i];
+                if(HinderedNow(p.Person) is {} why&&!Concurrency[(why,"家の役")])
                 {
-                    var sub=people.Values.Where(x=>x.Faction==key&&alive.Contains(new EntityId(x.Id))&&!used.Contains(new(x.Id))&&x.Id!=HouseSuccession.Head(w,h.House).Value&&Hindered(w,new(x.Id),now)==null).OrderBy(x=>x.Id,StringComparer.Ordinal).FirstOrDefault();
+                    var sub=people.Values.Where(x=>x.Faction==key&&alive.Contains(new EntityId(x.Id))&&!used.Contains(new(x.Id))&&x.Id!=HouseSuccession.Head(w,h.House).Value&&HinderedNow(new(x.Id))==null).OrderBy(x=>x.Id,StringComparer.Ordinal).FirstOrDefault();
                     if(sub==null)continue;
                     posts[i]=p with{Person=new(sub.Id),Since=now};used.Add(new(sub.Id));
                     Add("suspend",p.Place,h.House,null,p.Person,0,$"{PersonName(w,p.Person)}が{why}のため、{sub.Name}が{p.Post}を代わりに務める",null,p.Post+"/"+p.Place,new(sub.Id));
@@ -147,7 +149,7 @@ public static class Duties2
             }
             foreach(var e in events.Where(e=>e.Kind=="suspend"&&e.House==h.House&&!events.Any(x=>x.Kind=="resume"&&x.Detail==e.Id)).ToArray())
             {
-                if(e.Person is not {} orig||!alive.Contains(orig)||Hindered(w,orig,now)!=null)continue;
+                if(e.Person is not {} orig||!alive.Contains(orig)||HinderedNow(orig)!=null)continue;
                 int i=posts.FindIndex(p=>p.Person==e.Person2);if(i<0)continue;
                 posts[i]=posts[i] with{Person=orig};coin=Math.Max(0,coin-20);
                 Add("resume",e.Site,h.House,null,orig,20,$"{PersonName(w,orig)}が役に戻り、代わりを務めた{PersonName(w,e.Person2!.Value)}へ20貫を与えた",null,e.Id,e.Person2);

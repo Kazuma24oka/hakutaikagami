@@ -42,15 +42,31 @@ public static class BranchRoutes
     {
         var blocked=knownBlocked.ToHashSet(StringComparer.Ordinal);var distance=GraphNodes(w).ToDictionary(n=>n.Id,_=>long.MaxValue,StringComparer.Ordinal);
         if(!distance.ContainsKey(from)||!distance.ContainsKey(to))throw new InvalidDataException("Unknown graph node");
-        if(blocked.Any(id=>!GraphEdges(w).Any(e=>e.Id==id)))throw new InvalidDataException("Unknown blocked edge");
+        var edges=GraphEdges(w);var adjacent=Adjacent(edges);
+        if(blocked.Any(id=>!adjacent.Ids.Contains(id)))throw new InvalidDataException("Unknown blocked edge");
+        // 未訪問で距離の決まった地点を（距離・ID の順）に並べて先頭を取る。全地点をなめて並べ直すのと同じ順（S10）。
         distance[from]=0;var paths=new Dictionary<string,string[]>(StringComparer.Ordinal){{from,[]}};var visited=new HashSet<string>();
-        while(true){var current=distance.Where(p=>!visited.Contains(p.Key)&&p.Value<long.MaxValue).OrderBy(p=>p.Value).ThenBy(p=>p.Key,StringComparer.Ordinal).FirstOrDefault();
-            if(current.Key==null)throw new InvalidDataException("No known traversable path");if(current.Key==to)return paths[to];visited.Add(current.Key);
-            foreach(var e in GraphEdges(w).Where(e=>!blocked.Contains(e.Id)&&(e.From==current.Key||e.To==current.Key)).OrderBy(e=>e.Id,StringComparer.Ordinal)){
-                var next=e.From==current.Key?e.To:e.From;var d=checked(current.Value+(w!=null&&TravelWorld.Enabled(w)?TravelWorld.End(w,e,checked((departureAt??w.ElapsedSeconds)+current.Value),courier)-((departureAt??w.ElapsedSeconds)+current.Value):Duration(e,courier)));var path=paths[current.Key].Append(e.Id).ToArray();
-                if(d<distance[next]||d==distance[next]&&string.CompareOrdinal(string.Join("/",path),string.Join("/",paths.GetValueOrDefault(next,[])))<0){distance[next]=d;paths[next]=path;}}
+        var open=new SortedSet<(long D,string Id)>(Comparer<(long D,string Id)>.Create((a,b)=>a.D!=b.D?a.D.CompareTo(b.D):string.CompareOrdinal(a.Id,b.Id))){(0,from)};
+        bool travel=w!=null&&TravelWorld.Enabled(w);
+        while(true){
+            if(open.Count==0)throw new InvalidDataException("No known traversable path");
+            var current=open.Min;open.Remove(current);if(current.Id==to)return paths[to];visited.Add(current.Id);
+            foreach(var e in adjacent.By.GetValueOrDefault(current.Id,[])){
+                if(blocked.Contains(e.Id))continue;
+                var next=e.From==current.Id?e.To:e.From;var d=checked(current.D+(travel?TravelWorld.End(w!,e,checked((departureAt??w!.ElapsedSeconds)+current.D),courier)-((departureAt??w!.ElapsedSeconds)+current.D):Duration(e,courier)));var path=paths[current.Id].Append(e.Id).ToArray();
+                if(d<distance[next]||d==distance[next]&&string.CompareOrdinal(string.Join("/",path),string.Join("/",paths.GetValueOrDefault(next,[])))<0){
+                    if(!visited.Contains(next)){if(distance[next]<long.MaxValue)open.Remove((distance[next],next));open.Add((d,next));}
+                    distance[next]=d;paths[next]=path;}}
         }
     }
+    sealed record Adjacency(Dictionary<string,BranchEdge[]> By,HashSet<string> Ids);
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BranchEdge[],Adjacency> adjacency=new();
+    // 地点ごとに、つながる道を ID の順に並べた表（道の表ごとに一度だけ作る）。
+    static Adjacency Adjacent(BranchEdge[] edges)=>adjacency.GetValue(edges,es=>{
+        var by=new Dictionary<string,List<BranchEdge>>(StringComparer.Ordinal);
+        void Add(string node,BranchEdge e){if(!by.TryGetValue(node,out var l))by[node]=l=[];l.Add(e);}
+        foreach(var e in es){Add(e.From,e);if(e.To!=e.From)Add(e.To,e);}
+        return new(by.ToDictionary(p=>p.Key,p=>p.Value.OrderBy(e=>e.Id,StringComparer.Ordinal).ToArray(),StringComparer.Ordinal),es.Select(e=>e.Id).ToHashSet(StringComparer.Ordinal));});
     static int Duration(BranchEdge e,bool courier=false)=>checked((int)((e.LengthMm+(courier?e.CourierSpeed:e.FootSpeed)-1)/(courier?e.CourierSpeed:e.FootSpeed)));
     public static long Duration(IEnumerable<string> path,bool courier=false,ContractWorld? w=null)=>path.Sum(id=>(long)Duration(GraphEdges(w).Single(e=>e.Id==id),courier));
     public static JourneyLeg[] Schedule(string from,string[] path,long at,ContractWorld? w=null,bool personal=false,long? knownAt=null,long? knownRevision=null)

@@ -15,7 +15,7 @@ public static class MortalSuccession
     // 危篤：重さ3の傷病の峠（生死が決まる時）の前。
     public static bool Critical(ContractWorld w,EntityId person,long at)=>HealthMortality.Enabled(w)&&PersonalHealth.Active(w,person,at).Any(c=>c.Severity>=3&&at<HealthMortality.CrisisAt(c));
     // 意思表示不能：判断を要する政務ができない状態（重い病・重さ3の傷病・診療の最中）。
-    public static bool Incapacitated(ContractWorld w,EntityId person,long at)=>ClinicalHealth.Enabled(w)&&!PersonalHealth.Can(w,person,HealthLimit.Judgment,at);
+    public static bool Incapacitated(ContractWorld w,EntityId person,long at)=>ClinicalHealth.Enabled(w)&&!PersonalHealth.CanJudge(w,person,at);
 
     // 死亡の原本（自然死・傷病死・処断と、暗殺）。
     public static IEnumerable<(EntityId Person,long At,long Revision)> Deaths(ContractWorld w)=>

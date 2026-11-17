@@ -15,19 +15,28 @@ public static class StrategyDefections
     const long Day=86400;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
     internal static bool Left(StrategyState s,string house,string overlord)=>(s.Defections??[]).Any(d=>d.House.Value==house&&d.From.Value==overlord);
-    internal static bool Shaken(StrategyState s,string house,long now)=>
-        (s.Successions??[]).Any(x=>x.House.Value==house&&x.At>now-365*Day)||
-        s.Outcomes.Where(o=>o.At>now-90*Day).Any(o=>s.Campaigns.Single(c=>c.Id==o.Campaign) is var c&&(c.Attacker.Value==house&&!o.Captured||c.Defender.Value==house&&o.Captured));
+    internal static bool Shaken(StrategyState s,string house,long now)=>ShakenHouses(s,now).Contains(house);
+    // 動揺した家（一年以内の代替わり・90日以内の負け）を一度に数える。家ごとに出陣をなめ直さない（S10）。
+    internal static HashSet<string> ShakenHouses(StrategyState s,long now)
+    {
+        var set=(s.Successions??[]).Where(x=>x.At>now-365*Day).Select(x=>x.House.Value).ToHashSet(StringComparer.Ordinal);
+        var recent=s.Outcomes.Where(o=>o.At>now-90*Day).ToArray();if(recent.Length==0)return set;
+        var byId=s.Campaigns.ToDictionary(c=>c.Id);
+        foreach(var o in recent){var c=byId[o.Campaign];if(o.Captured)set.Add(c.Defender.Value);else set.Add(c.Attacker.Value);}
+        return set;
+    }
     internal static StrategyState Decide(ContractWorld w,StrategyState s,Dictionary<string,long> power,DateTime date)
     {
         long now=w.ElapsedSeconds;var rows=(s.Defections??[]).ToList();var pending=(s.Duties??[]).ToList();
         var factions=w.NewGame!.Start.Factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
-        bool PlayerHouse(string f)=>HouseSuccession.Head(w,new(f))==w.PlayerControl||w.NewGame.Start.People.SingleOrDefault(p=>p.Id==w.PlayerControl.Value)?.Faction==f;
-        bool Adult(string f)=>w.Characters.SingleOrDefault(c=>c.Id==HouseSuccession.Head(w,new(f)))?.Life==LifeState.Adult;
+        var playerFaction=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==w.PlayerControl.Value)?.Faction;var shaken=ShakenHouses(s,now);
+        var life=w.Characters.ToDictionary(c=>c.Id,c=>c.Life);
+        bool PlayerHouse(string f)=>playerFaction==f||HouseSuccession.Head(w,new(f))==w.PlayerControl;
+        bool Adult(string f)=>life.TryGetValue(HouseSuccession.Head(w,new(f)),out var l)&&l==LifeState.Adult;
         foreach(var house in factions.OrderBy(f=>f,StringComparer.Ordinal))
         {
             if(NationalStrategy.DbOverlord(w,house) is not {} overlord||!factions.Contains(overlord)||Left(s,house,overlord))continue;
-            if(PlayerHouse(house)||PlayerHouse(overlord)||!Adult(house)||power.GetValueOrDefault(house)==0||!Shaken(s,overlord,now))continue;
+            if(PlayerHouse(house)||PlayerHouse(overlord)||!Adult(house)||power.GetValueOrDefault(house)==0||!shaken.Contains(overlord))continue;
             if(power.GetValueOrDefault(house)*2<power.GetValueOrDefault(overlord,50))continue;
             // 守護の実権（一覧の CentralStanding）：その国の守護に従う家は離反しない。
             if(w.NewGame.Start.Factions.FirstOrDefault(f=>f.Id==house)?.Home is {} home&&CentralStanding.IsShugo(w,overlord,CentralStanding.ProvinceOf(new(home)),now))continue;

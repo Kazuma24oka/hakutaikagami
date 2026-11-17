@@ -26,10 +26,10 @@ public static class OfficerBattleHealth
     {
         if(ContractJson.CanonicalHash(step.OfficerWounds)!=ContractJson.CanonicalHash(Resolve(context,result)))throw new InvalidDataException("交戦時の武将の負傷を再現できません");
     }
-    internal static IEnumerable<HealthCondition> Conditions(ContractWorld w)
+    internal static IEnumerable<HealthCondition> Conditions(ContractWorld w,EntityId? only=null)
     {
         if(!Enabled(w))yield break;
-        foreach(var x in (w.WorldClashes?.Steps??[]).SelectMany(s=>s.OfficerWounds??[]))
+        foreach(var x in (w.WorldClashes?.Steps??[]).SelectMany(s=>s.OfficerWounds??[]).Where(x=>only==null||x.Person==only))
         {
             string source=FormattableString.Invariant($"battle-health-v2/{x.Person.Value}/{x.At}");
             long days=x.Severity switch{1=>3,2=>14,_=>45};

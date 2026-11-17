@@ -420,8 +420,9 @@ public static class NationalStrategy
         var date=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds);
         var successions=Succeed(w,ref s);s=s with{Successions=successions};w.Strategy=s;
         var outcomes=s.Outcomes.ToList();int settledBefore=outcomes.Count;
-        // 前の月の出陣を決着させる。
-        foreach(var c in s.Campaigns.Where(c=>!s.Outcomes.Any(o=>o.Campaign==c.Id)&&c.At<w.ElapsedSeconds))
+        // 前の月の出陣を決着させる。知らせの書状はまとめて一度に道を結ぶ（S10）。
+        var settled=s.Outcomes.Select(o=>o.Campaign).ToHashSet();
+        using(RegionalCampaign.Batch(w))foreach(var c in s.Campaigns.Where(c=>!settled.Contains(c.Id)&&c.At<w.ElapsedSeconds))
         {
             if(c.Real==true&&RealArmy(w,c) is {} army&&!NpcArmies.ReturnedAt(w,army,w.ElapsedSeconds,w.CommitSequence))continue; // 実際の軍勢は着いてから決着する（ResolveArmies）
             outcomes.Add(Settle(w,s,outcomes,c));
@@ -511,8 +512,8 @@ public static class NationalStrategy
         w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions};
         // 婚姻による同盟（一覧の Diplomacy2）：今月結んだ同盟に、両家の独身の成人の男女の婚姻を添える。
         if(Diplomacy2.On(w)){var wed=(w.Strategy.Marriages??[]).ToList();foreach(var p in pacts.Where(p=>p.Kind=="alliance"&&p.From==w.ElapsedSeconds&&p.Broken==null&&!wed.Any(m=>m.Pact==p.Id))){w.Strategy=w.Strategy with{Marriages=wed.ToArray()};if(Diplomacy2.MarryFor(w,p) is {} m)wed.Add(m);}if(wed.Count>0)w.Strategy=w.Strategy with{Marriages=wed.ToArray()};}
-        foreach(var c in formed){CoalitionLetters(w,c);InviteThePlayer(w,c);}
-        foreach(var (pact,sender) in pactLetters)PactLetters(w,pact,sender);
+        using(RegionalCampaign.Batch(w)){foreach(var c in formed){CoalitionLetters(w,c);InviteThePlayer(w,c);}
+        foreach(var (pact,sender) in pactLetters)PactLetters(w,pact,sender);}
     }
     // 実際の軍勢の出陣：敵対の表明の ID は出陣の ID から決まり、NPC の軍はその表明を根拠に出る（軍の目的の Claim.Declaration）。表明は30日。
     public const int RealDays=30;

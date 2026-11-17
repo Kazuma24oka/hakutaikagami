@@ -84,9 +84,15 @@ public static partial class RegionalCampaign
         w.Couriers=w.Couriers! with{Missions=w.Couriers.Missions.Where(x=>x.Attempt!=c.Attempt).Append(c).ToArray()};
         w.Messaging.Attempts=w.Messaging.Attempts.Select(a=>a.Id==c.Attempt?a with{DueAt=c.ReadyAt,FailOnArrival=a.FailOnArrival||c.Obstructed}:a).ToArray();
     }
+    // 続けて送る書状をまとめて一度に結ぶ（S10）。送った順に結ぶので、一通ごとに結ぶのと同じ結果になる。
+    [ThreadStatic] static int batching;[ThreadStatic] static bool pendingBind;
+    internal sealed class BindBatch(ContractWorld w):IDisposable{public void Dispose(){if(--batching==0&&pendingBind){pendingBind=false;Bind(w);}}}
+    internal static BindBatch Batch(ContractWorld w){batching++;return new(w);}
     public static void Bind(ContractWorld w)
     {
-        foreach(var a in w.Messaging.Attempts.Where(a=>!w.Couriers!.Missions.Any(c=>c.Attempt==a.Id)).ToArray()){
+        if(batching>0){pendingBind=true;return;}
+        var carried=w.Couriers!.Missions.Select(c=>c.Attempt).ToHashSet();
+        foreach(var a in w.Messaging.Attempts.Where(a=>!carried.Contains(a.Id)).ToArray()){
             if(RegionalBattle.Handles(w,a.MessageId)||NewGameMilitary.HandlesUnitMessage(w,a.MessageId)||NewGameMilitary.HandlesInternalAuthorityMessage(w,a.MessageId))continue;
             var m=w.Messaging.Messages.Single(m=>m.Id==a.MessageId);string destination=m.Kind=="delivery-failure"&&TrafficWorld.Enabled(w)?TrafficWorld.FailureAddress(w,m.Body):(NewGameWorld.Address(w,m)??RegionalWork.Address(w,m)??(TravelWorld.Enabled(w)&&m.SenderId==m.RecipientId?TravelWorld.SelfAddress(w,m.SenderId,a.SentAt):"castle"));long appointment=NewGameMilitary.RemoteAppointment(w,m)??FreightOperations.Appointment(w,m)??(a.SentAt+1);RoutePoint? origin=null;
             var t=w.Tasks.SingleOrDefault(t=>WorldSession.Child("message",t.Id,"order").Value==m.Id);

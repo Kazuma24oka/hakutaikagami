@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "3f99111ac8131d8e520442b3b565e491c7aeb55b7f951c432482bce31da19a88",
+    "Docs/Development/ProgressV1/estimate.json": "a17d7b718e6377948ccc1b84405f14828b97386690ceb57dd87298bf4b023832",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "6e86e7339d880287a34d9f49b55a58e2a309f4c6e4fe48688523a9f935f7a061",
-    "Scripts/check_approval_batch.py": "395495ed4c13e5051cd3343133489e79867a33a382a5d696652e1253dbccce32",
+    "Scripts/check_approval_batch.py": "a4ffb1ec0bad4b58da6310daeb76b6c39bac856817f63c8a6aff6f73aa57c85b",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -110,7 +110,7 @@
     "Tests/CastleAdministrationTests.cs": "fadfad6cb93590fefdd1b92652b788858e276c2089ebf6b22972b907db22fdf8",
     "Game/Scripts/NewGameRuntime.CastleAdministration.cs": "fd160f83de61813913e70b82b06660c40166bbc1b01d8271e10fbc5027c8de1f",
     "Game/Scripts/WorldClashProjectionCheck.cs": "7fee64fa5f818f439ef22b22816c240a1e4033eed0e301823cdeb304dee2ca0f",
-    "Core/Contracts/CastellanReports.cs": "fb31dbe718aba97a8c604d504cd02c3af8d429ddefddfdd870d87d939f2e9aea",
+    "Core/Contracts/CastellanReports.cs": "d29520485f05aac8b40f51b3c6a0945b9e708387d0ebe861ba29f09bc20c8f9a",
     "Tests/CastellanReportsTests.cs": "4102f7b623000459c0c6ea55252d70395df0e58a395093464b4a21fa7ec1943f",
     "Game/Scripts/NewGameRuntime.CastellanReports.cs": "63d266406daaffdbbe7720a62dbc7cde52cd4402dbf0f8f7e7fe48ca7558ed4d",
     "Docs/Design/CastleAdministrationV1/verification.json": "d745958e172dc5a5c940d3c78d35f4a691b36f00045849db25111eececa2d618",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "0556b58e1d42f5723d370fcbc898f2ed3ec9df6bc55a2e2143c5651db4ff98f6",
+    "Docs/Development/CURRENT_STAGE.md": "1c9a3359b9596a41a33efe10934155e684d34446c3e4950a5a3d3dd43ee12946",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
-    "Core/Contracts/NewGameWorld.cs": "238f98d35db591f59dae127318693751d4617039d43ee26512e6c8a39a68c391",
+    "Core/Contracts/NewGameWorld.cs": "57ebcd197b1bef705e091472365b6f1190bdd6d58b0421d4757d4f379ce779e0",
     "Core/Contracts/HouseSalary.cs": "546a379719d75a005be6ec06415ab1e0fa622044c2757954777f6730df79bd83",
     "Core/Contracts/HouseLogistics.cs": "4ff14fbf749ae4bd11e954ffa2d17bd3f5a44ca15867b821b770b6918de3ac0e",
     "Tests/HouseSuccessionTests.cs": "65edb5907e79afb95f93bd7059a857558affece68c595b7bd2cc94c5930c1df3",
@@ -183,7 +183,7 @@
     "Core/Contracts/TruceConfirmations.cs": "6365ef7eb1aad705c3eb0fc38869af89b32a95a40f536df25a8879b5ae858abd",
     "Core/Contracts/TruceConfirmations.ReportRetries.cs": "354423e7bc15c56ac9b6d861adab6f0df0f3098fde70e1fd2638d0d7bf7bbe85",
     "Core/Contracts/CourierRecovery.cs": "77d34edfc0198c258ca9170076dea4abfb59304db5c46e691fa20c8938419e31",
-    "Core/Contracts/WorldSession.cs": "d6d9b1197863c26973f0a424b6859db5cefab4b078b8acdf7ad310463eccabed",
+    "Core/Contracts/WorldSession.cs": "8a8ae61438ae44261d6b29590689c5d9ea4d2fef1ae1fc3f0d3dab2f04a57473",
     "Tests/TruceConfirmationTests.cs": "a55d38d096b4419952ffd60fef2b0b90dda03451bdc5fd9cf1717f5e5ff7248c",
     "Game/Scripts/NewGameRuntime.TruceConfirmations.cs": "02d321ac5b9b05f607e067119f45e6c2e5c57ff0151c10425066bf8304cc81d0",
     "Game/Scripts/NewGameRuntime.Mail.cs": "d8c7a817571f2cafd1ff2818be9e815c2668b81817fa7e06af2d67462e69b711",
@@ -311,7 +311,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v39.json": "b02330d69ede4625f6831df7d5323c84f307aa331b0bf8125866eedb6f15b917",
     "Scripts/verify_adult_marriage.py": "61430a9386fb68a645b2465fc5824ef8a49f21d9dc6cee90cfc8131596f765bd",
     "Core/Contracts/HostageCustody.cs": "eb863ab1390a858179148e9e333f99aa670f9a62345faeff1030efce5ffb22da",
-    "Core/Contracts/ContractValidation.cs": "40cad07252f60e06f0e9b687691d15b34c7ec89a553fc95491719a7871cfcbde",
+    "Core/Contracts/ContractValidation.cs": "06c8301d0ff83809085bf40b794b28b71670492b492cfa177c94a7cdea9a5346",
     "Tests/HostageCustodyTests.cs": "789842f58e12850257e5d66917a0dc844b1937bdaf64ed9ae92deb435d06c375",
     "Game/Scripts/NewGameRuntime.Custody.cs": "fc08734493cf5d52bfc3ab1b70027c78232cde325ea7093b4604b52dae20e00e",
     "Docs/Design/HostageCustodyV1/verification.json": "664a9e09185ec9c080c8d5e28f71bdeebcb925e1f18776f4455114775b84598a",
@@ -340,9 +340,9 @@
     "Scripts/verify_custody_food.py": "96a91b2ebe2c61080134361693913db342aa7cae1efbdf063ae1793d7ec442e6",
     "Core/Contracts/HostageCustody.Return.cs": "901e090cd365764af0771ac2fee55540b8bdc282c11a6766a471ef49ef070b4d",
     "Tests/CustodyReturnTests.cs": "3ca3d4b9d54d41bac7ce8e14e4a47d2734831a166e2319821ea3140495064917",
-    "Core/Contracts/BranchRoutes.cs": "a543afacabf18a3bdd57591a7e3fc24f599dfb8ee58bfbd853f2c913591bf1f0",
+    "Core/Contracts/BranchRoutes.cs": "6eb41e4309416be7380fbba155e3b37994db4c77b1602ea59f95111fa6212b31",
     "Core/Contracts/TravelWorld.cs": "2d37659400dbdbb1935952ae33001fcee427ec721f3d3de03fe45a09dbb8d8f3",
-    "Core/Contracts/RegionalCampaign.cs": "11f64e72f9966a36e9c7b5497ed5c56462d85db00f4833f47d9b7851da71424d",
+    "Core/Contracts/RegionalCampaign.cs": "c52fb59ba5b9774b3dad2ca56b5b699b4ac924bc11d24d38c6ce7435e6133e89",
     "Docs/Design/CustodyReturnV1/verification.json": "48640cfaf5a4bbc2cae3da58e37208b3b27ca1fb8584d45a1bdc98d126596614",
     "Core/Contracts/RegionalCampaign.NearbyNewGame.cs": "220897bf471491035f5cd151b0b94cb2e4899c281cb20f1468096a06195bbf7f",
     "Docs/Design/CustodyReturnV1/completion.json": "c1c3fed1dd55b7a2774c940c86e6ee97ffb4892bc79c09e3a478668f3c1e3a64",
@@ -455,7 +455,7 @@
     "Docs/Design/NpcJudgmentV1/pause.json": "533d42ee1dfc42ab44253e75fdf98c27d639f0e15298d32c16469d5a4b7b3af0",
     "Docs/Decisions/2026-11-05_CRITICAL_TEST_POLICY.md": "103494fd68d653bb79534a2fc514dcf2de66e7d5bb88f45e5b13152dbb431001",
     "Core/Contracts/NpcJudgment.cs": "f5f55adae98d7dae0921493116186324b2859d8f2501aa6c30464112ac62a5d8",
-    "Core/Contracts/NpcLocalOffers.cs": "3c41b690834f282d37e50dc9187a7543aa564cf5aa01d791b594060f9bc1b8c0",
+    "Core/Contracts/NpcLocalOffers.cs": "8ec022420cb85e82d8c8d2291191e25c4de5873c4d7b049cefe64aecf64143c6",
     "Core/Contracts/NpcChoiceRanking.cs": "2abc334f202d2e09c57199f812e68e9bb2851760091a4ac9b2c47906afbf9579",
     "Core/Contracts/NpcAspirationProfiles.cs": "2fe04e5403a4a1e4603e53d209d6fc3d159d0aeb1fca9188bfcd5f401596f5ff",
     "Tests/NpcJudgmentTests.cs": "dcb4cb5dc557ec2d29d5888278c6d6b0ad65333d7839b5031f08a8c47f36e2f2",
@@ -796,7 +796,7 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "3c2b44a0367a72f21fa8b47b4ab2e2857fe63817a745317a8b17993c34230cf9",
+    "Docs/Development/ProgressV1/index.html": "c1deb2add2e85bb0b506da162a9ebff331c7b76fcc77ef2e5141a1a6c131d97f",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
     "Core/Contracts/NationalNameHistory.cs": "9983b8d0e252a277381c26bd78fcc8647d7c4176289dc382a94a1d7d22c41ad8",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
@@ -919,7 +919,7 @@
     {
       "id": "BD-04",
       "status": "normal",
-      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。 登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変）。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 v111：全国移動網に川・湖沼・山の移動負荷を反映。 全国の開始で有効にする仕組みの一覧を新規開始のときに保存し、保存済みの世界は変えない。NPCの日課の区切りと判断の入力を並べて求め、落ち着いた2時間の進みを14.2秒から10.5秒に（同じ世界を確認）。多数の家の一斉の敵対は1時間あたり約130秒で、製品の性能の受入は残件。",
+      "existing": "全国概略と地域表示、合成人物1000人などの限定負荷試作がある。 登録24人を含む活動29 NPCを複数拠点の共通任務で実測。 同じ29 NPC場面の単独3回測定で中央値6404ms→5558ms（行動不変）。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 v111：全国移動網に川・湖沼・山の移動負荷を反映。 全国の開始で有効にする仕組みの一覧を新規開始のときに保存し、保存済みの世界は変えない。NPCの日課の区切りと判断の入力を並べて求め、落ち着いた2時間の進みを14.2秒から10.5秒に（同じ世界を確認）。多数の家の一斉の敵対は1時間あたり約130秒で、製品の性能の受入は残件。 2026-11-17（S10）：全国の1日を46.7秒、家の戦略の月の計算を平均0.88秒に（答えを変えずに、離反・道・書状・療養の判断を表で引く形に）。大きな世界（3000人・1000拠点・500軍）の1時間と描画の速さ、多数の家の一斉の敵対の受入は S14。",
       "remaining": "3000活動人物/1000拠点/500軍と実機FPSの受入。 統合案で追加：§20 W1 全国NPCの判断・W4 遠方の合戦の簡略計算・§19 T6 まとめて進める計算の負荷。 2026-11-06採用：全国の子の発達・教育も共通時計と主要結果を保ち、遠方のまとめ処理による経験/費用の重複を防ぐ。性能の確認は実装時の残件。",
       "evidence": [
         "Core/Contracts/NpcContinuing.cs",
@@ -956,7 +956,8 @@
         "Docs/Design/NationalTerrainRoutesV1/README.md",
         "Docs/Design/NationalTerrainRoutesV1/completion.json",
         "Core/Contracts/NationalSystems.cs",
-        "Tests/WorkExperienceTests.cs"
+        "Tests/WorkExperienceTests.cs",
+        "Docs/Design/NationalScaleV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1478,7 +1479,7 @@
     {
       "id": "BD-17",
       "status": "normal",
-      "existing": "同じ軍勢と本人を共通陸路の実位置へ接続し、復旧前後の実Node3Dを照合。到着先の集合地から局所布陣へ連続する。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。",
+      "existing": "同じ軍勢と本人を共通陸路の実位置へ接続し、復旧前後の実Node3Dを照合。到着先の集合地から局所布陣へ連続する。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。 2026-11-17（S10）：大規模世界の描画の最適化は S14（S10 では描画を変えていない）。",
       "remaining": "全国地形LOD/起伏精細化と海域詳細、大規模世界の描画最適化。 統合案で追加：天候（雨・霧）の描画・城の区画（堀・土塁・石垣・門・櫓）・寺社の建物などの風景の素材。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
@@ -1502,7 +1503,8 @@
         "Tests/ContinuousWorldTests.cs",
         "Tests/JapanGeographyTests.cs",
         "Docs/Design/RegionalWeatherV1/README.md",
-        "Docs/Design/RegionalWeatherV1/verification.json"
+        "Docs/Design/RegionalWeatherV1/verification.json",
+        "Docs/Design/NationalScaleV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1555,7 +1557,7 @@
     {
       "id": "BD-19",
       "status": "normal",
-      "existing": "担当家臣が本人と独立した共通陸路を移動し、停止/再開/待機/帰還の実位置を保持。補給担当者も同じGodot座標へ投影する。 2026-11-17（S08）：全国の家の水軍と海を渡る出陣・海路の封鎖、交易船の航路と難破・瀬戸内の通行銭と略奪、隊商の道と境での護衛の引継ぎ。全国規模の速さの受入は S10。",
+      "existing": "担当家臣が本人と独立した共通陸路を移動し、停止/再開/待機/帰還の実位置を保持。補給担当者も同じGodot座標へ投影する。 2026-11-17（S08）：全国の家の水軍と海を渡る出陣・海路の封鎖、交易船の航路と難破・瀬戸内の通行銭と略奪、隊商の道と境での護衛の引継ぎ。全国規模の速さの受入は S10。 2026-11-17（S10）：全国の拠点どうしの道の計画を1回2.26ミリ秒に（優先度つきの並び、答えは同じ）。",
       "remaining": "軍勢の海上輸送、一般の多荷種隊商/道中引継ぎと全国規模の性能受入。 統合案で追加：§26 Z2 水路と軍船の航路・Z7 交易船の航路。",
       "evidence": [
         "Core/Contracts/RoadConvoy.cs",
@@ -1588,7 +1590,8 @@
         "Tests/VoyageExpenseTests.cs",
         "Game/Scripts/NewGameRuntime.VoyageExpense.cs",
         "Docs/Design/TravelExpenseV1/verification.json",
-        "Docs/Design/Logistics2V1/verification.json"
+        "Docs/Design/Logistics2V1/verification.json",
+        "Docs/Design/NationalScaleV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1756,7 +1759,7 @@
     {
       "id": "BD-23",
       "status": "normal",
-      "existing": "城主任命原本と結び付いた現地保管報告を実配送し、到達と開封を分離。既知不達後のみ同じ時点の観測を三通まで再送し、ID衝突と過去時刻偽装を拒否。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。",
+      "existing": "城主任命原本と結び付いた現地保管報告を実配送し、到達と開封を分離。既知不達後のみ同じ時点の観測を三通まで再送し、ID衝突と過去時刻偽装を拒否。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 2026-11-17（S10）：NPCの城主の報告の不達後の自動の再送（一覧の CastellanResend）と、全国の書状の負荷の測り。全種書状の統一画面は S11。",
       "remaining": "全種書状の統一画面と全国負荷、NPC城主報告の自動再送。 統合案で追加：§19 日の速度・次の出来事まで・自動の停止と減速。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
@@ -1799,7 +1802,8 @@
         "Tests/WorldTimeTravelTests.cs",
         "Game/Scripts/NewGameRuntime.WorldTime.cs",
         "Game/Scripts/WorldTimeCheck.cs",
-        "Docs/Design/WorldTimeV1/verification.json"
+        "Docs/Design/WorldTimeV1/verification.json",
+        "Docs/Design/NationalScaleV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2

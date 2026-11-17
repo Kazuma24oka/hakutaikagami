@@ -4,6 +4,15 @@ namespace HakutaiKagami.Core.Contracts;
 // 現地で本人が目にできる相手へ相談する。依頼・配送・承諾・仕事は既存の任務を使う。
 public static class NpcLocalOffers
 {
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<RequestReceipt[],HashSet<EntityId>> offered=new();
+    // 依頼・書状・仕事の一覧が変わらない間に使い回す表（S10）。一覧は書き足すときに新しい配列に替わる。
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<RequestReceipt[],HashSet<string>> offerIds=new();
+    internal static HashSet<string> OfferIds(ContractWorld w)=>offerIds.GetValue(w.Requests,rs=>rs.Where(r=>IsOffer(w,r.Intent)).Select(r=>r.Id.Value).ToHashSet(StringComparer.Ordinal));
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<HakutaiKagami.Core.Messaging.MessageEnvelope[],ILookup<string,HakutaiKagami.Core.Messaging.MessageEnvelope>> offerMessages=new();
+    internal static IEnumerable<HakutaiKagami.Core.Messaging.MessageEnvelope> OfferMessagesTo(ContractWorld w,string recipient)=>offerMessages.GetValue(w.Messaging.Messages,ms=>ms.Where(m=>m.Kind is "contract-order" or "assessment-notice").ToLookup(m=>m.RecipientId,StringComparer.Ordinal))[recipient];
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<TaskState[],ILookup<EntityId,TaskState>> tasksBy=new();
+    internal static IEnumerable<TaskState> TasksOf(ContractWorld w,EntityId executor)=>tasksBy.GetValue(w.Tasks,ts=>ts.ToLookup(t=>t.Executor))[executor];
+    internal static HashSet<EntityId> OfferedTo(ContractWorld w)=>offered.GetValue(w.Requests,rs=>rs.Where(r=>IsOffer(w,r.Intent)).Select(r=>r.Intent.Executor).ToHashSet());
     public static bool IsOffer(ContractWorld w,Intent i)=>NpcJudgment.Enabled(w)&&i.Actor!=i.Executor&&i.Action==ActionKind.Inspect&&i.RequestId.Value.StartsWith("request:npc-routine/",StringComparison.Ordinal);
     internal static bool AvailableAt(ContractWorld w,EntityId actor,long at,long revision)=>!HostageCustody.HeldAt(w,actor,at,revision+1)&&!FieldConvoy.Busy(w,actor,at,revision+1)&&!NpcFreight.Busy(w,actor,at,revision+1)&&!PersonalCompanions.Occupied(w,actor,at,revision)&&!NpcArmies.CommanderBusyAt(w,actor,at,revision);
     internal static int InspectionReference(ContractWorld w, EntityId issuer, EntityId worker, long at)
@@ -65,17 +74,19 @@ public sealed partial class WorldSession
         // プレイヤーの開封・承諾は本人の操作に残す。
         if(actor==state.PlayerControl)return;
         // 自分が頼まれた検分（依頼の担い手が自分）がなければ、届く書状も仕事もない。全員の書状を毎回見直さない。
-        if(!state.Requests.Any(r=>r.Intent.Executor==actor&&NpcLocalOffers.IsOffer(state,r.Intent)))return;
-        var offers=state.Requests.Where(r=>NpcLocalOffers.IsOffer(state,r.Intent)).Select(r=>r.Id.Value).ToHashSet(StringComparer.Ordinal); // 検分の依頼の ID（1回だけ集める）
-        foreach(var message in state.Messaging.Messages.Where(m=>m.RecipientId==actor.Value&&offers.Contains(m.CorrelationId)&&m.Kind is "contract-order" or "assessment-notice").OrderBy(m=>m.CreatedAt).ThenBy(m=>m.Id,StringComparer.Ordinal).ToArray()){
+        // 依頼の一覧が変わらない間は、検分を頼まれている人の表を一度だけ作って使う（S10：人ごとに全部の依頼をなめない）。
+        if(!NpcLocalOffers.OfferedTo(state).Contains(actor))return;
+        var offers=NpcLocalOffers.OfferIds(state); // 検分の依頼の ID（依頼の一覧が変わらない間は1回だけ集める）
+        foreach(var message in NpcLocalOffers.OfferMessagesTo(state,actor.Value).Where(m=>offers.Contains(m.CorrelationId)).OrderBy(m=>m.CreatedAt).ThenBy(m=>m.Id,StringComparer.Ordinal).ToArray()){
             if(!MessageFlow.Knows(state.Messaging,message.Id,actor.Value)&&state.Messaging.Attempts.Any(a=>a.MessageId==message.Id&&a.ReceiverId==actor.Value&&a.Status==AttemptStatus.Delivered))Open(actor,new(message.Id),Revision);
         }
-        foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&t.Agreement==AgreementPhase.AwaitingAssent&&offers.Contains(t.RequestId.Value)).ToArray()){
+        var mine=NpcLocalOffers.TasksOf(state,actor);
+        foreach(var task in mine.Where(t=>t.Agreement==AgreementPhase.AwaitingAssent&&offers.Contains(t.RequestId.Value)).ToArray()){
             bool free=!state.Tasks.Any(t=>t.Id!=task.Id&&t.Executor==actor&&!Terminal(t));
             bool accept=free&&NpcLocalOffers.AvailableAt(state,actor,state.ElapsedSeconds,state.CommitSequence)&&RegionalCampaign.RoadActorPointAt(state,actor,state.ElapsedSeconds)==BranchRoutes.GraphNodes(state).Single(n=>RegionalCampaign.Site(n.Id)==task.Scope).Position&&CharacterRelations.DiagnosticTrait(state,actor,SocialTrait.Duty)+CharacterRelations.DiagnosticTrait(state,actor,SocialTrait.GainSeeking)>=70;
             Assent(task.Id,actor,accept,Revision);
         }
-        foreach(var task in state.Tasks.Where(t=>t.Executor==actor&&offers.Contains(t.RequestId.Value)).ToArray())
+        foreach(var task in NpcLocalOffers.TasksOf(state,actor).Where(t=>offers.Contains(t.RequestId.Value)).ToArray())
             if(NewGameWork.CanRequest(this,task.Id,actor,state))CollectWorkPayment(new("payment:npc-offer/"+task.Id.Value.Replace(':','/')),task.Id,actor,Revision);
     }
 }

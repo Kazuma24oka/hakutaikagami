@@ -55,12 +55,13 @@ public static class PersonalHealth
     };
 
     // 賊との接触が終わった時点の負傷。部位は接触と人物から固定する。
-    static IEnumerable<HealthCondition> Injuries(ContractWorld w)
+    // only：その人の分だけを作る（ほかの人の傷の ID を作らない。S10）。
+    static IEnumerable<HealthCondition> Injuries(ContractWorld w,EntityId? only=null)
     {
         foreach(var e in w.Bandits?.Encounters??[])
         {
             if(e.Phase is "選択待ち" or "交戦中")continue;
-            foreach(var p in e.People.Where(p=>p.Side==0))
+            foreach(var p in e.People.Where(p=>p.Side==0&&(only==null||p.Id==only)))
             {
                 var first=e.Initial.SingleOrDefault(x=>x.Id==p.Id);if(first==null)continue;
                 int loss=first.Health-p.Health;if(loss<=0)continue;
@@ -103,7 +104,7 @@ public static class PersonalHealth
     public static HealthCondition[] Conditions(ContractWorld w,EntityId person,long until)
     {
         if(!Enabled(w))return [];
-        var rows=Injuries(w).Concat(OfficerBattleHealth.Conditions(w)).Where(c=>c.Person==person&&c.OnsetAt<=until).ToList();
+        var rows=Injuries(w,person).Concat(OfficerBattleHealth.Conditions(w,person)).Where(c=>c.Person==person&&c.OnsetAt<=until).ToList();
         for(long k=0;k<=until/Window;k++)if(Illness(w,person,k) is {} c&&c.OnsetAt<=until)rows.Add(c);
         return rows.OrderBy(c=>c.OnsetAt).ThenBy(c=>c.Id.Value,StringComparer.Ordinal).ToArray();
     }
@@ -123,12 +124,18 @@ public static class PersonalHealth
     // 手当の後の残りの経過は、医術0で 3/5、医術50で 1/2、医術100で 2/5。病人は移らず、その拠点で頼める人に頼む。
     public const int DoctorSkill=30;
     static bool HouseCare(ContractWorld w)=>NationalSystems.On(w,"NpcHouseCare")&&CharacterDevelopment.Skills32(w);
+    sealed record MemberIndex(ILookup<EntityId,TimedRelation> BySubject,ILookup<EntityId,TimedRelation> ByTarget);
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<TimedRelation[],MemberIndex> memberIndex=new();
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<CharacterState[],HashSet<EntityId>> adultIndex=new();
     internal static EntityId HouseCarer(ContractWorld w,EntityId patient,EntityId site,long at)
     {
         if(!HouseCare(w))return patient;
         bool Active(TimedRelation r)=>r.From<=at&&at<r.Until;
-        var houses=w.Memberships.Where(m=>m.Subject==patient&&Active(m)).Select(m=>m.Target).ToHashSet();
-        var kin=w.Memberships.Where(m=>houses.Contains(m.Target)&&Active(m)&&m.Subject!=patient).Select(m=>m.Subject).Distinct().Where(p=>w.Characters.Any(c=>c.Id==p&&c.Life==LifeState.Adult)&&PersonalCompanions.PhysicalSiteAt(w,p,at,0)==site);
+        // 所属と成人の表は世界の配列ごとに一度だけ作る。最後に技能・本人・ID で並べ直すので、引く順は答えを変えない（S10）。
+        var (bySubject,byTarget)=memberIndex.GetValue(w.Memberships,ms=>new(ms.ToLookup(m=>m.Subject),ms.ToLookup(m=>m.Target)));
+        var adults=adultIndex.GetValue(w.Characters,cs=>cs.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id).ToHashSet());
+        var houses=bySubject[patient].Where(Active).Select(m=>m.Target).ToHashSet();
+        var kin=houses.SelectMany(h=>byTarget[h]).Where(m=>Active(m)&&m.Subject!=patient).Select(m=>m.Subject).Distinct().Where(p=>adults.Contains(p)&&PersonalCompanions.PhysicalSiteAt(w,p,at,0)==site);
         // 医者を頼む（一覧の NpcDoctor）：同じ拠点にいる、家の外の医術30以上の成人も手当を頼める相手に入る。
         if(NationalSystems.On(w,"NpcDoctor"))
         {
@@ -165,6 +172,8 @@ public static class PersonalHealth
     public static HealthLimit[] Limits(ContractWorld w,EntityId person,long at)=>
         Active(w,person,at).SelectMany(c=>LimitsOf(c).Concat(ClinicalHealth.Enabled(w)&&c.Severity>=3?[HealthLimit.Judgment]:Array.Empty<HealthLimit>())).Concat(ClinicalHealth.Fatigue(w,person,at)>=80?[HealthLimit.Practice]:Array.Empty<HealthLimit>()).Concat(ClinicalHealth.Fatigue(w,person,at)>=95?[HealthLimit.Weapon]:Array.Empty<HealthLimit>()).Concat(ClinicalHealth.Busy(w,person,at)?[HealthLimit.Travel,HealthLimit.Weapon,HealthLimit.Practice,HealthLimit.Judgment]:Array.Empty<HealthLimit>()).Distinct().Order().ToArray();
     public static bool Can(ContractWorld w,EntityId person,HealthLimit limit,long at)=>!Enabled(w)||!Limits(w,person,at).Contains(limit);
+    // 判断の制限だけを調べる（疲れの計算を省く。Limits と同じ答え。S10）。
+    public static bool CanJudge(ContractWorld w,EntityId person,long at)=>!Enabled(w)||!(Active(w,person,at).Any(c=>LimitsOf(c).Contains(HealthLimit.Judgment)||ClinicalHealth.Enabled(w)&&c.Severity>=3)||ClinicalHealth.Busy(w,person,at));
     static HealthLimit? LimitFor(ActionKind a)=>a switch{ActionKind.Move or ActionKind.Inspect=>HealthLimit.Travel,ActionKind.Train=>HealthLimit.Practice,_=>null};
     public static string? Blocked(ContractWorld w,Intent i)=>(i.Executor==w.PlayerControl||ClinicalHealth.Enabled(w))&&LimitFor(i.Action) is {} l&&!Can(w,i.Executor,l,w.ElapsedSeconds)?Reason(l):null;
     public static string Reason(HealthLimit l)=>l switch

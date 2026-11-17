@@ -198,7 +198,9 @@ public static partial class NewGameWorld
         return request!=null&&request.Intent.Actor!=request.Intent.Executor?Node(request.Intent.Scope.Value):null;
     }
     static bool Same<T>(T a,T b)=>ContractJson.CanonicalHash(a)==ContractJson.CanonicalHash(b);
-    public static void Validate(ContractWorld w)
+    public static void Validate(ContractWorld w)=>Validate(w,null);
+    // trustedPrior：直前に確かめた状態。そこから変わっていない先頭の依頼は確かめ直さない（S10。保存の読み込みでは全件）。
+    internal static void Validate(ContractWorld w,ContractWorld? trustedPrior)
     {
         if(!Enabled(w)){Need(w.NewGame==null,"他の開始に新規ゲーム定義を混在できません");return;}
         NationalDistrictControl.Validate(w);
@@ -211,7 +213,8 @@ public static partial class NewGameWorld
         // 人物ごとに一覧をなめない（同じ ID が複数あれば今までどおり Single で失敗する）。
         var characters=w.Characters.ToLookup(x=>x.Id.Value,StringComparer.Ordinal);var locations=w.Locations.ToLookup(l=>l.Actor);var travelling=w.Branches?.Journeys.Select(j=>j.Actor).ToHashSet();
         foreach(var p in d.Start.People){var c=characters[p.Id].Single();Need(c.AppearanceId==projection.People[p.Id].Appearance&&c.Life==(Assassination.DeadAt(w,c.Id,w.ElapsedSeconds,w.CommitSequence)?LifeState.Dead:FamilyKin.LifeAt(d,p,w.ElapsedSeconds)),"人物の外見・成人資格が一致しません");if(!(ControlSuccession.EverPlayed(w,c.Id)&&NewGameMilitary.Deployed(w))&&!travelling!.Contains(c.Id)&&!FieldConvoy.Controls(w,c.Id,w.ElapsedSeconds)&&!HostageCustody.HasReturnHistory(w,c.Id))Need(locations[c.Id].Single().Site==new EntityId(p.Site),"移動記録なしに所在を変更できません");}
-        foreach(var r in w.Requests)ValidateOrderAt(w,r.Intent,r.CreatedAt);
+        int trusted=ContractValidation.TrustedPrefix(trustedPrior?.Requests,w.Requests);
+        for(int n=trusted;n<w.Requests.Length;n++){var r=w.Requests[n];ValidateOrderAt(w,r.Intent,r.CreatedAt,r.CommitSequence);}
     }
     public static Intent Inspect(ContractWorld w,string id)=>InspectFor(w,w.PlayerControl,id,w.ElapsedSeconds);
     internal static Intent InspectFor(ContractWorld w,EntityId actor,string id,long at)=>new(new(id),actor,actor,w.Locations.Single(l=>l.Actor==actor).Site??throw new InvalidDataException("到着してから点検してください"),ActionKind.Inspect,null,null,0,null,new(DeadlineCriterion.Completion,at+60,false,null,at+60),at,1,4,1,false,TaskKind.BindingOrder);
@@ -224,12 +227,12 @@ public static partial class NewGameWorld
         if(i.Actor!=i.Executor){Need(i==LocalWork(w,i.RequestId.Value),"現地で相談した任意依頼の条件が違います");return;}
         Need(i.Action==ActionKind.Inspect && i==Inspect(w,i.RequestId.Value),"本人の移動・到着した拠点の自己点検だけを扱います");
     }
-    static void ValidateOrderAt(ContractWorld w,Intent i,long at)
+    static void ValidateOrderAt(ContractWorld w,Intent i,long at,long requestRevision)
     {
-        using var _cc=ControlContext.At(w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence);
-        if(NpcLocalOffers.IsOffer(w,i)){NpcLocalOffers.Validate(w,i,at,w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence-1);return;}
+        using var _cc=ControlContext.At(requestRevision);
+        if(NpcLocalOffers.IsOffer(w,i)){NpcLocalOffers.Validate(w,i,at,requestRevision-1);return;}
         if(i.Action==ActionKind.Train){CharacterDevelopment.ValidatePractice(w,i,at,false);return;}if(InformationSchemes.IsTrip(w,i)){InformationSchemes.ValidateTrip(w,i);return;}if(SocialWorld.IsCourierTrip(w,i)){SocialWorld.ValidateCourier(w,i);return;}if(ShogunExile.IsJourney(w,i)||MusterNotices.IsJourney(w,i)||RestorationEscort.IsHomeJourney(w,i)||GuardJobs.IsTrip(w,i)||PersonalCompanions.IsTask(w,i))return;Need((i.Executor==w.PlayerControl||(ArmyRoadMarch.IsTrip(w,i)||RoadConvoy.IsTrip(w,i))||NpcFreight.IsTrip(w,i)||NpcArmies.IsMarch(w,i)||i.Actor==i.Executor&&i.Action==ActionKind.Inspect&&NewGameNpcRoutine.WasActor(w,i.Actor,at))&&i.Action is ActionKind.Move or ActionKind.Inspect,"本人以外の指揮・徴収は開始だけではできません");
-        if(i.Actor!=i.Executor){Need(NewGameWork.ScopeSupported(w,i.Scope),"Unmapped local inspection offer");Need(LocalWorkDemand.At(w,i.Actor,i.Scope,at,w.Requests.Single(r=>r.Id==i.RequestId).CommitSequence-1).Needed,"Local inspection lacks known demand at issue");Need(i.Action==ActionKind.Inspect&&(i.Kind==TaskKind.VoluntaryRequest||i.Kind==TaskKind.BindingOrder&&NewGameService.BoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1)&&NewGameService.KnownBoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1))&&i.Important&&i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Executor,at)&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+120,"現地相談の物理所在・任意依頼・期限が不正です");}
+        if(i.Actor!=i.Executor){Need(NewGameWork.ScopeSupported(w,i.Scope),"Unmapped local inspection offer");Need(LocalWorkDemand.At(w,i.Actor,i.Scope,at,requestRevision-1).Needed,"Local inspection lacks known demand at issue");Need(i.Action==ActionKind.Inspect&&(i.Kind==TaskKind.VoluntaryRequest||i.Kind==TaskKind.BindingOrder&&NewGameService.BoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1)&&NewGameService.KnownBoundAt(w,i.Actor,at,w.Requests.Single(r=>r.Intent.RequestId==i.RequestId).CommitSequence-1))&&i.Important&&i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Executor,at)&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+120,"現地相談の物理所在・任意依頼・期限が不正です");}
         else if(i.Action==ActionKind.Inspect)Need(i.WorkSeconds==4&&i.DeliverySeconds==1&&i.ReportSeconds==1&&i.Scope.Value==dSite(w,i.Actor,at)&&i.Deadline.At==at+60,"自己点検の場所・期限が不正です");
     }
     static string dSite(ContractWorld w,EntityId actor,long at){var j=w.Branches!.Journeys.LastOrDefault(j=>j.Actor==actor&&w.Tasks.Single(t=>t.Id==j.Task).FinishedAt<=at);return j==null?FamilyBirth.People(w).Single(p=>p.Id==actor.Value).Site:RegionalCampaign.Site(j.Legs[^1].To).Value;}

@@ -345,12 +345,15 @@ public sealed partial class WorldSession
             _=>Terminal(t)};
         return met||deadline==null?t.AbsoluteLatestAt:Math.Min(deadline.Value,t.AbsoluteLatestAt);
     }
+    static readonly System.Collections.Concurrent.ConcurrentDictionary<string,EntityId> EvidenceIds=new(StringComparer.Ordinal);
     private static void SynchronizeEvidence(ContractWorld s)
     {
-        foreach(var k in s.Messaging.Knowledge.Where(k=>s.Characters.Any(c=>c.Id.Value==k.CharacterId)))
+        // 人物と証拠は表で引き、証拠の ID は覚えておく（S10：知った書状ごとに一覧をなめない。結果は同じ）。
+        var chars=s.Characters.Select(c=>c.Id.Value).ToHashSet(StringComparer.Ordinal);var have=s.Evidence.Select(e=>e.Id).ToHashSet();
+        foreach(var k in s.Messaging.Knowledge.Where(k=>chars.Contains(k.CharacterId)).ToArray())
         {
-            var id=new EntityId("evidence:"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(k.MessageId+"|"+k.CharacterId)));
-            if(s.Evidence.Any(e=>e.Id==id))continue;
+            var id=EvidenceIds.GetOrAdd(k.MessageId+"|"+k.CharacterId,key=>new EntityId("evidence:"+ContractJson.Hash(System.Text.Encoding.UTF8.GetBytes(key))));
+            if(!have.Add(id))continue;
             var m=s.Messaging.Messages.Single(m=>m.Id==k.MessageId);var task=s.Tasks.SingleOrDefault(t=>t.RequestId.Value==m.CorrelationId);
             var observer=new EntityId(k.CharacterId);
             s.Evidence=[..s.Evidence,new(id,observer,task?.Id??observer,m.Body,m.CreatedAt,k.LearnedAt,new(m.Id),null)];
