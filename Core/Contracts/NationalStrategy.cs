@@ -117,6 +117,9 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public CaseEvent[]? Cases {get;init;}
     // 任務・配送・命令の全般（一覧の Duties2 の世界だけ）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public DutyEvent[]? Duties {get;init;}
+    // 画面と文面の仕上げ（一覧の Screens2 の世界だけ）：本人の家の軍団への出陣の命と、史実の出陣の機会。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public CorpsOrder[]? Orders {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public HistoryOpportunity[]? Opportunities {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
 // 史実の同盟（S03）：二つの家が結ぶ。どちらかが無い・当主が成人でない・操作する人物の家なら前提が崩れた不発。
@@ -206,6 +209,7 @@ public static class NationalStrategy
         new("kooetsu-1579","甲越同盟","G-000106","G-000134",1579,9,"通説：天正7年、武田勝頼と上杉景勝"),
     ];
     // その世界で判定する史実の出陣（一覧に HistoryEvents2 があれば第2版も）。
+    public static string HistoryEventName(string id)=>History.Concat(History2).FirstOrDefault(e=>e.Id==id)?.Name??id;
     internal static IEnumerable<HistoricalCampaign> HistoryFor(ContractWorld w)=>NationalSystems.On(w,Events2)?History.Concat(History2):History;
     public static int EventCount=>History.Length+History2.Length+Alliances.Length;
     // 史実の同盟：その月のものを、前提（両家があり当主が成人、操作する人物の家でない）と歴史の設定（史実尊重90%・準史実50%・仮想は結ばない）で判定する。
@@ -218,7 +222,7 @@ public static class NationalStrategy
             bool ok(string f)=>w.NewGame!.Start.Factions.Any(x=>x.Id==f)&&HouseSuccession.Head(w,new(f)) is var h&&w.Characters.SingleOrDefault(c=>c.Id==h)?.Life==LifeState.Adult&&!playerHouse.Contains(f);
             if(mode==HistoryMode.Fictional){history.Add(new(e.Id,now,w.CommitSequence,"declined"));continue;}
             if(!ok(a)||!ok(b)||Bound(pacts.ToArray(),a,b,now)){history.Add(new(e.Id,now,w.CommitSequence,"premise"));continue;}
-            if(Draw(w,"history-alliance/"+e.Id)>=(mode==HistoryMode.Historical?900:500)){history.Add(new(e.Id,now,w.CommitSequence,"declined"));continue;}
+            if(Draw(w,"history-alliance/"+e.Id)>=Screens2.EventChance(w,mode==HistoryMode.Historical?900:500)){history.Add(new(e.Id,now,w.CommitSequence,"declined"));continue;}
             var pact=new StrategyPact(new($"pact:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(a+"/"+b+"/history"))[..12]}"),new(a),new(b),"alliance",now,now+5*365*86400L,w.CommitSequence,"history:"+e.Id);
             pacts.Add(pact);letters.Add((pact,""));history.Add(new(e.Id,now,w.CommitSequence,"fired"));
         }
@@ -376,7 +380,7 @@ public static class NationalStrategy
         {
             if(Bound(pacts.ToArray(),a,b,now)||s.Campaigns.Any(c=>c.At>now-180*86400&&(c.Attacker.Value==a&&c.Defender.Value==b||c.Attacker.Value==b&&c.Defender.Value==a)))continue;
             var threat=borders[a].Intersect(borders[b]).Where(c=>strength.TryGetValue(c,out var x)&&x>strength[a]&&x>strength[b]).OrderBy(c=>c,StringComparer.Ordinal).FirstOrDefault();
-            if(threat==null||Draw(w,$"alliance/{a}/{b}/{date:yyyy-MM}")>=(Persons2.Refuses(w,a,b,now)?0:Diplomacy2.On(w)?Diplomacy2.AllianceChance(w,a,b,now):200))continue;
+            if(threat==null||Draw(w,$"alliance/{a}/{b}/{date:yyyy-MM}")>=(Persons2.Refuses(w,a,b,now)?0:Screens2.ThreatChance(w,Diplomacy2.On(w)?Diplomacy2.AllianceChance(w,a,b,now):200)))continue;
             var pact=new StrategyPact(new($"pact:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(a+"/"+b))[..12]}"),new(a),new(b),"alliance",now,now+2*365*86400L,w.CommitSequence,"threat:"+threat);
             pacts.Add(pact);letters.Add((pact,""));
         }
@@ -437,13 +441,17 @@ public static class NationalStrategy
         var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(w,owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
         var player=w.PlayerControl;var playerHouse=w.NewGame!.Start.Factions.Where(f=>HouseSuccession.Head(w,new(f.Id))==player).Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         var playerMember=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==player.Value)?.Faction;if(playerMember!=null)playerHouse.Add(playerMember);
-        var mode=Mode(w);var history=(s.History??[]).ToList();
+        var mode=Mode(w);var history=(s.History??[]).ToList();var offers=new List<HistoryOpportunity>();
         // その月の史実の出陣で、攻める家が存在しないか当主が操作する人物の家などで判断に入らないものは、前提が崩れた不発として残す。
         foreach(var e in HistoryFor(w).Where(e=>e.Year==date.Year&&e.Month==date.Month))
         {
             var f=NationalStart.FactionId(e.Attacker);var head=w.NewGame.Start.Factions.Any(x=>x.Id==f)?HouseSuccession.Head(w,new(f)):default;
             if(mode==HistoryMode.Fictional||head.Value==null||playerHouse.Contains(f)||w.Characters.SingleOrDefault(c=>c.Id==head)?.Life!=LifeState.Adult||!owners.ContainsValue(f))
+            {
+                // 本人が当主の家が攻め手なら、家老から機会の書状が届く（一覧の Screens2）。
+                if(mode!=HistoryMode.Fictional&&owners.ContainsValue(f)&&Screens2.Offer(w,e,f,owners,offers)){history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"offered"));continue;}
                 history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,mode==HistoryMode.Fictional?"declined":"premise"));
+            }
         }
         var pactLetters=new List<(StrategyPact Pact,string Sender)>();var pacts=Diplomacy(w,s,owners,power,playerHouse,pactLetters);HistoricalAlliances(w,playerHouse,mode,date,history,pacts,pactLetters);
         foreach(var f in StrategyHouses(w).Select(id=>(Id:id,_:0)))
@@ -469,7 +477,7 @@ public static class NationalStrategy
                 {
                     var defender=NationalStart.FactionId(e.Defender);var known=targets.Where(t=>t.Owner==defender).OrderBy(t=>t.Site,StringComparer.Ordinal).ToArray();
                     if(known.Length==0||e.AttackerHead!=null&&NationalStart.DbPerson(head.Value)?.Id!=e.AttackerHead){history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"premise"));continue;} // 前提が崩れていれば不発
-                    if(basis==null&&Draw(w,"history/"+e.Id+"/"+f.Id)<(mode==HistoryMode.Historical?900:500)){basis="history:"+e.Id;pick=known[0];history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"fired"));}
+                    if(basis==null&&Draw(w,"history/"+e.Id+"/"+f.Id)<Screens2.EventChance(w,mode==HistoryMode.Historical?900:500)){basis="history:"+e.Id;pick=known[0];history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"fired"));}
                     else history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"declined"));
                 }
             if(basis==null&&bound.Length>0&&Draw(w,$"betray/{f.Id}/{date:yyyy-MM}")<(Diplomacy2.On(w)?Diplomacy2.BetrayChance(w,f.Id,bound[0].t.Owner!,w.ElapsedSeconds):30))
@@ -507,9 +515,11 @@ public static class NationalStrategy
                 campaigns.Add(new(new($"campaign:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(f.Id+"/2"))[..12]}"),new(f.Id),new(second.Owner),new(second.Site),w.ElapsedSeconds,w.CommitSequence,Border){Line=2,Share=40,Commander=Armies2.Commander(w,f.Id,second.Site)});
             }
         }
+        var opportunities=Screens2.Settle(w,s,owners,campaigns,history,pacts);var orders=Screens2.Muster(w,s,owners,campaigns,pacts,playerHouse);
+        if(offers.Count>0)opportunities=[..opportunities??[],..offers];
         if(StrategyRestoration.Enabled(w))campaigns.AddRange(StrategyRestoration.Uprisings(w,s,owners,playerHouse,near,campaigns,date));
         var coalitions=Coalitions(w,s,pacts,out var formed);
-        w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions};
+        w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions,Orders=orders,Opportunities=opportunities};
         // 婚姻による同盟（一覧の Diplomacy2）：今月結んだ同盟に、両家の独身の成人の男女の婚姻を添える。
         if(Diplomacy2.On(w)){var wed=(w.Strategy.Marriages??[]).ToList();foreach(var p in pacts.Where(p=>p.Kind=="alliance"&&p.From==w.ElapsedSeconds&&p.Broken==null&&!wed.Any(m=>m.Pact==p.Id))){w.Strategy=w.Strategy with{Marriages=wed.ToArray()};if(Diplomacy2.MarryFor(w,p) is {} m)wed.Add(m);}if(wed.Count>0)w.Strategy=w.Strategy with{Marriages=wed.ToArray()};}
         using(RegionalCampaign.Batch(w)){foreach(var c in formed){CoalitionLetters(w,c);InviteThePlayer(w,c);}
@@ -541,7 +551,7 @@ public static class NationalStrategy
         if(c.Real!=true||!NationalSystems.On(w,"StrategyCapture")||RealArmy(w,c) is not {} m||battle is {AttackerBroke:false})return null;
         var leader=m.Commander;long at=w.ElapsedSeconds;
         if(Assassination.DeadAt(w,leader,at,w.CommitSequence)||BattleCaptivity.HeldAt(w,leader,at,w.CommitSequence+1)||leader==w.PlayerControl)return null;
-        if((roll??Draw(w,"capture/"+c.Id.Value+"/"+leader.Value))>=350)return null; // roll は検査用
+        if((roll??Draw(w,"capture/"+c.Id.Value+"/"+leader.Value))>=Screens2.CaptureChance(w))return null; // roll は検査用
         var holder=HouseSuccession.Head(w,c.Defender);var capture=new BattleCapture(leader,c.Attacker,c.Defender,holder,c.Target,at);
         BattleCaptivity.StopCaptured(w,[capture]);return capture;
     }
@@ -795,7 +805,7 @@ public static class NationalStrategy
         if(s.Campaigns.Select(c=>c.Id).Distinct().Count()!=s.Campaigns.Length||s.Outcomes.Select(o=>o.Campaign).Distinct().Count()!=s.Outcomes.Length)throw new InvalidDataException("出陣の記録が重複しています");
         foreach(var c in s.Campaigns)
             if(c.Attacker==c.Defender||!factions.Contains(c.Attacker.Value)||!factions.Contains(c.Defender.Value)||c.At<0||c.At>w.ElapsedSeconds||c.Revision<0||c.Revision>w.CommitSequence||!IsMonthStart(w,c.At)||
-                !(c.Basis==Border||c.Basis=="betrayal"||c.Basis==Jouraku||c.Basis==Restoration&&StrategyRestoration.Enabled(w)||c.Basis.StartsWith("history:",StringComparison.Ordinal)&&HistoryFor(w).Any(e=>"history:"+e.Id==c.Basis))||Owner(w,c.Target,c.At,c.Revision)!=c.Defender)
+                !(c.Basis==Border||c.Basis=="betrayal"||c.Basis==Jouraku||c.Basis==Restoration&&StrategyRestoration.Enabled(w)||c.Basis.StartsWith("history:",StringComparison.Ordinal)&&HistoryFor(w).Any(e=>"history:"+e.Id==c.Basis)||c.Basis.StartsWith("order:",StringComparison.Ordinal)&&Screens2.On(w))||Owner(w,c.Target,c.At,c.Revision)!=c.Defender)
                 throw new InvalidDataException("出陣の記録が不正です");
         foreach(var x in s.Successions??[])if(!factions.Contains(x.House.Value)||x.At>w.ElapsedSeconds||x.Revision>w.CommitSequence||!IsMonthStart(w,x.At)||x.Retired!=true&&w.Characters.SingleOrDefault(c=>c.Id==x.Previous)?.Life!=LifeState.Dead||x.Retired==true&&!Persons2.On(w)||!w.Characters.Any(c=>c.Id==x.Heir))throw new InvalidDataException("家督の記録が不正です");
         PeaceBreach.Validate(w,s,prior?.Strategy);
@@ -805,7 +815,7 @@ public static class NationalStrategy
         foreach(var p in s.Pacts??[])if(p.A==p.B||!factions.Contains(p.A.Value)||!factions.Contains(p.B.Value)||p.Kind is not("alliance" or "truce")||p.From>w.ElapsedSeconds||p.Until<=p.From||!IsMonthStart(w,p.From)||p.Revision>w.CommitSequence)throw new InvalidDataException("家どうしの約束の記録が不正です");
         if(prior?.Strategy?.Pacts is {} oldPacts&&!(s.Pacts??[]).Take(oldPacts.Length).Select(p=>p with{Broken=null}).SequenceEqual(oldPacts.Select(p=>p with{Broken=null})))throw new InvalidDataException("過去の約束の記録が変更されています");
         foreach(var o in s.Outcomes){var c=s.Campaigns.SingleOrDefault(c=>c.Id==o.Campaign);if(c==null||o.At<=c.At||o.At>w.ElapsedSeconds||o.Revision>w.CommitSequence||!IsMonthStart(w,o.At)&&c.Real!=true)throw new InvalidDataException("出陣の結果が不正です");if(o.Capture is {} cap&&(c.Real!=true||o.Captured||cap.At!=o.At||cap.FromOwner!=c.Attacker||cap.CaptorOwner!=c.Defender||cap.Site!=c.Target||RealArmy(w,c)?.Commander!=cap.Person))throw new InvalidDataException("出陣の捕縛の記録が不正です");StrategyBattles.Validate(w,o);}
-        StrategyRestoration.Validate(w,s,prior?.Strategy);StrategyDefections.Validate(w,s,prior?.Strategy);Domestic2.Validate(w,s,prior?.Strategy);Logistics2.Validate(w,s,prior?.Strategy);Persons2.Validate(w,s,prior?.Strategy);Armies2.Validate(w,s,prior?.Strategy);Politics2.Validate(w,s,prior?.Strategy);Cases2.Validate(w,s,prior?.Strategy);Duties2.Validate(w,s,prior?.Strategy);
+        StrategyRestoration.Validate(w,s,prior?.Strategy);StrategyDefections.Validate(w,s,prior?.Strategy);Domestic2.Validate(w,s,prior?.Strategy);Logistics2.Validate(w,s,prior?.Strategy);Persons2.Validate(w,s,prior?.Strategy);Armies2.Validate(w,s,prior?.Strategy);Politics2.Validate(w,s,prior?.Strategy);Cases2.Validate(w,s,prior?.Strategy);Duties2.Validate(w,s,prior?.Strategy);Screens2.Validate(w,s,prior?.Strategy);
     }
 }
 

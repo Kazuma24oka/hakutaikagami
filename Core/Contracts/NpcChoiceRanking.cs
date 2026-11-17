@@ -21,6 +21,9 @@ public sealed record NpcJudgmentSettings(string Policy,HistoryMode History,NpcAt
     public bool? UseInspectionReferences {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public int? HealthEdition {get;init;}
+    // ルールのつまみ（S11、一覧の Screens2 の新規の全国開始だけ）。無ければ標準の値。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public RuleKnobs? Rules {get;init;}
 
 
 }

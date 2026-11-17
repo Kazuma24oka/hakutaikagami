@@ -8,7 +8,7 @@ public partial class NewGameRuntime
     AcceptDialog? historySummary;
     long? displayedSummary;
     static string TimeKindName(TimeNoticeKind kind)=>kind switch{
-        TimeNoticeKind.ImportantLetter=>"重要な書状の到着",TimeNoticeKind.Deadline=>"期限の直前",TimeNoticeKind.Arrival=>"目的地への到着",TimeNoticeKind.EnemyApproach=>"認識した敵軍の接近",TimeNoticeKind.Battle=>"目の前の合戦",TimeNoticeKind.Encounter=>"遭遇・襲撃",TimeNoticeKind.Council=>"評定の知らせ",TimeNoticeKind.Death=>"訃報",_=>"1650年の総括"};
+        TimeNoticeKind.ImportantLetter=>"重要な書状の到着",TimeNoticeKind.Deadline=>"期限の直前",TimeNoticeKind.Arrival=>"目的地への到着",TimeNoticeKind.EnemyApproach=>"認識した敵軍の接近",TimeNoticeKind.Battle=>"目の前の合戦",TimeNoticeKind.Encounter=>"遭遇・襲撃",TimeNoticeKind.Council=>"評定の知らせ",TimeNoticeKind.Death=>"訃報",TimeNoticeKind.SevereIllness=>"重い病状",_=>"1650年の総括"};
     void BuildWorldTime(HFlowContainer bar)
     {
         if(!WorldTimeControl.Enabled(Snapshot()))return;

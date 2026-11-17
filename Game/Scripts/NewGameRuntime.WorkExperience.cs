@@ -84,7 +84,7 @@ public partial class NewGameRuntime
     }
     void SetTalkSpeaker(EntityId speaker)
     {
-        ownWorkSpeaker=speaker==Session.PlayerControl;workNames.Text=PersonName(speaker)+(ownWorkSpeaker?"  ／  あなた":"");
+        ownWorkSpeaker=speaker==Session.PlayerControl;workNames.Text=(!ownWorkSpeaker&&Screens2.On(Snapshot())?Screens2.Address(Snapshot(),Session.PlayerControl,speaker):PersonName(speaker))+(ownWorkSpeaker?"  ／  あなた":"");
         for(int n=0;n<portraitPanels.Length;n++)portraitPanels[n].Modulate=n==(ownWorkSpeaker?0:1)?Colors.White:new Color(.42f,.42f,.42f,1);
     }
     void TalkPeople(EntityId other,bool present)
@@ -102,7 +102,7 @@ public partial class NewGameRuntime
     {
         workReadOnly=true;pendingWorkReply=null;workDecisionOpen=false;workDecision.Hide();ClearChoices();findingRoad.Hide();workReplyChoice.Hide();militaryWorkChoice?.Hide();workContactChoice?.Hide();workCardHeading.Show();shownRoads=[];LayoutBottomTalk();workTitle.Text=title;workSpeech.Text=speech;workDetails.Text=FormatWorkDetails(details);workPhase.Text=phase.Split('/')[0].Trim();workPrompt.Text=prompt;buttons["work-reply"].Text=phase.StartsWith("報告")?"結果を見る":"返答を選ぶ";
         bool present=NearbyDisplay().Any(p=>p.Actor==other)&&Snapshot().Locations.Single(p=>p.Actor==other).Site==Branch(Session.PlayerControl).Knowledge.Location.Site;
-        TalkPeople(other,present);portraitPanels[1].Visible=other!=Session.PlayerControl;SetTalkSpeaker(speaker);if(!present&&speaker!=Session.PlayerControl)workNames.Text+="  ／  書状";
+        TalkPeople(other,present);ApplyStage(other,title);portraitPanels[1].Visible=other!=Session.PlayerControl;SetTalkSpeaker(speaker);if(!present&&speaker!=Session.PlayerControl)workNames.Text+="  ／  書状";
         workOverlay.Show();
     }
     string FormatWorkDetails(string text)=>NewGameWork.Enabled(Snapshot())?text:text.Replace("\n","　");

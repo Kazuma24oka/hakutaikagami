@@ -1,0 +1,19 @@
+{
+  "status": "PASSED",
+  "scope": "S11 関係する検査と画面の一巡（全件テストは S14 で1回）",
+  "date": "2026-11-18",
+  "related_tests": "PASSED",
+  "passed": 149,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 9,
+  "commands": [
+    "Screens2Tests（9件）・WorldTimeControlTests・WorldTimeTravelTests・NationalStrategyTests・Armies2/Cases2/Diplomacy2/Duties2/Persons2/Politics2Tests・ClinicalHealth/PersonalHealth/HealthMortality/MortalSuccessionTests・FamilyKinTests・ControlSuccessionTests・StrategyBattle/Losses/RealArmyTests・PerformanceS10Tests・CommonSaveTests・NationalStartTests の149件（16分58秒）",
+    "Godot：Game/Scenes/Screens2Check.tscn（ゲーム内の入力と自前の描画。runtime-local に ledger-0〜6.png・ledger-ordered.png・talk.png・ui-result.json・ui.log）",
+    "ゲーム本体（Godot の C#）の組み立て"
+  ],
+  "not_run": "史実の機会の書状が届いてから「応じる」を画面で押す一巡（届くまでゲーム内で一日以上、Core の検査で確かめた）。全件テストは S14。",
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "PASSED",
+  "computer_use": "不使用"
+}

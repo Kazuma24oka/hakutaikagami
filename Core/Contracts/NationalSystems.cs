@@ -61,6 +61,8 @@ public static class NationalSystems
         Duties2,
         // NPCの城主の報告が届かなかったと知れば、同じ観測の報告を送り直す（S10）。
         CastellanResend,
+        // 画面と文面の仕上げ（S11）：書状の帳面・自動の停止・人物帳・判断の比較・ルールのつまみ・史実の機会・軍団への命
+        Screens2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -81,6 +83,7 @@ public static class NationalSystems
     public const string Cases2="Cases2";
     public const string Duties2="Duties2";
     public const string CastellanResend="CastellanResend";
+    public const string Screens2="Screens2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

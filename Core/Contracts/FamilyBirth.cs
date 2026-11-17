@@ -25,7 +25,7 @@ public static class FamilyBirth
             {
                 var key=FormattableString.Invariant($"family-birth-v1/{data.Seed}/{terms.Id.Value}/{cycle}");
                 var digest=SHA256.HashData(Encoding.UTF8.GetBytes(key));
-                if(digest[0]>=96)continue;
+                if(digest[0]>=Screens2.BirthThreshold(w))continue;
                 long due=marriage.At+(cycle*365+280+BinaryPrimitives.ReadUInt16LittleEndian(digest.AsSpan(1))%60)*Day;
                 if(from<due && due<=until && !Assassination.DeadAt(w,terms.First,due,w.CommitSequence) &&
                     !Assassination.DeadAt(w,terms.Second,due,w.CommitSequence))result.Add((terms,due));

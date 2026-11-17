@@ -1,7 +1,8 @@
 using HakutaiKagami.Core.Messaging;
 namespace HakutaiKagami.Core.Contracts;
 
-public enum TimeNoticeKind { ImportantLetter, Deadline, Arrival, EnemyApproach, Battle, Encounter, Council, Death, HistoricalEnd }
+// SevereIllness は一覧の Screens2 の世界だけが持つ（それより前の世界の設定には無い）。
+public enum TimeNoticeKind { ImportantLetter, Deadline, Arrival, EnemyApproach, Battle, Encounter, Council, Death, HistoricalEnd, SevereIllness }
 public enum TimeResponse { Off, Slow, Pause }
 public sealed record TimeRule(TimeNoticeKind Kind,TimeResponse Response);
 public sealed record TimeNotice(TimeNoticeKind Kind,string Source,long At,TimeResponse Response);
@@ -25,7 +26,8 @@ public static class WorldTimeControl
     public const string Policy="own-notice-calendar-v1";
     public static readonly int[] Speeds=[1,10,60,360,43200,86400,259200];
     public static readonly string[] SpeedLabels=["1倍","10倍","60倍","360倍（旧設定）","半日/秒","1日/秒","3日/秒"];
-    public static WorldTimeState Initial()=>new(Policy,Enum.GetValues<TimeNoticeKind>().Select(k=>new TimeRule(k,k is TimeNoticeKind.Arrival or TimeNoticeKind.EnemyApproach?TimeResponse.Slow:TimeResponse.Pause)).ToArray(),[],null,null,null,null);
+    public static WorldTimeState Initial(bool illness=false)=>new(Policy,Kinds(illness).Select(k=>new TimeRule(k,k is TimeNoticeKind.Arrival or TimeNoticeKind.EnemyApproach?TimeResponse.Slow:TimeResponse.Pause)).ToArray(),[],null,null,null,null);
+    static TimeNoticeKind[] Kinds(bool illness)=>Enum.GetValues<TimeNoticeKind>().Where(k=>illness||k!=TimeNoticeKind.SevereIllness).ToArray();
     public static bool Enabled(ContractWorld w)=>w.TimeControl!=null;
     public static TimeNotice? Pending(ContractWorld w)=>w.TimeControl?.Pending is {} n?w.TimeControl.Notices[n]:null;
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool ok,string message){if(!ok)throw new InvalidDataException(message);}
@@ -73,9 +75,11 @@ public static class WorldTimeControl
         // 評定・訃報等は、将来の発生源も同じ物理書状の認識境界に接続する。
         foreach(var k in w.Messaging.Knowledge.Where(k=>k.CharacterId==w.PlayerControl.Value&&k.LearnedAt==w.ElapsedSeconds)){
             var m=w.Messaging.Messages.Single(m=>m.Id==k.MessageId);
-            TimeNoticeKind? kind=m.Kind switch{"world-council"=>TimeNoticeKind.Council,"world-death"=>TimeNoticeKind.Death,"world-encounter"=>TimeNoticeKind.Encounter,_=>null};
+            TimeNoticeKind? kind=m.Kind switch{"world-council"=>TimeNoticeKind.Council,"world-death"=>TimeNoticeKind.Death,"world-encounter"=>TimeNoticeKind.Encounter,FamilyNotice.Kind when Screens2.On(w)=>TimeNoticeKind.Death,_=>null};
             if(kind is {} value)Add(w,value,m.Id);
         }
+        // 本人が知った重い病状（一覧の Screens2）。
+        if(w.TimeControl!.Rules.Any(r=>r.Kind==TimeNoticeKind.SevereIllness))foreach(var source in Screens2.SevereIllness(w).ToArray())Add(w,TimeNoticeKind.SevereIllness,source);
         if(NpcArmies.Enabled(w)&&w.NpcArmies!.Musters.Length>0){
             var before=NpcArmies.Sights(prior,prior.PlayerControl);
             var own=w.Memberships.Where(m=>m.Subject==w.PlayerControl&&m.From<=w.ElapsedSeconds&&m.Until>w.ElapsedSeconds).Select(m=>m.Target).ToHashSet();
@@ -95,7 +99,7 @@ public static class WorldTimeControl
         if(NewGameWorld.Enabled(w))Need((w.NewGame!.TimePolicy==Policy)==(w.TimeControl!=null)&&w.NewGame.TimePolicy is null or Policy,"開始方針と時間設定が一致しません");
         if(w.TimeControl is not {} s)return;
         Need(s.Policy==Policy&&s.Rules!=null&&s.Notices!=null,"時間設定の版が不正です");
-        Need(s.Rules!.Length==Enum.GetValues<TimeNoticeKind>().Length&&s.Rules.Select(r=>r.Kind).Distinct().Count()==s.Rules.Length&&s.Rules.All(r=>Enum.IsDefined(r.Kind)&&Enum.IsDefined(r.Response)),"時間設定が欠落しています");
+        Need(s.Rules!.Select(r=>r.Kind).Order().SequenceEqual(Kinds(Screens2.On(w)))&&s.Rules.Select(r=>r.Kind).Distinct().Count()==s.Rules.Length&&s.Rules.All(r=>Enum.IsDefined(r.Kind)&&Enum.IsDefined(r.Response)),"時間設定が欠落しています");
         Need(s.Notices!.All(n=>Enum.IsDefined(n.Kind)&&Enum.IsDefined(n.Response)&&!string.IsNullOrWhiteSpace(n.Source)&&n.At>=0&&n.At<=w.ElapsedSeconds)&&s.Notices.Select(n=>(n.Kind,n.Source)).Distinct().Count()==s.Notices.Length,"通知記録が不正です");
         Need(s.Notices.Zip(s.Notices.Skip(1)).All(p=>p.First.At<=p.Second.At),"通知の時刻が逆転しています");
         Need(s.Pending==null||s.Pending>=0&&s.Pending<s.Notices.Length&&s.Notices[s.Pending.Value].Response!=TimeResponse.Off&&(w.Paused||intermediate),"停止通知が不正です");

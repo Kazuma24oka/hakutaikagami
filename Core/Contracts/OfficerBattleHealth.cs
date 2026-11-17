@@ -17,7 +17,7 @@ public static class OfficerBattleHealth
             var person=HouseholdDetachment.Appointment(w,unit.Id,result.At,w.CommitSequence+1)?.Actor??unit.Commander;
             if(seen.Contains(person))continue;
             var d=SHA256.HashData(Encoding.UTF8.GetBytes(FormattableString.Invariant($"officer-wound-v2/{w.Seed}/{person.Value}/{result.At/86400}")));
-            if(d[0]%100>=15)continue;
+            if(d[0]%100>=Screens2.WoundChance(w))continue;
             seen.Add(person);wounds.Add(new(unit.Id,person,(HealthPart)(d[1]%3),1+d[2]%3,result.At));
         }
         return wounds.ToArray();

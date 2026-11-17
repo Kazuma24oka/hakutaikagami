@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Godot;
 using HakutaiKagami.Core.Contracts;
@@ -44,8 +45,20 @@ public partial class NewGameFrontEnd
             support.Select((int)supportLevel);
         };
 
-        {}
+        // ルールのつまみ（全国の開始だけ）：コースで組み、個別に変える。
+        page.AddChild(new Label{Text="ルール"});
+        var ruleCourse=new OptionButton{Name="RuleCourse"};foreach(var c in Screens2.Courses)ruleCourse.AddItem(c.Name);page.AddChild(ruleCourse);
+        var knobRow=new HFlowContainer{Name="RuleKnobs"};page.AddChild(knobRow);var knobButtons=new OptionButton[Screens2.KnobNames.Length];
+        RuleLevel[] Levels()=>[ruleKnobs.Events,ruleKnobs.Threat,ruleKnobs.Capture,ruleKnobs.Wounds,ruleKnobs.Births];
+        void ShowKnobs(){var l=Levels();for(int n=0;n<knobButtons.Length;n++)knobButtons[n].Select((int)l[n]);}
+        for(int n=0;n<knobButtons.Length;n++)
+        {
+            int k=n;knobRow.AddChild(new Label{Text=Screens2.KnobNames[n]});var b=new OptionButton{Name="Knob"+n};foreach(var level in Enum.GetValues<RuleLevel>())b.AddItem(Screens2.LevelName(level));knobRow.AddChild(b);knobButtons[n]=b;
+            b.ItemSelected+=i=>{var l=Levels();l[k]=(RuleLevel)i;ruleKnobs=new(l[0],l[1],l[2],l[3],l[4]);};
+        }
+        ruleCourse.ItemSelected+=i=>{ruleKnobs=Screens2.Courses[i].Knobs;ShowKnobs();};ShowKnobs();
     }
+    RuleKnobs ruleKnobs=Screens2.Courses[0].Knobs;
     internal (NewCampaignStore Store,NewCampaignProfile Profile) CreateJudgmentReview(string root,bool owari=false,NpcChallenge challenge=NpcChallenge.Standard)
     {
         if(TestKey!=null)throw new System.InvalidOperationException("通常の入口で検査してください");
