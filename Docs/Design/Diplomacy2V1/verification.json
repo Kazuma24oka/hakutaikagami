@@ -1,0 +1,17 @@
+{
+  "status": "PASSED",
+  "scope": "S06 関係する検査（全件テストは S14 で1回）",
+  "date": "2026-11-17",
+  "related_tests": "PASSED",
+  "passed": 72,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 4,
+  "commands": [
+    "Diplomacy2Tests（4件）",
+    "NationalStrategyTests|MortalSuccessionTests|ControlSuccessionTests|Warfare2Tests|CentralStandingTests（30件）",
+    "SocialWorldTests|SupremeOfficeTests（38件）"
+  ],
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "未実施（年代記の国と家の一覧は S12 の一巡で見る）"
+}

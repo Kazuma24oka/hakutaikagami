@@ -41,6 +41,8 @@ public static class NationalSystems
         CentralStanding,
         // 遠方の合戦の天候と地形・NPCの開城・負傷兵・捕縛からの逃亡・落城の勲功と知行（S05）。
         Warfare2,
+        // DBの配偶者・養親の事実、婚姻による同盟と離縁、破約への制裁、約束の引き継ぎの知らせ、情報の索引（S06）。
+        Diplomacy2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -51,6 +53,7 @@ public static class NationalSystems
     public const string LifeGoals2="LifeGoals2";
     public const string CentralStanding="CentralStanding";
     public const string Warfare2="Warfare2";
+    public const string Diplomacy2="Diplomacy2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

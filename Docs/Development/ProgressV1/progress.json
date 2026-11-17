@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "8cc06628671f9810540fdc49984ac6a21237e34775099133bf96f7e710de5f2e",
+    "Docs/Development/ProgressV1/estimate.json": "2f32373bb9a3135e1b4004d358200c20805988e7312a5e5f7fe5133d05bc5316",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "1dfff470ec32f40445373e9755e9e216b7885b84653a6afef21c873a601f196b",
+    "Scripts/check_approval_batch.py": "f41acfddff2e9e84a3d120c702d2e14439803f4b7ca9f3649244c6ceb2faf307",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "77173103674e0399671294776409ffa14a42799f53f7ab36f5b10ec67e3068ad",
+    "Docs/Development/CURRENT_STAGE.md": "084804362c816d90e7567d2de3615e314879618c5d017417796ea60605ba9f3d",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
     "Core/Contracts/NewGameWorld.cs": "238f98d35db591f59dae127318693751d4617039d43ee26512e6c8a39a68c391",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "efdcddff016b46c9c7e078eb21edd4cbd18fba52bacfc5ca94fd84254f132f2f",
     "Core/Contracts/NewGameNpcRoutine.cs": "49db6539ff2e3cd8bceeec7317f78dfdfd7ab5dd142a6cf7e1873d64ca1341a6",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "983b83b80777f83ae9ec34edd7023f24e061b8be2cbd72100fdad2fea134ff8a",
+    "Core/Contracts/ContractJson.cs": "a90872b3f6f8a380c87681c9dd0b146efe9f5b535d9d39ecee9a7b11178afa9b",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -442,7 +442,7 @@
     "Core/Contracts/TimeObservationSweep.cs": "7ac32f8ff2654f6ea5ea22471eac6c61a868a3878213b5a5215efbb1f417387b",
     "Tests/WorldTimeControlTests.cs": "b49cba2abf6c1a601fc45b9a4a2df81a8650e8f7d5ac2dac48c838f6dee90fd1",
     "Tests/WorldTimeTravelTests.cs": "d74bc40427190f641f0df372b40b1c1d7c83e4b850acf4443edc338791b76cc7",
-    "Game/Scripts/NewGameRuntime.WorldTime.cs": "ce362539b98d857184d8934270ce2ecb177588169801f7f82190979901016251",
+    "Game/Scripts/NewGameRuntime.WorldTime.cs": "4e9e150518006a1ebb7a8596d80ed56c910e836793b31d7f0eb668ef93023589",
     "Game/Scripts/WorldTimeCheck.cs": "90477b2af5e5af5bf80e7370c4025c6b1781a1749c2e339af3dbbcd569149c27",
     "Docs/Design/WorldTimeV1/verification.json": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
     "Docs/Design/WorldTimeV1/completion.json": "c9dbef24f4d04462d73c0a295d53abf8508f4a84923f601df3eb6b60601e49f8",
@@ -473,7 +473,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v53.json": "286550eb6dd1017c0a18354372539da4bd89a1912ade87ebe21e58a084660a44",
     "Docs/Design/HistoricalChronicleV1/scope.md": "fca898a57a5b4c92490ef34ca3cfff3b9d37e3ba8774b74a0304d6feee218369",
     "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d",
-    "Core/Contracts/HistoricalEventRules.cs": "c4bc82abc1fa35831fdf2b28c9d46bb4daff6e86592bdf17820e3b461a31be90",
+    "Core/Contracts/HistoricalEventRules.cs": "8fa7517b80c0eef5087640eb4a24f94f2d8f62a9098a4cc0d53e71b0531dd62a",
     "Tests/HistoricalEventRulesTests.cs": "ac77c5cca3b6254518ffae25f990f4b4d12e4df60ae3fc2b3a6167018264408c",
     "Game/Scripts/HistoricalChronicleCheck.cs": "75f7384777b129127a662b0e0b7c9a8c9bf40486af6745e4de4a64a8520dbc5d",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
@@ -491,7 +491,7 @@
     "Docs/Design/VerbNotebookV1/scope.md": "e367625aac63ed53753570194371ad39010232293ef37078f89d6b8cc0ab7728",
     "Scripts/verify_verb_notebook.py": "1f0b5ef15fbb146ed4d9f578dbf13396a295c5aacc002af38efe75deb1459986",
     "Docs/Development/ProgressV1/approval-baseline-v55.json": "ddc300f6495fe539b5bdbf942a81f77d372268ef2a475c5042ecff1e2a672e02",
-    "Core/Contracts/SocialWorld.cs": "d24670c8989ba7e4bc39146cd6ba7c0920afaf25da3057e29f1fbc0a305ddfd2",
+    "Core/Contracts/SocialWorld.cs": "20e52ca5187d223a129e78a92bdcf62679624c7ebc57c0a187055734f99d8a9b",
     "Core/Contracts/WorldSession.SocialCouriers.cs": "054330ed85ec0d20bb3c40ddcb5854861836829609885ac5b2affb9658557a53",
     "Game/Scripts/NewGameRuntime.SocialWorld.cs": "37a7387bbc2ba3dd327695ef0080f7a001e4c473999bedacfc443a42abb419fb",
     "Game/Scripts/SocialWorldCheck.cs": "30402241e590efd06406aec2de71a46ac655481a7a0464028d1aa12d460f595e",
@@ -796,7 +796,7 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "d4fc195ee855210b78112705443275a6066ced5d0b6e42d00f7b7ead55fe0e90",
+    "Docs/Development/ProgressV1/index.html": "93a241c63a1e8e44d922ba760e50b1aaa63f454ee32f3a5a60deeea7334878cb",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
     "Core/Contracts/NationalNameHistory.cs": "9f6e382ccb983f5cb21b4ca21bef752ebe309f1fbf77e577fd3515b9e94c1e8f",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
@@ -1040,7 +1040,7 @@
     {
       "id": "BD-07",
       "status": "foundation",
-      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：危篤と意思表示不能、NPCの家の家督争いの決着（家法の後継順位・家臣の意向・指名・年長）と兄弟姉妹の家督、操作の引き継ぎの兄弟姉妹、年代記の終わりの総括を新規の全国開始に入れた。全契約の承継は S06、NPCの隠居は S09。",
+      "existing": "人物ID・生死フラグ・主従/役職を分ける基盤がある。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 子が生まれると名簿に加わり、15歳で元服する。成人後の奉公は別に合意する。遠方の家族は出生・元服・死去を届いた封書で知る。 当主の死去を知った家族が本拠で家督を求め、現地の家臣が個別に支持・異議を返す。幼君の当主職、元服までの後見、帳簿の現地返還を分けた。 2026-11-17（S02）：危篤と意思表示不能、NPCの家の家督争いの決着（家法の後継順位・家臣の意向・指名・年長）と兄弟姉妹の家督、操作の引き継ぎの兄弟姉妹、年代記の終わりの総括を新規の全国開始に入れた。全契約の承継は S06、NPCの隠居は S09。 2026-11-17（S06）：当主を継いだときの約束の引き継ぎの知らせ。",
       "remaining": "ゲーム中の死亡・隠居・後継候補の認識・継承争い・適格な継続を実装する。 統合案で追加：§12 後継順位・誓紙・家督争い・後見・§4 出生・成人・訃報（決定9）。 2026-11-05 既存仕様の具体化：成人縁組・後継指名・正式継承・実支配と、プレイヤーの適格な操作継続を分離する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。隠居や後見だけで全記憶・全権限を移さず、成人不在時の既定を維持する。実装・シナリオ検査は未実施。 2026-11-06採用：危篤・意思表示不能・死亡・家督承認・操作継承を分離し、既存の歴史モードの自然死方針を健康モデルと接続する。 2026-11-06採用：元服で師事・経験・技能を保持し、本人が表明した希望を既知の範囲で振り返る。元服と適格な操作継承・後見終了・奉公を分離する。",
       "evidence": [
         "Core/Contracts/ContractModels.cs",
@@ -1055,7 +1055,8 @@
         "Docs/Design/GuardianshipV1/verification.json",
         "Docs/Decisions/2026-11-06_HEALTH_RECOVERY_AND_DUTY_CONTINUITY.md",
         "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
-        "Docs/Design/MortalSuccessionV1/verification.json"
+        "Docs/Design/MortalSuccessionV1/verification.json",
+        "Docs/Design/Diplomacy2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1802,7 +1803,7 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 2026-11-17（S03）：史実の事件の知らせは噂として道のりに応じて遅れて届き、15%は誤報。",
+      "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 2026-11-17（S03）：史実の事件の知らせは噂として道のりに応じて遅れて届き、15%は誤報。 2026-11-17（S06）：本人が知った情報の国と家ごとの索引。NPCの偵察と流言は S09。",
       "remaining": "一般偵察/流言/地理発見と情報の全国索引。 統合案で追加：§10 情報系の計略・§24 名声（噂の事実）・§22 E5 史実事件の知らせ（噂と書状、誤報）。 2026-11-05 既存仕様の具体化：輸送の見聞と情報提供者の報告を、観測時点・誤認・虚偽を含む個別の情報として扱い、敵の真の残量へ読み替えない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-06採用：教育方針の連絡・教師報告・子の希望は実際の面会や書状を通し、観測時点・配送・開封・認識を区別する。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
@@ -1862,7 +1863,8 @@
         "Docs/Design/AssassinationV1/README.md",
         "Docs/Design/AssassinationV1/verification.json",
         "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
-        "Docs/Design/HistoricalEventsV1/verification.json"
+        "Docs/Design/HistoricalEventsV1/verification.json",
+        "Docs/Design/Diplomacy2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2722,7 +2724,7 @@
     {
       "id": "BD-41",
       "status": "normal",
-      "existing": "正式条約の独立条項/版/実権者/既知代表者/固定本拠を記録。同一版の承諾到達で成立し、本人開封と本人による成立確認の返書を分離する。対案は元の条項/解除予告期間を保持し、未通知の代表者を探知しない。 当主が実効支配と旧国を確かめて家の規模を宣言する。家臣は通知到着後に昇格を知る。普請奉行・町奉行は引き受けた年度予算で担当工事を発令する。格差のある防衛交渉は書面に示した家格と相手への信頼から期間の対案を返す。",
+      "existing": "正式条約の独立条項/版/実権者/既知代表者/固定本拠を記録。同一版の承諾到達で成立し、本人開封と本人による成立確認の返書を分離する。対案は元の条項/解除予告期間を保持し、未通知の代表者を探知しない。 当主が実効支配と旧国を確かめて家の規模を宣言する。家臣は通知到着後に昇格を知る。普請奉行・町奉行は引き受けた年度予算で担当工事を発令する。格差のある防衛交渉は書面に示した家格と相手への信頼から期間の対案を返す。 2026-11-17（S06）：縁のある家は同盟を結びやすい。婚姻で同盟を結ぶ。交渉の発議と条項別の期間は S09。",
       "remaining": "条項別の期間/条件変更、一般代理決裁・追認、人質/婚姻・全国NPCの自主交渉と全画面受入。 統合案で追加：§15 外交・勧告・§15 D1 贈り物・§26 Z10 家の格と外交・Z13 包囲網の呼びかけと多者の盟約。 2026-11-05 既存仕様の具体化：国人連合の内的決議・範囲付き代表権と対外合意を分け、同じ版の条件・一括条件と独立案件を保持する（MORI_MOTONARI_COALITION_OPERATIONS.md、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/TreatyNegotiations.cs",
@@ -2764,7 +2766,8 @@
         "Docs/Design/PrivateStanddownV1/verification.json",
         "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md",
         "Docs/Design/HouseScaleV1/README.md",
-        "Docs/Design/HouseScaleV1/verification.json"
+        "Docs/Design/HouseScaleV1/verification.json",
+        "Docs/Design/Diplomacy2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2772,7 +2775,7 @@
     {
       "id": "BD-42",
       "status": "foundation",
-      "existing": "不侵略・通行・補給・防衛援軍を独立条項にする。既知の不侵略を実NPC/交戦判断へ接続し、解除意思・物理的法的到達・予告期間の効力・本人の認識を分離。不達再送と現物回収の重複でも同じ通知を一意に扱う。援軍/補給は条項別の量・期限・理由を持つ物理要請/受領/辞退まで接続し、実行完了としない。 補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。",
+      "existing": "不侵略・通行・補給・防衛援軍を独立条項にする。既知の不侵略を実NPC/交戦判断へ接続し、解除意思・物理的法的到達・予告期間の効力・本人の認識を分離。不達再送と現物回収の重複でも同じ通知を一意に扱う。援軍/補給は条項別の量・期限・理由を持つ物理要請/受領/辞退まで接続し、実行完了としない。 補給条約の要請受領後に本人が実物受取を手配。供与者の実米を共通引当し、同じ本人による現地受取/実移動/部分納入/現地返納へ接続。取消の発送/到達と在庫解放、不達の本人認識と同条件再送、退任後の現受領権者を分離。外交の受領返書を供与完了としない。 補給の実物供与に続き、防衛要請の受領返書から明示手配・実出陣・到着・守備・帰還へ接続。部隊と所有を保持し、出陣時の家の実米を同じ軍が消費して未使用分だけ返納。固定宛先の物理報告、元期限/取消到達、不達再送と重複防止、未開封情報を使わない取消を検査。 2026-11-17（S06）：同盟の破約への制裁（攻められた家の同盟の家が同盟を解く）と悪名。縁のある家は破りにくい。条項と現地履行は S09。",
       "remaining": "一般通行軍対応、複数軍/全国NPCの自主的履行、違反裁定/制裁/条項変更・婚姻/人質と長期判断。 統合案で追加：§15 従属の条項と違反（HANDOFF_D3_D4）・§26 Z13 盟約の取り決め（同じ頃の出兵・単独で和睦しない）と破約。 2026-11-05 明確化：不履行の発生・証拠・本人認識・責任と処遇の判断を分離する（家法承継の決定§2、実装未完了）。 既存仕様の具体化：配下の攻撃について、行為者・命令者・家の対外義務・委任者の監督と通知・各人の証拠を分け、抗議から現地措置と交渉・履行へ接続する（MORI_MOTONARI_RETAINER_INCIDENTS.md）。一律の連帯責任・免責を新設せず、実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：国人連合の参加義務から共同出陣・限定的指揮・補給・撤収・返報・精算までを接続する。退避、任務撤収、盟約離脱、単独和睦を分け、所有・返還条件と既存債務を保持する（MORI_MOTONARI_COALITION_OPERATIONS.md、実装・シナリオ検査は未実施）。",
       "evidence": [
         "Core/Contracts/TreatyDefense.cs",
@@ -2822,7 +2825,8 @@
         "Docs/Design/TruceNegotiationV1/verification.json",
         "Docs/Decisions/2026-11-05_HOUSE_LAW_SUCCESSION.md",
         "Docs/Proposals/MORI_MOTONARI_RETAINER_INCIDENTS.md",
-        "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md"
+        "Docs/Proposals/MORI_MOTONARI_COALITION_OPERATIONS.md",
+        "Docs/Design/Diplomacy2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2830,7 +2834,7 @@
     {
       "id": "BD-43",
       "status": "design_only",
-      "existing": "婚姻/養子の基本方針がある。 成人養子の本人・家の承諾・実施を分離し、役割/既知代表者/期限を固定。移動/不在/辞退/期限/重複/循環を確認し、所属/役職/所領を変えない。 明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 2026-11-17（S01）：百代鏡DBに兄弟姉妹を採録（追加の版）。開始時の婚姻・養子と兄弟の使いみちは S02・S06。",
+      "existing": "婚姻/養子の基本方針がある。 成人養子の本人・家の承諾・実施を分離し、役割/既知代表者/期限を固定。移動/不在/辞退/期限/重複/循環を確認し、所属/役職/所領を変えない。 明示された未婚の成人登録武将の婚姻を接続。本人・家の承諾・現地実施を分離し、養子と共通の判定で重複/親族/操作順を検査。 当主が実子・養子を後継に指名し、家臣から届いた返書を開く。指名の変更後も旧候補への誓紙を区別する。婚姻を実施した両家の縁戚を確認できる。 2026-11-17（S01）：百代鏡DBに兄弟姉妹を採録（追加の版）。開始時の婚姻・養子と兄弟の使いみちは S02・S06。 2026-11-17（S06）：百代鏡DBの配偶者・養親を事実として導き、相続人・操作の引き継ぎ・家どうしの縁に使う。婚姻による同盟と破約での離縁。未成年の予約・遠隔婚姻・強い家からの養子は S09。",
       "remaining": "史実の家族採録・出生・離縁・未成年予約・遠隔婚姻・所属変更後の再確認。 統合案で追加：§15 D2 婚姻同盟・§12 S6 強い家からの養子。 2026-11-05 既存仕様の具体化：成人養子の合意・実施、既存の後継指名や家法との競合、家督と個別引継ぎを接続する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。旧案の一律除外を採らず、後継指名の無条件解除や未成年縁組操作も追加しない。実装・シナリオ検査は未実施。 2026-11-06採用：子の教育・養育と養子縁組の合意を区別し、教師の選任で親子・家督・主従を一括変更しない。既存の出生原本と家族関係へ接続する。",
       "evidence": [
         "Core/Contracts/AdultMarriage.cs",
@@ -2854,7 +2858,8 @@
         "Docs/Design/HeirDesignationV1/verification.json",
         "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
         "Core/Contracts/HakutaiDbSupplement.cs",
-        "Docs/Design/HistoricalDataV1/verification.json"
+        "Docs/Design/HistoricalDataV1/verification.json",
+        "Docs/Design/Diplomacy2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3031,7 +3036,7 @@
     {
       "id": "BD-48",
       "status": "foundation",
-      "existing": "活動軍を返して借り直さず、同じ案件・兵・軍用倉・携行米を保持して指揮原本を別途再合意する。旧書状/署名は保持し、複数拠点の返納済み台帳も元の家・元の数量から再開する。",
+      "existing": "活動軍を返して借り直さず、同じ案件・兵・軍用倉・携行米を保持して指揮原本を別途再合意する。旧書状/署名は保持し、複数拠点の返納済み台帳も元の家・元の数量から再開する。 2026-11-17（S06）：家の約束は当主が代わっても続き、継いだ人に約束の一覧と遺産を知らせる。本人の私的な約束の一覧は S11。",
       "remaining": "遠隔展開軍/NPC軍、一般条約/人質/保証・死亡時の財産と一般相続。 2026-11-05 既存仕様の具体化：存命隠居時の私財・個人債務、家の義務、扶持の実給付、拠点と第三者所有を区別する（MORI_MOTONARI_SUCCESSION_TRANSFERS.md）。養子・家督交代だけで全財産と契約を一括移転せず、適法に完了した履行や消費を巻き戻さない。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：客将本人・元の家・受入側の所有、貸与物、未払いと返還義務を保ち、帰還や指揮の終了で契約・債務を自動消去しない（MORI_MOTONARI_GUEST_SERVICE.md）。実装・シナリオ検査は未実施。 2026-11-05 A案採用：再興時に有効に残る家の権利と未払い・約束を原本ごとに照合し、継続・承継同意待ち・係争を扱う。有効な移転・引受け・清算を巻き戻さず、個人債務を家へ一括変更せず、履行済みの請求を二重計上しない（2026-11-05_HOUSE_RESTORATION_CONTINUITY.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.ActiveSuccession.cs",
@@ -3099,7 +3104,8 @@
         "Core/Contracts/NewGameSetup.cs",
         "Docs/Proposals/MORI_MOTONARI_SUCCESSION_TRANSFERS.md",
         "Docs/Proposals/MORI_MOTONARI_GUEST_SERVICE.md",
-        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md"
+        "Docs/Decisions/2026-11-05_HOUSE_RESTORATION_CONTINUITY.md",
+        "Docs/Design/Diplomacy2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2

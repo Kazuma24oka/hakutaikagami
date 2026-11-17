@@ -84,6 +84,8 @@ public static class ControlSuccession
             var person=FamilyBirth.People(w).Single(p=>p.Id==terms.Child.Value);
             result.Add((terms.Child,terms.Child==named,person.BirthYear??int.MaxValue));
         }
+        // 開始時の養子（百代鏡DBの養親、一覧の Diplomacy2）。
+        foreach(var child in Diplomacy2.AdoptedChildren(w,head))result.Add((child,child==named,FamilyBirth.People(w).FirstOrDefault(p=>p.Id==child.Value)?.BirthYear??int.MaxValue));
         return result.Where(c=>w.Characters.SingleOrDefault(x=>x.Id==c.Person)?.Life==state)
             .DistinctBy(c=>c.Person).OrderByDescending(c=>c.Named).ThenBy(c=>c.Born).ThenBy(c=>c.Person.Value,StringComparer.Ordinal).Select(c=>c.Person).ToArray();
     }

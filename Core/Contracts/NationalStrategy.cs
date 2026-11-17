@@ -80,6 +80,8 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyEscape[]? Escapes {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyMerit[]? Merits {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyFief[]? Fiefs {get;init;}
+    // 婚姻による同盟の夫婦（一覧の Diplomacy2 の世界だけ）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyMarriage[]? Marriages {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDefection[]? Defections {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
@@ -340,7 +342,7 @@ public static class NationalStrategy
         {
             if(Bound(pacts.ToArray(),a,b,now)||s.Campaigns.Any(c=>c.At>now-180*86400&&(c.Attacker.Value==a&&c.Defender.Value==b||c.Attacker.Value==b&&c.Defender.Value==a)))continue;
             var threat=borders[a].Intersect(borders[b]).Where(c=>strength.TryGetValue(c,out var x)&&x>strength[a]&&x>strength[b]).OrderBy(c=>c,StringComparer.Ordinal).FirstOrDefault();
-            if(threat==null||Draw(w,$"alliance/{a}/{b}/{date:yyyy-MM}")>=200)continue;
+            if(threat==null||Draw(w,$"alliance/{a}/{b}/{date:yyyy-MM}")>=(Diplomacy2.On(w)?Diplomacy2.AllianceChance(w,a,b,now):200))continue;
             var pact=new StrategyPact(new($"pact:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(a+"/"+b))[..12]}"),new(a),new(b),"alliance",now,now+2*365*86400L,w.CommitSequence,"threat:"+threat);
             pacts.Add(pact);letters.Add((pact,""));
         }
@@ -435,10 +437,11 @@ public static class NationalStrategy
                     if(basis==null&&Draw(w,"history/"+e.Id+"/"+f.Id)<(mode==HistoryMode.Historical?900:500)){basis="history:"+e.Id;pick=known[0];history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"fired"));}
                     else history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"declined"));
                 }
-            if(basis==null&&bound.Length>0&&Draw(w,$"betray/{f.Id}/{date:yyyy-MM}")<30)
+            if(basis==null&&bound.Length>0&&Draw(w,$"betray/{f.Id}/{date:yyyy-MM}")<(Diplomacy2.On(w)?Diplomacy2.BetrayChance(w,f.Id,bound[0].t.Owner!,w.ElapsedSeconds):30))
             {
                 var victim=bound[0].t;basis="betrayal";pick=victim;
                 for(int n=0;n<pacts.Count;n++)if(pacts[n].Broken==null&&(pacts[n].A.Value==f.Id&&pacts[n].B.Value==victim.Owner||pacts[n].B.Value==f.Id&&pacts[n].A.Value==victim.Owner))pacts[n]=pacts[n] with{Broken=w.ElapsedSeconds};
+                Diplomacy2.Sanctions(w,pacts,f.Id,victim.Owner!,w.ElapsedSeconds);
             }
             // 上洛：自分が京の主でなく、境に山城の城があり、相手の2倍以上強い家は、月に30%でその城を目指す。
             if(basis==null&&Capital(w)?.Value!=f.Id&&targets.Where(t=>InKyoto(t.Site)&&mine>=2*power.GetValueOrDefault(t.Owner!,50)).OrderBy(t=>t.Site,StringComparer.Ordinal).FirstOrDefault() is {Site:not null} kyotoTarget&&Draw(w,$"jouraku/{f.Id}/{date:yyyy-MM}")<300)
@@ -459,6 +462,8 @@ public static class NationalStrategy
         if(StrategyRestoration.Enabled(w))campaigns.AddRange(StrategyRestoration.Uprisings(w,s,owners,playerHouse,near,campaigns,date));
         var coalitions=Coalitions(w,s,pacts,out var formed);
         w.Strategy=s with{Campaigns=campaigns.ToArray(),History=history.Count==0?null:history.ToArray(),Pacts=pacts.Count==0?null:pacts.ToArray(),Coalitions=coalitions};
+        // 婚姻による同盟（一覧の Diplomacy2）：今月結んだ同盟に、両家の独身の成人の男女の婚姻を添える。
+        if(Diplomacy2.On(w)){var wed=(w.Strategy.Marriages??[]).ToList();foreach(var p in pacts.Where(p=>p.Kind=="alliance"&&p.From==w.ElapsedSeconds&&p.Broken==null&&!wed.Any(m=>m.Pact==p.Id))){w.Strategy=w.Strategy with{Marriages=wed.ToArray()};if(Diplomacy2.MarryFor(w,p) is {} m)wed.Add(m);}if(wed.Count>0)w.Strategy=w.Strategy with{Marriages=wed.ToArray()};}
         foreach(var c in formed){CoalitionLetters(w,c);InviteThePlayer(w,c);}
         foreach(var (pact,sender) in pactLetters)PactLetters(w,pact,sender);
     }

@@ -35,7 +35,7 @@ public static class MortalSuccession
         var child=FamilyBirth.People(w).Where(p=>(p.BirthParents??[]).Contains(dead.Value)).Select(p=>new EntityId(p.Id))
             .Where(p=>AdultAlive(w,p,at,rev+1)).OrderBy(p=>Born(w,p)??int.MaxValue).ThenBy(p=>p.Value,StringComparer.Ordinal).Cast<EntityId?>().FirstOrDefault();
         if(child is {} c)return (c,"成人の実子");
-        var spouse=AdultMarriage.Spouses(w,dead,at,rev).Where(p=>AdultAlive(w,p,at,rev+1)).OrderBy(p=>p.Value,StringComparer.Ordinal).Cast<EntityId?>().FirstOrDefault();
+        var spouse=AdultMarriage.Spouses(w,dead,at,rev).Concat(Diplomacy2.Spouses(w,dead,at)).Distinct().Where(p=>AdultAlive(w,p,at,rev+1)).OrderBy(p=>p.Value,StringComparer.Ordinal).Cast<EntityId?>().FirstOrDefault();
         return spouse is {} s?(s,"配偶者"):null;
     }
     // 私財の動き：死亡の時点の私財（正の額だけ。借りは残す）が相続人の私財へ移る。
@@ -56,7 +56,7 @@ public static class MortalSuccession
     static bool MayInherit(ContractWorld w,EntityId actor,EntityId dead)=>
         (w.HeirNominations??[]).Any(x=>x.Head==dead&&x.Heir==actor)||
         (FamilyBirth.People(w).FirstOrDefault(p=>p.Id==actor.Value)?.BirthParents??[]).Contains(dead.Value)||
-        AdultMarriage.Spouses(w,dead,long.MaxValue,long.MaxValue).Contains(actor);
+        AdultMarriage.Spouses(w,dead,long.MaxValue,long.MaxValue).Contains(actor)||Diplomacy2.Spouses(w,dead,long.MaxValue).Contains(actor);
     // 相続の記録（死亡の原本から導く）。本人は自分が相続人か死者の家族のものだけ見る。
     public static EstateTransfer[] Estates(ContractWorld w,EntityId viewer)
     {
