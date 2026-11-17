@@ -50,7 +50,8 @@ public sealed class Domestic2Tests
     [Fact]
     public void CraftsmenAppearByHistoryModeAndGunsNeedIronAndSaltpeter()
     {
-        var w=NationalStart.Create(NationalStartTests.Nobunaga());
+        // 交易船の南蛮の鉄砲（一覧の Logistics2）を除いて、職人の作る鉄砲だけを確かめる。
+        var w=NationalStart.Create(NationalStartTests.Nobunaga());w.NewGame=w.NewGame! with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.Logistics2).ToArray()};
         Month(w,1560,6);
         var crafts=Domestic2.Crafts(w);
         Assert.Contains(crafts,c=>c.Name=="国友の鉄砲鍛冶");Assert.Contains(crafts,c=>c.Name=="穴太衆");

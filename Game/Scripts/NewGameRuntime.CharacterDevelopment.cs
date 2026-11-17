@@ -30,7 +30,18 @@ public partial class NewGameRuntime
              foreach(var (label,v) in new[]{("四公六民",40),("五公五民",50),("六公四民",60)}){var b=new Button{Text=label};b.Pressed+=()=>Order("decree",null,v);rates.AddChild(b);}
              box.AddChild(note);
          }
-         if(person==Session.PlayerControl)foreach(var job in Domestic2.Board(w1,person))Text($"{job.Kind}　{job.IssuerName}　{job.Fee}文");}
+         if(person==Session.PlayerControl)foreach(var job in Domestic2.Board(w1,person))Text($"{job.Kind}　{job.IssuerName}　{job.Fee}文");
+         // 探物（一覧の Logistics2）：引き受け・見つける・精算。
+         if(person==Session.PlayerControl&&Logistics2.On(w1))
+         {
+             long seen=Session.Revision;var hint=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};
+             void Work(string step,string target){var r=Session.TreasureWork(step,target,seen);if(r.Code!=ResultCode.Accepted){hint.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCharacterDevelopment();}
+             foreach(var (issuer,t,fee) in Logistics2.Offers(w1,person))Button($"{t.Name}の探物を引き受ける",()=>Work("accept",t.Id));
+             foreach(var j in Logistics2.Jobs(w1).Where(j=>j.Worker==person&&j.Phase!="精算済み"))
+             {var t=Logistics2.Treasures(w1).Single(x=>x.Id==j.Treasure);
+              if(j.Phase=="引受中")Button($"{t.Name}を{(j.Buy?"買う":"見つける")}",()=>Work("find",j.Id));else Button($"{t.Name}の探物を精算する",()=>Work("settle",j.Id));}
+             box.AddChild(hint);
+         }}
         var chooser=new OptionButton();box.AddChild(chooser);var people=Snapshot().NewGame!.Start.People;
         // Names already belong to the scenario roster; the selected card never exposes private values.
         for(int n=0;n<people.Length;n++){chooser.AddItem(people[n].Name);if(people[n].Id==person.Value)chooser.Select(n);}

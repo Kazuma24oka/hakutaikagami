@@ -219,6 +219,8 @@ public static class Domestic2
             .ToDictionary(g=>g.Key,g=>g.Select(p=>(Id:new EntityId(p.Id),Site:p.Site)).ToArray(),StringComparer.Ordinal);
         var power=NationalStrategy.Powers(w,owners);
         var held=owners.Where(x=>x.Value!=null&&sites.Value.ContainsKey(x.Key)).GroupBy(x=>x.Value!,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).ToArray(),StringComparer.Ordinal);
+        // 届く物は、前の月の初めより後から今までに届いたもの（月の初めごとに一度だけ数える）。
+        var pm=date.AddMonths(-1);long prevStart=NationalStrategy.MonthStart(w,pm.Year,pm.Month);
         var lastMonth=now-35*Day;
         var recentCampaigns=s.Campaigns.Where(c=>c.At>=lastMonth&&c.At<now).ToArray();
         var settled=s.Outcomes.Where(o=>o.At>lastMonth&&o.At<=now).ToArray();
@@ -476,7 +478,7 @@ public static class Domestic2
         }
 
         // 届いた救済で、村の不満が下がる。
-        foreach(var e in events.Where(e=>e.Kind=="relief"&&e.Arrives is long a&&a>lastMonth&&a<=now&&e.Site!=null)){var d=Get(e.Site!);Put(d with{Relief=d.Relief+e.Amount,Unrest=Math.Max(0,d.Unrest-2)});}
+        foreach(var e in events.Where(e=>e.Kind=="relief"&&e.Arrives is long a&&a>prevStart&&a<=now&&e.Site!=null)){var d=Get(e.Site!);Put(d with{Relief=d.Relief+e.Amount,Unrest=Math.Max(0,d.Unrest-2)});}
 
         // 拠点の村の判断：嘆願→労働の拒否→逃散→連合→一揆。
         var owned=owners.Where(x=>x.Value!=null&&sites.Value.ContainsKey(x.Key)).OrderBy(x=>x.Key,StringComparer.Ordinal).ToArray();
@@ -735,6 +737,7 @@ public static class Domestic2
         rows.Add("歴代　"+string.Join("・",heads.Distinct().Select(p=>PersonName(w,p))));
         var titles=Posts(w,w.ElapsedSeconds).Where(x=>x.Value==house.Value).Select(x=>x.Key).Concat((w.Strategy?.Honors??[]).Where(h=>h.House==house&&!ShogunatePost(h.Kind)).Select(h=>h.Kind)).Distinct(StringComparer.Ordinal).ToArray();
         if(titles.Length>0)rows.Add("家格　"+string.Join("・",titles));
+        if(Logistics2.TreasuresOf(w,house) is {Length:>0} named)rows.Add("名物　"+string.Join("・",named.Select(t=>t.Name)));
         var done=Events(w).Where(e=>e.Kind=="reform"&&e.House==house).Select(e=>e.Text.Split('：')[^1]).ToArray();
         if(done.Length>0)rows.Add("改革　"+string.Join("・",done));
         if(House(w,house) is {} d&&w.NewGame.Start.People.SingleOrDefault(p=>p.Id==viewer.Value)?.Faction==house.Value)
@@ -764,6 +767,7 @@ public static class Domestic2
                 rows.Add(new("道中の護衛",issuer,PersonName(w,issuer),null,80,false));
                 if(SocialWorld.Site(w,viewer) is {} here&&NationalStrategy.Neighbors(here.Value).Any(n=>Territory2.IsCamp(w,new(n))))rows.Add(new("賊の討伐",issuer,PersonName(w,issuer),null,80,false));
             }
+        foreach(var (issuer,t,fee) in Logistics2.Offers(w,viewer))rows.Add(new("探物："+t.Name,issuer,PersonName(w,issuer),new(t.Site),fee,false));
         return rows.DistinctBy(r=>(r.Kind,r.Issuer,r.Personal)).OrderBy(r=>r.Personal).ThenBy(r=>r.Kind,StringComparer.Ordinal).ThenBy(r=>r.Issuer.Value,StringComparer.Ordinal).ToArray();
     }
 

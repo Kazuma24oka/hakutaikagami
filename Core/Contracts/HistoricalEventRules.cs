@@ -51,7 +51,7 @@ public sealed partial class WorldSession
                 var msg=state.Messaging.Messages.Single(x=>x.Id==m.Id.Value);
                 return new PersonalChronicleRow(msg.Id,"開封済みの書状","書状を開封（本文は受信箱で確認）",null,HakutaiKagami.Core.Messaging.MessageFlow.LearnedAt(state.Messaging,msg.Id,actor.Value)!.Value,"書状:"+msg.Id);
               }));
-            rows=rows.Concat(SocialWorld.ChronicleRows(state,actor)).Concat(HistoricalNews.ChronicleRows(state,actor)).Concat(Domestic2.ChronicleRows(state,actor)).Concat(CentralStanding.ChronicleRows(state,actor)).Concat(PeaceBreach.ChronicleRows(state,actor)).Concat(Warfare2.ChronicleRows(state,actor)).Concat(Diplomacy2.ChronicleRows(state,actor));
+            rows=rows.Concat(SocialWorld.ChronicleRows(state,actor)).Concat(HistoricalNews.ChronicleRows(state,actor)).Concat(Domestic2.ChronicleRows(state,actor)).Concat(Logistics2.ChronicleRows(state,actor)).Concat(CentralStanding.ChronicleRows(state,actor)).Concat(PeaceBreach.ChronicleRows(state,actor)).Concat(Warfare2.ChronicleRows(state,actor)).Concat(Diplomacy2.ChronicleRows(state,actor));
             return rows.Where(x=>house==null||x.About(house.Value.Value)).GroupBy(x=>x.Id,StringComparer.Ordinal).Select(g=>g.First()).OrderBy(x=>x.LearnedAt).ThenBy(x=>x.Id,StringComparer.Ordinal).ToArray();
         }
     }
