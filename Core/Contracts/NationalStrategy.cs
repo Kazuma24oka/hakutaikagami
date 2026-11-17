@@ -70,6 +70,10 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyFall[]? Falls {get;init;}
     // 家督争いの決着（一覧の MortalSuccession の世界だけ）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDispute[]? Disputes {get;init;}
+    // 全国の守護の補任と将軍の栄典（一覧の CentralStanding の世界だけ）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyShugo[]? Shugo {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyHonor[]? Honors {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyAppeal[]? Appeals {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDefection[]? Defections {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
@@ -214,7 +218,7 @@ public static class NationalStrategy
     // 城の持ち主が変わる出来事（落城と、擁立で渡した城）を版の順に。
     static IEnumerable<(string Site,string House,long At,long Revision)> Changes(StrategyState s)=>
         s.Outcomes.Where(o=>o.Captured).Select(o=>{var c=s.Campaigns.Single(c=>c.Id==o.Campaign);return (c.Target.Value,c.Attacker.Value,o.At,o.Revision);})
-        .Concat((s.Shoguns??[]).Where(x=>x.Kind=="installed"&&x.Site!=null).Select(x=>(x.Site!.Value.Value,NationalStart.FactionId(Shogun),x.At,x.Revision)))
+        .Concat((s.Shoguns??[]).Where(x=>x.Kind is "installed"&&x.Site!=null).Select(x=>(x.Site!.Value.Value,NationalStart.FactionId(Shogun),x.At,x.Revision)))
         .OrderBy(x=>x.Item4).ThenBy(x=>x.Item3);
     internal static Dictionary<string,string?> Owners(ContractWorld w,StrategyState? s)
     {
@@ -341,6 +345,13 @@ public static class NationalStrategy
                 var (a,d)=g.Key;if(playerHouse.Contains(a)||playerHouse.Contains(d)||Bound(pacts.ToArray(),a,d,now)||a==shogun||d==shogun)continue;
                 long x=power.GetValueOrDefault(a,50),y=power.GetValueOrDefault(d,50);if(x>=3*y)continue;
                 var pact=new StrategyPact(new($"pact:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(a+"/"+d+"/truce"))[..12]}"),new(a),new(d),"truce",now,now+365*86400L,w.CommitSequence,"mediation:"+shogun);
+                // 和睦の命の受諾（一覧の CentralStanding）：両家の当主は京からの書状が届いてから決める。攻める側は相手の2倍以上強ければ半分の確かさで断る。断れば拘束しない。
+                if(CentralStanding.On(w))
+                {
+                    var kyoto=CentralCourtCatalog.KyotoIn(w);long arrive=new[]{a,d}.Max(h=>HistoricalNews.DelayFrom(w,HouseSuccession.Head(w,new(h)),kyoto,now));
+                    bool refuse=x>=2*y&&Draw(w,$"truce-answer/{a}/{d}/{date:yyyy-MM}")<500;
+                    pact=pact with{From=now+arrive,Basis="mediation:"+shogun+(refuse?":refused":":accepted"),Broken=refuse?now+arrive:null};
+                }
                 pacts.Add(pact);letters.Add((pact,sh.Value));
             }
         return pacts;
@@ -376,7 +387,7 @@ public static class NationalStrategy
         s=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});
         {var holder=CapitalHolder(Owners(w,s));var last=s.Capitals is {Length:>0} cs?cs[^1].House.Value:null;
          if(holder!=null&&holder!=last){s=s with{Capitals=[..s.Capitals??[],new(new(holder),w.ElapsedSeconds,w.CommitSequence)]};if(last!=null)CapitalLetter(w,holder);}}
-        s=ShogunTurn(w,s);
+        s=ShogunTurn(w,s);s=CentralStanding.Month(w,s,Owners(w,s));s=PeaceBreach.Month(w,s);
         if(StrategyDefections.Enabled(w)){var before=(s.Defections??[]).Length;s=StrategyDefections.Decide(w,s,Powers(w,Owners(w,s),InitialCounts(w)),date);
             if(NationalSystems.On(w,"DefectionLetters"))foreach(var d in (s.Defections??[]).Skip(before))DefectionLetter(w,d);}
         var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(w,owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
@@ -491,6 +502,8 @@ public static class NationalStrategy
                 var join=Vassals(w,s,c.Attacker.Value).Where(v=>near.Contains(v)&&v!=c.Defender.Value).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
                 allies=[..allies,..guard];local=join;
             }
+            // 守護の実権（一覧の CentralStanding）：その国の小さな家が守護の攻めに加わる。
+            if(CentralStanding.On(w))local=[..local,..CentralStanding.ShugoSupport(w,c,owners0,h=>Strength(w,h,owners0,initial0),allies.Select(a=>a.Value).Concat(Vassals(w,s,c.Defender.Value)).Concat(local.Select(x=>x.Value)))];
             foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
             foreach(var x in local)a=checked(a+Strength(w,x.Value,owners0,initial0)/2);
             // 再興の挙兵への後援（一覧の RestorationSupport）：落とした家に一年以内に城を奪われた家（今も城を持つ家）は、兵力の半分で後援する。
@@ -572,6 +585,14 @@ public static class NationalStrategy
             var candidate=FamilyBirth.People(w).Where(p=>p.Faction==shogun&&w.Characters.SingleOrDefault(c=>c.Id.Value==p.Id)?.Life==LifeState.Adult).OrderBy(p=>p.Lord==null?0:1).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
             var site=owners.Where(x=>x.Value==patron.Value&&InKyoto(x.Key)).Select(x=>x.Key).OrderBy(x=>x,StringComparer.Ordinal).FirstOrDefault();
             if(candidate!=null&&site!=null)rows.Add(new("installed",patron,new(candidate.Id),new(site),w.ElapsedSeconds,w.CommitSequence));
+        }
+        // 将軍の継承（一覧の CentralStanding）：将軍家が城を持ち、将軍が亡くなっていれば、将軍家の成人から後継を立てる。京の主（将軍家以外）がいれば、その当主と親しい人を推す。
+        else if(holds&&CentralStanding.On(w)&&SupremeOffice.ShogunAt(w,w.ElapsedSeconds,w.CommitSequence) is null&&(last==null||last.Kind!="vacant"))
+        {
+            var backer=Capital(w) is {} p0&&p0.Value!=shogun?p0:(EntityId?)null;var ph=backer is {} pp?HouseSuccession.Head(w,pp):(EntityId?)null;
+            var heir=FamilyBirth.People(w).Where(p=>p.Faction==shogun&&w.Characters.SingleOrDefault(c=>c.Id.Value==p.Id)?.Life==LifeState.Adult&&new EntityId(p.Id)!=w.PlayerControl)
+                .OrderByDescending(p=>ph is {} h?SocialWorld.ConsentBonus(w,h,new(p.Id),w.ElapsedSeconds,w.CommitSequence):0).ThenBy(p=>p.BirthYear??int.MaxValue).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
+            if(heir!=null)rows.Add(new("succeeded",backer,new(heir.Id),null,w.ElapsedSeconds,w.CommitSequence));
         }
         return rows.Count==(s.Shoguns?.Length??0)?s:s with{Shoguns=rows.ToArray()};
     }
@@ -691,6 +712,7 @@ public static class NationalStrategy
                 !(c.Basis==Border||c.Basis=="betrayal"||c.Basis==Jouraku||c.Basis==Restoration&&StrategyRestoration.Enabled(w)||c.Basis.StartsWith("history:",StringComparison.Ordinal)&&HistoryFor(w).Any(e=>"history:"+e.Id==c.Basis))||Owner(w,c.Target,c.At,c.Revision)!=c.Defender)
                 throw new InvalidDataException("出陣の記録が不正です");
         foreach(var x in s.Successions??[])if(!factions.Contains(x.House.Value)||x.At>w.ElapsedSeconds||x.Revision>w.CommitSequence||!IsMonthStart(w,x.At)||w.Characters.SingleOrDefault(c=>c.Id==x.Previous)?.Life!=LifeState.Dead||!w.Characters.Any(c=>c.Id==x.Heir))throw new InvalidDataException("家督の記録が不正です");
+        PeaceBreach.Validate(w,s,prior?.Strategy);
         if(prior?.Strategy?.Disputes is {} oldDisputes&&!(s.Disputes??[]).Take(oldDisputes.Length).SequenceEqual(oldDisputes,StrategyDisputeComparer.Instance))throw new InvalidDataException("過去の家督争いの記録が変更されています");
         if((s.Disputes??[]).Any(d=>!(s.Successions??[]).Any(x=>x.House==d.House&&x.Previous==d.Previous&&x.Heir==d.Winner&&x.Revision==d.Revision)))throw new InvalidDataException("家督争いの記録が家督と合いません");
         if(prior?.Strategy?.Successions is {} oldSuccessions&&!(s.Successions??[]).Take(oldSuccessions.Length).SequenceEqual(oldSuccessions))throw new InvalidDataException("過去の家督の記録が変更されています");

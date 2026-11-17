@@ -60,6 +60,7 @@ public partial class NewGameRuntime
         var rows=Session.PersonalChronicle(Session.PlayerControl);
         var house=new OptionButton();house.AddItem("すべての既知記録");var houses=rows.SelectMany(r=>r.Houses??(r.House!=null?[r.House]:[])).Distinct().Where(id=>Snapshot().Definitions.Organizations.Any(o=>o.Id.Value==id)).ToArray();foreach(var id in houses)house.AddItem(Snapshot().Definitions.Organizations.Single(o=>o.Id.Value==id).Name);box.AddChild(house);
         var entries=new VBoxContainer();box.AddChild(entries);
+        foreach(var breach in PeaceBreach.Cases(Snapshot(),Session.PlayerControl)){var c=breach;var b=new Button{Text=(Snapshot().Definitions.Organizations.SingleOrDefault(o=>o.Id==c.BreakingHouse)?.Name??c.BreakingHouse.Value)+"の和睦の違反を取次へ訴える"};box.AddChild(b);b.Pressed+=()=>{Submit(Session.AppealPeaceBreach(c.Campaign,Session.Revision));dialog.Hide();dialog.QueueFree();Refresh();};}
         string Readable(PersonalChronicleRow r)=>r.Text.StartsWith("initial-self-role:")?"開始時の本人の立場を確認":r.Text.StartsWith("task:")?"届いた依頼の内容を確認":r.Text.StartsWith("route-open:")?"道の通行情報を確認":r.Text.StartsWith("返報を認識:")?"任務の返報を読み、結果を確認":r.Kind=="認識した記録"?"現地の事情を確認（詳細は受信記録を参照）":r.Text;
         var openedNotices = Branch(Session.PlayerControl).Knowledge.Messages
             .Where(m => m.KnownBody != null).Select(m => m.Id.Value).ToHashSet();

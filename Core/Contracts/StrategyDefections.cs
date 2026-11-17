@@ -29,6 +29,8 @@ public static class StrategyDefections
             if(NationalStrategy.DbOverlord(w,house) is not {} overlord||!factions.Contains(overlord)||Left(s,house,overlord))continue;
             if(PlayerHouse(house)||PlayerHouse(overlord)||!Adult(house)||power.GetValueOrDefault(house)==0||!Shaken(s,overlord,now))continue;
             if(power.GetValueOrDefault(house)*2<power.GetValueOrDefault(overlord,50))continue;
+            // 守護の実権（一覧の CentralStanding）：その国の守護に従う家は離反しない。
+            if(w.NewGame.Start.Factions.FirstOrDefault(f=>f.Id==house)?.Home is {} home&&CentralStanding.IsShugo(w,overlord,CentralStanding.ProvinceOf(new(home)),now))continue;
             if(Draw(w,$"defect/{house}/{date:yyyy-MM}")>=100)continue;
             rows.Add(new(new(house),new(overlord),now,w.CommitSequence));
         }

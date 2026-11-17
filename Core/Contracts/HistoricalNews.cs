@@ -15,6 +15,8 @@ public static class HistoricalNews
     public static bool Enabled(ContractWorld w)=>NationalSystems.On(w,NationalStrategy.Events2)&&NationalStrategy.Enabled(w);
 
     static RoutePoint? SitePoint(ContractWorld w,EntityId site)=>BranchRoutes.GraphNodes(w).FirstOrDefault(n=>"site:"+n.Id==site.Value)?.Position;
+    // その場所から本人のところへ噂が届くまでの時間（1日＋30kmごとに1日）。
+    public static long DelayFrom(ContractWorld w,EntityId viewer,EntityId site,long at)=>SitePoint(w,site) is {} where?Delay(w,viewer,where,at):Day;
     static long Delay(ContractWorld w,EntityId viewer,RoutePoint where,long at)
     {
         var p=RegionalCampaign.ActorPointAt(w,viewer,at);long de=p.EastMm-where.EastMm,dn=p.NorthMm-where.NorthMm;

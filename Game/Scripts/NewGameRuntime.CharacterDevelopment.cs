@@ -14,6 +14,8 @@ public partial class NewGameRuntime
         void Text(string text)=>box.AddChild(new Label{Text=text,AutowrapMode=TextServer.AutowrapMode.WordSmart});
         void Button(string text,Action action,bool disabled=false){var b=new Button{Text=text,Disabled=disabled,CustomMinimumSize=new Vector2(0,34)};box.AddChild(b);b.Pressed+=action;}
         Text(PersonName(person));
+        {var w0=Snapshot();if(CentralStanding.KnownTitles(w0,Session.PlayerControl,person) is {Length:>0} titles)Text(string.Join("　",titles));
+         if(CentralStanding.SeatAtSite(w0,person) is {} seat)Text($"席次　{seat.Seat}／{seat.Of}");}
         var chooser=new OptionButton();box.AddChild(chooser);var people=Snapshot().NewGame!.Start.People;
         // Names already belong to the scenario roster; the selected card never exposes private values.
         for(int n=0;n<people.Length;n++){chooser.AddItem(people[n].Name);if(people[n].Id==person.Value)chooser.Select(n);}

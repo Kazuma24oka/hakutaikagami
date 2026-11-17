@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "91d6818e52248b6359cbfec555e2234af5b22266f4b2efe34c3f0a1e34d7e3c4",
+    "Docs/Development/ProgressV1/estimate.json": "74e963810ea7f900ad4c38aa2fc4ed794868bc1fa18c3ecd6c1e0524bf7ab36f",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "496632b3fb62e9cdc2cbf6b0447ca155d8daff53c685f8657ed123acd7169052",
+    "Scripts/check_approval_batch.py": "777df5f26f1341a3ab3dad8e99d410f5c4fba2ab2be1898569c11b4490b8a142",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "ca5aecc887f8899e14d699d480c1f40733ae1b9d0ffda63e8c4b890593c9f9c4",
+    "Docs/Development/CURRENT_STAGE.md": "b5266912faccd25d073623b0d97e3906e208857d042673b9c6763dc57ad6a868",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
     "Core/Contracts/NewGameWorld.cs": "238f98d35db591f59dae127318693751d4617039d43ee26512e6c8a39a68c391",
@@ -269,7 +269,7 @@
     "Core/Contracts/NewGameSetup.cs": "96f1352db381012056e3c6a14a497f66ca3508e325f8e6da026e63ad259f5f8e",
     "Core/Contracts/NewCampaignStore.cs": "0124e03da0cfdb4b89c6d33054331511a328396bc89c5c0f4a01afa7740b34b7",
     "Tests/CharacterDevelopmentTests.cs": "dcd5c5c9430de90344c1b9224cf0bf6cb46fd8893d32ca3985eeb22763f51330",
-    "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "9307bda6815fb3aa60ecd372a772d269a51855c1e66b3c2d79a9d4b956356e15",
+    "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "f83a4d0bf0b009349451f26cff2e000b90c49e54c18f731563537f4f8bc295af",
     "Game/Scripts/OfficerLibraryTrial.cs": "9241dbfdfa265ecdf278ca4b5eabfc4093e255f0a6bf0bf7f66602127615f9ae",
     "Game/Scripts/NewGameFrontEnd.cs": "aca08e2a63452476ee36969d080eeabd583d2087abe81b2111b027665c32d991",
     "Docs/Design/CharacterDevelopmentV1/verification.json": "2465c82c2592674c00430078fd41588277d4d4c46ee331d342e52ae8165fc16c",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "efdcddff016b46c9c7e078eb21edd4cbd18fba52bacfc5ca94fd84254f132f2f",
     "Core/Contracts/NewGameNpcRoutine.cs": "49db6539ff2e3cd8bceeec7317f78dfdfd7ab5dd142a6cf7e1873d64ca1341a6",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "51030f529fcce3e9cc3c7c84e820cf550bc3384135fcf962d4f27c9022421d3a",
+    "Core/Contracts/ContractJson.cs": "4b786ba76125e667e5f531f217bdbf6862e964549302fbf2d4f07b9abe7d386a",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -442,7 +442,7 @@
     "Core/Contracts/TimeObservationSweep.cs": "7ac32f8ff2654f6ea5ea22471eac6c61a868a3878213b5a5215efbb1f417387b",
     "Tests/WorldTimeControlTests.cs": "b49cba2abf6c1a601fc45b9a4a2df81a8650e8f7d5ac2dac48c838f6dee90fd1",
     "Tests/WorldTimeTravelTests.cs": "d74bc40427190f641f0df372b40b1c1d7c83e4b850acf4443edc338791b76cc7",
-    "Game/Scripts/NewGameRuntime.WorldTime.cs": "9effd4346da00f1a4c49dbf9c30ae651f374822ac2bdfa6645fe1baaff493cb4",
+    "Game/Scripts/NewGameRuntime.WorldTime.cs": "ce362539b98d857184d8934270ce2ecb177588169801f7f82190979901016251",
     "Game/Scripts/WorldTimeCheck.cs": "90477b2af5e5af5bf80e7370c4025c6b1781a1749c2e339af3dbbcd569149c27",
     "Docs/Design/WorldTimeV1/verification.json": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
     "Docs/Design/WorldTimeV1/completion.json": "c9dbef24f4d04462d73c0a295d53abf8508f4a84923f601df3eb6b60601e49f8",
@@ -473,7 +473,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v53.json": "286550eb6dd1017c0a18354372539da4bd89a1912ade87ebe21e58a084660a44",
     "Docs/Design/HistoricalChronicleV1/scope.md": "fca898a57a5b4c92490ef34ca3cfff3b9d37e3ba8774b74a0304d6feee218369",
     "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d",
-    "Core/Contracts/HistoricalEventRules.cs": "fab11838e5060f4d0558507d6567e31f6b031ff25250ff1d0522cbbb511da563",
+    "Core/Contracts/HistoricalEventRules.cs": "9fbb9a0baae679ba8c55d0659abdfa439de49b8c7a259c4e77f182a935b89785",
     "Tests/HistoricalEventRulesTests.cs": "ac77c5cca3b6254518ffae25f990f4b4d12e4df60ae3fc2b3a6167018264408c",
     "Game/Scripts/HistoricalChronicleCheck.cs": "75f7384777b129127a662b0e0b7c9a8c9bf40486af6745e4de4a64a8520dbc5d",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
@@ -491,7 +491,7 @@
     "Docs/Design/VerbNotebookV1/scope.md": "e367625aac63ed53753570194371ad39010232293ef37078f89d6b8cc0ab7728",
     "Scripts/verify_verb_notebook.py": "1f0b5ef15fbb146ed4d9f578dbf13396a295c5aacc002af38efe75deb1459986",
     "Docs/Development/ProgressV1/approval-baseline-v55.json": "ddc300f6495fe539b5bdbf942a81f77d372268ef2a475c5042ecff1e2a672e02",
-    "Core/Contracts/SocialWorld.cs": "98db1886916e9f86d7ad80af0fc4f8c46b2f5938948a8496cf30b879181176b7",
+    "Core/Contracts/SocialWorld.cs": "d24670c8989ba7e4bc39146cd6ba7c0920afaf25da3057e29f1fbc0a305ddfd2",
     "Core/Contracts/WorldSession.SocialCouriers.cs": "054330ed85ec0d20bb3c40ddcb5854861836829609885ac5b2affb9658557a53",
     "Game/Scripts/NewGameRuntime.SocialWorld.cs": "37a7387bbc2ba3dd327695ef0080f7a001e4c473999bedacfc443a42abb419fb",
     "Game/Scripts/SocialWorldCheck.cs": "30402241e590efd06406aec2de71a46ac655481a7a0464028d1aa12d460f595e",
@@ -796,7 +796,7 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "667ef6f4c0db574ed9952e1991ffb94e581e40bcc0ef9d0fd41b88dd59c56e53",
+    "Docs/Development/ProgressV1/index.html": "f18164ab00b0d5abcca96d4671d17b007689a9c44d8fe5c454719744681affc1",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
     "Core/Contracts/NationalNameHistory.cs": "9f6e382ccb983f5cb21b4ca21bef752ebe309f1fbf77e577fd3515b9e94c1e8f",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
@@ -3209,11 +3209,12 @@
     {
       "id": "BD-53",
       "status": "design_only",
-      "existing": "朝廷/幕府への働きかけの基本方針がある。",
+      "existing": "朝廷/幕府への働きかけの基本方針がある。 2026-11-17（S04）：全国の守護の補任、将軍の栄典と偏諱、将軍の継承、仲裁の失効・違反の訴え、将軍の和睦の命の受諾を新規の全国開始に入れた。",
       "remaining": "中央固有の決裁権と交渉案件を実装する。 統合案で追加：§15 朝廷・将軍への取次。 既存仕様の具体化：中央への取次、範囲付き交渉、申請・審査・発給・物理的な返答と各主体の権限を接続する資料を追加（MORI_MOTONARI_CENTRAL_MEDIATION.md）。仲介だけで承諾権・保証義務を与えず、制度的効力と現地履行を分ける。実装・シナリオ検査は未実施。",
       "evidence": [
         "Docs/Design/basic-design-v1.json",
-        "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md"
+        "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md",
+        "Docs/Design/CentralStandingV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3221,10 +3222,11 @@
     {
       "id": "BD-54",
       "status": "design_only",
-      "existing": "称号・任官・実権を分ける基本方針がある。",
+      "existing": "称号・任官・実権を分ける基本方針がある。 2026-11-17（S04）：名乗り（本人と他人の知る範囲）と同じ拠点の席次、補任・栄典・叙任の噂、守護の実権（国の小さな家の加勢・従う家が離反しない）。",
       "remaining": "中央任官の正式地位・名乗り・他者認識・実権を実装する。 統合案で追加：§11 官位・幕府職・家中職（RANKS_AND_OFFICES_V1）・§24 与姓・偏諱。",
       "evidence": [
-        "Docs/Design/basic-design-v1.json"
+        "Docs/Design/basic-design-v1.json",
+        "Docs/Design/CentralStandingV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3232,14 +3234,15 @@
     {
       "id": "BD-55",
       "status": "normal",
-      "existing": "工程9aの代表経路を確認。将軍の空位・追放・擁立、取次と系図認定、三職推任の往復、在職将軍の補任・栄典・仲裁を実装。 2026-11-17（S01）：1560年に年の記録のある官位を名乗りと朝廷の序列の始まりに入れた（例：三好長慶 修理大夫・従四位下）。年の無い官位は在職にしない。",
+      "existing": "工程9aの代表経路を確認。将軍の空位・追放・擁立、取次と系図認定、三職推任の往復、在職将軍の補任・栄典・仲裁を実装。 2026-11-17（S01）：1560年に年の記録のある官位を名乗りと朝廷の序列の始まりに入れた（例：三好長慶 修理大夫・従四位下）。年の無い官位は在職にしない。 2026-11-17（S04）：御供衆・白傘袋・毛氈鞍覆と偏諱、全国の守護、将軍の継承の長期運営。",
       "remaining": "全国の家系史料、全幕府職・全栄典、長期の政治運営、全国プレイの外観は未検証。",
       "evidence": [
         "Docs/Design/basic-design-v1.json",
         "Docs/Design/SupremeOfficeV1/entry-verification.md",
         "Tests/SupremeOfficeTests.cs",
         "Core/Contracts/HakutaiDbSupplement.cs",
-        "Docs/Design/HistoricalDataV1/verification.json"
+        "Docs/Design/HistoricalDataV1/verification.json",
+        "Docs/Design/CentralStandingV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3247,11 +3250,12 @@
     {
       "id": "BD-56",
       "status": "design_only",
-      "existing": "仲裁・服従の基本方針がある。",
+      "existing": "仲裁・服従の基本方針がある。 2026-11-17（S04）：仲裁案の返事の期限（60日）での失効、成立した和睦の違反の訴えと悪名、将軍の和睦の命を両家が受けるか断るか。",
       "remaining": "発給・到達・受容・履行・政治評価と、不達時の扱いを実装する。 統合案で追加：§15 仲裁。 既存仕様の具体化：中央仲裁による個別和平と全体合意条件、同じ版への必要な合意・到達、現地履行を接続する資料を追加（MORI_MOTONARI_CENTRAL_MEDIATION.md）。未成立の拒否と成立後の不履行、違反の訴えと各主体の認識を区別し、既存義務との抵触は別に照合する。実装・シナリオ検査は未実施。",
       "evidence": [
         "Docs/Design/basic-design-v1.json",
-        "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md"
+        "Docs/Proposals/MORI_MOTONARI_CENTRAL_MEDIATION.md",
+        "Docs/Design/CentralStandingV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2

@@ -37,6 +37,8 @@ public static class NationalSystems
         HistoryEvents2,
         // 個人の目標の追加（名声・一門の繁栄・城の奪取）と、1650年の総括の歩み（S03）。
         LifeGoals2,
+        // 京の政治の効果（全国の守護・将軍の栄典と偏諱・守護の実権・名乗りと席次・補任と栄典の噂・将軍の継承、S04）。
+        CentralStanding,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -45,6 +47,7 @@ public static class NationalSystems
     public const string MortalSuccession="MortalSuccession";
     public const string HistoryEvents2="HistoryEvents2";
     public const string LifeGoals2="LifeGoals2";
+    public const string CentralStanding="CentralStanding";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

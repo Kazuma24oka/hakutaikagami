@@ -11,7 +11,7 @@ public static class SupremeOffice
         // 全国：遠方の家の戦略で将軍家が城をすべて失えば空位、京の主が擁立すればその人（奏請による補任が後ならそちらが優先）。
         if(CentralCourtCatalog.National(w) && w.Strategy?.Shoguns?.LastOrDefault(x=>x.At<at||x.At==at&&x.Revision<=revision) is {} turn && turn.Revision>(grant?.Revision??0))
         {
-            if(turn.Kind!="installed" || turn.Shogun is not {} installed)return null;
+            if(turn.Kind is not("installed" or "succeeded") || turn.Shogun is not {} installed)return null;
             incumbent=installed;
         }
         if(Assassination.DeadAt(w,incumbent,at,revision))return null;
