@@ -36,7 +36,7 @@ public sealed class DefectionLetterTests
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
         Assert.True(NationalSystems.On(w,"DefectionLetters"));
         var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
-        var pair=w.NewGame.Start.Factions.Select(f=>(House:f.Id,Overlord:NationalStrategy.DbOverlord(f.Id))).First(x=>x.Overlord!=null&&x.House!=player&&x.Overlord!=player&&w.NewGame.Start.Factions.Any(f=>f.Id==x.Overlord));
+        var pair=w.NewGame.Start.Factions.Select(f=>(House:f.Id,Overlord:NationalStrategy.DbOverlord(w,f.Id))).First(x=>x.Overlord!=null&&x.House!=player&&x.Overlord!=player&&w.NewGame.Start.Factions.Any(f=>f.Id==x.Overlord));
         w.CommitSequence++;
         NationalStrategy.DefectionLetter(w,new(new(pair.House),new(pair.Overlord!),w.ElapsedSeconds,w.CommitSequence));
         var m=Assert.Single(w.Messaging.Messages,m=>m.CorrelationId=="defection:"+pair.House);
@@ -155,8 +155,8 @@ public sealed class LocalLordsTests
         w.Strategy??=new(1,NationalStrategy.Policy,[],[]);
         var owners=NationalStrategy.Owners(w,w.Strategy);var player=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
         var pick=w.NewGame.Start.Castles.Where(c=>c.Faction!=null&&c.Faction!=player).SelectMany(c=>NationalStrategy.Neighbors(c.Id).Select(n=>(Target:c,Vassal:owners.GetValueOrDefault(n))))
-            .First(x=>x.Vassal!=null&&NationalStrategy.DbOverlord(x.Vassal)==x.Target.Faction&&x.Vassal!=player);
-        var defender=pick.Target.Faction!;var attacker=w.NewGame.Start.Factions.First(f=>f.Id!=defender&&f.Id!=pick.Vassal&&f.Id!=player&&NationalStrategy.DbOverlord(f.Id)==null).Id;
+            .First(x=>x.Vassal!=null&&NationalStrategy.DbOverlord(w,x.Vassal)==x.Target.Faction&&x.Vassal!=player);
+        var defender=pick.Target.Faction!;var attacker=w.NewGame.Start.Factions.First(f=>f.Id!=defender&&f.Id!=pick.Vassal&&f.Id!=player&&NationalStrategy.DbOverlord(w,f.Id)==null).Id;
         var c=new StrategyCampaign(new("campaign:national/test/local"),new(attacker),new(defender),new(pick.Target.Id),0,1,"border");
         var s=new StrategyState(1,NationalStrategy.Policy,[c],[]);w.Strategy=s;w.ElapsedSeconds=86400;w.CommitSequence=2;
         var outcome=NationalStrategy.Settle(w,s,[],c);

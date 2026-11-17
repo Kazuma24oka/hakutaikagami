@@ -14,7 +14,7 @@ public static class StrategyRestoration
     public static bool Enabled(ContractWorld w)=>NationalSystems.On(w,"StrategyRestoration");
     static int Draw(ContractWorld w,string key)=>(int)(BinaryPrimitives.ReadUInt32LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes($"strategy-restoration-v1/{w.Seed}/{key}")))%1000);
     const long Day=86400;
-    internal static long Strength(string house)=>Math.Max(50L,NationalStrategy.Cap(house)/3);
+    internal static long Strength(ContractWorld w,string house)=>Math.Max(50L,NationalStrategy.Cap(w,house)/3);
     static void Need([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)]bool ok,string why){if(!ok)throw new InvalidDataException(why);}
 
     // 決着の後、城を持っていたのに一つも持たなくなった家を記録する。

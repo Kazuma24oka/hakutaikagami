@@ -73,6 +73,8 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDefection[]? Defections {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
+// 史実の同盟（S03）：二つの家が結ぶ。どちらかが無い・当主が成人でない・操作する人物の家なら前提が崩れた不発。
+public sealed record HistoricalAlliance(string Id,string Name,string A,string B,int Year,int Month,string Source);
 
 public static class NationalStrategy
 {
@@ -119,6 +121,62 @@ public static class NationalStrategy
         new("takamatsu-1582","備中高松城攻め","G-000131","G-000188","P-005235",1582,4,"通説：天正10年4月から"),
         new("suriagehara-1589","摺上原の戦い","G-000037","G-000040",null,1589,6,"通説：天正17年6月"),
     ];
+
+    // 史実の事件の第2版（2026-11-17、S03。一覧の HistoryEvents2 の世界だけ。今の保存の世界は前の34件のまま）。
+    // 1467年〜1559年（1467年の開始で使う）、1560年代以降の追加、1600年以降（1600年の開始で使う）。家と当主は事件の年の百代鏡DBの版の ID。
+    public const string Events2="HistoryEvents2";
+    public static readonly HistoricalCampaign[] History2=[
+        new("goryo-1467","御霊合戦","G-002967","G-000160","P-007086",1467,1,"通説：応仁元年1月、畠山義就が畠山政長を上御霊社に破る"),
+        new("kamigyo-1467","上京の戦い","G-000155","G-000175","P-010150",1467,5,"通説：応仁元年5月、細川勝元方と山名宗全方が京で戦う（応仁の乱）"),
+        new("ouchi-1467","大内政弘の上洛","G-000192","G-000155","P-006954",1467,8,"通説：応仁元年8月、大内政弘が西軍として上洛"),
+        new("sokokuji-1467","相国寺の戦い","G-000175","G-000155","P-010153",1467,10,"通説：応仁元年10月"),
+        new("magari-1487","六角征伐（鈎の陣）","G-000154","G-000150",null,1487,9,"通説：長享元年9月、将軍足利義尚が近江へ出陣"),
+        new("funaokayama-1511","船岡山合戦","G-000192","G-000484",null,1511,8,"通説：永正8年8月"),
+        new("kawagoe-1546","河越夜戦","G-000104","G-000099",null,1546,4,"通説：天文15年4月"),
+        new("kanoguchi-1547","加納口の戦い","G-000131","G-000117",null,1547,9,"通説：天文16年9月、織田信秀が美濃へ攻め込む"),
+        new("kawanakajima-1553","第一次川中島の戦い","G-000106","G-000134",null,1553,8,"通説：天文22年8月"),
+        new("itsukushima-1555","厳島の戦い","G-000188","G-000192",null,1555,10,"通説：弘治元年10月、毛利元就が陶晴賢を破る"),
+        new("takatenjin-1574","高天神城攻め","G-000106","G-000126",null,1574,5,"通説：天正2年5月"),
+        new("nagashino-1575","長篠の戦い","G-000106","G-000126",null,1575,5,"通説：天正3年5月"),
+        new("kozuki-1577","上月城攻め","G-000131","G-000182","P-005235",1577,11,"通説：天正5年11月"),
+        new("hitotoribashi-1585","人取橋の戦い","G-000069","G-000037",null,1585,11,"通説：天正13年11月"),
+        new("hetsugigawa-1586","戸次川の戦い","G-000236","G-000210",null,1586,12,"通説：天正14年12月"),
+        new("fushimi-1600","伏見城の戦い","G-510070","G-000126","P-001210",1600,7,"通説：慶長5年7月"),
+        new("tanabe-1600","田辺城の戦い","G-510070","G-002972","P-001210",1600,7,"通説：慶長5年7月"),
+        new("sekigahara-1600","関ヶ原の戦い","G-000126","G-510070","P-001209",1600,9,"通説：慶長5年9月"),
+        new("ueda-1600","第二次上田合戦","G-000126","G-000112",null,1600,9,"通説：慶長5年9月"),
+        new("dewa-1600","慶長出羽合戦","G-000134","G-000058",null,1600,9,"通説：慶長5年9月"),
+        new("otsu-1600","大津城の戦い","G-000188","G-000151",null,1600,9,"通説：慶長5年9月"),
+        new("osaka-1614","大坂冬の陣","G-000126","G-000132","P-001209",1614,11,"通説：慶長19年11月"),
+        new("osaka-1615","大坂夏の陣","G-000126","G-000132","P-001209",1615,5,"通説：慶長20年5月"),
+    ];
+    public static readonly HistoricalAlliance[] Alliances=[
+        new("koso-1554","甲相駿三国同盟","G-000106","G-000104",1554,3,"通説：天文23年、武田・北条・今川が婚姻で結ぶ（甲相）"),
+        new("sunso-1554","甲相駿三国同盟（駿相）","G-000123","G-000104",1554,3,"通説：天文23年（駿相）"),
+        new("kiyosu-1562","清洲同盟","G-000131","G-000126",1562,1,"通説：永禄5年1月、織田信長と徳川家康"),
+        new("odatakeda-1565","織田と武田の婚姻","G-000131","G-000106",1565,11,"通説：永禄8年11月、信長の養女が武田勝頼に嫁ぐ"),
+        new("etsuso-1569","越相同盟","G-000134","G-000104",1569,6,"通説：永禄12年6月"),
+        new("koso-1571","甲相同盟の復活","G-000106","G-000104",1571,12,"通説：元亀2年12月"),
+        new("kooetsu-1579","甲越同盟","G-000106","G-000134",1579,9,"通説：天正7年、武田勝頼と上杉景勝"),
+    ];
+    // その世界で判定する史実の出陣（一覧に HistoryEvents2 があれば第2版も）。
+    internal static IEnumerable<HistoricalCampaign> HistoryFor(ContractWorld w)=>NationalSystems.On(w,Events2)?History.Concat(History2):History;
+    public static int EventCount=>History.Length+History2.Length+Alliances.Length;
+    // 史実の同盟：その月のものを、前提（両家があり当主が成人、操作する人物の家でない）と歴史の設定（史実尊重90%・準史実50%・仮想は結ばない）で判定する。
+    static void HistoricalAlliances(ContractWorld w,HashSet<string> playerHouse,HistoryMode mode,DateTime date,List<StrategyHistoryRecord> history,List<StrategyPact> pacts,List<(StrategyPact Pact,string Sender)> letters)
+    {
+        if(!NationalSystems.On(w,Events2))return;long now=w.ElapsedSeconds;
+        foreach(var e in Alliances.Where(e=>e.Year==date.Year&&e.Month==date.Month))
+        {
+            string a=NationalStart.FactionId(e.A),b=NationalStart.FactionId(e.B);
+            bool ok(string f)=>w.NewGame!.Start.Factions.Any(x=>x.Id==f)&&HouseSuccession.Head(w,new(f)) is var h&&w.Characters.SingleOrDefault(c=>c.Id==h)?.Life==LifeState.Adult&&!playerHouse.Contains(f);
+            if(mode==HistoryMode.Fictional){history.Add(new(e.Id,now,w.CommitSequence,"declined"));continue;}
+            if(!ok(a)||!ok(b)||Bound(pacts.ToArray(),a,b,now)){history.Add(new(e.Id,now,w.CommitSequence,"premise"));continue;}
+            if(Draw(w,"history-alliance/"+e.Id)>=(mode==HistoryMode.Historical?900:500)){history.Add(new(e.Id,now,w.CommitSequence,"declined"));continue;}
+            var pact=new StrategyPact(new($"pact:national/{date:yyyyMM}/{ContractJson.Hash(Encoding.UTF8.GetBytes(a+"/"+b+"/history"))[..12]}"),new(a),new(b),"alliance",now,now+5*365*86400L,w.CommitSequence,"history:"+e.Id);
+            pacts.Add(pact);letters.Add((pact,""));history.Add(new(e.Id,now,w.CommitSequence,"fired"));
+        }
+    }
 
     static readonly Lazy<Dictionary<string,string[]>> adjacency=new(BuildAdjacency);
     static Dictionary<string,string[]> BuildAdjacency()
@@ -184,7 +242,7 @@ public static class NationalStrategy
     static IndependenceDeclaration? IndependentHouse(ContractWorld w,string house)=>NationalSystems.On(w,"IndependentHouses")?(w.Declarations??[]).FirstOrDefault(d=>d.House.Value==house):null;
     // 独立した家の兵力：元の家の城一つあたりの兵に、今持つ城の数を掛ける。
     static long IndependentStrength(ContractWorld w,IndependenceDeclaration d,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>
-        Math.Max(50L,(initial.GetValueOrDefault(d.FormerHouse.Value) is int start&&start>0?Cap(d.FormerHouse.Value)*owners.Values.Count(v=>v==d.House.Value)/start:0)-Losses(w).GetValueOrDefault(d.House.Value));
+        Math.Max(50L,(initial.GetValueOrDefault(d.FormerHouse.Value) is int start&&start>0?Cap(w,d.FormerHouse.Value)*owners.Values.Count(v=>v==d.House.Value)/start:0)-Losses(w).GetValueOrDefault(d.House.Value));
     static string HouseName(ContractWorld w,EntityId house)=>w.Definitions.Organizations.SingleOrDefault(o=>o.Id==house)?.Name??(HouseSuccession.Head(w,house) is var h&&FamilyBirth.People(w).SingleOrDefault(p=>p.Id==h.Value)?.Name is {} n?n.Split(' ')[0]+"家":house.Value);
     internal static long MonthStart(ContractWorld w,int year,int month)
     {
@@ -207,18 +265,20 @@ public static class NationalStrategy
 
     static int Draw(ContractWorld w,string key)=>(int)(BinaryPrimitives.ReadUInt32LittleEndian(SHA256.HashData(Encoding.UTF8.GetBytes($"national-strategy-v1/{w.Seed}/{key}")))%1000);
     static readonly System.Collections.Concurrent.ConcurrentDictionary<string,long> caps=new(StringComparer.Ordinal);
-    internal static long Cap(string faction)=>caps.GetOrAdd(faction,f=>NationalStart.DbHouse(f) is {} db?HakutaiDbStart.Roster(db).SoldierCap:0);
+    // 兵の上限は、その世界の開始年の版の名簿から（S03）。
+    internal static long Cap(string faction,int year=1560)=>caps.GetOrAdd(year+"/"+faction,_=>NationalStart.DbHouse(faction) is {} db&&HakutaiDb.Era(year).House(db)!=null?HakutaiDbStart.Roster(db,HakutaiDb.Era(year)).SoldierCap:0);
+    internal static long Cap(ContractWorld w,string faction)=>Cap(faction,NationalSystems.StartYear(w));
     internal static Dictionary<string,long> Powers(ContractWorld w,Dictionary<string,string?> owners)=>Powers(w,owners,InitialCounts(w));
     static Dictionary<string,long> Powers(ContractWorld w,Dictionary<string,string?> owners,Dictionary<string,int> initial)
     {
-        var lost=Losses(w);var p=lost.Count==0?Powers(owners,initial):Powers(owners,initial).ToDictionary(x=>x.Key,x=>Math.Max(50L,x.Value-lost.GetValueOrDefault(x.Key)),StringComparer.Ordinal);
+        var lost=Losses(w);var year=NationalSystems.StartYear(w);var p=lost.Count==0?Powers(owners,initial,year):Powers(owners,initial,year).ToDictionary(x=>x.Key,x=>Math.Max(50L,x.Value-lost.GetValueOrDefault(x.Key)),StringComparer.Ordinal);
         if(NationalSystems.On(w,"IndependentHouses"))foreach(var d in w.Declarations??[])if(owners.ContainsValue(d.House.Value))p[d.House.Value]=IndependentStrength(w,d,owners,initial);
         return p;
     }
-    static Dictionary<string,long> Powers(Dictionary<string,string?> owners,Dictionary<string,int> initial)
+    static Dictionary<string,long> Powers(Dictionary<string,string?> owners,Dictionary<string,int> initial,int year)
     {
         var now=owners.Values.Where(v=>v!=null).GroupBy(v=>v!,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.Count(),StringComparer.Ordinal);
-        return initial.Keys.ToDictionary(f=>f,f=>{int start=initial[f];return Math.Max(50L,start==0?0:Cap(f)*now.GetValueOrDefault(f)/start);},StringComparer.Ordinal);
+        return initial.Keys.ToDictionary(f=>f,f=>{int start=initial[f];return Math.Max(50L,start==0?0:Cap(f,year)*now.GetValueOrDefault(f)/start);},StringComparer.Ordinal);
     }
     static long Strength(ContractWorld w,string faction,Dictionary<string,string?> owners,Dictionary<string,int> initial)=>IndependentHouse(w,faction) is {} ind?IndependentStrength(w,ind,owners,initial):Math.Max(50L,(initial.GetValueOrDefault(faction) is int start&&start>0?Cap(faction)*owners.Values.Count(v=>v==faction)/start:0)-Losses(w).GetValueOrDefault(faction));
     // 合戦の損害を家の兵力に残す（全国の開始の一覧の StrategyLosses を持つ世界だけ）。遠方の合戦で失った兵は、その日から180日かけて同じ割合で戻る。
@@ -235,9 +295,10 @@ public static class NationalStrategy
             var allies=o.Allies??[];long weight=2+allies.Length;Add(c.Defender.Value,Left(b.DefenderLost)*2/weight);foreach(var a in allies)Add(a.Value,Left(b.DefenderLost)/weight);}
         return result;
     }
-    static bool Allied(StrategyState s,string a,string b)
+    static bool Allied(ContractWorld w,StrategyState s,string a,string b)
     {
-        var x=NationalStart.DbHouse(a) is {} da?HakutaiDb.House(da):null;var y=NationalStart.DbHouse(b) is {} db?HakutaiDb.House(db):null;
+        var era=HakutaiDb.Era(NationalSystems.StartYear(w));
+        var x=NationalStart.DbHouse(a) is {} da?era.House(da):null;var y=NationalStart.DbHouse(b) is {} db?era.House(db):null;
         bool Left(string house,string? overlord)=>overlord!=null&&StrategyDefections.Left(s,house,FactionId(overlord));
         return x?.Overlord!=null&&x.Overlord==y?.Id&&!Left(a,x.Overlord)||y?.Overlord!=null&&y.Overlord==x?.Id&&!Left(b,y.Overlord)||x?.Overlord!=null&&x.Overlord==y?.Overlord&&!Left(a,x.Overlord)&&!Left(b,y!.Overlord);
     }
@@ -285,11 +346,12 @@ public static class NationalStrategy
         return pacts;
     }
     internal static bool Resting(StrategyState s,string a,string b,long now)=>s.Outcomes.Any(o=>o.At>now-90*86400&&s.Campaigns.Single(c=>c.Id==o.Campaign) is var c&&(c.Attacker.Value==a&&c.Defender.Value==b||c.Attacker.Value==b&&c.Defender.Value==a));
-    static readonly Lazy<Dictionary<string,HashSet<string>>> vassalsOf=new(()=>HakutaiDb.Houses.Where(h=>h.Overlord!=null).GroupBy(h=>NationalStart.FactionId(h.Overlord!),StringComparer.Ordinal)
+    static readonly System.Collections.Concurrent.ConcurrentDictionary<int,Dictionary<string,HashSet<string>>> vassalsOf=new();
+    static Dictionary<string,HashSet<string>> VassalsOf(int year)=>vassalsOf.GetOrAdd(year,y=>HakutaiDb.Era(y).HouseList.Where(h=>h.Overlord!=null).GroupBy(h=>NationalStart.FactionId(h.Overlord!),StringComparer.Ordinal)
         .ToDictionary(g=>g.Key,g=>g.Select(h=>NationalStart.FactionId(h.Id)).ToHashSet(StringComparer.Ordinal),StringComparer.Ordinal));
-    static HashSet<string> Vassals(string faction)=>vassalsOf.Value.GetValueOrDefault(faction)??[];
-    static HashSet<string> Vassals(StrategyState s,string faction)=>Vassals(faction).Where(v=>!StrategyDefections.Left(s,v,faction)).ToHashSet(StringComparer.Ordinal);
-    internal static string? DbOverlord(string faction)=>NationalStart.DbHouse(faction) is {} d&&HakutaiDb.House(d)?.Overlord is {} o?FactionId(o):null;
+    static HashSet<string> Vassals(int year,string faction)=>VassalsOf(year).GetValueOrDefault(faction)??[];
+    static HashSet<string> Vassals(ContractWorld w,StrategyState s,string faction)=>Vassals(NationalSystems.StartYear(w),faction).Where(v=>!StrategyDefections.Left(s,v,faction)).ToHashSet(StringComparer.Ordinal);
+    internal static string? DbOverlord(ContractWorld w,string faction)=>NationalStart.DbHouse(faction) is {} d&&HakutaiDb.Era(NationalSystems.StartYear(w)).House(d)?.Overlord is {} o?FactionId(o):null;
     static HistoryMode Mode(ContractWorld w)=>w.NewGame!.Judgment?.History??w.NewGame.History??HistoryMode.SemiHistorical;
     // 操作する人物から30km以内の城（月の初めに一度だけ数える）。
     internal static HashSet<string> NearPlayerSites(ContractWorld w)
@@ -322,13 +384,13 @@ public static class NationalStrategy
         var playerMember=w.NewGame.Start.People.SingleOrDefault(p=>p.Id==player.Value)?.Faction;if(playerMember!=null)playerHouse.Add(playerMember);
         var mode=Mode(w);var history=(s.History??[]).ToList();
         // その月の史実の出陣で、攻める家が存在しないか当主が操作する人物の家などで判断に入らないものは、前提が崩れた不発として残す。
-        foreach(var e in History.Where(e=>e.Year==date.Year&&e.Month==date.Month))
+        foreach(var e in HistoryFor(w).Where(e=>e.Year==date.Year&&e.Month==date.Month))
         {
             var f=NationalStart.FactionId(e.Attacker);var head=w.NewGame.Start.Factions.Any(x=>x.Id==f)?HouseSuccession.Head(w,new(f)):default;
             if(mode==HistoryMode.Fictional||head.Value==null||playerHouse.Contains(f)||w.Characters.SingleOrDefault(c=>c.Id==head)?.Life!=LifeState.Adult||!owners.ContainsValue(f))
                 history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,mode==HistoryMode.Fictional?"declined":"premise"));
         }
-        var pactLetters=new List<(StrategyPact Pact,string Sender)>();var pacts=Diplomacy(w,s,owners,power,playerHouse,pactLetters);
+        var pactLetters=new List<(StrategyPact Pact,string Sender)>();var pacts=Diplomacy(w,s,owners,power,playerHouse,pactLetters);HistoricalAlliances(w,playerHouse,mode,date,history,pacts,pactLetters);
         foreach(var f in StrategyHouses(w).Select(id=>(Id:id,_:0)))
         {
             if(playerHouse.Contains(f.Id))continue;
@@ -337,10 +399,10 @@ public static class NationalStrategy
             if(MortalSuccession.On(w)&&MortalSuccession.Incapacitated(w,head,w.ElapsedSeconds))continue;
             var own=owners.Where(x=>x.Value==f.Id).Select(x=>x.Key).ToArray();if(own.Length==0)continue;
             // 境の城は、自分の城と、自分に従う家（DBの従属先が自分の家）の城の隣。
-            var vassals=Vassals(s,f.Id);var front=owners.Where(x=>x.Value==f.Id||x.Value!=null&&vassals.Contains(x.Value)).Select(x=>x.Key).ToArray();
+            var vassals=Vassals(w,s,f.Id);var front=owners.Where(x=>x.Value==f.Id||x.Value!=null&&vassals.Contains(x.Value)).Select(x=>x.Key).ToArray();
             long mine=power.GetValueOrDefault(f.Id,50);
             var targets=front.SelectMany(Neighbors).Distinct(StringComparer.Ordinal)
-                .Select(t=>(Site:t,Owner:owners.GetValueOrDefault(t))).Where(t=>t.Owner!=null&&t.Owner!=f.Id&&!vassals.Contains(t.Owner!)&&(realArmies||!playerHouse.Contains(t.Owner!))&&!Allied(s,f.Id,t.Owner!)&&!Resting(s,f.Id,t.Owner!,w.ElapsedSeconds)&&!Bound(pacts.ToArray(),f.Id,t.Owner!,w.ElapsedSeconds)&&(realArmies||!near.Contains(t.Site))).ToArray();
+                .Select(t=>(Site:t,Owner:owners.GetValueOrDefault(t))).Where(t=>t.Owner!=null&&t.Owner!=f.Id&&!vassals.Contains(t.Owner!)&&(realArmies||!playerHouse.Contains(t.Owner!))&&!Allied(w,s,f.Id,t.Owner!)&&!Resting(s,f.Id,t.Owner!,w.ElapsedSeconds)&&!Bound(pacts.ToArray(),f.Id,t.Owner!,w.ElapsedSeconds)&&(realArmies||!near.Contains(t.Site))).ToArray();
             // 破約：約束の相手が3倍以上弱ければ、当主は月に3%で約束を破って攻める。
             var bound=front.SelectMany(Neighbors).Distinct(StringComparer.Ordinal).Select(t=>(Site:t,Owner:owners.GetValueOrDefault(t)))
                 .Where(t=>t.Owner!=null&&t.Owner!=f.Id&&!playerHouse.Contains(t.Owner!)&&Bound(pacts.ToArray(),f.Id,t.Owner!,w.ElapsedSeconds)&&!near.Contains(t.Site))
@@ -348,7 +410,7 @@ public static class NationalStrategy
             if(targets.Length==0&&bound.Length==0)continue;
             string? basis=null;(string Site,string? Owner) pick=default;
             if(mode!=HistoryMode.Fictional)
-                foreach(var e in History.Where(e=>e.Year==date.Year&&e.Month==date.Month&&NationalStart.FactionId(e.Attacker)==f.Id))
+                foreach(var e in HistoryFor(w).Where(e=>e.Year==date.Year&&e.Month==date.Month&&NationalStart.FactionId(e.Attacker)==f.Id))
                 {
                     var defender=NationalStart.FactionId(e.Defender);var known=targets.Where(t=>t.Owner==defender).OrderBy(t=>t.Site,StringComparer.Ordinal).ToArray();
                     if(known.Length==0||e.AttackerHead!=null&&NationalStart.DbPerson(head.Value)?.Id!=e.AttackerHead){history.Add(new(e.Id,w.ElapsedSeconds,w.CommitSequence,"premise"));continue;} // 前提が崩れていれば不発
@@ -416,7 +478,7 @@ public static class NationalStrategy
     internal static StrategyOutcome Settle(ContractWorld w,StrategyState s,List<StrategyOutcome> outcomes,StrategyCampaign c)
     {
             var owners0=Owners(w,s with{Outcomes=outcomes.ToArray()});var initial0=InitialCounts(w);
-            long a=c.Basis==Restoration?StrategyRestoration.Strength(c.Attacker.Value):Strength(w,c.Attacker.Value,owners0,initial0),d=Strength(w,c.Defender.Value,owners0,initial0);
+            long a=c.Basis==Restoration?StrategyRestoration.Strength(w,c.Attacker.Value):Strength(w,c.Attacker.Value,owners0,initial0),d=Strength(w,c.Defender.Value,owners0,initial0);
             // 同盟の義務：守る側と出陣の時点で同盟していた家（攻める側と約束のない家）は、兵力の半分で援軍に出る。
             EntityId[] local=[];
             var allies=(s.Pacts??[]).Where(p=>p.Kind=="alliance"&&p.Broken==null&&p.From<=c.At&&c.At<p.Until&&(p.A==c.Defender||p.B==c.Defender)).Select(p=>p.A==c.Defender?p.B:p.A)
@@ -425,8 +487,8 @@ public static class NationalStrategy
             if(NationalSystems.On(w,"LocalLords"))
             {
                 var near=Neighbors(c.Target.Value).Select(n=>owners0.GetValueOrDefault(n)).Where(o=>o!=null).Select(o=>o!).ToHashSet(StringComparer.Ordinal);
-                var guard=Vassals(s,c.Defender.Value).Where(v=>near.Contains(v)&&v!=c.Attacker.Value&&!allies.Any(a=>a.Value==v)).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
-                var join=Vassals(s,c.Attacker.Value).Where(v=>near.Contains(v)&&v!=c.Defender.Value).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
+                var guard=Vassals(w,s,c.Defender.Value).Where(v=>near.Contains(v)&&v!=c.Attacker.Value&&!allies.Any(a=>a.Value==v)).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
+                var join=Vassals(w,s,c.Attacker.Value).Where(v=>near.Contains(v)&&v!=c.Defender.Value).OrderBy(v=>v,StringComparer.Ordinal).Select(v=>new EntityId(v)).ToArray();
                 allies=[..allies,..guard];local=join;
             }
             foreach(var ally in allies)d=checked(d+Strength(w,ally.Value,owners0,initial0)/2);
@@ -483,7 +545,7 @@ public static class NationalStrategy
         string attacker=HouseName(w,c.Attacker),defender=HouseName(w,c.Defender);
         string body=captured?$"{castle}は{attacker}の手に落ちました。":$"{attacker}の軍勢は{castle}を落とせずに退きました。";
         // 史実の出陣は、年代記に残るときの名で知らせる。
-        if(History.SingleOrDefault(e=>"history:"+e.Id==c.Basis) is {} named)body=named.Name+"　"+body;
+        if(HistoryFor(w).SingleOrDefault(e=>"history:"+e.Id==c.Basis) is {} named)body=named.Name+"　"+body;
         // 当事者の二家と、落ちた（または攻められた）城の隣に城を持つ家の当主へ届く（噂より確かな近隣の知らせ）。
         var owners=Owners(w,w.Strategy);
         var neighbours=Neighbors(c.Target.Value).Select(n=>owners.GetValueOrDefault(n)).Where(o=>o!=null).Select(o=>new EntityId(o!));
@@ -626,7 +688,7 @@ public static class NationalStrategy
         if(s.Campaigns.Select(c=>c.Id).Distinct().Count()!=s.Campaigns.Length||s.Outcomes.Select(o=>o.Campaign).Distinct().Count()!=s.Outcomes.Length)throw new InvalidDataException("出陣の記録が重複しています");
         foreach(var c in s.Campaigns)
             if(c.Attacker==c.Defender||!factions.Contains(c.Attacker.Value)||!factions.Contains(c.Defender.Value)||c.At<0||c.At>w.ElapsedSeconds||c.Revision<0||c.Revision>w.CommitSequence||!IsMonthStart(w,c.At)||
-                !(c.Basis==Border||c.Basis=="betrayal"||c.Basis==Jouraku||c.Basis==Restoration&&StrategyRestoration.Enabled(w)||c.Basis.StartsWith("history:",StringComparison.Ordinal)&&History.Any(e=>"history:"+e.Id==c.Basis))||Owner(w,c.Target,c.At,c.Revision)!=c.Defender)
+                !(c.Basis==Border||c.Basis=="betrayal"||c.Basis==Jouraku||c.Basis==Restoration&&StrategyRestoration.Enabled(w)||c.Basis.StartsWith("history:",StringComparison.Ordinal)&&HistoryFor(w).Any(e=>"history:"+e.Id==c.Basis))||Owner(w,c.Target,c.At,c.Revision)!=c.Defender)
                 throw new InvalidDataException("出陣の記録が不正です");
         foreach(var x in s.Successions??[])if(!factions.Contains(x.House.Value)||x.At>w.ElapsedSeconds||x.Revision>w.CommitSequence||!IsMonthStart(w,x.At)||w.Characters.SingleOrDefault(c=>c.Id==x.Previous)?.Life!=LifeState.Dead||!w.Characters.Any(c=>c.Id==x.Heir))throw new InvalidDataException("家督の記録が不正です");
         if(prior?.Strategy?.Disputes is {} oldDisputes&&!(s.Disputes??[]).Take(oldDisputes.Length).SequenceEqual(oldDisputes,StrategyDisputeComparer.Instance))throw new InvalidDataException("過去の家督争いの記録が変更されています");

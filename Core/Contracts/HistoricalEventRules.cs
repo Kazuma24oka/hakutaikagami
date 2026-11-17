@@ -30,7 +30,12 @@ public static class HistoricalEventRules
         return input with{History=continuedAfterHistory?HistoryMode.Fictional:input.History,Candidates=input.Candidates.Select(c=>c with{MatchesHistoricalGoal=c.MatchesHistoricalGoal||eligible.Contains(c.Id)}).ToArray()};
     }
 }
-public sealed record PersonalChronicleRow(string Id,string Kind,string Text,long? OccurredAt,long LearnedAt,string Source,string? House=null);
+public sealed record PersonalChronicleRow(string Id,string Kind,string Text,long? OccurredAt,long LearnedAt,string Source,string? House=null)
+{
+    // 二つ以上の家に関わる記録（史実の事件の噂など）。家ごとの年表はどれかの家に当たれば出す。
+    public string[]? Houses {get;init;}
+    public bool About(string house)=>House==house||Houses?.Contains(house)==true;
+}
 public sealed partial class WorldSession
 {
     public PersonalChronicleRow[] PersonalChronicle(EntityId actor,EntityId? house=null)
@@ -46,8 +51,8 @@ public sealed partial class WorldSession
                 var msg=state.Messaging.Messages.Single(x=>x.Id==m.Id.Value);
                 return new PersonalChronicleRow(msg.Id,"開封済みの書状","書状を開封（本文は受信箱で確認）",null,HakutaiKagami.Core.Messaging.MessageFlow.LearnedAt(state.Messaging,msg.Id,actor.Value)!.Value,"書状:"+msg.Id);
               }));
-            rows=rows.Concat(SocialWorld.ChronicleRows(state,actor));
-            return rows.Where(x=>house==null||x.House==house.Value.Value).GroupBy(x=>x.Id,StringComparer.Ordinal).Select(g=>g.First()).OrderBy(x=>x.LearnedAt).ThenBy(x=>x.Id,StringComparer.Ordinal).ToArray();
+            rows=rows.Concat(SocialWorld.ChronicleRows(state,actor)).Concat(HistoricalNews.ChronicleRows(state,actor));
+            return rows.Where(x=>house==null||x.About(house.Value.Value)).GroupBy(x=>x.Id,StringComparer.Ordinal).Select(g=>g.First()).OrderBy(x=>x.LearnedAt).ThenBy(x=>x.Id,StringComparer.Ordinal).ToArray();
         }
     }
 }

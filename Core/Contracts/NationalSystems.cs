@@ -33,12 +33,15 @@ public static class NationalSystems
         DbLineageFaith,
         // 危篤・意思表示不能、家督争いの決着と兄弟姉妹の家督、遺産の相続、本人の手当の医術と後遺症、操作の引き継ぎの兄弟姉妹（S02）。
         MortalSuccession,
+        // 史実の事件の第2版（1467年〜1615年の出陣と史実の同盟、S03）。
+        HistoryEvents2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
     public const string DbSkillHints="DbSkillHints";
     public const string DbLineageFaith="DbLineageFaith";
     public const string MortalSuccession="MortalSuccession";
+    public const string HistoryEvents2="HistoryEvents2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

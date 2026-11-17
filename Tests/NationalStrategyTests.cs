@@ -176,7 +176,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         Assert.Equal(fallen,rise.Attacker.Value);Assert.Equal(holder,rise.Defender.Value);Assert.Equal(site,rise.Target);
         var date=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds);Advance(w,date.Month==12?date.Year+1:date.Year,date.Month%12+1);
         var outcome=Assert.Single(w.Strategy!.Outcomes,x=>x.Campaign==rise.Id);
-        Assert.Equal(StrategyRestoration.Strength(fallen),outcome.Battle!.AttackerSoldiers);
+        Assert.Equal(StrategyRestoration.Strength(w,fallen),outcome.Battle!.AttackerSoldiers);
         o.WriteLine($"再興の合戦 {outcome.Battle.AttackerSoldiers}対{outcome.Battle.DefenderSoldiers} 落城={outcome.Captured}");
         // 記録の検証（月を直接進めた世界なので戦略の記録だけ）。滅んでいない家の再興の挙兵は読まない。
         NationalStrategy.Validate(ContractJson.Read<ContractWorld>(ContractJson.Write(w)),null);
@@ -192,7 +192,7 @@ public sealed class NationalStrategyTests(ITestOutputHelper o)
         var takeda=NationalStart.FactionId("G-000106");var factions=w.NewGame!.Start.Factions.Select(f=>f.Id).ToHashSet();
         var castles=w.NewGame.Start.Castles;var takedaCastle=new EntityId(castles.First(c=>c.Faction==takeda).Id);
         bool Adult(string f)=>w.Characters.SingleOrDefault(c=>c.Id==HouseSuccession.Head(w,new(f)))?.Life==LifeState.Adult;
-        var pair=factions.OrderBy(f=>f,StringComparer.Ordinal).Select(h=>(House:h,Overlord:NationalStrategy.DbOverlord(h)))
+        var pair=factions.OrderBy(f=>f,StringComparer.Ordinal).Select(h=>(House:h,Overlord:NationalStrategy.DbOverlord(w,h)))
             .First(x=>x.Overlord is {} o&&factions.Contains(o)&&x.House!=takeda&&o!=takeda&&Adult(x.House)&&castles.Any(c=>c.Faction==x.House)&&castles.Any(c=>c.Faction==o)&&
                 NationalStrategy.Cap(o)>0&&NationalStrategy.Cap(x.House)*2>=NationalStrategy.Cap(o));
         string house=pair.House,overlord=pair.Overlord!;o.WriteLine($"従う家 {house}（兵{NationalStrategy.Cap(house)}） 主家 {overlord}（兵{NationalStrategy.Cap(overlord)}）");

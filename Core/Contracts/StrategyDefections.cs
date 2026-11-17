@@ -26,7 +26,7 @@ public static class StrategyDefections
         bool Adult(string f)=>w.Characters.SingleOrDefault(c=>c.Id==HouseSuccession.Head(w,new(f)))?.Life==LifeState.Adult;
         foreach(var house in factions.OrderBy(f=>f,StringComparer.Ordinal))
         {
-            if(NationalStrategy.DbOverlord(house) is not {} overlord||!factions.Contains(overlord)||Left(s,house,overlord))continue;
+            if(NationalStrategy.DbOverlord(w,house) is not {} overlord||!factions.Contains(overlord)||Left(s,house,overlord))continue;
             if(PlayerHouse(house)||PlayerHouse(overlord)||!Adult(house)||power.GetValueOrDefault(house)==0||!Shaken(s,overlord,now))continue;
             if(power.GetValueOrDefault(house)*2<power.GetValueOrDefault(overlord,50))continue;
             if(Draw(w,$"defect/{house}/{date:yyyy-MM}")>=100)continue;
@@ -41,6 +41,6 @@ public static class StrategyDefections
         if(prior?.Defections is {} old)Need(rows.Take(old.Length).SequenceEqual(old),"過去の離反の記録が変更されています");
         Need(rows.Select(d=>(d.House,d.From)).Distinct().Count()==rows.Length,"離反の記録が重複しています");
         foreach(var d in rows)
-            Need(NationalStrategy.DbOverlord(d.House.Value)==d.From.Value&&d.At>=0&&d.At<=w.ElapsedSeconds&&d.Revision<=w.CommitSequence&&NationalStrategy.IsMonthStart(w,d.At)&&Shaken(s,d.From.Value,d.At),"離反の記録が不正です");
+            Need(NationalStrategy.DbOverlord(w,d.House.Value)==d.From.Value&&d.At>=0&&d.At<=w.ElapsedSeconds&&d.Revision<=w.CommitSequence&&NationalStrategy.IsMonthStart(w,d.At)&&Shaken(s,d.From.Value,d.At),"離反の記録が不正です");
     }
 }
