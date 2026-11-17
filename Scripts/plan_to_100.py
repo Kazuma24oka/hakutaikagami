@@ -83,6 +83,11 @@ def main():
         nxt = next((s for s in plan["steps"] if s.get("status") != "完了"), None)
         done = sum(1 for s in plan["steps"] if s.get("status") == "完了")
         print(f"- 工程表：{done}/{len(plan['steps'])} 工程完了。次の工程：" + (f"{nxt['id']} {nxt.get('title','')}（枠 {'・'.join(nxt.get('frames', []))}）" if nxt else "なし"))
+        if nxt:
+            from progress_estimate import load as load_estimate, plan_forecast
+            design = load(R / load(PROG)["design_source"])
+            _, rows = plan_forecast(load_estimate(), design, plan)
+            print("- 工程ごとの見込み（進捗表にも出す）：" + "、".join(f"{r['step']['id']} {r['gain']:+.2f}→{r['after']:.2f}%" for r in rows if not r["done"]))
         if nxt and nxt.get("user_decision"):
             print("- 次の工程を始める前にユーザーの判断が要る：" + nxt["user_decision"])
     if errors:
