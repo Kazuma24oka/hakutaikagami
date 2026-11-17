@@ -49,23 +49,19 @@ public static class HakutaiDb
         ["org:oda"]="G-000131",["org:takeda"]="G-000106",["org:hojo"]="G-000104",["org:imagawa"]="G-000123",
         ["org:otomo"]="G-000210",["org:shimazu"]="G-000236",["org:central-bakufu"]="G-000154",["org:ishiyama-honganji"]="G-000242"};
 
-    sealed class Index
+    static readonly Lazy<HakutaiDbEra> index=new(()=>{var e=Read();Validate(e);return new HakutaiDbEra(e);});
+    // 開始年ごとの版（2026-11-17、S03）。1560年は v2、ほかは hakutai-db-<年>-v1。地図と移動網は1560年の城の網を共通に使う。
+    public static readonly int[] StartYears=[1467,1560,1600];
+    static readonly Lazy<HakutaiDbEra> era1467=new(()=>ReadEra(1467)),era1600=new(()=>ReadEra(1600));
+    public static HakutaiDbEra Era1560=>index.Value;
+    public static HakutaiDbEra Era(int year)=>year switch{1560=>index.Value,1467=>era1467.Value,1600=>era1600.Value,_=>throw new ArgumentOutOfRangeException(nameof(year),"開始年の版がありません："+year)};
+    static HakutaiDbEra ReadEra(int year)
     {
-        public readonly HakutaiDbEdition Edition;
-        public readonly Dictionary<string,HakutaiDbPerson> People;
-        public readonly Dictionary<string,HakutaiDbHouse> Houses;
-        public readonly Dictionary<string,HakutaiDbCastle> Castles;
-        public readonly Dictionary<string,HakutaiDbPerson[]> Members;
-        public readonly Dictionary<string,HakutaiDbDistrict> Districts;
-        public Index(HakutaiDbEdition e)
-        {
-            Edition=e;People=e.People.ToDictionary(p=>p.Id,StringComparer.Ordinal);Houses=e.Houses.ToDictionary(h=>h.Id,StringComparer.Ordinal);
-            Castles=e.Castles.ToDictionary(c=>c.Id,StringComparer.Ordinal);
-            Districts=e.Districts.ToDictionary(d=>d.Id,StringComparer.Ordinal);
-            Members=e.People.GroupBy(p=>p.House,StringComparer.Ordinal).ToDictionary(g=>g.Key,g=>g.ToArray(),StringComparer.Ordinal);
-        }
+        using var stream=typeof(HakutaiDb).Assembly.GetManifestResourceStream("HakutaiDb"+year+"V1")??throw new InvalidDataException("百代鏡DBの"+year+"年の版がありません");
+        using var bytes=new MemoryStream();stream.CopyTo(bytes);var e=Parse(bytes.ToArray());Validate(e,"hakutai-db-"+year+"-v1",year);return new HakutaiDbEra(e);
     }
-    static readonly Lazy<Index> index=new(()=>{var e=Read();Validate(e);return new Index(e);});
+    // 年によらない事実（名前・生没年・血縁・城の位置）は、1560年の版を先に、なければほかの年の版から引く。
+    static T? Any<T>(Func<HakutaiDbEra,T?> pick) where T:class=>pick(index.Value)??pick(era1467.Value)??pick(era1600.Value);
 
     static readonly JsonSerializerOptions Options=new(){UnmappedMemberHandling=JsonUnmappedMemberHandling.Disallow};
     public static HakutaiDbEdition Parse(byte[] json)=>JsonSerializer.Deserialize<HakutaiDbEdition>(json,Options)??throw new InvalidDataException("百代鏡DBが空です");
@@ -75,10 +71,11 @@ public static class HakutaiDb
         using var bytes=new MemoryStream();stream.CopyTo(bytes);return Parse(bytes.ToArray());
     }
 
-    public static void Validate(HakutaiDbEdition e)
+    public static void Validate(HakutaiDbEdition e)=>Validate(e,Edition1560,1560);
+    static void Validate(HakutaiDbEdition e,string id,int year)
     {
         void Need(bool ok,string why){if(!ok)throw new InvalidDataException("百代鏡DBの検査："+why);}
-        Need(e.Schema==1&&e.Id==Edition1560&&e.WorldYear==1560&&!string.IsNullOrWhiteSpace(e.Policy),"版・年");
+        Need(e.Schema==1&&e.Id==id&&e.WorldYear==year&&!string.IsNullOrWhiteSpace(e.Policy),"版・年");
         Need(e.Source.Repository=="SengokuDB"&&Regex.IsMatch(e.Source.Commit,"^[0-9a-f]{40}$"),"元の戦国DBの版");
         Need(e.People.Length>0&&e.Houses.Length>0&&e.Castles.Length>0&&e.Districts.Length>0,"空の表");
         Need(e.Districts.Select(d=>d.Id).Distinct().Count()==e.Districts.Length&&e.Districts.All(d=>d.Kokudaka>=0&&(d.Owner==null||e.Houses.Any(h=>h.Id==d.Owner)&&d.OwnerBasis!=null)),"郡");
@@ -113,6 +110,7 @@ public static class HakutaiDb
             Need(c.LatitudeE7 is >=240000000 and <=460000000&&c.LongitudeE7 is >=1220000000 and <=1460000000,"城の位置が日本の外："+c.Id);
             Need(c.Owner==null||houses.Contains(c.Owner)&&c.OwnerBasis!=null,"城の持ち主："+c.Id);
         }
+        if(year!=1560)return;
         Need(GameLinks.All(l=>l.Key.StartsWith("person:",StringComparison.Ordinal)?people.Contains(l.Value):houses.Contains(l.Value)),"既存の開始人物・家との対応");
         Need(GameLinks.Where(l=>l.Key.StartsWith("person:",StringComparison.Ordinal)).Select(l=>l.Value).Distinct().Count()==GameLinks.Count(l=>l.Key.StartsWith("person:",StringComparison.Ordinal)),"対応の重複");
     }

@@ -8,10 +8,10 @@ public static class NationalFactionRelations
     public const string Policy="national-faction-relations-v1";
     const string Basis="hakutai-db-1560-v2:Overlord";
 
-    public static NationalFactionRelationsState Initial(SetupScenario start)
+    public static NationalFactionRelationsState Initial(SetupScenario start,int year=1560)
     {
         var factions=start.Factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
-        return new(1,Policy,HakutaiDb.Houses.Where(h=>h.Overlord!=null).OrderBy(h=>h.Id,StringComparer.Ordinal).Select(h=>new NationalFactionRelation(
+        return new(1,Policy,HakutaiDb.Era(year).HouseList.Where(h=>h.Overlord!=null).OrderBy(h=>h.Id,StringComparer.Ordinal).Select(h=>new NationalFactionRelation(
             h.Id,factions.Contains(NationalStart.FactionId(h.Id))?NationalStart.FactionId(h.Id):null,
             h.Overlord!,factions.Contains(NationalStart.FactionId(h.Overlord!))?NationalStart.FactionId(h.Overlord!):null,Basis)).ToArray());
     }
@@ -38,6 +38,6 @@ public static class NationalFactionRelations
         void Need(bool ok,string reason){if(!ok)throw new InvalidDataException("全国の勢力関係："+reason);}
         if(!Enabled(w)){Need(w.FactionRelations==null,"対象外の開始に勢力関係を混在できません");return;}
         Need(NationalStart.IsNational(w.NewGame!.HistoricalCatalog)&&w.NewGame.NetworkPolicy==WorldNetwork.CastlePolicy,"1560年全国開始だけで使用できます");
-        Need(w.FactionRelations is {Schema:1,Policy:Policy}&&ContractJson.CanonicalHash(w.FactionRelations)==ContractJson.CanonicalHash(Initial(w.NewGame.Start)),"百代鏡DBの1560年従属関係と開始台帳が一致しません");
+        Need(w.FactionRelations is {Schema:1,Policy:Policy}&&ContractJson.CanonicalHash(w.FactionRelations)==ContractJson.CanonicalHash(Initial(w.NewGame.Start,NationalSystems.StartYear(w))),"百代鏡DBの1560年従属関係と開始台帳が一致しません");
     }
 }

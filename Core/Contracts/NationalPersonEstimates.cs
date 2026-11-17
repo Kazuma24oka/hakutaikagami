@@ -27,6 +27,16 @@ public static class NationalPersonEstimates
     }
     public static NationalOfficerEstimateCatalog Catalog=>ContractJson.Copy(catalog.Value);
     public static NationalOfficerEstimate ForDbPerson(string id)=>byId.Value.GetValueOrDefault(id)??throw new InvalidDataException("全国人物推定表に人物がありません："+id);
+    // 開始年の推定表（2026-11-17、S03）：1560年の表にいる人はその値（同じ人を開始年で変えない）、いなければその年の表。
+    public static NationalOfficerEstimate ForDbPerson(string id,int year)=>year==1560?ForDbPerson(id):byId.Value.GetValueOrDefault(id)??(year==1467?era1467:era1600).Value.GetValueOrDefault(id)??throw new InvalidDataException("全国人物推定表に人物がありません："+id);
+    static readonly Lazy<Dictionary<string,NationalOfficerEstimate>> era1467=new(()=>ReadEra(1467)),era1600=new(()=>ReadEra(1600));
+    static Dictionary<string,NationalOfficerEstimate> ReadEra(int year)
+    {
+        using var stream=typeof(NationalPersonEstimates).Assembly.GetManifestResourceStream("NationalPersonEstimates"+year+"V1")??throw new InvalidDataException("全国人物推定表（"+year+"年）がありません");
+        using var bytes=new MemoryStream();stream.CopyTo(bytes);var c=ContractJson.Read<NationalOfficerEstimateCatalog>(bytes.ToArray());
+        if(c.Schema!=1||c.Policy!=Policy||c.SourceEdition!="hakutai-db-"+year+"-v1"||c.SourceCommit!=HakutaiDb.Era(year).Edition.Source.Commit||c.People.Length!=HakutaiDb.Era(year).People.Count)throw new InvalidDataException("全国人物推定表（"+year+"年）の版・対象DBが違います");
+        return c.People.ToDictionary(p=>p.Id,StringComparer.Ordinal);
+    }
     public static bool Enabled(ContractWorld w)=>w.NewGame?.NationalPersonDataPolicy==Policy;
     public static void ValidateWorld(ContractWorld w,bool compareInitialData)
     {
@@ -37,7 +47,7 @@ public static class NationalPersonEstimates
         foreach(var person in w.NewGame.Start.People)
         {
             if(NationalStart.DbPerson(person.Id) is not{} db)continue;
-            var estimate=ForDbPerson(db.Id);var a=person.Attributes;
+            var estimate=ForDbPerson(db.Id,NationalSystems.StartYear(w));var a=person.Attributes;
             Need(person.BirthYear==estimate.BirthYear&&a!=null&&a.Leadership==estimate.Abilities.Leadership&&a.Valor==estimate.Abilities.Valor&&a.Intelligence==estimate.Abilities.Intelligence&&a.Politics==estimate.Abilities.Politics&&a.Charm==estimate.Abilities.Charm,"初期の生年・能力が根拠表と違います："+db.Id);
         }
     }

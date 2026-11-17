@@ -26,7 +26,13 @@ public static class HakutaiDbStart
     // 郡ごとの金銭収入は戦国DBにまだない。町・港・市の収入の決まりを作るまでは0（石高だけで数える）。
     public static long MoneyKan(string house)=>0;
     public static long IncomeKoku(HakutaiDbHouse h)=>h.Kokudaka+MoneyKan(h.Id)*KokuPerKan;
-    public static int Quota(HakutaiDbHouse h)=>h.Religious?HakutaiDb.Members(h.Id).Count:Math.Max(MinimumOfficers,(int)Math.Round(IncomeKoku(h)*OfficersPerTenThousandKoku/10000d,MidpointRounding.AwayFromZero));
+    // 1560年以外の開始（S03）では、1家の登場人数を1560年の最大の家と同じ程度（240人）までにする（同じ城に何百人も集まると世界が動かなくなる）。
+    public const int EraMaximumOfficers=240;
+    public static int Quota(HakutaiDbHouse h,HakutaiDbEra? era=null)
+    {
+        int q=h.Religious?(era??HakutaiDb.Era1560).MembersOf(h.Id).Count:Math.Max(MinimumOfficers,(int)Math.Round(IncomeKoku(h)*OfficersPerTenThousandKoku/10000d,MidpointRounding.AwayFromZero));
+        return era is {Year:not 1560}?Math.Min(q,EraMaximumOfficers):q;
+    }
     public static int SoldierCap(HakutaiDbHouse h)=>(int)(IncomeKoku(h)*SoldiersPerTenThousandKoku/10000);
 
     // 残す順：当主 → 1560年の所属が記録による人 → 推定（主君・苗字と国から）→ 推定（国の支配者から）。
@@ -38,39 +44,41 @@ public static class HakutaiDbStart
         // 国は後の活動地のこともあるので、推定の所属の人だけに使う（記録の所属の柴田勝家＝越前などは下げない）。
         return t==1||p.Province is null or "国不明" or "明"||provinces.Count==0||provinces.Contains(p.Province)?t:t+3;
     }
-    static ISet<string> Provinces(HakutaiDbHouse h)
+    static ISet<string> Provinces(HakutaiDbHouse h,HakutaiDbEra db)
     {
-        var set=HakutaiDb.Districts.Where(d=>d.Shares.Any(x=>x.House==h.Id)).Select(d=>d.Province.TrimEnd('国').Replace('驒','騨')).ToHashSet(StringComparer.Ordinal);
-        if(h.Home is {} home&&HakutaiDb.Castle(home)?.Province is {} pv)set.Add(pv.TrimEnd('国').Replace('驒','騨'));
+        var set=db.DistrictList.Where(d=>d.Shares.Any(x=>x.House==h.Id)).Select(d=>d.Province.TrimEnd('国').Replace('驒','騨')).ToHashSet(StringComparer.Ordinal);
+        if(h.Home is {} home&&db.Castle(home)?.Province is {} pv)set.Add(pv.TrimEnd('国').Replace('驒','騨'));
         return set;
     }
 
-    public static HakutaiDbRoster Roster(string houseId)
+    public static HakutaiDbRoster Roster(string houseId)=>Roster(houseId,HakutaiDb.Era1560);
+    // 開始年の版ごとの名簿（2026-11-17、S03）。決め方は1560年と同じ。
+    public static HakutaiDbRoster Roster(string houseId,HakutaiDbEra db)
     {
-        var h=HakutaiDb.House(houseId)??throw new KeyNotFoundException(houseId);int quota=Quota(h);
-        var members=HakutaiDb.Members(houseId);
-        var provinces=Provinces(h);var kept=members.OrderBy(p=>Tier(h,p,provinces)).ThenBy(p=>(int)Of(p)).ThenByDescending(p=>p.Records).ThenBy(p=>p.Id,StringComparer.Ordinal).Take(quota)
-            .Select((p,i)=>new HakutaiDbOfficer(p.Id,p.StartName,houseId,Of(p),p.Id,i,OwnCastle(h,p))).ToList();
+        var h=db.House(houseId)??throw new KeyNotFoundException(houseId);int quota=Quota(h,db);
+        var members=db.MembersOf(houseId);
+        var provinces=Provinces(h,db);var kept=members.OrderBy(p=>Tier(h,p,provinces)).ThenBy(p=>(int)Of(p)).ThenByDescending(p=>p.Records).ThenBy(p=>p.Id,StringComparer.Ordinal).Take(quota)
+            .Select((p,i)=>new HakutaiDbOfficer(p.Id,p.StartName,houseId,Of(p),p.Id,i,OwnCastle(h,p,db))).ToList();
         int mobs=h.Religious?0:Math.Max(0,quota-kept.Count);
         // モブは家の城のうち、武将の少ない城から（同じなら郡の石高の多い城、ID の順）。
-        var castles=HakutaiDb.CastlesOf(houseId);var load=castles.ToDictionary(c=>c.Id,c=>kept.Count(o=>o.Castle==c.Id),StringComparer.Ordinal);
+        var castles=db.CastlesOf(houseId);var load=castles.ToDictionary(c=>c.Id,c=>kept.Count(o=>o.Castle==c.Id),StringComparer.Ordinal);
         var used=kept.Select(o=>o.Name).ToHashSet();
         for(int i=0;i<mobs;i++)
         {
-            var at=castles.Count==0?null:castles.OrderBy(c=>load[c.Id]).ThenByDescending(c=>DistrictKoku(c)).ThenBy(c=>c.Id,StringComparer.Ordinal).First();
+            var at=castles.Count==0?null:castles.OrderBy(c=>load[c.Id]).ThenByDescending(c=>DistrictKoku(c,db)).ThenBy(c=>c.Id,StringComparer.Ordinal).First();
             if(at!=null)load[at.Id]++;
-            var m=Mob(h,i,kept.Count,used,at??(h.Home is {} home?HakutaiDb.Castle(home):null));used.Add(m.Name);kept.Add(m);
+            var m=Mob(h,i,kept.Count,used,at??(h.Home is {} home?db.Castle(home):null),db);used.Add(m.Name);kept.Add(m);
         }
         return new(houseId,h.Kokudaka,MoneyKan(houseId),quota,SoldierCap(h),kept.ToArray(),members.Count,mobs,Math.Max(0,members.Count-quota));
     }
 
     // DBの人物の所属の城：DBの城がその家の城（または本拠）ならそれ、なければ本拠、なければ家の最初の城。
-    static string? OwnCastle(HakutaiDbHouse h,HakutaiDbPerson p)
+    static string? OwnCastle(HakutaiDbHouse h,HakutaiDbPerson p,HakutaiDbEra db)
     {
-        if(p.Castle is {} c&&(c==h.Home||HakutaiDb.Castle(c)?.Owner==h.Id))return c;
-        return h.Home??HakutaiDb.CastlesOf(h.Id).FirstOrDefault()?.Id;
+        if(p.Castle is {} c&&(c==h.Home||db.Castle(c)?.Owner==h.Id))return c;
+        return h.Home??db.CastlesOf(h.Id).FirstOrDefault()?.Id;
     }
-    static long DistrictKoku(HakutaiDbCastle c)=>c.District is {} d&&HakutaiDb.District((c.Province??"")+"::"+d) is {} x?x.Kokudaka:0;
+    static long DistrictKoku(HakutaiDbCastle c,HakutaiDbEra db)=>c.District is {} d&&db.District((c.Province??"")+"::"+d) is {} x?x.Kokudaka:0;
     // 国ごとに、その国の武将に多い苗字（上位8つ）。
     static readonly Lazy<Dictionary<string,string[]>> provinceSurnames=new(()=>HakutaiDb.Houses.SelectMany(h=>HakutaiDb.Members(h.Id))
         .Where(p=>p.Surname is {Length:>=1 and <=3}&&p.Province!=null).GroupBy(p=>HakutaiDb.Kuni(p.Province),StringComparer.Ordinal)
@@ -79,10 +87,10 @@ public static class HakutaiDbStart
 
     // オリジナルのモブ武将：所属の城のある国の武将に多い苗字（なければ家の人に多い苗字・家の名前）と、よくある通称から、家と番号で決まる名前。
     static readonly string[] Given=["源三郎","弥兵衛","与十郎","孫六","新左衛門","彦七","甚五郎","勘助","半兵衛","市之丞","藤八","喜兵衛","太郎左衛門","清蔵","庄九郎","伝右衛門","作兵衛","又四郎","権之助","久内"];
-    static HakutaiDbOfficer Mob(HakutaiDbHouse h,int n,int rank,ISet<string> used,HakutaiDbCastle? castle)
+    static HakutaiDbOfficer Mob(HakutaiDbHouse h,int n,int rank,ISet<string> used,HakutaiDbCastle? castle,HakutaiDbEra db)
     {
         var local=castle?.Province is {} pv?SurnamesOf(pv).ToArray():[];
-        var surnames=local.Length>0?local:HakutaiDb.Members(h.Id).Select(p=>p.Surname).OfType<string>().Where(s=>s.Length is >=1 and <=3).GroupBy(s=>s).OrderByDescending(g=>g.Count()).ThenBy(g=>g.Key,StringComparer.Ordinal).Select(g=>g.Key).Take(6).ToArray();
+        var surnames=local.Length>0?local:db.MembersOf(h.Id).Select(p=>p.Surname).OfType<string>().Where(s=>s.Length is >=1 and <=3).GroupBy(s=>s).OrderByDescending(g=>g.Count()).ThenBy(g=>g.Key,StringComparer.Ordinal).Select(g=>g.Key).Take(6).ToArray();
         string house=h.Name.Split('（')[0].TrimEnd('氏','家','衆');
         if(surnames.Length==0)surnames=[house.Length is >=1 and <=3?house:"某"];
         uint x=BitConverter.ToUInt32(SHA256.HashData(Encoding.UTF8.GetBytes(h.Id+"/mob/"+n)),0);

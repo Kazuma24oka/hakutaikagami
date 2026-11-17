@@ -50,13 +50,13 @@ public static class NationalDistrictControl
             houses.Select(h=>new NationalDistrictOwner(h,HakutaiDb.TopHouse(h).Id,match.NameInferred||source.OwnerBasis?.StartsWith("推定",StringComparison.Ordinal)==true)).ToArray());
     }
 
-    public static NationalDistrictControlState Initial()=>new(1,Policy,HakutaiDb.Districts.OrderBy(d=>d.Id,StringComparer.Ordinal).Select(d=>new NationalDistrictRecord(d.Id,d.Owner,d.OwnerBasis,d.Shares.OrderBy(s=>s.House,StringComparer.Ordinal).Select(s=>new NationalDistrictShare(s.House,s.Kokudaka)).ToArray())).ToArray());
+    public static NationalDistrictControlState Initial(int year=1560)=>new(1,Policy,HakutaiDb.Era(year).DistrictList.OrderBy(d=>d.Id,StringComparer.Ordinal).Select(d=>new NationalDistrictRecord(d.Id,d.Owner,d.OwnerBasis,d.Shares.OrderBy(s=>s.House,StringComparer.Ordinal).Select(s=>new NationalDistrictShare(s.House,s.Kokudaka)).ToArray())).ToArray());
     public static bool Enabled(ContractWorld w)=>w.NewGame?.DistrictControlPolicy==Policy;
     public static void Validate(ContractWorld w)
     {
         void Need(bool ok,string reason){if(!ok)throw new InvalidDataException("全国の郡支配："+reason);}
         if(!Enabled(w)){Need(w.DistrictControl==null,"対象外の開始に郡支配を混在できません");return;}
         Need(NationalStart.IsNational(w.NewGame!.HistoricalCatalog)&&w.NewGame.NetworkPolicy==WorldNetwork.CastlePolicy,"全国1560年開始だけで使用できます");
-        Need(w.DistrictControl is {Schema:1,Policy:Policy}&&ContractJson.CanonicalHash(w.DistrictControl)==ContractJson.CanonicalHash(Initial()),"開始時の支配・並立・根拠が1560年の百代鏡DBと一致しません");
+        Need(w.DistrictControl is {Schema:1,Policy:Policy}&&ContractJson.CanonicalHash(w.DistrictControl)==ContractJson.CanonicalHash(Initial(NationalSystems.StartYear(w))),"開始時の支配・並立・根拠が1560年の百代鏡DBと一致しません");
     }
 }

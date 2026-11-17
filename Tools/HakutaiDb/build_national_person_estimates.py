@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = ROOT / "Core/Data/hakutai-db-1560-v2.json"
-OUT_PATH = ROOT / "Core/Data/national-person-estimates-v1.json"
+# 2026-11-17（S03）：HAKUTAI_YEAR=1467/1600 で、その年の開始の版の人物の推定表も同じ決め方で作る（1560年の表は変えない）。
+YEAR = int(os.environ.get("HAKUTAI_YEAR", "1560"))
+DB_PATH = ROOT / ("Core/Data/hakutai-db-1560-v2.json" if YEAR == 1560 else f"Core/Data/hakutai-db-{YEAR}-v1.json")
+OUT_PATH = ROOT / ("Core/Data/national-person-estimates-v1.json" if YEAR == 1560 else f"Core/Data/national-person-estimates-{YEAR}-v1.json")
 
 LEADERSHIP = ("当主", "指導者", "城主", "領主", "重臣")
 VALOR = ("軍事", "軍役", "合戦", "武将", "武士", "在城", "守備", "軍勢")
@@ -22,11 +25,11 @@ def assessment(person: dict, people: dict[str, dict]) -> dict:
     else:
         father = people.get(person["Father"])
         if father and father["Birth"] is not None:
-            birth = min(1545, father["Birth"] + 25)
+            birth = min(YEAR - 15, father["Birth"] + 25)
             kind, basis, confidence = "estimated-father-gap", "DBに本人の生年なし。実父の明記生年＋25年を世代間隔の試作推定に使用", "estimate-low"
         else:
-            birth = 1530
-            kind, basis, confidence = "estimated-default-age", "DBに本人と実父の生年なし。1560年開始時30歳を中立的な試作値として使用", "estimate-very-low"
+            birth = YEAR - 30
+            kind, basis, confidence = "estimated-default-age", "DBに本人と実父の生年なし。1560年開始時30歳を中立的な試作値として使用".replace("1560", str(YEAR)), "estimate-very-low"
         if person["Death"] is not None and birth > person["Death"] - 16:
             birth = person["Death"] - 16
             kind += "+death-bound"
@@ -87,8 +90,8 @@ def build() -> dict:
     for father_id, births in explicit_children.items():
         person, row = people[father_id], by_id[father_id]
         candidate = min(births) - 25
-        upper = min(1560, person["Death"] - 16 if person["Death"] is not None else 1560)
-        if row["BirthKind"].startswith("estimated-default-age") and 1400 <= candidate <= upper:
+        upper = min(YEAR, person["Death"] - 16 if person["Death"] is not None else YEAR)
+        if row["BirthKind"].startswith("estimated-default-age") and YEAR - 160 <= candidate <= upper:
             row["BirthYear"] = candidate
             row["BirthKind"] += "+child-generation"
             row["BirthBasis"] += "。父自身と父の父の生年不明、明記生年の最年長の子より25年前を世代推定"
@@ -112,8 +115,13 @@ def build() -> dict:
             indegree[child_id] -= 1
             if indegree[child_id] == 0:
                 heapq.heappush(ready, child_id)
+    cycle: set[str] = set()
     if len(ordered) != len(people):
-        raise ValueError("百代鏡DBの父子記録に循環があります")
+        if YEAR == 1560:
+            raise ValueError("百代鏡DBの父子記録に循環があります")
+        # 1560年以外の版：循環に入った人の父子記録は使わない（ID の順に後ろへ足す）。
+        cycle = set(people) - set(ordered)
+        ordered += sorted(cycle)
 
     for person_id in ordered:
         person, row = people[person_id], by_id[person_id]
@@ -122,10 +130,14 @@ def build() -> dict:
             row["BirthParentAccepted"] = False
             row["BirthParentBasis"] = "DBに開始対象の父IDなし"
             continue
+        if person_id in cycle:
+            row["BirthParentAccepted"] = False
+            row["BirthParentBasis"] = "DBの父子記録が循環しているので、開始世界ではリンクを採用しない"
+            continue
         father_row = by_id[father_id]
         if father_row["BirthYear"] >= row["BirthYear"] and person["Birth"] is None:
             candidate = father_row["BirthYear"] + 20
-            upper = min(1560, person["Death"] - 16 if person["Death"] is not None else 1560)
+            upper = min(YEAR, person["Death"] - 16 if person["Death"] is not None else YEAR)
             if candidate <= upper:
                 row["BirthYear"] = candidate
                 if "+parent-generation" not in row["BirthKind"]:

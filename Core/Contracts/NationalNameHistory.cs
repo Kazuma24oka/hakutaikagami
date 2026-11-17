@@ -14,7 +14,8 @@ public static class NationalNameHistory
     static readonly ConcurrentDictionary<string,Candidate[]> cache=new(StringComparer.Ordinal);
     sealed record Candidate(EntityId Id,EntityId Person,string Name,int Year,string Step,string Basis,long At);
 
-    public static bool Enabled(ContractWorld w)=>w.NewGame?.NameHistoryPolicy==Policy;
+    // 年の分かる改名は1560年の版の名乗りの記録だけで作る（1467年・1600年の開始では使わない）。
+    public static bool Enabled(ContractWorld w)=>w.NewGame?.NameHistoryPolicy==Policy&&NationalSystems.StartYear(w)==1560;
     public static NationalNameHistoryState Initial(string edition=NationalStart.Edition)=>new(1,Policy,edition,[],[]);
 
     static Candidate[] Candidates(ContractWorld w)

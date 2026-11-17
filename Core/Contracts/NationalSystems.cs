@@ -40,7 +40,12 @@ public static class NationalSystems
     public const string DbLineageFaith="DbLineageFaith";
     public const string MortalSuccession="MortalSuccession";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
-    static readonly HashSet<string> known=new(Current,StringComparer.Ordinal);
+    // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
+    public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";
+    public static int StartYear(IReadOnlyCollection<string>? list)=>list==null?1560:list.Contains(StartYear1467)?1467:list.Contains(StartYear1600)?1600:1560;
+    public static int StartYear(ContractWorld w)=>StartYear(w.NewGame?.NationalSystems);
+    public static string[] ForYear(int year)=>year switch{1560=>[..Current],1467=>[..Current,StartYear1467],1600=>[..Current,StartYear1600],_=>throw new ArgumentOutOfRangeException(nameof(year))};
+    static readonly HashSet<string> known=new([..Current,StartYear1467,StartYear1600],StringComparer.Ordinal);
     // 一覧ごとに一度だけ引ける形にする（判定は多くの場所で何度も呼ばれる）。
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<string[],HashSet<string>> sets=new();
     public static bool On(ContractWorld w,string name)=>w.NewGame?.NationalSystems is {} list&&sets.GetValue(list,l=>new HashSet<string>(l,StringComparer.Ordinal)).Contains(name);

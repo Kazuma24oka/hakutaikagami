@@ -366,6 +366,10 @@ def main():
     }
     if YEAR != 1560:
         # 1560年以外の開始（2026-11-17、S03）：全体の版だけを書く。1560年の追加の版は v2 の名簿のものなので作らない。
+        # v2 と同じ形にする（追加の版の項目は持たせない）。
+        for x in people:
+            for k in ("Siblings", "Offices", "Held1560", "ReligiousNames", "Status", "HeadshipFrom", "Specialties", "Religions", "HousePosts", "Honsei", "Stipends"):
+                x.pop(k, None)
         doc["Id"] = f"hakutai-db-{YEAR}-v1"
         doc["Policy"] = doc["Policy"].replace("1560年", f"{YEAR}年")
         write_full(doc, OUT or Path(__file__).resolve().parents[2] / "Core" / "Data" / f"hakutai-db-{YEAR}-v1.json", houses, people, out_castles, commit, missing)
