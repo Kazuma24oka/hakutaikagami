@@ -205,7 +205,8 @@
       "contents": "中央への取次・申請・審査・発給と物理的な返答、任官の正式地位・名乗り・他者認識・実権、与姓・偏諱、全幕府職と栄典、将軍継承の長期運営、仲裁の発給・到達・受容・履行・不達（全国の軍勢の世界で）。",
       "status": "作業中",
       "deferred": [],
-      "done_when": "この工程の枠の残り（progress.json の remaining）のうち、この工程の中身が無くなり、承認の基準で率が上がったと確かめた時。残りのある枠を完了と言わない。"
+      "done_when": "この工程の枠の残り（progress.json の remaining）のうち、この工程の中身が無くなり、承認の基準で率が上がったと確かめた時。残りのある枠を完了と言わない。",
+      "baseline": "Docs/Development/ProgressV1/approval-baseline-v157.json"
     },
     {
       "id": "S05",
