@@ -7,6 +7,11 @@ using HakutaiKagami.Core.Contracts;
 // S11 の画面の一巡：帳面の各面をゲームの中の入力で開いて押し、描画を画像に書き出す。会話の差し替え口とキーでの送りも確かめる。
 public partial class NewGameRuntime
 {
+    // 全画面の一巡（S12）：窓を開くボタンを順に押し、開いた窓を閉じる。
+    internal static readonly string[] WindowButtons=["chronicle","history-summary","time-settings","work","military-leaders","adult-adoption","adult-marriage","army-road","bandit-encounter","battle-captives","battlefield-rules","broker-work","camp-supply","castellan","castle-handover","castle-siege","character-development","coalition-invites","companions","craft-trade","economy","family-news","history","hostage-custody","house-freight","house-succession","household-court","information-schemes","land-survey","merit-rewards","military-rice","personal-life","play-guide","private-contact","public-works","renown-world","retire","salary","secret-cooperation","social-assets","social-world","standing-administration","steward","temple-world","trade","treasury","treaty-defense","treaty-supply","truce-negotiation","village","ledger"];
+    internal bool ReviewHasButton(string id)=>buttons.TryGetValue(id,out var b)&&!b.Disabled;
+    internal string ReviewMessage=>message.Text;
+    internal void ReviewCloseWindows(){foreach(var x in Walk(this).OfType<Window>().Where(x=>x.Visible).ToArray())x.Hide();if(workOverlay?.Visible==true)CloseBottomTalk();if(historyOverlay?.Visible==true)historyOverlay.Hide();}
     internal void ReviewConfigureScreens(ContractWorld world)
     {
         campaigns=new NewCampaignStore(Path.Combine(Path.GetTempPath(),"screens2-ui-"+Guid.NewGuid().ToString("N")));
@@ -43,7 +48,17 @@ public partial class Screens2Check:Control
             var other=runtime.Session.CorpsCommanders().First();
             runtime.ReviewPresent(other);await Frames(3);Need(runtime.ReviewTalkOpen&&runtime.StagePortrait(1)=="仮","会話の差し替え口");await Shot("talk");
             runtime.ReviewTalkKey(Key.Escape);await Frames(2);Need(!runtime.ReviewTalkOpen,"Esc で会話を閉じる");
-            File.WriteAllText(Path.Combine(root,"ui-result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Scope="帳面の7面を開いて描画、届いていない史実の機会を出さない、軍団に出陣を命じる、会話の差し替え口とEscで閉じる（ゲーム内の入力）",ComputerUse="不使用"}));
+            // 全画面の一巡：窓を開くボタンを順に押して描画を書き出し、閉じる。押せないボタン（その場で使えない窓）は数えて残す。
+            runtime.ReviewCloseWindows();await Frames(2);var opened=new System.Collections.Generic.List<string>();var unavailable=new System.Collections.Generic.List<string>();
+            foreach(var id in NewGameRuntime.WindowButtons)
+            {
+                if(!runtime.ReviewHasButton(id)){unavailable.Add(id);continue;}
+                runtime.Press(id);await Frames(3);
+                if(runtime.ReviewMessage.StartsWith("操作できません",StringComparison.Ordinal))throw new InvalidDataException(id+"："+runtime.ReviewMessage);
+                await Shot("window-"+id);opened.Add(id);runtime.ReviewCloseWindows();await Frames(2);
+            }
+            Need(opened.Count>=20,"開けた窓が少ない："+opened.Count);
+            File.WriteAllText(Path.Combine(root,"ui-result.json"),System.Text.Json.JsonSerializer.Serialize(new{Status="PASSED",Scope="帳面の7面を開いて描画、届いていない史実の機会を出さない、軍団に出陣を命じる、会話の差し替え口とEscで閉じる、窓を開くボタンを順に押して描画し閉じる（ゲーム内の入力）",Opened=opened,Unavailable=unavailable,ComputerUse="不使用"}));
             GD.Print("SCREENS2_UI_PASS");GetTree().Quit(0);
         }
         catch(Exception e)

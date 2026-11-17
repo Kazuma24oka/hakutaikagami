@@ -63,6 +63,8 @@ public static class NationalSystems
         CastellanResend,
         // 画面と文面の仕上げ（S11）：書状の帳面・自動の停止・人物帳・判断の比較・ルールのつまみ・史実の機会・軍団への命
         Screens2,
+        // 最初の完成版の残り（S12）：兵糧の勲功と裁定、通行、人質、仲裁の抵触、栄典、計略の発覚、寺社の職、子の傾向、登用の例外、兵糧の援け、兵糧攻めの開城、本人の務めの返上
+        Finish2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -84,6 +86,7 @@ public static class NationalSystems
     public const string Duties2="Duties2";
     public const string CastellanResend="CastellanResend";
     public const string Screens2="Screens2";
+    public const string Finish2="Finish2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

@@ -54,7 +54,11 @@ public static class StrategyDefections
         if(!Enabled(w)){Need(rows.Length==0,"この保存では従属の離反を記録しません");return;}
         if(prior?.Defections is {} old)Need(rows.Take(old.Length).SequenceEqual(old),"過去の離反の記録が変更されています");
         Need(rows.Select(d=>(d.House,d.From)).Distinct().Count()==rows.Length,"離反の記録が重複しています");
+        // 根拠：動揺した主家からの離反、国人の鞍替えの通知が届いて解けた従属（Duties2 の defect）、違反で主家が従属を解いた（Politics2 の violation の追放）。
+        // 通知は間引かれずに残る。違反の記録は一年で間引かれるので、それより古い離反は記録した時の検証（過去の記録が変わらないこと）を根拠にする。
+        bool Notified(StrategyDefection d)=>(s.Duties??[]).Any(e=>e.Kind=="defect-notice"&&e.House==d.House&&e.Other==d.From&&e.Arrives<=d.At);
+        bool Expelled(StrategyDefection d)=>(s.Politics??[]).Any(e=>e.Kind=="violation"&&e.House==d.From&&e.Other==d.House&&e.Amount==1&&e.At==d.At)||Politics2.On(w)&&w.ElapsedSeconds-d.At>=365*86400L&&!(s.Politics??[]).Any(e=>e.Kind=="violation"&&e.At<=d.At);
         foreach(var d in rows)
-            Need(NationalStrategy.DbOverlord(w,d.House.Value)==d.From.Value&&d.At>=0&&d.At<=w.ElapsedSeconds&&d.Revision<=w.CommitSequence&&NationalStrategy.IsMonthStart(w,d.At)&&Shaken(s,d.From.Value,d.At),"離反の記録が不正です");
+            Need(d.At>=0&&d.At<=w.ElapsedSeconds&&d.Revision<=w.CommitSequence&&NationalStrategy.IsMonthStart(w,d.At)&&(NationalStrategy.DbOverlord(w,d.House.Value)==d.From.Value&&Shaken(s,d.From.Value,d.At)||Notified(d)||Expelled(d)),"離反の記録が不正です");
     }
 }

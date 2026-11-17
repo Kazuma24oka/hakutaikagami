@@ -44,7 +44,9 @@ public static class MusterNotices
             if (SocialWorld.Site(w, person) is not {} currentSite ||
                 !Reservations(w, person, w.ElapsedSeconds, w.CommitSequence+1).Any(r => r.Input.Id == order.Input.Id) ||
                 HostageCustody.HeldAt(w, person, w.ElapsedSeconds, w.CommitSequence) ||
-                Assassination.DeadAt(w, person, w.ElapsedSeconds, w.CommitSequence)) continue;
+                Assassination.DeadAt(w, person, w.ElapsedSeconds, w.CommitSequence) ||
+                // 併用の表（一覧の Finish2）：捕らわれ・療養の者は陣触れに応じない。
+                Finish2.On(w) && Duties2.HinderedFor(w, person, w.ElapsedSeconds) is {} why && !Duties2.Concurrency[(why, "陣触れ")]) continue;
             if (w.ElapsedSeconds < order.Input.When)
             {
                 Prepare(w, order, person, currentSite);

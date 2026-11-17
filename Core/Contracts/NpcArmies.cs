@@ -40,7 +40,7 @@ public static partial class NpcArmies
     {
         Need(Enabled(w)&&m.Commander!=ControlSuccession.PlayerAtRevision(w,m.Revision)&&m.At>=0&&m.At<=w.ElapsedSeconds&&m.Revision>0&&m.Revision<=w.CommitSequence&&EntityId.IsValid(m.Id.Value),"NPC軍の版・本人・時点が不正です");
         Need(MilitaryEconomy.CanMuster(w,m.Site,m.At,m.Revision),"現地の支援人手または家の自由米が不足しています");
-        Need(!PrivateStanddown.ShouldWait(w,m.Commander,m.At,m.Revision),"本人の新規軍引受は見合わせ期間中です");Need(!prior.Any(p=>p.Id==m.Id||p.Commander==m.Commander||p.Owner==m.Owner&&p.Site==m.Site),"同じ駐屯兵または指揮官を二重に割り当てられません");
+        Need(!PrivateStanddown.ShouldWait(w,m.Commander,m.At,m.Revision),"本人の新規軍引受は見合わせ期間中です");Need(!prior.Any(p=>p.Id==m.Id||(p.Commander==m.Commander||p.Owner==m.Owner&&p.Site==m.Site)&&!(Finish2.On(w)&&ReturnedAt(w,p,m.At,m.Revision))),"同じ駐屯兵または指揮官を二重に割り当てられません");
         var authority=FactionStances.ResolveAuthority(w,m.Issuer,m.Owner,m.At,m.Revision);
         if(m.Lord is {} lord)Need(RetainerCommand(w)&&lord!=m.Commander&&CanLead(w,m.Commander,lord,m.Owner,m.Site,m.At,m.Revision)&&TransportWork.At(w,lord,m.Site,m.At,m.Revision,true),"当主が城で直属の家臣に大将を命じてください");
         Need(authority!=null&&authority==m.Authority&&authority.Home==m.Site,"当主・所属・拠点支配の根拠がありません");

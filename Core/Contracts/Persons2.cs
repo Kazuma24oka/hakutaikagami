@@ -177,7 +177,7 @@ public static class Persons2
             if(staff>=provinces*2+6)continue;
             // 登用の条件（一覧の Politics2）：給付を削った家・裏切りの悪名の主の誘いには応じない。
             if(Politics2.On(w)&&(h.StipendCut>0||s.Campaigns.Any(c=>c.Basis=="betrayal"&&c.Attacker==h.House&&now-c.At<2*Year)))continue;
-            var r=ronin.FirstOrDefault(p=>own.Contains(p.Site)||own.Any(x=>NationalStrategy.Neighbors(x).Contains(p.Site)));if(r==null)continue;
+            var r=ronin.FirstOrDefault(p=>(own.Contains(p.Site)||own.Any(x=>NationalStrategy.Neighbors(x).Contains(p.Site)))&&Finish2.RecruitRefusal(w,s,p.Id,h.House,now)==null);if(r==null)continue;
             ronin=ronin.Where(x=>x!=r).ToArray();Add("recruit",new(r.Id),h.House,$"{HouseName(w,h.House)}が{r.Name}を召し抱えた");
         }
 

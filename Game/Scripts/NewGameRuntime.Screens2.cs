@@ -52,6 +52,13 @@ public partial class NewGameRuntime
             foreach(var g in book.Growth.Take(6))Text(people,When(g.At)+"　"+g.Text,"a8b7be");
             if(book.Health is {} h)foreach(var c in h.Conditions)Text(people,$"{c.Part}の{c.Kind}　{c.Severity}　{c.Outlook}",c.Severity is "重傷" or "危篤"?"e08a7a":null);
             if(book.Care.Any(c=>!c.Can))Text(people,string.Join("　",book.Care.Select(c=>c.Action+(c.Can?"":"×"+c.Reason))));
+            // 傷病のある本人は、頼まれた務めを返還・代理・延期で返上できる（一覧の Finish2）。
+            if(book.Own&&Finish2.On(w)&&book.Health?.Conditions.Length>0)
+                foreach(var t in w.Tasks.Where(t=>t.Executor==w.PlayerControl&&t.Issuer!=w.PlayerControl&&t.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed)))
+                {
+                    var row=new HBoxContainer();people.AddChild(row);row.AddChild(new Label{Text=Screens2.Address(w,w.PlayerControl,t.Issuer)+"の務め"});
+                    foreach(var kind in Finish2.ReliefKinds)Act(row,kind,false,()=>Session.RequestRelief(t.Id,kind,Session.Revision),1);
+                }
             if(book.Education is {} e)
             {
                 Text(people,e.Plan);if(e.Teacher!=null||e.Learning!=null)Text(people,"師 "+(e.Teacher??"なし")+"　"+(e.Learning??""));

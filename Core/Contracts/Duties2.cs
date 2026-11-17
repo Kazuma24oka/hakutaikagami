@@ -45,7 +45,9 @@ public static class Duties2
     public static readonly IReadOnlyDictionary<(string State,string Role),bool> Concurrency=new Dictionary<(string,string),bool>{
         [("捕らわれ","家の役")]=false,[("捕らわれ","軍団長")]=false,[("捕らわれ","客将")]=false,
         [("療養","家の役")]=false,[("療養","軍団長")]=false,[("療養","客将")]=false,
-        [("出陣中","家の役")]=true,[("出陣中","軍団長")]=true,[("出陣中","客将")]=true};
+        [("出陣中","家の役")]=true,[("出陣中","軍団長")]=true,[("出陣中","客将")]=true,
+        [("捕らわれ","陣触れ")]=false,[("療養","陣触れ")]=false,[("出陣中","陣触れ")]=false};
+    internal static string? HinderedFor(ContractWorld w,EntityId p,long at)=>Hindered(w,p,at);
     static string? Hindered(ContractWorld w,EntityId p,long at)=>BattleCaptivity.HeldAt(w,p,at,w.CommitSequence+1)?"捕らわれ":MortalSuccession.On(w)&&MortalSuccession.Incapacitated(w,p,at)?"療養":null;
 
     // ---- 書状 ----
@@ -70,7 +72,7 @@ public static class Duties2
     public static EntityId Opener(ContractWorld w,string house,long at)
     {
         var head=HouseSuccession.Head(w,new(house));bool away=SocialWorld.Site(w,head)?.Value!=HomeOf(w,house)||MortalSuccession.On(w)&&MortalSuccession.Incapacitated(w,head,at);
-        if(!away)return head;return Domestic2.House(w,new(house))?.Posts.FirstOrDefault(p=>p.Post==Domestic2.Elder)?.Person??head;
+        if(!away)return head;return Domestic2.House(w,new(house))?.Posts.FirstOrDefault(p=>p.Post==Domestic2.Elder)?.Person??Finish2.Proxy(w,house)??head;
     }
 
     // ---- 手強さと先読み ----
