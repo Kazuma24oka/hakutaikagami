@@ -44,7 +44,9 @@ public partial class NewGameRuntime
         // 本人の実行と本人に届いた記録だけを数える。全国の未認識の成果を表示しない。
         var own=w.TimeControl.Summary!.CompletedOwnTasks;
         var known=w.TimeControl.Summary!.KnownRecords;
-        historySummary.DialogText=$"{WorldCalendar.Display(w.EpochDate,w.TimeControl.SummaryAt.Value)}\n本人が完了した用件：{own}\n本人が得た記録：{known}\n\nこの先は史実の制御を外した世界として継続できます。";
+        var j=WorldTimeControl.Journey(w);
+        string journey=j==null?"":$"\n年数：{j.Years}\n継いだ回数：{j.Handovers}"+(j.House is {} h?$"\n{w.Definitions.Organizations.SingleOrDefault(o=>o.Id.Value==h)?.Name??h}　城 {j.CastlesAtStart}→{j.CastlesNow}":"")+$"\n聞いた史実の事件：{j.HeardEvents}\n果たした目標：{j.GoalsAchieved}";
+        historySummary.DialogText=$"{WorldCalendar.Display(w.EpochDate,w.TimeControl.SummaryAt.Value)}\n本人が完了した用件：{own}\n本人が得た記録：{known}{journey}\n\nこの先は史実の制御を外した世界として継続できます。";
         historySummary.OkButtonText="閉じる（停止を維持）";
         if(w.TimeControl.ContinuedAt==null){var b=historySummary.AddButton("仮想の世界として継続",true,"continue");historySummary.CustomAction+=a=>{if(a!="continue")return;CancelAdvancePrefetch();Submit(Session.ContinueAfterHistory(Session.Revision));historySummary.Hide();Refresh();};}
         historySummary.PopupCentered(new(580,300));

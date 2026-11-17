@@ -14,6 +14,7 @@ public partial class NewGameFrontEnd : Control
     Action? pendingStart;bool refreshingClaims;OptionButton jumpChoice=null!,placementPerson=null!,placementSite=null!;
     string NpcPolicyForEntry=>TestKey==null?NpcJudgment.Policy:NewGameNpcRoutine.Policy;
     NpcChallenge challengeLevel = NpcChallenge.Standard;
+    int startYear=1560;
     DecisionSupport supportLevel = DecisionSupport.Brief;
     HistoryMode historyMode=HistoryMode.SemiHistorical; NpcAttention npcAttention=NpcAttention.Standard;
     NpcJudgmentSettings? JudgmentForEntry=>TestKey==null?new(NpcJudgment.Policy,historyMode,npcAttention){UseInspectionReferences=true,HealthEdition=PersonalHealth.Edition,Challenge=challengeLevel,PracticeForecastVersion=challengeLevel==NpcChallenge.Strong?2:null,Support=supportLevel==DecisionSupport.Brief?null:supportLevel,EventEdition=historyMode==HistoryMode.Fictional?null:HistoricalEventRules.OwariEdition}:null;
@@ -68,11 +69,13 @@ public partial class NewGameFrontEnd : Control
     {
         Clear("武将作成・管理","");manager=new OfficerLibraryTrial{Enhanced=true,StorageOverride=LibraryRoot,Closed=()=>{ReadRegistry();ShowMenu();},SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(manager);
     }
-    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","");page.AddChild(new Label{Text="1560年"});{}AddJudgmentConditions();
+    void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","");page.AddChild(new Label{Text="開始年"});var year=new OptionButton{Name="StartYear"};foreach(var y in HakutaiDb.StartYears)year.AddItem(y+"年");year.Select(System.Array.IndexOf(HakutaiDb.StartYears,startYear));year.ItemSelected+=i=>startYear=HakutaiDb.StartYears[i];page.AddChild(year);AddJudgmentConditions();
         // 全国1560年（百代鏡DBの家と武将、城の移動網）。登録武将と配置の調整は使わず、操作する武将を選ぶ画面へ進む。
         national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");page.AddChild(scenarioChoice);
+        // 試作の開始は1560年だけ。
+        void SyncYear(){bool trial=scenarioChoice.Selected==0;year.Disabled=trial;if(trial){startYear=1560;year.Select(System.Array.IndexOf(HakutaiDb.StartYears,1560));}}scenarioChoice.ItemSelected+=_=>SyncYear();SyncYear();
         Add(page,"next","登録武将の選択へ",()=>{if(scenarioChoice.Selected==1)BeginNational();else ChooseRegistered();});Add(page,"back","スタートへ",ShowMenu);}
-    void BeginNational(){national=true;chosen=[];claims.Clear();var raw=NationalStart.Scenario();var request=new WorldSetupRequest([],[]);preview=NewGameSetup.Preview(raw,request);confirmed=NewGameSetup.Confirm(raw,request,preview);ChoosePerson();}
+    void BeginNational(){national=true;chosen=[];claims.Clear();var raw=NationalStart.Scenario(NationalStart.RevenueEdition,NationalSystems.ForYear(startYear));var request=new WorldSetupRequest([],[]);preview=NewGameSetup.Preview(raw,request);confirmed=NewGameSetup.Confirm(raw,request,preview);ChoosePerson();}
     void ChooseRegistered()
     {
         ReadRegistry();confirmed=null;preview=null;Clear("② 登録武将を選ぶ","");
@@ -135,7 +138,7 @@ public partial class NewGameFrontEnd : Control
             personText.Text+="\n織田家との対立あり。開始時は未開戦。敵対を表明するかは当主が決めます。";
     }
     NewCampaignProfile CreateSelectedCampaign(string person)=>PrepareSelectedCampaign(confirmed??throw new InvalidDataException("開始世界を確定してください"),person,previewOnly:false);
-    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly,TestKey==null?historyMode:null):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,TestKey==null?CharacterDevelopment.Policy32:CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge,controlPolicy:ControlSuccession.Policy);
+    NewCampaignProfile PrepareSelectedCampaign(SetupScenario setup,string person,bool previewOnly)=>national?NationalStart.New(campaigns,setup,person,Seed,TestKey==null?WorldTimeControl.Policy:null,previewOnly,TestKey==null?historyMode:null,startYear,TestKey==null?new(npcAttention,challengeLevel,supportLevel):null):campaigns.New(setup,chosen,person,Seed,NewGameWorld.CompactPersonalAuthority,HistoricalStartCatalog.Current,NpcPolicyForEntry,LocalInspectionFindings.Policy,WorkFollowup.Policy,DemandForEntry,VoyageRulesForEntry,NpcArmies.CompactCombatPolicy,HouseSuccession.Policy,PersonalCompanions.RetainerReleasePolicy,TruceNegotiations.Policy,PrivateInformation.Policy,PrivateStanddown.Policy,TestKey==null?CharacterDevelopment.Policy32:CharacterDevelopment.Policy,CharacterRelations.Policy,AdultAdoption.Policy,AdultMarriage.Policy,HostageCustody.Policy,TestKey==null?WorldTimeControl.Policy:null,JudgmentForEntry,CastleSiege.Policy,RegionalWeather.Policy,AbilityEffects.Policy,LocalSecurity.Policy,BattlefieldRules.Policy,previewOnly,FamilyKin.ComingOfAge,controlPolicy:ControlSuccession.Policy);
     void RequestBegin(){if(confirmed==null||selected==null)throw new InvalidDataException("世界と操作人物を選んでください");string person=selected;Action start=()=>{var p=CreateSelectedCampaign(person);OpenGame(p,false);};if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}
     void OpenGame(NewCampaignProfile profile,bool load)
     {

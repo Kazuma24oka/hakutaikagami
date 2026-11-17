@@ -46,10 +46,19 @@ public partial class NewGameRuntime
             Button("家を一年保つ",()=>Life(LifeAction.SetGoal,LifeGoal.KeepHouse,1));
             Button("所領を一年保つ",()=>Life(LifeAction.SetGoal,LifeGoal.KeepHoldings,1));
             Button("主家を一年支える",()=>Life(LifeAction.SetGoal,LifeGoal.SupportLord,1));
+            if(NationalSystems.On(Snapshot(),NationalSystems.LifeGoals2))
+            {
+                Button("勲功を三つ立てる",()=>Life(LifeAction.SetGoal,LifeGoal.Fame,3));
+                Button("子と孫を五人にする",()=>Life(LifeAction.SetGoal,LifeGoal.FamilyProsperity,5));
+                var w0=Snapshot();var mine=v.House?.Value;
+                if(mine!=null){var owners=w0.NewGame!.Start.Castles.ToDictionary(c=>c.Id,c=>c.Faction,System.StringComparer.Ordinal);
+                    foreach(var site in owners.Where(x=>x.Value==mine).SelectMany(x=>NationalStrategy.Neighbors(x.Key)).Distinct().Where(n=>owners.TryGetValue(n,out var o)&&o!=null&&o!=mine).OrderBy(n=>n,System.StringComparer.Ordinal).Take(5))
+                    {var c=new EntityId(site);Button((w0.Definitions.Sites.SingleOrDefault(x=>x.Id==c)?.Name??site)+"を奪う",()=>Life(LifeAction.SetGoal,LifeGoal.TakeCastle,1,c));}}
+            }
             {var w=Snapshot();foreach(var foe in PersonalLife.RevengeChoices(w,Session.PlayerControl,w.ElapsedSeconds,w.CommitSequence).Take(5)){var who=foe;Button($"{PersonName(who)}を討つ",()=>Life(LifeAction.SetGoal,LifeGoal.Revenge,1,who));}}
         }
         else Text("道中");
-        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.KeepHouse?"家の存続（年）":g.Goal==LifeGoal.KeepHoldings?"所領維持（年）":g.Goal==LifeGoal.SupportLord?"主家支援（年）":g.Goal==LifeGoal.Revenge?"報復":g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
+        foreach(var g in v.Goals.Reverse().Take(3)){string label=g.Goal==LifeGoal.Fame?"名声（勲功）":g.Goal==LifeGoal.FamilyProsperity?"一門の繁栄（人）":g.Goal==LifeGoal.TakeCastle?"城の奪取":g.Goal==LifeGoal.KeepHouse?"家の存続（年）":g.Goal==LifeGoal.KeepHoldings?"所領維持（年）":g.Goal==LifeGoal.SupportLord?"主家支援（年）":g.Goal==LifeGoal.Revenge?"報復":g.Goal==LifeGoal.GainTitle?"位階・官職":g.Goal==LifeGoal.WorkPay?"仕事報酬（文）":g.Goal==LifeGoal.ReceiveStipend?"扶持の実受領（kg）":"扶持の実支払（kg）";Text($"{label} {g.Progress}/{g.Target} — {(g.Achieved?"達成済み":g==v.Goals.Last()?"現在の目標":"変更前の目標")}");}
         {}Button("地図へ戻る",()=>popup.Hide());popup.PopupHide+=()=>popup.QueueFree();popup.PopupCentered(new Vector2I(620,580));
     }
 }

@@ -1,0 +1,20 @@
+{
+  "status": "PASSED",
+  "scope": "S03 関係する検査（全件テストは S14 で1回）",
+  "date": "2026-11-17",
+  "related_tests": "PASSED",
+  "passed": 104,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 11,
+  "commands": [
+    "StartYearTests（3件）",
+    "HistoricalEventsTests（4件）",
+    "LifeGoals2Tests（4件）",
+    "NationalStrategyTests|StrategyLossesTests|HistoricalChronicle|PersonalLifeTests（54件）",
+    "NationalSystemsTests|NationalStartTests|MortalSuccession|ControlSuccession|HakutaiDb（39件）"
+  ],
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "未実施（Godot の組み立ては成功。開始年の選択・噂・総括の画面は S12 の一巡で見る）",
+  "performance": "1600年の家康の開始で最初のゲームの1分が約46秒（1560年の信長と同じ程度）。1家の人数の上限を入れる前は約9分。"
+}

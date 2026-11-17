@@ -1,0 +1,77 @@
+{
+  "version": 156,
+  "step": "S03",
+  "criteria": [
+    {
+      "contract": "戦国DBから1467年と1600年の開始の版（家・人物・城の持ち主・郡の支配）を書き出し（2026-11-17 ユーザー承認「1467と1600」）、新規の全国開始で1467年・1560年・1600年を選べる。地図と移動網は共通（1560年の城の網）で、網に無い城の人は同じ国の網の城に置く（推定の印つき）。今の保存は変えない",
+      "status": "PASSED",
+      "done": "戦国DB（タグ hakutai-1560-v11）から hakutai-db-1467-v1（家228・人物602）と hakutai-db-1600-v1（家120・人物6,450）と人物の推定表を書き出した。新規開始の画面で開始年（1467・1560・1600）を選べる。開始年は一覧の印（StartYear1467/StartYear1600）で持ち、1560年の世界と今の保存は変わらない。網に無い城の人は同じ国の一番近い網の城に置く。1560年以外では1家の登場人数を240人まで（1600年の徳川・豊臣は900人前後になり世界が動かないため）。",
+      "evidence": [
+        "Tools/HakutaiDb/export_1560.py",
+        "Core/Contracts/HakutaiDbEra.cs",
+        "Core/Contracts/NationalStart.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Tests/StartYearTests.cs"
+      ]
+    },
+    {
+      "contract": "史実の事件を50件以上（1467年〜1615年の出陣と、出陣以外の同盟・上洛・将軍の交代などを含む）、前提・判断の重み（史実尊重・準史実・仮想）・不発の記録とともに持ち、どの開始年でも始まる年より後の事件だけを判定する。強制の上書きをしない",
+      "status": "PASSED",
+      "done": "史実の事件を64件（前の34件に、1467〜1559年の出陣10件・1560年代以降5件・1600年以降8件と史実の同盟7件）。前提（家と成人の当主・操作する人物の家でない）と歴史の設定（史実尊重90%・準史実50%・仮想なし）で判定し、premise・declined・fired を残す。第2版は一覧の HistoryEvents2 の世界だけ。",
+      "evidence": [
+        "Core/Contracts/NationalStrategy.cs",
+        "Tests/HistoricalEventsTests.cs"
+      ]
+    },
+    {
+      "contract": "史実の事件の結果を、知った人だけが知る（書状・噂、噂には誤報がある）。本人の年代記と家ごとの年表に、本人が知った事件を出す",
+      "status": "PASSED",
+      "done": "史実の出陣の決着と同盟は噂として、事件の時に本人がいた所からの道のりに応じて遅れて届き（1日＋30kmごとに1日）、15%は誤報。保存せず事件の記録と居場所から導く。本人の年代記に出し、家ごとの年表（家の絞り込み）は事件のどちらの家でも出す。",
+      "evidence": [
+        "Core/Contracts/HistoricalNews.cs",
+        "Core/Contracts/HistoricalEventRules.cs",
+        "Game/Scripts/NewGameRuntime.WorldTime.cs",
+        "Tests/HistoricalEventsTests.cs"
+      ]
+    },
+    {
+      "contract": "新規の全国開始で、手強さ・判断支援・史実への関わり方のつまみを選んで保存し、NPCの判断と助言に効く",
+      "status": "PASSED",
+      "done": "新規の全国開始で、声のかかりやすさ・手強さ・判断支援を世界に保存する（前は手強さが標準に固定、判断支援なし）。手強さは NPC の判断（NpcJudgment）、判断支援は助言の文に効く。",
+      "evidence": [
+        "Core/Contracts/NationalStart.cs",
+        "Game/Scripts/NewGameFrontEnd.cs",
+        "Tests/LifeGoals2Tests.cs"
+      ]
+    },
+    {
+      "contract": "1650年の総括に、本人と家の歩み（家督・城の数・知った事件・目標の達成）を出し、個人の目標に名声・一門の繁栄・特定の城の奪取を足す",
+      "status": "PASSED",
+      "done": "1650年の総括に、年数・継いだ回数・家の城の数（始め→総括）・聞いた史実の事件・果たした目標を出す（一覧の LifeGoals2 の世界だけ、総括の時点の事実から導く）。目標に名声（勲功の数）・一門の繁栄（生きている子と孫、一年ごと）・城の奪取（月の初めに本人の家のもの）を足した。城の候補は開始時の情勢の隣の城。",
+      "evidence": [
+        "Core/Contracts/PersonalLife.cs",
+        "Core/Contracts/WorldTimeControl.cs",
+        "Game/Scripts/NewGameRuntime.PersonalLife.cs",
+        "Tests/LifeGoals2Tests.cs"
+      ]
+    },
+    {
+      "contract": "関係する検査（開始年ごとの開始・保存の読み直し・事件の判定と知らせ・旧保存の不変）に合格する",
+      "status": "PASSED",
+      "done": "新しい検査11件（開始年3・事件4・目標と総括4）と、関係する既存の検査93件に合格。",
+      "evidence": [
+        "Docs/Design/HistoricalEventsV1/verification.json"
+      ]
+    }
+  ],
+  "moved_to_later": [
+    {
+      "what": "ルール設定の個別のつまみ（G-B9）と、史実の事件で本人に機会を出すこと",
+      "returns_in": "S11"
+    },
+    {
+      "what": "1467年・1600年の開始での年の分かる改名の台帳",
+      "returns_in": "S09"
+    }
+  ]
+}

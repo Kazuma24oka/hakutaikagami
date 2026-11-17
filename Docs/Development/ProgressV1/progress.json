@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "8745003951091ec8d581303b8f124125f580183bd73264842492b92cc3a4be33",
+    "Docs/Development/ProgressV1/estimate.json": "91d6818e52248b6359cbfec555e2234af5b22266f4b2efe34c3f0a1e34d7e3c4",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "e2b6d8f03b5dc7609d5ab9739191e72a5f10a973e71412cc37b43b104a303062",
-    "Scripts/check_approval_batch.py": "ecd4aeacc3d93dab0e6a5f032602b92bc3349a1ef794cfcb8d76ee0cccf5c4de",
+    "Scripts/check_approval_batch.py": "496632b3fb62e9cdc2cbf6b0447ca155d8daff53c685f8657ed123acd7169052",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -121,10 +121,10 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "f06b3c3ce0b01bbadf296d85af7b854d0338e77b846473d8460c49299959b3e8",
+    "Docs/Development/CURRENT_STAGE.md": "ca5aecc887f8899e14d699d480c1f40733ae1b9d0ffda63e8c4b890593c9f9c4",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
-    "Core/Contracts/NewGameWorld.cs": "43ce09a0b818e97640da210c65f02db0004f716f1514210daa7882821b52acad",
+    "Core/Contracts/NewGameWorld.cs": "238f98d35db591f59dae127318693751d4617039d43ee26512e6c8a39a68c391",
     "Core/Contracts/HouseSalary.cs": "546a379719d75a005be6ec06415ab1e0fa622044c2757954777f6730df79bd83",
     "Core/Contracts/HouseLogistics.cs": "4ff14fbf749ae4bd11e954ffa2d17bd3f5a44ca15867b821b770b6918de3ac0e",
     "Tests/HouseSuccessionTests.cs": "65edb5907e79afb95f93bd7059a857558affece68c595b7bd2cc94c5930c1df3",
@@ -271,7 +271,7 @@
     "Tests/CharacterDevelopmentTests.cs": "dcd5c5c9430de90344c1b9224cf0bf6cb46fd8893d32ca3985eeb22763f51330",
     "Game/Scripts/NewGameRuntime.CharacterDevelopment.cs": "9307bda6815fb3aa60ecd372a772d269a51855c1e66b3c2d79a9d4b956356e15",
     "Game/Scripts/OfficerLibraryTrial.cs": "9241dbfdfa265ecdf278ca4b5eabfc4093e255f0a6bf0bf7f66602127615f9ae",
-    "Game/Scripts/NewGameFrontEnd.cs": "a2682af1998a49e9c430165afc684f9d854d2b5f1ec82f3f72b7c2593a256694",
+    "Game/Scripts/NewGameFrontEnd.cs": "aca08e2a63452476ee36969d080eeabd583d2087abe81b2111b027665c32d991",
     "Docs/Design/CharacterDevelopmentV1/verification.json": "2465c82c2592674c00430078fd41588277d4d4c46ee331d342e52ae8165fc16c",
     "Docs/Design/CharacterDevelopmentV1/completion.json": "ffc5ef8d2ff1204e0400401ca15fc7f40eb32b73725e88000be3d2f5b679d541",
     "Docs/Design/CharacterDevelopmentV1/integration.json": "b5991bdd81c590452faaee7234e6b21e06aac40dab96300089203b62629effc1",
@@ -437,12 +437,12 @@
     "Docs/Design/NpcPurposeV1/README.md": "89095965e463be5718f058e54c80b131462943fbf3e596691ffc9cc43bae09a9",
     "Docs/Design/NpcPurposeV1/scope.md": "0f9def6f76d77ad33c1d21693c625aeac488bfd0a99377f887cd24d999cd8eb7",
     "Scripts/verify_npc_purpose.py": "c2c4f5052f18fa2f7a6b4d1a99f176a9556eb06a73a9d3e98fcb6e09cee87417",
-    "Core/Contracts/WorldTimeControl.cs": "c44ca6e827eba28a181e67477738c71bc658af6e84ba2bc29fc4ef8ae1e62da0",
+    "Core/Contracts/WorldTimeControl.cs": "88330a016c6c01ad49ac5749ec31786623c13843e4f09b3b16ee3a31a78572c7",
     "Core/Contracts/WorldCalendar.cs": "87e1cb1d37d375881d862cfe2235964835e2ad5590a07d8539a31a551b36e13a",
     "Core/Contracts/TimeObservationSweep.cs": "7ac32f8ff2654f6ea5ea22471eac6c61a868a3878213b5a5215efbb1f417387b",
     "Tests/WorldTimeControlTests.cs": "b49cba2abf6c1a601fc45b9a4a2df81a8650e8f7d5ac2dac48c838f6dee90fd1",
     "Tests/WorldTimeTravelTests.cs": "d74bc40427190f641f0df372b40b1c1d7c83e4b850acf4443edc338791b76cc7",
-    "Game/Scripts/NewGameRuntime.WorldTime.cs": "6fa77b002446810e96c180f11fbeb917e02edd9cfdf986d4667c0c38c98cf762",
+    "Game/Scripts/NewGameRuntime.WorldTime.cs": "9effd4346da00f1a4c49dbf9c30ae651f374822ac2bdfa6645fe1baaff493cb4",
     "Game/Scripts/WorldTimeCheck.cs": "90477b2af5e5af5bf80e7370c4025c6b1781a1749c2e339af3dbbcd569149c27",
     "Docs/Design/WorldTimeV1/verification.json": "3e079911206c2d9c4da641ad7ffbedbb12b404e168efe400f575036a47e9f467",
     "Docs/Design/WorldTimeV1/completion.json": "c9dbef24f4d04462d73c0a295d53abf8508f4a84923f601df3eb6b60601e49f8",
@@ -473,7 +473,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v53.json": "286550eb6dd1017c0a18354372539da4bd89a1912ade87ebe21e58a084660a44",
     "Docs/Design/HistoricalChronicleV1/scope.md": "fca898a57a5b4c92490ef34ca3cfff3b9d37e3ba8774b74a0304d6feee218369",
     "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d",
-    "Core/Contracts/HistoricalEventRules.cs": "8f081d59f4cc030712e501dd58fe608ca7e4a04af8d406bced2be8c09e781125",
+    "Core/Contracts/HistoricalEventRules.cs": "fab11838e5060f4d0558507d6567e31f6b031ff25250ff1d0522cbbb511da563",
     "Tests/HistoricalEventRulesTests.cs": "ac77c5cca3b6254518ffae25f990f4b4d12e4df60ae3fc2b3a6167018264408c",
     "Game/Scripts/HistoricalChronicleCheck.cs": "75f7384777b129127a662b0e0b7c9a8c9bf40486af6745e4de4a64a8520dbc5d",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
@@ -784,7 +784,7 @@
     "Docs/Design/IndependenceGarrisonV1/completion.json": "faecf607fe52502759aad46c2b1b5ab3692132dbbbd2b3a5589bd1c6eaee08cc",
     "Docs/Design/IndependenceGarrisonV1/verification.json": "1a25637db6feb530560141533152642cac4b7a50ecf2a3edf984dbecd7e05e11",
     "Core/Contracts/ContractModels.cs": "83750c031c8efb94288b83b0960e5e792075db84549232cda5d62a436575b135",
-    "Core/Contracts/NationalFactionRelations.cs": "e435f44e8f6ad257a69087f58c6e274d1e4077154882432206ff10ce55d65c0c",
+    "Core/Contracts/NationalFactionRelations.cs": "fa3c60e02ab3ecf893bb0d67aacfd5f5634716ef95a162d5192e3c8e07f64952",
     "Game/Scripts/NationalFactionRelationsCheck.cs": "1b81cd97325d8396ffda83640e78835fa141e2d32aa04d9d7610700b0189fc30",
     "Game/Scenes/NationalFactionRelationsCheck.tscn": "bc65f06fa79fc8727850e9fbac483eb4cc5b68dc413ae692cb110b38f9593322",
     "Tests/NationalFactionRelationsTests.cs": "e68f63be3376498ac81835a58d823e19260ce2f7fe2d8250cc208257ca53bda2",
@@ -796,9 +796,9 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "487feeac66f630f3ce47a47bccc2e6518de6ec5a2212ab8e8a2ff832bb41d25c",
+    "Docs/Development/ProgressV1/index.html": "667ef6f4c0db574ed9952e1991ffb94e581e40bcc0ef9d0fd41b88dd59c56e53",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
-    "Core/Contracts/NationalNameHistory.cs": "3b6267a8748ba01ec47c39882200c4e507a8bf9d96a009559dfe33f8aeb24b29",
+    "Core/Contracts/NationalNameHistory.cs": "9f6e382ccb983f5cb21b4ca21bef752ebe309f1fbf77e577fd3515b9e94c1e8f",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
     "Scripts/verify_national_name_history.py": "8eaafdb7127f3fb9e285a1ae9626a4939b2b4345e7dc9aa3b78f67e8b458bae5",
     "Docs/Design/NationalNameHistoryV1/README.md": "c2093b405a27d2330c4b52d20b46265444663c11c53dda2dba1ea864e17f4eff",
@@ -814,16 +814,16 @@
     "Docs/Design/NationalOfficerDataV1/verification.json": "7164b5ecaf07da1059865c1163b9d4832f0536378556a5fb2e3675c91f70a68a",
     "Docs/Design/NationalOfficerDataV1/integration.json": "bd39cef3da798fd69b49d6882615527496007c65cf03c7b645e7327d2df0769d",
     "Scripts/verify_national_person_estimates.py": "d5922e4fda66f77285e544606edb9305b6c09084174735ccb8998ba78ea2bb50",
-    "Tools/HakutaiDb/build_national_person_estimates.py": "e72221b849a8960111ac114071f1b3b4662f2a212a1f4c865b96d2ef77517ff0",
-    "Core/Contracts/NationalPersonEstimates.cs": "c9318803d604ba7147e9b11cbef8ee7106958ab2c4b9d6ca78ec4e25f452f2a3",
-    "Core/Contracts/NationalStart.cs": "952db48c1ab91899b67889d54eef0775070eadb88a920891694e2cbf67df4b39",
-    "Core/HakutaiKagami.Core.csproj": "15ee482e935f98572a8c31c9f86b62b040e416e1552bb1c81cea93b34f85380e",
+    "Tools/HakutaiDb/build_national_person_estimates.py": "88651ecdf2d551a90a96f578f0ee45ef452b84e6b8738958cf90f019bb773280",
+    "Core/Contracts/NationalPersonEstimates.cs": "d967ba19fa3619e7108ef24bbf26d2f581631b43e84784470e3e73af318ead89",
+    "Core/Contracts/NationalStart.cs": "4e7e5a9d582632ecd144ab1a15c96e688539ca6e1dd65e15617ae415a86482e5",
+    "Core/HakutaiKagami.Core.csproj": "2b13a5b55cc3b7034a1e317b2e738eafedb88a3b0a4510b7e7490093d71df36c",
     "Core/Data/national-person-estimates-v1.json": "d14c0c0e6e298a5bd760e5f52ab92ee28e2d95f4f785c8e5c5a0f9f443e4992b",
     "Tests/NationalPersonEstimateTests.cs": "740ccaefcdb80f7845e631aa9d61a41c27b416bcddc2e4e6d5ccce60692f7681",
     "Core/Data/hakutai-db-1560-v2.json": "51acd1814757df2125d1aad624857bb08f1f15d3bcbaa1759dfd349bb48fce05",
     "Core/Contracts/CentralCourtCatalog.cs": "ce2fa5d851ef03556c1418a7ebcfa255b9a098452a4385ce1950bc2fc0f064e0",
     ".gitignore": "4ffb68c7db6fa077bb56b84f04bf14ff31706e59c6f52f727abaf1853bd0c621",
-    "Tests/NationalStrategyTests.cs": "7f6b8701210d0d94855c47d0a1c0d8f8c5b1da6e63c964ce01b692ca7fcf50c1",
+    "Tests/NationalStrategyTests.cs": "dd74adb8e547f8abb53463d1f877a32f21f0a24c04c64e83cbd73e247767cb1f",
     "Core/Contracts/NationalDistrictRevenue.cs": "98f0419e5e1fed566bfa4c5fc146fc72274f768c7e79b001932707949f4aea70",
     "Docs/Design/NationalDistrictRevenueV1/completion.json": "108d411594c9984ef9bcee87886b4bca40068ac505e8db9f27d4590a852aace9",
     "Docs/Design/NationalDistrictRevenueV1/README.md": "3f46dfcc9f2e6b2e1ba6804fb6c3b72e5c2d0d0af06e904b0a5322855611a956",
@@ -872,7 +872,7 @@
     {
       "id": "BD-02",
       "status": "foundation",
-      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。 清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。 1560年の駿府に今川義元・氏真を配置。義元に当主の決裁権、氏真に後継指名があり、双方の主人公で途中復旧後の世界・3D配置が一致。 義元が駿府で敵対を決裁し、軍務を引き受け、家の米を軍用倉から携行して掛川へ出発。街道上の保存復旧で世界と3D配置が一致した。 補給の有無で岡崎から善照寺砦への出発可否が変わり、補給後に到着する通常開始の行程を確認。 判断支援を開始時に選択でき、保存復旧と兵糧購入の案内に接続。 登録時に4種類の志を選べる。グループ複製を別の志に変更し、編集画面を別プロセスで開いて双方の値を復元。世界復旧後、4種類すべてで本人の志に対応する修行を選び、史実加点は付かなかった。旧保存6件の世界データは再出力で完全一致。 2026-11-17（S01）：1560年の全国初期状態に官位の在職・史実人物の技能の手がかり・家系と信仰を入れた（新規の全国開始だけ）。",
+      "existing": "固定開始設定と史実カタログ、HistoryModeの選択データがある。 通常開始に歴史設定・本人への関わりを接続。共通評価で日・週・月の裁量判断、6性格と4人物の志、現地の相手選び・本人承諾・点検・返報・実支払を確認。関連40件、実保存復旧6段階、旧保存270件のバイト一致、Godot内部操作と自前描画・保存前後の表示一致が成功。 清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。 1560年の駿府に今川義元・氏真を配置。義元に当主の決裁権、氏真に後継指名があり、双方の主人公で途中復旧後の世界・3D配置が一致。 義元が駿府で敵対を決裁し、軍務を引き受け、家の米を軍用倉から携行して掛川へ出発。街道上の保存復旧で世界と3D配置が一致した。 補給の有無で岡崎から善照寺砦への出発可否が変わり、補給後に到着する通常開始の行程を確認。 判断支援を開始時に選択でき、保存復旧と兵糧購入の案内に接続。 登録時に4種類の志を選べる。グループ複製を別の志に変更し、編集画面を別プロセスで開いて双方の値を復元。世界復旧後、4種類すべてで本人の志に対応する修行を選び、史実加点は付かなかった。旧保存6件の世界データは再出力で完全一致。 2026-11-17（S01）：1560年の全国初期状態に官位の在職・史実人物の技能の手がかり・家系と信仰を入れた（新規の全国開始だけ）。 2026-11-17（S03）：1467年・1560年・1600年の全国開始、手強さ・判断支援・声のかかりやすさを全国の開始でも保存。ルールの個別のつまみと本人への機会は S11。",
       "remaining": "1560年の全国初期状態を採録し、史実尊重・準史実・仮想の実際の事件/AI差分を接続する。 統合案で追加：§20 W7 本人への機会（NPCの関わり方）・G-B9 ルール設定の個別つまみ・§20 W6 歴史モードでのNPCの史実志向の差。 2026-11-06採用：AIの手強さ（控えめ・標準・手強い）と判断支援（詳しい助言・要点だけ・自分で判断）を独立設定にし、組合せコースと個別調整へ接続する。歴史モード・本人への機会は区別し、具体的既定値と保存への接続は残件。設計採用のみ。 2026-11-06採用：史実人物も開始時の年齢と根拠に応じた状態から教育し、元服時に育成結果を固定の成人値で上書きしない。出生/死亡と歴史志向のモード差は維持する。",
       "evidence": [
         "Core/Contracts/StartConfiguration.cs",
@@ -896,7 +896,8 @@
         "Docs/Design/DecisionSupportV1/entry-verification.md",
         "Docs/Design/RegisteredAspirationV1/verification.json",
         "Core/Contracts/HakutaiDbSupplement.cs",
-        "Docs/Design/HistoricalDataV1/verification.json"
+        "Docs/Design/HistoricalDataV1/verification.json",
+        "Docs/Design/HistoricalEventsV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -904,12 +905,13 @@
     {
       "id": "BD-03",
       "status": "design_only",
-      "existing": "基本方針と受入予定がある。 清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。",
+      "existing": "基本方針と受入予定がある。 清洲にいる織田家当主信長の既知の点検需要に、1560年だけ偵察候補の重みを加える。浪人が実際の依頼を開封して引受・点検・返報・受領する通常入口と中途復旧を確認。 2026-11-17（S03）：史実の事件を64件（1467〜1615年の出陣57件と同盟7件）、前提・歴史の設定による重み・不発の記録つきで判定する。強制の上書きはしない。本人への機会は S11。",
       "remaining": "史実事件の前提・人物行動との競合・分岐を実装し、全モードで強制上書きがないことを検査する。 統合案で追加：§22 史実の事件（前提と判断の重み・不発・年代記）。",
       "evidence": [
         "Docs/Design/basic-design-v1.json",
         "Core/Contracts/StartConfiguration.cs",
-        "Docs/Design/OwariHistoricalOpportunityV1/entry-verification.md"
+        "Docs/Design/OwariHistoricalOpportunityV1/entry-verification.md",
+        "Docs/Design/HistoricalEventsV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1060,7 +1062,7 @@
     {
       "id": "BD-08",
       "status": "design_only",
-      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 2026-11-17（S02）：操作を継ぐ人がいなければ年代記の終わりに没日・家・当主・城の数を出す。兄弟姉妹で続けられる。",
+      "existing": "仕事報酬/扶持受領/扶持支払を当面の目標に選び、設定後の実受領だけを記録。途中変更し、達成後の消費でも既達成を保持し、ゲームを終了しない。 通常開始へ日の速度・本人向け通知による停止/減速・次の知らせ待ち・設定・暦・1650年総括を接続。全件4,053件、9段階の実保存復旧、旧保存261件のバイト一致、Godot配置3組と通常入口の内部操作・自前描画を確認。停止設定の有無で同時刻のNPC判断を変えない。 2026-11-17（S02）：操作を継ぐ人がいなければ年代記の終わりに没日・家・当主・城の数を出す。兄弟姉妹で続けられる。 2026-11-17（S03）：1650年の総括に年数・継いだ回数・城の数・聞いた事件・果たした目標。目標に名声・一門の繁栄・城の奪取。家ごとの年表。",
       "remaining": "報復/家の存続/領地維持など全個人目標、1650年総括、死亡と操作継承の終了条件。 統合案で追加：§19 年代記と開始年のシナリオ・§26 Z11 家ごとの年表。",
       "evidence": [
         "Core/Contracts/PersonalLife.cs",
@@ -1080,7 +1082,8 @@
         "Game/Scripts/NewGameRuntime.WorldTime.cs",
         "Game/Scripts/WorldTimeCheck.cs",
         "Docs/Design/WorldTimeV1/verification.json",
-        "Docs/Design/MortalSuccessionV1/verification.json"
+        "Docs/Design/MortalSuccessionV1/verification.json",
+        "Docs/Design/HistoricalEventsV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1492,7 +1495,7 @@
     {
       "id": "BD-18",
       "status": "normal",
-      "existing": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 2026-11-17（S01）：拠点の新しい値のうち城の種類（山城・平山城・平城）を追加の版に採録。開発の4軸・民心・治安・門徒・城の区画は S07。",
+      "existing": "新しい軍務版を固定し、本人単独移動と同じ貸与部隊の陸路行軍を識別。旧v15以下の保存原本を40実例で保持。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 指出と検地の人手・実資源・工期、現地帳面と物理報告、7日後の年貢布告と過去課税の保持を接続。新規開始でNPC地域運営を起動し、同時支出の見落としを修正。製品の実在資金による現地売却を追加。 固定Seedと世界暦に基づく地域災害と作柄、持続する田畑・町・城の被害、実費・人手・工期を使う復旧を接続。田畑の収穫と町の生産へ反映し、現地観測と奉行の時点付き物理月報を分離。旧開始への規則追加は行わない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 2026-11-17（S01）：拠点の新しい値のうち城の種類（山城・平山城・平城）を追加の版に採録。開発の4軸・民心・治安・門徒・城の区画は S07。 2026-11-17（S03）：1467年・1600年の開始の版（戦国DBから書き出し）と人物の推定表。地図は1560年の城の網を共通に使う。改名の台帳は S09。",
       "remaining": "複数年代の正式史実データ/シナリオ差分と製品データ移行。 統合案で追加：拠点の新しい値の持ち方（開発の4軸と上限・民心・治安・門徒・城の区画の堅さ・寺社の組織・職人集団・名物の所在。CHARACTER_DATA_FIELDS_V1 §3）。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
@@ -1526,7 +1529,8 @@
         "Docs/Design/BattlefieldRulesV1/README.md",
         "Docs/Design/BattlefieldRulesV1/verification.json",
         "Core/Contracts/HakutaiDbSupplement.cs",
-        "Docs/Design/HistoricalDataV1/verification.json"
+        "Docs/Design/HistoricalDataV1/verification.json",
+        "Docs/Design/HistoricalEventsV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -1797,7 +1801,7 @@
     {
       "id": "BD-25",
       "status": "normal",
-      "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。",
+      "existing": "NPCが現地で権限を持って確認した時点の在庫だけを封書へ記録。配送前/未開封や不在NPCから現在在庫を漏らさず、再送や任命交代で観測を現在量へ読み替えない。 本人が現地で放火・城門破壊・蔵米の強奪・村の煽動を試みる。配下は用件を引き受けて移動・実行し、依頼主は帰還後の返報開封で結果を知る。現場の目撃と後から聞く伝聞を区別した。 人物の所在を目撃し、拠点または同時に接近した街道で接触・襲撃する。死亡と捕縛は移動・所持金・生前の契約に反映し、遠方へ送った密偵の観測は返報の開封後に伝わる。 2026-11-17（S03）：史実の事件の知らせは噂として道のりに応じて遅れて届き、15%は誤報。",
       "remaining": "一般偵察/流言/地理発見と情報の全国索引。 統合案で追加：§10 情報系の計略・§24 名声（噂の事実）・§22 E5 史実事件の知らせ（噂と書状、誤報）。 2026-11-05 既存仕様の具体化：輸送の見聞と情報提供者の報告を、観測時点・誤認・虚偽を含む個別の情報として扱い、敵の真の残量へ読み替えない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-06採用：教育方針の連絡・教師報告・子の希望は実際の面会や書状を通し、観測時点・配送・開封・認識を区別する。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
@@ -1856,7 +1860,8 @@
         "Docs/Design/DestructiveSchemesV1/verification.json",
         "Docs/Design/AssassinationV1/README.md",
         "Docs/Design/AssassinationV1/verification.json",
-        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md"
+        "Docs/Decisions/2026-11-06_CHILD_EDUCATION_AND_INDIVIDUALITY.md",
+        "Docs/Design/HistoricalEventsV1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2

@@ -6,10 +6,22 @@ public enum TimeResponse { Off, Slow, Pause }
 public sealed record TimeRule(TimeNoticeKind Kind,TimeResponse Response);
 public sealed record TimeNotice(TimeNoticeKind Kind,string Source,long At,TimeResponse Response);
 public sealed record TimeSummary(int CompletedOwnTasks,int KnownRecords);
+// 1650年の総括の歩み（S03、一覧の LifeGoals2 の世界だけ）：総括の時点の事実から導く（保存しない）。
+public sealed record TimeJourney(int Years,int Handovers,string? House,int CastlesAtStart,int CastlesNow,int HeardEvents,int GoalsAchieved);
 public sealed record WorldTimeState(string Policy,TimeRule[] Rules,TimeNotice[] Notices,int? Pending,long? SummaryAt,long? ContinuedAt,TimeSummary? Summary);
 
 public static class WorldTimeControl
 {
+    public static TimeJourney? Journey(ContractWorld w)
+    {
+        if(w.TimeControl?.SummaryAt is not long at||!NationalSystems.On(w,NationalSystems.LifeGoals2))return null;
+        var me=w.PlayerControl;var house=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==me.Value)?.Faction;
+        int Castles(long t)=>house==null?0:w.NewGame!.Start.Castles.Count(c=>NationalStrategy.Owner(w,new(c.Id),t,long.MaxValue)?.Value==house);
+        int years=WorldCalendar.At(w.EpochDate,at).Year-WorldCalendar.At(w.EpochDate,0).Year;
+        return new(years,(w.ControlHandovers??[]).Count(h=>h.At<=at),house,house==null?0:w.NewGame!.Start.Castles.Count(c=>c.Faction==house),Castles(at),
+            HistoricalNews.Heard(w,me,at).Length,PersonalLife.Goals(w).Count(g=>g.Achieved&&g.AchievedAt<=at));
+    }
+
     public const string Policy="own-notice-calendar-v1";
     public static readonly int[] Speeds=[1,10,60,360,43200,86400,259200];
     public static readonly string[] SpeedLabels=["1倍","10倍","60倍","360倍（旧設定）","半日/秒","1日/秒","3日/秒"];

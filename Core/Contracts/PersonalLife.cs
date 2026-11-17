@@ -1,7 +1,8 @@
 namespace HakutaiKagami.Core.Contracts;
 
 public enum LifeAction { EatPrivateRice, RestOutside, RestInn, CancelRest, SetGoal }
-public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle, KeepHouse, KeepHoldings, SupportLord, Revenge }
+// Fame・FamilyProsperity・TakeCastle は一覧の LifeGoals2 の世界だけ（S03）。
+public enum LifeGoal { WorkPay, ReceiveStipend, PayStipend, GainTitle, KeepHouse, KeepHoldings, SupportLord, Revenge, Fame, FamilyProsperity, TakeCastle }
 public sealed record LifeInput(EntityId Id,LifeAction Action,EntityId Site,EntityId? Original=null,LifeGoal Goal=LifeGoal.WorkPay,long Target=0)
 {
     // 報復の相手（報復の目標だけ）。
@@ -49,7 +50,9 @@ public static class PersonalLife
                 if(i.Action==LifeAction.EatPrivateRice)Need(HouseSalary.PrivateRice(w,ControlSuccession.PlayerAtRevision(w,e.Revision),e.At,e.Revision)>=1,"食事に使える私有米がありません");
                 else if(i.Action==LifeAction.SetGoal){Need(i.Target is >=1 and <=5000,"目標は1〜5000です");
                     var me=ControlSuccession.PlayerAtRevision(w,e.Revision);
-                    Need(i.Goal==LifeGoal.Revenge?i.Subject is {} foe&&foe!=me&&i.Target==1&&w.Characters.Any(c=>c.Id==foe)&&!Assassination.DeadAt(w,foe,e.At,e.Revision):i.Subject==null,"報復の相手を一人選んでください");}
+                    Need(i.Goal is not(LifeGoal.Fame or LifeGoal.FamilyProsperity or LifeGoal.TakeCastle)||NationalSystems.On(w,NationalSystems.LifeGoals2),"この世界ではその目標を選べません");
+                    Need(i.Goal==LifeGoal.TakeCastle?i.Subject is {} castle&&i.Target==1&&w.NewGame!.Start.Castles.Any(c=>c.Id==castle.Value):true,"奪う城を一つ選んでください");
+                    Need(i.Goal==LifeGoal.Revenge?i.Subject is {} foe&&foe!=me&&i.Target==1&&w.Characters.Any(c=>c.Id==foe)&&!Assassination.DeadAt(w,foe,e.At,e.Revision):i.Goal==LifeGoal.TakeCastle||i.Subject==null,"報復の相手を一人選んでください");}
                 else {Need(Free(w,e.At,e.Revision),"任務や預かった部隊を先に引き継いでください");if(i.Action==LifeAction.RestInn)Need(TransportWork.WalletBefore(w,ControlSuccession.PlayerAtRevision(w,e.Revision),e.At,e.Revision)>=InnCost,"私財の自由残高が宿代に足りません。無料休息は選べます");}
             }
             seen.Add(e);at=e.At;rev=e.Revision;
@@ -102,6 +105,40 @@ public static class PersonalLife
             long endAt=es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min();
             long? known=RevengeKnown(w,me,foe,e.At,Math.Min(w.ElapsedSeconds,endAt));
             return new(e.Input.Id,e.Input.Goal,1,known!=null?1:0,known!=null,known);
+        }
+        if(e.Input.Goal is LifeGoal.Fame or LifeGoal.FamilyProsperity or LifeGoal.TakeCastle)
+        {
+            var me=ControlSuccession.PlayerAtRevision(w,e.Revision);
+            long endAt=Math.Min(w.ElapsedSeconds,es.Where(n=>n.Input.Action==LifeAction.SetGoal&&n.Revision>e.Revision).Select(n=>n.At).DefaultIfEmpty(long.MaxValue).Min());
+            if(e.Input.Goal==LifeGoal.Fame)
+            {
+                // 名声：目標を決めた後に、本人の働きとして主君に知られた勲功の数。
+                var known=MeritRewards.Records(w,me).Where(r=>r.Subject==me&&r.KnownAt>e.At&&r.KnownAt<=endAt).Select(r=>r.KnownAt).Order().ToArray();
+                return new(e.Input.Id,e.Input.Goal,e.Input.Target,known.Length,known.Length>=e.Input.Target,known.Length>=e.Input.Target?known[e.Input.Target-1]:null);
+            }
+            if(e.Input.Goal==LifeGoal.FamilyProsperity)
+            {
+                // 一門の繁栄：一年ごとの日に、生きている子と孫（実の親子の記録）の数。
+                var people=FamilyBirth.People(w).ToArray();
+                var kids=people.Where(p=>(p.BirthParents??[]).Contains(me.Value)).Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);
+                var line=kids.Concat(people.Where(p=>(p.BirthParents??[]).Any(kids.Contains)).Select(p=>p.Id)).Distinct(StringComparer.Ordinal).Select(x=>new EntityId(x)).ToArray();
+                int count=0;long? reached=null;
+                for(long t=e.At+365*86400L;t<=endAt;t+=365*86400L)
+                {
+                    count=line.Count(x=>FamilyBirth.People(w).Any(p=>p.Id==x.Value)&&!Assassination.DeadAt(w,x,t,long.MaxValue)&&((w.Births??[]).FirstOrDefault(b=>b.Child==x) is not {} b||b.At<=t));
+                    if(count>=e.Input.Target){reached=t;break;}
+                }
+                return new(e.Input.Id,e.Input.Goal,e.Input.Target,count,reached!=null,reached);
+            }
+            // 城の奪取：月の初めに、選んだ城が本人の家のものになっていれば果たした。
+            var house=FamilyBirth.People(w).SingleOrDefault(p=>p.Id==me.Value)?.Faction;long? taken=null;
+            var d=WorldCalendar.At(w.EpochDate,e.At);
+            for(var m=new DateTime(d.Year,d.Month,1).AddMonths(1);house!=null;m=m.AddMonths(1))
+            {
+                long t=NationalStrategy.MonthStart(w,m.Year,m.Month);if(t>endAt)break;
+                if(NationalStrategy.Owner(w,e.Input.Subject!.Value,t,long.MaxValue)?.Value==house){taken=t;break;}
+            }
+            return new(e.Input.Id,e.Input.Goal,1,taken!=null?1:0,taken!=null,taken);
         }
         if(e.Input.Goal==LifeGoal.GainTitle)
         {

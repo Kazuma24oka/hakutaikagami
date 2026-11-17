@@ -8,7 +8,7 @@ using HakutaiKagami.Core.World;
 public partial class NewGameFrontEnd
 {
     ItemList? dbHouses;Label? dbDetail;NewGameMap? dbMap;
-    internal void ReviewDbSelect(string house){var list=HakutaiDb.Houses.OrderByDescending(HakutaiDbStart.Quota).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();int i=Enumerable.Range(0,list.Length).First(k=>list[k].Name==house);dbHouses!.Select(i);dbHouses.EmitSignal(ItemList.SignalName.ItemSelected,i);}
+    internal void ReviewDbSelect(string house){var list=HakutaiDb.Houses.OrderByDescending(h=>HakutaiDbStart.Quota(h)).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();int i=Enumerable.Range(0,list.Length).First(k=>list[k].Name==house);dbHouses!.Select(i);dbHouses.EmitSignal(ItemList.SignalName.ItemSelected,i);}
     internal void ReviewDbOpen()=>buttons["hakutai-db"].EmitSignal(BaseButton.SignalName.Pressed);
     internal NewGameMap? ReviewDbMap()=>dbMap;
     internal string ReviewDbText()=>dbDetail?.Text??"";
@@ -20,7 +20,7 @@ public partial class NewGameFrontEnd
         var src=HakutaiDb.Source;
         Clear("1560年の勢力と人物","");
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill,CustomMinimumSize=new(0,470)};page.AddChild(columns);
-        var houses=HakutaiDb.Houses.OrderByDescending(HakutaiDbStart.Quota).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();
+        var houses=HakutaiDb.Houses.OrderByDescending(h=>HakutaiDbStart.Quota(h)).ThenBy(h=>h.Id,StringComparer.Ordinal).ToArray();
         dbHouses=new ItemList{CustomMinimumSize=new(210,0),SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(dbHouses);
         foreach(var h in houses)dbHouses.AddItem($"{h.Name}（{HakutaiDbStart.Quota(h)}人）");
         dbMap=new NewGameMap{ShowPins=false,ShowControl=true,ControlState=NationalDistrictControl.Initial(),SizeFlagsHorizontal=SizeFlags.ExpandFill,SizeFlagsVertical=SizeFlags.ExpandFill};columns.AddChild(dbMap);
