@@ -33,6 +33,8 @@ public static class Persons2
     public static AspirationValue? Aspiration(ContractWorld w,EntityId person)
     {
         if(!On(w))return null;
+        // 元服で養育と経験から定まった志（一覧の Duties2）。
+        if((w.Strategy?.Persons??[]).LastOrDefault(e=>e.Kind=="aspiration-formed"&&e.Person==person) is {} formed)return new(formed.Text,"養育と経験から定まった志");
         if((w.Strategy?.Persons??[]).LastOrDefault(e=>e.Kind=="aspiration"&&e.Person==person) is {} chosen)return new(chosen.Text,"本人が選んだもの");
         var p=FamilyBirth.People(w).SingleOrDefault(x=>x.Id==person.Value);if(p==null)return null;
         if(w.NewGame!.Registered.Any(r=>r.Id==person.Value))return null;

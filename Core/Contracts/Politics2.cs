@@ -60,7 +60,7 @@ public static class Politics2
     // 制裁：裏切った家に対して、裏切られた家の同盟の家が、2年のあいだ隊商を通さない。
     public static bool Sanctioning(ContractWorld w,string a,string b,long at)=>On(w)&&Events(w).Any(e=>e.Kind=="sanction"&&at-e.At<2*Year&&(e.House?.Value==a&&e.Other?.Value==b||e.House?.Value==b&&e.Other?.Value==a));
     // 養子の後継。
-    public static EntityId? AdoptedHeir(ContractWorld w,EntityId house)=>!On(w)?null:Events(w).LastOrDefault(e=>e.Kind=="adopt"&&e.House==house)?.Person;
+    public static EntityId? AdoptedHeir(ContractWorld w,EntityId house)=>!On(w)?null:Events(w).LastOrDefault(e=>e.Kind=="adopt"&&e.House==house&&!Duties2.AdoptionRefused(w,e.Person!.Value))?.Person;
     // 交換で放たれた人。
     public static bool Released(ContractWorld w,EntityId person,long capturedRevision,long at,long rev)=>On(w)&&Events(w).Any(e=>e.Kind=="exchange"&&(e.Person==person||e.Person2==person)&&e.Revision>=capturedRevision&&(e.At<at||e.At==at&&e.Revision<rev));
     // 外様の派閥が強く当主が若いか病の主からは、従う家が離反しやすい（離反の確率 10%→15%）。
@@ -104,6 +104,8 @@ public static class Politics2
             if(pa<pb*3&&pb<pa*3)continue;var strong=pa>pb?p.A:p.B;var weak=pa>pb?p.B:p.A;
             if(events.Any(e=>e.Kind=="revise"&&e.House==strong&&e.Other==weak&&now-e.At<Year))continue;
             bool border=owners.Where(x=>x.Value==weak.Value).Any(x=>NationalStrategy.Neighbors(x.Key).Any(n=>owners.GetValueOrDefault(n)==strong.Value));
+            // 取次の交渉の技能（一覧の Duties2）が高ければ、境を接していても断れる。
+            if(Duties2.NegotiatesAway(w,weak.Value))border=false;
             Add("revise",null,strong,weak,null,border?1:0,$"{HouseName(w,strong)}が{HouseName(w,weak)}に従属への変更を求め、{HouseName(w,weak)}は{(border?"受けた":"断った")}");
             if(border){pacts[i]=p with{Broken=now};Add("vassal",null,weak,strong,null,0,$"{HouseName(w,weak)}が{HouseName(w,strong)}に従った");}
         }
@@ -116,7 +118,8 @@ public static class Politics2
                 if(!touches||events.Any(e=>e.Kind=="proposal"&&e.House?.Value==f.Id&&now-e.At<Year)||pacts.Any(p=>Active(p)&&(p.A.Value==f.Id&&p.B.Value==mineHouse||p.B.Value==f.Id&&p.A.Value==mineHouse)))continue;
                 var threat=power.Where(x=>x.Key!=f.Id&&x.Key!=mineHouse&&x.Value>=2*power.GetValueOrDefault(f.Id)&&x.Value>=2*power.GetValueOrDefault(mineHouse)).Select(x=>x.Key).FirstOrDefault(t=>owners.Any(o=>o.Value==t&&NationalStrategy.Neighbors(o.Key).Any(n=>owners.GetValueOrDefault(n)==f.Id)));
                 if(threat==null||Draw(w,$"propose/{f.Id}/{year}")>=500)continue;
-                long arrive=now+Domestic2.Days(f.Home,HomeOf(w,mineHouse))*Day;
+                // 書状の道（一覧の Duties2）：敵の領地を避け、混めば遅れる。
+                long arrive=now+(Duties2.On(w)?Duties2.Route(w,s,f.Id,f.Home,HomeOf(w,mineHouse),events.Count(e=>e.House?.Value==f.Id&&e.At==now),now).Days:Domestic2.Days(f.Home,HomeOf(w,mineHouse)))*Day;
                 Add("proposal",f.Home,new(f.Id),new(mineHouse),null,0,$"{HouseName(w,new(f.Id))}から同盟の申し入れ（{HouseName(w,new(threat))}に備えて）",arrive);
                 Letter(w,f.Id,mineHouse,$"{HouseName(w,new(threat))}の勢いに備え、両家で盟を結びたし。");
             }
@@ -130,7 +133,9 @@ public static class Politics2
                 Add("peace-call",null,null,null,shogun,members.Length,$"将軍が{string.Join("・",members.Select(m=>HouseName(w,new(m))))}に和睦を呼びかけた");
                 var kyoto=CentralCourtCatalog.KyotoIn(w).Value;
                 var accept=members.Where(m=>s.Outcomes.Any(o=>o.Captured&&now-o.At<90*Day&&s.Campaigns.Single(c=>c.Id==o.Campaign).Defender.Value==m)||wars.Where(x=>x.A==m||x.B==m).All(x=>power.GetValueOrDefault(m)<power.GetValueOrDefault(x.A==m?x.B:x.A))).ToHashSet(StringComparer.Ordinal);
-                foreach(var m in members)Add("peace-answer",HomeOf(w,m),new(m),null,shogun,accept.Contains(m)?1:0,$"{HouseName(w,new(m))}は将軍の和睦の呼びかけを{(accept.Contains(m)?"受けた":"断った")}",now+Domestic2.Days(kyoto,HomeOf(w,m))*Day);
+                // 開封する人（一覧の Duties2）：当主が不在か意思表示できなければ家老。
+                foreach(var m in members){var op=Duties2.On(w)?Duties2.Opener(w,m,now):HouseSuccession.Head(w,new(m));string by=op!=HouseSuccession.Head(w,new(m))?$"（{PersonName(w,op)}が当主に代わり開封）":"";
+                    Add("peace-answer",HomeOf(w,m),new(m),null,shogun,accept.Contains(m)?1:0,$"{HouseName(w,new(m))}は将軍の和睦の呼びかけを{(accept.Contains(m)?"受けた":"断った")}{by}",now+Domestic2.Days(kyoto,HomeOf(w,m))*Day);}
                 foreach(var (a,b) in wars.Where(x=>accept.Contains(x.A)&&accept.Contains(x.B)))
                     if(!pacts.Any(p=>Active(p)&&(p.A.Value==a&&p.B.Value==b||p.A.Value==b&&p.B.Value==a)))pacts.Add(new(new($"pact:national/{date:yyyyMM}/{Hash(a+"/"+b+"/multi-peace")}"),new(a),new(b),"truce",now,now+Year,rev,"multi-peace:shogun"));
             }
@@ -207,7 +212,8 @@ public static class Politics2
             foreach(var c in Armies2.Corps(w,d.FormerHouse).GroupBy(c=>c.Province).Select(g=>g.Last()).Where(c=>alive.Contains(c.Commander)))
             {
                 long days=Domestic2.Days(HomeOf(w,d.FormerHouse.Value),owners.FirstOrDefault(x=>x.Value==d.FormerHouse.Value&&CentralStanding.ProvinceOf(new(x.Key))==c.Province).Key??HomeOf(w,d.FormerHouse.Value));
-                bool join=!c.Kin&&Draw(w,$"allegiance/{d.House.Value}/{c.Commander.Value}")<500;
+                // 恩と忠誠（一覧の Duties2）：元の当主への忠誠が50未満なら付く。
+                bool join=!c.Kin&&(Duties2.On(w)?Duties2.Loyalty(w,s,c.Commander,d.FormerHouse.Value)<50:Draw(w,$"allegiance/{d.House.Value}/{c.Commander.Value}")<500);
                 Add("allegiance",c.Province,join?d.House:d.FormerHouse,join?d.FormerHouse:d.House,c.Commander,join?power.GetValueOrDefault(d.FormerHouse.Value)/10:0,$"{PersonName(w,c.Commander)}（{c.Province}の軍団長）は{(join?HouseName(w,d.House)+"に付いた":HouseName(w,d.FormerHouse)+"に留まった")}",now+days*Day);
             }
         // 派閥：一門・譜代と外様の支持。勝てば譜代、負ければ・給付を削れば外様へ動く。軍備の家の流言は、相手の外様の支持を5動かす。
@@ -242,7 +248,7 @@ public static class Politics2
             bool bad=h.StipendCut>0||s.Campaigns.Any(c=>c.Basis=="betrayal"&&c.Attacker==h.House&&now-c.At<2*Year);if(!bad)continue;
             var posted=h.Posts.Select(p=>p.Person).ToHashSet();
             var who=people.Values.Where(x=>(recruits.TryGetValue(x.Id,out var r)?r:x.Faction)==key&&x.Id!=head.Value&&alive.Contains(new EntityId(x.Id))&&!posted.Contains(new(x.Id))&&x.BirthParents?.Contains(head.Value)!=true&&x.Id!=w.PlayerControl.Value)
-                .OrderBy(x=>Draw(w,$"resign/{x.Id}/{date:yyyyMM}")).FirstOrDefault();
+                .OrderBy(x=>Duties2.On(w)?Duties2.Loyalty(w,s,new(x.Id),key):0).ThenBy(x=>Draw(w,$"resign/{x.Id}/{date:yyyyMM}")).FirstOrDefault();
             if(who==null||Draw(w,$"resign/{key}/{date:yyyyMM}")>=20)continue;
             long arrive=now+Domestic2.Days(who.Site,HomeOf(w,key))*Day;
             persons.Add(new($"person:resign/{date:yyyyMM}/{Hash(who.Id)}","resign",new(who.Id),null,now,rev,$"{who.Name}が{HouseName(w,h.House)}に書状で暇を請うた"));

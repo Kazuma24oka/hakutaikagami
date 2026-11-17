@@ -107,7 +107,8 @@ public static class Logistics2
         long days=Armies2.TrackingDays(w,c)??Domestic2.Days(HomeOf(w,c.Attacker.Value),c.Target.Value);
         long far=days>10?carried*(days-10)/days:0,near=carried-far;
         long delay=days+far/2000;long arrive=delay>30?far*30/delay:far;
-        long broken=arrive*(delay/10)/100;arrive-=broken;
+        // 当主の兵站の技能（一覧の Duties2）が傷みを減らす。
+        long broken=arrive*(delay/10)/100*(100-Duties2.LogisticsCare(w,c.Attacker.Value))/100;arrive-=broken;
         bool bandits=Territory2.IsCamp(w,c.Target)||NationalStrategy.Neighbors(c.Target.Value).Any(n=>Territory2.IsCamp(w,new(n)));
         long stolen=bandits?arrive/10:0;arrive-=stolen;
         bool blockaded=Crossing(w,c)&&Escorted(w,s,c.Defender.Value,owners,at)>Escorted(w,s,c.Attacker.Value,owners,at);

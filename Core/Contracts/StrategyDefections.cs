@@ -20,7 +20,7 @@ public static class StrategyDefections
         s.Outcomes.Where(o=>o.At>now-90*Day).Any(o=>s.Campaigns.Single(c=>c.Id==o.Campaign) is var c&&(c.Attacker.Value==house&&!o.Captured||c.Defender.Value==house&&o.Captured));
     internal static StrategyState Decide(ContractWorld w,StrategyState s,Dictionary<string,long> power,DateTime date)
     {
-        long now=w.ElapsedSeconds;var rows=(s.Defections??[]).ToList();
+        long now=w.ElapsedSeconds;var rows=(s.Defections??[]).ToList();var pending=(s.Duties??[]).ToList();
         var factions=w.NewGame!.Start.Factions.Select(f=>f.Id).ToHashSet(StringComparer.Ordinal);
         bool PlayerHouse(string f)=>HouseSuccession.Head(w,new(f))==w.PlayerControl||w.NewGame.Start.People.SingleOrDefault(p=>p.Id==w.PlayerControl.Value)?.Faction==f;
         bool Adult(string f)=>w.Characters.SingleOrDefault(c=>c.Id==HouseSuccession.Head(w,new(f)))?.Life==LifeState.Adult;
@@ -33,9 +33,11 @@ public static class StrategyDefections
             if(w.NewGame.Start.Factions.FirstOrDefault(f=>f.Id==house)?.Home is {} home&&CentralStanding.IsShugo(w,overlord,CentralStanding.ProvinceOf(new(home)),now))continue;
             // 主の家中で外様の派閥が強く当主が弱ければ離反しやすい（一覧の Politics2）。
             if(Draw(w,$"defect/{house}/{date:yyyy-MM}")>=Politics2.DefectPerMille(w,overlord))continue;
+            // 鞍替えの通知（一覧の Duties2）：すぐには効かせず、元の主へ通知が届いた月に効く。
+            if(Duties2.Defer(w,pending,house,overlord,now,w.CommitSequence,power))continue;
             rows.Add(new(new(house),new(overlord),now,w.CommitSequence));
         }
-        return s with{Defections=rows.Count==0?null:rows.ToArray()};
+        return s with{Defections=rows.Count==0?null:rows.ToArray(),Duties=pending.Count==0?s.Duties:pending.ToArray()};
     }
     internal static void Validate(ContractWorld w,StrategyState s,StrategyState? prior)
     {

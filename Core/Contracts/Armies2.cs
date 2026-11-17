@@ -134,7 +134,8 @@ public static class Armies2
         foreach(var h in houses.Values.Where(h=>h.Policy==Domestic2.Arms&&h.Coin>=1000&&HouseSuccession.Head(w,h.House)!=w.PlayerControl&&owners.ContainsValue(h.House.Value)).OrderBy(h=>h.House.Value,StringComparer.Ordinal).ToArray())
         {
             if(events.Any(e=>e.Kind=="hire"&&e.House==h.House&&(e.Until??0)>now))continue;
-            long men=h.Coin/1000*100;houses[h.House.Value]=h with{Coin=h.Coin-h.Coin/10};
+            // 当主の調練の技能（一覧の Duties2）で雇える兵が増える。
+            long men=h.Coin/1000*100*(100+Duties2.DrillBonus(w,h.House.Value))/100;houses[h.House.Value]=h with{Coin=h.Coin-h.Coin/10};
             Add("hire",null,h.House,null,null,men,$"{HouseName(w,h.House)}が雇い兵{men}人を雇った",now+90*Day);
         }
         // 負けた家の雇い兵は逃げる。

@@ -57,6 +57,8 @@ public static class NationalSystems
         Politics2,
         // 領地と寺社と朝廷の個別の案件：水利の争いの裁定と普請、寺社への願いとキリスト教、惣国と徳政、客将と任命の再承認、国司・京官の効き目、幕府への申請と奉行人、中央の仲裁と兵を退くこと（S09D）。
         Cases2,
+        // 任務・配送・命令の全般：併用の表と代わり・戻り・補償、書状の道と継ぎと混み・代理の開封、命令の競合、子の形成、手強さの先読み、役以外の技能、後見、代理の決裁と追認、国人連合、配下の攻撃の責任、婚姻と養子の確かめ、鞍替えの通知、恩と忠誠、身代金と医療、兵糧の見聞（S09E）。
+        Duties2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -75,6 +77,7 @@ public static class NationalSystems
     public const string Armies2="Armies2";
     public const string Politics2="Politics2";
     public const string Cases2="Cases2";
+    public const string Duties2="Duties2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

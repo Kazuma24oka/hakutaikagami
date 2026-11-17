@@ -178,7 +178,8 @@ public static class Cases2
                 var (loser,winner)=g.Key;if(Player(w,loser.Value)||Player(w,winner.Value)||!owners.ContainsValue(loser.Value))continue;
                 if(houses.GetValueOrDefault(loser.Value)?.Posts.Any(p=>p.Post==Domestic2.Envoy)!=true||events.Any(e=>e.Kind=="mediation"&&e.House==loser&&now-e.At<Year))continue;
                 bool ok=power.GetValueOrDefault(winner.Value)<3*power.GetValueOrDefault(loser.Value);
-                long arrive=now+Math.Max(Domestic2.Days(kyoto,HomeOf(w,loser.Value)),Domestic2.Days(kyoto,HomeOf(w,winner.Value)))*Day;
+                // 書状の道（一覧の Duties2）：将軍の案は敵の領地を避けて両家へ届く。
+                long arrive=now+(Duties2.On(w)?Math.Max(Duties2.Route(w,s,NationalStart.FactionId(NationalStrategy.Shogun),kyoto,HomeOf(w,loser.Value),0,now).Days,Duties2.Route(w,s,NationalStart.FactionId(NationalStrategy.Shogun),kyoto,HomeOf(w,winner.Value),0,now).Days):Math.Max(Domestic2.Days(kyoto,HomeOf(w,loser.Value)),Domestic2.Days(kyoto,HomeOf(w,winner.Value))))*Day;
                 Add("mediation",HomeOf(w,loser.Value),loser,winner,shogun,ok?1:0,$"{HouseName(w,loser)}の願いで将軍が{HouseName(w,winner)}との仲裁に入り、{(ok?"両家は和睦した":HouseName(w,winner)+"は応じなかった")}",arrive);
                 if(!ok)continue;
                 if(!pacts.Any(p=>p.Broken==null&&p.From<=now&&now<p.Until&&(p.A==loser&&p.B==winner||p.A==winner&&p.B==loser)))
