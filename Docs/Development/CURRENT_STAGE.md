@@ -4,7 +4,7 @@
 
 ## 進捗表100%へ（2026-11-12 ユーザー指示「次で100％になるまで進めてほしい」）
 
-- **工程表の正本は [PLAN_TO_100.json](PLAN_TO_100.json)**（2026-11-16 作成、2026-11-17 に S07B を足して15工程、60枠すべてを含む）。今の率・次の工程・決まりの違反は `python Scripts/plan_to_100.py`（`--check` で確かめ）。会話の開始・再開・圧縮の後は .claude/settings.json の SessionStart でこの出力が自動で入る。
+- **工程表の正本は [PLAN_TO_100.json](PLAN_TO_100.json)**（2026-11-16 作成、2026-11-17 に S07B を足し、S09 を S09A〜S09E に分けて19工程、60枠すべてを含む）。今の率・次の工程・決まりの違反は `python Scripts/plan_to_100.py`（`--check` で確かめ）。会話の開始・再開・圧縮の後は .claude/settings.json の SessionStart でこの出力が自動で入る。
 - 工程は上から順。前提が終わっていない工程は始めない。「切り上げ」は使わない。後回しは工程表の deferred に戻る工程付きで書く。
 - S13（正式な絵・3D・音）は誰が作るかの判断が、始める前にユーザーに要る。S01 の戦国DBからの反映は 2026-11-16 に承認済み。
 - 作業の場所：C:\Workspace\Projects\Games\hakutaikagami の1か所、ブランチ prototype/claude-mainline。Claude が一人で進める。
