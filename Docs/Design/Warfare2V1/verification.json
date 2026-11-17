@@ -1,0 +1,19 @@
+{
+  "status": "PASSED",
+  "scope": "S05 関係する検査（全件テストは S14 で1回）",
+  "date": "2026-11-17",
+  "related_tests": "PASSED",
+  "passed": 33,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 4,
+  "commands": [
+    "Warfare2Tests（4件）",
+    "StrategyLossesTests|StrategyBattle|NpcCaptorTests|StrategyRealArmy|CentralStandingTests",
+    "BattleCaptivityTests（長い2件を除く）|Warfare2Tests|NpcCaptorTests（7件）",
+    "NationalStrategyTests|StrategyLossesTests|HistoricalEventsTests|CentralStandingTests（19件）"
+  ],
+  "not_run": "BattleCaptivityTests の ThePlayerRoutedWhileWithdrawingIsCapturedAndPleadsForRelease（前回8分）と ThePlayerAndAnEnemyRetainerCapturedInOneBattleAreExchanged（前回25分）は未実施（S14 の全件で流す）",
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "未実施（画面の変更は年代記の行だけ。S12 の一巡で見る）"
+}

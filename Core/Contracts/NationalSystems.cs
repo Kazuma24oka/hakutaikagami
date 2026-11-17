@@ -39,6 +39,8 @@ public static class NationalSystems
         LifeGoals2,
         // 京の政治の効果（全国の守護・将軍の栄典と偏諱・守護の実権・名乗りと席次・補任と栄典の噂・将軍の継承、S04）。
         CentralStanding,
+        // 遠方の合戦の天候と地形・NPCの開城・負傷兵・捕縛からの逃亡・落城の勲功と知行（S05）。
+        Warfare2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -48,6 +50,7 @@ public static class NationalSystems
     public const string HistoryEvents2="HistoryEvents2";
     public const string LifeGoals2="LifeGoals2";
     public const string CentralStanding="CentralStanding";
+    public const string Warfare2="Warfare2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

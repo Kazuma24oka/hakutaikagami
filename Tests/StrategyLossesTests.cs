@@ -17,8 +17,13 @@ public sealed class StrategyLossesTests
         w.Strategy=new(1,NationalStrategy.Policy,[c],[new(c.Id,86400,2,true){Allies=[new(f[2])],Battle=battle}]);
         long At(long day){w.ElapsedSeconds=86400+day*86400;var l=NationalStrategy.Losses(w);return l.GetValueOrDefault(f[0]);}
         Assert.Equal(600,At(0));
-        Assert.Equal(300,At(90));
+        // 一覧の Warfare2（S05）：損害の半分は負傷兵で60日、残りの戦死は180日で戻る。90日目は戦死の残り 300×90/180。
+        Assert.Equal(150,At(90));
         Assert.Equal(0,At(180));
+        // 一覧に Warfare2 の無い世界は前のまま、180日で一律に戻る。
+        var keep=w.NewGame;w.NewGame=w.NewGame! with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.Warfare2).ToArray()};
+        Assert.Equal(300,At(90));
+        w.NewGame=keep;
         w.ElapsedSeconds=86400;var now=NationalStrategy.Losses(w);
         Assert.Equal(200,now[f[1]]); // 守る家：300×2/3
         Assert.Equal(100,now[f[2]]); // 援軍：300×1/3

@@ -22,6 +22,8 @@ public sealed record StrategyOutcome(EntityId Campaign,long At,long Revision,boo
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public EntityId[]? Allies {get;init;}
     // 遠方の合戦の計算（StrategyBattles、W4）。強さの比のくじで決めた旧保存では持たない。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyBattle? Battle {get;init;}
+    // 合戦の前に守る側が開城した（一覧の Warfare2）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public bool? Surrendered {get;init;}
     // 実際の軍勢の出陣で、退いた攻め手の軍の大将を守る側が捕らえたとき（一覧の StrategyCapture）。拘束は捕縛の記録と同じに扱う（BattleCaptivity）。
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public BattleCapture? Capture {get;init;}
     // 再興の挙兵を後援した家（一覧の RestorationSupport）。
@@ -74,6 +76,10 @@ public sealed record StrategyState(int Schema,string Policy,StrategyCampaign[] C
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyShugo[]? Shugo {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyHonor[]? Honors {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyAppeal[]? Appeals {get;init;}
+    // 捕縛からの逃亡・落城の勲功・知行（一覧の Warfare2 の世界だけ）。
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyEscape[]? Escapes {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyMerit[]? Merits {get;init;}
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyFief[]? Fiefs {get;init;}
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public StrategyDefection[]? Defections {get;init;}
 }
 public sealed record HistoricalCampaign(string Id,string Name,string Attacker,string Defender,string? AttackerHead,int Year,int Month,string Source);
@@ -293,7 +299,7 @@ public static class NationalStrategy
         var result=new Dictionary<string,long>(StringComparer.Ordinal);if(w.Strategy is not {} s||!NationalSystems.On(w,"StrategyLosses"))return result;
         long now=w.ElapsedSeconds;
         foreach(var o in s.Outcomes){if(o.Battle is not {} b||now-o.At>=LossRecoverySeconds)continue;var c=s.Campaigns.Single(c=>c.Id==o.Campaign);
-            long Left(long lost)=>lost*(LossRecoverySeconds-(now-o.At))/LossRecoverySeconds;
+            long Left(long lost)=>Warfare2.On(w)?Warfare2.Left(lost,now-o.At,LossRecoverySeconds):lost*(LossRecoverySeconds-(now-o.At))/LossRecoverySeconds;
             void Add(string f,long n){if(n>0)result[f]=checked(result.GetValueOrDefault(f)+n);}
             var joined=o.Joined??[];if(c.Basis!=Restoration){long aw=2+joined.Length;Add(c.Attacker.Value,joined.Length==0?Left(b.AttackerLost):Left(b.AttackerLost)*2/aw);foreach(var j in joined)Add(j.Value,Left(b.AttackerLost)/aw);}
             var allies=o.Allies??[];long weight=2+allies.Length;Add(c.Defender.Value,Left(b.DefenderLost)*2/weight);foreach(var a in allies)Add(a.Value,Left(b.DefenderLost)/weight);}
@@ -377,7 +383,7 @@ public static class NationalStrategy
         var s=w.Strategy??new StrategyState(1,Policy,[],[]);
         var date=WorldCalendar.At(w.EpochDate,w.ElapsedSeconds);
         var successions=Succeed(w,ref s);s=s with{Successions=successions};w.Strategy=s;
-        var outcomes=s.Outcomes.ToList();
+        var outcomes=s.Outcomes.ToList();int settledBefore=outcomes.Count;
         // 前の月の出陣を決着させる。
         foreach(var c in s.Campaigns.Where(c=>!s.Outcomes.Any(o=>o.Campaign==c.Id)&&c.At<w.ElapsedSeconds))
         {
@@ -385,9 +391,10 @@ public static class NationalStrategy
             outcomes.Add(Settle(w,s,outcomes,c));
         }
         s=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});
+        foreach(var o in outcomes.Skip(settledBefore))s=Warfare2.Rewards(w,s,o);
         {var holder=CapitalHolder(Owners(w,s));var last=s.Capitals is {Length:>0} cs?cs[^1].House.Value:null;
          if(holder!=null&&holder!=last){s=s with{Capitals=[..s.Capitals??[],new(new(holder),w.ElapsedSeconds,w.CommitSequence)]};if(last!=null)CapitalLetter(w,holder);}}
-        s=ShogunTurn(w,s);s=CentralStanding.Month(w,s,Owners(w,s));s=PeaceBreach.Month(w,s);
+        s=ShogunTurn(w,s);s=CentralStanding.Month(w,s,Owners(w,s));s=PeaceBreach.Month(w,s);s=Warfare2.Escapes(w,s);
         if(StrategyDefections.Enabled(w)){var before=(s.Defections??[]).Length;s=StrategyDefections.Decide(w,s,Powers(w,Owners(w,s),InitialCounts(w)),date);
             if(NationalSystems.On(w,"DefectionLetters"))foreach(var d in (s.Defections??[]).Skip(before))DefectionLetter(w,d);}
         var owners=Owners(w,s);var initial=InitialCounts(w);var campaigns=s.Campaigns.ToList();var power=Powers(w,owners,initial);var near=NearPlayerSites(w);bool realArmies=NationalSystems.On(w,"StrategyRealArmies");
@@ -473,7 +480,7 @@ public static class NationalStrategy
             if(NpcArmies.Broken(w,m)){Letters(w,c,false);outcomes.Add(new(c.Id,w.ElapsedSeconds,w.CommitSequence,false));changed=true;continue;}
             if(NpcArmies.HoldEnd(w,m) is {} end&&w.ElapsedSeconds>=end){outcomes.Add(Settle(w,s,outcomes,c));changed=true;}
         }
-        if(changed)w.Strategy=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});
+        if(changed){var before=s.Outcomes.Length;var next=StrategyRestoration.RecordFalls(w,s,s with{Outcomes=outcomes.ToArray()});foreach(var o in outcomes.Skip(before))next=Warfare2.Rewards(w,next,o);w.Strategy=next;}
     }
     // 実際の軍勢の出陣が退いたとき、攻め手の軍が崩れていれば（遠方の合戦の計算のないときは常に）、守る家が軍の大将を捕らえる（35%、人物と日の固定のくじ）。
     internal static BattleCapture? CaptureLeader(ContractWorld w,StrategyCampaign c,StrategyBattle? battle,int? roll=null)
@@ -510,10 +517,18 @@ public static class NationalStrategy
             var supporters=c.Basis==Restoration&&NationalSystems.On(w,"RestorationSupport")?s.Outcomes.Concat(outcomes).Where(o=>o.Captured&&o.At>w.ElapsedSeconds-365*86400L).Select(o=>s.Campaigns.Single(x=>x.Id==o.Campaign)).Where(x=>x.Attacker==c.Defender&&x.Defender!=c.Attacker&&x.Basis!=Restoration&&owners0.ContainsValue(x.Defender.Value)).Select(x=>x.Defender).Distinct().OrderBy(x=>x.Value,StringComparer.Ordinal).ToArray():[];
             foreach(var x in supporters)a=checked(a+Strength(w,x.Value,owners0,initial0)/2);
             bool held=owners0.GetValueOrDefault(c.Target.Value)==c.Defender.Value;
-            var battle=StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
-            bool captured=held&&(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d));
+            // 天候と地形・開城（一覧の Warfare2）。
+            bool surrendered=false;
+            if(Warfare2.On(w))
+            {
+                (a,d)=Warfare2.Effective(w,c,a,d);
+                bool playerDefends=HouseSuccession.Head(w,c.Defender)==w.PlayerControl||w.NewGame!.Start.People.SingleOrDefault(p=>p.Id==w.PlayerControl.Value)?.Faction==c.Defender.Value;
+                surrendered=held&&Warfare2.Surrenders(w,c,a,d,allies.Length,playerDefends);
+            }
+            var battle=surrendered?null:StrategyBattles.Enabled(w)?StrategyBattles.Fight(w,c.Id,a,d):null;
+            bool captured=held&&(surrendered||(battle!=null?StrategyBattles.Falls(battle):Draw(w,"outcome/"+c.Id.Value)<1000*a/(a+d)));
             Letters(w,c,captured);
-            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle),Supporters=supporters.Length==0?null:supporters,Joined=local.Length==0?null:local};
+            return new(c.Id,w.ElapsedSeconds,w.CommitSequence,captured){Allies=allies.Length==0?null:allies,Battle=battle,Capture=captured?null:CaptureLeader(w,c,battle),Supporters=supporters.Length==0?null:supporters,Joined=local.Length==0?null:local,Surrendered=surrendered?true:null};
     }
     // 当主が亡くなった家（操作する人物の家を除く）の家督：成人した実子の年長者、いなければ家中の筆頭格の成人。
     // 一覧の MortalSuccession：申立が2人以上なら決着し、指名の後継・成人の実子の年長・同じ家の兄弟姉妹・家中の筆頭格の順。
