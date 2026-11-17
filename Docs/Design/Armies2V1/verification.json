@@ -1,0 +1,18 @@
+{
+  "status": "PASSED",
+  "scope": "S09B 関係する検査（全件テストは S14 で1回）",
+  "date": "2026-11-17",
+  "related_tests": "PASSED",
+  "passed": 237,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 6,
+  "commands": [
+    "Armies2Tests（6件）・Persons2Tests・Logistics2Tests・Domestic2Tests を含む、全国の戦略・内政・合戦・実際の軍勢・NPCの軍・捕縛・保存の検査 237件。初回は StrategyRealArmyTests の1件が、追跡補給で集合の記録の ID を軍勢の ID として位置を引いて失敗。率いる大将のその時の位置を使うよう直し、その検査を流し直して合格（ほかの236件は変更の影響の外）",
+    "ゲーム本体（Godot の C#）の組み立て"
+  ],
+  "not_run": "NationalDistrictRevenueTests（前回32分）、NobunagaTravels…（前回8分）、ATruceLetter…（前回9分）、NobunagaCanStartTheNationalWorld、LifeAndSocialSystemsRunInTheNationalStart は S14 の全件で流す",
+  "performance": "全国の信長の世界で1560年6月〜1561年12月の月の計算：Armies2 なし約34.4秒・あり約34.8秒。二の線の出陣21回。",
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "未実施（S12 の一巡で見る）"
+}

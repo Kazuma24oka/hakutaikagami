@@ -51,6 +51,8 @@ public static class NationalSystems
         Logistics2,
         // NPCの判断と人物の一生：志の推定と兵科適性、家の目標と計画、断る条件、自発登用と役の目標、実務の技能と教わる分と衰え、隠居、元服の希望、各年代の改名の台帳（S09A）。
         Persons2,
+        // 全国の軍勢の編成・指揮・攻城：作戦線と優先度、兵種の編成と募兵、軍団と一族の分隊、競合する命令と現場の裁量、区画の攻城と開城の条件、救援の到着、逃げた人の帰還、追跡補給（S09B）。
+        Armies2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -66,6 +68,7 @@ public static class NationalSystems
     public const string Domestic2="Domestic2";
     public const string Logistics2="Logistics2";
     public const string Persons2="Persons2";
+    public const string Armies2="Armies2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

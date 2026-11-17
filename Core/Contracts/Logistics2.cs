@@ -103,7 +103,8 @@ public static class Logistics2
         var owners=NationalStrategy.Owners(w,s);long at=c.At;
         long need=attacker*15/100;var house=s.Houses?.FirstOrDefault(h=>h.House==c.Attacker);
         long carried=house==null?need:Math.Min(need,house.Rice/2);
-        long days=Domestic2.Days(HomeOf(w,c.Attacker.Value),c.Target.Value);
+        // 追跡補給（一覧の Armies2）：実際に動く軍勢へは、その時の軍勢の位置までの日数。
+        long days=Armies2.TrackingDays(w,c)??Domestic2.Days(HomeOf(w,c.Attacker.Value),c.Target.Value);
         long far=days>10?carried*(days-10)/days:0,near=carried-far;
         long delay=days+far/2000;long arrive=delay>30?far*30/delay:far;
         long broken=arrive*(delay/10)/100;arrive-=broken;

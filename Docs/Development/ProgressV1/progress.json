@@ -19,11 +19,11 @@
     "Docs/Design/basic-design-acceptance.json": "51fc0f69bdb89a5242cc6b65b7351264c8180c7921aa7f661259b4c2f693e023",
     "Docs/Design/basic-design-v1.json": "06e7ab91087d248d258febe3275208f2b101042455259105bc7f343bb8d5f9c6",
     "Docs/Development/OPERATING_POLICY.md": "aa73c53f8614cc0b75d4566d800b410b1bf301ff44f23c1fe355ed9f36f138e1",
-    "Docs/Development/ProgressV1/estimate.json": "3d720947a06dd8ffe197fbc75da137cfc2f96ac04cdf0058b3f95a29dd78d9c4",
+    "Docs/Development/ProgressV1/estimate.json": "44c0cf70c1efd133bc5bf27d03eb5b2541dbf6154a70e77f4dbf943ce0a7d557",
     "Scripts/build_progress_report.py": "616cf4cd9ce547571ad60b8ab0d91db69cec0da81e41940afacf009bcac4c599",
     "Scripts/check_progress_report.py": "a6389140043e2c7886462fcb61af83e74967f54ac57404219bb4b6fc5b94d36c",
     "Scripts/progress_estimate.py": "6e86e7339d880287a34d9f49b55a58e2a309f4c6e4fe48688523a9f935f7a061",
-    "Scripts/check_approval_batch.py": "5a467845a27758793cca87629647ddfb3e138c13923a36165c9be30ed860a997",
+    "Scripts/check_approval_batch.py": "9ef0f21c9ba95d63ee342d2a30d8ecf5528a8e47c4ae4dc5f9b841bbdb353e4d",
     "Scripts/probe_community_reports.py": "69a7c690e8db16c0c5b5171f9b29769ea81feefb1038a2d2b0656b0aca113347",
     "Docs/Development/ProgressV1/approval-baseline-v1.json": "1c21afd0e11893cd7bdd7d1d21239fd9ce7e7c78999f15727b3910e4c6c08883",
     "Docs/Design/CommunityEconomyV2/completion.json": "027e2006c6871c0a3827806af8ee8b93132368874a7e9584413ca69042f4655e",
@@ -121,7 +121,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v20.json": "e811c2726e97831f7266dc576e2fda0e9bdad7e34adce6466f29acd00c5bf792",
     "Scripts/verify_castle_administration.py": "5ab90ccf2360928037a7593cb816abec4b27396666bb416d14d8a06ce3c3842f",
     "AGENTS.md": "ae50df76e1cc68435b22245deafec7ddadb7d47f8378e17998ec4f54f0704fa9",
-    "Docs/Development/CURRENT_STAGE.md": "76f80fabecac8660de906b49183a8529b5ffad7fc83cc0be4cd10c6e9e84bcb0",
+    "Docs/Development/CURRENT_STAGE.md": "4a04cecd157b5c983ff82f838de511dda81ca1cdf18b8db19f8c537f3e44b366",
     "Core/Contracts/HouseSuccession.cs": "a3e642957832c54dafe9f32572fe710dbb1fcd0e612143a6d30e4ca1d96d16e4",
     "Core/Contracts/FactionStances.cs": "b98599ad425d32c0b7afb989f0e7128a9a99f06f277205e09dcab588040639e4",
     "Core/Contracts/NewGameWorld.cs": "238f98d35db591f59dae127318693751d4617039d43ee26512e6c8a39a68c391",
@@ -354,7 +354,7 @@
     "Core/Contracts/NpcContinuing.cs": "efdcddff016b46c9c7e078eb21edd4cbd18fba52bacfc5ca94fd84254f132f2f",
     "Core/Contracts/NewGameNpcRoutine.cs": "49db6539ff2e3cd8bceeec7317f78dfdfd7ab5dd142a6cf7e1873d64ca1341a6",
     "Core/Contracts/NpcWork.cs": "333dd6a7149e6a4d37ba394eb99f2d7d6cc02417ea95952d76ff8e289b07aa1e",
-    "Core/Contracts/ContractJson.cs": "667e39c3337aa829c140289a9729d17a5d59a44f4ed5deff4982d07a7d51d823",
+    "Core/Contracts/ContractJson.cs": "229e3ff78298a897aac0399e672d813e686c52c25b61345d19de08e8aa912bcf",
     "Core/Contracts/LocalWorkDemand.cs": "9ee34ec26408bf8dcf8ff78f670b1f66d7a5c5a06293d325f091eef6c79524d4",
     "Tests/NpcContinuingTests.cs": "74cce5e6b2a69901c2bc227bc8ef43823ff971092d5c12cef997945df24d13c0",
     "Tests/NewGameNpcRoutineTests.cs": "3e7a9e87a3da54c28b2356dc191d1354e85a5b10298214013d639696ead2293f",
@@ -473,7 +473,7 @@
     "Docs/Development/ProgressV1/approval-baseline-v53.json": "286550eb6dd1017c0a18354372539da4bd89a1912ade87ebe21e58a084660a44",
     "Docs/Design/HistoricalChronicleV1/scope.md": "fca898a57a5b4c92490ef34ca3cfff3b9d37e3ba8774b74a0304d6feee218369",
     "Docs/Development/ProgressV1/approval-baseline-v54.json": "9ece8e45913c969272f4e34d480a4c239ce033c82bf47b74d436e771453b712d",
-    "Core/Contracts/HistoricalEventRules.cs": "6c01509d81149cd80bbab584125362315c1831b62cc901af7d2644dde1227e59",
+    "Core/Contracts/HistoricalEventRules.cs": "ff664f0ee98d739394332e99c243ab2f656cd1ef8c10d434897ebf1078c60ff4",
     "Tests/HistoricalEventRulesTests.cs": "ac77c5cca3b6254518ffae25f990f4b4d12e4df60ae3fc2b3a6167018264408c",
     "Game/Scripts/HistoricalChronicleCheck.cs": "75f7384777b129127a662b0e0b7c9a8c9bf40486af6745e4de4a64a8520dbc5d",
     "Docs/Design/HistoricalChronicleV1/verification.json": "61889f09506263c283acdb18c82edc22cf01d79df75f46c59a0129a84550e140",
@@ -796,7 +796,7 @@
     "Docs/Design/NationalFactionRelationsV1/integration.json": "9d6a336a0646d5c8b0cdf790c973d1f5b015de05d24a22566d889f46c517a92f",
     "Docs/Design/NationalFactionRelationsV1/verification.json": "8c679b63f8d20afff45a79454f319eaa03f060673a0f907790817636d2b39124",
     "Docs/Proposals/NATIONAL_PLACEMENT_DESIGN_V1.md": "604e0cdee99b73ceae6d758a9762573bda00428cf8bbbb0fbbc1916e2f54cdae",
-    "Docs/Development/ProgressV1/index.html": "5fe3aa88d5dae47e5264b44a7ac7a77c0204a00723411c9a0d840f93b79eb309",
+    "Docs/Development/ProgressV1/index.html": "5bfe21a0c1cba78eba824a4236e877116ce49ad313c9e519130ae49533e9eab3",
     "Docs/Development/ProgressV1/approval-baseline-v113.json": "d2b4dd6b7879add6a8aa26ee432e97bc0c16e01d5bd299cb9f850c54ea47c134",
     "Core/Contracts/NationalNameHistory.cs": "9983b8d0e252a277381c26bd78fcc8647d7c4176289dc382a94a1d7d22c41ad8",
     "Tests/NationalNameHistoryTests.cs": "70671cf774c14f045560fda1f48e0eef2c0844b7bb19f655b0bb70b130d60568",
@@ -1194,7 +1194,7 @@
     {
       "id": "BD-11",
       "status": "normal",
-      "existing": "新旧軍務案件の発令者を時点別に分け、旧主の命令/許可/照会/返報を新当主の新案件へ読み替えない。新しい指揮は条件提示/同意/開封/現地引受後だけ。",
+      "existing": "新旧軍務案件の発令者を時点別に分け、旧主の命令/許可/照会/返報を新当主の新案件へ読み替えない。新しい指揮は条件提示/同意/開封/現地引受後だけ。 2026-11-17（S09B）：従う家の加勢の命と約束の競合、軍団長の現場の裁量での撤退。総合の受入は S12。",
       "remaining": "全国の競合命令・現場裁量と複数指揮系統の総合受入。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.IssuerSuccession.cs",
@@ -1225,7 +1225,8 @@
         "Docs/Design/CastleAdministrationV1/verification.json",
         "Core/Contracts/NewGameMilitary.UnitDirectiveCancellation.cs",
         "Core/Contracts/NewGameMilitary.OrderDeadline.cs",
-        "Tests/UnitDirectiveCancellationBoundaryTests.cs"
+        "Tests/UnitDirectiveCancellationBoundaryTests.cs",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 3
@@ -1233,7 +1234,7 @@
     {
       "id": "BD-12",
       "status": "normal",
-      "existing": "家中の席次と役職、所属と直属、兵・指揮の別契約を分離。 固定個体の賊との同時計算、戦う・退く・通行銭、随行者と負傷の保持。依頼主の実在80文を預かり、護衛の双方の実移動・到着、討伐の敗走実績を現地で報告して精算。",
+      "existing": "家中の席次と役職、所属と直属、兵・指揮の別契約を分離。 固定個体の賊との同時計算、戦う・退く・通行銭、随行者と負傷の保持。依頼主の実在80文を預かり、護衛の双方の実移動・到着、討伐の敗走実績を現地で報告して精算。 2026-11-17（S09B）：国ごとの軍団と一族の分隊、二の線を軍団長が率いる。",
       "remaining": "軍団・一族の分隊・動員の本格接続。",
       "evidence": [
         "Core/Contracts/CastleAdministration.Succession.cs",
@@ -1293,7 +1294,8 @@
         "Docs/Design/HouseholdCourtV1/README.md",
         "Docs/Design/HouseholdCourtV1/verification.json",
         "Docs/Design/BanditEncounterV1/README.md",
-        "Docs/Design/BanditEncounterV1/verification.json"
+        "Docs/Design/BanditEncounterV1/verification.json",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2405,7 +2407,7 @@
     {
       "id": "BD-35",
       "status": "normal",
-      "existing": "引受名簿と元の家/軍用倉を変えず、本人が共通陸路で3隊を率い、到着拠点周辺で再集合/再出発する。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。 2026-11-17（S08）：水軍と海を渡る出陣、多荷種の隊商と差し押さえ、交易船と南蛮の鉄砲・硝石の到着、名物の売買。別行動の部隊の広い範囲の指揮は S09。",
+      "existing": "引受名簿と元の家/軍用倉を変えず、本人が共通陸路で3隊を率い、到着拠点周辺で再集合/再出発する。 書状を本人が実往復し、現地の手渡しと受領証の持帰りで報酬を精算。木材は依頼主の預り金・市場実在庫・本人の携行・依頼主の保管を分離。小口の履行から個別相談を解放。NPCも同じ仕入れ・納品・精算と同地の自発受注を使う。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 現地の直属家臣と三日の警固を合意し、私財の手当を実移転。賊と警固人数で通行を決め、無警固の放置で新規の商談を見合わせ、村の協力判断に反映。時点付きの現地確認・通常画面と途中復旧を接続。 2026-11-17（S08）：水軍と海を渡る出陣、多荷種の隊商と差し押さえ、交易船と南蛮の鉄砲・硝石の到着、名物の売買。別行動の部隊の広い範囲の指揮は S09。 2026-11-17（S09B）：別行動の二の線を軍団長が率いる広い範囲の指揮。",
       "remaining": "軍勢海上輸送・一般隊商、別行動中の広域指揮と全国性能。 統合案で追加：§24 名物の売買・新しい物資の取引と運搬（槍・弓・鉄砲・軍馬・飼料・火薬・玉・硝石・金銀。CHARACTER_DATA_FIELDS_V1 §4）・§26 Z7 交易船の派遣・航海・難破と鉄砲の到着日数。 2026-11-05 既存仕様の具体化：陸路・水路での実物輸送、護衛・軍船の配置、通行阻止・損失・実受渡しを接続し、支援の約束を到着済みの米へ加算しない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/ArmyRoadMarch.cs",
@@ -2469,7 +2471,8 @@
         "Docs/Design/CraftTradeV1/verification.json",
         "Docs/Design/LocalSecurityV1/README.md",
         "Docs/Design/LocalSecurityV1/verification.json",
-        "Docs/Design/Logistics2V1/verification.json"
+        "Docs/Design/Logistics2V1/verification.json",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2538,7 +2541,7 @@
     {
       "id": "BD-37",
       "status": "normal",
-      "existing": "同じ本人保管軍について新当主が署名した手配を根拠に旧指揮で行軍し、本人承諾から同じ軍・部隊の新権限を開始する。兵・米を再貸与しない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 本人の軍の部隊を家臣2人に任せて出陣できる。",
+      "existing": "同じ本人保管軍について新当主が署名した手配を根拠に旧指揮で行軍し、本人承諾から同じ軍・部隊の新権限を開始する。兵・米を再貸与しない。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 本人の軍の部隊を家臣2人に任せて出陣できる。 2026-11-17（S09B）：軍団長への指揮の移譲、装備で決まる兵種の編成、雇い兵の募兵。",
       "remaining": "一般NPC軍の指揮移譲・全国編成/募兵/多段指揮。 統合案で追加：§21 装備で決まる兵種・§13 募兵。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
@@ -2583,7 +2586,8 @@
         "Docs/Design/BattlefieldRulesV1/README.md",
         "Docs/Design/BattlefieldRulesV1/verification.json",
         "Core/Contracts/NewGameMilitary.UnitLeaders.cs",
-        "Tests/PlayerUnitLeaderTests.cs"
+        "Tests/PlayerUnitLeaderTests.cs",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2591,7 +2595,7 @@
     {
       "id": "BD-38",
       "status": "normal",
-      "existing": "展開中と実街道行軍中の承諾で位置・経路・兵・米を保持。保存前後の本人/部隊/署名者の実Node3D配置を照合する。 固定個体の賊との同時計算、戦う・退く・通行銭、随行者と負傷の保持。依頼主の実在80文を預かり、護衛の双方の実移動・到着、討伐の敗走実績を現地で報告して精算。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。",
+      "existing": "展開中と実街道行軍中の承諾で位置・経路・兵・米を保持。保存前後の本人/部隊/署名者の実Node3D配置を照合する。 固定個体の賊との同時計算、戦う・退く・通行銭、随行者と負傷の保持。依頼主の実在80文を預かり、護衛の双方の実移動・到着、討伐の敗走実績を現地で報告して精算。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 2026-11-17（S09B）：作戦線（主の線と二の線の兵の割合）と、兵種の運用に率いる人の技能。多数軍の操作の画面は S11、長い受入は S12。",
       "remaining": "全国多数軍の複数線と優先度・GUI操作と長期受入。 統合案で追加：§21 陣形（作戦線の型）。 2026-11-06採用：槍・弓・騎馬・鉄砲の兵科運用は統率と対応技能へ接続し、輸送適性は兵站へ統合する。戦術・攻守城・調練・水軍の担当を分ける。",
       "evidence": [
         "Core/Contracts/NewGameMilitary.RemoteSuccession.cs",
@@ -2630,7 +2634,8 @@
         "Docs/Design/BanditEncounterV1/verification.json",
         "Docs/Design/BattlefieldRulesV1/README.md",
         "Docs/Design/BattlefieldRulesV1/verification.json",
-        "Docs/Decisions/2026-11-06_CHARACTER_ABILITIES_SKILLS_GROWTH.md"
+        "Docs/Decisions/2026-11-06_CHARACTER_ABILITIES_SKILLS_GROWTH.md",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2690,7 +2695,7 @@
     {
       "id": "BD-40",
       "status": "normal",
-      "existing": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 現地へ行軍して外堀から本丸までを強襲する。開城条件・城門・本丸を別に扱い、守備兵が集まれば本丸引渡しを留保する。実船の封鎖・補給・解除時の納入を共通時計と地域台帳に接続した。 2026-11-17（S08）：出陣の兵糧の持ち出しと運ぶ荷の遅れ・傷み・賊・封鎖、守る城の兵糧、軍馬の飼料、武具の傷み。実際に動く軍勢への追跡補給は S09。",
+      "existing": "家の実米を家臣が共通陸路で集合拠点へ運び、部隊/本人/同じ軍務との合流で部分受渡し。複数便は実容量を共有し、期限/取消後は残米だけ実返納する。 土地と人口の容量に応じた農業・市・工房・牧場・鉱山・港の普請、実在の米・木材・銭・20人の7日間確保、完成後の収穫と実工房生産、港の交易船・軍船の造船と30日保守を接続。NPCの同地普請を実装。 実在する試作職人集団の交渉・給付・現地食糧と実移動、原料の取引・本人の実運搬・工房と製作日数、鉄砲・火薬・鉱山精錬・石工・南蛮技術の在庫を接続。港の実船と積荷・船員・往復の海路・運休待機・帰港後決済と未払いを分離。宣教師の組織・布教許可・個人の入信・商人との面識を分け、NPCの自発招請・調達・製作と採算判断を実装。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 現地へ行軍して外堀から本丸までを強襲する。開城条件・城門・本丸を別に扱い、守備兵が集まれば本丸引渡しを留保する。実船の封鎖・補給・解除時の納入を共通時計と地域台帳に接続した。 2026-11-17（S08）：出陣の兵糧の持ち出しと運ぶ荷の遅れ・傷み・賊・封鎖、守る城の兵糧、軍馬の飼料、武具の傷み。実際に動く軍勢への追跡補給は S09。 2026-11-17（S09B）：実際に動く軍勢への追跡補給（その時の位置までの日数）。",
       "remaining": "移動中部隊への追跡/道中補給、海上輸送/護衛/略奪、軍馬飼料/弾薬/装備消耗。 統合案で追加：§21 負傷兵の回復と兵糧・§26 Z1 攻め手の陣への補給・Z2 水路の補給と封鎖の維持・Z8 陣中の兵糧の消費。 2026-11-05 既存仕様の具体化：攻囲側・守備側の拠点在庫・携行分・輸送中の米と実消費を保持し、封鎖宣言だけで在庫消滅・即壊滅を起こさない（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/RoadConvoy.cs",
@@ -2738,7 +2743,8 @@
         "Docs/Design/BattlefieldRulesV1/verification.json",
         "Docs/Design/CastleSiegeV1/README.md",
         "Docs/Design/CastleSiegeV1/verification.json",
-        "Docs/Design/Logistics2V1/verification.json"
+        "Docs/Design/Logistics2V1/verification.json",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -2889,7 +2895,7 @@
     {
       "id": "BD-44",
       "status": "design_only",
-      "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 保証原本に基づく同じ本人の実護送・停止/再開・到着先の明示受領を接続。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 捕虜の処遇（登用・処断・身代金・引き換え）を本人とNPCの家の書状でやり取りし、捕虜は城まで護送する。 2026-11-17（S05）：NPCに捕らえられた人は月の初めに逃げ出すことがあり、拘束が終わる（本人・両家の当主が知る）。帰還の移動は S09、捕虜交換の実の受け渡しは S06。",
+      "existing": "人質/捕虜/保証の基本方針がある。 人質を捕虜と区別し、本人・受入先承諾と現地受入/解放、期限超過の返還義務を保持。 当主交代後の保証原本の現地再確認と新代表者の限定同行を接続。元の署名・所在・返還期限を保持し、了承済み代表者と現権限が一致する場合だけ解放する。 人質の現地食事を家の自由米から実消費し、既存の引当と二重支給を保護。受領/不足の時点付き記録と当主交代後の再確認を接続。 保証原本に基づく同じ本人の実護送・停止/再開・到着先の明示受領を接続。 槍・弓・鉄砲・騎馬・輸送の実在装備と弾薬、日ごとの天候と地形、同じ時計の射撃、実陣形、戦死・負傷・逃亡、米による療養、寺社の条件付き現地防衛と明示攻撃を接続。通常画面の内部操作と保存復旧の配置一致を確認。 捕虜の処遇（登用・処断・身代金・引き換え）を本人とNPCの家の書状でやり取りし、捕虜は城まで護送する。 2026-11-17（S05）：NPCに捕らえられた人は月の初めに逃げ出すことがあり、拘束が終わる（本人・両家の当主が知る）。帰還の移動は S09、捕虜交換の実の受け渡しは S06。 2026-11-17（S09B）：逃げた人の本拠への帰還（道のりの日数）。捕虜交換は S09C。",
       "remaining": "軍事捕縛・交換・身代金、NPC自律交代、宿泊/医療。 統合案で追加：§21 捕虜の処遇・§15 人質（HANDOFF_D3_D4）・§26 Z5 捕虜交換の交渉と受け渡し。 2026-11-05 既存仕様の具体化：捕虜交換の条件交渉・実護送・受渡し・帰還と残件、人質の既存返還義務に基づく履行をつなぐ。人質と捕虜の成立根拠を混ぜず、不要な再合意や自動登用を行わない（MORI_MOTONARI_CAPTIVE_EXCHANGE.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/HostageCustody.cs",
@@ -2921,7 +2927,8 @@
         "Docs/Design/BattlefieldRulesV1/verification.json",
         "Core/Contracts/BattleCaptivity.Ransom.cs",
         "Tests/NpcCaptorTests.cs",
-        "Docs/Design/Warfare2V1/verification.json"
+        "Docs/Design/Warfare2V1/verification.json",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
@@ -3026,7 +3033,7 @@
     {
       "id": "BD-47",
       "status": "design_only",
-      "existing": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。 現地へ行軍して外堀から本丸までを強襲する。開城条件・城門・本丸を別に扱い、守備兵が集まれば本丸引渡しを留保する。実船の封鎖・補給・解除時の納入を共通時計と地域台帳に接続した。 2026-11-17（S05）：NPCの守る側は、援軍がなく攻め手が3倍以上なら合戦の前に開城する。区画ごとの攻城と第三者の救援は S09。",
+      "existing": "城門の実占有が記録所有と競合する間、新規の地域行政/調達/現地納入を保留。過去の行政原本と既引渡しを巻き戻さず保持。 現地へ行軍して外堀から本丸までを強襲する。開城条件・城門・本丸を別に扱い、守備兵が集まれば本丸引渡しを留保する。実船の封鎖・補給・解除時の納入を共通時計と地域台帳に接続した。 2026-11-17（S05）：NPCの守る側は、援軍がなく攻め手が3倍以上なら合戦の前に開城する。区画ごとの攻城と第三者の救援は S09。 2026-11-17（S09B）：区画ごとの攻城と取った区画の持ち越し、半分を取られた城の退去を条件の開城、救援の到着の日数。城の引渡しの長い受入は S12。",
       "remaining": "全国の攻城戦/自主開城判断/実城郭区画と第三者救援の一般化。 統合案で追加：§21 開城の判断と条件の交渉・§26 Z2 水路から届く米と開城の判断。 2026-11-05 既存仕様の具体化：補給と救援についての既知情報から継戦・条件交渉・撤退を判断し、開城合意と区画の実引渡し、救援到着との競合を分ける（MORI_MOTONARI_SUPPLY_INTERDICTION.md）。実装・シナリオ検査は未実施。 2026-11-05 既存仕様の具体化：開城条件、門・本丸の実引渡し、城兵の安全な退去、在庫の受取、残件と統治開始を分ける。救援の有効な介入と一部守兵の拒否では未完了部分を扱い、全住人の捕虜化や完了効果の巻戻しを行わない（MORI_MOTONARI_SURRENDER_HANDOVER.md）。実装・シナリオ検査は未実施。",
       "evidence": [
         "Core/Contracts/CastleAdministration.cs",
@@ -3051,7 +3058,8 @@
         "Docs/Proposals/MORI_MOTONARI_SURRENDER_HANDOVER.md",
         "Docs/Design/CastleSiegeV1/README.md",
         "Docs/Design/CastleSiegeV1/verification.json",
-        "Docs/Design/Warfare2V1/verification.json"
+        "Docs/Design/Warfare2V1/verification.json",
+        "Docs/Design/Armies2V1/verification.json"
       ],
       "release_acceptance": "not_certified",
       "planned_acceptance_cases": 2
