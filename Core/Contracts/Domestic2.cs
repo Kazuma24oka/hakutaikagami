@@ -357,7 +357,8 @@ public static class Domestic2
             {
                 foreach(var x in mine){var d=Get(x);long pop=Population(w,x);long work=Math.Max(0,pop-d.Fled-d.Levied-d.Lost+FledIn(siteRows,x));
                     long gain=Koku(x)*measured/100*Rate(x,f.Id)/100*harvest.GetValueOrDefault(Province(x)??"",100)/100*(100-d.Agriculture)/100*work/Math.Max(1,pop);
-                    if(d.Ikki!=null)gain=0;
+                    // 一揆の拠点と、惣国（一覧の Cases2）の国の拠点からは年貢を取れない。
+                    if(d.Ikki!=null||Cases2.Sokoku(w,Province(x)??"",now))gain=0;
                     if(PostAt(h,Deputy,x) is {} dep)gain=gain*(100+Skill(w,dep.Person,DevelopmentSkill.Agriculture)/10)/100;
                     rice+=gain;}
             }

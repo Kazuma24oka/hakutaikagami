@@ -224,7 +224,8 @@ public static class Logistics2
                 if(Draw(w,"plunder/"+e.Id)<300){Add("plunder",e.Site,new(pirate),house,profit,$"{HouseName(w,new(pirate))}の水軍が{HouseName(w,house)}の交易船を奪った");houses[pirate]=houses[pirate] with{Coin=houses[pirate].Coin+profit};continue;}
                 long toll=profit/10;profit-=toll;houses[pirate]=houses[pirate] with{Coin=houses[pirate].Coin+toll};Add("toll",e.Site,new(pirate),house,toll,$"{HouseName(w,new(pirate))}の水軍が{HouseName(w,house)}の交易船から通行銭{toll}貫を取った");
             }
-            if(e.Site!=null&&nanban.Contains(e.Site)&&year>=1543){g=g with{Saltpeter=g.Saltpeter+20,Guns=g.Guns+10};got="・硝石20・鉄砲10";}
+            // 布教を許した家（一覧の Cases2）は南蛮船の品が倍になる。
+            if(e.Site!=null&&nanban.Contains(e.Site)&&year>=1543){int k=Cases2.Mission(w,house.Value)?2:1;g=g with{Saltpeter=g.Saltpeter+20*k,Guns=g.Guns+10*k};got=$"・硝石{20*k}・鉄砲{10*k}";}
             houses[house.Value]=h with{Coin=h.Coin+profit,Goods=g};
             Add("return",e.Site,house,null,profit,$"{HouseName(w,house)}の交易船が帰った（銭{profit}貫{got}）");
         }

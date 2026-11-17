@@ -140,7 +140,8 @@ public static class Politics2
         {
             var head=HouseSuccession.Head(w,h.House);if(Player(w,key)||!alive.Contains(head)||h.Coin<1000||!h.Posts.Any(p=>p.Post==Domestic2.Envoy))continue;
             if(CentralTitles.Held1560(w,head).Any()||honors.Any(x=>x.Person==head&&x.Kind=="従五位下")||events.Any(e=>e.Kind=="rank-ask"&&e.Person==head))continue;
-            if(Draw(w,$"rank/{head.Value}/{year}")>=50)continue;
+            // 京官の名乗りの当主（一覧の Cases2）は願いが通りやすい。
+            if(Draw(w,$"rank/{head.Value}/{year}")>=(Cases2.CourtOffice(w,head)?100:50))continue;
             var kyoto=CentralCourtCatalog.KyotoIn(w).Value;long arrive=now+Domestic2.Days(HomeOf(w,key),kyoto)*Day;
             houses[key]=h with{Coin=h.Coin-300};Add("rank-ask",HomeOf(w,key),h.House,null,head,300,$"{PersonName(w,head)}が取次を通して朝廷に官位を願った",arrive);
         }

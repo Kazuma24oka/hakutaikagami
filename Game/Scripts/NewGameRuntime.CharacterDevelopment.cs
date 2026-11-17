@@ -40,6 +40,18 @@ public partial class NewGameRuntime
               foreach(var (label,yes) in new[]{("受ける",true),("断る",false)}){var b=new Button{Text=label};b.Pressed+=()=>{var r=Session.AnswerProposal(p.Id,yes,shown);if(r.Code!=ResultCode.Accepted){note.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCharacterDevelopment();};row.AddChild(b);}}
          }
          if(person==Session.PlayerControl)foreach(var job in Domestic2.Board(w1,person))Text($"{job.Kind}　{job.IssuerName}　{job.Fee}文");
+         // 寺社への願いと幕府への申請（一覧の Cases2）。
+         if(person==Session.PlayerControl&&Cases2.On(w1))
+         {
+             long rv2=Session.Revision;var msg=new Label{AutowrapMode=TextServer.AutowrapMode.WordSmart};
+             void Ask(Func<CommandResult> f){var r=f();if(r.Code!=ResultCode.Accepted){msg.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCharacterDevelopment();}
+             var here=SocialWorld.Site(w1,person)?.Value;
+             foreach(var t in Domestic2.Temples(w1).Where(t=>t.Site==here)){Text(t.Temple);var row=new HBoxContainer();box.AddChild(row);
+              foreach(var q in Cases2.TempleRequests){var b=new Button{Text=q};b.Pressed+=()=>Ask(()=>Session.AskTemple(t.Temple,q,rv2));row.AddChild(b);}}
+             if(faction!=null&&HouseSuccession.Head(w1,new(faction))==person){var row=new HBoxContainer();box.AddChild(row);
+              foreach(var q in Cases2.ShogunateRequests){var b=new Button{Text=q};b.Pressed+=()=>Ask(()=>Session.AskShogunate(q,rv2));row.AddChild(b);}}
+             box.AddChild(msg);
+         }
          // 探物（一覧の Logistics2）：引き受け・見つける・精算。
          if(person==Session.PlayerControl&&Logistics2.On(w1))
          {

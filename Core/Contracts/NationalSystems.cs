@@ -55,6 +55,8 @@ public static class NationalSystems
         Armies2,
         // 外交・家中・国人の交渉：約束の条項と条件の変更、本人への申し入れ、多者の和睦と官位の願い、制裁の履行、従属の条項と違反、婚約と輿入れと養子、独立の伝達、派閥、辞去と転籍、捕虜の交換、偵察と流言（S09C）。
         Politics2,
+        // 領地と寺社と朝廷の個別の案件：水利の争いの裁定と普請、寺社への願いとキリスト教、惣国と徳政、客将と任命の再承認、国司・京官の効き目、幕府への申請と奉行人、中央の仲裁と兵を退くこと（S09D）。
+        Cases2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -72,6 +74,7 @@ public static class NationalSystems
     public const string Persons2="Persons2";
     public const string Armies2="Armies2";
     public const string Politics2="Politics2";
+    public const string Cases2="Cases2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";
