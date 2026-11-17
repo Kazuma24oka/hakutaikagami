@@ -53,6 +53,8 @@ public static class NationalSystems
         Persons2,
         // 全国の軍勢の編成・指揮・攻城：作戦線と優先度、兵種の編成と募兵、軍団と一族の分隊、競合する命令と現場の裁量、区画の攻城と開城の条件、救援の到着、逃げた人の帰還、追跡補給（S09B）。
         Armies2,
+        // 外交・家中・国人の交渉：約束の条項と条件の変更、本人への申し入れ、多者の和睦と官位の願い、制裁の履行、従属の条項と違反、婚約と輿入れと養子、独立の伝達、派閥、辞去と転籍、捕虜の交換、偵察と流言（S09C）。
+        Politics2,
     ];
     public const string QuietNpcSocial="QuietNpcSocial";
     public const string DbOffices1560="DbOffices1560";
@@ -69,6 +71,7 @@ public static class NationalSystems
     public const string Logistics2="Logistics2";
     public const string Persons2="Persons2";
     public const string Armies2="Armies2";
+    public const string Politics2="Politics2";
     // これまでに一覧に入ったことのある名前（保存の検証に使う）。名前を消さない。
     // 開始年の印（2026-11-17、S03）：1560年以外の開始の世界だけが一覧に持つ。印のない世界は1560年。
     public const string StartYear1467="StartYear1467",StartYear1600="StartYear1600";

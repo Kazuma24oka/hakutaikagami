@@ -35,6 +35,9 @@ public partial class NewGameRuntime
              var rates=new HBoxContainer();box.AddChild(rates);
              foreach(var (label,v) in new[]{("四公六民",40),("五公五民",50),("六公四民",60)}){var b=new Button{Text=label};b.Pressed+=()=>Order("decree",null,v);rates.AddChild(b);}
              box.AddChild(note);
+             // 同盟の申し入れ（一覧の Politics2）。
+             foreach(var p in Politics2.Proposals(w1,person)){Text(p.Text);var row=new HBoxContainer();box.AddChild(row);
+              foreach(var (label,yes) in new[]{("受ける",true),("断る",false)}){var b=new Button{Text=label};b.Pressed+=()=>{var r=Session.AnswerProposal(p.Id,yes,shown);if(r.Code!=ResultCode.Accepted){note.Text=r.VisibleReason;return;}popup.Hide();Refresh();ShowCharacterDevelopment();};row.AddChild(b);}}
          }
          if(person==Session.PlayerControl)foreach(var job in Domestic2.Board(w1,person))Text($"{job.Kind}　{job.IssuerName}　{job.Fee}文");
          // 探物（一覧の Logistics2）：引き受け・見つける・精算。

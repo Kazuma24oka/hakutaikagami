@@ -107,6 +107,8 @@ public static class MortalSuccession
         }
         if(claims.Length==1)return (claims[0].Claimant,null);
         if(named is {} n0&&ok(n0))return (n0,null);
+        // 強い家から迎えた養子（一覧の Politics2）。
+        if(Politics2.AdoptedHeir(w,house) is {} adopted&&ok(adopted))return (adopted,null);
         var people=FamilyBirth.People(w).ToArray();
         var child=people.Where(p=>(p.BirthParents??[]).Contains(dead.Value)&&ok(new(p.Id))).OrderBy(p=>p.BirthYear??NationalStart.Life(p.Id)?.Born??int.MaxValue).ThenBy(p=>p.Id,StringComparer.Ordinal).FirstOrDefault();
         if(child!=null)return (new(child.Id),null);

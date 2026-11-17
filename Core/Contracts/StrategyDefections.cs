@@ -31,7 +31,8 @@ public static class StrategyDefections
             if(power.GetValueOrDefault(house)*2<power.GetValueOrDefault(overlord,50))continue;
             // 守護の実権（一覧の CentralStanding）：その国の守護に従う家は離反しない。
             if(w.NewGame.Start.Factions.FirstOrDefault(f=>f.Id==house)?.Home is {} home&&CentralStanding.IsShugo(w,overlord,CentralStanding.ProvinceOf(new(home)),now))continue;
-            if(Draw(w,$"defect/{house}/{date:yyyy-MM}")>=100)continue;
+            // 主の家中で外様の派閥が強く当主が弱ければ離反しやすい（一覧の Politics2）。
+            if(Draw(w,$"defect/{house}/{date:yyyy-MM}")>=Politics2.DefectPerMille(w,overlord))continue;
             rows.Add(new(new(house),new(overlord),now,w.CommitSequence));
         }
         return s with{Defections=rows.Count==0?null:rows.ToArray()};

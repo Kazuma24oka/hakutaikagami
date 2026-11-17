@@ -216,7 +216,7 @@ public static class Domestic2
         }
         var alive=w.Characters.Where(c=>c.Life==LifeState.Adult).Select(c=>c.Id).ToHashSet();
         // 家中：開始の所属に、登用した人（一覧の Persons2）を一人ずつ足す。
-        var recruits=Persons2.On(w)?Persons2.Recruits(w):new Dictionary<string,string>(StringComparer.Ordinal);
+        var recruits=Persons2.On(w)?Persons2.Recruits(w):new Dictionary<string,string?>(StringComparer.Ordinal);
         var byFaction=FamilyBirth.People(w).Select(p=>recruits.TryGetValue(p.Id,out var r)?p with{Faction=r}:p).Where(p=>p.Faction!=null&&alive.Contains(new EntityId(p.Id))).GroupBy(p=>p.Faction!,StringComparer.Ordinal)
             .ToDictionary(g=>g.Key,g=>g.Select(p=>(Id:new EntityId(p.Id),Site:p.Site)).ToArray(),StringComparer.Ordinal);
         var power=NationalStrategy.Powers(w,owners);

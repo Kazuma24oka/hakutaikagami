@@ -163,7 +163,8 @@ public static class Persons2
 
         // 自発登用：人手の足りない家は、領地にいる主のない成人を一人登用する。
         var hired=events.Where(e=>e.Kind=="recruit").Select(e=>e.Person).ToHashSet();
-        var ronin=FamilyBirth.People(w).Where(p=>p.Faction==null&&alive.Contains(new EntityId(p.Id))&&!hired.Contains(new EntityId(p.Id))&&p.Id!=w.PlayerControl.Value).ToArray();
+        var resigned=Recruits(w).Where(x=>x.Value==null).Select(x=>x.Key).ToHashSet(StringComparer.Ordinal);
+        var ronin=FamilyBirth.People(w).Where(p=>(p.Faction==null||resigned.Contains(p.Id))&&alive.Contains(new EntityId(p.Id))&&!hired.Contains(new EntityId(p.Id))&&p.Id!=w.PlayerControl.Value).ToArray();
         foreach(var h in houses.Values.OrderBy(h=>h.House.Value,StringComparer.Ordinal))
         {
             if(HouseSuccession.Head(w,h.House)==w.PlayerControl)continue;
@@ -172,6 +173,8 @@ public static class Persons2
             // 人手の足りない家：家中の成人（登用した人を含む）が、国ごとの郡代と代官、ほかの役6つに足りない。
             int staff=FamilyBirth.People(w).Count(p=>(p.Faction==h.House.Value||Recruits(w).GetValueOrDefault(p.Id)==h.House.Value)&&alive.Contains(new EntityId(p.Id)));
             if(staff>=provinces*2+6)continue;
+            // 登用の条件（一覧の Politics2）：給付を削った家・裏切りの悪名の主の誘いには応じない。
+            if(Politics2.On(w)&&(h.StipendCut>0||s.Campaigns.Any(c=>c.Basis=="betrayal"&&c.Attacker==h.House&&now-c.At<2*Year)))continue;
             var r=ronin.FirstOrDefault(p=>own.Contains(p.Site)||own.Any(x=>NationalStrategy.Neighbors(x).Contains(p.Site)));if(r==null)continue;
             ronin=ronin.Where(x=>x!=r).ToArray();Add("recruit",new(r.Id),h.House,$"{HouseName(w,h.House)}が{r.Name}を召し抱えた");
         }
@@ -207,7 +210,8 @@ public static class Persons2
             Successions=successions.Count==0?null:successions.ToArray(),Houses=houses.Count==0?s.Houses:houses.Values.OrderBy(h=>h.House.Value,StringComparer.Ordinal).ToArray()};
     }
     // 登用した人の家（全国の家の内政の家中に数える）。
-    public static Dictionary<string,string> Recruits(ContractWorld w)=>(w.Strategy?.Persons??[]).Where(e=>e.Kind=="recruit"&&e.House!=null).GroupBy(e=>e.Person.Value).ToDictionary(g=>g.Key,g=>g.Last().House!.Value.Value,StringComparer.Ordinal);
+    // 辞去（一覧の Politics2）した人は主のない人（null）。
+    public static Dictionary<string,string?> Recruits(ContractWorld w)=>(w.Strategy?.Persons??[]).Where(e=>e.Kind=="recruit"&&e.House!=null||e.Kind=="resign").GroupBy(e=>e.Person.Value).ToDictionary(g=>g.Key,g=>g.Last().Kind=="resign"?null:g.Last().House!.Value.Value,StringComparer.Ordinal);
     public static bool Retired(ContractWorld w,EntityId person)=>On(w)&&(w.Strategy?.Successions??[]).Any(x=>x.Retired==true&&x.Previous==person);
 
     // ---- 知ること ----

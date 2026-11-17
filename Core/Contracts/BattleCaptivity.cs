@@ -108,7 +108,7 @@ public static partial class BattleCaptivity
     public static BattleCapture? CaptivityAt(ContractWorld w,EntityId person,long at,long rev)
     {
         if(!Enabled(w)||Last(w,person,at,rev) is not {} last)return null;
-        return EndOf(w,person,last.Revision,at,rev)==null&&!Warfare2.Escaped(w,person,last.Revision,at,rev)?last.Capture:null;
+        return EndOf(w,person,last.Revision,at,rev)==null&&!Warfare2.Escaped(w,person,last.Revision,at,rev)&&!Politics2.Released(w,person,last.Revision,at,rev)?last.Capture:null;
     }
     public static bool HeldAt(ContractWorld w,EntityId person,long at,long rev)=>CaptivityAt(w,person,at,rev)!=null;
     // 拘束中は捕らえた家の拠点。拘束が終わった後、本人が新しい行動を始めるまではその拠点（捕らえる前の行軍は続きとして扱わない）。

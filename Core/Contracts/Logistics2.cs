@@ -150,7 +150,7 @@ public static class Logistics2
         var pm=date.AddMonths(-1);long prevStart=NationalStrategy.MonthStart(w,pm.Year,pm.Month);
         var lastMonth=now-35*Day;var settled=s.Outcomes.Where(o=>o.At>lastMonth&&o.At<=now).ToArray();
         var power=NationalStrategy.Powers(w,owners);
-        bool AtWar(string a,string b)=>s.Campaigns.Any(c=>now-c.At<180*Day&&(c.Attacker.Value==a&&c.Defender.Value==b||c.Attacker.Value==b&&c.Defender.Value==a));
+        bool AtWar(string a,string b)=>Politics2.Sanctioning(w,a,b,now)||s.Campaigns.Any(c=>now-c.At<180*Day&&(c.Attacker.Value==a&&c.Defender.Value==b||c.Attacker.Value==b&&c.Defender.Value==a));
 
         // 名物：落城で奪われる。
         foreach(var o in settled.Where(o=>o.Captured))

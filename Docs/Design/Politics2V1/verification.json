@@ -1,0 +1,18 @@
+{
+  "status": "PASSED",
+  "scope": "S09C 関係する検査（全件テストは S14 で1回）",
+  "date": "2026-11-17",
+  "related_tests": "PASSED",
+  "passed": 221,
+  "failed": 0,
+  "skipped": 0,
+  "new_tests": 6,
+  "commands": [
+    "Politics2Tests（6件）・Armies2Tests・Persons2Tests・Logistics2Tests・Domestic2Tests を含む、全国の戦略・内政・合戦・実際の軍勢・捕縛（長い2件を除く）・人質・保存の検査 221件",
+    "ゲーム本体（Godot の C#）の組み立て"
+  ],
+  "not_run": "BattleCaptivityTests の長い2件（前回8分・25分）、NationalDistrictRevenueTests（前回32分）、NobunagaTravels…（前回8分）、ATruceLetter…（前回9分）、NobunagaCanStartTheNationalWorld、LifeAndSocialSystemsRunInTheNationalStart は S14 の全件で流す",
+  "performance": "外交の月の計算そのものは1か月あたり約18ミリ秒。1560年6月〜1561年12月の全体は Politics2 なし約36.0秒・あり約40.0秒（差は従属への切り替えなどで世界の動きが変わるため）。",
+  "full_core_suite": "未実施（S14 で1回）",
+  "godot_ui": "未実施（同盟の申し入れへの答えは S12 の一巡で見る）"
+}
