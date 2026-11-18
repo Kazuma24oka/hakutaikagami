@@ -85,12 +85,13 @@ public static class Screens2
             bool opened=MessageFlow.Knows(w.Messaging,m.Id,me);
             rows.Add(new(m.Id,Category(m.Kind),KindName(m.Kind),Address(w,viewer,new(m.SenderId)),Address(w,viewer,new(m.RecipientId)),g.Min(a=>a.FinishedAt)??m.CreatedAt,true,opened,false,opened?Readable(m):null));
         }
-        foreach(var m in w.Messaging.Messages.Where(m=>m.SenderId==me&&m.CreatedAt<=w.ElapsedSeconds))
+        // 自分あての書状（本人の仕事の控えなど）は出した書状に数えない。
+        foreach(var m in w.Messaging.Messages.Where(m=>m.SenderId==me&&m.RecipientId!=me&&m.CreatedAt<=w.ElapsedSeconds))
             rows.Add(new(m.Id,Category(m.Kind),KindName(m.Kind),Address(w,viewer,viewer),Address(w,viewer,new(m.RecipientId)),m.CreatedAt,false,true,failed.Contains(m.Id),Readable(m)));
         return rows.Where(r=>category==null||r.Category==category).OrderByDescending(r=>r.At).ThenBy(r=>r.Id,StringComparer.Ordinal).ToArray();
     }
     // 書状の本文：JSON の原本は種類の名前だけにする（画面に原本の書式を出さない）。
-    static string Readable(MessageEnvelope m)=>m.Body.StartsWith('{')||m.Body.StartsWith('[')?KindName(m.Kind):m.Body;
+    static string Readable(MessageEnvelope m)=>m.Body.StartsWith('{')||m.Body.StartsWith('[')||EntityId.IsValid(m.Body)?KindName(m.Kind):m.Body;
     public static string KindName(string kind)=>kind switch{
         FamilyNotice.Kind=>"訃報","family-birth-notice"=>"出生の知らせ","family-coming-of-age"=>"元服の知らせ","delivery-failure"=>"不達の知らせ",
         NationalStrategy.LetterKind=>"合戦の知らせ",NationalStrategy.InviteKind=>"包囲網の誘い",NationalStrategy.InviteReplyKind=>"誘いへの返書",HistoryKind=>"出陣の上申",

@@ -32,8 +32,8 @@ public sealed class NationalWarfareActivationTests
             WorldSession.SlowNpcDecisionRecord=slow;
             try
             {
-                var s=new WorldSession(initial);var outside=s.DiagnosticSnapshot();outside.NewGame!.Start.People[0]=outside.NewGame.Start.People[0] with{Name="外部で変更"};s.SetPaused(false);s.AdvanceTo(1,100000);
-                Assert.Equal(1,s.Seconds);var after=s.DiagnosticSnapshot();Assert.NotEmpty(after.NpcWork!.Decisions);Assert.DoesNotContain(after.NewGame!.Start.People,p=>p.Name=="外部で変更");return ContractJson.Write(after);
+                var s=new WorldSession(initial);var outside=s.DiagnosticSnapshot();outside.NewGame!.Start.People[0]=outside.NewGame.Start.People[0] with{Name="外部で変更"};s.SetPaused(false);s.AdvanceTo(60,100000); // 一覧の NearPlay：NPC の日課の判断は1分ごと
+                Assert.Equal(60,s.Seconds);var after=s.DiagnosticSnapshot();Assert.NotEmpty(after.NpcWork!.Decisions);Assert.DoesNotContain(after.NewGame!.Start.People,p=>p.Name=="外部で変更");return ContractJson.Write(after);
             }
             finally{WorldSession.SlowNpcDecisionRecord=false;}
         }

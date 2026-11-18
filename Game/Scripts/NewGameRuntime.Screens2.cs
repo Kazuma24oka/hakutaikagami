@@ -122,6 +122,39 @@ public partial class NewGameRuntime
         tabs.CurrentTab=Math.Clamp(tab,0,tabs.GetTabCount()-1);popup.PopupCentered();
     }
 
+    // ---- 拠点（城・町）の形と名前 ----
+    // 近くの画面に、見えている範囲の拠点を簡単な形（台と屋根）と名前で描く。絵の束ができたら差し替える。
+    readonly System.Collections.Generic.Dictionary<string,Node3D> siteMarkers=new();
+    void RefreshSiteMarkers(ContractWorld w,FieldPoint center)
+    {
+        foreach(var m in siteMarkers.Values)m.Visible=false;
+        if(nationMode)return;double reach=Span*1.6*1000;
+        foreach(var n in BranchRoutes.GraphNodes(w))
+        {
+            var fp=FieldWorld.FromWorld(n.Position);double dx=fp.X-center.X,dy=fp.Y-center.Y;if(dx*dx+dy*dy>reach*reach)continue;
+            if(!siteMarkers.TryGetValue(n.Id,out var marker))
+            {
+                marker=new Node3D();stage.AddChild(marker);siteMarkers[n.Id]=marker;string name=NewGameWorld.SiteName(RegionalCampaign.Site(n.Id).Value);bool castle=name.EndsWith("城");
+                var stone=new StandardMaterial3D{AlbedoColor=new Color(castle?"cfc6b4":"b89a6e")};var roof=new StandardMaterial3D{AlbedoColor=new Color(castle?"3d4650":"6b4a32")};
+                marker.AddChild(new MeshInstance3D{Mesh=new BoxMesh{Size=castle?new Vector3(5,2.4f,5):new Vector3(4,1.6f,3)},MaterialOverride=stone,Position=new Vector3(5,castle?1.2f:.8f,-8)});
+                marker.AddChild(new MeshInstance3D{Mesh=new PrismMesh{Size=castle?new Vector3(5.6f,2,5.6f):new Vector3(4.4f,1.4f,3.4f)},MaterialOverride=roof,Position=new Vector3(5,castle?3.4f:2.3f,-8)});
+                if(castle)marker.AddChild(new MeshInstance3D{Mesh=new BoxMesh{Size=new Vector3(2.4f,1.6f,2.4f)},MaterialOverride=stone,Position=new Vector3(5,5.2f,-8)});
+                marker.AddChild(new Label3D{Text=name,Position=new Vector3(5,castle?8:5,-8),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,FontSize=40,PixelSize=.03f,Modulate=new Color("f2dfb4"),OutlineSize=8,NoDepthTest=true});
+            }
+            WorldArmyProjection.Apply(marker,fp,center);marker.Visible=true;
+        }
+    }
+
+    // ---- 重い欄の描き直しの間引き ----
+    // 自動進行の間は、右の欄・城の印などの重い描き直しを3秒に一度にする。止まっている間や操作の後は毎回描き直す。
+    bool heavyUi=true;readonly System.Diagnostics.Stopwatch heavyClock=System.Diagnostics.Stopwatch.StartNew();long heavySeconds=-1;
+    bool HeavyUiDue()
+    {
+        bool running=automatic&&!Session.Paused;
+        if(running&&heavySeconds>=0&&heavyClock.Elapsed.TotalSeconds<3)return false;
+        heavyClock.Restart();heavySeconds=Session.Seconds;return true;
+    }
+
     // ---- 会話の差し替え口 ----
     // 立ち絵と背景は、絵の束に名前の合う絵があればそれを使い、無ければ今の仮の絵（3Dの武将・ドット絵）のまま。
     TextureRect?[] portraitSlots=[];
@@ -141,6 +174,12 @@ public partial class NewGameRuntime
         if(ResourceLoader.Exists(back))workOverlay.AddThemeStyleboxOverride("panel",new StyleBoxTexture{Texture=GD.Load<Texture2D>(back),ContentMarginLeft=12,ContentMarginRight=12,ContentMarginTop=12,ContentMarginBottom=12});
         else workOverlay.AddThemeStyleboxOverride("panel",WorkBox("17252f","a28b61",12));
         workSpeech.AddThemeFontSizeOverride("font_size",TextSize);
+    }
+    // 動画用：本人に一番近いほかの拠点を行き先にして出発する。
+    internal bool ReviewDepartNearest()
+    {
+        var me=Branch(Session.PlayerControl).Position;var pick=destinationNodes.Where(n=>n.Position!=me).OrderBy(n=>Math.Pow(n.Position.EastMm-me.EastMm,2)+Math.Pow(n.Position.NorthMm-me.NorthMm,2)).FirstOrDefault();
+        if(pick==null)return false;SetDestination(pick.Id);if(!ButtonEnabled("depart"))return false;Press("depart");return true;
     }
     internal string StagePortrait(int n)=>n<portraitSlots.Length&&portraitSlots[n]?.Visible==true?"絵":"仮";
     public override void _UnhandledKeyInput(InputEvent e)

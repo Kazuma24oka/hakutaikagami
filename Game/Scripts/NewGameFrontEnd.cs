@@ -37,6 +37,8 @@ public partial class NewGameFrontEnd : Control
         }
 
         GetTree().AutoAcceptQuit=false;
+        // 遊ぶときは進めるたびの世界全体の検証をしない（保存と読み込みでは検証する）。検査の起動（TestKey）では今までどおり毎回検証する。
+        if(TestKey==null)WorldSession.ValidateTransitions=false;
         Theme=new Theme{DefaultFontSize=16,DefaultFont=ownedFont=new SystemFont{FontNames=new[]{"Yu Gothic UI","Meiryo","sans-serif"}}};
         var bg=new ColorRect{Color=new Color("17232b"),MouseFilter=MouseFilterEnum.Ignore};AddChild(bg);bg.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         canvas=new Control();AddChild(canvas);canvas.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -48,7 +50,7 @@ public partial class NewGameFrontEnd : Control
     {
         buttons.Clear();foreach(Node n in canvas.GetChildren()){canvas.RemoveChild(n);n.QueueFree();}canvas.Visible=true;if(game!=null)game.Suspend();
         var margin=new MarginContainer();canvas.AddChild(margin);margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);foreach(var side in new[]{"left","right","top","bottom"})margin.AddThemeConstantOverride("margin_"+side,24);
-        page=new VBoxContainer();margin.AddChild(page);page.AddThemeConstantOverride("separation",10);heading=new(){Text=title,Modulate=new Color("e6c785")};heading.AddThemeFontSizeOverride("font_size",28);var headline=new HBoxContainer();page.AddChild(headline);heading.SizeFlagsHorizontal=SizeFlags.ExpandFill;headline.AddChild(heading);if(title!="百代鏡")Add(headline,"home","スタートへ",ShowMenu);page.AddChild(new Label{Text=help,AutowrapMode=TextServer.AutowrapMode.WordSmart});notice=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("edc89d")};page.AddChild(notice);
+        page=new VBoxContainer();margin.AddChild(page);page.AddThemeConstantOverride("separation",10);heading=new(){Text=title,Modulate=new Color("e6c785")};heading.AddThemeFontSizeOverride("font_size",28);var headline=new HBoxContainer();page.AddChild(headline);heading.SizeFlagsHorizontal=SizeFlags.ExpandFill;headline.AddChild(heading);if(title!="百代鏡")Add(headline,"home","戻る",ShowMenu);page.AddChild(new Label{Text=help,AutowrapMode=TextServer.AutowrapMode.WordSmart});notice=new(){AutowrapMode=TextServer.AutowrapMode.WordSmart,Modulate=new Color("edc89d")};page.AddChild(notice);
     }
     Button Add(Node parent,string id,string text,Action action){var b=new Button{Text=text,CustomMinimumSize=new(0,34)};parent.AddChild(b);buttons[id]=b;b.Pressed+=()=>Guard(action);return b;}
     HBoxContainer Bar()=>new HBoxContainer();
@@ -61,7 +63,7 @@ public partial class NewGameFrontEnd : Control
         Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
         Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
-        var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{NationalMovement=true,SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=site=>{notice.Text=NewGameWorld.SiteName(site)+" / 新規ゲームで、ここから武将を探せます。";nation.Focus(site);};
+        var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{NationalMovement=true,SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=async site=>{notice.Text=NewGameWorld.SiteName(site)+"　準備中";await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);Guard(()=>{startYear=1560;BeginNational();map!.SitePicked?.Invoke(site);});};
         menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         {}
     }
@@ -74,7 +76,7 @@ public partial class NewGameFrontEnd : Control
         national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");scenarioChoice.Select(1);page.AddChild(scenarioChoice);
         // 試作の開始は1560年だけ。
         void SyncYear(){bool trial=scenarioChoice.Selected==0;year.Disabled=trial;if(trial){startYear=1560;year.Select(System.Array.IndexOf(HakutaiDb.StartYears,1560));}}scenarioChoice.ItemSelected+=_=>SyncYear();SyncYear();
-        Add(page,"next","武将を選ぶ",async()=>{if(scenarioChoice.Selected!=1){ChooseRegistered();return;}var b=buttons["next"];b.Text="準備中";b.Disabled=true;await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);Guard(BeginNational);});Add(page,"back","スタートへ",ShowMenu);}
+        Add(page,"next","武将を選ぶ",async()=>{if(scenarioChoice.Selected!=1){ChooseRegistered();return;}var b=buttons["next"];b.Text="準備中";b.Disabled=true;await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);Guard(BeginNational);});Add(page,"back","戻る",ShowMenu);}
     void BeginNational(){national=true;chosen=[];claims.Clear();var raw=NationalStart.Scenario(NationalStart.RevenueEdition,NationalSystems.ForYear(startYear));var request=new WorldSetupRequest([],[]);preview=NewGameSetup.Preview(raw,request);confirmed=NewGameSetup.Confirm(raw,request,preview);ChoosePerson();}
     void ChooseRegistered()
     {
@@ -147,8 +149,8 @@ public partial class NewGameFrontEnd : Control
     void ShowLoads()
     {
         Clear("ロード","");savedRows=campaigns.List(out int unreadable);savedList=new(){SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(savedList);foreach(var row in savedRows){var p=row.Profile.Setup.People.Single(p=>p.Id==row.Profile.Selected);savedList.AddItem(p.Name+" / 開始地："+NewGameWorld.SiteName(p.Site)+" / 経過"+row.Seconds+"秒");}if(savedRows.Length>0)savedList.Select(0);notice.Text=unreadable>0?"読めない保存は保持しています（"+unreadable+"件）。":savedRows.Length==0?"保存した人生はまだありません。":"";
-        Add(page,"load","選んだ保存を開く",()=>{var index=savedList.GetSelectedItems();if(index.Length!=1)throw new InvalidDataException("保存を選んでください");var p=savedRows[index[0]].Profile;Action start=()=>OpenGame(campaigns.Read(p.Instance),true);if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}).Disabled=savedRows.Length==0;Add(page,"back","スタートへ",ShowMenu);
+        Add(page,"load","選んだ保存を開く",()=>{var index=savedList.GetSelectedItems();if(index.Length!=1)throw new InvalidDataException("保存を選んでください");var p=savedRows[index[0]].Profile;Action start=()=>OpenGame(campaigns.Read(p.Instance),true);if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}).Disabled=savedRows.Length==0;Add(page,"back","戻る",ShowMenu);
     }
-    void Settings(){Clear("設定","");Add(page,"standard","標準の文字",()=>Theme.DefaultFontSize=16);Add(page,"large","大きめの文字",()=>Theme.DefaultFontSize=18);Add(page,"back","スタートへ",ShowMenu);}
-    void Legacy(){Clear("以前の試作と保存","");Add(page,"back","スタートへ",ShowMenu);var hub=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn").Instantiate<Control>();hub.SizeFlagsVertical=SizeFlags.ExpandFill;page.AddChild(hub);}
+    void Settings(){Clear("設定","");Add(page,"standard","標準の文字",()=>Theme.DefaultFontSize=16);Add(page,"large","大きめの文字",()=>Theme.DefaultFontSize=18);Add(page,"back","戻る",ShowMenu);}
+    void Legacy(){Clear("以前の試作と保存","");Add(page,"back","戻る",ShowMenu);var hub=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn").Instantiate<Control>();hub.SizeFlagsVertical=SizeFlags.ExpandFill;page.AddChild(hub);}
 }

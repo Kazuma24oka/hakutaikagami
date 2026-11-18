@@ -42,6 +42,8 @@ public partial class NewGameFrontEnd
             await Say("遊ぶ画面：上の欄で時間を進める・止める・保存する。真ん中が今いる場所",4.5);
             await Say("世界はゲーム内の時計で動き、書状は使者が運んで届きます。知らないことは見えません",4.5);
             if(g.ReviewHasButton("nation")){g.Press("nation");await Say("「全国地図」：全国の勢力と城。もう一度押すと元の視点へ",4);g.Press("near");await FilmHold(1);}
+            await Say("右の「移動」で行き先を選び「行先へ出発」。速さを上げると、歩いて進む様子が見えます",4);
+            if(g.ReviewDepartNearest()){for(int n=0;n<300&&g.IsDeparting;n++)await FilmHold(1d/30);g.ReviewSelectSpeed(360);g.Press("auto");await Say("360倍で進めています。近くの城や町は名前つきで見えます",6);g.Press("pause");for(int n=0;n<300&&g.IsClockControlling;n++)await FilmHold(1d/30);}
             await Say("「帳面」：書状・人物・判断・約束・家督・軍勢・表示の7つの面",3.5);
             string[] tabs=["書状：届いた書状と出した書状。種類で絞り込めます","人物：5能力と6分野32技能、療養と教育","判断：知っている危機ごとに、対処案を比べます","約束：家の約束と、自分の約束","家督：当主・後継の候補・元服の年。後継の指名と隠居","軍勢：家の軍勢。当主は国と率いる人と優先度を選んで出陣を命じます","表示：文字の大きさ"];
             for(int n=0;n<tabs.Length;n++){g.ShowLedger(n);await Say(tabs[n],3.5);}

@@ -10,6 +10,7 @@ public partial class NewGameRuntime
     void RefreshCastleMarkers(ContractWorld w,FieldPoint center)
     {
         foreach(var marker in castleMarkers.Values)marker.Visible=false;
+        if(w.Castles is not {Entries.Length:>0})return; // 城の受け渡しの記録が無ければ計算しない
         if(Session.CastleView() is not {} v)return;
         foreach(var card in v.Castles.Where(c=>c.Local)){
             var j=CastleHandover.Jobs(w).Single(j=>j.Terms.Id==card.Id);if(j.Gate==null)continue;

@@ -5,7 +5,7 @@ public sealed partial class WorldSession
     // Keep state private and hold the session gate for the ordered turn. Change()
     // copies before mutation, so a pre-submit generation remains valid for the
     // recorded input revision without serializing a diagnostic copy per actor.
-    internal void TakeNewGameNpcTurns()=>RunBatchedTurns(RunNewGameNpcTurns);
+    internal void TakeNewGameNpcTurns(){if(Peek(NearPlay.Skip))return;RunBatchedTurns(RunNewGameNpcTurns);}
     // NPC の手番をまとめて変更し、世界全体の検査は手番の終わりに1回だけ行う（休眠の版の世界）。通らなければ手番の前に戻して1件ずつやり直す。
     // allowInPlace=false：時間を進める変更を含むときは、前後を比べる処理のために変更ごとに写す（検査だけをまとめる）。
     void RunBatchedTurns(Action run,bool allowInPlace=true)
@@ -35,7 +35,7 @@ public sealed partial class WorldSession
                 finally{deferValidation=false;inPlace=false;}
                 if(batchBroken)ok=false;
                 if(ok&&state.CommitSequence==before.CommitSequence){state=before;turnView=null;return;} // 何も変わらなかった
-                if(ok&&!ReferenceEquals(before,state)){try{if(FailBatchForTest)throw new InvalidDataException("検査用の失敗");ContractValidation.Validate(state,before);}catch(InvalidDataException){ok=false;}}
+                if(ok&&ValidateTransitions&&!ReferenceEquals(before,state)){try{if(FailBatchForTest)throw new InvalidDataException("検査用の失敗");ContractValidation.Validate(state,before);}catch(InvalidDataException){ok=false;}}
                 if(ok)return;
                 state=before;turnView=null;BatchRetries++;
             }

@@ -10,6 +10,7 @@ public partial class NewGameRuntime
     void RefreshHouseSuccessionMarkers(ContractWorld w,FieldPoint center)
     {
         foreach(var m in houseSuccessionMarkers.Values)m.Visible=false;
+        if(w.Succession is not {Entries.Length:>0})return; // 家督の交代の記録が無ければ計算しない
         if(HouseSuccession.ViewForProjection(w) is not {} v)return;
         foreach(var c in v.Changes.Where(c=>c.Local)){
             if(!houseSuccessionMarkers.TryGetValue(c.Id,out var marker)){marker=new Node3D();stage.AddChild(marker);marker.AddChild(new Label3D{Position=new Vector3(0,8,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,FontSize=24,PixelSize=.02f,Modulate=new Color("e7d8a1"),OutlineSize=5});houseSuccessionMarkers[c.Id]=marker;}

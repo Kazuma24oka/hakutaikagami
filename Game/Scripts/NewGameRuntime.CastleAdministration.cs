@@ -9,6 +9,7 @@ public partial class NewGameRuntime
     void RefreshCastellanMarkers(ContractWorld w,FieldPoint center)
     {
         foreach(var m in castellanMarkers.Values)m.Visible=false;
+        if(w.Castellan is not {Entries.Length:>0})return; // 任命の記録が無ければ計算しない（全国の人を確かめる重い計算のため）
         if(Session.CastellanView() is not {} v)return;
         foreach(var c in v.Appointments.Where(c=>c.Local)){
             if(!castellanMarkers.TryGetValue(c.Id,out var marker)){marker=new Node3D();stage.AddChild(marker);marker.AddChild(new Label3D{Position=new Vector3(0,6,0),Billboard=BaseMaterial3D.BillboardModeEnum.Enabled,FontSize=24,PixelSize=.02f,Modulate=new Color("c3e4d2"),OutlineSize=5});castellanMarkers[c.Id]=marker;}

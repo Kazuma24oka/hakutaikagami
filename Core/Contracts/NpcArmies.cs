@@ -268,7 +268,7 @@ public static partial class NpcArmies
     }
     internal static void TakeTurns(WorldSession session)
     {
-        var w=session.TurnSnapshot();if(!Enabled(w)||w.Paused)return;
+        var w=session.TurnSnapshot();if(!Enabled(w)||w.Paused||NearPlay.Skip(w))return;
         foreach(var f in DecidingHeads(w).OrderBy(f=>f.Id,StringComparer.Ordinal)){
             w=session.TurnSnapshot();if(Candidate(w,new(f.Head),new(f.Id)) is {} objective){var head=new EntityId(f.Head);var leader=Leader(w,head,new(f.Id),new(f.Home));session.MusterNpcArmy(MusterId(objective.Claim),leader,new(f.Id),objective,leader==head?null:head);}
         }

@@ -153,13 +153,17 @@ public partial class NewGameRuntime
         workCardHeading.Text=NewGameWorld.SiteName(task.Scope.Value)+"の点検";Choice("work-finish","地図へ戻る",()=>workOverlay.Hide());
     }
     static string ReadableStatus(string text)=>text.Replace("Completed","完了").Replace("Running","進行中").Replace("NotStarted","未着手").Replace("Stopped","中断").Replace("Failed","失敗").Replace("Waiting","待機");
+    bool toolbarChecked;
     void RefreshWorkExperience()
     {
+        // 手帳（会う・書く・任せる）の中のボタンを出すかの判定は重いので、手帳を開いている時と最初の1回だけ行う。
+        if(verbDialog?.Visible==true||!toolbarChecked){toolbarChecked=true;
         buttons["secret-cooperation"].Visible=PrivateStanddown.Enabled(Snapshot());buttons["secret-cooperation"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["private-contact"].Visible=PrivateInformation.Enabled(Snapshot());buttons["private-contact"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["truce-negotiation"].Visible=TruceNegotiations.Enabled(Snapshot())&&OwnPoliticalHouse(Snapshot())!=null;buttons["truce-negotiation"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["companions"].Visible=PersonalCompanions.Enabled(Snapshot());buttons["companions"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["character-development"].Visible=CharacterDevelopment.Enabled(Snapshot());buttons["character-development"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["treaty-defense"].Visible=TreatyDefense.View(Snapshot()).Length>0;buttons["treaty-defense"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["treaty-supply"].Visible=TreatySupply.View(Snapshot()).Length>0;buttons["treaty-supply"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["army-road"].Visible=Session.ArmyRoadView()!=null;buttons["army-road"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["camp-supply"].Visible=FieldConvoy.Enabled(Snapshot())&&Snapshot().NewMilitary!=null;buttons["camp-supply"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["military-rice"].Visible=Session.MilitaryEconomyView()!=null;buttons["military-rice"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["house-freight"].Visible=Session.HouseFreightView()!=null;buttons["house-freight"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["treasury"].Visible=Session.HouseTreasuryView()!=null;buttons["treasury"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["steward"].Visible=Session.StewardshipView()!=null;buttons["steward"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["village"].Visible=Session.VillageView()!=null;buttons["village"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["salary"].Visible=Session.SalaryView()!=null;buttons["salary"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["trade"].Text=MaterialMarkets.Enabled(Snapshot())?"物資の取引":"米の取引";buttons["trade"].Visible=Session.RegionalTradeView()!=null;buttons["trade"].Disabled=IsSaving||IsClockControlling||IsDeparting;buttons["economy"].Visible=Session.LocalEconomyView()!=null||Session.CommunityEconomyView()!=null;buttons["economy"].Disabled=IsSaving||IsClockControlling||IsDeparting;
+        }
         buttons["work-contact"].Visible=SelectWorkContact()!=null;
         buttons["work-contact"].Disabled=IsSaving||IsClockControlling||IsDeparting;
         buttons["work-duty"].Visible=WorkDuty.Candidate(Snapshot())!=null||WorkDuty.Active(Snapshot())!=null;
@@ -167,11 +171,12 @@ public partial class NewGameRuntime
         message.Visible=message.Text.StartsWith("操作できません：")||message.Text.Contains("確定できませんでした")||message.Text.Contains("保存できません");
         if(message.Text!=lastObservedMessage){lastObservedMessage=message.Text;if(!string.IsNullOrWhiteSpace(lastObservedMessage)){observedHistory.Add("開始から"+Session.Seconds+"秒　"+lastObservedMessage);if(observedHistory.Count>200)observedHistory.RemoveAt(0);}}
         var t=KnownWork();int unread=Branch(Session.PlayerControl).Knowledge.Messages.Count(m=>m.KnownBody==null);
-        workSummary.Text=IsSaving?"保存中":IsClockControlling?"確認中":unread>0?"書状 "+unread+"通":t==null?"仕事なし":t.KnownStatus.Contains("Completed")?"点検完了":t.KnownStatus.Contains("Running")?"進行中："+NewGameWorld.SiteName(Snapshot().Tasks.Single(p=>p.Id==t.Id).Scope.Value)+"の点検\n期限：残り"+Math.Max(0,(t.DeadlineAt??Session.Seconds)-Session.Seconds)+"秒":"仕事："+ReadableStatus(t.KnownStatus);
+        workSummary.Text=IsSaving?"保存中":IsClockControlling?"確認中":unread>0?"書状 "+unread+"通":t==null?"仕事なし":t.KnownStatus.Contains("Completed")?"点検完了":t.KnownStatus.Contains("Running")?"進行中："+NewGameWorld.SiteName(Snapshot().Tasks.Single(p=>p.Id==t.Id).Scope.Value)+"の点検\n期限：残り"+Math.Max(0,(t.DeadlineAt??Session.Seconds)-Session.Seconds)+"秒":t.KnownStatus.Contains("Waiting")||t.KnownStatus.Contains("NotStarted")?"引き受け済み："+NewGameWorld.SiteName(Snapshot().Tasks.Single(p=>p.Id==t.Id).Scope.Value)+"の点検":"仕事："+ReadableStatus(t.KnownStatus);
         buttons["work-details"].Disabled=t==null&&unread==0;buttons["work-details"].Text=unread>0?"届いた書状を開く":t?.KnownStatus.Contains("Completed")==true?"点検結果を見る":"仕事の内容を確認";
-        bool running=t?.KnownStatus.Contains("Running")==true;
+        bool running=t?.KnownStatus.Contains("Running")==true;bool accepted=t!=null&&t.Executor==Session.PlayerControl&&(t.KnownStatus.Contains("Waiting")||t.KnownStatus.Contains("NotStarted"))&&Awaiting()?.Id!=t.Id;
         buttons["work-details"].Visible=!running&&(t!=null||unread>0);buttons["work"].Visible=t==null||t.KnownStatus.Contains("Completed")||t.KnownStatus.Contains("Stopped")||t.KnownStatus.Contains("Failed");
-        buttons["work-run"].Visible=running;buttons["work-run"].Disabled=IsClockControlling||IsSaving;
+        // 引き受けた仕事は、時間を進めると始まる。引き受けた後も「仕事を進める」で進められるようにする。
+        buttons["work-run"].Visible=running||accepted;buttons["work-run"].Text=running?"点検を進める":"仕事を進める";buttons["work-run"].Disabled=IsClockControlling||IsSaving;
         buttons["accept"].Visible=buttons["decline"].Visible=false;
         bool idle=!Snapshot().Tasks.Any(p=>p.Executor==Session.PlayerControl&&p.Execution is not(ExecutionPhase.Completed or ExecutionPhase.Stopped or ExecutionPhase.Failed));buttons["work-self"].Visible=idle;buttons["work-self"].Disabled=!idle||Branch(Session.PlayerControl).Knowledge.Location.Kind!=LocationKind.AtSite||IsSaving||IsClockControlling;
         buttons["work-retry"].Visible=KnownFailedWorkLetters().Length>0;buttons["work-retry"].Disabled=IsSaving||IsClockControlling;
