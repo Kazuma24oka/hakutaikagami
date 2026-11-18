@@ -166,6 +166,40 @@ public partial class ProtoGame : Node3D
     readonly Dictionary<string, Vector3> heading = new();
     internal static string[] TroopMix(ProtoPerson p) => p.Skills.Contains("槍衾") ? ["yari", "yari", "yari", "yari", "teppo"] : ["yari", "yari", "teppo", "yari", "yumi"];
     static string ColorOf(string house) => house switch { "takano" => "紫", "sawatari" => "朱", "iwakiri" => "黒漆", _ => "鉄錆" };
+    // 同じ場所に止まっている同じ家の隊は陣形に並べる（2026-11-19 ユーザー「大将とその兵士、後ろに横並びで武将達と兵士、向きは大将に合わせる」）。
+    // 大将（当主・嫡男・城主・家老の順、次に統率）とその足軽が前、ほかの武将は後ろの列に横並びで、それぞれの足軽を後ろに連れる。描くときだけの並びで、世界の位置は変えない。
+    readonly Dictionary<string, (Vector3 Foot, Vector3 Dir, int Count, int Total)> formation = new();
+    static int RankOf(ProtoPerson p) => p.Role switch { "当主" => 0, "嫡男" => 1, "城主" => 2, "家老" => 3, _ => 4 };
+    // 足軽の並び：歩くときは横3列の縦隊、止まっているときは横5列の横隊。
+    static int Wide(ProtoPerson p) => p.Moving ? 3 : 5;
+    static int Rows(ProtoPerson p) => (Math.Clamp((p.Soldiers + 9) / 10, 0, 15) + Wide(p) - 1) / Wide(p);
+    const float FollowerSize = 0.5f, FollowerGap = 0.42f;
+    void PlanFormations(float px)
+    {
+        formation.Clear();
+        var units = World.People.Where(p => p.Active && p.Soldiers > 0 && !p.Moving && World.Sees(World.Player, p)).ToList();
+        var placed = new HashSet<string>(); float gap = 26 * px * FollowerGap;
+        foreach (var lead in units.OrderBy(RankOf).ThenByDescending(p => p.Command).ThenBy(p => p.Id))
+        {
+            if (placed.Contains(lead.Id)) continue;
+            var rest = units.Where(p => p != lead && !placed.Contains(p.Id) && p.House == lead.House && Math.Abs(p.X - lead.X) + Math.Abs(p.Y - lead.Y) < 9000)
+                .OrderBy(RankOf).ThenByDescending(p => p.Command).ThenBy(p => p.Id).ToList();
+            placed.Add(lead.Id);
+            // 向きは、見えているいちばん近い他家の隊の方。見えなければ最後に進んだ向き。
+            var foe = World.People.Where(e => e.Active && e.Soldiers > 0 && e.House != lead.House && World.Sees(World.Player, e)).OrderBy(e => Math.Abs(e.X - lead.X) + Math.Abs(e.Y - lead.Y)).FirstOrDefault();
+            var dir = foe != null && (foe.X != lead.X || foe.Y != lead.Y) ? new Vector3(foe.X - lead.X, 0, foe.Y - lead.Y).Normalized() : heading.TryGetValue(lead.Id, out var h) ? h : new Vector3(0, 0, -1);
+            if (rest.Count == 0) { formation[lead.Id] = (ToScene(lead.X, lead.Y), dir, 1, lead.Soldiers); continue; }
+            var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
+            var front = ToScene(lead.X, lead.Y); int total = lead.Soldiers + rest.Sum(p => p.Soldiers);
+            formation[lead.Id] = (front, dir, rest.Count + 1, total);
+            float behind = gap * (Rows(lead) + 2.2f);
+            for (int i = 0; i < rest.Count; i++)
+            {
+                var at = front + back * behind + side * (gap * 6.2f * (i - (rest.Count - 1) / 2f));
+                at.Y = HeightAt(at.X, at.Z); formation[rest[i].Id] = (at, dir, 0, 0); placed.Add(rest[i].Id);
+            }
+        }
+    }
     void DrawFollowers(ProtoPerson p, Vector3 foot, float px, bool show, string anim)
     {
         if (!followers.TryGetValue(p.Id, out var list)) followers[p.Id] = list = new();
@@ -173,17 +207,17 @@ public partial class ProtoGame : Node3D
         var mix = TroopMix(p);
         while (list.Count < want) { var d = new DotOfficerActor { OnTop = true }; AddChild(d); list.Add(d); }
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
-        var dir = heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
+        var dir = formation.TryGetValue(p.Id, out var f) ? f.Dir : heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
         var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
-        float gap = 26 * px * 0.55f;
+        float gap = 26 * px * FollowerGap; int wide = Wide(p);
         for (int i = 0; i < list.Count; i++)
         {
             var d = list[i]; d.Visible = i < want; if (i >= want) continue;
             d.Apply($"soldier/ashigaru/{mix[i % mix.Length]}/war/{ColorOf(p.House)}");
-            int row = i / 3 + 1, col = i % 3 - 1;
+            int row = i / wide + 1; float col = i % wide - (wide - 1) / 2f;
             var at = foot + back * (gap * row) + side * (gap * col * 1.1f);
             at.Y = HeightAt(at.X, at.Z);
-            d.PixelSize = px * 0.62f; d.Position = at; d.Freeze(anim, Time.GetTicksMsec() / 1000.0 + i * 0.21);
+            d.PixelSize = px * FollowerSize; d.Position = at; d.Freeze(anim, Time.GetTicksMsec() / 1000.0 + i * 0.21);
             d.Face(dir, Camera);
         }
     }
@@ -384,6 +418,7 @@ public partial class ProtoGame : Node3D
     void UpdateActors()
     {
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
+        if (war) PlanFormations(Math.Max(0.12f, distance / 380f) * 1.25f); else formation.Clear();
         foreach (var p in World.People)
         {
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p);
@@ -397,12 +432,15 @@ public partial class ProtoGame : Node3D
             {
                 // ちびコマ：足元を地面に置き、近づいても遠ざかっても見える大きさにする。歩く・戦う・止まるで動きを変える。
                 body.Visible = false; dot.Visible = seen;
-                var foot = ToScene(p.X, p.Y); float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
+                var real = ToScene(p.X, p.Y); bool inLine = formation.TryGetValue(p.Id, out var fm); var foot = inLine ? fm.Foot : real; float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
                 dot.Position = foot;
                 string anim = p.Doing.Contains("戦って") ? "attack" : p.Moving ? "walk" : p.Doing.Contains("敗走") ? "damage" : "idle";
                 dot.Freeze(anim, Time.GetTicksMsec() / 1000.0 + p.Id.Length * 0.37);
-                if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(foot - before, Camera); var mv = foot - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
-                lastPos[p.Id] = foot;
+                if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(real - before, Camera); var mv = real - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
+                lastPos[p.Id] = real;
+                if (inLine) dot.Face(fm.Dir, Camera);
+                if (inLine && fm.Count > 1) label.Text = $"{p.Name}ほか{fm.Count - 1}隊　兵{fm.Total}";
+                else if (inLine && fm.Count == 0) label.Visible = seen && (p.Player || close);
                 DrawFollowers(p, foot, px, seen && unit, anim);
                 label.Position = foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
