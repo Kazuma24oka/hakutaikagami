@@ -92,7 +92,7 @@ public sealed partial class ProtoWorld
             else Happen("katsumoto-loyal", "岩切勝元は新しい当主に従うと誓った。", katsumoto.X, katsumoto.Y, katsumoto);
         }
         // 軍議の刻限に城にいれば呼ばれて、その場で謀叛を知る。いなければ知らないまま（大将が決める）。
-        if (War.Phase == "軍議待ち" && Second >= War.CouncilAt && SiteOf(Player) == "takano-castle" && Fact("defiance") is { } defiance && !Knows(Player, "defiance"))
+        if (War.Phase == "軍議待ち" && SiteOf(Player) == "takano-castle" && (Second >= War.CouncilAt || SiteOf(Person(Heir)) == "takano-castle") && Fact("defiance") is { } defiance && !Knows(Player, "defiance"))
         { Learn(Player, defiance, Person(Heir).Name); Note($"{Person(Heir).Name}に軍議へ呼ばれた。"); }
         if (War.Phase == "軍議待ち" && Second >= War.CouncilAt + 30 * 60 && War.Assign.Count == 0) DecideCouncil(null, null, null); // 本人が来なければ大将が決める
         if (War.Phase is "行軍" or "合戦") Battle();
@@ -126,7 +126,9 @@ public sealed partial class ProtoWorld
     }
 
     // ---- 軍議 ----
-    public bool CouncilOpen => War.Phase == "軍議待ち" && War.Assign.Count == 0 && Second >= War.CouncilAt && SiteOf(Player) == "takano-castle" && Knows(Player, "defiance");
+    // 本人・大将・家老が城にそろえばすぐ開く（刻限を過ぎれば、そろわなくても開く）。
+    public bool CouncilOpen => War.Phase == "軍議待ち" && War.Assign.Count == 0 && SiteOf(Player) == "takano-castle" && Knows(Player, "defiance")
+        && (Second >= War.CouncilAt || SiteOf(Person(Heir)) == "takano-castle" && SiteOf(Person(Karou)) == "takano-castle");
     public ProtoCouncilView Council()
     {
         var heir = Person(Heir); var karou = Person(Karou);
@@ -149,6 +151,17 @@ public sealed partial class ProtoWorld
         War.DepartAt = dep == Departures[0] ? Math.Max(Second + 10 * 60, Math.Min(night, Second + Hour)) : dawn;
         War.SignalAt = (dawn / Day) * Day + (sig == Signals[0] ? 6 : 8) * Hour;
         War.Phase = "行軍";
+        // 兵を預かり、出陣の任務を受ける。軍議の任務は、軍議に加わって済む。
+        Player.Soldiers = 30; Player.Morale = 100;
+        foreach (var t in Tasks.Where(t => t.Kind == "council" && t.State == TaskState.Open && present)) Next(t);
+        var mine = PositionOf(War.Assign[Player.Id]);
+        Note($"{Person(Heir).Name}から兵30を預かった。");
+        if (mine.Id != "takano-castle")
+        {
+            var muster = Offer(Heir, "出陣：" + mine.Name, "muster", Second, War.SignalAt, 2, new ProtoStep("visit", mine.Name + "に陣を取る", X: mine.X * 100L, Y: mine.Y * 100L));
+            muster.State = TaskState.Open; muster.Speech = $"そなたは{mine.Name}に陣を取れ。{dep}。合図は{sig}じゃ。";
+            Note($"{Person(Heir).Name}「{muster.Speech}」");
+        }
         var where = string.Join("、", War.Assign.Select(a => $"{Person(a.Key).Name}は{PositionOf(a.Value).Name}"));
         var castle = Map.Site("takano-castle");
         Happen("council", $"軍議で決まった：{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
@@ -298,6 +311,26 @@ public sealed partial class ProtoWorld
         Walk(b, Spot(Map.Site(home), 2), home, "敗走している");
     }
 
+    // ---- 本人が攻めかかる・退く ----
+    string Attack(string id)
+    {
+        var e = Person(id); if (!InSight(Player, e) || Player.Soldiers <= 0) return "攻められない";
+        War.Target[Player.Id] = id;
+        if (War.Phase == "行軍")
+        {
+            War.Phase = "合戦"; AddFavor(Heir, -5);
+            Happen("nukegake:" + Player.Id, $"{Player.Name}が合図を待たずに{e.Name}の兵へ仕掛けた。", Player.X, Player.Y, Player);
+        }
+        MoveTo(e.X, e.Y, e.Name); Player.Doing = e.Name + "の兵へ攻めかかっている";
+        return $"{e.Name}の兵へ攻めかかる。";
+    }
+    string Withdraw()
+    {
+        War.Target.Remove(Player.Id);
+        var pos = War.Assign.TryGetValue(Player.Id, out var a) ? PositionOf(a) : PositionOf("takano-castle");
+        MoveTo(pos.X * 100L, pos.Y * 100L, pos.Name); return pos.Name + "まで兵を退く。";
+    }
+
     // ---- 見えない敵：見える範囲・味方の知らせ・物見 ----
     void Watch()
     {
@@ -366,7 +399,7 @@ public sealed partial class ProtoWorld
             {
                 Happen("defiance", "岩切勝元から手切れの書状が届いた。謀叛である。", to.X, to.Y, to, Person(Karou));
                 War = new ProtoWarState { Phase = "軍議待ち", CouncilAt = Second + Hour };
-                Offer(Heir, "軍議に出る", "council", War.CouncilAt + 30 * 60, War.CouncilAt + 30 * 60, 1, new ProtoStep("visit", "鷹野城の軍議に出る", "takano-castle"));
+                Offer(Heir, "軍議に出る", "council", War.CouncilAt + 30 * 60, War.CouncilAt + 30 * 60, 1, new ProtoStep("attend", "鷹野城の広間で軍議に加わる", "takano-castle"));
                 break;
             }
         }

@@ -113,7 +113,8 @@ public sealed partial class ProtoWorld
         return Dist(viewer, other) <= SightCm;
     }
     public IEnumerable<ProtoPerson> Visible => People.Where(p => Sees(Player, p));
-    public IEnumerable<ProtoPerson> Nearby => People.Where(p => !p.Player && p.Active && Dist(Player, p) <= HandCm);
+    // 合戦の間は、敵の隊とは話せない。
+    public IEnumerable<ProtoPerson> Nearby => People.Where(p => !p.Player && p.Active && Dist(Player, p) <= HandCm && !(War.Phase is "行軍" or "合戦" && Hostile(Player.House, p.House)));
     bool Near(ProtoPerson a, ProtoPerson b) => a.Active && b.Active && (Dist(a, b) <= HandCm || SiteOf(a) is { } s && s == SiteOf(b));
 
     // ---- 知っていること ----

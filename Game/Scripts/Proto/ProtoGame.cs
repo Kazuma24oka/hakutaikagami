@@ -212,6 +212,7 @@ public partial class ProtoGame : Node3D
             if (actions.Length > 0)
             {
                 panel.AddChild(new Label { Text = "やること" });
+                foreach (var o in World.OffersHere) panel.AddChild(new Label { Text = $"{World.Person(o.Giver).Name}「{o.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
                 foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => { if (aid == "council:open") OpenCouncil(); else { Message = World.Do(aid); ShowGoal(); } }); }
                 panel.AddChild(new HSeparator());
             }
@@ -219,6 +220,7 @@ public partial class ProtoGame : Node3D
             foreach (var t in open)
             {
                 panel.AddChild(new Label { Text = t.Title + "　" + (t.Current?.Text ?? ""), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+                if (t.Speech != "") panel.AddChild(new Label { Text = $"{World.Person(t.Giver).Name}「{t.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
                 var id = t.Id; var b = Add(panel, "task:" + id, "", () => { if (World.GoToTask(id)) ShowGoal(); }); taskButtons[id] = b;
             }
             if (near.Length > 0)

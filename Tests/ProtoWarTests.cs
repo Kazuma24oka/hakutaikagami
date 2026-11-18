@@ -131,4 +131,30 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Log("結果：" + w.War.Result + "　本人の兵" + w.Player.Soldiers + "　勲功" + w.Merit);
         cp.Expect(w.War.Result != "", "決着がつく");
     }
+
+    // 軍議に加わると兵を預かって出陣の任務が出る。見えている敵の隊には攻めかかれる（合図の前なら自分の抜け駆け）。敵の隊とは話せない。
+    [Fact]
+    public void ThePlayerMustersAndCanAttack()
+    {
+        using var cp = new Checkpoints("試作版の出陣と攻めかかり", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        cp.Expect(w.CouncilOpen, "城にいて大将と家老がそろえば、すぐ軍議に加われる（刻限まで待たない）");
+        cp.Expect(w.Player.Soldiers == 0, "軍議の前は兵を持っていない");
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]);
+        cp.Expect(w.Player.Soldiers == 30, "軍議で兵30を預かる");
+        var muster = w.OpenTasks.FirstOrDefault(t => t.Kind == "muster");
+        cp.Expect(muster != null && muster.Speech.Contains("道の口"), "出陣の任務が出る（口上つき）");
+        cp.Expect(w.TaskPlace(muster!) == "道の口", "出陣の行き先は陣の名前で出る");
+        var katsumoto = w.Person("iwakiri-katsumoto");
+        w.MoveTo(katsumoto.X, katsumoto.Y);
+        for (int i = 0; i < 240 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30);
+        var attack = w.Actions().FirstOrDefault(a => a.Id.StartsWith("attack:"));
+        cp.Expect(attack != null, "見えている敵の隊に攻めかかれる");
+        cp.Expect(!w.Nearby.Any(p => p.House == "iwakiri"), "敵の隊とは話せない");
+        cp.Log(w.Do(attack!.Id));
+        cp.Expect(w.War.Phase == "合戦" && w.Facts.Any(f => f.Id == "nukegake:" + w.Player.Id), "合図の前に攻めると自分の抜け駆けになる");
+    }
 }

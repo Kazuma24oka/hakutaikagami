@@ -24,9 +24,10 @@ public sealed class ProtoTask
     public long Deadline { get; set; }
     public int Merit { get; set; }
     public int Pay { get; set; }
+    public string Speech { get; set; } = ""; // 頼む人の口上（何をしてほしいかを人物の言葉で）
     public string? Goods { get; set; }
     public ProtoStep? Current => Step < Steps.Count ? Steps[Step] : null;
-    public ProtoTask Copy() => new() { Id = Id, Title = Title, Giver = Giver, Kind = Kind, Steps = [.. Steps], Step = Step, State = State, OfferUntil = OfferUntil, Deadline = Deadline, Merit = Merit, Pay = Pay, Goods = Goods };
+    public ProtoTask Copy() => new() { Id = Id, Title = Title, Giver = Giver, Kind = Kind, Steps = [.. Steps], Step = Step, State = State, OfferUntil = OfferUntil, Deadline = Deadline, Merit = Merit, Speech = Speech, Pay = Pay, Goods = Goods };
 }
 
 public sealed record ProtoAction(string Id, string Text);
@@ -59,10 +60,27 @@ public sealed partial class ProtoWorld
     ProtoTask Offer(string giver, string title, string kind, long until, long deadline, int merit, params ProtoStep[] steps)
     {
         var t = new ProtoTask { Id = "task:" + ++taskSeq, Title = title, Giver = giver, Kind = kind, Steps = [.. steps], State = TaskState.Offered, OfferUntil = until, Deadline = deadline, Merit = merit };
+        t.Speech = SpeechFor(kind);
         Tasks.Add(t);
-        var g = Person(giver); if (Near(Player, g)) Note($"{g.Name}から頼まれごと：{title}");
+        var g = Person(giver); if (Near(Player, g)) Note($"{g.Name}「{t.Speech}」");
         return t;
     }
+
+    static string SpeechFor(string kind) => kind switch
+    {
+        "letter" => "岩切勝元にこの書状を届けよ。守りを固めるよう書いてある。",
+        "errand" => "東の村の作右衛門さまに、この荷を届けてくださいませ。戻られたら駄賃をお渡しします。",
+        "patrol" => "西の村と峠を見回ってまいれ。怪しい者を見たら戻って知らせよ。",
+        "tax" => "西の村の太兵衛から年貢を受け取り、小坂に渡せ。",
+        "temple" => "小坂から寄進の銭を受け取り、円照寺の慈恩殿に届けよ。",
+        "attend" => "今日の話し合いに居合わせ、沢渡の出方を見届けよ。昼（12時）まで市場町におればよい。済んだら知らせに戻れ。",
+        "bandits" => "峠道に賊が出ておる。討ち払って、戻って知らせよ。",
+        "dispute-reply" => "沢渡信房への返書じゃ。沢渡城へ届けて、戻って知らせよ。",
+        "stakes" => "沢渡の者が村の境に杭を打っております。どうか追い返してくだされ。",
+        "death-notice" => "父の訃報を岩切城の勝元に届けてくれ。家は私が継いだと伝えよ。",
+        "council" => "勝元が背いた。軍議を開く。城の広間へ参れ。",
+        _ => "",
+    };
 
     void Opening()
     {
@@ -299,6 +317,11 @@ public sealed partial class ProtoWorld
     {
         if (CouncilOpen) yield return new("council:open", "軍議に加わる");
         if (CanPersuade) yield return new("persuade:katsumoto", "説き伏せる：岩切勝元");
+        if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
+        {
+            foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
+            if (War.Target.ContainsKey(Player.Id)) yield return new("withdraw:me", "兵を退く");
+        }
         if (CanScout) foreach (var pos in Map.Data.Positions!.Where(p => p.Id != "takano-castle")) yield return new("scout:" + pos.Id, "物見を出す：" + pos.Name);
         foreach (var t in OffersHere) { yield return new("accept:" + t.Id, "受ける：" + t.Title); yield return new("decline:" + t.Id, "断る：" + t.Title); }
         foreach (var t in OpenTasks)
@@ -317,6 +340,8 @@ public sealed partial class ProtoWorld
         if (kind == "talk") return Talk(id);
         if (kind == "persuade") return Persuade();
         if (kind == "scout") return SendScout(id);
+        if (kind == "attack") return Attack(id);
+        if (kind == "withdraw") return Withdraw();
         if (kind == "council") return "";
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)
@@ -421,7 +446,11 @@ public sealed partial class ProtoWorld
         }
         var site = Map.Site(s.Site ?? Person(s.Person!).Home); return (site.X * 100L, site.Y * 100L);
     }
-    public string TaskPlace(ProtoTask t) { var s = t.Current ?? t.Steps[^1]; return s.Site != null ? SiteName(s.Site) : s.Do == "fight" ? "峠道" : "峠"; }
+    public string TaskPlace(ProtoTask t)
+    {
+        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道";
+        var pos = Map.Data.Positions?.FirstOrDefault(p => p.X * 100L == s.X && p.Y * 100L == s.Y); return pos?.Name ?? "峠";
+    }
     public long? TaskEta(ProtoTask t)
     {
         var p = Player; var path = ProtoMove.Plan(Map, (p.X, p.Y), TaskTarget(t)); return path == null ? null : ProtoMove.Eta(Map, (p.X, p.Y), path, percent: PlayerPercent);
