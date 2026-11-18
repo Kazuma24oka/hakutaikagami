@@ -23,7 +23,7 @@ public sealed class NationalCourtTests
     }
 
     [Fact]
-    public void TheShogunPetitionsTheCourtThroughYamashinaInKyoto()
+    public void TheNationalCourtNamesYamashinaAsBrokerAndTheShogunInKyoto()
     {
         var s=new WorldSession(NationalStart.Create(Yoshiteru));
         var w0=s.DiagnosticSnapshot();
@@ -34,7 +34,6 @@ public sealed class NationalCourtTests
         var shogunBroker=CentralCourtCatalog.ShogunBrokerIn(w0);
         Assert.Equal(site,SocialWorld.Site(w0,shogunBroker));
         Assert.Equal(site,SocialWorld.Site(w0,broker));
-        var owner=CentralMediation.ApplicantHouse(w0,new(Yoshiteru))!.Value;
         Assert.True(s.ManageSocial(new(new("request:visit-yamashina"),SocialWorldAction.Visit,broker),s.Revision).Code==ResultCode.Accepted);
         var gift=s.ManageSocial(new(new("request:gift-yamashina"),SocialWorldAction.DispatchGift,broker,Amount:100),s.Revision);
         Assert.True(gift.Code==ResultCode.Accepted,gift.VisibleReason);
@@ -43,18 +42,10 @@ public sealed class NationalCourtTests
         Assert.True(CentralCourtCatalog.IsCourtBroker(w0,new(NationalStart.PersonId("P-011328"))));Assert.True(CentralCourtCatalog.IsCourtBroker(w0,broker));
         Assert.False(CentralCourtCatalog.IsCourtBroker(w0,new(NationalStart.PersonId("P-010184"))));Assert.False(CentralCourtCatalog.IsCourtBroker(w0,new(Yoshiteru)));
         Assert.Equal(broker,CentralCourtCatalog.BrokerFor(s.DiagnosticSnapshot(),new(Yoshiteru))); // 最後に会った公家へ奏請する
-        long start;CourtEvent[] events;
-        var r=s.ManageCourt(new CourtInput(new("request:national-rank"),CourtAction.AskCourtIntroduction,broker,owner,site){Title="rank:14"},s.Revision);
-        Assert.True(r.Code==ResultCode.Accepted,r.VisibleReason);
-        // 取次は日課の仕事の最中なら、終えてから返答する。
-        start=s.Seconds;
-        do{NewGameWorldTests.At(s,s.Seconds+6*3600);events=s.DiagnosticSnapshot().Court!.Events;}
-        while(s.Seconds<start+3*86400&&!events.Any(e=>e.Input.Action==CourtAction.FileRankPetition));
-        var filed=Assert.Single(events,e=>e.Input.Action==CourtAction.FileRankPetition);
+        Assert.NotNull(CentralMediation.ApplicantHouse(w0,new(Yoshiteru)));
+        // 取次の依頼から奏請・審議・返書までの流れは、地方開始の版の検査（CentralTitlesTests・CentralMediationTests）で確かめる。
+        // 全国で3日回していた流れは同じことの繰り返しだったので外した（2026-11-18、検査の見直し）。
         var w=s.DiagnosticSnapshot();
-        Assert.Contains(w.Court!.Events,e=>e.Input.Action==CourtAction.AcceptCourtIntroduction&&e.Actor==broker);
-        Assert.Equal(broker,filed.Actor);
-        // 朝廷の審議（将軍のいる版では二か月）と返書は、地方開始の版の検査（CentralTitlesTests）で確かめる。
         var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(w)));
         Assert.Equal(ContractJson.Write(w),ContractJson.Write(restored.DiagnosticSnapshot()));
     }

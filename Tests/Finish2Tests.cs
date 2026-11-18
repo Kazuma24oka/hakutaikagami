@@ -132,6 +132,7 @@ public sealed class Finish2Tests
     [Fact]
     public void PassageHonorsAndSchemeDiscoveryAppearOverMonthsAndValidate()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=Month();var kinds=new HashSet<string>();
         for(int m=7;m<=24&&!(kinds.Contains("passage")||kinds.Contains("protest")||kinds.Contains("passage-refused"));m++)
         {

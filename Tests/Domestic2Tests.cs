@@ -19,6 +19,7 @@ public sealed class Domestic2Tests
     [Fact]
     public void HousesSetPoliciesAppointSpecialistsAndKeepABudget()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());var old=Without(w);
         Month(w,1560,6);
         var houses=w.Strategy!.Houses!;Assert.True(houses.Length>20);
@@ -50,6 +51,7 @@ public sealed class Domestic2Tests
     [Fact]
     public void CraftsmenAppearByHistoryModeAndGunsNeedIronAndSaltpeter()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         // 交易船の南蛮の鉄砲（一覧の Logistics2）を除いて、職人の作る鉄砲だけを確かめる。
         var w=NationalStart.Create(NationalStartTests.Nobunaga());w.NewGame=w.NewGame! with{NationalSystems=w.NewGame.NationalSystems!.Where(x=>x!=NationalSystems.Logistics2).ToArray()};
         Month(w,1560,6);
@@ -110,6 +112,7 @@ public sealed class Domestic2Tests
     [Fact]
     public void AngryVillagesFleeRiseAndAreSettledByTheLordOrAProxy()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Month(w,1560,6);
         var owners=NationalStrategy.Owners(w,w.Strategy);var me=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
         var site=owners.Where(x=>x.Value!=null&&x.Value!=me&&x.Key.StartsWith("site:c-",StringComparison.Ordinal)&&NationalStrategy.Neighbors(x.Key).Length>0).OrderBy(x=>x.Key,StringComparer.Ordinal).First();
@@ -139,6 +142,7 @@ public sealed class Domestic2Tests
     [Fact]
     public void TemplesResistInfringementInStagesAndArmedTemplesJoinBattles()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Month(w,1560,6);
         Assert.Contains(Domestic2.Temples(w),t=>t.Temple=="延暦寺"&&t.Lord!=null&&t.Relation>=0);
         var t=Domestic2.Temples(w).First(t=>t.Temple=="延暦寺");
@@ -188,6 +192,7 @@ public sealed class Domestic2Tests
     [Fact]
     public void HousesReformAndLordsGiveNamesToTheirMostMeritoriousRetainers()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Month(w,1560,6);
         // 勲功を2度立てた家臣（当主の名の一字か姓を受けていない人）を一人用意する。
         var me=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;

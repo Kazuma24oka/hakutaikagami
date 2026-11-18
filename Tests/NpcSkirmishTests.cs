@@ -11,6 +11,7 @@ public sealed class NpcSkirmishTests(ITestOutputHelper o)
     [Fact]
     public void HostileNpcArmiesThatMeetFightAndTheBrokenSideWithdraws()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;long contact=NpcArmies.ContactMm;
         try{
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Assert.True(NationalSystems.On(w,"NpcSkirmish"));

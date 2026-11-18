@@ -16,6 +16,7 @@ public sealed class LongAcceptanceS12Tests(ITestOutputHelper output)
     [Fact]
     public void TenYearsOfTheNationalWorldKeepHappeningAndRestoreToTheSameFuture()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga(),history:HistoryMode.Historical);
         ContractWorld? saved=null;var clock=System.Diagnostics.Stopwatch.StartNew();
         for(int y=1560,m=6;y<1571;m++){if(m==13){m=1;y++;if(y==1571)break;}Month(w,y,m);if(y==1565&&m==1)saved=ContractJson.Read<ContractWorld>(ContractJson.Write(w));}

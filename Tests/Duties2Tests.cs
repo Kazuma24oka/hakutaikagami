@@ -70,6 +70,7 @@ public sealed class Duties2Tests
     [Fact]
     public void ConflictingOrdersChildrenStrongAIAndGuardiansFollowTheirRules()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Month(w,1560,6);
         var owners=NationalStrategy.Owners(w,w.Strategy);
         var vassal=owners.Values.Where(v=>v!=null&&v!=Me(w)).Distinct().First(v=>NationalStrategy.DbOverlord(w,v!) is {} o&&owners.ContainsValue(o));var lord=NationalStrategy.DbOverlord(w,vassal!)!;

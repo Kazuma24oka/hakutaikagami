@@ -55,6 +55,7 @@ public sealed class HistoricalEventsTests
     [Fact]
     public void AHistoricalAllianceFormsOnlyWhenItsPremiseHoldsAndNeverInTheFictionalMode()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga(),history:HistoryMode.Historical);
         // 信長は操作する人物なので、清洲同盟は前提が崩れる（本人の家を自動で結ばない）。
         Month(w,1562,1);

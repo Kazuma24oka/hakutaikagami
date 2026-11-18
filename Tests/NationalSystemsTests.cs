@@ -11,6 +11,7 @@ public sealed class NationalSystemsTests(ITestOutputHelper o)
     [Fact]
     public void LifeAndSocialSystemsRunInTheNationalStartAndRestoreToTheSameFuture()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の世界で手番ごとの写しの照合は重すぎる。照合そのものは小さな世界の検査で確かめる（2026-11-18、検査の見直し）
         var sw=System.Diagnostics.Stopwatch.StartNew();
         var w=NationalStart.Create(NationalStartTests.Nobunaga());o.WriteLine($"作成 {sw.ElapsedMilliseconds}ms");
         Assert.True(PersonalLife.Enabled(w));Assert.True(CharacterRelations.Enabled(w));Assert.True(AdultMarriage.Enabled(w));Assert.True(AdultAdoption.Enabled(w));
@@ -158,28 +159,48 @@ public sealed class NationalTruceRoundTests(ITestOutputHelper o)
     [Fact]
     public void ATruceLetterTravelsToANeighbouringHeadAndTheReplyFormsTheTruce()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         // 全国の世界は毎手番の写しの照合（検査だけの重い確かめ）を入れると何時間もかかるので切る（実際のゲームと同じ）。切り替えが他の検査に響かないよう、並走しない組で流す。
         bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
         try{TruceRound();}finally{WorldSession.GuardTurnSnapshots=guard;}
     }
     void TruceRound()
     {
+        using var cp=new Checkpoints("和睦の書状の往復",o);
         var w=NationalStart.Create(NationalStartTests.Nobunaga());var s=new WorldSession(w);
         var own=new EntityId(NationalStart.FactionId("G-000131"));var imagawa=new EntityId(NationalStart.FactionId("G-000123"));
+        var imagawaHead=HouseSuccession.Head(w,imagawa)!.Value;
+        cp.Log($"全国の世界を作った　{Checkpoints.Game(s.Seconds)}　相手の当主 {imagawaHead}");
         var sent=s.NegotiateTruce(new(new("request:national-truce"),TruceAction.Propose,own,imagawa,null,20),s.PlayerControl,s.Revision);
         Assert.True(sent.Code==ResultCode.Accepted,sent.VisibleReason);
-        var sw=System.Diagnostics.Stopwatch.StartNew();
+        long start=s.Seconds;long? delivered=null,replied=null,formed=null;
+        // 6時間ごとのチェックポイント：書状は今どこか、相手は開封したか、返書は出たか、和睦は成ったか。
+        string Look(ContractWorld x)
+        {
+            var t=x.Truces;var papers=t?.Papers??[];
+            var mail=string.Join("、",papers.Select(p=>{var a=x.Messaging.Attempts.Where(m=>m.MessageId==p.Message).Select(m=>m.Status.ToString()).LastOrDefault()??"記録なし";return $"{p.Input.Action}（{a}）";}));
+            return $"{Checkpoints.Game(x.ElapsedSeconds)}　書状 {papers.Length}通［{mail}］　開封 {t?.Openings.Length??0}　成立 {t?.Formations.Length??0}";
+        }
         for(int n=0;n<60&&!TruceNegotiations.Known(s.DiagnosticSnapshot(),s.PlayerControl).Any();n++)
         {
             NewGameWorldTests.At(s,s.Seconds+6*3600);
             foreach(var m in s.GetActorView(s.PlayerControl).Messages.Where(m=>m.KnownBody==null).ToArray())s.Open(s.PlayerControl,m.Id,s.Revision);
+            var x=s.DiagnosticSnapshot();cp.Log(Look(x));
+            var papers=x.Truces?.Papers??[];
+            if(delivered==null&&x.Messaging.Attempts.Any(a=>papers.Any(p=>p.Input.Action==TruceAction.Propose&&p.Message==a.MessageId)&&a.Status==HakutaiKagami.Core.Messaging.AttemptStatus.Delivered))delivered=x.ElapsedSeconds;
+            if(replied==null&&papers.Any(p=>p.Input.Action!=TruceAction.Propose))replied=x.ElapsedSeconds;
+            if(formed==null&&(x.Truces?.Formations.Length??0)>0)formed=x.ElapsedSeconds;
+            long days=(x.ElapsedSeconds-start)/86400;
+            if(days>=5)cp.Expect(delivered!=null,"申し入れの書状は5日以内に相手の当主に届く");
+            if(days>=10)cp.Expect(replied!=null,"相手の返書は10日以内に出る");
+            if(days>=15)cp.Expect(formed!=null,"和睦は15日以内に成る");
         }
-        var done=s.DiagnosticSnapshot();o.WriteLine($"{(done.ElapsedSeconds)/3600}時間 {sw.ElapsedMilliseconds}ms 段階={string.Join("、",s.TruceView().Select(c=>c.Stage))}");
+        var done=s.DiagnosticSnapshot();cp.Log("一巡の終わり　"+Look(done)+"　段階="+string.Join("、",s.TruceView().Select(c=>c.Stage)));
         var known=Assert.Single(TruceNegotiations.Known(done,s.PlayerControl));
         Assert.Equal(new[]{own,imagawa}.OrderBy(x=>x.Value),new[]{known.Terms.A,known.Terms.B}.OrderBy(x=>x.Value));
         Assert.True(TruceNegotiations.WillNotInitiate(done,imagawa,own,done.ElapsedSeconds,done.CommitSequence)||!TruceNegotiations.Known(done,new(HouseSuccession.Head(done,imagawa).Value)).Any(),"相手の当主は成立を知れば出陣しない");
         var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(done)));
         foreach(var x in new[]{s,restored})NewGameWorldTests.At(x,done.ElapsedSeconds+3600);
-        Assert.Equal(ContractJson.Write(s.DiagnosticSnapshot()),ContractJson.Write(restored.DiagnosticSnapshot()));
+        cp.ExpectSame(System.Text.Encoding.UTF8.GetString(ContractJson.Write(s.DiagnosticSnapshot())),System.Text.Encoding.UTF8.GetString(ContractJson.Write(restored.DiagnosticSnapshot())),"保存から戻した世界は1時間後も同じ");
     }
 }

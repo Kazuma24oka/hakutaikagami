@@ -7,6 +7,7 @@ public sealed class NationalDistrictRevenueTests
     [Fact]
     public void NationalPublicMoneyCanBuyFiniteLocalGoodsAndRestoreWithoutDuplication()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の世界で手番ごとの写しの照合は重すぎる。照合そのものは小さな世界の検査で確かめる（2026-11-18、検査の見直し）
         var scenario=NationalStart.Scenario(NationalStart.RevenueEdition,[]);
         var head=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長"));
         var world=NewGameWorld.Create(scenario,[],head,116,NewGameWorld.CompactPersonalAuthority,

@@ -13,7 +13,11 @@ public sealed partial class WorldSession
     private bool deferValidation,inPlace,batchBroken;
     // 進めるたびの世界全体の検証（2026-11-18 ユーザー判断「その案で直して」）：検査では毎回行い、遊ぶ画面（ゲームの起動時に false）では行わない。
     // 遊ぶ画面でも、保存の書き出しと読み込み（GenerationSaveStore）では必ず検証する。
-    public static bool ValidateTransitions { get; set; } = true;
+    // 検査では、全国の重い検査だけその流れの中で切れる（ValidateTransitionsHere、並べて流す別の検査には効かない。2026-11-18 検査の見直し）。
+    static bool validateDefault=true;
+    static readonly AsyncLocal<bool?> validateHere=new();
+    public static bool ValidateTransitions { get=>validateHere.Value??validateDefault; set=>validateDefault=value; }
+    internal static void ValidateTransitionsHere(bool? value)=>validateHere.Value=value;
     public WorldSession(ContractWorld initial) { if(ValidateTransitions)ContractValidation.Validate(initial); state = ContractJson.Copy(initial); }
     public EntityId PlayerControl { get { lock(gate) return state.PlayerControl; } }
     public long Revision { get { lock(gate) return state.CommitSequence; } }

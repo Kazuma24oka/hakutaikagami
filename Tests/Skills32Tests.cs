@@ -9,6 +9,7 @@ public sealed class Skills32Tests
     [Fact]
     public void TheNationalStartUsesThirtyTwoSkillsWithACurveAndHalfCreditForSelfPractice()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
         try{
         var w=NationalStart.Create(NationalStartTests.Nobunaga());

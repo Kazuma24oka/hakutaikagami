@@ -65,6 +65,7 @@ public sealed class Persons2Tests
     [Fact]
     public void HousesRecruitMasterlessMenAndReviewTheirOfficers()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Month(w,1560,6);
         var me=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;
         var owners=NationalStrategy.Owners(w,w.Strategy);
@@ -111,6 +112,7 @@ public sealed class Persons2Tests
     [Fact]
     public void OldLordsRetireAndChildrenComeOfAgeRecallingTheirWishes()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());Month(w,1560,6);
         // 開始の世界は成人だけなので、一人の生年を1546年にして、1561年1月に元服させる（ゲームの中で生まれた子と同じ道）。
         var me=w.NewGame!.Start.People.Single(p=>p.Id==w.PlayerControl.Value).Faction;

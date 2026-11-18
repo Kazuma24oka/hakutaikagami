@@ -15,6 +15,7 @@ public sealed class PerformanceS10Tests
     [Fact]
     public void LookupTablesGiveTheSameAnswersAsScanningEverything()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の世界で手番ごとの写しの照合は重すぎる。照合そのものは小さな世界の検査で確かめる（2026-11-18、検査の見直し）
         var s=new WorldSession(NationalStart.Create(NationalStartTests.Nobunaga()));
         NewGameWorldTests.At(s,s.Seconds+3600);
         var w=s.DiagnosticSnapshot();

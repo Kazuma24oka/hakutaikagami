@@ -19,6 +19,7 @@ public sealed class StartYearTests(ITestOutputHelper o)
     [InlineData(1600,"徳川家康")]
     public void AnotherStartYearBuildsItsOwnWorldAndRereadsTheSame(int year,string head)
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(Head(year,head),year:year);
         Assert.Equal(year+"-01-01",w.EpochDate);Assert.Equal(year,NationalSystems.StartYear(w));
         Assert.Equal(year,WorldCalendar.At(w.EpochDate,w.ElapsedSeconds).Year);

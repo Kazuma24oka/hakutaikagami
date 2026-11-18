@@ -9,6 +9,7 @@ public sealed class NationalFactionRelationsTests
     [Fact]
     public void NationalStartStoresKnownDirectedVassalRelationsAndRejectsDisclosureOrTampering()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var scenario=NationalStart.Scenario();
         var selected=scenario.Factions.Select(f=>f.Head).Single(h=>scenario.People.Single(p=>p.Id==h).Name.Contains("信長"));
         var world=NationalStart.Create(selected);
@@ -31,8 +32,7 @@ public sealed class NationalFactionRelationsTests
         Assert.True(store.Save(originalSession,"relations",world.WorldId).Published);
         var host=new WorldSessionHost(new WorldSession(TravelWorld.Create()));Assert.Equal(ResultCode.Accepted,host.CommitLoad(store.Prepare("relations"),host.Current,host.Current.Revision));
         Assert.Equal(ContractJson.Write(originalSession.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
-        NewGameWorldTests.At(originalSession,60);NewGameWorldTests.At(host.Current,60);
-        Assert.Equal(ContractJson.Write(originalSession.DiagnosticSnapshot()),ContractJson.Write(host.Current.DiagnosticSnapshot()));
+        // 読み込んだ後に進めても同じ未来になるかは、NationalStartTests.NobunagaTravels… で確かめる（2026-11-18、重なっていたので外した）。
         var forged=ContractJson.Copy(world);forged.FactionRelations=forged.FactionRelations! with{Relations=forged.FactionRelations.Relations.Skip(1).ToArray()};
         Assert.Throws<InvalidDataException>(()=>ContractValidation.Validate(forged));
     }

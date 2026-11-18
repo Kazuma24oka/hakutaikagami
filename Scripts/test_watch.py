@@ -114,10 +114,36 @@ def rebuild():
     print(f"いつもの時間を作り直した：{len(med)}件（回の記録 {len(runs)} 回）→ {TIMES}")
 
 
+PAGE = os.path.join(os.path.dirname(HISTORY), "検査の様子.html")
+
+
+def page(text, final, out_dir):
+    """あなたが自分で見られる様子のページ。開いておくと30秒ごとに読み直す。"""
+    import html
+    now = time.strftime("%H時%M分%S秒")
+    state = "終わった" if final else "動いている"
+    color = "#2f7d4f" if final else "#3a3f8f"
+    rows = "".join(f"<li class='{'warn' if l.strip().startswith('警告') else ''}'>{html.escape(l.strip())}</li>" for l in text.split(NL) if l.strip())
+    body = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta http-equiv="refresh" content="30">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>検査の様子</title>
+<style>body{{font-family:"Yu Gothic UI",sans-serif;background:#f6f4ee;color:#2b2a27;margin:0;padding:24px;line-height:1.8}}
+@media (prefers-color-scheme:dark){{body{{background:#1d1c1a;color:#ece9e1}}}}
+.state{{display:inline-block;padding:4px 14px;border-radius:999px;color:#fff;background:{color};font-weight:600}}
+li{{list-style:none;padding:6px 10px;border-bottom:1px solid #8884}} .warn{{color:#fff;background:#b3261e;border-radius:6px}}
+small{{opacity:.7}}</style></head><body>
+<p><span class="state">{state}</span>　<small>最後に書き直した時刻 {now}（30秒ごと。この時刻が2分以上古いなら、見張りが止まっている）</small></p>
+<ul>{rows}</ul><p><small>置き場：{html.escape(out_dir)}</small></p></body></html>"""
+    with open(PAGE, "w", encoding="utf-8") as f:
+        f.write(body)
+
+
 def run(out_dir, extra):
+    if not os.path.isabs(out_dir):  # 名前だけなら検証記録の下に置く（ターミナルで日本語の道を打たなくて済むように）
+        out_dir = os.path.join(os.path.dirname(HISTORY), out_dir)
     os.makedirs(out_dir, exist_ok=True)
     base = json.load(open(TIMES, encoding="utf-8")) if os.path.exists(TIMES) else {"tests": {}, "wallSeconds": None}
     expected = base["tests"]
+    partial = "--filter" in extra  # 一部だけ流すときは、全部の件数と残りの見込みを出さない
     total_expected = sum(expected.values()) or 1
     parallel = total_expected / base["wallSeconds"] if base.get("wallSeconds") else 6.0
     # 続きから：同じ置き場で前に通った検査は流し直さない。全部が通った組（クラス）を外して流す。
@@ -158,8 +184,9 @@ def run(out_dir, extra):
         with lock:
             now = time.time() - started
             left = sum(v for k, v in expected.items() if k not in done)
-            lines = [f"経過 {fmt(now)}　終わった {len(done)} / {len(expected) or '?'} 件　失敗 {len(failed)} 件" + ("　（終了）" if final else ""),
-                     f"残りの見込み 約{fmt(left / parallel)}（いつもの時間の合計から）"]
+            lines = [f"経過 {fmt(now)}　終わった {len(done)}" + ("" if partial else f" / {len(expected) or '?'}") + f" 件　失敗 {len(failed)} 件" + ("　（終了）" if final else "")]
+            if not partial:
+                lines.append(f"残りの見込み 約{fmt(left / parallel)}（いつもの時間の合計から）")
             alerts = []
             for name, el in sorted(running.items(), key=lambda x: -x[1]):
                 if name in done:
@@ -174,11 +201,41 @@ def run(out_dir, extra):
             snap = dict(times)
         with open(os.path.join(out_dir, "status.txt"), "w", encoding="utf-8") as f:
             f.write(text)
+        page(text, final, out_dir)
         write_run(run_id, snap, round(time.time() - started), kind if final else "running", out_dir, sha)
+
+    def say(text):
+        print(text, flush=True)
+
+    # 検査が書くチェックポイント（検証記録/検査の途中/*.log）の新しい行を、そのままターミナルに流す。
+    cp_dir = os.path.join(os.path.dirname(HISTORY), "検査の途中")
+    cp_seen = {}
+
+    def checkpoints():
+        if not os.path.isdir(cp_dir):
+            return
+        for name in sorted(os.listdir(cp_dir)):
+            path = os.path.join(cp_dir, name)
+            if not name.endswith(".log") or os.path.getmtime(path) < started - 5:
+                continue
+            with open(path, encoding="utf-8", errors="replace") as f:
+                lines = f.read().split(NL)
+            for l in lines[cp_seen.get(name, 0):-1]:
+                say(f"   ◆ {name.rsplit('_', 1)[0]}　{l}")
+            cp_seen[name] = max(len(lines) - 1, 0)
+
+    def cp_loop():
+        while proc.poll() is None:
+            checkpoints(); time.sleep(3)
+        checkpoints()
+    threading.Thread(target=cp_loop, daemon=True).start()
 
     def ticker():
         while proc.poll() is None:
-            status(); time.sleep(30)
+            status()
+            with lock:
+                say(f"── 経過 {fmt(time.time() - started)}　終わった {len(done)}" + ("" if partial else f" / {len(expected)}") + f" 件　失敗 {len(failed)} 件")
+            time.sleep(30)
     threading.Thread(target=ticker, daemon=True).start()
     for line in proc.stdout:
         log.write(line); log.flush()
@@ -191,11 +248,25 @@ def run(out_dir, extra):
                 elif m.group(1) in PASSED:
                     passed_out.write(m.group(2) + NL); passed_out.flush()
                     times[m.group(2)] = dur(m.group(3))
+                n = len(done)
+            short = m.group(2).split(".", 2)[-1]
+            exp = expected.get(m.group(2))
+            slow = exp and dur(m.group(3)) > max(exp * 3, exp + 300)
+            if m.group(1) in ("失敗", "Failed"):
+                say(f"[{n}] 失敗　{short}　{m.group(3)}")
+            elif slow or dur(m.group(3)) >= 60:
+                say(f"[{n}] {'遅い ' if slow else ''}成功　{short}　{m.group(3)}（いつも {fmt(exp) if exp else '記録なし'}）")
             continue
         m = LONG.search(line)
         if m:
+            el = int(m.group(2)) * 3600 + int(m.group(3)) * 60 + int(m.group(4))
             with lock:
-                running[m.group(1)] = int(m.group(2)) * 3600 + int(m.group(3)) * 60 + int(m.group(4))
+                running[m.group(1)] = el
+            exp = expected.get(m.group(1)); over = (el > max(exp * 3, exp + 300)) if exp else el > 600
+            say(f"   {'警告 ' if over else ''}動いている　{m.group(1).split('.', 2)[-1]}　{fmt(el)}（いつも {fmt(exp) if exp else '記録なし'}）")
+            continue
+        if "error" in line.lower() or "エラー" in line or "中止" in line:
+            say("   " + line.rstrip())
     code = proc.wait()
     if code != 0 and not failed:
         kind = "stopped"

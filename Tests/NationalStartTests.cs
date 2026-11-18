@@ -29,6 +29,7 @@ public sealed class NationalStartTests(ITestOutputHelper o)
     [Fact]
     public void NobunagaCanStartTheNationalWorld()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の世界で手番ごとの写しの照合は重すぎる。照合そのものは小さな世界の検査で確かめる（2026-11-18、検査の見直し）
         var t=Stopwatch.StartNew();var w=NationalStart.Create(Nobunaga());o.WriteLine($"作成 {t.ElapsedMilliseconds}ms 保存 {ContractJson.Write(w).Length/1024}KB 人 {w.Characters.Length}");
         Assert.True(WorldNetwork.Castle(w));Assert.Equal(TerrainCastleRoutes.Ruleset,w.NewGame!.NetworkPolicy);Assert.True(NpcDormancy.Enabled(w));
         Assert.Equal(NationalDistrictControl.Policy,w.NewGame.DistrictControlPolicy);Assert.Equal(HakutaiDb.Districts.Count,w.DistrictControl!.Districts.Length);
@@ -41,6 +42,7 @@ public sealed class NationalStartTests(ITestOutputHelper o)
     [Fact]
     public void NobunagaTravelsAndTheNationalWorldRestoresToTheSameFuture()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の世界で手番ごとの写しの照合は重すぎる。照合そのものは小さな世界の検査で確かめる（2026-11-18、検査の見直し）
         var w0=NationalStart.Create(Nobunaga());Assert.Equal(TerrainCastleRoutes.Ruleset,w0.NewGame!.NetworkPolicy);var me=w0.PlayerControl;var start=NewGameWorld.InitialNode(w0,me);
         Assert.Equal(TerrainCastleRoutes.Edges.Select(e=>e.Id).Order(),BranchRoutes.GraphEdges(w0).Select(e=>e.Id).Order());
         var oldEdges=CastleRoutes.Edges.ToDictionary(e=>e.Id,StringComparer.Ordinal);

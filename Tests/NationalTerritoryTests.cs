@@ -10,6 +10,7 @@ public sealed class NationalTerritoryTests(ITestOutputHelper o)
     [Fact]
     public void NearbyHeadsWorkTheirLandAndTheWorldRestoresToTheSameFuture()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の世界で手番ごとの写しの照合は重すぎる。照合そのものは小さな世界の検査で確かめる（2026-11-18、検査の見直し）
         var sw=System.Diagnostics.Stopwatch.StartNew();
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
         Assert.True(LiveTerritory.Enabled(w));Assert.True(CastleAdministration.Enabled(w));Assert.True(CastleHandover.Enabled(w));Assert.NotNull(w.Castellan);Assert.NotNull(CastleHandover.View(w));Assert.True(PrivateStanddown.Enabled(w));Assert.NotNull(w.Standdown);Assert.NotNull(w.PublicWorks);Assert.NotNull(w.Crafts);Assert.NotNull(w.Surveys);Assert.NotNull(w.Administration);

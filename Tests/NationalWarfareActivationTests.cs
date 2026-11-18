@@ -26,6 +26,7 @@ public sealed class NationalWarfareActivationTests
     }
     [Fact]public void RecordingNationalNpcDecisionsDoesNotChangeMoneyFoodOrTheFuture()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var person=NationalStart.Scenario().People.First(p=>p.Name.Contains("信長",StringComparison.Ordinal)).Id;
         var initial=NationalStart.Create(person);byte[] Run(bool slow)
         {

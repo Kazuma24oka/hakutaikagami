@@ -68,6 +68,7 @@ public sealed class Warfare2Tests
     [Fact]
     public void CaptivesHeldByNpcsSometimesEscapeAndTheCaptivityEnds()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
         var me=w.PlayerControl;var houses=w.NewGame!.Start.Factions.Where(f=>f.Head!=me.Value).Take(2).ToArray();
         // 一つ目の家の家臣たちを、二つ目の家が捕らえている（捕縛の記録を出陣の決着に置く）。

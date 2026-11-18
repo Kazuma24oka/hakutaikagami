@@ -12,6 +12,7 @@ public sealed class StrategyRealArmyTests(ITestOutputHelper o)
     [Fact]
     public void ANearbyCampaignMarchesARealArmyAndSettlesOnArrival()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         // 全国の開始で何時間も進めるので、検査用の写しの書き換え確認は切る（実際のゲームと同じ）。
         bool guard=WorldSession.GuardTurnSnapshots;WorldSession.GuardTurnSnapshots=false;
         try{Run();}finally{WorldSession.GuardTurnSnapshots=guard;}

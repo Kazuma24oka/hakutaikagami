@@ -20,6 +20,7 @@ public sealed class Logistics2Tests
     [Fact]
     public void TreasuresStartWithTheirHoldersAreTakenWithCastlesAndSoldByMerchants()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
         var start=Logistics2.Treasures(w);
         var dojigiri=start.Single(t=>t.Name=="童子切安綱");Assert.Equal(House(w,"足利将軍家"),dojigiri.House!.Value.Value);Assert.Contains("要確認",dojigiri.Basis);
@@ -100,6 +101,7 @@ public sealed class Logistics2Tests
     [Fact]
     public void TradeShipsSailAndReturnAndCaravansCarryGoodsAcrossBorders()
     {
+        using var noGuard=TurnSnapshotGuard.Off(); // 全国の重い検査は遊ぶ画面と同じ設定で流す（2026-11-18、検査の見直し）
         var w=NationalStart.Create(NationalStartTests.Nobunaga());
         // 品の余る家を作る（軍馬と銭）。
         Month(w,1560,6);
