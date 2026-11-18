@@ -8,7 +8,7 @@ namespace HakutaiKagami.Core.Proto;
 // 地図・拠点・地形・人はデータ（Core/Data/proto-map-v1.json）で書き、ここで格子に焼く。
 // 長さは cm、時間は秒。同じデータと同じ入力から必ず同じ格子と同じ結果になる。
 
-public enum Ground : byte { Grass, Road, Forest, Mountain, Water, Ford, Site }
+public enum Ground : byte { Grass, Road, Forest, Mountain, Water, Ford, Site, Bridge }
 
 public sealed record ProtoHouse(string Id, string Name, string Head);
 public sealed record ProtoSite(string Id, string Name, string Kind, string House, int X, int Y, int RadiusM);
@@ -63,7 +63,11 @@ public sealed class ProtoMap
                 foreach (var f in t.Forests) if (Norm(x, y, f) < 1 && g == Ground.Grass) g = Ground.Forest;
                 foreach (var w in t.Rivers) if (NearLine(x, y, w)) g = Ground.Water;
                 foreach (var f in t.Fords) if (g == Ground.Water && Dist(x, y, f.X, f.Y) <= f.RadiusM) g = Ground.Ford;
-                foreach (var road in t.Roads) if (NearLine(x, y, road)) g = Ground.Road;
+                foreach (var road in t.Roads)
+                {
+                    if (g is Ground.Water or Ground.Bridge) { if (NearLine(x, y, road with { WidthM = road.WidthM + Data.CellM * 2 })) g = Ground.Bridge; } // 道が川を渡る所は川幅の分だけ橋
+                    else if (NearLine(x, y, road)) g = Ground.Road;
+                }
                 foreach (var s in Data.Sites) if (Dist(x, y, s.X, s.Y) <= s.RadiusM) g = Ground.Site;
                 ground[r * Columns + c] = g; heightCm[r * Columns + c] = (int)Math.Round(h * 100);
             }
@@ -94,6 +98,6 @@ public sealed class ProtoMap
     public ProtoSite? SiteAt(long xCm, long yCm) => Data.Sites.FirstOrDefault(s => Dist(xCm / 100.0, yCm / 100.0, s.X, s.Y) <= s.RadiusM);
 
     // 歩きの速さ（cm/秒）。今の本線の決まり（道2m/秒・草1m/秒・森0.5m/秒・斜面0.4m/秒・水は通れない）に合わせる。
-    public static int Speed(Ground g) => g switch { Ground.Road or Ground.Site => 200, Ground.Grass => 100, Ground.Forest => 50, Ground.Mountain => 40, Ground.Ford => 50, _ => 0 };
-    public static string Name(Ground g) => g switch { Ground.Road => "道", Ground.Site => "拠点", Ground.Grass => "野", Ground.Forest => "森", Ground.Mountain => "山", Ground.Ford => "浅瀬", _ => "川" };
+    public static int Speed(Ground g) => g switch { Ground.Road or Ground.Site or Ground.Bridge => 200, Ground.Grass => 100, Ground.Forest => 50, Ground.Mountain => 40, Ground.Ford => 50, _ => 0 };
+    public static string Name(Ground g) => g switch { Ground.Road => "道", Ground.Bridge => "橋", Ground.Site => "拠点", Ground.Grass => "野", Ground.Forest => "森", Ground.Mountain => "山", Ground.Ford => "浅瀬", _ => "川" };
 }

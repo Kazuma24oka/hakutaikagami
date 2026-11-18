@@ -26,6 +26,9 @@ public partial class ProtoGame : Node3D
     internal Camera3D Camera = null!;
     internal int Speed = 30;
     internal long WaitUntil;
+    internal static readonly int[] Speeds = [10, 30, 60, 120, 500];
+    long skipUntil; int skipJournal;
+    internal void Skip(long until) { World.Stop(); marker.Visible = false; skipUntil = until; skipJournal = World.Journal.Count; Message = ""; }
     internal readonly Dictionary<string, Button> Buttons = new();
     internal string Message = "";
     double acc, uiTimer;
@@ -76,6 +79,7 @@ public partial class ProtoGame : Node3D
         Color k = g switch
         {
             Ground.Road => new Color(0.80f, 0.70f, 0.52f),
+            Ground.Bridge => new Color(0.48f, 0.33f, 0.20f),
             Ground.Site => new Color(0.84f, 0.80f, 0.68f),
             Ground.Forest => new Color(0.24f, 0.44f, 0.24f),
             Ground.Mountain => new Color(0.48f, 0.50f, 0.36f).Lerp(new Color(0.66f, 0.62f, 0.55f), Math.Clamp(h / 140f, 0, 1)),
@@ -161,9 +165,11 @@ public partial class ProtoGame : Node3D
         var bar = new HBoxContainer(); bar.AddThemeConstantOverride("separation", 8); top.Theme = new Theme { DefaultFontSize = 17 }; top.AddChild(bar);
         clock = new Label(); bar.AddChild(clock); foot = new Label(); bar.AddChild(foot); status = new Label(); bar.AddChild(status);
         bar.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, MouseFilter = Control.MouseFilterEnum.Ignore });
-        foreach (var v in new[] { 10, 30, 60, 120 }) Add(bar, "speed-" + v, v + "倍", () => { Speed = v; RefreshUi(); });
-        Add(bar, "wait", "1時間待つ", () => { WaitUntil = World.Second + 3600; });
-        Add(bar, "morning", "翌朝まで", () => { long d = ProtoWorld.Day; WaitUntil = (World.Second - 7 * 3600) / d * d + d + 7 * 3600; });
+        foreach (var v in Speeds) Add(bar, "speed-" + v, v + "倍", () => { Speed = v; RefreshUi(); });
+        // 待つ・翌朝まで・次の出来事までは、時間を一気に飛ばす（本人に知らせが入ったらそこで止まる）。
+        Add(bar, "wait", "1時間待つ", () => Skip(World.Second + 3600));
+        Add(bar, "morning", "翌朝まで", () => { long d = ProtoWorld.Day; Skip((World.Second - 7 * 3600) / d * d + d + 7 * 3600); });
+        Add(bar, "next", "次の出来事まで", () => Skip(World.Second + ProtoWorld.Day));
         Add(bar, "stop", "止まる", () => { World.Stop(); WaitUntil = 0; marker.Visible = false; RefreshUi(); });
         bar.AddChild(new VSeparator());
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
@@ -193,7 +199,7 @@ public partial class ProtoGame : Node3D
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
         status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
-        foreach (var v in new[] { 10, 30, 60, 120 }) Buttons["speed-" + v].Disabled = Speed == v;
+        foreach (var v in Speeds) Buttons["speed-" + v].Disabled = Speed == v;
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
         var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
@@ -264,6 +270,11 @@ public partial class ProtoGame : Node3D
             else if (mb.ButtonIndex == MouseButton.WheelUp) distance = Math.Max(120, distance * 0.85f);
             else if (mb.ButtonIndex == MouseButton.WheelDown) distance = Math.Min(4000, distance / 0.85f);
         }
+        else if (e is InputEventMouseMotion mm && (mm.ButtonMask & MouseButtonMask.Middle) != 0)
+        {
+            // 中ボタンでつかんで動かす
+            pan -= Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * new Vector3(mm.Relative.X, 0, mm.Relative.Y) * (distance / 700f);
+        }
         else if (e is InputEventKey k && k.Pressed && !k.Echo)
         {
             if (k.Keycode == Key.Q) yaw -= 15; else if (k.Keycode == Key.E) yaw += 15;
@@ -287,7 +298,21 @@ public partial class ProtoGame : Node3D
     public override void _Process(double delta)
     {
         var input = new Vector3((Input.IsKeyPressed(Key.D) || Input.IsKeyPressed(Key.Right) ? 1 : 0) - (Input.IsKeyPressed(Key.A) || Input.IsKeyPressed(Key.Left) ? 1 : 0), 0, (Input.IsKeyPressed(Key.S) || Input.IsKeyPressed(Key.Down) ? 1 : 0) - (Input.IsKeyPressed(Key.W) || Input.IsKeyPressed(Key.Up) ? 1 : 0));
+        // 画面の端にマウスを置くと地図が動く（HoI4 のように）。窓に入っているときだけ。
+        var mouse = GetViewport().GetMousePosition(); var size = GetViewport().GetVisibleRect().Size; const float edge = 14;
+        if (DisplayServer.WindowIsFocused() && mouse.X >= 0 && mouse.Y >= 0 && mouse.X <= size.X && mouse.Y <= size.Y)
+        {
+            if (mouse.X < edge) input.X -= 1; else if (mouse.X > size.X - edge) input.X += 1;
+            if (mouse.Y < edge) input.Z -= 1; else if (mouse.Y > size.Y - edge) input.Z += 1;
+        }
         if (input != Vector3.Zero && !Debug.NoteOpen) pan += Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * input * (float)(distance * delta);
+        if (skipUntil > World.Second && !Debug.NoteOpen)
+        {
+            // 一気に飛ばす：1フレームに最大2万秒。本人に知らせ（日誌の行）が入ったら止まる。
+            for (int i = 0; i < 20000 && World.Second < skipUntil; i++) { World.Step(); if (World.Journal.Count > skipJournal) { skipUntil = 0; break; } }
+            if (World.Second >= skipUntil) skipUntil = 0;
+            dirty = true; UpdateActors(); PlaceCamera(); RefreshUi(); SaveGame(); return;
+        }
         bool running = !Debug.NoteOpen && (World.Player.Moving || WaitUntil > World.Second);
         if (running)
         {
