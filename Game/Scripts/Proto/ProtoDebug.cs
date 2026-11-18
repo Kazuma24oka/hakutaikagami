@@ -101,7 +101,7 @@ public partial class ProtoDebug : Node
                 case "/camera": game.SetCamera(q.ContainsKey("distance") ? float.Parse(q["distance"]) : null, q.ContainsKey("yaw") ? float.Parse(q["yaw"]) : null, q.ContainsKey("pitch") ? float.Parse(q["pitch"]) : null); break;
                 case "/shot": { await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); var dir = Path.Combine(Root, "絵"); Directory.CreateDirectory(dir); var file = Path.Combine(dir, (q.TryGetValue("name", out var n) ? n : DateTime.Now.ToString("yyyyMMdd-HHmmss")) + ".png"); GetViewport().GetTexture().GetImage().SavePng(file); reply.SetResult(Write(new { file })); return; }
                 case "/note": reply.SetResult(Write(new { dir = SaveNote(GetViewport().GetTexture().GetImage(), Write(Known()), Write(All()), F("text")) })); return;
-                case "/note-submit": if (noteText == null || noteSave == null) throw new ArgumentException("一言の欄が開いていません"); noteText.Text = F("text"); noteSave(); break;
+                case "/note-submit": if (noteText == null || noteSave == null) throw new ArgumentException("印の窓が開いていません"); noteText.Text = F("text"); noteSave(); break;
                 case "/quit": reply.SetResult("{}"); GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest); GetTree().Quit(); return;
                 case "/stock": reply.SetResult(Write(Stock())); return;
                 case "/sent": reply.SetResult(Write(Directory.GetDirectories(Path.Combine(Root, "送った")).OrderBy(x => x).Select(x => new { bundle = x, notes = Directory.GetDirectories(x).Select(Path.GetFileName).ToArray() }).ToArray())); return;
@@ -142,24 +142,23 @@ public partial class ProtoDebug : Node
     }
 
     // ---- 印 ----
-    // 一言の欄は画面の下に細く出し、開いている間は時間を止める。絵は欄を出す前の画面を撮る。
-    internal bool NoteOpen => noteBar != null;
-    PanelContainer? noteBar; LineEdit? noteText; Action? noteSave;
+    // 一言はゲームの画面とは別の窓（メモ帳のような複数行）に書く。開いている間は時間を止める。絵は窓を出す前の画面を撮る。
+    internal bool NoteOpen => noteWindow != null;
+    Window? noteWindow; TextEdit? noteText; Action? noteSave;
     internal void OpenNote()
     {
-        if (noteBar != null) return;
+        if (noteWindow != null) { noteWindow.GrabFocus(); return; }
         var image = GetViewport().GetTexture().GetImage(); var state = Write(Known()); var all = Write(All());
-        var layer = new CanvasLayer { Layer = 5 }; AddChild(layer);
-        noteBar = new PanelContainer { Theme = new Theme { DefaultFontSize = 20 }, GrowHorizontal = Control.GrowDirection.Both };
-        noteBar.SetAnchorsPreset(Control.LayoutPreset.CenterTop); noteBar.OffsetLeft = -380; noteBar.OffsetRight = 380; noteBar.OffsetTop = 64; noteBar.OffsetBottom = 64; layer.AddChild(noteBar);
-        var row = new HBoxContainer(); noteBar.AddChild(row);
-        var text = new LineEdit { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; row.AddChild(text); noteText = text;
-        void Done() { layer.QueueFree(); noteBar = null; noteText = null; noteSave = null; game.RefreshUi(); }
+        var window = new Window { Visible = false, Title = "印　" + ProtoWorld.Clock(game.World.Second), Size = new Vector2I(720, 480), MinSize = new Vector2I(360, 240), ForceNative = true, Unresizable = false, WrapControls = false };
+        var root = new VBoxContainer { Theme = new Theme { DefaultFontSize = 18 } }; root.SetAnchorsPreset(Control.LayoutPreset.FullRect); root.OffsetLeft = 8; root.OffsetTop = 8; root.OffsetRight = -8; root.OffsetBottom = -8; window.AddChild(root);
+        var text = new TextEdit { SizeFlagsVertical = Control.SizeFlags.ExpandFill, WrapMode = TextEdit.LineWrappingMode.Boundary }; root.AddChild(text); noteText = text;
+        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End }; root.AddChild(row);
+        void Done() { window.QueueFree(); noteWindow = null; noteText = null; noteSave = null; game.RefreshUi(); }
         noteSave = () => { SaveNote(image, state, all, text.Text); Done(); };
         var ok = new Button { Text = "残す" }; ok.Pressed += () => noteSave?.Invoke(); row.AddChild(ok);
         var cancel = new Button { Text = "やめる" }; cancel.Pressed += Done; row.AddChild(cancel);
-        text.TextSubmitted += _ => noteSave?.Invoke();
-        text.GrabFocus();
+        window.CloseRequested += Done;
+        noteWindow = window; AddChild(window); window.PopupCentered(); text.GrabFocus();
     }
 
     internal string SaveNote(Image image, string state, string all, string note)
@@ -176,7 +175,7 @@ public partial class ProtoDebug : Node
     internal void OpenStock()
     {
         if (stockWindow != null) return;
-        stockWindow = new Window { Title = "ためておいた印", Size = new Vector2I(640, 480), Exclusive = true, Transient = true };
+        stockWindow = new Window { Visible = false, Title = "ためた印", Size = new Vector2I(720, 480), ForceNative = true };
         var box = new VBoxContainer(); box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 10; box.OffsetRight = -10; box.OffsetTop = 10; box.OffsetBottom = -10; stockWindow.AddChild(box);
         var scroll = new ScrollContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill }; box.AddChild(scroll);
         var list = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; scroll.AddChild(list);
