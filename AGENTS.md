@@ -27,6 +27,7 @@
 - **main 統合は包括委任**（2026-10-30）。検証済みのコードと資料は、個別の承認を求めずに PR 作成・差分確認・main 統合・内容一致の確認まで行い、続けて次の作業へ進む。
 - PR は gh（GitHub CLI、ログイン済み）で作り、squash で統合する。統合後は作業ブランチへ main を取り込み（内容一致の記録）、integration.json と進捗表に統合先を記録する。
 - **今は試作版を優先し、進捗表（ProgressV1）の100%は保留**（2026-11-18 ユーザー「試作版以降の話とか修正とかは別のブランチでやりたい」）。試作版の進め方・ブランチの行き来・本作業へ戻る手順は [Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)、試作版の進捗表は [Docs/Development/PrototypeProgress/index.html](Docs/Development/PrototypeProgress/index.html)。
+- **全件や長い検査は必ず `python Scripts/test_watch.py run <置き場>` で流す**（2026-11-18 ユーザー指摘）。流している間は <置き場>/status.txt で何件終わったか・長引いている検査を見る。検査ごとのいつもの時間は回ごとの記録（D:_プロジェクト別\百代鏡\検証記録\検査の時間）の直近5回の中央値（Docs/Development/test-times.json）。3倍かつ5分以上超えたら警告として原因を調べる。止まったら同じ置き場で流し直せば続きからになる（全部をやり直さない）。
 - 本作業へ戻ったときの決まり：目標は進捗表の100%（2026-11-12 ユーザー「次で100％になるまで進めてほしい」）。工程表は60枠すべての残りを入れて100%に届くものだけを出す。「切り上げ」で次へ進まない。残りのある枠を「完了」と言わない。今の率と残りは毎回 progress.json・estimate.json から数えて言う。main への統合は100%に届いたときに1回、全件テストはその前に1回。報告はそこに届いたときと判断が要るときだけ（PROCESS_V2 第1・2節）。
 - 作業は C:\Workspace\Projects\Games\hakutaikagami の1か所で、ブランチを切り替えて使う。試作版は prototype/small-world、本作業は prototype/claude-mainline（2026-11-13 から Claude が一人で進める）。どちらのブランチへの commit/push も承認済み。検査用の作業フォルダ（worktree）を作ったら、使い終わりに消す（ユーザーはフォルダが増えると分からなくなる。2026-11-14）。
 
