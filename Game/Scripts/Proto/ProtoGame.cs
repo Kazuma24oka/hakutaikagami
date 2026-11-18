@@ -29,6 +29,7 @@ public partial class ProtoGame : Node3D
 
     public override void _Ready()
     {
+        GetTree().AutoAcceptQuit = true; // スタート画面は閉じる前に保存を待つため×を止めている。試作版では×でそのまま閉じる。
         World = new ProtoWorld(ProtoMap.Load());
         var env = new WorldEnvironment { Environment = new Godot.Environment { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color(0.62f, 0.75f, 0.86f), AmbientLightSource = Godot.Environment.AmbientSource.Color, AmbientLightColor = new Color(0.75f, 0.75f, 0.75f), AmbientLightEnergy = 0.6f } };
         AddChild(env);
