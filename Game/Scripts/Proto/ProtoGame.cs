@@ -138,6 +138,9 @@ public partial class ProtoGame : Node3D
         foreach (var v in new[] { 10, 30, 60, 120 }) Add(bar, "speed-" + v, v + "倍", () => { Speed = v; RefreshUi(); });
         Add(bar, "wait", "1時間待つ", () => { WaitUntil = World.Second + 3600; });
         Add(bar, "stop", "止まる", () => { World.Stop(); WaitUntil = 0; marker.Visible = false; RefreshUi(); });
+        bar.AddChild(new VSeparator());
+        Add(bar, "note", "印を残す", () => Debug.OpenNote());
+        Add(bar, "stock", "ためた印", () => Debug.OpenStock());
 
         var side = new PanelContainer { CustomMinimumSize = new Vector2(400, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -410; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
         var col = new VBoxContainer(); side.AddChild(col);
@@ -163,6 +166,7 @@ public partial class ProtoGame : Node3D
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = "足もと：" + ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
         foreach (var v in new[] { 10, 30, 60, 120 }) Buttons["speed-" + v].Disabled = Speed == v;
+        int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         foreach (var c in tasks.GetChildren()) { tasks.RemoveChild(c); c.QueueFree(); }
         foreach (var key in Buttons.Keys.Where(k => k.StartsWith("task:") || k.StartsWith("talk:") || k.StartsWith("hand:")).ToArray()) Buttons.Remove(key);
         foreach (var t in World.Tasks.Where(t => t.State == TaskState.Open))
