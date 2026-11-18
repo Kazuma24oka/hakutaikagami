@@ -15,3 +15,6 @@
 | 7 | 検査の見張り（Scripts/test_watch.py）：回ごとの検査1つずつの時間、直近5回の中央値、警告、続きから、ターミナルに件数・長引き・チェックポイントを流す | 11-18 | 済（試作版のブランチ） | #4 で TEST_DURATIONS.md・test_tiers.py と一本化する |
 | 8 | 全ファイル（5882件）を確かめて整理する。漏れを許さない仕組み：台帳 Docs/Development/FileLedger/ledger.tsv、Scripts/file_ledger.py（scan/check/import/report）、Tests/FileLedgerTests.cs（台帳に無い・未確認があれば失敗） | 11-18 | 全件確認済み・整理はユーザーの承認待ち | 一覧 Docs/Development/FileLedger/review.html（消す523・移す530・手元だけ678・書き直す23）。承認されたまとまりから移す・消す。あわせて .claude/settings.json の会話の始まりの差し込み（今は plan_to_100）と、.github/workflows/officer-art-contract.yml の判断をもらう |
 | 9 | 試作版：残っている所（名前の重なり・地面のマス目・話す内容・出来事の場所の印・務めと事件の種類） | 11-18 | 未 | Docs/Development/PrototypeProgress/index.html が正本 |
+| 10 | 開発の進め方を変える（2026-11-18 ユーザー「その方向で進めて」）：核の遊びを1ページで決める → 試作版で毎回遊んでもらう → 進捗は遊べるもので測る → 資料を絞る → 検査も小さく | 11-18 | 始めた | まず「核の遊びの1ページ」の下書きを書いてユーザーに見せる（Docs/Design/CORE_LOOP.md を予定） |
+| 11 | 整理の進め方（#8 の続き）：試作版から見て要るかで仕分け直し、試作版のブランチから本作業だけの資料・スクリプト（約2010件、本作業のブランチ prototype/claude-mainline にそのまま残る）と消す候補（523件）を外す。手元だけ（677件）は Git から外して手元に残す。会話の始まりの差し込み（.claude/settings.json）を約束の台帳などに向け直し、GitHub Actions の旧2D検査を止める | 11-18 | ユーザーの承認待ち | 承認をもらったら実行し、台帳を scan して check を通す |
+
