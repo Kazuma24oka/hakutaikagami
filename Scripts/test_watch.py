@@ -62,7 +62,7 @@ def run(out_dir, extra):
     started = time.time()
     log = open(os.path.join(out_dir, "console.log"), "w", encoding="utf-8")
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
-    finish_re = re.compile(r"^\s+(合格|失敗|スキップ|Passed|Failed|Skipped)\s+(\S+)\s+\[")
+    finish_re = re.compile(r"^\s+(成功|合格|失敗|スキップ|Passed|Failed|Skipped)\s+(.+?)\s+\[[^\]]*\]\s*$")
     long_re = re.compile(r"\[Long Running Test\] '([^']+)', Elapsed: (\d+):(\d+):(\d+)")
     lock = threading.Lock()
 
