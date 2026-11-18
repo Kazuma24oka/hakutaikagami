@@ -782,6 +782,7 @@ Core/World/LandMaskIndex.cs	使う	LandMaskIndex、Polygon、Edge を定義。La
 Core/World/PrototypeScenario.cs	使う	PrototypeScenario を定義。PrototypeScenario が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Main.cs:18 で PrototypeScenario（他に Game 3件・Core 0件・Tests 10件）	2026-11-18
 Core/World/SeededRandom.cs	使う	SeededRandom を定義。SeededRandom が他の Coreから使われ、ゲームの本線から届く	Core/Contracts/WorldSession.cs:587 で SeededRandom（他に Game 0件・Core 3件・Tests 1件）	2026-11-18
 Core/World/WorldState.cs	使う	OrganizationDefinition、ScenarioDefinition、WorldState を定義。WorldState が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Main.cs:9 で WorldState（他に Game 2件・Core 3件・Tests 2件）	2026-11-18
+Docs/CORE_LOOP.md	使う	核の遊びの1ページ（下書き、ユーザーと決める）	AGENTS.md 第2節の進め方の最初の一歩。約束の台帳 #10	2026-11-18
 Docs/Confirmed/FOUNDATION_PRINCIPLES_F01_F08.md	記録	初期の確定資料の原本。保護対象（変更・移動しない）。食い違う所は後続の基本設計V1が正	AGENTS.md 第6節、Docs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md	2026-11-18
 Docs/Confirmed/GAME_CONCEPT.md	記録	初期の確定資料の原本。保護対象（変更・移動しない）。食い違う所は後続の基本設計V1が正	AGENTS.md 第6節、Docs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md	2026-11-18
 Docs/Confirmed/GODOT_IMPLEMENTATION_READINESS_PRINCIPLES.md	記録	初期の確定資料の原本。保護対象（変更・移動しない）。食い違う所は後続の基本設計V1が正	AGENTS.md 第6節、Docs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md	2026-11-18

@@ -15,6 +15,6 @@
 | 7 | 検査の見張り（Scripts/test_watch.py）：回ごとの検査1つずつの時間、直近5回の中央値、警告、続きから、ターミナルに件数・長引き・チェックポイントを流す | 11-18 | 済（試作版のブランチ） | #4 で TEST_DURATIONS.md・test_tiers.py と一本化する |
 | 8 | 全ファイル（5882件）を確かめて整理する。漏れを許さない仕組み：台帳 Docs/Development/FileLedger/ledger.tsv、Scripts/file_ledger.py（scan/check/import/report）、Tests/FileLedgerTests.cs | 11-18 | 済 | 全件に判断・理由・根拠。check と FileLedgerTests が通る（2026-11-18） |
 | 9 | 試作版：残っている所（名前の重なり・地面のマス目・話す内容・出来事の場所の印・務めと事件の種類） | 11-18 | 未 | Docs/Development/PrototypeProgress/index.html が正本 |
-| 10 | 開発の進め方を変える（2026-11-18 ユーザー「その方向で進めて」）：核の遊びを1ページで決める → 試作版で毎回遊んでもらう → 進捗は遊べるもので測る → 資料を絞る → 検査も小さく | 11-18 | 始めた | まず「核の遊びの1ページ」の下書きを書いてユーザーに見せる（Docs/Design/CORE_LOOP.md を予定） |
+| 10 | 開発の進め方を変える（2026-11-18 ユーザー「その方向で進めて」）：核の遊びを1ページで決める → 試作版で毎回遊んでもらう → 進捗は遊べるもので測る | 11-18 | 下書きを見せた | Docs/CORE_LOOP.md。「決めてほしいこと」4点（視点・時間・戦い・代替わり）の答えをもらって直し、次の試作に入る |
 | 11 | 整理の実行：試作版のブランチから本作業だけの資料・スクリプト2010件と消す候補523件を外し、手元だけ677件を Git から外した（ファイルは手元に残る）。会話の始まりの差し込みを Scripts/session_brief.py に、GitHub Actions の旧2D検査を止めた。AGENTS.md・README を書き直した | 11-18 | 済 | 台帳 3350件・未確認0・check 通過。組み立て・試作版と台帳と契約の検査80件・タイトル画面と試作版の起動を確かめた。本作業の資料は prototype/claude-mainline に残る |
 | 12 | 台帳で「書き直す」の11件を書き直す（PROTOTYPE_TRACK.md の古い手順、TEST_DURATIONS.md と test_watch の一本化など） | 11-18 | 未 | python Scripts/file_ledger.py report の「書き直す」から |
