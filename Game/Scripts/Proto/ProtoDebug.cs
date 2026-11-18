@@ -1,0 +1,198 @@
+using Godot;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using HakutaiKagami.Core.Proto;
+
+// 試作版の確認用の窓口と印のため置き（2026-11-18 ユーザー決定）。
+// ・窓口：このパソコンの中（127.0.0.1）からだけ受け付ける。画面の絵・本人が知っている状態・世界の全部を読み、操作を送れる。
+// ・印：F8 で今の画面・状態と一言を「ためておく」に残す。F9 で一覧を開き、選んだものを「送る」と一つの束にまとめる。
+//   送られた束だけを Claude が読む。送るまで修正は始めない。
+public partial class ProtoDebug : Node
+{
+    readonly ProtoGame game;
+    readonly ConcurrentQueue<(string Path, Dictionary<string, string> Query, TaskCompletionSource<string> Reply)> requests = new();
+    TcpListener? listener;
+    Thread? thread;
+    volatile bool running = true;
+    internal string Root { get; }
+    Window? noteWindow, stockWindow;
+
+    public ProtoDebug(ProtoGame game)
+    {
+        this.game = game;
+        var custom = System.Environment.GetEnvironmentVariable("HAKUTAI_PROTO_NOTES");
+        Root = !string.IsNullOrEmpty(custom) ? custom : Directory.Exists("D:/02_プロジェクト別/百代鏡/検証記録") ? "D:/02_プロジェクト別/百代鏡/検証記録/試作版" : ProjectSettings.GlobalizePath("user://proto-notes");
+        Directory.CreateDirectory(Path.Combine(Root, "ためておく")); Directory.CreateDirectory(Path.Combine(Root, "送った"));
+    }
+
+    public override void _Ready()
+    {
+        int port = int.TryParse(System.Environment.GetEnvironmentVariable("HAKUTAI_PROTO_PORT"), out var p) ? p : 8765;
+        try { listener = new TcpListener(IPAddress.Loopback, port); listener.Start(); thread = new Thread(Serve) { IsBackground = true }; thread.Start(); GD.Print($"PROTO debug http://127.0.0.1:{port}/ notes={Root}"); }
+        catch (Exception e) { GD.PrintErr("PROTO debug off: " + e.Message); }
+    }
+
+    public override void _ExitTree() { running = false; try { listener?.Stop(); } catch (Exception) { } }
+
+    void Serve()
+    {
+        while (running)
+        {
+            TcpClient client;
+            try { client = listener!.AcceptTcpClient(); } catch (Exception) { return; }
+            ThreadPool.QueueUserWorkItem(_ => Handle(client));
+        }
+    }
+
+    void Handle(TcpClient client)
+    {
+        using (client)
+        {
+            try
+            {
+                var stream = client.GetStream(); var reader = new StreamReader(stream, Encoding.UTF8);
+                var line = reader.ReadLine() ?? ""; while (!string.IsNullOrEmpty(reader.ReadLine())) { }
+                var parts = line.Split(' '); var target = parts.Length > 1 ? parts[1] : "/";
+                var q = target.IndexOf('?'); var path = q < 0 ? target : target[..q];
+                var query = new Dictionary<string, string>();
+                if (q >= 0) foreach (var kv in target[(q + 1)..].Split('&', StringSplitOptions.RemoveEmptyEntries)) { var i = kv.IndexOf('='); query[Uri.UnescapeDataString(i < 0 ? kv : kv[..i])] = i < 0 ? "" : Uri.UnescapeDataString(kv[(i + 1)..].Replace('+', ' ')); }
+                var tcs = new TaskCompletionSource<string>(); requests.Enqueue((path, query, tcs));
+                var body = tcs.Task.Wait(60000) ? tcs.Task.Result : "{\"error\":\"時間切れ\"}";
+                var bytes = Encoding.UTF8.GetBytes(body);
+                var head = Encoding.ASCII.GetBytes($"HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: {bytes.Length}\r\nConnection: close\r\n\r\n");
+                stream.Write(head); stream.Write(bytes);
+            }
+            catch (Exception) { }
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        while (requests.TryDequeue(out var r)) Run(r.Path, r.Query, r.Reply);
+    }
+
+    static readonly JsonSerializerOptions Json = new() { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+    static string Write(object o) => JsonSerializer.Serialize(o, Json);
+
+    async void Run(string path, Dictionary<string, string> q, TaskCompletionSource<string> reply)
+    {
+        try
+        {
+            var w = game.World;
+            string F(string k) => q.TryGetValue(k, out var v) ? v : throw new ArgumentException(k + " がありません");
+            switch (path)
+            {
+                case "/state": reply.SetResult(Write(Known())); return;
+                case "/all": reply.SetResult(Write(All())); return;
+                case "/walk": game.WalkTo(float.Parse(F("x")), float.Parse(F("y"))); break;
+                case "/click": game.ClickGround(new Vector2(float.Parse(F("x")), float.Parse(F("y")))); break;
+                case "/press": if (!game.Buttons.TryGetValue(F("id"), out var b)) throw new ArgumentException("ボタンがありません：" + F("id")); b.EmitSignal(BaseButton.SignalName.Pressed); break;
+                case "/advance": { long s = long.Parse(F("s")); for (long i = 0; i < s; i++) { w.Step(); if (q.ContainsKey("untilArrive") && !w.Player.Moving) break; } game.RefreshUi(); break; }
+                case "/speed": game.Speed = int.Parse(F("v")); break;
+                case "/camera": game.SetCamera(q.ContainsKey("distance") ? float.Parse(q["distance"]) : null, q.ContainsKey("yaw") ? float.Parse(q["yaw"]) : null, q.ContainsKey("pitch") ? float.Parse(q["pitch"]) : null); break;
+                case "/shot": { await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); var dir = Path.Combine(Root, "絵"); Directory.CreateDirectory(dir); var file = Path.Combine(dir, (q.TryGetValue("name", out var n) ? n : DateTime.Now.ToString("yyyyMMdd-HHmmss")) + ".png"); GetViewport().GetTexture().GetImage().SavePng(file); reply.SetResult(Write(new { file })); return; }
+                case "/note": reply.SetResult(Write(new { dir = SaveNote(GetViewport().GetTexture().GetImage(), Write(Known()), Write(All()), F("text")) })); return;
+                case "/stock": reply.SetResult(Write(Stock())); return;
+                case "/sent": reply.SetResult(Write(Directory.GetDirectories(Path.Combine(Root, "送った")).OrderBy(x => x).Select(x => new { bundle = x, notes = Directory.GetDirectories(x).Select(Path.GetFileName).ToArray() }).ToArray())); return;
+                default: reply.SetResult(Write(new { paths = new[] { "/state", "/all", "/walk?x=&y=", "/click?x=&y=", "/press?id=", "/advance?s=[&untilArrive]", "/speed?v=", "/camera?distance=&yaw=&pitch=", "/shot?name=", "/sent" } })); return;
+            }
+            reply.SetResult(Write(Known()));
+        }
+        catch (Exception e) { reply.TrySetResult(Write(new { error = e.Message })); }
+    }
+
+    // 本人が知っていること（画面に出ているもの）。
+    internal object Known()
+    {
+        var w = game.World; var p = w.Player;
+        return new
+        {
+            clock = ProtoWorld.Clock(w.Second), second = w.Second, speed = game.Speed, camera = game.CameraText,
+            player = new { p.Name, xM = p.X / 100.0, yM = p.Y / 100.0, ground = ProtoMap.Name(w.Map.GroundAtCm(p.X, p.Y)), site = w.SiteOf(p), p.Doing, moving = p.Moving },
+            seen = w.Visible.Where(x => !x.Player).Select(x => new { x.Name, x.Role, xM = x.X / 100.0, yM = x.Y / 100.0, x.Doing }).ToArray(),
+            tasks = w.Tasks.Select(t => new { t.Id, t.Title, state = t.State.ToString() }).ToArray(),
+            carrying = w.Letters.Where(l => l.Carrier == p.Id && l.State == LetterState.Carried).Select(l => new { l.Id, to = w.Person(l.To).Name }).ToArray(),
+            buttons = game.Buttons.Where(b => b.Value.IsInsideTree() && b.Value.IsVisibleInTree()).Select(b => new { id = b.Key, text = b.Value.Text, disabled = b.Value.Disabled }).ToArray(),
+            message = game.Message,
+            journal = w.Journal.TakeLast(10).Select(e => ProtoWorld.Clock(e.At) + " " + e.Text).ToArray(),
+        };
+    }
+
+    // 世界の本当の全部（確かめる側だけが見る）。
+    object All()
+    {
+        var w = game.World;
+        return new
+        {
+            clock = ProtoWorld.Clock(w.Second),
+            people = w.People.Select(x => new { x.Id, x.Name, x.Role, xM = x.X / 100.0, yM = x.Y / 100.0, site = w.SiteOf(x), x.Doing, x.Goal, moving = x.Moving }).ToArray(),
+            letters = w.Letters.Select(l => new { l.Id, from = w.Person(l.From).Name, to = w.Person(l.To).Name, carrier = w.Person(l.Carrier).Name, state = l.State.ToString(), l.Body }).ToArray(),
+        };
+    }
+
+    // ---- 印 ----
+    internal void OpenNote()
+    {
+        if (noteWindow != null) return;
+        var image = GetViewport().GetTexture().GetImage(); var state = Write(Known()); var all = Write(All());
+        noteWindow = new Window { Title = "印", Size = new Vector2I(560, 160), Exclusive = true, Transient = true };
+        var box = new VBoxContainer(); box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 10; box.OffsetRight = -10; box.OffsetTop = 10; noteWindow.AddChild(box);
+        var text = new LineEdit { CustomMinimumSize = new Vector2(520, 36) }; box.AddChild(text);
+        var row = new HBoxContainer(); box.AddChild(row);
+        void Save() { SaveNote(image, state, all, text.Text); Close(ref noteWindow); }
+        var ok = new Button { Text = "残す" }; ok.Pressed += Save; row.AddChild(ok);
+        var cancel = new Button { Text = "やめる" }; cancel.Pressed += () => Close(ref noteWindow); row.AddChild(cancel);
+        text.TextSubmitted += _ => Save();
+        noteWindow.CloseRequested += () => Close(ref noteWindow);
+        AddChild(noteWindow); noteWindow.PopupCentered(); text.GrabFocus();
+    }
+
+    internal string SaveNote(Image image, string state, string all, string note)
+    {
+        var dir = Path.Combine(Root, "ためておく", DateTime.Now.ToString("yyyyMMdd-HHmmss-fff")); Directory.CreateDirectory(dir);
+        image.SavePng(Path.Combine(dir, "画面.png")); File.WriteAllText(Path.Combine(dir, "本人が知っていること.json"), state); File.WriteAllText(Path.Combine(dir, "世界の全部.json"), all); File.WriteAllText(Path.Combine(dir, "一言.txt"), note);
+        game.Message = "印を残した"; return dir;
+    }
+
+    void Close(ref Window? window) { window?.QueueFree(); window = null; game.RefreshUi(); }
+
+    internal string[] Stock() => Directory.GetDirectories(Path.Combine(Root, "ためておく")).OrderBy(x => x).ToArray();
+
+    internal void OpenStock()
+    {
+        if (stockWindow != null) return;
+        stockWindow = new Window { Title = "ためておいた印", Size = new Vector2I(640, 480), Exclusive = true, Transient = true };
+        var box = new VBoxContainer(); box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 10; box.OffsetRight = -10; box.OffsetTop = 10; box.OffsetBottom = -10; stockWindow.AddChild(box);
+        var scroll = new ScrollContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill }; box.AddChild(scroll);
+        var list = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; scroll.AddChild(list);
+        var checks = new List<(CheckBox Box, string Dir)>();
+        foreach (var dir in Stock())
+        {
+            var note = File.Exists(Path.Combine(dir, "一言.txt")) ? File.ReadAllText(Path.Combine(dir, "一言.txt")) : "";
+            var c = new CheckBox { Text = Path.GetFileName(dir) + "　" + note, ButtonPressed = true }; list.AddChild(c); checks.Add((c, dir));
+        }
+        var row = new HBoxContainer(); box.AddChild(row);
+        var send = new Button { Text = "送る" }; row.AddChild(send);
+        send.Pressed += () =>
+        {
+            var chosen = checks.Where(x => x.Box.ButtonPressed).Select(x => x.Dir).ToArray(); if (chosen.Length == 0) return;
+            var bundle = Path.Combine(Root, "送った", DateTime.Now.ToString("yyyyMMdd-HHmmss")); Directory.CreateDirectory(bundle);
+            foreach (var d in chosen) Directory.Move(d, Path.Combine(bundle, Path.GetFileName(d)));
+            game.Message = chosen.Length + "件を送った"; Close(ref stockWindow);
+        };
+        var remove = new Button { Text = "消す" }; row.AddChild(remove);
+        remove.Pressed += () => { foreach (var x in checks.Where(x => x.Box.ButtonPressed)) Directory.Delete(x.Dir, true); Close(ref stockWindow); };
+        var cancel = new Button { Text = "閉じる" }; row.AddChild(cancel); cancel.Pressed += () => Close(ref stockWindow);
+        stockWindow.CloseRequested += () => Close(ref stockWindow);
+        AddChild(stockWindow); stockWindow.PopupCentered();
+    }
+}
