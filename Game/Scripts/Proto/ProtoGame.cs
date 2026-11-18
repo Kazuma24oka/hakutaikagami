@@ -9,12 +9,26 @@ using HakutaiKagami.Core.Proto;
 public partial class ProtoGame : Node3D
 {
     internal ProtoWorld World = null!;
+    // 保存は自動：ゲーム内の10分ごと、着いた時、閉じる時。前の保存を一つ残す。
+    internal const string SavePath = "user://proto-save.json";
+    internal static bool Fresh;
+    internal static bool HasSave => FileAccess.FileExists(SavePath);
+    internal void SaveGame()
+    {
+        var path = ProjectSettings.GlobalizePath(SavePath); var temp = path + ".tmp";
+        System.IO.File.WriteAllBytes(temp, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(World.Save(), ProtoMap.Json));
+        if (System.IO.File.Exists(path)) System.IO.File.Copy(path, path + ".1", true);
+        System.IO.File.Move(temp, path, true); savedBucket = World.Second / 600;
+    }
+    public override void _Notification(int what) { if (what == NotificationWMCloseRequest && World != null) SaveGame(); }
+    public override void _ExitTree() { if (World != null) SaveGame(); }
     internal Camera3D Camera = null!;
     internal int Speed = 30;
     internal long WaitUntil;
     internal readonly Dictionary<string, Button> Buttons = new();
     internal string Message = "";
     double acc, uiTimer;
+    bool dirty; long savedBucket = -1;
     float distance = 500, yaw = 0, pitch = 55;
     Vector3 pan;
     readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> actors = new();
@@ -30,7 +44,7 @@ public partial class ProtoGame : Node3D
     public override void _Ready()
     {
         GetTree().AutoAcceptQuit = true; // スタート画面は閉じる前に保存を待つため×を止めている。試作版では×でそのまま閉じる。
-        World = new ProtoWorld(ProtoMap.Load());
+        var map = ProtoMap.Load(); World = !Fresh && FileAccess.FileExists(SavePath) ? ProtoWorld.Load(map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath(SavePath)), ProtoMap.Json)!) : new ProtoWorld(map); Fresh = false; SaveGame();
         var env = new WorldEnvironment { Environment = new Godot.Environment { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color(0.62f, 0.75f, 0.86f), AmbientLightSource = Godot.Environment.AmbientSource.Color, AmbientLightColor = new Color(0.75f, 0.75f, 0.75f), AmbientLightEnergy = 0.6f } };
         AddChild(env);
         AddChild(new DirectionalLight3D { RotationDegrees = new Vector3(-50, -30, 0), LightEnergy = 1.1f });
@@ -240,19 +254,21 @@ public partial class ProtoGame : Node3D
     public override void _Process(double delta)
     {
         var input = new Vector3((Input.IsKeyPressed(Key.D) || Input.IsKeyPressed(Key.Right) ? 1 : 0) - (Input.IsKeyPressed(Key.A) || Input.IsKeyPressed(Key.Left) ? 1 : 0), 0, (Input.IsKeyPressed(Key.S) || Input.IsKeyPressed(Key.Down) ? 1 : 0) - (Input.IsKeyPressed(Key.W) || Input.IsKeyPressed(Key.Up) ? 1 : 0));
-        if (input != Vector3.Zero) pan += Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * input * (float)(distance * delta);
-        bool running = World.Player.Moving || WaitUntil > World.Second;
+        if (input != Vector3.Zero && !Debug.NoteOpen) pan += Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * input * (float)(distance * delta);
+        bool running = !Debug.NoteOpen && (World.Player.Moving || WaitUntil > World.Second);
         if (running)
         {
             acc += delta * Speed; int n = Math.Min((int)acc, 5000); acc -= n;
             for (int i = 0; i < n; i++)
             {
                 bool wasMoving = World.Player.Moving; World.Step();
+                if (wasMoving && !World.Player.Moving) dirty = true;
                 if (wasMoving && !World.Player.Moving && WaitUntil <= World.Second) { acc = 0; marker.Visible = false; break; }
                 if (!wasMoving && WaitUntil <= World.Second) { acc = 0; break; }
             }
         }
         else acc = 0;
+        if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
         UpdateActors(); DrawPath(); PlaceCamera();
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }

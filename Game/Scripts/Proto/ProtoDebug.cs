@@ -24,7 +24,7 @@ public partial class ProtoDebug : Node
     Thread? thread;
     volatile bool running = true;
     internal string Root { get; }
-    Window? noteWindow, stockWindow;
+    Window? stockWindow;
 
     public ProtoDebug(ProtoGame game)
     {
@@ -101,6 +101,8 @@ public partial class ProtoDebug : Node
                 case "/camera": game.SetCamera(q.ContainsKey("distance") ? float.Parse(q["distance"]) : null, q.ContainsKey("yaw") ? float.Parse(q["yaw"]) : null, q.ContainsKey("pitch") ? float.Parse(q["pitch"]) : null); break;
                 case "/shot": { await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); var dir = Path.Combine(Root, "絵"); Directory.CreateDirectory(dir); var file = Path.Combine(dir, (q.TryGetValue("name", out var n) ? n : DateTime.Now.ToString("yyyyMMdd-HHmmss")) + ".png"); GetViewport().GetTexture().GetImage().SavePng(file); reply.SetResult(Write(new { file })); return; }
                 case "/note": reply.SetResult(Write(new { dir = SaveNote(GetViewport().GetTexture().GetImage(), Write(Known()), Write(All()), F("text")) })); return;
+                case "/note-submit": if (noteText == null || noteSave == null) throw new ArgumentException("一言の欄が開いていません"); noteText.Text = F("text"); noteSave(); break;
+                case "/quit": reply.SetResult("{}"); GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest); GetTree().Quit(); return;
                 case "/stock": reply.SetResult(Write(Stock())); return;
                 case "/sent": reply.SetResult(Write(Directory.GetDirectories(Path.Combine(Root, "送った")).OrderBy(x => x).Select(x => new { bundle = x, notes = Directory.GetDirectories(x).Select(Path.GetFileName).ToArray() }).ToArray())); return;
                 default: reply.SetResult(Write(new { paths = new[] { "/state", "/all", "/walk?x=&y=", "/click?x=&y=", "/press?id=", "/advance?s=[&untilArrive]", "/speed?v=", "/camera?distance=&yaw=&pitch=", "/shot?name=", "/sent" } })); return;
@@ -140,20 +142,24 @@ public partial class ProtoDebug : Node
     }
 
     // ---- 印 ----
+    // 一言の欄は画面の下に細く出し、開いている間は時間を止める。絵は欄を出す前の画面を撮る。
+    internal bool NoteOpen => noteBar != null;
+    PanelContainer? noteBar; LineEdit? noteText; Action? noteSave;
     internal void OpenNote()
     {
-        if (noteWindow != null) return;
+        if (noteBar != null) return;
         var image = GetViewport().GetTexture().GetImage(); var state = Write(Known()); var all = Write(All());
-        noteWindow = new Window { Title = "印", Size = new Vector2I(560, 160), Exclusive = true, Transient = true };
-        var box = new VBoxContainer(); box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 10; box.OffsetRight = -10; box.OffsetTop = 10; noteWindow.AddChild(box);
-        var text = new LineEdit { CustomMinimumSize = new Vector2(520, 36) }; box.AddChild(text);
-        var row = new HBoxContainer(); box.AddChild(row);
-        void Save() { SaveNote(image, state, all, text.Text); Close(ref noteWindow); }
-        var ok = new Button { Text = "残す" }; ok.Pressed += Save; row.AddChild(ok);
-        var cancel = new Button { Text = "やめる" }; cancel.Pressed += () => Close(ref noteWindow); row.AddChild(cancel);
-        text.TextSubmitted += _ => Save();
-        noteWindow.CloseRequested += () => Close(ref noteWindow);
-        AddChild(noteWindow); noteWindow.PopupCentered(); text.GrabFocus();
+        var layer = new CanvasLayer { Layer = 5 }; AddChild(layer);
+        noteBar = new PanelContainer { Theme = new Theme { DefaultFontSize = 20 }, GrowHorizontal = Control.GrowDirection.Both };
+        noteBar.SetAnchorsPreset(Control.LayoutPreset.CenterTop); noteBar.OffsetLeft = -380; noteBar.OffsetRight = 380; noteBar.OffsetTop = 64; noteBar.OffsetBottom = 64; layer.AddChild(noteBar);
+        var row = new HBoxContainer(); noteBar.AddChild(row);
+        var text = new LineEdit { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; row.AddChild(text); noteText = text;
+        void Done() { layer.QueueFree(); noteBar = null; noteText = null; noteSave = null; game.RefreshUi(); }
+        noteSave = () => { SaveNote(image, state, all, text.Text); Done(); };
+        var ok = new Button { Text = "残す" }; ok.Pressed += () => noteSave?.Invoke(); row.AddChild(ok);
+        var cancel = new Button { Text = "やめる" }; cancel.Pressed += Done; row.AddChild(cancel);
+        text.TextSubmitted += _ => noteSave?.Invoke();
+        text.GrabFocus();
     }
 
     internal string SaveNote(Image image, string state, string all, string note)

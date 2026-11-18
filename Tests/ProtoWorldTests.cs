@@ -82,4 +82,17 @@ public sealed class ProtoWorldTests
         Assert.Contains(w.Visible, p => p.Id == "takano-yoshimasa");
         Assert.DoesNotContain(w.Visible, p => p.Id == "sawatari-nobufusa");
     }
+
+    [Fact]
+    public void SavingAndLoadingGivesTheSameFuture()
+    {
+        static string Look(ProtoWorld w) => string.Join("|", w.People.Select(p => $"{p.Id}:{p.X},{p.Y},{p.Doing},{p.PathIndex}")) + string.Join("|", w.Letters.Select(l => $"{l.Id}:{l.Carrier}:{l.State}")) + w.Journal.Count + w.Tasks.Count;
+        var straight = new ProtoWorld(Map); straight.GoToTask(straight.Tasks[0].Id); straight.Advance(3 * 3600 + 17);
+        var first = new ProtoWorld(Map); first.GoToTask(first.Tasks[0].Id); first.Advance(5000);
+        var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(first.Save(), ProtoMap.Json);
+        var loaded = ProtoWorld.Load(Map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(bytes, ProtoMap.Json)!);
+        Assert.Equal(Look(first), Look(loaded));
+        loaded.Advance(3 * 3600 + 17 - 5000);
+        Assert.Equal(Look(straight), Look(loaded));
+    }
 }

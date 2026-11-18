@@ -48,9 +48,9 @@ public sealed class ProtoWorld
     public List<ProtoEvent> Journal { get; } = [];
     public ProtoPerson Player => People.First(p => p.Player);
     int letterSeq, taskSeq;
-    readonly Dictionary<string, int> plan = [];
 
-    public ProtoWorld(ProtoMap map)
+    public ProtoWorld(ProtoMap map) : this(map, true) { }
+    ProtoWorld(ProtoMap map, bool opening)
     {
         Map = map; Second = map.Data.StartHour * 3600L;
         int i = 0;
@@ -59,7 +59,7 @@ public sealed class ProtoWorld
             var home = map.Site(d.Home); var spot = Spot(home, i++);
             People.Add(new ProtoPerson { Id = d.Id, Name = d.Name, House = d.House, Role = d.Role, Home = d.Home, Visits = d.Visits ?? [], Player = d.Player, X = spot.X, Y = spot.Y, Doing = "詰めている" });
         }
-        Opening();
+        if (opening) Opening();
     }
 
     public ProtoPerson Person(string id) => People.First(p => p.Id == id);
@@ -224,5 +224,32 @@ public sealed class ProtoWorld
             l.State = LetterState.Delivered; l.DeliveredAt = Second; carrier.Doing = "書状を渡した";
             if (Sees(Player, carrier)) Note($"{carrier.Name}が{to.Name}に書状を渡すのを見た。");
         }
+    }
+
+    // ---- 保存 ----
+    // 世界をまるごと書き出す。読み込むと、続けて進めた結果が保存しなかった場合と同じになる。
+    public sealed record SavedPerson(string Id, long X, long Y, long[][] Path, int PathIndex, string? Goal, string Doing);
+    public sealed record SavedLetter(string Id, string From, string To, string Body, long SentAt, string Carrier, LetterState State, long? DeliveredAt);
+    public sealed record SavedTask(string Id, string Title, string Site, string Person, string? Letter, TaskState State);
+    public sealed record Saved(int Schema, long Second, int LetterSeq, int TaskSeq, SavedPerson[] People, SavedLetter[] Letters, SavedTask[] Tasks, ProtoEvent[] Journal);
+
+    public Saved Save() => new(1, Second, letterSeq, taskSeq,
+        People.Select(p => new SavedPerson(p.Id, p.X, p.Y, p.Path.Select(q => new[] { q.X, q.Y }).ToArray(), p.PathIndex, p.Goal, p.Doing)).ToArray(),
+        Letters.Select(l => new SavedLetter(l.Id, l.From, l.To, l.Body, l.SentAt, l.Carrier, l.State, l.DeliveredAt)).ToArray(),
+        Tasks.Select(t => new SavedTask(t.Id, t.Title, t.Site, t.Person, t.Letter, t.State)).ToArray(), Journal.ToArray());
+
+    public static ProtoWorld Load(ProtoMap map, Saved s)
+    {
+        if (s.Schema != 1) throw new InvalidDataException("試作版の保存の版が違います");
+        var w = new ProtoWorld(map, false) { Second = s.Second, letterSeq = s.LetterSeq, taskSeq = s.TaskSeq };
+        foreach (var d in s.People)
+        {
+            var p = w.People.FirstOrDefault(x => x.Id == d.Id) ?? throw new InvalidDataException("保存にある人が地図にいません：" + d.Id);
+            p.X = d.X; p.Y = d.Y; p.Path = d.Path.Select(q => (q[0], q[1])).ToList(); p.PathIndex = d.PathIndex; p.Goal = d.Goal; p.Doing = d.Doing;
+        }
+        foreach (var l in s.Letters) w.Letters.Add(new ProtoLetter(l.Id, l.From, l.To, l.Body, l.SentAt) { Carrier = l.Carrier, State = l.State, DeliveredAt = l.DeliveredAt });
+        foreach (var t in s.Tasks) w.Tasks.Add(new ProtoTask(t.Id, t.Title, t.Site, t.Person, t.Letter) { State = t.State });
+        w.Journal.AddRange(s.Journal);
+        return w;
     }
 }

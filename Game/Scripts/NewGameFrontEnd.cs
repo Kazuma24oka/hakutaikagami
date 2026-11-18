@@ -60,7 +60,7 @@ public partial class NewGameFrontEnd : Control
     {
         Clear("百代鏡","");ReadRegistry();if(registryReadError!=null)notice.Text=registryReadError;
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(columns);var menu=new VBoxContainer{CustomMinimumSize=new(300,0)};columns.AddChild(menu);
-        Add(menu,"proto","試作版",()=>GetTree().ChangeSceneToFile("res://Scenes/ProtoGame.tscn"));Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
+        if(ProtoGame.HasSave)Add(menu,"proto","試作版：続きから",()=>GetTree().ChangeSceneToFile("res://Scenes/ProtoGame.tscn"));Add(menu,"proto-new","試作版：はじめから",()=>{ProtoGame.Fresh=true;GetTree().ChangeSceneToFile("res://Scenes/ProtoGame.tscn");});Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
         Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
         var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{NationalMovement=true,SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=async site=>{notice.Text=NewGameWorld.SiteName(site)+"　準備中";await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);Guard(()=>{startYear=1560;BeginNational();map!.SitePicked?.Invoke(site);});};
