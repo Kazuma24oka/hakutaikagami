@@ -8,7 +8,8 @@
       ・何件終わったか / 全部で何件か、失敗の数、残りの見込みの時間
       ・今動いている長い検査と、その経過時間・いつもの時間
       ・いつもの時間を大きく超えた検査は「警告」（3倍かつ5分以上の超過、記録がない検査は10分超）
-      終わると、この回の時間でいつもの時間を書き直す（合格した検査だけ）。
+      通った検査は <置き場>/passed.txt に1件ずつ残る。止まったら同じ置き場でもう一度 run すると、全部が通った組を外して続きから流す。
+      終わると、この回の時間でいつもの時間を書き直す（合格した検査だけ、続きからでない回）。
 """
 import json, os, re, subprocess, sys, threading, time
 import xml.etree.ElementTree as ET
@@ -56,11 +57,35 @@ def run(out_dir, extra):
     expected = base["tests"]
     total_expected = sum(expected.values()) or 1
     parallel = total_expected / base["wallSeconds"] if base.get("wallSeconds") else 6.0
-    cmd = ["dotnet", "test", os.path.join(ROOT, "Tests", "HakutaiKagami.Tests.csproj"), "--logger", "trx;LogFileName=full.trx",
-           "--logger", "console;verbosity=normal", "--results-directory", out_dir] + extra + ["--", "xUnit.LongRunningTestSeconds=60"]
-    done, failed, running = {}, [], {}
+    # 続きから：同じ置き場で前に通った検査（passed.txt）は流し直さない。全部が通った組（クラス）を外して流す。
+    passed_file = os.path.join(out_dir, "passed.txt")
+    old_log = os.path.join(out_dir, "console.log")
+    if not os.path.exists(passed_file) and os.path.exists(old_log):  # 前の回が passed.txt を書かない版でも、記録から拾う
+        pat = re.compile(r"^\s+(成功|合格|Passed)\s+(.+?)\s+\[[^\]]*\]\s*$")
+        with open(passed_file, "w", encoding="utf-8") as f:
+            for l in open(old_log, encoding="utf-8", errors="replace"):
+                m = pat.match(l)
+                if m: f.write(m.group(2) + chr(10))
+    before = set(open(passed_file, encoding="utf-8").read().split(chr(10))) - {""} if os.path.exists(passed_file) else set()
+    filt = []
+    if before:
+        listed = subprocess.run(["dotnet", "test", os.path.join(ROOT, "Tests", "HakutaiKagami.Tests.csproj"), "--list-tests", "--no-build"],
+                                capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
+        names = [l.strip() for l in listed.splitlines() if l.startswith("    HakutaiKagami.")]
+        classes = {}
+        for n in names:
+            classes.setdefault(n.split("(")[0].rsplit(".", 1)[0], []).append(n)
+        skip = [c for c, ts in classes.items() if all(t in before for t in ts)]
+        if skip:
+            filt = ["--filter", "&".join("FullyQualifiedName!~" + c + "." for c in skip)]
+        print(f"続きから：前に通った {len(before)} 件、外す組 {len(skip)} / {len(classes)}")
+    trx_name = "full.trx" if not before else f"rest-{int(time.time())}.trx"
+    cmd = ["dotnet", "test", os.path.join(ROOT, "Tests", "HakutaiKagami.Tests.csproj"), "--logger", "trx;LogFileName=" + trx_name,
+           "--logger", "console;verbosity=normal", "--results-directory", out_dir] + filt + extra + ["--", "xUnit.LongRunningTestSeconds=60"]
+    done, failed, running = {n: True for n in before}, [], {}
     started = time.time()
-    log = open(os.path.join(out_dir, "console.log"), "w", encoding="utf-8")
+    log = open(os.path.join(out_dir, "console.log"), "a", encoding="utf-8")
+    passed_out = open(passed_file, "a", encoding="utf-8")
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
     finish_re = re.compile(r"^\s+(成功|合格|失敗|スキップ|Passed|Failed|Skipped)\s+(.+?)\s+\[[^\]]*\]\s*$")
     long_re = re.compile(r"\[Long Running Test\] '([^']+)', Elapsed: (\d+):(\d+):(\d+)")
@@ -98,6 +123,8 @@ def run(out_dir, extra):
                 done[m.group(2)] = True
                 if m.group(1) in ("失敗", "Failed"):
                     failed.append(m.group(2))
+                elif m.group(1) in ("成功", "合格", "Passed"):
+                    passed_out.write(m.group(2) + chr(10)); passed_out.flush()
             continue
         m = long_re.search(line)
         if m:
@@ -105,8 +132,8 @@ def run(out_dir, extra):
                 running[m.group(1)] = int(m.group(2)) * 3600 + int(m.group(3)) * 60 + int(m.group(4))
     code = proc.wait()
     status(final=True)
-    trx = os.path.join(out_dir, "full.trx")
-    if os.path.exists(trx) and code == 0:
+    trx = os.path.join(out_dir, trx_name)
+    if os.path.exists(trx) and code == 0 and not before:
         tests, wall = read_trx(trx)
         save_baseline(tests, wall, trx)
     print(open(os.path.join(out_dir, "status.txt"), encoding="utf-8").read())
