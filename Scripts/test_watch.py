@@ -20,6 +20,9 @@
       全部が通った組（クラス）を外して続きから流す。
   python Scripts/test_watch.py baseline <full.trx>
       全件の結果（trx）を1回分の記録として足し、いつもの時間を作り直す。
+  python Scripts/test_watch.py compare [件数]
+      回ごとの検査1つ1つの時間を並べ、最後の回で長い順に出す（どこが詰まっているかを見る）。
+      検査の時間/比較.txt にも書く。
   python Scripts/test_watch.py record <結果の置き場>
       置き場の console.log から1回分の記録を作って足し、いつもの時間を作り直す（古い版の見張りで流した回のため）。
 """
@@ -198,8 +201,30 @@ def run(out_dir, extra):
         kind = "stopped"
     status(final=True)
     rebuild()
+    compare()
     print(open(os.path.join(out_dir, "status.txt"), encoding="utf-8").read())
     return code
+
+
+def compare(top=40):
+    """回ごとの、検査1つ1つの時間を並べる。最後の回で長い順。いつもより大きく遅い検査に印。"""
+    runs = []
+    for name in sorted(os.listdir(HISTORY)):
+        if name.endswith(".json"):
+            runs.append(json.load(open(os.path.join(HISTORY, name), encoding="utf-8")))
+    runs = runs[-6:]
+    last = runs[-1]["tests"]
+    base = json.load(open(TIMES, encoding="utf-8"))["tests"] if os.path.exists(TIMES) else {}
+    head = "検査　|　" + "　|　".join(r["run"] for r in runs) + "　|　いつも"
+    rows = [head]
+    for t in sorted(set().union(*[r["tests"] for r in runs]), key=lambda t: -last.get(t, 0))[:top]:
+        cells = [fmt(r["tests"][t]) if t in r["tests"] else "－" for r in runs]
+        exp = base.get(t); mark = "遅い " if exp and t in last and last[t] > max(exp * 3, exp + 300) else ""
+        rows.append(f"{mark}{t.split('.')[-1]}　|　" + "　|　".join(cells) + f"　|　{fmt(exp) if exp else '－'}")
+    text = NL.join(rows) + NL
+    with open(os.path.join(HISTORY, "比較.txt"), "w", encoding="utf-8") as f:
+        f.write(text)
+    print(text)
 
 
 if __name__ == "__main__":
@@ -211,6 +236,8 @@ if __name__ == "__main__":
         log = os.path.join(sys.argv[2], "console.log")
         write_run(time.strftime("%Y-%m-%d_%H%M%S", time.localtime(os.path.getmtime(log))) + "_記録から", from_console(log), None, "from-console", sys.argv[2], "")
         rebuild()
+    elif len(sys.argv) >= 2 and sys.argv[1] == "compare":
+        compare(int(sys.argv[2]) if len(sys.argv) >= 3 else 40)
     elif len(sys.argv) >= 3 and sys.argv[1] == "run":
         sys.exit(run(sys.argv[2], sys.argv[3:]))
     else:
