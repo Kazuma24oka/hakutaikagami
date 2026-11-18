@@ -43,6 +43,7 @@ public partial class ProtoGame : Node3D
     Label status = null!;
     readonly Dictionary<string, Button> taskButtons = new();
     internal ProtoDebug Debug = null!;
+    internal ProtoScene Scene = null!;
 
     static readonly Color Takano = new(0.55f, 0.45f, 0.85f), Sawatari = new(0.88f, 0.42f, 0.28f), Neutral = new(0.85f, 0.85f, 0.8f);
     static Color HouseColor(string house) => house == "takano" ? Takano : house == "sawatari" ? Sawatari : house == "iwakiri" ? new Color(0.62f, 0.12f, 0.12f) : Neutral;
@@ -65,6 +66,7 @@ public partial class ProtoGame : Node3D
         marker = new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 10, BottomRadius = 10, Height = 1 }, MaterialOverride = Unshaded(new Color(1, 0.9f, 0.2f, 0.8f)), Visible = false }; AddChild(marker);
         BuildHud();
         Debug = new ProtoDebug(this); AddChild(Debug);
+        Scene = new ProtoScene(this); AddChild(Scene);
         RefreshUi(); PlaceCamera();
     }
 
@@ -145,6 +147,20 @@ public partial class ProtoGame : Node3D
         AddChild(new Label3D { Text = name, Position = pos + new Vector3(0, ProtoSiteModels.Height(model) + 14, 0), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0011f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = new Color(1, 0.96f, 0.85f) });
     }
 
+    // ちびコマ（甲冑アニメ工房のドット絵）：役と年で絵を選び、合戦の間は家の色の甲冑を着る（鷹野は紫、沢渡は朱、謀叛の岩切は黒漆）。
+    internal static string SpriteKey(ProtoWorld w, ProtoPerson p)
+    {
+        string kind = p.Role switch { "当主" or "嫡男" => "lord", "住職" => "monk", "庄屋" or "商人" or "賊" => "ronin", _ => "samurai" };
+        var data = w.Map.Data.People.FirstOrDefault(d => d.Id == p.Id); int age = data?.Age ?? 30;
+        string band = age < 30 ? "young" : age < 50 ? "prime" : "old"; int variants = band == "young" ? 3 : band == "prime" ? 4 : 2;
+        int n = Math.Abs(p.Id.Aggregate(17, (h, c) => unchecked(h * 31 + c))) % variants;
+        bool armored = p.Soldiers > 0 && w.War.Phase is "行軍" or "合戦" || p.House == "bandit";
+        string color = p.House switch { "takano" => "紫", "sawatari" => "朱", "iwakiri" => "黒漆", _ => "鉄錆" };
+        return armored ? $"generic/{kind}/{band}/{n}/war/{color}" : $"generic/{kind}/{band}/{n}/peace";
+    }
+    readonly Dictionary<string, DotOfficerActor> dots = new();
+    readonly Dictionary<string, Vector3> lastPos = new();
+
     void BuildActors()
     {
         foreach (var p in World.People)
@@ -153,6 +169,7 @@ public partial class ProtoGame : Node3D
             var body = new MeshInstance3D { Mesh = new SphereMesh { Radius = r, Height = r * 2 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = p.Player ? new Color(1, 1, 1) : HouseColor(p.House), EmissionEnabled = p.Player, Emission = new Color(0.4f, 0.4f, 0.2f) } };
             var label = new Label3D { Text = p.Name, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = p.Player ? 0.0011f : 0.0008f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = p.Player ? new Color(1, 1, 0.6f) : new Color(1, 1, 1) };
             AddChild(body); AddChild(label); actors[p.Id] = (body, label);
+            if (DotOfficerActor.Available) { var dot = new DotOfficerActor { OnTop = true }; AddChild(dot); dots[p.Id] = dot; }
         }
     }
 
@@ -213,7 +230,7 @@ public partial class ProtoGame : Node3D
             {
                 panel.AddChild(new Label { Text = "やること" });
                 foreach (var o in World.OffersHere) panel.AddChild(new Label { Text = $"{World.Person(o.Giver).Name}「{o.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
-                foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => { if (aid == "council:open") OpenCouncil(); else { Message = World.Do(aid); ShowGoal(); } }); }
+                foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
                 panel.AddChild(new HSeparator());
             }
             panel.AddChild(new Label { Text = "任務" });
@@ -226,7 +243,7 @@ public partial class ProtoGame : Node3D
             if (near.Length > 0)
             {
                 panel.AddChild(new HSeparator()); panel.AddChild(new Label { Text = "近くの人" });
-                foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "話す：" + n.Name, () => Message = World.Do("talk:" + nid)); }
+                foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "話す：" + n.Name, () => Say(World.Do("talk:" + nid), nid)); }
             }
         }
         foreach (var t in open)
@@ -315,7 +332,7 @@ public partial class ProtoGame : Node3D
             if (World.Second >= skipUntil) skipUntil = 0;
             dirty = true; UpdateActors(); PlaceCamera(); RefreshUi(); SaveGame(); return;
         }
-        bool running = !Debug.NoteOpen && (World.Player.Moving || WaitUntil > World.Second);
+        bool running = !Debug.NoteOpen && !Scene.Open && (World.Player.Moving || WaitUntil > World.Second);
         if (running)
         {
             acc += delta * Speed; int n = Math.Min((int)acc, 5000); acc -= n;
@@ -348,6 +365,18 @@ public partial class ProtoGame : Node3D
             label.Text = unit ? $"{p.Name}　兵{p.Soldiers}" : p.Name;
             float grow = unit ? 1 + MathF.Sqrt(p.Soldiers) / 8 : 1, scale = Math.Max(1, distance / 450), r = (p.Player ? 7 : 5) * scale * grow; var pos = ToScene(p.X, p.Y) + new Vector3(0, r, 0);
             body.Position = pos; body.Scale = Vector3.One * scale * grow; label.Position = pos + new Vector3(0, r + distance * 0.035f, 0);
+            if (dots.TryGetValue(p.Id, out var dot) && dot.Apply(SpriteKey(World, p)))
+            {
+                // ちびコマ：足元を地面に置き、近づいても遠ざかっても見える大きさにする。歩く・戦う・止まるで動きを変える。
+                body.Visible = false; dot.Visible = seen;
+                var foot = ToScene(p.X, p.Y); float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
+                dot.Position = foot;
+                string anim = p.Doing.Contains("戦って") ? "attack" : p.Moving ? "walk" : p.Doing.Contains("敗走") ? "damage" : "idle";
+                dot.Freeze(anim, Time.GetTicksMsec() / 1000.0 + p.Id.Length * 0.37);
+                if (lastPos.TryGetValue(p.Id, out var before)) dot.Face(foot - before, Camera);
+                lastPos[p.Id] = foot;
+                label.Position = foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
+            }
         }
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
         foreach (var mk in World.Markers)
@@ -379,16 +408,28 @@ public partial class ProtoGame : Node3D
         for (int i = 0; i < scoutDots.Count; i++) { scoutDots[i].Visible = i < live.Length; if (i < live.Length) { float sc = Math.Max(1, distance / 450); scoutDots[i].Position = ToScene(live[i].X, live[i].Y) + new Vector3(0, 3 * sc, 0); scoutDots[i].Scale = Vector3.One * sc; } }
     }
 
-    // ---- 軍議の窓 ----
-    Window? councilWindow;
+    // ---- 話す場面 ----
+    // 返事に台詞（「」）があれば話す場面を前に出す。受けるときは、頼む人の口上から。
+    internal void Act(string aid)
+    {
+        if (aid == "council:open") { OpenCouncil(); return; }
+        var lines = new List<(string, string)>();
+        if (aid.StartsWith("accept:") && World.Tasks.FirstOrDefault(t => t.Id == aid[7..]) is { } task && task.Speech != "") lines.Add((task.Giver, task.Speech));
+        var result = World.Do(aid); ShowGoal();
+        if (ProtoScene.Parse(World, result) is { } said) lines.Add(said); else Message = result;
+        if (lines.Count > 0) { Message = ""; Scene.Show(lines, [World.Player.Id]); }
+    }
+    void Say(string result, string who)
+    {
+        if (ProtoScene.Parse(World, result) is { } said) Scene.Show([said], [World.Player.Id, who]); else Message = result;
+    }
+
+    // ---- 軍議（話す場面の上で、意見を聞いてから選ぶ） ----
     internal void OpenCouncil()
     {
-        if (councilWindow != null || !World.CouncilOpen) return;
+        if (Scene.Open || !World.CouncilOpen) return;
         var view = World.Council();
-        var w = new Window { Title = "軍議", Size = new Vector2I(760, 520), Exclusive = true, Transient = true };
-        var box = new VBoxContainer { Theme = new Theme { DefaultFontSize = 18 } }; box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 12; box.OffsetTop = 12; box.OffsetRight = -12; box.OffsetBottom = -12; w.AddChild(box);
-        foreach (var line in view.Opinions) box.AddChild(new Label { Text = line, AutowrapMode = TextServer.AutowrapMode.WordSmart });
-        box.AddChild(new HSeparator());
+        var box = new VBoxContainer();
         OptionButton Choice(string title, string[] items, int pick)
         {
             var row = new HBoxContainer(); box.AddChild(row); row.AddChild(new Label { Text = title, CustomMinimumSize = new Vector2(140, 0) });
@@ -398,9 +439,17 @@ public partial class ProtoGame : Node3D
         var dep = Choice("出立", view.Departures, 1);
         var sig = Choice("合図", view.Signals, 0);
         var ok = new Button { Text = "決める" }; box.AddChild(ok);
-        ok.Pressed += () => { Message = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected]); w.QueueFree(); councilWindow = null; RefreshUi(); };
-        w.CloseRequested += () => { w.QueueFree(); councilWindow = null; };
-        councilWindow = w; AddChild(w); w.PopupCentered();
+        ok.Pressed += () =>
+        {
+            var reply = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected]);
+            Scene.Close();
+            var after = new List<(string, string)>();
+            if (ProtoScene.Parse(World, reply) is { } r) after.Add(r);
+            if (World.OpenTasks.FirstOrDefault(t => t.Kind == "muster") is { } m) after.Add((m.Giver, m.Speech));
+            if (after.Count > 0) Scene.Show(after, [World.Player.Id]);
+        };
+        var lines = view.Opinions.Select(o => ProtoScene.Parse(World, o.Replace("（大将）", ""))).Where(x => x != null).Select(x => x!.Value).ToList();
+        Scene.Show(lines, [World.Player.Id], box);
     }
 
     void DrawPath()

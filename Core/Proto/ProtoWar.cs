@@ -71,7 +71,7 @@ public sealed partial class ProtoWorld
         if (day == 2 && HourOfDay == 5 && !Flag("lord-dead"))
         {
             Set("lord-dead"); lord.Active = false; lord.Path = []; lord.PathIndex = 0;
-            Heads["takano"] = Heir;
+            Heads["takano"] = Heir; Person(Heir).Role = "当主";
             var heir = Person(Heir); var castle = Map.Site("takano-castle");
             Happen("lord-dead", "鷹野義正が病で亡くなり、鷹野正之が家を継いだ。", castle.X * 100L, castle.Y * 100L, heir, Person(Karou));
             var notice = Send(heir, Katsumoto, "父義正が身罷った。これよりは正之が鷹野の家を継ぐ。変わらぬ忠勤を頼む。", "death-notice");

@@ -10,7 +10,7 @@ public sealed class ProtoPerson
     public required string Id { get; init; }
     public required string Name { get; init; }
     public required string House { get; set; } // 謀叛で変わる
-    public required string Role { get; init; }
+    public required string Role { get; set; } // 家督で変わる
     public required string Home { get; init; }
     public string[] Visits { get; init; } = [];
     public bool Player { get; init; }
@@ -252,13 +252,13 @@ public sealed partial class ProtoWorld
 
     // ---- 保存 ----
     // 世界をまるごと書き出す。読み込むと、続けて進めた結果が保存しなかった場合と同じになる。
-    public sealed record SavedPerson(string Id, bool Active, long X, long Y, long[][] Path, int PathIndex, string? Goal, string Doing, long HurtUntil, string House = "", int Soldiers = 0, int Morale = 100, int Loyalty = 70);
+    public sealed record SavedPerson(string Id, bool Active, long X, long Y, long[][] Path, int PathIndex, string? Goal, string Doing, long HurtUntil, string House = "", int Soldiers = 0, int Morale = 100, int Loyalty = 70, string Role = "");
     public sealed record Saved(int Schema, long Second, int LetterSeq, int TaskSeq, int FactSeq, SavedPerson[] People, ProtoLetter[] Letters, ProtoTask[] Tasks, ProtoEvent[] Journal,
         ProtoFact[] Facts, ProtoAppointment[] Appointments, Dictionary<string, string[]> Known, Dictionary<string, long> Flags, Dictionary<string, int> Favors, int Merit, int Money, int Rank,
         Dictionary<string, string>? Heads = null, ProtoWarState? War = null, ProtoMarker[]? Markers = null, ProtoReport[]? Reports = null, ProtoScout[]? Scouts = null, int ScoutSeq = 0);
 
     public Saved Save() => new(3, Second, letterSeq, taskSeq, factSeq,
-        People.Select(p => new SavedPerson(p.Id, p.Active, p.X, p.Y, p.Path.Select(q => new[] { q.X, q.Y }).ToArray(), p.PathIndex, p.Goal, p.Doing, p.HurtUntil, p.House, p.Soldiers, p.Morale, p.Loyalty)).ToArray(),
+        People.Select(p => new SavedPerson(p.Id, p.Active, p.X, p.Y, p.Path.Select(q => new[] { q.X, q.Y }).ToArray(), p.PathIndex, p.Goal, p.Doing, p.HurtUntil, p.House, p.Soldiers, p.Morale, p.Loyalty, p.Role)).ToArray(),
         Letters.ToArray(), Tasks.Select(t => t.Copy()).ToArray(), Journal.ToArray(), Facts.ToArray(), Appointments.ToArray(),
         known.ToDictionary(k => k.Key, k => k.Value.OrderBy(x => x, StringComparer.Ordinal).ToArray()), new(flags), new(favors), Merit, Money, Rank,
         new(Heads), System.Text.Json.JsonSerializer.Deserialize<ProtoWarState>(System.Text.Json.JsonSerializer.Serialize(War))!, Markers.ToArray(), Reports.ToArray(),
@@ -271,6 +271,7 @@ public sealed partial class ProtoWorld
         foreach (var d in s.People)
         {
             var p = w.People.FirstOrDefault(x => x.Id == d.Id) ?? throw new InvalidDataException("保存にある人が地図にいません：" + d.Id);
+            if (d.Role != "") p.Role = d.Role;
             p.House = d.House; p.Soldiers = d.Soldiers; p.Morale = d.Morale; p.Loyalty = d.Loyalty;
             p.Active = d.Active; p.X = d.X; p.Y = d.Y; p.Path = d.Path.Select(q => (q[0], q[1])).ToList(); p.PathIndex = d.PathIndex; p.Goal = d.Goal; p.Doing = d.Doing; p.HurtUntil = d.HurtUntil;
         }

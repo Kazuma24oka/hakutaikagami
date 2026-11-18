@@ -61,5 +61,15 @@ public partial class DotOfficerActor : Node3D
         sprite.FlipH=direction.Dot(camera.GlobalBasis.X)>0;
     }
     public bool FacingRight=>sprite.FlipH;
+    // 建物に隠れても見えるように、いつも手前に描く（試作版の地図、2026-11-18）。
+    public bool OnTop{get=>sprite.NoDepthTest;set=>sprite.NoDepthTest=value;}
+    // 話す場面などの2Dの絵に使う1コマ（試作版の会話の場面、2026-11-18）。
+    public static AtlasTexture? Frame(string key,string anim="idle",int col=0)
+    {
+        var index=Index();if(index==null||!index.TryGetValue(key,out var s))return null;
+        if(!textures.TryGetValue(s.File,out var tex)){tex=ImageTexture.CreateFromImage(Image.LoadFromFile(ProjectSettings.GlobalizePath(Root+s.File)));textures[s.File]=tex;}
+        int row=Math.Max(0,Array.IndexOf(s.Anims,s.Anims.Contains(anim)?anim:"idle"));
+        return new AtlasTexture{Atlas=tex,Region=new Rect2(col*s.W,row*s.H,s.W,s.H)};
+    }
     public Rect2 Region=>sprite.RegionRect;
 }
