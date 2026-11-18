@@ -2,6 +2,10 @@
 
 2026-10-31 までの工程記録は [Docs/Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md](../Archive/CURRENT_STAGE_HISTORY_TO_2026-10-31.md)、2026-11-13 までの製品受入と工程の実測の入口は [Docs/Archive/CURRENT_STAGE_ACCEPTANCE_TO_2026-11-13.md](../Archive/CURRENT_STAGE_ACCEPTANCE_TO_2026-11-13.md) にある。各工程の詳しい完成条件・検証・統合の記録は Docs/Design/〈工程名〉V1/ にある。
 
+## 2026-11-18：本作業は保留、試作版を優先
+- 試し遊びの後、ユーザーの判断で進捗表100%の工程を S12（試し遊び待ち、率は progress.json のまま）で止め、小さな試作版で遊びの芯を作り直している。ブランチは prototype/small-world。進め方と戻り方は [PROTOTYPE_TRACK.md](PROTOTYPE_TRACK.md)。
+- 2026-11-18 の時点の本作業の内容は main に統合した（全件の検査の記録は D:_プロジェクト別\百代鏡\検証記録6-11-18_全件）。戻るときは prototype/claude-mainline に切り替えて origin/main を取り込み、下の S12 から続ける。
+
 ## 進捗表100%へ（2026-11-12 ユーザー指示「次で100％になるまで進めてほしい」）
 
 - **工程表の正本は [PLAN_TO_100.json](PLAN_TO_100.json)**（2026-11-16 作成、2026-11-17 に S07B を足し、S09 を S09A〜S09E に分けて19工程、60枠すべてを含む）。今の率・次の工程・決まりの違反は `python Scripts/plan_to_100.py`（`--check` で確かめ）。会話の開始・再開・圧縮の後は .claude/settings.json の SessionStart でこの出力が自動で入る。

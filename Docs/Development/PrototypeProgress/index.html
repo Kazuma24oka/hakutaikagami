@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>試作版の進捗</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--text:#2b2a27;--muted:#6b6962;--line:#ddd9cf;--done:#2f7d4f;--doneBg:#e3f2e8;--open:#9a5b12;--openBg:#fbefdc;--idea:#4b55a8;--ideaBg:#e8eafa;--accent:#3a3f8f}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1c1a;--card:#272623;--text:#ece9e1;--muted:#a6a39a;--line:#3a3833;--done:#7fd3a0;--doneBg:#20392a;--open:#f0b866;--openBg:#3b2d17;--idea:#a9b0f2;--ideaBg:#272b4a;--accent:#a9b0f2}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Yu Gothic UI","Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.7}
+main{max-width:980px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:24px;font-weight:600;margin:0 0 4px}
+h2{font-size:18px;font-weight:600;margin:32px 0 10px}
+.sub{color:var(--muted);font-size:14px;margin:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.tile b{display:block;font-size:28px;font-weight:600}
+.tile span{color:var(--muted);font-size:13px}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--done)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px}
+th{font-size:13px;color:var(--muted);font-weight:500}
+td:nth-child(3){white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.done{color:var(--done);background:var(--doneBg)}.open{color:var(--open);background:var(--openBg)}.idea{color:var(--idea);background:var(--ideaBg)}
+.note{color:var(--muted);font-size:13px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:4px 12px;cursor:pointer}
+.filters button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.flow div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.flow h3{font-size:15px;font-weight:600;margin:0 0 6px}
+.flow ol{margin:0;padding-left:20px;font-size:14px}
+code{font-family:Consolas,monospace;font-size:13px;background:var(--bg);padding:1px 5px;border-radius:4px}
+@media (max-width:640px){th:nth-child(4),td:nth-child(4){display:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>試作版の進捗</h1>
+<p class="sub">ブランチ <code>prototype/small-world</code>　・　本作業（進捗表100%）は保留中　・　最終更新 <span id="updated"></span></p>
+
+<div class="tiles">
+  <div class="tile"><b id="nDone"></b><span>できた</span><div class="bar"><i id="barDone"></i></div></div>
+  <div class="tile"><b id="nOpen"></b><span>残っている所</span></div>
+  <div class="tile"><b id="nIdea"></b><span>次の候補（決めるのはユーザー）</span></div>
+</div>
+
+<h2>項目</h2>
+<div class="filters" id="filters"></div>
+<table>
+  <thead><tr><th>状態</th><th>項目</th><th>日付</th><th>メモ</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+
+<h2>ブランチの行き来</h2>
+<div class="flow">
+  <div><h3>試作版を進める（今）</h3><ol><li><code>git switch prototype/small-world</code></li><li>触る → 印をためて送る → 直す → 確かめる</li><li>関係する検査を通して commit・push</li></ol></div>
+  <div><h3>本作業へ戻る</h3><ol><li>試作版を commit・push</li><li><code>git switch prototype/claude-mainline</code></li><li><code>git merge origin/main</code></li><li>CURRENT_STAGE.md と PLAN_TO_100.json の S12 から</li></ol></div>
+  <div><h3>試作版の成果を本作業へ入れる</h3><ol><li>ユーザーが入れると決める</li><li>試作版のブランチを PR で main へ</li><li>本作業のブランチで <code>git merge origin/main</code></li></ol></div>
+</div>
+<p class="note">詳しくは Docs/Development/PROTOTYPE_TRACK.md。</p>
+</main>
+<script>
+const updated = "2026-11-18";
+const items = [
+  {s:"done", t:"軽い土台：地図・拠点・地形・人をデータで書く", d:"2026-11-18", m:"城3（鷹野家2・沢渡家1）・村2・寺・町・山2・森・川と浅瀬・道。武将10人と庄屋・住職・商人4人"},
+  {s:"done", t:"地面を押してそこへ歩く", d:"2026-11-18", m:"道は速く、森は4分の1、山はさらに遅く上りの分も時間がかかる。川は浅瀬だけ"},
+  {s:"done", t:"任務のボタン（行き先と着く時刻）で自動で向かう", d:"2026-11-18", m:"見込みの時刻と実際に着いた時刻が同じ"},
+  {s:"done", t:"書状を人が運ぶ", d:"2026-11-18", m:"本人が届けて返書を預かる。相手の使番が歩いて届け、近くにいれば見たと記録に残る"},
+  {s:"done", t:"近くの人だけ見える", d:"2026-11-18", m:"350m 以内か同じ拠点"},
+  {s:"done", t:"時間は歩く間と待つ間だけ進む", d:"2026-11-18", m:"速さは10・30・60・120倍、1時間待つ、止まる"},
+  {s:"done", t:"確認用の窓口", d:"2026-11-18", m:"このパソコンの中だけ。画面の絵・状態を読み、操作を送れる"},
+  {s:"done", t:"印：別の窓に書いてためる、選んで送る", d:"2026-11-18", m:"絵は窓を開く前の画面。書いている間は時間が止まる"},
+  {s:"done", t:"自動の保存と「続きから」", d:"2026-11-18", m:"ゲーム内の10分ごと・着いた時・閉じる時。前の保存を一つ残す"},
+  {s:"done", t:"×で閉じる", d:"2026-11-18", m:"スタート画面の設定が残って閉じなかった"},
+  {s:"open", t:"城の中に人が集まると名前が重なる", d:"", m:""},
+  {s:"open", t:"地面のマス目がはっきり見える", d:"", m:"20m の格子をそのまま描いている"},
+  {s:"open", t:"話す内容が一言だけ", d:"", m:""},
+  {s:"open", t:"スタート画面から入って×で閉じる流れの確かめ", d:"", m:"Claude の側では画面を押せないため未実施"},
+  {s:"idea", t:"ユーザーの試し遊びの印を受けて直す", d:"", m:"送られた束から"},
+  {s:"idea", t:"NPC の日課をもっと見える形にする", d:"", m:"何をしに行くのかが分かるように"},
+  {s:"idea", t:"本作業の仕組みを試作版へ移す", d:"", m:"合戦・調略・家中・内政など。どれから入れるかはユーザーが決める"},
+];
+const names = {done:"できた", open:"残っている所", idea:"次の候補"};
+let filter = "all";
+function render(){
+  const rows = document.getElementById("rows"); rows.innerHTML = "";
+  for (const i of items.filter(i => filter === "all" || i.s === filter)){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><span class="tag ${i.s}">${names[i.s]}</span></td><td></td><td class="note">${i.d}</td><td class="note"></td>`;
+    tr.children[1].textContent = i.t; tr.children[3].textContent = i.m; rows.appendChild(tr);
+  }
+}
+const count = s => items.filter(i => i.s === s).length;
+document.getElementById("updated").textContent = updated;
+document.getElementById("nDone").textContent = count("done");
+document.getElementById("nOpen").textContent = count("open");
+document.getElementById("nIdea").textContent = count("idea");
+document.getElementById("barDone").style.width = Math.round(100 * count("done") / (count("done") + count("open"))) + "%";
+const f = document.getElementById("filters");
+for (const [k, v] of [["all","すべて"], ...Object.entries(names)]){
+  const b = document.createElement("button"); b.textContent = v; b.setAttribute("aria-pressed", k === filter);
+  b.onclick = () => { filter = k; [...f.children].forEach(x => x.setAttribute("aria-pressed", x === b)); render(); };
+  f.appendChild(b);
+}
+render();
+</script>
+</body>
+</html>

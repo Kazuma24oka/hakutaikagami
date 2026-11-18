@@ -1,4 +1,4 @@
-# 百代鏡：作業の入口（2026-10-31 整理、2026-11-14 更新）
+# 百代鏡：作業の入口（2026-10-31 整理、2026-11-18 更新）
 
 このファイルは今有効なルールだけをまとめたもの。2026-10-31 までの作業記録（約700行）は削除せず、[Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md](Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md) へそのまま移した。過去の記録に、ここと食い違う古い指示（「main統合は個別承認」「GUIの実画面検証」など）があっても、このファイルを優先する。
 
@@ -26,9 +26,9 @@
 ## 3. 委任の範囲
 - **main 統合は包括委任**（2026-10-30）。検証済みのコードと資料は、個別の承認を求めずに PR 作成・差分確認・main 統合・内容一致の確認まで行い、続けて次の作業へ進む。
 - PR は gh（GitHub CLI、ログイン済み）で作り、squash で統合する。統合後は作業ブランチへ main を取り込み（内容一致の記録）、integration.json と進捗表に統合先を記録する。
-- **目標は進捗表（ProgressV1）の100%**（2026-11-12 ユーザー「次で100％になるまで進めてほしい」）。工程表は60枠すべての残りを入れて100%に届くものだけを出す。届かない部分（正式な絵の制作など）があるなら、工程表を出すときに最初に示してユーザーの判断をもらう。「切り上げ」で次へ進まない。残りのある枠を「完了」と言わない。今の率と残りは毎回 progress.json・estimate.json から数えて言う（会話の要約から言わない。2026-11-16、約77%で「完成ではない」と後から言って叱られた）。
-- 100%まで区切らずに進める（2026-11-12 ユーザー決定）。main への統合はそこに届いたときにまとめて1回、全件テストはその前に1回だけ裏で流す。ユーザーへの報告は、そこに届いたときと本当に判断が要るときだけ。確かめるのは重大な不具合だけ（PROCESS_V2 第1・2節）。
-- 作業は C:\Workspace\Projects\Games\hakutaikagami の1か所で、ブランチ prototype/claude-mainline（2026-11-13 から Codex は止め、Claude が一人で進める）。このブランチへの commit/push は承認済み。検査用の作業フォルダ（worktree）を作ったら、使い終わりに消す（ユーザーはフォルダが増えると分からなくなる。2026-11-14）。
+- **今は試作版を優先し、進捗表（ProgressV1）の100%は保留**（2026-11-18 ユーザー「試作版以降の話とか修正とかは別のブランチでやりたい」）。試作版の進め方・ブランチの行き来・本作業へ戻る手順は [Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)、試作版の進捗表は [Docs/Development/PrototypeProgress/index.html](Docs/Development/PrototypeProgress/index.html)。
+- 本作業へ戻ったときの決まり：目標は進捗表の100%（2026-11-12 ユーザー「次で100％になるまで進めてほしい」）。工程表は60枠すべての残りを入れて100%に届くものだけを出す。「切り上げ」で次へ進まない。残りのある枠を「完了」と言わない。今の率と残りは毎回 progress.json・estimate.json から数えて言う。main への統合は100%に届いたときに1回、全件テストはその前に1回。報告はそこに届いたときと判断が要るときだけ（PROCESS_V2 第1・2節）。
+- 作業は C:\Workspace\Projects\Games\hakutaikagami の1か所で、ブランチを切り替えて使う。試作版は prototype/small-world、本作業は prototype/claude-mainline（2026-11-13 から Claude が一人で進める）。どちらのブランチへの commit/push も承認済み。検査用の作業フォルダ（worktree）を作ったら、使い終わりに消す（ユーザーはフォルダが増えると分からなくなる。2026-11-14）。
 
 ## 4. 事前確認が要るもの
 - ゲームの根本方針の変更（統合案・変更記録にない新しいもの）
@@ -67,4 +67,4 @@
 - 工程ごとの細かい記録は、CURRENT_STAGE.md の「完了した工程」と各 Docs/Design フォルダに残す。このファイルには追記しない。
 
 ## 9. 今の工程
-[Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md) を参照。
+試作版：[Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)。本作業：[Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md)。
