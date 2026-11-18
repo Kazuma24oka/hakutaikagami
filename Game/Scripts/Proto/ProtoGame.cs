@@ -68,6 +68,7 @@ public partial class ProtoGame : Node3D
         Debug = new ProtoDebug(this); AddChild(Debug);
         Scene = new ProtoScene(this); AddChild(Scene);
         RefreshUi(); PlaceCamera();
+        if (FilmRoot != null) RunFilm();
     }
 
     static StandardMaterial3D Unshaded(Color c) => new() { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = c, Transparency = c.A < 1 ? BaseMaterial3D.TransparencyEnum.Alpha : BaseMaterial3D.TransparencyEnum.Disabled, NoDepthTest = false };
@@ -159,6 +160,33 @@ public partial class ProtoGame : Node3D
         return armored ? $"generic/{kind}/{band}/{n}/war/{color}" : $"generic/{kind}/{band}/{n}/peace";
     }
     readonly Dictionary<string, DotOfficerActor> dots = new();
+    // 部隊の足軽：兵10人につき1つ（最大15）、大将の後ろに隊列を組んでついてくる。兵種の並び（今は槍・鉄砲・弓）は TroopMix で決める。
+    // 騎馬などの兵種が増えたら、TroopMix と足軽の絵の名前（soldier/ashigaru/〈兵種〉/war/〈色〉）を足す。
+    readonly Dictionary<string, List<DotOfficerActor>> followers = new();
+    readonly Dictionary<string, Vector3> heading = new();
+    internal static string[] TroopMix(ProtoPerson p) => p.Skills.Contains("槍衾") ? ["yari", "yari", "yari", "yari", "teppo"] : ["yari", "yari", "teppo", "yari", "yumi"];
+    static string ColorOf(string house) => house switch { "takano" => "紫", "sawatari" => "朱", "iwakiri" => "黒漆", _ => "鉄錆" };
+    void DrawFollowers(ProtoPerson p, Vector3 foot, float px, bool show, string anim)
+    {
+        if (!followers.TryGetValue(p.Id, out var list)) followers[p.Id] = list = new();
+        int want = show ? Math.Clamp((p.Soldiers + 9) / 10, 0, 15) : 0;
+        var mix = TroopMix(p);
+        while (list.Count < want) { var d = new DotOfficerActor { OnTop = true }; AddChild(d); list.Add(d); }
+        // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
+        var dir = heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
+        var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
+        float gap = 26 * px * 0.55f;
+        for (int i = 0; i < list.Count; i++)
+        {
+            var d = list[i]; d.Visible = i < want; if (i >= want) continue;
+            d.Apply($"soldier/ashigaru/{mix[i % mix.Length]}/war/{ColorOf(p.House)}");
+            int row = i / 3 + 1, col = i % 3 - 1;
+            var at = foot + back * (gap * row) + side * (gap * col * 1.1f);
+            at.Y = HeightAt(at.X, at.Z);
+            d.PixelSize = px * 0.62f; d.Position = at; d.Freeze(anim, Time.GetTicksMsec() / 1000.0 + i * 0.21);
+            d.Face(dir, Camera);
+        }
+    }
     readonly Dictionary<string, Vector3> lastPos = new();
 
     void BuildActors()
@@ -373,8 +401,9 @@ public partial class ProtoGame : Node3D
                 dot.Position = foot;
                 string anim = p.Doing.Contains("戦って") ? "attack" : p.Moving ? "walk" : p.Doing.Contains("敗走") ? "damage" : "idle";
                 dot.Freeze(anim, Time.GetTicksMsec() / 1000.0 + p.Id.Length * 0.37);
-                if (lastPos.TryGetValue(p.Id, out var before)) dot.Face(foot - before, Camera);
+                if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(foot - before, Camera); var mv = foot - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
                 lastPos[p.Id] = foot;
+                DrawFollowers(p, foot, px, seen && unit, anim);
                 label.Position = foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
         }
@@ -425,6 +454,7 @@ public partial class ProtoGame : Node3D
     }
 
     // ---- 軍議（話す場面の上で、意見を聞いてから選ぶ） ----
+    internal (OptionButton Pos, OptionButton Dep, OptionButton Sig, Button Ok)? councilChoices;
     internal void OpenCouncil()
     {
         if (Scene.Open || !World.CouncilOpen) return;
@@ -439,6 +469,7 @@ public partial class ProtoGame : Node3D
         var dep = Choice("出立", view.Departures, 1);
         var sig = Choice("合図", view.Signals, 0);
         var ok = new Button { Text = "決める" }; box.AddChild(ok);
+        councilChoices = (pos, dep, sig, ok);
         ok.Pressed += () =>
         {
             var reply = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected]);

@@ -77,6 +77,8 @@ public partial class ProtoScene : CanvasLayer
     }
 
     void Advance() { if (index < lines.Count) { index++; ShowLine(); } }
+    public void Next() => Advance(); // 動画の台本から送る
+    public bool Choosing => Visible && final != null && final.GetParent() != null;
 
     public void Close()
     {

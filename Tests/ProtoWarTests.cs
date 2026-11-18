@@ -157,4 +157,25 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Log(w.Do(attack!.Id));
         cp.Expect(w.War.Phase == "合戦" && w.Facts.Any(f => f.Id == "nukegake:" + w.Player.Id), "合図の前に攻めると自分の抜け駆けになる");
     }
+
+    // 動画（Game/Scripts/Proto/ProtoFilm.cs）と同じ手順：訃報を自分で届けて説かずに戻り、軍議で南の丘・今夜・6時を選んで丘へ。合図で合戦になって決着がつく。
+    [Fact]
+    public void TheFilmsStoryReachesABattle()
+    {
+        using var cp = new Checkpoints("試作版の動画の筋", o);
+        var w = new ProtoWorld(Map);
+        w.Advance(2 * Day + 5 * Hour + 2 * 60 - w.Second);
+        var notice = w.OffersHere.First(t => t.Kind == "death-notice"); w.Do("accept:" + notice.Id);
+        w.GoToTask(notice.Id); w.Advance(w.TaskEta(notice)!.Value + 60); w.Do("step:" + notice.Id);
+        w.GoToTask(notice.Id); w.Advance(w.TaskEta(notice)!.Value + 60); w.Do("step:" + notice.Id);
+        while (!w.CouncilOpen && w.Second < 3 * Day) w.Advance(60);
+        cp.Expect(w.CouncilOpen, "軍議に加われる　" + ProtoWorld.Clock(w.Second));
+        cp.Log(w.DecideCouncil("south-hill", ProtoWorld.Departures[0], ProtoWorld.Signals[0]));
+        cp.Log($"出立 {ProtoWorld.Clock(w.War.DepartAt)}　合図 {ProtoWorld.Clock(w.War.SignalAt)}");
+        var muster = w.OpenTasks.First(t => t.Kind == "muster"); w.GoToTask(muster.Id);
+        int seen = w.Facts.Count;
+        while (w.War.Result == "" && w.Second < 4 * Day) { w.Advance(300); foreach (var f in w.Facts.Skip(seen)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count; }
+        cp.Log($"{ProtoWorld.Clock(w.Second)} 段階 {w.War.Phase} 合図 {w.War.Signaled} 結果 {w.War.Result}");
+        cp.Expect(w.War.Result != "", "決着がつく");
+    }
 }
