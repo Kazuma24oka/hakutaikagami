@@ -55,6 +55,6 @@
     { "id": "jion", "name": "慈恩", "house": "", "role": "住職", "home": "temple", "age": 60 },
     { "id": "tahei", "name": "太兵衛", "house": "takano", "role": "庄屋", "home": "west-village", "age": 48, "visits": ["town"] },
     { "id": "sakuemon", "name": "作右衛門", "house": "sawatari", "role": "庄屋", "home": "east-village", "age": 44, "visits": ["town"] },
-    { "id": "echigoya", "name": "越後屋", "house": "", "role": "商人", "home": "town", "age": 39 }
+    { "id": "echigoya", "name": "越後屋", "house": "", "role": "商人", "home": "town", "age": 39, "visits": ["east-village", "iwakiri-castle"] }
   ]
 }

@@ -69,7 +69,7 @@ public static class ProtoMove
     }
 
     // 1秒ぶん歩く。戻り値は着いたかどうか。
-    public static bool Step(ProtoMap map, ref long x, ref long y, List<(long X, long Y)> path, ref int index)
+    public static bool Step(ProtoMap map, ref long x, ref long y, List<(long X, long Y)> path, ref int index, int percent = 100)
     {
         double remaining = 1.0;
         while (remaining > 1e-9 && index < path.Count)
@@ -77,7 +77,7 @@ public static class ProtoMove
             var (tx, ty) = path[index]; double dx = tx - x, dy = ty - y, dist = Math.Sqrt(dx * dx + dy * dy);
             if (dist < 1) { x = tx; y = ty; index++; continue; }
             double ux = dx / dist, uy = dy / dist; long px = x + (long)Math.Round(ux * 100), py = y + (long)Math.Round(uy * 100);
-            double speed = ProtoMap.Speed(map.GroundAtCm(x, y)); if (speed <= 0) speed = 50;
+            double speed = ProtoMap.Speed(map.GroundAtCm(x, y)) * percent / 100.0; if (speed <= 0) speed = 50;
             double rise = Math.Abs(map.HeightAtCm(px, py) - map.HeightAtCm(x, y));
             double eff = speed * 100 / (Math.Sqrt(100 * 100 + rise * rise) + rise);
             double move = eff * remaining;
@@ -88,10 +88,10 @@ public static class ProtoMove
     }
 
     // 着くまでの秒数（本当に歩くのと同じ計算で数える）。
-    public static long Eta(ProtoMap map, (long X, long Y) from, List<(long X, long Y)> path, long limit = 12 * 3600)
+    public static long Eta(ProtoMap map, (long X, long Y) from, List<(long X, long Y)> path, long limit = 12 * 3600, int percent = 100)
     {
         long x = from.X, y = from.Y; int index = 0;
-        for (long s = 1; s <= limit; s++) if (Step(map, ref x, ref y, path, ref index)) return s;
+        for (long s = 1; s <= limit; s++) if (Step(map, ref x, ref y, path, ref index, percent)) return s;
         return limit;
     }
 }

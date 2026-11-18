@@ -95,6 +95,7 @@ public partial class ProtoDebug : Node
                 case "/all": reply.SetResult(Write(All())); return;
                 case "/walk": game.WalkTo(float.Parse(F("x")), float.Parse(F("y"))); break;
                 case "/click": game.ClickGround(new Vector2(float.Parse(F("x")), float.Parse(F("y")))); break;
+                case "/do": game.Message = w.Do(F("id")); game.RefreshUi(); break;
                 case "/press": if (!game.Buttons.TryGetValue(F("id"), out var b)) throw new ArgumentException("ボタンがありません：" + F("id")); b.EmitSignal(BaseButton.SignalName.Pressed); break;
                 case "/advance": { long s = long.Parse(F("s")); for (long i = 0; i < s; i++) { w.Step(); if (q.ContainsKey("untilArrive") && !w.Player.Moving) break; } game.RefreshUi(); break; }
                 case "/model": game.AddModel(F("kind"), q.TryGetValue("name", out var mn) ? mn : "", new Vector3(float.Parse(F("x")), game.HeightAt(float.Parse(F("x")), float.Parse(F("y"))), float.Parse(F("y"))), new Color(0.85f, 0.85f, 0.8f)); break;
@@ -122,7 +123,9 @@ public partial class ProtoDebug : Node
             clock = ProtoWorld.Clock(w.Second), second = w.Second, speed = game.Speed, camera = game.CameraText,
             player = new { p.Name, xM = p.X / 100.0, yM = p.Y / 100.0, ground = ProtoMap.Name(w.Map.GroundAtCm(p.X, p.Y)), site = w.SiteOf(p), p.Doing, moving = p.Moving },
             seen = w.Visible.Where(x => !x.Player).Select(x => new { x.Name, x.Role, xM = x.X / 100.0, yM = x.Y / 100.0, x.Doing }).ToArray(),
-            tasks = w.Tasks.Select(t => new { t.Id, t.Title, state = t.State.ToString() }).ToArray(),
+            tasks = w.Tasks.Where(t => t.State is TaskState.Open or TaskState.Offered).Select(t => new { t.Id, t.Title, state = t.State.ToString(), step = t.Current?.Text, giver = w.Person(t.Giver).Name }).ToArray(),
+            status = new { rank = w.RankName, merit = w.Merit, money = w.Money, hurt = w.Second < p.HurtUntil },
+            actions = w.Actions().Select(a => new { a.Id, a.Text }).ToArray(),
             carrying = w.Letters.Where(l => l.Carrier == p.Id && l.State == LetterState.Carried).Select(l => new { l.Id, to = w.Person(l.To).Name }).ToArray(),
             buttons = game.Buttons.Where(b => b.Value.IsInsideTree() && b.Value.IsVisibleInTree()).Select(b => new { id = b.Key, text = b.Value.Text, disabled = b.Value.Disabled }).ToArray(),
             message = game.Message,
@@ -138,6 +141,8 @@ public partial class ProtoDebug : Node
         {
             clock = ProtoWorld.Clock(w.Second),
             people = w.People.Select(x => new { x.Id, x.Name, x.Role, xM = x.X / 100.0, yM = x.Y / 100.0, site = w.SiteOf(x), x.Doing, x.Goal, moving = x.Moving }).ToArray(),
+            tasks = w.Tasks.Select(t => new { t.Id, t.Title, state = t.State.ToString(), step = t.Current?.Text }).ToArray(),
+            facts = w.Facts.Select(f => ProtoWorld.Clock(f.At) + " " + f.Text).ToArray(),
             letters = w.Letters.Select(l => new { l.Id, from = w.Person(l.From).Name, to = w.Person(l.To).Name, carrier = w.Person(l.Carrier).Name, state = l.State.ToString(), l.Body }).ToArray(),
         };
     }

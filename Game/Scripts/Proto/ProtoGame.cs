@@ -10,7 +10,8 @@ public partial class ProtoGame : Node3D
 {
     internal ProtoWorld World = null!;
     // 保存は自動：ゲーム内の10分ごと、着いた時、閉じる時。前の保存を一つ残す。
-    internal const string SavePath = "user://proto-save.json";
+    // 確かめる側（Claude）は HAKUTAI_PROTO_SAVE で別の保存を使い、遊ぶ人の保存に触らない。
+    internal static string SavePath => System.Environment.GetEnvironmentVariable("HAKUTAI_PROTO_SAVE") is { Length: > 0 } custom ? custom : "user://proto-save.json";
     internal static bool Fresh;
     internal static bool HasSave => FileAccess.FileExists(SavePath);
     internal void SaveGame()
@@ -35,7 +36,9 @@ public partial class ProtoGame : Node3D
     MeshInstance3D pathLine = null!, marker = null!;
     ImmediateMesh pathMesh = null!;
     Label clock = null!, foot = null!, journal = null!, message = null!;
-    VBoxContainer tasks = null!, nearby = null!;
+    VBoxContainer panel = null!;
+    Label status = null!;
+    readonly Dictionary<string, Button> taskButtons = new();
     internal ProtoDebug Debug = null!;
 
     static readonly Color Takano = new(0.55f, 0.45f, 0.85f), Sawatari = new(0.88f, 0.42f, 0.28f), Neutral = new(0.85f, 0.85f, 0.8f);
@@ -44,7 +47,11 @@ public partial class ProtoGame : Node3D
     public override void _Ready()
     {
         GetTree().AutoAcceptQuit = true; // スタート画面は閉じる前に保存を待つため×を止めている。試作版では×でそのまま閉じる。
-        var map = ProtoMap.Load(); World = !Fresh && FileAccess.FileExists(SavePath) ? ProtoWorld.Load(map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath(SavePath)), ProtoMap.Json)!) : new ProtoWorld(map); Fresh = false; SaveGame();
+        var map = ProtoMap.Load(); World = null!;
+        if (!Fresh && FileAccess.FileExists(SavePath))
+            try { World = ProtoWorld.Load(map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath(SavePath)), ProtoMap.Json)!); }
+            catch (Exception) { var old = ProjectSettings.GlobalizePath(SavePath); System.IO.File.Copy(old, old + ".old-" + DateTime.Now.ToString("yyyyMMddHHmmss"), true); } // 版の違う保存は残して、はじめから
+        World ??= new ProtoWorld(map); Fresh = false; SaveGame();
         var env = new WorldEnvironment { Environment = new Godot.Environment { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color(0.62f, 0.75f, 0.86f), AmbientLightSource = Godot.Environment.AmbientSource.Color, AmbientLightColor = new Color(0.75f, 0.75f, 0.75f), AmbientLightEnergy = 0.6f } };
         AddChild(env);
         AddChild(new DirectionalLight3D { RotationDegrees = new Vector3(-50, -30, 0), LightEnergy = 1.1f });
@@ -151,20 +158,20 @@ public partial class ProtoGame : Node3D
         var root = new Control { MouseFilter = Control.MouseFilterEnum.Ignore }; root.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(root);
         var theme = new Theme { DefaultFontSize = 20 }; root.Theme = theme;
         var top = new PanelContainer(); top.SetAnchorsPreset(Control.LayoutPreset.TopWide); root.AddChild(top);
-        var bar = new HBoxContainer(); bar.AddThemeConstantOverride("separation", 14); top.AddChild(bar);
-        clock = new Label(); bar.AddChild(clock); foot = new Label(); bar.AddChild(foot);
+        var bar = new HBoxContainer(); bar.AddThemeConstantOverride("separation", 8); top.Theme = new Theme { DefaultFontSize = 17 }; top.AddChild(bar);
+        clock = new Label(); bar.AddChild(clock); foot = new Label(); bar.AddChild(foot); status = new Label(); bar.AddChild(status);
         bar.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, MouseFilter = Control.MouseFilterEnum.Ignore });
         foreach (var v in new[] { 10, 30, 60, 120 }) Add(bar, "speed-" + v, v + "倍", () => { Speed = v; RefreshUi(); });
         Add(bar, "wait", "1時間待つ", () => { WaitUntil = World.Second + 3600; });
+        Add(bar, "morning", "翌朝まで", () => { long d = ProtoWorld.Day; WaitUntil = (World.Second - 7 * 3600) / d * d + d + 7 * 3600; });
         Add(bar, "stop", "止まる", () => { World.Stop(); WaitUntil = 0; marker.Visible = false; RefreshUi(); });
         bar.AddChild(new VSeparator());
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
 
-        var side = new PanelContainer { CustomMinimumSize = new Vector2(400, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -410; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
+        var side = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
         var col = new VBoxContainer(); side.AddChild(col);
-        col.AddChild(new Label { Text = "任務" }); tasks = new VBoxContainer(); col.AddChild(tasks);
-        col.AddChild(new HSeparator()); col.AddChild(new Label { Text = "近くの人" }); nearby = new VBoxContainer(); col.AddChild(nearby);
+        panel = col;
 
         var bottom = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 760; root.AddChild(bottom);
         var log = new VBoxContainer(); bottom.AddChild(log);
@@ -179,27 +186,49 @@ public partial class ProtoGame : Node3D
         return b;
     }
 
+    string panelKey = "";
     internal void RefreshUi()
     {
         var p = World.Player; var site = World.SiteOf(p);
         clock.Text = ProtoWorld.Clock(World.Second);
-        foot.Text = "足もと：" + ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
+        foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
+        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (World.Second < p.HurtUntil ? "　手傷" : "");
         foreach (var v in new[] { 10, 30, 60, 120 }) Buttons["speed-" + v].Disabled = Speed == v;
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
-        foreach (var c in tasks.GetChildren()) { tasks.RemoveChild(c); c.QueueFree(); }
-        foreach (var key in Buttons.Keys.Where(k => k.StartsWith("task:") || k.StartsWith("talk:") || k.StartsWith("hand:")).ToArray()) Buttons.Remove(key);
-        foreach (var t in World.Tasks.Where(t => t.State == TaskState.Open))
+        // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
+        var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
+        var key = string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id));
+        if (key != panelKey)
         {
-            var eta = World.TaskEta(t);
-            var text = World.SiteName(t.Site) + "へ　" + (eta == null ? "道がない" : "着くのは" + HourMinute(World.Second + eta.Value) + "ごろ");
-            tasks.AddChild(new Label { Text = t.Title });
-            var id = t.Id; Add(tasks, id, text, () => { if (World.GoToTask(id)) ShowGoal(); });
+            panelKey = key;
+            foreach (var c in panel.GetChildren()) { panel.RemoveChild(c); c.QueueFree(); }
+            foreach (var k in Buttons.Keys.Where(k => k.StartsWith("task:") || k.StartsWith("talk:") || k.StartsWith("act:")).ToArray()) Buttons.Remove(k);
+            if (actions.Length > 0)
+            {
+                panel.AddChild(new Label { Text = "やること" });
+                foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => { Message = World.Do(aid); ShowGoal(); }); }
+                panel.AddChild(new HSeparator());
+            }
+            panel.AddChild(new Label { Text = "任務" });
+            foreach (var t in open)
+            {
+                panel.AddChild(new Label { Text = t.Title + "　" + (t.Current?.Text ?? ""), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+                var id = t.Id; var b = Add(panel, "task:" + id, "", () => { if (World.GoToTask(id)) ShowGoal(); }); taskButtons[id] = b;
+            }
+            if (near.Length > 0)
+            {
+                panel.AddChild(new HSeparator()); panel.AddChild(new Label { Text = "近くの人" });
+                foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "話す：" + n.Name, () => Message = World.Do("talk:" + nid)); }
+            }
         }
-        foreach (var c in nearby.GetChildren()) { nearby.RemoveChild(c); c.QueueFree(); }
-        foreach (var l in World.Deliverable) { var lid = l.Id; Add(nearby, "hand:" + lid, "書状を渡す：" + World.Person(l.To).Name, () => Message = World.Hand(lid)); }
-        foreach (var n in World.Nearby) { var nid = n.Id; Add(nearby, "talk:" + nid, "話す：" + n.Name, () => Message = World.Talk(nid)); }
+        foreach (var t in open)
+        {
+            if (!taskButtons.TryGetValue(t.Id, out var b) || !IsInstanceValid(b)) continue;
+            var eta = World.TaskEta(t);
+            b.Text = World.TaskPlace(t) + "へ　" + (eta == null ? "道がない" : eta <= 5 ? "ここ" : "着くのは" + HourMinute(World.Second + eta.Value) + "ごろ");
+        }
         message.Text = Message;
-        journal.Text = string.Join("\n", World.Journal.TakeLast(5).Select(e => HourMinute(e.At) + "　" + e.Text));
+        journal.Text = string.Join((char)10, World.Journal.TakeLast(6).Select(e => HourMinute(e.At) + "　" + e.Text));
     }
     static string HourMinute(long s) => $"{s % ProtoWorld.Day / 3600}時{s % 3600 / 60:00}分";
 
