@@ -122,12 +122,16 @@ public partial class ProtoGame : Node3D
     {
         foreach (var s in World.Map.Data.Sites)
         {
-            float radius = s.Kind switch { "castle" => 14, "town" => 11, _ => 9 };
-            Color color = s.Kind switch { "castle" => HouseColor(s.House), "temple" => new Color(0.3f, 0.7f, 0.62f), "town" => new Color(0.92f, 0.66f, 0.25f), _ => new Color(0.62f, 0.58f, 0.5f) };
-            var pos = new Vector3(s.X, HeightAt(s.X, s.Y), s.Y);
-            AddChild(new MeshInstance3D { Mesh = new SphereMesh { Radius = radius, Height = radius * 2 }, Position = pos + new Vector3(0, radius * 0.6f, 0), MaterialOverride = new StandardMaterial3D { AlbedoColor = color, Roughness = 0.8f } });
-            AddChild(new Label3D { Text = s.Name, Position = pos + new Vector3(0, radius * 2.2f + 20, 0), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0011f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = new Color(1, 0.96f, 0.85f) });
+            // 城の段階（館・支城・本城）は、データに段階を持たせるまでの仮の割り当て。
+            string model = s.Kind switch { "castle" => s.Id switch { "takano-castle" => "honjo", "iwakiri-castle" => "shijo", _ => "yakata" }, "temple" => "tera", "shrine" => "jinja", "town" => "machi", _ => "mura" };
+            AddModel(model, s.Name, new Vector3(s.X, HeightAt(s.X, s.Y), s.Y), HouseColor(s.House));
         }
+    }
+
+    internal void AddModel(string model, string name, Vector3 pos, Color house)
+    {
+        var node = ProtoSiteModels.Build(model, house); node.Position = pos; AddChild(node);
+        AddChild(new Label3D { Text = name, Position = pos + new Vector3(0, ProtoSiteModels.Height(model) + 14, 0), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0011f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = new Color(1, 0.96f, 0.85f) });
     }
 
     void BuildActors()

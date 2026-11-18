@@ -97,6 +97,7 @@ public partial class ProtoDebug : Node
                 case "/click": game.ClickGround(new Vector2(float.Parse(F("x")), float.Parse(F("y")))); break;
                 case "/press": if (!game.Buttons.TryGetValue(F("id"), out var b)) throw new ArgumentException("ボタンがありません：" + F("id")); b.EmitSignal(BaseButton.SignalName.Pressed); break;
                 case "/advance": { long s = long.Parse(F("s")); for (long i = 0; i < s; i++) { w.Step(); if (q.ContainsKey("untilArrive") && !w.Player.Moving) break; } game.RefreshUi(); break; }
+                case "/model": game.AddModel(F("kind"), q.TryGetValue("name", out var mn) ? mn : "", new Vector3(float.Parse(F("x")), game.HeightAt(float.Parse(F("x")), float.Parse(F("y"))), float.Parse(F("y"))), new Color(0.85f, 0.85f, 0.8f)); break;
                 case "/speed": game.Speed = int.Parse(F("v")); break;
                 case "/camera": game.SetCamera(q.ContainsKey("distance") ? float.Parse(q["distance"]) : null, q.ContainsKey("yaw") ? float.Parse(q["yaw"]) : null, q.ContainsKey("pitch") ? float.Parse(q["pitch"]) : null); break;
                 case "/shot": { await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); var dir = Path.Combine(Root, "絵"); Directory.CreateDirectory(dir); var file = Path.Combine(dir, (q.TryGetValue("name", out var n) ? n : DateTime.Now.ToString("yyyyMMdd-HHmmss")) + ".png"); GetViewport().GetTexture().GetImage().SavePng(file); reply.SetResult(Write(new { file })); return; }
