@@ -71,10 +71,10 @@ public partial class NewGameFrontEnd : Control
     }
     void Conditions(){chosen=[];claims.Clear();preview=null;confirmed=null;selected=null;Clear("① 開始条件","");page.AddChild(new Label{Text="開始年"});var year=new OptionButton{Name="StartYear"};foreach(var y in HakutaiDb.StartYears)year.AddItem(y+"年");year.Select(System.Array.IndexOf(HakutaiDb.StartYears,startYear));year.ItemSelected+=i=>startYear=HakutaiDb.StartYears[i];page.AddChild(year);AddJudgmentConditions();
         // 全国1560年（百代鏡DBの家と武将、城の移動網）。登録武将と配置の調整は使わず、操作する武将を選ぶ画面へ進む。
-        national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");page.AddChild(scenarioChoice);
+        national=false;scenarioChoice=new();scenarioChoice.AddItem("試作の開始");scenarioChoice.AddItem("全国");scenarioChoice.Select(1);page.AddChild(scenarioChoice);
         // 試作の開始は1560年だけ。
         void SyncYear(){bool trial=scenarioChoice.Selected==0;year.Disabled=trial;if(trial){startYear=1560;year.Select(System.Array.IndexOf(HakutaiDb.StartYears,1560));}}scenarioChoice.ItemSelected+=_=>SyncYear();SyncYear();
-        Add(page,"next","登録武将の選択へ",()=>{if(scenarioChoice.Selected==1)BeginNational();else ChooseRegistered();});Add(page,"back","スタートへ",ShowMenu);}
+        Add(page,"next","武将を選ぶ",async()=>{if(scenarioChoice.Selected!=1){ChooseRegistered();return;}var b=buttons["next"];b.Text="準備中";b.Disabled=true;await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);Guard(BeginNational);});Add(page,"back","スタートへ",ShowMenu);}
     void BeginNational(){national=true;chosen=[];claims.Clear();var raw=NationalStart.Scenario(NationalStart.RevenueEdition,NationalSystems.ForYear(startYear));var request=new WorldSetupRequest([],[]);preview=NewGameSetup.Preview(raw,request);confirmed=NewGameSetup.Confirm(raw,request,preview);ChoosePerson();}
     void ChooseRegistered()
     {
