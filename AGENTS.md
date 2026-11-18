@@ -3,6 +3,7 @@
 このファイルは今有効なルールだけをまとめたもの。2026-10-31 までの作業記録（約700行）は削除せず、[Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md](Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md) へそのまま移した。過去の記録に、ここと食い違う古い指示（「main統合は個別承認」「GUIの実画面検証」など）があっても、このファイルを優先する。
 
 ## 1. 最初に読むもの
+0. [Docs/Development/OPEN_ITEMS.md](Docs/Development/OPEN_ITEMS.md)：約束の台帳。会話で「〜します」と言ったことは必ずここに書き、作業の前に読む。ここに無い約束はしない（2026-11-18 ユーザー指摘「口約束ばかりで、圧縮のたびに忘れ去ってなかったことにされる」）。
 1. [Docs/Development/PROCESS_V2.md](Docs/Development/PROCESS_V2.md)：開発の進め方（工程の単位・順番・画面の確認・全テスト・報告）。2026-10-31 ユーザー決定。
 2. [Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md) と工程表 [Docs/Development/PLAN_TO_100.json](Docs/Development/PLAN_TO_100.json)：100%までの工程と次の工程（`python Scripts/plan_to_100.py` で今の率と次の工程が出る）。
 3. [Docs/Development/OPERATING_POLICY.md](Docs/Development/OPERATING_POLICY.md)：役割・完成条件・検証・報告の基本。
