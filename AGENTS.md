@@ -4,6 +4,7 @@
 
 ## 1. 最初に読むもの
 0. [Docs/Development/OPEN_ITEMS.md](Docs/Development/OPEN_ITEMS.md)：約束の台帳。会話で「〜します」と言ったことは必ずここに書き、作業の前に読む。ここに無い約束はしない（2026-11-18 ユーザー指摘「口約束ばかりで、圧縮のたびに忘れ去ってなかったことにされる」）。
+0. [Docs/Development/FileLedger/ledger.tsv](Docs/Development/FileLedger/ledger.tsv)：全ファイルの台帳（判断・理由・根拠）。ファイルを足す・消す・役目を変えたら `python Scripts/file_ledger.py scan` で行を足し、判断と理由を書く。台帳に無いファイルや「未確認」があると Tests/FileLedgerTests.cs が失敗する（2026-11-18 ユーザー「ひとつも確認漏れを許しません。再現性がある仕組みに」）。新しい仕組みや資料を作る前に、台帳と Docs・Scripts を検索して、同じ役目のものが無いか確かめる。
 1. [Docs/Development/PROCESS_V2.md](Docs/Development/PROCESS_V2.md)：開発の進め方（工程の単位・順番・画面の確認・全テスト・報告）。2026-10-31 ユーザー決定。
 2. [Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md) と工程表 [Docs/Development/PLAN_TO_100.json](Docs/Development/PLAN_TO_100.json)：100%までの工程と次の工程（`python Scripts/plan_to_100.py` で今の率と次の工程が出る）。
 3. [Docs/Development/OPERATING_POLICY.md](Docs/Development/OPERATING_POLICY.md)：役割・完成条件・検証・報告の基本。

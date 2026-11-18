@@ -286,3 +286,6 @@ Docs/Design/NationalDistrictRevenueV1/runtime-local/
 
 # 検証記録（runtime-local）は D:\02_プロジェクト別\百代鏡\検証記録 に置き、ここはそこへのつなぎ（Scripts/link_runtime_local.py）。Git に入れない。
 runtime-local/
+
+# ファイルの台帳の事実（Scripts/file_ledger.py scan で作り直せる）
+/Docs/Development/FileLedger/facts.tsv

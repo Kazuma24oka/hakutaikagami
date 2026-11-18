@@ -13,5 +13,5 @@
 | 5 | 1分を超える長い検査にチェックポイント（途中の記録と途中の確かめ）を付ける | 11-18 | 和睦の検査だけ済 | #4 の決まりの中で、重い順に |
 | 6 | 重い検査の見直し（Docs/Development/TEST_TRIM_CANDIDATES.md） | 11-18 | 一部済・未検査 | 済：2件の重なった部分を削る、全国の重い22本に TurnSnapshotGuard.Off()、Away の準備を10ファイルで共有。未：これらを流して確かめる、全国の世界の共有、長い待ちの短縮 |
 | 7 | 検査の見張り（Scripts/test_watch.py）：回ごとの検査1つずつの時間、直近5回の中央値、警告、続きから、ターミナルに件数・長引き・チェックポイントを流す | 11-18 | 済（試作版のブランチ） | #4 で TEST_DURATIONS.md・test_tiers.py と一本化する |
-| 8 | Docs の整理：全ファイルの最終更新・参照元・重なりを一覧にし、書き直す／Archive へ移す候補を先に見せる（消さない） | 11-18 | 未 | 一覧を作ってユーザーに見せる |
+| 8 | 全ファイル（5882件）を確かめて整理する。漏れを許さない仕組み：台帳 Docs/Development/FileLedger/ledger.tsv、Scripts/file_ledger.py（scan/check/import/report）、Tests/FileLedgerTests.cs（台帳に無い・未確認があれば失敗） | 11-18 | 全件確認済み・整理はユーザーの承認待ち | 一覧 Docs/Development/FileLedger/review.html（消す523・移す530・手元だけ678・書き直す23）。承認されたまとまりから移す・消す。あわせて .claude/settings.json の会話の始まりの差し込み（今は plan_to_100）と、.github/workflows/officer-art-contract.yml の判断をもらう |
 | 9 | 試作版：残っている所（名前の重なり・地面のマス目・話す内容・出来事の場所の印・務めと事件の種類） | 11-18 | 未 | Docs/Development/PrototypeProgress/index.html が正本 |
