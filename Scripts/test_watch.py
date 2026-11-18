@@ -81,7 +81,7 @@ def run(out_dir, extra):
         print(f"続きから：前に通った {len(before)} 件、外す組 {len(skip)} / {len(classes)}")
     trx_name = "full.trx" if not before else f"rest-{int(time.time())}.trx"
     cmd = ["dotnet", "test", os.path.join(ROOT, "Tests", "HakutaiKagami.Tests.csproj"), "--logger", "trx;LogFileName=" + trx_name,
-           "--logger", "console;verbosity=normal", "--results-directory", out_dir] + filt + extra + ["--", "xUnit.LongRunningTestSeconds=60"]
+           "--logger", "console;verbosity=normal", "--results-directory", out_dir] + filt + extra + ["--", "xUnit.LongRunningTestSeconds=60", "xUnit.DiagnosticMessages=true"]
     done, failed, running = {n: True for n in before}, [], {}
     started = time.time()
     log = open(os.path.join(out_dir, "console.log"), "a", encoding="utf-8")
