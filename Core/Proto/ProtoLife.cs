@@ -88,6 +88,8 @@ public sealed partial class ProtoWorld
         }
         Bandits(day, hour);
         Dispute(day);
+        Wars();
+        Watch();
         Rewards();
         foreach (var p in People.Where(p => !p.Player && p.Active && p.HurtUntil > Second)) p.Doing = "手傷を負って休んでいる";
     }
@@ -108,7 +110,7 @@ public sealed partial class ProtoWorld
     // 朝7時、当主が城にいれば務めを出す。11時までに受けなければ家中の誰かが行く。
     void Duties(int day)
     {
-        var lord = Person(Lord); if (SiteOf(lord) != "takano-castle") return;
+        var lord = Person(HeadOf("takano")); var Lord = lord.Id; if (!lord.Active || SiteOf(lord) != "takano-castle") return;
         long until = At(day, 11), deadline = At(day, 19);
         Offer(Lord, "西の村と峠の見回り", "patrol", until, deadline, 3,
             new ProtoStep("visit", "西の村へ行く", "west-village"), new ProtoStep("visit", "峠へ行く", X: Pass.X, Y: Pass.Y), new ProtoStep("meet", "鷹野義正に報告する", "takano-castle", Lord));
@@ -134,6 +136,7 @@ public sealed partial class ProtoWorld
             case "patrol": Appointments.Add(new(Heir, "west-village", Second, Second + 2 * Hour, "見回りに来ている")); break;
             case "tax": Appointments.Add(new(Iguchi, "west-village", Second, Second + 2 * Hour, "年貢を受け取りに来ている")); break;
             case "dispute-reply": { var l = Letters.First(x => x.Tag == "dispute-reply"); l.Carrier = Karou; break; }
+            case "death-notice": { var l = Letters.First(x => x.Tag == "death-notice"); l.Carrier = Karou; break; }
         }
     }
 
@@ -158,7 +161,7 @@ public sealed partial class ProtoWorld
     // 勲功がたまると、当主のそばに行ったときに褒美と役目をもらう。
     void Rewards()
     {
-        var lord = Person(Lord); if (!Near(Player, lord)) return;
+        var lord = Person(HeadOf("takano")); var Lord = lord.Id; if (!Near(Player, lord)) return;
         if (Rank == 0 && Merit >= 8) { Rank = 1; Money += 500; Note($"{lord.Name}から、褒美に銭500文と馬を賜り、馬廻に取り立てられた。"); }
         else if (Rank == 1 && Merit >= 20) { Rank = 2; Money += 1000; Note($"{lord.Name}から、褒美に銭1000文を賜り、組頭に取り立てられた。"); }
         if (favors.TryGetValue(Lord, out var f) && f <= -15 && !Flag("scolded:" + DayIndex)) { Set("scolded:" + DayIndex); Note($"{lord.Name}「務めを怠るでない。」"); }
@@ -236,13 +239,15 @@ public sealed partial class ProtoWorld
         if (Flag("stakes") && !Flag("stakes-removed") && !Flag("skirmish-set") && Second >= At((int)flags["stakes-day"], 15))
         {
             Set("skirmish-set"); long d = flags["stakes-day"] + 1;
-            foreach (var id in new[] { Heir, Iguchi }) Appointments.Add(new(id, "west-village", d * Day + 9 * Hour, d * Day + 12 * Hour, "沢渡の者と睨み合っている"));
+            foreach (var id in new[] { Heir, Iguchi }.Where(id => Person(id).House == "takano")) Appointments.Add(new(id, "west-village", d * Day + 9 * Hour, d * Day + 12 * Hour, "沢渡の者と睨み合っている"));
             foreach (var id in new[] { Nobunao, Shiota }) Appointments.Add(new(id, "west-village", d * Day + 9 * Hour, d * Day + 12 * Hour, "境目に杭を打っている"));
             flags["skirmish-at"] = d * Day + 10 * Hour + 30 * 60;
         }
         if (flags.TryGetValue("skirmish-at", out var sa) && Second >= sa && !Flag("skirmish"))
         {
-            Set("skirmish"); var heir = Person(Heir); heir.HurtUntil = Second + 2 * Day; var v = Map.Site("west-village");
+            Set("skirmish"); var heir = Person(Heir); var v = Map.Site("west-village");
+            if (SiteOf(heir) != "west-village") return; // 合戦などで来られなかったら小競り合いは起きない
+            heir.HurtUntil = Second + 2 * Day;
             Happen("skirmish", "西の村で鷹野家と沢渡家の小競り合いがあり、鷹野正之が手傷を負った。", v.X * 100L, v.Y * 100L, heir, Person(Iguchi), Person(Nobunao), Person(Shiota));
         }
     }
@@ -281,6 +286,7 @@ public sealed partial class ProtoWorld
                 Note($"{to.Name}から、{Person(Lord).Name}あての返書を預かった。");
                 break;
             }
+            default: WarDelivered(l); break;
         }
         _ = from;
     }
@@ -291,6 +297,9 @@ public sealed partial class ProtoWorld
 
     public IEnumerable<ProtoAction> Actions()
     {
+        if (CouncilOpen) yield return new("council:open", "軍議に加わる");
+        if (CanPersuade) yield return new("persuade:katsumoto", "説き伏せる：岩切勝元");
+        if (CanScout) foreach (var pos in Map.Data.Positions!.Where(p => p.Id != "takano-castle")) yield return new("scout:" + pos.Id, "物見を出す：" + pos.Name);
         foreach (var t in OffersHere) { yield return new("accept:" + t.Id, "受ける：" + t.Title); yield return new("decline:" + t.Id, "断る：" + t.Title); }
         foreach (var t in OpenTasks)
         {
@@ -306,6 +315,9 @@ public sealed partial class ProtoWorld
     {
         var (kind, id) = (action[..action.IndexOf(':')], action[(action.IndexOf(':') + 1)..]);
         if (kind == "talk") return Talk(id);
+        if (kind == "persuade") return Persuade();
+        if (kind == "scout") return SendScout(id);
+        if (kind == "council") return "";
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)
         {

@@ -6,55 +6,474 @@
   "cellM": 20,
   "startHour": 7,
   "houses": [
-    { "id": "takano", "name": "鷹野家", "head": "takano-yoshimasa" },
-    { "id": "sawatari", "name": "沢渡家", "head": "sawatari-nobufusa" }
+    {
+      "id": "takano",
+      "name": "鷹野家",
+      "head": "takano-yoshimasa"
+    },
+    {
+      "id": "sawatari",
+      "name": "沢渡家",
+      "head": "sawatari-nobufusa"
+    }
   ],
   "sites": [
-    { "id": "takano-castle", "name": "鷹野城", "kind": "castle", "house": "takano", "x": 870, "y": 2200, "radiusM": 70 },
-    { "id": "iwakiri-castle", "name": "岩切城", "kind": "castle", "house": "takano", "x": 1730, "y": 530, "radiusM": 55 },
-    { "id": "sawatari-castle", "name": "沢渡城", "kind": "castle", "house": "sawatari", "x": 3470, "y": 1500, "radiusM": 70 },
-    { "id": "west-village", "name": "西の村", "kind": "village", "house": "takano", "x": 330, "y": 2650, "radiusM": 60 },
-    { "id": "east-village", "name": "東の村", "kind": "village", "house": "sawatari", "x": 3470, "y": 2550, "radiusM": 60 },
-    { "id": "temple", "name": "円照寺", "kind": "temple", "house": "", "x": 3200, "y": 350, "radiusM": 45 },
-    { "id": "town", "name": "市場町", "kind": "town", "house": "", "x": 2270, "y": 2120, "radiusM": 70 }
+    {
+      "id": "takano-castle",
+      "name": "鷹野城",
+      "kind": "castle",
+      "house": "takano",
+      "x": 870,
+      "y": 2200,
+      "radiusM": 70
+    },
+    {
+      "id": "iwakiri-castle",
+      "name": "岩切城",
+      "kind": "castle",
+      "house": "takano",
+      "x": 1730,
+      "y": 530,
+      "radiusM": 55
+    },
+    {
+      "id": "sawatari-castle",
+      "name": "沢渡城",
+      "kind": "castle",
+      "house": "sawatari",
+      "x": 3470,
+      "y": 1500,
+      "radiusM": 70
+    },
+    {
+      "id": "west-village",
+      "name": "西の村",
+      "kind": "village",
+      "house": "takano",
+      "x": 330,
+      "y": 2650,
+      "radiusM": 60
+    },
+    {
+      "id": "east-village",
+      "name": "東の村",
+      "kind": "village",
+      "house": "sawatari",
+      "x": 3470,
+      "y": 2550,
+      "radiusM": 60
+    },
+    {
+      "id": "temple",
+      "name": "円照寺",
+      "kind": "temple",
+      "house": "",
+      "x": 3200,
+      "y": 350,
+      "radiusM": 45
+    },
+    {
+      "id": "town",
+      "name": "市場町",
+      "kind": "town",
+      "house": "",
+      "x": 2270,
+      "y": 2120,
+      "radiusM": 70
+    }
   ],
   "terrain": {
     "mountains": [
-      { "x": 730, "y": 1250, "rx": 300, "ry": 240, "peakM": 140 },
-      { "x": 1080, "y": 1110, "rx": 230, "ry": 200, "peakM": 110 }
+      {
+        "x": 730,
+        "y": 1250,
+        "rx": 300,
+        "ry": 240,
+        "peakM": 140
+      },
+      {
+        "x": 1080,
+        "y": 1110,
+        "rx": 230,
+        "ry": 200,
+        "peakM": 110
+      },
+      {
+        "x": 1980,
+        "y": 820,
+        "rx": 150,
+        "ry": 120,
+        "peakM": 45
+      }
     ],
     "forests": [
-      { "x": 1500, "y": 1380, "rx": 260, "ry": 210 },
-      { "x": 1720, "y": 1170, "rx": 180, "ry": 140 }
+      {
+        "x": 1500,
+        "y": 1380,
+        "rx": 260,
+        "ry": 210
+      },
+      {
+        "x": 1720,
+        "y": 1170,
+        "rx": 180,
+        "ry": 140
+      }
     ],
     "rivers": [
-      { "widthM": 34, "points": [[2870, 0], [2670, 950], [2870, 1700], [2670, 2300], [2730, 3000]] }
+      {
+        "widthM": 34,
+        "points": [
+          [
+            2870,
+            0
+          ],
+          [
+            2670,
+            950
+          ],
+          [
+            2870,
+            1700
+          ],
+          [
+            2670,
+            2300
+          ],
+          [
+            2730,
+            3000
+          ]
+        ]
+      }
     ],
     "fords": [
-      { "x": 2800, "y": 1450, "radiusM": 30 }
+      {
+        "x": 2800,
+        "y": 1450,
+        "radiusM": 30
+      }
     ],
     "roads": [
-      { "widthM": 14, "points": [[870, 2200], [2270, 2120], [3470, 1500]] },
-      { "widthM": 12, "points": [[2270, 2120], [2470, 1500], [1730, 530]] },
-      { "widthM": 12, "points": [[1730, 530], [3200, 350]] },
-      { "widthM": 10, "points": [[870, 2200], [330, 2650]] },
-      { "widthM": 10, "points": [[3470, 1500], [3470, 2550]] }
+      {
+        "widthM": 14,
+        "points": [
+          [
+            870,
+            2200
+          ],
+          [
+            2270,
+            2120
+          ],
+          [
+            3470,
+            1500
+          ]
+        ]
+      },
+      {
+        "widthM": 12,
+        "points": [
+          [
+            2270,
+            2120
+          ],
+          [
+            2470,
+            1500
+          ],
+          [
+            1730,
+            530
+          ]
+        ]
+      },
+      {
+        "widthM": 12,
+        "points": [
+          [
+            1730,
+            530
+          ],
+          [
+            3200,
+            350
+          ]
+        ]
+      },
+      {
+        "widthM": 10,
+        "points": [
+          [
+            870,
+            2200
+          ],
+          [
+            330,
+            2650
+          ]
+        ]
+      },
+      {
+        "widthM": 10,
+        "points": [
+          [
+            3470,
+            1500
+          ],
+          [
+            3470,
+            2550
+          ]
+        ]
+      }
     ]
   },
   "people": [
-    { "id": "takano-yoshimasa", "name": "鷹野義正", "house": "takano", "role": "当主", "home": "takano-castle", "age": 46 },
-    { "id": "takano-masayuki", "name": "鷹野正之", "house": "takano", "role": "嫡男", "home": "takano-castle", "age": 19, "visits": ["west-village"] },
-    { "id": "kosaka-shigetada", "name": "小坂重忠", "house": "takano", "role": "家老", "home": "takano-castle", "age": 55, "visits": ["town"] },
-    { "id": "saeki-genzaburo", "name": "佐伯源三郎", "house": "takano", "role": "近習", "home": "takano-castle", "age": 22, "player": true },
-    { "id": "iwakiri-katsumoto", "name": "岩切勝元", "house": "takano", "role": "城主", "home": "iwakiri-castle", "age": 41, "visits": ["temple"] },
-    { "id": "iguchi-yashichi", "name": "井口弥七", "house": "takano", "role": "足軽頭", "home": "iwakiri-castle", "age": 33 },
-    { "id": "sawatari-nobufusa", "name": "沢渡信房", "house": "sawatari", "role": "当主", "home": "sawatari-castle", "age": 50 },
-    { "id": "sawatari-nobunao", "name": "沢渡信直", "house": "sawatari", "role": "弟", "home": "sawatari-castle", "age": 38, "visits": ["east-village"] },
-    { "id": "ono-tanomo", "name": "大野頼母", "house": "sawatari", "role": "家老", "home": "sawatari-castle", "age": 52, "visits": ["town"] },
-    { "id": "shiota-mondo", "name": "塩田主水", "house": "sawatari", "role": "使番", "home": "sawatari-castle", "age": 27 },
-    { "id": "jion", "name": "慈恩", "house": "", "role": "住職", "home": "temple", "age": 60 },
-    { "id": "tahei", "name": "太兵衛", "house": "takano", "role": "庄屋", "home": "west-village", "age": 48, "visits": ["town"] },
-    { "id": "sakuemon", "name": "作右衛門", "house": "sawatari", "role": "庄屋", "home": "east-village", "age": 44, "visits": ["town"] },
-    { "id": "echigoya", "name": "越後屋", "house": "", "role": "商人", "home": "town", "age": 39, "visits": ["east-village", "iwakiri-castle"] }
+    {
+      "id": "takano-yoshimasa",
+      "name": "鷹野義正",
+      "house": "takano",
+      "role": "当主",
+      "home": "takano-castle",
+      "age": 46,
+      "command": 70,
+      "valor": 55,
+      "wits": 65,
+      "loyalty": 100,
+      "temper": "慎重",
+      "soldiers": 0,
+      "skills": []
+    },
+    {
+      "id": "takano-masayuki",
+      "name": "鷹野正之",
+      "house": "takano",
+      "role": "嫡男",
+      "home": "takano-castle",
+      "age": 19,
+      "visits": [
+        "west-village"
+      ],
+      "command": 55,
+      "valor": 72,
+      "wits": 40,
+      "loyalty": 90,
+      "temper": "逸る",
+      "soldiers": 120,
+      "skills": [
+        "先駆け"
+      ]
+    },
+    {
+      "id": "kosaka-shigetada",
+      "name": "小坂重忠",
+      "house": "takano",
+      "role": "家老",
+      "home": "takano-castle",
+      "age": 55,
+      "visits": [
+        "town"
+      ],
+      "command": 68,
+      "valor": 50,
+      "wits": 72,
+      "loyalty": 85,
+      "temper": "慎重",
+      "soldiers": 100,
+      "skills": [
+        "物見上手"
+      ]
+    },
+    {
+      "id": "saeki-genzaburo",
+      "name": "佐伯源三郎",
+      "house": "takano",
+      "role": "近習",
+      "home": "takano-castle",
+      "age": 22,
+      "player": true,
+      "command": 45,
+      "valor": 55,
+      "wits": 50,
+      "loyalty": 80,
+      "temper": "普通",
+      "soldiers": 30,
+      "skills": []
+    },
+    {
+      "id": "iwakiri-katsumoto",
+      "name": "岩切勝元",
+      "house": "takano",
+      "role": "城主",
+      "home": "iwakiri-castle",
+      "age": 41,
+      "visits": [
+        "temple"
+      ],
+      "command": 72,
+      "valor": 62,
+      "wits": 70,
+      "loyalty": 45,
+      "temper": "慎重",
+      "soldiers": 150,
+      "skills": [
+        "城構え"
+      ]
+    },
+    {
+      "id": "iguchi-yashichi",
+      "name": "井口弥七",
+      "house": "takano",
+      "role": "足軽頭",
+      "home": "iwakiri-castle",
+      "age": 33,
+      "command": 50,
+      "valor": 70,
+      "wits": 35,
+      "loyalty": 60,
+      "temper": "逸る",
+      "soldiers": 80,
+      "skills": [
+        "槍衾"
+      ]
+    },
+    {
+      "id": "sawatari-nobufusa",
+      "name": "沢渡信房",
+      "house": "sawatari",
+      "role": "当主",
+      "home": "sawatari-castle",
+      "age": 50,
+      "command": 66,
+      "valor": 50,
+      "wits": 68,
+      "loyalty": 100,
+      "temper": "慎重",
+      "soldiers": 0,
+      "skills": []
+    },
+    {
+      "id": "sawatari-nobunao",
+      "name": "沢渡信直",
+      "house": "sawatari",
+      "role": "弟",
+      "home": "sawatari-castle",
+      "age": 38,
+      "visits": [
+        "east-village"
+      ],
+      "command": 60,
+      "valor": 68,
+      "wits": 45,
+      "loyalty": 85,
+      "temper": "逸る",
+      "soldiers": 100,
+      "skills": []
+    },
+    {
+      "id": "ono-tanomo",
+      "name": "大野頼母",
+      "house": "sawatari",
+      "role": "家老",
+      "home": "sawatari-castle",
+      "age": 52,
+      "visits": [
+        "town"
+      ],
+      "command": 55,
+      "valor": 40,
+      "wits": 75,
+      "loyalty": 85,
+      "temper": "慎重",
+      "soldiers": 0,
+      "skills": []
+    },
+    {
+      "id": "shiota-mondo",
+      "name": "塩田主水",
+      "house": "sawatari",
+      "role": "使番",
+      "home": "sawatari-castle",
+      "age": 27,
+      "command": 40,
+      "valor": 50,
+      "wits": 60,
+      "loyalty": 80,
+      "temper": "普通",
+      "soldiers": 0,
+      "skills": [
+        "物見上手"
+      ]
+    },
+    {
+      "id": "jion",
+      "name": "慈恩",
+      "house": "",
+      "role": "住職",
+      "home": "temple",
+      "age": 60
+    },
+    {
+      "id": "tahei",
+      "name": "太兵衛",
+      "house": "takano",
+      "role": "庄屋",
+      "home": "west-village",
+      "age": 48,
+      "visits": [
+        "town"
+      ]
+    },
+    {
+      "id": "sakuemon",
+      "name": "作右衛門",
+      "house": "sawatari",
+      "role": "庄屋",
+      "home": "east-village",
+      "age": 44,
+      "visits": [
+        "town"
+      ]
+    },
+    {
+      "id": "echigoya",
+      "name": "越後屋",
+      "house": "",
+      "role": "商人",
+      "home": "town",
+      "age": 39,
+      "visits": [
+        "east-village",
+        "iwakiri-castle"
+      ]
+    }
+  ],
+  "positions": [
+    {
+      "id": "south-hill",
+      "name": "南の丘",
+      "x": 1980,
+      "y": 820
+    },
+    {
+      "id": "forest-edge",
+      "name": "森の北の縁",
+      "x": 1720,
+      "y": 1010
+    },
+    {
+      "id": "road-mouth",
+      "name": "道の口",
+      "x": 2180,
+      "y": 1010
+    },
+    {
+      "id": "takano-castle",
+      "name": "鷹野城に残る",
+      "x": 870,
+      "y": 2200
+    }
   ]
 }

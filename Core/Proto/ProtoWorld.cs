@@ -9,7 +9,7 @@ public sealed class ProtoPerson
 {
     public required string Id { get; init; }
     public required string Name { get; init; }
-    public required string House { get; init; }
+    public required string House { get; set; } // 謀叛で変わる
     public required string Role { get; init; }
     public required string Home { get; init; }
     public string[] Visits { get; init; } = [];
@@ -22,8 +22,17 @@ public sealed class ProtoPerson
     public string? Goal { get; set; }
     public string Doing { get; set; } = "";
     public long HurtUntil { get; set; }
+    // 合戦（ProtoWar.cs）：能力・忠誠・気性・兵・士気・技能
+    public int Command { get; init; } = 50;
+    public int Valor { get; init; } = 50;
+    public int Wits { get; init; } = 50;
+    public int Loyalty { get; set; } = 70;
+    public string Temper { get; init; } = "普通";
+    public int Soldiers { get; set; }
+    public int Morale { get; set; } = 100;
+    public string[] Skills { get; init; } = [];
     public bool Moving => PathIndex < Path.Count;
-    public bool Samurai => House is "takano" or "sawatari";
+    public bool Samurai => House is "takano" or "sawatari" or "iwakiri";
 }
 
 public enum LetterState { Carried, Delivered }
@@ -62,7 +71,8 @@ public sealed partial class ProtoWorld
         foreach (var d in map.Data.People)
         {
             var home = map.Site(d.Home); var spot = Spot(home, i++);
-            People.Add(new ProtoPerson { Id = d.Id, Name = d.Name, House = d.House, Role = d.Role, Home = d.Home, Visits = d.Visits ?? [], Player = d.Player, X = spot.X, Y = spot.Y, Doing = "詰めている" });
+            People.Add(new ProtoPerson { Id = d.Id, Name = d.Name, House = d.House, Role = d.Role, Home = d.Home, Visits = d.Visits ?? [], Player = d.Player, X = spot.X, Y = spot.Y, Doing = "詰めている",
+                Command = d.Command, Valor = d.Valor, Wits = d.Wits, Loyalty = d.Loyalty, Temper = d.Temper, Soldiers = d.Soldiers, Skills = d.Skills ?? [] });
         }
         AddBandits();
         if (opening) Opening();
@@ -98,6 +108,7 @@ public sealed partial class ProtoWorld
     {
         if (viewer == other) return true;
         if (!other.Active) return false;
+        if (viewer.Player && Hostile(viewer.House, other.House) && other.Soldiers > 0) return InSight(viewer, other); // 敵の隊は見える範囲だけ
         var site = SiteOf(viewer); if (site != null && site == SiteOf(other)) return true;
         return Dist(viewer, other) <= SightCm;
     }
@@ -159,6 +170,7 @@ public sealed partial class ProtoWorld
         }
         if (minute) { Couriers(); Spread(); }
         PlayerSteps();
+        if (Scouts.Count > 0) MoveScouts();
     }
     public void Advance(long seconds) { for (long i = 0; i < seconds; i++) Step(); }
 
@@ -181,6 +193,7 @@ public sealed partial class ProtoWorld
     {
         if (p.Moving) return;
         if (p.House == "bandit") { Bandit(p); return; }
+        if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(p.Id) && !War.Routed.Contains(p.Id)) return; // 陣を守る（日課で城へ戻らない）
         if (Courier(p)) return;
         var appointment = Appointments.FirstOrDefault(a => a.Person == p.Id && a.From <= Second && Second < a.Until);
         string want = p.Home; string doing = "詰めている";
@@ -238,28 +251,35 @@ public sealed partial class ProtoWorld
 
     // ---- 保存 ----
     // 世界をまるごと書き出す。読み込むと、続けて進めた結果が保存しなかった場合と同じになる。
-    public sealed record SavedPerson(string Id, bool Active, long X, long Y, long[][] Path, int PathIndex, string? Goal, string Doing, long HurtUntil);
+    public sealed record SavedPerson(string Id, bool Active, long X, long Y, long[][] Path, int PathIndex, string? Goal, string Doing, long HurtUntil, string House = "", int Soldiers = 0, int Morale = 100, int Loyalty = 70);
     public sealed record Saved(int Schema, long Second, int LetterSeq, int TaskSeq, int FactSeq, SavedPerson[] People, ProtoLetter[] Letters, ProtoTask[] Tasks, ProtoEvent[] Journal,
-        ProtoFact[] Facts, ProtoAppointment[] Appointments, Dictionary<string, string[]> Known, Dictionary<string, long> Flags, Dictionary<string, int> Favors, int Merit, int Money, int Rank);
+        ProtoFact[] Facts, ProtoAppointment[] Appointments, Dictionary<string, string[]> Known, Dictionary<string, long> Flags, Dictionary<string, int> Favors, int Merit, int Money, int Rank,
+        Dictionary<string, string>? Heads = null, ProtoWarState? War = null, ProtoMarker[]? Markers = null, ProtoReport[]? Reports = null, ProtoScout[]? Scouts = null, int ScoutSeq = 0);
 
-    public Saved Save() => new(2, Second, letterSeq, taskSeq, factSeq,
-        People.Select(p => new SavedPerson(p.Id, p.Active, p.X, p.Y, p.Path.Select(q => new[] { q.X, q.Y }).ToArray(), p.PathIndex, p.Goal, p.Doing, p.HurtUntil)).ToArray(),
+    public Saved Save() => new(3, Second, letterSeq, taskSeq, factSeq,
+        People.Select(p => new SavedPerson(p.Id, p.Active, p.X, p.Y, p.Path.Select(q => new[] { q.X, q.Y }).ToArray(), p.PathIndex, p.Goal, p.Doing, p.HurtUntil, p.House, p.Soldiers, p.Morale, p.Loyalty)).ToArray(),
         Letters.ToArray(), Tasks.Select(t => t.Copy()).ToArray(), Journal.ToArray(), Facts.ToArray(), Appointments.ToArray(),
-        known.ToDictionary(k => k.Key, k => k.Value.OrderBy(x => x, StringComparer.Ordinal).ToArray()), new(flags), new(favors), Merit, Money, Rank);
+        known.ToDictionary(k => k.Key, k => k.Value.OrderBy(x => x, StringComparer.Ordinal).ToArray()), new(flags), new(favors), Merit, Money, Rank,
+        new(Heads), System.Text.Json.JsonSerializer.Deserialize<ProtoWarState>(System.Text.Json.JsonSerializer.Serialize(War))!, Markers.ToArray(), Reports.ToArray(),
+        Scouts.Select(x => new ProtoScout { Id = x.Id, Target = x.Target, X = x.X, Y = x.Y, Path = x.Path, PathIndex = x.PathIndex, Phase = x.Phase, Seen = [.. x.Seen] }).ToArray(), scoutSeq);
 
     public static ProtoWorld Load(ProtoMap map, Saved s)
     {
-        if (s.Schema != 2) throw new InvalidDataException("試作版の保存の版が違います");
+        if (s.Schema != 3) throw new InvalidDataException("試作版の保存の版が違います");
         var w = new ProtoWorld(map, false) { Second = s.Second, letterSeq = s.LetterSeq, taskSeq = s.TaskSeq, factSeq = s.FactSeq, Merit = s.Merit, Money = s.Money, Rank = s.Rank };
         foreach (var d in s.People)
         {
             var p = w.People.FirstOrDefault(x => x.Id == d.Id) ?? throw new InvalidDataException("保存にある人が地図にいません：" + d.Id);
+            p.House = d.House; p.Soldiers = d.Soldiers; p.Morale = d.Morale; p.Loyalty = d.Loyalty;
             p.Active = d.Active; p.X = d.X; p.Y = d.Y; p.Path = d.Path.Select(q => (q[0], q[1])).ToList(); p.PathIndex = d.PathIndex; p.Goal = d.Goal; p.Doing = d.Doing; p.HurtUntil = d.HurtUntil;
         }
         w.Letters.AddRange(s.Letters); w.Tasks.AddRange(s.Tasks.Select(t => t.Copy())); w.Journal.AddRange(s.Journal); w.Facts.AddRange(s.Facts); w.Appointments.AddRange(s.Appointments);
         foreach (var (k, v) in s.Known) w.known[k] = [.. v];
         foreach (var (k, v) in s.Flags) w.flags[k] = v;
         foreach (var (k, v) in s.Favors) w.favors[k] = v;
+        foreach (var (k, v) in s.Heads ?? []) w.Heads[k] = v;
+        if (s.War != null) w.War = System.Text.Json.JsonSerializer.Deserialize<ProtoWarState>(System.Text.Json.JsonSerializer.Serialize(s.War))!;
+        w.Markers.AddRange(s.Markers ?? []); w.Reports.AddRange(s.Reports ?? []); w.Scouts.AddRange(s.Scouts ?? []); w.scoutSeq = s.ScoutSeq;
         return w;
     }
 }

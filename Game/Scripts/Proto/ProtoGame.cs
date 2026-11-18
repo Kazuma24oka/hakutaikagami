@@ -42,7 +42,7 @@ public partial class ProtoGame : Node3D
     internal ProtoDebug Debug = null!;
 
     static readonly Color Takano = new(0.55f, 0.45f, 0.85f), Sawatari = new(0.88f, 0.42f, 0.28f), Neutral = new(0.85f, 0.85f, 0.8f);
-    static Color HouseColor(string house) => house == "takano" ? Takano : house == "sawatari" ? Sawatari : Neutral;
+    static Color HouseColor(string house) => house == "takano" ? Takano : house == "sawatari" ? Sawatari : house == "iwakiri" ? new Color(0.62f, 0.12f, 0.12f) : Neutral;
 
     public override void _Ready()
     {
@@ -192,7 +192,7 @@ public partial class ProtoGame : Node3D
         var p = World.Player; var site = World.SiteOf(p);
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
-        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (World.Second < p.HurtUntil ? "　手傷" : "");
+        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
         foreach (var v in new[] { 10, 30, 60, 120 }) Buttons["speed-" + v].Disabled = Speed == v;
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
@@ -206,7 +206,7 @@ public partial class ProtoGame : Node3D
             if (actions.Length > 0)
             {
                 panel.AddChild(new Label { Text = "やること" });
-                foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => { Message = World.Do(aid); ShowGoal(); }); }
+                foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => { if (aid == "council:open") OpenCouncil(); else { Message = World.Do(aid); ShowGoal(); } }); }
                 panel.AddChild(new HSeparator());
             }
             panel.AddChild(new Label { Text = "任務" });
@@ -306,16 +306,74 @@ public partial class ProtoGame : Node3D
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
 
+    readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> markers = new();
+    readonly Dictionary<string, Label3D> flags = new();
+    readonly List<MeshInstance3D> scoutDots = new();
     void UpdateActors()
     {
-        bool close = distance < 700;
+        bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
         foreach (var p in World.People)
         {
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p);
-            body.Visible = seen; label.Visible = seen && (p.Player || close);
-            float scale = Math.Max(1, distance / 450), r = (p.Player ? 7 : 5) * scale; var pos = ToScene(p.X, p.Y) + new Vector3(0, r, 0);
-            body.Position = pos; body.Scale = Vector3.One * scale; label.Position = pos + new Vector3(0, r + distance * 0.035f, 0);
+            bool unit = p.Soldiers > 0 && war;
+            if (body.MaterialOverride is StandardMaterial3D m && !p.Player) m.AlbedoColor = HouseColor(p.House);
+            body.Visible = seen; label.Visible = seen && (p.Player || close || unit);
+            label.Text = unit ? $"{p.Name}　兵{p.Soldiers}" : p.Name;
+            float grow = unit ? 1 + MathF.Sqrt(p.Soldiers) / 8 : 1, scale = Math.Max(1, distance / 450), r = (p.Player ? 7 : 5) * scale * grow; var pos = ToScene(p.X, p.Y) + new Vector3(0, r, 0);
+            body.Position = pos; body.Scale = Vector3.One * scale * grow; label.Position = pos + new Vector3(0, r + distance * 0.035f, 0);
         }
+        // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
+        foreach (var mk in World.Markers)
+        {
+            if (!markers.TryGetValue(mk.Unit, out var v))
+            {
+                var mat = new StandardMaterial3D { AlbedoColor = new Color(0.8f, 0.2f, 0.2f, 0.5f), Transparency = BaseMaterial3D.TransparencyEnum.Alpha, ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded };
+                v = (new MeshInstance3D { Mesh = new SphereMesh { Radius = 6, Height = 12 }, MaterialOverride = mat }, new Label3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = 28, OutlineSize = 8, NoDepthTest = true, Modulate = new Color(1, 0.75f, 0.75f) });
+                AddChild(v.Body); AddChild(v.Label); markers[mk.Unit] = v;
+            }
+            var enemy = World.Person(mk.Unit); bool now = World.Sees(World.Player, enemy) || !enemy.Active;
+            float age = (World.Second - mk.SeenAt) / 3600f, alpha = Math.Clamp(0.6f - age * 0.15f, 0.12f, 0.6f);
+            ((StandardMaterial3D)v.Body.MaterialOverride).AlbedoColor = new Color(0.8f, 0.2f, 0.2f, alpha);
+            float sc = Math.Max(1, distance / 450);
+            var at = ToScene(mk.X, mk.Y) + new Vector3(0, 6 * sc, 0);
+            v.Body.Position = at; v.Body.Scale = Vector3.One * sc; v.Label.Position = at + new Vector3(0, 8 * sc + distance * 0.03f, 0);
+            v.Label.Text = $"{enemy.Name}　{HourMinute(mk.SeenAt)}（{mk.By}）";
+            v.Body.Visible = v.Label.Visible = !now;
+        }
+        // 陣の場所の旗（合戦の間だけ）
+        foreach (var pos in World.Map.Data.Positions ?? [])
+        {
+            if (!flags.TryGetValue(pos.Id, out var f)) { f = new Label3D { Text = "⚑ " + pos.Name, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = 26, OutlineSize = 8, NoDepthTest = true, Modulate = new Color(1, 1, 0.8f) }; AddChild(f); flags[pos.Id] = f; }
+            f.Visible = war && pos.Id != "takano-castle"; f.Position = ToScene(pos.X * 100L, pos.Y * 100L) + new Vector3(0, 30, 0);
+        }
+        // 物見
+        var live = World.Scouts.Where(x => x.Phase != "済").ToArray();
+        while (scoutDots.Count < live.Length) { var d = new MeshInstance3D { Mesh = new SphereMesh { Radius = 3, Height = 6 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(1, 1, 1) } }; AddChild(d); scoutDots.Add(d); }
+        for (int i = 0; i < scoutDots.Count; i++) { scoutDots[i].Visible = i < live.Length; if (i < live.Length) { float sc = Math.Max(1, distance / 450); scoutDots[i].Position = ToScene(live[i].X, live[i].Y) + new Vector3(0, 3 * sc, 0); scoutDots[i].Scale = Vector3.One * sc; } }
+    }
+
+    // ---- 軍議の窓 ----
+    Window? councilWindow;
+    internal void OpenCouncil()
+    {
+        if (councilWindow != null || !World.CouncilOpen) return;
+        var view = World.Council();
+        var w = new Window { Title = "軍議", Size = new Vector2I(760, 520), Exclusive = true, Transient = true };
+        var box = new VBoxContainer { Theme = new Theme { DefaultFontSize = 18 } }; box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 12; box.OffsetTop = 12; box.OffsetRight = -12; box.OffsetBottom = -12; w.AddChild(box);
+        foreach (var line in view.Opinions) box.AddChild(new Label { Text = line, AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        box.AddChild(new HSeparator());
+        OptionButton Choice(string title, string[] items, int pick)
+        {
+            var row = new HBoxContainer(); box.AddChild(row); row.AddChild(new Label { Text = title, CustomMinimumSize = new Vector2(140, 0) });
+            var o = new OptionButton { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; foreach (var it in items) o.AddItem(it); o.Select(pick); row.AddChild(o); return o;
+        }
+        var pos = Choice("自分の陣", view.Positions.Select(p => p.Name).ToArray(), Array.FindIndex(view.Positions, p => p.Id == "forest-edge"));
+        var dep = Choice("出立", view.Departures, 1);
+        var sig = Choice("合図", view.Signals, 0);
+        var ok = new Button { Text = "決める" }; box.AddChild(ok);
+        ok.Pressed += () => { Message = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected]); w.QueueFree(); councilWindow = null; RefreshUi(); };
+        w.CloseRequested += () => { w.QueueFree(); councilWindow = null; };
+        councilWindow = w; AddChild(w); w.PopupCentered();
     }
 
     void DrawPath()
