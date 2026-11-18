@@ -1,9 +1,0 @@
-{
-  "schema": 1,
-  "contract": "explicit-cancellation-original-known-failure-fixed-copy-deadline-v1",
-  "criteria": 5,
-  "tests": 1905,
-  "baseline": 1885,
-  "added": 20,
-  "save_checkpoints": 24
-}

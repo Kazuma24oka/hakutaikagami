@@ -20,7 +20,8 @@ public sealed class FileLedgerTests
     [Fact]
     public void EveryFileIsInTheLedgerWithADecision()
     {
-        var files = Git("ls-files").Concat(Git("ls-files", "-o", "--exclude-standard")).ToHashSet(StringComparer.Ordinal);
+        var tracked = Git("ls-files").ToHashSet(StringComparer.Ordinal);
+        var files = tracked.Concat(Git("ls-files", "-o", "--exclude-standard")).ToHashSet(StringComparer.Ordinal);
         var rows = File.ReadAllLines(Path.Combine(Root, "Docs", "Development", "FileLedger", "ledger.tsv")).Skip(1)
             .Select(l => l.Split('\t')).ToDictionary(c => c[0], c => c, StringComparer.Ordinal);
         string[] decisions = ["使う", "記録", "書き直す", "移す", "消す", "手元だけ"];
@@ -29,6 +30,8 @@ public sealed class FileLedgerTests
         var unchecked_ = rows.Where(r => !decisions.Contains(r.Value[1]) || string.IsNullOrWhiteSpace(r.Value[2])).Select(r => r.Key).OrderBy(f => f, StringComparer.Ordinal).ToArray();
         Assert.True(missing.Length == 0, "台帳に無いファイル：" + string.Join("、", missing.Take(20)) + "（python Scripts/file_ledger.py scan で足して判断を書く）");
         Assert.True(gone.Length == 0, "もう無いファイルの行：" + string.Join("、", gone.Take(20)));
+        var localTracked = rows.Where(r => r.Value[1] == "手元だけ" && tracked.Contains(r.Key)).Select(r => r.Key).OrderBy(f => f, StringComparer.Ordinal).ToArray();
+        Assert.True(localTracked.Length == 0, "Git に入っている「手元だけ」：" + string.Join("、", localTracked.Take(20)) + "（git rm --cached で外す）");
         Assert.True(unchecked_.Length == 0, $"判断か理由の無い行 {unchecked_.Length} 件：" + string.Join("、", unchecked_.Take(20)));
     }
 }

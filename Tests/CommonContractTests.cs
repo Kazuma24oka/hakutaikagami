@@ -144,11 +144,6 @@ public sealed class CommonContractTests
         var s=Session();var id=new EntityId("decision:one");var a=s.Draw(id,"decisions");var before=Bytes(s);Assert.Equal(a,s.Draw(id,"decisions"));Assert.Equal(before,Bytes(s));
         var restored=new WorldSession(s.DiagnosticSnapshot());Assert.Equal(s.Draw(new("decision:two"),"decisions"),restored.Draw(new("decision:two"),"decisions"));
     }
-    [Fact] public void LegacyProjectionDoesNotMutateOrPretendToMigrate()
-    {
-        var world=PrototypeScenario.Load(File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"prototype.json")));var tax=TaxSimulation.Create(world);var before=tax.SaveJson();
-        var report=LegacyContractAdapter.Inspect(tax);Assert.Equal(ResultCode.MigrationRequired,report.ProductImport);Assert.Equal("LegacyPrototypeTicks",report.TimeDomain);Assert.Equal(before,tax.SaveJson());Assert.Equal(3,report.Characters.Length);
-    }
     [Fact] public void FutureEffectiveOrderDoesNotBlockCurrentlyEffectiveWork()
     {
         var s=Session();s.Submit(ContractFixture.Order("request:future") with{EffectiveAt=10},0);
@@ -258,15 +253,5 @@ public sealed class CommonContractTests
         var s=Session();s.Submit(ContractFixture.Order("request:sealed",important:true) with{WorkSeconds=10,Deadline=new(DeadlineCriterion.Completion,null,true,5,50)},0);
         s.AdvanceTo(2);s.Open(ContractFixture.Officer,Assert.Single(s.GetActorView(ContractFixture.Officer).Messages).Id,s.Revision);s.SetPaused(false);s.AdvanceTo(8);
         Assert.Equal(ExecutionPhase.Stopped,OnlyTask(s).Execution);Assert.Equal(AgreementPhase.Expired,OnlyTask(s).Agreement);
-    }
-    [Fact] public void LegacyFormationProjectionPreservesMilitaryIdentityAndTickDomain()
-    {
-        var legacy=TaxSimulation.Create(PrototypeScenario.Load(File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"prototype.json"))));
-        legacy.EnableOfficerIntegration();legacy.StartFormationMap();legacy.SendFormation("line","character-001",new(8,1),new(8,5),[1,3,5]);legacy.AdvanceOneTick();
-        var before=legacy.SaveJson();var report=LegacyContractAdapter.Inspect(legacy);var projection=Assert.IsType<LegacyMilitaryProjection>(report.Military);
-        Assert.Equal("LegacyPrototypeTicks",report.TimeDomain);Assert.Equal(1,projection.LegacyTick);Assert.Equal(3,projection.Units.Length);Assert.Equal(3,projection.Orders.Length);
-        Assert.Equal(legacy.MilitaryDiagnostic!.Units.Select(u=>u.Id),projection.Units.Select(u=>u.Id));
-        Assert.Equal(legacy.MilitaryDiagnostic.Orders.Select(o=>o.Status.ToString()),projection.Orders.Select(o=>o.Status));
-        Assert.NotEmpty(report.Authorities);Assert.Equal(before,legacy.SaveJson());Assert.Equal(ResultCode.MigrationRequired,report.ProductImport);
     }
 }

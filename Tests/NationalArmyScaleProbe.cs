@@ -29,7 +29,7 @@ public sealed class NationalArmyScaleProbe(ITestOutputHelper o)
         var s=new WorldSession(w);s.SetPaused(false);
         sw.Restart();NewGameWorldTests.At(s,(s.Seconds/NpcArmies.Cadence+1)*NpcArmies.Cadence+60);var a=s.DiagnosticSnapshot();
         Log($"出陣まで（次の毎時＋1分） {sw.ElapsedMilliseconds}ms 軍{a.NpcArmies!.Musters.Length} 行軍{a.NpcArmies.Marches.Length} 部隊{a.Units.Length}");
-        if(Environment.GetEnvironmentVariable("HAKUTAI_ARMY_SHORT")=="1"){Log(Prof.Report());Prof.Reset();sw.Restart();NewGameWorldTests.At(s,s.Seconds+600);Log($"10分 {sw.ElapsedMilliseconds}ms");Log(Prof.Report());WorldSession.GuardTurnSnapshots=guard;return;}
+        if(Environment.GetEnvironmentVariable("HAKUTAI_ARMY_SHORT")=="1"){sw.Restart();NewGameWorldTests.At(s,s.Seconds+600);Log($"10分 {sw.ElapsedMilliseconds}ms");WorldSession.GuardTurnSnapshots=guard;return;}
         sw.Restart();NewGameWorldTests.At(s,s.Seconds+3600);var b=s.DiagnosticSnapshot();
         Log($"1時間 {sw.ElapsedMilliseconds}ms {ContractJson.CanonicalHash(b)} 軍{b.NpcArmies!.Musters.Length} 行軍{b.NpcArmies.Marches.Length} 帰還{b.NpcArmies.Returns.Length} 交戦{b.WorldClashes?.Steps.Length}");
         sw.Restart();var restored=new WorldSession(ContractJson.Read<ContractWorld>(ContractJson.Write(b)));Log($"保存から戻す {sw.ElapsedMilliseconds}ms 大きさ{ContractJson.Write(b).Length/1024}KB");

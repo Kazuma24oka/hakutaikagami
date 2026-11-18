@@ -139,7 +139,9 @@ def check():
     bad = [p for p, r in rows.items() if r["判断"] not in DECISIONS]
     gone = [p for p in rows if p not in set(all_files)]
     noreason = [p for p, r in rows.items() if r["判断"] != "未確認" and not r["理由"].strip()]
-    problems = [("台帳に無いファイル", missing), ("未確認", unknown), ("判断の書き方が違う", bad), ("もう無いファイルの行", gone), ("理由が空", noreason)]
+    _, tracked = files()
+    local_tracked = [p for p, r in rows.items() if r["判断"] == "手元だけ" and p in tracked]
+    problems = [("台帳に無いファイル", missing), ("未確認", unknown), ("判断の書き方が違う", bad), ("もう無いファイルの行", gone), ("理由が空", noreason), ("Git に入っている「手元だけ」", local_tracked)]
     ok = True
     for title, items in problems:
         if items:

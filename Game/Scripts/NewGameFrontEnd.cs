@@ -30,11 +30,7 @@ public partial class NewGameFrontEnd : Control
     public override void _Notification(int what){if(what==NotificationWMCloseRequest&&!GetTree().AutoAcceptQuit)QuitGracefully();}
     public override void _Ready()
     {
-        // Explicit legacy verification flags preserve the former harness entry. Normal play uses this menu.
         var args=OS.GetCmdlineUserArgs();
-        if(args.Any(a=>a.StartsWith("--start-selection-")||a.StartsWith("--work-hub-")||a.StartsWith("--task-entry-")||a is "--startup-entry" or "--personnel-catalog" or "--smoke-test" or "--tax-smoke-test" or "--shared-protocol-smoke-test")){
-            using var legacyScene=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn");var legacy=legacyScene.Instantiate<Control>();AddChild(legacy);legacy.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);return;
-        }
 
         GetTree().AutoAcceptQuit=false;
         // 遊ぶときは進めるたびの世界全体の検証をしない（保存と読み込みでは検証する）。検査の起動（TestKey）では今までどおり毎回検証する。
@@ -62,7 +58,7 @@ public partial class NewGameFrontEnd : Control
         var columns=new HBoxContainer{SizeFlagsVertical=SizeFlags.ExpandFill};page.AddChild(columns);var menu=new VBoxContainer{CustomMinimumSize=new(300,0)};columns.AddChild(menu);
         if(ProtoGame.HasSave)Add(menu,"proto","試作版：続きから",()=>GetTree().ChangeSceneToFile("res://Scenes/ProtoGame.tscn"));Add(menu,"proto-new","試作版：はじめから",()=>{ProtoGame.Fresh=true;GetTree().ChangeSceneToFile("res://Scenes/ProtoGame.tscn");});Add(menu,"new","新規ゲーム",Conditions);Add(menu,"load-list","ロード",ShowLoads);Add(menu,"manage","武将作成・管理",ShowManagement);Add(menu,"settings","設定",Settings);
         if(game!=null)Add(menu,"continue","いまの武将へ戻る",()=>{canvas.Visible=false;game.Resume();});
-        Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"legacy","以前の試作と保存",Legacy);Add(menu,"quit","終了",()=>QuitGracefully());
+        Add(menu,"hakutai-db","史料：1560年の勢力と人物",ShowHakutaiDb);Add(menu,"quit","終了",()=>QuitGracefully());
         var overview=new VBoxContainer{SizeFlagsHorizontal=SizeFlags.ExpandFill};columns.AddChild(overview);overview.AddChild(new Label{Text="1560年 / 全国の拠点から、一人を選ぶ"});var nation=new NewGameMap{NationalMovement=true,SizeFlagsVertical=SizeFlags.ExpandFill};overview.AddChild(nation);nation.SitePicked=async site=>{notice.Text=NewGameWorld.SiteName(site)+"　準備中";await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);await ToSignal(GetTree(),SceneTree.SignalName.ProcessFrame);Guard(()=>{startYear=1560;BeginNational();map!.SitePicked?.Invoke(site);});};
         menu.AddChild(new Label{Text=(registryReadError==null?"登録武将 "+registry.Ungrouped.Length+"人\nグループ "+registry.Groups.Length+"組":"登録データ：読み込み不可（保持中）")+"",AutowrapMode=TextServer.AutowrapMode.WordSmart});
         {}
@@ -152,5 +148,4 @@ public partial class NewGameFrontEnd : Control
         Add(page,"load","選んだ保存を開く",()=>{var index=savedList.GetSelectedItems();if(index.Length!=1)throw new InvalidDataException("保存を選んでください");var p=savedRows[index[0]].Profile;Action start=()=>OpenGame(campaigns.Read(p.Instance),true);if(game!=null){pendingStart=start;switching.PopupCentered();}else start();}).Disabled=savedRows.Length==0;Add(page,"back","戻る",ShowMenu);
     }
     void Settings(){Clear("設定","");Add(page,"standard","標準の文字",()=>Theme.DefaultFontSize=16);Add(page,"large","大きめの文字",()=>Theme.DefaultFontSize=18);Add(page,"back","戻る",ShowMenu);}
-    void Legacy(){Clear("以前の試作と保存","");Add(page,"back","戻る",ShowMenu);var hub=GD.Load<PackedScene>("res://Scenes/WorkHubTrial.tscn").Instantiate<Control>();hub.SizeFlagsVertical=SizeFlags.ExpandFill;page.AddChild(hub);}
 }

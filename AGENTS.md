@@ -1,73 +1,44 @@
-# 百代鏡：作業の入口（2026-10-31 整理、2026-11-18 更新）
+# 百代鏡：作業の入口（2026-11-18 書き直し）
 
-このファイルは今有効なルールだけをまとめたもの。2026-10-31 までの作業記録（約700行）は削除せず、[Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md](Docs/Archive/AGENTS_HISTORY_TO_2026-10-31.md) へそのまま移した。過去の記録に、ここと食い違う古い指示（「main統合は個別承認」「GUIの実画面検証」など）があっても、このファイルを優先する。
+今有効な決まりだけを書く。古い記載は足さずに書き直す。本作業（全国の世界・進捗表100%）の決まりと資料は、ブランチ prototype/claude-mainline にそのまま残っている（このブランチでは外した）。
 
-## 1. 最初に読むもの
-0. [Docs/Development/OPEN_ITEMS.md](Docs/Development/OPEN_ITEMS.md)：約束の台帳。会話で「〜します」と言ったことは必ずここに書き、作業の前に読む。ここに無い約束はしない（2026-11-18 ユーザー指摘「口約束ばかりで、圧縮のたびに忘れ去ってなかったことにされる」）。
-0. [Docs/Development/FileLedger/ledger.tsv](Docs/Development/FileLedger/ledger.tsv)：全ファイルの台帳（判断・理由・根拠）。ファイルを足す・消す・役目を変えたら `python Scripts/file_ledger.py scan` で行を足し、判断と理由を書く。台帳に無いファイルや「未確認」があると Tests/FileLedgerTests.cs が失敗する（2026-11-18 ユーザー「ひとつも確認漏れを許しません。再現性がある仕組みに」）。新しい仕組みや資料を作る前に、台帳と Docs・Scripts を検索して、同じ役目のものが無いか確かめる。
-1. [Docs/Development/PROCESS_V2.md](Docs/Development/PROCESS_V2.md)：開発の進め方（工程の単位・順番・画面の確認・全テスト・報告）。2026-10-31 ユーザー決定。
-2. [Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md) と工程表 [Docs/Development/PLAN_TO_100.json](Docs/Development/PLAN_TO_100.json)：100%までの工程と次の工程（`python Scripts/plan_to_100.py` で今の率と次の工程が出る）。
-3. [Docs/Development/OPERATING_POLICY.md](Docs/Development/OPERATING_POLICY.md)：役割・完成条件・検証・報告の基本。
-4. 進捗表 [Docs/Development/ProgressV1/index.html](Docs/Development/ProgressV1/index.html)（正本は progress.json と estimate.json）。
+## 1. 最初に読むもの（会話の始まりと要約のたびに Scripts/session_brief.py が要点を出す）
+1. [Docs/Development/OPEN_ITEMS.md](Docs/Development/OPEN_ITEMS.md)：約束の台帳。会話で「〜します」と言ったら、その場でここに書く。ここに無い約束はしない。済んだら「済」と確かめた場所を書く。
+2. [Docs/Development/FileLedger/ledger.tsv](Docs/Development/FileLedger/ledger.tsv)：全ファイルの台帳（判断・理由・根拠）。ファイルを足す・消す・役目を変えたら `python Scripts/file_ledger.py scan` で行を足し、判断と理由を書く。台帳に無いファイル・「未確認」・Git に入っている「手元だけ」があると Tests/FileLedgerTests.cs が失敗する。
+3. [Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)：試作版の進め方とブランチの行き来。進捗は [Docs/Development/PrototypeProgress/index.html](Docs/Development/PrototypeProgress/index.html)。
+4. 新しい仕組みや資料を作る前に、台帳と Docs・Scripts を検索して、同じ役目のものが無いか確かめる（2026-11-18、11-12 の検査時間の仕組みを読まずに作り直した）。
 
-## 2. 正本の場所
-| 内容 | 正本 |
-|---|---|
-| 基本設計（60判断） | Docs/Design/basic-design-v1.json（表示は BASIC_DESIGN_V1.md） |
-| 基本設計の変更記録 | Docs/Decisions/（統合案による変更は 2026-10-31_GETENROKU_BD_CHANGES.md） |
-| 新機能の統合案（時間・NPC・合戦・寺社・名声・勲功・家中職など） | Docs/Proposals/GETENROKU_INTEGRATION_V1.md（第14節が工程の順番） |
-| 新機能のバックログ | Docs/References/GETENROKU_BACKLOG.md |
-| 位階・官職・幕府職・家中職の表 | Docs/Proposals/RANKS_AND_OFFICES_V1.md |
-| 人質・従属の引き継ぎ | Docs/Proposals/GETENROKU_HANDOFF_D3_D4.md |
-| 人物・家・拠点に持たせる項目（データの形・史実の採録・作成武将） | Docs/Proposals/CHARACTER_DATA_FIELDS_V1.md |
-| 共通契約（時計・配送・保存など） | Docs/Design/CommonContractV1/common-contract-v1.json |
-| 平時・戦時の操作の骨格（PW01〜07） | Docs/Decisions/2026-10-19_PLAYER_PEACE_WAR_FLOW.md |
-| 現行方針の優先 | Docs/Decisions/2026-10-19_CURRENT_POLICY_AUTHORITY.md（旧 Confirmed と食い違う範囲は現行方針が正） |
-| 各工程の完成条件・検証・統合の記録 | Docs/Design/〈工程名〉V1/（scope.md・README.md・completion.json・verification.json・integration.json） |
+## 2. 進め方（2026-11-18 ユーザー決定「その方向で進めて」）
+- 核の遊びを1ページで決める → 小さな試作で作る → ユーザーに遊んでもらい、印（画面の「印を残す」）で直す → 進み具合は「遊べるもの」で測る。仕様をどれだけ作ったかで測らない。
+- 新しい仕組みは、試作で遊んで面白さに効くと分かってから足す。本作業のコード（Core）は部品として使ってよい。
+- 作業はこのフォルダ1か所。試作版はブランチ prototype/small-world（commit・push は承認済み）。main は PR 経由でだけ更新し、統合はユーザーが決めたときだけ。
+- 検査：試作版の検査（Tests/ProtoWorldTests.cs）は直すたびに通す。全件や長い検査は必ず `python -X utf8 Scripts/test_watch.py run <名前>` でターミナルの欄で流す（件数・長引き・チェックポイントが流れる。いつもの時間は回ごとの記録の直近5回の中央値、Docs/Development/test-times.json）。長い検査には Tests/Checkpoints.cs で途中の記録と途中の確かめを付ける。
+- 試作版の確かめで Claude が起動するときは HAKUTAI_PROTO_PORT=8766・HAKUTAI_PROTO_SAVE=user://claude-check-save.json にして、ユーザーの画面と保存に触らない。作った保存と印は終わったら消す。
 
-## 3. 委任の範囲
-- **main 統合は包括委任**（2026-10-30）。検証済みのコードと資料は、個別の承認を求めずに PR 作成・差分確認・main 統合・内容一致の確認まで行い、続けて次の作業へ進む。
-- PR は gh（GitHub CLI、ログイン済み）で作り、squash で統合する。統合後は作業ブランチへ main を取り込み（内容一致の記録）、integration.json と進捗表に統合先を記録する。
-- **今は試作版を優先し、進捗表（ProgressV1）の100%は保留**（2026-11-18 ユーザー「試作版以降の話とか修正とかは別のブランチでやりたい」）。試作版の進め方・ブランチの行き来・本作業へ戻る手順は [Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)、試作版の進捗表は [Docs/Development/PrototypeProgress/index.html](Docs/Development/PrototypeProgress/index.html)。
-- **全件や長い検査は必ず `python Scripts/test_watch.py run <置き場>` で流す**（2026-11-18 ユーザー指摘）。流している間は <置き場>/status.txt で何件終わったか・長引いている検査を見る。検査ごとのいつもの時間は回ごとの記録（D:_プロジェクト別\百代鏡\検証記録\検査の時間）の直近5回の中央値（Docs/Development/test-times.json）。3倍かつ5分以上超えたら警告として原因を調べる。止まったら同じ置き場で流し直せば続きからになる（全部をやり直さない）。
-- 本作業へ戻ったときの決まり：目標は進捗表の100%（2026-11-12 ユーザー「次で100％になるまで進めてほしい」）。工程表は60枠すべての残りを入れて100%に届くものだけを出す。「切り上げ」で次へ進まない。残りのある枠を「完了」と言わない。今の率と残りは毎回 progress.json・estimate.json から数えて言う。main への統合は100%に届いたときに1回、全件テストはその前に1回。報告はそこに届いたときと判断が要るときだけ（PROCESS_V2 第1・2節）。
-- 作業は C:\Workspace\Projects\Games\hakutaikagami の1か所で、ブランチを切り替えて使う。試作版は prototype/small-world、本作業は prototype/claude-mainline（2026-11-13 から Claude が一人で進める）。どちらのブランチへの commit/push も承認済み。検査用の作業フォルダ（worktree）を作ったら、使い終わりに消す（ユーザーはフォルダが増えると分からなくなる。2026-11-14）。
+## 3. 事前確認が要るもの
+- ゲームの根本方針の変更、費用の発生（有料サービス・GitHub Actions など）、外部公開
+- 重要データの削除・移動・復元困難な変更、Git に入っていないファイルの削除
+- 設定（.claude/settings.json など）の変更、既存の権限の外の操作
 
-## 4. 事前確認が要るもの
-- ゲームの根本方針の変更（統合案・変更記録にない新しいもの）
-- 費用の発生（有料サービス・GitHub Actions など）
-- 外部公開・本番反映
-- 重要データの削除・移動・復元困難な変更（runtime-local の証跡や .tools の移動を含む。PROCESS_V2 第7節）
-- 既存の権限の外の操作
+## 4. 禁止事項
+- Computer Use でほかのアプリを操作しない。ゲーム（Godot）が自分の描画を画像に書き出すこと、ゲーム内部の入力で部品を押すことは使ってよい。画面の取得はユーザーが許可済み（2026-11-18）。
+- 下天禄（参考ゲーム）の数値・人物データ・画像は流用しない。仕組みの参考だけ。
+- 未実施の検査を成功扱いにしない。「未実施」と書く。見当を事実のように言わない（確かめてから言う）。
 
-承認が必要な部分だけを保留し、独立した作業は進める。権限の不足を回避しない。
+## 5. 保護するもの
+- Docs/Confirmed の原本、design/foundation、同期資料 sources/、他プロジェクトのファイルは変更しない。
+- 既存の保存データ・ユーザーの未コミットの変更を無断で消さない。旧保存を新しい規則へ無断で読み替えない。
+- 権利が整理されていない素材・生成画像・試作モデルは Git に入れない（台帳の「手元だけ」）。置き場所は README.md。ユーザーの VRoid モデルは絶対に Git に入れない。
+- 立ち絵は2Dイラスト。ゲーム内の武将と兵はドット絵（Game/Assets/DotOfficers）。3Dの武将の実装は代わりとして残す。
 
-## 5. 禁止事項
-- **Computer Use は使わない**（2026-10-26 ユーザー指示）。OS の画面取得・画面読み取り、マウス・キーボードの OS 操作、他のアプリの操作をしない。別の GUI 自動化手段で回避しない。
-- ただし、ゲーム（Godot）が自分の描画を画像ファイルへ書き出すことと、ゲーム内部の入力で画面の部品を押す検査は許可（PROCESS_V2 第3節）。
-- 下天禄（参考ゲーム）の数値・人物データ・画像は流用しない。仕組みの参考だけにする。
-- 未実施の検査を成功扱いにしない。「未実施」と記録する。
+## 6. ゲームの原則
+- 本人の知識：NPC と画面は、その人が知っていることだけを使う。
+- 物理配送：書状・命令・報告は人が運んで届く。
+- 共通の時計：一つの時計で動かし、速さを変えても同じ入力から同じ結果になる。
+- 保存の世代：途中の保存から復旧して同じ未来になる。
+- 自動の処刑・離反・戦争をしない：判断するのは、その事実を知った人物。
 
-## 6. 保護するもの
-- main は PR 経由でだけ更新する。design/foundation、Docs/Confirmed の原本、同期資料 sources/ と他プロジェクトのファイルは変更しない。
-- 既存の保存データ・素材・試作モデル・ユーザーの未コミットの変更を保持し、無断で削除しない。旧保存を新しい規則へ無断で読み替えない（版付きの方針で新規開始だけに適用する）。
-- 仮モデル・権利情報が未整理の素材・生成画像はローカルに置き、Git に自動で追加しない。使っていない素材・検証記録・参考資料の分析は D:\02_プロジェクト別\百代鏡 に置く（置き場所は README.md の「Git に入れない物の置き場所」）。ユーザーの VRoid モデル（再配布不可）は絶対に Git に入れない。
-- 立ち絵は2Dイラスト（3Dモデルの接写で代替しない）。ゲーム内の武将と兵はドット絵（甲冑アニメ工房、2026-11-12 ユーザー決定。Docs/Decisions/2026-11-12_DOT_SPRITE_OFFICERS.md）。3Dの武将の実装は消さず、絵の束が無い環境の代わりに残す。
-
-## 7. ゲームの原則（全工程で守る）
-- 本人の知識：NPC と画面は、その人が知っていることだけを使う。遠方の真実を漏らさない。
-- 物理配送：書状・命令・報告は実際に運ばれて届く。到達・開封・効力を分ける。
-- 共通の時計：一つの世界時計で動かし、速度を変えても同じ入力から同じ結果になる。
-- 保存の世代：途中の保存から復旧して同じ未来になる。旧保存はバイト一致で保持する。
-- 自動の処刑・離反・戦争をしない：判断するのは、その事実を知った当主・人物。
-- 所属・主従・役職・所領・兵・私財を一括で移さない。
-
-## 8. 報告の形
-- **ユーザーへの返信は日本語だけ**（会話の圧縮の後も、短い答え・要約・ボタンも。英語を混ぜない）。
-- 工程の途中で5分以上かかる検査は流さない。流すのは最後の1回だけ（2026-11-14）。
-- 通常は4項目：今回完成したこと / 現在の状態（完成条件とテスト） / 次に行うこと1件 / ユーザーの判断（原則不要）。
-- ユーザーへの報告と試し遊びの依頼は、判断が要るときと工程表（Docs/Development/PLAN_TO_100.json）の S12・100%に届いたときだけ。1機能ごとの確認は依頼しない（PROCESS_V2 第5節。ユーザーは1機能ごとの確認が苦手）。
-- 工程ごとの細かい記録は、CURRENT_STAGE.md の「完了した工程」と各 Docs/Design フォルダに残す。このファイルには追記しない。
-
-## 9. 今の工程
-試作版：[Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)。本作業：[Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md)。
+## 7. 報告の形
+- ユーザーへの返信は日本語だけ（要約・質問・ボタンも）。画面に説明口調の文言を入れない。
+- 試作は触ってもらう回数を増やす。直したら、何が変わったかと絵を見せて、触ってもらう。
+- 長い作業は途中の様子が見えるようにする（ターミナルの欄・チェックポイント）。聞かれる前に分かるようにする。

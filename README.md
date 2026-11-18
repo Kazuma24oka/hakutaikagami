@@ -5,25 +5,28 @@
 ## 入口
 | 知りたいこと | 場所 |
 |---|---|
-| 全体の進み具合（％） | [Docs/Development/ProgressV1/index.html](Docs/Development/ProgressV1/index.html)（ブラウザで開く。main へ統合するときに書き直す） |
-| 今やっている工程 | [Docs/Development/CURRENT_STAGE.md](Docs/Development/CURRENT_STAGE.md) |
-| 資料の案内（設計・記録・提案の場所） | [Docs/README.md](Docs/README.md) |
-| 作業の決まり（AI 向け） | [AGENTS.md](AGENTS.md) |
+| 作業の決まり | [AGENTS.md](AGENTS.md) |
+| 約束と、今やっていること | [Docs/Development/OPEN_ITEMS.md](Docs/Development/OPEN_ITEMS.md) |
+| 試作版の進め方と進捗 | [Docs/Development/PROTOTYPE_TRACK.md](Docs/Development/PROTOTYPE_TRACK.md)、[Docs/Development/PrototypeProgress/index.html](Docs/Development/PrototypeProgress/index.html) |
+| 全ファイルの台帳 | [Docs/Development/FileLedger/review.html](Docs/Development/FileLedger/review.html)（`python Scripts/file_ledger.py report` で作り直す） |
+
+## ブランチ
+- prototype/small-world：今の作業（小さな試作版で遊びの核を作り直す）。
+- prototype/claude-mainline：本作業（全国の世界・進捗表）。資料・工程表・確かめのスクリプトはこちらに全部残っている。
 
 ## このフォルダ
-- 作業はこのフォルダ1か所で行う。ブランチは prototype/claude-mainline（main へは差し替え前の完成のときに1回だけ統合する）。
-- 主な中身：Core（ゲームの仕組み）・Game（Godot の画面）・Tests（検査）・Tools / Scripts（道具）・Docs（資料）・Art（Git に入れる絵の原本）。
-- ゲームを動かす Godot は `.tools/godot-4.5.2` にある（Git の外）。
+- 主な中身：Core（ゲームの仕組み。試作版は Core/Proto）・Game（Godot の画面。試作版は Game/Scripts/Proto）・Tests（検査）・Scripts（道具）・Docs（資料）・Art（絵の原本）。
+- ゲームを動かす Godot は `.tools/godot-4.5.2` にある（Git の外）。スタート画面の「試作版：はじめから／続きから」で試作版。
 
-## Git に入れない物の置き場所（2026-11-14 整理）
+## Git に入れない物の置き場所
 使っていない物と大きな記録は `D:\02_プロジェクト別\百代鏡` に置く。
 
 | 置き場所 | 中身 |
 |---|---|
-| `参考資料\戦国下天禄` | 戦国下天禄の解析レポートと旧メモ（仕組みの参考だけ。数値・人物・画像は流用しない） |
+| `参考資料\戦国下天禄` | 戦国下天禄の解析と旧メモ（仕組みの参考だけ。数値・人物・画像は流用しない） |
 | `素材\VRoid\CharaCreate` | ユーザーの VRoid モデル（再配布不可。Git に入れない） |
-| `素材\人物の試作` | 使わなくなった人物の試作（素体・部品・着せ替えの場面・3D 武将の原型・画像の道具） |
-| `検証記録` | 各工程の検証の記録（runtime-local）。Docs と同じ並びで置く。このフォルダの Docs/Design/〈工程〉/runtime-local は D へのつなぎなので、新しい記録も最初から D に書かれる。新しい工程のフォルダを作ったら `python Scripts/link_runtime_local.py` を実行してつなぐ。保存の仕組みはつなぎを通る保存先を拒むので、ゲームの確認は記録の場所を `RecordPath.Globalize`（つなぎの先の本当の場所）で求める |
-| `作業の一時ファイル` | 画像生成の環境・検査の一時出力（消してもよい物） |
+| `素材\人物の試作` | 使わなくなった人物の試作 |
+| `検証記録` | 検査の記録。試作版の印（`試作版\ためておく`・`送った`）、検査の回ごとの時間（`検査の時間`）、検査のチェックポイント（`検査の途中`） |
+| `作業の一時ファイル` | 消してもよい一時出力 |
 
-ゲームで今も使う 3D 武将の試作モデル（Game/Assets/Officer3D、ドット絵の武将の土台）はこのフォルダに残す。
+台帳で「手元だけ」にしたファイル（生成画像・権利の整理されていない素材・Godot が作る .uid など）は、このフォルダの中にあっても Git に入れない。

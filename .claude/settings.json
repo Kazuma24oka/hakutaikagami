@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python Scripts/plan_to_100.py --brief",
+            "command": "python Scripts/session_brief.py",
             "timeout": 30
           }
         ]

@@ -1,1 +1,0 @@
-Initial displacement evidence and browser runtime report, prior to planting correction. Superseded by current rig and current validation; not current acceptance evidence. Original source assets are untouched.
