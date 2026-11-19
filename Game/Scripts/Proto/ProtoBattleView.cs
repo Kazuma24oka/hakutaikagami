@@ -35,8 +35,9 @@ public partial class ProtoGame
         var layer = new CanvasLayer { Layer = 2 }; AddChild(layer);
         var root = new Control { MouseFilter = Control.MouseFilterEnum.Ignore, Theme = new Theme { DefaultFontSize = 16 } }; root.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(root);
 
-        spiritBox = new PanelContainer(); spiritBox.SetAnchorsPreset(Control.LayoutPreset.CenterTop); spiritBox.OffsetTop = 50; spiritBox.OffsetLeft = -330; spiritBox.OffsetRight = 330; root.AddChild(spiritBox);
+        spiritBox = new PanelContainer(); spiritBox.SetAnchorsPreset(Control.LayoutPreset.CenterTop); spiritBox.OffsetTop = 50; spiritBox.OffsetLeft = -380; spiritBox.OffsetRight = 380; root.AddChild(spiritBox);
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 10); spiritBox.AddChild(row);
+        row.AddChild(new Label { Text = "総士気", Modulate = new Color(1, 0.9f, 0.6f) }); row.AddChild(new VSeparator());
         row.AddChild(new Label { Text = "鷹野勢" }); spiritTakano = Bar(HouseColor("takano"), 150, new Vector2(170, 16)); row.AddChild(spiritTakano); spiritTakanoText = new Label(); row.AddChild(spiritTakanoText);
         row.AddChild(new VSeparator());
         row.AddChild(new Label { Text = "岩切勢" }); spiritRebel = Bar(HouseColor("iwakiri"), 150, new Vector2(170, 16)); row.AddChild(spiritRebel); spiritRebelText = new Label(); row.AddChild(spiritRebelText);
@@ -50,7 +51,7 @@ public partial class ProtoGame
         sideTakano = new Label { CustomMinimumSize = new Vector2(70, 0) }; sideRebel = new Label { CustomMinimumSize = new Vector2(70, 0), HorizontalAlignment = HorizontalAlignment.Right };
         pushTexture = ImageTexture.CreateFromImage(pushImage);
         pushPic = new TextureRect { Texture = pushTexture, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.Scale, CustomMinimumSize = new Vector2(300, 16), SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, TextureFilter = CanvasItem.TextureFilterEnum.Nearest };
-        top.AddChild(sideTakano); top.AddChild(pushPic); top.AddChild(sideRebel);
+        top.AddChild(sideTakano); top.AddChild(new Label { Text = "押し合い", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(pushPic); top.AddChild(sideRebel);
         var lists = new HBoxContainer(); lists.AddThemeConstantOverride("separation", 14); col.AddChild(lists);
         allyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         lists.AddChild(allyList); lists.AddChild(new VSeparator()); lists.AddChild(enemyList);
@@ -196,7 +197,7 @@ public partial class ProtoGame
             int start = war.StartSoldiers.TryGetValue(u.Id, out var st) ? st : u.Soldiers;
             r.Text.Text = $"{u.Name}　兵{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id);
         }
-        sideTakano.Text = allies.Sum(u => u.Soldiers).ToString(); sideRebel.Text = enemies.Sum(u => u.Soldiers).ToString();
+        sideTakano.Text = "兵" + allies.Sum(u => u.Soldiers); sideRebel.Text = "兵" + enemies.Sum(u => u.Soldiers);
         PaintPush(pushImage, clashes.Count == 0 ? 0 : clashes.Average(c => c.Push)); pushTexture.Update(pushImage);
         kiBar.Value = war.Ki;
         foreach (var s in ProtoWorld.Stances) Buttons["clash-stance-" + s].Disabled = war.Stance == s;
@@ -212,8 +213,9 @@ public partial class ProtoGame
         var info = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; info.AddThemeConstantOverride("separation", 2); row.AddChild(info);
         var text = new Label { Modulate = u.Player ? new Color(1, 0.88f, 0.45f) : Colors.White }; text.AddThemeFontSizeOverride("font_size", 15); info.AddChild(text);
         var bars = new HBoxContainer(); bars.AddThemeConstantOverride("separation", 4); info.AddChild(bars);
-        var morale = Bar(new Color(0.95f, 0.8f, 0.3f), 100, new Vector2(70, 6)); var tactic = Bar(new Color(0.45f, 0.75f, 0.95f), 100, new Vector2(70, 6));
-        bars.AddChild(morale); bars.AddChild(tactic);
+        var morale = Bar(new Color(0.95f, 0.8f, 0.3f), 100, new Vector2(50, 6)); var tactic = Bar(new Color(0.45f, 0.75f, 0.95f), 100, new Vector2(50, 6));
+        Label Tag(string t) { var l = new Label { Text = t, Modulate = new Color(0.75f, 0.75f, 0.75f) }; l.AddThemeFontSizeOverride("font_size", 12); return l; }
+        bars.AddChild(Tag("士気")); bars.AddChild(morale); bars.AddChild(Tag("戦法")); bars.AddChild(tactic);
         var tn = new Label { Text = ProtoWorld.TacticOf(u), Modulate = new Color(0.6f, 0.8f, 1f) }; tn.AddThemeFontSizeOverride("font_size", 13); bars.AddChild(tn);
         rows[u.Id] = (text, morale, tactic);
     }
