@@ -135,7 +135,7 @@ public partial class ProtoGame
         await Cap("百代鏡　試作版：釣り野伏", 3);
         await Cap("囮が下がって敵を誘い込み、伏せていた兵が横から討つ", 3.5);
         await Cap("自分（佐伯源三郎）は道の口で囮。小坂重忠の隊は森の北の縁に伏せている。森で動かずにいる隊は、敵からは近くまで見えない", 5.5);
-        await Cap("札の上下左右の出っ張りは、その隊が向いている方", 3.5);
+        await Cap("凸の形は隊を表し、出っ張りの方を向いている（布陣図のように）", 3.5);
         await RunTo(w.War.SignalAt + 2 * 60, 30);
         // 字幕を読む間は時を止める（WaitUntil を今にする）。止めずに字幕を出すと、その間も戦いが進んで筋が変わる。
         void Pause() => FilmPause = true;
@@ -162,7 +162,7 @@ public partial class ProtoGame
         for (int n = 0; n < 30 * 90 && !w.War.Routed.Contains(iguchi.Id) && iguchi.Active; n++)
         {
             await Hold(1d / 30); if (Speed != 30) Speed = 30; if (w.Facts.Count > seen) { seen = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; }
-            if (n == 30 * 8) { Pause(); Follow(1150, 58); await Cap("引くと札で見える。札の出っ張りは隊が向いている方。横や後ろから当たっているのが分かる", 5); Resume(30); }
+            if (n == 30 * 8) { Pause(); Follow(1150, 58); await Cap("引くと凸で見える。出っ張りが向いている方なので、横や後ろから当たっているのが分かる", 5); Resume(30); }
         }
         Pause(); await Hold(1.5);
         await Cap(w.War.Routed.Contains(iguchi.Id) || !iguchi.Active ? "挟まれた井口弥七の隊は崩れた" : "井口弥七の隊はまだ持ちこたえている", 4);

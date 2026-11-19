@@ -156,66 +156,64 @@ public partial class ProtoGame
     }
 
     // ---- 隊の札（引いた視点） ----
-    // 凸の形の札（2026-11-19 ユーザーの図。名前の長さで形が変わらないよう、どの札も同じ大きさ）。
-    // 札は勢力の色。上の出っ張りに家の名、下の広い所に名前（軍団なら〇〇勢）・兵の合計・内訳、いちばん下に士気の細い棒。
-    // 名前が長いときは文字を小さくして収める。本人の札は金の縁。崩れた隊は灰色。
+    // 布陣図の凸（2026-11-19 ユーザー「向きそのものを変えてほしい」）：凸の形を地面に置き、出っ張りが隊の向く方を指すように回す（どの角度にも）。
+    // 色は勢力の色、縁は明るい勢力の色（本人は金、崩れた隊は灰色）。名前・兵の合計・内訳は凸の上に立てて読めるように出し、下に士気の細い棒。
+    // 大きさはカメラの遠さに合わせて、画面の上でほぼ同じ大きさに見える。
     const float CardDistance = 1000;
-    const int CardW = 132, TabW = 58, TabH = 24, BodyH = 78;
-    sealed class Card { public Sprite3D Back = null!; public Label3D House = null!, Name = null!, Total = null!, Parts = null!; public string Key = ""; }
+    sealed class Card { public MeshInstance3D Fill = null!, Edge = null!; public Label3D Name = null!, Total = null!, Parts = null!; public Sprite3D Morale = null!; public string Key = ""; }
     readonly Dictionary<string, Card> cards = new();
     static float Chars(string t) => t.Sum(ch => ch > 0x2000 ? 1f : 0.58f);
-    Label3D CardText(int size) => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = size, OutlineSize = 3, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 21 };
-    static string HouseShort(string house) => house switch { "takano" => "鷹野", "iwakiri" => "岩切", "sawatari" => "沢渡", _ => "" };
-    // 出っ張りは隊の向き（画面の上下左右のうち近いほう）を指す。向きが分からないときは上。
-    int CardDir(ProtoPerson p, Vector3 at)
+    Label3D CardText(int size) => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = size, OutlineSize = 4, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 22 };
+    // 凸の形（向きは -Z が前＝出っ張り）。本体 幅1・奥行き0.6、出っ張り 幅0.42・奥行き0.28。中心は本体の真ん中。
+    static ArrayMesh Totsu(float grow)
     {
-        if (!World.War.Facing.TryGetValue(p.Id, out var f) || Camera == null) return 0;
-        var a = Camera.UnprojectPosition(at); var b = Camera.UnprojectPosition(at + new Vector3((float)f[0], 0, (float)f[1]) * 20);
-        var d = b - a; if (d.LengthSquared() < 1) return 0;
-        return Math.Abs(d.X) > Math.Abs(d.Y) ? (d.X > 0 ? 1 : 3) : (d.Y < 0 ? 0 : 2); // 0上 1右 2下 3左
+        float w = 0.5f + grow, d = 0.3f + grow, tw = 0.21f + grow, td = 0.28f;
+        var v = new Vector3[] { new(-w, 0, d), new(w, 0, d), new(w, 0, -d), new(-w, 0, -d), new(-tw, 0, -d + 0.001f), new(tw, 0, -d + 0.001f), new(tw, 0, -d - td - grow), new(-tw, 0, -d - td - grow) };
+        var idx = new[] { 0, 2, 1, 0, 3, 2, 4, 6, 5, 4, 7, 6 };
+        var arr = new Godot.Collections.Array(); arr.Resize((int)Mesh.ArrayType.Max); arr[(int)Mesh.ArrayType.Vertex] = v; arr[(int)Mesh.ArrayType.Index] = idx;
+        var m = new ArrayMesh(); m.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arr); return m;
     }
+    static readonly ArrayMesh TotsuFill = Totsu(0), TotsuEdge = Totsu(0.035f);
+    static StandardMaterial3D Flat(int priority) => new() { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, NoDepthTest = true, CullMode = BaseMaterial3D.CullModeEnum.Disabled, RenderPriority = priority, Transparency = BaseMaterial3D.TransparencyEnum.Alpha };
     void DrawCard(ProtoPerson p, Vector3 foot, bool show, string name, int total, string parts)
     {
         if (!cards.TryGetValue(p.Id, out var c))
         {
-            c = new Card { Back = new Sprite3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 20 }, House = CardText(16), Name = CardText(17), Total = CardText(20), Parts = CardText(15) };
-            foreach (var n in new Node3D[] { c.Back, c.House, c.Name, c.Total, c.Parts }) AddChild(n);
+            c = new Card
+            {
+                Edge = new MeshInstance3D { Mesh = TotsuEdge, MaterialOverride = Flat(18) }, Fill = new MeshInstance3D { Mesh = TotsuFill, MaterialOverride = Flat(19) },
+                Name = CardText(17), Total = CardText(20), Parts = CardText(15),
+                Morale = new Sprite3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 21 },
+            };
+            foreach (var n in new Node3D[] { c.Edge, c.Fill, c.Name, c.Total, c.Parts, c.Morale }) AddChild(n);
             cards[p.Id] = c;
         }
-        foreach (var n in new GeometryInstance3D[] { c.Back, c.House, c.Name, c.Total, c.Parts }) n.Visible = show;
+        foreach (var n in new GeometryInstance3D[] { c.Edge, c.Fill, c.Name, c.Total, c.Morale }) n.Visible = show;
+        c.Parts.Visible = show && parts != "";
         if (!show) return;
-        var at = foot + new Vector3(0, 8 + distance * 0.025f, 0);
-        foreach (var n in new Node3D[] { c.Back, c.House, c.Name, c.Total, c.Parts }) n.Position = at;
-        bool routed = World.War.Routed.Contains(p.Id); int dir = routed ? 0 : CardDir(p, at);
-        var key = $"{name}|{total}|{parts}|{p.Morale / 5}|{routed}|{dir}";
-        if (key == c.Key) return;
-        c.Key = key; c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
-        c.House.Text = dir is 0 or 2 ? HouseShort(p.House) : HouseShort(p.House).Length > 0 ? HouseShort(p.House)[..1] : "";
-        c.Name.FontSize = Math.Min(17, (int)((CardW - 16) / Math.Max(1, Chars(name))));
-        c.Parts.FontSize = Math.Min(15, (int)((CardW - 16) / Math.Max(1, Chars(c.Parts.Text))));
-        // 形：上下なら幅 CardW・高さ TabH+BodyH、左右なら幅 CardW+TabH・高さ BodyH。出っ張りは辺の真ん中。
-        bool vertical = dir is 0 or 2; int w = vertical ? CardW : CardW + TabH, h = vertical ? TabH + BodyH : BodyH;
-        int bx = dir == 3 ? TabH : 0, by = dir == 0 ? TabH : 0;
-        var tab = dir switch { 0 => new Rect2I((w - TabW) / 2, 0, TabW, TabH + 2), 2 => new Rect2I((w - TabW) / 2, BodyH - 2, TabW, TabH + 2), 1 => new Rect2I(CardW - 2, (h - TabW) / 2, TabH + 2, TabW), _ => new Rect2I(0, (h - TabW) / 2, TabH + 2, TabW) };
-        var edge = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.35f);
-        var fill = routed ? new Color(0.32f, 0.32f, 0.32f, 0.95f) : HouseColor(p.House).Darkened(0.1f); // 勢力の色（文字は輪郭線で読む）
-        var tabFill = routed ? fill : HouseColor(p.House).Darkened(0.3f);
-        var img = Image.CreateEmpty(w, h, false, Image.Format.Rgba8); img.Fill(new Color(0, 0, 0, 0));
-        img.FillRect(tab, edge); img.FillRect(new Rect2I(bx, by, CardW, BodyH), edge);
-        img.FillRect(tab.Grow(-2), tabFill);
-        img.FillRect(new Rect2I(bx + 2, by + 2, CardW - 4, BodyH - 4), fill);
-        // 出っ張りと本体のつなぎ目の縁を消す
-        var seam = dir switch { 0 => new Rect2I(tab.Position.X + 2, by, TabW - 4, 2), 2 => new Rect2I(tab.Position.X + 2, BodyH - 2, TabW - 4, 2), 1 => new Rect2I(CardW - 2, tab.Position.Y + 2, 2, TabW - 4), _ => new Rect2I(TabH, tab.Position.Y + 2, 2, TabW - 4) };
-        img.FillRect(seam, tabFill);
-        img.FillRect(new Rect2I(bx + 6, by + BodyH - 10, CardW - 12, 5), new Color(0.12f, 0.12f, 0.12f));
-        img.FillRect(new Rect2I(bx + 6, by + BodyH - 10, Math.Max(1, (CardW - 12) * Math.Clamp(p.Morale, 0, 100) / 100), 5), new Color(0.95f, 0.8f, 0.3f));
-        c.Back.Texture = ImageTexture.CreateFromImage(img);
-        // 文字の位置（札の真ん中からのずれ、上が正）
-        Vector2 Off(float x, float y) => new(x - w / 2f, h / 2f - y);
-        float cx = bx + CardW / 2f;
-        c.House.Offset = Off(tab.Position.X + tab.Size.X / 2f, tab.Position.Y + tab.Size.Y / 2f + 1);
-        c.Name.Offset = Off(cx, by + 15);
-        c.Total.Offset = Off(cx, by + (parts == "" ? 42 : 37));
-        c.Parts.Offset = Off(cx, by + 57);
+        bool routed = World.War.Routed.Contains(p.Id);
+        // 地面の凸：遠さに合わせた大きさで、向きの角度に回す。
+        float size = distance * 0.105f;
+        double yaw = World.War.Facing.TryGetValue(p.Id, out var f) && !routed ? Math.Atan2(-f[0], -f[1]) : 0; // -Z が前
+        var basis = new Basis(Vector3.Up, (float)yaw).Scaled(new Vector3(size, 1, size));
+        var ground = foot + new Vector3(0, 2, 0);
+        c.Fill.Transform = c.Edge.Transform = new Transform3D(basis, ground);
+        var key = $"{name}|{total}|{parts}|{p.Morale / 5}|{routed}";
+        if (key != c.Key)
+        {
+            c.Key = key; c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
+            c.Name.FontSize = Math.Min(17, (int)(120 / Math.Max(1, Chars(name))));
+            c.Parts.FontSize = Math.Min(15, (int)(120 / Math.Max(1, Chars(c.Parts.Text))));
+            ((StandardMaterial3D)c.Fill.MaterialOverride).AlbedoColor = routed ? new Color(0.32f, 0.32f, 0.32f, 0.92f) : HouseColor(p.House).Darkened(0.1f) with { A = 0.92f };
+            ((StandardMaterial3D)c.Edge.MaterialOverride).AlbedoColor = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.4f);
+            var img = Image.CreateEmpty(100, 7, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
+            img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(p.Morale, 0, 100) / 100), 5), new Color(0.95f, 0.8f, 0.3f));
+            c.Morale.Texture = ImageTexture.CreateFromImage(img);
+        }
+        // 文字は凸の真ん中の上に立てる（名前・兵・内訳・士気の棒の順に上から）。
+        var at = ground + new Vector3(0, 1, 0);
+        foreach (var n in new Node3D[] { c.Name, c.Total, c.Parts, c.Morale }) n.Position = at;
+        bool hasParts = parts != "";
+        c.Name.Offset = new Vector2(0, hasParts ? 30 : 20); c.Total.Offset = new Vector2(0, hasParts ? 8 : -2); c.Parts.Offset = new Vector2(0, -12); c.Morale.Offset = new Vector2(0, hasParts ? -27 : -20);
     }
 }
