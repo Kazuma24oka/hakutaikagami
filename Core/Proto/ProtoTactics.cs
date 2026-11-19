@@ -35,6 +35,13 @@ public sealed partial class ProtoWorld
             // 歩いているときは、向かう敵の方（いなければ行き先の方）を向く。道の次の点は曲がり角で後ろを指すことがある。
             if (War.Target.TryGetValue(u.Id, out var tid)) { var t = Person(tid); Face(u, t.X - u.X, t.Y - u.Y); }
             else if (u.Moving) { var end = u.Path[^1]; Face(u, end.X - u.X, end.Y - u.Y); }
+            else
+            {
+                // 止まって構えている隊は、見えているいちばん近い敵の方を向く。見えなければ敵の本陣の方（2026-11-19 ユーザー「伏兵はなぜ左を向いているのか」。前は最後に歩いた向きのままで、意味が無かった）。
+                var seen = all.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(u, e)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
+                if (seen != null) Face(u, seen.X - u.X, seen.Y - u.Y);
+                else { var foeHead = all.FirstOrDefault(e => Hostile(u.House, e.House)); if (foeHead != null) { var camp = CampOf(foeHead); Face(u, camp.X - u.X, camp.Y - u.Y); } }
+            }
         }
         foreach (var u in all.Where(Hidden)) War.HiddenAt[u.Id] = Second;
     }
