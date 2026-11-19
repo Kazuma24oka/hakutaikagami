@@ -15,6 +15,7 @@ public partial class ProtoGame
     Label spiritTakanoText = null!, spiritRebelText = null!, sideTakano = null!, sideRebel = null!;
     TextureRect pushPic = null!;
     VBoxContainer allyList = null!, enemyList = null!;
+    Label troopsTakano = null!, troopsRebel = null!;
     string rowsKey = "";
     readonly Dictionary<string, (Label Text, ProgressBar Morale, ProgressBar Tactic)> rows = new();
     readonly Image pushImage = Image.CreateEmpty(240, 18, false, Image.Format.Rgba8);
@@ -37,21 +38,23 @@ public partial class ProtoGame
 
         spiritBox = new PanelContainer(); spiritBox.SetAnchorsPreset(Control.LayoutPreset.CenterTop); spiritBox.OffsetTop = 50; spiritBox.OffsetLeft = -380; spiritBox.OffsetRight = 380; root.AddChild(spiritBox);
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 10); spiritBox.AddChild(row);
-        row.AddChild(new Label { Text = "総士気", Modulate = new Color(1, 0.9f, 0.6f) }); row.AddChild(new VSeparator());
+        row.AddChild(new Label { Text = "全軍士気", Modulate = new Color(1, 0.9f, 0.6f) }); row.AddChild(new VSeparator());
         row.AddChild(new Label { Text = "鷹野勢" }); spiritTakano = Bar(HouseColor("takano"), 150, new Vector2(170, 16)); row.AddChild(spiritTakano); spiritTakanoText = new Label(); row.AddChild(spiritTakanoText);
         row.AddChild(new VSeparator());
         row.AddChild(new Label { Text = "岩切勢" }); spiritRebel = Bar(HouseColor("iwakiri"), 150, new Vector2(170, 16)); row.AddChild(spiritRebel); spiritRebelText = new Label(); row.AddChild(spiritRebelText);
 
         commandBox = new PanelContainer { GrowVertical = Control.GrowDirection.Begin };
         commandBox.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0.08f, 0.08f, 0.1f, 0.95f), BorderColor = new Color(0.75f, 0.6f, 0.3f), BorderWidthTop = 2, BorderWidthBottom = 2, BorderWidthLeft = 2, BorderWidthRight = 2, ContentMarginLeft = 14, ContentMarginRight = 14, ContentMarginTop = 10, ContentMarginBottom = 10, CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
-        commandBox.SetAnchorsPreset(Control.LayoutPreset.BottomRight); commandBox.OffsetLeft = -560; commandBox.OffsetRight = -10; commandBox.OffsetTop = -10; commandBox.OffsetBottom = -10; root.AddChild(commandBox);
+        commandBox.SetAnchorsPreset(Control.LayoutPreset.BottomRight); commandBox.OffsetLeft = -600; commandBox.OffsetRight = -10; commandBox.OffsetTop = -10; commandBox.OffsetBottom = -10; root.AddChild(commandBox);
         var col = new VBoxContainer(); col.AddThemeConstantOverride("separation", 6); commandBox.AddChild(col);
         // 上：両方の兵の合計と押し合い。中：このぶつかり合いに加わっている隊の一覧（左が味方、右が敵）。下：本人の気力と采配。
         var top = new HBoxContainer(); top.AddThemeConstantOverride("separation", 8); col.AddChild(top);
-        sideTakano = new Label { CustomMinimumSize = new Vector2(70, 0) }; sideRebel = new Label { CustomMinimumSize = new Vector2(70, 0), HorizontalAlignment = HorizontalAlignment.Right };
+        sideTakano = new Label { CustomMinimumSize = new Vector2(40, 0), HorizontalAlignment = HorizontalAlignment.Right }; sideRebel = new Label { CustomMinimumSize = new Vector2(40, 0) };
         pushTexture = ImageTexture.CreateFromImage(pushImage);
-        pushPic = new TextureRect { Texture = pushTexture, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.Scale, CustomMinimumSize = new Vector2(300, 16), SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, TextureFilter = CanvasItem.TextureFilterEnum.Nearest };
-        top.AddChild(sideTakano); top.AddChild(new Label { Text = "戦況", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(pushPic); top.AddChild(sideRebel);
+        pushPic = new TextureRect { Texture = pushTexture, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.Scale, CustomMinimumSize = new Vector2(220, 16), SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, TextureFilter = CanvasItem.TextureFilterEnum.Nearest };
+        // 並び：兵の合計｜士気合計 数字 [棒] 数字｜兵の合計
+        troopsTakano = new Label(); troopsRebel = new Label();
+        top.AddChild(troopsTakano); top.AddChild(new VSeparator()); top.AddChild(new Label { Text = "総士気", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(sideTakano); top.AddChild(pushPic); top.AddChild(sideRebel); top.AddChild(new VSeparator()); top.AddChild(troopsRebel);
         var lists = new HBoxContainer(); lists.AddThemeConstantOverride("separation", 14); col.AddChild(lists);
         allyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         lists.AddChild(allyList); lists.AddChild(new VSeparator()); lists.AddChild(enemyList);
@@ -197,8 +200,10 @@ public partial class ProtoGame
             int start = war.StartSoldiers.TryGetValue(u.Id, out var st) ? st : u.Soldiers;
             r.Text.Text = $"{u.Name}　兵{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id);
         }
-        sideTakano.Text = "兵" + allies.Sum(u => u.Soldiers); sideRebel.Text = "兵" + enemies.Sum(u => u.Soldiers);
-        PaintPush(pushImage, clashes.Count == 0 ? 0 : clashes.Average(c => c.Push)); pushTexture.Update(pushImage);
+        // 棒は士気の合計の比（2026-11-19 ユーザー「士気の合計を、数値も書いて」）。士気が20を切った隊は崩れるので、どちらが先に崩れそうかが分かる。
+        int ma = allies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale), me2 = enemies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale);
+        sideTakano.Text = ma.ToString(); sideRebel.Text = me2.ToString(); troopsTakano.Text = "兵" + allies.Sum(u => u.Soldiers); troopsRebel.Text = "兵" + enemies.Sum(u => u.Soldiers);
+        PaintPush(pushImage, ma + me2 == 0 ? 0 : (ma - me2) * 100.0 / (ma + me2)); pushTexture.Update(pushImage);
         kiBar.Value = war.Ki;
         foreach (var s in ProtoWorld.Stances) Buttons["clash-stance-" + s].Disabled = war.Stance == s;
         Buttons["clash-tactic"].Text = "戦法：" + ProtoWorld.TacticOf(me); Buttons["clash-tactic"].Disabled = World.GaugeOf(me.Id) < 100;
