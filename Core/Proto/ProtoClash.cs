@@ -83,9 +83,10 @@ public sealed partial class ProtoWorld
         if (War.Spirit.Count == 0) { War.Spirit["takano"] = 100; War.Spirit[Rebel] = 100; }
         var hits = new Dictionary<string, double>(); var dealt = new Dictionary<(string, string), double>(); var rear = new HashSet<string>(); var side = new HashSet<string>(); var shaken = new HashSet<string>();
         War.Hits.Clear();
+        foreach (var u in all) if (!War.StartSoldiers.ContainsKey(u.Id)) War.StartSoldiers[u.Id] = u.Soldiers;
         var before = all.ToDictionary(u => u.Id, u => u.Soldiers);
         bool Live(ProtoPerson x) => !War.Routed.Contains(x.Id);
-        ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && Dist(a, b) <= 80_00).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
+        ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && Dist(a, b) <= Reach).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
         foreach (var a in all.Where(Live))
         {
             var b = Foe(a); if (b == null) continue;

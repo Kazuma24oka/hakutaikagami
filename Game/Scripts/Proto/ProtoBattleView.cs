@@ -104,6 +104,37 @@ public partial class ProtoGame
         }
     }
 
+    // ---- 剣の印：ぶつかっている二つの隊の間（触れている所）に、交差した二本の剣 ----
+    static ImageTexture? swordTex;
+    static ImageTexture SwordTexture()
+    {
+        if (swordTex != null) return swordTex;
+        var img = Image.CreateEmpty(48, 48, false, Image.Format.Rgba8); img.Fill(new Color(0, 0, 0, 0));
+        void Dot(int x, int y, int r, Color c) { for (int dx = -r; dx <= r; dx++) for (int dy = -r; dy <= r; dy++) if (x + dx is >= 0 and < 48 && y + dy is >= 0 and < 48) img.SetPixel(x + dx, y + dy, c); }
+        var edge = new Color(0.1f, 0.1f, 0.1f); var blade = new Color(0.85f, 0.85f, 0.88f); var hilt = new Color(0.55f, 0.35f, 0.15f);
+        foreach (var flip in new[] { false, true })
+        {
+            for (int i = 6; i <= 40; i++) { int x = flip ? 47 - i : i, y = 47 - i; Dot(x, y, 3, edge); }
+            for (int i = 6; i <= 40; i++) { int x = flip ? 47 - i : i, y = 47 - i; Dot(x, y, 1, i > 14 ? blade : hilt); }
+            for (int k = -5; k <= 5; k++) { int cx = flip ? 47 - 14 : 14, cy = 47 - 14; Dot(cx + (flip ? -k : k), cy + k, 1, hilt); }
+        }
+        return swordTex = ImageTexture.CreateFromImage(img);
+    }
+    readonly Dictionary<string, Sprite3D> swords = new();
+    void DrawSwords()
+    {
+        var live = new HashSet<string>();
+        foreach (var c in World.War.Clashes)
+        {
+            var a = World.Person(c.A); var b = World.Person(c.B);
+            if (!World.Sees(World.Player, a) || !World.Sees(World.Player, b)) continue;
+            var key = c.A + "|" + c.B; live.Add(key);
+            if (!swords.TryGetValue(key, out var s)) { s = new Sprite3D { Texture = SwordTexture(), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0012f, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 25 }; AddChild(s); swords[key] = s; }
+            s.Position = (ToScene(a.X, a.Y) + ToScene(b.X, b.Y)) / 2 + new Vector3(0, 4, 0); s.Visible = true;
+        }
+        foreach (var (k, s) in swords) if (!live.Contains(k)) s.Visible = false;
+    }
+
     void UpdateBattleView()
     {
         ShowHits();
@@ -114,9 +145,10 @@ public partial class ProtoGame
             spiritTakano.Value = World.SpiritOf("takano"); spiritRebel.Value = World.SpiritOf("iwakiri");
             spiritTakanoText.Text = World.SpiritOf("takano").ToString(); spiritRebelText.Text = World.SpiritOf("iwakiri").ToString();
         }
-        // 地図の押し合いのゲージ
+        // ぶつかっている所に剣の印（2026-11-19 ユーザーの図）。押し合いのゲージは地図には出さない（右下の窓にある）。
+        DrawSwords();
         var live = new HashSet<string>();
-        foreach (var (key, line) in clashLine)
+        foreach (var (key, line) in clashLine.Where(_ => false))
         {
             var b = World.Person(key);
             if (!World.Sees(World.Player, b) || line.As.All(x => !World.Sees(World.Player, World.Person(x)))) continue;
@@ -161,7 +193,8 @@ public partial class ProtoGame
         foreach (var u in allies.Concat(enemies))
         {
             var r = rows[u.Id]; bool down = war.Routed.Contains(u.Id);
-            r.Text.Text = $"{u.Name}　{u.Soldiers}" + (down ? "　崩れ" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id);
+            int start = war.StartSoldiers.TryGetValue(u.Id, out var st) ? st : u.Soldiers;
+            r.Text.Text = $"{u.Name}　兵{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id);
         }
         sideTakano.Text = allies.Sum(u => u.Soldiers).ToString(); sideRebel.Text = enemies.Sum(u => u.Soldiers).ToString();
         PaintPush(pushImage, clashes.Count == 0 ? 0 : clashes.Average(c => c.Push)); pushTexture.Update(pushImage);
@@ -189,16 +222,18 @@ public partial class ProtoGame
     // 布陣図の凸（2026-11-19 ユーザー「向きそのものを変えてほしい」）：凸の形を地面に置き、出っ張りが隊の向く方を指すように回す（どの角度にも）。
     // 色は勢力の色、縁は明るい勢力の色（本人は金、崩れた隊は灰色）。名前・兵の合計・内訳は凸の上に立てて読めるように出し、下に士気の細い棒。
     // 大きさはカメラの遠さに合わせて、画面の上でほぼ同じ大きさに見える。
-    const float CardDistance = 1000;
+    const float CardDistance = 600; // 凸は世界の大きさなので、引きすぎると小さくなる。これより遠いと凸、近いとちびコマ
     sealed class Card { public MeshInstance3D Fill = null!, Edge = null!; public Label3D Name = null!, Total = null!, Parts = null!; public Sprite3D Morale = null!; public string Key = ""; }
     readonly Dictionary<string, Card> cards = new();
     static float Chars(string t) => t.Sum(ch => ch > 0x2000 ? 1f : 0.58f);
     const int CardFont = 48; // 文字は大きく作って縮める（凸と一緒に大きさが変わる）
     Label3D CardText() => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FontSize = CardFont, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 22 };
-    // 凸の形（向きは -Z が前＝出っ張り）。本体 幅1・奥行き0.6、出っ張り 幅0.42・奥行き0.28。中心は本体の真ん中。
+    // 凸の形（向きは -Z が前＝出っ張り）。本体 幅1・奥行き0.8、出っ張り 幅0.35・奥行き0.3。中心は本体の真ん中。
+    // 大きさは世界の長さで決まっている（CardSize m）。攻めかかる側は相手の80m手前で止まるので、出っ張りが相手の本体にちょうど触れる。
+    const float CardSize = 73f;
     static ArrayMesh Totsu(float grow)
     {
-        float w = 0.5f + grow, d = 0.3f + grow, tw = 0.21f + grow, td = 0.28f;
+        float w = 0.5f + grow, d = 0.4f + grow, tw = 0.175f + grow, td = 0.3f;
         var v = new Vector3[] { new(-w, 0, d), new(w, 0, d), new(w, 0, -d), new(-w, 0, -d), new(-tw, 0, -d + 0.001f), new(tw, 0, -d + 0.001f), new(tw, 0, -d - td - grow), new(-tw, 0, -d - td - grow) };
         var idx = new[] { 0, 2, 1, 0, 3, 2, 4, 6, 5, 4, 7, 6 };
         var arr = new Godot.Collections.Array(); arr.Resize((int)Mesh.ArrayType.Max); arr[(int)Mesh.ArrayType.Vertex] = v; arr[(int)Mesh.ArrayType.Index] = idx;
@@ -225,7 +260,7 @@ public partial class ProtoGame
         if (!show) return;
         bool routed = World.War.Routed.Contains(p.Id);
         // 地面の凸：遠さに合わせた大きさで、向きの角度へなめらかに回す（1秒に120度まで）。
-        float size = distance * 0.075f; // 隊の間（35〜60m）に対して大きすぎると重なるので小さめ
+        float size = CardSize;
         float want = World.War.Facing.TryGetValue(p.Id, out var f) && !routed ? (float)Math.Atan2(-f[0], -f[1]) : cardYaw.GetValueOrDefault(p.Id, 0); // -Z が前
         float yaw = cardYaw.TryGetValue(p.Id, out var was) ? was : want;
         float diff = Mathf.Wrap(want - yaw, -Mathf.Pi, Mathf.Pi), step = Mathf.DegToRad(120) * (float)GetProcessDeltaTime();
@@ -244,7 +279,7 @@ public partial class ProtoGame
         }
         // 見えない〇枠：本体の中の円（半径は本体の奥行きの半分の9割）。円は回しても同じなので、文字と棒はいつも凸の中に収まる。
         // 地面の円は斜めから見ると縦が縮むので、縦は傾きの分だけ詰める。行ごとの高さと、横幅に収まる大きさの小さいほうで文字の大きさを決める。
-        float r = 0.27f * size, squash = Mathf.Sin(Mathf.DegToRad(pitch)), boxW = 1.7f * r, boxH = 1.7f * r * squash;
+        float r = 0.36f * size, squash = Mathf.Sin(Mathf.DegToRad(pitch)), boxW = 1.7f * r, boxH = 1.7f * r * squash;
         bool hasParts = parts != ""; int rows = hasParts ? 4 : 3; float rowH = boxH / rows;
         float Fit(Label3D l, float scale) => Math.Min(rowH * scale, boxW / Math.Max(1, Chars(l.Text))) / CardFont;
         c.Name.PixelSize = Fit(c.Name, 0.85f); c.Total.PixelSize = Fit(c.Total, 1f); c.Parts.PixelSize = Fit(c.Parts, 0.75f);

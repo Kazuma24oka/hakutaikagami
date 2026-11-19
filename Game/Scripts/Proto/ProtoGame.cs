@@ -47,6 +47,28 @@ public partial class ProtoGame : Node3D
     ImmediateMesh pathMesh = null!;
     Label clock = null!, foot = null!, journal = null!, message = null!;
     PanelContainer sidePanel = null!; bool? panelOpen; string journalKey = ""; double journalShown;
+    static readonly string[] LogTabs = ["全部", "戦闘", "会話"];
+    string logTab = "全部"; bool logMin; VBoxContainer logBody = null!;
+    readonly List<ProtoEvent> damageLog = new(); long damageSeen = -1;
+    static readonly string[] BattleWords = ["崩れ", "突いた", "戦法", "奇襲", "押さえ", "立て直", "討ち取", "壊滅", "総崩れ", "攻めかか", "狼煙", "深追い", "仕掛け", "手前で止ま", "鎮ま", "退けられ", "兵を引いた"];
+    // 戦闘：合戦の出来事と、1分ごとの打撃。会話：台詞（「」のある行）。全部：記録のすべて。
+    IEnumerable<ProtoEvent> LogLines()
+    {
+        var hits = World.War.Hits;
+        if (hits.Count > 0 && hits[0].At != damageSeen)
+        {
+            damageSeen = hits[0].At;
+            foreach (var h in hits.Where(h => h.Loss > 0 && World.Sees(World.Player, World.Person(h.To))))
+                damageLog.Add(new ProtoEvent(h.At, $"{World.Person(h.To).Name} -{h.Loss}（{(h.Surprise ? "奇襲・" : "")}{h.Kind}）"));
+            if (damageLog.Count > 200) damageLog.RemoveRange(0, damageLog.Count - 200);
+        }
+        return logTab switch
+        {
+            "戦闘" => World.Journal.Where(e => BattleWords.Any(e.Text.Contains)).Concat(damageLog).OrderBy(e => e.At),
+            "会話" => World.Journal.Where(e => e.Text.Contains('「')),
+            _ => World.Journal,
+        };
+    }
     VBoxContainer panel = null!;
     Label status = null!;
     readonly Dictionary<string, Button> taskButtons = new();
@@ -239,9 +261,9 @@ public partial class ProtoGame : Node3D
         while (list.Count < want) { var d = new DotOfficerActor { OnTop = true }; AddChild(d); list.Add(d); }
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
         var dir = heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
-        // ぶつかっている間は、足軽が向いている方へ前に出て横一列に並び、打ち合う。
+        // 足軽は大将の後ろに並ぶ（2026-11-19 ユーザーの図「大将どうしが向かい合い、兵は後ろ」）。ぶつかっている間は打つ動き。
         bool front = World.ClashOf(p.Id) != null; if (front) anim = "attack";
-        var back = front ? dir : -dir; var side = new Vector3(-back.Z, 0, back.X);
+        var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
         float gap = 26 * px * FollowerGap; int wide = front ? 5 : Wide(p);
         for (int i = 0; i < list.Count; i++)
         {
@@ -293,8 +315,14 @@ public partial class ProtoGame : Node3D
 
         var bottom = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 700; root.AddChild(bottom);
         var log = new VBoxContainer(); bottom.AddChild(log);
-        message = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(1, 0.95f, 0.7f) }; log.AddChild(message);
-        journal = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart }; log.AddChild(journal);
+        // 記録（2026-11-19 ユーザー「最小化と、種類でタブを分けたい。戦闘のダメージ、会話だけ、全部」）。
+        var tabs = new HBoxContainer(); tabs.AddThemeConstantOverride("separation", 4); tabs.Theme = new Theme { DefaultFontSize = 15 }; log.AddChild(tabs);
+        foreach (var t in LogTabs) { var tab = t; Add(tabs, "log-" + tab, tab, () => { logTab = tab; journalKey = ""; RefreshUi(); }); }
+        tabs.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill });
+        Add(tabs, "log-min", "－", () => { logMin = !logMin; RefreshUi(); });
+        logBody = new VBoxContainer(); log.AddChild(logBody);
+        message = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(1, 0.95f, 0.7f) }; logBody.AddChild(message);
+        journal = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart }; logBody.AddChild(journal);
     }
 
     internal Button Add(Container parent, string id, string text, Action action)
@@ -349,7 +377,9 @@ public partial class ProtoGame : Node3D
             b.Text = World.TaskPlace(t) + "へ　" + (eta == null ? "道がない" : eta <= 5 ? "ここ" : "着くのは" + HourMinute(World.Second + eta.Value) + "ごろ");
         }
         message.Text = Message;
-        var lines = string.Join((char)10, World.Journal.TakeLast(3).Select(e => HourMinute(e.At) + "　" + e.Text));
+        var lines = string.Join((char)10, LogLines().TakeLast(logTab == "全部" ? 3 : 6).Select(e => HourMinute(e.At) + "　" + e.Text));
+        logBody.Visible = !logMin; Buttons["log-min"].Text = logMin ? "＋" : "－";
+        foreach (var t in LogTabs) Buttons["log-" + t].Disabled = logTab == t;
         if (lines != journalKey) { journalKey = lines; journalShown = Time.GetTicksMsec() / 1000.0; }
         journal.Text = lines;
         sidePanel.Visible = panelOpen ?? World.War.Phase != "合戦";
@@ -419,8 +449,9 @@ public partial class ProtoGame : Node3D
     {
         var input = new Vector3((Input.IsKeyPressed(Key.D) || Input.IsKeyPressed(Key.Right) ? 1 : 0) - (Input.IsKeyPressed(Key.A) || Input.IsKeyPressed(Key.Left) ? 1 : 0), 0, (Input.IsKeyPressed(Key.S) || Input.IsKeyPressed(Key.Down) ? 1 : 0) - (Input.IsKeyPressed(Key.W) || Input.IsKeyPressed(Key.Up) ? 1 : 0));
         // 画面の端にマウスを置くと地図が動く（HoI4 のように）。窓に入っているときだけ。
-        var mouse = GetViewport().GetMousePosition(); var size = GetViewport().GetVisibleRect().Size; const float edge = 14;
-        if (DisplayServer.WindowIsFocused() && mouse.X >= 0 && mouse.Y >= 0 && mouse.X <= size.X && mouse.Y <= size.Y)
+        // 上下の端は、窓の枠やタスクバーで端まで届かないことがあるので、端の少し外（40px）まで数える（2026-11-19 ユーザーの印）。
+        var mouse = GetViewport().GetMousePosition(); var size = GetViewport().GetVisibleRect().Size; const float edge = 24, outside = 40;
+        if (DisplayServer.WindowIsFocused() && mouse.X >= -outside && mouse.Y >= -outside && mouse.X <= size.X + outside && mouse.Y <= size.Y + outside)
         {
             if (mouse.X < edge) input.X -= 1; else if (mouse.X > size.X - edge) input.X += 1;
             if (mouse.Y < edge) input.Z -= 1; else if (mouse.Y > size.Y - edge) input.Z += 1;

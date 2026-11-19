@@ -9,6 +9,9 @@ namespace HakutaiKagami.Core.Proto;
 // ・伏せる：森の中で動かずにいる隊は、敵からは近く（80m）まで見えない。伏せていた隊が仕掛けると奇襲（5分のあいだ1.5倍、相手の士気-30、その間は毎分さらに-4）。側面を突かれると毎分-2。
 public sealed partial class ProtoWorld
 {
+    // 間合い（2026-11-19 ユーザーの図「遠巻きでは凸の出っ張りが相手の面に触れる」）：打ち合える遠さ100m、攻めかかる側は相手の80m手前で止まる、隊どうしは70m空ける。
+    // 地図の凸（幅64m・奥行き48m・出っ張り32m）がちょうど触れ合う長さ。
+    internal const long Reach = 100_00, Contact = 80_00, Gap = 70_00;
     public static bool Pursues(ProtoPerson u) => u.Temper == "逸る" || u.Wits < 55;
 
     // 伏せている：森の中で、動かず、ぶつかっておらず、崩れていない。
@@ -23,8 +26,8 @@ public sealed partial class ProtoWorld
         {
             if (War.Routed.Contains(u.Id)) { War.FacingFoe.Remove(u.Id); continue; }
             ProtoPerson? foe = null;
-            if (War.FacingFoe.TryGetValue(u.Id, out var fid)) { var f = Person(fid); if (f.Active && !War.Routed.Contains(fid) && Dist(u, f) <= 100_00) foe = f; }
-            foe ??= all.Where(b => Hostile(u.House, b.House) && !War.Routed.Contains(b.Id) && Dist(u, b) <= 80_00).OrderBy(b => Dist(u, b)).ThenBy(b => b.Id).FirstOrDefault();
+            if (War.FacingFoe.TryGetValue(u.Id, out var fid)) { var f = Person(fid); if (f.Active && !War.Routed.Contains(fid) && Dist(u, f) <= Reach + 20_00) foe = f; }
+            foe ??= all.Where(b => Hostile(u.House, b.House) && !War.Routed.Contains(b.Id) && Dist(u, b) <= Reach).OrderBy(b => Dist(u, b)).ThenBy(b => b.Id).FirstOrDefault();
             if (foe != null) { War.FacingFoe[u.Id] = foe.Id; Face(u, foe.X - u.X, foe.Y - u.Y); continue; }
             War.FacingFoe.Remove(u.Id);
             // 歩いているときは、向かう敵の方（いなければ行き先の方）を向く。道の次の点は曲がり角で後ろを指すことがある。
@@ -68,7 +71,7 @@ public sealed partial class ProtoWorld
     {
         foreach (var a in all.Where(a => !War.Routed.Contains(a.Id) && ClashOf(a.Id) == null))
         {
-            var r = all.Where(b => Hostile(a.House, b.House) && War.Routed.Contains(b.Id) && b.Active && Dist(a, b) <= 80_00).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
+            var r = all.Where(b => Hostile(a.House, b.House) && War.Routed.Contains(b.Id) && b.Active && Dist(a, b) <= Reach).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
             if (r == null) continue;
             hits[r.Id] = hits.GetValueOrDefault(r.Id) + a.Soldiers * 0.006 * (a.Valor / 50.0) * 1.5;
             a.Doing = $"{r.Name}の兵を追い討ちしている";
@@ -80,7 +83,7 @@ public sealed partial class ProtoWorld
     internal bool KeepsChasing(ProtoPerson u, ProtoPerson t)
     {
         // 退いている：崩れているか、誰にも向かわずに遠ざかっている（味方を追っている敵は退いているのではない）。
-        bool fleeing = War.Routed.Contains(t.Id) || MovingAway(t, u) && Dist(u, t) > 80_00 && !War.Target.ContainsKey(t.Id);
+        bool fleeing = War.Routed.Contains(t.Id) || MovingAway(t, u) && Dist(u, t) > Reach && !War.Target.ContainsKey(t.Id);
         if (!fleeing) return true;
         if (Pursues(u) && Dist(u, t) <= 600_00) { u.Doing = $"{t.Name}の兵を追っている"; return true; }
         if (!Flag($"hold:{u.Id}:{t.Id}")) { Set($"hold:{u.Id}:{t.Id}"); Happen($"hold:{u.Id}:{t.Id}", $"{u.Name}は退く{t.Name}の兵を深追いせず、止まった。", u.X, u.Y, u); }
@@ -100,6 +103,7 @@ public sealed partial class ProtoWorld
         Advance(War.SignalAt + 60 - Second);
         var kosaka = Person(Karou); var iguchi = Person(Iguchi); var me = Player;
         foreach (var id in new[] { Heir, Katsumoto }) { Person(id).Active = false; War.Target.Remove(id); }
+        War.StartSoldiers.Clear();
         foreach (var u in new[] { kosaka, iguchi, me }) { u.Path = []; u.PathIndex = 0; War.Target.Remove(u.Id); War.Routed.Remove(u.Id); }
         me.Soldiers = 30; me.Morale = 100; iguchi.Soldiers = 80; iguchi.Morale = 100; kosaka.Soldiers = 100; kosaka.Morale = 100;
         var hide = PositionOf("forest-edge"); kosaka.X = hide.X * 100L; kosaka.Y = hide.Y * 100L;
@@ -108,25 +112,25 @@ public sealed partial class ProtoWorld
     // 囮が下がる先：伏せた小坂のすぐ北（60m）を通って、森の縁沿いに西へ350m。
     public (long X, long Y) TsuriLure() { var k = Person(Karou); return (k.X - 350_00, k.Y - 60_00); }
 
-    // 間合い：u が t に当たるときに止まる所（t から u の側へ50m）。
+    // 間合い：u が t に当たるときに止まる所（t から u の側へ80m）。
     (long X, long Y) ContactPoint(ProtoPerson u, ProtoPerson t)
     {
         double dx = u.X - t.X, dy = u.Y - t.Y, len = Math.Sqrt(dx * dx + dy * dy);
         if (len < 1) { dx = 1; dy = 0; len = 1; }
-        var p = (t.X + (long)(dx / len * 50_00), t.Y + (long)(dy / len * 50_00));
+        var p = (t.X + (long)(dx / len * Contact), t.Y + (long)(dy / len * Contact));
         return Map.GroundAtCm(p.Item1, p.Item2) == Ground.Water ? (t.X, t.Y) : p;
     }
 
-    // 間を空ける（毎分）：隊どうしが35mより近ければ、互いに半分ずつ離す（重なって一つに見えないように。世界の本当の位置を動かす）。
+    // 間を空ける（毎分）：隊どうしが70mより近ければ、互いに半分ずつ離す（重なって一つに見えないように。世界の本当の位置を動かす）。
     void Spread(ProtoPerson[] all)
     {
         var us = all.Where(u => u.Active && u.Soldiers > 0).OrderBy(u => u.Id).ToArray();
         for (int i = 0; i < us.Length; i++) for (int j = i + 1; j < us.Length; j++)
         {
             var a = us[i]; var b = us[j]; double dx = b.X - a.X, dy = b.Y - a.Y, len = Math.Sqrt(dx * dx + dy * dy);
-            if (len >= 35_00) continue;
+            if (len >= Gap) continue;
             if (len < 1) { double ang = (i * 7 + j * 13) % 360 * Math.PI / 180; dx = Math.Cos(ang); dy = Math.Sin(ang); len = 1; }
-            long px = (long)(dx / len * (35_00 - len) / 2), py = (long)(dy / len * (35_00 - len) / 2);
+            long px = (long)(dx / len * (Gap - len) / 2), py = (long)(dy / len * (Gap - len) / 2);
             if (Map.GroundAtCm(a.X - px, a.Y - py) != Ground.Water) { a.X -= px; a.Y -= py; }
             if (Map.GroundAtCm(b.X + px, b.Y + py) != Ground.Water) { b.X += px; b.Y += py; }
         }
@@ -140,13 +144,13 @@ public sealed partial class ProtoWorld
         return Dist(u, n.X, n.Y) > Dist(u, t) + 50_00;
     }
 
-    // 伏せていた隊は、目の前に敵が来たら自分から仕掛ける。
+    // 伏せていた隊は、目の前（150m）に敵が来たら自分から仕掛ける。
     void Ambushers()
     {
         foreach (var u in Units.Where(u => Hidden(u) && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && !u.Player))
         {
-            // 目の前（120m）まで引きつけてから出る（遠くで出ると、同じ速さで逃げられて追いつけない）。
-            var e = Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 120_00 && InSight(u, e)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
+            // 目の前（150m）まで引きつけてから出る（遠くで出ると、同じ速さで逃げられて追いつけない）。
+            var e = Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 150_00 && InSight(u, e)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
             if (e != null) War.Target[u.Id] = e.Id;
         }
     }
