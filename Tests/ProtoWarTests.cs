@@ -174,10 +174,10 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         for (int i = 0; i < 120 && w.ClashOf(w.Player.Id) == null; i++) w.Advance(60);
         var clash = w.ClashOf(w.Player.Id);
         cp.Expect(clash != null, "攻めかかった相手とぶつかると押し合いができる　" + ProtoWorld.Clock(w.Second));
-        cp.Log($"押し合い {clash!.Push:F0}　気力 {w.War.Ki}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
+        cp.Log($"気力 {w.War.Ki}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
         // かかれ：気力を25使って、すぐ押し返す。
-        { double push = clash.Push; int ki = w.War.Ki; cp.Expect(w.CanKakare, "ぶつかっていて気力が25あればかかれる"); cp.Log(w.Do("kakare:me"));
-          cp.Expect(w.War.Ki == ki - 25 && w.ClashOf(w.Player.Id)!.Push >= Math.Min(100, push + 15) - 0.001, "かかれは気力を使って押し返す"); }
+        { int ki = w.War.Ki; cp.Expect(w.CanKakare, "ぶつかっていて気力が25あれば強攻できる"); cp.Log(w.Do("kakare:me"));
+          cp.Expect(w.War.Ki == ki - 25, "強攻は気力を25使う"); }
         // 構え：同じ世界を二つに分けて、防御のほうが兵の減りが少ない。
         var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(w.Save(), ProtoMap.Json);
         var guard = ProtoWorld.Load(Map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(bytes, ProtoMap.Json)!);
@@ -270,6 +270,21 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         throw new InvalidOperationException("森が見つからない");
     }
 
+    // 立て直し：崩れた隊は本陣で30分休むと、一度だけ戦いに戻る（士気60）。
+    [Fact]
+    public void TheRoutedUnitRegroupsAtCamp()
+    {
+        using var cp = new Checkpoints("試作版の立て直し", o);
+        var w = new ProtoWorld(Map); w.SetupTsuriPractice();
+        var iguchi = w.Person("iguchi-yashichi"); var castle = Map.Site("iwakiri-castle");
+        // 敵のいない本陣（岩切城）に、崩れた井口を置く。
+        foreach (var u in w.Units.Where(u => u.House == "takano")) { u.X = castle.X * 100L + 3000_00; u.Y = castle.Y * 100L + 3000_00; u.Path = []; u.PathIndex = 0; w.War.Target.Remove(u.Id); }
+        iguchi.X = castle.X * 100L; iguchi.Y = castle.Y * 100L; iguchi.Path = []; iguchi.PathIndex = 0; iguchi.Soldiers = 50; iguchi.Morale = 10; w.War.Routed.Add(iguchi.Id);
+        w.Advance(20 * 60); cp.Expect(w.War.Routed.Contains(iguchi.Id), "20分ではまだ崩れたまま");
+        w.Advance(15 * 60); cp.Log($"35分後：崩れ{w.War.Routed.Contains(iguchi.Id)} 士気{iguchi.Morale}");
+        cp.Expect(!w.War.Routed.Contains(iguchi.Id) && iguchi.Morale == 60, "30分休むと士気60で戦いに戻る");
+    }
+
     // 見た目を確かめるための保存（HAKUTAI_WRITE_SCENE に置き場所を渡したときだけ書く。ふだんは何もしない）。
     // 動画と同じ筋で、6時20分を過ぎて本人の隊がぶつかっている場面。ゲームを HAKUTAI_PROTO_SAVE でこれを読ませて絵を撮る。
     [Fact]
@@ -289,7 +304,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         w.Advance(3 * Day + 6 * Hour + 20 * 60 - w.Second);
         for (int i = 0; i < 60 && w.ClashOf(w.Player.Id) == null; i++) w.Advance(60);
         File.WriteAllBytes(path, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(w.Save(), ProtoMap.Json));
-        o.WriteLine($"{ProtoWorld.Clock(w.Second)} 押し合い {(w.ClashOf(w.Player.Id)?.Push ?? 0):F0} → {path}");
+        o.WriteLine($"{ProtoWorld.Clock(w.Second)} → {path}");
     }
 
     // 動画（Game/Scripts/Proto/ProtoFilm.cs）と同じ手順：訃報を自分で届けて説かずに戻り、軍議で南の丘・今夜・6時を選んで丘へ。合図で合戦になって決着がつく。
@@ -320,7 +335,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Log($"{ProtoWorld.Clock(w.Second)} 段階 {w.War.Phase} 合図 {w.War.Signaled} 結果 {w.War.Result}");
         cp.Expect(w.War.Result != "", "決着がつく");
         cp.Expect(w.Facts.Any(f => f.Id.StartsWith("tactic:")), "武将が戦法を使う");
-        cp.Expect(w.Facts.Any(f => f.Id.StartsWith("regroup:")), "崩れた隊が本陣で立て直す");
+        cp.Log("立て直した隊：" + w.Facts.Count(f => f.Id.StartsWith("regroup:")) + "（成り行きしだい。仕組みは TheRoutedUnitRegroupsAtCamp で確かめる）");
         cp.Log($"総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
     }
 }

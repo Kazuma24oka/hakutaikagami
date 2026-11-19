@@ -18,7 +18,6 @@ public sealed class ProtoClash
 {
     public string A { get; set; } = "";   // 鷹野方
     public string B { get; set; } = "";   // 岩切方
-    public double Push { get; set; }      // -100〜100。正なら鷹野方が押している
     public long Since { get; set; }
 }
 
@@ -123,7 +122,7 @@ public sealed partial class ProtoWorld
             War.Gauge[a.Id] = Math.Min(100, GaugeOf(a.Id) + (a.Player ? 12 : 6));
             if (a.Player) War.Ki = Math.Min(100, War.Ki + 3);
         }
-        // 押し合い：同じ1分に互いが失った割合の差で動く。押し込まれ続けると士気が下がる。
+        // ぶつかり合いの記録（誰と誰が打ち合っているか）。
         foreach (var ((x, y), _) in dealt)
         {
             var (a, b) = Person(x).House == Rebel ? (y, x) : (x, y);
@@ -144,10 +143,6 @@ public sealed partial class ProtoWorld
         foreach (var c in War.Clashes.ToArray())
         {
             if (!dealt.ContainsKey((c.A, c.B)) && !dealt.ContainsKey((c.B, c.A))) { War.Clashes.Remove(c); continue; }
-            double toB = dealt.GetValueOrDefault((c.A, c.B)) / Math.Max(1, before.GetValueOrDefault(c.B)), toA = dealt.GetValueOrDefault((c.B, c.A)) / Math.Max(1, before.GetValueOrDefault(c.A));
-            c.Push = Math.Clamp(c.Push + (toB - toA) * 900, -100, 100);
-            if (c.Push >= 60) Person(c.B).Morale = Math.Max(0, Person(c.B).Morale - 2);
-            if (c.Push <= -60) Person(c.A).Morale = Math.Max(0, Person(c.A).Morale - 2);
         }
         Pursue(all, hits);
         foreach (var (id, h) in hits)
@@ -201,20 +196,19 @@ public sealed partial class ProtoWorld
         War.Gauge[u.Id] = 0; var name = TacticOf(u);
         switch (name)
         {
-            case "突撃": War.Until["charge:" + u.Id] = Second + 3 * 60; Shove(u, 20); break;
+            case "突撃": War.Until["charge:" + u.Id] = Second + 3 * 60; break;
             case "槍衾": case "堅陣": War.Until["guard:" + u.Id] = Second + 5 * 60; break;
-            default: u.Morale = Math.Min(100, u.Morale + 25); Shove(u, 10); break;
+            default: u.Morale = Math.Min(100, u.Morale + 25); break;
         }
         Happen($"tactic:{u.Id}:{Second}", $"{u.Name}が戦法「{name}」を使った。", u.X, u.Y, u);
         return $"戦法「{name}」。";
     }
-    void Shove(ProtoPerson u, double d) { var c = ClashOf(u.Id); if (c != null) c.Push = Math.Clamp(c.Push + (c.A == u.Id ? d : -d), -100, 100); }
     string SetStance(string s) { if (!Stances.Contains(s)) return ""; War.Stance = s; return $"構え：{s}"; }
     public bool CanKakare => ClashOf(Player.Id) != null && War.Ki >= 25 && !War.Routed.Contains(Player.Id);
     string Kakare()
     {
         if (!CanKakare) return "今は強攻できない";
-        War.Ki -= 25; War.Until["kakare:" + Player.Id] = Second + 3 * 60; Shove(Player, 15);
+        War.Ki -= 25; War.Until["kakare:" + Player.Id] = Second + 3 * 60;
         return "強攻をかけた。";
     }
 }

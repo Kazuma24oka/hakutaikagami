@@ -118,7 +118,7 @@ public partial class ProtoGame
                         await Hold(1d / 30); if (Speed != 60) Speed = 60;
                         if (w.Facts.Count > seenF) { seenF = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; }
                         if (!usedTactic && w.GaugeOf(w.Player.Id) >= 100) { usedTactic = true; filmCaption.Text = "戦法のゲージがたまった。戦法「鼓舞」で士気を立て直す"; Buttons["clash-tactic"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
-                        else if (!guarded && w.ClashOf(w.Player.Id) is { Push: < -50 }) { guarded = true; filmCaption.Text = "押し込まれている。構えを「防御」に変えて耐える"; Buttons["clash-stance-防御"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
+                        else if (!guarded && w.Player.Morale < 60) { guarded = true; filmCaption.Text = "押し込まれている。構えを「防御」に変えて耐える"; Buttons["clash-stance-防御"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
                         else if (w.CanKakare && n % 60 == 0) { filmCaption.Text = "強攻"; Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed); }
                     }
                 }

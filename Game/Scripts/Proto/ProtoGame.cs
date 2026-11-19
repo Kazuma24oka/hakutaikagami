@@ -249,7 +249,7 @@ public partial class ProtoGame : Node3D
             var pb = ToScene(b.X, b.Y); var pa = As.Select(x => ToScene(World.Person(x).X, World.Person(x).Y)).Aggregate(Vector3.Zero, (s, v) => s + v) / As.Length;
             var d = pb - pa; d.Y = 0;
             if (d.LengthSquared() < 1) d = heading.TryGetValue(As[0], out var h) ? h : new Vector3(1, 0, 0);
-            d = d.Normalized(); double push = g.Average(c => c.Push);
+            d = d.Normalized(); double push = 0;
             var m = (pa + pb) / 2 + d * (float)(push / 100.0) * gap * 1.5f; // 押している側へ線が動く
             clashLine[g.Key] = (m, d, As, push);
         }
