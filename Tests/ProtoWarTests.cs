@@ -231,6 +231,60 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         heir.X = r.X + 200_00; heir.Y = r.Y; kosaka.X = r.X - 200_00; kosaka.Y = r.Y;
         cp.Expect(w.KeepsChasing(heir, r) && !w.KeepsChasing(kosaka, r), "逸る者は追い、慎重な者は追わない");
     }
+    // 釣り野伏：本人が道の口で井口とぶつかってから森の方へ下がると、逸る井口は追ってきて、森の北の縁に伏せた小坂が奇襲する。
+    // 本人が向き直って挟めば井口は崩れる。動画（Game/Scripts/Proto/ProtoFilm.cs の釣り野伏）と同じ手順。
+    internal static ProtoWorld TsuriSetup(ProtoWorld w)
+    {
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        // 本人は道の口（囮）、小坂は森の北の縁に伏せる。正之は城に残る（逸って先に仕掛けないように）。
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[0]);
+        w.War.Assign["takano-masayuki"] = "takano-castle"; w.War.Assign["kosaka-shigetada"] = "forest-edge";
+        w.GoToTask(w.OpenTasks.First(t => t.Kind == "muster").Id);
+        return w;
+    }
+    // 下がる先：伏せた小坂のすぐ北（60m）を通って、森の縁沿いに西へ350m（追ってくる敵が小坂の横を通る）。
+    internal static (long X, long Y) TsuriLure(ProtoWorld w) { var k = w.Person("kosaka-shigetada"); return (k.X - 350_00, k.Y - 60_00); }
+    [Fact]
+    public void TheFeignedRetreatDrawsTheEnemyIntoTheAmbush()
+    {
+        using var cp = new Checkpoints("試作版の釣り野伏", o);
+        var w = TsuriSetup(new ProtoWorld(Map)); int seen0 = w.Facts.Count;
+        cp.Log($"軍議 {ProtoWorld.Clock(w.Second)}　出立 {ProtoWorld.Clock(w.War.DepartAt)}　合図 {ProtoWorld.Clock(w.War.SignalAt)}");
+        w.Advance(w.War.SignalAt + 2 * 60 - w.Second);
+        foreach (var f in w.Facts.Skip(seen0)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}");
+        var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi");
+        cp.Log($"{ProtoWorld.Clock(w.Second)} 小坂 {kosaka.Doing} 伏せ{w.Hidden(kosaka)}　井口 {iguchi.Doing} 兵{iguchi.Soldiers}　本人 {w.Player.Doing}");
+        cp.Expect(w.Hidden(kosaka), "小坂は森の北の縁に伏せている");
+        var attack = w.Actions().FirstOrDefault(a => a.Id == "attack:" + iguchi.Id);
+        cp.Expect(attack != null, "道の口で井口が見えて、攻めかかれる");
+        w.Do(attack!.Id);
+        for (int i = 0; i < 30 && w.ClashOf(w.Player.Id) == null; i++) w.Advance(60);
+        cp.Expect(w.ClashOf(w.Player.Id) != null, "井口とぶつかる　" + ProtoWorld.Clock(w.Second));
+        w.Advance(60);
+        // わざと退く：小坂のいる森の向こうへ歩いて下がる。
+        // 伏兵の横を通り過ぎるように、森の縁の南へ下がる（追ってくる敵の側面に伏兵が来る）。
+        var lure = TsuriLure(w); w.War.Target.Remove(w.Player.Id); w.MoveTo(lure.X, lure.Y);
+        int seen = w.Facts.Count;
+        for (int i = 0; i < 40 && !w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id)); i++)
+        {
+            w.Advance(60); foreach (var f in w.Facts.Skip(seen)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count;
+            cp.Log($"　　{ProtoWorld.Clock(w.Second)} 井口まで{Math.Sqrt(Math.Pow(kosaka.X - iguchi.X, 2) + Math.Pow(kosaka.Y - iguchi.Y, 2)) / 100:F0}m 小坂 伏せ{w.Hidden(kosaka)} 見える{w.InSight(kosaka, iguchi)} 向かう{w.War.Target.GetValueOrDefault(kosaka.Id, "-")} {kosaka.Doing}　本人まで{Math.Sqrt(Math.Pow(w.Player.X - iguchi.X, 2) + Math.Pow(w.Player.Y - iguchi.Y, 2)) / 100:F0}m");
+        }
+        cp.Expect(w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id)), "追ってきた井口を、伏せていた小坂が奇襲する");
+        // 向き直って挟む。
+        if (w.Actions().Any(a => a.Id == "attack:" + iguchi.Id)) w.Do("attack:" + iguchi.Id);
+        for (int i = 0; i < 40 && !w.War.Routed.Contains(iguchi.Id) && iguchi.Active; i++)
+        {
+            w.Advance(60); foreach (var f in w.Facts.Skip(seen)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count;
+            var fk = w.War.Facing.GetValueOrDefault(kosaka.Id, [0, 0]);
+            cp.Log($"　　{ProtoWorld.Clock(w.Second)} 小坂の向き({fk[0]:F2},{fk[1]:F2}) 相手{w.War.FacingFoe.GetValueOrDefault(kosaka.Id, "-")} 井口へ({(iguchi.X - kosaka.X) / 100},{(iguchi.Y - kosaka.Y) / 100}) {w.FlankOf(kosaka, iguchi).Kind}　小坂 {kosaka.Doing}　井口 {iguchi.Doing}");
+        }
+        cp.Log($"井口 兵{iguchi.Soldiers} {iguchi.Doing}　本人 兵{w.Player.Soldiers}　小坂 兵{kosaka.Soldiers}");
+        cp.Expect(w.War.Routed.Contains(iguchi.Id) || !iguchi.Active, "挟まれた井口は崩れる");
+    }
+
     static (long X, long Y) FindForest(ProtoWorld w)
     {
         var p = w.PositionOf("forest-edge");

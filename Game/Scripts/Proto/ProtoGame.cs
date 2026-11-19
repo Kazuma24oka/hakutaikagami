@@ -436,7 +436,7 @@ public partial class ProtoGame : Node3D
             if (World.Second >= skipUntil) skipUntil = 0;
             dirty = true; UpdateActors(); PlaceCamera(); RefreshUi(); SaveGame(); return;
         }
-        bool running = !Debug.NoteOpen && !Scene.Open && (World.Player.Moving || WaitUntil > World.Second);
+        bool running = !Debug.NoteOpen && !Scene.Open && !FilmPause && (World.Player.Moving || WaitUntil > World.Second);
         if (running)
         {
             acc += delta * Speed; int n = Math.Min((int)acc, 5000); acc -= n;

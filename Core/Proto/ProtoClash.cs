@@ -38,9 +38,14 @@ public sealed partial class ProtoWorld
         foreach (var pos in Map.Data.Positions!.Where(p => p.Kind != ""))
         {
             var here = Units.Where(u => !War.Routed.Contains(u.Id) && Dist(u, pos.X * 100L, pos.Y * 100L) <= 150_00).Select(u => Side(u.House)).Distinct().ToArray();
-            if (here.Length == 1 && War.Holder.GetValueOrDefault(pos.Id) != here[0])
+            // 一つの家だけが5分続けて居たときに持ち主が替わる（通りがかりで行ったり来たりしないように）。
+            string cand = here.Length == 1 ? here[0] : "";
+            var prev = War.HoldCand.GetValueOrDefault(pos.Id, "|0").Split('|');
+            if (prev[0] != cand) War.HoldCand[pos.Id] = $"{cand}|{Second}";
+            long since = prev[0] == cand ? long.Parse(prev[1]) : Second;
+            if (cand != "" && Second - since >= 5 * 60 && War.Holder.GetValueOrDefault(pos.Id) != cand)
             {
-                War.Holder[pos.Id] = here[0];
+                War.Holder[pos.Id] = cand; here = [cand];
                 if (War.Phase == "合戦") Happen($"hold:{pos.Id}:{Second}", $"{HouseName(here[0])}が{pos.Name}を押さえた。", pos.X * 100L, pos.Y * 100L);
             }
             if (War.Phase == "合戦" && Second % 600 == 0 && War.Holder.TryGetValue(pos.Id, out var h))
@@ -67,7 +72,7 @@ public sealed partial class ProtoWorld
     void Fight(ProtoPerson[] all)
     {
         if (War.Spirit.Count == 0) { War.Spirit["takano"] = 100; War.Spirit[Rebel] = 100; }
-        var hits = new Dictionary<string, double>(); var dealt = new Dictionary<(string, string), double>(); var rear = new HashSet<string>();
+        var hits = new Dictionary<string, double>(); var dealt = new Dictionary<(string, string), double>(); var rear = new HashSet<string>(); var side = new HashSet<string>(); var shaken = new HashSet<string>();
         var before = all.ToDictionary(u => u.Id, u => u.Soldiers);
         bool Live(ProtoPerson x) => !War.Routed.Contains(x.Id);
         ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && Dist(a, b) <= 80_00).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
@@ -89,7 +94,8 @@ public sealed partial class ProtoWorld
             // 向き：側面1.5倍・背後2倍（Core/Proto/ProtoTactics.cs）。追っていて隊形が崩れた相手は1.25倍。伏せからの奇襲は1.5倍。
             var (flank, kind) = FlankOf(b, a); atk *= flank;
             if (kind != "正面" && !Flag($"flank:{a.Id}:{b.Id}:{kind}")) { Set($"flank:{a.Id}:{b.Id}:{kind}"); Happen($"flank:{a.Id}:{b.Id}:{kind}:{Second}", $"{a.Name}の兵が{b.Name}の{kind}を突いた。", b.X, b.Y, a, b); }
-            if (kind == "背後") rear.Add(b.Id);
+            if (kind == "背後") rear.Add(b.Id); else if (kind == "側面") side.Add(b.Id);
+            if (Buffed("surprise", a.Id)) shaken.Add(b.Id);
             if (b.Moving) atk *= 1.25;
             if (Buffed("surprise", a.Id)) atk *= 1.5;
             if (area is { Kind: "射撃" } && Dist(a, area.X * 100L, area.Y * 100L) <= 150_00) atk *= 1.2;
@@ -113,10 +119,11 @@ public sealed partial class ProtoWorld
             {
                 c = new ProtoClash { A = a, B = b, Since = Second }; War.Clashes.Add(c);
                 // 伏せていた隊（10分以内に伏せていた）が仕掛けたなら奇襲。
-                var (att, def) = (Person(x), Person(y));
+                // どちらが先に打ったかに関わらず、伏せていた側が仕掛けた側。
+                var (att, def) = War.HiddenAt.ContainsKey(y) && !War.HiddenAt.ContainsKey(x) ? (Person(y), Person(x)) : (Person(x), Person(y));
                 if (War.HiddenAt.TryGetValue(att.Id, out var hid) && Second - hid <= 10 * 60 && !Buffed("surprise", att.Id))
                 {
-                    War.Until["surprise:" + att.Id] = Second + 5 * 60; def.Morale = Math.Max(0, def.Morale - 15); War.HiddenAt.Remove(att.Id);
+                    War.Until["surprise:" + att.Id] = Second + 5 * 60; def.Morale = Math.Max(0, def.Morale - 30); War.HiddenAt.Remove(att.Id);
                     Happen($"surprise:{att.Id}:{Second}", $"{att.Name}の兵が森から{def.Name}の兵へ奇襲をかけた。", def.X, def.Y, att, def);
                 }
             }
@@ -134,7 +141,7 @@ public sealed partial class ProtoWorld
         {
             var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
             int was = b.Soldiers; b.Soldiers = Math.Max(0, b.Soldiers - loss);
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, was) * 1.0 * (b.Player && War.Stance == "防御" ? 0.5 : 1)) - (rear.Contains(id) ? 3 : 0));
+            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, was) * 1.0 * (b.Player && War.Stance == "防御" ? 0.5 : 1)) - (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0) - (shaken.Contains(id) ? 4 : 0)); // 背後5・側面2・奇襲を受けている間4、毎分さらに下がる
             if (War.Routed.Contains(id) && b.Soldiers == 0 && b.Active && !b.Player) { b.Active = false; b.Doing = "討ち取られた"; Happen($"slain:{id}", $"{b.Name}は追い討ちを受けて討ち取られた。", b.X, b.Y, b); }
         }
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 || u.Soldiers == 0)).ToArray()) Rout(u);

@@ -45,6 +45,7 @@ public sealed class ProtoWarState
     public Dictionary<string, double[]> Facing { get; set; } = [];
     public Dictionary<string, string> FacingFoe { get; set; } = [];
     public Dictionary<string, long> HiddenAt { get; set; } = [];
+    public Dictionary<string, string> HoldCand { get; set; } = []; // 要所 → 「家|居始めた時刻」
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals);
 
@@ -248,7 +249,8 @@ public sealed partial class ProtoWorld
             }
         }
         // 丘の陣は、鷹野が持っている間は守る（上ってくる敵を高い所から打つ）。ほかの陣と、丘を取られた隊は合図で攻めかかる。
-        foreach (var u in takano.Where(u => !u.Player && War.Signaled && (War.Assign[u.Id] != "south-hill" || War.Holder.GetValueOrDefault("south-hill") == Rebel) && !War.Target.ContainsKey(u.Id) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
+        // 伏兵の陣（森の北の縁）に就いた者は、合図でも出ずに伏せて待ち、敵が近くに来たら仕掛ける（Core/Proto/ProtoTactics.cs の Ambushers）。
+        foreach (var u in takano.Where(u => !u.Player && War.Signaled && PositionOf(War.Assign[u.Id]).Kind != "伏兵" && (War.Assign[u.Id] != "south-hill" || War.Holder.GetValueOrDefault("south-hill") == Rebel) && !War.Target.ContainsKey(u.Id) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
         {
             var target = rebels.OrderBy(r => Dist(u, r)).FirstOrDefault(); if (target != null) War.Target[u.Id] = target.Id;
         }

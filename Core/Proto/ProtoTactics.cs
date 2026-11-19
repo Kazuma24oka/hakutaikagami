@@ -1,18 +1,20 @@
 namespace HakutaiKagami.Core.Proto;
 
 // 試作版の合戦の駆け引き（2026-11-19 ユーザー「包囲殲滅・釣り野伏・挟撃を、正面の力押しより強く」。ボタンではなく、地図の上の動きで起こす）。
-// ・向き：隊は最初にぶつかった相手の方を向き続ける。側面から当たると1.5倍、背後からは2倍で、背後を突かれた側は士気がさらに下がる。
+// ・向き：隊は最初にぶつかった相手の方を向き続ける。側面から当たると1.5倍、背後からは2倍で、背後を突かれた側は士気が毎分5さらに下がる。
 // ・退き道：崩れた隊の本陣への道の先に敵がいると逃げられず壊滅する（兵の多くを失い、大将は捕らえられる）。
 // ・追い討ち：崩れて退く隊は、近くの敵に一方的に削られる。追っている隊は隊形が崩れて守りが弱い（受ける打撃1.25倍）。
 // ・追うかどうかは本人が決める：逸る者・知略の低い者は退く敵を追い、慎重な者・知略の高い者は深追いしない。
 //   崩れていないのに退いて見せる隊（本人が歩いて下がるなど）も、追う者は追う。これで釣り野伏ができる。
-// ・伏せる：森の中で動かずにいる隊は、敵からは近く（80m）まで見えない。伏せていた隊が仕掛けると奇襲（5分のあいだ1.5倍、相手の士気-15）。
+// ・伏せる：森の中で動かずにいる隊は、敵からは近く（80m）まで見えない。伏せていた隊が仕掛けると奇襲（5分のあいだ1.5倍、相手の士気-30、その間は毎分さらに-4）。側面を突かれると毎分-2。
 public sealed partial class ProtoWorld
 {
     public static bool Pursues(ProtoPerson u) => u.Temper == "逸る" || u.Wits < 55;
 
     // 伏せている：森の中で、動かず、ぶつかっておらず、崩れていない。
-    public bool Hidden(ProtoPerson u) => u.Soldiers > 0 && Map.GroundAtCm(u.X, u.Y) == Ground.Forest && !u.Moving && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id);
+    // 森の縁（30m以内に森がある）も木立に隠れられる。
+    public bool Hidden(ProtoPerson u) => u.Soldiers > 0 && InCover(u.X, u.Y) && !u.Moving && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id);
+    bool InCover(long x, long y) => new[] { (0L, 0L), (30_00L, 0L), (-30_00L, 0L), (0L, 30_00L), (0L, -30_00L) }.Any(d => Map.GroundAtCm(x + d.Item1, y + d.Item2) == Ground.Forest);
 
     // 向きの更新（毎分）：ぶつかっている相手がいればその方、いなければ進む方。
     void UpdateFacing(ProtoPerson[] all)
@@ -25,7 +27,9 @@ public sealed partial class ProtoWorld
             foe ??= all.Where(b => Hostile(u.House, b.House) && !War.Routed.Contains(b.Id) && Dist(u, b) <= 80_00).OrderBy(b => Dist(u, b)).ThenBy(b => b.Id).FirstOrDefault();
             if (foe != null) { War.FacingFoe[u.Id] = foe.Id; Face(u, foe.X - u.X, foe.Y - u.Y); continue; }
             War.FacingFoe.Remove(u.Id);
-            if (u.Moving) { var next = u.Path[u.PathIndex]; Face(u, next.X - u.X, next.Y - u.Y); }
+            // 歩いているときは、向かう敵の方（いなければ行き先の方）を向く。道の次の点は曲がり角で後ろを指すことがある。
+            if (War.Target.TryGetValue(u.Id, out var tid)) { var t = Person(tid); Face(u, t.X - u.X, t.Y - u.Y); }
+            else if (u.Moving) { var end = u.Path[^1]; Face(u, end.X - u.X, end.Y - u.Y); }
         }
         foreach (var u in all.Where(Hidden)) War.HiddenAt[u.Id] = Second;
     }
@@ -74,7 +78,8 @@ public sealed partial class ProtoWorld
     // 戻り値：追い続けるなら true。
     internal bool KeepsChasing(ProtoPerson u, ProtoPerson t)
     {
-        bool fleeing = War.Routed.Contains(t.Id) || MovingAway(t, u) && Dist(u, t) > 80_00 && (!War.Target.TryGetValue(t.Id, out var tt) || tt != u.Id);
+        // 退いている：崩れているか、誰にも向かわずに遠ざかっている（味方を追っている敵は退いているのではない）。
+        bool fleeing = War.Routed.Contains(t.Id) || MovingAway(t, u) && Dist(u, t) > 80_00 && !War.Target.ContainsKey(t.Id);
         if (!fleeing) return true;
         if (Pursues(u) && Dist(u, t) <= 600_00) { u.Doing = $"{t.Name}の兵を追っている"; return true; }
         if (!Flag($"hold:{u.Id}:{t.Id}")) { Set($"hold:{u.Id}:{t.Id}"); Happen($"hold:{u.Id}:{t.Id}", $"{u.Name}は退く{t.Name}の兵を深追いせず、止まった。", u.X, u.Y, u); }
@@ -90,12 +95,13 @@ public sealed partial class ProtoWorld
         return Dist(u, n.X, n.Y) > Dist(u, t) + 50_00;
     }
 
-    // 伏せていた隊は、近くに敵が見えたら自分から仕掛ける。
+    // 伏せていた隊は、目の前に敵が来たら自分から仕掛ける。
     void Ambushers()
     {
         foreach (var u in Units.Where(u => Hidden(u) && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && !u.Player))
         {
-            var e = Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 250_00 && InSight(u, e)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
+            // 目の前（120m）まで引きつけてから出る（遠くで出ると、同じ速さで逃げられて追いつけない）。
+            var e = Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 120_00 && InSight(u, e)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
             if (e != null) War.Target[u.Id] = e.Id;
         }
     }

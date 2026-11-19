@@ -11,6 +11,7 @@ public partial class ProtoGame
 {
     internal static string? FilmRoot => OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--proto-film="))?.Split('=', 2)[1];
     Label filmCaption = null!;
+    internal bool FilmPause; // 動画の字幕を読む間、時を止める（本人が歩いていても）
     async Task Hold(double seconds) { for (int n = 0; n < (int)Math.Ceiling(seconds * 30); n++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); }
     async Task Cap(string text, double seconds) { filmCaption.Text = text; await Hold(seconds * 0.75); } // 動画を短く（2026-11-19 ユーザー「動画時間長すぎる」）
     async Task Until(Func<bool> done, double limitSeconds) { for (int n = 0; n < limitSeconds * 30 && !done(); n++) await Hold(1d / 30); }
@@ -30,6 +31,7 @@ public partial class ProtoGame
             filmCaption = new Label { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, AutowrapMode = TextServer.AutowrapMode.WordSmart };
             filmCaption.AddThemeFontSizeOverride("font_size", 24); band.AddChild(filmCaption); layer.AddChild(band);
             var w = World; long Day = ProtoWorld.Day, H = ProtoWorld.Hour;
+            if (OS.GetCmdlineUserArgs().Contains("--proto-film-tsuri")) { await RunTsuri(); GetTree().Quit(); return; }
 
             // 2日目の終わりまでは撮らずに進める（謀叛の前の日々は別の動画で）。
             w.Advance(2 * Day + 4 * H + 50 * 60 - w.Second);
@@ -114,5 +116,49 @@ public partial class ProtoGame
         }
         catch (Exception e) { GD.PrintErr("PROTO FILM 失敗: " + e); }
         GetTree().Quit();
+    }
+
+    // 動画「釣り野伏」（2026-11-19 ユーザー「釣り野伏の動画」）。検査 Tests/ProtoWarTests.cs の TheFeignedRetreatDrawsTheEnemyIntoTheAmbush と同じ手順。
+    // 本人は道の口で囮、小坂重忠は森の北の縁に伏せる（正之は城に残る）。井口とぶつかってから森の縁沿いに下がると、逸る井口が追ってきて、小坂が横から奇襲する。
+    async Task RunTsuri()
+    {
+        var w = World; long Day = ProtoWorld.Day, H = ProtoWorld.Hour;
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = w.Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[0]);
+        w.War.Assign["takano-masayuki"] = "takano-castle"; w.War.Assign["kosaka-shigetada"] = "forest-edge";
+        w.GoToTask(w.OpenTasks.First(t => t.Kind == "muster").Id);
+        w.Advance(w.War.SignalAt - 6 * 60 - w.Second);
+        var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi");
+        Follow(1150, 58); RefreshUi();
+        await Cap("百代鏡　試作版：釣り野伏", 3);
+        await Cap("囮が下がって敵を誘い込み、伏せていた兵が横から討つ", 3.5);
+        await Cap("自分（佐伯源三郎）は道の口で囮。小坂重忠の隊は森の北の縁に伏せている。森で動かずにいる隊は、敵からは近くまで見えない", 5.5);
+        await RunTo(w.War.SignalAt + 2 * 60, 30);
+        // 字幕を読む間は時を止める（WaitUntil を今にする）。止めずに字幕を出すと、その間も戦いが進んで筋が変わる。
+        void Pause() => FilmPause = true;
+        void Resume(int speed) { FilmPause = false; Speed = speed; WaitUntil = 4 * Day + 23 * H; }
+        Pause(); await Cap("合図の狼煙。目の前の井口弥七の隊へ攻めかかる", 3);
+        Act("attack:" + iguchi.Id); Resume(30);
+        await Until(() => w.ClashOf(w.Player.Id) != null, 40);
+        // 検査と同じく、ぶつかって1分で退く。
+        long backAt = w.Second + 60; await Until(() => w.Second >= backAt, 20);
+        Pause(); await Cap("ぶつかったら、すぐにわざと退く。井口は逸る気性なので追ってくる（慎重な者は深追いしない）", 4.5);
+        w.War.Target.Remove(w.Player.Id); w.MoveTo(kosaka.X - 350_00, kosaka.Y - 60_00); ShowGoal();
+        Resume(60); int seen = w.Facts.Count;
+        bool Sprung() => w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id));
+        for (int n = 0; n < 30 * 90 && !Sprung() && !w.War.Routed.Contains(w.Player.Id); n++)
+        { await Hold(1d / 30); if (Speed != 60) Speed = 60; if (w.Facts.Count > seen) { seen = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; } }
+        if (!Sprung()) { Pause(); await Cap("伏兵まで誘い込めなかった", 4); await Cap("百代鏡　試作版", 2); return; }
+        Pause(); await Cap("伏せていた小坂重忠の隊が、追ってきた井口の横から奇襲をかけた。奇襲を受けた隊は士気が大きく下がる", 5);
+        await Cap("囮も向き直って挟み撃ちにする", 3);
+        if (w.Actions().Any(a => a.Id == "attack:" + iguchi.Id)) Act("attack:" + iguchi.Id);
+        Resume(30);
+        for (int n = 0; n < 30 * 90 && !w.War.Routed.Contains(iguchi.Id) && iguchi.Active; n++)
+        { await Hold(1d / 30); if (Speed != 30) Speed = 30; if (w.Facts.Count > seen) { seen = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; } }
+        Pause(); await Hold(1.5);
+        await Cap(w.War.Routed.Contains(iguchi.Id) || !iguchi.Active ? "挟まれた井口弥七の隊は崩れた" : "井口弥七の隊はまだ持ちこたえている", 4);
+        await Cap("百代鏡　試作版", 2);
     }
 }
