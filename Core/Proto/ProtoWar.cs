@@ -273,8 +273,9 @@ public sealed partial class ProtoWorld
             if (War.Routed.Contains(id)) continue;
             if (!t.Active || !KeepsChasing(u, t)) { War.Target.Remove(id); continue; }
             // 相手の手前の間合い（50m）まで進んで止まり、向かい合う（相手の位置に重ならない）。相手が動いたら1分ごとに引き直す。
-            // 下がっていく相手には、手前で止まらず追いすがる（相手の今いる所を目指す）。
-            if (Dist(u, t) > Contact + 20_00) { if (!u.Moving || Second % 60 == 0) Walk(u, Retreating(t) ? (t.X, t.Y) : ContactPoint(u, t), t.Name, $"{t.Name}の兵へ攻めかかっている"); }
+            // 下がっていく相手には、手前で止まらず追いすがる：相手の今いる所を目指し、20秒ごとに引き直す（途中で立ち止まって待たない。2026-11-19 ユーザーの印）。
+            if (Retreating(t)) { if (!u.Moving || Second % 20 == 0) Walk(u, (t.X, t.Y), t.Name, $"{t.Name}の兵を追っている"); }
+            else if (Dist(u, t) > Contact + 20_00) { if (!u.Moving || Second % 60 == 0) Walk(u, ContactPoint(u, t), t.Name, $"{t.Name}の兵へ攻めかかっている"); }
             else if (u.Moving && !u.Player) { u.Path = []; u.PathIndex = 0; }
         }
         HoldKeypoints();
