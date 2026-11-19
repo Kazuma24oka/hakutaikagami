@@ -93,7 +93,7 @@ public partial class ProtoGame
             {
                 var u = World.Person(h.To); if (!World.Sees(World.Player, u)) continue;
                 string head = (h.Surprise ? "奇襲 " : "") + (h.Kind == "正面" ? "" : h.Kind + " ");
-                var color = h.Kind == "背後" ? new Color(1, 0.35f, 0.3f) : h.Kind == "側面" ? new Color(1, 0.65f, 0.25f) : new Color(1, 1, 1);
+                var color = h.Kind == "背後" ? new Color(1, 0.35f, 0.3f) : h.Kind is "側面" or "追い討ち" ? new Color(1, 0.65f, 0.25f) : new Color(1, 1, 1);
                 var l = new Label3D { Text = $"{head}-{h.Loss}", Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0009f, FontSize = 30, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), Modulate = color, NoDepthTest = true, RenderPriority = 30 };
                 AddChild(l); popups.Add((l, Time.GetTicksMsec() / 1000.0, ToScene(u.X, u.Y)));
             }
@@ -235,12 +235,12 @@ public partial class ProtoGame
     static float Chars(string t) => t.Sum(ch => ch > 0x2000 ? 1f : 0.58f);
     const int CardFont = 48; // 文字は大きく作って縮める（凸と一緒に大きさが変わる）
     Label3D CardText() => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FontSize = CardFont, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 22 };
-    // 凸の形（向きは -Z が前＝出っ張り）。本体 幅1・奥行き0.8、出っ張り 幅0.35・奥行き0.3。中心は本体の真ん中。
+    // 凸の形（向きは -Z が前＝出っ張り）。本体 幅0.8・奥行き0.8、出っ張り 幅0.35・奥行き0.3。中心は本体の真ん中。
     // 大きさは世界の長さで決まっている（CardSize m）。攻めかかる側は相手の80m手前で止まるので、出っ張りが相手の本体にちょうど触れる。
     const float CardSize = 73f;
     static ArrayMesh Totsu(float grow)
     {
-        float w = 0.5f + grow, d = 0.4f + grow, tw = 0.175f + grow, td = 0.3f;
+        float w = 0.4f + grow, d = 0.4f + grow, tw = 0.175f + grow, td = 0.3f; // 本体は真四角（横から当たられても、出っ張りがちょうど面に触れる）
         var v = new Vector3[] { new(-w, 0, d), new(w, 0, d), new(w, 0, -d), new(-w, 0, -d), new(-tw, 0, -d + 0.001f), new(tw, 0, -d + 0.001f), new(tw, 0, -d - td - grow), new(-tw, 0, -d - td - grow) };
         var idx = new[] { 0, 2, 1, 0, 3, 2, 4, 6, 5, 4, 7, 6 };
         var arr = new Godot.Collections.Array(); arr.Resize((int)Mesh.ArrayType.Max); arr[(int)Mesh.ArrayType.Vertex] = v; arr[(int)Mesh.ArrayType.Index] = idx;

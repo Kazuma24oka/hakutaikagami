@@ -39,6 +39,7 @@ public partial class ProtoGame : Node3D
     internal void Skip(long until) { World.Stop(); marker.Visible = false; skipUntil = until; skipJournal = World.Journal.Count; Message = ""; }
     internal readonly Dictionary<string, Button> Buttons = new();
     internal string Message = "";
+    string messageShown = ""; double messageAt; // 操作の返事は8秒で消す
     double acc, uiTimer;
     bool dirty; long savedBucket = -1;
     float distance = 500, yaw = 0, pitch = 55;
@@ -377,7 +378,10 @@ public partial class ProtoGame : Node3D
             var eta = World.TaskEta(t);
             b.Text = World.TaskPlace(t) + "へ　" + (eta == null ? "道がない" : eta <= 5 ? "ここ" : "着くのは" + HourMinute(World.Second + eta.Value) + "ごろ");
         }
-        message.Text = Message;
+        double nowSec = Time.GetTicksMsec() / 1000.0;
+        if (Message != messageShown) { messageShown = Message; messageAt = nowSec; }
+        if (Message != "" && nowSec - messageAt > 8) { Message = ""; messageShown = ""; }
+        message.Text = Message; message.Visible = Message != "";
         var lines = string.Join((char)10, LogLines().TakeLast(logTab == "全部" ? 3 : 6).Select(e => HourMinute(e.At) + "　" + e.Text));
         logBody.Visible = !logMin; Buttons["log-min"].Text = logMin ? "＋" : "－";
         foreach (var t in LogTabs) Buttons["log-" + t].Disabled = logTab == t;
