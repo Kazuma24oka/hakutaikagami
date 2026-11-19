@@ -270,6 +270,37 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         throw new InvalidOperationException("森が見つからない");
     }
 
+    // 軍議で作戦と役目を決め、「指図どおりに動く」を選ぶと、総勢で着陣の地まで進み、着いてから役目ごとに分かれ、役目どおりに動く（Core/Proto/ProtoOrders.cs）。
+    [Theory]
+    [InlineData("釣り野伏", "囮")]
+    [InlineData("釣り野伏", "伏兵")]
+    [InlineData("挟撃", "回り込み")]
+    [InlineData("正面から当たる", "先手")]
+    public void TheArmyMarchesTogetherAndActsOnRoles(string plan, string role)
+    {
+        using var cp = new Checkpoints($"試作版の軍令_{plan}_{role}", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        cp.Log(w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], plan, role));
+        foreach (var or in w.Orders()) cp.Log($"軍令　{or.Name}：{or.Role}　{or.Text}");
+        cp.Expect(w.Orders().Any(x => x.Unit == w.Player.Id && x.Role == role), "自分の役目が軍令に出る");
+        cp.Log(w.Do("order:follow"));
+        var heir = w.Person("takano-masayuki"); int seen = w.Facts.Count; bool together = true, sawBody = false;
+        while (w.War.Result == "" && w.Second < 5 * Day)
+        {
+            w.Advance(60);
+            if (w.Body.Any()) { sawBody = true; if (w.Body.Any(u => Math.Sqrt(Math.Pow(u.X - heir.X, 2) + Math.Pow(u.Y - heir.Y, 2)) > 400_00)) together = false; }
+            foreach (var f in w.Facts.Skip(seen).Where(f => !f.Text.Contains("杭") && !f.Text.Contains("怪しい") && !f.Text.Contains("越後屋") && !f.Text.Contains("小競り"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}");
+            seen = w.Facts.Count;
+        }
+        cp.Log($"結果 {w.War.Result}　本人 兵{w.Player.Soldiers}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
+        cp.Expect(w.Facts.Any(f => f.Id == "marched") && w.Facts.Any(f => f.Id == "split"), "総勢で城を出て、着陣してから分かれる");
+        cp.Expect(sawBody && together, "着陣までは、総勢が大将から400m以内にまとまっている");
+        cp.Expect(w.War.Result != "", "決着がつく");
+    }
+
     // 立て直し：崩れた隊は本陣で30分休むと、一度だけ戦いに戻る（士気60）。
     [Fact]
     public void TheRoutedUnitRegroupsAtCamp()

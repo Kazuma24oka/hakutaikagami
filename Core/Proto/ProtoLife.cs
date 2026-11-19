@@ -321,6 +321,7 @@ public sealed partial class ProtoWorld
         {
             foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
             if (War.Target.ContainsKey(Player.Id)) yield return new("withdraw:me", "兵を退く");
+            if (War.Assign.ContainsKey(Player.Id)) yield return War.PlayerFollows ? new("order:free", "自分の判断で動く") : new("order:follow", "指図どおりに動く");
         }
         if (CanScout) foreach (var pos in Map.Data.Positions!.Where(p => p.Id != "takano-castle")) yield return new("scout:" + pos.Id, "物見を出す：" + pos.Name);
         foreach (var t in OffersHere) { yield return new("accept:" + t.Id, "受ける：" + t.Title); yield return new("decline:" + t.Id, "断る：" + t.Title); }
@@ -342,6 +343,7 @@ public sealed partial class ProtoWorld
         if (kind == "scout") return SendScout(id);
         if (kind == "attack") return Attack(id);
         if (kind == "withdraw") return Withdraw();
+        if (kind == "order") return FollowOrders(id == "follow");
         if (kind == "stance") return SetStance(id);
         if (kind == "kakare") return Kakare();
         if (kind == "tactic") return UseTactic(Player);

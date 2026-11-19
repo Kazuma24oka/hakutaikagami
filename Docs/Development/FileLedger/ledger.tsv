@@ -766,6 +766,7 @@ Core/Proto/ProtoClash.cs	使う	試作版の合戦の作り直し（要所と総
 Core/Proto/ProtoLife.cs	使う	ProtoStep、ProtoTask、ProtoAction を定義。GoToTask が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoGame.cs:216 で GoToTask（他に Game 1件・Core 1件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMap.cs	使う	Ground、ProtoHouse、ProtoSite を定義。GroundAtCm が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoDebug.cs:124 で GroundAtCm（他に Game 2件・Core 2件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMove.cs	使う	ProtoMove を定義。ProtoMove が他の Coreから使われ、ゲームの本線から届く	Core/Proto/ProtoLife.cs:193 で ProtoMove（他に Game 0件・Core 2件・Tests 1件）	2026-11-18
+Core/Proto/ProtoOrders.cs	使う	試作版の軍議の作戦と役目、総勢での行軍、指図どおりに動く、軍令の一覧	Core/Proto/ProtoWar.cs の DecideCouncil と Battle から呼ぶ。Tests/ProtoWarTests.cs の TheArmyMarchesTogetherAndActsOnRoles	2026-11-19
 Core/Proto/ProtoTactics.cs	使う	試作版の合戦の駆け引き（向きと側面・背後、退き道と壊滅、追い討ち、追うかどうかの判断、森で伏せる・奇襲）	Core/Proto/ProtoClash.cs と ProtoWar.cs から呼ぶ。Tests/ProtoWarTests.cs の FlanksCutOffAmbushAndPursuitWork	2026-11-19
 Core/Proto/ProtoWar.cs	使う	試作版の合戦：当主の死・家督・訃報・謀叛の判断・説き伏せ・軍議・行軍・先取り・抜け駆け・狼煙・打ち合い・敗走・見えない敵・物見	Core/Proto/ProtoLife.cs の Life と Delivered が呼ぶ。Docs/CORE_LOOP.md の戦い	2026-11-18
 Core/Proto/ProtoWorld.cs	使う	ProtoPerson、LetterState、ProtoLetter を定義。Appointments が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/NewGameRuntime.CastellanReports.cs:14 で Appointments（他に Game 5件・Core 2件・Tests 3件）	2026-11-18

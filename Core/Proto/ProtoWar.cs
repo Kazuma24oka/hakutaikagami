@@ -47,6 +47,13 @@ public sealed class ProtoWarState
     public Dictionary<string, long> HiddenAt { get; set; } = [];
     public Dictionary<string, string> HoldCand { get; set; } = []; // 要所 → 「家|居始めた時刻」
     public List<ProtoHit> Hits { get; set; } = []; // その1分の打撃（地図に出す）
+    // 作戦と役目・総勢での行軍（Core/Proto/ProtoOrders.cs）
+    public string Plan { get; set; } = "";
+    public Dictionary<string, string> Roles { get; set; } = [];
+    public bool Split { get; set; }          // 着陣して役目ごとに分かれたか
+    public long StageX { get; set; }
+    public long StageY { get; set; }
+    public bool PlayerFollows { get; set; }  // 本人が「指図どおりに動く」を選んでいる
     public Dictionary<string, int> StartSoldiers { get; set; } = []; // 合戦に入ったときの兵の数（右下の窓に「今/元」で出す）
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans);
@@ -63,7 +70,7 @@ public sealed partial class ProtoWorld
     public static readonly string[] Departures = ["今夜のうちに出る", "夜明けに出る"];
     public static readonly string[] Signals = ["卯の刻（6時）に狼煙", "辰の刻（8時）に狼煙"];
     // 作戦（2026-11-19 ユーザー「釣り野伏」）：正面は大将が道の口・家老が南の丘。釣り野伏は家老が森の北の縁に伏せ、大将は南の丘で勝元を引きつける（囮は本人）。
-    public static readonly string[] Plans = ["正面から当たる", "釣り野伏"];
+    public static readonly string[] Plans = ["正面から当たる", "釣り野伏", "挟撃"];
 
     public ProtoPosition PositionOf(string id) => Map.Data.Positions!.First(p => p.Id == id);
     public string HeadOf(string house) => Heads.TryGetValue(house, out var h) ? h : Map.Data.Houses.First(x => x.Id == house).Head;
@@ -161,13 +168,14 @@ public sealed partial class ProtoWorld
         return new(heir.Name, [.. ops], Map.Data.Positions!.Select(p => (p.Id, p.Name)).ToArray(), Departures, Signals, Plans);
     }
     // 本人が出ていれば本人の意見（自分の陣・出立・合図）が通る。出ていなければ大将の考えで決まる。
-    public string DecideCouncil(string? playerPosition, string? departure, string? signal, string? plan = null)
+    // 本人が出ていれば本人の意見（作戦・自分の役目・出立・合図）が通る。出ていなければ大将の考えで決まる。
+    // role：自分の役目（作戦の役目のどれか）。playerPosition だけを渡すと、その陣の役目になる（前の呼び方）。
+    public string DecideCouncil(string? playerPosition, string? departure, string? signal, string? plan = null, string? role = null)
     {
         if (War.Phase != "軍議待ち" || War.Assign.Count > 0) return "";
-        bool present = playerPosition != null; War.PlayerAtCouncil = present;
+        bool present = playerPosition != null || role != null; War.PlayerAtCouncil = present;
         string dep = departure ?? Departures[1], sig = signal ?? Signals[0];
-        bool tsuri = plan == Plans[1];
-        War.Assign[Heir] = tsuri ? "south-hill" : "road-mouth"; War.Assign[Karou] = tsuri ? "forest-edge" : "south-hill"; War.Assign[Player.Id] = playerPosition ?? "forest-edge";
+        AssignRoles(plan ?? Plans[0], role, playerPosition);
         long night = At(DayIndex, 21), dawn = (Second / Day + 1) * Day + 4 * Hour;
         War.DepartAt = dep == Departures[0] ? Math.Max(Second + 10 * 60, Math.Min(night, Second + Hour)) : dawn;
         War.SignalAt = (dawn / Day) * Day + (sig == Signals[0] ? 6 : 8) * Hour;
@@ -180,12 +188,12 @@ public sealed partial class ProtoWorld
         if (mine.Id != "takano-castle")
         {
             var muster = Offer(Heir, "出陣：" + mine.Name, "muster", Second, War.SignalAt, 2, new ProtoStep("visit", mine.Name + "に陣を取る", X: mine.X * 100L, Y: mine.Y * 100L));
-            muster.State = TaskState.Open; muster.Speech = $"そなたは{mine.Name}に陣を取れ。{dep}。合図は{sig}じゃ。";
+            muster.State = TaskState.Open; muster.Speech = $"そなたは{OrderText(Player.Id)}。{dep}。合図は{sig}じゃ。";
             Note($"{Person(Heir).Name}「{muster.Speech}」");
         }
-        var where = string.Join("、", War.Assign.Select(a => $"{Person(a.Key).Name}は{PositionOf(a.Value).Name}"));
+        var where = string.Join("、", War.Assign.Select(a => $"{Person(a.Key).Name}は{(War.Roles.GetValueOrDefault(a.Key, "") is { Length: > 0 } r ? r + "（" + PositionOf(a.Value).Name + "）" : PositionOf(a.Value).Name)}"));
         var castle = Map.Site("takano-castle");
-        Happen("council", $"軍議で決まった：{(tsuri ? "釣り野伏。" : "")}{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
+        Happen("council", $"軍議で決まった：{War.Plan}。{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
         return present ? $"{Person(Heir).Name}「それでいこう。」" : "";
     }
 
@@ -201,20 +209,9 @@ public sealed partial class ProtoWorld
     {
         var takano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && !War.Routed.Contains(u.Id)).ToArray();
         var rebels = Units.Where(u => u.House == Rebel && !War.Routed.Contains(u.Id)).ToArray();
-        // 出立：統率が低いほど遅れて出る。
-        foreach (var u in takano)
-        {
-            if (u.Player || Flag("departed:" + u.Id)) continue;
-            long delay = (100 - u.Command) / 2 * 60;
-            if (Second >= War.DepartAt + delay)
-            {
-                Set("departed:" + u.Id); var pos = PositionOf(War.Assign[u.Id]);
-                if (pos.Id != "takano-castle") MarchTo(u, pos);
-            }
-        }
-        if (Second == War.DepartAt) Note($"出立の刻限になった。{PositionOf(War.Assign[Player.Id]).Name}へ向かう。");
+        MarchTogether(takano);
         // 先に取られていた：着く前に敵がその陣にいれば、手前で止まって知らせる。
-        foreach (var u in takano.Where(u => !u.Player && u.Moving && !War.Target.ContainsKey(u.Id)))
+        foreach (var u in takano.Where(u => Auto(u) && War.Split && u.Moving && !War.Target.ContainsKey(u.Id) && !Flag("luring:" + u.Id)))
         {
             var pos = PositionOf(War.Assign[u.Id]); long px = pos.X * 100L, py = pos.Y * 100L;
             var holder = rebels.FirstOrDefault(r => Dist(r, px, py) <= 150_00);
@@ -245,7 +242,7 @@ public sealed partial class ProtoWorld
         }
         // 抜け駆け：逸る者は、合図の前でも敵が見えると仕掛けることがある。
         // 大将は自分の決めた合図を破らない。
-        foreach (var u in takano.Where(u => !u.Player && u.Id != Heir && !War.Signaled && u.Temper == "逸る" && !War.Target.ContainsKey(u.Id)))
+        foreach (var u in takano.Where(u => !u.Player && u.Id != Heir && War.Split && !War.Signaled && u.Temper == "逸る" && !War.Target.ContainsKey(u.Id)))
         {
             var seen = rebels.Where(r => InSight(u, r)).OrderBy(r => Dist(u, r)).FirstOrDefault();
             if (seen != null && Roll("nukegake:" + u.Id) % 100 < 30)
@@ -254,12 +251,7 @@ public sealed partial class ProtoWorld
                 Happen("nukegake:" + u.Id, $"{u.Name}が合図を待たずに{seen.Name}の兵へ仕掛けた。", u.X, u.Y, u);
             }
         }
-        // 丘の陣は、鷹野が持っている間は守る（上ってくる敵を高い所から打つ）。ほかの陣と、丘を取られた隊は合図で攻めかかる。
-        // 伏兵の陣（森の北の縁）に就いた者は、合図でも出ずに伏せて待ち、敵が近くに来たら仕掛ける（Core/Proto/ProtoTactics.cs の Ambushers）。
-        foreach (var u in takano.Where(u => !u.Player && War.Signaled && PositionOf(War.Assign[u.Id]).Kind != "伏兵" && (War.Assign[u.Id] != "south-hill" || War.Holder.GetValueOrDefault("south-hill") == Rebel) && !War.Target.ContainsKey(u.Id) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
-        {
-            var target = rebels.OrderBy(r => Dist(u, r)).FirstOrDefault(); if (target != null) War.Target[u.Id] = target.Id;
-        }
+        ActOnRoles(takano, rebels);
         // 謀叛方は、合戦になったら見えている敵に向かう。
         foreach (var r in rebels.Where(r => War.Phase == "合戦" && !War.Target.ContainsKey(r.Id)))
         {
@@ -276,13 +268,13 @@ public sealed partial class ProtoWorld
             // 下がっていく相手には、手前で止まらず追いすがる：相手の今いる所を目指し、20秒ごとに引き直す（途中で立ち止まって待たない。2026-11-19 ユーザーの印）。
             if (Retreating(t)) { if (!u.Moving || Second % 20 == 0) Walk(u, (t.X, t.Y), t.Name, $"{t.Name}の兵を追っている"); }
             else if (Dist(u, t) > Contact + 20_00) { if (!u.Moving || Second % 60 == 0) Walk(u, ContactPoint(u, t), t.Name, $"{t.Name}の兵へ攻めかかっている"); }
-            else if (u.Moving && !u.Player) { u.Path = []; u.PathIndex = 0; }
+            else if (u.Moving && Auto(u)) { u.Path = []; u.PathIndex = 0; }
         }
         HoldKeypoints();
         if (War.Phase == "合戦") Regroup();
         var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
-        if (War.Phase == "合戦") foreach (var u in field.Where(u => !u.Player && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
+        if (War.Phase == "合戦") foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
         Spread(field); UpdateFacing(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }

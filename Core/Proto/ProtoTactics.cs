@@ -162,7 +162,7 @@ public sealed partial class ProtoWorld
     // 伏せていた隊は、目の前（150m）に敵が来たら自分から仕掛ける。
     void Ambushers()
     {
-        foreach (var u in Units.Where(u => Hidden(u) && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && !u.Player))
+        foreach (var u in Units.Where(u => Hidden(u) && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && Auto(u)))
         {
             // 目の前（150m）まで引きつけてから出る（遠くで出ると、同じ速さで逃げられて追いつけない）。
             // 横か後ろを取れるまで待つ（敵が目の前を通り過ぎてから出る）。正面からしか当たれないなら、90mまで引きつける。
