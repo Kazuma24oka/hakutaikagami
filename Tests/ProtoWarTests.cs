@@ -190,6 +190,28 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(said.Contains("鼓舞") && guard.GaugeOf(guard.Player.Id) == 0, "戦法のゲージがたまると使える");
     }
 
+    // 見た目を確かめるための保存（HAKUTAI_WRITE_SCENE に置き場所を渡したときだけ書く。ふだんは何もしない）。
+    // 動画と同じ筋で、6時20分を過ぎて本人の隊がぶつかっている場面。ゲームを HAKUTAI_PROTO_SAVE でこれを読ませて絵を撮る。
+    [Fact]
+    public void WritesTheBattleSceneWhenAsked()
+    {
+        if (Environment.GetEnvironmentVariable("HAKUTAI_WRITE_SCENE") is not { Length: > 0 } path) return;
+        var w = new ProtoWorld(Map);
+        w.Advance(2 * Day + 5 * Hour + 2 * 60 - w.Second);
+        var notice = w.OffersHere.First(t => t.Kind == "death-notice"); w.Do("accept:" + notice.Id);
+        w.GoToTask(notice.Id); w.Advance(w.TaskEta(notice)!.Value + 60); w.Do("step:" + notice.Id);
+        w.GoToTask(notice.Id); w.Advance(w.TaskEta(notice)!.Value + 60); w.Do("step:" + notice.Id);
+        while (!w.CouncilOpen && w.Second < 3 * Day) w.Advance(60);
+        w.DecideCouncil("south-hill", ProtoWorld.Departures[0], ProtoWorld.Signals[0]);
+        w.GoToTask(w.OpenTasks.First(t => t.Kind == "muster").Id);
+        w.Advance(3 * Day + 6 * Hour + 3 * 60 - w.Second);
+        w.Do(w.Actions().First(a => a.Id.StartsWith("attack:")).Id);
+        w.Advance(3 * Day + 6 * Hour + 20 * 60 - w.Second);
+        for (int i = 0; i < 60 && w.ClashOf(w.Player.Id) == null; i++) w.Advance(60);
+        File.WriteAllBytes(path, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(w.Save(), ProtoMap.Json));
+        o.WriteLine($"{ProtoWorld.Clock(w.Second)} 押し合い {(w.ClashOf(w.Player.Id)?.Push ?? 0):F0} → {path}");
+    }
+
     // 動画（Game/Scripts/Proto/ProtoFilm.cs）と同じ手順：訃報を自分で届けて説かずに戻り、軍議で南の丘・今夜・6時を選んで丘へ。合図で合戦になって決着がつく。
     [Fact]
     public void TheFilmsStoryReachesABattle()

@@ -39,6 +39,7 @@ public partial class ProtoGame : Node3D
     MeshInstance3D pathLine = null!, marker = null!;
     ImmediateMesh pathMesh = null!;
     Label clock = null!, foot = null!, journal = null!, message = null!;
+    PanelContainer sidePanel = null!; bool? panelOpen; string journalKey = ""; double journalShown;
     VBoxContainer panel = null!;
     Label status = null!;
     readonly Dictionary<string, Button> taskButtons = new();
@@ -78,17 +79,18 @@ public partial class ProtoGame : Node3D
 
     static Color GroundColor(Ground g, float h, int c, int r)
     {
-        float n = ((c * 73856093) ^ (r * 19349663)) % 4 / 100f;
+        // マスごとのまだらは升目に見えるので、ゆるやかな濃淡にする（2026-11-19「ごちゃごちゃ」の案4）。
+        float n = (MathF.Sin(c * 0.11f) * MathF.Cos(r * 0.09f) + MathF.Sin((c + r) * 0.05f)) * 0.012f;
         Color k = g switch
         {
-            Ground.Road => new Color(0.80f, 0.70f, 0.52f),
+            Ground.Road => new Color(0.66f, 0.60f, 0.48f),
             Ground.Bridge => new Color(0.48f, 0.33f, 0.20f),
             Ground.Site => new Color(0.84f, 0.80f, 0.68f),
-            Ground.Forest => new Color(0.24f, 0.44f, 0.24f),
-            Ground.Mountain => new Color(0.48f, 0.50f, 0.36f).Lerp(new Color(0.66f, 0.62f, 0.55f), Math.Clamp(h / 140f, 0, 1)),
-            Ground.Water => new Color(0.26f, 0.48f, 0.78f),
-            Ground.Ford => new Color(0.46f, 0.64f, 0.82f),
-            _ => new Color(0.56f, 0.69f, 0.38f),
+            Ground.Forest => new Color(0.22f, 0.34f, 0.23f),
+            Ground.Mountain => new Color(0.44f, 0.46f, 0.36f).Lerp(new Color(0.58f, 0.56f, 0.50f), Math.Clamp(h / 140f, 0, 1)),
+            Ground.Water => new Color(0.28f, 0.44f, 0.62f),
+            Ground.Ford => new Color(0.42f, 0.56f, 0.68f),
+            _ => new Color(0.45f, 0.52f, 0.37f),
         };
         return new Color(k.R + n, k.G + n, k.B + n);
     }
@@ -200,6 +202,38 @@ public partial class ProtoGame : Node3D
             }
         }
     }
+    // ぶつかり合いは「前線」で見せる（2026-11-19 案3）：二つの隊を間の線から後ろへ離して向かい合わせ、足軽は線の所で打ち合う。
+    // 描くときだけの並びで、世界の位置は変えない。M：間の線の真ん中、D：鷹野方から岩切方への向き。
+    // 同じ相手とぶつかっている味方は、線の手前に横に並べる。押し合いのゲージも相手ごとに一つ（押し合いは平均）。
+    // キーは岩切方の隊。M：線の真ん中、D：鷹野方から岩切方への向き、As：その相手とぶつかっている鷹野方。
+    internal readonly Dictionary<string, (Vector3 M, Vector3 D, string[] As, double Push)> clashLine = new();
+    void PlanClashLines(float px)
+    {
+        clashLine.Clear(); float gap = 26 * px * FollowerGap;
+        foreach (var g in World.War.Clashes.GroupBy(c => c.B))
+        {
+            var b = World.Person(g.Key); var As = g.Select(c => c.A).OrderBy(x => x).ToArray();
+            var pb = ToScene(b.X, b.Y); var pa = As.Select(x => ToScene(World.Person(x).X, World.Person(x).Y)).Aggregate(Vector3.Zero, (s, v) => s + v) / As.Length;
+            var d = pb - pa; d.Y = 0;
+            if (d.LengthSquared() < 1) d = heading.TryGetValue(As[0], out var h) ? h : new Vector3(1, 0, 0);
+            d = d.Normalized(); double push = g.Average(c => c.Push);
+            var m = (pa + pb) / 2 + d * (float)(push / 100.0) * gap * 1.5f; // 押している側へ線が動く
+            clashLine[g.Key] = (m, d, As, push);
+        }
+    }
+    (Vector3 Foot, Vector3 Dir)? FrontOf(ProtoPerson p, float px)
+    {
+        float gap = 26 * px * FollowerGap, sep = gap * 3.2f;
+        foreach (var (bId, line) in clashLine)
+        {
+            int i = Array.IndexOf(line.As, p.Id);
+            if (bId != p.Id && i < 0) continue;
+            var dir = bId == p.Id ? -line.D : line.D; var side = new Vector3(-line.D.Z, 0, line.D.X);
+            var at = line.M - dir * sep + (i >= 0 ? side * gap * 5.6f * (i - (line.As.Length - 1) / 2f) : Vector3.Zero);
+            at.Y = HeightAt(at.X, at.Z); return (at, dir);
+        }
+        return null;
+    }
     void DrawFollowers(ProtoPerson p, Vector3 foot, float px, bool show, string anim)
     {
         if (!followers.TryGetValue(p.Id, out var list)) followers[p.Id] = list = new();
@@ -209,8 +243,8 @@ public partial class ProtoGame : Node3D
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
         var dir = formation.TryGetValue(p.Id, out var f) ? f.Dir : heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
         // ぶつかっている間は、足軽が相手の方へ前に出て横一列に並び、打ち合う。
-        var clash = World.ClashOf(p.Id); bool front = false;
-        if (clash != null) { var foe = World.Person(clash.A == p.Id ? clash.B : clash.A); var d = new Vector3(foe.X - p.X, 0, foe.Y - p.Y); if (d.LengthSquared() > 1) { dir = d.Normalized(); front = true; anim = "attack"; } }
+        bool front = false;
+        if (FrontOf(p, Math.Max(0.12f, distance / 380f) * 1.25f) is { } fr) { dir = fr.Dir; front = true; anim = "attack"; }
         var back = front ? dir : -dir; var side = new Vector3(-back.Z, 0, back.X);
         float gap = 26 * px * FollowerGap; int wide = front ? 5 : Wide(p);
         for (int i = 0; i < list.Count; i++)
@@ -257,11 +291,12 @@ public partial class ProtoGame : Node3D
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
 
-        var side = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
+        Add(bar, "panel", "やること", () => panelOpen = !(panelOpen ?? World.War.Phase != "合戦"));
+        var side = sidePanel = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
         var col = new VBoxContainer(); side.AddChild(col);
         panel = col;
 
-        var bottom = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 760; root.AddChild(bottom);
+        var bottom = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 700; root.AddChild(bottom);
         var log = new VBoxContainer(); bottom.AddChild(log);
         message = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(1, 0.95f, 0.7f) }; log.AddChild(message);
         journal = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart }; log.AddChild(journal);
@@ -318,7 +353,10 @@ public partial class ProtoGame : Node3D
             b.Text = World.TaskPlace(t) + "へ　" + (eta == null ? "道がない" : eta <= 5 ? "ここ" : "着くのは" + HourMinute(World.Second + eta.Value) + "ごろ");
         }
         message.Text = Message;
-        journal.Text = string.Join((char)10, World.Journal.TakeLast(6).Select(e => HourMinute(e.At) + "　" + e.Text));
+        var lines = string.Join((char)10, World.Journal.TakeLast(3).Select(e => HourMinute(e.At) + "　" + e.Text));
+        if (lines != journalKey) { journalKey = lines; journalShown = Time.GetTicksMsec() / 1000.0; }
+        journal.Text = lines;
+        sidePanel.Visible = panelOpen ?? World.War.Phase != "合戦";
     }
     static string HourMinute(long s) => $"{s % ProtoWorld.Day / 3600}時{s % 3600 / 60:00}分";
 
@@ -348,6 +386,7 @@ public partial class ProtoGame : Node3D
 
     public override void _UnhandledInput(InputEvent e)
     {
+        if (FilmRoot != null) return; // 動画を撮っている間は、マウスやキーで画面が動かないようにする
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
             if (mb.ButtonIndex == MouseButton.Left) ClickGround(mb.Position);
@@ -389,7 +428,7 @@ public partial class ProtoGame : Node3D
             if (mouse.X < edge) input.X -= 1; else if (mouse.X > size.X - edge) input.X += 1;
             if (mouse.Y < edge) input.Z -= 1; else if (mouse.Y > size.Y - edge) input.Z += 1;
         }
-        if (input != Vector3.Zero && !Debug.NoteOpen) pan += Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * input * (float)(distance * delta);
+        if (input != Vector3.Zero && !Debug.NoteOpen && FilmRoot == null) pan += Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * input * (float)(distance * delta);
         if (skipUntil > World.Second && !Debug.NoteOpen)
         {
             // 一気に飛ばす：1フレームに最大2万秒。本人に知らせ（日誌の行）が入ったら止まる。
@@ -412,6 +451,7 @@ public partial class ProtoGame : Node3D
         else acc = 0;
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
         UpdateActors(); UpdateBattleView(); DrawPath(); PlaceCamera();
+        journal.GetParent<Control>().GetParent<Control>().Modulate = new Color(1, 1, 1, (float)Math.Clamp(1.4 - (Time.GetTicksMsec() / 1000.0 - journalShown) / 8.0, 0.35, 1));
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
 
@@ -422,6 +462,7 @@ public partial class ProtoGame : Node3D
     {
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
         if (war) PlanFormations(Math.Max(0.12f, distance / 380f) * 1.25f); else formation.Clear();
+        PlanClashLines(Math.Max(0.12f, distance / 380f) * 1.25f);
         foreach (var p in World.People)
         {
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p);
@@ -435,16 +476,22 @@ public partial class ProtoGame : Node3D
             {
                 // ちびコマ：足元を地面に置き、近づいても遠ざかっても見える大きさにする。歩く・戦う・止まるで動きを変える。
                 body.Visible = false; dot.Visible = seen;
-                var real = ToScene(p.X, p.Y); bool inLine = formation.TryGetValue(p.Id, out var fm); var foot = inLine ? fm.Foot : real; float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
+                var real = ToScene(p.X, p.Y); bool inLine = formation.TryGetValue(p.Id, out var fm); var foot = inLine ? fm.Foot : real;
+                var frontLine = unit ? FrontOf(p, Math.Max(0.12f, distance / 380f) * 1.25f) : null; if (frontLine is { } fl) foot = fl.Foot; float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
                 dot.Position = foot;
-                string anim = p.Doing.Contains("戦って") ? "attack" : p.Moving ? "walk" : p.Doing.Contains("敗走") ? "damage" : "idle";
+                string anim = p.Doing.Contains("戦って") ? "attack" : p.Doing.Contains("退いて") || p.Doing.Contains("敗走") ? "damage" : p.Moving ? "walk" : "idle";
                 dot.Freeze(anim, Time.GetTicksMsec() / 1000.0 + p.Id.Length * 0.37);
                 if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(real - before, Camera); var mv = real - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
                 lastPos[p.Id] = real;
                 if (inLine) dot.Face(fm.Dir, Camera);
+                if (frontLine is { } fl2) dot.Face(fl2.Dir, Camera);
                 if (inLine && fm.Count > 1) label.Text = $"{p.Name}勢　{fm.Total}（{fm.Parts}）";
                 else if (inLine && fm.Count == 0) label.Visible = seen && (p.Player || close);
-                DrawFollowers(p, foot, px, seen && unit, anim);
+                // 引いた視点では、隊を札一枚で見せる（2026-11-19 案2）。近づくと大将と足軽のちびコマ。
+                bool card = unit && distance > CardDistance;
+                DrawFollowers(p, foot, px, seen && unit && !card, anim);
+                if (card) { dot.Visible = false; label.Visible = false; }
+                DrawCard(p, foot, card && seen && !(inLine && fm.Count == 0), inLine && fm.Count > 1 ? $"{p.Name}勢　{fm.Total}" : $"{p.Name}　{p.Soldiers}");
                 // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
                 label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }

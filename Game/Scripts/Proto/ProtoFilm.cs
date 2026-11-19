@@ -12,9 +12,9 @@ public partial class ProtoGame
     internal static string? FilmRoot => OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--proto-film="))?.Split('=', 2)[1];
     Label filmCaption = null!;
     async Task Hold(double seconds) { for (int n = 0; n < (int)Math.Ceiling(seconds * 30); n++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); }
-    async Task Cap(string text, double seconds) { filmCaption.Text = text; await Hold(seconds); }
+    async Task Cap(string text, double seconds) { filmCaption.Text = text; await Hold(seconds * 0.75); } // 動画を短く（2026-11-19 ユーザー「動画時間長すぎる」）
     async Task Until(Func<bool> done, double limitSeconds) { for (int n = 0; n < limitSeconds * 30 && !done(); n++) await Hold(1d / 30); }
-    async Task Talk(double perLine = 3.2) { while (Scene.Open && !Scene.Choosing) { await Hold(perLine); if (!Scene.Choosing) Scene.Next(); } }
+    async Task Talk(double perLine = 2.2) { while (Scene.Open && !Scene.Choosing) { await Hold(perLine); if (!Scene.Choosing) Scene.Next(); } }
     void Follow(float dist, float pitch = 55) => SetCamera(dist, null, pitch);
     // 一気に飛ばすのは知らせで止まるので、目的の時刻に本当に着くまで飛ばし直す。
     async Task SkipTo(long t) { for (int n = 0; n < 200 && World.Second < t; n++) { Skip(t); await Until(() => skipUntil == 0, 20); } }
@@ -51,7 +51,7 @@ public partial class ProtoGame
             Speed = 500;
             for (int n = 0; n < 400 && !w.CouncilOpen && w.Second < 3 * Day; n++) { await SkipTo(w.Second + 10 * 60); }
             await Cap("岩切勝元から手切れの書状が届いた。謀叛である。城の広間で軍議が開かれる", 4);
-            OpenCouncil(); await Talk(4);
+            OpenCouncil(); await Talk(2.8);
             await Cap("自分の陣は南の丘。今夜のうちに出て、丘を先に取る。合図は卯の刻（6時）の狼煙", 4.5);
             if (councilChoices is { } c)
             {
@@ -85,22 +85,22 @@ public partial class ProtoGame
                 Speed = 30; await Until(() => w.ClashOf(w.Player.Id) != null || w.War.Result != "", 60);
                 if (w.ClashOf(w.Player.Id) != null)
                 {
-                    await Cap("ぶつかった。間のゲージは押し合い。下に采配が出て、時間は10倍に落ちる", 4.5);
+                    await Cap("ぶつかった。間のゲージは押し合い。右下に采配が出る（遊ぶときは10倍に落ちる。動画では早回し）", 4.5);
                     await Cap("「かかれ！」は気力を使って一気に押し返す", 2.5);
                     if (w.CanKakare) Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed);
                     int seenF = w.Facts.Count; bool usedTactic = false, guarded = false;
-                    for (int n = 0; n < 30 * 150 && w.ClashOf(w.Player.Id) != null && w.War.Result == ""; n++)
+                    for (int n = 0; n < 30 * 90 && w.Second < 3 * Day + 6 * H + 50 * 60 && !w.War.Routed.Contains(w.Player.Id) && w.War.Result == ""; n++)
                     {
-                        await Hold(1d / 30);
+                        await Hold(1d / 30); if (Speed != 60) Speed = 60;
                         if (w.Facts.Count > seenF) { seenF = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; }
                         if (!usedTactic && w.GaugeOf(w.Player.Id) >= 100) { usedTactic = true; filmCaption.Text = "戦法のゲージがたまった。戦法「鼓舞」で士気を立て直す"; Buttons["clash-tactic"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
                         else if (!guarded && w.ClashOf(w.Player.Id) is { Push: < -50 }) { guarded = true; filmCaption.Text = "押し込まれている。構えを「防御」に変えて耐える"; Buttons["clash-stance-防御"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
-                        else if (w.CanKakare && n % 150 == 0) { filmCaption.Text = "かかれ！"; Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed); }
+                        else if (w.CanKakare && n % 60 == 0) { filmCaption.Text = "かかれ！"; Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed); }
                     }
                 }
             }
             if (w.War.Routed.Contains(w.Player.Id)) await Cap("自分の隊は崩れた。本陣まで退けば一度だけ立て直せる", 3.5);
-            Follow(1600, 62); Speed = 120; WaitUntil = 3 * Day + 15 * H;
+            Follow(1600, 62); Speed = 300; WaitUntil = 3 * Day + 15 * H;
             await Cap("あとは全体の成り行き。崩れた隊は本陣で立て直して戻ってくる", 3.5);
             int seen = w.Facts.Count;
             for (int n = 0; n < 30 * 240 && w.War.Result == ""; n++)
