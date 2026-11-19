@@ -67,7 +67,7 @@ public sealed partial class ProtoWorld
     void Fight(ProtoPerson[] all)
     {
         if (War.Spirit.Count == 0) { War.Spirit["takano"] = 100; War.Spirit[Rebel] = 100; }
-        var hits = new Dictionary<string, double>(); var dealt = new Dictionary<(string, string), double>();
+        var hits = new Dictionary<string, double>(); var dealt = new Dictionary<(string, string), double>(); var rear = new HashSet<string>();
         var before = all.ToDictionary(u => u.Id, u => u.Soldiers);
         bool Live(ProtoPerson x) => !War.Routed.Contains(x.Id);
         ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && Dist(a, b) <= 80_00).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
@@ -86,7 +86,12 @@ public sealed partial class ProtoWorld
             long rise = Map.HeightAtCm(a.X, a.Y) - Map.HeightAtCm(b.X, b.Y);
             if (rise > 10_00) atk *= 1.3; else if (rise < -10_00) atk *= 0.7;
             if (Map.GroundAtCm(b.X, b.Y) == Ground.Forest) atk *= 0.8;
-            if (all.Count(x => Hostile(x.House, b.House) && Live(x) && Dist(x, b) <= 80_00) >= 2) atk *= 1.3;
+            // 向き：側面1.5倍・背後2倍（Core/Proto/ProtoTactics.cs）。追っていて隊形が崩れた相手は1.25倍。伏せからの奇襲は1.5倍。
+            var (flank, kind) = FlankOf(b, a); atk *= flank;
+            if (kind != "正面" && !Flag($"flank:{a.Id}:{b.Id}:{kind}")) { Set($"flank:{a.Id}:{b.Id}:{kind}"); Happen($"flank:{a.Id}:{b.Id}:{kind}:{Second}", $"{a.Name}の兵が{b.Name}の{kind}を突いた。", b.X, b.Y, a, b); }
+            if (kind == "背後") rear.Add(b.Id);
+            if (b.Moving) atk *= 1.25;
+            if (Buffed("surprise", a.Id)) atk *= 1.5;
             if (area is { Kind: "射撃" } && Dist(a, area.X * 100L, area.Y * 100L) <= 150_00) atk *= 1.2;
             if (Buffed("charge", a.Id)) atk *= 1.8;
             if (Buffed("kakare", a.Id)) atk *= 1.6;
@@ -104,7 +109,17 @@ public sealed partial class ProtoWorld
         {
             var (a, b) = Person(x).House == Rebel ? (y, x) : (x, y);
             var c = War.Clashes.FirstOrDefault(k => k.A == a && k.B == b);
-            if (c == null) { c = new ProtoClash { A = a, B = b, Since = Second }; War.Clashes.Add(c); }
+            if (c == null)
+            {
+                c = new ProtoClash { A = a, B = b, Since = Second }; War.Clashes.Add(c);
+                // 伏せていた隊（10分以内に伏せていた）が仕掛けたなら奇襲。
+                var (att, def) = (Person(x), Person(y));
+                if (War.HiddenAt.TryGetValue(att.Id, out var hid) && Second - hid <= 10 * 60 && !Buffed("surprise", att.Id))
+                {
+                    War.Until["surprise:" + att.Id] = Second + 5 * 60; def.Morale = Math.Max(0, def.Morale - 15); War.HiddenAt.Remove(att.Id);
+                    Happen($"surprise:{att.Id}:{Second}", $"{att.Name}の兵が森から{def.Name}の兵へ奇襲をかけた。", def.X, def.Y, att, def);
+                }
+            }
         }
         foreach (var c in War.Clashes.ToArray())
         {
@@ -114,11 +129,13 @@ public sealed partial class ProtoWorld
             if (c.Push >= 60) Person(c.B).Morale = Math.Max(0, Person(c.B).Morale - 2);
             if (c.Push <= -60) Person(c.A).Morale = Math.Max(0, Person(c.A).Morale - 2);
         }
+        Pursue(all, hits);
         foreach (var (id, h) in hits)
         {
             var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
             int was = b.Soldiers; b.Soldiers = Math.Max(0, b.Soldiers - loss);
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, was) * 1.0 * (b.Player && War.Stance == "防御" ? 0.5 : 1)));
+            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, was) * 1.0 * (b.Player && War.Stance == "防御" ? 0.5 : 1)) - (rear.Contains(id) ? 3 : 0));
+            if (War.Routed.Contains(id) && b.Soldiers == 0 && b.Active && !b.Player) { b.Active = false; b.Doing = "討ち取られた"; Happen($"slain:{id}", $"{b.Name}は追い討ちを受けて討ち取られた。", b.X, b.Y, b); }
         }
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 || u.Soldiers == 0)).ToArray()) Rout(u);
         // NPC は戦法のゲージがたまれば自分で使う。
@@ -126,12 +143,13 @@ public sealed partial class ProtoWorld
         War.Clashes.RemoveAll(c => War.Routed.Contains(c.A) || War.Routed.Contains(c.B));
     }
 
-    void Rout(ProtoPerson b)
+    internal void Rout(ProtoPerson b)
     {
         if (War.Routed.Contains(b.Id)) return;
         War.Routed.Add(b.Id); War.Target.Remove(b.Id); War.AtCamp.Remove(b.Id);
         Happen($"rout:{b.Id}:{Second}", $"{b.Name}の兵が崩れて退いた（残り{b.Soldiers}）。", b.X, b.Y, b);
         AddSpirit(Side(b.House), b.Id == HeadOf(Side(b.House)) ? -40 : -15);
+        if (CutOff(b)) { Annihilate(b); if (!b.Player) return; }
         var camp = CampOf(b);
         if (b.Player) { Stop(); Note($"兵が崩れた。{camp.Name}の本陣まで退けば立て直せる。"); return; }
         Walk(b, (camp.X, camp.Y), camp.Name, "本陣へ退いている");

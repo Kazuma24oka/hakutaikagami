@@ -194,7 +194,8 @@ public sealed partial class ProtoWorld
     {
         if (p.Moving) return;
         if (p.House == "bandit") { Bandit(p); return; }
-        if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(p.Id) && !War.Routed.Contains(p.Id)) return; // 陣を守る（日課で城へ戻らない）
+        // 陣を守る（日課で城へ戻らない）。崩れた隊も、本陣で立て直せるうちは日課に戻らない。
+        if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(p.Id) && (!War.Routed.Contains(p.Id) || !War.Recovered.Contains(p.Id) && p.Soldiers >= 10)) return;
         if (Courier(p)) return;
         var appointment = Appointments.FirstOrDefault(a => a.Person == p.Id && a.From <= Second && Second < a.Until);
         string want = p.Home; string doing = "詰めている";

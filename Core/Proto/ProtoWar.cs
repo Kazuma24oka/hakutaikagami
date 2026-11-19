@@ -41,6 +41,10 @@ public sealed class ProtoWarState
     public Dictionary<string, long> Until { get; set; } = [];
     public Dictionary<string, long> AtCamp { get; set; } = [];
     public List<string> Recovered { get; set; } = [];
+    // 向き・伏せ（Core/Proto/ProtoTactics.cs）
+    public Dictionary<string, double[]> Facing { get; set; } = [];
+    public Dictionary<string, string> FacingFoe { get; set; } = [];
+    public Dictionary<string, long> HiddenAt { get; set; } = [];
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals);
 
@@ -71,7 +75,8 @@ public sealed partial class ProtoWorld
         if (p.Skills.Contains("物見上手")) r += 150_00;
         return (long)r;
     }
-    bool InSight(ProtoPerson viewer, ProtoPerson target) => Dist(viewer, target) <= SightOf(viewer);
+    // 森で伏せている隊は、80mまで近づかないと見えない（Core/Proto/ProtoTactics.cs）。
+    internal bool InSight(ProtoPerson viewer, ProtoPerson target) => Dist(viewer, target) <= (War.Phase is "行軍" or "合戦" && Hostile(viewer.House, target.House) && Hidden(target) ? 80_00 : SightOf(viewer));
 
     // ---- 毎分 ----
     void Wars()
@@ -258,12 +263,14 @@ public sealed partial class ProtoWorld
         {
             var u = Person(id); var t = Person(targetId);
             if (War.Routed.Contains(id)) continue;
-            if (War.Routed.Contains(targetId) || !t.Active) { War.Target.Remove(id); continue; }
+            if (!t.Active || !KeepsChasing(u, t)) { War.Target.Remove(id); continue; }
             if (Dist(u, t) > 60_00 && (!u.Moving || Second % 300 == 0)) Walk(u, (t.X, t.Y), t.Name, $"{t.Name}の兵へ攻めかかっている");
         }
         HoldKeypoints();
         if (War.Phase == "合戦") Regroup();
-        if (War.Phase == "合戦") Fight(takano.Concat(rebels).Concat(Player.Soldiers > 0 && !War.Routed.Contains(Player.Id) ? new[] { Player } : []).Distinct().ToArray());
+        var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
+        UpdateFacing(field);
+        if (War.Phase == "合戦") { Ambushers(); Fight(field); }
         // 終わり
         var liveRebels = Units.Where(u => u.House == Rebel && StillFights(u)).ToArray();
         // 本人は、戦いに加わっていなければ数えない（本人が後ろにいるだけでは合戦は続かない）。

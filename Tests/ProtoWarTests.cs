@@ -190,6 +190,58 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(said.Contains("鼓舞") && guard.GaugeOf(guard.Player.Id) == 0, "戦法のゲージがたまると使える");
     }
 
+    // 駆け引き（Core/Proto/ProtoTactics.cs）：側面・背後は強い、退き道をふさがれると壊滅、森で伏せると見えない、追うかどうかは気性と知略。
+    [Fact]
+    public void FlanksCutOffAmbushAndPursuitWork()
+    {
+        using var cp = new Checkpoints("試作版の駆け引き", o);
+        var w = new ProtoWorld(Map); w.Advance(3 * Day + 6 * Hour + 5 * 60 - w.Second);
+        cp.Expect(w.War.Phase == "合戦", "6時の合図の後は合戦　" + ProtoWorld.Clock(w.Second));
+        var k = w.Person("iwakiri-katsumoto"); var kosaka = w.Person("kosaka-shigetada"); var heir = w.Person("takano-masayuki"); var iguchi = w.Person("iguchi-yashichi");
+        // 向き：勝元が東（+X）を向いているとき、東から＝正面、北から＝側面、西から＝背後。
+        w.War.Facing[k.Id] = [1, 0];
+        long kx = k.X, ky = k.Y;
+        kosaka.X = kx + 50_00; kosaka.Y = ky; var front = w.FlankOf(k, kosaka);
+        kosaka.X = kx; kosaka.Y = ky + 50_00; var side = w.FlankOf(k, kosaka);
+        kosaka.X = kx - 50_00; kosaka.Y = ky; var back = w.FlankOf(k, kosaka);
+        cp.Log($"正面 {front.Mul}　側面 {side.Mul}　背後 {back.Mul}");
+        cp.Expect(front.Kind == "正面" && side.Kind == "側面" && back.Kind == "背後" && back.Mul > side.Mul && side.Mul > front.Mul, "背後 ＞ 側面 ＞ 正面");
+        // 退き道：井口の本陣（岩切城）への道の先に鷹野の隊がいると壊滅、いなければ本陣へ退く。
+        var castle = Map.Site("iwakiri-castle"); long cx = castle.X * 100L, cy = castle.Y * 100L;
+        var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(w.Save(), ProtoMap.Json);
+        ProtoWorld Copy() => ProtoWorld.Load(Map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(bytes, ProtoMap.Json)!);
+        foreach (var blocked in new[] { true, false })
+        {
+            var v = Copy(); var ig = v.Person(iguchi.Id); var ko = v.Person(kosaka.Id);
+            ig.X = cx + 500_00; ig.Y = cy; v.War.Routed.Remove(ig.Id); v.War.Recovered.Remove(ig.Id); ig.Active = true; ig.Soldiers = 80; int before = ig.Soldiers; // 戦いの成り行きに関係なく同じ形で試す
+            v.War.Routed.Remove(ko.Id); ko.Active = true; ko.Soldiers = Math.Max(ko.Soldiers, 50);
+            if (blocked) { ko.X = cx + 300_00; ko.Y = cy; } else { ko.X = cx + 1500_00; ko.Y = cy + 1500_00; }
+            foreach (var u in v.Units.Where(u => u.House == "takano" && u.Id != ko.Id)) { u.X = cx + 3000_00; u.Y = cy + 3000_00; }
+            v.Rout(ig);
+            cp.Log($"{(blocked ? "ふさがれた" : "開いている")}：兵 {before}→{ig.Soldiers}　{ig.Doing}");
+            cp.Expect(blocked ? !ig.Active && ig.Soldiers < before / 2 : ig.Active && ig.Soldiers == before, blocked ? "退き道をふさがれると壊滅する" : "退き道が開いていれば本陣へ退く");
+        }
+        // 伏せる：森の中で動かずにいる本人は、200m先の敵からは見えず、60mまで来ると見える。
+        var forest = FindForest(w); var me = w.Player; me.X = forest.X; me.Y = forest.Y; me.Path = []; me.PathIndex = 0; me.Soldiers = 30;
+        k.X = forest.X + 200_00; k.Y = forest.Y; bool far = w.InSight(k, me);
+        k.X = forest.X + 60_00; bool near = w.InSight(k, me);
+        cp.Expect(w.Hidden(me) && !far && near, "森で伏せると近くまで見えない");
+        // 追うかどうか：崩れて退く敵を、逸る正之は追い、慎重な小坂は深追いしない。
+        var r = w.Person(iguchi.Id); r.Active = true; r.Soldiers = 40; if (!w.War.Routed.Contains(r.Id)) w.War.Routed.Add(r.Id);
+        heir.X = r.X + 200_00; heir.Y = r.Y; kosaka.X = r.X - 200_00; kosaka.Y = r.Y;
+        cp.Expect(w.KeepsChasing(heir, r) && !w.KeepsChasing(kosaka, r), "逸る者は追い、慎重な者は追わない");
+    }
+    static (long X, long Y) FindForest(ProtoWorld w)
+    {
+        var p = w.PositionOf("forest-edge");
+        for (int d = 0; d < 400; d += 10) for (int a = 0; a < 360; a += 15)
+        {
+            long x = p.X * 100L + (long)(Math.Cos(a * Math.PI / 180) * d * 100), y = p.Y * 100L + (long)(Math.Sin(a * Math.PI / 180) * d * 100);
+            if (w.Map.GroundAtCm(x, y) == Ground.Forest) return (x, y);
+        }
+        throw new InvalidOperationException("森が見つからない");
+    }
+
     // 見た目を確かめるための保存（HAKUTAI_WRITE_SCENE に置き場所を渡したときだけ書く。ふだんは何もしない）。
     // 動画と同じ筋で、6時20分を過ぎて本人の隊がぶつかっている場面。ゲームを HAKUTAI_PROTO_SAVE でこれを読ませて絵を撮る。
     [Fact]
@@ -228,7 +280,15 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Log($"出立 {ProtoWorld.Clock(w.War.DepartAt)}　合図 {ProtoWorld.Clock(w.War.SignalAt)}");
         var muster = w.OpenTasks.First(t => t.Kind == "muster"); w.GoToTask(muster.Id);
         int seen = w.Facts.Count;
-        while (w.War.Result == "" && w.Second < 4 * Day) { w.Advance(300); foreach (var f in w.Facts.Skip(seen)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count; }
+        long half = 0;
+        while (w.War.Result == "" && w.Second < 4 * Day)
+        {
+            w.Advance(300); foreach (var f in w.Facts.Skip(seen)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count;
+            // 合図の後は30分ごとに、隊ごとの兵・士気・崩れ・していることを書く（決着がつかないときに理由を見る）。
+            if (w.War.Signaled && w.Second / 1800 != half && (half = w.Second / 1800) > 0)
+                cp.Log("　　" + string.Join("、", w.Units.Where(u => u.House is "takano" or "iwakiri" && (u.House == "iwakiri" || w.War.Assign.ContainsKey(u.Id)))
+                    .Select(u => $"{u.Name}({u.Soldiers}/{u.Morale}{(w.War.Routed.Contains(u.Id) ? "崩" : "")}) {u.Doing}")));
+        }
         cp.Log($"{ProtoWorld.Clock(w.Second)} 段階 {w.War.Phase} 合図 {w.War.Signaled} 結果 {w.War.Result}");
         cp.Expect(w.War.Result != "", "決着がつく");
         cp.Expect(w.Facts.Any(f => f.Id.StartsWith("tactic:")), "武将が戦法を使う");
