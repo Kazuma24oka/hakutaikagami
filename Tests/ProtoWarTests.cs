@@ -185,7 +185,8 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Log($"5分で 白兵 -{start - w.Player.Soldiers}　防御 -{start - guard.Player.Soldiers}");
         cp.Expect(start - guard.Player.Soldiers < start - w.Player.Soldiers, "防御の構えは兵の減りが少ない");
         // 戦法：ゲージがたまると使える（本人は技能が無いので鼓舞）。
-        for (int i = 0; i < 30 && guard.GaugeOf(guard.Player.Id) < 100 && !guard.War.Routed.Contains(guard.Player.Id); i++) guard.Advance(60);
+        // 戦法の仕組みだけを確かめるので、ゲージがたまるまで崩れないように兵と士気を足しておく。
+        for (int i = 0; i < 30 && guard.GaugeOf(guard.Player.Id) < 100 && !guard.War.Routed.Contains(guard.Player.Id); i++) { guard.Player.Soldiers = Math.Max(guard.Player.Soldiers, 30); guard.Player.Morale = Math.Max(guard.Player.Morale, 60); guard.Advance(60); }
         int morale = guard.Player.Morale; var said = guard.Do("tactic:me"); cp.Log(said + $"　ゲージ {guard.GaugeOf(guard.Player.Id)}　士気 {morale}→{guard.Player.Morale}");
         cp.Expect(said.Contains("鼓舞") && guard.GaugeOf(guard.Player.Id) == 0, "戦法のゲージがたまると使える");
     }

@@ -9,9 +9,9 @@ namespace HakutaiKagami.Core.Proto;
 // ・伏せる：森の中で動かずにいる隊は、敵からは近く（80m）まで見えない。伏せていた隊が仕掛けると奇襲（5分のあいだ1.5倍、相手の士気-30、その間は毎分さらに-4）。側面を突かれると毎分-2。
 public sealed partial class ProtoWorld
 {
-    // 間合い（2026-11-19 ユーザーの図「遠巻きでは凸の出っ張りが相手の面に触れる」）：打ち合える遠さ100m、攻めかかる側は相手の80m手前で止まる、隊どうしは70m空ける。
+    // 間合い（2026-11-19 ユーザーの図「遠巻きでは凸の出っ張りが相手の面に触れる」）：打ち合える遠さ100m、攻めかかる側は相手の80m手前で止まる、味方どうしは90m空ける（敵どうしは間合いの80mまで）。
     // 地図の凸（幅64m・奥行き48m・出っ張り32m）がちょうど触れ合う長さ。
-    internal const long Reach = 100_00, Contact = 80_00, Gap = 70_00;
+    internal const long Reach = 100_00, Contact = 80_00, Gap = 90_00;
     public static bool Pursues(ProtoPerson u) => u.Temper == "逸る" || u.Wits < 55;
 
     // 伏せている：森の中で、動かず、ぶつかっておらず、崩れていない。
@@ -26,6 +26,8 @@ public sealed partial class ProtoWorld
         {
             if (War.Routed.Contains(u.Id)) { War.FacingFoe.Remove(u.Id); continue; }
             ProtoPerson? foe = null;
+            // 狙っている相手がいる間は、その相手の方を向いたまま（横から別の敵に当たられても、すぐには向き直れない）。
+            if (War.Target.TryGetValue(u.Id, out var aim) && Person(aim) is { Active: true } at && !War.Routed.Contains(aim) && Dist(u, at) <= 300_00) { War.FacingFoe[u.Id] = aim; Face(u, at.X - u.X, at.Y - u.Y); continue; }
             if (War.FacingFoe.TryGetValue(u.Id, out var fid)) { var f = Person(fid); if (f.Active && !War.Routed.Contains(fid) && Dist(u, f) <= Reach + 20_00) foe = f; }
             foe ??= all.Where(b => Hostile(u.House, b.House) && !War.Routed.Contains(b.Id) && Dist(u, b) <= Reach).OrderBy(b => Dist(u, b)).ThenBy(b => b.Id).FirstOrDefault();
             if (foe != null) { War.FacingFoe[u.Id] = foe.Id; Face(u, foe.X - u.X, foe.Y - u.Y); continue; }
@@ -133,9 +135,10 @@ public sealed partial class ProtoWorld
         for (int i = 0; i < us.Length; i++) for (int j = i + 1; j < us.Length; j++)
         {
             var a = us[i]; var b = us[j]; double dx = b.X - a.X, dy = b.Y - a.Y, len = Math.Sqrt(dx * dx + dy * dy);
-            if (len >= Gap) continue;
+            long gap = Hostile(a.House, b.House) ? Contact - 5_00 : Gap; // 敵どうしは間合いまで寄れる
+            if (len >= gap) continue;
             if (len < 1) { double ang = (i * 7 + j * 13) % 360 * Math.PI / 180; dx = Math.Cos(ang); dy = Math.Sin(ang); len = 1; }
-            long px = (long)(dx / len * (Gap - len) / 2), py = (long)(dy / len * (Gap - len) / 2);
+            long px = (long)(dx / len * (gap - len) / 2), py = (long)(dy / len * (gap - len) / 2);
             if (Map.GroundAtCm(a.X - px, a.Y - py) != Ground.Water) { a.X -= px; a.Y -= py; }
             if (Map.GroundAtCm(b.X + px, b.Y + py) != Ground.Water) { b.X += px; b.Y += py; }
         }
@@ -155,7 +158,8 @@ public sealed partial class ProtoWorld
         foreach (var u in Units.Where(u => Hidden(u) && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && !u.Player))
         {
             // 目の前（150m）まで引きつけてから出る（遠くで出ると、同じ速さで逃げられて追いつけない）。
-            var e = Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 150_00 && InSight(u, e)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
+            // 横か後ろを取れるまで待つ（敵が目の前を通り過ぎてから出る）。正面からしか当たれないなら、90mまで引きつける。
+            var e = Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(u, e) && (Dist(u, e) <= 150_00 && FlankOf(e, u).Kind != "正面" || Dist(u, e) <= 90_00)).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
             if (e != null) War.Target[u.Id] = e.Id;
         }
     }
