@@ -213,8 +213,8 @@ public sealed partial class ProtoWorld
     public bool CanKakare => ClashOf(Player.Id) != null && War.Ki >= 25 && !War.Routed.Contains(Player.Id);
     string Kakare()
     {
-        if (!CanKakare) return "今はかかれない";
+        if (!CanKakare) return "今は強攻できない";
         War.Ki -= 25; War.Until["kakare:" + Player.Id] = Second + 3 * 60; Shove(Player, 15);
-        return "かかれ！";
+        return "強攻をかけた。";
     }
 }

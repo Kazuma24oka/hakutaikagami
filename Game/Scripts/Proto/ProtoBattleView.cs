@@ -51,7 +51,7 @@ public partial class ProtoGame
         sideTakano = new Label { CustomMinimumSize = new Vector2(70, 0) }; sideRebel = new Label { CustomMinimumSize = new Vector2(70, 0), HorizontalAlignment = HorizontalAlignment.Right };
         pushTexture = ImageTexture.CreateFromImage(pushImage);
         pushPic = new TextureRect { Texture = pushTexture, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.Scale, CustomMinimumSize = new Vector2(300, 16), SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, TextureFilter = CanvasItem.TextureFilterEnum.Nearest };
-        top.AddChild(sideTakano); top.AddChild(new Label { Text = "押し合い", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(pushPic); top.AddChild(sideRebel);
+        top.AddChild(sideTakano); top.AddChild(new Label { Text = "戦況", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(pushPic); top.AddChild(sideRebel);
         var lists = new HBoxContainer(); lists.AddThemeConstantOverride("separation", 14); col.AddChild(lists);
         allyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         lists.AddChild(allyList); lists.AddChild(new VSeparator()); lists.AddChild(enemyList);
@@ -62,7 +62,7 @@ public partial class ProtoGame
         foreach (var s in ProtoWorld.Stances) { var st = s; Add(orders, "clash-stance-" + st, st, () => Message = World.Do("stance:" + st)); }
         orders.AddChild(new VSeparator());
         Add(orders, "clash-tactic", "戦法", () => Message = World.Do("tactic:me"));
-        var kakare = Add(orders, "clash-kakare", "かかれ！", () => Message = World.Do("kakare:me"));
+        var kakare = Add(orders, "clash-kakare", "強攻", () => Message = World.Do("kakare:me"));
         kakare.AddThemeFontSizeOverride("font_size", 20);
         spiritBox.Visible = commandBox.Visible = false;
     }

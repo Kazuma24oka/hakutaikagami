@@ -109,8 +109,8 @@ public partial class ProtoGame
                 Speed = 30; await Until(() => w.ClashOf(w.Player.Id) != null || w.War.Result != "", 60);
                 if (w.ClashOf(w.Player.Id) != null)
                 {
-                    await Cap("ぶつかった。間のゲージは押し合い。右下に采配が出る（遊ぶときは10倍に落ちる。動画では早回し）", 4.5);
-                    await Cap("「かかれ！」は気力を使って一気に押し返す", 2.5);
+                    await Cap("ぶつかった。間のゲージは戦況。右下に采配が出る（遊ぶときは10倍に落ちる。動画では早回し）", 4.5);
+                    await Cap("「強攻」は気力を使って一気に攻め立てる", 2.5);
                     if (w.CanKakare) Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed);
                     int seenF = w.Facts.Count; bool usedTactic = false, guarded = false;
                     for (int n = 0; n < 30 * 90 && w.Second < 3 * Day + 6 * H + 50 * 60 && !w.War.Routed.Contains(w.Player.Id) && w.War.Result == ""; n++)
@@ -119,7 +119,7 @@ public partial class ProtoGame
                         if (w.Facts.Count > seenF) { seenF = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; }
                         if (!usedTactic && w.GaugeOf(w.Player.Id) >= 100) { usedTactic = true; filmCaption.Text = "戦法のゲージがたまった。戦法「鼓舞」で士気を立て直す"; Buttons["clash-tactic"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
                         else if (!guarded && w.ClashOf(w.Player.Id) is { Push: < -50 }) { guarded = true; filmCaption.Text = "押し込まれている。構えを「防御」に変えて耐える"; Buttons["clash-stance-防御"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
-                        else if (w.CanKakare && n % 60 == 0) { filmCaption.Text = "かかれ！"; Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed); }
+                        else if (w.CanKakare && n % 60 == 0) { filmCaption.Text = "強攻"; Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed); }
                     }
                 }
             }
