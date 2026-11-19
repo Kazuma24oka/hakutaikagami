@@ -135,6 +135,7 @@ public partial class ProtoGame
         await Cap("百代鏡　試作版：釣り野伏", 3);
         await Cap("囮が下がって敵を誘い込み、伏せていた兵が横から討つ", 3.5);
         await Cap("自分（佐伯源三郎）は道の口で囮。小坂重忠の隊は森の北の縁に伏せている。森で動かずにいる隊は、敵からは近くまで見えない", 5.5);
+        await Cap("札の上下左右の出っ張りは、その隊が向いている方", 3.5);
         await RunTo(w.War.SignalAt + 2 * 60, 30);
         // 字幕を読む間は時を止める（WaitUntil を今にする）。止めずに字幕を出すと、その間も戦いが進んで筋が変わる。
         void Pause() => FilmPause = true;
@@ -151,12 +152,18 @@ public partial class ProtoGame
         for (int n = 0; n < 30 * 90 && !Sprung() && !w.War.Routed.Contains(w.Player.Id); n++)
         { await Hold(1d / 30); if (Speed != 60) Speed = 60; if (w.Facts.Count > seen) { seen = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; } }
         if (!Sprung()) { Pause(); await Cap("伏兵まで誘い込めなかった", 4); await Cap("百代鏡　試作版", 2); return; }
-        Pause(); await Cap("伏せていた小坂重忠の隊が、追ってきた井口の横から奇襲をかけた。奇襲を受けた隊は士気が大きく下がる", 5);
+        // 奇襲の瞬間は寄って、ちびコマの打ち合いを見せる。
+        Pause(); Follow(650, 52); await Hold(0.5);
+        await Cap("伏せていた小坂重忠の隊が、追ってきた井口の横から奇襲をかけた。奇襲を受けた隊は士気が大きく下がる", 5);
         await Cap("囮も向き直って挟み撃ちにする", 3);
         if (w.Actions().Any(a => a.Id == "attack:" + iguchi.Id)) Act("attack:" + iguchi.Id);
         Resume(30);
+        // 寄りで少し見せてから引いて、札の出っ張り（隊の向き）で挟み撃ちの形を見せる。
         for (int n = 0; n < 30 * 90 && !w.War.Routed.Contains(iguchi.Id) && iguchi.Active; n++)
-        { await Hold(1d / 30); if (Speed != 30) Speed = 30; if (w.Facts.Count > seen) { seen = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; } }
+        {
+            await Hold(1d / 30); if (Speed != 30) Speed = 30; if (w.Facts.Count > seen) { seen = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; }
+            if (n == 30 * 8) { Pause(); Follow(1150, 58); await Cap("引くと札で見える。札の出っ張りは隊が向いている方。横や後ろから当たっているのが分かる", 5); Resume(30); }
+        }
         Pause(); await Hold(1.5);
         await Cap(w.War.Routed.Contains(iguchi.Id) || !iguchi.Active ? "挟まれた井口弥七の隊は崩れた" : "井口弥七の隊はまだ持ちこたえている", 4);
         await Cap("百代鏡　試作版", 2);

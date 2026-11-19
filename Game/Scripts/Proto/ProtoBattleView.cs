@@ -166,6 +166,14 @@ public partial class ProtoGame
     static float Chars(string t) => t.Sum(ch => ch > 0x2000 ? 1f : 0.58f);
     Label3D CardText(int size) => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = size, OutlineSize = 3, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 21 };
     static string HouseShort(string house) => house switch { "takano" => "鷹野", "iwakiri" => "岩切", "sawatari" => "沢渡", _ => "" };
+    // 出っ張りは隊の向き（画面の上下左右のうち近いほう）を指す。向きが分からないときは上。
+    int CardDir(ProtoPerson p, Vector3 at)
+    {
+        if (!World.War.Facing.TryGetValue(p.Id, out var f) || Camera == null) return 0;
+        var a = Camera.UnprojectPosition(at); var b = Camera.UnprojectPosition(at + new Vector3((float)f[0], 0, (float)f[1]) * 20);
+        var d = b - a; if (d.LengthSquared() < 1) return 0;
+        return Math.Abs(d.X) > Math.Abs(d.Y) ? (d.X > 0 ? 1 : 3) : (d.Y < 0 ? 0 : 2); // 0上 1右 2下 3左
+    }
     void DrawCard(ProtoPerson p, Vector3 foot, bool show, string name, int total, string parts)
     {
         if (!cards.TryGetValue(p.Id, out var c))
@@ -176,33 +184,38 @@ public partial class ProtoGame
         }
         foreach (var n in new GeometryInstance3D[] { c.Back, c.House, c.Name, c.Total, c.Parts }) n.Visible = show;
         if (!show) return;
-        bool routed = World.War.Routed.Contains(p.Id);
-        var key = $"{name}|{total}|{parts}|{p.Morale / 5}|{routed}";
-        if (key != c.Key)
-        {
-            c.Key = key; c.House.Text = HouseShort(p.House); c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
-            c.Name.FontSize = Math.Min(17, (int)((CardW - 16) / Math.Max(1, Chars(name))));
-            c.Parts.FontSize = Math.Min(15, (int)((CardW - 16) / Math.Max(1, Chars(c.Parts.Text))));
-            int w = CardW, h = TabH + BodyH, tx = (w - TabW) / 2;
-            var edge = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.35f);
-            var fill = routed ? new Color(0.32f, 0.32f, 0.32f, 0.95f) : HouseColor(p.House).Darkened(0.1f); // 勢力の色（文字は輪郭線で読む）
-            var tab = routed ? fill : HouseColor(p.House).Darkened(0.3f);
-            var img = Image.CreateEmpty(w, h, false, Image.Format.Rgba8); img.Fill(new Color(0, 0, 0, 0));
-            img.FillRect(new Rect2I(tx, 0, TabW, TabH + 2), edge); img.FillRect(new Rect2I(0, TabH, w, BodyH), edge);
-            img.FillRect(new Rect2I(tx + 2, 2, TabW - 4, TabH), tab);
-            img.FillRect(new Rect2I(2, TabH + 2, w - 4, BodyH - 4), fill);
-            img.FillRect(new Rect2I(tx + 2, TabH, TabW - 4, 2), tab);
-            img.FillRect(new Rect2I(6, h - 10, w - 12, 5), new Color(0.12f, 0.12f, 0.12f));
-            img.FillRect(new Rect2I(6, h - 10, Math.Max(1, (w - 12) * Math.Clamp(p.Morale, 0, 100) / 100), 5), new Color(0.95f, 0.8f, 0.3f));
-            c.Back.Texture = ImageTexture.CreateFromImage(img);
-            // 文字の位置（札の真ん中からの上下、上が正）。内訳が無いときは兵の数を下に寄せる。
-            float mid = h / 2f;
-            c.House.Offset = new Vector2(0, mid - TabH / 2f - 1);
-            c.Name.Offset = new Vector2(0, mid - (TabH + 15));
-            c.Total.Offset = new Vector2(0, mid - (TabH + (parts == "" ? 42 : 37)));
-            c.Parts.Offset = new Vector2(0, mid - (TabH + 57));
-        }
         var at = foot + new Vector3(0, 8 + distance * 0.025f, 0);
         foreach (var n in new Node3D[] { c.Back, c.House, c.Name, c.Total, c.Parts }) n.Position = at;
+        bool routed = World.War.Routed.Contains(p.Id); int dir = routed ? 0 : CardDir(p, at);
+        var key = $"{name}|{total}|{parts}|{p.Morale / 5}|{routed}|{dir}";
+        if (key == c.Key) return;
+        c.Key = key; c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
+        c.House.Text = dir is 0 or 2 ? HouseShort(p.House) : HouseShort(p.House).Length > 0 ? HouseShort(p.House)[..1] : "";
+        c.Name.FontSize = Math.Min(17, (int)((CardW - 16) / Math.Max(1, Chars(name))));
+        c.Parts.FontSize = Math.Min(15, (int)((CardW - 16) / Math.Max(1, Chars(c.Parts.Text))));
+        // 形：上下なら幅 CardW・高さ TabH+BodyH、左右なら幅 CardW+TabH・高さ BodyH。出っ張りは辺の真ん中。
+        bool vertical = dir is 0 or 2; int w = vertical ? CardW : CardW + TabH, h = vertical ? TabH + BodyH : BodyH;
+        int bx = dir == 3 ? TabH : 0, by = dir == 0 ? TabH : 0;
+        var tab = dir switch { 0 => new Rect2I((w - TabW) / 2, 0, TabW, TabH + 2), 2 => new Rect2I((w - TabW) / 2, BodyH - 2, TabW, TabH + 2), 1 => new Rect2I(CardW - 2, (h - TabW) / 2, TabH + 2, TabW), _ => new Rect2I(0, (h - TabW) / 2, TabH + 2, TabW) };
+        var edge = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.35f);
+        var fill = routed ? new Color(0.32f, 0.32f, 0.32f, 0.95f) : HouseColor(p.House).Darkened(0.1f); // 勢力の色（文字は輪郭線で読む）
+        var tabFill = routed ? fill : HouseColor(p.House).Darkened(0.3f);
+        var img = Image.CreateEmpty(w, h, false, Image.Format.Rgba8); img.Fill(new Color(0, 0, 0, 0));
+        img.FillRect(tab, edge); img.FillRect(new Rect2I(bx, by, CardW, BodyH), edge);
+        img.FillRect(tab.Grow(-2), tabFill);
+        img.FillRect(new Rect2I(bx + 2, by + 2, CardW - 4, BodyH - 4), fill);
+        // 出っ張りと本体のつなぎ目の縁を消す
+        var seam = dir switch { 0 => new Rect2I(tab.Position.X + 2, by, TabW - 4, 2), 2 => new Rect2I(tab.Position.X + 2, BodyH - 2, TabW - 4, 2), 1 => new Rect2I(CardW - 2, tab.Position.Y + 2, 2, TabW - 4), _ => new Rect2I(TabH, tab.Position.Y + 2, 2, TabW - 4) };
+        img.FillRect(seam, tabFill);
+        img.FillRect(new Rect2I(bx + 6, by + BodyH - 10, CardW - 12, 5), new Color(0.12f, 0.12f, 0.12f));
+        img.FillRect(new Rect2I(bx + 6, by + BodyH - 10, Math.Max(1, (CardW - 12) * Math.Clamp(p.Morale, 0, 100) / 100), 5), new Color(0.95f, 0.8f, 0.3f));
+        c.Back.Texture = ImageTexture.CreateFromImage(img);
+        // 文字の位置（札の真ん中からのずれ、上が正）
+        Vector2 Off(float x, float y) => new(x - w / 2f, h / 2f - y);
+        float cx = bx + CardW / 2f;
+        c.House.Offset = Off(tab.Position.X + tab.Size.X / 2f, tab.Position.Y + tab.Size.Y / 2f + 1);
+        c.Name.Offset = Off(cx, by + 15);
+        c.Total.Offset = Off(cx, by + (parts == "" ? 42 : 37));
+        c.Parts.Offset = Off(cx, by + 57);
     }
 }
