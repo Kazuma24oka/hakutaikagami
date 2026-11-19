@@ -5,6 +5,15 @@ namespace HakutaiKagami.Core.Proto;
 // 見え方：ぶつかった隊どうしの押し合い（HoI4 の戦いのゲージ）と、狭い所では一度に戦える隊の数が限られる（戦場の幅）。
 // 手応え：本人の隊がぶつかっている間だけ、構え（白兵・射撃・防御）・戦法・「かかれ」（気力を使う一押し、半熟英雄のボタン）。
 // 立て直し：崩れた隊は本陣へ戻り、しばらく休むと一度だけ戦いに戻れる（戦国下天禄の再出撃）。
+// その1分に受けた打撃（地図に数字で出す）。Kind はいちばん悪い当たり方（正面・側面・背後）、奇襲なら Surprise。
+public sealed class ProtoHit
+{
+    public string To { get; set; } = "";
+    public int Loss { get; set; }
+    public string Kind { get; set; } = "正面";
+    public bool Surprise { get; set; }
+    public long At { get; set; }
+}
 public sealed class ProtoClash
 {
     public string A { get; set; } = "";   // 鷹野方
@@ -73,6 +82,7 @@ public sealed partial class ProtoWorld
     {
         if (War.Spirit.Count == 0) { War.Spirit["takano"] = 100; War.Spirit[Rebel] = 100; }
         var hits = new Dictionary<string, double>(); var dealt = new Dictionary<(string, string), double>(); var rear = new HashSet<string>(); var side = new HashSet<string>(); var shaken = new HashSet<string>();
+        War.Hits.Clear();
         var before = all.ToDictionary(u => u.Id, u => u.Soldiers);
         bool Live(ProtoPerson x) => !War.Routed.Contains(x.Id);
         ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && Dist(a, b) <= 80_00).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
@@ -97,6 +107,7 @@ public sealed partial class ProtoWorld
             if (kind == "背後") rear.Add(b.Id); else if (kind == "側面") side.Add(b.Id);
             if (Buffed("surprise", a.Id)) shaken.Add(b.Id);
             if (b.Moving) atk *= 1.25;
+            if (a.Moving) atk *= 0.4; // 歩きながら（追いながら）では打ちにくい
             if (Buffed("surprise", a.Id)) atk *= 1.5;
             if (area is { Kind: "射撃" } && Dist(a, area.X * 100L, area.Y * 100L) <= 150_00) atk *= 1.2;
             if (Buffed("charge", a.Id)) atk *= 1.8;
@@ -141,6 +152,7 @@ public sealed partial class ProtoWorld
         {
             var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
             int was = b.Soldiers; b.Soldiers = Math.Max(0, b.Soldiers - loss);
+            War.Hits.Add(new ProtoHit { To = id, Loss = was - b.Soldiers, Kind = rear.Contains(id) ? "背後" : side.Contains(id) ? "側面" : "正面", Surprise = shaken.Contains(id), At = Second });
             b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, was) * 1.0 * (b.Player && War.Stance == "防御" ? 0.5 : 1)) - (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0) - (shaken.Contains(id) ? 4 : 0)); // 背後5・側面2・奇襲を受けている間4、毎分さらに下がる
             if (War.Routed.Contains(id) && b.Soldiers == 0 && b.Active && !b.Player) { b.Active = false; b.Doing = "討ち取られた"; Happen($"slain:{id}", $"{b.Name}は追い討ちを受けて討ち取られた。", b.X, b.Y, b); }
         }

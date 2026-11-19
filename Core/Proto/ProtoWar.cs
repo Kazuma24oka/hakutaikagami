@@ -46,6 +46,7 @@ public sealed class ProtoWarState
     public Dictionary<string, string> FacingFoe { get; set; } = [];
     public Dictionary<string, long> HiddenAt { get; set; } = [];
     public Dictionary<string, string> HoldCand { get; set; } = []; // 要所 → 「家|居始めた時刻」
+    public List<ProtoHit> Hits { get; set; } = []; // その1分の打撃（地図に出す）
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans);
 
@@ -60,7 +61,7 @@ public sealed partial class ProtoWorld
     const string Rebel = "iwakiri";
     public static readonly string[] Departures = ["今夜のうちに出る", "夜明けに出る"];
     public static readonly string[] Signals = ["卯の刻（6時）に狼煙", "辰の刻（8時）に狼煙"];
-    // 作戦（2026-11-19 ユーザー「釣り野伏」）：正面は大将が道の口・家老が南の丘。釣り野伏は家老が森の北の縁に伏せ、大将は城の本陣に残る（囮は本人）。
+    // 作戦（2026-11-19 ユーザー「釣り野伏」）：正面は大将が道の口・家老が南の丘。釣り野伏は家老が森の北の縁に伏せ、大将は南の丘で勝元を引きつける（囮は本人）。
     public static readonly string[] Plans = ["正面から当たる", "釣り野伏"];
 
     public ProtoPosition PositionOf(string id) => Map.Data.Positions!.First(p => p.Id == id);
@@ -165,7 +166,7 @@ public sealed partial class ProtoWorld
         bool present = playerPosition != null; War.PlayerAtCouncil = present;
         string dep = departure ?? Departures[1], sig = signal ?? Signals[0];
         bool tsuri = plan == Plans[1];
-        War.Assign[Heir] = tsuri ? "takano-castle" : "road-mouth"; War.Assign[Karou] = tsuri ? "forest-edge" : "south-hill"; War.Assign[Player.Id] = playerPosition ?? "forest-edge";
+        War.Assign[Heir] = tsuri ? "south-hill" : "road-mouth"; War.Assign[Karou] = tsuri ? "forest-edge" : "south-hill"; War.Assign[Player.Id] = playerPosition ?? "forest-edge";
         long night = At(DayIndex, 21), dawn = (Second / Day + 1) * Day + 4 * Hour;
         War.DepartAt = dep == Departures[0] ? Math.Max(Second + 10 * 60, Math.Min(night, Second + Hour)) : dawn;
         War.SignalAt = (dawn / Day) * Day + (sig == Signals[0] ? 6 : 8) * Hour;
@@ -242,7 +243,8 @@ public sealed partial class ProtoWorld
             if (Dist(Player, heir) <= 2500_00) Learn(Player, Fact("signal")!);
         }
         // 抜け駆け：逸る者は、合図の前でも敵が見えると仕掛けることがある。
-        foreach (var u in takano.Where(u => !u.Player && !War.Signaled && u.Temper == "逸る" && !War.Target.ContainsKey(u.Id)))
+        // 大将は自分の決めた合図を破らない。
+        foreach (var u in takano.Where(u => !u.Player && u.Id != Heir && !War.Signaled && u.Temper == "逸る" && !War.Target.ContainsKey(u.Id)))
         {
             var seen = rebels.Where(r => InSight(u, r)).OrderBy(r => Dist(u, r)).FirstOrDefault();
             if (seen != null && Roll("nukegake:" + u.Id) % 100 < 30)
@@ -269,12 +271,14 @@ public sealed partial class ProtoWorld
             var u = Person(id); var t = Person(targetId);
             if (War.Routed.Contains(id)) continue;
             if (!t.Active || !KeepsChasing(u, t)) { War.Target.Remove(id); continue; }
-            if (Dist(u, t) > 60_00 && (!u.Moving || Second % 300 == 0)) Walk(u, (t.X, t.Y), t.Name, $"{t.Name}の兵へ攻めかかっている");
+            // 相手の手前の間合い（50m）まで進んで止まり、向かい合う（相手の位置に重ならない）。相手が動いたら1分ごとに引き直す。
+            if (Dist(u, t) > 70_00) { if (!u.Moving || Second % 60 == 0) Walk(u, ContactPoint(u, t), t.Name, $"{t.Name}の兵へ攻めかかっている"); }
+            else if (u.Moving && !u.Player) { u.Path = []; u.PathIndex = 0; }
         }
         HoldKeypoints();
         if (War.Phase == "合戦") Regroup();
         var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
-        UpdateFacing(field);
+        Spread(field); UpdateFacing(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }
         // 終わり
         var liveRebels = Units.Where(u => u.House == Rebel && StillFights(u)).ToArray();
@@ -312,7 +316,7 @@ public sealed partial class ProtoWorld
             War.Phase = "合戦"; AddFavor(Heir, -5);
             Happen("nukegake:" + Player.Id, $"{Player.Name}が合図を待たずに{e.Name}の兵へ仕掛けた。", Player.X, Player.Y, Player);
         }
-        MoveTo(e.X, e.Y, e.Name); Player.Doing = e.Name + "の兵へ攻めかかっている";
+        var cp = ContactPoint(Player, e); MoveTo(cp.X, cp.Y, e.Name); Player.Doing = e.Name + "の兵へ攻めかかっている";
         return $"{e.Name}の兵へ攻めかかる。";
     }
     string Withdraw()

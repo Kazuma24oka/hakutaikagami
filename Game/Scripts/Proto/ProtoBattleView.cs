@@ -75,8 +75,38 @@ public partial class ProtoGame
         img.FillRect(new Rect2I(w / 2, 0, 1, h), new Color(1, 0.9f, 0.5f));
     }
 
+    // ---- 打撃の数字（2026-11-19 ユーザー「側面を突かれているのか正面なのか分からない。ダメージも出ていない」） ----
+    // 1分ごとに、打撃を受けた隊の上に数字を出して浮かべて消す。正面は白、側面は橙、背後は赤、奇襲を受けている間は「奇襲」を前に付ける。
+    readonly List<(Label3D Label, double Born, Vector3 At)> popups = new();
+    long hitsShown = -1;
+    void ShowHits()
+    {
+        var hits = World.War.Hits;
+        if (hits.Count > 0 && hits[0].At != hitsShown)
+        {
+            hitsShown = hits[0].At;
+            foreach (var h in hits.Where(h => h.Loss > 0))
+            {
+                var u = World.Person(h.To); if (!World.Sees(World.Player, u)) continue;
+                string head = (h.Surprise ? "奇襲 " : "") + (h.Kind == "正面" ? "" : h.Kind + " ");
+                var color = h.Kind == "背後" ? new Color(1, 0.35f, 0.3f) : h.Kind == "側面" ? new Color(1, 0.65f, 0.25f) : new Color(1, 1, 1);
+                var l = new Label3D { Text = $"{head}-{h.Loss}", Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0009f, FontSize = 30, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), Modulate = color, NoDepthTest = true, RenderPriority = 30 };
+                AddChild(l); popups.Add((l, Time.GetTicksMsec() / 1000.0, ToScene(u.X, u.Y)));
+            }
+        }
+        double now = Time.GetTicksMsec() / 1000.0;
+        for (int i = popups.Count - 1; i >= 0; i--)
+        {
+            var (l, born, at) = popups[i]; double age = now - born;
+            if (age > 1.6) { l.QueueFree(); popups.RemoveAt(i); continue; }
+            l.Position = at + new Vector3(0, distance * (0.05f + 0.03f * (float)age), 0);
+            l.Modulate = l.Modulate with { A = (float)Math.Clamp(1.6 - age, 0, 1) };
+        }
+    }
+
     void UpdateBattleView()
     {
+        ShowHits();
         var war = World.War; bool on = war.Phase is "合戦" or "終わり" && war.Spirit.Count > 0;
         spiritBox.Visible = on;
         if (on)
@@ -195,7 +225,7 @@ public partial class ProtoGame
         if (!show) return;
         bool routed = World.War.Routed.Contains(p.Id);
         // 地面の凸：遠さに合わせた大きさで、向きの角度へなめらかに回す（1秒に120度まで）。
-        float size = distance * 0.105f;
+        float size = distance * 0.075f; // 隊の間（35〜60m）に対して大きすぎると重なるので小さめ
         float want = World.War.Facing.TryGetValue(p.Id, out var f) && !routed ? (float)Math.Atan2(-f[0], -f[1]) : cardYaw.GetValueOrDefault(p.Id, 0); // -Z が前
         float yaw = cardYaw.TryGetValue(p.Id, out var was) ? was : want;
         float diff = Mathf.Wrap(want - yaw, -Mathf.Pi, Mathf.Pi), step = Mathf.DegToRad(120) * (float)GetProcessDeltaTime();

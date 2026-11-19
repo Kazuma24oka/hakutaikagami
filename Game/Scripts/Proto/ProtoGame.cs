@@ -31,6 +31,9 @@ public partial class ProtoGame : Node3D
     internal int Speed = 30;
     internal long WaitUntil;
     internal static readonly int[] Speeds = [10, 30, 60, 120, 500];
+    // 時間（2026-11-19 ユーザー「HoI4 のように。ボタンを増やさない」）：止めているか、進めているか。進めている間は、歩いていなくても時が流れる。
+    internal bool Paused = true;
+    HSlider speedSlider = null!; Label speedText = null!;
     long skipUntil; int skipJournal;
     internal void Skip(long until) { World.Stop(); marker.Visible = false; skipUntil = until; skipJournal = World.Journal.Count; Message = ""; }
     internal readonly Dictionary<string, Button> Buttons = new();
@@ -228,56 +231,6 @@ public partial class ProtoGame : Node3D
             clashLine[g.Key] = (m, d, As, push);
         }
     }
-    (Vector3 Foot, Vector3 Dir)? FrontOf(ProtoPerson p, float px)
-    {
-        float gap = 26 * px * FollowerGap, sep = gap * 3.2f;
-        foreach (var (bId, line) in clashLine)
-        {
-            int i = Array.IndexOf(line.As, p.Id);
-            if (bId != p.Id && i < 0) continue;
-            var dir = bId == p.Id ? -line.D : line.D; var side = new Vector3(-line.D.Z, 0, line.D.X);
-            var at = line.M - dir * sep + (i >= 0 ? side * gap * 5.6f * (i - (line.As.Length - 1) / 2f) : Vector3.Zero);
-            at.Y = HeightAt(at.X, at.Z); return (at, dir);
-        }
-        return null;
-    }
-    // ---- 引いた視点の凸の置き場所（2026-11-19 ユーザー「接敵中に隊が重なっているのは変」「味方同士でも重なっているのは違和感」） ----
-    // ぶつかっている隊は、間の線をはさんで向かい合わせる（出っ張りどうしが触れるくらい）。同じ敵に当たる味方は横に並ぶ。
-    // そのうえで、近すぎる凸どうしは少しずつ押し分ける。どれも描くときだけの置き場所で、世界の位置は変えない。
-    readonly Dictionary<string, Vector3> cardSpot = new();
-    void PlanCardSpots()
-    {
-        cardSpot.Clear(); float size = distance * 0.105f;
-        var units = World.People.Where(p => p.Active && p.Soldiers > 0 && World.Sees(World.Player, p) && (p.House == "iwakiri" || World.War.Assign.ContainsKey(p.Id))).OrderBy(p => p.Id).ToList();
-        foreach (var u in units) cardSpot[u.Id] = ToScene(u.X, u.Y);
-        foreach (var (bId, line) in clashLine)
-        {
-            if (!cardSpot.ContainsKey(bId)) continue;
-            var side = new Vector3(-line.D.Z, 0, line.D.X); float half = size * 0.6f;
-            cardSpot[bId] = line.M + line.D * half;
-            for (int i = 0; i < line.As.Length; i++) if (cardSpot.ContainsKey(line.As[i])) cardSpot[line.As[i]] = line.M - line.D * half + side * size * 1.15f * (i - (line.As.Length - 1) / 2f);
-        }
-        // 押し分け：凸の幅より近いものは、互いに半分ずつ離す（数回くり返す）。
-        var ids = cardSpot.Keys.ToList(); float min = size * 1.3f; // 回った凸の角どうしも当たらないくらい
-        for (int it = 0; it < 6; it++)
-            for (int i = 0; i < ids.Count; i++) for (int j = i + 1; j < ids.Count; j++)
-            {
-                var a = cardSpot[ids[i]]; var b = cardSpot[ids[j]]; var d = b - a; d.Y = 0; float len = d.Length();
-                if (len >= min) continue;
-                if (len < 0.01f) { d = new Vector3(1, 0, 0).Rotated(Vector3.Up, (i * 7 + j * 13) % 360 * Mathf.Pi / 180); len = 0.01f; }
-                var push = d / len * (min - len) / 2; cardSpot[ids[i]] = a - push; cardSpot[ids[j]] = b + push;
-            }
-    }
-    // 本当の位置からのずれを、1秒に「凸3つ分」までの速さで追わせる。
-    readonly Dictionary<string, Vector3> shown = new();
-    Vector3 Smooth(string id, Vector3 real, Vector3 want)
-    {
-        var target = want - real; var cur = shown.TryGetValue(id, out var c) ? c : target;
-        float step = distance * 0.105f * 3 * (float)GetProcessDeltaTime(); var d = target - cur;
-        cur = d.Length() <= step ? target : cur + d.Normalized() * step; shown[id] = cur;
-        var at = real + cur; at.Y = HeightAt(at.X, at.Z); return at;
-    }
-
     void DrawFollowers(ProtoPerson p, Vector3 foot, float px, bool show, string anim)
     {
         if (!followers.TryGetValue(p.Id, out var list)) followers[p.Id] = list = new();
@@ -285,10 +238,9 @@ public partial class ProtoGame : Node3D
         var mix = TroopMix(p);
         while (list.Count < want) { var d = new DotOfficerActor { OnTop = true }; AddChild(d); list.Add(d); }
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
-        var dir = formation.TryGetValue(p.Id, out var f) ? f.Dir : heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
-        // ぶつかっている間は、足軽が相手の方へ前に出て横一列に並び、打ち合う。
-        bool front = false;
-        if (FrontOf(p, Math.Max(0.12f, distance / 380f) * 1.25f) is { } fr) { dir = fr.Dir; front = true; anim = "attack"; }
+        var dir = heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
+        // ぶつかっている間は、足軽が向いている方へ前に出て横一列に並び、打ち合う。
+        bool front = World.ClashOf(p.Id) != null; if (front) anim = "attack";
         var back = front ? dir : -dir; var side = new Vector3(-back.Z, 0, back.X);
         float gap = 26 * px * FollowerGap; int wide = front ? 5 : Wide(p);
         for (int i = 0; i < list.Count; i++)
@@ -325,12 +277,11 @@ public partial class ProtoGame : Node3D
         var bar = new HBoxContainer(); bar.AddThemeConstantOverride("separation", 8); top.Theme = new Theme { DefaultFontSize = 17 }; top.AddChild(bar);
         clock = new Label(); bar.AddChild(clock); foot = new Label(); bar.AddChild(foot); status = new Label(); bar.AddChild(status);
         bar.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, MouseFilter = Control.MouseFilterEnum.Ignore });
-        foreach (var v in Speeds) Add(bar, "speed-" + v, v + "倍", () => { Speed = v; RefreshUi(); });
-        // 待つ・翌朝まで・次の出来事までは、時間を一気に飛ばす（本人に知らせが入ったらそこで止まる）。
-        Add(bar, "wait", "1時間待つ", () => Skip(World.Second + 3600));
-        Add(bar, "morning", "翌朝まで", () => { long d = ProtoWorld.Day; Skip((World.Second - 7 * 3600) / d * d + d + 7 * 3600); });
-        Add(bar, "next", "次の出来事まで", () => Skip(World.Second + ProtoWorld.Day));
-        Add(bar, "stop", "止まる", () => { World.Stop(); WaitUntil = 0; marker.Visible = false; RefreshUi(); });
+        // 止める・進める（スペースでも）と、速さの目盛り。
+        Add(bar, "pause", "進める", () => { Paused = !Paused; RefreshUi(); });
+        speedSlider = new HSlider { MinValue = 0, MaxValue = Speeds.Length - 1, Step = 1, CustomMinimumSize = new Vector2(160, 0), SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, FocusMode = Control.FocusModeEnum.None };
+        speedSlider.ValueChanged += v => { Speed = Speeds[(int)v]; speedText.Text = Speed + "倍"; };
+        bar.AddChild(speedSlider); speedText = new Label { CustomMinimumSize = new Vector2(60, 0) }; bar.AddChild(speedText);
         bar.AddChild(new VSeparator());
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
@@ -360,7 +311,8 @@ public partial class ProtoGame : Node3D
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
         status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
-        foreach (var v in Speeds) Buttons["speed-" + v].Disabled = Speed == v;
+        Buttons["pause"].Text = Paused ? "進める" : "止める";
+        int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
         var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
@@ -445,7 +397,8 @@ public partial class ProtoGame : Node3D
         else if (e is InputEventKey k && k.Pressed && !k.Echo)
         {
             if (k.Keycode == Key.Q) yaw -= 15; else if (k.Keycode == Key.E) yaw += 15;
-            else if (k.Keycode == Key.Space) pan = Vector3.Zero;
+            else if (k.Keycode == Key.Space) { Paused = !Paused; RefreshUi(); }
+            else if (k.Keycode == Key.Home) pan = Vector3.Zero;
             else if (k.Keycode == Key.F8) Debug.OpenNote();
             else if (k.Keycode == Key.F9) Debug.OpenStock();
         }
@@ -480,7 +433,8 @@ public partial class ProtoGame : Node3D
             if (World.Second >= skipUntil) skipUntil = 0;
             dirty = true; UpdateActors(); PlaceCamera(); RefreshUi(); SaveGame(); return;
         }
-        bool running = !Debug.NoteOpen && !Scene.Open && !FilmPause && (World.Player.Moving || WaitUntil > World.Second);
+        // 動画（台本）は前のとおり「歩いている間と、待つと決めた時刻まで」進む。遊ぶときは止める・進めるで決まる。
+        bool running = !Debug.NoteOpen && !Scene.Open && !FilmPause && (FilmRoot != null ? World.Player.Moving || WaitUntil > World.Second : !Paused);
         if (running)
         {
             acc += delta * Speed; int n = Math.Min((int)acc, 5000); acc -= n;
@@ -488,6 +442,7 @@ public partial class ProtoGame : Node3D
             {
                 bool wasMoving = World.Player.Moving; World.Step();
                 if (wasMoving && !World.Player.Moving) dirty = true;
+                if (FilmRoot == null) { if (wasMoving && !World.Player.Moving) marker.Visible = false; continue; }
                 if (wasMoving && !World.Player.Moving && WaitUntil <= World.Second) { acc = 0; marker.Visible = false; break; }
                 if (!wasMoving && WaitUntil <= World.Second) { acc = 0; break; }
             }
@@ -507,7 +462,6 @@ public partial class ProtoGame : Node3D
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
         if (war) PlanFormations(Math.Max(0.12f, distance / 380f) * 1.25f); else formation.Clear();
         PlanClashLines(Math.Max(0.12f, distance / 380f) * 1.25f);
-        if (war && distance > CardDistance) PlanCardSpots(); else cardSpot.Clear();
         foreach (var p in World.People)
         {
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p);
@@ -521,20 +475,16 @@ public partial class ProtoGame : Node3D
             {
                 // ちびコマ：足元を地面に置き、近づいても遠ざかっても見える大きさにする。歩く・戦う・止まるで動きを変える。
                 body.Visible = false; dot.Visible = seen;
-                var real = ToScene(p.X, p.Y); bool inLine = formation.TryGetValue(p.Id, out var fm); var foot = inLine ? fm.Foot : real;
-                var frontLine = unit ? FrontOf(p, Math.Max(0.12f, distance / 380f) * 1.25f) : null; if (frontLine is { } fl) foot = fl.Foot;
-                // 引いた視点（凸）では、凸どうしの置き場所（向かい合い・押し分け）を使う。
-                if (unit && distance > CardDistance) { foot = cardSpot.TryGetValue(p.Id, out var cs) ? cs : real; inLine = false; frontLine = null; }
-                // 並べ直しの分（本当の位置からのずれ）は、なめらかに動かす（急に飛ばないように）。
-                foot = Smooth(p.Id, real, foot);
+                // 隊はいつも世界の本当の位置に描く（描くときだけ動かすと、飛んだり勝手に位置が変わって見える。2026-11-19 ユーザーの印）。
+                var real = ToScene(p.X, p.Y); bool inLine = formation.TryGetValue(p.Id, out var fm); var foot = real;
                 float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
                 dot.Position = foot;
                 string anim = p.Doing.Contains("戦って") ? "attack" : p.Doing.Contains("退いて") || p.Doing.Contains("敗走") ? "damage" : p.Moving ? "walk" : "idle";
                 dot.Freeze(anim, Time.GetTicksMsec() / 1000.0 + p.Id.Length * 0.37);
                 if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(real - before, Camera); var mv = real - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
                 lastPos[p.Id] = real;
-                if (inLine) dot.Face(fm.Dir, Camera);
-                if (frontLine is { } fl2) dot.Face(fl2.Dir, Camera);
+                // 向きは世界の向き一つ（凸と同じ）。合戦の間は、ちびコマも足軽もこれに合わせる。
+                if (World.War.Facing.TryGetValue(p.Id, out var wf)) { var fdir = new Vector3((float)wf[0], 0, (float)wf[1]); dot.Face(fdir, Camera); heading[p.Id] = fdir; }
                 if (inLine && fm.Count > 1) label.Text = $"{p.Name}勢　{fm.Total}（{fm.Parts}）";
                 else if (inLine && fm.Count == 0) label.Visible = seen && (p.Player || close);
                 // 引いた視点では、隊を札一枚で見せる（2026-11-19 案2）。近づくと大将と足軽のちびコマ。

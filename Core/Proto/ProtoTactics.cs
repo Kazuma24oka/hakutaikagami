@@ -88,6 +88,50 @@ public sealed partial class ProtoWorld
         return false;
     }
 
+    // ---- 釣り野伏の場面（検査 TheFeignedRetreatDrawsTheEnemyIntoTheAmbush と「合戦を見る」で同じものを使う） ----
+    // 謀叛が起きたら軍議で「釣り野伏」を選び、合図の1分後に、開けた所へ囮の本人・逸る井口・森の縁に伏せた小坂を置く（正之と勝元はこの場面から外す）。
+    public void SetupTsuriPractice()
+    {
+        while (War.Phase != "軍議待ち" && Second < 4 * Day) Advance(600);
+        var castle = Map.Site("takano-castle"); MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !CouncilOpen; i++) Advance(60);
+        DecideCouncil("road-mouth", Departures[0], Signals[0], Plans[1]);
+        GoToTask(OpenTasks.First(t => t.Kind == "muster").Id);
+        Advance(War.SignalAt + 60 - Second);
+        var kosaka = Person(Karou); var iguchi = Person(Iguchi); var me = Player;
+        foreach (var id in new[] { Heir, Katsumoto }) { Person(id).Active = false; War.Target.Remove(id); }
+        foreach (var u in new[] { kosaka, iguchi, me }) { u.Path = []; u.PathIndex = 0; War.Target.Remove(u.Id); War.Routed.Remove(u.Id); }
+        me.Soldiers = 30; me.Morale = 100; iguchi.Soldiers = 80; iguchi.Morale = 100; kosaka.Soldiers = 100; kosaka.Morale = 100;
+        var hide = PositionOf("forest-edge"); kosaka.X = hide.X * 100L; kosaka.Y = hide.Y * 100L;
+        iguchi.X = kosaka.X + 400_00; iguchi.Y = kosaka.Y - 60_00; me.X = iguchi.X - 60_00; me.Y = iguchi.Y;
+    }
+    // 囮が下がる先：伏せた小坂のすぐ北（60m）を通って、森の縁沿いに西へ350m。
+    public (long X, long Y) TsuriLure() { var k = Person(Karou); return (k.X - 350_00, k.Y - 60_00); }
+
+    // 間合い：u が t に当たるときに止まる所（t から u の側へ50m）。
+    (long X, long Y) ContactPoint(ProtoPerson u, ProtoPerson t)
+    {
+        double dx = u.X - t.X, dy = u.Y - t.Y, len = Math.Sqrt(dx * dx + dy * dy);
+        if (len < 1) { dx = 1; dy = 0; len = 1; }
+        var p = (t.X + (long)(dx / len * 50_00), t.Y + (long)(dy / len * 50_00));
+        return Map.GroundAtCm(p.Item1, p.Item2) == Ground.Water ? (t.X, t.Y) : p;
+    }
+
+    // 間を空ける（毎分）：隊どうしが35mより近ければ、互いに半分ずつ離す（重なって一つに見えないように。世界の本当の位置を動かす）。
+    void Spread(ProtoPerson[] all)
+    {
+        var us = all.Where(u => u.Active && u.Soldiers > 0).OrderBy(u => u.Id).ToArray();
+        for (int i = 0; i < us.Length; i++) for (int j = i + 1; j < us.Length; j++)
+        {
+            var a = us[i]; var b = us[j]; double dx = b.X - a.X, dy = b.Y - a.Y, len = Math.Sqrt(dx * dx + dy * dy);
+            if (len >= 35_00) continue;
+            if (len < 1) { double ang = (i * 7 + j * 13) % 360 * Math.PI / 180; dx = Math.Cos(ang); dy = Math.Sin(ang); len = 1; }
+            long px = (long)(dx / len * (35_00 - len) / 2), py = (long)(dy / len * (35_00 - len) / 2);
+            if (Map.GroundAtCm(a.X - px, a.Y - py) != Ground.Water) { a.X -= px; a.Y -= py; }
+            if (Map.GroundAtCm(b.X + px, b.Y + py) != Ground.Water) { b.X += px; b.Y += py; }
+        }
+    }
+
     // t が u から遠ざかる向きに歩いているか。
     bool MovingAway(ProtoPerson t, ProtoPerson u)
     {

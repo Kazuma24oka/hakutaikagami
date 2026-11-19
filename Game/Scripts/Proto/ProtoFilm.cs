@@ -29,14 +29,20 @@ public partial class ProtoGame
             filmCaption = new Label { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, AutowrapMode = TextServer.AutowrapMode.WordSmart };
             filmCaption.AddThemeFontSizeOverride("font_size", 24); band.AddChild(filmCaption); layer.AddChild(band);
     }
-    // 合戦を見る：動画と同じ釣り野伏の台本を、ふだんの窓で流す（終わっても閉じない）。
+    // 合戦を見る（2026-11-19 ユーザーの印「台本がカメラや速さを奪う」を受けて）：釣り野伏の場面に置いて、本人の操作だけを自動でする。
+    // 時間（止める・進める・速さ）とカメラはふだんどおり遊ぶ人のもの。字幕は出さない。
     async void RunWatch()
     {
         try
         {
-            BuildCaption(); await RunTsuri();
-            // 台本が終わっても、合戦は決着まで動かし続ける（印を残しながら見られるように）。
-            FilmPause = false; Speed = 30; WaitUntil = World.Second + 2 * ProtoWorld.Day; filmCaption.GetParent<Control>().Visible = false;
+            var w = World; w.SetupTsuriPractice(); var me = w.Player; var iguchi = w.Person("iguchi-yashichi"); var kosaka = w.Person("kosaka-shigetada");
+            Follow(900, 55); Paused = false; Speed = 30; RefreshUi();
+            async Task WaitFor(Func<bool> done) { while (!done() && w.War.Result == "") await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); }
+            await WaitFor(() => w.ClashOf(me.Id) != null);
+            long back = w.Second + 60; await WaitFor(() => w.Second >= back);
+            w.War.Target.Remove(me.Id); var lure = w.TsuriLure(); w.MoveTo(lure.X, lure.Y); ShowGoal();
+            await WaitFor(() => w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id)) || w.War.Routed.Contains(me.Id));
+            if (w.Actions().Any(a => a.Id == "attack:" + iguchi.Id)) Act("attack:" + iguchi.Id);
         }
         catch (Exception e) { GD.PrintErr("PROTO WATCH 失敗: " + e); }
     }
