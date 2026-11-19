@@ -47,7 +47,7 @@ public sealed class ProtoWarState
     public Dictionary<string, long> HiddenAt { get; set; } = [];
     public Dictionary<string, string> HoldCand { get; set; } = []; // 要所 → 「家|居始めた時刻」
 }
-public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals);
+public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans);
 
 public sealed partial class ProtoWorld
 {
@@ -60,6 +60,8 @@ public sealed partial class ProtoWorld
     const string Rebel = "iwakiri";
     public static readonly string[] Departures = ["今夜のうちに出る", "夜明けに出る"];
     public static readonly string[] Signals = ["卯の刻（6時）に狼煙", "辰の刻（8時）に狼煙"];
+    // 作戦（2026-11-19 ユーザー「釣り野伏」）：正面は大将が道の口・家老が南の丘。釣り野伏は家老が森の北の縁に伏せ、大将は城の本陣に残る（囮は本人）。
+    public static readonly string[] Plans = ["正面から当たる", "釣り野伏"];
 
     public ProtoPosition PositionOf(string id) => Map.Data.Positions!.First(p => p.Id == id);
     public string HeadOf(string house) => Heads.TryGetValue(house, out var h) ? h : Map.Data.Houses.First(x => x.Id == house).Head;
@@ -154,15 +156,16 @@ public sealed partial class ProtoWorld
             $"{karou.Name}「南の丘を先に押さえれば、城から出る敵を見下ろせます。勝元は用心深い男、夜明けには丘へ出てまいりましょう。今夜のうちに丘へ。」",
         };
         if (Knows(Player, "invite")) ops.Add($"{Player.Name}は、沢渡家が勝元を誘っていたことを知っている。");
-        return new(heir.Name, [.. ops], Map.Data.Positions!.Select(p => (p.Id, p.Name)).ToArray(), Departures, Signals);
+        return new(heir.Name, [.. ops], Map.Data.Positions!.Select(p => (p.Id, p.Name)).ToArray(), Departures, Signals, Plans);
     }
     // 本人が出ていれば本人の意見（自分の陣・出立・合図）が通る。出ていなければ大将の考えで決まる。
-    public string DecideCouncil(string? playerPosition, string? departure, string? signal)
+    public string DecideCouncil(string? playerPosition, string? departure, string? signal, string? plan = null)
     {
         if (War.Phase != "軍議待ち" || War.Assign.Count > 0) return "";
         bool present = playerPosition != null; War.PlayerAtCouncil = present;
         string dep = departure ?? Departures[1], sig = signal ?? Signals[0];
-        War.Assign[Heir] = "road-mouth"; War.Assign[Karou] = "south-hill"; War.Assign[Player.Id] = playerPosition ?? "forest-edge";
+        bool tsuri = plan == Plans[1];
+        War.Assign[Heir] = tsuri ? "takano-castle" : "road-mouth"; War.Assign[Karou] = tsuri ? "forest-edge" : "south-hill"; War.Assign[Player.Id] = playerPosition ?? "forest-edge";
         long night = At(DayIndex, 21), dawn = (Second / Day + 1) * Day + 4 * Hour;
         War.DepartAt = dep == Departures[0] ? Math.Max(Second + 10 * 60, Math.Min(night, Second + Hour)) : dawn;
         War.SignalAt = (dawn / Day) * Day + (sig == Signals[0] ? 6 : 8) * Hour;
@@ -180,7 +183,7 @@ public sealed partial class ProtoWorld
         }
         var where = string.Join("、", War.Assign.Select(a => $"{Person(a.Key).Name}は{PositionOf(a.Value).Name}"));
         var castle = Map.Site("takano-castle");
-        Happen("council", $"軍議で決まった：{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
+        Happen("council", $"軍議で決まった：{(tsuri ? "釣り野伏。" : "")}{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
         return present ? $"{Person(Heir).Name}「それでいこう。」" : "";
     }
 

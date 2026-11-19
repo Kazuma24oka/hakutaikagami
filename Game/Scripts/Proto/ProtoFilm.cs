@@ -126,8 +126,7 @@ public partial class ProtoGame
         while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
         var castle = w.Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
         for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
-        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[0]);
-        w.War.Assign["takano-masayuki"] = "takano-castle"; w.War.Assign["kosaka-shigetada"] = "forest-edge";
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[0], ProtoWorld.Plans[1]);
         w.GoToTask(w.OpenTasks.First(t => t.Kind == "muster").Id);
         w.Advance(w.War.SignalAt - 6 * 60 - w.Second);
         var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi");

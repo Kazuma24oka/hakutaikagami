@@ -33,7 +33,8 @@ public sealed partial class ProtoWorld
         }
         foreach (var u in all.Where(Hidden)) War.HiddenAt[u.Id] = Second;
     }
-    void Face(ProtoPerson u, long dx, long dy) { double len = Math.Sqrt((double)dx * dx + (double)dy * dy); if (len > 1) War.Facing[u.Id] = [dx / len, dy / len]; }
+    // 20mより近い（重なっている）相手の方は当てにならないので、向きを変えない（くるくる回らないように）。
+    void Face(ProtoPerson u, long dx, long dy) { double len = Math.Sqrt((double)dx * dx + (double)dy * dy); if (len > 20_00) War.Facing[u.Id] = [dx / len, dy / len]; }
 
     // 攻める側 a が守る側 b のどこを突いているか。
     public (double Mul, string Kind) FlankOf(ProtoPerson b, ProtoPerson a)

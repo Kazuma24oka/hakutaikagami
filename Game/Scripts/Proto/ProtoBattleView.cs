@@ -163,7 +163,8 @@ public partial class ProtoGame
     sealed class Card { public MeshInstance3D Fill = null!, Edge = null!; public Label3D Name = null!, Total = null!, Parts = null!; public Sprite3D Morale = null!; public string Key = ""; }
     readonly Dictionary<string, Card> cards = new();
     static float Chars(string t) => t.Sum(ch => ch > 0x2000 ? 1f : 0.58f);
-    Label3D CardText(int size) => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = size, OutlineSize = 4, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 22 };
+    const int CardFont = 48; // 文字は大きく作って縮める（凸と一緒に大きさが変わる）
+    Label3D CardText() => new() { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FontSize = CardFont, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 22 };
     // 凸の形（向きは -Z が前＝出っ張り）。本体 幅1・奥行き0.6、出っ張り 幅0.42・奥行き0.28。中心は本体の真ん中。
     static ArrayMesh Totsu(float grow)
     {
@@ -175,6 +176,7 @@ public partial class ProtoGame
     }
     static readonly ArrayMesh TotsuFill = Totsu(0), TotsuEdge = Totsu(0.035f);
     static StandardMaterial3D Flat(int priority) => new() { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, NoDepthTest = true, CullMode = BaseMaterial3D.CullModeEnum.Disabled, RenderPriority = priority, Transparency = BaseMaterial3D.TransparencyEnum.Alpha };
+    readonly Dictionary<string, float> cardYaw = new();
     void DrawCard(ProtoPerson p, Vector3 foot, bool show, string name, int total, string parts)
     {
         if (!cards.TryGetValue(p.Id, out var c))
@@ -182,8 +184,8 @@ public partial class ProtoGame
             c = new Card
             {
                 Edge = new MeshInstance3D { Mesh = TotsuEdge, MaterialOverride = Flat(18) }, Fill = new MeshInstance3D { Mesh = TotsuFill, MaterialOverride = Flat(19) },
-                Name = CardText(17), Total = CardText(20), Parts = CardText(15),
-                Morale = new Sprite3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 21 },
+                Name = CardText(), Total = CardText(), Parts = CardText(),
+                Morale = new Sprite3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 21 },
             };
             foreach (var n in new Node3D[] { c.Edge, c.Fill, c.Name, c.Total, c.Parts, c.Morale }) AddChild(n);
             cards[p.Id] = c;
@@ -192,28 +194,34 @@ public partial class ProtoGame
         c.Parts.Visible = show && parts != "";
         if (!show) return;
         bool routed = World.War.Routed.Contains(p.Id);
-        // 地面の凸：遠さに合わせた大きさで、向きの角度に回す。
+        // 地面の凸：遠さに合わせた大きさで、向きの角度へなめらかに回す（1秒に120度まで）。
         float size = distance * 0.105f;
-        double yaw = World.War.Facing.TryGetValue(p.Id, out var f) && !routed ? Math.Atan2(-f[0], -f[1]) : 0; // -Z が前
-        var basis = new Basis(Vector3.Up, (float)yaw).Scaled(new Vector3(size, 1, size));
+        float want = World.War.Facing.TryGetValue(p.Id, out var f) && !routed ? (float)Math.Atan2(-f[0], -f[1]) : cardYaw.GetValueOrDefault(p.Id, 0); // -Z が前
+        float yaw = cardYaw.TryGetValue(p.Id, out var was) ? was : want;
+        float diff = Mathf.Wrap(want - yaw, -Mathf.Pi, Mathf.Pi), step = Mathf.DegToRad(120) * (float)GetProcessDeltaTime();
+        yaw += Math.Clamp(diff, -step, step); cardYaw[p.Id] = yaw;
         var ground = foot + new Vector3(0, 2, 0);
-        c.Fill.Transform = c.Edge.Transform = new Transform3D(basis, ground);
+        c.Fill.Transform = c.Edge.Transform = new Transform3D(new Basis(Vector3.Up, yaw).Scaled(new Vector3(size, 1, size)), ground);
         var key = $"{name}|{total}|{parts}|{p.Morale / 5}|{routed}";
         if (key != c.Key)
         {
             c.Key = key; c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
-            c.Name.FontSize = Math.Min(17, (int)(120 / Math.Max(1, Chars(name))));
-            c.Parts.FontSize = Math.Min(15, (int)(120 / Math.Max(1, Chars(c.Parts.Text))));
             ((StandardMaterial3D)c.Fill.MaterialOverride).AlbedoColor = routed ? new Color(0.32f, 0.32f, 0.32f, 0.92f) : HouseColor(p.House).Darkened(0.1f) with { A = 0.92f };
             ((StandardMaterial3D)c.Edge.MaterialOverride).AlbedoColor = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.4f);
-            var img = Image.CreateEmpty(100, 7, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
-            img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(p.Morale, 0, 100) / 100), 5), new Color(0.95f, 0.8f, 0.3f));
+            var img = Image.CreateEmpty(100, 8, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
+            img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(p.Morale, 0, 100) / 100), 6), new Color(0.95f, 0.8f, 0.3f));
             c.Morale.Texture = ImageTexture.CreateFromImage(img);
         }
-        // 文字は凸の真ん中の上に立てる（名前・兵・内訳・士気の棒の順に上から）。
-        var at = ground + new Vector3(0, 1, 0);
-        foreach (var n in new Node3D[] { c.Name, c.Total, c.Parts, c.Morale }) n.Position = at;
-        bool hasParts = parts != "";
-        c.Name.Offset = new Vector2(0, hasParts ? 30 : 20); c.Total.Offset = new Vector2(0, hasParts ? 8 : -2); c.Parts.Offset = new Vector2(0, -12); c.Morale.Offset = new Vector2(0, hasParts ? -27 : -20);
+        // 見えない〇枠：本体の中の円（半径は本体の奥行きの半分の9割）。円は回しても同じなので、文字と棒はいつも凸の中に収まる。
+        // 地面の円は斜めから見ると縦が縮むので、縦は傾きの分だけ詰める。行ごとの高さと、横幅に収まる大きさの小さいほうで文字の大きさを決める。
+        float r = 0.27f * size, squash = Mathf.Sin(Mathf.DegToRad(pitch)), boxW = 1.7f * r, boxH = 1.7f * r * squash;
+        bool hasParts = parts != ""; int rows = hasParts ? 4 : 3; float rowH = boxH / rows;
+        float Fit(Label3D l, float scale) => Math.Min(rowH * scale, boxW / Math.Max(1, Chars(l.Text))) / CardFont;
+        c.Name.PixelSize = Fit(c.Name, 0.85f); c.Total.PixelSize = Fit(c.Total, 1f); c.Parts.PixelSize = Fit(c.Parts, 0.75f);
+        c.Morale.PixelSize = boxW * 0.8f / 100;
+        var up = Camera?.GlobalBasis.Y ?? Vector3.Up; var center = ground + new Vector3(0, 1, 0);
+        float top = boxH / 2 - rowH / 2;
+        var order = hasParts ? new Node3D[] { c.Name, c.Total, c.Parts, c.Morale } : new Node3D[] { c.Name, c.Total, c.Morale };
+        for (int k = 0; k < order.Length; k++) order[k].Position = center + up * (top - rowH * k);
     }
 }

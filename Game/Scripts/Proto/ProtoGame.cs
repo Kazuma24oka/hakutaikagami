@@ -234,6 +234,43 @@ public partial class ProtoGame : Node3D
         }
         return null;
     }
+    // ---- 引いた視点の凸の置き場所（2026-11-19 ユーザー「接敵中に隊が重なっているのは変」「味方同士でも重なっているのは違和感」） ----
+    // ぶつかっている隊は、間の線をはさんで向かい合わせる（出っ張りどうしが触れるくらい）。同じ敵に当たる味方は横に並ぶ。
+    // そのうえで、近すぎる凸どうしは少しずつ押し分ける。どれも描くときだけの置き場所で、世界の位置は変えない。
+    readonly Dictionary<string, Vector3> cardSpot = new();
+    void PlanCardSpots()
+    {
+        cardSpot.Clear(); float size = distance * 0.105f;
+        var units = World.People.Where(p => p.Active && p.Soldiers > 0 && World.Sees(World.Player, p) && (p.House == "iwakiri" || World.War.Assign.ContainsKey(p.Id))).OrderBy(p => p.Id).ToList();
+        foreach (var u in units) cardSpot[u.Id] = ToScene(u.X, u.Y);
+        foreach (var (bId, line) in clashLine)
+        {
+            if (!cardSpot.ContainsKey(bId)) continue;
+            var side = new Vector3(-line.D.Z, 0, line.D.X); float half = size * 0.6f;
+            cardSpot[bId] = line.M + line.D * half;
+            for (int i = 0; i < line.As.Length; i++) if (cardSpot.ContainsKey(line.As[i])) cardSpot[line.As[i]] = line.M - line.D * half + side * size * 1.15f * (i - (line.As.Length - 1) / 2f);
+        }
+        // 押し分け：凸の幅より近いものは、互いに半分ずつ離す（数回くり返す）。
+        var ids = cardSpot.Keys.ToList(); float min = size * 1.3f; // 回った凸の角どうしも当たらないくらい
+        for (int it = 0; it < 6; it++)
+            for (int i = 0; i < ids.Count; i++) for (int j = i + 1; j < ids.Count; j++)
+            {
+                var a = cardSpot[ids[i]]; var b = cardSpot[ids[j]]; var d = b - a; d.Y = 0; float len = d.Length();
+                if (len >= min) continue;
+                if (len < 0.01f) { d = new Vector3(1, 0, 0).Rotated(Vector3.Up, (i * 7 + j * 13) % 360 * Mathf.Pi / 180); len = 0.01f; }
+                var push = d / len * (min - len) / 2; cardSpot[ids[i]] = a - push; cardSpot[ids[j]] = b + push;
+            }
+    }
+    // 本当の位置からのずれを、1秒に「凸3つ分」までの速さで追わせる。
+    readonly Dictionary<string, Vector3> shown = new();
+    Vector3 Smooth(string id, Vector3 real, Vector3 want)
+    {
+        var target = want - real; var cur = shown.TryGetValue(id, out var c) ? c : target;
+        float step = distance * 0.105f * 3 * (float)GetProcessDeltaTime(); var d = target - cur;
+        cur = d.Length() <= step ? target : cur + d.Normalized() * step; shown[id] = cur;
+        var at = real + cur; at.Y = HeightAt(at.X, at.Z); return at;
+    }
+
     void DrawFollowers(ProtoPerson p, Vector3 foot, float px, bool show, string anim)
     {
         if (!followers.TryGetValue(p.Id, out var list)) followers[p.Id] = list = new();
@@ -463,6 +500,7 @@ public partial class ProtoGame : Node3D
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
         if (war) PlanFormations(Math.Max(0.12f, distance / 380f) * 1.25f); else formation.Clear();
         PlanClashLines(Math.Max(0.12f, distance / 380f) * 1.25f);
+        if (war && distance > CardDistance) PlanCardSpots(); else cardSpot.Clear();
         foreach (var p in World.People)
         {
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p);
@@ -477,7 +515,12 @@ public partial class ProtoGame : Node3D
                 // ちびコマ：足元を地面に置き、近づいても遠ざかっても見える大きさにする。歩く・戦う・止まるで動きを変える。
                 body.Visible = false; dot.Visible = seen;
                 var real = ToScene(p.X, p.Y); bool inLine = formation.TryGetValue(p.Id, out var fm); var foot = inLine ? fm.Foot : real;
-                var frontLine = unit ? FrontOf(p, Math.Max(0.12f, distance / 380f) * 1.25f) : null; if (frontLine is { } fl) foot = fl.Foot; float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
+                var frontLine = unit ? FrontOf(p, Math.Max(0.12f, distance / 380f) * 1.25f) : null; if (frontLine is { } fl) foot = fl.Foot;
+                // 引いた視点（凸）では、凸どうしの置き場所（向かい合い・押し分け）を使う。
+                if (unit && distance > CardDistance) { foot = cardSpot.TryGetValue(p.Id, out var cs) ? cs : real; inLine = false; frontLine = null; }
+                // 並べ直しの分（本当の位置からのずれ）は、なめらかに動かす（急に飛ばないように）。
+                foot = Smooth(p.Id, real, foot);
+                float px = Math.Max(0.12f, distance / 380f) * (unit ? 1.25f : 1f) * (p.Player ? 1.15f : 1f); dot.PixelSize = px;
                 dot.Position = foot;
                 string anim = p.Doing.Contains("戦って") ? "attack" : p.Doing.Contains("退いて") || p.Doing.Contains("敗走") ? "damage" : p.Moving ? "walk" : "idle";
                 dot.Freeze(anim, Time.GetTicksMsec() / 1000.0 + p.Id.Length * 0.37);
@@ -545,7 +588,7 @@ public partial class ProtoGame : Node3D
     }
 
     // ---- 軍議（話す場面の上で、意見を聞いてから選ぶ） ----
-    internal (OptionButton Pos, OptionButton Dep, OptionButton Sig, Button Ok)? councilChoices;
+    internal (OptionButton Pos, OptionButton Dep, OptionButton Sig, Button Ok, OptionButton Plan)? councilChoices;
     internal void OpenCouncil()
     {
         if (Scene.Open || !World.CouncilOpen) return;
@@ -559,11 +602,12 @@ public partial class ProtoGame : Node3D
         var pos = Choice("自分の陣", view.Positions.Select(p => p.Name).ToArray(), Array.FindIndex(view.Positions, p => p.Id == "forest-edge"));
         var dep = Choice("出立", view.Departures, 1);
         var sig = Choice("合図", view.Signals, 0);
+        var plan = Choice("作戦", view.Plans, 0);
         var ok = new Button { Text = "決める" }; box.AddChild(ok);
-        councilChoices = (pos, dep, sig, ok);
+        councilChoices = (pos, dep, sig, ok, plan);
         ok.Pressed += () =>
         {
-            var reply = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected]);
+            var reply = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected], view.Plans[plan.Selected]);
             Scene.Close();
             var after = new List<(string, string)>();
             if (ProtoScene.Parse(World, reply) is { } r) after.Add(r);

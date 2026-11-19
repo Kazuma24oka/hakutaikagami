@@ -239,8 +239,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
         for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
         // 本人は道の口（囮）、小坂は森の北の縁に伏せる。正之は城に残る（逸って先に仕掛けないように）。
-        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[0]);
-        w.War.Assign["takano-masayuki"] = "takano-castle"; w.War.Assign["kosaka-shigetada"] = "forest-edge";
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[0], ProtoWorld.Plans[1]);
         w.GoToTask(w.OpenTasks.First(t => t.Kind == "muster").Id);
         return w;
     }

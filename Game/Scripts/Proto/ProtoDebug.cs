@@ -104,7 +104,7 @@ public partial class ProtoDebug : Node
                 case "/act": game.Act(F("id")); break;
                 case "/talk": game.Act("talk:" + F("id")); break;
                 case "/scene-close": game.Scene.Close(); break;
-                case "/council": game.Message = w.DecideCouncil(F("pos"), q.TryGetValue("dep", out var dp) ? ProtoWorld.Departures[int.Parse(dp)] : null, q.TryGetValue("sig", out var sg) ? ProtoWorld.Signals[int.Parse(sg)] : null); game.RefreshUi(); break;
+                case "/council": game.Message = w.DecideCouncil(F("pos"), q.TryGetValue("dep", out var dp) ? ProtoWorld.Departures[int.Parse(dp)] : null, q.TryGetValue("sig", out var sg) ? ProtoWorld.Signals[int.Parse(sg)] : null, q.TryGetValue("plan", out var pl) ? ProtoWorld.Plans[int.Parse(pl)] : null); game.RefreshUi(); break;
                 case "/camera": game.SetCamera(q.ContainsKey("distance") ? float.Parse(q["distance"]) : null, q.ContainsKey("yaw") ? float.Parse(q["yaw"]) : null, q.ContainsKey("pitch") ? float.Parse(q["pitch"]) : null); break;
                 case "/shot": { await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw); var dir = Path.Combine(Root, "絵"); Directory.CreateDirectory(dir); var file = Path.Combine(dir, (q.TryGetValue("name", out var n) ? n : DateTime.Now.ToString("yyyyMMdd-HHmmss")) + ".png"); GetViewport().GetTexture().GetImage().SavePng(file); reply.SetResult(Write(new { file })); return; }
                 case "/note": reply.SetResult(Write(new { dir = SaveNote(GetViewport().GetTexture().GetImage(), Write(Known()), Write(All()), F("text")) })); return;
