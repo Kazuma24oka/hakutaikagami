@@ -11,7 +11,11 @@ public partial class ProtoGame : Node3D
     internal ProtoWorld World = null!;
     // 保存は自動：ゲーム内の10分ごと、着いた時、閉じる時。前の保存を一つ残す。
     // 確かめる側（Claude）は HAKUTAI_PROTO_SAVE で別の保存を使い、遊ぶ人の保存に触らない。
-    internal static string SavePath => System.Environment.GetEnvironmentVariable("HAKUTAI_PROTO_SAVE") is { Length: > 0 } custom ? custom : "user://proto-save.json";
+    // 合戦を見る（Watch）ときは別の保存を使い、ふだんの保存に触らない。
+    internal static string SavePath => System.Environment.GetEnvironmentVariable("HAKUTAI_PROTO_SAVE") is { Length: > 0 } custom ? custom : Watch ? "user://proto-watch-save.json" : "user://proto-save.json";
+    // 合戦を見る（2026-11-19 ユーザー「合戦の所を出せ。最初からやるのはだるい。指示もしたくない。問題ある所だけコメントしたい」）：
+    // 釣り野伏の合戦の手前から始まり、動画と同じ台本で勝手に進む。寄り引き・地図の移動・印を残すはふだんどおり使える。
+    internal static bool Watch;
     internal static bool Fresh;
     internal static bool HasSave => FileAccess.FileExists(SavePath);
     internal void SaveGame()
@@ -52,6 +56,8 @@ public partial class ProtoGame : Node3D
     public override void _Ready()
     {
         GetTree().AutoAcceptQuit = true; // スタート画面は閉じる前に保存を待つため×を止めている。試作版では×でそのまま閉じる。
+        if (OS.GetCmdlineUserArgs().Contains("--proto-watch")) Watch = true;
+        if (Watch) Fresh = true;
         var map = ProtoMap.Load(); World = null!;
         if (!Fresh && FileAccess.FileExists(SavePath))
             try { World = ProtoWorld.Load(map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath(SavePath)), ProtoMap.Json)!); }
@@ -70,6 +76,7 @@ public partial class ProtoGame : Node3D
         Scene = new ProtoScene(this); AddChild(Scene);
         RefreshUi(); PlaceCamera();
         if (FilmRoot != null) RunFilm();
+        else if (Watch) RunWatch();
     }
 
     static StandardMaterial3D Unshaded(Color c) => new() { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = c, Transparency = c.A < 1 ? BaseMaterial3D.TransparencyEnum.Alpha : BaseMaterial3D.TransparencyEnum.Disabled, NoDepthTest = false };

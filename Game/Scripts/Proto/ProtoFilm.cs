@@ -21,15 +21,31 @@ public partial class ProtoGame
     async Task SkipTo(long t) { for (int n = 0; n < 200 && World.Second < t; n++) { Skip(t); await Until(() => skipUntil == 0, 20); } }
     async Task RunTo(long t, int speed) { Speed = speed; WaitUntil = t; await Until(() => World.Second >= t, 900); }
 
-    async void RunFilm()
+    void BuildCaption()
     {
-        try
-        {
             var layer = new CanvasLayer { Layer = 100 }; AddChild(layer);
             var band = new PanelContainer { AnchorLeft = 0, AnchorRight = 1, AnchorTop = 0, AnchorBottom = 0, OffsetTop = 96, OffsetBottom = 160, OffsetLeft = 200, OffsetRight = -200, MouseFilter = Control.MouseFilterEnum.Ignore };
             band.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0, 0, 0, 0.78f), CornerRadiusTopLeft = 8, CornerRadiusTopRight = 8, CornerRadiusBottomLeft = 8, CornerRadiusBottomRight = 8, ContentMarginLeft = 16, ContentMarginRight = 16 });
             filmCaption = new Label { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, AutowrapMode = TextServer.AutowrapMode.WordSmart };
             filmCaption.AddThemeFontSizeOverride("font_size", 24); band.AddChild(filmCaption); layer.AddChild(band);
+    }
+    // 合戦を見る：動画と同じ釣り野伏の台本を、ふだんの窓で流す（終わっても閉じない）。
+    async void RunWatch()
+    {
+        try
+        {
+            BuildCaption(); await RunTsuri();
+            // 台本が終わっても、合戦は決着まで動かし続ける（印を残しながら見られるように）。
+            FilmPause = false; Speed = 30; WaitUntil = World.Second + 2 * ProtoWorld.Day; filmCaption.GetParent<Control>().Visible = false;
+        }
+        catch (Exception e) { GD.PrintErr("PROTO WATCH 失敗: " + e); }
+    }
+
+    async void RunFilm()
+    {
+        try
+        {
+            BuildCaption();
             var w = World; long Day = ProtoWorld.Day, H = ProtoWorld.Hour;
             if (OS.GetCmdlineUserArgs().Contains("--proto-film-tsuri")) { await RunTsuri(); GetTree().Quit(); return; }
 
