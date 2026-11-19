@@ -90,6 +90,7 @@ public sealed partial class ProtoWorld
         foreach (var a in all.Where(Live))
         {
             var b = Foe(a); if (b == null) continue;
+            if (Retreating(a)) continue; // 下がっている隊は打ち返さない（打たれるだけ）
             var area = Map.Data.Positions!.FirstOrDefault(p => p.Width > 0 && Dist(a, p.X * 100L, p.Y * 100L) <= 200_00);
             if (area != null)
             {
