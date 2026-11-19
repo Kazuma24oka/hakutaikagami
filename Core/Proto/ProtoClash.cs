@@ -107,7 +107,7 @@ public sealed partial class ProtoWorld
             if (kind != "正面" && !Flag($"flank:{a.Id}:{b.Id}:{kind}")) { Set($"flank:{a.Id}:{b.Id}:{kind}"); Happen($"flank:{a.Id}:{b.Id}:{kind}:{Second}", $"{a.Name}の兵が{b.Name}の{kind}を突いた。", b.X, b.Y, a, b); }
             if (kind == "背後") rear.Add(b.Id); else if (kind == "側面") side.Add(b.Id);
             if (Buffed("surprise", a.Id)) shaken.Add(b.Id);
-            if (b.Moving) atk *= 1.25;
+            if (b.Moving) atk *= Retreating(b) ? 1.5 : 1.25; // 下がる隊は打たれやすい
             if (a.Moving) atk *= 0.4; // 歩きながら（追いながら）では打ちにくい
             if (Buffed("surprise", a.Id)) atk *= 1.5;
             if (area is { Kind: "射撃" } && Dist(a, area.X * 100L, area.Y * 100L) <= 150_00) atk *= 1.2;

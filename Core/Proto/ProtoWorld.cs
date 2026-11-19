@@ -165,7 +165,7 @@ public sealed partial class ProtoWorld
         {
             if (!p.Moving || !p.Active) continue;
             long x = p.X, y = p.Y; int i = p.PathIndex;
-            bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, p.Player ? PlayerPercent : 100);
+            bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, (p.Player ? PlayerPercent : 100) * (Retreating(p) ? 75 : 100) / 100);
             p.X = x; p.Y = y; p.PathIndex = i;
             if (arrived) Arrive(p);
         }

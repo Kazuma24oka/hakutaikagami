@@ -112,6 +112,11 @@ public sealed partial class ProtoWorld
     // 囮が下がる先：伏せた小坂のすぐ北（60m）を通って、森の縁沿いに西へ350m。
     public (long X, long Y) TsuriLure() { var k = Person(Karou); return (k.X - 350_00, k.Y - 60_00); }
 
+    // 後ろへ下がっている（2026-11-19 ユーザーの印「後退は普通より遅い。釣り野伏のつもりが本当に壊走することもある」）：
+    // 合戦の間、崩れていない隊が、300m以内の敵から遠ざかる向きに歩いている。敵に背を見せずに下がるので速さは75%、受ける打撃は1.5倍。
+    internal bool Retreating(ProtoPerson u) => War.Phase == "合戦" && u.Soldiers > 0 && u.Moving && !War.Routed.Contains(u.Id)
+        && Units.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 300_00 && MovingAway(u, e));
+
     // 間合い：u が t に当たるときに止まる所（t から u の側へ80m）。
     (long X, long Y) ContactPoint(ProtoPerson u, ProtoPerson t)
     {

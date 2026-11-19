@@ -273,14 +273,15 @@ public sealed partial class ProtoWorld
             if (War.Routed.Contains(id)) continue;
             if (!t.Active || !KeepsChasing(u, t)) { War.Target.Remove(id); continue; }
             // 相手の手前の間合い（50m）まで進んで止まり、向かい合う（相手の位置に重ならない）。相手が動いたら1分ごとに引き直す。
-            if (Dist(u, t) > Contact + 20_00) { if (!u.Moving || Second % 60 == 0) Walk(u, ContactPoint(u, t), t.Name, $"{t.Name}の兵へ攻めかかっている"); }
+            // 下がっていく相手には、手前で止まらず追いすがる（相手の今いる所を目指す）。
+            if (Dist(u, t) > Contact + 20_00) { if (!u.Moving || Second % 60 == 0) Walk(u, Retreating(t) ? (t.X, t.Y) : ContactPoint(u, t), t.Name, $"{t.Name}の兵へ攻めかかっている"); }
             else if (u.Moving && !u.Player) { u.Path = []; u.PathIndex = 0; }
         }
         HoldKeypoints();
         if (War.Phase == "合戦") Regroup();
         var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
-        if (War.Phase == "合戦") foreach (var u in field.Where(u => !u.Player && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= Reach)))
+        if (War.Phase == "合戦") foreach (var u in field.Where(u => !u.Player && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
         Spread(field); UpdateFacing(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }

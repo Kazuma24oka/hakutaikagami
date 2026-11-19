@@ -33,6 +33,7 @@ public partial class ProtoGame : Node3D
     internal static readonly int[] Speeds = [10, 30, 60, 120, 500];
     // 時間（2026-11-19 ユーザー「HoI4 のように。ボタンを増やさない」）：止めているか、進めているか。進めている間は、歩いていなくても時が流れる。
     internal bool Paused = true;
+    double edgeDwell;
     HSlider speedSlider = null!; Label speedText = null!;
     long skipUntil; int skipJournal;
     internal void Skip(long until) { World.Stop(); marker.Visible = false; skipUntil = until; skipJournal = World.Journal.Count; Message = ""; }
@@ -451,11 +452,15 @@ public partial class ProtoGame : Node3D
         // 画面の端にマウスを置くと地図が動く（HoI4 のように）。窓に入っているときだけ。
         // 上下の端は、窓の枠やタスクバーで端まで届かないことがあるので、端の少し外（40px）まで数える（2026-11-19 ユーザーの印）。
         var mouse = GetViewport().GetMousePosition(); var size = GetViewport().GetVisibleRect().Size; const float edge = 24, outside = 40;
-        if (DisplayServer.WindowIsFocused() && mouse.X >= -outside && mouse.Y >= -outside && mouse.X <= size.X + outside && mouse.Y <= size.Y + outside)
+        // ボタンや目盛りの上にいる間は動かさない。端に0.4秒とどまってから動かす（ボタンを押しに行くだけで動かないように。2026-11-19 ユーザーの印）。
+        var edgeMove = Vector3.Zero; bool onButton = GetViewport().GuiGetHoveredControl() is BaseButton or Slider;
+        if (DisplayServer.WindowIsFocused() && !onButton && mouse.X >= -outside && mouse.Y >= -outside && mouse.X <= size.X + outside && mouse.Y <= size.Y + outside)
         {
-            if (mouse.X < edge) input.X -= 1; else if (mouse.X > size.X - edge) input.X += 1;
-            if (mouse.Y < edge) input.Z -= 1; else if (mouse.Y > size.Y - edge) input.Z += 1;
+            if (mouse.X < edge) edgeMove.X -= 1; else if (mouse.X > size.X - edge) edgeMove.X += 1;
+            if (mouse.Y < edge) edgeMove.Z -= 1; else if (mouse.Y > size.Y - edge) edgeMove.Z += 1;
         }
+        edgeDwell = edgeMove == Vector3.Zero ? 0 : edgeDwell + delta;
+        if (edgeDwell >= 0.4) input += edgeMove;
         if (input != Vector3.Zero && !Debug.NoteOpen && FilmRoot == null) pan += Basis.FromEuler(new Vector3(0, Mathf.DegToRad(yaw), 0)) * input * (float)(distance * delta);
         if (skipUntil > World.Second && !Debug.NoteOpen)
         {
