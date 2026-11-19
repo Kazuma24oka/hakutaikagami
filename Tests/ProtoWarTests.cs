@@ -158,6 +158,38 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.War.Phase == "合戦" && w.Facts.Any(f => f.Id == "nukegake:" + w.Player.Id), "合図の前に攻めると自分の抜け駆けになる");
     }
 
+    // 本人の隊がぶつかると押し合いができ、構え・かかれ・戦法が効く（Core/Proto/ProtoClash.cs）。
+    [Fact]
+    public void ThePlayerCommandsInAClash()
+    {
+        using var cp = new Checkpoints("試作版の采配", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]);
+        var katsumoto = w.Person("iwakiri-katsumoto"); w.MoveTo(katsumoto.X, katsumoto.Y);
+        for (int i = 0; i < 240 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30);
+        w.Do(w.Actions().First(a => a.Id.StartsWith("attack:")).Id);
+        for (int i = 0; i < 120 && w.ClashOf(w.Player.Id) == null; i++) w.Advance(60);
+        var clash = w.ClashOf(w.Player.Id);
+        cp.Expect(clash != null, "攻めかかった相手とぶつかると押し合いができる　" + ProtoWorld.Clock(w.Second));
+        cp.Log($"押し合い {clash!.Push:F0}　気力 {w.War.Ki}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
+        // かかれ：気力を25使って、すぐ押し返す。
+        { double push = clash.Push; int ki = w.War.Ki; cp.Expect(w.CanKakare, "ぶつかっていて気力が25あればかかれる"); cp.Log(w.Do("kakare:me"));
+          cp.Expect(w.War.Ki == ki - 25 && w.ClashOf(w.Player.Id)!.Push >= Math.Min(100, push + 15) - 0.001, "かかれは気力を使って押し返す"); }
+        // 構え：同じ世界を二つに分けて、防御のほうが兵の減りが少ない。
+        var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(w.Save(), ProtoMap.Json);
+        var guard = ProtoWorld.Load(Map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(bytes, ProtoMap.Json)!);
+        int start = w.Player.Soldiers; guard.Do("stance:防御"); w.Advance(5 * 60); guard.Advance(5 * 60);
+        cp.Log($"5分で 白兵 -{start - w.Player.Soldiers}　防御 -{start - guard.Player.Soldiers}");
+        cp.Expect(start - guard.Player.Soldiers < start - w.Player.Soldiers, "防御の構えは兵の減りが少ない");
+        // 戦法：ゲージがたまると使える（本人は技能が無いので鼓舞）。
+        for (int i = 0; i < 30 && guard.GaugeOf(guard.Player.Id) < 100 && !guard.War.Routed.Contains(guard.Player.Id); i++) guard.Advance(60);
+        int morale = guard.Player.Morale; var said = guard.Do("tactic:me"); cp.Log(said + $"　ゲージ {guard.GaugeOf(guard.Player.Id)}　士気 {morale}→{guard.Player.Morale}");
+        cp.Expect(said.Contains("鼓舞") && guard.GaugeOf(guard.Player.Id) == 0, "戦法のゲージがたまると使える");
+    }
+
     // 動画（Game/Scripts/Proto/ProtoFilm.cs）と同じ手順：訃報を自分で届けて説かずに戻り、軍議で南の丘・今夜・6時を選んで丘へ。合図で合戦になって決着がつく。
     [Fact]
     public void TheFilmsStoryReachesABattle()
@@ -177,5 +209,8 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         while (w.War.Result == "" && w.Second < 4 * Day) { w.Advance(300); foreach (var f in w.Facts.Skip(seen)) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count; }
         cp.Log($"{ProtoWorld.Clock(w.Second)} 段階 {w.War.Phase} 合図 {w.War.Signaled} 結果 {w.War.Result}");
         cp.Expect(w.War.Result != "", "決着がつく");
+        cp.Expect(w.Facts.Any(f => f.Id.StartsWith("tactic:")), "武将が戦法を使う");
+        cp.Expect(w.Facts.Any(f => f.Id.StartsWith("regroup:")), "崩れた隊が本陣で立て直す");
+        cp.Log($"総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
     }
 }

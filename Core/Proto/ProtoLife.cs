@@ -342,6 +342,9 @@ public sealed partial class ProtoWorld
         if (kind == "scout") return SendScout(id);
         if (kind == "attack") return Attack(id);
         if (kind == "withdraw") return Withdraw();
+        if (kind == "stance") return SetStance(id);
+        if (kind == "kakare") return Kakare();
+        if (kind == "tactic") return UseTactic(Player);
         if (kind == "council") return "";
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)

@@ -64,7 +64,7 @@ public partial class ProtoGame : Node3D
         BuildGround(); BuildTrees(); BuildSites(); BuildActors();
         pathMesh = new ImmediateMesh(); pathLine = new MeshInstance3D { Mesh = pathMesh, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.85f, 0.2f, 0.85f), Transparency = BaseMaterial3D.TransparencyEnum.Alpha, CullMode = BaseMaterial3D.CullModeEnum.Disabled, NoDepthTest = true } }; AddChild(pathLine);
         marker = new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 10, BottomRadius = 10, Height = 1 }, MaterialOverride = Unshaded(new Color(1, 0.9f, 0.2f, 0.8f)), Visible = false }; AddChild(marker);
-        BuildHud();
+        BuildHud(); BuildBattleView();
         Debug = new ProtoDebug(this); AddChild(Debug);
         Scene = new ProtoScene(this); AddChild(Scene);
         RefreshUi(); PlaceCamera();
@@ -168,7 +168,7 @@ public partial class ProtoGame : Node3D
     static string ColorOf(string house) => house switch { "takano" => "紫", "sawatari" => "朱", "iwakiri" => "黒漆", _ => "鉄錆" };
     // 同じ場所に止まっている同じ家の隊は陣形に並べる（2026-11-19 ユーザー「大将とその兵士、後ろに横並びで武将達と兵士、向きは大将に合わせる」）。
     // 大将（当主・嫡男・城主・家老の順、次に統率）とその足軽が前、ほかの武将は後ろの列に横並びで、それぞれの足軽を後ろに連れる。描くときだけの並びで、世界の位置は変えない。
-    readonly Dictionary<string, (Vector3 Foot, Vector3 Dir, int Count, int Total)> formation = new();
+    readonly Dictionary<string, (Vector3 Foot, Vector3 Dir, int Count, int Total, string Parts)> formation = new();
     static int RankOf(ProtoPerson p) => p.Role switch { "当主" => 0, "嫡男" => 1, "城主" => 2, "家老" => 3, _ => 4 };
     // 足軽の並び：歩くときは横3列の縦隊、止まっているときは横5列の横隊。
     static int Wide(ProtoPerson p) => p.Moving ? 3 : 5;
@@ -177,7 +177,7 @@ public partial class ProtoGame : Node3D
     void PlanFormations(float px)
     {
         formation.Clear();
-        var units = World.People.Where(p => p.Active && p.Soldiers > 0 && !p.Moving && World.Sees(World.Player, p)).ToList();
+        var units = World.People.Where(p => p.Active && p.Soldiers > 0 && !p.Moving && World.ClashOf(p.Id) == null && World.Sees(World.Player, p)).ToList();
         var placed = new HashSet<string>(); float gap = 26 * px * FollowerGap;
         foreach (var lead in units.OrderBy(RankOf).ThenByDescending(p => p.Command).ThenBy(p => p.Id))
         {
@@ -188,15 +188,15 @@ public partial class ProtoGame : Node3D
             // 向きは、見えているいちばん近い他家の隊の方。見えなければ最後に進んだ向き。
             var foe = World.People.Where(e => e.Active && e.Soldiers > 0 && e.House != lead.House && World.Sees(World.Player, e)).OrderBy(e => Math.Abs(e.X - lead.X) + Math.Abs(e.Y - lead.Y)).FirstOrDefault();
             var dir = foe != null && (foe.X != lead.X || foe.Y != lead.Y) ? new Vector3(foe.X - lead.X, 0, foe.Y - lead.Y).Normalized() : heading.TryGetValue(lead.Id, out var h) ? h : new Vector3(0, 0, -1);
-            if (rest.Count == 0) { formation[lead.Id] = (ToScene(lead.X, lead.Y), dir, 1, lead.Soldiers); continue; }
+            if (rest.Count == 0) { formation[lead.Id] = (ToScene(lead.X, lead.Y), dir, 1, lead.Soldiers, ""); continue; }
             var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
             var front = ToScene(lead.X, lead.Y); int total = lead.Soldiers + rest.Sum(p => p.Soldiers);
-            formation[lead.Id] = (front, dir, rest.Count + 1, total);
+            formation[lead.Id] = (front, dir, rest.Count + 1, total, string.Join("+", new[] { lead }.Concat(rest).Select(u => u.Soldiers)));
             float behind = gap * (Rows(lead) + 2.2f);
             for (int i = 0; i < rest.Count; i++)
             {
                 var at = front + back * behind + side * (gap * 6.2f * (i - (rest.Count - 1) / 2f));
-                at.Y = HeightAt(at.X, at.Z); formation[rest[i].Id] = (at, dir, 0, 0); placed.Add(rest[i].Id);
+                at.Y = HeightAt(at.X, at.Z); formation[rest[i].Id] = (at, dir, 0, 0, ""); placed.Add(rest[i].Id);
             }
         }
     }
@@ -208,8 +208,11 @@ public partial class ProtoGame : Node3D
         while (list.Count < want) { var d = new DotOfficerActor { OnTop = true }; AddChild(d); list.Add(d); }
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
         var dir = formation.TryGetValue(p.Id, out var f) ? f.Dir : heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
-        var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
-        float gap = 26 * px * FollowerGap; int wide = Wide(p);
+        // ぶつかっている間は、足軽が相手の方へ前に出て横一列に並び、打ち合う。
+        var clash = World.ClashOf(p.Id); bool front = false;
+        if (clash != null) { var foe = World.Person(clash.A == p.Id ? clash.B : clash.A); var d = new Vector3(foe.X - p.X, 0, foe.Y - p.Y); if (d.LengthSquared() > 1) { dir = d.Normalized(); front = true; anim = "attack"; } }
+        var back = front ? dir : -dir; var side = new Vector3(-back.Z, 0, back.X);
+        float gap = 26 * px * FollowerGap; int wide = front ? 5 : Wide(p);
         for (int i = 0; i < list.Count; i++)
         {
             var d = list[i]; d.Visible = i < want; if (i >= want) continue;
@@ -408,7 +411,7 @@ public partial class ProtoGame : Node3D
         }
         else acc = 0;
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
-        UpdateActors(); DrawPath(); PlaceCamera();
+        UpdateActors(); UpdateBattleView(); DrawPath(); PlaceCamera();
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
 
@@ -439,10 +442,11 @@ public partial class ProtoGame : Node3D
                 if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(real - before, Camera); var mv = real - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
                 lastPos[p.Id] = real;
                 if (inLine) dot.Face(fm.Dir, Camera);
-                if (inLine && fm.Count > 1) label.Text = $"{p.Name}ほか{fm.Count - 1}隊　兵{fm.Total}";
+                if (inLine && fm.Count > 1) label.Text = $"{p.Name}勢　{fm.Total}（{fm.Parts}）";
                 else if (inLine && fm.Count == 0) label.Visible = seen && (p.Player || close);
                 DrawFollowers(p, foot, px, seen && unit, anim);
-                label.Position = foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
+                // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
+                label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
         }
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
@@ -468,6 +472,7 @@ public partial class ProtoGame : Node3D
         {
             if (!flags.TryGetValue(pos.Id, out var f)) { f = new Label3D { Text = "⚑ " + pos.Name, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = 26, OutlineSize = 8, NoDepthTest = true, Modulate = new Color(1, 1, 0.8f) }; AddChild(f); flags[pos.Id] = f; }
             f.Visible = war && pos.Id != "takano-castle"; f.Position = ToScene(pos.X * 100L, pos.Y * 100L) + new Vector3(0, 30, 0);
+            f.Modulate = World.War.Holder.TryGetValue(pos.Id, out var holder) ? HouseColor(holder).Lightened(0.35f) : new Color(1, 1, 0.8f);
         }
         // 物見
         var live = World.Scouts.Where(x => x.Phase != "済").ToArray();

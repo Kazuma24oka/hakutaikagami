@@ -31,6 +31,16 @@ public sealed class ProtoWarState
     public Dictionary<string, string> Target { get; set; } = []; // 抜け駆け・合図の後に向かう敵
     public List<string> Routed { get; set; } = [];
     public string Result { get; set; } = "";
+    // 要所・総士気・押し合い・采配（Core/Proto/ProtoClash.cs）
+    public Dictionary<string, int> Spirit { get; set; } = [];
+    public Dictionary<string, string> Holder { get; set; } = [];
+    public List<ProtoClash> Clashes { get; set; } = [];
+    public string Stance { get; set; } = "白兵";
+    public int Ki { get; set; } = 50;
+    public Dictionary<string, int> Gauge { get; set; } = [];
+    public Dictionary<string, long> Until { get; set; } = [];
+    public Dictionary<string, long> AtCamp { get; set; } = [];
+    public List<string> Recovered { get; set; } = [];
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals);
 
@@ -232,8 +242,8 @@ public sealed partial class ProtoWorld
                 Happen("nukegake:" + u.Id, $"{u.Name}が合図を待たずに{seen.Name}の兵へ仕掛けた。", u.X, u.Y, u);
             }
         }
-        // 丘の陣は守る（上ってくる敵を高い所から打つ）。ほかの陣は合図で攻めかかる。
-        foreach (var u in takano.Where(u => !u.Player && War.Signaled && War.Assign[u.Id] != "south-hill" && !War.Target.ContainsKey(u.Id) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
+        // 丘の陣は、鷹野が持っている間は守る（上ってくる敵を高い所から打つ）。ほかの陣と、丘を取られた隊は合図で攻めかかる。
+        foreach (var u in takano.Where(u => !u.Player && War.Signaled && (War.Assign[u.Id] != "south-hill" || War.Holder.GetValueOrDefault("south-hill") == Rebel) && !War.Target.ContainsKey(u.Id) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
         {
             var target = rebels.OrderBy(r => Dist(u, r)).FirstOrDefault(); if (target != null) War.Target[u.Id] = target.Id;
         }
@@ -251,11 +261,13 @@ public sealed partial class ProtoWorld
             if (War.Routed.Contains(targetId) || !t.Active) { War.Target.Remove(id); continue; }
             if (Dist(u, t) > 60_00 && (!u.Moving || Second % 300 == 0)) Walk(u, (t.X, t.Y), t.Name, $"{t.Name}の兵へ攻めかかっている");
         }
+        HoldKeypoints();
+        if (War.Phase == "合戦") Regroup();
         if (War.Phase == "合戦") Fight(takano.Concat(rebels).Concat(Player.Soldiers > 0 && !War.Routed.Contains(Player.Id) ? new[] { Player } : []).Distinct().ToArray());
         // 終わり
-        var liveRebels = Units.Where(u => u.House == Rebel && !War.Routed.Contains(u.Id)).ToArray();
+        var liveRebels = Units.Where(u => u.House == Rebel && StillFights(u)).ToArray();
         // 本人は、戦いに加わっていなければ数えない（本人が後ろにいるだけでは合戦は続かない）。
-        var liveTakano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && !War.Routed.Contains(u.Id) && (!u.Player || Flag("fought:" + u.Id))).ToArray();
+        var liveTakano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && (u.Player ? !War.Routed.Contains(u.Id) && Flag("fought:" + u.Id) : StillFights(u))).ToArray();
         if (Flag("rebels-out") && liveRebels.Length == 0 && War.Result == "")
         {
             War.Result = "鎮めた"; War.Phase = "終わり"; var k = Person(Katsumoto);
@@ -263,52 +275,19 @@ public sealed partial class ProtoWorld
             foreach (var r in People.Where(r => r.House == Rebel)) { r.Active = false; r.Path = []; r.PathIndex = 0; r.Doing = "捕らえられた"; }
             if (Flag("fought:" + Player.Id)) { Merit += 10; Note("謀叛の討伐で働いた。勲功10。"); }
         }
+        else if (War.Phase == "合戦" && War.Result == "" && Second >= War.SignalAt + 8 * Hour)
+        {
+            // 日が傾いても決まらなければ、両方とも兵を引く。
+            War.Result = "引き分け"; War.Phase = "終わり"; var h = Person(Heir);
+            Happen("draw", "日が傾き、鷹野勢も岩切勢も兵を引いた。", h.X, h.Y, h);
+            foreach (var r in People.Where(r => r.House == Rebel && r.Active)) Walk(r, Spot(Map.Site("iwakiri-castle"), 3), "iwakiri-castle", "岩切城へ引き上げている");
+        }
         else if (War.Phase == "合戦" && liveTakano.Length == 0 && War.Result == "")
         {
             War.Result = "退けられた"; War.Phase = "終わり"; var h = Person(Heir);
             Happen("expedition-failed", "鷹野の討手は岩切勢に退けられた。", h.X, h.Y, h, Person(Karou));
             foreach (var r in People.Where(r => r.House == Rebel && r.Active)) Walk(r, Spot(Map.Site("iwakiri-castle"), 3), "iwakiri-castle", "岩切城へ引き上げている");
         }
-    }
-
-    // 1分ごとの打ち合い：兵 × 武勇 × 地形（高い所・森）× 挟み撃ち ÷ 相手の統率。士気が20を切ると敗走。
-    void Fight(ProtoPerson[] all)
-    {
-        var hits = new Dictionary<string, double>();
-        foreach (var a in all)
-        {
-            var foes = all.Where(b => Hostile(a.House, b.House) && Dist(a, b) <= 80_00 && !War.Routed.Contains(b.Id)).ToArray();
-            if (foes.Length == 0 || War.Routed.Contains(a.Id)) continue;
-            Set("fought:" + a.Id);
-            var b = foes.OrderBy(f => Dist(a, f)).First();
-            double atk = a.Soldiers * 0.012 * (a.Valor / 50.0) * (a.Morale / 100.0 + 0.5);
-            long rise = Map.HeightAtCm(a.X, a.Y) - Map.HeightAtCm(b.X, b.Y);
-            if (rise > 10_00) atk *= 1.3;        // 高い所から打ち下ろす
-            else if (rise < -10_00) atk *= 0.7;  // 坂の下から攻め上る
-            if (Map.GroundAtCm(b.X, b.Y) == Ground.Forest) atk *= 0.8;                      // 森に籠もる相手
-            if (all.Count(x => Hostile(x.House, b.House) && Dist(x, b) <= 80_00) >= 2) atk *= 1.3; // 挟み撃ち
-            if (a.Skills.Contains("槍衾") && a.Moving == false) atk *= 1.15;
-            atk /= b.Command / 50.0;
-            hits[b.Id] = hits.GetValueOrDefault(b.Id) + atk;
-            a.Doing = $"{b.Name}の兵と戦っている";
-        }
-        foreach (var (id, h) in hits)
-        {
-            var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
-            int before = b.Soldiers; b.Soldiers = Math.Max(0, b.Soldiers - loss);
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, before) * 1.5));
-            if (b.Morale < 20 || b.Soldiers == 0) Rout(b);
-        }
-    }
-
-    void Rout(ProtoPerson b)
-    {
-        if (War.Routed.Contains(b.Id)) return;
-        War.Routed.Add(b.Id); War.Target.Remove(b.Id);
-        Happen("rout:" + b.Id, $"{b.Name}の兵が崩れて退いた（残り{b.Soldiers}）。", b.X, b.Y, b);
-        if (b.Player) { Stop(); Note("兵が崩れた。これ以上は戦えない。"); return; }
-        var home = b.House == Rebel ? "iwakiri-castle" : b.Home;
-        Walk(b, Spot(Map.Site(home), 2), home, "敗走している");
     }
 
     // ---- 本人が攻めかかる・退く ----

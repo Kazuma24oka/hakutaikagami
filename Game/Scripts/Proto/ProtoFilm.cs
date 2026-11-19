@@ -25,7 +25,7 @@ public partial class ProtoGame
         try
         {
             var layer = new CanvasLayer { Layer = 100 }; AddChild(layer);
-            var band = new PanelContainer { AnchorLeft = 0, AnchorRight = 1, AnchorTop = 0, AnchorBottom = 0, OffsetTop = 56, OffsetBottom = 120, OffsetLeft = 200, OffsetRight = -200, MouseFilter = Control.MouseFilterEnum.Ignore };
+            var band = new PanelContainer { AnchorLeft = 0, AnchorRight = 1, AnchorTop = 0, AnchorBottom = 0, OffsetTop = 96, OffsetBottom = 160, OffsetLeft = 200, OffsetRight = -200, MouseFilter = Control.MouseFilterEnum.Ignore };
             band.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0, 0, 0, 0.78f), CornerRadiusTopLeft = 8, CornerRadiusTopRight = 8, CornerRadiusBottomLeft = 8, CornerRadiusBottomRight = 8, ContentMarginLeft = 16, ContentMarginRight = 16 });
             filmCaption = new Label { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, AutowrapMode = TextServer.AutowrapMode.WordSmart };
             filmCaption.AddThemeFontSizeOverride("font_size", 24); band.AddChild(filmCaption); layer.AddChild(band);
@@ -73,16 +73,43 @@ public partial class ProtoGame
                 await Cap("丘を先に押さえられた岩切勢は、手前で止まった", 3.5);
             await SkipTo(3 * Day + 5 * H + 58 * 60);
             Follow(1300, 60);
-            await Cap("卯の刻。正之の陣から合図の狼煙が上がる", 3);
-            Speed = 30; WaitUntil = 3 * Day + 8 * H;
+            await Cap("卯の刻。正之の陣から合図の狼煙が上がる。上に両軍の総士気が出る", 3.5);
+            await RunTo(3 * Day + 6 * H + 3 * 60, 30);
+            await Cap("要所（丘・道の口・森の縁）を持つ側は総士気が上がる。隊が崩れると下がり、0で総崩れ", 4.5);
+            // 本人も丘から目の前の敵へ攻めかかる。ぶつかると押し合いのゲージと采配が出る。
+            var foeId = w.Actions().Where(a => a.Id.StartsWith("attack:")).Select(a => a.Id).FirstOrDefault();
+            if (foeId != null)
+            {
+                Act(foeId); Follow(700, 55); WaitUntil = 3 * Day + 14 * H;
+                await Cap("丘を下りて、目の前の岩切勝元の隊へ攻めかかる", 3);
+                Speed = 30; await Until(() => w.ClashOf(w.Player.Id) != null || w.War.Result != "", 60);
+                if (w.ClashOf(w.Player.Id) != null)
+                {
+                    await Cap("ぶつかった。間のゲージは押し合い。下に采配が出て、時間は10倍に落ちる", 4.5);
+                    await Cap("「かかれ！」は気力を使って一気に押し返す", 2.5);
+                    if (w.CanKakare) Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed);
+                    int seenF = w.Facts.Count; bool usedTactic = false, guarded = false;
+                    for (int n = 0; n < 30 * 150 && w.ClashOf(w.Player.Id) != null && w.War.Result == ""; n++)
+                    {
+                        await Hold(1d / 30);
+                        if (w.Facts.Count > seenF) { seenF = w.Facts.Count; filmCaption.Text = w.Facts[^1].Text; }
+                        if (!usedTactic && w.GaugeOf(w.Player.Id) >= 100) { usedTactic = true; filmCaption.Text = "戦法のゲージがたまった。戦法「鼓舞」で士気を立て直す"; Buttons["clash-tactic"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
+                        else if (!guarded && w.ClashOf(w.Player.Id) is { Push: < -50 }) { guarded = true; filmCaption.Text = "押し込まれている。構えを「防御」に変えて耐える"; Buttons["clash-stance-防御"].EmitSignal(BaseButton.SignalName.Pressed); await Hold(2.5); }
+                        else if (w.CanKakare && n % 150 == 0) { filmCaption.Text = "かかれ！"; Buttons["clash-kakare"].EmitSignal(BaseButton.SignalName.Pressed); }
+                    }
+                }
+            }
+            if (w.War.Routed.Contains(w.Player.Id)) await Cap("自分の隊は崩れた。本陣まで退けば一度だけ立て直せる", 3.5);
+            Follow(1600, 62); Speed = 120; WaitUntil = 3 * Day + 15 * H;
+            await Cap("あとは全体の成り行き。崩れた隊は本陣で立て直して戻ってくる", 3.5);
             int seen = w.Facts.Count;
-            for (int n = 0; n < 30 * 120 && w.War.Result == ""; n++)
+            for (int n = 0; n < 30 * 240 && w.War.Result == ""; n++)
             {
                 await Hold(1d / 30);
                 if (w.Facts.Count > seen) { var f = w.Facts[^1]; seen = w.Facts.Count; filmCaption.Text = f.Text; }
             }
             await Hold(2);
-            await Cap(w.War.Result == "鎮めた" ? "岩切勝元の謀叛は鎮まった" : w.War.Result == "退けられた" ? "鷹野の討手は岩切勢に退けられた。勝ち負けは陣取りと打ち合いの成り行きで変わる" : "合戦はまだ続いている", 5);
+            await Cap(w.War.Result switch { "鎮めた" => "岩切勝元の謀叛は鎮まった", "退けられた" => "鷹野の討手は岩切勢に退けられた", "引き分け" => "日が傾き、両軍とも兵を引いた", _ => "合戦はまだ続いている" }, 4);
             await Cap("百代鏡　試作版", 2);
         }
         catch (Exception e) { GD.PrintErr("PROTO FILM 失敗: " + e); }

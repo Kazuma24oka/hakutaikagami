@@ -762,6 +762,7 @@ Core/Data/river-roads-v1.json	使う	埋め込み資料 RiverRoadsV1 として C
 Core/Events/EventScheduler.cs	使う	ScheduledEvent、EventScheduler を定義。EventScheduler が他の Coreから使われ、ゲームの本線から届く	Core/World/WorldState.cs:21 で EventScheduler（他に Game 0件・Core 1件・Tests 1件）	2026-11-18
 Core/HakutaiKagami.Core.csproj	使う	Core の組み立て定義（埋め込み資料23件、Tests への内部公開）	Game/HakutaiKagami.Game.csproj:3 と Tests/HakutaiKagami.Tests.csproj が参照	2026-11-18
 Core/Messaging/MessageFlow.cs	使う	AttemptStatus、MessageEnvelope、MessageAttempt を定義。AttemptStatus が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/NewGameRuntime.CastellanReports.cs:15 で AttemptStatus（他に Game 42件・Core 128件・Tests 65件）	2026-11-18
+Core/Proto/ProtoClash.cs	使う	試作版の合戦の作り直し（要所と総士気・押し合い・戦場の幅・采配・本陣での立て直し）	Core/Proto/ProtoWar.cs の Battle から呼ぶ。Tests/ProtoWarTests.cs	2026-11-19
 Core/Proto/ProtoLife.cs	使う	ProtoStep、ProtoTask、ProtoAction を定義。GoToTask が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoGame.cs:216 で GoToTask（他に Game 1件・Core 1件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMap.cs	使う	Ground、ProtoHouse、ProtoSite を定義。GroundAtCm が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoDebug.cs:124 で GroundAtCm（他に Game 2件・Core 2件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMove.cs	使う	ProtoMove を定義。ProtoMove が他の Coreから使われ、ゲームの本線から届く	Core/Proto/ProtoLife.cs:193 で ProtoMove（他に Game 0件・Core 2件・Tests 1件）	2026-11-18
@@ -2945,6 +2946,7 @@ Game/Scripts/PerfProbe.cs	使う	遊ぶ画面の重さの測り（2026-11-18 の
 Game/Scripts/PerfProbe.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PerfProbe.cs は「使う」	2026-11-18
 Game/Scripts/PersonalHealthCheck.cs	使う	工程の検査場面（ゲーム内部の入力・自前の描画で確かめる。PROCESS_V2 第2節）	Scripts/・Tests/ に起動するランナーなし（手動起動）。出力先 Docs/Design/PersonalHealthV1/runtime-local。最終コミット 2026-11-14	2026-11-18
 Game/Scripts/PersonalHealthCheck.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PersonalHealthCheck.cs は「使う」	2026-11-18
+Game/Scripts/Proto/ProtoBattleView.cs	使う	試作版の合戦の見え方（総士気・押し合いのゲージ・采配の窓）	Game/Scripts/Proto/ProtoGame.cs の _Ready と _Process から呼ぶ	2026-11-19
 Game/Scripts/Proto/ProtoDebug.cs	使う	今の試作版（ProtoGame.tscn）の部品	Game/Scripts/Proto/ProtoGame.cs:42 ProtoDebug	2026-11-18
 Game/Scripts/Proto/ProtoFilm.cs	使う	試作版の動画「謀叛から合戦まで」の台本（--proto-film）	Game/Scripts/Proto/ProtoGame.cs の _Ready が --proto-film のときに呼ぶ	2026-11-19
 Game/Scripts/Proto/ProtoGame.cs	使う	今の試作版（ProtoGame.tscn）の部品	Game/Scenes/ProtoGame.tscn:3 res://Scripts/Proto/ProtoGame.cs	2026-11-18
