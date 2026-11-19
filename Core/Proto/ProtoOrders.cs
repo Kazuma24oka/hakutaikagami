@@ -58,6 +58,9 @@ public sealed partial class ProtoWorld
     internal bool Auto(ProtoPerson u) => !u.Player || War.PlayerFollows;
     // 総勢の中にいるか（出立してから着陣まで）。
     public bool InBody(ProtoPerson u) => War.Phase is "行軍" or "合戦" && !War.Split && Flag("marched") && u.House == "takano" && u.Soldiers > 0 && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle" && Auto(u) && !War.Routed.Contains(u.Id);
+    // 画面で一つの勢として見せるか：城に集まっている間と、総勢で進んでいる間（大将から300m以内）。
+    public bool InHost(ProtoPerson u) => War.Phase == "行軍" && !War.Split && u.House == "takano" && u.Soldiers > 0 && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle" && Auto(u) && Dist(u, Person(Heir)) <= 300_00;
+    public IEnumerable<ProtoPerson> Host => Units.Where(InHost);
     public int MarchPercent => 60 + Person(Heir).Command * 7 / 10;
     public IEnumerable<ProtoPerson> Body => Units.Where(InBody);
 

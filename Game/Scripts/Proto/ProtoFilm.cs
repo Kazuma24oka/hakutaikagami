@@ -79,7 +79,7 @@ public partial class ProtoGame
             await Cap("自分の陣は南の丘。今夜のうちに出て、丘を先に取る。合図は卯の刻（6時）の狼煙", 4.5);
             if (councilChoices is { } c)
             {
-                c.Pos.Select(0); c.Dep.Select(0); c.Sig.Select(0); await Hold(1.5);
+                c.Plan.Select(0); c.Role.Select(1); c.Dep.Select(0); c.Sig.Select(0); await Hold(1.5); // 正面から当たる・後詰（南の丘）
                 c.Ok.EmitSignal(BaseButton.SignalName.Pressed);
             }
             await Talk();

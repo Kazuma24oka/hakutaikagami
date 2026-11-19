@@ -310,7 +310,7 @@ public partial class ProtoGame : Node3D
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
 
-        Add(bar, "panel", "やること", () => panelOpen = !(panelOpen ?? World.War.Phase != "合戦"));
+        Add(bar, "panel", "任務", () => panelOpen = !(panelOpen ?? World.War.Phase != "合戦"));
         var side = sidePanel = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
         var col = new VBoxContainer(); side.AddChild(col);
         panel = col;
@@ -334,7 +334,22 @@ public partial class ProtoGame : Node3D
         return b;
     }
 
-    string panelKey = "";
+    string panelKey = ""; string? missionTab;
+    // 軍令の行にマウスを乗せると、その隊と行き先を地図で光らせる。
+    string? hoverUnit; Vector3 hoverSpot; MeshInstance3D hoverRingUnit = null!, hoverRingSpot = null!;
+    internal void Hover(string? id) { hoverUnit = id; if (id != null && World.Orders().FirstOrDefault(o => o.Unit == id) is { } o) hoverSpot = ToScene(o.X, o.Y); }
+    void UpdateHover()
+    {
+        if (hoverRingUnit == null)
+        {
+            MeshInstance3D Ring() { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.86f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.9f, 0.3f), NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
+            hoverRingUnit = Ring(); hoverRingSpot = Ring();
+        }
+        bool on = hoverUnit != null && sidePanel.Visible; hoverRingUnit.Visible = hoverRingSpot.Visible = on; if (!on) return;
+        var u = World.Person(hoverUnit!); float pulse = 1 + 0.12f * MathF.Sin(Time.GetTicksMsec() / 150f), r = Math.Max(45, distance * 0.05f) * pulse;
+        hoverRingUnit.Position = ToScene(u.X, u.Y) + new Vector3(0, 3, 0); hoverRingUnit.Scale = new Vector3(r, 1, r);
+        hoverRingSpot.Position = hoverSpot + new Vector3(0, 3, 0); hoverRingSpot.Scale = new Vector3(r * 0.7f, 1, r * 0.7f);
+    }
     internal void RefreshUi()
     {
         var p = World.Player; var site = World.SiteOf(p);
@@ -346,30 +361,46 @@ public partial class ProtoGame : Node3D
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
         var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
-        var key = string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id));
+        // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
+        var orders = World.Orders().ToArray(); bool inWar = World.War.Phase is "行軍" or "合戦" && orders.Length > 0;
+        string tab = !inWar ? "依頼" : missionTab ?? "軍令";
+        static bool IsWarAction(string id) => id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("scout:") || id.StartsWith("order:") || id.StartsWith("council:");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows;
         if (key != panelKey)
         {
-            panelKey = key;
+            panelKey = key; hoverUnit = null;
             foreach (var c in panel.GetChildren()) { panel.RemoveChild(c); c.QueueFree(); }
-            foreach (var k in Buttons.Keys.Where(k => k.StartsWith("task:") || k.StartsWith("talk:") || k.StartsWith("act:")).ToArray()) Buttons.Remove(k);
-            if (actions.Length > 0)
+            foreach (var k in Buttons.Keys.Where(k => k.StartsWith("task:") || k.StartsWith("talk:") || k.StartsWith("act:") || k.StartsWith("mission-")).ToArray()) Buttons.Remove(k);
+            var tabs = new HBoxContainer(); panel.AddChild(tabs);
+            foreach (var t in new[] { "軍令", "依頼" }) { var name = t; var b = Add(tabs, "mission-" + name, name, () => { missionTab = name; RefreshUi(); }); b.Disabled = name == tab || name == "軍令" && !inWar; }
+            if (tab == "軍令")
             {
-                panel.AddChild(new Label { Text = "やること" });
-                foreach (var o in World.OffersHere) panel.AddChild(new Label { Text = $"{World.Person(o.Giver).Name}「{o.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
-                foreach (var a in actions) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
+                panel.AddChild(new Label { Text = World.War.Plan, Modulate = new Color(1, 0.9f, 0.6f) });
+                foreach (var o in orders)
+                {
+                    bool mine = o.Unit == World.Player.Id;
+                    var row = new Label { Text = o.Name + "　" + o.Role + (char)10 + "　" + o.Text, AutowrapMode = TextServer.AutowrapMode.WordSmart, MouseFilter = Control.MouseFilterEnum.Stop, Modulate = mine ? new Color(1, 0.88f, 0.45f) : Colors.White };
+                    var ord = o; row.MouseEntered += () => { hoverUnit = ord.Unit; hoverSpot = ToScene(ord.X, ord.Y); }; row.MouseExited += () => { if (hoverUnit == ord.Unit) hoverUnit = null; };
+                    panel.AddChild(row);
+                }
                 panel.AddChild(new HSeparator());
+                foreach (var a in actions.Where(a => IsWarAction(a.Id))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
             }
-            panel.AddChild(new Label { Text = "任務" });
-            foreach (var t in open)
+            else
             {
-                panel.AddChild(new Label { Text = t.Title + "　" + (t.Current?.Text ?? ""), AutowrapMode = TextServer.AutowrapMode.WordSmart });
-                if (t.Speech != "") panel.AddChild(new Label { Text = $"{World.Person(t.Giver).Name}「{t.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
-                var id = t.Id; var b = Add(panel, "task:" + id, "", () => { if (World.GoToTask(id)) ShowGoal(); }); taskButtons[id] = b;
-            }
-            if (near.Length > 0)
-            {
-                panel.AddChild(new HSeparator()); panel.AddChild(new Label { Text = "近くの人" });
-                foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "話す：" + n.Name, () => Say(World.Do("talk:" + nid), nid)); }
+                foreach (var o in World.OffersHere) panel.AddChild(new Label { Text = $"{World.Person(o.Giver).Name}「{o.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
+                foreach (var a in actions.Where(a => !inWar || !IsWarAction(a.Id))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
+                foreach (var t in open)
+                {
+                    panel.AddChild(new Label { Text = t.Title + "　" + (t.Current?.Text ?? ""), AutowrapMode = TextServer.AutowrapMode.WordSmart });
+                    if (t.Speech != "") panel.AddChild(new Label { Text = $"{World.Person(t.Giver).Name}「{t.Speech}」", AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = new Color(0.85f, 0.85f, 0.75f) });
+                    var id = t.Id; var b = Add(panel, "task:" + id, "", () => { if (World.GoToTask(id)) ShowGoal(); }); taskButtons[id] = b;
+                }
+                if (near.Length > 0)
+                {
+                    panel.AddChild(new HSeparator());
+                    foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "話す：" + n.Name, () => Say(World.Do("talk:" + nid), nid)); }
+                }
             }
         }
         foreach (var t in open)
@@ -404,7 +435,7 @@ public partial class ProtoGame : Node3D
         for (int i = 0; i < 8000; i++)
         {
             var q = from + dir * t;
-            if (q.X >= 0 && q.Z >= 0 && q.X < World.Map.Data.WidthM && q.Z < World.Map.Data.HeightM && q.Y <= HeightAt(q.X, q.Z)) return WalkTo(q.X, q.Z);
+            if (q.X >= 0 && q.Z >= 0 && q.X < World.Map.Data.WidthM && q.Z < World.Map.Data.HeightM && q.Y <= HeightAt(q.X, q.Z)) { World.ActOnOwn(); return WalkTo(q.X, q.Z); } // 自分で動けば指図から外れる
             t += step;
         }
         return false;
@@ -489,7 +520,7 @@ public partial class ProtoGame : Node3D
         }
         else acc = 0;
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
-        UpdateActors(); UpdateBattleView(); DrawPath(); PlaceCamera();
+        UpdateActors(); UpdateBattleView(); UpdateHover(); DrawPath(); PlaceCamera();
         journal.GetParent<Control>().GetParent<Control>().Modulate = new Color(1, 1, 1, (float)Math.Clamp(1.4 - (Time.GetTicksMsec() / 1000.0 - journalShown) / 8.0, 0.35, 1));
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
@@ -531,8 +562,12 @@ public partial class ProtoGame : Node3D
                 bool card = unit && distance > CardDistance;
                 DrawFollowers(p, foot, px, seen && unit && !card, anim);
                 if (card) { dot.Visible = false; label.Visible = false; }
+                // 総勢で行軍している間は、大将の凸一つにまとめる（「鷹野正之勢」と兵の合計・内訳）。
+                bool inBody = World.InHost(p), bodyLead = inBody && p.Id == World.HeadOf("takano");
+                var host = bodyLead ? World.Host.OrderByDescending(u => u.Id == p.Id).ThenBy(u => u.Id).ToArray() : [];
                 bool group = inLine && fm.Count > 1;
-                DrawCard(p, foot, card && seen && !(inLine && fm.Count == 0), group ? p.Name + "勢" : p.Name, group ? fm.Total : p.Soldiers, group ? fm.Parts : "");
+                if (bodyLead && host.Length > 1) DrawCard(p, foot, card && seen, p.Name + "勢", host.Sum(u => u.Soldiers), string.Join("+", host.Select(u => u.Soldiers)));
+                else DrawCard(p, foot, card && seen && !inBody && !(inLine && fm.Count == 0), group ? p.Name + "勢" : p.Name, group ? fm.Total : p.Soldiers, group ? fm.Parts : "");
                 // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
                 label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
@@ -585,7 +620,7 @@ public partial class ProtoGame : Node3D
     }
 
     // ---- 軍議（話す場面の上で、意見を聞いてから選ぶ） ----
-    internal (OptionButton Pos, OptionButton Dep, OptionButton Sig, Button Ok, OptionButton Plan)? councilChoices;
+    internal (OptionButton Role, OptionButton Dep, OptionButton Sig, Button Ok, OptionButton Plan)? councilChoices;
     internal void OpenCouncil()
     {
         if (Scene.Open || !World.CouncilOpen) return;
@@ -596,15 +631,18 @@ public partial class ProtoGame : Node3D
             var row = new HBoxContainer(); box.AddChild(row); row.AddChild(new Label { Text = title, CustomMinimumSize = new Vector2(140, 0) });
             var o = new OptionButton { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; foreach (var it in items) o.AddItem(it); o.Select(pick); row.AddChild(o); return o;
         }
-        var pos = Choice("自分の陣", view.Positions.Select(p => p.Name).ToArray(), Array.FindIndex(view.Positions, p => p.Id == "forest-edge"));
+        // 作戦を選ぶと、その作戦の役目が出る。
         var dep = Choice("出立", view.Departures, 1);
         var sig = Choice("合図", view.Signals, 0);
         var plan = Choice("作戦", view.Plans, 0);
+        var role = Choice("自分の役目", ProtoWorld.RolesOf(view.Plans[0]).Select(r => r.Role).ToArray(), 0);
+        box.MoveChild(plan.GetParent(), 0); box.MoveChild(role.GetParent(), 1);
+        plan.ItemSelected += i => { role.Clear(); foreach (var r in ProtoWorld.RolesOf(view.Plans[(int)i])) role.AddItem(r.Role); role.Select(0); };
         var ok = new Button { Text = "決める" }; box.AddChild(ok);
-        councilChoices = (pos, dep, sig, ok, plan);
+        councilChoices = (role, dep, sig, ok, plan);
         ok.Pressed += () =>
         {
-            var reply = World.DecideCouncil(view.Positions[pos.Selected].Id, view.Departures[dep.Selected], view.Signals[sig.Selected], view.Plans[plan.Selected]);
+            var reply = World.DecideCouncil(null, view.Departures[dep.Selected], view.Signals[sig.Selected], view.Plans[plan.Selected], role.GetItemText(role.Selected));
             Scene.Close();
             var after = new List<(string, string)>();
             if (ProtoScene.Parse(World, reply) is { } r) after.Add(r);
