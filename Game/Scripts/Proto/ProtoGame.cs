@@ -491,7 +491,8 @@ public partial class ProtoGame : Node3D
                 bool card = unit && distance > CardDistance;
                 DrawFollowers(p, foot, px, seen && unit && !card, anim);
                 if (card) { dot.Visible = false; label.Visible = false; }
-                DrawCard(p, foot, card && seen && !(inLine && fm.Count == 0), inLine && fm.Count > 1 ? $"{p.Name}勢　{fm.Total}" : $"{p.Name}　{p.Soldiers}");
+                bool group = inLine && fm.Count > 1;
+                DrawCard(p, foot, card && seen && !(inLine && fm.Count == 0), group ? p.Name + "勢" : p.Name, group ? fm.Total : p.Soldiers, group ? fm.Parts : "");
                 // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
                 label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
