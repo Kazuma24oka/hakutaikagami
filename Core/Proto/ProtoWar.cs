@@ -73,6 +73,7 @@ public sealed class ProtoWarState
     public Dictionary<string, string> RetreatAdded { get; set; } = [];
     public Dictionary<string, string> RetreatBy { get; set; } = [];   // 満たした条件（退き貝が鳴った）
     public Dictionary<string, long> RetreatAt { get; set; } = [];
+    public ProtoSiege? Siege { get; set; } // 攻城（Core/Proto/ProtoSiege.cs）
     public Dictionary<string, int> StartMen { get; set; } = []; // 合戦に入ったときの兵の数（右下の窓に「今/元」で出す）
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans, string[] Goals, string[] RetreatAdds);
@@ -286,10 +287,13 @@ public sealed partial class ProtoWorld
                 Happen("nukegake:" + u.Id, $"{u.Name}が合図を待たずに{seen.Name}の兵へ仕掛けた。", u.X, u.Y, u);
             }
         }
-        ActOnRoles(takano, rebels);
+        if (War.Siege == null) ActOnRoles(takano, rebels); else SiegeMoves(takano, rebels);
+        if (War.Result != "") return; // 攻城の中で開城した
         // 謀叛方は、合戦になったら見えている敵に向かう。陣を守り抜くつもりなら、自分の陣の近く（400m）に来た敵だけを相手にし、離れたら陣へ戻る。
         bool rebelsHold = GoalOf(Rebel) == Goals[1];
-        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
+        // 攻城で城門が残っている間は、城から出ない（寄せて来た敵と、その場で戦う。出るのは朝駆けのときだけ）。
+        bool walled = War.Siege is { Gate: > 0 };
+        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !walled && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
         {
             var post = War.Post.ContainsKey(r.Id) ? PostOf(r.Id) : null;
             var seen = allTakano.Concat(new[] { Player }).Where(t => t.Soldiers > 0 && InSight(r, t) && (!rebelsHold || post == null || Dist(t, post.X * 100L, post.Y * 100L) <= 400_00)).OrderBy(t => Dist(r, t)).FirstOrDefault();
@@ -325,10 +329,10 @@ public sealed partial class ProtoWorld
         if (Flag("rebels-out") && liveRebels.Length == 0 && War.Result == "")
         {
             War.Result = "鎮めた"; War.Phase = "終わり"; var k = Person(Katsumoto);
-            Happen("rebellion-crushed", "岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。", k.X, k.Y, Person(Heir), Person(Karou), k);
+            Happen("rebellion-crushed", War.Siege != null ? "岩切城は落ち、岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。" : "岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。", k.X, k.Y, Person(Heir), Person(Karou), k);
             foreach (var r in People.Where(r => r.House == Rebel)) { r.Active = false; r.Path = []; r.PathIndex = 0; r.Doing = "捕らえられた"; }
         }
-        else if (War.Phase == "合戦" && War.Result == "" && Second >= War.SignalAt + 8 * Hour)
+        else if (War.Phase == "合戦" && War.Result == "" && War.Siege == null && Second >= War.SignalAt + 8 * Hour)
         {
             // 日が傾いても決まらなければ、両方とも兵を引く。
             War.Result = "引き分け"; War.Phase = "終わり"; var h = Person(Heir);

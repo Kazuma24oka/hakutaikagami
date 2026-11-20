@@ -40,6 +40,7 @@ public sealed partial class ProtoWorld
         "lord" => $"{Person(HeadOf(side)).Name}の隊が崩れる",
         "spirit-half" => RetreatAdds[1],
         "noon" => RetreatAdds[2],
+        "supply" => "兵糧が尽きて士気が保てない",
         _ => RetreatAdds[3],
     };
     bool RuleMet(string side, string id)
@@ -51,11 +52,12 @@ public sealed partial class ProtoWorld
             "head" => !head.Active || !StillFights(head),
             "spirit0" => SpiritOf(side) <= 0,
             "lost-post" => flags.TryGetValue("post-lost:" + side, out var since) && Second - since >= 30 * 60,
-            "dusk" => War.Signaled && Second >= War.SignalAt + 8 * Hour,
+            "dusk" => War.Siege == null && War.Signaled && Second >= War.SignalAt + 8 * Hour, // 攻城は日をまたぐ
             "half-men" => SideUnits(side).Sum(u => u.Soldiers) * 2 < War.StartMen.GetValueOrDefault(side),
             "lord" => War.Routed.Contains(head.Id),
             "spirit-half" => SpiritOf(side) < 50,
             "noon" => Second >= War.SignalAt / Day * Day + 12 * Hour,
+            "supply" => War.Siege is { Supply: <= 0 } && SpiritOf(side) < 30,
             _ => Flag("plan-failed"),
         };
     }
@@ -99,6 +101,8 @@ public sealed partial class ProtoWorld
             bool heard = SideUnits(side).Where(u => u.Soldiers > 0 && !War.Routed.Contains(u.Id)).All(u => Flag("retreat-heard:" + u.Id));
             bool clear = heard && !SideUnits(side).Any(u => Withdrawing(u) && !War.Routed.Contains(u.Id) && Units.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 600_00));
             if (!clear && Second < War.RetreatAt[side] + 30 * 60) continue;
+            // 岩切勢が城へ退ききったら、決着にせず攻城になる（Core/Proto/ProtoSiege.cs）。
+            if (side == Rebel && CanBesiege) { StartSiege(); continue; }
             var h = Person(HeadOf(side)); War.Phase = "終わり";
             if (side == Rebel)
             {

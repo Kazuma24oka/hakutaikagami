@@ -50,7 +50,8 @@ public sealed partial class ProtoWorld
         Set("collapse:" + side);
         var head = Person(HeadOf(side));
         Happen("collapse:" + side, $"{HouseName(side)}の総士気が尽き、総崩れになった。", head.X, head.Y, head);
-        foreach (var u in Units.Where(u => Side(u.House) == side).ToArray()) { if (!War.Recovered.Contains(u.Id)) War.Recovered.Add(u.Id); Rout(u); } // 総崩れの後は立て直さない
+        // 総崩れの後は立て直さない。崩れるのは、この合戦に出ている隊だけ（ほかの家の隊は関わらない）。
+        foreach (var u in Units.Where(u => side == Rebel ? u.House == Rebel : InArmy(u)).ToArray()) { if (!War.Recovered.Contains(u.Id)) War.Recovered.Add(u.Id); Rout(u); }
     }
 
     // ---- 1分ごとの打ち合い ----
@@ -87,6 +88,7 @@ public sealed partial class ProtoWorld
             if (Buffed("guard", b.Id)) atk *= 0.5;
             if (b.Player) atk *= War.Stance switch { "射撃" => 0.6, "防御" => 0.5, _ => 1.0 };
             atk /= Cmd(b) / 50.0;
+            atk *= CastleShield(a, b); // 攻城：城門が残っている間の城の利
             hits[b.Id] = hits.GetValueOrDefault(b.Id) + atk; dealt[(a.Id, b.Id)] = dealt.GetValueOrDefault((a.Id, b.Id)) + atk;
             a.Doing = $"{b.Name}の兵と戦っている";
             War.Gauge[a.Id] = Math.Min(100, GaugeOf(a.Id) + (a.Player ? 12 : 6));
@@ -103,7 +105,7 @@ public sealed partial class ProtoWorld
                 // 伏兵（か、利が残っている間）の隊がぶつかったなら奇襲：3分ぶんの打撃を一度に与え、相手の混乱を30上げる（Core/Proto/ProtoChaos.cs）。
                 // どちらが先に打ったかに関わらず、伏兵だった側が仕掛けた側。
                 var (att, def) = CanSurprise(y) && !CanSurprise(x) ? (Person(y), Person(x)) : (Person(x), Person(y));
-                if (CanSurprise(att.Id))
+                if (CanSurprise(att.Id) && !BehindGate(def))
                 {
                     bool wood = InForest(att.X, att.Y);
                     War.Ambush.Remove(att.Id); War.AmbushUntil.Remove(att.Id); War.UnseenSince.Remove(att.Id);
@@ -118,6 +120,7 @@ public sealed partial class ProtoWorld
         {
             if (!dealt.ContainsKey((c.A, c.B)) && !dealt.ContainsKey((c.B, c.A))) { War.Clashes.Remove(c); continue; }
         }
+        WearGate();
         Pursue(all, hits);
         foreach (var (id, h) in hits)
         {
@@ -134,6 +137,7 @@ public sealed partial class ProtoWorld
         }
         // 打たれていない隊の混乱は毎分5ずつ引く。
         foreach (var u in all.Where(u => Live(u) && !dealt.Keys.Any(k => k.Item2 == u.Id) && ChaosOf(u.Id) > 0)) War.Chaos[u.Id] = Math.Max(0, ChaosOf(u.Id) - 5);
+        foreach (var u in all.Where(u => Live(u) && BehindGate(u) && u.Soldiers > 0)) u.Morale = Math.Max(u.Morale, 20); // 城門の内の兵は崩れない
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 || u.Soldiers == 0)).ToArray()) Rout(u);
         // NPC は戦法のゲージがたまれば自分で使う。
         foreach (var u in all.Where(u => !u.Player && Live(u) && GaugeOf(u.Id) >= 100 && !Confused(u.Id))) UseTactic(u);

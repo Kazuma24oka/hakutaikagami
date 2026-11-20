@@ -62,7 +62,7 @@ public sealed partial class ProtoWorld
         var t = new ProtoTask { Id = "task:" + ++taskSeq, Title = title, Giver = giver, Kind = kind, Steps = [.. steps], State = TaskState.Offered, OfferUntil = until, Deadline = deadline, Merit = merit };
         t.Speech = SpeechFor(kind);
         Tasks.Add(t);
-        var g = Person(giver); if (Near(Player, g)) Note($"{g.Name}「{t.Speech}」");
+        var g = Person(giver); if (Near(Player, g) && t.Speech != "") Note($"{g.Name}「{t.Speech}」");
         return t;
     }
 
@@ -317,6 +317,7 @@ public sealed partial class ProtoWorld
     {
         if (CouncilOpen) yield return new("council:open", "軍議に加わる");
         if (CanPersuade) yield return new("persuade:katsumoto", "説き伏せる：岩切勝元");
+        if (CanParley) yield return new("parley:katsumoto", "開城を説く：岩切勝元");
         if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
         {
             foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
@@ -347,6 +348,8 @@ public sealed partial class ProtoWorld
         if (kind == "tactic") return UseTactic(Player);
         if (kind == "council") return "";
         if (kind == "awards") return TakeAwards();
+        if (kind == "siege") return DecideSiege(id);
+        if (kind == "parley") return Parley();
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)
         {

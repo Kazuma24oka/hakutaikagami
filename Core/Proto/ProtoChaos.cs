@@ -28,7 +28,7 @@ public sealed partial class ProtoWorld
             bool live = u.Soldiers > 0 && !War.Routed.Contains(u.Id);
             // 打ち合った隊は、そのあと5分は見つかったまま（打ち合いの切れ目でまた伏兵にならない）。
             if (ClashOf(u.Id) != null) flags["clashed:" + u.Id] = Second;
-            bool seen = !live || Spotted(u.Id) || flags.TryGetValue("clashed:" + u.Id, out var cl) && Second - cl < 5 * 60 || field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(e, u));
+            bool seen = !live || War.Siege != null && InFoeCastle(u) || Spotted(u.Id) || flags.TryGetValue("clashed:" + u.Id, out var cl) && Second - cl < 5 * 60 || field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(e, u));
             if (seen) War.UnseenSince.Remove(u.Id); else if (!War.UnseenSince.ContainsKey(u.Id)) War.UnseenSince[u.Id] = Second;
             bool now = !seen && Second - War.UnseenSince[u.Id] >= (InForest(u.X, u.Y) ? UnseenForest : UnseenOpen);
             if (now) { if (!InAmbush(u.Id)) War.Ambush.Add(u.Id); }

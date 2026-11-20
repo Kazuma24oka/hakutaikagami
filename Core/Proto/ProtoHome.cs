@@ -17,18 +17,19 @@ public sealed partial class ProtoWorld
     public bool Returning => War.Phase == "終わり" && War.Result != "" && !Flag("awards-done") && !Flag("war-merit") && People.Any(InArmy);
     // 総勢として城へ戻っているか（画面で一つの勢に見せ、行軍の速さで進む）。
     public bool InReturn(ProtoPerson u) => Returning && Flag("home-march") && !Flag("awards-ready") && InArmy(u) && u.Soldiers > 0 && Auto(u) && !War.Routed.Contains(u.Id) && Dist(u, Person(Heir)) <= 300_00;
+    public string AwardsHostId => AwardsHost.Id;
     ProtoPerson AwardsHost => Person(Heir).Active ? Person(Heir) : Person(Karou);
 
     // 毎分：集まる → 総勢で戻る → 論功行賞。
     void Homecoming()
     {
         if (!Returning) return;
-        var heir = Person(Heir); var host = AwardsHost; var castle = Map.Site("takano-castle"); long cx = castle.X * 100L, cy = castle.Y * 100L;
+        var heir = Person(Heir); var host = AwardsHost; var castle = Map.Site(AwardsSite); long cx = castle.X * 100L, cy = castle.Y * 100L;
         var army = People.Where(u => InArmy(u) && u.Active).ToArray();
         if (!Flag("awards-ready"))
         {
             var able = army.Where(u => Auto(u) && u.Soldiers > 0 && !War.Routed.Contains(u.Id)).ToArray();
-            bool won = War.Result is "鎮めた" or "退かせた" or "守り抜いた" or "引き分け", leads = won && able.Contains(heir);
+            bool won = War.Result is "鎮めた" or "開城させた" or "退かせた" or "守り抜いた" or "引き分け", leads = won && able.Contains(heir);
             if (!Flag("home-gather")) { Set("home-gather"); if (leads) { heir.Path = []; heir.PathIndex = 0; heir.Doing = "兵をまとめている"; } }
             if (!Flag("home-march"))
             {
@@ -55,10 +56,13 @@ public sealed partial class ProtoWorld
     }
 
     public bool AwardsReady => Flag("awards-ready");
-    public bool AwardsOpen => Flag("awards-ready") && !Flag("awards-done") && SiteOf(Player) == "takano-castle";
+    public bool AwardsOpen => Flag("awards-ready") && !Flag("awards-done") && SiteOf(Player) == AwardsSite;
+    // 論功行賞の場所：城を落とした・開かせたときは、その城に入って行う。ほかは鷹野城へ戻ってから。
+    public string AwardsSite => War.Siege != null && War.Result is "鎮めた" or "開城させた" ? FoeCastle : "takano-castle";
     public string AwardsSpeech => AwardsHost.Name + "「" + War.Result switch
     {
-        "鎮めた" => "謀叛は鎮まった。皆、よう働いた。",
+        "鎮めた" => War.Siege != null ? "岩切城は落ちた。皆、よう働いた。" : "謀叛は鎮まった。皆、よう働いた。",
+        "開城させた" => "岩切城は開いた。皆、よう働いた。",
         "退かせた" or "守り抜いた" => "岩切勢を退けた。皆、よう働いた。",
         "引き分け" => "決着はつかなんだ。次こそ討つ。",
         _ => "この度は不覚を取った。次に備えよ。",
@@ -82,7 +86,8 @@ public sealed partial class ProtoWorld
     public int WarMerit(string id)
     {
         int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = DidRole(id) ? see : see / 2;
-        return Math.Max(0, War.Result switch { "鎮めた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 : 0 });
+        if (id == Player.Id && Flag("parley-won")) m += 8; // 説いて城を開かせた
+        return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 : 0 });
     }
 
     // 論功行賞を受ける。absent：本人がいないまま済ませる。

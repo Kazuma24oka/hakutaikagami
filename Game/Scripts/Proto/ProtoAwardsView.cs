@@ -1,12 +1,28 @@
 using Godot;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using HakutaiKagami.Core.Proto;
 
-// 試作版の論功行賞の画面（2026-11-20 ユーザーの印。決まりは Core/Proto/ProtoHome.cs）。
+// 試作版の論功行賞の画面（2026-11-20 ユーザーの印。決まりは Core/Proto/ProtoHome.cs）と、攻城の攻め方の軍議（Core/Proto/ProtoSiege.cs）。
 // 軍が鷹野城へ戻り、本人も城にいると開く。まず大将の言葉（話す場面）、そのあと出陣した者みなの役目・兵・働き・勲功の表。
 // 「承る」で勲功を受け、預かった兵を返す。開いている間は時を止める。
 public partial class ProtoGame
 {
+    // 攻め方の軍議：城の前に陣を敷くと、総大将が攻め方を言う。そのまま従うか、別の攻め方を選んで再提案する。
+    void UpdateSiegeCouncil()
+    {
+        if (Scene.Open || FilmRoot != null || askLayer != null || !World.SiegeCouncilOpen) return;
+        string prop = World.SiegeProposal;
+        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 12);
+        var pick = new OptionButton { FocusMode = Control.FocusModeEnum.None }; foreach (var m in ProtoWorld.SiegeMethods) pick.AddItem(m); pick.Select(Array.IndexOf(ProtoWorld.SiegeMethods, prop)); row.AddChild(pick);
+        var ok = new Button { Text = "従う", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(160, 0) }; row.AddChild(ok);
+        pick.ItemSelected += i => ok.Text = ProtoWorld.SiegeMethods[i] == prop ? "従う" : "再提案する";
+        ok.Pressed += () => { var reply = World.Do("siege:" + ProtoWorld.SiegeMethods[pick.Selected]); Scene.Close(); panelKey = ""; Say(reply, World.HeadOf("takano")); };
+        var lines = new List<(string, string)>(); if (ProtoScene.Parse(World, World.SiegeSpeech) is { } said) lines.Add(said);
+        Scene.Show(lines, [World.Player.Id], row);
+    }
+
     CanvasLayer? awardsLayer; internal Button? AwardsOk;
     void UpdateAwards()
     {
@@ -20,7 +36,7 @@ public partial class ProtoGame
         var col = new VBoxContainer(); col.AddThemeConstantOverride("separation", 14); pad.AddChild(col);
         Color gold = new(1, 0.9f, 0.6f), dim = new(0.62f, 0.62f, 0.62f);
         var title = new Label { Text = "論功行賞", HorizontalAlignment = HorizontalAlignment.Center, Modulate = gold }; title.AddThemeFontSizeOverride("font_size", 34); col.AddChild(title);
-        string result = World.War.Result switch { "鎮めた" => "岩切勝元の謀叛を鎮めた", "退かせた" => "岩切勢を退かせた", "守り抜いた" => "陣を守り抜いた", "退いた" => "兵を引いた", var r => r };
+        string result = World.War.Result switch { "鎮めた" when World.War.Siege != null => "岩切城を落とした", "開城させた" => "岩切城を開かせた", "鎮めた" => "岩切勝元の謀叛を鎮めた", "退かせた" => "岩切勢を退かせた", "守り抜いた" => "陣を守り抜いた", "退いた" => "兵を引いた", var r => r };
         col.AddChild(new Label { Text = result, HorizontalAlignment = HorizontalAlignment.Center });
         col.AddChild(new HSeparator());
         var grid = new GridContainer { Columns = 5 }; grid.AddThemeConstantOverride("h_separation", 40); grid.AddThemeConstantOverride("v_separation", 10); col.AddChild(grid);

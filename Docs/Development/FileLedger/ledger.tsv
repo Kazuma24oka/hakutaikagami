@@ -772,6 +772,7 @@ Core/Proto/ProtoLife.cs	使う	ProtoStep、ProtoTask、ProtoAction を定義。G
 Core/Proto/ProtoMap.cs	使う	Ground、ProtoHouse、ProtoSite を定義。GroundAtCm が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoDebug.cs:124 で GroundAtCm（他に Game 2件・Core 2件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMove.cs	使う	ProtoMove を定義。ProtoMove が他の Coreから使われ、ゲームの本線から届く	Core/Proto/ProtoLife.cs:193 で ProtoMove（他に Game 0件・Core 2件・Tests 1件）	2026-11-18
 Core/Proto/ProtoOrders.cs	使う	試作版の軍議の作戦と役目、総勢での行軍、指図どおりに動く、軍令の一覧	Core/Proto/ProtoWar.cs の DecideCouncil と Battle から呼ぶ。Tests/ProtoWarTests.cs の TheArmyMarchesTogetherAndActsOnRoles	2026-11-19
+Core/Proto/ProtoSiege.cs	使う	試作版の攻城（力攻めと城門・囲みと兵糧・朝駆け・開城を説く）	Core/Proto/ProtoWar.cs の Battle、Core/Proto/ProtoGoals.cs の Retreats、Core/Proto/ProtoClash.cs の Fight から呼ぶ。Tests/ProtoWarTests.cs の TheCastleIsStormedStarvedOrTalkedOpen	2026-11-20
 Core/Proto/ProtoTactics.cs	使う	試作版の合戦の駆け引き（向きと側面・背後、退き道と壊滅、追い討ち、追うかどうかの判断、森で伏せる・奇襲）	Core/Proto/ProtoClash.cs と ProtoWar.cs から呼ぶ。Tests/ProtoWarTests.cs の FlanksCutOffAmbushAndPursuitWork	2026-11-19
 Core/Proto/ProtoWar.cs	使う	試作版の合戦：当主の死・家督・訃報・謀叛の判断・説き伏せ・軍議・行軍・先取り・抜け駆け・狼煙・打ち合い・敗走・見えない敵・物見	Core/Proto/ProtoLife.cs の Life と Delivered が呼ぶ。Docs/CORE_LOOP.md の戦い	2026-11-18
 Core/Proto/ProtoWorld.cs	使う	ProtoPerson、LetterState、ProtoLetter を定義。Appointments が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/NewGameRuntime.CastellanReports.cs:14 で Appointments（他に Game 5件・Core 2件・Tests 3件）	2026-11-18
@@ -2953,7 +2954,7 @@ Game/Scripts/PerfProbe.cs	使う	遊ぶ画面の重さの測り（2026-11-18 の
 Game/Scripts/PerfProbe.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PerfProbe.cs は「使う」	2026-11-18
 Game/Scripts/PersonalHealthCheck.cs	使う	工程の検査場面（ゲーム内部の入力・自前の描画で確かめる。PROCESS_V2 第2節）	Scripts/・Tests/ に起動するランナーなし（手動起動）。出力先 Docs/Design/PersonalHealthV1/runtime-local。最終コミット 2026-11-14	2026-11-18
 Game/Scripts/PersonalHealthCheck.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PersonalHealthCheck.cs は「使う」	2026-11-18
-Game/Scripts/Proto/ProtoAwardsView.cs	使う	試作版の論功行賞の画面（大将の言葉のあと、役目・兵・働き・勲功の表）	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateAwards）	2026-11-20
+Game/Scripts/Proto/ProtoAwardsView.cs	使う	試作版の論功行賞の画面（大将の言葉のあと、役目・兵・働き・勲功の表）と、攻城の攻め方の軍議	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateAwards）	2026-11-20
 Game/Scripts/Proto/ProtoBattleView.cs	使う	試作版の合戦の見え方（総士気・押し合いのゲージ・采配の窓）	Game/Scripts/Proto/ProtoGame.cs の _Ready と _Process から呼ぶ	2026-11-19
 Game/Scripts/Proto/ProtoDebug.cs	使う	今の試作版（ProtoGame.tscn）の部品	Game/Scripts/Proto/ProtoGame.cs:42 ProtoDebug	2026-11-18
 Game/Scripts/Proto/ProtoFilm.cs	使う	試作版の動画「謀叛から合戦まで」の台本（--proto-film）	Game/Scripts/Proto/ProtoGame.cs の _Ready が --proto-film のときに呼ぶ	2026-11-19

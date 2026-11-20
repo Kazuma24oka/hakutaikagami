@@ -343,18 +343,19 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(rules.Any(r => r.Id == (goal == "陣を守り抜く" ? "lost-post" : "dusk")), "大目標に合う撤退条件が付く");
         cp.Expect(rules.Count(r => r.Added) == (add == "足さない" ? 0 : 1), "軍議で足した条件だけが増える");
         cp.Log(w.Do("order:follow"));
-        int seen = w.Facts.Count; bool loggedRebel = false;
-        while (w.War.Result == "" && w.Second < 5 * Day)
+        int seen = w.Facts.Count; bool loggedRebel = false; string rebelGoal = "";
+        while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) // 野の戦いの決着まで（岩切勢が城へ退けば攻城になる）
         {
             w.Advance(60);
-            if (!loggedRebel && w.RetreatRules("iwakiri").Any()) { loggedRebel = true; cp.Log($"岩切の大目標：{w.GoalOf("iwakiri")}　撤退条件：" + string.Join("、", w.RetreatRules("iwakiri").Select(r => r.Text + (r.Added ? "（足した）" : "")))); }
+            if (!loggedRebel && w.RetreatRules("iwakiri").Any()) { loggedRebel = true; rebelGoal = w.GoalOf("iwakiri"); cp.Log($"岩切の大目標：{w.GoalOf("iwakiri")}　撤退条件：" + string.Join("、", w.RetreatRules("iwakiri").Select(r => r.Text + (r.Added ? "（足した）" : "")))); }
             foreach (var f in w.Facts.Skip(seen).Where(f => !f.Text.Contains("杭") && !f.Text.Contains("怪しい") && !f.Text.Contains("越後屋") && !f.Text.Contains("小競り"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}");
             seen = w.Facts.Count;
         }
-        cp.Log($"結果 {w.War.Result}　{ProtoWorld.Clock(w.Second)}　本人 兵{w.Player.Soldiers}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
+        cp.Log($"結果 {(w.War.Siege != null ? "攻城へ" : w.War.Result)}　{ProtoWorld.Clock(w.Second)}　本人 兵{w.Player.Soldiers}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
         cp.Log($"作戦 {plan}　{w.PlanState}：" + string.Join("、", w.PlanSteps().Select(x => x.Text + (x.State != "" ? "＝" + x.State : ""))));
-        cp.Expect(loggedRebel && w.GoalOf("iwakiri") == (dep == 0 ? "敵を崩す" : "陣を守り抜く"), "岩切勢も大目標と撤退条件を持つ（鷹野が夜のうちに出ていれば討って出る）");
-        cp.Expect(w.War.Result != "", "決着がつく");
+        cp.Expect(loggedRebel && rebelGoal == (dep == 0 ? "敵を崩す" : "陣を守り抜く"), "岩切勢も大目標と撤退条件を持つ（鷹野が夜のうちに出ていれば討って出る）");
+        cp.Expect(w.War.Result != "" || w.War.Siege != null, "決着がつく（岩切勢が城へ退いたら攻城になる）");
+        if (w.War.Siege != null) cp.Expect(w.Facts.Any(f => f.Id == "retreat:iwakiri") && !w.Retreated("iwakiri"), "岩切勢は撤退条件を満たして退き貝を鳴らし、城に籠もった");
         foreach (var side in new[] { "takano", "iwakiri" })
             if (w.Retreated(side)) cp.Expect(w.Facts.Any(f => f.Id == "retreat:" + side) && w.RetreatRules(side).Count(r => r.Met) == 1, $"{side} は撤退条件を満たして退き貝を鳴らした");
         cp.Expect(w.War.Result is not ("退いた" or "退かせた") || w.Retreated("takano") || w.Retreated("iwakiri"), "退いた決着は、撤退条件を満たしたときだけ");
@@ -430,7 +431,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
         w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
         var me = w.Player; int merit = w.Merit;
-        while (w.War.Result == "" && w.Second < 5 * Day)
+        while (w.War.Result == "" && w.Second < 9 * Day) // 攻城になれば、総大将の決めた攻め方で終わるまで
         {
             w.Advance(60);
             if (mode == "隊が崩れた" && w.War.Phase == "合戦" && !w.War.Routed.Contains(me.Id)) { me.Soldiers = 4; w.War.Routed.Add(me.Id); }
@@ -440,7 +441,9 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.War.Result != "" && w.Returning, "決着しても、軍はまだ解かれていない");
         int held = me.Soldiers; w.Advance(120);
         cp.Expect(w.Merit == merit && me.Soldiers == held, "決着の場では、勲功は入らず、預かった兵もそのまま");
-        if (mode == "城に戻らない") { w.Do("order:free"); w.Stop(); }
+        var site = Map.Site(w.AwardsSite); cp.Log($"論功行賞の場所 {site.Name}");
+        // 城に戻らない：論功行賞のある城とは別の城へ行ってしまう。
+        if (mode == "城に戻らない") { w.Do("order:free"); var away = Map.Site(w.AwardsSite == "takano-castle" ? "iwakiri-castle" : "takano-castle"); w.MoveTo(away.X * 100L, away.Y * 100L); }
         bool together = false; long far = 0;
         for (int i = 0; i < 24 * 60 && !w.AwardsReady; i++)
         {
@@ -449,10 +452,10 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
             if (i % 20 == 0) cp.Log($"　{ProtoWorld.Clock(w.Second)}　総勢{host}　" + string.Join("　", w.Awards().Select(a => { var u = w.Person(a.Unit); return $"{u.Name} {u.Doing}"; })));
             far = Math.Max(far, w.Second);
         }
-        var heir = w.Person("takano-masayuki");
+        var heir = w.Person(w.AwardsHostId); // 大将が捕らえられていれば家老が行う
         cp.Log($"{ProtoWorld.Clock(w.Second)}　大将 {heir.X / 100},{heir.Y / 100} {w.SiteOf(heir)} {heir.Active}　城 {castle.X},{castle.Y}　" + string.Join(" ", w.Facts.TakeLast(3).Select(f => f.Id + ":" + f.Text)));
-        cp.Expect(w.AwardsReady && w.SiteOf(heir) == "takano-castle", "大将が鷹野城に着くと論功行賞になる");
-        if (w.War.Result is "鎮めた" or "退かせた" or "守り抜いた" or "引き分け") cp.Expect(together, "勝ったときは、総勢でまとまって戻る");
+        cp.Expect(w.AwardsReady && w.SiteOf(heir) == w.AwardsSite, "大将が城に着くと論功行賞になる（落とした城か、鷹野城）");
+        if (w.War.Result is "退かせた" or "守り抜いた" or "引き分け") cp.Expect(together, "野で勝ったときは、総勢でまとまって戻る");
         var rows = w.Awards().ToArray();
         foreach (var a in rows) cp.Log($"{a.Name}　{a.Role}　兵{a.Now}/{a.Start}　{(a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—")}　勲功{a.Merit}");
         cp.Expect(rows.Length == 3 && rows.Any(a => a.Unit == me.Id), "出陣した者はみな名を呼ばれる（負けても、隊が崩れても）");
@@ -477,6 +480,82 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(me.Soldiers == 0 && !w.Returning, "論功行賞が済むと、預かった兵を返して軍が解かれる");
     }
 
+    // 攻城（Core/Proto/ProtoSiege.cs）：野の戦いで岩切勢が城へ退くと攻城になる。力攻め・囲む・開城を説く。
+    [Theory]
+    [InlineData("力攻め", false)]
+    [InlineData("囲む", false)]
+    [InlineData("囲む", true)]
+    public void TheCastleIsStormedStarvedOrTalkedOpen(string method, bool parley)
+    {
+        using var cp = new Checkpoints("試作版の攻城_" + method + (parley ? "_説く" : ""), o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
+        string Line() => $"{ProtoWorld.Clock(w.Second)}　城門{w.GateOf}　全軍士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}　" + string.Join(" ", w.People.Where(u => u.Soldiers > 0 && u.House is "takano" or "iwakiri" && w.War.StartSoldiers.ContainsKey(u.Id)).Select(u => $"{u.Name}{u.Soldiers}{(w.War.Routed.Contains(u.Id) ? "崩" : "")}"));
+        cp.Log("野の戦いのあと　" + Line());
+        cp.Expect(w.War.Siege != null && w.War.Result == "", "岩切勢が城へ退くと、決着にならず攻城になる");
+        for (int i = 0; i < 6 * 60 && !w.SiegeCouncilOpen; i++) w.Advance(60);
+        cp.Log($"{ProtoWorld.Clock(w.Second)}　{w.SiegeSpeech}");
+        cp.Expect(w.SiegeCouncilOpen, "城の前に陣を敷くと、攻め方の軍議が開く");
+        cp.Log("　" + w.Do("siege:" + method));
+        cp.Expect(w.War.Siege!.Method == method, "本人の進言が通る（総大将の心証が悪くなければ）");
+        int seen = w.Facts.Count; long start = w.Second;
+        cp.Log($"　本人 兵{w.Player.Soldiers}　城まで{Math.Sqrt(Math.Pow(w.Player.X - Map.Site("iwakiri-castle").X * 100.0, 2) + Math.Pow(w.Player.Y - Map.Site("iwakiri-castle").Y * 100.0, 2)) / 100:0}m");
+        while (w.War.Result == "" && w.Second < start + 6 * Day)
+        {
+            w.Advance(60);
+            foreach (var f in w.Facts.Skip(seen).Where(f => !f.Id.StartsWith("free:") && !f.Id.StartsWith("flank:") && !f.Id.StartsWith("spotted:"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count;
+            if ((w.Second - start) % (method == "力攻め" ? 600 : 6 * 3600) == 0) cp.Log("　" + Line());
+            if (parley && w.Second % Day == 12 * 3600 && w.CanParley) cp.Log($"{ProtoWorld.Clock(w.Second)}　説く：" + w.Do("parley:katsumoto"));
+        }
+        cp.Log($"結果 {w.War.Result}　{(w.Second - start) / 3600}時間　" + Line());
+        cp.Expect(w.War.Result != "", "攻城に決着がつく");
+        if (method == "力攻め") cp.Expect(w.War.Result == "鎮めた" && w.GateOf == 0 && w.Facts.Any(f => f.Id == "gate-broken"), "力攻め：城門を破って落とす");
+        else if (!parley) cp.Expect(w.War.Result == "退いた" && w.War.Siege!.Supply == 0 && w.War.Siege.Food > 0, "囲んで待つだけでは、攻め手の兵糧が先に尽きて囲みを解く");
+        else cp.Expect(w.War.Result == "開城させた" && w.GateOf == 100, "囲んで、城の兵糧が乏しくなった頃に説けば、城は開く");
+        if (w.War.Result is "鎮めた" or "開城させた")
+        {
+            for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
+            cp.Log($"{ProtoWorld.Clock(w.Second)}　論功行賞の場所 {w.AwardsSite}　本人 {w.SiteOf(w.Player)}");
+            cp.Expect(w.AwardsOpen && w.AwardsSite == "iwakiri-castle", "城を落とした・開かせたときは、岩切城に入って論功行賞");
+            int merit = w.Merit; w.Do("awards:take"); cp.Log($"勲功 {merit}→{w.Merit}");
+        }
+    }
+
+    // 囲まれた城は、兵糧が尽きると朝駆けに出る（慎重な城主でも）。40分たつか、隊が崩れたら城へ引き上げる。
+    [Fact]
+    public void TheStarvingGarrisonSalliesAtDawn()
+    {
+        using var cp = new Checkpoints("試作版の朝駆け", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
+        for (int i = 0; i < 6 * 60 && !w.SiegeCouncilOpen; i++) w.Advance(60);
+        w.Do("siege:囲む");
+        cp.Expect(w.War.Siege is { Method: "囲む" }, "囲むと決まる");
+        w.Advance(3 * 3600);
+        var foe = Map.Site("iwakiri-castle"); double Far(ProtoPerson u) => Math.Sqrt(Math.Pow(u.X - foe.X * 100.0, 2) + Math.Pow(u.Y - foe.Y * 100.0, 2)) / 100;
+        var rebels = w.People.Where(u => u.House == "iwakiri" && u.Active).ToArray();
+        cp.Log("囲み：" + string.Join("　", w.People.Where(u => u.House == "takano" && u.Soldiers > 0 && w.War.StartSoldiers.ContainsKey(u.Id)).Select(u => $"{u.Name} 城から{Far(u):0}m")) + "　城方：" + string.Join("　", rebels.Select(u => $"{u.Name} {Far(u):0}m")));
+        cp.Expect(w.War.Clashes.Count == 0 && rebels.All(u => Far(u) <= 150), "囲んでいる間、城の兵は城から出ず、打ち合いも起きない");
+        w.War.Siege!.Food = 0; // 兵糧が尽きたことにする
+        int seen = w.Facts.Count;
+        while (w.Second % Day != 5 * 3600 + 60) w.Advance(60);
+        cp.Expect(w.Facts.Skip(seen).Any(f => f.Id.StartsWith("sally:")), "兵糧が尽きると、朝5時に朝駆けに出る");
+        double farthest = 0;
+        for (int i = 0; i < 90 && w.War.Result == ""; i++) { w.Advance(60); farthest = Math.Max(farthest, rebels.Where(u => u.Active).Select(Far).DefaultIfEmpty(0).Max()); }
+        foreach (var f in w.Facts.Skip(seen).Where(f => !f.Id.StartsWith("free:"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}");
+        cp.Log($"いちばん遠くまで出た所 城から{farthest:0}m　結果「{w.War.Result}」　城方：" + string.Join("　", rebels.Select(u => $"{u.Name} 兵{u.Soldiers} {Far(u):0}m {u.Doing}")));
+        cp.Expect(farthest > 300, "城から出て、囲みの隊へ向かう");
+        cp.Expect(w.War.Result != "" || rebels.Where(u => u.Active && u.Soldiers > 0).All(u => Far(u) <= 200), "決着しなければ、城へ引き上げている");
+    }
+
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。
     [Fact]
     public void WritesTheTableOfBattles()
@@ -494,13 +573,15 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
                 for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
                 w.DecideCouncil(null, ProtoWorld.Departures[dep], ProtoWorld.Signals[0], plan, role, goal); w.Do("order:follow");
                 int merit = w.Merit;
-                while (w.War.Result == "" && w.Second < 5 * Day) w.Advance(60);
-                w.Advance(60); total++; if (w.War.Result is "鎮めた" or "退かせた" or "守り抜いた") wins++;
+                while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
+                string field = w.War.Siege != null ? "城へ退かせた" : w.War.Result; long fieldEnd = w.Second;
+                while (w.War.Result == "" && w.Second < 9 * Day) w.Advance(60); // 攻城は総大将が攻め方を決める（本人は軍議で何も言わない）
+                w.Advance(60); total++; if (w.War.Result is "鎮めた" or "開城させた" or "退かせた" or "守り抜いた") wins++;
                 for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
                 w.Do("awards:take");
-                long mins = (w.Facts.LastOrDefault(f => f.Id is "rebellion-crushed" or "expedition-failed" or "draw" or "held" || f.Id.StartsWith("withdrawn:"))?.At ?? w.Second) / 60 - w.War.SignalAt / 60;
+                long mins = fieldEnd / 60 - w.War.SignalAt / 60;
                 int chaos = w.Facts.Count(f => f.Id.StartsWith("chaos:")), surprise = w.Facts.Count(f => f.Id.StartsWith("surprise:")), spotted = w.Facts.Count(f => f.Id.StartsWith("spotted:"));
-                cp.Log($"{ProtoWorld.Departures[dep]}｜{goal}｜{plan}｜{role}｜{w.War.Result}｜{mins}分｜作戦{w.PlanState}｜奇襲{surprise} 混乱{chaos} 見破り{spotted}｜勲功{w.Merit - merit}｜岩切の大目標 {w.GoalOf("iwakiri")}");
+                cp.Log($"{ProtoWorld.Departures[dep]}｜{goal}｜{plan}｜{role}｜野 {field} {mins}分｜{(w.War.Siege != null ? "攻城 " + w.War.Siege.Method + " " + (w.Second - fieldEnd) / 3600 + "時間 " : "")}{w.War.Result}｜作戦{w.PlanState}｜奇襲{surprise} 混乱{chaos} 見破り{spotted}｜勲功{w.Merit - merit}｜岩切の大目標 {w.GoalOf("iwakiri")}");
                 cp.Expect(w.War.Result != "", $"決着がつく（{plan}・{role}・{ProtoWorld.Departures[dep]}）");
             }
         cp.Log($"鷹野の勝ち {wins}/{total}");

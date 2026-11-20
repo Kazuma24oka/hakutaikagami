@@ -44,7 +44,7 @@ public sealed partial class ProtoWorld
         if (InForest(u.X, u.Y)) return false;
         var c = ClashOf(u.Id); var foe = c != null ? Person(c.A == u.Id ? c.B : c.A) : null;
         foe ??= Units.Where(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= Reach).OrderBy(e => Dist(u, e)).ThenBy(e => e.Id).FirstOrDefault();
-        if (foe == null) return false;
+        if (foe == null || BehindGate(foe)) return false;
         double blow = u.Soldiers * 0.03 * (Val(u) / 50.0) * (Apt(u) ? 1.3 : 1.0) * FlankOf(foe, u).Item1 / (Cmd(foe) / 50.0);
         if (Buffed("guard", foe.Id)) blow *= 0.5;
         int was = foe.Soldiers, loss = Math.Min(was, Math.Max(1, (int)Math.Round(blow)));
