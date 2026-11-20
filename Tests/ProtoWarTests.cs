@@ -412,6 +412,33 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.Merit - merit is > 0 and <= 16, "合戦で働けば、見込みに近い勲功が入る");
     }
 
+    // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。
+    [Fact]
+    public void WritesTheTableOfBattles()
+    {
+        using var cp = new Checkpoints("試作版の作戦ごとの勝ち負け", o);
+        var cases = new List<(string Goal, string Plan, string Role)>();
+        foreach (var goal in ProtoWorld.Goals) foreach (var plan in ProtoWorld.PlansOf(goal)) foreach (var r in ProtoWorld.RolesOf(plan)) cases.Add((goal, plan, r.Role));
+        int wins = 0, total = 0;
+        foreach (var dep in new[] { 0, 1 })
+            foreach (var (goal, plan, role) in cases)
+            {
+                var w = new ProtoWorld(Map);
+                while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+                var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+                for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+                w.DecideCouncil(null, ProtoWorld.Departures[dep], ProtoWorld.Signals[0], plan, role, goal); w.Do("order:follow");
+                int merit = w.Merit;
+                while (w.War.Result == "" && w.Second < 5 * Day) w.Advance(60);
+                w.Advance(60); total++; if (w.War.Result is "鎮めた" or "退かせた" or "守り抜いた") wins++;
+                long mins = (w.Facts.LastOrDefault(f => f.Id is "rebellion-crushed" or "expedition-failed" or "draw" or "held" || f.Id.StartsWith("withdrawn:"))?.At ?? w.Second) / 60 - w.War.SignalAt / 60;
+                int chaos = w.Facts.Count(f => f.Id.StartsWith("chaos:")), surprise = w.Facts.Count(f => f.Id.StartsWith("surprise:")), spotted = w.Facts.Count(f => f.Id.StartsWith("spotted:"));
+                cp.Log($"{ProtoWorld.Departures[dep]}｜{goal}｜{plan}｜{role}｜{w.War.Result}｜{mins}分｜作戦{w.PlanState}｜奇襲{surprise} 混乱{chaos} 見破り{spotted}｜勲功{w.Merit - merit}｜岩切の大目標 {w.GoalOf("iwakiri")}");
+                cp.Expect(w.War.Result != "", $"決着がつく（{plan}・{role}・{ProtoWorld.Departures[dep]}）");
+            }
+        cp.Log($"鷹野の勝ち {wins}/{total}");
+    }
+
     // 兵種・戦法・技能と、忠誠による能力の上げ下げ（Core/Proto/ProtoArms.cs）。
     [Fact]
     public void TroopsTacticsAndLoyaltyShapeTheFight()

@@ -170,6 +170,8 @@ public partial class ProtoGame
         // 本人の采配：本人とつながっているぶつかり合い（同じ敵と戦う味方、その敵と戦う味方…）を全部まとめて見せる。
         var mine = World.ClashOf(World.Player.Id);
         commandBox.Visible = mine != null;
+        // 合戦の窓が出ている間は、記録の窓をその左までに縮める（重ならないように）。
+        logPanel.OffsetRight = commandBox.Visible ? Math.Clamp(GetViewport().GetVisibleRect().Size.X - commandBox.Size.X - 24, 300, 700) : 700;
         if (mine == null) { lastClash = ""; return; }
         var me = World.Player;
         var group = new HashSet<string> { me.Id }; var clashes = new List<ProtoClash>();

@@ -104,11 +104,19 @@ public sealed partial class ProtoWorld
             {
                 War.Result = "退かせた"; Happen("withdrawn:" + side, "岩切勢は兵を引き、岩切城へ退いた。", h.X, h.Y, Person(Heir), Person(Karou), h);
             }
-            else { War.Result = "退いた"; Happen("withdrawn:" + side, "鷹野勢は兵を引いた。", h.X, h.Y, h, Person(Karou)); }
+            else
+            {
+                War.Result = "退いた"; Happen("withdrawn:" + side, "鷹野勢は兵を引いた。", h.X, h.Y, h, Person(Karou));
+                // 手動の本人が退き貝を聞いても敵の前（600m以内）に残っていたら、大将の心証が下がる。
+                var me = Player;
+                if (!Auto(me) && Flag("retreat-heard:" + me.Id) && me.Soldiers > 0 && !War.Routed.Contains(me.Id) && Units.Any(e => e.House == Rebel && !War.Routed.Contains(e.Id) && Dist(me, e) <= 600_00))
+                { AddFavor(Heir, -5); Set("disobeyed-retreat"); Note($"退き貝に従わず、敵の前に残った。{h.Name}の心証が下がった。"); }
+            }
             GoHome(); return;
         }
         // 陣を守り抜く：合図から三刻（6時間）、守る陣を一つも取られていなければ守り抜いた。
-        if (GoalOf("takano") == Goals[1] && War.Signaled && Second >= War.SignalAt + 6 * Hour && !flags.ContainsKey("post-lost:takano"))
+        // ただし、敵が攻めて来て戦ったときだけ（待っているだけでは勝ちにならない。にらみ合いのまま日が傾けば引き分け）。
+        if (GoalOf("takano") == Goals[1] && War.Signaled && Second >= War.SignalAt + 6 * Hour && !flags.ContainsKey("post-lost:takano") && SideUnits("takano").Any(u => Flag("fought:" + u.Id)))
         {
             var h = Person(Heir); War.Result = "守り抜いた"; War.Phase = "終わり";
             Happen("held", "鷹野勢は陣を守り抜いた。", h.X, h.Y, h, Person(Karou));

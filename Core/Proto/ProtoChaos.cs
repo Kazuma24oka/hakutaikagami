@@ -39,7 +39,7 @@ public sealed partial class ProtoWorld
     // 隊はいつも周りを探っている。5分ごとに、知略に応じた確率で、少し遠く（ScoutFar。物見上手は+100m）の森の中の敵に気づく。
     // 気づかれた隊は5分のあいだ森の中でも隠れられず、伏兵も解ける。味方が見つけた敵は、知らせが届いてから印になる。
     public const long ScoutFar = 250_00;
-    public int ScoutChance(ProtoPerson p) => Math.Clamp((Wit(p) - 30) * 3 / 2, 0, 90);
+    public int ScoutChance(ProtoPerson p) => Math.Clamp(Wit(p) - 30, 0, 60);
     bool Spotted(string id) => flags.TryGetValue("spotted:" + id, out var at) && Second - at < 5 * 60;
     void AutoScout(ProtoPerson[] field)
     {

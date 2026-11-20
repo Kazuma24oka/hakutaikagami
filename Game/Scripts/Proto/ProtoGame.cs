@@ -48,7 +48,7 @@ public partial class ProtoGame : Node3D
     MeshInstance3D pathLine = null!, marker = null!;
     ImmediateMesh pathMesh = null!;
     Label clock = null!, foot = null!, journal = null!, message = null!;
-    ScrollContainer sideScroll = null!; PanelContainer sidePanel = null!; bool? panelOpen; string journalKey = ""; double journalShown;
+    PanelContainer logPanel = null!; ScrollContainer sideScroll = null!; PanelContainer sidePanel = null!; bool? panelOpen; string journalKey = ""; double journalShown;
     static readonly string[] LogTabs = ["全部", "戦闘", "会話"];
     string logTab = "全部"; bool logMin; VBoxContainer logBody = null!;
     readonly List<ProtoEvent> damageLog = new(); long damageSeen = -1;
@@ -317,7 +317,7 @@ public partial class ProtoGame : Node3D
         var col = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; sideScroll.AddChild(col);
         panel = col;
 
-        var bottom = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 700; root.AddChild(bottom);
+        var bottom = logPanel = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 700; root.AddChild(bottom);
         var log = new VBoxContainer(); bottom.AddChild(log);
         // 記録（2026-11-19 ユーザー「最小化と、種類でタブを分けたい。戦闘のダメージ、会話だけ、全部」）。
         var tabs = new HBoxContainer(); tabs.AddThemeConstantOverride("separation", 4); tabs.Theme = new Theme { DefaultFontSize = 15 }; log.AddChild(tabs);
@@ -705,7 +705,9 @@ public partial class ProtoGame : Node3D
                     var body = new ColorRect { Size = new Vector2(18, 18), MouseFilter = Control.MouseFilterEnum.Ignore }; board.AddChild(body);
                     marks[pc.Unit] = mk = (body, Tag(pc.Name, Vector2.Zero, Colors.White, 14));
                 }
-                var at = OnBoard(x, y); mk.Body.Position = at - new Vector2(9, 9); mk.Body.Color = mine ? new Color(1, 0.85f, 0.3f) : HouseColor("takano").Lightened(0.25f); mk.Name.Position = at + new Vector2(11, -11);
+                // 同じ所に置かれた駒は、少しずらして重ならないようにする（図の上だけ）。
+                int same = p.Pieces.TakeWhile(q => q.Unit != pc.Unit).Count(q => Math.Abs(pieces[q.Unit].X - x) + Math.Abs(pieces[q.Unit].Y - y) < 40_00);
+                var at = OnBoard(x, y) + new Vector2(0, same * 20); mk.Body.Position = at - new Vector2(9, 9); mk.Body.Color = mine ? new Color(1, 0.85f, 0.3f) : HouseColor("takano").Lightened(0.25f); mk.Name.Position = at + new Vector2(11, -11);
                 string effect = World.TerrainEffect(x, y);
                 var line = new Button { Text = $"{pc.Name}　{pc.Role}　{World.Person(pc.Unit).Troop}{pc.Soldiers}　{World.TerrainName(x, y)}" + (effect != "" ? "　" + effect : "") + $"　功{pc.Merit}", Alignment = HorizontalAlignment.Left, Flat = true, Disabled = !lead && !mine };
                 line.AddThemeColorOverride("font_color", sel ? new Color(1, 0.88f, 0.45f) : Colors.White); line.AddThemeColorOverride("font_disabled_color", Colors.White);
