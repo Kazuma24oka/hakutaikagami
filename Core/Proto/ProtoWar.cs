@@ -5,9 +5,10 @@ namespace HakutaiKagami.Core.Proto;
 // 流れ：当主の死 → 家督 → 訃報（書状） → 城主が知って判断（忠誠しだいで謀叛。プレイヤーは説き伏せられる） → 手切れの書状
 //       → 軍議（陣・出立・合図の時刻） → 行軍（遅れ・先取り・抜け駆け） → 合図の狼煙 → 合戦（兵・地形・能力・挟み撃ち・士気・敗走）。
 // 見えない敵：敵の隊は、本人の見える範囲（地形と知略で変わる）に入ったときだけ見える。味方が見た敵は、知らせが届くまで遅れて
-// 「最後に見た場所と時刻」の印になる。物見を出すと、見て戻ってきたときに印が増える。
+// 「最後に見た場所と時刻」の印になる。隊はいつも周りを探っていて、知略しだいで森の伏兵にも気づく（Core/Proto/ProtoChaos.cs の AutoScout）。
 public sealed record ProtoMarker(string Unit, long X, long Y, long SeenAt, string By);
 public sealed record ProtoReport(string Unit, long X, long Y, long SeenAt, long ArriveAt, string By);
+// 前の保存に残っている手動の物見（2026-11-20 に自動へ変えた。読むだけで使わない）。
 public sealed class ProtoScout
 {
     public string Id { get; set; } = "";
@@ -82,8 +83,6 @@ public sealed partial class ProtoWorld
     public ProtoWarState War { get; private set; } = new();
     public List<ProtoMarker> Markers { get; } = [];
     public List<ProtoReport> Reports { get; } = [];
-    public List<ProtoScout> Scouts { get; } = [];
-    int scoutSeq;
     const string Rebel = "iwakiri";
     public static readonly string[] Departures = ["今夜のうちに出る", "夜明けに出る"];
     public static readonly string[] Signals = ["卯の刻（6時）に狼煙", "辰の刻（8時）に狼煙"];
@@ -317,7 +316,7 @@ public sealed partial class ProtoWorld
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
         if (War.Phase == "合戦") foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
-        Spread(field); UpdateFacing(field); Stealth(field);
+        Spread(field); UpdateFacing(field); AutoScout(field); Stealth(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }
         // 終わり
         var liveRebels = Units.Where(u => u.House == Rebel && StillFights(u)).ToArray();
@@ -387,48 +386,6 @@ public sealed partial class ProtoWorld
         Markers.Add(m);
     }
     public bool SeesEnemy(ProtoPerson e) => !Hostile(Player.House, e.House) || InSight(Player, e);
-
-    // 物見（2026-11-20 ユーザー）：地図に置いた丸（半径 ScoutRadius）の中を見てくる。兵を ScoutMen 人割いて出し、戻れば兵も戻る。
-    // 行き帰りに敵の隊のそば（ScoutCaught 以内）を通ると見つかって戻らない（兵も知らせも失う）。伏せている敵も、丸の中なら見つける。
-    public const int ScoutMen = 5; public const long ScoutRadius = 300_00, ScoutCaught = 100_00;
-    public long ScoutRadiusOf(ProtoPerson p) => ScoutRadius + (p.Skills.Contains("物見上手") ? 100_00 : 0);
-    public bool CanScout => War.Phase is "行軍" or "合戦" && Player.Soldiers > ScoutMen && !War.Routed.Contains(Player.Id) && Scouts.All(s => s.Phase == "済");
-    string SendScout(string positionId) { var pos = PositionOf(positionId); return SendScoutTo(pos.X * 100L, pos.Y * 100L); }
-    public string SendScoutTo(long tx, long ty)
-    {
-        if (!CanScout) return "今は物見を出せない";
-        var to = ProtoMove.Nearest(Map, tx, ty);
-        var path = ProtoMove.Plan(Map, (Player.X, Player.Y), to); if (path == null) return "そこへは行けない";
-        Player.Soldiers -= ScoutMen;
-        Scouts.Add(new ProtoScout { Id = "scout:" + ++scoutSeq, TX = to.X, TY = to.Y, Men = ScoutMen, X = Player.X, Y = Player.Y, Path = path.Select(p => new[] { p.X, p.Y }).ToArray() });
-        return $"物見を{ScoutMen}人出した。";
-    }
-    void MoveScouts()
-    {
-        foreach (var s in Scouts.Where(s => s.Phase != "済"))
-        {
-            if (s.Phase == "消えた") { if (Second >= s.NoteAt) { s.Phase = "済"; Note($"物見が戻らない。{s.Men}人を失った。"); } continue; }
-            long x = s.X, y = s.Y; int i = s.PathIndex; var path = s.Path.Select(p => (p[0], p[1])).ToList();
-            bool arrived = ProtoMove.Step(Map, ref x, ref y, path, ref i, 130); s.X = x; s.Y = y; s.PathIndex = i;
-            if (Units.Any(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && Dist(e, s.X, s.Y) <= ScoutCaught))
-            { s.Phase = "消えた"; s.NoteAt = Second + 20 * 60; s.Path = []; continue; }
-            if (!arrived) continue;
-            if (s.Phase == "行き")
-            {
-                foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && Dist(e, s.TX, s.TY) <= ScoutRadiusOf(Player))) s.Seen.Add(new ProtoMarker(e.Id, e.X, e.Y, Second, "物見"));
-                s.Phase = "帰り"; var back = ProtoMove.Plan(Map, (s.X, s.Y), (Player.X, Player.Y));
-                s.Path = back?.Select(p => new[] { p.X, p.Y }).ToArray() ?? []; s.PathIndex = 0;
-            }
-            else if (Math.Sqrt((double)(Player.X - s.X) * (Player.X - s.X) + (double)(Player.Y - s.Y) * (Player.Y - s.Y)) <= 100_00 || s.Path.Length == 0)
-            {
-                s.Phase = "済"; foreach (var m in s.Seen) { Mark(m); FoundByScout(m.Unit); }
-                if (Player.Active && !War.Routed.Contains(Player.Id)) Player.Soldiers += s.Men;
-                var names = s.Seen.Select(m => Person(m.Unit).Name).Distinct().ToArray();
-                Note(names.Length == 0 ? "物見が戻った。敵は見えなかったという。" : $"物見が戻った。{string.Join("・", names)}の兵を見たという。");
-            }
-            else { var back = ProtoMove.Plan(Map, (s.X, s.Y), (Player.X, Player.Y)); s.Path = back?.Select(p => new[] { p.X, p.Y }).ToArray() ?? []; s.PathIndex = 0; }
-        }
-    }
 
     // 書状が届いたときの合戦まわりの続き（ProtoLife.Delivered から呼ぶ）。
     void WarDelivered(ProtoLetter l)

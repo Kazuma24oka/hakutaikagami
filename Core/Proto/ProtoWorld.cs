@@ -171,7 +171,6 @@ public sealed partial class ProtoWorld
         }
         if (minute) { Couriers(); Spread(); }
         PlayerSteps();
-        if (Scouts.Count > 0) MoveScouts();
     }
     public void Advance(long seconds) { for (long i = 0; i < seconds; i++) Step(); }
 
@@ -263,7 +262,7 @@ public sealed partial class ProtoWorld
         Letters.ToArray(), Tasks.Select(t => t.Copy()).ToArray(), Journal.ToArray(), Facts.ToArray(), Appointments.ToArray(),
         known.ToDictionary(k => k.Key, k => k.Value.OrderBy(x => x, StringComparer.Ordinal).ToArray()), new(flags), new(favors), Merit, Money, Rank,
         new(Heads), System.Text.Json.JsonSerializer.Deserialize<ProtoWarState>(System.Text.Json.JsonSerializer.Serialize(War))!, Markers.ToArray(), Reports.ToArray(),
-        Scouts.Select(x => new ProtoScout { Id = x.Id, Target = x.Target, X = x.X, Y = x.Y, Path = x.Path, PathIndex = x.PathIndex, Phase = x.Phase, Seen = [.. x.Seen], TX = x.TX, TY = x.TY, Men = x.Men, NoteAt = x.NoteAt }).ToArray(), scoutSeq);
+        null, 0);
 
     public static ProtoWorld Load(ProtoMap map, Saved s)
     {
@@ -282,7 +281,7 @@ public sealed partial class ProtoWorld
         foreach (var (k, v) in s.Favors) w.favors[k] = v;
         foreach (var (k, v) in s.Heads ?? []) w.Heads[k] = v;
         if (s.War != null) w.War = System.Text.Json.JsonSerializer.Deserialize<ProtoWarState>(System.Text.Json.JsonSerializer.Serialize(s.War))!;
-        w.Markers.AddRange(s.Markers ?? []); w.Reports.AddRange(s.Reports ?? []); w.Scouts.AddRange(s.Scouts ?? []); w.scoutSeq = s.ScoutSeq;
+        w.Markers.AddRange(s.Markers ?? []); w.Reports.AddRange(s.Reports ?? []);
         return w;
     }
 }

@@ -77,28 +77,29 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var katsumoto = w.Person("iwakiri-katsumoto");
         cp.Expect(!w.Visible.Contains(katsumoto), "遠くの敵の隊は見えない");
         var hill = w.PositionOf("south-hill"); w.MoveTo(hill.X * 100L, hill.Y * 100L);
-        // 物見：置いた丸の中を見てくる。兵を割いて出し、戻れば兵も戻る。
-        cp.Expect(w.CanScout, "行軍中は物見を出せる");
-        int before = w.Player.Soldiers; var mouth = w.PositionOf("road-mouth");
-        cp.Log(w.SendScoutTo(mouth.X * 100L - 250_00, mouth.Y * 100L));
-        cp.Expect(w.Player.Soldiers == before - ProtoWorld.ScoutMen && !w.CanScout, "物見に出した分だけ兵が減り、戻るまで次は出せない");
-        Run(w, 3 * Hour, cp);
-        cp.Log("印：" + string.Join("、", w.Markers.Select(m => $"{w.Person(m.Unit).Name} {ProtoWorld.Clock(m.SeenAt)} {m.By}")));
-        cp.Expect(w.Journal.Any(e => e.Text.StartsWith("物見が戻った")) && w.Player.Soldiers == before, "物見が戻って知らせ、兵も戻る");
     }
 
-    // 物見は、敵の隊のそばを通ると戻らない（兵も知らせも失う）。
+    // 物見は自動：隊はいつも周りを探っていて、知略の高い武将は少し遠くの森の伏兵にも気づく（Core/Proto/ProtoChaos.cs の AutoScout）。
     [Fact]
-    public void TheScoutIsLostNearTheEnemy()
+    public void WiseCommandersSpotAmbushersInTheForest()
     {
-        using var cp = new Checkpoints("試作版の物見が戻らない", o);
+        using var cp = new Checkpoints("試作版の自動の物見", o);
         var w = new ProtoWorld(Map); w.SetupTsuriPractice();
-        var foe = w.Units.First(u => u.House == "iwakiri"); int before = w.Player.Soldiers;
-        cp.Log(w.SendScoutTo(foe.X, foe.Y));
-        for (int i = 0; i < 120 && !w.Journal.Any(e => e.Text.StartsWith("物見が戻")); i++) w.Advance(60);
-        cp.Log(w.Journal.Last(e => e.Text.StartsWith("物見")).Text);
-        cp.Expect(w.Journal.Any(e => e.Text.StartsWith("物見が戻らない")), "敵の真ん中へ出した物見は戻らない");
-        cp.Expect(w.Player.Soldiers <= before - ProtoWorld.ScoutMen && !w.Markers.Any(m => m.By == "物見"), "兵は戻らず、知らせも届かない");
+        var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi"); var me = w.Player;
+        cp.Log($"見つける見込み（5分ごと）：小坂（知略{kosaka.Wits}）{ProtoWorld.ScoutChance(kosaka)}%　井口（知略{iguchi.Wits}）{ProtoWorld.ScoutChance(iguchi)}%");
+        cp.Expect(ProtoWorld.ScoutChance(kosaka) > ProtoWorld.ScoutChance(iguchi) * 3, "知略が高いほど見つけやすい");
+        // 井口を森の中に、小坂を300m離れた森の外に置く（小坂は物見上手なので350mまで探れる）。本人は遠くへ。
+        (iguchi.X, iguchi.Y) = (kosaka.X, kosaka.Y); kosaka.X = iguchi.X + 300_00; kosaka.Y = iguchi.Y - 150_00;
+        me.X = 2600_00; me.Y = 1900_00; me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
+        cp.Expect(w.TerrainName(iguchi.X, iguchi.Y) == "森" && w.TerrainName(kosaka.X, kosaka.Y) != "森" && !w.Visible.Contains(iguchi), "森の中の井口は、離れた所からは見えない");
+        for (int i = 0; i < 60 && !w.Facts.Any(f => f.Id.StartsWith("spotted:" + iguchi.Id)); i++) { foreach (var u in new[] { kosaka, iguchi }) { u.Path = []; u.PathIndex = 0; w.War.Target.Remove(u.Id); } w.Advance(60); }
+        var found = w.Facts.FirstOrDefault(f => f.Id.StartsWith("spotted:" + iguchi.Id));
+        cp.Log(found == null ? "見つけられなかった" : ProtoWorld.Clock(found.At) + "　" + found.Text);
+        cp.Expect(found != null && found.Text.Contains(kosaka.Name), "小坂の物見が、森の中の井口に気づく");
+        cp.Expect(!w.InAmbush(iguchi.Id), "気づかれた隊は伏兵でなくなる");
+        w.Advance(20 * 60);
+        cp.Log("印：" + string.Join("、", w.Markers.Select(m => $"{w.Person(m.Unit).Name} {ProtoWorld.Clock(m.SeenAt)} {m.By}")));
+        cp.Expect(w.Markers.Any(m => m.Unit == iguchi.Id && m.By.Contains(kosaka.Name)), "味方の見つけた敵は、知らせが届いてから印になる");
     }
 
     [Fact]

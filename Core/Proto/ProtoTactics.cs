@@ -17,7 +17,7 @@ public sealed partial class ProtoWorld
     // 伏せている：森の中で、動かず、ぶつかっておらず、崩れていない。
     // 森の縁（30m以内に森がある）も木立に隠れられる。
     // 森の中にいる隊（動いていても）。近づくまで見えない。
-    public bool Hidden(ProtoPerson u) => u.Soldiers > 0 && InForest(u.X, u.Y) && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id);
+    public bool Hidden(ProtoPerson u) => u.Soldiers > 0 && InForest(u.X, u.Y) && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id) && !Spotted(u.Id);
     bool InCover(long x, long y) => new[] { (0L, 0L), (30_00L, 0L), (-30_00L, 0L), (0L, 30_00L), (0L, -30_00L) }.Any(d => Map.GroundAtCm(x + d.Item1, y + d.Item2) == Ground.Forest);
 
     // 向きの更新（毎分）：ぶつかっている相手がいればその方、いなければ進む方。

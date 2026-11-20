@@ -339,8 +339,6 @@ public sealed partial class ProtoWorld
         var (kind, id) = (action[..action.IndexOf(':')], action[(action.IndexOf(':') + 1)..]);
         if (kind == "talk") return Talk(id);
         if (kind == "persuade") return Persuade();
-        if (kind == "scout") return SendScout(id);
-        if (kind == "scout-at") { var xy = id.Split(','); return SendScoutTo(long.Parse(xy[0]), long.Parse(xy[1])); }
         if (kind == "attack") return Attack(id);
         if (kind == "withdraw") return Withdraw();
         if (kind == "order") return FollowOrders(id == "follow");

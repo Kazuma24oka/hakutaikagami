@@ -339,9 +339,6 @@ public partial class ProtoGame : Node3D
     string panelKey = ""; string? missionTab;
     // 軍令の行にマウスを乗せると、その隊と行き先を地図で光らせる。
     string? hoverUnit; Vector3 hoverSpot; MeshInstance3D hoverRingUnit = null!, hoverRingSpot = null!;
-    // 物見の丸：軍令の「物見」を押すと、見てくる範囲の丸がマウスに付いてくる。地面を押すとそこへ出す。右クリックか Esc でやめる。
-    bool scoutAim; Vector3? aimForced; MeshInstance3D aimRing = null!, scoutRing = null!;
-    internal void AimScout(float x, float z) { scoutAim = true; aimForced = new Vector3(x, HeightAt(x, z), z); RefreshUi(); }
     internal void Hover(string? id) { hoverUnit = id; if (id != null && World.Orders().FirstOrDefault(o => o.Unit == id) is { } o) hoverSpot = ToScene(o.X, o.Y); }
     void UpdateHover()
     {
@@ -349,16 +346,8 @@ public partial class ProtoGame : Node3D
         {
             MeshInstance3D Ring() { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.86f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.9f, 0.3f), NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
             hoverRingUnit = Ring(); hoverRingSpot = Ring();
-            MeshInstance3D Thin(Color c) { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.965f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = c, NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
-            aimRing = Thin(new Color(1, 1, 1)); scoutRing = Thin(new Color(1, 1, 1, 0.45f)); ((StandardMaterial3D)scoutRing.MaterialOverride).Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
         }
         sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, GetViewport().GetVisibleRect().Size.Y - 80));
-        float sr = World.ScoutRadiusOf(World.Player) / 100f;
-        if (scoutAim && !World.CanScout) scoutAim = false;
-        var aim = scoutAim ? aimForced ?? PickGround(GetViewport().GetMousePosition()) : null;
-        aimRing.Visible = aim != null; if (aim is { } ap) { aimRing.Position = ap + new Vector3(0, 3, 0); aimRing.Scale = new Vector3(sr, Math.Max(1, distance / 300f), sr); }
-        var out1 = World.Scouts.FirstOrDefault(x => x.Phase is "行き" or "帰り");
-        scoutRing.Visible = out1 != null; if (out1 != null) { scoutRing.Position = ToScene(out1.TX, out1.TY) + new Vector3(0, 3, 0); scoutRing.Scale = new Vector3(sr, Math.Max(1, distance / 300f), sr); }
         bool on = hoverUnit != null && sidePanel.Visible; hoverRingUnit.Visible = hoverRingSpot.Visible = on; if (!on) return;
         var u = World.Person(hoverUnit!); float pulse = 1 + 0.12f * MathF.Sin(Time.GetTicksMsec() / 150f), r = Math.Max(45, distance * 0.05f) * pulse;
         hoverRingUnit.Position = ToScene(u.X, u.Y) + new Vector3(0, 3, 0); hoverRingUnit.Scale = new Vector3(r, 1, r);
@@ -378,8 +367,8 @@ public partial class ProtoGame : Node3D
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
         var orders = World.Orders().ToArray(); bool inWar = World.War.Phase is "行軍" or "合戦" or "終わり" && orders.Length > 0; // 決着のあとも、作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
-        static bool IsWarAction(string id) => id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("scout:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.CanScout + scoutAim + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri");
+        static bool IsWarAction(string id) => id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -414,7 +403,6 @@ public partial class ProtoGame : Node3D
                     foreach (var (id, text, on) in new[] { ("order:follow", "委任", World.War.PlayerFollows), ("order:free", "手動", !World.War.PlayerFollows) })
                     { var aid = id; var b = Add(mode, "act:" + aid, (on ? "● " : "○ ") + text, () => { Act(aid); RefreshUi(); }); if (on) b.Modulate = new Color(1, 0.88f, 0.45f); b.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill; }
                 }
-                if (World.War.Phase is "行軍" or "合戦") { var sb = Add(panel, "act:scout", scoutAim ? "物見　やめる" : $"物見　兵{ProtoWorld.ScoutMen}", () => { scoutAim = !scoutAim; aimForced = null; RefreshUi(); }); sb.Disabled = !World.CanScout; }
                 foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:"))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
                 // 撤退の条件（足した分は金色、満たして退き貝が鳴った条件は赤）。
                 var rules = World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
@@ -481,11 +469,6 @@ public partial class ProtoGame : Node3D
     }
     internal bool ClickGround(Vector2 screen)
     {
-        if (scoutAim)
-        {
-            if ((aimForced ?? PickGround(screen)) is not { } a) return false;
-            scoutAim = false; aimForced = null; Message = World.Do($"scout-at:{(long)(a.X * 100)},{(long)(a.Z * 100)}"); RefreshUi(); return true;
-        }
         if (PickGround(screen) is not { } q) return false;
         World.ActOnOwn(); return WalkTo(q.X, q.Z); // 自分で動けば指図から外れる
     }
@@ -501,7 +484,6 @@ public partial class ProtoGame : Node3D
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
             if (mb.ButtonIndex == MouseButton.Left) ClickGround(mb.Position);
-            else if (mb.ButtonIndex == MouseButton.Right && scoutAim) { scoutAim = false; aimForced = null; RefreshUi(); }
             else if (mb.ButtonIndex == MouseButton.WheelUp) distance = Math.Max(120, distance * 0.85f);
             else if (mb.ButtonIndex == MouseButton.WheelDown) distance = Math.Min(4000, distance / 0.85f);
         }
@@ -512,7 +494,6 @@ public partial class ProtoGame : Node3D
         }
         else if (e is InputEventKey k && k.Pressed && !k.Echo)
         {
-            if (k.Keycode == Key.Escape && scoutAim) { scoutAim = false; aimForced = null; RefreshUi(); }
             if (k.Keycode == Key.Q) yaw -= 15; else if (k.Keycode == Key.E) yaw += 15;
             else if (k.Keycode == Key.Space) { Paused = !Paused; RefreshUi(); }
             else if (k.Keycode == Key.Home) pan = Vector3.Zero;
@@ -577,7 +558,6 @@ public partial class ProtoGame : Node3D
     }
 
     readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> markers = new();
-    readonly List<MeshInstance3D> scoutDots = new();
     void UpdateActors()
     {
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
@@ -641,10 +621,6 @@ public partial class ProtoGame : Node3D
             v.Label.Text = $"{enemy.Name}　{HourMinute(mk.SeenAt)}（{mk.By}）";
             v.Body.Visible = v.Label.Visible = !now;
         }
-        // 物見
-        var live = World.Scouts.Where(x => x.Phase is "行き" or "帰り").ToArray();
-        while (scoutDots.Count < live.Length) { var d = new MeshInstance3D { Mesh = new SphereMesh { Radius = 3, Height = 6 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(1, 1, 1) } }; AddChild(d); scoutDots.Add(d); }
-        for (int i = 0; i < scoutDots.Count; i++) { scoutDots[i].Visible = i < live.Length; if (i < live.Length) { float sc = Math.Max(1, distance / 450); scoutDots[i].Position = ToScene(live[i].X, live[i].Y) + new Vector3(0, 3 * sc, 0); scoutDots[i].Scale = Vector3.One * sc; } }
     }
 
     // ---- 話す場面 ----

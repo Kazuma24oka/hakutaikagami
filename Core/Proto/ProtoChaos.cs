@@ -28,11 +28,37 @@ public sealed partial class ProtoWorld
             bool live = u.Soldiers > 0 && !War.Routed.Contains(u.Id);
             // 打ち合った隊は、そのあと5分は見つかったまま（打ち合いの切れ目でまた伏兵にならない）。
             if (ClashOf(u.Id) != null) flags["clashed:" + u.Id] = Second;
-            bool seen = !live || flags.TryGetValue("clashed:" + u.Id, out var cl) && Second - cl < 5 * 60 || field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(e, u));
+            bool seen = !live || Spotted(u.Id) || flags.TryGetValue("clashed:" + u.Id, out var cl) && Second - cl < 5 * 60 || field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(e, u));
             if (seen) War.UnseenSince.Remove(u.Id); else if (!War.UnseenSince.ContainsKey(u.Id)) War.UnseenSince[u.Id] = Second;
             bool now = !seen && Second - War.UnseenSince[u.Id] >= (InForest(u.X, u.Y) ? UnseenForest : UnseenOpen);
             if (now) { if (!InAmbush(u.Id)) War.Ambush.Add(u.Id); }
             else if (War.Ambush.Remove(u.Id) && live) War.AmbushUntil[u.Id] = Second + AmbushGrace;
+        }
+    }
+    // ---- 物見（自動。2026-11-20 ユーザー「自部隊に知略高い武将がいれば自動でたまにとってくる」） ----
+    // 隊はいつも周りを探っている。5分ごとに、知略に応じた確率で、少し遠く（ScoutFar。物見上手は+100m）の森の中の敵に気づく。
+    // 気づかれた隊は5分のあいだ森の中でも隠れられず、伏兵も解ける。味方が見つけた敵は、知らせが届いてから印になる。
+    public const long ScoutFar = 250_00;
+    public static int ScoutChance(ProtoPerson p) => Math.Clamp((p.Wits - 30) * 3 / 2, 0, 90);
+    bool Spotted(string id) => flags.TryGetValue("spotted:" + id, out var at) && Second - at < 5 * 60;
+    void AutoScout(ProtoPerson[] field)
+    {
+        if (Second % 300 != 0) return;
+        foreach (var v in field.Where(v => v.Soldiers > 0 && !War.Routed.Contains(v.Id) && !Confused(v.Id)).OrderBy(v => v.Id))
+        {
+            long far = ScoutFar + (v.Skills.Contains("物見上手") ? 100_00 : 0);
+            foreach (var t in field.Where(t => Hostile(v.House, t.House) && !War.Routed.Contains(t.Id) && Hidden(t) && !InSight(v, t) && Dist(v, t) <= far).OrderBy(t => t.Id))
+            {
+                if (Roll($"scout:{v.Id}:{t.Id}") % 100 >= ScoutChance(v)) continue;
+                flags["spotted:" + t.Id] = Second; FoundByScout(t.Id);
+                Happen($"spotted:{t.Id}:{Second}", $"{v.Name}の物見が、森に潜む{t.Name}の兵を見つけた。", v.X, v.Y, v);
+                if (Side(v.House) == "takano")
+                {
+                    if (v.Player) Mark(new ProtoMarker(t.Id, t.X, t.Y, Second, "物見"));
+                    else Reports.Add(new ProtoReport(t.Id, t.X, t.Y, Second, Second + Dist(v, Player) / 200, v.Name));
+                }
+                else if (t.Player) Note("敵の物見に見つかった。");
+            }
         }
     }
     // 物見に見られた隊は見つかる。
