@@ -35,6 +35,14 @@ public partial class ProtoGame : Node3D
     internal bool Paused = true;
     double edgeDwell;
     HSlider speedSlider = null!; Label speedText = null!;
+    internal CheckBox stopAtContact = null!; readonly HashSet<string> closingSeen = new();
+    // ぶつかる手前（150m）に新しく入った組があるか。離れた（300m）組は、次に近づいたときまた止める。
+    bool NewContact()
+    {
+        closingSeen.IntersectWith(World.Closing(300_00, true));
+        bool fresh = false; foreach (var k in World.Closing(150_00)) fresh |= closingSeen.Add(k);
+        return fresh;
+    }
     long skipUntil; int skipJournal;
     internal void Skip(long until) { World.Stop(); marker.Visible = false; skipUntil = until; skipJournal = World.Journal.Count; Message = ""; }
     internal readonly Dictionary<string, Button> Buttons = new();
@@ -306,6 +314,8 @@ public partial class ProtoGame : Node3D
         speedSlider = new HSlider { MinValue = 0, MaxValue = Speeds.Length - 1, Step = 1, CustomMinimumSize = new Vector2(160, 0), SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, FocusMode = Control.FocusModeEnum.None };
         speedSlider.ValueChanged += v => { Speed = Speeds[(int)v]; speedText.Text = Speed + "倍"; };
         bar.AddChild(speedSlider); speedText = new Label { CustomMinimumSize = new Vector2(60, 0) }; bar.AddChild(speedText);
+        // 接敵で止める（2026-11-20 ユーザーの印）：入れていると、隊どうしがぶつかる手前で時を止める。入れていなければ止めない（速さも変えない）。
+        stopAtContact = new CheckBox { Text = "接敵で止める", FocusMode = Control.FocusModeEnum.None }; bar.AddChild(stopAtContact);
         bar.AddChild(new VSeparator());
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
@@ -347,7 +357,9 @@ public partial class ProtoGame : Node3D
             MeshInstance3D Ring() { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.86f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.9f, 0.3f), NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
             hoverRingUnit = Ring(); hoverRingSpot = Ring();
         }
-        sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, GetViewport().GetVisibleRect().Size.Y - 80));
+        // 任務の窓は、右下の合戦の窓の上までにする（重ならない。長い分は窓の中で送る。2026-11-20 ユーザーの印）。
+        float room = GetViewport().GetVisibleRect().Size.Y - 80 - (commandBox.Visible ? commandBox.Size.Y + 16 : 0);
+        sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, Math.Max(140, room)));
         bool on = hoverUnit != null && sidePanel.Visible; hoverRingUnit.Visible = hoverRingSpot.Visible = on; if (!on) return;
         var u = World.Person(hoverUnit!); float pulse = 1 + 0.12f * MathF.Sin(Time.GetTicksMsec() / 150f), r = Math.Max(45, distance * 0.05f) * pulse;
         hoverRingUnit.Position = ToScene(u.X, u.Y) + new Vector3(0, 3, 0); hoverRingUnit.Scale = new Vector3(r, 1, r);
@@ -365,7 +377,7 @@ public partial class ProtoGame : Node3D
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
         var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
-        var orders = World.Orders().ToArray(); bool inWar = World.War.Phase is "行軍" or "合戦" or "終わり" && orders.Length > 0; // 決着のあとも、作戦の成否を見られる
+        var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
         var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri");
@@ -380,6 +392,13 @@ public partial class ProtoGame : Node3D
             {
                 // 作戦の名と成否、段取り（済んだ段は成功・失敗、今の段は白、先の段は薄く）。
                 Color good = new(0.6f, 0.9f, 0.6f), bad = new(1, 0.5f, 0.45f), dim = new(0.62f, 0.62f, 0.62f);
+                // 委任／手動（今の方が押し込まれている）。合戦の窓が出ていても押せるように、いちばん上に置く。
+                if (actions.Any(a => a.Id.StartsWith("order:")))
+                {
+                    var mode = new HBoxContainer(); panel.AddChild(mode);
+                    foreach (var (id, text, on) in new[] { ("order:follow", "委任", World.War.PlayerFollows), ("order:free", "手動", !World.War.PlayerFollows) })
+                    { var aid = id; var b = Add(mode, "act:" + aid, (on ? "● " : "○ ") + text, () => { Act(aid); RefreshUi(); }); if (on) b.Modulate = new Color(1, 0.88f, 0.45f); b.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill; }
+                }
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
                 panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });
@@ -396,13 +415,6 @@ public partial class ProtoGame : Node3D
                     panel.AddChild(row);
                 }
                 panel.AddChild(new HSeparator());
-                // 委任／手動（今の方が押し込まれている）。
-                if (actions.Any(a => a.Id.StartsWith("order:")))
-                {
-                    var mode = new HBoxContainer(); panel.AddChild(mode);
-                    foreach (var (id, text, on) in new[] { ("order:follow", "委任", World.War.PlayerFollows), ("order:free", "手動", !World.War.PlayerFollows) })
-                    { var aid = id; var b = Add(mode, "act:" + aid, (on ? "● " : "○ ") + text, () => { Act(aid); RefreshUi(); }); if (on) b.Modulate = new Color(1, 0.88f, 0.45f); b.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill; }
-                }
                 foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:"))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
                 // 撤退の条件（足した分は金色、満たして退き貝が鳴った条件は赤）。
                 var rules = World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
@@ -537,13 +549,14 @@ public partial class ProtoGame : Node3D
             dirty = true; UpdateActors(); PlaceCamera(); RefreshUi(); SaveGame(); return;
         }
         // 動画（台本）は前のとおり「歩いている間と、待つと決めた時刻まで」進む。遊ぶときは止める・進めるで決まる。
-        bool running = !Debug.NoteOpen && !Scene.Open && !FilmPause && (FilmRoot != null ? World.Player.Moving || WaitUntil > World.Second : !Paused);
+        bool running = !Debug.NoteOpen && !Scene.Open && awardsLayer == null && !FilmPause && (FilmRoot != null ? World.Player.Moving || WaitUntil > World.Second : !Paused);
         if (running)
         {
             acc += delta * Speed; int n = Math.Min((int)acc, 5000); acc -= n;
             for (int i = 0; i < n; i++)
             {
                 bool wasMoving = World.Player.Moving; World.Step();
+                if (FilmRoot == null && World.Second % 5 == 0 && World.War.Phase is "行軍" or "合戦" && NewContact() && stopAtContact.ButtonPressed) { Paused = true; acc = 0; dirty = true; RefreshUi(); break; }
                 if (wasMoving && !World.Player.Moving) dirty = true;
                 if (FilmRoot == null) { if (wasMoving && !World.Player.Moving) marker.Visible = false; continue; }
                 if (wasMoving && !World.Player.Moving && WaitUntil <= World.Second) { acc = 0; marker.Visible = false; break; }
@@ -552,7 +565,7 @@ public partial class ProtoGame : Node3D
         }
         else acc = 0;
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
-        UpdateActors(); UpdateBattleView(); UpdateHover(); DrawPath(); PlaceCamera();
+        UpdateActors(); UpdateBattleView(); UpdateHover(); UpdateAwards(); DrawPath(); PlaceCamera();
         journal.GetParent<Control>().GetParent<Control>().Modulate = new Color(1, 1, 1, (float)Math.Clamp(1.4 - (Time.GetTicksMsec() / 1000.0 - journalShown) / 8.0, 0.35, 1));
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
@@ -560,7 +573,7 @@ public partial class ProtoGame : Node3D
     readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> markers = new();
     void UpdateActors()
     {
-        bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦";
+        bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦" || World.Returning;
         if (war) PlanFormations(Math.Max(0.12f, distance / 380f) * 1.25f); else formation.Clear();
         PlanClashLines(Math.Max(0.12f, distance / 380f) * 1.25f);
         foreach (var p in World.People)

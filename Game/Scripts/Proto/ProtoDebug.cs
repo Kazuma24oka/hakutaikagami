@@ -101,6 +101,8 @@ public partial class ProtoDebug : Node
                 case "/model": game.AddModel(F("kind"), q.TryGetValue("name", out var mn) ? mn : "", new Vector3(float.Parse(F("x")), game.HeightAt(float.Parse(F("x")), float.Parse(F("y"))), float.Parse(F("y"))), new Color(0.85f, 0.85f, 0.8f)); break;
                 case "/speed": game.Speed = int.Parse(F("v")); break;
                 case "/council-window": game.OpenCouncil(); break;
+                case "/stop-contact": game.stopAtContact.ButtonPressed = F("v") == "1"; break;
+                case "/awards-ok": game.AwardsOk?.EmitSignal(BaseButton.SignalName.Pressed); break;
                 // 軍議の窓の選択肢を選ぶ（確かめ用）：plan・role は並びの番号。
                 case "/council-select": if (game.councilChoices is { } cc) { if (q.TryGetValue("goal", out var cg)) { cc.Goal.Select(int.Parse(cg)); cc.Goal.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cg)); } if (q.TryGetValue("retreat", out var cx)) cc.Retreat.Select(int.Parse(cx)); if (q.TryGetValue("plan", out var cp)) { cc.Plan.Select(int.Parse(cp)); cc.Plan.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cp)); } if (q.TryGetValue("role", out var cr)) { cc.Role.Select(int.Parse(cr)); cc.Role.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cr)); } if (q.TryGetValue("dep", out var cd)) cc.Dep.Select(int.Parse(cd)); } break;
                 case "/council-place": game.PlaceCouncilPiece(q.TryGetValue("id", out var cpi) ? cpi : null, float.Parse(F("x")), float.Parse(F("y"))); break;

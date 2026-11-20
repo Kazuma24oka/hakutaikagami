@@ -43,7 +43,7 @@ public sealed partial class ProtoWorld
     // 総勢の中にいるか（出立してから着陣まで）。
     public bool InBody(ProtoPerson u) => War.Phase is "行軍" or "合戦" && !War.Split && Flag("marched") && u.House == "takano" && u.Soldiers > 0 && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle" && Auto(u) && !War.Routed.Contains(u.Id);
     // 画面で一つの勢として見せるか：城に集まっている間と、総勢で進んでいる間（大将から300m以内）。
-    public bool InHost(ProtoPerson u) => War.Phase == "行軍" && !War.Split && u.House == "takano" && u.Soldiers > 0 && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle" && Auto(u) && Dist(u, Person(Heir)) <= 300_00;
+    public bool InHost(ProtoPerson u) => War.Phase == "行軍" && !War.Split && u.House == "takano" && u.Soldiers > 0 && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle" && Auto(u) && Dist(u, Person(Heir)) <= 300_00 || InReturn(u);
     public IEnumerable<ProtoPerson> Host => Units.Where(InHost);
     public int MarchPercent => 60 + Person(Heir).Command * 7 / 10;
     public IEnumerable<ProtoPerson> Body => Units.Where(InBody);
@@ -79,6 +79,8 @@ public sealed partial class ProtoWorld
 
     // ---- 作戦の段取り ----
     string? Who(string role) => War.Roles.FirstOrDefault(r => r.Value == role).Key;
+    // その役目のだれかが奇襲をかけたか（同じ役目が二人いることがある）。
+    bool Surprised(string role) => War.Roles.Any(r => r.Value == role && Facts.Any(f => f.Id.StartsWith("surprise:" + r.Key + ":")));
     bool Fought(string? id) => id != null && Flag("fought:" + id);
     bool Broke(string? id) => id != null && Facts.Any(f => f.Id.StartsWith("rout:" + id + ":"));
     // 段ごとの確かめ：0＝まだ、1＝成功、2＝失敗。
@@ -97,8 +99,8 @@ public sealed partial class ProtoWorld
             {
                 string? bait = Who("囮"), amb = Who("伏兵");
                 steps.Add(("囮が敵に当たる", () => Fought(bait) ? 1 : Broke(bait) ? 2 : 0));
-                steps.Add(("囮が退いて、伏兵の前へ誘い込む", () => Fact("bait-stays:" + bait) != null ? 2 : Fact("bait-back:" + bait) != null && Flag("bait-done:" + bait) || Facts.Any(f => f.Id.StartsWith("surprise:" + amb + ":")) ? 1 : Broke(bait) ? 2 : 0));
-                steps.Add(("伏兵が敵の横を突く", () => Facts.Any(f => f.Id.StartsWith("surprise:" + amb + ":")) ? 1 : Broke(amb) || flags.TryGetValue("bait-done:" + bait, out var done) && Second >= done + 10 * 60 ? 2 : 0));
+                steps.Add(("囮が退いて、伏兵の前へ誘い込む", () => Fact("bait-stays:" + bait) != null ? 2 : Fact("bait-back:" + bait) != null && Flag("bait-done:" + bait) || Surprised("伏兵") ? 1 : Broke(bait) ? 2 : 0));
+                steps.Add(("伏兵が敵の横を突く", () => Surprised("伏兵") ? 1 : Broke(amb) || flags.TryGetValue("bait-done:" + bait, out var done) && Second >= done + 10 * 60 ? 2 : 0));
                 break;
             }
             case "挟撃":

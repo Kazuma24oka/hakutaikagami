@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Proto;
 // 試作版の合戦の見え方（2026-11-19 組み合わせ案。Core/Proto/ProtoClash.cs）。
 // ・上：両方の総士気。
 // ・地図：ぶつかっている隊どうしの間に押し合いのゲージ（左が鷹野、右が岩切。押している側が伸びる）。要所の旗は持っている家の色。
-// ・下：本人の隊がぶつかっている間だけ、采配（構え・戦法・かかれ）。ぶつかった瞬間に速さを10倍に落とす。
+// ・下：本人の隊がぶつかっている間だけ、采配（構え・戦法・かかれ）。速さは勝手に変えない（上の帯の「接敵で止める」を入れていれば、ぶつかる手前で止まる）。
 public partial class ProtoGame
 {
     PanelContainer spiritBox = null!, commandBox = null!;
@@ -142,7 +142,7 @@ public partial class ProtoGame
     void UpdateBattleView()
     {
         ShowHits();
-        var war = World.War; bool on = war.Phase is "合戦" or "終わり" && war.Spirit.Count > 0;
+        var war = World.War; bool on = (war.Phase == "合戦" || World.Returning) && war.Spirit.Count > 0;
         spiritBox.Visible = on;
         if (on)
         {
@@ -186,7 +186,6 @@ public partial class ProtoGame
         var ck = string.Join(",", allies.Select(u => u.Id)) + "|" + string.Join(",", enemies.Select(u => u.Id));
         if (ck != lastClash)
         {
-            if (lastClash == "" && Speed > 10 && FilmRoot == null) { Speed = 10; RefreshUi(); } // 動画では落とさない
             lastClash = ck;
         }
         if (ck != rowsKey)

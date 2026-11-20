@@ -139,7 +139,7 @@ public sealed partial class ProtoWorld
         if (War.Phase == "軍議待ち" && SiteOf(Player) == "takano-castle" && (Second >= War.CouncilAt || SiteOf(Person(Heir)) == "takano-castle") && Fact("defiance") is { } defiance && !Knows(Player, "defiance"))
         { Learn(Player, defiance, Person(Heir).Name); Note($"{Person(Heir).Name}に軍議へ呼ばれた。"); }
         if (War.Phase == "軍議待ち" && Second >= War.CouncilAt + 30 * 60 && War.Assign.Count == 0) DecideCouncil(null, null, null); // 本人が来なければ大将が決める
-        if (War.Phase is "行軍" or "合戦") Battle();
+        if (War.Phase is "行軍" or "合戦") Battle(); else if (War.Phase == "終わり") Homecoming();
         // 謀叛方は夜明け前（4時）に陣へ出る。鷹野が夜明けに出れば丘は先に取られる
         if (Flag("rebellion") && !Flag("rebels-out") && HourOfDay == 4)
         {
@@ -342,7 +342,7 @@ public sealed partial class ProtoWorld
             foreach (var r in People.Where(r => r.House == Rebel && r.Active)) Walk(r, Spot(Map.Site("iwakiri-castle"), 3), "iwakiri-castle", "岩切城へ引き上げている");
         }
         Retreats();
-        if (War.Result != "") { UpdatePlan(); AwardWarMerit(); } // 決着で最後の段と勲功が決まる
+        if (War.Result != "") UpdatePlan(); // 決着で最後の段が決まる（勲功は城へ戻ってからの論功行賞。Core/Proto/ProtoHome.cs）
     }
 
     // ---- 本人が攻めかかる・退く ----
@@ -386,6 +386,12 @@ public sealed partial class ProtoWorld
         Markers.Add(m);
     }
     public bool SeesEnemy(ProtoPerson e) => !Hostile(Player.House, e.House) || InSight(Player, e);
+    // 接敵の手前（画面の「接敵で止める」）：鷹野の隊と、本人に見えている敵の隊が within まで近づいていて、まだぶつかっていない組。
+    public IEnumerable<string> Closing(long within, bool clashing = false) => War.Phase is not ("行軍" or "合戦") ? [] :
+        from a in Units where InArmy(a) && !War.Routed.Contains(a.Id) && (a.Player || Sees(Player, a))
+        from e in Units where e.House == Rebel && !War.Routed.Contains(e.Id) && InSight(Player, e) && Dist(a, e) <= within
+            && (clashing || !War.Clashes.Any(c => c.A == a.Id && c.B == e.Id || c.A == e.Id && c.B == a.Id))
+        select a.Id + "|" + e.Id;
 
     // 書状が届いたときの合戦まわりの続き（ProtoLife.Delivered から呼ぶ）。
     void WarDelivered(ProtoLetter l)

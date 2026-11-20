@@ -346,6 +346,7 @@ public sealed partial class ProtoWorld
         if (kind == "kakare") return Kakare();
         if (kind == "tactic") return UseTactic(Player);
         if (kind == "council") return "";
+        if (kind == "awards") return TakeAwards();
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)
         {

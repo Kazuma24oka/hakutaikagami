@@ -767,6 +767,7 @@ Core/Proto/ProtoChaos.cs	使う	試作版の伏兵（見つかっていない隊
 Core/Proto/ProtoClash.cs	使う	試作版の合戦の作り直し（要所と総士気・押し合い・戦場の幅・采配・本陣での立て直し）	Core/Proto/ProtoWar.cs の Battle から呼ぶ。Tests/ProtoWarTests.cs	2026-11-19
 Core/Proto/ProtoField.cs	使う	試作版の陣の置き場所（決まった点をやめ、地形から決める）。総大将の案、敵の陣、地形の名前と効果	Core/Proto/ProtoWar.cs の DecideCouncil と Wars、Game/Scripts/Proto/ProtoGame.cs の軍議の戦場図から呼ぶ。Tests/ProtoWarTests.cs	2026-11-20
 Core/Proto/ProtoGoals.cs	使う	試作版の合戦の大目標（敵を崩す・陣を守り抜く）と、軍としての撤退条件（状況で決まり、軍議で足せる）、退き貝と退却	Core/Proto/ProtoWar.cs の DecideCouncil と Battle から呼ぶ。Tests/ProtoWarTests.cs の TheArmyHasAGoalAndRetreatRules	2026-11-20
+Core/Proto/ProtoHome.cs	使う	試作版の帰陣（決着のあと総勢で鷹野城へ戻る）と論功行賞（出陣した者みなの働きと勲功、預かった兵を返す）	Core/Proto/ProtoWar.cs の Wars から毎分呼ぶ。Tests/ProtoWarTests.cs の TheArmyReturnsHomeBeforeTheAwards	2026-11-20
 Core/Proto/ProtoLife.cs	使う	ProtoStep、ProtoTask、ProtoAction を定義。GoToTask が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoGame.cs:216 で GoToTask（他に Game 1件・Core 1件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMap.cs	使う	Ground、ProtoHouse、ProtoSite を定義。GroundAtCm が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoDebug.cs:124 で GroundAtCm（他に Game 2件・Core 2件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMove.cs	使う	ProtoMove を定義。ProtoMove が他の Coreから使われ、ゲームの本線から届く	Core/Proto/ProtoLife.cs:193 で ProtoMove（他に Game 0件・Core 2件・Tests 1件）	2026-11-18
@@ -2952,6 +2953,7 @@ Game/Scripts/PerfProbe.cs	使う	遊ぶ画面の重さの測り（2026-11-18 の
 Game/Scripts/PerfProbe.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PerfProbe.cs は「使う」	2026-11-18
 Game/Scripts/PersonalHealthCheck.cs	使う	工程の検査場面（ゲーム内部の入力・自前の描画で確かめる。PROCESS_V2 第2節）	Scripts/・Tests/ に起動するランナーなし（手動起動）。出力先 Docs/Design/PersonalHealthV1/runtime-local。最終コミット 2026-11-14	2026-11-18
 Game/Scripts/PersonalHealthCheck.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PersonalHealthCheck.cs は「使う」	2026-11-18
+Game/Scripts/Proto/ProtoAwardsView.cs	使う	試作版の論功行賞の画面（大将の言葉のあと、役目・兵・働き・勲功の表）	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateAwards）	2026-11-20
 Game/Scripts/Proto/ProtoBattleView.cs	使う	試作版の合戦の見え方（総士気・押し合いのゲージ・采配の窓）	Game/Scripts/Proto/ProtoGame.cs の _Ready と _Process から呼ぶ	2026-11-19
 Game/Scripts/Proto/ProtoDebug.cs	使う	今の試作版（ProtoGame.tscn）の部品	Game/Scripts/Proto/ProtoGame.cs:42 ProtoDebug	2026-11-18
 Game/Scripts/Proto/ProtoFilm.cs	使う	試作版の動画「謀叛から合戦まで」の台本（--proto-film）	Game/Scripts/Proto/ProtoGame.cs の _Ready が --proto-film のときに呼ぶ	2026-11-19

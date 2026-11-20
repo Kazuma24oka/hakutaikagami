@@ -407,9 +407,74 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
         int merit = w.Merit;
         while (w.War.Result == "" && w.Second < 5 * Day) w.Advance(60);
-        w.Advance(60);
+        int atEnd = w.Merit; w.Advance(60); // 出陣の任務の分は、ここまでに入っている
+        cp.Expect(w.Merit == atEnd, "決着しただけでは合戦の勲功は入らない（城へ戻ってからの論功行賞で入る）");
+        for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
+        w.Do("awards:take");
         cp.Log($"結果 {w.War.Result}　勲功 {merit}→{w.Merit}　" + string.Join(" ", w.Journal.Where(e => e.Text.Contains("勲功")).Select(e => e.Text).TakeLast(2)));
         cp.Expect(w.Merit - merit is > 0 and <= 16, "合戦で働けば、見込みに近い勲功が入る");
+    }
+
+    // 決着しても軍は解かず、総勢で鷹野城へ戻ってから論功行賞（Core/Proto/ProtoHome.cs）。
+    // 負けても、隊が崩れても名を呼ばれる。本人が城にいなければ1日待ち、いないまま済ませて勲功だけ届く。
+    [Theory]
+    [InlineData("そのまま")]
+    [InlineData("隊が崩れた")]
+    [InlineData("城に戻らない")]
+    public void TheArmyReturnsHomeBeforeTheAwards(string mode)
+    {
+        using var cp = new Checkpoints("試作版の帰陣と論功行賞_" + mode, o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        var me = w.Player; int merit = w.Merit;
+        while (w.War.Result == "" && w.Second < 5 * Day)
+        {
+            w.Advance(60);
+            if (mode == "隊が崩れた" && w.War.Phase == "合戦" && !w.War.Routed.Contains(me.Id)) { me.Soldiers = 4; w.War.Routed.Add(me.Id); }
+        }
+        merit = w.Merit; // 出陣の任務の分は、ここまでに入っている
+        cp.Log($"決着 {ProtoWorld.Clock(w.Second)}　{w.War.Result}　本人 兵{me.Soldiers}{(w.War.Routed.Contains(me.Id) ? "（崩れた）" : "")}");
+        cp.Expect(w.War.Result != "" && w.Returning, "決着しても、軍はまだ解かれていない");
+        int held = me.Soldiers; w.Advance(120);
+        cp.Expect(w.Merit == merit && me.Soldiers == held, "決着の場では、勲功は入らず、預かった兵もそのまま");
+        if (mode == "城に戻らない") { w.Do("order:free"); w.Stop(); }
+        bool together = false; long far = 0;
+        for (int i = 0; i < 24 * 60 && !w.AwardsReady; i++)
+        {
+            w.Advance(60);
+            int host = w.People.Count(u => w.InReturn(u)); together |= host >= 2;
+            if (i % 20 == 0) cp.Log($"　{ProtoWorld.Clock(w.Second)}　総勢{host}　" + string.Join("　", w.Awards().Select(a => { var u = w.Person(a.Unit); return $"{u.Name} {u.Doing}"; })));
+            far = Math.Max(far, w.Second);
+        }
+        var heir = w.Person("takano-masayuki");
+        cp.Log($"{ProtoWorld.Clock(w.Second)}　大将 {heir.X / 100},{heir.Y / 100} {w.SiteOf(heir)} {heir.Active}　城 {castle.X},{castle.Y}　" + string.Join(" ", w.Facts.TakeLast(3).Select(f => f.Id + ":" + f.Text)));
+        cp.Expect(w.AwardsReady && w.SiteOf(heir) == "takano-castle", "大将が鷹野城に着くと論功行賞になる");
+        if (w.War.Result is "鎮めた" or "退かせた" or "守り抜いた" or "引き分け") cp.Expect(together, "勝ったときは、総勢でまとまって戻る");
+        var rows = w.Awards().ToArray();
+        foreach (var a in rows) cp.Log($"{a.Name}　{a.Role}　兵{a.Now}/{a.Start}　{(a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—")}　勲功{a.Merit}");
+        cp.Expect(rows.Length == 3 && rows.Any(a => a.Unit == me.Id), "出陣した者はみな名を呼ばれる（負けても、隊が崩れても）");
+        int see = w.WarMerit(me.Id);
+        if (mode == "城に戻らない")
+        {
+            cp.Expect(!w.AwardsOpen && w.Returning, "本人が城にいなければ、論功行賞は開かない（待っている）");
+            for (int i = 0; i < 30 * 60 && w.Returning; i++) w.Advance(60);
+            cp.Log(string.Join("　", w.Journal.TakeLast(2).Select(e => e.Text)));
+            cp.Expect(!w.Returning && w.Merit == merit + see, "1日待っても来なければ、いないまま済ませて勲功だけ届く");
+            cp.Expect(w.Tasks.Where(t => t.Kind == "awards").All(t => t.State == TaskState.Done), "来なかったことで任務の失敗にはしない");
+        }
+        else
+        {
+            for (int i = 0; i < 6 * 60 && !w.AwardsOpen; i++) w.Advance(60); // 崩れた隊は少し遅れて着く
+            cp.Log($"{ProtoWorld.Clock(w.Second)}　本人 {w.SiteOf(me)} {me.Doing}");
+            cp.Expect(w.AwardsOpen, "委任の本人は軍と一緒に城へ戻り、論功行賞が開く");
+            w.Do("awards:take");
+            cp.Log(string.Join("　", w.Journal.TakeLast(2).Select(e => e.Text)));
+            cp.Expect(w.Merit == merit + see, "論功行賞で勲功を受ける");
+        }
+        cp.Expect(me.Soldiers == 0 && !w.Returning, "論功行賞が済むと、預かった兵を返して軍が解かれる");
     }
 
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。
@@ -431,6 +496,8 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
                 int merit = w.Merit;
                 while (w.War.Result == "" && w.Second < 5 * Day) w.Advance(60);
                 w.Advance(60); total++; if (w.War.Result is "鎮めた" or "退かせた" or "守り抜いた") wins++;
+                for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
+                w.Do("awards:take");
                 long mins = (w.Facts.LastOrDefault(f => f.Id is "rebellion-crushed" or "expedition-failed" or "draw" or "held" || f.Id.StartsWith("withdrawn:"))?.At ?? w.Second) / 60 - w.War.SignalAt / 60;
                 int chaos = w.Facts.Count(f => f.Id.StartsWith("chaos:")), surprise = w.Facts.Count(f => f.Id.StartsWith("surprise:")), spotted = w.Facts.Count(f => f.Id.StartsWith("spotted:"));
                 cp.Log($"{ProtoWorld.Departures[dep]}｜{goal}｜{plan}｜{role}｜{w.War.Result}｜{mins}分｜作戦{w.PlanState}｜奇襲{surprise} 混乱{chaos} 見破り{spotted}｜勲功{w.Merit - merit}｜岩切の大目標 {w.GoalOf("iwakiri")}");

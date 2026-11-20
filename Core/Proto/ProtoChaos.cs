@@ -8,7 +8,7 @@ namespace HakutaiKagami.Core.Proto;
 // ・混乱：打たれるとたまる（毎分 正面2・側面6・背後10、二隊以上に打たれていれば+4、下がりながら打たれていれば+4。打たれていなければ毎分−5）。
 //   たまる量は「打つ側の知略÷打たれる側の知略」倍。100になると3分のあいだ混乱する：動けない・向きを変えられない・戦法を使えない・
 //   与える打撃は半分・受ける打撃は1.5倍・士気の下がりは1.5倍。終わると0からたまり直す。気性は計算に使わない。
-// ・勲功：役目ごとの見込み（軍議の戦場図に出す）を、役目を果たしたかと勝ち負けで増減する。
+// ・勲功：役目ごとの見込み（軍議の戦場図に出す）。決まるのは城へ戻ってからの論功行賞（Core/Proto/ProtoHome.cs）。
 public sealed partial class ProtoWorld
 {
     public const int UnseenForest = 60, UnseenOpen = 5 * 60, AmbushGrace = 3 * 60, ChaosTime = 3 * 60;
@@ -83,22 +83,4 @@ public sealed partial class ProtoWorld
 
     // ---- 勲功 ----
     public static int RoleMerit(string role) => role switch { "囮" or "先手" or "正面" => 12, "伏兵" or "回り込み" => 10, _ => 6 };
-    // 決着のときに、役目を果たしたかと勝ち負けで勲功を決める。
-    void AwardWarMerit()
-    {
-        if (Flag("war-merit") || War.Result == "" || !War.Post.ContainsKey(Player.Id)) return;
-        Set("war-merit");
-        string me = Player.Id, role = War.Roles.GetValueOrDefault(me, ""); int see = RoleMerit(role);
-        bool fought = Flag("fought:" + me);
-        bool did = role switch
-        {
-            "囮" => Fact("bait-back:" + me) != null || fought && Facts.Any(f => f.Id.StartsWith("surprise:")),
-            "伏兵" or "回り込み" => Facts.Any(f => f.Id.StartsWith("surprise:" + me + ":") || f.Id.StartsWith("flank:" + me + ":")),
-            _ => fought,
-        };
-        int m = did ? see : see / 2;
-        m = War.Result switch { "鎮めた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => fought ? see / 4 : 0 };
-        if (m <= 0) return;
-        Merit += m; Note($"合戦の働きで勲功{m}。");
-    }
 }
