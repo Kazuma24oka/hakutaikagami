@@ -36,9 +36,10 @@ public partial class ProtoGame
     }
 
     CanvasLayer? awardsLayer; internal Button? AwardsOk;
-    void UpdateAwards()
+    void UpdateAwards() { if (FilmRoot == null) ShowAwards(); } // 動画では台本が開く
+    internal void ShowAwards()
     {
-        if (awardsLayer != null || Scene.Open || FilmRoot != null || !World.AwardsOpen) return;
+        if (awardsLayer != null || Scene.Open || !World.AwardsOpen) return;
         var layer = awardsLayer = new CanvasLayer { Layer = 60, Visible = false }; AddChild(layer);
         var dimmer = new ColorRect { Color = new Color(0, 0, 0, 0.55f) }; dimmer.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(dimmer);
         var center = new CenterContainer { Theme = new Theme { DefaultFontSize = 22 } }; center.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(center);

@@ -69,6 +69,7 @@ public sealed partial class ProtoWorld
         foreach (var a in all.Where(Live))
         {
             var b = Foe(a); if (b == null) continue;
+            if (Talking && (BehindGate(a) || BehindGate(b))) continue; // 勧告の交渉中は、城との打ち合いを止める
             if (Retreating(a)) continue; // 下がっている隊は打ち返さない（打たれるだけ）
             Set("fought:" + a.Id);
             double atk = a.Soldiers * 0.006 * (Val(a) / 50.0) * TroopAttack(a) * (a.Morale / 100.0 + 0.5) * (SpiritOf(Side(a.House)) / 200.0 + 0.5);

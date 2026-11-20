@@ -319,7 +319,7 @@ public sealed partial class ProtoWorld
         if (War.Phase == "合戦") Regroup();
         var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
-        if (War.Phase == "合戦") foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
+        if (War.Phase == "合戦" && !Talking) foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
         Spread(field); UpdateFacing(field); AutoScout(field); Stealth(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }

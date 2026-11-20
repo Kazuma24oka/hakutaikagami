@@ -564,6 +564,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
             // 兵糧が残り1日になれば、退去の条件は受ける。
             sg.Food = 1; sg.ParleyAt = -1; cp.Log("兵糧が残り1日のとき 退去：" + w.Do("siege:勧告:退去")); w.Advance(40 * 60); Flush(); // 日が替わったことにして、もう一度使者を出す
             cp.Expect(w.War.Result == "開城させた" && !katsumoto.Active && iguchi.House == "takano", "退去：城主は城を明け渡して去り、城内の者は鷹野に戻る");
+            cp.Expect(w.Awards().All(x => x.Unit != iguchi.Id) && w.Awards().Count() == 3, "降って戻った者は、論功行賞の鷹野勢には並ばない");
         }
         else
         {

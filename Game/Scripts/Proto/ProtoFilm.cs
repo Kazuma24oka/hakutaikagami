@@ -54,6 +54,7 @@ public partial class ProtoGame
             BuildCaption();
             var w = World; long Day = ProtoWorld.Day, H = ProtoWorld.Hour;
             if (OS.GetCmdlineUserArgs().Contains("--proto-film-tsuri")) { await RunTsuri(); GetTree().Quit(); return; }
+            if (OS.GetCmdlineUserArgs().Contains("--proto-film-siege")) { await RunSiegeFilm(); GetTree().Quit(); return; }
 
             // 2日目の終わりまでは撮らずに進める（謀叛の前の日々は別の動画で）。
             w.Advance(2 * Day + 4 * H + 50 * 60 - w.Second);
@@ -139,6 +140,65 @@ public partial class ProtoGame
 
     // 動画「釣り野伏」（2026-11-19 ユーザー「釣り野伏の動画」）。検査 Tests/ProtoWarTests.cs の TheFeignedRetreatDrawsTheEnemyIntoTheAmbush と同じ手順。
     // 本人は道の口で囮、小坂重忠は森の北の縁に伏せる（正之は城に残る）。井口とぶつかってから森の縁沿いに下がると、勇猛な井口が追ってきて、小坂が横から奇襲する。
+    // 動画「攻城」（2026-11-20 ユーザー「動画でくれますか」）：包囲 → 攻城の軍議 → 調略 → 力攻めで層を破る → 勧告 → 論功行賞。
+    // 筋は決めていない（井口が内応を約すか、城主が勧告を受けるかは、その場の成り行き）。字幕は成り行きに合わせて出す。
+    async Task RunSiegeFilm()
+    {
+        var w = World; long Day = ProtoWorld.Day;
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var home = w.Map.Site("takano-castle"); w.MoveTo(home.X * 100L, home.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
+        void Pause() => FilmPause = true;
+        void Resume(int speed) { FilmPause = false; Speed = speed; WaitUntil = 9 * Day; }
+        panelOpen = true; Follow(1300, 55); RefreshUi(); Pause();
+        if (w.War.Siege is not { } sg) { await Cap("この回は攻城にならなかった", 3); return; }
+        var heir = w.Person("takano-masayuki");
+        async Task Pick(string key) { await Hold(1.2); if (SiegeButtons.TryGetValue(key, out var b) && !b.Disabled) b.EmitSignal(BaseButton.SignalName.Pressed); else Scene.Close(); await Talk(2.6); }
+        await Cap("百代鏡　試作版：攻城", 3);
+        await Cap("野の戦いに敗れた岩切勢は、岩切城に籠もった。城は外から 三の丸・二の丸・本丸 の三層", 5.5);
+        await Cap("攻城は包囲から始まる。囲みの兵が足りると包囲が成り、城の兵糧が減り始める", 5.5);
+        Resume(60); await Until(() => sg.CampAt > 0 && sg.Ringed, 40); await Hold(2); Pause();
+        await Cap("城に取りついた隊は、いつでも攻城の軍議を開ける", 4);
+        OpenSiegeCouncil(); await Talk(2.6);
+        await Cap("続ける行動は 包囲 と 力攻め。軍議の中で打つ手は 調略 と 勧告（帰参・退去・切腹）", 6.5);
+        await Cap("まず調略。城内の井口弥七へ密書を忍ばせる。内応を約すかは、井口が決める", 5.5);
+        await Pick("調略");
+        Resume(300); await Until(() => sg.Plot != "密書", 60); await Hold(1); Pause();
+        await Cap(sg.Plot == "約束" ? "井口から、内応を約す返書が届いた" : "井口からの返書は来なかった。今の井口は動かない", 5);
+        await Cap("力攻めに切り替える。城門へ寄せて、層の耐久を削る", 4.5);
+        OpenSiegeCouncil(); await Talk(2.6); await Pick("力攻め");
+        Follow(650, 55); Resume(60); int layer = sg.Layer;
+        for (int n = 0; n < 30 * 150 && w.War.Result == "" && sg.Layer < 2 && heir.Morale >= 45 && !w.War.Routed.Contains(heir.Id); n++)
+        {
+            await Hold(1d / 30);
+            if (sg.Layer == layer) continue;
+            string lost = ProtoWorld.LayerName(sg.Layers, layer); layer = sg.Layer;
+            Pause(); await Cap($"{lost}を失い、岩切勢は{ProtoWorld.LayerName(sg.Layers, layer)}へ退いた。層は、耐久が尽きるか城の士気が切れると失う", 6); Resume(60);
+        }
+        if (w.War.Result == "")
+        {
+            Pause(); await Cap("攻め手も傷んできた。ここで勧告。条件は「退去」（城主は城を明け渡して去る）", 5.5);
+            OpenSiegeCouncil(); await Talk(2.6); await Pick("勧告:退去");
+            if (w.Talking)
+            {
+                await Cap("使者が戻るまでは攻めない。受けるかは城主が決める", 4.5);
+                Follow(1000, 55); Resume(60); await Until(() => !w.Talking, 60); await Hold(1.5); Pause();
+                await Cap(w.War.Result == "開城させた" ? "岩切勝元は勧告を受け、城を明け渡した" : "岩切勝元は勧告を退けた", 5);
+            }
+            else await Cap("総大将は使者を出さなかった", 4);
+        }
+        if (w.War.Result is "開城させた" or "鎮めた")
+        {
+            await Cap("落とした城に入って、論功行賞", 3.5);
+            Follow(500, 55); Resume(120); await Until(() => w.AwardsOpen, 90); Pause();
+            ShowAwards(); await Talk(2.6); await Hold(6);
+        }
+        else if (w.War.Result != "") await Cap("結果：" + w.War.Result, 4);
+        await Hold(1);
+    }
+
     async Task RunTsuri()
     {
         var w = World; long Day = ProtoWorld.Day, H = ProtoWorld.Hour;

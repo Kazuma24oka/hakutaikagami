@@ -12,7 +12,8 @@ public sealed record ProtoAward(string Unit, string Name, string Role, bool Did,
 
 public sealed partial class ProtoWorld
 {
-    bool InArmy(ProtoPerson u) => u.House == "takano" && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle";
+    // 出陣した鷹野勢（軍議で役目をもらった者）。降って鷹野に戻った岩切の者は入れない。
+    bool InArmy(ProtoPerson u) => u.House == "takano" && War.Roles.ContainsKey(u.Id) && War.Assign.TryGetValue(u.Id, out var a) && a != "takano-castle";
     // 決着してから論功行賞が済むまで（軍はまだ解かれていない）。
     public bool Returning => War.Phase == "終わり" && War.Result != "" && !Flag("awards-done") && !Flag("war-merit") && People.Any(InArmy);
     // 総勢として城へ戻っているか（画面で一つの勢に見せ、行軍の速さで進む）。

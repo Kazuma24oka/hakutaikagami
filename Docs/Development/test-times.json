@@ -2,7 +2,6 @@
 "method": "検査ごとに記録のある直近5回の中央値",
 "history": "D:/02_プロジェクト別/百代鏡/検証記録/検査の時間",
 "runs": [
-"2026-11-18_214040_全件",
 "2026-11-18_214928_全件",
 "2026-11-20_173209_全件",
 "2026-11-20_173418_全件",
@@ -21,7 +20,8 @@
 "2026-11-20_204751_全件",
 "2026-11-20_205747_全件",
 "2026-11-20_210254_全件",
-"2026-11-20_210532_全件"
+"2026-11-20_210532_全件",
+"2026-11-20_213017_全件"
 ],
 "wallSeconds": 31,
 "count": 4770,
@@ -3164,7 +3164,7 @@
 "HakutaiKagami.Tests.ProtoWarTests.TheArmyReturnsHomeBeforeTheAwards(mode: \"隊が崩れた\")": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"力攻め\", parley: False)": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"包囲\", parley: False)": 0.9,
-"HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"包囲\", parley: True)": 0.9,
+"HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"包囲\", parley: True)": 0.8,
 "HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"囲む\", parley: False)": 1.0,
 "HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"囲む\", parley: True)": 0.9,
 "HakutaiKagami.Tests.ProtoWarTests.TheCouncilFogAndScoutsWork": 0.3,
@@ -3178,7 +3178,7 @@
 "HakutaiKagami.Tests.ProtoWarTests.TheRoutedUnitRegroupsAtCamp": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheStarvingGarrisonSalliesAtDawn": 0.6,
 "HakutaiKagami.Tests.ProtoWarTests.TheWarIsTheSameWhateverTheStepSizeAndAfterSaving": 2.0,
-"HakutaiKagami.Tests.ProtoWarTests.TroopsTacticsAndLoyaltyShapeTheFight": 0.8,
+"HakutaiKagami.Tests.ProtoWarTests.TroopsTacticsAndLoyaltyShapeTheFight": 0.7,
 "HakutaiKagami.Tests.ProtoWarTests.UnseenUnitsAmbushAndConfusedUnitsCannotMove": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.WiseCommandersSpotAmbushersInTheForest": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.WithoutThePlayerTheRebellionIsRaisedAndFought": 0.9,
