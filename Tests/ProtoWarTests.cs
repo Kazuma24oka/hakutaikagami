@@ -185,6 +185,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
         for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
         w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]);
+        w.Do("tactic-auto:off"); // この検査は、本人が自分で戦法を使う場合（合戦の窓の「自動」を外した形）
         var katsumoto = w.Person("iwakiri-katsumoto"); w.MoveTo(katsumoto.X, katsumoto.Y);
         for (int i = 0; i < 240 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30);
         w.Do(w.Actions().First(a => a.Id.StartsWith("attack:")).Id);
@@ -206,6 +207,11 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         for (int i = 0; i < 30 && guard.GaugeOf(guard.Player.Id) < 100 && !guard.War.Routed.Contains(guard.Player.Id); i++) { guard.Player.Soldiers = Math.Max(guard.Player.Soldiers, 30); guard.Player.Morale = Math.Max(guard.Player.Morale, 60); guard.Advance(60); }
         int morale = guard.Player.Morale; var said = guard.Do("tactic:me"); cp.Log(said + $"　ゲージ {guard.GaugeOf(guard.Player.Id)}　士気 {morale}→{guard.Player.Morale}");
         cp.Expect(said.Contains("鼓舞") && guard.GaugeOf(guard.Player.Id) == 0, "戦法のゲージがたまると使える");
+        // 「自動」を入れると、ゲージがたまりしだい自分で使う。
+        guard.Do("tactic-auto:on"); int used = guard.Facts.Count(f => f.Text.Contains(guard.Player.Name + "が戦法"));
+        for (int i = 0; i < 40 && guard.ClashOf(guard.Player.Id) != null && guard.Facts.Count(f => f.Text.Contains(guard.Player.Name + "が戦法")) == used; i++) { guard.Player.Soldiers = Math.Max(guard.Player.Soldiers, 30); guard.Player.Morale = Math.Max(guard.Player.Morale, 60); guard.Advance(60); }
+        cp.Log(guard.Facts.LastOrDefault(f => f.Text.Contains("が戦法"))?.Text ?? "使わなかった");
+        cp.Expect(guard.Facts.Count(f => f.Text.Contains(guard.Player.Name + "が戦法")) > used, "自動を入れると、たまりしだい戦法を使う");
     }
 
     // 駆け引き（Core/Proto/ProtoTactics.cs）：側面・背後は強い、退き道をふさがれると壊滅、森で伏せると見えない、追うかどうかは気性と知略。

@@ -7,13 +7,16 @@ using HakutaiKagami.Core.Proto;
 // 試作版の合戦の見え方（2026-11-19 組み合わせ案。Core/Proto/ProtoClash.cs）。
 // ・上：両方の総士気。
 // ・地図：ぶつかっている隊どうしの間に押し合いのゲージ（左が鷹野、右が岩切。押している側が伸びる）。要所の旗は持っている家の色。
-// ・下：本人の隊がぶつかっている間だけ、采配（構え・戦法・かかれ）。速さは勝手に変えない（上の帯の「接敵で止める」を入れていれば、ぶつかる手前で止まる）。
+// ・右下：本人の隊がぶつかっている間だけ、ぶつかり合いに加わっている隊の一覧。本人の行の戦法の名前を押すと戦法を使う
+//   （「自動」を入れていれば、ゲージがたまりしだい使う）。気力・構え・強攻は画面から外した（2026-11-20 ユーザーの印）。
+//   速さは勝手に変えない（上の帯の「接敵で止める」を入れていれば、ぶつかる手前で止まる）。
 public partial class ProtoGame
 {
     PanelContainer spiritBox = null!, commandBox = null!;
-    ProgressBar spiritTakano = null!, spiritRebel = null!, kiBar = null!;
+    ProgressBar spiritTakano = null!, spiritRebel = null!;
     Label spiritTakanoText = null!, spiritRebelText = null!, sideTakano = null!, sideRebel = null!;
     TextureRect pushPic = null!;
+    internal CheckBox? tacticAuto;
     VBoxContainer allyList = null!, enemyList = null!; ScrollContainer allyScroll = null!, enemyScroll = null!;
     float battleRowH = 42;
     // 合戦の窓がいちばん高いとき（一覧が3人ぶん）の高さ。任務の窓はこの上までにする。
@@ -64,15 +67,6 @@ public partial class ProtoGame
         allyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; allyScroll.AddChild(allyList);
         enemyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyScroll.AddChild(enemyList);
         lists.AddChild(allyScroll); lists.AddChild(new VSeparator()); lists.AddChild(enemyScroll);
-        col.AddChild(new HSeparator());
-        var gauges = new HBoxContainer(); gauges.AddThemeConstantOverride("separation", 8); col.AddChild(gauges);
-        gauges.AddChild(new Label { Text = "気力" }); kiBar = Bar(new Color(0.9f, 0.75f, 0.3f), 100, new Vector2(150, 10)); gauges.AddChild(kiBar);
-        var orders = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; orders.AddThemeConstantOverride("separation", 6); col.AddChild(orders);
-        foreach (var s in ProtoWorld.Stances) { var st = s; Add(orders, "clash-stance-" + st, st, () => Message = World.Do("stance:" + st)); }
-        orders.AddChild(new VSeparator());
-        Add(orders, "clash-tactic", "戦法", () => Message = World.Do("tactic:me"));
-        var kakare = Add(orders, "clash-kakare", "強攻", () => Message = World.Do("kakare:me"));
-        kakare.AddThemeFontSizeOverride("font_size", 20);
         spiritBox.Visible = commandBox.Visible = false;
     }
 
@@ -200,9 +194,9 @@ public partial class ProtoGame
             foreach (var list in new[] { allyList, enemyList }) foreach (var n in list.GetChildren()) { list.RemoveChild(n); n.QueueFree(); }
             foreach (var u in allies) AddRow(allyList, u, false);
             foreach (var u in enemies) AddRow(enemyList, u, true);
-            // 高さは、多い方の人数（3人まで）に合わせる。
+            // 高さはいつも3人ぶん。
             float rowH = allyList.GetChildCount() > 0 ? ((Control)allyList.GetChild(0)).GetCombinedMinimumSize().Y : 40; int sep = allyList.GetThemeConstant("separation");
-            battleRowH = rowH; int shown = Math.Min(RowsShown, Math.Max(allies.Count, enemies.Count));
+            battleRowH = rowH; int shown = RowsShown; // 窓の高さはいつも3人ぶん（出るたびに高さが変わらない。任務の窓はそのすぐ上まで）
             allyScroll.CustomMinimumSize = enemyScroll.CustomMinimumSize = new Vector2(0, shown * rowH + (shown - 1) * sep);
             allyScroll.ScrollVertical = enemyScroll.ScrollVertical = 0;
         }
@@ -216,10 +210,8 @@ public partial class ProtoGame
         int ma = allies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale), me2 = enemies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale);
         sideTakano.Text = ma.ToString(); sideRebel.Text = me2.ToString(); troopsTakano.Text = "兵" + allies.Sum(u => u.Soldiers); troopsRebel.Text = "兵" + enemies.Sum(u => u.Soldiers);
         PaintPush(pushImage, ma + me2 == 0 ? 0 : (ma - me2) * 100.0 / (ma + me2)); pushTexture.Update(pushImage);
-        kiBar.Value = war.Ki;
-        foreach (var s in ProtoWorld.Stances) Buttons["clash-stance-" + s].Disabled = war.Stance == s;
-        Buttons["clash-tactic"].Text = "戦法：" + ProtoWorld.TacticOf(me); Buttons["clash-tactic"].Disabled = World.GaugeOf(me.Id) < 100;
-        Buttons["clash-kakare"].Disabled = !World.CanKakare;
+        if (Buttons.TryGetValue("clash-tactic", out var tb) && IsInstanceValid(tb)) tb.Disabled = World.GaugeOf(me.Id) < 100 || war.Routed.Contains(me.Id) || World.Confused(me.Id);
+        if (tacticAuto != null && IsInstanceValid(tacticAuto) && tacticAuto.ButtonPressed != war.AutoTactic) tacticAuto.SetPressedNoSignal(war.AutoTactic);
     }
 
     // 一覧の一行：小さなちびコマ・名前と兵・士気（金）と戦法のゲージ（青）と戦法の名前。本人の行は金の文字。
@@ -234,7 +226,15 @@ public partial class ProtoGame
         Label Tag(string t) { var l = new Label { Text = t, Modulate = new Color(0.75f, 0.75f, 0.75f) }; l.AddThemeFontSizeOverride("font_size", 12); return l; }
         var chaos = Bar(new Color(0.8f, 0.45f, 0.9f), 100, new Vector2(50, 6));
         bars.AddChild(Tag("士気")); bars.AddChild(morale); bars.AddChild(Tag("混乱")); bars.AddChild(chaos); bars.AddChild(Tag("戦法")); bars.AddChild(tactic);
-        var tn = new Label { Text = ProtoWorld.TacticOf(u), Modulate = new Color(0.6f, 0.8f, 1f) }; tn.AddThemeFontSizeOverride("font_size", 13); bars.AddChild(tn);
+        if (u.Player)
+        {
+            // 本人：戦法の名前がボタン（ゲージがたまると押せる）。横に「自動」。
+            var tb = Add(bars, "clash-tactic", ProtoWorld.TacticOf(u), () => Message = World.Do("tactic:me"));
+            tb.AddThemeFontSizeOverride("font_size", 13); tb.AddThemeColorOverride("font_color", new Color(0.6f, 0.8f, 1f)); tb.AddThemeColorOverride("font_disabled_color", new Color(0.4f, 0.5f, 0.62f));
+            tacticAuto = new CheckBox { Text = "自動", FocusMode = Control.FocusModeEnum.None, ButtonPressed = World.War.AutoTactic }; tacticAuto.AddThemeFontSizeOverride("font_size", 13);
+            tacticAuto.Toggled += on => World.Do("tactic-auto:" + (on ? "on" : "off")); bars.AddChild(tacticAuto);
+        }
+        else { var tn = new Label { Text = ProtoWorld.TacticOf(u), Modulate = new Color(0.6f, 0.8f, 1f) }; tn.AddThemeFontSizeOverride("font_size", 13); bars.AddChild(tn); }
         rows[u.Id] = (text, morale, tactic, chaos);
         row.AddChild(new Control { CustomMinimumSize = new Vector2(12, 0) }); // 送りの棒の分の余白
     }
@@ -266,7 +266,7 @@ public partial class ProtoGame
     // 色は勢力の色、縁は明るい勢力の色（本人は金、崩れた隊は灰色）。名前・兵の合計・内訳は凸の上に立てて読めるように出し、下に士気の細い棒。
     // 大きさはカメラの遠さに合わせて、画面の上でほぼ同じ大きさに見える。
     const float CardDistance = 600; // 凸は世界の大きさなので、引きすぎると小さくなる。これより遠いと凸、近いとちびコマ
-    sealed class Card { public MeshInstance3D Fill = null!, Edge = null!; public Label3D Name = null!, Total = null!, Parts = null!; public Sprite3D Morale = null!; public string Key = ""; }
+    sealed class Card { public MeshInstance3D Fill = null!, Edge = null!, Wall = null!, Shadow = null!; public Label3D Name = null!, Total = null!, Parts = null!; public Sprite3D Morale = null!; public string Key = ""; }
     readonly Dictionary<string, Card> cards = new();
     static float Chars(string t) => t.Sum(ch => ch > 0x2000 ? 1f : 0.58f);
     const int CardFont = 48; // 文字は大きく作って縮める（凸と一緒に大きさが変わる）
@@ -277,12 +277,31 @@ public partial class ProtoGame
     static ArrayMesh Totsu(float grow)
     {
         float w = 0.4f + grow, d = 0.4f + grow, tw = 0.175f + grow, td = 0.3f; // 本体は真四角（横から当たられても、出っ張りがちょうど面に触れる）
-        var v = new Vector3[] { new(-w, 0, d), new(w, 0, d), new(w, 0, -d), new(-w, 0, -d), new(-tw, 0, -d + 0.001f), new(tw, 0, -d + 0.001f), new(tw, 0, -d - td - grow), new(-tw, 0, -d - td - grow) };
+        var v = new Vector3[] { new(-w, 1, d), new(w, 1, d), new(w, 1, -d), new(-w, 1, -d), new(-tw, 1, -d + 0.001f), new(tw, 1, -d + 0.001f), new(tw, 1, -d - td - grow), new(-tw, 1, -d - td - grow) };
         var idx = new[] { 0, 2, 1, 0, 3, 2, 4, 6, 5, 4, 7, 6 };
         var arr = new Godot.Collections.Array(); arr.Resize((int)Mesh.ArrayType.Max); arr[(int)Mesh.ArrayType.Vertex] = v; arr[(int)Mesh.ArrayType.Index] = idx;
         var m = new ArrayMesh(); m.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arr); return m;
     }
-    static readonly ArrayMesh TotsuFill = Totsu(0), TotsuEdge = Totsu(0.035f);
+    static readonly ArrayMesh TotsuFill = Totsu(0), TotsuEdge = Totsu(0.035f), TotsuWall = TotsuWalls(0.035f);
+    // 凸の厚み（2026-11-20 ユーザーの印「平べったすぎる」）：凸を駒のように持ち上げ、側面を付ける。側面は面の向きで明るさを変える（手前が暗い）。
+    // 上の面は高さ1に置き、厚みは置くときの縦の倍率で決める（CardThick m）。下に影。
+    const float CardThick = 14f;
+    static ArrayMesh TotsuWalls(float grow)
+    {
+        float w = 0.4f + grow, d = 0.4f + grow, tw = 0.175f + grow, td = 0.3f + grow;
+        var ring = new Vector2[] { new(-w, d), new(w, d), new(w, -d), new(tw, -d), new(tw, -d - td), new(-tw, -d - td), new(-tw, -d), new(-w, -d) };
+        var v = new List<Vector3>(); var col = new List<Color>(); var idx = new List<int>();
+        for (int i = 0; i < ring.Length; i++)
+        {
+            var a = ring[i]; var b = ring[(i + 1) % ring.Length]; var n = new Vector2(b.Y - a.Y, a.X - b.X).Normalized(); // 外向き
+            float shade = 0.5f + 0.22f * n.Dot(new Vector2(-0.6f, -0.8f)); // 左奥からの明かり
+            int k = v.Count; v.Add(new(a.X, 0, a.Y)); v.Add(new(b.X, 0, b.Y)); v.Add(new(b.X, 1, b.Y)); v.Add(new(a.X, 1, a.Y));
+            for (int j = 0; j < 4; j++) col.Add(new Color(shade, shade, shade));
+            idx.AddRange(new[] { k, k + 1, k + 2, k, k + 2, k + 3 });
+        }
+        var arr = new Godot.Collections.Array(); arr.Resize((int)Mesh.ArrayType.Max); arr[(int)Mesh.ArrayType.Vertex] = v.ToArray(); arr[(int)Mesh.ArrayType.Color] = col.ToArray(); arr[(int)Mesh.ArrayType.Index] = idx.ToArray();
+        var m = new ArrayMesh(); m.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arr); return m;
+    }
     static StandardMaterial3D Flat(int priority) => new() { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, NoDepthTest = true, CullMode = BaseMaterial3D.CullModeEnum.Disabled, RenderPriority = priority, Transparency = BaseMaterial3D.TransparencyEnum.Alpha };
     readonly Dictionary<string, float> cardYaw = new();
     void DrawCard(ProtoPerson p, Vector3 foot, bool show, string name, int total, string parts)
@@ -292,13 +311,15 @@ public partial class ProtoGame
             c = new Card
             {
                 Edge = new MeshInstance3D { Mesh = TotsuEdge, MaterialOverride = Flat(18) }, Fill = new MeshInstance3D { Mesh = TotsuFill, MaterialOverride = Flat(19) },
+                Wall = new MeshInstance3D { Mesh = TotsuWall, MaterialOverride = Flat(17) }, Shadow = new MeshInstance3D { Mesh = TotsuEdge, MaterialOverride = Flat(16) },
                 Name = CardText(), Total = CardText(), Parts = CardText(),
                 Morale = new Sprite3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 21 },
             };
-            foreach (var n in new Node3D[] { c.Edge, c.Fill, c.Name, c.Total, c.Parts, c.Morale }) AddChild(n);
+            ((StandardMaterial3D)c.Wall.MaterialOverride).VertexColorUseAsAlbedo = true; ((StandardMaterial3D)c.Shadow.MaterialOverride).AlbedoColor = new Color(0, 0, 0, 0.3f);
+            foreach (var n in new Node3D[] { c.Shadow, c.Wall, c.Edge, c.Fill, c.Name, c.Total, c.Parts, c.Morale }) AddChild(n);
             cards[p.Id] = c;
         }
-        foreach (var n in new GeometryInstance3D[] { c.Edge, c.Fill, c.Name, c.Total, c.Morale }) n.Visible = show;
+        foreach (var n in new GeometryInstance3D[] { c.Shadow, c.Wall, c.Edge, c.Fill, c.Name, c.Total, c.Morale }) n.Visible = show;
         c.Parts.Visible = show && parts != "";
         if (!show) return;
         bool routed = World.War.Routed.Contains(p.Id);
@@ -309,13 +330,15 @@ public partial class ProtoGame
         float diff = Mathf.Wrap(want - yaw, -Mathf.Pi, Mathf.Pi), step = Mathf.DegToRad(120) * (float)GetProcessDeltaTime();
         yaw += Math.Clamp(diff, -step, step); cardYaw[p.Id] = yaw;
         var ground = foot + new Vector3(0, 2, 0);
-        c.Fill.Transform = c.Edge.Transform = new Transform3D(new Basis(Vector3.Up, yaw).Scaled(new Vector3(size, 1, size)), ground);
+        c.Fill.Transform = c.Edge.Transform = c.Wall.Transform = new Transform3D(new Basis(Vector3.Up, yaw).Scaled(new Vector3(size, CardThick, size)), ground);
+        c.Shadow.Transform = new Transform3D(new Basis(Vector3.Up, yaw).Scaled(new Vector3(size * 1.04f, 0.01f, size * 1.04f)), ground + new Vector3(CardThick * 0.5f, -1, CardThick * 0.6f));
         var key = $"{name}|{total}|{parts}|{p.Morale / 5}|{routed}";
         if (key != c.Key)
         {
             c.Key = key; c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
             ((StandardMaterial3D)c.Fill.MaterialOverride).AlbedoColor = routed ? new Color(0.32f, 0.32f, 0.32f, 0.92f) : HouseColor(p.House).Darkened(0.1f) with { A = 0.92f };
             ((StandardMaterial3D)c.Edge.MaterialOverride).AlbedoColor = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.4f);
+            ((StandardMaterial3D)c.Wall.MaterialOverride).AlbedoColor = routed ? new Color(0.45f, 0.45f, 0.45f) : HouseColor(p.House);
             var img = Image.CreateEmpty(100, 8, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
             img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(p.Morale, 0, 100) / 100), 6), new Color(0.95f, 0.8f, 0.3f));
             c.Morale.Texture = ImageTexture.CreateFromImage(img);
@@ -327,7 +350,7 @@ public partial class ProtoGame
         float Fit(Label3D l, float scale) => Math.Min(rowH * scale, boxW / Math.Max(1, Chars(l.Text))) / CardFont;
         c.Name.PixelSize = Fit(c.Name, 0.85f); c.Total.PixelSize = Fit(c.Total, 1f); c.Parts.PixelSize = Fit(c.Parts, 0.75f);
         c.Morale.PixelSize = boxW * 0.8f / 100;
-        var up = Camera?.GlobalBasis.Y ?? Vector3.Up; var center = ground + new Vector3(0, 1, 0);
+        var up = Camera?.GlobalBasis.Y ?? Vector3.Up; var center = ground + new Vector3(0, CardThick + 1, 0);
         float top = boxH / 2 - rowH / 2;
         var order = hasParts ? new Node3D[] { c.Name, c.Total, c.Parts, c.Morale } : new Node3D[] { c.Name, c.Total, c.Morale };
         for (int k = 0; k < order.Length; k++) order[k].Position = center + up * (top - rowH * k);

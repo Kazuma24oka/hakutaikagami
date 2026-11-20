@@ -139,8 +139,8 @@ public sealed partial class ProtoWorld
         foreach (var u in all.Where(u => Live(u) && !dealt.Keys.Any(k => k.Item2 == u.Id) && ChaosOf(u.Id) > 0)) War.Chaos[u.Id] = Math.Max(0, ChaosOf(u.Id) - 5);
         foreach (var u in all.Where(u => Live(u) && BehindGate(u) && u.Soldiers > 0)) u.Morale = Math.Max(u.Morale, 20); // 城門の内の兵は崩れない
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 || u.Soldiers == 0)).ToArray()) Rout(u);
-        // NPC は戦法のゲージがたまれば自分で使う。
-        foreach (var u in all.Where(u => !u.Player && Live(u) && GaugeOf(u.Id) >= 100 && !Confused(u.Id))) UseTactic(u);
+        // NPC は戦法のゲージがたまれば自分で使う。本人は「自動」を入れているときだけ。
+        foreach (var u in all.Where(u => (!u.Player || War.AutoTactic) && Live(u) && GaugeOf(u.Id) >= 100 && !Confused(u.Id))) UseTactic(u);
         War.Clashes.RemoveAll(c => War.Routed.Contains(c.A) || War.Routed.Contains(c.B));
     }
 

@@ -43,6 +43,7 @@ public sealed class ProtoWarState
     public List<ProtoClash> Clashes { get; set; } = [];
     public string Stance { get; set; } = "白兵";
     public int Ki { get; set; } = 50;
+    public bool AutoTactic { get; set; } = true; // 本人の戦法を、ゲージがたまりしだい自動で使う（合戦の窓のチェック）
     public Dictionary<string, int> Gauge { get; set; } = [];
     public Dictionary<string, long> Until { get; set; } = [];
     public Dictionary<string, long> AtCamp { get; set; } = [];

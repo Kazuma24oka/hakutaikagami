@@ -268,7 +268,7 @@ public partial class ProtoGame : Node3D
         if (!followers.TryGetValue(p.Id, out var list)) followers[p.Id] = list = new();
         int want = show ? Math.Clamp((p.Soldiers + 9) / 10, 0, 15) : 0;
         var mix = TroopMix(p);
-        while (list.Count < want) { var d = new DotOfficerActor { OnTop = true }; AddChild(d); list.Add(d); }
+        while (list.Count < want) { var d = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(d); list.Add(d); }
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
         var dir = heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
         // 足軽は大将の後ろに並ぶ（2026-11-19 ユーザーの図「大将どうしが向かい合い、兵は後ろ」）。ぶつかっている間は打つ動き。
@@ -296,7 +296,7 @@ public partial class ProtoGame : Node3D
             var body = new MeshInstance3D { Mesh = new SphereMesh { Radius = r, Height = r * 2 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = p.Player ? new Color(1, 1, 1) : HouseColor(p.House), EmissionEnabled = p.Player, Emission = new Color(0.4f, 0.4f, 0.2f) } };
             var label = new Label3D { Text = p.Name, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = p.Player ? 0.0011f : 0.0008f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = p.Player ? new Color(1, 1, 0.6f) : new Color(1, 1, 1) };
             AddChild(body); AddChild(label); actors[p.Id] = (body, label);
-            if (DotOfficerActor.Available) { var dot = new DotOfficerActor { OnTop = true }; AddChild(dot); dots[p.Id] = dot; }
+            if (DotOfficerActor.Available) { var dot = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(dot); dots[p.Id] = dot; }
         }
     }
 
@@ -359,7 +359,7 @@ public partial class ProtoGame : Node3D
         }
         // 任務の窓は、いつも、右下の合戦の窓がいちばん高いとき（3人ぶん）の上までにする。合戦の窓が出ていなくても同じ長さ
         // （出たり消えたりで長さが変わると見にくい。2026-11-20 ユーザー）。長い分は窓の中で送る。
-        float room = GetViewport().GetVisibleRect().Size.Y - 80 - (BattleBoxMaxHeight + 16);
+        float room = GetViewport().GetVisibleRect().Size.Y - 68 - (BattleBoxMaxHeight + 16); // 上の帯の下60から、合戦の窓の上すれすれまで
         sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, Math.Max(140, room)));
         bool on = hoverUnit != null && sidePanel.Visible; hoverRingUnit.Visible = hoverRingSpot.Visible = on; if (!on) return;
         var u = World.Person(hoverUnit!); float pulse = 1 + 0.12f * MathF.Sin(Time.GetTicksMsec() / 150f), r = Math.Max(45, distance * 0.05f) * pulse;

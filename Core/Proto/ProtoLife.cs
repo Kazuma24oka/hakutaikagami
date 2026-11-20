@@ -346,6 +346,7 @@ public sealed partial class ProtoWorld
         if (kind == "stance") return SetStance(id);
         if (kind == "kakare") return Kakare();
         if (kind == "tactic") return UseTactic(Player);
+        if (kind == "tactic-auto") { War.AutoTactic = id == "on"; return ""; }
         if (kind == "council") return "";
         if (kind == "awards") return TakeAwards();
         if (kind == "siege") return DecideSiege(id);
