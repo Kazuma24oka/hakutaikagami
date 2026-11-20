@@ -35,7 +35,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(ids.Contains("council"), "手切れの書状が届いて軍議が開かれる（本人がいなければ大将が決める）");
         cp.Expect(ids.Contains("signal") || ids.Any(i => i.StartsWith("nukegake:")), "合図の狼煙か抜け駆けで合戦になる");
         cp.Expect(ids.Any(i => i.StartsWith("rout:")), "どちらかの隊が崩れる");
-        cp.Expect(ids.Contains("rebellion-crushed") || ids.Contains("expedition-failed"), "合戦の決着がつく");
+        cp.Expect(ids.Contains("rebellion-crushed") || ids.Contains("expedition-failed") || ids.Any(i => i.StartsWith("withdrawn:")) || ids.Contains("held") || ids.Contains("draw"), "合戦の決着がつく");
         cp.Expect(!w.Knows(w.Player, "invite"), "沢渡の誘いは、本人は知らない（密かな書状）");
     }
 
@@ -319,6 +319,44 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.Facts.Any(f => f.Id == "marched") && w.Facts.Any(f => f.Id == "split"), "総勢で城を出て、着陣してから分かれる");
         cp.Expect(sawBody && together, "着陣までは、総勢が大将から400m以内にまとまっている");
         cp.Expect(w.War.Result != "", "決着がつく");
+    }
+
+    // 大目標と撤退条件（Core/Proto/ProtoGoals.cs）：撤退条件は状況で初めから決まっていて、軍議では足せるが減らせない。敵も持つ。
+    [Theory]
+    [InlineData("敵を崩す", "正面から当たる", "先手", "足さない", 0)]
+    [InlineData("敵を崩す", "釣り野伏", "伏兵", "全軍士気が半分を切る", 0)]
+    [InlineData("陣を守り抜く", "陣を固める", "森の守り", "昼までに決まらない", 1)]
+    [InlineData("陣を守り抜く", "陣を固める", "丘の守り", "足さない", 0)]
+    public void TheArmyHasAGoalAndRetreatRules(string goal, string plan, string role, string add, int dep)
+    {
+        using var cp = new Checkpoints($"試作版の大目標_{goal}_{plan}_{add}_{dep}", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        cp.Expect(ProtoWorld.PlansOf(goal).Contains(plan), "大目標ごとに選べる作戦がある");
+        cp.Log(w.DecideCouncil(null, ProtoWorld.Departures[dep], ProtoWorld.Signals[0], plan, role, goal, add));
+        var rules = w.RetreatRules().ToArray();
+        cp.Log("鷹野の撤退条件：" + string.Join("、", rules.Select(r => r.Text + (r.Added ? "（足した）" : ""))));
+        cp.Expect(rules.Count(r => !r.Added) >= 3 && rules.Any(r => r.Id == "head") && rules.Any(r => r.Id == "spirit0"), "初めから決まっている撤退条件がある");
+        cp.Expect(rules.Any(r => r.Id == (goal == "陣を守り抜く" ? "lost-post" : "dusk")), "大目標に合う撤退条件が付く");
+        cp.Expect(rules.Count(r => r.Added) == (add == "足さない" ? 0 : 1), "軍議で足した条件だけが増える");
+        cp.Log(w.Do("order:follow"));
+        int seen = w.Facts.Count; bool loggedRebel = false;
+        while (w.War.Result == "" && w.Second < 5 * Day)
+        {
+            w.Advance(60);
+            if (!loggedRebel && w.RetreatRules("iwakiri").Any()) { loggedRebel = true; cp.Log($"岩切の大目標：{w.GoalOf("iwakiri")}　撤退条件：" + string.Join("、", w.RetreatRules("iwakiri").Select(r => r.Text + (r.Added ? "（足した）" : "")))); }
+            foreach (var f in w.Facts.Skip(seen).Where(f => !f.Text.Contains("杭") && !f.Text.Contains("怪しい") && !f.Text.Contains("越後屋") && !f.Text.Contains("小競り"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}");
+            seen = w.Facts.Count;
+        }
+        cp.Log($"結果 {w.War.Result}　{ProtoWorld.Clock(w.Second)}　本人 兵{w.Player.Soldiers}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
+        cp.Log($"作戦 {plan}　{w.PlanState}：" + string.Join("、", w.PlanSteps().Select(x => x.Text + (x.State != "" ? "＝" + x.State : ""))));
+        cp.Expect(loggedRebel && w.GoalOf("iwakiri") == (dep == 0 ? "敵を崩す" : "陣を守り抜く"), "岩切勢も大目標と撤退条件を持つ（鷹野が夜のうちに出ていれば討って出る）");
+        cp.Expect(w.War.Result != "", "決着がつく");
+        foreach (var side in new[] { "takano", "iwakiri" })
+            if (w.Retreated(side)) cp.Expect(w.Facts.Any(f => f.Id == "retreat:" + side) && w.RetreatRules(side).Count(r => r.Met) == 1, $"{side} は撤退条件を満たして退き貝を鳴らした");
+        cp.Expect(w.War.Result is not ("退いた" or "退かせた") || w.Retreated("takano") || w.Retreated("iwakiri"), "退いた決着は、撤退条件を満たしたときだけ");
     }
 
     // 立て直し：崩れた隊は本陣で30分休むと、一度だけ戦いに戻る（士気60）。

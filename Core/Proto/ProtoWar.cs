@@ -58,9 +58,16 @@ public sealed class ProtoWarState
     public long StageX { get; set; }
     public long StageY { get; set; }
     public bool PlayerFollows { get; set; }  // 本人が「指図どおりに動く」を選んでいる
-    public Dictionary<string, int> StartSoldiers { get; set; } = []; // 合戦に入ったときの兵の数（右下の窓に「今/元」で出す）
+    public Dictionary<string, int> StartSoldiers { get; set; } = [];
+    // 大目標と撤退条件（Core/Proto/ProtoGoals.cs）。鍵は側（takano・iwakiri）。
+    public Dictionary<string, string> Goals { get; set; } = [];
+    public Dictionary<string, List<string>> RetreatRules { get; set; } = [];
+    public Dictionary<string, string> RetreatAdded { get; set; } = [];
+    public Dictionary<string, string> RetreatBy { get; set; } = [];   // 満たした条件（退き貝が鳴った）
+    public Dictionary<string, long> RetreatAt { get; set; } = [];
+    public Dictionary<string, int> StartMen { get; set; } = []; // 合戦に入ったときの兵の数（右下の窓に「今/元」で出す）
 }
-public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans);
+public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans, string[] Goals, string[] RetreatAdds);
 
 public sealed partial class ProtoWorld
 {
@@ -132,6 +139,9 @@ public sealed partial class ProtoWorld
         {
             Set("rebels-out");
             War.Assign[Katsumoto] = "south-hill"; War.Assign[Iguchi] = "road-mouth";
+            // 岩切勢の大目標：鷹野が夜のうちに出ていれば（陣を取られているかもしれない）討って出る。まだ出ていなければ陣を守り抜く。
+            War.Goals[Rebel] = flags.TryGetValue("marched", out var went) && went < Second ? Goals[0] : Goals[1];
+            SetRetreatRules(Rebel, katsumoto.Temper == "慎重" ? RetreatAdds[1] : null);
             foreach (var id in new[] { Katsumoto, Iguchi }) { var p = Person(id); if (p.House == Rebel) MarchTo(p, PositionOf(War.Assign[id])); }
         }
     }
@@ -169,23 +179,26 @@ public sealed partial class ProtoWorld
             $"{karou.Name}「南の丘を先に押さえれば、城から出る敵を見下ろせます。勝元は用心深い男、夜明けには丘へ出てまいりましょう。今夜のうちに丘へ。」",
         };
         if (Knows(Player, "invite")) ops.Add($"{Player.Name}は、沢渡家が勝元を誘っていたことを知っている。");
-        return new(heir.Name, [.. ops], Map.Data.Positions!.Select(p => (p.Id, p.Name)).ToArray(), Departures, Signals, Plans);
+        return new(heir.Name, [.. ops], Map.Data.Positions!.Select(p => (p.Id, p.Name)).ToArray(), Departures, Signals, Plans, Goals, RetreatAdds);
     }
     // 本人が出ていれば本人の意見（自分の陣・出立・合図）が通る。出ていなければ大将の考えで決まる。
     // 本人が出ていれば本人の意見（作戦・自分の役目・出立・合図）が通る。出ていなければ大将の考えで決まる。
     // role：自分の役目（作戦の役目のどれか）。playerPosition だけを渡すと、その陣の役目になる（前の呼び方）。
-    public string DecideCouncil(string? playerPosition, string? departure, string? signal, string? plan = null, string? role = null)
+    // goal：大目標。retreat：足す撤退条件（RetreatAdds）。出ていなければ大将が決める（慎重な大将は「全軍士気が半分を切る」を足す）。
+    public string DecideCouncil(string? playerPosition, string? departure, string? signal, string? plan = null, string? role = null, string? goal = null, string? retreat = null)
     {
         if (War.Phase != "軍議待ち" || War.Assign.Count > 0) return "";
         bool present = playerPosition != null || role != null; War.PlayerAtCouncil = present;
         string dep = departure ?? Departures[1], sig = signal ?? Signals[0];
-        AssignRoles(plan ?? Plans[0], role, playerPosition);
+        War.Goals["takano"] = goal ?? Goals[0];
+        AssignRoles(plan ?? PlansOf(War.Goals["takano"])[0], role, playerPosition);
         long night = At(DayIndex, 21), dawn = (Second / Day + 1) * Day + 4 * Hour;
         War.DepartAt = dep == Departures[0] ? Math.Max(Second + 10 * 60, Math.Min(night, Second + Hour)) : dawn;
         War.SignalAt = (dawn / Day) * Day + (sig == Signals[0] ? 6 : 8) * Hour;
         War.Phase = "行軍";
         // 兵を預かり、出陣の任務を受ける。軍議の任務は、軍議に加わって済む。
         Player.Soldiers = 30; Player.Morale = 100;
+        SetRetreatRules("takano", present ? retreat : Person(Heir).Temper == "慎重" ? RetreatAdds[1] : null);
         foreach (var t in Tasks.Where(t => t.Kind == "council" && t.State == TaskState.Open && present)) Next(t);
         var mine = PositionOf(War.Assign[Player.Id]);
         Note($"{Person(Heir).Name}から兵30を預かった。");
@@ -197,7 +210,7 @@ public sealed partial class ProtoWorld
         }
         var where = string.Join("、", War.Assign.Select(a => $"{Person(a.Key).Name}は{(War.Roles.GetValueOrDefault(a.Key, "") is { Length: > 0 } r ? r + "（" + PositionOf(a.Value).Name + "）" : PositionOf(a.Value).Name)}"));
         var castle = Map.Site("takano-castle");
-        Happen("council", $"軍議で決まった：{War.Plan}。{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
+        Happen("council", $"軍議で決まった：{War.Goals["takano"]}。{War.Plan}。{where}。{dep}。{sig}。", castle.X * 100L, castle.Y * 100L, Person(Heir), Person(Karou), Player);
         return present ? $"{Person(Heir).Name}「それでいこう。」" : "";
     }
 
@@ -213,6 +226,8 @@ public sealed partial class ProtoWorld
     {
         var takano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && !War.Routed.Contains(u.Id)).ToArray();
         var rebels = Units.Where(u => u.House == Rebel && !War.Routed.Contains(u.Id)).ToArray();
+        // 退き貝で退いている隊は、作戦にも狙いにも加えない（敵からは見えるので、追われる）。
+        var allTakano = takano; takano = takano.Where(u => !Withdrawing(u)).ToArray();
         MarchTogether(takano);
         // 先に取られていた：着く前に敵がその陣にいれば、手前で止まって知らせる。
         foreach (var u in takano.Where(u => Auto(u) && War.Split && u.Moving && !War.Target.ContainsKey(u.Id) && !Flag("luring:" + u.Id)))
@@ -256,11 +271,14 @@ public sealed partial class ProtoWorld
             }
         }
         ActOnRoles(takano, rebels);
-        // 謀叛方は、合戦になったら見えている敵に向かう。
-        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !War.Target.ContainsKey(r.Id)))
+        // 謀叛方は、合戦になったら見えている敵に向かう。陣を守り抜くつもりなら、自分の陣の近く（400m）に来た敵だけを相手にし、離れたら陣へ戻る。
+        bool rebelsHold = GoalOf(Rebel) == Goals[1];
+        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
         {
-            var seen = takano.Concat(new[] { Player }).Where(t => t.Soldiers > 0 && InSight(r, t)).OrderBy(t => Dist(r, t)).FirstOrDefault();
+            var post = War.Assign.TryGetValue(r.Id, out var ra) ? PositionOf(ra) : null;
+            var seen = allTakano.Concat(new[] { Player }).Where(t => t.Soldiers > 0 && InSight(r, t) && (!rebelsHold || post == null || Dist(t, post.X * 100L, post.Y * 100L) <= 400_00)).OrderBy(t => Dist(r, t)).FirstOrDefault();
             if (seen != null) War.Target[r.Id] = seen.Id;
+            else if (rebelsHold && post != null && !r.Moving && ClashOf(r.Id) == null && Dist(r, post.X * 100L, post.Y * 100L) > 150_00) MarchTo(r, post);
         }
         // 向かう：相手が動けば道筋を引き直す（5分ごと）。
         foreach (var (id, targetId) in War.Target.ToArray())
@@ -278,7 +296,7 @@ public sealed partial class ProtoWorld
         if (War.Phase == "合戦") Regroup();
         var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
-        if (War.Phase == "合戦") foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
+        if (War.Phase == "合戦") foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
         Spread(field); UpdateFacing(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }
@@ -306,6 +324,7 @@ public sealed partial class ProtoWorld
             Happen("expedition-failed", "鷹野の討手は岩切勢に退けられた。", h.X, h.Y, h, Person(Karou));
             foreach (var r in People.Where(r => r.House == Rebel && r.Active)) Walk(r, Spot(Map.Site("iwakiri-castle"), 3), "iwakiri-castle", "岩切城へ引き上げている");
         }
+        Retreats();
         if (War.Result != "") UpdatePlan(); // 決着で最後の段が決まる
     }
 

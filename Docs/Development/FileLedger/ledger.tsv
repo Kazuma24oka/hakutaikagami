@@ -763,6 +763,7 @@ Core/Events/EventScheduler.cs	使う	ScheduledEvent、EventScheduler を定義�
 Core/HakutaiKagami.Core.csproj	使う	Core の組み立て定義（埋め込み資料23件、Tests への内部公開）	Game/HakutaiKagami.Game.csproj:3 と Tests/HakutaiKagami.Tests.csproj が参照	2026-11-18
 Core/Messaging/MessageFlow.cs	使う	AttemptStatus、MessageEnvelope、MessageAttempt を定義。AttemptStatus が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/NewGameRuntime.CastellanReports.cs:15 で AttemptStatus（他に Game 42件・Core 128件・Tests 65件）	2026-11-18
 Core/Proto/ProtoClash.cs	使う	試作版の合戦の作り直し（要所と総士気・押し合い・戦場の幅・采配・本陣での立て直し）	Core/Proto/ProtoWar.cs の Battle から呼ぶ。Tests/ProtoWarTests.cs	2026-11-19
+Core/Proto/ProtoGoals.cs	使う	試作版の合戦の大目標（敵を崩す・陣を守り抜く）と、軍としての撤退条件（状況で決まり、軍議で足せる）、退き貝と退却	Core/Proto/ProtoWar.cs の DecideCouncil と Battle から呼ぶ。Tests/ProtoWarTests.cs の TheArmyHasAGoalAndRetreatRules	2026-11-20
 Core/Proto/ProtoLife.cs	使う	ProtoStep、ProtoTask、ProtoAction を定義。GoToTask が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoGame.cs:216 で GoToTask（他に Game 1件・Core 1件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMap.cs	使う	Ground、ProtoHouse、ProtoSite を定義。GroundAtCm が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/Proto/ProtoDebug.cs:124 で GroundAtCm（他に Game 2件・Core 2件・Tests 1件）	2026-11-18
 Core/Proto/ProtoMove.cs	使う	ProtoMove を定義。ProtoMove が他の Coreから使われ、ゲームの本線から届く	Core/Proto/ProtoLife.cs:193 で ProtoMove（他に Game 0件・Core 2件・Tests 1件）	2026-11-18

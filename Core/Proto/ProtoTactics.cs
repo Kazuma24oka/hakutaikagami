@@ -112,7 +112,7 @@ public sealed partial class ProtoWorld
         Advance(War.SignalAt + 60 - Second);
         var kosaka = Person(Karou); var iguchi = Person(Iguchi); var me = Player;
         foreach (var id in new[] { Heir, Katsumoto }) { Person(id).Active = false; War.Target.Remove(id); }
-        War.StartSoldiers.Clear();
+        War.StartSoldiers.Clear(); War.RetreatRules.Clear(); // この試しでは軍としての撤退は見ない
         foreach (var u in new[] { kosaka, iguchi, me }) { u.Path = []; u.PathIndex = 0; War.Target.Remove(u.Id); War.Routed.Remove(u.Id); }
         me.Soldiers = 30; me.Morale = 100; iguchi.Soldiers = 80; iguchi.Morale = 100; kosaka.Soldiers = 100; kosaka.Morale = 100;
         var hide = PositionOf("forest-edge"); kosaka.X = hide.X * 100L; kosaka.Y = hide.Y * 100L;

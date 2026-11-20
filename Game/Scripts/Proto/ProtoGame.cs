@@ -48,7 +48,7 @@ public partial class ProtoGame : Node3D
     MeshInstance3D pathLine = null!, marker = null!;
     ImmediateMesh pathMesh = null!;
     Label clock = null!, foot = null!, journal = null!, message = null!;
-    PanelContainer sidePanel = null!; bool? panelOpen; string journalKey = ""; double journalShown;
+    ScrollContainer sideScroll = null!; PanelContainer sidePanel = null!; bool? panelOpen; string journalKey = ""; double journalShown;
     static readonly string[] LogTabs = ["全部", "戦闘", "会話"];
     string logTab = "全部"; bool logMin; VBoxContainer logBody = null!;
     readonly List<ProtoEvent> damageLog = new(); long damageSeen = -1;
@@ -312,7 +312,9 @@ public partial class ProtoGame : Node3D
 
         Add(bar, "panel", "任務", () => panelOpen = !(panelOpen ?? World.War.Phase != "合戦"));
         var side = sidePanel = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
-        var col = new VBoxContainer(); side.AddChild(col);
+        // 中身が長いときは窓の中で送る（画面の下にはみ出さない）。
+        sideScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled }; side.AddChild(sideScroll);
+        var col = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; sideScroll.AddChild(col);
         panel = col;
 
         var bottom = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 700; root.AddChild(bottom);
@@ -350,6 +352,7 @@ public partial class ProtoGame : Node3D
             MeshInstance3D Thin(Color c) { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.965f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = c, NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
             aimRing = Thin(new Color(1, 1, 1)); scoutRing = Thin(new Color(1, 1, 1, 0.45f)); ((StandardMaterial3D)scoutRing.MaterialOverride).Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
         }
+        sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, GetViewport().GetVisibleRect().Size.Y - 80));
         float sr = ProtoWorld.ScoutRadius / 100f;
         if (scoutAim && !World.CanScout) scoutAim = false;
         var aim = scoutAim ? aimForced ?? PickGround(GetViewport().GetMousePosition()) : null;
@@ -376,7 +379,7 @@ public partial class ProtoGame : Node3D
         var orders = World.Orders().ToArray(); bool inWar = World.War.Phase is "行軍" or "合戦" or "終わり" && orders.Length > 0; // 決着のあとも、作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("scout:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.CanScout + scoutAim + World.War.Phase;
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.CanScout + scoutAim + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -389,6 +392,7 @@ public partial class ProtoGame : Node3D
                 // 作戦の名と成否、段取り（済んだ段は成功・失敗、今の段は白、先の段は薄く）。
                 Color good = new(0.6f, 0.9f, 0.6f), bad = new(1, 0.5f, 0.45f), dim = new(0.62f, 0.62f, 0.62f);
                 string state = World.PlanState;
+                panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
                 panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });
                 var steps = World.PlanSteps().ToArray(); int now = state == "" ? Array.FindIndex(steps, x => x.State == "") : -1;
                 for (int i = 0; i < steps.Length; i++)
@@ -397,7 +401,8 @@ public partial class ProtoGame : Node3D
                 foreach (var o in orders)
                 {
                     bool mine = o.Unit == World.Player.Id;
-                    var row = new Label { Text = o.Name + "　" + o.Role + (char)10 + "　" + o.Text, AutowrapMode = TextServer.AutowrapMode.WordSmart, MouseFilter = Control.MouseFilterEnum.Stop, Modulate = mine ? new Color(1, 0.88f, 0.45f) : Colors.White };
+                    // 自分の隊だけ指図の文も出す（ほかの隊は名前と役目。乗せると行き先が光る）。
+                    var row = new Label { Text = o.Name + "　" + o.Role + (mine ? (char)10 + "　" + o.Text : ""), AutowrapMode = TextServer.AutowrapMode.WordSmart, MouseFilter = Control.MouseFilterEnum.Stop, Modulate = mine ? new Color(1, 0.88f, 0.45f) : Colors.White };
                     var ord = o; row.MouseEntered += () => { hoverUnit = ord.Unit; hoverSpot = ToScene(ord.X, ord.Y); }; row.MouseExited += () => { if (hoverUnit == ord.Unit) hoverUnit = null; };
                     panel.AddChild(row);
                 }
@@ -411,6 +416,14 @@ public partial class ProtoGame : Node3D
                 }
                 if (World.War.Phase is "行軍" or "合戦") { var sb = Add(panel, "act:scout", scoutAim ? "物見　やめる" : $"物見　兵{ProtoWorld.ScoutMen}", () => { scoutAim = !scoutAim; aimForced = null; RefreshUi(); }); sb.Disabled = !World.CanScout; }
                 foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:"))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
+                // 撤退の条件（足した分は金色、満たして退き貝が鳴った条件は赤）。
+                var rules = World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
+                if (rules.Length > 0)
+                {
+                    panel.AddChild(new HSeparator());
+                    panel.AddChild(new Label { Text = gone ? "撤退" : "撤退の条件", Modulate = gone ? bad : new Color(1, 0.9f, 0.6f) });
+                    foreach (var r in rules) panel.AddChild(new Label { Text = "・" + r.Text, AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = r.Met ? bad : r.Added ? new Color(1, 0.88f, 0.45f) : gone ? dim : Colors.White });
+                }
             }
             else
             {
@@ -658,29 +671,32 @@ public partial class ProtoGame : Node3D
     }
 
     // ---- 軍議（話す場面の上で、意見を聞いてから選ぶ） ----
-    internal (OptionButton Role, OptionButton Dep, OptionButton Sig, Button Ok, OptionButton Plan)? councilChoices;
+    internal (OptionButton Role, OptionButton Dep, OptionButton Sig, Button Ok, OptionButton Plan, OptionButton Goal, OptionButton Retreat)? councilChoices;
     internal void OpenCouncil()
     {
         if (Scene.Open || !World.CouncilOpen) return;
         var view = World.Council();
-        var box = new VBoxContainer();
+        var box = new VBoxContainer(); var grid = new GridContainer { Columns = 2 }; grid.AddThemeConstantOverride("h_separation", 24); box.AddChild(grid);
         OptionButton Choice(string title, string[] items, int pick)
         {
-            var row = new HBoxContainer(); box.AddChild(row); row.AddChild(new Label { Text = title, CustomMinimumSize = new Vector2(140, 0) });
+            var row = new HBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; grid.AddChild(row); row.AddChild(new Label { Text = title, CustomMinimumSize = new Vector2(150, 0) });
             var o = new OptionButton { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; foreach (var it in items) o.AddItem(it); o.Select(pick); row.AddChild(o); return o;
         }
-        // 作戦を選ぶと、その作戦の役目が出る。
+        // 大目標を選ぶとその作戦が出て、作戦を選ぶとその役目が出る。撤退の条件は、初めから決まっている分に足すだけ。
+        var goal = Choice("大目標", view.Goals, 0);
+        var plan = Choice("作戦", ProtoWorld.PlansOf(view.Goals[0]), 0);
+        var role = Choice("自分の役目", ProtoWorld.RolesOf(plan.GetItemText(0)).Select(r => r.Role).ToArray(), 0);
         var dep = Choice("出立", view.Departures, 1);
         var sig = Choice("合図", view.Signals, 0);
-        var plan = Choice("作戦", view.Plans, 0);
-        var role = Choice("自分の役目", ProtoWorld.RolesOf(view.Plans[0]).Select(r => r.Role).ToArray(), 0);
-        box.MoveChild(plan.GetParent(), 0); box.MoveChild(role.GetParent(), 1);
-        plan.ItemSelected += i => { role.Clear(); foreach (var r in ProtoWorld.RolesOf(view.Plans[(int)i])) role.AddItem(r.Role); role.Select(0); };
+        var retreat = Choice("撤退の条件を足す", view.RetreatAdds, 0);
+        void Roles() { role.Clear(); foreach (var r in ProtoWorld.RolesOf(plan.GetItemText(plan.Selected))) role.AddItem(r.Role); role.Select(0); }
+        plan.ItemSelected += _ => Roles();
+        goal.ItemSelected += i => { plan.Clear(); foreach (var p in ProtoWorld.PlansOf(view.Goals[(int)i])) plan.AddItem(p); plan.Select(0); Roles(); };
         var ok = new Button { Text = "決める" }; box.AddChild(ok);
-        councilChoices = (role, dep, sig, ok, plan);
+        councilChoices = (role, dep, sig, ok, plan, goal, retreat);
         ok.Pressed += () =>
         {
-            var reply = World.DecideCouncil(null, view.Departures[dep.Selected], view.Signals[sig.Selected], view.Plans[plan.Selected], role.GetItemText(role.Selected));
+            var reply = World.DecideCouncil(null, view.Departures[dep.Selected], view.Signals[sig.Selected], plan.GetItemText(plan.Selected), role.GetItemText(role.Selected), view.Goals[goal.Selected], view.RetreatAdds[retreat.Selected]);
             Scene.Close();
             var after = new List<(string, string)>();
             if (ProtoScene.Parse(World, reply) is { } r) after.Add(r);
