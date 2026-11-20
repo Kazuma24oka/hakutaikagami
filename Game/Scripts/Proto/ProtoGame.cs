@@ -337,6 +337,9 @@ public partial class ProtoGame : Node3D
     string panelKey = ""; string? missionTab;
     // 軍令の行にマウスを乗せると、その隊と行き先を地図で光らせる。
     string? hoverUnit; Vector3 hoverSpot; MeshInstance3D hoverRingUnit = null!, hoverRingSpot = null!;
+    // 物見の丸：軍令の「物見」を押すと、見てくる範囲の丸がマウスに付いてくる。地面を押すとそこへ出す。右クリックか Esc でやめる。
+    bool scoutAim; Vector3? aimForced; MeshInstance3D aimRing = null!, scoutRing = null!;
+    internal void AimScout(float x, float z) { scoutAim = true; aimForced = new Vector3(x, HeightAt(x, z), z); RefreshUi(); }
     internal void Hover(string? id) { hoverUnit = id; if (id != null && World.Orders().FirstOrDefault(o => o.Unit == id) is { } o) hoverSpot = ToScene(o.X, o.Y); }
     void UpdateHover()
     {
@@ -344,7 +347,15 @@ public partial class ProtoGame : Node3D
         {
             MeshInstance3D Ring() { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.86f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.9f, 0.3f), NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
             hoverRingUnit = Ring(); hoverRingSpot = Ring();
+            MeshInstance3D Thin(Color c) { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.965f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = c, NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
+            aimRing = Thin(new Color(1, 1, 1)); scoutRing = Thin(new Color(1, 1, 1, 0.45f)); ((StandardMaterial3D)scoutRing.MaterialOverride).Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
         }
+        float sr = ProtoWorld.ScoutRadius / 100f;
+        if (scoutAim && !World.CanScout) scoutAim = false;
+        var aim = scoutAim ? aimForced ?? PickGround(GetViewport().GetMousePosition()) : null;
+        aimRing.Visible = aim != null; if (aim is { } ap) { aimRing.Position = ap + new Vector3(0, 3, 0); aimRing.Scale = new Vector3(sr, Math.Max(1, distance / 300f), sr); }
+        var out1 = World.Scouts.FirstOrDefault(x => x.Phase is "行き" or "帰り");
+        scoutRing.Visible = out1 != null; if (out1 != null) { scoutRing.Position = ToScene(out1.TX, out1.TY) + new Vector3(0, 3, 0); scoutRing.Scale = new Vector3(sr, Math.Max(1, distance / 300f), sr); }
         bool on = hoverUnit != null && sidePanel.Visible; hoverRingUnit.Visible = hoverRingSpot.Visible = on; if (!on) return;
         var u = World.Person(hoverUnit!); float pulse = 1 + 0.12f * MathF.Sin(Time.GetTicksMsec() / 150f), r = Math.Max(45, distance * 0.05f) * pulse;
         hoverRingUnit.Position = ToScene(u.X, u.Y) + new Vector3(0, 3, 0); hoverRingUnit.Scale = new Vector3(r, 1, r);
@@ -362,10 +373,10 @@ public partial class ProtoGame : Node3D
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
         var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
-        var orders = World.Orders().ToArray(); bool inWar = World.War.Phase is "行軍" or "合戦" && orders.Length > 0;
+        var orders = World.Orders().ToArray(); bool inWar = World.War.Phase is "行軍" or "合戦" or "終わり" && orders.Length > 0; // 決着のあとも、作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("scout:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows;
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.CanScout + scoutAim + World.War.Phase;
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -375,7 +386,14 @@ public partial class ProtoGame : Node3D
             foreach (var t in new[] { "軍令", "依頼" }) { var name = t; var b = Add(tabs, "mission-" + name, name, () => { missionTab = name; RefreshUi(); }); b.Disabled = name == tab || name == "軍令" && !inWar; }
             if (tab == "軍令")
             {
-                panel.AddChild(new Label { Text = World.War.Plan, Modulate = new Color(1, 0.9f, 0.6f) });
+                // 作戦の名と成否、段取り（済んだ段は成功・失敗、今の段は白、先の段は薄く）。
+                Color good = new(0.6f, 0.9f, 0.6f), bad = new(1, 0.5f, 0.45f), dim = new(0.62f, 0.62f, 0.62f);
+                string state = World.PlanState;
+                panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });
+                var steps = World.PlanSteps().ToArray(); int now = state == "" ? Array.FindIndex(steps, x => x.State == "") : -1;
+                for (int i = 0; i < steps.Length; i++)
+                    panel.AddChild(new Label { Text = "一二三四五六七八九"[i] + "　" + steps[i].Text + (steps[i].State != "" ? "　" + steps[i].State : ""), AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = steps[i].State == "成功" ? good : steps[i].State == "失敗" ? bad : i == now ? Colors.White : dim });
+                panel.AddChild(new HSeparator());
                 foreach (var o in orders)
                 {
                     bool mine = o.Unit == World.Player.Id;
@@ -384,7 +402,15 @@ public partial class ProtoGame : Node3D
                     panel.AddChild(row);
                 }
                 panel.AddChild(new HSeparator());
-                foreach (var a in actions.Where(a => IsWarAction(a.Id))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
+                // 委任／手動（今の方が押し込まれている）。
+                if (actions.Any(a => a.Id.StartsWith("order:")))
+                {
+                    var mode = new HBoxContainer(); panel.AddChild(mode);
+                    foreach (var (id, text, on) in new[] { ("order:follow", "委任", World.War.PlayerFollows), ("order:free", "手動", !World.War.PlayerFollows) })
+                    { var aid = id; var b = Add(mode, "act:" + aid, (on ? "● " : "○ ") + text, () => { Act(aid); RefreshUi(); }); if (on) b.Modulate = new Color(1, 0.88f, 0.45f); b.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill; }
+                }
+                if (World.War.Phase is "行軍" or "合戦") { var sb = Add(panel, "act:scout", scoutAim ? "物見　やめる" : $"物見　兵{ProtoWorld.ScoutMen}", () => { scoutAim = !scoutAim; aimForced = null; RefreshUi(); }); sb.Disabled = !World.CanScout; }
+                foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:"))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
             }
             else
             {
@@ -428,17 +454,27 @@ public partial class ProtoGame : Node3D
         var (x, y) = p.Path[^1]; marker.Position = ToScene(x, y) + new Vector3(0, 0.6f, 0); marker.Visible = true;
     }
 
-    internal bool ClickGround(Vector2 screen)
+    Vector3? PickGround(Vector2 screen)
     {
         var from = Camera.ProjectRayOrigin(screen); var dir = Camera.ProjectRayNormal(screen);
         float t = 0, step = 4;
         for (int i = 0; i < 8000; i++)
         {
             var q = from + dir * t;
-            if (q.X >= 0 && q.Z >= 0 && q.X < World.Map.Data.WidthM && q.Z < World.Map.Data.HeightM && q.Y <= HeightAt(q.X, q.Z)) { World.ActOnOwn(); return WalkTo(q.X, q.Z); } // 自分で動けば指図から外れる
+            if (q.X >= 0 && q.Z >= 0 && q.X < World.Map.Data.WidthM && q.Z < World.Map.Data.HeightM && q.Y <= HeightAt(q.X, q.Z)) return q;
             t += step;
         }
-        return false;
+        return null;
+    }
+    internal bool ClickGround(Vector2 screen)
+    {
+        if (scoutAim)
+        {
+            if ((aimForced ?? PickGround(screen)) is not { } a) return false;
+            scoutAim = false; aimForced = null; Message = World.Do($"scout-at:{(long)(a.X * 100)},{(long)(a.Z * 100)}"); RefreshUi(); return true;
+        }
+        if (PickGround(screen) is not { } q) return false;
+        World.ActOnOwn(); return WalkTo(q.X, q.Z); // 自分で動けば指図から外れる
     }
     internal bool WalkTo(float x, float z)
     {
@@ -452,6 +488,7 @@ public partial class ProtoGame : Node3D
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
             if (mb.ButtonIndex == MouseButton.Left) ClickGround(mb.Position);
+            else if (mb.ButtonIndex == MouseButton.Right && scoutAim) { scoutAim = false; aimForced = null; RefreshUi(); }
             else if (mb.ButtonIndex == MouseButton.WheelUp) distance = Math.Max(120, distance * 0.85f);
             else if (mb.ButtonIndex == MouseButton.WheelDown) distance = Math.Min(4000, distance / 0.85f);
         }
@@ -462,6 +499,7 @@ public partial class ProtoGame : Node3D
         }
         else if (e is InputEventKey k && k.Pressed && !k.Echo)
         {
+            if (k.Keycode == Key.Escape && scoutAim) { scoutAim = false; aimForced = null; RefreshUi(); }
             if (k.Keycode == Key.Q) yaw -= 15; else if (k.Keycode == Key.E) yaw += 15;
             else if (k.Keycode == Key.Space) { Paused = !Paused; RefreshUi(); }
             else if (k.Keycode == Key.Home) pan = Vector3.Zero;
@@ -598,7 +636,7 @@ public partial class ProtoGame : Node3D
             f.Modulate = World.War.Holder.TryGetValue(pos.Id, out var holder) ? HouseColor(holder).Lightened(0.35f) : new Color(1, 1, 0.8f);
         }
         // 物見
-        var live = World.Scouts.Where(x => x.Phase != "済").ToArray();
+        var live = World.Scouts.Where(x => x.Phase is "行き" or "帰り").ToArray();
         while (scoutDots.Count < live.Length) { var d = new MeshInstance3D { Mesh = new SphereMesh { Radius = 3, Height = 6 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(1, 1, 1) } }; AddChild(d); scoutDots.Add(d); }
         for (int i = 0; i < scoutDots.Count; i++) { scoutDots[i].Visible = i < live.Length; if (i < live.Length) { float sc = Math.Max(1, distance / 450); scoutDots[i].Position = ToScene(live[i].X, live[i].Y) + new Vector3(0, 3 * sc, 0); scoutDots[i].Scale = Vector3.One * sc; } }
     }

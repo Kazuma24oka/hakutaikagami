@@ -77,12 +77,28 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var katsumoto = w.Person("iwakiri-katsumoto");
         cp.Expect(!w.Visible.Contains(katsumoto), "遠くの敵の隊は見えない");
         var hill = w.PositionOf("south-hill"); w.MoveTo(hill.X * 100L, hill.Y * 100L);
-        var scout = w.Actions().FirstOrDefault(a => a.Id == "scout:road-mouth");
-        cp.Expect(scout != null, "行軍中は物見を出せる");
-        cp.Log(w.Do(scout!.Id));
+        // 物見：置いた丸の中を見てくる。兵を割いて出し、戻れば兵も戻る。
+        cp.Expect(w.CanScout, "行軍中は物見を出せる");
+        int before = w.Player.Soldiers; var mouth = w.PositionOf("road-mouth");
+        cp.Log(w.SendScoutTo(mouth.X * 100L - 250_00, mouth.Y * 100L));
+        cp.Expect(w.Player.Soldiers == before - ProtoWorld.ScoutMen && !w.CanScout, "物見に出した分だけ兵が減り、戻るまで次は出せない");
         Run(w, 3 * Hour, cp);
         cp.Log("印：" + string.Join("、", w.Markers.Select(m => $"{w.Person(m.Unit).Name} {ProtoWorld.Clock(m.SeenAt)} {m.By}")));
-        cp.Expect(w.Journal.Any(e => e.Text.StartsWith("物見が戻った")), "物見が戻って知らせる");
+        cp.Expect(w.Journal.Any(e => e.Text.StartsWith("物見が戻った")) && w.Player.Soldiers == before, "物見が戻って知らせ、兵も戻る");
+    }
+
+    // 物見は、敵の隊のそばを通ると戻らない（兵も知らせも失う）。
+    [Fact]
+    public void TheScoutIsLostNearTheEnemy()
+    {
+        using var cp = new Checkpoints("試作版の物見が戻らない", o);
+        var w = new ProtoWorld(Map); w.SetupTsuriPractice();
+        var foe = w.Units.First(u => u.House == "iwakiri"); int before = w.Player.Soldiers;
+        cp.Log(w.SendScoutTo(foe.X, foe.Y));
+        for (int i = 0; i < 120 && !w.Journal.Any(e => e.Text.StartsWith("物見が戻")); i++) w.Advance(60);
+        cp.Log(w.Journal.Last(e => e.Text.StartsWith("物見")).Text);
+        cp.Expect(w.Journal.Any(e => e.Text.StartsWith("物見が戻らない")), "敵の真ん中へ出した物見は戻らない");
+        cp.Expect(w.Player.Soldiers <= before - ProtoWorld.ScoutMen && !w.Markers.Any(m => m.By == "物見"), "兵は戻らず、知らせも届かない");
     }
 
     [Fact]
@@ -296,6 +312,10 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
             seen = w.Facts.Count;
         }
         cp.Log($"結果 {w.War.Result}　本人 兵{w.Player.Soldiers}　総士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}");
+        var steps = w.PlanSteps().ToArray();
+        cp.Log($"作戦 {plan}　{w.PlanState}：" + string.Join("、", steps.Select(x => x.Text + (x.State != "" ? "＝" + x.State : ""))));
+        cp.Expect(steps.Take(2).All(x => x.State == "成功"), "出立と着陣の段は成功になる");
+        cp.Expect(w.PlanState != "" && (w.PlanState == "成功") == steps.All(x => x.State == "成功") && (w.PlanState == "失敗") == steps.Any(x => x.State == "失敗"), "決着までに作戦の成否が決まる（全部の段が成功なら成功、どれかが失敗なら失敗）");
         cp.Expect(w.Facts.Any(f => f.Id == "marched") && w.Facts.Any(f => f.Id == "split"), "総勢で城を出て、着陣してから分かれる");
         cp.Expect(sawBody && together, "着陣までは、総勢が大将から400m以内にまとまっている");
         cp.Expect(w.War.Result != "", "決着がつく");

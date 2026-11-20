@@ -6,7 +6,11 @@ namespace HakutaiKagami.Core.Proto;
 // ・作戦を選ぶと役目が出る。正面から当たる＝先手・後詰、釣り野伏＝囮・伏兵・本隊、挟撃＝正面・回り込み。
 //   NPC は役目どおりに動く。ただし逸る者が囮になると、半々で退かずに戦い続ける。
 // ・本人は「指図どおりに動く」を選ぶと、NPC と同じに役目どおり自動で動く。自分で動けばその間は指図から外れる。
+// ・作戦は段取りの並び（2026-11-20 ユーザー）。段ごとに成功・失敗が付き、一つでも失敗すれば作戦は崩れる。
+//   崩れたあとは作戦なし：自動で動く隊（NPC と、委任にした本人）は気性に合う動きをする（逸る＝見えた敵へ攻めかかる、
+//   慎重＝南の丘へ下がって守る、普通＝味方が近くで戦っているか兵が劣らなければ攻める）。
 public sealed record ProtoOrder(string Unit, string Name, string Role, string Place, string Text, long X, long Y);
+public sealed record ProtoPlanStep(string Text, string State); // State：""（まだ）・"成功"・"失敗"
 
 public sealed partial class ProtoWorld
 {
@@ -93,9 +97,102 @@ public sealed partial class ProtoWorld
         foreach (var u in body) { var pos = PositionOf(War.Assign[u.Id]); MarchTo(u, pos); }
     }
 
-    // 合図のあとの動き（役目ごと）。
+    // ---- 作戦の段取り ----
+    string? Who(string role) => War.Roles.FirstOrDefault(r => r.Value == role).Key;
+    bool Fought(string? id) => id != null && Flag("fought:" + id);
+    bool Broke(string? id) => id != null && Facts.Any(f => f.Id.StartsWith("rout:" + id + ":"));
+    // 段ごとの確かめ：0＝まだ、1＝成功、2＝失敗。
+    (string Text, Func<int> Check)[] StepDefs()
+    {
+        var steps = new List<(string, Func<int>)>
+        {
+            ("鷹野城に集まって出立する", () => Flag("marched") ? 1 : 0),
+            ("着陣の地まで進み、役目ごとに分かれる", () => War.Split ? 1 : 0),
+            ("合図まで陣で待つ", () => Facts.Any(f => f.Id.StartsWith("nukegake:")) ? 2 : War.Signaled ? 1 : 0),
+        };
+        switch (War.Plan)
+        {
+            case "釣り野伏":
+            {
+                string? bait = Who("囮"), amb = Who("伏兵");
+                steps.Add(("囮が敵に当たる", () => Fought(bait) ? 1 : Broke(bait) ? 2 : 0));
+                steps.Add(("囮が退いて、伏兵の前へ誘い込む", () => Fact("bait-stays:" + bait) != null ? 2 : Fact("bait-back:" + bait) != null && Flag("bait-done:" + bait) || Facts.Any(f => f.Id.StartsWith("surprise:" + amb + ":")) ? 1 : Broke(bait) ? 2 : 0));
+                steps.Add(("伏兵が敵の横を突く", () => Facts.Any(f => f.Id.StartsWith("surprise:" + amb + ":")) ? 1 : Broke(amb) || flags.TryGetValue("bait-done:" + bait, out var done) && Second >= done + 10 * 60 ? 2 : 0));
+                break;
+            }
+            case "挟撃":
+            {
+                string? front = Who("正面"), flank = Who("回り込み");
+                steps.Add(("正面が敵に当たる", () => Fought(front) ? 1 : Broke(front) ? 2 : 0));
+                steps.Add(("回り込みが敵の横を突く", () => Fact("flanker:" + flank) != null && Fought(flank) && ClashOf(flank!) != null ? 1 : Broke(flank) || Broke(front) ? 2 : 0));
+                break;
+            }
+            default:
+            {
+                string? van = Who("先手");
+                steps.Add(("先手が攻めかかる", () => Fought(van) ? 1 : Broke(van) ? 2 : 0));
+                steps.Add(("後詰が南の丘を押さえる", () => !War.Signaled ? 0 : War.Holder.GetValueOrDefault("south-hill") == Rebel ? 2 : War.Holder.GetValueOrDefault("south-hill") == "takano" ? 1 : 0));
+                break;
+            }
+        }
+        steps.Add(("敵を崩す", () => War.Result == "鎮めた" ? 1 : War.Result != "" ? 2 : 0));
+        return [.. steps];
+    }
+    public IEnumerable<ProtoPlanStep> PlanSteps()
+    {
+        if (War.Plan == "") yield break;
+        var defs = StepDefs();
+        for (int i = 0; i < defs.Length; i++) yield return new(defs[i].Text, Flag("plan-ok:" + i) ? "成功" : Flag("plan-ng:" + i) ? "失敗" : "");
+    }
+    // 作戦の成否：""（進めている）・"成功"・"失敗"。
+    public string PlanState => War.Plan == "" ? "" : Flag("plan-failed") ? "失敗" : Flag("plan-done") ? "成功" : "";
+    void UpdatePlan()
+    {
+        if (War.Plan == "" || Flag("plan-failed") || Flag("plan-done")) return;
+        var defs = StepDefs();
+        for (int i = 0; i < defs.Length; i++)
+        {
+            if (Flag("plan-ok:" + i)) continue;
+            int r = defs[i].Check(); if (r == 0) continue;
+            if (r == 1) { Set("plan-ok:" + i); if (i == defs.Length - 1) Set("plan-done"); continue; }
+            Set("plan-ng:" + i); Set("plan-failed"); var heir = Person(Heir);
+            // 最後の段（敵を崩す）の失敗は合戦の決着なので、別に知らせない。
+            if (i < defs.Length - 1) Happen("plan-failed", $"{War.Plan}は崩れた（{defs[i].Text}）。", heir.X, heir.Y, heir, Person(Karou), Player);
+            return;
+        }
+    }
+
+    // 作戦なしの動き：気性に合う動きをする。
+    void Freelance(ProtoPerson[] takano, ProtoPerson[] rebels)
+    {
+        if (War.Phase != "合戦") return;
+        var hill = PositionOf("south-hill"); long hx = hill.X * 100L, hy = hill.Y * 100L;
+        foreach (var u in takano.Where(Auto))
+        {
+            flags.Remove("luring:" + u.Id);
+            if (War.Target.ContainsKey(u.Id) || ClashOf(u.Id) != null) continue;
+            var seen = rebels.Where(r => InSight(u, r)).OrderBy(r => Dist(u, r)).ThenBy(r => r.Id).FirstOrDefault();
+            bool near = rebels.Any(r => Dist(u, r) <= 2 * Reach);
+            string did = "";
+            if (u.Temper == "慎重")
+            {
+                // 南の丘へ下がって守る（敵がすぐそばにいる間は、その場で受ける）。
+                if (!near && !u.Moving && Dist(u, hx, hy) > 150_00 && War.Holder.GetValueOrDefault(hill.Id) != Rebel) { MarchTo(u, hill); did = $"{u.Name}は{hill.Name}へ下がって守りを固めた。"; }
+            }
+            else if (seen != null)
+            {
+                bool helped = War.Clashes.Any(c => Dist(u, Person(c.A)) <= 400_00 || Dist(u, Person(c.B)) <= 400_00);
+                if (u.Temper == "逸る" || helped || u.Soldiers >= seen.Soldiers) { War.Target[u.Id] = seen.Id; did = $"{u.Name}は{seen.Name}の兵へ攻めかかった。"; }
+            }
+            if (did != "") Happen("free:" + u.Id, did, u.X, u.Y, u);
+        }
+    }
+
+    // 合図のあとの動き（役目ごと）。作戦が崩れたあとは、気性に合う動き。
     void ActOnRoles(ProtoPerson[] takano, ProtoPerson[] rebels)
     {
+        UpdatePlan();
+        if (Flag("plan-failed")) { Freelance(takano, rebels); return; }
         if (!War.Signaled) return;
         foreach (var u in takano.Where(u => Auto(u) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
         {
@@ -160,15 +257,16 @@ public sealed partial class ProtoWorld
         return ProtoMove.Nearest(Map, p.Item1, p.Item2);
     }
 
-    // 「指図どおりに動く」。
+    // 委任（作戦どおりに自動で動く。作戦が崩れたあとは気性に合う動き）と、手動。
     string FollowOrders(bool on)
     {
         if (!War.Assign.TryGetValue(Player.Id, out var a)) return "";
-        War.PlayerFollows = on; if (!on) return "自分の判断で動く。";
+        War.PlayerFollows = on; if (!on) return "";
         War.Target.Remove(Player.Id);
+        if (Flag("plan-failed")) return "";
         if (War.Split) MarchTo(Player, PositionOf(a));
         else if (Flag("marched")) Walk(Player, (War.StageX, War.StageY), "着陣の地", $"{Person(Heir).Name}勢として兵を進めている");
-        return $"指図どおりに動く：{OrderText(Player.Id)}。";
+        return "";
     }
     // 本人が自分で動いたら、指図から外れる（画面から呼ぶ）。
     public void ActOnOwn() => War.PlayerFollows = false;

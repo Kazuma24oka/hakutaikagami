@@ -16,7 +16,11 @@ public sealed class ProtoScout
     public long Y { get; set; }
     public long[][] Path { get; set; } = [];
     public int PathIndex { get; set; }
-    public string Phase { get; set; } = "行き"; // 行き・帰り・済
+    public string Phase { get; set; } = "行き"; // 行き・帰り・消えた（敵に見つかった。刻限に「戻らない」と分かる）・済
+    public long TX { get; set; }
+    public long TY { get; set; }
+    public int Men { get; set; }
+    public long NoteAt { get; set; }
     public List<ProtoMarker> Seen { get; set; } = [];
 }
 public sealed class ProtoWarState
@@ -302,6 +306,7 @@ public sealed partial class ProtoWorld
             Happen("expedition-failed", "鷹野の討手は岩切勢に退けられた。", h.X, h.Y, h, Person(Karou));
             foreach (var r in People.Where(r => r.House == Rebel && r.Active)) Walk(r, Spot(Map.Site("iwakiri-castle"), 3), "iwakiri-castle", "岩切城へ引き上げている");
         }
+        if (War.Result != "") UpdatePlan(); // 決着で最後の段が決まる
     }
 
     // ---- 本人が攻めかかる・退く ----
@@ -346,35 +351,42 @@ public sealed partial class ProtoWorld
     }
     public bool SeesEnemy(ProtoPerson e) => !Hostile(Player.House, e.House) || InSight(Player, e);
 
-    public bool CanScout => War.Phase is "行軍" or "合戦" && Player.Soldiers >= 5 && Scouts.All(s => s.Phase == "済");
-    string SendScout(string positionId)
+    // 物見（2026-11-20 ユーザー）：地図に置いた丸（半径 ScoutRadius）の中を見てくる。兵を ScoutMen 人割いて出し、戻れば兵も戻る。
+    // 行き帰りに敵の隊のそば（ScoutCaught 以内）を通ると見つかって戻らない（兵も知らせも失う）。伏せている敵も、丸の中なら見つける。
+    public const int ScoutMen = 5; public const long ScoutRadius = 300_00, ScoutCaught = 100_00;
+    public bool CanScout => War.Phase is "行軍" or "合戦" && Player.Soldiers > ScoutMen && !War.Routed.Contains(Player.Id) && Scouts.All(s => s.Phase == "済");
+    string SendScout(string positionId) { var pos = PositionOf(positionId); return SendScoutTo(pos.X * 100L, pos.Y * 100L); }
+    public string SendScoutTo(long tx, long ty)
     {
         if (!CanScout) return "今は物見を出せない";
-        var pos = PositionOf(positionId); var to = ProtoMove.Nearest(Map, pos.X * 100L, pos.Y * 100L);
+        var to = ProtoMove.Nearest(Map, tx, ty);
         var path = ProtoMove.Plan(Map, (Player.X, Player.Y), to); if (path == null) return "そこへは行けない";
-        Scouts.Add(new ProtoScout { Id = "scout:" + ++scoutSeq, Target = positionId, X = Player.X, Y = Player.Y, Path = path.Select(p => new[] { p.X, p.Y }).ToArray() });
-        return $"{pos.Name}へ物見を出した。";
+        Player.Soldiers -= ScoutMen;
+        Scouts.Add(new ProtoScout { Id = "scout:" + ++scoutSeq, TX = to.X, TY = to.Y, Men = ScoutMen, X = Player.X, Y = Player.Y, Path = path.Select(p => new[] { p.X, p.Y }).ToArray() });
+        return $"物見を{ScoutMen}人出した。";
     }
     void MoveScouts()
     {
         foreach (var s in Scouts.Where(s => s.Phase != "済"))
         {
+            if (s.Phase == "消えた") { if (Second >= s.NoteAt) { s.Phase = "済"; Note($"物見が戻らない。{s.Men}人を失った。"); } continue; }
             long x = s.X, y = s.Y; int i = s.PathIndex; var path = s.Path.Select(p => (p[0], p[1])).ToList();
             bool arrived = ProtoMove.Step(Map, ref x, ref y, path, ref i, 130); s.X = x; s.Y = y; s.PathIndex = i;
-            if (Second % 60 == 0)
-                foreach (var e in Units.Where(e => Hostile(Player.House, e.House)))
-                    if (Math.Sqrt((double)(e.X - s.X) * (e.X - s.X) + (double)(e.Y - s.Y) * (e.Y - s.Y)) <= 600_00) s.Seen.Add(new ProtoMarker(e.Id, e.X, e.Y, Second, "物見"));
+            if (Units.Any(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && Dist(e, s.X, s.Y) <= ScoutCaught))
+            { s.Phase = "消えた"; s.NoteAt = Second + 20 * 60; s.Path = []; continue; }
             if (!arrived) continue;
             if (s.Phase == "行き")
             {
+                foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && Dist(e, s.TX, s.TY) <= ScoutRadius)) s.Seen.Add(new ProtoMarker(e.Id, e.X, e.Y, Second, "物見"));
                 s.Phase = "帰り"; var back = ProtoMove.Plan(Map, (s.X, s.Y), (Player.X, Player.Y));
                 s.Path = back?.Select(p => new[] { p.X, p.Y }).ToArray() ?? []; s.PathIndex = 0;
             }
             else if (Math.Sqrt((double)(Player.X - s.X) * (Player.X - s.X) + (double)(Player.Y - s.Y) * (Player.Y - s.Y)) <= 100_00 || s.Path.Length == 0)
             {
                 s.Phase = "済"; foreach (var m in s.Seen) Mark(m);
+                if (Player.Active && !War.Routed.Contains(Player.Id)) Player.Soldiers += s.Men;
                 var names = s.Seen.Select(m => Person(m.Unit).Name).Distinct().ToArray();
-                Note(names.Length == 0 ? $"物見が戻った。{PositionOf(s.Target).Name}のあたりに敵は見えなかった。" : $"物見が戻った。{string.Join("・", names)}の兵を見たという。");
+                Note(names.Length == 0 ? "物見が戻った。敵は見えなかったという。" : $"物見が戻った。{string.Join("・", names)}の兵を見たという。");
             }
             else { var back = ProtoMove.Plan(Map, (s.X, s.Y), (Player.X, Player.Y)); s.Path = back?.Select(p => new[] { p.X, p.Y }).ToArray() ?? []; s.PathIndex = 0; }
         }

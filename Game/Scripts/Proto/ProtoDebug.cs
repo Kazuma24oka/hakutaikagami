@@ -104,6 +104,7 @@ public partial class ProtoDebug : Node
                 // 軍議の窓の選択肢を選ぶ（確かめ用）：plan・role は並びの番号。
                 case "/council-select": if (game.councilChoices is { } cc) { if (q.TryGetValue("plan", out var cp)) { cc.Plan.Select(int.Parse(cp)); cc.Plan.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cp)); } if (q.TryGetValue("role", out var cr)) cc.Role.Select(int.Parse(cr)); if (q.TryGetValue("dep", out var cd)) cc.Dep.Select(int.Parse(cd)); } break;
                 case "/council-ok": game.councilChoices?.Ok.EmitSignal(BaseButton.SignalName.Pressed); break;
+                case "/scout-aim": game.AimScout(float.Parse(F("x")), float.Parse(F("y"))); break;
                 case "/hover": game.Hover(q.TryGetValue("id", out var hv) ? hv : null); break;
                 case "/act": game.Act(F("id")); break;
                 case "/talk": game.Act("talk:" + F("id")); break;
