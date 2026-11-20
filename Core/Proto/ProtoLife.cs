@@ -317,6 +317,7 @@ public sealed partial class ProtoWorld
     {
         if (CouncilOpen) yield return new("council:open", "軍議に加わる");
         if (CanPersuade) yield return new("persuade:katsumoto", "説き伏せる：岩切勝元");
+        if (SiegeCouncilOpen) yield return new("siege:open", "攻城の軍議");
         if (CanParley) yield return new("parley:katsumoto", "開城を説く：岩切勝元");
         if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
         {
@@ -349,7 +350,7 @@ public sealed partial class ProtoWorld
         if (kind == "tactic-auto") { War.AutoTactic = id == "on"; return ""; }
         if (kind == "council") return "";
         if (kind == "awards") return TakeAwards();
-        if (kind == "siege") return DecideSiege(id);
+        if (kind == "siege") return id == "open" ? "" : DecideSiege(id);
         if (kind == "parley") return Parley();
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)

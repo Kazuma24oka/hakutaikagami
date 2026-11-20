@@ -16,7 +16,7 @@ public partial class ProtoGame
     ProgressBar spiritTakano = null!, spiritRebel = null!;
     Label spiritTakanoText = null!, spiritRebelText = null!, sideTakano = null!, sideRebel = null!;
     TextureRect pushPic = null!;
-    internal CheckBox? tacticAuto;
+    internal CheckBox? tacticAuto; HBoxContainer castleRow = null!; Label castleRowText = null!; ProgressBar castleRowBar = null!;
     VBoxContainer allyList = null!, enemyList = null!; ScrollContainer allyScroll = null!, enemyScroll = null!;
     float battleRowH = 42;
     // 合戦の窓がいちばん高いとき（一覧が3人ぶん）の高さ。任務の窓はこの上までにする。
@@ -66,7 +66,13 @@ public partial class ProtoGame
         allyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         allyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; allyScroll.AddChild(allyList);
         enemyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyScroll.AddChild(enemyList);
-        lists.AddChild(allyScroll); lists.AddChild(new VSeparator()); lists.AddChild(enemyScroll);
+        // 敵の欄の上に城の行：城の内の隊と戦っている間だけ（今の層とその耐久）。
+        var enemyCol = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyCol.AddThemeConstantOverride("separation", 2);
+        castleRow = new HBoxContainer { Visible = false }; castleRow.AddThemeConstantOverride("separation", 6);
+        castleRowText = new Label { Modulate = new Color(1, 0.9f, 0.6f) }; castleRowText.AddThemeFontSizeOverride("font_size", 15); castleRow.AddChild(castleRowText);
+        castleRowBar = Bar(new Color(0.85f, 0.85f, 0.9f), 100, new Vector2(120, 8)); castleRow.AddChild(castleRowBar);
+        enemyCol.AddChild(castleRow); enemyCol.AddChild(enemyScroll);
+        lists.AddChild(allyScroll); lists.AddChild(new VSeparator()); lists.AddChild(enemyCol);
         spiritBox.Visible = commandBox.Visible = false;
     }
 
@@ -210,6 +216,9 @@ public partial class ProtoGame
         int ma = allies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale), me2 = enemies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale);
         sideTakano.Text = ma.ToString(); sideRebel.Text = me2.ToString(); troopsTakano.Text = "兵" + allies.Sum(u => u.Soldiers); troopsRebel.Text = "兵" + enemies.Sum(u => u.Soldiers);
         PaintPush(pushImage, ma + me2 == 0 ? 0 : (ma - me2) * 100.0 / (ma + me2)); pushTexture.Update(pushImage);
+        bool atCastle = war.Siege is { } sg0 && sg0.Layer < sg0.Layers && enemies.Any(World.Garrisoned);
+        castleRow.Visible = atCastle;
+        if (atCastle) { var sg = war.Siege!; castleRowText.Text = $"岩切城　{ProtoWorld.LayerName(sg.Layers, sg.Layer)}　耐久{sg.Gate}"; castleRowBar.Value = sg.Gate; }
         if (Buttons.TryGetValue("clash-tactic", out var tb) && IsInstanceValid(tb)) tb.Disabled = World.GaugeOf(me.Id) < 100 || war.Routed.Contains(me.Id) || World.Confused(me.Id);
         if (tacticAuto != null && IsInstanceValid(tacticAuto) && tacticAuto.ButtonPressed != war.AutoTactic) tacticAuto.SetPressedNoSignal(war.AutoTactic);
     }

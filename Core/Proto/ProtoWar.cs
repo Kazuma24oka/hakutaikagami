@@ -259,7 +259,7 @@ public sealed partial class ProtoWorld
             }
         }
         // 謀叛方も、向かう陣が鷹野に押さえられていれば手前で止まる。
-        foreach (var r in rebels.Where(r => r.Moving && War.Assign.ContainsKey(r.Id) && !War.Target.ContainsKey(r.Id)))
+        foreach (var r in rebels.Where(r => War.Siege == null && r.Moving && War.Assign.ContainsKey(r.Id) && !War.Target.ContainsKey(r.Id)))
         {
             var pos = PostOf(r.Id); long px = pos.X * 100L, py = pos.Y * 100L;
             var holder = takano.Concat(new[] { Player }).FirstOrDefault(t => t.Soldiers > 0 && Dist(t, px, py) <= 150_00);
@@ -293,7 +293,7 @@ public sealed partial class ProtoWorld
         // 謀叛方は、合戦になったら見えている敵に向かう。陣を守り抜くつもりなら、自分の陣の近く（400m）に来た敵だけを相手にし、離れたら陣へ戻る。
         bool rebelsHold = GoalOf(Rebel) == Goals[1];
         // 攻城で城門が残っている間は、城から出ない（寄せて来た敵と、その場で戦う。出るのは朝駆けのときだけ）。
-        bool walled = War.Siege is { Gate: > 0 };
+        bool walled = War.Siege != null;
         foreach (var r in rebels.Where(r => War.Phase == "合戦" && !walled && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
         {
             var post = War.Post.ContainsKey(r.Id) ? PostOf(r.Id) : null;

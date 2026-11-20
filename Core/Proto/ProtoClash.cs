@@ -129,7 +129,7 @@ public sealed partial class ProtoWorld
             War.Hits.Add(new ProtoHit { To = id, Loss = was - b.Soldiers, Kind = War.Routed.Contains(id) ? "追い討ち" : rear.Contains(id) ? "背後" : side.Contains(id) ? "側面" : "正面", Surprise = shaken.Contains(id), At = Second });
             // 士気：倒れた割合ぶん下がり、背後5・側面2がさらに下がる。混乱している間は下がりが1.5倍。
             double drop = Math.Ceiling(loss * 100.0 / Math.Max(1, was) * (b.Player && War.Stance == "防御" ? 0.5 : 1)) + (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0);
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1) * Math.Clamp(50.0 / Cmd(b), 0.6, 1.4))); // 統率が高いほど士気が減りにくい
+            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1) * (BehindGate(b) ? 0.5 : 1) * Math.Clamp(50.0 / Cmd(b), 0.6, 1.4))); // 城の内の兵は士気が半分しか下がらない // 統率が高いほど士気が減りにくい
             // 混乱：正面2・側面6・背後10、二隊以上に打たれていれば+4、下がりながら打たれていれば+4。
             var hitters = dealt.Keys.Where(k => k.Item2 == id).Select(k => Person(k.Item1)).OrderByDescending(h => h.Wits).ThenBy(h => h.Id).ToArray();
             if (hitters.Length > 0) AddChaos(b, (rear.Contains(id) ? 10 : side.Contains(id) ? 6 : 2) + (hitters.Length >= 2 ? 4 : 0) + (Retreating(b) ? 4 : 0), hitters[0]);
@@ -137,7 +137,7 @@ public sealed partial class ProtoWorld
         }
         // 打たれていない隊の混乱は毎分5ずつ引く。
         foreach (var u in all.Where(u => Live(u) && !dealt.Keys.Any(k => k.Item2 == u.Id) && ChaosOf(u.Id) > 0)) War.Chaos[u.Id] = Math.Max(0, ChaosOf(u.Id) - 5);
-        foreach (var u in all.Where(u => Live(u) && BehindGate(u) && u.Soldiers > 0)) u.Morale = Math.Max(u.Morale, 20); // 城門の内の兵は崩れない
+        GarrisonMorale(all); if (War.Result != "") return; // 城の兵は士気が切れても崩れず、一層捨てて内へ退く
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 || u.Soldiers == 0)).ToArray()) Rout(u);
         // NPC は戦法のゲージがたまれば自分で使う。本人は「自動」を入れているときだけ。
         foreach (var u in all.Where(u => (!u.Player || War.AutoTactic) && Live(u) && GaugeOf(u.Id) >= 100 && !Confused(u.Id))) UseTactic(u);

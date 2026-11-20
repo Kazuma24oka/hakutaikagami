@@ -380,8 +380,8 @@ public partial class ProtoGame : Node3D
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
-        static bool IsWarAction(string id) => id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt : "");
+        static bool IsWarAction(string id) => id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Layer + sg.Ringed + World.RingHave / 10 : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -405,8 +405,9 @@ public partial class ProtoGame : Node3D
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
                 if (World.War.Siege is { } siege)
                 {
-                    panel.AddChild(new Label { Text = "攻城　" + (siege.Method != "" ? siege.Method : siege.CampAt > 0 ? "軍議" : "岩切城へ"), Modulate = new Color(1, 0.9f, 0.6f) });
-                    panel.AddChild(new Label { Text = $"城の耐久　{siege.Gate}", Modulate = siege.Gate <= 0 ? good : Colors.White });
+                    panel.AddChild(new Label { Text = "攻城　" + siege.Method, Modulate = new Color(1, 0.9f, 0.6f) });
+                    if (siege.Layer < siege.Layers) panel.AddChild(new Label { Text = $"{ProtoWorld.LayerName(siege.Layers, siege.Layer)}　耐久{siege.Gate}" });
+                    panel.AddChild(new Label { Text = $"包囲　{(siege.Ringed ? "成った" : "兵が足りない")}（{World.RingHave}／{World.RingNeed}）", Modulate = siege.Ringed ? good : bad });
                     panel.AddChild(new Label { Text = siege.Supply > 0 ? $"兵糧　あと{siege.Supply}日" : "兵糧　尽きた", Modulate = siege.Supply > 0 ? Colors.White : bad });
                     panel.AddChild(new HSeparator());
                 }
@@ -493,6 +494,8 @@ public partial class ProtoGame : Node3D
         if (PickGround(screen) is not { } q) return false;
         // 委任している間は、地図を押しても動かさない。委任を解くかを聞く（2026-11-20 ユーザー）。
         if (World.War.PlayerFollows && (World.War.Phase is "行軍" or "合戦" || World.Returning)) { AskRelease(q.X, q.Z); return false; }
+        // 攻城の間に城を押すと、囲みの自分の陣へ向かう（城の中へは歩かない）。
+        if (World.PlayerSiegePost is { } post) { var site = World.Map.Site(CastleSite); if (new Vector2(q.X - site.X, q.Z - site.Y).Length() <= 200) return WalkTo(post.X / 100f, post.Y / 100f); }
         return WalkTo(q.X, q.Z);
     }
     // 「委任を解きますか」：はい＝手動にして、押した所へ向かう。いいえ＝そのまま。開いている間は時を止める。
@@ -606,7 +609,7 @@ public partial class ProtoGame : Node3D
         }
         else acc = 0;
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
-        UpdateActors(); UpdateBattleView(); UpdateHover(); UpdateAwards(); UpdateSiegeCouncil(); DrawPath(); PlaceCamera();
+        UpdateActors(); UpdateBattleView(); UpdateHover(); UpdateAwards(); UpdateCastleView(); DrawPath(); PlaceCamera();
         journal.GetParent<Control>().GetParent<Control>().Modulate = new Color(1, 1, 1, (float)Math.Clamp(1.4 - (Time.GetTicksMsec() / 1000.0 - journalShown) / 8.0, 0.35, 1));
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
@@ -682,6 +685,7 @@ public partial class ProtoGame : Node3D
     internal void Act(string aid)
     {
         if (aid == "council:open") { OpenCouncil(); return; }
+        if (aid == "siege:open") { OpenSiegeCouncil(); return; }
         var lines = new List<(string, string)>();
         if (aid.StartsWith("accept:") && World.Tasks.FirstOrDefault(t => t.Id == aid[7..]) is { } task && task.Speech != "") lines.Add((task.Giver, task.Speech));
         var result = World.Do(aid); ShowGoal();

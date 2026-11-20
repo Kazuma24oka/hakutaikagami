@@ -9,16 +9,20 @@ using HakutaiKagami.Core.Proto;
 // 「承る」で勲功を受け、預かった兵を返す。開いている間は時を止める。
 public partial class ProtoGame
 {
-    // 攻め方の軍議：城の前に陣を敷くと、総大将が攻め方を言う。そのまま従うか、別の攻め方を選んで再提案する。
-    void UpdateSiegeCouncil()
+    // 攻城の軍議：城に取りついていれば、任務の窓の「攻城の軍議」からいつでも開ける。総大将の考えを聞き、包囲か力攻めを押して進言する。
+    internal readonly Dictionary<string, Button> SiegeButtons = new();
+    internal void OpenSiegeCouncil()
     {
-        if (Scene.Open || FilmRoot != null || askLayer != null || !World.SiegeCouncilOpen) return;
-        string prop = World.SiegeProposal;
-        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 12);
-        var pick = new OptionButton { FocusMode = Control.FocusModeEnum.None }; foreach (var m in ProtoWorld.SiegeMethods) pick.AddItem(m); pick.Select(Array.IndexOf(ProtoWorld.SiegeMethods, prop)); row.AddChild(pick);
-        var ok = new Button { Text = "従う", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(160, 0) }; row.AddChild(ok);
-        pick.ItemSelected += i => ok.Text = ProtoWorld.SiegeMethods[i] == prop ? "従う" : "再提案する";
-        ok.Pressed += () => { var reply = World.Do("siege:" + ProtoWorld.SiegeMethods[pick.Selected]); Scene.Close(); panelKey = ""; Say(reply, World.HeadOf("takano")); };
+        if (Scene.Open || askLayer != null || !World.SiegeCouncilOpen) return;
+        string now = World.War.Siege!.Method; SiegeButtons.Clear();
+        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 16);
+        foreach (var m in new[] { "包囲", "力攻め" })
+        {
+            var method = m; var b = new Button { Text = method, FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(160, 0) };
+            if (method == now) b.Modulate = new Color(1, 0.88f, 0.45f);
+            b.Pressed += () => { var reply = World.Do("siege:" + method); Scene.Close(); panelKey = ""; Say(reply, World.HeadOf("takano")); };
+            row.AddChild(b); SiegeButtons[method] = b;
+        }
         var lines = new List<(string, string)>(); if (ProtoScene.Parse(World, World.SiegeSpeech) is { } said) lines.Add(said);
         Scene.Show(lines, [World.Player.Id], row);
     }
