@@ -120,7 +120,7 @@ public sealed partial class ProtoWorld
         {
             if (!dealt.ContainsKey((c.A, c.B)) && !dealt.ContainsKey((c.B, c.A))) { War.Clashes.Remove(c); continue; }
         }
-        WearGate();
+        WearGate(); if (War.Result != "") return; // 耐久が尽きて落城
         Pursue(all, hits);
         foreach (var (id, h) in hits)
         {

@@ -402,11 +402,11 @@ public partial class ProtoGame : Node3D
                 }
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
-                // 攻城：攻め方・城門・攻め手の兵糧（城の兵糧は外からは見えない）。
+                // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
                 if (World.War.Siege is { } siege)
                 {
                     panel.AddChild(new Label { Text = "攻城　" + (siege.Method != "" ? siege.Method : siege.CampAt > 0 ? "軍議" : "岩切城へ"), Modulate = new Color(1, 0.9f, 0.6f) });
-                    panel.AddChild(new Label { Text = $"城門　{siege.Gate}" + (siege.Gate <= 0 ? "　破れた" : ""), Modulate = siege.Gate <= 0 ? good : Colors.White });
+                    panel.AddChild(new Label { Text = $"城の耐久　{siege.Gate}", Modulate = siege.Gate <= 0 ? good : Colors.White });
                     panel.AddChild(new Label { Text = siege.Supply > 0 ? $"兵糧　あと{siege.Supply}日" : "兵糧　尽きた", Modulate = siege.Supply > 0 ? Colors.White : bad });
                     panel.AddChild(new HSeparator());
                 }

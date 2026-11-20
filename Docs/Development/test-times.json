@@ -20,7 +20,8 @@
 "2026-11-20_191849_全件",
 "2026-11-20_193222_全件",
 "2026-11-20_193509_全件",
-"2026-11-20_193747_全件"
+"2026-11-20_193747_全件",
+"2026-11-20_194648_全件"
 ],
 "wallSeconds": 30,
 "count": 4765,
@@ -3156,7 +3157,7 @@
 "HakutaiKagami.Tests.ProtoWarTests.TheArmyMarchesTogetherAndActsOnRoles(plan: \"釣り野伏\", role: \"伏兵\")": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheArmyMarchesTogetherAndActsOnRoles(plan: \"釣り野伏\", role: \"囮\")": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheArmyReturnsHomeBeforeTheAwards(mode: \"そのまま\")": 0.4,
-"HakutaiKagami.Tests.ProtoWarTests.TheArmyReturnsHomeBeforeTheAwards(mode: \"城に戻らない\")": 0.8,
+"HakutaiKagami.Tests.ProtoWarTests.TheArmyReturnsHomeBeforeTheAwards(mode: \"城に戻らない\")": 0.7,
 "HakutaiKagami.Tests.ProtoWarTests.TheArmyReturnsHomeBeforeTheAwards(mode: \"隊が崩れた\")": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"力攻め\", parley: False)": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheCastleIsStormedStarvedOrTalkedOpen(method: \"囲む\", parley: False)": 1.0,

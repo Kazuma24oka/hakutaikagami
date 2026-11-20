@@ -500,7 +500,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
         w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
         while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
-        string Line() => $"{ProtoWorld.Clock(w.Second)}　城門{w.GateOf}　全軍士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}　" + string.Join(" ", w.People.Where(u => u.Soldiers > 0 && u.House is "takano" or "iwakiri" && w.War.StartSoldiers.ContainsKey(u.Id)).Select(u => $"{u.Name}{u.Soldiers}{(w.War.Routed.Contains(u.Id) ? "崩" : "")}"));
+        string Line() => $"{ProtoWorld.Clock(w.Second)}　耐久{w.GateOf}　全軍士気 鷹野{w.SpiritOf("takano")} 岩切{w.SpiritOf("iwakiri")}　" + string.Join(" ", w.People.Where(u => u.Soldiers > 0 && u.House is "takano" or "iwakiri" && w.War.StartSoldiers.ContainsKey(u.Id)).Select(u => $"{u.Name}{u.Soldiers}{(w.War.Routed.Contains(u.Id) ? "崩" : "")}"));
         cp.Log("野の戦いのあと　" + Line());
         cp.Expect(w.War.Siege != null && w.War.Result == "", "岩切勢が城へ退くと、決着にならず攻城になる");
         for (int i = 0; i < 6 * 60 && !w.SiegeCouncilOpen; i++) w.Advance(60);
@@ -519,9 +519,9 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         }
         cp.Log($"結果 {w.War.Result}　{(w.Second - start) / 3600}時間　" + Line());
         cp.Expect(w.War.Result != "", "攻城に決着がつく");
-        if (method == "力攻め") cp.Expect(w.War.Result == "鎮めた" && w.GateOf == 0 && w.Facts.Any(f => f.Id == "gate-broken"), "力攻め：城門を破って落とす");
-        else if (!parley) cp.Expect(w.War.Result == "退いた" && w.War.Siege!.Supply == 0 && w.War.Siege.Food > 0, "囲んで待つだけでは、攻め手の兵糧が先に尽きて囲みを解く");
-        else cp.Expect(w.War.Result == "開城させた" && w.GateOf == 100, "囲んで、城の兵糧が乏しくなった頃に説けば、城は開く");
+        if (method == "力攻め") cp.Expect(w.War.Result == "鎮めた" && (w.GateOf == 0 || !w.People.Any(u => u.House == "iwakiri" && u.Active && u.Soldiers > 0 && !w.War.Routed.Contains(u.Id))), "力攻め：城の耐久か城の兵が尽きて落城");
+        else if (!parley) cp.Expect(w.GateOf == 100 && (w.War.Result == "開城させた" && w.War.Siege!.Food == 0 || w.War.Result == "鎮めた" && w.War.Siege!.Food <= 1), "囲む：城の兵糧が尽きて開城するか、残り1日で打って出た城の兵が崩れて落城");
+        else cp.Expect(w.War.Result == "開城させた" && w.GateOf == 100 && w.War.Siege!.Food > 0, "囲んで説けば、兵糧が尽きるのを待たずに城が開く");
         if (w.War.Result is "鎮めた" or "開城させた")
         {
             for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
@@ -531,7 +531,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         }
     }
 
-    // 囲まれた城は、兵糧が尽きると朝駆けに出る（慎重な城主でも）。40分たつか、隊が崩れたら城へ引き上げる。
+    // 囲まれた城は、兵糧が残り1日になると朝駆けに出る（慎重な城主でも）。40分たつか、隊が崩れたら城へ引き上げる。
     [Fact]
     public void TheStarvingGarrisonSalliesAtDawn()
     {
@@ -550,10 +550,10 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var rebels = w.People.Where(u => u.House == "iwakiri" && u.Active).ToArray();
         cp.Log("囲み：" + string.Join("　", w.People.Where(u => u.House == "takano" && u.Soldiers > 0 && w.War.StartSoldiers.ContainsKey(u.Id)).Select(u => $"{u.Name} 城から{Far(u):0}m")) + "　城方：" + string.Join("　", rebels.Select(u => $"{u.Name} {Far(u):0}m")));
         cp.Expect(w.War.Clashes.Count == 0 && rebels.All(u => Far(u) <= 150), "囲んでいる間、城の兵は城から出ず、打ち合いも起きない");
-        w.War.Siege!.Food = 0; // 兵糧が尽きたことにする
+        w.War.Siege!.Food = 1; // 兵糧が残り1日になったことにする
         int seen = w.Facts.Count;
         while (w.Second % Day != 5 * 3600 + 60) w.Advance(60);
-        cp.Expect(w.Facts.Skip(seen).Any(f => f.Id.StartsWith("sally:")), "兵糧が尽きると、朝5時に朝駆けに出る");
+        cp.Expect(w.Facts.Skip(seen).Any(f => f.Id.StartsWith("sally:")), "兵糧が残り1日になると、朝5時に朝駆けに出る");
         double farthest = 0;
         for (int i = 0; i < 90 && w.War.Result == ""; i++) { w.Advance(60); farthest = Math.Max(farthest, rebels.Where(u => u.Active).Select(Far).DefaultIfEmpty(0).Max()); }
         foreach (var f in w.Facts.Skip(seen).Where(f => !f.Id.StartsWith("free:"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}");

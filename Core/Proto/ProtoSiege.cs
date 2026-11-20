@@ -4,13 +4,14 @@ namespace HakutaiKagami.Core.Proto;
 // ・始まり：野の戦いで岩切勢が退き貝で岩切城へ退ききると、決着にせず攻城になる（鷹野の大目標が「敵を崩す」で、戦える隊が残っているとき。
 //   「陣を守り抜く」なら、退かせた所で決着）。
 //   鷹野勢は城の前（道の550m手前）に陣を敷き、そこで攻め方の軍議。総大将が案を出し、本人がいれば再提案できる（聞き入れるかは心証しだい）。
-// ・力攻め：皆で城の兵へ攻めかかる。城門（100）が残っている間、城の兵が受ける打撃は4割5分・与える打撃は1.15倍。
-//   城門は攻め手の兵の数と武勇で削れ、0になると城の利が消えて、岩切の全軍士気が下がる。城の兵がみな崩れれば落城。
-// ・囲む：城を三方から囲んで（550m）兵糧を断つ。城の兵糧は3日、攻め手の兵糧は2日（城には蓄えがある。待つだけでは攻め手が先に尽きる）。
-//   毎朝6時に1日ぶん減り、長陣で鷹野の全軍士気も下がる。尽きた側は6時間ごとに全軍士気が下がる。
-//   城方は毎朝5時、囲みのいちばん小さい隊へ朝駆けに出る（慎重な城主は兵糧が尽きるまで出ない）。見張りが気づかなければ奇襲になる。
+// ・城の負け（2026-11-20 ユーザー「兵糧ゼロか耐久値ゼロか兵力ゼロになったらまけ」）：城の耐久（100）・城の兵糧（3日）・城の兵のどれかが尽きたら落ちる。
+// ・力攻め：皆で城の兵へ攻めかかる。耐久が残っている間、城の兵が受ける打撃は4割5分・与える打撃は1.15倍で、城の兵は崩れない。
+//   耐久は攻め手の兵の数と武勇で削れ、0になると落城。その前に城の兵がみな倒れても落城。
+// ・囲む：城を三方から囲んで（550m）兵糧を断つ。毎朝6時に城も攻め手も1日ぶん減る（攻め手も3日ぶん）。城の兵糧が尽きたら開城。
+//   長陣で鷹野の全軍士気は毎日下がり、攻め手の兵糧が尽きると6時間ごとにさらに下がる。
+//   城方は毎朝5時、囲みのいちばん小さい隊へ朝駆けに出る（慎重な城主は兵糧が残り1日になるまで出ない）。見張りが気づかなければ奇襲になる。
 // ・開城を説く：本人が城の近く（700m）で勝元に説く。城の全軍士気が低い・兵糧が乏しい（外からは見えない）・城門が破れている・
-//   勝元の心証が良いほど聞き入れる。同じ日に二度は説けない。
+//   勝元の心証が良いほど聞き入れる（兵糧が尽きるのを待たずに開かせる手）。同じ日に二度は説けない。
 // ・終わり：落城（鎮めた）・開城（開城させた）・鷹野が退く（退いた。撤退条件は野の戦いと同じ。日が傾いても、は攻城では数えない）。
 //   落城・開城のときは岩切城へ入り、そこで論功行賞（Core/Proto/ProtoHome.cs）。
 public sealed class ProtoSiege
@@ -18,10 +19,10 @@ public sealed class ProtoSiege
     public long Since { get; set; }
     public long CampAt { get; set; }      // 城の前に陣を敷いた時刻（0＝まだ）
     public string Method { get; set; } = ""; // 力攻め・囲む（""＝まだ決まっていない）
-    public int Gate { get; set; } = 100;
+    public int Gate { get; set; } = 100; // 城の耐久
     public double GateHits { get; set; }
     public int Food { get; set; } = 3;    // 城の兵糧（日）
-    public int Supply { get; set; } = 2;  // 攻め手の兵糧（日）
+    public int Supply { get; set; } = 3;  // 攻め手の兵糧（日）
     public int Days { get; set; }
     public long SallyUntil { get; set; }
     public long ParleyAt { get; set; } = -1;
@@ -141,11 +142,11 @@ public sealed partial class ProtoWorld
         if (Second % (6 * Hour) == 0 && Second > s.Since + Hour)
         {
             if (s.Supply <= 0) AddSpirit("takano", -15);
-            if (s.Food <= 0) { if (SpiritOf(Rebel) <= 30) { OpenCastle("兵糧が尽き、岩切城は門を開いた。"); return; } AddSpirit(Rebel, -10); }
+            if (s.Food <= 0) { OpenCastle("兵糧が尽き、岩切城は門を開いた。"); return; } // 城の兵糧が尽きたら、城の負け
         }
         // 朝5時：城方の朝駆け。囲みのいちばん小さい隊へ。
         var able = rebels.Where(r => !Withdrawing(r) && r.Soldiers >= 10).ToArray();
-        if (ofDay == 5 * Hour && Second > s.Since + Hour && s.SallyUntil == 0 && able.Length > 0 && (s.Food <= 0 || SpiritOf(Rebel) >= 50 && k.Temper != "慎重")) // 慎重な城主は、兵糧が尽きるまで出ない
+        if (ofDay == 5 * Hour && Second > s.Since + Hour && s.SallyUntil == 0 && able.Length > 0 && (s.Food <= 1 || SpiritOf(Rebel) >= 50 && k.Temper != "慎重")) // 慎重な城主は、兵糧が尽きるまで出ない
         {
             var victim = takano.Where(u => !War.Routed.Contains(u.Id) && Dist(u, castle: true) <= 900_00).OrderBy(u => u.Soldiers).ThenBy(u => u.Id).FirstOrDefault();
             if (victim != null)
@@ -176,16 +177,20 @@ public sealed partial class ProtoWorld
         }
         return attacker.House == Rebel && InFoeCastle(attacker) ? 1.15 : 1;
     }
-    // 城門が残っている間、城の兵は崩れない・不意を突かれない・騎突を受けない。
+    // 耐久が残っている間、城の兵は崩れない・不意を突かれない・騎突を受けない。
     bool BehindGate(ProtoPerson u) => War.Siege is { Gate: > 0 } && u.House == Rebel && InFoeCastle(u);
     void WearGate()
     {
         var s = War.Siege; if (s == null || s.Gate <= 0 || s.GateHits < 1) return;
         int d = (int)s.GateHits; s.GateHits -= d; s.Gate = Math.Max(0, s.Gate - d);
         if (s.Gate > 0) return;
-        var c = Map.Site(FoeCastle);
-        Happen("gate-broken", "岩切城の門が破られた。", c.X * 100L, c.Y * 100L, [.. Units.Where(u => Dist(u, castle: true) <= 1000_00)]);
-        AddSpirit(Rebel, -20); AddSpirit("takano", 10);
+        // 城の耐久が尽きたら落城（城の負け）。
+        var c = Map.Site(FoeCastle); var k = Person(HeadOf(Rebel));
+        Happen("gate-broken", "岩切城の守りが破られた。", c.X * 100L, c.Y * 100L, [.. Units.Where(u => Dist(u, castle: true) <= 1000_00)]);
+        War.Result = "鎮めた"; War.Phase = "終わり";
+        Happen("rebellion-crushed", "岩切城は落ち、岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。", k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active), k]);
+        foreach (var r in People.Where(r => r.House == Rebel)) { r.Active = false; r.Path = []; r.PathIndex = 0; r.Doing = "捕らえられた"; }
+        War.Clashes.Clear(); War.Target.Clear();
     }
 
     // ---- 開城を説く ----
