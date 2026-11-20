@@ -260,11 +260,13 @@
       "valor": 72,
       "wits": 40,
       "loyalty": 90,
-      "temper": "逸る",
+      "temper": "勇猛",
       "soldiers": 120,
       "skills": [
-        "先駆け"
-      ]
+        "騎馬"
+      ],
+      "troop": "騎馬",
+      "tactic": "騎突"
     },
     {
       "id": "kosaka-shigetada",
@@ -283,8 +285,11 @@
       "temper": "慎重",
       "soldiers": 100,
       "skills": [
-        "物見上手"
-      ]
+        "物見上手",
+        "足軽"
+      ],
+      "troop": "足軽",
+      "tactic": ""
     },
     {
       "id": "saeki-genzaburo",
@@ -298,7 +303,7 @@
       "valor": 55,
       "wits": 50,
       "loyalty": 80,
-      "temper": "普通",
+      "temper": "臨機",
       "soldiers": 0,
       "skills": []
     },
@@ -319,8 +324,10 @@
       "temper": "慎重",
       "soldiers": 150,
       "skills": [
-        "城構え"
-      ]
+        "足軽"
+      ],
+      "troop": "足軽",
+      "tactic": "堅陣"
     },
     {
       "id": "iguchi-yashichi",
@@ -333,11 +340,13 @@
       "valor": 70,
       "wits": 35,
       "loyalty": 60,
-      "temper": "逸る",
+      "temper": "勇猛",
       "soldiers": 80,
       "skills": [
-        "槍衾"
-      ]
+        "足軽"
+      ],
+      "troop": "足軽",
+      "tactic": "槍衾"
     },
     {
       "id": "sawatari-nobufusa",
@@ -368,7 +377,7 @@
       "valor": 68,
       "wits": 45,
       "loyalty": 85,
-      "temper": "逸る",
+      "temper": "勇猛",
       "soldiers": 100,
       "skills": []
     },
@@ -401,7 +410,7 @@
       "valor": 50,
       "wits": 60,
       "loyalty": 80,
-      "temper": "普通",
+      "temper": "臨機",
       "soldiers": 0,
       "skills": [
         "物見上手"

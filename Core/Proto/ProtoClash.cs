@@ -24,8 +24,7 @@ public sealed class ProtoClash
 public sealed partial class ProtoWorld
 {
     public static readonly string[] Stances = ["白兵", "射撃", "防御"];
-    // 戦法：武将の技能から決まる。ゲージがたまると使える（NPC はたまれば自分で使う）。
-    public static string TacticOf(ProtoPerson p) => p.Skills.Contains("先駆け") ? "突撃" : p.Skills.Contains("槍衾") ? "槍衾" : p.Skills.Contains("城構え") ? "堅陣" : "鼓舞";
+    // 戦法：一人一つ（Core/Proto/ProtoArms.cs の TacticOf）。ゲージがたまると使える（NPC はたまれば自分で使う）。
     public int SpiritOf(string house) => War.Spirit.TryGetValue(house, out var s) ? s : 100;
     public ProtoClash? ClashOf(string id) => War.Clashes.FirstOrDefault(c => c.A == id || c.B == id);
     public int GaugeOf(string id) => War.Gauge.TryGetValue(id, out var g) ? g : 0;
@@ -71,7 +70,7 @@ public sealed partial class ProtoWorld
             var b = Foe(a); if (b == null) continue;
             if (Retreating(a)) continue; // 下がっている隊は打ち返さない（打たれるだけ）
             Set("fought:" + a.Id);
-            double atk = a.Soldiers * 0.006 * (a.Valor / 50.0) * (a.Morale / 100.0 + 0.5) * (SpiritOf(Side(a.House)) / 200.0 + 0.5);
+            double atk = a.Soldiers * 0.006 * (Val(a) / 50.0) * TroopAttack(a) * (a.Morale / 100.0 + 0.5) * (SpiritOf(Side(a.House)) / 200.0 + 0.5);
             long rise = Map.HeightAtCm(a.X, a.Y) - Map.HeightAtCm(b.X, b.Y);
             if (rise > 10_00) atk *= 1.3; else if (rise < -10_00) atk *= 0.7;
             if (Map.GroundAtCm(b.X, b.Y) == Ground.Forest) atk *= 0.8;
@@ -82,12 +81,12 @@ public sealed partial class ProtoWorld
             if (b.Moving) atk *= Retreating(b) ? 1.5 : 1.25; // 下がる隊は打たれやすい
             if (a.Moving) atk *= 0.4; // 歩きながら（追いながら）では打ちにくい
             if (Confused(a.Id)) atk *= 0.5; if (Confused(b.Id)) atk *= 1.5; // 混乱：与える打撃は半分、受ける打撃は1.5倍
-            if (Buffed("charge", a.Id)) atk *= 1.8;
+            if (Buffed("spear", a.Id)) atk *= Apt(a) ? 2.0 : 1.8; // 槍衾
             if (Buffed("kakare", a.Id)) atk *= 1.6;
             if (a.Player) atk *= War.Stance switch { "射撃" => 0.7, "防御" => 0.3, _ => 1.0 };
             if (Buffed("guard", b.Id)) atk *= 0.5;
             if (b.Player) atk *= War.Stance switch { "射撃" => 0.6, "防御" => 0.5, _ => 1.0 };
-            atk /= b.Command / 50.0;
+            atk /= Cmd(b) / 50.0;
             hits[b.Id] = hits.GetValueOrDefault(b.Id) + atk; dealt[(a.Id, b.Id)] = dealt.GetValueOrDefault((a.Id, b.Id)) + atk;
             a.Doing = $"{b.Name}の兵と戦っている";
             War.Gauge[a.Id] = Math.Min(100, GaugeOf(a.Id) + (a.Player ? 12 : 6));
@@ -127,7 +126,7 @@ public sealed partial class ProtoWorld
             War.Hits.Add(new ProtoHit { To = id, Loss = was - b.Soldiers, Kind = War.Routed.Contains(id) ? "追い討ち" : rear.Contains(id) ? "背後" : side.Contains(id) ? "側面" : "正面", Surprise = shaken.Contains(id), At = Second });
             // 士気：倒れた割合ぶん下がり、背後5・側面2がさらに下がる。混乱している間は下がりが1.5倍。
             double drop = Math.Ceiling(loss * 100.0 / Math.Max(1, was) * (b.Player && War.Stance == "防御" ? 0.5 : 1)) + (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0);
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1)));
+            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1) * Math.Clamp(50.0 / Cmd(b), 0.6, 1.4))); // 統率が高いほど士気が減りにくい
             // 混乱：正面2・側面6・背後10、二隊以上に打たれていれば+4、下がりながら打たれていれば+4。
             var hitters = dealt.Keys.Where(k => k.Item2 == id).Select(k => Person(k.Item1)).OrderByDescending(h => h.Wits).ThenBy(h => h.Id).ToArray();
             if (hitters.Length > 0) AddChaos(b, (rear.Contains(id) ? 10 : side.Contains(id) ? 6 : 2) + (hitters.Length >= 2 ? 4 : 0) + (Retreating(b) ? 4 : 0), hitters[0]);
@@ -165,7 +164,7 @@ public sealed partial class ProtoWorld
             if (Dist(u, camp.X, camp.Y) > 120_00) { War.AtCamp.Remove(id); continue; }
             if (!War.AtCamp.TryGetValue(id, out var since)) { War.AtCamp[id] = Second; continue; }
             if (Second - since < 30 * 60) continue;
-            War.Routed.Remove(id); War.Recovered.Add(id); War.AtCamp.Remove(id); u.Morale = 60;
+            War.Routed.Remove(id); War.Recovered.Add(id); War.AtCamp.Remove(id); u.Morale = Math.Clamp(60 + (Val(u) - 50) / 2, 40, 80); // 武勇が高いほど士気が戻る
             Happen($"regroup:{id}", $"{u.Name}の兵が{camp.Name}で立て直し、再び戦いに戻った（兵{u.Soldiers}）。", u.X, u.Y, u);
             AddSpirit(Side(u.House), 5);
             if (u.Player) { Note("兵を立て直した。"); continue; }
@@ -177,12 +176,15 @@ public sealed partial class ProtoWorld
     string UseTactic(ProtoPerson u)
     {
         if (GaugeOf(u.Id) < 100 || War.Routed.Contains(u.Id) || Confused(u.Id)) return "まだ使えない";
-        War.Gauge[u.Id] = 0; var name = TacticOf(u);
+        var name = TacticOf(u);
+        if (name == "騎突" && !Charge(u)) return "まだ使えない"; // 相手がいない・森の中
+        War.Gauge[u.Id] = 0;
         switch (name)
         {
-            case "突撃": War.Until["charge:" + u.Id] = Second + 3 * 60; break;
-            case "槍衾": case "堅陣": War.Until["guard:" + u.Id] = Second + 5 * 60; break;
-            default: u.Morale = Math.Min(100, u.Morale + 25); break;
+            case "騎突": break;
+            case "槍衾": War.Until["spear:" + u.Id] = Second + 5 * 60; break;
+            case "堅陣": War.Until["guard:" + u.Id] = Second + 5 * 60; break;
+            default: u.Morale = Math.Min(100, u.Morale + 25 * Val(u) / 50); break; // 鼓舞：武勇が高いほど士気が戻る
         }
         Happen($"tactic:{u.Id}:{Second}", $"{u.Name}が戦法「{name}」を使った。", u.X, u.Y, u);
         return $"戦法「{name}」。";

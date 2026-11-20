@@ -86,8 +86,8 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         using var cp = new Checkpoints("試作版の自動の物見", o);
         var w = new ProtoWorld(Map); w.SetupTsuriPractice();
         var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi"); var me = w.Player;
-        cp.Log($"見つける見込み（5分ごと）：小坂（知略{kosaka.Wits}）{ProtoWorld.ScoutChance(kosaka)}%　井口（知略{iguchi.Wits}）{ProtoWorld.ScoutChance(iguchi)}%");
-        cp.Expect(ProtoWorld.ScoutChance(kosaka) > ProtoWorld.ScoutChance(iguchi) * 3, "知略が高いほど見つけやすい");
+        cp.Log($"見つける見込み（5分ごと）：小坂（知略{kosaka.Wits}）{w.ScoutChance(kosaka)}%　井口（知略{iguchi.Wits}）{w.ScoutChance(iguchi)}%");
+        cp.Expect(w.ScoutChance(kosaka) > w.ScoutChance(iguchi) * 3, "知略が高いほど見つけやすい");
         // 井口を森の中に、小坂を300m離れた森の外に置く（小坂は物見上手なので350mまで探れる）。本人は遠くへ。
         (iguchi.X, iguchi.Y) = (kosaka.X, kosaka.Y); kosaka.X = iguchi.X + 300_00; kosaka.Y = iguchi.Y - 150_00;
         me.X = 2600_00; me.Y = 1900_00; me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
@@ -244,13 +244,13 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         k.X = forest.X + 200_00; k.Y = forest.Y; bool far = w.InSight(k, me);
         k.X = forest.X + 60_00; bool near = w.InSight(k, me);
         cp.Expect(w.Hidden(me) && !far && near, "森で伏せると近くまで見えない");
-        // 追うかどうか：崩れて退く敵を、逸る正之は追い、慎重な小坂は深追いしない。
+        // 追うかどうか：崩れて退く敵を、勇猛な正之は追い、慎重な小坂は深追いしない。
         var r = w.Person(iguchi.Id); r.Active = true; r.Soldiers = 40; if (!w.War.Routed.Contains(r.Id)) w.War.Routed.Add(r.Id);
         heir.X = r.X + 200_00; heir.Y = r.Y; kosaka.X = r.X - 200_00; kosaka.Y = r.Y;
-        cp.Expect(w.KeepsChasing(heir, r) && !w.KeepsChasing(kosaka, r), "逸る者は追い、慎重な者は追わない");
+        cp.Expect(w.KeepsChasing(heir, r) && !w.KeepsChasing(kosaka, r), "勇猛な者は追い、慎重な者は追わない");
     }
     // 釣り野伏の基本の仕組み（決まった筋書きではなく、置き方だけ決めて仕組みで起こす）：
-    // 開けた所で、囮の本人が逸る井口とぶつかってから、森の縁に伏せた小坂の横を通って下がる。井口は追い、小坂が目の前で奇襲し、本人が向き直って挟むと井口は崩れる。
+    // 開けた所で、囮の本人が勇猛な井口とぶつかってから、森の縁に伏せた小坂の横を通って下がる。井口は追い、小坂が目の前で奇襲し、本人が向き直って挟むと井口は崩れる。
     // ほかの隊（正之・勝元）はこの試しから外す。
     [Fact]
     public void TheFeignedRetreatDrawsTheEnemyIntoTheAmbush()
@@ -412,7 +412,34 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.Merit - merit is > 0 and <= 16, "合戦で働けば、見込みに近い勲功が入る");
     }
 
-    // 立て直し：崩れた隊は本陣で30分休むと、一度だけ戦いに戻る（士気60）。
+    // 兵種・戦法・技能と、忠誠による能力の上げ下げ（Core/Proto/ProtoArms.cs）。
+    [Fact]
+    public void TroopsTacticsAndLoyaltyShapeTheFight()
+    {
+        using var cp = new Checkpoints("試作版の兵種と戦法", o);
+        var w = new ProtoWorld(Map); w.SetupTsuriPractice();
+        var heir = w.Person("takano-masayuki"); var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi"); var katsumoto = w.Person("iwakiri-katsumoto");
+        foreach (var u in new[] { heir, kosaka, iguchi, katsumoto, w.Player }) cp.Log($"{u.Name}　{u.Troop}　戦法 {ProtoWorld.TacticOf(u)}　技能 {string.Join("・", u.Skills)}　気性 {u.Temper}　統率 {u.Command}→{w.Cmd(u)}　武勇 {u.Valor}→{w.Val(u)}　知略 {u.Wits}→{w.Wit(u)}（忠誠{u.Loyalty}）");
+        cp.Expect(heir.Troop == "騎馬" && ProtoWorld.TacticOf(heir) == "騎突" && iguchi.Troop == "足軽" && ProtoWorld.TacticOf(iguchi) == "槍衾", "兵種に合う戦法を持つ");
+        cp.Expect(ProtoWorld.TacticOf(w.Player) == "鼓舞", "戦法の無い者は鼓舞");
+        cp.Expect(w.Val(kosaka) > kosaka.Valor && w.Val(heir) == heir.Valor && w.Val(katsumoto) == katsumoto.Valor, "忠誠の高い家臣は申告より働く。当主はそのまま");
+        cp.Expect(new[] { heir, kosaka, iguchi, katsumoto }.All(u => u.Temper is "勇猛" or "臨機" or "慎重"), "気性は勇猛・臨機・慎重");
+        // 槍衾：井口が本人と打ち合い、戦法がたまると使う（5分間、与える打撃が増える）。
+        var me = w.Player; me.Soldiers = 200; kosaka.X += 2000_00; // 小坂は遠くへ（この試しでは伏兵を見ない）
+        for (int i = 0; i < 40 && !w.Facts.Any(f => f.Id.StartsWith("tactic:" + iguchi.Id)); i++) { iguchi.Morale = 100; me.Morale = 100; w.Advance(60); }
+        cp.Log(w.Facts.LastOrDefault(f => f.Id.StartsWith("tactic:"))?.Text ?? "戦法なし");
+        cp.Expect(w.Facts.Any(f => f.Id.StartsWith("tactic:" + iguchi.Id) && f.Text.Contains("槍衾")), "足軽の井口は槍衾を使う");
+        // 騎突：野で井口の前に置いた正之（騎馬）が、たまった戦法で一度に兵を削る。
+        heir.Active = true; heir.Soldiers = 120; heir.Morale = 100; w.War.Routed.Remove(heir.Id); (heir.X, heir.Y) = (iguchi.X + 60_00, iguchi.Y - 40_00); heir.Path = []; heir.PathIndex = 0;
+        iguchi.Soldiers = 80; iguchi.Morale = 100; w.War.Routed.Remove(iguchi.Id); w.War.Gauge[heir.Id] = 100;
+        cp.Expect(w.TerrainName(heir.X, heir.Y) != "森", "正之は森の外にいる");
+        int before = iguchi.Soldiers; w.Advance(60);
+        var hit = w.Facts.LastOrDefault(f => f.Id.StartsWith("tactic:" + heir.Id));
+        cp.Log($"{hit?.Text}　井口 兵{before}→{iguchi.Soldiers}");
+        cp.Expect(hit != null && hit.Text.Contains("騎突") && before - iguchi.Soldiers >= 5, "騎馬の正之は騎突で一度に兵を削る");
+    }
+
+    // 立て直し：崩れた隊は本陣で30分休むと、一度だけ戦いに戻る（士気は60を基準に、武勇で増減）。
     [Fact]
     public void TheRoutedUnitRegroupsAtCamp()
     {
@@ -424,7 +451,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         iguchi.X = castle.X * 100L; iguchi.Y = castle.Y * 100L; iguchi.Path = []; iguchi.PathIndex = 0; iguchi.Soldiers = 50; iguchi.Morale = 10; w.War.Routed.Add(iguchi.Id);
         w.Advance(20 * 60); cp.Expect(w.War.Routed.Contains(iguchi.Id), "20分ではまだ崩れたまま");
         w.Advance(15 * 60); cp.Log($"35分後：崩れ{w.War.Routed.Contains(iguchi.Id)} 士気{iguchi.Morale}");
-        cp.Expect(!w.War.Routed.Contains(iguchi.Id) && iguchi.Morale == 60, "30分休むと士気60で戦いに戻る");
+        cp.Expect(!w.War.Routed.Contains(iguchi.Id) && iguchi.Morale == Math.Clamp(60 + (w.Val(iguchi) - 50) / 2, 40, 80), "30分休むと戦いに戻る（戻る士気は60を基準に、武勇が高いほど多い）");
     }
 
     // 見た目を確かめるための保存（HAKUTAI_WRITE_SCENE に置き場所を渡したときだけ書く。ふだんは何もしない）。

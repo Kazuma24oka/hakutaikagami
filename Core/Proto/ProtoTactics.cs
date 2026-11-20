@@ -4,7 +4,7 @@ namespace HakutaiKagami.Core.Proto;
 // ・向き：隊は最初にぶつかった相手の方を向き続ける。側面から当たると1.5倍、背後からは2倍で、背後を突かれた側は士気が毎分5さらに下がる。
 // ・退き道：崩れた隊の本陣への道の先に敵がいると逃げられず壊滅する（兵の多くを失い、大将は捕らえられる）。
 // ・追い討ち：崩れて退く隊は、近くの敵に一方的に削られる。追っている隊は隊形が崩れて守りが弱い（受ける打撃1.25倍）。
-// ・追うかどうかは本人が決める：逸る者・知略の低い者は退く敵を追い、慎重な者・知略の高い者は深追いしない。
+// ・追うかどうかは本人が決める：勇猛な者・知略の低い者は退く敵を追い、慎重な者・知略の高い者は深追いしない。
 //   崩れていないのに退いて見せる隊（本人が歩いて下がるなど）も、追う者は追う。これで釣り野伏ができる。
 // ・伏せる：森の中で動かずにいる隊は、敵からは近く（80m）まで見えない。伏せていた隊が仕掛けると奇襲（5分のあいだ1.5倍、相手の士気-30、その間は毎分さらに-4）。側面を突かれると毎分-2。
 public sealed partial class ProtoWorld
@@ -12,7 +12,8 @@ public sealed partial class ProtoWorld
     // 間合い（2026-11-19 ユーザーの図「遠巻きでは凸の出っ張りが相手の面に触れる」）：打ち合える遠さ100m、攻めかかる側は相手の80m手前で止まる、味方どうしは90m空ける（敵どうしは間合いの80mまで）。
     // 地図の凸（幅64m・奥行き48m・出っ張り32m）がちょうど触れ合う長さ。
     internal const long Reach = 100_00, Contact = 80_00, Gap = 90_00;
-    public static bool Pursues(ProtoPerson u) => u.Temper == "逸る" || u.Wits < 55;
+    // 追うかどうかは気性で決まる：勇猛はいつも追う。臨機は自軍の全軍士気が敵を上回っているときだけ。慎重は追わない。
+    public bool Pursues(ProtoPerson u) => u.Temper == "勇猛" || u.Temper == "臨機" && SpiritOf(Side(u.House)) > SpiritOf(Foe(Side(u.House)));
 
     // 伏せている：森の中で、動かず、ぶつかっておらず、崩れていない。
     // 森の縁（30m以内に森がある）も木立に隠れられる。
@@ -83,7 +84,7 @@ public sealed partial class ProtoWorld
         {
             var r = all.Where(b => Hostile(a.House, b.House) && War.Routed.Contains(b.Id) && b.Active && Dist(a, b) <= Reach).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
             if (r == null) continue;
-            hits[r.Id] = hits.GetValueOrDefault(r.Id) + a.Soldiers * 0.006 * (a.Valor / 50.0) * 1.5;
+            hits[r.Id] = hits.GetValueOrDefault(r.Id) + a.Soldiers * 0.006 * (Val(a) / 50.0) * 1.5;
             a.Doing = $"{r.Name}の兵を追い討ちしている";
         }
     }
@@ -102,7 +103,7 @@ public sealed partial class ProtoWorld
     }
 
     // ---- 釣り野伏の場面（検査 TheFeignedRetreatDrawsTheEnemyIntoTheAmbush と「合戦を見る」で同じものを使う） ----
-    // 謀叛が起きたら軍議で「釣り野伏」を選び、合図の1分後に、開けた所へ囮の本人・逸る井口・森の縁に伏せた小坂を置く（正之と勝元はこの場面から外す）。
+    // 謀叛が起きたら軍議で「釣り野伏」を選び、合図の1分後に、開けた所へ囮の本人・勇猛な井口・森の縁に伏せた小坂を置く（正之と勝元はこの場面から外す）。
     public void SetupTsuriPractice()
     {
         while (War.Phase != "軍議待ち" && Second < 4 * Day) Advance(600);

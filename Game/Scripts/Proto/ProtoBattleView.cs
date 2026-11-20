@@ -198,7 +198,7 @@ public partial class ProtoGame
         {
             var r = rows[u.Id]; bool down = war.Routed.Contains(u.Id);
             int start = war.StartSoldiers.TryGetValue(u.Id, out var st) ? st : u.Soldiers;
-            r.Text.Text = $"{u.Name}　兵{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : World.Confused(u.Id) ? "　混乱" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id); r.Chaos.Value = World.Confused(u.Id) ? 100 : World.ChaosOf(u.Id);
+            r.Text.Text = $"{u.Name}　{u.Troop}{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : World.Confused(u.Id) ? "　混乱" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id); r.Chaos.Value = World.Confused(u.Id) ? 100 : World.ChaosOf(u.Id);
         }
         // 棒は士気の合計の比（2026-11-19 ユーザー「士気の合計を、数値も書いて」）。士気が20を切った隊は崩れるので、どちらが先に崩れそうかが分かる。
         int ma = allies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale), me2 = enemies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale);

@@ -4,7 +4,7 @@ namespace HakutaiKagami.Core.Proto;
 // ・大目標（何を果たせば勝ちか）＝「敵を崩す」「陣を守り抜く」。中目標＝作戦、小目標＝役目（Core/Proto/ProtoOrders.cs）。
 //   作戦が崩れたあとの自動の動きは、大目標に戻って決める（気性は、どれだけ無理をするかの加減だけ）。
 // ・撤退条件は、選ぶものではなく状況で初めから決まっている。軍議では足せるが、減らせない。
-//   どれかを満たすと退き貝が鳴り、狼煙と同じに届く（見える所はすぐ、遠い隊は知らせが届いてから）。逸る者は、戦っている最中だと半々で従わない。
+//   どれかを満たすと退き貝が鳴り、狼煙と同じに届く（見える所はすぐ、遠い隊は知らせが届いてから）。勇猛な者は、戦っている最中だと半々で従わない。
 // ・敵（岩切勢）も同じに大目標と撤退条件を持つ。
 public sealed record ProtoRetreatRule(string Id, string Text, bool Added, bool Met);
 
@@ -87,8 +87,8 @@ public sealed partial class ProtoWorld
                 Set("retreat-heard:" + u.Id);
                 if (u.Player) { if (Fact("retreat:" + side) is { } f) Learn(u, f); Note($"退き貝が聞こえた。{HouseName(side)}は兵を引く。"); }
                 if (!Auto(u)) continue;
-                // 逸る者は、戦っている最中だと半々で従わない。
-                if (u.Temper == "逸る" && u.Id != leader && ClashOf(u.Id) != null && Roll("stays:" + u.Id) % 100 < 50)
+                // 勇猛な者は、戦っている最中だと半々で従わない。
+                if (u.Temper == "勇猛" && u.Id != leader && ClashOf(u.Id) != null && Roll("stays:" + u.Id) % 100 < 50)
                 { Set("stays:" + u.Id); Happen("stays:" + u.Id, $"{u.Name}は退き貝を聞いても退かず、戦い続けた。", u.X, u.Y, u); continue; }
                 War.Target.Remove(u.Id); flags.Remove("luring:" + u.Id); Set("withdrawing:" + u.Id);
                 Walk(u, Spot(camp, 3), camp.Id, camp.Name + "へ兵を引いている");

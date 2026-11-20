@@ -17,7 +17,7 @@ public sealed record ProtoLine(int WidthM, int[][] Points);
 public sealed record ProtoCircle(int X, int Y, int RadiusM);
 public sealed record ProtoTerrain(ProtoEllipse[] Mountains, ProtoEllipse[] Forests, ProtoLine[] Rivers, ProtoCircle[] Fords, ProtoLine[] Roads);
 public sealed record ProtoPersonData(string Id, string Name, string House, string Role, string Home, int Age, string[]? Visits = null, bool Player = false,
-    int Command = 50, int Valor = 50, int Wits = 50, int Loyalty = 70, string Temper = "普通", int Soldiers = 0, string[]? Skills = null);
+    int Command = 50, int Valor = 50, int Wits = 50, int Loyalty = 70, string Temper = "臨機", int Soldiers = 0, string[]? Skills = null, string Troop = "足軽", string Tactic = "");
 // Kind：要所の種類（射撃・要所・伏兵、空なら要所でない）。Width：一度に戦える隊の数（0なら限りなし）。
 public sealed record ProtoPosition(string Id, string Name, int X, int Y, string Kind = "", int Width = 0);
 public sealed record ProtoMapData(int Schema, string Name, int WidthM, int HeightM, int CellM, int StartHour, ProtoHouse[] Houses, ProtoSite[] Sites, ProtoTerrain Terrain, ProtoPersonData[] People, ProtoPosition[]? Positions = null);

@@ -18,7 +18,7 @@ public sealed partial class ProtoWorld
     public int ChaosOf(string id) => War.Chaos.GetValueOrDefault(id);
     public bool Confused(string id) => War.ChaosUntil.GetValueOrDefault(id) > Second;
     // 森の伏兵を見つける遠さ（cm）。
-    long SpotRange(ProtoPerson viewer) => 80_00 + (viewer.Wits - 50) * 1_00 + (viewer.Skills.Contains("物見上手") ? 30_00 : 0);
+    long SpotRange(ProtoPerson viewer) => 80_00 + (Wit(viewer) - 50) * 1_00 + (viewer.Skills.Contains("物見上手") ? 30_00 : 0);
 
     // 毎分：見つかっているかを確かめ、伏兵になる・解ける。
     void Stealth(ProtoPerson[] field)
@@ -39,7 +39,7 @@ public sealed partial class ProtoWorld
     // 隊はいつも周りを探っている。5分ごとに、知略に応じた確率で、少し遠く（ScoutFar。物見上手は+100m）の森の中の敵に気づく。
     // 気づかれた隊は5分のあいだ森の中でも隠れられず、伏兵も解ける。味方が見つけた敵は、知らせが届いてから印になる。
     public const long ScoutFar = 250_00;
-    public static int ScoutChance(ProtoPerson p) => Math.Clamp((p.Wits - 30) * 3 / 2, 0, 90);
+    public int ScoutChance(ProtoPerson p) => Math.Clamp((Wit(p) - 30) * 3 / 2, 0, 90);
     bool Spotted(string id) => flags.TryGetValue("spotted:" + id, out var at) && Second - at < 5 * 60;
     void AutoScout(ProtoPerson[] field)
     {
@@ -72,7 +72,7 @@ public sealed partial class ProtoWorld
     void AddChaos(ProtoPerson b, int amount, ProtoPerson? by)
     {
         if (amount == 0 || Confused(b.Id) || War.Routed.Contains(b.Id) || b.Soldiers <= 0) return;
-        int add = amount > 0 ? Math.Max(1, (int)Math.Round(amount * (double)(by?.Wits ?? 50) / Math.Max(1, b.Wits))) : amount;
+        int add = amount > 0 ? Math.Max(1, (int)Math.Round(amount * (double)(by != null ? Wit(by) : 50) / Wit(b))) : amount;
         int now = Math.Clamp(ChaosOf(b.Id) + add, 0, 100); War.Chaos[b.Id] = now;
         if (now < 100) return;
         War.Chaos[b.Id] = 0; War.ChaosUntil[b.Id] = Second + ChaosTime;

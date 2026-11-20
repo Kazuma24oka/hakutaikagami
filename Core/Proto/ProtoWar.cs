@@ -100,7 +100,7 @@ public sealed partial class ProtoWorld
         double r = 350_00;
         var g = Map.GroundAtCm(p.X, p.Y);
         if (g == Ground.Mountain) r *= 1.8; else if (g == Ground.Forest) r *= 0.6;
-        r += (p.Wits - 50) * 4_00;
+        r += (Wit(p) - 50) * 4_00;
         if (p.Skills.Contains("物見上手")) r += 150_00;
         return (long)r;
     }
@@ -275,9 +275,9 @@ public sealed partial class ProtoWorld
             foreach (var u in takano) { long d = Dist(u, heir); flags["attack-at:" + u.Id] = d <= 2500_00 ? Second : Second + d / 200; }
             if (Dist(Player, heir) <= 2500_00) Learn(Player, Fact("signal")!);
         }
-        // 抜け駆け：逸る者は、合図の前でも敵が見えると仕掛けることがある。
+        // 抜け駆け：勇猛な者は、合図の前でも敵が見えると仕掛けることがある。
         // 大将は自分の決めた合図を破らない。
-        foreach (var u in takano.Where(u => !u.Player && u.Id != Heir && War.Split && !War.Signaled && u.Temper == "逸る" && !War.Target.ContainsKey(u.Id)))
+        foreach (var u in takano.Where(u => !u.Player && u.Id != Heir && War.Split && !War.Signaled && u.Temper == "勇猛" && !War.Target.ContainsKey(u.Id)))
         {
             var seen = rebels.Where(r => InSight(u, r)).OrderBy(r => Dist(u, r)).FirstOrDefault();
             if (seen != null && Roll("nukegake:" + u.Id) % 100 < 30)

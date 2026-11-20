@@ -141,7 +141,7 @@ public partial class ProtoGame
     }
 
     // 動画「釣り野伏」（2026-11-19 ユーザー「釣り野伏の動画」）。検査 Tests/ProtoWarTests.cs の TheFeignedRetreatDrawsTheEnemyIntoTheAmbush と同じ手順。
-    // 本人は道の口で囮、小坂重忠は森の北の縁に伏せる（正之は城に残る）。井口とぶつかってから森の縁沿いに下がると、逸る井口が追ってきて、小坂が横から奇襲する。
+    // 本人は道の口で囮、小坂重忠は森の北の縁に伏せる（正之は城に残る）。井口とぶつかってから森の縁沿いに下がると、勇猛な井口が追ってきて、小坂が横から奇襲する。
     async Task RunTsuri()
     {
         var w = World; long Day = ProtoWorld.Day, H = ProtoWorld.Hour;
@@ -166,7 +166,7 @@ public partial class ProtoGame
         await Until(() => w.ClashOf(w.Player.Id) != null, 40);
         // 検査と同じく、ぶつかって1分で退く。
         long backAt = w.Second + 60; await Until(() => w.Second >= backAt, 20);
-        Pause(); await Cap("ぶつかったら、すぐにわざと退く。井口は逸る気性なので追ってくる（慎重な者は深追いしない）", 4.5);
+        Pause(); await Cap("ぶつかったら、すぐにわざと退く。井口は勇猛な気性なので追ってくる（慎重な者は深追いしない）", 4.5);
         w.War.Target.Remove(w.Player.Id); w.MoveTo(kosaka.X - 350_00, kosaka.Y - 60_00); ShowGoal();
         Resume(60); int seen = w.Facts.Count;
         bool Sprung() => w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id));

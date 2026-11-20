@@ -4,7 +4,7 @@ namespace HakutaiKagami.Core.Proto;
 // ・主君の指示の出陣は、まず城に集まり、総勢が大将に率いられてまとまって戦地（着陣の地）へ進み、着いてから役目ごとに分かれる。
 //   出立の遅れは無い。行軍の速さは大将の統率で決まる（60＋統率×0.7 ％）。
 // ・作戦を選ぶと役目が出る。正面から当たる＝先手・後詰、釣り野伏＝囮・伏兵・本隊、挟撃＝正面・回り込み。
-//   NPC は役目どおりに動く。ただし逸る者が囮になると、半々で退かずに戦い続ける。
+//   NPC は役目どおりに動く。ただし勇猛な者が囮になると、半々で退かずに戦い続ける。
 // ・本人は「指図どおりに動く」を選ぶと、NPC と同じに役目どおり自動で動く。自分で動けばその間は指図から外れる。
 // ・作戦は段取りの並び（2026-11-20 ユーザー）。段ごとに成功・失敗が付き、一つでも失敗すれば作戦は崩れる。
 //   崩れたあとは作戦なし：自動で動く隊（NPC と、委任にした本人）は気性に合う動きをする（逸る＝見えた敵へ攻めかかる、
@@ -163,16 +163,16 @@ public sealed partial class ProtoWorld
             string did = "", what = "";
             if (hold)
             {
-                // 陣を守り抜く：陣の近く（300m）に来た敵だけを相手にし、離れていれば陣へ戻る。逸る者だけ、見えた敵を追って出る。
-                if (seen != null && (u.Temper == "逸る" || Dist(seen, px, py) <= 300_00)) { War.Target[u.Id] = seen.Id; what = seen.Id; did = $"{u.Name}は{seen.Name}の兵へ攻めかかった。"; }
+                // 陣を守り抜く：陣の近く（300m）に来た敵だけを相手にし、離れていれば陣へ戻る。勇猛な者だけ、見えた敵を追って出る。
+                if (seen != null && (u.Temper == "勇猛" || Dist(seen, px, py) <= 300_00)) { War.Target[u.Id] = seen.Id; what = seen.Id; did = $"{u.Name}は{seen.Name}の兵へ攻めかかった。"; }
                 else if (!near && !u.Moving && Dist(u, px, py) > 150_00) { MarchTo(u, post); what = "post"; did = $"{u.Name}は{post.Name}へ戻って守りを固めた。"; }
             }
             else
             {
-                // 敵を崩す：攻め続ける。逸る者は一人でも、普通の者は兵が劣らなければ、慎重な者は味方が近くで戦っているときに。そうでなければ大将と合流する。
-                // 自分に見えていなくても、味方の誰かに見えている敵は知らせで分かる（大将と逸る者はそこへ向かう）。
-                if (seen == null && (u.Id == Heir || u.Temper == "逸る")) seen = rebels.Where(r => takano.Any(t => InSight(t, r))).OrderBy(r => Dist(u, r)).ThenBy(r => r.Id).FirstOrDefault();
-                bool go = seen != null && (u.Temper == "逸る" || u.Id == Heir || helped || u.Temper != "慎重" && u.Soldiers >= seen.Soldiers);
+                // 敵を崩す：攻め続ける。勇猛な者は一人でも、臨機の者は兵が劣らなければ、慎重な者は味方が近くで戦っているときに。そうでなければ大将と合流する。
+                // 自分に見えていなくても、味方の誰かに見えている敵は知らせで分かる（大将と勇猛な者はそこへ向かう）。
+                if (seen == null && (u.Id == Heir || u.Temper == "勇猛")) seen = rebels.Where(r => takano.Any(t => InSight(t, r))).OrderBy(r => Dist(u, r)).ThenBy(r => r.Id).FirstOrDefault();
+                bool go = seen != null && (u.Temper == "勇猛" || u.Id == Heir || helped || u.Temper == "臨機" && u.Soldiers >= seen.Soldiers && SpiritOf("takano") >= 50); // 臨機は、兵が劣らず全軍士気が半分あれば攻める
                 if (go) { War.Target[u.Id] = seen!.Id; what = seen.Id; did = $"{u.Name}は{seen.Name}の兵へ攻めかかった。"; }
                 else if (seen == null && !u.Moving && (u.Id == Heir || War.Routed.Contains(Heir) && u.Temper != "慎重") && Dist(u, foeCamp.X * 100L, foeCamp.Y * 100L) > 300_00)
                 { Walk(u, ProtoMove.Nearest(Map, foeCamp.X * 100L, foeCamp.Y * 100L), foeCamp.Name, $"{foeCamp.Name}へ兵を進めている"); what = "advance"; did = $"{u.Name}は敵を求めて{foeCamp.Name}へ兵を進めた。"; }
@@ -246,8 +246,8 @@ public sealed partial class ProtoWorld
         if (!flags.TryGetValue("bait-clash:" + u.Id, out var since)) { flags["bait-clash:" + u.Id] = Second; return; }
         if (Second - since < 60) return;
         if (ambusher == null) { Set("bait-done:" + u.Id); return; }
-        // 逸る者は、半々で退かずに戦い続ける。
-        if (u.Temper == "逸る" && Roll("bait:" + u.Id) % 100 < 50)
+        // 勇猛な者は、半々で退かずに戦い続ける。
+        if (u.Temper == "勇猛" && Roll("bait:" + u.Id) % 100 < 50)
         {
             Set("bait-done:" + u.Id);
             Happen("bait-stays:" + u.Id, $"囮の{u.Name}は退かず、そのまま戦い続けた。", u.X, u.Y, u);

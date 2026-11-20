@@ -27,10 +27,12 @@ public sealed class ProtoPerson
     public int Valor { get; init; } = 50;
     public int Wits { get; init; } = 50;
     public int Loyalty { get; set; } = 70;
-    public string Temper { get; init; } = "普通";
+    public string Temper { get; init; } = "臨機";
     public int Soldiers { get; set; }
     public int Morale { get; set; } = 100;
-    public string[] Skills { get; init; } = [];
+    public string[] Skills { get; init; } = [];   // 技能（いくつでも。兵種の適性・物見上手）
+    public string Troop { get; init; } = "足軽";    // 兵種（足軽・騎馬）
+    public string Tactic { get; init; } = "";       // 戦法（一つだけ。Core/Proto/ProtoArms.cs）
     public bool Moving => PathIndex < Path.Count;
     public bool Samurai => House is "takano" or "sawatari" or "iwakiri";
 }
@@ -72,7 +74,7 @@ public sealed partial class ProtoWorld
         {
             var home = map.Site(d.Home); var spot = Spot(home, i++);
             People.Add(new ProtoPerson { Id = d.Id, Name = d.Name, House = d.House, Role = d.Role, Home = d.Home, Visits = d.Visits ?? [], Player = d.Player, X = spot.X, Y = spot.Y, Doing = "詰めている",
-                Command = d.Command, Valor = d.Valor, Wits = d.Wits, Loyalty = d.Loyalty, Temper = d.Temper, Soldiers = d.Soldiers, Skills = d.Skills ?? [] });
+                Command = d.Command, Valor = d.Valor, Wits = d.Wits, Loyalty = d.Loyalty, Temper = d.Temper, Soldiers = d.Soldiers, Skills = d.Skills ?? [], Troop = d.Troop, Tactic = d.Tactic });
         }
         AddBandits();
         if (opening) Opening();
@@ -165,7 +167,7 @@ public sealed partial class ProtoWorld
         {
             if (!p.Moving || !p.Active || Confused(p.Id)) continue; // 混乱している隊は動けない
             long x = p.X, y = p.Y; int i = p.PathIndex;
-            bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, (InBody(p) ? MarchPercent : p.Player ? PlayerPercent : 100) * (Retreating(p) ? 75 : 100) / 100);
+            bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, (InBody(p) ? MarchPercent : p.Player ? PlayerPercent : 100) * (Retreating(p) ? 75 : 100) / 100 * TroopSpeed(p) / 100);
             p.X = x; p.Y = y; p.PathIndex = i;
             if (arrived) Arrive(p);
         }

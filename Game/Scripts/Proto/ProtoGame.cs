@@ -707,7 +707,7 @@ public partial class ProtoGame : Node3D
                 }
                 var at = OnBoard(x, y); mk.Body.Position = at - new Vector2(9, 9); mk.Body.Color = mine ? new Color(1, 0.85f, 0.3f) : HouseColor("takano").Lightened(0.25f); mk.Name.Position = at + new Vector2(11, -11);
                 string effect = World.TerrainEffect(x, y);
-                var line = new Button { Text = $"{pc.Name}　{pc.Role}　兵{pc.Soldiers}　{World.TerrainName(x, y)}" + (effect != "" ? "　" + effect : "") + $"　功{pc.Merit}", Alignment = HorizontalAlignment.Left, Flat = true, Disabled = !lead && !mine };
+                var line = new Button { Text = $"{pc.Name}　{pc.Role}　{World.Person(pc.Unit).Troop}{pc.Soldiers}　{World.TerrainName(x, y)}" + (effect != "" ? "　" + effect : "") + $"　功{pc.Merit}", Alignment = HorizontalAlignment.Left, Flat = true, Disabled = !lead && !mine };
                 line.AddThemeColorOverride("font_color", sel ? new Color(1, 0.88f, 0.45f) : Colors.White); line.AddThemeColorOverride("font_disabled_color", Colors.White);
                 var id = pc.Unit; line.Pressed += () => { pick = id; Draw(); };
                 list.AddChild(line);
