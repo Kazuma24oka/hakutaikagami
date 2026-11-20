@@ -11,10 +11,16 @@ namespace HakutaiKagami.Core.Proto;
 //   完成している間だけ、毎朝6時に城の兵糧（3日）が1日ぶん減る。足りなければ城は補給できて、兵糧は減らない。0になれば開城。
 // ・攻め手の兵糧は総大将の隊が持ち、皆がそれを食べる（3日）。総大将の隊が崩れると兵糧を失う。尽きると6時間ごとに全軍士気が下がる。
 // ・攻城の軍議：城に取りついた隊（800m）はいつでも開ける。包囲・力攻めを選ぶ（総大将が聞き入れるかは心証しだい）。
-//   本人が言わなければ、陣を敷いて半刻で総大将が決める（勇猛な総大将は力攻め）。調略・勧告はこれから。今は「開城を説く」がある。
+//   本人が言わなければ、陣を敷いて半刻で総大将が決める（勇猛な総大将は力攻め）。軍議の中で、調略と勧告も打てる（総大将が認めたとき）。
 // ・力攻め：皆で城門の兵へ攻めかかる。耐久は攻め手の兵の数と武勇で削れる。
 // ・朝駆け：城方は毎朝5時、囲みのいちばん小さい隊へ打って出る（慎重な城主は兵糧が残り1日になるまで出ない）。見張りが気づかなければ奇襲。
-// ・開城を説く：本人が城の近く（700m）で勝元に説く。城の全軍士気・兵糧・失った層・勝元の心証で決まる。同じ日に二度は説けない。
+// ・勧告：軍議で条件を選んで、降伏の使者を出す（1日に一度。総大将が認めたとき）。出すと包囲になり、返事が戻るまで（半刻）攻めない・城方も打って出ない。
+//   条件は 帰参（所領はそのままで鷹野に戻る）・退去（城主は城を明け渡して去る）・切腹（城主の切腹で城兵を助ける）。
+//   受けるかは城主が決める：城の全軍士気・兵糧（外からは見えない）・失った層・勝元の心証に、条件の重さを足し引きする。
+//   勇猛な総大将は、押しているうち（全軍士気60以上・兵糧2日以上）は「帰参」を認めない。
+// ・調略：軍議で、城内の武将（城主でない者）へ密書を忍ばせる（総大将が認めたとき）。2時間で返事。内応を約すかは、その武将が決める
+//   （鷹野への忠誠・本人への心証・城の全軍士気・兵糧・失った層）。約束があれば、軍議で「内応の合図」を出せる。
+//   合図のとき、動くかどうかをもう一度その武将が決める。動けば、城主を生け捕って開城／内から城門を開けて一層失わせる／露見して城内で斬り合い、のどれか。
 // ・終わり：落城（鎮めた）・開城（開城させた）・鷹野が退く（退いた）。落城・開城のときは岩切城へ入って論功行賞（Core/Proto/ProtoHome.cs）。
 public sealed class ProtoSiege
 {
@@ -30,7 +36,12 @@ public sealed class ProtoSiege
     public int Supply { get; set; } = 3;  // 攻め手の兵糧（日）
     public int Days { get; set; }
     public long SallyUntil { get; set; }
-    public long ParleyAt { get; set; } = -1;
+    public long ParleyAt { get; set; } = -1; // 最後に勧告の使者を出した時刻
+    public string Terms { get; set; } = "";  // 勧告の条件（交渉中）
+    public long TalksUntil { get; set; }     // 使者の返事が戻る時刻（0＝交渉していない）
+    public string Plot { get; set; } = "";   // 調略：""・密書・約束・断られた・済
+    public string PlotWith { get; set; } = "";
+    public long PlotAt { get; set; }
 }
 
 public sealed partial class ProtoWorld
@@ -110,6 +121,7 @@ public sealed partial class ProtoWorld
     {
         var s = War.Siege; if (s == null || War.Result != "") return "";
         if (want != null && !SiegeCouncilOpen) return "";
+        if (want == SiegeMethods[0] && s.TalksUntil > 0) return $"{SiegeLead.Name}「使者が戻るまでは攻めぬ。」";
         string prop = Flag("siege-decided") ? s.Method : SiegeProposal; bool present = want != null && SiegeMethods.Contains(want), refused = present && want != prop && !CommanderListens;
         string next = present && !refused ? want! : prop; var lead = SiegeLead; Set("siege-decided");
         if (next == s.Method && !present) return "";
@@ -143,7 +155,7 @@ public sealed partial class ProtoWorld
             // 陣を敷いたら知らせる。半刻たっても本人が何も言わなければ、総大将が攻め方を決める。
             var camp = SiegeCamp; var lead = SiegeLead;
             if (s.CampAt == 0 && Dist(lead, camp.X, camp.Y) <= 150_00) { s.CampAt = Second; Happen("siege-camp", $"{lead.Name}勢は岩切城の前に陣を敷いた。", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00)]); }
-            if (s.CampAt > 0 && Second >= s.CampAt + 30 * 60 && !Flag("siege-decided")) DecideSiege(null);
+            if (s.CampAt > 0 && Second >= s.CampAt + 30 * 60 && !Flag("siege-decided") && s.TalksUntil == 0) DecideSiege(null);
             // 城の兵は、今の層の城門に並ぶ（朝駆けに出ている間は別）。
             foreach (var r in rebels.Where(r => !Withdrawing(r) && !War.Target.ContainsKey(r.Id) && !r.Moving && ClashOf(r.Id) == null && War.Post.TryGetValue(r.Id, out var at) && Dist(r, at[0], at[1]) > 30_00)) MarchTo(r, PostOf(r.Id));
             // 包囲の完成：囲みの中の兵が足りているか。
@@ -170,6 +182,8 @@ public sealed partial class ProtoWorld
                 if (!u.Moving && ClashOf(u.Id) == null && Dist(u, post.X, post.Y) > 100_00) Walk(u, post, "囲みの陣", "岩切城を囲んでいる");
             }
         }
+        SiegeTalks();
+        if (War.Result != "") return;
         SiegeDays(takano, rebels);
     }
 
@@ -191,7 +205,7 @@ public sealed partial class ProtoWorld
         }
         // 朝5時：城方の朝駆け。囲みのいちばん小さい隊へ。
         var able = rebels.Where(r => !Withdrawing(r) && r.Soldiers >= 10).ToArray();
-        if (ofDay == 5 * Hour && Second > s.Since + Hour && s.SallyUntil == 0 && able.Length > 0 && (s.Food <= 1 || SpiritOf(Rebel) >= 50 && k.Temper != "慎重")) // 慎重な城主は、兵糧が尽きるまで出ない
+        if (ofDay == 5 * Hour && Second > s.Since + Hour && s.SallyUntil == 0 && s.TalksUntil == 0 && able.Length > 0 && (s.Food <= 1 || SpiritOf(Rebel) >= 50 && k.Temper != "慎重")) // 慎重な城主は、兵糧が尽きるまで出ない
         {
             var victim = takano.Where(u => !War.Routed.Contains(u.Id) && Dist(u, castle: true) <= 900_00).OrderBy(u => u.Soldiers).ThenBy(u => u.Id).FirstOrDefault();
             if (victim != null)
@@ -224,11 +238,15 @@ public sealed partial class ProtoWorld
     }
     // 耐久が残っている間、城の兵は崩れない・不意を突かれない・騎突を受けない。
     bool BehindGate(ProtoPerson u) => War.Siege is { Gate: > 0 } s && s.Layer < s.Layers && War.Result == "" && u.House == Rebel && InFoeCastle(u) && !Withdrawing(u);
-    // 城の兵の士気が切れたら（20を切る隊が出たら）、敗走の代わりに一層捨てて内へ退く（Fight から呼ぶ）。
+    public int CastleMorale { get { var g = Garrison.Where(u => !War.Routed.Contains(u.Id)).ToArray(); int men = g.Sum(u => u.Soldiers); return men == 0 ? 0 : g.Sum(u => u.Morale * u.Soldiers) / men; } }
+    // 城の士気が切れたら（20を切ったら）、敗走の代わりに一層捨てて内へ退く（Fight から呼ぶ）。
     void GarrisonMorale(ProtoPerson[] all)
     {
         if (War.Siege == null || War.Result != "") return;
-        if (all.Any(u => BehindGate(u) && u.Soldiers > 0 && u.Morale < 20 && !War.Routed.Contains(u.Id))) LoseLayer(true);
+        // 城の士気＝城の内の隊の士気を、兵の数で重みを付けてならしたもの。個々の隊は20より下がらない（崩れない）。
+        var inside = all.Where(u => BehindGate(u) && u.Soldiers > 0 && !War.Routed.Contains(u.Id)).ToArray(); if (inside.Length == 0) return;
+        foreach (var u in inside) u.Morale = Math.Max(u.Morale, 10);
+        if (CastleMorale < 20) LoseLayer(true);
     }
     // 層を失う。byMorale：士気が切れて捨てた（最後の層なら開城）。耐久が尽きた（最後の層なら落城）。
     void LoseLayer(bool byMorale)
@@ -260,27 +278,113 @@ public sealed partial class ProtoWorld
         LoseLayer(false); // 今の層の耐久が尽きた
     }
 
-    // ---- 開城を説く ----
-    public bool CanParley => War.Siege is { } s && War.Result == "" && InArmy(Player) && ClashOf(Player.Id) == null && Dist(Player, castle: true) <= 700_00 && Person(HeadOf(Rebel)).Active && (s.ParleyAt < 0 || Second / Day != s.ParleyAt / Day);
+    // ---- 勧告 ----
+    public static readonly string[] SurrenderTerms = ["帰参", "退去", "切腹"];
+    static string TermsText(string t) => t switch { "帰参" => "所領はそのままで鷹野に戻る", "退去" => "城主は城を明け渡して去る", _ => "城主の切腹で城兵を助ける" };
+    public bool Talking => War.Siege is { TalksUntil: > 0 };
     int ParleyScore()
     {
         var s = War.Siege!; var k = Person(HeadOf(Rebel));
         return 30 + (100 - Math.Min(100, SpiritOf(Rebel))) / 2 + (s.Food <= 1 ? 30 : s.Food <= 2 ? 10 : 0) + 10 * s.Layer
             + Math.Clamp(Favor(k.Id), -20, 20) + (Flag("persuaded") ? 10 : 0) - (k.Temper == "勇猛" ? 10 : 0);
     }
-    string Parley()
+    string Recommend(string terms)
     {
-        if (!CanParley) return "今は説けない";
-        var s = War.Siege!; var k = Person(HeadOf(Rebel)); s.ParleyAt = Second; int score = ParleyScore();
-        Happen("parley:" + Second, $"{Player.Name}が岩切勝元に、城を開くよう説いた。", Player.X, Player.Y, Player, k);
-        if (score >= 70)
-        {
-            Set("parley-won"); OpenCastle($"{Player.Name}の説得で、岩切勝元は城を開いた。");
-            return $"{k.Name}「……もはやこれまでか。城は開く。兵の命は助けてくれ。」";
-        }
-        // 断り方で、城の内の様子がうかがえる。
-        return s.Food <= 1 ? $"{k.Name}「……まだ降らぬ。だが、長くは保たぬかもしれぬな。」" : score >= 55 ? $"{k.Name}「……今は聞けぬ。出直してまいれ。」" : $"{k.Name}「米も矢もまだある。帰って若殿に伝えよ、城は渡さぬと。」";
+        var s = War.Siege; if (s == null || !SiegeCouncilOpen || !SurrenderTerms.Contains(terms)) return "";
+        var lead = SiegeLead; var heir = Person(Heir);
+        if (s.TalksUntil > 0) return $"{lead.Name}「使者はまだ戻らぬ。」";
+        if (s.ParleyAt >= 0 && Second / Day == s.ParleyAt / Day) return $"{lead.Name}「今日はもう使者を出した。」";
+        if (!CommanderListens) return $"{lead.Name}「勧告など無用。」";
+        if (terms == "帰参" && heir.Temper == "勇猛" && SpiritOf("takano") >= 60 && s.Supply >= 2) return $"{lead.Name}「謀叛人をそのまま許せと申すか。ならぬ。」";
+        s.ParleyAt = Second; s.Terms = terms; s.TalksUntil = Second + 30 * 60; s.Method = SiegeMethods[1]; Set("siege-decided"); Set("envoy-mine");
+        foreach (var u in People.Where(InArmy)) War.Target.Remove(u.Id);
+        Happen("envoy:" + Second, $"鷹野勢は岩切城へ降伏の使者を出した（{TermsText(terms)}）。", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00), Person(HeadOf(Rebel))]);
+        return $"{lead.Name}「よかろう。使者を出す。」";
     }
+    // 毎分：使者の返事と、密書の返事。
+    void SiegeTalks()
+    {
+        var s = War.Siege!; var k = Person(HeadOf(Rebel)); var lead = SiegeLead;
+        if (s.TalksUntil > 0 && Second >= s.TalksUntil)
+        {
+            s.TalksUntil = 0; int score = ParleyScore() + s.Terms switch { "帰参" => 25, "退去" => 5, _ => -20 };
+            if (score >= 70 && k.Active) { Surrender(s.Terms); return; }
+            // 断り方で、城の内の様子がうかがえる。
+            string said = s.Food <= 1 ? "まだ降らぬ。だが、長くは保たぬかもしれぬな。" : score >= 55 ? "今は聞けぬ。出直してまいれ。" : "米も矢もまだある。城は渡さぬ。";
+            Happen("envoy-back:" + Second, $"岩切勝元は勧告を退けた。「{said}」", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00), k]);
+        }
+        if (s.Plot == "密書" && Second >= s.PlotAt)
+        {
+            var t = Person(s.PlotWith); bool yes = t.Active && t.House == Rebel && PlotWill(t) >= 90;
+            s.Plot = yes ? "約束" : "断られた";
+            Happen("plot-reply", yes ? $"{t.Name}から、内応を約す返書が届いた。" : $"{t.Name}からの返書は来なかった。", lead.X, lead.Y, lead, Player);
+        }
+    }
+    // 勧告を受けて城を開く。条件ごとに、城主と城内の者の行く末が変わる。
+    void Surrender(string terms)
+    {
+        var k = Person(HeadOf(Rebel)); War.Result = "開城させた"; War.Phase = "終わり"; if (Flag("envoy-mine")) Set("parley-won");
+        string text = terms switch
+        {
+            "帰参" => $"{k.Name}は勧告を受け、城を開いて鷹野に帰参した。",
+            "退去" => $"{k.Name}は勧告を受け、城を明け渡して去った。",
+            _ => $"{k.Name}は城兵の命と引き換えに腹を切り、岩切城は開いた。",
+        };
+        Happen("castle-open", text, k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active), k]);
+        foreach (var r in People.Where(r => r.House == Rebel).ToArray())
+        {
+            r.Path = []; r.PathIndex = 0;
+            if (r.Id == k.Id && terms != "帰参") { r.Active = false; r.Doing = terms == "退去" ? "城を明け渡して去った" : "腹を切った"; continue; }
+            r.House = "takano"; r.Doing = "帰参した"; if (r.Id == k.Id) r.Loyalty = Math.Max(r.Loyalty, 55);
+        }
+        War.Clashes.Clear(); War.Target.Clear();
+    }
+
+    // ---- 調略 ----
+    ProtoPerson? PlotTarget => People.Where(r => r.House == Rebel && r.Active && r.Id != HeadOf(Rebel) && r.Soldiers > 0).OrderBy(r => r.Id).FirstOrDefault();
+    // 内応する気（90以上で約す、80以上で合図のとき動く）：鷹野への忠誠・本人への心証・城の全軍士気・兵糧・失った層。
+    int PlotWill(ProtoPerson t) { var s = War.Siege!; return t.Loyalty + Math.Clamp(Favor(t.Id), -20, 20) + (100 - Math.Min(100, SpiritOf(Rebel))) / 2 + (s.Food <= 1 ? 15 : 0) + 10 * s.Layer; }
+    // 軍議で出せる手（画面用）：調略の今の段。
+    public string PlotStage => War.Siege?.Plot ?? "";
+    string Scheme()
+    {
+        var s = War.Siege; if (s == null || !SiegeCouncilOpen) return "";
+        var lead = SiegeLead;
+        if (s.Plot == "約束") return PlotSignal();
+        if (s.Plot != "") return s.Plot == "密書" ? $"{lead.Name}「返書を待て。」" : $"{lead.Name}「その手はもう使えぬ。」";
+        if (PlotTarget is not { } t) return $"{lead.Name}「誘える者がおらぬ。」";
+        if (!CommanderListens) return $"{lead.Name}「小細工は要らぬ。」";
+        s.Plot = "密書"; s.PlotWith = t.Id; s.PlotAt = Second + 2 * Hour; Set("siege-decided"); // 本人が軍議で手を打ったので、総大将は今の攻め方のまま待つ
+        Happen("plot-sent", $"鷹野勢は、城内の{t.Name}へ密書を忍ばせた。", lead.X, lead.Y, lead, Player);
+        return $"{lead.Name}「よし、{t.Name}へ密書を忍ばせよ。」";
+    }
+    // 内応の合図：動くかどうかは、その武将がもう一度決める。
+    string PlotSignal()
+    {
+        var s = War.Siege!; var lead = SiegeLead; var t = Person(s.PlotWith); var k = Person(HeadOf(Rebel)); s.Plot = "済";
+        var c = Map.Site(FoeCastle); var near = Units.Where(u => Dist(u, castle: true) <= 1000_00).ToArray();
+        if (!t.Active || t.House != Rebel || t.Soldiers <= 0 || PlotWill(t) < 80)
+        { Happen("plot-none", $"合図を出したが、{t.Name}は動かなかった。", lead.X, lead.Y, lead, Player, t); return $"{lead.Name}「……動かぬか。」"; }
+        int roll = Roll("plot:" + t.Id) % 100 + (Wit(t) - Wit(k)) / 2;
+        if (roll >= 75 && CastleMorale < 50)
+        {
+            foreach (var r in People.Where(r => r.House == Rebel && r.Id != k.Id).ToArray()) { r.House = "takano"; r.Doing = "内応して鷹野に付いた"; r.Path = []; r.PathIndex = 0; }
+            Set("parley-won"); OpenCastle($"{t.Name}が城内で{k.Name}を捕らえ、岩切城の門を開いた。");
+            return $"{lead.Name}「でかした。」";
+        }
+        if (roll >= 35)
+        {
+            Happen("plot-gate", $"{t.Name}が内応し、{LayerName(s.Layers, s.Layer)}の城門を内から開いた。", c.X * 100L, c.Y * 100L, near);
+            t.House = "takano"; t.Doing = "内応して鷹野に付いた"; t.Path = []; t.PathIndex = 0; War.Target.Remove(t.Id); War.Clashes.RemoveAll(x => x.A == t.Id || x.B == t.Id);
+            LoseLayer(false);
+            return $"{lead.Name}「城門が開いたぞ。」";
+        }
+        // 露見：城内で斬り合いになり、内応した隊は潰れ、城主の隊も兵を失う。
+        int cost = Math.Min(k.Soldiers, t.Soldiers / 2); k.Soldiers -= cost; t.Soldiers = 0; t.Active = false; t.Doing = "内応が露見して討たれた";
+        Happen("plot-found", $"{t.Name}の内応は露見し、城内で斬り合いになった（岩切勝元の兵{cost}を失わせた）。", c.X * 100L, c.Y * 100L, near);
+        return $"{lead.Name}「……露見したか。」";
+    }
+
     void OpenCastle(string text)
     {
         var k = Person(HeadOf(Rebel)); War.Result = "開城させた"; War.Phase = "終わり";

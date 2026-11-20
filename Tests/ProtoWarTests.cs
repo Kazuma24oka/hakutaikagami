@@ -486,7 +486,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(me.Soldiers == 0 && !w.Returning, "論功行賞が済むと、預かった兵を返して軍が解かれる");
     }
 
-    // 攻城（Core/Proto/ProtoSiege.cs）：野の戦いで岩切勢が城へ退くと攻城になる。力攻め・囲む・開城を説く。
+    // 攻城（Core/Proto/ProtoSiege.cs）：野の戦いで岩切勢が城へ退くと攻城になる。包囲・力攻め・勧告。
     [Theory]
     [InlineData("力攻め", false)]
     [InlineData("包囲", false)]
@@ -515,19 +515,72 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
             w.Advance(60);
             foreach (var f in w.Facts.Skip(seen).Where(f => !f.Id.StartsWith("free:") && !f.Id.StartsWith("flank:") && !f.Id.StartsWith("spotted:") && !f.Id.StartsWith("tactic:") && !f.Text.Contains("越後屋") && !f.Text.Contains("市が立つ"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count;
             if ((w.Second - start) % (method == "力攻め" ? 600 : 6 * 3600) == 0) cp.Log("　" + Line());
-            if (parley && w.Second % Day == 12 * 3600 && w.CanParley) cp.Log($"{ProtoWorld.Clock(w.Second)}　説く：" + w.Do("parley:katsumoto"));
+            if (parley && w.Second % Day == 12 * 3600 && w.SiegeCouncilOpen) cp.Log($"{ProtoWorld.Clock(w.Second)}　勧告（退去）：" + w.Do("siege:勧告:退去"));
         }
         cp.Log($"結果 {w.War.Result}　{(w.Second - start) / 3600}時間　" + Line());
         cp.Expect(w.War.Result != "", "攻城に決着がつく");
         if (method == "力攻め") cp.Expect(w.Facts.Any(f => f.Id == "layer:1") && (w.War.Result is not ("鎮めた" or "開城させた") || w.War.Siege!.Layer == w.War.Siege.Layers), "力攻め：外の層から一層ずつ失う（落ちるのは最後の層を失ったとき）");
         else if (!parley) cp.Expect(w.GateOf == 100 && (w.War.Result == "開城させた" && w.War.Siege!.Food == 0 || w.War.Result == "鎮めた" && w.War.Siege!.Food <= 1), "囲む：城の兵糧が尽きて開城するか、残り1日で打って出た城の兵が崩れて落城");
-        else cp.Expect(w.War.Result == "開城させた" && w.GateOf == 100 && w.War.Siege!.Food > 0, "囲んで説けば、兵糧が尽きるのを待たずに城が開く");
+        else cp.Expect(w.War.Result == "開城させた" && w.GateOf == 100 && w.War.Siege!.Food > 0, "囲んで勧告すれば、兵糧が尽きるのを待たずに城が開く");
         if (w.War.Result is "鎮めた" or "開城させた")
         {
             for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
             cp.Log($"{ProtoWorld.Clock(w.Second)}　論功行賞の場所 {w.AwardsSite}　本人 {w.SiteOf(w.Player)}");
             cp.Expect(w.AwardsOpen && w.AwardsSite == "iwakiri-castle", "城を落とした・開かせたときは、岩切城に入って論功行賞");
             int merit = w.Merit; w.Do("awards:take"); cp.Log($"勲功 {merit}→{w.Merit}");
+        }
+    }
+
+    // 攻城の軍議で打つ手：勧告（条件で受けやすさが変わる。交渉中は攻めない）と調略（密書→内応の約束→合図。動くかは本人が決める）。
+    [Theory]
+    [InlineData("勧告")]
+    [InlineData("調略_約す")]
+    [InlineData("調略_断る")]
+    public void EnvoysAndPlotsWorkThroughTheSiegeCouncil(string mode)
+    {
+        using var cp = new Checkpoints("試作版の勧告と調略_" + mode, o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
+        for (int i = 0; i < 6 * 60 && !w.SiegeCouncilOpen; i++) w.Advance(60);
+        var sg = w.War.Siege!; var iguchi = w.Person("iguchi-yashichi"); var katsumoto = w.Person("iwakiri-katsumoto"); int seen = w.Facts.Count;
+        void Flush() { foreach (var f in w.Facts.Skip(seen).Where(f => !f.Id.StartsWith("free:") && !f.Id.StartsWith("tactic:") && !f.Text.Contains("越後屋") && !f.Text.Contains("市が立つ") && !f.Text.Contains("立て直し"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count; }
+        if (mode == "勧告")
+        {
+            // 押しているうちの勇猛な総大将は「帰参」を認めない。「切腹」は認めるが、城主はまだ受けない。
+            cp.Log("帰参：" + w.Do("siege:勧告:帰参"));
+            cp.Expect(!w.Talking, "勇猛な総大将は、押しているうちは帰参を認めない");
+            cp.Log("切腹：" + w.Do("siege:勧告:切腹"));
+            cp.Expect(w.Talking && sg.Method == "包囲", "使者を出すと包囲になり、交渉が始まる");
+            cp.Log("交渉中に力攻め：" + w.Do("siege:力攻め"));
+            cp.Expect(sg.Method == "包囲", "交渉中は攻めない");
+            w.Advance(40 * 60); Flush();
+            cp.Expect(!w.Talking && w.War.Result == "" && w.Facts.Any(f => f.Id.StartsWith("envoy-back:")), "半刻で使者が戻る。兵糧のある城主は切腹の条件を受けない");
+            cp.Log("同じ日にもう一度：" + w.Do("siege:勧告:退去"));
+            cp.Expect(!w.Talking, "使者は1日に一度");
+            // 兵糧が残り1日になれば、退去の条件は受ける。
+            sg.Food = 1; sg.ParleyAt = -1; cp.Log("兵糧が残り1日のとき 退去：" + w.Do("siege:勧告:退去")); w.Advance(40 * 60); Flush(); // 日が替わったことにして、もう一度使者を出す
+            cp.Expect(w.War.Result == "開城させた" && !katsumoto.Active && iguchi.House == "takano", "退去：城主は城を明け渡して去り、城内の者は鷹野に戻る");
+        }
+        else
+        {
+            iguchi.Loyalty = mode == "調略_約す" ? 95 : 10; // 内応する気は、その武将の鷹野への忠誠で大きく変わる
+            cp.Log("調略：" + w.Do("siege:調略"));
+            cp.Expect(w.PlotStage == "密書", "総大将が認めれば、城内の武将へ密書を忍ばせる");
+            w.Advance(2 * 3600 + 120); Flush();
+            cp.Expect(w.PlotStage == (mode == "調略_約す" ? "約束" : "断られた"), "2時間で返事。内応を約すかは、その武将が決める");
+            int layer = sg.Layer, men = katsumoto.Soldiers;
+            cp.Log("もう一度 調略：" + w.Do("siege:調略")); w.Advance(120); Flush();
+            if (mode == "調略_約す")
+            {
+                cp.Expect(w.PlotStage == "済", "約束があれば、内応の合図を出せる（一度きり）");
+                cp.Expect(w.Facts.Any(f => f.Id is "plot-gate" or "plot-found" or "plot-none") || w.War.Result == "開城させた", "合図の結果は、城主を捕らえて開城・城門を開く・露見・動かない のどれか");
+                cp.Log($"層 {layer}→{sg.Layer}　勝元の兵 {men}→{katsumoto.Soldiers}　井口：{iguchi.House} {iguchi.Doing}　結果「{w.War.Result}」");
+            }
+            else cp.Expect(w.PlotStage == "断られた" && sg.Layer == layer, "断られたら、合図は出せない");
         }
     }
 

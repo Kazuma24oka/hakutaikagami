@@ -381,7 +381,7 @@ public partial class ProtoGame : Node3D
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Layer + sg.Ringed + World.RingHave / 10 : "");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Layer + sg.Ringed + World.RingHave / 10 + sg.TalksUntil + sg.Plot : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -408,6 +408,8 @@ public partial class ProtoGame : Node3D
                     panel.AddChild(new Label { Text = "攻城　" + siege.Method, Modulate = new Color(1, 0.9f, 0.6f) });
                     if (siege.Layer < siege.Layers) panel.AddChild(new Label { Text = $"{ProtoWorld.LayerName(siege.Layers, siege.Layer)}　耐久{siege.Gate}" });
                     panel.AddChild(new Label { Text = $"包囲　{(siege.Ringed ? "成った" : "兵が足りない")}（{World.RingHave}／{World.RingNeed}）", Modulate = siege.Ringed ? good : bad });
+                    if (World.Talking) panel.AddChild(new Label { Text = $"勧告　交渉中（{siege.Terms}）", Modulate = new Color(1, 0.88f, 0.45f) });
+                    if (siege.Plot is "密書" or "約束") panel.AddChild(new Label { Text = siege.Plot == "密書" ? "調略　返書待ち" : "調略　内応の約束あり", Modulate = new Color(1, 0.88f, 0.45f) });
                     panel.AddChild(new Label { Text = siege.Supply > 0 ? $"兵糧　あと{siege.Supply}日" : "兵糧　尽きた", Modulate = siege.Supply > 0 ? Colors.White : bad });
                     panel.AddChild(new HSeparator());
                 }
