@@ -14,7 +14,8 @@ public partial class ProtoGame
     ProgressBar spiritTakano = null!, spiritRebel = null!, kiBar = null!;
     Label spiritTakanoText = null!, spiritRebelText = null!, sideTakano = null!, sideRebel = null!;
     TextureRect pushPic = null!;
-    VBoxContainer allyList = null!, enemyList = null!;
+    VBoxContainer allyList = null!, enemyList = null!; ScrollContainer allyScroll = null!, enemyScroll = null!;
+    const int RowsShown = 3; // 部隊の一覧は3人まで見せ、それより多ければ窓の中で送る（2026-11-20 ユーザー）
     Label troopsTakano = null!, troopsRebel = null!;
     string rowsKey = "";
     readonly Dictionary<string, (Label Text, ProgressBar Morale, ProgressBar Tactic, ProgressBar Chaos)> rows = new();
@@ -57,7 +58,9 @@ public partial class ProtoGame
         top.AddChild(troopsTakano); top.AddChild(new VSeparator()); top.AddChild(new Label { Text = "総士気", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(sideTakano); top.AddChild(pushPic); top.AddChild(sideRebel); top.AddChild(new VSeparator()); top.AddChild(troopsRebel);
         var lists = new HBoxContainer(); lists.AddThemeConstantOverride("separation", 14); col.AddChild(lists);
         allyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
-        lists.AddChild(allyList); lists.AddChild(new VSeparator()); lists.AddChild(enemyList);
+        allyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; allyScroll.AddChild(allyList);
+        enemyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyScroll.AddChild(enemyList);
+        lists.AddChild(allyScroll); lists.AddChild(new VSeparator()); lists.AddChild(enemyScroll);
         col.AddChild(new HSeparator());
         var gauges = new HBoxContainer(); gauges.AddThemeConstantOverride("separation", 8); col.AddChild(gauges);
         gauges.AddChild(new Label { Text = "気力" }); kiBar = Bar(new Color(0.9f, 0.75f, 0.3f), 100, new Vector2(150, 10)); gauges.AddChild(kiBar);
@@ -194,6 +197,11 @@ public partial class ProtoGame
             foreach (var list in new[] { allyList, enemyList }) foreach (var n in list.GetChildren()) { list.RemoveChild(n); n.QueueFree(); }
             foreach (var u in allies) AddRow(allyList, u, false);
             foreach (var u in enemies) AddRow(enemyList, u, true);
+            // 高さは、多い方の人数（3人まで）に合わせる。
+            float rowH = allyList.GetChildCount() > 0 ? ((Control)allyList.GetChild(0)).GetCombinedMinimumSize().Y : 40; int sep = allyList.GetThemeConstant("separation");
+            int shown = Math.Min(RowsShown, Math.Max(allies.Count, enemies.Count));
+            allyScroll.CustomMinimumSize = enemyScroll.CustomMinimumSize = new Vector2(0, shown * rowH + (shown - 1) * sep);
+            allyScroll.ScrollVertical = enemyScroll.ScrollVertical = 0;
         }
         foreach (var u in allies.Concat(enemies))
         {
@@ -225,6 +233,7 @@ public partial class ProtoGame
         bars.AddChild(Tag("士気")); bars.AddChild(morale); bars.AddChild(Tag("混乱")); bars.AddChild(chaos); bars.AddChild(Tag("戦法")); bars.AddChild(tactic);
         var tn = new Label { Text = ProtoWorld.TacticOf(u), Modulate = new Color(0.6f, 0.8f, 1f) }; tn.AddThemeFontSizeOverride("font_size", 13); bars.AddChild(tn);
         rows[u.Id] = (text, morale, tactic, chaos);
+        row.AddChild(new Control { CustomMinimumSize = new Vector2(12, 0) }); // 送りの棒の分の余白
     }
 
     // ---- 混乱の印：混乱している隊の上で、渦が回り続ける（2026-11-20 ユーザー「クルクル回っているようなアイコン」） ----

@@ -482,7 +482,38 @@ public partial class ProtoGame : Node3D
     internal bool ClickGround(Vector2 screen)
     {
         if (PickGround(screen) is not { } q) return false;
-        World.ActOnOwn(); return WalkTo(q.X, q.Z); // 自分で動けば指図から外れる
+        // 委任している間は、地図を押しても動かさない。委任を解くかを聞く（2026-11-20 ユーザー）。
+        if (World.War.PlayerFollows && (World.War.Phase is "行軍" or "合戦" || World.Returning)) { AskRelease(q.X, q.Z); return false; }
+        return WalkTo(q.X, q.Z);
+    }
+    // 「委任を解きますか」：はい＝手動にして、押した所へ向かう。いいえ＝そのまま。開いている間は時を止める。
+    CanvasLayer? askLayer; internal Button? AskYes, AskNo; internal float CameraDistance => distance;
+    void AskRelease(float x, float z)
+    {
+        if (askLayer != null) return;
+        var layer = askLayer = new CanvasLayer { Layer = 55 }; AddChild(layer);
+        var back = new ColorRect { Color = new Color(0, 0, 0, 0.3f) }; back.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(back);
+        var center = new CenterContainer { Theme = new Theme { DefaultFontSize = 22 } }; center.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(center);
+        var frame = new PanelContainer(); center.AddChild(frame);
+        frame.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0.09f, 0.09f, 0.11f), BorderColor = new Color(0.75f, 0.6f, 0.3f), BorderWidthTop = 2, BorderWidthBottom = 2, BorderWidthLeft = 2, BorderWidthRight = 2, ContentMarginLeft = 30, ContentMarginRight = 30, ContentMarginTop = 20, ContentMarginBottom = 20, CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
+        var col = new VBoxContainer(); col.AddThemeConstantOverride("separation", 16); frame.AddChild(col);
+        col.AddChild(new Label { Text = "委任を解きますか", HorizontalAlignment = HorizontalAlignment.Center });
+        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 16); col.AddChild(row);
+        void Done(bool yes)
+        {
+            askLayer?.QueueFree(); askLayer = null; AskYes = AskNo = null;
+            if (yes) { World.ActOnOwn(); WalkTo(x, z); }
+            RefreshUi();
+        }
+        AskYes = new Button { Text = "はい", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(120, 0) }; AskYes.Pressed += () => Done(true); row.AddChild(AskYes);
+        AskNo = new Button { Text = "いいえ", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(120, 0) }; AskNo.Pressed += () => Done(false); row.AddChild(AskNo);
+    }
+    // 窓（任務・合戦・記録・上の帯など）の上にマウスがあるか。あれば、地図は押さない・カメラも寄せ引きしない。
+    bool OverWindow(Vector2 at)
+    {
+        if (GetViewport().GuiGetHoveredControl() != null) return true;
+        foreach (var c in new Control[] { sidePanel, commandBox, logPanel, spiritBox }) if (c.IsVisibleInTree() && c.GetGlobalRect().HasPoint(at)) return true;
+        return false;
     }
     internal bool WalkTo(float x, float z)
     {
@@ -495,6 +526,7 @@ public partial class ProtoGame : Node3D
         if (FilmRoot != null) return; // 動画を撮っている間は、マウスやキーで画面が動かないようにする
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
+            if (askLayer != null || OverWindow(mb.Position)) return;
             if (mb.ButtonIndex == MouseButton.Left) ClickGround(mb.Position);
             else if (mb.ButtonIndex == MouseButton.WheelUp) distance = Math.Max(120, distance * 0.85f);
             else if (mb.ButtonIndex == MouseButton.WheelDown) distance = Math.Min(4000, distance / 0.85f);
@@ -549,7 +581,7 @@ public partial class ProtoGame : Node3D
             dirty = true; UpdateActors(); PlaceCamera(); RefreshUi(); SaveGame(); return;
         }
         // 動画（台本）は前のとおり「歩いている間と、待つと決めた時刻まで」進む。遊ぶときは止める・進めるで決まる。
-        bool running = !Debug.NoteOpen && !Scene.Open && awardsLayer == null && !FilmPause && (FilmRoot != null ? World.Player.Moving || WaitUntil > World.Second : !Paused);
+        bool running = !Debug.NoteOpen && !Scene.Open && awardsLayer == null && askLayer == null && !FilmPause && (FilmRoot != null ? World.Player.Moving || WaitUntil > World.Second : !Paused);
         if (running)
         {
             acc += delta * Speed; int n = Math.Min((int)acc, 5000); acc -= n;
