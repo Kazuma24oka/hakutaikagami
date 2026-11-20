@@ -15,6 +15,9 @@ public partial class ProtoGame
     Label spiritTakanoText = null!, spiritRebelText = null!, sideTakano = null!, sideRebel = null!;
     TextureRect pushPic = null!;
     VBoxContainer allyList = null!, enemyList = null!; ScrollContainer allyScroll = null!, enemyScroll = null!;
+    float battleRowH = 42;
+    // 合戦の窓がいちばん高いとき（一覧が3人ぶん）の高さ。任務の窓はこの上までにする。
+    float BattleBoxMaxHeight => commandBox.GetCombinedMinimumSize().Y - allyScroll.CustomMinimumSize.Y + RowsShown * battleRowH + (RowsShown - 1) * allyList.GetThemeConstant("separation");
     const int RowsShown = 3; // 部隊の一覧は3人まで見せ、それより多ければ窓の中で送る（2026-11-20 ユーザー）
     Label troopsTakano = null!, troopsRebel = null!;
     string rowsKey = "";
@@ -199,7 +202,7 @@ public partial class ProtoGame
             foreach (var u in enemies) AddRow(enemyList, u, true);
             // 高さは、多い方の人数（3人まで）に合わせる。
             float rowH = allyList.GetChildCount() > 0 ? ((Control)allyList.GetChild(0)).GetCombinedMinimumSize().Y : 40; int sep = allyList.GetThemeConstant("separation");
-            int shown = Math.Min(RowsShown, Math.Max(allies.Count, enemies.Count));
+            battleRowH = rowH; int shown = Math.Min(RowsShown, Math.Max(allies.Count, enemies.Count));
             allyScroll.CustomMinimumSize = enemyScroll.CustomMinimumSize = new Vector2(0, shown * rowH + (shown - 1) * sep);
             allyScroll.ScrollVertical = enemyScroll.ScrollVertical = 0;
         }

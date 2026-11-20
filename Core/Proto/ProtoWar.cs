@@ -386,9 +386,9 @@ public sealed partial class ProtoWorld
         Markers.Add(m);
     }
     public bool SeesEnemy(ProtoPerson e) => !Hostile(Player.House, e.House) || InSight(Player, e);
-    // 接敵の手前（画面の「接敵で止める」）：鷹野の隊と、本人に見えている敵の隊が within まで近づいていて、まだぶつかっていない組。
+    // 接敵の手前（画面の「接敵で止める」）：本人の隊と、本人に見えている敵の隊が within まで近づいていて、まだぶつかっていない組（2026-11-20 ユーザー「自分の隊だけ」）。
     public IEnumerable<string> Closing(long within, bool clashing = false) => War.Phase is not ("行軍" or "合戦") ? [] :
-        from a in Units where InArmy(a) && !War.Routed.Contains(a.Id) && (a.Player || Sees(Player, a))
+        from a in Units where a.Player && InArmy(a) && !War.Routed.Contains(a.Id)
         from e in Units where e.House == Rebel && !War.Routed.Contains(e.Id) && InSight(Player, e) && Dist(a, e) <= within
             && (clashing || !War.Clashes.Any(c => c.A == a.Id && c.B == e.Id || c.A == e.Id && c.B == a.Id))
         select a.Id + "|" + e.Id;

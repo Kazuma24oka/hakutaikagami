@@ -357,8 +357,9 @@ public partial class ProtoGame : Node3D
             MeshInstance3D Ring() { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.86f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.9f, 0.3f), NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
             hoverRingUnit = Ring(); hoverRingSpot = Ring();
         }
-        // 任務の窓は、右下の合戦の窓の上までにする（重ならない。長い分は窓の中で送る。2026-11-20 ユーザーの印）。
-        float room = GetViewport().GetVisibleRect().Size.Y - 80 - (commandBox.Visible ? commandBox.Size.Y + 16 : 0);
+        // 任務の窓は、いつも、右下の合戦の窓がいちばん高いとき（3人ぶん）の上までにする。合戦の窓が出ていなくても同じ長さ
+        // （出たり消えたりで長さが変わると見にくい。2026-11-20 ユーザー）。長い分は窓の中で送る。
+        float room = GetViewport().GetVisibleRect().Size.Y - 80 - (BattleBoxMaxHeight + 16);
         sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, Math.Max(140, room)));
         bool on = hoverUnit != null && sidePanel.Visible; hoverRingUnit.Visible = hoverRingSpot.Visible = on; if (!on) return;
         var u = World.Person(hoverUnit!); float pulse = 1 + 0.12f * MathF.Sin(Time.GetTicksMsec() / 150f), r = Math.Max(45, distance * 0.05f) * pulse;
