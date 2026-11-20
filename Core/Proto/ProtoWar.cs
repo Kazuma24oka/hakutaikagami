@@ -50,6 +50,12 @@ public sealed class ProtoWarState
     public Dictionary<string, double[]> Facing { get; set; } = [];
     public Dictionary<string, string> FacingFoe { get; set; } = [];
     public Dictionary<string, long> HiddenAt { get; set; } = [];
+    // 伏兵・混乱（Core/Proto/ProtoChaos.cs）
+    public Dictionary<string, long> UnseenSince { get; set; } = [];
+    public List<string> Ambush { get; set; } = [];
+    public Dictionary<string, long> AmbushUntil { get; set; } = [];
+    public Dictionary<string, int> Chaos { get; set; } = [];
+    public Dictionary<string, long> ChaosUntil { get; set; } = [];
     public Dictionary<string, string> HoldCand { get; set; } = []; // 要所 → 「家|居始めた時刻」
     public List<ProtoHit> Hits { get; set; } = []; // その1分の打撃（地図に出す）
     // 作戦と役目・総勢での行軍（Core/Proto/ProtoOrders.cs）
@@ -99,8 +105,8 @@ public sealed partial class ProtoWorld
         if (p.Skills.Contains("物見上手")) r += 150_00;
         return (long)r;
     }
-    // 森で伏せている隊は、80mまで近づかないと見えない（Core/Proto/ProtoTactics.cs）。
-    internal bool InSight(ProtoPerson viewer, ProtoPerson target) => Dist(viewer, target) <= (War.Phase is "行軍" or "合戦" && Hostile(viewer.House, target.House) && Hidden(target) ? 80_00 : SightOf(viewer));
+    // 森の中の隊は、80m（見る側の知略と技能で増減）まで近づかないと見えない（Core/Proto/ProtoChaos.cs）。
+    internal bool InSight(ProtoPerson viewer, ProtoPerson target) => Dist(viewer, target) <= (War.Phase is "行軍" or "合戦" && Hostile(viewer.House, target.House) && Hidden(target) ? SpotRange(viewer) : SightOf(viewer));
 
     // ---- 毎分 ----
     void Wars()
@@ -311,7 +317,7 @@ public sealed partial class ProtoWorld
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
         if (War.Phase == "合戦") foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
-        Spread(field); UpdateFacing(field);
+        Spread(field); UpdateFacing(field); Stealth(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }
         // 終わり
         var liveRebels = Units.Where(u => u.House == Rebel && StillFights(u)).ToArray();
@@ -322,7 +328,6 @@ public sealed partial class ProtoWorld
             War.Result = "鎮めた"; War.Phase = "終わり"; var k = Person(Katsumoto);
             Happen("rebellion-crushed", "岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。", k.X, k.Y, Person(Heir), Person(Karou), k);
             foreach (var r in People.Where(r => r.House == Rebel)) { r.Active = false; r.Path = []; r.PathIndex = 0; r.Doing = "捕らえられた"; }
-            if (Flag("fought:" + Player.Id)) { Merit += 10; Note("謀叛の討伐で働いた。勲功10。"); }
         }
         else if (War.Phase == "合戦" && War.Result == "" && Second >= War.SignalAt + 8 * Hour)
         {
@@ -338,7 +343,7 @@ public sealed partial class ProtoWorld
             foreach (var r in People.Where(r => r.House == Rebel && r.Active)) Walk(r, Spot(Map.Site("iwakiri-castle"), 3), "iwakiri-castle", "岩切城へ引き上げている");
         }
         Retreats();
-        if (War.Result != "") UpdatePlan(); // 決着で最後の段が決まる
+        if (War.Result != "") { UpdatePlan(); AwardWarMerit(); } // 決着で最後の段と勲功が決まる
     }
 
     // ---- 本人が攻めかかる・退く ----
@@ -386,6 +391,7 @@ public sealed partial class ProtoWorld
     // 物見（2026-11-20 ユーザー）：地図に置いた丸（半径 ScoutRadius）の中を見てくる。兵を ScoutMen 人割いて出し、戻れば兵も戻る。
     // 行き帰りに敵の隊のそば（ScoutCaught 以内）を通ると見つかって戻らない（兵も知らせも失う）。伏せている敵も、丸の中なら見つける。
     public const int ScoutMen = 5; public const long ScoutRadius = 300_00, ScoutCaught = 100_00;
+    public long ScoutRadiusOf(ProtoPerson p) => ScoutRadius + (p.Skills.Contains("物見上手") ? 100_00 : 0);
     public bool CanScout => War.Phase is "行軍" or "合戦" && Player.Soldiers > ScoutMen && !War.Routed.Contains(Player.Id) && Scouts.All(s => s.Phase == "済");
     string SendScout(string positionId) { var pos = PositionOf(positionId); return SendScoutTo(pos.X * 100L, pos.Y * 100L); }
     public string SendScoutTo(long tx, long ty)
@@ -409,13 +415,13 @@ public sealed partial class ProtoWorld
             if (!arrived) continue;
             if (s.Phase == "行き")
             {
-                foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && Dist(e, s.TX, s.TY) <= ScoutRadius)) s.Seen.Add(new ProtoMarker(e.Id, e.X, e.Y, Second, "物見"));
+                foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && Dist(e, s.TX, s.TY) <= ScoutRadiusOf(Player))) s.Seen.Add(new ProtoMarker(e.Id, e.X, e.Y, Second, "物見"));
                 s.Phase = "帰り"; var back = ProtoMove.Plan(Map, (s.X, s.Y), (Player.X, Player.Y));
                 s.Path = back?.Select(p => new[] { p.X, p.Y }).ToArray() ?? []; s.PathIndex = 0;
             }
             else if (Math.Sqrt((double)(Player.X - s.X) * (Player.X - s.X) + (double)(Player.Y - s.Y) * (Player.Y - s.Y)) <= 100_00 || s.Path.Length == 0)
             {
-                s.Phase = "済"; foreach (var m in s.Seen) Mark(m);
+                s.Phase = "済"; foreach (var m in s.Seen) { Mark(m); FoundByScout(m.Unit); }
                 if (Player.Active && !War.Routed.Contains(Player.Id)) Player.Soldiers += s.Men;
                 var names = s.Seen.Select(m => Person(m.Unit).Name).Distinct().ToArray();
                 Note(names.Length == 0 ? "物見が戻った。敵は見えなかったという。" : $"物見が戻った。{string.Join("・", names)}の兵を見たという。");

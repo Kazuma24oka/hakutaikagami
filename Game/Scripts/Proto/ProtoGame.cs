@@ -353,7 +353,7 @@ public partial class ProtoGame : Node3D
             aimRing = Thin(new Color(1, 1, 1)); scoutRing = Thin(new Color(1, 1, 1, 0.45f)); ((StandardMaterial3D)scoutRing.MaterialOverride).Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
         }
         sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, GetViewport().GetVisibleRect().Size.Y - 80));
-        float sr = ProtoWorld.ScoutRadius / 100f;
+        float sr = World.ScoutRadiusOf(World.Player) / 100f;
         if (scoutAim && !World.CanScout) scoutAim = false;
         var aim = scoutAim ? aimForced ?? PickGround(GetViewport().GetMousePosition()) : null;
         aimRing.Visible = aim != null; if (aim is { } ap) { aimRing.Position = ap + new Vector3(0, 3, 0); aimRing.Scale = new Vector3(sr, Math.Max(1, distance / 300f), sr); }
@@ -618,6 +618,7 @@ public partial class ProtoGame : Node3D
                 bool group = inLine && fm.Count > 1;
                 if (bodyLead && host.Length > 1) DrawCard(p, foot, card && seen, p.Name + "勢", host.Sum(u => u.Soldiers), string.Join("+", host.Select(u => u.Soldiers)));
                 else DrawCard(p, foot, card && seen && !inBody && !(inLine && fm.Count == 0), group ? p.Name + "勢" : p.Name, group ? fm.Total : p.Soldiers, group ? fm.Parts : "");
+                DrawSwirl(p, foot, seen && unit && World.Confused(p.Id), card);
                 // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
                 label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
@@ -730,7 +731,7 @@ public partial class ProtoGame : Node3D
                 }
                 var at = OnBoard(x, y); mk.Body.Position = at - new Vector2(9, 9); mk.Body.Color = mine ? new Color(1, 0.85f, 0.3f) : HouseColor("takano").Lightened(0.25f); mk.Name.Position = at + new Vector2(11, -11);
                 string effect = World.TerrainEffect(x, y);
-                var line = new Button { Text = $"{pc.Name}　{pc.Role}　兵{pc.Soldiers}　{World.TerrainName(x, y)}" + (effect != "" ? "　" + effect : ""), Alignment = HorizontalAlignment.Left, Flat = true, Disabled = !lead && !mine };
+                var line = new Button { Text = $"{pc.Name}　{pc.Role}　兵{pc.Soldiers}　{World.TerrainName(x, y)}" + (effect != "" ? "　" + effect : "") + $"　功{pc.Merit}", Alignment = HorizontalAlignment.Left, Flat = true, Disabled = !lead && !mine };
                 line.AddThemeColorOverride("font_color", sel ? new Color(1, 0.88f, 0.45f) : Colors.White); line.AddThemeColorOverride("font_disabled_color", Colors.White);
                 var id = pc.Unit; line.Pressed += () => { pick = id; Draw(); };
                 list.AddChild(line);

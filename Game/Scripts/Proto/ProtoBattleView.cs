@@ -17,7 +17,7 @@ public partial class ProtoGame
     VBoxContainer allyList = null!, enemyList = null!;
     Label troopsTakano = null!, troopsRebel = null!;
     string rowsKey = "";
-    readonly Dictionary<string, (Label Text, ProgressBar Morale, ProgressBar Tactic)> rows = new();
+    readonly Dictionary<string, (Label Text, ProgressBar Morale, ProgressBar Tactic, ProgressBar Chaos)> rows = new();
     readonly Image pushImage = Image.CreateEmpty(240, 18, false, Image.Format.Rgba8);
     ImageTexture pushTexture = null!;
     readonly Dictionary<string, (Sprite3D Bar, ImageTexture Tex, Image Img)> clashBars = new();
@@ -198,7 +198,7 @@ public partial class ProtoGame
         {
             var r = rows[u.Id]; bool down = war.Routed.Contains(u.Id);
             int start = war.StartSoldiers.TryGetValue(u.Id, out var st) ? st : u.Soldiers;
-            r.Text.Text = $"{u.Name}　兵{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id);
+            r.Text.Text = $"{u.Name}　兵{u.Soldiers}/{start}　士気{u.Morale}" + (down ? "　崩れ" : World.Confused(u.Id) ? "　混乱" : ""); r.Morale.Value = u.Morale; r.Tactic.Value = World.GaugeOf(u.Id); r.Chaos.Value = World.Confused(u.Id) ? 100 : World.ChaosOf(u.Id);
         }
         // 棒は士気の合計の比（2026-11-19 ユーザー「士気の合計を、数値も書いて」）。士気が20を切った隊は崩れるので、どちらが先に崩れそうかが分かる。
         int ma = allies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale), me2 = enemies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale);
@@ -220,9 +220,32 @@ public partial class ProtoGame
         var bars = new HBoxContainer(); bars.AddThemeConstantOverride("separation", 4); info.AddChild(bars);
         var morale = Bar(new Color(0.95f, 0.8f, 0.3f), 100, new Vector2(50, 6)); var tactic = Bar(new Color(0.45f, 0.75f, 0.95f), 100, new Vector2(50, 6));
         Label Tag(string t) { var l = new Label { Text = t, Modulate = new Color(0.75f, 0.75f, 0.75f) }; l.AddThemeFontSizeOverride("font_size", 12); return l; }
-        bars.AddChild(Tag("士気")); bars.AddChild(morale); bars.AddChild(Tag("戦法")); bars.AddChild(tactic);
+        var chaos = Bar(new Color(0.8f, 0.45f, 0.9f), 100, new Vector2(50, 6));
+        bars.AddChild(Tag("士気")); bars.AddChild(morale); bars.AddChild(Tag("混乱")); bars.AddChild(chaos); bars.AddChild(Tag("戦法")); bars.AddChild(tactic);
         var tn = new Label { Text = ProtoWorld.TacticOf(u), Modulate = new Color(0.6f, 0.8f, 1f) }; tn.AddThemeFontSizeOverride("font_size", 13); bars.AddChild(tn);
-        rows[u.Id] = (text, morale, tactic);
+        rows[u.Id] = (text, morale, tactic, chaos);
+    }
+
+    // ---- 混乱の印：混乱している隊の上で、渦が回り続ける（2026-11-20 ユーザー「クルクル回っているようなアイコン」） ----
+    readonly Dictionary<string, MeshInstance3D> swirls = new(); ImageTexture? swirlTexture;
+    void DrawSwirl(ProtoPerson p, Vector3 foot, bool show, bool card)
+    {
+        if (!swirls.TryGetValue(p.Id, out var m))
+        {
+            if (!show) return;
+            if (swirlTexture == null)
+            {
+                var img = Image.CreateEmpty(64, 64, false, Image.Format.Rgba8); img.Fill(new Color(0, 0, 0, 0));
+                void Stroke(int r, Color c) { for (double t = 0.6; t < 5.2 * Math.PI; t += 0.02) { double rad = 1.75 * t; int cx = 32 + (int)Math.Round(Math.Cos(t) * rad), cy = 32 + (int)Math.Round(Math.Sin(t) * rad); for (int dy = -r; dy <= r; dy++) for (int dx = -r; dx <= r; dx++) if (dx * dx + dy * dy <= r * r && cx + dx >= 0 && cy + dy >= 0 && cx + dx < 64 && cy + dy < 64) img.SetPixel(cx + dx, cy + dy, c); } }
+                Stroke(4, new Color(0.1f, 0.05f, 0.15f)); Stroke(2, new Color(1, 0.92f, 0.3f));
+                swirlTexture = ImageTexture.CreateFromImage(img);
+            }
+            var mat = Flat(26); mat.AlbedoTexture = swirlTexture; mat.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
+            m = new MeshInstance3D { Mesh = new PlaneMesh { Size = Vector2.One }, MaterialOverride = mat }; AddChild(m); swirls[p.Id] = m;
+        }
+        m.Visible = show; if (!show) return;
+        float size = card ? 64 : Math.Max(16, distance * 0.05f);
+        m.Position = foot + new Vector3(0, card ? 9 : 34, 0); m.Scale = new Vector3(size, 1, size); m.Rotation = new Vector3(0, -(float)(Time.GetTicksMsec() % 100000) / 180f, 0);
     }
 
     // ---- 隊の札（引いた視点） ----

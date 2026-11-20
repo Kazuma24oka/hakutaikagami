@@ -359,6 +359,58 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.War.Result is not ("退いた" or "退かせた") || w.Retreated("takano") || w.Retreated("iwakiri"), "退いた決着は、撤退条件を満たしたときだけ");
     }
 
+    // 伏兵・奇襲・混乱（Core/Proto/ProtoChaos.cs）：見つかっていない隊は伏兵になる（森は1分、森の外は5分）。
+    // 伏兵がぶつかると奇襲（一度きりの打撃と混乱+30）。混乱が100になると3分動けない。
+    [Fact]
+    public void UnseenUnitsAmbushAndConfusedUnitsCannotMove()
+    {
+        using var cp = new Checkpoints("試作版の伏兵と混乱", o);
+        var w = new ProtoWorld(Map); w.SetupTsuriPractice();
+        var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi"); var me = w.Player;
+        // 本人は敵から遠い野へ。小坂は森の中。
+        me.X = 2600_00; me.Y = 1900_00; me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
+        cp.Expect(w.TerrainName(me.X, me.Y) != "森" && w.TerrainName(kosaka.X, kosaka.Y) == "森", "本人は森の外、小坂は森の中にいる");
+        iguchi.X = kosaka.X + 900_00; w.War.Target.Remove(iguchi.Id); iguchi.Path = []; iguchi.PathIndex = 0;
+        w.Advance(150);
+        cp.Expect(w.InAmbush(kosaka.Id) && !w.InAmbush(me.Id), "森の中は1分で伏兵になる。森の外は、まだならない");
+        w.Advance(5 * 60);
+        cp.Expect(w.InAmbush(me.Id), "森の外でも、5分見つからなければ伏兵になる");
+        // 井口を小坂のすぐ前へ置くと、小坂が奇襲をかける。
+        iguchi.X = kosaka.X + 60_00; iguchi.Y = kosaka.Y - 70_00; int before = iguchi.Soldiers;
+        for (int i = 0; i < 10 && !w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id)); i++) w.Advance(60);
+        cp.Log(w.Facts.Last().Text + $"　井口 兵{before}→{iguchi.Soldiers} 混乱{w.ChaosOf(iguchi.Id)}");
+        cp.Expect(w.Facts.Any(f => f.Id.StartsWith("surprise:" + kosaka.Id)) && (w.ChaosOf(iguchi.Id) >= 30 || w.Confused(iguchi.Id)), "伏兵がぶつかると奇襲になり、相手の混乱が30以上たまる");
+        cp.Expect(!w.InAmbush(kosaka.Id), "仕掛けた隊は伏兵でなくなる");
+        // 混乱：100になると3分のあいだ動けない。
+        w.War.Routed.Remove(iguchi.Id); iguchi.Morale = 100; iguchi.Soldiers = 80; w.War.Chaos[iguchi.Id] = 99;
+        for (int i = 0; i < 5 && !w.Confused(iguchi.Id); i++) w.Advance(60);
+        cp.Expect(w.Confused(iguchi.Id), "混乱が100になると混乱する");
+        long x = iguchi.X, y = iguchi.Y; w.War.Target[iguchi.Id] = me.Id; w.Advance(60);
+        cp.Expect(iguchi.X == x && iguchi.Y == y, "混乱している隊は動けない");
+        w.Advance(ProtoWorld.ChaosTime);
+        cp.Expect(!w.Confused(iguchi.Id), "3分で混乱が解ける");
+    }
+
+    // 軍議の戦場図に、役目ごとの勲功の見込みが出る。決着で、役目を果たしたかと勝ち負けで勲功が決まる。
+    [Fact]
+    public void TheCouncilShowsExpectedMeritAndTheBattleAwardsIt()
+    {
+        using var cp = new Checkpoints("試作版の勲功の見込み", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        var prop = w.Proposal("敵を崩す", "釣り野伏", "伏兵");
+        foreach (var pc in prop.Pieces) cp.Log($"{pc.Name}　{pc.Role}　{pc.Terrain}　{pc.Effect}　功{pc.Merit}");
+        cp.Expect(prop.Pieces.First(x => x.Role == "囮").Merit > prop.Pieces.First(x => x.Role == "伏兵").Merit, "危ない役（囮）は伏兵より見込みが大きい");
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        int merit = w.Merit;
+        while (w.War.Result == "" && w.Second < 5 * Day) w.Advance(60);
+        w.Advance(60);
+        cp.Log($"結果 {w.War.Result}　勲功 {merit}→{w.Merit}　" + string.Join(" ", w.Journal.Where(e => e.Text.Contains("勲功")).Select(e => e.Text).TakeLast(2)));
+        cp.Expect(w.Merit - merit is > 0 and <= 16, "合戦で働けば、見込みに近い勲功が入る");
+    }
+
     // 立て直し：崩れた隊は本陣で30分休むと、一度だけ戦いに戻る（士気60）。
     [Fact]
     public void TheRoutedUnitRegroupsAtCamp()

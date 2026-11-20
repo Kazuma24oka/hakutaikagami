@@ -103,7 +103,6 @@ public sealed partial class ProtoWorld
             if (side == Rebel)
             {
                 War.Result = "退かせた"; Happen("withdrawn:" + side, "岩切勢は兵を引き、岩切城へ退いた。", h.X, h.Y, Person(Heir), Person(Karou), h);
-                if (Flag("fought:" + Player.Id)) { Merit += 5; Note("岩切勢を退かせた。勲功5。"); }
             }
             else { War.Result = "退いた"; Happen("withdrawn:" + side, "鷹野勢は兵を引いた。", h.X, h.Y, h, Person(Karou)); }
             GoHome(); return;
@@ -113,7 +112,6 @@ public sealed partial class ProtoWorld
         {
             var h = Person(Heir); War.Result = "守り抜いた"; War.Phase = "終わり";
             Happen("held", "鷹野勢は陣を守り抜いた。", h.X, h.Y, h, Person(Karou));
-            if (Flag("fought:" + Player.Id)) { Merit += 5; Note("陣を守り抜いた。勲功5。"); }
             GoHome();
         }
     }

@@ -7,7 +7,7 @@ namespace HakutaiKagami.Core.Proto;
 // ・陣取りで全軍士気は動かさない（定位置で待つだけで勝てる形にしない）。
 // ・軍議では、まず総大将が全員の陣と役目を決める（Proposal）。ほかの者は自分の陣と役目、作戦を再提案する（総大将が本人なら全員を決める）。
 // ・敵（岩切勢）も地形から置き場所を選ぶ（高い所、城への道をふさぐ所、道のそばの森）。
-public sealed record ProtoPiece(string Unit, string Name, string Role, long X, long Y, string Terrain, string Effect, int Soldiers);
+public sealed record ProtoPiece(string Unit, string Name, string Role, long X, long Y, string Terrain, string Effect, int Soldiers, int Merit);
 public sealed record ProtoProposal(string Goal, string Plan, string Departure, string Signal, string RetreatAdd, ProtoPiece[] Pieces);
 
 public sealed partial class ProtoWorld
@@ -107,7 +107,7 @@ public sealed partial class ProtoWorld
         string g = goal ?? Goals[0]; string p = plan != null && PlansOf(g).Contains(plan) ? plan : PlansOf(g)[0];
         if (role != null && !RolesOf(p).Any(r => r.Role == role)) role = null;
         var (rh, rk, rm) = RolesBy(p, role);
-        ProtoPiece Piece(string id, string r, int soldiers) { var at = PostFor(r); var u = Person(id); return new(id, u.Name, r, at.X, at.Y, TerrainName(at.X, at.Y), TerrainEffect(at.X, at.Y), soldiers); }
+        ProtoPiece Piece(string id, string r, int soldiers) { var at = PostFor(r); var u = Person(id); return new(id, u.Name, r, at.X, at.Y, TerrainName(at.X, at.Y), TerrainEffect(at.X, at.Y), soldiers, RoleMerit(r)); }
         return new(g, p, Departures[1], Signals[0], heir.Temper == "慎重" ? RetreatAdds[1] : RetreatAdds[0],
             [Piece(Heir, rh, heir.Soldiers), Piece(Karou, rk, Person(Karou).Soldiers), Piece(Player.Id, rm, 30)]);
     }

@@ -1,0 +1,78 @@
+namespace HakutaiKagami.Core.Proto;
+
+// 試作版の伏兵・奇襲・混乱と、合戦の勲功（2026-11-20 ユーザー）。
+// ・伏兵：敵に見つかっていない隊。森の中は（動いていても）1分、森の外は5分、見つからずにいると伏兵になる。
+//   森の中の隊は80m（見る側の知略で増減、物見上手は+30m）まで近づかないと見つからない。森の外は、敵の見える範囲に入れば見つかる。
+//   見つかったあと・森を出たあとも、3分の間は伏兵の利が残る。
+// ・奇襲：伏兵（か、利が残っている間）の隊が敵にぶつかると起きる。ぶつかった瞬間に3分ぶんの打撃を一度に与え、相手の混乱を30上げる。
+// ・混乱：打たれるとたまる（毎分 正面2・側面6・背後10、二隊以上に打たれていれば+4、下がりながら打たれていれば+4。打たれていなければ毎分−5）。
+//   たまる量は「打つ側の知略÷打たれる側の知略」倍。100になると3分のあいだ混乱する：動けない・向きを変えられない・戦法を使えない・
+//   与える打撃は半分・受ける打撃は1.5倍・士気の下がりは1.5倍。終わると0からたまり直す。気性は計算に使わない。
+// ・勲功：役目ごとの見込み（軍議の戦場図に出す）を、役目を果たしたかと勝ち負けで増減する。
+public sealed partial class ProtoWorld
+{
+    public const int UnseenForest = 60, UnseenOpen = 5 * 60, AmbushGrace = 3 * 60, ChaosTime = 3 * 60;
+
+    public bool InAmbush(string id) => War.Ambush.Contains(id);
+    bool CanSurprise(string id) => InAmbush(id) || War.AmbushUntil.GetValueOrDefault(id) >= Second;
+    public int ChaosOf(string id) => War.Chaos.GetValueOrDefault(id);
+    public bool Confused(string id) => War.ChaosUntil.GetValueOrDefault(id) > Second;
+    // 森の伏兵を見つける遠さ（cm）。
+    long SpotRange(ProtoPerson viewer) => 80_00 + (viewer.Wits - 50) * 1_00 + (viewer.Skills.Contains("物見上手") ? 30_00 : 0);
+
+    // 毎分：見つかっているかを確かめ、伏兵になる・解ける。
+    void Stealth(ProtoPerson[] field)
+    {
+        foreach (var u in field)
+        {
+            bool live = u.Soldiers > 0 && !War.Routed.Contains(u.Id);
+            // 打ち合った隊は、そのあと5分は見つかったまま（打ち合いの切れ目でまた伏兵にならない）。
+            if (ClashOf(u.Id) != null) flags["clashed:" + u.Id] = Second;
+            bool seen = !live || flags.TryGetValue("clashed:" + u.Id, out var cl) && Second - cl < 5 * 60 || field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && InSight(e, u));
+            if (seen) War.UnseenSince.Remove(u.Id); else if (!War.UnseenSince.ContainsKey(u.Id)) War.UnseenSince[u.Id] = Second;
+            bool now = !seen && Second - War.UnseenSince[u.Id] >= (InForest(u.X, u.Y) ? UnseenForest : UnseenOpen);
+            if (now) { if (!InAmbush(u.Id)) War.Ambush.Add(u.Id); }
+            else if (War.Ambush.Remove(u.Id) && live) War.AmbushUntil[u.Id] = Second + AmbushGrace;
+        }
+    }
+    // 物見に見られた隊は見つかる。
+    void FoundByScout(string id)
+    {
+        War.UnseenSince.Remove(id);
+        if (War.Ambush.Remove(id)) War.AmbushUntil[id] = Second + AmbushGrace;
+    }
+
+    // 混乱をためる。by：打った側（知略の比で増減）。
+    void AddChaos(ProtoPerson b, int amount, ProtoPerson? by)
+    {
+        if (amount == 0 || Confused(b.Id) || War.Routed.Contains(b.Id) || b.Soldiers <= 0) return;
+        int add = amount > 0 ? Math.Max(1, (int)Math.Round(amount * (double)(by?.Wits ?? 50) / Math.Max(1, b.Wits))) : amount;
+        int now = Math.Clamp(ChaosOf(b.Id) + add, 0, 100); War.Chaos[b.Id] = now;
+        if (now < 100) return;
+        War.Chaos[b.Id] = 0; War.ChaosUntil[b.Id] = Second + ChaosTime;
+        Happen($"chaos:{b.Id}:{Second}", $"{b.Name}の兵が混乱した。", b.X, b.Y, b);
+        if (b.Player) Note("兵が混乱した。しばらく動けない。");
+    }
+    void ClearChaos(string id) { War.Chaos.Remove(id); War.ChaosUntil.Remove(id); War.Ambush.Remove(id); War.AmbushUntil.Remove(id); War.UnseenSince.Remove(id); }
+
+    // ---- 勲功 ----
+    public static int RoleMerit(string role) => role switch { "囮" or "先手" or "正面" => 12, "伏兵" or "回り込み" => 10, _ => 6 };
+    // 決着のときに、役目を果たしたかと勝ち負けで勲功を決める。
+    void AwardWarMerit()
+    {
+        if (Flag("war-merit") || War.Result == "" || !War.Post.ContainsKey(Player.Id)) return;
+        Set("war-merit");
+        string me = Player.Id, role = War.Roles.GetValueOrDefault(me, ""); int see = RoleMerit(role);
+        bool fought = Flag("fought:" + me);
+        bool did = role switch
+        {
+            "囮" => Fact("bait-back:" + me) != null || fought && Facts.Any(f => f.Id.StartsWith("surprise:")),
+            "伏兵" or "回り込み" => Facts.Any(f => f.Id.StartsWith("surprise:" + me + ":") || f.Id.StartsWith("flank:" + me + ":")),
+            _ => fought,
+        };
+        int m = did ? see : see / 2;
+        m = War.Result switch { "鎮めた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => fought ? see / 4 : 0 };
+        if (m <= 0) return;
+        Merit += m; Note($"合戦の働きで勲功{m}。");
+    }
+}

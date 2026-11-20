@@ -170,7 +170,9 @@ public sealed partial class ProtoWorld
             else
             {
                 // 敵を崩す：攻め続ける。逸る者は一人でも、普通の者は兵が劣らなければ、慎重な者は味方が近くで戦っているときに。そうでなければ大将と合流する。
-                bool go = seen != null && (u.Temper == "逸る" || helped || u.Temper != "慎重" && u.Soldiers >= seen.Soldiers);
+                // 自分に見えていなくても、味方の誰かに見えている敵は知らせで分かる（大将と逸る者はそこへ向かう）。
+                if (seen == null && (u.Id == Heir || u.Temper == "逸る")) seen = rebels.Where(r => takano.Any(t => InSight(t, r))).OrderBy(r => Dist(u, r)).ThenBy(r => r.Id).FirstOrDefault();
+                bool go = seen != null && (u.Temper == "逸る" || u.Id == Heir || helped || u.Temper != "慎重" && u.Soldiers >= seen.Soldiers);
                 if (go) { War.Target[u.Id] = seen!.Id; what = seen.Id; did = $"{u.Name}は{seen.Name}の兵へ攻めかかった。"; }
                 else if (seen == null && !u.Moving && (u.Id == Heir || War.Routed.Contains(Heir) && u.Temper != "慎重") && Dist(u, foeCamp.X * 100L, foeCamp.Y * 100L) > 300_00)
                 { Walk(u, ProtoMove.Nearest(Map, foeCamp.X * 100L, foeCamp.Y * 100L), foeCamp.Name, $"{foeCamp.Name}へ兵を進めている"); what = "advance"; did = $"{u.Name}は敵を求めて{foeCamp.Name}へ兵を進めた。"; }

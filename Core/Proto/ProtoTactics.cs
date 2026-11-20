@@ -16,7 +16,8 @@ public sealed partial class ProtoWorld
 
     // 伏せている：森の中で、動かず、ぶつかっておらず、崩れていない。
     // 森の縁（30m以内に森がある）も木立に隠れられる。
-    public bool Hidden(ProtoPerson u) => u.Soldiers > 0 && InCover(u.X, u.Y) && !u.Moving && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id);
+    // 森の中にいる隊（動いていても）。近づくまで見えない。
+    public bool Hidden(ProtoPerson u) => u.Soldiers > 0 && InForest(u.X, u.Y) && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id);
     bool InCover(long x, long y) => new[] { (0L, 0L), (30_00L, 0L), (-30_00L, 0L), (0L, 30_00L), (0L, -30_00L) }.Any(d => Map.GroundAtCm(x + d.Item1, y + d.Item2) == Ground.Forest);
 
     // 向きの更新（毎分）：ぶつかっている相手がいればその方、いなければ進む方。
@@ -24,6 +25,7 @@ public sealed partial class ProtoWorld
     {
         foreach (var u in all)
         {
+            if (Confused(u.Id)) continue; // 混乱している隊は向きを変えられない
             if (War.Routed.Contains(u.Id)) { War.FacingFoe.Remove(u.Id); continue; }
             ProtoPerson? foe = null;
             // 狙っている相手がいる間は、その相手の方を向いたまま（横から別の敵に当たられても、すぐには向き直れない）。
@@ -43,8 +45,6 @@ public sealed partial class ProtoWorld
                 else { var foeHead = all.FirstOrDefault(e => Hostile(u.House, e.House)); if (foeHead != null) { var camp = CampOf(foeHead); Face(u, camp.X - u.X, camp.Y - u.Y); } }
             }
         }
-        // 森の中にいる（歩いていても）か、森の縁で伏せている隊は、仕掛ければ奇襲になる。森を出ても5分は奇襲（2026-11-20 ユーザー）。
-        foreach (var u in all.Where(u => Hidden(u) || InForest(u.X, u.Y) && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id))) War.HiddenAt[u.Id] = Second;
     }
     // 20mより近い（重なっている）相手の方は当てにならないので、向きを変えない（くるくる回らないように）。
     void Face(ProtoPerson u, long dx, long dy) { double len = Math.Sqrt((double)dx * dx + (double)dy * dy); if (len > 20_00) War.Facing[u.Id] = [dx / len, dy / len]; }
@@ -116,7 +116,8 @@ public sealed partial class ProtoWorld
         War.StartSoldiers.Clear(); War.RetreatRules.Clear(); // この試しでは軍としての撤退は見ない
         foreach (var u in new[] { kosaka, iguchi, me }) { u.Path = []; u.PathIndex = 0; War.Target.Remove(u.Id); War.Routed.Remove(u.Id); }
         me.Soldiers = 30; me.Morale = 100; iguchi.Soldiers = 80; iguchi.Morale = 100; kosaka.Soldiers = 100; kosaka.Morale = 100;
-        var hide = PositionOf("forest-edge"); kosaka.X = hide.X * 100L; kosaka.Y = hide.Y * 100L;
+        var edge = PositionOf("forest-edge"); var hide = ForestSpot(edge.X * 100L, edge.Y * 100L, 300_00, 20_00) ?? (edge.X * 100L, edge.Y * 100L); kosaka.X = hide.X; kosaka.Y = hide.Y;
+        War.Chaos.Clear(); War.ChaosUntil.Clear(); War.Ambush.Clear(); War.AmbushUntil.Clear(); War.UnseenSince.Clear();
         iguchi.X = kosaka.X + 400_00; iguchi.Y = kosaka.Y - 60_00; me.X = iguchi.X - 60_00; me.Y = iguchi.Y;
     }
     // 囮が下がる先：伏せた小坂のすぐ北（60m）を通って、森の縁沿いに西へ350m。
@@ -163,7 +164,7 @@ public sealed partial class ProtoWorld
     // 伏せていた隊は、目の前（150m）に敵が来たら自分から仕掛ける。
     void Ambushers()
     {
-        foreach (var u in Units.Where(u => Hidden(u) && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && Auto(u)))
+        foreach (var u in Units.Where(u => Hidden(u) && !u.Moving && !War.Target.ContainsKey(u.Id) && (u.House == Rebel || War.Assign.ContainsKey(u.Id)) && Auto(u)))
         {
             // 目の前（150m）まで引きつけてから出る（遠くで出ると、同じ速さで逃げられて追いつけない）。
             // 横か後ろを取れるまで待つ（敵が目の前を通り過ぎてから出る）。正面からしか当たれないなら、90mまで引きつける。

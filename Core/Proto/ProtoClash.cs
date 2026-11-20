@@ -79,10 +79,9 @@ public sealed partial class ProtoWorld
             var (flank, kind) = FlankOf(b, a); atk *= flank;
             if (kind != "正面" && !Flag($"flank:{a.Id}:{b.Id}:{kind}")) { Set($"flank:{a.Id}:{b.Id}:{kind}"); Happen($"flank:{a.Id}:{b.Id}:{kind}:{Second}", $"{a.Name}の兵が{b.Name}の{kind}を突いた。", b.X, b.Y, a, b); }
             if (kind == "背後") rear.Add(b.Id); else if (kind == "側面") side.Add(b.Id);
-            if (Buffed("surprise", a.Id)) shaken.Add(b.Id);
             if (b.Moving) atk *= Retreating(b) ? 1.5 : 1.25; // 下がる隊は打たれやすい
             if (a.Moving) atk *= 0.4; // 歩きながら（追いながら）では打ちにくい
-            if (Buffed("surprise", a.Id)) atk *= 1.5;
+            if (Confused(a.Id)) atk *= 0.5; if (Confused(b.Id)) atk *= 1.5; // 混乱：与える打撃は半分、受ける打撃は1.5倍
             if (Buffed("charge", a.Id)) atk *= 1.8;
             if (Buffed("kakare", a.Id)) atk *= 1.6;
             if (a.Player) atk *= War.Stance switch { "射撃" => 0.7, "防御" => 0.3, _ => 1.0 };
@@ -102,13 +101,17 @@ public sealed partial class ProtoWorld
             if (c == null)
             {
                 c = new ProtoClash { A = a, B = b, Since = Second }; War.Clashes.Add(c);
-                // 伏せていた隊（10分以内に伏せていた）が仕掛けたなら奇襲。
-                // どちらが先に打ったかに関わらず、伏せていた側が仕掛けた側。
-                var (att, def) = War.HiddenAt.ContainsKey(y) && !War.HiddenAt.ContainsKey(x) ? (Person(y), Person(x)) : (Person(x), Person(y));
-                if (War.HiddenAt.TryGetValue(att.Id, out var hid) && Second - hid <= 5 * 60 && !Buffed("surprise", att.Id))
+                // 伏兵（か、利が残っている間）の隊がぶつかったなら奇襲：3分ぶんの打撃を一度に与え、相手の混乱を30上げる（Core/Proto/ProtoChaos.cs）。
+                // どちらが先に打ったかに関わらず、伏兵だった側が仕掛けた側。
+                var (att, def) = CanSurprise(y) && !CanSurprise(x) ? (Person(y), Person(x)) : (Person(x), Person(y));
+                if (CanSurprise(att.Id))
                 {
-                    War.Until["surprise:" + att.Id] = Second + 5 * 60; def.Morale = Math.Max(0, def.Morale - 30); War.HiddenAt.Remove(att.Id);
-                    Happen($"surprise:{att.Id}:{Second}", $"{att.Name}の兵が森から{def.Name}の兵へ奇襲をかけた。", def.X, def.Y, att, def);
+                    bool wood = InForest(att.X, att.Y);
+                    War.Ambush.Remove(att.Id); War.AmbushUntil.Remove(att.Id); War.UnseenSince.Remove(att.Id);
+                    double blow = dealt.GetValueOrDefault((att.Id, def.Id)); if (blow <= 0) blow = att.Soldiers * 0.006 * (att.Valor / 50.0);
+                    hits[def.Id] = hits.GetValueOrDefault(def.Id) + blow * 2; shaken.Add(def.Id);
+                    AddChaos(def, 30, att);
+                    Happen($"surprise:{att.Id}:{Second}", wood ? $"{att.Name}の兵が森から{def.Name}の兵へ奇襲をかけた。" : $"{att.Name}の兵が{def.Name}の兵の不意を突いた。", def.X, def.Y, att, def);
                 }
             }
         }
@@ -122,19 +125,28 @@ public sealed partial class ProtoWorld
             var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
             int was = b.Soldiers; b.Soldiers = Math.Max(0, b.Soldiers - loss);
             War.Hits.Add(new ProtoHit { To = id, Loss = was - b.Soldiers, Kind = War.Routed.Contains(id) ? "追い討ち" : rear.Contains(id) ? "背後" : side.Contains(id) ? "側面" : "正面", Surprise = shaken.Contains(id), At = Second });
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(loss * 100.0 / Math.Max(1, was) * 1.0 * (b.Player && War.Stance == "防御" ? 0.5 : 1)) - (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0) - (shaken.Contains(id) ? 4 : 0)); // 背後5・側面2・奇襲を受けている間4、毎分さらに下がる
+            // 士気：倒れた割合ぶん下がり、背後5・側面2がさらに下がる。混乱している間は下がりが1.5倍。
+            double drop = Math.Ceiling(loss * 100.0 / Math.Max(1, was) * (b.Player && War.Stance == "防御" ? 0.5 : 1)) + (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0);
+            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1)));
+            // 混乱：正面2・側面6・背後10、二隊以上に打たれていれば+4、下がりながら打たれていれば+4。
+            var hitters = dealt.Keys.Where(k => k.Item2 == id).Select(k => Person(k.Item1)).OrderByDescending(h => h.Wits).ThenBy(h => h.Id).ToArray();
+            if (hitters.Length > 0) AddChaos(b, (rear.Contains(id) ? 10 : side.Contains(id) ? 6 : 2) + (hitters.Length >= 2 ? 4 : 0) + (Retreating(b) ? 4 : 0), hitters[0]);
             if (War.Routed.Contains(id) && b.Soldiers == 0 && b.Active && !b.Player) { b.Active = false; b.Doing = "討ち取られた"; Happen($"slain:{id}", $"{b.Name}は追い討ちを受けて討ち取られた。", b.X, b.Y, b); }
         }
+        // 打たれていない隊の混乱は毎分5ずつ引く。
+        foreach (var u in all.Where(u => Live(u) && !dealt.Keys.Any(k => k.Item2 == u.Id) && ChaosOf(u.Id) > 0)) War.Chaos[u.Id] = Math.Max(0, ChaosOf(u.Id) - 5);
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 || u.Soldiers == 0)).ToArray()) Rout(u);
         // NPC は戦法のゲージがたまれば自分で使う。
-        foreach (var u in all.Where(u => !u.Player && Live(u) && GaugeOf(u.Id) >= 100)) UseTactic(u);
+        foreach (var u in all.Where(u => !u.Player && Live(u) && GaugeOf(u.Id) >= 100 && !Confused(u.Id))) UseTactic(u);
         War.Clashes.RemoveAll(c => War.Routed.Contains(c.A) || War.Routed.Contains(c.B));
     }
 
     internal void Rout(ProtoPerson b)
     {
         if (War.Routed.Contains(b.Id)) return;
-        War.Routed.Add(b.Id); War.Target.Remove(b.Id); War.AtCamp.Remove(b.Id);
+        War.Routed.Add(b.Id); War.Target.Remove(b.Id); War.AtCamp.Remove(b.Id); ClearChaos(b.Id);
+        // 大将の隊が崩れると、味方の隊は動揺する（混乱+15）。
+        if (b.Id == HeadOf(Side(b.House))) foreach (var f in Units.Where(f => f.Id != b.Id && Side(f.House) == Side(b.House) && (f.House == Rebel || War.Post.ContainsKey(f.Id))).ToArray()) AddChaos(f, 15, null);
         Happen($"rout:{b.Id}:{Second}", $"{b.Name}の兵が崩れて退いた（残り{b.Soldiers}）。", b.X, b.Y, b);
         AddSpirit(Side(b.House), b.Id == HeadOf(Side(b.House)) ? -40 : -15);
         if (CutOff(b)) { Annihilate(b); if (!b.Player) return; }
@@ -164,7 +176,7 @@ public sealed partial class ProtoWorld
     // ---- 戦法・構え・かかれ ----
     string UseTactic(ProtoPerson u)
     {
-        if (GaugeOf(u.Id) < 100 || War.Routed.Contains(u.Id)) return "まだ使えない";
+        if (GaugeOf(u.Id) < 100 || War.Routed.Contains(u.Id) || Confused(u.Id)) return "まだ使えない";
         War.Gauge[u.Id] = 0; var name = TacticOf(u);
         switch (name)
         {
@@ -176,7 +188,7 @@ public sealed partial class ProtoWorld
         return $"戦法「{name}」。";
     }
     string SetStance(string s) { if (!Stances.Contains(s)) return ""; War.Stance = s; return $"構え：{s}"; }
-    public bool CanKakare => ClashOf(Player.Id) != null && War.Ki >= 25 && !War.Routed.Contains(Player.Id);
+    public bool CanKakare => ClashOf(Player.Id) != null && War.Ki >= 25 && !War.Routed.Contains(Player.Id) && !Confused(Player.Id);
     string Kakare()
     {
         if (!CanKakare) return "今は強攻できない";

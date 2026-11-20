@@ -163,7 +163,7 @@ public sealed partial class ProtoWorld
         if (minute) { Life(); foreach (var p in People) if (!p.Player && p.Active) Decide(p); }
         foreach (var p in People)
         {
-            if (!p.Moving || !p.Active) continue;
+            if (!p.Moving || !p.Active || Confused(p.Id)) continue; // 混乱している隊は動けない
             long x = p.X, y = p.Y; int i = p.PathIndex;
             bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, (InBody(p) ? MarchPercent : p.Player ? PlayerPercent : 100) * (Retreating(p) ? 75 : 100) / 100);
             p.X = x; p.Y = y; p.PathIndex = i;
