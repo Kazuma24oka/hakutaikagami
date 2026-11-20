@@ -91,7 +91,8 @@ public sealed class ProtoWorldTests
         Assert.Contains("talk-set", ids);
         Assert.Contains("talk-failed", ids);
         Assert.Contains("stakes", ids);
-        Assert.Contains("skirmish", ids);
+        // 小競り合いは、正之が西の村へ来られたときだけ起きる（合戦で隊が崩れて来られなければ起きない）。
+        Assert.True(ids.Contains("skirmish") || ids.Any(i => i.StartsWith("rout:takano-masayuki:")));
         Assert.Contains(ids, id => id.StartsWith("robbery:echigoya"));
         Assert.Contains("bandits-reported", ids);
         Assert.True(w.Knows(w.Person("takano-yoshimasa"), "bandits-reported"));

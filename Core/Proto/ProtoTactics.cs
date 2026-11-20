@@ -43,7 +43,8 @@ public sealed partial class ProtoWorld
                 else { var foeHead = all.FirstOrDefault(e => Hostile(u.House, e.House)); if (foeHead != null) { var camp = CampOf(foeHead); Face(u, camp.X - u.X, camp.Y - u.Y); } }
             }
         }
-        foreach (var u in all.Where(Hidden)) War.HiddenAt[u.Id] = Second;
+        // 森の中にいる（歩いていても）か、森の縁で伏せている隊は、仕掛ければ奇襲になる。森を出ても5分は奇襲（2026-11-20 ユーザー）。
+        foreach (var u in all.Where(u => Hidden(u) || InForest(u.X, u.Y) && ClashOf(u.Id) == null && !War.Routed.Contains(u.Id))) War.HiddenAt[u.Id] = Second;
     }
     // 20mより近い（重なっている）相手の方は当てにならないので、向きを変えない（くるくる回らないように）。
     void Face(ProtoPerson u, long dx, long dy) { double len = Math.Sqrt((double)dx * dx + (double)dy * dy); if (len > 20_00) War.Facing[u.Id] = [dx / len, dy / len]; }

@@ -73,7 +73,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.CouncilOpen, "刻限に鷹野城にいれば軍議に加われる");
         foreach (var line in w.Council().Opinions) cp.Log(line);
         cp.Log(w.DecideCouncil("south-hill", ProtoWorld.Departures[0], ProtoWorld.Signals[0]));
-        cp.Expect(w.War.Assign[w.Player.Id] == "south-hill" && w.War.PlayerAtCouncil, "本人の選んだ陣が通る");
+        cp.Expect(w.PostOf(w.Player.Id).Name == "丘の陣" && w.War.PlayerAtCouncil, "本人の選んだ陣が通る（陣の名前は地形から付く）");
         var katsumoto = w.Person("iwakiri-katsumoto");
         cp.Expect(!w.Visible.Contains(katsumoto), "遠くの敵の隊は見えない");
         var hill = w.PositionOf("south-hill"); w.MoveTo(hill.X * 100L, hill.Y * 100L);
@@ -162,7 +162,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]);
         cp.Expect(w.Player.Soldiers == 30, "軍議で兵30を預かる");
         var muster = w.OpenTasks.FirstOrDefault(t => t.Kind == "muster");
-        cp.Expect(muster != null && muster.Speech.Contains("道の口"), "出陣の任務が出る（口上つき）");
+        cp.Expect(muster != null && muster.Speech.Contains("の陣"), "出陣の任務が出る（口上つき）");
         cp.Expect(w.TaskPlace(muster!) == "道の口", "出陣の行き先は陣の名前で出る");
         var katsumoto = w.Person("iwakiri-katsumoto");
         w.MoveTo(katsumoto.X, katsumoto.Y);

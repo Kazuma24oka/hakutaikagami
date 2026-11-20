@@ -577,7 +577,6 @@ public partial class ProtoGame : Node3D
     }
 
     readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> markers = new();
-    readonly Dictionary<string, Label3D> flags = new();
     readonly List<MeshInstance3D> scoutDots = new();
     void UpdateActors()
     {
@@ -641,13 +640,6 @@ public partial class ProtoGame : Node3D
             v.Label.Text = $"{enemy.Name}　{HourMinute(mk.SeenAt)}（{mk.By}）";
             v.Body.Visible = v.Label.Visible = !now;
         }
-        // 陣の場所の旗（合戦の間だけ）
-        foreach (var pos in World.Map.Data.Positions ?? [])
-        {
-            if (!flags.TryGetValue(pos.Id, out var f)) { f = new Label3D { Text = "⚑ " + pos.Name, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = 26, OutlineSize = 8, NoDepthTest = true, Modulate = new Color(1, 1, 0.8f) }; AddChild(f); flags[pos.Id] = f; }
-            f.Visible = war && pos.Id != "takano-castle"; f.Position = ToScene(pos.X * 100L, pos.Y * 100L) + new Vector3(0, 30, 0);
-            f.Modulate = World.War.Holder.TryGetValue(pos.Id, out var holder) ? HouseColor(holder).Lightened(0.35f) : new Color(1, 1, 0.8f);
-        }
         // 物見
         var live = World.Scouts.Where(x => x.Phase is "行き" or "帰り").ToArray();
         while (scoutDots.Count < live.Length) { var d = new MeshInstance3D { Mesh = new SphereMesh { Radius = 3, Height = 6 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(1, 1, 1) } }; AddChild(d); scoutDots.Add(d); }
@@ -672,39 +664,115 @@ public partial class ProtoGame : Node3D
 
     // ---- 軍議（話す場面の上で、意見を聞いてから選ぶ） ----
     internal (OptionButton Role, OptionButton Dep, OptionButton Sig, Button Ok, OptionButton Plan, OptionButton Goal, OptionButton Retreat)? councilChoices;
+    // 軍議（2026-11-20 ユーザー）：まず総大将の案（大目標・作戦・全員の役目と陣）が戦場図に出る。自分の駒は地図を押して置き直せる
+    // （総大将が本人なら、駒を選んで全員を置ける）。地形とそこで受ける効果の名前を駒の一覧に出す。変えた所があれば再提案になる。
+    CanvasLayer? councilLayer; Action<string, long, long>? councilPlace;
+    internal void PlaceCouncilPiece(string? id, float xM, float yM) => councilPlace?.Invoke(id ?? World.Player.Id, (long)(xM * 100), (long)(yM * 100));
     internal void OpenCouncil()
     {
         if (Scene.Open || !World.CouncilOpen) return;
-        var view = World.Council();
-        var box = new VBoxContainer(); var grid = new GridContainer { Columns = 2 }; grid.AddThemeConstantOverride("h_separation", 24); box.AddChild(grid);
+        var view = World.Council(); var prop = World.Proposal(); bool lead = World.HeadOf("takano") == World.Player.Id;
+        councilLayer?.QueueFree(); councilLayer = new CanvasLayer { Layer = 60, Visible = false }; AddChild(councilLayer);
+        var dimmer = new ColorRect { Color = new Color(0, 0, 0, 0.55f) }; dimmer.SetAnchorsPreset(Control.LayoutPreset.FullRect); councilLayer.AddChild(dimmer);
+        var frame = new PanelContainer(); frame.SetAnchorsPreset(Control.LayoutPreset.FullRect); frame.OffsetLeft = 30; frame.OffsetTop = 24; frame.OffsetRight = -30; frame.OffsetBottom = -24; councilLayer.AddChild(frame);
+        var pad = new MarginContainer(); foreach (var m in new[] { "margin_left", "margin_right", "margin_top", "margin_bottom" }) pad.AddThemeConstantOverride(m, 14); frame.AddChild(pad);
+        var row0 = new HBoxContainer(); row0.AddThemeConstantOverride("separation", 18); pad.AddChild(row0);
+
+        // 戦場図：正面の地点を真ん中に、東西1800m・南北1400m。
+        var map = World.Map; int cell = map.Data.CellM; var front = World.Front;
+        int wM = 1800, hM = 1400, x0 = (int)Math.Clamp(front.X / 100 - wM / 2, 0, map.Data.WidthM - wM) / cell * cell, y0 = (int)Math.Clamp(front.Y / 100 - hM / 2 + 100, 0, map.Data.HeightM - hM) / cell * cell;
+        var img = Image.CreateEmpty(wM / cell, hM / cell, false, Image.Format.Rgb8);
+        for (int r = 0; r < hM / cell; r++) for (int c = 0; c < wM / cell; c++) { int mc = x0 / cell + c, mr = y0 / cell + r; img.SetPixel(c, r, GroundColor(map.GroundAt(mc, mr), map.HeightAt(mc, mr) / 100f, mc, mr)); }
+        var size = new Vector2(wM, hM) * 0.36f; float k = size.X / wM;
+        var board = new TextureRect { Texture = ImageTexture.CreateFromImage(img), ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.Scale, TextureFilter = CanvasItem.TextureFilterEnum.Nearest, CustomMinimumSize = size, SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, MouseFilter = Control.MouseFilterEnum.Stop, ClipContents = true };
+        row0.AddChild(board);
+        Vector2 OnBoard(long x, long y) => new((x / 100f - x0) * k, (y / 100f - y0) * k);
+        Label Tag(string text, Vector2 at, Color color, int font = 15) { var l = new Label { Text = text, Position = at, MouseFilter = Control.MouseFilterEnum.Ignore }; l.AddThemeFontSizeOverride("font_size", font); l.AddThemeColorOverride("font_color", color); l.AddThemeColorOverride("font_outline_color", Colors.Black); l.AddThemeConstantOverride("outline_size", 5); board.AddChild(l); return l; }
+        foreach (var site in map.Data.Sites.Where(t => t.X >= x0 && t.X < x0 + wM && t.Y >= y0 && t.Y < y0 + hM)) Tag(site.Name, OnBoard(site.X * 100L, site.Y * 100L) + new Vector2(-24, -10), new Color(1, 1, 0.85f));
+        // 知っている敵の印（最後に見た場所）。
+        foreach (var mk in World.Markers) { var at = OnBoard(mk.X, mk.Y); board.AddChild(new ColorRect { Color = HouseColor("iwakiri"), Position = at - new Vector2(6, 6), Size = new Vector2(12, 12), MouseFilter = Control.MouseFilterEnum.Ignore }); Tag(World.Person(mk.Unit).Name, at + new Vector2(8, -10), new Color(1, 0.7f, 0.7f), 13); }
+
+        var right = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; row0.AddChild(right);
+        right.AddChild(new Label { Text = "総大将　" + view.Commander, Modulate = new Color(1, 0.9f, 0.6f) });
+        var grid = new GridContainer { Columns = 1 }; right.AddChild(grid);
         OptionButton Choice(string title, string[] items, int pick)
         {
             var row = new HBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; grid.AddChild(row); row.AddChild(new Label { Text = title, CustomMinimumSize = new Vector2(150, 0) });
-            var o = new OptionButton { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; foreach (var it in items) o.AddItem(it); o.Select(pick); row.AddChild(o); return o;
+            var o = new OptionButton { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; foreach (var it in items) o.AddItem(it); o.Select(Math.Max(0, pick)); row.AddChild(o); return o;
         }
-        // 大目標を選ぶとその作戦が出て、作戦を選ぶとその役目が出る。撤退の条件は、初めから決まっている分に足すだけ。
-        var goal = Choice("大目標", view.Goals, 0);
-        var plan = Choice("作戦", ProtoWorld.PlansOf(view.Goals[0]), 0);
-        var role = Choice("自分の役目", ProtoWorld.RolesOf(plan.GetItemText(0)).Select(r => r.Role).ToArray(), 0);
-        var dep = Choice("出立", view.Departures, 1);
-        var sig = Choice("合図", view.Signals, 0);
-        var retreat = Choice("撤退の条件を足す", view.RetreatAdds, 0);
-        void Roles() { role.Clear(); foreach (var r in ProtoWorld.RolesOf(plan.GetItemText(plan.Selected))) role.AddItem(r.Role); role.Select(0); }
-        plan.ItemSelected += _ => Roles();
-        goal.ItemSelected += i => { plan.Clear(); foreach (var p in ProtoWorld.PlansOf(view.Goals[(int)i])) plan.AddItem(p); plan.Select(0); Roles(); };
-        var ok = new Button { Text = "決める" }; box.AddChild(ok);
+        var goal = Choice("大目標", view.Goals, Array.IndexOf(view.Goals, prop.Goal));
+        var plan = Choice("作戦", ProtoWorld.PlansOf(prop.Goal), Array.IndexOf(ProtoWorld.PlansOf(prop.Goal), prop.Plan));
+        string myRole = prop.Pieces.First(x => x.Unit == World.Player.Id).Role; var roleNames = ProtoWorld.RolesOf(prop.Plan).Select(r => r.Role).ToArray();
+        var role = Choice("自分の役目", roleNames, Array.IndexOf(roleNames, myRole));
+        var dep = Choice("出立", view.Departures, Array.IndexOf(view.Departures, prop.Departure));
+        var sig = Choice("合図", view.Signals, Array.IndexOf(view.Signals, prop.Signal));
+        var retreat = Choice("撤退の条件を足す", view.RetreatAdds, Array.IndexOf(view.RetreatAdds, prop.RetreatAdd));
+        right.AddChild(new HSeparator());
+        var list = new VBoxContainer(); right.AddChild(list);
+        var ok = new Button { Text = "従う" }; right.AddChild(ok);
+
+        // 駒
+        var pieces = prop.Pieces.ToDictionary(x => x.Unit, x => (x.X, x.Y)); var moved = new HashSet<string>(); string pick = World.Player.Id;
+        var marks = new Dictionary<string, (ColorRect Body, Label Name)>();
+        string Now() => goal.Selected + "|" + plan.GetItemText(plan.Selected) + "|" + role.GetItemText(role.Selected) + "|" + dep.Selected + "|" + sig.Selected + "|" + retreat.Selected;
+        string first = Now();
+        void Draw()
+        {
+            var p = World.Proposal(view.Goals[goal.Selected], plan.GetItemText(plan.Selected), role.GetItemText(role.Selected));
+            foreach (var c in list.GetChildren()) { list.RemoveChild(c); c.QueueFree(); }
+            foreach (var pc in p.Pieces)
+            {
+                var (x, y) = pieces[pc.Unit]; bool mine = pc.Unit == World.Player.Id, sel = pc.Unit == pick && (lead || mine);
+                if (!marks.TryGetValue(pc.Unit, out var mk))
+                {
+                    var body = new ColorRect { Size = new Vector2(18, 18), MouseFilter = Control.MouseFilterEnum.Ignore }; board.AddChild(body);
+                    marks[pc.Unit] = mk = (body, Tag(pc.Name, Vector2.Zero, Colors.White, 14));
+                }
+                var at = OnBoard(x, y); mk.Body.Position = at - new Vector2(9, 9); mk.Body.Color = mine ? new Color(1, 0.85f, 0.3f) : HouseColor("takano").Lightened(0.25f); mk.Name.Position = at + new Vector2(11, -11);
+                string effect = World.TerrainEffect(x, y);
+                var line = new Button { Text = $"{pc.Name}　{pc.Role}　兵{pc.Soldiers}　{World.TerrainName(x, y)}" + (effect != "" ? "　" + effect : ""), Alignment = HorizontalAlignment.Left, Flat = true, Disabled = !lead && !mine };
+                line.AddThemeColorOverride("font_color", sel ? new Color(1, 0.88f, 0.45f) : Colors.White); line.AddThemeColorOverride("font_disabled_color", Colors.White);
+                var id = pc.Unit; line.Pressed += () => { pick = id; Draw(); };
+                list.AddChild(line);
+            }
+            ok.Text = Now() != first || moved.Count > 0 ? "再提案する" : "従う";
+        }
+        // 作戦や役目を変えたら、総大将の陣立てを引き直す（自分で置いた駒は、役目が変わらなければそのまま）。
+        void Relay(bool keepMine)
+        {
+            var p = World.Proposal(view.Goals[goal.Selected], plan.GetItemText(plan.Selected), role.GetItemText(role.Selected));
+            foreach (var pc in p.Pieces) if (!(keepMine && moved.Contains(pc.Unit))) { pieces[pc.Unit] = (pc.X, pc.Y); moved.Remove(pc.Unit); }
+            Draw();
+        }
+        void Roles() { role.Clear(); foreach (var r in ProtoWorld.RolesOf(plan.GetItemText(plan.Selected))) role.AddItem(r.Role); var mine = World.Proposal(view.Goals[goal.Selected], plan.GetItemText(plan.Selected)).Pieces.First(x => x.Unit == World.Player.Id).Role; for (int n = 0; n < role.ItemCount; n++) if (role.GetItemText(n) == mine) role.Select(n); }
+        goal.ItemSelected += n => { plan.Clear(); foreach (var p in ProtoWorld.PlansOf(view.Goals[(int)n])) plan.AddItem(p); plan.Select(0); Roles(); Relay(false); };
+        plan.ItemSelected += _ => { Roles(); Relay(false); };
+        role.ItemSelected += _ => Relay(false);
+        dep.ItemSelected += _ => Draw(); sig.ItemSelected += _ => Draw(); retreat.ItemSelected += _ => Draw();
+        councilPlace = (id, x, y) =>
+        {
+            if (!pieces.ContainsKey(id) || !lead && id != World.Player.Id) return;
+            var n = ProtoMove.Nearest(World.Map, Math.Clamp(x, x0 * 100L, (x0 + wM) * 100L - 1), Math.Clamp(y, y0 * 100L, (y0 + hM) * 100L - 1));
+            pieces[id] = (n.X, n.Y); moved.Add(id); Draw();
+        };
+        board.GuiInput += e => { if (e is InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left } mb) councilPlace?.Invoke(pick, (long)((mb.Position.X / k + x0) * 100), (long)((mb.Position.Y / k + y0) * 100)); };
+        Draw();
         councilChoices = (role, dep, sig, ok, plan, goal, retreat);
         ok.Pressed += () =>
         {
-            var reply = World.DecideCouncil(null, view.Departures[dep.Selected], view.Signals[sig.Selected], plan.GetItemText(plan.Selected), role.GetItemText(role.Selected), view.Goals[goal.Selected], view.RetreatAdds[retreat.Selected]);
+            var posts = moved.Where(id => lead || id == World.Player.Id).ToDictionary(id => id, id => new[] { pieces[id].X, pieces[id].Y });
+            var reply = World.DecideCouncil(null, view.Departures[dep.Selected], view.Signals[sig.Selected], plan.GetItemText(plan.Selected), role.GetItemText(role.Selected), view.Goals[goal.Selected], view.RetreatAdds[retreat.Selected], posts);
+            councilLayer?.QueueFree(); councilLayer = null; councilPlace = null; councilChoices = null;
             Scene.Close();
             var after = new List<(string, string)>();
             if (ProtoScene.Parse(World, reply) is { } r) after.Add(r);
             if (World.OpenTasks.FirstOrDefault(t => t.Kind == "muster") is { } m) after.Add((m.Giver, m.Speech));
             if (after.Count > 0) Scene.Show(after, [World.Player.Id]);
         };
+        // 皆の意見を聞き終えたら、戦場図を開く。
+        var gate = new Control(); var layer = councilLayer; gate.TreeEntered += () => { if (IsInstanceValid(layer)) layer.Visible = true; };
         var lines = view.Opinions.Select(o => ProtoScene.Parse(World, o.Replace("（大将）", ""))).Where(x => x != null).Select(x => x!.Value).ToList();
-        Scene.Show(lines, [World.Player.Id], box);
+        Scene.Show(lines, [World.Player.Id], gate);
     }
 
     void DrawPath()

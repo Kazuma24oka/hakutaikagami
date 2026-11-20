@@ -36,30 +36,10 @@ public sealed partial class ProtoWorld
     (long X, long Y, string Name) CampOf(ProtoPerson p)
     {
         if (p.House == Rebel) { var s = Map.Site("iwakiri-castle"); return (s.X * 100L, s.Y * 100L, s.Name); }
-        if (War.Assign.TryGetValue(Heir, out var a) && !War.Routed.Contains(Heir)) { var pos = PositionOf(a); return (pos.X * 100L, pos.Y * 100L, pos.Name); }
+        if (War.Post.ContainsKey(Heir) && !War.Routed.Contains(Heir)) { var pos = PostOf(Heir); return (pos.X * 100L, pos.Y * 100L, pos.Name); }
         var c = Map.Site("takano-castle"); return (c.X * 100L, c.Y * 100L, c.Name);
     }
 
-    // ---- 要所：その場にいるのが一つの家だけなら、その家が持つ。10分ごとに持つ側の総士気が上がり、相手が下がる ----
-    void HoldKeypoints()
-    {
-        foreach (var pos in Map.Data.Positions!.Where(p => p.Kind != ""))
-        {
-            var here = Units.Where(u => !War.Routed.Contains(u.Id) && Dist(u, pos.X * 100L, pos.Y * 100L) <= 150_00).Select(u => Side(u.House)).Distinct().ToArray();
-            // 一つの家だけが5分続けて居たときに持ち主が替わる（通りがかりで行ったり来たりしないように）。
-            string cand = here.Length == 1 ? here[0] : "";
-            var prev = War.HoldCand.GetValueOrDefault(pos.Id, "|0").Split('|');
-            if (prev[0] != cand) War.HoldCand[pos.Id] = $"{cand}|{Second}";
-            long since = prev[0] == cand ? long.Parse(prev[1]) : Second;
-            if (cand != "" && Second - since >= 5 * 60 && War.Holder.GetValueOrDefault(pos.Id) != cand)
-            {
-                War.Holder[pos.Id] = cand; here = [cand];
-                if (War.Phase == "合戦") Happen($"hold:{pos.Id}:{Second}", $"{HouseName(here[0])}が{pos.Name}を押さえた。", pos.X * 100L, pos.Y * 100L);
-            }
-            if (War.Phase == "合戦" && Second % 600 == 0 && War.Holder.TryGetValue(pos.Id, out var h))
-            { AddSpirit(h, 3); AddSpirit(h == Rebel ? "takano" : Rebel, -3); }
-        }
-    }
     // まだ戦える：崩れていないか、本陣で立て直せる（兵10以上・まだ一度も立て直していない）。
     bool StillFights(ProtoPerson u) => !War.Routed.Contains(u.Id) || u.Active && u.Soldiers >= 10 && !War.Recovered.Contains(u.Id);
     string HouseName(string side) => side == Rebel ? "岩切勢" : "鷹野勢";
@@ -90,13 +70,6 @@ public sealed partial class ProtoWorld
         {
             var b = Foe(a); if (b == null) continue;
             if (Retreating(a)) continue; // 下がっている隊は打ち返さない（打たれるだけ）
-            var area = Map.Data.Positions!.FirstOrDefault(p => p.Width > 0 && Dist(a, p.X * 100L, p.Y * 100L) <= 200_00);
-            if (area != null)
-            {
-                var line = all.Where(x => x.House == a.House && Live(x) && Dist(x, area.X * 100L, area.Y * 100L) <= 200_00 && Foe(x) != null)
-                    .OrderBy(x => Dist(x, Foe(x)!)).ThenBy(x => x.Id).ToList();
-                if (line.IndexOf(a) >= area.Width) { a.Doing = $"{area.Name}で控えている"; continue; }
-            }
             Set("fought:" + a.Id);
             double atk = a.Soldiers * 0.006 * (a.Valor / 50.0) * (a.Morale / 100.0 + 0.5) * (SpiritOf(Side(a.House)) / 200.0 + 0.5);
             long rise = Map.HeightAtCm(a.X, a.Y) - Map.HeightAtCm(b.X, b.Y);
@@ -110,7 +83,6 @@ public sealed partial class ProtoWorld
             if (b.Moving) atk *= Retreating(b) ? 1.5 : 1.25; // 下がる隊は打たれやすい
             if (a.Moving) atk *= 0.4; // 歩きながら（追いながら）では打ちにくい
             if (Buffed("surprise", a.Id)) atk *= 1.5;
-            if (area is { Kind: "射撃" } && Dist(a, area.X * 100L, area.Y * 100L) <= 150_00) atk *= 1.2;
             if (Buffed("charge", a.Id)) atk *= 1.8;
             if (Buffed("kakare", a.Id)) atk *= 1.6;
             if (a.Player) atk *= War.Stance switch { "射撃" => 0.7, "防御" => 0.3, _ => 1.0 };
@@ -133,7 +105,7 @@ public sealed partial class ProtoWorld
                 // 伏せていた隊（10分以内に伏せていた）が仕掛けたなら奇襲。
                 // どちらが先に打ったかに関わらず、伏せていた側が仕掛けた側。
                 var (att, def) = War.HiddenAt.ContainsKey(y) && !War.HiddenAt.ContainsKey(x) ? (Person(y), Person(x)) : (Person(x), Person(y));
-                if (War.HiddenAt.TryGetValue(att.Id, out var hid) && Second - hid <= 10 * 60 && !Buffed("surprise", att.Id))
+                if (War.HiddenAt.TryGetValue(att.Id, out var hid) && Second - hid <= 5 * 60 && !Buffed("surprise", att.Id))
                 {
                     War.Until["surprise:" + att.Id] = Second + 5 * 60; def.Morale = Math.Max(0, def.Morale - 30); War.HiddenAt.Remove(att.Id);
                     Happen($"surprise:{att.Id}:{Second}", $"{att.Name}の兵が森から{def.Name}の兵へ奇襲をかけた。", def.X, def.Y, att, def);
@@ -185,7 +157,7 @@ public sealed partial class ProtoWorld
             Happen($"regroup:{id}", $"{u.Name}の兵が{camp.Name}で立て直し、再び戦いに戻った（兵{u.Soldiers}）。", u.X, u.Y, u);
             AddSpirit(Side(u.House), 5);
             if (u.Player) { Note("兵を立て直した。"); continue; }
-            if (War.Assign.TryGetValue(id, out var a) && Dist(u, PositionOf(a).X * 100L, PositionOf(a).Y * 100L) > 150_00) MarchTo(u, PositionOf(a));
+            if (War.Post.ContainsKey(id) && Dist(u, PostOf(id).X * 100L, PostOf(id).Y * 100L) > 150_00) MarchTo(u, PostOf(id));
         }
     }
 

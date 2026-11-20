@@ -17,7 +17,6 @@ public sealed partial class ProtoWorld
     public string GoalOf(string side) => War.Goals.GetValueOrDefault(side, Goals[0]);
 
     IEnumerable<ProtoPerson> SideUnits(string side) => People.Where(u => u.Active && u.House != "bandit" && Side(u.House) == side && (side == Rebel ? u.House == Rebel : War.Assign.ContainsKey(u.Id) && War.Assign[u.Id] != "takano-castle"));
-    IEnumerable<string> Posts(string side) => SideUnits(side).Where(u => War.Assign.ContainsKey(u.Id)).Select(u => War.Assign[u.Id]).Distinct();
     static string Foe(string side) => side == Rebel ? "takano" : Rebel;
 
     // 状況から撤退条件を決める（軍議・敵の出陣のとき）。added：足す条件（RetreatAdds のどれか）。
@@ -72,7 +71,7 @@ public sealed partial class ProtoWorld
         foreach (var side in new[] { "takano", Rebel })
         {
             // 守る陣を敵に取られているか（取られ始めた時刻を持つ）。
-            bool lost = Posts(side).Any(p => War.Holder.GetValueOrDefault(p) == Foe(side));
+            bool lost = PostLost(side);
             if (!lost) flags.Remove("post-lost:" + side); else if (!flags.ContainsKey("post-lost:" + side)) flags["post-lost:" + side] = Second;
             if (!Retreated(side) && !Retreated(Foe(side)) && War.RetreatRules.GetValueOrDefault(side, []).FirstOrDefault(id => RuleMet(side, id)) is { } met)
             {

@@ -102,7 +102,8 @@ public partial class ProtoDebug : Node
                 case "/speed": game.Speed = int.Parse(F("v")); break;
                 case "/council-window": game.OpenCouncil(); break;
                 // 軍議の窓の選択肢を選ぶ（確かめ用）：plan・role は並びの番号。
-                case "/council-select": if (game.councilChoices is { } cc) { if (q.TryGetValue("goal", out var cg)) { cc.Goal.Select(int.Parse(cg)); cc.Goal.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cg)); } if (q.TryGetValue("retreat", out var cx)) cc.Retreat.Select(int.Parse(cx)); if (q.TryGetValue("plan", out var cp)) { cc.Plan.Select(int.Parse(cp)); cc.Plan.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cp)); } if (q.TryGetValue("role", out var cr)) cc.Role.Select(int.Parse(cr)); if (q.TryGetValue("dep", out var cd)) cc.Dep.Select(int.Parse(cd)); } break;
+                case "/council-select": if (game.councilChoices is { } cc) { if (q.TryGetValue("goal", out var cg)) { cc.Goal.Select(int.Parse(cg)); cc.Goal.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cg)); } if (q.TryGetValue("retreat", out var cx)) cc.Retreat.Select(int.Parse(cx)); if (q.TryGetValue("plan", out var cp)) { cc.Plan.Select(int.Parse(cp)); cc.Plan.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cp)); } if (q.TryGetValue("role", out var cr)) { cc.Role.Select(int.Parse(cr)); cc.Role.EmitSignal(OptionButton.SignalName.ItemSelected, long.Parse(cr)); } if (q.TryGetValue("dep", out var cd)) cc.Dep.Select(int.Parse(cd)); } break;
+                case "/council-place": game.PlaceCouncilPiece(q.TryGetValue("id", out var cpi) ? cpi : null, float.Parse(F("x")), float.Parse(F("y"))); break;
                 case "/council-ok": game.councilChoices?.Ok.EmitSignal(BaseButton.SignalName.Pressed); break;
                 case "/scout-aim": game.AimScout(float.Parse(F("x")), float.Parse(F("y"))); break;
                 case "/hover": game.Hover(q.TryGetValue("id", out var hv) ? hv : null); break;
