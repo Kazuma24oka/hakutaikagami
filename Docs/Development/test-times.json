@@ -2,7 +2,6 @@
 "method": "検査ごとに記録のある直近5回の中央値",
 "history": "D:/02_プロジェクト別/百代鏡/検証記録/検査の時間",
 "runs": [
-"2026-11-20_190718_全件",
 "2026-11-20_190817_全件",
 "2026-11-20_191849_全件",
 "2026-11-20_193222_全件",
@@ -21,7 +20,8 @@
 "2026-11-21_121300_全件",
 "2026-11-21_121319_全件",
 "2026-11-21_121412_全件",
-"2026-11-21_122623_全件"
+"2026-11-21_122623_全件",
+"2026-11-21_124134_全件"
 ],
 "wallSeconds": 30,
 "count": 4770,
@@ -3189,12 +3189,12 @@
 "HakutaiKagami.Tests.ProtoWorldTests.MountainAndForestAreSlowerThanTheRoad": 0.0,
 "HakutaiKagami.Tests.ProtoWorldTests.PlansAroundTheRiverAndUsesTheFord": 0.0,
 "HakutaiKagami.Tests.ProtoWorldTests.SameInputsGiveTheSameWorld": 0.6,
-"HakutaiKagami.Tests.ProtoWorldTests.SavingAndLoadingGivesTheSameFuture": 0.7,
+"HakutaiKagami.Tests.ProtoWorldTests.SavingAndLoadingGivesTheSameFuture": 0.6,
 "HakutaiKagami.Tests.ProtoWorldTests.TheLordGivesDutiesEveryMorning": 0.2,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerCanDriveOffTheBanditsAfterTheyAreReported": 0.4,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerCarriesTheLetterAndGetsAReply": 0.0,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerOnlySeesNearbyPeople": 0.0,
-"HakutaiKagami.Tests.ProtoWorldTests.TheWorldMovesWithoutThePlayer": 0.8,
+"HakutaiKagami.Tests.ProtoWorldTests.TheWorldMovesWithoutThePlayer": 0.7,
 "HakutaiKagami.Tests.PublicWorksTests.CompletedAgricultureAffectsTheActualAutumnHarvest": 96.7,
 "HakutaiKagami.Tests.PublicWorksTests.CompletedWorkshopChangesActualProductionWithoutInventingRawStock": 20.1,
 "HakutaiKagami.Tests.PublicWorksTests.ConstructionConsumesActualHouseRiceWoodAndMoneyAndHoldsLaborUntilCompletion": 4.2,

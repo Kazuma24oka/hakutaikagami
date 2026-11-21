@@ -11,7 +11,8 @@ namespace HakutaiKagami.Core.Proto;
 public enum Ground : byte { Grass, Road, Forest, Mountain, Water, Ford, Site, Bridge }
 
 public sealed record ProtoHouse(string Id, string Name, string Head);
-public sealed record ProtoSite(string Id, string Name, string Kind, string House, int X, int Y, int RadiusM);
+// Layers：城の層の数（1〜5。城の規模。0＝書いていない＝1層）。Core/Proto/ProtoSiege.cs。
+public sealed record ProtoSite(string Id, string Name, string Kind, string House, int X, int Y, int RadiusM, int Layers = 0);
 public sealed record ProtoEllipse(int X, int Y, int Rx, int Ry, int PeakM = 0);
 public sealed record ProtoLine(int WidthM, int[][] Points);
 public sealed record ProtoCircle(int X, int Y, int RadiusM);

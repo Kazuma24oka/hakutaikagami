@@ -53,9 +53,10 @@ public sealed partial class ProtoWorld
     public static readonly string[] SiegeMethods = ["力攻め", "包囲"];
     const string FoeCastle = "iwakiri-castle";
     bool InFoeCastle(ProtoPerson u) => Dist(u, castle: true) <= 180_00; // 城の内（城の真ん中から180m。いちばん外の層は150m）
-    public static int LayersOf(string site) => site == FoeCastle ? 3 : 1;
+    // 層の数は地図のデータ（拠点の layers）で決まる。1〜5。
+    public int LayersOf(string site) => Math.Clamp(Map.Site(site).Layers, 1, 5);
     // 層の名前（外から。三層なら 三の丸・二の丸・本丸）と、層の外周までの遠さ（cm）。
-    public static string LayerName(int layers, int layer) => (layers - layer) switch { <= 1 => "本丸", 2 => "二の丸", _ => "三の丸" };
+    public static string LayerName(int layers, int layer) => (layers - layer) switch { <= 1 => "本丸", 2 => "二の丸", 3 => "三の丸", 4 => "外曲輪", _ => "総構" };
     public static long LayerRadius(int layers, int layer) => 50_00L * (layers - layer);
     // 今の層の城門（攻め手の陣の側）。城の兵はここに立つ。
     public (long X, long Y) GatePoint(int layer)
@@ -79,7 +80,7 @@ public sealed partial class ProtoWorld
     }
     // 城が立っている（謀叛のあと、落ちるまで）。
     bool CastleStands => Flag("rebellion") && War.Result == "" && War.Phase is "行軍" or "合戦" && (War.Siege == null || War.Siege.Layer < War.Siege.Layers);
-    bool InWalls(ProtoPerson u) => Dist(u, castle: true) <= 160_00; // いちばん外の塀（150m）の内
+    bool InWalls(ProtoPerson u) => Dist(u, castle: true) <= LayerRadius(LayersOf(FoeCastle), 0) + 10_00; // いちばん外の塀の内
     // 城内の隊：城という一つの部隊の中身。個別には戦わず、狙われない。狙いを持って打って出る隊は別。
     // 攻城の前は、城へ逃げ込んだ隊（崩れた・退き貝で退いた）と、まだ城を出ていない隊だけ。城のそばに陣を張って戦っている隊は、野の隊のまま。
     public bool Sheltered(ProtoPerson u) => u.House == Rebel && u.Active && CastleStands && InWalls(u) && !War.Target.ContainsKey(u.Id)
@@ -113,17 +114,19 @@ public sealed partial class ProtoWorld
         var gate = GatePoint(s.Layer);
         var att = all.Where(a => InArmy(a) && a.Soldiers > 0 && !War.Routed.Contains(a.Id) && !Retreating(a) && Dist(a, gate.X, gate.Y) <= AssaultReach).ToArray(); if (att.Length == 0) return;
         var lord = g.OrderByDescending(u => u.Id == HeadOf(Rebel)).ThenBy(u => u.Id).First(); double into = 0; int morale = CastleMorale;
+        // 城内の武将の能力が、城の能力になる：守りは城内でいちばん高い統率、打ち返しはいちばん高い武勇。
+        int castleCmd = g.Max(Cmd), castleVal = g.Max(Val);
         foreach (var a in att)
         {
             Set("fought:" + a.Id);
-            double atk = a.Soldiers * 0.006 * (Val(a) / 50.0) * TroopAttack(a) * (a.Morale / 100.0 + 0.5) * (SpiritOf("takano") / 200.0 + 0.5) * 0.55 / (Cmd(lord) / 50.0);
+            double atk = a.Soldiers * 0.006 * (Val(a) / 50.0) * TroopAttack(a) * (a.Morale / 100.0 + 0.5) * (SpiritOf("takano") / 200.0 + 0.5) * 0.55 / (castleCmd / 50.0);
             if (Confused(a.Id)) atk *= 0.5; if (Buffed("spear", a.Id)) atk *= Apt(a) ? 2.0 : 1.8;
             into += atk; s.GateHits += a.Soldiers * 0.02 * (Val(a) / 50.0);
             dealt[(a.Id, lord.Id)] = dealt.GetValueOrDefault((a.Id, lord.Id)) + atk;
             a.Doing = "岩切城の兵と戦っている"; War.Gauge[a.Id] = Math.Min(100, GaugeOf(a.Id) + (a.Player ? 12 : 6));
         }
         foreach (var u in g) { hits[u.Id] = hits.GetValueOrDefault(u.Id) + into * u.Soldiers / men; Set("fought:" + u.Id); }
-        double back = men * 0.006 * (Val(lord) / 50.0) * (morale / 100.0 + 0.5) * (SpiritOf(Rebel) / 200.0 + 0.5) * 0.65; int total = att.Sum(a => a.Soldiers); // 城門の前に出て戦えるのは城の兵の一部
+        double back = men * 0.006 * (castleVal / 50.0) * (morale / 100.0 + 0.5) * (SpiritOf(Rebel) / 200.0 + 0.5) * 0.65; int total = att.Sum(a => a.Soldiers); // 城門の前に出て戦えるのは城の兵の一部
         foreach (var a in att)
         {
             double h = back * a.Soldiers / total / (Cmd(a) / 50.0); if (Buffed("guard", a.Id)) h *= 0.5; if (Confused(a.Id)) h *= 1.5;
@@ -170,6 +173,8 @@ public sealed partial class ProtoWorld
     public string SiegeSpeech => $"{SiegeLead.Name}「岩切城は、{MethodText(Flag("siege-decided") ? War.Siege!.Method : SiegeProposal)}。」";
     // 画面用：城の内で守っている隊か。本人の囲みの陣（城を押したときの行き先）。
     public bool Garrisoned(ProtoPerson u) => Sheltered(u);
+    // 画面用：城が攻め手と打ち合っているか。
+    public bool CastleFighting => War.Siege != null && War.Clashes.Any(c => Sheltered(Person(c.A)) || Sheltered(Person(c.B)));
     public (long X, long Y)? PlayerSiegePost => War.Siege != null && War.Result == "" && InArmy(Player) ? SiegePost(Player) : null;
     // 攻城の軍議：城に取りついた隊（800m）は、いつでも開ける。
     public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && InArmy(Player) && Dist(Player, castle: true) <= 800_00;

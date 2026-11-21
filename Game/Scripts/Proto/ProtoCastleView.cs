@@ -9,7 +9,10 @@ using HakutaiKagami.Core.Proto;
 // ・堀（水）と、城門の前の橋。　・石垣の上に白壁と瓦の塀（内の層ほど石垣が高い）。　・四隅に二重の隅櫓。　・攻め手の陣の側に櫓門（下は門、上は櫓）。
 // ・三の丸：侍屋敷の並びと蔵。　・二の丸：御殿（大きな屋根の建物）と蔵。　・本丸：隅に三重の天守（真ん中は、もとからある城の館）。　・松。
 // ・層の名前の札（三の丸・二の丸・本丸）を、その層の上に出す。
-// 攻城の間：今守っている層の櫓門は屋根が金色。失った層は、塀も建物も焼け落ちて低く黒くなる。
+// 城の形は、層の数（地図のデータ。1〜5）から一度だけ組み立てて持っておく（毎回は描かない）。層が増えるごとに、外へ一つずつ曲輪が足される：
+//   内から 本丸（天守）・二の丸（御殿）・三の丸（侍屋敷）・外曲輪（長屋）・総構（町屋と畑）。
+// 攻城の間：今守っている層の櫓門のまわりに、明るい枠がゆっくり点滅する（門の色はほかと同じ）。失った層は、塀も建物も焼け落ちて低く黒くなる。
+// 城内の武将と兵は、合戦の姿のちびコマで、今守っている層の城門の両脇の塀の上に立つ（打ち合っている間は打つ動き）。
 // 城の名前の下に、今の層・その耐久・城の兵・士気と、耐久の棒を出す。
 public partial class ProtoGame
 {
@@ -17,9 +20,12 @@ public partial class ProtoGame
     sealed class Ring
     {
         public Node3D Root = null!; public MeshInstance3D Floor = null!; public Label3D Name = null!;
-        public StandardMaterial3D Stone = null!, Plaster = null!, Tile = null!, GateTile = null!, Wood = null!, Leaf = null!, FloorMat = null!;
+        public StandardMaterial3D Stone = null!, Plaster = null!, Tile = null!, Wood = null!, Leaf = null!, FloorMat = null!;
+        public Vector3 Gate; public float WallTop, GateHeight; // 城門の場所（城の真ん中から）・塀の上の高さ・櫓門の高さ
     }
     readonly List<Ring> castleRings = new(); Label3D? castleLabel; Sprite3D? castleBar; string castleKey = "";
+    MeshInstance3D? gateGlow; StandardMaterial3D? gateGlowMat; Vector3 castleGateAxis, castleGateSide; bool castleGateOnX;
+    readonly Dictionary<string, DotOfficerActor> wallOfficers = new(); readonly List<DotOfficerActor> wallSoldiers = new();
     static readonly Color StoneColor = new(0.56f, 0.55f, 0.52f), PlasterColor = new(0.94f, 0.92f, 0.87f), TileColor = new(0.24f, 0.25f, 0.3f), WoodColor = new(0.42f, 0.3f, 0.2f),
         LeafColor = new(0.2f, 0.38f, 0.22f), EarthColor = new(0.69f, 0.63f, 0.5f), WaterColor = new(0.27f, 0.43f, 0.6f), Burnt = new(0.2f, 0.18f, 0.17f);
 
@@ -64,7 +70,7 @@ public partial class ProtoGame
 
     void BuildCastleRings()
     {
-        var site = World.Map.Site(CastleSite); int layers = ProtoWorld.LayersOf(CastleSite); var c = ToScene(site.X * 100L, site.Y * 100L);
+        var site = World.Map.Site(CastleSite); int layers = World.LayersOf(CastleSite); var c = ToScene(site.X * 100L, site.Y * 100L);
         var water = new StandardMaterial3D { AlbedoColor = WaterColor }; var bridge = new StandardMaterial3D { AlbedoColor = WoodColor }; var dark = new StandardMaterial3D { AlbedoColor = new Color(0.1f, 0.09f, 0.08f) };
         // 城門の向き（攻め手の陣の側）。塀は東西南北に沿っているので、いちばん近い辺に門を置く。
         var g0 = World.GatePoint(0); var gdir = ToScene(g0.X, g0.Y) - c; gdir.Y = 0; gdir = gdir.LengthSquared() > 0.01f ? gdir.Normalized() : Vector3.Back;
@@ -73,6 +79,7 @@ public partial class ProtoGame
         float gateSlide = Math.Clamp(gateOnX ? gdir.Z / Math.Abs(gdir.X) : gdir.X / Math.Abs(gdir.Z), -0.5f, 0.5f); // 辺の上でのずれ（−0.5〜0.5）
         Vector3 side = gateOnX ? new Vector3(0, 0, 1) : new Vector3(1, 0, 0);
         Vector3 GateAt(float r) => gateAxis * r + side * (gateSlide * r);
+        castleGateAxis = gateAxis; castleGateSide = side; castleGateOnX = gateOnX;
         // 門から門へ続く道の上か（建物や木を置かない）。
         bool OnRoad(Vector3 p) { float along = p.Dot(gateAxis), off = Math.Abs(p.Dot(side) - gateSlide * Math.Max(0, along)); return along > 0 && off < 15; }
 
@@ -82,7 +89,7 @@ public partial class ProtoGame
             var ring = new Ring
             {
                 Stone = new StandardMaterial3D { AlbedoColor = StoneColor }, Plaster = new StandardMaterial3D { AlbedoColor = PlasterColor }, Tile = new StandardMaterial3D { AlbedoColor = TileColor },
-                GateTile = new StandardMaterial3D { AlbedoColor = TileColor }, Wood = new StandardMaterial3D { AlbedoColor = WoodColor }, Leaf = new StandardMaterial3D { AlbedoColor = LeafColor }, FloorMat = new StandardMaterial3D { AlbedoColor = EarthColor },
+                Wood = new StandardMaterial3D { AlbedoColor = WoodColor }, Leaf = new StandardMaterial3D { AlbedoColor = LeafColor }, FloorMat = new StandardMaterial3D { AlbedoColor = EarthColor },
             };
             // 堀：塀の外をぐるりと水。その内に層の地面（内の層ほど一段高い。色はどの層も同じ）。
             Box(this, new Vector3(2 * (r + moat), 0.5f, 2 * (r + moat)), c + new Vector3(0, 0.25f + 0.02f * i + lift - 0.6f, 0), water);
@@ -101,27 +108,39 @@ public partial class ProtoGame
             foreach (var (sx, sz) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) Tower(ring.Root, new Vector3(sx * r, -lift, sz * r), 11, 2, stoneH + 1, ring.Stone, ring.Plaster, ring.Tile);
             // 櫓門：下は石垣と門、上は櫓。門の前に、堀を渡る橋。
             {
-                var at = GateAt(r); var gate = new Node3D { Position = at + new Vector3(0, -lift, 0), Rotation = new Vector3(0, gateOnX ? Mathf.Pi / 2 : 0, 0) }; ring.Root.AddChild(gate);
+                var at = GateAt(r); ring.Gate = at; ring.WallTop = stoneH + 4.2f; ring.GateHeight = stoneH + 13; var gate = new Node3D { Position = at + new Vector3(0, -lift, 0), Rotation = new Vector3(0, gateOnX ? Mathf.Pi / 2 : 0, 0) }; ring.Root.AddChild(gate);
                 Box(gate, new Vector3(30, stoneH + 3, 11), new Vector3(0, (stoneH + 3) / 2, 0), ring.Stone);
                 Box(gate, new Vector3(9, stoneH + 1, 11.6f), new Vector3(0, (stoneH + 1) / 2, 0), dark); // 門の口
                 Box(gate, new Vector3(26, 5, 9), new Vector3(0, stoneH + 3 + 2.5f, 0), ring.Plaster);
-                GableRoof(gate, 30, 11, 4.5f, new Vector3(0, stoneH + 8, 0), ring.GateTile);
+                GableRoof(gate, 30, 11, 4.5f, new Vector3(0, stoneH + 8, 0), ring.Tile);
                 Box(this, gateOnX ? new Vector3(moat + 8, 1, 10) : new Vector3(10, 1, moat + 8), c + at + gateAxis * (moat / 2 + 2) + new Vector3(0, lift - 0.1f, 0), bridge);
             }
             if (i < layers - 1)
             {
                 // 層の中：塀の内側に沿って建物を並べる。三の丸＝侍屋敷と蔵、二の丸＝御殿と蔵。
                 float inner = ProtoWorld.LayerRadius(layers, i + 1) / 100f + 9 + 6, outer = r - 8, band = outer - inner, mid = (inner + outer) / 2;
-                bool samurai = layers - i >= 3; int k = 0;
+                int depth = layers - i; bool samurai = depth >= 3; int k = 0; // depth：内から数えた層（1＝本丸）
                 foreach (var (ax, az) in new[] { (0f, -1f), (0f, 1f), (-1f, 0f), (1f, 0f) })
                 {
                     var axis = new Vector3(ax, 0, az); var along = new Vector3(Math.Abs(az), 0, Math.Abs(ax));
-                    float step = samurai ? 21 : 46;
+                    float step = depth >= 5 ? 30 : depth == 4 ? 17 : samurai ? 21 : 46; // 総構はまばら、外曲輪は長屋が詰まって並ぶ
                     for (float t = -mid + 4; t <= mid - 4; t += step, k++)
                     {
                         var at = axis * mid + along * (t + step / 2); if (Math.Abs(at.Dot(along)) > mid - 6 || OnRoad(at)) continue;
                         bool houseAlongX = az != 0;
-                        if (samurai)
+                        if (depth >= 5)
+                        {
+                            // 総構：町屋と畑。
+                            if (k % 3 == 1) Box(ring.Root, new Vector3(houseAlongX ? 18 : 12, 0.3f, houseAlongX ? 12 : 18), at + new Vector3(0, 0.15f, 0), ring.Leaf);
+                            else Hall(ring.Root, at, houseAlongX ? 11 : 8, 3.6f, houseAlongX ? 8 : 11, ring.Wood, ring.Wood);
+                        }
+                        else if (depth == 4)
+                        {
+                            // 外曲輪：足軽の長屋。
+                            Hall(ring.Root, at, houseAlongX ? 13 : 7, 3.4f, houseAlongX ? 7 : 13, ring.Wood, ring.Tile);
+                            if (k % 5 == 2) Pine(ring.Root, at + along * 8.5f + axis * (band * 0.3f), ring.Wood, ring.Leaf);
+                        }
+                        else if (samurai)
                         {
                             if (k % 5 == 3) Hall(ring.Root, at, houseAlongX ? 8 : 9, 6.5f, houseAlongX ? 9 : 8, ring.Plaster, ring.Tile);                       // 蔵
                             else Hall(ring.Root, at, houseAlongX ? 15 : Math.Min(band * 0.55f, 10), 4.2f, houseAlongX ? Math.Min(band * 0.55f, 10) : 15, ring.Wood, ring.Tile); // 侍屋敷
@@ -152,6 +171,48 @@ public partial class ProtoGame
         AddChild(castleLabel); AddChild(castleBar);
     }
 
+    // 今守っている層の櫓門を、明るい枠の点滅で示す（門の色は変えない）。
+    void DrawGateGlow(ProtoSiege? siege, Vector3 c)
+    {
+        if (gateGlow == null)
+        {
+            gateGlowMat = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, Transparency = BaseMaterial3D.TransparencyEnum.Alpha, AlbedoColor = new Color(1, 0.95f, 0.6f, 0.3f), CullMode = BaseMaterial3D.CullModeEnum.Disabled };
+            gateGlow = new MeshInstance3D { Mesh = new BoxMesh { Size = Vector3.One }, MaterialOverride = gateGlowMat, Visible = false }; AddChild(gateGlow);
+        }
+        bool on = siege != null && siege.Layer < castleRings.Count && World.War.Result == "";
+        gateGlow.Visible = on; if (!on) return;
+        var ring = castleRings[siege!.Layer]; float pulse = 0.5f + 0.5f * MathF.Sin(Time.GetTicksMsec() / 380f), grow = 1 + 0.06f * pulse;
+        gateGlowMat!.AlbedoColor = new Color(1, 0.95f, 0.6f, 0.14f + 0.26f * pulse);
+        gateGlow.Position = c + ring.Gate + new Vector3(0, ring.GateHeight / 2 + ring.Root.Position.Y - c.Y, 0);
+        gateGlow.Scale = (castleGateOnX ? new Vector3(15, ring.GateHeight + 4, 36) : new Vector3(36, ring.GateHeight + 4, 15)) * grow;
+    }
+    // 城内の武将と兵を、今守っている層の城門の両脇の塀の上に立たせる（合戦の姿のちびコマ）。
+    void DrawWallGuards(ProtoSiege? siege, Vector3 c)
+    {
+        var garrison = World.Garrison.OrderByDescending(u => u.Id == World.HeadOf("iwakiri")).ThenBy(u => u.Id).ToArray();
+        int layer = Math.Min(siege?.Layer ?? 0, castleRings.Count - 1);
+        bool show = garrison.Length > 0 && World.War.Result == "" && World.War.Phase is "行軍" or "合戦" && c.DistanceTo(ToScene(World.Player.X, World.Player.Y)) <= 1000;
+        var ring = castleRings[layer]; float px = Math.Max(0.12f, distance / 380f); string anim = World.CastleFighting ? "attack" : "idle"; double t = Time.GetTicksMsec() / 1000.0;
+        float y = c.Y + ring.WallTop; // 塀の瓦の上
+        Vector3 Spot(int n) { var at = c + ring.Gate + castleGateSide * ((n % 2 == 0 ? 1 : -1) * (24 + 9 * (n / 2))); at.Y = y; return at; }
+        foreach (var (id, d) in wallOfficers) d.Visible = false;
+        int slot = 0;
+        if (show) foreach (var p in garrison)
+        {
+            if (!wallOfficers.TryGetValue(p.Id, out var d)) { d = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(d); wallOfficers[p.Id] = d; }
+            if (!d.Apply(SpriteKey(World, p))) continue;
+            d.Visible = true; d.PixelSize = px * 1.2f; d.Position = Spot(slot++); d.Freeze(anim, t + slot * 0.4); d.Face(castleGateAxis, Camera);
+        }
+        int want = show ? Math.Clamp(garrison.Sum(u => u.Soldiers) / 12, 2, 12) : 0; var mix = show ? TroopMix(garrison[0]) : [];
+        while (wallSoldiers.Count < want) { var d = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(d); wallSoldiers.Add(d); }
+        for (int i = 0; i < wallSoldiers.Count; i++)
+        {
+            var d = wallSoldiers[i]; d.Visible = i < want; if (i >= want) continue;
+            d.Apply($"soldier/ashigaru/{mix[i % mix.Length]}/war/{ColorOf("iwakiri")}");
+            d.PixelSize = px * FollowerSize; d.Position = Spot(slot + i); d.Freeze(anim, t + i * 0.21); d.Face(castleGateAxis, Camera);
+        }
+    }
+
     void UpdateCastleView()
     {
         if (castleRings.Count == 0) BuildCastleRings();
@@ -163,10 +224,10 @@ public partial class ProtoGame
             ring.Root.Scale = new Vector3(1, down ? 0.3f : 1, 1); // 焼け落ちる
             ring.Stone.AlbedoColor = down ? Burnt.Lightened(0.12f) : StoneColor; ring.Plaster.AlbedoColor = down ? Burnt : PlasterColor; ring.Tile.AlbedoColor = down ? Burnt : TileColor;
             ring.Wood.AlbedoColor = down ? Burnt : WoodColor; ring.Leaf.AlbedoColor = down ? Burnt : LeafColor;
-            ring.GateTile.AlbedoColor = down ? Burnt : now ? new Color(1, 0.8f, 0.3f) : TileColor;
             ring.FloorMat.AlbedoColor = down ? EarthColor.Darkened(0.4f) : EarthColor;
             ring.Name.Visible = near; ring.Name.Modulate = down ? new Color(0.6f, 0.6f, 0.6f) : now ? new Color(1, 0.85f, 0.4f) : new Color(1, 0.95f, 0.8f);
         }
+        DrawGateGlow(siege, c); DrawWallGuards(siege, c);
         // 城の欄：攻城の間、本人が城の近く（1km）にいるときだけ。
         bool show = siege != null && siege.Layer < siege.Layers && World.War.Result == "" && c.DistanceTo(ToScene(World.Player.X, World.Player.Y)) <= 1000;
         castleLabel!.Visible = castleBar!.Visible = show; if (!show) return;
