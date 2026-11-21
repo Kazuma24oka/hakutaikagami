@@ -561,6 +561,8 @@ public partial class ProtoGame : Node3D
     }
 
     internal void SetCamera(float? dist, float? yawDeg, float? pitchDeg) { if (dist != null) distance = dist.Value; if (yawDeg != null) yaw = yawDeg.Value; if (pitchDeg != null) pitch = pitchDeg.Value; PlaceCamera(); }
+    // 確かめ用：地図の上の一点（m）を画面の真ん中に据える。
+    internal void LookAt(float xM, float zM) { var p = World.Player; pan = new Vector3(xM, HeightAt(xM, zM), zM) - ToScene(p.X, p.Y); PlaceCamera(); }
     internal string CameraText => $"距離{distance:0}m 向き{yaw:0} 傾き{pitch:0}";
 
     void PlaceCamera()

@@ -4,75 +4,148 @@ using System.Collections.Generic;
 using System.Linq;
 using HakutaiKagami.Core.Proto;
 
-// 試作版の城の層の見え方（2026-11-20 ユーザーの図、2026-11-21 印「色に意味はないので色合いは戻す。城の構造に見えるように建造物を」）。
-// 決まりは Core/Proto/ProtoSiege.cs。
-// 城のまわりに、層の数だけ塀を四角く巡らせる（三層なら外から 三の丸・二の丸・本丸）。内の層ほど塀が高く、地面も一段高い（色はどの層も同じ土の色）。
-// 塀の四隅に隅櫓、攻め手の陣の側に櫓門、層の中に屋敷と蔵。攻城の間：今守っている層の櫓門の屋根は金色。失った層は、塀が崩れ、建物が焼け落ちて黒くなる。
-// 城の名前の下に、今の層・その耐久・城の兵の数（見えているとき）と、耐久の棒を出す。
+// 試作版の城の見え方（2026-11-20 ユーザーの図、2026-11-21 印「色は戻す。城の構造に見えるように建造物を」「作りこみがあまい。三の丸とかにみえない」）。
+// 決まりは Core/Proto/ProtoSiege.cs。輪郭式の城として、層ごとに次を置く（三層なら外から 三の丸・二の丸・本丸）。
+// ・堀（水）と、城門の前の橋。　・石垣の上に白壁と瓦の塀（内の層ほど石垣が高い）。　・四隅に二重の隅櫓。　・攻め手の陣の側に櫓門（下は門、上は櫓）。
+// ・三の丸：侍屋敷の並びと蔵。　・二の丸：御殿（大きな屋根の建物）と蔵。　・本丸：隅に三重の天守（真ん中は、もとからある城の館）。　・松。
+// ・層の名前の札（三の丸・二の丸・本丸）を、その層の上に出す。
+// 攻城の間：今守っている層の櫓門は屋根が金色。失った層は、塀も建物も焼け落ちて低く黒くなる。
+// 城の名前の下に、今の層・その耐久・城の兵・士気と、耐久の棒を出す。
 public partial class ProtoGame
 {
     const string CastleSite = "iwakiri-castle";
     sealed class Ring
     {
-        public List<MeshInstance3D> Walls = new(); public List<(Node3D Node, float Height)> Buildings = new(); public MeshInstance3D Floor = null!;
-        public StandardMaterial3D Wall = null!, Plaster = null!, Roof = null!, GateRoof = null!, FloorMat = null!; public float Height;
+        public Node3D Root = null!; public MeshInstance3D Floor = null!; public Label3D Name = null!;
+        public StandardMaterial3D Stone = null!, Plaster = null!, Tile = null!, GateTile = null!, Wood = null!, Leaf = null!, FloorMat = null!;
     }
     readonly List<Ring> castleRings = new(); Label3D? castleLabel; Sprite3D? castleBar; string castleKey = "";
-    static readonly Color WallColor = new(0.78f, 0.74f, 0.66f), PlasterColor = new(0.93f, 0.91f, 0.86f), RoofColor = new(0.27f, 0.28f, 0.33f), EarthColor = new(0.69f, 0.63f, 0.5f), Burnt = new(0.2f, 0.18f, 0.17f);
+    static readonly Color StoneColor = new(0.56f, 0.55f, 0.52f), PlasterColor = new(0.94f, 0.92f, 0.87f), TileColor = new(0.24f, 0.25f, 0.3f), WoodColor = new(0.42f, 0.3f, 0.2f),
+        LeafColor = new(0.2f, 0.38f, 0.22f), EarthColor = new(0.69f, 0.63f, 0.5f), WaterColor = new(0.27f, 0.43f, 0.6f), Burnt = new(0.2f, 0.18f, 0.17f);
 
-    // 建物一つ：白壁の箱に、四方へ流れる屋根。足元が原点。
-    static Node3D House(float w, float h, float d, StandardMaterial3D plaster, StandardMaterial3D roof)
+    static MeshInstance3D Box(Node3D parent, Vector3 size, Vector3 at, Material mat)
     {
-        var n = new Node3D();
-        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(w, h, d) }, MaterialOverride = plaster, Position = new Vector3(0, h / 2, 0) });
-        float rh = Math.Max(3, Math.Min(w, d) * 0.45f);
-        n.AddChild(new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 0.01f, BottomRadius = 0.78f, Height = 1, RadialSegments = 4, Rings = 1 }, MaterialOverride = roof, Position = new Vector3(0, h + rh / 2, 0), Rotation = new Vector3(0, Mathf.Pi / 4, 0), Scale = new Vector3(w * 1.05f, rh, d * 1.05f) });
-        return n;
+        var m = new MeshInstance3D { Mesh = new BoxMesh { Size = size }, MaterialOverride = mat, Position = at }; parent.AddChild(m); return m;
+    }
+    // 四方へ流れる屋根（櫓・天守）。at は屋根の下端の真ん中。
+    static void HipRoof(Node3D parent, float w, float d, float h, Vector3 at, Material mat) =>
+        parent.AddChild(new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 0.01f, BottomRadius = 0.74f, Height = 1, RadialSegments = 4, Rings = 1 }, MaterialOverride = mat, Position = at + new Vector3(0, h / 2, 0), Rotation = new Vector3(0, Mathf.Pi / 4, 0), Scale = new Vector3(w, h, d) });
+    // 切妻の屋根（屋敷・御殿・蔵）。棟は長い辺に沿う。
+    static void GableRoof(Node3D parent, float w, float d, float h, Vector3 at, Material mat)
+    {
+        bool alongX = w >= d;
+        parent.AddChild(new MeshInstance3D { Mesh = new PrismMesh { Size = alongX ? new Vector3(d * 1.15f, h, w * 1.08f) : new Vector3(w * 1.15f, h, d * 1.08f) }, MaterialOverride = mat, Position = at + new Vector3(0, h / 2, 0), Rotation = new Vector3(0, alongX ? Mathf.Pi / 2 : 0, 0) });
+    }
+    // 建物：壁の箱と切妻の屋根。
+    static void Hall(Node3D parent, Vector3 at, float w, float h, float d, Material wall, Material roof)
+    {
+        Box(parent, new Vector3(w, h, d), at + new Vector3(0, h / 2, 0), wall); GableRoof(parent, w, d, Math.Max(2.5f, Math.Min(w, d) * 0.45f), at + new Vector3(0, h, 0), roof);
+    }
+    // 重ねの櫓（隅櫓は二重、天守は三重）：石垣の台の上に、上ほど小さい階を重ねる。
+    static void Tower(Node3D parent, Vector3 at, float w, int tiers, float baseH, Material stone, Material wall, Material roof)
+    {
+        Box(parent, new Vector3(w + 3, baseH, w + 3), at + new Vector3(0, baseH / 2, 0), stone);
+        float y = baseH, size = w;
+        for (int t = 0; t < tiers; t++)
+        {
+            float h = t == 0 ? 6 : 4.5f;
+            Box(parent, new Vector3(size, h, size), at + new Vector3(0, y + h / 2, 0), wall); y += h;
+            bool top = t == tiers - 1; float rh = top ? size * 0.45f : 1.6f;
+            if (top) HipRoof(parent, size * 1.35f, size * 1.35f, rh, at + new Vector3(0, y, 0), roof);
+            else { Box(parent, new Vector3(size * 1.3f, 1.2f, size * 1.3f), at + new Vector3(0, y + 0.6f, 0), roof); y += 1.2f; }
+            size *= 0.74f;
+        }
+    }
+    static void Pine(Node3D parent, Vector3 at, Material wood, Material leaf)
+    {
+        Box(parent, new Vector3(1.2f, 4, 1.2f), at + new Vector3(0, 2, 0), wood);
+        parent.AddChild(new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 0.01f, BottomRadius = 4.2f, Height = 8, RadialSegments = 6, Rings = 1 }, MaterialOverride = leaf, Position = at + new Vector3(0, 7, 0) });
     }
 
     void BuildCastleRings()
     {
         var site = World.Map.Site(CastleSite); int layers = ProtoWorld.LayersOf(CastleSite); var c = ToScene(site.X * 100L, site.Y * 100L);
+        var water = new StandardMaterial3D { AlbedoColor = WaterColor }; var bridge = new StandardMaterial3D { AlbedoColor = WoodColor }; var dark = new StandardMaterial3D { AlbedoColor = new Color(0.1f, 0.09f, 0.08f) };
+        // 城門の向き（攻め手の陣の側）。塀は東西南北に沿っているので、いちばん近い辺に門を置く。
+        var g0 = World.GatePoint(0); var gdir = ToScene(g0.X, g0.Y) - c; gdir.Y = 0; gdir = gdir.LengthSquared() > 0.01f ? gdir.Normalized() : Vector3.Back;
+        bool gateOnX = Math.Abs(gdir.X) > Math.Abs(gdir.Z); // 門が東西の辺にある
+        Vector3 gateAxis = gateOnX ? new Vector3(Math.Sign(gdir.X), 0, 0) : new Vector3(0, 0, Math.Sign(gdir.Z));
+        float gateSlide = Math.Clamp(gateOnX ? gdir.Z / Math.Abs(gdir.X) : gdir.X / Math.Abs(gdir.Z), -0.5f, 0.5f); // 辺の上でのずれ（−0.5〜0.5）
+        Vector3 side = gateOnX ? new Vector3(0, 0, 1) : new Vector3(1, 0, 0);
+        Vector3 GateAt(float r) => gateAxis * r + side * (gateSlide * r);
+        // 門から門へ続く道の上か（建物や木を置かない）。
+        bool OnRoad(Vector3 p) { float along = p.Dot(gateAxis), off = Math.Abs(p.Dot(side) - gateSlide * Math.Max(0, along)); return along > 0 && off < 15; }
+
         for (int i = 0; i < layers; i++)
         {
-            float r = ProtoWorld.LayerRadius(layers, i) / 100f, h = 9 + 4 * i, thick = 7, lift = 0.6f * (i + 1);
+            float r = ProtoWorld.LayerRadius(layers, i) / 100f, lift = 0.6f * (i + 1), stoneH = 4 + 2.5f * i, moat = i == 0 ? 18 : 9;
             var ring = new Ring
             {
-                Height = h, Wall = new StandardMaterial3D { AlbedoColor = WallColor }, Plaster = new StandardMaterial3D { AlbedoColor = PlasterColor },
-                Roof = new StandardMaterial3D { AlbedoColor = RoofColor }, GateRoof = new StandardMaterial3D { AlbedoColor = RoofColor }, FloorMat = new StandardMaterial3D { AlbedoColor = EarthColor },
+                Stone = new StandardMaterial3D { AlbedoColor = StoneColor }, Plaster = new StandardMaterial3D { AlbedoColor = PlasterColor }, Tile = new StandardMaterial3D { AlbedoColor = TileColor },
+                GateTile = new StandardMaterial3D { AlbedoColor = TileColor }, Wood = new StandardMaterial3D { AlbedoColor = WoodColor }, Leaf = new StandardMaterial3D { AlbedoColor = LeafColor }, FloorMat = new StandardMaterial3D { AlbedoColor = EarthColor },
             };
-            // 層の地面：内の層ほど一段高い。色はどの層も同じ。
-            ring.Floor = new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(2 * r, 1, 2 * r) }, MaterialOverride = ring.FloorMat, Position = c + new Vector3(0, lift / 2, 0), Scale = new Vector3(1, lift, 1) };
-            AddChild(ring.Floor);
-            // 四辺の塀。
-            foreach (var (dx, dz, sx, sz) in new[] { (0f, -r, 2 * r + thick, thick), (0f, r, 2 * r + thick, thick), (-r, 0f, thick, 2 * r + thick), (r, 0f, thick, 2 * r + thick) })
+            // 堀：塀の外をぐるりと水。その内に層の地面（内の層ほど一段高い。色はどの層も同じ）。
+            Box(this, new Vector3(2 * (r + moat), 0.5f, 2 * (r + moat)), c + new Vector3(0, 0.25f + 0.02f * i + lift - 0.6f, 0), water);
+            ring.Floor = Box(this, new Vector3(2 * r, lift, 2 * r), c + new Vector3(0, lift / 2 + 0.05f, 0), ring.FloorMat);
+            ring.Root = new Node3D { Position = c + new Vector3(0, lift, 0) }; AddChild(ring.Root);
+            // 塀：石垣・白壁・瓦。
+            foreach (var (dx, dz, alongX) in new[] { (0f, -r, true), (0f, r, true), (-r, 0f, false), (r, 0f, false) })
             {
-                var m = new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(sx, 1, sz) }, MaterialOverride = ring.Wall, Position = c + new Vector3(dx, 0, dz) };
-                AddChild(m); ring.Walls.Add(m);
+                var at = new Vector3(dx, 0, dz); float len = 2 * r;
+                Vector3 S(float thick, float h) => alongX ? new Vector3(len + thick, h, thick) : new Vector3(thick, h, len + thick);
+                Box(ring.Root, S(9, stoneH), at + new Vector3(0, stoneH / 2 - lift, 0), ring.Stone);
+                Box(ring.Root, S(3.5f, 3.2f), at + new Vector3(0, stoneH + 1.6f - lift, 0), ring.Plaster);
+                Box(ring.Root, S(5.5f, 1), at + new Vector3(0, stoneH + 3.7f - lift, 0), ring.Tile);
             }
-            void Put(Node3D n, Vector3 at, float height, float yaw = 0) { n.Position = new Vector3(at.X, c.Y + lift, at.Z); n.Rotation = new Vector3(0, yaw, 0); AddChild(n); ring.Buildings.Add((n, height)); }
-            // 四隅の隅櫓。
-            foreach (var (sx, sz) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) Put(House(13, h + 7, 13, ring.Plaster, ring.Roof), c + new Vector3(sx * r, 0, sz * r), h + 7);
-            // 櫓門：攻め手の陣の側。
-            var g = World.GatePoint(i); var gp = ToScene(g.X, g.Y); var dir = gp - c; dir.Y = 0; dir = dir.LengthSquared() > 0.01f ? dir.Normalized() : Vector3.Back;
-            // 城門はいちばん近い辺の上に置く（塀は東西南北に沿っている）。
-            var onWall = Math.Abs(dir.X) > Math.Abs(dir.Z) ? new Vector3(Math.Sign(dir.X) * r, 0, Math.Clamp(dir.Z / Math.Abs(dir.X), -0.7f, 0.7f) * r) : new Vector3(Math.Clamp(dir.X / Math.Abs(dir.Z), -0.7f, 0.7f) * r, 0, Math.Sign(dir.Z) * r);
-            bool alongX = Math.Abs(dir.X) <= Math.Abs(dir.Z);
-            Put(House(alongX ? 26 : 12, h + 4, alongX ? 12 : 26, ring.Plaster, ring.GateRoof), c + onWall, h + 4);
-            // 層の中の屋敷と蔵（本丸の中は、もとからある城の建物）。塀の内側に沿って並べる。
+            // 四隅に二重の隅櫓。
+            foreach (var (sx, sz) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) Tower(ring.Root, new Vector3(sx * r, -lift, sz * r), 11, 2, stoneH + 1, ring.Stone, ring.Plaster, ring.Tile);
+            // 櫓門：下は石垣と門、上は櫓。門の前に、堀を渡る橋。
+            {
+                var at = GateAt(r); var gate = new Node3D { Position = at + new Vector3(0, -lift, 0), Rotation = new Vector3(0, gateOnX ? Mathf.Pi / 2 : 0, 0) }; ring.Root.AddChild(gate);
+                Box(gate, new Vector3(30, stoneH + 3, 11), new Vector3(0, (stoneH + 3) / 2, 0), ring.Stone);
+                Box(gate, new Vector3(9, stoneH + 1, 11.6f), new Vector3(0, (stoneH + 1) / 2, 0), dark); // 門の口
+                Box(gate, new Vector3(26, 5, 9), new Vector3(0, stoneH + 3 + 2.5f, 0), ring.Plaster);
+                GableRoof(gate, 30, 11, 4.5f, new Vector3(0, stoneH + 8, 0), ring.GateTile);
+                Box(this, gateOnX ? new Vector3(moat + 8, 1, 10) : new Vector3(10, 1, moat + 8), c + at + gateAxis * (moat / 2 + 2) + new Vector3(0, lift - 0.1f, 0), bridge);
+            }
             if (i < layers - 1)
             {
-                float inner = ProtoWorld.LayerRadius(layers, i + 1) / 100f, mid = (r + inner) / 2, band = r - inner;
-                int k = 0;
-                foreach (var (ax, az) in new[] { (-0.55f, -1f), (0.45f, -1f), (-1f, -0.4f), (-1f, 0.5f), (1f, -0.5f), (1f, 0.35f), (-0.35f, 1f), (0.6f, 1f) })
+                // 層の中：塀の内側に沿って建物を並べる。三の丸＝侍屋敷と蔵、二の丸＝御殿と蔵。
+                float inner = ProtoWorld.LayerRadius(layers, i + 1) / 100f + 9 + 6, outer = r - 8, band = outer - inner, mid = (inner + outer) / 2;
+                bool samurai = layers - i >= 3; int k = 0;
+                foreach (var (ax, az) in new[] { (0f, -1f), (0f, 1f), (-1f, 0f), (1f, 0f) })
                 {
-                    var at = c + new Vector3(ax * mid, 0, az * mid);
-                    if (new Vector2(at.X - (c + onWall).X, at.Z - (c + onWall).Z).Length() < 30) continue; // 城門の前は空ける
-                    bool wide = Math.Abs(az) >= 0.99f; float bw = Math.Min(band * 0.5f, k % 3 == 0 ? 20 : 14), bd = Math.Min(band * 0.4f, 11);
-                    Put(House(wide ? bw : bd, k % 3 == 0 ? 6 : 8, wide ? bd : bw, ring.Plaster, ring.Roof), at, 8); k++;
+                    var axis = new Vector3(ax, 0, az); var along = new Vector3(Math.Abs(az), 0, Math.Abs(ax));
+                    float step = samurai ? 21 : 46;
+                    for (float t = -mid + 4; t <= mid - 4; t += step, k++)
+                    {
+                        var at = axis * mid + along * (t + step / 2); if (Math.Abs(at.Dot(along)) > mid - 6 || OnRoad(at)) continue;
+                        bool houseAlongX = az != 0;
+                        if (samurai)
+                        {
+                            if (k % 5 == 3) Hall(ring.Root, at, houseAlongX ? 8 : 9, 6.5f, houseAlongX ? 9 : 8, ring.Plaster, ring.Tile);                       // 蔵
+                            else Hall(ring.Root, at, houseAlongX ? 15 : Math.Min(band * 0.55f, 10), 4.2f, houseAlongX ? Math.Min(band * 0.55f, 10) : 15, ring.Wood, ring.Tile); // 侍屋敷
+                            if (k % 4 == 1) Pine(ring.Root, at + along * 10.5f + axis * (band * 0.3f), ring.Wood, ring.Leaf);
+                        }
+                        else
+                        {
+                            if (k % 3 == 2) Hall(ring.Root, at, houseAlongX ? 9 : 10, 7, houseAlongX ? 10 : 9, ring.Plaster, ring.Tile);                             // 蔵
+                            else Hall(ring.Root, at, houseAlongX ? 34 : Math.Min(band * 0.6f, 14), 6, houseAlongX ? Math.Min(band * 0.6f, 14) : 34, ring.Plaster, ring.Tile); // 御殿
+                            if (k % 2 == 0) Pine(ring.Root, at + along * 22 + axis * (band * 0.25f), ring.Wood, ring.Leaf);
+                        }
+                    }
                 }
             }
-            castleRings.Add(ring);
+            else
+            {
+                // 本丸：門と反対の隅に三重の天守。
+                var corner = -gateAxis * (r - 17) + side * (gateSlide <= 0 ? 1 : -1) * (r - 17);
+                Tower(ring.Root, corner + new Vector3(0, -lift, 0), 15, 3, stoneH + 4, ring.Stone, ring.Plaster, ring.Tile);
+            }
+            // 層の名前の札。
+            float nameR = i < layers - 1 ? (r + ProtoWorld.LayerRadius(layers, i + 1) / 100f) / 2 : r * 0.45f;
+            ring.Name = new Label3D { Text = ProtoWorld.LayerName(layers, i), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0007f, FontSize = 30, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), Modulate = new Color(1, 0.95f, 0.8f), NoDepthTest = true, RenderPriority = 23, Position = c + (-gateAxis * nameR * (i < layers - 1 ? 1 : 0)) + side * (i < layers - 1 ? 0 : -nameR * 0.6f) + new Vector3(0, 26, 0) };
+            AddChild(ring.Name); castleRings.Add(ring);
         }
         castleLabel = new Label3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0009f, FontSize = 30, OutlineSize = 8, OutlineModulate = new Color(0, 0, 0, 0.9f), NoDepthTest = true, RenderPriority = 24, Visible = false };
         castleBar = new Sprite3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0016f, NoDepthTest = true, Shaded = false, TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest, RenderPriority = 24, Visible = false };
@@ -83,15 +156,16 @@ public partial class ProtoGame
     {
         if (castleRings.Count == 0) BuildCastleRings();
         var siege = World.War.Siege; int lost = siege?.Layer ?? 0; var site = World.Map.Site(CastleSite); var c = ToScene(site.X * 100L, site.Y * 100L);
+        bool near = distance < 1100;
         for (int i = 0; i < castleRings.Count; i++)
         {
             var ring = castleRings[i]; bool down = siege != null && i < lost, now = siege != null && i == lost && World.War.Result == "";
-            float h = down ? 2.5f : ring.Height;
-            foreach (var m in ring.Walls) { m.Scale = new Vector3(1, h, 1); m.Position = m.Position with { Y = c.Y + h / 2 }; }
-            ring.Wall.AlbedoColor = down ? Burnt : WallColor; ring.Plaster.AlbedoColor = down ? Burnt : PlasterColor; ring.Roof.AlbedoColor = down ? Burnt : RoofColor;
-            ring.GateRoof.AlbedoColor = down ? Burnt : now ? new Color(1, 0.8f, 0.3f) : RoofColor;
-            ring.FloorMat.AlbedoColor = down ? EarthColor.Darkened(0.35f) : EarthColor;
-            foreach (var (n, _) in ring.Buildings) n.Scale = new Vector3(1, down ? 0.3f : 1, 1); // 焼け落ちる
+            ring.Root.Scale = new Vector3(1, down ? 0.3f : 1, 1); // 焼け落ちる
+            ring.Stone.AlbedoColor = down ? Burnt.Lightened(0.12f) : StoneColor; ring.Plaster.AlbedoColor = down ? Burnt : PlasterColor; ring.Tile.AlbedoColor = down ? Burnt : TileColor;
+            ring.Wood.AlbedoColor = down ? Burnt : WoodColor; ring.Leaf.AlbedoColor = down ? Burnt : LeafColor;
+            ring.GateTile.AlbedoColor = down ? Burnt : now ? new Color(1, 0.8f, 0.3f) : TileColor;
+            ring.FloorMat.AlbedoColor = down ? EarthColor.Darkened(0.4f) : EarthColor;
+            ring.Name.Visible = near; ring.Name.Modulate = down ? new Color(0.6f, 0.6f, 0.6f) : now ? new Color(1, 0.85f, 0.4f) : new Color(1, 0.95f, 0.8f);
         }
         // 城の欄：攻城の間、本人が城の近く（1km）にいるときだけ。
         bool show = siege != null && siege.Layer < siege.Layers && World.War.Result == "" && c.DistanceTo(ToScene(World.Player.X, World.Player.Y)) <= 1000;
@@ -101,12 +175,12 @@ public partial class ProtoGame
         if (key != castleKey)
         {
             castleKey = key;
-            castleLabel.Text = $"{ProtoWorld.LayerName(siege.Layers, siege.Layer)}　耐久{siege.Gate}　兵{men}　士気{World.CastleMorale}";
+            castleLabel.Text = $"耐久{siege.Gate}　兵{men}　士気{World.CastleMorale}";
             var img = Image.CreateEmpty(100, 8, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
             img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(siege.Gate, 0, 100) / 100), 6), new Color(0.85f, 0.85f, 0.9f));
             castleBar.Texture = ImageTexture.CreateFromImage(img);
         }
-        var top = c + new Vector3(0, 30 + distance * 0.05f, 0);
+        var top = c + new Vector3(0, 55 + distance * 0.05f, 0);
         castleLabel.Position = top; castleBar.Position = top - (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.03f);
     }
 }
