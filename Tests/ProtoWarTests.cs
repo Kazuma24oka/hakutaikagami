@@ -790,6 +790,31 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         double toCamp = Math.Sqrt(Math.Pow(me.X - camp.X, 2) + Math.Pow(me.Y - camp.Y, 2)) / 100, toGate = Math.Sqrt(Math.Pow(me.X - gate.X, 2) + Math.Pow(me.Y - gate.Y, 2)) / 100;
         cp.Log($"{ProtoWorld.Clock(w.Second)}　本人 {camp.Name}まで{toCamp:0}m 城門まで{toGate:0}m　{me.Doing}　結果「{w.War.Result}」");
         cp.Expect(w.War.Result != "" || toCamp <= 100 && me.Doing.Contains("控えて"), "兵を失った本人は、本陣で控えている");
+        // 本陣で控えていても、本陣の範囲の中の味方の隊は分かる。
+        var heir = w.Person("takano-masayuki"); var hq = w.CampAt("takano");
+        if (hq is { } h && heir.Soldiers > 0 && Math.Sqrt(Math.Pow(heir.X - h.X, 2) + Math.Pow(heir.Y - h.Y, 2)) <= ProtoWorld.CampRange)
+            cp.Expect(w.Sees(me, heir), "本陣で控えていても、本陣の範囲の中の味方の隊は見える");
+    }
+
+    // 合戦の間の味方の隊：本人の目か、本陣の範囲の中なら使番の知らせで分かる。範囲の外の遠くの味方は分からない。
+    [Fact]
+    public void AlliesAreKnownThroughTheCamp()
+    {
+        using var cp = new Checkpoints("試作版の味方が分かる", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[1], "正面から当たる", "後詰", "敵を崩す"); w.Do("order:follow");
+        for (int i = 0; i < 600 && w.CampAt("takano") == null; i++) w.Advance(60);
+        var me = w.Player; var kosaka = w.Person("kosaka-shigetada"); var camp = w.CampAt("takano")!.Value;
+        w.Do("order:free"); me.Path = []; me.PathIndex = 0; kosaka.Path = []; kosaka.PathIndex = 0;
+        (me.X, me.Y) = (camp.X + 30_00, camp.Y); (kosaka.X, kosaka.Y) = (camp.X - 800_00, camp.Y);
+        cp.Expect(w.Sees(me, kosaka), "本人も味方も本陣の範囲の中なら、800m離れていても味方は分かる");
+        (kosaka.X, kosaka.Y) = (camp.X - 1600_00, camp.Y);
+        cp.Expect(!w.Sees(me, kosaka), "本陣の範囲の外の遠くの味方は分からない");
+        (me.X, me.Y) = (camp.X - 1400_00, camp.Y);
+        cp.Expect(w.Sees(me, kosaka), "本人の目で見える所の味方は分かる");
     }
 
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。

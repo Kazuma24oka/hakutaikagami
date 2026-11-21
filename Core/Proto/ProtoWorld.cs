@@ -112,10 +112,19 @@ public sealed partial class ProtoWorld
         if (!other.Active) return false;
         if (viewer.Player && Hostile(viewer.House, other.House) && other.Soldiers > 0) return InSight(viewer, other) || FightingFriend(other); // 敵の隊は見える範囲だけ。味方とぶつかっている敵は見える
         var site = SiteOf(viewer); if (site != null && site == SiteOf(other)) return true;
+        if (viewer.Player && KnowsAlly(other)) return true; // 合戦の間の、同じ軍の味方の隊
         return Dist(viewer, other) <= SightCm;
     }
+    // 合戦の間、同じ軍の味方の隊が分かるか（2026-11-21 ユーザー「味方部隊が見えなくなっている」）：
+    // 本人の目（合戦の視野）で見えるか、本人も味方も本陣の範囲の中にいれば、本陣に集まる使番の知らせで分かる。
+    bool KnowsAlly(ProtoPerson f)
+    {
+        if (War.Phase is not ("行軍" or "合戦") && !Returning || f.Soldiers <= 0 || !InArmy(f) || !InArmy(Player)) return false;
+        if (Dist(Player, f) <= SightOf(Player)) return true;
+        return CampAt("takano") is { } hq && !CampLost("takano") && Dist(f, hq.X, hq.Y) <= CampRange && Dist(Player, hq.X, hq.Y) <= CampRange;
+    }
     // 味方の隊とぶつかっている敵の隊は、本人から遠くても見える（2026-11-21 ユーザー「味方部隊と接敵している敵部隊が見えないのも変」）。
-    // 味方の隊はいつも見えているので、その目の前の相手も分かる。城内の隊（城という一つの部隊）は別。
+    // 城内の隊（城という一つの部隊）は別。
     // 本人の目で味方が見えていればすぐ。本陣の範囲の中の戦いなら、使番が本陣を経て本人に知らせるまでかかる（本人の知識の原則）。
     internal bool FightingFriend(ProtoPerson enemy)
     {
@@ -124,7 +133,7 @@ public sealed partial class ProtoWorld
         {
             string? fid = c.A == enemy.Id ? c.B : c.B == enemy.Id ? c.A : null; if (fid == null) continue;
             var f = Person(fid); if (Hostile(Player.House, f.House)) continue;
-            if (f.Player || Dist(Player, f) <= SightOf(Player)) return true;
+            if (f.Player || Dist(Player, f) <= SightOf(Player) || Dist(Player, enemy) <= SightOf(Player)) return true;
             string side = Side(Player.House);
             if (CampAt(side) is { } hq && !CampLost(side) && Dist(f, hq.X, hq.Y) <= CampRange && Dist(Player, hq.X, hq.Y) <= CampRange
                 && Second >= c.Since + (Dist(f, hq.X, hq.Y) + Dist(Player, hq.X, hq.Y)) / RunnerSpeed) return true;

@@ -58,11 +58,14 @@ public sealed partial class ProtoWorld
     void StartPacking()
     {
         if (CampAt("takano") is not { } c || CampLost("takano") || flags.ContainsKey("camp-pack")) return;
-        War.CampMoveTo = null; flags["camp-pack"] = Second; var lead = Person(Heir).Active ? Person(Heir) : Person(Karou);
+        if (War.CampMoveTo is { } to) { if (Second < War.CampMoveUntil) return; War.Camp["takano"] = to; War.CampMoveTo = null; } // 移している最中なら、移し終えてから畳む（2026-11-21 ユーザー）
+        flags["camp-pack"] = Second; var lead = Person(Heir).Active ? Person(Heir) : Person(Karou);
         Happen("camp-pack", $"{lead.Name}勢は本陣を畳み始めた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
     }
     void UpdatePacking()
     {
+        // 決着のあと（毎分の動きが止まったあと）も、移し終えたら本陣を移す。
+        if (War.CampMoveTo is { } to && Second >= War.CampMoveUntil) { War.Camp["takano"] = to; War.CampMoveTo = null; }
         if (!CampPacking || Second < flags["camp-pack"] + PackTime) return;
         var c = CampAt("takano")!.Value; Set("camp-packed");
         Happen("camp-packed", "本陣を畳み終えた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);

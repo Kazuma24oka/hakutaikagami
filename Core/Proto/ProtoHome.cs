@@ -31,7 +31,8 @@ public sealed partial class ProtoWorld
         {
             var able = army.Where(u => Auto(u) && u.Soldiers > 0 && !War.Routed.Contains(u.Id)).ToArray();
             bool won = War.Result is "鎮めた" or "開城させた" or "退かせた" or "守り抜いた" or "引き分け", leads = won && able.Contains(heir);
-            var hq = CampAt("takano") is { } c0 && !CampLost("takano") ? c0 : ((long X, long Y)?)null;
+            UpdatePacking(); // 移している最中なら、移し終えるまで待つ（集まる先は移す先）
+            var hq = CampAt("takano") is { } c0 && !CampLost("takano") ? (CampMoveTarget ?? c0) : ((long X, long Y)?)null;
             if (!Flag("home-gather")) { Set("home-gather"); if (leads && hq == null) { heir.Path = []; heir.PathIndex = 0; heir.Doing = "兵をまとめている"; } }
             if (!Flag("home-march"))
             {
@@ -45,6 +46,7 @@ public sealed partial class ProtoWorld
                         return;
                     }
                     StartPacking(); UpdatePacking();
+                    if (CampMoving) { foreach (var u in all.Where(u => !u.Moving)) u.Doing = "本陣を移し終えるのを待っている"; return; }
                     if (!Flag("camp-packed")) { foreach (var u in all.Where(u => !u.Moving)) u.Doing = "本陣を畳んでいる"; return; }
                 }
                 else if (leads && !able.All(u => Dist(u, heir) <= 200_00) && Second < flags["home-gather"] + 30 * 60)
