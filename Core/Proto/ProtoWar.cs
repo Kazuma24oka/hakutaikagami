@@ -369,7 +369,7 @@ public sealed partial class ProtoWorld
             War.Target.Remove(Player.Id); var at = AssaultPoint(Player); MoveTo(at.X, at.Y, "城門"); Player.Doing = "岩切城の城門へ寄せている";
             return "岩切城の城門へ寄せる。";
         }
-        var e = Person(id); if (!InSight(Player, e) || Player.Soldiers <= 0 || Sheltered(e)) return "攻められない";
+        var e = Person(id); if (!SeesEnemy(e) || Player.Soldiers <= 0 || Sheltered(e)) return "攻められない";
         War.Target[Player.Id] = id;
         if (War.Phase == "行軍")
         {
@@ -406,7 +406,7 @@ public sealed partial class ProtoWorld
         if (old != null) Markers.Remove(old);
         Markers.Add(m);
     }
-    public bool SeesEnemy(ProtoPerson e) => !Hostile(Player.House, e.House) || InSight(Player, e);
+    public bool SeesEnemy(ProtoPerson e) => !Hostile(Player.House, e.House) || InSight(Player, e) || FightingFriend(e);
     // 接敵の手前（画面の「接敵で止める」）：本人の隊と、本人に見えている敵の隊が within まで近づいていて、まだぶつかっていない組（2026-11-20 ユーザー「自分の隊だけ」）。
     public IEnumerable<string> Closing(long within, bool clashing = false) => War.Phase is not ("行軍" or "合戦") ? [] :
         from a in Units where a.Player && InArmy(a) && !War.Routed.Contains(a.Id)

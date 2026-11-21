@@ -110,10 +110,13 @@ public sealed partial class ProtoWorld
     {
         if (viewer == other) return true;
         if (!other.Active) return false;
-        if (viewer.Player && Hostile(viewer.House, other.House) && other.Soldiers > 0) return InSight(viewer, other); // 敵の隊は見える範囲だけ
+        if (viewer.Player && Hostile(viewer.House, other.House) && other.Soldiers > 0) return InSight(viewer, other) || FightingFriend(other); // 敵の隊は見える範囲だけ。味方とぶつかっている敵は見える
         var site = SiteOf(viewer); if (site != null && site == SiteOf(other)) return true;
         return Dist(viewer, other) <= SightCm;
     }
+    // 味方の隊とぶつかっている敵の隊は、本人から遠くても見える（2026-11-21 ユーザー「味方部隊と接敵している敵部隊が見えないのも変」）。
+    // 味方の隊はいつも見えているので、その目の前の相手も分かる。城内の隊（城という一つの部隊）は別。
+    internal bool FightingFriend(ProtoPerson enemy) => !Sheltered(enemy) && War.Clashes.Any(c => c.A == enemy.Id && !Hostile(Player.House, Person(c.B).House) || c.B == enemy.Id && !Hostile(Player.House, Person(c.A).House));
     public IEnumerable<ProtoPerson> Visible => People.Where(p => Sees(Player, p));
     // 合戦の間は、敵の隊とは話せない。
     public IEnumerable<ProtoPerson> Nearby => People.Where(p => !p.Player && p.Active && Dist(Player, p) <= HandCm && !(War.Phase is "行軍" or "合戦" && Hostile(Player.House, p.House)));

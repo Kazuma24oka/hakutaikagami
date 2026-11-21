@@ -702,6 +702,23 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(!w.CampMoving && w.CampAt("takano") == to && w.Supplied(heir), "移し終えると、新しい所から兵糧が届く");
     }
 
+    // 味方の隊とぶつかっている敵の隊は、本人から遠くても見える。ぶつかっていなければ、見える範囲の外の敵は見えない。
+    [Fact]
+    public void EnemiesFightingFriendsAreSeenFromAfar()
+    {
+        using var cp = new Checkpoints("試作版の味方と戦う敵が見える", o);
+        var w = new ProtoWorld(Map); w.SetupTsuriPractice();
+        var me = w.Player; var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi");
+        (me.X, me.Y) = (iguchi.X + 1500_00, iguchi.Y + 1200_00); me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
+        (iguchi.X, iguchi.Y) = (kosaka.X + 600_00, kosaka.Y - 500_00); iguchi.Path = []; iguchi.PathIndex = 0; w.War.Target.Remove(iguchi.Id);
+        cp.Expect(!w.Sees(me, iguchi) && !w.Actions().Any(a => a.Id == "attack:" + iguchi.Id), "遠くの敵は、ぶつかっていなければ見えない");
+        (iguchi.X, iguchi.Y) = (kosaka.X + 60_00, kosaka.Y - 60_00);
+        for (int i = 0; i < 10 && w.ClashOf(kosaka.Id) == null; i++) { me.Path = []; me.PathIndex = 0; w.Advance(60); }
+        cp.Log($"小坂と井口：ぶつかり{w.ClashOf(kosaka.Id) != null}　本人から井口まで{Math.Sqrt(Math.Pow(me.X - iguchi.X, 2) + Math.Pow(me.Y - iguchi.Y, 2)) / 100:0}m　見える{w.Sees(me, iguchi)}");
+        cp.Expect(w.ClashOf(kosaka.Id) != null && w.Sees(me, iguchi), "味方とぶつかっている敵は、遠くても見える");
+        cp.Expect(w.Actions().Any(a => a.Id == "attack:" + iguchi.Id), "見えているので、攻めかかる相手に選べる");
+    }
+
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。
     [Fact]
     public void WritesTheTableOfBattles()

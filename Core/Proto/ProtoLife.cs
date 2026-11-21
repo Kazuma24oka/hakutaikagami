@@ -321,7 +321,7 @@ public sealed partial class ProtoWorld
         if (CanMoveCamp) yield return new("camp:pick", "本陣移動");
         if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
         {
-            foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && !Sheltered(e) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻撃：" + e.Name);
+            foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && !Sheltered(e) && SeesEnemy(e))) yield return new("attack:" + e.Id, "攻撃：" + e.Name);
             if (War.Siege != null && War.Result == "" && InArmy(Player) && Dist(Player, castle: true) <= 800_00) yield return new("attack:castle", "攻撃：岩切城");
             if (War.Target.ContainsKey(Player.Id)) yield return new("withdraw:me", "後退");
         }
