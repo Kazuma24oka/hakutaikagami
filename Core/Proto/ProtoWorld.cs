@@ -148,6 +148,14 @@ public sealed partial class ProtoWorld
         }
         return false;
     }
+    // 城（城という一つの部隊）が分かるか：本人の目で城が見える所にいるか、城と打ち合っている味方の様子が分かるか（その味方と同じ知らせで届く）。
+    public bool KnowsCastle()
+    {
+        if (War.Siege == null || War.Result != "") return false;
+        if (Dist(Player, castle: true) <= SightOf(Player) + CastleRadius) return true;
+        return War.Clashes.Any(c => Sheltered(Person(c.A)) && KnowsAlly(Person(c.B)) || Sheltered(Person(c.B)) && KnowsAlly(Person(c.A)))
+            || CastleFighting && People.Any(u => InArmy(u) && u.Soldiers > 0 && Dist(u, GatePoint.X, GatePoint.Y) <= 120_00 && KnowsAlly(u));
+    }
     internal void SetCampForTest(long x, long y) { War.Camp["takano"] = [x, y]; Set("camp-set"); }
     public IEnumerable<ProtoPerson> Visible => People.Where(p => Sees(Player, p));
     // 合戦の間は、敵の隊とは話せない。
@@ -233,6 +241,7 @@ public sealed partial class ProtoWorld
         if (p.House == "bandit") { Bandit(p); return; }
         // 陣を守る（日課で城へ戻らない）。崩れた隊も、本陣で立て直せるうちは日課に戻らない。
         if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(p.Id) && (!War.Routed.Contains(p.Id) || !War.Recovered.Contains(p.Id) && p.Soldiers >= 10)) return;
+        if (Returning && InArmy(p)) return; // 決着のあと、論功行賞が済むまでは軍の一員（本陣を畳んでいる間に日課へ戻って、ほかの所へ行かない）
         if (Courier(p)) return;
         var appointment = Appointments.FirstOrDefault(a => a.Person == p.Id && a.From <= Second && Second < a.Until);
         string want = p.Home; string doing = "詰めている";

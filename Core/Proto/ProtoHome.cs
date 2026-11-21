@@ -32,6 +32,15 @@ public sealed partial class ProtoWorld
             var able = army.Where(u => Auto(u) && u.Soldiers > 0 && !War.Routed.Contains(u.Id)).ToArray();
             bool won = War.Result is "鎮めた" or "開城させた" or "退かせた" or "守り抜いた" or "引き分け", leads = won && able.Contains(heir);
             UpdatePacking(); // 移している最中なら、移し終えるまで待つ（集まる先は移す先）
+            // 兵を失った者（委任の本人など）も軍の一員：集まる間は本陣（無ければ大将）へ、戻る間は総大将について歩く（先に城へ入って待たない。2026-11-21 ユーザーの印）。
+            foreach (var u in army.Where(u => Auto(u) && u.Soldiers == 0 && u.Id != host.Id))
+            {
+                if (u.Moving && Second % 120 != 0) continue;
+                if (Flag("home-march") && SiteOf(host) == castle.Id) { if (SiteOf(u) != castle.Id && !u.Moving) Walk(u, Spot(castle, 3), castle.Id, castle.Name + "へ引き上げている"); continue; } // 総大将が城に入れば一緒に入る
+                (long X, long Y) to = Flag("home-march") ? (host.X, host.Y) : (CampMoveTarget ?? CampAt("takano") ?? (host.X, host.Y));
+                if (Dist(u, to.X, to.Y) > 60_00) Walk(u, ProtoMove.Nearest(Map, to.X - 30_00, to.Y + 40_00), host.Name, Flag("home-march") ? $"{host.Name}勢について引き上げている" : $"{host.Name}勢に加わっている");
+                else if (!u.Moving) u.Doing = Flag("home-march") ? $"{host.Name}勢について引き上げている" : $"{host.Name}勢に加わっている";
+            }
             var hq = CampAt("takano") is { } c0 && !CampLost("takano") ? (CampMoveTarget ?? c0) : ((long X, long Y)?)null;
             if (!Flag("home-gather")) { Set("home-gather"); if (leads && hq == null) { heir.Path = []; heir.PathIndex = 0; heir.Doing = "兵をまとめている"; } }
             if (!Flag("home-march"))
@@ -55,11 +64,11 @@ public sealed partial class ProtoWorld
                     return;
                 }
                 Set("home-march");
-                foreach (var u in army.Where(u => Auto(u))) Walk(u, Spot(castle, 3), castle.Id, castle.Name + "へ引き上げている");
+                foreach (var u in army.Where(u => Auto(u) && u.Soldiers > 0)) Walk(u, Spot(castle, 3), castle.Id, castle.Name + "へ引き上げている"); // 崩れていた隊も、兵が残っていれば一緒に
                 if (leads) Happen("home-march", $"{heir.Name}勢は兵をまとめ、{castle.Name}へ引き上げた。", heir.X, heir.Y, able);
                 if (InArmy(Player) && !Auto(Player)) Note($"{host.Name}勢は{castle.Name}へ引き上げる。");
             }
-            foreach (var u in army.Where(u => Auto(u) && !u.Moving && SiteOf(u) != castle.Id)) Walk(u, Spot(castle, 3), castle.Id, castle.Name + "へ引き上げている");
+            foreach (var u in army.Where(u => Auto(u) && u.Soldiers > 0 && !u.Moving && SiteOf(u) != castle.Id)) Walk(u, Spot(castle, 3), castle.Id, castle.Name + "へ引き上げている");
             if (SiteOf(host) != castle.Id && Second < flags["home-gather"] + 8 * Hour) return;
             Set("awards-ready");
             Happen("awards", $"{castle.Name}で論功行賞が行われる。", cx, cy, [.. army.Where(u => SiteOf(u) == castle.Id)]);
@@ -68,7 +77,12 @@ public sealed partial class ProtoWorld
             t.State = TaskState.Open;
             if (SiteOf(Player) != castle.Id) Note($"{castle.Name}で論功行賞がある。");
         }
-        else if (Second >= flags["awards-ready"] + Day) TakeAwards(true);
+        else
+        {
+            // 論功行賞を待つ間、兵のない者も城の中へ入る。
+            foreach (var u in army.Where(u => Auto(u) && u.Soldiers == 0 && !u.Moving && SiteOf(u) != castle.Id)) Walk(u, Spot(castle, 3), castle.Id, castle.Name + "へ引き上げている");
+            if (Second >= flags["awards-ready"] + Day) TakeAwards(true);
+        }
     }
 
     public bool AwardsReady => Flag("awards-ready");

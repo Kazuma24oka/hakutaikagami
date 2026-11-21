@@ -2,8 +2,6 @@
 "method": "検査ごとに記録のある直近5回の中央値",
 "history": "D:/02_プロジェクト別/百代鏡/検証記録/検査の時間",
 "runs": [
-"2026-11-21_132431_全件",
-"2026-11-21_132921_全件",
 "2026-11-21_133002_全件",
 "2026-11-21_133042_全件",
 "2026-11-21_133814_全件",
@@ -21,9 +19,11 @@
 "2026-11-21_151845_全件",
 "2026-11-21_152319_全件",
 "2026-11-21_152938_全件",
-"2026-11-21_153950_全件"
+"2026-11-21_153950_全件",
+"2026-11-21_155231_全件",
+"2026-11-21_155505_全件"
 ],
-"wallSeconds": 29,
+"wallSeconds": 30,
 "count": 4777,
 "tests": {
 "HakutaiKagami.Tests.AbilityEffectsTests.ExtraObservationRequiresDeliveredOpenedReport": 1.9,
@@ -3148,8 +3148,8 @@
 "HakutaiKagami.Tests.PrivateStanddownTests.UnsupportedHoursDoNotChangeWorld(hours: 25)": 2.2,
 "HakutaiKagami.Tests.ProtoWarTests.AlliesAreKnownThroughTheCamp": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.EnemiesFightingFriendsAreSeenFromAfar": 0.3,
-"HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"勧告\")": 0.4,
-"HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"調略_断る\")": 0.6,
+"HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"勧告\")": 0.6,
+"HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"調略_断る\")": 0.7,
 "HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"調略_約す\")": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.FlanksCutOffAmbushAndPursuitWork": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.PersuadingTheCastellanPreventsTheRebellion": 0.2,
@@ -3201,7 +3201,7 @@
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerCanDriveOffTheBanditsAfterTheyAreReported": 0.3,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerCarriesTheLetterAndGetsAReply": 0.0,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerOnlySeesNearbyPeople": 0.0,
-"HakutaiKagami.Tests.ProtoWorldTests.TheWorldMovesWithoutThePlayer": 0.8,
+"HakutaiKagami.Tests.ProtoWorldTests.TheWorldMovesWithoutThePlayer": 1.0,
 "HakutaiKagami.Tests.PublicWorksTests.CompletedAgricultureAffectsTheActualAutumnHarvest": 96.7,
 "HakutaiKagami.Tests.PublicWorksTests.CompletedWorkshopChangesActualProductionWithoutInventingRawStock": 20.1,
 "HakutaiKagami.Tests.PublicWorksTests.ConstructionConsumesActualHouseRiceWoodAndMoneyAndHoldsLaborUntilCompletion": 4.2,

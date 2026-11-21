@@ -125,7 +125,7 @@ public sealed partial class ProtoWorld
         UpdatePacking();
         // 兵を失って戦えない本人は、委任なら本陣で控える。
         { var me = Player; if (InArmy(me) && Auto(me) && War.Result == "" && (me.Soldiers == 0 || War.Routed.Contains(me.Id) && (me.Soldiers < 10 || War.Recovered.Contains(me.Id))))
-          { var c = CampOf(me); var spot = ProtoMove.Nearest(Map, c.X - 30_00, c.Y + 45_00); /* 本陣の入口の脇（真ん中は本陣の札と重なる） */ if (!me.Moving && Dist(me, spot.X, spot.Y) > 20_00) Walk(me, spot, c.Name, $"{c.Name}へ下がっている"); else if (!me.Moving) me.Doing = $"{c.Name}で控えている"; } }
+          { var c = CampOf(me); if (CampMoveTarget is { } mt) c = (mt.X, mt.Y, c.Name); var spot = ProtoMove.Nearest(Map, c.X - 30_00, c.Y + 45_00); /* 本陣の入口の脇（真ん中は本陣の札と重なる） */ if (!me.Moving && Dist(me, spot.X, spot.Y) > 20_00) Walk(me, spot, c.Name, $"{c.Name}へ下がっている"); else if (!me.Moving) me.Doing = $"{c.Name}で控えている"; } }
 
         // 兵糧の届かない隊は、じわじわ士気と兵が減る（10分ごと）。城内の隊は、城の兵糧の決まり（Core/Proto/ProtoSiege.cs）。
         foreach (var u in takano.Concat(rebels).Where(u => u.Soldiers > 0 && !Sheltered(u)))

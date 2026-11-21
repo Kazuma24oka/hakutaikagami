@@ -794,6 +794,17 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var heir = w.Person("takano-masayuki"); var hq = w.CampAt("takano");
         if (hq is { } h && heir.Soldiers > 0 && Math.Sqrt(Math.Pow(heir.X - h.X, 2) + Math.Pow(heir.Y - h.Y, 2)) <= ProtoWorld.CampRange)
             cp.Expect(w.Sees(me, heir), "本陣で控えていても、本陣の範囲の中の味方の隊は見える");
+        // 決着のあと：兵のない本人も総大将について戻り、先に城へ入って待たない。
+        var host = w.Person("takano-masayuki"); long gap = 0; bool alone = false;
+        for (int i = 0; i < 6 * 60 && !w.AwardsReady; i++)
+        {
+            w.Advance(60);
+            if (w.War.Result != "" && w.SiteOf(me) == w.AwardsSite && w.SiteOf(host) != w.AwardsSite) alone = true;
+            if (w.Facts.Any(f => f.Id == "home-march")) gap = Math.Max(gap, (long)Math.Sqrt(Math.Pow(me.X - host.X, 2) + Math.Pow(me.Y - host.Y, 2)) / 100);
+        }
+        cp.Log($"戻る間の総大将との遠さ（いちばん離れた所）{gap}m　先に城へ入っていた{alone}");
+        cp.Log($"{ProtoWorld.Clock(w.Second)}　結果「{w.War.Result}」　" + string.Join(" / ", w.Facts.TakeLast(6).Select(f => ProtoWorld.Clock(f.At) + " " + f.Text)) + $"　本人 {w.SiteOf(me)} {me.Doing}　大将 {w.SiteOf(host)} {host.Doing} 兵{host.Soldiers}");
+        cp.Expect(w.AwardsReady && !alone && gap <= 400, "兵のない本人も総大将について戻り、一人で先に城へ入って待たない");
     }
 
     // 合戦の間の味方の隊：本人の目か、本陣の範囲の中なら使番の知らせで分かる。範囲の外の遠くの味方は分からない。

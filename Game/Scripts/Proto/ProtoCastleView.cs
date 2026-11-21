@@ -40,7 +40,7 @@ public partial class ProtoGame
         }
         DrawWallGuards(c, gate);
         // 城の欄：攻城の間、本人が城の近く（1km）にいるときだけ。
-        bool show = live && c.DistanceTo(ToScene(World.Player.X, World.Player.Y)) <= 1000;
+        bool show = live && World.KnowsCastle();
         castleLabel!.Visible = castleBar!.Visible = show; if (!show) return;
         int men = World.Garrison.Sum(u => u.Soldiers);
         string key = $"{siege!.Gate}|{men}|{World.CastleMorale}";
@@ -60,7 +60,7 @@ public partial class ProtoGame
     void DrawWallGuards(Vector3 c, Vector3 gate)
     {
         var garrison = World.Garrison.OrderByDescending(u => u.Id == World.HeadOf("iwakiri")).ThenBy(u => u.Id).ToArray();
-        bool show = garrison.Length > 0 && World.War.Result == "" && World.War.Phase is "行軍" or "合戦" && c.DistanceTo(ToScene(World.Player.X, World.Player.Y)) <= 1000;
+        bool show = garrison.Length > 0 && World.War.Phase is "行軍" or "合戦" && World.KnowsCastle(); // 本人の目か、城と戦う味方の知らせで分かるとき
         float px = Math.Max(0.12f, distance / 380f); string anim = World.CastleFighting ? "attack" : "idle"; double t = Time.GetTicksMsec() / 1000.0;
         // 柵の内の広場（城の真ん中から南へ60〜80m。主郭の段と門の建物の間）に、左右へ散らして置く。
         Vector3 Spot(int n) { var at = c + new Vector3((n % 2 == 0 ? 1 : -1) * (18 + 9 * (n / 2)), 0, 62 + 10 * (n % 3)); at.Y = HeightAt(at.X, at.Z) + 1; return at; }
