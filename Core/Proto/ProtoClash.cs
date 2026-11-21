@@ -139,7 +139,7 @@ public sealed partial class ProtoWorld
         }
         // 打たれていない隊の混乱は毎分5ずつ引く。
         foreach (var u in all.Where(u => Live(u) && !dealt.Keys.Any(k => k.Item2 == u.Id) && ChaosOf(u.Id) > 0)) War.Chaos[u.Id] = Math.Max(0, ChaosOf(u.Id) - 5);
-        GarrisonMorale(all); if (War.Result != "") return; // 城の兵は士気が切れても崩れず、一層捨てて内へ退く
+        GarrisonMorale(all); if (War.Result != "") return; // 城の兵は士気が切れても崩れない（城の士気が尽きると門を開く）
         foreach (var u in all.Where(u => Live(u) && (u.Morale < 20 && !BehindGate(u) || u.Soldiers == 0)).ToArray()) Rout(u); // 城の内の隊は士気では崩れない
         // NPC は戦法のゲージがたまれば自分で使う。本人は「自動」を入れているときだけ。
         foreach (var u in all.Where(u => (!u.Player || War.AutoTactic) && Live(u) && GaugeOf(u.Id) >= 100 && !Confused(u.Id))) UseTactic(u);

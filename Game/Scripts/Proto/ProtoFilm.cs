@@ -140,7 +140,7 @@ public partial class ProtoGame
 
     // 動画「釣り野伏」（2026-11-19 ユーザー「釣り野伏の動画」）。検査 Tests/ProtoWarTests.cs の TheFeignedRetreatDrawsTheEnemyIntoTheAmbush と同じ手順。
     // 本人は道の口で囮、小坂重忠は森の北の縁に伏せる（正之は城に残る）。井口とぶつかってから森の縁沿いに下がると、勇猛な井口が追ってきて、小坂が横から奇襲する。
-    // 動画「攻城」（2026-11-20 ユーザー「動画でくれますか」）：包囲 → 攻城の軍議 → 調略 → 力攻めで層を破る → 勧告 → 論功行賞。
+    // 動画「攻城」（2026-11-20 ユーザー「動画でくれますか」）：包囲 → 攻城の軍議 → 調略 → 力攻め → 勧告 → 論功行賞。
     // 筋は決めていない（井口が内応を約すか、城主が勧告を受けるかは、その場の成り行き）。字幕は成り行きに合わせて出す。
     async Task RunSiegeFilm()
     {
@@ -157,8 +157,8 @@ public partial class ProtoGame
         var heir = w.Person("takano-masayuki");
         async Task Pick(string key) { await Hold(1.2); if (SiegeButtons.TryGetValue(key, out var b) && !b.Disabled) b.EmitSignal(BaseButton.SignalName.Pressed); else Scene.Close(); await Talk(2.6); }
         await Cap("百代鏡　試作版：攻城", 3);
-        await Cap("野の戦いに敗れた岩切勢は、岩切城に籠もった。城は外から 三の丸・二の丸・本丸 の三層", 5.5);
-        await Cap("攻城は包囲から始まる。囲みの兵が足りると包囲が成り、城の兵糧が減り始める", 5.5);
+        await Cap("岩切の隊が城へ逃げ込むと、城内の兵は「城」という一つの部隊になる", 5.5);
+        await Cap("攻城は包囲から始まる。囲んでいる間、城は兵糧を補給できず、士気もだんだん下がる", 5.5);
         Resume(60); await Until(() => sg.CampAt > 0 && sg.Ringed, 40); await Hold(2); Pause();
         await Cap("城に取りついた隊は、いつでも攻城の軍議を開ける", 4);
         OpenSiegeCouncil(); await Talk(2.6);
@@ -167,16 +167,10 @@ public partial class ProtoGame
         await Pick("調略");
         Resume(300); await Until(() => sg.Plot != "密書", 60); await Hold(1); Pause();
         await Cap(sg.Plot == "約束" ? "井口から、内応を約す返書が届いた" : "井口からの返書は来なかった。今の井口は動かない", 5);
-        await Cap("力攻めに切り替える。城門へ寄せて、層の耐久を削る", 4.5);
+        await Cap("力攻めに切り替える。城門へ寄せて、城の耐久を削る", 4.5);
         OpenSiegeCouncil(); await Talk(2.6); await Pick("力攻め");
-        Follow(650, 55); Resume(60); int layer = sg.Layer;
-        for (int n = 0; n < 30 * 150 && w.War.Result == "" && sg.Layer < 2 && heir.Morale >= 45 && !w.War.Routed.Contains(heir.Id); n++)
-        {
-            await Hold(1d / 30);
-            if (sg.Layer == layer) continue;
-            string lost = ProtoWorld.LayerName(sg.Layers, layer); layer = sg.Layer;
-            Pause(); await Cap($"{lost}を失い、岩切勢は{ProtoWorld.LayerName(sg.Layers, layer)}へ退いた。層は、耐久が尽きるか城の士気が切れると失う", 6); Resume(60);
-        }
+        Follow(650, 55); Resume(60);
+        for (int n = 0; n < 30 * 150 && w.War.Result == "" && sg.Gate > 40 && heir.Morale >= 45 && !w.War.Routed.Contains(heir.Id); n++) await Hold(1d / 30);
         if (w.War.Result == "")
         {
             Pause(); await Cap("攻め手も傷んできた。ここで勧告。条件は「退去」（城主は城を明け渡して去る）", 5.5);

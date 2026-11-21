@@ -218,9 +218,9 @@ public partial class ProtoGame
         int ma = allies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale), me2 = enemies.Where(u => !war.Routed.Contains(u.Id)).Sum(u => u.Morale);
         sideTakano.Text = ma.ToString(); sideRebel.Text = me2.ToString(); troopsTakano.Text = "兵" + allies.Sum(u => u.Soldiers); troopsRebel.Text = "兵" + enemies.Sum(u => u.Soldiers);
         PaintPush(pushImage, ma + me2 == 0 ? 0 : (ma - me2) * 100.0 / (ma + me2)); pushTexture.Update(pushImage);
-        bool atCastle = war.Siege is { } sg0 && sg0.Layer < sg0.Layers && enemies.Any(World.Garrisoned);
+        bool atCastle = war.Siege != null && enemies.Any(World.Garrisoned);
         castleRow.Visible = atCastle;
-        if (atCastle) { var sg = war.Siege!; castleRowText.Text = $"岩切城　{ProtoWorld.LayerName(sg.Layers, sg.Layer)}　兵{enemies.Sum(u => u.Soldiers)}　士気{World.CastleMorale}　耐久{sg.Gate}"; castleRowBar.Value = sg.Gate; }
+        if (atCastle) { var sg = war.Siege!; castleRowText.Text = $"岩切城　兵{enemies.Sum(u => u.Soldiers)}　士気{World.CastleMorale}　耐久{sg.Gate}"; castleRowBar.Value = sg.Gate; }
         if (Buttons.TryGetValue("clash-tactic", out var tb) && IsInstanceValid(tb)) tb.Disabled = World.GaugeOf(me.Id) < 100 || war.Routed.Contains(me.Id) || World.Confused(me.Id);
         if (tacticAuto != null && IsInstanceValid(tacticAuto) && tacticAuto.ButtonPressed != war.AutoTactic) tacticAuto.SetPressedNoSignal(war.AutoTactic);
     }

@@ -321,7 +321,7 @@ public sealed partial class ProtoWorld
         if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
         {
             foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && !Sheltered(e) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
-            if (War.Siege is { } sg && sg.Layer < sg.Layers && InArmy(Player) && Dist(Player, castle: true) <= 800_00) yield return new("attack:castle", "攻めかかる：岩切城");
+            if (War.Siege != null && War.Result == "" && InArmy(Player) && Dist(Player, castle: true) <= 800_00) yield return new("attack:castle", "攻めかかる：岩切城");
             if (War.Target.ContainsKey(Player.Id)) yield return new("withdraw:me", "兵を退く");
         }
         // 委任／手動は、隊が崩れていても切り替えられる。
