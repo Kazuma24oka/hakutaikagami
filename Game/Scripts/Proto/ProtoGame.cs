@@ -757,7 +757,7 @@ public partial class ProtoGame : Node3D
         // 駒
         var pieces = prop.Pieces.ToDictionary(x => x.Unit, x => (x.X, x.Y)); var moved = new HashSet<string>(); string pick = World.Player.Id;
         var marks = new Dictionary<string, (ColorRect Body, Label Name)>();
-        // 本陣：総大将の案の場所から始める。駒の一覧の「本陣」を選んで、図を押すと置き直せる。届く範囲（800m）を輪で見せる。
+        // 本陣：総大将の案の場所から始める。駒の一覧の「本陣」を選んで、図を押すと置き直せる。届く範囲（1,000m）を輪で見せる。
         { var cd = World.CampDefault; pieces["camp"] = (cd.X, cd.Y); }
         board.ClipContents = true;
         var campRange = new Line2D { Width = 2, DefaultColor = new Color(1, 0.95f, 0.7f, 0.75f), Closed = true }; board.AddChild(campRange);
