@@ -10,8 +10,8 @@ namespace HakutaiKagami.Core.Proto;
 //   城に層は無い（2026-11-21 ユーザー「層の話はなかったことに」）。城の見た目は、もとの模型を4倍にしたもの（城の内は真ん中から190m）。
 // ・包囲：攻め手が城のそば（900m）にいる間は包囲。兵の数は問わない。包囲されている間、城は兵糧を補給できず（毎朝6時に1日ぶん減る）、
 //   城の士気が6時間ごとに下がる。攻め手がみな離れれば包囲は解ける。
-// ・攻め手の兵糧は総大将の隊が持ち、皆がそれを食べる（3日）。総大将の隊が崩れると兵糧を失う。尽きると6時間ごとに全軍士気が下がる。
-// ・攻城の軍議：城に取りついた隊（800m）はいつでも開ける。続ける行動は 包囲 と 力攻め（総大将が聞き入れるかは心証しだい）。
+// ・攻め手の兵糧は本陣に置く（3日。Core/Proto/ProtoCamp.cs）。本陣を取られると失う。尽きると6時間ごとに全軍士気が下がり、隊もじわじわ痩せる。
+// ・攻城の軍議：本陣（300m）にいれば、いつでも開ける。続ける行動は 包囲 と 力攻め（総大将が聞き入れるかは心証しだい）。
 //   本人が言わなければ、陣を敷いて半刻で総大将が決める（勇猛な総大将は力攻め）。軍議の中で、調略と勧告も打てる（総大将が認めたとき）。
 // ・力攻め：城門（城の南）に寄せて城と戦う（城門から110m以内）。与えた打撃は城内の隊に兵の数で割り振られ、城は城内の兵の合計で打ち返す。
 //   耐久は攻め手の兵の数と武勇で削れる。城が立っている間、城の内へは入れない。城から打って出た隊（朝駆け）だけが、野の隊として個別に戦う。
@@ -133,7 +133,7 @@ public sealed partial class ProtoWorld
     void StartSiege()
     {
         var castle = Map.Site(FoeCastle); var k = Person(HeadOf(Rebel));
-        War.Siege = new ProtoSiege { Since = Second };
+        War.Siege = new ProtoSiege { Since = Second, Supply = War.Stock.GetValueOrDefault("takano", 3) }; // 攻め手の兵糧は本陣のもの
         War.RetreatBy.Remove(Rebel); War.RetreatAt.Remove(Rebel); War.RetreatRules[Rebel] = []; War.Goals[Rebel] = Goals[1];
         foreach (var r in People.Where(r => r.House == Rebel))
         {
@@ -165,8 +165,9 @@ public sealed partial class ProtoWorld
     // 画面用：城が攻め手と打ち合っているか。
     public bool CastleFighting => War.Siege != null && War.Clashes.Any(c => Sheltered(Person(c.A)) || Sheltered(Person(c.B)));
     public (long X, long Y)? PlayerSiegePost => War.Siege != null && War.Result == "" && InArmy(Player) ? SiegePost(Player) : null;
-    // 攻城の軍議：城に取りついた隊（800m）は、いつでも開ける。
-    public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && InArmy(Player) && Dist(Player, castle: true) <= 800_00;
+    // 攻城の軍議：本陣（300m）で、いつでも開ける（本陣を取られたあとは、総大将のそば）。
+    public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && InArmy(Player)
+        && (CampAt("takano") is { } hq && !CampLost("takano") ? Dist(Player, hq.X, hq.Y) <= 300_00 : Dist(Player, SiegeLead) <= 300_00);
     string DecideSiege(string? want)
     {
         var s = War.Siege; if (s == null || War.Result != "") return "";
@@ -216,8 +217,6 @@ public sealed partial class ProtoWorld
             // 包囲の完成：囲みの中の兵が足りているか。
             bool ring = Besieging;
             if (ring != s.Ringed) { s.Ringed = ring; Happen($"ring:{ring}:{Second}", ring ? "鷹野勢は岩切城を囲んだ。" : "岩切城の囲みが解けた。", lead.X, lead.Y, [.. People.Where(u => InArmy(u) && u.Active)]); }
-            // 兵糧は総大将の隊が持つ。崩れると失う。
-            if (War.Routed.Contains(Heir) && s.Supply > 0 && !Flag("supply-lost")) { Set("supply-lost"); s.Supply = 0; Happen("supply-lost", "総大将の隊が崩れ、鷹野勢は兵糧を失った。", lead.X, lead.Y, [.. AbleArmy]); }
         }
         if (s.Method == SiegeMethods[0])
         {

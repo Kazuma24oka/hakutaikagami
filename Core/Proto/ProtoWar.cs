@@ -75,6 +75,10 @@ public sealed class ProtoWarState
     public Dictionary<string, string> RetreatBy { get; set; } = [];   // 満たした条件（退き貝が鳴った）
     public Dictionary<string, long> RetreatAt { get; set; } = [];
     public ProtoSiege? Siege { get; set; } // 攻城（Core/Proto/ProtoSiege.cs）
+    // 本陣（Core/Proto/ProtoCamp.cs）：鷹野勢の本陣の場所・本陣の兵糧（日）・兵糧が届かなくなった時刻。
+    public Dictionary<string, long[]> Camp { get; set; } = [];
+    public Dictionary<string, int> Stock { get; set; } = [];
+    public Dictionary<string, long> OutSince { get; set; } = [];
     public Dictionary<string, int> StartMen { get; set; } = []; // 合戦に入ったときの兵の数（右下の窓に「今/元」で出す）
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans, string[] Goals, string[] RetreatAdds);
@@ -210,6 +214,9 @@ public sealed partial class ProtoWorld
         string dep = departure ?? Departures[1], sig = signal ?? Signals[0];
         War.Goals["takano"] = goal ?? Goals[0];
         AssignRoles(plan ?? PlansOf(War.Goals["takano"])[0], role, playerPosition, posts);
+        // 本陣を置く所：総大将の案は、戦場への道の手前（着陣の地）。本人の再提案（posts の "camp"）は、総大将が聞き入れたときだけ。総勢はまずそこへ進む。
+        { var at = CampDefault; if (posts != null && posts.TryGetValue("camp", out var want) && !refused && (HeadOf("takano") == Player.Id || CommanderListens)) at = ProtoMove.Nearest(Map, want[0], want[1]);
+          War.Camp["takano"] = [at.X, at.Y]; War.Stock["takano"] = 3; (War.StageX, War.StageY) = at; }
         long night = At(DayIndex, 21), dawn = (Second / Day + 1) * Day + 4 * Hour;
         War.DepartAt = dep == Departures[0] ? Math.Max(Second + 10 * 60, Math.Min(night, Second + Hour)) : dawn;
         War.SignalAt = (dawn / Day) * Day + (sig == Signals[0] ? 6 : 8) * Hour;
@@ -295,7 +302,7 @@ public sealed partial class ProtoWorld
         // 攻城で城門が残っている間は、城から出ない（寄せて来た敵と、その場で戦う。出るのは朝駆けのときだけ）。
         // 岩切の隊が一つでも城へ逃げ込んだら（崩れて・退き貝で）、その時から攻城（城内の隊は城という一つの部隊になる）。
         if (War.Siege == null && War.Phase == "合戦" && CanBesiege && People.Any(r => r.House == Rebel && r.Active && r.Soldiers > 0 && InWalls(r) && (War.Routed.Contains(r.Id) || Withdrawing(r)))) StartSiege();
-        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !Sheltered(r) && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
+        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !Sheltered(r) && !War.Target.ContainsKey(r.Id) && !Withdrawing(r) && !(Flag("raid:" + r.Id) && !CampLost("takano"))))
         {
             var post = War.Post.ContainsKey(r.Id) ? PostOf(r.Id) : null;
             var seen = allTakano.Concat(new[] { Player }).Where(t => t.Soldiers > 0 && InSight(r, t) && (!rebelsHold || post == null || Dist(t, post.X * 100L, post.Y * 100L) <= 400_00)).OrderBy(t => Dist(r, t)).FirstOrDefault();
@@ -322,7 +329,7 @@ public sealed partial class ProtoWorld
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
         if (War.Phase == "合戦" && !Talking) foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && !Sheltered(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
-        Spread(field); UpdateFacing(field); AutoScout(field); Stealth(field);
+        Spread(field); UpdateFacing(field); AutoScout(field); Stealth(field); Camps(allTakano, rebels);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }
         // 終わり
         var liveRebels = Units.Where(u => u.House == Rebel && (StillFights(u) || Sheltered(u))).ToArray(); // 城内の兵は、城が落ちるまで残っている

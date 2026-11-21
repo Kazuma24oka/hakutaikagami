@@ -763,6 +763,7 @@ Core/Events/EventScheduler.cs	使う	ScheduledEvent、EventScheduler を定義�
 Core/HakutaiKagami.Core.csproj	使う	Core の組み立て定義（埋め込み資料23件、Tests への内部公開）	Game/HakutaiKagami.Game.csproj:3 と Tests/HakutaiKagami.Tests.csproj が参照	2026-11-18
 Core/Messaging/MessageFlow.cs	使う	AttemptStatus、MessageEnvelope、MessageAttempt を定義。AttemptStatus が遊ぶ画面の Game スクリプトから使われ、ゲームの本線から届く	Game/Scripts/NewGameRuntime.CastellanReports.cs:15 で AttemptStatus（他に Game 42件・Core 128件・Tests 65件）	2026-11-18
 Core/Proto/ProtoArms.cs	使う	試作版の合戦のステータスの役割（忠誠で能力が上下する実際の働き）、兵種（足軽・騎馬）、戦法（騎突・槍衾・堅陣・鼓舞）、技能（適性）	Core/Proto/ProtoClash.cs の Fight と UseTactic、Core/Proto/ProtoWorld.cs の Step から呼ぶ。Tests/ProtoWarTests.cs の TroopsTacticsAndLoyaltyShapeTheFight	2026-11-20
+Core/Proto/ProtoCamp.cs	使う	試作版の本陣（置く所・指示と兵糧の届く範囲・兵糧が届かない隊が痩せる・本陣を取られる・劣勢の敵が本陣を突く）	Core/Proto/ProtoWar.cs の Battle から毎分呼ぶ（Camps）。Tests/ProtoWarTests.cs の TheCampFeedsCommandsSheltersAndCanBeTaken	2026-11-21
 Core/Proto/ProtoChaos.cs	使う	試作版の伏兵（見つかっていない隊）・奇襲（一度きりの打撃と混乱）・混乱ゲージと混乱状態、役目ごとの勲功	Core/Proto/ProtoWar.cs の Battle、Core/Proto/ProtoClash.cs の Fight から呼ぶ。Tests/ProtoWarTests.cs の UnseenUnitsAmbushAndConfusedUnitsCannotMove ほか	2026-11-20
 Core/Proto/ProtoClash.cs	使う	試作版の合戦の作り直し（要所と総士気・押し合い・戦場の幅・采配・本陣での立て直し）	Core/Proto/ProtoWar.cs の Battle から呼ぶ。Tests/ProtoWarTests.cs	2026-11-19
 Core/Proto/ProtoField.cs	使う	試作版の陣の置き場所（決まった点をやめ、地形から決める）。総大将の案、敵の陣、地形の名前と効果	Core/Proto/ProtoWar.cs の DecideCouncil と Wars、Game/Scripts/Proto/ProtoGame.cs の軍議の戦場図から呼ぶ。Tests/ProtoWarTests.cs	2026-11-20
@@ -2956,7 +2957,8 @@ Game/Scripts/PersonalHealthCheck.cs	使う	工程の検査場面（ゲーム内�
 Game/Scripts/PersonalHealthCheck.cs.uid	手元だけ	Godot が作った識別子。本体は Git に入っている。場面は path で参照し uid を使わないので無くても動く。Godot 4.4 以降の推奨に合わせるなら、使う本体の分を一括で Git に入れる	本体 Game/Scripts/PersonalHealthCheck.cs は「使う」	2026-11-18
 Game/Scripts/Proto/ProtoAwardsView.cs	使う	試作版の論功行賞の画面（大将の言葉のあと、役目・兵・働き・勲功の表）と、攻城の攻め方の軍議	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateAwards）	2026-11-20
 Game/Scripts/Proto/ProtoBattleView.cs	使う	試作版の合戦の見え方（総士気・押し合いのゲージ・采配の窓）	Game/Scripts/Proto/ProtoGame.cs の _Ready と _Process から呼ぶ	2026-11-19
-Game/Scripts/Proto/ProtoCastleView.cs	使う	試作版の城の見え方（層ごとの堀と橋・石垣と白壁の塀・隅櫓・櫓門・侍屋敷・御殿・蔵・天守・松・層の名前の札、失った層は焼け落ちる、城の名前の下に耐久・城の兵・士気）	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateCastleView）	2026-11-20
+Game/Scripts/Proto/ProtoCampView.cs	使う	試作版の本陣の見え方（陣幕と幟、指示と兵糧の届く範囲の輪）	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateCampView）	2026-11-21
+Game/Scripts/Proto/ProtoCastleView.cs	使う	試作版の攻城の間の城の見え方（城門のハイライト、城門の両脇で守るちびコマ、城の名前の下の耐久・兵・士気）。城そのものは元の模型の4倍	Game/Scripts/Proto/ProtoGame.cs の _Process から呼ぶ（UpdateCastleView）	2026-11-21
 Game/Scripts/Proto/ProtoDebug.cs	使う	今の試作版（ProtoGame.tscn）の部品	Game/Scripts/Proto/ProtoGame.cs:42 ProtoDebug	2026-11-18
 Game/Scripts/Proto/ProtoFilm.cs	使う	試作版の動画「謀叛から合戦まで」の台本（--proto-film）	Game/Scripts/Proto/ProtoGame.cs の _Ready が --proto-film のときに呼ぶ	2026-11-19
 Game/Scripts/Proto/ProtoGame.cs	使う	今の試作版（ProtoGame.tscn）の部品	Game/Scenes/ProtoGame.tscn:3 res://Scripts/Proto/ProtoGame.cs	2026-11-18

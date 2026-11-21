@@ -80,11 +80,11 @@ public sealed partial class ProtoWorld
                 War.RetreatBy[side] = met; War.RetreatAt[side] = Second; var head = Person(HeadOf(side));
                 // 総崩れで皆が崩れているなら、退き貝を鳴らすまでもない（決着の決まりに任せる）。
                 Happen("retreat:" + side, $"{HouseName(side)}の陣で退き貝が鳴った（{RuleText(side, met)}）。", head.X, head.Y, [.. SideUnits(side).Where(u => !u.Player && Dist(u, head) <= 2500_00)]);
-                foreach (var u in SideUnits(side)) { long d = Dist(u, head); flags["retreat-at:" + u.Id] = d <= 2500_00 ? Second : Second + d / 200; }
+                foreach (var u in SideUnits(side)) flags["retreat-at:" + u.Id] = Ordered(u) ? Second : Second + 30 * 60; // 本陣の指示が届く隊はすぐ、届かない隊は半刻たって気づく（届く所へ戻れば、その時）
             }
             if (!Retreated(side)) continue;
             var camp = Map.Site(side == Rebel ? "iwakiri-castle" : "takano-castle"); var leader = HeadOf(side);
-            foreach (var u in SideUnits(side).Where(u => u.Soldiers > 0 && !War.Routed.Contains(u.Id) && !Flag("retreat-heard:" + u.Id) && flags.TryGetValue("retreat-at:" + u.Id, out var at) && Second >= at))
+            foreach (var u in SideUnits(side).Where(u => u.Soldiers > 0 && !War.Routed.Contains(u.Id) && !Flag("retreat-heard:" + u.Id) && flags.TryGetValue("retreat-at:" + u.Id, out var at) && (Second >= at || Ordered(u))))
             {
                 Set("retreat-heard:" + u.Id);
                 if (u.Player) { if (Fact("retreat:" + side) is { } f) Learn(u, f); Note($"退き貝が聞こえた。{HouseName(side)}は兵を引く。"); }

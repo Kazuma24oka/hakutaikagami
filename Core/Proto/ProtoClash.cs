@@ -31,12 +31,11 @@ public sealed partial class ProtoWorld
     bool Buffed(string kind, string id) => War.Until.TryGetValue(kind + ":" + id, out var t) && Second < t;
     string Side(string house) => house == Rebel ? Rebel : "takano";
 
-    // 本陣：鷹野は大将の陣（大将が崩れていれば城）、岩切は岩切城。
+    // 本陣：岩切は岩切城。鷹野は置いた本陣（置く前と、取られたあとは、出てきた鷹野城）。Core/Proto/ProtoCamp.cs。
     internal (long X, long Y, string Name) CampOf(ProtoPerson p)
     {
         if (p.House == Rebel) { var s = Map.Site("iwakiri-castle"); return (s.X * 100L, s.Y * 100L, s.Name); }
-        if (War.Siege != null) { var sc = SiegeCamp; return (sc.X, sc.Y, "攻城の陣"); } // 攻城の間は、城の前の陣
-        if (War.Post.ContainsKey(Heir) && !War.Routed.Contains(Heir)) { var pos = PostOf(Heir); return (pos.X * 100L, pos.Y * 100L, pos.Name); }
+        if (CampAt("takano") is { } at && !CampLost("takano")) return (at.X, at.Y, "本陣");
         var c = Map.Site("takano-castle"); return (c.X * 100L, c.Y * 100L, c.Name);
     }
 
@@ -161,8 +160,8 @@ public sealed partial class ProtoWorld
         Walk(b, (camp.X, camp.Y), camp.Name, "本陣へ退いている");
     }
 
-    // ---- 立て直し：本陣で30分休むと、兵が10以上残っていれば一度だけ戦いに戻る ----
-    // 本人の隊の立て直しまでの残り（秒）。-1＝本陣へ退いている途中。null＝崩れていない、または立て直せない（兵10未満・一度立て直した）。
+    // ---- 立て直し：本陣（城）に収容されて30分休むと、残った兵の7割で戦いに戻る（何度でも。兵が10以上残っていれば。総崩れのあとは戻らない） ----
+    // 本人の隊の立て直しまでの残り（秒）。-1＝本陣へ退いている途中。null＝崩れていない、または立て直せない（兵10未満・総崩れのあと）。
     public long? RegroupLeft
     {
         get
@@ -183,7 +182,7 @@ public sealed partial class ProtoWorld
             if (Dist(u, camp.X, camp.Y) > 120_00) { War.AtCamp.Remove(id); continue; }
             if (!War.AtCamp.TryGetValue(id, out var since)) { War.AtCamp[id] = Second; continue; }
             if (Second - since < 30 * 60) continue;
-            War.Routed.Remove(id); War.Recovered.Add(id); War.AtCamp.Remove(id); u.Morale = Math.Clamp(60 + (Val(u) - 50) / 2, 40, 80); // 武勇が高いほど士気が戻る
+            War.Routed.Remove(id); War.AtCamp.Remove(id); u.Soldiers = Math.Max(1, u.Soldiers * 7 / 10); u.Morale = Math.Clamp(60 + (Val(u) - 50) / 2, 40, 80); // 武勇が高いほど士気が戻る
             Happen($"regroup:{id}", $"{u.Name}の兵が{camp.Name}で立て直し、再び戦いに戻った（兵{u.Soldiers}）。", u.X, u.Y, u);
             AddSpirit(Side(u.House), 5);
             if (u.Player) { Note("兵を立て直した。"); continue; }

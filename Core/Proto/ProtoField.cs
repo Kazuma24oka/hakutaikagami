@@ -111,6 +111,8 @@ public sealed partial class ProtoWorld
         return new(g, p, Departures[1], Signals[0], heir.Temper == "慎重" ? RetreatAdds[1] : RetreatAdds[0],
             [Piece(Heir, rh, heir.Soldiers), Piece(Karou, rk, Person(Karou).Soldiers), Piece(Player.Id, rm, 30)]);
     }
+    // 総大将の案での本陣の場所：戦場への道の手前（城まで1150m）。
+    public (long X, long Y) CampDefault => RoadPoint(1150_00);
     // 総大将が再提案を聞き入れるか：本人を嫌っていなければ聞く（軍全体に関わる分。自分の陣と役目はいつも聞く）。
     public bool CommanderListens => HeadOf("takano") == Player.Id || Favor(Heir) >= 0;
 

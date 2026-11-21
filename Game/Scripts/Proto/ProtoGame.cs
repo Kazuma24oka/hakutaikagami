@@ -372,7 +372,8 @@ public partial class ProtoGame : Node3D
         var p = World.Player; var site = World.SiteOf(p);
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
-        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
+        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (p.Soldiers > 0 && World.War.Phase is "行軍" or "合戦" && World.War.Result == "" && World.CampAt("takano") != null ? (World.Ordered(p) ? "" : "　指図届かず") + (World.Supplied(p) ? "" : "　兵糧届かず") : "")
+            + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
         Buttons["pause"].Text = Paused ? "進める" : "止める";
         int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
@@ -382,7 +383,7 @@ public partial class ProtoGame : Node3D
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -403,6 +404,8 @@ public partial class ProtoGame : Node3D
                 }
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
+                if (World.War.Siege == null && World.CampAt("takano") != null)
+                    panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
                 if (World.War.Siege is { } siege)
                 {
@@ -614,7 +617,7 @@ public partial class ProtoGame : Node3D
         }
         else acc = 0;
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
-        UpdateActors(); UpdateBattleView(); UpdateHover(); UpdateAwards(); UpdateCastleView(); DrawPath(); PlaceCamera();
+        UpdateActors(); UpdateBattleView(); UpdateHover(); UpdateAwards(); UpdateCastleView(); UpdateCampView(); DrawPath(); PlaceCamera();
         journal.GetParent<Control>().GetParent<Control>().Modulate = new Color(1, 1, 1, (float)Math.Clamp(1.4 - (Time.GetTicksMsec() / 1000.0 - journalShown) / 8.0, 0.35, 1));
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
@@ -754,6 +757,12 @@ public partial class ProtoGame : Node3D
         // 駒
         var pieces = prop.Pieces.ToDictionary(x => x.Unit, x => (x.X, x.Y)); var moved = new HashSet<string>(); string pick = World.Player.Id;
         var marks = new Dictionary<string, (ColorRect Body, Label Name)>();
+        // 本陣：総大将の案の場所から始める。駒の一覧の「本陣」を選んで、図を押すと置き直せる。届く範囲（800m）を輪で見せる。
+        { var cd = World.CampDefault; pieces["camp"] = (cd.X, cd.Y); }
+        board.ClipContents = true;
+        var campRange = new Line2D { Width = 2, DefaultColor = new Color(1, 0.95f, 0.7f, 0.75f), Closed = true }; board.AddChild(campRange);
+        var campBody = new ColorRect { Size = new Vector2(16, 16), Color = new Color(0.97f, 0.96f, 0.92f), MouseFilter = Control.MouseFilterEnum.Ignore }; board.AddChild(campBody);
+        var campName = Tag("本陣", Vector2.Zero, new Color(1, 0.96f, 0.85f), 14);
         string Now() => goal.Selected + "|" + plan.GetItemText(plan.Selected) + "|" + role.GetItemText(role.Selected) + "|" + dep.Selected + "|" + sig.Selected + "|" + retreat.Selected;
         string first = Now();
         void Draw()
@@ -777,6 +786,14 @@ public partial class ProtoGame : Node3D
                 var id = pc.Unit; line.Pressed += () => { pick = id; Draw(); };
                 list.AddChild(line);
             }
+            {
+                var (cx, cy) = pieces["camp"]; var at = OnBoard(cx, cy); campBody.Position = at - new Vector2(8, 8); campName.Position = at + new Vector2(10, -11);
+                float rr = ProtoWorld.CampRange / 100f * k; var pts = new Vector2[64]; for (int n = 0; n < 64; n++) pts[n] = at + new Vector2(MathF.Cos(n * MathF.Tau / 64), MathF.Sin(n * MathF.Tau / 64)) * rr; campRange.Points = pts;
+                var line = new Button { Text = $"本陣　{World.TerrainName(cx, cy)}", Alignment = HorizontalAlignment.Left, Flat = true };
+                line.AddThemeColorOverride("font_color", pick == "camp" ? new Color(1, 0.88f, 0.45f) : Colors.White);
+                line.Pressed += () => { pick = "camp"; Draw(); };
+                list.AddChild(line);
+            }
             ok.Text = Now() != first || moved.Count > 0 ? "再提案する" : "従う";
         }
         // 作戦や役目を変えたら、総大将の陣立てを引き直す（自分で置いた駒は、役目が変わらなければそのまま）。
@@ -793,7 +810,7 @@ public partial class ProtoGame : Node3D
         dep.ItemSelected += _ => Draw(); sig.ItemSelected += _ => Draw(); retreat.ItemSelected += _ => Draw();
         councilPlace = (id, x, y) =>
         {
-            if (!pieces.ContainsKey(id) || !lead && id != World.Player.Id) return;
+            if (!pieces.ContainsKey(id) || !lead && id != World.Player.Id && id != "camp") return;
             var n = ProtoMove.Nearest(World.Map, Math.Clamp(x, x0 * 100L, (x0 + wM) * 100L - 1), Math.Clamp(y, y0 * 100L, (y0 + hM) * 100L - 1));
             pieces[id] = (n.X, n.Y); moved.Add(id); Draw();
         };
@@ -802,7 +819,7 @@ public partial class ProtoGame : Node3D
         councilChoices = (role, dep, sig, ok, plan, goal, retreat);
         ok.Pressed += () =>
         {
-            var posts = moved.Where(id => lead || id == World.Player.Id).ToDictionary(id => id, id => new[] { pieces[id].X, pieces[id].Y });
+            var posts = moved.Where(id => lead || id == World.Player.Id || id == "camp").ToDictionary(id => id, id => new[] { pieces[id].X, pieces[id].Y });
             var reply = World.DecideCouncil(null, view.Departures[dep.Selected], view.Signals[sig.Selected], plan.GetItemText(plan.Selected), role.GetItemText(role.Selected), view.Goals[goal.Selected], view.RetreatAdds[retreat.Selected], posts);
             councilLayer?.QueueFree(); councilLayer = null; councilPlace = null; councilChoices = null;
             Scene.Close();

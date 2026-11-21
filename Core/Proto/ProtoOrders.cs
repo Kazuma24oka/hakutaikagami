@@ -193,6 +193,13 @@ public sealed partial class ProtoWorld
         if (!War.Signaled) return;
         foreach (var u in takano.Where(u => Auto(u) && flags.TryGetValue("attack-at:" + u.Id, out var at) && Second >= at))
         {
+            // 本陣からの指示が届かない隊は、役目の動きを受け取れない（最後の指図のまま）。勇猛な者だけ、見えた敵に自分で当たる。
+            if (!Ordered(u))
+            {
+                if (u.Temper == "勇猛" && !War.Target.ContainsKey(u.Id) && rebels.Where(r => InSight(u, r)).OrderBy(r => Dist(u, r)).ThenBy(r => r.Id).FirstOrDefault() is { } near0) War.Target[u.Id] = near0.Id;
+                if (!Flag("unordered:" + u.Id)) { Set("unordered:" + u.Id); Happen("unordered:" + u.Id, $"{u.Name}の隊には、本陣の指示が届いていない。", u.X, u.Y, u); }
+                continue;
+            }
             string role = War.Roles.GetValueOrDefault(u.Id, ""); var pos = PostOf(u.Id);
             if (role == "囮") { Bait(u, rebels); continue; }
             if (War.Target.ContainsKey(u.Id)) continue;
