@@ -2,7 +2,6 @@
 "method": "検査ごとに記録のある直近5回の中央値",
 "history": "D:/02_プロジェクト別/百代鏡/検証記録/検査の時間",
 "runs": [
-"2026-11-21_121412_全件",
 "2026-11-21_122623_全件",
 "2026-11-21_124134_全件",
 "2026-11-21_131345_全件",
@@ -21,9 +20,10 @@
 "2026-11-21_141852_全件",
 "2026-11-21_142635_全件",
 "2026-11-21_142728_全件",
-"2026-11-21_143242_全件"
+"2026-11-21_143242_全件",
+"2026-11-21_143727_全件"
 ],
-"wallSeconds": 28,
+"wallSeconds": 29,
 "count": 4773,
 "tests": {
 "HakutaiKagami.Tests.AbilityEffectsTests.ExtraObservationRequiresDeliveredOpenedReport": 1.9,
@@ -3197,7 +3197,7 @@
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerCanDriveOffTheBanditsAfterTheyAreReported": 0.3,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerCarriesTheLetterAndGetsAReply": 0.0,
 "HakutaiKagami.Tests.ProtoWorldTests.ThePlayerOnlySeesNearbyPeople": 0.0,
-"HakutaiKagami.Tests.ProtoWorldTests.TheWorldMovesWithoutThePlayer": 0.8,
+"HakutaiKagami.Tests.ProtoWorldTests.TheWorldMovesWithoutThePlayer": 0.9,
 "HakutaiKagami.Tests.PublicWorksTests.CompletedAgricultureAffectsTheActualAutumnHarvest": 96.7,
 "HakutaiKagami.Tests.PublicWorksTests.CompletedWorkshopChangesActualProductionWithoutInventingRawStock": 20.1,
 "HakutaiKagami.Tests.PublicWorksTests.ConstructionConsumesActualHouseRiceWoodAndMoneyAndHoldsLaborUntilCompletion": 4.2,

@@ -29,7 +29,7 @@ public partial class DotOfficerActor : Node3D
     readonly Sprite3D sprite=new(){Billboard=BaseMaterial3D.BillboardModeEnum.FixedY,TextureFilter=BaseMaterial3D.TextureFilterEnum.Nearest,Shaded=false,AlphaCut=SpriteBase3D.AlphaCutMode.Discard,RegionEnabled=true,Centered=true};
     Sheet? sheet;public string Key{get;private set;}="";
     // 3D の武将と同じくらいの背丈（体25ドット）。
-    public float PixelSize{get=>sprite.PixelSize;set{sprite.PixelSize=value;if(solid!=null){solid.Scale=new Vector3(sprite.FlipH?-value:value,value,value);shadow!.Scale=new Vector3(value*24,1,value*15);}}}
+    public float PixelSize{get=>sprite.PixelSize;set{sprite.PixelSize=value;if(solid!=null){Pose();shadow!.Scale=new Vector3(value*24,1,value*15);}}}
     // 厚みのある形（試作版、2026-11-21 ユーザー「立体感がたりない」「作り変える」）：絵のドット一つ一つを奥行きのある箱にして、厚い人形として組み立てる。
     // 板の絵（Sprite3D）は使わず、コマごとに形を作って持っておく（同じ絵・同じコマは使い回す）。いつもカメラの方を向く（縦の軸で回る）ので、
     // 斜め上から見ると頭や肩の上の面が見える。上の面は明るく、横の面は暗くする。足元に丸い影を置く。
@@ -59,7 +59,15 @@ public partial class DotOfficerActor : Node3D
     public override void _Process(double delta)
     {
         if(solid==null||!Visible)return;
-        if(GetViewport()?.GetCamera3D() is {} cam)solid.GlobalRotation=new Vector3(cam.GlobalRotation.X*Lean,cam.GlobalRotation.Y,0);
+        if(GetViewport()?.GetCamera3D() is {} cam){camRot=cam.GlobalRotation;Pose();}
+    }
+    // 向きと大きさをまとめて決める。左右の反転を「大きさを負にする」でやると、向きを入れ直したときに上下が逆さになることがあるので
+    // （2026-11-21 ユーザーの印「攻めている側が上下反転している」）、回す分と大きさ・反転を自分で掛け合わせて置く。
+    Vector3 camRot;
+    void Pose()
+    {
+        if(solid==null)return;float px=sprite.PixelSize;
+        solid.Basis=Basis.FromEuler(new Vector3(camRot.X*Lean,camRot.Y,0))*Basis.FromScale(new Vector3(sprite.FlipH?-px:px,px,px));
     }
     int frameCol,frameRow;
     void ShowFrame()
@@ -67,7 +75,7 @@ public partial class DotOfficerActor : Node3D
         if(solid==null||sheet==null)return;
         var key=(sheet.File,frameCol,frameRow);
         if(!meshes.TryGetValue(key,out var m)){m=BuildMesh(sheet,frameCol,frameRow);meshes[key]=m;}
-        solid.Mesh=m;solid.Scale=new Vector3(sprite.FlipH?-sprite.PixelSize:sprite.PixelSize,sprite.PixelSize,sprite.PixelSize);
+        solid.Mesh=m;Pose();
     }
     static ArrayMesh BuildMesh(Sheet s,int col,int row)
     {
@@ -120,7 +128,8 @@ public partial class DotOfficerActor : Node3D
     public void Face(Vector3 direction,Camera3D? camera)
     {
         if(camera==null||direction.LengthSquared()<1e-6f)return;
-        float side=direction.Normalized().Dot(camera.GlobalBasis.X);if(Mathf.Abs(side)<.2f)return;sprite.FlipH=side>0; // 真上・真下に近い向きでは、前の右左のままif(solid!=null)solid.Scale=new Vector3(sprite.FlipH?-sprite.PixelSize:sprite.PixelSize,sprite.PixelSize,sprite.PixelSize);
+        float side=direction.Normalized().Dot(camera.GlobalBasis.X);if(Mathf.Abs(side)<.2f)return; // 真上・真下に近い向きでは、前の右左のまま
+        sprite.FlipH=side>0;Pose();
     }
     public bool FacingRight=>sprite.FlipH;
     // 建物に隠れても見えるように、いつも手前に描く（試作版の地図、2026-11-18）。
