@@ -320,7 +320,7 @@ public partial class ProtoGame : Node3D
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
 
-        Add(bar, "panel", "任務", () => panelOpen = !(panelOpen ?? World.War.Phase != "合戦"));
+        Add(bar, "panel", "任務", () => panelOpen = !(panelOpen ?? true));
         var side = sidePanel = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
         // 中身が長いときは窓の中で送る（画面の下にはみ出さない）。
         sideScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled }; side.AddChild(sideScroll);
@@ -371,7 +371,7 @@ public partial class ProtoGame : Node3D
         var p = World.Player; var site = World.SiteOf(p);
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
-        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
+        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
         Buttons["pause"].Text = Paused ? "進める" : "止める";
         int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
@@ -469,7 +469,7 @@ public partial class ProtoGame : Node3D
         foreach (var t in LogTabs) Buttons["log-" + t].Disabled = logTab == t;
         if (lines != journalKey) { journalKey = lines; journalShown = Time.GetTicksMsec() / 1000.0; }
         journal.Text = lines;
-        sidePanel.Visible = panelOpen ?? World.War.Phase != "合戦";
+        sidePanel.Visible = panelOpen ?? true; // 合戦の間も初めから出しておく（委任／手動がここにある）
     }
     static string HourMinute(long s) => $"{s % ProtoWorld.Day / 3600}時{s % 3600 / 60:00}分";
 
@@ -624,7 +624,7 @@ public partial class ProtoGame : Node3D
         PlanClashLines(Math.Max(0.12f, distance / 380f) * 1.25f);
         foreach (var p in World.People)
         {
-            var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p);
+            var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p) && !World.Sheltered(p); // 城内の隊は描かない（城の欄にまとめる）
             bool unit = p.Soldiers > 0 && war;
             if (body.MaterialOverride is StandardMaterial3D m && !p.Player) m.AlbedoColor = HouseColor(p.House);
             body.Visible = seen; label.Visible = seen && (p.Player || close || unit);

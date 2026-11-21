@@ -71,7 +71,7 @@ public sealed partial class ProtoWorld
     // 混乱をためる。by：打った側（知略の比で増減）。
     void AddChaos(ProtoPerson b, int amount, ProtoPerson? by)
     {
-        if (amount == 0 || Confused(b.Id) || War.Routed.Contains(b.Id) || b.Soldiers <= 0) return;
+        if (amount == 0 || Confused(b.Id) || War.Routed.Contains(b.Id) || b.Soldiers <= 0 || Sheltered(b)) return; // 城内の隊は混乱しない
         int add = amount > 0 ? Math.Max(1, (int)Math.Round(amount * (double)(by != null ? Wit(by) : 50) / Wit(b))) : amount;
         int now = Math.Clamp(ChaosOf(b.Id) + add, 0, 100); War.Chaos[b.Id] = now;
         if (now < 100) return;

@@ -189,6 +189,8 @@ public partial class ProtoGame
         }
         var allies = group.Select(World.Person).Where(u => u.House != "iwakiri").OrderByDescending(u => u.Player).ThenBy(u => u.Id).ToList();
         var enemies = group.Select(World.Person).Where(u => u.House == "iwakiri").OrderBy(u => u.Id).ToList();
+        // 城と戦っているときは、城内の武将をみな並べる（城という一つの部隊の中身）。
+        if (enemies.Any(World.Garrisoned)) enemies = World.Garrison.OrderByDescending(u => u.Id == World.HeadOf("iwakiri")).ThenBy(u => u.Id).ToList();
         var ck = string.Join(",", allies.Select(u => u.Id)) + "|" + string.Join(",", enemies.Select(u => u.Id));
         if (ck != lastClash)
         {
@@ -218,7 +220,7 @@ public partial class ProtoGame
         PaintPush(pushImage, ma + me2 == 0 ? 0 : (ma - me2) * 100.0 / (ma + me2)); pushTexture.Update(pushImage);
         bool atCastle = war.Siege is { } sg0 && sg0.Layer < sg0.Layers && enemies.Any(World.Garrisoned);
         castleRow.Visible = atCastle;
-        if (atCastle) { var sg = war.Siege!; castleRowText.Text = $"岩切城　{ProtoWorld.LayerName(sg.Layers, sg.Layer)}　耐久{sg.Gate}"; castleRowBar.Value = sg.Gate; }
+        if (atCastle) { var sg = war.Siege!; castleRowText.Text = $"岩切城　{ProtoWorld.LayerName(sg.Layers, sg.Layer)}　兵{enemies.Sum(u => u.Soldiers)}　士気{World.CastleMorale}　耐久{sg.Gate}"; castleRowBar.Value = sg.Gate; }
         if (Buttons.TryGetValue("clash-tactic", out var tb) && IsInstanceValid(tb)) tb.Disabled = World.GaugeOf(me.Id) < 100 || war.Routed.Contains(me.Id) || World.Confused(me.Id);
         if (tacticAuto != null && IsInstanceValid(tacticAuto) && tacticAuto.ButtonPressed != war.AutoTactic) tacticAuto.SetPressedNoSignal(war.AutoTactic);
     }

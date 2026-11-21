@@ -320,10 +320,12 @@ public sealed partial class ProtoWorld
         if (SiegeCouncilOpen) yield return new("siege:open", "攻城の軍議");
         if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
         {
-            foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
+            foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && !Sheltered(e) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
+            if (War.Siege is { } sg && sg.Layer < sg.Layers && InArmy(Player) && Dist(Player, castle: true) <= 800_00) yield return new("attack:castle", "攻めかかる：岩切城");
             if (War.Target.ContainsKey(Player.Id)) yield return new("withdraw:me", "兵を退く");
-            if (War.Assign.ContainsKey(Player.Id)) yield return War.PlayerFollows ? new("order:free", "手動") : new("order:follow", "委任");
         }
+        // 委任／手動は、隊が崩れていても切り替えられる。
+        if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(Player.Id) && War.Assign[Player.Id] != "takano-castle") yield return War.PlayerFollows ? new("order:free", "手動") : new("order:follow", "委任");
         foreach (var t in OffersHere) { yield return new("accept:" + t.Id, "受ける：" + t.Title); yield return new("decline:" + t.Id, "断る：" + t.Title); }
         foreach (var t in OpenTasks)
         {

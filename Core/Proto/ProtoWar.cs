@@ -293,8 +293,9 @@ public sealed partial class ProtoWorld
         // 謀叛方は、合戦になったら見えている敵に向かう。陣を守り抜くつもりなら、自分の陣の近く（400m）に来た敵だけを相手にし、離れたら陣へ戻る。
         bool rebelsHold = GoalOf(Rebel) == Goals[1];
         // 攻城で城門が残っている間は、城から出ない（寄せて来た敵と、その場で戦う。出るのは朝駆けのときだけ）。
-        bool walled = War.Siege != null;
-        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !walled && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
+        // 岩切の隊が一つでも城へ逃げ込んだら（崩れて・退き貝で）、その時から攻城（城内の隊は城という一つの部隊になる）。
+        if (War.Siege == null && War.Phase == "合戦" && CanBesiege && People.Any(r => r.House == Rebel && r.Active && r.Soldiers > 0 && InWalls(r) && (War.Routed.Contains(r.Id) || Withdrawing(r)))) StartSiege();
+        foreach (var r in rebels.Where(r => War.Phase == "合戦" && !Sheltered(r) && !War.Target.ContainsKey(r.Id) && !Withdrawing(r)))
         {
             var post = War.Post.ContainsKey(r.Id) ? PostOf(r.Id) : null;
             var seen = allTakano.Concat(new[] { Player }).Where(t => t.Soldiers > 0 && InSight(r, t) && (!rebelsHold || post == null || Dist(t, post.X * 100L, post.Y * 100L) <= 400_00)).OrderBy(t => Dist(r, t)).FirstOrDefault();
@@ -309,7 +310,7 @@ public sealed partial class ProtoWorld
         {
             var u = Person(id); var t = Person(targetId);
             if (War.Routed.Contains(id)) continue;
-            if (!t.Active || !KeepsChasing(u, t)) { War.Target.Remove(id); continue; }
+            if (!t.Active || Sheltered(t) || !KeepsChasing(u, t)) { War.Target.Remove(id); if (Sheltered(t) && Auto(u)) { u.Path = []; u.PathIndex = 0; } continue; } // 城内へ入った相手は追えない
             // 相手の手前の間合い（50m）まで進んで止まり、向かい合う（相手の位置に重ならない）。相手が動いたら1分ごとに引き直す。
             // 下がっていく相手には、手前で止まらず追いすがる：相手の今いる所を目指し、20秒ごとに引き直す（途中で立ち止まって待たない。2026-11-19 ユーザーの印）。
             if (Retreating(t)) { if (!u.Moving || Second % 20 == 0) Walk(u, (t.X, t.Y), t.Name, $"{t.Name}の兵を追っている"); }
@@ -319,12 +320,12 @@ public sealed partial class ProtoWorld
         if (War.Phase == "合戦") Regroup();
         var field = Units.Where(u => u.House == Rebel || u.House == "takano" && War.Assign.ContainsKey(u.Id)).ToArray();
         // 打ち合える所に敵がいる隊は、その場で止まって戦う（追いかけながら重なっていかない）。本人の歩みは本人が決める。
-        if (War.Phase == "合戦" && !Talking) foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && Dist(u, e) <= Reach)))
+        if (War.Phase == "合戦" && !Talking) foreach (var u in field.Where(u => Auto(u) && !Flag("luring:" + u.Id) && !Withdrawing(u) && u.Moving && !War.Routed.Contains(u.Id) && field.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && !Retreating(e) && !Sheltered(e) && Dist(u, e) <= Reach)))
             { u.Path = []; u.PathIndex = 0; }
         Spread(field); UpdateFacing(field); AutoScout(field); Stealth(field);
         if (War.Phase == "合戦") { Ambushers(); Fight(field); }
         // 終わり
-        var liveRebels = Units.Where(u => u.House == Rebel && StillFights(u)).ToArray();
+        var liveRebels = Units.Where(u => u.House == Rebel && (StillFights(u) || Sheltered(u))).ToArray(); // 城内の兵は、城が落ちるまで残っている
         // 本人は、戦いに加わっていなければ数えない（本人が後ろにいるだけでは合戦は続かない）。
         var liveTakano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && (u.Player ? !War.Routed.Contains(u.Id) && Flag("fought:" + u.Id) : StillFights(u))).ToArray();
         if (Flag("rebels-out") && liveRebels.Length == 0 && War.Result == "")
@@ -353,7 +354,13 @@ public sealed partial class ProtoWorld
     // ---- 本人が攻めかかる・退く ----
     string Attack(string id)
     {
-        var e = Person(id); if (!InSight(Player, e) || Player.Soldiers <= 0) return "攻められない";
+        if (id == "castle")
+        {
+            if (War.Siege == null || Player.Soldiers <= 0) return "攻められない";
+            War.Target.Remove(Player.Id); var at = AssaultPoint(Player); MoveTo(at.X, at.Y, "城門"); Player.Doing = "岩切城の城門へ寄せている";
+            return "岩切城の城門へ寄せる。";
+        }
+        var e = Person(id); if (!InSight(Player, e) || Player.Soldiers <= 0 || Sheltered(e)) return "攻められない";
         War.Target[Player.Id] = id;
         if (War.Phase == "行軍")
         {

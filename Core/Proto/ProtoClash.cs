@@ -32,9 +32,10 @@ public sealed partial class ProtoWorld
     string Side(string house) => house == Rebel ? Rebel : "takano";
 
     // 本陣：鷹野は大将の陣（大将が崩れていれば城）、岩切は岩切城。
-    (long X, long Y, string Name) CampOf(ProtoPerson p)
+    internal (long X, long Y, string Name) CampOf(ProtoPerson p)
     {
         if (p.House == Rebel) { var s = Map.Site("iwakiri-castle"); return (s.X * 100L, s.Y * 100L, s.Name); }
+        if (War.Siege != null) { var sc = SiegeCamp; return (sc.X, sc.Y, "攻城の陣"); } // 攻城の間は、城の前の陣
         if (War.Post.ContainsKey(Heir) && !War.Routed.Contains(Heir)) { var pos = PostOf(Heir); return (pos.X * 100L, pos.Y * 100L, pos.Name); }
         var c = Map.Site("takano-castle"); return (c.X * 100L, c.Y * 100L, c.Name);
     }
@@ -65,11 +66,11 @@ public sealed partial class ProtoWorld
         foreach (var u in all) if (!War.StartSoldiers.ContainsKey(u.Id)) War.StartSoldiers[u.Id] = u.Soldiers;
         var before = all.ToDictionary(u => u.Id, u => u.Soldiers);
         bool Live(ProtoPerson x) => !War.Routed.Contains(x.Id);
-        ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && Dist(a, b) <= Reach).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
+        ProtoPerson? Foe(ProtoPerson a) => all.Where(b => Hostile(a.House, b.House) && Live(b) && !Sheltered(b) && Dist(a, b) <= Reach).OrderBy(b => Dist(a, b)).ThenBy(b => b.Id).FirstOrDefault();
         foreach (var a in all.Where(Live))
         {
+            if (Sheltered(a)) continue; // 城内の隊は個別には戦わない（城として戦う。下の CastleFight）
             var b = Foe(a); if (b == null) continue;
-            if (Talking && (BehindGate(a) || BehindGate(b))) continue; // 勧告の交渉中は、城との打ち合いを止める
             if (Retreating(a)) continue; // 下がっている隊は打ち返さない（打たれるだけ）
             Set("fought:" + a.Id);
             double atk = a.Soldiers * 0.006 * (Val(a) / 50.0) * TroopAttack(a) * (a.Morale / 100.0 + 0.5) * (SpiritOf(Side(a.House)) / 200.0 + 0.5);
@@ -89,12 +90,12 @@ public sealed partial class ProtoWorld
             if (Buffed("guard", b.Id)) atk *= 0.5;
             if (b.Player) atk *= War.Stance switch { "射撃" => 0.6, "防御" => 0.5, _ => 1.0 };
             atk /= Cmd(b) / 50.0;
-            atk *= CastleShield(a, b); // 攻城：城門が残っている間の城の利
             hits[b.Id] = hits.GetValueOrDefault(b.Id) + atk; dealt[(a.Id, b.Id)] = dealt.GetValueOrDefault((a.Id, b.Id)) + atk;
             a.Doing = $"{b.Name}の兵と戦っている";
             War.Gauge[a.Id] = Math.Min(100, GaugeOf(a.Id) + (a.Player ? 12 : 6));
             if (a.Player) War.Ki = Math.Min(100, War.Ki + 3);
         }
+        CastleFight(all, hits, dealt); // 攻城：城門に寄せた攻め手と、城
         // ぶつかり合いの記録（誰と誰が打ち合っているか）。
         foreach (var ((x, y), _) in dealt)
         {
@@ -106,7 +107,7 @@ public sealed partial class ProtoWorld
                 // 伏兵（か、利が残っている間）の隊がぶつかったなら奇襲：3分ぶんの打撃を一度に与え、相手の混乱を30上げる（Core/Proto/ProtoChaos.cs）。
                 // どちらが先に打ったかに関わらず、伏兵だった側が仕掛けた側。
                 var (att, def) = CanSurprise(y) && !CanSurprise(x) ? (Person(y), Person(x)) : (Person(x), Person(y));
-                if (CanSurprise(att.Id) && !BehindGate(def))
+                if (CanSurprise(att.Id) && !BehindGate(def) && !BehindGate(att))
                 {
                     bool wood = InForest(att.X, att.Y);
                     War.Ambush.Remove(att.Id); War.AmbushUntil.Remove(att.Id); War.UnseenSince.Remove(att.Id);
@@ -155,13 +156,26 @@ public sealed partial class ProtoWorld
         AddSpirit(Side(b.House), b.Id == HeadOf(Side(b.House)) ? -40 : -15);
         if (CutOff(b)) { Annihilate(b); if (!b.Player) return; }
         var camp = CampOf(b);
-        if (b.Player) { Stop(); Note($"兵が崩れた。{camp.Name}の本陣まで退けば立て直せる。"); return; }
+        // 本人の隊も、崩れたら本陣へ退く（崩れた兵は思うように動かせない。2026-11-21 ユーザーの印「自部隊が一向に復帰しない」）。
+        if (b.Player) Note($"兵が崩れた。{camp.Name}へ退いて立て直す。");
         Walk(b, (camp.X, camp.Y), camp.Name, "本陣へ退いている");
     }
 
     // ---- 立て直し：本陣で30分休むと、兵が10以上残っていれば一度だけ戦いに戻る ----
+    // 本人の隊の立て直しまでの残り（秒）。-1＝本陣へ退いている途中。null＝崩れていない、または立て直せない（兵10未満・一度立て直した）。
+    public long? RegroupLeft
+    {
+        get
+        {
+            var me = Player; if (!War.Routed.Contains(me.Id) || War.Result != "") return null;
+            if (me.Soldiers < 10 || War.Recovered.Contains(me.Id)) return null;
+            return War.AtCamp.TryGetValue(me.Id, out var since) ? Math.Max(0, 30 * 60 - (Second - since)) : -1;
+        }
+    }
     void Regroup()
     {
+        // 崩れた本人の隊が本陣から離れて止まっていたら、また本陣へ退かせる。
+        { var me = Player; if (War.Routed.Contains(me.Id) && me.Soldiers >= 10 && !War.Recovered.Contains(me.Id) && !me.Moving) { var c = CampOf(me); if (Dist(me, c.X, c.Y) > 120_00) Walk(me, (c.X, c.Y), c.Name, "本陣へ退いている"); } }
         foreach (var id in War.Routed.ToArray())
         {
             var u = Person(id); if (!u.Active || u.Soldiers < 10 || War.Recovered.Contains(id)) continue;

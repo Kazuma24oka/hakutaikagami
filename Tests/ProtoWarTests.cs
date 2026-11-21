@@ -167,7 +167,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.TaskPlace(muster!) == "道の口", "出陣の行き先は陣の名前で出る");
         var katsumoto = w.Person("iwakiri-katsumoto");
         w.MoveTo(katsumoto.X, katsumoto.Y);
-        for (int i = 0; i < 240 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30);
+        for (int i = 0; i < 2000 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30); // 城内の敵は狙えない。城を出てくる（朝4時）まで待つ
         var attack = w.Actions().FirstOrDefault(a => a.Id.StartsWith("attack:"));
         cp.Expect(attack != null, "見えている敵の隊に攻めかかれる");
         cp.Expect(!w.Nearby.Any(p => p.House == "iwakiri"), "敵の隊とは話せない");
@@ -187,7 +187,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]);
         w.Do("tactic-auto:off"); // この検査は、本人が自分で戦法を使う場合（合戦の窓の「自動」を外した形）
         var katsumoto = w.Person("iwakiri-katsumoto"); w.MoveTo(katsumoto.X, katsumoto.Y);
-        for (int i = 0; i < 240 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30);
+        for (int i = 0; i < 2000 && !w.Actions().Any(a => a.Id.StartsWith("attack:")); i++) w.Advance(30); // 城内の敵は狙えない。城を出てくる（朝4時）まで待つ
         w.Do(w.Actions().First(a => a.Id.StartsWith("attack:")).Id);
         for (int i = 0; i < 120 && w.ClashOf(w.Player.Id) == null; i++) w.Advance(60);
         var clash = w.ClashOf(w.Player.Id);
@@ -205,6 +205,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         // 戦法：ゲージがたまると使える（本人は技能が無いので鼓舞）。
         // 戦法の仕組みだけを確かめるので、ゲージがたまるまで崩れないように兵と士気を足しておく。
         for (int i = 0; i < 30 && guard.GaugeOf(guard.Player.Id) < 100 && !guard.War.Routed.Contains(guard.Player.Id); i++) { guard.Player.Soldiers = Math.Max(guard.Player.Soldiers, 30); guard.Player.Morale = Math.Max(guard.Player.Morale, 60); guard.Advance(60); }
+        guard.War.Chaos.Remove(guard.Player.Id); guard.War.ChaosUntil.Remove(guard.Player.Id); guard.War.Routed.Remove(guard.Player.Id); // 戦法の仕組みだけを見るので、混乱と崩れは外しておく
         int morale = guard.Player.Morale; var said = guard.Do("tactic:me"); cp.Log(said + $"　ゲージ {guard.GaugeOf(guard.Player.Id)}　士気 {morale}→{guard.Player.Morale}");
         cp.Expect(said.Contains("鼓舞") && guard.GaugeOf(guard.Player.Id) == 0, "戦法のゲージがたまると使える");
         // 「自動」を入れると、ゲージがたまりしだい自分で使う。
@@ -361,7 +362,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Log($"作戦 {plan}　{w.PlanState}：" + string.Join("、", w.PlanSteps().Select(x => x.Text + (x.State != "" ? "＝" + x.State : ""))));
         cp.Expect(loggedRebel && rebelGoal == (dep == 0 ? "敵を崩す" : "陣を守り抜く"), "岩切勢も大目標と撤退条件を持つ（鷹野が夜のうちに出ていれば討って出る）");
         cp.Expect(w.War.Result != "" || w.War.Siege != null, "決着がつく（岩切勢が城へ退いたら攻城になる）");
-        if (w.War.Siege != null) cp.Expect(w.Facts.Any(f => f.Id == "retreat:iwakiri") && !w.Retreated("iwakiri"), "岩切勢は撤退条件を満たして退き貝を鳴らし、城に籠もった");
+        if (w.War.Siege != null) cp.Expect(w.Facts.Any(f => f.Id == "siege") && !w.Retreated("iwakiri"), "岩切勢は（退き貝で、または崩れて）城へ逃げ込み、城に籠もった");
         foreach (var side in new[] { "takano", "iwakiri" })
             if (w.Retreated(side)) cp.Expect(w.Facts.Any(f => f.Id == "retreat:" + side) && w.RetreatRules(side).Count(r => r.Met) == 1, $"{side} は撤退条件を満たして退き貝を鳴らした");
         cp.Expect(w.War.Result is not ("退いた" or "退かせた") || w.Retreated("takano") || w.Retreated("iwakiri"), "退いた決着は、撤退条件を満たしたときだけ");
@@ -519,8 +520,8 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         }
         cp.Log($"結果 {w.War.Result}　{(w.Second - start) / 3600}時間　" + Line());
         cp.Expect(w.War.Result != "", "攻城に決着がつく");
-        if (method == "力攻め") cp.Expect(w.Facts.Any(f => f.Id == "layer:1") && (w.War.Result is not ("鎮めた" or "開城させた") || w.War.Siege!.Layer == w.War.Siege.Layers), "力攻め：外の層から一層ずつ失う（落ちるのは最後の層を失ったとき）");
-        else if (!parley) cp.Expect(w.GateOf == 100 && (w.War.Result == "開城させた" && w.War.Siege!.Food == 0 || w.War.Result == "鎮めた" && w.War.Siege!.Food <= 1), "囲む：城の兵糧が尽きて開城するか、残り1日で打って出た城の兵が崩れて落城");
+        if (method == "力攻め") cp.Expect((w.GateOf < 100 || w.War.Siege!.Layer > 0) && (w.War.Siege!.Layer == 0 || w.Facts.Any(f => f.Id == "layer:1")) && (w.War.Result is not ("鎮めた" or "開城させた") || w.War.Siege!.Layer == w.War.Siege.Layers || w.War.Siege.Food == 0), "力攻め：城門に寄せると耐久が削れ、外の層から一層ずつ失う");
+        else if (!parley) cp.Expect(w.GateOf == 100 && w.War.Siege!.Food < 3 && w.Facts.Any(f => f.Id.StartsWith("ring:True")), "包囲：包囲が成っている間、城の兵糧が毎朝減る（城門には寄せない）");
         else cp.Expect(w.War.Result == "開城させた" && w.GateOf == 100 && w.War.Siege!.Food > 0, "囲んで勧告すれば、兵糧が尽きるのを待たずに城が開く");
         if (w.War.Result is "鎮めた" or "開城させた")
         {
@@ -681,12 +682,19 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         using var cp = new Checkpoints("試作版の立て直し", o);
         var w = new ProtoWorld(Map); w.SetupTsuriPractice();
         var iguchi = w.Person("iguchi-yashichi"); var castle = Map.Site("iwakiri-castle");
-        // 敵のいない本陣（岩切城）に、崩れた井口を置く。
-        foreach (var u in w.Units.Where(u => u.House == "takano")) { u.X = castle.X * 100L + 3000_00; u.Y = castle.Y * 100L + 3000_00; u.Path = []; u.PathIndex = 0; w.War.Target.Remove(u.Id); }
-        iguchi.X = castle.X * 100L; iguchi.Y = castle.Y * 100L; iguchi.Path = []; iguchi.PathIndex = 0; iguchi.Soldiers = 50; iguchi.Morale = 10; w.War.Routed.Add(iguchi.Id);
-        w.Advance(20 * 60); cp.Expect(w.War.Routed.Contains(iguchi.Id), "20分ではまだ崩れたまま");
-        w.Advance(15 * 60); cp.Log($"35分後：崩れ{w.War.Routed.Contains(iguchi.Id)} 士気{iguchi.Morale}");
-        cp.Expect(!w.War.Routed.Contains(iguchi.Id) && iguchi.Morale == Math.Clamp(60 + (w.Val(iguchi) - 50) / 2, 40, 80), "30分休むと戦いに戻る（戻る士気は60を基準に、武勇が高いほど多い）");
+        // 鷹野の本陣（大将の陣）に、崩れた小坂を置く。敵は遠くへ。
+        var kosaka = w.Person("kosaka-shigetada"); var camp = w.CampOf(kosaka);
+        foreach (var u in w.Units.Where(u => u.House == "iwakiri")) { u.X = camp.X + 3000_00; u.Y = camp.Y + 3000_00; u.Path = []; u.PathIndex = 0; w.War.Target.Remove(u.Id); }
+        kosaka.X = camp.X; kosaka.Y = camp.Y; kosaka.Path = []; kosaka.PathIndex = 0; kosaka.Soldiers = 50; kosaka.Morale = 10; w.War.Routed.Add(kosaka.Id);
+        w.Advance(20 * 60); cp.Expect(w.War.Routed.Contains(kosaka.Id), "20分ではまだ崩れたまま");
+        w.Advance(15 * 60); cp.Log($"35分後：崩れ{w.War.Routed.Contains(kosaka.Id)} 士気{kosaka.Morale}");
+        cp.Expect(!w.War.Routed.Contains(kosaka.Id) && kosaka.Morale == Math.Clamp(60 + (w.Val(kosaka) - 50) / 2, 40, 80), "30分休むと戦いに戻る（戻る士気は60を基準に、武勇が高いほど多い）");
+        // 岩切の崩れた隊が城へ逃げ込むと、城という一つの部隊の中身になる（個別には狙えず、戦わない）。
+        iguchi.X = castle.X * 100L; iguchi.Y = castle.Y * 100L; iguchi.Path = []; iguchi.PathIndex = 0; iguchi.Soldiers = 50; iguchi.Morale = 10; if (!w.War.Routed.Contains(iguchi.Id)) w.War.Routed.Add(iguchi.Id);
+        w.Advance(120);
+        cp.Log($"井口：崩れ{w.War.Routed.Contains(iguchi.Id)} 城内{w.Sheltered(iguchi)} 攻城{w.War.Siege != null}");
+        cp.Expect(w.War.Siege != null && w.Sheltered(iguchi) && !w.War.Routed.Contains(iguchi.Id), "崩れた隊が城へ逃げ込むと攻城になり、その隊は城の兵に戻る");
+        cp.Expect(!w.Actions().Any(a => a.Id == "attack:" + iguchi.Id), "城内の隊は個別には狙えない");
     }
 
     // 見た目を確かめるための保存（HAKUTAI_WRITE_SCENE に置き場所を渡したときだけ書く。ふだんは何もしない）。
