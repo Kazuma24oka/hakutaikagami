@@ -383,7 +383,7 @@ public partial class ProtoGame : Node3D
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("camp:") || id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + CampPick + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -402,6 +402,8 @@ public partial class ProtoGame : Node3D
                     foreach (var (id, text, on) in new[] { ("order:follow", "委任", World.War.PlayerFollows), ("order:free", "手動", !World.War.PlayerFollows) })
                     { var aid = id; var b = Add(mode, "act:" + aid, (on ? "● " : "○ ") + text, () => { Act(aid); RefreshUi(); }); if (on) b.Modulate = new Color(1, 0.88f, 0.45f); b.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill; }
                 }
+                // 本陣を移す：委任／手動のすぐ下（見つけやすい所。2026-11-21 ユーザー）。
+                if (actions.Any(x => x.Id == "camp:pick")) { var mv = Add(panel, "act:camp:pick", "本陣を移す", () => Act("camp:pick")); if (CampPick) mv.Modulate = new Color(1, 0.88f, 0.45f); }
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
                 if (World.War.Siege == null && World.CampAt("takano") != null)
@@ -431,7 +433,7 @@ public partial class ProtoGame : Node3D
                     panel.AddChild(row);
                 }
                 panel.AddChild(new HSeparator());
-                foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:"))) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
+                foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:") && a.Id != "camp:pick")) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
                 // 撤退の条件（足した分は金色、満たして退き貝が鳴った条件は赤）。
                 var rules = World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
                 if (rules.Length > 0)
