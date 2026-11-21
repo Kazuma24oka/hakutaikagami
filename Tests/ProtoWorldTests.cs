@@ -108,7 +108,7 @@ public sealed class ProtoWorldTests
         w.Advance(Day);
         var offered = w.OffersHere.Select(t => t.Title).ToArray();
         Assert.Contains("西の村と峠の見回り", offered);
-        Assert.Contains(w.Actions(), a => a.Text == "受ける：西の村と峠の見回り");
+        Assert.Contains(w.Actions(), a => a.Text == "受諾：西の村と峠の見回り");
         w.Advance(5 * Hour);
         Assert.All(w.Tasks.Where(t => t.Kind == "patrol"), t => Assert.Equal(TaskState.Expired, t.State));
         Assert.Equal("west-village", w.Appointments.Last(a => a.Person == "takano-masayuki").Site);
@@ -151,7 +151,7 @@ public sealed class ProtoWorldTests
         for (int tries = 0; tries < 8 && duty.Current?.Do == "fight"; tries++)
         {
             w.GoToTask(duty.Id); w.Advance((w.TaskEta(duty) ?? 0) + 60);
-            var fight = w.Actions().FirstOrDefault(a => a.Text == "賊と戦う"); if (fight != null) w.Do(fight.Id); else w.Advance(600);
+            var fight = w.Actions().FirstOrDefault(a => a.Text == "賊討伐"); if (fight != null) w.Do(fight.Id); else w.Advance(600);
         }
         Assert.Equal("meet", duty.Current!.Do);
         Assert.True(w.Knows(w.Player, "bandits-gone"));

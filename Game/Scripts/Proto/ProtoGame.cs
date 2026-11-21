@@ -311,12 +311,12 @@ public partial class ProtoGame : Node3D
         clock = new Label(); bar.AddChild(clock); foot = new Label(); bar.AddChild(foot); status = new Label(); bar.AddChild(status);
         bar.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, MouseFilter = Control.MouseFilterEnum.Ignore });
         // 止める・進める（スペースでも）と、速さの目盛り。
-        Add(bar, "pause", "進める", () => { Paused = !Paused; RefreshUi(); });
+        Add(bar, "pause", "再生", () => { Paused = !Paused; RefreshUi(); });
         speedSlider = new HSlider { MinValue = 0, MaxValue = Speeds.Length - 1, Step = 1, CustomMinimumSize = new Vector2(160, 0), SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, FocusMode = Control.FocusModeEnum.None };
         speedSlider.ValueChanged += v => { Speed = Speeds[(int)v]; speedText.Text = Speed + "倍"; };
         bar.AddChild(speedSlider); speedText = new Label { CustomMinimumSize = new Vector2(60, 0) }; bar.AddChild(speedText);
         // 接敵で止める（2026-11-20 ユーザーの印）：入れていると、隊どうしがぶつかる手前で時を止める。入れていなければ止めない（速さも変えない）。
-        stopAtContact = new CheckBox { Text = "接敵で止める", FocusMode = Control.FocusModeEnum.None }; bar.AddChild(stopAtContact);
+        stopAtContact = new CheckBox { Text = "接敵停止", FocusMode = Control.FocusModeEnum.None }; bar.AddChild(stopAtContact);
         bar.AddChild(new VSeparator());
         Add(bar, "note", "印を残す", () => Debug.OpenNote());
         Add(bar, "stock", "ためた印", () => Debug.OpenStock());
@@ -374,7 +374,7 @@ public partial class ProtoGame : Node3D
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
         status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (p.Soldiers > 0 && World.War.Phase is "行軍" or "合戦" && World.War.Result == "" && World.CampAt("takano") != null ? (World.Ordered(p) ? "" : "　指図届かず") + (World.Supplied(p) ? "" : World.CarriedLeft(p) is > 0 and var left ? $"　兵糧届かず（手持ち あと{(left + Hour0 - 1) / Hour0}刻）".Replace("刻", "時間") : "　兵糧切れ") : "")
             + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
-        Buttons["pause"].Text = Paused ? "進める" : "止める";
+        Buttons["pause"].Text = Paused ? "再生" : "停止";
         int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
@@ -403,7 +403,7 @@ public partial class ProtoGame : Node3D
                     { var aid = id; var b = Add(mode, "act:" + aid, (on ? "● " : "○ ") + text, () => { Act(aid); RefreshUi(); }); if (on) b.Modulate = new Color(1, 0.88f, 0.45f); b.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill; }
                 }
                 // 本陣を移す：委任／手動のすぐ下（見つけやすい所。2026-11-21 ユーザー）。
-                if (actions.Any(x => x.Id == "camp:pick")) { var mv = Add(panel, "act:camp:pick", "本陣を移す", () => Act("camp:pick")); if (CampPick) mv.Modulate = new Color(1, 0.88f, 0.45f); }
+                if (actions.Any(x => x.Id == "camp:pick")) { var mv = Add(panel, "act:camp:pick", "本陣移動", () => Act("camp:pick")); if (CampPick) mv.Modulate = new Color(1, 0.88f, 0.45f); }
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
                 if (World.War.Siege == null && World.CampAt("takano") != null)
@@ -456,7 +456,7 @@ public partial class ProtoGame : Node3D
                 if (near.Length > 0)
                 {
                     panel.AddChild(new HSeparator());
-                    foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "話す：" + n.Name, () => Say(World.Do("talk:" + nid), nid)); }
+                    foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "会話：" + n.Name, () => Say(World.Do("talk:" + nid), nid)); }
                 }
             }
         }
@@ -464,7 +464,7 @@ public partial class ProtoGame : Node3D
         {
             if (!taskButtons.TryGetValue(t.Id, out var b) || !IsInstanceValid(b)) continue;
             var eta = World.TaskEta(t);
-            b.Text = World.TaskPlace(t) + "へ　" + (eta == null ? "道がない" : eta <= 5 ? "ここ" : "着くのは" + HourMinute(World.Second + eta.Value) + "ごろ");
+            b.Text = World.TaskPlace(t) + "　" + (eta == null ? "不通" : eta <= 5 ? "到着" : HourMinute(World.Second + eta.Value) + "着");
         }
         double nowSec = Time.GetTicksMsec() / 1000.0;
         if (Message != messageShown) { messageShown = Message; messageAt = nowSec; }
@@ -519,7 +519,7 @@ public partial class ProtoGame : Node3D
         var frame = new PanelContainer(); center.AddChild(frame);
         frame.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0.09f, 0.09f, 0.11f), BorderColor = new Color(0.75f, 0.6f, 0.3f), BorderWidthTop = 2, BorderWidthBottom = 2, BorderWidthLeft = 2, BorderWidthRight = 2, ContentMarginLeft = 30, ContentMarginRight = 30, ContentMarginTop = 20, ContentMarginBottom = 20, CornerRadiusTopLeft = 6, CornerRadiusTopRight = 6, CornerRadiusBottomLeft = 6, CornerRadiusBottomRight = 6 });
         var col = new VBoxContainer(); col.AddThemeConstantOverride("separation", 16); frame.AddChild(col);
-        col.AddChild(new Label { Text = "委任を解きますか", HorizontalAlignment = HorizontalAlignment.Center });
+        col.AddChild(new Label { Text = "委任解除", HorizontalAlignment = HorizontalAlignment.Center });
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 16); col.AddChild(row);
         void Done(bool yes)
         {
@@ -759,7 +759,7 @@ public partial class ProtoGame : Node3D
         var retreat = Choice("撤退の条件を足す", view.RetreatAdds, Array.IndexOf(view.RetreatAdds, prop.RetreatAdd));
         right.AddChild(new HSeparator());
         var list = new VBoxContainer(); right.AddChild(list);
-        var ok = new Button { Text = "従う" }; right.AddChild(ok);
+        var ok = new Button { Text = "承認" }; right.AddChild(ok);
 
         // 駒
         var pieces = prop.Pieces.ToDictionary(x => x.Unit, x => (x.X, x.Y)); var moved = new HashSet<string>(); string pick = World.Player.Id;
@@ -801,7 +801,7 @@ public partial class ProtoGame : Node3D
                 line.Pressed += () => { pick = "camp"; Draw(); };
                 list.AddChild(line);
             }
-            ok.Text = Now() != first || moved.Count > 0 ? "再提案する" : "従う";
+            ok.Text = Now() != first || moved.Count > 0 ? "再提案" : "承認";
         }
         // 作戦や役目を変えたら、総大将の陣立てを引き直す（自分で置いた駒は、役目が変わらなければそのまま）。
         void Relay(bool keepMine)

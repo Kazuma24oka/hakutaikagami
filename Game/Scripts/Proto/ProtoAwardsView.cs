@@ -27,8 +27,8 @@ public partial class ProtoGame
         var top = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; top.AddThemeConstantOverride("separation", 16); box.AddChild(top);
         foreach (var m in new[] { "包囲", "力攻め" }) Pick(top, m, m, "siege:" + m, m == now);
         string stage = World.PlotStage;
-        Pick(top, "調略", stage == "約束" ? "内応の合図" : "調略", "siege:調略", stage == "約束", stage is "密書" or "断られた" or "済");
-        if (World.CanMoveCamp) { var mv = new Button { Text = "本陣を移す", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 0) }; mv.Pressed += () => { Scene.Close(); CampPick = true; }; top.AddChild(mv); SiegeButtons["本陣を移す"] = mv; }
+        Pick(top, "調略", stage == "約束" ? "内応合図" : "調略", "siege:調略", stage == "約束", stage is "密書" or "断られた" or "済");
+        if (World.CanMoveCamp) { var mv = new Button { Text = "本陣移動", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 0) }; mv.Pressed += () => { Scene.Close(); CampPick = true; }; top.AddChild(mv); SiegeButtons["本陣移動"] = mv; }
         var low = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; low.AddThemeConstantOverride("separation", 16); box.AddChild(low);
         low.AddChild(new Label { Text = "勧告", Modulate = new Color(1, 0.9f, 0.6f) });
         foreach (var t in ProtoWorld.SurrenderTerms) Pick(low, "勧告:" + t, t, "siege:勧告:" + t, false, World.Talking);
@@ -64,7 +64,7 @@ public partial class ProtoGame
                 grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left });
         }
         col.AddChild(new HSeparator());
-        var ok = AwardsOk = new Button { Text = "承る", FocusMode = Control.FocusModeEnum.None, SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter, CustomMinimumSize = new Vector2(180, 0) }; col.AddChild(ok);
+        var ok = AwardsOk = new Button { Text = "拝受", FocusMode = Control.FocusModeEnum.None, SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter, CustomMinimumSize = new Vector2(180, 0) }; col.AddChild(ok);
         ok.Pressed += () =>
         {
             World.Do("awards:take");
