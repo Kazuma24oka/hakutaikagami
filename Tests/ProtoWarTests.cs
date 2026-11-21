@@ -659,7 +659,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         {
             { var now = w.CampOf(kosaka); camp = (now.X, now.Y); } // 攻城になると、本陣は城の前へ進む
             kosaka.X = camp.X; kosaka.Y = camp.Y; kosaka.Path = []; kosaka.PathIndex = 0; kosaka.Soldiers = 100; kosaka.Morale = 10; if (!w.War.Routed.Contains(kosaka.Id)) w.War.Routed.Add(kosaka.Id);
-            for (int i = 0; i < 80 && w.War.Routed.Contains(kosaka.Id); i++) { var now2 = w.CampOf(kosaka); kosaka.Path = []; kosaka.PathIndex = 0; (kosaka.X, kosaka.Y) = (now2.X, now2.Y); w.Advance(60); } // 本陣が進めば、進んだ先で休む
+            for (int i = 0; i < 180 && w.War.Routed.Contains(kosaka.Id); i++) { var now2 = w.CampOf(kosaka); kosaka.Path = []; kosaka.PathIndex = 0; (kosaka.X, kosaka.Y) = (now2.X, now2.Y); w.Advance(60); } // 本陣が進めば、進んだ先で休む
             cp.Log($"{round}度目：崩れ{w.War.Routed.Contains(kosaka.Id)} 兵100→{kosaka.Soldiers}　{w.War.Phase}「{w.War.Result}」 本陣まで{Math.Sqrt(Math.Pow(kosaka.X - w.CampOf(kosaka).X, 2) + Math.Pow(kosaka.Y - w.CampOf(kosaka).Y, 2)) / 100:0}m {w.CampOf(kosaka).Name} 収容{w.War.AtCamp.ContainsKey(kosaka.Id)} 総崩れ{w.War.Recovered.Contains(kosaka.Id)}");
             cp.Expect(!w.War.Routed.Contains(kosaka.Id) && kosaka.Soldiers == 70, $"本陣に収容されて半刻で、7割の兵で戻る（{round}度目）");
         }
@@ -709,14 +709,87 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         using var cp = new Checkpoints("試作版の味方と戦う敵が見える", o);
         var w = new ProtoWorld(Map); w.SetupTsuriPractice();
         var me = w.Player; var kosaka = w.Person("kosaka-shigetada"); var iguchi = w.Person("iguchi-yashichi");
-        (me.X, me.Y) = (iguchi.X + 1500_00, iguchi.Y + 1200_00); me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
+        (me.X, me.Y) = (kosaka.X + 1100_00, kosaka.Y + 900_00); me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
         (iguchi.X, iguchi.Y) = (kosaka.X + 600_00, kosaka.Y - 500_00); iguchi.Path = []; iguchi.PathIndex = 0; w.War.Target.Remove(iguchi.Id);
-        cp.Expect(!w.Sees(me, iguchi) && !w.Actions().Any(a => a.Id == "attack:" + iguchi.Id), "遠くの敵は、ぶつかっていなければ見えない");
+        cp.Expect(!w.Sees(me, iguchi), "遠くの敵は、ぶつかっていなければ見えない");
         (iguchi.X, iguchi.Y) = (kosaka.X + 60_00, kosaka.Y - 60_00);
         for (int i = 0; i < 10 && w.ClashOf(kosaka.Id) == null; i++) { me.Path = []; me.PathIndex = 0; w.Advance(60); }
-        cp.Log($"小坂と井口：ぶつかり{w.ClashOf(kosaka.Id) != null}　本人から井口まで{Math.Sqrt(Math.Pow(me.X - iguchi.X, 2) + Math.Pow(me.Y - iguchi.Y, 2)) / 100:0}m　見える{w.Sees(me, iguchi)}");
-        cp.Expect(w.ClashOf(kosaka.Id) != null && w.Sees(me, iguchi), "味方とぶつかっている敵は、遠くても見える");
+        cp.Expect(w.ClashOf(kosaka.Id) != null && !w.Sees(me, iguchi), "本陣が無ければ、見えない所の戦いは知らせが来ないので見えない");
+        // 本陣を、本人と小坂の間に置く（どちらも本陣の範囲の中）。
+        w.SetCampForTest((me.X + kosaka.X) / 2, (me.Y + kosaka.Y) / 2);
+        long since = w.War.Clashes.First(c => c.A == kosaka.Id || c.B == kosaka.Id).Since; bool early = w.Sees(me, iguchi);
+        for (int i = 0; i < 20 && !w.Sees(me, iguchi); i++) { me.Path = []; me.PathIndex = 0; w.Advance(60); }
+        cp.Log($"ぶつかってから{(w.Second - since) / 60}分で見えた　本人から井口まで{Math.Sqrt(Math.Pow(me.X - iguchi.X, 2) + Math.Pow(me.Y - iguchi.Y, 2)) / 100:0}m");
+        cp.Expect(w.Sees(me, iguchi) && w.Second - since >= 5 * 60, "本陣の範囲の中なら、使番が本陣を経て知らせが届いてから見える");
         cp.Expect(w.Actions().Any(a => a.Id == "attack:" + iguchi.Id), "見えているので、攻めかかる相手に選べる");
+    }
+
+    // 撤収（Core/Proto/ProtoCamp.cs）：退き貝なら本陣へ退いて畳み（殿が前を固める）、勝てば本陣に集まって畳んでから戻る。畳むのに半刻。
+    [Theory]
+    [InlineData("退き貝")]
+    [InlineData("勝ち")]
+    public void TheCampIsPackedBeforeGoingHome(string mode)
+    {
+        using var cp = new Checkpoints("試作版の撤収_" + mode, o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        if (mode == "退き貝") w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "正面から当たる", "後詰", "敵を崩す");
+        else w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "陣を固める", "道の守り", "陣を守り抜く");
+        w.Do("order:follow");
+        while (w.War.Phase != "合戦" && w.Second < 5 * Day) w.Advance(60);
+        var camp = w.CampAt("takano")!.Value; var heir = w.Person("takano-masayuki");
+        w.Advance(5 * 60);
+        // 片方の全軍士気を半分より下げ、その側の撤退条件を満たさせる。
+        string side = mode == "退き貝" ? "takano" : "iwakiri";
+        w.War.RetreatRules[side] = ["spirit-half"]; w.War.RetreatRules[side == "takano" ? "iwakiri" : "takano"] = []; w.War.Spirit[side] = 40;
+        int seen = w.Facts.Count; long start = w.Second;
+        void Flush() { foreach (var f in w.Facts.Skip(seen).Where(f => f.Id.StartsWith("retreat") || f.Id.StartsWith("camp-") || f.Id.StartsWith("rearguard") || f.Id.StartsWith("withdrawn") || f.Id.StartsWith("home-march"))) cp.Log($"{ProtoWorld.Clock(f.At)}　{f.Text}"); seen = w.Facts.Count; }
+        if (mode == "退き貝")
+        {
+            w.Advance(120); Flush();
+            cp.Expect(w.CampPacking && w.War.Result == "", "退き貝が鳴ると本陣を畳み始め、畳み終えるまでは決着しない");
+            var rg = w.People.FirstOrDefault(u => w.Facts.Any(f => f.Id == "rearguard:" + u.Id));
+            cp.Log("殿：" + (rg?.Name ?? "なし"));
+            cp.Expect(rg != null && rg.Id != heir.Id && !rg.Player, "総大将は一隊を殿に残す（大将と本人は除く）");
+            for (int i = 0; i < 25; i++) w.Advance(60);
+            var back = w.People.Where(u => u.House == "takano" && w.War.Assign.ContainsKey(u.Id) && u.Active && u.Soldiers > 0 && w.Facts.Any(f => f.Id == "retreat:takano") && u.Id != rg!.Id && !u.Player).ToArray();
+            cp.Log("畳んでいる最中：" + string.Join("　", back.Select(u => $"{u.Name} 本陣まで{Math.Sqrt(Math.Pow(u.X - camp.X, 2) + Math.Pow(u.Y - camp.Y, 2)) / 100:0}m {u.Doing}")));
+            cp.Expect(back.All(u => Math.Sqrt(Math.Pow(u.X - camp.X, 2) + Math.Pow(u.Y - camp.Y, 2)) <= 400_00), "各隊は城ではなく本陣へ退いている");
+            for (int i = 0; i < 20 && w.War.Result == ""; i++) w.Advance(60); Flush();
+            var packed = w.Facts.FirstOrDefault(f => f.Id == "camp-packed"); var done = w.Facts.FirstOrDefault(f => f.Id == "withdrawn:takano");
+            cp.Expect(packed != null && done != null && packed.At - start >= 30 * 60 - 120 && done.At >= packed.At && w.War.Result == "退いた", "半刻で畳み終え、そこで決着（退いた）");
+            cp.Expect(w.CampAt("takano") == null, "畳み終えた本陣は無くなる");
+        }
+        else
+        {
+            for (int i = 0; i < 300 && w.War.Result == ""; i++) w.Advance(60);
+            cp.Log($"決着 {ProtoWorld.Clock(w.Second)}「{w.War.Result}」");
+            for (int i = 0; i < 180 && !w.Facts.Any(f => f.Id == "home-march"); i++) w.Advance(60); Flush();
+            var packed = w.Facts.FirstOrDefault(f => f.Id == "camp-packed"); var march = w.Facts.FirstOrDefault(f => f.Id == "home-march"); var pack = w.Facts.FirstOrDefault(f => f.Id == "camp-pack");
+            cp.Expect(w.War.Result == "退かせた" && pack != null && packed != null && march != null && packed.At - pack.At >= 30 * 60 - 60 && march.At >= packed.At, "勝てば本陣に集まって半刻で畳み、それから総勢で戻る");
+            cp.Log($"畳み始め {ProtoWorld.Clock(pack!.At)}　畳み終え {ProtoWorld.Clock(packed!.At)}　引き上げ {ProtoWorld.Clock(march!.At)}");
+        }
+    }
+
+    // 兵を失って戦えない本人は、委任なら本陣で控える（攻城の城門へは行かない）。
+    [Fact]
+    public void TheBrokenPlayerWaitsAtCamp()
+    {
+        using var cp = new Checkpoints("試作版の本人は本陣で控える", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], "釣り野伏", "伏兵", "敵を崩す"); w.Do("order:follow");
+        while (w.War.Result == "" && w.War.Siege == null && w.Second < 5 * Day) w.Advance(60);
+        var me = w.Player; me.Soldiers = 0;
+        for (int i = 0; i < 6 * 60 && w.War.Result == ""; i++) w.Advance(60);
+        var camp = w.CampOf(me); var gate = w.GatePoint;
+        double toCamp = Math.Sqrt(Math.Pow(me.X - camp.X, 2) + Math.Pow(me.Y - camp.Y, 2)) / 100, toGate = Math.Sqrt(Math.Pow(me.X - gate.X, 2) + Math.Pow(me.Y - gate.Y, 2)) / 100;
+        cp.Log($"{ProtoWorld.Clock(w.Second)}　本人 {camp.Name}まで{toCamp:0}m 城門まで{toGate:0}m　{me.Doing}　結果「{w.War.Result}」");
+        cp.Expect(w.War.Result != "" || toCamp <= 100 && me.Doing.Contains("控えて"), "兵を失った本人は、本陣で控えている");
     }
 
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。

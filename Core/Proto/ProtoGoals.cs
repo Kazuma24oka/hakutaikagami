@@ -80,10 +80,22 @@ public sealed partial class ProtoWorld
                 War.RetreatBy[side] = met; War.RetreatAt[side] = Second; var head = Person(HeadOf(side));
                 // 総崩れで皆が崩れているなら、退き貝を鳴らすまでもない（決着の決まりに任せる）。
                 Happen("retreat:" + side, $"{HouseName(side)}の陣で退き貝が鳴った（{RuleText(side, met)}）。", head.X, head.Y, [.. SideUnits(side).Where(u => !u.Player && Dist(u, head) <= 2500_00)]);
-                foreach (var u in SideUnits(side)) flags["retreat-at:" + u.Id] = Ordered(u) ? Second : Second + 30 * 60; // 本陣の指示が届く隊はすぐ、届かない隊は半刻たって気づく（届く所へ戻れば、その時）
+                // 退き貝の音は本陣の範囲で聞こえる。その外の隊へは使番が走る（届く所へ戻れば、その時に聞こえる）。
+                foreach (var u in SideUnits(side)) flags["retreat-at:" + u.Id] = Ordered(u) ? Second : RunnerAt(u);
+                // 鷹野勢は本陣を畳み始め、総大将が一隊を殿に残す（いちばん兵の多い隊。大将と本人は除く）。
+                if (side != Rebel && CampAt("takano") != null && !CampLost("takano"))
+                {
+                    StartPacking();
+                    if (SideUnits(side).Where(u => Auto(u) && !u.Player && u.Id != Heir && u.Soldiers > 0 && !War.Routed.Contains(u.Id)).OrderByDescending(u => u.Soldiers).ThenBy(u => u.Id).FirstOrDefault() is { } rg)
+                    { Set("rearguard:" + rg.Id); Happen("rearguard:" + rg.Id, $"{rg.Name}の隊が殿を務める。", rg.X, rg.Y, rg); }
+                }
             }
             if (!Retreated(side)) continue;
             var camp = Map.Site(side == Rebel ? "iwakiri-castle" : "takano-castle"); var leader = HeadOf(side);
+            // 鷹野勢は、本陣があれば本陣へ退く（畳み終えるまでそこで固まる）。無ければ城へ。
+            bool toCamp = side != Rebel && CampAt("takano") != null && !CampLost("takano"); (long X, long Y) hq = toCamp ? CampAt("takano")!.Value : (camp.X * 100L, camp.Y * 100L);
+            (long X, long Y) Dest(ProtoPerson u) => toCamp ? AroundCamp(hq, u.Id) : Spot(camp, 3);
+            string destId = toCamp ? "本陣" : camp.Id, destName = toCamp ? "本陣" : camp.Name;
             foreach (var u in SideUnits(side).Where(u => u.Soldiers > 0 && !War.Routed.Contains(u.Id) && !Flag("retreat-heard:" + u.Id) && flags.TryGetValue("retreat-at:" + u.Id, out var at) && (Second >= at || Ordered(u))))
             {
                 Set("retreat-heard:" + u.Id);
@@ -92,15 +104,32 @@ public sealed partial class ProtoWorld
                 // 勇猛な者は、戦っている最中だと半々で従わない。
                 if (u.Temper == "勇猛" && u.Id != leader && ClashOf(u.Id) != null && Roll("stays:" + u.Id) % 100 < 50)
                 { Set("stays:" + u.Id); Happen("stays:" + u.Id, $"{u.Name}は退き貝を聞いても退かず、戦い続けた。", u.X, u.Y, u); continue; }
+                if (Flag("rearguard:" + u.Id) && toCamp) continue; // 殿は退かずに本陣の前を固める
                 War.Target.Remove(u.Id); flags.Remove("luring:" + u.Id); Set("withdrawing:" + u.Id);
-                Walk(u, Spot(camp, 3), camp.Id, camp.Name + "へ兵を引いている");
+                Walk(u, Dest(u), destId, destName + "へ兵を引いている");
             }
             // 退く隊は、歩みが止まっていれば歩き直す。
-            foreach (var u in SideUnits(side).Where(u => Withdrawing(u) && !u.Moving && !War.Routed.Contains(u.Id) && Dist(u, camp.X * 100L, camp.Y * 100L) > 300_00)) Walk(u, Spot(camp, 3), camp.Id, camp.Name + "へ兵を引いている");
+            foreach (var u in SideUnits(side).Where(u => Withdrawing(u) && !u.Moving && !War.Routed.Contains(u.Id) && Dist(u, hq.X, hq.Y) > (toCamp ? 120_00 : 300_00))) Walk(u, Dest(u), destId, destName + "へ兵を引いている");
+            // 殿：本陣の敵側の前（250m）に立ち、近づく敵（300m）に当たる。
+            if (toCamp && People.FirstOrDefault(u => Flag("rearguard:" + u.Id) && u.Active && u.Soldiers > 0 && !War.Routed.Contains(u.Id)) is { } guard)
+            {
+                var foe = Units.Where(e => e.House == Rebel && !War.Routed.Contains(e.Id) && !Sheltered(e)).OrderBy(e => Dist(e, hq.X, hq.Y)).ThenBy(e => e.Id).FirstOrDefault();
+                if (foe != null)
+                {
+                    double dx = foe.X - hq.X, dy = foe.Y - hq.Y, len = Math.Max(1, Math.Sqrt(dx * dx + dy * dy)); var spot = ProtoMove.Nearest(Map, hq.X + (long)(dx / len * 250_00), hq.Y + (long)(dy / len * 250_00));
+                    if (!War.Target.ContainsKey(guard.Id) && Dist(foe, spot.X, spot.Y) <= 300_00 && InSight(guard, foe)) War.Target[guard.Id] = foe.Id;
+                    else if (!War.Target.ContainsKey(guard.Id) && !guard.Moving && Dist(guard, spot.X, spot.Y) > 60_00) Walk(guard, spot, "殿", "殿として本陣の前を固めている");
+                }
+            }
+            // 本陣へ退いたときは、畳み終えたら決着（総勢で城へ戻る）。
+            if (toCamp) { if (!Flag("camp-packed")) continue; }
+            else
+            {
             // 退く隊がみな敵から600m離れたら（または半刻たったら）決着。それまでは追われる。
             bool heard = SideUnits(side).Where(u => u.Soldiers > 0 && !War.Routed.Contains(u.Id)).All(u => Flag("retreat-heard:" + u.Id));
             bool clear = heard && !SideUnits(side).Any(u => Withdrawing(u) && !War.Routed.Contains(u.Id) && Units.Any(e => Hostile(u.House, e.House) && !War.Routed.Contains(e.Id) && Dist(u, e) <= 600_00));
             if (!clear && Second < War.RetreatAt[side] + 30 * 60) continue;
+            }
             // 岩切勢が城へ退ききったら、決着にせず攻城になる（Core/Proto/ProtoSiege.cs）。
             if (side == Rebel && CanBesiege) { StartSiege(); continue; }
             var h = Person(HeadOf(side)); War.Phase = "終わり";

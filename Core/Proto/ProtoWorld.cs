@@ -116,7 +116,22 @@ public sealed partial class ProtoWorld
     }
     // 味方の隊とぶつかっている敵の隊は、本人から遠くても見える（2026-11-21 ユーザー「味方部隊と接敵している敵部隊が見えないのも変」）。
     // 味方の隊はいつも見えているので、その目の前の相手も分かる。城内の隊（城という一つの部隊）は別。
-    internal bool FightingFriend(ProtoPerson enemy) => !Sheltered(enemy) && War.Clashes.Any(c => c.A == enemy.Id && !Hostile(Player.House, Person(c.B).House) || c.B == enemy.Id && !Hostile(Player.House, Person(c.A).House));
+    // 本人の目で味方が見えていればすぐ。本陣の範囲の中の戦いなら、使番が本陣を経て本人に知らせるまでかかる（本人の知識の原則）。
+    internal bool FightingFriend(ProtoPerson enemy)
+    {
+        if (Sheltered(enemy)) return false;
+        foreach (var c in War.Clashes)
+        {
+            string? fid = c.A == enemy.Id ? c.B : c.B == enemy.Id ? c.A : null; if (fid == null) continue;
+            var f = Person(fid); if (Hostile(Player.House, f.House)) continue;
+            if (f.Player || Dist(Player, f) <= SightOf(Player)) return true;
+            string side = Side(Player.House);
+            if (CampAt(side) is { } hq && !CampLost(side) && Dist(f, hq.X, hq.Y) <= CampRange && Dist(Player, hq.X, hq.Y) <= CampRange
+                && Second >= c.Since + (Dist(f, hq.X, hq.Y) + Dist(Player, hq.X, hq.Y)) / RunnerSpeed) return true;
+        }
+        return false;
+    }
+    internal void SetCampForTest(long x, long y) { War.Camp["takano"] = [x, y]; Set("camp-set"); }
     public IEnumerable<ProtoPerson> Visible => People.Where(p => Sees(Player, p));
     // 合戦の間は、敵の隊とは話せない。
     public IEnumerable<ProtoPerson> Nearby => People.Where(p => !p.Player && p.Active && Dist(Player, p) <= HandCm && !(War.Phase is "行軍" or "合戦" && Hostile(Player.House, p.House)));

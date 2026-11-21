@@ -2,8 +2,8 @@ namespace HakutaiKagami.Core.Proto;
 
 // 試作版の帰陣と論功行賞（2026-11-20 ユーザーの印「謀叛が鎮まったら急に軍団解散するのも微妙。城に戻るまで維持して、戻ってから論功行賞」
 // 「敗戦時とか自部隊が壊滅しても論功行賞からハブられないように」）。
-// ・決着しても軍はその場で解かない。勝ったとき・引き分けのときは大将のもとに集まり（半刻まで待つ）、総勢で鷹野城へ戻る
-//   （行きと同じ速さ・同じ一つの凸）。負けて退くときは、集まらずにそのまま城へ。
+// ・決着しても軍はその場で解かない。本陣があれば皆が本陣に集まり（半刻まで待つ）、陣を畳んで（半刻）から、総勢で戻る
+//   （行きと同じ速さ・同じ一つの凸）。本陣が無ければ大将のもとに集まる。退き貝で退いたときは、もう畳んであるのでそのまま城へ（Core/Proto/ProtoCamp.cs）。
 // ・大将が城に着くと論功行賞。本人が城にいれば開く。いなければ1日待ち、過ぎたらいないまま済ませて勲功だけ届く。
 // ・出陣した者はみな名を呼ばれる：負けても、隊が崩れても、兵を失っても外さない。
 //   勲功は、役目の見込み（RoleMerit）・役目を果たしたか・勝ち負けで決まる。
@@ -31,10 +31,23 @@ public sealed partial class ProtoWorld
         {
             var able = army.Where(u => Auto(u) && u.Soldiers > 0 && !War.Routed.Contains(u.Id)).ToArray();
             bool won = War.Result is "鎮めた" or "開城させた" or "退かせた" or "守り抜いた" or "引き分け", leads = won && able.Contains(heir);
-            if (!Flag("home-gather")) { Set("home-gather"); if (leads) { heir.Path = []; heir.PathIndex = 0; heir.Doing = "兵をまとめている"; } }
+            var hq = CampAt("takano") is { } c0 && !CampLost("takano") ? c0 : ((long X, long Y)?)null;
+            if (!Flag("home-gather")) { Set("home-gather"); if (leads && hq == null) { heir.Path = []; heir.PathIndex = 0; heir.Doing = "兵をまとめている"; } }
             if (!Flag("home-march"))
             {
-                if (leads && !able.All(u => Dist(u, heir) <= 200_00) && Second < flags["home-gather"] + 30 * 60)
+                // 本陣があれば、皆が本陣に集まって陣を畳む（負けて崩れていても）。無ければ、勝ったときだけ大将のもとに集まる。
+                if (hq is { } h0)
+                {
+                    var all = army.Where(u => Auto(u) && u.Soldiers > 0).ToArray();
+                    if (!Flag("camp-pack") && !all.All(u => Dist(u, h0.X, h0.Y) <= 200_00) && Second < flags["home-gather"] + 30 * 60)
+                    {
+                        foreach (var u in all.Where(u => Dist(u, h0.X, h0.Y) > 150_00 && (!u.Moving || u.Goal != "本陣"))) Walk(u, AroundCamp(h0, u.Id), "本陣", "本陣へ集まっている");
+                        return;
+                    }
+                    StartPacking(); UpdatePacking();
+                    if (!Flag("camp-packed")) { foreach (var u in all.Where(u => !u.Moving)) u.Doing = "本陣を畳んでいる"; return; }
+                }
+                else if (leads && !able.All(u => Dist(u, heir) <= 200_00) && Second < flags["home-gather"] + 30 * 60)
                 {
                     foreach (var u in able.Where(u => u.Id != Heir && Dist(u, heir) > 150_00 && (!u.Moving || u.Goal != heir.Name))) Walk(u, (heir.X, heir.Y), heir.Name, $"{heir.Name}のもとへ集まっている");
                     return;

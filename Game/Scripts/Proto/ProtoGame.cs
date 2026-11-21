@@ -394,7 +394,7 @@ public partial class ProtoGame : Node3D
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("camp:") || id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + CampPick + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + World.CampPacking + CampPick + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -418,7 +418,7 @@ public partial class ProtoGame : Node3D
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
                 if (World.War.Siege == null && World.CampAt("takano") != null)
-                    panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.CampMoving ? "本陣　移している" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
+                    panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.CampMoving ? "本陣　移している" : World.CampPacking ? "本陣　撤収" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
                 if (World.War.Siege is { } siege)
                 {
@@ -694,7 +694,7 @@ public partial class ProtoGame : Node3D
                 v = (new MeshInstance3D { Mesh = new SphereMesh { Radius = 6, Height = 12 }, MaterialOverride = mat }, new Label3D { Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0008f, FontSize = 28, OutlineSize = 8, NoDepthTest = true, Modulate = new Color(1, 0.75f, 0.75f) });
                 AddChild(v.Body); AddChild(v.Label); markers[mk.Unit] = v;
             }
-            var enemy = World.Person(mk.Unit); bool now = World.Sees(World.Player, enemy) || !enemy.Active;
+            var enemy = World.Person(mk.Unit); bool now = World.Sees(World.Player, enemy) || !enemy.Active || World.Sheltered(enemy); // 城内の隊は城の欄にまとめるので、印は出さない
             float age = (World.Second - mk.SeenAt) / 3600f, alpha = Math.Clamp(0.6f - age * 0.15f, 0.12f, 0.6f);
             ((StandardMaterial3D)v.Body.MaterialOverride).AlbedoColor = new Color(0.8f, 0.2f, 0.2f, alpha);
             float sc = Math.Max(1, distance / 450);

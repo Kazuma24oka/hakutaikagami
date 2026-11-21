@@ -254,7 +254,7 @@ public sealed partial class ProtoWorld
         var takano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && !War.Routed.Contains(u.Id)).ToArray();
         var rebels = Units.Where(u => u.House == Rebel && !War.Routed.Contains(u.Id)).ToArray();
         // 退き貝で退いている隊は、作戦にも狙いにも加えない（敵からは見えるので、追われる）。
-        var allTakano = takano; takano = takano.Where(u => !Withdrawing(u)).ToArray();
+        var allTakano = takano; takano = takano.Where(u => !Withdrawing(u) && !Flag("rearguard:" + u.Id)).ToArray(); // 殿は作戦の動きから外す（Core/Proto/ProtoGoals.cs）
         MarchTogether(takano);
         // 先に取られていた：着く前に敵がその陣にいれば、手前で止まって知らせる。
         foreach (var u in takano.Where(u => Auto(u) && War.Split && u.Moving && !War.Target.ContainsKey(u.Id) && !Flag("luring:" + u.Id)))

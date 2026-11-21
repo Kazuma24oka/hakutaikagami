@@ -179,7 +179,7 @@ public sealed partial class ProtoWorld
         {
             var u = Person(id); if (!u.Active || u.Soldiers < 10 || War.Recovered.Contains(id)) continue;
             var camp = CampOf(u);
-            if (u.House != Rebel && CampMoving) { War.AtCamp.Remove(id); continue; } // 本陣を移している間は休めない
+            if (u.House != Rebel && (CampMoving || CampPacking)) { War.AtCamp.Remove(id); continue; } // 本陣を移している・畳んでいる間は休めない
             if (Dist(u, camp.X, camp.Y) > 120_00) { War.AtCamp.Remove(id); continue; }
             if (!War.AtCamp.TryGetValue(id, out var since)) { War.AtCamp[id] = Second; continue; }
             if (Second - since < 30 * 60) continue;

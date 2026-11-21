@@ -79,11 +79,11 @@ public partial class ProtoGame
         campNode!.Visible = campRing!.Visible = campLabel!.Visible = campIcon!.Visible = show; if (!show) { if (campGhost != null) campGhost.Visible = campGhostLabel!.Visible = false; CampPick = false; return; }
         var at = ToScene(plan!.Value.X, plan.Value.Y); bool set = World.CampAt("takano") != null, lost = World.CampLost("takano");
         campNode.Position = at; campNode.Scale = Vector3.One * (2f / 3); // 初めに作った大きさの2/3（幅80m。2026-11-21 ユーザー）
-        float lift = 50 + distance * 0.035f; campLabel.Position = at + new Vector3(0, lift, 0);
+        float lift = 62 + distance * 0.06f; campLabel.Position = at + new Vector3(0, lift, 0); // ちびコマの名前より上
         campIcon.Position = campLabel.Position + (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.05f); campIcon.Visible = distance > 500;
         var burnt = new Color(0.2f, 0.18f, 0.17f); var house = HouseColor("takano");
         campCloth!.AlbedoColor = lost ? burnt : new Color(0.96f, 0.95f, 0.91f); campBand!.AlbedoColor = lost ? burnt : house; campFlag!.AlbedoColor = lost ? burnt : house;
-        campLabel.Text = lost ? "本陣（奪われた）" : World.CampMoving ? $"移している　あと{(World.CampMoveLeft + 59) / 60}分" : "本陣";
+        campLabel.Text = lost ? "本陣（奪われた）" : World.CampMoving ? $"移している　あと{(World.CampMoveLeft + 59) / 60}分" : World.CampPacking ? $"撤収　あと{(World.CampPackLeft + 59) / 60}分" : "本陣";
         // 移す先：選んでいる間はマウスの所に、移している間は行き先に、届く範囲の輪と名前を出す。
         if (campGhost == null)
         {
@@ -94,10 +94,10 @@ public partial class ProtoGame
         if (CampPick && !World.CanMoveCamp) CampPick = false;
         campGhost.Visible = campGhostLabel!.Visible = ghost != null && !lost;
         if (ghost is { } gp) { float gr = ProtoWorld.CampRange / 100f; campGhost.Position = gp + new Vector3(0, 2, 0); campGhost.Scale = new Vector3(gr, Math.Max(1, distance / 60f), gr); campGhostLabel.Position = gp + new Vector3(0, 20 + distance * 0.03f, 0); }
-        campLabel.PixelSize = World.CampMoving ? 0.001f : 0.0016f; // 移している間の札は小さく
+        campLabel.PixelSize = World.CampMoving || World.CampPacking ? 0.001f : 0.0016f; // 移している間の札は小さく
         campLabel.Modulate = lost ? new Color(0.85f, 0.55f, 0.5f) : set ? new Color(1, 0.96f, 0.85f) : new Color(1, 0.96f, 0.85f, 0.6f);
         float r = ProtoWorld.CampRange / 100f; campRing.Position = at + new Vector3(0, 2, 0); campRing.Scale = new Vector3(r, Math.Max(1, distance / 60f), r);
-        campRing.Visible = World.War.Result == "" && !lost && !World.CampMoving;
+        campRing.Visible = World.War.Result == "" && !lost && !World.CampMoving && !World.CampPacking;
         campRingMat!.AlbedoColor = new Color(1, 0.95f, 0.7f, set ? 0.6f : 0.3f);
     }
 }

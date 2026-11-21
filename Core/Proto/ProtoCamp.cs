@@ -12,10 +12,18 @@ namespace HakutaiKagami.Core.Proto;
 //   そのあとは、指示は総大将の隊から届き、崩れた隊は出てきた城まで退く。劣勢の岩切勢は、手薄な本陣が見えると突きに来る。
 // ・本陣を移す：本人が本陣（300m）にいるとき、総大将に進言できる（聞き入れたときだけ）。畳んで運んで張り直すまで、半刻＋道のり（1秒に1m）かかる。
 //   移している間は本陣が無い扱い：指示は総大将の隊から届き、兵糧の補給は止まり（手持ちで保つ）、崩れた隊は休めない。元の場所を敵に踏まれれば取られる。
+// ・撤収（2026-11-21 ユーザー「畳むのに時間かかるのはわかる」。焼いて捨てるは無し）：陣を畳むのに半刻かかる。畳んでいる間は補給も立て直しも止まる。
+//   退き貝のとき：各隊は城ではなく本陣へ退き、本陣は畳み始める。総大将は一隊を殿（しんがり）に残し、本陣の敵側の前に立たせる。畳み終えたら総勢で城へ戻る。
+//   畳んでいる最中に敵が本陣へ踏み込めば（味方がそばにいなければ）取られる。
+//   決着のとき（勝ち・引き分け・崩れた）：各隊は本陣に集まり、畳んでから戻る。攻城で城を取れば、畳んでから城へ入る。
+// ・使番：指示は人が運ぶ（1秒に3m）。退き貝の音は本陣から CampRange まで聞こえ、その外の隊へは使番が走る。攻城の攻め方を変えると、
+//   使番が着いた隊から新しい攻め方で動く。味方とぶつかっている敵は、本人の目で見えるか、本陣の範囲の中なら使番の知らせが届いてから見える。
+// ・兵を失って戦えない本人は、委任なら本陣で控える（2026-11-21 ユーザー「兵を失った佐伯がなにもしないのに城攻めに参加していた」）。
 // ・軍議は本陣で行う：野戦の軍議は出陣の前の城で、攻城の軍議は本陣（300m）で。
 public sealed partial class ProtoWorld
 {
     public const long CampRange = 1000_00;
+    public const long RunnerSpeed = 300, PackTime = 30 * 60; // 使番の速さ（cm/秒＝3m/秒）・陣を畳む時間
     // 隊が手持ちで保つ時間：範囲の外に出てから2日。本陣に兵糧が無いときは半日。
     public const long Carried = 2 * Day, CarriedNoStock = 12 * Hour;
 
@@ -23,7 +31,7 @@ public sealed partial class ProtoWorld
     public (long X, long Y)? CampAt(string side)
     {
         if (side == Rebel) { if (!Flag("rebellion")) return null; var c = Map.Site(FoeCastle); return (c.X * 100L, c.Y * 100L); }
-        return Flag("camp-set") && War.Camp.TryGetValue("takano", out var at) ? (at[0], at[1]) : null;
+        return Flag("camp-set") && !Flag("camp-packed") && War.Camp.TryGetValue("takano", out var at) ? (at[0], at[1]) : null;
     }
     // 軍議で決めた、本陣を置く所（置く前でも分かる。画面用）。
     public (long X, long Y)? CampPlan => War.Camp.TryGetValue("takano", out var at) ? (at[0], at[1]) : null;
@@ -41,7 +49,32 @@ public sealed partial class ProtoWorld
     public bool Supplied(ProtoPerson u)
     {
         string side = Side(u.House); if (CampAt(side) is not { } c) return true;
-        return !CampLost(side) && !(side != Rebel && CampMoving) && StockOf(side) > 0 && Dist(u, c.X, c.Y) <= CampRange;
+        return !CampLost(side) && !(side != Rebel && (CampMoving || CampPacking)) && StockOf(side) > 0 && Dist(u, c.X, c.Y) <= CampRange;
+    }
+
+    // ---- 撤収 ----
+    public bool CampPacking => flags.ContainsKey("camp-pack") && !Flag("camp-packed");
+    public long CampPackLeft => CampPacking ? Math.Max(0, flags["camp-pack"] + PackTime - Second) : 0;
+    void StartPacking()
+    {
+        if (CampAt("takano") is not { } c || CampLost("takano") || flags.ContainsKey("camp-pack")) return;
+        War.CampMoveTo = null; flags["camp-pack"] = Second; var lead = Person(Heir).Active ? Person(Heir) : Person(Karou);
+        Happen("camp-pack", $"{lead.Name}勢は本陣を畳み始めた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+    }
+    void UpdatePacking()
+    {
+        if (!CampPacking || Second < flags["camp-pack"] + PackTime) return;
+        var c = CampAt("takano")!.Value; Set("camp-packed");
+        Happen("camp-packed", "本陣を畳み終えた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+    }
+    // 本陣のまわりの、隊ごとに少しずらした所（集まるとき・退くとき）。
+    (long X, long Y) AroundCamp((long X, long Y) c, string id) { int h = Hash(id, 7); return ProtoMove.Nearest(Map, c.X + (h % 5 - 2) * 25_00, c.Y + (h / 5 % 5 - 2) * 25_00); }
+    // 指示の届く時刻：本陣（取られたら総大将）から使番が走る。
+    internal long RunnerAt(ProtoPerson u)
+    {
+        string side = Side(u.House); var head = Person(HeadOf(side));
+        var from = CampAt(side) is { } c && !CampLost(side) ? c : (head.X, head.Y);
+        return Second + Dist(u, from.X, from.Y) / RunnerSpeed;
     }
 
     // ---- 本陣を移す ----
@@ -79,8 +112,17 @@ public sealed partial class ProtoWorld
         // 移し終えた。
         if (War.CampMoveTo is { } to && Second >= War.CampMoveUntil)
         { War.Camp["takano"] = to; War.CampMoveTo = null; Happen("camp-at:" + Second, $"{heir.Name}勢は本陣を移し終えた。", to[0], to[1], [.. People.Where(u => InArmy(u) && u.Active)]); }
-        if (War.Siege is { CampAt: > 0 } && Flag("camp-set") && !CampLost("takano") && !Flag("camp-moved") && War.CampMoveTo == null)
-        { Set("camp-moved"); var sc = SiegeCamp; War.Camp["takano"] = [sc.X, sc.Y]; Happen("camp-moved", $"{heir.Name}勢は本陣を岩切城の前へ進めた。", sc.X, sc.Y, [.. People.Where(u => InArmy(u) && u.Active)]); }
+        // 攻城で城の前に陣を敷いたら、本陣をそこへ移し始める（畳んで運んで張り直す。自分で移すときと同じだけかかる）。
+        if (War.Siege is { CampAt: > 0 } && CampAt("takano") is { } from0 && !CampLost("takano") && !Flag("camp-moved") && War.CampMoveTo == null && !CampPacking)
+        {
+            Set("camp-moved"); var sc = SiegeCamp; long d = (long)Math.Sqrt(Math.Pow(sc.X - from0.X, 2) + Math.Pow(sc.Y - from0.Y, 2));
+            if (d < 100_00) War.Camp["takano"] = [sc.X, sc.Y];
+            else { War.CampMoveTo = [sc.X, sc.Y]; War.CampMoveUntil = Second + 30 * 60 + d / 100; Happen("camp-moved", $"{heir.Name}勢は本陣を岩切城の前へ移し始めた。", from0.X, from0.Y, [.. People.Where(u => InArmy(u) && u.Active)]); }
+        }
+        UpdatePacking();
+        // 兵を失って戦えない本人は、委任なら本陣で控える。
+        { var me = Player; if (InArmy(me) && Auto(me) && War.Result == "" && (me.Soldiers == 0 || War.Routed.Contains(me.Id) && (me.Soldiers < 10 || War.Recovered.Contains(me.Id))))
+          { var c = CampOf(me); var spot = ProtoMove.Nearest(Map, c.X - 30_00, c.Y + 45_00); /* 本陣の入口の脇（真ん中は本陣の札と重なる） */ if (!me.Moving && Dist(me, spot.X, spot.Y) > 20_00) Walk(me, spot, c.Name, $"{c.Name}へ下がっている"); else if (!me.Moving) me.Doing = $"{c.Name}で控えている"; } }
 
         // 兵糧の届かない隊は、じわじわ士気と兵が減る（10分ごと）。城内の隊は、城の兵糧の決まり（Core/Proto/ProtoSiege.cs）。
         foreach (var u in takano.Concat(rebels).Where(u => u.Soldiers > 0 && !Sheltered(u)))

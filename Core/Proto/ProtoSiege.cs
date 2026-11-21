@@ -29,6 +29,8 @@ public sealed class ProtoSiege
     public long Since { get; set; }
     public long CampAt { get; set; }      // 城の前に陣を敷いた時刻（0＝まだ）
     public string Method { get; set; } = "包囲"; // 力攻め・包囲（基本は包囲から）
+    public string PrevMethod { get; set; } = "包囲"; // 変える前の攻め方（使番が着くまでは、こちらで動く）
+    public long MethodAt { get; set; }
     public bool Ringed { get; set; }      // 包囲されている（攻め手が城のそばにいる）
     public int Gate { get; set; } = 100; // 城の耐久
     public double GateHits { get; set; }
@@ -167,7 +169,7 @@ public sealed partial class ProtoWorld
     public (long X, long Y)? PlayerSiegePost => War.Siege != null && War.Result == "" && InArmy(Player) ? SiegePost(Player) : null;
     // 攻城の軍議：本陣（300m）で、いつでも開ける（本陣を取られたあとは、総大将のそば）。
     public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && InArmy(Player)
-        && (CampAt("takano") is { } hq && !CampLost("takano") ? Dist(Player, hq.X, hq.Y) <= 300_00 : Dist(Player, SiegeLead) <= 300_00);
+        && (CampAt("takano") is { } hq && !CampLost("takano") ? Dist(Player, hq.X, hq.Y) <= 300_00 || CampMoveTarget is { } mv && Dist(Player, mv.X, mv.Y) <= 300_00 : Dist(Player, SiegeLead) <= 300_00);
     string DecideSiege(string? want)
     {
         var s = War.Siege; if (s == null || War.Result != "") return "";
@@ -176,6 +178,7 @@ public sealed partial class ProtoWorld
         string prop = Flag("siege-decided") ? s.Method : SiegeProposal; bool present = want != null && SiegeMethods.Contains(want), refused = present && want != prop && !CommanderListens;
         string next = present && !refused ? want! : prop; var lead = SiegeLead; Set("siege-decided");
         if (next == s.Method && !present) return "";
+        if (next != s.Method) { s.PrevMethod = s.Method; s.MethodAt = Second; }
         s.Method = next;
         foreach (var u in People.Where(InArmy)) War.Target.Remove(u.Id);
         Happen("siege-method:" + Second, $"軍議で決まった：岩切城は、{MethodText(s.Method)}。", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00)]);
@@ -205,8 +208,6 @@ public sealed partial class ProtoWorld
         var auto = takano.Where(u => Auto(u) && !War.Routed.Contains(u.Id)).ToArray();
         // 城内の隊を狙っていた者は、狙いを外す（城の中の隊は個別には狙えない）。
         foreach (var (id, tid) in War.Target.ToArray()) if (Person(id).House != Rebel && Sheltered(Person(tid))) War.Target.Remove(id);
-        // 兵を失った本人も、委任なら総大将について行く（軍議や説得に加われるように）。
-        if (InArmy(Player) && Auto(Player) && Player.Soldiers == 0 && !Player.Moving && Dist(Player, SiegeLead) > 200_00) Walk(Player, (SiegeLead.X, SiegeLead.Y), SiegeLead.Name, $"{SiegeLead.Name}の陣へ向かっている");
         {
             // 陣を敷いたら知らせる。半刻たっても本人が何も言わなければ、総大将が攻め方を決める。
             var camp = SiegeCamp; var lead = SiegeLead;
@@ -218,9 +219,11 @@ public sealed partial class ProtoWorld
             bool ring = Besieging;
             if (ring != s.Ringed) { s.Ringed = ring; Happen($"ring:{ring}:{Second}", ring ? "鷹野勢は岩切城を囲んだ。" : "岩切城の囲みが解けた。", lead.X, lead.Y, [.. People.Where(u => InArmy(u) && u.Active)]); }
         }
-        if (s.Method == SiegeMethods[0])
+        // 攻め方は使番が運ぶ：着いた隊から新しい攻め方で動く。
+        string MethodFor(ProtoPerson u) => Second >= s.MethodAt + (RunnerAt(u) - Second) ? s.Method : s.PrevMethod;
+        var storm = auto.Where(u => MethodFor(u) == SiegeMethods[0]).ToArray(); var hold = auto.Except(storm).ToArray();
         {
-            foreach (var u in auto.Where(u => !War.Target.ContainsKey(u.Id)))
+            foreach (var u in storm.Where(u => !War.Target.ContainsKey(u.Id)))
             {
                 // 城の外にいる敵（打って出た隊・まだ入っていない隊）が見えていれば、そちらに当たる。いなければ城門へ寄せる。
                 var outside = rebels.Where(r => !Sheltered(r) && !Withdrawing(r) && (InSight(u, r) || ClashOf(r.Id) != null)).OrderBy(r => Dist(u, r)).ThenBy(r => r.Id).FirstOrDefault();
@@ -229,9 +232,8 @@ public sealed partial class ProtoWorld
                 if (!u.Moving && Dist(u, at.X, at.Y) > 40_00) Walk(u, at, "城門", "岩切城の城門へ寄せている");
             }
         }
-        else
         {
-            foreach (var u in auto)
+            foreach (var u in hold)
             {
                 // 城の中の敵は追わない。城から出てきた敵（見えている、または味方が戦っている）には当たる。
                 if (War.Target.TryGetValue(u.Id, out var tid) && ClashOf(u.Id) == null && Dist(Person(tid), cx, cy) <= 250_00) War.Target.Remove(u.Id);
@@ -337,7 +339,7 @@ public sealed partial class ProtoWorld
         if (s.ParleyAt >= 0 && Second / Day == s.ParleyAt / Day) return $"{lead.Name}「今日はもう使者を出した。」";
         if (!CommanderListens) return $"{lead.Name}「勧告など無用。」";
         if (terms == "帰参" && heir.Temper == "勇猛" && SpiritOf("takano") >= 60 && s.Supply >= 2) return $"{lead.Name}「謀叛人をそのまま許せと申すか。ならぬ。」";
-        s.ParleyAt = Second; s.Terms = terms; s.TalksUntil = Second + 30 * 60; s.Method = SiegeMethods[1]; Set("siege-decided"); Set("envoy-mine");
+        s.ParleyAt = Second; s.Terms = terms; s.TalksUntil = Second + 30 * 60; if (s.Method != SiegeMethods[1]) { s.PrevMethod = s.Method; s.MethodAt = Second; } s.Method = SiegeMethods[1]; Set("siege-decided"); Set("envoy-mine");
         foreach (var u in People.Where(InArmy)) War.Target.Remove(u.Id);
         Happen("envoy:" + Second, $"鷹野勢は岩切城へ降伏の使者を出した（{TermsText(terms)}）。", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00), Person(HeadOf(Rebel))]);
         return $"{lead.Name}「よかろう。使者を出す。」";

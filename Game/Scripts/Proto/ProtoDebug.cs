@@ -147,7 +147,7 @@ public partial class ProtoDebug : Node
             carrying = w.Letters.Where(l => l.Carrier == p.Id && l.State == LetterState.Carried).Select(l => new { l.Id, to = w.Person(l.To).Name }).ToArray(),
             buttons = game.Buttons.Where(b => b.Value.IsInsideTree() && b.Value.IsVisibleInTree()).Select(b => new { id = b.Key, text = b.Value.Text, disabled = b.Value.Disabled }).ToArray(),
             message = game.Message,
-            war = new { w.War.Phase, w.War.Result, assign = w.War.Assign, markers = w.Markers.Select(m => $"{w.Person(m.Unit).Name} {ProtoWorld.Clock(m.SeenAt)} {m.By}").ToArray(), soldiers = p.Soldiers, morale = p.Morale },
+            war = new { w.War.Phase, w.War.Result, assign = w.War.Assign, camp = w.CampPlan is { } cp0 ? new[] { cp0.X, cp0.Y } : null, markers = w.Markers.Select(m => $"{w.Person(m.Unit).Name} {ProtoWorld.Clock(m.SeenAt)} {m.By}").ToArray(), soldiers = p.Soldiers, morale = p.Morale },
             journal = w.Journal.TakeLast(10).Select(e => ProtoWorld.Clock(e.At) + " " + e.Text).ToArray(),
         };
     }
