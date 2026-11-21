@@ -318,8 +318,8 @@ public partial class ProtoGame : Node3D
         // 接敵で止める（2026-11-20 ユーザーの印）：入れていると、隊どうしがぶつかる手前で時を止める。入れていなければ止めない（速さも変えない）。
         stopAtContact = new CheckBox { Text = "接敵停止", FocusMode = Control.FocusModeEnum.None }; bar.AddChild(stopAtContact);
         bar.AddChild(new VSeparator());
-        Add(bar, "note", "印を残す", () => Debug.OpenNote());
-        Add(bar, "stock", "ためた印", () => Debug.OpenStock());
+        Add(bar, "note", "印", () => Debug.OpenNote());
+        Add(bar, "stock", "印一覧", () => Debug.OpenStock());
 
         Add(bar, "panel", "任務", () => panelOpen = !(panelOpen ?? true));
         var side = sidePanel = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
@@ -376,7 +376,7 @@ public partial class ProtoGame : Node3D
             + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
         Buttons["pause"].Text = Paused ? "再生" : "停止";
         int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
-        int stocked = Debug.Stock().Length; Buttons["stock"].Text = "ためた印（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
+        int stocked = Debug.Stock().Length; Buttons["stock"].Text = "印一覧（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
         // 中身が変わったときだけ作り直す（押している最中にボタンが消えないように）。
         var actions = World.Actions().ToArray(); var open = World.OpenTasks.ToArray(); var near = World.Nearby.ToArray();
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。

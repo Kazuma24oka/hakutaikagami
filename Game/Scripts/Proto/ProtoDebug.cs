@@ -180,8 +180,8 @@ public partial class ProtoDebug : Node
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End }; root.AddChild(row);
         void Done() { window.QueueFree(); noteWindow = null; noteText = null; noteSave = null; game.RefreshUi(); }
         noteSave = () => { SaveNote(image, state, all, text.Text); Done(); };
-        var ok = new Button { Text = "残す" }; ok.Pressed += () => noteSave?.Invoke(); row.AddChild(ok);
-        var cancel = new Button { Text = "やめる" }; cancel.Pressed += Done; row.AddChild(cancel);
+        var ok = new Button { Text = "保存" }; ok.Pressed += () => noteSave?.Invoke(); row.AddChild(ok);
+        var cancel = new Button { Text = "取消" }; cancel.Pressed += Done; row.AddChild(cancel);
         window.CloseRequested += Done;
         noteWindow = window; AddChild(window); window.PopupCentered(); text.GrabFocus();
     }
@@ -200,7 +200,7 @@ public partial class ProtoDebug : Node
     internal void OpenStock()
     {
         if (stockWindow != null) return;
-        stockWindow = new Window { Visible = false, Title = "ためた印", Size = new Vector2I(720, 480), ForceNative = true };
+        stockWindow = new Window { Visible = false, Title = "印一覧", Size = new Vector2I(720, 480), ForceNative = true };
         var box = new VBoxContainer(); box.SetAnchorsPreset(Control.LayoutPreset.FullRect); box.OffsetLeft = 10; box.OffsetRight = -10; box.OffsetTop = 10; box.OffsetBottom = -10; stockWindow.AddChild(box);
         var scroll = new ScrollContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill }; box.AddChild(scroll);
         var list = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; scroll.AddChild(list);
@@ -211,7 +211,7 @@ public partial class ProtoDebug : Node
             var c = new CheckBox { Text = Path.GetFileName(dir) + "　" + note, ButtonPressed = true }; list.AddChild(c); checks.Add((c, dir));
         }
         var row = new HBoxContainer(); box.AddChild(row);
-        var send = new Button { Text = "送る" }; row.AddChild(send);
+        var send = new Button { Text = "送信" }; row.AddChild(send);
         send.Pressed += () =>
         {
             var chosen = checks.Where(x => x.Box.ButtonPressed).Select(x => x.Dir).ToArray(); if (chosen.Length == 0) return;
@@ -219,9 +219,9 @@ public partial class ProtoDebug : Node
             foreach (var d in chosen) Directory.Move(d, Path.Combine(bundle, Path.GetFileName(d)));
             game.Message = chosen.Length + "件を送った"; Close(ref stockWindow);
         };
-        var remove = new Button { Text = "消す" }; row.AddChild(remove);
+        var remove = new Button { Text = "削除" }; row.AddChild(remove);
         remove.Pressed += () => { foreach (var x in checks.Where(x => x.Box.ButtonPressed)) Directory.Delete(x.Dir, true); Close(ref stockWindow); };
-        var cancel = new Button { Text = "閉じる" }; row.AddChild(cancel); cancel.Pressed += () => Close(ref stockWindow);
+        var cancel = new Button { Text = "閉" }; row.AddChild(cancel); cancel.Pressed += () => Close(ref stockWindow);
         stockWindow.CloseRequested += () => Close(ref stockWindow);
         AddChild(stockWindow); stockWindow.PopupCentered();
     }
