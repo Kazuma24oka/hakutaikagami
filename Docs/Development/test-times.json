@@ -2,7 +2,6 @@
 "method": "検査ごとに記録のある直近5回の中央値",
 "history": "D:/02_プロジェクト別/百代鏡/検証記録/検査の時間",
 "runs": [
-"2026-11-21_132014_全件",
 "2026-11-21_132431_全件",
 "2026-11-21_132921_全件",
 "2026-11-21_133002_全件",
@@ -21,7 +20,8 @@
 "2026-11-21_151140_全件",
 "2026-11-21_151845_全件",
 "2026-11-21_152319_全件",
-"2026-11-21_152938_全件"
+"2026-11-21_152938_全件",
+"2026-11-21_153950_全件"
 ],
 "wallSeconds": 29,
 "count": 4777,
@@ -3149,7 +3149,7 @@
 "HakutaiKagami.Tests.ProtoWarTests.AlliesAreKnownThroughTheCamp": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.EnemiesFightingFriendsAreSeenFromAfar": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"勧告\")": 0.4,
-"HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"調略_断る\")": 0.7,
+"HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"調略_断る\")": 0.6,
 "HakutaiKagami.Tests.ProtoWarTests.EnvoysAndPlotsWorkThroughTheSiegeCouncil(mode: \"調略_約す\")": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.FlanksCutOffAmbushAndPursuitWork": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.PersuadingTheCastellanPreventsTheRebellion": 0.2,

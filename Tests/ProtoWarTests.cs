@@ -815,6 +815,12 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(!w.Sees(me, kosaka), "本陣の範囲の外の遠くの味方は分からない");
         (me.X, me.Y) = (camp.X - 1400_00, camp.Y);
         cp.Expect(w.Sees(me, kosaka), "本人の目で見える所の味方は分かる");
+        // 本陣を移している間は、総大将の隊にも知らせが集まる。
+        var heir = w.Person("takano-masayuki"); (me.X, me.Y) = (camp.X + 30_00, camp.Y); heir.Path = []; heir.PathIndex = 0;
+        w.Do("camp:move:" + (camp.X + 600_00) + "," + camp.Y);
+        cp.Expect(w.CampMoving, "本陣を移し始める");
+        (heir.X, heir.Y) = (camp.X - 1300_00, camp.Y); (kosaka.X, kosaka.Y) = (camp.X - 2100_00, camp.Y); (me.X, me.Y) = (camp.X - 900_00, camp.Y);
+        cp.Expect(w.Sees(me, kosaka), "本陣を移している間は、総大将の隊の近くの味方も、総大将を通して分かる");
     }
 
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。

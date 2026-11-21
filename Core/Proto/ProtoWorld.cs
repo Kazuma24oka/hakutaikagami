@@ -121,7 +121,15 @@ public sealed partial class ProtoWorld
     {
         if (War.Phase is not ("行軍" or "合戦") && !Returning || f.Soldiers <= 0 || !InArmy(f) || !InArmy(Player)) return false;
         if (Dist(Player, f) <= SightOf(Player)) return true;
-        return CampAt("takano") is { } hq && !CampLost("takano") && Dist(f, hq.X, hq.Y) <= CampRange && Dist(Player, hq.X, hq.Y) <= CampRange;
+        return InfoHubs().Any(h => Dist(f, h.X, h.Y) <= CampRange && Dist(Player, h.X, h.Y) <= CampRange);
+    }
+    // 知らせの集まる所：本陣。本陣を移している・畳んでいる・取られたあとは、総大将の隊も（使番は総大将のもとへも走る。2026-11-21 ユーザー「分かるようにする」）。
+    IEnumerable<(long X, long Y)> InfoHubs()
+    {
+        bool down = CampLost("takano") || CampMoving || CampPacking;
+        if (CampAt("takano") is { } hq && !CampLost("takano")) yield return hq;
+        if (down || CampAt("takano") == null && Flag("camp-set")) { var head = Person(HeadOf("takano")); if (head.Active && head.Soldiers > 0 && InArmy(head)) yield return (head.X, head.Y); }
+        if (CampMoveTarget is { } mv) yield return mv; // 移す先でも、先に着いた使番が知らせを集める
     }
     // 味方の隊とぶつかっている敵の隊は、本人から遠くても見える（2026-11-21 ユーザー「味方部隊と接敵している敵部隊が見えないのも変」）。
     // 城内の隊（城という一つの部隊）は別。
@@ -134,9 +142,9 @@ public sealed partial class ProtoWorld
             string? fid = c.A == enemy.Id ? c.B : c.B == enemy.Id ? c.A : null; if (fid == null) continue;
             var f = Person(fid); if (Hostile(Player.House, f.House)) continue;
             if (f.Player || Dist(Player, f) <= SightOf(Player) || Dist(Player, enemy) <= SightOf(Player)) return true;
-            string side = Side(Player.House);
-            if (CampAt(side) is { } hq && !CampLost(side) && Dist(f, hq.X, hq.Y) <= CampRange && Dist(Player, hq.X, hq.Y) <= CampRange
-                && Second >= c.Since + (Dist(f, hq.X, hq.Y) + Dist(Player, hq.X, hq.Y)) / RunnerSpeed) return true;
+            foreach (var hq in InfoHubs())
+                if (Dist(f, hq.X, hq.Y) <= CampRange && Dist(Player, hq.X, hq.Y) <= CampRange
+                    && Second >= c.Since + (Dist(f, hq.X, hq.Y) + Dist(Player, hq.X, hq.Y)) / RunnerSpeed) return true;
         }
         return false;
     }
