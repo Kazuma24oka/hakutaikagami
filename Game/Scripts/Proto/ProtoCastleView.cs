@@ -7,7 +7,7 @@ using HakutaiKagami.Core.Proto;
 // 試作版の攻城の間の城の見え方（決まりは Core/Proto/ProtoSiege.cs）。
 // 城そのものは、もとの模型（本城・支城・館）を4倍にしたもの（Game/Scripts/Proto/ProtoGame.cs の拠点の模型。2026-11-21 ユーザー）。ここでは足すものだけを描く。
 // ・城門（城の南）のまわりに、明るい枠がゆっくり点滅する（攻城の間。門の色は変えない）。
-// ・城内の武将と兵は、合戦の姿のちびコマで、城門の両脇の柵の内に並ぶ（城が打ち合っている間は打つ動き）。
+// ・城内の武将と兵は、合戦の姿のちびコマで、城の中（柵の内の広場）にいる。城が打ち合っている間は打つ動きをするだけで、門の前には立たない（2026-11-21 ユーザー）。
 // ・城の名前の下に、耐久・城の兵・士気と、耐久の棒を出す（本人が城の近くにいるとき）。
 public partial class ProtoGame
 {
@@ -56,14 +56,14 @@ public partial class ProtoGame
         castleLabel.Position = top; castleBar.Position = top - (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.03f);
     }
 
-    // 城内の武将と兵を、城門の両脇の柵の内に並べる（合戦の姿のちびコマ。南を向く）。
+    // 城内の武将と兵を、城の中の広場に置く（合戦の姿のちびコマ。南を向く）。
     void DrawWallGuards(Vector3 c, Vector3 gate)
     {
         var garrison = World.Garrison.OrderByDescending(u => u.Id == World.HeadOf("iwakiri")).ThenBy(u => u.Id).ToArray();
         bool show = garrison.Length > 0 && World.War.Result == "" && World.War.Phase is "行軍" or "合戦" && c.DistanceTo(ToScene(World.Player.X, World.Player.Y)) <= 1000;
         float px = Math.Max(0.12f, distance / 380f); string anim = World.CastleFighting ? "attack" : "idle"; double t = Time.GetTicksMsec() / 1000.0;
-        // 柵のすぐ内（門から北へ少し）。門の両脇へ、交互に並べる。
-        Vector3 Spot(int n) { var at = gate + new Vector3((n % 2 == 0 ? 1 : -1) * (30 + 13 * (n / 2)), 0, -22); at.Y = HeightAt(at.X, at.Z) + 1; return at; }
+        // 柵の内の広場（城の真ん中から南へ60〜80m。主郭の段と門の建物の間）に、左右へ散らして置く。
+        Vector3 Spot(int n) { var at = c + new Vector3((n % 2 == 0 ? 1 : -1) * (18 + 9 * (n / 2)), 0, 62 + 10 * (n % 3)); at.Y = HeightAt(at.X, at.Z) + 1; return at; }
         foreach (var (_, d) in wallOfficers) d.Visible = false;
         int slot = 0;
         if (show) foreach (var p in garrison)
@@ -72,7 +72,7 @@ public partial class ProtoGame
             if (!d.Apply(SpriteKey(World, p))) continue;
             d.Visible = true; d.PixelSize = px * 1.2f; d.Position = Spot(slot++); d.Freeze(anim, t + slot * 0.4); d.Face(Vector3.Back, Camera);
         }
-        int want = show ? Math.Clamp(garrison.Sum(u => u.Soldiers) / 12, 2, 12) : 0; var mix = show ? TroopMix(garrison[0]) : [];
+        int want = show ? Math.Clamp(garrison.Sum(u => u.Soldiers) / 15, 2, 8) : 0; var mix = show ? TroopMix(garrison[0]) : [];
         while (wallSoldiers.Count < want) { var d = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(d); wallSoldiers.Add(d); }
         for (int i = 0; i < wallSoldiers.Count; i++)
         {

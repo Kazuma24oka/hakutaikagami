@@ -30,25 +30,27 @@ public partial class DotOfficerActor : Node3D
     Sheet? sheet;public string Key{get;private set;}="";
     // 3D の武将と同じくらいの背丈（体25ドット）。
     public float PixelSize{get=>sprite.PixelSize;set{sprite.PixelSize=value;foreach(var b in backs)b.PixelSize=value;if(shadow!=null)shadow.Scale=new Vector3(value*26,1,value*16);}}
-    // 厚み（試作版、2026-11-20 ユーザーの印「身体の厚みがなく見える」）：絵の右下に、暗い同じ絵を2枚ずらして重ねて厚みに見せ、足元に丸い影を置く。
+    // 厚み（試作版、2026-11-20 ユーザーの印「身体の厚みがなく見える」、11-21「立体感がたりない」）：絵の後ろ上へ、少し暗くした同じ絵を4枚、半ドットずつずらして重ね、
+    // 厚い切り抜きを斜め上から見たように見せる（奥の層ほど暗い）。足元に丸い影を置く。
+    const int Layers=4;
     readonly List<Sprite3D> backs=new();MeshInstance3D? shadow;static ImageTexture? shadowTex;
     public bool Solid
     {
         set
         {
-            if(!value||backs.Count>0)return;
-            for(int i=1;i<=2;i++){var b=new Sprite3D{Billboard=sprite.Billboard,TextureFilter=sprite.TextureFilter,Shaded=false,AlphaCut=sprite.AlphaCut,RegionEnabled=true,Centered=true,PixelSize=sprite.PixelSize,NoDepthTest=sprite.NoDepthTest,RenderPriority=sprite.RenderPriority-i,Modulate=new Color(.13f,.1f,.16f),Texture=sprite.Texture,RegionRect=sprite.RegionRect,FlipH=sprite.FlipH};backs.Add(b);AddChild(b);}
+            if(!value||backs.Count>0)return;sprite.AlphaCut=SpriteBase3D.AlphaCutMode.Disabled;sprite.RenderPriority=-1;
+            for(int i=1;i<=Layers;i++){var b=new Sprite3D{Billboard=sprite.Billboard,TextureFilter=sprite.TextureFilter,Shaded=false,AlphaCut=SpriteBase3D.AlphaCutMode.Disabled,RegionEnabled=true,Centered=true,PixelSize=sprite.PixelSize,NoDepthTest=sprite.NoDepthTest,RenderPriority=-1-i,Modulate=new Color(.5f-.07f*i,.46f-.07f*i,.56f-.07f*i),Texture=sprite.Texture,RegionRect=sprite.RegionRect,FlipH=sprite.FlipH};backs.Add(b);AddChild(b);}
             if(shadowTex==null)
             {
                 var img=Image.CreateEmpty(32,32,false,Image.Format.Rgba8);
                 for(int y=0;y<32;y++)for(int x=0;x<32;x++){float r=Mathf.Sqrt((x-15.5f)*(x-15.5f)+(y-15.5f)*(y-15.5f))/15.5f;img.SetPixel(x,y,new Color(0,0,0,r>=1?0:.5f*Mathf.Min(1,(1-r)*2.5f)));}
                 shadowTex=ImageTexture.CreateFromImage(img);
             }
-            shadow=new MeshInstance3D{Mesh=new PlaneMesh{Size=Vector2.One},MaterialOverride=new StandardMaterial3D{ShadingMode=BaseMaterial3D.ShadingModeEnum.Unshaded,Transparency=BaseMaterial3D.TransparencyEnum.Alpha,AlbedoTexture=shadowTex,NoDepthTest=sprite.NoDepthTest,RenderPriority=sprite.RenderPriority-3},Position=new Vector3(0,.5f,0),Scale=new Vector3(sprite.PixelSize*26,1,sprite.PixelSize*16)};
+            shadow=new MeshInstance3D{Mesh=new PlaneMesh{Size=Vector2.One},MaterialOverride=new StandardMaterial3D{ShadingMode=BaseMaterial3D.ShadingModeEnum.Unshaded,Transparency=BaseMaterial3D.TransparencyEnum.Alpha,AlbedoTexture=shadowTex,NoDepthTest=sprite.NoDepthTest,RenderPriority=-Layers-2},Position=new Vector3(0,.5f,0),Scale=new Vector3(sprite.PixelSize*26,1,sprite.PixelSize*16)};
             AddChild(shadow);MoveChild(sprite,-1);SyncBacks();
         }
     }
-    void SyncBacks(){for(int i=0;i<backs.Count;i++){var b=backs[i];b.Texture=sprite.Texture;b.RegionRect=sprite.RegionRect;b.FlipH=sprite.FlipH;b.Offset=sprite.Offset+new Vector2(.9f*(i+1),-.55f*(i+1));}}
+    void SyncBacks(){for(int i=0;i<backs.Count;i++){var b=backs[i];b.Texture=sprite.Texture;b.RegionRect=sprite.RegionRect;b.FlipH=sprite.FlipH;b.Offset=sprite.Offset+new Vector2((sprite.FlipH?-.3f:.3f)*(i+1),.5f*(i+1));}}
     public override void _Ready(){if(sprite.GetParent()==null)AddChild(sprite);}
     public DotOfficerActor(){sprite.PixelSize=.07f;AddChild(sprite);}
 
@@ -78,7 +80,7 @@ public partial class DotOfficerActor : Node3D
     public void Face(Vector3 direction,Camera3D? camera)
     {
         if(camera==null||direction.LengthSquared()<1e-6f)return;
-        sprite.FlipH=direction.Dot(camera.GlobalBasis.X)>0;foreach(var b in backs)b.FlipH=sprite.FlipH;
+        bool was=sprite.FlipH;sprite.FlipH=direction.Dot(camera.GlobalBasis.X)>0;if(was!=sprite.FlipH)SyncBacks();
     }
     public bool FacingRight=>sprite.FlipH;
     // 建物に隠れても見えるように、いつも手前に描く（試作版の地図、2026-11-18）。
