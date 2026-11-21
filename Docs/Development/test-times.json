@@ -2,7 +2,6 @@
 "method": "検査ごとに記録のある直近5回の中央値",
 "history": "D:/02_プロジェクト別/百代鏡/検証記録/検査の時間",
 "runs": [
-"2026-11-21_121319_全件",
 "2026-11-21_121412_全件",
 "2026-11-21_122623_全件",
 "2026-11-21_124134_全件",
@@ -21,7 +20,8 @@
 "2026-11-21_140815_全件",
 "2026-11-21_141852_全件",
 "2026-11-21_142635_全件",
-"2026-11-21_142728_全件"
+"2026-11-21_142728_全件",
+"2026-11-21_143242_全件"
 ],
 "wallSeconds": 28,
 "count": 4773,
@@ -3173,7 +3173,7 @@
 "HakutaiKagami.Tests.ProtoWarTests.TheCouncilFogAndScoutsWork": 0.2,
 "HakutaiKagami.Tests.ProtoWarTests.TheCouncilShowsExpectedMeritAndTheBattleAwardsIt": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheFeignedRetreatDrawsTheEnemyIntoTheAmbush": 0.3,
-"HakutaiKagami.Tests.ProtoWarTests.TheFilmsStoryReachesABattle": 0.3,
+"HakutaiKagami.Tests.ProtoWarTests.TheFilmsStoryReachesABattle": 0.4,
 "HakutaiKagami.Tests.ProtoWarTests.TheMarchAndBattleAreLogged": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.ThePlayerCommandsInAClash": 0.3,
 "HakutaiKagami.Tests.ProtoWarTests.ThePlayerMustersAndCanAttack": 0.3,

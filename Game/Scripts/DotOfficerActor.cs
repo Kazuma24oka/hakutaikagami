@@ -120,7 +120,7 @@ public partial class DotOfficerActor : Node3D
     public void Face(Vector3 direction,Camera3D? camera)
     {
         if(camera==null||direction.LengthSquared()<1e-6f)return;
-        sprite.FlipH=direction.Dot(camera.GlobalBasis.X)>0;if(solid!=null)solid.Scale=new Vector3(sprite.FlipH?-sprite.PixelSize:sprite.PixelSize,sprite.PixelSize,sprite.PixelSize);
+        float side=direction.Normalized().Dot(camera.GlobalBasis.X);if(Mathf.Abs(side)<.2f)return;sprite.FlipH=side>0; // 真上・真下に近い向きでは、前の右左のままif(solid!=null)solid.Scale=new Vector3(sprite.FlipH?-sprite.PixelSize:sprite.PixelSize,sprite.PixelSize,sprite.PixelSize);
     }
     public bool FacingRight=>sprite.FlipH;
     // 建物に隠れても見えるように、いつも手前に描く（試作版の地図、2026-11-18）。

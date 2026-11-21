@@ -272,6 +272,9 @@ public partial class ProtoGame : Node3D
         while (list.Count < want) { var d = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(d); list.Add(d); }
         // 進む向きの反対側（後ろ）に、横3列で並べる。止まっているときは最後に進んだ向きのまま。
         var dir = heading.TryGetValue(p.Id, out var h) ? h : new Vector3(0, 0, -1);
+        // 近くで見るとき（ちびコマ）は、画面の右か左だけを向かせる（上や下を向くと、兵が大将に重なって見にくい。2026-11-21 ユーザー）。
+        // 凸で見るときの向き（上下左右）は世界の向きのまま。真上・真下に近い向きのときは、前の右左をそのまま使う。
+        dir = SideDir(p.Id, dir);
         // 足軽は大将の後ろに並ぶ（2026-11-19 ユーザーの図「大将どうしが向かい合い、兵は後ろ」）。ぶつかっている間は打つ動き。
         bool front = World.ClashOf(p.Id) != null; if (front) anim = "attack";
         var back = -dir; var side = new Vector3(-back.Z, 0, back.X);
@@ -286,6 +289,14 @@ public partial class ProtoGame : Node3D
             d.PixelSize = px * FollowerSize; d.Position = at; d.Freeze(anim, Time.GetTicksMsec() / 1000.0 + i * 0.21);
             d.Face(dir, Camera);
         }
+    }
+    readonly Dictionary<string, int> screenSide = new();
+    Vector3 SideDir(string id, Vector3 dir)
+    {
+        var right = Camera.GlobalBasis.X; right.Y = 0; right = right.LengthSquared() > 1e-6f ? right.Normalized() : Vector3.Right;
+        float d = dir.Dot(right); int side = screenSide.GetValueOrDefault(id, 1);
+        if (MathF.Abs(d) > 0.25f) side = d > 0 ? 1 : -1;
+        screenSide[id] = side; return right * side;
     }
     readonly Dictionary<string, Vector3> lastPos = new();
 
@@ -656,7 +667,7 @@ public partial class ProtoGame : Node3D
                 if (lastPos.TryGetValue(p.Id, out var before)) { dot.Face(real - before, Camera); var mv = real - before; mv.Y = 0; if (mv.LengthSquared() > 0.01f) heading[p.Id] = mv.Normalized(); }
                 lastPos[p.Id] = real;
                 // 向きは世界の向き一つ（凸と同じ）。合戦の間は、ちびコマも足軽もこれに合わせる。
-                if (World.War.Facing.TryGetValue(p.Id, out var wf)) { var fdir = new Vector3((float)wf[0], 0, (float)wf[1]); dot.Face(fdir, Camera); heading[p.Id] = fdir; }
+                if (World.War.Facing.TryGetValue(p.Id, out var wf)) { var fdir = new Vector3((float)wf[0], 0, (float)wf[1]); heading[p.Id] = fdir; dot.Face(SideDir(p.Id, fdir), Camera); }
                 if (inLine && fm.Count > 1) label.Text = $"{p.Name}勢　{fm.Total}（{fm.Parts}）";
                 else if (inLine && fm.Count == 0) label.Visible = seen && (p.Player || close);
                 // 引いた視点では、隊を札一枚で見せる（2026-11-19 案2）。近づくと大将と足軽のちびコマ。
