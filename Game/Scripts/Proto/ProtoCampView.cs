@@ -9,6 +9,8 @@ using HakutaiKagami.Core.Proto;
 // ・指示と兵糧の届く範囲：本陣を中心にした輪（1,000m）。地形に隠れないように、いつも見える線で描く。
 public partial class ProtoGame
 {
+    internal bool CampPick; // 本陣を移す先を、地図を押して選んでいる（右クリックでやめる）
+    MeshInstance3D? campGhost; Label3D? campGhostLabel;
     Node3D? campNode; MeshInstance3D? campRing; Label3D? campLabel; Sprite3D? campIcon; StandardMaterial3D? campCloth, campBand, campFlag, campRingMat;
 
     void BuildCamp()
@@ -74,17 +76,27 @@ public partial class ProtoGame
         if (campNode == null) BuildCamp();
         bool war = World.War.Phase is "行軍" or "合戦" || World.Returning && World.CampAt("takano") != null;
         var plan = World.CampPlan; bool show = war && plan != null;
-        campNode!.Visible = campRing!.Visible = campLabel!.Visible = campIcon!.Visible = show; if (!show) return;
+        campNode!.Visible = campRing!.Visible = campLabel!.Visible = campIcon!.Visible = show; if (!show) { if (campGhost != null) campGhost.Visible = campGhostLabel!.Visible = false; CampPick = false; return; }
         var at = ToScene(plan!.Value.X, plan.Value.Y); bool set = World.CampAt("takano") != null, lost = World.CampLost("takano");
         campNode.Position = at; campNode.Scale = Vector3.One * (2f / 3); // 初めに作った大きさの2/3（幅80m。2026-11-21 ユーザー）
         float lift = 50 + distance * 0.035f; campLabel.Position = at + new Vector3(0, lift, 0);
         campIcon.Position = campLabel.Position + (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.05f); campIcon.Visible = distance > 500;
         var burnt = new Color(0.2f, 0.18f, 0.17f); var house = HouseColor("takano");
         campCloth!.AlbedoColor = lost ? burnt : new Color(0.96f, 0.95f, 0.91f); campBand!.AlbedoColor = lost ? burnt : house; campFlag!.AlbedoColor = lost ? burnt : house;
-        campLabel.Text = lost ? "本陣（奪われた）" : "本陣";
+        campLabel.Text = lost ? "本陣（奪われた）" : World.CampMoving ? $"移している　あと{(World.CampMoveLeft + 59) / 60}分" : "本陣";
+        // 移す先：選んでいる間はマウスの所に、移している間は行き先に、届く範囲の輪と名前を出す。
+        if (campGhost == null)
+        {
+            campGhost = new MeshInstance3D { Mesh = campRing.Mesh, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, Transparency = BaseMaterial3D.TransparencyEnum.Alpha, AlbedoColor = new Color(0.7f, 1, 0.75f, 0.6f), NoDepthTest = true, RenderPriority = 13 } }; AddChild(campGhost);
+            campGhostLabel = new Label3D { Text = "本陣", Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0013f, FontSize = 30, OutlineSize = 12, NoDepthTest = true, RenderPriority = 23, Modulate = new Color(0.75f, 1, 0.8f) }; AddChild(campGhostLabel);
+        }
+        Vector3? ghost = World.CampMoveTarget is { } mt ? ToScene(mt.X, mt.Y) : CampPick && World.CanMoveCamp ? PickGround(GetViewport().GetMousePosition()) : null;
+        if (CampPick && !World.CanMoveCamp) CampPick = false;
+        campGhost.Visible = campGhostLabel!.Visible = ghost != null && !lost;
+        if (ghost is { } gp) { float gr = ProtoWorld.CampRange / 100f; campGhost.Position = gp + new Vector3(0, 2, 0); campGhost.Scale = new Vector3(gr, Math.Max(1, distance / 60f), gr); campGhostLabel.Position = gp + new Vector3(0, 20 + distance * 0.03f, 0); }
         campLabel.Modulate = lost ? new Color(0.85f, 0.55f, 0.5f) : set ? new Color(1, 0.96f, 0.85f) : new Color(1, 0.96f, 0.85f, 0.6f);
         float r = ProtoWorld.CampRange / 100f; campRing.Position = at + new Vector3(0, 2, 0); campRing.Scale = new Vector3(r, Math.Max(1, distance / 60f), r);
-        campRing.Visible = World.War.Result == "" && !lost;
+        campRing.Visible = World.War.Result == "" && !lost && !World.CampMoving;
         campRingMat!.AlbedoColor = new Color(1, 0.95f, 0.7f, set ? 0.6f : 0.3f);
     }
 }

@@ -382,8 +382,8 @@ public partial class ProtoGame : Node3D
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
-        static bool IsWarAction(string id) => id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
+        static bool IsWarAction(string id) => id.StartsWith("camp:") || id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -405,7 +405,7 @@ public partial class ProtoGame : Node3D
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
                 if (World.War.Siege == null && World.CampAt("takano") != null)
-                    panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
+                    panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.CampMoving ? "本陣　移している" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
                 if (World.War.Siege is { } siege)
                 {
@@ -498,6 +498,8 @@ public partial class ProtoGame : Node3D
     internal bool ClickGround(Vector2 screen)
     {
         if (PickGround(screen) is not { } q) return false;
+        // 本陣を移す先を選んでいる：押した所へ移すよう進言する。
+        if (CampPick) { CampPick = false; Say(World.Do($"camp:move:{(long)(q.X * 100)},{(long)(q.Z * 100)}"), World.HeadOf("takano")); panelKey = ""; RefreshUi(); return true; }
         // 委任している間は、地図を押しても動かさない。委任を解くかを聞く（2026-11-20 ユーザー）。
         if (World.War.PlayerFollows && (World.War.Phase is "行軍" or "合戦" || World.Returning)) { AskRelease(q.X, q.Z); return false; }
         // 攻城の間に城を押すと、囲みの自分の陣へ向かう（城の中へは歩かない）。
@@ -545,6 +547,7 @@ public partial class ProtoGame : Node3D
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
             if (askLayer != null || OverWindow(mb.Position)) return;
+            if (CampPick && mb.ButtonIndex == MouseButton.Right) { CampPick = false; return; }
             if (mb.ButtonIndex == MouseButton.Left) ClickGround(mb.Position);
             else if (mb.ButtonIndex == MouseButton.WheelUp) distance = Math.Max(120, distance * 0.85f);
             else if (mb.ButtonIndex == MouseButton.WheelDown) distance = Math.Min(4000, distance / 0.85f);
@@ -695,6 +698,7 @@ public partial class ProtoGame : Node3D
     {
         if (aid == "council:open") { OpenCouncil(); return; }
         if (aid == "siege:open") { OpenSiegeCouncil(); return; }
+        if (aid == "camp:pick") { CampPick = true; return; }
         var lines = new List<(string, string)>();
         if (aid.StartsWith("accept:") && World.Tasks.FirstOrDefault(t => t.Id == aid[7..]) is { } task && task.Speech != "") lines.Add((task.Giver, task.Speech));
         var result = World.Do(aid); ShowGoal();

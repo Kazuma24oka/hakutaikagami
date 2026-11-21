@@ -105,6 +105,7 @@ public partial class ProtoDebug : Node
                 case "/wheel": { var ev = new InputEventMouseButton { ButtonIndex = MouseButton.WheelUp, Pressed = true, Position = new Vector2(float.Parse(F("x")), float.Parse(F("y"))), GlobalPosition = new Vector2(float.Parse(F("x")), float.Parse(F("y"))) }; Input.ParseInputEvent(ev); await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); reply.SetResult(Write(new { distance = game.CameraDistance, width = GetViewport().GetVisibleRect().Size.X, height = GetViewport().GetVisibleRect().Size.Y })); return; }
                 case "/ask": (F("yes") == "1" ? game.AskYes : game.AskNo)?.EmitSignal(BaseButton.SignalName.Pressed); break;
                 case "/siege-pick": if (game.SiegeButtons.TryGetValue(F("m"), out var sb)) sb.EmitSignal(BaseButton.SignalName.Pressed); break;
+                case "/camp-move": game.Message = w.Do($"camp:move:{(long)(float.Parse(F("x")) * 100)},{(long)(float.Parse(F("y")) * 100)}"); game.RefreshUi(); break;
                 case "/look": game.LookAt(float.Parse(F("x")), float.Parse(F("z"))); break;
                 case "/awards-ok": game.AwardsOk?.EmitSignal(BaseButton.SignalName.Pressed); break;
                 // 軍議の窓の選択肢を選ぶ（確かめ用）：plan・role は並びの番号。

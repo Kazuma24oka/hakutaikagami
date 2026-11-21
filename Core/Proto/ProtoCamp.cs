@@ -10,6 +10,8 @@ namespace HakutaiKagami.Core.Proto;
 // ・敗走：崩れた隊は本陣（城）へ退いて収容される。半刻休むと、残った兵の7割で戦いに戻る（何度でも。兵が10以上残っていれば）。
 // ・本陣を取られる：敵の隊が本陣（60m）に踏み込み、味方の隊がそば（150m）にいないと取られる。兵糧を失い、収容していた兵は半分が散り、全軍士気が30下がる。
 //   そのあとは、指示は総大将の隊から届き、崩れた隊は出てきた城まで退く。劣勢の岩切勢は、手薄な本陣が見えると突きに来る。
+// ・本陣を移す：本人が本陣（300m）にいるとき、総大将に進言できる（聞き入れたときだけ）。畳んで運んで張り直すまで、半刻＋道のり（1秒に1m）かかる。
+//   移している間は本陣が無い扱い：指示は総大将の隊から届き、兵糧の補給は止まり（手持ちで保つ）、崩れた隊は休めない。元の場所を敵に踏まれれば取られる。
 // ・軍議は本陣で行う：野戦の軍議は出陣の前の城で、攻城の軍議は本陣（300m）で。
 public sealed partial class ProtoWorld
 {
@@ -32,14 +34,32 @@ public sealed partial class ProtoWorld
     public bool Ordered(ProtoPerson u)
     {
         string side = Side(u.House); if (CampAt(side) is not { } c) return true;
-        if (CampLost(side)) { var head = Person(HeadOf(side)); return head.Active && Dist(u, head) <= CampRange; }
+        if (CampLost(side) || side != Rebel && CampMoving) { var head = Person(HeadOf(side)); return head.Active && Dist(u, head) <= CampRange; }
         return Dist(u, c.X, c.Y) <= CampRange;
     }
     // 兵糧が届くか：本陣に兵糧があり、本陣から CampRange。
     public bool Supplied(ProtoPerson u)
     {
         string side = Side(u.House); if (CampAt(side) is not { } c) return true;
-        return !CampLost(side) && StockOf(side) > 0 && Dist(u, c.X, c.Y) <= CampRange;
+        return !CampLost(side) && !(side != Rebel && CampMoving) && StockOf(side) > 0 && Dist(u, c.X, c.Y) <= CampRange;
+    }
+
+    // ---- 本陣を移す ----
+    public bool CampMoving => War.CampMoveTo != null;
+    public (long X, long Y)? CampMoveTarget => War.CampMoveTo is { } t ? (t[0], t[1]) : null;
+    public long CampMoveLeft => Math.Max(0, War.CampMoveUntil - Second);
+    public bool CanMoveCamp => War.Phase is "行軍" or "合戦" && War.Result == "" && InArmy(Player) && !CampLost("takano") && !CampMoving && !Talking
+        && CampAt("takano") is { } c && Dist(Player, c.X, c.Y) <= 300_00;
+    string MoveCamp(long x, long y)
+    {
+        if (!CanMoveCamp) return "";
+        var lead = Person(Heir).Active ? Person(Heir) : Person(Karou); var from = CampAt("takano")!.Value;
+        if (HeadOf("takano") != Player.Id && !CommanderListens) return $"{lead.Name}「本陣は動かさぬ。」";
+        (x, y) = OutsideWalls(x, y, from.X, from.Y); var to = ProtoMove.Nearest(Map, x, y);
+        long d = (long)Math.Sqrt(Math.Pow(to.X - from.X, 2) + Math.Pow(to.Y - from.Y, 2)); if (d < 100_00) return $"{lead.Name}「それでは動かす意味が無い。」";
+        War.CampMoveTo = [to.X, to.Y]; War.CampMoveUntil = Second + 30 * 60 + d / 100;
+        Happen("camp-move:" + Second, $"{lead.Name}勢は本陣を畳み、移し始めた。", from.X, from.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+        return $"{lead.Name}「よかろう。本陣を移す。」";
     }
 
     // 手持ちの兵糧の残り（秒）。届いている間は null。
@@ -56,7 +76,10 @@ public sealed partial class ProtoWorld
         if (!Flag("camp-set") && War.Camp.TryGetValue("takano", out var plan) && War.Split)
         { Set("camp-set"); Happen("camp-set", $"{heir.Name}勢は本陣を置いた。", plan[0], plan[1], [.. People.Where(u => InArmy(u) && u.Active)]); }
         // 攻城になって城の前に陣を敷いたら、本陣をそこへ進める。
-        if (War.Siege is { CampAt: > 0 } && Flag("camp-set") && !CampLost("takano") && !Flag("camp-moved"))
+        // 移し終えた。
+        if (War.CampMoveTo is { } to && Second >= War.CampMoveUntil)
+        { War.Camp["takano"] = to; War.CampMoveTo = null; Happen("camp-at:" + Second, $"{heir.Name}勢は本陣を移し終えた。", to[0], to[1], [.. People.Where(u => InArmy(u) && u.Active)]); }
+        if (War.Siege is { CampAt: > 0 } && Flag("camp-set") && !CampLost("takano") && !Flag("camp-moved") && War.CampMoveTo == null)
         { Set("camp-moved"); var sc = SiegeCamp; War.Camp["takano"] = [sc.X, sc.Y]; Happen("camp-moved", $"{heir.Name}勢は本陣を岩切城の前へ進めた。", sc.X, sc.Y, [.. People.Where(u => InArmy(u) && u.Active)]); }
 
         // 兵糧の届かない隊は、じわじわ士気と兵が減る（10分ごと）。城内の隊は、城の兵糧の決まり（Core/Proto/ProtoSiege.cs）。
@@ -77,7 +100,7 @@ public sealed partial class ProtoWorld
             bool guarded = People.Any(u => InArmy(u) && u.Active && u.Soldiers > 0 && !War.Routed.Contains(u.Id) && Dist(u, camp.X, camp.Y) <= 150_00);
             if (taker != null && !guarded)
             {
-                Set("camp-lost:takano"); War.Stock["takano"] = 0; if (War.Siege != null) War.Siege.Supply = 0;
+                Set("camp-lost:takano"); War.CampMoveTo = null; War.Stock["takano"] = 0; if (War.Siege != null) War.Siege.Supply = 0;
                 foreach (var u in People.Where(u => InArmy(u) && War.Routed.Contains(u.Id) && Dist(u, camp.X, camp.Y) <= 150_00)) { u.Soldiers /= 2; War.AtCamp.Remove(u.Id); }
                 Happen("camp-lost:takano", $"{taker.Name}の兵が鷹野勢の本陣を奪った。兵糧は失われた。", camp.X, camp.Y, [.. People.Where(u => InArmy(u) && u.Active), taker]);
                 AddSpirit("takano", -30); AddSpirit(Rebel, 10); flags.Remove("raid:" + taker.Id);

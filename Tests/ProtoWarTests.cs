@@ -673,6 +673,35 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(!w.Supplied(heir), "取られたあとは、どの隊にも兵糧が届かない");
     }
 
+    // 本陣を移す（Core/Proto/ProtoCamp.cs）：本陣にいる本人が進言する。移している間は本陣が無い扱いで、移し終えると新しい所から届く。
+    [Fact]
+    public void TheCampCanBeMovedButIsDownWhileMoving()
+    {
+        using var cp = new Checkpoints("試作版の本陣を移す", o);
+        var w = new ProtoWorld(Map);
+        while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
+        var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
+        for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
+        w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[1], "正面から当たる", "後詰", "敵を崩す"); w.Do("order:follow");
+        for (int i = 0; i < 600 && w.CampAt("takano") == null; i++) w.Advance(60);
+        var me = w.Player; var heir = w.Person("takano-masayuki"); var camp = w.CampAt("takano")!.Value;
+        w.Do("order:free"); me.Path = []; me.PathIndex = 0; (me.X, me.Y) = (camp.X + 1200_00, camp.Y);
+        cp.Expect(!w.CanMoveCamp && !w.Actions().Any(a => a.Id == "camp:pick"), "本陣から離れていると、移す進言はできない");
+        (me.X, me.Y) = (camp.X + 50_00, camp.Y);
+        cp.Expect(w.CanMoveCamp && w.Actions().Any(a => a.Id == "camp:pick"), "本陣にいれば、移す進言ができる");
+        var front = w.Front; long tx = (camp.X + front.X) / 2, ty = (camp.Y + front.Y) / 2;
+        cp.Log(w.Do($"camp:move:{tx},{ty}"));
+        var to = w.CampMoveTarget!.Value; double dist = Math.Sqrt(Math.Pow(to.X - camp.X, 2) + Math.Pow(to.Y - camp.Y, 2)) / 100;
+        cp.Log($"{camp.X / 100},{camp.Y / 100} → {to.X / 100},{to.Y / 100}（{dist:0}m）　あと{w.CampMoveLeft / 60}分");
+        cp.Expect(w.CampMoving && w.CampMoveLeft >= 30 * 60, "聞き入れられると移し始める。半刻と道のりの分だけかかる");
+        (heir.X, heir.Y) = (camp.X, camp.Y); heir.Path = []; heir.PathIndex = 0;
+        cp.Expect(!w.Supplied(heir) && w.Ordered(heir) && w.CampAt("takano") == camp, "移している間は補給が止まる（指示は総大将の隊から）。本陣はまだ元の所");
+        cp.Expect(!w.CanMoveCamp, "移している最中に、もう一度は移せない");
+        long left = w.CampMoveLeft; for (int i = 0; i < left / 60 + 2; i++) { (heir.X, heir.Y) = (to.X, to.Y); heir.Path = []; heir.PathIndex = 0; w.Advance(60); }
+        cp.Log($"{ProtoWorld.Clock(w.Second)}　本陣 {w.CampAt("takano")!.Value.X / 100},{w.CampAt("takano")!.Value.Y / 100}　" + (w.Facts.LastOrDefault(f => f.Id.StartsWith("camp-at:"))?.Text ?? ""));
+        cp.Expect(!w.CampMoving && w.CampAt("takano") == to && w.Supplied(heir), "移し終えると、新しい所から兵糧が届く");
+    }
+
     // 作戦ごとの勝ち負けの表（釣り合いを見るための記録。本人は委任）。
     [Fact]
     public void WritesTheTableOfBattles()

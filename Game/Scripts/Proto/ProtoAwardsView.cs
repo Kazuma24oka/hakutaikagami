@@ -28,6 +28,7 @@ public partial class ProtoGame
         foreach (var m in new[] { "包囲", "力攻め" }) Pick(top, m, m, "siege:" + m, m == now);
         string stage = World.PlotStage;
         Pick(top, "調略", stage == "約束" ? "内応の合図" : "調略", "siege:調略", stage == "約束", stage is "密書" or "断られた" or "済");
+        if (World.CanMoveCamp) { var mv = new Button { Text = "本陣を移す", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 0) }; mv.Pressed += () => { Scene.Close(); CampPick = true; }; top.AddChild(mv); SiegeButtons["本陣を移す"] = mv; }
         var low = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; low.AddThemeConstantOverride("separation", 16); box.AddChild(low);
         low.AddChild(new Label { Text = "勧告", Modulate = new Color(1, 0.9f, 0.6f) });
         foreach (var t in ProtoWorld.SurrenderTerms) Pick(low, "勧告:" + t, t, "siege:勧告:" + t, false, World.Talking);

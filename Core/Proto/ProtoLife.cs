@@ -318,6 +318,7 @@ public sealed partial class ProtoWorld
         if (CouncilOpen) yield return new("council:open", "軍議に加わる");
         if (CanPersuade) yield return new("persuade:katsumoto", "説き伏せる：岩切勝元");
         if (SiegeCouncilOpen) yield return new("siege:open", "攻城の軍議");
+        if (CanMoveCamp) yield return new("camp:pick", "本陣を移す");
         if (War.Phase is "行軍" or "合戦" && Player.Soldiers > 0 && !War.Routed.Contains(Player.Id))
         {
             foreach (var e in Units.Where(e => Hostile(Player.House, e.House) && !War.Routed.Contains(e.Id) && !Sheltered(e) && InSight(Player, e))) yield return new("attack:" + e.Id, "攻めかかる：" + e.Name);
@@ -348,6 +349,7 @@ public sealed partial class ProtoWorld
         if (kind == "stance") return SetStance(id);
         if (kind == "kakare") return Kakare();
         if (kind == "tactic") return UseTactic(Player);
+        if (kind == "camp") { if (!id.StartsWith("move:")) return ""; var xy = id[5..].Split(','); return MoveCamp(long.Parse(xy[0]), long.Parse(xy[1])); }
         if (kind == "tactic-auto") { War.AutoTactic = id == "on"; return ""; }
         if (kind == "council") return "";
         if (kind == "awards") return TakeAwards();
