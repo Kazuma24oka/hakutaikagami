@@ -372,7 +372,7 @@ public partial class ProtoGame : Node3D
         var p = World.Player; var site = World.SiteOf(p);
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
-        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (p.Soldiers > 0 && World.War.Phase is "行軍" or "合戦" && World.War.Result == "" && World.CampAt("takano") != null ? (World.Ordered(p) ? "" : "　指図届かず") + (World.Supplied(p) ? "" : "　兵糧届かず") : "")
+        status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (p.Soldiers > 0 && World.War.Phase is "行軍" or "合戦" && World.War.Result == "" && World.CampAt("takano") != null ? (World.Ordered(p) ? "" : "　指図届かず") + (World.Supplied(p) ? "" : World.CarriedLeft(p) is > 0 and var left ? $"　兵糧届かず（手持ち あと{(left + Hour0 - 1) / Hour0}刻）".Replace("刻", "時間") : "　兵糧切れ") : "")
             + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
         Buttons["pause"].Text = Paused ? "進める" : "止める";
         int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
@@ -566,6 +566,7 @@ public partial class ProtoGame : Node3D
 
     internal void SetCamera(float? dist, float? yawDeg, float? pitchDeg) { if (dist != null) distance = dist.Value; if (yawDeg != null) yaw = yawDeg.Value; if (pitchDeg != null) pitch = pitchDeg.Value; PlaceCamera(); }
     // 確かめ用：地図の上の一点（m）を画面の真ん中に据える。
+    const long Hour0 = ProtoWorld.Hour;
     internal void LookAt(float xM, float zM) { var p = World.Player; pan = new Vector3(xM, HeightAt(xM, zM), zM) - ToScene(p.X, p.Y); PlaceCamera(); }
     internal string CameraText => $"距離{distance:0}m 向き{yaw:0} 傾き{pitch:0}";
 

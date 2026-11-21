@@ -644,9 +644,12 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         w.Do("order:free"); me.Path = []; me.PathIndex = 0; (me.X, me.Y) = (camp.X - 1500_00, camp.Y + 300_00);
         cp.Expect(!w.Ordered(me) && !w.Supplied(me) && w.Ordered(heir) && w.Supplied(heir), "本陣から1,000mを超えると、指示も兵糧も届かない");
         int men = me.Soldiers, morale = me.Morale, heirMen = heir.Soldiers;
+        for (int i = 0; i < 60 && w.War.Phase == "行軍"; i++) { me.Path = []; me.PathIndex = 0; w.Advance(60); }
+        cp.Expect(me.Soldiers == men && me.Morale == morale, "範囲の外に出ても、手持ちの兵糧で2日は保つ");
+        w.War.OutSince[me.Id] = w.Second - 2 * Day; // 2日たったことにする
         for (int i = 0; i < 180 && w.War.Phase == "行軍"; i++) { me.Path = []; me.PathIndex = 0; w.Advance(60); }
-        cp.Log($"届かないまま3時間：本人 兵{men}→{me.Soldiers} 士気{morale}→{me.Morale}　大将 兵{heirMen}→{heir.Soldiers}");
-        cp.Expect(me.Morale < morale && me.Soldiers < men && w.Facts.Any(f => f.Id == "hungry:" + me.Id), "兵糧が届かない隊は、じわじわ士気と兵が減る");
+        cp.Log($"手持ちが尽きて3時間：本人 兵{men}→{me.Soldiers} 士気{morale}→{me.Morale}　大将 兵{heirMen}→{heir.Soldiers}");
+        cp.Expect(me.Morale < morale && me.Soldiers < men && w.Facts.Any(f => f.Id == "hungry:" + me.Id), "手持ちが尽きると、じわじわ士気と兵が減る");
         cp.Expect(heir.Soldiers == heirMen, "届いている隊は減らない");
         // 敗走の収容と復活：本陣で半刻休むと、残った兵の7割で戻る。何度でも。
         foreach (var r in w.People.Where(r => r.House == "iwakiri")) { r.X = camp.X + 4000_00; r.Y = camp.Y; r.Path = []; r.PathIndex = 0; } // 敵は遠くへ

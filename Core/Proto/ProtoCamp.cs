@@ -5,7 +5,8 @@ namespace HakutaiKagami.Core.Proto;
 //   （着くまでは、出てきた城が本陣の扱い）。攻城になれば、城の前の陣へ本陣を進める。
 // ・兵糧は本陣に置く。指示と兵糧は、本陣から CampRange（1,000m）まで届く。
 //   指示が届かない隊：役目の動き・退き貝を受け取れない（最後の指図のまま。勇猛な者は見えた敵に自分で当たる）。退き貝は、届く所に戻るか半刻たつと気づく。
-//   兵糧が届かない隊：1時間たつと、10分ごとに士気が1下がり、30分ごとに兵が2％（最低1）減る。本陣の兵糧が無いとき（尽きた・取られた）は、すぐに減り始める。
+//   兵糧が届かない隊：手持ちの兵糧で2日は保つ（2026-11-21 ユーザー「範囲外にでた兵も数日は士気と兵力を保てる」）。それを過ぎると、10分ごとに士気が1下がり、30分ごとに兵が2％（最低1）減る。
+//   本陣の兵糧が無いとき（尽きた・取られた）は、どの隊も補給を受けられず、手持ちの半日ぶんを過ぎると減り始める。
 // ・敗走：崩れた隊は本陣（城）へ退いて収容される。半刻休むと、残った兵の7割で戦いに戻る（何度でも。兵が10以上残っていれば）。
 // ・本陣を取られる：敵の隊が本陣（60m）に踏み込み、味方の隊がそば（150m）にいないと取られる。兵糧を失い、収容していた兵は半分が散り、全軍士気が30下がる。
 //   そのあとは、指示は総大将の隊から届き、崩れた隊は出てきた城まで退く。劣勢の岩切勢は、手薄な本陣が見えると突きに来る。
@@ -13,6 +14,8 @@ namespace HakutaiKagami.Core.Proto;
 public sealed partial class ProtoWorld
 {
     public const long CampRange = 1000_00;
+    // 隊が手持ちで保つ時間：範囲の外に出てから2日。本陣に兵糧が無いときは半日。
+    public const long Carried = 2 * Day, CarriedNoStock = 12 * Hour;
 
     // 本陣の場所（まだ置いていなければ null）。岩切勢は岩切城。
     public (long X, long Y)? CampAt(string side)
@@ -39,6 +42,12 @@ public sealed partial class ProtoWorld
         return !CampLost(side) && StockOf(side) > 0 && Dist(u, c.X, c.Y) <= CampRange;
     }
 
+    // 手持ちの兵糧の残り（秒）。届いている間は null。
+    public long? CarriedLeft(ProtoPerson u)
+    {
+        if (Supplied(u)) return null; string side = Side(u.House); bool none = CampLost(side) || StockOf(side) <= 0;
+        return Math.Max(0, (none ? CarriedNoStock : Carried) - (Second - War.OutSince.GetValueOrDefault(u.Id, Second)));
+    }
     // 毎分（行軍と合戦の間）：本陣を置く・進める、兵糧の届かない隊が痩せる、本陣を取られる、劣勢の岩切勢が本陣を突く。
     void Camps(ProtoPerson[] takano, ProtoPerson[] rebels)
     {
@@ -56,7 +65,7 @@ public sealed partial class ProtoWorld
             if (Supplied(u)) { War.OutSince.Remove(u.Id); continue; }
             if (!War.OutSince.TryGetValue(u.Id, out var since)) { War.OutSince[u.Id] = since = Second; }
             string side = Side(u.House); bool none = CampLost(side) || StockOf(side) <= 0;
-            if (Second % 600 != 0 || !none && Second - since < Hour) continue;
+            if (Second % 600 != 0 || Second - since < (none ? CarriedNoStock : Carried)) continue;
             u.Morale = Math.Max(0, u.Morale - 1); if (Second % 1800 == 0) u.Soldiers = Math.Max(0, u.Soldiers - Math.Max(1, u.Soldiers / 50));
             if (!Flag("hungry:" + u.Id)) { Set("hungry:" + u.Id); Happen("hungry:" + u.Id, $"{u.Name}の隊は兵糧が届かず、兵が痩せ始めた。", u.X, u.Y, u); if (u.Player) Note("兵糧が届かない。兵が痩せ始めた。"); }
         }

@@ -3,7 +3,7 @@ using System;
 using HakutaiKagami.Core.Proto;
 
 // 試作版の本陣の見え方（決まりは Core/Proto/ProtoCamp.cs）。2026-11-21 ユーザー「分かりにくいし、小さすぎるし、見た目がださい」で作り直した。
-// ・本陣：隊の凸より大きい陣（幅120m）。家の色の帯が入った白い陣幕を三方に張り、前（南）は楯を並べて開ける。四隅と入口に背の高い幟、真ん中に大将旗（馬印）、
+// ・本陣：隊の凸より少し大きい陣（幅80m）。家の色の帯が入った白い陣幕を三方に張り、前（南）は楯を並べて開ける。四隅と入口に背の高い幟、真ん中に大将旗（馬印）、
 //   幕の内に床几と陣太鼓、左右に兵糧の俵と荷、入口に篝火。軍議で決めた所に、行軍の間から出す（着くまでは薄い名前だけ濃くしない）。取られたら幕も幟も黒くなる。
 // ・遠くからでも分かるように、本陣の上に大きな名前と、家の色の旗の印を出す。
 // ・指示と兵糧の届く範囲：本陣を中心にした輪（1,000m）。地形に隠れないように、いつも見える線で描く。
@@ -76,8 +76,8 @@ public partial class ProtoGame
         var plan = World.CampPlan; bool show = war && plan != null;
         campNode!.Visible = campRing!.Visible = campLabel!.Visible = campIcon!.Visible = show; if (!show) return;
         var at = ToScene(plan!.Value.X, plan.Value.Y); bool set = World.CampAt("takano") != null, lost = World.CampLost("takano");
-        campNode.Position = at;
-        float lift = 70 + distance * 0.035f; campLabel.Position = at + new Vector3(0, lift, 0);
+        campNode.Position = at; campNode.Scale = Vector3.One * (2f / 3); // 初めに作った大きさの2/3（幅80m。2026-11-21 ユーザー）
+        float lift = 50 + distance * 0.035f; campLabel.Position = at + new Vector3(0, lift, 0);
         campIcon.Position = campLabel.Position + (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.05f); campIcon.Visible = distance > 500;
         var burnt = new Color(0.2f, 0.18f, 0.17f); var house = HouseColor("takano");
         campCloth!.AlbedoColor = lost ? burnt : new Color(0.96f, 0.95f, 0.91f); campBand!.AlbedoColor = lost ? burnt : house; campFlag!.AlbedoColor = lost ? burnt : house;
