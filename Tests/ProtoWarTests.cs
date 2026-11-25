@@ -423,7 +423,9 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         for (int i = 0; i < 24 * 60 && !w.AwardsOpen; i++) w.Advance(60);
         w.Do("awards:take");
         cp.Log($"結果 {w.War.Result}　勲功 {merit}→{w.Merit}　" + string.Join(" ", w.Journal.Where(e => e.Text.Contains("勲功")).Select(e => e.Text).TakeLast(2)));
-        cp.Expect(w.Merit - merit is > 0 and <= 22, "合戦で働けば、見込みに戦果（6まで）を足した勲功が入る");
+        // 攻城まで進んだら、攻城の働き（役目は8まで・一番乗り6・朝駆けの知らせ3・使者として開かせた8）も入る。
+        int cap = 22 + (w.War.Siege != null ? 8 + 6 + 3 + 8 : 0);
+        cp.Expect(w.Merit - merit > 0 && w.Merit - merit <= cap, "合戦で働けば、見込みに戦果（6まで）と攻城の働きを足した勲功が入る");
     }
 
     // 決着しても軍は解かず、総勢で鷹野城へ戻ってから論功行賞（Core/Proto/ProtoHome.cs）。

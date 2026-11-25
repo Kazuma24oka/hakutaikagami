@@ -188,7 +188,7 @@ public partial class ProtoGame : Node3D
     }
 
     readonly Dictionary<string, Label3D> siteLabels = new();
-    bool campLabelBlocked; // 本陣の札を旗だけにする（Unclutter が決め、本陣の描き方が守る）
+    bool campLabelBlocked, castleLabelCovered; // 本陣の札を旗だけにする（Unclutter が決め、本陣の描き方が守る）
     internal void AddModel(string model, string name, Vector3 pos, Color house, float scale = 1)
     {
         var node = ProtoSiteModels.Build(model, house); node.Position = pos; node.Scale = Vector3.One * scale; AddChild(node);
@@ -464,7 +464,7 @@ public partial class ProtoGame : Node3D
                 if (!sieging) panel.AddChild(new HSeparator());
                 foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:") && a.Id != "camp:pick")) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
                 // 撤退の条件（足した分は金色、満たして退き貝が鳴った条件は赤）。
-                var rules = World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
+                var rules = World.War.Result != "" && !World.Retreated("takano") ? [] : World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
                 if (rules.Length > 0)
                 {
                     panel.AddChild(new HSeparator());
@@ -675,7 +675,7 @@ public partial class ProtoGame : Node3D
         float h = GetViewport().GetVisibleRect().Size.Y, k = h / (2 * Mathf.Tan(Mathf.DegToRad(Camera.Fov) / 2)); // 1単位の大きさが画面で何ドットか（同じ遠さで）
         var placed = new List<Rect2>();
         // 窓や帯の下に入る札は出さない（2026-11-25 擬人格の印「札が士気の帯の裏に隠れる」）。
-        var covers = GetTree().Root.FindChildren("*", "PanelContainer", true, false).OfType<PanelContainer>().Where(c => c.IsVisibleInTree()).Select(c => c.GetGlobalRect()).ToList();
+        var covers = GetTree().Root.FindChildren("*", "PanelContainer", true, false).OfType<PanelContainer>().Where(c => c.IsVisibleInTree()).Select(c => c.GetGlobalRect().Grow(12)).ToList();
         Rect2? Box(Label3D l)
         {
             if (!l.Visible || l.Text == "" || Camera.IsPositionBehind(l.GlobalPosition)) return null;
@@ -692,9 +692,12 @@ public partial class ProtoGame : Node3D
         }
         if (campIcon != null && campIcon.Visible && !Camera.IsPositionBehind(campIcon.GlobalPosition)) { float s = campIcon.PixelSize * k; var at = Camera.UnprojectPosition(campIcon.GlobalPosition); placed.Add(new Rect2(at.X - 12 * s, at.Y - 14 * s, 24 * s, 28 * s)); }
         if (campLabel != null && campIcon != null && campIcon.Visible) campLabel.Visible = true; // 隠していても、重なるかは毎回確かめ直す
+        castleLabelCovered = false;
+        foreach (var sl in siteLabels.Values) if (Box(sl) is { } sr) placed.Add(sr);
         foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr)
         {
             // 本陣の札は、寄りでは出さない（陣と旗で分かる）。引きでも、駒や本人の札に重なるなら旗だけにする。
+            if (fixedLabel == castleLabel && covers.Any(c => c.Intersects(fr))) { castleLabelCovered = true; castleLabel.Visible = false; continue; }
             bool blocked = fixedLabel != castleLabel && (World.War.Siege != null || distance < 700 || bodies.Any(b => b.R.Intersects(fr)) || Box(actors[World.Player.Id].Label) is { } pr && pr.Intersects(fr));
             if (fixedLabel == campLabel) campLabelBlocked = blocked;
             if (blocked) { fixedLabel.Visible = false; continue; }

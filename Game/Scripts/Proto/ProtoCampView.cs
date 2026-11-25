@@ -92,7 +92,7 @@ public partial class ProtoGame
         }
         Vector3? ghost = World.CampMoveTarget is { } mt ? ToScene(mt.X, mt.Y) : CampPick && World.CanMoveCamp ? PickGround(GetViewport().GetMousePosition()) : null;
         if (CampPick && !World.CanMoveCamp) CampPick = false;
-        campGhost.Visible = campGhostLabel!.Visible = ghost != null && !lost;
+        campGhost.Visible = ghost != null && !lost; campGhostLabel!.Visible = campGhost.Visible && World.War.Siege == null && !campLabelBlocked; // 攻城の間は旗だけ
         if (ghost is { } gp) { float gr = ProtoWorld.CampRange / 100f; campGhost.Position = gp + new Vector3(0, 2, 0); campGhost.Scale = new Vector3(gr, Math.Max(1, distance / 60f), gr); campGhostLabel.Position = gp + new Vector3(0, 20 + distance * 0.03f, 0); }
         campLabel.PixelSize = World.CampMoving || World.CampPacking ? 0.001f : 0.0016f; // 移している間の札は小さく
         campLabel.Modulate = lost ? new Color(0.85f, 0.55f, 0.5f) : set ? new Color(1, 0.96f, 0.85f) : new Color(1, 0.96f, 0.85f, 0.6f);
