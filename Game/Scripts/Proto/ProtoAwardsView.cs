@@ -15,7 +15,7 @@ public partial class ProtoGame
     internal void OpenSiegeCouncil()
     {
         if (Scene.Open || askLayer != null || !World.SiegeCouncilOpen) return;
-        string now = World.War.Siege!.Method; SiegeButtons.Clear();
+        string now = World.KnownSiegeMethod; SiegeButtons.Clear(); // 決まったと知るまでは、どの攻め方も光らせない
         var box = new VBoxContainer(); box.AddThemeConstantOverride("separation", 12);
         Button Pick(HBoxContainer row, string key, string text, string act, bool on = false, bool off = false)
         {
@@ -24,6 +24,8 @@ public partial class ProtoGame
             b.Pressed += () => { var reply = World.Do(act); Scene.Close(); panelKey = ""; Say(reply, World.HeadOf("takano")); };
             row.AddChild(b); SiegeButtons[key] = b; return b;
         }
+        // 総大将が遠いときは、頼みを使番が運ぶ（誰に頼むのかを名前で出す）。
+        if (!World.LeadNear()) box.AddChild(new Label { Text = "使番　→　" + World.Person(World.HeadOf("takano")).Name, HorizontalAlignment = HorizontalAlignment.Center, Modulate = new Color(0.62f, 0.62f, 0.62f) });
         var top = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; top.AddThemeConstantOverride("separation", 16); box.AddChild(top);
         foreach (var m in new[] { "包囲", "力攻め" }) Pick(top, m, m, "siege:" + m, m == now);
         string stage = World.PlotStage;
@@ -63,6 +65,9 @@ public partial class ProtoGame
         {
             var c = a.Unit == World.Player.Id ? new Color(1, 0.88f, 0.45f) : Colors.White;
             string deed = a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—";
+            // 本人は、攻城の毎日の役目と一番乗りも働きに出す（2026-11-25 擬人格の印09）。
+            if (a.Unit == World.Player.Id && World.DutiesDone > 0) deed = (deed == "—" ? "" : deed + "　") + $"攻城の役目{World.DutiesDone}";
+            if (a.Unit == World.Player.Id && World.Ichiban) deed += "　一番乗り";
             foreach (var (text, right) in new[] { (a.Name, false), (a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Deeds.ToString(), true), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
                 grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left });
         }

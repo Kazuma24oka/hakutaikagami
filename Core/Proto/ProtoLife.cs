@@ -463,13 +463,13 @@ public sealed partial class ProtoWorld
     }
     public string TaskPlace(ProtoTask t)
     {
-        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do is "build" or "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do == "escort") return "小荷駄";
+        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do == "escort") return "小荷駄";
         var pos = Map.Data.Positions?.FirstOrDefault(p => p.X * 100L == s.X && p.Y * 100L == s.Y); return pos?.Name ?? "峠";
     }
     public long? TaskEta(ProtoTask t)
     {
         var p = Player; var to = TaskTarget(t);
-        if (t.Kind == "duty" && Dist(p, to.X, to.Y) <= 100_00) return 0; // 役目は、その場所の近くにいれば着いている
+        if (t.Kind == "duty" && (Dist(p, to.X, to.Y) <= 100_00 || t.Current?.Do == "watch" && War.Siege != null && Dist(p, castle: true) <= 800_00)) return 0; // 役目は、その場所の近くにいれば着いている
         var path = ProtoMove.Plan(Map, (p.X, p.Y), to); return path == null ? null : ProtoMove.Eta(Map, (p.X, p.Y), path, percent: PlayerPercent);
     }
     public bool GoToTask(string taskId) { var t = Tasks.First(x => x.Id == taskId); var (x, y) = TaskTarget(t); return MoveTo(x, y, TaskPlace(t)); }

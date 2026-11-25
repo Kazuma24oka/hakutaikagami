@@ -868,7 +868,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var camp = w.CampOf(me); var gate = w.GatePoint;
         double toCamp = Math.Sqrt(Math.Pow(me.X - camp.X, 2) + Math.Pow(me.Y - camp.Y, 2)) / 100, toGate = Math.Sqrt(Math.Pow(me.X - gate.X, 2) + Math.Pow(me.Y - gate.Y, 2)) / 100;
         cp.Log($"{ProtoWorld.Clock(w.Second)}　本人 {camp.Name}まで{toCamp:0}m 城門まで{toGate:0}m　{me.Doing}　結果「{w.War.Result}」");
-        cp.Expect(w.War.Result != "" || toCamp <= 100 && me.Doing.Contains("控えて"), "兵を失った本人は、本陣で控えている");
+        cp.Expect(w.War.Result != "" || w.OnDuty || toCamp <= 100 && me.Doing.Contains("控えて"), "兵を失った本人は、役目が無ければ本陣で控えている");
         // 本陣で控えていても、本陣の範囲の中の味方の隊は分かる。
         var heir = w.Person("takano-masayuki"); var hq = w.CampAt("takano");
         if (hq is { } h && heir.Soldiers > 0 && Math.Sqrt(Math.Pow(heir.X - h.X, 2) + Math.Pow(heir.Y - h.Y, 2)) <= ProtoWorld.CampRange)

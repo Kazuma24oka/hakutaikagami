@@ -57,8 +57,8 @@ public partial class ProtoGame
         castleLabel.Position = top; castleBar.Position = top - (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.03f);
     }
 
-    // 囲み（Core/Proto/ProtoSiege.cs）：城から450mの薄い輪と、築いた付城（柵と小屋と旗）。隊は実際の隊がそのまま持ち場に立つ。
-    MeshInstance3D? siegeRing; readonly Node3D?[] forts = new Node3D?[6];
+    // 囲み（Core/Proto/ProtoSiege.cs）：城から450mの薄い輪と付城。付城は、普請が進むにつれて柵が立っていき、築き終えると櫓と小屋が建つ。
+    MeshInstance3D? siegeRing; readonly Node3D?[] forts = new Node3D?[6]; readonly List<Node3D>[] fortPales = [.. Enumerable.Range(0, 6).Select(_ => new List<Node3D>())]; readonly Node3D?[] fortKeep = new Node3D?[6];
     void DrawRing(Vector3 c, bool on)
     {
         if (siegeRing == null)
@@ -70,20 +70,37 @@ public partial class ProtoGame
         if (on) { float r = ProtoWorld.SiegeRingRadius / 100f; siegeRing.Position = c + new Vector3(0, 2, 0); siegeRing.Scale = new Vector3(r, Math.Max(1, distance / 60f), r); }
         for (int i = 0; i < forts.Length; i++)
         {
-            bool built = on && World.SectorFort(i);
-            if (built && forts[i] == null) forts[i] = BuildFort(i);
-            if (forts[i] != null) forts[i]!.Visible = built;
+            int prog = on ? World.FortProgress(i) : 0;
+            if (prog > 0 && forts[i] == null) forts[i] = BuildFort(i);
+            if (forts[i] == null) continue;
+            forts[i]!.Visible = prog > 0;
+            var pales = fortPales[i]; int up = prog >= 100 ? pales.Count : pales.Count * prog / 100;
+            for (int k = 0; k < pales.Count; k++) pales[k].Visible = k < up;
+            fortKeep[i]!.Visible = prog >= 100;
         }
     }
     Node3D BuildFort(int i)
     {
         var n = new Node3D(); AddChild(n); var p = World.SectorPost(i); var at = ToScene(p.X, p.Y); at.Y = HeightAt(at.X, at.Z); n.Position = at;
         var wood = new StandardMaterial3D { AlbedoColor = new Color(0.45f, 0.32f, 0.2f) }; var roof = new StandardMaterial3D { AlbedoColor = new Color(0.55f, 0.5f, 0.42f) }; var flag = new StandardMaterial3D { AlbedoColor = HouseColor("takano") };
-        for (int k = 0; k < 16; k++) { float a = k * Mathf.Tau / 16; n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(2, 9, 2) }, MaterialOverride = wood, Position = new Vector3(Mathf.Cos(a) * 22, 4.5f, Mathf.Sin(a) * 22) }); }
-        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(16, 7, 11) }, MaterialOverride = wood, Position = new Vector3(0, 3.5f, 0) });
-        n.AddChild(new MeshInstance3D { Mesh = new PrismMesh { Size = new Vector3(18, 5, 13) }, MaterialOverride = roof, Position = new Vector3(0, 9.5f, 0) });
-        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.8f, 20, 0.8f) }, MaterialOverride = wood, Position = new Vector3(12, 10, 0) });
-        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.4f, 6, 5) }, MaterialOverride = flag, Position = new Vector3(12, 16, 2.6f) });
+        // 柵：すき間なく並べた板塀（城に向いた側に木戸のすき間）。普請の進みに合わせて、木戸の脇から順に立つ。
+        var c = World.Map.Site("iwakiri-castle"); var toCastle = new Vector2(c.X - p.X / 100f, c.Y - p.Y / 100f).Normalized(); float gate = Mathf.Atan2(toCastle.Y, toCastle.X);
+        const int N = 44; const float R = 26;
+        for (int k = 1; k < N - 1; k++)
+        {
+            float a = gate + k * Mathf.Tau / N;
+            var pale = new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(1.6f, 11, 4.2f) }, MaterialOverride = wood, Position = new Vector3(Mathf.Cos(a) * R, 5.5f, Mathf.Sin(a) * R), Rotation = new Vector3(0, -a, 0) };
+            n.AddChild(pale); fortPales[i].Add(pale);
+        }
+        // 櫓（4本の柱・床・屋根・旗）と小屋。
+        var keep = new Node3D(); n.AddChild(keep); fortKeep[i] = keep;
+        foreach (var (x, z) in new[] { (-4f, -4f), (4f, -4f), (-4f, 4f), (4f, 4f) }) keep.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(1.2f, 20, 1.2f) }, MaterialOverride = wood, Position = new Vector3(x - 8, 10, z) });
+        keep.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(11, 4, 11) }, MaterialOverride = wood, Position = new Vector3(-8, 21, 0) });
+        keep.AddChild(new MeshInstance3D { Mesh = new PrismMesh { Size = new Vector3(13, 4, 13) }, MaterialOverride = roof, Position = new Vector3(-8, 25, 0) });
+        keep.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.6f, 12, 0.6f) }, MaterialOverride = wood, Position = new Vector3(-8, 33, 0) });
+        keep.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.3f, 5, 4) }, MaterialOverride = flag, Position = new Vector3(-8, 36, 2.1f) });
+        keep.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(14, 6, 9) }, MaterialOverride = wood, Position = new Vector3(9, 3, 4) });
+        keep.AddChild(new MeshInstance3D { Mesh = new PrismMesh { Size = new Vector3(16, 4, 11) }, MaterialOverride = roof, Position = new Vector3(9, 8, 4) });
         return n;
     }
 

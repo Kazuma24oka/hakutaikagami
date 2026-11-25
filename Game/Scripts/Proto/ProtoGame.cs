@@ -98,9 +98,9 @@ public partial class ProtoGame : Node3D
             try { World = ProtoWorld.Load(map, System.Text.Json.JsonSerializer.Deserialize<ProtoWorld.Saved>(System.IO.File.ReadAllBytes(ProjectSettings.GlobalizePath(SavePath)), ProtoMap.Json)!); }
             catch (Exception) { var old = ProjectSettings.GlobalizePath(SavePath); System.IO.File.Copy(old, old + ".old-" + DateTime.Now.ToString("yyyyMMddHHmmss"), true); } // 版の違う保存は残して、はじめから
         World ??= new ProtoWorld(map); Fresh = false; SaveGame();
-        var env = new WorldEnvironment { Environment = new Godot.Environment { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color(0.62f, 0.75f, 0.86f), AmbientLightSource = Godot.Environment.AmbientSource.Color, AmbientLightColor = new Color(0.75f, 0.75f, 0.75f), AmbientLightEnergy = 0.6f } };
+        var env = skyEnv = new WorldEnvironment { Environment = new Godot.Environment { BackgroundMode = Godot.Environment.BGMode.Color, BackgroundColor = new Color(0.62f, 0.75f, 0.86f), AmbientLightSource = Godot.Environment.AmbientSource.Color, AmbientLightColor = new Color(0.75f, 0.75f, 0.75f), AmbientLightEnergy = 0.6f } };
         AddChild(env);
-        AddChild(new DirectionalLight3D { RotationDegrees = new Vector3(-50, -30, 0), LightEnergy = 1.1f });
+        AddChild(sun = new DirectionalLight3D { RotationDegrees = new Vector3(-50, -30, 0), LightEnergy = 1.1f });
         Camera = new Camera3D { Fov = 45, Far = 20000, Near = 1 }; AddChild(Camera); Camera.MakeCurrent();
         AddChild(new MeshInstance3D { Mesh = new PlaneMesh { Size = new Vector2(40000, 40000) }, Position = new Vector3(2000, -3, 1500), MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(0.42f, 0.5f, 0.36f), Roughness = 1 } });
         BuildGround(); BuildTrees(); BuildSites(); BuildActors();
@@ -434,20 +434,22 @@ public partial class ProtoGame : Node3D
                 }
                 else if (World.War.Siege is { } siege)
                 {
-                    panel.AddChild(new Label { Text = "攻城　" + siege.Method, Modulate = new Color(1, 0.9f, 0.6f) });
+                    panel.AddChild(new Label { Text = "攻城　" + (World.KnownSiegeMethod != "" ? World.KnownSiegeMethod : "軍議待ち"), Modulate = new Color(1, 0.9f, 0.6f) });
                     panel.AddChild(new Label { Text = $"門　{siege.Gate}" });
                     panel.AddChild(new Label { Text = siege.CampAt == 0 ? "囲み　まだ" : World.OpenSectors == 0 ? "囲み　閉じている" : $"囲み　穴{World.OpenSectors}", Modulate = siege.CampAt > 0 && World.OpenSectors == 0 ? good : bad });
+                    if (World.KnownCastleFood != "") panel.AddChild(new Label { Text = "城の兵糧　" + World.KnownCastleFood, Modulate = good });
                     if (World.KnownRelief != "") panel.AddChild(new Label { Text = "後詰　" + World.KnownRelief, Modulate = World.KnownRelief == "退けた" ? good : bad });
                     if (World.Talking) panel.AddChild(new Label { Text = $"勧告　交渉中（{siege.Terms}）", Modulate = new Color(1, 0.88f, 0.45f) });
                     if (siege.Plot is "密書" or "約束") panel.AddChild(new Label { Text = siege.Plot == "密書" ? "調略　返書待ち" : "調略　内応の約束あり", Modulate = new Color(1, 0.88f, 0.45f) });
                     panel.AddChild(new HSeparator());
                 }
-                panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });
+                bool sieging = World.War.Siege != null && World.War.Result == ""; // 籠城の間は、野戦の作戦の段と役目の一覧を出さない（2026-11-25 擬人格の印10）
+                if (!sieging) panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });
                 var steps = World.PlanSteps().ToArray(); int now = state == "" ? Array.FindIndex(steps, x => x.State == "") : -1;
-                for (int i = 0; i < steps.Length; i++)
+                for (int i = 0; i < steps.Length && !sieging; i++)
                     panel.AddChild(new Label { Text = "一二三四五六七八九"[i] + "　" + steps[i].Text + (steps[i].State != "" ? "　" + steps[i].State : ""), AutowrapMode = TextServer.AutowrapMode.WordSmart, Modulate = steps[i].State == "成功" ? good : steps[i].State == "失敗" ? bad : i == now ? Colors.White : dim });
-                panel.AddChild(new HSeparator());
-                foreach (var o in orders)
+                if (!sieging) panel.AddChild(new HSeparator());
+                foreach (var o in orders.Where(_ => !sieging))
                 {
                     bool mine = o.Unit == World.Player.Id;
                     // 自分の隊だけ指図の文も出す（ほかの隊は名前と役目。乗せると行き先が光る）。
@@ -455,7 +457,7 @@ public partial class ProtoGame : Node3D
                     var ord = o; row.MouseEntered += () => { hoverUnit = ord.Unit; hoverSpot = ToScene(ord.X, ord.Y); }; row.MouseExited += () => { if (hoverUnit == ord.Unit) hoverUnit = null; };
                     panel.AddChild(row);
                 }
-                panel.AddChild(new HSeparator());
+                if (!sieging) panel.AddChild(new HSeparator());
                 foreach (var a in actions.Where(a => IsWarAction(a.Id) && !a.Id.StartsWith("order:") && a.Id != "camp:pick")) { var aid = a.Id; Add(panel, "act:" + aid, a.Text, () => Act(aid)); }
                 // 撤退の条件（足した分は金色、満たして退き貝が鳴った条件は赤）。
                 var rules = World.RetreatRules().ToArray(); bool gone = World.Retreated("takano");
@@ -648,22 +650,39 @@ public partial class ProtoGame : Node3D
         if (dirty || World.Second / 600 != savedBucket) { dirty = false; SaveGame(); }
         UpdateActors(); UpdateBattleView(); UpdateHover(); UpdateAwards(); UpdateCastleView(); UpdateCampView(); DrawPath(); PlaceCamera();
         journal.GetParent<Control>().GetParent<Control>().Modulate = new Color(1, 1, 1, (float)Math.Clamp(1.4 - (Time.GetTicksMsec() / 1000.0 - journalShown) / 8.0, 0.35, 1));
+        UpdateSky();
         uiTimer -= delta; if (uiTimer <= 0) { uiTimer = running ? 0.5 : 0.25; RefreshUi(); }
     }
 
+    // 昼と夜：日の出（5〜7時）と日の入り（17〜19時）でなめらかに暗くなる。夜でも地図は見える明るさに留める。
+    WorldEnvironment skyEnv = null!; DirectionalLight3D sun = null!;
+    void UpdateSky()
+    {
+        float h = World.Second % ProtoWorld.Day / 3600f, day = h < 5 ? 0 : h < 7 ? (h - 5) / 2 : h < 17 ? 1 : h < 19 ? 1 - (h - 17) / 2 : 0;
+        sun.LightEnergy = 0.12f + 0.98f * day;
+        var e = skyEnv.Environment; e.AmbientLightEnergy = 0.3f + 0.3f * day;
+        e.AmbientLightColor = new Color(0.55f, 0.6f, 0.85f).Lerp(new Color(0.75f, 0.75f, 0.75f), day);
+        e.BackgroundColor = new Color(0.1f, 0.13f, 0.25f).Lerp(new Color(0.62f, 0.75f, 0.86f), day);
+    }
     readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> markers = new();
-    // 名前の札が画面で重なったら、後の札を一段ずつ上へずらす（本人の札は動かさない）。
+    // 名前の札が画面で重なったら、後の札を一段ずつ上へずらす。本陣と城の札は動かさず、先に置く。人は本人・兵の多い順。
     void Unclutter()
     {
         float h = GetViewport().GetVisibleRect().Size.Y, k = h / (2 * Mathf.Tan(Mathf.DegToRad(Camera.Fov) / 2)); // 1単位の大きさが画面で何ドットか（同じ遠さで）
         var placed = new List<Rect2>();
+        Rect2? Box(Label3D l)
+        {
+            if (!l.Visible || l.Text == "" || Camera.IsPositionBehind(l.GlobalPosition)) return null;
+            float s = l.PixelSize * k, lineH = l.FontSize * s * 1.15f, w = l.FontSize * s * l.Text.Length * 0.9f; // 札の大きさ（画面のドット）
+            var at = Camera.UnprojectPosition(l.GlobalPosition) + l.Offset * s * new Vector2(1, -1);
+            return new Rect2(at.X - w / 2, at.Y - lineH / 2, w, lineH);
+        }
+        foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr) placed.Add(fr);
         foreach (var p in World.People.OrderByDescending(p => p.Player).ThenByDescending(p => p.Soldiers).ThenBy(p => p.Id))
         {
             var l = actors[p.Id].Label; l.Offset = Vector2.Zero;
-            if (!l.Visible || l.Text == "" || Camera.IsPositionBehind(l.Position)) continue;
-            float s = l.PixelSize * k, lineH = l.FontSize * s * 1.15f, w = l.FontSize * s * l.Text.Length * 0.9f; // 札の大きさ（画面のドット）
-            var at = Camera.UnprojectPosition(l.Position);
-            var r = new Rect2(at.X - w / 2, at.Y - lineH / 2, w, lineH);
+            if (Box(l) is not { } r) continue;
+            float lineH = r.Size.Y;
             for (int step = 0; step < 6 && placed.Any(q => q.Intersects(r)); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
             placed.Add(r);
         }
