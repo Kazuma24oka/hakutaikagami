@@ -24,7 +24,11 @@ public sealed partial class ProtoWorld
     // 毎分：集まる → 総勢で戻る → 論功行賞。
     void Homecoming()
     {
-        if (War.Result != "") { EndRelief(); UpdatePlan(); } // どんな決着でも、後詰は沢渡へ引き上げる。作戦の最後の段（敵を崩す）も決着で決まる
+        if (War.Result != "")
+        {
+            EndRelief(); UpdatePlan();
+            foreach (var t in Tasks.Where(t => t.Kind == "duty" && t.State is TaskState.Open or TaskState.Offered)) t.State = TaskState.Expired; // 決着したら、攻城の役目は解く
+        } // どんな決着でも、後詰は沢渡へ引き上げる。作戦の最後の段（敵を崩す）も決着で決まる
         if (!Returning) return;
         var heir = Person(Heir); var host = AwardsHost; var castle = Map.Site(AwardsSite); long cx = castle.X * 100L, cy = castle.Y * 100L;
         var army = People.Where(u => InArmy(u) && u.Active).ToArray();
@@ -72,11 +76,10 @@ public sealed partial class ProtoWorld
             foreach (var u in army.Where(u => Auto(u) && u.Soldiers > 0 && !u.Moving && SiteOf(u) != castle.Id)) Walk(u, Spot(castle, Hash(u.Id, 0) % 12), castle.Id, castle.Name + "へ引き上げている");
             if (SiteOf(host) != castle.Id && Second < flags["home-gather"] + 8 * Hour) return;
             Set("awards-ready");
-            Happen("awards", $"{castle.Name}で論功行賞が行われる。", cx, cy, [.. army.Where(u => SiteOf(u) == castle.Id)]);
+            Happen("awards", $"{castle.Name}で論功行賞が行われる。", cx, cy, [.. army.Where(u => SiteOf(u) == castle.Id || u.Player && InArmy(u))]);
             if (!InArmy(Player)) { Set("awards-done"); return; }
             var t = Offer(host.Id, "論功行賞に出る", "awards", Second, Second + 2 * Day, 0, new ProtoStep("attend", $"{castle.Name}の広間で論功行賞に出る", castle.Id));
             t.State = TaskState.Open;
-            if (SiteOf(Player) != castle.Id) Note($"{castle.Name}で論功行賞がある。");
         }
         else
         {
@@ -122,7 +125,7 @@ public sealed partial class ProtoWorld
     {
         int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = (DidRole(id) ? see : see / 2) + Deeds(id);
         if (id == Player.Id && Flag("parley-won")) m += 8; // 説いて城を開かせた
-        if (id == Player.Id) m += DutiesDone + (Flag("ichiban") ? 6 : 0);
+        if (id == Player.Id) m += Math.Min(8, DutiesDone / 3) + (Flag("ichiban") ? 6 : 0);
         return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 + Deeds(id) : 0 });
     }
 

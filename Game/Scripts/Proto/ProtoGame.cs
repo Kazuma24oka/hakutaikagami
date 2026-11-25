@@ -369,7 +369,7 @@ public partial class ProtoGame : Node3D
             MeshInstance3D Ring() { var m = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.86f, OuterRadius = 1f }, MaterialOverride = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, AlbedoColor = new Color(1, 0.9f, 0.3f), NoDepthTest = true, RenderPriority = 30 }, Visible = false }; AddChild(m); return m; }
             hoverRingUnit = Ring(); hoverRingSpot = Ring();
         }
-        // 任務の窓は、いつも、右下の合戦の窓がいちばん高いとき（3人ぶん）の上までにする。合戦の窓が出ていなくても同じ長さ
+        // 任務の窓は、いつも、右下の合戦の窓がいちばん高いとき（3人分）の上までにする。合戦の窓が出ていなくても同じ長さ
         // （出たり消えたりで長さが変わると見にくい。2026-11-20 ユーザー）。長い分は窓の中で送る。
         float room = GetViewport().GetVisibleRect().Size.Y - 68 - (BattleBoxMaxHeight + 16); // 上の帯の下60から、合戦の窓の上すれすれまで
         sideScroll.CustomMinimumSize = new Vector2(440, Math.Min(panel.GetCombinedMinimumSize().Y, Math.Max(140, room)));
@@ -423,7 +423,7 @@ public partial class ProtoGame : Node3D
                     var id = t.Id; var b = Add(panel, "task:" + id, "", () => { if (World.GoToTask(id)) ShowGoal(); }); taskButtons[id] = b;
                 }
                 string state = World.PlanState;
-                panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
+                if (World.War.Siege == null) panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) }); // 籠城してからは、野戦の大目標と作戦を出さない（決着の後も）
                 if (World.CampAt("takano") != null && (World.War.Siege == null || World.War.Result == ""))
                     panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.CampMoving ? "本陣　移している" : World.CampPacking ? "本陣　撤収" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
@@ -443,7 +443,7 @@ public partial class ProtoGame : Node3D
                     if (siege.Plot is "密書" or "約束") panel.AddChild(new Label { Text = siege.Plot == "密書" ? "調略　返書待ち" : "調略　内応の約束あり", Modulate = new Color(1, 0.88f, 0.45f) });
                     panel.AddChild(new HSeparator());
                 }
-                bool sieging = World.War.Siege != null && World.War.Result == ""; // 籠城の間は、野戦の作戦の段と役目の一覧を出さない（2026-11-25 擬人格の印10）
+                bool sieging = World.War.Siege != null; // 籠城の間は、野戦の作戦の段と役目の一覧を出さない（2026-11-25 擬人格の印10）
                 if (!sieging) panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });
                 var steps = World.PlanSteps().ToArray(); int now = state == "" ? Array.FindIndex(steps, x => x.State == "") : -1;
                 for (int i = 0; i < steps.Length && !sieging; i++)

@@ -180,8 +180,8 @@ public sealed partial class ProtoWorld
     void Rewards()
     {
         var lord = Person(HeadOf("takano")); var Lord = lord.Id; if (!Near(Player, lord)) return;
-        if (Rank == 0 && Merit >= 8) { Rank = 1; Money += 500; Note($"{lord.Name}から、褒美に銭500文と馬を賜り、馬廻に取り立てられた。"); }
-        else if (Rank == 1 && Merit >= 20) { Rank = 2; Money += 1000; Note($"{lord.Name}から、褒美に銭1000文を賜り、組頭に取り立てられた。"); }
+        if (Rank == 0 && Merit >= 8) { Set("promoted:" + DayIndex); Rank = 1; Money += 500; Note($"{lord.Name}から、褒美に銭500文と馬を賜り、馬廻に取り立てられた。"); }
+        else if (Rank == 1 && Merit >= 20 && !Flag("promoted:" + DayIndex)) { Rank = 2; Money += 1000; Note($"{lord.Name}から、褒美に銭1000文を賜り、組頭に取り立てられた。"); }
         if (favors.TryGetValue(Lord, out var f) && f <= -15 && !Flag("scolded:" + DayIndex)) { Set("scolded:" + DayIndex); Note($"{lord.Name}「務めを怠るでない。」"); }
     }
 
@@ -463,7 +463,7 @@ public sealed partial class ProtoWorld
     }
     public string TaskPlace(ProtoTask t)
     {
-        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do == "escort") return "小荷駄";
+        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do == "scout") return "岩切城の前"; if (s.Do == "escort") return "小荷駄";
         var pos = Map.Data.Positions?.FirstOrDefault(p => p.X * 100L == s.X && p.Y * 100L == s.Y); return pos?.Name ?? "峠";
     }
     public long? TaskEta(ProtoTask t)

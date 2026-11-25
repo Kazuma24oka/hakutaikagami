@@ -19,7 +19,7 @@ public partial class ProtoGame
     internal CheckBox? tacticAuto; HBoxContainer castleRow = null!; Label castleRowText = null!; ProgressBar castleRowBar = null!;
     VBoxContainer allyList = null!, enemyList = null!; ScrollContainer allyScroll = null!, enemyScroll = null!;
     float battleRowH = 42;
-    // 合戦の窓がいちばん高いとき（一覧が3人ぶん）の高さ。任務の窓はこの上までにする。
+    // 合戦の窓がいちばん高いとき（一覧が3人分）の高さ。任務の窓はこの上までにする。
     float BattleBoxMaxHeight => commandBox.GetCombinedMinimumSize().Y - allyScroll.CustomMinimumSize.Y + RowsShown * battleRowH + (RowsShown - 1) * allyList.GetThemeConstant("separation");
     const int RowsShown = 3; // 部隊の一覧は3人まで見せ、それより多ければ窓の中で送る（2026-11-20 ユーザー）
     Label troopsTakano = null!, troopsRebel = null!;
@@ -202,9 +202,9 @@ public partial class ProtoGame
             foreach (var list in new[] { allyList, enemyList }) foreach (var n in list.GetChildren()) { list.RemoveChild(n); n.QueueFree(); }
             foreach (var u in allies) AddRow(allyList, u, false);
             foreach (var u in enemies) AddRow(enemyList, u, true);
-            // 高さはいつも3人ぶん。
+            // 高さはいつも3人分。
             float rowH = allyList.GetChildCount() > 0 ? ((Control)allyList.GetChild(0)).GetCombinedMinimumSize().Y : 40; int sep = allyList.GetThemeConstant("separation");
-            battleRowH = rowH; int shown = RowsShown; // 窓の高さはいつも3人ぶん（出るたびに高さが変わらない。任務の窓はそのすぐ上まで）
+            battleRowH = rowH; int shown = RowsShown; // 窓の高さはいつも3人分（出るたびに高さが変わらない。任務の窓はそのすぐ上まで）
             allyScroll.CustomMinimumSize = enemyScroll.CustomMinimumSize = new Vector2(0, shown * rowH + (shown - 1) * sep);
             allyScroll.ScrollVertical = enemyScroll.ScrollVertical = 0;
         }
