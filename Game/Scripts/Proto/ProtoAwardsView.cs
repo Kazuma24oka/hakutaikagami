@@ -71,7 +71,7 @@ public partial class ProtoGame
             if (a.Unit == World.Player.Id && World.Ichiban) deed += "　一番乗り";
             if (World.EnvoyWon(a.Unit)) deed = (deed == "—" ? "" : deed + "　") + "勧告の使者";
             foreach (var (text, right) in new[] { (a.Name, false), (World.SiegeRole(a.Unit) is { Length: > 0 } sr ? (a.Role == "" ? sr : a.Role + "・" + sr) : a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Deeds.ToString(), true), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
-                grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left });
+                grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left, AutowrapMode = text == deed ? TextServer.AutowrapMode.Arbitrary : TextServer.AutowrapMode.Off, CustomMinimumSize = text == deed ? new Vector2(380, 0) : Vector2.Zero }); // 働きが長いときは折り返す（表を画面からはみ出させない）
         }
         col.AddChild(new HSeparator());
         var ok = AwardsOk = new Button { Text = "拝受", FocusMode = Control.FocusModeEnum.None, SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter, CustomMinimumSize = new Vector2(180, 0) }; col.AddChild(ok);

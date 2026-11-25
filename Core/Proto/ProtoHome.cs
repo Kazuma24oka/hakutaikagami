@@ -24,6 +24,7 @@ public sealed partial class ProtoWorld
     // 毎分：集まる → 総勢で戻る → 論功行賞。
     void Homecoming()
     {
+        if (flags.TryGetValue("news-open", out var na) && Second >= na) { flags.Remove("news-open"); Note("使番が来た。岩切城が開いたとの知らせ。"); }
         if (War.Result != "")
         {
             EndRelief(); UpdatePlan(); EnvoyBack(force: Flag("home-march"));

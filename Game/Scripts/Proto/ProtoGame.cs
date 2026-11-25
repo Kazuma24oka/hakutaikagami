@@ -715,6 +715,7 @@ public partial class ProtoGame : Node3D
             for (; step < 3 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r))); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
             if (step == 3 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r)))) { r = r0; l.Offset = Vector2.Zero; if (!p.Player) { l.Visible = false; continue; } } // ずらしても重なるなら、本人の札は元の場所、ほかの人の札は出さない
             placed.Add(r);
+            if (p.Player) foreach (var sl in siteLabels.Values) if (Box(sl) is { } s2 && s2.Intersects(r)) sl.Visible = false; // 本人の札にかかる拠点の札は出さない
         }
     }
     // 小荷駄の荷車：人足の後ろに、米俵を積んだ車（2026-11-26 擬人格の印「小荷駄が人足一人」）。

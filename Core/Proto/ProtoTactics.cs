@@ -71,6 +71,7 @@ public sealed partial class ProtoWorld
     void Annihilate(ProtoPerson u)
     {
         int lost = (int)Math.Round(u.Soldiers * 0.7); u.Soldiers -= lost; if (!War.Recovered.Contains(u.Id)) War.Recovered.Add(u.Id);
+        if (u.Player && u.Soldiers <= 5) { lost += u.Soldiers; u.Soldiers = 0; Happen($"cutoff:{u.Id}:{Second}", $"{u.Name}の隊は退き道をふさがれ、兵{lost}を失った。{u.Name}は辛くも囲みを破ったが、残った兵も散り散りになった。", u.X, u.Y, u); return; }
         if (u.Player) { Happen($"cutoff:{u.Id}:{Second}", $"{u.Name}の隊は退き道をふさがれ、兵{lost}を失った。辛くも囲みを破った（残り{u.Soldiers}）。", u.X, u.Y, u); return; }
         Happen($"cutoff:{u.Id}:{Second}", $"{u.Name}の隊は退き道をふさがれて壊滅した（兵{lost}を失い、{u.Name}は捕らえられた）。", u.X, u.Y, u);
         u.Active = false; u.Path = []; u.PathIndex = 0; u.Doing = "捕らえられた";
