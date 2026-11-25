@@ -188,6 +188,7 @@ public partial class ProtoGame : Node3D
     }
 
     readonly Dictionary<string, Label3D> siteLabels = new();
+    bool campLabelBlocked; // 本陣の札を旗だけにする（Unclutter が決め、本陣の描き方が守る）
     internal void AddModel(string model, string name, Vector3 pos, Color house, float scale = 1)
     {
         var node = ProtoSiteModels.Build(model, house); node.Position = pos; node.Scale = Vector3.One * scale; AddChild(node);
@@ -684,11 +685,19 @@ public partial class ProtoGame : Node3D
         }
         // 札は、ほかの人の駒と本陣の旗にも重ねない（2026-11-25 擬人格の印）。
         var bodies = new List<(string Id, Rect2 R)>();
-        foreach (var (id, dot) in dots) if (dot.Visible && !Camera.IsPositionBehind(dot.GlobalPosition)) { var at = Camera.UnprojectPosition(dot.GlobalPosition); bodies.Add((id, new Rect2(at.X - 16, at.Y - 48, 32, 48))); }
+        foreach (var (id, dot) in dots) if (dot.Visible && !Camera.IsPositionBehind(dot.GlobalPosition) && actors.TryGetValue(id, out var ac))
+        {
+            var at = Camera.UnprojectPosition(dot.GlobalPosition); float top = Camera.UnprojectPosition(ac.Label.GlobalPosition).Y, bh = Math.Max(24, at.Y - top);
+            bodies.Add((id, new Rect2(at.X - bh * 0.4f, at.Y - bh, bh * 0.8f, bh)));
+        }
         if (campIcon != null && campIcon.Visible && !Camera.IsPositionBehind(campIcon.GlobalPosition)) { float s = campIcon.PixelSize * k; var at = Camera.UnprojectPosition(campIcon.GlobalPosition); placed.Add(new Rect2(at.X - 12 * s, at.Y - 14 * s, 24 * s, 28 * s)); }
+        if (campLabel != null && campIcon != null && campIcon.Visible) campLabel.Visible = true; // 隠していても、重なるかは毎回確かめ直す
         foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr)
         {
-            if (fixedLabel != castleLabel && bodies.Any(b => b.R.Intersects(fr))) { fixedLabel.Visible = false; continue; } // 本陣の札が駒に重なるなら、旗だけにする
+            // 本陣の札は、寄りでは出さない（陣と旗で分かる）。引きでも、駒や本人の札に重なるなら旗だけにする。
+            bool blocked = fixedLabel != castleLabel && (World.War.Siege != null || distance < 700 || bodies.Any(b => b.R.Intersects(fr)) || Box(actors[World.Player.Id].Label) is { } pr && pr.Intersects(fr));
+            if (fixedLabel == campLabel) campLabelBlocked = blocked;
+            if (blocked) { fixedLabel.Visible = false; continue; }
             placed.Add(fr);
         }
         foreach (var p in World.People.OrderByDescending(p => p.Player).ThenByDescending(p => p.Soldiers).ThenBy(p => p.Id))
@@ -697,7 +706,9 @@ public partial class ProtoGame : Node3D
             if (Box(l) is not { } r) continue;
             if (covers.Any(c => c.Intersects(r))) { l.Visible = false; continue; }
             float lineH = r.Size.Y;
-            for (int step = 0; step < 6 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r))); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
+            var r0 = r; int step = 0;
+            for (; step < 3 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r))); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
+            if (step == 3 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r)))) { r = r0; l.Offset = Vector2.Zero; if (!p.Player) { l.Visible = false; continue; } } // ずらしても重なるなら、本人の札は元の場所、ほかの人の札は出さない
             placed.Add(r);
         }
     }
@@ -729,7 +740,7 @@ public partial class ProtoGame : Node3D
                 lastPos[p.Id] = real;
                 // 向きは世界の向き一つ（凸と同じ）。合戦の間は、ちびコマも足軽もこれに合わせる。
                 if (World.War.Facing.TryGetValue(p.Id, out var wf)) { var fdir = new Vector3((float)wf[0], 0, (float)wf[1]); heading[p.Id] = fdir; dot.Face(SideDir(p.Id, fdir), Camera); }
-                if (inLine && fm.Count > 1) label.Text = $"{p.Name}勢　{fm.Total}（{fm.Parts}）";
+                if (inLine && fm.Count > 1) label.Text = $"{p.Name}勢　{fm.Total}";
                 else if (inLine && fm.Count == 0) label.Visible = seen && (p.Player || close);
                 // 引いた視点では、隊を札一枚で見せる（2026-11-19 案2）。近づくと大将と足軽のちびコマ。
                 bool card = unit && distance > CardDistance;
@@ -748,6 +759,8 @@ public partial class ProtoGame : Node3D
             else DrawFollowers(p, Vector3.Zero, 0, false, "idle"); // ちびコマを描かない人（城を去った・絵が無い）の足軽を前の場所に残さない（2026-11-25 擬人格の印「名前の札のない足軽」）
         }
         Unclutter();
+        if (Scene.Open) { foreach (var (_, ac) in actors) ac.Label.Visible = false; foreach (var sl in siteLabels.Values) sl.Visible = false; if (campLabel != null) campLabel.Visible = false; }
+        else foreach (var (nm, sl) in siteLabels) if (nm != World.Map.Site("iwakiri-castle").Name) sl.Visible = true;
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
         foreach (var mk in World.Markers)
         {

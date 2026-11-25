@@ -76,7 +76,7 @@ public partial class ProtoGame
         if (campNode == null) BuildCamp();
         bool war = World.War.Phase is "行軍" or "合戦" || World.Returning && World.CampAt("takano") != null;
         var plan = World.CampPlan; bool show = war && plan != null;
-        campNode!.Visible = campRing!.Visible = campLabel!.Visible = campIcon!.Visible = show; if (!show) { if (campGhost != null) campGhost.Visible = campGhostLabel!.Visible = false; CampPick = false; return; }
+        campNode!.Visible = campRing!.Visible = campIcon!.Visible = show; campLabel!.Visible = show && !campLabelBlocked; if (!show) { if (campGhost != null) campGhost.Visible = campGhostLabel!.Visible = false; CampPick = false; return; }
         var at = ToScene(plan!.Value.X, plan.Value.Y); bool set = World.CampAt("takano") != null, lost = World.CampLost("takano");
         campNode.Position = at; campNode.Scale = Vector3.One * (2f / 3); // 初めに作った大きさの2/3（幅80m。2026-11-21 ユーザー）
         float lift = 62 + distance * 0.06f; campLabel.Position = at + new Vector3(0, lift, 0); // ちびコマの名前より上
