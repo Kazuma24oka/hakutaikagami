@@ -892,6 +892,7 @@ Docs/Proposals/Evidence/shared-protocol.png	手元だけ	2026-10-18〜19 の旧�
 Docs/Proposals/Evidence/tax-vertical-validation.txt	手元だけ	2026-10-18〜19 の旧試作（Godot 最小基盤・2D武将パーツ）の検証画像とログ。AGENTS.md 第6節は検証記録を D:\02_プロジェクト別\百代鏡 に置くと決めている（フォルダ全体で7MB）	対応する提案資料は移す候補	2026-11-18
 Docs/Proposals/Evidence/tax-vertical.png	手元だけ	2026-10-18〜19 の旧試作（Godot 最小基盤・2D武将パーツ）の検証画像とログ。AGENTS.md 第6節は検証記録を D:\02_プロジェクト別\百代鏡 に置くと決めている（フォルダ全体で7MB）	対応する提案資料は移す候補。読む道具：Game/Scripts/TaxPanel.cs	2026-11-18
 Docs/Proposals/Evidence/validation.txt	手元だけ	2026-10-18〜19 の旧試作（Godot 最小基盤・2D武将パーツ）の検証画像とログ。AGENTS.md 第6節は検証記録を D:\02_プロジェクト別\百代鏡 に置くと決めている（フォルダ全体で7MB）	対応する提案資料は移す候補	2026-11-18
+Docs/Proposals/SIEGE_REDESIGN.md	使う	攻城の作り直しの案（史実と他のゲームの調べ、考え方、長さの見込み、決めてほしいこと）。ユーザーが決めたら試作版の攻城をこれで作り直す	2026-11-25 ユーザー「全体的に考え直して。他のゲームとかも参考にして」。約束の台帳 #54	2026-11-25
 Game/Assets/DotOfficers/Sheets/famous__hideyoshi__peace.png	使う	ドット絵武将の絵（今の絵の方針）	Sheets/index.json の sheets.*.file に載っている（404枚すべて照合済み）。Game/Scripts/DotOfficerActor.cs:41 が Root＋file で読み、NewGameRuntime.cs:70 が DotOfficerLooks から鍵を作る	2026-11-18
 Game/Assets/DotOfficers/Sheets/famous__hideyoshi__peace.png.import	使う	ドット絵武将の絵（今の絵の方針）（.import は本体に従う）	Sheets/index.json の sheets.*.file に載っている（404枚すべて照合済み）。Game/Scripts/DotOfficerActor.cs:41 が Root＋file で読み、NewGameRuntime.cs:70 が DotOfficerLooks から鍵を作る	2026-11-18
 Game/Assets/DotOfficers/Sheets/famous__hideyoshi__war.png	使う	ドット絵武将の絵（今の絵の方針）	Sheets/index.json の sheets.*.file に載っている（404枚すべて照合済み）。Game/Scripts/DotOfficerActor.cs:41 が Root＋file で読み、NewGameRuntime.cs:70 が DotOfficerLooks から鍵を作る	2026-11-18
