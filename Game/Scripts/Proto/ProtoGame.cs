@@ -717,6 +717,26 @@ public partial class ProtoGame : Node3D
             placed.Add(r);
         }
     }
+    // 小荷駄の荷車：人足の後ろに、米俵を積んだ車（2026-11-26 擬人格の印「小荷駄が人足一人」）。
+    Node3D? cart;
+    void DrawCart()
+    {
+        var kd = World.People.FirstOrDefault(p => p.Id == "konida");
+        if (cart == null)
+        {
+            cart = new Node3D(); AddChild(cart);
+            var wood = new StandardMaterial3D { AlbedoColor = new Color(0.45f, 0.32f, 0.2f) }; var straw = new StandardMaterial3D { AlbedoColor = new Color(0.85f, 0.75f, 0.45f) }; var dark = new StandardMaterial3D { AlbedoColor = new Color(0.2f, 0.15f, 0.1f) };
+            cart.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(10, 1.5f, 6) }, MaterialOverride = wood, Position = new Vector3(0, 3, 0) });
+            foreach (float z in new[] { -3.4f, 3.4f }) cart.AddChild(new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 2.4f, BottomRadius = 2.4f, Height = 0.8f }, MaterialOverride = dark, Position = new Vector3(0, 2.4f, z), Rotation = new Vector3(Mathf.Pi / 2, 0, 0) });
+            foreach (var (x, y) in new[] { (-2.6f, 5f), (2.6f, 5f), (0f, 8f) }) cart.AddChild(new MeshInstance3D { Mesh = new CylinderMesh { TopRadius = 1.8f, BottomRadius = 1.8f, Height = 5 }, MaterialOverride = straw, Position = new Vector3(x, y, 0), Rotation = new Vector3(Mathf.Pi / 2, 0, 0) });
+            cart.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(8, 0.5f, 0.5f) }, MaterialOverride = wood, Position = new Vector3(8, 3, 1.5f) });
+            cart.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(8, 0.5f, 0.5f) }, MaterialOverride = wood, Position = new Vector3(8, 3, -1.5f) });
+        }
+        bool on = kd != null && kd.Active && World.Sees(World.Player, kd);
+        cart.Visible = on; if (!on) return;
+        float sc = Math.Max(1, distance / 450); var at = ToScene(kd!.X, kd.Y);
+        cart.Scale = Vector3.One * sc * 3; cart.Position = at + new Vector3(-36 * sc, 0, -6 * sc); // ちびコマと同じくらいの大きさで、人足の後ろに
+    }
     void UpdateActors()
     {
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦" || World.Returning;
@@ -763,6 +783,7 @@ public partial class ProtoGame : Node3D
             }
             else DrawFollowers(p, Vector3.Zero, 0, false, "idle"); // ちびコマを描かない人（城を去った・絵が無い）の足軽を前の場所に残さない（2026-11-25 擬人格の印「名前の札のない足軽」）
         }
+        DrawCart();
         foreach (var (nm, sl) in siteLabels) if (nm != World.Map.Site("iwakiri-castle").Name) sl.Visible = true; // 隠した拠点の札は、重なりを確かめ直す前に戻す
         Unclutter();
         if (Scene.Open) { foreach (var (_, ac) in actors) ac.Label.Visible = false; foreach (var sl in siteLabels.Values) sl.Visible = false; if (campLabel != null) campLabel.Visible = false; }

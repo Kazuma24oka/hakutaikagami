@@ -231,6 +231,7 @@ public sealed partial class ProtoWorld
     void Walk(ProtoPerson p, (long X, long Y) to, string goal, string doing)
     {
         var path = ProtoMove.Plan(Map, (p.X, p.Y), to); if (path == null) return;
+        if (War.Siege != null && p.House != Rebel && ThroughGate(p, to) is { } gate && ProtoMove.Plan(Map, (p.X, p.Y), gate) is { } a && ProtoMove.Plan(Map, gate, to) is { } b) path = [.. a, .. b];
         p.Path = path; p.PathIndex = 0; p.Goal = goal; p.Doing = doing;
     }
 

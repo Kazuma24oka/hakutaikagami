@@ -121,6 +121,7 @@ public sealed partial class ProtoWorld
     // 勲功：役目を果たせば見込みどおり、果たせなければ半分。戦果を足す。勝ちで上乗せ、負けは戦っていれば見込みの四半分。
     // 本人は、攻城の毎日の役目（1つにつき1。小さな務めなので、合戦の役目より軽い）と一番乗り（6）も足す。兵を失ったこと自体では減らさない。
     public bool Ichiban => Flag("ichiban");
+    public bool ParleyWon => Flag("parley-won");
     public int WarMerit(string id)
     {
         int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = (DidRole(id) ? see : see / 2) + Deeds(id);

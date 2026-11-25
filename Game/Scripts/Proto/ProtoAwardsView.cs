@@ -67,6 +67,7 @@ public partial class ProtoGame
             string deed = a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—";
             // 本人は、攻城の毎日の役目と一番乗りも働きに出す（2026-11-25 擬人格の印09）。
             if (a.Unit == World.Player.Id && World.DutiesDone > 0) deed = (deed == "—" ? "" : deed + "　") + World.DutiesText;
+            if (a.Unit == World.Player.Id && World.ParleyWon) deed = "使者として開城させた　" + deed;
             if (a.Unit == World.Player.Id && World.Ichiban) deed += "　一番乗り";
             if (World.EnvoyWon(a.Unit)) deed = (deed == "—" ? "" : deed + "　") + "勧告の使者";
             foreach (var (text, right) in new[] { (a.Name, false), (World.SiegeRole(a.Unit) is { Length: > 0 } sr ? (a.Role == "" ? sr : a.Role + "・" + sr) : a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Deeds.ToString(), true), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
