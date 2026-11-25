@@ -347,9 +347,9 @@ public partial class ProtoGame
         if (key != c.Key)
         {
             c.Key = key; c.Name.Text = name; c.Total.Text = total.ToString(); c.Parts.Text = parts == "" ? "" : $"({parts})";
-            ((StandardMaterial3D)c.Fill.MaterialOverride).AlbedoColor = routed ? new Color(0.32f, 0.32f, 0.32f, 0.92f) : HouseColor(p.House).Darkened(0.1f) with { A = 0.92f };
-            ((StandardMaterial3D)c.Edge.MaterialOverride).AlbedoColor = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(p.House).Lightened(0.4f);
-            ((StandardMaterial3D)c.Wall.MaterialOverride).AlbedoColor = routed ? new Color(0.45f, 0.45f, 0.45f) : HouseColor(p.House);
+            ((StandardMaterial3D)c.Fill.MaterialOverride).AlbedoColor = routed ? new Color(0.32f, 0.32f, 0.32f, 0.92f) : HouseColor(World.ShownHouse(p)).Darkened(0.1f) with { A = 0.92f };
+            ((StandardMaterial3D)c.Edge.MaterialOverride).AlbedoColor = p.Player ? new Color(1, 0.85f, 0.35f) : routed ? new Color(0.6f, 0.6f, 0.6f) : HouseColor(World.ShownHouse(p)).Lightened(0.4f);
+            ((StandardMaterial3D)c.Wall.MaterialOverride).AlbedoColor = routed ? new Color(0.45f, 0.45f, 0.45f) : HouseColor(World.ShownHouse(p));
             var img = Image.CreateEmpty(100, 8, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
             img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(p.Morale, 0, 100) / 100), 6), new Color(0.95f, 0.8f, 0.3f));
             c.Morale.Texture = ImageTexture.CreateFromImage(img);

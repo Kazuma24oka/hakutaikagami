@@ -341,8 +341,9 @@ public sealed partial class ProtoWorld
         var liveTakano = Units.Where(u => u.House == "takano" && War.Assign.ContainsKey(u.Id) && (u.Player ? !War.Routed.Contains(u.Id) && Flag("fought:" + u.Id) : StillFights(u))).ToArray();
         if (Flag("rebels-out") && liveRebels.Length == 0 && War.Result == "")
         {
-            War.Result = "鎮めた"; War.Phase = "終わり"; var k = Person(Katsumoto);
-            Happen("rebellion-crushed", War.Siege != null ? "岩切城は落ち、岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。" : "岩切勝元の謀叛は鎮まった。勝元と井口は捕らえられた。", k.X, k.Y, Person(Heir), Person(Karou), k);
+            War.Result = "鎮めた"; War.Phase = "終わり"; var k = Person(Katsumoto); EndRelief();
+            var caught = People.Where(r => r.House == Rebel && r.Active && r.Id != Nobunao).Select(r => r.Name).ToArray();
+            Happen("rebellion-crushed", (War.Siege != null ? "岩切城は落ち、" : "") + "岩切勝元の謀叛は鎮まった。" + (caught.Length > 0 ? string.Join("と", caught) + "は捕らえられた。" : ""), k.X, k.Y, Person(Heir), Person(Karou), k);
             foreach (var r in People.Where(r => r.House == Rebel)) { r.Active = false; r.Path = []; r.PathIndex = 0; r.Doing = "捕らえられた"; }
         }
         else if (War.Phase == "合戦" && War.Result == "" && War.Siege == null && Second >= War.SignalAt + 8 * Hour)

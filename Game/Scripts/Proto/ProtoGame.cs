@@ -201,7 +201,7 @@ public partial class ProtoGame : Node3D
         string band = age < 30 ? "young" : age < 50 ? "prime" : "old"; int variants = band == "young" ? 3 : band == "prime" ? 4 : 2;
         int n = Math.Abs(p.Id.Aggregate(17, (h, c) => unchecked(h * 31 + c))) % variants;
         bool armored = p.Soldiers > 0 && w.War.Phase is "行軍" or "合戦" || p.House == "bandit";
-        string color = p.House switch { "takano" => "紫", "sawatari" => "朱", "iwakiri" => "黒漆", _ => "鉄錆" };
+        string color = w.ShownHouse(p) switch { "takano" => "紫", "sawatari" => "朱", "iwakiri" => "黒漆", _ => "鉄錆" };
         return armored ? $"generic/{kind}/{band}/{n}/war/{color}" : $"generic/{kind}/{band}/{n}/peace";
     }
     readonly Dictionary<string, DotOfficerActor> dots = new();
@@ -282,7 +282,7 @@ public partial class ProtoGame : Node3D
         for (int i = 0; i < list.Count; i++)
         {
             var d = list[i]; d.Visible = i < want; if (i >= want) continue;
-            d.Apply($"soldier/ashigaru/{mix[i % mix.Length]}/war/{ColorOf(p.House)}");
+            d.Apply($"soldier/ashigaru/{mix[i % mix.Length]}/war/{ColorOf(World.ShownHouse(p))}");
             int row = i / wide + 1; float col = i % wide - (wide - 1) / 2f;
             var at = foot + back * (gap * row) + side * (gap * col * 1.1f);
             at.Y = HeightAt(at.X, at.Z);
@@ -305,7 +305,7 @@ public partial class ProtoGame : Node3D
         foreach (var p in World.People)
         {
             float r = p.Player ? 7 : 5;
-            var body = new MeshInstance3D { Mesh = new SphereMesh { Radius = r, Height = r * 2 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = p.Player ? new Color(1, 1, 1) : HouseColor(p.House), EmissionEnabled = p.Player, Emission = new Color(0.4f, 0.4f, 0.2f) } };
+            var body = new MeshInstance3D { Mesh = new SphereMesh { Radius = r, Height = r * 2 }, MaterialOverride = new StandardMaterial3D { AlbedoColor = p.Player ? new Color(1, 1, 1) : HouseColor(World.ShownHouse(p)), EmissionEnabled = p.Player, Emission = new Color(0.4f, 0.4f, 0.2f) } };
             var label = new Label3D { Text = p.Name, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = p.Player ? 0.0011f : 0.0008f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = p.Player ? new Color(1, 1, 0.6f) : new Color(1, 1, 1) };
             AddChild(body); AddChild(label); actors[p.Id] = (body, label);
             if (DotOfficerActor.Available) { var dot = new DotOfficerActor { OnTop = true, Solid = true }; AddChild(dot); dots[p.Id] = dot; }
@@ -652,6 +652,22 @@ public partial class ProtoGame : Node3D
     }
 
     readonly Dictionary<string, (MeshInstance3D Body, Label3D Label)> markers = new();
+    // 名前の札が画面で重なったら、後の札を一段ずつ上へずらす（本人の札は動かさない）。
+    void Unclutter()
+    {
+        float h = GetViewport().GetVisibleRect().Size.Y, k = h / (2 * Mathf.Tan(Mathf.DegToRad(Camera.Fov) / 2)); // 1単位の大きさが画面で何ドットか（同じ遠さで）
+        var placed = new List<Rect2>();
+        foreach (var p in World.People.OrderByDescending(p => p.Player).ThenByDescending(p => p.Soldiers).ThenBy(p => p.Id))
+        {
+            var l = actors[p.Id].Label; l.Offset = Vector2.Zero;
+            if (!l.Visible || l.Text == "" || Camera.IsPositionBehind(l.Position)) continue;
+            float s = l.PixelSize * k, lineH = l.FontSize * s * 1.15f, w = l.FontSize * s * l.Text.Length * 0.9f; // 札の大きさ（画面のドット）
+            var at = Camera.UnprojectPosition(l.Position);
+            var r = new Rect2(at.X - w / 2, at.Y - lineH / 2, w, lineH);
+            for (int step = 0; step < 6 && placed.Any(q => q.Intersects(r)); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
+            placed.Add(r);
+        }
+    }
     void UpdateActors()
     {
         bool close = distance < 700, war = World.War.Phase is "軍議待ち" or "行軍" or "合戦" || World.Returning;
@@ -661,7 +677,7 @@ public partial class ProtoGame : Node3D
         {
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p) && !World.Sheltered(p); // 城内の隊は描かない（城の欄にまとめる）
             bool unit = p.Soldiers > 0 && war;
-            if (body.MaterialOverride is StandardMaterial3D m && !p.Player) m.AlbedoColor = HouseColor(p.House);
+            if (body.MaterialOverride is StandardMaterial3D m && !p.Player) m.AlbedoColor = HouseColor(World.ShownHouse(p));
             body.Visible = seen; label.Visible = seen && (p.Player || close || unit || p.House == "bandit" && p.Id == World.People.Where(b => b.House == "bandit" && b.Active).Select(b => b.Id).DefaultIfEmpty(p.Id).Min()); // 賊も札を出す（固まっているので、札は一つ）（名の無い足軽に見えないように。2026-11-25 擬人格の印）
             label.Text = unit ? $"{p.Name}　兵{p.Soldiers}" : p.Name;
             float grow = unit ? 1 + MathF.Sqrt(p.Soldiers) / 8 : 1, scale = Math.Max(1, distance / 450), r = (p.Player ? 7 : 5) * scale * grow; var pos = ToScene(p.X, p.Y) + new Vector3(0, r, 0);
@@ -698,6 +714,7 @@ public partial class ProtoGame : Node3D
             }
             else DrawFollowers(p, Vector3.Zero, 0, false, "idle"); // ちびコマを描かない人（城を去った・絵が無い）の足軽を前の場所に残さない（2026-11-25 擬人格の印「名前の札のない足軽」）
         }
+        Unclutter();
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
         foreach (var mk in World.Markers)
         {

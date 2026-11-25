@@ -616,6 +616,8 @@ public sealed partial class ProtoWorld
         if (nao.Active) { var sw = Map.Site("sawatari-castle"); Walk(nao, Spot(sw, 2), sw.Id, "沢渡城へ引き上げている"); }
     }
     public string ReliefState => War.Siege?.Relief ?? "";
+    // 画面の色：後詰の沢渡信直は、岩切の側で戦っていても沢渡の色で描く。
+    public string ShownHouse(ProtoPerson p) => p.Id == Nobunao && Flag("relief-house") ? "sawatari" : p.House;
     // 画面用：本人が知っている後詰の様子（""・沢渡勢・退けた）。
     public string KnownRelief => Knows(Player, "relief-broken") ? "退けた" : Knows(Player, "relief-arrive") ? "沢渡勢" : "";
 

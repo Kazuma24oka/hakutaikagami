@@ -211,9 +211,13 @@ public sealed partial class ProtoWorld
     {
         if (!b.Active) return;
         int k = b.Id[^1] - '0'; bool day = HourOfDay is >= 8 and < 17;
-        var (x, y) = day ? Ambush : Camp; var spot = ProtoMove.Nearest(Map, x + k * 1500 - 3000, y + (k % 2) * 1800 - 900);
-        if (Dist(b, spot.X, spot.Y) < 500) { b.Doing = day ? "峠道で待ち伏せている" : "隠れ家に潜んでいる"; return; }
-        Walk(b, spot, "", day ? "峠道へ向かう" : "隠れ家へ戻る");
+        // 兵を連れた軍が近い所には居座らない。待ち伏せの場所に軍がいれば隠れ家に、両方に近ければ軍から遠い方に潜む。
+        long Army((long X, long Y) at) => People.Where(a => a.Active && a.Soldiers > 0 && a.House != "bandit").Select(a => Dist(a, at.X, at.Y)).DefaultIfEmpty(long.MaxValue).Min();
+        bool armyNear = Army(Ambush) <= 500_00 || Army(Camp) <= 500_00;
+        var (x, y) = armyNear ? (Army(Ambush) > Army(Camp) ? Ambush : Camp) : day ? Ambush : Camp;
+        var spot = ProtoMove.Nearest(Map, x + k * 1500 - 3000, y + (k % 2) * 1800 - 900);
+        if (Dist(b, spot.X, spot.Y) < 500) { b.Doing = armyNear ? "潜んでいる" : day ? "峠道で待ち伏せている" : "隠れ家に潜んでいる"; return; }
+        Walk(b, spot, "", armyNear ? "軍を避けている" : day ? "峠道へ向かう" : "隠れ家へ戻る");
     }
 
     // ---- 国境の境目の争い ----
@@ -464,7 +468,9 @@ public sealed partial class ProtoWorld
     }
     public long? TaskEta(ProtoTask t)
     {
-        var p = Player; var path = ProtoMove.Plan(Map, (p.X, p.Y), TaskTarget(t)); return path == null ? null : ProtoMove.Eta(Map, (p.X, p.Y), path, percent: PlayerPercent);
+        var p = Player; var to = TaskTarget(t);
+        if (t.Kind == "duty" && Dist(p, to.X, to.Y) <= 100_00) return 0; // 役目は、その場所の近くにいれば着いている
+        var path = ProtoMove.Plan(Map, (p.X, p.Y), to); return path == null ? null : ProtoMove.Eta(Map, (p.X, p.Y), path, percent: PlayerPercent);
     }
     public bool GoToTask(string taskId) { var t = Tasks.First(x => x.Id == taskId); var (x, y) = TaskTarget(t); return MoveTo(x, y, TaskPlace(t)); }
 }
